@@ -35,7 +35,6 @@ import static org.junit.Assert.*;
 
 import java.io.ByteArrayInputStream;
 import java.io.ByteArrayOutputStream;
-import java.io.File;
 import java.math.BigInteger;
 import java.nio.ByteBuffer;
 import java.nio.ByteOrder;
@@ -67,7 +66,7 @@ public class FitsEncoderTest {
         buf.setByteOrder(ByteOrder.LITTLE_ENDIAN);
         assertEquals("byteorder", ByteOrder.LITTLE_ENDIAN, buf.byteOrder());
         buf.putDouble(Math.PI);
-        buf.flush();
+        e.flush();
         
         ByteBuffer b = ByteBuffer.wrap(o.toByteArray());
         assertEquals("BE", Math.PI, b.getDouble(), 1e-12);

@@ -35,6 +35,7 @@ import java.io.EOFException;
 import java.io.IOException;
 import java.lang.reflect.Array;
 
+import edu.umd.cs.findbugs.annotations.SuppressFBWarnings;
 import nom.tam.fits.FitsFactory;
 import nom.tam.util.type.ElementType;
 
@@ -52,6 +53,10 @@ public class FitsDecoder extends ArrayDecoder {
     /** The FITS byte value for the binary representation of a boolean 'true' value */
     private static final byte FITS_TRUE = (byte) 'T';
 
+    /**
+     * Instantiates a new decoder of FITS binary data to Java arrays. To be used by subclass
+     * constructors only.
+     */
     protected FitsDecoder() {
         super();
     }
@@ -125,6 +130,7 @@ public class FitsDecoder extends ArrayDecoder {
      * @see #booleanFor(int)
      *              
      */
+    @SuppressFBWarnings(value = "NP_BOOLEAN_RETURN_NULL", justification = "null values are explicitly allowed by FITS, so we want to support them.")
     protected static final Boolean booleanObjectFor(int c) {
         if (c == 0) {
             return null;
@@ -134,6 +140,10 @@ public class FitsDecoder extends ArrayDecoder {
 
     /**
      * @deprecated Low-level reading/writing should be handled internally as arrays by this library only.
+     * 
+     * @return the next boolean value from the input.
+     * @throws IOException
+     *              if there was an IO error reading from the input.
      */
     @Deprecated
     protected synchronized boolean readBoolean() throws IOException {
@@ -142,6 +152,10 @@ public class FitsDecoder extends ArrayDecoder {
 
     /**
      * @deprecated Low-level reading/writing should be handled internally as arrays by this library only.
+     * 
+     * @return the next character value from the input.
+     * @throws IOException
+     *              if there was an IO error reading from the input.
      */
     @Deprecated
     protected synchronized char readChar() throws IOException {
@@ -153,6 +167,10 @@ public class FitsDecoder extends ArrayDecoder {
 
     /**
      * @deprecated Low-level reading/writing should be handled internally as arrays by this library only.
+     * 
+     * @return the next byte the input.
+     * @throws IOException
+     *              if there was an IO error reading from the input.
      */
     @Deprecated
     protected final byte readByte() throws IOException {
@@ -165,6 +183,10 @@ public class FitsDecoder extends ArrayDecoder {
 
     /**
      * @deprecated Low-level reading/writing should be handled internally as arrays by this library only.
+     * 
+     * @return the next unsigned byte from the input, or -1 if there is no more bytes available.
+     * @throws IOException
+     *              if there was an IO error reading from the input, other than the end-of-file.
      */
     @Deprecated
     protected synchronized int readUnsignedByte() throws IOException {
@@ -173,6 +195,10 @@ public class FitsDecoder extends ArrayDecoder {
 
     /**
      * @deprecated Low-level reading/writing should be handled internally as arrays by this library only.
+     * 
+     * @return the next 16-bit integer value from the input.
+     * @throws IOException
+     *              if there was an IO error reading from the input.
      */
     @Deprecated
     protected final short readShort() throws IOException {
@@ -185,6 +211,10 @@ public class FitsDecoder extends ArrayDecoder {
 
     /**
      * @deprecated Low-level reading/writing should be handled internally as arrays by this library only.
+     * 
+     * @return the next unsigned 16-bit integer value from the input.
+     * @throws IOException
+     *              if there was an IO error reading from the input.
      */
     @Deprecated
     protected synchronized int readUnsignedShort() throws IOException {
@@ -194,6 +224,10 @@ public class FitsDecoder extends ArrayDecoder {
 
     /**
      * @deprecated Low-level reading/writing should be handled internally as arrays by this library only.
+     * 
+     * @return the next 32-bit integer value from the input.
+     * @throws IOException
+     *              if there was an IO error reading from the input.
      */
     @Deprecated
     protected synchronized int readInt() throws IOException {
@@ -203,6 +237,10 @@ public class FitsDecoder extends ArrayDecoder {
 
     /**
      * @deprecated Low-level reading/writing should be handled internally as arrays by this library only.
+     * 
+     * @return the next 64-bit integer value from the input.
+     * @throws IOException
+     *              if there was an IO error reading from the input.
      */
     @Deprecated
     protected synchronized long readLong() throws IOException {
@@ -212,6 +250,10 @@ public class FitsDecoder extends ArrayDecoder {
 
     /**
      * @deprecated Low-level reading/writing should be handled internally as arrays by this library only.
+     * 
+     * @return the next single-precision (32-bit) floating point value from the input.
+     * @throws IOException
+     *              if there was an IO error reading from the input.
      */
     @Deprecated
     protected synchronized float readFloat() throws IOException {
@@ -221,6 +263,10 @@ public class FitsDecoder extends ArrayDecoder {
 
     /**
      * @deprecated Low-level reading/writing should be handled internally as arrays by this library only.
+     * 
+     * @return the next double-precision (64-bit) floating point value from the input.
+     * @throws IOException
+     *              if there was an IO error reading from the input.
      */
     @Deprecated
     protected synchronized double readDouble() throws IOException {
@@ -230,6 +276,10 @@ public class FitsDecoder extends ArrayDecoder {
 
     /**
      * @deprecated Low-level reading/writing should be handled internally as arrays by this library only.
+     * 
+     * @return the next line of 1-byte ASCII characters, terminated by a LF or EOF. 
+     * @throws IOException
+     *              if there was an IO error reading from the input.
      */
     @Deprecated
     protected synchronized String readAsciiLine() throws IOException {
@@ -270,6 +320,14 @@ public class FitsDecoder extends ArrayDecoder {
      * See {@link ArrayDataInput#read(boolean[], int, int)} for the general contract of this method.
      * In FITS, <code>true</code> values are represented by the ASCII byte for 'T', whereas
      * <code>false</code> is represented by the ASCII byte for 'F'.
+     * 
+     * @param b             an array of boolean values.
+     * @param start         the buffer index at which to start reading data
+     * @param length        the total number of elements to read.
+     * @return the number of bytes successfully read.
+     * 
+     * @throws IOException  if there was an IO error before, before requested number of bytes could
+     *                      be read, or an <code>EOFException</code> if already at the end of file.
      */
     protected synchronized int read(boolean[] b, int start, int length) throws IOException {
         InputBuffer in = getInputBuffer();
@@ -303,6 +361,14 @@ public class FitsDecoder extends ArrayDecoder {
      * In FITS, <code>true</code> values are represented by the ASCII byte for 'T',
      * <code>false</code> is represented by the ASCII byte for 'F', while <code>null</code>
      * values are represented by the value 0.
+     * 
+     * @param b             an array of boolean values.
+     * @param start         the buffer index at which to start reading data
+     * @param length        the total number of elements to read.
+     * @return the number of bytes successfully read.
+     * 
+     * @throws IOException  if there was an IO error before, before requested number of bytes could
+     *                      be read, or an <code>EOFException</code> if already at the end of file.
      */
     protected synchronized int read(Boolean[] b, int start, int length) throws IOException {
         InputBuffer in = getInputBuffer();
@@ -339,6 +405,14 @@ public class FitsDecoder extends ArrayDecoder {
      * and the old 2-byte behaviour are supported, and can be selected via 
      * {@link FitsFactory#setUseUnicodeChars(boolean)}.
      * 
+     * @param c             a character array.
+     * @param start         the buffer index at which to start reading data
+     * @param length        the total number of elements to read.
+     * @return the number of bytes successfully read.
+     * 
+     * @throws IOException  if there was an IO error before, before requested number of bytes could
+     *                      be read, or an <code>EOFException</code> if already at the end of file.
+     * 
      * @see FitsFactory#setUseUnicodeChars(boolean) 
      */
     protected synchronized int read(char[] c, int start, int length) throws IOException {
@@ -372,6 +446,14 @@ public class FitsDecoder extends ArrayDecoder {
 
     /**
      * See {@link ArrayDataInput#read(short[], int, int)} for a contract of this method.
+     * 
+     * @param s             an array of 16-bit integer values.
+     * @param start         the buffer index at which to start reading data
+     * @param length        the total number of elements to read.
+     * @return the number of bytes successfully read.
+     * 
+     * @throws IOException  if there was an IO error before, before requested number of bytes could
+     *                      be read, or an <code>EOFException</code> if already at the end of file.
      */
     protected synchronized int read(short[] s, int start, int length) throws IOException {
         InputBuffer in = getInputBuffer();
@@ -402,6 +484,14 @@ public class FitsDecoder extends ArrayDecoder {
 
     /**
      * See {@link ArrayDataInput#read(int[], int, int)} for a contract of this method.
+     * 
+     * @param j             an array of 32-bit integer values.
+     * @param start         the buffer index at which to start reading data
+     * @param length        the total number of elements to read.
+     * @return the number of bytes successfully read.
+     * 
+     * @throws IOException  if there was an IO error before, before requested number of bytes could
+     *                      be read, or an <code>EOFException</code> if already at the end of file.
      */
     protected synchronized int read(int[] j, int start, int length) throws IOException {
         InputBuffer in = getInputBuffer();
@@ -421,6 +511,15 @@ public class FitsDecoder extends ArrayDecoder {
 
     /**
      * See {@link ArrayDataInput#read(long[], int, int)} for a contract of this method.
+     * 
+     * @param l             an array of 64-bit integer values.
+     * @param start         the buffer index at which to start reading data
+     * @param length        the total number of elements to read.
+     * @return the number of bytes successfully read.
+     * 
+     * @throws IOException  if there was an IO error before, before requested number of bytes could
+     *                      be read, or an <code>EOFException</code> if already at the end of file.
+     * 
      */
     protected synchronized int read(long[] l, int start, int length) throws IOException {
         InputBuffer in = getInputBuffer();
@@ -440,6 +539,14 @@ public class FitsDecoder extends ArrayDecoder {
 
     /**
      * See {@link ArrayDataInput#read(float[], int, int)} for a contract of this method.
+     * 
+     * @param f             an array of single-precision (32-bit) floating point values.
+     * @param start         the buffer index at which to start reading data
+     * @param length        the total number of elements to read.
+     * @return the number of bytes successfully read.
+     * 
+     * @throws IOException  if there was an IO error before, before requested number of bytes could
+     *                      be read, or an <code>EOFException</code> if already at the end of file.
      */
     protected synchronized int read(float[] f, int start, int length) throws IOException {
         InputBuffer in = getInputBuffer();
@@ -459,6 +566,14 @@ public class FitsDecoder extends ArrayDecoder {
 
     /**
      * See {@link ArrayDataInput#read(double[], int, int)} for a contract of this method.
+     * 
+     * @param d             an array of double-precision (64-bit) floating point values.
+     * @param start         the buffer index at which to start reading data
+     * @param length        the total number of elements to read.
+     * @return the number of bytes successfully read.
+     * 
+     * @throws IOException  if there was an IO error before, before requested number of bytes could
+     *                      be read, or an <code>EOFException</code> if already at the end of file.
      */
     protected synchronized int read(double[] d, int start, int length) throws IOException {
         InputBuffer in = getInputBuffer();

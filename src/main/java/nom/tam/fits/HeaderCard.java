@@ -89,7 +89,7 @@ public class HeaderCard implements CursorValue<String>, Cloneable {
     /** if a commend needs the be specified 2 extra chars are needed to start the comment */
     public static final int MAX_LONG_STRING_VALUE_WITH_COMMENT_LENGTH = MAX_LONG_STRING_VALUE_LENGTH - 2;
 
-    /** Maximum HIERARCH keyword length (80 chars must fit [<keyword> = '&'] at minimum... */
+    /** Maximum HIERARCH keyword length (80 chars must fit [&lt;keyword&gt; = '&amp;'] at minimum... */
     public static final int MAX_HIERARCH_KEYWORD_LENGTH = FITS_HEADER_CARD_SIZE - 6;
 
     /** The start and end quotes of the string and the ampasant to continue the string. */
@@ -505,7 +505,7 @@ public class HeaderCard implements CursorValue<String>, Cloneable {
      * 
      * @throws HeaderCardException for any invalid keyword or value
      */
-    private void set(String aKey, String aValue, String aComment, Class<?> aType) throws HeaderCardException {
+    private synchronized void set(String aKey, String aValue, String aComment, Class<?> aType) throws HeaderCardException {
         // TODO we never call with null type and non-null value internally, so this is dead code here...
 //        if (aType == null && aValue != null) {
 //            throw new HeaderCardException("Null type for value: [" + sanitize(aValue) + "]");
@@ -629,7 +629,7 @@ public class HeaderCard implements CursorValue<String>, Cloneable {
      * @see #getComment()
      */
     @Override
-    public final String getKey() {
+    public final synchronized String getKey() {
         return this.key;
     }
 
@@ -655,7 +655,7 @@ public class HeaderCard implements CursorValue<String>, Cloneable {
      * @see #getKey()
      * @see #getValue()
      */
-    public final String getComment() {
+    public final synchronized String getComment() {
         return this.comment;
     }
 
@@ -819,7 +819,7 @@ public class HeaderCard implements CursorValue<String>, Cloneable {
      * 
      * @since 1.16
      */
-    public final boolean isCommentStyleCard() {
+    public final synchronized boolean isCommentStyleCard() {
         return (type == null);
     }
 
@@ -832,7 +832,7 @@ public class HeaderCard implements CursorValue<String>, Cloneable {
      * @since 1.16
      * 
      */
-    public final boolean hasHierarchKey() {
+    public final synchronized boolean hasHierarchKey() {
         return isHierarchKey(key);
     }
 
@@ -842,7 +842,7 @@ public class HeaderCard implements CursorValue<String>, Cloneable {
      *
      * @param comment   the new comment text.
      */
-    public void setComment(String comment) {
+    public synchronized void setComment(String comment) {
         this.comment = sanitize(comment);
     }
 
@@ -898,7 +898,7 @@ public class HeaderCard implements CursorValue<String>, Cloneable {
      * Sets a new boolean value for this card.
      *
      * @param update                    the new value to se (can be <code>null</code>).
-     * throws LongValueException        if the card has no room even for the single-character 'T' or 'F'.
+     * @throws LongValueException       if the card has no room even for the single-character 'T' or 'F'.
      *                                  This can never happen with cards created programmatically as they
      *                                  will not allow setting HIERARCH-style keywords long enough to ever
      *                                  trigger this condition. But, it is possible to read cards from
@@ -1122,7 +1122,7 @@ public class HeaderCard implements CursorValue<String>, Cloneable {
      *                                  an 80-character record.
      */
     @SuppressWarnings("deprecation")
-    private void parseLongStringCard(HeaderCardCountingArrayDataInput dis, HeaderCardParser next)
+    private synchronized void parseLongStringCard(HeaderCardCountingArrayDataInput dis, HeaderCardParser next)
             throws IOException, TruncatedFileException {
 
         StringBuilder longValue = new StringBuilder();
@@ -1238,6 +1238,8 @@ public class HeaderCard implements CursorValue<String>, Cloneable {
     /**
      * Updates the keyword for this card.
      * 
+     * @param newKey    the new FITS header keyword to use for this card.
+     * 
      * @throws HierarchNotEnabledException      if the new key is a HIERARCH-style long key
      *                                          but support for these is not currently
      *                                          enabled.
@@ -1271,7 +1273,7 @@ public class HeaderCard implements CursorValue<String>, Cloneable {
      * 
      * @return  <code>true</code> if the card contains nothing but blank spaces.
      */
-    public boolean isBlank() {
+    public synchronized boolean isBlank() {
         if (!isCommentStyleCard() || !key.isEmpty()) {
             return false;
         }
@@ -1708,6 +1710,8 @@ public class HeaderCard implements CursorValue<String>, Cloneable {
      *                  <code>String.class</code> is assumed (for backward compatibility).
      * 
      * @return the new HeaderCard
+     * @throws IllegalStateException
+     *                  if the card could not be created for some reason (noted as the cause).
      * 
      * @deprecated      This was to be used internally only, without public visibility. It will become unexposed
      *                  to users in a future release...

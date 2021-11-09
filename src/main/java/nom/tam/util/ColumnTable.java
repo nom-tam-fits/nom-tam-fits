@@ -56,6 +56,7 @@ import nom.tam.util.type.ElementType;
  * array. Each column is required to have the same number of rows. Information
  * regarding the dimensionality of columns and possible data pointers is
  * retained for use by clients which can understand them.
+ * 
  */
 public class ColumnTable<T> implements DataTable {
 

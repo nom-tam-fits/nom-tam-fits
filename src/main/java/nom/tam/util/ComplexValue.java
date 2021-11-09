@@ -196,7 +196,7 @@ public class ComplexValue {
      *                  if the supplied string does not appear to be a FITS standard
      *                  representation of a complex value.
      *                  
-     * @See {@link FitsFactory#setAllowHeaderRepairs(boolean)}
+     * @see FitsFactory#setAllowHeaderRepairs(boolean)
      */
     public ComplexValue(String text) throws IllegalArgumentException {        
         // Allow the use of 'D' or 'd' to mark the exponent, instead of the standard 'E' or 'e'...

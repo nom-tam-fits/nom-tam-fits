@@ -72,7 +72,7 @@ import java.util.logging.Logger;
  * Version 1.3 -- March 2, 2007: Added File based constructors.</li>
  * 
  * <li>
- * Version 1.4 -- July 20, 2009: Added support for >2G Object reads.
+ * Version 1.4 -- July 20, 2009: Added support for &gt;2G Object reads.
  * This is still a bit problematic in that we do not support primitive arrays
  * larger than 2 GB/atomsize. However except in the case of bytes this is not
  * currently a major issue.</li>

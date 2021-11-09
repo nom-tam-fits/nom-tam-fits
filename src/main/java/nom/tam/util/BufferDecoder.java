@@ -69,7 +69,7 @@ public abstract class BufferDecoder extends FitsDecoder {
         
         pretendHalfPopulated();
         
-        setReader(new InputReader() {
+        setInput(new InputReader() {
             private byte[] b1 = new byte[1];
 
             @Override
@@ -109,6 +109,9 @@ public abstract class BufferDecoder extends FitsDecoder {
     /**
      * @deprecated  No longer used internally, kept only for back-compatibility since it used to be a needed abstract method.
      *              It's safest if you never override or call this method from your code!
+     *             
+     * @param needBytes     the number of byte we need available to decode the next element
+     * @throws IOException  if the data could not be made available due to an IO error of the underlying input.
      */
     protected void checkBuffer(int needBytes) throws IOException {
     }
@@ -120,10 +123,33 @@ public abstract class BufferDecoder extends FitsDecoder {
     
     /**
      * @deprecated  No longer used internally, kept only for back-compatibility since it used to be a needed abstract method.
+     * 
+     * @param e     the <code>EOFException</code> thrown by one of the read calls.
+     * @param start the index of the first array element we wanted to fill
+     * @param index the array index of the element during which the exception was thrown
+     * @param elementSize the number of bytes per element we were processing
+     * 
+     * @return the numer of bytes successfully processed from the input before the exception occurred.
+     * @throws EOFException
+     *              if the input had no more data to process
      */
     protected int eofCheck(EOFException e, int start, int index, int elementSize) throws EOFException {
         return super.eofCheck(e, (index - start), -1) * elementSize;
     }
+    
+    /**
+     * See the contract of {@link ArrayDataInput#readLArray(Object)}.
+     * 
+     * @param o
+     *            an array, to be populated
+     * @return the actual number of bytes read from the input, or -1 if already
+     *         at the end-of-file.
+     * @throws IllegalArgumentException
+     *             if the argument is not an array or if it contains an element
+     *             that is not supported for decoding.
+     * @throws IOException
+     *             if there was an IO error reading from the input
+     */
     protected long readLArray(Object o) throws IOException {
         try { 
             return super.readArray(o); 

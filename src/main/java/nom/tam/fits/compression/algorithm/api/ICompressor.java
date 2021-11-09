@@ -38,6 +38,8 @@ import java.nio.ByteBuffer;
  * Compressor that can compress a Buffer into a ByteBuffer and vize versa. the
  * Byte buffer must have enough space allocated else an exception will be
  * thrown.
+ * 
+ * @param <T>  The generic type of NIO buffer on which this compressor operates.
  */
 public interface ICompressor<T extends Buffer> {
 

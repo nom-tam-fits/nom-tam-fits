@@ -160,6 +160,9 @@ public class HeaderCardBuilder {
      * @param value     the new number value to set.
      * @return this
      * @throws HeaderCardException if the card creation failed.
+     * @throws LongValueException 
+     *                  if the number value cannot be represented in the space available
+     *                  for it in the 80-character wide FITS header record.    
      */
     public HeaderCardBuilder value(Number value) throws HeaderCardException, LongValueException {
         if (this.card == null) {
@@ -180,6 +183,9 @@ public class HeaderCardBuilder {
      * @return this
      * @throws HeaderCardException
      *             if the card creation failed.
+     * @throws LongValueException 
+     *             if the number value cannot be represented in the space available
+     *             for it in the 80-character wide FITS header record.
      */
     public HeaderCardBuilder value(String newValue) throws HeaderCardException, LongValueException {
         if (this.card == null) {

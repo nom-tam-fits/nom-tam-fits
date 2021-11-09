@@ -53,21 +53,28 @@ import nom.tam.fits.header.Bitpix;
  */
 public abstract class ElementType<B extends Buffer> {
 
+    /** Tha size value to use to indicate that instance have their own size each */
+    private static final int VARIABLE_SIZE = -1;
+    
+    /** Number of bytes to copy as a block */
     public static final int COPY_BLOCK_SIZE = 1024;
 
+    /** The BITPIX integer value associated with this type of element */
     private final int bitPix;
 
+    /** The class of NIO Buffer associated with this type of element */
     private final Class<B> bufferClass;
 
-    private final boolean isVariableSize;
-
+    /** The primitive data class of this element */
     private final Class<?> primitiveClass;
 
+    /** The fixed size for this element, if any */
     private final int size;
 
     /** The second character of the Java array type, e.g. `J` from `[J` for `long[]` */
     private final char javaType;
 
+    /** A boxing class for the primitive type */
     private final Class<?> wrapperClass;
 
     /**
@@ -80,11 +87,10 @@ public abstract class ElementType<B extends Buffer> {
      * @param bufferClass       The type of underlying buffer (in FITS), or <code>null</code> if arrays of this type 
      *                          cannot be wrapped into a buffer directly (e.g. because of differing byrte size or order).
      * @param type              The second character of the Java array type, e.g. `J` from `[J` for `long[]`. 
-     * @param bitPix
+     * @param bitPix            The BITPIX header value for an image HDU of this type.
      */
     protected ElementType(int size, boolean varSize, Class<?> primitiveClass, Class<?> wrapperClass, Class<B> bufferClass, char type, int bitPix) {
-        this.size = size;
-        this.isVariableSize = varSize;
+        this.size = varSize ? VARIABLE_SIZE : size;
         this.primitiveClass = primitiveClass;
         this.wrapperClass = wrapperClass;
         this.bufferClass = bufferClass;
@@ -92,12 +98,23 @@ public abstract class ElementType<B extends Buffer> {
         this.bitPix = bitPix;
     }
 
-
+    /**
+     * Appends data from one buffer to another.
+     * 
+     * @param buffer            the destination buffer
+     * @param dataToAppend      the buffer containing the data segment to append.
+     */
     public void appendBuffer(B buffer, B dataToAppend) {
         throw new UnsupportedOperationException("no primitive type");
     }
 
- 
+    /**
+     * Appends data from one buffer to a byte buffer.
+     * 
+     * @param byteBuffer        the destination buffer
+     * @param dataToAppend      the buffer containing the data segment to append.
+     *
+     */
     public void appendToByteBuffer(ByteBuffer byteBuffer, B dataToAppend) {
         byte[] temp = new byte[Math.min(COPY_BLOCK_SIZE * size(), dataToAppend.remaining() * size())];
         B typedBuffer = asTypedBuffer(ByteBuffer.wrap(temp));
@@ -142,11 +159,15 @@ public abstract class ElementType<B extends Buffer> {
     }
 
     public boolean isVariableSize() {
-        return this.isVariableSize;
+        return size == VARIABLE_SIZE;
     }
     
     /**
      * @deprecated Use {@link #isVariableSize()} instead.
+     * 
+     * @return  <code>true</code> if this type of element comes in all sizes, and the particular
+     *          size of an obejct of this element type is specific to its instance. Or, <code>false</code>
+     *          for fixed-sized elements.
      */
     @Deprecated
     public final boolean individualSize() {

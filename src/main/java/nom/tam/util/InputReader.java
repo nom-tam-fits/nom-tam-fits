@@ -62,7 +62,7 @@ public interface InputReader {
      *            the buffer
      * @param from
      *            the starting buffer index
-     * @param len
+     * @param length
      *            the number of bytes to write.
      * @return the number of bytes actually read, or -1 if there is nothing left
      *         to read.

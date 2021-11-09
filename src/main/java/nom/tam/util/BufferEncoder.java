@@ -45,7 +45,6 @@ import java.io.IOException;
 public abstract class BufferEncoder extends FitsEncoder {
     
     private BufferPointer p;
-    private OutputBuffer buf;
     
     /**
      * 
@@ -63,10 +62,8 @@ public abstract class BufferEncoder extends FitsEncoder {
         this.p = p;
         
         pretendHalfPopulated();
-        
-        buf = getOutputBuffer();
 
-        setWriter(new OutputWriter() {
+        setOutput(new OutputWriter() {
              
             private byte[] b1 = new byte[1];
            
@@ -97,6 +94,10 @@ public abstract class BufferEncoder extends FitsEncoder {
     /**
      * @deprecated No longer used internally, kept only for back-compatibility since it used to be a needed abstract method.
      *             It's safest if you never override or call this method from your code!
+     *             
+     * @param need      the number of consecutive bytes we need available in the conversion buffer
+     * @throws IOException  
+     *                  if the buffer could not be flushed to the output to free up space in the buffer.
      */ 
     protected void needBuffer(int need) throws IOException {
     }
@@ -130,7 +131,7 @@ public abstract class BufferEncoder extends FitsEncoder {
      */
     protected void writeUncheckedByte(byte b) {
         try { 
-            buf.flush();
+            flush();
             write(b); 
         } catch (IOException e) {
             throw new IllegalStateException(e);

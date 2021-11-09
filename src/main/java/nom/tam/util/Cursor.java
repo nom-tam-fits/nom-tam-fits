@@ -34,6 +34,9 @@ package nom.tam.util;
 /**
  * This interface extends the Iterator interface to allow insertion of data and
  * move to previous entries in a collection.
+ * 
+ * @param <KEY>       the generic type of the keyword element
+ * @param <VALUE>     the generic type of the associated value  
  */
 public interface Cursor<KEY, VALUE> extends java.util.Iterator<VALUE> {
 

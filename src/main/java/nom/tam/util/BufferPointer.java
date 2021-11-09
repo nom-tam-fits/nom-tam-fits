@@ -85,4 +85,12 @@ public class BufferPointer {
         this.length = 0;
         this.pos = 0;
     }
+    
+    public int position() {
+        return pos;
+    }
+    
+    public int limit() {
+        return length;
+    }
 }

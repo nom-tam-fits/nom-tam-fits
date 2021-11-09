@@ -42,6 +42,7 @@ import java.nio.ShortBuffer;
 import java.util.zip.GZIPInputStream;
 import java.util.zip.GZIPOutputStream;
 
+import edu.umd.cs.findbugs.annotations.SuppressFBWarnings;
 import nom.tam.fits.compression.algorithm.gzip.GZipCompressor;
 import nom.tam.util.type.ElementType;
 
@@ -154,12 +155,14 @@ public abstract class GZip2Compressor<T extends Buffer> extends GZipCompressor<T
     }
 
     @Override
+    @SuppressFBWarnings(value = "RCN_REDUNDANT_NULLCHECK_WOULD_HAVE_BEEN_A_NPE", justification = "what null check is FB even referring to?")
     public boolean compress(T pixelData, ByteBuffer compressed) {
         int pixelDataLimit = pixelData.limit();
         byte[] pixelBytes = new byte[pixelDataLimit * this.primitiveSize];
         getPixel(pixelData, pixelBytes);
         pixelBytes = shuffle(pixelBytes);
         try (GZIPOutputStream zip = createGZipOutputStream(pixelDataLimit, compressed)) {
+            // FIXME AK: FB complains the line below has a redundant null ckeck for 'zip', but where exactly?
             zip.write(pixelBytes, 0, pixelBytes.length);
         } catch (IOException e) {
             throw new IllegalStateException("could not gzip data", e);
