@@ -57,6 +57,8 @@ import nom.tam.util.type.ElementType;
  * regarding the dimensionality of columns and possible data pointers is
  * retained for use by clients which can understand them.
  * 
+ * @param <T>   the generic type of extra state information associated with this table.
+ * 
  */
 public class ColumnTable<T> implements DataTable {
 

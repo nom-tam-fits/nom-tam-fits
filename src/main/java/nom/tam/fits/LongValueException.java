@@ -47,18 +47,58 @@ public class LongValueException extends IllegalStateException {
      */
     private static final long serialVersionUID = -1446259888260331392L;
 
+    /**
+     * Instantiates a new exception about a long value that cannot be fitted
+     * into the space available for it in the FITS header.
+     * 
+     * @param spaceAvailable
+     *            the maximum space available for the value field for the given
+     *            record.
+     */
     public LongValueException(int spaceAvailable) {
         super("Not enough space (" + spaceAvailable + ") for value");
     }
 
+    /**
+     * Instantiates a new exception about a long value that cannot be fitted
+     * into the space available for it in the FITS header.
+     * 
+     * @param key
+     *            the header keyword for which the exception occurred.
+     * @param spaceAvailable
+     *            the maximum space available for the value field for the given
+     *            record.
+     */
     public LongValueException(String key, int spaceAvailable) {
         super("Not enough space (" + spaceAvailable + ") for value of [" + key + "]");
     }
 
+    /**
+     * Instantiates a new exception about a long value that cannot be fitted
+     * into the space available for it in the FITS header.
+     * 
+     * @param spaceAvailable
+     *            the maximum space available for the value field for the given
+     *            record.
+     * @param value
+     *            the header value that was too long.
+     */
     public LongValueException(int spaceAvailable, String value) {
         super("Not enough space (" + spaceAvailable + ") for: [" + value + "]");
     }
 
+    /**
+     * Instantiates a new exception about a long value that cannot be fitted
+     * into the space available for it in the FITS header.
+     * 
+     * @param spaceAvailable
+     *            the maximum space available for the value field for the given
+     *            record.
+     * @param key
+     *            the header keyword for which the exception occurred.
+     * @param value
+     *            the header value that was too long.
+     */
     public LongValueException(int spaceAvailable, String key, String value) {
         super("Not enough space (" + spaceAvailable + ") for: [" + key + "=" + value + "]");
     }

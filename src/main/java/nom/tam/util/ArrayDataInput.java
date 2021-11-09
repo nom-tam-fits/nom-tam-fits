@@ -35,6 +35,10 @@ import java.io.DataInput;
 
 import java.io.IOException;
 
+/**
+ * Interface for reading array data from inputs.
+ *
+ */
 public interface ArrayDataInput extends InputReader, DataInput, FitsIO {
 
     /**

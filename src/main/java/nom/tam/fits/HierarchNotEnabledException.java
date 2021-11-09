@@ -32,8 +32,8 @@
 package nom.tam.fits;
 
 /**
- * Thrown when an operation requires support for HIERARCH style long keywords
- * but the library does not have the hierarch support enabled at present.
+ * The keyword is a HIERARCH-style long FITS keyword but the library does not
+ * have the hierarch support enabled at present.
  * 
  * @author Attila Kovacs
  * @see FitsFactory#setUseHierarch(boolean)
@@ -50,6 +50,13 @@ public class HierarchNotEnabledException extends IllegalStateException {
         return "Hierarch support is not enabled for [" + key + "]" + "\n\n --> Try FitsFactory.setUseHierarch(true).\n";
     }
 
+    /**
+     * Instantiates a new exception for a HIERARCH-style header keyword, when
+     * support for the hierarch convention is not enabled.
+     * 
+     * @param key
+     *            the HIERARCH-style FITS keyword.
+     */
     public HierarchNotEnabledException(String key) {
         super(getMessage(key));
     }
