@@ -222,4 +222,18 @@ public class DeprecatedTest {
         assertFalse("'$'", AsciiFuncs.isWhitespace('$'));
     }
     
+    @Test
+    public void testBPPosition() throws Exception {
+        BufferPointer bp = new BufferPointer();
+        bp.pos = 11;
+        assertEquals(11, bp.position());
+    }
+    
+    @Test
+    public void testBPLimit() throws Exception {
+        BufferPointer bp = new BufferPointer();
+        bp.length = 11;
+        assertEquals(11, bp.limit());
+    }
+    
 }
