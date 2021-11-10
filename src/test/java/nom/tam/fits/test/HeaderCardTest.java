@@ -1730,4 +1730,34 @@ public class HeaderCardTest {
         };
         new HeaderCard(in);
     }
+    
+    @Test
+    public void testDowncastToByte() throws Exception {
+        HeaderCard hc = new HeaderCard("TEST", Math.PI, null);
+        assertEquals((byte) 3, (byte) hc.getValue(Byte.class, (byte) 0));
+    }
+     
+    @Test
+    public void testDowncastToShort() throws Exception {
+        HeaderCard hc = new HeaderCard("TEST", Math.PI, null);
+        assertEquals((short) 3, (short) hc.getValue(Short.class, (short) 0));
+    }
+    
+    @Test
+    public void testDowncastToInt() throws Exception {
+        HeaderCard hc = new HeaderCard("TEST", Math.PI, null);
+        assertEquals(3, (int) hc.getValue(Integer.class, 0));
+    }
+    
+    @Test
+    public void testDowncastToLong() throws Exception {
+        HeaderCard hc = new HeaderCard("TEST", Math.PI, null);
+        assertEquals(3L, (long) hc.getValue(Long.class, 0L));
+    }
+    
+    @Test
+    public void testDowncastToFloat() throws Exception {
+        HeaderCard hc = new HeaderCard("TEST", Math.PI, null);
+        assertEquals((float) Math.PI, (float) hc.getValue(Float.class, 0.0F), 1e-6);
+    }
 }
