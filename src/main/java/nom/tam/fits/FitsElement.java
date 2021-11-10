@@ -59,8 +59,9 @@ public interface FitsElement {
      *              utilize {@link nom.tam.util.FitsDecoder} to convert binary data to
      *              Java types. As such, this method is inherently unsafe as it can 
      *              be used to properly interpret FITS files.
-     *              It will be removed from the public API in a future release of this library,
-     *              and replaced with something safer to use.
+     *              It will be removed in a future release of this library,
+     *              and will be replaced with a new <code>read(FitsDecoder)</code>
+     *              method that offers similar functionality in a safe way. 
      * 
      * Read a data array into the current object and if needed position to the
      * beginning of the next FITS block.
@@ -106,7 +107,8 @@ public interface FitsElement {
      *              format. As such, this
      *              method is inherently unsafe as it can be used to create unreadable FITS files.
      *              It will be removed from the public API in a future release of this library,
-     *              and replaced with something safer to use.
+     *              and will be replaced with a new <code>write(FitsEncoder)</code>
+     *              method that offers similar functionality in a safe way. 
      * 
      * Write the contents of the element to a data sink.
      * 

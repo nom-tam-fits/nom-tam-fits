@@ -1,23 +1,27 @@
 <document xmlns="http://maven.apache.org/changes/1.0.0" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:schemaLocation="http://maven.apache.org/changes/1.0.0 http://maven.apache.org/xsd/changes-1.0.0.xsd">
 	<body>
-	  <release version="1.16.0-rc1" date="2021-11-09" description="Compliance to FITS 4.0 standard, plus many more fixes and improvements.">
+	
+	  <release version="1.16.0-rc2" date="2021-11-16" description="Compliance to FITS 4.0 standard, plus many more fixes and improvements.">
 	    <action type="update" dev="attipaci" issue="161">
-				Permissive default <code>FitsFactory</code> settings: long strings enabled by default (FITS 4.0 standard), and error-free reading of some flawed 3rd party files by default (as long as they can be made sense of). However, issued encountered with 3rd party FITS files are logged so they can be inspected.
+				Long strings enabled by default (FITS 4.0 standard).
+			</action>	
+			<action type="update" dev="attipaci" issue="195">
+				Permissive default <code>FitsFactory</code> settings: error-free reading of some flawed 3rd party files by default (as long as they can be made sense of). However, issued encountered with 3rd party FITS files are logged so they can be inspected.
 			</action>	
 			<action type="update" dev="olebole" issue="125">
-				Set <code>FitsFactory.useHierarch(true)</code> by default. <code>HIERARCH</code> style keys are written upper-case only by default, but case-sensitive support can also be enabled via a setting to the <code>IHierarchKeyFormatter</code> instance used by <code>FitsFactory</code>.
+				Set <code>FitsFactory.useHierarch(true)</code> by default. HIERARCH style keys are written upper-case only by default, but case-sensitive support can also be enabled via a call to the <code>setCaseSensitive(boolean)</code> method of the <code>IHierarchKeyFormatter</code> instance used by <code>FitsFactory</code>.
 			</action>
 			<action type="add" dev="attipaci" issue="177">
-				Added support for preallocated blank header space, as per FITS 4.0 standard. Headers remain rewritable in-place as long as they don't exceed their original size in the file.
+				Added support for preallocated blank header space, as per FITS 4.0 standard. via <code>Header.ensureCardSpace(int)<code> and <code>Header.getMinimumSize()</code>. Headers remain rewritable in-place as long as they don't exceed their original size in the file.
 			</action>
 			<action type="add" dev="attipaci" issue="172">
-				Added support for complex values in FITS headers, as specified by the FITS standard.
+				Added support for complex values in FITS headers, as specified by the FITS standard, via new <code>ComplexValue</code> class.
 			</action>
 			<action type="add" dev="attipaci" issue="167">
-				Added support for header integers in hexadecimal format, as specified by the FITS standard. 
+				Added support for header integers in hexadecimal format, as specified by the FITS standard, e.g. via <code>addHexValue(...)</code> and <code>getHexValue(...)</code> methods in both <code>Header</code> and <code>HeaderCard</code> classes.
 			</action>
 			<action type="fix" dev="attipaci" issue="171">
-				Prevent the creation of invalid header entries from code, by throwing informative runtime exceptions.
+				Prevent the creation of invalid header entries from code, by throwing informative runtime exceptions. New runtime exception classes <code>HierarchNotEnabledException</code>, <code>LongStringsNotEnabledException</code>, <code>LongValueException</code>, <code>UnclosedQuoteException</code> are used to report when illegal action was pre-empted relating to FITS headers.
 			</action>
 			<action type="fix" dev="attipaci" issue="165">
 				Prevent creating header cards with NaN and Infinite values. The FITS standard does not support these.
@@ -26,7 +30,7 @@
 				More predictable explicit precision control for header decimals. The same number of decimal places are shown after the leading figure regardless whether fixed-decimal or scientific (exponential) notation is used.
 			</action>
 			<action type="add" dev="wcleveland" issue="120">
-				Added optional support for using 'D' instead of 'E' as the exponent in decimal representations (via a <code>FitsFactory</code> setting), as specified by the FITS standard.  
+				Added optional support for using 'D' instead of 'E' as the exponent in decimal representations (via <code>FitsFactory.setUseExponentD(boolean)</code> setting), as specified by the FITS standard.  
 			</action>
 			<action type="update" dev="attipaci" issue="173">
 				Fully preserve long comments for string values, including internal spaces in the comment, using the now standard long string convention.
@@ -34,11 +38,11 @@
 			<action type="update" dev="attipaci" issue="121">
 				More predictable header card ordering when editing headers, both directly or indirectly via an iterator. 
 			</action>
-			<action type="update" dev="attipaci" issue="189">
+			<action type="update" dev="attipaci" issue="192">
 				New FITS IO class hierarchies for better layering and separation of functionality. Standard IO functions (for reading, writing, positioning, and skipping) now conform to their canonical contracts in the core Java API. The messy old IO API is also supported, though deprecated, to provide back compatibility until the next major release. The new IO classes are also 2 to 4 times faster than before. 
 			</action>
 			<action type="update" dev="attipaci" issue="188">
-				<code>FitsHeap</code> access made a lot more efficient with true random access mode.
+				<code>FitsHeap</code> access made a lot more efficient with true random access.
 			</action>
 			<action type="fix" dev="attipaci" issue="187">
 				No <code>EOFException</code> is thrown when skipping beyond the end of file, since it should be allowed in random access mode.
@@ -47,39 +51,61 @@
 				Consistent handling of logical (<code>true</code>/<code>false</code>) values in FITS binary tables, including newly added support for <code>null</code> (or undefined) values also as per FITS standard.
 			</action>
 			<action type="fix" dev="attipaci" issue="184">
-				In prior versions <code>char[]</code> arrays in binary tables were written as 16-0bit unicode and read back as <code>short[]</code> integers. That violated the FITS standard, where only ASCII character arrays with 1-byte per character are supported. A new <code>FitsFactory</code> option can enable compliance to the FITS standard for <code>char[]</code> arrays. However, the old misconceived behavior remains the default to maintain back compatibility until the next major release. 
+				In prior versions <code>char[]</code> arrays in binary tables were written as 16-bit Unicode and read back as <code>short[]</code> integers. FITS recognises only ASCII character arrays with 1-byte per character. A new <code>FitsFactory.setUseUnicodeChars(boolean)</code> option can toggle compliance to the FITS standard for <code>char[]</code> arrays. However, the misconceived prior behavior remains the default to maintain back compatibility until the next major release. 
 			</action>
 			<action type="add" dev="attipaci" issue="182">
-				Replace fragmented <code>PrimitiveType</code> hierarchy with a more aptly named one-stop <code>ElementType</code> class. The old hierarchy is also available, albeit in deprecated form.
+				Replace fragmented <code>PrimitiveType...</code> hierarchy with a more aptly named one-stop <code>ElementType</code> class. The old hierarchy is also available, albeit in deprecated form.
 			</action>
-			<action type="add" dev="attipaci" issue="181">
-				Type safe BITPIX values via enum with restricted set. The unsafe BITPIX methods have been deprecated for removal in a future major release.
+			<action type="add" dev="attipaci" issue="191">
+				Type safe <code>BITPIX</code> values via new <code>Bitpix</code> enum providing a restricted set. The unsafe <code>BITPIX</code> methods have been deprecated for removal in a future major release.
 			</action>
 			<action type="add" dev="attipaci" issue="175">
-				Added new <code>FitsFactory</code> option to log FITS standard violations when reading (3rd party) headers.
+				Added new <code>Header.setParseWarningsEnabled(boolean)</code> option to log FITS standard violations when reading (3rd party) headers.
 			</action>
 			<action type="fix" dev="attipaci" issue="153">
-				Fix-up build, no more <code>Logger</code> warnings on multiple <code>CONTINUE</code> keywords, tolerant <code>HIERARCH</code> parsing, and other small fixes.
+				no more <code>Logger</code> warnings on multiple <code>CONTINUE</code> keywords, tolerant <code>HIERARCH</code> parsing, and other small fixes.
 			</action>
 			<action type="add" dev="FinitePhaseSpace" issue="138">
-				<code>FitsDate</code> <code>equals</code> / <code>hashCode</code> / <code>compareTo</code> implementations.
+				<code>FitsDate</code> <code>equals()</code> / <code>hashCode()</code> / <code>compareTo()</code> implementations.
 			</action>
 			<action type="fix" dev="Zlika" issue="135">
 				Fix management of sub-seconds in <code>FitsDate</code>
 			</action>
 			<action type="fix" dev="olebole" issue="130">
-				Fix serious FITS character handling bug (non-ASCII or non-printable characters in headers)
+				Check for and reject non-ASCII or non-printable characters in headers. The FITS standard allows only ASCII characters in the range of 0x20 to 0x7E in the headers. The new static method <code>HeaderCard.sanitize(String)</code> is available to users to replace characters outside of the supported range with <code>?</code>. 
 			</action>
 			<action type="fix" dev="wcleveland" issue="123">
 				Minor fixes prior to release
 			</action>
-			<action type="update" dev="attipaci" issue="163">
-				Source code updated for Java 8, with diamond operators and try-with-resources used throughout as appropriate.
+			<action type="update" dev="attipaci" issue="164">
+				Source code updated for <b>Java 8</b>, with diamond operators and try-with-resources used throughout as appropriate.
+			</action>
+			<action type="fix" dev="attipaci" issue="162">
+  			Revised when exceptions are thrown, and they are made more informative by providing more essential details and traceable causes.
+			</action>
+			<action type="fix" dev="attipaci" issue="159">
+  			<code>HIERARCH</code> header cards are now written to conform to <b>cfitsio</code> specification, which requires a space before '='. While the HIERARCH convention itself does not specify the extra space, it certainly allows for it, and with the change our FITS files shall be more conformant to, and readable, by yet another widely used library.
+			</action>
+			<action type="fix" dev="mbtaylor" issue="158">
+				Check for <code>markSupported()</code> when attempting to use <code>mark()</code> or <code>reset()</code> methods in <code>ArrayDataInput</code>, and throw an appropriate runtime exception if the methods are not supported by the implementation.
+			</action>
+			<action type="fix" dev="attipaci" issue="156">
+				Fixed issues with handling of single quotes as part of user-supplied strings.
+			</action>
+			<action type="fix" dev="mbtaylor" issue="143">
+				<code>I10</code> format ASCII tables are parsed as 32-bit <code>int[]</code> by default (for back compatibility), unless <code>TLMIN/TLMAX</code> or <code>TDMIN/TDMAX</code> header entries indicate a more extended range. Added new <code>AsciiTable(Header, boolean)</code> constructor to optionally change the preference to read <code>I10</code> ASCII table data as 64-bit <code>long[]</code> columns.
 			</action>
 			<action type="fix" dev="attipaci">
 				Various smaller fixes and improvements throughout, increased unit test coverage, and more comprehensive unit tests.
-			</action>			
+			</action>
+			<action type="fix" dev="attipaci">
+	      Deprecated classes and methods that (<b>>a</b>) were exposed in the public API even though they should not have been, (<b>b</b>) had names that poorly reflected their function, (<b>c</b>) were poorly conceived/designed in the first place, and (<b>d</b>) allowed misuse with unpredictable results. The deprecated API remains supported nonetheless, and slated for removal in the next major release (2.0) only.
+			</action>
+	    <action type="fix" dev="attipaci">
+	      A lot of the Javadoc API documentation has been revised and improved.
+			</action>
 	  </release>
+	  
 		<release version="1.15.2" date="2017-04-28" description="Maintenance release with bug fixes.">
 			<action type="update">
 				Maintenance release with bug fixes.

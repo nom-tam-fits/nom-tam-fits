@@ -124,7 +124,7 @@ import nom.tam.util.SafeClose;
  * <li>The utilities package includes simple tools to copy and list FITS files.
  * </ul>
  * 
- * @version 1.12
+ * @version 1.16
  */
 public class Fits implements Closeable {
 
@@ -712,17 +712,27 @@ public class Fits implements Closeable {
     }
 
     /**
+     * @deprecated This method is poorly conceived as we cannot really read FITS from 
+     *              just any <code>ArrayDataInput</code> but only those,
+     *              which utilize {@link nom.tam.util.FitsDecoder} to convert Java types to 
+     *              FITS binary format, such as {@link FitsInputStream} or {@link FitsFile} 
+     *              (or else a wrapped <code>DataInputStream</code>).
+     *              As such, this method is inherently unsafe as it can be used to parse
+     *              FITS content iscorrectly. It will be removed from the public API in a 
+     *              future major release.
+     * 
      * Set the data stream to be used for future input.
      * 
      * @param stream
      *            The data stream to be used.
      */
+    @Deprecated
     public void setStream(ArrayDataInput stream) {
         this.dataStr = stream;
         this.atEOF = false;
         this.lastFileOffset = -1;
     }
-
+    
     /**
      * Return the number of HDUs in the Fits object. If the FITS file is
      * associated with an external stream make sure that we have exhausted the
