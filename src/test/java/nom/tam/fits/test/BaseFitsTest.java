@@ -1208,4 +1208,23 @@ public class BaseFitsTest {
         assertTrue(new File(TMP_FITS_NAME).exists());
     }
     
+    @Test
+    public void testWriteToFitsFileAsDataOutput() throws Exception {
+        FitsFile f = new FitsFile(TMP_FITS_NAME, "rw");
+        new Fits().write((DataOutput) f);
+        f.close();
+        assertTrue(new File(TMP_FITS_NAME).exists());
+    }
+    
+    @Test(expected = FitsException.class)
+    public void testWriteToFitsStreamAsDataOutputException() throws Exception {
+        FitsOutputStream o = new FitsOutputStream(new FileOutputStream(new File(TMP_FITS_NAME))) {
+            public void flush() throws IOException {
+                throw new IOException("flush disabled.");
+            }
+        };
+        new Fits().write((DataOutput) o);
+        o.close();
+    }
+    
 }
