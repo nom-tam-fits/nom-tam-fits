@@ -1,5 +1,6 @@
 package nom.tam.util;
 
+import java.io.Closeable;
 import java.io.DataOutput;
 
 /*
@@ -38,7 +39,7 @@ import java.io.IOException;
 /**
  * Interface for writing array data to outputs.
  */
-public interface ArrayDataOutput extends DataOutput, FitsIO {
+public interface ArrayDataOutput extends DataOutput, Closeable {
 
     /**
      * Flush the output buffer

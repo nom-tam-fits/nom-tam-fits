@@ -1760,4 +1760,10 @@ public class HeaderCardTest {
         HeaderCard hc = new HeaderCard("TEST", Math.PI, null);
         assertEquals((float) Math.PI, (float) hc.getValue(Float.class, 0.0F), 1e-6);
     }
+    
+    @Test
+    public void testNonNumberDefault() throws Exception {
+        HeaderCard hc = new HeaderCard("TEST", "blah", null);
+        assertEquals(Math.PI, (double) hc.getValue(Double.class, Math.PI), 1e-12);
+    }
 }
