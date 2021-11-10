@@ -12,7 +12,7 @@
 				Set <code>FitsFactory.useHierarch(true)</code> by default. HIERARCH style keys are written upper-case only by default, but case-sensitive support can also be enabled via a call to the <code>setCaseSensitive(boolean)</code> method of the <code>IHierarchKeyFormatter</code> instance used by <code>FitsFactory</code>.
 			</action>
 			<action type="add" dev="attipaci" issue="177">
-				Added support for preallocated blank header space, as per FITS 4.0 standard. via <code>Header.ensureCardSpace(int)<code> and <code>Header.getMinimumSize()</code>. Headers remain rewritable in-place as long as they don't exceed their original size in the file.
+				Added support for preallocated blank header space, as per FITS 4.0 standard. via <code>Header.ensureCardSpace(int)</code> and <code>Header.getMinimumSize()</code>. Headers remain rewritable in-place as long as they don't exceed their original size in the file.
 			</action>
 			<action type="add" dev="attipaci" issue="172">
 				Added support for complex values in FITS headers, as specified by the FITS standard, via new <code>ComplexValue</code> class.
@@ -84,7 +84,7 @@
   			Revised when exceptions are thrown, and they are made more informative by providing more essential details and traceable causes.
 			</action>
 			<action type="fix" dev="attipaci" issue="159">
-  			<code>HIERARCH</code> header cards are now written to conform to <b>cfitsio</code> specification, which requires a space before '='. While the HIERARCH convention itself does not specify the extra space, it certainly allows for it, and with the change our FITS files shall be more conformant to, and readable, by yet another widely used library.
+  			<code>HIERARCH</code> header cards are now written to conform to <b>cfitsio</b> specification, which requires a space before '='. While the HIERARCH convention itself does not specify the extra space, it certainly allows for it, and with the change our FITS files shall be more conformant to, and readable, by yet another widely used library.
 			</action>
 			<action type="fix" dev="mbtaylor" issue="158">
 				Check for <code>markSupported()</code> when attempting to use <code>mark()</code> or <code>reset()</code> methods in <code>ArrayDataInput</code>, and throw an appropriate runtime exception if the methods are not supported by the implementation.
