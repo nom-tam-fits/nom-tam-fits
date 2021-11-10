@@ -706,39 +706,31 @@ public class HeaderCard implements CursorValue<String>, Cloneable {
             return asType.cast(new ComplexValue(value)); 
         }
         if (Number.class.isAssignableFrom(asType)) {
+            BigDecimal big = new BigDecimal(value.toUpperCase().replace('D', 'E'));
+            
             if (Byte.class.isAssignableFrom(asType)) {
-                return asType.cast(Byte.parseByte(value));
+                return asType.cast(big.byteValue());
             }
             if (Short.class.isAssignableFrom(asType)) {
-                return asType.cast(Short.parseShort(value));
+                return asType.cast(big.shortValue());
             }
             if (Integer.class.isAssignableFrom(asType)) {
-                return asType.cast(Integer.parseInt(value));
+                return asType.cast(big.intValue());
             }
             if (Long.class.isAssignableFrom(asType)) {
-                return asType.cast(Long.parseLong(value));
+                return asType.cast(big.longValue());
             }
             if (BigInteger.class.isAssignableFrom(asType)) {
-                try { 
-                    return asType.cast(new BigInteger(value)); 
-                } catch (NumberFormatException e) {
-                    // No worries we'll try again from BigDecimal...
-                }
+                return asType.cast(big.toBigInteger()); 
             }
-
-            String ieee = value.toUpperCase().replace('D', 'E');
-
             if (Float.class.isAssignableFrom(asType)) {
-                return asType.cast(Float.parseFloat(ieee));
+                return asType.cast(big.floatValue());
             }
             if (Double.class.isAssignableFrom(asType)) {
-                return asType.cast(Double.parseDouble(ieee));
+                return asType.cast(big.doubleValue());
             }
             if (BigDecimal.class.isAssignableFrom(asType)) {
-                return asType.cast(new BigDecimal(ieee));
-            }
-            if (BigInteger.class.isAssignableFrom(asType)) {
-                return asType.cast(new BigDecimal(ieee).toBigIntegerExact());
+                return asType.cast(big);
             }
         }
  
