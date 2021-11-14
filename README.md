@@ -20,22 +20,22 @@ visit our documentation at:
 If you want to use the bleeding edge version of nom-tam-fits, you can get it from sonatype:
 
 ```xml
-	<dependencies>
-		<dependency>
-			<groupId>gov.nasa.gsfc.heasarc</groupId>
-			<artifactId>nom-tam-fits</artifactId>
-			<version>xxxxx-SNAPSHOT</version>
-		</dependency>
-	</dependencies>
-	...
-	<repositories>
-		<repository>
-			<id>sonatype-snapshots</id>
-			<url>https://oss.sonatype.org/content/repositories/snapshots</url>
-			<snapshots>
-				<enabled>true</enabled>
-			</snapshots>
-		</repository>
-	</repositories>    
+<dependencies>
+	<dependency>
+		<groupId>gov.nasa.gsfc.heasarc</groupId>
+		<artifactId>nom-tam-fits</artifactId>
+		<version>xxxxx-SNAPSHOT</version>
+	</dependency>
+</dependencies>
+...
+<repositories>
+	<repository>
+		<id>sonatype-snapshots</id>
+		<url>https://oss.sonatype.org/content/repositories/snapshots</url>
+		<snapshots>
+			<enabled>true</enabled>
+		</snapshots>
+	</repository>
+</repositories>    
 ```
 
