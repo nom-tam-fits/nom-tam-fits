@@ -677,22 +677,33 @@ public class HeaderCard implements CursorValue<String>, Cloneable {
     }
 
     /**
-     * Returns the value cast to the specified type, is possible.
+     * <p>
+     * Returns the value cast to the specified type, if possible, or the specified default value if the
+     * value is <code>null</code> or if the value is incompatible with the requested type. 
+     * </p>
+     * <p>
+     * For number types and values, if the requested type has lesser range or
+     * precision than the number stored in the FITS header, the value is automatically downcast (i.e.
+     * possible rounded and/or truncated) -- the same as if an explicit cast were used in Java. As long
+     * as the header value is a proper decimal value, it will be returned as any requested number type.
+     * </p>
      * 
      * @param asType        the requested class of the value
-     * @param defaultValue  the value if the card was not present or had a null value.
+     * @param defaultValue  the value to use if the card has a null value, or a value that cannot
+     *                      be cast to the specified type.
      * @param <T>           the generic type of the requested class
      * 
      * @return the value from this card as a specific type, or the specified default value
      * 
-     * @throws IllegalArgumentException     if the value cannot be cast into the the specified type.
+     * @throws IllegalArgumentException     
+     *                      if the specified Java type of not one that is supported for use in 
+     *                      FITS headers.
      */
     public synchronized <T> T getValue(Class<T> asType, T defaultValue) throws IllegalArgumentException {
 
         if (this.value == null) {
             return defaultValue;
         }
-        
         if (String.class.isAssignableFrom(asType)) {
             return asType.cast(this.value);
         }
@@ -704,44 +715,40 @@ public class HeaderCard implements CursorValue<String>, Cloneable {
         }
         if (ComplexValue.class.isAssignableFrom(asType)) {
             return asType.cast(new ComplexValue(value)); 
-        }
+        }   
         if (Number.class.isAssignableFrom(asType)) {
-            if (Byte.class.isAssignableFrom(asType)) {
-                return asType.cast(Byte.parseByte(value));
-            }
-            if (Short.class.isAssignableFrom(asType)) {
-                return asType.cast(Short.parseShort(value));
-            }
-            if (Integer.class.isAssignableFrom(asType)) {
-                return asType.cast(Integer.parseInt(value));
-            }
-            if (Long.class.isAssignableFrom(asType)) {
-                return asType.cast(Long.parseLong(value));
-            }
-            if (BigInteger.class.isAssignableFrom(asType)) {
-                try { 
-                    return asType.cast(new BigInteger(value)); 
-                } catch (NumberFormatException e) {
-                    // No worries we'll try again from BigDecimal...
+            try {
+                BigDecimal big = new BigDecimal(value.toUpperCase().replace('D', 'E'));
+                
+                if (Byte.class.isAssignableFrom(asType)) {
+                    return asType.cast(big.byteValue());
                 }
-            }
-
-            String ieee = value.toUpperCase().replace('D', 'E');
-
-            if (Float.class.isAssignableFrom(asType)) {
-                return asType.cast(Float.parseFloat(ieee));
-            }
-            if (Double.class.isAssignableFrom(asType)) {
-                return asType.cast(Double.parseDouble(ieee));
-            }
-            if (BigDecimal.class.isAssignableFrom(asType)) {
-                return asType.cast(new BigDecimal(ieee));
-            }
-            if (BigInteger.class.isAssignableFrom(asType)) {
-                return asType.cast(new BigDecimal(ieee).toBigIntegerExact());
-            }
+                if (Short.class.isAssignableFrom(asType)) {
+                    return asType.cast(big.shortValue());
+                }
+                if (Integer.class.isAssignableFrom(asType)) {
+                    return asType.cast(big.intValue());
+                }
+                if (Long.class.isAssignableFrom(asType)) {
+                    return asType.cast(big.longValue());
+                }
+                if (Float.class.isAssignableFrom(asType)) {
+                    return asType.cast(big.floatValue());
+                }
+                if (Double.class.isAssignableFrom(asType)) {
+                    return asType.cast(big.doubleValue());
+                }
+                if (BigInteger.class.isAssignableFrom(asType)) {
+                    return asType.cast(big.toBigInteger()); 
+                }
+                // All possibilities have been exhausted, it must be a BigDecimal...
+                return asType.cast(big);
+            } catch (NumberFormatException e) {
+                // The value is not a decimal number, so return the default value by contract.
+                return defaultValue;
+            } 
         }
- 
+
         throw new IllegalArgumentException("unsupported class " + asType);
     }
 

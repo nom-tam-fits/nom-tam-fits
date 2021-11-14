@@ -54,6 +54,8 @@ import nom.tam.util.type.ElementType;
  * @author Richard White
  * @author William Pence
  * @author Richard van Nieuwenhoven
+ * 
+ * @param <T> the genetic type of NIO buffer on which this compressor operates.
  */
 public abstract class RiceCompressor<T extends Buffer> implements ICompressor<T> {
 

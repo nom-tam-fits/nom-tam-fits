@@ -32,8 +32,7 @@ package nom.tam.fits.test;
  */
 
 import static nom.tam.fits.header.Standard.NAXISn;
-import static org.junit.Assert.assertEquals;
-import static org.junit.Assert.assertFalse;
+import static org.junit.Assert.*;
 
 import java.io.ByteArrayInputStream;
 import java.io.ByteArrayOutputStream;
@@ -85,6 +84,7 @@ import nom.tam.util.LoggerHelper;
 import nom.tam.util.SafeClose;
 import nom.tam.util.test.ThrowAnyException;
 
+import org.junit.After;
 import org.junit.Assert;
 import org.junit.Before;
 import org.junit.Rule;
@@ -115,6 +115,8 @@ public class BaseFitsTest {
 
     public static final String FILE = "file:" + File.separator + File.separator + File.separator;
 
+    private static final String TMP_FITS_NAME = "tmp.fits";
+    
 //    @Rule
 //    public TestRule watcher = new TestWatcher() {
 //       protected void starting(Description description) {
@@ -130,8 +132,14 @@ public class BaseFitsTest {
         } catch (Exception e) {
             // ignore
         }
+        new File(TMP_FITS_NAME).delete();
     }
 
+    @After
+    public void cleanup() {
+        new File(TMP_FITS_NAME).delete();
+    }
+    
     @Test
     public void testFitsSkipHdu() throws Exception {
         Fits fits1 = makeAsciiTable();
@@ -1004,12 +1012,8 @@ public class BaseFitsTest {
                 return null;
             }
         });
-        try {
-            new Fits().write(out);
-        } catch (Exception e) {
-            Assert.assertTrue(e.getMessage().contains("ArrayDataOutput"));
-            throw e;
-        }
+        
+        new Fits().write(out);
     }
 
     @Test(expected = FitsException.class)
@@ -1021,12 +1025,8 @@ public class BaseFitsTest {
                 throw new IOException("failed flush");
             }
         };
-        try {
-            new Fits().write(out);
-        } catch (Exception e) {
-            Assert.assertTrue(e.getMessage().contains("flush"));
-            throw e;
-        }
+        
+        new Fits().write(out);
     }
 
     @Test(expected = FitsException.class)
@@ -1038,29 +1038,18 @@ public class BaseFitsTest {
                 throw new IOException("failed trimm");
             }
         };
-        try {
-            new Fits().write(out);
-        } catch (Exception e) {
-            Assert.assertTrue(e.getMessage().contains("resiz"));
-            throw e;
-        }
+
+        new Fits().write(out);
     }
 
     @Test(expected = FitsException.class)
     public void testFitsWriteException4() throws Exception {
-
-        try {
-            new Fits(new File("target/doesNotExistAtAll"));
-        } catch (Exception e) {
-            Assert.assertTrue(e.getMessage().contains("existent"));
-            throw e;
-        }
+        new Fits(new File("target/doesNotExistAtAll"));
     }
 
     @Test(expected = FitsException.class)
     public void testFitsWriteException5() throws Exception {
         File writeOnlyTestFile = new File("target/writeOnlyTestFile") {
-
             @Override
             public boolean canRead() {
                 return true;
@@ -1202,7 +1191,40 @@ public class BaseFitsTest {
             ex = e;
         }
         
-        Assert.assertNotNull(ex);
-        
+        Assert.assertNotNull(ex);   
     }
+    
+    @Test
+    public void testWriteToFileName() throws Exception {
+        new Fits().write(TMP_FITS_NAME);
+        assertTrue(new File(TMP_FITS_NAME).exists());
+    }
+    
+    @Test
+    public void testWriteToFitsFile() throws Exception {
+        FitsFile f = new FitsFile(TMP_FITS_NAME, "rw");
+        new Fits().write(f);
+        f.close();
+        assertTrue(new File(TMP_FITS_NAME).exists());
+    }
+    
+    @Test
+    public void testWriteToFitsFileAsDataOutput() throws Exception {
+        FitsFile f = new FitsFile(TMP_FITS_NAME, "rw");
+        new Fits().write((DataOutput) f);
+        f.close();
+        assertTrue(new File(TMP_FITS_NAME).exists());
+    }
+    
+    @Test(expected = FitsException.class)
+    public void testWriteToFitsStreamAsDataOutputException() throws Exception {
+        FitsOutputStream o = new FitsOutputStream(new FileOutputStream(new File(TMP_FITS_NAME))) {
+            public void flush() throws IOException {
+                throw new IOException("flush disabled.");
+            }
+        };
+        new Fits().write((DataOutput) o);
+        o.close();
+    }
+    
 }
