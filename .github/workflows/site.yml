@@ -13,8 +13,7 @@ jobs:
   build:
 
     runs-on: ubuntu-latest
-    env:
-      CI_DEPLOY_USERNAME: git
+
     steps:
     - uses: actions/checkout@v2
         

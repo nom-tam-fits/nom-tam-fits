@@ -7,6 +7,10 @@
 			<username>${env.CI_DEPLOY_USERNAME}</username>
 			<password>${env.CI_DEPLOY_PASSWORD}</password>
 		</server>
+		<server>
+      <id>github-pages</id>
+      <username>git</username>
+    </server>
 	</servers>
 	<mirrors>
 	</mirrors>
