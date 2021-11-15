@@ -77,7 +77,7 @@ jobs:
 #       cd ..
 
 
-on : 
+on: 
   release:
     types: [published, created, edited]
     
