@@ -4,7 +4,8 @@ name: Update Release
 on: 
   release:
     types: [published, created, edited]
-    
+ 
+jobs:  
   build:
 
     runs-on: ubuntu-latest
