@@ -28,7 +28,7 @@ jobs:
         distribution: 'adopt'
         cache: maven
         
-    - name: Build with Maven
+    - name: Build and test with Maven
       run: mvn -B test jacoco:report --file pom.xml
       working-directory: ./nom-tam-fits
       
@@ -75,3 +75,36 @@ jobs:
 #         git push
 #       fi
 #       cd ..
+
+
+on : 
+  release:
+    types: [published, created, edited]
+    
+  build:
+
+    runs-on: ubuntu-latest
+
+    steps:
+    - uses: actions/checkout@v2
+      with:
+        path: nom-tam-fits
+        
+    - name: Check out blackbox images 
+      uses: actions/checkout@v2
+      with:
+        repository: nom-tam-fits/blackbox-images
+        path: blackbox-images
+        
+    - name: Set up JDK 11
+      uses: actions/setup-java@v2
+      with:
+        java-version: '11'
+        distribution: 'adopt'
+        cache: maven
+        
+    - name: Build, test, and deploy with Maven
+      run: mvn clean deploy --quiet --settings settings.xml -PcreateHeasarcZip
+      working-directory: ./nom-tam-fits
+
+
