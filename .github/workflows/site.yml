@@ -2,7 +2,8 @@
 name: Update Site
 
 on: 
-  release: [published, created, edited]
+  release: 
+    types: [published, unpublished, created, edited, deleted]
   
   push:
     paths:
