@@ -8,7 +8,7 @@
 			<password>${env.CI_DEPLOY_PASSWORD}</password>
 		</server>
 		<server>
-      <id>github-pages</id>
+      <id>github-project-site</id>
       <username>git</username>
     </server>
 	</servers>
