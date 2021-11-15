@@ -1,10 +1,10 @@
-<?xml version="1.0" encoding="UTF-8"?><!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Strict//EN" "http://www.w3.org/TR/xhtml1/DTD/xhtml1-strict.dtd"><html xmlns="http://www.w3.org/1999/xhtml" lang="en"><head><meta http-equiv="Content-Type" content="text/html;charset=UTF-8"/><link rel="stylesheet" href="../.resources/report.css" type="text/css"/><link rel="shortcut icon" href="../.resources/report.gif" type="image/gif"/><title>UndefinedHDU.java</title><link rel="stylesheet" href="../.resources/prettify.css" type="text/css"/><script type="text/javascript" src="../.resources/prettify.js"></script></head><body onload="window['PR_TAB_WIDTH']=4;prettyPrint()"><div class="breadcrumb" id="breadcrumb"><span class="info"><a href="../.sessions.html" class="el_session">Sessions</a></span><a href="../index.html" class="el_report">nom.tam FITS library</a> &gt; <a href="index.source.html" class="el_package">nom.tam.fits</a> &gt; <span class="el_source">UndefinedHDU.java</span></div><h1>UndefinedHDU.java</h1><pre class="source lang-java linenums">package nom.tam.fits;
+<?xml version="1.0" encoding="UTF-8"?><!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Strict//EN" "http://www.w3.org/TR/xhtml1/DTD/xhtml1-strict.dtd"><html xmlns="http://www.w3.org/1999/xhtml" lang="en"><head><meta http-equiv="Content-Type" content="text/html;charset=UTF-8"/><link rel="stylesheet" href="../jacoco-resources/report.css" type="text/css"/><link rel="shortcut icon" href="../jacoco-resources/report.gif" type="image/gif"/><title>UndefinedHDU.java</title><link rel="stylesheet" href="../jacoco-resources/prettify.css" type="text/css"/><script type="text/javascript" src="../jacoco-resources/prettify.js"></script></head><body onload="window['PR_TAB_WIDTH']=4;prettyPrint()"><div class="breadcrumb" id="breadcrumb"><span class="info"><a href="../jacoco-sessions.html" class="el_session">Sessions</a></span><a href="../index.html" class="el_report">nom.tam FITS library</a> &gt; <a href="index.source.html" class="el_package">nom.tam.fits</a> &gt; <span class="el_source">UndefinedHDU.java</span></div><h1>UndefinedHDU.java</h1><pre class="source lang-java linenums">package nom.tam.fits;
 
 /*
  * #%L
  * nom.tam FITS library
  * %%
- * Copyright (C) 2004 - 2015 nom-tam-fits
+ * Copyright (C) 2004 - 2021 nom-tam-fits
  * %%
  * This is free and unencumbered software released into the public domain.
  * 
@@ -36,7 +36,7 @@ import static nom.tam.fits.header.Standard.XTENSION;
 
 import java.io.PrintStream;
 
-import nom.tam.util.ArrayFuncs;
+import nom.tam.util.FitsEncoder;
 
 /**
  * Holder for unknown data types.
@@ -64,7 +64,11 @@ public class UndefinedHDU extends BasicHDU&lt;UndefinedData&gt; {
      * @return true if o can be an Undefined FITS block.
      */
     public static boolean isData(Object o) {
-<span class="fc bfc" id="L67" title="All 2 branches covered.">        return ArrayFuncs.computeLSize(o) &gt; 0;</span>
+        try { 
+<span class="fc bfc" id="L68" title="All 2 branches covered.">            return FitsEncoder.computeSize(o) &gt; 0;</span>
+<span class="nc" id="L69">        } catch (IllegalArgumentException e) {</span>
+<span class="nc" id="L70">            return false;</span>
+        }
     }
 
     /**
@@ -75,14 +79,14 @@ public class UndefinedHDU extends BasicHDU&lt;UndefinedData&gt; {
      * @return &lt;CODE&gt;true&lt;/CODE&gt; if this HDU has a valid header.
      */
     public static boolean isHeader(Header hdr) {
-<span class="pc bpc" id="L78" title="1 of 4 branches missed.">        if (hdr.getStringValue(XTENSION) != null &amp;&amp; hdr.getIntValue(NAXIS, -1) &gt;= 0) {</span>
-<span class="fc" id="L79">            return true;</span>
+<span class="pc bpc" id="L82" title="1 of 4 branches missed.">        if (hdr.getStringValue(XTENSION) != null &amp;&amp; hdr.getIntValue(NAXIS, -1) &gt;= 0) {</span>
+<span class="fc" id="L83">            return true;</span>
         }
-<span class="fc" id="L81">        return false;</span>
+<span class="fc" id="L85">        return false;</span>
     }
 
     public static Data manufactureData(Header hdr) throws FitsException {
-<span class="fc" id="L85">        return new UndefinedData(hdr);</span>
+<span class="fc" id="L89">        return new UndefinedData(hdr);</span>
     }
 
     /**
@@ -94,10 +98,10 @@ public class UndefinedHDU extends BasicHDU&lt;UndefinedData&gt; {
      */
     public static Header manufactureHeader(Data d) throws FitsException {
 
-<span class="fc" id="L97">        Header h = new Header();</span>
-<span class="fc" id="L98">        d.fillHeader(h);</span>
+<span class="fc" id="L101">        Header h = new Header();</span>
+<span class="fc" id="L102">        d.fillHeader(h);</span>
 
-<span class="fc" id="L100">        return h;</span>
+<span class="fc" id="L104">        return h;</span>
     }
 
     /**
@@ -111,15 +115,15 @@ public class UndefinedHDU extends BasicHDU&lt;UndefinedData&gt; {
      *             if there was a problem with the data.
      */
     public UndefinedHDU(Header h, UndefinedData d) throws FitsException {
-<span class="fc" id="L114">        super(h, d);</span>
+<span class="fc" id="L118">        super(h, d);</span>
 
-<span class="fc" id="L116">    }</span>
+<span class="fc" id="L120">    }</span>
 
     @Override
     public void info(PrintStream stream) {
-<span class="fc" id="L120">        stream.println(&quot;  Unhandled/Undefined/Unknown Type&quot;);</span>
-<span class="fc" id="L121">        stream.println(&quot;  XTENSION=&quot; + this.myHeader.getStringValue(XTENSION).trim());</span>
-<span class="fc" id="L122">        stream.println(&quot;  Apparent size:&quot; + this.myData.getTrueSize());</span>
-<span class="fc" id="L123">    }</span>
+<span class="fc" id="L124">        stream.println(&quot;  Unhandled/Undefined/Unknown Type&quot;);</span>
+<span class="fc" id="L125">        stream.println(&quot;  XTENSION=&quot; + this.myHeader.getStringValue(XTENSION).trim());</span>
+<span class="fc" id="L126">        stream.println(&quot;  Apparent size:&quot; + this.myData.getTrueSize());</span>
+<span class="fc" id="L127">    }</span>
 }
-</pre><div class="footer"><span class="right">Created with <a href="http://www.eclemma.org/jacoco">JaCoCo</a> 0.7.6.201602180812</span></div></body></html>
+</pre><div class="footer"><span class="right">Created with <a href="http://www.jacoco.org/jacoco">JaCoCo</a> 0.8.7.202105040129</span></div></body></html>

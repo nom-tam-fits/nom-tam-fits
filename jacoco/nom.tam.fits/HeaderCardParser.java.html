@@ -1,0 +1,650 @@
+<?xml version="1.0" encoding="UTF-8"?><!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Strict//EN" "http://www.w3.org/TR/xhtml1/DTD/xhtml1-strict.dtd"><html xmlns="http://www.w3.org/1999/xhtml" lang="en"><head><meta http-equiv="Content-Type" content="text/html;charset=UTF-8"/><link rel="stylesheet" href="../jacoco-resources/report.css" type="text/css"/><link rel="shortcut icon" href="../jacoco-resources/report.gif" type="image/gif"/><title>HeaderCardParser.java</title><link rel="stylesheet" href="../jacoco-resources/prettify.css" type="text/css"/><script type="text/javascript" src="../jacoco-resources/prettify.js"></script></head><body onload="window['PR_TAB_WIDTH']=4;prettyPrint()"><div class="breadcrumb" id="breadcrumb"><span class="info"><a href="../jacoco-sessions.html" class="el_session">Sessions</a></span><a href="../index.html" class="el_report">nom.tam FITS library</a> &gt; <a href="index.source.html" class="el_package">nom.tam.fits</a> &gt; <span class="el_source">HeaderCardParser.java</span></div><h1>HeaderCardParser.java</h1><pre class="source lang-java linenums">/*
+ * #%L
+ * nom.tam FITS library
+ * %%
+ * Copyright (C) 2004 - 2021 nom-tam-fits
+ * %%
+ * This is free and unencumbered software released into the public domain.
+ * 
+ * Anyone is free to copy, modify, publish, use, compile, sell, or
+ * distribute this software, either in source code form or as a compiled
+ * binary, for any purpose, commercial or non-commercial, and by any
+ * means.
+ * 
+ * In jurisdictions that recognize copyright laws, the author or authors
+ * of this software dedicate any and all copyright interest in the
+ * software to the public domain. We make this dedication for the benefit
+ * of the public at large and to the detriment of our heirs and
+ * successors. We intend this dedication to be an overt act of
+ * relinquishment in perpetuity of all present and future rights to this
+ * software under copyright law.
+ * 
+ * THE SOFTWARE IS PROVIDED &quot;AS IS&quot;, WITHOUT WARRANTY OF ANY KIND,
+ * EXPRESS OR IMPLIED, INCLUDING BUT NOT LIMITED TO THE WARRANTIES OF
+ * MERCHANTABILITY, FITNESS FOR A PARTICULAR PURPOSE AND NONINFRINGEMENT.
+ * IN NO EVENT SHALL THE AUTHORS BE LIABLE FOR ANY CLAIM, DAMAGES OR
+ * OTHER LIABILITY, WHETHER IN AN ACTION OF CONTRACT, TORT OR OTHERWISE,
+ * ARISING FROM, OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR
+ * OTHER DEALINGS IN THE SOFTWARE.
+ * #L%
+ */
+
+package nom.tam.fits;
+
+import static nom.tam.fits.header.Standard.CONTINUE;
+import static nom.tam.fits.header.NonStandard.HIERARCH;
+
+import java.math.BigDecimal;
+import java.math.BigInteger;
+import java.util.Locale;
+import java.util.StringTokenizer;
+import java.util.logging.Level;
+import java.util.logging.Logger;
+import java.util.regex.Pattern;
+
+import nom.tam.util.ComplexValue;
+import nom.tam.util.FlexFormat;
+
+/**
+ * &lt;p&gt;
+ * Converts a single 80-character wide FITS header record into a header card. See
+ * {@link HeaderCard#create(String)} for a description of the rules that guide parsing.
+ * &lt;/p&gt;
+ * &lt;p&gt;
+ * When parsing header records that violate FITS standards, the violations can be logged
+ * or will throw appropriate excpetions (depending on the severity of the standard 
+ * violation and whether {@link FitsFactory#setAllowHeaderRepairs(boolean)} is
+ * enabled or not. The logging of violations is disabled by default, but may be
+ * controlled via {@link Header#setParserWarningsEnabled(boolean)}.
+ * &lt;/p&gt;
+ * 
+ *
+ * @author Attila Kovacs
+ * 
+ * @see FitsFactory#setAllowHeaderRepairs(boolean)
+ * @see Header#setParserWarningsEnabled(boolean)
+ */
+class HeaderCardParser {
+
+<span class="fc" id="L69">    private static final Logger LOG = Logger.getLogger(HeaderCardParser.class.getName());</span>
+    
+    static {
+        // Do not log warnings by default.
+<span class="fc" id="L73">        LOG.setLevel(Level.SEVERE);</span>
+    }
+    
+    /** regexp for IEEE floats */
+<span class="fc" id="L77">    private static final Pattern DECIMAL_REGEX = Pattern.compile(&quot;[+-]?\\d+(\\.\\d*)?([dDeE][+-]?\\d+)?&quot;);</span>
+    
+    /** regexp for complex numbers */
+<span class="fc" id="L80">    private static final Pattern COMPLEX_REGEX = Pattern.compile(&quot;\\(\\s*&quot; + DECIMAL_REGEX + &quot;\\s*,\\s*&quot; + DECIMAL_REGEX + &quot;\\s*\\)&quot;);</span>
+   
+    /** regexp for decimal integers. */
+<span class="fc" id="L83">    private static final Pattern INT_REGEX = Pattern.compile(&quot;[+-]?\\d+&quot;);</span>
+    
+    /** regexp for hexadecimal integers. */
+<span class="fc" id="L86">    private static final Pattern HEX_REGEX = Pattern.compile(&quot;[+-]?[\\dA-Fa-f]+&quot;);</span>
+    
+    /** The header line (usually 80-character width), which to parse. */
+    private String line;
+
+    /**
+     * the value of the card. (trimmed and standardized with . in HIERARCH)
+     */
+<span class="fc" id="L94">    private String key = null;</span>
+
+    /**
+     * the value of the card. (trimmed)
+     */
+<span class="fc" id="L99">    private String value = null;</span>
+
+    /**
+     * the comment specified with the value.
+     */
+<span class="fc" id="L104">    private String comment = null;</span>
+
+    /**
+     * was the value quoted?
+     */
+<span class="fc" id="L109">    private Class&lt;?&gt; type = null;</span>
+
+    
+    /**
+     * The position in the string that right after the last character processed by this parser
+     */
+<span class="fc" id="L115">    private int parsePos = 0;</span>
+
+    /**
+     * Instantiates a new parser for a FITS header line.
+     * 
+     * @param line a line in the FITS header, normally exactly 80-characters wide (but need not be).
+     * 
+     * @see #getKey()
+     * @see #getValue()
+     * @see #getComment()
+     * @see #isString()
+     * 
+     * @throws UnclosedQuoteException       if there is a missing end-quote and header repairs aren't allowed.
+     * @throws IllegalArgumentException     if the record contained neither a key or a value.
+     * 
+     * @see FitsFactory#setAllowHeaderRepairs(boolean)
+     */
+<span class="fc" id="L132">    HeaderCardParser(String line) throws UnclosedQuoteException, IllegalArgumentException {</span>
+<span class="fc" id="L133">        this.line = line;</span>
+        // TODO HeaderCard never calls this with a null argument, so the check below is dead code here...
+//        if (line == null) {
+//            throw new IllegalArgumentException(&quot;Cannot parse null string&quot;);
+//        }
+<span class="fc" id="L138">        parseKey();</span>
+<span class="fc" id="L139">        parseValue();</span>
+<span class="fc" id="L140">        parseComment();</span>
+<span class="fc" id="L141">    }</span>
+
+    /**
+     * Returns the keyword component of the parsed header line. If the processing of HIERARCH keywords is enabled,
+     * it may be a `HIERARCH` style long key with the components separated by dots (e.g.
+     * `HIERARCH.ORG.SYSTEM.SUBSYS.ELEMENT`). Otherwise, it will be a standard 0--8 character standard uppercase
+     * FITS keyword (including simply `HIERARCH` if {@link FitsFactory#setUseHierarch(boolean)} was set
+     * &lt;code&gt;false&lt;/code&gt;).
+     * 
+     * @return the FITS header keyword for the line.
+     * 
+     * @see FitsFactory#setUseHierarch(boolean)
+     */
+    String getKey() {
+<span class="fc" id="L155">        return this.key;</span>
+    }
+
+    /**
+     * Returns the value component of the parsed header line.
+     * 
+     * @return the value part of the line or &lt;code&gt;null&lt;/code&gt; if the line contained no value.
+     * 
+     * @see FitsFactory#setUseHierarch(boolean)
+     */
+    String getValue() {
+<span class="fc" id="L166">        return this.value;</span>
+    }
+
+    /**
+     * Returns the comment component of the parsed header line, with all leading and trailing spaces preserved.
+     * 
+     * @return the comment part of the line or &lt;code&gt;null&lt;/code&gt; if the line contained no comment.
+     * 
+     * @see #getTrimmedComment()
+     */
+    String getUntrimmedComment() {
+<span class="fc" id="L177">        return this.comment;</span>
+    }
+    
+    /**
+     * Returns the comment component of the parsed header line, with both leading and trailing spaces removed
+     * 
+     * @return the comment part of the line or &lt;code&gt;null&lt;/code&gt; if the line contained no comment.
+     * 
+     * @see #getUntrimmedComment()
+     */
+    String getTrimmedComment() {
+<span class="fc bfc" id="L188" title="All 2 branches covered.">        return comment == null ? null : comment.trim();</span>
+    }
+
+    /**
+     * Returns whether the line contained a quoted string value. By default, strings with missing end quotes are no
+     * considered string values, but rather as comments. To allow processing lines with missing quotes as string
+     * values, you must set {@link FitsFactory#setAllowHeaderRepairs(boolean)} to &lt;code&gt;true&lt;/code&gt; prior to parsing
+     * a header line with the missing end quote.
+     * 
+     * @return true if the value was quoted.
+     * 
+     * @see FitsFactory#setAllowHeaderRepairs(boolean)
+     */
+    boolean isString() {
+<span class="fc bfc" id="L202" title="All 2 branches covered.">        if (type == null) {</span>
+<span class="fc" id="L203">            return false;</span>
+        }
+<span class="fc" id="L205">        return String.class.isAssignableFrom(type);</span>
+    }
+    
+    /**
+     * &lt;p&gt;
+     * Returns the inferred Java class for the value stored in the header record, such as a
+     * {@link String} class, a {@link Boolean} class, an integer type ({@link Integer}, {@link Long}, or {@link BigInteger})
+     * class, a decimal type ({@link Float}, {@link Double}, or {@link BigDecimal}) class,
+     * a {@link ComplexValue} class, or &lt;code&gt;null&lt;/code&gt;. For number types, it returns the
+     * 'smallest' type that can be used to represent the string value. 
+     * &lt;/p&gt;
+     * &lt;p&gt;
+     * Its an inferred type as
+     * the true underlying type that was used to create the value is lost. For example, the
+     * value &lt;code&gt;42&lt;/code&gt; may have been written from any integer type, including &lt;code&gt;byte&lt;/code&gt;
+     * or &lt;code&gt;short&lt;code&gt;, but this routine will guess it to be an &lt;code&gt;int&lt;/code&gt; ({@link Integer}
+     * type. As such, it may not be equal to {@link HeaderCard#valueType()} from which the
+     * record was created, and hence should not be used for round-trip testing of type equality.
+     * &lt;/p&gt;
+     * 
+     * @return  the inferred type of the stored serialized (string) value, or &lt;code&gt;null&lt;/code&gt;
+     *          if the value does not seem to match any of the supported value types.
+     * 
+     * @see HeaderCard#valueType()
+     */
+    Class&lt;?&gt; getInferredType() {
+<span class="fc" id="L231">        return type;</span>
+    }
+
+    /**
+     * Parses a fits keyword from a card and standardizes it (trim, uppercase, and hierarch with dots).
+     */
+    private void parseKey() {
+        /*
+         * AK: The parsing of headers should never be stricter that the writing, such that any header written by
+         * this library can be parsed back without errors. (And, if anything, the parsing should be more permissive
+         * to allow reading FITS produced by other libraries, which may be less stringent in their rules). The
+         * original implementation strongly enforced the ESO HIERARCH convention when reading, but not at all for
+         * writing. Here is a tolerant hierarch parser that will read back any hierarch key that was written by this
+         * library. The input FITS can use any space or even '.' to separate the hierarchies, and the hierarchical
+         * elements may contain any ASCII characters other than those used for separating. It is more in line with
+         * what we do with standard keys too.
+         */
+
+        // Find the '=' in the line, if any...
+<span class="fc" id="L250">        int iEq = line.indexOf('=');</span>
+        
+        // The stem is in the first 8 characters or what precedes an '=' character
+        // before that.
+<span class="fc bfc" id="L254" title="All 4 branches covered.">        int endStem = (iEq &gt;= 0 &amp;&amp; iEq &lt;= HeaderCard.MAX_KEYWORD_LENGTH) ? iEq : HeaderCard.MAX_KEYWORD_LENGTH;</span>
+<span class="fc" id="L255">        endStem = Math.min(line.length(), endStem);</span>
+
+<span class="fc" id="L257">        String rawStem = line.substring(0, endStem).trim();</span>
+        
+        // Check for space at the start of the keyword...
+<span class="fc bfc" id="L260" title="All 4 branches covered.">        if (endStem &gt; 0 &amp;&amp; !rawStem.isEmpty()) {</span>
+<span class="fc bfc" id="L261" title="All 2 branches covered.">            if (Character.isSpaceChar(line.charAt(0))) {</span>
+<span class="fc" id="L262">                LOG.warning(&quot;[&quot; + sanitize(rawStem) + &quot;] Non-standard starting with a space (trimming).&quot;);</span>
+            }
+        }
+        
+<span class="fc" id="L266">        String stem = rawStem.toUpperCase();</span>
+        
+<span class="fc bfc" id="L268" title="All 2 branches covered.">        if (!stem.equals(rawStem)) {</span>
+<span class="fc" id="L269">            LOG.warning(&quot;[&quot; + sanitize(rawStem) + &quot;] Non-standard lower-case letter(s) in base keyword.&quot;);</span>
+        }   
+        
+<span class="fc" id="L272">        key = stem;</span>
+<span class="fc" id="L273">        parsePos = endStem;</span>
+
+        // If not using HIERARCH, then be very resilient, and return whatever key the first 8 chars make...
+<span class="fc bfc" id="L276" title="All 2 branches covered.">        if (!FitsFactory.getUseHierarch()) {</span>
+<span class="fc" id="L277">            return;</span>
+        }
+
+        // If the line does not have an '=', can only be a simple key
+<span class="fc bfc" id="L281" title="All 2 branches covered.">        if (iEq &lt; 0) {</span>
+<span class="fc" id="L282">            return;</span>
+        }
+
+        // If it's not a HIERARCH keyword, then return the simple key.
+<span class="fc bfc" id="L286" title="All 2 branches covered.">        if (!stem.equals(HIERARCH.key())) {</span>
+<span class="fc" id="L287">            return;</span>
+        }
+
+        // Compose the hierarchical key...
+<span class="fc" id="L291">        StringTokenizer tokens = new StringTokenizer(line.substring(stem.length(), iEq), &quot; \t\r\n.&quot;);</span>
+<span class="fc" id="L292">        StringBuilder builder = new StringBuilder(stem);</span>
+
+<span class="fc bfc" id="L294" title="All 2 branches covered.">        while (tokens.hasMoreTokens()) {</span>
+<span class="fc" id="L295">            String token = tokens.nextToken();</span>
+
+<span class="fc" id="L297">            parsePos = line.indexOf(token, parsePos) + token.length();</span>
+
+            // Add a . to separate hierarchies
+<span class="fc" id="L300">            builder.append('.');</span>
+<span class="fc" id="L301">            builder.append(token);</span>
+<span class="fc" id="L302">        }</span>
+
+<span class="fc" id="L304">        key = builder.toString();</span>
+        
+<span class="fc bfc" id="L306" title="All 2 branches covered.">        if (HIERARCH.key().equals(key)) {</span>
+            // The key is only HIERARCH, without a hierarchical keyword after it...
+<span class="fc" id="L308">            LOG.warning(&quot;HIERARCH base keyword without HIERARCH-style long key after it.&quot;);</span>
+<span class="fc" id="L309">            return;</span>
+        }
+
+<span class="fc bfc" id="L312" title="All 2 branches covered.">        if (!FitsFactory.getHierarchFormater().isCaseSensitive()) {</span>
+<span class="fc" id="L313">            key = key.toUpperCase(Locale.US);</span>
+        }
+        
+        try {
+<span class="fc" id="L317">            HeaderCard.validateKey(key);</span>
+<span class="fc" id="L318">        } catch (IllegalArgumentException e) {</span>
+<span class="fc" id="L319">            LOG.warning(e.getMessage());</span>
+<span class="fc" id="L320">        }</span>
+<span class="fc" id="L321">    }</span>
+
+    /**
+     * Advances the parse position to skip any spaces at the current parse position, and returns whether there is
+     * anything left in the line after the spaces...
+     * 
+     * @return &lt;code&gt;true&lt;/code&gt; if there is more non-space characters in the string, otherwise &lt;code&gt;false&lt;/code&gt;
+     */
+    private boolean skipSpaces() {
+<span class="fc bfc" id="L330" title="All 2 branches covered.">        for (; parsePos &lt; line.length(); parsePos++) {</span>
+<span class="fc bfc" id="L331" title="All 2 branches covered.">            if (!Character.isSpaceChar(line.charAt(parsePos))) {</span>
+                // Line has non-space characters left to parse...
+<span class="fc" id="L333">                return true;</span>
+            }
+        }
+        // nothing left to parse.
+<span class="fc" id="L337">        return false;</span>
+    }
+
+    /**
+     * Parses the comment components starting from the current parse position. After this call the parse position is
+     * set to the end of the string. The leading '/' (if found) is not included in the comment.
+     */
+    private void parseComment() {
+<span class="fc bfc" id="L345" title="All 2 branches covered.">        if (!skipSpaces()) {</span>
+            // nothing left to parse.
+<span class="fc" id="L347">            return;</span>
+        }
+        
+        // if no value, then everything is comment from here on...
+<span class="fc bfc" id="L351" title="All 2 branches covered.">        if (value != null) {</span>
+<span class="fc bfc" id="L352" title="All 2 branches covered.">            if (line.charAt(parsePos) == '/') {</span>
+                // Skip the '/' itself, the comment is whatever is after it.
+<span class="fc" id="L354">                parsePos++;</span>
+            } else {
+                // Junk after a string value -- interpret it as the start of the comment...
+<span class="fc" id="L357">                LOG.warning(&quot;[&quot; + sanitize(getKey()) + &quot;] Junk after value (included in the comment).&quot;);</span>
+            }
+        }
+
+<span class="fc" id="L361">        comment = line.substring(parsePos);</span>
+<span class="fc" id="L362">        parsePos = line.length();</span>
+        
+        try {
+<span class="fc" id="L365">            HeaderCard.validateChars(comment);</span>
+<span class="fc" id="L366">        } catch (IllegalArgumentException e) {</span>
+<span class="fc" id="L367">            LOG.warning(&quot;[&quot; + sanitize(getKey()) + &quot;]: &quot; + e.getMessage());</span>
+<span class="fc" id="L368">        }</span>
+<span class="fc" id="L369">    }</span>
+
+    /**
+     * Parses the value component from the current parse position. The parse position is advanced to the first
+     * character after the value specification in the line. If the header line does not contain a value component,
+     * then the value field of this object is set to &lt;code&gt;null&lt;/code&gt;.
+     * 
+     * @throws UnclosedQuoteException if there is a missing end-quote and header repairs aren't allowed.
+     * 
+     * @see FitsFactory#setAllowHeaderRepairs(boolean)
+     * 
+     */
+    private void parseValue() throws UnclosedQuoteException {
+<span class="fc bfc" id="L382" title="All 2 branches covered.">        if (key.isEmpty()) {</span>
+            // the entire line is a comment.
+<span class="fc" id="L384">            return;</span>
+        }
+
+<span class="fc bfc" id="L387" title="All 2 branches covered.">        if (!skipSpaces()) {</span>
+            // nothing left to parse.
+<span class="fc" id="L389">            return;</span>
+        }
+
+<span class="fc bfc" id="L392" title="All 2 branches covered.">        if (CONTINUE.key().equals(key)) {</span>
+<span class="fc" id="L393">            parseValueBody();</span>
+<span class="fc bfc" id="L394" title="All 2 branches covered.">        } else if (line.charAt(parsePos) == '=') {</span>
+           
+<span class="fc bfc" id="L396" title="All 2 branches covered.">            if (parsePos &lt; HeaderCard.MAX_KEYWORD_LENGTH) {</span>
+<span class="fc" id="L397">                LOG.warning(&quot;[&quot; + sanitize(key) + &quot;] assigmment before byte &quot; + (HeaderCard.MAX_KEYWORD_LENGTH + 1) + &quot; for key '&quot; + sanitize(key) + &quot;'.&quot;);</span>
+            }
+<span class="fc bfc" id="L399" title="All 2 branches covered.">            if (parsePos + 1 &gt;= line.length()) {</span>
+<span class="fc" id="L400">                LOG.warning(&quot;[&quot; + sanitize(key) + &quot;] Record ends with '='.&quot;);</span>
+<span class="fc bfc" id="L401" title="All 2 branches covered.">            } else if (line.charAt(parsePos + 1) != ' ') {</span>
+<span class="fc" id="L402">                LOG.warning(&quot;[&quot; + sanitize(key) + &quot;] Missing required standard space after '='.&quot;);</span>
+            }    
+            
+<span class="fc bfc" id="L405" title="All 2 branches covered.">            if (parsePos &gt; HeaderCard.MAX_KEYWORD_LENGTH) {</span>
+                // equal sign = after the 9th char -- only supported with hierarch keys...
+<span class="fc bfc" id="L407" title="All 2 branches covered.">                if (!key.startsWith(HIERARCH.key() + &quot;.&quot;)) {</span>
+<span class="fc" id="L408">                    LOG.warning(&quot;[&quot; + sanitize(key) + &quot;] Possibly misplaced '=' (after byte 9).&quot;);</span>
+                    // It's not a HIERARCH key
+<span class="fc" id="L410">                    return;</span>
+                }
+            } 
+
+<span class="fc" id="L414">            parsePos++;</span>
+<span class="fc" id="L415">            parseValueBody();</span>
+        }
+        
+        try {
+<span class="fc" id="L419">            HeaderCard.validateChars(value);</span>
+<span class="fc" id="L420">        } catch (IllegalArgumentException e) {</span>
+<span class="fc" id="L421">            LOG.warning(&quot;[&quot; + sanitize(getKey()) + &quot;] &quot; + e.getMessage());</span>
+<span class="fc" id="L422">        }</span>
+<span class="fc" id="L423">    }</span>
+
+    /**
+     * Parses the value body from the current parse position. The parse position is advanced to the first character
+     * after the value specification in the line. If the header line does not contain a value component, then the
+     * value field of this object is set to &lt;code&gt;null&lt;/code&gt;.
+     * 
+     * @throws UnclosedQuoteException if there is a missing end-quote and header repairs aren't allowed.
+     * 
+     * @see FitsFactory#setAllowHeaderRepairs(boolean)
+     * 
+     */
+    private void parseValueBody() throws UnclosedQuoteException {
+<span class="fc bfc" id="L436" title="All 2 branches covered.">        if (!skipSpaces()) {</span>
+            // nothing left to parse.
+<span class="fc" id="L438">            return;</span>
+        }
+
+<span class="fc bfc" id="L441" title="All 2 branches covered.">        if (isNextQuote()) {</span>
+            // Parse as a string value, or else throw an exception.
+<span class="fc" id="L443">            parseStringValue();</span>
+        } else {
+<span class="fc" id="L445">            int end = line.indexOf('/', parsePos);</span>
+<span class="fc bfc" id="L446" title="All 2 branches covered.">            if (end &lt; 0) {</span>
+<span class="fc" id="L447">                end = line.length();</span>
+            }
+<span class="fc" id="L449">            value = line.substring(parsePos, end).trim();</span>
+<span class="fc" id="L450">            parsePos = end;</span>
+<span class="fc" id="L451">            this.type = getInferredValueType(key, value);</span>
+        }
+
+<span class="fc" id="L454">    }</span>
+
+    /**
+     * Checks if the next character, at the current parse position, is a single quote.
+     * 
+     * @return &lt;code&gt;true&lt;/code&gt; if the next character on the line exists and is a single quote, otherwise
+     *             &lt;code&gt;false&lt;/code&gt;.
+     */
+    private boolean isNextQuote() {
+<span class="fc bfc" id="L463" title="All 2 branches covered.">        if (parsePos &gt;= line.length()) {</span>
+            // nothing left to parse.
+<span class="fc" id="L465">            return false;</span>
+        }
+<span class="fc bfc" id="L467" title="All 2 branches covered.">        return line.charAt(parsePos) == '\'';</span>
+    }
+
+    /**
+     * Returns the string fom a parsed string value component, with trailing spaces removed. It preserves leading
+     * spaces.
+     * 
+     * @param buf the parsed string value.
+     * 
+     * @return the string value with trailing spaces removed.
+     */
+    private static String getNoTrailingSpaceString(StringBuilder buf) {
+<span class="fc" id="L479">        int to = buf.length();</span>
+
+        // Remove trailing spaces only!
+<span class="fc bfc" id="L482" title="All 2 branches covered.">        while (--to &gt;= 0) {</span>
+<span class="fc bfc" id="L483" title="All 2 branches covered.">            if (!Character.isSpaceChar(buf.charAt(to))) {</span>
+<span class="fc" id="L484">                break;</span>
+            }
+        }
+
+<span class="fc bfc" id="L488" title="All 2 branches covered.">        return to &lt; 0 ? &quot;&quot; : buf.substring(0, to + 1);</span>
+    }
+
+    /**
+     * Parses a quoted string value starting at the current parse position. If successful, the parse position is
+     * updated to after the string. Otherwise, the parse position is advanced only to skip leading spaces starting
+     * from the input position.
+     * 
+     * @throws UnclosedQuoteException if there is a missing end-quote and header repairs aren't allowed.
+     * 
+     * @see FitsFactory#setAllowHeaderRepairs(boolean)
+     */
+    private void parseStringValue() throws UnclosedQuoteException {
+<span class="fc" id="L501">        this.type = String.class;</span>
+<span class="fc" id="L502">        StringBuilder buf = new StringBuilder(HeaderCard.MAX_VALUE_LENGTH);</span>
+
+        // Build the string value, up to the end quote and paying attention to double
+        // quotes inside the string, which are translated to single quotes within
+        // the string value itself.
+<span class="fc bfc" id="L507" title="All 2 branches covered.">        for (++parsePos; parsePos &lt; line.length(); parsePos++) {</span>
+<span class="fc bfc" id="L508" title="All 2 branches covered.">            if (isNextQuote()) {</span>
+<span class="fc" id="L509">                parsePos++;</span>
+
+<span class="fc bfc" id="L511" title="All 2 branches covered.">                if (!isNextQuote()) {</span>
+                    // Closing single quote;
+<span class="fc" id="L513">                    value = getNoTrailingSpaceString(buf);</span>
+<span class="fc" id="L514">                    return;</span>
+                }
+            } 
+<span class="fc" id="L517">            buf.append(line.charAt(parsePos));</span>
+        }
+        
+        // String with missing end quote
+<span class="fc bfc" id="L521" title="All 2 branches covered.">        if (FitsFactory.isAllowHeaderRepairs()) {</span>
+<span class="fc" id="L522">            LOG.warning(&quot;[&quot; + sanitize(key) + &quot;] Ignored missing end quote (value parsed to end of record).&quot;);</span>
+<span class="fc" id="L523">            value = getNoTrailingSpaceString(buf);</span>
+        } else {
+<span class="fc" id="L525">            throw new UnclosedQuoteException(line);</span>
+        }
+<span class="fc" id="L527">    }</span>
+    
+    /**
+     * Returns the inferred Java class for the specified value. See {@link #getInferredType()}
+     * for a more detailed description.
+     * 
+     * @param value     the serialized (string) representation of a FITS header value.
+     * @return          the inferred type of the specified serialized (string) value, or &lt;code&gt;null&lt;/code&gt;
+     *                  if the value does not seem to match any of the supported value types. &lt;code&gt;null&lt;/code&gt;
+     *                  values default to &lt;code&gt;Boolean.class&lt;/code&gt;.
+     */
+    private static Class&lt;?&gt; getInferredValueType(String key, String value) {
+        // TODO We never call this with null locally, so the following check is dead code here...
+//        if (value == null) {
+//            return Boolean.class;
+//        }
+<span class="fc bfc" id="L543" title="All 2 branches covered.">        if (value.isEmpty()) {</span>
+<span class="fc" id="L544">            LOG.warning(&quot;[&quot; + sanitize(key) + &quot;] Null non-string value (defaulted to Boolean.class).&quot;);</span>
+<span class="fc" id="L545">            return Boolean.class;</span>
+        }
+           
+<span class="fc" id="L548">        String trimmedValue = value.trim().toUpperCase();</span>
+        
+<span class="fc bfc" id="L550" title="All 4 branches covered.">        if (&quot;T&quot;.equals(trimmedValue) || &quot;F&quot;.equals(trimmedValue)) {</span>
+<span class="fc" id="L551">            return Boolean.class;</span>
+<span class="fc bfc" id="L552" title="All 2 branches covered.">        } else if (INT_REGEX.matcher(trimmedValue).matches()) {</span>
+<span class="fc" id="L553">                return getIntegerType(trimmedValue); </span>
+<span class="fc bfc" id="L554" title="All 2 branches covered.">        } else if (DECIMAL_REGEX.matcher(trimmedValue).matches()) {</span>
+<span class="fc" id="L555">            return getDecimalType(trimmedValue); </span>
+<span class="fc bfc" id="L556" title="All 2 branches covered.">        } else if (HEX_REGEX.matcher(trimmedValue).matches()) {</span>
+<span class="fc" id="L557">            return getIntegerType(trimmedValue);</span>
+<span class="fc bfc" id="L558" title="All 2 branches covered.">        } else if (COMPLEX_REGEX.matcher(trimmedValue).matches()) {</span>
+<span class="fc" id="L559">            return ComplexValue.class;</span>
+        }
+        
+<span class="fc" id="L562">        LOG.warning(&quot;[&quot; + sanitize(key) + &quot;] Unrecognised non-string value type '&quot; + sanitize(trimmedValue) + &quot;'.&quot;);</span>
+        
+<span class="fc" id="L564">        return null;</span>
+    }
+
+    /**
+     * Returns the guessed decimal type of a string representation of a decimal value.
+     *
+     * @param value     the string representation of a decimal value.
+     * 
+     * @return the      The Java class ({@link Float}, {@link Double}, or {@link BigDecimal}) 
+     *                  that can be used to represent the value with the precision provided.
+     *                  
+     * @see #getInferredValueType()
+     * @see #getIntegerType(String)
+     */
+    private static Class&lt;? extends Number&gt; getDecimalType(String value) {
+<span class="fc" id="L579">        value = value.toUpperCase(Locale.US);</span>
+<span class="fc bfc" id="L580" title="All 2 branches covered.">        boolean hasD = (value.indexOf('D') &gt;= 0);</span>
+        
+<span class="fc bfc" id="L582" title="All 2 branches covered.">        if (hasD) {</span>
+            // Convert the Double Scientific Notation specified by FITS to pure IEEE.
+<span class="fc" id="L584">            value = value.replace('D', 'E');</span>
+        }
+     
+<span class="fc" id="L587">        BigDecimal big = new BigDecimal(value);</span>
+        
+        // Check for zero, and deal with it separately...
+<span class="fc bfc" id="L590" title="All 2 branches covered.">        if (big.stripTrailingZeros().equals(BigDecimal.ZERO)) {</span>
+<span class="fc" id="L591">            int decimals = big.scale();</span>
+<span class="fc bfc" id="L592" title="All 2 branches covered.">            if (decimals &lt;= FlexFormat.FLOAT_DECIMALS) {</span>
+<span class="fc bfc" id="L593" title="All 2 branches covered.">                return hasD ? Double.class : Float.class;</span>
+            }
+<span class="fc bfc" id="L595" title="All 2 branches covered.">            if (decimals &lt;= FlexFormat.DOUBLE_DECIMALS) {</span>
+<span class="fc" id="L596">                return Double.class;</span>
+            }
+<span class="fc" id="L598">            return BigDecimal.class;</span>
+        }
+       
+        // Now non-zero values...
+<span class="fc" id="L602">        int decimals = big.precision() - 1;</span>
+<span class="fc" id="L603">        float f = big.floatValue();        </span>
+<span class="fc bfc" id="L604" title="All 6 branches covered.">        if (decimals &lt;= FlexFormat.FLOAT_DECIMALS &amp;&amp; (f != 0.0F) &amp;&amp; Float.isFinite(f)) {</span>
+<span class="fc bfc" id="L605" title="All 2 branches covered.">            return hasD ? Double.class : Float.class;</span>
+        } 
+        
+<span class="fc" id="L608">        double d = big.doubleValue();</span>
+<span class="fc bfc" id="L609" title="All 6 branches covered.">        if (decimals &lt;= FlexFormat.DOUBLE_DECIMALS &amp;&amp; (d != 0.0) &amp;&amp; Double.isFinite(d)) {</span>
+<span class="fc" id="L610">            return Double.class;</span>
+        }
+<span class="fc" id="L612">        return BigDecimal.class;</span>
+    }
+
+    /**
+     * Returns the guessed integer type of a string representation of a integer value.
+     *
+     * @param value     the string representation of an integer value.
+     * 
+     * @return the      The Java class ({@link Integer}, {@link Long}, or {@link BigInteger})
+     *                  that can be used to represent the value with the number of digits provided.
+     *                  
+     * @see #getInferredValueType()
+     * @see #getDecimalType(String)
+     */
+    private static Class&lt;? extends Number&gt; getIntegerType(String value) { 
+        try {
+<span class="fc" id="L628">            int bits = new BigInteger(value).bitLength();      </span>
+<span class="fc bfc" id="L629" title="All 2 branches covered.">            if (bits &lt; Integer.SIZE) {</span>
+<span class="fc" id="L630">                return Integer.class;</span>
+            }
+<span class="fc bfc" id="L632" title="All 2 branches covered.">            if (bits &lt; Long.SIZE) {</span>
+<span class="fc" id="L633">                return Long.class;</span>
+            }   
+<span class="fc" id="L635">            return BigInteger.class;</span>
+<span class="fc" id="L636">        } catch (NumberFormatException e) {</span>
+            // Try hexadecimal...
+<span class="fc" id="L638">            long l = Long.decode(&quot;0x&quot; + value);</span>
+<span class="fc bfc" id="L639" title="All 2 branches covered.">            return (l == (int) l) ? Integer.class : Long.class; </span>
+        }  
+    }
+    
+    private static String sanitize(String text) {
+<span class="fc" id="L644">        return HeaderCard.sanitize(text);</span>
+    }
+    
+    
+    
+}
+</pre><div class="footer"><span class="right">Created with <a href="http://www.jacoco.org/jacoco">JaCoCo</a> 0.8.7.202105040129</span></div></body></html>

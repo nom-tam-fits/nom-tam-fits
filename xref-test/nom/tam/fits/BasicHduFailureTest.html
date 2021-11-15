@@ -12,7 +12,7 @@
 <a class="jxr_linenumber" name="L4" href="#L4">4</a>   <em class="jxr_comment"> * #%L</em>
 <a class="jxr_linenumber" name="L5" href="#L5">5</a>   <em class="jxr_comment"> * nom.tam FITS library</em>
 <a class="jxr_linenumber" name="L6" href="#L6">6</a>   <em class="jxr_comment"> * %%</em>
-<a class="jxr_linenumber" name="L7" href="#L7">7</a>   <em class="jxr_comment"> * Copyright (C) 1996 - 2016 nom-tam-fits</em>
+<a class="jxr_linenumber" name="L7" href="#L7">7</a>   <em class="jxr_comment"> * Copyright (C) 1996 - 2021 nom-tam-fits</em>
 <a class="jxr_linenumber" name="L8" href="#L8">8</a>   <em class="jxr_comment"> * %%</em>
 <a class="jxr_linenumber" name="L9" href="#L9">9</a>   <em class="jxr_comment"> * This is free and unencumbered software released into the public domain.</em>
 <a class="jxr_linenumber" name="L10" href="#L10">10</a>  <em class="jxr_comment"> * </em>
@@ -47,7 +47,7 @@
 <a class="jxr_linenumber" name="L39" href="#L39">39</a>  
 <a class="jxr_linenumber" name="L40" href="#L40">40</a>  <strong class="jxr_keyword">import</strong> java.io.IOException;
 <a class="jxr_linenumber" name="L41" href="#L41">41</a>  
-<a class="jxr_linenumber" name="L42" href="#L42">42</a>  <strong class="jxr_keyword">import</strong> nom.tam.util.BufferedFile;
+<a class="jxr_linenumber" name="L42" href="#L42">42</a>  <strong class="jxr_keyword">import</strong> nom.tam.util.FitsFile;
 <a class="jxr_linenumber" name="L43" href="#L43">43</a>  <strong class="jxr_keyword">import</strong> nom.tam.util.SafeClose;
 <a class="jxr_linenumber" name="L44" href="#L44">44</a>  <strong class="jxr_keyword">import</strong> nom.tam.util.test.ThrowAnyException;
 <a class="jxr_linenumber" name="L45" href="#L45">45</a>  
@@ -118,9 +118,9 @@
 <a class="jxr_linenumber" name="L110" href="#L110">110</a>     @Test
 <a class="jxr_linenumber" name="L111" href="#L111">111</a>     <strong class="jxr_keyword">public</strong> <strong class="jxr_keyword">void</strong> testDefaultFileOffset() <strong class="jxr_keyword">throws</strong> Exception {
 <a class="jxr_linenumber" name="L112" href="#L112">112</a>         BasicHDU&lt;?&gt; dummyHDU = BasicHDU.getDummyHDU();
-<a class="jxr_linenumber" name="L113" href="#L113">113</a>         BufferedFile out = <strong class="jxr_keyword">null</strong>;
+<a class="jxr_linenumber" name="L113" href="#L113">113</a>         FitsFile out = <strong class="jxr_keyword">null</strong>;
 <a class="jxr_linenumber" name="L114" href="#L114">114</a>         <strong class="jxr_keyword">try</strong> {
-<a class="jxr_linenumber" name="L115" href="#L115">115</a>             out = <strong class="jxr_keyword">new</strong> BufferedFile(<span class="jxr_string">"target/BasicHduFailureTeststestDefaultFileOffset"</span>, <span class="jxr_string">"rw"</span>);
+<a class="jxr_linenumber" name="L115" href="#L115">115</a>             out = <strong class="jxr_keyword">new</strong> FitsFile(<span class="jxr_string">"target/BasicHduFailureTeststestDefaultFileOffset"</span>, <span class="jxr_string">"rw"</span>);
 <a class="jxr_linenumber" name="L116" href="#L116">116</a>             dummyHDU.write(out);
 <a class="jxr_linenumber" name="L117" href="#L117">117</a>         } <strong class="jxr_keyword">finally</strong> {
 <a class="jxr_linenumber" name="L118" href="#L118">118</a>             SafeClose.close(out);
@@ -129,7 +129,7 @@
 <a class="jxr_linenumber" name="L121" href="#L121">121</a>         FitsException actual = <strong class="jxr_keyword">null</strong>;
 <a class="jxr_linenumber" name="L122" href="#L122">122</a>         out = <strong class="jxr_keyword">null</strong>;
 <a class="jxr_linenumber" name="L123" href="#L123">123</a>         <strong class="jxr_keyword">try</strong> {
-<a class="jxr_linenumber" name="L124" href="#L124">124</a>             out = <strong class="jxr_keyword">new</strong> BufferedFile(<span class="jxr_string">"target/BasicHduFailureTeststestDefaultFileOffset"</span>, <span class="jxr_string">"rw"</span>) {
+<a class="jxr_linenumber" name="L124" href="#L124">124</a>             out = <strong class="jxr_keyword">new</strong> FitsFile(<span class="jxr_string">"target/BasicHduFailureTeststestDefaultFileOffset"</span>, <span class="jxr_string">"rw"</span>) {
 <a class="jxr_linenumber" name="L125" href="#L125">125</a> 
 <a class="jxr_linenumber" name="L126" href="#L126">126</a>                 <strong class="jxr_keyword">int</strong> count = 0;
 <a class="jxr_linenumber" name="L127" href="#L127">127</a> 
@@ -205,6 +205,6 @@
 <a class="jxr_linenumber" name="L197" href="#L197">197</a> }
 </pre>
 <hr/>
-<div id="footer">Copyright &#169; 1996&#x2013;2017 nom-tam-fits. All rights reserved.</div>
+<div id="footer">Copyright &#169; 1996&#x2013;2021 nom-tam-fits. All rights reserved.</div>
 </body>
 </html>

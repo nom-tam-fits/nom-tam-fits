@@ -1,0 +1,348 @@
+<?xml version="1.0" encoding="UTF-8"?><!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Strict//EN" "http://www.w3.org/TR/xhtml1/DTD/xhtml1-strict.dtd"><html xmlns="http://www.w3.org/1999/xhtml" lang="en"><head><meta http-equiv="Content-Type" content="text/html;charset=UTF-8"/><link rel="stylesheet" href="../jacoco-resources/report.css" type="text/css"/><link rel="shortcut icon" href="../jacoco-resources/report.gif" type="image/gif"/><title>ElementType.java</title><link rel="stylesheet" href="../jacoco-resources/prettify.css" type="text/css"/><script type="text/javascript" src="../jacoco-resources/prettify.js"></script></head><body onload="window['PR_TAB_WIDTH']=4;prettyPrint()"><div class="breadcrumb" id="breadcrumb"><span class="info"><a href="../jacoco-sessions.html" class="el_session">Sessions</a></span><a href="../index.html" class="el_report">nom.tam FITS library</a> &gt; <a href="index.source.html" class="el_package">nom.tam.util.type</a> &gt; <span class="el_source">ElementType.java</span></div><h1>ElementType.java</h1><pre class="source lang-java linenums">package nom.tam.util.type;
+
+/*
+ * #%L
+ * nom.tam FITS library
+ * %%
+ * Copyright (C) 2004 - 2021 nom-tam-fits
+ * %%
+ * This is free and unencumbered software released into the public domain.
+ * 
+ * Anyone is free to copy, modify, publish, use, compile, sell, or
+ * distribute this software, either in source code form or as a compiled
+ * binary, for any purpose, commercial or non-commercial, and by any
+ * means.
+ * 
+ * In jurisdictions that recognize copyright laws, the author or authors
+ * of this software dedicate any and all copyright interest in the
+ * software to the public domain. We make this dedication for the benefit
+ * of the public at large and to the detriment of our heirs and
+ * successors. We intend this dedication to be an overt act of
+ * relinquishment in perpetuity of all present and future rights to this
+ * software under copyright law.
+ * 
+ * THE SOFTWARE IS PROVIDED &quot;AS IS&quot;, WITHOUT WARRANTY OF ANY KIND,
+ * EXPRESS OR IMPLIED, INCLUDING BUT NOT LIMITED TO THE WARRANTIES OF
+ * MERCHANTABILITY, FITNESS FOR A PARTICULAR PURPOSE AND NONINFRINGEMENT.
+ * IN NO EVENT SHALL THE AUTHORS BE LIABLE FOR ANY CLAIM, DAMAGES OR
+ * OTHER LIABILITY, WHETHER IN AN ACTION OF CONTRACT, TORT OR OTHERWISE,
+ * ARISING FROM, OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR
+ * OTHER DEALINGS IN THE SOFTWARE.
+ * #L%
+ */
+
+import java.lang.reflect.Array;
+import java.nio.Buffer;
+import java.nio.ByteBuffer;
+import java.nio.DoubleBuffer;
+import java.nio.FloatBuffer;
+import java.nio.IntBuffer;
+import java.nio.LongBuffer;
+import java.nio.ShortBuffer;
+import java.util.Collections;
+import java.util.HashMap;
+import java.util.Map;
+
+import nom.tam.fits.FitsException;
+import nom.tam.fits.header.Bitpix;
+
+/**
+ * A base data element type in a FITS image or table column, with associated functions.
+ *
+ * @param &lt;B&gt;   the generic type of data buffer
+ */
+public abstract class ElementType&lt;B extends Buffer&gt; {
+
+    /** Tha size value to use to indicate that instance have their own size each */
+    private static final int VARIABLE_SIZE = -1;
+    
+    /** Number of bytes to copy as a block */
+    public static final int COPY_BLOCK_SIZE = 1024;
+
+    /** The BITPIX integer value associated with this type of element */
+    private final int bitPix;
+
+    /** The class of NIO Buffer associated with this type of element */
+    private final Class&lt;B&gt; bufferClass;
+
+    /** The primitive data class of this element */
+    private final Class&lt;?&gt; primitiveClass;
+
+    /** The fixed size for this element, if any */
+    private final int size;
+
+    /** The second character of the Java array type, e.g. `J` from `[J` for `long[]` */
+    private final char javaType;
+
+    /** A boxing class for the primitive type */
+    private final Class&lt;?&gt; wrapperClass;
+
+    /**
+     * Instantiates a new FITS data element type.
+     * 
+     * @param size              the number of bytes in the FITS representation of that type.
+     * @param varSize           &lt;code&gt;true&lt;/code&gt; if the element has a size that varies from object to object.
+     * @param primitiveClass    The primitive data type, e.g. `int.class`, or &lt;code&gt;null&lt;/code&gt; if no primitive type is associated.
+     * @param wrapperClass      The boxed data type, e.g. `Integer.class`, or &lt;code&gt;null&lt;/code&gt; if no boxed type is associated.
+     * @param bufferClass       The type of underlying buffer (in FITS), or &lt;code&gt;null&lt;/code&gt; if arrays of this type 
+     *                          cannot be wrapped into a buffer directly (e.g. because of differing byrte size or order).
+     * @param type              The second character of the Java array type, e.g. `J` from `[J` for `long[]`. 
+     * @param bitPix            The BITPIX header value for an image HDU of this type.
+     */
+<span class="fc" id="L92">    protected ElementType(int size, boolean varSize, Class&lt;?&gt; primitiveClass, Class&lt;?&gt; wrapperClass, Class&lt;B&gt; bufferClass, char type, int bitPix) {</span>
+<span class="fc bfc" id="L93" title="All 2 branches covered.">        this.size = varSize ? VARIABLE_SIZE : size;</span>
+<span class="fc" id="L94">        this.primitiveClass = primitiveClass;</span>
+<span class="fc" id="L95">        this.wrapperClass = wrapperClass;</span>
+<span class="fc" id="L96">        this.bufferClass = bufferClass;</span>
+<span class="fc" id="L97">        this.javaType = type;</span>
+<span class="fc" id="L98">        this.bitPix = bitPix;</span>
+<span class="fc" id="L99">    }</span>
+
+    /**
+     * Appends data from one buffer to another.
+     * 
+     * @param buffer            the destination buffer
+     * @param dataToAppend      the buffer containing the data segment to append.
+     */
+    public void appendBuffer(B buffer, B dataToAppend) {
+<span class="fc" id="L108">        throw new UnsupportedOperationException(&quot;no primitive type&quot;);</span>
+    }
+
+    /**
+     * Appends data from one buffer to a byte buffer.
+     * 
+     * @param byteBuffer        the destination buffer
+     * @param dataToAppend      the buffer containing the data segment to append.
+     *
+     */
+    public void appendToByteBuffer(ByteBuffer byteBuffer, B dataToAppend) {
+<span class="fc" id="L119">        byte[] temp = new byte[Math.min(COPY_BLOCK_SIZE * size(), dataToAppend.remaining() * size())];</span>
+<span class="fc" id="L120">        B typedBuffer = asTypedBuffer(ByteBuffer.wrap(temp));</span>
+<span class="fc" id="L121">        Object array = newArray(Math.min(COPY_BLOCK_SIZE, dataToAppend.remaining()));</span>
+<span class="fc bfc" id="L122" title="All 2 branches covered.">        while (dataToAppend.hasRemaining()) {</span>
+<span class="fc" id="L123">            int part = Math.min(COPY_BLOCK_SIZE, dataToAppend.remaining());</span>
+<span class="fc" id="L124">            getArray(dataToAppend, array, part);</span>
+<span class="fc" id="L125">            putArray(typedBuffer, array, part);</span>
+<span class="fc" id="L126">            byteBuffer.put(temp, 0, part * size());</span>
+<span class="fc" id="L127">        }</span>
+<span class="fc" id="L128">    }</span>
+
+    public B asTypedBuffer(ByteBuffer buffer) {
+<span class="fc" id="L131">        throw new UnsupportedOperationException(&quot;no primitive buffer available&quot;);</span>
+    }
+
+    public int bitPix() {
+<span class="fc" id="L135">        return this.bitPix;</span>
+    }
+
+    public Class&lt;B&gt; bufferClass() {
+<span class="fc" id="L139">        return this.bufferClass;</span>
+    }
+
+    public ByteBuffer convertToByteBuffer(Object array) {
+<span class="fc" id="L143">        ByteBuffer buffer = ByteBuffer.wrap(new byte[Array.getLength(array) * size()]);</span>
+<span class="fc" id="L144">        putArray(asTypedBuffer(buffer), array);</span>
+<span class="fc" id="L145">        buffer.rewind();</span>
+<span class="fc" id="L146">        return buffer;</span>
+    }
+
+    public final void getArray(B buffer, Object array) {
+<span class="fc" id="L150">        getArray(buffer, array, Array.getLength(array));</span>
+<span class="fc" id="L151">    }</span>
+
+    public final void getArray(B buffer, Object array, int length) {
+<span class="fc" id="L154">        getArray(buffer, array, 0, length);</span>
+<span class="fc" id="L155">    }</span>
+
+    public void getArray(B buffer, Object array, int offset, int length) {
+<span class="fc" id="L158">        throw new UnsupportedOperationException(&quot;no primitive type&quot;);</span>
+    }
+
+    public boolean isVariableSize() {
+<span class="fc bfc" id="L162" title="All 2 branches covered.">        return size == VARIABLE_SIZE;</span>
+    }
+    
+    /**
+     * @deprecated Use {@link #isVariableSize()} instead.
+     * 
+     * @return  &lt;code&gt;true&lt;/code&gt; if this type of element comes in all sizes, and the particular
+     *          size of an obejct of this element type is specific to its instance. Or, &lt;code&gt;false&lt;/code&gt;
+     *          for fixed-sized elements.
+     */
+    @Deprecated
+    public final boolean individualSize() {
+<span class="fc" id="L174">        return isVariableSize();</span>
+    }
+
+    public boolean is(ElementType&lt;? extends Buffer&gt; other) {
+<span class="fc bfc" id="L178" title="All 2 branches covered.">        return this.bitPix == other.bitPix();</span>
+    }
+
+    public Object newArray(int length) {
+<span class="fc" id="L182">        return null;</span>
+    }
+
+    public final B newBuffer(int length) {
+<span class="fc" id="L186">        return wrap(newArray(length));</span>
+    }
+
+    public final B newBuffer(long length) {
+        // TODO handle big arrays differently by using memory mapped files.
+<span class="fc" id="L191">        return wrap(newArray((int) length));</span>
+    }
+
+    public Class&lt;?&gt; primitiveClass() {
+<span class="fc" id="L195">        return this.primitiveClass;</span>
+    }
+
+    public final void putArray(B buffer, Object array) {
+<span class="fc" id="L199">        putArray(buffer, array, Array.getLength(array));</span>
+<span class="fc" id="L200">    }</span>
+
+    public void putArray(B buffer, Object array, int length) {
+<span class="fc" id="L203">        throw new UnsupportedOperationException(&quot;no primitive type&quot;);</span>
+    }
+
+    public int size() {
+<span class="fc" id="L207">        return this.size;</span>
+    }
+
+    /**
+     * currently the only individual size primitive so, keep it simple
+     *
+     * @param instance
+     *            the object to calculate the size
+     * @return the size in bytes of the object instance
+     * @throws IllegalArgumentException
+     *              if the object is not of the type expected by this class.
+     */
+    public int size(Object instance) {
+<span class="fc bfc" id="L220" title="All 2 branches covered.">        if (instance == null) {</span>
+<span class="fc" id="L221">            return 0;</span>
+        }
+        
+<span class="fc" id="L224">        Class&lt;?&gt; cl = instance.getClass();</span>
+<span class="pc bpc" id="L225" title="1 of 4 branches missed.">        if (!(primitiveClass.isAssignableFrom(cl) || wrapperClass.isAssignableFrom(cl))) {</span>
+<span class="fc" id="L226">            throw new IllegalArgumentException(&quot;Class &quot; + cl.getName() + &quot; does not match type &quot; + getClass().getSimpleName());</span>
+        }
+        
+<span class="fc" id="L229">        return size();</span>
+    }
+
+    public B sliceBuffer(B buffer) {
+<span class="fc" id="L233">        return null;</span>
+    }
+
+    public char type() {
+<span class="fc" id="L237">        return this.javaType;</span>
+    }
+
+    public B wrap(Object array) {
+<span class="fc" id="L241">        return null;</span>
+    }
+
+    public Class&lt;?&gt; wrapperClass() {
+<span class="fc" id="L245">        return this.wrapperClass;</span>
+    }
+    
+<span class="fc" id="L248">    public static final ElementType&lt;Buffer&gt; BOOLEAN = new BooleanType();</span>
+
+<span class="fc" id="L250">    public static final ElementType&lt;ByteBuffer&gt; BYTE = new ByteType();</span>
+
+<span class="fc" id="L252">    public static final ElementType&lt;ByteBuffer&gt; CHAR = new CharType();</span>
+
+<span class="fc" id="L254">    public static final ElementType&lt;DoubleBuffer&gt; DOUBLE = new DoubleType();</span>
+
+<span class="fc" id="L256">    public static final ElementType&lt;FloatBuffer&gt; FLOAT = new FloatType();</span>
+
+<span class="fc" id="L258">    public static final ElementType&lt;IntBuffer&gt; INT = new IntType();</span>
+
+<span class="fc" id="L260">    public static final ElementType&lt;LongBuffer&gt; LONG = new LongType();</span>
+
+<span class="fc" id="L262">    public static final ElementType&lt;ShortBuffer&gt; SHORT = new ShortType();</span>
+
+<span class="fc" id="L264">    public static final ElementType&lt;Buffer&gt; STRING = new StringType();</span>
+    
+<span class="fc" id="L266">    public static final ElementType&lt;Buffer&gt; UNKNOWN = new UnknownType();</span>
+
+    
+    private static Map&lt;Class&lt;?&gt;, ElementType&lt;?&gt;&gt; byClass;
+    
+    private static Map&lt;Character, ElementType&lt;?&gt;&gt; byType;
+    
+    static {
+<span class="fc" id="L274">        Map&lt;Class&lt;?&gt;, ElementType&lt;?&gt;&gt; initialByClass = new HashMap&lt;&gt;();</span>
+<span class="fc" id="L275">        Map&lt;Character, ElementType&lt;?&gt;&gt; initialByType = new HashMap&lt;&gt;();</span>
+<span class="fc bfc" id="L276" title="All 2 branches covered.">        for (ElementType&lt;?&gt; type : values()) {</span>
+<span class="fc" id="L277">            initialByType.put(type.type(), type);</span>
+<span class="fc" id="L278">            initialByClass.put(type.primitiveClass(), type);</span>
+<span class="fc" id="L279">            initialByClass.put(type.wrapperClass(), type);</span>
+<span class="fc bfc" id="L280" title="All 2 branches covered.">            if (type.bufferClass() != null) {</span>
+<span class="fc" id="L281">                initialByClass.put(type.bufferClass(), type);</span>
+            }
+        }
+<span class="fc" id="L284">        byClass = Collections.unmodifiableMap(initialByClass);</span>
+<span class="fc" id="L285">        byType = Collections.unmodifiableMap(initialByType);</span>
+<span class="fc" id="L286">    }</span>
+
+
+    public static ElementType&lt;Buffer&gt; forDataID(char type) {
+<span class="fc" id="L290">        return cast(byType.get(type));</span>
+    }
+    
+    public static &lt;B extends Buffer&gt; ElementType&lt;B&gt; forClass(Class&lt;?&gt; clazz) {
+<span class="fc" id="L294">        ElementType&lt;?&gt; primitiveType = byClass.get(clazz);</span>
+<span class="fc bfc" id="L295" title="All 2 branches covered.">        if (primitiveType == null) {</span>
+<span class="fc bfc" id="L296" title="All 2 branches covered.">            for (Class&lt;?&gt; interf : clazz.getInterfaces()) {</span>
+<span class="fc" id="L297">                primitiveType = byClass.get(interf);</span>
+<span class="fc bfc" id="L298" title="All 2 branches covered.">                if (primitiveType != null) {</span>
+<span class="fc" id="L299">                    return cast(primitiveType);</span>
+                }
+            }
+<span class="fc" id="L302">            return forClass(clazz.getSuperclass());</span>
+        }
+<span class="fc" id="L304">        return cast(primitiveType);</span>
+    }
+
+    public static &lt;B extends Buffer&gt; ElementType&lt;B&gt; forBuffer(B b) {
+<span class="fc" id="L308">        return forClass(b.getClass());</span>
+    }
+    
+    public static ElementType&lt;Buffer&gt; forBitpix(int bitPix) {
+        try {
+<span class="fc" id="L313">            return cast(Bitpix.forValue(bitPix).getElementType());</span>
+<span class="fc" id="L314">        } catch (FitsException e) {</span>
+<span class="fc" id="L315">            return null;</span>
+        }
+    }
+    
+    public static ElementType&lt;Buffer&gt; forNearestBitpix(int bitPix) {
+        try {
+<span class="fc" id="L321">            return cast(Bitpix.forValue(bitPix, true).getElementType());</span>
+<span class="fc" id="L322">        } catch (FitsException e) {</span>
+<span class="fc" id="L323">            return UNKNOWN;</span>
+        }
+    }
+
+    @SuppressWarnings(&quot;unchecked&quot;)
+    private static &lt;B extends Buffer&gt; ElementType&lt;B&gt; cast(ElementType&lt;?&gt; primitiveType) {
+<span class="fc" id="L329">        return (ElementType&lt;B&gt;) primitiveType;</span>
+    }
+
+    private static ElementType&lt;?&gt;[] values() {
+<span class="fc" id="L333">        return new ElementType[]{</span>
+            BOOLEAN,
+            BYTE,
+            CHAR,
+            DOUBLE,
+            FLOAT,
+            INT,
+            LONG,
+            SHORT,
+            STRING,
+            UNKNOWN
+        };
+    }
+
+}
+</pre><div class="footer"><span class="right">Created with <a href="http://www.jacoco.org/jacoco">JaCoCo</a> 0.8.7.202105040129</span></div></body></html>

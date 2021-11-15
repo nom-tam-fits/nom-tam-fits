@@ -1,0 +1,525 @@
+<?xml version="1.0" encoding="UTF-8"?><!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Strict//EN" "http://www.w3.org/TR/xhtml1/DTD/xhtml1-strict.dtd"><html xmlns="http://www.w3.org/1999/xhtml" lang="en"><head><meta http-equiv="Content-Type" content="text/html;charset=UTF-8"/><link rel="stylesheet" href="../jacoco-resources/report.css" type="text/css"/><link rel="shortcut icon" href="../jacoco-resources/report.gif" type="image/gif"/><title>BufferedFileIO.java</title><link rel="stylesheet" href="../jacoco-resources/prettify.css" type="text/css"/><script type="text/javascript" src="../jacoco-resources/prettify.js"></script></head><body onload="window['PR_TAB_WIDTH']=4;prettyPrint()"><div class="breadcrumb" id="breadcrumb"><span class="info"><a href="../jacoco-sessions.html" class="el_session">Sessions</a></span><a href="../index.html" class="el_report">nom.tam FITS library</a> &gt; <a href="index.source.html" class="el_package">nom.tam.util</a> &gt; <span class="el_source">BufferedFileIO.java</span></div><h1>BufferedFileIO.java</h1><pre class="source lang-java linenums">/*
+ * #%L
+ * nom.tam FITS library
+ * %%
+ * Copyright (C) 2004 - 2021 nom-tam-fits
+ * %%
+ * This is free and unencumbered software released into the public domain.
+ * 
+ * Anyone is free to copy, modify, publish, use, compile, sell, or
+ * distribute this software, either in source code form or as a compiled
+ * binary, for any purpose, commercial or non-commercial, and by any
+ * means.
+ * 
+ * In jurisdictions that recognize copyright laws, the author or authors
+ * of this software dedicate any and all copyright interest in the
+ * software to the public domain. We make this dedication for the benefit
+ * of the public at large and to the detriment of our heirs and
+ * successors. We intend this dedication to be an overt act of
+ * relinquishment in perpetuity of all present and future rights to this
+ * software under copyright law.
+ * 
+ * THE SOFTWARE IS PROVIDED &quot;AS IS&quot;, WITHOUT WARRANTY OF ANY KIND,
+ * EXPRESS OR IMPLIED, INCLUDING BUT NOT LIMITED TO THE WARRANTIES OF
+ * MERCHANTABILITY, FITNESS FOR A PARTICULAR PURPOSE AND NONINFRINGEMENT.
+ * IN NO EVENT SHALL THE AUTHORS BE LIABLE FOR ANY CLAIM, DAMAGES OR
+ * OTHER LIABILITY, WHETHER IN AN ACTION OF CONTRACT, TORT OR OTHERWISE,
+ * ARISING FROM, OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR
+ * OTHER DEALINGS IN THE SOFTWARE.
+ * #L%
+ */
+
+package nom.tam.util;
+
+import java.io.Closeable;
+import java.io.EOFException;
+import java.io.File;
+import java.io.FileDescriptor;
+import java.io.Flushable;
+import java.io.IOException;
+import java.io.RandomAccessFile;
+import java.nio.channels.FileChannel;
+
+/**
+ * Basic file input/output with efficient internal buffering. 
+ * 
+ * @author Attila Kovacs
+ *
+ * @since 1.16
+ */
+class BufferedFileIO implements InputReader, OutputWriter, Flushable, Closeable {
+    
+    protected static final int BYTE_MASK = 0xFF;
+    
+    /** The undelying unbuffere random access file IO */
+    private RandomAccessFile file;
+    
+    /** The file position at which the buffer begins */
+    private long startOfBuf;
+    
+    /** The buffer */
+    private byte[] buf;
+    
+    /** Pointer to the next byte to read/write */
+    private int offset;
+    
+    /** The last legal element in the buffer */
+    private int end;
+    
+    /** Whether the buffer has been modified locally, so it needs to be written back to stream before discarding. */
+    private boolean isModified;
+    
+    /** Whether the current position is beyond the current ennd-of-file */
+    private boolean writeAhead;
+    
+    
+    /**
+     * Instantiates a new buffered random access file with the specified IO mode and buffer size.
+     * This class offers up to 2+ orders of magnitude superior performance over {@link RandomAccessFile}
+     * when repeatedly reading or writing chunks of data at consecutive locations
+     * 
+     * @param f             the file
+     * @param mode          the access mode, such as &quot;rw&quot; (see {@link RandomAccessFile} for more info).
+     * @param bufferSize    the size of the buffer in bytes
+     * @throws IOException  if there was an IO error getting the required access to the file.
+     */
+<span class="fc" id="L86">    BufferedFileIO(File f, String mode, int bufferSize) throws IOException {</span>
+<span class="fc" id="L87">        this.file = new RandomAccessFile(f, mode);</span>
+<span class="fc" id="L88">        buf = new byte[bufferSize];</span>
+<span class="fc" id="L89">        startOfBuf = 0;</span>
+<span class="fc" id="L90">        offset = 0;</span>
+<span class="fc" id="L91">        end = 0;</span>
+<span class="fc" id="L92">        isModified = false;</span>
+<span class="fc" id="L93">        writeAhead = false;</span>
+<span class="fc" id="L94">    }</span>
+    
+    public final synchronized void seek(long newPos) throws IOException {
+        // Check that the new position is valid
+<span class="fc bfc" id="L98" title="All 2 branches covered.">        if (newPos &lt; 0) {                </span>
+<span class="fc" id="L99">            throw new IllegalArgumentException(&quot;seek at &quot; + newPos);</span>
+        }
+        
+<span class="fc bfc" id="L102" title="All 2 branches covered.">        if (newPos &lt;= startOfBuf + end) {</span>
+            // AK: Do not invoke checking length (costly) if not necessary
+<span class="fc" id="L104">            writeAhead = false;</span>
+        } else {
+<span class="fc bfc" id="L106" title="All 2 branches covered.">            writeAhead = newPos &gt; length();</span>
+        }
+        
+<span class="fc bfc" id="L109" title="All 4 branches covered.">        if (newPos &lt; startOfBuf || newPos &gt;= startOfBuf + end) {</span>
+            // The new position is outside the currently buffered region.
+            // Write the current buffer back to the stream, and start anew.
+<span class="fc" id="L112">            flush();</span>
+  
+            // We'll start buffering at the new position next.
+<span class="fc" id="L115">            startOfBuf = newPos;</span>
+<span class="fc" id="L116">            end = 0;</span>
+        }
+        
+        // Position within the new buffer...
+<span class="fc" id="L120">        offset = (int) (newPos - startOfBuf);</span>
+        
+<span class="fc" id="L122">        matchBufferPos();</span>
+<span class="fc" id="L123">    }</span>
+    
+    /**
+     * Get the channel associated with this file. Note that this returns the
+     * channel of the associated RandomAccessFile. Note that since the
+     * BufferedFile buffers the I/O's to the underlying file, the offset of the
+     * channel may be different than the offset of the BufferedFile. This is
+     * different than for a RandomAccessFile where the offsets are guaranteed to
+     * be the same.
+     * 
+     * @return the file channel
+     */
+    public final FileChannel getChannel() {
+<span class="fc" id="L136">        return file.getChannel();</span>
+    }
+    
+    /**
+     * Get the file descriptor associated with this stream. Note that this
+     * returns the file descriptor of the associated RandomAccessFile.
+     * 
+     * @return the file descriptor
+     * @throws IOException
+     *             if the descriptor could not be accessed.
+     */
+    public final FileDescriptor getFD() throws IOException {
+<span class="fc" id="L148">        return file.getFD();</span>
+    }
+
+    /**
+     * Gets the current read/write position in the file.
+     * 
+     * @return the current byte offset from the beginning of the file.
+     */
+    public final synchronized long getFilePointer() {
+<span class="fc" id="L157">        return startOfBuf + offset;</span>
+    }
+    
+    /**
+     * Returns the number of bytes that can still be read from the file before the end
+     * is reached.
+     * 
+     * @return                  the number of bytes left to read.
+     * @throws IOException      if there was an IO error.
+     */
+    private synchronized long getRemaining() throws IOException {
+<span class="fc" id="L168">        long n = file.length() - getFilePointer();</span>
+<span class="fc bfc" id="L169" title="All 2 branches covered.">        return n &gt; 0 ? n : 0L;</span>
+    }
+    
+    /**
+     * Checks if there is more that can be read from this file. If so, it ensures that
+     * the next byte is buffered.
+     * 
+     * @return      &lt;code&gt;true&lt;/code&gt; if there is more that can be read from the file
+     *              (and from the buffer!), or else &lt;code&gt;false&lt;/code&gt;.
+     *              
+     * @throws IOException  if there was an IO error accessing the file.
+     */
+    private synchronized boolean makeAvailable() throws IOException {
+<span class="fc bfc" id="L182" title="All 2 branches covered.">        if (offset &lt; end) {</span>
+<span class="fc" id="L183">            return true;</span>
+        }
+        
+<span class="fc bfc" id="L186" title="All 2 branches covered.">        if (getRemaining() &lt;= 0) {</span>
+<span class="fc" id="L187">            return false;</span>
+        }
+
+        // Buffer as much as we can.
+<span class="fc" id="L191">        seek(getFilePointer());</span>
+<span class="fc" id="L192">        end = file.read(buf, 0, buf.length);</span>
+        
+<span class="pc bpc" id="L194" title="1 of 2 branches missed.">        return end &gt; 0;</span>
+    }
+    
+    /**
+     * Checks if there are the required number of bytes available to read from this file.
+     * 
+     * @param need  the number of bytes we need.
+     * @return      &lt;code&gt;true&lt;/code&gt; if the needed number of bytes can be read from the file
+     *              or else &lt;code&gt;false&lt;/code&gt;.
+     *              
+     * @throws IOException  if there was an IO error accessing the file.
+     */
+    public final synchronized boolean hasAvailable(int need) throws IOException {
+<span class="fc bfc" id="L207" title="All 2 branches covered.">        if (end &gt;= offset + need) {</span>
+<span class="fc" id="L208">            return true;</span>
+        }
+<span class="fc bfc" id="L210" title="All 2 branches covered.">        if (file.length() &gt;= getFilePointer() + need) {</span>
+<span class="fc" id="L211">            return true;</span>
+        }
+<span class="fc" id="L213">        return false;</span>
+    }
+    
+    /**
+     * Returns the current length of the file.
+     * 
+     * @return the current length of the file.
+     * @throws IOException
+     *             if the operation failed
+     */
+    public final synchronized long length() throws IOException {
+        // It's either the file's length or that of the end of the (yet) unsynched buffer...
+<span class="fc bfc" id="L225" title="All 2 branches covered.">        if (end &gt; 0) {</span>
+<span class="fc" id="L226">            return Math.max(file.length(), startOfBuf + end);</span>
+        }
+<span class="fc" id="L228">        return file.length();</span>
+    }
+    
+    /**
+     * Sets the length of the file. This method calls the method of the same name
+     * in {@link RandomAccessFile}.
+     * 
+     * @param newLength
+     *            The number of bytes at which the file is set.
+     * @throws IOException
+     *             if the resizing of the underlying stream fails
+     */
+    public synchronized void setLength(long newLength) throws IOException {
+        // Check if we can change the length inside the current buffer.
+<span class="fc" id="L242">        final long bufEnd = startOfBuf + end;</span>
+<span class="fc bfc" id="L243" title="All 4 branches covered.">        if (newLength &gt;= startOfBuf &amp;&amp; newLength &lt; bufEnd) {</span>
+            // If truncated in the buffered region, then truncate the buffer also...
+<span class="fc" id="L245">            end = (int) (newLength - startOfBuf);</span>
+        } else {
+<span class="fc" id="L247">            flush();</span>
+<span class="fc" id="L248">            end = 0;</span>
+        }
+        
+<span class="fc bfc" id="L251" title="All 2 branches covered.">        if (getFilePointer() &gt; newLength) {</span>
+<span class="fc" id="L252">            seek(newLength);</span>
+        }
+        
+        // Change the length of the file itself...
+<span class="fc" id="L256">        file.setLength(newLength);</span>
+<span class="fc" id="L257">    }</span>
+    
+    /** 
+     * Positions the file pointer to match the current buffer pointer.
+     * 
+     * @throws IOException  if there was an IO error
+     */
+    private synchronized void matchBufferPos() throws IOException {
+<span class="fc" id="L265">        file.seek(getFilePointer());</span>
+<span class="fc" id="L266">    }</span>
+    
+  
+    /** 
+     * Positions the buffer pointer to match the current file pointer.
+     * 
+     * @throws IOException  if there was an IO error
+     */
+    private synchronized void matchFilePos() throws IOException {
+<span class="fc" id="L275">        seek(file.getFilePointer());</span>
+<span class="fc" id="L276">    }</span>
+    
+    @Override
+    public synchronized void close() throws IOException {
+<span class="fc" id="L280">        flush();</span>
+<span class="fc" id="L281">        file.close();</span>
+<span class="fc" id="L282">        startOfBuf = 0;</span>
+<span class="fc" id="L283">        offset = 0;</span>
+<span class="fc" id="L284">        end = 0;</span>
+<span class="fc" id="L285">    }</span>
+    
+    /**
+     * Moves the buffer to the current read/write position.
+     * 
+     * @throws IOException  if there was an IO error writing the prior data back to the file.
+     */
+    private synchronized void moveBuffer() throws IOException {
+<span class="fc" id="L293">        seek(getFilePointer());</span>
+<span class="fc" id="L294">    }</span>
+    
+    @Override
+    public synchronized void flush() throws IOException {
+<span class="fc bfc" id="L298" title="All 2 branches covered.">        if (!isModified) {</span>
+<span class="fc" id="L299">            return;</span>
+        }
+
+        // the buffer was modified locally, so we need to write it back to the stream    
+<span class="fc bfc" id="L303" title="All 2 branches covered.">        if (end &gt; 0) {</span>
+<span class="fc" id="L304">            file.seek(startOfBuf);</span>
+<span class="fc" id="L305">            file.write(buf, 0, end);</span>
+        }
+<span class="fc" id="L307">        isModified = false;</span>
+<span class="fc" id="L308">    }</span>
+    
+   
+    @Override
+    public final synchronized void write(int b) throws IOException {
+<span class="fc bfc" id="L313" title="All 2 branches covered.">        if (writeAhead) {</span>
+<span class="fc" id="L314">            setLength(getFilePointer());</span>
+        }
+
+<span class="fc bfc" id="L317" title="All 2 branches covered.">        if (offset &gt;= buf.length) {</span>
+            // The buffer is full, it's time to write it back to stream, and start anew
+<span class="fc" id="L319">            moveBuffer();</span>
+        }
+        
+<span class="fc" id="L322">        isModified = true;</span>
+<span class="fc" id="L323">        buf[offset++] = (byte) b;</span>
+       
+<span class="fc bfc" id="L325" title="All 2 branches covered.">        if (offset &gt; end) {</span>
+            // We are writing at the end of the file, and we need to grow the buffer with the file...
+<span class="fc" id="L327">            end = offset;</span>
+        }
+<span class="fc" id="L329">    }</span>
+    
+    
+    @Override
+    public final synchronized int read() throws IOException {
+<span class="fc bfc" id="L334" title="All 2 branches covered.">        if (!makeAvailable()) {</span>
+            // By contract of read(), it returns -1 at th end of file.
+<span class="fc" id="L336">            return -1;</span>
+        }
+
+        // Return the unsigned(!) byte.
+<span class="fc" id="L340">        return buf[offset++] &amp; BYTE_MASK;</span>
+    }
+    
+    
+    @Override
+    public final synchronized void write(byte[] b, int from, int len) throws IOException {
+<span class="fc bfc" id="L346" title="All 2 branches covered.">        if (len &lt;= 0) {</span>
+<span class="fc" id="L347">            return;</span>
+        }
+
+<span class="fc bfc" id="L350" title="All 2 branches covered.">        if (writeAhead) {</span>
+<span class="fc" id="L351">            setLength(getFilePointer());</span>
+        }
+        
+<span class="fc bfc" id="L354" title="All 2 branches covered.">        if (len &gt; 2 * buf.length) {</span>
+            // Large direct write...
+<span class="fc" id="L356">            matchBufferPos();</span>
+<span class="fc" id="L357">            file.write(b, from, len);</span>
+<span class="fc" id="L358">            matchFilePos();</span>
+<span class="fc" id="L359">            return;</span>
+        }
+        
+<span class="fc bfc" id="L362" title="All 2 branches covered.">        while (len &gt; 0) {</span>
+<span class="fc bfc" id="L363" title="All 2 branches covered.">            if (offset &gt;= buf.length) {</span>
+                // The buffer is full, it's time to write it back to stream, and start anew.
+<span class="fc" id="L365">                moveBuffer();</span>
+            }
+            
+<span class="fc" id="L368">            isModified = true;</span>
+<span class="fc" id="L369">            int n = Math.min(len, buf.length - offset);</span>
+<span class="fc" id="L370">            System.arraycopy(b, from, buf, offset, n);</span>
+            
+<span class="fc" id="L372">            offset += n;</span>
+<span class="fc" id="L373">            from += n;</span>
+<span class="fc" id="L374">            len -= n;</span>
+           
+<span class="fc bfc" id="L376" title="All 2 branches covered.">            if (offset &gt; end) {</span>
+                // We are growing the file, so grow the buffer also...
+<span class="fc" id="L378">                end = offset;</span>
+            }
+<span class="fc" id="L380">        }</span>
+<span class="fc" id="L381">    }</span>
+    
+    @Override
+    public final synchronized int read(byte[] b, int from, int len) throws IOException {
+<span class="fc bfc" id="L385" title="All 2 branches covered.">        if (len &lt;= 0) {</span>
+            // Nothing to do.
+<span class="fc" id="L387">            return 0;</span>
+        }
+        
+<span class="fc bfc" id="L390" title="All 2 branches covered.">        if (len &gt; 2 * buf.length) {</span>
+            // Large direct read...
+<span class="fc" id="L392">            matchBufferPos();</span>
+<span class="fc" id="L393">            int l = file.read(b, from, len);</span>
+<span class="fc" id="L394">            matchFilePos();</span>
+<span class="fc" id="L395">            return l;</span>
+        }
+        
+<span class="fc" id="L398">        int got = 0;</span>
+        
+<span class="fc bfc" id="L400" title="All 2 branches covered.">        while (got &lt; len) {</span>
+<span class="fc bfc" id="L401" title="All 2 branches covered.">            if (!makeAvailable()) {</span>
+<span class="fc bfc" id="L402" title="All 2 branches covered.">                return got &gt; 0 ? got : -1;</span>
+            }
+            
+<span class="fc" id="L405">            int n = Math.min(len - got, end - offset);   </span>
+            
+<span class="fc" id="L407">            System.arraycopy(buf, offset, b, from, n);</span>
+            
+<span class="fc" id="L409">            got += n;</span>
+<span class="fc" id="L410">            offset += n;   </span>
+<span class="fc" id="L411">            from += n;</span>
+<span class="fc" id="L412">        }</span>
+
+<span class="fc" id="L414">        return got;</span>
+    }
+    
+    /**
+     * Reads bytes to completely fill the supplied buffer. If not enough bytes are avaialable in the
+     * file to fully fill the buffer, an {@link EOFException} will be thrown.
+     * 
+     * @param b             the buffer
+     * @throws IOException  if there was an IO error before the buffer could be fully populated.
+     * 
+     */
+    public final synchronized void readFully(byte[] b) throws IOException {
+<span class="fc" id="L426">        readFully(b, 0, b.length);</span>
+<span class="fc" id="L427">    }</span>
+
+    /**
+     * Reads bytes to fill the supplied buffer with the requested number of bytes from the given
+     * starting buffer index. If not enough bytes are avaialable in the
+     * file to deliver the reqauested number of bytes the buffer, an {@link EOFException} will be thrown.
+     * 
+     * @param b             the buffer
+     * @param off           the buffer index at which to start reading data
+     * @param len           the total number of bytes to read.
+     * @throws IOException  if there was an IO error before the requested number of bytes could
+     *                      all be read.
+     */
+    public synchronized void readFully(byte[] b, int off, int len) throws IOException { 
+<span class="fc bfc" id="L441" title="All 2 branches covered.">        while (len &gt; 0) {</span>
+<span class="fc" id="L442">            int n = read(b, off, len);</span>
+<span class="fc bfc" id="L443" title="All 2 branches covered.">            if (n &lt; 0) {</span>
+<span class="fc" id="L444">                throw new EOFException();</span>
+            }
+<span class="fc" id="L446">            off += n;</span>
+<span class="fc" id="L447">            len -= n;</span>
+<span class="fc" id="L448">        }</span>
+<span class="fc" id="L449">    }</span>
+    
+    /**
+     * Same as {@link RandomAccessFile#readUTF()}.
+     * 
+     * @return              a string
+     * @throws IOException  if there was an IO error while reading from the file.
+     */
+    public final synchronized String readUTF() throws IOException {
+<span class="fc" id="L458">        matchBufferPos();</span>
+<span class="fc" id="L459">        String s = file.readUTF();</span>
+<span class="fc" id="L460">        matchFilePos();</span>
+<span class="fc" id="L461">        return s;</span>
+    }
+
+    /**
+     * Same as {@link RandomAccessFile#writeUTF(String)}
+     * 
+     * @param s             a string
+     * @throws IOException  if there was an IO error while writing to the file.
+     */
+    public final synchronized void writeUTF(String s) throws IOException {
+<span class="fc" id="L471">        matchBufferPos();</span>
+<span class="fc" id="L472">        file.writeUTF(s);</span>
+<span class="fc" id="L473">        matchFilePos();</span>
+<span class="fc" id="L474">    }</span>
+    
+    /**
+     * Moves the file pointer by a number of bytes from its current position.
+     * 
+     * @param n     the number of byter to move. Negative values are allowed and
+     *              result in moving the pointer backward.
+     * @return      the actual number of bytes that the pointer moved, which may be
+     *              fewer than requested if the file boundary was reached.
+     * @throws IOException  if there was an IO error.
+     */
+    public final synchronized long skip(long n) throws IOException {
+<span class="fc bfc" id="L486" title="All 4 branches covered.">        if (offset + n &gt;= 0 &amp;&amp; offset + n &lt;= end) {</span>
+            // Skip within the buffered region...
+<span class="fc" id="L488">            offset = (int) (offset + n);</span>
+<span class="fc" id="L489">            return n;</span>
+        }
+        
+<span class="fc" id="L492">        long pos = getFilePointer();</span>
+       
+<span class="fc" id="L494">        n = Math.max(n, -pos);        </span>
+        
+<span class="fc" id="L496">        seek(pos + n);</span>
+<span class="fc" id="L497">        return n;</span>
+    }
+
+    /**
+     * Read as many bytes into a byte array as possible. The number of bytes read may be fewer than
+     * the size of the array, for example because the end-of-file is reached during the read.
+     * 
+     * @param b         the byte buffer to fill with data from the file.
+     * @return          the number of bytes actually read.
+     * @throws IOException  if there was an IO error while reading, other than the end-of-file.
+     * 
+     */
+    public final synchronized int read(byte[] b) throws IOException {
+<span class="fc" id="L510">        return read(b, 0, b.length);</span>
+    }
+    
+    /**
+     * Writes the contents of a byte array into the file.
+     * 
+     * @param b             the byte buffer to write into the file.
+     * @throws IOException  if there was an IO error while writing to the file...
+     * 
+     */
+    public final synchronized void write(byte[] b) throws IOException {
+<span class="fc" id="L521">        write(b, 0, b.length);</span>
+<span class="fc" id="L522">    }</span>
+    
+}
+</pre><div class="footer"><span class="right">Created with <a href="http://www.jacoco.org/jacoco">JaCoCo</a> 0.8.7.202105040129</span></div></body></html>

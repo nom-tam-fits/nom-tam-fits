@@ -1,0 +1,278 @@
+<?xml version="1.0" encoding="UTF-8"?><!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Strict//EN" "http://www.w3.org/TR/xhtml1/DTD/xhtml1-strict.dtd"><html xmlns="http://www.w3.org/1999/xhtml" lang="en"><head><meta http-equiv="Content-Type" content="text/html;charset=UTF-8"/><link rel="stylesheet" href="../jacoco-resources/report.css" type="text/css"/><link rel="shortcut icon" href="../jacoco-resources/report.gif" type="image/gif"/><title>ComplexValue.java</title><link rel="stylesheet" href="../jacoco-resources/prettify.css" type="text/css"/><script type="text/javascript" src="../jacoco-resources/prettify.js"></script></head><body onload="window['PR_TAB_WIDTH']=4;prettyPrint()"><div class="breadcrumb" id="breadcrumb"><span class="info"><a href="../jacoco-sessions.html" class="el_session">Sessions</a></span><a href="../index.html" class="el_report">nom.tam FITS library</a> &gt; <a href="index.source.html" class="el_package">nom.tam.util</a> &gt; <span class="el_source">ComplexValue.java</span></div><h1>ComplexValue.java</h1><pre class="source lang-java linenums">/*
+ * #%L
+ * nom.tam FITS library
+ * %%
+ * Copyright (C) 2004 - 2021 nom-tam-fits
+ * %%
+ * This is free and unencumbered software released into the public domain.
+ * 
+ * Anyone is free to copy, modify, publish, use, compile, sell, or
+ * distribute this software, either in source code form or as a compiled
+ * binary, for any purpose, commercial or non-commercial, and by any
+ * means.
+ * 
+ * In jurisdictions that recognize copyright laws, the author or authors
+ * of this software dedicate any and all copyright interest in the
+ * software to the public domain. We make this dedication for the benefit
+ * of the public at large and to the detriment of our heirs and
+ * successors. We intend this dedication to be an overt act of
+ * relinquishment in perpetuity of all present and future rights to this
+ * software under copyright law.
+ * 
+ * THE SOFTWARE IS PROVIDED &quot;AS IS&quot;, WITHOUT WARRANTY OF ANY KIND,
+ * EXPRESS OR IMPLIED, INCLUDING BUT NOT LIMITED TO THE WARRANTIES OF
+ * MERCHANTABILITY, FITNESS FOR A PARTICULAR PURPOSE AND NONINFRINGEMENT.
+ * IN NO EVENT SHALL THE AUTHORS BE LIABLE FOR ANY CLAIM, DAMAGES OR
+ * OTHER LIABILITY, WHETHER IN AN ACTION OF CONTRACT, TORT OR OTHERWISE,
+ * ARISING FROM, OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR
+ * OTHER DEALINGS IN THE SOFTWARE.
+ * #L%
+ */
+
+package nom.tam.util;
+
+import java.util.StringTokenizer;
+import java.util.logging.Logger;
+
+import nom.tam.fits.FitsFactory;
+import nom.tam.fits.LongValueException;
+
+/**
+ * &lt;p&gt;
+ * A no-frills complex value, for representing complex numbers in FITS headers.
+ * It is a non-mutable object that is created with a real and imaginary parts, which can be
+ * retrieved thereafter, and provides string formatting that is suited specifically for
+ * representation in FITS headers.
+ * &lt;/p&gt;
+ * 
+ * &lt;p&gt;
+ * Note that binary tables handle complex data differently, with elements of `float[2]` or
+ * `double[2]`.
+ * &lt;/p&gt;
+ * 
+ * @author Attila Kovacs
+ *
+ * @since 1.16
+ * 
+ */
+public class ComplexValue {
+    
+<span class="fc" id="L60">    private static final Logger LOG = Logger.getLogger(ComplexValue.class.getName());</span>
+
+    /** The complex zero **/
+<span class="fc" id="L63">    public static final ComplexValue ZERO = new ComplexValue(0.0, 0.0);</span>
+    
+    /** The complex unity along the real axis, or (1.0, 0.0) **/
+<span class="fc" id="L66">    public static final ComplexValue ONE = new ComplexValue(1.0, 0.0);</span>
+    
+    /** The unity along the imaginary axis &lt;i&gt;i&lt;/i&gt;, or (0.0, 1.0) **/
+<span class="fc" id="L69">    public static final ComplexValue I = new ComplexValue(0.0, 1.0);</span>
+    
+    /** The real and imaginary parts */
+    private double re, im;
+    
+    /** 
+     * The minimum size string needed to represent a complex value with 
+     * even just single digits for the real and imaginary parts. 
+     */
+    private static final int MIN_STRING_LENGTH = 5;     // &quot;(#,#)&quot;
+    
+    /** 
+     * Instantiates a new complex number value with the specified real and imaginary components.
+     * 
+     * @param re    the real part
+     * @param im    thei maginary part
+     */
+<span class="fc" id="L86">    public ComplexValue(double re, double im) {</span>
+<span class="fc" id="L87">        this.re = re;</span>
+<span class="fc" id="L88">        this.im = im;</span>
+<span class="fc" id="L89">    }</span>
+    
+    /**
+     * Returns the real part of this complex value.
+     * 
+     * @return      the real part
+     * 
+     * @see #im()
+     */
+    public final double re() {
+<span class="fc" id="L99">        return re;</span>
+    }
+
+    /**
+     * Returns the imaginary part of this complex value.
+     * 
+     * @return      the imaginary part
+     * 
+     * @see #re()
+     */
+    public final double im() {
+<span class="fc" id="L110">        return im;</span>
+    }
+    
+    @Override
+    public int hashCode() {
+<span class="fc" id="L115">        return Double.hashCode(re()) ^ Double.hashCode(im());</span>
+    }
+    
+    @Override
+    public boolean equals(Object o) {
+<span class="fc bfc" id="L120" title="All 2 branches covered.">        if (o == this) {</span>
+<span class="fc" id="L121">            return true;</span>
+        }
+        
+<span class="fc bfc" id="L124" title="All 2 branches covered.">        if (!(o instanceof ComplexValue)) {</span>
+<span class="fc" id="L125">            return false;</span>
+        }
+        
+<span class="fc" id="L128">        ComplexValue z = (ComplexValue) o;</span>
+<span class="fc bfc" id="L129" title="All 4 branches covered.">        return z.re() == re() &amp;&amp; z.im() == im();        </span>
+    }
+    
+    /**
+     * Checks if the complex value is zero. That is, if both the real or imaginary parts
+     * are zero.
+     * 
+     * @return      &lt;code&gt;true&lt;/code&gt;if both the real or imaginary parts are zero.
+     *              Otherwise &lt;code&gt;false&lt;/code&gt;.
+     */
+    public final boolean isZero() {
+<span class="fc bfc" id="L140" title="All 4 branches covered.">        return re() == 0.0 &amp;&amp; im() == 0.0;</span>
+    }
+    
+    /**
+     * Checks if the complex value is finite. That is, if neither the real or imaginary parts
+     * are NaN or Infinite.
+     * 
+     * @return      &lt;code&gt;true&lt;/code&gt;if neither the real or imaginary parts are NaN or Infinite.
+     *              Otherwise &lt;code&gt;false&lt;/code&gt;.
+     */
+    public final boolean isFinite() {
+<span class="fc bfc" id="L151" title="All 4 branches covered.">        return Double.isFinite(re()) &amp;&amp; Double.isFinite(im());</span>
+    }
+    
+    @Override
+    public String toString() {
+<span class="fc" id="L156">        return &quot;(&quot; + re() + &quot;,&quot; + im() + &quot;)&quot;;</span>
+    }
+    
+    /**
+     * Converts this complex value to its string representation with up to the specified 
+     * number of decimal places showing after the leading figure, for both the
+     * real and imaginary parts. 
+     * 
+     * @param decimals  the maximum number of decimal places to show.
+     * @return          the string representation with the specified precision, which
+     *                  may be used in a FITS header.
+     *                  
+     * @see FlexFormat
+     */
+    public String toString(int decimals) {
+<span class="fc" id="L171">        FlexFormat f = new FlexFormat().setPrecision(decimals); </span>
+<span class="fc" id="L172">        return &quot;(&quot; + f.format(re()) + &quot;,&quot; + f.format(im()) + &quot;)&quot;;</span>
+    }
+    
+
+    /**
+     * &lt;p&gt;
+     * Instantiates a new complex number value from the string repressentation of it in
+     * a FITS header value. By default, it will parse complex numbers as a comma-separated
+     * pair of real values enclosed in a bracket, such as &lt;code&gt;(1.0, -2.0)&lt;/code&gt;, or
+     * standard real values, such as &lt;code&gt;123.456&lt;/code&gt; or &lt;code&gt;123&lt;/code&gt; (as real-only
+     * values). There can be any number of spaces around the brackets, number components or
+     * the comma.
+     * &lt;/p&gt;
+     * &lt;p&gt;
+     * If {@link FitsFactory#setAllowHeaderRepairs(boolean)} is set &lt;code&gt;true&lt;/code&gt;, the
+     * parsing becomes more tolerant, working around missing closing brackets, different
+     * number of comma-separated components, and missing empty components. So, for example
+     * &lt;code&gt;(,-1,abc&lt;/code&gt; may be parsed assuming it was meant to be -&lt;i&gt;i&lt;/i&gt;. 
+     * &lt;/p&gt;
+     * 
+     * @param text      The FITS header value representing the complex number, in brackets
+     *                  with the real and imaginary pars separated by a comma. Additional
+     *                  spaces may surround the component parts.
+     * @throws IllegalArgumentException     
+     *                  if the supplied string does not appear to be a FITS standard
+     *                  representation of a complex value.
+     *                  
+     * @see FitsFactory#setAllowHeaderRepairs(boolean)
+     */
+<span class="fc" id="L201">    public ComplexValue(String text) throws IllegalArgumentException {        </span>
+        // Allow the use of 'D' or 'd' to mark the exponent, instead of the standard 'E' or 'e'...
+<span class="fc" id="L203">        text = text.trim().toUpperCase().replace('D', 'E');</span>
+        
+<span class="fc bfc" id="L205" title="All 2 branches covered.">        boolean hasOpeningBracket = text.charAt(0) == '(';</span>
+<span class="fc bfc" id="L206" title="All 2 branches covered.">        boolean hasClosingBracket = text.charAt(text.length() - 1) == ')';</span>
+        
+<span class="fc bfc" id="L208" title="All 4 branches covered.">        if (!(hasOpeningBracket || hasClosingBracket)) {</span>
+            // Use just the real value.
+<span class="fc" id="L210">            re = Double.parseDouble(text);</span>
+<span class="fc" id="L211">            return;</span>
+<span class="fc bfc" id="L212" title="All 4 branches covered.">        } else if (!hasOpeningBracket || !hasClosingBracket) {</span>
+<span class="fc bfc" id="L213" title="All 2 branches covered.">            if (!FitsFactory.isAllowHeaderRepairs()) {</span>
+<span class="fc" id="L214">                throw new IllegalArgumentException(&quot;Missing bracket around complex value: '&quot; + text </span>
+                        + &quot;'\n\n --&gt; Try FitsFactory.setAllowHeaderRepair(true).\n&quot;);
+            }
+<span class="fc" id="L217">            LOG.warning(&quot;Ignored missing bracket in '&quot; + text + &quot;'.&quot;);</span>
+        }
+        
+<span class="fc bfc" id="L220" title="All 2 branches covered.">        int start = hasOpeningBracket ? 1 : 0;</span>
+<span class="fc bfc" id="L221" title="All 2 branches covered.">        int end = hasClosingBracket ? text.length() - 1 : text.length();</span>
+<span class="fc bfc" id="L222" title="All 2 branches covered.">        StringTokenizer tokens = new StringTokenizer(text.substring(start, end), FitsFactory.isAllowHeaderRepairs() ? &quot;,; \t&quot; : &quot;, &quot;);</span>
+<span class="fc bfc" id="L223" title="All 2 branches covered.">        if (tokens.countTokens() != 2) {</span>
+<span class="fc bfc" id="L224" title="All 2 branches covered.">            if (!FitsFactory.isAllowHeaderRepairs()) {</span>
+<span class="fc" id="L225">                throw new IllegalArgumentException(&quot;Invalid complex value: '&quot; + text </span>
+                        + &quot;'\n\n --&gt; Try FitsFactory.setAllowHeaderRepair(true).\n&quot;);
+            }
+<span class="fc" id="L228">            LOG.warning(&quot;Ignored wrong number of components (&quot; + tokens.countTokens() + &quot;) in '&quot; + text + &quot;'.&quot;);</span>
+        }
+        
+<span class="fc bfc" id="L231" title="All 2 branches covered.">        if (tokens.hasMoreTokens()) {</span>
+<span class="fc" id="L232">            re = Double.parseDouble(tokens.nextToken());</span>
+        }
+<span class="fc bfc" id="L234" title="All 2 branches covered.">        if (tokens.hasMoreTokens()) {</span>
+<span class="fc" id="L235">            im = Double.parseDouble(tokens.nextToken());</span>
+        }
+<span class="fc" id="L237">    }</span>
+    
+    
+    /**
+     * Converts this comlex value to its string representation using up to the
+     * specified number of characters only. The precision may be reduced as
+     * necessary to ensure that the representation fits in the allotted space.
+     * 
+     * @param maxLength     the maximum length of the returned string representation
+     * @return              the string representation, possibly with reduced
+     *                      precision to fit into the alotted space.
+     * @throws LongValueException
+     *                      if the space was too short to fit the value even
+     *                      with the minimal (1-digit) precision.
+     */
+    public String toBoundedString(int maxLength) throws LongValueException {
+<span class="fc bfc" id="L253" title="All 2 branches covered.">        if (maxLength &lt; MIN_STRING_LENGTH) {</span>
+<span class="fc" id="L254">            throw new LongValueException(maxLength, toString());</span>
+        }
+        
+<span class="fc" id="L257">        String s = toString();</span>
+<span class="fc bfc" id="L258" title="All 2 branches covered.">        if (s.length() &lt;= maxLength) {</span>
+<span class="fc" id="L259">            return s;</span>
+        }
+        
+<span class="fc" id="L262">        int decimals = FlexFormat.DOUBLE_DECIMALS;</span>
+        
+<span class="fc" id="L264">        s = toString(decimals);</span>
+<span class="fc bfc" id="L265" title="All 2 branches covered.">        while (s.length() &gt; maxLength) {</span>
+            // Assume both real and imaginary parts shorten the same amount... 
+<span class="fc" id="L267">            decimals -= (s.length() - maxLength + 1) / 2;</span>
+            
+<span class="fc bfc" id="L269" title="All 2 branches covered.">            if (decimals &lt; 0) {</span>
+<span class="fc" id="L270">                throw new LongValueException(maxLength, toString());</span>
+            }
+<span class="fc" id="L272">            s = toString(decimals);</span>
+        }
+        
+<span class="fc" id="L275">        return s;</span>
+    }
+}
+</pre><div class="footer"><span class="right">Created with <a href="http://www.jacoco.org/jacoco">JaCoCo</a> 0.8.7.202105040129</span></div></body></html>

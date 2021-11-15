@@ -1,0 +1,380 @@
+<?xml version="1.0" encoding="UTF-8"?><!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Strict//EN" "http://www.w3.org/TR/xhtml1/DTD/xhtml1-strict.dtd"><html xmlns="http://www.w3.org/1999/xhtml" lang="en"><head><meta http-equiv="Content-Type" content="text/html;charset=UTF-8"/><link rel="stylesheet" href="../jacoco-resources/report.css" type="text/css"/><link rel="shortcut icon" href="../jacoco-resources/report.gif" type="image/gif"/><title>FlexFormat.java</title><link rel="stylesheet" href="../jacoco-resources/prettify.css" type="text/css"/><script type="text/javascript" src="../jacoco-resources/prettify.js"></script></head><body onload="window['PR_TAB_WIDTH']=4;prettyPrint()"><div class="breadcrumb" id="breadcrumb"><span class="info"><a href="../jacoco-sessions.html" class="el_session">Sessions</a></span><a href="../index.html" class="el_report">nom.tam FITS library</a> &gt; <a href="index.source.html" class="el_package">nom.tam.util</a> &gt; <span class="el_source">FlexFormat.java</span></div><h1>FlexFormat.java</h1><pre class="source lang-java linenums">package nom.tam.util;
+
+/*
+ * #%L
+ * nom.tam FITS library
+ * %%
+ * Copyright (C) 1996 - 2021 nom-tam-fits
+ * %%
+ * This is free and unencumbered software released into the public domain.
+ * 
+ * Anyone is free to copy, modify, publish, use, compile, sell, or
+ * distribute this software, either in source code form or as a compiled
+ * binary, for any purpose, commercial or non-commercial, and by any
+ * means.
+ * 
+ * In jurisdictions that recognize copyright laws, the author or authors
+ * of this software dedicate any and all copyright interest in the
+ * software to the public domain. We make this dedication for the benefit
+ * of the public at large and to the detriment of our heirs and
+ * successors. We intend this dedication to be an overt act of
+ * relinquishment in perpetuity of all present and future rights to this
+ * software under copyright law.
+ * 
+ * THE SOFTWARE IS PROVIDED &quot;AS IS&quot;, WITHOUT WARRANTY OF ANY KIND,
+ * EXPRESS OR IMPLIED, INCLUDING BUT NOT LIMITED TO THE WARRANTIES OF
+ * MERCHANTABILITY, FITNESS FOR A PARTICULAR PURPOSE AND NONINFRINGEMENT.
+ * IN NO EVENT SHALL THE AUTHORS BE LIABLE FOR ANY CLAIM, DAMAGES OR
+ * OTHER LIABILITY, WHETHER IN AN ACTION OF CONTRACT, TORT OR OTHERWISE,
+ * ARISING FROM, OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR
+ * OTHER DEALINGS IN THE SOFTWARE.
+ * #L%
+ */
+
+import java.math.BigDecimal;
+import java.math.BigInteger;
+import java.math.RoundingMode;
+import java.text.DecimalFormat;
+import java.text.DecimalFormatSymbols;
+import java.util.Locale;
+
+import nom.tam.fits.FitsFactory;
+import nom.tam.fits.HeaderCard;
+import nom.tam.fits.LongValueException;
+
+/**
+ * Formatting number values for use in FITS headers.
+ * 
+ * @author Attila Kovacs
+ * @since 1.16
+ */
+<span class="fc" id="L51">public class FlexFormat {</span>
+
+    /**
+     * Constant to specify the precision (number of decimal places shown) should
+     * be the natural precision of the number type, or reduced at most to
+     * {@link #DOUBLE_DECIMALS} as necessary to fit in the alotted space.
+     */
+    public static final int AUTO_PRECISION = -1;
+
+    /**
+     * The maximum number of decimal places to show (after the leading figure)
+     * for double-precision (64-bit) values.
+     */
+    public static final int DOUBLE_DECIMALS = 16;
+
+    /**
+     * The maximum number of decimal places to show (after the leading figure)
+     * for single-precision (32-bit) values.
+     */
+    public static final int FLOAT_DECIMALS = 7;
+
+    /**
+     * The minimum number of decimal places to show (after the leading figure)
+     * for big-decimal values. 64-bit longs are in the +-1E19 range, so they
+     * provide 18 decimals after the leading figure. We want big integer to
+     * provideat least as many decimal places as a long, when in exponential
+     * form...
+     */
+    public static final int MIN_BIGINT_EFORM_DECIMALS = 18;
+
+    /**
+     * The exclusive upper limit floating point value that can be shown in fixed
+     * format. Values larger or equals to it will always be shown in exponential
+     * format. This is juist for human readability. If there are more than 5
+     * figures in front of the decimal place, they become harder to comprehend
+     * at first sight than the explicit powers of 10 of the exponential format.
+     */
+    private static final double MAX_FIXED = 1e6;
+
+    /**
+     * The smallest floating point value that can be shown in fixed format.
+     * Values smallert than this value will always be printed in exponential
+     * format. This is juist for human readability. If there are more than 2
+     * leading zeroes in front of the decimal place, they become harder to
+     * comprehend at first sight than the explicit powers of 10 of the
+     * exponential format.
+     */
+    private static final double MIN_FIXED = 0.001;
+
+    /**
+     * The maximum number of decimal places to show after the leading figure
+     * (i.e. fractional digits in exponential format). If the value has more
+     * precision than this value it will be rounded to the specified decimal
+     * place. The special value {@link #AUTO_PRECISION} can be used to display
+     * as many of the available decimal places as can fit into the space that is
+     * available (see {@link #setWidth(int)}.
+     */
+<span class="fc" id="L108">    private int decimals = AUTO_PRECISION;</span>
+
+    /**
+     * The maximum number of characters available for showing number values.
+     * This class will always return numbers that fit in that space, or else
+     * throw an exception.
+     */
+<span class="fc" id="L115">    private int width = HeaderCard.FITS_HEADER_CARD_SIZE;</span>
+
+<span class="fc" id="L117">    private static final DecimalFormatSymbols SYMBOLS = DecimalFormatSymbols.getInstance(Locale.US);</span>
+
+    /**
+     * Sets the maximum number of decimal places to show after the leading
+     * figure (i.e. fractional digits in exponential format). If the value has
+     * more precision than this value it will be rounded to the specified
+     * decimal place. The special value {@link #AUTO_PRECISION} can be used to
+     * display as many of the available decimal places as can fit into the space
+     * that is available (see {@link #setWidth(int)}.
+     * 
+     * @param nDecimals
+     *            the requested new number of decimal places to show after the
+     *            leading figure, or {@link #AUTO_PRECISION}. If an explicit
+     *            value is set, all decimal values will be printed in
+     *            exponential format with up to that many fractional digits
+     *            showing before the exponent symbol.
+     * @return itself
+     * @see #autoPrecision()
+     * @see #getPrecision()
+     * @see #setWidth(int)
+     * @see #format(Number)
+     */
+    public synchronized FlexFormat setPrecision(int nDecimals) {
+<span class="fc bfc" id="L140" title="All 2 branches covered.">        this.decimals = nDecimals &lt; 0 ? AUTO_PRECISION : nDecimals;</span>
+<span class="fc" id="L141">        return this;</span>
+    }
+
+    /**
+     * Selects flexible precision formatting of floating point values. The
+     * values will be printed either in fixed format or exponential format, with
+     * up to the number of decimal places supported by the underlying value. For
+     * {@link BigDecimal} and {@link BigInteger} types, the precision may be
+     * reduced at most down to {@link #DOUBLE_DECIMALS} to make it fit in the
+     * available space.
+     * 
+     * @return itself
+     * @see #setPrecision(int)
+     * @see #getPrecision()
+     * @see #setWidth(int)
+     * @see #format(Number)
+     */
+    public synchronized FlexFormat autoPrecision() {
+<span class="fc" id="L159">        return setPrecision(AUTO_PRECISION);</span>
+    }
+
+    /**
+     * Returns the maximum number of decimal places that will be shown when
+     * formatting floating point values in exponential form, or
+     * {@link #AUTO_PRECISION} if either fixed or exponential form may be used
+     * with up to the native precision of the value, or whatever precision can
+     * be shown in the space available.
+     * 
+     * @return the maximum number of decimal places that will be shown when
+     *         formatting floating point values, or {@link #AUTO_PRECISION}.
+     * @see #setPrecision(int)
+     * @see #autoPrecision()
+     * @see #setWidth(int)
+     */
+    public final synchronized int getPrecision() {
+<span class="fc" id="L176">        return decimals;</span>
+    }
+
+    /**
+     * Sets the number of characters that this formatter can use to print number
+     * values. Subsequent calls to {@link #format(Number)} will guarantee to
+     * return only values that are shorter or equals to the specified width, or
+     * else throw an exception.
+     * 
+     * @param nChars
+     *            the new maximum length for formatted values.
+     * @return itself
+     * @see #getWidth()
+     * @see #forCard(HeaderCard)
+     * @see #setPrecision(int)
+     * @see #format(Number)
+     */
+    public synchronized FlexFormat setWidth(int nChars) {
+<span class="fc bfc" id="L194" title="All 2 branches covered.">        this.width = nChars &gt; 0 ? nChars : 0;</span>
+<span class="fc" id="L195">        return this;</span>
+    }
+
+    /**
+     * Sets the number of characters that this formatter can use to print number
+     * values to the space available for the value field in the specified header
+     * card. It is essentially a shorthand for
+     * &lt;code&gt;setWidth(card.spaceForValue())&lt;/code&gt;.
+     * 
+     * @param card
+     *            the header card in which the formatted number values must fit.
+     * @return itself
+     */
+    public final FlexFormat forCard(HeaderCard card) {
+<span class="fc" id="L209">        return setWidth(card.spaceForValue());</span>
+    }
+
+    /**
+     * Returns the number of characters that this formatter can use to print
+     * number values
+     * 
+     * @return the maximum length for formatted values.
+     */
+    public final synchronized int getWidth() {
+<span class="fc" id="L219">        return width;</span>
+    }
+
+    /**
+     * Checks if the specified number is a decimal (non-integer) type.
+     * 
+     * @param value
+     *            the number to check
+     * @return &lt;code&gt;true&lt;/code&gt; if the specified number is a decimal type
+     *         value, or else &lt;code&gt;false&lt;/code&gt; if it is an integer type.
+     */
+    private static boolean isDecimal(Number value) {
+<span class="fc bfc" id="L231" title="All 6 branches covered.">        return value instanceof Float || value instanceof Double || value instanceof BigDecimal;</span>
+    }
+
+    /**
+     * Returns a string representation of a decimal number, in the available
+     * space, using either fixed decimal format or exponential notitation. It
+     * will use the notation that either gets closer to the required fixed
+     * precision while filling the available space, or if both notations can fit
+     * it will return the more compact one. If neither notation can be
+     * accomodated in the space available, then an exception is thrown.
+     * 
+     * @param value
+     *            the decimal value to print
+     * @return the string representing the value, or an empty string if the
+     *         value was &lt;code&gt;null&lt;/code&gt;.
+     * @throws LongValueException
+     *             if the decimal value cannot be represented in the alotted
+     *             space with any precision
+     * @see #setPrecision(int)
+     * @see #setWidth(int)
+     * @see #forCard(HeaderCard)
+     */
+    public synchronized String format(Number value) throws LongValueException {
+
+<span class="fc bfc" id="L255" title="All 2 branches covered.">        if (value == null) {</span>
+<span class="fc" id="L256">            return &quot;&quot;;</span>
+        }
+
+        // The value in fixed notation...
+<span class="fc" id="L260">        String fixed = null;</span>
+
+<span class="fc bfc" id="L262" title="All 2 branches covered.">        if (!isDecimal(value)) {</span>
+            // For integer types, always consider the fixed format...
+<span class="fc" id="L264">            fixed = value.toString();</span>
+<span class="fc bfc" id="L265" title="All 2 branches covered.">            if (fixed.length() &lt;= width) {</span>
+<span class="fc" id="L266">                return fixed;</span>
+<span class="fc bfc" id="L267" title="All 2 branches covered.">            } else if (value instanceof BigInteger) {</span>
+                // We'll try exponential with reduced precision...
+<span class="fc" id="L269">                fixed = null;</span>
+            } else {
+<span class="fc" id="L271">                throw new LongValueException(width, fixed);</span>
+            }
+<span class="fc bfc" id="L273" title="All 2 branches covered.">        } else if (decimals &lt; 0) {</span>
+            // Don&quot;t do fixed format if precision is set explicitly
+            // (It's not really trivial to control the number of significant
+            // gigures in the fixed format...)
+<span class="fc" id="L277">            double a = Math.abs(value.doubleValue());</span>
+<span class="fc bfc" id="L278" title="All 4 branches covered.">            if (a &gt;= MIN_FIXED &amp;&amp; a &lt; MAX_FIXED) {</span>
+                // Fixed format only in a resonable data...
+                try {
+<span class="fc" id="L281">                    fixed = format(value, &quot;0.#&quot;, AUTO_PRECISION, false);</span>
+<span class="fc" id="L282">                } catch (LongValueException e) {</span>
+                    // We'll try with exponential notation...
+<span class="fc" id="L284">                }</span>
+            }
+        }
+
+        // The value in exponential notation...
+<span class="fc" id="L289">        String exp = null;</span>
+
+        try {
+<span class="fc" id="L292">            exp = format(value, &quot;0.#E0&quot;, decimals, FitsFactory.isUseExponentD());</span>
+<span class="fc bfc" id="L293" title="All 2 branches covered.">            if (fixed == null) {</span>
+<span class="fc" id="L294">                return exp;</span>
+            }
+            // Go with whichever is more compact.
+<span class="fc bfc" id="L297" title="All 2 branches covered.">            return exp.length() &lt; fixed.length() ? exp : fixed;</span>
+
+<span class="fc" id="L299">        } catch (LongValueException e) {</span>
+<span class="pc bpc" id="L300" title="1 of 2 branches missed.">            if (fixed == null) {</span>
+<span class="fc" id="L301">                throw e;</span>
+            }
+        }
+
+<span class="nc" id="L305">        return fixed;</span>
+    }
+
+    /**
+     * Returns a fixed decimal representation of a value in the available space.
+     * For BigInteger and BigDecimal types, we allow reducing the precision at
+     * most down to to doube precision, if necessary to fit the number in the
+     * alotted space. If it's not at all possible to fit the fixed
+     * representation in the space available, then an exception is.
+     * 
+     * @param value
+     *            the decimal value to set
+     * @param fmt
+     *            the string that describes the base format (e.g. &quot;0.#&quot; or
+     *            &quot;0E0&quot;).
+     * @param nDecimals
+     *            the number of decimal places to show
+     * @param allowUseD
+     *            if 'D' may be used instead of 'E' to precede the exponent when
+     *            value has more than 32-bit floating-point precision.
+     * @return the fixed format decimal representation of the value in the
+     *         alotted space.
+     * @throws LongValueException
+     *             if the decimal value cannot be represented in the alotted
+     *             space with the specified precision
+     */
+    private synchronized String format(Number value, String fmt, int nDecimals, boolean allowUseD) throws LongValueException {
+<span class="fc bfc" id="L332" title="All 2 branches covered.">        if (width &lt; 1) {</span>
+<span class="fc" id="L333">            throw new LongValueException(width);</span>
+        }
+
+<span class="fc" id="L336">        DecimalFormat f = new DecimalFormat(fmt);</span>
+<span class="fc" id="L337">        f.setDecimalFormatSymbols(SYMBOLS);</span>
+<span class="fc" id="L338">        f.setDecimalSeparatorAlwaysShown(true);</span>
+<span class="fc" id="L339">        f.setRoundingMode(RoundingMode.HALF_UP);</span>
+
+<span class="fc bfc" id="L341" title="All 2 branches covered.">        if (nDecimals &lt; 0) {</span>
+            // Determine precision based on the type.
+<span class="fc bfc" id="L343" title="All 4 branches covered.">            if (value instanceof BigDecimal || value instanceof BigInteger) {</span>
+<span class="fc" id="L344">                nDecimals = width;</span>
+<span class="fc bfc" id="L345" title="All 2 branches covered.">            } else if (value instanceof Double) {</span>
+<span class="fc" id="L346">                nDecimals = DOUBLE_DECIMALS;</span>
+            } else {
+<span class="fc" id="L348">                nDecimals = FLOAT_DECIMALS;</span>
+            }
+        }
+
+<span class="fc bfc" id="L352" title="All 2 branches covered.">        f.setMinimumFractionDigits(fmt.indexOf('E') &lt; 0 ? 1 : 0);</span>
+<span class="fc" id="L353">        f.setMaximumFractionDigits(nDecimals);</span>
+
+<span class="fc" id="L355">        String text = f.format(value);</span>
+
+        // Iterate to make sure we get where we want...
+<span class="fc bfc" id="L358" title="All 2 branches covered.">        while (text.length() &gt; width) {</span>
+<span class="fc" id="L359">            int delta = text.length() - width;</span>
+<span class="fc" id="L360">            nDecimals -= delta;</span>
+
+<span class="fc bfc" id="L362" title="All 8 branches covered.">            if ((value instanceof BigInteger &amp;&amp; nDecimals &lt; MIN_BIGINT_EFORM_DECIMALS) || (!(value instanceof BigInteger) &amp;&amp; nDecimals &lt; DOUBLE_DECIMALS)) {</span>
+                // We cannot show enough decimals for big types...
+<span class="fc" id="L364">                throw new LongValueException(width, text);</span>
+            }
+
+<span class="fc" id="L367">            f.setMaximumFractionDigits(nDecimals);</span>
+<span class="fc" id="L368">            text = f.format(value);</span>
+<span class="fc" id="L369">        }</span>
+
+<span class="fc bfc" id="L371" title="All 4 branches covered.">        if (allowUseD &amp;&amp; nDecimals &gt; FLOAT_DECIMALS) {</span>
+            // If we want 'D' instead of 'E', just replace the letter in the
+            // result.
+<span class="fc" id="L374">            text = text.replace('E', 'D');</span>
+        }
+
+<span class="fc" id="L377">        return text;</span>
+    }
+}
+</pre><div class="footer"><span class="right">Created with <a href="http://www.jacoco.org/jacoco">JaCoCo</a> 0.8.7.202105040129</span></div></body></html>

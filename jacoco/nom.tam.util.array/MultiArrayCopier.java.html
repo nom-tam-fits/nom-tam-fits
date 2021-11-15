@@ -1,10 +1,8 @@
-<?xml version="1.0" encoding="UTF-8"?><!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Strict//EN" "http://www.w3.org/TR/xhtml1/DTD/xhtml1-strict.dtd"><html xmlns="http://www.w3.org/1999/xhtml" lang="en"><head><meta http-equiv="Content-Type" content="text/html;charset=UTF-8"/><link rel="stylesheet" href="../.resources/report.css" type="text/css"/><link rel="shortcut icon" href="../.resources/report.gif" type="image/gif"/><title>MultiArrayCopier.java</title><link rel="stylesheet" href="../.resources/prettify.css" type="text/css"/><script type="text/javascript" src="../.resources/prettify.js"></script></head><body onload="window['PR_TAB_WIDTH']=4;prettyPrint()"><div class="breadcrumb" id="breadcrumb"><span class="info"><a href="../.sessions.html" class="el_session">Sessions</a></span><a href="../index.html" class="el_report">nom.tam FITS library</a> &gt; <a href="index.source.html" class="el_package">nom.tam.util.array</a> &gt; <span class="el_source">MultiArrayCopier.java</span></div><h1>MultiArrayCopier.java</h1><pre class="source lang-java linenums">package nom.tam.util.array;
-
-/*
+<?xml version="1.0" encoding="UTF-8"?><!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Strict//EN" "http://www.w3.org/TR/xhtml1/DTD/xhtml1-strict.dtd"><html xmlns="http://www.w3.org/1999/xhtml" lang="en"><head><meta http-equiv="Content-Type" content="text/html;charset=UTF-8"/><link rel="stylesheet" href="../jacoco-resources/report.css" type="text/css"/><link rel="shortcut icon" href="../jacoco-resources/report.gif" type="image/gif"/><title>MultiArrayCopier.java</title><link rel="stylesheet" href="../jacoco-resources/prettify.css" type="text/css"/><script type="text/javascript" src="../jacoco-resources/prettify.js"></script></head><body onload="window['PR_TAB_WIDTH']=4;prettyPrint()"><div class="breadcrumb" id="breadcrumb"><span class="info"><a href="../jacoco-sessions.html" class="el_session">Sessions</a></span><a href="../index.html" class="el_report">nom.tam FITS library</a> &gt; <a href="index.source.html" class="el_package">nom.tam.util.array</a> &gt; <span class="el_source">MultiArrayCopier.java</span></div><h1>MultiArrayCopier.java</h1><pre class="source lang-java linenums">/*
  * #%L
  * nom.tam FITS library
  * %%
- * Copyright (C) 1996 - 2015 nom-tam-fits
+ * Copyright (C) 1996 - 2021 nom-tam-fits
  * %%
  * This is free and unencumbered software released into the public domain.
  * 
@@ -31,41 +29,43 @@
  * #L%
  */
 
+package nom.tam.util.array;
+
 import java.lang.reflect.Array;
 
-public final class MultiArrayCopier {
+public final class MultiArrayCopier&lt;Source, Destination&gt; {
 
-    public static void copyInto(Object fromArray, Object toArray) {
-<span class="fc" id="L39">        new MultiArrayCopier(fromArray, toArray).copyInto();</span>
+    public static &lt;Source, Destination&gt; void copyInto(Source fromArray, Destination toArray) {
+<span class="fc" id="L39">        new MultiArrayCopier&lt;&gt;(fromArray, toArray).copyInto();</span>
 <span class="fc" id="L40">    }</span>
 
-    private final MultiArrayIterator from;
+    private final MultiArrayIterator&lt;Source&gt; from;
 
-    private final MultiArrayIterator to;
+    private final MultiArrayIterator&lt;Destination&gt; to;
 
-    private Object currentToArray;
+    private Destination currentToArray;
 
     private int currentToArrayOffset;
 
     private int currentToArrayLength;
 
-    private final MultiArrayCopyFactory copyFactory;
+    private final MultiArrayCopyFactory&lt;Source, Destination&gt; copyFactory;
 
-<span class="fc" id="L54">    private MultiArrayCopier(Object fromArray, Object toArray) {</span>
-<span class="fc" id="L55">        this.from = new MultiArrayIterator(fromArray);</span>
-<span class="fc" id="L56">        this.to = new MultiArrayIterator(toArray);</span>
-<span class="fc" id="L57">        this.copyFactory = MultiArrayCopyFactory.select(this.from.deepComponentType(), this.to.deepComponentType());</span>
+<span class="fc" id="L54">    private MultiArrayCopier(Source fromArray, Destination toArray) {</span>
+<span class="fc" id="L55">        this.from = new MultiArrayIterator&lt;&gt;(fromArray);</span>
+<span class="fc" id="L56">        this.to = new MultiArrayIterator&lt;&gt;(toArray);</span>
+<span class="fc" id="L57">        this.copyFactory = (MultiArrayCopyFactory&lt;Source, Destination&gt;) MultiArrayCopyFactory.select(this.from.deepComponentType(), this.to.deepComponentType());</span>
 <span class="fc" id="L58">    }</span>
 
     private void copyInto() {
-<span class="fc" id="L61">        Object current = this.from.next();</span>
+<span class="fc" id="L61">        Source current = this.from.next();</span>
 <span class="fc bfc" id="L62" title="All 2 branches covered.">        while (current != null) {</span>
 <span class="fc" id="L63">            copyInto(current);</span>
 <span class="fc" id="L64">            current = this.from.next();</span>
         }
 <span class="fc" id="L66">    }</span>
 
-    private void copyInto(Object currentFromArray) {
+    private void copyInto(Source currentFromArray) {
 <span class="fc" id="L69">        int currentFromArrayOffset = 0;</span>
 <span class="fc" id="L70">        int currentFromArrayLength = Array.getLength(currentFromArray);</span>
 <span class="fc bfc" id="L71" title="All 2 branches covered.">        while (currentFromArrayOffset &lt; currentFromArrayLength) {</span>
@@ -82,4 +82,4 @@ public final class MultiArrayCopier {
 <span class="fc" id="L82">    }</span>
 
 }
-</pre><div class="footer"><span class="right">Created with <a href="http://www.eclemma.org/jacoco">JaCoCo</a> 0.7.6.201602180812</span></div></body></html>
+</pre><div class="footer"><span class="right">Created with <a href="http://www.jacoco.org/jacoco">JaCoCo</a> 0.8.7.202105040129</span></div></body></html>

@@ -1,10 +1,10 @@
-<?xml version="1.0" encoding="UTF-8"?><!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Strict//EN" "http://www.w3.org/TR/xhtml1/DTD/xhtml1-strict.dtd"><html xmlns="http://www.w3.org/1999/xhtml" lang="en"><head><meta http-equiv="Content-Type" content="text/html;charset=UTF-8"/><link rel="stylesheet" href="../.resources/report.css" type="text/css"/><link rel="shortcut icon" href="../.resources/report.gif" type="image/gif"/><title>BasicCompressProvider.java</title><link rel="stylesheet" href="../.resources/prettify.css" type="text/css"/><script type="text/javascript" src="../.resources/prettify.js"></script></head><body onload="window['PR_TAB_WIDTH']=4;prettyPrint()"><div class="breadcrumb" id="breadcrumb"><span class="info"><a href="../.sessions.html" class="el_session">Sessions</a></span><a href="../index.html" class="el_report">nom.tam FITS library</a> &gt; <a href="index.source.html" class="el_package">nom.tam.fits.compress</a> &gt; <span class="el_source">BasicCompressProvider.java</span></div><h1>BasicCompressProvider.java</h1><pre class="source lang-java linenums">package nom.tam.fits.compress;
+<?xml version="1.0" encoding="UTF-8"?><!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Strict//EN" "http://www.w3.org/TR/xhtml1/DTD/xhtml1-strict.dtd"><html xmlns="http://www.w3.org/1999/xhtml" lang="en"><head><meta http-equiv="Content-Type" content="text/html;charset=UTF-8"/><link rel="stylesheet" href="../jacoco-resources/report.css" type="text/css"/><link rel="shortcut icon" href="../jacoco-resources/report.gif" type="image/gif"/><title>BasicCompressProvider.java</title><link rel="stylesheet" href="../jacoco-resources/prettify.css" type="text/css"/><script type="text/javascript" src="../jacoco-resources/prettify.js"></script></head><body onload="window['PR_TAB_WIDTH']=4;prettyPrint()"><div class="breadcrumb" id="breadcrumb"><span class="info"><a href="../jacoco-sessions.html" class="el_session">Sessions</a></span><a href="../index.html" class="el_report">nom.tam FITS library</a> &gt; <a href="index.source.html" class="el_package">nom.tam.fits.compress</a> &gt; <span class="el_source">BasicCompressProvider.java</span></div><h1>BasicCompressProvider.java</h1><pre class="source lang-java linenums">package nom.tam.fits.compress;
 
 /*
  * #%L
  * nom.tam FITS library
  * %%
- * Copyright (C) 1996 - 2015 nom-tam-fits
+ * Copyright (C) 1996 - 2021 nom-tam-fits
  * %%
  * This is free and unencumbered software released into the public domain.
  * 
@@ -52,13 +52,13 @@ import nom.tam.fits.FitsException;
 
     private InputStream compressInputStream(final InputStream compressed) throws IOException, FitsException {
         try {
-<span class="fc" id="L55">            Process proc = new ProcessBuilder(&quot;uncompress&quot;, &quot;-c&quot;).start();</span>
-<span class="fc" id="L56">            return new CloseIS(proc, compressed);</span>
+<span class="nc" id="L55">            Process proc = new ProcessBuilder(&quot;uncompress&quot;, &quot;-c&quot;).start();</span>
+<span class="nc" id="L56">            return new CloseIS(proc, compressed);</span>
 <span class="fc" id="L57">        } catch (Exception e) {</span>
 <span class="fc" id="L58">            ICompressProvider next = CompressionManager.nextCompressionProvider(COMPRESS_MAGIC_BYTE1, COMPRESS_MAGIC_BYTE2, this);</span>
 <span class="pc bpc" id="L59" title="1 of 2 branches missed.">            if (next != null) {</span>
 <span class="fc" id="L60">                LOG.log(Level.WARNING, &quot;Error initiating .Z decompression: &quot; + e.getMessage() + &quot; trying alternative decompressor&quot;, e);</span>
-<span class="nc" id="L61">                return next.decompress(compressed);</span>
+<span class="fc" id="L61">                return next.decompress(compressed);</span>
             }
 <span class="nc" id="L63">            throw new FitsException(&quot;Unable to read .Z compressed stream.\nIs 'uncompress' in the path?&quot;, e);</span>
         }
@@ -79,4 +79,4 @@ import nom.tam.fits.FitsException;
 <span class="fc bfc" id="L79" title="All 4 branches covered.">        return mag1 == COMPRESS_MAGIC_BYTE1 &amp;&amp; mag2 == COMPRESS_MAGIC_BYTE2;</span>
     }
 }
-</pre><div class="footer"><span class="right">Created with <a href="http://www.eclemma.org/jacoco">JaCoCo</a> 0.7.6.201602180812</span></div></body></html>
+</pre><div class="footer"><span class="right">Created with <a href="http://www.jacoco.org/jacoco">JaCoCo</a> 0.8.7.202105040129</span></div></body></html>

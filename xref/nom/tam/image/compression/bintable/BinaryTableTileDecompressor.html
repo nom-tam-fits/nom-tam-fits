@@ -12,7 +12,7 @@
 <a class="jxr_linenumber" name="L4" href="#L4">4</a>   <em class="jxr_comment"> * #%L</em>
 <a class="jxr_linenumber" name="L5" href="#L5">5</a>   <em class="jxr_comment"> * nom.tam FITS library</em>
 <a class="jxr_linenumber" name="L6" href="#L6">6</a>   <em class="jxr_comment"> * %%</em>
-<a class="jxr_linenumber" name="L7" href="#L7">7</a>   <em class="jxr_comment"> * Copyright (C) 1996 - 2016 nom-tam-fits</em>
+<a class="jxr_linenumber" name="L7" href="#L7">7</a>   <em class="jxr_comment"> * Copyright (C) 1996 - 2021 nom-tam-fits</em>
 <a class="jxr_linenumber" name="L8" href="#L8">8</a>   <em class="jxr_comment"> * %%</em>
 <a class="jxr_linenumber" name="L9" href="#L9">9</a>   <em class="jxr_comment"> * This is free and unencumbered software released into the public domain.</em>
 <a class="jxr_linenumber" name="L10" href="#L10">10</a>  <em class="jxr_comment"> * </em>
@@ -46,7 +46,7 @@
 <a class="jxr_linenumber" name="L38" href="#L38">38</a>  <strong class="jxr_keyword">import</strong> nom.tam.fits.FitsException;
 <a class="jxr_linenumber" name="L39" href="#L39">39</a>  <strong class="jxr_keyword">import</strong> nom.tam.image.compression.hdu.CompressedTableData;
 <a class="jxr_linenumber" name="L40" href="#L40">40</a>  <strong class="jxr_keyword">import</strong> nom.tam.util.ArrayDataInput;
-<a class="jxr_linenumber" name="L41" href="#L41">41</a>  <strong class="jxr_keyword">import</strong> nom.tam.util.BufferedDataInputStream;
+<a class="jxr_linenumber" name="L41" href="#L41">41</a>  <strong class="jxr_keyword">import</strong> nom.tam.util.FitsInputStream;
 <a class="jxr_linenumber" name="L42" href="#L42">42</a>  <strong class="jxr_keyword">import</strong> nom.tam.util.ColumnTable;
 <a class="jxr_linenumber" name="L43" href="#L43">43</a>  
 <a class="jxr_linenumber" name="L44" href="#L44">44</a>  <strong class="jxr_keyword">public</strong> <strong class="jxr_keyword">class</strong> <a href="../../../../../nom/tam/image/compression/bintable/BinaryTableTileDecompressor.html">BinaryTableTileDecompressor</a> <strong class="jxr_keyword">extends</strong> <a href="../../../../../nom/tam/image/compression/bintable/BinaryTableTile.html">BinaryTableTile</a> {
@@ -65,7 +65,7 @@
 <a class="jxr_linenumber" name="L57" href="#L57">57</a>          <strong class="jxr_keyword">if</strong> (<strong class="jxr_keyword">this</strong>.is == <strong class="jxr_keyword">null</strong>) {
 <a class="jxr_linenumber" name="L58" href="#L58">58</a>              ByteBuffer unCompressedBytes = ByteBuffer.wrap(<strong class="jxr_keyword">new</strong> byte[getUncompressedSizeInBytes()]);
 <a class="jxr_linenumber" name="L59" href="#L59">59</a>              getCompressorControl().decompress(<strong class="jxr_keyword">this</strong>.compressedBytes, type.asTypedBuffer(unCompressedBytes), <strong class="jxr_keyword">null</strong>);
-<a class="jxr_linenumber" name="L60" href="#L60">60</a>              <strong class="jxr_keyword">this</strong>.is = <strong class="jxr_keyword">new</strong> <a href="../../../../../nom/tam/util/BufferedDataInputStream.html">BufferedDataInputStream</a>(<strong class="jxr_keyword">new</strong> ByteArrayInputStream(unCompressedBytes.array()));
+<a class="jxr_linenumber" name="L60" href="#L60">60</a>              <strong class="jxr_keyword">this</strong>.is = <strong class="jxr_keyword">new</strong> <a href="../../../../../nom/tam/util/FitsInputStream.html">FitsInputStream</a>(<strong class="jxr_keyword">new</strong> ByteArrayInputStream(unCompressedBytes.array()));
 <a class="jxr_linenumber" name="L61" href="#L61">61</a>          }
 <a class="jxr_linenumber" name="L62" href="#L62">62</a>          <strong class="jxr_keyword">try</strong> {
 <a class="jxr_linenumber" name="L63" href="#L63">63</a>              <strong class="jxr_keyword">this</strong>.data.read(<strong class="jxr_keyword">this</strong>.is, <strong class="jxr_keyword">this</strong>.rowStart, <strong class="jxr_keyword">this</strong>.rowEnd, <strong class="jxr_keyword">this</strong>.column);
@@ -77,6 +77,6 @@
 <a class="jxr_linenumber" name="L69" href="#L69">69</a>  }
 </pre>
 <hr/>
-<div id="footer">Copyright &#169; 1996&#x2013;2017 nom-tam-fits. All rights reserved.</div>
+<div id="footer">Copyright &#169; 1996&#x2013;2021 nom-tam-fits. All rights reserved.</div>
 </body>
 </html>

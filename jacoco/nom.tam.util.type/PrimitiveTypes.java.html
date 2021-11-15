@@ -1,10 +1,10 @@
-<?xml version="1.0" encoding="UTF-8"?><!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Strict//EN" "http://www.w3.org/TR/xhtml1/DTD/xhtml1-strict.dtd"><html xmlns="http://www.w3.org/1999/xhtml" lang="en"><head><meta http-equiv="Content-Type" content="text/html;charset=UTF-8"/><link rel="stylesheet" href="../.resources/report.css" type="text/css"/><link rel="shortcut icon" href="../.resources/report.gif" type="image/gif"/><title>PrimitiveTypes.java</title><link rel="stylesheet" href="../.resources/prettify.css" type="text/css"/><script type="text/javascript" src="../.resources/prettify.js"></script></head><body onload="window['PR_TAB_WIDTH']=4;prettyPrint()"><div class="breadcrumb" id="breadcrumb"><span class="info"><a href="../.sessions.html" class="el_session">Sessions</a></span><a href="../index.html" class="el_report">nom.tam FITS library</a> &gt; <a href="index.source.html" class="el_package">nom.tam.util.type</a> &gt; <span class="el_source">PrimitiveTypes.java</span></div><h1>PrimitiveTypes.java</h1><pre class="source lang-java linenums">package nom.tam.util.type;
+<?xml version="1.0" encoding="UTF-8"?><!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Strict//EN" "http://www.w3.org/TR/xhtml1/DTD/xhtml1-strict.dtd"><html xmlns="http://www.w3.org/1999/xhtml" lang="en"><head><meta http-equiv="Content-Type" content="text/html;charset=UTF-8"/><link rel="stylesheet" href="../jacoco-resources/report.css" type="text/css"/><link rel="shortcut icon" href="../jacoco-resources/report.gif" type="image/gif"/><title>PrimitiveTypes.java</title><link rel="stylesheet" href="../jacoco-resources/prettify.css" type="text/css"/><script type="text/javascript" src="../jacoco-resources/prettify.js"></script></head><body onload="window['PR_TAB_WIDTH']=4;prettyPrint()"><div class="breadcrumb" id="breadcrumb"><span class="info"><a href="../jacoco-sessions.html" class="el_session">Sessions</a></span><a href="../index.html" class="el_report">nom.tam FITS library</a> &gt; <a href="index.source.html" class="el_package">nom.tam.util.type</a> &gt; <span class="el_source">PrimitiveTypes.java</span></div><h1>PrimitiveTypes.java</h1><pre class="source lang-java linenums">package nom.tam.util.type;
 
 /*
  * #%L
  * nom.tam FITS library
  * %%
- * Copyright (C) 1996 - 2016 nom-tam-fits
+ * Copyright (C) 1996 - 2021 nom-tam-fits
  * %%
  * This is free and unencumbered software released into the public domain.
  * 
@@ -33,38 +33,52 @@
 
 import java.nio.Buffer;
 import java.nio.ByteBuffer;
-import java.nio.CharBuffer;
 import java.nio.DoubleBuffer;
 import java.nio.FloatBuffer;
 import java.nio.IntBuffer;
 import java.nio.LongBuffer;
 import java.nio.ShortBuffer;
 
+/**
+ * @deprecated  Use identical static fields of {@link ElementType} instead.
+ * 
+ */
+@Deprecated
 public final class PrimitiveTypes {
 
-<span class="fc" id="L45">    public static final PrimitiveType&lt;Buffer&gt; BOOLEAN = new BooleanType();</span>
+    /** @deprecated Use {@link ElementType#BOOLEAN} instead */
+<span class="fc" id="L50">    public static final ElementType&lt;Buffer&gt; BOOLEAN = ElementType.BOOLEAN;</span>
 
-<span class="fc" id="L47">    public static final PrimitiveType&lt;ByteBuffer&gt; BYTE = new ByteType();</span>
+    /** @deprecated Use {@link ElementType#BYTE} instead */
+<span class="fc" id="L53">    public static final ElementType&lt;ByteBuffer&gt; BYTE = ElementType.BYTE;</span>
 
-<span class="fc" id="L49">    public static final PrimitiveType&lt;CharBuffer&gt; CHAR = new CharType();</span>
+    /** @deprecated Use {@link ElementType#CHAR} instead */
+<span class="fc" id="L56">    public static final ElementType&lt;ByteBuffer&gt; CHAR = ElementType.CHAR;</span>
 
-<span class="fc" id="L51">    public static final PrimitiveType&lt;DoubleBuffer&gt; DOUBLE = new DoubleType();</span>
+    /** @deprecated Use {@link ElementType#DOUBLE} instead */
+<span class="fc" id="L59">    public static final ElementType&lt;DoubleBuffer&gt; DOUBLE = ElementType.DOUBLE;</span>
 
-<span class="fc" id="L53">    public static final PrimitiveType&lt;FloatBuffer&gt; FLOAT = new FloatType();</span>
+    /** @deprecated Use {@link ElementType#FLOAT} instead */
+<span class="fc" id="L62">    public static final ElementType&lt;FloatBuffer&gt; FLOAT = ElementType.FLOAT;</span>
 
-<span class="fc" id="L55">    public static final PrimitiveType&lt;IntBuffer&gt; INT = new IntType();</span>
+    /** @deprecated Use {@link ElementType#INT} instead */
+<span class="fc" id="L65">    public static final ElementType&lt;IntBuffer&gt; INT = ElementType.INT;</span>
 
-<span class="fc" id="L57">    public static final PrimitiveType&lt;LongBuffer&gt; LONG = new LongType();</span>
+    /** @deprecated Use {@link ElementType#LONG} instead */
+<span class="fc" id="L68">    public static final ElementType&lt;LongBuffer&gt; LONG = ElementType.LONG;</span>
 
-<span class="fc" id="L59">    public static final PrimitiveType&lt;ShortBuffer&gt; SHORT = new ShortType();</span>
+    /** @deprecated Use {@link ElementType#SHORT} instead */
+<span class="fc" id="L71">    public static final ElementType&lt;ShortBuffer&gt; SHORT = ElementType.SHORT;</span>
 
-<span class="fc" id="L61">    public static final PrimitiveType&lt;Buffer&gt; STRING = new StringType();</span>
+    /** @deprecated Use {@link ElementType#STRING} instead */
+<span class="fc" id="L74">    public static final ElementType&lt;Buffer&gt; STRING = ElementType.STRING;</span>
 
-<span class="fc" id="L63">    public static final PrimitiveType&lt;Buffer&gt; UNKNOWN = new UnknownType();</span>
-
-<span class="fc" id="L65">    private PrimitiveTypes() {</span>
+    /** @deprecated Use {@link ElementType#UNKNOWN} instead */
+<span class="fc" id="L77">    public static final ElementType&lt;Buffer&gt; UNKNOWN = ElementType.UNKNOWN;</span>
+    
+    private PrimitiveTypes() {
         // TODO Auto-generated constructor stub
-<span class="fc" id="L67">    }</span>
+    }
 
 }
-</pre><div class="footer"><span class="right">Created with <a href="http://www.eclemma.org/jacoco">JaCoCo</a> 0.7.6.201602180812</span></div></body></html>
+</pre><div class="footer"><span class="right">Created with <a href="http://www.jacoco.org/jacoco">JaCoCo</a> 0.8.7.202105040129</span></div></body></html>

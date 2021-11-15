@@ -25,13 +25,13 @@
 <a class="jxr_linenumber" name="L17" href="#L17">17</a>  <strong class="jxr_keyword">import</strong> nom.tam.fits.FitsException;
 <a class="jxr_linenumber" name="L18" href="#L18">18</a>  <strong class="jxr_keyword">import</strong> nom.tam.fits.FitsFactory;
 <a class="jxr_linenumber" name="L19" href="#L19">19</a>  <strong class="jxr_keyword">import</strong> nom.tam.fits.ImageHDU;
-<a class="jxr_linenumber" name="L20" href="#L20">20</a>  <strong class="jxr_keyword">import</strong> nom.tam.util.BufferedFile;
+<a class="jxr_linenumber" name="L20" href="#L20">20</a>  <strong class="jxr_keyword">import</strong> nom.tam.util.FitsFile;
 <a class="jxr_linenumber" name="L21" href="#L21">21</a>  
 <a class="jxr_linenumber" name="L22" href="#L22">22</a>  <em class="jxr_comment">/*</em>
 <a class="jxr_linenumber" name="L23" href="#L23">23</a>  <em class="jxr_comment"> * #%L</em>
 <a class="jxr_linenumber" name="L24" href="#L24">24</a>  <em class="jxr_comment"> * nom.tam FITS library</em>
 <a class="jxr_linenumber" name="L25" href="#L25">25</a>  <em class="jxr_comment"> * %%</em>
-<a class="jxr_linenumber" name="L26" href="#L26">26</a>  <em class="jxr_comment"> * Copyright (C) 1996 - 2015 nom-tam-fits</em>
+<a class="jxr_linenumber" name="L26" href="#L26">26</a>  <em class="jxr_comment"> * Copyright (C) 1996 - 2021 nom-tam-fits</em>
 <a class="jxr_linenumber" name="L27" href="#L27">27</a>  <em class="jxr_comment"> * %%</em>
 <a class="jxr_linenumber" name="L28" href="#L28">28</a>  <em class="jxr_comment"> * This is free and unencumbered software released into the public domain.</em>
 <a class="jxr_linenumber" name="L29" href="#L29">29</a>  <em class="jxr_comment"> * </em>
@@ -283,7 +283,7 @@
 <a class="jxr_linenumber" name="L275" href="#L275">275</a>         BasicHDU&lt;?&gt; hdu = FitsFactory.hduFactory(image);
 <a class="jxr_linenumber" name="L276" href="#L276">276</a>         Fits fits = <strong class="jxr_keyword">new</strong> Fits();
 <a class="jxr_linenumber" name="L277" href="#L277">277</a>         fits.addHDU(hdu);
-<a class="jxr_linenumber" name="L278" href="#L278">278</a>         BufferedFile bf = <strong class="jxr_keyword">new</strong> BufferedFile(<span class="jxr_string">"target/compress/test"</span> + edge + <span class="jxr_string">"Data8.fits"</span>, <span class="jxr_string">"rw"</span>);
+<a class="jxr_linenumber" name="L278" href="#L278">278</a>         FitsFile bf = <strong class="jxr_keyword">new</strong> FitsFile(<span class="jxr_string">"target/compress/test"</span> + edge + <span class="jxr_string">"Data8.fits"</span>, <span class="jxr_string">"rw"</span>);
 <a class="jxr_linenumber" name="L279" href="#L279">279</a>         fits.write(bf);
 <a class="jxr_linenumber" name="L280" href="#L280">280</a>         bf.flush();
 <a class="jxr_linenumber" name="L281" href="#L281">281</a>         bf.close();
@@ -303,7 +303,7 @@
 <a class="jxr_linenumber" name="L295" href="#L295">295</a>         BasicHDU&lt;?&gt; hdu = FitsFactory.hduFactory(image);
 <a class="jxr_linenumber" name="L296" href="#L296">296</a>         Fits fits = <strong class="jxr_keyword">new</strong> Fits();
 <a class="jxr_linenumber" name="L297" href="#L297">297</a>         fits.addHDU(hdu);
-<a class="jxr_linenumber" name="L298" href="#L298">298</a>         BufferedFile bf = <strong class="jxr_keyword">new</strong> BufferedFile(<span class="jxr_string">"target/compress/test"</span> + edge + <span class="jxr_string">"Data-64.fits"</span>, <span class="jxr_string">"rw"</span>);
+<a class="jxr_linenumber" name="L298" href="#L298">298</a>         FitsFile bf = <strong class="jxr_keyword">new</strong> FitsFile(<span class="jxr_string">"target/compress/test"</span> + edge + <span class="jxr_string">"Data-64.fits"</span>, <span class="jxr_string">"rw"</span>);
 <a class="jxr_linenumber" name="L299" href="#L299">299</a>         fits.write(bf);
 <a class="jxr_linenumber" name="L300" href="#L300">300</a>         bf.flush();
 <a class="jxr_linenumber" name="L301" href="#L301">301</a>         bf.close();
@@ -323,7 +323,7 @@
 <a class="jxr_linenumber" name="L315" href="#L315">315</a>         BasicHDU&lt;?&gt; hdu = FitsFactory.hduFactory(image);
 <a class="jxr_linenumber" name="L316" href="#L316">316</a>         Fits fits = <strong class="jxr_keyword">new</strong> Fits();
 <a class="jxr_linenumber" name="L317" href="#L317">317</a>         fits.addHDU(hdu);
-<a class="jxr_linenumber" name="L318" href="#L318">318</a>         BufferedFile bf = <strong class="jxr_keyword">new</strong> BufferedFile(<span class="jxr_string">"target/compress/test"</span> + edge + <span class="jxr_string">"Data-32.fits"</span>, <span class="jxr_string">"rw"</span>);
+<a class="jxr_linenumber" name="L318" href="#L318">318</a>         FitsFile bf = <strong class="jxr_keyword">new</strong> FitsFile(<span class="jxr_string">"target/compress/test"</span> + edge + <span class="jxr_string">"Data-32.fits"</span>, <span class="jxr_string">"rw"</span>);
 <a class="jxr_linenumber" name="L319" href="#L319">319</a>         fits.write(bf);
 <a class="jxr_linenumber" name="L320" href="#L320">320</a>         bf.flush();
 <a class="jxr_linenumber" name="L321" href="#L321">321</a>         bf.close();
@@ -343,7 +343,7 @@
 <a class="jxr_linenumber" name="L335" href="#L335">335</a>         BasicHDU&lt;?&gt; hdu = FitsFactory.hduFactory(image);
 <a class="jxr_linenumber" name="L336" href="#L336">336</a>         Fits fits = <strong class="jxr_keyword">new</strong> Fits();
 <a class="jxr_linenumber" name="L337" href="#L337">337</a>         fits.addHDU(hdu);
-<a class="jxr_linenumber" name="L338" href="#L338">338</a>         BufferedFile bf = <strong class="jxr_keyword">new</strong> BufferedFile(<span class="jxr_string">"target/compress/test"</span> + edge + <span class="jxr_string">"Data32.fits"</span>, <span class="jxr_string">"rw"</span>);
+<a class="jxr_linenumber" name="L338" href="#L338">338</a>         FitsFile bf = <strong class="jxr_keyword">new</strong> FitsFile(<span class="jxr_string">"target/compress/test"</span> + edge + <span class="jxr_string">"Data32.fits"</span>, <span class="jxr_string">"rw"</span>);
 <a class="jxr_linenumber" name="L339" href="#L339">339</a>         fits.write(bf);
 <a class="jxr_linenumber" name="L340" href="#L340">340</a>         bf.flush();
 <a class="jxr_linenumber" name="L341" href="#L341">341</a>         bf.close();
@@ -363,7 +363,7 @@
 <a class="jxr_linenumber" name="L355" href="#L355">355</a>         BasicHDU&lt;?&gt; hdu = FitsFactory.hduFactory(image);
 <a class="jxr_linenumber" name="L356" href="#L356">356</a>         Fits fits = <strong class="jxr_keyword">new</strong> Fits();
 <a class="jxr_linenumber" name="L357" href="#L357">357</a>         fits.addHDU(hdu);
-<a class="jxr_linenumber" name="L358" href="#L358">358</a>         BufferedFile bf = <strong class="jxr_keyword">new</strong> BufferedFile(<span class="jxr_string">"target/compress/test"</span> + edge + <span class="jxr_string">"Data64.fits"</span>, <span class="jxr_string">"rw"</span>);
+<a class="jxr_linenumber" name="L358" href="#L358">358</a>         FitsFile bf = <strong class="jxr_keyword">new</strong> FitsFile(<span class="jxr_string">"target/compress/test"</span> + edge + <span class="jxr_string">"Data64.fits"</span>, <span class="jxr_string">"rw"</span>);
 <a class="jxr_linenumber" name="L359" href="#L359">359</a>         fits.write(bf);
 <a class="jxr_linenumber" name="L360" href="#L360">360</a>         bf.flush();
 <a class="jxr_linenumber" name="L361" href="#L361">361</a>         bf.close();
@@ -383,7 +383,7 @@
 <a class="jxr_linenumber" name="L375" href="#L375">375</a>         BasicHDU&lt;?&gt; hdu = FitsFactory.hduFactory(image);
 <a class="jxr_linenumber" name="L376" href="#L376">376</a>         Fits fits = <strong class="jxr_keyword">new</strong> Fits();
 <a class="jxr_linenumber" name="L377" href="#L377">377</a>         fits.addHDU(hdu);
-<a class="jxr_linenumber" name="L378" href="#L378">378</a>         BufferedFile bf = <strong class="jxr_keyword">new</strong> BufferedFile(<span class="jxr_string">"target/compress/test"</span> + edge + <span class="jxr_string">"Data16.fits"</span>, <span class="jxr_string">"rw"</span>);
+<a class="jxr_linenumber" name="L378" href="#L378">378</a>         FitsFile bf = <strong class="jxr_keyword">new</strong> FitsFile(<span class="jxr_string">"target/compress/test"</span> + edge + <span class="jxr_string">"Data16.fits"</span>, <span class="jxr_string">"rw"</span>);
 <a class="jxr_linenumber" name="L379" href="#L379">379</a>         fits.write(bf);
 <a class="jxr_linenumber" name="L380" href="#L380">380</a>         bf.flush();
 <a class="jxr_linenumber" name="L381" href="#L381">381</a>         bf.close();
@@ -415,6 +415,6 @@
 <a class="jxr_linenumber" name="L407" href="#L407">407</a> }
 </pre>
 <hr/>
-<div id="footer">Copyright &#169; 1996&#x2013;2017 nom-tam-fits. All rights reserved.</div>
+<div id="footer">Copyright &#169; 1996&#x2013;2021 nom-tam-fits. All rights reserved.</div>
 </body>
 </html>

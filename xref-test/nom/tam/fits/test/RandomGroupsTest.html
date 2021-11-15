@@ -12,7 +12,7 @@
 <a class="jxr_linenumber" name="L4" href="#L4">4</a>   <em class="jxr_comment"> * #%L</em>
 <a class="jxr_linenumber" name="L5" href="#L5">5</a>   <em class="jxr_comment"> * nom.tam FITS library</em>
 <a class="jxr_linenumber" name="L6" href="#L6">6</a>   <em class="jxr_comment"> * %%</em>
-<a class="jxr_linenumber" name="L7" href="#L7">7</a>   <em class="jxr_comment"> * Copyright (C) 2004 - 2015 nom-tam-fits</em>
+<a class="jxr_linenumber" name="L7" href="#L7">7</a>   <em class="jxr_comment"> * Copyright (C) 2004 - 2021 nom-tam-fits</em>
 <a class="jxr_linenumber" name="L8" href="#L8">8</a>   <em class="jxr_comment"> * %%</em>
 <a class="jxr_linenumber" name="L9" href="#L9">9</a>   <em class="jxr_comment"> * This is free and unencumbered software released into the public domain.</em>
 <a class="jxr_linenumber" name="L10" href="#L10">10</a>  <em class="jxr_comment"> * </em>
@@ -52,7 +52,7 @@
 <a class="jxr_linenumber" name="L44" href="#L44">44</a>  <strong class="jxr_keyword">import</strong> nom.tam.fits.RandomGroupsHDU;
 <a class="jxr_linenumber" name="L45" href="#L45">45</a>  <strong class="jxr_keyword">import</strong> nom.tam.fits.FitsException;
 <a class="jxr_linenumber" name="L46" href="#L46">46</a>  <strong class="jxr_keyword">import</strong> nom.tam.util.ArrayFuncs;
-<a class="jxr_linenumber" name="L47" href="#L47">47</a>  <strong class="jxr_keyword">import</strong> nom.tam.util.BufferedFile;
+<a class="jxr_linenumber" name="L47" href="#L47">47</a>  <strong class="jxr_keyword">import</strong> nom.tam.util.FitsFile;
 <a class="jxr_linenumber" name="L48" href="#L48">48</a>  <strong class="jxr_keyword">import</strong> nom.tam.util.SafeClose;
 <a class="jxr_linenumber" name="L49" href="#L49">49</a>  
 <a class="jxr_linenumber" name="L50" href="#L50">50</a>  <strong class="jxr_keyword">import</strong> org.junit.Assert;
@@ -70,9 +70,9 @@
 <a class="jxr_linenumber" name="L62" href="#L62">62</a>          <strong class="jxr_keyword">float</strong>[] pa = <strong class="jxr_keyword">new</strong> <strong class="jxr_keyword">float</strong>[3];
 <a class="jxr_linenumber" name="L63" href="#L63">63</a>  
 <a class="jxr_linenumber" name="L64" href="#L64">64</a>          Object[][] data = <strong class="jxr_keyword">new</strong> Object[1][2];
-<a class="jxr_linenumber" name="L65" href="#L65">65</a>          BufferedFile bf = <strong class="jxr_keyword">null</strong>;
+<a class="jxr_linenumber" name="L65" href="#L65">65</a>          FitsFile bf = <strong class="jxr_keyword">null</strong>;
 <a class="jxr_linenumber" name="L66" href="#L66">66</a>          <strong class="jxr_keyword">try</strong> {
-<a class="jxr_linenumber" name="L67" href="#L67">67</a>              bf = <strong class="jxr_keyword">new</strong> BufferedFile(<span class="jxr_string">"target/rg1.fits"</span>, <span class="jxr_string">"rw"</span>);
+<a class="jxr_linenumber" name="L67" href="#L67">67</a>              bf = <strong class="jxr_keyword">new</strong> FitsFile(<span class="jxr_string">"target/rg1.fits"</span>, <span class="jxr_string">"rw"</span>);
 <a class="jxr_linenumber" name="L68" href="#L68">68</a>  
 <a class="jxr_linenumber" name="L69" href="#L69">69</a>              data[0][0] = pa;
 <a class="jxr_linenumber" name="L70" href="#L70">70</a>              data[0][1] = fa;
@@ -131,7 +131,7 @@
 <a class="jxr_linenumber" name="L123" href="#L123">123</a>         <em class="jxr_comment">// all the data in place first.</em>
 <a class="jxr_linenumber" name="L124" href="#L124">124</a>         <strong class="jxr_keyword">try</strong> {
 <a class="jxr_linenumber" name="L125" href="#L125">125</a>             f = <strong class="jxr_keyword">new</strong> Fits();
-<a class="jxr_linenumber" name="L126" href="#L126">126</a>             bf = <strong class="jxr_keyword">new</strong> BufferedFile(<span class="jxr_string">"target/rg2.fits"</span>, <span class="jxr_string">"rw"</span>);
+<a class="jxr_linenumber" name="L126" href="#L126">126</a>             bf = <strong class="jxr_keyword">new</strong> FitsFile(<span class="jxr_string">"target/rg2.fits"</span>, <span class="jxr_string">"rw"</span>);
 <a class="jxr_linenumber" name="L127" href="#L127">127</a>             <em class="jxr_comment">// Generate a FITS HDU from the kernel.</em>
 <a class="jxr_linenumber" name="L128" href="#L128">128</a>             f.addHDU(Fits.makeHDU(data));
 <a class="jxr_linenumber" name="L129" href="#L129">129</a>             f.write(bf);
@@ -172,7 +172,7 @@
 <a class="jxr_linenumber" name="L164" href="#L164">164</a>     }
 <a class="jxr_linenumber" name="L165" href="#L165">165</a> 
 <a class="jxr_linenumber" name="L166" href="#L166">166</a>     @Test
-<a class="jxr_linenumber" name="L167" href="#L167">167</a>     <strong class="jxr_keyword">public</strong> <strong class="jxr_keyword">void</strong> typedRandomGroup() <strong class="jxr_keyword">throws</strong> FitsException {
+<a class="jxr_linenumber" name="L167" href="#L167">167</a>     <strong class="jxr_keyword">public</strong> <strong class="jxr_keyword">void</strong> typedRandomGroup() <strong class="jxr_keyword">throws</strong> Exception {
 <a class="jxr_linenumber" name="L168" href="#L168">168</a>         testGroupCreationAndRecreationByType(<strong class="jxr_keyword">new</strong> byte[20][20], <strong class="jxr_keyword">new</strong> byte[3], 8, <span class="jxr_string">"byte"</span>);
 <a class="jxr_linenumber" name="L169" href="#L169">169</a>         testGroupCreationAndRecreationByType(<strong class="jxr_keyword">new</strong> <strong class="jxr_keyword">short</strong>[20][20], <strong class="jxr_keyword">new</strong> <strong class="jxr_keyword">short</strong>[3], 16, <span class="jxr_string">"short"</span>);
 <a class="jxr_linenumber" name="L170" href="#L170">170</a>         testGroupCreationAndRecreationByType(<strong class="jxr_keyword">new</strong> <strong class="jxr_keyword">int</strong>[20][20], <strong class="jxr_keyword">new</strong> <strong class="jxr_keyword">int</strong>[3], 32, <span class="jxr_string">"int"</span>);
@@ -182,7 +182,7 @@
 <a class="jxr_linenumber" name="L174" href="#L174">174</a>     }
 <a class="jxr_linenumber" name="L175" href="#L175">175</a> 
 <a class="jxr_linenumber" name="L176" href="#L176">176</a>     @Test(expected = FitsException.<strong class="jxr_keyword">class</strong>)
-<a class="jxr_linenumber" name="L177" href="#L177">177</a>     <strong class="jxr_keyword">public</strong> <strong class="jxr_keyword">void</strong> illegalTypedRandomGroup() <strong class="jxr_keyword">throws</strong> FitsException {
+<a class="jxr_linenumber" name="L177" href="#L177">177</a>     <strong class="jxr_keyword">public</strong> <strong class="jxr_keyword">void</strong> illegalTypedRandomGroup() <strong class="jxr_keyword">throws</strong> Exception {
 <a class="jxr_linenumber" name="L178" href="#L178">178</a>         testGroupCreationAndRecreationByType(<strong class="jxr_keyword">new</strong> Double[20][20], <strong class="jxr_keyword">new</strong> Double[3], -64, <span class="jxr_string">"Double"</span>);
 <a class="jxr_linenumber" name="L179" href="#L179">179</a>     }
 <a class="jxr_linenumber" name="L180" href="#L180">180</a> 
@@ -191,9 +191,9 @@
 <a class="jxr_linenumber" name="L183" href="#L183">183</a>         <strong class="jxr_keyword">float</strong>[][] fa = <strong class="jxr_keyword">new</strong> <strong class="jxr_keyword">float</strong>[20][20];
 <a class="jxr_linenumber" name="L184" href="#L184">184</a>         <strong class="jxr_keyword">float</strong>[] pa = <strong class="jxr_keyword">new</strong> <strong class="jxr_keyword">float</strong>[3];
 <a class="jxr_linenumber" name="L185" href="#L185">185</a>         RandomGroupsData groups;
-<a class="jxr_linenumber" name="L186" href="#L186">186</a>         BufferedFile bf = <strong class="jxr_keyword">null</strong>;
+<a class="jxr_linenumber" name="L186" href="#L186">186</a>         FitsFile bf = <strong class="jxr_keyword">null</strong>;
 <a class="jxr_linenumber" name="L187" href="#L187">187</a>         <strong class="jxr_keyword">try</strong> {
-<a class="jxr_linenumber" name="L188" href="#L188">188</a>             bf = <strong class="jxr_keyword">new</strong> BufferedFile(<span class="jxr_string">"target/testResetData"</span>, <span class="jxr_string">"rw"</span>);
+<a class="jxr_linenumber" name="L188" href="#L188">188</a>             bf = <strong class="jxr_keyword">new</strong> FitsFile(<span class="jxr_string">"target/testResetData"</span>, <span class="jxr_string">"rw"</span>);
 <a class="jxr_linenumber" name="L189" href="#L189">189</a>             Object[][] data = <strong class="jxr_keyword">new</strong> Object[1][2];
 <a class="jxr_linenumber" name="L190" href="#L190">190</a>             data[0][0] = pa;
 <a class="jxr_linenumber" name="L191" href="#L191">191</a>             data[0][1] = fa;
@@ -206,7 +206,7 @@
 <a class="jxr_linenumber" name="L198" href="#L198">198</a> 
 <a class="jxr_linenumber" name="L199" href="#L199">199</a>         <em class="jxr_comment">// ok now test it</em>
 <a class="jxr_linenumber" name="L200" href="#L200">200</a>         <strong class="jxr_keyword">try</strong> {
-<a class="jxr_linenumber" name="L201" href="#L201">201</a>             bf = <strong class="jxr_keyword">new</strong> BufferedFile(<span class="jxr_string">"target/testResetData"</span>, <span class="jxr_string">"rw"</span>);
+<a class="jxr_linenumber" name="L201" href="#L201">201</a>             bf = <strong class="jxr_keyword">new</strong> FitsFile(<span class="jxr_string">"target/testResetData"</span>, <span class="jxr_string">"rw"</span>);
 <a class="jxr_linenumber" name="L202" href="#L202">202</a>             bf.readLong();
 <a class="jxr_linenumber" name="L203" href="#L203">203</a>             groups = <strong class="jxr_keyword">new</strong> RandomGroupsData();
 <a class="jxr_linenumber" name="L204" href="#L204">204</a>             groups.read(bf);
@@ -220,7 +220,7 @@
 <a class="jxr_linenumber" name="L212" href="#L212">212</a>         }
 <a class="jxr_linenumber" name="L213" href="#L213">213</a>     }
 <a class="jxr_linenumber" name="L214" href="#L214">214</a> 
-<a class="jxr_linenumber" name="L215" href="#L215">215</a>     <strong class="jxr_keyword">private</strong> <strong class="jxr_keyword">void</strong> testGroupCreationAndRecreationByType(Object fa, Object pa, <strong class="jxr_keyword">int</strong> bipix, String typeName) <strong class="jxr_keyword">throws</strong> FitsException {
+<a class="jxr_linenumber" name="L215" href="#L215">215</a>     <strong class="jxr_keyword">private</strong> <strong class="jxr_keyword">void</strong> testGroupCreationAndRecreationByType(Object fa, Object pa, <strong class="jxr_keyword">int</strong> bipix, String typeName) <strong class="jxr_keyword">throws</strong> Exception {
 <a class="jxr_linenumber" name="L216" href="#L216">216</a>         Object[][] data = <strong class="jxr_keyword">new</strong> Object[1][2];
 <a class="jxr_linenumber" name="L217" href="#L217">217</a>         data[0][0] = pa;
 <a class="jxr_linenumber" name="L218" href="#L218">218</a>         data[0][1] = fa;
@@ -247,6 +247,6 @@
 <a class="jxr_linenumber" name="L239" href="#L239">239</a> }
 </pre>
 <hr/>
-<div id="footer">Copyright &#169; 1996&#x2013;2017 nom-tam-fits. All rights reserved.</div>
+<div id="footer">Copyright &#169; 1996&#x2013;2021 nom-tam-fits. All rights reserved.</div>
 </body>
 </html>

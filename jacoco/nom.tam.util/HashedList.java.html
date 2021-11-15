@@ -1,10 +1,10 @@
-<?xml version="1.0" encoding="UTF-8"?><!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Strict//EN" "http://www.w3.org/TR/xhtml1/DTD/xhtml1-strict.dtd"><html xmlns="http://www.w3.org/1999/xhtml" lang="en"><head><meta http-equiv="Content-Type" content="text/html;charset=UTF-8"/><link rel="stylesheet" href="../.resources/report.css" type="text/css"/><link rel="shortcut icon" href="../.resources/report.gif" type="image/gif"/><title>HashedList.java</title><link rel="stylesheet" href="../.resources/prettify.css" type="text/css"/><script type="text/javascript" src="../.resources/prettify.js"></script></head><body onload="window['PR_TAB_WIDTH']=4;prettyPrint()"><div class="breadcrumb" id="breadcrumb"><span class="info"><a href="../.sessions.html" class="el_session">Sessions</a></span><a href="../index.html" class="el_report">nom.tam FITS library</a> &gt; <a href="index.source.html" class="el_package">nom.tam.util</a> &gt; <span class="el_source">HashedList.java</span></div><h1>HashedList.java</h1><pre class="source lang-java linenums">package nom.tam.util;
+<?xml version="1.0" encoding="UTF-8"?><!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Strict//EN" "http://www.w3.org/TR/xhtml1/DTD/xhtml1-strict.dtd"><html xmlns="http://www.w3.org/1999/xhtml" lang="en"><head><meta http-equiv="Content-Type" content="text/html;charset=UTF-8"/><link rel="stylesheet" href="../jacoco-resources/report.css" type="text/css"/><link rel="shortcut icon" href="../jacoco-resources/report.gif" type="image/gif"/><title>HashedList.java</title><link rel="stylesheet" href="../jacoco-resources/prettify.css" type="text/css"/><script type="text/javascript" src="../jacoco-resources/prettify.js"></script></head><body onload="window['PR_TAB_WIDTH']=4;prettyPrint()"><div class="breadcrumb" id="breadcrumb"><span class="info"><a href="../jacoco-sessions.html" class="el_session">Sessions</a></span><a href="../index.html" class="el_report">nom.tam FITS library</a> &gt; <a href="index.source.html" class="el_package">nom.tam.util</a> &gt; <span class="el_source">HashedList.java</span></div><h1>HashedList.java</h1><pre class="source lang-java linenums">package nom.tam.util;
 
 /*
  * #%L
  * nom.tam FITS library
  * %%
- * Copyright (C) 2004 - 2015 nom-tam-fits
+ * Copyright (C) 2004 - 2021 nom-tam-fits
  * %%
  * This is free and unencumbered software released into the public domain.
  * 
@@ -98,75 +98,87 @@ import java.util.NoSuchElementException;
 
         @Override
         public void add(VALUE reference) {
-<span class="fc" id="L101">            HashedList.this.add(this.current++, reference);</span>
-<span class="fc" id="L102">        }</span>
+<span class="fc" id="L101">            HashedList.this.add(this.current, reference);</span>
+<span class="fc" id="L102">            this.current++;</span>
+                
+            // AK: Do not allow the iterator to exceed the header size
+            //     prev() requires this to work properly...
+<span class="fc bfc" id="L106" title="All 2 branches covered.">            if (this.current &gt; HashedList.this.size()) {</span>
+<span class="fc" id="L107">                this.current = HashedList.this.size();</span>
+            }
+<span class="fc" id="L109">        }</span>
 
         @Override
         public VALUE end() {
-<span class="fc" id="L106">            this.current = Math.max(0, HashedList.this.ordered.size() - 1);</span>
-<span class="fc" id="L107">            return next();</span>
+<span class="fc" id="L113">            this.current = Math.max(0, HashedList.this.ordered.size() - 1);</span>
+<span class="fc" id="L114">            return next();</span>
         }
 
         @Override
         public boolean hasNext() {
-<span class="pc bpc" id="L112" title="1 of 4 branches missed.">            return this.current &gt;= 0 &amp;&amp; this.current &lt; HashedList.this.ordered.size();</span>
+<span class="pc bpc" id="L119" title="1 of 4 branches missed.">            return this.current &gt;= 0 &amp;&amp; this.current &lt; HashedList.this.ordered.size();</span>
         }
 
         @Override
         public boolean hasPrev() {
-<span class="fc bfc" id="L117" title="All 2 branches covered.">            return this.current &gt; 0;</span>
+<span class="fc bfc" id="L124" title="All 2 branches covered.">            return this.current &gt; 0;</span>
         }
 
         @Override
         public VALUE next() {
-<span class="pc bpc" id="L122" title="1 of 4 branches missed.">            if (this.current &lt; 0 || this.current &gt;= HashedList.this.ordered.size()) {</span>
-<span class="fc" id="L123">                throw new NoSuchElementException(&quot;Outside list&quot;);</span>
-            } else {
-<span class="fc" id="L125">                VALUE entry = HashedList.this.ordered.get(this.current);</span>
-<span class="fc" id="L126">                this.current++;</span>
-<span class="fc" id="L127">                return entry;</span>
+<span class="pc bpc" id="L129" title="1 of 4 branches missed.">            if (this.current &lt; 0 || this.current &gt;= HashedList.this.ordered.size()) {</span>
+<span class="fc" id="L130">                throw new NoSuchElementException(&quot;Outside list&quot;);</span>
             }
+<span class="fc" id="L132">            VALUE entry = HashedList.this.ordered.get(this.current);</span>
+<span class="fc" id="L133">            this.current++;</span>
+<span class="fc" id="L134">            return entry;</span>
         }
 
         @Override
         public VALUE next(int count) {
-<span class="fc bfc" id="L133" title="All 2 branches covered.">            for (int index = 1; index &lt; count; index++) {</span>
-<span class="fc" id="L134">                next();</span>
+<span class="fc bfc" id="L139" title="All 2 branches covered.">            for (int index = 1; index &lt; count; index++) {</span>
+<span class="fc" id="L140">                next();</span>
             }
-<span class="fc" id="L136">            return next();</span>
+<span class="fc" id="L142">            return next();</span>
         }
 
         @Override
         public VALUE prev() {
-<span class="fc bfc" id="L141" title="All 2 branches covered.">            if (this.current &lt;= 0) {</span>
-<span class="fc" id="L142">                throw new NoSuchElementException(&quot;Before beginning of list&quot;);</span>
+<span class="fc bfc" id="L147" title="All 2 branches covered.">            if (this.current &lt;= 0) {</span>
+<span class="fc" id="L148">                throw new NoSuchElementException(&quot;Before beginning of list&quot;);</span>
             }
-<span class="fc" id="L144">            return HashedList.this.ordered.get(--this.current);</span>
+<span class="fc" id="L150">            return HashedList.this.ordered.get(--this.current);</span>
         }
 
         @Override
         public void remove() {
-<span class="pc bpc" id="L149" title="2 of 4 branches missed.">            if (this.current &gt; 0 &amp;&amp; this.current &lt;= HashedList.this.ordered.size()) {</span>
-<span class="fc" id="L150">                HashedList.this.remove(--this.current);</span>
+<span class="pc bpc" id="L155" title="2 of 4 branches missed.">            if (this.current &gt; 0 &amp;&amp; this.current &lt;= HashedList.this.ordered.size()) {</span>
+<span class="fc" id="L156">                HashedList.this.remove(--this.current);</span>
             }
-<span class="fc" id="L152">        }</span>
+<span class="fc" id="L158">        }</span>
 
         @Override
         public void setKey(String key) {
-<span class="fc" id="L156">            VALUE entry = HashedList.this.keyed.get(key);</span>
-<span class="fc bfc" id="L157" title="All 2 branches covered.">            if (entry != null) {</span>
-<span class="fc" id="L158">                this.current = indexOf(entry);</span>
+<span class="fc" id="L162">            VALUE entry = HashedList.this.keyed.get(key);</span>
+<span class="fc bfc" id="L163" title="All 2 branches covered.">            if (entry != null) {</span>
+<span class="fc" id="L164">                this.current = indexOf(entry);</span>
             } else {
-<span class="fc" id="L160">                this.current = HashedList.this.ordered.size();</span>
+<span class="fc" id="L166">                this.current = HashedList.this.ordered.size();</span>
             }
-<span class="fc" id="L162">        }</span>
+<span class="fc" id="L168">        }</span>
     }
 
     /** An ordered list of the keys */
-<span class="fc" id="L166">    private final ArrayList&lt;VALUE&gt; ordered = new ArrayList&lt;VALUE&gt;();</span>
+<span class="fc" id="L172">    private final ArrayList&lt;VALUE&gt; ordered = new ArrayList&lt;&gt;();</span>
 
     /** The key value pairs */
-<span class="fc" id="L169">    private final HashMap&lt;String, VALUE&gt; keyed = new HashMap&lt;String, VALUE&gt;();</span>
+<span class="fc" id="L175">    private final HashMap&lt;String, VALUE&gt; keyed = new HashMap&lt;&gt;();</span>
+    
+    /**
+     * This maintains a 'current' position in the list...
+     */
+<span class="fc" id="L180">    private HashedListIterator cursor = new HashedListIterator(0);</span>
+
 
     /**
      * Add an element to the list at a specified position. If that element was
@@ -180,67 +192,102 @@ import java.util.NoSuchElementException;
      *            put at the end of the list.
      * @param reference
      *            The element to add to the list.
+     *            
      */
-    private void add(int pos, VALUE reference) {
-<span class="fc" id="L185">        VALUE entry = reference;</span>
-<span class="fc" id="L186">        String key = entry.getKey();</span>
-<span class="fc bfc" id="L187" title="All 4 branches covered.">        if (this.keyed.containsKey(key) &amp;&amp; !unkeyedKey(key)) {</span>
-<span class="fc" id="L188">            int oldPos = indexOf(entry);</span>
-<span class="fc" id="L189">            this.keyed.remove(key);</span>
-<span class="fc" id="L190">            this.ordered.remove(oldPos);</span>
-<span class="fc bfc" id="L191" title="All 2 branches covered.">            if (oldPos &lt; pos) {</span>
-<span class="fc" id="L192">                pos--;</span>
+    private void add(int pos, VALUE entry) {     
+<span class="fc" id="L198">        String key = entry.getKey();</span>
+<span class="fc bfc" id="L199" title="All 4 branches covered.">        if (this.keyed.containsKey(key) &amp;&amp; !unkeyedKey(key)) {</span>
+<span class="fc" id="L200">            int oldPos = indexOf(entry);</span>
+<span class="fc" id="L201">            internalRemove(oldPos, entry);</span>
+<span class="fc bfc" id="L202" title="All 2 branches covered.">            if (oldPos &lt; pos) {</span>
+<span class="fc" id="L203">                pos--;</span>
             }
         }
-<span class="fc" id="L195">        this.keyed.put(key, entry);</span>
-<span class="fc bfc" id="L196" title="All 2 branches covered.">        if (pos &gt;= this.ordered.size()) {</span>
-<span class="fc" id="L197">            this.ordered.add(entry);</span>
+<span class="fc" id="L206">        this.keyed.put(key, entry);</span>
+<span class="fc bfc" id="L207" title="All 2 branches covered.">        if (pos &gt;= this.ordered.size()) {</span>
+            // AK: We are adding a card to the end of the header.
+            //     If the cursor points to the end of the header, we want to increment it.
+            //     We can do this by faking 'insertion' before the last position.
+            //     The cursor will then advance at the end of this method.
+            //     Note, that if the addition of the card was done through the cursor itself
+            //     then the cursor will be incremented twice, once here, and once by the
+            //     cursor itself by the HashedListIterator.add(call).
+            //     But, this is fine, since the end position is properly checked by 
+            //     HashedListIterator.add().
+<span class="fc" id="L217">            pos = this.ordered.size() - 1;</span>
+<span class="fc" id="L218">            this.ordered.add(entry);</span>
         } else {
-<span class="fc" id="L199">            this.ordered.add(pos, entry);</span>
+<span class="fc" id="L220">            this.ordered.add(pos, entry);</span>
         }
-<span class="fc" id="L201">    }</span>
+        
+        // AK: When inserting keys before the current position, increment the current
+        //     position so it keeps pointing to the same location in the header...
+<span class="fc bfc" id="L225" title="All 2 branches covered.">        if (pos &lt; cursor.current) {</span>
+<span class="fc" id="L226">            cursor.current++;</span>
+        }
+<span class="fc" id="L228">    }</span>
 
     private static boolean unkeyedKey(String key) {
-<span class="fc bfc" id="L204" title="All 6 branches covered.">        return &quot;COMMENT&quot;.equals(key) || &quot;HISTORY&quot;.equals(key) || key.trim().isEmpty();</span>
+<span class="fc bfc" id="L231" title="All 6 branches covered.">        return &quot;COMMENT&quot;.equals(key) || &quot;HISTORY&quot;.equals(key) || key.trim().isEmpty();</span>
     }
 
     @Override
     public boolean add(VALUE e) {
-<span class="fc" id="L209">        add(this.ordered.size(), e);</span>
-<span class="fc" id="L210">        return true;</span>
+<span class="fc" id="L236">        add(this.ordered.size(), e);</span>
+<span class="fc" id="L237">        return true;</span>
     }
 
+    /**
+     * Similar to add(VALUE), except this replaces an existing card that matches the specified key in-situ.
+     * At the same time, new entries are added at the current position.
+     * 
+     * @param key
+     *            The key of the existing card (if any) to be replaced).
+     * 
+     * @param entry
+     *            The element to add to the list.
+     */
+    public void update(String key, VALUE entry) {
+<span class="pc bpc" id="L251" title="1 of 4 branches missed.">        if (this.keyed.containsKey(key) &amp;&amp; !unkeyedKey(key)) {</span>
+<span class="fc" id="L252">            int index = indexOf(get(key));</span>
+<span class="fc" id="L253">            remove(index);</span>
+<span class="fc" id="L254">            add(index, entry);</span>
+<span class="fc" id="L255">        } else {</span>
+<span class="fc" id="L256">            cursor.add(entry);</span>
+        }
+<span class="fc" id="L258">    }</span>
+    
     @Override
     public boolean addAll(Collection&lt;? extends VALUE&gt; c) {
-<span class="fc bfc" id="L215" title="All 2 branches covered.">        for (VALUE element : c) {</span>
-<span class="fc" id="L216">            add(element);</span>
-<span class="fc" id="L217">        }</span>
-<span class="fc" id="L218">        return true;</span>
+<span class="fc bfc" id="L262" title="All 2 branches covered.">        for (VALUE element : c) {</span>
+<span class="fc" id="L263">            add(element);</span>
+<span class="fc" id="L264">        }</span>
+<span class="fc" id="L265">        return true;</span>
     }
 
     @Override
     public void clear() {
-<span class="fc" id="L223">        this.keyed.clear();</span>
-<span class="fc" id="L224">        this.ordered.clear();</span>
-<span class="fc" id="L225">    }</span>
+<span class="fc" id="L270">        this.keyed.clear();</span>
+<span class="fc" id="L271">        this.ordered.clear();</span>
+<span class="fc" id="L272">    }</span>
 
     @Override
     public boolean contains(Object o) {
-<span class="fc bfc" id="L229" title="All 2 branches covered.">        for (VALUE entry : this.ordered) {</span>
-<span class="fc bfc" id="L230" title="All 2 branches covered.">            if (o.equals(entry)) {</span>
-<span class="fc" id="L231">                return true;</span>
+<span class="fc bfc" id="L276" title="All 2 branches covered.">        for (VALUE entry : this.ordered) {</span>
+<span class="fc bfc" id="L277" title="All 2 branches covered.">            if (o.equals(entry)) {</span>
+<span class="fc" id="L278">                return true;</span>
             }
-<span class="fc" id="L233">        }</span>
-<span class="fc" id="L234">        return false;</span>
+<span class="fc" id="L280">        }</span>
+<span class="fc" id="L281">        return false;</span>
     }
 
     @Override
     public boolean containsAll(Collection&lt;?&gt; c) {
-<span class="fc" id="L239">        List&lt;?&gt; values = new ArrayList&lt;Object&gt;(c);</span>
-<span class="fc bfc" id="L240" title="All 2 branches covered.">        for (VALUE entry : this.ordered) {</span>
-<span class="fc" id="L241">            values.remove(entry);</span>
-<span class="fc" id="L242">        }</span>
-<span class="fc" id="L243">        return values.isEmpty();</span>
+<span class="fc" id="L286">        List&lt;?&gt; values = new ArrayList&lt;Object&gt;(c);</span>
+<span class="fc bfc" id="L287" title="All 2 branches covered.">        for (VALUE entry : this.ordered) {</span>
+<span class="fc" id="L288">            values.remove(entry);</span>
+<span class="fc" id="L289">        }</span>
+<span class="fc" id="L290">        return values.isEmpty();</span>
     }
 
     /**
@@ -249,7 +296,7 @@ import java.util.NoSuchElementException;
      *            the key to search
      */
     public boolean containsKey(Object key) {
-<span class="fc" id="L252">        return this.keyed.containsKey(key);</span>
+<span class="fc" id="L299">        return this.keyed.containsKey(key);</span>
     }
 
     /**
@@ -258,7 +305,7 @@ import java.util.NoSuchElementException;
      *            the index to get
      */
     public VALUE get(int n) {
-<span class="fc" id="L261">        return this.ordered.get(n);</span>
+<span class="fc" id="L308">        return this.ordered.get(n);</span>
     }
 
     /**
@@ -268,7 +315,7 @@ import java.util.NoSuchElementException;
      *            the key to search for
      */
     public VALUE get(Object key) {
-<span class="fc" id="L271">        return this.keyed.get(key);</span>
+<span class="fc" id="L318">        return this.keyed.get(key);</span>
     }
 
     // Note that, if the entry is not found, a NoSuchElementException is
@@ -276,18 +323,18 @@ import java.util.NoSuchElementException;
     // the method is used internally in situations where the entry must be
     // there.
     int indexOf(VALUE entry) {
-<span class="fc bfc" id="L279" title="All 2 branches covered.">        for (int index = 0; index &lt; this.ordered.size(); index++) {</span>
-<span class="fc" id="L280">            String searchKey = entry.getKey();</span>
-<span class="fc bfc" id="L281" title="All 2 branches covered.">            if (searchKey.equals(this.ordered.get(index).getKey())) {</span>
-<span class="fc" id="L282">                return index;</span>
+<span class="fc bfc" id="L326" title="All 2 branches covered.">        for (int index = 0; index &lt; this.ordered.size(); index++) {</span>
+<span class="fc" id="L327">            String searchKey = entry.getKey();</span>
+<span class="fc bfc" id="L328" title="All 2 branches covered.">            if (searchKey.equals(this.ordered.get(index).getKey())) {</span>
+<span class="fc" id="L329">                return index;</span>
             }
         }
-<span class="fc" id="L285">        throw new NoSuchElementException(&quot;Internal error: &quot; + entry + &quot; should have been found in &quot; + ordered);</span>
+<span class="fc" id="L332">        throw new NoSuchElementException(&quot;Internal error: &quot; + entry + &quot; should have been found in &quot; + ordered);</span>
     }
 
     @Override
     public boolean isEmpty() {
-<span class="fc" id="L290">        return this.ordered.isEmpty();</span>
+<span class="fc" id="L337">        return this.ordered.isEmpty();</span>
     }
 
     /**
@@ -295,7 +342,7 @@ import java.util.NoSuchElementException;
      */
     @Override
     public HashedListIterator iterator() {
-<span class="fc" id="L298">        return new HashedListIterator(0);</span>
+<span class="fc" id="L345">        return new HashedListIterator(0);</span>
     }
 
     /**
@@ -304,13 +351,26 @@ import java.util.NoSuchElementException;
      *            the index to start the iterator
      */
     public Cursor&lt;String, VALUE&gt; iterator(int n) {
-<span class="fc bfc" id="L307" title="All 4 branches covered.">        if (n &gt;= 0 &amp;&amp; n &lt;= this.ordered.size()) {</span>
-<span class="fc" id="L308">            return new HashedListIterator(n);</span>
-        } else {
-<span class="fc" id="L310">            throw new NoSuchElementException(&quot;Invalid index for iterator:&quot; + n);</span>
+<span class="fc bfc" id="L354" title="All 4 branches covered.">        if (n &gt;= 0 &amp;&amp; n &lt;= this.ordered.size()) {</span>
+<span class="fc" id="L355">            return new HashedListIterator(n);</span>
         }
+<span class="fc" id="L357">        throw new NoSuchElementException(&quot;Invalid index for iterator:&quot; + n);</span>
+    }
+    
+    
+    /** Return the iterator that represents the current position in the header. This provides a connection
+     *  between editing headers through Header add/append/update methods, and via Cursors, which can be
+     *  used side-by-side while maintaining desired card ordering. For the reverse direction (
+     *  translating iterator position to current position in the header), we can just use findCard().
+     *  
+     *  @return the iterator representing the current position in the header.
+     *  
+     */
+    public Cursor&lt;String, VALUE&gt; cursor() {
+<span class="fc" id="L370">        return cursor;</span>
     }
 
+    
     /**
      * @return an iterator over the list starting with the entry with a given
      *         key.
@@ -318,12 +378,11 @@ import java.util.NoSuchElementException;
      *            the key to use as a start point
      */
     public HashedListIterator iterator(String key) {
-<span class="fc" id="L321">        VALUE entry = this.keyed.get(key);</span>
-<span class="fc bfc" id="L322" title="All 2 branches covered.">        if (entry != null) {</span>
-<span class="fc" id="L323">            return new HashedListIterator(indexOf(entry));</span>
-        } else {
-<span class="fc" id="L325">            throw new NoSuchElementException(&quot;Unknown key for iterator:&quot; + key);</span>
+<span class="fc" id="L381">        VALUE entry = this.keyed.get(key);</span>
+<span class="fc bfc" id="L382" title="All 2 branches covered.">        if (entry != null) {</span>
+<span class="fc" id="L383">            return new HashedListIterator(indexOf(entry));</span>
         }
+<span class="fc" id="L385">        throw new NoSuchElementException(&quot;Unknown key for iterator:&quot; + key);</span>
     }
 
     /**
@@ -334,36 +393,44 @@ import java.util.NoSuchElementException;
      * @return true if the index was in range
      */
     public boolean remove(int index) {
-<span class="fc bfc" id="L337" title="All 4 branches covered.">        if (index &gt;= 0 &amp;&amp; index &lt; this.ordered.size()) {</span>
-<span class="fc" id="L338">            return internalRemove(index, this.ordered.get(index));</span>
+<span class="fc bfc" id="L396" title="All 4 branches covered.">        if (index &gt;= 0 &amp;&amp; index &lt; this.ordered.size()) {</span>
+<span class="fc" id="L397">            return internalRemove(index, this.ordered.get(index));</span>
         }
-<span class="fc" id="L340">        return false;</span>
+<span class="fc" id="L399">        return false;</span>
     }
 
+  
     private boolean internalRemove(int index, VALUE entry) {
-<span class="fc" id="L344">        this.keyed.remove(entry.getKey());</span>
-<span class="fc" id="L345">        this.ordered.remove(index);</span>
-<span class="fc" id="L346">        return true;</span>
+<span class="fc" id="L404">        this.keyed.remove(entry.getKey());</span>
+<span class="fc" id="L405">        this.ordered.remove(index);</span>
+        
+        // AK: if removing a key before the current position, update the current position to
+        //     keep pointing to the same location.
+<span class="fc bfc" id="L409" title="All 2 branches covered.">        if (index &lt; cursor.current) {</span>
+<span class="fc" id="L410">            cursor.current--;</span>
+        }
+        
+<span class="fc" id="L413">        return true;</span>
     }
 
     @Override
     public boolean remove(Object o) {
-<span class="fc bfc" id="L351" title="All 2 branches covered.">        for (int i = 0; i &lt; this.ordered.size(); i++) {</span>
-<span class="fc" id="L352">            VALUE entry = this.ordered.get(i);</span>
-<span class="fc bfc" id="L353" title="All 2 branches covered.">            if (o.equals(entry)) {</span>
-<span class="fc" id="L354">                return internalRemove(i, entry);</span>
+<span class="fc bfc" id="L418" title="All 2 branches covered.">        for (int i = 0; i &lt; this.ordered.size(); i++) {</span>
+<span class="fc" id="L419">            VALUE entry = this.ordered.get(i);</span>
+<span class="fc bfc" id="L420" title="All 2 branches covered.">            if (o.equals(entry)) {</span>
+<span class="fc" id="L421">                return internalRemove(i, entry);</span>
             }
         }
-<span class="fc" id="L357">        return false;</span>
+<span class="fc" id="L424">        return false;</span>
     }
 
     @Override
     public boolean removeAll(Collection&lt;?&gt; c) {
-<span class="fc" id="L362">        boolean result = false;</span>
-<span class="fc bfc" id="L363" title="All 2 branches covered.">        for (Object element : c.toArray()) {</span>
-<span class="pc bpc" id="L364" title="3 of 4 branches missed.">            result = remove(element) || result;</span>
+<span class="fc" id="L429">        boolean result = false;</span>
+<span class="fc bfc" id="L430" title="All 2 branches covered.">        for (Object element : c.toArray()) {</span>
+<span class="pc bpc" id="L431" title="3 of 4 branches missed.">            result = remove(element) || result;</span>
         }
-<span class="fc" id="L366">        return result;</span>
+<span class="fc" id="L433">        return result;</span>
     }
 
     /**
@@ -375,14 +442,12 @@ import java.util.NoSuchElementException;
      * @return &lt;code&gt;true&lt;/code&gt; if the key was removed
      */
     public boolean removeKey(Object key) {
-<span class="fc" id="L378">        VALUE entry = this.keyed.get(key);</span>
-<span class="fc bfc" id="L379" title="All 2 branches covered.">        if (entry != null) {</span>
-<span class="fc" id="L380">            int index = indexOf(entry);</span>
-<span class="fc" id="L381">            this.keyed.remove(key);</span>
-<span class="fc" id="L382">            this.ordered.remove(index);</span>
-<span class="fc" id="L383">            return true;</span>
+<span class="fc" id="L445">        VALUE entry = get(key);</span>
+<span class="fc bfc" id="L446" title="All 2 branches covered.">        if (entry != null) { </span>
+<span class="fc" id="L447">            internalRemove(indexOf(entry), entry);</span>
+<span class="fc" id="L448">            return true;</span>
         }
-<span class="fc" id="L385">        return false;</span>
+<span class="fc" id="L450">        return false;</span>
     }
 
     /**
@@ -396,34 +461,34 @@ import java.util.NoSuchElementException;
      */
     public boolean replaceKey(String oldKey, String newKey) {
 
-<span class="fc bfc" id="L399" title="All 4 branches covered.">        if (!this.keyed.containsKey(oldKey) || this.keyed.containsKey(newKey)) {</span>
-<span class="fc" id="L400">            return false;</span>
+<span class="fc bfc" id="L464" title="All 4 branches covered.">        if (!this.keyed.containsKey(oldKey) || this.keyed.containsKey(newKey)) {</span>
+<span class="fc" id="L465">            return false;</span>
         }
-<span class="fc" id="L402">        VALUE oldVal = this.keyed.get(oldKey);</span>
+<span class="fc" id="L467">        VALUE oldVal = this.keyed.get(oldKey);</span>
         // same entry in hashmap and ordered so only one change.
-<span class="fc" id="L404">        this.keyed.remove(oldKey);</span>
-<span class="fc" id="L405">        this.keyed.put(newKey, oldVal);</span>
-<span class="fc" id="L406">        return true;</span>
+<span class="fc" id="L469">        this.keyed.remove(oldKey);</span>
+<span class="fc" id="L470">        this.keyed.put(newKey, oldVal);</span>
+<span class="fc" id="L471">        return true;</span>
     }
 
     @Override
     public boolean retainAll(Collection&lt;?&gt; c) {
 
-<span class="fc" id="L412">        Iterator&lt;VALUE&gt; iter = iterator();</span>
-<span class="fc" id="L413">        boolean result = false;</span>
-<span class="fc bfc" id="L414" title="All 2 branches covered.">        while (iter.hasNext()) {</span>
-<span class="fc" id="L415">            Object o = iter.next();</span>
-<span class="fc bfc" id="L416" title="All 2 branches covered.">            if (!c.contains(o)) {</span>
-<span class="fc" id="L417">                iter.remove();</span>
-<span class="fc" id="L418">                result = true;</span>
+<span class="fc" id="L477">        Iterator&lt;VALUE&gt; iter = iterator();</span>
+<span class="fc" id="L478">        boolean result = false;</span>
+<span class="fc bfc" id="L479" title="All 2 branches covered.">        while (iter.hasNext()) {</span>
+<span class="fc" id="L480">            Object o = iter.next();</span>
+<span class="fc bfc" id="L481" title="All 2 branches covered.">            if (!c.contains(o)) {</span>
+<span class="fc" id="L482">                iter.remove();</span>
+<span class="fc" id="L483">                result = true;</span>
             }
-<span class="fc" id="L420">        }</span>
-<span class="fc" id="L421">        return result;</span>
+<span class="fc" id="L485">        }</span>
+<span class="fc" id="L486">        return result;</span>
     }
 
     @Override
     public int size() {
-<span class="fc" id="L426">        return this.ordered.size();</span>
+<span class="fc" id="L491">        return this.ordered.size();</span>
     }
 
     /**
@@ -433,22 +498,22 @@ import java.util.NoSuchElementException;
      *            the comparator to use for the sorting
      */
     public void sort(final Comparator&lt;String&gt; comp) {
-<span class="fc" id="L436">        java.util.Collections.sort(this.ordered, new EntryComparator&lt;VALUE&gt;(comp));</span>
-<span class="fc" id="L437">    }</span>
+<span class="fc" id="L501">        java.util.Collections.sort(this.ordered, new EntryComparator&lt;VALUE&gt;(comp));</span>
+<span class="fc" id="L502">    }</span>
 
     @Override
     public Object[] toArray() {
-<span class="fc" id="L441">        return ordered.toArray();</span>
+<span class="fc" id="L506">        return ordered.toArray();</span>
     }
 
     @Override
     public &lt;T&gt; T[] toArray(T[] o) {
-<span class="fc" id="L446">        return ordered.toArray(o);</span>
+<span class="fc" id="L511">        return ordered.toArray(o);</span>
     }
 
     @Override
     public String toString() {
-<span class="fc" id="L451">        return this.ordered.toString();</span>
+<span class="fc" id="L516">        return this.ordered.toString();</span>
     }
 }
-</pre><div class="footer"><span class="right">Created with <a href="http://www.eclemma.org/jacoco">JaCoCo</a> 0.7.6.201602180812</span></div></body></html>
+</pre><div class="footer"><span class="right">Created with <a href="http://www.jacoco.org/jacoco">JaCoCo</a> 0.8.7.202105040129</span></div></body></html>

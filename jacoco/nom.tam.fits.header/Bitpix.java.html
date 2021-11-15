@@ -1,0 +1,413 @@
+<?xml version="1.0" encoding="UTF-8"?><!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Strict//EN" "http://www.w3.org/TR/xhtml1/DTD/xhtml1-strict.dtd"><html xmlns="http://www.w3.org/1999/xhtml" lang="en"><head><meta http-equiv="Content-Type" content="text/html;charset=UTF-8"/><link rel="stylesheet" href="../jacoco-resources/report.css" type="text/css"/><link rel="shortcut icon" href="../jacoco-resources/report.gif" type="image/gif"/><title>Bitpix.java</title><link rel="stylesheet" href="../jacoco-resources/prettify.css" type="text/css"/><script type="text/javascript" src="../jacoco-resources/prettify.js"></script></head><body onload="window['PR_TAB_WIDTH']=4;prettyPrint()"><div class="breadcrumb" id="breadcrumb"><span class="info"><a href="../jacoco-sessions.html" class="el_session">Sessions</a></span><a href="../index.html" class="el_report">nom.tam FITS library</a> &gt; <a href="index.source.html" class="el_package">nom.tam.fits.header</a> &gt; <span class="el_source">Bitpix.java</span></div><h1>Bitpix.java</h1><pre class="source lang-java linenums">package nom.tam.fits.header;
+
+import java.util.logging.Logger;
+
+/*
+ * #%L
+ * nom.tam FITS library
+ * %%
+ * Copyright (C) 1996 - 2021 nom-tam-fits
+ * %%
+ * This is free and unencumbered software released into the public domain.
+ * 
+ * Anyone is free to copy, modify, publish, use, compile, sell, or
+ * distribute this software, either in source code form or as a compiled
+ * binary, for any purpose, commercial or non-commercial, and by any
+ * means.
+ * 
+ * In jurisdictions that recognize copyright laws, the author or authors
+ * of this software dedicate any and all copyright interest in the
+ * software to the public domain. We make this dedication for the benefit
+ * of the public at large and to the detriment of our heirs and
+ * successors. We intend this dedication to be an overt act of
+ * relinquishment in perpetuity of all present and future rights to this
+ * software under copyright law.
+ * 
+ * THE SOFTWARE IS PROVIDED &quot;AS IS&quot;, WITHOUT WARRANTY OF ANY KIND,
+ * EXPRESS OR IMPLIED, INCLUDING BUT NOT LIMITED TO THE WARRANTIES OF
+ * MERCHANTABILITY, FITNESS FOR A PARTICULAR PURPOSE AND NONINFRINGEMENT.
+ * IN NO EVENT SHALL THE AUTHORS BE LIABLE FOR ANY CLAIM, DAMAGES OR
+ * OTHER LIABILITY, WHETHER IN AN ACTION OF CONTRACT, TORT OR OTHERWISE,
+ * ARISING FROM, OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR
+ * OTHER DEALINGS IN THE SOFTWARE.
+ * #L%
+ */
+
+import nom.tam.fits.FitsException;
+import nom.tam.fits.FitsFactory;
+import nom.tam.fits.Header;
+import nom.tam.fits.HeaderCard;
+import nom.tam.util.type.ElementType;
+
+/**
+ * Standard BITPIX values and associated functions. Since the FITS BITPIX keyword has 
+ * only a handful of legal values, an &lt;code&gt;enum&lt;/code&gt; provides ideal type-safe
+ * representation. It also allows to interface the value for the type of data
+ * it represents in a natural way.
+ * 
+ * 
+ * @author Attila Kovacs
+ *
+ * @since 1.16
+ */
+<span class="fc" id="L53">public enum Bitpix {</span>
+<span class="fc" id="L54">    BYTE(Byte.TYPE, ElementType.BYTE, &quot;bytes&quot;),</span>
+<span class="fc" id="L55">    SHORT(Short.TYPE, ElementType.SHORT, &quot;16-bit integers&quot;),</span>
+<span class="fc" id="L56">    INTEGER(Integer.TYPE, ElementType.INT, &quot;32-bit integers&quot;),</span>
+<span class="fc" id="L57">    LONG(Long.TYPE, ElementType.LONG, &quot;64-bit integers&quot;),</span>
+<span class="fc" id="L58">    FLOAT(Float.TYPE, ElementType.FLOAT, &quot;32-bit floating point&quot;),</span>
+<span class="fc" id="L59">    DOUBLE(Double.TYPE, ElementType.DOUBLE, &quot;64-bit floating point&quot;);</span>
+    
+<span class="fc" id="L61">    private static final Logger LOG = Logger.getLogger(&quot;nom.tam.fits.HeaderCardParser&quot;);</span>
+    
+    private static final int BITS_TO_BYTES_SHIFT = 3;
+    
+    /** BITPIX value for &lt;code&gt;byte&lt;/code&gt; type data */
+    public static final int VALUE_FOR_BYTE = 8;
+    
+    /** BITPIX value for &lt;code&gt;short&lt;/code&gt; type data */
+    public static final int VALUE_FOR_SHORT = 16;
+    
+    /** BITPIX value for &lt;code&gt;int&lt;/code&gt; type data */
+    public static final int VALUE_FOR_INT = 32;
+    
+    /** BITPIX value for &lt;code&gt;long&lt;/code&gt; type data */
+    public static final int VALUE_FOR_LONG = 64;
+    
+    /** BITPIX value for &lt;code&gt;float&lt;/code&gt; type data */
+    public static final int VALUE_FOR_FLOAT = -32;
+    
+    /** BITPIX value for &lt;code&gt;double&lt;/code&gt; type data */
+    public static final int VALUE_FOR_DOUBLE = -64;
+    
+    
+    /** the number subclass represented this BITPIX instance */
+    private Class&lt;? extends Number&gt; numberType;
+    
+    /** the library's element type */
+    private ElementType&lt;?&gt; elementType;
+  
+    /** a concise description of the data type represented */
+    private String description;
+
+    
+    /**
+     * Constructor for a standard BITPIX instance.
+     * 
+     * @param numberType        the Number subclass     
+     * @param elementType       the class of data element
+     * @param desc              a concise description of the data type
+     */
+<span class="fc" id="L101">    Bitpix(Class&lt;? extends Number&gt; numberType, ElementType&lt;?&gt; elementType, String desc) {</span>
+<span class="fc" id="L102">        this.numberType = numberType;</span>
+<span class="fc" id="L103">        this.elementType = elementType;</span>
+<span class="fc" id="L104">        this.description = desc;</span>
+<span class="fc" id="L105">    }</span>
+    
+    public final ElementType&lt;?&gt; getElementType() {
+<span class="fc" id="L108">        return elementType;</span>
+    }
+    
+    /**
+     * Returns the sublass of {@link Number} corresponding for this BITPIX value.
+     * 
+     * @return  the number class for this BITPIX instance.
+     * 
+     * @see #getPrimitiveType()
+     * @see Bitpix#forNumberType(Class)
+     */
+    public final Class&lt;? extends Number&gt; getNumberType() {
+<span class="fc" id="L120">        return numberType;</span>
+    }
+    
+    /**
+     * Returns the primitive built-in Java number type corresponding for this BITPIX value.
+     * 
+     * @return  the primitive class for this BITPIX instance, such as &lt;code&gt;int.class&lt;/code&gt;, 
+     *          or &lt;code&gt;double.class&lt;/code&gt;.
+     * 
+     * @see #getNumberType()
+     * @see Bitpix#forPrimitiveType(Class)
+     */
+    public final Class&lt;?&gt; getPrimitiveType() {
+<span class="fc" id="L133">        return elementType.primitiveClass();</span>
+    }
+    
+    /**
+     * Returns the FITS standard BITPIX header value for this instance.
+     * 
+     * @return  the standard FITS BITPIX value, such as 8, 16, 32, 64, -32, or -64.
+     * 
+     * @see Bitpix#forValue(int)
+     * @see #getHeaderCard()
+     */
+    public final int getHeaderValue() {
+<span class="fc" id="L145">        return elementType.bitPix();</span>
+    }
+    
+    /**
+     * Returns the Java letter ID for this BITPIX instance, such as the letter ID
+     * used in the Java array representation of that class. For example, an &lt;code&gt;int[]&lt;/code&gt;
+     * array has class &lt;code&gt;I[&lt;/code&gt;, so the letter ID is &lt;code&gt;I&lt;/code&gt;.
+     * 
+     * @return  The Java letter ID for arrays corresponding to this BITPIX instance. 
+     * 
+     * @see Bitpix#forArrayID(char)
+     */
+    public final char getArrayID() {
+<span class="fc" id="L158">        return elementType.type();</span>
+    }
+    
+    /**
+     * Returns a concise description of the data type represented by this BITPIX instance.
+     * 
+     * @return  a brief description of the corresponding data type.
+     */
+    public final String getDescription() {
+<span class="fc" id="L167">        return description;</span>
+    }
+    
+    /**
+     * Returns the size of a data element, in bytes, for this BITPIX instance
+     * 
+     * @return      the size of a data element in bytes.
+     */
+    public final int byteSize() {
+<span class="fc" id="L176">        return Math.abs(getHeaderValue()) &gt;&gt;&gt; BITS_TO_BYTES_SHIFT;</span>
+    }
+    
+    /**
+     * Returns the standard FITS header card for this BITPIX instance.
+     * 
+     * @return      the standard FITS header card with the BITPIX keyword and the corresponding value
+     *              for this instance.
+     *              
+     * @see #getHeaderValue()
+     */
+    public final HeaderCard getHeaderCard() {
+<span class="fc" id="L188">        return HeaderCard.create(Standard.BITPIX, getHeaderValue());</span>
+    }
+    
+    /**
+     * Returns the standard BITPIX object for a primitive type.
+     * 
+     * @param dataType      the primitive class, such as &lt;code&gt;int.class&lt;/code&gt;.
+     * @return              the standard BITPIX associated to the number type
+     * @throws FitsException    if the class is not a primitive class, or if its not
+     *                          one that has a corresponding BITPIX value (e.g. &lt;code&gt;
+     *                          boolean.class&lt;/code&gt;).
+     *                          
+     * @see Bitpix#forNumberType(Class)
+     * @see #getPrimitiveType()
+     */
+    public static Bitpix forPrimitiveType(Class&lt;?&gt; dataType) throws FitsException {
+<span class="fc bfc" id="L204" title="All 2 branches covered.">        if (dataType == byte.class) {</span>
+<span class="fc" id="L205">            return BYTE;</span>
+        }
+<span class="fc bfc" id="L207" title="All 2 branches covered.">        if (dataType == short.class) {</span>
+<span class="fc" id="L208">            return SHORT;</span>
+        }
+<span class="fc bfc" id="L210" title="All 2 branches covered.">        if (dataType == int.class) {</span>
+<span class="fc" id="L211">            return INTEGER;</span>
+        }
+<span class="fc bfc" id="L213" title="All 2 branches covered.">        if (dataType == long.class) {</span>
+<span class="fc" id="L214">            return LONG;</span>
+        }
+<span class="fc bfc" id="L216" title="All 2 branches covered.">        if (dataType == float.class) {</span>
+<span class="fc" id="L217">            return FLOAT;</span>
+        }
+<span class="fc bfc" id="L219" title="All 2 branches covered.">        if (dataType == double.class) {</span>
+<span class="fc" id="L220">            return DOUBLE;</span>
+        }
+<span class="pc bpc" id="L222" title="1 of 2 branches missed.">        if (Object.class.isAssignableFrom(dataType)) {</span>
+<span class="fc" id="L223">            throw new FitsException(&quot;No BITPIX for type: &quot; + dataType + &quot; (expected primitive type)&quot;);</span>
+        }
+        
+<span class="nc" id="L226">        throw new FitsException(&quot;No BITPIX for primitive type: &quot; + dataType);</span>
+    }
+    
+    /**
+     * Returns the standard BITPIX object for a number type.
+     * 
+     * @param dataType      the class of number, such as {@link Integer#TYPE}.
+     * @return              the standard BITPIX associated to the number type
+     * @throws FitsException    if there is no standard BITPIX value corresponding to the number type
+     *                          (e.g. {@link java.math.BigDecimal}).
+     *                          
+     * @see Bitpix#forPrimitiveType(Class)
+     * @see #getNumberType()
+     */
+    public static Bitpix forNumberType(Class&lt;? extends Number&gt; dataType) throws FitsException {
+<span class="fc bfc" id="L241" title="All 2 branches covered.">        if (Byte.class.isAssignableFrom(dataType)) {</span>
+<span class="fc" id="L242">            return BYTE;</span>
+        }
+<span class="fc bfc" id="L244" title="All 2 branches covered.">        if (Short.class.isAssignableFrom(dataType)) {</span>
+<span class="fc" id="L245">            return SHORT;</span>
+        }
+<span class="fc bfc" id="L247" title="All 2 branches covered.">        if (Integer.class.isAssignableFrom(dataType)) {</span>
+<span class="fc" id="L248">            return INTEGER;</span>
+        }
+<span class="fc bfc" id="L250" title="All 2 branches covered.">        if (Long.class.isAssignableFrom(dataType)) {</span>
+<span class="fc" id="L251">            return LONG;</span>
+        }
+<span class="fc bfc" id="L253" title="All 2 branches covered.">        if (Float.class.isAssignableFrom(dataType)) {</span>
+<span class="fc" id="L254">            return FLOAT;</span>
+        }
+<span class="fc bfc" id="L256" title="All 2 branches covered.">        if (Double.class.isAssignableFrom(dataType)) {</span>
+<span class="fc" id="L257">            return DOUBLE;</span>
+        }
+<span class="fc" id="L259">        throw new FitsException(&quot;No BITPIX for Number type &quot; + dataType);</span>
+    }
+    
+    
+    /**
+     * Returns the standard BITPIX object based on the value assigned to the BITPIX keyword in the header
+     * 
+     * @param h             the FITS header
+     * @return              the standard BITPIX enum that matches the header description, or is
+     *                      inferred from an invalid header description (provided 
+     *                      {@link FitsFactory#setAllowHeaderRepairs(boolean)} is enabled).
+     * @throws FitsException    if the header does not contain a BITPIX value or it is invalid
+     *                          and cannot or will not be repaired. 
+     *                          
+     * @see Bitpix#fromHeader(Header, boolean)
+     * @see Bitpix#forValue(int)
+     * @see FitsFactory#setAllowHeaderRepairs(boolean)
+     */
+    public static Bitpix fromHeader(Header h) throws FitsException {
+<span class="fc" id="L278">        return forValue(h.getIntValue(Standard.BITPIX, 0));</span>
+    }
+    
+    /**
+     * Returns the standard BITPIX object based on the value assigned to the BITPIX keyword in the header
+     * 
+     * @param h             the FITS header
+     * @param allowRepair   if we can try repair non-standard (invalid) BITPIX values.
+     * @return              the standard BITPIX enum that matches the header description, or is
+     *                      inferred from an invalid header description.
+     * @throws FitsException    if the header does not contain a BITPIX value or it is invalid
+     *                          and cannot or will not be repaired. 
+     *                          
+     * @see Bitpix#fromHeader(Header)
+     * @see Bitpix#forValue(int, boolean)
+     */
+    public static Bitpix fromHeader(Header h, boolean allowRepair) throws FitsException {
+<span class="fc" id="L295">        return forValue(h.getIntValue(Standard.BITPIX, 0), allowRepair);</span>
+    }
+    
+   /**
+    * Returns the standard BITPIX enum value for a given integer value, such as 8, 16, 32, 64, -32, or -64.
+    * If the value is not one of the standard values, then depending on whether header repairs are enabled
+    * either an exception is thrown, or else the value the value is 'repaired' and a loh entry is made
+    * to the logger of {@link Header}.
+    * 
+    * @param ival          The integer value of BITPIX in the FITS header.
+    * @return              The standard value as a Java object.
+    * @throws FitsException    if the value was invalid or irreparable.
+    * 
+    * @see Bitpix#forValue(int, boolean)
+    * @see FitsFactory#setAllowHeaderRepairs(boolean)
+    * @see #getHeaderValue()
+    */
+   public static Bitpix forValue(int ival) throws FitsException {
+        try {
+<span class="fc" id="L314">            return forValue(ival, FitsFactory.isAllowHeaderRepairs());</span>
+<span class="fc" id="L315">        } catch (FitsException e) {</span>
+<span class="fc" id="L316">            throw new FitsException(e.getMessage() + &quot;\n\n&quot;</span>
+                    + &quot; --&gt; Try FitsFactory.setAllowHeaderRepairs(true).\n&quot;);
+        }
+    }
+        
+    /**
+     * Returns the standard BITPIX enum value for a given integer value, such as 8, 16, 32, 64, -32, or -64.
+     * If the value is not one of the standard values, then depending on whether repairs are enabled
+     * either an exception is thrown, or else the value the value is 'repaired' and a loh entry is made
+     * to the logger of {@link Header}.
+     * 
+     * @param ival          The integer value of BITPIX in the FITS header.
+     * @param allowRepair   Whether we can fix up invalid values to make them valid.
+     * @return              The standard value as a Java object.
+     * @throws FitsException    if the value was invalid or irreparable.
+     * 
+     * @see Bitpix#forValue(int)
+     * @see #getHeaderValue()
+     */
+    public static Bitpix forValue(int ival, boolean allowRepair) throws FitsException {
+        
+<span class="fc bfc" id="L337" title="All 2 branches covered.">        if (ival == 0) {</span>
+<span class="fc" id="L338">            throw new FitsException(&quot;Invalid BITPIX value:&quot; + ival);</span>
+        }
+        
+        // Normally BITPIX must be one one of the supported values. Unfortunately, some
+        // commercial cameras fill illegal values, such as 20.
+        // We can 'repair' them by rounding up to the next valid value, so 20 repairs to 32, and
+        // maxing at +/- 64, so for example -80 repairs to -64.
+<span class="fc bfc" id="L345" title="All 2 branches covered.">        if (allowRepair) {</span>
+<span class="fc" id="L346">            int fixed = 0;</span>
+
+<span class="fc bfc" id="L348" title="All 2 branches covered.">            if (ival &lt; 0) {</span>
+<span class="fc bfc" id="L349" title="All 2 branches covered.">                fixed = ival &lt; VALUE_FOR_FLOAT ? VALUE_FOR_DOUBLE : VALUE_FOR_FLOAT;</span>
+<span class="fc bfc" id="L350" title="All 2 branches covered.">            } else if (ival &lt; VALUE_FOR_BYTE) {</span>
+<span class="fc" id="L351">                fixed = VALUE_FOR_BYTE;</span>
+<span class="fc bfc" id="L352" title="All 2 branches covered.">            } else if (ival &gt; VALUE_FOR_LONG) {</span>
+<span class="fc" id="L353">                fixed = VALUE_FOR_LONG;</span>
+<span class="fc bfc" id="L354" title="All 2 branches covered.">            } else if (ival &gt; Integer.highestOneBit(ival)) {</span>
+<span class="fc" id="L355">                fixed = (Integer.highestOneBit(ival) &lt;&lt; 1);</span>
+            }
+            
+<span class="fc bfc" id="L358" title="All 2 branches covered.">            if (fixed != 0) {</span>
+<span class="fc" id="L359">                LOG.warning(&quot;Repaired invalid BITPIX value:&quot; + ival + &quot; --&gt; &quot; + fixed);</span>
+<span class="fc" id="L360">                ival = fixed;</span>
+            }
+        }
+        
+<span class="fc bfc" id="L364" title="All 7 branches covered.">        switch (ival) {</span>
+        case VALUE_FOR_BYTE: 
+<span class="fc" id="L366">            return BYTE;</span>
+        case VALUE_FOR_SHORT: 
+<span class="fc" id="L368">            return SHORT;</span>
+        case VALUE_FOR_INT: 
+<span class="fc" id="L370">            return INTEGER;</span>
+        case VALUE_FOR_LONG: 
+<span class="fc" id="L372">            return LONG;</span>
+        case VALUE_FOR_FLOAT: 
+<span class="fc" id="L374">            return FLOAT;</span>
+        case VALUE_FOR_DOUBLE: 
+<span class="fc" id="L376">            return DOUBLE;</span>
+        default:
+<span class="fc" id="L378">            throw new FitsException(&quot;Invalid BITPIX value:&quot; + ival);</span>
+        }
+    }
+    
+    /**
+     * Returns the standard BITPIX object for the given Java array ID. The array ID is the same
+     * letter code as Java uses for identifying ptrimitive array types. For example a Java 
+     * array of &lt;code&gt;long[][]&lt;/code&gt; has a class name of &lt;code&gt;J[[&lt;/code&gt;, so so the array ID for 
+     * &lt;code&gt;long&lt;/code&gt; arrays is &lt;code&gt;J&lt;/code&gt;.
+     * 
+     * @param id        The Java letter ID for arrays of the underlying primitive type. E.g. &lt;code&gt;J&lt;/code&gt;
+     *                  for &lt;code&gt;long&lt;/code&gt;.
+     * @return          The standard BITPIX enum corresponding to the data type.
+     * @throws FitsException    if the data type is unknown or does not have a BITPIX ewquivalent.
+     * 
+     */
+    public static Bitpix forArrayID(char id) throws FitsException {
+<span class="fc bfc" id="L395" title="All 7 branches covered.">        switch (id) {</span>
+        case 'B': 
+<span class="fc" id="L397">            return BYTE;</span>
+        case 'S': 
+<span class="fc" id="L399">            return SHORT;</span>
+        case 'I': 
+<span class="fc" id="L401">            return INTEGER;</span>
+        case 'J': 
+<span class="fc" id="L403">            return LONG;</span>
+        case 'F': 
+<span class="fc" id="L405">            return FLOAT;</span>
+        case 'D': 
+<span class="fc" id="L407">            return DOUBLE;</span>
+        default:
+<span class="fc" id="L409">            throw new FitsException(&quot;Invalid BITPIX data ID: '&quot; + id + &quot;'&quot;);</span>
+        }
+    } 
+}
+</pre><div class="footer"><span class="right">Created with <a href="http://www.jacoco.org/jacoco">JaCoCo</a> 0.8.7.202105040129</span></div></body></html>

@@ -1,10 +1,10 @@
-<?xml version="1.0" encoding="UTF-8"?><!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Strict//EN" "http://www.w3.org/TR/xhtml1/DTD/xhtml1-strict.dtd"><html xmlns="http://www.w3.org/1999/xhtml" lang="en"><head><meta http-equiv="Content-Type" content="text/html;charset=UTF-8"/><link rel="stylesheet" href="../.resources/report.css" type="text/css"/><link rel="shortcut icon" href="../.resources/report.gif" type="image/gif"/><title>TiledImageCompressionOperation.java</title><link rel="stylesheet" href="../.resources/prettify.css" type="text/css"/><script type="text/javascript" src="../.resources/prettify.js"></script></head><body onload="window['PR_TAB_WIDTH']=4;prettyPrint()"><div class="breadcrumb" id="breadcrumb"><span class="info"><a href="../.sessions.html" class="el_session">Sessions</a></span><a href="../index.html" class="el_report">nom.tam FITS library</a> &gt; <a href="index.source.html" class="el_package">nom.tam.image.compression.tile</a> &gt; <span class="el_source">TiledImageCompressionOperation.java</span></div><h1>TiledImageCompressionOperation.java</h1><pre class="source lang-java linenums">package nom.tam.image.compression.tile;
+<?xml version="1.0" encoding="UTF-8"?><!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Strict//EN" "http://www.w3.org/TR/xhtml1/DTD/xhtml1-strict.dtd"><html xmlns="http://www.w3.org/1999/xhtml" lang="en"><head><meta http-equiv="Content-Type" content="text/html;charset=UTF-8"/><link rel="stylesheet" href="../jacoco-resources/report.css" type="text/css"/><link rel="shortcut icon" href="../jacoco-resources/report.gif" type="image/gif"/><title>TiledImageCompressionOperation.java</title><link rel="stylesheet" href="../jacoco-resources/prettify.css" type="text/css"/><script type="text/javascript" src="../jacoco-resources/prettify.js"></script></head><body onload="window['PR_TAB_WIDTH']=4;prettyPrint()"><div class="breadcrumb" id="breadcrumb"><span class="info"><a href="../jacoco-sessions.html" class="el_session">Sessions</a></span><a href="../index.html" class="el_report">nom.tam FITS library</a> &gt; <a href="index.source.html" class="el_package">nom.tam.image.compression.tile</a> &gt; <span class="el_source">TiledImageCompressionOperation.java</span></div><h1>TiledImageCompressionOperation.java</h1><pre class="source lang-java linenums">package nom.tam.image.compression.tile;
 
 /*
  * #%L
  * nom.tam FITS library
  * %%
- * Copyright (C) 1996 - 2015 nom-tam-fits
+ * Copyright (C) 1996 - 2021 nom-tam-fits
  * %%
  * This is free and unencumbered software released into the public domain.
  * 
@@ -69,9 +69,7 @@ import nom.tam.fits.compression.provider.param.api.HeaderCardAccess;
 import nom.tam.image.compression.tile.mask.ImageNullPixelMask;
 import nom.tam.image.tile.operation.AbstractTiledImageOperation;
 import nom.tam.image.tile.operation.TileArea;
-import nom.tam.util.type.PrimitiveType;
-import nom.tam.util.type.PrimitiveTypeHandler;
-import nom.tam.util.type.PrimitiveTypes;
+import nom.tam.util.type.ElementType;
 
 /**
  * This class represents a complete tiledImageOperation of tileOperations
@@ -106,20 +104,20 @@ public class TiledImageCompressionOperation extends AbstractTiledImageOperation&
     private ImageNullPixelMask imageNullPixelMask;
 
     private static void addColumnToTable(BinaryTableHDU hdu, Object column, String columnName) throws FitsException {
-<span class="fc bfc" id="L109" title="All 2 branches covered.">        if (column != null) {</span>
-<span class="fc" id="L110">            hdu.setColumnName(hdu.addColumn(column) - 1, columnName, null);</span>
+<span class="fc bfc" id="L107" title="All 2 branches covered.">        if (column != null) {</span>
+<span class="fc" id="L108">            hdu.setColumnName(hdu.addColumn(column) - 1, columnName, null);</span>
         }
-<span class="fc" id="L112">    }</span>
+<span class="fc" id="L110">    }</span>
 
     private static void setNullEntries(Object column, Object defaultValue) {
-<span class="fc bfc" id="L115" title="All 2 branches covered.">        if (column != null) {</span>
-<span class="fc bfc" id="L116" title="All 2 branches covered.">            for (int index = 0; index &lt; Array.getLength(column); index++) {</span>
-<span class="fc bfc" id="L117" title="All 2 branches covered.">                if (Array.get(column, index) == null) {</span>
-<span class="fc" id="L118">                    Array.set(column, index, defaultValue);</span>
+<span class="fc bfc" id="L113" title="All 2 branches covered.">        if (column != null) {</span>
+<span class="fc bfc" id="L114" title="All 2 branches covered.">            for (int index = 0; index &lt; Array.getLength(column); index++) {</span>
+<span class="fc bfc" id="L115" title="All 2 branches covered.">                if (Array.get(column, index) == null) {</span>
+<span class="fc" id="L116">                    Array.set(column, index, defaultValue);</span>
                 }
             }
         }
-<span class="fc" id="L122">    }</span>
+<span class="fc" id="L120">    }</span>
 
     /**
      * create a TiledImageCompressionOperation based on a compressed image data.
@@ -128,65 +126,65 @@ public class TiledImageCompressionOperation extends AbstractTiledImageOperation&
      *            the compressed image data.
      */
     public TiledImageCompressionOperation(BinaryTable binaryTable) {
-<span class="fc" id="L131">        super(TileCompressionOperation.class);</span>
-<span class="fc" id="L132">        this.binaryTable = binaryTable;</span>
-<span class="fc" id="L133">    }</span>
+<span class="fc" id="L129">        super(TileCompressionOperation.class);</span>
+<span class="fc" id="L130">        this.binaryTable = binaryTable;</span>
+<span class="fc" id="L131">    }</span>
 
     public void compress(BinaryTableHDU hdu) throws FitsException {
-<span class="fc" id="L136">        processAllTiles();</span>
-<span class="fc" id="L137">        writeColumns(hdu);</span>
-<span class="fc" id="L138">        writeHeader(hdu.getHeader());</span>
-<span class="fc" id="L139">    }</span>
+<span class="fc" id="L134">        processAllTiles();</span>
+<span class="fc" id="L135">        writeColumns(hdu);</span>
+<span class="fc" id="L136">        writeHeader(hdu.getHeader());</span>
+<span class="fc" id="L137">    }</span>
 
     @Override
     public ICompressOption compressOptions() {
-<span class="fc" id="L143">        initializeCompressionControl();</span>
-<span class="fc" id="L144">        return this.imageOptions;</span>
+<span class="fc" id="L141">        initializeCompressionControl();</span>
+<span class="fc" id="L142">        return this.imageOptions;</span>
     }
 
     public Buffer decompress() {
-<span class="fc" id="L148">        Buffer decompressedWholeArea = getBaseType().newBuffer(getBufferSize());</span>
-<span class="fc bfc" id="L149" title="All 2 branches covered.">        for (TileCompressionOperation tileOperation : getTileOperations()) {</span>
-<span class="fc" id="L150">            tileOperation.setWholeImageBuffer(decompressedWholeArea);</span>
+<span class="fc" id="L146">        Buffer decompressedWholeArea = getBaseType().newBuffer(getBufferSize());</span>
+<span class="fc bfc" id="L147" title="All 2 branches covered.">        for (TileCompressionOperation tileOperation : getTileOperations()) {</span>
+<span class="fc" id="L148">            tileOperation.setWholeImageBuffer(decompressedWholeArea);</span>
         }
-<span class="fc" id="L152">        processAllTiles();</span>
-<span class="fc" id="L153">        decompressedWholeArea.rewind();</span>
-<span class="fc" id="L154">        return decompressedWholeArea;</span>
+<span class="fc" id="L150">        processAllTiles();</span>
+<span class="fc" id="L151">        decompressedWholeArea.rewind();</span>
+<span class="fc" id="L152">        return decompressedWholeArea;</span>
     }
 
     public void forceNoLoss(int x, int y, int width, int heigth) {
-<span class="fc" id="L158">        TileArea tileArea = new TileArea().start(x, y).end(x + width, y + heigth);</span>
-<span class="fc bfc" id="L159" title="All 2 branches covered.">        for (TileCompressionOperation operation : getTileOperations()) {</span>
-<span class="fc bfc" id="L160" title="All 2 branches covered.">            if (operation.getArea().intersects(tileArea)) {</span>
-<span class="fc" id="L161">                operation.forceNoLoss(true);</span>
+<span class="fc" id="L156">        TileArea tileArea = new TileArea().start(x, y).end(x + width, y + heigth);</span>
+<span class="fc bfc" id="L157" title="All 2 branches covered.">        for (TileCompressionOperation operation : getTileOperations()) {</span>
+<span class="fc bfc" id="L158" title="All 2 branches covered.">            if (operation.getArea().intersects(tileArea)) {</span>
+<span class="fc" id="L159">                operation.forceNoLoss(true);</span>
             }
         }
-<span class="fc" id="L164">    }</span>
+<span class="fc" id="L162">    }</span>
 
     @Override
     public ByteBuffer getCompressedWholeArea() {
-<span class="fc" id="L168">        return this.compressedWholeArea;</span>
+<span class="fc" id="L166">        return this.compressedWholeArea;</span>
     }
 
     @Override
     public ICompressorControl getCompressorControl() {
-<span class="fc" id="L173">        initializeCompressionControl();</span>
-<span class="fc" id="L174">        return this.compressorControl;</span>
+<span class="fc" id="L171">        initializeCompressionControl();</span>
+<span class="fc" id="L172">        return this.compressorControl;</span>
     }
 
     @Override
     public ICompressorControl getGzipCompressorControl() {
-<span class="fc bfc" id="L179" title="All 2 branches covered.">        if (this.gzipCompressorControl == null) {</span>
-<span class="fc" id="L180">            this.gzipCompressorControl = CompressorProvider.findCompressorControl(null, ZCMPTYPE_GZIP_1, getBaseType().primitiveClass());</span>
+<span class="fc bfc" id="L177" title="All 2 branches covered.">        if (this.gzipCompressorControl == null) {</span>
+<span class="fc" id="L178">            this.gzipCompressorControl = CompressorProvider.findCompressorControl(null, ZCMPTYPE_GZIP_1, getBaseType().primitiveClass());</span>
         }
-<span class="fc" id="L182">        return this.gzipCompressorControl;</span>
+<span class="fc" id="L180">        return this.gzipCompressorControl;</span>
     }
 
     public TiledImageCompressionOperation prepareUncompressedData(final Buffer buffer) throws FitsException {
-<span class="fc" id="L186">        this.compressedWholeArea = ByteBuffer.wrap(new byte[getBaseType().size() * getBufferSize()]);</span>
-<span class="fc" id="L187">        createTiles(new TileCompressorInitialisation(this, buffer));</span>
-<span class="fc" id="L188">        this.compressedWholeArea.rewind();</span>
-<span class="fc" id="L189">        return this;</span>
+<span class="fc" id="L184">        this.compressedWholeArea = ByteBuffer.wrap(new byte[getBaseType().size() * getBufferSize()]);</span>
+<span class="fc" id="L185">        createTiles(new TileCompressorInitialisation(this, buffer));</span>
+<span class="fc" id="L186">        this.compressedWholeArea.rewind();</span>
+<span class="fc" id="L187">        return this;</span>
     }
 
     /**
@@ -202,197 +200,194 @@ public class TiledImageCompressionOperation extends AbstractTiledImageOperation&
      * @return the created null pixel mask
      */
     public ImageNullPixelMask preserveNulls(long nullValue, String compressionAlgorithm) {
-<span class="fc" id="L205">        this.imageNullPixelMask = new ImageNullPixelMask(getTileOperations().length, nullValue, compressionAlgorithm);</span>
-<span class="fc bfc" id="L206" title="All 2 branches covered.">        for (TileCompressionOperation tileOperation : getTileOperations()) {</span>
-<span class="fc" id="L207">            tileOperation.createImageNullPixelMask(getImageNullPixelMask());</span>
+<span class="fc" id="L203">        this.imageNullPixelMask = new ImageNullPixelMask(getTileOperations().length, nullValue, compressionAlgorithm);</span>
+<span class="fc bfc" id="L204" title="All 2 branches covered.">        for (TileCompressionOperation tileOperation : getTileOperations()) {</span>
+<span class="fc" id="L205">            tileOperation.createImageNullPixelMask(getImageNullPixelMask());</span>
         }
-<span class="fc" id="L209">        return this.imageNullPixelMask;</span>
+<span class="fc" id="L207">        return this.imageNullPixelMask;</span>
     }
 
     public TiledImageCompressionOperation read(final Header header) throws FitsException {
-<span class="fc" id="L213">        readPrimaryHeaders(header);</span>
-<span class="fc" id="L214">        setCompressAlgorithm(header.findCard(ZCMPTYPE));</span>
-<span class="fc" id="L215">        setQuantAlgorithm(header.findCard(ZQUANTIZ));</span>
-<span class="fc" id="L216">        createTiles(new TileDecompressorInitialisation(this, //</span>
-                getNullableColumn(header, Object[].class, UNCOMPRESSED_DATA_COLUMN), //
-                getNullableColumn(header, Object[].class, COMPRESSED_DATA_COLUMN), //
-                getNullableColumn(header, Object[].class, GZIP_COMPRESSED_DATA_COLUMN), //
+<span class="fc" id="L211">        readPrimaryHeaders(header);</span>
+<span class="fc" id="L212">        setCompressAlgorithm(header.findCard(ZCMPTYPE));</span>
+<span class="fc" id="L213">        setQuantAlgorithm(header.findCard(ZQUANTIZ));</span>
+<span class="fc" id="L214">        createTiles(new TileDecompressorInitialisation(this, //</span>
+<span class="fc" id="L215">                getNullableColumn(header, Object[].class, UNCOMPRESSED_DATA_COLUMN), //</span>
+<span class="fc" id="L216">                getNullableColumn(header, Object[].class, COMPRESSED_DATA_COLUMN), //</span>
+<span class="fc" id="L217">                getNullableColumn(header, Object[].class, GZIP_COMPRESSED_DATA_COLUMN), //</span>
                 new HeaderAccess(header)));
-<span class="fc" id="L221">        byte[][] nullPixels = getNullableColumn(header, byte[][].class, NULL_PIXEL_MASK_COLUMN);</span>
-<span class="fc bfc" id="L222" title="All 2 branches covered.">        if (nullPixels != null) {</span>
-<span class="fc" id="L223">            preserveNulls(0L, header.getStringValue(ZMASKCMP)).setColumn(nullPixels);</span>
+<span class="fc" id="L219">        byte[][] nullPixels = getNullableColumn(header, byte[][].class, NULL_PIXEL_MASK_COLUMN);</span>
+<span class="fc bfc" id="L220" title="All 2 branches covered.">        if (nullPixels != null) {</span>
+<span class="fc" id="L221">            preserveNulls(0L, header.getStringValue(ZMASKCMP)).setColumn(nullPixels);</span>
         }
-<span class="fc" id="L225">        readCompressionHeaders(header);</span>
-<span class="fc" id="L226">        return this;</span>
+<span class="fc" id="L223">        readCompressionHeaders(header);</span>
+<span class="fc" id="L224">        return this;</span>
     }
 
     public void readPrimaryHeaders(Header header) throws FitsException {
-<span class="fc" id="L230">        readBaseType(header);</span>
-<span class="fc" id="L231">        readAxis(header);</span>
-<span class="fc" id="L232">        readTileAxis(header);</span>
-<span class="fc" id="L233">    }</span>
+<span class="fc" id="L228">        readBaseType(header);</span>
+<span class="fc" id="L229">        readAxis(header);</span>
+<span class="fc" id="L230">        readTileAxis(header);</span>
+<span class="fc" id="L231">    }</span>
 
     public TiledImageCompressionOperation setCompressAlgorithm(HeaderCard compressAlgorithmCard) {
-<span class="fc" id="L236">        this.compressAlgorithm = compressAlgorithmCard.getValue();</span>
-<span class="fc" id="L237">        return this;</span>
+<span class="fc" id="L234">        this.compressAlgorithm = compressAlgorithmCard.getValue();</span>
+<span class="fc" id="L235">        return this;</span>
     }
 
     public TiledImageCompressionOperation setQuantAlgorithm(HeaderCard quantAlgorithmCard) {
-<span class="fc bfc" id="L241" title="All 2 branches covered.">        if (quantAlgorithmCard != null) {</span>
-<span class="fc" id="L242">            this.quantAlgorithm = quantAlgorithmCard.getValue();</span>
+<span class="fc bfc" id="L239" title="All 2 branches covered.">        if (quantAlgorithmCard != null) {</span>
+<span class="fc" id="L240">            this.quantAlgorithm = quantAlgorithmCard.getValue();</span>
         } else {
-<span class="fc" id="L244">            this.quantAlgorithm = null;</span>
+<span class="fc" id="L242">            this.quantAlgorithm = null;</span>
         }
-<span class="fc" id="L246">        return this;</span>
+<span class="fc" id="L244">        return this;</span>
     }
 
     private &lt;T&gt; T getNullableColumn(Header header, Class&lt;T&gt; class1, String columnName) throws FitsException {
-<span class="fc bfc" id="L250" title="All 2 branches covered.">        for (int i = 1; i &lt;= this.binaryTable.getNCols(); i++) {</span>
-<span class="fc" id="L251">            String val = header.getStringValue(TTYPEn.n(i));</span>
-<span class="pc bpc" id="L252" title="1 of 4 branches missed.">            if (val != null &amp;&amp; val.trim().equals(columnName)) {</span>
-<span class="fc" id="L253">                return class1.cast(this.binaryTable.getColumn(i - 1));</span>
+<span class="fc bfc" id="L248" title="All 2 branches covered.">        for (int i = 1; i &lt;= this.binaryTable.getNCols(); i++) {</span>
+<span class="fc" id="L249">            String val = header.getStringValue(TTYPEn.n(i));</span>
+<span class="pc bpc" id="L250" title="1 of 4 branches missed.">            if (val != null &amp;&amp; val.trim().equals(columnName)) {</span>
+<span class="fc" id="L251">                return class1.cast(this.binaryTable.getColumn(i - 1));</span>
             }
         }
-<span class="fc" id="L256">        return null;</span>
+<span class="fc" id="L254">        return null;</span>
     }
 
     private void initializeCompressionControl() {
-<span class="fc bfc" id="L260" title="All 2 branches covered.">        if (this.compressorControl == null) {</span>
-<span class="fc" id="L261">            this.compressorControl = CompressorProvider.findCompressorControl(this.quantAlgorithm, this.compressAlgorithm, getBaseType().primitiveClass());</span>
-<span class="fc bfc" id="L262" title="All 2 branches covered.">            if (this.compressorControl == null) {</span>
-<span class="fc" id="L263">                throw new IllegalStateException(&quot;Found no compressor control for compression algorithm:&quot; + this.compressAlgorithm + //</span>
-                        &quot; (quantize algorithm = &quot; + this.quantAlgorithm + &quot;, base type = &quot; + getBaseType().primitiveClass() + &quot;)&quot;);
+<span class="fc bfc" id="L258" title="All 2 branches covered.">        if (this.compressorControl == null) {</span>
+<span class="fc" id="L259">            this.compressorControl = CompressorProvider.findCompressorControl(this.quantAlgorithm, this.compressAlgorithm, getBaseType().primitiveClass());</span>
+<span class="fc bfc" id="L260" title="All 2 branches covered.">            if (this.compressorControl == null) {</span>
+<span class="fc" id="L261">                throw new IllegalStateException(&quot;Found no compressor control for compression algorithm:&quot; + this.compressAlgorithm + //</span>
+<span class="fc" id="L262">                        &quot; (quantize algorithm = &quot; + this.quantAlgorithm + &quot;, base type = &quot; + getBaseType().primitiveClass() + &quot;)&quot;);</span>
             }
-<span class="fc" id="L266">            initImageOptions();</span>
+<span class="fc" id="L264">            initImageOptions();</span>
         }
-<span class="fc" id="L268">    }</span>
+<span class="fc" id="L266">    }</span>
 
     private void initImageOptions() {
-<span class="fc" id="L271">        this.imageOptions = this.compressorControl.option();</span>
-<span class="fc" id="L272">        initializeQuantAlgorithm();</span>
-<span class="fc" id="L273">        this.imageOptions.getCompressionParameters().initializeColumns(getNumberOfTileOperations());</span>
-<span class="fc" id="L274">    }</span>
+<span class="fc" id="L269">        this.imageOptions = this.compressorControl.option();</span>
+<span class="fc" id="L270">        initializeQuantAlgorithm();</span>
+<span class="fc" id="L271">        this.imageOptions.getCompressionParameters().initializeColumns(getNumberOfTileOperations());</span>
+<span class="fc" id="L272">    }</span>
 
     private void processAllTiles() {
-<span class="fc" id="L277">        ExecutorService threadPool = FitsFactory.threadPool();</span>
-<span class="fc bfc" id="L278" title="All 2 branches covered.">        for (TileCompressionOperation tileOperation : getTileOperations()) {</span>
-<span class="fc" id="L279">            tileOperation.execute(threadPool);</span>
+<span class="fc" id="L275">        ExecutorService threadPool = FitsFactory.threadPool();</span>
+<span class="fc bfc" id="L276" title="All 2 branches covered.">        for (TileCompressionOperation tileOperation : getTileOperations()) {</span>
+<span class="fc" id="L277">            tileOperation.execute(threadPool);</span>
         }
-<span class="fc bfc" id="L281" title="All 2 branches covered.">        for (TileCompressionOperation tileOperation : getTileOperations()) {</span>
-<span class="fc" id="L282">            tileOperation.waitForResult();</span>
+<span class="fc bfc" id="L279" title="All 2 branches covered.">        for (TileCompressionOperation tileOperation : getTileOperations()) {</span>
+<span class="fc" id="L280">            tileOperation.waitForResult();</span>
         }
-<span class="fc" id="L284">    }</span>
+<span class="fc" id="L282">    }</span>
 
     private void readAxis(Header header) throws FitsException {
-<span class="fc bfc" id="L287" title="All 2 branches covered.">        if (areAxesUndefined()) {</span>
-<span class="fc" id="L288">            int naxis = header.getIntValue(ZNAXIS);</span>
-<span class="fc" id="L289">            int[] axes = new int[naxis];</span>
-<span class="fc bfc" id="L290" title="All 2 branches covered.">            for (int i = 1; i &lt;= naxis; i++) {</span>
-<span class="fc" id="L291">                int axisValue = header.getIntValue(ZNAXISn.n(i), -1);</span>
-<span class="fc" id="L292">                axes[i - 1] = axisValue;</span>
-<span class="fc bfc" id="L293" title="All 2 branches covered.">                if (axes[i - 1] == -1) {</span>
-<span class="fc" id="L294">                    throw new FitsException(&quot;Required ZNAXISn not found&quot;);</span>
+<span class="fc bfc" id="L285" title="All 2 branches covered.">        if (areAxesUndefined()) {</span>
+<span class="fc" id="L286">            int naxis = header.getIntValue(ZNAXIS);</span>
+<span class="fc" id="L287">            int[] axes = new int[naxis];</span>
+<span class="fc bfc" id="L288" title="All 2 branches covered.">            for (int i = 1; i &lt;= naxis; i++) {</span>
+<span class="fc" id="L289">                int axisValue = header.getIntValue(ZNAXISn.n(i), -1);</span>
+<span class="fc" id="L290">                axes[i - 1] = axisValue;</span>
+<span class="fc bfc" id="L291" title="All 2 branches covered.">                if (axes[i - 1] == -1) {</span>
+<span class="fc" id="L292">                    throw new FitsException(&quot;Required ZNAXISn not found&quot;);</span>
                 }
             }
-<span class="fc" id="L297">            setAxes(axes);</span>
+<span class="fc" id="L295">            setAxes(axes);</span>
         }
-<span class="fc" id="L299">    }</span>
+<span class="fc" id="L297">    }</span>
 
     private void readBaseType(Header header) {
-<span class="pc bpc" id="L302" title="1 of 2 branches missed.">        if (getBaseType() == null) {</span>
-<span class="fc" id="L303">            int zBitPix = header.getIntValue(ZBITPIX);</span>
-<span class="fc" id="L304">            PrimitiveType&lt;Buffer&gt; primitiveType = PrimitiveTypeHandler.valueOf(zBitPix);</span>
-<span class="fc bfc" id="L305" title="All 2 branches covered.">            if (primitiveType == null) {</span>
-<span class="fc" id="L306">                primitiveType = PrimitiveTypeHandler.nearestValueOf(zBitPix);</span>
-<span class="pc bpc" id="L307" title="1 of 2 branches missed.">                if (primitiveType == PrimitiveTypes.UNKNOWN) {</span>
-<span class="nc" id="L308">                    throw new IllegalArgumentException(&quot;illegal value for zbitpix &quot; + zBitPix);</span>
-                }
+<span class="pc bpc" id="L300" title="1 of 2 branches missed.">        if (getBaseType() == null) {</span>
+<span class="fc" id="L301">            int zBitPix = header.getIntValue(ZBITPIX);</span>
+<span class="fc" id="L302">            ElementType&lt;Buffer&gt; elementType = ElementType.forNearestBitpix(zBitPix);</span>
+<span class="pc bpc" id="L303" title="1 of 2 branches missed.">            if (elementType == ElementType.UNKNOWN) {</span>
+<span class="nc" id="L304">                throw new IllegalArgumentException(&quot;illegal value for ZBITPIX &quot; + zBitPix);</span>
             }
-<span class="fc" id="L311">            setBaseType(primitiveType);</span>
+<span class="fc" id="L306">            setBaseType(elementType);</span>
         }
-<span class="fc" id="L313">    }</span>
+<span class="fc" id="L308">    }</span>
 
     private void readCompressionHeaders(Header header) {
-<span class="fc" id="L316">        compressOptions().getCompressionParameters().getValuesFromHeader(new HeaderAccess(header));</span>
-<span class="fc" id="L317">    }</span>
+<span class="fc" id="L311">        compressOptions().getCompressionParameters().getValuesFromHeader(new HeaderAccess(header));</span>
+<span class="fc" id="L312">    }</span>
 
     private void readTileAxis(Header header) throws FitsException {
-<span class="fc bfc" id="L320" title="All 2 branches covered.">        if (areTileAxesUndefined()) {</span>
-<span class="fc" id="L321">            int[] tileAxes = new int[getNAxes()];</span>
-<span class="fc" id="L322">            Arrays.fill(tileAxes, 1);</span>
-<span class="fc" id="L323">            tileAxes[0] = -1;</span>
-<span class="fc bfc" id="L324" title="All 2 branches covered.">            for (int i = 1; i &lt;= tileAxes.length; i++) {</span>
-<span class="fc" id="L325">                HeaderCard card = header.findCard(ZTILEn.n(i));</span>
-<span class="fc bfc" id="L326" title="All 2 branches covered.">                if (card != null) {</span>
-<span class="fc" id="L327">                    tileAxes[i - 1] = card.getValue(Integer.class, -1);</span>
+<span class="fc bfc" id="L315" title="All 2 branches covered.">        if (areTileAxesUndefined()) {</span>
+<span class="fc" id="L316">            int[] tileAxes = new int[getNAxes()];</span>
+<span class="fc" id="L317">            Arrays.fill(tileAxes, 1);</span>
+<span class="fc" id="L318">            tileAxes[0] = -1;</span>
+<span class="fc bfc" id="L319" title="All 2 branches covered.">            for (int i = 1; i &lt;= tileAxes.length; i++) {</span>
+<span class="fc" id="L320">                HeaderCard card = header.findCard(ZTILEn.n(i));</span>
+<span class="fc bfc" id="L321" title="All 2 branches covered.">                if (card != null) {</span>
+<span class="fc" id="L322">                    tileAxes[i - 1] = card.getValue(Integer.class, -1);</span>
                 }
             }
-<span class="fc" id="L330">            setTileAxes(tileAxes);</span>
+<span class="fc" id="L325">            setTileAxes(tileAxes);</span>
         }
-<span class="fc" id="L332">    }</span>
+<span class="fc" id="L327">    }</span>
 
     private &lt;T&gt; Object setInColumn(Object column, boolean predicate, TileCompressionOperation tileOperation, Class&lt;T&gt; clazz, T value) {
-<span class="fc bfc" id="L335" title="All 2 branches covered.">        if (predicate) {</span>
-<span class="fc bfc" id="L336" title="All 2 branches covered.">            if (column == null) {</span>
-<span class="fc" id="L337">                column = Array.newInstance(clazz, getNumberOfTileOperations());</span>
+<span class="fc bfc" id="L330" title="All 2 branches covered.">        if (predicate) {</span>
+<span class="fc bfc" id="L331" title="All 2 branches covered.">            if (column == null) {</span>
+<span class="fc" id="L332">                column = Array.newInstance(clazz, getNumberOfTileOperations());</span>
             }
-<span class="fc" id="L339">            Array.set(column, tileOperation.getTileIndex(), value);</span>
+<span class="fc" id="L334">            Array.set(column, tileOperation.getTileIndex(), value);</span>
         }
-<span class="fc" id="L341">        return column;</span>
+<span class="fc" id="L336">        return column;</span>
     }
 
     private void writeColumns(BinaryTableHDU hdu) throws FitsException {
-<span class="fc" id="L345">        Object compressedColumn = null;</span>
-<span class="fc" id="L346">        Object uncompressedColumn = null;</span>
-<span class="fc" id="L347">        Object gzipColumn = null;</span>
-<span class="fc bfc" id="L348" title="All 2 branches covered.">        for (TileCompressionOperation tileOperation : getTileOperations()) {</span>
-<span class="fc" id="L349">            TileCompressionType compression = tileOperation.getCompressionType();</span>
-<span class="fc" id="L350">            byte[] compressedData = tileOperation.getCompressedData();</span>
+<span class="fc" id="L340">        Object compressedColumn = null;</span>
+<span class="fc" id="L341">        Object uncompressedColumn = null;</span>
+<span class="fc" id="L342">        Object gzipColumn = null;</span>
+<span class="fc bfc" id="L343" title="All 2 branches covered.">        for (TileCompressionOperation tileOperation : getTileOperations()) {</span>
+<span class="fc" id="L344">            TileCompressionType compression = tileOperation.getCompressionType();</span>
+<span class="fc" id="L345">            byte[] compressedData = tileOperation.getCompressedData();</span>
 
-<span class="fc bfc" id="L352" title="All 2 branches covered.">            compressedColumn = setInColumn(compressedColumn, compression == COMPRESSED, tileOperation, byte[].class, compressedData);</span>
-<span class="fc bfc" id="L353" title="All 2 branches covered.">            gzipColumn = setInColumn(gzipColumn, compression == GZIP_COMPRESSED, tileOperation, byte[].class, compressedData);</span>
-<span class="fc bfc" id="L354" title="All 2 branches covered.">            uncompressedColumn = setInColumn(uncompressedColumn, compression == UNCOMPRESSED, tileOperation, byte[].class, compressedData);</span>
+<span class="fc bfc" id="L347" title="All 2 branches covered.">            compressedColumn = setInColumn(compressedColumn, compression == COMPRESSED, tileOperation, byte[].class, compressedData);</span>
+<span class="fc bfc" id="L348" title="All 2 branches covered.">            gzipColumn = setInColumn(gzipColumn, compression == GZIP_COMPRESSED, tileOperation, byte[].class, compressedData);</span>
+<span class="fc bfc" id="L349" title="All 2 branches covered.">            uncompressedColumn = setInColumn(uncompressedColumn, compression == UNCOMPRESSED, tileOperation, byte[].class, compressedData);</span>
         }
-<span class="fc" id="L356">        setNullEntries(compressedColumn, new byte[0]);</span>
-<span class="fc" id="L357">        setNullEntries(gzipColumn, new byte[0]);</span>
-<span class="fc" id="L358">        setNullEntries(uncompressedColumn, new byte[0]);</span>
-<span class="fc" id="L359">        addColumnToTable(hdu, compressedColumn, COMPRESSED_DATA_COLUMN);</span>
-<span class="fc" id="L360">        addColumnToTable(hdu, gzipColumn, GZIP_COMPRESSED_DATA_COLUMN);</span>
-<span class="fc" id="L361">        addColumnToTable(hdu, uncompressedColumn, UNCOMPRESSED_DATA_COLUMN);</span>
-<span class="fc bfc" id="L362" title="All 2 branches covered.">        if (this.imageNullPixelMask != null) {</span>
-<span class="fc" id="L363">            addColumnToTable(hdu, this.imageNullPixelMask.getColumn(), NULL_PIXEL_MASK_COLUMN);</span>
+<span class="fc" id="L351">        setNullEntries(compressedColumn, new byte[0]);</span>
+<span class="fc" id="L352">        setNullEntries(gzipColumn, new byte[0]);</span>
+<span class="fc" id="L353">        setNullEntries(uncompressedColumn, new byte[0]);</span>
+<span class="fc" id="L354">        addColumnToTable(hdu, compressedColumn, COMPRESSED_DATA_COLUMN);</span>
+<span class="fc" id="L355">        addColumnToTable(hdu, gzipColumn, GZIP_COMPRESSED_DATA_COLUMN);</span>
+<span class="fc" id="L356">        addColumnToTable(hdu, uncompressedColumn, UNCOMPRESSED_DATA_COLUMN);</span>
+<span class="fc bfc" id="L357" title="All 2 branches covered.">        if (this.imageNullPixelMask != null) {</span>
+<span class="fc" id="L358">            addColumnToTable(hdu, this.imageNullPixelMask.getColumn(), NULL_PIXEL_MASK_COLUMN);</span>
         }
-<span class="fc" id="L365">        this.imageOptions.getCompressionParameters().addColumnsToTable(hdu);</span>
-<span class="fc" id="L366">        hdu.getData().fillHeader(hdu.getHeader());</span>
-<span class="fc" id="L367">    }</span>
+<span class="fc" id="L360">        this.imageOptions.getCompressionParameters().addColumnsToTable(hdu);</span>
+<span class="fc" id="L361">        hdu.getData().fillHeader(hdu.getHeader());</span>
+<span class="fc" id="L362">    }</span>
 
     private void writeHeader(Header header) throws FitsException {
-<span class="fc" id="L370">        HeaderCardBuilder cardBuilder = header//</span>
-                .card(ZBITPIX).value(getBaseType().bitPix())//
-                .card(ZCMPTYPE).value(this.compressAlgorithm);
-<span class="fc" id="L373">        int[] tileAxes = getTileAxes();</span>
-<span class="fc bfc" id="L374" title="All 2 branches covered.">        for (int i = 1; i &lt;= tileAxes.length; i++) {</span>
-<span class="fc" id="L375">            cardBuilder.card(ZTILEn.n(i)).value(tileAxes[i - 1]);</span>
+<span class="fc" id="L365">        HeaderCardBuilder cardBuilder = header//</span>
+<span class="fc" id="L366">                .card(ZBITPIX).value(getBaseType().bitPix())//</span>
+<span class="fc" id="L367">                .card(ZCMPTYPE).value(this.compressAlgorithm);</span>
+<span class="fc" id="L368">        int[] tileAxes = getTileAxes();</span>
+<span class="fc bfc" id="L369" title="All 2 branches covered.">        for (int i = 1; i &lt;= tileAxes.length; i++) {</span>
+<span class="fc" id="L370">            cardBuilder.card(ZTILEn.n(i)).value(tileAxes[i - 1]);</span>
         }
-<span class="fc" id="L377">        compressOptions().getCompressionParameters().setValuesInHeader(new HeaderAccess(header));</span>
-<span class="fc bfc" id="L378" title="All 2 branches covered.">        if (this.imageNullPixelMask != null) {</span>
-<span class="fc" id="L379">            cardBuilder.card(ZMASKCMP).value(this.imageNullPixelMask.getCompressAlgorithm());</span>
+<span class="fc" id="L372">        compressOptions().getCompressionParameters().setValuesInHeader(new HeaderAccess(header));</span>
+<span class="fc bfc" id="L373" title="All 2 branches covered.">        if (this.imageNullPixelMask != null) {</span>
+<span class="fc" id="L374">            cardBuilder.card(ZMASKCMP).value(this.imageNullPixelMask.getCompressAlgorithm());</span>
         }
-<span class="fc" id="L381">    }</span>
+<span class="fc" id="L376">    }</span>
 
     protected BinaryTable getBinaryTable() {
-<span class="fc" id="L384">        return this.binaryTable;</span>
+<span class="fc" id="L379">        return this.binaryTable;</span>
     }
 
     protected ImageNullPixelMask getImageNullPixelMask() {
-<span class="fc" id="L388">        return this.imageNullPixelMask;</span>
+<span class="fc" id="L383">        return this.imageNullPixelMask;</span>
     }
 
     protected void initializeQuantAlgorithm() {
-<span class="fc bfc" id="L392" title="All 2 branches covered.">        if (this.quantAlgorithm != null) {</span>
-<span class="fc" id="L393">            this.imageOptions.getCompressionParameters().getValuesFromHeader(new HeaderCardAccess(ZQUANTIZ, this.quantAlgorithm));</span>
+<span class="fc bfc" id="L387" title="All 2 branches covered.">        if (this.quantAlgorithm != null) {</span>
+<span class="fc" id="L388">            this.imageOptions.getCompressionParameters().getValuesFromHeader(new HeaderCardAccess(ZQUANTIZ, this.quantAlgorithm));</span>
         }
-<span class="fc" id="L395">    }</span>
+<span class="fc" id="L390">    }</span>
 
 }
-</pre><div class="footer"><span class="right">Created with <a href="http://www.eclemma.org/jacoco">JaCoCo</a> 0.7.6.201602180812</span></div></body></html>
+</pre><div class="footer"><span class="right">Created with <a href="http://www.jacoco.org/jacoco">JaCoCo</a> 0.8.7.202105040129</span></div></body></html>

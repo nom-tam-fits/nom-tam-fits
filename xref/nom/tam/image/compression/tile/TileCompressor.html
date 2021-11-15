@@ -12,7 +12,7 @@
 <a class="jxr_linenumber" name="L4" href="#L4">4</a>   <em class="jxr_comment"> * #%L</em>
 <a class="jxr_linenumber" name="L5" href="#L5">5</a>   <em class="jxr_comment"> * nom.tam FITS library</em>
 <a class="jxr_linenumber" name="L6" href="#L6">6</a>   <em class="jxr_comment"> * %%</em>
-<a class="jxr_linenumber" name="L7" href="#L7">7</a>   <em class="jxr_comment"> * Copyright (C) 1996 - 2015 nom-tam-fits</em>
+<a class="jxr_linenumber" name="L7" href="#L7">7</a>   <em class="jxr_comment"> * Copyright (C) 1996 - 2021 nom-tam-fits</em>
 <a class="jxr_linenumber" name="L8" href="#L8">8</a>   <em class="jxr_comment"> * %%</em>
 <a class="jxr_linenumber" name="L9" href="#L9">9</a>   <em class="jxr_comment"> * This is free and unencumbered software released into the public domain.</em>
 <a class="jxr_linenumber" name="L10" href="#L10">10</a>  <em class="jxr_comment"> * </em>
@@ -44,7 +44,7 @@
 <a class="jxr_linenumber" name="L36" href="#L36">36</a>  <strong class="jxr_keyword">import</strong> nom.tam.image.compression.tile.mask.ImageNullPixelMask;
 <a class="jxr_linenumber" name="L37" href="#L37">37</a>  <strong class="jxr_keyword">import</strong> nom.tam.image.compression.tile.mask.NullPixelMaskPreserver;
 <a class="jxr_linenumber" name="L38" href="#L38">38</a>  <strong class="jxr_keyword">import</strong> nom.tam.image.tile.operation.TileArea;
-<a class="jxr_linenumber" name="L39" href="#L39">39</a>  <strong class="jxr_keyword">import</strong> nom.tam.util.type.PrimitiveTypes;
+<a class="jxr_linenumber" name="L39" href="#L39">39</a>  <strong class="jxr_keyword">import</strong> nom.tam.util.type.ElementType;
 <a class="jxr_linenumber" name="L40" href="#L40">40</a>  
 <a class="jxr_linenumber" name="L41" href="#L41">41</a>  <strong class="jxr_keyword">public</strong> <strong class="jxr_keyword">class</strong> <a href="../../../../../nom/tam/image/compression/tile/TileCompressor.html">TileCompressor</a> <strong class="jxr_keyword">extends</strong> <a href="../../../../../nom/tam/image/compression/tile/TileCompressionOperation.html">TileCompressionOperation</a> {
 <a class="jxr_linenumber" name="L42" href="#L42">42</a>  
@@ -72,7 +72,7 @@
 <a class="jxr_linenumber" name="L64" href="#L64">64</a>              getPreviousTileOperation().waitForResult();
 <a class="jxr_linenumber" name="L65" href="#L65">65</a>              ByteBuffer compressedWholeArea = getCompressedWholeArea();
 <a class="jxr_linenumber" name="L66" href="#L66">66</a>              <strong class="jxr_keyword">this</strong>.compressedOffset = compressedWholeArea.position();
-<a class="jxr_linenumber" name="L67" href="#L67">67</a>              PrimitiveTypes.BYTE.appendBuffer(compressedWholeArea, <strong class="jxr_keyword">this</strong>.compressedData);
+<a class="jxr_linenumber" name="L67" href="#L67">67</a>              ElementType.BYTE.appendBuffer(compressedWholeArea, <strong class="jxr_keyword">this</strong>.compressedData);
 <a class="jxr_linenumber" name="L68" href="#L68">68</a>              replaceCompressedBufferWithTargetArea(compressedWholeArea);
 <a class="jxr_linenumber" name="L69" href="#L69">69</a>          } <strong class="jxr_keyword">else</strong> {
 <a class="jxr_linenumber" name="L70" href="#L70">70</a>              <strong class="jxr_keyword">this</strong>.compressedOffset = 0;
@@ -134,6 +134,6 @@
 <a class="jxr_linenumber" name="L126" href="#L126">126</a> }
 </pre>
 <hr/>
-<div id="footer">Copyright &#169; 1996&#x2013;2017 nom-tam-fits. All rights reserved.</div>
+<div id="footer">Copyright &#169; 1996&#x2013;2021 nom-tam-fits. All rights reserved.</div>
 </body>
 </html>

@@ -1,0 +1,258 @@
+<?xml version="1.0" encoding="UTF-8"?><!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Strict//EN" "http://www.w3.org/TR/xhtml1/DTD/xhtml1-strict.dtd"><html xmlns="http://www.w3.org/1999/xhtml" lang="en"><head><meta http-equiv="Content-Type" content="text/html;charset=UTF-8"/><link rel="stylesheet" href="../jacoco-resources/report.css" type="text/css"/><link rel="shortcut icon" href="../jacoco-resources/report.gif" type="image/gif"/><title>FitsOutputStream.java</title><link rel="stylesheet" href="../jacoco-resources/prettify.css" type="text/css"/><script type="text/javascript" src="../jacoco-resources/prettify.js"></script></head><body onload="window['PR_TAB_WIDTH']=4;prettyPrint()"><div class="breadcrumb" id="breadcrumb"><span class="info"><a href="../jacoco-sessions.html" class="el_session">Sessions</a></span><a href="../index.html" class="el_report">nom.tam FITS library</a> &gt; <a href="index.source.html" class="el_package">nom.tam.util</a> &gt; <span class="el_source">FitsOutputStream.java</span></div><h1>FitsOutputStream.java</h1><pre class="source lang-java linenums">/*
+ * #%L
+ * nom.tam FITS library
+ * %%
+ * Copyright (C) 2004 - 2021 nom-tam-fits
+ * %%
+ * This is free and unencumbered software released into the public domain.
+ * 
+ * Anyone is free to copy, modify, publish, use, compile, sell, or
+ * distribute this software, either in source code form or as a compiled
+ * binary, for any purpose, commercial or non-commercial, and by any
+ * means.
+ * 
+ * In jurisdictions that recognize copyright laws, the author or authors
+ * of this software dedicate any and all copyright interest in the
+ * software to the public domain. We make this dedication for the benefit
+ * of the public at large and to the detriment of our heirs and
+ * successors. We intend this dedication to be an overt act of
+ * relinquishment in perpetuity of all present and future rights to this
+ * software under copyright law.
+ * 
+ * THE SOFTWARE IS PROVIDED &quot;AS IS&quot;, WITHOUT WARRANTY OF ANY KIND,
+ * EXPRESS OR IMPLIED, INCLUDING BUT NOT LIMITED TO THE WARRANTIES OF
+ * MERCHANTABILITY, FITNESS FOR A PARTICULAR PURPOSE AND NONINFRINGEMENT.
+ * IN NO EVENT SHALL THE AUTHORS BE LIABLE FOR ANY CLAIM, DAMAGES OR
+ * OTHER LIABILITY, WHETHER IN AN ACTION OF CONTRACT, TORT OR OTHERWISE,
+ * ARISING FROM, OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR
+ * OTHER DEALINGS IN THE SOFTWARE.
+ * #L%
+ */
+package nom.tam.util;
+
+import java.io.DataOutput;
+import java.io.DataOutputStream;
+import java.io.IOException;
+import java.io.OutputStream;
+
+
+/**
+ * This class is intended for high performance writing FITS files or 
+ * FITS data blocks.
+ *
+ * &lt;p&gt;
+ * Testing and timing for this class is performed in the
+ * nom.tam.util.test.BufferedFileTester class.
+ * 
+ * &lt;p&gt;
+ * Version 2.0 -- October 30, 2021: Completely overhauled, with new name and 
+ * hierarchy. Performance is 2-4 times better than before. (Attila Kovacs)
+ * 
+ * @see FitsInputStream
+ * @see FitsFile
+ */
+@SuppressWarnings(&quot;deprecation&quot;)
+public class FitsOutputStream extends ArrayOutputStream implements ArrayDataOutput {
+
+    /** the output, as accessible via the &lt;code&gt;DataInput&lt;/code&gt; interface */
+    private final DataOutput data;
+    
+    /**
+     * Use the BufferedOutputStream constructor
+     * 
+     * @param o
+     *            An open output stream.
+     */
+    public FitsOutputStream(OutputStream o) {
+<span class="fc" id="L67">        this(o, FitsIO.DEFAULT_BUFFER_SIZE);</span>
+<span class="fc" id="L68">    }</span>
+
+    /**
+     * Use the BufferedOutputStream constructor
+     * 
+     * @param o
+     *            An open output stream.
+     * @param bufLength
+     *            The buffer size.
+     */
+    public FitsOutputStream(OutputStream o, int bufLength) {
+<span class="fc" id="L79">        super(o, bufLength);</span>
+<span class="fc" id="L80">        setEncoder(new FitsEncoder(this));</span>
+<span class="fc bfc" id="L81" title="All 2 branches covered.">        if (o instanceof DataOutput) {</span>
+<span class="fc" id="L82">            data = (DataOutput) o;</span>
+        } else {
+<span class="fc" id="L84">            data = new DataOutputStream(o);</span>
+        }
+<span class="fc" id="L86">    }</span>
+    
+    @Override
+    protected FitsEncoder getEncoder() {
+<span class="fc" id="L90">        return (FitsEncoder) super.getEncoder();</span>
+    }
+    
+
+    @Override
+    public final synchronized void write(boolean[] b) throws IOException {
+<span class="fc" id="L96">        write(b, 0, b.length);</span>
+<span class="fc" id="L97">    }</span>
+
+    @Override
+    public synchronized void write(boolean[] b, int start, int length) throws IOException {
+<span class="fc" id="L101">        getEncoder().write(b, start, length);</span>
+<span class="fc" id="L102">    }</span>
+
+    @Override
+    public final synchronized void write(Boolean[] buf) throws IOException {
+<span class="fc" id="L106">        write(buf, 0, buf.length);</span>
+<span class="fc" id="L107">    }</span>
+
+    @Override
+    public synchronized void write(Boolean[] buf, int offset, int size) throws IOException {
+<span class="fc" id="L111">        getEncoder().write(buf, offset, size);</span>
+<span class="fc" id="L112">    }</span>
+    
+    @Override
+    public final synchronized void write(char[] c) throws IOException {
+<span class="fc" id="L116">        write(c, 0, c.length);</span>
+<span class="fc" id="L117">    }</span>
+
+    @Override
+    public synchronized void write(char[] c, int start, int length) throws IOException {
+<span class="fc" id="L121">        getEncoder().write(c, start, length);</span>
+<span class="fc" id="L122">    }</span>
+
+    @Override
+    public final synchronized void write(short[] s) throws IOException {
+<span class="fc" id="L126">        write(s, 0, s.length);</span>
+<span class="fc" id="L127">    }</span>
+
+    @Override
+    public synchronized void write(short[] s, int start, int length) throws IOException {
+<span class="fc" id="L131">        getEncoder().write(s, start, length);</span>
+<span class="fc" id="L132">    }</span>
+
+    @Override
+    public final synchronized void write(int[] i) throws IOException {
+<span class="fc" id="L136">        write(i, 0, i.length);</span>
+<span class="fc" id="L137">    }</span>
+
+    @Override
+    public synchronized void write(int[] i, int start, int length) throws IOException {
+<span class="fc" id="L141">        getEncoder().write(i, start, length);</span>
+<span class="fc" id="L142">    }</span>
+
+    @Override
+    public final synchronized void write(long[] l) throws IOException {
+<span class="fc" id="L146">        write(l, 0, l.length);</span>
+<span class="fc" id="L147">    }</span>
+
+    @Override
+    public synchronized void write(long[] l, int start, int length) throws IOException {
+<span class="fc" id="L151">        getEncoder().write(l, start, length);</span>
+<span class="fc" id="L152">    }</span>
+
+    @Override
+    public final synchronized void write(float[] f) throws IOException {
+<span class="fc" id="L156">        write(f, 0, f.length);</span>
+<span class="fc" id="L157">    }</span>
+
+    @Override
+    public synchronized void write(float[] f, int start, int length) throws IOException {
+<span class="fc" id="L161">        getEncoder().write(f, start, length);</span>
+<span class="fc" id="L162">    }</span>
+
+    @Override
+    public final synchronized void write(double[] d) throws IOException {
+<span class="fc" id="L166">        write(d, 0, d.length);</span>
+<span class="fc" id="L167">    }</span>
+
+    @Override
+    public synchronized void write(double[] d, int start, int length) throws IOException {
+<span class="fc" id="L171">        getEncoder().write(d, start, length);</span>
+<span class="fc" id="L172">    }</span>
+
+    @Override
+    public final synchronized void write(String[] s) throws IOException {
+<span class="fc" id="L176">        write(s, 0, s.length);</span>
+<span class="fc" id="L177">    }</span>
+
+    @Override
+    public synchronized void writeBytes(String s) throws IOException {
+<span class="fc" id="L181">        getEncoder().writeBytes(s);</span>
+<span class="fc" id="L182">    }</span>
+
+    @Override
+    public synchronized void writeChars(String s) throws IOException {
+<span class="fc" id="L186">        getEncoder().writeChars(s);</span>
+<span class="fc" id="L187">    }</span>
+
+    @Override
+    public synchronized void writeUTF(String s) throws IOException {
+<span class="fc" id="L191">        data.writeUTF(s);</span>
+<span class="fc" id="L192">    }</span>
+
+    @Override
+    public synchronized void write(String[] s, int start, int len) throws IOException {
+<span class="fc" id="L196">        getEncoder().write(s, start, len);</span>
+<span class="fc" id="L197">    }</span>
+
+    @Override
+    public synchronized void writeByte(int b) throws IOException {
+<span class="fc" id="L201">        getEncoder().writeByte(b);        </span>
+<span class="fc" id="L202">    }</span>
+
+    @Override
+    public synchronized void writeBoolean(boolean b) throws IOException {
+<span class="fc" id="L206">        getEncoder().writeBoolean(b);</span>
+<span class="fc" id="L207">    }</span>
+    
+    @Override
+    public synchronized void writeBoolean(Boolean b) throws IOException {
+<span class="fc" id="L211">        getEncoder().writeBoolean(b);</span>
+<span class="fc" id="L212">    }</span>
+
+    @Override
+    public synchronized void writeChar(int c) throws IOException {
+<span class="fc" id="L216">        getEncoder().writeChar(c);</span>
+<span class="fc" id="L217">    }</span>
+
+    @Override
+    public synchronized void writeShort(int s) throws IOException {
+<span class="fc" id="L221">        getEncoder().writeShort(s);</span>
+<span class="fc" id="L222">    }</span>
+
+    @Override
+    public synchronized void writeInt(int i) throws IOException {
+<span class="fc" id="L226">        getEncoder().writeInt(i);</span>
+<span class="fc" id="L227">    }</span>
+
+    @Override
+    public synchronized void writeLong(long l) throws IOException {
+<span class="fc" id="L231">        getEncoder().writeLong(l);</span>
+<span class="fc" id="L232">    }</span>
+
+    @Override
+    public synchronized void writeFloat(float f) throws IOException {
+<span class="fc" id="L236">        getEncoder().writeFloat(f);</span>
+<span class="fc" id="L237">    }</span>
+
+    @Override
+    public synchronized void writeDouble(double d) throws IOException {
+<span class="fc" id="L241">        getEncoder().writeDouble(d);</span>
+<span class="fc" id="L242">    }</span>
+
+    /**
+     * Deprecated use {@link #writeArray(Object)}.
+     * 
+     * @param o
+     *            The object to be written.
+     * @throws IOException
+     *             if one of the underlying write operations failed
+     * @deprecated use {@link #writeArray(Object)} instead
+     */
+    @Deprecated
+    public final synchronized void writePrimitiveArray(Object o) throws IOException {
+<span class="fc" id="L255">        writeArray(o);</span>
+<span class="fc" id="L256">    }</span>
+}
+</pre><div class="footer"><span class="right">Created with <a href="http://www.jacoco.org/jacoco">JaCoCo</a> 0.8.7.202105040129</span></div></body></html>

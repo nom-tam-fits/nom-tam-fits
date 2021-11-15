@@ -12,7 +12,7 @@
 <a class="jxr_linenumber" name="L4" href="#L4">4</a>   <em class="jxr_comment"> * #%L</em>
 <a class="jxr_linenumber" name="L5" href="#L5">5</a>   <em class="jxr_comment"> * nom.tam FITS library</em>
 <a class="jxr_linenumber" name="L6" href="#L6">6</a>   <em class="jxr_comment"> * %%</em>
-<a class="jxr_linenumber" name="L7" href="#L7">7</a>   <em class="jxr_comment"> * Copyright (C) 1996 - 2015 nom-tam-fits</em>
+<a class="jxr_linenumber" name="L7" href="#L7">7</a>   <em class="jxr_comment"> * Copyright (C) 1996 - 2021 nom-tam-fits</em>
 <a class="jxr_linenumber" name="L8" href="#L8">8</a>   <em class="jxr_comment"> * %%</em>
 <a class="jxr_linenumber" name="L9" href="#L9">9</a>   <em class="jxr_comment"> * This is free and unencumbered software released into the public domain.</em>
 <a class="jxr_linenumber" name="L10" href="#L10">10</a>  <em class="jxr_comment"> * </em>
@@ -77,14 +77,14 @@
 <a class="jxr_linenumber" name="L69" href="#L69">69</a>                  .card(COMMENT).comment(<span class="jxr_string">"something to comment"</span>)<em class="jxr_comment">//</em>
 <a class="jxr_linenumber" name="L70" href="#L70">70</a>                  .card(THEAP).value(2L)<em class="jxr_comment">//</em>
 <a class="jxr_linenumber" name="L71" href="#L71">71</a>                  .card(DATAMIN).value(1)<em class="jxr_comment">//</em>
-<a class="jxr_linenumber" name="L72" href="#L72">72</a>                  .card(DATAMAX).value(2f)<em class="jxr_comment">//</em>
-<a class="jxr_linenumber" name="L73" href="#L73">73</a>                  .card(Standard.BSCALE).value(3d)<em class="jxr_comment">//</em>
+<a class="jxr_linenumber" name="L72" href="#L72">72</a>                  .card(DATAMAX).value(2)<em class="jxr_comment">//</em>
+<a class="jxr_linenumber" name="L73" href="#L73">73</a>                  .card(Standard.BSCALE).value(3.0)<em class="jxr_comment">//</em>
 <a class="jxr_linenumber" name="L74" href="#L74">74</a>                  .scale(1)<em class="jxr_comment">//</em>
-<a class="jxr_linenumber" name="L75" href="#L75">75</a>                  .card(TZEROn.n(5)).value(5.55f)<em class="jxr_comment">//</em>
-<a class="jxr_linenumber" name="L76" href="#L76">76</a>                  .card(Standard.BZERO).value(5.55d)<em class="jxr_comment">//</em>
+<a class="jxr_linenumber" name="L75" href="#L75">75</a>                  .card(TZEROn.n(5)).value(5.55)<em class="jxr_comment">//</em>
+<a class="jxr_linenumber" name="L76" href="#L76">76</a>                  .card(Standard.BZERO).value(6.55)<em class="jxr_comment">//</em>
 <a class="jxr_linenumber" name="L77" href="#L77">77</a>                  .card(Standard.EQUINOX).value(<strong class="jxr_keyword">new</strong> BigDecimal(<span class="jxr_string">"5.55"</span>))<em class="jxr_comment">//</em>
 <a class="jxr_linenumber" name="L78" href="#L78">78</a>                  .noScale()<em class="jxr_comment">//</em>
-<a class="jxr_linenumber" name="L79" href="#L79">79</a>                  .card(TZEROn.n(1)).value(1.99999d)<em class="jxr_comment">//</em>
+<a class="jxr_linenumber" name="L79" href="#L79">79</a>                  .card(TZEROn.n(1)).value(1.99999)<em class="jxr_comment">//</em>
 <a class="jxr_linenumber" name="L80" href="#L80">80</a>                  .card(TZEROn.n(2)).value(<strong class="jxr_keyword">new</strong> BigDecimal(<span class="jxr_string">"1.99999"</span>))<em class="jxr_comment">//</em>
 <a class="jxr_linenumber" name="L81" href="#L81">81</a>                  .card(AUTHOR).value(<strong class="jxr_keyword">true</strong>);
 <a class="jxr_linenumber" name="L82" href="#L82">82</a>  
@@ -96,13 +96,13 @@
 <a class="jxr_linenumber" name="L88" href="#L88">88</a>          Assert.assertEquals(<strong class="jxr_keyword">null</strong>, header.getStringValue(COMMENT));
 <a class="jxr_linenumber" name="L89" href="#L89">89</a>          Assert.assertEquals(2L, header.getLongValue(THEAP));
 <a class="jxr_linenumber" name="L90" href="#L90">90</a>          Assert.assertEquals(1, header.getIntValue(DATAMIN));
-<a class="jxr_linenumber" name="L91" href="#L91">91</a>          Assert.assertEquals(2f, header.getFloatValue(DATAMAX), 0.000001f);
-<a class="jxr_linenumber" name="L92" href="#L92">92</a>          Assert.assertEquals(3d, header.getDoubleValue(Standard.BSCALE), 0.000001d);
-<a class="jxr_linenumber" name="L93" href="#L93">93</a>          Assert.assertEquals(5.6d, header.getDoubleValue(Standard.BZERO), 0.000001d);
-<a class="jxr_linenumber" name="L94" href="#L94">94</a>          Assert.assertEquals(5.6d, header.getDoubleValue(Standard.EQUINOX), 0.000001d);
-<a class="jxr_linenumber" name="L95" href="#L95">95</a>          Assert.assertEquals(5.6f, header.getFloatValue(TZEROn.n(5)), 0.000001f);
-<a class="jxr_linenumber" name="L96" href="#L96">96</a>          Assert.assertEquals(1.99999d, header.getDoubleValue(TZEROn.n(1)), 0.000001d);
-<a class="jxr_linenumber" name="L97" href="#L97">97</a>          Assert.assertEquals(1.99999d, header.getDoubleValue(TZEROn.n(2)), 0.000001d);
+<a class="jxr_linenumber" name="L91" href="#L91">91</a>          Assert.assertEquals(2.0, header.getFloatValue(DATAMAX), 0.000001);
+<a class="jxr_linenumber" name="L92" href="#L92">92</a>          Assert.assertEquals(3.0, header.getDoubleValue(Standard.BSCALE), 0.000001);
+<a class="jxr_linenumber" name="L93" href="#L93">93</a>          Assert.assertEquals(6.6, header.getDoubleValue(Standard.BZERO), 0.11);
+<a class="jxr_linenumber" name="L94" href="#L94">94</a>          Assert.assertEquals(5.6, header.getDoubleValue(Standard.EQUINOX), 0.11);
+<a class="jxr_linenumber" name="L95" href="#L95">95</a>          Assert.assertEquals(5.6, header.getFloatValue(TZEROn.n(5)), 0.11);
+<a class="jxr_linenumber" name="L96" href="#L96">96</a>          Assert.assertEquals(1.99999, header.getDoubleValue(TZEROn.n(1)), 0.000001);
+<a class="jxr_linenumber" name="L97" href="#L97">97</a>          Assert.assertEquals(1.99999, header.getDoubleValue(TZEROn.n(2)), 0.000001);
 <a class="jxr_linenumber" name="L98" href="#L98">98</a>          Assert.assertEquals(<strong class="jxr_keyword">true</strong>, header.getBooleanValue(AUTHOR));
 <a class="jxr_linenumber" name="L99" href="#L99">99</a>  
 <a class="jxr_linenumber" name="L100" href="#L100">100</a>         date = <strong class="jxr_keyword">new</strong> FitsDate(<span class="jxr_string">"2015-07-12T05:21:25.446"</span>).toDate();
@@ -113,17 +113,17 @@
 <a class="jxr_linenumber" name="L105" href="#L105">105</a>                 .card(COMMENT).comment(<span class="jxr_string">"something else to comment"</span>)<em class="jxr_comment">//</em>
 <a class="jxr_linenumber" name="L106" href="#L106">106</a>                 .card(THEAP).value(200L)<em class="jxr_comment">//</em>
 <a class="jxr_linenumber" name="L107" href="#L107">107</a>                 .card(DATAMIN).value(100)<em class="jxr_comment">//</em>
-<a class="jxr_linenumber" name="L108" href="#L108">108</a>                 .card(DATAMAX).value(200f)<em class="jxr_comment">//</em>
-<a class="jxr_linenumber" name="L109" href="#L109">109</a>                 .card(Standard.BSCALE).value(300d)<em class="jxr_comment">//</em>
-<a class="jxr_linenumber" name="L110" href="#L110">110</a>                 .scale(2)<em class="jxr_comment">//</em>
-<a class="jxr_linenumber" name="L111" href="#L111">111</a>                 .card(TZEROn.n(5)).value(50.55f)<em class="jxr_comment">//</em>
-<a class="jxr_linenumber" name="L112" href="#L112">112</a>                 .card(Standard.BZERO).value(500.055d)<em class="jxr_comment">//</em>
+<a class="jxr_linenumber" name="L108" href="#L108">108</a>                 .card(DATAMAX).value(200)<em class="jxr_comment">//</em>
+<a class="jxr_linenumber" name="L109" href="#L109">109</a>                 .card(Standard.BSCALE).value(300.0)<em class="jxr_comment">//</em>
+<a class="jxr_linenumber" name="L110" href="#L110">110</a>                 .precision(4)<em class="jxr_comment">//</em>
+<a class="jxr_linenumber" name="L111" href="#L111">111</a>                 .card(TZEROn.n(5)).value(50.55)<em class="jxr_comment">//</em>
+<a class="jxr_linenumber" name="L112" href="#L112">112</a>                 .card(Standard.BZERO).value(500.055f)<em class="jxr_comment">//</em>
 <a class="jxr_linenumber" name="L113" href="#L113">113</a>                 .card(Standard.EQUINOX).value(<strong class="jxr_keyword">new</strong> BigDecimal(<span class="jxr_string">"500.055"</span>))<em class="jxr_comment">//</em>
-<a class="jxr_linenumber" name="L114" href="#L114">114</a>                 .card(TZEROn.n(3)).value(500.055f)<em class="jxr_comment">//</em>
-<a class="jxr_linenumber" name="L115" href="#L115">115</a>                 .noScale()<em class="jxr_comment">//</em>
+<a class="jxr_linenumber" name="L114" href="#L114">114</a>                 .card(TZEROn.n(3)).value(600.055f)<em class="jxr_comment">//</em>
+<a class="jxr_linenumber" name="L115" href="#L115">115</a>                 .autoPrecision()<em class="jxr_comment">//</em>
 <a class="jxr_linenumber" name="L116" href="#L116">116</a>                 .card(TZEROn.n(1)).value(100.99999d)<em class="jxr_comment">//</em>
 <a class="jxr_linenumber" name="L117" href="#L117">117</a>                 .card(TZEROn.n(2)).value(<strong class="jxr_keyword">new</strong> BigDecimal(<span class="jxr_string">"100.99999"</span>))<em class="jxr_comment">//</em>
-<a class="jxr_linenumber" name="L118" href="#L118">118</a>                 .card(TZEROn.n(4)).value(100.999f)<em class="jxr_comment">//</em>
+<a class="jxr_linenumber" name="L118" href="#L118">118</a>                 .card(TZEROn.n(4)).value(101.999)<em class="jxr_comment">//</em>
 <a class="jxr_linenumber" name="L119" href="#L119">119</a>                 .card(AUTHOR).value(false);
 <a class="jxr_linenumber" name="L120" href="#L120">120</a> 
 <a class="jxr_linenumber" name="L121" href="#L121">121</a>         Assert.assertEquals(<span class="jxr_string">"2015-07-12T05:21:25.446"</span>, header.getStringValue(DATE_OBS));
@@ -134,21 +134,21 @@
 <a class="jxr_linenumber" name="L126" href="#L126">126</a>         Assert.assertEquals(<strong class="jxr_keyword">null</strong>, header.getStringValue(COMMENT));
 <a class="jxr_linenumber" name="L127" href="#L127">127</a>         Assert.assertEquals(200L, header.getLongValue(THEAP));
 <a class="jxr_linenumber" name="L128" href="#L128">128</a>         Assert.assertEquals(100, header.getIntValue(DATAMIN));
-<a class="jxr_linenumber" name="L129" href="#L129">129</a>         Assert.assertEquals(200f, header.getFloatValue(DATAMAX), 0.000001f);
-<a class="jxr_linenumber" name="L130" href="#L130">130</a>         Assert.assertEquals(300d, header.getDoubleValue(Standard.BSCALE), 0.000001d);
-<a class="jxr_linenumber" name="L131" href="#L131">131</a>         Assert.assertEquals(500.06d, header.getDoubleValue(Standard.BZERO), 0.000001d);
-<a class="jxr_linenumber" name="L132" href="#L132">132</a>         Assert.assertEquals(500.06d, header.getDoubleValue(Standard.EQUINOX), 0.000001d);
-<a class="jxr_linenumber" name="L133" href="#L133">133</a>         Assert.assertEquals(100.99999d, header.getDoubleValue(TZEROn.n(1)), 0.000001d);
-<a class="jxr_linenumber" name="L134" href="#L134">134</a>         Assert.assertEquals(100.99999d, header.getDoubleValue(TZEROn.n(2)), 0.000001d);
-<a class="jxr_linenumber" name="L135" href="#L135">135</a>         Assert.assertEquals(500.06f, header.getFloatValue(TZEROn.n(3)), 0.000001f);
-<a class="jxr_linenumber" name="L136" href="#L136">136</a>         Assert.assertEquals(100.999f, header.getFloatValue(TZEROn.n(4)), 0.000001f);
+<a class="jxr_linenumber" name="L129" href="#L129">129</a>         Assert.assertEquals(200.0, header.getFloatValue(DATAMAX), 0.000001);
+<a class="jxr_linenumber" name="L130" href="#L130">130</a>         Assert.assertEquals(300.0, header.getDoubleValue(Standard.BSCALE), 0.000001);
+<a class="jxr_linenumber" name="L131" href="#L131">131</a>         Assert.assertEquals(500.06f, header.getFloatValue(Standard.BZERO), 0.011f);
+<a class="jxr_linenumber" name="L132" href="#L132">132</a>         Assert.assertEquals(500.06, header.getDoubleValue(Standard.EQUINOX), 0.000001);
+<a class="jxr_linenumber" name="L133" href="#L133">133</a>         Assert.assertEquals(100.99999, header.getDoubleValue(TZEROn.n(1)), 0.000001);
+<a class="jxr_linenumber" name="L134" href="#L134">134</a>         Assert.assertEquals(100.99999, header.getDoubleValue(TZEROn.n(2)), 0.000001);
+<a class="jxr_linenumber" name="L135" href="#L135">135</a>         Assert.assertEquals(600.06f, header.getFloatValue(TZEROn.n(3)), 0.011f);
+<a class="jxr_linenumber" name="L136" href="#L136">136</a>         Assert.assertEquals(101.999, header.getFloatValue(TZEROn.n(4)), 0.000001);
 <a class="jxr_linenumber" name="L137" href="#L137">137</a>         Assert.assertEquals(false, header.getBooleanValue(AUTHOR));
-<a class="jxr_linenumber" name="L138" href="#L138">138</a>         Assert.assertEquals(50.55f, header.getFloatValue(TZEROn.n(5)), 0.000001f);
+<a class="jxr_linenumber" name="L138" href="#L138">138</a>         Assert.assertEquals(50.55, header.getFloatValue(TZEROn.n(5)), 0.000001);
 <a class="jxr_linenumber" name="L139" href="#L139">139</a> 
 <a class="jxr_linenumber" name="L140" href="#L140">140</a>     }
 <a class="jxr_linenumber" name="L141" href="#L141">141</a> }
 </pre>
 <hr/>
-<div id="footer">Copyright &#169; 1996&#x2013;2017 nom-tam-fits. All rights reserved.</div>
+<div id="footer">Copyright &#169; 1996&#x2013;2021 nom-tam-fits. All rights reserved.</div>
 </body>
 </html>

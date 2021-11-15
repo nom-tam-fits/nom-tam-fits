@@ -1,0 +1,366 @@
+<?xml version="1.0" encoding="UTF-8"?><!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Strict//EN" "http://www.w3.org/TR/xhtml1/DTD/xhtml1-strict.dtd"><html xmlns="http://www.w3.org/1999/xhtml" lang="en"><head><meta http-equiv="Content-Type" content="text/html;charset=UTF-8"/><link rel="stylesheet" href="../jacoco-resources/report.css" type="text/css"/><link rel="shortcut icon" href="../jacoco-resources/report.gif" type="image/gif"/><title>FitsInputStream.java</title><link rel="stylesheet" href="../jacoco-resources/prettify.css" type="text/css"/><script type="text/javascript" src="../jacoco-resources/prettify.js"></script></head><body onload="window['PR_TAB_WIDTH']=4;prettyPrint()"><div class="breadcrumb" id="breadcrumb"><span class="info"><a href="../jacoco-sessions.html" class="el_session">Sessions</a></span><a href="../index.html" class="el_report">nom.tam FITS library</a> &gt; <a href="index.source.html" class="el_package">nom.tam.util</a> &gt; <span class="el_source">FitsInputStream.java</span></div><h1>FitsInputStream.java</h1><pre class="source lang-java linenums">/*
+ * #%L
+ * nom.tam FITS library
+ * %%
+ * Copyright (C) 1996 - 2021 nom-tam-fits
+ * %%
+ * This is free and unencumbered software released into the public domain.
+ * 
+ * Anyone is free to copy, modify, publish, use, compile, sell, or
+ * distribute this software, either in source code form or as a compiled
+ * binary, for any purpose, commercial or non-commercial, and by any
+ * means.
+ * 
+ * In jurisdictions that recognize copyright laws, the author or authors
+ * of this software dedicate any and all copyright interest in the
+ * software to the public domain. We make this dedication for the benefit
+ * of the public at large and to the detriment of our heirs and
+ * successors. We intend this dedication to be an overt act of
+ * relinquishment in perpetuity of all present and future rights to this
+ * software under copyright law.
+ * 
+ * THE SOFTWARE IS PROVIDED &quot;AS IS&quot;, WITHOUT WARRANTY OF ANY KIND,
+ * EXPRESS OR IMPLIED, INCLUDING BUT NOT LIMITED TO THE WARRANTIES OF
+ * MERCHANTABILITY, FITNESS FOR A PARTICULAR PURPOSE AND NONINFRINGEMENT.
+ * IN NO EVENT SHALL THE AUTHORS BE LIABLE FOR ANY CLAIM, DAMAGES OR
+ * OTHER LIABILITY, WHETHER IN AN ACTION OF CONTRACT, TORT OR OTHERWISE,
+ * ARISING FROM, OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR
+ * OTHER DEALINGS IN THE SOFTWARE.
+ * #L%
+ */
+
+package nom.tam.util;
+
+import static nom.tam.util.LoggerHelper.getLogger;
+
+
+// What do we use in here?
+import java.io.DataInput;
+import java.io.DataInputStream;
+import java.io.EOFException;
+import java.io.IOException;
+import java.io.InputStream;
+import java.util.logging.Level;
+import java.util.logging.Logger;
+
+/**
+ * This class is intended for high performance reading FITS files or blocks 
+ * of FITS data.
+ *
+ * &lt;p&gt;
+ * Testing and timing routines are provided in the
+ * nom.tam.util.test.BufferedFileTester class. 
+ * 
+ * &lt;p&gt;Prior versions under the old &lt;code&gt;BufferedDataInputStream&lt;/code&gt;:
+ * &lt;ul&gt;
+ * &lt;li&gt;
+ * Version 1.1 -- October 12, 2000:
+ * Fixed handling of EOF to return partially read arrays when EOF is detected&lt;/li&gt;
+ * &lt;li&gt;
+ * Version 1.2 -- July 20, 2009: Added handling of very large Object arrays.
+ * Additional work is required to handle very large arrays generally.&lt;/li&gt;
+ * &lt;/ul&gt;
+ * 
+ * &lt;p&gt;
+ * Version 2.0 -- October 30, 2021: Completely overhauled, with new name and 
+ * hierarchy. Performance is 2-4 times better than before (Attila Kovacs)
+ * 
+ * 
+ * @see FitsInputStream
+ * @see FitsFile
+ */
+@SuppressWarnings(&quot;deprecation&quot;)
+public class FitsInputStream extends ArrayInputStream implements ArrayDataInput {
+
+<span class="fc" id="L75">    private static final Logger LOG = getLogger(FitsInputStream.class);</span>
+        
+    /** the input, as accessible via the &lt;code&gt;DataInput&lt;/code&gt; interface */ 
+    private DataInput data;
+    
+    /**
+     * Create a BufferedInputStream based on a input stream with a specified
+     * buffer size.
+     * 
+     * @param i
+     *            the input stream to use for reading.
+     * @param bufLength
+     *            the buffer length to use.
+     */
+    public FitsInputStream(InputStream i, int bufLength) { 
+<span class="fc" id="L90">        super(i, bufLength);</span>
+<span class="fc" id="L91">        data = new DataInputStream(this);</span>
+<span class="fc" id="L92">        setDecoder(new FitsDecoder(this));</span>
+<span class="fc" id="L93">    }</span>
+    
+    /**
+     * Create a BufferedInputStream based on an input stream.
+     * 
+     * @param o
+     *            the input stream to use for reading.
+     */
+    public FitsInputStream(InputStream o) {
+<span class="fc" id="L102">        this(o, FitsIO.DEFAULT_BUFFER_SIZE);</span>
+<span class="fc" id="L103">    }</span>
+    
+    @Override
+    protected FitsDecoder getDecoder() {
+<span class="fc" id="L107">        return (FitsDecoder) super.getDecoder();</span>
+    }
+    
+    @Override
+    public synchronized void readFully(byte[] b) throws IOException {
+<span class="fc" id="L112">        readFully(b, 0, b.length);</span>
+<span class="fc" id="L113">    }</span>
+
+    @Override
+    public synchronized void readFully(byte[] b, int off, int len) throws IOException {
+<span class="fc" id="L117">        getDecoder().readFully(b, off, len);        </span>
+<span class="fc" id="L118">    }</span>
+
+    @Override
+    public final synchronized int read(boolean[] b) throws IOException {
+<span class="fc" id="L122">        return read(b, 0, b.length);</span>
+    }
+
+    @Override
+    public synchronized int read(boolean[] b, int start, int length) throws IOException {
+<span class="fc" id="L127">        return getDecoder().read(b, start, length);</span>
+    }
+
+    @Override
+    public final synchronized int read(Boolean[] b) throws IOException {
+<span class="fc" id="L132">        return read(b, 0, b.length);</span>
+    }
+
+    @Override
+    public synchronized int read(Boolean[] b, int start, int length) throws IOException {
+<span class="fc" id="L137">        return getDecoder().read(b, start, length);</span>
+    }
+   
+    @Override
+    public final synchronized int read(char[] c) throws IOException {
+<span class="fc" id="L142">        return read(c, 0, c.length);</span>
+    }
+
+    @Override
+    public synchronized int read(char[] c, int start, int length) throws IOException {
+<span class="fc" id="L147">        return getDecoder().read(c, start, length);</span>
+    }
+
+    @Override
+    public final synchronized int read(short[] s) throws IOException {
+<span class="fc" id="L152">        return read(s, 0, s.length);</span>
+    }
+
+    @Override
+    public synchronized int read(short[] s, int start, int length) throws IOException {
+<span class="fc" id="L157">        return getDecoder().read(s, start, length);</span>
+    }
+
+
+    @Override
+    public final synchronized int read(int[] i) throws IOException {
+<span class="fc" id="L163">        return read(i, 0, i.length);</span>
+    }
+
+    @Override
+    public synchronized int read(int[] i, int start, int length) throws IOException {
+<span class="fc" id="L168">        return getDecoder().read(i, start, length);</span>
+    }
+
+    @Override
+    public final synchronized int read(long[] l) throws IOException {
+<span class="fc" id="L173">        return read(l, 0, l.length);</span>
+    }
+
+
+    @Override
+    public synchronized int read(long[] l, int start, int length) throws IOException {
+<span class="fc" id="L179">        return getDecoder().read(l, start, length);</span>
+    }
+
+    @Override
+    public final synchronized int read(float[] f) throws IOException {
+<span class="fc" id="L184">        return read(f, 0, f.length);</span>
+    }
+
+    @Override
+    public synchronized int read(float[] f, int start, int length) throws IOException {
+<span class="fc" id="L189">        return getDecoder().read(f, start, length);</span>
+    }
+
+    @Override
+    public final synchronized int read(double[] d) throws IOException {
+<span class="fc" id="L194">        return read(d, 0, d.length);</span>
+    }
+
+    @Override
+    public synchronized int read(double[] d, int start, int length) throws IOException {
+<span class="fc" id="L199">        return getDecoder().read(d, start, length);</span>
+    }
+
+    @Deprecated
+    @Override
+    public final synchronized int readArray(Object o) throws IOException {
+<span class="fc" id="L205">        return (int) readLArray(o);</span>
+    }
+ 
+    /**
+     * This routine provides efficient reading of arrays of any primitive type.
+     * It is an error to invoke this method with an object that is not an array
+     * of some primitive type. Note that there is no corresponding capability to
+     * writePrimitiveArray in BufferedDataOutputStream to read in an array of
+     * Strings.
+     * 
+     * @return number of bytes read.
+     * @param o
+     *            The object to be read. It must be an array of a primitive
+     *            type, or an array of Object's.
+     * @throws IOException
+     *             if the underlying read operation fails
+     * @deprecated use {@link #readLArray(Object)} instead
+     */
+    @Deprecated
+    public final synchronized int readPrimitiveArray(Object o) throws IOException {
+<span class="fc" id="L225">        return (int) readLArray(o);</span>
+    }
+    
+
+    @Override
+    public synchronized long skip(long n) throws IOException {
+        // The underlying stream may or may not support skip(). So, if skip()
+        // fails, we'll just default to reading byte-by-byte...
+        try {
+<span class="fc" id="L234">            return super.skip(n);</span>
+<span class="fc" id="L235">        } catch (Exception e) {</span>
+<span class="fc" id="L236">            LOG.log(Level.WARNING, &quot;Built-in skip failed (will try work around it...)&quot;, e);</span>
+            // Move on...
+        }
+           
+        // Fallback byte-by-byte read()...
+<span class="fc" id="L241">        long skipped = 0;</span>
+<span class="fc bfc" id="L242" title="All 2 branches covered.">        for (; skipped &lt; n; skipped++) {</span>
+<span class="fc bfc" id="L243" title="All 2 branches covered.">            if (read() &lt; 0) {</span>
+<span class="fc" id="L244">                break;</span>
+            }
+        } 
+<span class="fc" id="L247">        return skipped;</span>
+    }
+    
+    
+    @Override
+    public synchronized int skipBytes(int n) throws IOException {
+<span class="fc" id="L253">        return (int) super.skip(n);</span>
+    }
+    
+    
+    @Override
+    public final synchronized void skipAllBytes(int toSkip) throws IOException {
+<span class="fc" id="L259">        skipAllBytes((long) toSkip);</span>
+<span class="fc" id="L260">    }</span>
+
+    
+    @Override
+    public synchronized void skipAllBytes(long toSkip) throws IOException {
+<span class="fc" id="L265">        long got = 0;</span>
+        
+<span class="fc bfc" id="L267" title="All 2 branches covered.">        while (got &lt; toSkip) {</span>
+<span class="fc" id="L268">            long n = skip(toSkip - got);</span>
+<span class="fc bfc" id="L269" title="All 2 branches covered.">            if (n &lt;= 0) {</span>
+<span class="fc" id="L270">                break;</span>
+            }
+<span class="fc" id="L272">            got += n;</span>
+<span class="fc" id="L273">        }</span>
+
+<span class="fc bfc" id="L275" title="All 2 branches covered.">        if (got != toSkip) {</span>
+<span class="fc" id="L276">            throw new EOFException(&quot;Reached end-of-stream after skipping &quot; + got + &quot; of &quot; + toSkip);</span>
+        }
+<span class="fc" id="L278">    }</span>
+
+
+    @Override
+    public synchronized boolean readBoolean() throws IOException {
+<span class="fc" id="L283">        return getDecoder().readBoolean();</span>
+    }
+    
+
+    @Override
+    public synchronized int readUnsignedByte() throws IOException {
+<span class="fc" id="L289">        return getDecoder().readUnsignedByte();</span>
+    }
+
+
+    @Override
+    public synchronized byte readByte() throws IOException {
+<span class="fc" id="L295">        return getDecoder().readByte();</span>
+    }
+
+
+    @Override
+    public synchronized char readChar() throws IOException {
+<span class="fc" id="L301">        return getDecoder().readChar();</span>
+    }
+
+
+    @Override
+    public synchronized int readUnsignedShort() throws IOException {
+<span class="fc" id="L307">        return getDecoder().readUnsignedShort();</span>
+    }
+
+
+    @Override
+    public synchronized short readShort() throws IOException {
+<span class="fc" id="L313">        return getDecoder().readShort();</span>
+    }
+
+
+    @Override
+    public synchronized int readInt() throws IOException {
+<span class="fc" id="L319">        return getDecoder().readInt();</span>
+    }
+
+
+    @Override
+    public synchronized long readLong() throws IOException {
+<span class="fc" id="L325">        return getDecoder().readLong();</span>
+    }
+
+
+    @Override
+    public synchronized float readFloat() throws IOException {
+<span class="fc" id="L331">        return getDecoder().readFloat();</span>
+    }
+
+
+    @Override
+    public synchronized double readDouble() throws IOException {
+<span class="fc" id="L337">        return getDecoder().readDouble();</span>
+    }
+    
+
+    @Override
+    public synchronized String readUTF() throws IOException {
+<span class="fc" id="L343">        return data.readUTF();</span>
+    }
+
+    
+    @Override
+    public final synchronized String readLine() throws IOException {
+<span class="fc" id="L349">        return getDecoder().readAsciiLine();</span>
+    }
+
+
+    @Override
+    public String toString() {
+<span class="fc" id="L355">        return super.toString() + &quot;[count=&quot; + this.count + &quot;,pos=&quot; + this.pos + &quot;]&quot;;</span>
+    }
+    
+
+    @Override
+    public final boolean checkTruncated() throws IOException {
+        // We cannot skip more than is available in an input stream.
+<span class="fc" id="L362">        return false;</span>
+    }
+
+}
+</pre><div class="footer"><span class="right">Created with <a href="http://www.jacoco.org/jacoco">JaCoCo</a> 0.8.7.202105040129</span></div></body></html>

@@ -1,10 +1,10 @@
-<?xml version="1.0" encoding="UTF-8"?><!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Strict//EN" "http://www.w3.org/TR/xhtml1/DTD/xhtml1-strict.dtd"><html xmlns="http://www.w3.org/1999/xhtml" lang="en"><head><meta http-equiv="Content-Type" content="text/html;charset=UTF-8"/><link rel="stylesheet" href="../.resources/report.css" type="text/css"/><link rel="shortcut icon" href="../.resources/report.gif" type="image/gif"/><title>CompressorControlNameComputer.java</title><link rel="stylesheet" href="../.resources/prettify.css" type="text/css"/><script type="text/javascript" src="../.resources/prettify.js"></script></head><body onload="window['PR_TAB_WIDTH']=4;prettyPrint()"><div class="breadcrumb" id="breadcrumb"><span class="info"><a href="../.sessions.html" class="el_session">Sessions</a></span><a href="../index.html" class="el_report">nom.tam FITS library</a> &gt; <a href="index.source.html" class="el_package">nom.tam.fits.compression.provider</a> &gt; <span class="el_source">CompressorControlNameComputer.java</span></div><h1>CompressorControlNameComputer.java</h1><pre class="source lang-java linenums">package nom.tam.fits.compression.provider;
+<?xml version="1.0" encoding="UTF-8"?><!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Strict//EN" "http://www.w3.org/TR/xhtml1/DTD/xhtml1-strict.dtd"><html xmlns="http://www.w3.org/1999/xhtml" lang="en"><head><meta http-equiv="Content-Type" content="text/html;charset=UTF-8"/><link rel="stylesheet" href="../jacoco-resources/report.css" type="text/css"/><link rel="shortcut icon" href="../jacoco-resources/report.gif" type="image/gif"/><title>CompressorControlNameComputer.java</title><link rel="stylesheet" href="../jacoco-resources/prettify.css" type="text/css"/><script type="text/javascript" src="../jacoco-resources/prettify.js"></script></head><body onload="window['PR_TAB_WIDTH']=4;prettyPrint()"><div class="breadcrumb" id="breadcrumb"><span class="info"><a href="../jacoco-sessions.html" class="el_session">Sessions</a></span><a href="../index.html" class="el_report">nom.tam FITS library</a> &gt; <a href="index.source.html" class="el_package">nom.tam.fits.compression.provider</a> &gt; <span class="el_source">CompressorControlNameComputer.java</span></div><h1>CompressorControlNameComputer.java</h1><pre class="source lang-java linenums">package nom.tam.fits.compression.provider;
 
 /*
  * #%L
  * nom.tam FITS library
  * %%
- * Copyright (C) 1996 - 2016 nom-tam-fits
+ * Copyright (C) 1996 - 2021 nom-tam-fits
  * %%
  * This is free and unencumbered software released into the public domain.
  * 
@@ -67,8 +67,8 @@ public class CompressorControlNameComputer {
     }
 
     private static String standardizeCompressionAlgorithm(String compressionAlgorithm) {
-<span class="pc bpc" id="L70" title="1 of 4 branches missed.">        if (Compression.ZCMPTYPE_RICE_1.equalsIgnoreCase(compressionAlgorithm) || //</span>
-                Compression.ZCMPTYPE_RICE_ONE.equalsIgnoreCase(compressionAlgorithm)) {
+<span class="fc bfc" id="L70" title="All 2 branches covered.">        if (Compression.ZCMPTYPE_RICE_1.equalsIgnoreCase(compressionAlgorithm) || //</span>
+<span class="pc bpc" id="L71" title="1 of 2 branches missed.">                Compression.ZCMPTYPE_RICE_ONE.equalsIgnoreCase(compressionAlgorithm)) {</span>
 <span class="fc" id="L72">            return &quot;Rice&quot;;</span>
 <span class="fc bfc" id="L73" title="All 2 branches covered.">        } else if (Compression.ZCMPTYPE_PLIO_1.equalsIgnoreCase(compressionAlgorithm)) {</span>
 <span class="fc" id="L74">            return &quot;PLIO&quot;;</span>
@@ -86,31 +86,30 @@ public class CompressorControlNameComputer {
 
     private static String standardizeQuantAlgorithm(String quantAlgorithm) {
 <span class="fc bfc" id="L88" title="All 2 branches covered.">        if (quantAlgorithm != null) {</span>
-<span class="pc bpc" id="L89" title="1 of 6 branches missed.">            if (Compression.ZQUANTIZ_NO_DITHER.equalsIgnoreCase(quantAlgorithm) || //</span>
-                    Compression.ZQUANTIZ_SUBTRACTIVE_DITHER_1.equalsIgnoreCase(quantAlgorithm) || //
-                    Compression.ZQUANTIZ_SUBTRACTIVE_DITHER_2.equalsIgnoreCase(quantAlgorithm)) {
+<span class="fc bfc" id="L89" title="All 2 branches covered.">            if (Compression.ZQUANTIZ_NO_DITHER.equalsIgnoreCase(quantAlgorithm) || //</span>
+<span class="pc bpc" id="L90" title="1 of 2 branches missed.">                    Compression.ZQUANTIZ_SUBTRACTIVE_DITHER_1.equalsIgnoreCase(quantAlgorithm) || //</span>
+<span class="fc bfc" id="L91" title="All 2 branches covered.">                    Compression.ZQUANTIZ_SUBTRACTIVE_DITHER_2.equalsIgnoreCase(quantAlgorithm)) {</span>
 <span class="fc" id="L92">                return &quot;Quant&quot;;</span>
-            } else {
-<span class="fc" id="L94">                return &quot;Unknown&quot;;</span>
             }
+<span class="fc" id="L94">            return &quot;Unknown&quot;;</span>
         }
-<span class="fc" id="L97">        return &quot;&quot;;</span>
+<span class="fc" id="L96">        return &quot;&quot;;</span>
     }
 
     public CompressorControlNameComputer() {
-<span class="fc" id="L101">        super();</span>
-<span class="fc" id="L102">    }</span>
+<span class="fc" id="L100">        super();</span>
+<span class="fc" id="L101">    }</span>
 
     public String createCompressorClassName(String quantAlgorithm, String compressionAlgorithm, Class&lt;?&gt; baseType) {
-<span class="fc" id="L105">        StringBuilder className = new StringBuilder();</span>
-<span class="fc" id="L106">        className.append(standardizeBaseType(baseType.getSimpleName()));</span>
-<span class="fc bfc" id="L107" title="All 4 branches covered.">        if (className.indexOf(Float.class.getSimpleName()) == 0 || className.indexOf(Double.class.getSimpleName()) == 0) {</span>
-<span class="fc" id="L108">            quantAlgorithm = null; // default so not in the className</span>
+<span class="fc" id="L104">        StringBuilder className = new StringBuilder();</span>
+<span class="fc" id="L105">        className.append(standardizeBaseType(baseType.getSimpleName()));</span>
+<span class="fc bfc" id="L106" title="All 4 branches covered.">        if (className.indexOf(Float.class.getSimpleName()) == 0 || className.indexOf(Double.class.getSimpleName()) == 0) {</span>
+<span class="fc" id="L107">            quantAlgorithm = null; // default so not in the className</span>
         }
-<span class="fc" id="L110">        className.append(standardizeQuantAlgorithm(quantAlgorithm));</span>
-<span class="fc" id="L111">        className.append(standardizeCompressionAlgorithm(compressionAlgorithm));</span>
-<span class="fc" id="L112">        className.append(COMPRESSOR_CLASS_SUFFIX);</span>
-<span class="fc" id="L113">        return className.toString();</span>
+<span class="fc" id="L109">        className.append(standardizeQuantAlgorithm(quantAlgorithm));</span>
+<span class="fc" id="L110">        className.append(standardizeCompressionAlgorithm(compressionAlgorithm));</span>
+<span class="fc" id="L111">        className.append(COMPRESSOR_CLASS_SUFFIX);</span>
+<span class="fc" id="L112">        return className.toString();</span>
     }
 }
-</pre><div class="footer"><span class="right">Created with <a href="http://www.eclemma.org/jacoco">JaCoCo</a> 0.7.6.201602180812</span></div></body></html>
+</pre><div class="footer"><span class="right">Created with <a href="http://www.jacoco.org/jacoco">JaCoCo</a> 0.8.7.202105040129</span></div></body></html>

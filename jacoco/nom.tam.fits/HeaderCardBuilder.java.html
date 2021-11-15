@@ -1,10 +1,10 @@
-<?xml version="1.0" encoding="UTF-8"?><!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Strict//EN" "http://www.w3.org/TR/xhtml1/DTD/xhtml1-strict.dtd"><html xmlns="http://www.w3.org/1999/xhtml" lang="en"><head><meta http-equiv="Content-Type" content="text/html;charset=UTF-8"/><link rel="stylesheet" href="../.resources/report.css" type="text/css"/><link rel="shortcut icon" href="../.resources/report.gif" type="image/gif"/><title>HeaderCardBuilder.java</title><link rel="stylesheet" href="../.resources/prettify.css" type="text/css"/><script type="text/javascript" src="../.resources/prettify.js"></script></head><body onload="window['PR_TAB_WIDTH']=4;prettyPrint()"><div class="breadcrumb" id="breadcrumb"><span class="info"><a href="../.sessions.html" class="el_session">Sessions</a></span><a href="../index.html" class="el_report">nom.tam FITS library</a> &gt; <a href="index.source.html" class="el_package">nom.tam.fits</a> &gt; <span class="el_source">HeaderCardBuilder.java</span></div><h1>HeaderCardBuilder.java</h1><pre class="source lang-java linenums">package nom.tam.fits;
+<?xml version="1.0" encoding="UTF-8"?><!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Strict//EN" "http://www.w3.org/TR/xhtml1/DTD/xhtml1-strict.dtd"><html xmlns="http://www.w3.org/1999/xhtml" lang="en"><head><meta http-equiv="Content-Type" content="text/html;charset=UTF-8"/><link rel="stylesheet" href="../jacoco-resources/report.css" type="text/css"/><link rel="shortcut icon" href="../jacoco-resources/report.gif" type="image/gif"/><title>HeaderCardBuilder.java</title><link rel="stylesheet" href="../jacoco-resources/prettify.css" type="text/css"/><script type="text/javascript" src="../jacoco-resources/prettify.js"></script></head><body onload="window['PR_TAB_WIDTH']=4;prettyPrint()"><div class="breadcrumb" id="breadcrumb"><span class="info"><a href="../jacoco-sessions.html" class="el_session">Sessions</a></span><a href="../index.html" class="el_report">nom.tam FITS library</a> &gt; <a href="index.source.html" class="el_package">nom.tam.fits</a> &gt; <span class="el_source">HeaderCardBuilder.java</span></div><h1>HeaderCardBuilder.java</h1><pre class="source lang-java linenums">package nom.tam.fits;
 
 /*
  * #%L
  * nom.tam FITS library
  * %%
- * Copyright (C) 1996 - 2015 nom-tam-fits
+ * Copyright (C) 1996 - 2021 nom-tam-fits
  * %%
  * This is free and unencumbered software released into the public domain.
  * 
@@ -31,8 +31,7 @@
  * #L%
  */
 
-import java.math.BigDecimal;
-import java.math.RoundingMode;
+
 import java.util.Date;
 
 import nom.tam.fits.header.IFitsHeader;
@@ -62,7 +61,7 @@ public class HeaderCardBuilder {
     /**
      * scale to use for decimal values.
      */
-<span class="fc" id="L65">    private int scale = -1;</span>
+<span class="fc" id="L64">    private int precision = -1;</span>
 
     /**
      * constructor to the header card builder.
@@ -72,10 +71,10 @@ public class HeaderCardBuilder {
      * @param key
      *            the first header card to set.
      */
-<span class="fc" id="L75">    protected HeaderCardBuilder(Header header, IFitsHeader key) {</span>
-<span class="fc" id="L76">        this.header = header;</span>
-<span class="fc" id="L77">        card(key);</span>
-<span class="fc" id="L78">    }</span>
+<span class="fc" id="L74">    protected HeaderCardBuilder(Header header, IFitsHeader key) {</span>
+<span class="fc" id="L75">        this.header = header;</span>
+<span class="fc" id="L76">        card(key);</span>
+<span class="fc" id="L77">    }</span>
 
     /**
      * get the current build card of the builder.
@@ -83,7 +82,7 @@ public class HeaderCardBuilder {
      * @return the current card
      */
     public HeaderCard card() {
-<span class="fc" id="L86">        return this.card;</span>
+<span class="fc" id="L85">        return this.card;</span>
     }
 
     /**
@@ -95,9 +94,9 @@ public class HeaderCardBuilder {
      * @return this
      */
     public HeaderCardBuilder card(IFitsHeader newKey) {
-<span class="fc" id="L98">        this.key = newKey;</span>
-<span class="fc" id="L99">        this.card = this.header.findCard(this.key);</span>
-<span class="fc" id="L100">        return this;</span>
+<span class="fc" id="L97">        this.key = newKey;</span>
+<span class="fc" id="L98">        this.card = this.header.findCard(this.key);</span>
+<span class="fc" id="L99">        return this;</span>
     }
 
     /**
@@ -112,12 +111,12 @@ public class HeaderCardBuilder {
      *             if the card creation failed.
      */
     public HeaderCardBuilder comment(String newComment) throws HeaderCardException {
-<span class="fc bfc" id="L115" title="All 2 branches covered.">        if (this.card == null) {</span>
-<span class="fc" id="L116">            this.card = new HeaderCard(this.key.key(), (String) null, null);</span>
-<span class="fc" id="L117">            this.header.addLine(this.card);</span>
+<span class="fc bfc" id="L114" title="All 2 branches covered.">        if (this.card == null) {</span>
+<span class="fc" id="L115">            this.card = new HeaderCard(this.key.key(), (String) null, null);</span>
+<span class="fc" id="L116">            this.header.addLine(this.card);</span>
         }
-<span class="fc" id="L119">        this.card.setComment(newComment);</span>
-<span class="fc" id="L120">        return this;</span>
+<span class="fc" id="L118">        this.card.setComment(newComment);</span>
+<span class="fc" id="L119">        return this;</span>
     }
 
     /**
@@ -131,13 +130,13 @@ public class HeaderCardBuilder {
      *             if the card creation failed.
      */
     public HeaderCardBuilder value(boolean newValue) throws HeaderCardException {
-<span class="fc bfc" id="L134" title="All 2 branches covered.">        if (this.card == null) {</span>
-<span class="fc" id="L135">            this.card = new HeaderCard(this.key.key(), newValue, null);</span>
-<span class="fc" id="L136">            this.header.addLine(this.card);</span>
+<span class="fc bfc" id="L133" title="All 2 branches covered.">        if (this.card == null) {</span>
+<span class="fc" id="L134">            this.card = new HeaderCard(this.key.key(), newValue, null);</span>
+<span class="fc" id="L135">            this.header.addLine(this.card);</span>
         } else {
-<span class="fc" id="L138">            this.card.setValue(newValue);</span>
+<span class="fc" id="L137">            this.card.setValue(newValue);</span>
         }
-<span class="fc" id="L140">        return this;</span>
+<span class="fc" id="L139">        return this;</span>
     }
 
     /**
@@ -151,35 +150,28 @@ public class HeaderCardBuilder {
      *             if the card creation failed.
      */
     public HeaderCardBuilder value(Date newValue) throws HeaderCardException {
-<span class="fc" id="L154">        return value(FitsDate.getFitsDateString(newValue));</span>
+<span class="fc" id="L153">        return value(FitsDate.getFitsDateString(newValue));</span>
     }
 
     /**
-     * set the value of the current card.If the card did not exist yet the card
+     * Sets a new number value for the current card. If the card did not exist yet the card
      * will be created.
      * 
-     * @param newValue
-     *            the new value to set.
+     * @param value     the new number value to set.
      * @return this
-     * @throws HeaderCardException
-     *             if the card creation failed.
+     * @throws HeaderCardException if the card creation failed.
+     * @throws LongValueException 
+     *                  if the number value cannot be represented in the space available
+     *                  for it in the 80-character wide FITS header record.    
      */
-    public HeaderCardBuilder value(double newValue) throws HeaderCardException {
+    public HeaderCardBuilder value(Number value) throws HeaderCardException, LongValueException {
 <span class="fc bfc" id="L168" title="All 2 branches covered.">        if (this.card == null) {</span>
-<span class="fc bfc" id="L169" title="All 2 branches covered.">            if (scale &gt;= 0) {</span>
-<span class="fc" id="L170">                this.card = new HeaderCard(this.key.key(), newValue, scale, null);</span>
-            } else {
-<span class="fc" id="L172">                this.card = new HeaderCard(this.key.key(), newValue, null);</span>
-            }
-<span class="fc" id="L174">            this.header.addLine(this.card);</span>
+<span class="fc" id="L169">            this.card = new HeaderCard(this.key.key(), value, precision, null);</span>
+<span class="fc" id="L170">            this.header.addLine(this.card);</span>
         } else {
-<span class="fc bfc" id="L176" title="All 2 branches covered.">            if (scale &gt;= 0) {</span>
-<span class="fc" id="L177">                this.card.setValue(newValue, scale);</span>
-            } else {
-<span class="fc" id="L179">                this.card.setValue(newValue);</span>
-            }
+<span class="fc" id="L172">            this.card.setValue(value, precision);</span>
         }
-<span class="fc" id="L182">        return this;</span>
+<span class="fc" id="L174">        return this;</span>
     }
 
     /**
@@ -191,138 +183,83 @@ public class HeaderCardBuilder {
      * @return this
      * @throws HeaderCardException
      *             if the card creation failed.
+     * @throws LongValueException 
+     *             if the number value cannot be represented in the space available
+     *             for it in the 80-character wide FITS header record.
      */
-    public HeaderCardBuilder value(BigDecimal newValue) throws HeaderCardException {
-        final BigDecimal scaledValue;
-<span class="fc bfc" id="L197" title="All 2 branches covered.">        if (scale &gt;= 0) {</span>
-<span class="fc" id="L198">            scaledValue = newValue.setScale(scale, RoundingMode.HALF_UP);</span>
+    public HeaderCardBuilder value(String newValue) throws HeaderCardException, LongValueException {
+<span class="fc bfc" id="L191" title="All 2 branches covered.">        if (this.card == null) {</span>
+<span class="fc" id="L192">            this.card = new HeaderCard(this.key.key(), newValue, null);</span>
+<span class="fc" id="L193">            this.header.addLine(this.card);</span>
         } else {
-<span class="fc" id="L200">            scaledValue = newValue;</span>
+<span class="fc" id="L195">            this.card.setValue(newValue);</span>
         }
-<span class="fc bfc" id="L202" title="All 2 branches covered.">        if (this.card == null) {</span>
-<span class="fc" id="L203">            this.card = new HeaderCard(this.key.key(), scaledValue, null);</span>
-<span class="fc" id="L204">            this.header.addLine(this.card);</span>
-        } else {
-<span class="fc" id="L206">            this.card.setValue(scaledValue);</span>
-        }
-<span class="fc" id="L208">        return this;</span>
+<span class="fc" id="L197">        return this;</span>
     }
 
     /**
-     * set the value of the current card.If the card did not exist yet the card
-     * will be created.
+     * Sets the number of decimals to show for the following decimal values. This method
+     * is now deprecated. Use {@link #precision(int)} instead.
      * 
-     * @param newValue
-     *            the new value to set.
+     * @param decimals     the new number of decimal places to show.
      * @return this
-     * @throws HeaderCardException
-     *             if the card creation failed.
+     * 
+     * @deprecated Use {@link #precision(int)} instead.
      */
-    public HeaderCardBuilder value(float newValue) throws HeaderCardException {
-<span class="fc bfc" id="L222" title="All 2 branches covered.">        if (this.card == null) {</span>
-<span class="fc bfc" id="L223" title="All 2 branches covered.">            if (scale &gt;= 0) {</span>
-<span class="fc" id="L224">                this.card = new HeaderCard(this.key.key(), newValue, scale, null);</span>
-            } else {
-<span class="fc" id="L226">                this.card = new HeaderCard(this.key.key(), newValue, null);</span>
-            }
-<span class="fc" id="L228">            this.header.addLine(this.card);</span>
-        } else {
-<span class="fc bfc" id="L230" title="All 2 branches covered.">            if (scale &gt;= 0) {</span>
-<span class="fc" id="L231">                this.card.setValue(newValue, scale);</span>
-            } else {
-<span class="fc" id="L233">                this.card.setValue(newValue);</span>
-            }
-        }
-<span class="fc" id="L236">        return this;</span>
+    @Deprecated
+    public HeaderCardBuilder scale(int decimals) {
+<span class="fc" id="L211">        this.precision = decimals;</span>
+<span class="fc" id="L212">        return this;</span>
+    }
+    
+    
+    /**
+     * Sets the number of decimals to show for the following decimal values. 
+     * Trailing zeroes will be ommitted.
+     * 
+     * 
+     * @param decimals     the number of decimals to show for the following decimal values. 
+     * @return              this
+     * 
+     * @since 1.16
+     */
+    public HeaderCardBuilder precision(int decimals) {
+<span class="fc" id="L227">        this.precision = decimals;</span>
+<span class="fc" id="L228">        return this;</span>
     }
 
     /**
-     * set the value of the current card.If the card did not exist yet the card
-     * will be created.
-     * 
-     * @param newValue
-     *            the new value to set.
-     * @return this
-     * @throws HeaderCardException
-     *             if the card creation failed.
-     */
-    public HeaderCardBuilder value(int newValue) throws HeaderCardException {
-<span class="fc bfc" id="L250" title="All 2 branches covered.">        if (this.card == null) {</span>
-<span class="fc" id="L251">            this.card = new HeaderCard(this.key.key(), newValue, null);</span>
-<span class="fc" id="L252">            this.header.addLine(this.card);</span>
-        } else {
-<span class="fc" id="L254">            this.card.setValue(newValue);</span>
-        }
-<span class="fc" id="L256">        return this;</span>
-    }
-
-    /**
-     * set the value of the current card.If the card did not exist yet the card
-     * will be created.
-     * 
-     * @param newValue
-     *            the new value to set.
-     * @return this
-     * @throws HeaderCardException
-     *             if the card creation failed.
-     */
-    public HeaderCardBuilder value(long newValue) throws HeaderCardException {
-<span class="fc bfc" id="L270" title="All 2 branches covered.">        if (this.card == null) {</span>
-<span class="fc" id="L271">            this.card = new HeaderCard(this.key.key(), newValue, null);</span>
-<span class="fc" id="L272">            this.header.addLine(this.card);</span>
-        } else {
-<span class="fc" id="L274">            this.card.setValue(newValue);</span>
-        }
-<span class="fc" id="L276">        return this;</span>
-    }
-
-    /**
-     * set the value of the current card.If the card did not exist yet the card
-     * will be created.
-     * 
-     * @param newValue
-     *            the new value to set.
-     * @return this
-     * @throws HeaderCardException
-     *             if the card creation failed.
-     */
-    public HeaderCardBuilder value(String newValue) throws HeaderCardException {
-<span class="fc bfc" id="L290" title="All 2 branches covered.">        if (this.card == null) {</span>
-<span class="fc" id="L291">            this.card = new HeaderCard(this.key.key(), newValue, null);</span>
-<span class="fc" id="L292">            this.header.addLine(this.card);</span>
-        } else {
-<span class="fc" id="L294">            this.card.setValue(newValue);</span>
-        }
-<span class="fc" id="L296">        return this;</span>
-    }
-
-    /**
-     * set the scale for the following decimal values.
-     * 
-     * @param newScale
-     *            the new scale to use
-     * @return this
-     */
-    public HeaderCardBuilder scale(int newScale) {
-<span class="fc" id="L307">        this.scale = newScale;</span>
-<span class="fc" id="L308">        return this;</span>
-    }
-
-    /**
-     * use no scale for the following decimal values.
+     * This method has been deprecated. Please use {@link #autoPrecision()} instead.
      * 
      * @return this
+     * 
+     * @deprecated Use {@link #autoPrecision()} instead
      */
+    @Deprecated
     public HeaderCardBuilder noScale() {
-<span class="fc" id="L317">        this.scale = -1;</span>
-<span class="fc" id="L318">        return this;</span>
+<span class="fc" id="L240">        this.precision = -1;</span>
+<span class="fc" id="L241">        return this;</span>
     }
 
+    /**
+     * Use the native precision for the given number type. Trailing zeroes will be
+     * ommitted.
+     * 
+     * @return this
+     * 
+     * @since 1.16
+     */
+    public HeaderCardBuilder autoPrecision() {
+<span class="fc" id="L253">        this.precision = -1;</span>
+<span class="fc" id="L254">        return this;</span>
+    }
+    
     /**
      * @return the filled header.
      */
     public Header header() {
-<span class="fc" id="L325">        return header;</span>
+<span class="fc" id="L261">        return header;</span>
     }
 }
-</pre><div class="footer"><span class="right">Created with <a href="http://www.eclemma.org/jacoco">JaCoCo</a> 0.7.6.201602180812</span></div></body></html>
+
+</pre><div class="footer"><span class="right">Created with <a href="http://www.jacoco.org/jacoco">JaCoCo</a> 0.8.7.202105040129</span></div></body></html>

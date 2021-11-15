@@ -1,10 +1,10 @@
-<?xml version="1.0" encoding="UTF-8"?><!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Strict//EN" "http://www.w3.org/TR/xhtml1/DTD/xhtml1-strict.dtd"><html xmlns="http://www.w3.org/1999/xhtml" lang="en"><head><meta http-equiv="Content-Type" content="text/html;charset=UTF-8"/><link rel="stylesheet" href="../.resources/report.css" type="text/css"/><link rel="shortcut icon" href="../.resources/report.gif" type="image/gif"/><title>BufferDecoder.java</title><link rel="stylesheet" href="../.resources/prettify.css" type="text/css"/><script type="text/javascript" src="../.resources/prettify.js"></script></head><body onload="window['PR_TAB_WIDTH']=4;prettyPrint()"><div class="breadcrumb" id="breadcrumb"><span class="info"><a href="../.sessions.html" class="el_session">Sessions</a></span><a href="../index.html" class="el_report">nom.tam FITS library</a> &gt; <a href="index.source.html" class="el_package">nom.tam.util</a> &gt; <span class="el_source">BufferDecoder.java</span></div><h1>BufferDecoder.java</h1><pre class="source lang-java linenums">package nom.tam.util;
+<?xml version="1.0" encoding="UTF-8"?><!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Strict//EN" "http://www.w3.org/TR/xhtml1/DTD/xhtml1-strict.dtd"><html xmlns="http://www.w3.org/1999/xhtml" lang="en"><head><meta http-equiv="Content-Type" content="text/html;charset=UTF-8"/><link rel="stylesheet" href="../jacoco-resources/report.css" type="text/css"/><link rel="shortcut icon" href="../jacoco-resources/report.gif" type="image/gif"/><title>BufferDecoder.java</title><link rel="stylesheet" href="../jacoco-resources/prettify.css" type="text/css"/><script type="text/javascript" src="../jacoco-resources/prettify.js"></script></head><body onload="window['PR_TAB_WIDTH']=4;prettyPrint()"><div class="breadcrumb" id="breadcrumb"><span class="info"><a href="../jacoco-sessions.html" class="el_session">Sessions</a></span><a href="../index.html" class="el_report">nom.tam FITS library</a> &gt; <a href="index.source.html" class="el_package">nom.tam.util</a> &gt; <span class="el_source">BufferDecoder.java</span></div><h1>BufferDecoder.java</h1><pre class="source lang-java linenums">package nom.tam.util;
 
 /*
  * #%L
  * nom.tam FITS library
  * %%
- * Copyright (C) 1996 - 2015 nom-tam-fits
+ * Copyright (C) 1996 - 2021 nom-tam-fits
  * %%
  * This is free and unencumbered software released into the public domain.
  * 
@@ -31,313 +31,133 @@
  * #L%
  */
 
+
 import java.io.EOFException;
 import java.io.IOException;
-import java.lang.reflect.Array;
 
-import nom.tam.util.type.PrimitiveType;
-import nom.tam.util.type.PrimitiveTypeHandler;
-import nom.tam.util.type.PrimitiveTypes;
+/**
+ * @deprecated  This is a rusty rail implementation only, unsafe for general use.
+ *      Use {@link FitsDecoder} instead, which provides a similar function but in
+ *      a more consistent way and with a less misleading name, or else use {@link ArrayDecoder}
+ *      as a base for implementing efficient custom decoding of binary inputs. 
+ *      
+ *      
+ *
+ * @see FitsDecoder
+ */
+@Deprecated
+public abstract class BufferDecoder extends FitsDecoder {
 
-public abstract class BufferDecoder {
-
-<span class="fc" id="L44">    private class PrimitiveArrayRecurse {</span>
-
-        /**
-         * Counter used in reading arrays
-         */
-        private long primitiveArrayCount;
-
-        protected long primitiveArrayRecurse(Object o) throws IOException {
-<span class="fc bfc" id="L52" title="All 2 branches covered.">            if (o == null) {</span>
-<span class="fc" id="L53">                return this.primitiveArrayCount;</span>
-            }
-<span class="fc bfc" id="L55" title="All 2 branches covered.">            if (!o.getClass().isArray()) {</span>
-<span class="fc" id="L56">                throw new IOException(&quot;Invalid object passed to BufferedDataInputStream.readArray:&quot; + o.getClass().getName());</span>
-            }
-<span class="fc" id="L58">            int length = Array.getLength(o);</span>
-            // Is this a multidimensional array? If so process recursively.
-<span class="fc bfc" id="L60" title="All 2 branches covered.">            if (o.getClass().getComponentType().isArray()) {</span>
-<span class="fc bfc" id="L61" title="All 2 branches covered.">                for (int i = 0; i &lt; length; i++) {</span>
-<span class="fc" id="L62">                    primitiveArrayRecurse(Array.get(o, i));</span>
-                }
-            } else {
-                // This is a one-d array. Process it using our special
-                // functions.
-<span class="fc" id="L67">                PrimitiveType&lt;?&gt; type = PrimitiveTypeHandler.valueOf(o.getClass().getComponentType());</span>
-<span class="fc bfc" id="L68" title="All 2 branches covered.">                if (type == PrimitiveTypes.BOOLEAN) {</span>
-<span class="fc" id="L69">                    this.primitiveArrayCount += read((boolean[]) o, 0, length);</span>
-<span class="fc bfc" id="L70" title="All 2 branches covered.">                } else if (type == PrimitiveTypes.BYTE) {</span>
-<span class="fc" id="L71">                    int len = read((byte[]) o, 0, length);</span>
-<span class="fc" id="L72">                    this.primitiveArrayCount += len;</span>
-<span class="fc bfc" id="L73" title="All 2 branches covered.">                    if (len &lt; length) {</span>
-<span class="fc" id="L74">                        throw new EOFException();</span>
-                    }
-<span class="fc bfc" id="L76" title="All 2 branches covered.">                } else if (type == PrimitiveTypes.CHAR) {</span>
-<span class="fc" id="L77">                    this.primitiveArrayCount += read((char[]) o, 0, length);</span>
-<span class="fc bfc" id="L78" title="All 2 branches covered.">                } else if (type == PrimitiveTypes.SHORT) {</span>
-<span class="fc" id="L79">                    this.primitiveArrayCount += read((short[]) o, 0, length);</span>
-<span class="fc bfc" id="L80" title="All 2 branches covered.">                } else if (type == PrimitiveTypes.INT) {</span>
-<span class="fc" id="L81">                    this.primitiveArrayCount += read((int[]) o, 0, length);</span>
-<span class="fc bfc" id="L82" title="All 2 branches covered.">                } else if (type == PrimitiveTypes.LONG) {</span>
-<span class="fc" id="L83">                    this.primitiveArrayCount += read((long[]) o, 0, length);</span>
-<span class="fc bfc" id="L84" title="All 2 branches covered.">                } else if (type == PrimitiveTypes.FLOAT) {</span>
-<span class="fc" id="L85">                    this.primitiveArrayCount += read((float[]) o, 0, length);</span>
-<span class="fc bfc" id="L86" title="All 2 branches covered.">                } else if (type == PrimitiveTypes.DOUBLE) {</span>
-<span class="fc" id="L87">                    this.primitiveArrayCount += read((double[]) o, 0, length);</span>
-<span class="pc bpc" id="L88" title="2 of 4 branches missed.">                } else if (type == PrimitiveTypes.STRING || type == PrimitiveTypes.UNKNOWN) {</span>
-<span class="fc bfc" id="L89" title="All 2 branches covered.">                    for (int i = 0; i &lt; length; i++) {</span>
-<span class="fc" id="L90">                        primitiveArrayRecurse(Array.get(o, i));</span>
-                    }
-                }
-            }
-<span class="fc" id="L94">            return this.primitiveArrayCount;</span>
-        }
-    }
-
-    private final BufferPointer sharedBuffer;
-
-<span class="fc" id="L100">    public BufferDecoder(BufferPointer sharedBuffer) {</span>
-<span class="fc" id="L101">        this.sharedBuffer = sharedBuffer;</span>
-<span class="fc" id="L102">    }</span>
-
+   
+    
+    private BufferPointer p;
+    
     /**
-     * This should only be used when a small number of bytes is required
-     * (substantially smaller than bufferSize.
      * 
-     * @param needBytes
-     *            the number of bytes needed for the next operation.
-     * @throws IOException
-     *             if the buffer could not be filled
+     * @param p     Unused, but the position and length fields are set/reset as to pretend that half of
+     *              the buffer is perpetually available for reading.
+     *              However, at no point will there be any data actually in the buffer of this object,
+     *              and you should by all means avoid directly loading data from the stream into this
+     *              dead-end buffer, other than the hopefully untiggered existing implementation
+     *              of &lt;code&gt;checkBuffer(int)&lt;/code&gt; (and it's safest if you don't override
+     *              or ever call &lt;code&gt;checkBuffer(int)&lt;/code&gt; from your code!).
      */
-    protected abstract void checkBuffer(int needBytes) throws IOException;
+    public BufferDecoder(BufferPointer p) {
+<span class="fc" id="L66">        super();</span>
+        
+<span class="fc" id="L68">        this.p = p;</span>
+        
+<span class="fc" id="L70">        pretendHalfPopulated();</span>
+        
+<span class="fc" id="L72">        setInput(new InputReader() {</span>
+<span class="fc" id="L73">            private byte[] b1 = new byte[1];</span>
 
-    protected abstract int eofCheck(EOFException e, int start, int index, int length) throws EOFException;
-
-    protected int read(boolean[] b, int start, int length) throws IOException {
-
-<span class="fc" id="L119">        int i = start;</span>
-        try {
-<span class="fc bfc" id="L121" title="All 2 branches covered.">            for (; i &lt; start + length; i++) {</span>
-<span class="fc" id="L122">                b[i] = readBoolean();</span>
-            }
-<span class="fc" id="L124">            return length;</span>
-<span class="fc" id="L125">        } catch (EOFException e) {</span>
-<span class="fc" id="L126">            return eofCheck(e, start, i, 1);</span>
-        }
-    }
-
-    protected int read(byte[] buf, int offset, int len) throws IOException {
-<span class="fc" id="L131">        checkBuffer(-1);</span>
-<span class="fc" id="L132">        int total = 0;</span>
-
-        // Ensure that the entire dataBuffer.buffer is read.
-<span class="fc bfc" id="L135" title="All 2 branches covered.">        while (len &gt; 0) {</span>
-
-<span class="fc bfc" id="L137" title="All 2 branches covered.">            if (this.sharedBuffer.bufferOffset &lt; this.sharedBuffer.bufferLength) {</span>
-
-<span class="fc" id="L139">                int get = len;</span>
-<span class="fc bfc" id="L140" title="All 2 branches covered.">                if (this.sharedBuffer.bufferOffset + get &gt; this.sharedBuffer.bufferLength) {</span>
-<span class="fc" id="L141">                    get = this.sharedBuffer.bufferLength - this.sharedBuffer.bufferOffset;</span>
+            @Override
+            public int read() throws IOException {
+<span class="fc" id="L77">                int n = BufferDecoder.this.read(b1, 0, 1);</span>
+<span class="fc bfc" id="L78" title="All 2 branches covered.">                if (n &lt; 0) {</span>
+<span class="fc" id="L79">                    return n;</span>
                 }
-<span class="fc" id="L143">                System.arraycopy(this.sharedBuffer.buffer, this.sharedBuffer.bufferOffset, buf, offset, get);</span>
-<span class="fc" id="L144">                len -= get;</span>
-<span class="fc" id="L145">                this.sharedBuffer.bufferOffset += get;</span>
-<span class="fc" id="L146">                offset += get;</span>
-<span class="fc" id="L147">                total += get;</span>
-<span class="fc" id="L148">                continue;</span>
-
-            } else {
-
-                // This might be pretty long, but we know that the
-                // old dataBuffer.buffer is exhausted.
-                try {
-<span class="fc bfc" id="L155" title="All 2 branches covered.">                    if (len &gt; this.sharedBuffer.buffer.length) {</span>
-<span class="fc" id="L156">                        checkBuffer(this.sharedBuffer.buffer.length);</span>
-                    } else {
-<span class="fc" id="L158">                        checkBuffer(len);</span>
-                    }
-<span class="fc" id="L160">                } catch (EOFException e) {</span>
-<span class="fc bfc" id="L161" title="All 2 branches covered.">                    if (this.sharedBuffer.bufferLength &gt; 0) {</span>
-<span class="fc" id="L162">                        System.arraycopy(this.sharedBuffer.buffer, 0, buf, offset, this.sharedBuffer.bufferLength);</span>
-<span class="fc" id="L163">                        total += this.sharedBuffer.bufferLength;</span>
-<span class="fc" id="L164">                        this.sharedBuffer.bufferLength = 0;</span>
-                    }
-<span class="fc bfc" id="L166" title="All 2 branches covered.">                    if (total == 0) {</span>
-<span class="fc" id="L167">                        throw e;</span>
-                    } else {
-<span class="fc" id="L169">                        return total;</span>
-                    }
-<span class="fc" id="L171">                }</span>
+<span class="fc" id="L81">                return b1[0];</span>
             }
-        }
 
-<span class="fc" id="L175">        return total;</span>
-    }
-
-    protected int read(char[] c, int start, int length) throws IOException {
-
-<span class="fc" id="L180">        int i = start;</span>
-        try {
-<span class="fc bfc" id="L182" title="All 2 branches covered.">            for (; i &lt; start + length; i++) {</span>
-<span class="fc" id="L183">                c[i] = readChar();</span>
+            @Override
+            public int read(byte[] b, int from, int length) throws IOException {
+<span class="fc" id="L86">                return BufferDecoder.this.read(b, from, length);</span>
             }
-<span class="fc" id="L185">            return length * FitsIO.BYTES_IN_CHAR;</span>
-<span class="fc" id="L186">        } catch (EOFException e) {</span>
-<span class="fc" id="L187">            return eofCheck(e, start, i, FitsIO.BYTES_IN_CHAR);</span>
-        }
-    }
-
-    protected int read(double[] d, int start, int length) throws IOException {
-
-<span class="fc" id="L193">        int i = start;</span>
-        try {
-<span class="fc bfc" id="L195" title="All 2 branches covered.">            for (; i &lt; start + length; i++) {</span>
-<span class="fc" id="L196">                d[i] = Double.longBitsToDouble(readLong());</span>
-            }
-<span class="fc" id="L198">            return length * FitsIO.BYTES_IN_DOUBLE;</span>
-<span class="fc" id="L199">        } catch (EOFException e) {</span>
-<span class="fc" id="L200">            return eofCheck(e, start, i, FitsIO.BYTES_IN_DOUBLE);</span>
-        }
-    }
-
-    protected int read(float[] f, int start, int length) throws IOException {
-
-<span class="fc" id="L206">        int i = start;</span>
-        try {
-<span class="fc bfc" id="L208" title="All 2 branches covered.">            for (; i &lt; start + length; i++) {</span>
-<span class="fc" id="L209">                f[i] = Float.intBitsToFloat(readInt());</span>
-            }
-<span class="fc" id="L211">            return length * FitsIO.BYTES_IN_FLOAT;</span>
-<span class="fc" id="L212">        } catch (EOFException e) {</span>
-<span class="fc" id="L213">            return eofCheck(e, start, i, FitsIO.BYTES_IN_FLOAT);</span>
-        }
-    }
-
-    protected int read(int[] i, int start, int length) throws IOException {
-
-<span class="fc" id="L219">        int ii = start;</span>
-        try {
-<span class="fc bfc" id="L221" title="All 2 branches covered.">            for (; ii &lt; start + length; ii++) {</span>
-<span class="fc" id="L222">                i[ii] = readInt();</span>
-            }
-<span class="fc" id="L224">            return length * FitsIO.BYTES_IN_INTEGER;</span>
-<span class="fc" id="L225">        } catch (EOFException e) {</span>
-<span class="fc" id="L226">            return eofCheck(e, start, ii, FitsIO.BYTES_IN_INTEGER);</span>
-        }
-    }
-
-    protected int read(long[] l, int start, int length) throws IOException {
-
-<span class="fc" id="L232">        int i = start;</span>
-        try {
-<span class="fc bfc" id="L234" title="All 2 branches covered.">            for (; i &lt; start + length; i++) {</span>
-<span class="fc" id="L235">                l[i] = readLong();</span>
-            }
-<span class="fc" id="L237">            return length * FitsIO.BYTES_IN_LONG;</span>
-<span class="fc" id="L238">        } catch (EOFException e) {</span>
-<span class="fc" id="L239">            return eofCheck(e, start, i, FitsIO.BYTES_IN_LONG);</span>
-        }
-
-    }
-
-    protected int read(short[] s, int start, int length) throws IOException {
-
-<span class="fc" id="L246">        int i = start;</span>
-        try {
-<span class="fc bfc" id="L248" title="All 2 branches covered.">            for (; i &lt; start + length; i++) {</span>
-<span class="fc" id="L249">                s[i] = readShort();</span>
-            }
-<span class="fc" id="L251">            return length * FitsIO.BYTES_IN_SHORT;</span>
-<span class="fc" id="L252">        } catch (EOFException e) {</span>
-<span class="fc" id="L253">            return eofCheck(e, start, i, FitsIO.BYTES_IN_SHORT);</span>
-        }
-    }
-
+            
+        });
+<span class="fc" id="L90">    }</span>
+    
     /**
-     * @return a boolean from the buffer
-     * @throws IOException
-     *             if the underlying operation fails
+     * We'll always pretend the buffer to be half populated at pos=0, in order to avoid triggering
+     * a read from the input into the unused buffer of BufferPointer, or a write to the
+     * output from that buffer... If the pointer has no buffer, length will be 0 also.
      */
-    protected boolean readBoolean() throws IOException {
-<span class="fc" id="L263">        checkBuffer(FitsIO.BYTES_IN_BOOLEAN);</span>
-<span class="fc bfc" id="L264" title="All 2 branches covered.">        return this.sharedBuffer.buffer[this.sharedBuffer.bufferOffset++] == 1;</span>
+    private void pretendHalfPopulated() {
+<span class="fc" id="L98">        p.pos = 0; </span>
+<span class="fc bfc" id="L99" title="All 2 branches covered.">        p.length = p.buffer == null ? 0 : p.buffer.length &gt;&gt;&gt; 1;   </span>
+<span class="fc" id="L100">    }</span>
+    
+    @Override
+    boolean makeAvailable(int needBytes) throws IOException {
+<span class="fc" id="L104">        pretendHalfPopulated();</span>
+<span class="fc" id="L105">        boolean result = super.makeAvailable(needBytes);</span>
+<span class="fc" id="L106">        return result;</span>
     }
-
+    
     /**
-     * @return a char from the buffer
-     * @throws IOException
-     *             if the underlying operation fails
+     * @deprecated  No longer used internally, kept only for back-compatibility since it used to be a needed abstract method.
+     *              It's safest if you never override or call this method from your code!
+     *             
+     * @param needBytes     the number of byte we need available to decode the next element
+     * @throws IOException  if the data could not be made available due to an IO error of the underlying input.
      */
-    protected char readChar() throws IOException {
-<span class="fc" id="L273">        checkBuffer(FitsIO.BYTES_IN_CHAR);</span>
-<span class="fc" id="L274">        return (char) readUncheckedShort();</span>
+    protected void checkBuffer(int needBytes) throws IOException {
+<span class="fc" id="L117">    }</span>
+    
+    @Override
+    protected int read(byte[] buf, int offset, int length) throws IOException {
+<span class="fc" id="L121">        throw new UnsupportedOperationException(&quot;You need to override this with an implementation that reads from the desired input.&quot;);</span>
     }
-
+    
     /**
-     * @return an integer value from the buffer
-     * @throws IOException
-     *             if the underlying operation fails
+     * @deprecated  No longer used internally, kept only for back-compatibility since it used to be a needed abstract method.
+     * 
+     * @param e     the &lt;code&gt;EOFException&lt;/code&gt; thrown by one of the read calls.
+     * @param start the index of the first array element we wanted to fill
+     * @param index the array index of the element during which the exception was thrown
+     * @param elementSize the number of bytes per element we were processing
+     * 
+     * @return the numer of bytes successfully processed from the input before the exception occurred.
+     * @throws EOFException
+     *              if the input had no more data to process
      */
-    protected int readInt() throws IOException {
-<span class="fc" id="L283">        checkBuffer(FitsIO.BYTES_IN_INTEGER);</span>
-<span class="fc" id="L284">        return readUncheckedInt();</span>
+    protected int eofCheck(EOFException e, int start, int index, int elementSize) throws EOFException {
+<span class="fc" id="L137">        return super.eofCheck(e, (index - start), -1) * elementSize;</span>
     }
-
+    
+    /**
+     * See the contract of {@link ArrayDataInput#readLArray(Object)}.
+     * 
+     * @param o
+     *            an array, to be populated
+     * @return the actual number of bytes read from the input, or -1 if already
+     *         at the end-of-file.
+     * @throws IllegalArgumentException
+     *             if the argument is not an array or if it contains an element
+     *             that is not supported for decoding.
+     * @throws IOException
+     *             if there was an IO error reading from the input
+     */
     protected long readLArray(Object o) throws IOException {
-<span class="fc" id="L288">        return new PrimitiveArrayRecurse().primitiveArrayRecurse(o);</span>
-    }
-
-    /**
-     * @return a long value from the buffer
-     * @throws IOException
-     *             if the underlying operation fails
-     */
-    protected long readLong() throws IOException {
-<span class="fc" id="L297">        checkBuffer(FitsIO.BYTES_IN_LONG);</span>
-<span class="fc" id="L298">        int i1 = readUncheckedInt();</span>
-<span class="fc" id="L299">        int i2 = readUncheckedInt();</span>
-<span class="fc" id="L300">        return (long) i1 &lt;&lt; FitsIO.BITS_OF_4_BYTES | i2 &amp; FitsIO.INTEGER_MASK;</span>
-    }
-
-    protected double readDouble() throws IOException {
-<span class="fc" id="L304">        return Double.longBitsToDouble(readLong());</span>
-    }
-
-    protected float readFloat() throws IOException {
-<span class="fc" id="L308">        return Float.intBitsToFloat(readInt());</span>
-    }
-
-    protected void readFully(byte[] b, int off, int len) throws IOException {
-<span class="pc bpc" id="L312" title="2 of 6 branches missed.">        if (off &lt; 0 || len &lt; 0 || off + len &gt; b.length) {</span>
-<span class="fc" id="L313">            throw new IOException(&quot;Attempt to read outside byte array&quot;);</span>
+        try { 
+<span class="fc" id="L155">            return super.readArray(o); </span>
+<span class="fc" id="L156">        } catch (IllegalArgumentException e) {</span>
+<span class="fc" id="L157">            throw new IOException(e);</span>
         }
-<span class="fc bfc" id="L315" title="All 2 branches covered.">        if (read(b, off, len) &lt; len) {</span>
-<span class="fc" id="L316">            throw new EOFException();</span>
-        }
-<span class="fc" id="L318">    }</span>
-
-    /**
-     * @return a short from the buffer
-     * @throws IOException
-     *             if the underlying operation fails
-     */
-    protected short readShort() throws IOException {
-<span class="fc" id="L326">        checkBuffer(FitsIO.BYTES_IN_SHORT);</span>
-<span class="fc" id="L327">        return (short) readUncheckedShort();</span>
     }
-
-    private int readUncheckedInt() {
-<span class="fc" id="L331">        return this.sharedBuffer.buffer[this.sharedBuffer.bufferOffset++] &lt;&lt; FitsIO.BITS_OF_3_BYTES | //</span>
-                (this.sharedBuffer.buffer[this.sharedBuffer.bufferOffset++] &amp; FitsIO.BYTE_MASK) &lt;&lt; FitsIO.BITS_OF_2_BYTES | //
-                (this.sharedBuffer.buffer[this.sharedBuffer.bufferOffset++] &amp; FitsIO.BYTE_MASK) &lt;&lt; FitsIO.BITS_OF_1_BYTE | //
-                this.sharedBuffer.buffer[this.sharedBuffer.bufferOffset++] &amp; FitsIO.BYTE_MASK;
-    }
-
-    private int readUncheckedShort() {
-<span class="fc" id="L338">        return this.sharedBuffer.buffer[this.sharedBuffer.bufferOffset++] &lt;&lt; FitsIO.BITS_OF_1_BYTE | //</span>
-                this.sharedBuffer.buffer[this.sharedBuffer.bufferOffset++] &amp; FitsIO.BYTE_MASK;
-    }
-
+ 
+    
 }
-</pre><div class="footer"><span class="right">Created with <a href="http://www.eclemma.org/jacoco">JaCoCo</a> 0.7.6.201602180812</span></div></body></html>
+</pre><div class="footer"><span class="right">Created with <a href="http://www.jacoco.org/jacoco">JaCoCo</a> 0.8.7.202105040129</span></div></body></html>

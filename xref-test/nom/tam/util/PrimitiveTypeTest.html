@@ -12,7 +12,7 @@
 <a class="jxr_linenumber" name="L4" href="#L4">4</a>   <em class="jxr_comment"> * #%L</em>
 <a class="jxr_linenumber" name="L5" href="#L5">5</a>   <em class="jxr_comment"> * nom.tam FITS library</em>
 <a class="jxr_linenumber" name="L6" href="#L6">6</a>   <em class="jxr_comment"> * %%</em>
-<a class="jxr_linenumber" name="L7" href="#L7">7</a>   <em class="jxr_comment"> * Copyright (C) 1996 - 2015 nom-tam-fits</em>
+<a class="jxr_linenumber" name="L7" href="#L7">7</a>   <em class="jxr_comment"> * Copyright (C) 1996 - 2021 nom-tam-fits</em>
 <a class="jxr_linenumber" name="L8" href="#L8">8</a>   <em class="jxr_comment"> * %%</em>
 <a class="jxr_linenumber" name="L9" href="#L9">9</a>   <em class="jxr_comment"> * This is free and unencumbered software released into the public domain.</em>
 <a class="jxr_linenumber" name="L10" href="#L10">10</a>  <em class="jxr_comment"> * </em>
@@ -53,7 +53,7 @@
 <a class="jxr_linenumber" name="L45" href="#L45">45</a>  <strong class="jxr_keyword">import</strong> java.nio.LongBuffer;
 <a class="jxr_linenumber" name="L46" href="#L46">46</a>  <strong class="jxr_keyword">import</strong> java.nio.ShortBuffer;
 <a class="jxr_linenumber" name="L47" href="#L47">47</a>  
-<a class="jxr_linenumber" name="L48" href="#L48">48</a>  <strong class="jxr_keyword">import</strong> nom.tam.util.type.PrimitiveType;
+<a class="jxr_linenumber" name="L48" href="#L48">48</a>  <strong class="jxr_keyword">import</strong> nom.tam.util.type.ElementType;
 <a class="jxr_linenumber" name="L49" href="#L49">49</a>  <strong class="jxr_keyword">import</strong> nom.tam.util.type.PrimitiveTypeHandler;
 <a class="jxr_linenumber" name="L50" href="#L50">50</a>  <strong class="jxr_keyword">import</strong> nom.tam.util.type.PrimitiveTypes;
 <a class="jxr_linenumber" name="L51" href="#L51">51</a>  
@@ -62,7 +62,7 @@
 <a class="jxr_linenumber" name="L54" href="#L54">54</a>  
 <a class="jxr_linenumber" name="L55" href="#L55">55</a>  <strong class="jxr_keyword">public</strong> <strong class="jxr_keyword">class</strong> <a href="../../../nom/tam/util/PrimitiveTypeTest.html">PrimitiveTypeTest</a> {
 <a class="jxr_linenumber" name="L56" href="#L56">56</a>  
-<a class="jxr_linenumber" name="L57" href="#L57">57</a>      <strong class="jxr_keyword">private</strong> &lt;T <strong class="jxr_keyword">extends</strong> Buffer&gt; Buffer bufferAtPosition(PrimitiveType&lt;T&gt; type, <strong class="jxr_keyword">int</strong> length, <strong class="jxr_keyword">int</strong> position) {
+<a class="jxr_linenumber" name="L57" href="#L57">57</a>      <strong class="jxr_keyword">private</strong> &lt;T <strong class="jxr_keyword">extends</strong> Buffer&gt; Buffer bufferAtPosition(ElementType&lt;T&gt; type, <strong class="jxr_keyword">int</strong> length, <strong class="jxr_keyword">int</strong> position) {
 <a class="jxr_linenumber" name="L58" href="#L58">58</a>          T result = type.newBuffer(length);
 <a class="jxr_linenumber" name="L59" href="#L59">59</a>          result.position(position);
 <a class="jxr_linenumber" name="L60" href="#L60">60</a>          <strong class="jxr_keyword">return</strong> type.sliceBuffer(result);
@@ -86,7 +86,7 @@
 <a class="jxr_linenumber" name="L78" href="#L78">78</a>          testAppedBuffer(PrimitiveTypes.BYTE, expectedValue);
 <a class="jxr_linenumber" name="L79" href="#L79">79</a>      }
 <a class="jxr_linenumber" name="L80" href="#L80">80</a>  
-<a class="jxr_linenumber" name="L81" href="#L81">81</a>      <strong class="jxr_keyword">private</strong> &lt;T <strong class="jxr_keyword">extends</strong> Buffer&gt; <strong class="jxr_keyword">void</strong> testGetPutArray(PrimitiveType&lt;T&gt; type, Object value, Object other) {
+<a class="jxr_linenumber" name="L81" href="#L81">81</a>      <strong class="jxr_keyword">private</strong> &lt;T <strong class="jxr_keyword">extends</strong> Buffer&gt; <strong class="jxr_keyword">void</strong> testGetPutArray(ElementType&lt;T&gt; type, Object value, Object other) {
 <a class="jxr_linenumber" name="L82" href="#L82">82</a>          Object array = type.newArray(1);
 <a class="jxr_linenumber" name="L83" href="#L83">83</a>          Array.set(array, 0, value);
 <a class="jxr_linenumber" name="L84" href="#L84">84</a>          T buffer = type.newBuffer(1);
@@ -194,7 +194,7 @@
 <a class="jxr_linenumber" name="L186" href="#L186">186</a>         testAppedBuffer(PrimitiveTypes.SHORT, expectedValue);
 <a class="jxr_linenumber" name="L187" href="#L187">187</a>     }
 <a class="jxr_linenumber" name="L188" href="#L188">188</a> 
-<a class="jxr_linenumber" name="L189" href="#L189">189</a>     <strong class="jxr_keyword">private</strong> &lt;T <strong class="jxr_keyword">extends</strong> Buffer&gt; <strong class="jxr_keyword">void</strong> testAppedBuffer(PrimitiveType&lt;T&gt; type, Object expectedValue) {
+<a class="jxr_linenumber" name="L189" href="#L189">189</a>     <strong class="jxr_keyword">private</strong> &lt;T <strong class="jxr_keyword">extends</strong> Buffer&gt; <strong class="jxr_keyword">void</strong> testAppedBuffer(ElementType&lt;T&gt; type, Object expectedValue) {
 <a class="jxr_linenumber" name="L190" href="#L190">190</a>         Object oneArray = type.newArray(1);
 <a class="jxr_linenumber" name="L191" href="#L191">191</a>         Array.set(oneArray, 0, expectedValue);
 <a class="jxr_linenumber" name="L192" href="#L192">192</a>         T buffer = type.wrap(oneArray);
@@ -257,19 +257,22 @@
 <a class="jxr_linenumber" name="L249" href="#L249">249</a> 
 <a class="jxr_linenumber" name="L250" href="#L250">250</a>     @Test
 <a class="jxr_linenumber" name="L251" href="#L251">251</a>     <strong class="jxr_keyword">public</strong> <strong class="jxr_keyword">void</strong> testPrimitiveTypeNearest() <strong class="jxr_keyword">throws</strong> Exception {
-<a class="jxr_linenumber" name="L252" href="#L252">252</a>         assertSame(PrimitiveTypes.BYTE, PrimitiveTypeHandler.nearestValueOf(2));
-<a class="jxr_linenumber" name="L253" href="#L253">253</a>         assertSame(PrimitiveTypes.FLOAT, PrimitiveTypeHandler.nearestValueOf(-2));
-<a class="jxr_linenumber" name="L254" href="#L254">254</a>         assertSame(PrimitiveTypes.FLOAT, PrimitiveTypeHandler.nearestValueOf(-17));
-<a class="jxr_linenumber" name="L255" href="#L255">255</a>         assertSame(PrimitiveTypes.DOUBLE, PrimitiveTypeHandler.nearestValueOf(-40));
-<a class="jxr_linenumber" name="L256" href="#L256">256</a>         assertSame(PrimitiveTypes.UNKNOWN, PrimitiveTypeHandler.nearestValueOf(-80));
-<a class="jxr_linenumber" name="L257" href="#L257">257</a>         assertSame(PrimitiveTypes.SHORT, PrimitiveTypeHandler.nearestValueOf(9));
-<a class="jxr_linenumber" name="L258" href="#L258">258</a>         assertSame(PrimitiveTypes.INT, PrimitiveTypeHandler.nearestValueOf(20));
-<a class="jxr_linenumber" name="L259" href="#L259">259</a>         assertSame(PrimitiveTypes.LONG, PrimitiveTypeHandler.nearestValueOf(40));
-<a class="jxr_linenumber" name="L260" href="#L260">260</a>         assertSame(PrimitiveTypes.UNKNOWN, PrimitiveTypeHandler.nearestValueOf(80));
-<a class="jxr_linenumber" name="L261" href="#L261">261</a>     }
-<a class="jxr_linenumber" name="L262" href="#L262">262</a> }
+<a class="jxr_linenumber" name="L252" href="#L252">252</a>         assertSame(PrimitiveTypes.UNKNOWN, PrimitiveTypeHandler.nearestValueOf(0));
+<a class="jxr_linenumber" name="L253" href="#L253">253</a>         assertSame(PrimitiveTypes.BYTE, PrimitiveTypeHandler.nearestValueOf(2));
+<a class="jxr_linenumber" name="L254" href="#L254">254</a>         assertSame(PrimitiveTypes.FLOAT, PrimitiveTypeHandler.nearestValueOf(-2));
+<a class="jxr_linenumber" name="L255" href="#L255">255</a>         assertSame(PrimitiveTypes.FLOAT, PrimitiveTypeHandler.nearestValueOf(-17));
+<a class="jxr_linenumber" name="L256" href="#L256">256</a>         assertSame(PrimitiveTypes.DOUBLE, PrimitiveTypeHandler.nearestValueOf(-40));
+<a class="jxr_linenumber" name="L257" href="#L257">257</a>         assertSame(PrimitiveTypes.DOUBLE, PrimitiveTypeHandler.nearestValueOf(-80));
+<a class="jxr_linenumber" name="L258" href="#L258">258</a>         assertSame(PrimitiveTypes.SHORT, PrimitiveTypeHandler.nearestValueOf(9));
+<a class="jxr_linenumber" name="L259" href="#L259">259</a>         assertSame(PrimitiveTypes.INT, PrimitiveTypeHandler.nearestValueOf(20));
+<a class="jxr_linenumber" name="L260" href="#L260">260</a>         assertSame(PrimitiveTypes.LONG, PrimitiveTypeHandler.nearestValueOf(40));
+<a class="jxr_linenumber" name="L261" href="#L261">261</a>         assertSame(PrimitiveTypes.LONG, PrimitiveTypeHandler.nearestValueOf(80));
+<a class="jxr_linenumber" name="L262" href="#L262">262</a>     }
+<a class="jxr_linenumber" name="L263" href="#L263">263</a>     
+<a class="jxr_linenumber" name="L264" href="#L264">264</a> 
+<a class="jxr_linenumber" name="L265" href="#L265">265</a> }
 </pre>
 <hr/>
-<div id="footer">Copyright &#169; 1996&#x2013;2017 nom-tam-fits. All rights reserved.</div>
+<div id="footer">Copyright &#169; 1996&#x2013;2021 nom-tam-fits. All rights reserved.</div>
 </body>
 </html>

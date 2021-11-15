@@ -1,0 +1,481 @@
+<?xml version="1.0" encoding="UTF-8"?><!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Strict//EN" "http://www.w3.org/TR/xhtml1/DTD/xhtml1-strict.dtd"><html xmlns="http://www.w3.org/1999/xhtml" lang="en"><head><meta http-equiv="Content-Type" content="text/html;charset=UTF-8"/><link rel="stylesheet" href="../jacoco-resources/report.css" type="text/css"/><link rel="shortcut icon" href="../jacoco-resources/report.gif" type="image/gif"/><title>ArrayDecoder.java</title><link rel="stylesheet" href="../jacoco-resources/prettify.css" type="text/css"/><script type="text/javascript" src="../jacoco-resources/prettify.js"></script></head><body onload="window['PR_TAB_WIDTH']=4;prettyPrint()"><div class="breadcrumb" id="breadcrumb"><span class="info"><a href="../jacoco-sessions.html" class="el_session">Sessions</a></span><a href="../index.html" class="el_report">nom.tam FITS library</a> &gt; <a href="index.source.html" class="el_package">nom.tam.util</a> &gt; <span class="el_source">ArrayDecoder.java</span></div><h1>ArrayDecoder.java</h1><pre class="source lang-java linenums">/*
+ * #%L
+ * nom.tam FITS library
+ * %%
+ * Copyright (C) 1996 - 2021 nom-tam-fits
+ * %%
+ * This is free and unencumbered software released into the public domain.
+ * 
+ * Anyone is free to copy, modify, publish, use, compile, sell, or
+ * distribute this software, either in source code form or as a compiled
+ * binary, for any purpose, commercial or non-commercial, and by any
+ * means.
+ * 
+ * In jurisdictions that recognize copyright laws, the author or authors
+ * of this software dedicate any and all copyright interest in the
+ * software to the public domain. We make this dedication for the benefit
+ * of the public at large and to the detriment of our heirs and
+ * successors. We intend this dedication to be an overt act of
+ * relinquishment in perpetuity of all present and future rights to this
+ * software under copyright law.
+ * 
+ * THE SOFTWARE IS PROVIDED &quot;AS IS&quot;, WITHOUT WARRANTY OF ANY KIND,
+ * EXPRESS OR IMPLIED, INCLUDING BUT NOT LIMITED TO THE WARRANTIES OF
+ * MERCHANTABILITY, FITNESS FOR A PARTICULAR PURPOSE AND NONINFRINGEMENT.
+ * IN NO EVENT SHALL THE AUTHORS BE LIABLE FOR ANY CLAIM, DAMAGES OR
+ * OTHER LIABILITY, WHETHER IN AN ACTION OF CONTRACT, TORT OR OTHERWISE,
+ * ARISING FROM, OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR
+ * OTHER DEALINGS IN THE SOFTWARE.
+ * #L%
+ */
+
+package nom.tam.util;
+
+import java.io.EOFException;
+import java.io.IOException;
+import java.io.InputStream;
+import java.nio.ByteBuffer;
+import java.nio.ByteOrder;
+
+import nom.tam.fits.FitsFactory;
+
+/**
+ * Efficient base class for decoding of binary input into Java arrays.
+ * 
+ * @author Attila Kovacs
+ * @since 1.16
+ * @see ArrayEncoder
+ * @see ArrayDataFile
+ * @see ArrayInputStream
+ * @see ArrayOutputStream
+ */
+public abstract class ArrayDecoder {
+
+    /** The buffer size for array translation */
+    private static final int BUFFER_SIZE = FitsFactory.FITS_BLOCK_SIZE;
+
+    /** bit mask for 1 byte */
+    private static final int BYTE_MASK = 0xFF;
+
+    /** bit mask for a 16-byte integer (a Java &lt;code&gt;short&lt;/code&gt;). */
+    private static final int SHORT_MASK = 0xFFFF;
+
+    /** the input providing the binary representation of data */
+    private InputReader in;
+
+    /** the conversion buffer */
+    private InputBuffer buf;
+
+    /**
+     * Instantiates a new decoder of binary input to Java arrays. To be used by
+     * subclass constructors only.
+     * 
+     * @see #setInput(InputReader)
+     */
+<span class="fc" id="L75">    protected ArrayDecoder() {</span>
+<span class="fc" id="L76">        buf = new InputBuffer(BUFFER_SIZE);</span>
+<span class="fc" id="L77">    }</span>
+
+    /**
+     * Instantiates a new decoder for converting data representations into Java
+     * arrays.
+     * 
+     * @param i
+     *            the binary input.
+     */
+    public ArrayDecoder(InputReader i) {
+<span class="fc" id="L87">        this();</span>
+<span class="fc" id="L88">        setInput(i);</span>
+<span class="fc" id="L89">    }</span>
+
+    /**
+     * Sets the input from which to read the binary output.
+     * 
+     * @param i
+     *            the new binary input.
+     */
+    protected void setInput(InputReader i) {
+<span class="fc" id="L98">        this.in = i;</span>
+<span class="fc" id="L99">    }</span>
+
+    /**
+     * Returns the buffer that is used for conversion, which can be used to bulk
+     * read bytes ahead from the input (see
+     * {@link InputBuffer#loadBytes(long, int)}) and
+     * {@link InputBuffer#loadOne(int)}) before doing conversions to Java types
+     * locally.
+     * 
+     * @return the conversion buffer used by this decoder.
+     */
+    protected InputBuffer getInputBuffer() {
+<span class="fc" id="L111">        return buf;</span>
+    }
+
+    /**
+     * Makes sure that an elements of the specified size is fully available in
+     * the buffer, prompting additional reading of the underlying stream as
+     * appropriate (but not beyond the limit set by
+     * {@link #loadBytes(long, int)}.
+     * 
+     * @param size
+     *            the number of bytes we need at once from the buffer
+     * @return &lt;code&gt;true&lt;/code&gt; if the requested number of bytes are, or could
+     *         be made, available. Otherwise &lt;code&gt;false&lt;/code&gt;.
+     * @throws IOException
+     *             if there was an underlying IO error, other than the end of
+     *             file, while trying to fetch additional data from the
+     *             underlying input
+     */
+    boolean makeAvailable(int size) throws IOException {
+        // TODO Once the deprecated BufferDecoder is retired, this should become
+        // a private method of InputBuffer (with buf. prefixed removed below).
+<span class="fc bfc" id="L132" title="All 2 branches covered.">        while (buf.buffer.remaining() &lt; size) {</span>
+<span class="fc bfc" id="L133" title="All 2 branches covered.">            if (!buf.fetch()) {</span>
+<span class="fc" id="L134">                return false;</span>
+            }
+        }
+<span class="fc" id="L137">        return true;</span>
+    }
+
+    /**
+     * Reads one byte from the input. See the contract of
+     * {@link InputStream#read()}.
+     * 
+     * @return the byte, or -1 if at the end of the file.
+     * @throws IOException
+     *             if an IO error, other than the end-of-file prevented the
+     *             read.
+     */
+    protected synchronized int read() throws IOException {
+<span class="fc" id="L150">        return in.read();</span>
+    }
+
+    /**
+     * Reads bytes into an array from the input. See the contract of
+     * {@link InputStream#read(byte[], int, int)}.
+     * 
+     * @param b
+     *            the destination array
+     * @param start
+     *            the first index in the array to be populated
+     * @param length
+     *            the number of bytes to read into the array.
+     * @return the number of bytes successfully read, or -1 if at the end of the
+     *         file.
+     * @throws IOException
+     *             if an IO error, other than the end-of-file prevented the
+     *             read.
+     */
+    protected synchronized int read(byte[] b, int start, int length) throws IOException {
+<span class="fc" id="L170">        return in.read(b, start, length);</span>
+    }
+
+    /**
+     * Based on {@link #readArray(Object)}, but guaranteeing a complete read of
+     * the supplied object or else an {@link EOFException} is thrown.
+     * 
+     * @param o
+     *            the array, including multi-dimensional, and heterogeneous
+     *            arrays of arrays.
+     * @throws IOException
+     *             if there was an IO error, uncluding end-of-file (
+     *             {@link EOFException}, before all components of the supplied
+     *             array were populated from the input.
+     * @throws IllegalArgumentException
+     *             if the argument is not a Java array, or is or contains
+     *             elements that do not have supported conversions from binary
+     *             representation.
+     */
+    public void readArrayFully(Object o) throws IOException, IllegalArgumentException {
+<span class="fc bfc" id="L190" title="All 2 branches covered.">        if (readArray(o) != FitsEncoder.computeSize(o)) {</span>
+<span class="fc" id="L191">            throw new EOFException(&quot;Incomplete array read.&quot;);</span>
+        }
+<span class="fc" id="L193">    }</span>
+
+    /**
+     * See the contract of {@link ArrayDataInput#readLArray(Object)}.
+     * 
+     * @param o
+     *            an array, to be populated
+     * @return the actual number of bytes read from the input, or -1 if already
+     *         at the end-of-file.
+     * @throws IllegalArgumentException
+     *             if the argument is not an array or if it contains an element
+     *             that is not supported for decoding.
+     * @throws IOException
+     *             if there was an IO error reading from the input
+     * @see #readArrayFully(Object)
+     */
+    public abstract long readArray(Object o) throws IOException, IllegalArgumentException;
+
+    /**
+     * &lt;p&gt;
+     * The conversion buffer for decoding binary data representation into Java
+     * arrays (objects).
+     * &lt;/p&gt;
+     * &lt;p&gt;
+     * The buffering is most efficient, if we fist specify how many bytes of
+     * input maybe be consumed first (buffered from the input), via
+     * {@link #loadBytes(long, int)}. After that, we can call the get routines
+     * of this class to return binary data converted to Java format until we
+     * exhaust the specified alotment of bytes.
+     * &lt;/p&gt;
+     * 
+     * &lt;pre&gt;
+     * // The data we want to retrieve
+     * double d;
+     * int i;
+     * short[] shortArray = new short[100];
+     * float[] floaTarray = new float[48];
+     * 
+     * // We convert from the binary format to Java format using
+     * // the local conversion buffer
+     * ConversionBuffer buf = getBuffer();
+     * 
+     * // We can allow the conversion buffer to read enough bytes for all
+     * // data we want to retrieve:
+     * buf.loadBytes(FitsIO.BYTES_IN_DOUBLE + FitsIO.BYTES_IN_INT + FitsIO.BYTES_IN_SHORT * shortArray.length + FitsIO.BYTES_IN_FLOAT * floatArray.length);
+     * 
+     * // Now we can get the data with minimal underlying IO calls...
+     * d = buf.getDouble();
+     * i = buf.getInt();
+     * 
+     * for (int i = 0; i &amp;lt; shortArray.length; i++) {
+     *     shortArray[i] = buf.getShort();
+     * }
+     * 
+     * for (int i = 0; i &amp;lt; floatArray.length; i++) {
+     *     floatArray[i] = buf.getFloat();
+     * }
+     * &lt;/pre&gt;
+     * &lt;p&gt;
+     * In the special case that one needs just a single element (or a few single
+     * elements) from the input, rather than lots of elements or arrays, one may
+     * use {@link #loadOne(int)} instead of {@link #loadBytes(long, int)} to
+     * read just enough bytes for a single data element from the input before
+     * each conversion. For example:
+     * &lt;/p&gt;
+     * 
+     * &lt;pre&gt;
+     * ConversionBuffer buf = getBuffer();
+     * 
+     * buf.loadOne(FitsIO.BYTES_IN_FLOAT);
+     * float f = buf.getFloat();
+     * &lt;/pre&gt;
+     * 
+     * @author Attila Kovacs
+     */
+    protected final class InputBuffer {
+
+        /** the byte array in which to buffer data from the input */
+        private final byte[] data;
+
+        /** the buffer wrapped for NIO access */
+        private final ByteBuffer buffer;
+
+        /** the number of bytes requested, but not yet buffered */
+<span class="fc" id="L277">        private long pending = 0;</span>
+
+<span class="fc" id="L279">        private InputBuffer(int size) {</span>
+<span class="fc" id="L280">            this.data = new byte[size];</span>
+<span class="fc" id="L281">            buffer = ByteBuffer.wrap(data);</span>
+<span class="fc" id="L282">        }</span>
+
+        /**
+         * Sets the byte order of the binary data representation from which we
+         * are decoding data.
+         * 
+         * @param order
+         *            the new byte order
+         * @see #byteOrder()
+         * @see ByteBuffer#order(ByteOrder)
+         */
+        protected void setByteOrder(ByteOrder order) {
+<span class="fc" id="L294">            buffer.order(order);</span>
+<span class="fc" id="L295">        }</span>
+
+        /**
+         * Returns the current byte order of the binary data representation from
+         * which we are decoding.
+         * 
+         * @return the byte order
+         * @see #setByteOrder(ByteOrder)
+         * @see ByteBuffer#order()
+         */
+        protected ByteOrder byteOrder() {
+<span class="fc" id="L306">            return buffer.order();</span>
+        }
+
+        /**
+         * Set the number of bytes we can buffer from the input for subsequent
+         * rettrieval from this buffer. The get methods of this class will be
+         * ensured not to fetch data from the input beyond the requested size.
+         * 
+         * @param n
+         *            the number of elements we can read and buffer from the
+         *            input
+         * @param size
+         *            the number of bytes in each elements.
+         */
+        protected void loadBytes(long n, int size) {
+<span class="fc" id="L321">            buffer.rewind();</span>
+<span class="fc" id="L322">            buffer.limit(0);</span>
+<span class="fc" id="L323">            this.pending = n * size;</span>
+<span class="fc" id="L324">        }</span>
+
+        /**
+         * Loads just a single element of the specified byte size. The element
+         * must fit into the conversion buffer, and it is up to the caller to
+         * ensure that. The method itself does not check.
+         * 
+         * @param size
+         *            The number of bytes in the element
+         * @return &lt;code&gt;true&lt;/code&gt; if the data was successfully read from the
+         *         uderlying stream or file, otherwise &lt;code&gt;false&lt;/code&gt;.
+         * @throws IOException
+         *             if there was an IO error, other than the end-of-file.
+         */
+        protected boolean loadOne(int size) throws IOException {
+<span class="fc" id="L339">            this.pending = size;</span>
+<span class="fc" id="L340">            buffer.rewind();</span>
+<span class="fc" id="L341">            buffer.limit(Math.max(0, in.read(data, 0, size)));</span>
+<span class="fc bfc" id="L342" title="All 2 branches covered.">            return buffer.limit() == size;</span>
+        }
+
+        /**
+         * Reads more data into the buffer from the underlying stream,
+         * attempting to fill the buffer if possible.
+         * 
+         * @return &lt;code&gt;true&lt;/code&gt; if data was successfully buffered from the
+         *         underlying intput. Othwrwise &lt;code&gt;false&lt;/code&gt;.
+         * @throws IOException
+         *             if there as an IO error, other than the end of file,
+         *             while trying to read more data from the underlying input
+         *             into the buffer.
+         */
+        private boolean fetch() throws IOException {
+<span class="fc" id="L357">            int remaining = buffer.remaining();</span>
+
+<span class="fc bfc" id="L359" title="All 2 branches covered.">            if (remaining &gt; 0) {</span>
+<span class="fc" id="L360">                System.arraycopy(data, buffer.position(), data, 0, remaining);</span>
+            }
+
+<span class="fc" id="L363">            buffer.rewind();</span>
+
+<span class="fc" id="L365">            int n = (int) Math.min(pending, data.length - remaining);</span>
+<span class="fc" id="L366">            n = in.read(data, remaining, n);</span>
+<span class="fc bfc" id="L367" title="All 2 branches covered.">            if (n &lt; 0) {</span>
+<span class="fc" id="L368">                return false;</span>
+            }
+<span class="fc" id="L370">            buffer.limit(remaining + n);</span>
+<span class="fc" id="L371">            pending -= n;</span>
+
+<span class="fc" id="L373">            return true;</span>
+        }
+
+        /**
+         * Retrieves a single byte from the buffer.
+         * 
+         * @return the byte value, or -1 if no more data is available from the
+         *         buffer or the underlying input.
+         * @throws IOException
+         *             if there as an IO error, other than the end of file,
+         *             while trying to read more data from the underlying input
+         *             into the buffer.
+         */
+        protected int get() throws IOException {
+<span class="fc bfc" id="L387" title="All 2 branches covered.">            if (makeAvailable(1)) {</span>
+<span class="fc" id="L388">                return buffer.get() &amp; BYTE_MASK;</span>
+            }
+<span class="fc" id="L390">            return -1;</span>
+        }
+
+        /**
+         * Retrieves a 2-byte unsidned integer from the buffer.
+         * 
+         * @return the 16-bit integer value, or -1 if no more data is available
+         *         from the buffer or the underlying input.
+         * @throws IOException
+         *             if there as an IO error, other than the end of file,
+         *             while trying to read more data from the underlying input
+         *             into the buffer.
+         */
+        protected int getUnsignedShort() throws IOException {
+<span class="fc bfc" id="L404" title="All 2 branches covered.">            if (makeAvailable(FitsIO.BYTES_IN_SHORT)) {</span>
+<span class="fc" id="L405">                return buffer.getShort() &amp; SHORT_MASK;</span>
+            }
+<span class="fc" id="L407">            return -1;</span>
+        }
+
+        /**
+         * Retrieves a 4-byte integer from the buffer.
+         * 
+         * @return the 32-bit integer value.
+         * @throws IOException
+         *             if there as an IO error, including and
+         *             {@link EOFException} if the end of file was reached,
+         *             while trying to read more data from the underlying input
+         *             into the buffer.
+         */
+        protected int getInt() throws IOException {
+<span class="fc bfc" id="L421" title="All 2 branches covered.">            if (makeAvailable(FitsIO.BYTES_IN_INTEGER)) {</span>
+<span class="fc" id="L422">                return buffer.getInt();</span>
+            }
+<span class="fc" id="L424">            throw new EOFException();</span>
+        }
+
+        /**
+         * Retrieves a 8-byte integer from the buffer.
+         * 
+         * @return the 64-bit integer value.
+         * @throws IOException
+         *             if there as an IO error, including and
+         *             {@link EOFException} if the end of file was reached,
+         *             while trying to read more data from the underlying input
+         *             into the buffer.
+         */
+        protected long getLong() throws IOException {
+<span class="fc bfc" id="L438" title="All 2 branches covered.">            if (makeAvailable(FitsIO.BYTES_IN_LONG)) {</span>
+<span class="fc" id="L439">                return buffer.getLong();</span>
+            }
+<span class="fc" id="L441">            throw new EOFException();</span>
+        }
+
+        /**
+         * Retrieves a 4-byte single-precision floating point value from the
+         * buffer.
+         * 
+         * @return the 32-bit single-precision floating-point value.
+         * @throws IOException
+         *             if there as an IO error, including and
+         *             {@link EOFException} if the end of file was reached,
+         *             while trying to read more data from the underlying input
+         *             into the buffer.
+         */
+        protected float getFloat() throws IOException {
+<span class="fc bfc" id="L456" title="All 2 branches covered.">            if (makeAvailable(FitsIO.BYTES_IN_FLOAT)) {</span>
+<span class="fc" id="L457">                return buffer.getFloat();</span>
+            }
+<span class="fc" id="L459">            throw new EOFException();</span>
+        }
+
+        /**
+         * Retrieves a 8-byte double-precision floating point value from the
+         * buffer.
+         * 
+         * @return the 64-bit double-precision floating-point value.
+         * @throws IOException
+         *             if there as an IO error, including and
+         *             {@link EOFException} if the end of file was reached,
+         *             while trying to read more data from the underlying input
+         *             into the buffer.
+         */
+        protected double getDouble() throws IOException {
+<span class="fc bfc" id="L474" title="All 2 branches covered.">            if (makeAvailable(FitsIO.BYTES_IN_DOUBLE)) {</span>
+<span class="fc" id="L475">                return buffer.getDouble();</span>
+            }
+<span class="fc" id="L477">            throw new EOFException();</span>
+        }
+    }
+}
+</pre><div class="footer"><span class="right">Created with <a href="http://www.jacoco.org/jacoco">JaCoCo</a> 0.8.7.202105040129</span></div></body></html>

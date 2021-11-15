@@ -1,10 +1,10 @@
-<?xml version="1.0" encoding="UTF-8"?><!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Strict//EN" "http://www.w3.org/TR/xhtml1/DTD/xhtml1-strict.dtd"><html xmlns="http://www.w3.org/1999/xhtml" lang="en"><head><meta http-equiv="Content-Type" content="text/html;charset=UTF-8"/><link rel="stylesheet" href="../.resources/report.css" type="text/css"/><link rel="shortcut icon" href="../.resources/report.gif" type="image/gif"/><title>BufferEncoder.java</title><link rel="stylesheet" href="../.resources/prettify.css" type="text/css"/><script type="text/javascript" src="../.resources/prettify.js"></script></head><body onload="window['PR_TAB_WIDTH']=4;prettyPrint()"><div class="breadcrumb" id="breadcrumb"><span class="info"><a href="../.sessions.html" class="el_session">Sessions</a></span><a href="../index.html" class="el_report">nom.tam FITS library</a> &gt; <a href="index.source.html" class="el_package">nom.tam.util</a> &gt; <span class="el_source">BufferEncoder.java</span></div><h1>BufferEncoder.java</h1><pre class="source lang-java linenums">package nom.tam.util;
+<?xml version="1.0" encoding="UTF-8"?><!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Strict//EN" "http://www.w3.org/TR/xhtml1/DTD/xhtml1-strict.dtd"><html xmlns="http://www.w3.org/1999/xhtml" lang="en"><head><meta http-equiv="Content-Type" content="text/html;charset=UTF-8"/><link rel="stylesheet" href="../jacoco-resources/report.css" type="text/css"/><link rel="shortcut icon" href="../jacoco-resources/report.gif" type="image/gif"/><title>BufferEncoder.java</title><link rel="stylesheet" href="../jacoco-resources/prettify.css" type="text/css"/><script type="text/javascript" src="../jacoco-resources/prettify.js"></script></head><body onload="window['PR_TAB_WIDTH']=4;prettyPrint()"><div class="breadcrumb" id="breadcrumb"><span class="info"><a href="../jacoco-sessions.html" class="el_session">Sessions</a></span><a href="../index.html" class="el_report">nom.tam FITS library</a> &gt; <a href="index.source.html" class="el_package">nom.tam.util</a> &gt; <span class="el_source">BufferEncoder.java</span></div><h1>BufferEncoder.java</h1><pre class="source lang-java linenums">package nom.tam.util;
 
 /*
  * #%L
  * nom.tam FITS library
  * %%
- * Copyright (C) 1996 - 2015 nom-tam-fits
+ * Copyright (C) 1996 - 2021 nom-tam-fits
  * %%
  * This is free and unencumbered software released into the public domain.
  * 
@@ -32,165 +32,110 @@
  */
 
 import java.io.IOException;
-import java.lang.reflect.Array;
 
-public abstract class BufferEncoder {
+/**
+ * @deprecated  This is a rusty rail implementation only, unsafe for general use.
+ *      Use {@link FitsEncoder} instead, which provides a similar function but in
+ *      a more consistent way and with a less misleading name, or else use {@link ArrayEncoder}
+ *      as a base for implementing efficient custom encoding of binary outputs.
+ *
+ * @see FitsEncoder
+ */
+@Deprecated
+public abstract class BufferEncoder extends FitsEncoder {
+    
+    private BufferPointer p;
+    
+    /**
+     * 
+     * @param p     Unused, but the position and length fields are set/reset as to pretend that the
+     *              buffer is perpetually half filled with data, and with position at 0.
+     *              However, at no point will there be any data actually in the buffer of this object.
+     *              You should by all means avoid directly writing data from this buffer to the
+     *              output stream, other than the hopefully untriggered write of an existing 
+     *              &lt;code&gt;needBuffer(int)&lt;/code&gt; implementation (and it's safest if you don't override
+     *              or ever call &lt;code&gt;needBuffer(int)&lt;/code&gt; from your code!). 
+     */
+    public BufferEncoder(BufferPointer p) {
+<span class="fc" id="L60">        super();</span>
+       
+<span class="fc" id="L62">        this.p = p;</span>
+        
+<span class="fc" id="L64">        pretendHalfPopulated();</span>
 
-    private final BufferPointer sharedBuffer;
+<span class="fc" id="L66">        setOutput(new OutputWriter() {</span>
+             
+<span class="fc" id="L68">            private byte[] b1 = new byte[1];</span>
+           
+            @Override
+            public void write(int b) throws IOException {
+<span class="fc" id="L72">                b1[0] = (byte) b;</span>
+<span class="fc" id="L73">                BufferEncoder.this.write(b1, 0, 1);</span>
+<span class="fc" id="L74">            }</span>
 
-<span class="fc" id="L41">    protected BufferEncoder(BufferPointer sharedBuffer) {</span>
-<span class="fc" id="L42">        this.sharedBuffer = sharedBuffer;</span>
-<span class="fc" id="L43">    }</span>
+            @Override
+            public void write(byte[] b, int from, int length) throws IOException {
+<span class="fc" id="L78">                BufferEncoder.this.write(b, from, length);</span>
+<span class="fc" id="L79">            }</span>
+            
+        });
+<span class="fc" id="L82">    }</span>
+    
+    /**
+     * We'll always pretend the buffer to be half populated at pos=0, in order to avoid triggering
+     * a read from the input into the unused buffer of BufferPointer, or a write to the
+     * output from that buffer... If the pointer has no buffer, length will be 0 also.
+     */
+    private void pretendHalfPopulated() {
+<span class="fc" id="L90">        p.pos = 0; </span>
+<span class="fc bfc" id="L91" title="All 2 branches covered.">        p.length = p.buffer == null ? 0 : p.buffer.length &gt;&gt;&gt; 1;   </span>
+<span class="fc" id="L92">    }</span>
+  
+    /**
+     * @deprecated No longer used internally, kept only for back-compatibility since it used to be a needed abstract method.
+     *             It's safest if you never override or call this method from your code!
+     *             
+     * @param need      the number of consecutive bytes we need available in the conversion buffer
+     * @throws IOException  
+     *                  if the buffer could not be flushed to the output to free up space in the buffer.
+     */ 
+    protected void needBuffer(int need) throws IOException {
+<span class="fc" id="L103">    }</span>
+    
+    @Override
+    void need(int bytes) throws IOException {
+<span class="fc" id="L107">        pretendHalfPopulated();</span>
+<span class="fc" id="L108">        super.need(bytes);</span>
+<span class="fc" id="L109">    }</span>
 
-    protected abstract void needBuffer(int need) throws IOException;
-
-    protected void write(boolean[] b, int start, int length) throws IOException {
-<span class="fc bfc" id="L48" title="All 2 branches covered.">        for (int i = start; i &lt; start + length; i++) {</span>
-<span class="fc" id="L49">            writeBoolean(b[i]);</span>
-        }
-<span class="fc" id="L51">    }</span>
-
-    protected abstract void write(byte[] buf, int offset, int length) throws IOException;
-
-    protected void write(char[] c, int start, int length) throws IOException {
-<span class="fc bfc" id="L56" title="All 2 branches covered.">        for (int i = start; i &lt; start + length; i++) {</span>
-<span class="fc" id="L57">            writeChar(c[i]);</span>
-        }
-<span class="fc" id="L59">    }</span>
-
-    protected void write(double[] d, int start, int length) throws IOException {
-<span class="fc bfc" id="L62" title="All 2 branches covered.">        for (int i = start; i &lt; start + length; i++) {</span>
-<span class="fc" id="L63">            writeLong(Double.doubleToLongBits(d[i]));</span>
-        }
-<span class="fc" id="L65">    }</span>
-
-    protected void write(float[] f, int start, int length) throws IOException {
-<span class="fc bfc" id="L68" title="All 2 branches covered.">        for (int i = start; i &lt; start + length; i++) {</span>
-<span class="fc" id="L69">            writeInt(Float.floatToIntBits(f[i]));</span>
-        }
-<span class="fc" id="L71">    }</span>
-
-    protected void write(int[] i, int start, int length) throws IOException {
-<span class="fc bfc" id="L74" title="All 2 branches covered.">        for (int ii = start; ii &lt; start + length; ii++) {</span>
-<span class="fc" id="L75">            writeInt(i[ii]);</span>
-        }
-<span class="fc" id="L77">    }</span>
-
-    protected void write(long[] l, int start, int length) throws IOException {
-<span class="fc bfc" id="L80" title="All 2 branches covered.">        for (int i = start; i &lt; start + length; i++) {</span>
-<span class="fc" id="L81">            writeLong(l[i]);</span>
-        }
-<span class="fc" id="L83">    }</span>
-
-    protected void write(short[] s, int start, int length) throws IOException {
-<span class="fc bfc" id="L86" title="All 2 branches covered.">        for (int i = start; i &lt; start + length; i++) {</span>
-<span class="fc" id="L87">            writeShort(s[i]);</span>
-        }
-<span class="fc" id="L89">    }</span>
-
-    protected void write(String[] s, int start, int length) throws IOException {
-<span class="fc bfc" id="L92" title="All 2 branches covered.">        for (int i = start; i &lt; start + length; i++) {</span>
-<span class="fc" id="L93">            write(AsciiFuncs.getBytes(s[i]), 0, s[i].length());</span>
-        }
-<span class="fc" id="L95">    }</span>
-
-    protected void writeArray(Object o) throws IOException {
-<span class="fc bfc" id="L98" title="All 2 branches covered.">        if (!o.getClass().isArray()) {</span>
-<span class="fc" id="L99">            throw new IOException(&quot;Invalid object passed to BufferedDataOutputStream.write&quot; + o.getClass().getName());</span>
-        }
-<span class="fc" id="L101">        int length = Array.getLength(o);</span>
-        // Is this a multidimensional array? If so process recursiv
-<span class="fc bfc" id="L103" title="All 2 branches covered.">        if (o.getClass().getComponentType().isArray()) {</span>
-<span class="fc bfc" id="L104" title="All 2 branches covered.">            for (int i = 0; i &lt; length; i++) {</span>
-<span class="fc" id="L105">                writeArray(Array.get(o, i));</span>
-            }
-        } else {
-<span class="fc bfc" id="L108" title="All 2 branches covered.">            if (o instanceof boolean[]) {</span>
-<span class="fc" id="L109">                write((boolean[]) o, 0, length);</span>
-<span class="fc bfc" id="L110" title="All 2 branches covered.">            } else if (o instanceof byte[]) {</span>
-<span class="fc" id="L111">                write((byte[]) o, 0, length);</span>
-<span class="fc bfc" id="L112" title="All 2 branches covered.">            } else if (o instanceof char[]) {</span>
-<span class="fc" id="L113">                write((char[]) o, 0, length);</span>
-<span class="fc bfc" id="L114" title="All 2 branches covered.">            } else if (o instanceof short[]) {</span>
-<span class="fc" id="L115">                write((short[]) o, 0, length);</span>
-<span class="fc bfc" id="L116" title="All 2 branches covered.">            } else if (o instanceof int[]) {</span>
-<span class="fc" id="L117">                write((int[]) o, 0, length);</span>
-<span class="fc bfc" id="L118" title="All 2 branches covered.">            } else if (o instanceof long[]) {</span>
-<span class="fc" id="L119">                write((long[]) o, 0, length);</span>
-<span class="fc bfc" id="L120" title="All 2 branches covered.">            } else if (o instanceof float[]) {</span>
-<span class="fc" id="L121">                write((float[]) o, 0, length);</span>
-<span class="fc bfc" id="L122" title="All 2 branches covered.">            } else if (o instanceof double[]) {</span>
-<span class="fc" id="L123">                write((double[]) o, 0, length);</span>
-<span class="fc bfc" id="L124" title="All 2 branches covered.">            } else if (o instanceof String[]) {</span>
-<span class="fc" id="L125">                write((String[]) o, 0, length);</span>
-            } else {
-<span class="fc bfc" id="L127" title="All 2 branches covered.">                for (int i = 0; i &lt; length; i++) {</span>
-<span class="fc" id="L128">                    writeArray(Array.get(o, i));</span>
-                }
-            }
-        }
-<span class="fc" id="L132">    }</span>
-
-    protected void writeBoolean(boolean b) throws IOException {
-<span class="fc" id="L135">        needBuffer(FitsIO.BYTES_IN_BOOLEAN);</span>
-<span class="fc bfc" id="L136" title="All 2 branches covered.">        if (b) {</span>
-<span class="fc" id="L137">            this.sharedBuffer.buffer[this.sharedBuffer.bufferOffset] = (byte) 1;</span>
-        } else {
-<span class="fc" id="L139">            this.sharedBuffer.buffer[this.sharedBuffer.bufferOffset] = (byte) 0;</span>
-        }
-<span class="fc" id="L141">        this.sharedBuffer.bufferOffset++;</span>
-<span class="fc" id="L142">    }</span>
-
-    protected void writeByte(int b) throws IOException {
-<span class="fc" id="L145">        needBuffer(FitsIO.BYTES_IN_BYTE);</span>
-<span class="fc" id="L146">        this.sharedBuffer.buffer[this.sharedBuffer.bufferOffset++] = (byte) b;</span>
-<span class="fc" id="L147">    }</span>
-
-    protected void writeChar(int c) throws IOException {
-<span class="fc" id="L150">        needBuffer(FitsIO.BYTES_IN_CHAR);</span>
-<span class="fc" id="L151">        this.sharedBuffer.buffer[this.sharedBuffer.bufferOffset++] = (byte) (c &gt;&gt;&gt; FitsIO.BITS_OF_1_BYTE);</span>
-<span class="fc" id="L152">        this.sharedBuffer.buffer[this.sharedBuffer.bufferOffset++] = (byte) c;</span>
-<span class="fc" id="L153">    }</span>
-
-    protected void writeChars(String s) throws IOException {
-<span class="fc" id="L156">        int len = s.length();</span>
-<span class="fc bfc" id="L157" title="All 2 branches covered.">        for (int i = 0; i &lt; len; i++) {</span>
-<span class="fc" id="L158">            writeChar(s.charAt(i));</span>
-        }
-<span class="fc" id="L160">    }</span>
-
-    protected void writeDouble(double d) throws IOException {
-<span class="fc" id="L163">        writeLong(Double.doubleToLongBits(d));</span>
-<span class="fc" id="L164">    }</span>
-
-    protected void writeFloat(float f) throws IOException {
-<span class="fc" id="L167">        writeInt(Float.floatToIntBits(f));</span>
-<span class="fc" id="L168">    }</span>
-
-    protected void writeInt(int i) throws IOException {
-<span class="fc" id="L171">        needBuffer(FitsIO.BYTES_IN_INTEGER);</span>
-<span class="fc" id="L172">        this.sharedBuffer.buffer[this.sharedBuffer.bufferOffset++] = (byte) (i &gt;&gt;&gt; FitsIO.BITS_OF_3_BYTES);</span>
-<span class="fc" id="L173">        this.sharedBuffer.buffer[this.sharedBuffer.bufferOffset++] = (byte) (i &gt;&gt;&gt; FitsIO.BITS_OF_2_BYTES);</span>
-<span class="fc" id="L174">        this.sharedBuffer.buffer[this.sharedBuffer.bufferOffset++] = (byte) (i &gt;&gt;&gt; FitsIO.BITS_OF_1_BYTE);</span>
-<span class="fc" id="L175">        this.sharedBuffer.buffer[this.sharedBuffer.bufferOffset++] = (byte) i;</span>
-<span class="fc" id="L176">    }</span>
-
-    protected void writeLong(long l) throws IOException {
-<span class="fc" id="L179">        needBuffer(FitsIO.BYTES_IN_LONG);</span>
-<span class="fc" id="L180">        this.sharedBuffer.buffer[this.sharedBuffer.bufferOffset++] = (byte) (l &gt;&gt;&gt; FitsIO.BITS_OF_7_BYTES);</span>
-<span class="fc" id="L181">        this.sharedBuffer.buffer[this.sharedBuffer.bufferOffset++] = (byte) (l &gt;&gt;&gt; FitsIO.BITS_OF_6_BYTES);</span>
-<span class="fc" id="L182">        this.sharedBuffer.buffer[this.sharedBuffer.bufferOffset++] = (byte) (l &gt;&gt;&gt; FitsIO.BITS_OF_5_BYTES);</span>
-<span class="fc" id="L183">        this.sharedBuffer.buffer[this.sharedBuffer.bufferOffset++] = (byte) (l &gt;&gt;&gt; FitsIO.BITS_OF_4_BYTES);</span>
-<span class="fc" id="L184">        this.sharedBuffer.buffer[this.sharedBuffer.bufferOffset++] = (byte) (l &gt;&gt;&gt; FitsIO.BITS_OF_3_BYTES);</span>
-<span class="fc" id="L185">        this.sharedBuffer.buffer[this.sharedBuffer.bufferOffset++] = (byte) (l &gt;&gt;&gt; FitsIO.BITS_OF_2_BYTES);</span>
-<span class="fc" id="L186">        this.sharedBuffer.buffer[this.sharedBuffer.bufferOffset++] = (byte) (l &gt;&gt;&gt; FitsIO.BITS_OF_1_BYTE);</span>
-<span class="fc" id="L187">        this.sharedBuffer.buffer[this.sharedBuffer.bufferOffset++] = (byte) l;</span>
-<span class="fc" id="L188">    }</span>
-
-    protected void writeShort(int s) throws IOException {
-<span class="fc" id="L191">        needBuffer(FitsIO.BYTES_IN_SHORT);</span>
-<span class="fc" id="L192">        this.sharedBuffer.buffer[this.sharedBuffer.bufferOffset++] = (byte) (s &gt;&gt;&gt; FitsIO.BITS_OF_1_BYTE);</span>
-<span class="fc" id="L193">        this.sharedBuffer.buffer[this.sharedBuffer.bufferOffset++] = (byte) s;</span>
-<span class="fc" id="L194">    }</span>
+    @Override
+    protected void write(byte[] b, int from, int len) throws IOException {
+<span class="fc" id="L113">        throw new UnsupportedOperationException(&quot;You need to override this with an implementation that writes to the desired output.&quot;);</span>
+    }
+    
+    /**
+     * Writes a single byte to the output, but not before flushing the contents of the conversion buffer. 
+     * The supplied {@link BufferPointer} is not used at all, and is immediately invalidated (which is 
+     * consistent with having flushed all pending output). It's not all that efficient, but then again 
+     * one should be using the new {@link FitsEncoder} instead. This is really just a rusty rail solution. 
+     * Also, since this methods does not throw an exception, and {@link #needBuffer(int)} (which did 
+     * throw an exception) is no longer in use, the duct-tape solution is to convert any IOException 
+     * encountered here into a runtime exception... 
+     * 
+     * @param b     the byte to write
+     * 
+     * @throws IllegalStateException    
+     * 
+     *              if there was an IO error flushing the conversion buffer or writing
+     *              the new byte after it.    
+     */
+    protected void writeUncheckedByte(byte b) {
+        try { 
+<span class="fc" id="L134">            flush();</span>
+<span class="fc" id="L135">            write(b); </span>
+<span class="fc" id="L136">        } catch (IOException e) {</span>
+<span class="fc" id="L137">            throw new IllegalStateException(e);</span>
+<span class="fc" id="L138">        }</span>
+<span class="fc" id="L139">    }</span>
 }
-</pre><div class="footer"><span class="right">Created with <a href="http://www.eclemma.org/jacoco">JaCoCo</a> 0.7.6.201602180812</span></div></body></html>
+</pre><div class="footer"><span class="right">Created with <a href="http://www.jacoco.org/jacoco">JaCoCo</a> 0.8.7.202105040129</span></div></body></html>

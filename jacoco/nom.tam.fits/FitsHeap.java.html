@@ -1,10 +1,12 @@
-<?xml version="1.0" encoding="UTF-8"?><!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Strict//EN" "http://www.w3.org/TR/xhtml1/DTD/xhtml1-strict.dtd"><html xmlns="http://www.w3.org/1999/xhtml" lang="en"><head><meta http-equiv="Content-Type" content="text/html;charset=UTF-8"/><link rel="stylesheet" href="../.resources/report.css" type="text/css"/><link rel="shortcut icon" href="../.resources/report.gif" type="image/gif"/><title>FitsHeap.java</title><link rel="stylesheet" href="../.resources/prettify.css" type="text/css"/><script type="text/javascript" src="../.resources/prettify.js"></script></head><body onload="window['PR_TAB_WIDTH']=4;prettyPrint()"><div class="breadcrumb" id="breadcrumb"><span class="info"><a href="../.sessions.html" class="el_session">Sessions</a></span><a href="../index.html" class="el_report">nom.tam FITS library</a> &gt; <a href="index.source.html" class="el_package">nom.tam.fits</a> &gt; <span class="el_source">FitsHeap.java</span></div><h1>FitsHeap.java</h1><pre class="source lang-java linenums">package nom.tam.fits;
+<?xml version="1.0" encoding="UTF-8"?><!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Strict//EN" "http://www.w3.org/TR/xhtml1/DTD/xhtml1-strict.dtd"><html xmlns="http://www.w3.org/1999/xhtml" lang="en"><head><meta http-equiv="Content-Type" content="text/html;charset=UTF-8"/><link rel="stylesheet" href="../jacoco-resources/report.css" type="text/css"/><link rel="shortcut icon" href="../jacoco-resources/report.gif" type="image/gif"/><title>FitsHeap.java</title><link rel="stylesheet" href="../jacoco-resources/prettify.css" type="text/css"/><script type="text/javascript" src="../jacoco-resources/prettify.js"></script></head><body onload="window['PR_TAB_WIDTH']=4;prettyPrint()"><div class="breadcrumb" id="breadcrumb"><span class="info"><a href="../jacoco-sessions.html" class="el_session">Sessions</a></span><a href="../index.html" class="el_report">nom.tam FITS library</a> &gt; <a href="index.source.html" class="el_package">nom.tam.fits</a> &gt; <span class="el_source">FitsHeap.java</span></div><h1>FitsHeap.java</h1><pre class="source lang-java linenums">package nom.tam.fits;
+
+
 
 /*
  * #%L
  * nom.tam FITS library
  * %%
- * Copyright (C) 2004 - 2015 nom-tam-fits
+ * Copyright (C) 2004 - 2021 nom-tam-fits
  * %%
  * This is free and unencumbered software released into the public domain.
  * 
@@ -31,134 +33,115 @@
  * #L%
  */
 
-import java.io.ByteArrayInputStream;
-import java.io.ByteArrayOutputStream;
 import java.io.IOException;
 
 import edu.umd.cs.findbugs.annotations.SuppressFBWarnings;
 import nom.tam.util.ArrayDataInput;
 import nom.tam.util.ArrayDataOutput;
-import nom.tam.util.ArrayFuncs;
-import nom.tam.util.BufferedDataInputStream;
-import nom.tam.util.BufferedDataOutputStream;
+import nom.tam.util.FitsDecoder;
+import nom.tam.util.FitsEncoder;
+import nom.tam.util.ByteArrayIO;
 
 /**
  * This class supports the FITS heap. This is currently used for variable length
- * columns in binary tables.
+ * columns in binary tables. The newer implementation of the heap now provides
+ * proper random access to the byte buffer as of version 1.16.
+ * 
  */
 public class FitsHeap implements FitsElement {
 
-    private static final int MINIMUM_HEAP_SIZE = 16384;
-
-    /**
-     * The storage buffer
+    /** The minimum stoprage size to allocate for the heap, from which it can grow as necessary */
+    private static final int MIN_HEAP_CAPACITY = 16384;
+    
+    // TODO
+    // AK: In principle we could use ReadWriteAccess interface as the storage, which can be either an in-memory
+    // array or a buffered file region. The latter could support heaps over 2G, and could reduce memory overhead
+    // for heap access in some future release...
+    /** The underlying storage space of the heap */
+    private ByteArrayIO store; 
+    
+    /** conversion from Java arrays to FITS binary representation */
+    private FitsEncoder encoder;
+    
+    /** conversion from FITS binary representation to Java arrays */
+    private FitsDecoder decoder;
+    
+    /** 
+     * Construct a new uninitialized FITS heap object. 
      */
-    private byte[] heap;
-
+    private FitsHeap() {   
+    }
+    
     /**
-     * The current used size of the buffer &lt;= heap.length
+     * Creates a heap of a given initial size. The new heap is initialized with 0's, and
+     * up to the specified number of bytes are immediately available for reading
+     * (as zeroes). The heap can grow as needed if more data is written into it.
+     * 
+     * @throws IllegalArgumentException 
+     *                  if the size argument is negative.
+     * 
      */
-    private int heapSize;
-
-    /**
-     * Our current offset into the heap. When we read from the heap we use a
-     * byte array input stream. So long as we continue to read further into the
-     * heap, we can continue to use the same stream, but we need to recreate the
-     * stream whenever we skip backwards.
-     */
-<span class="fc" id="L69">    private int heapOffset = 0;</span>
-
-    /**
-     * A stream used to read the heap data
-     */
-    private BufferedDataInputStream bstr;
-
-    /**
-     * Create a heap of a given size.
-     */
-<span class="fc" id="L79">    FitsHeap(int size) {</span>
-<span class="fc" id="L80">        this.heapSize = size;</span>
-<span class="fc bfc" id="L81" title="All 2 branches covered.">        if (size &lt; 0) {</span>
-<span class="fc" id="L82">            throw new IllegalArgumentException(&quot;Illegal size for FITS heap:&quot; + size);</span>
+<span class="fc" id="L84">    FitsHeap(int size) { </span>
+<span class="fc bfc" id="L85" title="All 2 branches covered.">        if (size &lt; 0) {</span>
+<span class="fc" id="L86">            throw new IllegalArgumentException(&quot;Illegal size for FITS heap: &quot; + size);</span>
         }
-<span class="fc" id="L84">    }</span>
-
-    private void allocate() {
-<span class="fc bfc" id="L87" title="All 2 branches covered.">        if (this.heap == null) {</span>
-<span class="fc" id="L88">            this.heap = new byte[this.heapSize];</span>
-        }
-<span class="fc" id="L90">    }</span>
-
+        
+<span class="fc" id="L89">        ByteArrayIO data = new ByteArrayIO(Math.max(size, MIN_HEAP_CAPACITY));</span>
+<span class="fc" id="L90">        data.setLength(Math.max(0, size));</span>
+<span class="fc" id="L91">        setData(data);</span>
+<span class="fc" id="L92">        encoder = new FitsEncoder(store);</span>
+<span class="fc" id="L93">        decoder = new FitsDecoder(store);</span>
+<span class="fc" id="L94">    }</span>
+    
+    /**
+     * Sets the underlying data storage for this heap instance. Constructors should
+     * call this.
+     * 
+     * @param data      the new underlying storage object for this heap instance. 
+     */
+    protected void setData(ByteArrayIO data) {
+<span class="fc" id="L103">        this.store = data;</span>
+<span class="fc" id="L104">    }</span>
+    
     /**
      * Add a copy constructor to allow us to duplicate a heap. This would be
      * necessary if we wanted to copy an HDU that included variable length
      * columns.
      */
     FitsHeap copy() {
-<span class="fc" id="L98">        FitsHeap copy = new FitsHeap(0);</span>
-<span class="fc bfc" id="L99" title="All 2 branches covered.">        if (this.heap != null) {</span>
-<span class="fc" id="L100">            copy.heap = this.heap.clone();</span>
-        }
-<span class="fc" id="L102">        copy.heapSize = this.heapSize;</span>
-<span class="fc" id="L103">        copy.heapOffset = this.heapOffset;</span>
-<span class="fc" id="L104">        return copy;</span>
+<span class="fc" id="L112">        FitsHeap copy = new FitsHeap();</span>
+<span class="fc" id="L113">        copy.setData(store.copy());</span>
+<span class="fc" id="L114">        copy.encoder = new FitsEncoder(copy.store);</span>
+<span class="fc" id="L115">        copy.decoder = new FitsDecoder(copy.store);</span>
+<span class="fc" id="L116">        return copy;</span>
     }
 
     /**
-     * Check if the Heap can accommodate a given requirement. If not expand the
-     * heap.
-     */
-    void expandHeap(int need) {
-
-        // Invalidate any existing input stream to the heap.
-<span class="fc" id="L114">        this.bstr = null;</span>
-<span class="fc" id="L115">        allocate();</span>
-
-<span class="fc bfc" id="L117" title="All 2 branches covered.">        if (this.heapSize + need &gt; this.heap.length) {</span>
-<span class="fc" id="L118">            int newlen = (this.heapSize + need) * 2;</span>
-<span class="fc bfc" id="L119" title="All 2 branches covered.">            if (newlen &lt; MINIMUM_HEAP_SIZE) {</span>
-<span class="fc" id="L120">                newlen = MINIMUM_HEAP_SIZE;</span>
-            }
-<span class="fc" id="L122">            byte[] newHeap = new byte[newlen];</span>
-<span class="fc" id="L123">            System.arraycopy(this.heap, 0, newHeap, 0, this.heapSize);</span>
-<span class="fc" id="L124">            this.heap = newHeap;</span>
-        }
-<span class="fc" id="L126">    }</span>
-
-    /**
-     * Get data from the heap.
+     * Gets data for a Java array from the heap. The array may be a multi-dimensional or a 
+     * heterogenetous array of arrays.
      * 
      * @param offset
-     *            The offset at which the data begins.
+     *            the heap byte offset at which the data begins.
      * @param array
      *            The array to be extracted.
      * @throws FitsException
      *             if the operation failed
      */
     public void getData(int offset, Object array) throws FitsException {
-<span class="fc" id="L139">        allocate();</span>
         try {
-            // Can we reuse the existing byte stream?
-<span class="fc bfc" id="L142" title="All 4 branches covered.">            if (this.bstr == null || this.heapOffset &gt; offset) {</span>
-<span class="fc" id="L143">                this.heapOffset = 0;</span>
-<span class="fc" id="L144">                this.bstr = new BufferedDataInputStream(new ByteArrayInputStream(this.heap));</span>
-            }
-
-<span class="fc" id="L147">            this.bstr.skipAllBytes(offset - this.heapOffset);</span>
-<span class="fc" id="L148">            this.heapOffset = offset;</span>
-<span class="fc" id="L149">            this.heapOffset += this.bstr.readLArray(array);</span>
-
-<span class="nc" id="L151">        } catch (IOException e) {</span>
-<span class="nc" id="L152">            throw new FitsException(&quot;Error decoding heap area at offset=&quot; + offset + &quot;.  Exception: Exception &quot; + e);</span>
-<span class="fc" id="L153">        }</span>
-<span class="fc" id="L154">    }</span>
+<span class="fc" id="L132">            store.position(offset);</span>
+<span class="fc" id="L133">            decoder.readArrayFully(array);</span>
+<span class="fc" id="L134">        } catch (Exception e) {</span>
+<span class="fc" id="L135">            throw new FitsException(&quot;Error decoding heap area at offset=&quot; + offset + &quot;.&quot;, e);</span>
+<span class="fc" id="L136">        }</span>
+<span class="fc" id="L137">    }</span>
 
     /**
      * Get the file offset of the heap
      */
     @Override
     public long getFileOffset() {
-<span class="fc" id="L161">        throw new IllegalStateException(&quot;FitsHeap should only be reset from inside its parent, never alone&quot;);</span>
+<span class="fc" id="L144">        throw new IllegalStateException(&quot;FitsHeap should only be reset from inside its parent, never alone&quot;);</span>
     }
 
     /**
@@ -166,91 +149,77 @@ public class FitsHeap implements FitsElement {
      */
     @Override
     public long getSize() {
-<span class="fc" id="L169">        return size();</span>
+<span class="fc" id="L152">        return size();</span>
     }
 
     /**
      * Add some data to the heap.
      */
     int putData(Object data) throws FitsException {
-
-<span class="fc" id="L177">        long lsize = ArrayFuncs.computeLSize(data);</span>
-<span class="fc bfc" id="L178" title="All 2 branches covered.">        if (lsize &gt; Integer.MAX_VALUE) {</span>
-<span class="fc" id="L179">            throw new FitsException(&quot;FITS Heap &gt; 2 G&quot;);</span>
+<span class="fc" id="L159">        long lsize = store.length() + FitsEncoder.computeSize(data);</span>
+<span class="fc bfc" id="L160" title="All 2 branches covered.">        if (lsize &gt; Integer.MAX_VALUE) {</span>
+<span class="fc" id="L161">            throw new FitsException(&quot;FITS Heap &gt; 2 G&quot;);</span>
         }
-<span class="fc" id="L181">        int size = (int) lsize;</span>
-<span class="fc" id="L182">        expandHeap(size);</span>
-<span class="fc" id="L183">        ByteArrayOutputStream bo = new ByteArrayOutputStream(size);</span>
-
+        
+<span class="fc" id="L164">        int oldSize = (int) store.length();</span>
+        
         try {
-<span class="fc" id="L186">            BufferedDataOutputStream o = new BufferedDataOutputStream(bo);</span>
-<span class="fc" id="L187">            o.writeArray(data);</span>
-<span class="fc" id="L188">            o.flush();</span>
-<span class="fc" id="L189">            o.close();</span>
-<span class="nc" id="L190">        } catch (IOException e) {</span>
-<span class="nc" id="L191">            throw new FitsException(&quot;Unable to write variable column length data&quot;, e);</span>
-<span class="fc" id="L192">        }</span>
-
-<span class="fc" id="L194">        System.arraycopy(bo.toByteArray(), 0, this.heap, this.heapSize, size);</span>
-<span class="fc" id="L195">        int oldOffset = this.heapSize;</span>
-<span class="fc" id="L196">        this.heapSize += size;</span>
-
-<span class="fc" id="L198">        return oldOffset;</span>
+<span class="fc" id="L167">            store.position(oldSize);</span>
+<span class="fc" id="L168">            encoder.writeArray(data);</span>
+<span class="fc" id="L169">        } catch (Exception e) {</span>
+<span class="fc" id="L170">            throw new FitsException(&quot;Unable to write variable column length data&quot;, e);</span>
+<span class="fc" id="L171">        }</span>
+       
+<span class="fc" id="L173">        return oldSize;</span>
     }
-
-    /**
-     * Read the heap
-     */
+    
     @SuppressFBWarnings(value = &quot;RR_NOT_CHECKED&quot;, justification = &quot;this read will never return less than the requested length&quot;)
     @Override
     public void read(ArrayDataInput str) throws FitsException {
-<span class="fc bfc" id="L207" title="All 2 branches covered.">        if (this.heapSize &gt; 0) {</span>
-<span class="fc" id="L208">            allocate();</span>
-            try {
-<span class="fc bfc" id="L210" title="All 2 branches covered.">                if (str.read(this.heap, 0, this.heapSize) &lt; this.heapSize) {</span>
-<span class="fc" id="L211">                    throw new FitsException(&quot;Error reading heap, no more data&quot;);</span>
-                }
-<span class="fc" id="L213">            } catch (IOException e) {</span>
-<span class="fc" id="L214">                throw new FitsException(&quot;Error reading heap &quot; + e.getMessage(), e);</span>
-<span class="fc" id="L215">            }</span>
+<span class="fc bfc" id="L179" title="All 2 branches covered.">        if (store.length() == 0) {</span>
+<span class="fc" id="L180">            return;</span>
         }
-
-<span class="fc" id="L218">        this.bstr = null;</span>
-<span class="fc" id="L219">    }</span>
+       
+        try {
+<span class="fc" id="L184">            str.readFully(store.getBuffer(), 0, (int) store.length());</span>
+<span class="fc" id="L185">        } catch (IOException e) {</span>
+<span class="fc" id="L186">            throw new FitsException(&quot;Error reading heap &quot; + e.getMessage(), e);</span>
+<span class="fc" id="L187">        }</span>
+<span class="fc" id="L188">    }</span>
 
     @Override
     public boolean reset() {
-<span class="fc" id="L223">        throw new IllegalStateException(&quot;FitsHeap should only be reset from inside its parent, never alone&quot;);</span>
+<span class="fc" id="L192">        throw new IllegalStateException(&quot;FitsHeap should only be reset from inside its parent, never alone&quot;);</span>
     }
 
     @Override
     public void rewrite() throws IOException, FitsException {
-<span class="fc" id="L228">        throw new FitsException(&quot;FitsHeap should only be rewritten from inside its parent, never alone&quot;);</span>
+<span class="fc" id="L197">        throw new FitsException(&quot;FitsHeap should only be rewritten from inside its parent, never alone&quot;);</span>
     }
 
     @Override
     public boolean rewriteable() {
-<span class="fc" id="L233">        return false;</span>
+<span class="fc" id="L202">        return false;</span>
     }
 
     /**
-     * @return the size of the Heap
+     * Returns the current heap size.
+     * 
+     * @return      the size of the heap in bytes
      */
     public int size() {
-<span class="fc" id="L240">        return this.heapSize;</span>
+<span class="fc" id="L211">        return (int) store.length();</span>
     }
 
-    /**
-     * Write the heap
-     */
     @Override
     public void write(ArrayDataOutput str) throws FitsException {
-<span class="fc" id="L248">        allocate();</span>
         try {
-<span class="fc" id="L250">            str.write(this.heap, 0, this.heapSize);</span>
-<span class="fc" id="L251">        } catch (IOException e) {</span>
-<span class="fc" id="L252">            throw new FitsException(&quot;Error writing heap:&quot; + e.getMessage(), e);</span>
-<span class="fc" id="L253">        }</span>
-<span class="fc" id="L254">    }</span>
+<span class="fc" id="L217">            str.write(store.getBuffer(), 0, (int) store.length());</span>
+<span class="fc" id="L218">        } catch (IOException e) {</span>
+<span class="fc" id="L219">            throw new FitsException(&quot;Error writing heap:&quot; + e.getMessage(), e);</span>
+<span class="fc" id="L220">        }</span>
+<span class="fc" id="L221">    }</span>
+    
+    
 }
-</pre><div class="footer"><span class="right">Created with <a href="http://www.eclemma.org/jacoco">JaCoCo</a> 0.7.6.201602180812</span></div></body></html>
+</pre><div class="footer"><span class="right">Created with <a href="http://www.jacoco.org/jacoco">JaCoCo</a> 0.8.7.202105040129</span></div></body></html>

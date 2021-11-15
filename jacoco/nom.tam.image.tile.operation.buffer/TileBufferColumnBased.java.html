@@ -1,10 +1,10 @@
-<?xml version="1.0" encoding="UTF-8"?><!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Strict//EN" "http://www.w3.org/TR/xhtml1/DTD/xhtml1-strict.dtd"><html xmlns="http://www.w3.org/1999/xhtml" lang="en"><head><meta http-equiv="Content-Type" content="text/html;charset=UTF-8"/><link rel="stylesheet" href="../.resources/report.css" type="text/css"/><link rel="shortcut icon" href="../.resources/report.gif" type="image/gif"/><title>TileBufferColumnBased.java</title><link rel="stylesheet" href="../.resources/prettify.css" type="text/css"/><script type="text/javascript" src="../.resources/prettify.js"></script></head><body onload="window['PR_TAB_WIDTH']=4;prettyPrint()"><div class="breadcrumb" id="breadcrumb"><span class="info"><a href="../.sessions.html" class="el_session">Sessions</a></span><a href="../index.html" class="el_report">nom.tam FITS library</a> &gt; <a href="index.source.html" class="el_package">nom.tam.image.tile.operation.buffer</a> &gt; <span class="el_source">TileBufferColumnBased.java</span></div><h1>TileBufferColumnBased.java</h1><pre class="source lang-java linenums">package nom.tam.image.tile.operation.buffer;
+<?xml version="1.0" encoding="UTF-8"?><!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Strict//EN" "http://www.w3.org/TR/xhtml1/DTD/xhtml1-strict.dtd"><html xmlns="http://www.w3.org/1999/xhtml" lang="en"><head><meta http-equiv="Content-Type" content="text/html;charset=UTF-8"/><link rel="stylesheet" href="../jacoco-resources/report.css" type="text/css"/><link rel="shortcut icon" href="../jacoco-resources/report.gif" type="image/gif"/><title>TileBufferColumnBased.java</title><link rel="stylesheet" href="../jacoco-resources/prettify.css" type="text/css"/><script type="text/javascript" src="../jacoco-resources/prettify.js"></script></head><body onload="window['PR_TAB_WIDTH']=4;prettyPrint()"><div class="breadcrumb" id="breadcrumb"><span class="info"><a href="../jacoco-sessions.html" class="el_session">Sessions</a></span><a href="../index.html" class="el_report">nom.tam FITS library</a> &gt; <a href="index.source.html" class="el_package">nom.tam.image.tile.operation.buffer</a> &gt; <span class="el_source">TileBufferColumnBased.java</span></div><h1>TileBufferColumnBased.java</h1><pre class="source lang-java linenums">package nom.tam.image.tile.operation.buffer;
 
 /*
  * #%L
  * nom.tam FITS library
  * %%
- * Copyright (C) 1996 - 2015 nom-tam-fits
+ * Copyright (C) 1996 - 2021 nom-tam-fits
  * %%
  * This is free and unencumbered software released into the public domain.
  * 
@@ -33,8 +33,7 @@
 
 import java.nio.Buffer;
 
-import nom.tam.util.type.PrimitiveType;
-import nom.tam.util.type.PrimitiveTypeHandler;
+import nom.tam.util.type.ElementType;
 
 /**
  * This subclass of the row based view, will abstract the problems that occur
@@ -58,64 +57,64 @@ class TileBufferColumnBased extends TileBuffer {
      */
     private final int imageWidth;
 
-    TileBufferColumnBased(PrimitiveType&lt;Buffer&gt; baseType, int dataOffset, int imageWidth, int width, int height) {
-<span class="fc" id="L62">        super(baseType, dataOffset, width, height);</span>
-<span class="fc" id="L63">        this.imageWidth = imageWidth;</span>
-<span class="fc" id="L64">    }</span>
+    TileBufferColumnBased(ElementType&lt;Buffer&gt; baseType, int dataOffset, int imageWidth, int width, int height) {
+<span class="fc" id="L61">        super(baseType, dataOffset, width, height);</span>
+<span class="fc" id="L62">        this.imageWidth = imageWidth;</span>
+<span class="fc" id="L63">    }</span>
 
     @Override
     public void finish() {
-<span class="fc" id="L68">        desolveGapLessBuffer();</span>
-<span class="fc" id="L69">    }</span>
+<span class="fc" id="L67">        desolveGapLessBuffer();</span>
+<span class="fc" id="L68">    }</span>
 
     @Override
     public Buffer getBuffer() {
-<span class="pc bpc" id="L73" title="1 of 2 branches missed.">        if (this.gapLessBuffer == null) {</span>
-<span class="fc" id="L74">            createGapLessBuffer();</span>
+<span class="pc bpc" id="L72" title="1 of 2 branches missed.">        if (this.gapLessBuffer == null) {</span>
+<span class="fc" id="L73">            createGapLessBuffer();</span>
         }
-<span class="fc" id="L76">        return this.gapLessBuffer;</span>
+<span class="fc" id="L75">        return this.gapLessBuffer;</span>
     }
 
     /**
      * create the temporary buffer that contains no data gaps.
      */
     private void createGapLessBuffer() {
-<span class="fc" id="L83">        final int gap = this.imageWidth - getWidth();</span>
-<span class="fc" id="L84">        final int pixelSizeInData = getPixelSizeInData();</span>
-<span class="fc" id="L85">        Buffer imagebuffer = getImageBuffer();</span>
-<span class="fc" id="L86">        imagebuffer.position(0);</span>
-<span class="fc" id="L87">        imagebuffer.limit(0);</span>
-<span class="fc" id="L88">        PrimitiveType&lt;Buffer&gt; type = primitiveType();</span>
-<span class="fc" id="L89">        this.gapLessBuffer = type.newBuffer(getPixelSize());</span>
-<span class="fc bfc" id="L90" title="All 2 branches covered.">        while (imagebuffer.limit() &lt; pixelSizeInData) {</span>
-<span class="fc" id="L91">            imagebuffer.limit(imagebuffer.position() + getWidth());</span>
-<span class="fc" id="L92">            type.appendBuffer(this.gapLessBuffer, imagebuffer);</span>
-<span class="fc" id="L93">            imagebuffer.limit(Math.min(pixelSizeInData, imagebuffer.position() + gap));</span>
-<span class="fc" id="L94">            imagebuffer.position(imagebuffer.limit());</span>
+<span class="fc" id="L82">        final int gap = this.imageWidth - getWidth();</span>
+<span class="fc" id="L83">        final int pixelSizeInData = getPixelSizeInData();</span>
+<span class="fc" id="L84">        Buffer imagebuffer = getImageBuffer();</span>
+<span class="fc" id="L85">        imagebuffer.position(0);</span>
+<span class="fc" id="L86">        imagebuffer.limit(0);</span>
+<span class="fc" id="L87">        ElementType&lt;Buffer&gt; type = elementType();</span>
+<span class="fc" id="L88">        this.gapLessBuffer = type.newBuffer(getPixelSize());</span>
+<span class="fc bfc" id="L89" title="All 2 branches covered.">        while (imagebuffer.limit() &lt; pixelSizeInData) {</span>
+<span class="fc" id="L90">            imagebuffer.limit(imagebuffer.position() + getWidth());</span>
+<span class="fc" id="L91">            type.appendBuffer(this.gapLessBuffer, imagebuffer);</span>
+<span class="fc" id="L92">            imagebuffer.limit(Math.min(pixelSizeInData, imagebuffer.position() + gap));</span>
+<span class="fc" id="L93">            imagebuffer.position(imagebuffer.limit());</span>
         }
-<span class="fc" id="L96">        this.gapLessBuffer.rewind();</span>
-<span class="fc" id="L97">    }</span>
+<span class="fc" id="L95">        this.gapLessBuffer.rewind();</span>
+<span class="fc" id="L96">    }</span>
 
     /**
      * resolve the temporary buffer that contains no data gaps, and put the data
      * back into the image buffer.
      */
     private void desolveGapLessBuffer() {
-<span class="fc" id="L104">        final int gap = this.imageWidth - getWidth();</span>
-<span class="fc" id="L105">        final int pixelSize = getPixelSize();</span>
-<span class="fc" id="L106">        Buffer imagebuffer = getImageBuffer();</span>
-<span class="fc" id="L107">        imagebuffer.limit(getPixelSizeInData());</span>
-<span class="fc" id="L108">        imagebuffer.rewind();</span>
-<span class="fc" id="L109">        this.gapLessBuffer.rewind();</span>
-<span class="fc" id="L110">        this.gapLessBuffer.limit(0);</span>
-<span class="fc" id="L111">        PrimitiveType&lt;Buffer&gt; type = primitiveType();</span>
-<span class="fc bfc" id="L112" title="All 2 branches covered.">        while (this.gapLessBuffer.limit() &lt; pixelSize) {</span>
-<span class="fc" id="L113">            this.gapLessBuffer.limit(this.gapLessBuffer.position() + getWidth());</span>
-<span class="fc" id="L114">            type.appendBuffer(imagebuffer, this.gapLessBuffer);</span>
-<span class="fc" id="L115">            imagebuffer.position(Math.min(imagebuffer.position() + gap, imagebuffer.limit()));</span>
+<span class="fc" id="L103">        final int gap = this.imageWidth - getWidth();</span>
+<span class="fc" id="L104">        final int pixelSize = getPixelSize();</span>
+<span class="fc" id="L105">        Buffer imagebuffer = getImageBuffer();</span>
+<span class="fc" id="L106">        imagebuffer.limit(getPixelSizeInData());</span>
+<span class="fc" id="L107">        imagebuffer.rewind();</span>
+<span class="fc" id="L108">        this.gapLessBuffer.rewind();</span>
+<span class="fc" id="L109">        this.gapLessBuffer.limit(0);</span>
+<span class="fc" id="L110">        ElementType&lt;Buffer&gt; type = elementType();</span>
+<span class="fc bfc" id="L111" title="All 2 branches covered.">        while (this.gapLessBuffer.limit() &lt; pixelSize) {</span>
+<span class="fc" id="L112">            this.gapLessBuffer.limit(this.gapLessBuffer.position() + getWidth());</span>
+<span class="fc" id="L113">            type.appendBuffer(imagebuffer, this.gapLessBuffer);</span>
+<span class="fc" id="L114">            imagebuffer.position(Math.min(imagebuffer.position() + gap, imagebuffer.limit()));</span>
         }
-<span class="fc" id="L117">        this.gapLessBuffer = null;</span>
-<span class="fc" id="L118">    }</span>
+<span class="fc" id="L116">        this.gapLessBuffer = null;</span>
+<span class="fc" id="L117">    }</span>
 
     /**
      * @return size of the tile data inside the image data. normally
@@ -123,12 +122,12 @@ class TileBufferColumnBased extends TileBuffer {
      *         would go over the image data limit.
      */
     private int getPixelSizeInData() {
-<span class="fc" id="L126">        return (getHeight() - 1) * this.imageWidth + getWidth();</span>
+<span class="fc" id="L125">        return (getHeight() - 1) * this.imageWidth + getWidth();</span>
     }
 
-    private PrimitiveType&lt;Buffer&gt; primitiveType() {
-<span class="fc" id="L130">        return PrimitiveTypeHandler.valueOf(getImageBuffer().getClass());</span>
+    private ElementType&lt;Buffer&gt; elementType() {
+<span class="fc" id="L129">        return ElementType.forBuffer(getImageBuffer());</span>
     }
 
 }
-</pre><div class="footer"><span class="right">Created with <a href="http://www.eclemma.org/jacoco">JaCoCo</a> 0.7.6.201602180812</span></div></body></html>
+</pre><div class="footer"><span class="right">Created with <a href="http://www.jacoco.org/jacoco">JaCoCo</a> 0.8.7.202105040129</span></div></body></html>

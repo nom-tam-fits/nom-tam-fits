@@ -1,0 +1,654 @@
+<?xml version="1.0" encoding="UTF-8"?><!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Strict//EN" "http://www.w3.org/TR/xhtml1/DTD/xhtml1-strict.dtd"><html xmlns="http://www.w3.org/1999/xhtml" lang="en"><head><meta http-equiv="Content-Type" content="text/html;charset=UTF-8"/><link rel="stylesheet" href="../jacoco-resources/report.css" type="text/css"/><link rel="shortcut icon" href="../jacoco-resources/report.gif" type="image/gif"/><title>HeaderCardFormatter.java</title><link rel="stylesheet" href="../jacoco-resources/prettify.css" type="text/css"/><script type="text/javascript" src="../jacoco-resources/prettify.js"></script></head><body onload="window['PR_TAB_WIDTH']=4;prettyPrint()"><div class="breadcrumb" id="breadcrumb"><span class="info"><a href="../jacoco-sessions.html" class="el_session">Sessions</a></span><a href="../index.html" class="el_report">nom.tam FITS library</a> &gt; <a href="index.source.html" class="el_package">nom.tam.fits</a> &gt; <span class="el_source">HeaderCardFormatter.java</span></div><h1>HeaderCardFormatter.java</h1><pre class="source lang-java linenums">/*
+ * #%L
+ * nom.tam FITS library
+ * %%
+ * Copyright (C) 2004 - 2021 nom-tam-fits
+ * %%
+ * This is free and unencumbered software released into the public domain.
+ * 
+ * Anyone is free to copy, modify, publish, use, compile, sell, or
+ * distribute this software, either in source code form or as a compiled
+ * binary, for any purpose, commercial or non-commercial, and by any
+ * means.
+ * 
+ * In jurisdictions that recognize copyright laws, the author or authors
+ * of this software dedicate any and all copyright interest in the
+ * software to the public domain. We make this dedication for the benefit
+ * of the public at large and to the detriment of our heirs and
+ * successors. We intend this dedication to be an overt act of
+ * relinquishment in perpetuity of all present and future rights to this
+ * software under copyright law.
+ * 
+ * THE SOFTWARE IS PROVIDED &quot;AS IS&quot;, WITHOUT WARRANTY OF ANY KIND,
+ * EXPRESS OR IMPLIED, INCLUDING BUT NOT LIMITED TO THE WARRANTIES OF
+ * MERCHANTABILITY, FITNESS FOR A PARTICULAR PURPOSE AND NONINFRINGEMENT.
+ * IN NO EVENT SHALL THE AUTHORS BE LIABLE FOR ANY CLAIM, DAMAGES OR
+ * OTHER LIABILITY, WHETHER IN AN ACTION OF CONTRACT, TORT OR OTHERWISE,
+ * ARISING FROM, OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR
+ * OTHER DEALINGS IN THE SOFTWARE.
+ * #L%
+ */
+
+package nom.tam.fits;
+
+import static nom.tam.fits.header.Standard.CONTINUE;
+
+import nom.tam.fits.FitsFactory.FitsSettings;
+
+
+/**
+ * Converts {@link HeaderCard}s into one or more 80-character wide FITS header records. It is a
+ * replacement for {@link nom.tam.fits.utilities.FitsLineAppender}, which is still available
+ * for external use for backward compatibility, but is no longer used internally in this 
+ * library itself.
+ * 
+ * @author Attila Kovacs
+ * 
+ * @since 1.16
+ */
+class HeaderCardFormatter {
+    
+    /**
+     * The FITS settings to use, such as support for long strings, support for HIERARCH-style cards, or the
+     * use of 'D' for high-precision exponential values. These settings control when and how header cards
+     * are represented exactly in the FITS header.
+     * 
+     */
+    private FitsSettings settings;
+    
+    /** The length of two single quotes. */
+    private static final int QUOTES_LENGTH = 2;
+    
+    /** 
+     * Character sequence that comes after a value field, and before the comment string in the
+     * header record. While only a '/' character is really required, we like to add spaces around
+     * it for a more pleasing visual of the resulting header record. The space before the
+     * '/' is strongly recommended by the FITS standard.
+     */
+    private static final String COMMENT_PREFIX = &quot; / &quot;;
+    
+    /**
+     * Long string comments should not add a space after the '/', because we want to preserve spaces in continued
+     * long string comments, hece we start the comment immediately after the '/' to ensure that
+     * internal spaces in wrapped comments remain intact and properly accounted for. The space before the
+     * '/' is strongly recommended by the FITS standard.
+     */
+    private static final String LONG_COMMENT_PREFIX = &quot; /&quot;;
+    
+    /** 
+     * The alignment position of card comments for a more pleasing visual experience. Comments will be
+     * aligned to this position, provided the lengths of all fields allow for it.
+     */
+    private static final int COMMENT_ALIGN = 30;
+
+    /**
+     * In older FITS standards there was a requirement that a closing quote for string values may not
+     * come before byte 20 (counted from 1) in the header record. To ensure that, strings need to be
+     * padded with blank spaces to push the closing quote out to that position, if necessary. While
+     * it is no longer required by the current FITS standard, it is possible (or even likely) that
+     * some existing tools rely on the earlier requirement. Therefore, we will abide by the requirements
+     * of the older standard. (In the future, we may make this requirement optional, and controllable
+     * through the API). 
+     */
+    private static final int MIN_STRING_END = 19;
+    
+    /** whatever fits after &quot;CONTINUE  '' /&quot; */
+<span class="fc" id="L96">    private static final int MAX_LONG_END_COMMENT = 68 - LONG_COMMENT_PREFIX.length(); </span>
+    
+    /**
+     * Instantiates a new header card formatter with the specified FITS settings.
+     * 
+     * @param settings      the local FITS settings to use by this card formatter.
+     * 
+     * @see #HeaderCardFormatter()
+     */
+<span class="fc" id="L105">    HeaderCardFormatter(FitsSettings settings) {</span>
+<span class="fc" id="L106">        this.settings = settings;</span>
+<span class="fc" id="L107">    }</span>
+    
+    /**
+     * Converts a {@link HeaderCard} to one or more 80-character wide FITS header records
+     * following the FITS rules, and the various conventions that are allowed by the 
+     * FITS settings with which this card formatter instance was created. 
+     * 
+     * @param card          the header card object
+     * @return              the correspoinding FITS header snipplet, as one or more
+     *                      80-character wide header 'records'.
+     * @throws HierarchNotEnabledException
+     *                      if the cards is a HIERARCH-style card, but support
+     *                      for HIERARCH keywords is not enabled in the FITS settings 
+     *                      used by this formatter.
+     * @throws LongValueException       
+     *                      if the (non-string) value stored in the card cannot fit
+     *                      in the header record.
+     * @throws LongStringsNotEnabledException
+     *                      if the card contains a string value that cannot fit into
+     *                      a single header record, and the use of long string is
+     *                      not enabled in the FITS settings used by this formatter.
+     *                      
+     * @see FitsFactory#setLongStringsEnabled(boolean)
+     */
+    String toString(HeaderCard card) 
+            throws HierarchNotEnabledException, LongValueException, LongStringsNotEnabledException {
+<span class="fc" id="L133">        StringBuffer buf = new StringBuffer(HeaderCard.FITS_HEADER_CARD_SIZE);</span>
+        
+<span class="fc" id="L135">        appendKey(buf, card);</span>
+        
+<span class="fc" id="L137">        int valueStart = appendValue(buf, card);</span>
+<span class="fc" id="L138">        int valueEnd = buf.length();</span>
+        
+<span class="fc" id="L140">        appendComment(buf, card);</span>
+        
+<span class="fc bfc" id="L142" title="All 2 branches covered.">        if (!card.isCommentStyleCard()) {</span>
+<span class="fc bfc" id="L143" title="All 2 branches covered.">            realign(buf, card.isStringValue() ? valueEnd : valueStart, valueEnd);</span>
+        }
+        
+<span class="fc" id="L146">        pad(buf);</span>
+        
+<span class="fc" id="L148">        return HeaderCard.sanitize(new String(buf));</span>
+    }
+    
+    /**
+     * Adds the FITS keyword to the header record (normally at the beginning).
+     * 
+     * @param buf           The string buffer in which we are building the header record.
+     * @param card          The header card to be formatted.
+     * @throws HierarchNotEnabledException      
+     *                      if the card contains a HIERARCH-style long keyword, but support
+     *                      for these has not been enabled in the settings used by this
+     *                      formatter.
+     * @throws LongValueException
+     *                      if the HIERARCH keyword is itself too long to fit on the
+     *                      record without leaving a minimum amount of space for a value.
+     *                      
+     * @see FitsFactory#setUseHierarch(boolean)
+     */
+    private void appendKey(StringBuffer buf, HeaderCard card) throws HierarchNotEnabledException, LongValueException {
+<span class="fc" id="L167">        String key = card.getKey();</span>
+
+<span class="fc bfc" id="L169" title="All 2 branches covered.">        if (card.hasHierarchKey()) {</span>
+<span class="fc bfc" id="L170" title="All 2 branches covered.">            if (!settings.isUseHierarch()) {</span>
+<span class="fc" id="L171">                throw new HierarchNotEnabledException(key);</span>
+            }
+<span class="fc" id="L173">            key = settings.getHierarchKeyFormatter().toHeaderString(key);</span>
+<span class="fc bfc" id="L174" title="All 2 branches covered.">            if (key.length() &gt; HeaderCard.MAX_HIERARCH_KEYWORD_LENGTH) {</span>
+                // Truncate HIERARCH keywords as necessary to fit.
+                // This is really just a second parachute here. Normally, HeaderCards
+                // won't allow creation or setting longer keywords...
+<span class="fc" id="L178">                throw new LongValueException(key, HeaderCard.MAX_HIERARCH_KEYWORD_LENGTH);</span>
+            }            
+        } else {
+            // Just to be certain, we'll make sure base keywords are upper-case, if they
+            // were not already.
+<span class="fc" id="L183">            key = key.toUpperCase();</span>
+        }
+        
+<span class="fc" id="L186">        buf.append(key);</span>
+        
+<span class="fc" id="L188">        padTo(buf, HeaderCard.MAX_KEYWORD_LENGTH);</span>
+<span class="fc" id="L189">    }</span>
+    
+    
+    /**
+     * Adds the FITS value to the header record (normally after the keyword), including the standard &quot;= &quot; assigment marker
+     * in front of it, or the non-standard &quot;=&quot; (without space after) if {@link FitsFactory#setSkipBlankAfterAssign(boolean)}
+     * is set &lt;code&gt;true&lt;/code&gt;.
+     * 
+     * @param buf       The string buffer in which we are building the header record.
+     * @param card      The header card to be formatted.
+     * @return          the buffer position at which the appended value starts, or the 
+     *                  last posirtion if a value was not added at all. (This is used
+     *                  for realigning later...)
+     * @throws LongValueException
+     *                  if the card contained a non-string value that is too long to fit
+     *                  in the space available in the current record.
+     * @throws LongStringsNotEnabledException
+     *                  if the card contains a string value that cannot fit into
+     *                  a single header record, and the use of long string is
+     *                  not enabled in the FITS settings used by this formatter.
+     */
+    private int appendValue(StringBuffer buf, HeaderCard card) throws LongValueException, LongStringsNotEnabledException {
+<span class="fc" id="L211">        String value = card.getValue();</span>
+        
+<span class="fc bfc" id="L213" title="All 2 branches covered.">        if (card.isCommentStyleCard()) {</span>
+            // omment-style card. Nothing to do here...
+<span class="fc" id="L215">            return buf.length();</span>
+        }
+
+        // Add assignment sequence &quot;= &quot;
+<span class="fc" id="L219">        buf.append(getAssignString());</span>
+       
+<span class="fc bfc" id="L221" title="All 2 branches covered.">        if (value == null) {</span>
+            // 'null' value, nothing more to append.
+<span class="fc" id="L223">            return buf.length();</span>
+        }
+        
+<span class="fc" id="L226">        int valueStart = buf.length();        </span>
+
+<span class="fc bfc" id="L228" title="All 2 branches covered.">        if (card.isStringValue()) {</span>
+<span class="fc" id="L229">            int from = appendQuotedValue(buf, card, 0);</span>
+<span class="fc bfc" id="L230" title="All 2 branches covered.">            while (from &lt; value.length()) {</span>
+<span class="fc" id="L231">                pad(buf);</span>
+<span class="fc" id="L232">                buf.append(CONTINUE.key() + &quot;  &quot;);</span>
+<span class="fc" id="L233">                from += appendQuotedValue(buf, card, from);</span>
+            }
+        // TODO We prevent the creation of cards with longer values, so the following check is dead code here.    
+//        } else if (value.length() &gt; available) {
+//            throw new LongValueException(available, card.getKey(), card.getValue());
+<span class="fc" id="L238">        } else {</span>
+<span class="fc" id="L239">            append(buf, value, 0);</span>
+        }
+        
+<span class="fc" id="L242">        return valueStart;</span>
+    }
+    
+    /**
+     * Returns the minimum size of a truncated header comment. When truncating header comments
+     * we should preserve at least the first word of the comment string wholly...
+     * 
+     * @param card      The header card to be formatted.
+     * @return          the length of the first word in the comment string
+     */
+    private int getMinTruncatedCommentSize(HeaderCard card) {
+<span class="fc" id="L253">        String comment = card.getComment();</span>
+        
+        // TODO We check for null before calling, so this is dead code here...
+//        if (comment == null) {
+//            return 0;
+//        }
+        
+<span class="fc" id="L260">        int firstWordLength = comment.indexOf(' ');</span>
+<span class="fc bfc" id="L261" title="All 2 branches covered.">        if (firstWordLength &lt; 0) {</span>
+<span class="fc" id="L262">            firstWordLength = comment.length();</span>
+        }
+        
+<span class="fc" id="L265">        return COMMENT_PREFIX.length() + firstWordLength;</span>
+    }
+    
+    /**
+     * Appends the comment to the header record, or as much of it as possible, but never
+     * less than the first word (at minimum).
+     * 
+     * @param buf       The string buffer in which we are building the header record.
+     * @param card      The header card to be formatted.
+     * @return          &lt;code&gt;true&lt;/code&gt; if the comment was fully represented in the
+     *                  record, or &lt;code&gt;false&lt;/code&gt; if it was truncated or fully
+     *                  ommitted.
+     */
+    private boolean appendComment(StringBuffer buf, HeaderCard card) {
+<span class="fc" id="L279">        String comment = card.getComment();</span>
+<span class="fc bfc" id="L280" title="All 2 branches covered.">        if (comment == null) {</span>
+<span class="fc" id="L281">            return true;</span>
+        }
+        
+<span class="fc bfc" id="L284" title="All 2 branches covered.">        if (comment.isEmpty()) {</span>
+<span class="fc" id="L285">            return true;</span>
+        }
+        
+<span class="fc" id="L288">        int available = getAvailable(buf);</span>
+<span class="fc bfc" id="L289" title="All 4 branches covered.">        boolean longCommentOK = FitsFactory.isLongStringsEnabled() &amp;&amp; card.isStringValue();</span>
+        
+<span class="fc bfc" id="L291" title="All 4 branches covered.">        if (!card.isCommentStyleCard() &amp;&amp; longCommentOK) {</span>
+<span class="fc bfc" id="L292" title="All 2 branches covered.">            if (COMMENT_PREFIX.length() + card.getComment().length() &gt; available) {</span>
+                // No room for a complete regular comment, but we can do a long string comment...
+<span class="fc" id="L294">                appendLongStringComment(buf, card);</span>
+<span class="fc" id="L295">                return true;</span>
+            }
+        }
+
+<span class="fc bfc" id="L299" title="All 2 branches covered.">        if (card.isCommentStyleCard()) {</span>
+            // '  ' instead of '= '
+<span class="fc" id="L301">            available--;</span>
+        } else {    
+            // ' / '
+<span class="fc" id="L304">            available -= COMMENT_PREFIX.length();</span>
+<span class="fc bfc" id="L305" title="All 2 branches covered.">            if (getMinTruncatedCommentSize(card) &gt; available) {</span>
+<span class="fc bfc" id="L306" title="All 2 branches covered.">                if (!longCommentOK) {</span>
+<span class="fc" id="L307">                    return false;</span>
+                }
+            }
+        }
+        
+<span class="fc bfc" id="L312" title="All 2 branches covered.">        if (card.isCommentStyleCard()) {</span>
+<span class="fc" id="L313">            buf.append(' ');</span>
+        } else {
+<span class="fc" id="L315">            buf.append(COMMENT_PREFIX);</span>
+        }
+        
+<span class="fc bfc" id="L318" title="All 2 branches covered.">        if (available &gt;= comment.length()) {</span>
+<span class="fc" id="L319">            buf.append(comment);</span>
+<span class="fc" id="L320">            return true;</span>
+        }
+        
+<span class="fc" id="L323">        buf.append(comment.substring(0, available));</span>
+<span class="fc" id="L324">        return false;</span>
+    }
+    
+    /**
+     * Realigns the header record (single records only!) for more pleasing visual appearance
+     * by adding padding after a string value, or before a non-string value, as necessary
+     * to push the comment field to the alignment position, if it's possible without truncating
+     * the existing record.
+     * 
+     * @param buf       The string buffer in which we are building the header record.
+     * @param at        The position at which to insert padding
+     * @param from      The position in the record that is to be pushed to the alignment
+     *                  position.
+     *                  
+     * @return          &lt;code&gt;true&lt;/code&gt; if the card was successfully realigned. Otherwise
+     *                  &lt;code&gt;false&lt;/code&gt;.
+     */
+    private boolean realign(StringBuffer buf, int at, int from) {
+<span class="fc bfc" id="L342" title="All 2 branches covered.">        if (buf.length() &gt;= HeaderCard.FITS_HEADER_CARD_SIZE) {</span>
+            // No space on first card, or it's a long string card, which stays unaligned.
+<span class="fc" id="L344">            return false;</span>
+        }
+        
+<span class="fc bfc" id="L347" title="All 2 branches covered.">        if (from &gt; COMMENT_ALIGN) {</span>
+            // We are beyond the alignment point already...
+<span class="fc" id="L349">            return false;</span>
+        }
+        
+<span class="fc" id="L352">        return realign(buf, at, from, COMMENT_ALIGN);     </span>
+    }
+    
+    /**
+     * Realigns the header record (single records only!) for more pleasing visual appearance
+     * by adding padding after a string value, or before a non-string value, as necessary
+     * to push the comment field to the specified alignment position, if it's possible without 
+     * truncating the existing record
+     * 
+     * @param buf       The string buffer in which we are building the header record.
+     * @param at        The position at which to insert padding
+     * @param from      The position in the record that is to be pushed to the alignment
+     *                  position.
+     * @param to        The new alignment position.
+     * @return          &lt;code&gt;true&lt;/code&gt; if the card was successfully realigned. Otherwise
+     *                  &lt;code&gt;false&lt;/code&gt;.
+     */
+    private boolean realign(StringBuffer buf, int at, int from, int to) {
+<span class="fc" id="L370">        int spaces = to - from;</span>
+        
+<span class="fc bfc" id="L372" title="All 4 branches covered.">        if (spaces &lt; 1 || spaces &gt; getAvailable(buf)) {</span>
+            // No space left in card to align the the specified position.
+<span class="fc" id="L374">            return false;</span>
+        }
+        
+<span class="fc" id="L377">        StringBuffer sBuf = new StringBuffer(spaces);</span>
+<span class="fc bfc" id="L378" title="All 2 branches covered.">        while (--spaces &gt;= 0) {</span>
+<span class="fc" id="L379">            sBuf.append(' ');</span>
+        }
+        
+<span class="fc" id="L382">        buf.insert(at, sBuf.toString());</span>
+        
+<span class="fc" id="L384">        return true;</span>
+    }
+    
+    /**
+     * Adds a long string comment. When long strings are enabled, it is possible to fully
+     * preserve a comment of any length after a string value, by wrapping into multiple
+     * records with CONTINUE keywords. Crucially, we will want to do this in a way as to 
+     * preserve internal spaces within the comment, when wrapped into multiple records.
+     * 
+     * @param buf       The string buffer in which we are building the header record.
+     * @param card      The header card to be formatted.
+     */
+    private void appendLongStringComment(StringBuffer buf, HeaderCard card) {     
+        // We can wrap the comment to our delight, with CONTINUE!
+<span class="fc" id="L398">        int iLast = buf.length() - 1;</span>
+<span class="fc" id="L399">        String comment = card.getComment();</span>
+        
+        // We need to amend the last string to end with '&amp;'
+<span class="fc bfc" id="L402" title="All 2 branches covered.">        if (getAvailable(buf) &gt;= LONG_COMMENT_PREFIX.length() + comment.length()) {</span>
+            // We can append the entire comment, easy...
+<span class="fc" id="L404">            buf.append(LONG_COMMENT_PREFIX);</span>
+<span class="fc" id="L405">            append(buf, comment, 0);</span>
+<span class="fc" id="L406">            return;</span>
+        }   
+        
+        // Add '&amp;' to the end of the string value.
+        // appendQuotedValue() must always leave space for it!
+<span class="fc" id="L411">        buf.setCharAt(iLast, '&amp;');</span>
+<span class="fc" id="L412">        buf.append(&quot;'&quot;);</span>
+        
+<span class="fc" id="L414">        int from = 0;</span>
+        
+<span class="fc" id="L416">        int available = getAvailable(buf);</span>
+        
+        // If there is room for a standard inline comment, then go for it
+<span class="fc bfc" id="L419" title="All 2 branches covered.">        if (available &gt;= COMMENT_PREFIX.length()) {</span>
+<span class="fc" id="L420">            buf.append(COMMENT_PREFIX);</span>
+        } else {
+            // Add a CONTINUE card with an empty string and try again...
+<span class="fc" id="L423">            pad(buf);</span>
+<span class="fc" id="L424">            buf.append(CONTINUE.key() + &quot;  ''&quot;);</span>
+<span class="fc" id="L425">            appendComment(buf, card);</span>
+<span class="fc" id="L426">            return;</span>
+        }
+            
+<span class="fc" id="L429">        from = append(buf, comment, 0);</span>
+        
+        // Now add records as needed to write the comment fully...
+<span class="fc bfc" id="L432" title="All 2 branches covered.">        while (from &lt; comment.length()) {</span>
+<span class="fc" id="L433">            pad(buf);</span>
+<span class="fc" id="L434">            buf.append(CONTINUE.key() + &quot;  &quot;);</span>
+<span class="fc bfc" id="L435" title="All 2 branches covered.">            buf.append((comment.length() &gt;= from + MAX_LONG_END_COMMENT) ? &quot;'&amp;'&quot; : &quot;''&quot;);</span>
+<span class="fc" id="L436">            buf.append(LONG_COMMENT_PREFIX);</span>
+<span class="fc" id="L437">            from += append(buf, comment, from);</span>
+        }
+<span class="fc" id="L439">    }</span>
+    
+    /**
+     * Appends as many characters as possible from a string, starting at the
+     * specified string position, into the header record. 
+     * 
+     * @param buf       The string buffer in which we are building the header record.
+     * @param text      The string from which to append characters up to the end
+     *                  of the record.
+     * @param from      The starting position in the string
+     * @return          the number of characters deposited into the header
+     *                  record from the string after the starting position.
+     */
+    private int append(StringBuffer buf, String text, int from) {
+<span class="fc" id="L453">        int available = getAvailable(buf);</span>
+
+<span class="fc" id="L455">        int n = Math.min(available, text.length() - from);</span>
+<span class="fc bfc" id="L456" title="All 2 branches covered.">        if (n &lt; 1) {</span>
+<span class="fc" id="L457">            return 0;</span>
+        }
+    
+<span class="fc bfc" id="L460" title="All 2 branches covered.">        for (int i = 0; i &lt; n; i++) {</span>
+<span class="fc" id="L461">            buf.append(text.charAt(from + i));</span>
+        }
+     
+<span class="fc" id="L464">        return n;        </span>
+    }
+
+    /**
+     * Appends quoted text from the specified string position, until the end of the string is reached, or 
+     * until the 80-character header record is full. It replaces quotes in the string with doubled quotes,
+     * while making sure that not unclosed quotes are left and there is space for an '&amp;' character
+     * for
+     * 
+     * @param buf       The string buffer in which we are building the header record.
+     * @param card      The header card whose value to quote in the header record.
+     * @param from      The starting position in the string.
+     * @return          the number of characters consumed from the string, which may be different
+     *                  from the number of characters deposited as each single quote in
+     *                  the input string is represented as 2 single quotes in the record.
+     */
+    private int appendQuotedValue(StringBuffer buf, HeaderCard card, int from) {
+        // Always leave room for an extra &amp; character at the end...
+<span class="fc" id="L482">        int available = getAvailable(buf) - QUOTES_LENGTH;</span>
+        
+        // If long strings are enabled leave space for '&amp;' at the end.
+<span class="fc bfc" id="L485" title="All 4 branches covered.">        if (FitsFactory.isLongStringsEnabled() &amp;&amp; card.getComment() != null) {</span>
+<span class="fc bfc" id="L486" title="All 2 branches covered.">            if (card.getComment().length() &gt; 0) {</span>
+<span class="fc" id="L487">                available--;</span>
+            }
+        }
+        
+<span class="fc" id="L491">        String text = card.getValue();</span>
+
+        // TODO We check for null before calling, so this is dead code here...
+//        if (text == null) {
+//            return 0;
+//        }
+
+        // The the remaining part of the string fits in the space with the
+        // quoted quotes, then it's easy...
+<span class="fc bfc" id="L500" title="All 2 branches covered.">        if (available &gt;= text.length() - from) {</span>
+<span class="fc" id="L501">            String escaped = text.substring(from).replace(&quot;'&quot;, &quot;''&quot;);</span>
+<span class="fc bfc" id="L502" title="All 2 branches covered.">            if (escaped.length() &lt;= available) {</span>
+<span class="fc" id="L503">                buf.append('\'');</span>
+<span class="fc" id="L504">                buf.append(escaped);</span>
+                
+                // Earlier versions of the FITS standard required that the closing quote
+                // does not come before byte 20. It's no longer required but older tools
+                // may still expect it, so let's conform. This only affects single
+                // record card, but not continued long strings...
+<span class="fc bfc" id="L510" title="All 2 branches covered.">                if (buf.length() &lt; MIN_STRING_END) {</span>
+<span class="fc" id="L511">                    padTo(buf, MIN_STRING_END);</span>
+                }
+                
+<span class="fc" id="L514">                buf.append('\'');</span>
+                
+                
+<span class="fc" id="L517">                return text.length() - from;</span>
+            }
+        }
+        
+<span class="fc bfc" id="L521" title="All 2 branches covered.">        if (!FitsFactory.isLongStringsEnabled()) {</span>
+<span class="fc" id="L522">            throw new LongStringsNotEnabledException(card.getKey() + &quot;= &quot; + card.getValue());</span>
+        }
+        
+        // Now, we definitely need space for '&amp;' at the end...
+<span class="fc" id="L526">        available = getAvailable(buf) - QUOTES_LENGTH - 1;</span>
+            
+        // We need room for an '&amp;' character at the end also... 
+        // TODO Again we prevent this ever occuring before we reach this point, so it is dead code...
+//        if (available &lt; 1) {
+//            return 0;
+//        }
+        
+        // Opening quote
+<span class="fc" id="L535">        buf.append(&quot;'&quot;);</span>
+
+        // For counting the characters consumed from the input
+<span class="fc" id="L538">        int consumed = 0;</span>
+        
+<span class="fc bfc" id="L540" title="All 2 branches covered.">        for (int i = 0; i &lt; available; i++, consumed++) {</span>
+            // TODO We already know we cannot show the whole string on one line, so this is dead code...
+//            if (from + i &gt;= text.length()) {
+//                // Reached end of string;
+//                break;
+//            }
+            
+<span class="fc" id="L547">            char c = text.charAt(from + consumed);</span>
+            
+<span class="fc bfc" id="L549" title="All 2 branches covered.">            if (c == '\'') {</span>
+                // Quoted quotes take up 2 spaces...
+<span class="fc" id="L551">                i++;</span>
+<span class="fc bfc" id="L552" title="All 2 branches covered.">                if (i + 1 &lt; available) {</span>
+                    // Only append the quoted quote if there is room for both.
+<span class="fc" id="L554">                    buf.append(&quot;''&quot;);</span>
+                } else {
+                    // Otherwise leave the value quote unconsumed.
+                    break;
+                }
+            } else {
+                // Append a non-quote character.
+<span class="fc" id="L561">                buf.append(c);</span>
+            }
+        }
+        
+        // &amp; and Closing quote
+<span class="fc" id="L566">        buf.append(&quot;&amp;'&quot;);</span>
+        
+<span class="fc" id="L568">        return consumed;        </span>
+    }
+    
+    /**
+     * Adds a specific amount of padding (empty spaces) in the header record. 
+     * 
+     * @param buf   The string buffer in which we are building the header record.
+     * @param n     the number of empty spaces to add.
+     */
+    private void pad(StringBuffer buf, int n) {
+<span class="fc bfc" id="L578" title="All 2 branches covered.">        for (int i = n; --i &gt;= 0;) {</span>
+<span class="fc" id="L579">            buf.append(' ');</span>
+        }
+<span class="fc" id="L581">    }</span>
+    
+    /**
+     * Pads the current header record with empty spaces to up to the end of the 
+     * 80-character record.
+     * 
+     * @param buf   The string buffer in which we are building the header record.
+     */
+    private void pad(StringBuffer buf) {
+<span class="fc" id="L590">        pad(buf, getAvailable(buf));</span>
+<span class="fc" id="L591">    }</span>
+    
+    /**
+     * Adds padding (empty spaces) in the header record, up to the specified
+     * position within the record.
+     * 
+     * @param buf   The string buffer in which we are building the header record.
+     * @param to    The position in the record to which to pad with spaces.
+     */
+    private void padTo(StringBuffer buf, int to) {
+<span class="fc bfc" id="L601" title="All 2 branches covered.">        for (int pos = buf.length() % HeaderCard.FITS_HEADER_CARD_SIZE; pos &lt; to; pos++) {</span>
+<span class="fc" id="L602">            buf.append(' ');</span>
+        }
+<span class="fc" id="L604">    }</span>
+    
+    /**
+     * Returns the number of characters available for remaining fields in the
+     * current record. Empty records will return 0.
+     * 
+     * @param buf   The string buffer in which we are building the header record.
+     * @return      the number of characters still available in the currently started
+     *              80-character header record. Empty records will return 0.
+     */
+    private int getAvailable(StringBuffer buf) {
+<span class="fc" id="L615">        return (HeaderCard.FITS_HEADER_CARD_SIZE - buf.length() % HeaderCard.FITS_HEADER_CARD_SIZE) % HeaderCard.FITS_HEADER_CARD_SIZE;</span>
+    }
+    
+    /**
+     * Returns the assignment string to use between the keyword and the value. The
+     * FITS standard requires the 2-character sequence &quot;= &quot;, but for some reason we
+     * allow to skip the required space after the '=' if {@link FitsFactory#setSkipBlankAfterAssign(boolean)}
+     * is set to &lt;code&gt;true&lt;/code&gt;...
+     * 
+     * @return      The character sequence to insert between the keyword and the
+     *              value.
+     *              
+     * @see #getAssignLength()
+     */
+    @SuppressWarnings(&quot;deprecation&quot;)
+    static String getAssignString() {
+<span class="fc bfc" id="L631" title="All 2 branches covered.">        return FitsFactory.isSkipBlankAfterAssign() ? &quot;=&quot; : &quot;= &quot;;</span>
+    }
+    
+    /**
+     * Returns the number of characters we use for assignment. Normally, it
+     * should be 2 as per FITS standard, but if {@link FitsFactory#setSkipBlankAfterAssign(boolean)}
+     * is set to &lt;code&gt;true&lt;/code&gt;, it may be only 1.
+     * 
+     * @return      The number of characters that should be between the keyword and the value
+     *              indicating assignment.
+     *              
+     * @see #getAssignString()
+     */
+    @SuppressWarnings(&quot;deprecation&quot;)
+    static int getAssignLength() {
+<span class="fc" id="L646">        int n = 1;</span>
+<span class="fc bfc" id="L647" title="All 2 branches covered.">        if (!FitsFactory.isSkipBlankAfterAssign()) {</span>
+<span class="fc" id="L648">            n++;</span>
+        }
+<span class="fc" id="L650">        return n;</span>
+    }
+   
+}
+</pre><div class="footer"><span class="right">Created with <a href="http://www.jacoco.org/jacoco">JaCoCo</a> 0.8.7.202105040129</span></div></body></html>

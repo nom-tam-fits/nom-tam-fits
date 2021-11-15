@@ -1,10 +1,10 @@
-<?xml version="1.0" encoding="UTF-8"?><!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Strict//EN" "http://www.w3.org/TR/xhtml1/DTD/xhtml1-strict.dtd"><html xmlns="http://www.w3.org/1999/xhtml" lang="en"><head><meta http-equiv="Content-Type" content="text/html;charset=UTF-8"/><link rel="stylesheet" href="../.resources/report.css" type="text/css"/><link rel="shortcut icon" href="../.resources/report.gif" type="image/gif"/><title>FitsCheckSum.java</title><link rel="stylesheet" href="../.resources/prettify.css" type="text/css"/><script type="text/javascript" src="../.resources/prettify.js"></script></head><body onload="window['PR_TAB_WIDTH']=4;prettyPrint()"><div class="breadcrumb" id="breadcrumb"><span class="info"><a href="../.sessions.html" class="el_session">Sessions</a></span><a href="../index.html" class="el_report">nom.tam FITS library</a> &gt; <a href="index.source.html" class="el_package">nom.tam.fits.utilities</a> &gt; <span class="el_source">FitsCheckSum.java</span></div><h1>FitsCheckSum.java</h1><pre class="source lang-java linenums">package nom.tam.fits.utilities;
+<?xml version="1.0" encoding="UTF-8"?><!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Strict//EN" "http://www.w3.org/TR/xhtml1/DTD/xhtml1-strict.dtd"><html xmlns="http://www.w3.org/1999/xhtml" lang="en"><head><meta http-equiv="Content-Type" content="text/html;charset=UTF-8"/><link rel="stylesheet" href="../jacoco-resources/report.css" type="text/css"/><link rel="shortcut icon" href="../jacoco-resources/report.gif" type="image/gif"/><title>FitsCheckSum.java</title><link rel="stylesheet" href="../jacoco-resources/prettify.css" type="text/css"/><script type="text/javascript" src="../jacoco-resources/prettify.js"></script></head><body onload="window['PR_TAB_WIDTH']=4;prettyPrint()"><div class="breadcrumb" id="breadcrumb"><span class="info"><a href="../jacoco-sessions.html" class="el_session">Sessions</a></span><a href="../index.html" class="el_report">nom.tam FITS library</a> &gt; <a href="index.source.html" class="el_package">nom.tam.fits.utilities</a> &gt; <span class="el_source">FitsCheckSum.java</span></div><h1>FitsCheckSum.java</h1><pre class="source lang-java linenums">package nom.tam.fits.utilities;
 
 /*
  * #%L
  * nom.tam FITS library
  * %%
- * Copyright (C) 1996 - 2015 nom-tam-fits
+ * Copyright (C) 1996 - 2021 nom-tam-fits
  * %%
  * This is free and unencumbered software released into the public domain.
  * 
@@ -40,23 +40,17 @@ import static nom.tam.util.FitsIO.BYTE_4_OF_LONG_MASK;
 
 import java.io.ByteArrayOutputStream;
 import java.io.IOException;
-import java.util.logging.Logger;
 
 import nom.tam.fits.BasicHDU;
 import nom.tam.fits.FitsException;
 import nom.tam.fits.Header;
 import nom.tam.util.AsciiFuncs;
-import nom.tam.util.BufferedDataOutputStream;
+import nom.tam.util.FitsOutputStream;
 import nom.tam.util.FitsIO;
 
 public final class FitsCheckSum {
 
     private static final int CHECKSUM_STRING_SIZE = 16;
-
-    /**
-     * logger to log to.
-     */
-<span class="fc" id="L59">    private static final Logger LOG = Logger.getLogger(FitsCheckSum.class.getName());</span>
 
     private static final int CHECKSUM_BLOCK_SIZE = 4;
 
@@ -82,39 +76,39 @@ public final class FitsCheckSum {
      * @since 2005-10-05
      */
     public static long checksum(final byte[] data) {
-<span class="fc" id="L85">        long hi = 0;</span>
-<span class="fc" id="L86">        long lo = 0;</span>
-<span class="fc" id="L87">        final int len = CHECKSUM_HALF_BLOCK_SIZE * (data.length / CHECKSUM_BLOCK_SIZE);</span>
+<span class="fc" id="L79">        long hi = 0;</span>
+<span class="fc" id="L80">        long lo = 0;</span>
+<span class="fc" id="L81">        final int len = CHECKSUM_HALF_BLOCK_SIZE * (data.length / CHECKSUM_BLOCK_SIZE);</span>
         // System.out.println(data.length + &quot; bytes&quot;) ;
-<span class="fc" id="L89">        final int remain = data.length % CHECKSUM_BLOCK_SIZE;</span>
-<span class="fc bfc" id="L90" title="All 2 branches covered.">        if (remain != 0) {</span>
-<span class="fc" id="L91">            throw new IllegalArgumentException(&quot;fits blocks always must be devidable by 4&quot;);</span>
+<span class="fc" id="L83">        final int remain = data.length % CHECKSUM_BLOCK_SIZE;</span>
+<span class="fc bfc" id="L84" title="All 2 branches covered.">        if (remain != 0) {</span>
+<span class="fc" id="L85">            throw new IllegalArgumentException(&quot;fits blocks always must be devidable by 4&quot;);</span>
         }
         /*
          * a write(2) on Sparc/PA-RISC would write the MSB first, on Linux the
          * LSB; by some kind of coincidence, we can stay with the byte order
          * known from the original C version of the algorithm.
          */
-<span class="fc bfc" id="L98" title="All 2 branches covered.">        for (int i = 0; i &lt; len; i += CHECKSUM_HALF_BLOCK_SIZE) {</span>
+<span class="fc bfc" id="L92" title="All 2 branches covered.">        for (int i = 0; i &lt; len; i += CHECKSUM_HALF_BLOCK_SIZE) {</span>
             /*
              * The four bytes in this block handled by a single 'i' are each
              * signed (-128 to 127) in Java and need to be masked indivdually to
              * avoid sign extension /propagation.
              */
-<span class="fc" id="L104">            int offset = CHECKSUM_HALF_BLOCK_SIZE * i;</span>
-<span class="fc" id="L105">            hi += data[offset++] &lt;&lt; FitsIO.BITS_OF_1_BYTE &amp; BYTE_2_OF_LONG_MASK | data[offset++] &amp; BYTE_1_OF_LONG_MASK;</span>
-<span class="fc" id="L106">            lo += data[offset++] &lt;&lt; FitsIO.BITS_OF_1_BYTE &amp; BYTE_2_OF_LONG_MASK | data[offset++] &amp; BYTE_1_OF_LONG_MASK;</span>
+<span class="fc" id="L98">            int offset = CHECKSUM_HALF_BLOCK_SIZE * i;</span>
+<span class="fc" id="L99">            hi += data[offset++] &lt;&lt; FitsIO.BITS_OF_1_BYTE &amp; BYTE_2_OF_LONG_MASK | data[offset++] &amp; BYTE_1_OF_LONG_MASK;</span>
+<span class="fc" id="L100">            lo += data[offset++] &lt;&lt; FitsIO.BITS_OF_1_BYTE &amp; BYTE_2_OF_LONG_MASK | data[offset++] &amp; BYTE_1_OF_LONG_MASK;</span>
         }
 
-<span class="fc" id="L109">        long hicarry = hi &gt;&gt;&gt; FitsIO.BITS_OF_2_BYTES;</span>
-<span class="fc" id="L110">        long locarry = lo &gt;&gt;&gt; FitsIO.BITS_OF_2_BYTES;</span>
-<span class="pc bpc" id="L111" title="1 of 4 branches missed.">        while (hicarry != 0 || locarry != 0) {</span>
-<span class="fc" id="L112">            hi = (hi &amp; FitsIO.SHORT_OF_LONG_MASK) + locarry;</span>
-<span class="fc" id="L113">            lo = (lo &amp; FitsIO.SHORT_OF_LONG_MASK) + hicarry;</span>
-<span class="fc" id="L114">            hicarry = hi &gt;&gt;&gt; FitsIO.BITS_OF_2_BYTES;</span>
-<span class="fc" id="L115">            locarry = lo &gt;&gt;&gt; FitsIO.BITS_OF_2_BYTES;</span>
+<span class="fc" id="L103">        long hicarry = hi &gt;&gt;&gt; FitsIO.BITS_OF_2_BYTES;</span>
+<span class="fc" id="L104">        long locarry = lo &gt;&gt;&gt; FitsIO.BITS_OF_2_BYTES;</span>
+<span class="pc bpc" id="L105" title="1 of 4 branches missed.">        while (hicarry != 0 || locarry != 0) {</span>
+<span class="fc" id="L106">            hi = (hi &amp; FitsIO.SHORT_OF_LONG_MASK) + locarry;</span>
+<span class="fc" id="L107">            lo = (lo &amp; FitsIO.SHORT_OF_LONG_MASK) + hicarry;</span>
+<span class="fc" id="L108">            hicarry = hi &gt;&gt;&gt; FitsIO.BITS_OF_2_BYTES;</span>
+<span class="fc" id="L109">            locarry = lo &gt;&gt;&gt; FitsIO.BITS_OF_2_BYTES;</span>
         }
-<span class="fc" id="L117">        return hi &lt;&lt; FitsIO.BITS_OF_2_BYTES | lo;</span>
+<span class="fc" id="L111">        return hi &lt;&lt; FitsIO.BITS_OF_2_BYTES | lo;</span>
     }
 
     /**
@@ -130,8 +124,8 @@ public final class FitsCheckSum {
      * @return the encoded string of 16 bytes.
      */
     public static String checksumEnc(final long c, final boolean compl) {
-<span class="fc" id="L133">        byte[] asc = new byte[CHECKSUM_STRING_SIZE];</span>
-<span class="fc" id="L134">        final int[] exclude = {</span>
+<span class="fc" id="L127">        byte[] asc = new byte[CHECKSUM_STRING_SIZE];</span>
+<span class="fc" id="L128">        final int[] exclude = {</span>
             0x3a,
             0x3b,
             0x3c,
@@ -146,48 +140,48 @@ public final class FitsCheckSum {
             0x5f,
             0x60
         };
-<span class="fc" id="L149">        final long[] mask = {</span>
+<span class="fc" id="L143">        final long[] mask = {</span>
             BYTE_4_OF_LONG_MASK,
             BYTE_3_OF_LONG_MASK,
             BYTE_2_OF_LONG_MASK,
             BYTE_1_OF_LONG_MASK
         };
-<span class="fc" id="L155">        final int offset = 0x30; /* ASCII 0 (zero */</span>
-<span class="pc bpc" id="L156" title="1 of 2 branches missed.">        final long value = compl ? ~c : c;</span>
-<span class="fc bfc" id="L157" title="All 2 branches covered.">        for (int i = 0; i &lt; CHECKSUM_BLOCK_SIZE; i++) {</span>
+<span class="fc" id="L149">        final int offset = 0x30; /* ASCII 0 (zero */</span>
+<span class="pc bpc" id="L150" title="1 of 2 branches missed.">        final long value = compl ? ~c : c;</span>
+<span class="fc bfc" id="L151" title="All 2 branches covered.">        for (int i = 0; i &lt; CHECKSUM_BLOCK_SIZE; i++) {</span>
             // each byte becomes four
-<span class="fc" id="L159">            final int byt = (int) ((value &amp; mask[i]) &gt;&gt;&gt; FitsIO.BITS_OF_3_BYTES - FitsIO.BITS_OF_1_BYTE * i);</span>
-<span class="fc" id="L160">            final int quotient = byt / CHECKSUM_BLOCK_SIZE + offset;</span>
-<span class="fc" id="L161">            final int remainder = byt % CHECKSUM_BLOCK_SIZE;</span>
-<span class="fc" id="L162">            int[] ch = new int[CHECKSUM_BLOCK_SIZE];</span>
-<span class="fc bfc" id="L163" title="All 2 branches covered.">            for (int j = 0; j &lt; CHECKSUM_BLOCK_SIZE; j++) {</span>
-<span class="fc" id="L164">                ch[j] = quotient;</span>
+<span class="fc" id="L153">            final int byt = (int) ((value &amp; mask[i]) &gt;&gt;&gt; FitsIO.BITS_OF_3_BYTES - FitsIO.BITS_OF_1_BYTE * i);</span>
+<span class="fc" id="L154">            final int quotient = byt / CHECKSUM_BLOCK_SIZE + offset;</span>
+<span class="fc" id="L155">            final int remainder = byt % CHECKSUM_BLOCK_SIZE;</span>
+<span class="fc" id="L156">            int[] ch = new int[CHECKSUM_BLOCK_SIZE];</span>
+<span class="fc bfc" id="L157" title="All 2 branches covered.">            for (int j = 0; j &lt; CHECKSUM_BLOCK_SIZE; j++) {</span>
+<span class="fc" id="L158">                ch[j] = quotient;</span>
             }
 
-<span class="fc" id="L167">            ch[0] += remainder;</span>
-<span class="fc" id="L168">            boolean check = true;</span>
-<span class="fc bfc" id="L169" title="All 2 branches covered.">            while (check) {</span>
+<span class="fc" id="L161">            ch[0] += remainder;</span>
+<span class="fc" id="L162">            boolean check = true;</span>
+<span class="fc bfc" id="L163" title="All 2 branches covered.">            while (check) {</span>
                 // avoid ASCII punctuation
-<span class="fc" id="L171">                check = false;</span>
-<span class="fc bfc" id="L172" title="All 2 branches covered.">                for (int element : exclude) {</span>
-<span class="fc bfc" id="L173" title="All 2 branches covered.">                    for (int j = 0; j &lt; CHECKSUM_BLOCK_SIZE; j += CHECKSUM_HALF_BLOCK_SIZE) {</span>
-<span class="fc bfc" id="L174" title="All 4 branches covered.">                        if (ch[j] == element || ch[j + 1] == element) {</span>
-<span class="fc" id="L175">                            ch[j]++;</span>
-<span class="fc" id="L176">                            ch[j + 1]--;</span>
-<span class="fc" id="L177">                            check = true;</span>
+<span class="fc" id="L165">                check = false;</span>
+<span class="fc bfc" id="L166" title="All 2 branches covered.">                for (int element : exclude) {</span>
+<span class="fc bfc" id="L167" title="All 2 branches covered.">                    for (int j = 0; j &lt; CHECKSUM_BLOCK_SIZE; j += CHECKSUM_HALF_BLOCK_SIZE) {</span>
+<span class="fc bfc" id="L168" title="All 4 branches covered.">                        if (ch[j] == element || ch[j + 1] == element) {</span>
+<span class="fc" id="L169">                            ch[j]++;</span>
+<span class="fc" id="L170">                            ch[j + 1]--;</span>
+<span class="fc" id="L171">                            check = true;</span>
                         }
                     }
                 }
             }
 
-<span class="fc bfc" id="L183" title="All 2 branches covered.">            for (int j = 0; j &lt; CHECKSUM_BLOCK_SIZE; j++) {</span>
+<span class="fc bfc" id="L177" title="All 2 branches covered.">            for (int j = 0; j &lt; CHECKSUM_BLOCK_SIZE; j++) {</span>
                 // assign the bytes
-<span class="fc" id="L185">                asc[CHECKSUM_BLOCK_SIZE * j + i] = (byte) ch[j];</span>
+<span class="fc" id="L179">                asc[CHECKSUM_BLOCK_SIZE * j + i] = (byte) ch[j];</span>
             }
         }
         // shift the bytes 1 to the right circularly.
-<span class="fc" id="L189">        String resul = AsciiFuncs.asciiString(asc, CHECKSUM_STRING_SIZE - 1, 1);</span>
-<span class="fc" id="L190">        return resul.concat(AsciiFuncs.asciiString(asc, 0, CHECKSUM_STRING_SIZE - 1));</span>
+<span class="fc" id="L183">        String resul = AsciiFuncs.asciiString(asc, CHECKSUM_STRING_SIZE - 1, 1);</span>
+<span class="fc" id="L184">        return resul.concat(AsciiFuncs.asciiString(asc, 0, CHECKSUM_STRING_SIZE - 1));</span>
     }
 
     /**
@@ -206,21 +200,21 @@ public final class FitsCheckSum {
              * problems with non.tam.fits.Header.checkCard() which otherwise
              * says it expected PCOUNT and found DATE.
              */
-<span class="fc" id="L209">            Header hdr = hdu.getHeader();</span>
-<span class="fc" id="L210">            hdr.deleteKey(CHECKSUM);</span>
-<span class="fc" id="L211">            hdr.deleteKey(DATASUM);</span>
+<span class="fc" id="L203">            Header hdr = hdu.getHeader();</span>
+<span class="fc" id="L204">            hdr.deleteKey(CHECKSUM);</span>
+<span class="fc" id="L205">            hdr.deleteKey(DATASUM);</span>
             /*
              * delete the keys to force rewriting of the ckecksum and update of
              * the checksum comment
              */
-<span class="fc" id="L216">            hdr.addValue(CHECKSUM, &quot;0000000000000000&quot;);</span>
-<span class="fc" id="L217">            hdr.addValue(DATASUM, &quot;0&quot;);</span>
+<span class="fc" id="L210">            hdr.addValue(CHECKSUM, &quot;0000000000000000&quot;);</span>
+<span class="fc" id="L211">            hdr.addValue(DATASUM, &quot;0&quot;);</span>
 
             // write the header to stream to get the cards sorted. no need to
             // flush because we will ignore the data.
-<span class="fc" id="L221">            ByteArrayOutputStream hduByteImage = new ByteArrayOutputStream();</span>
-<span class="fc" id="L222">            hdu.getHeader().write(new BufferedDataOutputStream(hduByteImage));</span>
-<span class="fc" id="L223">            hduByteImage.reset();</span>
+<span class="fc" id="L215">            ByteArrayOutputStream hduByteImage = new ByteArrayOutputStream();</span>
+<span class="fc" id="L216">            hdu.getHeader().write(new FitsOutputStream(hduByteImage));</span>
+<span class="fc" id="L217">            hduByteImage.reset();</span>
 
             /*
              * Convert the entire sequence of 2880 byte header cards into a byte
@@ -230,41 +224,41 @@ public final class FitsCheckSum {
              * Sparc...) supposed that the correct implementation is in the
              * write() interface.
              */
-<span class="fc" id="L233">            BufferedDataOutputStream bdos = new BufferedDataOutputStream(hduByteImage);</span>
-<span class="fc" id="L234">            hdu.getData().write(bdos);</span>
-<span class="fc" id="L235">            bdos.flush();</span>
+<span class="fc" id="L227">            FitsOutputStream bdos = new FitsOutputStream(hduByteImage);</span>
+<span class="fc" id="L228">            hdu.getData().write(bdos);</span>
+<span class="fc" id="L229">            bdos.flush();</span>
             
-<span class="fc" id="L237">            long csd = checksum(hduByteImage.toByteArray());</span>
-<span class="fc" id="L238">            hdu.getHeader().card(DATASUM).value(Long.toString(csd));</span>
+<span class="fc" id="L231">            long csd = checksum(hduByteImage.toByteArray());</span>
+<span class="fc" id="L232">            hdu.getHeader().card(DATASUM).value(Long.toString(csd));</span>
 
             // We already have the checksum of the data. Lets compute it for
             // the header.
-<span class="fc" id="L242">            hduByteImage.reset();</span>
-<span class="fc" id="L243">            hdu.getHeader().write(bdos);</span>
-<span class="fc" id="L244">            bdos.flush();</span>
+<span class="fc" id="L236">            hduByteImage.reset();</span>
+<span class="fc" id="L237">            hdu.getHeader().write(bdos);</span>
+<span class="fc" id="L238">            bdos.flush();</span>
             
-<span class="fc" id="L246">            long csh = checksum(hduByteImage.toByteArray());</span>
+<span class="fc" id="L240">            long csh = checksum(hduByteImage.toByteArray());</span>
             
-<span class="fc" id="L248">            long cshdu = csh + csd;</span>
+<span class="fc" id="L242">            long cshdu = csh + csd;</span>
             // If we had a carry it should go into the
             // beginning.
-<span class="fc bfc" id="L251" title="All 2 branches covered.">            while ((cshdu &amp; FitsIO.HIGH_INTEGER_MASK) != 0) {</span>
-<span class="fc" id="L252">                long cshduIntPart = cshdu &amp; FitsIO.INTEGER_MASK;</span>
-<span class="fc" id="L253">                cshdu = cshduIntPart + 1;</span>
-<span class="fc" id="L254">            }</span>
+<span class="fc bfc" id="L245" title="All 2 branches covered.">            while ((cshdu &amp; FitsIO.HIGH_INTEGER_MASK) != 0) {</span>
+<span class="fc" id="L246">                long cshduIntPart = cshdu &amp; FitsIO.INTEGER_MASK;</span>
+<span class="fc" id="L247">                cshdu = cshduIntPart + 1;</span>
+<span class="fc" id="L248">            }</span>
             /*
              * This time we do not use a deleteKey() to ensure that the keyword
              * is replaced &quot;in place&quot;. Note that the value of the checksum is
              * actually independent to a permutation of the 80-byte records
              * within the header.
              */
-<span class="fc" id="L261">            hdr.card(CHECKSUM).value(checksumEnc(cshdu, true));</span>
-<span class="fc" id="L262">        } catch (IOException e) {</span>
-<span class="fc" id="L263">            throw new FitsException(&quot;Could not calculate the checksum!&quot;, e);</span>
-<span class="fc" id="L264">        }</span>
-<span class="fc" id="L265">    }</span>
+<span class="fc" id="L255">            hdr.card(CHECKSUM).value(checksumEnc(cshdu, true));</span>
+<span class="fc" id="L256">        } catch (IOException e) {</span>
+<span class="fc" id="L257">            throw new FitsException(&quot;Could not calculate the checksum!&quot;, e);</span>
+<span class="fc" id="L258">        }</span>
+<span class="fc" id="L259">    }</span>
 
-<span class="fc" id="L267">    private FitsCheckSum() {</span>
-<span class="fc" id="L268">    }</span>
+    private FitsCheckSum() {
+    }
 }
-</pre><div class="footer"><span class="right">Created with <a href="http://www.eclemma.org/jacoco">JaCoCo</a> 0.7.6.201602180812</span></div></body></html>
+</pre><div class="footer"><span class="right">Created with <a href="http://www.jacoco.org/jacoco">JaCoCo</a> 0.8.7.202105040129</span></div></body></html>

@@ -1,10 +1,8 @@
-<?xml version="1.0" encoding="UTF-8"?><!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Strict//EN" "http://www.w3.org/TR/xhtml1/DTD/xhtml1-strict.dtd"><html xmlns="http://www.w3.org/1999/xhtml" lang="en"><head><meta http-equiv="Content-Type" content="text/html;charset=UTF-8"/><link rel="stylesheet" href="../.resources/report.css" type="text/css"/><link rel="shortcut icon" href="../.resources/report.gif" type="image/gif"/><title>MultiArrayCopyFactory.java</title><link rel="stylesheet" href="../.resources/prettify.css" type="text/css"/><script type="text/javascript" src="../.resources/prettify.js"></script></head><body onload="window['PR_TAB_WIDTH']=4;prettyPrint()"><div class="breadcrumb" id="breadcrumb"><span class="info"><a href="../.sessions.html" class="el_session">Sessions</a></span><a href="../index.html" class="el_report">nom.tam FITS library</a> &gt; <a href="index.source.html" class="el_package">nom.tam.util.array</a> &gt; <span class="el_source">MultiArrayCopyFactory.java</span></div><h1>MultiArrayCopyFactory.java</h1><pre class="source lang-java linenums">package nom.tam.util.array;
-
-/*
+<?xml version="1.0" encoding="UTF-8"?><!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Strict//EN" "http://www.w3.org/TR/xhtml1/DTD/xhtml1-strict.dtd"><html xmlns="http://www.w3.org/1999/xhtml" lang="en"><head><meta http-equiv="Content-Type" content="text/html;charset=UTF-8"/><link rel="stylesheet" href="../jacoco-resources/report.css" type="text/css"/><link rel="shortcut icon" href="../jacoco-resources/report.gif" type="image/gif"/><title>MultiArrayCopyFactory.java</title><link rel="stylesheet" href="../jacoco-resources/prettify.css" type="text/css"/><script type="text/javascript" src="../jacoco-resources/prettify.js"></script></head><body onload="window['PR_TAB_WIDTH']=4;prettyPrint()"><div class="breadcrumb" id="breadcrumb"><span class="info"><a href="../jacoco-sessions.html" class="el_session">Sessions</a></span><a href="../index.html" class="el_report">nom.tam FITS library</a> &gt; <a href="index.source.html" class="el_package">nom.tam.util.array</a> &gt; <span class="el_source">MultiArrayCopyFactory.java</span></div><h1>MultiArrayCopyFactory.java</h1><pre class="source lang-java linenums">/*
  * #%L
  * nom.tam FITS library
  * %%
- * Copyright (C) 1996 - 2015 nom-tam-fits
+ * Copyright (C) 1996 - 2021 nom-tam-fits
  * %%
  * This is free and unencumbered software released into the public domain.
  * 
@@ -31,618 +29,543 @@
  * #L%
  */
 
+package nom.tam.util.array;
+
+
 import java.util.Collections;
 import java.util.HashMap;
 import java.util.Map;
 
-<span class="fc" id="L38">public class MultiArrayCopyFactory {</span>
+/**
+ * 
+ *
+ * @param &lt;Source&gt;      The generic type of array from which we want to copy elements
+ * @param &lt;Destination&gt; The generic type of array to which we want to copy elements.
+ */
+<span class="fc" id="L45">public class MultiArrayCopyFactory&lt;Source, Destination&gt; {</span>
 
-<span class="fc" id="L40">    private static class ByteToChar extends MultiArrayCopyFactory {</span>
+    private static class ByteToChar extends MultiArrayCopyFactory&lt;byte[], char[]&gt; {
 
         @Override
-        public void arraycopy(Object srcO, int srcPos, Object destO, int destPos, int length) {
-<span class="fc" id="L44">            byte[] src = (byte[]) srcO;</span>
-<span class="fc" id="L45">            char[] dest = (char[]) destO;</span>
-<span class="fc bfc" id="L46" title="All 2 branches covered.">            for (int index = 0; index &lt; length; index++) {</span>
-<span class="fc" id="L47">                dest[index + destPos] = (char) src[index + srcPos];</span>
+        public void arraycopy(byte[] src, int srcPos, char[] dest, int destPos, int length) {
+<span class="fc bfc" id="L51" title="All 2 branches covered.">            for (int index = 0; index &lt; length; index++) {</span>
+<span class="fc" id="L52">                dest[index + destPos] = (char) src[index + srcPos];</span>
             }
-<span class="fc" id="L49">        }</span>
+<span class="fc" id="L54">        }</span>
     }
 
-<span class="fc" id="L52">    private static class ByteToDouble extends MultiArrayCopyFactory {</span>
+    private static class ByteToDouble extends MultiArrayCopyFactory&lt;byte[], double[]&gt; {
 
         @Override
-        public void arraycopy(Object srcO, int srcPos, Object destO, int destPos, int length) {
-<span class="fc" id="L56">            byte[] src = (byte[]) srcO;</span>
-<span class="fc" id="L57">            double[] dest = (double[]) destO;</span>
-<span class="fc bfc" id="L58" title="All 2 branches covered.">            for (int index = 0; index &lt; length; index++) {</span>
-<span class="fc" id="L59">                dest[index + destPos] = src[index + srcPos];</span>
+        public void arraycopy(byte[] src, int srcPos, double[] dest, int destPos, int length) {
+<span class="fc bfc" id="L61" title="All 2 branches covered.">            for (int index = 0; index &lt; length; index++) {</span>
+<span class="fc" id="L62">                dest[index + destPos] = src[index + srcPos];</span>
             }
-<span class="fc" id="L61">        }</span>
+<span class="fc" id="L64">        }</span>
     }
 
-<span class="fc" id="L64">    private static class ByteToFloat extends MultiArrayCopyFactory {</span>
+    private static class ByteToFloat extends MultiArrayCopyFactory&lt;byte[], float[]&gt; {
 
         @Override
-        public void arraycopy(Object srcO, int srcPos, Object destO, int destPos, int length) {
-<span class="fc" id="L68">            byte[] src = (byte[]) srcO;</span>
-<span class="fc" id="L69">            float[] dest = (float[]) destO;</span>
-<span class="fc bfc" id="L70" title="All 2 branches covered.">            for (int index = 0; index &lt; length; index++) {</span>
-<span class="fc" id="L71">                dest[index + destPos] = src[index + srcPos];</span>
+        public void arraycopy(byte[] src, int srcPos, float[] dest, int destPos, int length) {
+<span class="fc bfc" id="L71" title="All 2 branches covered.">            for (int index = 0; index &lt; length; index++) {</span>
+<span class="fc" id="L72">                dest[index + destPos] = src[index + srcPos];</span>
             }
-<span class="fc" id="L73">        }</span>
+<span class="fc" id="L74">        }</span>
     }
 
-<span class="fc" id="L76">    private static class ByteToInt extends MultiArrayCopyFactory {</span>
+    private static class ByteToInt extends MultiArrayCopyFactory&lt;byte[], int[]&gt; {
 
         @Override
-        public void arraycopy(Object srcO, int srcPos, Object destO, int destPos, int length) {
-<span class="fc" id="L80">            byte[] src = (byte[]) srcO;</span>
-<span class="fc" id="L81">            int[] dest = (int[]) destO;</span>
-<span class="fc bfc" id="L82" title="All 2 branches covered.">            for (int index = 0; index &lt; length; index++) {</span>
-<span class="fc" id="L83">                dest[index + destPos] = src[index + srcPos];</span>
+        public void arraycopy(byte[] src, int srcPos, int[] dest, int destPos, int length) {
+<span class="fc bfc" id="L81" title="All 2 branches covered.">            for (int index = 0; index &lt; length; index++) {</span>
+<span class="fc" id="L82">                dest[index + destPos] = src[index + srcPos];</span>
             }
-<span class="fc" id="L85">        }</span>
+<span class="fc" id="L84">        }</span>
     }
 
-<span class="fc" id="L88">    private static class ByteToLong extends MultiArrayCopyFactory {</span>
+    private static class ByteToLong extends MultiArrayCopyFactory&lt;byte[], long[]&gt; {
 
         @Override
-        public void arraycopy(Object srcO, int srcPos, Object destO, int destPos, int length) {
-<span class="fc" id="L92">            byte[] src = (byte[]) srcO;</span>
-<span class="fc" id="L93">            long[] dest = (long[]) destO;</span>
-<span class="fc bfc" id="L94" title="All 2 branches covered.">            for (int index = 0; index &lt; length; index++) {</span>
-<span class="fc" id="L95">                dest[index + destPos] = src[index + srcPos];</span>
+        public void arraycopy(byte[] src, int srcPos, long[] dest, int destPos, int length) {
+<span class="fc bfc" id="L91" title="All 2 branches covered.">            for (int index = 0; index &lt; length; index++) {</span>
+<span class="fc" id="L92">                dest[index + destPos] = src[index + srcPos];</span>
             }
-<span class="fc" id="L97">        }</span>
+<span class="fc" id="L94">        }</span>
     }
 
-<span class="fc" id="L100">    private static class ByteToShort extends MultiArrayCopyFactory {</span>
+    private static class ByteToShort extends MultiArrayCopyFactory&lt;byte[], short[]&gt; {
 
         @Override
-        public void arraycopy(Object srcO, int srcPos, Object destO, int destPos, int length) {
-<span class="fc" id="L104">            byte[] src = (byte[]) srcO;</span>
-<span class="fc" id="L105">            short[] dest = (short[]) destO;</span>
-<span class="fc bfc" id="L106" title="All 2 branches covered.">            for (int index = 0; index &lt; length; index++) {</span>
-<span class="fc" id="L107">                dest[index + destPos] = src[index + srcPos];</span>
+        public void arraycopy(byte[] src, int srcPos, short[] dest, int destPos, int length) {
+<span class="fc bfc" id="L101" title="All 2 branches covered.">            for (int index = 0; index &lt; length; index++) {</span>
+<span class="fc" id="L102">                dest[index + destPos] = src[index + srcPos];</span>
             }
-<span class="fc" id="L109">        }</span>
+<span class="fc" id="L104">        }</span>
     }
 
-<span class="fc" id="L112">    private static class CharToByte extends MultiArrayCopyFactory {</span>
+    private static class CharToByte extends MultiArrayCopyFactory&lt;char[], byte[]&gt; {
 
         @Override
-        public void arraycopy(Object srcO, int srcPos, Object destO, int destPos, int length) {
-<span class="fc" id="L116">            char[] src = (char[]) srcO;</span>
-<span class="fc" id="L117">            byte[] dest = (byte[]) destO;</span>
-<span class="fc bfc" id="L118" title="All 2 branches covered.">            for (int index = 0; index &lt; length; index++) {</span>
-<span class="fc" id="L119">                dest[index + destPos] = (byte) src[index + srcPos];</span>
+        public void arraycopy(char[] src, int srcPos, byte[] dest, int destPos, int length) {
+<span class="fc bfc" id="L111" title="All 2 branches covered.">            for (int index = 0; index &lt; length; index++) {</span>
+<span class="fc" id="L112">                dest[index + destPos] = (byte) src[index + srcPos];</span>
             }
-<span class="fc" id="L121">        }</span>
+<span class="fc" id="L114">        }</span>
     }
 
-<span class="fc" id="L124">    private static class CharToDouble extends MultiArrayCopyFactory {</span>
+    private static class CharToDouble extends MultiArrayCopyFactory&lt;char[], double[]&gt; {
 
         @Override
-        public void arraycopy(Object srcO, int srcPos, Object destO, int destPos, int length) {
-<span class="fc" id="L128">            char[] src = (char[]) srcO;</span>
-<span class="fc" id="L129">            double[] dest = (double[]) destO;</span>
-<span class="fc bfc" id="L130" title="All 2 branches covered.">            for (int index = 0; index &lt; length; index++) {</span>
-<span class="fc" id="L131">                dest[index + destPos] = src[index + srcPos];</span>
+        public void arraycopy(char[] src, int srcPos, double[] dest, int destPos, int length) {
+<span class="fc bfc" id="L121" title="All 2 branches covered.">            for (int index = 0; index &lt; length; index++) {</span>
+<span class="fc" id="L122">                dest[index + destPos] = src[index + srcPos];</span>
             }
-<span class="fc" id="L133">        }</span>
+<span class="fc" id="L124">        }</span>
     }
 
-<span class="fc" id="L136">    private static class CharToFloat extends MultiArrayCopyFactory {</span>
+    private static class CharToFloat extends MultiArrayCopyFactory&lt;char[], float[]&gt; {
 
         @Override
-        public void arraycopy(Object srcO, int srcPos, Object destO, int destPos, int length) {
-<span class="fc" id="L140">            char[] src = (char[]) srcO;</span>
-<span class="fc" id="L141">            float[] dest = (float[]) destO;</span>
-<span class="fc bfc" id="L142" title="All 2 branches covered.">            for (int index = 0; index &lt; length; index++) {</span>
-<span class="fc" id="L143">                dest[index + destPos] = src[index + srcPos];</span>
+        public void arraycopy(char[] src, int srcPos, float[] dest, int destPos, int length) {
+<span class="fc bfc" id="L131" title="All 2 branches covered.">            for (int index = 0; index &lt; length; index++) {</span>
+<span class="fc" id="L132">                dest[index + destPos] = src[index + srcPos];</span>
             }
-<span class="fc" id="L145">        }</span>
+<span class="fc" id="L134">        }</span>
     }
 
-<span class="fc" id="L148">    private static class CharToInt extends MultiArrayCopyFactory {</span>
+    private static class CharToInt extends MultiArrayCopyFactory&lt;char[], int[]&gt; {
 
         @Override
-        public void arraycopy(Object srcO, int srcPos, Object destO, int destPos, int length) {
-<span class="fc" id="L152">            char[] src = (char[]) srcO;</span>
-<span class="fc" id="L153">            int[] dest = (int[]) destO;</span>
-<span class="fc bfc" id="L154" title="All 2 branches covered.">            for (int index = 0; index &lt; length; index++) {</span>
-<span class="fc" id="L155">                dest[index + destPos] = src[index + srcPos];</span>
+        public void arraycopy(char[] src, int srcPos, int[] dest, int destPos, int length) {
+<span class="fc bfc" id="L141" title="All 2 branches covered.">            for (int index = 0; index &lt; length; index++) {</span>
+<span class="fc" id="L142">                dest[index + destPos] = src[index + srcPos];</span>
             }
-<span class="fc" id="L157">        }</span>
+<span class="fc" id="L144">        }</span>
     }
 
-<span class="fc" id="L160">    private static class CharToLong extends MultiArrayCopyFactory {</span>
+    private static class CharToLong extends MultiArrayCopyFactory&lt;char[], long[]&gt; {
 
         @Override
-        public void arraycopy(Object srcO, int srcPos, Object destO, int destPos, int length) {
-<span class="fc" id="L164">            char[] src = (char[]) srcO;</span>
-<span class="fc" id="L165">            long[] dest = (long[]) destO;</span>
-<span class="fc bfc" id="L166" title="All 2 branches covered.">            for (int index = 0; index &lt; length; index++) {</span>
-<span class="fc" id="L167">                dest[index + destPos] = src[index + srcPos];</span>
+        public void arraycopy(char[] src, int srcPos, long[] dest, int destPos, int length) {
+<span class="fc bfc" id="L151" title="All 2 branches covered.">            for (int index = 0; index &lt; length; index++) {</span>
+<span class="fc" id="L152">                dest[index + destPos] = src[index + srcPos];</span>
             }
-<span class="fc" id="L169">        }</span>
+<span class="fc" id="L154">        }</span>
     }
 
-<span class="fc" id="L172">    private static class CharToShort extends MultiArrayCopyFactory {</span>
+    private static class CharToShort extends MultiArrayCopyFactory&lt;char[], short[]&gt; {
 
         @Override
-        public void arraycopy(Object srcO, int srcPos, Object destO, int destPos, int length) {
-<span class="fc" id="L176">            char[] src = (char[]) srcO;</span>
-<span class="fc" id="L177">            short[] dest = (short[]) destO;</span>
-<span class="fc bfc" id="L178" title="All 2 branches covered.">            for (int index = 0; index &lt; length; index++) {</span>
-<span class="fc" id="L179">                dest[index + destPos] = (short) src[index + srcPos];</span>
+        public void arraycopy(char[] src, int srcPos, short[] dest, int destPos, int length) {
+<span class="fc bfc" id="L161" title="All 2 branches covered.">            for (int index = 0; index &lt; length; index++) {</span>
+<span class="fc" id="L162">                dest[index + destPos] = (short) src[index + srcPos];</span>
             }
-<span class="fc" id="L181">        }</span>
+<span class="fc" id="L164">        }</span>
     }
 
-<span class="fc" id="L184">    private static class DoubleToByte extends MultiArrayCopyFactory {</span>
+    private static class DoubleToByte extends MultiArrayCopyFactory&lt;double[], byte[]&gt; {
 
         @Override
-        public void arraycopy(Object srcO, int srcPos, Object destO, int destPos, int length) {
-<span class="fc" id="L188">            double[] src = (double[]) srcO;</span>
-<span class="fc" id="L189">            byte[] dest = (byte[]) destO;</span>
-<span class="fc bfc" id="L190" title="All 2 branches covered.">            for (int index = 0; index &lt; length; index++) {</span>
-<span class="fc" id="L191">                dest[index + destPos] = (byte) src[index + srcPos];</span>
+        public void arraycopy(double[] src, int srcPos, byte[] dest, int destPos, int length) {
+<span class="fc bfc" id="L171" title="All 2 branches covered.">            for (int index = 0; index &lt; length; index++) {</span>
+<span class="fc" id="L172">                dest[index + destPos] = (byte) src[index + srcPos];</span>
             }
-<span class="fc" id="L193">        }</span>
+<span class="fc" id="L174">        }</span>
     }
 
-<span class="fc" id="L196">    private static class DoubleToChar extends MultiArrayCopyFactory {</span>
+    private static class DoubleToChar extends MultiArrayCopyFactory&lt;double[], char[]&gt; {
 
         @Override
-        public void arraycopy(Object srcO, int srcPos, Object destO, int destPos, int length) {
-<span class="fc" id="L200">            double[] src = (double[]) srcO;</span>
-<span class="fc" id="L201">            char[] dest = (char[]) destO;</span>
-<span class="fc bfc" id="L202" title="All 2 branches covered.">            for (int index = 0; index &lt; length; index++) {</span>
-<span class="fc" id="L203">                dest[index + destPos] = (char) src[index + srcPos];</span>
+        public void arraycopy(double[] src, int srcPos, char[] dest, int destPos, int length) {
+<span class="fc bfc" id="L181" title="All 2 branches covered.">            for (int index = 0; index &lt; length; index++) {</span>
+<span class="fc" id="L182">                dest[index + destPos] = (char) src[index + srcPos];</span>
             }
-<span class="fc" id="L205">        }</span>
+<span class="fc" id="L184">        }</span>
     }
 
-<span class="fc" id="L208">    private static class DoubleToFloat extends MultiArrayCopyFactory {</span>
+    private static class DoubleToFloat extends MultiArrayCopyFactory&lt;double[], float[]&gt; {
 
         @Override
-        public void arraycopy(Object srcO, int srcPos, Object destO, int destPos, int length) {
-<span class="fc" id="L212">            double[] src = (double[]) srcO;</span>
-<span class="fc" id="L213">            float[] dest = (float[]) destO;</span>
-<span class="fc bfc" id="L214" title="All 2 branches covered.">            for (int index = 0; index &lt; length; index++) {</span>
-<span class="fc" id="L215">                dest[index + destPos] = (float) src[index + srcPos];</span>
+        public void arraycopy(double[] src, int srcPos, float[] dest, int destPos, int length) {
+<span class="fc bfc" id="L191" title="All 2 branches covered.">            for (int index = 0; index &lt; length; index++) {</span>
+<span class="fc" id="L192">                dest[index + destPos] = (float) src[index + srcPos];</span>
             }
-<span class="fc" id="L217">        }</span>
+<span class="fc" id="L194">        }</span>
     }
 
-<span class="fc" id="L220">    private static class DoubleToInt extends MultiArrayCopyFactory {</span>
+    private static class DoubleToInt extends MultiArrayCopyFactory&lt;double[], int[]&gt; {
 
         @Override
-        public void arraycopy(Object srcO, int srcPos, Object destO, int destPos, int length) {
-<span class="fc" id="L224">            double[] src = (double[]) srcO;</span>
-<span class="fc" id="L225">            int[] dest = (int[]) destO;</span>
-<span class="fc bfc" id="L226" title="All 2 branches covered.">            for (int index = 0; index &lt; length; index++) {</span>
-<span class="fc" id="L227">                dest[index + destPos] = (int) src[index + srcPos];</span>
+        public void arraycopy(double[] src, int srcPos, int[] dest, int destPos, int length) {
+<span class="fc bfc" id="L201" title="All 2 branches covered.">            for (int index = 0; index &lt; length; index++) {</span>
+<span class="fc" id="L202">                dest[index + destPos] = (int) src[index + srcPos];</span>
             }
-<span class="fc" id="L229">        }</span>
+<span class="fc" id="L204">        }</span>
     }
 
-<span class="fc" id="L232">    private static class DoubleToLong extends MultiArrayCopyFactory {</span>
+    private static class DoubleToLong extends MultiArrayCopyFactory&lt;double[], long[]&gt; {
 
         @Override
-        public void arraycopy(Object srcO, int srcPos, Object destO, int destPos, int length) {
-<span class="fc" id="L236">            double[] src = (double[]) srcO;</span>
-<span class="fc" id="L237">            long[] dest = (long[]) destO;</span>
-<span class="fc bfc" id="L238" title="All 2 branches covered.">            for (int index = 0; index &lt; length; index++) {</span>
-<span class="fc" id="L239">                dest[index + destPos] = (long) src[index + srcPos];</span>
+        public void arraycopy(double[] src, int srcPos, long[] dest, int destPos, int length) {
+<span class="fc bfc" id="L211" title="All 2 branches covered.">            for (int index = 0; index &lt; length; index++) {</span>
+<span class="fc" id="L212">                dest[index + destPos] = (long) src[index + srcPos];</span>
             }
-<span class="fc" id="L241">        }</span>
+<span class="fc" id="L214">        }</span>
     }
 
-<span class="fc" id="L244">    private static class DoubleToShort extends MultiArrayCopyFactory {</span>
+    private static class DoubleToShort extends MultiArrayCopyFactory&lt;double[], short[]&gt; {
 
         @Override
-        public void arraycopy(Object srcO, int srcPos, Object destO, int destPos, int length) {
-<span class="fc" id="L248">            double[] src = (double[]) srcO;</span>
-<span class="fc" id="L249">            short[] dest = (short[]) destO;</span>
-<span class="fc bfc" id="L250" title="All 2 branches covered.">            for (int index = 0; index &lt; length; index++) {</span>
-<span class="fc" id="L251">                dest[index + destPos] = (short) src[index + srcPos];</span>
+        public void arraycopy(double[] src, int srcPos, short[] dest, int destPos, int length) {
+<span class="fc bfc" id="L221" title="All 2 branches covered.">            for (int index = 0; index &lt; length; index++) {</span>
+<span class="fc" id="L222">                dest[index + destPos] = (short) src[index + srcPos];</span>
             }
-<span class="fc" id="L253">        }</span>
+<span class="fc" id="L224">        }</span>
     }
 
-<span class="fc" id="L256">    private static class FloatToByte extends MultiArrayCopyFactory {</span>
+    private static class FloatToByte extends MultiArrayCopyFactory&lt;float[], byte[]&gt; {
 
         @Override
-        public void arraycopy(Object srcO, int srcPos, Object destO, int destPos, int length) {
-<span class="fc" id="L260">            float[] src = (float[]) srcO;</span>
-<span class="fc" id="L261">            byte[] dest = (byte[]) destO;</span>
-<span class="fc bfc" id="L262" title="All 2 branches covered.">            for (int index = 0; index &lt; length; index++) {</span>
-<span class="fc" id="L263">                dest[index + destPos] = (byte) src[index + srcPos];</span>
+        public void arraycopy(float[] src, int srcPos, byte[] dest, int destPos, int length) {
+<span class="fc bfc" id="L231" title="All 2 branches covered.">            for (int index = 0; index &lt; length; index++) {</span>
+<span class="fc" id="L232">                dest[index + destPos] = (byte) src[index + srcPos];</span>
             }
-<span class="fc" id="L265">        }</span>
+<span class="fc" id="L234">        }</span>
     }
 
-<span class="fc" id="L268">    private static class FloatToChar extends MultiArrayCopyFactory {</span>
+    private static class FloatToChar extends MultiArrayCopyFactory&lt;float[], char[]&gt; {
 
         @Override
-        public void arraycopy(Object srcO, int srcPos, Object destO, int destPos, int length) {
-<span class="fc" id="L272">            float[] src = (float[]) srcO;</span>
-<span class="fc" id="L273">            char[] dest = (char[]) destO;</span>
-<span class="fc bfc" id="L274" title="All 2 branches covered.">            for (int index = 0; index &lt; length; index++) {</span>
-<span class="fc" id="L275">                dest[index + destPos] = (char) src[index + srcPos];</span>
+        public void arraycopy(float[] src, int srcPos, char[] dest, int destPos, int length) {
+<span class="fc bfc" id="L241" title="All 2 branches covered.">            for (int index = 0; index &lt; length; index++) {</span>
+<span class="fc" id="L242">                dest[index + destPos] = (char) src[index + srcPos];</span>
             }
-<span class="fc" id="L277">        }</span>
+<span class="fc" id="L244">        }</span>
     }
 
-<span class="fc" id="L280">    private static class FloatToDouble extends MultiArrayCopyFactory {</span>
+    private static class FloatToDouble extends MultiArrayCopyFactory&lt;float[], double[]&gt; {
 
         @Override
-        public void arraycopy(Object srcO, int srcPos, Object destO, int destPos, int length) {
-<span class="fc" id="L284">            float[] src = (float[]) srcO;</span>
-<span class="fc" id="L285">            double[] dest = (double[]) destO;</span>
-<span class="fc bfc" id="L286" title="All 2 branches covered.">            for (int index = 0; index &lt; length; index++) {</span>
-<span class="fc" id="L287">                dest[index + destPos] = src[index + srcPos];</span>
+        public void arraycopy(float[] src, int srcPos, double[] dest, int destPos, int length) {
+<span class="fc bfc" id="L251" title="All 2 branches covered.">            for (int index = 0; index &lt; length; index++) {</span>
+<span class="fc" id="L252">                dest[index + destPos] = src[index + srcPos];</span>
             }
-<span class="fc" id="L289">        }</span>
+<span class="fc" id="L254">        }</span>
     }
 
-<span class="fc" id="L292">    private static class FloatToInt extends MultiArrayCopyFactory {</span>
+    private static class FloatToInt extends MultiArrayCopyFactory&lt;float[], int[]&gt; {
 
         @Override
-        public void arraycopy(Object srcO, int srcPos, Object destO, int destPos, int length) {
-<span class="fc" id="L296">            float[] src = (float[]) srcO;</span>
-<span class="fc" id="L297">            int[] dest = (int[]) destO;</span>
-<span class="fc bfc" id="L298" title="All 2 branches covered.">            for (int index = 0; index &lt; length; index++) {</span>
-<span class="fc" id="L299">                dest[index + destPos] = (int) src[index + srcPos];</span>
+        public void arraycopy(float[] src, int srcPos, int[] dest, int destPos, int length) {
+<span class="fc bfc" id="L261" title="All 2 branches covered.">            for (int index = 0; index &lt; length; index++) {</span>
+<span class="fc" id="L262">                dest[index + destPos] = (int) src[index + srcPos];</span>
             }
-<span class="fc" id="L301">        }</span>
+<span class="fc" id="L264">        }</span>
     }
 
-<span class="fc" id="L304">    private static class FloatToLong extends MultiArrayCopyFactory {</span>
+    private static class FloatToLong extends MultiArrayCopyFactory&lt;float[], long[]&gt; {
 
         @Override
-        public void arraycopy(Object srcO, int srcPos, Object destO, int destPos, int length) {
-<span class="fc" id="L308">            float[] src = (float[]) srcO;</span>
-<span class="fc" id="L309">            long[] dest = (long[]) destO;</span>
-<span class="fc bfc" id="L310" title="All 2 branches covered.">            for (int index = 0; index &lt; length; index++) {</span>
-<span class="fc" id="L311">                dest[index + destPos] = (long) src[index + srcPos];</span>
+        public void arraycopy(float[] src, int srcPos, long[] dest, int destPos, int length) {
+<span class="fc bfc" id="L271" title="All 2 branches covered.">            for (int index = 0; index &lt; length; index++) {</span>
+<span class="fc" id="L272">                dest[index + destPos] = (long) src[index + srcPos];</span>
             }
-<span class="fc" id="L313">        }</span>
+<span class="fc" id="L274">        }</span>
     }
 
-<span class="fc" id="L316">    private static class FloatToShort extends MultiArrayCopyFactory {</span>
+    private static class FloatToShort extends MultiArrayCopyFactory&lt;float[], short[]&gt; {
 
         @Override
-        public void arraycopy(Object srcO, int srcPos, Object destO, int destPos, int length) {
-<span class="fc" id="L320">            float[] src = (float[]) srcO;</span>
-<span class="fc" id="L321">            short[] dest = (short[]) destO;</span>
-<span class="fc bfc" id="L322" title="All 2 branches covered.">            for (int index = 0; index &lt; length; index++) {</span>
-<span class="fc" id="L323">                dest[index + destPos] = (short) src[index + srcPos];</span>
+        public void arraycopy(float[] src, int srcPos, short[] dest, int destPos, int length) {
+<span class="fc bfc" id="L281" title="All 2 branches covered.">            for (int index = 0; index &lt; length; index++) {</span>
+<span class="fc" id="L282">                dest[index + destPos] = (short) src[index + srcPos];</span>
             }
-<span class="fc" id="L325">        }</span>
+<span class="fc" id="L284">        }</span>
     }
 
-<span class="fc" id="L328">    private static class Generic extends MultiArrayCopyFactory {</span>
+    private static class Generic extends MultiArrayCopyFactory&lt;Object, Object&gt; {
 
         @Override
         public void arraycopy(Object srcO, int srcPos, Object destO, int destPos, int length) {
-<span class="fc" id="L332">            System.arraycopy(srcO, srcPos, destO, destPos, length);</span>
-<span class="fc" id="L333">        }</span>
+<span class="fc" id="L291">            System.arraycopy(srcO, srcPos, destO, destPos, length);</span>
+<span class="fc" id="L292">        }</span>
     }
 
-<span class="fc" id="L336">    private static class IntToByte extends MultiArrayCopyFactory {</span>
+    private static class IntToByte extends MultiArrayCopyFactory&lt;int[], byte[]&gt; {
 
         @Override
-        public void arraycopy(Object srcO, int srcPos, Object destO, int destPos, int length) {
-<span class="fc" id="L340">            int[] src = (int[]) srcO;</span>
-<span class="fc" id="L341">            byte[] dest = (byte[]) destO;</span>
-<span class="fc bfc" id="L342" title="All 2 branches covered.">            for (int index = 0; index &lt; length; index++) {</span>
-<span class="fc" id="L343">                dest[index + destPos] = (byte) src[index + srcPos];</span>
+        public void arraycopy(int[] src, int srcPos, byte[] dest, int destPos, int length) {
+<span class="fc bfc" id="L299" title="All 2 branches covered.">            for (int index = 0; index &lt; length; index++) {</span>
+<span class="fc" id="L300">                dest[index + destPos] = (byte) src[index + srcPos];</span>
             }
-<span class="fc" id="L345">        }</span>
+<span class="fc" id="L302">        }</span>
     }
 
-<span class="fc" id="L348">    private static class IntToChar extends MultiArrayCopyFactory {</span>
+    private static class IntToChar extends MultiArrayCopyFactory&lt;int[], char[]&gt; {
 
         @Override
-        public void arraycopy(Object srcO, int srcPos, Object destO, int destPos, int length) {
-<span class="fc" id="L352">            int[] src = (int[]) srcO;</span>
-<span class="fc" id="L353">            char[] dest = (char[]) destO;</span>
-<span class="fc bfc" id="L354" title="All 2 branches covered.">            for (int index = 0; index &lt; length; index++) {</span>
-<span class="fc" id="L355">                dest[index + destPos] = (char) src[index + srcPos];</span>
+        public void arraycopy(int[] src, int srcPos, char[] dest, int destPos, int length) {
+<span class="fc bfc" id="L309" title="All 2 branches covered.">            for (int index = 0; index &lt; length; index++) {</span>
+<span class="fc" id="L310">                dest[index + destPos] = (char) src[index + srcPos];</span>
             }
-<span class="fc" id="L357">        }</span>
+<span class="fc" id="L312">        }</span>
     }
 
-<span class="fc" id="L360">    private static class IntToDouble extends MultiArrayCopyFactory {</span>
+    private static class IntToDouble extends MultiArrayCopyFactory&lt;int[], double[]&gt; {
 
         @Override
-        public void arraycopy(Object srcO, int srcPos, Object destO, int destPos, int length) {
-<span class="fc" id="L364">            int[] src = (int[]) srcO;</span>
-<span class="fc" id="L365">            double[] dest = (double[]) destO;</span>
-<span class="fc bfc" id="L366" title="All 2 branches covered.">            for (int index = 0; index &lt; length; index++) {</span>
-<span class="fc" id="L367">                dest[index + destPos] = src[index + srcPos];</span>
+        public void arraycopy(int[] src, int srcPos, double[] dest, int destPos, int length) {
+<span class="fc bfc" id="L319" title="All 2 branches covered.">            for (int index = 0; index &lt; length; index++) {</span>
+<span class="fc" id="L320">                dest[index + destPos] = src[index + srcPos];</span>
             }
-<span class="fc" id="L369">        }</span>
+<span class="fc" id="L322">        }</span>
     }
 
-<span class="fc" id="L372">    private static class IntToFloat extends MultiArrayCopyFactory {</span>
+    private static class IntToFloat extends MultiArrayCopyFactory&lt;int[], float[]&gt; {
 
         @Override
-        public void arraycopy(Object srcO, int srcPos, Object destO, int destPos, int length) {
-<span class="fc" id="L376">            int[] src = (int[]) srcO;</span>
-<span class="fc" id="L377">            float[] dest = (float[]) destO;</span>
-<span class="fc bfc" id="L378" title="All 2 branches covered.">            for (int index = 0; index &lt; length; index++) {</span>
-<span class="fc" id="L379">                dest[index + destPos] = src[index + srcPos];</span>
+        public void arraycopy(int[] src, int srcPos, float[] dest, int destPos, int length) {
+<span class="fc bfc" id="L329" title="All 2 branches covered.">            for (int index = 0; index &lt; length; index++) {</span>
+<span class="fc" id="L330">                dest[index + destPos] = src[index + srcPos];</span>
             }
-<span class="fc" id="L381">        }</span>
+<span class="fc" id="L332">        }</span>
     }
 
-<span class="fc" id="L384">    private static class IntToLong extends MultiArrayCopyFactory {</span>
+    private static class IntToLong extends MultiArrayCopyFactory&lt;int[], long[]&gt; {
 
         @Override
-        public void arraycopy(Object srcO, int srcPos, Object destO, int destPos, int length) {
-<span class="fc" id="L388">            int[] src = (int[]) srcO;</span>
-<span class="fc" id="L389">            long[] dest = (long[]) destO;</span>
-<span class="fc bfc" id="L390" title="All 2 branches covered.">            for (int index = 0; index &lt; length; index++) {</span>
-<span class="fc" id="L391">                dest[index + destPos] = src[index + srcPos];</span>
+        public void arraycopy(int[] src, int srcPos, long[] dest, int destPos, int length) {
+<span class="fc bfc" id="L339" title="All 2 branches covered.">            for (int index = 0; index &lt; length; index++) {</span>
+<span class="fc" id="L340">                dest[index + destPos] = src[index + srcPos];</span>
             }
-<span class="fc" id="L393">        }</span>
+<span class="fc" id="L342">        }</span>
     }
 
-<span class="fc" id="L396">    private static class IntToShort extends MultiArrayCopyFactory {</span>
+    private static class IntToShort extends MultiArrayCopyFactory&lt;int[], short[]&gt; {
 
         @Override
-        public void arraycopy(Object srcO, int srcPos, Object destO, int destPos, int length) {
-<span class="fc" id="L400">            int[] src = (int[]) srcO;</span>
-<span class="fc" id="L401">            short[] dest = (short[]) destO;</span>
-<span class="fc bfc" id="L402" title="All 2 branches covered.">            for (int index = 0; index &lt; length; index++) {</span>
-<span class="fc" id="L403">                dest[index + destPos] = (short) src[index + srcPos];</span>
+        public void arraycopy(int[] src, int srcPos, short[] dest, int destPos, int length) {
+<span class="fc bfc" id="L349" title="All 2 branches covered.">            for (int index = 0; index &lt; length; index++) {</span>
+<span class="fc" id="L350">                dest[index + destPos] = (short) src[index + srcPos];</span>
             }
-<span class="fc" id="L405">        }</span>
+<span class="fc" id="L352">        }</span>
     }
 
-<span class="fc" id="L408">    private static class LongToByte extends MultiArrayCopyFactory {</span>
+    private static class LongToByte extends MultiArrayCopyFactory&lt;long[], byte[]&gt; {
 
         @Override
-        public void arraycopy(Object srcO, int srcPos, Object destO, int destPos, int length) {
-<span class="fc" id="L412">            long[] src = (long[]) srcO;</span>
-<span class="fc" id="L413">            byte[] dest = (byte[]) destO;</span>
-<span class="fc bfc" id="L414" title="All 2 branches covered.">            for (int index = 0; index &lt; length; index++) {</span>
-<span class="fc" id="L415">                dest[index + destPos] = (byte) src[index + srcPos];</span>
+        public void arraycopy(long[] src, int srcPos, byte[] dest, int destPos, int length) {
+<span class="fc bfc" id="L359" title="All 2 branches covered.">            for (int index = 0; index &lt; length; index++) {</span>
+<span class="fc" id="L360">                dest[index + destPos] = (byte) src[index + srcPos];</span>
             }
-<span class="fc" id="L417">        }</span>
+<span class="fc" id="L362">        }</span>
     }
 
-<span class="fc" id="L420">    private static class LongToChar extends MultiArrayCopyFactory {</span>
+    private static class LongToChar extends MultiArrayCopyFactory&lt;long[], char[]&gt; {
 
         @Override
-        public void arraycopy(Object srcO, int srcPos, Object destO, int destPos, int length) {
-<span class="fc" id="L424">            long[] src = (long[]) srcO;</span>
-<span class="fc" id="L425">            char[] dest = (char[]) destO;</span>
-<span class="fc bfc" id="L426" title="All 2 branches covered.">            for (int index = 0; index &lt; length; index++) {</span>
-<span class="fc" id="L427">                dest[index + destPos] = (char) src[index + srcPos];</span>
+        public void arraycopy(long[] src, int srcPos, char[] dest, int destPos, int length) {
+<span class="fc bfc" id="L369" title="All 2 branches covered.">            for (int index = 0; index &lt; length; index++) {</span>
+<span class="fc" id="L370">                dest[index + destPos] = (char) src[index + srcPos];</span>
             }
-<span class="fc" id="L429">        }</span>
+<span class="fc" id="L372">        }</span>
     }
 
-<span class="fc" id="L432">    private static class LongToDouble extends MultiArrayCopyFactory {</span>
+    private static class LongToDouble extends MultiArrayCopyFactory&lt;long[], double[]&gt; {
 
         @Override
-        public void arraycopy(Object srcO, int srcPos, Object destO, int destPos, int length) {
-<span class="fc" id="L436">            long[] src = (long[]) srcO;</span>
-<span class="fc" id="L437">            double[] dest = (double[]) destO;</span>
-<span class="fc bfc" id="L438" title="All 2 branches covered.">            for (int index = 0; index &lt; length; index++) {</span>
-<span class="fc" id="L439">                dest[index + destPos] = src[index + srcPos];</span>
+        public void arraycopy(long[] src, int srcPos, double[] dest, int destPos, int length) {
+<span class="fc bfc" id="L379" title="All 2 branches covered.">            for (int index = 0; index &lt; length; index++) {</span>
+<span class="fc" id="L380">                dest[index + destPos] = src[index + srcPos];</span>
             }
-<span class="fc" id="L441">        }</span>
+<span class="fc" id="L382">        }</span>
     }
 
-<span class="fc" id="L444">    private static class LongToFloat extends MultiArrayCopyFactory {</span>
+    private static class LongToFloat extends MultiArrayCopyFactory&lt;long[], float[]&gt; {
 
         @Override
-        public void arraycopy(Object srcO, int srcPos, Object destO, int destPos, int length) {
-<span class="fc" id="L448">            long[] src = (long[]) srcO;</span>
-<span class="fc" id="L449">            float[] dest = (float[]) destO;</span>
-<span class="fc bfc" id="L450" title="All 2 branches covered.">            for (int index = 0; index &lt; length; index++) {</span>
-<span class="fc" id="L451">                dest[index + destPos] = src[index + srcPos];</span>
+        public void arraycopy(long[] src, int srcPos, float[] dest, int destPos, int length) {
+<span class="fc bfc" id="L389" title="All 2 branches covered.">            for (int index = 0; index &lt; length; index++) {</span>
+<span class="fc" id="L390">                dest[index + destPos] = src[index + srcPos];</span>
             }
-<span class="fc" id="L453">        }</span>
+<span class="fc" id="L392">        }</span>
     }
 
-<span class="fc" id="L456">    private static class LongToInt extends MultiArrayCopyFactory {</span>
+    private static class LongToInt extends MultiArrayCopyFactory&lt;long[], int[]&gt; {
 
         @Override
-        public void arraycopy(Object srcO, int srcPos, Object destO, int destPos, int length) {
-<span class="fc" id="L460">            long[] src = (long[]) srcO;</span>
-<span class="fc" id="L461">            int[] dest = (int[]) destO;</span>
-<span class="fc bfc" id="L462" title="All 2 branches covered.">            for (int index = 0; index &lt; length; index++) {</span>
-<span class="fc" id="L463">                dest[index + destPos] = (int) src[index + srcPos];</span>
+        public void arraycopy(long[] src, int srcPos, int[] dest, int destPos, int length) {
+<span class="fc bfc" id="L399" title="All 2 branches covered.">            for (int index = 0; index &lt; length; index++) {</span>
+<span class="fc" id="L400">                dest[index + destPos] = (int) src[index + srcPos];</span>
             }
-<span class="fc" id="L465">        }</span>
+<span class="fc" id="L402">        }</span>
     }
 
-<span class="fc" id="L468">    private static class LongToShort extends MultiArrayCopyFactory {</span>
+    private static class LongToShort extends MultiArrayCopyFactory&lt;long[], short[]&gt; {
 
         @Override
-        public void arraycopy(Object srcO, int srcPos, Object destO, int destPos, int length) {
-<span class="fc" id="L472">            long[] src = (long[]) srcO;</span>
-<span class="fc" id="L473">            short[] dest = (short[]) destO;</span>
-<span class="fc bfc" id="L474" title="All 2 branches covered.">            for (int index = 0; index &lt; length; index++) {</span>
-<span class="fc" id="L475">                dest[index + destPos] = (short) src[index + srcPos];</span>
+        public void arraycopy(long[] src, int srcPos, short[] dest, int destPos, int length) {
+<span class="fc bfc" id="L409" title="All 2 branches covered.">            for (int index = 0; index &lt; length; index++) {</span>
+<span class="fc" id="L410">                dest[index + destPos] = (short) src[index + srcPos];</span>
             }
-<span class="fc" id="L477">        }</span>
+<span class="fc" id="L412">        }</span>
     }
 
-<span class="fc" id="L480">    private static class ShortToByte extends MultiArrayCopyFactory {</span>
+    private static class ShortToByte extends MultiArrayCopyFactory&lt;short[], byte[]&gt; {
 
         @Override
-        public void arraycopy(Object srcO, int srcPos, Object destO, int destPos, int length) {
-<span class="fc" id="L484">            short[] src = (short[]) srcO;</span>
-<span class="fc" id="L485">            byte[] dest = (byte[]) destO;</span>
-<span class="fc bfc" id="L486" title="All 2 branches covered.">            for (int index = 0; index &lt; length; index++) {</span>
-<span class="fc" id="L487">                dest[index + destPos] = (byte) src[index + srcPos];</span>
+        public void arraycopy(short[] src, int srcPos, byte[] dest, int destPos, int length) {
+<span class="fc bfc" id="L419" title="All 2 branches covered.">            for (int index = 0; index &lt; length; index++) {</span>
+<span class="fc" id="L420">                dest[index + destPos] = (byte) src[index + srcPos];</span>
             }
-<span class="fc" id="L489">        }</span>
+<span class="fc" id="L422">        }</span>
     }
 
-<span class="fc" id="L492">    private static class ShortToChar extends MultiArrayCopyFactory {</span>
+    private static class ShortToChar extends MultiArrayCopyFactory&lt;short[], char[]&gt; {
 
         @Override
-        public void arraycopy(Object srcO, int srcPos, Object destO, int destPos, int length) {
-<span class="fc" id="L496">            short[] src = (short[]) srcO;</span>
-<span class="fc" id="L497">            char[] dest = (char[]) destO;</span>
-<span class="fc bfc" id="L498" title="All 2 branches covered.">            for (int index = 0; index &lt; length; index++) {</span>
-<span class="fc" id="L499">                dest[index + destPos] = (char) src[index + srcPos];</span>
+        public void arraycopy(short[] src, int srcPos, char[] dest, int destPos, int length) {
+<span class="fc bfc" id="L429" title="All 2 branches covered.">            for (int index = 0; index &lt; length; index++) {</span>
+<span class="fc" id="L430">                dest[index + destPos] = (char) src[index + srcPos];</span>
             }
-<span class="fc" id="L501">        }</span>
+<span class="fc" id="L432">        }</span>
     }
 
-<span class="fc" id="L504">    private static class ShortToDouble extends MultiArrayCopyFactory {</span>
+    private static class ShortToDouble extends MultiArrayCopyFactory&lt;short[], double[]&gt; {
 
         @Override
-        public void arraycopy(Object srcO, int srcPos, Object destO, int destPos, int length) {
-<span class="fc" id="L508">            short[] src = (short[]) srcO;</span>
-<span class="fc" id="L509">            double[] dest = (double[]) destO;</span>
-<span class="fc bfc" id="L510" title="All 2 branches covered.">            for (int index = 0; index &lt; length; index++) {</span>
-<span class="fc" id="L511">                dest[index + destPos] = src[index + srcPos];</span>
+        public void arraycopy(short[] src, int srcPos, double[] dest, int destPos, int length) {
+<span class="fc bfc" id="L439" title="All 2 branches covered.">            for (int index = 0; index &lt; length; index++) {</span>
+<span class="fc" id="L440">                dest[index + destPos] = src[index + srcPos];</span>
             }
-<span class="fc" id="L513">        }</span>
+<span class="fc" id="L442">        }</span>
     }
 
-<span class="fc" id="L516">    private static class ShortToFloat extends MultiArrayCopyFactory {</span>
+    private static class ShortToFloat extends MultiArrayCopyFactory&lt;short[], float[]&gt; {
 
         @Override
-        public void arraycopy(Object srcO, int srcPos, Object destO, int destPos, int length) {
-<span class="fc" id="L520">            short[] src = (short[]) srcO;</span>
-<span class="fc" id="L521">            float[] dest = (float[]) destO;</span>
-<span class="fc bfc" id="L522" title="All 2 branches covered.">            for (int index = 0; index &lt; length; index++) {</span>
-<span class="fc" id="L523">                dest[index + destPos] = src[index + srcPos];</span>
+        public void arraycopy(short[] src, int srcPos, float[] dest, int destPos, int length) {
+<span class="fc bfc" id="L449" title="All 2 branches covered.">            for (int index = 0; index &lt; length; index++) {</span>
+<span class="fc" id="L450">                dest[index + destPos] = src[index + srcPos];</span>
             }
-<span class="fc" id="L525">        }</span>
+<span class="fc" id="L452">        }</span>
     }
 
-<span class="fc" id="L528">    private static class ShortToInt extends MultiArrayCopyFactory {</span>
+    private static class ShortToInt extends MultiArrayCopyFactory&lt;short[], int[]&gt; {
 
         @Override
-        public void arraycopy(Object srcO, int srcPos, Object destO, int destPos, int length) {
-<span class="fc" id="L532">            short[] src = (short[]) srcO;</span>
-<span class="fc" id="L533">            int[] dest = (int[]) destO;</span>
-<span class="fc bfc" id="L534" title="All 2 branches covered.">            for (int index = 0; index &lt; length; index++) {</span>
-<span class="fc" id="L535">                dest[index + destPos] = src[index + srcPos];</span>
+        public void arraycopy(short[] src, int srcPos, int[] dest, int destPos, int length) {
+<span class="fc bfc" id="L459" title="All 2 branches covered.">            for (int index = 0; index &lt; length; index++) {</span>
+<span class="fc" id="L460">                dest[index + destPos] = src[index + srcPos];</span>
             }
-<span class="fc" id="L537">        }</span>
+<span class="fc" id="L462">        }</span>
     }
 
-<span class="fc" id="L540">    private static class ShortToLong extends MultiArrayCopyFactory {</span>
+    private static class ShortToLong extends MultiArrayCopyFactory&lt;short[], long[]&gt; {
 
         @Override
-        public void arraycopy(Object srcO, int srcPos, Object destO, int destPos, int length) {
-<span class="fc" id="L544">            short[] src = (short[]) srcO;</span>
-<span class="fc" id="L545">            long[] dest = (long[]) destO;</span>
-<span class="fc bfc" id="L546" title="All 2 branches covered.">            for (int index = 0; index &lt; length; index++) {</span>
-<span class="fc" id="L547">                dest[index + destPos] = src[index + srcPos];</span>
+        public void arraycopy(short[] src, int srcPos, long[] dest, int destPos, int length) {
+<span class="fc bfc" id="L469" title="All 2 branches covered.">            for (int index = 0; index &lt; length; index++) {</span>
+<span class="fc" id="L470">                dest[index + destPos] = src[index + srcPos];</span>
             }
-<span class="fc" id="L549">        }</span>
+<span class="fc" id="L472">        }</span>
     }
 
-    private static final Map&lt;Class&lt;?&gt;, Map&lt;Class&lt;?&gt;, MultiArrayCopyFactory&gt;&gt; FACTORIES;
+    private static final Map&lt;Class&lt;?&gt;, Map&lt;Class&lt;?&gt;, MultiArrayCopyFactory&lt;?, ?&gt;&gt;&gt; FACTORIES;
 
-<span class="fc" id="L554">    private static final MultiArrayCopyFactory GENERIC = new Generic();</span>
+<span class="fc" id="L477">    private static final MultiArrayCopyFactory&lt;Object, Object&gt; GENERIC = new Generic();</span>
 
     static {
-<span class="fc" id="L557">        Map&lt;Class&lt;?&gt;, Map&lt;Class&lt;?&gt;, MultiArrayCopyFactory&gt;&gt; factories = new HashMap&lt;Class&lt;?&gt;, Map&lt;Class&lt;?&gt;, MultiArrayCopyFactory&gt;&gt;();</span>
+<span class="fc" id="L480">        Map&lt;Class&lt;?&gt;, Map&lt;Class&lt;?&gt;, MultiArrayCopyFactory&lt;?, ?&gt;&gt;&gt; factories = new HashMap&lt;&gt;();</span>
 
-<span class="fc" id="L559">        Map&lt;Class&lt;?&gt;, MultiArrayCopyFactory&gt; byteMap = new HashMap&lt;Class&lt;?&gt;, MultiArrayCopyFactory&gt;();</span>
-<span class="fc" id="L560">        byteMap.put(byte.class, new MultiArrayCopyFactory());</span>
-<span class="fc" id="L561">        byteMap.put(char.class, new ByteToChar());</span>
-<span class="fc" id="L562">        byteMap.put(short.class, new ByteToShort());</span>
-<span class="fc" id="L563">        byteMap.put(int.class, new ByteToInt());</span>
-<span class="fc" id="L564">        byteMap.put(long.class, new ByteToLong());</span>
-<span class="fc" id="L565">        byteMap.put(float.class, new ByteToFloat());</span>
-<span class="fc" id="L566">        byteMap.put(double.class, new ByteToDouble());</span>
-<span class="fc" id="L567">        factories.put(byte.class, Collections.unmodifiableMap(byteMap));</span>
+<span class="fc" id="L482">        Map&lt;Class&lt;?&gt;, MultiArrayCopyFactory&lt;byte[], ?&gt;&gt; byteMap = new HashMap&lt;&gt;();</span>
+<span class="fc" id="L483">        byteMap.put(byte.class, new MultiArrayCopyFactory&lt;byte[], byte[]&gt;());</span>
+<span class="fc" id="L484">        byteMap.put(char.class, new ByteToChar());</span>
+<span class="fc" id="L485">        byteMap.put(short.class, new ByteToShort());</span>
+<span class="fc" id="L486">        byteMap.put(int.class, new ByteToInt());</span>
+<span class="fc" id="L487">        byteMap.put(long.class, new ByteToLong());</span>
+<span class="fc" id="L488">        byteMap.put(float.class, new ByteToFloat());</span>
+<span class="fc" id="L489">        byteMap.put(double.class, new ByteToDouble());</span>
+<span class="fc" id="L490">        factories.put(byte.class, Collections.unmodifiableMap(byteMap));</span>
 
-<span class="fc" id="L569">        Map&lt;Class&lt;?&gt;, MultiArrayCopyFactory&gt; charMap = new HashMap&lt;Class&lt;?&gt;, MultiArrayCopyFactory&gt;();</span>
-<span class="fc" id="L570">        charMap.put(byte.class, new CharToByte());</span>
-<span class="fc" id="L571">        charMap.put(char.class, new MultiArrayCopyFactory());</span>
-<span class="fc" id="L572">        charMap.put(short.class, new CharToShort());</span>
-<span class="fc" id="L573">        charMap.put(int.class, new CharToInt());</span>
-<span class="fc" id="L574">        charMap.put(long.class, new CharToLong());</span>
-<span class="fc" id="L575">        charMap.put(float.class, new CharToFloat());</span>
-<span class="fc" id="L576">        charMap.put(double.class, new CharToDouble());</span>
-<span class="fc" id="L577">        factories.put(char.class, Collections.unmodifiableMap(charMap));</span>
+<span class="fc" id="L492">        Map&lt;Class&lt;?&gt;, MultiArrayCopyFactory&lt;char[], ?&gt;&gt; charMap = new HashMap&lt;&gt;();</span>
+<span class="fc" id="L493">        charMap.put(byte.class, new CharToByte());</span>
+<span class="fc" id="L494">        charMap.put(char.class, new MultiArrayCopyFactory&lt;char[], char[]&gt;());</span>
+<span class="fc" id="L495">        charMap.put(short.class, new CharToShort());</span>
+<span class="fc" id="L496">        charMap.put(int.class, new CharToInt());</span>
+<span class="fc" id="L497">        charMap.put(long.class, new CharToLong());</span>
+<span class="fc" id="L498">        charMap.put(float.class, new CharToFloat());</span>
+<span class="fc" id="L499">        charMap.put(double.class, new CharToDouble());</span>
+<span class="fc" id="L500">        factories.put(char.class, Collections.unmodifiableMap(charMap));</span>
 
-<span class="fc" id="L579">        Map&lt;Class&lt;?&gt;, MultiArrayCopyFactory&gt; shortMap = new HashMap&lt;Class&lt;?&gt;, MultiArrayCopyFactory&gt;();</span>
-<span class="fc" id="L580">        shortMap.put(byte.class, new ShortToByte());</span>
-<span class="fc" id="L581">        shortMap.put(char.class, new ShortToChar());</span>
-<span class="fc" id="L582">        shortMap.put(short.class, new MultiArrayCopyFactory());</span>
-<span class="fc" id="L583">        shortMap.put(int.class, new ShortToInt());</span>
-<span class="fc" id="L584">        shortMap.put(long.class, new ShortToLong());</span>
-<span class="fc" id="L585">        shortMap.put(float.class, new ShortToFloat());</span>
-<span class="fc" id="L586">        shortMap.put(double.class, new ShortToDouble());</span>
-<span class="fc" id="L587">        factories.put(short.class, Collections.unmodifiableMap(shortMap));</span>
+<span class="fc" id="L502">        Map&lt;Class&lt;?&gt;, MultiArrayCopyFactory&lt;short[], ?&gt;&gt; shortMap = new HashMap&lt;&gt;();</span>
+<span class="fc" id="L503">        shortMap.put(byte.class, new ShortToByte());</span>
+<span class="fc" id="L504">        shortMap.put(char.class, new ShortToChar());</span>
+<span class="fc" id="L505">        shortMap.put(short.class, new MultiArrayCopyFactory&lt;short[], short[]&gt;());</span>
+<span class="fc" id="L506">        shortMap.put(int.class, new ShortToInt());</span>
+<span class="fc" id="L507">        shortMap.put(long.class, new ShortToLong());</span>
+<span class="fc" id="L508">        shortMap.put(float.class, new ShortToFloat());</span>
+<span class="fc" id="L509">        shortMap.put(double.class, new ShortToDouble());</span>
+<span class="fc" id="L510">        factories.put(short.class, Collections.unmodifiableMap(shortMap));</span>
 
-<span class="fc" id="L589">        Map&lt;Class&lt;?&gt;, MultiArrayCopyFactory&gt; intMap = new HashMap&lt;Class&lt;?&gt;, MultiArrayCopyFactory&gt;();</span>
-<span class="fc" id="L590">        intMap.put(byte.class, new IntToByte());</span>
-<span class="fc" id="L591">        intMap.put(char.class, new IntToChar());</span>
-<span class="fc" id="L592">        intMap.put(short.class, new IntToShort());</span>
-<span class="fc" id="L593">        intMap.put(int.class, new MultiArrayCopyFactory());</span>
-<span class="fc" id="L594">        intMap.put(long.class, new IntToLong());</span>
-<span class="fc" id="L595">        intMap.put(float.class, new IntToFloat());</span>
-<span class="fc" id="L596">        intMap.put(double.class, new IntToDouble());</span>
-<span class="fc" id="L597">        factories.put(int.class, Collections.unmodifiableMap(intMap));</span>
+<span class="fc" id="L512">        Map&lt;Class&lt;?&gt;, MultiArrayCopyFactory&lt;int[], ?&gt;&gt; intMap = new HashMap&lt;&gt;();</span>
+<span class="fc" id="L513">        intMap.put(byte.class, new IntToByte());</span>
+<span class="fc" id="L514">        intMap.put(char.class, new IntToChar());</span>
+<span class="fc" id="L515">        intMap.put(short.class, new IntToShort());</span>
+<span class="fc" id="L516">        intMap.put(int.class, new MultiArrayCopyFactory&lt;int[], int[]&gt;());</span>
+<span class="fc" id="L517">        intMap.put(long.class, new IntToLong());</span>
+<span class="fc" id="L518">        intMap.put(float.class, new IntToFloat());</span>
+<span class="fc" id="L519">        intMap.put(double.class, new IntToDouble());</span>
+<span class="fc" id="L520">        factories.put(int.class, Collections.unmodifiableMap(intMap));</span>
 
-<span class="fc" id="L599">        Map&lt;Class&lt;?&gt;, MultiArrayCopyFactory&gt; longMap = new HashMap&lt;Class&lt;?&gt;, MultiArrayCopyFactory&gt;();</span>
-<span class="fc" id="L600">        longMap.put(byte.class, new LongToByte());</span>
-<span class="fc" id="L601">        longMap.put(char.class, new LongToChar());</span>
-<span class="fc" id="L602">        longMap.put(short.class, new LongToShort());</span>
-<span class="fc" id="L603">        longMap.put(int.class, new LongToInt());</span>
-<span class="fc" id="L604">        longMap.put(long.class, new MultiArrayCopyFactory());</span>
-<span class="fc" id="L605">        longMap.put(float.class, new LongToFloat());</span>
-<span class="fc" id="L606">        longMap.put(double.class, new LongToDouble());</span>
-<span class="fc" id="L607">        factories.put(long.class, Collections.unmodifiableMap(longMap));</span>
+<span class="fc" id="L522">        Map&lt;Class&lt;?&gt;, MultiArrayCopyFactory&lt;long[], ?&gt;&gt; longMap = new HashMap&lt;&gt;();</span>
+<span class="fc" id="L523">        longMap.put(byte.class, new LongToByte());</span>
+<span class="fc" id="L524">        longMap.put(char.class, new LongToChar());</span>
+<span class="fc" id="L525">        longMap.put(short.class, new LongToShort());</span>
+<span class="fc" id="L526">        longMap.put(int.class, new LongToInt());</span>
+<span class="fc" id="L527">        longMap.put(long.class, new MultiArrayCopyFactory&lt;long[], long[]&gt;());</span>
+<span class="fc" id="L528">        longMap.put(float.class, new LongToFloat());</span>
+<span class="fc" id="L529">        longMap.put(double.class, new LongToDouble());</span>
+<span class="fc" id="L530">        factories.put(long.class, Collections.unmodifiableMap(longMap));</span>
 
-<span class="fc" id="L609">        Map&lt;Class&lt;?&gt;, MultiArrayCopyFactory&gt; floatMap = new HashMap&lt;Class&lt;?&gt;, MultiArrayCopyFactory&gt;();</span>
-<span class="fc" id="L610">        floatMap.put(byte.class, new FloatToByte());</span>
-<span class="fc" id="L611">        floatMap.put(char.class, new FloatToChar());</span>
-<span class="fc" id="L612">        floatMap.put(short.class, new FloatToShort());</span>
-<span class="fc" id="L613">        floatMap.put(int.class, new FloatToInt());</span>
-<span class="fc" id="L614">        floatMap.put(long.class, new FloatToLong());</span>
-<span class="fc" id="L615">        floatMap.put(float.class, new MultiArrayCopyFactory());</span>
-<span class="fc" id="L616">        floatMap.put(double.class, new FloatToDouble());</span>
-<span class="fc" id="L617">        factories.put(float.class, Collections.unmodifiableMap(floatMap));</span>
+<span class="fc" id="L532">        Map&lt;Class&lt;?&gt;, MultiArrayCopyFactory&lt;float[], ?&gt;&gt; floatMap = new HashMap&lt;&gt;();</span>
+<span class="fc" id="L533">        floatMap.put(byte.class, new FloatToByte());</span>
+<span class="fc" id="L534">        floatMap.put(char.class, new FloatToChar());</span>
+<span class="fc" id="L535">        floatMap.put(short.class, new FloatToShort());</span>
+<span class="fc" id="L536">        floatMap.put(int.class, new FloatToInt());</span>
+<span class="fc" id="L537">        floatMap.put(long.class, new FloatToLong());</span>
+<span class="fc" id="L538">        floatMap.put(float.class, new MultiArrayCopyFactory&lt;float[], float[]&gt;());</span>
+<span class="fc" id="L539">        floatMap.put(double.class, new FloatToDouble());</span>
+<span class="fc" id="L540">        factories.put(float.class, Collections.unmodifiableMap(floatMap));</span>
 
-<span class="fc" id="L619">        Map&lt;Class&lt;?&gt;, MultiArrayCopyFactory&gt; doubleMap = new HashMap&lt;Class&lt;?&gt;, MultiArrayCopyFactory&gt;();</span>
-<span class="fc" id="L620">        doubleMap.put(byte.class, new DoubleToByte());</span>
-<span class="fc" id="L621">        doubleMap.put(char.class, new DoubleToChar());</span>
-<span class="fc" id="L622">        doubleMap.put(short.class, new DoubleToShort());</span>
-<span class="fc" id="L623">        doubleMap.put(int.class, new DoubleToInt());</span>
-<span class="fc" id="L624">        doubleMap.put(long.class, new DoubleToLong());</span>
-<span class="fc" id="L625">        doubleMap.put(float.class, new DoubleToFloat());</span>
-<span class="fc" id="L626">        doubleMap.put(double.class, new MultiArrayCopyFactory());</span>
-<span class="fc" id="L627">        factories.put(double.class, Collections.unmodifiableMap(doubleMap));</span>
+<span class="fc" id="L542">        Map&lt;Class&lt;?&gt;, MultiArrayCopyFactory&lt;double[], ?&gt;&gt; doubleMap = new HashMap&lt;&gt;();</span>
+<span class="fc" id="L543">        doubleMap.put(byte.class, new DoubleToByte());</span>
+<span class="fc" id="L544">        doubleMap.put(char.class, new DoubleToChar());</span>
+<span class="fc" id="L545">        doubleMap.put(short.class, new DoubleToShort());</span>
+<span class="fc" id="L546">        doubleMap.put(int.class, new DoubleToInt());</span>
+<span class="fc" id="L547">        doubleMap.put(long.class, new DoubleToLong());</span>
+<span class="fc" id="L548">        doubleMap.put(float.class, new DoubleToFloat());</span>
+<span class="fc" id="L549">        doubleMap.put(double.class, new MultiArrayCopyFactory&lt;double[], double[]&gt;());</span>
+<span class="fc" id="L550">        factories.put(double.class, Collections.unmodifiableMap(doubleMap));</span>
 
-<span class="fc" id="L629">        FACTORIES = Collections.unmodifiableMap(factories);</span>
-<span class="fc" id="L630">    }</span>
+<span class="fc" id="L552">        FACTORIES = Collections.unmodifiableMap(factories);</span>
+<span class="fc" id="L553">    }</span>
 
-    public static MultiArrayCopyFactory select(Class&lt;?&gt; primitiveType, Class&lt;?&gt; primitiveType2) {
-<span class="fc" id="L633">        Map&lt;Class&lt;?&gt;, MultiArrayCopyFactory&gt; from = MultiArrayCopyFactory.FACTORIES.get(primitiveType);</span>
-<span class="fc bfc" id="L634" title="All 2 branches covered.">        if (from != null) {</span>
-<span class="fc" id="L635">            MultiArrayCopyFactory to = from.get(primitiveType2);</span>
-<span class="pc bpc" id="L636" title="1 of 2 branches missed.">            if (to != null) {</span>
-<span class="fc" id="L637">                return to;</span>
+    public static MultiArrayCopyFactory&lt;?, ?&gt; select(Class&lt;?&gt; primitiveType, Class&lt;?&gt; primitiveType2) {
+<span class="fc" id="L556">        Map&lt;Class&lt;?&gt;, MultiArrayCopyFactory&lt;?, ?&gt;&gt; from = MultiArrayCopyFactory.FACTORIES.get(primitiveType);</span>
+<span class="fc bfc" id="L557" title="All 2 branches covered.">        if (from != null) {</span>
+<span class="fc" id="L558">            MultiArrayCopyFactory&lt;?, ?&gt; to = from.get(primitiveType2);</span>
+<span class="pc bpc" id="L559" title="1 of 2 branches missed.">            if (to != null) {</span>
+<span class="fc" id="L560">                return to;</span>
             }
         }
-<span class="fc" id="L640">        return MultiArrayCopyFactory.GENERIC;</span>
+<span class="fc" id="L563">        return MultiArrayCopyFactory.GENERIC;</span>
     }
 
-    public void arraycopy(Object src, int srcPos, Object dest, int destPos, int length) {
-<span class="fc" id="L644">        System.arraycopy(src, srcPos, dest, destPos, length);</span>
-<span class="fc" id="L645">    }</span>
+    public void arraycopy(Source src, int srcPos, Destination dest, int destPos, int length) {
+<span class="fc" id="L567">        System.arraycopy(src, srcPos, dest, destPos, length);</span>
+<span class="fc" id="L568">    }</span>
 
 }
-</pre><div class="footer"><span class="right">Created with <a href="http://www.eclemma.org/jacoco">JaCoCo</a> 0.7.6.201602180812</span></div></body></html>
+</pre><div class="footer"><span class="right">Created with <a href="http://www.jacoco.org/jacoco">JaCoCo</a> 0.8.7.202105040129</span></div></body></html>

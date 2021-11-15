@@ -1,10 +1,10 @@
-<?xml version="1.0" encoding="UTF-8"?><!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Strict//EN" "http://www.w3.org/TR/xhtml1/DTD/xhtml1-strict.dtd"><html xmlns="http://www.w3.org/1999/xhtml" lang="en"><head><meta http-equiv="Content-Type" content="text/html;charset=UTF-8"/><link rel="stylesheet" href="../.resources/report.css" type="text/css"/><link rel="shortcut icon" href="../.resources/report.gif" type="image/gif"/><title>Quantize.java</title><link rel="stylesheet" href="../.resources/prettify.css" type="text/css"/><script type="text/javascript" src="../.resources/prettify.js"></script></head><body onload="window['PR_TAB_WIDTH']=4;prettyPrint()"><div class="breadcrumb" id="breadcrumb"><span class="info"><a href="../.sessions.html" class="el_session">Sessions</a></span><a href="../index.html" class="el_report">nom.tam FITS library</a> &gt; <a href="index.source.html" class="el_package">nom.tam.fits.compression.algorithm.quant</a> &gt; <span class="el_source">Quantize.java</span></div><h1>Quantize.java</h1><pre class="source lang-java linenums">package nom.tam.fits.compression.algorithm.quant;
+<?xml version="1.0" encoding="UTF-8"?><!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Strict//EN" "http://www.w3.org/TR/xhtml1/DTD/xhtml1-strict.dtd"><html xmlns="http://www.w3.org/1999/xhtml" lang="en"><head><meta http-equiv="Content-Type" content="text/html;charset=UTF-8"/><link rel="stylesheet" href="../jacoco-resources/report.css" type="text/css"/><link rel="shortcut icon" href="../jacoco-resources/report.gif" type="image/gif"/><title>Quantize.java</title><link rel="stylesheet" href="../jacoco-resources/prettify.css" type="text/css"/><script type="text/javascript" src="../jacoco-resources/prettify.js"></script></head><body onload="window['PR_TAB_WIDTH']=4;prettyPrint()"><div class="breadcrumb" id="breadcrumb"><span class="info"><a href="../jacoco-sessions.html" class="el_session">Sessions</a></span><a href="../index.html" class="el_report">nom.tam FITS library</a> &gt; <a href="index.source.html" class="el_package">nom.tam.fits.compression.algorithm.quant</a> &gt; <span class="el_source">Quantize.java</span></div><h1>Quantize.java</h1><pre class="source lang-java linenums">package nom.tam.fits.compression.algorithm.quant;
 
 /*
  * #%L
  * nom.tam FITS library
  * %%
- * Copyright (C) 1996 - 2015 nom-tam-fits
+ * Copyright (C) 1996 - 2021 nom-tam-fits
  * %%
  * This is free and unencumbered software released into the public domain.
  * 
@@ -141,225 +141,223 @@ public class Quantize {
      *            check for null values, if true
      * @param nullvalue
      *            value of null pixels, if nullcheck is true
-     * @return error status
      */
     private void calculateNoise(double[] arrayIn, int nx, int ny) {
-<span class="fc" id="L147">        DoubleArrayPointer array = new DoubleArrayPointer(arrayIn);</span>
-<span class="fc" id="L148">        initializeNoise();</span>
-<span class="fc bfc" id="L149" title="All 2 branches covered.">        if (nx &lt; MINIMUM_PIXEL_WIDTH) {</span>
+<span class="fc" id="L146">        DoubleArrayPointer array = new DoubleArrayPointer(arrayIn);</span>
+<span class="fc" id="L147">        initializeNoise();</span>
+<span class="fc bfc" id="L148" title="All 2 branches covered.">        if (nx &lt; MINIMUM_PIXEL_WIDTH) {</span>
             // treat entire tiledImageOperation as an image with a single row
-<span class="fc" id="L151">            nx = nx * ny;</span>
-<span class="fc" id="L152">            ny = 1;</span>
+<span class="fc" id="L150">            nx = nx * ny;</span>
+<span class="fc" id="L151">            ny = 1;</span>
         }
-<span class="fc bfc" id="L154" title="All 2 branches covered.">        if (calculateNoiseShortRow(array, nx, ny)) {</span>
-<span class="fc" id="L155">            return;</span>
+<span class="fc bfc" id="L153" title="All 2 branches covered.">        if (calculateNoiseShortRow(array, nx, ny)) {</span>
+<span class="fc" id="L154">            return;</span>
         }
         DoubleArrayPointer rowpix;
-<span class="fc" id="L158">        int nrows = 0, nrows2 = 0;</span>
-<span class="fc" id="L159">        long ngoodpix = 0;</span>
+<span class="fc" id="L157">        int nrows = 0, nrows2 = 0;</span>
+<span class="fc" id="L158">        long ngoodpix = 0;</span>
         /* allocate arrays used to compute the median and noise estimates */
-<span class="fc" id="L161">        double[] differences2 = new double[nx];</span>
-<span class="fc" id="L162">        double[] differences3 = new double[nx];</span>
-<span class="fc" id="L163">        double[] differences5 = new double[nx];</span>
-<span class="fc" id="L164">        double[] diffs2 = new double[ny];</span>
-<span class="fc" id="L165">        double[] diffs3 = new double[ny];</span>
-<span class="fc" id="L166">        double[] diffs5 = new double[ny];</span>
+<span class="fc" id="L160">        double[] differences2 = new double[nx];</span>
+<span class="fc" id="L161">        double[] differences3 = new double[nx];</span>
+<span class="fc" id="L162">        double[] differences5 = new double[nx];</span>
+<span class="fc" id="L163">        double[] diffs2 = new double[ny];</span>
+<span class="fc" id="L164">        double[] diffs3 = new double[ny];</span>
+<span class="fc" id="L165">        double[] diffs5 = new double[ny];</span>
         /* loop over each row of the image */
-<span class="fc bfc" id="L168" title="All 2 branches covered.">        for (int jj = 0; jj &lt; ny; jj++) {</span>
-<span class="fc" id="L169">            rowpix = array.copy(jj * nx); /* point to first pixel in the row */</span>
-<span class="fc" id="L170">            int ii = 0;</span>
-<span class="fc" id="L171">            ii = findNextValidPixelWithNullCheck(nx, rowpix, ii);</span>
-<span class="fc bfc" id="L172" title="All 2 branches covered.">            if (ii == nx) {</span>
-<span class="fc" id="L173">                continue; /* hit end of row */</span>
+<span class="fc bfc" id="L167" title="All 2 branches covered.">        for (int jj = 0; jj &lt; ny; jj++) {</span>
+<span class="fc" id="L168">            rowpix = array.copy(jj * nx); /* point to first pixel in the row */</span>
+<span class="fc" id="L169">            int ii = 0;</span>
+<span class="fc" id="L170">            ii = findNextValidPixelWithNullCheck(nx, rowpix, ii);</span>
+<span class="fc bfc" id="L171" title="All 2 branches covered.">            if (ii == nx) {</span>
+<span class="fc" id="L172">                continue; /* hit end of row */</span>
             }
-<span class="fc" id="L175">            double v1 = getNextPixelAndCheckMinMax(rowpix, ii);</span>
-<span class="fc" id="L176">            ngoodpix++;</span>
-<span class="fc" id="L177">            ii = findNextValidPixelWithNullCheck(nx, rowpix, ++ii);</span>
-<span class="fc bfc" id="L178" title="All 2 branches covered.">            if (ii == nx) {</span>
-<span class="fc" id="L179">                continue; /* hit end of row */</span>
+<span class="fc" id="L174">            double v1 = getNextPixelAndCheckMinMax(rowpix, ii);</span>
+<span class="fc" id="L175">            ngoodpix++;</span>
+<span class="fc" id="L176">            ii = findNextValidPixelWithNullCheck(nx, rowpix, ++ii);</span>
+<span class="fc bfc" id="L177" title="All 2 branches covered.">            if (ii == nx) {</span>
+<span class="fc" id="L178">                continue; /* hit end of row */</span>
             }
-<span class="fc" id="L181">            double v2 = getNextPixelAndCheckMinMax(rowpix, ii);</span>
-<span class="fc" id="L182">            ngoodpix++;</span>
-<span class="fc" id="L183">            ii = findNextValidPixelWithNullCheck(nx, rowpix, ++ii);</span>
-<span class="fc bfc" id="L184" title="All 2 branches covered.">            if (ii == nx) {</span>
-<span class="fc" id="L185">                continue; /* hit end of row */</span>
+<span class="fc" id="L180">            double v2 = getNextPixelAndCheckMinMax(rowpix, ii);</span>
+<span class="fc" id="L181">            ngoodpix++;</span>
+<span class="fc" id="L182">            ii = findNextValidPixelWithNullCheck(nx, rowpix, ++ii);</span>
+<span class="fc bfc" id="L183" title="All 2 branches covered.">            if (ii == nx) {</span>
+<span class="fc" id="L184">                continue; /* hit end of row */</span>
             }
-<span class="fc" id="L187">            double v3 = getNextPixelAndCheckMinMax(rowpix, ii);</span>
-<span class="fc" id="L188">            ngoodpix++;</span>
-<span class="fc" id="L189">            ii = findNextValidPixelWithNullCheck(nx, rowpix, ++ii);</span>
-<span class="fc bfc" id="L190" title="All 2 branches covered.">            if (ii == nx) {</span>
-<span class="fc" id="L191">                continue; /* hit end of row */</span>
+<span class="fc" id="L186">            double v3 = getNextPixelAndCheckMinMax(rowpix, ii);</span>
+<span class="fc" id="L187">            ngoodpix++;</span>
+<span class="fc" id="L188">            ii = findNextValidPixelWithNullCheck(nx, rowpix, ++ii);</span>
+<span class="fc bfc" id="L189" title="All 2 branches covered.">            if (ii == nx) {</span>
+<span class="fc" id="L190">                continue; /* hit end of row */</span>
             }
-<span class="fc" id="L193">            double v4 = getNextPixelAndCheckMinMax(rowpix, ii);</span>
-<span class="fc" id="L194">            ngoodpix++;</span>
-<span class="fc" id="L195">            ii = findNextValidPixelWithNullCheck(nx, rowpix, ++ii);</span>
-<span class="fc bfc" id="L196" title="All 2 branches covered.">            if (ii == nx) {</span>
-<span class="fc" id="L197">                continue; /* hit end of row */</span>
+<span class="fc" id="L192">            double v4 = getNextPixelAndCheckMinMax(rowpix, ii);</span>
+<span class="fc" id="L193">            ngoodpix++;</span>
+<span class="fc" id="L194">            ii = findNextValidPixelWithNullCheck(nx, rowpix, ++ii);</span>
+<span class="fc bfc" id="L195" title="All 2 branches covered.">            if (ii == nx) {</span>
+<span class="fc" id="L196">                continue; /* hit end of row */</span>
             }
-<span class="fc" id="L199">            double v5 = getNextPixelAndCheckMinMax(rowpix, ii);</span>
-<span class="fc" id="L200">            ngoodpix++;</span>
-<span class="fc" id="L201">            ii = findNextValidPixelWithNullCheck(nx, rowpix, ++ii);</span>
-<span class="fc bfc" id="L202" title="All 2 branches covered.">            if (ii == nx) {</span>
-<span class="fc" id="L203">                continue; /* hit end of row */</span>
+<span class="fc" id="L198">            double v5 = getNextPixelAndCheckMinMax(rowpix, ii);</span>
+<span class="fc" id="L199">            ngoodpix++;</span>
+<span class="fc" id="L200">            ii = findNextValidPixelWithNullCheck(nx, rowpix, ++ii);</span>
+<span class="fc bfc" id="L201" title="All 2 branches covered.">            if (ii == nx) {</span>
+<span class="fc" id="L202">                continue; /* hit end of row */</span>
             }
-<span class="fc" id="L205">            double v6 = getNextPixelAndCheckMinMax(rowpix, ii);</span>
-<span class="fc" id="L206">            ngoodpix++;</span>
-<span class="fc" id="L207">            ii = findNextValidPixelWithNullCheck(nx, rowpix, ++ii);</span>
-<span class="fc bfc" id="L208" title="All 2 branches covered.">            if (ii == nx) {</span>
-<span class="fc" id="L209">                continue; /* hit end of row */</span>
+<span class="fc" id="L204">            double v6 = getNextPixelAndCheckMinMax(rowpix, ii);</span>
+<span class="fc" id="L205">            ngoodpix++;</span>
+<span class="fc" id="L206">            ii = findNextValidPixelWithNullCheck(nx, rowpix, ++ii);</span>
+<span class="fc bfc" id="L207" title="All 2 branches covered.">            if (ii == nx) {</span>
+<span class="fc" id="L208">                continue; /* hit end of row */</span>
             }
-<span class="fc" id="L211">            double v7 = getNextPixelAndCheckMinMax(rowpix, ii);</span>
-<span class="fc" id="L212">            ngoodpix++;</span>
-<span class="fc" id="L213">            ii = findNextValidPixelWithNullCheck(nx, rowpix, ++ii);</span>
-<span class="fc bfc" id="L214" title="All 2 branches covered.">            if (ii == nx) {</span>
-<span class="fc" id="L215">                continue; /* hit end of row */</span>
+<span class="fc" id="L210">            double v7 = getNextPixelAndCheckMinMax(rowpix, ii);</span>
+<span class="fc" id="L211">            ngoodpix++;</span>
+<span class="fc" id="L212">            ii = findNextValidPixelWithNullCheck(nx, rowpix, ++ii);</span>
+<span class="fc bfc" id="L213" title="All 2 branches covered.">            if (ii == nx) {</span>
+<span class="fc" id="L214">                continue; /* hit end of row */</span>
             }
-<span class="fc" id="L217">            double v8 = getNextPixelAndCheckMinMax(rowpix, ii);</span>
-<span class="fc" id="L218">            ngoodpix++;</span>
+<span class="fc" id="L216">            double v8 = getNextPixelAndCheckMinMax(rowpix, ii);</span>
+<span class="fc" id="L217">            ngoodpix++;</span>
             // now populate the differences arrays for the remaining pixels in
             // the row */
-<span class="fc" id="L221">            int nvals = 0;</span>
-<span class="fc" id="L222">            int nvals2 = 0;</span>
-<span class="fc bfc" id="L223" title="All 2 branches covered.">            for (ii++; ii &lt; nx; ii++) {</span>
-<span class="fc" id="L224">                ii = findNextValidPixelWithNullCheck(nx, rowpix, ii);</span>
-<span class="fc bfc" id="L225" title="All 2 branches covered.">                if (ii == nx) {</span>
-<span class="fc" id="L226">                    continue; /* hit end of row */</span>
+<span class="fc" id="L220">            int nvals = 0;</span>
+<span class="fc" id="L221">            int nvals2 = 0;</span>
+<span class="fc bfc" id="L222" title="All 2 branches covered.">            for (ii++; ii &lt; nx; ii++) {</span>
+<span class="fc" id="L223">                ii = findNextValidPixelWithNullCheck(nx, rowpix, ii);</span>
+<span class="fc bfc" id="L224" title="All 2 branches covered.">                if (ii == nx) {</span>
+<span class="fc" id="L225">                    continue; /* hit end of row */</span>
                 }
-<span class="fc" id="L228">                double v9 = getNextPixelAndCheckMinMax(rowpix, ii);</span>
+<span class="fc" id="L227">                double v9 = getNextPixelAndCheckMinMax(rowpix, ii);</span>
                 /* construct tiledImageOperation of absolute differences */
-<span class="fc bfc" id="L230" title="All 4 branches covered.">                if (!(v5 == v6 &amp;&amp; v6 == v7)) {</span>
-<span class="fc" id="L231">                    differences2[nvals2] = Math.abs(v5 - v7);</span>
-<span class="fc" id="L232">                    nvals2++;</span>
+<span class="fc bfc" id="L229" title="All 4 branches covered.">                if (!(v5 == v6 &amp;&amp; v6 == v7)) {</span>
+<span class="fc" id="L230">                    differences2[nvals2] = Math.abs(v5 - v7);</span>
+<span class="fc" id="L231">                    nvals2++;</span>
                 }
-<span class="fc bfc" id="L234" title="All 8 branches covered.">                if (!(v3 == v4 &amp;&amp; v4 == v5 &amp;&amp; v5 == v6 &amp;&amp; v6 == v7)) {</span>
-<span class="fc" id="L235">                    differences3[nvals] = Math.abs(2 * v5 - v3 - v7);</span>
-<span class="fc" id="L236">                    differences5[nvals] = Math.abs(N6 * v5 - N4 * v3 - N4 * v7 + v1 + v9);</span>
-<span class="fc" id="L237">                    nvals++;</span>
+<span class="fc bfc" id="L233" title="All 8 branches covered.">                if (!(v3 == v4 &amp;&amp; v4 == v5 &amp;&amp; v5 == v6 &amp;&amp; v6 == v7)) {</span>
+<span class="fc" id="L234">                    differences3[nvals] = Math.abs(2 * v5 - v3 - v7);</span>
+<span class="fc" id="L235">                    differences5[nvals] = Math.abs(N6 * v5 - N4 * v3 - N4 * v7 + v1 + v9);</span>
+<span class="fc" id="L236">                    nvals++;</span>
                 } else {
                     /* ignore constant background regions */
-<span class="fc" id="L240">                    ngoodpix++;</span>
+<span class="fc" id="L239">                    ngoodpix++;</span>
                 }
                 /* shift over 1 pixel */
-<span class="fc" id="L243">                v1 = v2;</span>
-<span class="fc" id="L244">                v2 = v3;</span>
-<span class="fc" id="L245">                v3 = v4;</span>
-<span class="fc" id="L246">                v4 = v5;</span>
-<span class="fc" id="L247">                v5 = v6;</span>
-<span class="fc" id="L248">                v6 = v7;</span>
-<span class="fc" id="L249">                v7 = v8;</span>
-<span class="fc" id="L250">                v8 = v9;</span>
+<span class="fc" id="L242">                v1 = v2;</span>
+<span class="fc" id="L243">                v2 = v3;</span>
+<span class="fc" id="L244">                v3 = v4;</span>
+<span class="fc" id="L245">                v4 = v5;</span>
+<span class="fc" id="L246">                v5 = v6;</span>
+<span class="fc" id="L247">                v6 = v7;</span>
+<span class="fc" id="L248">                v7 = v8;</span>
+<span class="fc" id="L249">                v8 = v9;</span>
             } /* end of loop over pixels in the row */
             // compute the median diffs Note that there are 8 more pixel values
             // than there are diffs values.
-<span class="fc" id="L254">            ngoodpix += nvals;</span>
-<span class="fc bfc" id="L255" title="All 2 branches covered.">            if (nvals == 0) {</span>
-<span class="fc" id="L256">                continue; /* cannot compute medians on this row */</span>
-<span class="fc bfc" id="L257" title="All 2 branches covered.">            } else if (nvals == 1) {</span>
-<span class="pc bpc" id="L258" title="1 of 2 branches missed.">                if (nvals2 == 1) {</span>
-<span class="fc" id="L259">                    diffs2[nrows2] = differences2[0];</span>
-<span class="fc" id="L260">                    nrows2++;</span>
+<span class="fc" id="L253">            ngoodpix += nvals;</span>
+<span class="fc bfc" id="L254" title="All 2 branches covered.">            if (nvals == 0) {</span>
+<span class="fc" id="L255">                continue; /* cannot compute medians on this row */</span>
+<span class="fc bfc" id="L256" title="All 2 branches covered.">            } else if (nvals == 1) {</span>
+<span class="pc bpc" id="L257" title="1 of 2 branches missed.">                if (nvals2 == 1) {</span>
+<span class="fc" id="L258">                    diffs2[nrows2] = differences2[0];</span>
+<span class="fc" id="L259">                    nrows2++;</span>
                 }
-<span class="fc" id="L262">                diffs3[nrows] = differences3[0];</span>
-<span class="fc" id="L263">                diffs5[nrows] = differences5[0];</span>
+<span class="fc" id="L261">                diffs3[nrows] = differences3[0];</span>
+<span class="fc" id="L262">                diffs5[nrows] = differences5[0];</span>
             } else {
                 /* quick_select returns the median MUCH faster than using qsort */
-<span class="pc bpc" id="L266" title="1 of 2 branches missed.">                if (nvals2 &gt; 1) {</span>
-<span class="fc" id="L267">                    diffs2[nrows2] = quickSelect(differences2, nvals);</span>
-<span class="fc" id="L268">                    nrows2++;</span>
+<span class="pc bpc" id="L265" title="1 of 2 branches missed.">                if (nvals2 &gt; 1) {</span>
+<span class="fc" id="L266">                    diffs2[nrows2] = quickSelect(differences2, nvals);</span>
+<span class="fc" id="L267">                    nrows2++;</span>
                 }
-<span class="fc" id="L270">                diffs3[nrows] = quickSelect(differences3, nvals);</span>
-<span class="fc" id="L271">                diffs5[nrows] = quickSelect(differences5, nvals);</span>
+<span class="fc" id="L269">                diffs3[nrows] = quickSelect(differences3, nvals);</span>
+<span class="fc" id="L270">                diffs5[nrows] = quickSelect(differences5, nvals);</span>
             }
-<span class="fc" id="L273">            nrows++;</span>
+<span class="fc" id="L272">            nrows++;</span>
         } /* end of loop over rows */
-<span class="fc" id="L275">        computeMedianOfValuesEachRow(nrows, nrows2, diffs2, diffs3, diffs5);</span>
-<span class="fc" id="L276">        setNoiseResult(ngoodpix);</span>
-<span class="fc" id="L277">    }</span>
+<span class="fc" id="L274">        computeMedianOfValuesEachRow(nrows, nrows2, diffs2, diffs3, diffs5);</span>
+<span class="fc" id="L275">        setNoiseResult(ngoodpix);</span>
+<span class="fc" id="L276">    }</span>
 
     private boolean calculateNoiseShortRow(DoubleArrayPointer array, int nx, int ny) {
         /* rows must have at least 9 pixels */
-<span class="fc bfc" id="L281" title="All 2 branches covered.">        if (nx &lt; MINIMUM_PIXEL_WIDTH) {</span>
-<span class="fc" id="L282">            int ngoodpix = 0;</span>
-<span class="fc bfc" id="L283" title="All 2 branches covered.">            for (int index = 0; index &lt; nx; index++) {</span>
-<span class="fc bfc" id="L284" title="All 2 branches covered.">                if (isNull(array.get(index))) {</span>
-<span class="fc" id="L285">                    continue;</span>
-                } else {
-<span class="fc bfc" id="L287" title="All 2 branches covered.">                    if (array.get(index) &lt; this.xminval) {</span>
-<span class="fc" id="L288">                        this.xminval = array.get(index);</span>
-                    }
-<span class="fc bfc" id="L290" title="All 2 branches covered.">                    if (array.get(index) &gt; this.xmaxval) {</span>
-<span class="fc" id="L291">                        this.xmaxval = array.get(index);</span>
-                    }
-<span class="fc" id="L293">                    ngoodpix++;</span>
+<span class="fc bfc" id="L280" title="All 2 branches covered.">        if (nx &lt; MINIMUM_PIXEL_WIDTH) {</span>
+<span class="fc" id="L281">            int ngoodpix = 0;</span>
+<span class="fc bfc" id="L282" title="All 2 branches covered.">            for (int index = 0; index &lt; nx; index++) {</span>
+<span class="fc bfc" id="L283" title="All 2 branches covered.">                if (isNull(array.get(index))) {</span>
+<span class="fc" id="L284">                    continue;</span>
                 }
+<span class="fc bfc" id="L286" title="All 2 branches covered.">                if (array.get(index) &lt; this.xminval) {</span>
+<span class="fc" id="L287">                    this.xminval = array.get(index);</span>
+                }
+<span class="fc bfc" id="L289" title="All 2 branches covered.">                if (array.get(index) &gt; this.xmaxval) {</span>
+<span class="fc" id="L290">                    this.xmaxval = array.get(index);</span>
+                }
+<span class="fc" id="L292">                ngoodpix++;</span>
             }
-<span class="fc" id="L296">            setNoiseResult(ngoodpix);</span>
-<span class="fc" id="L297">            return true;</span>
+<span class="fc" id="L294">            setNoiseResult(ngoodpix);</span>
+<span class="fc" id="L295">            return true;</span>
         }
-<span class="fc" id="L299">        return false;</span>
+<span class="fc" id="L297">        return false;</span>
     }
 
     protected void computeMedianOfValuesEachRow(int nrows, int nrows2, double[] diffs2, double[] diffs3, double[] diffs5) {
         // compute median of the values for each row.
-<span class="fc bfc" id="L304" title="All 2 branches covered.">        if (nrows == 0) {</span>
-<span class="fc" id="L305">            this.xnoise3 = 0;</span>
-<span class="fc" id="L306">            this.xnoise5 = 0;</span>
-<span class="fc bfc" id="L307" title="All 2 branches covered.">        } else if (nrows == 1) {</span>
-<span class="fc" id="L308">            this.xnoise3 = diffs3[0];</span>
-<span class="fc" id="L309">            this.xnoise5 = diffs5[0];</span>
+<span class="fc bfc" id="L302" title="All 2 branches covered.">        if (nrows == 0) {</span>
+<span class="fc" id="L303">            this.xnoise3 = 0;</span>
+<span class="fc" id="L304">            this.xnoise5 = 0;</span>
+<span class="fc bfc" id="L305" title="All 2 branches covered.">        } else if (nrows == 1) {</span>
+<span class="fc" id="L306">            this.xnoise3 = diffs3[0];</span>
+<span class="fc" id="L307">            this.xnoise5 = diffs5[0];</span>
         } else {
-<span class="fc" id="L311">            Arrays.sort(diffs3, 0, nrows);</span>
-<span class="fc" id="L312">            Arrays.sort(diffs5, 0, nrows);</span>
-<span class="fc" id="L313">            this.xnoise3 = (diffs3[(nrows - 1) / 2] + diffs3[nrows / 2]) / 2.;</span>
-<span class="fc" id="L314">            this.xnoise5 = (diffs5[(nrows - 1) / 2] + diffs5[nrows / 2]) / 2.;</span>
+<span class="fc" id="L309">            Arrays.sort(diffs3, 0, nrows);</span>
+<span class="fc" id="L310">            Arrays.sort(diffs5, 0, nrows);</span>
+<span class="fc" id="L311">            this.xnoise3 = (diffs3[(nrows - 1) / 2] + diffs3[nrows / 2]) / 2.;</span>
+<span class="fc" id="L312">            this.xnoise5 = (diffs5[(nrows - 1) / 2] + diffs5[nrows / 2]) / 2.;</span>
         }
-<span class="fc bfc" id="L316" title="All 2 branches covered.">        if (nrows2 == 0) {</span>
-<span class="fc" id="L317">            this.xnoise2 = 0;</span>
-<span class="fc bfc" id="L318" title="All 2 branches covered.">        } else if (nrows2 == 1) {</span>
-<span class="fc" id="L319">            this.xnoise2 = diffs2[0];</span>
+<span class="fc bfc" id="L314" title="All 2 branches covered.">        if (nrows2 == 0) {</span>
+<span class="fc" id="L315">            this.xnoise2 = 0;</span>
+<span class="fc bfc" id="L316" title="All 2 branches covered.">        } else if (nrows2 == 1) {</span>
+<span class="fc" id="L317">            this.xnoise2 = diffs2[0];</span>
         } else {
-<span class="fc" id="L321">            Arrays.sort(diffs2, 0, nrows2);</span>
-<span class="fc" id="L322">            this.xnoise2 = (diffs2[(nrows2 - 1) / 2] + diffs2[nrows2 / 2]) / 2.;</span>
+<span class="fc" id="L319">            Arrays.sort(diffs2, 0, nrows2);</span>
+<span class="fc" id="L320">            this.xnoise2 = (diffs2[(nrows2 - 1) / 2] + diffs2[nrows2 / 2]) / 2.;</span>
         }
-<span class="fc" id="L324">    }</span>
+<span class="fc" id="L322">    }</span>
 
     protected int findNextValidPixelWithNullCheck(int nx, DoubleArrayPointer rowpix, int ii) {
-<span class="fc" id="L327">        return ii;</span>
+<span class="fc" id="L325">        return ii;</span>
     }
 
     private double getNextPixelAndCheckMinMax(DoubleArrayPointer rowpix, int ii) {
-<span class="fc" id="L331">        double pixelValue = rowpix.get(ii); /* store the good pixel value */</span>
-<span class="fc bfc" id="L332" title="All 2 branches covered.">        if (pixelValue &lt; this.xminval) {</span>
-<span class="fc" id="L333">            this.xminval = pixelValue;</span>
+<span class="fc" id="L329">        double pixelValue = rowpix.get(ii); /* store the good pixel value */</span>
+<span class="fc bfc" id="L330" title="All 2 branches covered.">        if (pixelValue &lt; this.xminval) {</span>
+<span class="fc" id="L331">            this.xminval = pixelValue;</span>
         }
-<span class="fc bfc" id="L335" title="All 2 branches covered.">        if (pixelValue &gt; this.xmaxval) {</span>
-<span class="fc" id="L336">            this.xmaxval = pixelValue;</span>
+<span class="fc bfc" id="L333" title="All 2 branches covered.">        if (pixelValue &gt; this.xmaxval) {</span>
+<span class="fc" id="L334">            this.xmaxval = pixelValue;</span>
         }
-<span class="fc" id="L338">        return pixelValue;</span>
+<span class="fc" id="L336">        return pixelValue;</span>
     }
 
     protected double getNoise2() {
-<span class="fc" id="L342">        return this.noise2;</span>
+<span class="fc" id="L340">        return this.noise2;</span>
     }
 
     protected double getNoise3() {
-<span class="fc" id="L346">        return this.noise3;</span>
+<span class="fc" id="L344">        return this.noise3;</span>
     }
 
     protected double getNoise5() {
-<span class="fc" id="L350">        return this.noise5;</span>
+<span class="fc" id="L348">        return this.noise5;</span>
     }
 
     private void initializeNoise() {
-<span class="fc" id="L354">        this.xnoise2 = 0;</span>
-<span class="fc" id="L355">        this.xnoise3 = 0;</span>
-<span class="fc" id="L356">        this.xnoise5 = 0;</span>
-<span class="fc" id="L357">        this.xminval = Double.MAX_VALUE;</span>
-<span class="fc" id="L358">        this.xmaxval = Double.MIN_VALUE;</span>
-<span class="fc" id="L359">    }</span>
+<span class="fc" id="L352">        this.xnoise2 = 0;</span>
+<span class="fc" id="L353">        this.xnoise3 = 0;</span>
+<span class="fc" id="L354">        this.xnoise5 = 0;</span>
+<span class="fc" id="L355">        this.xminval = Double.MAX_VALUE;</span>
+<span class="fc" id="L356">        this.xmaxval = Double.MIN_VALUE;</span>
+<span class="fc" id="L357">    }</span>
 
     protected boolean isNull(double d) {
-<span class="fc" id="L362">        return false;</span>
+<span class="fc" id="L360">        return false;</span>
     }
 
     /**
@@ -406,56 +404,56 @@ public class Quantize {
         double stdev;
         double bScale; /* bscale, 1 in intdata = delta in fdata */
 
-<span class="fc" id="L409">        long nx = (long) nxpix * (long) nypix;</span>
-<span class="fc bfc" id="L410" title="All 2 branches covered.">        if (nx &lt;= 1L) {</span>
-<span class="fc" id="L411">            this.parameter.setBScale(1.);</span>
-<span class="fc" id="L412">            this.parameter.setBZero(0.);</span>
-<span class="fc" id="L413">            return false;</span>
+<span class="fc" id="L407">        long nx = (long) nxpix * (long) nypix;</span>
+<span class="fc bfc" id="L408" title="All 2 branches covered.">        if (nx &lt;= 1L) {</span>
+<span class="fc" id="L409">            this.parameter.setBScale(1.);</span>
+<span class="fc" id="L410">            this.parameter.setBZero(0.);</span>
+<span class="fc" id="L411">            return false;</span>
         }
-<span class="fc bfc" id="L415" title="All 2 branches covered.">        if (this.parameter.getQLevel() &gt;= 0.) {</span>
+<span class="fc bfc" id="L413" title="All 2 branches covered.">        if (this.parameter.getQLevel() &gt;= 0.) {</span>
             /* estimate background noise using MAD pixel differences */
-<span class="fc" id="L417">            calculateNoise(fdata, nxpix, nypix);</span>
+<span class="fc" id="L415">            calculateNoise(fdata, nxpix, nypix);</span>
             // special case of an image filled with Nulls
-<span class="fc bfc" id="L419" title="All 4 branches covered.">            if (this.parameter.isCheckNull() &amp;&amp; this.ngood == 0) {</span>
+<span class="fc bfc" id="L417" title="All 4 branches covered.">            if (this.parameter.isCheckNull() &amp;&amp; this.ngood == 0) {</span>
                 /* set parameters to dummy values, which are not used */
-<span class="fc" id="L421">                this.minValue = 0.;</span>
-<span class="fc" id="L422">                this.maxValue = 1.;</span>
-<span class="fc" id="L423">                stdev = 1;</span>
+<span class="fc" id="L419">                this.minValue = 0.;</span>
+<span class="fc" id="L420">                this.maxValue = 1.;</span>
+<span class="fc" id="L421">                stdev = 1;</span>
             } else {
                 // use the minimum of noise2, noise3, and noise5 as the best
                 // noise value
-<span class="fc" id="L427">                stdev = this.noise3;</span>
-<span class="fc bfc" id="L428" title="All 4 branches covered.">                if (this.noise2 != 0. &amp;&amp; this.noise2 &lt; stdev) {</span>
-<span class="fc" id="L429">                    stdev = this.noise2;</span>
+<span class="fc" id="L425">                stdev = this.noise3;</span>
+<span class="fc bfc" id="L426" title="All 4 branches covered.">                if (this.noise2 != 0. &amp;&amp; this.noise2 &lt; stdev) {</span>
+<span class="fc" id="L427">                    stdev = this.noise2;</span>
                 }
-<span class="fc bfc" id="L431" title="All 4 branches covered.">                if (this.noise5 != 0. &amp;&amp; this.noise5 &lt; stdev) {</span>
-<span class="fc" id="L432">                    stdev = this.noise5;</span>
+<span class="fc bfc" id="L429" title="All 4 branches covered.">                if (this.noise5 != 0. &amp;&amp; this.noise5 &lt; stdev) {</span>
+<span class="fc" id="L430">                    stdev = this.noise5;</span>
                 }
             }
-<span class="fc bfc" id="L435" title="All 2 branches covered.">            if (this.parameter.getQLevel() == 0.) {</span>
-<span class="fc" id="L436">                bScale = stdev / DEFAULT_QUANT_LEVEL; /* default quantization */</span>
+<span class="fc bfc" id="L433" title="All 2 branches covered.">            if (this.parameter.getQLevel() == 0.) {</span>
+<span class="fc" id="L434">                bScale = stdev / DEFAULT_QUANT_LEVEL; /* default quantization */</span>
             } else {
-<span class="fc" id="L438">                bScale = stdev / this.parameter.getQLevel();</span>
+<span class="fc" id="L436">                bScale = stdev / this.parameter.getQLevel();</span>
             }
-<span class="fc bfc" id="L440" title="All 2 branches covered.">            if (bScale == 0.) {</span>
-<span class="fc" id="L441">                return false; /* don't quantize */</span>
+<span class="fc bfc" id="L438" title="All 2 branches covered.">            if (bScale == 0.) {</span>
+<span class="fc" id="L439">                return false; /* don't quantize */</span>
             }
         } else {
             /* negative value represents the absolute quantization level */
-<span class="fc" id="L445">            bScale = -this.parameter.getQLevel();</span>
+<span class="fc" id="L443">            bScale = -this.parameter.getQLevel();</span>
             /* only nned to calculate the min and max values */
-<span class="fc" id="L447">            calculateNoise(fdata, nxpix, nypix);</span>
+<span class="fc" id="L445">            calculateNoise(fdata, nxpix, nypix);</span>
         }
         /* check that the range of quantized levels is not &gt; range of int */
-<span class="pc bpc" id="L450" title="1 of 2 branches missed.">        if ((this.maxValue - this.minValue) / bScale &gt; 2. * MAX_INT_AS_DOUBLE - N_RESERVED_VALUES) {</span>
-<span class="nc" id="L451">            return false; /* don't quantize */</span>
+<span class="pc bpc" id="L448" title="1 of 2 branches missed.">        if ((this.maxValue - this.minValue) / bScale &gt; 2. * MAX_INT_AS_DOUBLE - N_RESERVED_VALUES) {</span>
+<span class="nc" id="L449">            return false; /* don't quantize */</span>
         }
 
-<span class="fc" id="L454">        this.parameter.setBScale(bScale);</span>
-<span class="fc" id="L455">        this.parameter.setMinValue(this.minValue);</span>
-<span class="fc" id="L456">        this.parameter.setMaxValue(this.maxValue);</span>
-<span class="fc bfc" id="L457" title="All 4 branches covered.">        this.parameter.setCheckNull(this.parameter.isCheckNull() &amp;&amp; this.ngood != nx);</span>
-<span class="fc" id="L458">        return true; /* yes, data have been quantized */</span>
+<span class="fc" id="L452">        this.parameter.setBScale(bScale);</span>
+<span class="fc" id="L453">        this.parameter.setMinValue(this.minValue);</span>
+<span class="fc" id="L454">        this.parameter.setMaxValue(this.maxValue);</span>
+<span class="fc bfc" id="L455" title="All 4 branches covered.">        this.parameter.setCheckNull(this.parameter.isCheckNull() &amp;&amp; this.ngood != nx);</span>
+<span class="fc" id="L456">        return true; /* yes, data have been quantized */</span>
     }
 
     private double quickSelect(double[] arr, int n) {
@@ -463,81 +461,81 @@ public class Quantize {
         int median;
         int middle, ll, hh;
 
-<span class="fc" id="L466">        low = 0;</span>
-<span class="fc" id="L467">        high = n - 1;</span>
-<span class="fc" id="L468">        median = low + high &gt;&gt;&gt; 1; // was (low + high) / 2;</span>
+<span class="fc" id="L464">        low = 0;</span>
+<span class="fc" id="L465">        high = n - 1;</span>
+<span class="fc" id="L466">        median = low + high &gt;&gt;&gt; 1; // was (low + high) / 2;</span>
         for (;;) {
-<span class="fc bfc" id="L470" title="All 2 branches covered.">            if (high &lt;= low) {</span>
-<span class="fc" id="L471">                return arr[median];</span>
+<span class="fc bfc" id="L468" title="All 2 branches covered.">            if (high &lt;= low) {</span>
+<span class="fc" id="L469">                return arr[median];</span>
             }
 
-<span class="fc bfc" id="L474" title="All 2 branches covered.">            if (high == low + 1) { /* Two elements only */</span>
-<span class="fc bfc" id="L475" title="All 2 branches covered.">                if (arr[low] &gt; arr[high]) {</span>
-<span class="fc" id="L476">                    swapElements(arr, low, high);</span>
+<span class="fc bfc" id="L472" title="All 2 branches covered.">            if (high == low + 1) { /* Two elements only */</span>
+<span class="fc bfc" id="L473" title="All 2 branches covered.">                if (arr[low] &gt; arr[high]) {</span>
+<span class="fc" id="L474">                    swapElements(arr, low, high);</span>
                 }
-<span class="fc" id="L478">                return arr[median];</span>
+<span class="fc" id="L476">                return arr[median];</span>
             }
 
             /* Find median of low, middle and high items; swap into position low */
-<span class="fc" id="L482">            middle = low + high &gt;&gt;&gt; 1; // was (low + high) / 2;</span>
-<span class="fc bfc" id="L483" title="All 2 branches covered.">            if (arr[middle] &gt; arr[high]) {</span>
-<span class="fc" id="L484">                swapElements(arr, middle, high);</span>
+<span class="fc" id="L480">            middle = low + high &gt;&gt;&gt; 1; // was (low + high) / 2;</span>
+<span class="fc bfc" id="L481" title="All 2 branches covered.">            if (arr[middle] &gt; arr[high]) {</span>
+<span class="fc" id="L482">                swapElements(arr, middle, high);</span>
             }
-<span class="fc bfc" id="L486" title="All 2 branches covered.">            if (arr[low] &gt; arr[high]) {</span>
-<span class="fc" id="L487">                swapElements(arr, low, high);</span>
+<span class="fc bfc" id="L484" title="All 2 branches covered.">            if (arr[low] &gt; arr[high]) {</span>
+<span class="fc" id="L485">                swapElements(arr, low, high);</span>
             }
-<span class="fc bfc" id="L489" title="All 2 branches covered.">            if (arr[middle] &gt; arr[low]) {</span>
-<span class="fc" id="L490">                swapElements(arr, middle, low);</span>
+<span class="fc bfc" id="L487" title="All 2 branches covered.">            if (arr[middle] &gt; arr[low]) {</span>
+<span class="fc" id="L488">                swapElements(arr, middle, low);</span>
             }
 
             /* Swap low item (now in position middle) into position (low+1) */
-<span class="fc" id="L494">            swapElements(arr, middle, low + 1);</span>
+<span class="fc" id="L492">            swapElements(arr, middle, low + 1);</span>
 
             /* Nibble from each end towards middle, swapping items when stuck */
-<span class="fc" id="L497">            ll = low + 1;</span>
-<span class="fc" id="L498">            hh = high;</span>
+<span class="fc" id="L495">            ll = low + 1;</span>
+<span class="fc" id="L496">            hh = high;</span>
             for (;;) {
                 do {
-<span class="fc" id="L501">                    ll++;</span>
-<span class="fc bfc" id="L502" title="All 2 branches covered.">                } while (arr[low] &gt; arr[ll]);</span>
+<span class="fc" id="L499">                    ll++;</span>
+<span class="fc bfc" id="L500" title="All 2 branches covered.">                } while (arr[low] &gt; arr[ll]);</span>
                 do {
-<span class="fc" id="L504">                    hh--;</span>
-<span class="fc bfc" id="L505" title="All 2 branches covered.">                } while (arr[hh] &gt; arr[low]);</span>
+<span class="fc" id="L502">                    hh--;</span>
+<span class="fc bfc" id="L503" title="All 2 branches covered.">                } while (arr[hh] &gt; arr[low]);</span>
 
-<span class="fc bfc" id="L507" title="All 2 branches covered.">                if (hh &lt; ll) {</span>
-<span class="fc" id="L508">                    break;</span>
+<span class="fc bfc" id="L505" title="All 2 branches covered.">                if (hh &lt; ll) {</span>
+<span class="fc" id="L506">                    break;</span>
                 }
 
-<span class="fc" id="L511">                swapElements(arr, ll, hh);</span>
+<span class="fc" id="L509">                swapElements(arr, ll, hh);</span>
             }
 
             /* Swap middle item (in position low) back into correct position */
-<span class="fc" id="L515">            swapElements(arr, low, hh);</span>
+<span class="fc" id="L513">            swapElements(arr, low, hh);</span>
 
             /* Re-set active partition */
-<span class="fc bfc" id="L518" title="All 2 branches covered.">            if (hh &lt;= median) {</span>
-<span class="fc" id="L519">                low = ll;</span>
+<span class="fc bfc" id="L516" title="All 2 branches covered.">            if (hh &lt;= median) {</span>
+<span class="fc" id="L517">                low = ll;</span>
             }
-<span class="fc bfc" id="L521" title="All 2 branches covered.">            if (hh &gt;= median) {</span>
-<span class="fc" id="L522">                high = hh - 1;</span>
+<span class="fc bfc" id="L519" title="All 2 branches covered.">            if (hh &gt;= median) {</span>
+<span class="fc" id="L520">                high = hh - 1;</span>
             }
         }
     }
 
     private void setNoiseResult(long ngoodpix) {
-<span class="fc" id="L528">        this.minValue = this.xminval;</span>
-<span class="fc" id="L529">        this.maxValue = this.xmaxval;</span>
-<span class="fc" id="L530">        this.ngood = ngoodpix;</span>
-<span class="fc" id="L531">        this.noise2 = NOISE_2_MULTIPLICATOR * this.xnoise2;</span>
-<span class="fc" id="L532">        this.noise3 = NOISE_3_MULTIPLICATOR * this.xnoise3;</span>
-<span class="fc" id="L533">        this.noise5 = NOISE_5_MULTIPLICATOR * this.xnoise5;</span>
-<span class="fc" id="L534">    }</span>
+<span class="fc" id="L526">        this.minValue = this.xminval;</span>
+<span class="fc" id="L527">        this.maxValue = this.xmaxval;</span>
+<span class="fc" id="L528">        this.ngood = ngoodpix;</span>
+<span class="fc" id="L529">        this.noise2 = NOISE_2_MULTIPLICATOR * this.xnoise2;</span>
+<span class="fc" id="L530">        this.noise3 = NOISE_3_MULTIPLICATOR * this.xnoise3;</span>
+<span class="fc" id="L531">        this.noise5 = NOISE_5_MULTIPLICATOR * this.xnoise5;</span>
+<span class="fc" id="L532">    }</span>
 
     private void swapElements(double[] array, int one, int second) {
-<span class="fc" id="L537">        double value = array[one];</span>
-<span class="fc" id="L538">        array[one] = array[second];</span>
-<span class="fc" id="L539">        array[second] = value;</span>
-<span class="fc" id="L540">    }</span>
+<span class="fc" id="L535">        double value = array[one];</span>
+<span class="fc" id="L536">        array[one] = array[second];</span>
+<span class="fc" id="L537">        array[second] = value;</span>
+<span class="fc" id="L538">    }</span>
 
 }
-</pre><div class="footer"><span class="right">Created with <a href="http://www.eclemma.org/jacoco">JaCoCo</a> 0.7.6.201602180812</span></div></body></html>
+</pre><div class="footer"><span class="right">Created with <a href="http://www.jacoco.org/jacoco">JaCoCo</a> 0.8.7.202105040129</span></div></body></html>

@@ -1,4 +1,4 @@
-<?xml version="1.0" encoding="UTF-8"?><!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Strict//EN" "http://www.w3.org/TR/xhtml1/DTD/xhtml1-strict.dtd"><html xmlns="http://www.w3.org/1999/xhtml" lang="en"><head><meta http-equiv="Content-Type" content="text/html;charset=UTF-8"/><link rel="stylesheet" href="../.resources/report.css" type="text/css"/><link rel="shortcut icon" href="../.resources/report.gif" type="image/gif"/><title>Synonyms.java</title><link rel="stylesheet" href="../.resources/prettify.css" type="text/css"/><script type="text/javascript" src="../.resources/prettify.js"></script></head><body onload="window['PR_TAB_WIDTH']=4;prettyPrint()"><div class="breadcrumb" id="breadcrumb"><span class="info"><a href="../.sessions.html" class="el_session">Sessions</a></span><a href="../index.html" class="el_report">nom.tam FITS library</a> &gt; <a href="index.source.html" class="el_package">nom.tam.fits.header</a> &gt; <span class="el_source">Synonyms.java</span></div><h1>Synonyms.java</h1><pre class="source lang-java linenums">package nom.tam.fits.header;
+<?xml version="1.0" encoding="UTF-8"?><!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Strict//EN" "http://www.w3.org/TR/xhtml1/DTD/xhtml1-strict.dtd"><html xmlns="http://www.w3.org/1999/xhtml" lang="en"><head><meta http-equiv="Content-Type" content="text/html;charset=UTF-8"/><link rel="stylesheet" href="../jacoco-resources/report.css" type="text/css"/><link rel="shortcut icon" href="../jacoco-resources/report.gif" type="image/gif"/><title>Synonyms.java</title><link rel="stylesheet" href="../jacoco-resources/prettify.css" type="text/css"/><script type="text/javascript" src="../jacoco-resources/prettify.js"></script></head><body onload="window['PR_TAB_WIDTH']=4;prettyPrint()"><div class="breadcrumb" id="breadcrumb"><span class="info"><a href="../jacoco-sessions.html" class="el_session">Sessions</a></span><a href="../index.html" class="el_report">nom.tam FITS library</a> &gt; <a href="index.source.html" class="el_package">nom.tam.fits.header</a> &gt; <span class="el_source">Synonyms.java</span></div><h1>Synonyms.java</h1><pre class="source lang-java linenums">package nom.tam.fits.header;
 
 import edu.umd.cs.findbugs.annotations.SuppressFBWarnings;
 import nom.tam.fits.header.extra.NOAOExt;
@@ -9,7 +9,7 @@ import nom.tam.fits.header.extra.STScIExt;
  * #%L
  * nom.tam FITS library
  * %%
- * Copyright (C) 1996 - 2015 nom-tam-fits
+ * Copyright (C) 1996 - 2021 nom-tam-fits
  * %%
  * This is free and unencumbered software released into the public domain.
  * 
@@ -42,50 +42,52 @@ import nom.tam.fits.header.extra.STScIExt;
  * 
  * @author Richard van Nieuwenhoven
  */
-<span class="pc" id="L45">public enum Synonyms {</span>
-<span class="fc" id="L46">    EQUINOX(Standard.EQUINOX, Standard.EPOCH),</span>
-<span class="fc" id="L47">    TIMESYS(NOAOExt.TIMESYS, STScIExt.TIMESYS),</span>
-<span class="fc" id="L48">    RADESYS(Standard.RADESYS, Standard.RADECSYS),</span>
-<span class="fc" id="L49">    DARKTIME(NOAOExt.DARKTIME, SBFitsExt.DARKTIME);</span>
+<span class="fc" id="L45">public enum Synonyms {</span>
+<span class="fc" id="L46">    @SuppressWarnings(&quot;deprecation&quot;)</span>
+    EQUINOX(Standard.EQUINOX, Standard.EPOCH),
+<span class="fc" id="L48">    TIMESYS(NOAOExt.TIMESYS, STScIExt.TIMESYS),</span>
+<span class="fc" id="L49">    @SuppressWarnings(&quot;deprecation&quot;)</span>
+    RADESYS(Standard.RADESYS, Standard.RADECSYS),
+<span class="fc" id="L51">    DARKTIME(NOAOExt.DARKTIME, SBFitsExt.DARKTIME);</span>
 
     private final IFitsHeader primaryKeyword;
 
     private final IFitsHeader[] synonyms;
 
-<span class="fc" id="L55">    Synonyms(IFitsHeader primaryKeyword, IFitsHeader... synonyms) {</span>
-<span class="fc" id="L56">        this.primaryKeyword = primaryKeyword;</span>
-<span class="fc" id="L57">        this.synonyms = synonyms;</span>
-<span class="fc" id="L58">    }</span>
+<span class="fc" id="L57">    Synonyms(IFitsHeader primaryKeyword, IFitsHeader... synonyms) {</span>
+<span class="fc" id="L58">        this.primaryKeyword = primaryKeyword;</span>
+<span class="fc" id="L59">        this.synonyms = synonyms;</span>
+<span class="fc" id="L60">    }</span>
 
     @SuppressFBWarnings(value = &quot;EI_EXPOSE_REP&quot;, justification = &quot;by convention the array may not be changed.&quot;)
     public IFitsHeader[] getSynonyms() {
-<span class="fc" id="L62">        return this.synonyms;</span>
+<span class="fc" id="L64">        return this.synonyms;</span>
     }
 
     public IFitsHeader primaryKeyword() {
-<span class="fc" id="L66">        return this.primaryKeyword;</span>
+<span class="fc" id="L68">        return this.primaryKeyword;</span>
     }
 
     public static IFitsHeader primaryKeyword(IFitsHeader header) {
-<span class="fc bfc" id="L70" title="All 2 branches covered.">        for (Synonyms synonym : values()) {</span>
-<span class="fc bfc" id="L71" title="All 2 branches covered.">            for (IFitsHeader synHeader : synonym.synonyms) {</span>
-<span class="fc bfc" id="L72" title="All 2 branches covered.">                if (synHeader.equals(header)) {</span>
-<span class="fc" id="L73">                    return synonym.primaryKeyword();</span>
+<span class="fc bfc" id="L72" title="All 2 branches covered.">        for (Synonyms synonym : values()) {</span>
+<span class="fc bfc" id="L73" title="All 2 branches covered.">            for (IFitsHeader synHeader : synonym.synonyms) {</span>
+<span class="fc bfc" id="L74" title="All 2 branches covered.">                if (synHeader.equals(header)) {</span>
+<span class="fc" id="L75">                    return synonym.primaryKeyword();</span>
                 }
             }
         }
-<span class="fc" id="L77">        return header;</span>
+<span class="fc" id="L79">        return header;</span>
     }
 
     public static String primaryKeyword(String header) {
-<span class="fc bfc" id="L81" title="All 2 branches covered.">        for (Synonyms synonym : values()) {</span>
-<span class="fc bfc" id="L82" title="All 2 branches covered.">            for (IFitsHeader synHeader : synonym.synonyms) {</span>
-<span class="fc bfc" id="L83" title="All 2 branches covered.">                if (synHeader.key().equals(header)) {</span>
-<span class="fc" id="L84">                    return synonym.primaryKeyword().key();</span>
+<span class="fc bfc" id="L83" title="All 2 branches covered.">        for (Synonyms synonym : values()) {</span>
+<span class="fc bfc" id="L84" title="All 2 branches covered.">            for (IFitsHeader synHeader : synonym.synonyms) {</span>
+<span class="fc bfc" id="L85" title="All 2 branches covered.">                if (synHeader.key().equals(header)) {</span>
+<span class="fc" id="L86">                    return synonym.primaryKeyword().key();</span>
                 }
             }
         }
-<span class="fc" id="L88">        return header;</span>
+<span class="fc" id="L90">        return header;</span>
     }
 }
-</pre><div class="footer"><span class="right">Created with <a href="http://www.eclemma.org/jacoco">JaCoCo</a> 0.7.6.201602180812</span></div></body></html>
+</pre><div class="footer"><span class="right">Created with <a href="http://www.jacoco.org/jacoco">JaCoCo</a> 0.8.7.202105040129</span></div></body></html>

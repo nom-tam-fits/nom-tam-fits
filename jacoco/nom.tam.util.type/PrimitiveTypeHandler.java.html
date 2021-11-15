@@ -1,10 +1,10 @@
-<?xml version="1.0" encoding="UTF-8"?><!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Strict//EN" "http://www.w3.org/TR/xhtml1/DTD/xhtml1-strict.dtd"><html xmlns="http://www.w3.org/1999/xhtml" lang="en"><head><meta http-equiv="Content-Type" content="text/html;charset=UTF-8"/><link rel="stylesheet" href="../.resources/report.css" type="text/css"/><link rel="shortcut icon" href="../.resources/report.gif" type="image/gif"/><title>PrimitiveTypeHandler.java</title><link rel="stylesheet" href="../.resources/prettify.css" type="text/css"/><script type="text/javascript" src="../.resources/prettify.js"></script></head><body onload="window['PR_TAB_WIDTH']=4;prettyPrint()"><div class="breadcrumb" id="breadcrumb"><span class="info"><a href="../.sessions.html" class="el_session">Sessions</a></span><a href="../index.html" class="el_report">nom.tam FITS library</a> &gt; <a href="index.source.html" class="el_package">nom.tam.util.type</a> &gt; <span class="el_source">PrimitiveTypeHandler.java</span></div><h1>PrimitiveTypeHandler.java</h1><pre class="source lang-java linenums">package nom.tam.util.type;
+<?xml version="1.0" encoding="UTF-8"?><!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Strict//EN" "http://www.w3.org/TR/xhtml1/DTD/xhtml1-strict.dtd"><html xmlns="http://www.w3.org/1999/xhtml" lang="en"><head><meta http-equiv="Content-Type" content="text/html;charset=UTF-8"/><link rel="stylesheet" href="../jacoco-resources/report.css" type="text/css"/><link rel="shortcut icon" href="../jacoco-resources/report.gif" type="image/gif"/><title>PrimitiveTypeHandler.java</title><link rel="stylesheet" href="../jacoco-resources/prettify.css" type="text/css"/><script type="text/javascript" src="../jacoco-resources/prettify.js"></script></head><body onload="window['PR_TAB_WIDTH']=4;prettyPrint()"><div class="breadcrumb" id="breadcrumb"><span class="info"><a href="../jacoco-sessions.html" class="el_session">Sessions</a></span><a href="../index.html" class="el_report">nom.tam FITS library</a> &gt; <a href="index.source.html" class="el_package">nom.tam.util.type</a> &gt; <span class="el_source">PrimitiveTypeHandler.java</span></div><h1>PrimitiveTypeHandler.java</h1><pre class="source lang-java linenums">package nom.tam.util.type;
 
 /*
  * #%L
  * nom.tam FITS library
  * %%
- * Copyright (C) 1996 - 2015 nom-tam-fits
+ * Copyright (C) 1996 - 2021 nom-tam-fits
  * %%
  * This is free and unencumbered software released into the public domain.
  * 
@@ -32,100 +32,58 @@
  */
 
 import java.nio.Buffer;
-import java.util.Collections;
-import java.util.HashMap;
-import java.util.Map;
 
+/**
+ * @deprecated  Use equivalent static methods of {@link ElementType} instead.
+ * 
+ */
+@Deprecated
 public final class PrimitiveTypeHandler {
 
-    private static final int MAX_TYPE_VALUE = 256;
-
-    private static final int BIT_PIX_OFFSET = 64;
-
-    private static PrimitiveType&lt;?&gt;[] byBitPix;
-
-    private static PrimitiveType&lt;?&gt;[] byType;
-
-    private static Map&lt;Class&lt;?&gt;, PrimitiveType&lt;? extends Buffer&gt;&gt; byClass;
-
-    static {
-<span class="fc" id="L52">        byBitPix = new PrimitiveType[BIT_PIX_OFFSET * 2 + 1];</span>
-<span class="fc" id="L53">        byType = new PrimitiveType[MAX_TYPE_VALUE];</span>
-<span class="fc" id="L54">        Map&lt;Class&lt;?&gt;, PrimitiveType&lt;?&gt;&gt; initialByClass = new HashMap&lt;Class&lt;?&gt;, PrimitiveType&lt;?&gt;&gt;();</span>
-<span class="fc bfc" id="L55" title="All 2 branches covered.">        for (PrimitiveType&lt;?&gt; type : values()) {</span>
-<span class="fc bfc" id="L56" title="All 2 branches covered.">            if (type.bitPix() != 0) {</span>
-<span class="fc" id="L57">                byBitPix[type.bitPix() + BIT_PIX_OFFSET] = type;</span>
-            }
-<span class="fc" id="L59">            byType[type.type()] = type;</span>
-<span class="fc" id="L60">            initialByClass.put(type.primitiveClass(), type);</span>
-<span class="fc" id="L61">            initialByClass.put(type.wrapperClass(), type);</span>
-<span class="fc bfc" id="L62" title="All 2 branches covered.">            if (type.bufferClass() != null) {</span>
-<span class="fc" id="L63">                initialByClass.put(type.bufferClass(), type);</span>
-            }
-        }
-<span class="fc" id="L66">        byClass = Collections.unmodifiableMap(initialByClass);</span>
-<span class="fc" id="L67">    }</span>
-
-    public static &lt;B extends Buffer&gt; PrimitiveType&lt;B&gt; nearestValueOf(int bitPix) {
-<span class="fc bfc" id="L70" title="All 4 branches covered.">        if (bitPix &gt;= PrimitiveTypes.FLOAT.bitPix() &amp;&amp; bitPix &lt; 0) {</span>
-<span class="fc" id="L71">            return (PrimitiveType&lt;B&gt;) PrimitiveTypes.FLOAT;</span>
-<span class="fc bfc" id="L72" title="All 4 branches covered.">        } else if (bitPix &gt;= PrimitiveTypes.DOUBLE.bitPix() &amp;&amp; bitPix &lt; PrimitiveTypes.FLOAT.bitPix()) {</span>
-<span class="fc" id="L73">            return (PrimitiveType&lt;B&gt;) PrimitiveTypes.DOUBLE;</span>
-<span class="fc bfc" id="L74" title="All 4 branches covered.">        } else if (bitPix &gt; 0 &amp;&amp; bitPix &lt;= PrimitiveTypes.BYTE.bitPix()) {</span>
-<span class="fc" id="L75">            return (PrimitiveType&lt;B&gt;) PrimitiveTypes.BYTE;</span>
-<span class="fc bfc" id="L76" title="All 4 branches covered.">        } else if (bitPix &gt; PrimitiveTypes.BYTE.bitPix() &amp;&amp; bitPix &lt;= PrimitiveTypes.SHORT.bitPix()) {</span>
-<span class="fc" id="L77">            return (PrimitiveType&lt;B&gt;) PrimitiveTypes.SHORT;</span>
-<span class="fc bfc" id="L78" title="All 4 branches covered.">        } else if (bitPix &gt; PrimitiveTypes.SHORT.bitPix() &amp;&amp; bitPix &lt;= PrimitiveTypes.INT.bitPix()) {</span>
-<span class="fc" id="L79">            return (PrimitiveType&lt;B&gt;) PrimitiveTypes.INT;</span>
-<span class="fc bfc" id="L80" title="All 4 branches covered.">        } else if (bitPix &gt; PrimitiveTypes.INT.bitPix() &amp;&amp; bitPix &lt;= PrimitiveTypes.LONG.bitPix()) {</span>
-<span class="fc" id="L81">            return (PrimitiveType&lt;B&gt;) PrimitiveTypes.LONG;</span>
-        }
-<span class="fc" id="L83">        return (PrimitiveType&lt;B&gt;) PrimitiveTypes.UNKNOWN;</span>
+    /**
+     * @deprecated Use {@link ElementType#forDataID(char)} instead.
+     * 
+     * @param type  the Java array type character ID. For example 'J' for long integers.
+     * @return the corresponding FITS element type.
+     * 
+     */
+    public static ElementType&lt;Buffer&gt; valueOf(char type) {
+<span class="fc" id="L51">        return ElementType.forDataID(type);</span>
     }
 
-    public static PrimitiveType&lt;Buffer&gt; valueOf(char type) {
-<span class="fc" id="L87">        return cast(byType[type]);</span>
+    /**
+     * @deprecated Use {@link ElementType#forClass(Class)} instead.
+     * 
+     * @param clazz  the Java class of an element or an array thereof
+     * @return the corresponding FITS element type.
+     * 
+     * @param &lt;B&gt; the generic tpye of buffer used by the returned element type.
+     */
+    public static &lt;B extends Buffer&gt; ElementType&lt;B&gt; valueOf(Class&lt;?&gt; clazz) {
+<span class="fc" id="L63">        return ElementType.forClass(clazz);</span>
     }
 
-    public static &lt;B extends Buffer&gt; PrimitiveType&lt;B&gt; valueOf(Class&lt;?&gt; clazz) {
-<span class="fc" id="L91">        PrimitiveType&lt;?&gt; primitiveType = byClass.get(clazz);</span>
-<span class="fc bfc" id="L92" title="All 2 branches covered.">        if (primitiveType == null) {</span>
-<span class="fc bfc" id="L93" title="All 2 branches covered.">            for (Class&lt;?&gt; interf : clazz.getInterfaces()) {</span>
-<span class="fc" id="L94">                primitiveType = byClass.get(interf);</span>
-<span class="fc bfc" id="L95" title="All 2 branches covered.">                if (primitiveType != null) {</span>
-<span class="fc" id="L96">                    return cast(primitiveType);</span>
-                }
-            }
-<span class="fc" id="L99">            return valueOf(clazz.getSuperclass());</span>
-        }
-<span class="fc" id="L101">        return cast(primitiveType);</span>
+    /**
+     * @deprecated Use {@link ElementType#forBitpix(int)} instead.
+     * 
+     * @param bitPix  the FITS BITPIX value
+     * @return the corresponding FITS element type.
+     */
+    public static ElementType&lt;Buffer&gt; valueOf(int bitPix) {
+<span class="fc" id="L73">        return ElementType.forBitpix(bitPix);</span>
+    }
+    
+    /**
+     * @deprecated Use {@link ElementType#forNearestBitpix(int)} instead.
+     * 
+     * @param bitPix  a FITS BITPIX value
+     * @return the nearest corresponding FITS element type.
+     */
+    public static ElementType&lt;Buffer&gt; nearestValueOf(int bitPix) {
+<span class="fc" id="L83">        return ElementType.forNearestBitpix(bitPix);</span>
     }
 
-    public static PrimitiveType&lt;Buffer&gt; valueOf(int bitPix) {
-<span class="fc" id="L105">        return cast(byBitPix[bitPix + BIT_PIX_OFFSET]);</span>
+    private PrimitiveTypeHandler() {
     }
-
-    @SuppressWarnings(&quot;unchecked&quot;)
-    private static &lt;B extends Buffer&gt; PrimitiveType&lt;B&gt; cast(PrimitiveType&lt;?&gt; primitiveType) {
-<span class="fc" id="L110">        return (PrimitiveType&lt;B&gt;) primitiveType;</span>
-    }
-
-    private static PrimitiveType&lt;?&gt;[] values() {
-<span class="fc" id="L114">        return new PrimitiveType[]{</span>
-            PrimitiveTypes.BOOLEAN,
-            PrimitiveTypes.BYTE,
-            PrimitiveTypes.CHAR,
-            PrimitiveTypes.DOUBLE,
-            PrimitiveTypes.FLOAT,
-            PrimitiveTypes.INT,
-            PrimitiveTypes.LONG,
-            PrimitiveTypes.SHORT,
-            PrimitiveTypes.STRING,
-            PrimitiveTypes.UNKNOWN
-        };
-    }
-
-<span class="fc" id="L128">    private PrimitiveTypeHandler() {</span>
-<span class="fc" id="L129">    }</span>
 }
-</pre><div class="footer"><span class="right">Created with <a href="http://www.eclemma.org/jacoco">JaCoCo</a> 0.7.6.201602180812</span></div></body></html>
+</pre><div class="footer"><span class="right">Created with <a href="http://www.jacoco.org/jacoco">JaCoCo</a> 0.8.7.202105040129</span></div></body></html>

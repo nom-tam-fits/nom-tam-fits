@@ -1,10 +1,10 @@
-<?xml version="1.0" encoding="UTF-8"?><!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Strict//EN" "http://www.w3.org/TR/xhtml1/DTD/xhtml1-strict.dtd"><html xmlns="http://www.w3.org/1999/xhtml" lang="en"><head><meta http-equiv="Content-Type" content="text/html;charset=UTF-8"/><link rel="stylesheet" href="../.resources/report.css" type="text/css"/><link rel="shortcut icon" href="../.resources/report.gif" type="image/gif"/><title>ArrayFuncs.java</title><link rel="stylesheet" href="../.resources/prettify.css" type="text/css"/><script type="text/javascript" src="../.resources/prettify.js"></script></head><body onload="window['PR_TAB_WIDTH']=4;prettyPrint()"><div class="breadcrumb" id="breadcrumb"><span class="info"><a href="../.sessions.html" class="el_session">Sessions</a></span><a href="../index.html" class="el_report">nom.tam FITS library</a> &gt; <a href="index.source.html" class="el_package">nom.tam.util</a> &gt; <span class="el_source">ArrayFuncs.java</span></div><h1>ArrayFuncs.java</h1><pre class="source lang-java linenums">package nom.tam.util;
+<?xml version="1.0" encoding="UTF-8"?><!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Strict//EN" "http://www.w3.org/TR/xhtml1/DTD/xhtml1-strict.dtd"><html xmlns="http://www.w3.org/1999/xhtml" lang="en"><head><meta http-equiv="Content-Type" content="text/html;charset=UTF-8"/><link rel="stylesheet" href="../jacoco-resources/report.css" type="text/css"/><link rel="shortcut icon" href="../jacoco-resources/report.gif" type="image/gif"/><title>ArrayFuncs.java</title><link rel="stylesheet" href="../jacoco-resources/prettify.css" type="text/css"/><script type="text/javascript" src="../jacoco-resources/prettify.js"></script></head><body onload="window['PR_TAB_WIDTH']=4;prettyPrint()"><div class="breadcrumb" id="breadcrumb"><span class="info"><a href="../jacoco-sessions.html" class="el_session">Sessions</a></span><a href="../index.html" class="el_report">nom.tam FITS library</a> &gt; <a href="index.source.html" class="el_package">nom.tam.util</a> &gt; <span class="el_source">ArrayFuncs.java</span></div><h1>ArrayFuncs.java</h1><pre class="source lang-java linenums">package nom.tam.util;
 
 /*
  * #%L
  * nom.tam FITS library
  * %%
- * Copyright (C) 2004 - 2015 nom-tam-fits
+ * Copyright (C) 2004 - 2021 nom-tam-fits
  * %%
  * This is free and unencumbered software released into the public domain.
  * 
@@ -37,9 +37,7 @@ import java.util.logging.Level;
 import java.util.logging.Logger;
 
 import nom.tam.util.array.MultiArrayCopier;
-import nom.tam.util.array.MultiArrayIterator;
-import nom.tam.util.type.PrimitiveType;
-import nom.tam.util.type.PrimitiveTypeHandler;
+import nom.tam.util.type.ElementType;
 
 /**
  * This is a package of static functions which perform computations on arrays.
@@ -48,10 +46,10 @@ import nom.tam.util.type.PrimitiveTypeHandler;
  */
 public final class ArrayFuncs {
 
-<span class="fc" id="L51">    private static final Logger LOG = Logger.getLogger(ArrayFuncs.class.getName());</span>
+<span class="fc" id="L49">    private static final Logger LOG = Logger.getLogger(ArrayFuncs.class.getName());</span>
 
-<span class="fc" id="L53">    private ArrayFuncs() {</span>
-<span class="fc" id="L54">    }</span>
+    private ArrayFuncs() {
+    }
 
     /**
      * @return a description of an array (presumed rectangular).
@@ -59,59 +57,39 @@ public final class ArrayFuncs {
      *            The array to be described.
      */
     public static String arrayDescription(Object o) {
-<span class="fc" id="L62">        Class&lt;?&gt; base = getBaseClass(o);</span>
-<span class="pc bpc" id="L63" title="1 of 2 branches missed.">        if (base == Void.TYPE) {</span>
-<span class="nc" id="L64">            return &quot;NULL&quot;;</span>
+<span class="fc" id="L60">        Class&lt;?&gt; base = getBaseClass(o);</span>
+<span class="fc bfc" id="L61" title="All 2 branches covered.">        if (base == Void.TYPE) {</span>
+<span class="fc" id="L62">            return &quot;NULL&quot;;</span>
         }
-<span class="fc" id="L66">        return new StringBuffer(base.getSimpleName())//</span>
-                .append(Arrays.toString(getDimensions(o)))//
-                .toString();
-    }
-
-    public static long computeLSize(Object o) {
-<span class="fc bfc" id="L72" title="All 2 branches covered.">        if (o == null) {</span>
-<span class="fc" id="L73">            return 0;</span>
-        }
-<span class="fc bfc" id="L75" title="All 2 branches covered.">        if (o.getClass().isArray()) {</span>
-<span class="fc" id="L76">            long size = 0;</span>
-<span class="fc" id="L77">            MultiArrayIterator iter = new MultiArrayIterator(o);</span>
-            Object array;
-<span class="fc bfc" id="L79" title="All 2 branches covered.">            while ((array = iter.next()) != null) {</span>
-<span class="fc" id="L80">                long length = Array.getLength(array);</span>
-<span class="fc bfc" id="L81" title="All 2 branches covered.">                if (length &gt; 0) {</span>
-<span class="fc" id="L82">                    Class&lt;?&gt; componentType = array.getClass().getComponentType();</span>
-<span class="fc" id="L83">                    PrimitiveType&lt;?&gt; primType = PrimitiveTypeHandler.valueOf(componentType);</span>
-<span class="fc bfc" id="L84" title="All 2 branches covered.">                    if (componentType.isPrimitive()) {</span>
-<span class="fc" id="L85">                        size += length * primType.size();</span>
-                    } else {
-<span class="fc bfc" id="L87" title="All 2 branches covered.">                        for (int index = 0; index &lt; length; index++) {</span>
-<span class="fc" id="L88">                            size += primType.size(Array.get(array, index));</span>
-                        }
-                    }
-                }
-<span class="fc" id="L92">            }</span>
-<span class="fc" id="L93">            return size;</span>
-        } else {
-<span class="fc" id="L95">            PrimitiveType&lt;?&gt; primType = PrimitiveTypeHandler.valueOf(o.getClass());</span>
-<span class="pc bpc" id="L96" title="1 of 2 branches missed.">            if (primType.individualSize()) {</span>
-<span class="fc" id="L97">                return primType.size(o);</span>
-            } else {
-<span class="nc" id="L99">                return primType.size();</span>
-            }
-        }
+<span class="fc" id="L64">        return new StringBuffer(base.getSimpleName())//</span>
+<span class="fc" id="L65">                .append(Arrays.toString(getDimensions(o)))//</span>
+<span class="fc" id="L66">                .toString();</span>
     }
 
     /**
-     * @return Compute the size of an object. Note that this only handles arrays
-     *         or scalars of the primitive objects and Strings. It returns 0 for
-     *         any object array element it does not understand.
-     * @param o
-     *            The object whose size is desired.
-     * @deprecated May silently underestimate the size if the size &amp;gt; 2 GB.
+     * Use {@link FitsEncoder#computeSize(Object)} instead.
+     * 
+     * @param o     the object
+     * @return      the number of bytes in the FITS binary representation of the object or
+     *              0 if the object has no FITS representation. (Also elements not known to
+     *              FITS will count as 0 sized).
+     */
+    @Deprecated
+    public static long computeLSize(Object o) {
+<span class="fc" id="L79">        return FitsEncoder.computeSize(o);</span>
+    }
+
+    /**
+     * Use {@link FitsEncoder#computeSize(Object)} instead. 
+     * 
+     * @param o     the object
+     * @return      the number of bytes in the FITS binary representation of the object or
+     *              0 if the object has no FITS representation. (Also elements not known to
+     *              FITS will count as 0 sized).
      */
     @Deprecated
     public static int computeSize(Object o) {
-<span class="fc" id="L114">        return (int) computeLSize(o);</span>
+<span class="fc" id="L92">        return (int) computeLSize(o);</span>
     }
 
     /**
@@ -129,10 +107,10 @@ public final class ArrayFuncs {
          * times and only allocate a new array when needed.
          */
         /* First create the full new array. */
-<span class="fc" id="L132">        Object mimic = mimicArray(array, newType);</span>
+<span class="fc" id="L110">        Object mimic = mimicArray(array, newType);</span>
         /* Now copy the info into the new array */
-<span class="fc" id="L134">        copyInto(array, mimic);</span>
-<span class="fc" id="L135">        return mimic;</span>
+<span class="fc" id="L112">        copyInto(array, mimic);</span>
+<span class="fc" id="L113">        return mimic;</span>
     }
 
     /**
@@ -148,14 +126,15 @@ public final class ArrayFuncs {
      *            then the original is returned.
      */
     public static Object convertArray(Object array, Class&lt;?&gt; newType, boolean reuse) {
-<span class="fc bfc" id="L151" title="All 4 branches covered.">        if (getBaseClass(array) == newType &amp;&amp; reuse) {</span>
-<span class="fc" id="L152">            return array;</span>
-        } else {
-<span class="fc" id="L154">            return convertArray(array, newType);</span>
+<span class="fc bfc" id="L129" title="All 4 branches covered.">        if (getBaseClass(array) == newType &amp;&amp; reuse) {</span>
+<span class="fc" id="L130">            return array;</span>
         }
+<span class="fc" id="L132">        return convertArray(array, newType);</span>
     }
 
     /**
+     * @deprecated No longer used within the library itself.
+     * 
      * Copy one array into another. This function copies the contents of one
      * array into a previously allocated array. The arrays must agree in type
      * and size.
@@ -165,23 +144,36 @@ public final class ArrayFuncs {
      * @param copy
      *            The array to be copied into. This array must already be fully
      *            allocated.
+     * @throws IllegalArgumentException
+     *            if the two arrays do not match in type or size.
      */
-    public static void copyArray(Object original, Object copy) {
-<span class="fc" id="L170">        Class&lt;? extends Object&gt; originalClass = original.getClass();</span>
-<span class="pc bpc" id="L171" title="1 of 2 branches missed.">        if (!originalClass.isArray()) {</span>
-<span class="nc" id="L172">            return;</span>
+    @Deprecated
+    public static void copyArray(Object original, Object copy) throws IllegalArgumentException {
+<span class="fc" id="L152">        Class&lt;? extends Object&gt; cl = original.getClass();</span>
+<span class="fc bfc" id="L153" title="All 2 branches covered.">        if (!cl.isArray()) {</span>
+<span class="fc" id="L154">            throw new IllegalArgumentException(&quot;original is not an array&quot;);</span>
         }
-<span class="fc" id="L174">        int length = Array.getLength(original);</span>
-<span class="fc bfc" id="L175" title="All 2 branches covered.">        if (originalClass.getComponentType().isArray()) {</span>
-<span class="pc bpc" id="L176" title="1 of 2 branches missed.">            if (length != Array.getLength(copy)) {</span>
-<span class="nc" id="L177">                return;</span>
-            }
-<span class="fc bfc" id="L179" title="All 2 branches covered.">            for (int index = 0; index &lt; length; index++) {</span>
-<span class="fc" id="L180">                copyArray(Array.get(original, index), Array.get(copy, index));</span>
-            }
+        
+<span class="fc bfc" id="L157" title="All 2 branches covered.">        if (!copy.getClass().equals(cl)) {</span>
+<span class="fc" id="L158">            throw new IllegalArgumentException(&quot;mismatch of types: &quot; + cl.getName() + &quot; vs &quot; + copy.getClass().getName());</span>
         }
-<span class="fc" id="L183">        System.arraycopy(original, 0, copy, 0, length);</span>
-<span class="fc" id="L184">    }</span>
+        
+<span class="fc" id="L161">        int length = Array.getLength(original);</span>
+        
+<span class="fc bfc" id="L163" title="All 2 branches covered.">        if (Array.getLength(copy) != length) {</span>
+<span class="fc" id="L164">            throw new IllegalArgumentException(&quot;mismatch of sizes: &quot; + length + &quot; vs &quot; + Array.getLength(copy));</span>
+        }
+        
+<span class="fc bfc" id="L167" title="All 2 branches covered.">        if (original instanceof Object[]) {</span>
+<span class="fc" id="L168">            Object[] from = (Object[]) original;</span>
+<span class="fc" id="L169">            Object[] to = (Object[]) copy;</span>
+<span class="fc bfc" id="L170" title="All 2 branches covered.">            for (int index = 0; index &lt; length; index++) {</span>
+<span class="fc" id="L171">                copyArray(from[index], to[index]);</span>
+            }
+<span class="fc" id="L173">        } else {</span>
+<span class="fc" id="L174">            System.arraycopy(original, 0, copy, 0, length);</span>
+        }
+<span class="fc" id="L176">    }</span>
 
     /**
      * Copy an array into an array of a different type. The dimensions and
@@ -193,8 +185,8 @@ public final class ArrayFuncs {
      *            The array mimicking the original.
      */
     public static void copyInto(Object array, Object mimic) {
-<span class="fc" id="L196">        MultiArrayCopier.copyInto(array, mimic);</span>
-<span class="fc" id="L197">    }</span>
+<span class="fc" id="L188">        MultiArrayCopier.copyInto(array, mimic);</span>
+<span class="fc" id="L189">    }</span>
 
     /**
      * Curl an input array up into a multi-dimensional array.
@@ -206,23 +198,26 @@ public final class ArrayFuncs {
      * @return The curled array.
      */
     public static Object curl(Object input, int[] dimens) {
-<span class="fc bfc" id="L209" title="All 2 branches covered.">        if (input == null) {</span>
-<span class="fc" id="L210">            return null;</span>
+<span class="fc bfc" id="L201" title="All 2 branches covered.">        if (input == null) {</span>
+<span class="fc" id="L202">            return null;</span>
         }
-<span class="pc bpc" id="L212" title="1 of 4 branches missed.">        if (!input.getClass().isArray() || input.getClass().getComponentType().isArray()) {</span>
-<span class="fc" id="L213">            throw new RuntimeException(&quot;Attempt to curl non-1D array&quot;);</span>
+<span class="fc bfc" id="L204" title="All 2 branches covered.">        if (!input.getClass().isArray()) {</span>
+<span class="fc" id="L205">            throw new RuntimeException(&quot;Attempt to curl a non-array&quot;);</span>
         }
-<span class="fc" id="L215">        int size = Array.getLength(input);</span>
-<span class="fc" id="L216">        int test = 1;</span>
-<span class="fc bfc" id="L217" title="All 2 branches covered.">        for (int dimen : dimens) {</span>
-<span class="fc" id="L218">            test *= dimen;</span>
+<span class="fc bfc" id="L207" title="All 2 branches covered.">        if (input.getClass().getComponentType().isArray()) {</span>
+<span class="fc" id="L208">            throw new RuntimeException(&quot;Attempt to curl non-1D array&quot;);</span>
         }
-<span class="fc bfc" id="L220" title="All 2 branches covered.">        if (test != size) {</span>
-<span class="fc" id="L221">            throw new RuntimeException(&quot;Curled array does not fit desired dimensions&quot;);</span>
+<span class="fc" id="L210">        int size = Array.getLength(input);</span>
+<span class="fc" id="L211">        int test = 1;</span>
+<span class="fc bfc" id="L212" title="All 2 branches covered.">        for (int dimen : dimens) {</span>
+<span class="fc" id="L213">            test *= dimen;</span>
         }
-<span class="fc" id="L223">        Object newArray = ArrayFuncs.newInstance(getBaseClass(input), dimens);</span>
-<span class="fc" id="L224">        MultiArrayCopier.copyInto(input, newArray);</span>
-<span class="fc" id="L225">        return newArray;</span>
+<span class="fc bfc" id="L215" title="All 2 branches covered.">        if (test != size) {</span>
+<span class="fc" id="L216">            throw new RuntimeException(&quot;Curled array does not fit desired dimensions&quot;);</span>
+        }
+<span class="fc" id="L218">        Object newArray = ArrayFuncs.newInstance(getBaseClass(input), dimens);</span>
+<span class="fc" id="L219">        MultiArrayCopier.copyInto(input, newArray);</span>
+<span class="fc" id="L220">        return newArray;</span>
 
     }
 
@@ -236,31 +231,30 @@ public final class ArrayFuncs {
      *            The object to be copied.
      */
     public static Object deepClone(Object o) {
-<span class="pc bpc" id="L239" title="1 of 2 branches missed.">        if (o == null) {</span>
-<span class="nc" id="L240">            return null;</span>
+<span class="fc bfc" id="L234" title="All 2 branches covered.">        if (o == null) {</span>
+<span class="fc" id="L235">            return null;</span>
         }
-<span class="fc bfc" id="L242" title="All 2 branches covered.">        if (!o.getClass().isArray()) {</span>
-<span class="fc" id="L243">            return genericClone(o);</span>
+<span class="fc bfc" id="L237" title="All 2 branches covered.">        if (!o.getClass().isArray()) {</span>
+<span class="fc" id="L238">            return genericClone(o);</span>
         }
         // Check if this is a 1D primitive array.
-<span class="fc bfc" id="L246" title="All 2 branches covered.">        if (o.getClass().getComponentType().isPrimitive()) {</span>
-<span class="fc" id="L247">            int length = Array.getLength(o);</span>
-<span class="fc" id="L248">            Object result = Array.newInstance(o.getClass().getComponentType(), length);</span>
-<span class="fc" id="L249">            System.arraycopy(o, 0, result, 0, length);</span>
-<span class="fc" id="L250">            return result;</span>
-        } else {
-            // Get the base type.
-<span class="fc" id="L253">            Class&lt;?&gt; baseClass = getBaseClass(o);</span>
-            // Allocate the array but make all but the first dimension 0.
-<span class="fc" id="L255">            int[] dims = getDimensions(o);</span>
-<span class="fc" id="L256">            Arrays.fill(dims, 1, dims.length, 0);</span>
-<span class="fc" id="L257">            Object copy = ArrayFuncs.newInstance(baseClass, dims);</span>
-            // Now fill in the next level down by recursion.
-<span class="fc bfc" id="L259" title="All 2 branches covered.">            for (int i = 0; i &lt; dims[0]; i++) {</span>
-<span class="fc" id="L260">                Array.set(copy, i, deepClone(Array.get(o, i)));</span>
-            }
-<span class="fc" id="L262">            return copy;</span>
+<span class="fc bfc" id="L241" title="All 2 branches covered.">        if (o.getClass().getComponentType().isPrimitive()) {</span>
+<span class="fc" id="L242">            int length = Array.getLength(o);</span>
+<span class="fc" id="L243">            Object result = Array.newInstance(o.getClass().getComponentType(), length);</span>
+<span class="fc" id="L244">            System.arraycopy(o, 0, result, 0, length);</span>
+<span class="fc" id="L245">            return result;</span>
         }
+        // Get the base type.
+<span class="fc" id="L248">        Class&lt;?&gt; baseClass = getBaseClass(o);</span>
+        // Allocate the array but make all but the first dimension 0.
+<span class="fc" id="L250">        int[] dims = getDimensions(o);</span>
+<span class="fc" id="L251">        Arrays.fill(dims, 1, dims.length, 0);</span>
+<span class="fc" id="L252">        Object copy = ArrayFuncs.newInstance(baseClass, dims);</span>
+        // Now fill in the next level down by recursion.
+<span class="fc bfc" id="L254" title="All 2 branches covered.">        for (int i = 0; i &lt; dims[0]; i++) {</span>
+<span class="fc" id="L255">            Array.set(copy, i, deepClone(Array.get(o, i)));</span>
+        }
+<span class="fc" id="L257">        return copy;</span>
     }
 
     /**
@@ -271,17 +265,17 @@ public final class ArrayFuncs {
      *            The input array.
      */
     public static Object flatten(Object input) {
-<span class="fc" id="L274">        int[] dimens = getDimensions(input);</span>
-<span class="fc bfc" id="L275" title="All 2 branches covered.">        if (dimens.length &lt;= 1) {</span>
-<span class="fc" id="L276">            return input;</span>
+<span class="fc" id="L268">        int[] dimens = getDimensions(input);</span>
+<span class="fc bfc" id="L269" title="All 2 branches covered.">        if (dimens.length &lt;= 1) {</span>
+<span class="fc" id="L270">            return input;</span>
         }
-<span class="fc" id="L278">        int size = 1;</span>
-<span class="fc bfc" id="L279" title="All 2 branches covered.">        for (int dimen : dimens) {</span>
-<span class="fc" id="L280">            size *= dimen;</span>
+<span class="fc" id="L272">        int size = 1;</span>
+<span class="fc bfc" id="L273" title="All 2 branches covered.">        for (int dimen : dimens) {</span>
+<span class="fc" id="L274">            size *= dimen;</span>
         }
-<span class="fc" id="L282">        Object flat = ArrayFuncs.newInstance(getBaseClass(input), size);</span>
-<span class="fc" id="L283">        MultiArrayCopier.copyInto(input, flat);</span>
-<span class="fc" id="L284">        return flat;</span>
+<span class="fc" id="L276">        Object flat = ArrayFuncs.newInstance(getBaseClass(input), size);</span>
+<span class="fc" id="L277">        MultiArrayCopier.copyInto(input, flat);</span>
+<span class="fc" id="L278">        return flat;</span>
     }
 
     /**
@@ -300,18 +294,18 @@ public final class ArrayFuncs {
      * @return the clone
      */
     public static Object genericClone(Object o) {
-<span class="fc bfc" id="L303" title="All 2 branches covered.">        if (o.getClass().isArray()) {</span>
-<span class="fc" id="L304">            return deepClone(o);</span>
+<span class="fc bfc" id="L297" title="All 2 branches covered.">        if (o.getClass().isArray()) {</span>
+<span class="fc" id="L298">            return deepClone(o);</span>
         }
-<span class="fc bfc" id="L306" title="All 2 branches covered.">        if (!(o instanceof Cloneable)) {</span>
-<span class="fc" id="L307">            LOG.log(Level.SEVERE, &quot;generic clone called on a non clonable type&quot;);</span>
-<span class="fc" id="L308">            return null;</span>
+<span class="fc bfc" id="L300" title="All 2 branches covered.">        if (!(o instanceof Cloneable)) {</span>
+<span class="fc" id="L301">            LOG.log(Level.SEVERE, &quot;generic clone called on a non clonable type&quot;);</span>
+<span class="fc" id="L302">            return null;</span>
         }
         try {
-<span class="fc" id="L311">            return o.getClass().getMethod(&quot;clone&quot;).invoke(o);</span>
-<span class="fc" id="L312">        } catch (Exception e) {</span>
-<span class="fc" id="L313">            LOG.log(Level.WARNING, &quot;Implements cloneable, but does not apparently make clone public.&quot;, e);</span>
-<span class="fc" id="L314">            return null;</span>
+<span class="fc" id="L305">            return o.getClass().getMethod(&quot;clone&quot;).invoke(o);</span>
+<span class="fc" id="L306">        } catch (Exception e) {</span>
+<span class="fc" id="L307">            LOG.log(Level.WARNING, &quot;Implements cloneable, but does not apparently make clone public.&quot;, e);</span>
+<span class="fc" id="L308">            return null;</span>
         }
     }
 
@@ -325,11 +319,10 @@ public final class ArrayFuncs {
      * @return base array of a multi-dimensional array.
      */
     public static Object getBaseArray(Object o) {
-<span class="fc bfc" id="L328" title="All 2 branches covered.">        if (o.getClass().getComponentType().isArray()) {</span>
-<span class="fc" id="L329">            return getBaseArray(Array.get(o, 0));</span>
-        } else {
-<span class="fc" id="L331">            return o;</span>
+<span class="fc bfc" id="L322" title="All 2 branches covered.">        if (o instanceof Object[]) {</span>
+<span class="fc" id="L323">            return getBaseArray(Array.get(o, 0));</span>
         }
+<span class="fc" id="L325">        return o;</span>
     }
 
     /**
@@ -341,14 +334,14 @@ public final class ArrayFuncs {
      * @return the base class of an array
      */
     public static Class&lt;?&gt; getBaseClass(Object o) {
-<span class="fc bfc" id="L344" title="All 2 branches covered.">        if (o == null) {</span>
-<span class="fc" id="L345">            return Void.TYPE;</span>
+<span class="fc bfc" id="L337" title="All 2 branches covered.">        if (o == null) {</span>
+<span class="fc" id="L338">            return Void.TYPE;</span>
         }
-<span class="fc" id="L347">        Class&lt;?&gt; clazz = o.getClass();</span>
-<span class="fc bfc" id="L348" title="All 2 branches covered.">        while (clazz.isArray()) {</span>
-<span class="fc" id="L349">            clazz = clazz.getComponentType();</span>
+<span class="fc" id="L340">        Class&lt;?&gt; clazz = o.getClass();</span>
+<span class="fc bfc" id="L341" title="All 2 branches covered.">        while (clazz.isArray()) {</span>
+<span class="fc" id="L342">            clazz = clazz.getComponentType();</span>
         }
-<span class="fc" id="L351">        return clazz;</span>
+<span class="fc" id="L344">        return clazz;</span>
     }
 
     /**
@@ -360,14 +353,11 @@ public final class ArrayFuncs {
      *         primitive array.
      */
     public static int getBaseLength(Object o) {
-<span class="fc bfc" id="L363" title="All 2 branches covered.">        if (o == null) {</span>
-<span class="fc" id="L364">            return 0;</span>
+<span class="fc bfc" id="L356" title="All 2 branches covered.">        if (o == null) {</span>
+<span class="fc" id="L357">            return 0;</span>
         }
-<span class="fc" id="L366">        PrimitiveType&lt;?&gt; type = PrimitiveTypeHandler.valueOf(getBaseClass(o));</span>
-<span class="pc bpc" id="L367" title="1 of 4 branches missed.">        if (type != null &amp;&amp; type.size() != 0) {</span>
-<span class="fc" id="L368">            return type.size();</span>
-        }
-<span class="fc" id="L370">        return -1;</span>
+<span class="fc" id="L359">        ElementType&lt;?&gt; type = ElementType.forClass(getBaseClass(o));</span>
+<span class="fc" id="L360">        return type.size();</span>
     }
 
     /**
@@ -382,35 +372,35 @@ public final class ArrayFuncs {
      * @return the dimensions of an object
      */
     public static int[] getDimensions(Object o) {
-<span class="fc bfc" id="L385" title="All 2 branches covered.">        if (o == null) {</span>
-<span class="fc" id="L386">            return null;</span>
+<span class="fc bfc" id="L375" title="All 2 branches covered.">        if (o == null) {</span>
+<span class="fc" id="L376">            return null;</span>
         }
-<span class="fc" id="L388">        Object object = o;</span>
-<span class="fc" id="L389">        Class&lt;?&gt; clazz = o.getClass();</span>
-<span class="fc" id="L390">        int ndim = 0;</span>
-<span class="fc bfc" id="L391" title="All 2 branches covered.">        while (clazz.isArray()) {</span>
-<span class="fc" id="L392">            clazz = clazz.getComponentType();</span>
-<span class="fc" id="L393">            ndim++;</span>
+<span class="fc" id="L378">        Object object = o;</span>
+<span class="fc" id="L379">        Class&lt;?&gt; clazz = o.getClass();</span>
+<span class="fc" id="L380">        int ndim = 0;</span>
+<span class="fc bfc" id="L381" title="All 2 branches covered.">        while (clazz.isArray()) {</span>
+<span class="fc" id="L382">            clazz = clazz.getComponentType();</span>
+<span class="fc" id="L383">            ndim++;</span>
         }
-<span class="fc" id="L395">        clazz = o.getClass();</span>
-<span class="fc" id="L396">        int[] dimens = new int[ndim];</span>
-<span class="fc" id="L397">        ndim = 0;</span>
-<span class="fc bfc" id="L398" title="All 2 branches covered.">        while (clazz.isArray()) {</span>
-<span class="fc" id="L399">            dimens[ndim] = -1;</span>
-<span class="fc bfc" id="L400" title="All 2 branches covered.">            if (object != null) {</span>
-<span class="fc" id="L401">                int length = Array.getLength(object);</span>
-<span class="fc bfc" id="L402" title="All 2 branches covered.">                if (length &gt; 0) {</span>
-<span class="fc" id="L403">                    dimens[ndim] = length;</span>
-<span class="fc" id="L404">                    object = Array.get(object, 0);</span>
+<span class="fc" id="L385">        clazz = o.getClass();</span>
+<span class="fc" id="L386">        int[] dimens = new int[ndim];</span>
+<span class="fc" id="L387">        ndim = 0;</span>
+<span class="fc bfc" id="L388" title="All 2 branches covered.">        while (clazz.isArray()) {</span>
+<span class="fc" id="L389">            dimens[ndim] = -1;</span>
+<span class="fc bfc" id="L390" title="All 2 branches covered.">            if (object != null) {</span>
+<span class="fc" id="L391">                int length = Array.getLength(object);</span>
+<span class="fc bfc" id="L392" title="All 2 branches covered.">                if (length &gt; 0) {</span>
+<span class="fc" id="L393">                    dimens[ndim] = length;</span>
+<span class="fc" id="L394">                    object = Array.get(object, 0);</span>
                 } else {
-<span class="fc" id="L406">                    dimens[ndim] = 0;</span>
-<span class="fc" id="L407">                    object = null;</span>
+<span class="fc" id="L396">                    dimens[ndim] = 0;</span>
+<span class="fc" id="L397">                    object = null;</span>
                 }
             }
-<span class="fc" id="L410">            clazz = clazz.getComponentType();</span>
-<span class="fc" id="L411">            ndim++;</span>
+<span class="fc" id="L400">            clazz = clazz.getComponentType();</span>
+<span class="fc" id="L401">            ndim++;</span>
         }
-<span class="fc" id="L413">        return dimens;</span>
+<span class="fc" id="L403">        return dimens;</span>
     }
 
     /**
@@ -425,33 +415,29 @@ public final class ArrayFuncs {
      *            descriptors for primitive numeric data, e.g., double.type.
      */
     public static Object mimicArray(Object array, Class&lt;?&gt; newType) {
-<span class="fc" id="L428">        int dims = 0;</span>
-<span class="fc" id="L429">        Class&lt;?&gt; arrayClass = array.getClass();</span>
-<span class="pc bpc" id="L430" title="1 of 4 branches missed.">        while (arrayClass != null &amp;&amp; arrayClass.isArray()) {</span>
-<span class="fc" id="L431">            arrayClass = arrayClass.getComponentType();</span>
-<span class="fc" id="L432">            dims += 1;</span>
+<span class="fc" id="L418">        int dims = 0;</span>
+<span class="fc" id="L419">        Class&lt;?&gt; arrayClass = array.getClass();</span>
+<span class="fc bfc" id="L420" title="All 2 branches covered.">        while (arrayClass.isArray()) {</span>
+<span class="fc" id="L421">            arrayClass = arrayClass.getComponentType();</span>
+<span class="fc" id="L422">            dims += 1;</span>
         }
 
-        Object mimic;
+<span class="fc bfc" id="L425" title="All 2 branches covered.">        if (dims &lt;= 1) {</span>
+<span class="fc" id="L426">            return ArrayFuncs.newInstance(newType, Array.getLength(array));</span>
+        }
+        
+<span class="fc" id="L429">        Object[] xarray = (Object[]) array;</span>
+<span class="fc" id="L430">        int[] dimens = new int[dims];</span>
+<span class="fc" id="L431">        dimens[0] = xarray.length; // Leave other dimensions at 0.</span>
 
-<span class="fc bfc" id="L437" title="All 2 branches covered.">        if (dims &gt; 1) {</span>
+<span class="fc" id="L433">        Object mimic = ArrayFuncs.newInstance(newType, dimens);</span>
 
-<span class="fc" id="L439">            Object[] xarray = (Object[]) array;</span>
-<span class="fc" id="L440">            int[] dimens = new int[dims];</span>
-<span class="fc" id="L441">            dimens[0] = xarray.length; // Leave other dimensions at 0.</span>
-
-<span class="fc" id="L443">            mimic = ArrayFuncs.newInstance(newType, dimens);</span>
-
-<span class="fc bfc" id="L445" title="All 2 branches covered.">            for (int i = 0; i &lt; xarray.length; i += 1) {</span>
-<span class="fc" id="L446">                Object temp = mimicArray(xarray[i], newType);</span>
-<span class="fc" id="L447">                ((Object[]) mimic)[i] = temp;</span>
-            }
-
-<span class="fc" id="L450">        } else {</span>
-<span class="fc" id="L451">            mimic = ArrayFuncs.newInstance(newType, Array.getLength(array));</span>
+<span class="fc bfc" id="L435" title="All 2 branches covered.">        for (int i = 0; i &lt; xarray.length; i += 1) {</span>
+<span class="fc" id="L436">            Object temp = mimicArray(xarray[i], newType);</span>
+<span class="fc" id="L437">            ((Object[]) mimic)[i] = temp;</span>
         }
 
-<span class="fc" id="L454">        return mimic;</span>
+<span class="fc" id="L440">        return mimic;</span>
     }
 
     /**
@@ -462,7 +448,7 @@ public final class ArrayFuncs {
      */
     @Deprecated
     public static int nElements(Object o) {
-<span class="fc" id="L465">        return (int) nLElements(o);</span>
+<span class="fc" id="L451">        return (int) nLElements(o);</span>
     }
 
     /**
@@ -477,7 +463,7 @@ public final class ArrayFuncs {
      * @return The allocated array.
      */
     public static Object newInstance(Class&lt;?&gt; cl, int dim) {
-<span class="fc" id="L480">        return Array.newInstance(cl, dim);</span>
+<span class="fc" id="L466">        return Array.newInstance(cl, dim);</span>
     }
 
     /**
@@ -492,13 +478,13 @@ public final class ArrayFuncs {
      * @return The allocated array.
      */
     public static Object newInstance(Class&lt;?&gt; cl, int[] dims) {
-<span class="fc bfc" id="L495" title="All 2 branches covered.">        if (dims.length == 0) {</span>
+<span class="fc bfc" id="L481" title="All 2 branches covered.">        if (dims.length == 0) {</span>
             // Treat a scalar as a 1-d array of length 1
-<span class="fc" id="L497">            dims = new int[]{</span>
+<span class="fc" id="L483">            dims = new int[]{</span>
                 1
             };
         }
-<span class="fc" id="L501">        return Array.newInstance(cl, dims);</span>
+<span class="fc" id="L487">        return Array.newInstance(cl, dims);</span>
     }
 
     /**
@@ -510,24 +496,24 @@ public final class ArrayFuncs {
     @Deprecated
     public static long nLElements(Object o) {
 
-<span class="fc bfc" id="L513" title="All 2 branches covered.">        if (o == null) {</span>
-<span class="fc" id="L514">            return 0;</span>
+<span class="fc bfc" id="L499" title="All 2 branches covered.">        if (o == null) {</span>
+<span class="fc" id="L500">            return 0;</span>
         }
 
-<span class="fc" id="L517">        String classname = o.getClass().getName();</span>
-<span class="fc bfc" id="L518" title="All 2 branches covered.">        if (classname.charAt(1) == '[') {</span>
-<span class="fc" id="L519">            int count = 0;</span>
-<span class="fc bfc" id="L520" title="All 2 branches covered.">            for (int i = 0; i &lt; ((Object[]) o).length; i += 1) {</span>
-<span class="fc" id="L521">                count += nLElements(((Object[]) o)[i]);</span>
+<span class="fc bfc" id="L503" title="All 2 branches covered.">        if (o instanceof Object[]) {</span>
+<span class="fc" id="L504">            long count = 0;</span>
+<span class="fc bfc" id="L505" title="All 2 branches covered.">            for (Object e : (Object[]) o) {</span>
+<span class="fc" id="L506">                count += nLElements(e);</span>
             }
-<span class="fc" id="L523">            return count;</span>
+<span class="fc" id="L508">            return count;</span>
 
-<span class="fc bfc" id="L525" title="All 2 branches covered.">        } else if (classname.charAt(0) == '[') {</span>
-<span class="fc" id="L526">            return Array.getLength(o);</span>
-
-        } else {
-<span class="fc" id="L529">            return 1;</span>
-        }
+        } 
+        
+<span class="fc bfc" id="L512" title="All 2 branches covered.">        if (o.getClass().isArray()) {</span>
+<span class="fc" id="L513">            return Array.getLength(o);</span>
+        } 
+        
+<span class="fc" id="L516">        return 1;</span>
     }
 
     /**
@@ -539,13 +525,13 @@ public final class ArrayFuncs {
      *            the array to reverse
      */
     public static int[] reverseIndices(int[] indices) {
-<span class="fc" id="L542">        int[] result = new int[indices.length];</span>
-<span class="fc" id="L543">        int len = indices.length;</span>
-<span class="fc bfc" id="L544" title="All 2 branches covered.">        for (int i = 0; i &lt; indices.length; i += 1) {</span>
-<span class="fc" id="L545">            result[len - i - 1] = indices[i];</span>
+<span class="fc" id="L528">        int[] result = new int[indices.length];</span>
+<span class="fc" id="L529">        int len = indices.length;</span>
+<span class="fc bfc" id="L530" title="All 2 branches covered.">        for (int i = 0; i &lt; indices.length; i += 1) {</span>
+<span class="fc" id="L531">            result[len - i - 1] = indices[i];</span>
         }
-<span class="fc" id="L547">        return result;</span>
+<span class="fc" id="L533">        return result;</span>
     }
 
 }
-</pre><div class="footer"><span class="right">Created with <a href="http://www.eclemma.org/jacoco">JaCoCo</a> 0.7.6.201602180812</span></div></body></html>
+</pre><div class="footer"><span class="right">Created with <a href="http://www.jacoco.org/jacoco">JaCoCo</a> 0.8.7.202105040129</span></div></body></html>

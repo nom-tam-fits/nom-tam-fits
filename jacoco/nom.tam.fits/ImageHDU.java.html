@@ -1,10 +1,10 @@
-<?xml version="1.0" encoding="UTF-8"?><!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Strict//EN" "http://www.w3.org/TR/xhtml1/DTD/xhtml1-strict.dtd"><html xmlns="http://www.w3.org/1999/xhtml" lang="en"><head><meta http-equiv="Content-Type" content="text/html;charset=UTF-8"/><link rel="stylesheet" href="../.resources/report.css" type="text/css"/><link rel="shortcut icon" href="../.resources/report.gif" type="image/gif"/><title>ImageHDU.java</title><link rel="stylesheet" href="../.resources/prettify.css" type="text/css"/><script type="text/javascript" src="../.resources/prettify.js"></script></head><body onload="window['PR_TAB_WIDTH']=4;prettyPrint()"><div class="breadcrumb" id="breadcrumb"><span class="info"><a href="../.sessions.html" class="el_session">Sessions</a></span><a href="../index.html" class="el_report">nom.tam FITS library</a> &gt; <a href="index.source.html" class="el_package">nom.tam.fits</a> &gt; <span class="el_source">ImageHDU.java</span></div><h1>ImageHDU.java</h1><pre class="source lang-java linenums">package nom.tam.fits;
+<?xml version="1.0" encoding="UTF-8"?><!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Strict//EN" "http://www.w3.org/TR/xhtml1/DTD/xhtml1-strict.dtd"><html xmlns="http://www.w3.org/1999/xhtml" lang="en"><head><meta http-equiv="Content-Type" content="text/html;charset=UTF-8"/><link rel="stylesheet" href="../jacoco-resources/report.css" type="text/css"/><link rel="shortcut icon" href="../jacoco-resources/report.gif" type="image/gif"/><title>ImageHDU.java</title><link rel="stylesheet" href="../jacoco-resources/prettify.css" type="text/css"/><script type="text/javascript" src="../jacoco-resources/prettify.js"></script></head><body onload="window['PR_TAB_WIDTH']=4;prettyPrint()"><div class="breadcrumb" id="breadcrumb"><span class="info"><a href="../jacoco-sessions.html" class="el_session">Sessions</a></span><a href="../index.html" class="el_report">nom.tam FITS library</a> &gt; <a href="index.source.html" class="el_package">nom.tam.fits</a> &gt; <span class="el_source">ImageHDU.java</span></div><h1>ImageHDU.java</h1><pre class="source lang-java linenums">package nom.tam.fits;
 
 /*
  * #%L
  * nom.tam FITS library
  * %%
- * Copyright (C) 2004 - 2015 nom-tam-fits
+ * Copyright (C) 2004 - 2021 nom-tam-fits
  * %%
  * This is free and unencumbered software released into the public domain.
  * 
@@ -46,16 +46,14 @@ import java.util.logging.Logger;
 
 import nom.tam.image.StandardImageTiler;
 import nom.tam.util.ArrayFuncs;
-import nom.tam.util.type.PrimitiveType;
-import nom.tam.util.type.PrimitiveTypeHandler;
-import nom.tam.util.type.PrimitiveTypes;
+import nom.tam.util.type.ElementType;
 
 /**
  * FITS image header/data unit
  */
 public class ImageHDU extends BasicHDU&lt;ImageData&gt; {
 
-<span class="fc" id="L58">    private static final Logger LOG = getLogger(ImageHDU.class);</span>
+<span class="fc" id="L56">    private static final Logger LOG = getLogger(ImageHDU.class);</span>
 
     /**
      * @return Encapsulate an object as an ImageHDU.
@@ -65,7 +63,7 @@ public class ImageHDU extends BasicHDU&lt;ImageData&gt; {
      *             if the operation failed
      */
     public static ImageData encapsulate(Object o) throws FitsException {
-<span class="fc" id="L68">        return new ImageData(o);</span>
+<span class="fc" id="L66">        return new ImageData(o);</span>
     }
 
     /**
@@ -74,14 +72,14 @@ public class ImageHDU extends BasicHDU&lt;ImageData&gt; {
      *            The Object being tested.
      */
     public static boolean isData(Object o) {
-<span class="fc bfc" id="L77" title="All 2 branches covered.">        if (o.getClass().isArray()) {</span>
-<span class="fc" id="L78">            PrimitiveType&lt;?&gt; type = PrimitiveTypeHandler.valueOf(ArrayFuncs.getBaseClass(o));</span>
-<span class="pc bpc" id="L79" title="1 of 6 branches missed.">            return type != PrimitiveTypes.BOOLEAN &amp;&amp; //</span>
-                    type != PrimitiveTypes.STRING &amp;&amp; //
-                    type != PrimitiveTypes.UNKNOWN;
+<span class="fc bfc" id="L75" title="All 2 branches covered.">        if (o.getClass().isArray()) {</span>
+<span class="fc" id="L76">            ElementType&lt;?&gt; type = ElementType.forClass(ArrayFuncs.getBaseClass(o));</span>
+<span class="pc bpc" id="L77" title="1 of 6 branches missed.">            return type != ElementType.BOOLEAN &amp;&amp; //</span>
+                    type != ElementType.STRING &amp;&amp; //
+                    type != ElementType.UNKNOWN;
 
         }
-<span class="fc" id="L84">        return false;</span>
+<span class="fc" id="L82">        return false;</span>
     }
 
     /**
@@ -92,22 +90,22 @@ public class ImageHDU extends BasicHDU&lt;ImageData&gt; {
      * @return &lt;CODE&gt;true&lt;/CODE&gt; if this HDU has a valid header.
      */
     public static boolean isHeader(Header hdr) {
-<span class="fc" id="L95">        boolean found = hdr.getBooleanValue(SIMPLE);</span>
-<span class="fc bfc" id="L96" title="All 2 branches covered.">        if (!found) {</span>
-<span class="fc" id="L97">            String xtension = hdr.getStringValue(XTENSION);</span>
-<span class="fc bfc" id="L98" title="All 2 branches covered.">            xtension = xtension == null ? &quot;&quot; : xtension.trim();</span>
-<span class="pc bpc" id="L99" title="1 of 4 branches missed.">            if (XTENSION_IMAGE.equals(xtension) || &quot;IUEIMAGE&quot;.equals(xtension)) {</span>
-<span class="fc" id="L100">                found = true;</span>
+<span class="fc" id="L93">        boolean found = hdr.getBooleanValue(SIMPLE);</span>
+<span class="fc bfc" id="L94" title="All 2 branches covered.">        if (!found) {</span>
+<span class="fc" id="L95">            String xtension = hdr.getStringValue(XTENSION);</span>
+<span class="fc bfc" id="L96" title="All 2 branches covered.">            xtension = xtension == null ? &quot;&quot; : xtension.trim();</span>
+<span class="pc bpc" id="L97" title="1 of 4 branches missed.">            if (XTENSION_IMAGE.equals(xtension) || &quot;IUEIMAGE&quot;.equals(xtension)) {</span>
+<span class="fc" id="L98">                found = true;</span>
             }
         }
-<span class="fc bfc" id="L103" title="All 2 branches covered.">        if (!found) {</span>
-<span class="fc" id="L104">            return false;</span>
+<span class="fc bfc" id="L101" title="All 2 branches covered.">        if (!found) {</span>
+<span class="fc" id="L102">            return false;</span>
         }
-<span class="fc bfc" id="L106" title="All 2 branches covered.">        return !hdr.getBooleanValue(GROUPS);</span>
+<span class="fc bfc" id="L104" title="All 2 branches covered.">        return !hdr.getBooleanValue(GROUPS);</span>
     }
 
     public static Data manufactureData(Header hdr) throws FitsException {
-<span class="fc" id="L110">        return new ImageData(hdr);</span>
+<span class="fc" id="L108">        return new ImageData(hdr);</span>
     }
 
     /**
@@ -118,14 +116,14 @@ public class ImageHDU extends BasicHDU&lt;ImageData&gt; {
      *             if the object does not contain valid image data.
      */
     public static Header manufactureHeader(Data d) throws FitsException {
-<span class="fc bfc" id="L121" title="All 2 branches covered.">        if (d == null) {</span>
-<span class="fc" id="L122">            return null;</span>
+<span class="fc bfc" id="L119" title="All 2 branches covered.">        if (d == null) {</span>
+<span class="fc" id="L120">            return null;</span>
         }
 
-<span class="fc" id="L125">        Header h = new Header();</span>
-<span class="fc" id="L126">        d.fillHeader(h);</span>
+<span class="fc" id="L123">        Header h = new Header();</span>
+<span class="fc" id="L124">        d.fillHeader(h);</span>
 
-<span class="fc" id="L128">        return h;</span>
+<span class="fc" id="L126">        return h;</span>
     }
 
     /**
@@ -139,17 +137,17 @@ public class ImageHDU extends BasicHDU&lt;ImageData&gt; {
      *             if there was a problem with the data.
      */
     public ImageHDU(Header h, ImageData d) throws FitsException {
-<span class="fc" id="L142">        super(h, d);</span>
-<span class="fc" id="L143">    }</span>
+<span class="fc" id="L140">        super(h, d);</span>
+<span class="fc" id="L141">    }</span>
 
     /** Indicate that Images can appear at the beginning of a FITS dataset */
     @Override
     protected boolean canBePrimary() {
-<span class="fc" id="L148">        return true;</span>
+<span class="fc" id="L146">        return true;</span>
     }
 
     public StandardImageTiler getTiler() {
-<span class="fc" id="L152">        return this.myData.getTiler();</span>
+<span class="fc" id="L150">        return this.myData.getTiler();</span>
     }
 
     /**
@@ -157,48 +155,48 @@ public class ImageHDU extends BasicHDU&lt;ImageData&gt; {
      */
     @Override
     public void info(PrintStream stream) {
-<span class="fc bfc" id="L160" title="All 2 branches covered.">        if (isHeader(this.myHeader)) {</span>
-<span class="fc" id="L161">            stream.println(&quot;  Image&quot;);</span>
+<span class="fc bfc" id="L158" title="All 2 branches covered.">        if (isHeader(this.myHeader)) {</span>
+<span class="fc" id="L159">            stream.println(&quot;  Image&quot;);</span>
         } else {
-<span class="fc" id="L163">            stream.println(&quot;  Image (bad header)&quot;);</span>
+<span class="fc" id="L161">            stream.println(&quot;  Image (bad header)&quot;);</span>
         }
 
-<span class="fc" id="L166">        stream.println(&quot;      Header Information:&quot;);</span>
-<span class="fc" id="L167">        stream.println(&quot;         BITPIX=&quot; + this.myHeader.getIntValue(BITPIX, -1));</span>
-<span class="fc" id="L168">        int naxis = this.myHeader.getIntValue(NAXIS, -1);</span>
-<span class="fc" id="L169">        stream.println(&quot;         NAXIS=&quot; + naxis);</span>
-<span class="fc bfc" id="L170" title="All 2 branches covered.">        for (int i = 1; i &lt;= naxis; i += 1) {</span>
-<span class="fc" id="L171">            stream.println(&quot;         NAXIS&quot; + i + &quot;=&quot; + this.myHeader.getIntValue(NAXISn.n(i), -1));</span>
+<span class="fc" id="L164">        stream.println(&quot;      Header Information:&quot;);</span>
+<span class="fc" id="L165">        stream.println(&quot;         BITPIX=&quot; + this.myHeader.getIntValue(BITPIX, -1));</span>
+<span class="fc" id="L166">        int naxis = this.myHeader.getIntValue(NAXIS, -1);</span>
+<span class="fc" id="L167">        stream.println(&quot;         NAXIS=&quot; + naxis);</span>
+<span class="fc bfc" id="L168" title="All 2 branches covered.">        for (int i = 1; i &lt;= naxis; i += 1) {</span>
+<span class="fc" id="L169">            stream.println(&quot;         NAXIS&quot; + i + &quot;=&quot; + this.myHeader.getIntValue(NAXISn.n(i), -1));</span>
         }
 
-<span class="fc" id="L174">        stream.println(&quot;      Data information:&quot;);</span>
+<span class="fc" id="L172">        stream.println(&quot;      Data information:&quot;);</span>
         try {
-<span class="fc bfc" id="L176" title="All 2 branches covered.">            if (this.myData.getData() == null) {</span>
-<span class="fc" id="L177">                stream.println(&quot;        No Data&quot;);</span>
+<span class="fc bfc" id="L174" title="All 2 branches covered.">            if (this.myData.getData() == null) {</span>
+<span class="fc" id="L175">                stream.println(&quot;        No Data&quot;);</span>
             } else {
-<span class="fc" id="L179">                stream.println(&quot;         &quot; + ArrayFuncs.arrayDescription(this.myData.getData()));</span>
+<span class="fc" id="L177">                stream.println(&quot;         &quot; + ArrayFuncs.arrayDescription(this.myData.getData()));</span>
             }
-<span class="fc" id="L181">        } catch (Exception e) {</span>
-<span class="fc" id="L182">            LOG.log(Level.SEVERE, &quot;Unable to get image data&quot;, e);</span>
-<span class="fc" id="L183">            stream.println(&quot;      Unable to get data&quot;);</span>
-<span class="fc" id="L184">        }</span>
-<span class="fc" id="L185">    }</span>
+<span class="fc" id="L179">        } catch (Exception e) {</span>
+<span class="fc" id="L180">            LOG.log(Level.SEVERE, &quot;Unable to get image data&quot;, e);</span>
+<span class="fc" id="L181">            stream.println(&quot;      Unable to get data&quot;);</span>
+<span class="fc" id="L182">        }</span>
+<span class="fc" id="L183">    }</span>
 
     /** Change the Image from/to primary */
     @Override
     protected void setPrimaryHDU(boolean status) {
 
         try {
-<span class="fc" id="L192">            super.setPrimaryHDU(status);</span>
-<span class="fc" id="L193">        } catch (FitsException e) {</span>
-<span class="fc" id="L194">            LOG.log(Level.SEVERE, &quot;Impossible exception in ImageData&quot;, e);</span>
-<span class="fc" id="L195">        }</span>
+<span class="fc" id="L190">            super.setPrimaryHDU(status);</span>
+<span class="fc" id="L191">        } catch (FitsException e) {</span>
+<span class="fc" id="L192">            LOG.log(Level.SEVERE, &quot;Impossible exception in ImageData&quot;, e);</span>
+<span class="fc" id="L193">        }</span>
 
-<span class="fc bfc" id="L197" title="All 2 branches covered.">        if (status) {</span>
-<span class="fc" id="L198">            this.myHeader.setSimple(true);</span>
+<span class="fc bfc" id="L195" title="All 2 branches covered.">        if (status) {</span>
+<span class="fc" id="L196">            this.myHeader.setSimple(true);</span>
         } else {
-<span class="fc" id="L200">            this.myHeader.setXtension(XTENSION_IMAGE);</span>
+<span class="fc" id="L198">            this.myHeader.setXtension(XTENSION_IMAGE);</span>
         }
-<span class="fc" id="L202">    }</span>
+<span class="fc" id="L200">    }</span>
 }
-</pre><div class="footer"><span class="right">Created with <a href="http://www.eclemma.org/jacoco">JaCoCo</a> 0.7.6.201602180812</span></div></body></html>
+</pre><div class="footer"><span class="right">Created with <a href="http://www.jacoco.org/jacoco">JaCoCo</a> 0.8.7.202105040129</span></div></body></html>

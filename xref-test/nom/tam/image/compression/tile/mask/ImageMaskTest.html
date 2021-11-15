@@ -12,7 +12,7 @@
 <a class="jxr_linenumber" name="L4" href="#L4">4</a>   <em class="jxr_comment"> * #%L</em>
 <a class="jxr_linenumber" name="L5" href="#L5">5</a>   <em class="jxr_comment"> * nom.tam FITS library</em>
 <a class="jxr_linenumber" name="L6" href="#L6">6</a>   <em class="jxr_comment"> * %%</em>
-<a class="jxr_linenumber" name="L7" href="#L7">7</a>   <em class="jxr_comment"> * Copyright (C) 1996 - 2016 nom-tam-fits</em>
+<a class="jxr_linenumber" name="L7" href="#L7">7</a>   <em class="jxr_comment"> * Copyright (C) 1996 - 2021 nom-tam-fits</em>
 <a class="jxr_linenumber" name="L8" href="#L8">8</a>   <em class="jxr_comment"> * %%</em>
 <a class="jxr_linenumber" name="L9" href="#L9">9</a>   <em class="jxr_comment"> * This is free and unencumbered software released into the public domain.</em>
 <a class="jxr_linenumber" name="L10" href="#L10">10</a>  <em class="jxr_comment"> * </em>
@@ -54,7 +54,7 @@
 <a class="jxr_linenumber" name="L46" href="#L46">46</a>  
 <a class="jxr_linenumber" name="L47" href="#L47">47</a>  <strong class="jxr_keyword">import</strong> nom.tam.image.tile.operation.buffer.TileBuffer;
 <a class="jxr_linenumber" name="L48" href="#L48">48</a>  <strong class="jxr_keyword">import</strong> nom.tam.image.tile.operation.buffer.TileBufferFactory;
-<a class="jxr_linenumber" name="L49" href="#L49">49</a>  <strong class="jxr_keyword">import</strong> nom.tam.util.type.PrimitiveType;
+<a class="jxr_linenumber" name="L49" href="#L49">49</a>  <strong class="jxr_keyword">import</strong> nom.tam.util.type.ElementType;
 <a class="jxr_linenumber" name="L50" href="#L50">50</a>  <strong class="jxr_keyword">import</strong> nom.tam.util.type.PrimitiveTypes;
 <a class="jxr_linenumber" name="L51" href="#L51">51</a>  
 <a class="jxr_linenumber" name="L52" href="#L52">52</a>  <strong class="jxr_keyword">import</strong> org.junit.Assert;
@@ -346,24 +346,24 @@
 <a class="jxr_linenumber" name="L338" href="#L338">338</a>         constrs[0].newInstance();
 <a class="jxr_linenumber" name="L339" href="#L339">339</a>     }
 <a class="jxr_linenumber" name="L340" href="#L340">340</a> 
-<a class="jxr_linenumber" name="L341" href="#L341">341</a>     <strong class="jxr_keyword">protected</strong> TileBuffer createTileBuffer(Buffer buffer, PrimitiveType type) {
+<a class="jxr_linenumber" name="L341" href="#L341">341</a>     <strong class="jxr_keyword">protected</strong> TileBuffer createTileBuffer(Buffer buffer, ElementType type) {
 <a class="jxr_linenumber" name="L342" href="#L342">342</a>         TileBuffer tileBuffer = TileBufferFactory.createTileBuffer(type, 0, 10, 10, 1);
 <a class="jxr_linenumber" name="L343" href="#L343">343</a>         tileBuffer.setData(buffer);
 <a class="jxr_linenumber" name="L344" href="#L344">344</a>         <strong class="jxr_keyword">return</strong> tileBuffer;
 <a class="jxr_linenumber" name="L345" href="#L345">345</a>     }
 <a class="jxr_linenumber" name="L346" href="#L346">346</a> 
-<a class="jxr_linenumber" name="L347" href="#L347">347</a>     <strong class="jxr_keyword">protected</strong> <strong class="jxr_keyword">void</strong> createTilePreserver(Buffer buffer, ImageNullPixelMask mask, PrimitiveType type, <strong class="jxr_keyword">int</strong> tileIndex) {
+<a class="jxr_linenumber" name="L347" href="#L347">347</a>     <strong class="jxr_keyword">protected</strong> <strong class="jxr_keyword">void</strong> createTilePreserver(Buffer buffer, ImageNullPixelMask mask, ElementType type, <strong class="jxr_keyword">int</strong> tileIndex) {
 <a class="jxr_linenumber" name="L348" href="#L348">348</a>         TileBuffer tileBuffer = createTileBuffer(buffer, type);
 <a class="jxr_linenumber" name="L349" href="#L349">349</a>         mask.createTilePreserver(tileBuffer, tileIndex).preserveNull();
 <a class="jxr_linenumber" name="L350" href="#L350">350</a>     }
 <a class="jxr_linenumber" name="L351" href="#L351">351</a> 
-<a class="jxr_linenumber" name="L352" href="#L352">352</a>     <strong class="jxr_keyword">protected</strong> NullPixelMaskRestorer createTileRestorer(Buffer buffer, ImageNullPixelMask mask, PrimitiveType type, <strong class="jxr_keyword">int</strong> tileIndex) {
+<a class="jxr_linenumber" name="L352" href="#L352">352</a>     <strong class="jxr_keyword">protected</strong> NullPixelMaskRestorer createTileRestorer(Buffer buffer, ImageNullPixelMask mask, ElementType type, <strong class="jxr_keyword">int</strong> tileIndex) {
 <a class="jxr_linenumber" name="L353" href="#L353">353</a>         TileBuffer tileBuffer = createTileBuffer(buffer, type);
 <a class="jxr_linenumber" name="L354" href="#L354">354</a>         <strong class="jxr_keyword">return</strong> mask.createTileRestorer(tileBuffer, tileIndex);
 <a class="jxr_linenumber" name="L355" href="#L355">355</a>     }
 <a class="jxr_linenumber" name="L356" href="#L356">356</a> }
 </pre>
 <hr/>
-<div id="footer">Copyright &#169; 1996&#x2013;2017 nom-tam-fits. All rights reserved.</div>
+<div id="footer">Copyright &#169; 1996&#x2013;2021 nom-tam-fits. All rights reserved.</div>
 </body>
 </html>

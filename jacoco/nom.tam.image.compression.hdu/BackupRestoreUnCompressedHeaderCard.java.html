@@ -1,10 +1,10 @@
-<?xml version="1.0" encoding="UTF-8"?><!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Strict//EN" "http://www.w3.org/TR/xhtml1/DTD/xhtml1-strict.dtd"><html xmlns="http://www.w3.org/1999/xhtml" lang="en"><head><meta http-equiv="Content-Type" content="text/html;charset=UTF-8"/><link rel="stylesheet" href="../.resources/report.css" type="text/css"/><link rel="shortcut icon" href="../.resources/report.gif" type="image/gif"/><title>BackupRestoreUnCompressedHeaderCard.java</title><link rel="stylesheet" href="../.resources/prettify.css" type="text/css"/><script type="text/javascript" src="../.resources/prettify.js"></script></head><body onload="window['PR_TAB_WIDTH']=4;prettyPrint()"><div class="breadcrumb" id="breadcrumb"><span class="info"><a href="../.sessions.html" class="el_session">Sessions</a></span><a href="../index.html" class="el_report">nom.tam FITS library</a> &gt; <a href="index.source.html" class="el_package">nom.tam.image.compression.hdu</a> &gt; <span class="el_source">BackupRestoreUnCompressedHeaderCard.java</span></div><h1>BackupRestoreUnCompressedHeaderCard.java</h1><pre class="source lang-java linenums">package nom.tam.image.compression.hdu;
+<?xml version="1.0" encoding="UTF-8"?><!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Strict//EN" "http://www.w3.org/TR/xhtml1/DTD/xhtml1-strict.dtd"><html xmlns="http://www.w3.org/1999/xhtml" lang="en"><head><meta http-equiv="Content-Type" content="text/html;charset=UTF-8"/><link rel="stylesheet" href="../jacoco-resources/report.css" type="text/css"/><link rel="shortcut icon" href="../jacoco-resources/report.gif" type="image/gif"/><title>BackupRestoreUnCompressedHeaderCard.java</title><link rel="stylesheet" href="../jacoco-resources/prettify.css" type="text/css"/><script type="text/javascript" src="../jacoco-resources/prettify.js"></script></head><body onload="window['PR_TAB_WIDTH']=4;prettyPrint()"><div class="breadcrumb" id="breadcrumb"><span class="info"><a href="../jacoco-sessions.html" class="el_session">Sessions</a></span><a href="../index.html" class="el_report">nom.tam FITS library</a> &gt; <a href="index.source.html" class="el_package">nom.tam.image.compression.hdu</a> &gt; <span class="el_source">BackupRestoreUnCompressedHeaderCard.java</span></div><h1>BackupRestoreUnCompressedHeaderCard.java</h1><pre class="source lang-java linenums">package nom.tam.image.compression.hdu;
 
 /*
  * #%L
  * nom.tam FITS library
  * %%
- * Copyright (C) 1996 - 2015 nom-tam-fits
+ * Copyright (C) 1996 - 2021 nom-tam-fits
  * %%
  * This is free and unencumbered software released into the public domain.
  * 
@@ -76,7 +76,7 @@ import nom.tam.fits.header.IFitsHeader;
 import nom.tam.fits.header.IFitsHeader.VALUE;
 import nom.tam.util.Cursor;
 
-<span class="pc" id="L79">enum BackupRestoreUnCompressedHeaderCard {</span>
+<span class="fc" id="L79">enum BackupRestoreUnCompressedHeaderCard {</span>
 <span class="fc" id="L80">    MAP_ANY(null) {</span>
 
         @Override
@@ -129,99 +129,100 @@ import nom.tam.util.Cursor;
 <span class="fc" id="L129">    MAP_ZBLANK(ZBLANK),</span>
 <span class="fc" id="L130">    MAP_ZTILELEN(ZTILELEN),</span>
 <span class="fc" id="L131">    MAP_ZCTYPn(ZCTYPn),</span>
-<span class="fc" id="L132">    MAP_ZBLOCKED(ZBLOCKED),</span>
-<span class="fc" id="L133">    MAP_ZCMPTYPE(ZCMPTYPE),</span>
-<span class="fc" id="L134">    MAP_ZDATASUM(ZDATASUM),</span>
-<span class="fc" id="L135">    MAP_ZDITHER0(ZDITHER0),</span>
-<span class="fc" id="L136">    MAP_ZEXTEND(ZEXTEND),</span>
-<span class="fc" id="L137">    MAP_ZGCOUNT(ZGCOUNT),</span>
-<span class="fc" id="L138">    MAP_ZHECKSUM(ZHECKSUM),</span>
-<span class="fc" id="L139">    MAP_ZIMAGE(ZIMAGE),</span>
-<span class="fc" id="L140">    MAP_ZTABLE(ZTABLE),</span>
-<span class="fc" id="L141">    MAP_ZNAMEn(ZNAMEn),</span>
-<span class="fc" id="L142">    MAP_ZNAXIS(ZNAXIS),</span>
-<span class="fc" id="L143">    MAP_THEAP(THEAP) {</span>
+<span class="fc" id="L132">    @SuppressWarnings(&quot;deprecation&quot;)</span>
+    MAP_ZBLOCKED(ZBLOCKED),
+<span class="fc" id="L134">    MAP_ZCMPTYPE(ZCMPTYPE),</span>
+<span class="fc" id="L135">    MAP_ZDATASUM(ZDATASUM),</span>
+<span class="fc" id="L136">    MAP_ZDITHER0(ZDITHER0),</span>
+<span class="fc" id="L137">    MAP_ZEXTEND(ZEXTEND),</span>
+<span class="fc" id="L138">    MAP_ZGCOUNT(ZGCOUNT),</span>
+<span class="fc" id="L139">    MAP_ZHECKSUM(ZHECKSUM),</span>
+<span class="fc" id="L140">    MAP_ZIMAGE(ZIMAGE),</span>
+<span class="fc" id="L141">    MAP_ZTABLE(ZTABLE),</span>
+<span class="fc" id="L142">    MAP_ZNAMEn(ZNAMEn),</span>
+<span class="fc" id="L143">    MAP_ZNAXIS(ZNAXIS),</span>
+<span class="fc" id="L144">    MAP_THEAP(THEAP) {</span>
 
         @Override
         protected void backupCard(HeaderCard card, Cursor&lt;String, HeaderCard&gt; headerIterator) throws HeaderCardException {
-<span class="fc" id="L147">        }</span>
+<span class="fc" id="L148">        }</span>
 
         @Override
         protected void restoreCard(HeaderCard card, Cursor&lt;String, HeaderCard&gt; headerIterator) throws HeaderCardException {
-<span class="nc" id="L151">        }</span>
+<span class="nc" id="L152">        }</span>
     },
-<span class="fc" id="L153">    MAP_ZNAXISn(ZNAXISn) {</span>
+<span class="fc" id="L154">    MAP_ZNAXISn(ZNAXISn) {</span>
 
         @Override
         protected void backupCard(HeaderCard card, Cursor&lt;String, HeaderCard&gt; headerIterator) throws HeaderCardException {
-<span class="fc" id="L157">            String newKey = uncompressedHeaderKey().n(GenericKey.getN(card.getKey())).key();</span>
-<span class="fc" id="L158">            headerIterator.add(new HeaderCard(newKey, card.getValue(Integer.class, 0), card.getComment()));</span>
-<span class="fc" id="L159">        }</span>
+<span class="fc" id="L158">            String newKey = uncompressedHeaderKey().n(GenericKey.getN(card.getKey())).key();</span>
+<span class="fc" id="L159">            headerIterator.add(new HeaderCard(newKey, card.getValue(Integer.class, 0), card.getComment()));</span>
+<span class="fc" id="L160">        }</span>
 
         @Override
         protected void restoreCard(HeaderCard card, Cursor&lt;String, HeaderCard&gt; headerIterator) throws HeaderCardException {
-<span class="fc" id="L163">            String newKey = compressedHeaderKey().n(GenericKey.getN(card.getKey())).key();</span>
-<span class="fc" id="L164">            headerIterator.add(new HeaderCard(newKey, card.getValue(Integer.class, 0), card.getComment()));</span>
-<span class="fc" id="L165">        }</span>
+<span class="fc" id="L164">            String newKey = compressedHeaderKey().n(GenericKey.getN(card.getKey())).key();</span>
+<span class="fc" id="L165">            headerIterator.add(new HeaderCard(newKey, card.getValue(Integer.class, 0), card.getComment()));</span>
+<span class="fc" id="L166">        }</span>
 
     },
-<span class="fc" id="L168">    MAP_ZPCOUNT(ZPCOUNT),</span>
-<span class="fc" id="L169">    MAP_ZQUANTIZ(ZQUANTIZ),</span>
-<span class="fc" id="L170">    MAP_ZSIMPLE(ZSIMPLE),</span>
-<span class="fc" id="L171">    MAP_ZTENSION(ZTENSION),</span>
-<span class="fc" id="L172">    MAP_ZTILEn(ZTILEn),</span>
-<span class="fc" id="L173">    MAP_ZVALn(ZVALn);</span>
+<span class="fc" id="L169">    MAP_ZPCOUNT(ZPCOUNT),</span>
+<span class="fc" id="L170">    MAP_ZQUANTIZ(ZQUANTIZ),</span>
+<span class="fc" id="L171">    MAP_ZSIMPLE(ZSIMPLE),</span>
+<span class="fc" id="L172">    MAP_ZTENSION(ZTENSION),</span>
+<span class="fc" id="L173">    MAP_ZTILEn(ZTILEn),</span>
+<span class="fc" id="L174">    MAP_ZVALn(ZVALn);</span>
 
     private final IFitsHeader compressedHeaderKey;
 
     private final IFitsHeader uncompressedHeaderKey;
 
     public static void backup(HeaderCard card, Cursor&lt;String, HeaderCard&gt; headerIterator) throws HeaderCardException {
-<span class="fc" id="L180">        BackupRestoreUnCompressedHeaderCard mapping = selectMapping(CompressedImageHDU.UNCOMPRESSED_HEADER_MAPPING, card);</span>
-<span class="fc" id="L181">        mapping.backupCard(card, headerIterator);</span>
-<span class="fc" id="L182">    }</span>
+<span class="fc" id="L181">        BackupRestoreUnCompressedHeaderCard mapping = selectMapping(CompressedImageHDU.UNCOMPRESSED_HEADER_MAPPING, card);</span>
+<span class="fc" id="L182">        mapping.backupCard(card, headerIterator);</span>
+<span class="fc" id="L183">    }</span>
 
     public static void restore(HeaderCard card, Cursor&lt;String, HeaderCard&gt; headerIterator) throws HeaderCardException {
-<span class="fc" id="L185">        BackupRestoreUnCompressedHeaderCard mapping = selectMapping(CompressedImageHDU.COMPRESSED_HEADER_MAPPING, card);</span>
-<span class="fc" id="L186">        mapping.restoreCard(card, headerIterator);</span>
-<span class="fc" id="L187">    }</span>
+<span class="fc" id="L186">        BackupRestoreUnCompressedHeaderCard mapping = selectMapping(CompressedImageHDU.COMPRESSED_HEADER_MAPPING, card);</span>
+<span class="fc" id="L187">        mapping.restoreCard(card, headerIterator);</span>
+<span class="fc" id="L188">    }</span>
 
     protected static BackupRestoreUnCompressedHeaderCard selectMapping(Map&lt;IFitsHeader, BackupRestoreUnCompressedHeaderCard&gt; mappings, HeaderCard card) {
-<span class="fc" id="L190">        IFitsHeader key = GenericKey.lookup(card.getKey());</span>
-<span class="fc bfc" id="L191" title="All 2 branches covered.">        if (key != null) {</span>
-<span class="fc" id="L192">            BackupRestoreUnCompressedHeaderCard mapping = mappings.get(key);</span>
-<span class="fc bfc" id="L193" title="All 2 branches covered.">            if (mapping != null) {</span>
-<span class="fc" id="L194">                return mapping;</span>
+<span class="fc" id="L191">        IFitsHeader key = GenericKey.lookup(card.getKey());</span>
+<span class="fc bfc" id="L192" title="All 2 branches covered.">        if (key != null) {</span>
+<span class="fc" id="L193">            BackupRestoreUnCompressedHeaderCard mapping = mappings.get(key);</span>
+<span class="fc bfc" id="L194" title="All 2 branches covered.">            if (mapping != null) {</span>
+<span class="fc" id="L195">                return mapping;</span>
             }
         }
-<span class="fc" id="L197">        return MAP_ANY;</span>
+<span class="fc" id="L198">        return MAP_ANY;</span>
     }
 
-<span class="fc" id="L200">    BackupRestoreUnCompressedHeaderCard(IFitsHeader header) {</span>
-<span class="fc" id="L201">        this.compressedHeaderKey = header;</span>
-<span class="fc bfc" id="L202" title="All 2 branches covered.">        if (header instanceof Compression) {</span>
-<span class="fc" id="L203">            this.uncompressedHeaderKey = ((Compression) this.compressedHeaderKey).getUncompressedKey();</span>
+<span class="fc" id="L201">    BackupRestoreUnCompressedHeaderCard(IFitsHeader header) {</span>
+<span class="fc" id="L202">        this.compressedHeaderKey = header;</span>
+<span class="fc bfc" id="L203" title="All 2 branches covered.">        if (header instanceof Compression) {</span>
+<span class="fc" id="L204">            this.uncompressedHeaderKey = ((Compression) this.compressedHeaderKey).getUncompressedKey();</span>
 
         } else {
-<span class="fc" id="L206">            this.uncompressedHeaderKey = null;</span>
+<span class="fc" id="L207">            this.uncompressedHeaderKey = null;</span>
         }
-<span class="fc" id="L208">        CompressedImageHDU.UNCOMPRESSED_HEADER_MAPPING.put(header, this);</span>
-<span class="fc bfc" id="L209" title="All 2 branches covered.">        if (this.uncompressedHeaderKey != null) {</span>
-<span class="fc" id="L210">            CompressedImageHDU.COMPRESSED_HEADER_MAPPING.put(this.uncompressedHeaderKey, this);</span>
+<span class="fc" id="L209">        CompressedImageHDU.UNCOMPRESSED_HEADER_MAPPING.put(header, this);</span>
+<span class="fc bfc" id="L210" title="All 2 branches covered.">        if (this.uncompressedHeaderKey != null) {</span>
+<span class="fc" id="L211">            CompressedImageHDU.COMPRESSED_HEADER_MAPPING.put(this.uncompressedHeaderKey, this);</span>
         }
-<span class="fc" id="L212">    }</span>
+<span class="fc" id="L213">    }</span>
 
     private void addHeaderCard(HeaderCard card, Cursor&lt;String, HeaderCard&gt; headerIterator, IFitsHeader targetKey) throws HeaderCardException {
-<span class="fc bfc" id="L215" title="All 2 branches covered.">        if (targetKey != null) {</span>
-<span class="fc bfc" id="L216" title="All 2 branches covered.">            if (targetKey.valueType() == VALUE.INTEGER) {</span>
-<span class="fc" id="L217">                headerIterator.add(new HeaderCard(targetKey.key(), card.getValue(Integer.class, 0), card.getComment()));</span>
-<span class="fc bfc" id="L218" title="All 2 branches covered.">            } else if (targetKey.valueType() == VALUE.STRING) {</span>
-<span class="fc" id="L219">                headerIterator.add(new HeaderCard(targetKey.key(), card.getValue(), card.getComment()));</span>
-<span class="pc bpc" id="L220" title="1 of 2 branches missed.">            } else if (targetKey.valueType() == VALUE.LOGICAL) {</span>
-<span class="fc" id="L221">                headerIterator.add(new HeaderCard(targetKey.key(), card.getValue(Boolean.class, false), card.getComment()));</span>
+<span class="fc bfc" id="L216" title="All 2 branches covered.">        if (targetKey != null) {</span>
+<span class="fc bfc" id="L217" title="All 2 branches covered.">            if (targetKey.valueType() == VALUE.INTEGER) {</span>
+<span class="fc" id="L218">                headerIterator.add(new HeaderCard(targetKey.key(), card.getValue(Integer.class, 0), card.getComment()));</span>
+<span class="fc bfc" id="L219" title="All 2 branches covered.">            } else if (targetKey.valueType() == VALUE.STRING) {</span>
+<span class="fc" id="L220">                headerIterator.add(new HeaderCard(targetKey.key(), card.getValue(), card.getComment()));</span>
+<span class="pc bpc" id="L221" title="1 of 2 branches missed.">            } else if (targetKey.valueType() == VALUE.LOGICAL) {</span>
+<span class="fc" id="L222">                headerIterator.add(new HeaderCard(targetKey.key(), card.getValue(Boolean.class, false), card.getComment()));</span>
             }
         }
-<span class="fc" id="L224">    }</span>
+<span class="fc" id="L225">    }</span>
 
     /**
      * default behaviour is to ignore the card and by that to exclude it from
@@ -235,20 +236,20 @@ import nom.tam.util.Cursor;
      *             if the card could not be copied
      */
     protected void backupCard(HeaderCard card, Cursor&lt;String, HeaderCard&gt; headerIterator) throws HeaderCardException {
-<span class="fc" id="L238">        IFitsHeader uncompressedKey = this.uncompressedHeaderKey;</span>
-<span class="fc" id="L239">        addHeaderCard(card, headerIterator, uncompressedKey);</span>
-<span class="fc" id="L240">    }</span>
+<span class="fc" id="L239">        IFitsHeader uncompressedKey = this.uncompressedHeaderKey;</span>
+<span class="fc" id="L240">        addHeaderCard(card, headerIterator, uncompressedKey);</span>
+<span class="fc" id="L241">    }</span>
 
     protected IFitsHeader compressedHeaderKey() {
-<span class="fc" id="L243">        return this.compressedHeaderKey;</span>
+<span class="fc" id="L244">        return this.compressedHeaderKey;</span>
     }
 
     protected void restoreCard(HeaderCard card, Cursor&lt;String, HeaderCard&gt; headerIterator) throws HeaderCardException {
-<span class="fc" id="L247">        addHeaderCard(card, headerIterator, this.compressedHeaderKey);</span>
-<span class="fc" id="L248">    }</span>
+<span class="fc" id="L248">        addHeaderCard(card, headerIterator, this.compressedHeaderKey);</span>
+<span class="fc" id="L249">    }</span>
 
     protected IFitsHeader uncompressedHeaderKey() {
-<span class="fc" id="L251">        return this.uncompressedHeaderKey;</span>
+<span class="fc" id="L252">        return this.uncompressedHeaderKey;</span>
     }
 }
-</pre><div class="footer"><span class="right">Created with <a href="http://www.eclemma.org/jacoco">JaCoCo</a> 0.7.6.201602180812</span></div></body></html>
+</pre><div class="footer"><span class="right">Created with <a href="http://www.jacoco.org/jacoco">JaCoCo</a> 0.8.7.202105040129</span></div></body></html>

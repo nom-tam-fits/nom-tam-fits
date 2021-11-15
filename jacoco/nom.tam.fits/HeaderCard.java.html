@@ -1,37 +1,8 @@
-<?xml version="1.0" encoding="UTF-8"?><!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Strict//EN" "http://www.w3.org/TR/xhtml1/DTD/xhtml1-strict.dtd"><html xmlns="http://www.w3.org/1999/xhtml" lang="en"><head><meta http-equiv="Content-Type" content="text/html;charset=UTF-8"/><link rel="stylesheet" href="../.resources/report.css" type="text/css"/><link rel="shortcut icon" href="../.resources/report.gif" type="image/gif"/><title>HeaderCard.java</title><link rel="stylesheet" href="../.resources/prettify.css" type="text/css"/><script type="text/javascript" src="../.resources/prettify.js"></script></head><body onload="window['PR_TAB_WIDTH']=4;prettyPrint()"><div class="breadcrumb" id="breadcrumb"><span class="info"><a href="../.sessions.html" class="el_session">Sessions</a></span><a href="../index.html" class="el_report">nom.tam FITS library</a> &gt; <a href="index.source.html" class="el_package">nom.tam.fits</a> &gt; <span class="el_source">HeaderCard.java</span></div><h1>HeaderCard.java</h1><pre class="source lang-java linenums">package nom.tam.fits;
-
-import static nom.tam.fits.header.NonStandard.CONTINUE;
-import static nom.tam.fits.header.Standard.COMMENT;
-import static nom.tam.fits.header.Standard.HISTORY;
-
-import java.io.ByteArrayInputStream;
-import java.io.EOFException;
-import java.io.IOException;
-import java.math.BigDecimal;
-import java.math.BigInteger;
-import java.math.MathContext;
-import java.math.RoundingMode;
-import java.util.Arrays;
-import java.util.logging.Level;
-import java.util.logging.Logger;
-import java.util.regex.Pattern;
-
-import nom.tam.fits.FitsFactory.FitsSettings;
-import nom.tam.fits.header.NonStandard;
-import nom.tam.fits.utilities.FitsHeaderCardParser;
-import nom.tam.fits.utilities.FitsHeaderCardParser.ParsedValue;
-import nom.tam.fits.utilities.FitsLineAppender;
-import nom.tam.fits.utilities.FitsSubString;
-import nom.tam.util.ArrayDataInput;
-import nom.tam.util.AsciiFuncs;
-import nom.tam.util.BufferedDataInputStream;
-import nom.tam.util.CursorValue;
-
-/*
+<?xml version="1.0" encoding="UTF-8"?><!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Strict//EN" "http://www.w3.org/TR/xhtml1/DTD/xhtml1-strict.dtd"><html xmlns="http://www.w3.org/1999/xhtml" lang="en"><head><meta http-equiv="Content-Type" content="text/html;charset=UTF-8"/><link rel="stylesheet" href="../jacoco-resources/report.css" type="text/css"/><link rel="shortcut icon" href="../jacoco-resources/report.gif" type="image/gif"/><title>HeaderCard.java</title><link rel="stylesheet" href="../jacoco-resources/prettify.css" type="text/css"/><script type="text/javascript" src="../jacoco-resources/prettify.js"></script></head><body onload="window['PR_TAB_WIDTH']=4;prettyPrint()"><div class="breadcrumb" id="breadcrumb"><span class="info"><a href="../jacoco-sessions.html" class="el_session">Sessions</a></span><a href="../index.html" class="el_report">nom.tam FITS library</a> &gt; <a href="index.source.html" class="el_package">nom.tam.fits</a> &gt; <span class="el_source">HeaderCard.java</span></div><h1>HeaderCard.java</h1><pre class="source lang-java linenums">/*
  * #%L
  * nom.tam FITS library
  * %%
- * Copyright (C) 2004 - 2015 nom-tam-fits
+ * Copyright (C) 2004 - 2021 nom-tam-fits
  * %%
  * This is free and unencumbered software released into the public domain.
  * 
@@ -58,1083 +29,1896 @@ import nom.tam.util.CursorValue;
  * #L%
  */
 
+package nom.tam.fits;
+
+import static nom.tam.fits.header.Standard.BLANKS;
+import static nom.tam.fits.header.Standard.COMMENT;
+import static nom.tam.fits.header.Standard.CONTINUE;
+import static nom.tam.fits.header.Standard.HISTORY;
+
+import java.io.ByteArrayInputStream;
+import java.io.EOFException;
+import java.io.IOException;
+import java.math.BigDecimal;
+import java.math.BigInteger;
+import java.util.Arrays;
+import java.util.logging.Level;
+import java.util.logging.Logger;
+
+import nom.tam.fits.FitsFactory.FitsSettings;
+import nom.tam.fits.header.IFitsHeader;
+import nom.tam.fits.header.IFitsHeader.VALUE;
+import nom.tam.fits.header.NonStandard;
+import nom.tam.util.ArrayDataInput;
+import nom.tam.util.AsciiFuncs;
+import nom.tam.util.FitsInputStream;
+import nom.tam.util.ComplexValue;
+import nom.tam.util.CursorValue;
+import nom.tam.util.FlexFormat;
+
+
 /**
- * This class describes methods to access and manipulate the individual cards
- * for a FITS Header.
+ * An individual entry in the FITS Header, such as a key/value pair with an optional comment field, or a comment-style only
+ * entry.
  */
-public class HeaderCard implements CursorValue&lt;String&gt; {
+public class HeaderCard implements CursorValue&lt;String&gt;, Cloneable {
 
-    private static final int SPACE_NEEDED_FOR_EQUAL_AND_TWO_BLANKS = 3;
-
-    private static final double MAX_DECIMAL_VALUE_TO_USE_PLAIN_STRING = 1.0E16;
-
-<span class="fc" id="L71">    private static final Logger LOG = Logger.getLogger(HeaderCard.class.getName());</span>
-
-<span class="fc" id="L73">    private static final String CONTINUE_CARD_PREFIX = CONTINUE.key() + &quot;  '&quot;;</span>
-
+<span class="fc" id="L66">    private static final Logger LOG = Logger.getLogger(HeaderCard.class.getName());</span>
+    
+    /** The number of characters per header card (line). */
     public static final int FITS_HEADER_CARD_SIZE = 80;
-
-<span class="fc" id="L77">    private static final String HIERARCH_WITH_BLANK = NonStandard.HIERARCH.key() + &quot; &quot;;</span>
-
-<span class="fc" id="L79">    private static final int HIERARCH_WITH_BLANK_LENGTH = HIERARCH_WITH_BLANK.length();</span>
-
-<span class="fc" id="L81">    private static final String HIERARCH_WITH_DOT = NonStandard.HIERARCH.key() + &quot;.&quot;;</span>
-
-    /**
-     * regexp for IEEE floats
-     */
-<span class="fc" id="L86">    private static final Pattern IEEE_REGEX = Pattern.compile(&quot;[+-]?(?=\\d*[.eE])(?=\\.?\\d)\\d*\\.?\\d*(?:[eE][+-]?\\d+)?&quot;);</span>
-
-<span class="fc" id="L88">    private static final BigDecimal LONG_MAX_VALUE_AS_BIG_DECIMAL = BigDecimal.valueOf(Long.MAX_VALUE);</span>
-
-    /**
-     * regexp for numbers.
-     */
-<span class="fc" id="L93">    private static final Pattern LONG_REGEX = Pattern.compile(&quot;[+-]?[0-9][0-9]*&quot;);</span>
-
-    /**
-     * max number of characters an integer can have.
-     */
-<span class="fc" id="L98">    private static final int MAX_INTEGER_STRING_SIZE = Integer.toString(Integer.MAX_VALUE).length() - 1;</span>
-
+    
     /** Maximum length of a FITS keyword field */
     public static final int MAX_KEYWORD_LENGTH = 8;
-
-    /**
-     * the start and end quotes of the string and the ampasant to continue the
-     * string.
-     */
-    public static final int MAX_LONG_STRING_CONTINUE_OVERHEAD = 3;
-
-    /**
-     * max number of characters a long can have.
-     */
-<span class="fc" id="L112">    private static final int MAX_LONG_STRING_SIZE = Long.toString(Long.MAX_VALUE).length() - 1;</span>
-
-    /**
-     * Maximum length of a FITS long string value field. the &amp;amp; for the
-     * continuation needs one char.
-     */
-    public static final int MAX_LONG_STRING_VALUE_LENGTH = HeaderCard.MAX_STRING_VALUE_LENGTH - 1;
-
-    /**
-     * if a commend needs the be specified 2 extra chars are needed to start the
-     * comment
-     */
-    public static final int MAX_LONG_STRING_VALUE_WITH_COMMENT_LENGTH = HeaderCard.MAX_LONG_STRING_VALUE_LENGTH - 2;
-
-    /**
-     * Maximum length of a FITS string value field.
-     */
-    public static final int MAX_STRING_VALUE_LENGTH = HeaderCard.MAX_VALUE_LENGTH - 2;
-
-    /**
-     * Maximum length of a FITS value field.
-     */
+    
+    /** The length of two single quotes that must surround string values. */
+    public static final int STRING_QUOTES_LENGTH = 2;
+    
+    /** Maximum length of a FITS value field. */
     public static final int MAX_VALUE_LENGTH = 70;
+    
+    /** Maximum length of a comment-style card comment field. */
+    public static final int MAX_COMMENT_CARD_COMMENT_LENGTH = MAX_VALUE_LENGTH + 1;
+    
+    /** Maximum length of a FITS string value field. */
+    public static final int MAX_STRING_VALUE_LENGTH = MAX_VALUE_LENGTH - 2;
+    
+    /** Maximum length of a FITS long string value field. the &amp;amp; for the continuation needs one char. */
+    public static final int MAX_LONG_STRING_VALUE_LENGTH = MAX_STRING_VALUE_LENGTH - 1;
 
-    private static final int NORMAL_ALIGN_POSITION = 30;
+    /** if a commend needs the be specified 2 extra chars are needed to start the comment */
+    public static final int MAX_LONG_STRING_VALUE_WITH_COMMENT_LENGTH = MAX_LONG_STRING_VALUE_LENGTH - 2;
 
-    private static final int NORMAL_SMALL_STRING_ALIGN_POSITION = 19;
+    /** Maximum HIERARCH keyword length (80 chars must fit [&amp;lt;keyword&amp;gt; = '&amp;amp;'] at minimum... */
+    public static final int MAX_HIERARCH_KEYWORD_LENGTH = FITS_HEADER_CARD_SIZE - 6;
 
-    private static final int STRING_SPLIT_POSITION_FOR_EXTRA_COMMENT_SPACE = 35;
+    /** The start and end quotes of the string and the ampasant to continue the string. */
+    public static final int MAX_LONG_STRING_CONTINUE_OVERHEAD = 3;
+    
+    /** The first ASCII character that may be used in header records */
+    public static final char MIN_VALID_CHAR = 0x20;
 
-    /**
-     * The comment part of the card (set to null if there's no comment)
-     */
-    private String comment;
+    /** The last ASCII character that may be used in header records */
+    public static final char MAX_VALID_CHAR = 0x7e;
 
-    /**
-     * A flag indicating whether or not this is a string value
-     */
-    private boolean isString;
+    /** The default keyword to use instead of null or any number of blanks. */
+    public static final String EMPTY_KEY = &quot;&quot;;
 
-    /**
-     * The keyword part of the card (set to null if there's no keyword)
-     */
+    /** The string &quot;HIERARCH.&quot; */
+<span class="fc" id="L108">    private static final String HIERARCH_WITH_DOT = NonStandard.HIERARCH.key() + &quot;.&quot;;</span>
+
+    /** The keyword part of the card (set to null if there's no keyword) */
     private String key;
-
-    /**
-     * Does this card represent a nullable field. ?
-     */
-    private boolean nullable;
-
-    /**
-     * The value part of the card (set to null if there's no value)
-     */
+    
+    /** The keyword part of the card (set to null if there's no value / empty string) */
     private String value;
 
-    /**
-     * @return a created HeaderCard from a FITS card string.
-     * @param card
-     *            the 80 character card image
-     */
-    public static HeaderCard create(String card) {
-        try {
-<span class="fc" id="L174">            return new HeaderCard(stringToArrayInputStream(card));</span>
-<span class="fc" id="L175">        } catch (Exception e) {</span>
-<span class="fc" id="L176">            throw new IllegalArgumentException(&quot;card not legal&quot;, e);</span>
-        }
-    }
+    /** The comment part of the card (set to null if there's no comment) */
+    private String comment;
 
-    /**
-     * Create a string from a BigDecimal making sure that it's not longer than
-     * the available space.
-     *
-     * @param decimalValue
-     *            the decimal value to print
-     * @param availableSpace
-     *            the space available for the value
-     * @return the string representing the value.
+    /** 
+     * The Java class associated to the value 
+     * 
+     * @since 1.16
      */
-    private static String dblString(BigDecimal decimalValue, int availableSpace) {
-<span class="fc" id="L191">        return dblString(decimalValue, -1, availableSpace);</span>
+    private Class&lt;?&gt; type;
+    
+    /** Private constructor for an empty card, used by other constructors. */
+    private HeaderCard() {   
     }
 
     /**
-     * Create a string from a BigDecimal making sure that it's not longer than
-     * the available space.
-     *
-     * @param decimalValue
-     *            the decimal value to print
-     * @param precision
-     *            the precision to use
-     * @param availableSpace
-     *            the space available for the value
-     * @return the string representing the value.
+     * Creates a new header card, but reading from the specified data input stream. The card is expected
+     * to be describes by one or more 80-character wide header 'lines'. If long string support is
+     * not enabled, then a new card is created from the next 80-characters. When long string
+     * support is enabled, cunsecutive lines starting with [&lt;code&gt;CONTINUE &lt;/code&gt;] after the first line will 
+     * be aggregated into a single new card.
+     * 
+     * @param dis           the data input stream
+     * 
+     * @throws UnclosedQuoteException       if the line contained an unclosed single quote.
+     * @throws TruncatedFileException       if we reached the end of file unexpectedly before
+     *                                      fully parsing an 80-character line.
+     * @throws IOException                  if there was some IO issue.
+     * 
+     * @see FitsFactory#setLongStringsEnabled(boolean)
      */
-    private static String dblString(BigDecimal decimalValue, int precision, int availableSpace) {
-<span class="fc" id="L207">        BigDecimal decimal = decimalValue;</span>
-<span class="fc bfc" id="L208" title="All 2 branches covered.">        if (precision &gt;= 0) {</span>
-<span class="fc" id="L209">            decimal = decimalValue.setScale(precision, RoundingMode.HALF_UP);</span>
-        }
-<span class="fc" id="L211">        double absInput = Math.abs(decimalValue.doubleValue());</span>
-<span class="fc bfc" id="L212" title="All 4 branches covered.">        if (absInput &gt; 0d &amp;&amp; absInput &lt; MAX_DECIMAL_VALUE_TO_USE_PLAIN_STRING) {</span>
-<span class="fc" id="L213">            String value = decimal.toPlainString();</span>
-<span class="fc bfc" id="L214" title="All 2 branches covered.">            if (value.length() &lt; availableSpace) {</span>
-<span class="fc" id="L215">                return value;</span>
-            }
-        }
-<span class="fc" id="L218">        String value = decimalValue.toString();</span>
-<span class="fc bfc" id="L219" title="All 2 branches covered.">        while (value.length() &gt; availableSpace) {</span>
-<span class="fc" id="L220">            decimal = decimalValue.setScale(decimal.scale() - 1, BigDecimal.ROUND_HALF_UP);</span>
-<span class="fc" id="L221">            value = decimal.toString();</span>
-        }
-<span class="fc" id="L223">        return value;</span>
-    }
+    @SuppressWarnings(&quot;deprecation&quot;)
+    public HeaderCard(ArrayDataInput dis) throws UnclosedQuoteException, TruncatedFileException, IOException {
+<span class="fc" id="L148">        this(new HeaderCardCountingArrayDataInput(dis));</span>
+<span class="fc" id="L149">    }</span>
 
     /**
-     * Create a string from a BigDecimal making sure that it's not longer than
-     * the available space.
-     *
-     * @param decimalValue
-     *            the decimal value to print
-     * @param availableSpace
-     *            the space available for the value
-     * @return the string representing the value.
+     * &lt;p&gt;
+     * Deprecated, first because it should not be public since it should only be used only at the package level; 
+     * and second, because card counting should be internal to HeaderCard, not external... 
+     * We'll likely remove support in future releases. -- (AK)
+     * &lt;/p&gt;
+     * &lt;p&gt;
+     * Creates a new header card, but reading from the specified data input. The card is expected
+     * to be describes by one or more 80-character wide header 'lines'. If long string support is
+     * not enabled, then a new card is created from the next 80-characters. When long string
+     * support is enabled, cunsecutive lines starting with [&lt;code&gt;CONTINUE &lt;/code&gt;] after the first line will 
+     * be aggregated into a single new card.
+     * &lt;/p&gt;
+     * 
+     * @param dis           the data input
+     * 
+     * @throws UnclosedQuoteException       if the line contained an unclosed single quote.
+     * @throws TruncatedFileException       if we reached the end of file unexpectedly before
+     *                                      fully parsing an 80-character line.
+     * @throws IOException                  if there was some IO issue.
+     * 
+     * @see #HeaderCard(ArrayDataInput)
+     * @see FitsFactory#setLongStringsEnabled(boolean)
+     * 
      */
-    private static String dblString(double decimalValue, int availableSpace) {
-<span class="fc" id="L237">        return dblString(BigDecimal.valueOf(decimalValue), -1, availableSpace);</span>
-    }
+    @Deprecated
+    public HeaderCard(HeaderCardCountingArrayDataInput dis) throws UnclosedQuoteException, TruncatedFileException, IOException {
+<span class="fc" id="L178">        this();</span>
+<span class="fc" id="L179">        this.key = null;</span>
+<span class="fc" id="L180">        this.value = null;</span>
+<span class="fc" id="L181">        this.comment = null;</span>
+<span class="fc" id="L182">        this.type = null;</span>
 
-    /**
-     * @param input
-     *            float value being converted
-     * @param precision
-     *            the number of decimal places to show
-     * @return Create a fixed decimal string from a double with the specified
-     *         precision.
-     */
-    private static String dblString(double input, int precision, int availableSpace) {
-<span class="fc" id="L249">        return dblString(BigDecimal.valueOf(input), precision, availableSpace);</span>
-    }
-
-    /**
-     * attention float to double cases are very lossy so a toString is needed to
-     * keep the precision. proof (double)500.055f = 500.05499267578125d
-     *
-     * @param floatValue
-     *            the float value
-     * @return the BigDecimal as close to the value of the float as possible
-     */
-    private static BigDecimal floatToBigDecimal(float floatValue) {
-<span class="fc" id="L261">        return new BigDecimal(floatValue, MathContext.DECIMAL32);</span>
-    }
-
-    /**
-     * detect the decimal type of the value, does it fit in a Double/BigInteger
-     * or must it be a BigDecimal to keep the needed precission.
-     *
-     * @param value
-     *            the String value to check.
-     * @return the type to fit the value
-     */
-    private static Class&lt;?&gt; getDecimalNumberType(String value) {
-<span class="fc" id="L273">        BigDecimal bigDecimal = new BigDecimal(value);</span>
-<span class="fc bfc" id="L274" title="All 4 branches covered.">        if (bigDecimal.abs().compareTo(HeaderCard.LONG_MAX_VALUE_AS_BIG_DECIMAL) &gt; 0 &amp;&amp; bigDecimal.remainder(BigDecimal.ONE).compareTo(BigDecimal.ZERO) == 0) {</span>
-<span class="fc" id="L275">            return BigInteger.class;</span>
-<span class="fc bfc" id="L276" title="All 2 branches covered.">        } else if (bigDecimal.equals(BigDecimal.valueOf(Double.valueOf(value)))) {</span>
-<span class="fc" id="L277">            return Double.class;</span>
-        } else {
-<span class="fc" id="L279">            return BigDecimal.class;</span>
-        }
-    }
-
-    private static Class&lt;?&gt; getIntegerNumberType(String value) {
-<span class="fc" id="L284">        int length = value.length();</span>
-<span class="fc bfc" id="L285" title="All 4 branches covered.">        if (value.charAt(0) == '-' || value.charAt(0) == '+') {</span>
-<span class="fc" id="L286">            length--;</span>
-        }
-<span class="fc bfc" id="L288" title="All 2 branches covered.">        if (length &lt;= HeaderCard.MAX_INTEGER_STRING_SIZE) {</span>
-<span class="fc" id="L289">            return Integer.class;</span>
-<span class="fc bfc" id="L290" title="All 2 branches covered.">        } else if (length &lt;= HeaderCard.MAX_LONG_STRING_SIZE) {</span>
-<span class="fc" id="L291">            return Long.class;</span>
-        } else {
-<span class="fc" id="L293">            return BigInteger.class;</span>
-        }
-    }
-
-    /**
-     * Read exactly one complete fits header line from the input.
-     *
-     * @param dis
-     *            the data input stream to read the line
-     * @return a string of exactly 80 characters
-     * @throws IOException
-     *             if the input stream could not be read
-     * @throws TruncatedFileException
-     *             is there was not a complete line available in the input.
-     */
-    private static String readOneHeaderLine(HeaderCardCountingArrayDataInput dis) throws IOException, TruncatedFileException {
-<span class="fc" id="L309">        byte[] buffer = new byte[FITS_HEADER_CARD_SIZE];</span>
-        int len;
-<span class="fc" id="L311">        int need = FITS_HEADER_CARD_SIZE;</span>
-        try {
-<span class="fc bfc" id="L313" title="All 2 branches covered.">            while (need &gt; 0) {</span>
-<span class="fc" id="L314">                len = dis.in().read(buffer, FITS_HEADER_CARD_SIZE - need, need);</span>
-<span class="fc bfc" id="L315" title="All 2 branches covered.">                if (len == 0) {</span>
-<span class="fc" id="L316">                    throw new TruncatedFileException(&quot;nothing to read left&quot;);</span>
-                }
-<span class="fc" id="L318">                need -= len;</span>
-            }
-<span class="fc" id="L320">        } catch (EOFException e) {</span>
-<span class="fc bfc" id="L321" title="All 2 branches covered.">            if (need == FITS_HEADER_CARD_SIZE) {</span>
-<span class="fc" id="L322">                throw e;</span>
-            }
-<span class="fc" id="L324">            throw new TruncatedFileException(e.getMessage());</span>
-<span class="fc" id="L325">        }</span>
-<span class="fc" id="L326">        dis.cardRead();</span>
-<span class="fc" id="L327">        return AsciiFuncs.asciiString(buffer);</span>
-    }
-
-    private static int spaceAvailableForValue(String key) {
-<span class="fc" id="L331">        return FITS_HEADER_CARD_SIZE - (Math.max(key.length(), CONTINUE.key().length()) + SPACE_NEEDED_FOR_EQUAL_AND_TWO_BLANKS);</span>
-    }
-
-    private static ArrayDataInput stringToArrayInputStream(String card) {
-<span class="fc" id="L335">        byte[] bytes = AsciiFuncs.getBytes(card);</span>
-<span class="fc bfc" id="L336" title="All 2 branches covered.">        if (bytes.length % FITS_HEADER_CARD_SIZE != 0) {</span>
-<span class="fc" id="L337">            byte[] newBytes = new byte[bytes.length + FITS_HEADER_CARD_SIZE - bytes.length % FITS_HEADER_CARD_SIZE];</span>
-<span class="fc" id="L338">            System.arraycopy(bytes, 0, newBytes, 0, bytes.length);</span>
-<span class="fc" id="L339">            Arrays.fill(newBytes, bytes.length, newBytes.length, (byte) ' ');</span>
-<span class="fc" id="L340">            bytes = newBytes;</span>
-        }
-<span class="fc" id="L342">        return new BufferedDataInputStream(new ByteArrayInputStream(bytes));</span>
-    }
-
-    /**
-     * This method is only used internally when it is sure that the creation of
-     * the card is granted not to throw an exception
-     *
-     * @param key
-     *            the key for the card
-     * @param comment
-     *            the comment for the card
-     * @param isString
-     *            is this a string value card?
-     * @return the new HeaderCard
-     */
-    protected static HeaderCard saveNewHeaderCard(String key, String comment, boolean isString) {
-        try {
-<span class="fc" id="L359">            return new HeaderCard(key, null, comment, false, isString);</span>
-<span class="fc" id="L360">        } catch (HeaderCardException e) {</span>
-<span class="fc" id="L361">            LOG.log(Level.SEVERE, &quot;Impossible Exception for internal card creation:&quot; + key, e);</span>
-<span class="fc" id="L362">            throw new IllegalStateException(e);</span>
-        }
-    }
-
-    public HeaderCard(ArrayDataInput dis) throws TruncatedFileException, IOException {
-<span class="fc" id="L367">        this(new HeaderCardCountingArrayDataInput(dis));</span>
-<span class="fc" id="L368">    }</span>
-
-<span class="fc" id="L370">    public HeaderCard(HeaderCardCountingArrayDataInput dis) throws TruncatedFileException, IOException {</span>
-<span class="fc" id="L371">        this.key = null;</span>
-<span class="fc" id="L372">        this.value = null;</span>
-<span class="fc" id="L373">        this.comment = null;</span>
-<span class="fc" id="L374">        this.isString = false;</span>
-
-<span class="fc" id="L376">        String card = readOneHeaderLine(dis);</span>
-
-<span class="fc bfc" id="L378" title="All 4 branches covered.">        if (FitsFactory.getUseHierarch() &amp;&amp; card.startsWith(HIERARCH_WITH_BLANK)) {</span>
-<span class="fc" id="L379">            hierarchCard(card, dis);</span>
-<span class="fc" id="L380">            return;</span>
-        }
+<span class="fc" id="L184">        String card = readOneHeaderLine(dis);</span>
+        
+<span class="fc" id="L186">        HeaderCardParser parsed = new HeaderCardParser(card);</span>
 
         // extract the key
-<span class="fc" id="L384">        this.key = card.substring(0, MAX_KEYWORD_LENGTH).trim();</span>
-
-        // if it is an empty key, assume the remainder of the card is a comment
-<span class="fc bfc" id="L387" title="All 2 branches covered.">        if (this.key.isEmpty()) {</span>
-<span class="fc" id="L388">            this.comment = card.substring(MAX_KEYWORD_LENGTH);</span>
-<span class="fc" id="L389">            return;</span>
+<span class="fc" id="L189">        this.key = parsed.getKey();</span>
+<span class="fc" id="L190">        this.type = parsed.getInferredType();</span>
+        
+<span class="fc bfc" id="L192" title="All 6 branches covered.">        if (FitsFactory.isLongStringsEnabled() &amp;&amp; parsed.isString() &amp;&amp; parsed.getValue().endsWith(&quot;&amp;&quot;)) {</span>
+            // Potentially a multi-record long string card...
+<span class="fc" id="L194">            parseLongStringCard(dis, parsed);</span>
+        } else {
+<span class="fc" id="L196">            this.value = parsed.getValue();</span>
+<span class="fc" id="L197">            this.type = parsed.getInferredType();</span>
+<span class="fc" id="L198">            this.comment = parsed.getTrimmedComment();</span>
         }
 
-        // Non-key/value pair lines are treated as keyed comments
-<span class="fc bfc" id="L393" title="All 6 branches covered.">        if (this.key.equals(COMMENT.key()) || this.key.equals(HISTORY.key()) || !card.startsWith(&quot;=&quot;, MAX_KEYWORD_LENGTH)) {</span>
-<span class="fc" id="L394">            this.comment = card.substring(MAX_KEYWORD_LENGTH).trim();</span>
-<span class="fc" id="L395">            return;</span>
+<span class="fc" id="L201">    }</span>
+   
+    /**
+     * Creates a new card with a number value. The card will be created either in the integer, fixed-decimal, or
+     * format, with the native precision. If the native precision cannot be fitted in the available card space,
+     * the value will be represented with reduced precision with at least {@link FlexFormat#DOUBLE_DECIMALS}.
+     * Trailing zeroes will be omitted.
+     *
+     * @param key       keyword
+     * @param value     value (can be &lt;code&gt;null&lt;/code&gt;, in which case the card type defaults to &lt;code&gt;Integer.class&lt;/code&gt;)
+     * 
+     * @throws HeaderCardException      for any invalid keyword or value.
+     * @since 1.16
+     * 
+     * @see #HeaderCard(String, Number, String)
+     * @see #HeaderCard(String, Number, int, String)
+     * @see #create(IFitsHeader, Number)
+     * @see FitsFactory#setUseExponentD(boolean)
+     */
+    public HeaderCard(String key, Number value) throws HeaderCardException {
+<span class="fc" id="L221">        this(key, value, FlexFormat.AUTO_PRECISION, null);</span>
+<span class="fc" id="L222">    }</span>
+    
+    /**
+     * Creates a new card with a number value and a comment. The card will be created either in the integer, 
+     * fixed-decimal, or format. If the native precision cannot be fitted in the available card space,
+     * the value will be represented with reduced precision with at least {@link FlexFormat#DOUBLE_DECIMALS}.
+     * Trailing zeroes will be omitted.
+     *
+     * @param key       keyword
+     * @param value     value (can be &lt;code&gt;null&lt;/code&gt;, in which case the card type defaults to &lt;code&gt;Integer.class&lt;/code&gt;)
+     * @param comment   optional comment, or &lt;code&gt;null&lt;/code&gt;
+     * 
+     * @throws HeaderCardException      for any invalid keyword or value
+     * 
+     * @see #HeaderCard(String, Number)
+     * @see #HeaderCard(String, Number, int, String)
+     * @see #create(IFitsHeader, Number)
+     * @see FitsFactory#setUseExponentD(boolean)
+     */
+    public HeaderCard(String key, Number value, String comment) throws HeaderCardException {
+<span class="fc" id="L242">        this(key, value, FlexFormat.AUTO_PRECISION, comment);</span>
+<span class="fc" id="L243">    }</span>
+
+    /**
+     * Creates a new card with a number value, using scientific notation, with up to the specified decimal places
+     * showing between the decimal place and the exponent. For example, if &lt;code&gt;decimals&lt;/code&gt; is set to 2, then {@link Math#PI} 
+     * gets formatted as &lt;code&gt;3.14E0&lt;/code&gt; (or &lt;code&gt;3.14D0&lt;/code&gt; if {@link FitsFactory#setUseExponentD(boolean)} is
+     * enabled).
+     *
+     * @param key       keyword
+     * @param value     value (can be &lt;code&gt;null&lt;/code&gt;, in which case the card type defaults to &lt;code&gt;Integer.class&lt;/code&gt;)
+     * @param decimals  the number of decimal places to show in the scientific notation. 
+     * @param comment   optional comment, or &lt;code&gt;null&lt;/code&gt;
+     * 
+     * @throws HeaderCardException      for any invalid keyword or value
+     *                                  
+     * @see #HeaderCard(String, Number)
+     * @see #HeaderCard(String, Number, String)
+     * @see #create(IFitsHeader, Number)
+     * @see FitsFactory#setUseExponentD(boolean)
+     */
+<span class="fc" id="L263">    public HeaderCard(String key, Number value, int decimals, String comment) throws HeaderCardException {</span>
+<span class="fc bfc" id="L264" title="All 2 branches covered.">        if (value == null) {</span>
+<span class="fc" id="L265">            set(key, null, comment, Integer.class);</span>
+<span class="fc" id="L266">            return;</span>
         }
-<span class="fc" id="L397">        extractValueCommentFromString(dis, card);</span>
-<span class="fc" id="L398">    }</span>
+        
+        try { 
+<span class="fc" id="L270">            checkNumber(value);        </span>
+<span class="fc" id="L271">        } catch (NumberFormatException e) {</span>
+<span class="fc" id="L272">            throw new HeaderCardException(&quot;FITS headers may not contain NaN or Infinite values&quot;, e);</span>
+<span class="fc" id="L273">        }</span>
+<span class="fc" id="L274">        set(key, new FlexFormat().setWidth(spaceForValue(key)).setPrecision(decimals).format(value), comment, value.getClass());</span>
+<span class="fc" id="L275">    }</span>
 
     /**
-     * Create a HeaderCard from its component parts
+     * Creates a new card with a boolean value (and no comment).
      *
-     * @param key
-     *            keyword (null for a comment)
-     * @param value
-     *            value (null for a comment or keyword without an '=')
-     * @param comment
-     *            comment
-     * @exception HeaderCardException
-     *                for any invalid keyword
+     * @param key       keyword
+     * @param value     value (can be &lt;code&gt;null&lt;/code&gt;)
+     * 
+     * @throws HeaderCardException for any invalid keyword
+     * 
+     * @see #HeaderCard(String, Boolean, String)
+     * @see #create(IFitsHeader, Boolean)
      */
-    public HeaderCard(String key, BigDecimal value, String comment) throws HeaderCardException {
-<span class="fc" id="L413">        this(key, dblString(value, spaceAvailableForValue(key)), comment, false, false);</span>
-<span class="fc" id="L414">    }</span>
+    public HeaderCard(String key, Boolean value) throws HeaderCardException {
+<span class="fc" id="L289">        this(key, value, null);</span>
+<span class="fc" id="L290">    }</span>
 
     /**
-     * Create a HeaderCard from its component parts
+     * Creates a new card with a boolean value, and a comment.
      *
-     * @param key
-     *            keyword (null for a comment)
-     * @param value
-     *            value (null for a comment or keyword without an '=')
-     * @param comment
-     *            comment
-     * @exception HeaderCardException
-     *                for any invalid keyword
+     * @param key       keyword
+     * @param value     value (can be &lt;code&gt;null&lt;/code&gt;)
+     * @param comment   optional comment, or &lt;code&gt;null&lt;/code&gt;
+     * 
+     * @throws HeaderCardException for any invalid keyword or value
+     * 
+     * @see #HeaderCard(String, Boolean)
+     * @see #create(IFitsHeader, Boolean)
      */
-    public HeaderCard(String key, BigInteger value, String comment) throws HeaderCardException {
-<span class="fc" id="L429">        this(key, dblString(new BigDecimal(value), spaceAvailableForValue(key)), comment, false, false);</span>
-<span class="fc" id="L430">    }</span>
-
+    public HeaderCard(String key, Boolean value, String comment) throws HeaderCardException {
+<span class="fc bfc" id="L305" title="All 4 branches covered.">        this(key, value == null ? null : (value ? &quot;T&quot; : &quot;F&quot;), comment, Boolean.class);</span>
+<span class="fc" id="L306">    }</span>
+    
     /**
-     * Create a HeaderCard from its component parts
+     * Creates a new card with a complex value. The real and imaginary parts will be shown either in the fixed 
+     * decimal format or in the exponential notation, whichever preserves more digits, or else whichever is the 
+     * more compact notation. Trailing zeroes will be omitted.
      *
-     * @param key
-     *            keyword (null for a comment)
-     * @param value
-     *            value (null for a comment or keyword without an '=')
-     * @param comment
-     *            comment
-     * @exception HeaderCardException
-     *                for any invalid keyword
+     * @param key       keyword
+     * @param value     value (can be &lt;code&gt;null&lt;/code&gt;)
+     * 
+     * @throws HeaderCardException      for any invalid keyword or value.
+     * 
+     * @see #HeaderCard(String, ComplexValue, String)
+     * @see #HeaderCard(String, ComplexValue, int, String)
      */
-    public HeaderCard(String key, boolean value, String comment) throws HeaderCardException {
-<span class="fc bfc" id="L445" title="All 2 branches covered.">        this(key, value ? &quot;T&quot; : &quot;F&quot;, comment, false, false);</span>
-<span class="fc" id="L446">    }</span>
-
+    public HeaderCard(String key, ComplexValue value) throws HeaderCardException {
+<span class="fc" id="L322">        this(key, value, null);</span>
+<span class="fc" id="L323">    }</span>
+    
     /**
-     * Create a HeaderCard from its component parts
+     * Creates a new card with a complex value and a comment. The real and imaginary parts will be shown either in the fixed 
+     * decimal format or in the exponential notation, whichever preserves more digits, or else whichever is the 
+     * more compact notation. Trailing zeroes will be omitted.
      *
-     * @param key
-     *            keyword (null for a comment)
-     * @param value
-     *            value (null for a comment or keyword without an '=')
-     * @param precision
-     *            Number of decimal places (fixed format).
-     * @param comment
-     *            comment
-     * @exception HeaderCardException
-     *                for any invalid keyword
+     * @param key       keyword
+     * @param value     value (can be &lt;code&gt;null&lt;/code&gt;)
+     * @param comment   optional comment, or &lt;code&gt;null&lt;/code&gt;
+     * 
+     * @throws HeaderCardException      for any invalid keyword or value.
+     * 
+     * @see #HeaderCard(String, ComplexValue)
+     * @see #HeaderCard(String, ComplexValue, int, String)
      */
-    public HeaderCard(String key, double value, int precision, String comment) throws HeaderCardException {
-<span class="fc" id="L463">        this(key, dblString(value, precision, spaceAvailableForValue(key)), comment, false, false);</span>
-<span class="fc" id="L464">    }</span>
-
+    public HeaderCard(String key, ComplexValue value, String comment) throws HeaderCardException {
+<span class="fc" id="L340">        this();</span>
+        
+<span class="fc bfc" id="L342" title="All 2 branches covered.">        if (value == null) {</span>
+<span class="fc" id="L343">            set(key, null, comment, ComplexValue.class);</span>
+<span class="fc" id="L344">            return;</span>
+        }
+        
+<span class="fc bfc" id="L347" title="All 2 branches covered.">        if (!value.isFinite()) {</span>
+<span class="fc" id="L348">            throw new HeaderCardException(&quot;Cannot represent &quot; + value + &quot; in FITS headers.&quot;);</span>
+        }
+<span class="fc" id="L350">        set(key, value.toBoundedString(spaceForValue(key)), comment, ComplexValue.class);</span>
+<span class="fc" id="L351">    }</span>
+   
     /**
-     * Create a HeaderCard from its component parts
+     * Creates a new card with a complex number value, using scientific (exponential) notation, with up to the 
+     * specified number of decimal places showing between the decimal point and the exponent. Trailing zeroes
+     * will be omitted. For example, if &lt;code&gt;decimals&lt;/code&gt; is set to 2, then (&amp;pi;, 12) gets formatted as 
+     * &lt;code&gt;(3.14E0,1.2E1)&lt;/code&gt;.
      *
-     * @param key
-     *            keyword (null for a comment)
-     * @param value
-     *            value (null for a comment or keyword without an '=')
-     * @param comment
-     *            comment
-     * @exception HeaderCardException
-     *                for any invalid keyword
+     * @param key       keyword
+     * @param value     value (can be &lt;code&gt;null&lt;/code&gt;)
+     * @param decimals  the number of decimal places to show. 
+     * @param comment   optional comment, or &lt;code&gt;null&lt;/code&gt;
+     * 
+     * @throws HeaderCardException  for any invalid keyword or value.
+     *                              
+     * @see #HeaderCard(String, ComplexValue)
+     * @see #HeaderCard(String, ComplexValue, String)
      */
-    public HeaderCard(String key, double value, String comment) throws HeaderCardException {
-<span class="fc" id="L479">        this(key, dblString(value, spaceAvailableForValue(key)), comment, false, false);</span>
-<span class="fc" id="L480">    }</span>
+    public HeaderCard(String key, ComplexValue value, int decimals, String comment) throws HeaderCardException {
+<span class="fc" id="L370">        this();</span>
+        
+<span class="fc bfc" id="L372" title="All 2 branches covered.">        if (value == null) {</span>
+<span class="fc" id="L373">            set(key, null, comment, ComplexValue.class);</span>
+<span class="fc" id="L374">            return;</span>
+        }
+        
+<span class="fc bfc" id="L377" title="All 2 branches covered.">        if (!value.isFinite()) {</span>
+<span class="fc" id="L378">            throw new HeaderCardException(&quot;Cannot represent &quot; + value + &quot; in FITS headers.&quot;);</span>
+        }
+<span class="fc" id="L380">        set(key, value.toString(decimals), comment, ComplexValue.class);</span>
+<span class="fc" id="L381">    }</span>
 
     /**
-     * Create a HeaderCard from its component parts
+     * &lt;p&gt;
+     * This constructor is now &lt;b&gt;DEPRECATED&lt;/b&gt;. You should use {@link #HeaderCard(String, String, String)} to create
+     * cards with &lt;code&gt;null&lt;/code&gt; strings, or else {@link #createCommentStyleCard(String, String)} to
+     * create any comment-style card, or {@link #createCommentCard(String)} or {@link #createHistoryCard(String)}
+     * to create COMMENT or HISTORY cards. 
+     * &lt;/p&gt;
+     * 
+     * &lt;p&gt;
+     * Creates a card with a string value or comment.
+     * &lt;/p&gt;
      *
-     * @param key
-     *            keyword (null for a comment)
-     * @param value
-     *            value (null for a comment or keyword without an '=')
-     * @param precision
-     *            Number of decimal places (fixed format).
-     * @param comment
-     *            comment
-     * @exception HeaderCardException
-     *                for any invalid keyword
+     * @param key               The key for the comment or nullable field.
+     * @param comment           The comment
+     * @param withNullValue     If &lt;code&gt;true&lt;/code&gt; the new card will be a value stle card with
+     *                          a null string value. Otherwise it's a comment-style card.
+     * 
+     * @throws HeaderCardException for any invalid keyword or value
+     * 
+     * @see #HeaderCard(String, String, String)
+     * @see #createCommentStyleCard(String, String)
+     * @see #createCommentCard(String)
+     * @see #createHistoryCard(String)
+     * 
+     * @deprecated Use {@link #HeaderCard(String, String, String)}, or {@link #createCommentStyleCard(String, String)} instead.
      */
-    public HeaderCard(String key, float value, int precision, String comment) throws HeaderCardException {
-<span class="fc" id="L497">        this(key, dblString(floatToBigDecimal(value), precision, spaceAvailableForValue(key)), comment, false, false);</span>
-<span class="fc" id="L498">    }</span>
-
+    @Deprecated
+    public HeaderCard(String key, String comment, boolean withNullValue) throws HeaderCardException {
+<span class="fc" id="L411">        this(key, null, comment, withNullValue);</span>
+<span class="fc" id="L412">    }</span>
+  
     /**
-     * Create a HeaderCard from its component parts
-     *
-     * @param key
-     *            keyword (null for a comment)
-     * @param value
-     *            value (null for a comment or keyword without an '=')
-     * @param comment
-     *            comment
-     * @exception HeaderCardException
-     *                for any invalid keyword
-     */
-    public HeaderCard(String key, float value, String comment) throws HeaderCardException {
-<span class="fc" id="L513">        this(key, dblString(floatToBigDecimal(value), spaceAvailableForValue(key)), comment, false, false);</span>
-<span class="fc" id="L514">    }</span>
-
-    /**
-     * Create a HeaderCard from its component parts
-     *
-     * @param key
-     *            keyword (null for a comment)
-     * @param value
-     *            value (null for a comment or keyword without an '=')
-     * @param comment
-     *            comment
-     * @exception HeaderCardException
-     *                for any invalid keyword
-     */
-    public HeaderCard(String key, int value, String comment) throws HeaderCardException {
-<span class="fc" id="L529">        this(key, String.valueOf(value), comment, false, false);</span>
-<span class="fc" id="L530">    }</span>
-
-    /**
-     * Create a HeaderCard from its component parts
-     *
-     * @param key
-     *            keyword (null for a comment)
-     * @param value
-     *            value (null for a comment or keyword without an '=')
-     * @param comment
-     *            comment
-     * @exception HeaderCardException
-     *                for any invalid keyword
-     */
-    public HeaderCard(String key, long value, String comment) throws HeaderCardException {
-<span class="fc" id="L545">        this(key, String.valueOf(value), comment, false, false);</span>
-<span class="fc" id="L546">    }</span>
-
-    /**
-     * Create a comment style card. This constructor builds a card which has no
-     * value. This may be either a comment style card in which case the nullable
-     * field should be false, or a value field which has a null value, in which
+     * &lt;p&gt;
+     * This constructor is now &lt;b&gt;DEPRECATED&lt;/b&gt;. It has always been a poor construct. 
+     * You should use {@link #HeaderCard(String, String, String)} to create
+     * cards with &lt;code&gt;null&lt;/code&gt; strings, or else {@link #createCommentStyleCard(String, String)} to
+     * create any comment-style card, or {@link #createCommentCard(String)} or {@link #createHistoryCard(String)}
+     * to create COMMENT or HISTORY cards. 
+     * &lt;/p&gt;
+     * 
+     * Creates a comment style card. This may be a comment
+     * style card in which case the nullable field should be false, or a value field which has a null value, in which
      * case the nullable field should be true.
      *
-     * @param key
-     *            The key for the comment or nullable field.
-     * @param comment
-     *            The comment
-     * @param nullable
-     *            Is this a nullable field or a comment-style card?
-     * @throws HeaderCardException
-     *             for any invalid keyword or value
+     * @param key       The key for the comment or nullable field.
+     * @param value     The value (can be &lt;code&gt;null&lt;/code&gt;)
+     * @param comment   The comment
+     * @param nullable  If &lt;code&gt;true&lt;/code&gt; a null value is a valid value. Otherwise, a &lt;code&gt;null&lt;/code&gt; value 
+     *                  turns this into a comment-style card.
+     * 
+     * @throws HeaderCardException for any invalid keyword or value
+     * 
+     * @see #HeaderCard(String, String, String)
+     * @see #createCommentStyleCard(String, String)
+     * @see #createCommentCard(String)
+     * @see #createHistoryCard(String)
+     * 
+     * @deprecated Use {@link #HeaderCard(String, String, String)}, or {@link #createCommentStyleCard(String, String)} instead.
      */
-    public HeaderCard(String key, String comment, boolean nullable) throws HeaderCardException {
-<span class="fc" id="L564">        this(key, null, comment, nullable, true);</span>
-<span class="fc" id="L565">    }</span>
+    @Deprecated
+    public HeaderCard(String key, String value, String comment, boolean nullable) throws HeaderCardException {
+<span class="fc bfc" id="L444" title="All 4 branches covered.">        this(key, value, comment, (nullable || value != null) ? String.class : null);</span>
+<span class="fc" id="L445">    }</span>
 
     /**
-     * Create a HeaderCard from its component parts
+     * Creates a new card with a string value (and no comment).
      *
-     * @param key
-     *            keyword (null for a comment)
-     * @param value
-     *            value (null for a comment or keyword without an '=')
-     * @param comment
-     *            comment
-     * @exception HeaderCardException
-     *                for any invalid keyword or value
+     * @param key       keyword
+     * @param value     value
+     * 
+     * @throws HeaderCardException for any invalid keyword or value
+     * 
+     * @see #HeaderCard(String, String, String)
+     * @see #create(IFitsHeader, String)
+     */
+    public HeaderCard(String key, String value) throws HeaderCardException {
+<span class="fc" id="L459">        this(key, value, null, String.class);</span>
+<span class="fc" id="L460">    }   </span>
+    
+    /**
+     * Creates a new card with a string value, and a comment
+     *
+     * @param key       keyword
+     * @param value     value
+     * @param comment   optional comment, or &lt;code&gt;null&lt;/code&gt;
+     * 
+     * @throws HeaderCardException for any invalid keyword or value
+     * 
+     * @see #HeaderCard(String, String)
+     * @see #create(IFitsHeader, String)
      */
     public HeaderCard(String key, String value, String comment) throws HeaderCardException {
-<span class="fc" id="L580">        this(key, value, comment, false, true);</span>
-<span class="fc" id="L581">    }</span>
+<span class="fc" id="L475">        this(key, value, comment, String.class);</span>
+<span class="fc" id="L476">    } </span>
+    
 
     /**
-     * Create a HeaderCard from its component parts
+     * Creates a new card from its component parts. Use locally only...
      *
-     * @param key
-     *            Keyword (null for a COMMENT)
-     * @param value
-     *            Value
-     * @param comment
-     *            Comment
-     * @param nullable
-     *            Is this a nullable value card?
-     * @exception HeaderCardException
-     *                for any invalid keyword or value
+     * @param key       Case-sensitive keyword (can be null for COMMENT)
+     * @param value     the serialized value (tailing spaces will be removed)
+     * @param comment   an optional comment or null.
+     * @param type      The Java class from which the value field was derived, or
+     *                  null if it's a comment-style card with a null value.
+     * 
+     * @throws HeaderCardException for any invalid keyword or value
+     * 
+     * @see #set(String, String, String, Class)
      */
-    public HeaderCard(String key, String value, String comment, boolean nullable) throws HeaderCardException {
-<span class="fc" id="L598">        this(key, value, comment, nullable, true);</span>
-<span class="fc" id="L599">    }</span>
-
+<span class="fc" id="L492">    private HeaderCard(String key, String value, String comment, Class&lt;?&gt; type) throws HeaderCardException {</span>
+<span class="fc" id="L493">        set(key, value, comment, type);         </span>
+<span class="fc" id="L494">        this.type = type;</span>
+<span class="fc" id="L495">    }</span>
+  
     /**
-     * Create a HeaderCard from its component parts
+     * Sets all components of the card to the specified values. For internal use only.
      *
-     * @param key
-     *            Keyword (null for a COMMENT)
-     * @param value
-     *            Value
-     * @param comment
-     *            Comment
-     * @param nullable
-     *            Is this a nullable value card?
-     * @exception HeaderCardException
-     *                for any invalid keyword or value
+     * @param aKey       Case-sensitive keyword (can be &lt;code&gt;null&lt;/code&gt; for an unkeyed comment)
+     * @param aValue     the serialized value (tailing spaces will be removed), or &lt;code&gt;null&lt;/code&gt;
+     * @param aComment   an optional comment or &lt;code&gt;null&lt;/code&gt;.
+     * @param aType      The Java class from which the value field was derived, or
+     *                   null if it's a comment-style card.
+     * 
+     * @throws HeaderCardException for any invalid keyword or value
      */
-<span class="fc" id="L615">    private HeaderCard(String key, String value, String comment, boolean nullable, boolean isString) throws HeaderCardException {</span>
-<span class="fc" id="L616">        this.isString = isString;</span>
-<span class="pc bpc" id="L617" title="1 of 4 branches missed.">        if (key == null &amp;&amp; value != null) {</span>
-<span class="fc" id="L618">            throw new HeaderCardException(&quot;Null keyword with non-null value&quot;);</span>
-<span class="pc bpc" id="L619" title="2 of 8 branches missed.">        } else if (key != null &amp;&amp; key.length() &gt; HeaderCard.MAX_KEYWORD_LENGTH &amp;&amp; //</span>
-                (!FitsFactory.getUseHierarch() || !key.startsWith(HIERARCH_WITH_DOT))) {
-<span class="fc" id="L621">            throw new HeaderCardException(&quot;Keyword too long&quot;);</span>
+    private synchronized void set(String aKey, String aValue, String aComment, Class&lt;?&gt; aType) throws HeaderCardException {
+        // TODO we never call with null type and non-null value internally, so this is dead code here...
+//        if (aType == null &amp;&amp; aValue != null) {
+//            throw new HeaderCardException(&quot;Null type for value: [&quot; + sanitize(aValue) + &quot;]&quot;);
+//        }
+        
+<span class="fc" id="L514">        this.type = aType;</span>
+        
+        // AK: Map null and blank keys to BLANKS.key()
+        // This simplifies things as we won't have to check for null keys separately!
+<span class="fc bfc" id="L518" title="All 2 branches covered.">        if (aKey == null) {</span>
+<span class="fc" id="L519">            aKey = EMPTY_KEY;</span>
+<span class="fc bfc" id="L520" title="All 2 branches covered.">        } else if (aKey.trim().isEmpty()) {</span>
+<span class="fc" id="L521">            aKey = EMPTY_KEY;</span>
         }
-<span class="fc bfc" id="L623" title="All 2 branches covered.">        if (value != null) {</span>
-<span class="fc" id="L624">            value = value.replaceAll(&quot; *$&quot;, &quot;&quot;);</span>
-
-<span class="fc bfc" id="L626" title="All 2 branches covered.">            if (value.startsWith(&quot;'&quot;)) {</span>
-<span class="fc bfc" id="L627" title="All 2 branches covered.">                if (value.charAt(value.length() - 1) != '\'') {</span>
-<span class="fc" id="L628">                    throw new HeaderCardException(&quot;Missing end quote in string value&quot;);</span>
-                }
-<span class="fc" id="L630">                value = value.substring(1, value.length() - 1).trim();</span>
-            }
-            // Remember that quotes get doubled in the value...
-<span class="fc bfc" id="L633" title="All 6 branches covered.">            if (!FitsFactory.isLongStringsEnabled()</span>
-                    &amp;&amp; value.replace(&quot;'&quot;, &quot;''&quot;).length() &gt; (this.isString ? HeaderCard.MAX_STRING_VALUE_LENGTH : HeaderCard.MAX_VALUE_LENGTH)) {
-<span class="fc" id="L635">                throw new HeaderCardException(&quot;Value too long&quot;);</span>
-            }
-        }
-
-<span class="fc" id="L639">        this.key = key;</span>
-<span class="fc" id="L640">        this.value = value;</span>
-<span class="fc" id="L641">        this.comment = comment;</span>
-<span class="fc" id="L642">        this.nullable = nullable;</span>
-<span class="fc" id="L643">    }</span>
-
-    /**
-     * @return the size of the card in blocks of 80 bytes. So normally every
-     *         card will return 1. only long stings can return more than one.
-     */
-    public int cardSize() {
-<span class="fc bfc" id="L650" title="All 6 branches covered.">        if (this.isString &amp;&amp; this.value != null &amp;&amp; FitsFactory.isLongStringsEnabled()) {</span>
-<span class="fc" id="L651">            int maxStringValueLength = maxStringValueLength();</span>
-<span class="fc" id="L652">            String stringValue = this.value.replace(&quot;'&quot;, &quot;''&quot;);</span>
-<span class="fc bfc" id="L653" title="All 2 branches covered.">            if (stringValue.length() &gt; maxStringValueLength) {</span>
-                // this is very bad for performance but it is to difficult to
-                // keep the cardSize and the toString compatible at all times
-<span class="fc" id="L656">                return toString().length() / FITS_HEADER_CARD_SIZE;</span>
-            }
-        }
-<span class="fc" id="L659">        return 1;</span>
-    }
-
-    public HeaderCard copy() throws HeaderCardException {
-<span class="fc" id="L663">        HeaderCard copy = new HeaderCard(this.key, null, this.comment, this.nullable, this.isString);</span>
-<span class="fc" id="L664">        copy.value = this.value;</span>
-<span class="fc" id="L665">        return copy;</span>
-    }
-
-    /**
-     * @return the comment from this card
-     */
-    public String getComment() {
-<span class="fc" id="L672">        return this.comment;</span>
-    }
-
-    /**
-     * @return the keyword from this card
-     */
-    @Override
-    public String getKey() {
-<span class="fc" id="L680">        return this.key;</span>
-    }
-
-    /**
-     * @return the value from this card
-     */
-    public String getValue() {
-<span class="fc" id="L687">        return this.value;</span>
-    }
-
-    /**
-     * @param clazz
-     *            the requested class of the value
-     * @param defaultValue
-     *            the value if the card was not present.
-     * @param &lt;T&gt;
-     *            the type of the requested class
-     * @return the value from this card as a specific type
-     */
-    public &lt;T&gt; T getValue(Class&lt;T&gt; clazz, T defaultValue) {
-<span class="fc bfc" id="L700" title="All 2 branches covered.">        if (String.class.isAssignableFrom(clazz)) {</span>
-<span class="fc" id="L701">            return clazz.cast(this.value);</span>
-<span class="pc bpc" id="L702" title="1 of 4 branches missed.">        } else if (this.value == null || this.value.isEmpty()) {</span>
-<span class="fc" id="L703">            return defaultValue;</span>
-<span class="fc bfc" id="L704" title="All 2 branches covered.">        } else if (Boolean.class.isAssignableFrom(clazz)) {</span>
-<span class="fc" id="L705">            return clazz.cast(getBooleanValue((Boolean) defaultValue));</span>
-        }
-        BigDecimal parsedValue;
+      
+<span class="fc bfc" id="L524" title="All 4 branches covered.">        if (aKey.isEmpty() &amp;&amp; aValue != null) {</span>
+<span class="fc" id="L525">            throw new HeaderCardException(&quot;Blank or null key for value: [&quot; + sanitize(aValue) + &quot;]&quot;);</span>
+        } 
+        
         try {
-<span class="fc" id="L709">            parsedValue = new BigDecimal(this.value);</span>
-<span class="fc" id="L710">        } catch (NumberFormatException e) {</span>
-<span class="fc" id="L711">            return defaultValue;</span>
-<span class="fc" id="L712">        }</span>
-<span class="fc bfc" id="L713" title="All 2 branches covered.">        if (Integer.class.isAssignableFrom(clazz)) {</span>
-<span class="fc" id="L714">            return clazz.cast(parsedValue.intValueExact());</span>
-<span class="fc bfc" id="L715" title="All 2 branches covered.">        } else if (Long.class.isAssignableFrom(clazz)) {</span>
-<span class="fc" id="L716">            return clazz.cast(parsedValue.longValueExact());</span>
-<span class="fc bfc" id="L717" title="All 2 branches covered.">        } else if (Double.class.isAssignableFrom(clazz)) {</span>
-<span class="fc" id="L718">            return clazz.cast(parsedValue.doubleValue());</span>
-<span class="fc bfc" id="L719" title="All 2 branches covered.">        } else if (Float.class.isAssignableFrom(clazz)) {</span>
-<span class="fc" id="L720">            return clazz.cast(parsedValue.floatValue());</span>
-<span class="fc bfc" id="L721" title="All 2 branches covered.">        } else if (BigDecimal.class.isAssignableFrom(clazz)) {</span>
-<span class="fc" id="L722">            return clazz.cast(parsedValue);</span>
-<span class="fc bfc" id="L723" title="All 2 branches covered.">        } else if (BigInteger.class.isAssignableFrom(clazz)) {</span>
-<span class="fc" id="L724">            return clazz.cast(parsedValue.toBigIntegerExact());</span>
-        } else {
-<span class="fc" id="L726">            throw new IllegalArgumentException(&quot;unsupported class &quot; + clazz);</span>
+<span class="fc" id="L529">            validateKey(aKey);</span>
+<span class="fc" id="L530">        } catch (RuntimeException e) {</span>
+<span class="fc" id="L531">            throw new HeaderCardException(&quot;Invalid FITS keyword: [&quot; + sanitize(aKey) + &quot;]&quot;, e);</span>
+<span class="fc" id="L532">        }</span>
+
+<span class="fc" id="L534">        this.key = aKey;</span>
+       
+        try {
+<span class="fc" id="L537">            validateChars(aComment);</span>
+<span class="fc" id="L538">        } catch (IllegalArgumentException e) {</span>
+<span class="fc" id="L539">            throw new HeaderCardException(&quot;Invalid FITS comment: [&quot; + sanitize(aComment) + &quot;]&quot;, e);</span>
+<span class="fc" id="L540">        }</span>
+       
+<span class="fc" id="L542">        this.comment = aComment;</span>
+       
+        try {
+<span class="fc" id="L545">            validateChars(aValue);</span>
+<span class="fc" id="L546">        } catch (IllegalArgumentException e) {</span>
+<span class="fc" id="L547">            throw new HeaderCardException(&quot;Invalid FITS value: [&quot; + sanitize(aValue) + &quot;]&quot;, e);</span>
+<span class="fc" id="L548">        }</span>
+        
+<span class="fc bfc" id="L550" title="All 2 branches covered.">        if (aValue == null) {</span>
+<span class="fc" id="L551">            this.value = null;</span>
+<span class="fc" id="L552">            return;</span>
+<span class="fc bfc" id="L553" title="All 2 branches covered.">        } else if (isStringValue()) { </span>
+            // Discard trailing spaces
+<span class="fc" id="L555">            int to = aValue.length();</span>
+<span class="fc bfc" id="L556" title="All 2 branches covered.">            while (--to &gt;= 0) {</span>
+<span class="fc bfc" id="L557" title="All 2 branches covered.">                if (!Character.isSpaceChar(aValue.charAt(to))) {</span>
+<span class="fc" id="L558">                    break;</span>
+                }
+            }
+<span class="fc" id="L561">            to++;</span>
+<span class="fc bfc" id="L562" title="All 2 branches covered.">            if (to &lt; aValue.length()) {</span>
+<span class="fc" id="L563">                aValue = aValue.substring(0, to);</span>
+            }
+
+            // Remember that quotes get doubled in the value...
+<span class="fc" id="L567">            String printValue = aValue.replace(&quot;'&quot;, &quot;''&quot;);</span>
+
+            // Check that the value fits in the space available for it.
+<span class="fc bfc" id="L570" title="All 4 branches covered.">            if (!FitsFactory.isLongStringsEnabled() &amp;&amp; (printValue.length() + STRING_QUOTES_LENGTH) &gt; spaceForValue()) {</span>
+<span class="fc" id="L571">                throw new HeaderCardException(&quot;value too long: [&quot; + sanitize(aValue) + &quot;]&quot;, new LongStringsNotEnabledException(key));</span>
+            }
+
+<span class="fc" id="L574">        } else {</span>
+<span class="fc" id="L575">            aValue = aValue.trim();</span>
+
+            // Check that the value fits in the space available for it.
+<span class="fc bfc" id="L578" title="All 2 branches covered.">            if (aValue.length() &gt; spaceForValue()) {</span>
+<span class="fc" id="L579">                throw new HeaderCardException(&quot;Value too long: [&quot; + sanitize(aValue) + &quot;]&quot;, new LongValueException(key, spaceForValue()));</span>
+            }
+        }
+        
+<span class="fc" id="L583">        this.value = aValue;</span>
+<span class="fc" id="L584">    }</span>
+
+    
+    @Override
+    protected HeaderCard clone() {
+        try { 
+<span class="fc" id="L590">            return (HeaderCard) super.clone(); </span>
+<span class="nc" id="L591">        } catch (CloneNotSupportedException e) {</span>
+<span class="nc" id="L592">            return null;</span>
         }
     }
-
+    
     /**
-     * @return Is this a key/value card?
+     * Returns the number of 80-character header lines needed to store the data from this card.
+     * 
+     * @return      the size of the card in blocks of 80 bytes. So normally every card will return 1. only long stings can
+     *              return more than one, provided support for long string is enabled.
      */
-    public boolean isKeyValuePair() {
-<span class="pc bpc" id="L734" title="1 of 4 branches missed.">        return this.key != null &amp;&amp; this.value != null;</span>
+    public synchronized int cardSize() {
+<span class="fc bfc" id="L603" title="All 6 branches covered.">        if (FitsFactory.isLongStringsEnabled() &amp;&amp; isStringValue() &amp;&amp; this.value != null) {</span>
+            // this is very bad for performance but it is to difficult to
+            // keep the cardSize and the toString compatible at all times
+<span class="fc" id="L606">            return toString().length() / FITS_HEADER_CARD_SIZE;</span>
+        }
+<span class="fc" id="L608">        return 1;</span>
     }
 
     /**
-     * @return if this card contain does a string value?
+     * Returns an independent copy of this card. Both this card and the returned value will have identical
+     * content, but modifying one is guaranteed to not affect the other.
+     * 
+     * @return  a copy of this carf.
      */
-    public boolean isStringValue() {
-<span class="fc" id="L741">        return this.isString;</span>
+    public HeaderCard copy() {
+<span class="fc" id="L618">        HeaderCard copy = clone();</span>
+<span class="fc" id="L619">        return copy;</span>
     }
 
     /**
-     * set the comment of a card.
-     *
-     * @param comment
-     *            the comment to set.
-     */
-    public void setComment(String comment) {
-<span class="fc" id="L751">        this.comment = comment;</span>
-<span class="fc" id="L752">    }</span>
-
-    /**
-     * Set the value for this card.
-     *
-     * @param update
-     *            the new value to set
-     * @return the HeaderCard itself
-     */
-    public HeaderCard setValue(BigDecimal update) {
-<span class="fc" id="L762">        this.value = dblString(update, spaceAvailableForValue(this.key));</span>
-<span class="fc" id="L763">        return this;</span>
-    }
-
-    /**
-     * Set the value for this card.
-     *
-     * @param update
-     *            the new value to set
-     * @return the HeaderCard itself
-     */
-    public HeaderCard setValue(boolean update) {
-<span class="fc bfc" id="L774" title="All 2 branches covered.">        this.value = update ? &quot;T&quot; : &quot;F&quot;;</span>
-<span class="fc" id="L775">        return this;</span>
-    }
-
-    /**
-     * Set the value for this card.
-     *
-     * @param update
-     *            the new value to set
-     * @return the HeaderCard itself
-     */
-    public HeaderCard setValue(double update) {
-<span class="fc" id="L786">        this.value = dblString(update, spaceAvailableForValue(this.key));</span>
-<span class="fc" id="L787">        return this;</span>
-    }
-
-    /**
-     * Set the value for this card.
-     *
-     * @param update
-     *            the new value to set
-     * @param precision
-     *            the number of decimal places to show
-     * @return the HeaderCard itself
-     */
-    public HeaderCard setValue(double update, int precision) {
-<span class="fc" id="L800">        this.value = dblString(update, precision, spaceAvailableForValue(this.key));</span>
-<span class="fc" id="L801">        return this;</span>
-    }
-
-    /**
-     * Set the value for this card.
-     *
-     * @param update
-     *            the new value to set
-     * @return the HeaderCard itself
-     */
-    public HeaderCard setValue(float update) {
-<span class="fc" id="L812">        this.value = dblString(floatToBigDecimal(update), spaceAvailableForValue(this.key));</span>
-<span class="fc" id="L813">        return this;</span>
-    }
-
-    /**
-     * Set the value for this card.
-     *
-     * @param update
-     *            the new value to set
-     * @param precision
-     *            the number of decimal places to show
-     * @return the HeaderCard itself
-     */
-    public HeaderCard setValue(float update, int precision) {
-<span class="fc" id="L826">        this.value = dblString(floatToBigDecimal(update), precision, spaceAvailableForValue(this.key));</span>
-<span class="fc" id="L827">        return this;</span>
-    }
-
-    /**
-     * Set the value for this card.
-     *
-     * @param update
-     *            the new value to set
-     * @return the HeaderCard itself
-     */
-    public HeaderCard setValue(int update) {
-<span class="fc" id="L838">        this.value = String.valueOf(update);</span>
-<span class="fc" id="L839">        return this;</span>
-    }
-
-    /**
-     * Set the value for this card.
-     *
-     * @param update
-     *            the new value to set
-     * @return the HeaderCard itself
-     */
-    public HeaderCard setValue(long update) {
-<span class="fc" id="L850">        this.value = String.valueOf(update);</span>
-<span class="fc" id="L851">        return this;</span>
-    }
-
-    /**
-     * Set the value for this card.
-     *
-     * @param update
-     *            the new value to set
-     * @return the HeaderCard itself
-     */
-    public HeaderCard setValue(String update) {
-<span class="fc" id="L862">        this.value = update;</span>
-<span class="fc" id="L863">        return this;</span>
-    }
-
-    /**
-     * Return the modulo 80 character card image, the toString tries to preserve
-     * as much as possible of the comment value by reducing the alignment of the
-     * Strings if the comment is longer and if longString is enabled the string
-     * can be split into one more card to have more space for the comment.
+     * Returns the keyword component of this card, which may be empty but never &lt;code&gt;null&lt;/code&gt;,
+     * but it may be an empty string.
+     * 
+     * @return the keyword from this card, guaranteed to be not &lt;code&gt;null&lt;/code&gt;).
+     * 
+     * @see #getValue()
+     * @see #getComment()
      */
     @Override
-    public String toString() {
-<span class="fc" id="L874">        return toString(FitsFactory.current());</span>
+    public final synchronized String getKey() {
+<span class="fc" id="L633">        return this.key;</span>
+    }
+
+    /**
+     * Returns the serialized value component of this card, which may be null.
+     * 
+     * @return the value from this card
+     * 
+     * @see #getValue(Class, Object)
+     * @see #getHexValue()
+     * @see #getKey()
+     * @see #getComment()
+     */
+    public final synchronized String getValue() {
+<span class="fc" id="L647">        return this.value;</span>
+    }
+
+    /**
+     * Returns the comment component of this card, which may be null.
+     * 
+     * @return the comment from this card
+     * 
+     * @see #getKey()
+     * @see #getValue()
+     */
+    public final synchronized String getComment() {
+<span class="fc" id="L659">        return this.comment;</span>
+    }
+
+    
+    /**
+     * Returns the integer value from the hexadecimal representation of it in the Header. The FITS standard explicitly
+     * allows hexadecimal values, such as 2B, not only decimal values such as 43 in the header.
+     * 
+     * @return the  value from this card
+     * @throws NumberFormatException    if the card's value is null or cannot be parsed as a hexadecimal value.
+     * 
+     * @see #getValue()
+     */
+    public final synchronized long getHexValue() throws NumberFormatException {
+<span class="fc bfc" id="L673" title="All 2 branches covered.">        if (value == null) {</span>
+<span class="fc" id="L674">            throw new NumberFormatException(&quot;Card has a null value&quot;);</span>
+        }
+<span class="fc" id="L676">        return Long.decode(&quot;0x&quot; + this.value);</span>
+    }
+
+    /**
+     * &lt;p&gt;
+     * Returns the value cast to the specified type, if possible, or the specified default value if the
+     * value is &lt;code&gt;null&lt;/code&gt; or if the value is incompatible with the requested type. 
+     * &lt;/p&gt;
+     * &lt;p&gt;
+     * For number types and values, if the requested type has lesser range or
+     * precision than the number stored in the FITS header, the value is automatically downcast (i.e.
+     * possible rounded and/or truncated) -- the same as if an explicit cast were used in Java. As long
+     * as the header value is a proper decimal value, it will be returned as any requested number type.
+     * &lt;/p&gt;
+     * 
+     * @param asType        the requested class of the value
+     * @param defaultValue  the value to use if the card has a null value, or a value that cannot
+     *                      be cast to the specified type.
+     * @param &lt;T&gt;           the generic type of the requested class
+     * 
+     * @return the value from this card as a specific type, or the specified default value
+     * 
+     * @throws IllegalArgumentException     
+     *                      if the specified Java type of not one that is supported for use in 
+     *                      FITS headers.
+     */
+    public synchronized &lt;T&gt; T getValue(Class&lt;T&gt; asType, T defaultValue) throws IllegalArgumentException {
+
+<span class="fc bfc" id="L704" title="All 2 branches covered.">        if (this.value == null) {</span>
+<span class="fc" id="L705">            return defaultValue;</span>
+        }
+<span class="fc bfc" id="L707" title="All 2 branches covered.">        if (String.class.isAssignableFrom(asType)) {</span>
+<span class="fc" id="L708">            return asType.cast(this.value);</span>
+        }
+<span class="fc bfc" id="L710" title="All 2 branches covered.">        if (this.value.isEmpty()) {</span>
+<span class="fc" id="L711">            return defaultValue;</span>
+        }
+<span class="fc bfc" id="L713" title="All 2 branches covered.">        if (Boolean.class.isAssignableFrom(asType)) {</span>
+<span class="fc" id="L714">            return asType.cast(getBooleanValue((Boolean) defaultValue));</span>
+        }
+<span class="fc bfc" id="L716" title="All 2 branches covered.">        if (ComplexValue.class.isAssignableFrom(asType)) {</span>
+<span class="fc" id="L717">            return asType.cast(new ComplexValue(value)); </span>
+        }   
+<span class="fc bfc" id="L719" title="All 2 branches covered.">        if (Number.class.isAssignableFrom(asType)) {</span>
+            try {
+<span class="fc" id="L721">                BigDecimal big = new BigDecimal(value.toUpperCase().replace('D', 'E'));</span>
+                
+<span class="fc bfc" id="L723" title="All 2 branches covered.">                if (Byte.class.isAssignableFrom(asType)) {</span>
+<span class="fc" id="L724">                    return asType.cast(big.byteValue());</span>
+                }
+<span class="fc bfc" id="L726" title="All 2 branches covered.">                if (Short.class.isAssignableFrom(asType)) {</span>
+<span class="fc" id="L727">                    return asType.cast(big.shortValue());</span>
+                }
+<span class="fc bfc" id="L729" title="All 2 branches covered.">                if (Integer.class.isAssignableFrom(asType)) {</span>
+<span class="fc" id="L730">                    return asType.cast(big.intValue());</span>
+                }
+<span class="fc bfc" id="L732" title="All 2 branches covered.">                if (Long.class.isAssignableFrom(asType)) {</span>
+<span class="fc" id="L733">                    return asType.cast(big.longValue());</span>
+                }
+<span class="fc bfc" id="L735" title="All 2 branches covered.">                if (Float.class.isAssignableFrom(asType)) {</span>
+<span class="fc" id="L736">                    return asType.cast(big.floatValue());</span>
+                }
+<span class="fc bfc" id="L738" title="All 2 branches covered.">                if (Double.class.isAssignableFrom(asType)) {</span>
+<span class="fc" id="L739">                    return asType.cast(big.doubleValue());</span>
+                }
+<span class="fc bfc" id="L741" title="All 2 branches covered.">                if (BigInteger.class.isAssignableFrom(asType)) {</span>
+<span class="fc" id="L742">                    return asType.cast(big.toBigInteger()); </span>
+                }
+                // All possibilities have been exhausted, it must be a BigDecimal...
+<span class="fc" id="L745">                return asType.cast(big);</span>
+<span class="fc" id="L746">            } catch (NumberFormatException e) {</span>
+                // The value is not a decimal number, so return the default value by contract.
+<span class="fc" id="L748">                return defaultValue;</span>
+            } 
+        }
+
+<span class="fc" id="L752">        throw new IllegalArgumentException(&quot;unsupported class &quot; + asType);</span>
+    }
+
+    /**
+     * Checks if this card has both a valid keyword and a (non-null) value.
+     * 
+     * @return Is this a key/value card?
+     * 
+     * @see #isCommentStyleCard()
+     */
+    public synchronized boolean isKeyValuePair() {
+<span class="pc bpc" id="L763" title="1 of 6 branches missed.">        return !isCommentStyleCard() &amp;&amp; !(key.isEmpty() || value == null);</span>
+    }
+
+    /**
+     * Checks if this card has a string value (which may be &lt;code&gt;null&lt;/code&gt;).
+     * 
+     * @return  &lt;code&gt;true&lt;/code&gt; if this card has a string value, otherwise &lt;code&gt;false&lt;/code&gt;.
+     * 
+     * @see #isDecimalType()
+     * @see #isIntegerType()
+     * @see #valueType()
+     */
+    public synchronized boolean isStringValue() {
+<span class="fc bfc" id="L776" title="All 2 branches covered.">        if (type == null) {</span>
+<span class="fc" id="L777">            return false;</span>
+        }
+<span class="fc" id="L779">        return String.class.isAssignableFrom(type);</span>
+    }
+
+    /**
+     * Checks if this card has a decimal (floating-point) type value (which may be &lt;code&gt;null&lt;/code&gt;).
+     * 
+     * @return  &lt;code&gt;true&lt;/code&gt; if this card has a decimal (not integer) type number value, otherwise &lt;code&gt;false&lt;/code&gt;.
+     * 
+     * @see #isIntegerType()
+     * @see #isStringValue()
+     * @see #valueType()
+     * 
+     * @since 1.16
+     */
+    public synchronized boolean isDecimalType() {
+<span class="fc bfc" id="L794" title="All 2 branches covered.">        if (type == null) {</span>
+<span class="fc" id="L795">            return false;</span>
+        }
+<span class="fc bfc" id="L797" title="All 6 branches covered.">        return Float.class.isAssignableFrom(type) || Double.class.isAssignableFrom(type) || BigDecimal.class.isAssignableFrom(type);</span>
+    }
+    
+    /**
+     * Checks if this card has an integer type value (which may be &lt;code&gt;null&lt;/code&gt;).
+     * 
+     * @return  &lt;code&gt;true&lt;/code&gt; if this card has an integer type value, otherwise &lt;code&gt;false&lt;/code&gt;.
+     * 
+     * @see #isDecimalType()
+     * @see #isStringValue()
+     * @see #valueType()
+     * 
+     * @since 1.16
+     */
+    public synchronized boolean isIntegerType() {
+<span class="fc bfc" id="L812" title="All 2 branches covered.">        if (type == null) {</span>
+<span class="fc" id="L813">            return false;</span>
+        }
+<span class="fc bfc" id="L815" title="All 4 branches covered.">        return Number.class.isAssignableFrom(type) &amp;&amp; !isDecimalType();</span>
+    } 
+    
+    /**
+     * Checks if this card is a comment-style card with no associated value field.
+     * 
+     * @return  &lt;code&gt;true&lt;/code&gt; if this card is a comment-style card, otherwise &lt;code&gt;false&lt;/code&gt;.
+     * 
+     * @see #isKeyValuePair()
+     * @see #isStringValue()
+     * @see #valueType()
+     * 
+     * @since 1.16
+     */
+    public final synchronized boolean isCommentStyleCard() {
+<span class="fc bfc" id="L830" title="All 2 branches covered.">        return (type == null);</span>
+    }
+
+    /**
+     * Checks if this card cas a hierarch style long keyword.
+     * 
+     * @return  &lt;code&gt;true&lt;/code&gt; if the card has a non-standard HIERARCH style long keyword, with 
+     *          dot-separated components. Otherwise &lt;code&gt;false&lt;/code&gt;.
+     *          
+     * @since 1.16
+     * 
+     */
+    public final synchronized boolean hasHierarchKey() {
+<span class="fc" id="L843">        return isHierarchKey(key);</span>
+    }
+
+    /**
+     * Sets a new comment component for this card. The specified comment string will be sanitized to ensure
+     * it onlly contains characters suitable for FITS headers. Invalid characters will be replaced with '?'.
+     *
+     * @param comment   the new comment text.
+     */
+    public synchronized void setComment(String comment) {
+<span class="fc" id="L853">        this.comment = sanitize(comment);</span>
+<span class="fc" id="L854">    }</span>
+
+    /**
+     * Sets a new number value for this card. The new value will be shown in the integer, fixed-decimal, or
+     * format, whichever preserves more digits, or else whichever is the more compact notation.
+     * Trailing zeroes will be omitted.
+     *
+     * @param update    the new value to set (can be &lt;code&gt;null&lt;/code&gt;, in which case the card type defaults to 
+     *                  &lt;code&gt;Integer.class&lt;/code&gt;)
+     * 
+     * @return the card itself
+     * 
+     * @throws NumberFormatException    if the input value is NaN or Infinity.
+     * @throws LongValueException       if the decimal value cannot be represented in the alotted space
+     * 
+     * @see #setValue(Number, int)
+     */
+    public final HeaderCard setValue(Number update) throws NumberFormatException, LongValueException {
+<span class="fc" id="L872">        return setValue(update, FlexFormat.AUTO_PRECISION);</span>
+    }
+
+    /**
+     * Sets a new number value for this card, using scientific (exponential) notation, with up to the specified decimal
+     * places showing between the decimal point and the exponent. For example, if &lt;code&gt;decimals&lt;/code&gt; is set to 2, 
+     * then &amp;pi; gets formatted as &lt;code&gt;3.14E0&lt;/code&gt;.
+     *
+     * @param update    the new value to set (can be &lt;code&gt;null&lt;/code&gt;, in which case the card type defaults to 
+     *                  &lt;code&gt;Integer.class&lt;/code&gt;)
+     * @param decimals  the number of decimal places to show in the scientific notation. 
+     * 
+     * @return the card itself
+     * 
+     * @throws NumberFormatException    if the input value is NaN or Infinity.
+     * @throws LongValueException       if the decimal value cannot be represented in the alotted space
+     * 
+     * @see #setValue(Number)
+     */
+    public synchronized HeaderCard setValue(Number update, int decimals) throws NumberFormatException, LongValueException {
+<span class="fc bfc" id="L892" title="All 2 branches covered.">        if (update == null) {</span>
+<span class="fc" id="L893">            this.value = null;</span>
+<span class="fc" id="L894">            this.type = Integer.class;</span>
+        } else {
+<span class="fc" id="L896">            checkNumber(update);</span>
+<span class="fc" id="L897">            setUnquotedValue(new FlexFormat().forCard(this).setPrecision(decimals).format(update));</span>
+
+<span class="fc" id="L899">            this.type = update.getClass();</span>
+        }
+<span class="fc" id="L901">        return this;</span>
+    }
+
+    /**
+     * Sets a new boolean value for this card.
+     *
+     * @param update                    the new value to se (can be &lt;code&gt;null&lt;/code&gt;).
+     * @throws LongValueException       if the card has no room even for the single-character 'T' or 'F'.
+     *                                  This can never happen with cards created programmatically as they
+     *                                  will not allow setting HIERARCH-style keywords long enough to ever
+     *                                  trigger this condition. But, it is possible to read cards from
+     *                                  a non-standard header, which breaches this limit, by ommitting some 
+     *                                  required spaces (esp. after the '='), and have a null value. When that 
+     *                                  happens, we can be left without room for even a single character. 
+     * 
+     * @return the card itself
+     */
+    public synchronized HeaderCard setValue(Boolean update) throws LongValueException {
+<span class="fc bfc" id="L919" title="All 2 branches covered.">        if (update == null) {</span>
+<span class="fc" id="L920">            this.value = null;</span>
+<span class="fc bfc" id="L921" title="All 2 branches covered.">        } else if (spaceForValue() &lt; 1) {</span>
+<span class="fc" id="L922">            throw new LongValueException(key, spaceForValue());</span>
+        } else {
+            // There is always room for a boolean value. :-)
+<span class="fc bfc" id="L925" title="All 2 branches covered.">            this.value = update ? &quot;T&quot; : &quot;F&quot;;</span>
+        }
+        
+<span class="fc" id="L928">        this.type = Boolean.class;</span>
+<span class="fc" id="L929">        return this;</span>
+    }
+    
+    /**
+     * Sets a new complex number value for this card. The real and imaginary part will be shown in the integer, 
+     * fixed-decimal, or format, whichever preserves more digits, or else whichever is the more compact notation.
+     * Trailing zeroes will be omitted.
+     *
+     * @param update                    the new value to set (can be &lt;code&gt;null&lt;/code&gt;)
+     * 
+     * @return the card itself
+     * 
+     * @throws NumberFormatException    if the input value is NaN or Infinity.
+     * @throws LongValueException       if the decimal value cannot be represented in the alotted space
+     * 
+     * @see #setValue(ComplexValue, int)
+     * 
+     * @since 1.16
+     */
+    public final HeaderCard setValue(ComplexValue update) throws NumberFormatException, LongValueException {
+<span class="fc" id="L949">        return setValue(update, FlexFormat.AUTO_PRECISION);</span>
+    }
+    
+    /**
+     * Sets a new complex number value for this card, using scientific (exponential) notation, with up to the 
+     * specified number of decimal places showing between the decimal point and the exponent. Trailing zeroes
+     * will be omitted. For example, if &lt;code&gt;decimals&lt;/code&gt; is set to 2, then (&amp;pi;, 12) gets formatted as 
+     * &lt;code&gt;(3.14E0,1.2E1)&lt;/code&gt;.
+     *
+     * @param update        the new value to set (can be &lt;code&gt;null&lt;/code&gt;)
+     * @param decimals      the number of decimal places to show in the scientific notation. 
+     * 
+     * @return the HeaderCard itself
+     * 
+     * @throws NumberFormatException    if the input value is NaN or Infinity.
+     * @throws LongValueException       if the decimal value cannot be represented in the alotted space
+     * 
+     * @see #setValue(ComplexValue)
+     * 
+     * @since 1.16
+     */
+    public synchronized HeaderCard setValue(ComplexValue update, int decimals) throws LongValueException {
+<span class="fc bfc" id="L971" title="All 2 branches covered.">        if (update == null) {</span>
+<span class="fc" id="L972">            this.value = null;</span>
+        } else {
+<span class="fc bfc" id="L974" title="All 2 branches covered.">            if (!update.isFinite()) {</span>
+<span class="fc" id="L975">                throw new NumberFormatException(&quot;Cannot represent &quot; + update + &quot; in FITS headers.&quot;);</span>
+            }
+<span class="fc" id="L977">            setUnquotedValue(update.toString(decimals));</span>
+        }
+        
+<span class="fc" id="L980">        this.type = ComplexValue.class;</span>
+<span class="fc" id="L981">        return this;</span>
+    }
+    
+    /**
+     * Sets a new unquoted value for this card, checking to make sure it fits in the available header space.
+     * If the value is too long to fit, an IllegalArgumentException will be thrown.
+     * 
+     * @param update                    the new unquoted header value for this card, as a string.
+     * @throws LongValueException       if the value is too long to fit in the available space.
+     */
+    private synchronized void setUnquotedValue(String update) throws LongValueException {
+<span class="fc bfc" id="L992" title="All 2 branches covered.">        if (update.length() &gt; spaceForValue()) {</span>
+<span class="fc" id="L993">            throw new LongValueException(spaceForValue(), key, value);</span>
+        }
+<span class="fc" id="L995">        this.value = update;</span>
+<span class="fc" id="L996">    }</span>
+    
+    /**
+     * Sets the value for this card, represented as a hexadecimal number.
+     *
+     * @param update                 the new value to set
+     * 
+     * @return the HeaderCard itself
+     * @throws LongValueException    if the value is too long to fit in the available space.
+     * 
+     * @since 1.16
+     */
+    public synchronized HeaderCard setHexValue(long update) throws LongValueException {
+<span class="fc" id="L1009">        setUnquotedValue(Long.toHexString(update));</span>
+<span class="fc bfc" id="L1010" title="All 2 branches covered.">        this.type = (update == (int) update) ? Integer.class : Long.class;</span>
+<span class="fc" id="L1011">        return this;</span>
+    }
+    
+    /**
+     * Sets a new string value for this card.
+     *
+     * @param update the new value to set
+     * 
+     * @return the HeaderCard itself
+     * 
+     * @throws IllegalArgumentException         if the new value contains characters that cannot be added to the
+     *                                          the FITS header.
+     * @throws LongStringsNotEnabledException   if the card contains a long string but support for long strings
+     *                                          is currently disabled.
+     *                                      
+     * @see FitsFactory#setLongStringsEnabled(boolean)
+     * @see #validateChars(String)
+     */
+    public synchronized HeaderCard setValue(String update) throws IllegalArgumentException, LongStringsNotEnabledException {
+<span class="fc bfc" id="L1030" title="All 2 branches covered.">        if (update == null) {</span>
+            // There is always room for an empty string...
+<span class="fc" id="L1032">            this.value = null;</span>
+        } else {
+<span class="fc" id="L1034">            validateChars(update);</span>
+<span class="fc" id="L1035">            int l = STRING_QUOTES_LENGTH + update.length();</span>
+<span class="fc bfc" id="L1036" title="All 4 branches covered.">            if (!FitsFactory.isLongStringsEnabled() &amp;&amp; l &gt; spaceForValue(key)) {</span>
+<span class="fc" id="L1037">                throw new LongStringsNotEnabledException(&quot;New string value for [&quot; + key + &quot;] is too long.&quot;</span>
+                        + &quot;\n\n --&gt; You can enable long string support by FitsFactory.setLongStringEnabled(true).\n&quot;);
+            }
+<span class="fc" id="L1040">            this.value = update;</span>
+        }
+        
+<span class="fc" id="L1043">        this.type = String.class;</span>
+<span class="fc" id="L1044">        return this;</span>
+    }
+
+    /**
+     * Returns the modulo 80 character card image, the toString tries to preserve as much as possible of the comment
+     * value by reducing the alignment of the Strings if the comment is longer and if longString is enabled the string
+     * can be split into one more card to have more space for the comment.
+     * 
+     * @return the FITS card as one or more 80-character string blocks.
+     * 
+     * @throws LongValueException                   if the card has a long string value that is too long to contain in
+     *                                              the space available after the keyword.
+     * @throws LongStringsNotEnabledException       if the card contains a long string but support for long strings
+     *                                              is currently disabled.
+     * @throws HierarchNotEnabledException          if the card contains a HIERARCH-style long keyword but support
+     *                                              for these is currently disabled.
+     *                                      
+     * @see FitsFactory#setLongStringsEnabled(boolean)
+     */
+    @Override
+    public String toString() throws LongValueException, LongStringsNotEnabledException, HierarchNotEnabledException {
+<span class="fc" id="L1065">        return toString(FitsFactory.current());</span>
     }
 
     /**
      * Same as {@link #toString()} just with a prefetched settings object
      * 
-     * @param settings
-     *            the settings to use for writing the header card
+     * @param settings the settings to use for writing the header card
+     * 
      * @return the string representing the card.
+     * 
+     * @throws LongValueException                   if the card has a long string value that is too long to contain in
+     *                                              the space available after the keyword.
+     * @throws LongStringsNotEnabledException       if the card contains a long string but support for long strings
+     *                                              is disabled in the settings.
+     * @throws HierarchNotEnabledException          if the card contains a HIERARCH-style long keyword but support
+     *                                              for these is disabled in the settings.
+     *                                      
+     * @see FitsFactory#setLongStringsEnabled(boolean)
      */
-    protected String toString(final FitsSettings settings) {
-<span class="fc" id="L885">        int alignSmallString = NORMAL_SMALL_STRING_ALIGN_POSITION;</span>
-<span class="fc" id="L886">        int alignPosition = NORMAL_ALIGN_POSITION;</span>
-<span class="fc" id="L887">        FitsLineAppender buf = new FitsLineAppender();</span>
-        // start with the keyword, if there is one
-<span class="pc bpc" id="L889" title="1 of 2 branches missed.">        if (this.key != null) {</span>
-<span class="pc bpc" id="L890" title="1 of 4 branches missed.">            if (this.key.length() &gt; HIERARCH_WITH_BLANK_LENGTH &amp;&amp; this.key.startsWith(HIERARCH_WITH_DOT)) {</span>
-<span class="fc" id="L891">                settings.getHierarchKeyFormatter().append(this.key, buf);</span>
-<span class="fc" id="L892">                alignSmallString = buf.length();</span>
-<span class="fc" id="L893">                alignPosition = buf.length();</span>
-            } else {
-<span class="fc" id="L895">                buf.append(this.key);</span>
-<span class="fc bfc" id="L896" title="All 2 branches covered.">                if (this.key.isEmpty()) {</span>
-<span class="fc" id="L897">                    buf.append(' ');</span>
-                }
-<span class="fc" id="L899">                buf.appendSpacesTo(MAX_KEYWORD_LENGTH);</span>
-            }
-        }
-<span class="fc" id="L902">        FitsSubString commentSubString = new FitsSubString(this.comment);</span>
-<span class="fc bfc" id="L903" title="All 2 branches covered.">        if (FITS_HEADER_CARD_SIZE - alignPosition - MAX_LONG_STRING_CONTINUE_OVERHEAD &lt; commentSubString.length()) {</span>
-            // with alignment the comment would not fit so lets make more space
-<span class="fc" id="L905">            alignPosition = Math.max(buf.length(), FITS_HEADER_CARD_SIZE - MAX_LONG_STRING_CONTINUE_OVERHEAD - commentSubString.length());</span>
-<span class="fc" id="L906">            alignSmallString = buf.length();</span>
-        }
-<span class="fc" id="L908">        boolean commentHandled = false;</span>
-<span class="fc bfc" id="L909" title="All 4 branches covered.">        if (this.value != null || this.nullable) {</span>
-<span class="fc bfc" id="L910" title="All 2 branches covered.">            if (settings.isSkipBlankAfterAssign()) {</span>
-<span class="fc" id="L911">                buf.append('=');</span>
-            } else {
-<span class="fc" id="L913">                buf.append(&quot;= &quot;);</span>
-            }
-<span class="fc bfc" id="L915" title="All 2 branches covered.">            if (this.value != null) {</span>
-
-<span class="fc bfc" id="L917" title="All 2 branches covered.">                if (this.isString) {</span>
-<span class="fc" id="L918">                    commentHandled = stringValueToString(alignSmallString, alignPosition, buf, commentHandled);</span>
-                } else {
-<span class="fc" id="L920">                    buf.appendSpacesTo(alignPosition - this.value.length());</span>
-<span class="fc" id="L921">                    buf.append(this.value);</span>
-                }
-            } else {
-                // Pad out a null value.
-<span class="fc" id="L925">                buf.appendSpacesTo(alignPosition);</span>
-            }
-            // is there space left for a comment?
-<span class="fc" id="L928">            int spaceLeft = FITS_HEADER_CARD_SIZE - buf.length();</span>
-<span class="fc" id="L929">            int spaceLeftInCard = spaceLeft % FITS_HEADER_CARD_SIZE;</span>
-<span class="fc" id="L930">            commentSubString.getAdjustedLength(spaceLeftInCard - MAX_LONG_STRING_CONTINUE_OVERHEAD);</span>
-            // if there is a comment, add a comment delimiter
-<span class="fc bfc" id="L932" title="All 4 branches covered.">            if (!commentHandled &amp;&amp; commentSubString.length() &gt; 0) {</span>
-<span class="fc" id="L933">                buf.append(&quot; / &quot;);</span>
-            }
-<span class="fc bfc" id="L935" title="All 2 branches covered.">        } else if (commentSubString.startsWith(&quot;=&quot;)) {</span>
-<span class="fc" id="L936">            buf.append(&quot;  &quot;);</span>
-        }
-
-        // finally, add any comment
-<span class="fc bfc" id="L940" title="All 4 branches covered.">        if (!commentHandled &amp;&amp; commentSubString.length() &gt; 0) {</span>
-<span class="fc bfc" id="L941" title="All 2 branches covered.">            if (commentSubString.startsWith(&quot; &quot;)) {</span>
-<span class="fc" id="L942">                commentSubString.skip(1);</span>
-            }
-            // is there space left for a comment?
-<span class="fc" id="L945">            commentSubString.getAdjustedLength((FITS_HEADER_CARD_SIZE - buf.length()) % FITS_HEADER_CARD_SIZE);</span>
-<span class="fc" id="L946">            buf.append(commentSubString);</span>
-<span class="fc" id="L947">            commentSubString.rest();</span>
-<span class="fc bfc" id="L948" title="All 2 branches covered.">            if (commentSubString.length() &gt; 0) {</span>
-<span class="fc" id="L949">                LOG.log(Level.INFO, &quot;&quot; + this.key + &quot; was trimmed to fit&quot;);</span>
-            }
-        }
-<span class="fc" id="L952">        buf.completeLine();</span>
-<span class="fc" id="L953">        return buf.toString();</span>
+    protected synchronized String toString(final FitsSettings settings) 
+            throws LongValueException, LongStringsNotEnabledException, HierarchNotEnabledException {
+<span class="fc" id="L1086">        return new HeaderCardFormatter(settings).toString(this);</span>
     }
 
     /**
+     * Returns the class of the associated value, or null if it's a comment-style card.
+     * 
      * @return the type of the value.
+     * 
+     * @see #isCommentStyleCard()
+     * @see #isKeyValuePair()
+     * @see #isIntegerType()
+     * @see #isDecimalType()
      */
-    public Class&lt;?&gt; valueType() {
-<span class="fc bfc" id="L960" title="All 2 branches covered.">        if (this.isString) {</span>
-<span class="fc" id="L961">            return String.class;</span>
-<span class="pc bpc" id="L962" title="1 of 2 branches missed.">        } else if (this.value != null) {</span>
-<span class="fc" id="L963">            String trimedValue = this.value.trim();</span>
-<span class="fc bfc" id="L964" title="All 4 branches covered.">            if (&quot;T&quot;.equals(trimedValue) || &quot;F&quot;.equals(trimedValue)) {</span>
-<span class="fc" id="L965">                return Boolean.class;</span>
-<span class="fc bfc" id="L966" title="All 2 branches covered.">            } else if (HeaderCard.LONG_REGEX.matcher(trimedValue).matches()) {</span>
-<span class="fc" id="L967">                return getIntegerNumberType(trimedValue);</span>
-<span class="fc bfc" id="L968" title="All 2 branches covered.">            } else if (HeaderCard.IEEE_REGEX.matcher(trimedValue).find()) {</span>
-<span class="fc" id="L969">                return getDecimalNumberType(trimedValue);</span>
-            }
-        }
-<span class="fc" id="L972">        return null;</span>
+    public synchronized Class&lt;?&gt; valueType() {
+<span class="fc" id="L1100">        return type;</span>
     }
 
-    private void extractValueCommentFromString(HeaderCardCountingArrayDataInput dis, String card) throws IOException, TruncatedFileException {
-        // extract the value/comment part of the string
-<span class="fc" id="L977">        ParsedValue parsedValue = FitsHeaderCardParser.parseCardValue(card);</span>
-
-<span class="fc bfc" id="L979" title="All 6 branches covered.">        if (FitsFactory.isLongStringsEnabled() &amp;&amp; parsedValue.isString() &amp;&amp; parsedValue.getValue().endsWith(&quot;&amp;&quot;)) {</span>
-<span class="fc" id="L980">            longStringCard(dis, parsedValue);</span>
-        } else {
-<span class="fc" id="L982">            this.value = parsedValue.getValue();</span>
-<span class="fc" id="L983">            this.isString = parsedValue.isString();</span>
-<span class="fc" id="L984">            this.comment = parsedValue.getComment();</span>
-<span class="fc bfc" id="L985" title="All 4 branches covered.">            if (!this.isString &amp;&amp; this.value.indexOf('\'') &gt;= 0) {</span>
-<span class="fc" id="L986">                throw new IllegalArgumentException(&quot;no single quotes allowed in values&quot;);</span>
-            }
-        }
-<span class="fc" id="L989">    }</span>
-
+    /** 
+     * Returns the value as a boolean, or the default value if the card has no associated value or it 
+     * is not a boolean.
+     * 
+     * @param defaultValue      the default value to return if the card has no associated value or is not a boolean.
+     * @return                  the boolean value of this card, or else the default value.
+     */
     private Boolean getBooleanValue(Boolean defaultValue) {
-<span class="fc bfc" id="L992" title="All 2 branches covered.">        if (&quot;T&quot;.equals(this.value)) {</span>
-<span class="fc" id="L993">            return Boolean.TRUE;</span>
-<span class="fc bfc" id="L994" title="All 2 branches covered.">        } else if (&quot;F&quot;.equals(this.value)) {</span>
-<span class="fc" id="L995">            return Boolean.FALSE;</span>
+<span class="fc bfc" id="L1111" title="All 2 branches covered.">        if (&quot;T&quot;.equals(value)) {</span>
+<span class="fc" id="L1112">            return true;</span>
         }
-<span class="fc" id="L997">        return defaultValue;</span>
+<span class="fc bfc" id="L1114" title="All 2 branches covered.">        if (&quot;F&quot;.equals(value)) {</span>
+<span class="fc" id="L1115">            return false;</span>
+        }
+<span class="fc" id="L1117">        return defaultValue;</span>
     }
 
     /**
-     * Process HIERARCH style cards... HIERARCH LEV1 LEV2 ... = value / comment
-     * The keyword for the card will be &quot;HIERARCH.LEV1.LEV2...&quot; A '/' is assumed
-     * to start a comment.
-     *
-     * @param dis
+     * Parses a continued long string value and comment for this card, which may occupy one or more
+     * consecutive 80-character header records.
+     * 
+     * @param dis               the input stream from which to parse the value and comment fields of
+     *                          this card.
+     * @param next            the parser to use for each 80-character record.
+     * @throws IOException      if there was an IO error reading the stream.
+     * @throws TruncatedFileException   if the stream endedc ubnexpectedly in the middle of
+     *                                  an 80-character record.
      */
-    private void hierarchCard(String card, HeaderCardCountingArrayDataInput dis) throws IOException, TruncatedFileException {
-<span class="fc" id="L1008">        this.key = FitsHeaderCardParser.parseCardKey(card);</span>
-<span class="fc" id="L1009">        extractValueCommentFromString(dis, card);</span>
-<span class="fc" id="L1010">    }</span>
+    @SuppressWarnings(&quot;deprecation&quot;)
+    private synchronized void parseLongStringCard(HeaderCardCountingArrayDataInput dis, HeaderCardParser next)
+            throws IOException, TruncatedFileException {
 
-    private void longStringCard(HeaderCardCountingArrayDataInput dis, ParsedValue parsedValue) throws IOException, TruncatedFileException {
-        // ok this is a longString now read over all continues.
-<span class="fc" id="L1014">        StringBuilder longValue = new StringBuilder();</span>
-<span class="fc" id="L1015">        StringBuilder longComment = null;</span>
-<span class="fc" id="L1016">        ParsedValue continueCard = parsedValue;</span>
-        do {
-<span class="pc bpc" id="L1018" title="1 of 2 branches missed.">            if (continueCard.getValue() != null) {</span>
-<span class="fc" id="L1019">                longValue.append(continueCard.getValue());</span>
+<span class="fc" id="L1135">        StringBuilder longValue = new StringBuilder();</span>
+<span class="fc" id="L1136">        StringBuilder longComment = null;       </span>
+       
+        
+<span class="fc bfc" id="L1139" title="All 2 branches covered.">        while (next != null) {  </span>
+<span class="fc" id="L1140">            String valuePart = next.getValue();</span>
+<span class="fc" id="L1141">            String untrimmedComment = next.getUntrimmedComment();</span>
+            
+<span class="pc bpc" id="L1143" title="1 of 2 branches missed.">            if (valuePart == null) {</span>
+                // The card cannot have a null value. If it does it wasn't a string card...
+<span class="nc" id="L1145">                break;</span>
             }
-<span class="fc bfc" id="L1021" title="All 2 branches covered.">            if (continueCard.getComment() != null) {</span>
-<span class="fc bfc" id="L1022" title="All 2 branches covered.">                if (longComment == null) {</span>
-<span class="fc" id="L1023">                    longComment = new StringBuilder();</span>
-                } else {
-<span class="fc" id="L1025">                    longComment.append(' ');</span>
-                }
-<span class="fc" id="L1027">                longComment.append(continueCard.getComment());</span>
+            
+            // The end point of the value
+<span class="fc" id="L1149">            int valueEnd = valuePart.length();</span>
+            
+            
+            // Check if there card continues inot the next record. The value
+            // must end with '&amp;' and the next card must be a CONTINUE card.
+            // If so, remove the '&amp;' from the value part, and parse in the next 
+            // card for the next iteration...
+<span class="pc bpc" id="L1156" title="1 of 2 branches missed.">            if (!dis.markSupported()) {</span>
+<span class="nc" id="L1157">                throw new IOException(&quot;InputStream does not support mark/reset&quot;);</span>
             }
-<span class="fc" id="L1029">            continueCard = null;</span>
-<span class="fc bfc" id="L1030" title="All 4 branches covered.">            if (longValue.length() &gt; 0 &amp;&amp; longValue.charAt(longValue.length() - 1) == '&amp;') {</span>
-<span class="fc" id="L1031">                longValue.setLength(longValue.length() - 1);</span>
-<span class="fc" id="L1032">                dis.mark();</span>
-<span class="fc" id="L1033">                String card = readOneHeaderLine(dis);</span>
-<span class="fc bfc" id="L1034" title="All 2 branches covered.">                if (card.startsWith(CONTINUE.key())) {</span>
-                    // extract the value/comment part of the string
-<span class="fc" id="L1036">                    continueCard = FitsHeaderCardParser.parseCardValue(card);</span>
+
+            // Peek at the next card.
+<span class="fc" id="L1161">            dis.mark();</span>
+            
+            try {
+                // Check if we should continue parsing this card...
+<span class="fc" id="L1165">                next = new HeaderCardParser(readOneHeaderLine(dis));</span>
+<span class="fc bfc" id="L1166" title="All 4 branches covered.">                if (valuePart.endsWith(&quot;&amp;&quot;) &amp;&amp; CONTINUE.key().equals(next.getKey())) {</span>
+                    // Remove '&amp; from the value part...
+<span class="fc" id="L1168">                    valueEnd--;</span>
                 } else {
-                    // the &amp; was part of the string put it back.
-<span class="fc" id="L1039">                    longValue.append('&amp;');</span>
                     // ok move the input stream one card back.
-<span class="fc" id="L1041">                    dis.reset();</span>
+<span class="fc" id="L1171">                    dis.reset();</span>
+                    // Clear the parser also.
+<span class="fc" id="L1173">                    next = null;</span>
+                }
+<span class="fc" id="L1175">            } catch (EOFException e) {</span>
+                // Nothing left to parse after the current one...
+<span class="fc" id="L1177">                next = null;</span>
+<span class="fc" id="L1178">            }</span>
+
+            // Append the value part from the record last parsed.
+<span class="fc" id="L1181">            longValue.append(valuePart, 0, valueEnd);</span>
+            
+            // Append any comment from the card last parsed.
+<span class="fc bfc" id="L1184" title="All 2 branches covered.">            if (untrimmedComment != null) {</span>
+<span class="fc bfc" id="L1185" title="All 2 branches covered.">                if (longComment == null) {</span>
+<span class="fc" id="L1186">                    longComment = new StringBuilder(untrimmedComment);</span>
+                } else {
+<span class="fc" id="L1188">                    longComment.append(untrimmedComment);</span>
                 }
             }
-<span class="fc bfc" id="L1044" title="All 2 branches covered.">        } while (continueCard != null);</span>
-<span class="fc bfc" id="L1045" title="All 2 branches covered.">        this.comment = longComment == null ? null : longComment.toString();</span>
-<span class="fc" id="L1046">        this.value = longValue.toString();</span>
-<span class="fc" id="L1047">        this.isString = true;</span>
-<span class="fc" id="L1048">    }</span>
+<span class="fc" id="L1191">        }</span>
+        
+<span class="fc bfc" id="L1193" title="All 2 branches covered.">        this.comment = longComment == null ? null : longComment.toString().trim();</span>
+<span class="fc" id="L1194">        this.value = longValue.toString().trim();</span>
+<span class="fc" id="L1195">        this.type = String.class;</span>
+<span class="fc" id="L1196">    }</span>
 
-    private int maxStringValueLength() {
-<span class="fc" id="L1051">        int maxStringValueLength = HeaderCard.MAX_STRING_VALUE_LENGTH;</span>
-<span class="fc bfc" id="L1052" title="All 4 branches covered.">        if (FitsFactory.getUseHierarch() &amp;&amp; getKey().length() &gt; MAX_KEYWORD_LENGTH) {</span>
-<span class="fc" id="L1053">            maxStringValueLength -= getKey().length() - MAX_KEYWORD_LENGTH;</span>
+    
+    /**
+     * Returns the minimum number of characters the value field will occupy in the
+     * header record, including quotes around string values, and quoted quotes
+     * inside. The actual header may add padding (e.g. to ensure the end quote
+     * does not come before byte 20).
+     * 
+     * @return      the minimum number of bytes needed to represent this value
+     *              in a header record.
+     *              
+     * @since 1.16.
+     * 
+     * @see #spaceForValue()
+     */
+    private synchronized int getHeaderValueSize() {
+<span class="fc bfc" id="L1213" title="All 4 branches covered.">        if (isStringValue() &amp;&amp; FitsFactory.isLongStringsEnabled()) {</span>
+<span class="fc" id="L1214">            return Integer.MAX_VALUE;</span>
         }
-<span class="fc" id="L1055">        return maxStringValueLength;</span>
-    }
-
-    private boolean stringValueToString(int alignSmallString, int alignPosition, FitsLineAppender buf, boolean commentHandled) {
-<span class="fc" id="L1059">        String stringValue = this.value.replace(&quot;'&quot;, &quot;''&quot;);</span>
-<span class="fc bfc" id="L1060" title="All 4 branches covered.">        if (FitsFactory.isLongStringsEnabled() &amp;&amp; stringValue.length() &gt; maxStringValueLength()) {</span>
-<span class="fc" id="L1061">            writeLongStringValue(buf, stringValue);</span>
-<span class="fc" id="L1062">            commentHandled = true;</span>
-        } else {
-            // left justify the string inside the quotes
-<span class="fc" id="L1065">            buf.append('\'');</span>
-<span class="fc" id="L1066">            buf.append(stringValue);</span>
-<span class="fc" id="L1067">            buf.appendSpacesTo(alignSmallString);</span>
-<span class="fc" id="L1068">            buf.append('\'');</span>
-            // Now add space to the comment area starting at column
-            // 30
-<span class="fc" id="L1071">            buf.appendSpacesTo(alignPosition);</span>
+        
+<span class="fc bfc" id="L1217" title="All 2 branches covered.">        int n = isStringValue() ? 2 : 0;</span>
+<span class="fc bfc" id="L1218" title="All 2 branches covered.">        if (value == null) {</span>
+<span class="fc" id="L1219">            return n;</span>
         }
-<span class="fc" id="L1073">        return commentHandled;</span>
-    }
-
-    private void writeLongStringValue(FitsLineAppender buf, String stringValueString) {
-<span class="fc" id="L1077">        FitsSubString stringValue = new FitsSubString(stringValueString);</span>
-<span class="fc" id="L1078">        FitsSubString commentValue = new FitsSubString(this.comment);</span>
-        // We assume that we've made the test so that
-        // we need to write a long string.
-        // We also need to be careful that single quotes don't
-        // make the string too long and that we don't split
-        // in the middle of a quote.
-<span class="fc" id="L1084">        stringValue.getAdjustedLength(FITS_HEADER_CARD_SIZE - buf.length() - MAX_LONG_STRING_CONTINUE_OVERHEAD);</span>
-        // No comment here since we're using as much of the card
-        // as we can
-<span class="fc" id="L1087">        buf.append('\'');</span>
-<span class="fc" id="L1088">        buf.append(stringValue);</span>
-<span class="fc" id="L1089">        buf.append(&quot;&amp;'&quot;);</span>
-<span class="fc" id="L1090">        buf.completeLine();</span>
-<span class="fc" id="L1091">        stringValue.rest();</span>
-<span class="fc bfc" id="L1092" title="All 2 branches covered.">        if (commentValue.startsWith(&quot; &quot;)) {</span>
-<span class="fc" id="L1093">            commentValue.skip(1);</span>
-        }
-<span class="fc bfc" id="L1095" title="All 2 branches covered.">        while (stringValue.length() &gt; 0) {</span>
-<span class="fc" id="L1096">            stringValue.getAdjustedLength(MAX_LONG_STRING_VALUE_LENGTH);</span>
-<span class="fc bfc" id="L1097" title="All 2 branches covered.">            if (stringValue.fullLength() &gt; MAX_LONG_STRING_VALUE_LENGTH) {</span>
-<span class="fc" id="L1098">                buf.append(CONTINUE_CARD_PREFIX);</span>
-<span class="fc" id="L1099">                buf.append(stringValue);</span>
-<span class="fc" id="L1100">                buf.append(&quot;&amp;'&quot;);</span>
-<span class="fc" id="L1101">                stringValue.rest();</span>
-            } else {
-<span class="fc bfc" id="L1103" title="All 2 branches covered.">                if (commentValue.length() &gt; MAX_LONG_STRING_VALUE_WITH_COMMENT_LENGTH - stringValue.length()) {</span>
-                    // ok comment does not fit lets give it a little more room
-<span class="fc" id="L1105">                    stringValue.getAdjustedLength(STRING_SPLIT_POSITION_FOR_EXTRA_COMMENT_SPACE);</span>
-<span class="fc bfc" id="L1106" title="All 2 branches covered.">                    if (stringValue.fullLength() &gt; stringValue.length()) {</span>
-<span class="fc" id="L1107">                        buf.append(CONTINUE_CARD_PREFIX);</span>
-<span class="fc" id="L1108">                        buf.append(stringValue);</span>
-<span class="fc" id="L1109">                        buf.append(&quot;&amp;'&quot;);</span>
-                    } else {
-<span class="fc" id="L1111">                        buf.append(CONTINUE_CARD_PREFIX);</span>
-<span class="fc" id="L1112">                        buf.append(stringValue);</span>
-<span class="fc" id="L1113">                        buf.append(&quot;'&quot;);</span>
-                    }
-<span class="fc" id="L1115">                    int spaceForComment = buf.spaceLeftInLine() - MAX_LONG_STRING_CONTINUE_OVERHEAD;</span>
-<span class="fc" id="L1116">                    commentValue.getAdjustedLength(spaceForComment);</span>
-<span class="fc" id="L1117">                } else {</span>
-<span class="fc" id="L1118">                    buf.append(CONTINUE_CARD_PREFIX);</span>
-<span class="fc" id="L1119">                    buf.append(stringValue);</span>
-<span class="fc" id="L1120">                    buf.append('\'');</span>
-                }
-<span class="fc bfc" id="L1122" title="All 2 branches covered.">                if (commentValue.length() &gt; 0) {</span>
-<span class="fc" id="L1123">                    buf.append(&quot; / &quot;);</span>
-<span class="fc" id="L1124">                    buf.append(commentValue);</span>
-<span class="fc" id="L1125">                    commentValue.rest();</span>
-                }
-<span class="fc" id="L1127">                buf.completeLine();</span>
-<span class="fc" id="L1128">                stringValue.rest();</span>
+        
+<span class="fc" id="L1222">        n += value.length();      </span>
+<span class="fc bfc" id="L1223" title="All 2 branches covered.">        for (int i = value.length(); --i &gt;= 0;) {</span>
+<span class="fc bfc" id="L1224" title="All 2 branches covered.">            if (value.charAt(i) == '\'') {</span>
+                // Add the number of quotes that need quoting.
+<span class="fc" id="L1226">                n++;</span>
             }
         }
-<span class="fc" id="L1131">    }</span>
+<span class="fc" id="L1229">        return n;</span>
+    }
 
     /**
-     * Set the key.
+     * Returns the space available for value and/or comment in a single record the keyword.
+     * 
+     * @return  the number of characters available in a single 80-character header record 
+     *          for a standard (non long string) value and/or comment.
+     *          
+     * @since 1.16
+     * 
      */
-    void setKey(String newKey) {
-<span class="fc" id="L1137">        this.key = newKey;</span>
-<span class="fc" id="L1138">    }</span>
+    public final synchronized int spaceForValue() {
+<span class="fc" id="L1242">        return spaceForValue(key);</span>
+    }
+
+    /**
+     * Updates the keyword for this card.
+     * 
+     * @param newKey    the new FITS header keyword to use for this card.
+     * 
+     * @throws HierarchNotEnabledException      if the new key is a HIERARCH-style long key
+     *                                          but support for these is not currently
+     *                                          enabled.
+     * @throws IllegalArgumentException         if the keyword contains invalid characters
+     * @throws LongValueException               if the new keyword does not leave sufficient
+     *                                          room for the current non-string value.
+     * @throws LongStringsNotEnabledException   if the new keyword does not leave sufficient
+     *                                          rooom for the current string value without
+     *                                          enabling long string support.
+     *                                          
+     * @see FitsFactory#setLongStringsEnabled(boolean)
+     * @see #spaceForValue()
+     * @see #getValue()
+     */
+    public synchronized void changeKey(String newKey) 
+            throws HierarchNotEnabledException, LongValueException, LongStringsNotEnabledException, IllegalArgumentException {
+        
+<span class="fc" id="L1267">        validateKey(newKey);</span>
+<span class="fc bfc" id="L1268" title="All 2 branches covered.">        if (getHeaderValueSize() &gt; spaceForValue(newKey)) {</span>
+<span class="fc bfc" id="L1269" title="All 2 branches covered.">            if (!isStringValue()) {</span>
+<span class="fc" id="L1270">                throw new LongValueException(spaceForValue(newKey), newKey + &quot;= &quot; + value);</span>
+<span class="fc bfc" id="L1271" title="All 2 branches covered.">            } else if (!FitsFactory.isLongStringsEnabled()) {</span>
+<span class="fc" id="L1272">                throw new LongStringsNotEnabledException(newKey);</span>
+            }
+        }
+<span class="fc" id="L1275">        this.key = newKey;</span>
+<span class="fc" id="L1276">    }</span>
+    
+    /**
+     * Checks if the card is blank, that is if it contains only empty spaces.
+     * 
+     * @return  &lt;code&gt;true&lt;/code&gt; if the card contains nothing but blank spaces.
+     */
+    public synchronized boolean isBlank() {
+<span class="fc bfc" id="L1284" title="All 4 branches covered.">        if (!isCommentStyleCard() || !key.isEmpty()) {</span>
+<span class="fc" id="L1285">            return false;</span>
+        }
+<span class="fc bfc" id="L1287" title="All 2 branches covered.">        if (comment == null) {</span>
+<span class="fc" id="L1288">            return true;</span>
+        }
+<span class="fc" id="L1290">        return comment.isEmpty();</span>
+    }
+
+    
+    /**
+     * &lt;p&gt;
+     * Creates a new FITS header card from a FITS stream representation of it, which is how the key/value and comment
+     * are represented inside the FITS file, normally as an 80-character wide entry. The parsing of header 'lines'
+     * conforms to all FITS standards, and some optional conventions, such as HIERARCH keywords (if
+     * {@link FitsFactory#setUseHierarch(boolean)} is enabled), COMMENT and HISTORY entries, and OGIP 1.0 long CONTINUE
+     * lines (if {@link FitsFactory#setLongStringsEnabled(boolean)} is enabled).
+     * &lt;/p&gt;
+     * &lt;p&gt;
+     * However, the parsing here is permissive beyond the standards and conventions, and will do its best to support a
+     * wide range of FITS files, which may deviate from the standard in subtle (or no so subtle) ways.
+     * &lt;/p&gt;
+     * &lt;p&gt;
+     * Here is a brief summary of the rules that guide the parsing of keywords, values, and comment 'fields' from the
+     * single header line:
+     * &lt;/p&gt;
+     * &lt;p&gt;
+     * &lt;b&gt;A. Keywords&lt;/b&gt;
+     * &lt;/p&gt;
+     * &lt;ul&gt;
+     * &lt;li&gt;The standard FITS keyword is the first 8 characters of the line, or up to an equal [=] character, whichever
+     * comes first, with trailing spaces removed, and always converted to upper-case.&lt;/li&gt;
+     * &lt;li&gt;If {@link FitsFactory#setUseHierarch(boolean)} is enabled, structured longer keywords can be composed after a
+     * &lt;code&gt;HIERARCH&lt;/code&gt; base key, followed by space (and/or dot ].]) separated parts, up to an equal sign [=]. The
+     * library will represent the same components (including &lt;code&gt;HIERARCH&lt;/code&gt;) but separated by single dots [.].
+     * For example, the header line starting with [&lt;code&gt;HIERARCH SMA OBS TARGET =&lt;/code&gt;], will be referred as
+     * [&lt;code&gt;HIERARCH.SMA.OBS.TARGET&lt;/code&gt;] withing this library. The keyword parts can be composed of any ASCII
+     * characters except dot [.], white spaces, or equal [=].&lt;/li&gt;
+     * &lt;li&gt;By default, all parts of the key are converted to upper-case. Case sensitive HIERARCH keywords can be
+     * retained after enabling
+     * {@link nom.tam.fits.header.hierarch.IHierarchKeyFormatter#setCaseSensitive(boolean)}.&lt;/li&gt;
+     * &lt;/ul&gt;
+     * &lt;p&gt;
+     * &lt;b&gt;B. Values&lt;/b&gt;
+     * &lt;/p&gt;
+     * &lt;p&gt;
+     * Values are the part of the header line, that is between the keyword and an optional ending comment. Legal header
+     * values follow the following parse patterns:
+     * &lt;ul&gt;
+     * &lt;li&gt;Begin with an equal sign [=], or else come after a CONTINUE keyword.&lt;/li&gt;
+     * &lt;li&gt;Next can be a quoted value such as &lt;code&gt;'hello'&lt;/code&gt;, placed inside two single quotes. Or an unquoted
+     * value, such as &lt;code&gt;123&lt;/code&gt;.&lt;/li&gt;
+     * &lt;li&gt;Quoted values must begin with a single quote ['] and and with the next single quote. If there is no end-quote
+     * in the line, it is not considered a string value but rather a comment, unless
+     * {@link FitsFactory#setAllowHeaderRepairs(boolean)} is enabled, in which case the entire remaining line after the
+     * opening quote is assumed to be a malformed value.&lt;/li&gt;
+     * &lt;li&gt;Unquoted values end at the fist [/] character, or else go until the line end.&lt;/li&gt;
+     * &lt;li&gt;Quoted values have trailing spaces removed, s.t. [&lt;code&gt;'  value   '&lt;/code&gt;] becomes
+     * [&lt;code&gt;  value&lt;/code&gt;].&lt;/li&gt;
+     * &lt;li&gt;Unquoted values are trimmed, with both leading and trailing spaces removed, e.g. [&lt;code&gt;  123  &lt;/code&gt;]
+     * becomes [&lt;code&gt;123&lt;/code&gt;].&lt;/li&gt;
+     * &lt;/ul&gt;
+     * &lt;p&gt;
+     * &lt;b&gt;C. Comments&lt;/b&gt;
+     * &lt;/p&gt;
+     * &lt;p&gt;
+     * The following rules guide the parsing of the values component:
+     * &lt;ul&gt;
+     * &lt;li&gt;If a value is present (see above), the comment is what comes after it. That is, for quoted values, everything
+     * that follows the closing quote. For unquoted values, it's what comes after the first [/], with the [/] itself
+     * removed.&lt;/li&gt;
+     * &lt;li&gt;If a value is not present, then everything following the keyword is considered the comment.&lt;/li&gt;
+     * &lt;li&gt;Comments are trimmed, with both leading and trailing spaces removed.&lt;/li&gt;
+     * &lt;/ul&gt;
+     * 
+     * @return a newly created HeaderCard from a FITS card string.
+     * 
+     * @param line the card image (typically 80 characters if in a FITS file).
+     * 
+     * @throws IllegalArgumentException     if the card was malformed, truncated, or if there was an IO error.
+     * 
+     * @see FitsFactory#setUseHierarch(boolean)
+     * @see nom.tam.fits.header.hierarch.IHierarchKeyFormatter#setCaseSensitive(boolean)
+     */
+    public static HeaderCard create(String line) throws IllegalArgumentException {
+<span class="fc" id="L1369">        try (ArrayDataInput in = stringToArrayInputStream(line)) {</span>
+<span class="fc" id="L1370">            return new HeaderCard(in);</span>
+<span class="fc" id="L1371">        } catch (Exception e) {</span>
+<span class="fc" id="L1372">            throw new IllegalArgumentException(&quot;card not legal&quot;, e);</span>
+        }
+    }
+    
+    /**
+     * &lt;p&gt;
+     * Checks if the value type is compatible with what's expected for a standard FITS keyword
+     * and prints out debugging information if there is a mismatch.
+     * &lt;/p&gt;
+     * &lt;p&gt;
+     * A type mismatch is a programmer's error that we can let pass, but the programmer should probably
+     * fix, either because the IFitsHeader was defined with an incorrect (too restrictive?) type, 
+     * or because someone is trying to set a value that does not belong to the keyword...
+     * So we just print the stack trace to provide the debugging information for the
+     * developer.
+     * &lt;/p&gt;
+     * 
+     * @param key       The standard or conventional FITS keyword
+     * @param type      The type we want to use with that key
+     * 
+     * @since 1.16
+     */
+    private static void checkType(IFitsHeader key, VALUE type) {
+<span class="fc bfc" id="L1395" title="All 4 branches covered.">        if (key.valueType() != VALUE.ANY &amp;&amp; key.valueType() != type) {</span>
+<span class="fc" id="L1396">            LOG.log(Level.WARNING, &quot;[&quot; + key + &quot;] created with unexpected value type.&quot;, new IllegalArgumentException(&quot;Expected &quot; + type + &quot;, got &quot; + key.valueType()));</span>
+        }
+<span class="fc" id="L1398">    }</span>
+    
+    /**
+     * Creates a new card with a standard or conventional keyword and a boolean value, with
+     * the default comment associated with the keyword. Unlike {@link #HeaderCard(String, Boolean)},
+     * this call does not throw an exception, since the keyword and comment should be valid
+     * by design.
+     * 
+     * @param key       The standard or conventional keyword with its associated default comment.
+     * @param value     the boolean value associated to the keyword
+     * 
+     * @return          A new header card with the speficied standard-style key and comment
+     *                  and the specified value, or &lt;code&gt;null&lt;/code&gt; if the standard
+     *                  key itself is malformed or illegal.
+     *                  
+     * @throws IllegalArgumentException     
+     *                  if the standard key was ill-defined.
+     *                  
+     * @since 1.16
+     */
+    public static HeaderCard create(IFitsHeader key, Boolean value) throws IllegalArgumentException {
+<span class="fc" id="L1419">        checkType(key, VALUE.LOGICAL);</span>
+        
+        try {
+<span class="fc" id="L1422">            return new HeaderCard(key.key(), value, key.comment());</span>
+<span class="fc" id="L1423">        } catch (HeaderCardException e) {</span>
+<span class="fc" id="L1424">            throw new IllegalArgumentException(&quot;Invalid standard key [&quot; + key.key() + &quot;]&quot;, e);</span>
+        }
+    }
+    
+    /**
+     * Creates a new card with a standard or conventional keyword and a number value, with
+     * the default comment associated with the keyword. Unlike {@link #HeaderCard(String, Number)},
+     * this call does not throw an exception, since the keyword and comment should be valid 
+     * by design.
+     * 
+     * @param key       The standard or conventional keyword with its associated default comment.
+     * @param value     the integer value associated to the keyword.
+     * 
+     * @return          A new header card with the speficied standard-style key and comment
+     *                  and the specified value.
+     *                  
+     * @throws IllegalArgumentException     
+     *                  if the standard key was ill-defined.
+     *                  
+     * @since 1.6
+     */
+    public static HeaderCard create(IFitsHeader key, Number value)  throws IllegalArgumentException  {
+<span class="pc bpc" id="L1446" title="1 of 6 branches missed.">        if (value instanceof Float || value instanceof Double || value instanceof BigInteger) {</span>
+<span class="fc" id="L1447">            checkType(key, VALUE.REAL);</span>
+        } else {       
+<span class="fc" id="L1449">            checkType(key, VALUE.INTEGER);</span>
+        }
+            
+        try {
+<span class="fc" id="L1453">            return new HeaderCard(key.key(), value, key.comment());</span>
+<span class="fc" id="L1454">        } catch (HeaderCardException e) {</span>
+<span class="fc" id="L1455">            throw new IllegalArgumentException(&quot;Invalid standard key [&quot; + key.key() + &quot;]&quot;, e);</span>
+        }
+    }
+    
+    /**
+     * Creates a new card with a standard or conventional keyword and a number value, with
+     * the default comment associated with the keyword. Unlike {@link #HeaderCard(String, Number)},
+     * this call does not throw an exception, since the keyword and comment should be valid 
+     * by design.
+     * 
+     * @param key       The standard or conventional keyword with its associated default comment.
+     * @param value     the integer value associated to the keyword.
+     * 
+     * @return          A new header card with the speficied standard-style key and comment
+     *                  and the specified value.
+     *                  
+     * @throws IllegalArgumentException     
+     *                  if the standard key was ill-defined.
+     *                  
+     * @since 1.6
+     */
+    public static HeaderCard create(IFitsHeader key, ComplexValue value)  throws IllegalArgumentException  {
+<span class="fc" id="L1477">        checkType(key, VALUE.COMPLEX);</span>
+            
+        try {
+<span class="fc" id="L1480">            return new HeaderCard(key.key(), value, key.comment());</span>
+<span class="fc" id="L1481">        } catch (HeaderCardException e) {</span>
+<span class="fc" id="L1482">            throw new IllegalArgumentException(&quot;Invalid standard key [&quot; + key.key() + &quot;]&quot;, e);</span>
+        }
+    }
+    
+    /**
+     * Creates a new card with a standard or conventional keyword and an integer value, with
+     * the default comment associated with the keyword. Unlike {@link #HeaderCard(String, Number)},
+     * this call does not throw a hard exception, since the keyword and comment sohould be valid
+     * by design. The string value however will be checked, and an appropriate runtime
+     * exception is thrown if it cannot be included in a FITS header.
+     * 
+     * @param key       The standard or conventional keyword with its associated default comment.
+     * @param value     the string associated to the keyword.
+     * 
+     * @return          A new header card with the speficied standard-style key and comment
+     *                  and the specified value.
+     * 
+     * @throws IllegalArgumentException     
+     *                  if the string value contains characters that are not allowed in
+     *                  FITS headers, that is characters outside of the 0x20 thru 0x7E
+     *                  range, or if the standard key was ill-defined.
+     *                  
+     */
+    public static HeaderCard create(IFitsHeader key, String value) throws IllegalArgumentException {
+<span class="fc" id="L1506">        checkType(key, VALUE.STRING);        </span>
+<span class="fc" id="L1507">        validateChars(value);</span>
+        
+        try {
+<span class="fc" id="L1510">            return new HeaderCard(key.key(), value, key.comment());</span>
+<span class="fc" id="L1511">        } catch (HeaderCardException e) {</span>
+<span class="fc" id="L1512">            throw new IllegalArgumentException(&quot;Invalid standard key [&quot; + key.key() + &quot;]&quot;, e);</span>
+        }
+    }
+    
+    /**
+     * Creates a comment-style card with no associated value field.
+     * 
+     * @param key       The keyword, or &lt;code&gt;null&lt;/code&gt; blank/empty string for an unkeyed comment.
+     * @param comment   The comment text.
+     * @return          a new comment-style header card with the specified key and comment text.
+     * @throws HeaderCardException      if the key or value were invalid.
+     * @throws LongValueException       if the comment text is longer than the space available
+     *                                  in comment-style cards (71 characters max)
+     * 
+     * @see #createUnkeyedCommentCard(String)
+     * @see #createCommentCard(String)
+     * @see #createHistoryCard(String)
+     * @see Header#insertCommentStyle(String, String)
+     * @see Header#insertCommentStyleMultiline(String, String)
+     */
+    public static HeaderCard createCommentStyleCard(String key, String comment) throws HeaderCardException, LongValueException {
+<span class="fc bfc" id="L1533" title="All 2 branches covered.">        if (comment == null) {</span>
+<span class="fc" id="L1534">            comment = &quot;&quot;;</span>
+<span class="fc bfc" id="L1535" title="All 2 branches covered.">        } else if (comment.length() &gt; MAX_COMMENT_CARD_COMMENT_LENGTH) {</span>
+<span class="fc" id="L1536">            throw new LongValueException(MAX_COMMENT_CARD_COMMENT_LENGTH, key, comment);</span>
+        }
+<span class="fc" id="L1538">        HeaderCard card = new HeaderCard();</span>
+<span class="fc" id="L1539">        card.set(key, null, comment, null);</span>
+<span class="fc" id="L1540">        return card;</span>
+    }
+    
+    /**
+     * Creates a new unkeyed comment card for th FITS header. These are comment-style cards with no associated
+     * value field, and with a blank keyword. They are commonly used to add explanatory notes in the
+     * FITS header. Keyed comments are another alternative...
+     * 
+     * @param text      a concise descriptive entry (max 71 characters).
+     * @return          a new COMMENT card with the specified key and comment text.
+     * @throws HeaderCardException      if the text contains invalid charaters.
+     * @throws LongValueException       if the comment text is longer than the space available
+     *                                  in comment-style cards (71 characters max)
+     *                                  
+     * @see #createCommentCard(String)
+     * @see #createCommentStyleCard(String, String)
+     * @see Header#insertUnkeyedComment(String)
+     */
+    public static HeaderCard createUnkeyedCommentCard(String text) throws HeaderCardException, LongValueException {
+<span class="fc" id="L1559">        return createCommentStyleCard(BLANKS.key(), text);</span>
+    }
+    
+    /**
+     * Creates a new keyed comment card for th FITS header. These are comment-style cards with no associated
+     * value field, and with COMMENT as the keyword. They are commonly used to add explanatory notes in the
+     * FITS header. Unkeyed comments are another alternative...
+     * 
+     * @param text      a concise descriptive entry (max 71 characters).
+     * @return          a new COMMENT card with the specified key and comment text.
+     * @throws HeaderCardException      if the text contains invalid charaters.
+     * @throws LongValueException       if the comment text is longer than the space available
+     *                                  in comment-style cards (71 characters max)
+     *                                  
+     * @see #createUnkeyedCommentCard(String)
+     * @see #createCommentStyleCard(String, String)
+     * @see Header#insertComment(String)
+     */
+    public static HeaderCard createCommentCard(String text) throws HeaderCardException, LongValueException {
+<span class="fc" id="L1578">        return createCommentStyleCard(COMMENT.key(), text);</span>
+    }
+    
+    /**
+     * Creates a new history record for the FITS header. These are comment-style cards with no associated
+     * value field, and with HISTORY as the keyword. They are commonly used to document the
+     * sequence operations that were performed on the data before it arrived to the state represented
+     * by the FITS file. The text field for history entries is limited to 70 characters max per
+     * card. However there is no limit to how many such entries are in a FITS header.
+     * 
+     * @param text      a concise descriptive entry (max 71 characters).
+     * @return          a new HISTORY card with the specified key and comment text.
+     * @throws HeaderCardException      if the text contains invalid charaters.
+     * @throws LongValueException       if the comment text is longer than the space available
+     *                                  in comment-style cards (71 characters max)
+     *                                  
+     * @see #createCommentStyleCard(String, String)
+     * @see Header#insertHistory(String)
+     */
+    public static HeaderCard createHistoryCard(String text) throws HeaderCardException, LongValueException {
+<span class="fc" id="L1598">        return createCommentStyleCard(HISTORY.key(), text);</span>
+    }
+    
+    /**
+     * Creates a new header card with the hexadecimal representation of an integer value
+     * 
+     * @param key the keyword
+     * @param value the integer value
+     * 
+     * @return A new header card, with the specified integer in hexadecomal representation.
+     * 
+     * @throws HeaderCardException if the card is invalid (for example the keyword is not valid).
+     * 
+     * @see #createHexValueCard(String, long, String)
+     * @see #getHexValue()
+     * @see Header#getHexValue(String)
+     */
+    public static HeaderCard createHexValueCard(String key, long value) throws HeaderCardException {
+<span class="fc" id="L1616">        return createHexValueCard(key, value, null);</span>
+    }
+    
+    /**
+     * Creates a new header card with the hexadecimal representation of an integer value
+     * 
+     * @param key the keyword
+     * @param value the integer value
+     * @param comment optional comment, or &lt;code&gt;null&lt;/code&gt;.
+     * 
+     * @return A new header card, with the specified integer in hexadecomal representation.
+     * 
+     * @throws HeaderCardException if the card is invalid (for example the keyword is not valid).
+     * 
+     * @see #createHexValueCard(String, long)
+     * @see #getHexValue()
+     * @see Header#getHexValue(String)
+     */
+    public static HeaderCard createHexValueCard(String key, long value, String comment) throws HeaderCardException {
+<span class="fc" id="L1635">        return new HeaderCard(key, Long.toHexString(value), comment, Long.class);</span>
+    }
+
+    /**
+     * Read exactly one complete fits header line from the input.
+     *
+     * @param dis the data input stream to read the line
+     * 
+     * @return a string of exactly 80 characters
+     *
+     * @throwa EOFException             if already at the end of file.
+     * @throws TruncatedFileException   if there was not a complete line available in the input.
+     * @throws IOException              if the input stream could not be read
+     */
+    @SuppressWarnings({ &quot;resource&quot;, &quot;deprecation&quot; })
+    private static String readOneHeaderLine(HeaderCardCountingArrayDataInput dis) throws IOException, TruncatedFileException {
+<span class="fc" id="L1651">        byte[] buffer = new byte[FITS_HEADER_CARD_SIZE];       </span>
+       
+<span class="fc" id="L1653">        int got = 0;</span>
+        
+        try {
+            // Read as long as there is more available, even if it comes in a trickle...
+<span class="fc bfc" id="L1657" title="All 2 branches covered.">            while (got &lt; buffer.length) {</span>
+<span class="fc" id="L1658">                int n = dis.in().read(buffer, got, buffer.length - got);</span>
+<span class="fc bfc" id="L1659" title="All 2 branches covered.">                if (n &lt;= 0) {</span>
+<span class="fc" id="L1660">                    break;</span>
+                }
+<span class="fc" id="L1662">                got += n;</span>
+<span class="fc" id="L1663">            }</span>
+<span class="fc" id="L1664">        } catch (EOFException e) {</span>
+            // Just in case read throws EOFException instead of returning -1 by contract.
+<span class="fc" id="L1666">        }</span>
+        
+<span class="fc bfc" id="L1668" title="All 2 branches covered.">        if (got == 0) {</span>
+            // Nothing left to read.
+<span class="fc" id="L1670">            throw new EOFException();</span>
+        }
+        
+<span class="fc bfc" id="L1673" title="All 2 branches covered.">        if (got &lt; buffer.length) {</span>
+            // Got an incomplete header card...
+<span class="fc" id="L1675">            throw new TruncatedFileException(&quot;Got only &quot; + got + &quot; of &quot; + buffer.length + &quot; bytes expected for a header card&quot;); </span>
+        }
+            
+<span class="fc" id="L1678">        dis.cardRead();</span>
+        
+<span class="fc" id="L1680">        return AsciiFuncs.asciiString(buffer);</span>
+    }
+
+    /**
+     * Returns the maximum number of characters that can be used for a value field in a single FITS header
+     * record (80 characters wide), after the specified keyword.
+     * 
+     * @param key   the header keyword, which may be a HIERARCH-style key...
+     * @return      the space available for the value field in a single record, after the keyword,
+     *              and the assigmnent sequence (or equivalent blank space).
+     */
+    private static int spaceForValue(String key) {
+<span class="fc bfc" id="L1692" title="All 2 branches covered.">        if (key.length() &gt; MAX_KEYWORD_LENGTH) {</span>
+<span class="fc" id="L1693">            return FITS_HEADER_CARD_SIZE - (Math.max(key.length(), MAX_KEYWORD_LENGTH)</span>
+<span class="fc" id="L1694">                    + FitsFactory.getHierarchFormater().getExtraSpaceRequired(key));</span>
+        }
+<span class="fc" id="L1696">        return FITS_HEADER_CARD_SIZE - (Math.max(key.length(), MAX_KEYWORD_LENGTH) + HeaderCardFormatter.getAssignLength());</span>
+    }
+
+    private static ArrayDataInput stringToArrayInputStream(String card) {
+<span class="fc" id="L1700">        byte[] bytes = AsciiFuncs.getBytes(card);</span>
+<span class="fc bfc" id="L1701" title="All 2 branches covered.">        if (bytes.length % FITS_HEADER_CARD_SIZE != 0) {</span>
+<span class="fc" id="L1702">            byte[] newBytes = new byte[bytes.length + FITS_HEADER_CARD_SIZE - bytes.length % FITS_HEADER_CARD_SIZE];</span>
+<span class="fc" id="L1703">            System.arraycopy(bytes, 0, newBytes, 0, bytes.length);</span>
+<span class="fc" id="L1704">            Arrays.fill(newBytes, bytes.length, newBytes.length, (byte) ' ');</span>
+<span class="fc" id="L1705">            bytes = newBytes;</span>
+        }
+<span class="fc" id="L1707">        return new FitsInputStream(new ByteArrayInputStream(bytes));</span>
+    }
+
+    /**
+     * This method was designed for use internally. It is 'safe' (not save!) in the sense that the runtime exception it may
+     * throw does not need to be caught.
+     *
+     * @param key       keyword
+     * @param comment   optional comment, or &lt;code&gt;null&lt;/code&gt;
+     * @param hasValue  does this card have a (&lt;code&gt;null&lt;/code&gt;) value field? If &lt;code&gt;true&lt;/code&gt; a null value of type
+     *                  &lt;code&gt;String.class&lt;/code&gt; is assumed (for backward compatibility).
+     * 
+     * @return the new HeaderCard
+     * @throws IllegalStateException
+     *                  if the card could not be created for some reason (noted as the cause).
+     * 
+     * @deprecated      This was to be used internally only, without public visibility. It will become unexposed
+     *                  to users in a future release...
+     *                  
+     */
+    @Deprecated
+    public static HeaderCard saveNewHeaderCard(String key, String comment, boolean hasValue) throws IllegalStateException {
+        try {
+<span class="pc bpc" id="L1730" title="1 of 2 branches missed.">            return new HeaderCard(key, null, comment, hasValue ? String.class : null);</span>
+<span class="fc" id="L1731">        } catch (HeaderCardException e) {</span>
+<span class="fc" id="L1732">            LOG.log(Level.SEVERE, &quot;Impossible Exception for internal card creation:&quot; + key, e);</span>
+<span class="fc" id="L1733">            throw new IllegalStateException(e);</span>
+        }
+    }
+    
+    /**
+     * Checks if the specified keyword is a HIERARCH-style long keyword.
+     * 
+     * @param key   The keyword to check.
+     * @return      &lt;code&gt;true&lt;/code&gt; if the specified key may be a HIERARC-style key, otehrwise &lt;code&gt;false&lt;/code&gt;. 
+     */
+    private static boolean isHierarchKey(String key) {
+<span class="fc" id="L1744">        return key.toUpperCase().startsWith(HIERARCH_WITH_DOT);</span>
+    }
+
+    /**
+     * Replaces illegal characters in the string ith '?' to be suitable for FITS header records. According to the FITS
+     * standard, headers may only contain ASCII characters in the range 0x20 and 0x7E (inclusive).
+     * 
+     * @param str       the input string.
+     * @return          the sanitized string for use in a FITS header, with illegal characters replaced by '?'.
+     * 
+     * @see #isValidChar(char)
+     * @see #validateChars(String)
+     */
+    public static String sanitize(String str) {
+<span class="fc" id="L1758">        int nc = str.length();</span>
+<span class="fc" id="L1759">        char[] cbuf = new char[nc];</span>
+<span class="fc bfc" id="L1760" title="All 2 branches covered.">        for (int ic = 0; ic &lt; nc; ic++) {</span>
+<span class="fc" id="L1761">            char c = str.charAt(ic);</span>
+<span class="fc bfc" id="L1762" title="All 2 branches covered.">            cbuf[ic] = isValidChar(c) ? c : '?';</span>
+        }
+<span class="fc" id="L1764">        return new String(cbuf);</span>
+    }
+    
+    /**
+     * Checks if a character is valid for inclusion in a FITS header record. The FITS standard specifies
+     * that only ASCII characters between 0x20 thru 0x7E may be used in FITS headers.
+     * 
+     * @param c     the character to check
+     * @return      &lt;code&gt;true&lt;/code&gt; if the character is allowed in the FITS header, otherwise
+     *              &lt;code&gt;false&lt;/code&gt;.
+     *              
+     * @see #validateChars(String)
+     * @see #sanitize(String)
+     */
+    public static boolean isValidChar(char c) {
+<span class="fc bfc" id="L1779" title="All 4 branches covered.">        return (c &gt;= MIN_VALID_CHAR &amp;&amp; c &lt;= MAX_VALID_CHAR);</span>
+    }
+    
+    /**
+     * Checks the specified string for characters that are not allowed in FITS headers, and throws an exception
+     * if any are found. According to the FITS
+     * standard, headers may only contain ASCII characters in the range 0x20 and 0x7E (inclusive).
+     * 
+     * @param text      the input string
+     * @throws IllegalArgumentException     if the unput string contains any characters that cannot be
+     *                                      in a FITS header, that is characters outside of the 0x20 to 0x7E 
+     *                                      range.
+     * 
+     * @since 1.16
+     * 
+     * @see #isValidChar(char)
+     * @see #sanitize(String)
+     * @see #validateKey(String)
+     */
+    public static void validateChars(String text) throws IllegalArgumentException {
+<span class="fc bfc" id="L1799" title="All 2 branches covered.">        if (text == null) {</span>
+<span class="fc" id="L1800">            return;</span>
+        }
+        
+<span class="fc bfc" id="L1803" title="All 2 branches covered.">        for (int i = text.length(); --i &gt;= 0;) {</span>
+<span class="fc" id="L1804">            char c = text.charAt(i);</span>
+<span class="fc bfc" id="L1805" title="All 2 branches covered.">            if (c &lt; MIN_VALID_CHAR) {</span>
+<span class="fc" id="L1806">                throw new IllegalArgumentException(</span>
+<span class="fc" id="L1807">                        &quot;Non-printable character(s), e.g. 0x&quot; + (int) c + &quot;, in [&quot; + sanitize(text) + &quot;].&quot;);</span>
+            }
+<span class="fc bfc" id="L1809" title="All 2 branches covered.">            if (c &gt; MAX_VALID_CHAR) {</span>
+<span class="fc" id="L1810">                throw new IllegalArgumentException(&quot;Extendeed ASCII character(s) in [&quot; + sanitize(text)</span>
+                        + &quot;]. Only 0x20 through 0x7E are allowed.&quot;);
+            }
+<span class="fc" id="L1813">        }     </span>
+<span class="fc" id="L1814">    }</span>
+  
+    /**
+     * Checks if the specified string may be used as a FITS header keyword according to the FITS standard
+     * and currently settings for supporting extensions to the standard, such as HIERARCH-style keywords.
+     * 
+     * @param key           the proposed keyword string
+     * 
+     * @throws IllegalArgumentException     
+     *                      if the string cannot be used as a FITS keyword with the
+     *                      current settings. The exception will contain an informative
+     *                      message describing the issue.
+     * 
+     * @since 1.16
+     * 
+     * @see #validateChars(String)
+     * @see FitsFactory#setUseHierarch(boolean)
+     */
+    public static void validateKey(String key) throws IllegalArgumentException {
+<span class="fc" id="L1833">        int maxLength = MAX_KEYWORD_LENGTH;</span>
+<span class="fc bfc" id="L1834" title="All 2 branches covered.">        if (isHierarchKey(key)) {</span>
+<span class="fc bfc" id="L1835" title="All 2 branches covered.">            if (!FitsFactory.getUseHierarch()) {</span>
+<span class="fc" id="L1836">                throw new HierarchNotEnabledException(key);</span>
+            }
+            
+<span class="fc" id="L1839">            maxLength = MAX_HIERARCH_KEYWORD_LENGTH;</span>
+<span class="fc" id="L1840">            validateHierarchComponents(key);</span>
+        }
+
+<span class="fc bfc" id="L1843" title="All 2 branches covered.">        if (key.length() &gt; maxLength) {</span>
+<span class="fc" id="L1844">            throw new IllegalArgumentException(&quot;Keyword is too long: [&quot; + sanitize(key) + &quot;]&quot;);</span>
+        }
+
+        // Check the whole key for non-printable, non-standard ASCII
+<span class="fc bfc" id="L1848" title="All 2 branches covered.">        for (int i = key.length(); --i &gt;= 0;) {</span>
+<span class="fc" id="L1849">            char c = key.charAt(i);</span>
+<span class="fc bfc" id="L1850" title="All 2 branches covered.">            if (c &lt; MIN_VALID_CHAR) {</span>
+<span class="fc" id="L1851">                throw new IllegalArgumentException(</span>
+<span class="fc" id="L1852">                        &quot;Keyword contains non-printable character 0x&quot; + (int) c + &quot;: [&quot; + sanitize(key) + &quot;].&quot;);</span>
+            }
+<span class="fc bfc" id="L1854" title="All 2 branches covered.">            if (c &gt; MAX_VALID_CHAR) {</span>
+<span class="fc" id="L1855">                throw new IllegalArgumentException(&quot;Keyword contains extendeed ASCII characters: [&quot; + sanitize(key)</span>
+                        + &quot;]. Only 0x20 through 0x7E are allowed.&quot;);
+            }
+<span class="fc" id="L1858">        }</span>
+
+        // Check if the first 8 characters conform to strict FITS specification...
+<span class="fc bfc" id="L1861" title="All 2 branches covered.">        for (int i = Math.min(MAX_KEYWORD_LENGTH, key.length()); --i &gt;= 0;) {</span>
+<span class="fc" id="L1862">            char c = key.charAt(i);</span>
+<span class="pc bpc" id="L1863" title="1 of 4 branches missed.">            if (c &gt;= 'a' &amp;&amp; c &lt;= 'z') {</span>
+<span class="fc" id="L1864">                continue;</span>
+            }
+<span class="fc bfc" id="L1866" title="All 4 branches covered.">            if (c &gt;= 'A' &amp;&amp; c &lt;= 'Z') {</span>
+<span class="fc" id="L1867">                continue;</span>
+            }
+<span class="fc bfc" id="L1869" title="All 4 branches covered.">            if (c &gt;= '0' &amp;&amp; c &lt;= '9') {</span>
+<span class="fc" id="L1870">                continue;</span>
+            }
+<span class="fc bfc" id="L1872" title="All 2 branches covered.">            if (c == '-') {</span>
+<span class="fc" id="L1873">                continue;</span>
+            }
+<span class="fc bfc" id="L1875" title="All 2 branches covered.">            if (c == '_') {</span>
+<span class="fc" id="L1876">                continue;</span>
+            }
+<span class="fc" id="L1878">            throw new IllegalArgumentException(&quot;Keyword [&quot; + sanitize(key) + &quot;] contains invalid characters. Only [A-Z][a-z][0-9][-][_] are allowed.&quot;);</span>
+        }
+<span class="fc" id="L1880">    }</span>
+    
+    /**
+     * Additional checks the extended components of the HIEARCH key (in bytes 9-77), to make sure they conform to
+     * our own standards of storing hierarch keys as a dot-separated list of components. That is,
+     * the keyword must not have any spaces...
+     * 
+     * @param key       the HIERARCH keyword to check.
+     * 
+     * @throws IllegalArgumentException     if the keyword is not a proper dot-separated set of non-empty 
+     *                                      hierarchical components
+     */
+    private static void validateHierarchComponents(String key) throws IllegalArgumentException {        
+<span class="fc bfc" id="L1893" title="All 2 branches covered.">        for (int i = key.length(); --i &gt;= 0;) {</span>
+<span class="fc bfc" id="L1894" title="All 2 branches covered.">            if (Character.isSpaceChar(key.charAt(i))) {</span>
+<span class="fc" id="L1895">                throw new IllegalArgumentException(&quot;No spaces allowed in HIERARCH keywords used internally: [&quot; + sanitize(key) + &quot;].&quot;);</span>
+            }
+        }
+        
+<span class="fc bfc" id="L1899" title="All 2 branches covered.">        if (key.indexOf(&quot;..&quot;) &gt;= 0) {</span>
+<span class="fc" id="L1900">            throw new IllegalArgumentException(&quot;HIERARCH keywords with empty component: [&quot; + sanitize(key) + &quot;].&quot;);</span>
+        }   
+<span class="fc" id="L1902">    }</span>
+    
+    /**
+     * Checks that a number value is not NaN or Infinite, since FITS does not have a standard for describing
+     * those values in the header. If the value is not suitable for the FITS header, an exception is thrown.
+     * 
+     * @param value                     The number to check
+     * @throws NumberFormatException    if the input value is NaN or infinite.
+     * 
+     */
+    private static void checkNumber(Number value) throws NumberFormatException {
+<span class="fc bfc" id="L1913" title="All 2 branches covered.">        if (value instanceof Double) {</span>
+<span class="fc bfc" id="L1914" title="All 2 branches covered.">            if (!Double.isFinite(value.doubleValue())) {</span>
+<span class="fc" id="L1915">                throw new NumberFormatException(&quot;Cannot represent &quot; + value + &quot; in FITS headers.&quot;);</span>
+            }
+<span class="fc bfc" id="L1917" title="All 2 branches covered.">         } else if (value instanceof Float) {</span>
+<span class="fc bfc" id="L1918" title="All 2 branches covered.">             if (!Float.isFinite(value.floatValue())) {</span>
+<span class="fc" id="L1919">                 throw new NumberFormatException(&quot;Cannot represent &quot; + value + &quot; in FITS headers.&quot;);</span>
+             }
+         } 
+<span class="fc" id="L1922">    }</span>
 }
-</pre><div class="footer"><span class="right">Created with <a href="http://www.eclemma.org/jacoco">JaCoCo</a> 0.7.6.201602180812</span></div></body></html>
+</pre><div class="footer"><span class="right">Created with <a href="http://www.jacoco.org/jacoco">JaCoCo</a> 0.8.7.202105040129</span></div></body></html>

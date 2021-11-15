@@ -1,0 +1,290 @@
+<?xml version="1.0" encoding="UTF-8"?><!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Strict//EN" "http://www.w3.org/TR/xhtml1/DTD/xhtml1-strict.dtd"><html xmlns="http://www.w3.org/1999/xhtml" lang="en"><head><meta http-equiv="Content-Type" content="text/html;charset=UTF-8"/><link rel="stylesheet" href="../jacoco-resources/report.css" type="text/css"/><link rel="shortcut icon" href="../jacoco-resources/report.gif" type="image/gif"/><title>ByteArrayIO.java</title><link rel="stylesheet" href="../jacoco-resources/prettify.css" type="text/css"/><script type="text/javascript" src="../jacoco-resources/prettify.js"></script></head><body onload="window['PR_TAB_WIDTH']=4;prettyPrint()"><div class="breadcrumb" id="breadcrumb"><span class="info"><a href="../jacoco-sessions.html" class="el_session">Sessions</a></span><a href="../index.html" class="el_report">nom.tam FITS library</a> &gt; <a href="index.source.html" class="el_package">nom.tam.util</a> &gt; <span class="el_source">ByteArrayIO.java</span></div><h1>ByteArrayIO.java</h1><pre class="source lang-java linenums">package nom.tam.util;
+
+/*
+ * #%L
+ * nom.tam FITS library
+ * %%
+ * Copyright (C) 1996 - 2021 nom-tam-fits
+ * %%
+ * This is free and unencumbered software released into the public domain.
+ * 
+ * Anyone is free to copy, modify, publish, use, compile, sell, or
+ * distribute this software, either in source code form or as a compiled
+ * binary, for any purpose, commercial or non-commercial, and by any
+ * means.
+ * 
+ * In jurisdictions that recognize copyright laws, the author or authors
+ * of this software dedicate any and all copyright interest in the
+ * software to the public domain. We make this dedication for the benefit
+ * of the public at large and to the detriment of our heirs and
+ * successors. We intend this dedication to be an overt act of
+ * relinquishment in perpetuity of all present and future rights to this
+ * software under copyright law.
+ * 
+ * THE SOFTWARE IS PROVIDED &quot;AS IS&quot;, WITHOUT WARRANTY OF ANY KIND,
+ * EXPRESS OR IMPLIED, INCLUDING BUT NOT LIMITED TO THE WARRANTIES OF
+ * MERCHANTABILITY, FITNESS FOR A PARTICULAR PURPOSE AND NONINFRINGEMENT.
+ * IN NO EVENT SHALL THE AUTHORS BE LIABLE FOR ANY CLAIM, DAMAGES OR
+ * OTHER LIABILITY, WHETHER IN AN ACTION OF CONTRACT, TORT OR OTHERWISE,
+ * ARISING FROM, OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR
+ * OTHER DEALINGS IN THE SOFTWARE.
+ * #L%
+ */
+
+import java.io.EOFException;
+import java.io.IOException;
+import java.util.Arrays;
+
+import edu.umd.cs.findbugs.annotations.SuppressFBWarnings;
+
+/**
+ * A class for reading and writing into byte arrays with a stream-like
+ * interface.
+ * 
+ * @author Attila Kovacs
+ *
+ * @since 1.16
+ */
+public class ByteArrayIO implements ReadWriteAccess {
+    
+    /** Mask for 1-byte */
+    private static final int BYTE_MASK = 0xFF;
+    
+    /** The underlying buffer */
+    private byte[] buf;
+    
+    /** Whether the buffer is allowed to grow as needed to contain more data */
+    private boolean isGrowable;
+    
+    /** The current pointer position, for the next read or write in the buffer */
+    private int pos;
+    
+    /** The current end of the buffer, that is the total number of bytes available for reading from the buffer */
+    private int end;
+   
+    /**
+     * Instantiates a new byte array with an IO interface, with a fixed-size buffer using the
+     * specified array as its backing storage.
+     * 
+     * @param buffer        the fixed buffer.
+     */
+    @SuppressFBWarnings(value = &quot;EI_EXPOSE_REP2&quot;, justification = &quot;by design this class provides an IO interface for an accessible array.&quot;)
+<span class="fc" id="L72">    public ByteArrayIO(byte[] buffer) {</span>
+<span class="fc" id="L73">        this.buf = buffer;</span>
+<span class="fc" id="L74">        this.end = 0;</span>
+<span class="fc" id="L75">        this.isGrowable = false;</span>
+<span class="fc" id="L76">    }</span>
+    
+    /**
+     * Instantiates a new byte array with an IO interface, with a growable buffer initialized
+     * to the specific size.
+     * 
+     * @param initialCapacity       the number of bytes to contain in the buffer.
+     * @throws IllegalArgumentException
+     *                              if the initial capacity is 0 or negative
+     */
+<span class="fc" id="L86">    public ByteArrayIO(int initialCapacity) throws IllegalArgumentException {</span>
+<span class="fc bfc" id="L87" title="All 2 branches covered.">        if (initialCapacity &lt;= 0) {</span>
+<span class="fc" id="L88">            throw new IllegalArgumentException(&quot;Illegal buffer size:&quot; + initialCapacity);</span>
+        }
+        
+<span class="fc" id="L91">        this.buf = new byte[initialCapacity];</span>
+<span class="fc" id="L92">        this.end = 0;</span>
+<span class="fc" id="L93">        this.isGrowable = true;</span>
+<span class="fc" id="L94">    }</span>
+    
+    /**
+     * Returns a copy of this byte array with an IO interface, including a deep copy of
+     * the buffered data.
+     * 
+     * @return      a deep copy of this byte array with an IO interface instance.
+     */
+    public synchronized ByteArrayIO copy() {
+<span class="fc" id="L103">        ByteArrayIO copy = new ByteArrayIO(Arrays.copyOf(buf, buf.length));</span>
+<span class="fc" id="L104">        synchronized (copy) {</span>
+<span class="fc" id="L105">            copy.isGrowable = this.isGrowable;</span>
+<span class="fc" id="L106">            copy.pos = this.pos;</span>
+<span class="fc" id="L107">            copy.end = this.end;</span>
+<span class="fc" id="L108">        }</span>
+<span class="fc" id="L109">        return copy;</span>
+    }
+    
+    /**
+     * Returns the underlying byte array, which is the backing array of this buffer.
+     * 
+     * @return  the backing array of this buffer.
+     */
+    @SuppressFBWarnings(value = &quot;EI_EXPOSE_REP&quot;, justification = &quot;by design this class provides an IO interface for an accessible array.&quot;)
+    public synchronized byte[] getBuffer() {
+<span class="fc" id="L119">        return buf;</span>
+    }
+    
+    /**
+     * Returns the current capacity of this buffer, that is the total number of
+     * bytes that may be written into the current backing buffer.
+     * 
+     * @return  the current size of the backing array.
+     */
+    public final synchronized int capacity() {
+<span class="fc" id="L129">        return buf.length;</span>
+    }
+    
+    @Override
+    public final synchronized long length() {
+<span class="fc" id="L134">        return end;</span>
+    }
+    
+    /**
+     * Returns the number of bytes available for reading from the current position.
+     * 
+     * @return  the number of bytes that can be read from this buffer from the current position.
+     */
+    public final synchronized int getRemaining() {
+<span class="fc bfc" id="L143" title="All 2 branches covered.">        if (pos &gt;= end) {</span>
+<span class="fc" id="L144">            return 0;</span>
+        }
+<span class="fc" id="L146">        return end - pos;</span>
+    }
+    
+    @Override
+    public final synchronized long position() {
+<span class="fc" id="L151">        return pos;</span>
+    }
+    
+    @Override
+    public synchronized void position(long offset) throws IOException { 
+<span class="fc bfc" id="L156" title="All 2 branches covered.">        if (offset &lt; 0) {</span>
+<span class="fc" id="L157">            throw new EOFException(&quot;Negative buffer index: &quot; + offset);</span>
+        }
+        
+<span class="fc bfc" id="L160" title="All 2 branches covered.">        if (offset &gt; buf.length) {</span>
+<span class="fc bfc" id="L161" title="All 2 branches covered.">            if (!isGrowable) {</span>
+<span class="fc" id="L162">                throw new EOFException(&quot;Position &quot; + offset + &quot; beyond fixed buffer size &quot; + buf.length);</span>
+            }
+        }
+        
+<span class="fc" id="L166">        pos = (int) offset;</span>
+<span class="fc" id="L167">    }</span>
+    
+    /**
+     * Changes the length of this buffer. The total number of bytes available
+     * from reading from this buffer will be that of the new length. If the buffer
+     * is truncated and its pointer is positioned beyond the new size, then the pointer
+     * is changed to point to the new buffer end. If the buffer is enlarged beyond
+     * it current capacity, its capacity will grow as necessary provided the
+     * buffer is growable. Otherwise, an EOFException is thrown if the new length
+     * is beyond the fixed buffer capacity. If the new length is larger than the old 
+     * one, the added buffer segment may have undefined contents.
+     * 
+     * @param length        The buffer length, that is number of bytes available for
+     *                      reading.
+     * @throws IllegalArgumentException 
+     *                      if the length is negative or if the new new length 
+     *                      exceeds the capacity of a fixed-type buffer.
+     *                      
+     * @see #length()
+     * @see #capacity()
+     */
+    public synchronized void setLength(int length) throws IllegalArgumentException {
+<span class="fc bfc" id="L189" title="All 2 branches covered.">        if (length &lt; 0) {</span>
+<span class="fc" id="L190">            throw new IllegalArgumentException(&quot;Buffer set to negative length: &quot; + length);</span>
+        }
+        
+<span class="fc bfc" id="L193" title="All 2 branches covered.">        if (length &gt; capacity()) {</span>
+<span class="fc bfc" id="L194" title="All 2 branches covered.">            if (!isGrowable) {</span>
+<span class="fc" id="L195">                throw new IllegalArgumentException(&quot;the new length &quot; + length + &quot; is larger than the fixed capacity &quot; + capacity());</span>
+            }
+<span class="fc" id="L197">            grow(length - capacity());</span>
+        }
+<span class="fc" id="L199">        end = length;</span>
+        
+        // If the pointer is beyond the new size, move it back to the new end...
+<span class="fc bfc" id="L202" title="All 2 branches covered.">        if (pos &gt; end) {</span>
+<span class="fc" id="L203">            pos = end;</span>
+        }
+<span class="fc" id="L205">    }</span>
+    
+    /**
+     * Grows the buffer by at least the number of specified bytes. A new buffer is
+     * allocated, and the contents of the previous buffer are copied over.
+     * 
+     * @param need      the minimum number of extra bytes needed beyond the current capacity. 
+     */
+    private synchronized void grow(int need) {
+<span class="fc" id="L214">        int size = capacity() + need;</span>
+<span class="fc" id="L215">        int below = Integer.highestOneBit(size);</span>
+<span class="fc bfc" id="L216" title="All 2 branches covered.">        if (below != size) {</span>
+<span class="fc" id="L217">            size = below &lt;&lt; 1;</span>
+        }
+<span class="fc" id="L219">        byte[] newbuf = new byte[size];</span>
+<span class="fc" id="L220">        System.arraycopy(buf, 0, newbuf, 0, buf.length);</span>
+<span class="fc" id="L221">        buf = newbuf;</span>
+<span class="fc" id="L222">    }</span>
+    
+    @Override
+    public final synchronized void write(int b) throws IOException {
+<span class="fc bfc" id="L226" title="All 2 branches covered.">        if (pos + 1 &gt; buf.length) {</span>
+<span class="fc bfc" id="L227" title="All 2 branches covered.">            if (isGrowable) {</span>
+<span class="fc" id="L228">                grow(pos + 1 - buf.length);</span>
+            } else {
+<span class="fc" id="L230">                throw new EOFException(&quot;buffer is full (size=&quot; + length() + &quot;)&quot;);</span>
+            }
+        }
+<span class="fc" id="L233">        buf[pos++] = (byte) b;</span>
+<span class="fc bfc" id="L234" title="All 2 branches covered.">        if (pos &gt; end) {</span>
+<span class="fc" id="L235">            end = pos;</span>
+        }
+<span class="fc" id="L237">    }</span>
+    
+    @Override
+    public final synchronized void write(byte[] b, int from, int length) throws IOException {
+<span class="fc bfc" id="L241" title="All 2 branches covered.">        if (length &lt;= 0) {</span>
+<span class="fc" id="L242">            return;</span>
+        }
+        
+<span class="fc bfc" id="L245" title="All 6 branches covered.">        if (pos &gt; buf.length || (isGrowable &amp;&amp; pos + length &gt; buf.length)) {</span>
+            // This may only happen in a growable buffer...
+<span class="fc" id="L247">            grow(buf.length + length - pos);</span>
+        }
+        
+<span class="fc" id="L250">        int l = Math.min(length, buf.length - pos);</span>
+        
+<span class="fc" id="L252">        System.arraycopy(b, from, buf, pos, l);</span>
+<span class="fc" id="L253">        pos += l;</span>
+<span class="fc bfc" id="L254" title="All 2 branches covered.">        if (pos &gt; end) {</span>
+<span class="fc" id="L255">            end = pos;</span>
+        }
+        
+<span class="fc bfc" id="L258" title="All 2 branches covered.">        if (l &lt; length) {</span>
+<span class="fc" id="L259">            throw new EOFException(&quot;Incomplete write of &quot; + l + &quot; of &quot; + length + &quot; bytes in buffer of size &quot; + length());</span>
+        }
+<span class="fc" id="L261">    }</span>
+
+    @Override
+    public final synchronized int read() throws IOException {
+<span class="fc bfc" id="L265" title="All 2 branches covered.">        if (getRemaining() &lt;= 0) {</span>
+<span class="fc" id="L266">            return -1;</span>
+        }
+<span class="fc" id="L268">        return buf[pos++] &amp; BYTE_MASK;</span>
+    }
+
+    @Override
+    public final synchronized int read(byte[] b, int from, int length) {
+<span class="fc bfc" id="L273" title="All 2 branches covered.">        if (length &lt;= 0) {</span>
+<span class="fc" id="L274">            return 0;</span>
+        }
+        
+<span class="fc" id="L277">        int remaining = getRemaining();</span>
+        
+<span class="fc bfc" id="L279" title="All 2 branches covered.">        if (remaining &lt;= 0) {</span>
+<span class="fc" id="L280">            return -1;</span>
+        }
+        
+<span class="fc" id="L283">        int n = Math.min(remaining, length);</span>
+<span class="fc" id="L284">        System.arraycopy(buf, pos, b, from, n);</span>
+<span class="fc" id="L285">        pos += n;</span>
+        
+<span class="fc" id="L287">        return n;</span>
+    }
+}
+</pre><div class="footer"><span class="right">Created with <a href="http://www.jacoco.org/jacoco">JaCoCo</a> 0.8.7.202105040129</span></div></body></html>

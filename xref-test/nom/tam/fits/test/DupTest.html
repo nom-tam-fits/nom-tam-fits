@@ -12,7 +12,7 @@
 <a class="jxr_linenumber" name="L4" href="#L4">4</a>   <em class="jxr_comment"> * #%L</em>
 <a class="jxr_linenumber" name="L5" href="#L5">5</a>   <em class="jxr_comment"> * nom.tam FITS library</em>
 <a class="jxr_linenumber" name="L6" href="#L6">6</a>   <em class="jxr_comment"> * %%</em>
-<a class="jxr_linenumber" name="L7" href="#L7">7</a>   <em class="jxr_comment"> * Copyright (C) 2004 - 2015 nom-tam-fits</em>
+<a class="jxr_linenumber" name="L7" href="#L7">7</a>   <em class="jxr_comment"> * Copyright (C) 2004 - 2021 nom-tam-fits</em>
 <a class="jxr_linenumber" name="L8" href="#L8">8</a>   <em class="jxr_comment"> * %%</em>
 <a class="jxr_linenumber" name="L9" href="#L9">9</a>   <em class="jxr_comment"> * This is free and unencumbered software released into the public domain.</em>
 <a class="jxr_linenumber" name="L10" href="#L10">10</a>  <em class="jxr_comment"> * </em>
@@ -40,55 +40,60 @@
 <a class="jxr_linenumber" name="L32" href="#L32">32</a>  <em class="jxr_comment"> */</em>
 <a class="jxr_linenumber" name="L33" href="#L33">33</a>  
 <a class="jxr_linenumber" name="L34" href="#L34">34</a>  <strong class="jxr_keyword">import</strong> <strong class="jxr_keyword">static</strong> org.junit.Assert.assertEquals;
-<a class="jxr_linenumber" name="L35" href="#L35">35</a>  <strong class="jxr_keyword">import</strong> <strong class="jxr_keyword">static</strong> org.junit.Assert.assertTrue;
-<a class="jxr_linenumber" name="L36" href="#L36">36</a>  
-<a class="jxr_linenumber" name="L37" href="#L37">37</a>  <strong class="jxr_keyword">import</strong> java.io.DataOutputStream;
-<a class="jxr_linenumber" name="L38" href="#L38">38</a>  <strong class="jxr_keyword">import</strong> java.io.FileOutputStream;
-<a class="jxr_linenumber" name="L39" href="#L39">39</a>  <strong class="jxr_keyword">import</strong> java.util.List;
-<a class="jxr_linenumber" name="L40" href="#L40">40</a>  
-<a class="jxr_linenumber" name="L41" href="#L41">41</a>  <strong class="jxr_keyword">import</strong> nom.tam.fits.Fits;
-<a class="jxr_linenumber" name="L42" href="#L42">42</a>  <strong class="jxr_keyword">import</strong> nom.tam.fits.Header;
-<a class="jxr_linenumber" name="L43" href="#L43">43</a>  <strong class="jxr_keyword">import</strong> nom.tam.fits.HeaderCard;
-<a class="jxr_linenumber" name="L44" href="#L44">44</a>  
-<a class="jxr_linenumber" name="L45" href="#L45">45</a>  <strong class="jxr_keyword">import</strong> org.junit.Test;
-<a class="jxr_linenumber" name="L46" href="#L46">46</a>  
-<a class="jxr_linenumber" name="L47" href="#L47">47</a>  <em class="jxr_javadoccomment">/**</em>
-<a class="jxr_linenumber" name="L48" href="#L48">48</a>  <em class="jxr_javadoccomment"> * Test adding a little junk after a valid image. We wish to test three</em>
-<a class="jxr_linenumber" name="L49" href="#L49">49</a>  <em class="jxr_javadoccomment"> * scenarios: Junk at the beginning (should continue to fail) Short (&lt;80 byte)</em>
-<a class="jxr_linenumber" name="L50" href="#L50">50</a>  <em class="jxr_javadoccomment"> * junk after valid HDU Long (&gt;80 byte) junk after valid HDU The last two should</em>
-<a class="jxr_linenumber" name="L51" href="#L51">51</a>  <em class="jxr_javadoccomment"> * succeed after FitsFactory.setAllowTerminalJunk(true).</em>
-<a class="jxr_linenumber" name="L52" href="#L52">52</a>  <em class="jxr_javadoccomment"> */</em>
-<a class="jxr_linenumber" name="L53" href="#L53">53</a>  <strong class="jxr_keyword">public</strong> <strong class="jxr_keyword">class</strong> <a href="../../../../nom/tam/fits/test/DupTest.html">DupTest</a> {
-<a class="jxr_linenumber" name="L54" href="#L54">54</a>  
-<a class="jxr_linenumber" name="L55" href="#L55">55</a>      @Test
-<a class="jxr_linenumber" name="L56" href="#L56">56</a>      <strong class="jxr_keyword">public</strong> <strong class="jxr_keyword">void</strong> test() <strong class="jxr_keyword">throws</strong> Exception {
-<a class="jxr_linenumber" name="L57" href="#L57">57</a>  
-<a class="jxr_linenumber" name="L58" href="#L58">58</a>          Fits f = <strong class="jxr_keyword">new</strong> Fits(<span class="jxr_string">"src/test/resources/nom/tam/fits/test/test_dup.fits"</span>);
-<a class="jxr_linenumber" name="L59" href="#L59">59</a>          Header hdr = f.readHDU().getHeader();
-<a class="jxr_linenumber" name="L60" href="#L60">60</a>          assertEquals(<span class="jxr_string">"Internal size:"</span>, hdr.getSize(), 2880);
-<a class="jxr_linenumber" name="L61" href="#L61">61</a>          assertEquals(<span class="jxr_string">"External size:"</span>, hdr.getOriginalSize(), 8640);
-<a class="jxr_linenumber" name="L62" href="#L62">62</a>          assertTrue(<span class="jxr_string">"Has duplicates:"</span>, hdr.hadDuplicates());
-<a class="jxr_linenumber" name="L63" href="#L63">63</a>          List&lt;HeaderCard&gt; dups = hdr.getDuplicates();
-<a class="jxr_linenumber" name="L64" href="#L64">64</a>          System.out.println(<span class="jxr_string">"Number of duplicates:"</span> + dups.size());
-<a class="jxr_linenumber" name="L65" href="#L65">65</a>          assertTrue(<span class="jxr_string">"Has dups:"</span>, dups != <strong class="jxr_keyword">null</strong> &amp;&amp; dups.size() &gt; 0);
-<a class="jxr_linenumber" name="L66" href="#L66">66</a>          assertTrue(<span class="jxr_string">"Not rewriteable:"</span>, !hdr.rewriteable());
-<a class="jxr_linenumber" name="L67" href="#L67">67</a>          DataOutputStream bf = <strong class="jxr_keyword">new</strong> DataOutputStream(<strong class="jxr_keyword">new</strong> FileOutputStream(<span class="jxr_string">"target/created_dup.fits"</span>));
-<a class="jxr_linenumber" name="L68" href="#L68">68</a>          f.write(bf);
-<a class="jxr_linenumber" name="L69" href="#L69">69</a>          bf.flush();
-<a class="jxr_linenumber" name="L70" href="#L70">70</a>          bf.close();
-<a class="jxr_linenumber" name="L71" href="#L71">71</a>          hdr.resetOriginalSize();
-<a class="jxr_linenumber" name="L72" href="#L72">72</a>          assertEquals(<span class="jxr_string">"External size, after reset"</span>, hdr.getOriginalSize(), 2880);
-<a class="jxr_linenumber" name="L73" href="#L73">73</a>          Fits g = <strong class="jxr_keyword">new</strong> Fits(<span class="jxr_string">"target/created_dup.fits"</span>);
-<a class="jxr_linenumber" name="L74" href="#L74">74</a>          hdr = g.readHDU().getHeader();
-<a class="jxr_linenumber" name="L75" href="#L75">75</a>          assertEquals(<span class="jxr_string">"Internal size, after rewrite"</span>, hdr.getSize(), 2880);
-<a class="jxr_linenumber" name="L76" href="#L76">76</a>          assertEquals(<span class="jxr_string">"External size, after rewrite"</span>, hdr.getOriginalSize(), 2880);
-<a class="jxr_linenumber" name="L77" href="#L77">77</a>          assertTrue(<span class="jxr_string">"Now rewriteable"</span>, hdr.rewriteable());
-<a class="jxr_linenumber" name="L78" href="#L78">78</a>          assertTrue(<span class="jxr_string">"No duplicates"</span>, !hdr.hadDuplicates());
-<a class="jxr_linenumber" name="L79" href="#L79">79</a>          assertTrue(<span class="jxr_string">"Dups is null"</span>, hdr.getDuplicates() == <strong class="jxr_keyword">null</strong>);
-<a class="jxr_linenumber" name="L80" href="#L80">80</a>      }
-<a class="jxr_linenumber" name="L81" href="#L81">81</a>  }
+<a class="jxr_linenumber" name="L35" href="#L35">35</a>  <strong class="jxr_keyword">import</strong> <strong class="jxr_keyword">static</strong> org.junit.Assert.assertFalse;
+<a class="jxr_linenumber" name="L36" href="#L36">36</a>  <strong class="jxr_keyword">import</strong> <strong class="jxr_keyword">static</strong> org.junit.Assert.assertTrue;
+<a class="jxr_linenumber" name="L37" href="#L37">37</a>  
+<a class="jxr_linenumber" name="L38" href="#L38">38</a>  <strong class="jxr_keyword">import</strong> java.io.DataOutputStream;
+<a class="jxr_linenumber" name="L39" href="#L39">39</a>  <strong class="jxr_keyword">import</strong> java.io.FileOutputStream;
+<a class="jxr_linenumber" name="L40" href="#L40">40</a>  <strong class="jxr_keyword">import</strong> java.util.List;
+<a class="jxr_linenumber" name="L41" href="#L41">41</a>  
+<a class="jxr_linenumber" name="L42" href="#L42">42</a>  <strong class="jxr_keyword">import</strong> nom.tam.fits.Fits;
+<a class="jxr_linenumber" name="L43" href="#L43">43</a>  <strong class="jxr_keyword">import</strong> nom.tam.fits.Header;
+<a class="jxr_linenumber" name="L44" href="#L44">44</a>  <strong class="jxr_keyword">import</strong> nom.tam.fits.HeaderCard;
+<a class="jxr_linenumber" name="L45" href="#L45">45</a>  
+<a class="jxr_linenumber" name="L46" href="#L46">46</a>  <strong class="jxr_keyword">import</strong> org.junit.Test;
+<a class="jxr_linenumber" name="L47" href="#L47">47</a>  
+<a class="jxr_linenumber" name="L48" href="#L48">48</a>  <em class="jxr_javadoccomment">/**</em>
+<a class="jxr_linenumber" name="L49" href="#L49">49</a>  <em class="jxr_javadoccomment"> * Test adding a little junk after a valid image. We wish to test three</em>
+<a class="jxr_linenumber" name="L50" href="#L50">50</a>  <em class="jxr_javadoccomment"> * scenarios: Junk at the beginning (should continue to fail) Short (&lt;80 byte)</em>
+<a class="jxr_linenumber" name="L51" href="#L51">51</a>  <em class="jxr_javadoccomment"> * junk after valid HDU Long (&gt;80 byte) junk after valid HDU The last two should</em>
+<a class="jxr_linenumber" name="L52" href="#L52">52</a>  <em class="jxr_javadoccomment"> * succeed after FitsFactory.setAllowTerminalJunk(true).</em>
+<a class="jxr_linenumber" name="L53" href="#L53">53</a>  <em class="jxr_javadoccomment"> */</em>
+<a class="jxr_linenumber" name="L54" href="#L54">54</a>  <strong class="jxr_keyword">public</strong> <strong class="jxr_keyword">class</strong> <a href="../../../../nom/tam/fits/test/DupTest.html">DupTest</a> {
+<a class="jxr_linenumber" name="L55" href="#L55">55</a>  
+<a class="jxr_linenumber" name="L56" href="#L56">56</a>      @Test
+<a class="jxr_linenumber" name="L57" href="#L57">57</a>      <strong class="jxr_keyword">public</strong> <strong class="jxr_keyword">void</strong> test() <strong class="jxr_keyword">throws</strong> Exception {
+<a class="jxr_linenumber" name="L58" href="#L58">58</a>  
+<a class="jxr_linenumber" name="L59" href="#L59">59</a>          Fits f = <strong class="jxr_keyword">new</strong> Fits(<span class="jxr_string">"src/test/resources/nom/tam/fits/test/test_dup.fits"</span>);
+<a class="jxr_linenumber" name="L60" href="#L60">60</a>          Header hdr = f.readHDU().getHeader();
+<a class="jxr_linenumber" name="L61" href="#L61">61</a>          assertEquals(<span class="jxr_string">"Internal size:"</span>, 8640, hdr.getSize());
+<a class="jxr_linenumber" name="L62" href="#L62">62</a>          assertEquals(<span class="jxr_string">"External size:"</span>, 8640, hdr.getMinimumSize());
+<a class="jxr_linenumber" name="L63" href="#L63">63</a>          assertTrue(<span class="jxr_string">"Has duplicates:"</span>, hdr.hadDuplicates());
+<a class="jxr_linenumber" name="L64" href="#L64">64</a>          List&lt;HeaderCard&gt; dups = hdr.getDuplicates();
+<a class="jxr_linenumber" name="L65" href="#L65">65</a>          
+<a class="jxr_linenumber" name="L66" href="#L66">66</a>          <strong class="jxr_keyword">int</strong> nDups = dups.size();
+<a class="jxr_linenumber" name="L67" href="#L67">67</a>          System.out.println(<span class="jxr_string">"Number of duplicates:"</span> + nDups);
+<a class="jxr_linenumber" name="L68" href="#L68">68</a>          assertTrue(<span class="jxr_string">"Has dups:"</span>, dups != <strong class="jxr_keyword">null</strong> &amp;&amp; dups.size() &gt; 0);
+<a class="jxr_linenumber" name="L69" href="#L69">69</a>          <em class="jxr_comment">// AK: It is rewritable with preallocated blank space that is now supported!</em>
+<a class="jxr_linenumber" name="L70" href="#L70">70</a>          assertTrue(<span class="jxr_string">"Not rewriteable:"</span>, hdr.rewriteable());
+<a class="jxr_linenumber" name="L71" href="#L71">71</a>             
+<a class="jxr_linenumber" name="L72" href="#L72">72</a>          DataOutputStream bf = <strong class="jxr_keyword">new</strong> DataOutputStream(<strong class="jxr_keyword">new</strong> FileOutputStream(<span class="jxr_string">"target/created_dup.fits"</span>));
+<a class="jxr_linenumber" name="L73" href="#L73">73</a>          hdr.resetOriginalSize();
+<a class="jxr_linenumber" name="L74" href="#L74">74</a>          assertEquals(<span class="jxr_string">"External size, after reset"</span>, 2880, hdr.getMinimumSize());
+<a class="jxr_linenumber" name="L75" href="#L75">75</a>          f.write(bf);
+<a class="jxr_linenumber" name="L76" href="#L76">76</a>          bf.flush();
+<a class="jxr_linenumber" name="L77" href="#L77">77</a>          bf.close();
+<a class="jxr_linenumber" name="L78" href="#L78">78</a>          Fits g = <strong class="jxr_keyword">new</strong> Fits(<span class="jxr_string">"target/created_dup.fits"</span>);
+<a class="jxr_linenumber" name="L79" href="#L79">79</a>          hdr = g.readHDU().getHeader();
+<a class="jxr_linenumber" name="L80" href="#L80">80</a>          assertEquals(<span class="jxr_string">"Internal size, after rewrite"</span>, 2880, hdr.getSize());
+<a class="jxr_linenumber" name="L81" href="#L81">81</a>          assertEquals(<span class="jxr_string">"External size, after rewrite"</span>, 2880, hdr.getMinimumSize());
+<a class="jxr_linenumber" name="L82" href="#L82">82</a>          assertTrue(<span class="jxr_string">"Now rewriteable"</span>, hdr.rewriteable());
+<a class="jxr_linenumber" name="L83" href="#L83">83</a>          assertFalse(<span class="jxr_string">"No duplicates"</span>, hdr.hadDuplicates());
+<a class="jxr_linenumber" name="L84" href="#L84">84</a>          assertTrue(<span class="jxr_string">"Dups is null"</span>, hdr.getDuplicates() == <strong class="jxr_keyword">null</strong>);
+<a class="jxr_linenumber" name="L85" href="#L85">85</a>      }
+<a class="jxr_linenumber" name="L86" href="#L86">86</a>  }
 </pre>
 <hr/>
-<div id="footer">Copyright &#169; 1996&#x2013;2017 nom-tam-fits. All rights reserved.</div>
+<div id="footer">Copyright &#169; 1996&#x2013;2021 nom-tam-fits. All rights reserved.</div>
 </body>
 </html>

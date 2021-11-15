@@ -1,10 +1,12 @@
-<?xml version="1.0" encoding="UTF-8"?><!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Strict//EN" "http://www.w3.org/TR/xhtml1/DTD/xhtml1-strict.dtd"><html xmlns="http://www.w3.org/1999/xhtml" lang="en"><head><meta http-equiv="Content-Type" content="text/html;charset=UTF-8"/><link rel="stylesheet" href="../.resources/report.css" type="text/css"/><link rel="shortcut icon" href="../.resources/report.gif" type="image/gif"/><title>BufferedDataOutputStream.java</title><link rel="stylesheet" href="../.resources/prettify.css" type="text/css"/><script type="text/javascript" src="../.resources/prettify.js"></script></head><body onload="window['PR_TAB_WIDTH']=4;prettyPrint()"><div class="breadcrumb" id="breadcrumb"><span class="info"><a href="../.sessions.html" class="el_session">Sessions</a></span><a href="../index.html" class="el_report">nom.tam FITS library</a> &gt; <a href="index.source.html" class="el_package">nom.tam.util</a> &gt; <span class="el_source">BufferedDataOutputStream.java</span></div><h1>BufferedDataOutputStream.java</h1><pre class="source lang-java linenums">package nom.tam.util;
+<?xml version="1.0" encoding="UTF-8"?><!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Strict//EN" "http://www.w3.org/TR/xhtml1/DTD/xhtml1-strict.dtd"><html xmlns="http://www.w3.org/1999/xhtml" lang="en"><head><meta http-equiv="Content-Type" content="text/html;charset=UTF-8"/><link rel="stylesheet" href="../jacoco-resources/report.css" type="text/css"/><link rel="shortcut icon" href="../jacoco-resources/report.gif" type="image/gif"/><title>BufferedDataOutputStream.java</title><link rel="stylesheet" href="../jacoco-resources/prettify.css" type="text/css"/><script type="text/javascript" src="../jacoco-resources/prettify.js"></script></head><body onload="window['PR_TAB_WIDTH']=4;prettyPrint()"><div class="breadcrumb" id="breadcrumb"><span class="info"><a href="../jacoco-sessions.html" class="el_session">Sessions</a></span><a href="../index.html" class="el_report">nom.tam FITS library</a> &gt; <a href="index.source.html" class="el_package">nom.tam.util</a> &gt; <span class="el_source">BufferedDataOutputStream.java</span></div><h1>BufferedDataOutputStream.java</h1><pre class="source lang-java linenums">package nom.tam.util;
+
+import java.io.IOException;
 
 /*
  * #%L
  * nom.tam FITS library
  * %%
- * Copyright (C) 2004 - 2015 nom-tam-fits
+ * Copyright (C) 1996 - 2021 nom-tam-fits
  * %%
  * This is free and unencumbered software released into the public domain.
  * 
@@ -31,260 +33,46 @@
  * #L%
  */
 
-// What do we use in here?
-import java.io.BufferedOutputStream;
-import java.io.DataOutputStream;
-import java.io.IOException;
 import java.io.OutputStream;
 
 /**
- * This class is intended for high performance I/O in scientific applications.
- * It combines the functionality of the BufferedOutputStream and the
- * DataOutputStream as well as more efficient handling of arrays. This minimizes
- * the number of method calls that are required to write data. Informal tests of
- * this method show that it can be as much as 10 times faster than using a
- * DataOutputStream layered on a BufferedOutputStream for writing large arrays.
- * The performance gain on scalars or small arrays will be less but there should
- * probably never be substantial degradation of performance.
- * &lt;p&gt;
- * Note that there is substantial duplication of code to minimize method
- * invocations. However simple output methods were used where empirical tests
- * seemed to indicate that the simpler method did not cost any time. It seems
- * likely that most of these variations will be washed out across different
- * compilers and users who wish to tune the method for their particular system
- * may wish to compare the the implementation of write(int[], int, int) with
- * write(float[], int, int).
- * &lt;p&gt;
- * Testing and timing for this class is performed in the
- * nom.tam.util.test.BufferedFileTester class.
+ * @deprecated Use {@link FitsOutputStream}, which provides the exact same functionality
+ * but with a less misleading name, or else use {@link ArrayOutputStream} as a base for an 
+ * implementation with any (non-FITS) encoding.
+ * 
  */
-public class BufferedDataOutputStream extends BufferedOutputStream implements ArrayDataOutput {
-
-<span class="fc" id="L63">    private final BufferPointer bufferPointer = new BufferPointer(this.buf);</span>
-
-<span class="fc" id="L65">    private final BufferEncoder bufferEncoder = new BufferEncoder(this.bufferPointer) {</span>
-
-        @Override
-        protected void needBuffer(int need) throws IOException {
-<span class="fc" id="L69">            BufferedDataOutputStream.this.checkBuf(need);</span>
-<span class="fc" id="L70">            BufferedDataOutputStream.this.bufferPointer.bufferLength = BufferedDataOutputStream.this.count;</span>
-<span class="fc" id="L71">            BufferedDataOutputStream.this.bufferPointer.bufferOffset = BufferedDataOutputStream.this.count;</span>
-<span class="fc" id="L72">            BufferedDataOutputStream.this.count += need;</span>
-<span class="fc" id="L73">        }</span>
-
-        @Override
-        protected void write(byte[] buf, int offset, int length) throws IOException {
-<span class="fc" id="L77">            BufferedDataOutputStream.this.write(buf, offset, length);</span>
-
-<span class="fc" id="L79">        }</span>
-    };
+@Deprecated
+public class BufferedDataOutputStream extends FitsOutputStream {
 
     /**
-     * Use the BufferedOutputStream constructor
+     * Instantiates a new output stream for FITS data.
      * 
-     * @param o
-     *            An open output stream.
-     */
-    public BufferedDataOutputStream(OutputStream o) {
-<span class="fc" id="L89">        super(o, FitsIO.DEFAULT_BUFFER_SIZE);</span>
-<span class="fc" id="L90">    }</span>
-
-    /**
-     * Use the BufferedOutputStream constructor
-     * 
-     * @param o
-     *            An open output stream.
-     * @param bufLength
-     *            The buffer size.
+     * @param o             the underlying output stream
+     * @param bufLength     the size of the buffer to use in bytes.
      */
     public BufferedDataOutputStream(OutputStream o, int bufLength) {
-<span class="fc" id="L101">        super(o, bufLength);</span>
-<span class="fc" id="L102">    }</span>
+<span class="fc" id="L54">        super(o, bufLength);</span>
+<span class="fc" id="L55">    }</span>
 
     /**
-     * See if there is enough space to add something to the buffer.
+     * Instantiates a new output stream for FITS data, using a default buffer size.
      * 
-     * @param need
-     *            the number of bytes that should be available in the buffer.
-     * @throws IOException
-     *             if the underlying write operation fails
+     * @param o             the underlying output stream
      */
-    protected void checkBuf(int need) throws IOException {
-
-<span class="fc bfc" id="L114" title="All 2 branches covered.">        if (this.count + need &gt; this.buf.length) {</span>
-<span class="fc" id="L115">            this.out.write(this.buf, 0, this.count);</span>
-<span class="fc" id="L116">            this.count = 0;</span>
-        }
-<span class="fc" id="L118">    }</span>
-
-    @Override
-    public void write(boolean[] b) throws IOException {
-<span class="fc" id="L122">        write(b, 0, b.length);</span>
-<span class="fc" id="L123">    }</span>
-
-    @Override
-    public void write(boolean[] b, int start, int length) throws IOException {
-<span class="fc" id="L127">        this.bufferEncoder.write(b, start, length);</span>
-<span class="fc" id="L128">    }</span>
-
-    @Override
-    public void write(char[] c) throws IOException {
-<span class="fc" id="L132">        write(c, 0, c.length);</span>
-<span class="fc" id="L133">    }</span>
-
-    @Override
-    public void write(char[] c, int start, int length) throws IOException {
-<span class="fc" id="L137">        this.bufferEncoder.write(c, start, length);</span>
-<span class="fc" id="L138">    }</span>
-
-    @Override
-    public void write(double[] d) throws IOException {
-<span class="fc" id="L142">        write(d, 0, d.length);</span>
-<span class="fc" id="L143">    }</span>
-
-    @Override
-    public void write(double[] d, int start, int length) throws IOException {
-<span class="fc" id="L147">        this.bufferEncoder.write(d, start, length);</span>
-<span class="fc" id="L148">    }</span>
-
-    @Override
-    public void write(float[] f) throws IOException {
-<span class="fc" id="L152">        write(f, 0, f.length);</span>
-<span class="fc" id="L153">    }</span>
-
-    @Override
-    public void write(float[] f, int start, int length) throws IOException {
-<span class="fc" id="L157">        this.bufferEncoder.write(f, start, length);</span>
-<span class="fc" id="L158">    }</span>
-
-    @Override
-    public void write(int[] i) throws IOException {
-<span class="fc" id="L162">        write(i, 0, i.length);</span>
-<span class="fc" id="L163">    }</span>
-
-    @Override
-    public void write(int[] i, int start, int length) throws IOException {
-<span class="fc" id="L167">        this.bufferEncoder.write(i, start, length);</span>
-<span class="fc" id="L168">    }</span>
-
-    @Override
-    public void write(long[] l) throws IOException {
-<span class="fc" id="L172">        write(l, 0, l.length);</span>
-<span class="fc" id="L173">    }</span>
-
-    @Override
-    public void write(long[] l, int start, int length) throws IOException {
-<span class="fc" id="L177">        this.bufferEncoder.write(l, start, length);</span>
-<span class="fc" id="L178">    }</span>
-
-    @Override
-    public void write(short[] s) throws IOException {
-<span class="fc" id="L182">        write(s, 0, s.length);</span>
-<span class="fc" id="L183">    }</span>
-
-    @Override
-    public void write(short[] s, int start, int length) throws IOException {
-<span class="fc" id="L187">        this.bufferEncoder.write(s, start, length);</span>
-<span class="fc" id="L188">    }</span>
-
-    @Override
-    public void write(String[] s) throws IOException {
-<span class="fc" id="L192">        write(s, 0, s.length);</span>
-<span class="fc" id="L193">    }</span>
-
-    @Override
-    public void write(String[] s, int start, int len) throws IOException {
-        // Do not worry about buffering this specially since the
-        // strings may be of differing lengths.
-<span class="fc bfc" id="L199" title="All 2 branches covered.">        for (String element : s) {</span>
-<span class="fc" id="L200">            writeBytes(element);</span>
-        }
-<span class="fc" id="L202">    }</span>
-
-    @Override
-    public void writeArray(Object o) throws IOException {
-<span class="fc" id="L206">        this.bufferEncoder.writeArray(o);</span>
-<span class="fc" id="L207">    }</span>
-
-    @Override
-    public void writeBoolean(boolean b) throws IOException {
-<span class="fc" id="L211">        this.bufferEncoder.writeBoolean(b);</span>
-<span class="fc" id="L212">    }</span>
-
-    @Override
-    public void writeByte(int b) throws IOException {
-<span class="fc" id="L216">        this.bufferEncoder.writeByte(b);</span>
-<span class="fc" id="L217">    }</span>
-
-    @Override
-    public void writeBytes(String s) throws IOException {
-<span class="fc" id="L221">        write(AsciiFuncs.getBytes(s), 0, s.length());</span>
-<span class="fc" id="L222">    }</span>
-
-    @Override
-    public void writeChar(int c) throws IOException {
-<span class="fc" id="L226">        this.bufferEncoder.writeChar(c);</span>
-<span class="fc" id="L227">    }</span>
-
-    @Override
-    public void writeChars(String s) throws IOException {
-<span class="fc" id="L231">        this.bufferEncoder.writeChars(s);</span>
-<span class="fc" id="L232">    }</span>
-
-    @Override
-    public void writeDouble(double d) throws IOException {
-<span class="fc" id="L236">        this.bufferEncoder.writeDouble(d);</span>
-<span class="fc" id="L237">    }</span>
-
-    @Override
-    public void writeFloat(float f) throws IOException {
-<span class="fc" id="L241">        this.bufferEncoder.writeFloat(f);</span>
-<span class="fc" id="L242">    }</span>
-
-    @Override
-    public void writeInt(int i) throws IOException {
-<span class="fc" id="L246">        this.bufferEncoder.writeInt(i);</span>
-<span class="fc" id="L247">    }</span>
-
-    @Override
-    public void writeLong(long l) throws IOException {
-<span class="fc" id="L251">        this.bufferEncoder.writeLong(l);</span>
-<span class="fc" id="L252">    }</span>
-
+    public BufferedDataOutputStream(OutputStream o) {
+<span class="fc" id="L63">        super(o);</span>
+<span class="fc" id="L64">    }</span>
+    
     /**
-     * Deprecated use {@link #writeArray(Object)}.
+     * @deprecated  No longer used internally, but kept for back compatibility (and it does exactly nothing)
      * 
-     * @param o
-     *            The object to be written.
-     * @throws IOException
-     *             if one of the underlying write operations failed
-     * @deprecated use {@link #writeArray(Object)} instead
+     * @param need          the number of consecutive bytes we need in the buffer for the next write.
+     * @throws IOException  if there was an IO error flushing the buffer to the output to make avaiable
+     *                      the space required in the buffer.
      */
     @Deprecated
-    public void writePrimitiveArray(Object o) throws IOException {
-<span class="fc" id="L265">        writeArray(o);</span>
-<span class="fc" id="L266">    }</span>
+    protected void checkBuf(int need) throws IOException {
+<span class="fc" id="L75">    }</span>
 
-    /**
-     * Write a short value.
-     */
-    @Override
-    public void writeShort(int s) throws IOException {
-<span class="fc" id="L273">        this.bufferEncoder.writeShort(s);</span>
-<span class="fc" id="L274">    }</span>
-
-    @Override
-    public void writeUTF(String s) throws IOException {
-        // Punt on this one and use standard routines.
-<span class="fc" id="L279">        DataOutputStream d = new DataOutputStream(this) {</span>
-
-            @Override
-            public void close() throws IOException {
-<span class="fc" id="L283">                flush();</span>
-<span class="fc" id="L284">            }</span>
-        };
-<span class="fc" id="L286">        d.writeUTF(s);</span>
-<span class="fc" id="L287">        d.close();</span>
-<span class="fc" id="L288">    }</span>
 }
-</pre><div class="footer"><span class="right">Created with <a href="http://www.eclemma.org/jacoco">JaCoCo</a> 0.7.6.201602180812</span></div></body></html>
+</pre><div class="footer"><span class="right">Created with <a href="http://www.jacoco.org/jacoco">JaCoCo</a> 0.8.7.202105040129</span></div></body></html>

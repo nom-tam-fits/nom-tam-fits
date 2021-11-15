@@ -1,11 +1,9 @@
-<?xml version="1.0" encoding="UTF-8"?><!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Strict//EN" "http://www.w3.org/TR/xhtml1/DTD/xhtml1-strict.dtd"><html xmlns="http://www.w3.org/1999/xhtml" lang="en"><head><meta http-equiv="Content-Type" content="text/html;charset=UTF-8"/><link rel="stylesheet" href="../.resources/report.css" type="text/css"/><link rel="shortcut icon" href="../.resources/report.gif" type="image/gif"/><title>TableHDU.java</title><link rel="stylesheet" href="../.resources/prettify.css" type="text/css"/><script type="text/javascript" src="../.resources/prettify.js"></script></head><body onload="window['PR_TAB_WIDTH']=4;prettyPrint()"><div class="breadcrumb" id="breadcrumb"><span class="info"><a href="../.sessions.html" class="el_session">Sessions</a></span><a href="../index.html" class="el_report">nom.tam FITS library</a> &gt; <a href="index.source.html" class="el_package">nom.tam.fits</a> &gt; <span class="el_source">TableHDU.java</span></div><h1>TableHDU.java</h1><pre class="source lang-java linenums">package nom.tam.fits;
+<?xml version="1.0" encoding="UTF-8"?><!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Strict//EN" "http://www.w3.org/TR/xhtml1/DTD/xhtml1-strict.dtd"><html xmlns="http://www.w3.org/1999/xhtml" lang="en"><head><meta http-equiv="Content-Type" content="text/html;charset=UTF-8"/><link rel="stylesheet" href="../jacoco-resources/report.css" type="text/css"/><link rel="shortcut icon" href="../jacoco-resources/report.gif" type="image/gif"/><title>TableHDU.java</title><link rel="stylesheet" href="../jacoco-resources/prettify.css" type="text/css"/><script type="text/javascript" src="../jacoco-resources/prettify.js"></script></head><body onload="window['PR_TAB_WIDTH']=4;prettyPrint()"><div class="breadcrumb" id="breadcrumb"><span class="info"><a href="../jacoco-sessions.html" class="el_session">Sessions</a></span><a href="../index.html" class="el_report">nom.tam FITS library</a> &gt; <a href="index.source.html" class="el_package">nom.tam.fits</a> &gt; <span class="el_source">TableHDU.java</span></div><h1>TableHDU.java</h1><pre class="source lang-java linenums">package nom.tam.fits;
 
 import static nom.tam.fits.header.Standard.NAXISn;
 import static nom.tam.fits.header.Standard.TFIELDS;
 import static nom.tam.fits.header.Standard.TFORMn;
 import static nom.tam.fits.header.Standard.TTYPEn;
-
-import java.util.logging.Logger;
 
 import nom.tam.fits.header.GenericKey;
 import nom.tam.fits.header.IFitsHeader;
@@ -14,7 +12,7 @@ import nom.tam.fits.header.IFitsHeader;
  * #%L
  * nom.tam FITS library
  * %%
- * Copyright (C) 2004 - 2015 nom-tam-fits
+ * Copyright (C) 2004 - 2021 nom-tam-fits
  * %%
  * This is free and unencumbered software released into the public domain.
  * 
@@ -44,10 +42,10 @@ import nom.tam.fits.header.IFitsHeader;
 /**
  * This class allows FITS binary and ASCII tables to be accessed via a common
  * interface.
+ * 
+ * @param &lt;T&gt; the generic type of table data contained in this HDU instance.
  */
 public abstract class TableHDU&lt;T extends AbstractTableData&gt; extends BasicHDU&lt;T&gt; {
-
-<span class="fc" id="L50">    private static final Logger LOG = Logger.getLogger(TableHDU.class.getName());</span>
 
     /**
      * Create the TableHDU. Note that this will normally only be invoked by
@@ -59,8 +57,13 @@ public abstract class TableHDU&lt;T extends AbstractTableData&gt; extends BasicH
      *            The data for the table.
      */
     protected TableHDU(Header hdr, T td) {
-<span class="fc" id="L62">        super(hdr, td);</span>
-<span class="fc" id="L63">    }</span>
+<span class="fc" id="L60">        super(hdr, td);</span>
+<span class="fc bfc" id="L61" title="All 2 branches covered.">        for (int i = getNCols(); --i &gt;= 0;) {</span>
+<span class="fc bfc" id="L62" title="All 2 branches covered.">            if (getColumnName(i) == null) {</span>
+<span class="fc" id="L63">                setDefaultColumnName(i);</span>
+            }
+        }
+<span class="fc" id="L66">    }</span>
 
     /**
      * Add a column to the table without any associated header information.
@@ -80,10 +83,13 @@ public abstract class TableHDU&lt;T extends AbstractTableData&gt; extends BasicH
      *             if the operation failed
      */
     public int addColumn(Object newCol) throws FitsException {
-<span class="fc" id="L83">        int nCols = getNCols();</span>
-<span class="fc" id="L84">        this.myHeader.addValue(TFIELDS, nCols);</span>
-<span class="fc" id="L85">        return nCols;</span>
+<span class="fc" id="L86">        int nCols = getNCols();</span>
+<span class="fc" id="L87">        this.myHeader.addValue(TFIELDS, nCols);</span>
+<span class="fc" id="L88">        setDefaultColumnName(nCols);</span>
+<span class="fc" id="L89">        return nCols;</span>
     }
+    
+
 
     /**
      * Add a row to the end of the table. If this is the first row, then this
@@ -97,9 +103,9 @@ public abstract class TableHDU&lt;T extends AbstractTableData&gt; extends BasicH
      *             if the operation failed
      */
     public int addRow(Object[] newRows) throws FitsException {
-<span class="fc" id="L100">        int row = this.myData.addRow(newRows);</span>
-<span class="fc" id="L101">        this.myHeader.addValue(NAXISn.n(2), getNRows());</span>
-<span class="fc" id="L102">        return row;</span>
+<span class="fc" id="L106">        int row = this.myData.addRow(newRows);</span>
+<span class="fc" id="L107">        this.myHeader.addValue(NAXISn.n(2), getNRows());</span>
+<span class="fc" id="L108">        return row;</span>
     }
 
     /**
@@ -120,8 +126,8 @@ public abstract class TableHDU&lt;T extends AbstractTableData&gt; extends BasicH
      *             if the operation failed
      */
     public void deleteColumnsIndexOne(int column, int len) throws FitsException {
-<span class="fc" id="L123">        deleteColumnsIndexZero(column - 1, len);</span>
-<span class="fc" id="L124">    }</span>
+<span class="fc" id="L129">        deleteColumnsIndexZero(column - 1, len);</span>
+<span class="fc" id="L130">    }</span>
 
     /**
      * Delete a set of columns from a table.
@@ -136,8 +142,8 @@ public abstract class TableHDU&lt;T extends AbstractTableData&gt; extends BasicH
      *             if the operation failed
      */
     public void deleteColumnsIndexOne(int column, int len, String[] fields) throws FitsException {
-<span class="fc" id="L139">        deleteColumnsIndexZero(column - 1, len, GenericKey.create(fields));</span>
-<span class="fc" id="L140">    }</span>
+<span class="fc" id="L145">        deleteColumnsIndexZero(column - 1, len, GenericKey.create(fields));</span>
+<span class="fc" id="L146">    }</span>
 
     /**
      * Delete a set of columns from a table.
@@ -150,8 +156,8 @@ public abstract class TableHDU&lt;T extends AbstractTableData&gt; extends BasicH
      *             if the operation failed
      */
     public void deleteColumnsIndexZero(int column, int len) throws FitsException {
-<span class="fc" id="L153">        deleteColumnsIndexZero(column, len, columnKeyStems());</span>
-<span class="fc" id="L154">    }</span>
+<span class="fc" id="L159">        deleteColumnsIndexZero(column, len, columnKeyStems());</span>
+<span class="fc" id="L160">    }</span>
 
     /**
      * Delete a set of columns from a table.
@@ -167,40 +173,40 @@ public abstract class TableHDU&lt;T extends AbstractTableData&gt; extends BasicH
      */
     public void deleteColumnsIndexZero(int column, int len, IFitsHeader[] fields) throws FitsException {
 
-<span class="pc bpc" id="L170" title="2 of 6 branches missed.">        if (column &lt; 0 || len &lt; 0 || column + len &gt; getNCols()) {</span>
-<span class="fc" id="L171">            throw new FitsException(&quot;Illegal columns deletion request- Start:&quot; + column + &quot; Len:&quot; + len + &quot; from table with &quot; + getNCols() + &quot; columns&quot;);</span>
+<span class="pc bpc" id="L176" title="2 of 6 branches missed.">        if (column &lt; 0 || len &lt; 0 || column + len &gt; getNCols()) {</span>
+<span class="fc" id="L177">            throw new FitsException(&quot;Illegal columns deletion request- Start:&quot; + column + &quot; Len:&quot; + len + &quot; from table with &quot; + getNCols() + &quot; columns&quot;);</span>
         }
 
-<span class="fc bfc" id="L174" title="All 2 branches covered.">        if (len == 0) {</span>
-<span class="fc" id="L175">            return;</span>
+<span class="fc bfc" id="L180" title="All 2 branches covered.">        if (len == 0) {</span>
+<span class="fc" id="L181">            return;</span>
         }
 
-<span class="fc" id="L178">        int ncol = getNCols();</span>
-<span class="fc" id="L179">        this.myData.deleteColumns(column, len);</span>
+<span class="fc" id="L184">        int ncol = getNCols();</span>
+<span class="fc" id="L185">        this.myData.deleteColumns(column, len);</span>
 
         // Get rid of the keywords for the deleted columns
-<span class="fc bfc" id="L182" title="All 2 branches covered.">        for (int col = column; col &lt; column + len; col += 1) {</span>
-<span class="fc bfc" id="L183" title="All 2 branches covered.">            for (IFitsHeader field : fields) {</span>
-<span class="fc" id="L184">                this.myHeader.deleteKey(field.n(col + 1));</span>
+<span class="fc bfc" id="L188" title="All 2 branches covered.">        for (int col = column; col &lt; column + len; col += 1) {</span>
+<span class="fc bfc" id="L189" title="All 2 branches covered.">            for (IFitsHeader field : fields) {</span>
+<span class="fc" id="L190">                this.myHeader.deleteKey(field.n(col + 1));</span>
             }
         }
 
         // Shift the keywords for the columns after the deleted columns
-<span class="fc bfc" id="L189" title="All 2 branches covered.">        for (int col = column + len; col &lt; ncol; col += 1) {</span>
-<span class="fc bfc" id="L190" title="All 2 branches covered.">            for (IFitsHeader field : fields) {</span>
-<span class="fc" id="L191">                IFitsHeader oldKey = field.n(col + 1);</span>
-<span class="fc" id="L192">                IFitsHeader newKey = field.n(col + 1 - len);</span>
-<span class="fc bfc" id="L193" title="All 2 branches covered.">                if (this.myHeader.containsKey(oldKey)) {</span>
-<span class="fc" id="L194">                    this.myHeader.replaceKey(oldKey, newKey);</span>
+<span class="fc bfc" id="L195" title="All 2 branches covered.">        for (int col = column + len; col &lt; ncol; col += 1) {</span>
+<span class="fc bfc" id="L196" title="All 2 branches covered.">            for (IFitsHeader field : fields) {</span>
+<span class="fc" id="L197">                IFitsHeader oldKey = field.n(col + 1);</span>
+<span class="fc" id="L198">                IFitsHeader newKey = field.n(col + 1 - len);</span>
+<span class="fc bfc" id="L199" title="All 2 branches covered.">                if (this.myHeader.containsKey(oldKey)) {</span>
+<span class="fc" id="L200">                    this.myHeader.replaceKey(oldKey, newKey);</span>
                 }
             }
         }
         // Update the number of fields.
-<span class="fc" id="L199">        this.myHeader.addValue(TFIELDS, getNCols());</span>
+<span class="fc" id="L205">        this.myHeader.addValue(TFIELDS, getNCols());</span>
 
         // Give the data sections a chance to update the header too.
-<span class="fc" id="L202">        this.myData.updateAfterDelete(ncol, this.myHeader);</span>
-<span class="fc" id="L203">    }</span>
+<span class="fc" id="L208">        this.myData.updateAfterDelete(ncol, this.myHeader);</span>
+<span class="fc" id="L209">    }</span>
 
     /**
      * Remove all rows from the table starting at some specific index from the
@@ -214,8 +220,8 @@ public abstract class TableHDU&lt;T extends AbstractTableData&gt; extends BasicH
      *             if an error occurs.
      */
     public void deleteRows(final int row) throws FitsException {
-<span class="fc" id="L217">        deleteRows(row, getNRows() - row);</span>
-<span class="fc" id="L218">    }</span>
+<span class="fc" id="L223">        deleteRows(row, getNRows() - row);</span>
+<span class="fc" id="L224">    }</span>
 
     /**
      * Remove a number of adjacent rows from the table. This routine was
@@ -234,18 +240,18 @@ public abstract class TableHDU&lt;T extends AbstractTableData&gt; extends BasicH
     public void deleteRows(final int firstRow, int nRow) throws FitsException {
 
         // Just ignore invalid requests.
-<span class="pc bpc" id="L237" title="1 of 6 branches missed.">        if (nRow &lt;= 0 || firstRow &gt;= getNRows() || firstRow &lt;= 0) {</span>
-<span class="fc" id="L238">            return;</span>
+<span class="pc bpc" id="L243" title="1 of 6 branches missed.">        if (nRow &lt;= 0 || firstRow &gt;= getNRows() || firstRow &lt;= 0) {</span>
+<span class="fc" id="L244">            return;</span>
         }
 
         /* correct if more rows are requested than available */
-<span class="fc bfc" id="L242" title="All 2 branches covered.">        if (nRow &gt; getNRows() - firstRow) {</span>
-<span class="fc" id="L243">            nRow = getNRows() - firstRow;</span>
+<span class="fc bfc" id="L248" title="All 2 branches covered.">        if (nRow &gt; getNRows() - firstRow) {</span>
+<span class="fc" id="L249">            nRow = getNRows() - firstRow;</span>
         }
 
-<span class="fc" id="L246">        this.myData.deleteRows(firstRow, nRow);</span>
-<span class="fc" id="L247">        this.myHeader.setNaxis(2, getNRows());</span>
-<span class="fc" id="L248">    }</span>
+<span class="fc" id="L252">        this.myData.deleteRows(firstRow, nRow);</span>
+<span class="fc" id="L253">        this.myHeader.setNaxis(2, getNRows());</span>
+<span class="fc" id="L254">    }</span>
 
     /**
      * Find the 0-based column index corresponding to a particular column name.
@@ -255,13 +261,13 @@ public abstract class TableHDU&lt;T extends AbstractTableData&gt; extends BasicH
      *            the name of the column
      */
     public int findColumn(String colName) {
-<span class="fc bfc" id="L258" title="All 2 branches covered.">        for (int i = 0; i &lt; getNCols(); i += 1) {</span>
-<span class="fc" id="L259">            String val = this.myHeader.getStringValue(TTYPEn.n(i + 1));</span>
-<span class="fc bfc" id="L260" title="All 4 branches covered.">            if (val != null &amp;&amp; val.trim().equals(colName)) {</span>
-<span class="fc" id="L261">                return i;</span>
+<span class="fc bfc" id="L264" title="All 2 branches covered.">        for (int i = 0; i &lt; getNCols(); i += 1) {</span>
+<span class="fc" id="L265">            String val = this.myHeader.getStringValue(TTYPEn.n(i + 1));</span>
+<span class="fc bfc" id="L266" title="All 4 branches covered.">            if (val != null &amp;&amp; val.trim().equals(colName)) {</span>
+<span class="fc" id="L267">                return i;</span>
             }
         }
-<span class="fc" id="L264">        return -1;</span>
+<span class="fc" id="L270">        return -1;</span>
     }
 
     /**
@@ -272,7 +278,7 @@ public abstract class TableHDU&lt;T extends AbstractTableData&gt; extends BasicH
      *             if the operation failed
      */
     public Object getColumn(int col) throws FitsException {
-<span class="fc" id="L275">        return this.myData.getColumn(col);</span>
+<span class="fc" id="L281">        return this.myData.getColumn(col);</span>
     }
 
     /**
@@ -284,7 +290,7 @@ public abstract class TableHDU&lt;T extends AbstractTableData&gt; extends BasicH
      *             if the operation failed
      */
     public Object getColumn(String colName) throws FitsException {
-<span class="fc" id="L287">        return getColumn(findColumn(colName));</span>
+<span class="fc" id="L293">        return getColumn(findColumn(colName));</span>
     }
 
     /**
@@ -297,12 +303,12 @@ public abstract class TableHDU&lt;T extends AbstractTableData&gt; extends BasicH
      *             if an invalid index was requested.
      */
     public String getColumnFormat(int index) throws FitsException {
-<span class="fc" id="L300">        int flds = this.myHeader.getIntValue(TFIELDS, 0);</span>
-<span class="pc bpc" id="L301" title="1 of 4 branches missed.">        if (index &lt; 0 || index &gt;= flds) {</span>
-<span class="fc" id="L302">            throw new FitsException(&quot;Bad column index &quot; + index + &quot; (only &quot; + flds + &quot; columns)&quot;);</span>
+<span class="fc" id="L306">        int flds = this.myHeader.getIntValue(TFIELDS, 0);</span>
+<span class="pc bpc" id="L307" title="1 of 4 branches missed.">        if (index &lt; 0 || index &gt;= flds) {</span>
+<span class="fc" id="L308">            throw new FitsException(&quot;Bad column index &quot; + index + &quot; (only &quot; + flds + &quot; columns)&quot;);</span>
         }
 
-<span class="fc" id="L305">        return this.myHeader.getStringValue(TFORMn.n(index + 1)).trim();</span>
+<span class="fc" id="L311">        return this.myHeader.getStringValue(TFORMn.n(index + 1)).trim();</span>
     }
 
     /**
@@ -317,7 +323,7 @@ public abstract class TableHDU&lt;T extends AbstractTableData&gt; extends BasicH
      *            the key type to get
      */
     public String getColumnMeta(int index, String type) {
-<span class="fc" id="L320">        return this.myHeader.getStringValue(type + (index + 1));</span>
+<span class="fc" id="L326">        return this.myHeader.getStringValue(type + (index + 1));</span>
     }
 
     /**
@@ -329,24 +335,25 @@ public abstract class TableHDU&lt;T extends AbstractTableData&gt; extends BasicH
      */
     public String getColumnName(int index) {
 
-<span class="fc" id="L332">        String ttype = this.myHeader.getStringValue(TTYPEn.n(index + 1));</span>
-<span class="fc bfc" id="L333" title="All 2 branches covered.">        if (ttype != null) {</span>
-<span class="fc" id="L334">            ttype = ttype.trim();</span>
+<span class="fc" id="L338">        String ttype = this.myHeader.getStringValue(TTYPEn.n(index + 1));</span>
+<span class="fc bfc" id="L339" title="All 2 branches covered.">        if (ttype != null) {</span>
+<span class="fc" id="L340">            ttype = ttype.trim();</span>
         }
-<span class="fc" id="L336">        return ttype;</span>
+<span class="fc" id="L342">        return ttype;</span>
     }
-
+    
+    
     /**
      * @return all of the columns of the table.
      * @throws FitsException
      *             if the operation failed
      */
     public Object[] getColumns() throws FitsException {
-<span class="fc" id="L345">        Object[] result = new Object[getNCols()];</span>
-<span class="fc bfc" id="L346" title="All 2 branches covered.">        for (int i = 0; i &lt; result.length; i += 1) {</span>
-<span class="fc" id="L347">            result[i] = getColumn(i);</span>
+<span class="fc" id="L352">        Object[] result = new Object[getNCols()];</span>
+<span class="fc bfc" id="L353" title="All 2 branches covered.">        for (int i = 0; i &lt; result.length; i += 1) {</span>
+<span class="fc" id="L354">            result[i] = getColumn(i);</span>
         }
-<span class="fc" id="L349">        return result;</span>
+<span class="fc" id="L356">        return result;</span>
     }
 
     /**
@@ -359,7 +366,7 @@ public abstract class TableHDU&lt;T extends AbstractTableData&gt; extends BasicH
      *             if the operation failed
      */
     public Object getElement(int row, int col) throws FitsException {
-<span class="fc" id="L362">        return this.myData.getElement(row, col);</span>
+<span class="fc" id="L369">        return this.myData.getElement(row, col);</span>
     }
 
     /**
@@ -368,7 +375,7 @@ public abstract class TableHDU&lt;T extends AbstractTableData&gt; extends BasicH
      * @return The number of columns in the table.
      */
     public int getNCols() {
-<span class="fc" id="L371">        return this.myData.getNCols();</span>
+<span class="fc" id="L378">        return this.myData.getNCols();</span>
     }
 
     /**
@@ -377,7 +384,7 @@ public abstract class TableHDU&lt;T extends AbstractTableData&gt; extends BasicH
      * @return The number of rows in the table.
      */
     public int getNRows() {
-<span class="fc" id="L380">        return this.myData.getNRows();</span>
+<span class="fc" id="L387">        return this.myData.getNRows();</span>
     }
 
     /**
@@ -388,7 +395,7 @@ public abstract class TableHDU&lt;T extends AbstractTableData&gt; extends BasicH
      *             if the operation failed
      */
     public Object[] getRow(int row) throws FitsException {
-<span class="fc" id="L391">        return this.myData.getRow(row);</span>
+<span class="fc" id="L398">        return this.myData.getRow(row);</span>
     }
 
     /**
@@ -403,8 +410,8 @@ public abstract class TableHDU&lt;T extends AbstractTableData&gt; extends BasicH
      *             if the operation failed
      */
     public void setColumn(int col, Object newCol) throws FitsException {
-<span class="fc" id="L406">        this.myData.setColumn(col, newCol);</span>
-<span class="fc" id="L407">    }</span>
+<span class="fc" id="L413">        this.myData.setColumn(col, newCol);</span>
+<span class="fc" id="L414">    }</span>
 
     /**
      * Update a column within a table. The new column should have the same
@@ -418,8 +425,8 @@ public abstract class TableHDU&lt;T extends AbstractTableData&gt; extends BasicH
      *             if the operation failed
      */
     public void setColumn(String colName, Object newCol) throws FitsException {
-<span class="fc" id="L421">        setColumn(findColumn(colName), newCol);</span>
-<span class="fc" id="L422">    }</span>
+<span class="fc" id="L428">        setColumn(findColumn(colName), newCol);</span>
+<span class="fc" id="L429">    }</span>
 
     /**
      * Specify column metadata for a given column in a way that allows all of
@@ -435,39 +442,135 @@ public abstract class TableHDU&lt;T extends AbstractTableData&gt; extends BasicH
      *            The comment for the header
      * @param after
      *            Should the header card be after the current column metadata
-     *            block (true), or immediately before the TFORM card (false). @throws
-     *            FitsException if the operation failed
-     * @throws FitsException
+     *            block (&lt;code&gt;true&lt;/code&gt;), or immediately before the TFORM card 
+     *            (&lt;code&gt;false&lt;/code&gt;).
+     * @throws HeaderCardException
      *             if the header could not be updated
      */
-    public void setColumnMeta(int index, IFitsHeader key, String value, String comment, boolean after) throws FitsException {
-<span class="fc" id="L444">        setCurrentColumn(index, after);</span>
-<span class="fc" id="L445">        this.myHeader.addValue(key.n(index + 1).key(), value, comment);</span>
-<span class="fc" id="L446">    }</span>
+    public void setColumnMeta(int index, IFitsHeader key, String value, String comment, boolean after) throws HeaderCardException {
+<span class="fc" id="L451">        setCurrentColumn(index, after);</span>
+<span class="fc" id="L452">        this.myHeader.addLine(new HeaderCard(key.n(index + 1).key(), value, comment));</span>
+<span class="fc" id="L453">    }</span>
 
-    public void setColumnMeta(int index, String key, boolean value, String comment, boolean after) throws FitsException {
-<span class="fc" id="L449">        setCurrentColumn(index, after);</span>
-<span class="fc" id="L450">        this.myHeader.addValue(key + (index + 1), value, comment);</span>
-<span class="fc" id="L451">    }</span>
+    /**
+     * Specify column metadata for a given column in a way that allows all of
+     * the column metadata for a given column to be organized together.
+     *
+     * @param index
+     *            The 0-based index of the column
+     * @param key
+     *            The column key. I.e., the keyword will be key+(index+1)
+     * @param value
+     *            The value to be placed in the header.
+     * @param comment
+     *            The comment for the header
+     * @param after
+     *            Should the header card be after the current column metadata
+     *            block (&lt;code&gt;true&lt;/code&gt;), or immediately before the TFORM card 
+     *            (&lt;code&gt;false&lt;/code&gt;).
+     * @throws HeaderCardException
+     *             if the header could not be updated
+     *             
+     * @since 1.16
+     */
+    public void setColumnMeta(int index, IFitsHeader key, Number value, String comment, boolean after) throws HeaderCardException {
+<span class="fc" id="L477">        setCurrentColumn(index, after);</span>
+<span class="fc" id="L478">        this.myHeader.addLine(new HeaderCard(key.n(index + 1).key(), value, comment));</span>
+<span class="fc" id="L479">    }</span>
+    
+    /**
+     * Specify column metadata for a given column in a way that allows all of
+     * the column metadata for a given column to be organized together.
+     *
+     * @param index
+     *            The 0-based index of the column
+     * @param key
+     *            The column key. I.e., the keyword will be key+(index+1)
+     * @param value
+     *            The value to be placed in the header.
+     * @param comment
+     *            The comment for the header
+     * @param after
+     *            Should the header card be after the current column metadata
+     *            block (&lt;code&gt;true&lt;/code&gt;), or immediately before the TFORM card 
+     *            (&lt;code&gt;false&lt;/code&gt;).
+     * @throws HeaderCardException
+     *             if the header could not be updated
+     */
+    public void setColumnMeta(int index, String key, Boolean value, String comment, boolean after) throws HeaderCardException {
+<span class="fc" id="L501">        setCurrentColumn(index, after);</span>
+<span class="fc" id="L502">        this.myHeader.addLine(new HeaderCard(key + (index + 1), value, comment));</span>
+<span class="fc" id="L503">    }</span>
 
-    public void setColumnMeta(int index, String key, double value, String comment, boolean after) throws FitsException {
-<span class="fc" id="L454">        setCurrentColumn(index, after);</span>
-<span class="fc" id="L455">        this.myHeader.addValue(key + (index + 1), value, comment);</span>
-<span class="fc" id="L456">    }</span>
+    /**
+     * Specify column metadata for a given column in a way that allows all of
+     * the column metadata for a given column to be organized together.
+     *
+     * @param index
+     *            The 0-based index of the column
+     * @param key
+     *            The column key. I.e., the keyword will be key+(index+1)
+     * @param value
+     *            The value to be placed in the header.
+     * @param comment
+     *            The comment for the header
+     * @param after
+     *            Should the header card be after the current column metadata
+     *            block (&lt;code&gt;true&lt;/code&gt;), or immediately before the TFORM card 
+     *            (&lt;code&gt;false&lt;/code&gt;).
+     * @throws HeaderCardException
+     *             if the header could not be updated
+     */
+    public void setColumnMeta(int index, String key, Number value, String comment, boolean after) throws HeaderCardException {
+<span class="fc" id="L525">        setCurrentColumn(index, after);</span>
+<span class="fc" id="L526">        this.myHeader.addLine(new HeaderCard(key + (index + 1), value, comment));</span>
+<span class="fc" id="L527">    }</span>
 
-    public void setColumnMeta(int index, String key, double value, int precision, String comment, boolean after) throws FitsException {
-<span class="fc" id="L459">        setCurrentColumn(index, after);</span>
-<span class="fc" id="L460">        this.myHeader.addValue(key + (index + 1), value, precision, comment);</span>
-<span class="fc" id="L461">    }</span>
-
-    public void setColumnMeta(int index, String key, long value, String comment, boolean after) throws FitsException {
-<span class="fc" id="L464">        setCurrentColumn(index, after);</span>
-<span class="fc" id="L465">        this.myHeader.addValue(key + (index + 1), value, comment);</span>
-<span class="fc" id="L466">    }</span>
-
-    public void setColumnMeta(int index, String key, String value, String comment) throws FitsException {
-<span class="fc" id="L469">        setColumnMeta(index, key, value, comment, true);</span>
-<span class="fc" id="L470">    }</span>
+    /**
+     * Specify column metadata for a given column in a way that allows all of
+     * the column metadata for a given column to be organized together.
+     *
+     * @param index
+     *            The 0-based index of the column
+     * @param key
+     *            The column key. I.e., the keyword will be key+(index+1)
+     * @param value
+     *            The value to be placed in the header.
+     * @param precision
+     *            The maximum number of decimal places to show after the leading figure. (Trailing zeroes will be ommitted.)
+     * @param comment
+     *            The comment for the header
+     * @param after
+     *            Should the header card be after the current column metadata
+     *            block (&lt;code&gt;true&lt;/code&gt;), or immediately before the TFORM card 
+     *            (&lt;code&gt;false&lt;/code&gt;).
+     * @throws HeaderCardException
+     *             if the header could not be updated
+     */
+    public void setColumnMeta(int index, String key, Number value, int precision, String comment, boolean after) throws HeaderCardException {
+<span class="fc" id="L551">        setCurrentColumn(index, after);</span>
+<span class="fc" id="L552">        this.myHeader.addLine(new HeaderCard(key + (index + 1), value, precision, comment));</span>
+<span class="fc" id="L553">    }</span>
+    
+ 
+    /**
+     * Specify column metadata for a given column in a way that allows all of
+     * the column metadata for a given column to be organized together.
+     *
+     * @param index
+     *            The 0-based index of the column
+     * @param key
+     *            The column key. I.e., the keyword will be key+(index+1)
+     * @param value
+     *            The value to be placed in the header.
+     * @param comment
+     *            The comment for the header
+     * @throws HeaderCardException
+     *             if the header could not be updated
+     */
+    public void setColumnMeta(int index, String key, String value, String comment) throws HeaderCardException {
+<span class="fc" id="L572">        setColumnMeta(index, key, value, comment, true);</span>
+<span class="fc" id="L573">    }</span>
 
     /**
      * Specify column metadata for a given column in a way that allows all of
@@ -485,21 +588,37 @@ public abstract class TableHDU&lt;T extends AbstractTableData&gt; extends BasicH
      *            Should the header card be after the current column metadata
      *            block (true), or immediately before the TFORM card (false). @throws
      *            FitsException if the operation failed
-     * @throws FitsException
+     * @throws HeaderCardException
      *             if the header could not be updated
      * @deprecated use
      *             {@link #setColumnMeta(int, IFitsHeader, String, String, boolean)}
      */
     @Deprecated
-    public void setColumnMeta(int index, String key, String value, String comment, boolean after) throws FitsException {
-<span class="fc" id="L495">        setCurrentColumn(index, after);</span>
-<span class="fc" id="L496">        this.myHeader.addValue(key + (index + 1), value, comment);</span>
-<span class="fc" id="L497">    }</span>
+    public void setColumnMeta(int index, String key, String value, String comment, boolean after) throws HeaderCardException {
+<span class="fc" id="L598">        setCurrentColumn(index, after);</span>
+<span class="fc" id="L599">        this.myHeader.addLine(new HeaderCard(key + (index + 1), value, comment));</span>
+<span class="fc" id="L600">    }</span>
 
-    public void setColumnName(int index, String name, String comment) throws FitsException {
-<span class="fc" id="L500">        setColumnMeta(index, TTYPEn, name, comment, true);</span>
-<span class="fc" id="L501">    }</span>
+    public void setColumnName(int index, String name, String comment) throws HeaderCardException {
+<span class="fc" id="L603">        setColumnMeta(index, TTYPEn, name, comment, true);</span>
+<span class="fc" id="L604">    }</span>
 
+    private void setDefaultColumnName(int index) {
+        // TODO 
+        // AK: We currently allow undefined column names, but some other software, such as fv, have
+        // problemss processing such files. By uncommenting the lines below, we can enable
+        // setting default column names when columns are created or added to the table...
+        // This should not break anything in principle, but can increase header size,
+        // and therefore some of out unit tests may fail, unless adjusted...
+        
+//        try {
+//            setColumnName(index, &quot;Column&quot; + (index + 1), &quot;default column name&quot;);
+//        } catch (Exception e) {
+//            // Should not happen.
+//            e.printStackTrace();
+//        }
+<span class="fc" id="L620">    }</span>
+    
     /**
      * Set the cursor in the header to point after the metadata for the
      * specified column
@@ -508,8 +627,8 @@ public abstract class TableHDU&lt;T extends AbstractTableData&gt; extends BasicH
      *            The 0-based index of the column
      */
     public void setCurrentColumn(int col) {
-<span class="fc" id="L511">        setCurrentColumn(col, true);</span>
-<span class="fc" id="L512">    }</span>
+<span class="fc" id="L630">        setCurrentColumn(col, true);</span>
+<span class="fc" id="L631">    }</span>
 
     /**
      * Set the cursor in the header to point either before the TFORM value or
@@ -524,12 +643,12 @@ public abstract class TableHDU&lt;T extends AbstractTableData&gt; extends BasicH
      *            will be placed at the end of current header.
      */
     public void setCurrentColumn(int col, boolean after) {
-<span class="fc bfc" id="L527" title="All 2 branches covered.">        if (after) {</span>
-<span class="fc" id="L528">            this.myHeader.positionAfterIndex(TFORMn, col + 1);</span>
+<span class="fc bfc" id="L646" title="All 2 branches covered.">        if (after) {</span>
+<span class="fc" id="L647">            this.myHeader.positionAfterIndex(TFORMn, col + 1);</span>
         } else {
-<span class="fc" id="L530">            this.myHeader.findCard(TFORMn.n(col + 1));</span>
+<span class="fc" id="L649">            this.myHeader.findCard(TFORMn.n(col + 1));</span>
         }
-<span class="fc" id="L532">    }</span>
+<span class="fc" id="L651">    }</span>
 
     /**
      * Update a single element within the table.
@@ -544,8 +663,8 @@ public abstract class TableHDU&lt;T extends AbstractTableData&gt; extends BasicH
      *             if the operation failed
      */
     public void setElement(int row, int col, Object element) throws FitsException {
-<span class="fc" id="L547">        this.myData.setElement(row, col, element);</span>
-<span class="fc" id="L548">    }</span>
+<span class="fc" id="L666">        this.myData.setElement(row, col, element);</span>
+<span class="fc" id="L667">    }</span>
 
     /**
      * Update a row within a table.
@@ -558,7 +677,7 @@ public abstract class TableHDU&lt;T extends AbstractTableData&gt; extends BasicH
      *             if the operation failed
      */
     public void setRow(int row, Object[] newRow) throws FitsException {
-<span class="fc" id="L561">        this.myData.setRow(row, newRow);</span>
-<span class="fc" id="L562">    }</span>
+<span class="fc" id="L680">        this.myData.setRow(row, newRow);</span>
+<span class="fc" id="L681">    }</span>
 }
-</pre><div class="footer"><span class="right">Created with <a href="http://www.eclemma.org/jacoco">JaCoCo</a> 0.7.6.201602180812</span></div></body></html>
+</pre><div class="footer"><span class="right">Created with <a href="http://www.jacoco.org/jacoco">JaCoCo</a> 0.8.7.202105040129</span></div></body></html>

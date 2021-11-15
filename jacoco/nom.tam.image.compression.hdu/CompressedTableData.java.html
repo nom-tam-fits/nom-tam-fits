@@ -1,10 +1,10 @@
-<?xml version="1.0" encoding="UTF-8"?><!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Strict//EN" "http://www.w3.org/TR/xhtml1/DTD/xhtml1-strict.dtd"><html xmlns="http://www.w3.org/1999/xhtml" lang="en"><head><meta http-equiv="Content-Type" content="text/html;charset=UTF-8"/><link rel="stylesheet" href="../.resources/report.css" type="text/css"/><link rel="shortcut icon" href="../.resources/report.gif" type="image/gif"/><title>CompressedTableData.java</title><link rel="stylesheet" href="../.resources/prettify.css" type="text/css"/><script type="text/javascript" src="../.resources/prettify.js"></script></head><body onload="window['PR_TAB_WIDTH']=4;prettyPrint()"><div class="breadcrumb" id="breadcrumb"><span class="info"><a href="../.sessions.html" class="el_session">Sessions</a></span><a href="../index.html" class="el_report">nom.tam FITS library</a> &gt; <a href="index.source.html" class="el_package">nom.tam.image.compression.hdu</a> &gt; <span class="el_source">CompressedTableData.java</span></div><h1>CompressedTableData.java</h1><pre class="source lang-java linenums">package nom.tam.image.compression.hdu;
+<?xml version="1.0" encoding="UTF-8"?><!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Strict//EN" "http://www.w3.org/TR/xhtml1/DTD/xhtml1-strict.dtd"><html xmlns="http://www.w3.org/1999/xhtml" lang="en"><head><meta http-equiv="Content-Type" content="text/html;charset=UTF-8"/><link rel="stylesheet" href="../jacoco-resources/report.css" type="text/css"/><link rel="shortcut icon" href="../jacoco-resources/report.gif" type="image/gif"/><title>CompressedTableData.java</title><link rel="stylesheet" href="../jacoco-resources/prettify.css" type="text/css"/><script type="text/javascript" src="../jacoco-resources/prettify.js"></script></head><body onload="window['PR_TAB_WIDTH']=4;prettyPrint()"><div class="breadcrumb" id="breadcrumb"><span class="info"><a href="../jacoco-sessions.html" class="el_session">Sessions</a></span><a href="../index.html" class="el_report">nom.tam FITS library</a> &gt; <a href="index.source.html" class="el_package">nom.tam.image.compression.hdu</a> &gt; <span class="el_source">CompressedTableData.java</span></div><h1>CompressedTableData.java</h1><pre class="source lang-java linenums">package nom.tam.image.compression.hdu;
 
 /*
  * #%L
  * nom.tam FITS library
  * %%
- * Copyright (C) 1996 - 2016 nom-tam-fits
+ * Copyright (C) 1996 - 2021 nom-tam-fits
  * %%
  * This is free and unencumbered software released into the public domain.
  * 
@@ -93,19 +93,19 @@ public class CompressedTableData extends BinaryTable {
 <span class="pc bpc" id="L93" title="1 of 2 branches missed.">        if (this.columnCompressionAlgorithms.length &lt; ncols) {</span>
 <span class="fc" id="L94">            this.columnCompressionAlgorithms = Arrays.copyOfRange(this.columnCompressionAlgorithms, 0, ncols);</span>
         }
-<span class="fc" id="L96">        this.tiles = new ArrayList&lt;BinaryTableTile&gt;();</span>
+<span class="fc" id="L96">        this.tiles = new ArrayList&lt;&gt;();</span>
 <span class="fc bfc" id="L97" title="All 2 branches covered.">        for (int column = 0; column &lt; ncols; column++) {</span>
 <span class="fc" id="L98">            addByteVaryingColumn();</span>
 <span class="fc" id="L99">            int tileIndex = 1;</span>
 <span class="fc bfc" id="L100" title="All 2 branches covered.">            for (int rowStart = 0; rowStart &lt; nrows; rowStart += this.rowsPerTile) {</span>
 <span class="fc" id="L101">                addRow(new byte[ncols][0]);</span>
 <span class="fc" id="L102">                this.tiles.add(new BinaryTableTileCompressor(this, data,</span>
-                        tile()//
-                                .rowStart(rowStart)//
-                                .rowEnd(rowStart + this.rowsPerTile)//
-                                .column(column)//
-                                .tileIndex(tileIndex++)//
-                                .compressionAlgorithm(this.columnCompressionAlgorithms[column])));
+<span class="fc" id="L103">                        tile()//</span>
+<span class="fc" id="L104">                                .rowStart(rowStart)//</span>
+<span class="fc" id="L105">                                .rowEnd(rowStart + this.rowsPerTile)//</span>
+<span class="fc" id="L106">                                .column(column)//</span>
+<span class="fc" id="L107">                                .tileIndex(tileIndex++)//</span>
+<span class="fc" id="L108">                                .compressionAlgorithm(this.columnCompressionAlgorithms[column])));</span>
             }
         }
 <span class="fc" id="L111">    }</span>
@@ -114,19 +114,19 @@ public class CompressedTableData extends BinaryTable {
 <span class="fc" id="L114">        int nrows = targetHeader.getIntValue(Standard.NAXIS2);</span>
 <span class="fc" id="L115">        int ncols = compressedHeader.getIntValue(TFIELDS);</span>
 <span class="fc" id="L116">        this.rowsPerTile = compressedHeader.getIntValue(Compression.ZTILELEN, nrows);</span>
-<span class="fc" id="L117">        this.tiles = new ArrayList&lt;BinaryTableTile&gt;();</span>
+<span class="fc" id="L117">        this.tiles = new ArrayList&lt;&gt;();</span>
 <span class="fc" id="L118">        BinaryTable.createColumnDataFor(dataToFill);</span>
 <span class="fc bfc" id="L119" title="All 2 branches covered.">        for (int column = 0; column &lt; ncols; column++) {</span>
 <span class="fc" id="L120">            int tileIndex = 1;</span>
 <span class="fc" id="L121">            String compressionAlgorithm = compressedHeader.getStringValue(Compression.ZCTYPn.n(column + 1));</span>
 <span class="fc bfc" id="L122" title="All 2 branches covered.">            for (int rowStart = 0; rowStart &lt; nrows; rowStart += this.rowsPerTile) {</span>
 <span class="fc" id="L123">                BinaryTableTileDecompressor binaryTableTile = new BinaryTableTileDecompressor(this, dataToFill.getData(),</span>
-                        tile()//
-                                .rowStart(rowStart)//
-                                .rowEnd(rowStart + this.rowsPerTile)//
-                                .column(column)//
-                                .tileIndex(tileIndex++)//
-                                .compressionAlgorithm(compressionAlgorithm));
+<span class="fc" id="L124">                        tile()//</span>
+<span class="fc" id="L125">                                .rowStart(rowStart)//</span>
+<span class="fc" id="L126">                                .rowEnd(rowStart + this.rowsPerTile)//</span>
+<span class="fc" id="L127">                                .column(column)//</span>
+<span class="fc" id="L128">                                .tileIndex(tileIndex++)//</span>
+<span class="fc" id="L129">                                .compressionAlgorithm(compressionAlgorithm));</span>
 <span class="fc" id="L130">                this.tiles.add(binaryTableTile);</span>
 <span class="fc" id="L131">                binaryTableTile.execute(FitsFactory.threadPool());</span>
             }
@@ -150,4 +150,4 @@ public class CompressedTableData extends BinaryTable {
 <span class="fc" id="L150">        return this;</span>
     }
 }
-</pre><div class="footer"><span class="right">Created with <a href="http://www.eclemma.org/jacoco">JaCoCo</a> 0.7.6.201602180812</span></div></body></html>
+</pre><div class="footer"><span class="right">Created with <a href="http://www.jacoco.org/jacoco">JaCoCo</a> 0.8.7.202105040129</span></div></body></html>

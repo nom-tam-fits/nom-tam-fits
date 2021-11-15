@@ -1,10 +1,10 @@
-<?xml version="1.0" encoding="UTF-8"?><!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Strict//EN" "http://www.w3.org/TR/xhtml1/DTD/xhtml1-strict.dtd"><html xmlns="http://www.w3.org/1999/xhtml" lang="en"><head><meta http-equiv="Content-Type" content="text/html;charset=UTF-8"/><link rel="stylesheet" href="../.resources/report.css" type="text/css"/><link rel="shortcut icon" href="../.resources/report.gif" type="image/gif"/><title>HDecompress.java</title><link rel="stylesheet" href="../.resources/prettify.css" type="text/css"/><script type="text/javascript" src="../.resources/prettify.js"></script></head><body onload="window['PR_TAB_WIDTH']=4;prettyPrint()"><div class="breadcrumb" id="breadcrumb"><span class="info"><a href="../.sessions.html" class="el_session">Sessions</a></span><a href="../index.html" class="el_report">nom.tam FITS library</a> &gt; <a href="index.source.html" class="el_package">nom.tam.fits.compression.algorithm.hcompress</a> &gt; <span class="el_source">HDecompress.java</span></div><h1>HDecompress.java</h1><pre class="source lang-java linenums">package nom.tam.fits.compression.algorithm.hcompress;
+<?xml version="1.0" encoding="UTF-8"?><!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Strict//EN" "http://www.w3.org/TR/xhtml1/DTD/xhtml1-strict.dtd"><html xmlns="http://www.w3.org/1999/xhtml" lang="en"><head><meta http-equiv="Content-Type" content="text/html;charset=UTF-8"/><link rel="stylesheet" href="../jacoco-resources/report.css" type="text/css"/><link rel="shortcut icon" href="../jacoco-resources/report.gif" type="image/gif"/><title>HDecompress.java</title><link rel="stylesheet" href="../jacoco-resources/prettify.css" type="text/css"/><script type="text/javascript" src="../jacoco-resources/prettify.js"></script></head><body onload="window['PR_TAB_WIDTH']=4;prettyPrint()"><div class="breadcrumb" id="breadcrumb"><span class="info"><a href="../jacoco-sessions.html" class="el_session">Sessions</a></span><a href="../index.html" class="el_report">nom.tam FITS library</a> &gt; <a href="index.source.html" class="el_package">nom.tam.fits.compression.algorithm.hcompress</a> &gt; <span class="el_source">HDecompress.java</span></div><h1>HDecompress.java</h1><pre class="source lang-java linenums">package nom.tam.fits.compression.algorithm.hcompress;
 
 /*
  * #%L
  * nom.tam FITS library
  * %%
- * Copyright (C) 1996 - 2015 nom-tam-fits
+ * Copyright (C) 1996 - 2021 nom-tam-fits
  * %%
  * This is free and unencumbered software released into the public domain.
  * 
@@ -57,7 +57,7 @@ import java.nio.ByteBuffer;
  */
 <span class="fc" id="L58">public class HDecompress {</span>
 
-<span class="fc" id="L60">    private static class LongArrayPointer {</span>
+    private static class LongArrayPointer {
 
         private final long[] a;
 
@@ -700,28 +700,27 @@ import java.nio.ByteBuffer;
 <span class="fc" id="L700">        c = inputBit(infile) | c &lt;&lt; 1;</span>
 <span class="fc bfc" id="L701" title="All 2 branches covered.">        if (c == N62) {</span>
 <span class="fc" id="L702">            return 0;</span>
-        } else {
-<span class="fc" id="L704">            return N14;</span>
         }
+<span class="fc" id="L704">        return N14;</span>
     }
 
     private int inputNbits(ByteBuffer infile, int n) {
-<span class="fc bfc" id="L709" title="All 2 branches covered.">        if (this.bitsToGo &lt; n) {</span>
+<span class="fc bfc" id="L708" title="All 2 branches covered.">        if (this.bitsToGo &lt; n) {</span>
             /*
              * need another byte's worth of bits
              */
 
-<span class="fc" id="L714">            this.buffer2 = this.buffer2 &lt;&lt; BITS_OF_1_BYTE | infile.get() &amp; BYTE_MASK;</span>
-<span class="fc" id="L715">            this.bitsToGo += BITS_OF_1_BYTE;</span>
+<span class="fc" id="L713">            this.buffer2 = this.buffer2 &lt;&lt; BITS_OF_1_BYTE | infile.get() &amp; BYTE_MASK;</span>
+<span class="fc" id="L714">            this.bitsToGo += BITS_OF_1_BYTE;</span>
         }
         /*
          * now pick off the first n bits
          */
-<span class="fc" id="L720">        this.bitsToGo -= n;</span>
+<span class="fc" id="L719">        this.bitsToGo -= n;</span>
 
         /* there was a slight gain in speed by replacing the following line */
         /* return( (buffer2&gt;&gt;bits_to_go) &amp; ((1&lt;&lt;n)-1) ); */
-<span class="fc" id="L724">        return this.buffer2 &gt;&gt; this.bitsToGo &amp; MASKS[n];</span>
+<span class="fc" id="L723">        return this.buffer2 &gt;&gt; this.bitsToGo &amp; MASKS[n];</span>
     }
 
     /* INITIALIZE BIT INPUT */
@@ -738,78 +737,78 @@ import java.nio.ByteBuffer;
          * forcing byte alignment doesn;t help, and even makes it go slightly
          * slower if (bits_to_go != 8) input_nbits(infile, bits_to_go);
          */
-<span class="pc bpc" id="L741" title="1 of 2 branches missed.">        if (n == 1) {</span>
-<span class="nc" id="L742">            array[0] = (byte) inputNybble(infile);</span>
-<span class="nc" id="L743">            return 0;</span>
+<span class="pc bpc" id="L740" title="1 of 2 branches missed.">        if (n == 1) {</span>
+<span class="nc" id="L741">            array[0] = (byte) inputNybble(infile);</span>
+<span class="nc" id="L742">            return 0;</span>
         }
 
-<span class="pc bpc" id="L746" title="1 of 2 branches missed.">        if (this.bitsToGo == BITS_OF_1_BYTE) {</span>
+<span class="pc bpc" id="L745" title="1 of 2 branches missed.">        if (this.bitsToGo == BITS_OF_1_BYTE) {</span>
             /*
              * already have 2 full nybbles in buffer2, so backspace the infile
              * tiledImageOperation to reuse last char
              */
-<span class="nc" id="L751">            infile.position(infile.position() - 1);</span>
-<span class="nc" id="L752">            this.bitsToGo = 0;</span>
+<span class="nc" id="L750">            infile.position(infile.position() - 1);</span>
+<span class="nc" id="L751">            this.bitsToGo = 0;</span>
         }
 
         /* bits_to_go now has a value in the range 0 - 7. After adding */
         /* another byte, bits_to_go effectively will be in range 8 - 15 */
 
-<span class="fc" id="L758">        shift1 = this.bitsToGo + BITS_OF_1_NYBBLE; /*</span>
+<span class="fc" id="L757">        shift1 = this.bitsToGo + BITS_OF_1_NYBBLE; /*</span>
                                                     * shift1 will be in range 4
                                                     * - 11
                                                     */
-<span class="fc" id="L762">        shift2 = this.bitsToGo; /* shift2 will be in range 0 - 7 */</span>
-<span class="fc" id="L763">        kk = 0;</span>
+<span class="fc" id="L761">        shift2 = this.bitsToGo; /* shift2 will be in range 0 - 7 */</span>
+<span class="fc" id="L762">        kk = 0;</span>
 
         /* special case */
-<span class="fc bfc" id="L766" title="All 2 branches covered.">        if (this.bitsToGo == 0) {</span>
-<span class="fc bfc" id="L767" title="All 2 branches covered.">            for (ii = 0; ii &lt; n / 2; ii++) {</span>
+<span class="fc bfc" id="L765" title="All 2 branches covered.">        if (this.bitsToGo == 0) {</span>
+<span class="fc bfc" id="L766" title="All 2 branches covered.">            for (ii = 0; ii &lt; n / 2; ii++) {</span>
                 /*
                  * refill the buffer with next byte
                  */
-<span class="fc" id="L771">                this.buffer2 = this.buffer2 &lt;&lt; BITS_OF_1_BYTE | infile.get() &amp; BYTE_MASK;</span>
-<span class="fc" id="L772">                array[kk] = (byte) (this.buffer2 &gt;&gt; BITS_OF_1_NYBBLE &amp; NYBBLE_MASK);</span>
-<span class="fc" id="L773">                array[kk + 1] = (byte) (this.buffer2 &amp; NYBBLE_MASK); /*</span>
+<span class="fc" id="L770">                this.buffer2 = this.buffer2 &lt;&lt; BITS_OF_1_BYTE | infile.get() &amp; BYTE_MASK;</span>
+<span class="fc" id="L771">                array[kk] = (byte) (this.buffer2 &gt;&gt; BITS_OF_1_NYBBLE &amp; NYBBLE_MASK);</span>
+<span class="fc" id="L772">                array[kk + 1] = (byte) (this.buffer2 &amp; NYBBLE_MASK); /*</span>
                                                                       * no shift
                                                                       * required
                                                                       */
-<span class="fc" id="L777">                kk += 2;</span>
+<span class="fc" id="L776">                kk += 2;</span>
             }
         } else {
-<span class="fc bfc" id="L780" title="All 2 branches covered.">            for (ii = 0; ii &lt; n / 2; ii++) {</span>
+<span class="fc bfc" id="L779" title="All 2 branches covered.">            for (ii = 0; ii &lt; n / 2; ii++) {</span>
                 /*
                  * refill the buffer with next byte
                  */
-<span class="fc" id="L784">                this.buffer2 = this.buffer2 &lt;&lt; BITS_OF_1_BYTE | infile.get() &amp; BYTE_MASK;</span>
-<span class="fc" id="L785">                array[kk] = (byte) (this.buffer2 &gt;&gt; shift1 &amp; NYBBLE_MASK);</span>
-<span class="fc" id="L786">                array[kk + 1] = (byte) (this.buffer2 &gt;&gt; shift2 &amp; NYBBLE_MASK);</span>
-<span class="fc" id="L787">                kk += 2;</span>
+<span class="fc" id="L783">                this.buffer2 = this.buffer2 &lt;&lt; BITS_OF_1_BYTE | infile.get() &amp; BYTE_MASK;</span>
+<span class="fc" id="L784">                array[kk] = (byte) (this.buffer2 &gt;&gt; shift1 &amp; NYBBLE_MASK);</span>
+<span class="fc" id="L785">                array[kk + 1] = (byte) (this.buffer2 &gt;&gt; shift2 &amp; NYBBLE_MASK);</span>
+<span class="fc" id="L786">                kk += 2;</span>
             }
         }
 
-<span class="fc bfc" id="L791" title="All 2 branches covered.">        if (ii * 2 != n) { /* have to read last odd byte */</span>
-<span class="fc" id="L792">            array[n - 1] = (byte) inputNybble(infile);</span>
+<span class="fc bfc" id="L790" title="All 2 branches covered.">        if (ii * 2 != n) { /* have to read last odd byte */</span>
+<span class="fc" id="L791">            array[n - 1] = (byte) inputNybble(infile);</span>
         }
 
-<span class="fc" id="L795">        return this.buffer2 &gt;&gt; this.bitsToGo &amp; NYBBLE_MASK;</span>
+<span class="fc" id="L794">        return this.buffer2 &gt;&gt; this.bitsToGo &amp; NYBBLE_MASK;</span>
     }
 
     private int inputNybble(ByteBuffer infile) {
-<span class="fc bfc" id="L799" title="All 2 branches covered.">        if (this.bitsToGo &lt; BITS_OF_1_NYBBLE) {</span>
+<span class="fc bfc" id="L798" title="All 2 branches covered.">        if (this.bitsToGo &lt; BITS_OF_1_NYBBLE) {</span>
             /*
              * need another byte's worth of bits
              */
 
-<span class="fc" id="L804">            this.buffer2 = this.buffer2 &lt;&lt; BITS_OF_1_BYTE | infile.get() &amp; BYTE_MASK;</span>
-<span class="fc" id="L805">            this.bitsToGo += BITS_OF_1_BYTE;</span>
+<span class="fc" id="L803">            this.buffer2 = this.buffer2 &lt;&lt; BITS_OF_1_BYTE | infile.get() &amp; BYTE_MASK;</span>
+<span class="fc" id="L804">            this.bitsToGo += BITS_OF_1_BYTE;</span>
         }
         /*
          * now pick off the first 4 bits
          */
-<span class="fc" id="L810">        this.bitsToGo -= BITS_OF_1_NYBBLE;</span>
+<span class="fc" id="L809">        this.bitsToGo -= BITS_OF_1_NYBBLE;</span>
 
-<span class="fc" id="L812">        return this.buffer2 &gt;&gt; this.bitsToGo &amp; NYBBLE_MASK;</span>
+<span class="fc" id="L811">        return this.buffer2 &gt;&gt; this.bitsToGo &amp; NYBBLE_MASK;</span>
     }
 
     /**
@@ -820,74 +819,74 @@ import java.nio.ByteBuffer;
      */
     private void qtreeBitins64(byte[] a, int lnx, int lny, LongArrayPointer b, int n, int bit) {
         int i, j, s00;
-<span class="fc" id="L823">        long planeVal = 1L &lt;&lt; bit;</span>
+<span class="fc" id="L822">        long planeVal = 1L &lt;&lt; bit;</span>
         // expand each 2x2 block
-<span class="fc" id="L825">        ByteBuffer k = ByteBuffer.wrap(a); /* k is index of a[i/2,j/2] */</span>
-<span class="fc bfc" id="L826" title="All 2 branches covered.">        for (i = 0; i &lt; lnx - 1; i += 2) {</span>
-<span class="fc" id="L827">            s00 = n * i; /* s00 is index of b[i,j] */</span>
+<span class="fc" id="L824">        ByteBuffer k = ByteBuffer.wrap(a); /* k is index of a[i/2,j/2] */</span>
+<span class="fc bfc" id="L825" title="All 2 branches covered.">        for (i = 0; i &lt; lnx - 1; i += 2) {</span>
+<span class="fc" id="L826">            s00 = n * i; /* s00 is index of b[i,j] */</span>
             // Note: this code appears to run very slightly faster on a 32-bit
             // linux machine using s00+n rather than the s10 intermediate
             // variable
             // s10 = s00+n; *//* s10 is index of b[i+1,j]
-<span class="fc bfc" id="L832" title="All 2 branches covered.">            for (j = 0; j &lt; lny - 1; j += 2) {</span>
-<span class="fc" id="L833">                byte value = k.get();</span>
-<span class="fc bfc" id="L834" title="All 2 branches covered.">                if ((value &amp; BIT_ONE) != ZERO) {</span>
-<span class="fc" id="L835">                    b.bitOr(s00 + n + 1, planeVal);</span>
+<span class="fc bfc" id="L831" title="All 2 branches covered.">            for (j = 0; j &lt; lny - 1; j += 2) {</span>
+<span class="fc" id="L832">                byte value = k.get();</span>
+<span class="fc bfc" id="L833" title="All 2 branches covered.">                if ((value &amp; BIT_ONE) != ZERO) {</span>
+<span class="fc" id="L834">                    b.bitOr(s00 + n + 1, planeVal);</span>
                 }
-<span class="fc bfc" id="L837" title="All 2 branches covered.">                if ((value &amp; BIT_TWO) != ZERO) {</span>
-<span class="fc" id="L838">                    b.bitOr(s00 + n, planeVal);</span>
+<span class="fc bfc" id="L836" title="All 2 branches covered.">                if ((value &amp; BIT_TWO) != ZERO) {</span>
+<span class="fc" id="L837">                    b.bitOr(s00 + n, planeVal);</span>
                 }
-<span class="fc bfc" id="L840" title="All 2 branches covered.">                if ((value &amp; BIT_THREE) != ZERO) {</span>
-<span class="fc" id="L841">                    b.bitOr(s00 + 1, planeVal);</span>
+<span class="fc bfc" id="L839" title="All 2 branches covered.">                if ((value &amp; BIT_THREE) != ZERO) {</span>
+<span class="fc" id="L840">                    b.bitOr(s00 + 1, planeVal);</span>
                 }
-<span class="fc bfc" id="L843" title="All 2 branches covered.">                if ((value &amp; BIT_FOUR) != ZERO) {</span>
-<span class="fc" id="L844">                    b.bitOr(s00, planeVal);</span>
+<span class="fc bfc" id="L842" title="All 2 branches covered.">                if ((value &amp; BIT_FOUR) != ZERO) {</span>
+<span class="fc" id="L843">                    b.bitOr(s00, planeVal);</span>
                 }
                 // b.bitOr(s10+1, ((LONGLONG) ( a[k] &amp; 1)) &lt;&lt; bit; b.bitOr(s10 ,
                 // ((((LONGLONG)a[k])&gt;&gt;1) &amp; 1) &lt;&lt; bit; b.bitOr(s00+1,
                 // ((((LONGLONG)a[k])&gt;&gt;2) &amp; 1) &lt;&lt; bit; b.bitOr(s00
                 // ,((((LONGLONG)a[k])&gt;&gt;3) &amp; 1) &lt;&lt; bit;
-<span class="fc" id="L850">                s00 += 2;</span>
+<span class="fc" id="L849">                s00 += 2;</span>
                 /* s10 += 2; */
             }
-<span class="fc bfc" id="L853" title="All 2 branches covered.">            if (j &lt; lny) {</span>
+<span class="fc bfc" id="L852" title="All 2 branches covered.">            if (j &lt; lny) {</span>
                 // row size is odd, do last element in row s00+1, s10+1 are off
                 // edge
-<span class="fc" id="L856">                byte value = k.get();</span>
-<span class="fc bfc" id="L857" title="All 2 branches covered.">                if ((value &amp; BIT_TWO) != ZERO) {</span>
-<span class="fc" id="L858">                    b.bitOr(s00 + n, planeVal);</span>
+<span class="fc" id="L855">                byte value = k.get();</span>
+<span class="fc bfc" id="L856" title="All 2 branches covered.">                if ((value &amp; BIT_TWO) != ZERO) {</span>
+<span class="fc" id="L857">                    b.bitOr(s00 + n, planeVal);</span>
                 }
-<span class="fc bfc" id="L860" title="All 2 branches covered.">                if ((value &amp; BIT_FOUR) != ZERO) {</span>
-<span class="fc" id="L861">                    b.bitOr(s00, planeVal);</span>
+<span class="fc bfc" id="L859" title="All 2 branches covered.">                if ((value &amp; BIT_FOUR) != ZERO) {</span>
+<span class="fc" id="L860">                    b.bitOr(s00, planeVal);</span>
                 }
                 // b.bitOr(s10 , ((((LONGLONG)a[k])&gt;&gt;1) &amp; 1) &lt;&lt; bit; b.bitOr(s00
                 // , ((((LONGLONG)a[k])&gt;&gt;3) &amp; 1) &lt;&lt; bit;
             }
         }
-<span class="fc bfc" id="L867" title="All 2 branches covered.">        if (i &lt; lnx) {</span>
+<span class="fc bfc" id="L866" title="All 2 branches covered.">        if (i &lt; lnx) {</span>
             // column size is odd, do last row s10, s10+1 are off edge
-<span class="fc" id="L869">            s00 = n * i;</span>
-<span class="fc bfc" id="L870" title="All 2 branches covered.">            for (j = 0; j &lt; lny - 1; j += 2) {</span>
-<span class="fc" id="L871">                byte value = k.get();</span>
-<span class="fc bfc" id="L872" title="All 2 branches covered.">                if ((value &amp; BIT_THREE) != ZERO) {</span>
-<span class="fc" id="L873">                    b.bitOr(s00 + 1, planeVal);</span>
+<span class="fc" id="L868">            s00 = n * i;</span>
+<span class="fc bfc" id="L869" title="All 2 branches covered.">            for (j = 0; j &lt; lny - 1; j += 2) {</span>
+<span class="fc" id="L870">                byte value = k.get();</span>
+<span class="fc bfc" id="L871" title="All 2 branches covered.">                if ((value &amp; BIT_THREE) != ZERO) {</span>
+<span class="fc" id="L872">                    b.bitOr(s00 + 1, planeVal);</span>
                 }
-<span class="fc bfc" id="L875" title="All 2 branches covered.">                if ((value &amp; BIT_FOUR) != ZERO) {</span>
-<span class="fc" id="L876">                    b.bitOr(s00, planeVal);</span>
+<span class="fc bfc" id="L874" title="All 2 branches covered.">                if ((value &amp; BIT_FOUR) != ZERO) {</span>
+<span class="fc" id="L875">                    b.bitOr(s00, planeVal);</span>
                 } // b.bitOr(s00+1, ((((LONGLONG)a[k])&gt;&gt;2) &amp; 1) &lt;&lt; bit;
                   // b.bitOr(s00 , ((((LONGLONG)a[k])&gt;&gt;3) &amp; 1) &lt;&lt; bit;
-<span class="fc" id="L879">                s00 += 2;</span>
+<span class="fc" id="L878">                s00 += 2;</span>
             }
-<span class="fc bfc" id="L881" title="All 2 branches covered.">            if (j &lt; lny) {</span>
+<span class="fc bfc" id="L880" title="All 2 branches covered.">            if (j &lt; lny) {</span>
                 // both row and column size are odd, do corner element s00+1,
                 // s10, s10+1 are off edge
-<span class="pc bpc" id="L884" title="1 of 2 branches missed.">                if ((k.get() &amp; BIT_FOUR) != ZERO) {</span>
-<span class="nc" id="L885">                    b.bitOr(s00, planeVal);</span>
+<span class="pc bpc" id="L883" title="1 of 2 branches missed.">                if ((k.get() &amp; BIT_FOUR) != ZERO) {</span>
+<span class="nc" id="L884">                    b.bitOr(s00, planeVal);</span>
                 }
                 // b.bitOr(s00 , ((((LONGLONG)a[k])&gt;&gt;3) &amp; 1) &lt;&lt; bit;
             }
         }
-<span class="fc" id="L890">    }</span>
+<span class="fc" id="L889">    }</span>
 
     /**
      * copy 4-bit values from a[(nx+1)/2,(ny+1)/2] to b[nx,ny], expanding each
@@ -898,55 +897,55 @@ import java.nio.ByteBuffer;
         int s00, s10;
         // first copy 4-bit values to b start at end in case a,b are same
         // tiledImageOperation
-<span class="fc" id="L901">        nx2 = (lnx + 1) / 2;</span>
-<span class="fc" id="L902">        ny2 = (lny + 1) / 2;</span>
-<span class="fc" id="L903">        k = ny2 * (nx2 - 1) + ny2 - 1; /* k is index of a[i,j] */</span>
-<span class="fc bfc" id="L904" title="All 2 branches covered.">        for (i = nx2 - 1; i &gt;= 0; i--) {</span>
-<span class="fc" id="L905">            s00 = 2 * (n * i + ny2 - 1); /* s00 is index of b[2*i,2*j] */</span>
-<span class="fc bfc" id="L906" title="All 2 branches covered.">            for (j = ny2 - 1; j &gt;= 0; j--) {</span>
-<span class="fc" id="L907">                b[s00] = a[k];</span>
-<span class="fc" id="L908">                k -= 1;</span>
-<span class="fc" id="L909">                s00 -= 2;</span>
+<span class="fc" id="L900">        nx2 = (lnx + 1) / 2;</span>
+<span class="fc" id="L901">        ny2 = (lny + 1) / 2;</span>
+<span class="fc" id="L902">        k = ny2 * (nx2 - 1) + ny2 - 1; /* k is index of a[i,j] */</span>
+<span class="fc bfc" id="L903" title="All 2 branches covered.">        for (i = nx2 - 1; i &gt;= 0; i--) {</span>
+<span class="fc" id="L904">            s00 = 2 * (n * i + ny2 - 1); /* s00 is index of b[2*i,2*j] */</span>
+<span class="fc bfc" id="L905" title="All 2 branches covered.">            for (j = ny2 - 1; j &gt;= 0; j--) {</span>
+<span class="fc" id="L906">                b[s00] = a[k];</span>
+<span class="fc" id="L907">                k -= 1;</span>
+<span class="fc" id="L908">                s00 -= 2;</span>
             }
         }
-<span class="fc bfc" id="L912" title="All 2 branches covered.">        for (i = 0; i &lt; lnx - 1; i += 2) { // now expand each 2x2 block</span>
+<span class="fc bfc" id="L911" title="All 2 branches covered.">        for (i = 0; i &lt; lnx - 1; i += 2) { // now expand each 2x2 block</span>
             // Note: Unlike the case in qtree_bitins, this code runs faster on a
             // 32-bit linux machine using the s10 intermediate variable, rather
             // that using s00+n. Go figure!
-<span class="fc" id="L916">            s00 = n * i; // s00 is index of b[i,j]</span>
-<span class="fc" id="L917">            s10 = s00 + n; // s10 is index of b[i+1,j]</span>
-<span class="fc bfc" id="L918" title="All 2 branches covered.">            for (j = 0; j &lt; lny - 1; j += 2) {</span>
-<span class="fc bfc" id="L919" title="All 2 branches covered.">                b[s10 + 1] = (b[s00] &amp; BIT_ONE) == ZERO ? ZERO : BIT_ONE;</span>
-<span class="fc bfc" id="L920" title="All 2 branches covered.">                b[s10] = (b[s00] &amp; BIT_TWO) == ZERO ? ZERO : BIT_ONE;</span>
-<span class="fc bfc" id="L921" title="All 2 branches covered.">                b[s00 + 1] = (b[s00] &amp; BIT_THREE) == ZERO ? ZERO : BIT_ONE;</span>
-<span class="fc bfc" id="L922" title="All 2 branches covered.">                b[s00] = (b[s00] &amp; BIT_FOUR) == ZERO ? ZERO : BIT_ONE;</span>
-<span class="fc" id="L923">                s00 += 2;</span>
-<span class="fc" id="L924">                s10 += 2;</span>
+<span class="fc" id="L915">            s00 = n * i; // s00 is index of b[i,j]</span>
+<span class="fc" id="L916">            s10 = s00 + n; // s10 is index of b[i+1,j]</span>
+<span class="fc bfc" id="L917" title="All 2 branches covered.">            for (j = 0; j &lt; lny - 1; j += 2) {</span>
+<span class="fc bfc" id="L918" title="All 2 branches covered.">                b[s10 + 1] = (b[s00] &amp; BIT_ONE) == ZERO ? ZERO : BIT_ONE;</span>
+<span class="fc bfc" id="L919" title="All 2 branches covered.">                b[s10] = (b[s00] &amp; BIT_TWO) == ZERO ? ZERO : BIT_ONE;</span>
+<span class="fc bfc" id="L920" title="All 2 branches covered.">                b[s00 + 1] = (b[s00] &amp; BIT_THREE) == ZERO ? ZERO : BIT_ONE;</span>
+<span class="fc bfc" id="L921" title="All 2 branches covered.">                b[s00] = (b[s00] &amp; BIT_FOUR) == ZERO ? ZERO : BIT_ONE;</span>
+<span class="fc" id="L922">                s00 += 2;</span>
+<span class="fc" id="L923">                s10 += 2;</span>
             }
-<span class="fc bfc" id="L926" title="All 2 branches covered.">            if (j &lt; lny) {</span>
+<span class="fc bfc" id="L925" title="All 2 branches covered.">            if (j &lt; lny) {</span>
                 // row size is odd, do last element in row s00+1, s10+1 are off
                 // edge not worth converting this to use 16 case statements
-<span class="fc" id="L929">                b[s10] = (byte) (b[s00] &gt;&gt; 1 &amp; 1);</span>
-<span class="fc" id="L930">                b[s00] = (byte) (b[s00] &gt;&gt; N03 &amp; 1);</span>
+<span class="fc" id="L928">                b[s10] = (byte) (b[s00] &gt;&gt; 1 &amp; 1);</span>
+<span class="fc" id="L929">                b[s00] = (byte) (b[s00] &gt;&gt; N03 &amp; 1);</span>
             }
         }
-<span class="fc bfc" id="L933" title="All 2 branches covered.">        if (i &lt; lnx) {</span>
+<span class="fc bfc" id="L932" title="All 2 branches covered.">        if (i &lt; lnx) {</span>
             // column size is odd, do last row s10, s10+1 are off edge
-<span class="fc" id="L935">            s00 = n * i;</span>
-<span class="fc bfc" id="L936" title="All 2 branches covered.">            for (j = 0; j &lt; lny - 1; j += 2) {</span>
+<span class="fc" id="L934">            s00 = n * i;</span>
+<span class="fc bfc" id="L935" title="All 2 branches covered.">            for (j = 0; j &lt; lny - 1; j += 2) {</span>
                 // not worth converting this to use 16 case statements
-<span class="fc" id="L938">                b[s00 + 1] = (byte) (b[s00] &gt;&gt; 2 &amp; 1);</span>
-<span class="fc" id="L939">                b[s00] = (byte) (b[s00] &gt;&gt; N03 &amp; 1);</span>
-<span class="fc" id="L940">                s00 += 2;</span>
+<span class="fc" id="L937">                b[s00 + 1] = (byte) (b[s00] &gt;&gt; 2 &amp; 1);</span>
+<span class="fc" id="L938">                b[s00] = (byte) (b[s00] &gt;&gt; N03 &amp; 1);</span>
+<span class="fc" id="L939">                s00 += 2;</span>
             }
-<span class="fc bfc" id="L942" title="All 2 branches covered.">            if (j &lt; lny) {</span>
+<span class="fc bfc" id="L941" title="All 2 branches covered.">            if (j &lt; lny) {</span>
                 // both row and column size are odd, do corner element s00+1,
                 // s10, s10+1 are off edge not worth converting this to use 16
                 // case statements
-<span class="fc" id="L946">                b[s00] = (byte) (b[s00] &gt;&gt; N03 &amp; 1);</span>
+<span class="fc" id="L945">                b[s00] = (byte) (b[s00] &gt;&gt; N03 &amp; 1);</span>
             }
         }
-<span class="fc" id="L949">    }</span>
+<span class="fc" id="L948">    }</span>
 
     /**
      * char *infile; long a[]; a is 2-D tiledImageOperation with dimensions
@@ -962,74 +961,74 @@ import java.nio.ByteBuffer;
         /*
          * log2n is log2 of max(nqx,nqy) rounded up to next power of 2
          */
-<span class="fc bfc" id="L965" title="All 2 branches covered.">        int nqmax = nqx &gt; nqy ? nqx : nqy;</span>
-<span class="fc" id="L966">        int log2n = calculateLog2N(nqmax);</span>
+<span class="fc bfc" id="L964" title="All 2 branches covered.">        int nqmax = nqx &gt; nqy ? nqx : nqy;</span>
+<span class="fc" id="L965">        int log2n = calculateLog2N(nqmax);</span>
         /*
          * allocate scratch tiledImageOperation for working space
          */
-<span class="fc" id="L970">        int nqx2 = (nqx + 1) / 2;</span>
-<span class="fc" id="L971">        int nqy2 = (nqy + 1) / 2;</span>
-<span class="fc" id="L972">        scratch = new byte[nqx2 * nqy2];</span>
+<span class="fc" id="L969">        int nqx2 = (nqx + 1) / 2;</span>
+<span class="fc" id="L970">        int nqy2 = (nqy + 1) / 2;</span>
+<span class="fc" id="L971">        scratch = new byte[nqx2 * nqy2];</span>
 
         /*
          * now decode each bit plane, starting at the top A is assumed to be
          * initialized to zero
          */
-<span class="fc bfc" id="L978" title="All 2 branches covered.">        for (bit = nbitplanes - 1; bit &gt;= 0; bit--) {</span>
+<span class="fc bfc" id="L977" title="All 2 branches covered.">        for (bit = nbitplanes - 1; bit &gt;= 0; bit--) {</span>
             /*
              * Was bitplane was quadtree-coded or written directly?
              */
-<span class="fc" id="L982">            b = inputNybble(infile);</span>
+<span class="fc" id="L981">            b = inputNybble(infile);</span>
 
-<span class="fc bfc" id="L984" title="All 2 branches covered.">            if (b == 0) {</span>
+<span class="fc bfc" id="L983" title="All 2 branches covered.">            if (b == 0) {</span>
                 /*
                  * bit map was written directly
                  */
-<span class="fc" id="L988">                readBdirect64(infile, a, n, nqx, nqy, scratch, bit);</span>
-<span class="pc bpc" id="L989" title="1 of 2 branches missed.">            } else if (b != NYBBLE_MASK) {</span>
-<span class="nc" id="L990">                throw new RuntimeException(&quot;Compression error&quot;);</span>
+<span class="fc" id="L987">                readBdirect64(infile, a, n, nqx, nqy, scratch, bit);</span>
+<span class="pc bpc" id="L988" title="1 of 2 branches missed.">            } else if (b != NYBBLE_MASK) {</span>
+<span class="nc" id="L989">                throw new RuntimeException(&quot;Compression error&quot;);</span>
             } else {
                 /*
                  * bitmap was quadtree-coded, do log2n expansions read first
                  * code
                  */
-<span class="fc" id="L996">                scratch[0] = (byte) inputHuffman(infile);</span>
+<span class="fc" id="L995">                scratch[0] = (byte) inputHuffman(infile);</span>
                 /*
                  * now do log2n expansions, reading codes from file as necessary
                  */
-<span class="fc" id="L1000">                nx2 = 1;</span>
-<span class="fc" id="L1001">                ny2 = 1;</span>
-<span class="fc" id="L1002">                nfx = nqx;</span>
-<span class="fc" id="L1003">                nfy = nqy;</span>
-<span class="fc" id="L1004">                c = 1 &lt;&lt; log2n;</span>
-<span class="fc bfc" id="L1005" title="All 2 branches covered.">                for (k = 1; k &lt; log2n; k++) {</span>
+<span class="fc" id="L999">                nx2 = 1;</span>
+<span class="fc" id="L1000">                ny2 = 1;</span>
+<span class="fc" id="L1001">                nfx = nqx;</span>
+<span class="fc" id="L1002">                nfy = nqy;</span>
+<span class="fc" id="L1003">                c = 1 &lt;&lt; log2n;</span>
+<span class="fc bfc" id="L1004" title="All 2 branches covered.">                for (k = 1; k &lt; log2n; k++) {</span>
                     /*
                      * this somewhat cryptic code generates the sequence n[k-1]
                      * = (n[k]+1)/2 where n[log2n]=nqx or nqy
                      */
-<span class="fc" id="L1010">                    c = c &gt;&gt; 1;</span>
-<span class="fc" id="L1011">                    nx2 = nx2 &lt;&lt; 1;</span>
-<span class="fc" id="L1012">                    ny2 = ny2 &lt;&lt; 1;</span>
-<span class="fc bfc" id="L1013" title="All 2 branches covered.">                    if (nfx &lt;= c) {</span>
-<span class="fc" id="L1014">                        nx2 -= 1;</span>
+<span class="fc" id="L1009">                    c = c &gt;&gt; 1;</span>
+<span class="fc" id="L1010">                    nx2 = nx2 &lt;&lt; 1;</span>
+<span class="fc" id="L1011">                    ny2 = ny2 &lt;&lt; 1;</span>
+<span class="fc bfc" id="L1012" title="All 2 branches covered.">                    if (nfx &lt;= c) {</span>
+<span class="fc" id="L1013">                        nx2 -= 1;</span>
                     } else {
-<span class="fc" id="L1016">                        nfx -= c;</span>
+<span class="fc" id="L1015">                        nfx -= c;</span>
                     }
-<span class="fc bfc" id="L1018" title="All 2 branches covered.">                    if (nfy &lt;= c) {</span>
-<span class="fc" id="L1019">                        ny2 -= 1;</span>
+<span class="fc bfc" id="L1017" title="All 2 branches covered.">                    if (nfy &lt;= c) {</span>
+<span class="fc" id="L1018">                        ny2 -= 1;</span>
                     } else {
-<span class="fc" id="L1021">                        nfy -= c;</span>
+<span class="fc" id="L1020">                        nfy -= c;</span>
                     }
-<span class="fc" id="L1023">                    qtreeExpand(infile, scratch, nx2, ny2, scratch);</span>
+<span class="fc" id="L1022">                    qtreeExpand(infile, scratch, nx2, ny2, scratch);</span>
                 }
                 /*
                  * now copy last set of 4-bit codes to bitplane bit of
                  * tiledImageOperation a
                  */
-<span class="fc" id="L1029">                qtreeBitins64(scratch, nqx, nqy, a, n, bit);</span>
+<span class="fc" id="L1028">                qtreeBitins64(scratch, nqx, nqy, a, n, bit);</span>
             }
         }
-<span class="fc" id="L1032">        return 0;</span>
+<span class="fc" id="L1031">        return 0;</span>
     }
 
     /*
@@ -1043,16 +1042,16 @@ import java.nio.ByteBuffer;
         /*
          * first copy a to b, expanding each 4-bit value
          */
-<span class="fc" id="L1046">        qtreeCopy(a, nx2, ny2, b, ny2);</span>
+<span class="fc" id="L1045">        qtreeCopy(a, nx2, ny2, b, ny2);</span>
         /*
          * now read new 4-bit values into b for each non-zero element
          */
-<span class="fc bfc" id="L1050" title="All 2 branches covered.">        for (i = nx2 * ny2 - 1; i &gt;= 0; i--) {</span>
-<span class="fc bfc" id="L1051" title="All 2 branches covered.">            if (b[i] != 0) {</span>
-<span class="fc" id="L1052">                b[i] = (byte) inputHuffman(infile);</span>
+<span class="fc bfc" id="L1049" title="All 2 branches covered.">        for (i = nx2 * ny2 - 1; i &gt;= 0; i--) {</span>
+<span class="fc bfc" id="L1050" title="All 2 branches covered.">            if (b[i] != 0) {</span>
+<span class="fc" id="L1051">                b[i] = (byte) inputHuffman(infile);</span>
             }
         }
-<span class="fc" id="L1055">    }</span>
+<span class="fc" id="L1054">    }</span>
 
     private void readBdirect64(ByteBuffer infile, LongArrayPointer a, int n, int nqx, int nqy, byte[] scratch, int bit) {
         /*
@@ -1062,13 +1061,13 @@ import java.nio.ByteBuffer;
          * int i; for (i = 0; i &lt; ((nqx+1)/2) * ((nqy+1)/2); i++) { scratch[i] =
          * input_nybble(infile); }
          */
-<span class="fc" id="L1065">        inputNnybble(infile, (nqx + 1) / 2 * ((nqy + 1) / 2), scratch);</span>
+<span class="fc" id="L1064">        inputNnybble(infile, (nqx + 1) / 2 * ((nqy + 1) / 2), scratch);</span>
 
         /*
          * insert in bitplane BIT of image A
          */
-<span class="fc" id="L1070">        qtreeBitins64(scratch, nqx, nqy, a, n, bit);</span>
-<span class="fc" id="L1071">    }</span>
+<span class="fc" id="L1069">        qtreeBitins64(scratch, nqx, nqy, a, n, bit);</span>
+<span class="fc" id="L1070">    }</span>
 
     /*
      * ##########################################################################
@@ -1078,8 +1077,8 @@ import java.nio.ByteBuffer;
         /*
          * Buffer starts out with no bits in it
          */
-<span class="fc" id="L1081">        this.bitsToGo = 0;</span>
-<span class="fc" id="L1082">    }</span>
+<span class="fc" id="L1080">        this.bitsToGo = 0;</span>
+<span class="fc" id="L1081">    }</span>
 
     private void undigitize64(LongArrayPointer a) {
         long scale64;
@@ -1087,17 +1086,17 @@ import java.nio.ByteBuffer;
         /*
          * multiply by scale
          */
-<span class="fc bfc" id="L1090" title="All 2 branches covered.">        if (this.scale &lt;= 1) {</span>
-<span class="fc" id="L1091">            return;</span>
+<span class="fc bfc" id="L1089" title="All 2 branches covered.">        if (this.scale &lt;= 1) {</span>
+<span class="fc" id="L1090">            return;</span>
         }
-<span class="fc" id="L1093">        scale64 = this.scale; /*</span>
+<span class="fc" id="L1092">        scale64 = this.scale; /*</span>
                                * use a 64-bit int for efficiency in the big loop
                                */
 
-<span class="fc bfc" id="L1097" title="All 2 branches covered.">        for (int index = 0; index &lt; a.a.length; index++) {</span>
-<span class="fc" id="L1098">            a.a[index] = a.a[index] * scale64;</span>
+<span class="fc bfc" id="L1096" title="All 2 branches covered.">        for (int index = 0; index &lt; a.a.length; index++) {</span>
+<span class="fc" id="L1097">            a.a[index] = a.a[index] * scale64;</span>
         }
-<span class="fc" id="L1100">    }</span>
+<span class="fc" id="L1099">    }</span>
 
     /**
      * long a[]; tiledImageOperation to shuffle int n; number of elements to
@@ -1111,35 +1110,35 @@ import java.nio.ByteBuffer;
         /*
          * copy 2nd half of tiledImageOperation to tmp
          */
-<span class="fc" id="L1114">        nhalf = n + 1 &gt;&gt; 1;</span>
-<span class="fc" id="L1115">        pt = new LongArrayPointer(tmp);</span>
-<span class="fc" id="L1116">        p1 = a.copy(n2 * nhalf); /* pointer to a[i] */</span>
-<span class="fc bfc" id="L1117" title="All 2 branches covered.">        for (i = nhalf; i &lt; n; i++) {</span>
-<span class="fc" id="L1118">            pt.set(p1.get());</span>
-<span class="fc" id="L1119">            p1.offset += n2;</span>
-<span class="fc" id="L1120">            pt.offset += 1;</span>
+<span class="fc" id="L1113">        nhalf = n + 1 &gt;&gt; 1;</span>
+<span class="fc" id="L1114">        pt = new LongArrayPointer(tmp);</span>
+<span class="fc" id="L1115">        p1 = a.copy(n2 * nhalf); /* pointer to a[i] */</span>
+<span class="fc bfc" id="L1116" title="All 2 branches covered.">        for (i = nhalf; i &lt; n; i++) {</span>
+<span class="fc" id="L1117">            pt.set(p1.get());</span>
+<span class="fc" id="L1118">            p1.offset += n2;</span>
+<span class="fc" id="L1119">            pt.offset += 1;</span>
         }
         /*
          * distribute 1st half of tiledImageOperation to even elements
          */
-<span class="fc" id="L1125">        p2 = a.copy(n2 * (nhalf - 1)); /* pointer to a[i] */</span>
-<span class="fc" id="L1126">        p1 = a.copy(n2 * (nhalf - 1) &lt;&lt; 1); /* pointer to a[2*i] */</span>
-<span class="fc bfc" id="L1127" title="All 2 branches covered.">        for (i = nhalf - 1; i &gt;= 0; i--) {</span>
-<span class="fc" id="L1128">            p1.set(p2.get());</span>
-<span class="fc" id="L1129">            p2.offset -= n2;</span>
-<span class="fc" id="L1130">            p1.offset -= n2 + n2;</span>
+<span class="fc" id="L1124">        p2 = a.copy(n2 * (nhalf - 1)); /* pointer to a[i] */</span>
+<span class="fc" id="L1125">        p1 = a.copy(n2 * (nhalf - 1) &lt;&lt; 1); /* pointer to a[2*i] */</span>
+<span class="fc bfc" id="L1126" title="All 2 branches covered.">        for (i = nhalf - 1; i &gt;= 0; i--) {</span>
+<span class="fc" id="L1127">            p1.set(p2.get());</span>
+<span class="fc" id="L1128">            p2.offset -= n2;</span>
+<span class="fc" id="L1129">            p1.offset -= n2 + n2;</span>
         }
         /*
          * now distribute 2nd half of tiledImageOperation (in tmp) to odd
          * elements
          */
-<span class="fc" id="L1136">        pt = new LongArrayPointer(tmp);</span>
-<span class="fc" id="L1137">        p1 = a.copy(n2); /* pointer to a[i] */</span>
-<span class="fc bfc" id="L1138" title="All 2 branches covered.">        for (i = 1; i &lt; n; i += 2) {</span>
-<span class="fc" id="L1139">            p1.set(pt.get());</span>
-<span class="fc" id="L1140">            p1.offset += n2 + n2;</span>
-<span class="fc" id="L1141">            pt.offset += 1;</span>
+<span class="fc" id="L1135">        pt = new LongArrayPointer(tmp);</span>
+<span class="fc" id="L1136">        p1 = a.copy(n2); /* pointer to a[i] */</span>
+<span class="fc bfc" id="L1137" title="All 2 branches covered.">        for (i = 1; i &lt; n; i += 2) {</span>
+<span class="fc" id="L1138">            p1.set(pt.get());</span>
+<span class="fc" id="L1139">            p1.offset += n2 + n2;</span>
+<span class="fc" id="L1140">            pt.offset += 1;</span>
         }
-<span class="fc" id="L1143">    }</span>
+<span class="fc" id="L1142">    }</span>
 }
-</pre><div class="footer"><span class="right">Created with <a href="http://www.eclemma.org/jacoco">JaCoCo</a> 0.7.6.201602180812</span></div></body></html>
+</pre><div class="footer"><span class="right">Created with <a href="http://www.jacoco.org/jacoco">JaCoCo</a> 0.8.7.202105040129</span></div></body></html>
