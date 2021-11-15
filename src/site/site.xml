@@ -8,9 +8,6 @@
 	<bannerLeft>
 		<src>images/fits_logo.png</src>
 	</bannerLeft>
-	<bannerRight>
-		<src>images/fits_logo_text.png</src>
-	</bannerRight>
 	<publishDate position="left" format="yyyy-MM-dd" />
 	<version position="right" />
 	<poweredBy>
@@ -34,6 +31,7 @@
 		<menu name="Documentation">
 			<item name="About" href="index.html" />
 			<item name="Introduction" href="intro.html" />
+			<item name="API Documentation" href="apidocs/index.html" />
 			<item name="Fits keywords" href="header.html" />
 			<item name="Download" href="download.html" />
 			<item name="Compression" href="compression.html" />
