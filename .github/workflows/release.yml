@@ -1,7 +1,8 @@
 
 name: Update Release
 
-on: release
+on: 
+  release: []
    
 jobs:  
   build:
