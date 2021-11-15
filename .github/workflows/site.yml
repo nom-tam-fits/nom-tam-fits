@@ -25,6 +25,6 @@ jobs:
         cache: maven
         
     - name: Build, test, and deploy with Maven
-      run: mvn site-deploy
+      run: mvn site-deploy --settings settings.xml
 
 
