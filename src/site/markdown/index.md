@@ -36,7 +36,7 @@ This is an open-source project hosted on github as [nom-tam-fits](https://github
 <a name="what-is-fits"></a>
 ### What is FITS?
 
-FITS (Flexible Image Transport System) is a binary format devised and primarily used for the storage of astronomical information.
+FITS (Flexible Image Transport System) is a binary format devised and primarily used for the storage of astronomical datasets.
 A FITS file is composed of one or more *Header-Data Units* *(HDUs)*.
 As their name suggests, each *HDU* has a *header* which can contain comments and associated metadata as key-value pairs.
 Most *HDUs* also have a *data* section which can store a (possibly multidimensional) array of data or a table of values.
@@ -65,7 +65,7 @@ Often a null-image is used: this is possible by requesting an image HDU with an 
 
 5. **Compressed Image HDUs** can store an image HDU in a compressed manner. There are a set of available compression algorithms and compression parameters available.
 
-6. **Foreign File HDUs** can encapsulate various other files within the FITS. We do not support foreign file encapsulation yet, but it is something that we are considering for a future release.
+6. **Foreign File HDUs** can encapsulate various other files within the FITS. Foreign file HDUs are a recognised convention, but not (yet) officially part of the FITS standard. We do not support foreign file encapsulation yet, but it is something that we are considering for a future release.
 
   
 <a name="general-philosophy"></a>
@@ -112,14 +112,10 @@ This may change in a future release to make the use of `ComplexValue` more unive
 
 #### Strings
 
-FITS generally represents character strings a byte arrays of ASCII characters. The library will automatically converts between Java `String`s and the internal FITS representations, by the appropriate downcasting `char` to `byte`. Therefore you should be careful to avoid using extended Unicode chasracters (beyond the ASCII set) in String that weill be written
-to FITS.
+FITS generally represents character strings a byte arrays of ASCII characters. The library will automatically converts between Java `String`s and the internal FITS representations, by the appropriate downcasting `char` to `byte`. Therefore, you should be careful to avoid using extended Unicode characters (beyond the ASCII set) in `String`s, which will be written to FITS.
 
-It is also possible to write `char[]` arrays, Unfortunately, historically the library wrote `char[]` arrays as 16-bit Unicode, 
-rather than the 8-bit ASCII standard of FITS, and consequiently these would be read back as `short[]`. As of version 1.16, you can change that behavior by 
-`FitsFactory.setUseUnicodeChars(false)`, to reconcile `char[]` arrays with `String`s (and to read them back as `String`s). 
-
-
+It is also possible to write `char[]` arrays to FITS, Unfortunately, historically the library wrote `char[]` arrays as 16-bit Unicode, 
+rather than the 8-bit ASCII standard of FITS, and consequently (because there is no other corresponding 16-bit FITS datatype) these would be read back as `short[]`. As of version 1.16, you can change that behavior by `FitsFactory.setUseUnicodeChars(false)` to treat `char[]` arrays the same way as `String`s (and to read them back as `String`s). 
 
 
 
@@ -169,7 +165,7 @@ To read a FITS file the user typically might open a `Fits` object, get the appro
 <a name="deferred-reading"></a>
 ### Deferred reading
 
-When FITS data are being read from a non-compressed file (`FitsFile`), the `read()` call will parse all HDU headers but will typically skip over the data segments (noting their position in the file however). Only when the user tries to access data from a HDU, will the library load that data from the previously noted file position. The behavior allows to inspect the contents of a FITS file very quickly even when the file is large, and reduced the need for IO when to only the parts of interest to the user. Deferred input is not possible when the input is compressed or if it is uses an stream rather than a random-access `FitsFile`.
+When FITS data are being read from a non-compressed file (`FitsFile`), the `read()` call will parse all HDU headers but will typically skip over the data segments (noting their position in the file however). Only when the user tries to access data from a HDU, will the library load that data from the previously noted file position. The behavior allows to inspect the contents of a FITS file very quickly even when the file is large, and reduces the need for IO when only parts of the whole are of interest to the user. Deferred input, however, is not possible when the input is compressed or if it is uses an stream rather than a random-access `FitsFile`.
 
 <a name="reading-images"></a>
 ### Reading Images
@@ -192,7 +188,7 @@ which is actually a short hand for getting the data unit and the data within:
 
 ```java
   ImageData imageData = (ImageData) hdu.getData();
-  int[][] image = (int[][]) imageData.getKernel();
+  int[][] image = (int[][]) imageData.getData();
 ```
 
 However the user will be responsible for casting this to an appropriate type if they want to use the data inside their program.
@@ -323,8 +319,8 @@ If the pixels are ints, that’s  an 8 GB file.  We can do
       ArrayDataInput in = f.getStream();
       while (in.readLArray(line) == line.length * 4) {  // int is 4 bytes
           for (int i=0; i<line.length; i += 1) {
-              sum   += line[i];
-         	    count += 1;
+              sum += line[i];
+              count++;
           }
       }
       double avg = ((double) sum)/count;
@@ -370,7 +366,7 @@ It is also harder to do if there are variable length records although something 
 
 ### Tolerance to standard violations in 3rd party FITS files.
 
-By default the library will be tolerant to FITS standard violations when parsing 3rd-party FITS files. We believe that if you use this library to read a FITS produced by other software, you are mainly interested to find out what's inside it, rather than know what was not written properly. However, problems such as missing padding at the end of the file, or an unexpected end-of-file before content was fully parse, will be logged so they can be inspected. Soft violations of header standards (those that can be overcome with edicated guesses) are also tolerared when reading, but logging for these is not enabled by default (since they may be many, and likely you don't care). You can enable logging standard violations in 3rd-party headers by `Header.setParserWarningsEnabled(true)`. You can also enforce stricter compliance to standard when reading FITS files via `FitsFactory.setAllowHeaderRepairs(true)` and `FitsFactory.setAllowTerminalJunk(false)`. When violations are not tolerated, appropriate exceptions will be thrown during reading.
+By default the library will be tolerant to FITS standard violations when parsing 3rd-party FITS files. We believe that if you use this library to read a FITS produced by other software, you are mainly interested to find out what's inside it, rather than know if it was written properly. However, problems such as missing padding at the end of the file, or an unexpected end-of-file before content was fully parsed, will be logged so they can be inspected. Soft violations of header standards (those that can be overcome with educated guesses) are also tolerared when reading, but logging for these is not enabled by default (since they may be many, and likely you don't care). You can enable logging standard violations in 3rd-party headers by `Header.setParserWarningsEnabled(true)`. You can also enforce stricter compliance to standard when reading FITS files via `FitsFactory.setAllowHeaderRepairs(true)` and `FitsFactory.setAllowTerminalJunk(false)`. When violations are not tolerated, appropriate exceptions will be thrown during reading.
 
 
 
@@ -739,7 +735,7 @@ There are a set of `setTableMeta()` methods that can be used to help organize th
 <a name="standard-and-conventional-fits-header-keywords"></a>
 ### Standard and conventional FITS header keywords
 
-There many, many sources of FITS keywords.   Many organisations (or groups of organisations) have defined their own sets of keywords.
+There many, many fully standard, or conventional FITS keywords. Many organisations (or groups of organisations) have defined their own sets of keywords.
 This results in many different dictionaries with partly overlapping definitions. To help the "normal" user of FITS files
 with these, we have started to collect the standards and will try to include them in this library to ease finding of the "right" 
 keyword.
@@ -756,29 +752,29 @@ All included dictionaries of organisations can be found in the [nom.tam.fits.hea
 
 Currently we include:
 
-* Standard
-   source: [http://heasarc.gsfc.nasa.gov/docs/fcg/standard_dict.html](http://heasarc.gsfc.nasa.gov/docs/fcg/standard_dict.html) 
-* Common standard
-  inherits from Standard
-  source: [http://heasarc.gsfc.nasa.gov/docs/fcg/common_dict.html](http://heasarc.gsfc.nasa.gov/docs/fcg/common_dict.html) 
-* NOAO
-  inherits from Common standard
-  source: [http://iraf.noao.edu/iraf/web/projects/ccdmosaic/imagedef/fitsdic.html](http://iraf.noao.edu/iraf/web/projects/ccdmosaic/imagedef/fitsdic.html) 
-* SBFits
-  inherits from Common standard
-  source: [http://archive.sbig.com/pdffiles/SBFITSEXT_1r0.pdf](http://archive.sbig.com/pdffiles/SBFITSEXT_1r0.pdf) 
-* MaxImDL
-  inherits from SBFits
-  source: [http://www.cyanogen.com/help/maximdl/FITS_File_Header_Definitions.htm](http://www.cyanogen.com/help/maximdl/FITS_File_Header_Definitions.htm) 
-* CXCStclShared
-  inherits from Common standard
-  source: we found these duplicated 
-* CXC
-  inherits from CXCStclShared
-  source: [http://cxc.harvard.edu/contrib/arots/fits/content.txt](http://cxc.harvard.edu/contrib/arots/fits/content.txt) 
-* STScI
-  inherits from CXCStclShared
-  source: [http://tucana.noao.edu/ADASS/adass_proc/adass_95/zaraten/zaraten.html](http://tucana.noao.edu/ADASS/adass_proc/adass_95/zaraten/zaraten.html) 
+* `Standard`
+  (source: [http://heasarc.gsfc.nasa.gov/docs/fcg/standard_dict.html](http://heasarc.gsfc.nasa.gov/docs/fcg/standard_dict.html))
+* `Common`
+  extends `Standard`
+  (source: [http://heasarc.gsfc.nasa.gov/docs/fcg/common_dict.html](http://heasarc.gsfc.nasa.gov/docs/fcg/common_dict.html))
+  * `NOAO`
+    extends `Common`
+    (source: [http://iraf.noao.edu/iraf/web/projects/ccdmosaic/imagedef/fitsdic.html](http://iraf.noao.edu/iraf/web/projects/ccdmosaic/imagedef/fitsdic.html))
+  * `SBFits`
+     extends `Common`
+     (source: [http://archive.sbig.com/pdffiles/SBFITSEXT_1r0.pdf](http://archive.sbig.com/pdffiles/SBFITSEXT_1r0.pdf))
+    * `MaxImDL`
+      extends `SBFits`
+      (source: [http://www.cyanogen.com/help/maximdl/FITS_File_Header_Definitions.htm](http://www.cyanogen.com/help/maximdl/FITS_File_Header_Definitions.htm)) 
+  * `CXCStclShared`
+     extends `Common`
+     (source: _we found these duplicated_) 
+    * `CXC`
+      extends `CXCStclShared`
+      (source: [http://cxc.harvard.edu/contrib/arots/fits/content.txt](http://cxc.harvard.edu/contrib/arots/fits/content.txt)) 
+    * `STScI`
+      extends `CXCStclShared`
+      (source: [http://tucana.noao.edu/ADASS/adass_proc/adass_95/zaraten/zaraten.html](http://tucana.noao.edu/ADASS/adass_proc/adass_95/zaraten/zaraten.html)) 
 
 
 All duplicates were eliminated from enumerations (including enumerations that are defined in one of the "parent" standards). 
@@ -798,24 +794,27 @@ We would appreciate any additional help in correcting errors in these definition
 or adding new dictionaries.  While we are happy to receive information in any format,
 a pull request will work best.
 
+
 #### Using standardized FITS keywords
 
 To use the header keywords, just make static imports of them and use them just as you would have used strings. Here a simple example:
 
 ```java
-	import static nom.tam.fits.header.InstrumentDescription.FILTER;
-	import static nom.tam.fits.header.Standard.INSTRUME;
-	...
-	hdr.addValue(INSTRUME, "My very big telescope");
-	hdr.addValue(FILTER, "meade #25A Red");
-	...
+  import static nom.tam.fits.header.InstrumentDescription.FILTER;
+  import static nom.tam.fits.header.Standard.INSTRUME;
+  ...
+  hdr.addValue(INSTRUME, "My very big telescope");
+  hdr.addValue(FILTER, "meade #25A Red");
+  ...
 ```
 
 Some keywords have indexes that must be specified, just call the n() method on the keyword and specify the indexes you want. You must spececify one integer per 'n' in the keyword.
 
-	import static nom.tam.fits.header.extra.NOAOExt.WATn_nnn;
-	...
-	hdr.addValue(WATn_nnn.n(9, 2, 3, 4), "50");
+```java
+  import static nom.tam.fits.header.extra.NOAOExt.WATn_nnn;
+  ...
+  hdr.addValue(WATn_nnn.n(9, 2, 3, 4), "50");
+```
 
 You can use the compiler to check your keywords, and also use your IDE to easily find references to certain keywords.
 
@@ -849,11 +848,11 @@ You can use `FitsFactory.getHierarchFormater().setCaseSensitive(true)` to allow 
 You may note a few other properties of HIERARCH keywords as implemented by this library:
 
  1. The convention of the library is to refer to HIERARCH keywords internally as a dot-separated hierarchy, preceded by `HIERARCH.`.
- 2. The HIERARCH keywords may contain all printable standard ASCII character that are allowed in FITS headers (`0x20` thru `0x7E`). As such, we take a liberal reading of the ESO convention, which designated only upper-case letters, numbers, plus dash `-` and underscore `_`. If you want to conform to the ESO convention more closely, you should avoid using characters outside of the set of the original convention.
+ 2. The HIERARCH keywords may contain all printable standard ASCII characters that are allowed in FITS headers (`0x20` thru `0x7E`). As such, we take a liberal reading of the ESO convention, which designated only upper-case letters, numbers, plus dash `-` and underscore `_`. If you want to conform to the ESO convention more closely, you should avoid using characters outside of the set of the original convention.
  3. The library adds a space between the keywords and the `=` sign, as prescribed by the __cfitsio__ convention. The original ESO convention does not require such a space (but certainly allows for it). We add the extra space to offer better compatibility with __cfitsio__.
- 4. The HIERARCH parsing is tolerant, and does not care about extra space (or spaces) between the hierarchical components or before `=`. It also recognises `.` as a separator of hierarchy besides the conventional white space ` `.
+ 4. The HIERARCH parsing is tolerant, and does not care about extra space (or spaces) between the hierarchical components or before `=`. It also recognises `.` as a separator of hierarchy besides the conventional white space.
  5. The case sensitive setting (above) also determines whether or not HIERARCH keywords are converted to upper-case upon parsing. As such, the header entry in last example above can be referred either as `HIERARCH.MY.LOWER.CASE.KEYWORD[!]` or as `HIERARCH.my.lower.case.keyword[!]` internally after parsing.
- 6. If `FitsFactory` has HIERARCH support disabled, any attempt to define a HIERARCH-style long keyword will throw a `HierarchNotEnabledException` runtime exception. (However, just `HIERARCH` will still be allowed, as a stanndard 8-character FITS keyword on its own). 
+ 6. If `FitsFactory` has HIERARCH support disabled, any attempt to define a HIERARCH-style long keyword will throw a `HierarchNotEnabledException` runtime exception. (However, just `HIERARCH` by itself will still be allowed as a standard 8-character FITS keyword on its own). 
  
 <a name="checksums"></a>
 ### Checksums
@@ -863,9 +862,9 @@ Checksums can be added to the Headers for HDUs that can be used to ensure the fa
 <a name="preallocated-header-space"></a>
 ### Preallocated header space
 
-Many FITS files are created by live-recording of data, e.g. from astronomical instruments. As such not all header values may be defined as one needs to start writing the data segment of the HDU that follows the header. For example, we do not know in advance how many rows the binary table will contain, which will depend on when once stops the recording at a later point. Other metadata may simply not be provides also, until a later time. For this reason version 4.0 of the FITS standard has specified preallocating blanck header space as some number of blank header records between the last defined header entry and the `END` keyword.
+Many FITS files are created by live-recording of data, e.g. from astronomical instruments. As such not all header values may be defined as one needs to start writing the data segment of the HDU that follows the header. For example, we do not know in advance how many rows the binary table will contain, which will depend on when once stops the recording at a later point. Other metadata may simply not be provided until a later time. For this reason version 4.0 of the FITS standard has specified preallocating header space as some number of blank header records between the last defined header entry and the `END` keyword.
 
-As of version 1.16, this library support preallocated header space via `Header.ensureCardSpace(int)`, which can be used to ensure that the header can contain _at least_ the specified number of 80-character records when written to the output. (In reality it may accomodate somewhat more even because of the required padding to multiples of 2880 bytes or 36 records -- and you can use `Header.getMinimumSize()` to find out just how many bytes are reserved/used by any header object at any point). 
+As of version 1.16, this library support preallocated header space via `Header.ensureCardSpace(int)`, which can be used to ensure that the header can contain _at least_ the specified number of 80-character records when written to the output. (In reality it may accommodate somewhat more even because of the required padding to multiples of 2880 bytes or 36 records -- and you can use `Header.getMinimumSize()` to find out just how many bytes are reserved/used by any header object at any point). 
 
 Once the space has been reserved, the header can be written to the output, and one may begin recording data after it. Cards may be filled later, up to the number of records defined (and sometimes beyond), and the header can be rewritten at a later point in place, with the additional entries.
 
@@ -873,8 +872,9 @@ Once the space has been reserved, the header can be written to the output, and o
 For example,
 
 ```java
-  Header h = new Header();
   FitsFile out = new FitsFile("mydata.fits", "rw");
+  
+  Header h = new Header();
   
   // We want to keep room for 200 80-character records in total
   // to be filled later
@@ -887,7 +887,7 @@ For example,
   // Now we record data, such as a binary table row-by-row
   // ...
   
-  // Once the data has been recordced we can proceed to fill in 
+  // Once the data has been recorded we can proceed to fill in 
   // the additional header values, such as the end time of observation
   h.addValue("DATE-END", FitsDate.getFitsDateString(), "end of observation");
   
@@ -896,7 +896,7 @@ For example,
 ```
 
 Preallocated header space is also preserved when reading the data in. Any trailing blank header records (before the `END` key) are counted without adding them as blank cards when
-the header is parsed. (Internal blank cards are however preserved as blank comment cards). After reading a header with preallocated space, the user can add at least as many new cards into that header as trailing blank records were written, and still call `rewrite()` on that header without any problems.
+the header is parsed. (Internal blank cards, between two regular keyword entries, are however preserved as blank comment cards and their space will not be reusable unless these cards are explicitly removed firts). After reading a header with preallocated space, the user can add at least as many new cards into that header as trailing blank records were found, and still call `rewrite()` on that header without any problems.
 
 
 
@@ -905,7 +905,7 @@ the header is parsed. (Internal blank cards are however preserved as blank comme
 <a name="standard-compliance"></a>
 ### Standard compliance
 
-The library offers a two-pronged approach to ensure header compliance to the [FITS standard])(#https://fits.gsfc.nasa.gov/fits_standard.html). 
+The library offers a two-pronged approach to ensure header compliance to the [FITS standard](#https://fits.gsfc.nasa.gov/fits_standard.html). 
 
 - First, we fully enforce the standards when creating FITS headers using this library, and we do it in a way that is compliant with earlier FITS specifications (prior to 4.0) also. We will prevent the creation of non-standard header entries (cards) by throwing appropriate runtime exceptions (such as `IllegalArgumentException`, `LongValueException`, `LongStringsNotEnabledException`, `HierarchNotEnabledException`) as soon as one attempts to set a header component that is supported by FITS or by the set of standards selected in the current `FitsFactory` settings.
 
@@ -965,36 +965,38 @@ To compress an existing image HDU, use code like:
 Depending on the compression algorithm you select, different options can be set, and if you activate quantization (as in the example above) 
 another set of options is available.
 
+
+ 
 <table>
 	<tr>
-		<td>quant?</td>
+		<td><b>quant?</b></td>
 		<td><b>Compression</b></td>
 		<td><b>option java classes</b></td>
 	</tr>
 	<tr>
 		<td>no</td>
-		<td>ZCMPTYPE_GZIP_1</td>
-		<td>no options </td>
+		<td><code>ZCMPTYPE_GZIP_1</code></td>
+		<td><i>no options</i></td>
 	</tr>
 	<tr>
 		<td>no</td>
-		<td>ZCMPTYPE_GZIP_2</td>
-		<td>no options </td>
+		<td><code>ZCMPTYPE_GZIP_2</code></td>
+		<td><i>no options</i></td>
+	</tr>
+	<tr>
+		<td>yes</td>
+		<td><code>ZCMPTYPE_RICE_ONE</code> / <code>ZCMPTYPE_RICE_1</code></td>
+		<td><code>RiceCompressOption</code></td>
 	</tr>
 	<tr>
 		<td>no</td>
-		<td>ZCMPTYPE_RICE_ONE/ZCMPTYPE_RICE_1</td>
-		<td>RiceCompressOption </td>
+		<td><code>ZCMPTYPE_PLIO_1</code></td>
+		<td><i>no options</i></td>
 	</tr>
 	<tr>
-		<td>no</td>
-		<td>ZCMPTYPE_PLIO_1</td>
-		<td>no options </td>
-	</tr>
-	<tr>
-		<td>no</td>
-		<td>ZCMPTYPE_HCOMPRESS_1</td>
-		<td>HCompressorOption,QuantizeOption </td>
+		<td>yes</td>
+		<td><code>ZCMPTYPE_HCOMPRESS_1</code></td>
+		<td><code>HCompressorOption</code>, <code>QuantizeOption</code></td>
 	</tr>
 </table>
 
@@ -1008,7 +1010,7 @@ All information required for image decompression are stored in the header of the
   }
 ```
 
-Please read the original fits documentation for further information on the different compression options and their possible values.
+Please read the original FITS documentation for further information on the different compression options and their possible values.
 
 <a name="table-compression"></a>
 ### Table compression
