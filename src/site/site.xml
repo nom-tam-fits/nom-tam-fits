@@ -24,18 +24,15 @@
 			</gitHub>
 		</fluidoSkin>
 	</custom>
-	
 	<body>
 		<breadcrumbs>
 			<item name="${project.name}" href="index.html" />
 		</breadcrumbs>
 		<menu name="Documentation">
-			<item name="About" href="index.html" />
-			<item name="Introduction" href="intro.html" />
+			<item name="Getting Started" href="index.html" />
 			<item name="API Documentation" href="apidocs/index.html" />
-			<item name="Fits keywords" href="header.html" />
 			<item name="Download" href="download.html" />
-			<item name="Compression" href="compression.html" />
+		  <item name="About" href="about.html" />
 		</menu>
 		<menu ref="modules" />
 		<menu ref="reports" />
