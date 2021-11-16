@@ -43,7 +43,7 @@ jobs:
       run: |
         cp -a nom-tam-fits/target/site/* site/
         cd site
-        git config --global user.email "41898282+github-actions[bot]@users.noreply.github.com"
+        git config --global user.email "$GITHUB_JOB+github-actions[bot]@users.noreply.github.com"
         git config --global user.name "github-actions"
         git add -A
         git commit -m "[automated site update]"
