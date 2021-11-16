@@ -224,7 +224,7 @@
 <p><b>Compressed Image HDUs</b> can store an image HDU in a compressed manner. There are a set of available compression algorithms and compression parameters available.</p></li>
   
 <li>
-<p><b>Foreign File HDUs</b> can encapsulate various other files with in the FITS. We do not yet support foreign file encapsulation currently, but it is somnething that we are considering to include support for in a future release.</p></li>
+<p><b>Foreign File HDUs</b> can encapsulate various other files within the FITS. We do not yet support foreign file encapsulation currently, but it is something that we are considering for a future release.</p></li>
 </ol></div>
 <div class="section">
 <h3><a name="General_philosophy"></a>General philosophy</h3>
@@ -233,7 +233,7 @@
 <div class="section">
 <h3><a name="FITS_vs_Java_data_types"></a>FITS vs Java data types</h3>
 <div class="section">
-<h4><a name="Signed_versus_unsigned_bytes"></a>Signed versus unsigned bytes</h4>
+<h4><a name="Signed_vs_unsigned_bytes"></a>Signed vs unsigned bytes</h4>
 <p>Java bytes are signed, but FITS bytes are not. If any arithmetic processing is to be done on byte data, users may need to be careful of Java&#x2019;s automated conversion of bytes to integers which includes sign extension.</p>
 <p>E.g.</p>
 
@@ -263,8 +263,8 @@
 <h3><a name="Checksums"></a>Checksums</h3>
 <p>Checksums can be added to the Headers for HDUs that can be used to ensure the faithful copying of the FITS data. Fits.setChecksum() can be used to set these. Setting the checksum should be the users last action before writing the FITS file.</p></div>
 <div class="section">
-<h3><a name="HIEARARCH_style_header_keywords"></a>HIEARARCH style header keywords</h3>
-<p>The Hierarchical keyword convention allows for longer and/or hieratchical sets of FITS keywords. Support for HIERARCH-style keywords is enabled by default as of version 1.16. HIERARCH support can be toggled if needed via <tt>FitsFactory.setUseHierarch(boolean)</tt>.</p></div>
+<h3><a name="HIERARCH_style_header_keywords"></a>HIERARCH style header keywords</h3>
+<p>The HIERARCH keyword convention allows for longer and/or hierarchical sets of FITS keywords. Support for HIERARCH-style keywords is enabled by default as of version 1.16. HIERARCH support can be toggled if needed via <tt>FitsFactory.setUseHierarch(boolean)</tt>.</p></div>
 <div class="section">
 <h3><a name="Long_header_string_values"></a>Long header string values</h3>
 <p>The standard maximum length for string values in the header is 68 characters. As of FITS 4.0, the OGIP 1.0 long string convention is part of the standard. And, as of version 1.16 of this library, it is supported by default. Support for long strings can be toggled via <tt>FitsFactory.setLongStringEnabled(boolean)</tt> if necessary.</p>
