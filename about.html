@@ -9,7 +9,7 @@
     <meta name="viewport" content="width=device-width, initial-scale=1.0" />
     <meta name="Date-Revision-yyyymmdd" content="20211116" />
     <meta http-equiv="Content-Language" content="en" />
-    <title>nom-tam-fits &#x2013; Changes Report</title>
+    <title>nom-tam-fits &#x2013; </title>
     <link rel="stylesheet" href="./css/apache-maven-fluido-1.3.0.min.css" />
     <link rel="stylesheet" href="./css/site.css" />
     <link rel="stylesheet" href="./css/print.css" media="print" />
@@ -56,7 +56,7 @@
         nom.tam FITS library</a>
         </li>
       <li class="divider ">/</li>
-        <li class="">Changes Report</li>
+        <li class=""></li>
                 
                 
                     
@@ -95,12 +95,10 @@
         Download</a>
             </li>
                   
-      <li>
+      <li class="active">
     
-                          <a href="about.html" title="About">
-          <i class="none"></i>
-        About</a>
-            </li>
+            <a href="#"><i class="none"></i>About</a>
+          </li>
                               <li class="nav-header">Project Documentation</li>
                                                                                                                                                                             
       <li>
@@ -109,76 +107,13 @@
           <i class="icon-chevron-right"></i>
         Project Information</a>
                   </li>
-                                                                                                                                                                                                                              
+                                                                                                                                                                                                                    
       <li>
     
                           <a href="project-reports.html" title="Project Reports">
-          <i class="icon-chevron-down"></i>
+          <i class="icon-chevron-right"></i>
         Project Reports</a>
-                    <ul class="nav nav-list">
-                      
-      <li>
-    
-                          <a href="checkstyle.html" title="Checkstyle">
-          <i class="none"></i>
-        Checkstyle</a>
-            </li>
-                      
-      <li>
-    
-                          <a href="apidocs/index.html" title="Javadoc">
-          <i class="none"></i>
-        Javadoc</a>
-            </li>
-                      
-      <li>
-    
-                          <a href="xref-test/index.html" title="Test Source Xref">
-          <i class="none"></i>
-        Test Source Xref</a>
-            </li>
-                      
-      <li>
-    
-                          <a href="xref/index.html" title="Source Xref">
-          <i class="none"></i>
-        Source Xref</a>
-            </li>
-                      
-      <li class="active">
-    
-            <a href="#"><i class="none"></i>Changes</a>
-          </li>
-                      
-      <li>
-    
-                          <a href="cpd.html" title="CPD">
-          <i class="none"></i>
-        CPD</a>
-            </li>
-                      
-      <li>
-    
-                          <a href="pmd.html" title="PMD">
-          <i class="none"></i>
-        PMD</a>
-            </li>
-                      
-      <li>
-    
-                          <a href="taglist.html" title="Tag List">
-          <i class="none"></i>
-        Tag List</a>
-            </li>
-                      
-      <li>
-    
-                          <a href="jacoco-aggregate/index.html" title="JaCoCo Aggregate">
-          <i class="none"></i>
-        JaCoCo Aggregate</a>
-            </li>
-              </ul>
-        </li>
+                  </li>
             </ul>
                 
                     
@@ -199,15 +134,36 @@
                 
         <div id="bodyColumn"  class="span9" >
                                   
-            <div class="section">
-<h2><a name="Changes_Report"></a>Changes Report</h2>
-<div class="section">
-<h3><a name="Release_History"></a>Release History</h3>
-<table border="0" class="table table-striped">
-<tr class="a">
-<th>Version</th>
-<th>Date</th>
-<th>Description</th></tr></table></div></div>
+            <p><a class="externalLink" href="https://maven-badges.herokuapp.com/maven-central/gov.nasa.gsfc.heasarc/nom-tam-fits"><img src="https://maven-badges.herokuapp.com/maven-central/gov.nasa.gsfc.heasarc/nom-tam-fits/badge.svg" alt="Maven Central" /></a></p>
+<h1>nom-tam-fits</h1>
+<p>Pure Java library for reading and writing FITS files. FITS, the Flexible Image Transport System, is the format commonly used in the archiving and transport of astronomical data.</p>
+<p>This is the original library from <a class="externalLink" href="http://heasarc.gsfc.nasa.gov/docs/heasarc/fits/java/">http://heasarc.gsfc.nasa.gov/docs/heasarc/fits/java/</a> ported to maven and published to the central repo by the original developers!</p>
+<p>Please feel free to fork us and report any found issues at our github pages (Pull request are very welcome):</p>
+<p><a class="externalLink" href="https://github.com/nom-tam-fits/nom-tam-fits" title="nom-tam-fits git repository">nom-tam-fits git repository</a></p>
+<p>visit our documentation at: </p>
+<p><a class="externalLink" href="http://nom-tam-fits.github.io/nom-tam-fits/" title="nom-tam-fits project site">nom-tam-fits project site</a></p>
+<p>If you want to use the bleeding edge version of nom-tam-fits, you can get it from sonatype:</p>
+
+<div class="source">
+<div class="source">
+<pre>&lt;dependencies&gt;
+	&lt;dependency&gt;
+		&lt;groupId&gt;gov.nasa.gsfc.heasarc&lt;/groupId&gt;
+		&lt;artifactId&gt;nom-tam-fits&lt;/artifactId&gt;
+		&lt;version&gt;xxxxx-SNAPSHOT&lt;/version&gt;
+	&lt;/dependency&gt;
+&lt;/dependencies&gt;
+...
+&lt;repositories&gt;
+	&lt;repository&gt;
+		&lt;id&gt;sonatype-snapshots&lt;/id&gt;
+		&lt;url&gt;https://oss.sonatype.org/content/repositories/snapshots&lt;/url&gt;
+		&lt;snapshots&gt;
+			&lt;enabled&gt;true&lt;/enabled&gt;
+		&lt;/snapshots&gt;
+	&lt;/repository&gt;
+&lt;/repositories&gt;    
+</pre></div></div>
                   </div>
             </div>
           </div>
