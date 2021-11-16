@@ -198,12 +198,23 @@
 <p><a name="introduction"></a></p>
 <div class="section">
 <h2><a name="Introduction"></a>Introduction</h2>
-<p>This document describes the nom.tam FITS library, a full-function Java library for reading and writing FITS files. Only a general introduction on how to use the library is given here. Detailed documentation for the classes is given in their JavaDocs.</p>
+
+<ul>
+  
+<li><a href="#what-is-fits">What is FITS</a></li>
+  
+<li><a href="#general-philosophy">General philosophy</a></li>
+  
+<li><a href="#fits-vs-java-data-types">FITS vs Java data types</a></li>
+</ul>
+<p>This document describes the nom.tam FITS library, a full-function Java library for reading and writing FITS files. Only a general introduction on how to use the library is given here. More detailed documentation for the classes is given in their JavaDocs.</p>
 <p>FITS, the Flexible Image Transport System, is the format commonly used in the archiving and transport of astronomical data. This document assumes a general knowledge of FITS and Java but starts with a brief overview of FITS to set the context and terminology used.</p>
+<p>As of version 1.16 of this library, we provide full support for the <a class="externalLink" href="#https://fits.gsfc.nasa.gov/fits_standard.html">FITS 4.0 standard</a> for reading and writing, although some parts of the standard (such as WCS coordinate systems) may require further interpretation beyond what is offered by the library.</p>
 <p>This is an open-source project hosted on github as <a class="externalLink" href="https://github.com/nom-tam-fits/nom-tam-fits">nom-tam-fits</a>. Further information and documentation, including API docs, can be found on the <a class="externalLink" href="http://nom-tam-fits.github.io/nom-tam-fits/index.html">project site</a>.</p>
+<p><a name="what-is-fits"></a></p>
 <div class="section">
 <h3><a name="What_is_FITS"></a>What is FITS?</h3>
-<p>FITS (Flexible Image Transport System) is a binary format devised and primarily used for the storage of astronomical information. A FITS file is composed of one or more <i>Header-Data Units</i> <i>(HDUs)</i>. As their name suggests, each <i>HDU</i> has a <i>header</i> which can contain comments and a set of key-value pairs. Most <i>HDUs</i> also have a <i>data</i> section which can store a (possibly multidimensional) array of data or a table of values.</p>
+<p>FITS (Flexible Image Transport System) is a binary format devised and primarily used for the storage of astronomical information. A FITS file is composed of one or more <i>Header-Data Units</i> <i>(HDUs)</i>. As their name suggests, each <i>HDU</i> has a <i>header</i> which can contain comments and associated metadata as key-value pairs. Most <i>HDUs</i> also have a <i>data</i> section which can store a (possibly multidimensional) array of data or a table of values.</p>
 <p>The current FITS standard (4.0) recognizes the following principal types of HDUs: </p>
 
 <ol style="list-style-type: decimal">
@@ -212,10 +223,10 @@
 <p><b>Image HDUs</b> can store an array (the image) of 1-8 dimensions with a type corresponding to Java bytes, shorts, ints, longs, floats or double: e.g., a one-dimensional time series where each bin in the array represents a constant interval, or a three-dimensional image cube with separate channels for different energies.</p></li>
   
 <li>
-<p><b>Random-Groups HDUs</b> can contain a list of such &#x2018;images&#x2019; where there is a header of parameters for each image. The header comprises 0 or more elements of the same type as the image. Each image in the random groups HDU has the same dimensionality. A random-groups HDU might store a set of 2-D images each of which has a two-element header giving the center of the image.</p></li>
+<p><b>Random-Groups HDUs</b> can contain a set of images of the same type and dimensions. Header values might describe the images individually.</p></li>
   
 <li>
-<p><b>ASCII Table HDUs</b> can store floating point, string and integer scalars. The data are stored as ASCII strings using a fixed format within the table for each column. There are essentially no limits on the size and precision of the values to be represented. In principle, ASCII tables can represent data that cannot be conveniently represented using Java primitive types. In practice the source data are common computer types and the nom.tam library is able to accurately decode the table values. An ASCII table might represent a catalog of sources.</p></li>
+<p><b>ASCII Table HDUs</b> can store floating point, string, and integer scalars. The data are stored as ASCII strings using a fixed format within the table for each column. There are essentially no limits on the size and precision of the values to be represented. In principle, ASCII tables can represent data that cannot be conveniently represented using Java primitive types. In practice the source data are common computer types and the nom.tam library is able to accurately decode the table values. An ASCII table might represent a catalog of sources.</p></li>
   
 <li>
 <p><b>Binary table HDUs</b> can store a table where each element of the table can be a scalar or an array of any dimensionality. In addition to the types supported for <i>image</i> and <i>random groups</i> HDUs the elements of a binary table can be single and double precision complex values, booleans, and bit strings. A column in a binary table can be of either fixed format or a variable length array. Variable length arrays can be only one-dimensional but the length of the array can vary from row to row. A binary table might be used to store the source characteristics of each source detected in an observation along with small image cutouts and spectra for each source. Any number of HDUs can be strung together in a FITS file. The first HDU must be either an image or random-groups HDU. Often a null-image is used: this is possible by requesting an image HDU with an image dimensionality 0 or where one of the dimensions is 0.</p></li>
@@ -224,17 +235,19 @@
 <p><b>Compressed Image HDUs</b> can store an image HDU in a compressed manner. There are a set of available compression algorithms and compression parameters available.</p></li>
   
 <li>
-<p><b>Foreign File HDUs</b> can encapsulate various other files within the FITS. We do not yet support foreign file encapsulation currently, but it is something that we are considering for a future release.</p></li>
-</ol></div>
+<p><b>Foreign File HDUs</b> can encapsulate various other files within the FITS. We do not support foreign file encapsulation yet, but it is something that we are considering for a future release.</p></li>
+</ol>
+<p><a name="general-philosophy"></a></p></div>
 <div class="section">
 <h3><a name="General_philosophy"></a>General philosophy</h3>
 <p>The approach of the nom.tam FITS library is to try to hide as many of the details of the organization of the FITS data from the user as possible. To write FITS data the user provides data in Java primitive and String arrays and these data are automatically organized images or tables and written to the output. When reading data, the user can get Java primitive types and Strings from the HDUs only knowing the general characteristics of the table, not anything about how the data is stored in FITS. Users who wish to delve into the intricacies of the FITS representation can generally do so using methods in some of the classes that were intended primarily for internal use but which are made available to the general user.</p>
-<p>This library is concerned only with the structural issues for transforming between the internal Java and external FITS representations. It knows nothing about the semantics of FITS files, including conventions ratified as FITS standards such as the FITS world coordinate systems. The nom.tam library was originally written in Java 1.0 and its design and implementation were strongly influenced by the limited functionality and efficiencies of early versions of Java.</p></div>
+<p>This library is concerned only with the structural issues for transforming between the internal Java and external FITS representations. It knows nothing about the semantics of FITS files, including conventions ratified as FITS standards such as the FITS world coordinate systems. The nom.tam library was originally written in Java 1.0 and its design and implementation were strongly influenced by the limited functionality and efficiencies of early versions of Java.</p>
+<p><a name="fits-vs-java-data-types"></a></p></div>
 <div class="section">
 <h3><a name="FITS_vs_Java_data_types"></a>FITS vs Java data types</h3>
 <div class="section">
 <h4><a name="Signed_vs_unsigned_bytes"></a>Signed vs unsigned bytes</h4>
-<p>Java bytes are signed, but FITS bytes are not. If any arithmetic processing is to be done on byte data, users may need to be careful of Java&#x2019;s automated conversion of bytes to integers which includes sign extension.</p>
+<p>Java bytes are signed, but FITS bytes are not. If any arithmetic processing is to be done on byte data values, users may need to be careful of Java&#x2019;s automated conversion of bytes to integers which includes sign extension.</p>
 <p>E.g.</p>
 
 <div class="source">
@@ -244,31 +257,16 @@
        bimg[i] = (byte)(bimg[i]&amp;0xFF - offset);
   }
 </pre></div></div>
-<p>This idiom of AND-ing the byte values with 0xFF is generally the way to prevent undesired sign extension of bytes.</p></div>
+<p>This idiom of AND-ing the byte values with <tt>0xFF</tt> is generally the way to prevent undesired sign extension of bytes.</p></div>
 <div class="section">
 <h4><a name="Complex_values_and_data"></a>Complex values and data</h4>
-<p>Java has no native complex data types, but FITS binary tables support both single and double precision complex. These are represented as <tt>float[2]</tt> and <tt>double[2]</tt> arrays in the <tt>nom.tam</tt> library. </p>
-<p>As of version 1.16, we added a <tt>ComplexValue</tt> object ofr use with complex-valued header entries. At this point, this new type is not being used with tables to maintain backward compatibility to the original behavior described above. This may change in a future release to make the use of <tt>ComplexValue</tt> more universal.</p></div>
+<p>Java has no native complex data types, but FITS binary tables support both single and double precision complex data in tables. These are represented as <tt>float[2]</tt> and <tt>double[2]</tt> arrays in the <tt>nom.tam</tt> library. </p>
+<p>As of version 1.16, we added a <tt>ComplexValue</tt> object for use in headers. At this point, the new type is not being used with tables to maintain backward compatibility to the original behavior described above. This may change in a future release to make the use of <tt>ComplexValue</tt> more universal.</p></div>
 <div class="section">
 <h4><a name="Strings"></a>Strings</h4>
-<p>FITS generally represents character strings using byte arrays. However the nom.tam library automatically converts between Java Strings and the internal FITS representations. While it is possible to write <tt>char[]</tt> arrays, they will generally read back as <tt>String</tt> also.</p></div></div>
-<div class="section">
-<h3><a name="Binary_versus_ASCII_tables"></a>Binary versus ASCII tables</h3>
-<p>When writing simple tables it may be possible to write the tables as either binary or ASCII tables, i.e., all columns are scalar strings, floating point values or integers. By default, the library will create and write binary tables for table data. To create ASCII tables instead the user should call <tt>FitsFactory.setUseAsciiTables(true)</tt> first. </p></div>
-<div class="section">
-<h3><a name="Deferred_reading"></a>Deferred reading</h3>
-<p>When FITS data are being read from a non-compressed file, the actual data will typically not be read until the user actually requests data. When an HDU is read the header is read and the input stream is positioned to read the beginning of the next HDU. If and when the user requests data from the HDU, the stream is reset to the beginning of the data and it is then read. </p>
-<p>This deferred input allows users to skip past HDU&#x2019;s that may not be of interest. Deferred input is not possible when the input is compressed or not a <tt>FitsFile</tt>.</p></div>
-<div class="section">
-<h3><a name="Checksums"></a>Checksums</h3>
-<p>Checksums can be added to the Headers for HDUs that can be used to ensure the faithful copying of the FITS data. Fits.setChecksum() can be used to set these. Setting the checksum should be the users last action before writing the FITS file.</p></div>
-<div class="section">
-<h3><a name="HIERARCH_style_header_keywords"></a>HIERARCH style header keywords</h3>
-<p>The HIERARCH keyword convention allows for longer and/or hierarchical sets of FITS keywords. Support for HIERARCH-style keywords is enabled by default as of version 1.16. HIERARCH support can be toggled if needed via <tt>FitsFactory.setUseHierarch(boolean)</tt>.</p></div>
-<div class="section">
-<h3><a name="Long_header_string_values"></a>Long header string values</h3>
-<p>The standard maximum length for string values in the header is 68 characters. As of FITS 4.0, the OGIP 1.0 long string convention is part of the standard. And, as of version 1.16 of this library, it is supported by default. Support for long strings can be toggled via <tt>FitsFactory.setLongStringEnabled(boolean)</tt> if necessary.</p>
-<p><a name="where-to-get-it"></a></p></div></div>
+<p>FITS generally represents character strings a byte arrays of ASCII characters. The library will automatically converts between Java <tt>String</tt>s and the internal FITS representations, by the appropriate downcasting <tt>char</tt> to <tt>byte</tt>. Therefore you should be careful to avoid using extended Unicode chasracters (beyond the ASCII set) in String that weill be written to FITS.</p>
+<p>It is also possible to write <tt>char[]</tt> arrays, Unfortunately, historically the library wrote <tt>char[]</tt> arrays as 16-bit Unicode, rather than the 8-bit ASCII standard of FITS, and consequiently these would be read back as <tt>short[]</tt>. As of version 1.16, you can change that behavior by <tt>FitsFactory.setUseUnicodeChars(false)</tt>, to reconcile <tt>char[]</tt> arrays with <tt>String</tt>s (and to read them back as <tt>String</tt>s). </p>
+<p><a name="where-to-get-it"></a></p></div></div></div>
 <div class="section">
 <h2><a name="Where_to_get_it"></a>Where to get it</h2>
 <p>Official releases of the library are published on <a class="externalLink" href="https://github.com/nom-tam-fits/nom-tam-fits/releases">Github</a> and also available on <a class="externalLink" href="http://search.maven.org/#search|ga|1|g%3A%22gov.nasa.gsfc.heasarc%22" title="Maven Central">Maven Central</a>. Documentation can be found on the project site at <a class="externalLink" href="http://nom-tam-fits.github.io/nom-tam-fits/index.html">http://nom-tam-fits.github.io/nom-tam-fits</a>.</p>
@@ -297,7 +295,23 @@
 <p><a name="reading-fits-files"></a></p></div>
 <div class="section">
 <h2><a name="Reading_FITS_files"></a>Reading FITS files</h2>
+
+<ul>
+  
+<li><a href="#deferred-reading">Deferred reading</a></li>
+  
+<li><a href="#reading-images">Reading images</a></li>
+  
+<li><a href="#reading-tables">Reading tables</a></li>
+  
+<li><a href="#low-level-reads">Low-level reads</a></li>
+</ul>
 <p>To read a FITS file the user typically might open a <tt>Fits</tt> object, get the appropriate HDU using the <tt>getHDU</tt> method and then get the data using <tt>getKernel()</tt>.</p>
+<p><a name="deferred-reading"></a></p>
+<div class="section">
+<h3><a name="Deferred_reading"></a>Deferred reading</h3>
+<p>When FITS data are being read from a non-compressed file (<tt>FitsFile</tt>), the <tt>read()</tt> call will parse all HDU headers but will typically skip over the data segments (noting their position in the file however). Only when the user tries to access data from a HDU, will the library load that data from the previously noted file position. The behavior allows to inspect the contents of a FITS file very quickly even when the file is large, and reduced the need for IO when to only the parts of interest to the user. Deferred input is not possible when the input is compressed or if it is uses an stream rather than a random-access <tt>FitsFile</tt>.</p>
+<p><a name="reading-images"></a></p></div>
 <div class="section">
 <h3><a name="Reading_Images"></a>Reading Images</h3>
 <p>The simplest example of reading an image contained in the first HDU (zero based indexing) is given below:</p>
@@ -309,17 +323,17 @@
   int[][] image = (int[][]) hdu.getKernel();
 </pre></div></div>
 <p>First we create a new instance of <tt>Fits</tt> with the filename as first and only argument. Then we can get first HDU using the <tt>getHDU</tt> method. Note the casting into an <tt>ImageHDU</tt>.</p>
-<p>Now we are ready to get the image data with the <tt>getKernel</tt> method of the hdu, which is actually a short hand for getting the data unit and the data within:</p>
+<p>Now we are ready to get the image data with the <tt>getKernel()</tt> method of the hdu, which is actually a short hand for getting the data unit and the data within:</p>
 
 <div class="source">
 <div class="source">
 <pre>  ImageData imageData = (ImageData) hdu.getData();
-  int[][] image = (int[][]) imageData.getData();
+  int[][] image = (int[][]) imageData.getKernel();
 </pre></div></div>
 <p>However the user will be responsible for casting this to an appropriate type if they want to use the data inside their program. It is possible to build tools that will handle arbitrary array types, but it is not trivial.</p>
 <p>When reading FITS data using the nom.tam library the user will often need to cast the results to the appropriate type. Given that the FITS file may contain many different kinds of data and that Java provides us with no class that can point to different kinds of primitive arrays other than Object, this downcasting is inevitable if you want to use the data from the FITS files.</p>
 <div class="section">
-<h4><a name="Reading_only_parts_of_an_Image"></a>Reading only parts of an Image</h4>
+<h4><a name="Reading_parts_of_an_image_only"></a>Reading parts of an image only</h4>
 <p>When reading image data users may not want to read an entire array especially if the data is very large. An <tt>ImageTiler</tt> can be used to read in only a portion of an array. The user can specify a box (or a sequence of boxes) within the image and extract the desired subsets. <tt>ImageTiler</tt>s can be used for any image. The library will try to only read the subsets requested if the FITS data is being read from an uncompressed file but in many cases it will need to read in the entire image before subsetting.</p>
 <p>Suppose the image we retrieve above has 2000x2000 pixels, but we only want to see the innermost 100x100 pixels. This can be achieved with</p>
 
@@ -328,7 +342,8 @@
 <pre>  ImageTiler tiler = hdu.getTiler();
   short[] center = (short[]) tiler.getTile({950, 950}, {100, 100});
 </pre></div></div>
-<p>The tiler needs to know the corners and size of the tile we want. Note that we can tile an image of any dimensionality. <tt>getTile</tt> returns a one-dimensional array with the flattend image.</p></div></div>
+<p>The tiler needs to know the corners and size of the tile we want. Note that we can tile an image of any dimensionality. <tt>getTile()</tt> returns a one-dimensional array with the flattend image.</p>
+<p><a name="reading-tables"></a></p></div></div>
 <div class="section">
 <h3><a name="Reading_Tables"></a>Reading Tables</h3>
 <p>When reading tabular data the user has a variety of ways to read the data. The entire table can be read at once, or the data can be read in pieces, by row, by column or just an individual element.</p>
@@ -379,9 +394,10 @@
   double[] dec = (double[]) row[2];
   double[] spectrum = (double[]) row[3];
 </pre></div></div>
-<p>Here <tt>ra</tt> and <tt>dec</tt> will have length <tt>1</tt>: they are scalars, but the library uses one element arrays to provide a mutable Object wrapper. The spectrum may have any length, perhaps <tt>0</tt> if there was no spectrum for this source. A user can read rows in any order.</p></div></div>
+<p>Here <tt>ra</tt> and <tt>dec</tt> will have length <tt>1</tt>: they are scalars, but the library uses one element arrays to provide a mutable Object wrapper. The spectrum may have any length, perhaps <tt>0</tt> if there was no spectrum for this source. A user can read rows in any order.</p>
+<p><a name="low-level-reads"></a></p></div></div>
 <div class="section">
-<h3><a name="Lower_level_reads"></a>Lower level reads</h3>
+<h3><a name="Low-level_reads"></a>Low-level reads</h3>
 <p>A user can get access to the special stream that is used to read the FITS information and then process the data at a lower level using the nom.tam libraries special I/O objects. This can be a bit more efficient for large datasets.</p>
 <div class="section">
 <h4><a name="Images"></a>Images</h4>
@@ -395,8 +411,8 @@
       int[] line = new int[100000];
       long sum   = 0;
       long count = 0;
-      ArrayDataInput adi = f.getStream();
-      while (adi.readLArray(line) == line.length * 4) {  // int is 4 bytes
+      ArrayDataInput in = f.getStream();
+      while (in.readLArray(line) == line.length * 4) {  // int is 4 bytes
           for (int i=0; i&lt;line.length; i += 1) {
               sum   += line[i];
          	    count += 1;
@@ -423,8 +439,8 @@
   long rowSize = FitsEncoder.computeSize(row);
      
   if (bhdu.getData().reset()) {
-      ArrayDataInput adi = f.getStream();
-      while (adi.readLArray(row) == rowSize) {
+      ArrayDataInput in = f.getStream();
+      while (in.readLArray(row) == rowSize) {
           // process this row
       }
   }
@@ -436,9 +452,23 @@
 <p><a name="writing-data"></a></p></div></div>
 <div class="section">
 <h2><a name="Writing_data"></a>Writing data</h2>
+
+<ul>
+  
+<li><a href="#writing-images">Writing images</a></li>
+  
+<li><a href="#writing-tables">Writing tables</a></li>
+  
+<li><a href="#modifying-existing-files">Modifying existing files</a></li>
+  
+<li><a href="#low-level-writes">Low-level writes</a></li>
+  
+<li><a href="#writing-gzipped-outputs">Writing GZIP-ed outputs</a></li>
+</ul>
+<p><a name="writing-images"></a></p>
 <div class="section">
 <h3><a name="Writing_images"></a>Writing images</h3>
-<p>When we write FITS files we start with known data, so there are typically no casts required. We use a factory method to convert our primitive data to a FITS HDU and then write the Fits object to a desired location. The <tt>write</tt> methods of the <tt>Fits</tt> object takes an <tt>ArrayDataOutput</tt> object which indicates where the Fits data is to be written. The two primary classes that implement this interface are <tt>FitsFile</tt> and <tt>FitsOutputStream</tt>.</p>
+<p>When we write FITS files we start with known data, so there are typically no casts required. We use a factory method to convert our primitive data to a FITS HDU and then write the Fits object to a desired location. The two primary classes to which we can write Fits data are are <tt>FitsFile</tt> (random acccess) and <tt>FitsOutputStream</tt>. For exaple,</p>
 
 <div class="source">
 <div class="source">
@@ -449,7 +479,7 @@
 
   FitsOutputStream out = new FitsOutputStream(new FileOutputStream(new File(&quot;img.fits&quot;)));     
   f.write(out);
-  out.close
+  out.close();
 </pre></div></div>
 <p>Or, equivalently, using <tt>Fits.write(String)</tt>:</p>
 
@@ -461,10 +491,14 @@
   f.addHDU(FitsFactory.hduFactory(data));
      
   f.write(&quot;img.fits&quot;);
-</pre></div></div></div>
+</pre></div></div>
+<p><a name="writing-tables"></a></p></div>
 <div class="section">
 <h3><a name="Writing_tables"></a>Writing tables</h3>
 <p>Just as with reading, there are a variety of options for writing tables.</p>
+<div class="section">
+<h4><a name="Binary_versus_ASCII_tables"></a>Binary versus ASCII tables</h4>
+<p>When writing simple tables it may be possible to write the tables in either binary or ASCII format, provided all columns are scalar types. By default, the library will create and write binary tables for such data. To create ASCII tables instead the user should call <tt>FitsFactory.setUseAsciiTables(true)</tt> first. </p></div>
 <div class="section">
 <h4><a name="Using_columns"></a>Using columns</h4>
 <p>If the data is available as a set of columns, then we can simply replace data above with something like:</p>
@@ -511,9 +545,10 @@
 </pre></div></div>
 <p>Normally <tt>addRow</tt> does not affect the structure of the HDU, it just adds another row. However if the table is empty, the first <tt>addRow</tt> defines the structure of each of the columns. If a column represents a string, then the length of that column is defined by the length of the string in first row. Subsequent rows will be truncated if longer. A user can add blanks to pad out the first row&#x2019;s entries to a desired length.</p>
 <p>Note that while we can add rows to a table created with variable length arrays, you cannot currently build up a table from scratch with variable length arrays using <tt>addRow</tt>. When the first row is read in, all of the column formats are defined, and at that point there is no indication that the column has variable length. The library can&#x2019;t see row to row variations since there is only a single row.</p>
-<p>It is possible to mix these approaches: e.g., use addColumn to build up an initial set of rows and then add additional rows to the specified structure.</p></div></div>
+<p>It is possible to mix these approaches: e.g., use addColumn to build up an initial set of rows and then add additional rows to the specified structure.</p>
+<p><a name="modifying-existing-files"></a></p></div></div>
 <div class="section">
-<h3><a name="Modify_existing_files"></a>Modify existing files</h3>
+<h3><a name="Modifying_existing_files"></a>Modifying existing files</h3>
 <p>An existing FITS file can be modified in place in some circumstances. The file must be an uncompressed file. The user can then modify elements either by directly modifying the kernel object gotten for image data, or by using the <tt>setElement</tt> or similar methods for tables.</p>
 <p>Suppose we have just a couple of specific elements we know we need to change in a given file:</p>
 
@@ -538,12 +573,25 @@
   thdu.setElement(3, 0, &#x201d;NewName&#x201d;);
   thdu.rewrite();
 </pre></div></div>
-<p>This rewrites the FITS file in place. Generally rewrites can be made as long as the only change is to the content of the data (and the FITS file meets the criteria mentioned above). An exception will be thrown if the data has been added or deleted or too many changes have been made to the header. Some modifications may be made to the header but the number of header cards modulo 36 must remain unchanged.</p></div>
+<p>This rewrites the FITS file in place. Generally rewrites can be made as long as the only change is to the content of the data (and the FITS file meets the criteria mentioned above). An exception will be thrown if the data has been added or deleted or too many changes have been made to the header. Some modifications may be made to the header but the number of header cards modulo 36 must remain unchanged.</p>
+<p><a name="low-level-writes"></a></p></div>
 <div class="section">
-<h3><a name="Lower_level_writes"></a>Lower level writes</h3>
+<h3><a name="Low-level_writes"></a>Low-level writes</h3>
 <p>When a large table or image is to be written, the user may wish to stream the write. This is possible but rather more difficult than in the case of reads.</p>
 <p>There are two main issues: 1. The header for the HDU must written to show the size of the entire file when we are done. Thus the user may need to modify the header data appropriately. 2. After writing the data, a valid FITS file may need to be padded to an appropriate length.</p>
 <p>It&#x2019;s not hard to address these, but the user needs some familiarity with the internals of the FITS representation.</p>
+<p><a name="writing-gzipped-outputs"></a></p></div>
+<div class="section">
+<h3><a name="Writing_GZIP-ed_outputs"></a>Writing GZIP-ed outputs</h3>
+<p>It is common practice to compress FITS files using <b>gzip</b> so they can be exchanged in a more compact form. The library supports the creation of gzipped fits out of the box, by wrapping the file&#x2019;s output stream into a <tt>GZIPOutputStream</tt>, such as:</p>
+
+<div class="source">
+<div class="source">
+<pre>  Fits f = new Fits();
+  
+  FitsOutputStream out = new FitsOutputStream(new GZIPOutputStream(new FileOutputStream(new File(&quot;mydata.fits.gz&quot;))));
+  f.write(out);
+</pre></div></div>
 <div class="section">
 <h4><a name="Images"></a>Images</h4>
 <p>Suppose we have a 16 GB image that we want to write. It could be foolish to require all of that data to be held in-memory. We&#x2019;ll build up a header that&#x2019;s almost what we want, fix it, write it and then write the data. The data is an array of 2000 x 2000 pixel images in 1000 energy channels. Each channel has a 4 byte integer. The entire image might be specified as </p>
@@ -637,9 +685,28 @@
 <p><a name="fits-headers"></a></p></div></div></div>
 <div class="section">
 <h2><a name="FITS_headers"></a>FITS headers</h2>
-<p>The metadata that describes the FITS files contents is stored in the headers of each HDU. There are two basic ways to access these data.</p>
+
+<ul>
+  
+<li><a href="#accessing-header-values">Accessing header values</a></li>
+  
+<li><a href="#standard-and-conventional-fits-header-keywords">Standard and conventional FITS header keywords</a></li>
+  
+<li><a href="#long-string-values">Long string values</a></li>
+  
+<li><a href="#checksums">Checksums</a></li>
+  
+<li><a href="#preallocated-header-space">Preallocated header space</a></li>
+  
+<li><a href="#standard-compliance">Standard compliance</a></li>
+</ul>
+<p>The metadata that describes the FITS files contents is stored in the headers of each HDU.</p>
+<p><a name="accessing-header-values"></a></p>
 <div class="section">
-<h3><a name="a1._Direct_access_header_values"></a>1. Direct access header values</h3>
+<h3><a name="Accessing_header_values"></a>Accessing header values</h3>
+<p>There are two basic ways to access these data.</p>
+<div class="section">
+<h4><a name="A._Direct_access_header_values"></a>A. Direct access header values</h4>
 <p>If you are not concerned with the internal organization of the header you can get values from the header using the <tt>getXXXValue</tt> methods. To set values use the <tt>addValue</tt> method.</p>
 <p>To find out the telescope used you might want to know the value of the <tt>TELESCOP</tt> key.</p>
 
@@ -665,7 +732,7 @@
 </pre></div></div>
 <p>The second argument is our new RA. The third is a comment field that will also be written to that header.</p></div>
 <div class="section">
-<h3><a name="a2._Iterator-based_access_of_header_values"></a>2. Iterator-based access of header values</h3>
+<h4><a name="B._Iterator-based_access_of_header_values"></a>B. Iterator-based access of header values</h4>
 <p>If you are writing files, it&#x2019;s often desirable to organize the header and include copious comments and history records. This is most easily accomplished using a header Cursor and using the HeaderCard.</p>
 
 <div class="source">
@@ -673,7 +740,8 @@
 <pre>  Cursor&lt;String, HeaderCard&gt; c = header.iterator();
 </pre></div></div>
 <p>returns a cursor object that points to the first card of the header. We have <tt>prev()</tt> and <tt>next()</tt> methods that allow us to move through the header, and <tt>add()</tt> and <tt>delete()</tt> methods to add new records. The methods of <tt>HeaderCard</tt> allow us to manipulate the entire current card as a single string or broken down into keyword, value and comment components. Comment and history header cards can be created and added to the header.</p>
-<p>For tables much of the metadata describes individual columns. There are a set of <tt>setTableMeta()</tt> methods that can be used to help organize these as the user wishes.</p></div>
+<p>For tables much of the metadata describes individual columns. There are a set of <tt>setTableMeta()</tt> methods that can be used to help organize these as the user wishes.</p>
+<p><a name="standard-and-conventional-fits-header-keywords"></a></p></div></div>
 <div class="section">
 <h3><a name="Standard_and_conventional_FITS_header_keywords"></a>Standard and conventional FITS header keywords</h3>
 <p>There many, many sources of FITS keywords. Many organisations (or groups of organisations) have defined their own sets of keywords. This results in many different dictionaries with partly overlapping definitions. To help the &#x201c;normal&#x201d; user of FITS files with these, we have started to collect the standards and will try to include them in this library to ease finding of the &#x201c;right&#x201d; keyword.</p>
@@ -725,10 +793,109 @@
 hdr.addValue(WATn_nnn.n(9, 2, 3, 4), &quot;50&quot;);
 </pre></div></div>
 <p>You can use the compiler to check your keywords, and also use your IDE to easily find references to certain keywords.</p>
-<p><a name="compression-support"></a></p></div></div></div>
+<p><a name="long-string-values"></a></p></div></div>
+<div class="section">
+<h3><a name="Long_string_values"></a>Long string values</h3>
+<p>The standard maximum length for string values in the header is 68 characters. As of FITS 4.0, the OGIP 1.0 long string convention is part of the standard. And, as of version 1.16 of this library, it is supported by default. Support for long strings can be toggled via <tt>FitsFactory.setLongStringEnabled(boolean)</tt> if necessary. If the settings is disabled, any attempt to set a header value to a string longer than the space available for it in a single 80-character header record will throw a <tt>LongStringsNotEnabledException</tt> runtime exception.</p>
+<p><a name="fits-headers"></a></p></div>
+<div class="section">
+<h3><a name="HIERARCH_style_header_keywords"></a>HIERARCH style header keywords</h3>
+<p>The standard FITS header keywords consists of maximum 8 upper case letters or number, plus dash <tt>-</tt> and underscore <tt>_</tt>. The HIERARCH keyword convention allows for longer and/or hierarchical sets of FITS keywords, and/or for supporting a more extended set of ASCII characters (in the range of <tt>0x20</tt> to <tt>0x7E</tt>). Support for HIERARCH-style keywords is enabled by default as of version 1.16. HIERARCH support can be toggled if needed via <tt>FitsFactory.setUseHierarch(boolean)</tt>. By default, HIERARCH keywords are converted to upper-case only (<b>cfitsio</b> convention), so</p>
+
+<div class="source">
+<div class="source">
+<pre>  HeaderCard hc = new HeaderCard(&quot;HIERARCH.my.lower.case.keyword[!]&quot;, &quot;value&quot;, &quot;comment&quot;);
+</pre></div></div>
+<p>will write the header entry to FITS as:</p>
+
+<div class="source">
+<div class="source">
+<pre>  HIERARCH MY LOWER CASE KEYWORD[!] = 'value' / comment
+</pre></div></div>
+<p>You can use <tt>FitsFactory.getHierarchFormater().setCaseSensitive(true)</tt> to allow the use of lower-case characters, and hence enable case-sensitive keywords. After the setting, the same card will be written to FITS as:</p>
+
+<div class="source">
+<div class="source">
+<pre>  HIERARCH my lower case keyword[!] = 'value' / comment
+</pre></div></div>
+<p>You may note a few other properties of HIERARCH keywords as implemented by this library:</p>
+
+<ol style="list-style-type: decimal">
+  
+<li>The convention of the library is to refer to HIERARCH keywords internally as a dot-separated hierarchy, preceded by <tt>HIERARCH.</tt>.</li>
+  
+<li>The HIERARCH keywords may contain all printable standard ASCII character that are allowed in FITS headers (<tt>0x20</tt> thru <tt>0x7E</tt>). As such, we take a liberal reading of the ESO convention, which designated only upper-case letters, numbers, plus dash <tt>-</tt> and underscore <tt>_</tt>. If you want to conform to the ESO convention more closely, you should avoid using characters outside of the set of the original convention.</li>
+  
+<li>The library adds a space between the keywords and the <tt>=</tt> sign, as prescribed by the <b>cfitsio</b> convention. The original ESO convention does not require such a space (but certainly allows for it). We add the extra space to offer better compatibility with <b>cfitsio</b>.</li>
+  
+<li>The HIERARCH parsing is tolerant, and does not care about extra space (or spaces) between the hierarchical components or before <tt>=</tt>. It also recognises <tt>.</tt> as a separator of hierarchy besides the conventional white space ` `.</li>
+  
+<li>The case sensitive setting (above) also determines whether or not HIERARCH keywords are converted to upper-case upon parsing. As such, the header entry in last example above can be referred either as <tt>HIERARCH.MY.LOWER.CASE.KEYWORD[!]</tt> or as <tt>HIERARCH.my.lower.case.keyword[!]</tt> internally after parsing.</li>
+  
+<li>If <tt>FitsFactory</tt> has HIERARCH support disabled, any attempt to define a HIERARCH-style long keyword will throw a <tt>HierarchNotEnabledException</tt> runtime exception. (However, just <tt>HIERARCH</tt> will still be allowed, as a stanndard 8-character FITS keyword on its own).</li>
+</ol>
+<p><a name="checksums"></a></p></div>
+<div class="section">
+<h3><a name="Checksums"></a>Checksums</h3>
+<p>Checksums can be added to the Headers for HDUs that can be used to ensure the faithful copying of the FITS data. <tt>Fits.setChecksum()</tt> can be used to set these. Setting the checksum should be the users last action before writing the FITS file.</p>
+<p><a name="preallocated-header-space"></a></p></div>
+<div class="section">
+<h3><a name="Preallocated_header_space"></a>Preallocated header space</h3>
+<p>Many FITS files are created by live-recording of data, e.g. from astronomical instruments. As such not all header values may be defined as one needs to start writing the data segment of the HDU that follows the header. For example, we do not know in advance how many rows the binary table will contain, which will depend on when once stops the recording at a later point. Other metadata may simply not be provides also, until a later time. For this reason version 4.0 of the FITS standard has specified preallocating blanck header space as some number of blank header records between the last defined header entry and the <tt>END</tt> keyword.</p>
+<p>As of version 1.16, this library support preallocated header space via <tt>Header.ensureCardSpace(int)</tt>, which can be used to ensure that the header can contain <i>at least</i> the specified number of 80-character records when written to the output. (In reality it may accomodate somewhat more even because of the required padding to multiples of 2880 bytes or 36 records &#x2013; and you can use <tt>Header.getMinimumSize()</tt> to find out just how many bytes are reserved/used by any header object at any point). </p>
+<p>Once the space has been reserved, the header can be written to the output, and one may begin recording data after it. Cards may be filled later, up to the number of records defined (and sometimes beyond), and the header can be rewritten at a later point in place, with the additional entries.</p>
+<p>For example,</p>
+
+<div class="source">
+<div class="source">
+<pre>  Header h = new Header();
+  FitsFile out = new FitsFile(&quot;mydata.fits&quot;, &quot;rw&quot;);
+  
+  // We want to keep room for 200 80-character records in total
+  // to be filled later
+  h.ensureCardSpace(200);
+
+  // We can now write the header, knowing we can fill it with up to
+  // 200 records in total at a later point
+  h.write(out);
+  
+  // Now we record data, such as a binary table row-by-row
+  // ...
+  
+  // Once the data has been recordced we can proceed to fill in 
+  // the additional header values, such as the end time of observation
+  h.addValue(&quot;DATE-END&quot;, FitsDate.getFitsDateString(), &quot;end of observation&quot;);
+  
+  // And we can re-write the header in place
+  h.rewrite();
+</pre></div></div>
+<p>Preallocated header space is also preserved when reading the data in. Any trailing blank header records (before the <tt>END</tt> key) are counted without adding them as blank cards when the header is parsed. (Internal blank cards are however preserved as blank comment cards). After reading a header with preallocated space, the user can add at least as many new cards into that header as trailing blank records were written, and still call <tt>rewrite()</tt> on that header without any problems.</p>
+<p><a name="standard-compliance"></a></p></div>
+<div class="section">
+<h3><a name="Standard_compliance"></a>Standard compliance</h3>
+<p>The library offers a two-pronged approach to ensure header compliance to the [FITS standard])(#<a class="externalLink" href="https://fits.gsfc.nasa.gov/fits_standard.html)">https://fits.gsfc.nasa.gov/fits_standard.html)</a>. </p>
+
+<ul>
+  
+<li>
+<p>First, we fully enforce the standards when creating FITS headers using this library, and we do it in a way that is compliant with earlier FITS specifications (prior to 4.0) also. We will prevent the creation of non-standard header entries (cards) by throwing appropriate runtime exceptions (such as <tt>IllegalArgumentException</tt>, <tt>LongValueException</tt>, <tt>LongStringsNotEnabledException</tt>, <tt>HierarchNotEnabledException</tt>) as soon as one attempts to set a header component that is supported by FITS or by the set of standards selected in the current <tt>FitsFactory</tt> settings.</p></li>
+  
+<li>
+<p>Second, we offer the choice between tolerant and strict interpretation of 3rd-party FITS headers when parsing these. In tolerant mode (default), the parser will do its best to overcome standard violations as much as possible, such that the header can be parsed as fully as possible, even if some entries may have corrupted content. The user may enable <tt>Header.setParserWarningsEnabled(true)</tt> to log each violation detected by the parser as warnings, so these can be inspected if the user cares to know. Stricter parsing can be enabled by <tt>FitsFactory.setAllowHeaderRepairs(false)</tt>. In this mode, the parser will throw an exception when it encounters a severely corrupted header entry, such as a string value with no closing quote (<tt>UnclosedQuoteException</tt>) or a complex value without a closing bracket (<tt>IllegalArgumentException</tt>). (And, slighter violations can still be logged, the same way.)</p></li>
+</ul>
+<p>Additionally, we provide <tt>HeaderCard.sanitize(String)</tt> method that the user can call to ensure that <tt>String</tt>s can be used in FITS headers. The method will replace illegal character (outside of the range of <tt>0x20</tt> thru <tt>0x7E</tt>) with <tt>?</tt>.</p>
+<p><a name="compression-support"></a></p></div></div>
 <div class="section">
 <h2><a name="Compression_support"></a>Compression support</h2>
+
+<ul>
+  
+<li><a href="#image-compression">Image compression</a></li>
+  
+<li><a href="#table-compression">Table compression</a></li>
+</ul>
 <p>Starting with version 1.15.0 compression of both images and tables is fully supported. A 100% Java implementation of the compression libraries available in cfitsio was implemented and can be used through the Java API.</p>
+<p><a name="image-compression"></a></p>
 <div class="section">
 <h3><a name="Image_compression"></a>Image compression</h3>
 <p>Image compression and tiling are now fully supported by nom-tam-fits.</p>
@@ -749,9 +916,7 @@ hdr.addValue(WATn_nnn.n(9, 2, 3, 4), &quot;50&quot;);
          /**/.setScale(1);
      compressedHdu.compress();
      f.addHDU(compressedHdu);
-     try (FitsOutputStream bdos = new FitsOutputStream(new FileOutputStream(&quot;something.fits.fz&quot;))) {
-        f.write(bdos);
-     }
+     f.write(&quot;something.fits.fz&quot;);
   } 
 </pre></div></div>
 <p>Depending on the compression algorithm you select, different options can be set, and if you activate quantization (as in the example above) another set of options is available.</p>
@@ -822,7 +987,8 @@ hdr.addValue(WATn_nnn.n(9, 2, 3, 4), &quot;50&quot;);
       ImageHdu uncompressedImage = hdu.asImageHDU();
   }
 </pre></div></div>
-<p>Please read the original fits documentation for further information on the different compression options and their possible values.</p></div>
+<p>Please read the original fits documentation for further information on the different compression options and their possible values.</p>
+<p><a name="table-compression"></a></p></div>
 <div class="section">
 <h3><a name="Table_compression"></a>Table compression</h3>
 <p>Table compression is also supported in nom-tam-fits from version 1.15.0. When a table is compressed the effect is that within each column we compress &#x2018;tiles&#x2019; that are sets of contiguous rows. E.g., if we use a &#x2018;tile&#x2019; size of 10, then for the first column we concatenate the data from the first 10 rows and compress the resulting sequence of bytes. The result of this compression will be stored in the heap area of the FITS file since its length will likely vary from tile to tile. We then do the same for the first 10 rows of the second column and every other column in the table. After we finish we are ready to write the first row of the compressed table. We then repeat for sets of 10 rows until we reach the end of the input table. The result is a new binary table with the same number of columns but with the number of rows decreased by ~10 (in our example). Thus, just as with images, we can get the ability to efficiently compress the data without losing the ability to retrieve only the rows we are interested in when we are reading from a large table.</p>
