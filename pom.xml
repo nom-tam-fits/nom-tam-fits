@@ -23,13 +23,10 @@
 			<name>Thomas A Mcglynn</name>
 			<email>Thomas.A.McGlynn [at] NASA [dot] gov</email>
 			<roles>
-				<role>Developer</role>
+			  <role>Creator</role>
 				<role>Admin</role>
 			</roles>
 			<url>http://science.gsfc.nasa.gov/sed/index.cfm?fuseAction=people.jumpBio&amp;&amp;iPhonebookId=849</url>
-			<properties>
-				<picUrl>http://science.gsfc.nasa.gov/sed/images/Photos/038982816/McGlynn,_Tom.jpg</picUrl>
-			</properties>
 		</developer>
 		<developer>
 			<id>ritchieGitHub</id>
@@ -51,6 +48,9 @@
 				<role>Developer</role>
 				<role>Admin</role>
 			</roles>
+			<properties>
+				<picUrl>http://1.gravatar.com/avatar/cc5454473320275f87bcae3c13aec99d</picUrl>
+			</properties>
 			<url>https://www.sigmyne.com/attila</url>
 		</developer>
 		<developer>
