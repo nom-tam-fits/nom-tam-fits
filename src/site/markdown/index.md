@@ -108,11 +108,11 @@ These are represented as `float[2]` and `double[2]` arrays in the `nom.tam` libr
 
 As of version 1.16, we added a `ComplexValue` object for use in headers. At this point, 
 the new type is not being used with tables to maintain backward compatibility to the original behavior described above.
-This may change in a future release to make the use of `ComplexValue` more universal.
+This may change in a future release to make the use of `ComplexValue` more universally.
 
 #### Strings
 
-FITS generally represents character strings a byte arrays of ASCII characters. The library will automatically converts between Java `String`s and the internal FITS representations, by the appropriate downcasting `char` to `byte`. Therefore, you should be careful to avoid using extended Unicode characters (beyond the ASCII set) in `String`s, which will be written to FITS.
+FITS generally represents character strings a byte arrays of ASCII characters. The library automatically converts between Java `String`s and their FITS representations, by the appropriate downcasting `char` to `byte`. Therefore, you should be careful to avoid using extended Unicode characters (beyond the ASCII set) in `String`s, which will be written to FITS.
 
 It is also possible to write `char[]` arrays to FITS, Unfortunately, historically the library wrote `char[]` arrays as 16-bit Unicode, 
 rather than the 8-bit ASCII standard of FITS, and consequently (because there is no other corresponding 16-bit FITS datatype) these would be read back as `short[]`. As of version 1.16, you can change that behavior by `FitsFactory.setUseUnicodeChars(false)` to treat `char[]` arrays the same way as `String`s (and to read them back as `String`s). 
