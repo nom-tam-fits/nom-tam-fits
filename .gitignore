@@ -1,3 +1,5 @@
+**/*~
+**/bin/
 target/
 pom.xml.tag
 pom.xml.releaseBackup
@@ -9,15 +11,12 @@ release.properties
 /LICENSE.txt
 /.settings/
 /jtest.fil
-/.travis.yml~
 /target/
 /.metadata/
 /RemoteSystemsTempFiles/
 /.apt_generated/
 /.factorypath
-/target/
 /nom-tam-fits.sonargraph/
-/target/
 .idea
 nom-tam-fits.iml
 coverage
