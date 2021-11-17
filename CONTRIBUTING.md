@@ -16,7 +16,7 @@ The _nom-tam-fits_ library is a community-maintained project. We absolutely rely
 5. If all goes well (and why would it not?), your pull-request will get merged, and will be included in the next release of _nom-tam-fits_. Congratulations for your excellent work, and many thanks for dedicating some of your time for making this library a little bit better. There will be many who will appreciate it. :-)
 
 
-If at any point you have questions, or need feedback, don't be afraid to ask. You can put your questions into the issue you found or created, or your pull-request, or as a Q&amp;A in under [Discussions](https://github.com/nom-tam-fits/nom-tam-fits/discussions).
+If at any point you have questions, or need feedback, don't be afraid to ask. You can put your questions into the issue you found or created, or your pull-request, or as a Q&amp;A in [Discussions](https://github.com/nom-tam-fits/nom-tam-fits/discussions).
 
 
 
