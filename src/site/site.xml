@@ -24,6 +24,7 @@
 			</gitHub>
 		</fluidoSkin>
 	</custom>
+	
 	<body>
 		<breadcrumbs>
 			<item name="${project.name}" href="index.html" />
