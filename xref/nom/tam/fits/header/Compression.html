@@ -44,7 +44,7 @@
 <a class="jxr_linenumber" name="L36" href="#L36">36</a>  <em class="jxr_javadoccomment"> * the header of the FITS binary table extension to describe the structure of</em>
 <a class="jxr_linenumber" name="L37" href="#L37">37</a>  <em class="jxr_javadoccomment"> * the compressed image.</em>
 <a class="jxr_linenumber" name="L38" href="#L38">38</a>  <em class="jxr_javadoccomment"> */</em>
-<a class="jxr_linenumber" name="L39" href="#L39">39</a>  <strong class="jxr_keyword">public</strong> enum <a href="../../../../nom/tam/fits/header/Compression.html">Compression</a> <strong class="jxr_keyword">implements</strong> <a href="../../../../nom/tam/fits/header/IFitsHeader.html">IFitsHeader</a> {
+<a class="jxr_linenumber" name="L39" href="#L39">39</a>  <strong class="jxr_keyword">public</strong> enum <a name="Compression" href="../../../../nom/tam/fits/header/Compression.html#Compression">Compression</a> <strong class="jxr_keyword">implements</strong> <a name="IFitsHeader" href="../../../../nom/tam/fits/header/IFitsHeader.html#IFitsHeader">IFitsHeader</a> {
 <a class="jxr_linenumber" name="L40" href="#L40">40</a>      <em class="jxr_javadoccomment">/**</em>
 <a class="jxr_linenumber" name="L41" href="#L41">41</a>  <em class="jxr_javadoccomment">     * (required keyword) This keyword must have the logical value T. The value</em>
 <a class="jxr_linenumber" name="L42" href="#L42">42</a>  <em class="jxr_javadoccomment">     * field of this keyword shall be ’T’ to indicate that the FITS binary table</em>
@@ -507,16 +507,16 @@
 <a class="jxr_linenumber" name="L499" href="#L499">499</a>     <strong class="jxr_keyword">public</strong> <strong class="jxr_keyword">static</strong> <strong class="jxr_keyword">final</strong> String SMOOTH = <span class="jxr_string">"SMOOTH"</span>;
 <a class="jxr_linenumber" name="L500" href="#L500">500</a> 
 <a class="jxr_linenumber" name="L501" href="#L501">501</a>     @SuppressWarnings(<span class="jxr_string">"CPD-START"</span>)
-<a class="jxr_linenumber" name="L502" href="#L502">502</a>     <strong class="jxr_keyword">private</strong> <strong class="jxr_keyword">final</strong> <a href="../../../../nom/tam/fits/header/IFitsHeader.html">IFitsHeader</a> key;
+<a class="jxr_linenumber" name="L502" href="#L502">502</a>     <strong class="jxr_keyword">private</strong> <strong class="jxr_keyword">final</strong> <a name="IFitsHeader" href="../../../../nom/tam/fits/header/IFitsHeader.html#IFitsHeader">IFitsHeader</a> key;
 <a class="jxr_linenumber" name="L503" href="#L503">503</a> 
-<a class="jxr_linenumber" name="L504" href="#L504">504</a>     <strong class="jxr_keyword">private</strong> <strong class="jxr_keyword">final</strong> <a href="../../../../nom/tam/fits/header/IFitsHeader.html">IFitsHeader</a> uncompressedKey;
+<a class="jxr_linenumber" name="L504" href="#L504">504</a>     <strong class="jxr_keyword">private</strong> <strong class="jxr_keyword">final</strong> <a name="IFitsHeader" href="../../../../nom/tam/fits/header/IFitsHeader.html#IFitsHeader">IFitsHeader</a> uncompressedKey;
 <a class="jxr_linenumber" name="L505" href="#L505">505</a> 
-<a class="jxr_linenumber" name="L506" href="#L506">506</a>     <a href="../../../../nom/tam/fits/header/Compression.html">Compression</a>(<a href="../../../../nom/tam/fits/header/IFitsHeader.html">HDU</a> hdu, <a href="../../../../nom/tam/fits/header/IFitsHeader.html">VALUE</a> valueType, String comment) {
+<a class="jxr_linenumber" name="L506" href="#L506">506</a>     <a name="Compression" href="../../../../nom/tam/fits/header/Compression.html#Compression">Compression</a>(HDU hdu, VALUE valueType, String comment) {
 <a class="jxr_linenumber" name="L507" href="#L507">507</a>         <strong class="jxr_keyword">this</strong>(hdu, valueType, comment, <strong class="jxr_keyword">null</strong>);
 <a class="jxr_linenumber" name="L508" href="#L508">508</a>     }
 <a class="jxr_linenumber" name="L509" href="#L509">509</a> 
-<a class="jxr_linenumber" name="L510" href="#L510">510</a>     <a href="../../../../nom/tam/fits/header/Compression.html">Compression</a>(<a href="../../../../nom/tam/fits/header/IFitsHeader.html">HDU</a> hdu, <a href="../../../../nom/tam/fits/header/IFitsHeader.html">VALUE</a> valueType, String comment, <a href="../../../../nom/tam/fits/header/IFitsHeader.html">IFitsHeader</a> uncompressedKey) {
-<a class="jxr_linenumber" name="L511" href="#L511">511</a>         <strong class="jxr_keyword">this</strong>.key = <strong class="jxr_keyword">new</strong> <a href="../../../../nom/tam/fits/header/FitsHeaderImpl.html">FitsHeaderImpl</a>(name(), IFitsHeader.SOURCE.HEASARC, hdu, valueType, comment);
+<a class="jxr_linenumber" name="L510" href="#L510">510</a>     <a name="Compression" href="../../../../nom/tam/fits/header/Compression.html#Compression">Compression</a>(HDU hdu, VALUE valueType, String comment, <a name="IFitsHeader" href="../../../../nom/tam/fits/header/IFitsHeader.html#IFitsHeader">IFitsHeader</a> uncompressedKey) {
+<a class="jxr_linenumber" name="L511" href="#L511">511</a>         <strong class="jxr_keyword">this</strong>.key = <strong class="jxr_keyword">new</strong> <a name="FitsHeaderImpl" href="../../../../nom/tam/fits/header/FitsHeaderImpl.html#FitsHeaderImpl">FitsHeaderImpl</a>(name(), IFitsHeader.SOURCE.HEASARC, hdu, valueType, comment);
 <a class="jxr_linenumber" name="L512" href="#L512">512</a>         <strong class="jxr_keyword">this</strong>.uncompressedKey = uncompressedKey;
 <a class="jxr_linenumber" name="L513" href="#L513">513</a>     }
 <a class="jxr_linenumber" name="L514" href="#L514">514</a> 
@@ -525,12 +525,12 @@
 <a class="jxr_linenumber" name="L517" href="#L517">517</a>         <strong class="jxr_keyword">return</strong> <strong class="jxr_keyword">this</strong>.key.comment();
 <a class="jxr_linenumber" name="L518" href="#L518">518</a>     }
 <a class="jxr_linenumber" name="L519" href="#L519">519</a> 
-<a class="jxr_linenumber" name="L520" href="#L520">520</a>     <strong class="jxr_keyword">public</strong> <a href="../../../../nom/tam/fits/header/IFitsHeader.html">IFitsHeader</a> getUncompressedKey() {
+<a class="jxr_linenumber" name="L520" href="#L520">520</a>     <strong class="jxr_keyword">public</strong> <a name="IFitsHeader" href="../../../../nom/tam/fits/header/IFitsHeader.html#IFitsHeader">IFitsHeader</a> getUncompressedKey() {
 <a class="jxr_linenumber" name="L521" href="#L521">521</a>         <strong class="jxr_keyword">return</strong> <strong class="jxr_keyword">this</strong>.uncompressedKey;
 <a class="jxr_linenumber" name="L522" href="#L522">522</a>     }
 <a class="jxr_linenumber" name="L523" href="#L523">523</a> 
 <a class="jxr_linenumber" name="L524" href="#L524">524</a>     @Override
-<a class="jxr_linenumber" name="L525" href="#L525">525</a>     <strong class="jxr_keyword">public</strong> <a href="../../../../nom/tam/fits/header/IFitsHeader.html">HDU</a> hdu() {
+<a class="jxr_linenumber" name="L525" href="#L525">525</a>     <strong class="jxr_keyword">public</strong> HDU hdu() {
 <a class="jxr_linenumber" name="L526" href="#L526">526</a>         <strong class="jxr_keyword">return</strong> <strong class="jxr_keyword">this</strong>.key.hdu();
 <a class="jxr_linenumber" name="L527" href="#L527">527</a>     }
 <a class="jxr_linenumber" name="L528" href="#L528">528</a> 
@@ -540,18 +540,18 @@
 <a class="jxr_linenumber" name="L532" href="#L532">532</a>     }
 <a class="jxr_linenumber" name="L533" href="#L533">533</a> 
 <a class="jxr_linenumber" name="L534" href="#L534">534</a>     @Override
-<a class="jxr_linenumber" name="L535" href="#L535">535</a>     <strong class="jxr_keyword">public</strong> <a href="../../../../nom/tam/fits/header/IFitsHeader.html">IFitsHeader</a> n(<strong class="jxr_keyword">int</strong>... number) {
+<a class="jxr_linenumber" name="L535" href="#L535">535</a>     <strong class="jxr_keyword">public</strong> <a name="IFitsHeader" href="../../../../nom/tam/fits/header/IFitsHeader.html#IFitsHeader">IFitsHeader</a> n(<strong class="jxr_keyword">int</strong>... number) {
 <a class="jxr_linenumber" name="L536" href="#L536">536</a>         <strong class="jxr_keyword">return</strong> <strong class="jxr_keyword">this</strong>.key.n(number);
 <a class="jxr_linenumber" name="L537" href="#L537">537</a>     }
 <a class="jxr_linenumber" name="L538" href="#L538">538</a> 
 <a class="jxr_linenumber" name="L539" href="#L539">539</a>     @Override
-<a class="jxr_linenumber" name="L540" href="#L540">540</a>     <strong class="jxr_keyword">public</strong> <a href="../../../../nom/tam/fits/header/IFitsHeader.html">SOURCE</a> status() {
+<a class="jxr_linenumber" name="L540" href="#L540">540</a>     <strong class="jxr_keyword">public</strong> SOURCE status() {
 <a class="jxr_linenumber" name="L541" href="#L541">541</a>         <strong class="jxr_keyword">return</strong> <strong class="jxr_keyword">this</strong>.key.status();
 <a class="jxr_linenumber" name="L542" href="#L542">542</a>     }
 <a class="jxr_linenumber" name="L543" href="#L543">543</a> 
 <a class="jxr_linenumber" name="L544" href="#L544">544</a>     @Override
 <a class="jxr_linenumber" name="L545" href="#L545">545</a>     @SuppressWarnings(<span class="jxr_string">"CPD-END"</span>)
-<a class="jxr_linenumber" name="L546" href="#L546">546</a>     <strong class="jxr_keyword">public</strong> <a href="../../../../nom/tam/fits/header/IFitsHeader.html">VALUE</a> valueType() {
+<a class="jxr_linenumber" name="L546" href="#L546">546</a>     <strong class="jxr_keyword">public</strong> VALUE valueType() {
 <a class="jxr_linenumber" name="L547" href="#L547">547</a>         <strong class="jxr_keyword">return</strong> <strong class="jxr_keyword">this</strong>.key.valueType();
 <a class="jxr_linenumber" name="L548" href="#L548">548</a>     }
 <a class="jxr_linenumber" name="L549" href="#L549">549</a> 

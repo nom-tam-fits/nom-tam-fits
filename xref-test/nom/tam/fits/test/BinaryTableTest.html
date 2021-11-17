@@ -111,7 +111,7 @@
 <a class="jxr_linenumber" name="L103" href="#L103">103</a> <em class="jxr_javadoccomment"> *     Rewrite binary table in place</em>
 <a class="jxr_linenumber" name="L104" href="#L104">104</a> <em class="jxr_javadoccomment"> * &lt;/pre&gt;</em>
 <a class="jxr_linenumber" name="L105" href="#L105">105</a> <em class="jxr_javadoccomment"> */</em>
-<a class="jxr_linenumber" name="L106" href="#L106">106</a> <strong class="jxr_keyword">public</strong> <strong class="jxr_keyword">class</strong> <a href="../../../../nom/tam/fits/test/BinaryTableTest.html">BinaryTableTest</a> {
+<a class="jxr_linenumber" name="L106" href="#L106">106</a> <strong class="jxr_keyword">public</strong> <strong class="jxr_keyword">class</strong> <a name="BinaryTableTest" href="../../../../nom/tam/fits/test/BinaryTableTest.html#BinaryTableTest">BinaryTableTest</a> {
 <a class="jxr_linenumber" name="L107" href="#L107">107</a> 
 <a class="jxr_linenumber" name="L108" href="#L108">108</a>     <strong class="jxr_keyword">private</strong> <strong class="jxr_keyword">static</strong> <strong class="jxr_keyword">final</strong> Object[] TEST_ROW = <strong class="jxr_keyword">new</strong> Object[]{
 <a class="jxr_linenumber" name="L109" href="#L109">109</a>             <strong class="jxr_keyword">new</strong> <strong class="jxr_keyword">float</strong>[]{
@@ -1560,7 +1560,7 @@
 <a class="jxr_linenumber" name="L1552" href="#L1552">1552</a>     <strong class="jxr_keyword">public</strong> <strong class="jxr_keyword">void</strong> testColumnCloneFailure() <strong class="jxr_keyword">throws</strong> Exception {
 <a class="jxr_linenumber" name="L1553" href="#L1553">1553</a>         BinaryTable btab = <strong class="jxr_keyword">new</strong> BinaryTable() {
 <a class="jxr_linenumber" name="L1554" href="#L1554">1554</a> 
-<a class="jxr_linenumber" name="L1555" href="#L1555">1555</a>             <strong class="jxr_keyword">class</strong> <a href="../../../../nom/tam/fits/test/BinaryTableTest.html">ColumnExtra</a> <strong class="jxr_keyword">extends</strong> ColumnDesc {
+<a class="jxr_linenumber" name="L1555" href="#L1555">1555</a>             <strong class="jxr_keyword">class</strong> ColumnExtra <strong class="jxr_keyword">extends</strong> ColumnDesc {
 <a class="jxr_linenumber" name="L1556" href="#L1556">1556</a> 
 <a class="jxr_linenumber" name="L1557" href="#L1557">1557</a>                 @Override
 <a class="jxr_linenumber" name="L1558" href="#L1558">1558</a>                 <strong class="jxr_keyword">public</strong> <strong class="jxr_keyword">int</strong>[] getDimens() {
@@ -1572,7 +1572,7 @@
 <a class="jxr_linenumber" name="L1564" href="#L1564">1564</a> 
 <a class="jxr_linenumber" name="L1565" href="#L1565">1565</a>             @Override
 <a class="jxr_linenumber" name="L1566" href="#L1566">1566</a>             <strong class="jxr_keyword">public</strong> String toString() {
-<a class="jxr_linenumber" name="L1567" href="#L1567">1567</a>                 <strong class="jxr_keyword">new</strong> <a href="../../../../nom/tam/fits/test/BinaryTableTest.html">ColumnExtra</a>().clone();
+<a class="jxr_linenumber" name="L1567" href="#L1567">1567</a>                 <strong class="jxr_keyword">new</strong> ColumnExtra().clone();
 <a class="jxr_linenumber" name="L1568" href="#L1568">1568</a>                 <strong class="jxr_keyword">return</strong> <strong class="jxr_keyword">super</strong>.toString();
 <a class="jxr_linenumber" name="L1569" href="#L1569">1569</a>             }
 <a class="jxr_linenumber" name="L1570" href="#L1570">1570</a>         };
@@ -1590,7 +1590,7 @@
 <a class="jxr_linenumber" name="L1582" href="#L1582">1582</a>         };
 <a class="jxr_linenumber" name="L1583" href="#L1583">1583</a>     }
 <a class="jxr_linenumber" name="L1584" href="#L1584">1584</a> 
-<a class="jxr_linenumber" name="L1585" href="#L1585">1585</a>     <strong class="jxr_keyword">static</strong> <strong class="jxr_keyword">class</strong> <a href="../../../../nom/tam/fits/test/BinaryTableTest.html">AccessBinaryTable</a> <strong class="jxr_keyword">extends</strong> BinaryTable {
+<a class="jxr_linenumber" name="L1585" href="#L1585">1585</a>     <strong class="jxr_keyword">static</strong> <strong class="jxr_keyword">class</strong> AccessBinaryTable <strong class="jxr_keyword">extends</strong> BinaryTable {
 <a class="jxr_linenumber" name="L1586" href="#L1586">1586</a> 
 <a class="jxr_linenumber" name="L1587" href="#L1587">1587</a>         <strong class="jxr_keyword">private</strong> <strong class="jxr_keyword">static</strong> Object newState() {
 <a class="jxr_linenumber" name="L1588" href="#L1588">1588</a>             <strong class="jxr_keyword">return</strong> <strong class="jxr_keyword">new</strong> SaveState(<strong class="jxr_keyword">new</strong> ArrayList&lt;ColumnDesc&gt;(), <strong class="jxr_keyword">null</strong>);

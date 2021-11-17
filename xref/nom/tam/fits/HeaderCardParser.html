@@ -72,7 +72,7 @@
 <a class="jxr_linenumber" name="L64" href="#L64">64</a>  <em class="jxr_javadoccomment"> * @see FitsFactory#setAllowHeaderRepairs(boolean)</em>
 <a class="jxr_linenumber" name="L65" href="#L65">65</a>  <em class="jxr_javadoccomment"> * @see Header#setParserWarningsEnabled(boolean)</em>
 <a class="jxr_linenumber" name="L66" href="#L66">66</a>  <em class="jxr_javadoccomment"> */</em>
-<a class="jxr_linenumber" name="L67" href="#L67">67</a>  <strong class="jxr_keyword">class</strong> <a href="../../../nom/tam/fits/HeaderCardParser.html">HeaderCardParser</a> {
+<a class="jxr_linenumber" name="L67" href="#L67">67</a>  <strong class="jxr_keyword">class</strong> <a name="HeaderCardParser" href="../../../nom/tam/fits/HeaderCardParser.html#HeaderCardParser">HeaderCardParser</a> {
 <a class="jxr_linenumber" name="L68" href="#L68">68</a>  
 <a class="jxr_linenumber" name="L69" href="#L69">69</a>      <strong class="jxr_keyword">private</strong> <strong class="jxr_keyword">static</strong> <strong class="jxr_keyword">final</strong> Logger LOG = Logger.getLogger(HeaderCardParser.<strong class="jxr_keyword">class</strong>.getName());
 <a class="jxr_linenumber" name="L70" href="#L70">70</a>      
@@ -137,7 +137,7 @@
 <a class="jxr_linenumber" name="L129" href="#L129">129</a> <em class="jxr_javadoccomment">     * </em>
 <a class="jxr_linenumber" name="L130" href="#L130">130</a> <em class="jxr_javadoccomment">     * @see FitsFactory#setAllowHeaderRepairs(boolean)</em>
 <a class="jxr_linenumber" name="L131" href="#L131">131</a> <em class="jxr_javadoccomment">     */</em>
-<a class="jxr_linenumber" name="L132" href="#L132">132</a>     <a href="../../../nom/tam/fits/HeaderCardParser.html">HeaderCardParser</a>(String line) <strong class="jxr_keyword">throws</strong> UnclosedQuoteException, IllegalArgumentException {
+<a class="jxr_linenumber" name="L132" href="#L132">132</a>     <a name="HeaderCardParser" href="../../../nom/tam/fits/HeaderCardParser.html#HeaderCardParser">HeaderCardParser</a>(String line) <strong class="jxr_keyword">throws</strong> UnclosedQuoteException, IllegalArgumentException {
 <a class="jxr_linenumber" name="L133" href="#L133">133</a>         <strong class="jxr_keyword">this</strong>.line = line;
 <a class="jxr_linenumber" name="L134" href="#L134">134</a>         <em class="jxr_comment">// TODO HeaderCard never calls this with a null argument, so the check below is dead code here...</em>
 <a class="jxr_linenumber" name="L135" href="#L135">135</a> <em class="jxr_comment">//        if (line == null) {</em>
@@ -386,7 +386,7 @@
 <a class="jxr_linenumber" name="L378" href="#L378">378</a> <em class="jxr_javadoccomment">     * @see FitsFactory#setAllowHeaderRepairs(boolean)</em>
 <a class="jxr_linenumber" name="L379" href="#L379">379</a> <em class="jxr_javadoccomment">     * </em>
 <a class="jxr_linenumber" name="L380" href="#L380">380</a> <em class="jxr_javadoccomment">     */</em>
-<a class="jxr_linenumber" name="L381" href="#L381">381</a>     <strong class="jxr_keyword">private</strong> <strong class="jxr_keyword">void</strong> parseValue() <strong class="jxr_keyword">throws</strong> UnclosedQuoteException {
+<a class="jxr_linenumber" name="L381" href="#L381">381</a>     <strong class="jxr_keyword">private</strong> <strong class="jxr_keyword">void</strong> parseValue() <strong class="jxr_keyword">throws</strong> <a name="UnclosedQuoteException" href="../../../nom/tam/fits/UnclosedQuoteException.html#UnclosedQuoteException">UnclosedQuoteException</a> {
 <a class="jxr_linenumber" name="L382" href="#L382">382</a>         <strong class="jxr_keyword">if</strong> (key.isEmpty()) {
 <a class="jxr_linenumber" name="L383" href="#L383">383</a>             <em class="jxr_comment">// the entire line is a comment.</em>
 <a class="jxr_linenumber" name="L384" href="#L384">384</a>             <strong class="jxr_keyword">return</strong>;
@@ -440,7 +440,7 @@
 <a class="jxr_linenumber" name="L432" href="#L432">432</a> <em class="jxr_javadoccomment">     * @see FitsFactory#setAllowHeaderRepairs(boolean)</em>
 <a class="jxr_linenumber" name="L433" href="#L433">433</a> <em class="jxr_javadoccomment">     * </em>
 <a class="jxr_linenumber" name="L434" href="#L434">434</a> <em class="jxr_javadoccomment">     */</em>
-<a class="jxr_linenumber" name="L435" href="#L435">435</a>     <strong class="jxr_keyword">private</strong> <strong class="jxr_keyword">void</strong> parseValueBody() <strong class="jxr_keyword">throws</strong> UnclosedQuoteException {
+<a class="jxr_linenumber" name="L435" href="#L435">435</a>     <strong class="jxr_keyword">private</strong> <strong class="jxr_keyword">void</strong> parseValueBody() <strong class="jxr_keyword">throws</strong> <a name="UnclosedQuoteException" href="../../../nom/tam/fits/UnclosedQuoteException.html#UnclosedQuoteException">UnclosedQuoteException</a> {
 <a class="jxr_linenumber" name="L436" href="#L436">436</a>         <strong class="jxr_keyword">if</strong> (!skipSpaces()) {
 <a class="jxr_linenumber" name="L437" href="#L437">437</a>             <em class="jxr_comment">// nothing left to parse.</em>
 <a class="jxr_linenumber" name="L438" href="#L438">438</a>             <strong class="jxr_keyword">return</strong>;
@@ -505,7 +505,7 @@
 <a class="jxr_linenumber" name="L497" href="#L497">497</a> <em class="jxr_javadoccomment">     * </em>
 <a class="jxr_linenumber" name="L498" href="#L498">498</a> <em class="jxr_javadoccomment">     * @see FitsFactory#setAllowHeaderRepairs(boolean)</em>
 <a class="jxr_linenumber" name="L499" href="#L499">499</a> <em class="jxr_javadoccomment">     */</em>
-<a class="jxr_linenumber" name="L500" href="#L500">500</a>     <strong class="jxr_keyword">private</strong> <strong class="jxr_keyword">void</strong> parseStringValue() <strong class="jxr_keyword">throws</strong> UnclosedQuoteException {
+<a class="jxr_linenumber" name="L500" href="#L500">500</a>     <strong class="jxr_keyword">private</strong> <strong class="jxr_keyword">void</strong> parseStringValue() <strong class="jxr_keyword">throws</strong> <a name="UnclosedQuoteException" href="../../../nom/tam/fits/UnclosedQuoteException.html#UnclosedQuoteException">UnclosedQuoteException</a> {
 <a class="jxr_linenumber" name="L501" href="#L501">501</a>         <strong class="jxr_keyword">this</strong>.type = String.<strong class="jxr_keyword">class</strong>;
 <a class="jxr_linenumber" name="L502" href="#L502">502</a>         StringBuilder buf = <strong class="jxr_keyword">new</strong> StringBuilder(HeaderCard.MAX_VALUE_LENGTH);
 <a class="jxr_linenumber" name="L503" href="#L503">503</a> 
@@ -530,7 +530,7 @@
 <a class="jxr_linenumber" name="L522" href="#L522">522</a>             LOG.warning(<span class="jxr_string">"["</span> + sanitize(key) + <span class="jxr_string">"] Ignored missing end quote (value parsed to end of record)."</span>);
 <a class="jxr_linenumber" name="L523" href="#L523">523</a>             value = getNoTrailingSpaceString(buf);
 <a class="jxr_linenumber" name="L524" href="#L524">524</a>         } <strong class="jxr_keyword">else</strong> {
-<a class="jxr_linenumber" name="L525" href="#L525">525</a>             <strong class="jxr_keyword">throw</strong> <strong class="jxr_keyword">new</strong> <a href="../../../nom/tam/fits/UnclosedQuoteException.html">UnclosedQuoteException</a>(line);
+<a class="jxr_linenumber" name="L525" href="#L525">525</a>             <strong class="jxr_keyword">throw</strong> <strong class="jxr_keyword">new</strong> <a name="UnclosedQuoteException" href="../../../nom/tam/fits/UnclosedQuoteException.html#UnclosedQuoteException">UnclosedQuoteException</a>(line);
 <a class="jxr_linenumber" name="L526" href="#L526">526</a>         }
 <a class="jxr_linenumber" name="L527" href="#L527">527</a>     }
 <a class="jxr_linenumber" name="L528" href="#L528">528</a>     

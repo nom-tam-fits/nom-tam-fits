@@ -64,9 +64,9 @@
 <a class="jxr_linenumber" name="L56" href="#L56">56</a>  <em class="jxr_javadoccomment">     * Byte compress is a special case, the only one that does not extends</em>
 <a class="jxr_linenumber" name="L57" href="#L57">57</a>  <em class="jxr_javadoccomment">     * GZipCompress because it can write the buffer directly.</em>
 <a class="jxr_linenumber" name="L58" href="#L58">58</a>  <em class="jxr_javadoccomment">     */</em>
-<a class="jxr_linenumber" name="L59" href="#L59">59</a>      <strong class="jxr_keyword">public</strong> <strong class="jxr_keyword">static</strong> <strong class="jxr_keyword">class</strong> <a href="../../../../../../nom/tam/fits/compression/algorithm/gzip/GZipCompressor.html">ByteGZipCompressor</a> <strong class="jxr_keyword">extends</strong> GZipCompressor&lt;ByteBuffer&gt; {
+<a class="jxr_linenumber" name="L59" href="#L59">59</a>      <strong class="jxr_keyword">public</strong> <strong class="jxr_keyword">static</strong> <strong class="jxr_keyword">class</strong> ByteGZipCompressor <strong class="jxr_keyword">extends</strong> GZipCompressor&lt;ByteBuffer&gt; {
 <a class="jxr_linenumber" name="L60" href="#L60">60</a>  
-<a class="jxr_linenumber" name="L61" href="#L61">61</a>          <strong class="jxr_keyword">public</strong> <a href="../../../../../../nom/tam/fits/compression/algorithm/gzip/GZipCompressor.html">ByteGZipCompressor</a>() {
+<a class="jxr_linenumber" name="L61" href="#L61">61</a>          <strong class="jxr_keyword">public</strong> ByteGZipCompressor() {
 <a class="jxr_linenumber" name="L62" href="#L62">62</a>              <strong class="jxr_keyword">super</strong>(1);
 <a class="jxr_linenumber" name="L63" href="#L63">63</a>              <strong class="jxr_keyword">this</strong>.nioBuffer = ByteBuffer.wrap(<strong class="jxr_keyword">this</strong>.buffer);
 <a class="jxr_linenumber" name="L64" href="#L64">64</a>          }
@@ -82,11 +82,11 @@
 <a class="jxr_linenumber" name="L74" href="#L74">74</a>          }
 <a class="jxr_linenumber" name="L75" href="#L75">75</a>      }
 <a class="jxr_linenumber" name="L76" href="#L76">76</a>  
-<a class="jxr_linenumber" name="L77" href="#L77">77</a>      <strong class="jxr_keyword">public</strong> <strong class="jxr_keyword">static</strong> <strong class="jxr_keyword">class</strong> <a href="../../../../../../nom/tam/fits/compression/algorithm/gzip/GZipCompressor.html">DoubleGZipCompressor</a> <strong class="jxr_keyword">extends</strong> GZipCompressor&lt;DoubleBuffer&gt; {
+<a class="jxr_linenumber" name="L77" href="#L77">77</a>      <strong class="jxr_keyword">public</strong> <strong class="jxr_keyword">static</strong> <strong class="jxr_keyword">class</strong> DoubleGZipCompressor <strong class="jxr_keyword">extends</strong> GZipCompressor&lt;DoubleBuffer&gt; {
 <a class="jxr_linenumber" name="L78" href="#L78">78</a>  
 <a class="jxr_linenumber" name="L79" href="#L79">79</a>          <strong class="jxr_keyword">protected</strong> <strong class="jxr_keyword">static</strong> <strong class="jxr_keyword">final</strong> <strong class="jxr_keyword">int</strong> BYTE_SIZE_OF_DOUBLE = 8;
 <a class="jxr_linenumber" name="L80" href="#L80">80</a>  
-<a class="jxr_linenumber" name="L81" href="#L81">81</a>          <strong class="jxr_keyword">public</strong> <a href="../../../../../../nom/tam/fits/compression/algorithm/gzip/GZipCompressor.html">DoubleGZipCompressor</a>() {
+<a class="jxr_linenumber" name="L81" href="#L81">81</a>          <strong class="jxr_keyword">public</strong> DoubleGZipCompressor() {
 <a class="jxr_linenumber" name="L82" href="#L82">82</a>              <strong class="jxr_keyword">super</strong>(BYTE_SIZE_OF_DOUBLE);
 <a class="jxr_linenumber" name="L83" href="#L83">83</a>              <strong class="jxr_keyword">this</strong>.nioBuffer = ByteBuffer.wrap(<strong class="jxr_keyword">this</strong>.buffer).asDoubleBuffer();
 <a class="jxr_linenumber" name="L84" href="#L84">84</a>          }
@@ -102,11 +102,11 @@
 <a class="jxr_linenumber" name="L94" href="#L94">94</a>          }
 <a class="jxr_linenumber" name="L95" href="#L95">95</a>      }
 <a class="jxr_linenumber" name="L96" href="#L96">96</a>  
-<a class="jxr_linenumber" name="L97" href="#L97">97</a>      <strong class="jxr_keyword">public</strong> <strong class="jxr_keyword">static</strong> <strong class="jxr_keyword">class</strong> <a href="../../../../../../nom/tam/fits/compression/algorithm/gzip/GZipCompressor.html">FloatGZipCompressor</a> <strong class="jxr_keyword">extends</strong> GZipCompressor&lt;FloatBuffer&gt; {
+<a class="jxr_linenumber" name="L97" href="#L97">97</a>      <strong class="jxr_keyword">public</strong> <strong class="jxr_keyword">static</strong> <strong class="jxr_keyword">class</strong> FloatGZipCompressor <strong class="jxr_keyword">extends</strong> GZipCompressor&lt;FloatBuffer&gt; {
 <a class="jxr_linenumber" name="L98" href="#L98">98</a>  
 <a class="jxr_linenumber" name="L99" href="#L99">99</a>          <strong class="jxr_keyword">protected</strong> <strong class="jxr_keyword">static</strong> <strong class="jxr_keyword">final</strong> <strong class="jxr_keyword">int</strong> BYTE_SIZE_OF_FLOAT = 4;
 <a class="jxr_linenumber" name="L100" href="#L100">100</a> 
-<a class="jxr_linenumber" name="L101" href="#L101">101</a>         <strong class="jxr_keyword">public</strong> <a href="../../../../../../nom/tam/fits/compression/algorithm/gzip/GZipCompressor.html">FloatGZipCompressor</a>() {
+<a class="jxr_linenumber" name="L101" href="#L101">101</a>         <strong class="jxr_keyword">public</strong> FloatGZipCompressor() {
 <a class="jxr_linenumber" name="L102" href="#L102">102</a>             <strong class="jxr_keyword">super</strong>(BYTE_SIZE_OF_FLOAT);
 <a class="jxr_linenumber" name="L103" href="#L103">103</a>             <strong class="jxr_keyword">this</strong>.nioBuffer = ByteBuffer.wrap(<strong class="jxr_keyword">this</strong>.buffer).asFloatBuffer();
 <a class="jxr_linenumber" name="L104" href="#L104">104</a>         }
@@ -122,11 +122,11 @@
 <a class="jxr_linenumber" name="L114" href="#L114">114</a>         }
 <a class="jxr_linenumber" name="L115" href="#L115">115</a>     }
 <a class="jxr_linenumber" name="L116" href="#L116">116</a> 
-<a class="jxr_linenumber" name="L117" href="#L117">117</a>     <strong class="jxr_keyword">public</strong> <strong class="jxr_keyword">static</strong> <strong class="jxr_keyword">class</strong> <a href="../../../../../../nom/tam/fits/compression/algorithm/gzip/GZipCompressor.html">IntGZipCompressor</a> <strong class="jxr_keyword">extends</strong> GZipCompressor&lt;IntBuffer&gt; {
+<a class="jxr_linenumber" name="L117" href="#L117">117</a>     <strong class="jxr_keyword">public</strong> <strong class="jxr_keyword">static</strong> <strong class="jxr_keyword">class</strong> IntGZipCompressor <strong class="jxr_keyword">extends</strong> GZipCompressor&lt;IntBuffer&gt; {
 <a class="jxr_linenumber" name="L118" href="#L118">118</a> 
 <a class="jxr_linenumber" name="L119" href="#L119">119</a>         <strong class="jxr_keyword">protected</strong> <strong class="jxr_keyword">static</strong> <strong class="jxr_keyword">final</strong> <strong class="jxr_keyword">int</strong> BYTE_SIZE_OF_INT = 4;
 <a class="jxr_linenumber" name="L120" href="#L120">120</a> 
-<a class="jxr_linenumber" name="L121" href="#L121">121</a>         <strong class="jxr_keyword">public</strong> <a href="../../../../../../nom/tam/fits/compression/algorithm/gzip/GZipCompressor.html">IntGZipCompressor</a>() {
+<a class="jxr_linenumber" name="L121" href="#L121">121</a>         <strong class="jxr_keyword">public</strong> IntGZipCompressor() {
 <a class="jxr_linenumber" name="L122" href="#L122">122</a>             <strong class="jxr_keyword">super</strong>(BYTE_SIZE_OF_INT);
 <a class="jxr_linenumber" name="L123" href="#L123">123</a>             <strong class="jxr_keyword">this</strong>.nioBuffer = ByteBuffer.wrap(<strong class="jxr_keyword">this</strong>.buffer).asIntBuffer();
 <a class="jxr_linenumber" name="L124" href="#L124">124</a>         }
@@ -142,11 +142,11 @@
 <a class="jxr_linenumber" name="L134" href="#L134">134</a>         }
 <a class="jxr_linenumber" name="L135" href="#L135">135</a>     }
 <a class="jxr_linenumber" name="L136" href="#L136">136</a> 
-<a class="jxr_linenumber" name="L137" href="#L137">137</a>     <strong class="jxr_keyword">public</strong> <strong class="jxr_keyword">static</strong> <strong class="jxr_keyword">class</strong> <a href="../../../../../../nom/tam/fits/compression/algorithm/gzip/GZipCompressor.html">LongGZipCompressor</a> <strong class="jxr_keyword">extends</strong> GZipCompressor&lt;LongBuffer&gt; {
+<a class="jxr_linenumber" name="L137" href="#L137">137</a>     <strong class="jxr_keyword">public</strong> <strong class="jxr_keyword">static</strong> <strong class="jxr_keyword">class</strong> LongGZipCompressor <strong class="jxr_keyword">extends</strong> GZipCompressor&lt;LongBuffer&gt; {
 <a class="jxr_linenumber" name="L138" href="#L138">138</a> 
 <a class="jxr_linenumber" name="L139" href="#L139">139</a>         <strong class="jxr_keyword">protected</strong> <strong class="jxr_keyword">static</strong> <strong class="jxr_keyword">final</strong> <strong class="jxr_keyword">int</strong> BYTE_SIZE_OF_LONG = 8;
 <a class="jxr_linenumber" name="L140" href="#L140">140</a> 
-<a class="jxr_linenumber" name="L141" href="#L141">141</a>         <strong class="jxr_keyword">public</strong> <a href="../../../../../../nom/tam/fits/compression/algorithm/gzip/GZipCompressor.html">LongGZipCompressor</a>() {
+<a class="jxr_linenumber" name="L141" href="#L141">141</a>         <strong class="jxr_keyword">public</strong> LongGZipCompressor() {
 <a class="jxr_linenumber" name="L142" href="#L142">142</a>             <strong class="jxr_keyword">super</strong>(BYTE_SIZE_OF_LONG);
 <a class="jxr_linenumber" name="L143" href="#L143">143</a>             <strong class="jxr_keyword">this</strong>.nioBuffer = ByteBuffer.wrap(<strong class="jxr_keyword">this</strong>.buffer).asLongBuffer();
 <a class="jxr_linenumber" name="L144" href="#L144">144</a>         }
@@ -162,11 +162,11 @@
 <a class="jxr_linenumber" name="L154" href="#L154">154</a>         }
 <a class="jxr_linenumber" name="L155" href="#L155">155</a>     }
 <a class="jxr_linenumber" name="L156" href="#L156">156</a> 
-<a class="jxr_linenumber" name="L157" href="#L157">157</a>     <strong class="jxr_keyword">public</strong> <strong class="jxr_keyword">static</strong> <strong class="jxr_keyword">class</strong> <a href="../../../../../../nom/tam/fits/compression/algorithm/gzip/GZipCompressor.html">ShortGZipCompressor</a> <strong class="jxr_keyword">extends</strong> GZipCompressor&lt;ShortBuffer&gt; {
+<a class="jxr_linenumber" name="L157" href="#L157">157</a>     <strong class="jxr_keyword">public</strong> <strong class="jxr_keyword">static</strong> <strong class="jxr_keyword">class</strong> ShortGZipCompressor <strong class="jxr_keyword">extends</strong> GZipCompressor&lt;ShortBuffer&gt; {
 <a class="jxr_linenumber" name="L158" href="#L158">158</a> 
 <a class="jxr_linenumber" name="L159" href="#L159">159</a>         <strong class="jxr_keyword">protected</strong> <strong class="jxr_keyword">static</strong> <strong class="jxr_keyword">final</strong> <strong class="jxr_keyword">int</strong> BYTE_SIZE_OF_SHORT = 2;
 <a class="jxr_linenumber" name="L160" href="#L160">160</a> 
-<a class="jxr_linenumber" name="L161" href="#L161">161</a>         <strong class="jxr_keyword">public</strong> <a href="../../../../../../nom/tam/fits/compression/algorithm/gzip/GZipCompressor.html">ShortGZipCompressor</a>() {
+<a class="jxr_linenumber" name="L161" href="#L161">161</a>         <strong class="jxr_keyword">public</strong> ShortGZipCompressor() {
 <a class="jxr_linenumber" name="L162" href="#L162">162</a>             <strong class="jxr_keyword">super</strong>(BYTE_SIZE_OF_SHORT);
 <a class="jxr_linenumber" name="L163" href="#L163">163</a>             <strong class="jxr_keyword">this</strong>.nioBuffer = ByteBuffer.wrap(<strong class="jxr_keyword">this</strong>.buffer).asShortBuffer();
 <a class="jxr_linenumber" name="L164" href="#L164">164</a>         }
@@ -196,7 +196,7 @@
 <a class="jxr_linenumber" name="L188" href="#L188">188</a> 
 <a class="jxr_linenumber" name="L189" href="#L189">189</a>         <strong class="jxr_keyword">private</strong> <strong class="jxr_keyword">final</strong> Object toArray;
 <a class="jxr_linenumber" name="L190" href="#L190">190</a> 
-<a class="jxr_linenumber" name="L191" href="#L191">191</a>         <strong class="jxr_keyword">private</strong> <a href="../../../../../../nom/tam/fits/compression/algorithm/gzip/GZipCompressor.html">TypeConversion</a>(ElementType&lt;B&gt; from) {
+<a class="jxr_linenumber" name="L191" href="#L191">191</a>         <strong class="jxr_keyword">private</strong> TypeConversion(ElementType&lt;B&gt; from) {
 <a class="jxr_linenumber" name="L192" href="#L192">192</a>             <strong class="jxr_keyword">this</strong>.from = from;
 <a class="jxr_linenumber" name="L193" href="#L193">193</a>             <strong class="jxr_keyword">this</strong>.to = getElementType(GZipCompressor.<strong class="jxr_keyword">this</strong>.primitiveSize);
 <a class="jxr_linenumber" name="L194" href="#L194">194</a>             <strong class="jxr_keyword">this</strong>.toBuffer = GZipCompressor.<strong class="jxr_keyword">this</strong>.nioBuffer;
@@ -229,7 +229,7 @@
 <a class="jxr_linenumber" name="L221" href="#L221">221</a> 
 <a class="jxr_linenumber" name="L222" href="#L222">222</a>     <strong class="jxr_keyword">private</strong> <strong class="jxr_keyword">final</strong> IntBuffer sizeBuffer = ByteBuffer.wrap(<strong class="jxr_keyword">this</strong>.sizeArray).order(ByteOrder.LITTLE_ENDIAN).asIntBuffer();
 <a class="jxr_linenumber" name="L223" href="#L223">223</a> 
-<a class="jxr_linenumber" name="L224" href="#L224">224</a>     <strong class="jxr_keyword">public</strong> <a href="../../../../../../nom/tam/fits/compression/algorithm/gzip/GZipCompressor.html">GZipCompressor</a>(<strong class="jxr_keyword">int</strong> primitiveSize) {
+<a class="jxr_linenumber" name="L224" href="#L224">224</a>     <strong class="jxr_keyword">public</strong> <a name="GZipCompressor" href="../../../../../../nom/tam/fits/compression/algorithm/gzip/GZipCompressor.html#GZipCompressor">GZipCompressor</a>(<strong class="jxr_keyword">int</strong> primitiveSize) {
 <a class="jxr_linenumber" name="L225" href="#L225">225</a>         <strong class="jxr_keyword">this</strong>.primitiveSize = primitiveSize;
 <a class="jxr_linenumber" name="L226" href="#L226">226</a>     }
 <a class="jxr_linenumber" name="L227" href="#L227">227</a> 
@@ -301,11 +301,11 @@
 <a class="jxr_linenumber" name="L293" href="#L293">293</a>     }
 <a class="jxr_linenumber" name="L294" href="#L294">294</a> 
 <a class="jxr_linenumber" name="L295" href="#L295">295</a>     <strong class="jxr_keyword">protected</strong> GZIPInputStream createGZipInputStream(ByteBuffer compressed) <strong class="jxr_keyword">throws</strong> IOException {
-<a class="jxr_linenumber" name="L296" href="#L296">296</a>         <strong class="jxr_keyword">return</strong> <strong class="jxr_keyword">new</strong> GZIPInputStream(<strong class="jxr_keyword">new</strong> <a href="../../../../../../nom/tam/util/ByteBufferInputStream.html">ByteBufferInputStream</a>(compressed), Math.min(compressed.limit() * 2, DEFAULT_GZIP_BUFFER_SIZE));
+<a class="jxr_linenumber" name="L296" href="#L296">296</a>         <strong class="jxr_keyword">return</strong> <strong class="jxr_keyword">new</strong> GZIPInputStream(<strong class="jxr_keyword">new</strong> <a name="ByteBufferInputStream" href="../../../../../../nom/tam/util/ByteBufferInputStream.html#ByteBufferInputStream">ByteBufferInputStream</a>(compressed), Math.min(compressed.limit() * 2, DEFAULT_GZIP_BUFFER_SIZE));
 <a class="jxr_linenumber" name="L297" href="#L297">297</a>     }
 <a class="jxr_linenumber" name="L298" href="#L298">298</a> 
 <a class="jxr_linenumber" name="L299" href="#L299">299</a>     <strong class="jxr_keyword">protected</strong> GZIPOutputStream createGZipOutputStream(<strong class="jxr_keyword">int</strong> length, ByteBuffer compressed) <strong class="jxr_keyword">throws</strong> IOException {
-<a class="jxr_linenumber" name="L300" href="#L300">300</a>         <strong class="jxr_keyword">return</strong> <strong class="jxr_keyword">new</strong> GZIPOutputStream(<strong class="jxr_keyword">new</strong> <a href="../../../../../../nom/tam/util/ByteBufferOutputStream.html">ByteBufferOutputStream</a>(compressed), Math.min(Math.max(length * 2, MINIMAL_GZIP_BUFFER_SIZE), DEFAULT_GZIP_BUFFER_SIZE));
+<a class="jxr_linenumber" name="L300" href="#L300">300</a>         <strong class="jxr_keyword">return</strong> <strong class="jxr_keyword">new</strong> GZIPOutputStream(<strong class="jxr_keyword">new</strong> <a name="ByteBufferOutputStream" href="../../../../../../nom/tam/util/ByteBufferOutputStream.html#ByteBufferOutputStream">ByteBufferOutputStream</a>(compressed), Math.min(Math.max(length * 2, MINIMAL_GZIP_BUFFER_SIZE), DEFAULT_GZIP_BUFFER_SIZE));
 <a class="jxr_linenumber" name="L301" href="#L301">301</a>     }
 <a class="jxr_linenumber" name="L302" href="#L302">302</a> 
 <a class="jxr_linenumber" name="L303" href="#L303">303</a>     <strong class="jxr_keyword">protected</strong> <strong class="jxr_keyword">abstract</strong> <strong class="jxr_keyword">void</strong> getPixel(T pixelData, byte[] pixelBytes);

@@ -55,7 +55,7 @@
 <a class="jxr_linenumber" name="L47" href="#L47">47</a>  <em class="jxr_javadoccomment"> *</em>
 <a class="jxr_linenumber" name="L48" href="#L48">48</a>  <em class="jxr_javadoccomment"> * @since 1.16</em>
 <a class="jxr_linenumber" name="L49" href="#L49">49</a>  <em class="jxr_javadoccomment"> */</em>
-<a class="jxr_linenumber" name="L50" href="#L50">50</a>  <strong class="jxr_keyword">class</strong> <a href="../../../nom/tam/util/BufferedFileIO.html">BufferedFileIO</a> <strong class="jxr_keyword">implements</strong> InputReader, OutputWriter, Flushable, Closeable {
+<a class="jxr_linenumber" name="L50" href="#L50">50</a>  <strong class="jxr_keyword">class</strong> <a name="BufferedFileIO" href="../../../nom/tam/util/BufferedFileIO.html#BufferedFileIO">BufferedFileIO</a> <strong class="jxr_keyword">implements</strong> InputReader, OutputWriter, Flushable, Closeable {
 <a class="jxr_linenumber" name="L51" href="#L51">51</a>      
 <a class="jxr_linenumber" name="L52" href="#L52">52</a>      <strong class="jxr_keyword">protected</strong> <strong class="jxr_keyword">static</strong> <strong class="jxr_keyword">final</strong> <strong class="jxr_keyword">int</strong> BYTE_MASK = 0xFF;
 <a class="jxr_linenumber" name="L53" href="#L53">53</a>      
@@ -91,7 +91,7 @@
 <a class="jxr_linenumber" name="L83" href="#L83">83</a>  <em class="jxr_javadoccomment">     * @param bufferSize    the size of the buffer in bytes</em>
 <a class="jxr_linenumber" name="L84" href="#L84">84</a>  <em class="jxr_javadoccomment">     * @throws IOException  if there was an IO error getting the required access to the file.</em>
 <a class="jxr_linenumber" name="L85" href="#L85">85</a>  <em class="jxr_javadoccomment">     */</em>
-<a class="jxr_linenumber" name="L86" href="#L86">86</a>      <a href="../../../nom/tam/util/BufferedFileIO.html">BufferedFileIO</a>(File f, String mode, <strong class="jxr_keyword">int</strong> bufferSize) <strong class="jxr_keyword">throws</strong> IOException {
+<a class="jxr_linenumber" name="L86" href="#L86">86</a>      <a name="BufferedFileIO" href="../../../nom/tam/util/BufferedFileIO.html#BufferedFileIO">BufferedFileIO</a>(File f, String mode, <strong class="jxr_keyword">int</strong> bufferSize) <strong class="jxr_keyword">throws</strong> IOException {
 <a class="jxr_linenumber" name="L87" href="#L87">87</a>          <strong class="jxr_keyword">this</strong>.file = <strong class="jxr_keyword">new</strong> RandomAccessFile(f, mode);
 <a class="jxr_linenumber" name="L88" href="#L88">88</a>          buf = <strong class="jxr_keyword">new</strong> byte[bufferSize];
 <a class="jxr_linenumber" name="L89" href="#L89">89</a>          startOfBuf = 0;

@@ -68,7 +68,7 @@
 <a class="jxr_linenumber" name="L60" href="#L60">60</a>  <em class="jxr_javadoccomment"> * @param &lt;T&gt;   the generic type of extra state information associated with this table.</em>
 <a class="jxr_linenumber" name="L61" href="#L61">61</a>  <em class="jxr_javadoccomment"> * </em>
 <a class="jxr_linenumber" name="L62" href="#L62">62</a>  <em class="jxr_javadoccomment"> */</em>
-<a class="jxr_linenumber" name="L63" href="#L63">63</a>  <strong class="jxr_keyword">public</strong> <strong class="jxr_keyword">class</strong> ColumnTable&lt;T&gt; <strong class="jxr_keyword">implements</strong> <a href="../../../nom/tam/util/DataTable.html">DataTable</a> {
+<a class="jxr_linenumber" name="L63" href="#L63">63</a>  <strong class="jxr_keyword">public</strong> <strong class="jxr_keyword">class</strong> ColumnTable&lt;T&gt; <strong class="jxr_keyword">implements</strong> <a name="DataTable" href="../../../nom/tam/util/DataTable.html#DataTable">DataTable</a> {
 <a class="jxr_linenumber" name="L64" href="#L64">64</a>  
 <a class="jxr_linenumber" name="L65" href="#L65">65</a>      <strong class="jxr_keyword">private</strong> <strong class="jxr_keyword">static</strong> <strong class="jxr_keyword">final</strong> <strong class="jxr_keyword">int</strong> MAX_COLUMN_INDEXES = 256;
 <a class="jxr_linenumber" name="L66" href="#L66">66</a>  
@@ -80,9 +80,9 @@
 <a class="jxr_linenumber" name="L72" href="#L72">72</a>  
 <a class="jxr_linenumber" name="L73" href="#L73">73</a>          X get(ColumnTable&lt;?&gt; table);
 <a class="jxr_linenumber" name="L74" href="#L74">74</a>  
-<a class="jxr_linenumber" name="L75" href="#L75">75</a>          <strong class="jxr_keyword">void</strong> write(ColumnTable&lt;?&gt; table, <a href="../../../nom/tam/util/ArrayDataOutput.html">ArrayDataOutput</a> os, <strong class="jxr_keyword">int</strong> index, <strong class="jxr_keyword">int</strong> arrOffset, <strong class="jxr_keyword">int</strong> size) <strong class="jxr_keyword">throws</strong> IOException;
+<a class="jxr_linenumber" name="L75" href="#L75">75</a>          <strong class="jxr_keyword">void</strong> write(ColumnTable&lt;?&gt; table, <a name="ArrayDataOutput" href="../../../nom/tam/util/ArrayDataOutput.html#ArrayDataOutput">ArrayDataOutput</a> os, <strong class="jxr_keyword">int</strong> index, <strong class="jxr_keyword">int</strong> arrOffset, <strong class="jxr_keyword">int</strong> size) <strong class="jxr_keyword">throws</strong> IOException;
 <a class="jxr_linenumber" name="L76" href="#L76">76</a>  
-<a class="jxr_linenumber" name="L77" href="#L77">77</a>          <strong class="jxr_keyword">void</strong> read(ColumnTable&lt;?&gt; table, <a href="../../../nom/tam/util/ArrayDataInput.html">ArrayDataInput</a> is, <strong class="jxr_keyword">int</strong> index, <strong class="jxr_keyword">int</strong> arrOffset, <strong class="jxr_keyword">int</strong> size) <strong class="jxr_keyword">throws</strong> IOException;
+<a class="jxr_linenumber" name="L77" href="#L77">77</a>          <strong class="jxr_keyword">void</strong> read(ColumnTable&lt;?&gt; table, <a name="ArrayDataInput" href="../../../nom/tam/util/ArrayDataInput.html#ArrayDataInput">ArrayDataInput</a> is, <strong class="jxr_keyword">int</strong> index, <strong class="jxr_keyword">int</strong> arrOffset, <strong class="jxr_keyword">int</strong> size) <strong class="jxr_keyword">throws</strong> IOException;
 <a class="jxr_linenumber" name="L78" href="#L78">78</a>  
 <a class="jxr_linenumber" name="L79" href="#L79">79</a>      }
 <a class="jxr_linenumber" name="L80" href="#L80">80</a>  
@@ -103,13 +103,13 @@
 <a class="jxr_linenumber" name="L95" href="#L95">95</a>              }
 <a class="jxr_linenumber" name="L96" href="#L96">96</a>  
 <a class="jxr_linenumber" name="L97" href="#L97">97</a>              @Override
-<a class="jxr_linenumber" name="L98" href="#L98">98</a>              <strong class="jxr_keyword">public</strong> <strong class="jxr_keyword">void</strong> write(ColumnTable&lt;?&gt; table, <a href="../../../nom/tam/util/ArrayDataOutput.html">ArrayDataOutput</a> os, <strong class="jxr_keyword">int</strong> index, <strong class="jxr_keyword">int</strong> arrOffset, <strong class="jxr_keyword">int</strong> size) <strong class="jxr_keyword">throws</strong> IOException {
+<a class="jxr_linenumber" name="L98" href="#L98">98</a>              <strong class="jxr_keyword">public</strong> <strong class="jxr_keyword">void</strong> write(ColumnTable&lt;?&gt; table, <a name="ArrayDataOutput" href="../../../nom/tam/util/ArrayDataOutput.html#ArrayDataOutput">ArrayDataOutput</a> os, <strong class="jxr_keyword">int</strong> index, <strong class="jxr_keyword">int</strong> arrOffset, <strong class="jxr_keyword">int</strong> size) <strong class="jxr_keyword">throws</strong> IOException {
 <a class="jxr_linenumber" name="L99" href="#L99">99</a>                  os.write(table.bytePointers[index], arrOffset, size);
 <a class="jxr_linenumber" name="L100" href="#L100">100</a>             }
 <a class="jxr_linenumber" name="L101" href="#L101">101</a> 
 <a class="jxr_linenumber" name="L102" href="#L102">102</a>             @Override
 <a class="jxr_linenumber" name="L103" href="#L103">103</a>             @SuppressFBWarnings(value = <span class="jxr_string">"RR_NOT_CHECKED"</span>, justification = <span class="jxr_string">"this read will never return less than the requested length"</span>)
-<a class="jxr_linenumber" name="L104" href="#L104">104</a>             <strong class="jxr_keyword">public</strong> <strong class="jxr_keyword">void</strong> read(ColumnTable&lt;?&gt; table, <a href="../../../nom/tam/util/ArrayDataInput.html">ArrayDataInput</a> is, <strong class="jxr_keyword">int</strong> index, <strong class="jxr_keyword">int</strong> arrOffset, <strong class="jxr_keyword">int</strong> size) <strong class="jxr_keyword">throws</strong> IOException {
+<a class="jxr_linenumber" name="L104" href="#L104">104</a>             <strong class="jxr_keyword">public</strong> <strong class="jxr_keyword">void</strong> read(ColumnTable&lt;?&gt; table, <a name="ArrayDataInput" href="../../../nom/tam/util/ArrayDataInput.html#ArrayDataInput">ArrayDataInput</a> is, <strong class="jxr_keyword">int</strong> index, <strong class="jxr_keyword">int</strong> arrOffset, <strong class="jxr_keyword">int</strong> size) <strong class="jxr_keyword">throws</strong> IOException {
 <a class="jxr_linenumber" name="L105" href="#L105">105</a>                 is.read(table.bytePointers[index], arrOffset, size);
 <a class="jxr_linenumber" name="L106" href="#L106">106</a>             }
 <a class="jxr_linenumber" name="L107" href="#L107">107</a>         };
@@ -126,12 +126,12 @@
 <a class="jxr_linenumber" name="L118" href="#L118">118</a>             }
 <a class="jxr_linenumber" name="L119" href="#L119">119</a> 
 <a class="jxr_linenumber" name="L120" href="#L120">120</a>             @Override
-<a class="jxr_linenumber" name="L121" href="#L121">121</a>             <strong class="jxr_keyword">public</strong> <strong class="jxr_keyword">void</strong> write(ColumnTable&lt;?&gt; table, <a href="../../../nom/tam/util/ArrayDataOutput.html">ArrayDataOutput</a> os, <strong class="jxr_keyword">int</strong> index, <strong class="jxr_keyword">int</strong> arrOffset, <strong class="jxr_keyword">int</strong> size) <strong class="jxr_keyword">throws</strong> IOException {
+<a class="jxr_linenumber" name="L121" href="#L121">121</a>             <strong class="jxr_keyword">public</strong> <strong class="jxr_keyword">void</strong> write(ColumnTable&lt;?&gt; table, <a name="ArrayDataOutput" href="../../../nom/tam/util/ArrayDataOutput.html#ArrayDataOutput">ArrayDataOutput</a> os, <strong class="jxr_keyword">int</strong> index, <strong class="jxr_keyword">int</strong> arrOffset, <strong class="jxr_keyword">int</strong> size) <strong class="jxr_keyword">throws</strong> IOException {
 <a class="jxr_linenumber" name="L122" href="#L122">122</a>                 os.write(table.booleanPointers[index], arrOffset, size);
 <a class="jxr_linenumber" name="L123" href="#L123">123</a>             }
 <a class="jxr_linenumber" name="L124" href="#L124">124</a> 
 <a class="jxr_linenumber" name="L125" href="#L125">125</a>             @Override
-<a class="jxr_linenumber" name="L126" href="#L126">126</a>             <strong class="jxr_keyword">public</strong> <strong class="jxr_keyword">void</strong> read(ColumnTable&lt;?&gt; table, <a href="../../../nom/tam/util/ArrayDataInput.html">ArrayDataInput</a> is, <strong class="jxr_keyword">int</strong> index, <strong class="jxr_keyword">int</strong> arrOffset, <strong class="jxr_keyword">int</strong> size) <strong class="jxr_keyword">throws</strong> IOException {
+<a class="jxr_linenumber" name="L126" href="#L126">126</a>             <strong class="jxr_keyword">public</strong> <strong class="jxr_keyword">void</strong> read(ColumnTable&lt;?&gt; table, <a name="ArrayDataInput" href="../../../nom/tam/util/ArrayDataInput.html#ArrayDataInput">ArrayDataInput</a> is, <strong class="jxr_keyword">int</strong> index, <strong class="jxr_keyword">int</strong> arrOffset, <strong class="jxr_keyword">int</strong> size) <strong class="jxr_keyword">throws</strong> IOException {
 <a class="jxr_linenumber" name="L127" href="#L127">127</a>                 is.read(table.booleanPointers[index], arrOffset, size);
 <a class="jxr_linenumber" name="L128" href="#L128">128</a>             }
 <a class="jxr_linenumber" name="L129" href="#L129">129</a>         };
@@ -148,12 +148,12 @@
 <a class="jxr_linenumber" name="L140" href="#L140">140</a>             }
 <a class="jxr_linenumber" name="L141" href="#L141">141</a> 
 <a class="jxr_linenumber" name="L142" href="#L142">142</a>             @Override
-<a class="jxr_linenumber" name="L143" href="#L143">143</a>             <strong class="jxr_keyword">public</strong> <strong class="jxr_keyword">void</strong> write(ColumnTable&lt;?&gt; table, <a href="../../../nom/tam/util/ArrayDataOutput.html">ArrayDataOutput</a> os, <strong class="jxr_keyword">int</strong> index, <strong class="jxr_keyword">int</strong> arrOffset, <strong class="jxr_keyword">int</strong> size) <strong class="jxr_keyword">throws</strong> IOException {
+<a class="jxr_linenumber" name="L143" href="#L143">143</a>             <strong class="jxr_keyword">public</strong> <strong class="jxr_keyword">void</strong> write(ColumnTable&lt;?&gt; table, <a name="ArrayDataOutput" href="../../../nom/tam/util/ArrayDataOutput.html#ArrayDataOutput">ArrayDataOutput</a> os, <strong class="jxr_keyword">int</strong> index, <strong class="jxr_keyword">int</strong> arrOffset, <strong class="jxr_keyword">int</strong> size) <strong class="jxr_keyword">throws</strong> IOException {
 <a class="jxr_linenumber" name="L144" href="#L144">144</a>                 os.write(table.shortPointers[index], arrOffset, size);
 <a class="jxr_linenumber" name="L145" href="#L145">145</a>             }
 <a class="jxr_linenumber" name="L146" href="#L146">146</a> 
 <a class="jxr_linenumber" name="L147" href="#L147">147</a>             @Override
-<a class="jxr_linenumber" name="L148" href="#L148">148</a>             <strong class="jxr_keyword">public</strong> <strong class="jxr_keyword">void</strong> read(ColumnTable&lt;?&gt; table, <a href="../../../nom/tam/util/ArrayDataInput.html">ArrayDataInput</a> is, <strong class="jxr_keyword">int</strong> index, <strong class="jxr_keyword">int</strong> arrOffset, <strong class="jxr_keyword">int</strong> size) <strong class="jxr_keyword">throws</strong> IOException {
+<a class="jxr_linenumber" name="L148" href="#L148">148</a>             <strong class="jxr_keyword">public</strong> <strong class="jxr_keyword">void</strong> read(ColumnTable&lt;?&gt; table, <a name="ArrayDataInput" href="../../../nom/tam/util/ArrayDataInput.html#ArrayDataInput">ArrayDataInput</a> is, <strong class="jxr_keyword">int</strong> index, <strong class="jxr_keyword">int</strong> arrOffset, <strong class="jxr_keyword">int</strong> size) <strong class="jxr_keyword">throws</strong> IOException {
 <a class="jxr_linenumber" name="L149" href="#L149">149</a>                 is.read(table.shortPointers[index], arrOffset, size);
 <a class="jxr_linenumber" name="L150" href="#L150">150</a>             }
 <a class="jxr_linenumber" name="L151" href="#L151">151</a>         };
@@ -170,13 +170,13 @@
 <a class="jxr_linenumber" name="L162" href="#L162">162</a>             }
 <a class="jxr_linenumber" name="L163" href="#L163">163</a> 
 <a class="jxr_linenumber" name="L164" href="#L164">164</a>             @Override
-<a class="jxr_linenumber" name="L165" href="#L165">165</a>             <strong class="jxr_keyword">public</strong> <strong class="jxr_keyword">void</strong> write(ColumnTable&lt;?&gt; table, <a href="../../../nom/tam/util/ArrayDataOutput.html">ArrayDataOutput</a> os, <strong class="jxr_keyword">int</strong> index, <strong class="jxr_keyword">int</strong> arrOffset, <strong class="jxr_keyword">int</strong> size) <strong class="jxr_keyword">throws</strong> IOException {
+<a class="jxr_linenumber" name="L165" href="#L165">165</a>             <strong class="jxr_keyword">public</strong> <strong class="jxr_keyword">void</strong> write(ColumnTable&lt;?&gt; table, <a name="ArrayDataOutput" href="../../../nom/tam/util/ArrayDataOutput.html#ArrayDataOutput">ArrayDataOutput</a> os, <strong class="jxr_keyword">int</strong> index, <strong class="jxr_keyword">int</strong> arrOffset, <strong class="jxr_keyword">int</strong> size) <strong class="jxr_keyword">throws</strong> IOException {
 <a class="jxr_linenumber" name="L166" href="#L166">166</a>                 os.write(table.charPointers[index], arrOffset, size);
 <a class="jxr_linenumber" name="L167" href="#L167">167</a>             }
 <a class="jxr_linenumber" name="L168" href="#L168">168</a> 
 <a class="jxr_linenumber" name="L169" href="#L169">169</a>             @Override
 <a class="jxr_linenumber" name="L170" href="#L170">170</a>             @SuppressFBWarnings(value = <span class="jxr_string">"RR_NOT_CHECKED"</span>, justification = <span class="jxr_string">"this read will never return less than the requested length"</span>)
-<a class="jxr_linenumber" name="L171" href="#L171">171</a>             <strong class="jxr_keyword">public</strong> <strong class="jxr_keyword">void</strong> read(ColumnTable&lt;?&gt; table, <a href="../../../nom/tam/util/ArrayDataInput.html">ArrayDataInput</a> is, <strong class="jxr_keyword">int</strong> index, <strong class="jxr_keyword">int</strong> arrOffset, <strong class="jxr_keyword">int</strong> size) <strong class="jxr_keyword">throws</strong> IOException {
+<a class="jxr_linenumber" name="L171" href="#L171">171</a>             <strong class="jxr_keyword">public</strong> <strong class="jxr_keyword">void</strong> read(ColumnTable&lt;?&gt; table, <a name="ArrayDataInput" href="../../../nom/tam/util/ArrayDataInput.html#ArrayDataInput">ArrayDataInput</a> is, <strong class="jxr_keyword">int</strong> index, <strong class="jxr_keyword">int</strong> arrOffset, <strong class="jxr_keyword">int</strong> size) <strong class="jxr_keyword">throws</strong> IOException {
 <a class="jxr_linenumber" name="L172" href="#L172">172</a>                 is.read(table.charPointers[index], arrOffset, size);
 <a class="jxr_linenumber" name="L173" href="#L173">173</a>             }
 <a class="jxr_linenumber" name="L174" href="#L174">174</a>         };
@@ -193,12 +193,12 @@
 <a class="jxr_linenumber" name="L185" href="#L185">185</a>             }
 <a class="jxr_linenumber" name="L186" href="#L186">186</a> 
 <a class="jxr_linenumber" name="L187" href="#L187">187</a>             @Override
-<a class="jxr_linenumber" name="L188" href="#L188">188</a>             <strong class="jxr_keyword">public</strong> <strong class="jxr_keyword">void</strong> write(ColumnTable&lt;?&gt; table, <a href="../../../nom/tam/util/ArrayDataOutput.html">ArrayDataOutput</a> os, <strong class="jxr_keyword">int</strong> index, <strong class="jxr_keyword">int</strong> arrOffset, <strong class="jxr_keyword">int</strong> size) <strong class="jxr_keyword">throws</strong> IOException {
+<a class="jxr_linenumber" name="L188" href="#L188">188</a>             <strong class="jxr_keyword">public</strong> <strong class="jxr_keyword">void</strong> write(ColumnTable&lt;?&gt; table, <a name="ArrayDataOutput" href="../../../nom/tam/util/ArrayDataOutput.html#ArrayDataOutput">ArrayDataOutput</a> os, <strong class="jxr_keyword">int</strong> index, <strong class="jxr_keyword">int</strong> arrOffset, <strong class="jxr_keyword">int</strong> size) <strong class="jxr_keyword">throws</strong> IOException {
 <a class="jxr_linenumber" name="L189" href="#L189">189</a>                 os.write(table.intPointers[index], arrOffset, size);
 <a class="jxr_linenumber" name="L190" href="#L190">190</a>             }
 <a class="jxr_linenumber" name="L191" href="#L191">191</a> 
 <a class="jxr_linenumber" name="L192" href="#L192">192</a>             @Override
-<a class="jxr_linenumber" name="L193" href="#L193">193</a>             <strong class="jxr_keyword">public</strong> <strong class="jxr_keyword">void</strong> read(ColumnTable&lt;?&gt; table, <a href="../../../nom/tam/util/ArrayDataInput.html">ArrayDataInput</a> is, <strong class="jxr_keyword">int</strong> index, <strong class="jxr_keyword">int</strong> arrOffset, <strong class="jxr_keyword">int</strong> size) <strong class="jxr_keyword">throws</strong> IOException {
+<a class="jxr_linenumber" name="L193" href="#L193">193</a>             <strong class="jxr_keyword">public</strong> <strong class="jxr_keyword">void</strong> read(ColumnTable&lt;?&gt; table, <a name="ArrayDataInput" href="../../../nom/tam/util/ArrayDataInput.html#ArrayDataInput">ArrayDataInput</a> is, <strong class="jxr_keyword">int</strong> index, <strong class="jxr_keyword">int</strong> arrOffset, <strong class="jxr_keyword">int</strong> size) <strong class="jxr_keyword">throws</strong> IOException {
 <a class="jxr_linenumber" name="L194" href="#L194">194</a>                 is.read(table.intPointers[index], arrOffset, size);
 <a class="jxr_linenumber" name="L195" href="#L195">195</a>             }
 <a class="jxr_linenumber" name="L196" href="#L196">196</a>         };
@@ -215,12 +215,12 @@
 <a class="jxr_linenumber" name="L207" href="#L207">207</a>             }
 <a class="jxr_linenumber" name="L208" href="#L208">208</a> 
 <a class="jxr_linenumber" name="L209" href="#L209">209</a>             @Override
-<a class="jxr_linenumber" name="L210" href="#L210">210</a>             <strong class="jxr_keyword">public</strong> <strong class="jxr_keyword">void</strong> write(ColumnTable&lt;?&gt; table, <a href="../../../nom/tam/util/ArrayDataOutput.html">ArrayDataOutput</a> os, <strong class="jxr_keyword">int</strong> index, <strong class="jxr_keyword">int</strong> arrOffset, <strong class="jxr_keyword">int</strong> size) <strong class="jxr_keyword">throws</strong> IOException {
+<a class="jxr_linenumber" name="L210" href="#L210">210</a>             <strong class="jxr_keyword">public</strong> <strong class="jxr_keyword">void</strong> write(ColumnTable&lt;?&gt; table, <a name="ArrayDataOutput" href="../../../nom/tam/util/ArrayDataOutput.html#ArrayDataOutput">ArrayDataOutput</a> os, <strong class="jxr_keyword">int</strong> index, <strong class="jxr_keyword">int</strong> arrOffset, <strong class="jxr_keyword">int</strong> size) <strong class="jxr_keyword">throws</strong> IOException {
 <a class="jxr_linenumber" name="L211" href="#L211">211</a>                 os.write(table.longPointers[index], arrOffset, size);
 <a class="jxr_linenumber" name="L212" href="#L212">212</a>             }
 <a class="jxr_linenumber" name="L213" href="#L213">213</a> 
 <a class="jxr_linenumber" name="L214" href="#L214">214</a>             @Override
-<a class="jxr_linenumber" name="L215" href="#L215">215</a>             <strong class="jxr_keyword">public</strong> <strong class="jxr_keyword">void</strong> read(ColumnTable&lt;?&gt; table, <a href="../../../nom/tam/util/ArrayDataInput.html">ArrayDataInput</a> is, <strong class="jxr_keyword">int</strong> index, <strong class="jxr_keyword">int</strong> arrOffset, <strong class="jxr_keyword">int</strong> size) <strong class="jxr_keyword">throws</strong> IOException {
+<a class="jxr_linenumber" name="L215" href="#L215">215</a>             <strong class="jxr_keyword">public</strong> <strong class="jxr_keyword">void</strong> read(ColumnTable&lt;?&gt; table, <a name="ArrayDataInput" href="../../../nom/tam/util/ArrayDataInput.html#ArrayDataInput">ArrayDataInput</a> is, <strong class="jxr_keyword">int</strong> index, <strong class="jxr_keyword">int</strong> arrOffset, <strong class="jxr_keyword">int</strong> size) <strong class="jxr_keyword">throws</strong> IOException {
 <a class="jxr_linenumber" name="L216" href="#L216">216</a>                 is.read(table.longPointers[index], arrOffset, size);
 <a class="jxr_linenumber" name="L217" href="#L217">217</a>             }
 <a class="jxr_linenumber" name="L218" href="#L218">218</a>         };
@@ -237,12 +237,12 @@
 <a class="jxr_linenumber" name="L229" href="#L229">229</a>             }
 <a class="jxr_linenumber" name="L230" href="#L230">230</a> 
 <a class="jxr_linenumber" name="L231" href="#L231">231</a>             @Override
-<a class="jxr_linenumber" name="L232" href="#L232">232</a>             <strong class="jxr_keyword">public</strong> <strong class="jxr_keyword">void</strong> write(ColumnTable&lt;?&gt; table, <a href="../../../nom/tam/util/ArrayDataOutput.html">ArrayDataOutput</a> os, <strong class="jxr_keyword">int</strong> index, <strong class="jxr_keyword">int</strong> arrOffset, <strong class="jxr_keyword">int</strong> size) <strong class="jxr_keyword">throws</strong> IOException {
+<a class="jxr_linenumber" name="L232" href="#L232">232</a>             <strong class="jxr_keyword">public</strong> <strong class="jxr_keyword">void</strong> write(ColumnTable&lt;?&gt; table, <a name="ArrayDataOutput" href="../../../nom/tam/util/ArrayDataOutput.html#ArrayDataOutput">ArrayDataOutput</a> os, <strong class="jxr_keyword">int</strong> index, <strong class="jxr_keyword">int</strong> arrOffset, <strong class="jxr_keyword">int</strong> size) <strong class="jxr_keyword">throws</strong> IOException {
 <a class="jxr_linenumber" name="L233" href="#L233">233</a>                 os.write(table.floatPointers[index], arrOffset, size);
 <a class="jxr_linenumber" name="L234" href="#L234">234</a>             }
 <a class="jxr_linenumber" name="L235" href="#L235">235</a> 
 <a class="jxr_linenumber" name="L236" href="#L236">236</a>             @Override
-<a class="jxr_linenumber" name="L237" href="#L237">237</a>             <strong class="jxr_keyword">public</strong> <strong class="jxr_keyword">void</strong> read(ColumnTable&lt;?&gt; table, <a href="../../../nom/tam/util/ArrayDataInput.html">ArrayDataInput</a> is, <strong class="jxr_keyword">int</strong> index, <strong class="jxr_keyword">int</strong> arrOffset, <strong class="jxr_keyword">int</strong> size) <strong class="jxr_keyword">throws</strong> IOException {
+<a class="jxr_linenumber" name="L237" href="#L237">237</a>             <strong class="jxr_keyword">public</strong> <strong class="jxr_keyword">void</strong> read(ColumnTable&lt;?&gt; table, <a name="ArrayDataInput" href="../../../nom/tam/util/ArrayDataInput.html#ArrayDataInput">ArrayDataInput</a> is, <strong class="jxr_keyword">int</strong> index, <strong class="jxr_keyword">int</strong> arrOffset, <strong class="jxr_keyword">int</strong> size) <strong class="jxr_keyword">throws</strong> IOException {
 <a class="jxr_linenumber" name="L238" href="#L238">238</a>                 is.read(table.floatPointers[index], arrOffset, size);
 <a class="jxr_linenumber" name="L239" href="#L239">239</a>             }
 <a class="jxr_linenumber" name="L240" href="#L240">240</a>         };
@@ -259,12 +259,12 @@
 <a class="jxr_linenumber" name="L251" href="#L251">251</a>             }
 <a class="jxr_linenumber" name="L252" href="#L252">252</a> 
 <a class="jxr_linenumber" name="L253" href="#L253">253</a>             @Override
-<a class="jxr_linenumber" name="L254" href="#L254">254</a>             <strong class="jxr_keyword">public</strong> <strong class="jxr_keyword">void</strong> write(ColumnTable&lt;?&gt; table, <a href="../../../nom/tam/util/ArrayDataOutput.html">ArrayDataOutput</a> os, <strong class="jxr_keyword">int</strong> index, <strong class="jxr_keyword">int</strong> arrOffset, <strong class="jxr_keyword">int</strong> size) <strong class="jxr_keyword">throws</strong> IOException {
+<a class="jxr_linenumber" name="L254" href="#L254">254</a>             <strong class="jxr_keyword">public</strong> <strong class="jxr_keyword">void</strong> write(ColumnTable&lt;?&gt; table, <a name="ArrayDataOutput" href="../../../nom/tam/util/ArrayDataOutput.html#ArrayDataOutput">ArrayDataOutput</a> os, <strong class="jxr_keyword">int</strong> index, <strong class="jxr_keyword">int</strong> arrOffset, <strong class="jxr_keyword">int</strong> size) <strong class="jxr_keyword">throws</strong> IOException {
 <a class="jxr_linenumber" name="L255" href="#L255">255</a>                 os.write(table.doublePointers[index], arrOffset, size);
 <a class="jxr_linenumber" name="L256" href="#L256">256</a>             }
 <a class="jxr_linenumber" name="L257" href="#L257">257</a> 
 <a class="jxr_linenumber" name="L258" href="#L258">258</a>             @Override
-<a class="jxr_linenumber" name="L259" href="#L259">259</a>             <strong class="jxr_keyword">public</strong> <strong class="jxr_keyword">void</strong> read(ColumnTable&lt;?&gt; table, <a href="../../../nom/tam/util/ArrayDataInput.html">ArrayDataInput</a> is, <strong class="jxr_keyword">int</strong> index, <strong class="jxr_keyword">int</strong> arrOffset, <strong class="jxr_keyword">int</strong> size) <strong class="jxr_keyword">throws</strong> IOException {
+<a class="jxr_linenumber" name="L259" href="#L259">259</a>             <strong class="jxr_keyword">public</strong> <strong class="jxr_keyword">void</strong> read(ColumnTable&lt;?&gt; table, <a name="ArrayDataInput" href="../../../nom/tam/util/ArrayDataInput.html#ArrayDataInput">ArrayDataInput</a> is, <strong class="jxr_keyword">int</strong> index, <strong class="jxr_keyword">int</strong> arrOffset, <strong class="jxr_keyword">int</strong> size) <strong class="jxr_keyword">throws</strong> IOException {
 <a class="jxr_linenumber" name="L260" href="#L260">260</a>                 is.read(table.doublePointers[index], arrOffset, size);
 <a class="jxr_linenumber" name="L261" href="#L261">261</a>             }
 <a class="jxr_linenumber" name="L262" href="#L262">262</a>         };
@@ -332,7 +332,7 @@
 <a class="jxr_linenumber" name="L324" href="#L324">324</a> <em class="jxr_javadoccomment">     * @throws TableException</em>
 <a class="jxr_linenumber" name="L325" href="#L325">325</a> <em class="jxr_javadoccomment">     *             if the structure of the columns is not consistent</em>
 <a class="jxr_linenumber" name="L326" href="#L326">326</a> <em class="jxr_javadoccomment">     */</em>
-<a class="jxr_linenumber" name="L327" href="#L327">327</a>     <strong class="jxr_keyword">public</strong> <a href="../../../nom/tam/util/ColumnTable.html">ColumnTable</a>(Object[] arrays, <strong class="jxr_keyword">int</strong>[] sizes) <strong class="jxr_keyword">throws</strong> TableException {
+<a class="jxr_linenumber" name="L327" href="#L327">327</a>     <strong class="jxr_keyword">public</strong> <a name="ColumnTable" href="../../../nom/tam/util/ColumnTable.html#ColumnTable">ColumnTable</a>(Object[] arrays, <strong class="jxr_keyword">int</strong>[] sizes) <strong class="jxr_keyword">throws</strong> <a name="TableException" href="../../../nom/tam/util/TableException.html#TableException">TableException</a> {
 <a class="jxr_linenumber" name="L328" href="#L328">328</a>         setup(arrays, sizes);
 <a class="jxr_linenumber" name="L329" href="#L329">329</a>     }
 <a class="jxr_linenumber" name="L330" href="#L330">330</a> 
@@ -347,7 +347,7 @@
 <a class="jxr_linenumber" name="L339" href="#L339">339</a> <em class="jxr_javadoccomment">     *             if the structure of the new column does not fit the structure</em>
 <a class="jxr_linenumber" name="L340" href="#L340">340</a> <em class="jxr_javadoccomment">     *             of the rows/columns</em>
 <a class="jxr_linenumber" name="L341" href="#L341">341</a> <em class="jxr_javadoccomment">     */</em>
-<a class="jxr_linenumber" name="L342" href="#L342">342</a>     <strong class="jxr_keyword">public</strong> <strong class="jxr_keyword">void</strong> addColumn(Object newColumn, <strong class="jxr_keyword">int</strong> size) <strong class="jxr_keyword">throws</strong> TableException {
+<a class="jxr_linenumber" name="L342" href="#L342">342</a>     <strong class="jxr_keyword">public</strong> <strong class="jxr_keyword">void</strong> addColumn(Object newColumn, <strong class="jxr_keyword">int</strong> size) <strong class="jxr_keyword">throws</strong> <a name="TableException" href="../../../nom/tam/util/TableException.html#TableException">TableException</a> {
 <a class="jxr_linenumber" name="L343" href="#L343">343</a> 
 <a class="jxr_linenumber" name="L344" href="#L344">344</a>         String classname = newColumn.getClass().getName();
 <a class="jxr_linenumber" name="L345" href="#L345">345</a>         <strong class="jxr_keyword">this</strong>.nrow = checkColumnConsistency(newColumn, classname, <strong class="jxr_keyword">this</strong>.nrow, size);
@@ -385,10 +385,10 @@
 <a class="jxr_linenumber" name="L377" href="#L377">377</a> <em class="jxr_javadoccomment">     *             if the structure of the specified array does not fit the</em>
 <a class="jxr_linenumber" name="L378" href="#L378">378</a> <em class="jxr_javadoccomment">     *             structure of the rows/columns</em>
 <a class="jxr_linenumber" name="L379" href="#L379">379</a> <em class="jxr_javadoccomment">     */</em>
-<a class="jxr_linenumber" name="L380" href="#L380">380</a>     <strong class="jxr_keyword">protected</strong> <strong class="jxr_keyword">void</strong> addPointer(Object data) <strong class="jxr_keyword">throws</strong> TableException {
+<a class="jxr_linenumber" name="L380" href="#L380">380</a>     <strong class="jxr_keyword">protected</strong> <strong class="jxr_keyword">void</strong> addPointer(Object data) <strong class="jxr_keyword">throws</strong> <a name="TableException" href="../../../nom/tam/util/TableException.html#TableException">TableException</a> {
 <a class="jxr_linenumber" name="L381" href="#L381">381</a>         PointerAccess&lt;Object&gt; accessor = selectPointerAccessor(data);
 <a class="jxr_linenumber" name="L382" href="#L382">382</a>         <strong class="jxr_keyword">if</strong> (accessor == <strong class="jxr_keyword">null</strong>) {
-<a class="jxr_linenumber" name="L383" href="#L383">383</a>             <strong class="jxr_keyword">throw</strong> <strong class="jxr_keyword">new</strong> <a href="../../../nom/tam/util/TableException.html">TableException</a>(<span class="jxr_string">"Invalid type for added column:"</span> + data.getClass().getComponentType());
+<a class="jxr_linenumber" name="L383" href="#L383">383</a>             <strong class="jxr_keyword">throw</strong> <strong class="jxr_keyword">new</strong> <a name="TableException" href="../../../nom/tam/util/TableException.html#TableException">TableException</a>(<span class="jxr_string">"Invalid type for added column:"</span> + data.getClass().getComponentType());
 <a class="jxr_linenumber" name="L384" href="#L384">384</a>         }
 <a class="jxr_linenumber" name="L385" href="#L385">385</a>         accessor.set(<strong class="jxr_keyword">this</strong>, extendArray(accessor.get(<strong class="jxr_keyword">this</strong>), data));
 <a class="jxr_linenumber" name="L386" href="#L386">386</a>     }
@@ -417,18 +417,18 @@
 <a class="jxr_linenumber" name="L409" href="#L409">409</a> <em class="jxr_javadoccomment">     *             if the structure of the specified array does not fit the</em>
 <a class="jxr_linenumber" name="L410" href="#L410">410</a> <em class="jxr_javadoccomment">     *             structure of the rows/columns</em>
 <a class="jxr_linenumber" name="L411" href="#L411">411</a> <em class="jxr_javadoccomment">     */</em>
-<a class="jxr_linenumber" name="L412" href="#L412">412</a>     <strong class="jxr_keyword">public</strong> <strong class="jxr_keyword">void</strong> addRow(Object[] row) <strong class="jxr_keyword">throws</strong> TableException {
+<a class="jxr_linenumber" name="L412" href="#L412">412</a>     <strong class="jxr_keyword">public</strong> <strong class="jxr_keyword">void</strong> addRow(Object[] row) <strong class="jxr_keyword">throws</strong> <a name="TableException" href="../../../nom/tam/util/TableException.html#TableException">TableException</a> {
 <a class="jxr_linenumber" name="L413" href="#L413">413</a>         <strong class="jxr_keyword">if</strong> (<strong class="jxr_keyword">this</strong>.arrays.length == 0) {
 <a class="jxr_linenumber" name="L414" href="#L414">414</a>             <strong class="jxr_keyword">for</strong> (Object element : row) {
 <a class="jxr_linenumber" name="L415" href="#L415">415</a>                 addColumn(element, Array.getLength(element));
 <a class="jxr_linenumber" name="L416" href="#L416">416</a>             }
 <a class="jxr_linenumber" name="L417" href="#L417">417</a>         } <strong class="jxr_keyword">else</strong> {
 <a class="jxr_linenumber" name="L418" href="#L418">418</a>             <strong class="jxr_keyword">if</strong> (row.length != <strong class="jxr_keyword">this</strong>.arrays.length) {
-<a class="jxr_linenumber" name="L419" href="#L419">419</a>                 <strong class="jxr_keyword">throw</strong> <strong class="jxr_keyword">new</strong> <a href="../../../nom/tam/util/TableException.html">TableException</a>(<span class="jxr_string">"Row length mismatch"</span>);
+<a class="jxr_linenumber" name="L419" href="#L419">419</a>                 <strong class="jxr_keyword">throw</strong> <strong class="jxr_keyword">new</strong> <a name="TableException" href="../../../nom/tam/util/TableException.html#TableException">TableException</a>(<span class="jxr_string">"Row length mismatch"</span>);
 <a class="jxr_linenumber" name="L420" href="#L420">420</a>             }
 <a class="jxr_linenumber" name="L421" href="#L421">421</a>             <strong class="jxr_keyword">for</strong> (<strong class="jxr_keyword">int</strong> i = 0; i &lt; row.length; i++) {
 <a class="jxr_linenumber" name="L422" href="#L422">422</a>                 <strong class="jxr_keyword">if</strong> (row[i].getClass() != <strong class="jxr_keyword">this</strong>.arrays[i].getClass() || Array.getLength(row[i]) != <strong class="jxr_keyword">this</strong>.sizes[i]) {
-<a class="jxr_linenumber" name="L423" href="#L423">423</a>                     <strong class="jxr_keyword">throw</strong> <strong class="jxr_keyword">new</strong> <a href="../../../nom/tam/util/TableException.html">TableException</a>(<span class="jxr_string">"Row column mismatch at column:"</span> + i);
+<a class="jxr_linenumber" name="L423" href="#L423">423</a>                     <strong class="jxr_keyword">throw</strong> <strong class="jxr_keyword">new</strong> <a name="TableException" href="../../../nom/tam/util/TableException.html#TableException">TableException</a>(<span class="jxr_string">"Row column mismatch at column:"</span> + i);
 <a class="jxr_linenumber" name="L424" href="#L424">424</a>                 }
 <a class="jxr_linenumber" name="L425" href="#L425">425</a>                 Object xarray = ArrayFuncs.newInstance(<strong class="jxr_keyword">this</strong>.bases[i], (<strong class="jxr_keyword">this</strong>.nrow + 1) * <strong class="jxr_keyword">this</strong>.sizes[i]);
 <a class="jxr_linenumber" name="L426" href="#L426">426</a>                 System.arraycopy(<strong class="jxr_keyword">this</strong>.arrays[i], 0, xarray, 0, <strong class="jxr_keyword">this</strong>.nrow * <strong class="jxr_keyword">this</strong>.sizes[i]);
@@ -456,14 +456,14 @@
 <a class="jxr_linenumber" name="L448" href="#L448">448</a> <em class="jxr_javadoccomment">     * @throws TableException</em>
 <a class="jxr_linenumber" name="L449" href="#L449">449</a> <em class="jxr_javadoccomment">     *             if the table was inconsistent</em>
 <a class="jxr_linenumber" name="L450" href="#L450">450</a> <em class="jxr_javadoccomment">     */</em>
-<a class="jxr_linenumber" name="L451" href="#L451">451</a>     <strong class="jxr_keyword">protected</strong> <strong class="jxr_keyword">void</strong> checkArrayConsistency(Object[] newArrays, <strong class="jxr_keyword">int</strong>[] newSizes) <strong class="jxr_keyword">throws</strong> TableException {
+<a class="jxr_linenumber" name="L451" href="#L451">451</a>     <strong class="jxr_keyword">protected</strong> <strong class="jxr_keyword">void</strong> checkArrayConsistency(Object[] newArrays, <strong class="jxr_keyword">int</strong>[] newSizes) <strong class="jxr_keyword">throws</strong> <a name="TableException" href="../../../nom/tam/util/TableException.html#TableException">TableException</a> {
 <a class="jxr_linenumber" name="L452" href="#L452">452</a> 
 <a class="jxr_linenumber" name="L453" href="#L453">453</a>         <em class="jxr_comment">// This routine throws an error if it detects an inconsistency</em>
 <a class="jxr_linenumber" name="L454" href="#L454">454</a>         <em class="jxr_comment">// between the arrays being read in.</em>
 <a class="jxr_linenumber" name="L455" href="#L455">455</a> 
 <a class="jxr_linenumber" name="L456" href="#L456">456</a>         <em class="jxr_comment">// First check that the lengths of the two arrays are the same.</em>
 <a class="jxr_linenumber" name="L457" href="#L457">457</a>         <strong class="jxr_keyword">if</strong> (newArrays.length != newSizes.length) {
-<a class="jxr_linenumber" name="L458" href="#L458">458</a>             <strong class="jxr_keyword">throw</strong> <strong class="jxr_keyword">new</strong> <a href="../../../nom/tam/util/TableException.html">TableException</a>(<span class="jxr_string">"readArraysAsColumns: Incompatible arrays and sizes."</span>);
+<a class="jxr_linenumber" name="L458" href="#L458">458</a>             <strong class="jxr_keyword">throw</strong> <strong class="jxr_keyword">new</strong> <a name="TableException" href="../../../nom/tam/util/TableException.html#TableException">TableException</a>(<span class="jxr_string">"readArraysAsColumns: Incompatible arrays and sizes."</span>);
 <a class="jxr_linenumber" name="L459" href="#L459">459</a>         }
 <a class="jxr_linenumber" name="L460" href="#L460">460</a> 
 <a class="jxr_linenumber" name="L461" href="#L461">461</a>         <em class="jxr_comment">// Now check that that we fill up all of the arrays exactly.</em>
@@ -487,20 +487,20 @@
 <a class="jxr_linenumber" name="L479" href="#L479">479</a>         <strong class="jxr_keyword">this</strong>.sizes = newSizes;
 <a class="jxr_linenumber" name="L480" href="#L480">480</a>     }
 <a class="jxr_linenumber" name="L481" href="#L481">481</a> 
-<a class="jxr_linenumber" name="L482" href="#L482">482</a>     <strong class="jxr_keyword">private</strong> <strong class="jxr_keyword">int</strong> checkColumnConsistency(Object data, String classname, <strong class="jxr_keyword">int</strong> ratio, <strong class="jxr_keyword">int</strong> size) <strong class="jxr_keyword">throws</strong> TableException {
+<a class="jxr_linenumber" name="L482" href="#L482">482</a>     <strong class="jxr_keyword">private</strong> <strong class="jxr_keyword">int</strong> checkColumnConsistency(Object data, String classname, <strong class="jxr_keyword">int</strong> ratio, <strong class="jxr_keyword">int</strong> size) <strong class="jxr_keyword">throws</strong> <a name="TableException" href="../../../nom/tam/util/TableException.html#TableException">TableException</a> {
 <a class="jxr_linenumber" name="L483" href="#L483">483</a> 
 <a class="jxr_linenumber" name="L484" href="#L484">484</a>         <strong class="jxr_keyword">if</strong> (classname.charAt(0) != '[' || classname.length() != 2) {
-<a class="jxr_linenumber" name="L485" href="#L485">485</a>             <strong class="jxr_keyword">throw</strong> <strong class="jxr_keyword">new</strong> <a href="../../../nom/tam/util/TableException.html">TableException</a>(<span class="jxr_string">"Non-primitive array for column"</span>);
+<a class="jxr_linenumber" name="L485" href="#L485">485</a>             <strong class="jxr_keyword">throw</strong> <strong class="jxr_keyword">new</strong> <a name="TableException" href="../../../nom/tam/util/TableException.html#TableException">TableException</a>(<span class="jxr_string">"Non-primitive array for column"</span>);
 <a class="jxr_linenumber" name="L486" href="#L486">486</a>         }
 <a class="jxr_linenumber" name="L487" href="#L487">487</a> 
 <a class="jxr_linenumber" name="L488" href="#L488">488</a>         <strong class="jxr_keyword">int</strong> thisSize = Array.getLength(data);
 <a class="jxr_linenumber" name="L489" href="#L489">489</a>         <strong class="jxr_keyword">if</strong> (thisSize == 0 &amp;&amp; size != 0 &amp;&amp; ratio != 0 || thisSize != 0 &amp;&amp; size == 0) {
-<a class="jxr_linenumber" name="L490" href="#L490">490</a>             <strong class="jxr_keyword">throw</strong> <strong class="jxr_keyword">new</strong> <a href="../../../nom/tam/util/TableException.html">TableException</a>(<span class="jxr_string">"Size mismatch in column: "</span> + thisSize + <span class="jxr_string">" != "</span> + size);
+<a class="jxr_linenumber" name="L490" href="#L490">490</a>             <strong class="jxr_keyword">throw</strong> <strong class="jxr_keyword">new</strong> <a name="TableException" href="../../../nom/tam/util/TableException.html#TableException">TableException</a>(<span class="jxr_string">"Size mismatch in column: "</span> + thisSize + <span class="jxr_string">" != "</span> + size);
 <a class="jxr_linenumber" name="L491" href="#L491">491</a>         }
 <a class="jxr_linenumber" name="L492" href="#L492">492</a> 
 <a class="jxr_linenumber" name="L493" href="#L493">493</a>         <em class="jxr_comment">// The row size must evenly divide the size of the array.</em>
 <a class="jxr_linenumber" name="L494" href="#L494">494</a>         <strong class="jxr_keyword">if</strong> (size != 0 &amp;&amp; thisSize % size != 0) {
-<a class="jxr_linenumber" name="L495" href="#L495">495</a>             <strong class="jxr_keyword">throw</strong> <strong class="jxr_keyword">new</strong> <a href="../../../nom/tam/util/TableException.html">TableException</a>(<span class="jxr_string">"Row size does not divide array for column"</span>);
+<a class="jxr_linenumber" name="L495" href="#L495">495</a>             <strong class="jxr_keyword">throw</strong> <strong class="jxr_keyword">new</strong> <a name="TableException" href="../../../nom/tam/util/TableException.html#TableException">TableException</a>(<span class="jxr_string">"Row size does not divide array for column"</span>);
 <a class="jxr_linenumber" name="L496" href="#L496">496</a>         }
 <a class="jxr_linenumber" name="L497" href="#L497">497</a> 
 <a class="jxr_linenumber" name="L498" href="#L498">498</a>         <em class="jxr_comment">// Finally the ratio of sizes must be the same for all columns -- this</em>
@@ -510,7 +510,7 @@
 <a class="jxr_linenumber" name="L502" href="#L502">502</a>             thisRatio = thisSize / size;
 <a class="jxr_linenumber" name="L503" href="#L503">503</a> 
 <a class="jxr_linenumber" name="L504" href="#L504">504</a>             <strong class="jxr_keyword">if</strong> (ratio != 0 &amp;&amp; thisRatio != ratio) {
-<a class="jxr_linenumber" name="L505" href="#L505">505</a>                 <strong class="jxr_keyword">throw</strong> <strong class="jxr_keyword">new</strong> <a href="../../../nom/tam/util/TableException.html">TableException</a>(<span class="jxr_string">"Different number of rows in different columns"</span>);
+<a class="jxr_linenumber" name="L505" href="#L505">505</a>                 <strong class="jxr_keyword">throw</strong> <strong class="jxr_keyword">new</strong> <a name="TableException" href="../../../nom/tam/util/TableException.html#TableException">TableException</a>(<span class="jxr_string">"Different number of rows in different columns"</span>);
 <a class="jxr_linenumber" name="L506" href="#L506">506</a>             }
 <a class="jxr_linenumber" name="L507" href="#L507">507</a>         }
 <a class="jxr_linenumber" name="L508" href="#L508">508</a>         <strong class="jxr_keyword">if</strong> (thisRatio &gt; 0) {
@@ -520,7 +520,7 @@
 <a class="jxr_linenumber" name="L512" href="#L512">512</a> 
 <a class="jxr_linenumber" name="L513" href="#L513">513</a>     }
 <a class="jxr_linenumber" name="L514" href="#L514">514</a> 
-<a class="jxr_linenumber" name="L515" href="#L515">515</a>     <strong class="jxr_keyword">public</strong> ColumnTable&lt;T&gt; copy() <strong class="jxr_keyword">throws</strong> TableException {
+<a class="jxr_linenumber" name="L515" href="#L515">515</a>     <strong class="jxr_keyword">public</strong> ColumnTable&lt;T&gt; copy() <strong class="jxr_keyword">throws</strong> <a name="TableException" href="../../../nom/tam/util/TableException.html#TableException">TableException</a> {
 <a class="jxr_linenumber" name="L516" href="#L516">516</a>         <strong class="jxr_keyword">return</strong> <strong class="jxr_keyword">new</strong> ColumnTable&lt;&gt;((Object[]) ArrayFuncs.deepClone(<strong class="jxr_keyword">this</strong>.arrays), <strong class="jxr_keyword">this</strong>.sizes.clone());
 <a class="jxr_linenumber" name="L517" href="#L517">517</a>     }
 <a class="jxr_linenumber" name="L518" href="#L518">518</a> 
@@ -535,10 +535,10 @@
 <a class="jxr_linenumber" name="L527" href="#L527">527</a> <em class="jxr_javadoccomment">     *             if the request goes outside the boundaries of the table or if</em>
 <a class="jxr_linenumber" name="L528" href="#L528">528</a> <em class="jxr_javadoccomment">     *             the length is negative.</em>
 <a class="jxr_linenumber" name="L529" href="#L529">529</a> <em class="jxr_javadoccomment">     */</em>
-<a class="jxr_linenumber" name="L530" href="#L530">530</a>     <strong class="jxr_keyword">public</strong> <strong class="jxr_keyword">void</strong> deleteColumns(<strong class="jxr_keyword">int</strong> start, <strong class="jxr_keyword">int</strong> len) <strong class="jxr_keyword">throws</strong> TableException {
+<a class="jxr_linenumber" name="L530" href="#L530">530</a>     <strong class="jxr_keyword">public</strong> <strong class="jxr_keyword">void</strong> deleteColumns(<strong class="jxr_keyword">int</strong> start, <strong class="jxr_keyword">int</strong> len) <strong class="jxr_keyword">throws</strong> <a name="TableException" href="../../../nom/tam/util/TableException.html#TableException">TableException</a> {
 <a class="jxr_linenumber" name="L531" href="#L531">531</a>         <strong class="jxr_keyword">int</strong> ncol = <strong class="jxr_keyword">this</strong>.arrays.length;
 <a class="jxr_linenumber" name="L532" href="#L532">532</a>         <strong class="jxr_keyword">if</strong> (start &lt; 0 || len &lt; 0 || start + len &gt; ncol) {
-<a class="jxr_linenumber" name="L533" href="#L533">533</a>             <strong class="jxr_keyword">throw</strong> <strong class="jxr_keyword">new</strong> <a href="../../../nom/tam/util/TableException.html">TableException</a>(<span class="jxr_string">"Invalid request to delete columns start: "</span> + start + <span class="jxr_string">" length:"</span> + len + <span class="jxr_string">" for table with "</span> + ncol + <span class="jxr_string">" columns."</span>);
+<a class="jxr_linenumber" name="L533" href="#L533">533</a>             <strong class="jxr_keyword">throw</strong> <strong class="jxr_keyword">new</strong> <a name="TableException" href="../../../nom/tam/util/TableException.html#TableException">TableException</a>(<span class="jxr_string">"Invalid request to delete columns start: "</span> + start + <span class="jxr_string">" length:"</span> + len + <span class="jxr_string">" for table with "</span> + ncol + <span class="jxr_string">" columns."</span>);
 <a class="jxr_linenumber" name="L534" href="#L534">534</a>         }
 <a class="jxr_linenumber" name="L535" href="#L535">535</a>         <strong class="jxr_keyword">if</strong> (len == 0) {
 <a class="jxr_linenumber" name="L536" href="#L536">536</a>             <strong class="jxr_keyword">return</strong>;
@@ -580,7 +580,7 @@
 <a class="jxr_linenumber" name="L572" href="#L572">572</a> <em class="jxr_javadoccomment">     *             if the request goes outside the boundaries of the table or if</em>
 <a class="jxr_linenumber" name="L573" href="#L573">573</a> <em class="jxr_javadoccomment">     *             the length is negative.</em>
 <a class="jxr_linenumber" name="L574" href="#L574">574</a> <em class="jxr_javadoccomment">     */</em>
-<a class="jxr_linenumber" name="L575" href="#L575">575</a>     <strong class="jxr_keyword">public</strong> <strong class="jxr_keyword">void</strong> deleteRow(<strong class="jxr_keyword">int</strong> row) <strong class="jxr_keyword">throws</strong> TableException {
+<a class="jxr_linenumber" name="L575" href="#L575">575</a>     <strong class="jxr_keyword">public</strong> <strong class="jxr_keyword">void</strong> deleteRow(<strong class="jxr_keyword">int</strong> row) <strong class="jxr_keyword">throws</strong> <a name="TableException" href="../../../nom/tam/util/TableException.html#TableException">TableException</a> {
 <a class="jxr_linenumber" name="L576" href="#L576">576</a>         deleteRows(row, 1);
 <a class="jxr_linenumber" name="L577" href="#L577">577</a>     }
 <a class="jxr_linenumber" name="L578" href="#L578">578</a> 
@@ -595,10 +595,10 @@
 <a class="jxr_linenumber" name="L587" href="#L587">587</a> <em class="jxr_javadoccomment">     *             if the request goes outside the boundaries of the table or if</em>
 <a class="jxr_linenumber" name="L588" href="#L588">588</a> <em class="jxr_javadoccomment">     *             the length is negative.</em>
 <a class="jxr_linenumber" name="L589" href="#L589">589</a> <em class="jxr_javadoccomment">     */</em>
-<a class="jxr_linenumber" name="L590" href="#L590">590</a>     <strong class="jxr_keyword">public</strong> <strong class="jxr_keyword">void</strong> deleteRows(<strong class="jxr_keyword">int</strong> row, <strong class="jxr_keyword">int</strong> length) <strong class="jxr_keyword">throws</strong> TableException {
+<a class="jxr_linenumber" name="L590" href="#L590">590</a>     <strong class="jxr_keyword">public</strong> <strong class="jxr_keyword">void</strong> deleteRows(<strong class="jxr_keyword">int</strong> row, <strong class="jxr_keyword">int</strong> length) <strong class="jxr_keyword">throws</strong> <a name="TableException" href="../../../nom/tam/util/TableException.html#TableException">TableException</a> {
 <a class="jxr_linenumber" name="L591" href="#L591">591</a> 
 <a class="jxr_linenumber" name="L592" href="#L592">592</a>         <strong class="jxr_keyword">if</strong> (row &lt; 0 || length &lt; 0 || row + length &gt; <strong class="jxr_keyword">this</strong>.nrow) {
-<a class="jxr_linenumber" name="L593" href="#L593">593</a>             <strong class="jxr_keyword">throw</strong> <strong class="jxr_keyword">new</strong> <a href="../../../nom/tam/util/TableException.html">TableException</a>(<span class="jxr_string">"Invalid request to delete rows start: "</span> + row + <span class="jxr_string">" length:"</span> + length + <span class="jxr_string">" for table with "</span> + <strong class="jxr_keyword">this</strong>.nrow + <span class="jxr_string">" rows."</span>);
+<a class="jxr_linenumber" name="L593" href="#L593">593</a>             <strong class="jxr_keyword">throw</strong> <strong class="jxr_keyword">new</strong> <a name="TableException" href="../../../nom/tam/util/TableException.html#TableException">TableException</a>(<span class="jxr_string">"Invalid request to delete rows start: "</span> + row + <span class="jxr_string">" length:"</span> + length + <span class="jxr_string">" for table with "</span> + <strong class="jxr_keyword">this</strong>.nrow + <span class="jxr_string">" rows."</span>);
 <a class="jxr_linenumber" name="L594" href="#L594">594</a>         }
 <a class="jxr_linenumber" name="L595" href="#L595">595</a> 
 <a class="jxr_linenumber" name="L596" href="#L596">596</a>         <strong class="jxr_keyword">if</strong> (length == 0) {
@@ -778,7 +778,7 @@
 <a class="jxr_linenumber" name="L770" href="#L770">770</a> <em class="jxr_javadoccomment">     * @throws IOException</em>
 <a class="jxr_linenumber" name="L771" href="#L771">771</a> <em class="jxr_javadoccomment">     *             if the reading failed</em>
 <a class="jxr_linenumber" name="L772" href="#L772">772</a> <em class="jxr_javadoccomment">     */</em>
-<a class="jxr_linenumber" name="L773" href="#L773">773</a>     <strong class="jxr_keyword">public</strong> <strong class="jxr_keyword">void</strong> read(<a href="../../../nom/tam/util/ArrayDataInput.html">ArrayDataInput</a> is) <strong class="jxr_keyword">throws</strong> IOException {
+<a class="jxr_linenumber" name="L773" href="#L773">773</a>     <strong class="jxr_keyword">public</strong> <strong class="jxr_keyword">void</strong> read(<a name="ArrayDataInput" href="../../../nom/tam/util/ArrayDataInput.html#ArrayDataInput">ArrayDataInput</a> is) <strong class="jxr_keyword">throws</strong> IOException {
 <a class="jxr_linenumber" name="L774" href="#L774">774</a>         <strong class="jxr_keyword">int</strong>[] columnIndex = <strong class="jxr_keyword">new</strong> <strong class="jxr_keyword">int</strong>[MAX_COLUMN_INDEXES];
 <a class="jxr_linenumber" name="L775" href="#L775">775</a>         <em class="jxr_comment">// While we have not finished reading the table..</em>
 <a class="jxr_linenumber" name="L776" href="#L776">776</a>         <strong class="jxr_keyword">for</strong> (<strong class="jxr_keyword">int</strong> row = 0; row &lt; <strong class="jxr_keyword">this</strong>.nrow; row += 1) {
@@ -808,7 +808,7 @@
 <a class="jxr_linenumber" name="L800" href="#L800">800</a> <em class="jxr_javadoccomment">     *                information in the table.</em>
 <a class="jxr_linenumber" name="L801" href="#L801">801</a> <em class="jxr_javadoccomment">     */</em>
 <a class="jxr_linenumber" name="L802" href="#L802">802</a>     @Override
-<a class="jxr_linenumber" name="L803" href="#L803">803</a>     <strong class="jxr_keyword">public</strong> <strong class="jxr_keyword">void</strong> setColumn(<strong class="jxr_keyword">int</strong> col, Object newColumn) <strong class="jxr_keyword">throws</strong> TableException {
+<a class="jxr_linenumber" name="L803" href="#L803">803</a>     <strong class="jxr_keyword">public</strong> <strong class="jxr_keyword">void</strong> setColumn(<strong class="jxr_keyword">int</strong> col, Object newColumn) <strong class="jxr_keyword">throws</strong> <a name="TableException" href="../../../nom/tam/util/TableException.html#TableException">TableException</a> {
 <a class="jxr_linenumber" name="L804" href="#L804">804</a> 
 <a class="jxr_linenumber" name="L805" href="#L805">805</a>         <strong class="jxr_keyword">boolean</strong> reset = newColumn.getClass() != <strong class="jxr_keyword">this</strong>.arrays[col].getClass() || Array.getLength(newColumn) != Array.getLength(<strong class="jxr_keyword">this</strong>.arrays[col]);
 <a class="jxr_linenumber" name="L806" href="#L806">806</a>         <strong class="jxr_keyword">this</strong>.arrays[col] = newColumn;
@@ -837,16 +837,16 @@
 <a class="jxr_linenumber" name="L829" href="#L829">829</a> <em class="jxr_javadoccomment">     *                data it replaces.</em>
 <a class="jxr_linenumber" name="L830" href="#L830">830</a> <em class="jxr_javadoccomment">     */</em>
 <a class="jxr_linenumber" name="L831" href="#L831">831</a>     @Override
-<a class="jxr_linenumber" name="L832" href="#L832">832</a>     <strong class="jxr_keyword">public</strong> <strong class="jxr_keyword">void</strong> setElement(<strong class="jxr_keyword">int</strong> row, <strong class="jxr_keyword">int</strong> col, Object x) <strong class="jxr_keyword">throws</strong> TableException {
+<a class="jxr_linenumber" name="L832" href="#L832">832</a>     <strong class="jxr_keyword">public</strong> <strong class="jxr_keyword">void</strong> setElement(<strong class="jxr_keyword">int</strong> row, <strong class="jxr_keyword">int</strong> col, Object x) <strong class="jxr_keyword">throws</strong> <a name="TableException" href="../../../nom/tam/util/TableException.html#TableException">TableException</a> {
 <a class="jxr_linenumber" name="L833" href="#L833">833</a> 
 <a class="jxr_linenumber" name="L834" href="#L834">834</a>         String classname = x.getClass().getName();
 <a class="jxr_linenumber" name="L835" href="#L835">835</a> 
 <a class="jxr_linenumber" name="L836" href="#L836">836</a>         <strong class="jxr_keyword">if</strong> (!classname.equals(<span class="jxr_string">"["</span> + <strong class="jxr_keyword">this</strong>.types[col])) {
-<a class="jxr_linenumber" name="L837" href="#L837">837</a>             <strong class="jxr_keyword">throw</strong> <strong class="jxr_keyword">new</strong> <a href="../../../nom/tam/util/TableException.html">TableException</a>(<span class="jxr_string">"setElement: Incompatible element type"</span>);
+<a class="jxr_linenumber" name="L837" href="#L837">837</a>             <strong class="jxr_keyword">throw</strong> <strong class="jxr_keyword">new</strong> <a name="TableException" href="../../../nom/tam/util/TableException.html#TableException">TableException</a>(<span class="jxr_string">"setElement: Incompatible element type"</span>);
 <a class="jxr_linenumber" name="L838" href="#L838">838</a>         }
 <a class="jxr_linenumber" name="L839" href="#L839">839</a> 
 <a class="jxr_linenumber" name="L840" href="#L840">840</a>         <strong class="jxr_keyword">if</strong> (Array.getLength(x) != <strong class="jxr_keyword">this</strong>.sizes[col]) {
-<a class="jxr_linenumber" name="L841" href="#L841">841</a>             <strong class="jxr_keyword">throw</strong> <strong class="jxr_keyword">new</strong> <a href="../../../nom/tam/util/TableException.html">TableException</a>(<span class="jxr_string">"setElement: Incompatible element size"</span>);
+<a class="jxr_linenumber" name="L841" href="#L841">841</a>             <strong class="jxr_keyword">throw</strong> <strong class="jxr_keyword">new</strong> <a name="TableException" href="../../../nom/tam/util/TableException.html#TableException">TableException</a>(<span class="jxr_string">"setElement: Incompatible element size"</span>);
 <a class="jxr_linenumber" name="L842" href="#L842">842</a>         }
 <a class="jxr_linenumber" name="L843" href="#L843">843</a> 
 <a class="jxr_linenumber" name="L844" href="#L844">844</a>         System.arraycopy(x, 0, <strong class="jxr_keyword">this</strong>.arrays[col], <strong class="jxr_keyword">this</strong>.sizes[col] * row, <strong class="jxr_keyword">this</strong>.sizes[col]);
@@ -875,10 +875,10 @@
 <a class="jxr_linenumber" name="L867" href="#L867">867</a> <em class="jxr_javadoccomment">     *            nom.tam.util.ColumnTable)</em>
 <a class="jxr_linenumber" name="L868" href="#L868">868</a> <em class="jxr_javadoccomment">     */</em>
 <a class="jxr_linenumber" name="L869" href="#L869">869</a>     @Override
-<a class="jxr_linenumber" name="L870" href="#L870">870</a>     <strong class="jxr_keyword">public</strong> <strong class="jxr_keyword">void</strong> setRow(<strong class="jxr_keyword">int</strong> row, Object x) <strong class="jxr_keyword">throws</strong> TableException {
+<a class="jxr_linenumber" name="L870" href="#L870">870</a>     <strong class="jxr_keyword">public</strong> <strong class="jxr_keyword">void</strong> setRow(<strong class="jxr_keyword">int</strong> row, Object x) <strong class="jxr_keyword">throws</strong> <a name="TableException" href="../../../nom/tam/util/TableException.html#TableException">TableException</a> {
 <a class="jxr_linenumber" name="L871" href="#L871">871</a> 
 <a class="jxr_linenumber" name="L872" href="#L872">872</a>         <strong class="jxr_keyword">if</strong> (!(x instanceof Object[])) {
-<a class="jxr_linenumber" name="L873" href="#L873">873</a>             <strong class="jxr_keyword">throw</strong> <strong class="jxr_keyword">new</strong> <a href="../../../nom/tam/util/TableException.html">TableException</a>(<span class="jxr_string">"setRow: Incompatible row"</span>);
+<a class="jxr_linenumber" name="L873" href="#L873">873</a>             <strong class="jxr_keyword">throw</strong> <strong class="jxr_keyword">new</strong> <a name="TableException" href="../../../nom/tam/util/TableException.html#TableException">TableException</a>(<span class="jxr_string">"setRow: Incompatible row"</span>);
 <a class="jxr_linenumber" name="L874" href="#L874">874</a>         }
 <a class="jxr_linenumber" name="L875" href="#L875">875</a> 
 <a class="jxr_linenumber" name="L876" href="#L876">876</a>         <strong class="jxr_keyword">for</strong> (<strong class="jxr_keyword">int</strong> col = 0; col &lt; <strong class="jxr_keyword">this</strong>.arrays.length; col += 1) {
@@ -897,7 +897,7 @@
 <a class="jxr_linenumber" name="L889" href="#L889">889</a> <em class="jxr_javadoccomment">     * @throws TableException</em>
 <a class="jxr_linenumber" name="L890" href="#L890">890</a> <em class="jxr_javadoccomment">     *             if the structure of the columns is not consistent</em>
 <a class="jxr_linenumber" name="L891" href="#L891">891</a> <em class="jxr_javadoccomment">     */</em>
-<a class="jxr_linenumber" name="L892" href="#L892">892</a>     <strong class="jxr_keyword">private</strong> <strong class="jxr_keyword">void</strong> setup(Object[] newArrays, <strong class="jxr_keyword">int</strong>[] newSizes) <strong class="jxr_keyword">throws</strong> TableException {
+<a class="jxr_linenumber" name="L892" href="#L892">892</a>     <strong class="jxr_keyword">private</strong> <strong class="jxr_keyword">void</strong> setup(Object[] newArrays, <strong class="jxr_keyword">int</strong>[] newSizes) <strong class="jxr_keyword">throws</strong> <a name="TableException" href="../../../nom/tam/util/TableException.html#TableException">TableException</a> {
 <a class="jxr_linenumber" name="L893" href="#L893">893</a>         checkArrayConsistency(newArrays, newSizes);
 <a class="jxr_linenumber" name="L894" href="#L894">894</a>         initializePointers();
 <a class="jxr_linenumber" name="L895" href="#L895">895</a>     }
@@ -910,7 +910,7 @@
 <a class="jxr_linenumber" name="L902" href="#L902">902</a> <em class="jxr_javadoccomment">     * @throws IOException</em>
 <a class="jxr_linenumber" name="L903" href="#L903">903</a> <em class="jxr_javadoccomment">     *             if the write operation failed</em>
 <a class="jxr_linenumber" name="L904" href="#L904">904</a> <em class="jxr_javadoccomment">     */</em>
-<a class="jxr_linenumber" name="L905" href="#L905">905</a>     <strong class="jxr_keyword">public</strong> <strong class="jxr_keyword">void</strong> write(<a href="../../../nom/tam/util/ArrayDataOutput.html">ArrayDataOutput</a> os) <strong class="jxr_keyword">throws</strong> IOException {
+<a class="jxr_linenumber" name="L905" href="#L905">905</a>     <strong class="jxr_keyword">public</strong> <strong class="jxr_keyword">void</strong> write(<a name="ArrayDataOutput" href="../../../nom/tam/util/ArrayDataOutput.html#ArrayDataOutput">ArrayDataOutput</a> os) <strong class="jxr_keyword">throws</strong> IOException {
 <a class="jxr_linenumber" name="L906" href="#L906">906</a>         <strong class="jxr_keyword">int</strong>[] columnIndex = <strong class="jxr_keyword">new</strong> <strong class="jxr_keyword">int</strong>[MAX_COLUMN_INDEXES];
 <a class="jxr_linenumber" name="L907" href="#L907">907</a>         <strong class="jxr_keyword">for</strong> (<strong class="jxr_keyword">int</strong> row = 0; row &lt; <strong class="jxr_keyword">this</strong>.nrow; row += 1) {
 <a class="jxr_linenumber" name="L908" href="#L908">908</a>             Arrays.fill(columnIndex, 0);
@@ -941,7 +941,7 @@
 <a class="jxr_linenumber" name="L933" href="#L933">933</a> <em class="jxr_javadoccomment">     * @throws IOException</em>
 <a class="jxr_linenumber" name="L934" href="#L934">934</a> <em class="jxr_javadoccomment">     *             if the write operation failed</em>
 <a class="jxr_linenumber" name="L935" href="#L935">935</a> <em class="jxr_javadoccomment">     */</em>
-<a class="jxr_linenumber" name="L936" href="#L936">936</a>     <strong class="jxr_keyword">public</strong> <strong class="jxr_keyword">void</strong> write(<a href="../../../nom/tam/util/ArrayDataOutput.html">ArrayDataOutput</a> os, <strong class="jxr_keyword">int</strong> rowStart, <strong class="jxr_keyword">int</strong> rowEnd, <strong class="jxr_keyword">int</strong> columnNr) <strong class="jxr_keyword">throws</strong> IOException {
+<a class="jxr_linenumber" name="L936" href="#L936">936</a>     <strong class="jxr_keyword">public</strong> <strong class="jxr_keyword">void</strong> write(<a name="ArrayDataOutput" href="../../../nom/tam/util/ArrayDataOutput.html#ArrayDataOutput">ArrayDataOutput</a> os, <strong class="jxr_keyword">int</strong> rowStart, <strong class="jxr_keyword">int</strong> rowEnd, <strong class="jxr_keyword">int</strong> columnNr) <strong class="jxr_keyword">throws</strong> IOException {
 <a class="jxr_linenumber" name="L937" href="#L937">937</a>         <strong class="jxr_keyword">int</strong>[] columnIndex = <strong class="jxr_keyword">new</strong> <strong class="jxr_keyword">int</strong>[MAX_COLUMN_INDEXES];
 <a class="jxr_linenumber" name="L938" href="#L938">938</a>         <strong class="jxr_keyword">for</strong> (<strong class="jxr_keyword">int</strong> row = 0; row &lt; <strong class="jxr_keyword">this</strong>.nrow; row += 1) {
 <a class="jxr_linenumber" name="L939" href="#L939">939</a>             <strong class="jxr_keyword">if</strong> (row &gt;= rowStart &amp;&amp; row &lt; rowEnd) {
@@ -976,7 +976,7 @@
 <a class="jxr_linenumber" name="L968" href="#L968">968</a> <em class="jxr_javadoccomment">     * @throws IOException</em>
 <a class="jxr_linenumber" name="L969" href="#L969">969</a> <em class="jxr_javadoccomment">     *             if the reading failed</em>
 <a class="jxr_linenumber" name="L970" href="#L970">970</a> <em class="jxr_javadoccomment">     */</em>
-<a class="jxr_linenumber" name="L971" href="#L971">971</a>     <strong class="jxr_keyword">public</strong> <strong class="jxr_keyword">void</strong> read(<a href="../../../nom/tam/util/ArrayDataInput.html">ArrayDataInput</a> is, <strong class="jxr_keyword">int</strong> rowStart, <strong class="jxr_keyword">int</strong> rowEnd, <strong class="jxr_keyword">int</strong> columnNr) <strong class="jxr_keyword">throws</strong> IOException {
+<a class="jxr_linenumber" name="L971" href="#L971">971</a>     <strong class="jxr_keyword">public</strong> <strong class="jxr_keyword">void</strong> read(<a name="ArrayDataInput" href="../../../nom/tam/util/ArrayDataInput.html#ArrayDataInput">ArrayDataInput</a> is, <strong class="jxr_keyword">int</strong> rowStart, <strong class="jxr_keyword">int</strong> rowEnd, <strong class="jxr_keyword">int</strong> columnNr) <strong class="jxr_keyword">throws</strong> IOException {
 <a class="jxr_linenumber" name="L972" href="#L972">972</a>         <strong class="jxr_keyword">int</strong>[] columnIndex = <strong class="jxr_keyword">new</strong> <strong class="jxr_keyword">int</strong>[MAX_COLUMN_INDEXES];
 <a class="jxr_linenumber" name="L973" href="#L973">973</a>         <em class="jxr_comment">// While we have not finished reading the table..</em>
 <a class="jxr_linenumber" name="L974" href="#L974">974</a>         <strong class="jxr_keyword">for</strong> (<strong class="jxr_keyword">int</strong> row = 0; row &lt; <strong class="jxr_keyword">this</strong>.nrow; row += 1) {

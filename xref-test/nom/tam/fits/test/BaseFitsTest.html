@@ -104,11 +104,11 @@
 <a class="jxr_linenumber" name="L96" href="#L96">96</a>  <strong class="jxr_keyword">import</strong> org.junit.runner.Description;
 <a class="jxr_linenumber" name="L97" href="#L97">97</a>  <strong class="jxr_keyword">import</strong> org.junit.runners.model.FrameworkMethod;
 <a class="jxr_linenumber" name="L98" href="#L98">98</a>  
-<a class="jxr_linenumber" name="L99" href="#L99">99</a>  <strong class="jxr_keyword">public</strong> <strong class="jxr_keyword">class</strong> <a href="../../../../nom/tam/fits/test/BaseFitsTest.html">BaseFitsTest</a> {
+<a class="jxr_linenumber" name="L99" href="#L99">99</a>  <strong class="jxr_keyword">public</strong> <strong class="jxr_keyword">class</strong> <a name="BaseFitsTest" href="../../../../nom/tam/fits/test/BaseFitsTest.html#BaseFitsTest">BaseFitsTest</a> {
 <a class="jxr_linenumber" name="L100" href="#L100">100</a> 
-<a class="jxr_linenumber" name="L101" href="#L101">101</a>     <strong class="jxr_keyword">private</strong> <strong class="jxr_keyword">static</strong> <strong class="jxr_keyword">final</strong> <strong class="jxr_keyword">class</strong> <a href="../../../../nom/tam/fits/test/BaseFitsTest.html">TestUndefinedData</a> <strong class="jxr_keyword">extends</strong> UndefinedData {
+<a class="jxr_linenumber" name="L101" href="#L101">101</a>     <strong class="jxr_keyword">private</strong> <strong class="jxr_keyword">static</strong> <strong class="jxr_keyword">final</strong> <strong class="jxr_keyword">class</strong> TestUndefinedData <strong class="jxr_keyword">extends</strong> UndefinedData {
 <a class="jxr_linenumber" name="L102" href="#L102">102</a> 
-<a class="jxr_linenumber" name="L103" href="#L103">103</a>         <strong class="jxr_keyword">private</strong> <a href="../../../../nom/tam/fits/test/BaseFitsTest.html">TestUndefinedData</a>(Object x) {
+<a class="jxr_linenumber" name="L103" href="#L103">103</a>         <strong class="jxr_keyword">private</strong> TestUndefinedData(Object x) {
 <a class="jxr_linenumber" name="L104" href="#L104">104</a>             <strong class="jxr_keyword">super</strong>(x);
 <a class="jxr_linenumber" name="L105" href="#L105">105</a>         }
 <a class="jxr_linenumber" name="L106" href="#L106">106</a> 
@@ -906,7 +906,7 @@
 <a class="jxr_linenumber" name="L898" href="#L898">898</a>         <strong class="jxr_keyword">final</strong> <strong class="jxr_keyword">int</strong>[] fail = {
 <a class="jxr_linenumber" name="L899" href="#L899">899</a>             100
 <a class="jxr_linenumber" name="L900" href="#L900">900</a>         };
-<a class="jxr_linenumber" name="L901" href="#L901">901</a>         <a href="../../../../nom/tam/fits/test/BaseFitsTest.html">TestUndefinedData</a> data = <strong class="jxr_keyword">new</strong> <a href="../../../../nom/tam/fits/test/BaseFitsTest.html">TestUndefinedData</a>(<strong class="jxr_keyword">new</strong> byte[10]);
+<a class="jxr_linenumber" name="L901" href="#L901">901</a>         TestUndefinedData data = <strong class="jxr_keyword">new</strong> TestUndefinedData(<strong class="jxr_keyword">new</strong> byte[10]);
 <a class="jxr_linenumber" name="L902" href="#L902">902</a>         FitsException expected = <strong class="jxr_keyword">null</strong>;
 <a class="jxr_linenumber" name="L903" href="#L903">903</a>         <strong class="jxr_keyword">try</strong> {
 <a class="jxr_linenumber" name="L904" href="#L904">904</a>             data.rewrite();
@@ -954,7 +954,7 @@
 <a class="jxr_linenumber" name="L946" href="#L946">946</a> 
 <a class="jxr_linenumber" name="L947" href="#L947">947</a>     @Test
 <a class="jxr_linenumber" name="L948" href="#L948">948</a>     <strong class="jxr_keyword">public</strong> <strong class="jxr_keyword">void</strong> testFitsFactoryData() <strong class="jxr_keyword">throws</strong> Exception {
-<a class="jxr_linenumber" name="L949" href="#L949">949</a>         Assert.assertNull(FitsFactory.HDUFactory(<strong class="jxr_keyword">new</strong> Header(), <strong class="jxr_keyword">new</strong> BadData()));
+<a class="jxr_linenumber" name="L949" href="#L949">949</a>         Assert.assertNull(FitsFactory.HDUFactory(<strong class="jxr_keyword">new</strong> Header(), <strong class="jxr_keyword">new</strong> <a name="BadData" href="../../../../nom/tam/fits/BadData.html#BadData">BadData</a>()));
 <a class="jxr_linenumber" name="L950" href="#L950">950</a>     }
 <a class="jxr_linenumber" name="L951" href="#L951">951</a> 
 <a class="jxr_linenumber" name="L952" href="#L952">952</a>     @Test(expected = FitsException.<strong class="jxr_keyword">class</strong>)

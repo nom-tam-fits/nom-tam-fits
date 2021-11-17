@@ -98,7 +98,7 @@
 <a class="jxr_linenumber" name="L90" href="#L90">90</a>  <em class="jxr_javadoccomment"> * @since 1.16</em>
 <a class="jxr_linenumber" name="L91" href="#L91">91</a>  <em class="jxr_javadoccomment"> */</em>
 <a class="jxr_linenumber" name="L92" href="#L92">92</a>  @SuppressWarnings(<span class="jxr_string">"deprecation"</span>)
-<a class="jxr_linenumber" name="L93" href="#L93">93</a>  <strong class="jxr_keyword">public</strong> <strong class="jxr_keyword">class</strong> <a href="../../../nom/tam/util/FitsFile.html">FitsFile</a> <strong class="jxr_keyword">extends</strong> <a href="../../../nom/tam/util/ArrayDataFile.html">ArrayDataFile</a> <strong class="jxr_keyword">implements</strong> RandomAccess, <a href="../../../nom/tam/util/ArrayDataOutput.html">ArrayDataOutput</a> {
+<a class="jxr_linenumber" name="L93" href="#L93">93</a>  <strong class="jxr_keyword">public</strong> <strong class="jxr_keyword">class</strong> <a name="FitsFile" href="../../../nom/tam/util/FitsFile.html#FitsFile">FitsFile</a> <strong class="jxr_keyword">extends</strong> <a name="ArrayDataFile" href="../../../nom/tam/util/ArrayDataFile.html#ArrayDataFile">ArrayDataFile</a> <strong class="jxr_keyword">implements</strong> RandomAccess, <a name="ArrayDataOutput" href="../../../nom/tam/util/ArrayDataOutput.html#ArrayDataOutput">ArrayDataOutput</a> {
 <a class="jxr_linenumber" name="L94" href="#L94">94</a>  
 <a class="jxr_linenumber" name="L95" href="#L95">95</a>      <strong class="jxr_keyword">private</strong> <strong class="jxr_keyword">static</strong> <strong class="jxr_keyword">final</strong> Logger LOG = Logger.getLogger(FitsFile.<strong class="jxr_keyword">class</strong>.getName());
 <a class="jxr_linenumber" name="L96" href="#L96">96</a>      
@@ -115,7 +115,7 @@
 <a class="jxr_linenumber" name="L107" href="#L107">107</a> <em class="jxr_javadoccomment">     * @throws IOException</em>
 <a class="jxr_linenumber" name="L108" href="#L108">108</a> <em class="jxr_javadoccomment">     *             if the file could not be opened</em>
 <a class="jxr_linenumber" name="L109" href="#L109">109</a> <em class="jxr_javadoccomment">     */</em>
-<a class="jxr_linenumber" name="L110" href="#L110">110</a>     <strong class="jxr_keyword">public</strong> <a href="../../../nom/tam/util/FitsFile.html">FitsFile</a>(File file) <strong class="jxr_keyword">throws</strong> IOException {
+<a class="jxr_linenumber" name="L110" href="#L110">110</a>     <strong class="jxr_keyword">public</strong> <a name="FitsFile" href="../../../nom/tam/util/FitsFile.html#FitsFile">FitsFile</a>(File file) <strong class="jxr_keyword">throws</strong> IOException {
 <a class="jxr_linenumber" name="L111" href="#L111">111</a>         <strong class="jxr_keyword">this</strong>(file, <span class="jxr_string">"r"</span>, FitsIO.DEFAULT_BUFFER_SIZE);
 <a class="jxr_linenumber" name="L112" href="#L112">112</a>     }
 <a class="jxr_linenumber" name="L113" href="#L113">113</a> 
@@ -129,7 +129,7 @@
 <a class="jxr_linenumber" name="L121" href="#L121">121</a> <em class="jxr_javadoccomment">     * @throws IOException</em>
 <a class="jxr_linenumber" name="L122" href="#L122">122</a> <em class="jxr_javadoccomment">     *             if the file could not be opened</em>
 <a class="jxr_linenumber" name="L123" href="#L123">123</a> <em class="jxr_javadoccomment">     */</em>
-<a class="jxr_linenumber" name="L124" href="#L124">124</a>     <strong class="jxr_keyword">public</strong> <a href="../../../nom/tam/util/FitsFile.html">FitsFile</a>(File file, String mode) <strong class="jxr_keyword">throws</strong> IOException {
+<a class="jxr_linenumber" name="L124" href="#L124">124</a>     <strong class="jxr_keyword">public</strong> <a name="FitsFile" href="../../../nom/tam/util/FitsFile.html#FitsFile">FitsFile</a>(File file, String mode) <strong class="jxr_keyword">throws</strong> IOException {
 <a class="jxr_linenumber" name="L125" href="#L125">125</a>         <strong class="jxr_keyword">this</strong>(file, mode, FitsIO.DEFAULT_BUFFER_SIZE);
 <a class="jxr_linenumber" name="L126" href="#L126">126</a>     }
 <a class="jxr_linenumber" name="L127" href="#L127">127</a> 
@@ -145,10 +145,10 @@
 <a class="jxr_linenumber" name="L137" href="#L137">137</a> <em class="jxr_javadoccomment">     * @throws IOException</em>
 <a class="jxr_linenumber" name="L138" href="#L138">138</a> <em class="jxr_javadoccomment">     *             if the file could not be opened</em>
 <a class="jxr_linenumber" name="L139" href="#L139">139</a> <em class="jxr_javadoccomment">     */</em>
-<a class="jxr_linenumber" name="L140" href="#L140">140</a>     <strong class="jxr_keyword">public</strong> <a href="../../../nom/tam/util/FitsFile.html">FitsFile</a>(File file, String mode, <strong class="jxr_keyword">int</strong> bufferSize) <strong class="jxr_keyword">throws</strong> IOException {
+<a class="jxr_linenumber" name="L140" href="#L140">140</a>     <strong class="jxr_keyword">public</strong> <a name="FitsFile" href="../../../nom/tam/util/FitsFile.html#FitsFile">FitsFile</a>(File file, String mode, <strong class="jxr_keyword">int</strong> bufferSize) <strong class="jxr_keyword">throws</strong> IOException {
 <a class="jxr_linenumber" name="L141" href="#L141">141</a>         <strong class="jxr_keyword">super</strong>(file, mode, bufferSize);
-<a class="jxr_linenumber" name="L142" href="#L142">142</a>         setDecoder(<strong class="jxr_keyword">new</strong> <a href="../../../nom/tam/util/FitsDecoder.html">FitsDecoder</a>(<strong class="jxr_keyword">this</strong>));
-<a class="jxr_linenumber" name="L143" href="#L143">143</a>         setEncoder(<strong class="jxr_keyword">new</strong> <a href="../../../nom/tam/util/FitsEncoder.html">FitsEncoder</a>(<strong class="jxr_keyword">this</strong>));
+<a class="jxr_linenumber" name="L142" href="#L142">142</a>         setDecoder(<strong class="jxr_keyword">new</strong> <a name="FitsDecoder" href="../../../nom/tam/util/FitsDecoder.html#FitsDecoder">FitsDecoder</a>(<strong class="jxr_keyword">this</strong>));
+<a class="jxr_linenumber" name="L143" href="#L143">143</a>         setEncoder(<strong class="jxr_keyword">new</strong> <a name="FitsEncoder" href="../../../nom/tam/util/FitsEncoder.html#FitsEncoder">FitsEncoder</a>(<strong class="jxr_keyword">this</strong>));
 <a class="jxr_linenumber" name="L144" href="#L144">144</a>     }
 <a class="jxr_linenumber" name="L145" href="#L145">145</a> 
 <a class="jxr_linenumber" name="L146" href="#L146">146</a>     <em class="jxr_javadoccomment">/**</em>
@@ -159,7 +159,7 @@
 <a class="jxr_linenumber" name="L151" href="#L151">151</a> <em class="jxr_javadoccomment">     * @throws IOException</em>
 <a class="jxr_linenumber" name="L152" href="#L152">152</a> <em class="jxr_javadoccomment">     *             if the file could not be opened</em>
 <a class="jxr_linenumber" name="L153" href="#L153">153</a> <em class="jxr_javadoccomment">     */</em>
-<a class="jxr_linenumber" name="L154" href="#L154">154</a>     <strong class="jxr_keyword">public</strong> <a href="../../../nom/tam/util/FitsFile.html">FitsFile</a>(String filename) <strong class="jxr_keyword">throws</strong> IOException {
+<a class="jxr_linenumber" name="L154" href="#L154">154</a>     <strong class="jxr_keyword">public</strong> <a name="FitsFile" href="../../../nom/tam/util/FitsFile.html#FitsFile">FitsFile</a>(String filename) <strong class="jxr_keyword">throws</strong> IOException {
 <a class="jxr_linenumber" name="L155" href="#L155">155</a>         <strong class="jxr_keyword">this</strong>(filename, <span class="jxr_string">"r"</span>, FitsFile.DEFAULT_BUFFER_SIZE);
 <a class="jxr_linenumber" name="L156" href="#L156">156</a>     }
 <a class="jxr_linenumber" name="L157" href="#L157">157</a> 
@@ -173,7 +173,7 @@
 <a class="jxr_linenumber" name="L165" href="#L165">165</a> <em class="jxr_javadoccomment">     * @throws IOException</em>
 <a class="jxr_linenumber" name="L166" href="#L166">166</a> <em class="jxr_javadoccomment">     *             if the file could not be opened</em>
 <a class="jxr_linenumber" name="L167" href="#L167">167</a> <em class="jxr_javadoccomment">     */</em>
-<a class="jxr_linenumber" name="L168" href="#L168">168</a>     <strong class="jxr_keyword">public</strong> <a href="../../../nom/tam/util/FitsFile.html">FitsFile</a>(String filename, String mode) <strong class="jxr_keyword">throws</strong> IOException {
+<a class="jxr_linenumber" name="L168" href="#L168">168</a>     <strong class="jxr_keyword">public</strong> <a name="FitsFile" href="../../../nom/tam/util/FitsFile.html#FitsFile">FitsFile</a>(String filename, String mode) <strong class="jxr_keyword">throws</strong> IOException {
 <a class="jxr_linenumber" name="L169" href="#L169">169</a>         <strong class="jxr_keyword">this</strong>(filename, mode, FitsFile.DEFAULT_BUFFER_SIZE);
 <a class="jxr_linenumber" name="L170" href="#L170">170</a>     }
 <a class="jxr_linenumber" name="L171" href="#L171">171</a> 
@@ -193,19 +193,19 @@
 <a class="jxr_linenumber" name="L185" href="#L185">185</a> <em class="jxr_javadoccomment">     * @throws IOException</em>
 <a class="jxr_linenumber" name="L186" href="#L186">186</a> <em class="jxr_javadoccomment">     *             if the file could not be opened</em>
 <a class="jxr_linenumber" name="L187" href="#L187">187</a> <em class="jxr_javadoccomment">     */</em>
-<a class="jxr_linenumber" name="L188" href="#L188">188</a>     <strong class="jxr_keyword">public</strong> <a href="../../../nom/tam/util/FitsFile.html">FitsFile</a>(String filename, String mode, <strong class="jxr_keyword">int</strong> bufferSize) <strong class="jxr_keyword">throws</strong> IOException {
+<a class="jxr_linenumber" name="L188" href="#L188">188</a>     <strong class="jxr_keyword">public</strong> <a name="FitsFile" href="../../../nom/tam/util/FitsFile.html#FitsFile">FitsFile</a>(String filename, String mode, <strong class="jxr_keyword">int</strong> bufferSize) <strong class="jxr_keyword">throws</strong> IOException {
 <a class="jxr_linenumber" name="L189" href="#L189">189</a>         <strong class="jxr_keyword">this</strong>(<strong class="jxr_keyword">new</strong> File(filename), mode, bufferSize);
 <a class="jxr_linenumber" name="L190" href="#L190">190</a>     }
 <a class="jxr_linenumber" name="L191" href="#L191">191</a> 
 <a class="jxr_linenumber" name="L192" href="#L192">192</a>     
 <a class="jxr_linenumber" name="L193" href="#L193">193</a>     @Override
-<a class="jxr_linenumber" name="L194" href="#L194">194</a>     <strong class="jxr_keyword">public</strong> <a href="../../../nom/tam/util/FitsEncoder.html">FitsEncoder</a> getEncoder() {
-<a class="jxr_linenumber" name="L195" href="#L195">195</a>         <strong class="jxr_keyword">return</strong> (FitsEncoder) <strong class="jxr_keyword">super</strong>.getEncoder();
+<a class="jxr_linenumber" name="L194" href="#L194">194</a>     <strong class="jxr_keyword">public</strong> <a name="FitsEncoder" href="../../../nom/tam/util/FitsEncoder.html#FitsEncoder">FitsEncoder</a> getEncoder() {
+<a class="jxr_linenumber" name="L195" href="#L195">195</a>         <strong class="jxr_keyword">return</strong> (<a name="FitsEncoder" href="../../../nom/tam/util/FitsEncoder.html#FitsEncoder">FitsEncoder</a>) <strong class="jxr_keyword">super</strong>.getEncoder();
 <a class="jxr_linenumber" name="L196" href="#L196">196</a>     }
 <a class="jxr_linenumber" name="L197" href="#L197">197</a>     
 <a class="jxr_linenumber" name="L198" href="#L198">198</a>     @Override
-<a class="jxr_linenumber" name="L199" href="#L199">199</a>     <strong class="jxr_keyword">public</strong> <a href="../../../nom/tam/util/FitsDecoder.html">FitsDecoder</a> getDecoder() {
-<a class="jxr_linenumber" name="L200" href="#L200">200</a>         <strong class="jxr_keyword">return</strong> (FitsDecoder) <strong class="jxr_keyword">super</strong>.getDecoder();
+<a class="jxr_linenumber" name="L199" href="#L199">199</a>     <strong class="jxr_keyword">public</strong> <a name="FitsDecoder" href="../../../nom/tam/util/FitsDecoder.html#FitsDecoder">FitsDecoder</a> getDecoder() {
+<a class="jxr_linenumber" name="L200" href="#L200">200</a>         <strong class="jxr_keyword">return</strong> (<a name="FitsDecoder" href="../../../nom/tam/util/FitsDecoder.html#FitsDecoder">FitsDecoder</a>) <strong class="jxr_keyword">super</strong>.getDecoder();
 <a class="jxr_linenumber" name="L201" href="#L201">201</a>     }
 <a class="jxr_linenumber" name="L202" href="#L202">202</a>   
 <a class="jxr_linenumber" name="L203" href="#L203">203</a>     @Override

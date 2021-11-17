@@ -43,16 +43,16 @@
 <a class="jxr_linenumber" name="L35" href="#L35">35</a>  
 <a class="jxr_linenumber" name="L36" href="#L36">36</a>  <strong class="jxr_keyword">import</strong> nom.tam.util.type.ElementType;
 <a class="jxr_linenumber" name="L37" href="#L37">37</a>  
-<a class="jxr_linenumber" name="L38" href="#L38">38</a>  <strong class="jxr_keyword">public</strong> <strong class="jxr_keyword">final</strong> <strong class="jxr_keyword">class</strong> <a href="../../../../../../nom/tam/image/tile/operation/buffer/TileBufferFactory.html">TileBufferFactory</a> {
+<a class="jxr_linenumber" name="L38" href="#L38">38</a>  <strong class="jxr_keyword">public</strong> <strong class="jxr_keyword">final</strong> <strong class="jxr_keyword">class</strong> <a name="TileBufferFactory" href="../../../../../../nom/tam/image/tile/operation/buffer/TileBufferFactory.html#TileBufferFactory">TileBufferFactory</a> {
 <a class="jxr_linenumber" name="L39" href="#L39">39</a>  
-<a class="jxr_linenumber" name="L40" href="#L40">40</a>      <strong class="jxr_keyword">public</strong> <strong class="jxr_keyword">static</strong> <a href="../../../../../../nom/tam/image/tile/operation/buffer/TileBuffer.html">TileBuffer</a> createTileBuffer(ElementType&lt;Buffer&gt; baseType, <strong class="jxr_keyword">int</strong> dataOffset, <strong class="jxr_keyword">int</strong> imageWidth, <strong class="jxr_keyword">int</strong> width, <strong class="jxr_keyword">int</strong> height) {
+<a class="jxr_linenumber" name="L40" href="#L40">40</a>      <strong class="jxr_keyword">public</strong> <strong class="jxr_keyword">static</strong> <a name="TileBuffer" href="../../../../../../nom/tam/image/tile/operation/buffer/TileBuffer.html#TileBuffer">TileBuffer</a> createTileBuffer(ElementType&lt;Buffer&gt; baseType, <strong class="jxr_keyword">int</strong> dataOffset, <strong class="jxr_keyword">int</strong> imageWidth, <strong class="jxr_keyword">int</strong> width, <strong class="jxr_keyword">int</strong> height) {
 <a class="jxr_linenumber" name="L41" href="#L41">41</a>          <strong class="jxr_keyword">if</strong> (imageWidth &gt; width) {
-<a class="jxr_linenumber" name="L42" href="#L42">42</a>              <strong class="jxr_keyword">return</strong> <strong class="jxr_keyword">new</strong> <a href="../../../../../../nom/tam/image/tile/operation/buffer/TileBufferColumnBased.html">TileBufferColumnBased</a>(baseType, dataOffset, imageWidth, width, height);
+<a class="jxr_linenumber" name="L42" href="#L42">42</a>              <strong class="jxr_keyword">return</strong> <strong class="jxr_keyword">new</strong> <a name="TileBufferColumnBased" href="../../../../../../nom/tam/image/tile/operation/buffer/TileBufferColumnBased.html#TileBufferColumnBased">TileBufferColumnBased</a>(baseType, dataOffset, imageWidth, width, height);
 <a class="jxr_linenumber" name="L43" href="#L43">43</a>          }
-<a class="jxr_linenumber" name="L44" href="#L44">44</a>          <strong class="jxr_keyword">return</strong> <strong class="jxr_keyword">new</strong> <a href="../../../../../../nom/tam/image/tile/operation/buffer/TileBufferRowBased.html">TileBufferRowBased</a>(baseType, dataOffset, width, height);
+<a class="jxr_linenumber" name="L44" href="#L44">44</a>          <strong class="jxr_keyword">return</strong> <strong class="jxr_keyword">new</strong> <a name="TileBufferRowBased" href="../../../../../../nom/tam/image/tile/operation/buffer/TileBufferRowBased.html#TileBufferRowBased">TileBufferRowBased</a>(baseType, dataOffset, width, height);
 <a class="jxr_linenumber" name="L45" href="#L45">45</a>      }
 <a class="jxr_linenumber" name="L46" href="#L46">46</a>  
-<a class="jxr_linenumber" name="L47" href="#L47">47</a>      <strong class="jxr_keyword">private</strong> <a href="../../../../../../nom/tam/image/tile/operation/buffer/TileBufferFactory.html">TileBufferFactory</a>() {
+<a class="jxr_linenumber" name="L47" href="#L47">47</a>      <strong class="jxr_keyword">private</strong> <a name="TileBufferFactory" href="../../../../../../nom/tam/image/tile/operation/buffer/TileBufferFactory.html#TileBufferFactory">TileBufferFactory</a>() {
 <a class="jxr_linenumber" name="L48" href="#L48">48</a>          <em class="jxr_comment">// unused</em>
 <a class="jxr_linenumber" name="L49" href="#L49">49</a>      }
 <a class="jxr_linenumber" name="L50" href="#L50">50</a>  }

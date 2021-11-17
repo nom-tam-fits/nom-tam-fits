@@ -65,7 +65,7 @@
 <a class="jxr_linenumber" name="L57" href="#L57">57</a>  <em class="jxr_javadoccomment"> * dimensionality.</em>
 <a class="jxr_linenumber" name="L58" href="#L58">58</a>  <em class="jxr_javadoccomment"> * &lt;/ul&gt;</em>
 <a class="jxr_linenumber" name="L59" href="#L59">59</a>  <em class="jxr_javadoccomment"> */</em>
-<a class="jxr_linenumber" name="L60" href="#L60">60</a>  <strong class="jxr_keyword">public</strong> <strong class="jxr_keyword">abstract</strong> <strong class="jxr_keyword">class</strong> <a href="../../../nom/tam/fits/Data.html">Data</a> <strong class="jxr_keyword">implements</strong> <a href="../../../nom/tam/fits/FitsElement.html">FitsElement</a> {
+<a class="jxr_linenumber" name="L60" href="#L60">60</a>  <strong class="jxr_keyword">public</strong> <strong class="jxr_keyword">abstract</strong> <strong class="jxr_keyword">class</strong> <a name="Data" href="../../../nom/tam/fits/Data.html#Data">Data</a> <strong class="jxr_keyword">implements</strong> <a name="FitsElement" href="../../../nom/tam/fits/FitsElement.html#FitsElement">FitsElement</a> {
 <a class="jxr_linenumber" name="L61" href="#L61">61</a>  
 <a class="jxr_linenumber" name="L62" href="#L62">62</a>      <strong class="jxr_keyword">private</strong> <strong class="jxr_keyword">static</strong> <strong class="jxr_keyword">final</strong> Logger LOG = getLogger(Data.<strong class="jxr_keyword">class</strong>);
 <a class="jxr_linenumber" name="L63" href="#L63">63</a>  
@@ -84,7 +84,7 @@
 <a class="jxr_linenumber" name="L76" href="#L76">76</a>      <em class="jxr_javadoccomment">/**</em>
 <a class="jxr_linenumber" name="L77" href="#L77">77</a>  <em class="jxr_javadoccomment">     * The input stream used.</em>
 <a class="jxr_linenumber" name="L78" href="#L78">78</a>  <em class="jxr_javadoccomment">     */</em>
-<a class="jxr_linenumber" name="L79" href="#L79">79</a>      <strong class="jxr_keyword">protected</strong> <a href="../../../nom/tam/util/RandomAccess.html">RandomAccess</a> input;
+<a class="jxr_linenumber" name="L79" href="#L79">79</a>      <strong class="jxr_keyword">protected</strong> <a name="RandomAccess" href="../../../nom/tam/util/RandomAccess.html#RandomAccess">RandomAccess</a> input;
 <a class="jxr_linenumber" name="L80" href="#L80">80</a>  
 <a class="jxr_linenumber" name="L81" href="#L81">81</a>      <em class="jxr_javadoccomment">/**</em>
 <a class="jxr_linenumber" name="L82" href="#L82">82</a>  <em class="jxr_javadoccomment">     * Modify a header to point to this data, this differs per subclass, they</em>
@@ -96,7 +96,7 @@
 <a class="jxr_linenumber" name="L88" href="#L88">88</a>  <em class="jxr_javadoccomment">     * @throws FitsException</em>
 <a class="jxr_linenumber" name="L89" href="#L89">89</a>  <em class="jxr_javadoccomment">     *             if the operation fails</em>
 <a class="jxr_linenumber" name="L90" href="#L90">90</a>  <em class="jxr_javadoccomment">     */</em>
-<a class="jxr_linenumber" name="L91" href="#L91">91</a>      <strong class="jxr_keyword">abstract</strong> <strong class="jxr_keyword">void</strong> fillHeader(<a href="../../../nom/tam/fits/Header.html">Header</a> head) <strong class="jxr_keyword">throws</strong> FitsException;
+<a class="jxr_linenumber" name="L91" href="#L91">91</a>      <strong class="jxr_keyword">abstract</strong> <strong class="jxr_keyword">void</strong> fillHeader(<a name="Header" href="../../../nom/tam/fits/Header.html#Header">Header</a> head) <strong class="jxr_keyword">throws</strong> FitsException;
 <a class="jxr_linenumber" name="L92" href="#L92">92</a>  
 <a class="jxr_linenumber" name="L93" href="#L93">93</a>      <em class="jxr_javadoccomment">/**</em>
 <a class="jxr_linenumber" name="L94" href="#L94">94</a>  <em class="jxr_javadoccomment">     * @return the data array object.</em>
@@ -118,7 +118,7 @@
 <a class="jxr_linenumber" name="L110" href="#L110">110</a> <em class="jxr_javadoccomment">     * @throws FitsException</em>
 <a class="jxr_linenumber" name="L111" href="#L111">111</a> <em class="jxr_javadoccomment">     *             if the data could not be gathered .</em>
 <a class="jxr_linenumber" name="L112" href="#L112">112</a> <em class="jxr_javadoccomment">     */</em>
-<a class="jxr_linenumber" name="L113" href="#L113">113</a>     <strong class="jxr_keyword">public</strong> Object getKernel() <strong class="jxr_keyword">throws</strong> FitsException {
+<a class="jxr_linenumber" name="L113" href="#L113">113</a>     <strong class="jxr_keyword">public</strong> Object getKernel() <strong class="jxr_keyword">throws</strong> <a name="FitsException" href="../../../nom/tam/fits/FitsException.html#FitsException">FitsException</a> {
 <a class="jxr_linenumber" name="L114" href="#L114">114</a>         <strong class="jxr_keyword">return</strong> getData();
 <a class="jxr_linenumber" name="L115" href="#L115">115</a>     }
 <a class="jxr_linenumber" name="L116" href="#L116">116</a> 
@@ -133,7 +133,7 @@
 <a class="jxr_linenumber" name="L125" href="#L125">125</a>     <strong class="jxr_keyword">abstract</strong> <strong class="jxr_keyword">long</strong> getTrueSize();
 <a class="jxr_linenumber" name="L126" href="#L126">126</a> 
 <a class="jxr_linenumber" name="L127" href="#L127">127</a>     @Override
-<a class="jxr_linenumber" name="L128" href="#L128">128</a>     <strong class="jxr_keyword">public</strong> <strong class="jxr_keyword">abstract</strong> <strong class="jxr_keyword">void</strong> read(<a href="../../../nom/tam/util/ArrayDataInput.html">ArrayDataInput</a> in) <strong class="jxr_keyword">throws</strong> FitsException;
+<a class="jxr_linenumber" name="L128" href="#L128">128</a>     <strong class="jxr_keyword">public</strong> <strong class="jxr_keyword">abstract</strong> <strong class="jxr_keyword">void</strong> read(<a name="ArrayDataInput" href="../../../nom/tam/util/ArrayDataInput.html#ArrayDataInput">ArrayDataInput</a> in) <strong class="jxr_keyword">throws</strong> FitsException;
 <a class="jxr_linenumber" name="L129" href="#L129">129</a> 
 <a class="jxr_linenumber" name="L130" href="#L130">130</a>     @Override
 <a class="jxr_linenumber" name="L131" href="#L131">131</a>     <strong class="jxr_keyword">public</strong> <strong class="jxr_keyword">boolean</strong> reset() {
@@ -147,18 +147,18 @@
 <a class="jxr_linenumber" name="L139" href="#L139">139</a>     }
 <a class="jxr_linenumber" name="L140" href="#L140">140</a> 
 <a class="jxr_linenumber" name="L141" href="#L141">141</a>     @Override
-<a class="jxr_linenumber" name="L142" href="#L142">142</a>     <strong class="jxr_keyword">public</strong> <strong class="jxr_keyword">void</strong> rewrite() <strong class="jxr_keyword">throws</strong> FitsException {
+<a class="jxr_linenumber" name="L142" href="#L142">142</a>     <strong class="jxr_keyword">public</strong> <strong class="jxr_keyword">void</strong> rewrite() <strong class="jxr_keyword">throws</strong> <a name="FitsException" href="../../../nom/tam/fits/FitsException.html#FitsException">FitsException</a> {
 <a class="jxr_linenumber" name="L143" href="#L143">143</a> 
 <a class="jxr_linenumber" name="L144" href="#L144">144</a>         <strong class="jxr_keyword">if</strong> (!rewriteable()) {
-<a class="jxr_linenumber" name="L145" href="#L145">145</a>             <strong class="jxr_keyword">throw</strong> <strong class="jxr_keyword">new</strong> <a href="../../../nom/tam/fits/FitsException.html">FitsException</a>(<span class="jxr_string">"Illegal attempt to rewrite data"</span>);
+<a class="jxr_linenumber" name="L145" href="#L145">145</a>             <strong class="jxr_keyword">throw</strong> <strong class="jxr_keyword">new</strong> <a name="FitsException" href="../../../nom/tam/fits/FitsException.html#FitsException">FitsException</a>(<span class="jxr_string">"Illegal attempt to rewrite data"</span>);
 <a class="jxr_linenumber" name="L146" href="#L146">146</a>         }
 <a class="jxr_linenumber" name="L147" href="#L147">147</a> 
 <a class="jxr_linenumber" name="L148" href="#L148">148</a>         FitsUtil.reposition(<strong class="jxr_keyword">this</strong>.input, <strong class="jxr_keyword">this</strong>.fileOffset);
-<a class="jxr_linenumber" name="L149" href="#L149">149</a>         write((ArrayDataOutput) <strong class="jxr_keyword">this</strong>.input);
+<a class="jxr_linenumber" name="L149" href="#L149">149</a>         write((<a name="ArrayDataOutput" href="../../../nom/tam/util/ArrayDataOutput.html#ArrayDataOutput">ArrayDataOutput</a>) <strong class="jxr_keyword">this</strong>.input);
 <a class="jxr_linenumber" name="L150" href="#L150">150</a>         <strong class="jxr_keyword">try</strong> {
-<a class="jxr_linenumber" name="L151" href="#L151">151</a>             ((<a href="../../../nom/tam/util/ArrayDataOutput.html">ArrayDataOutput</a>) <strong class="jxr_keyword">this</strong>.input).flush();
+<a class="jxr_linenumber" name="L151" href="#L151">151</a>             ((<a name="ArrayDataOutput" href="../../../nom/tam/util/ArrayDataOutput.html#ArrayDataOutput">ArrayDataOutput</a>) <strong class="jxr_keyword">this</strong>.input).flush();
 <a class="jxr_linenumber" name="L152" href="#L152">152</a>         } <strong class="jxr_keyword">catch</strong> (IOException e) {
-<a class="jxr_linenumber" name="L153" href="#L153">153</a>             <strong class="jxr_keyword">throw</strong> <strong class="jxr_keyword">new</strong> <a href="../../../nom/tam/fits/FitsException.html">FitsException</a>(<span class="jxr_string">"Error in rewrite flush: "</span>, e);
+<a class="jxr_linenumber" name="L153" href="#L153">153</a>             <strong class="jxr_keyword">throw</strong> <strong class="jxr_keyword">new</strong> <a name="FitsException" href="../../../nom/tam/fits/FitsException.html#FitsException">FitsException</a>(<span class="jxr_string">"Error in rewrite flush: "</span>, e);
 <a class="jxr_linenumber" name="L154" href="#L154">154</a>         }
 <a class="jxr_linenumber" name="L155" href="#L155">155</a>     }
 <a class="jxr_linenumber" name="L156" href="#L156">156</a> 
@@ -174,11 +174,11 @@
 <a class="jxr_linenumber" name="L166" href="#L166">166</a> <em class="jxr_javadoccomment">     * @param o</em>
 <a class="jxr_linenumber" name="L167" href="#L167">167</a> <em class="jxr_javadoccomment">     *            reread information.</em>
 <a class="jxr_linenumber" name="L168" href="#L168">168</a> <em class="jxr_javadoccomment">     */</em>
-<a class="jxr_linenumber" name="L169" href="#L169">169</a>     <strong class="jxr_keyword">protected</strong> <strong class="jxr_keyword">void</strong> setFileOffset(<a href="../../../nom/tam/util/ArrayDataInput.html">ArrayDataInput</a> o) {
-<a class="jxr_linenumber" name="L170" href="#L170">170</a>         <strong class="jxr_keyword">if</strong> (o instanceof RandomAccess) {
+<a class="jxr_linenumber" name="L169" href="#L169">169</a>     <strong class="jxr_keyword">protected</strong> <strong class="jxr_keyword">void</strong> setFileOffset(<a name="ArrayDataInput" href="../../../nom/tam/util/ArrayDataInput.html#ArrayDataInput">ArrayDataInput</a> o) {
+<a class="jxr_linenumber" name="L170" href="#L170">170</a>         <strong class="jxr_keyword">if</strong> (o instanceof <a name="RandomAccess" href="../../../nom/tam/util/RandomAccess.html#RandomAccess">RandomAccess</a>) {
 <a class="jxr_linenumber" name="L171" href="#L171">171</a>             <strong class="jxr_keyword">this</strong>.fileOffset = FitsUtil.findOffset(o);
 <a class="jxr_linenumber" name="L172" href="#L172">172</a>             <strong class="jxr_keyword">this</strong>.dataSize = getTrueSize();
-<a class="jxr_linenumber" name="L173" href="#L173">173</a>             <strong class="jxr_keyword">this</strong>.input = (RandomAccess) o;
+<a class="jxr_linenumber" name="L173" href="#L173">173</a>             <strong class="jxr_keyword">this</strong>.input = (<a name="RandomAccess" href="../../../nom/tam/util/RandomAccess.html#RandomAccess">RandomAccess</a>) o;
 <a class="jxr_linenumber" name="L174" href="#L174">174</a>         }
 <a class="jxr_linenumber" name="L175" href="#L175">175</a>     }
 <a class="jxr_linenumber" name="L176" href="#L176">176</a> 
@@ -189,7 +189,7 @@
 <a class="jxr_linenumber" name="L181" href="#L181">181</a> <em class="jxr_javadoccomment">     *            The output stream on which to write the data.</em>
 <a class="jxr_linenumber" name="L182" href="#L182">182</a> <em class="jxr_javadoccomment">     */</em>
 <a class="jxr_linenumber" name="L183" href="#L183">183</a>     @Override
-<a class="jxr_linenumber" name="L184" href="#L184">184</a>     <strong class="jxr_keyword">public</strong> <strong class="jxr_keyword">abstract</strong> <strong class="jxr_keyword">void</strong> write(<a href="../../../nom/tam/util/ArrayDataOutput.html">ArrayDataOutput</a> o) <strong class="jxr_keyword">throws</strong> FitsException;
+<a class="jxr_linenumber" name="L184" href="#L184">184</a>     <strong class="jxr_keyword">public</strong> <strong class="jxr_keyword">abstract</strong> <strong class="jxr_keyword">void</strong> write(<a name="ArrayDataOutput" href="../../../nom/tam/util/ArrayDataOutput.html#ArrayDataOutput">ArrayDataOutput</a> o) <strong class="jxr_keyword">throws</strong> FitsException;
 <a class="jxr_linenumber" name="L185" href="#L185">185</a> }
 </pre>
 <hr/>

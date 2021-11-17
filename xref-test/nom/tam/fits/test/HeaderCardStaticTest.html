@@ -58,7 +58,7 @@
 <a class="jxr_linenumber" name="L50" href="#L50">50</a>  <strong class="jxr_keyword">import</strong> nom.tam.fits.header.Standard;
 <a class="jxr_linenumber" name="L51" href="#L51">51</a>  
 <a class="jxr_linenumber" name="L52" href="#L52">52</a>  
-<a class="jxr_linenumber" name="L53" href="#L53">53</a>  <strong class="jxr_keyword">public</strong> <strong class="jxr_keyword">class</strong> <a href="../../../../nom/tam/fits/test/HeaderCardStaticTest.html">HeaderCardStaticTest</a> {
+<a class="jxr_linenumber" name="L53" href="#L53">53</a>  <strong class="jxr_keyword">public</strong> <strong class="jxr_keyword">class</strong> <a name="HeaderCardStaticTest" href="../../../../nom/tam/fits/test/HeaderCardStaticTest.html#HeaderCardStaticTest">HeaderCardStaticTest</a> {
 <a class="jxr_linenumber" name="L54" href="#L54">54</a>  
 <a class="jxr_linenumber" name="L55" href="#L55">55</a>      @Test
 <a class="jxr_linenumber" name="L56" href="#L56">56</a>      <strong class="jxr_keyword">public</strong> <strong class="jxr_keyword">void</strong> testCreateCommentCard() <strong class="jxr_keyword">throws</strong> Exception {
@@ -189,7 +189,7 @@
 <a class="jxr_linenumber" name="L181" href="#L181">181</a>         assertEquals(<span class="jxr_string">"name"</span>, hc.getValue(String.<strong class="jxr_keyword">class</strong>, <span class="jxr_string">"unknown"</span>));
 <a class="jxr_linenumber" name="L182" href="#L182">182</a>         
 <a class="jxr_linenumber" name="L183" href="#L183">183</a>         ComplexValue z = <strong class="jxr_keyword">new</strong> ComplexValue(-1.0, 2.0);
-<a class="jxr_linenumber" name="L184" href="#L184">184</a>         hc = HeaderCard.create(<strong class="jxr_keyword">new</strong> <a href="../../../../nom/tam/fits/test/HeaderCardStaticTest.html">CustomIFitsHeader</a>(<span class="jxr_string">"CTEST"</span>, <span class="jxr_string">"a complex value"</span>, VALUE.COMPLEX), z);
+<a class="jxr_linenumber" name="L184" href="#L184">184</a>         hc = HeaderCard.create(<strong class="jxr_keyword">new</strong> CustomIFitsHeader(<span class="jxr_string">"CTEST"</span>, <span class="jxr_string">"a complex value"</span>, VALUE.COMPLEX), z);
 <a class="jxr_linenumber" name="L185" href="#L185">185</a>         assertTrue(hc.isKeyValuePair());
 <a class="jxr_linenumber" name="L186" href="#L186">186</a>         assertEquals(<span class="jxr_string">"CTEST"</span>, hc.getKey());
 <a class="jxr_linenumber" name="L187" href="#L187">187</a>         assertEquals(ComplexValue.<strong class="jxr_keyword">class</strong>, hc.valueType());
@@ -204,45 +204,45 @@
 <a class="jxr_linenumber" name="L196" href="#L196">196</a>     
 <a class="jxr_linenumber" name="L197" href="#L197">197</a>     @Test(expected = IllegalArgumentException.<strong class="jxr_keyword">class</strong>)
 <a class="jxr_linenumber" name="L198" href="#L198">198</a>     <strong class="jxr_keyword">public</strong> <strong class="jxr_keyword">void</strong> testCreateIllegalIFitsHeaderCard1() <strong class="jxr_keyword">throws</strong> Exception {
-<a class="jxr_linenumber" name="L199" href="#L199">199</a>         HeaderCard hc = HeaderCard.create(<strong class="jxr_keyword">new</strong> <a href="../../../../nom/tam/fits/test/HeaderCardStaticTest.html">CustomIFitsHeader</a>(<span class="jxr_string">"TEST\t"</span>, <strong class="jxr_keyword">null</strong>, VALUE.ANY), <strong class="jxr_keyword">true</strong>);
+<a class="jxr_linenumber" name="L199" href="#L199">199</a>         HeaderCard hc = HeaderCard.create(<strong class="jxr_keyword">new</strong> CustomIFitsHeader(<span class="jxr_string">"TEST\t"</span>, <strong class="jxr_keyword">null</strong>, VALUE.ANY), <strong class="jxr_keyword">true</strong>);
 <a class="jxr_linenumber" name="L200" href="#L200">200</a>         assertNull(hc);
 <a class="jxr_linenumber" name="L201" href="#L201">201</a>     }
 <a class="jxr_linenumber" name="L202" href="#L202">202</a>     
 <a class="jxr_linenumber" name="L203" href="#L203">203</a>     @Test(expected = IllegalArgumentException.<strong class="jxr_keyword">class</strong>)
 <a class="jxr_linenumber" name="L204" href="#L204">204</a>     <strong class="jxr_keyword">public</strong> <strong class="jxr_keyword">void</strong> testCreateIllegalIFitsHeaderCard2() <strong class="jxr_keyword">throws</strong> Exception {
-<a class="jxr_linenumber" name="L205" href="#L205">205</a>         HeaderCard hc = HeaderCard.create(<strong class="jxr_keyword">new</strong> <a href="../../../../nom/tam/fits/test/HeaderCardStaticTest.html">CustomIFitsHeader</a>(<span class="jxr_string">"TEST\t"</span>, <strong class="jxr_keyword">null</strong>, VALUE.ANY), 1);
+<a class="jxr_linenumber" name="L205" href="#L205">205</a>         HeaderCard hc = HeaderCard.create(<strong class="jxr_keyword">new</strong> CustomIFitsHeader(<span class="jxr_string">"TEST\t"</span>, <strong class="jxr_keyword">null</strong>, VALUE.ANY), 1);
 <a class="jxr_linenumber" name="L206" href="#L206">206</a>         assertNull(hc);
 <a class="jxr_linenumber" name="L207" href="#L207">207</a>     }
 <a class="jxr_linenumber" name="L208" href="#L208">208</a>     
 <a class="jxr_linenumber" name="L209" href="#L209">209</a>     @Test(expected = IllegalArgumentException.<strong class="jxr_keyword">class</strong>)
 <a class="jxr_linenumber" name="L210" href="#L210">210</a>     <strong class="jxr_keyword">public</strong> <strong class="jxr_keyword">void</strong> testCreateIllegalIFitsHeaderCard3() <strong class="jxr_keyword">throws</strong> Exception {
-<a class="jxr_linenumber" name="L211" href="#L211">211</a>         HeaderCard hc = HeaderCard.create(<strong class="jxr_keyword">new</strong> <a href="../../../../nom/tam/fits/test/HeaderCardStaticTest.html">CustomIFitsHeader</a>(<span class="jxr_string">"TEST\t"</span>, <strong class="jxr_keyword">null</strong>, VALUE.ANY), 1.0);
+<a class="jxr_linenumber" name="L211" href="#L211">211</a>         HeaderCard hc = HeaderCard.create(<strong class="jxr_keyword">new</strong> CustomIFitsHeader(<span class="jxr_string">"TEST\t"</span>, <strong class="jxr_keyword">null</strong>, VALUE.ANY), 1.0);
 <a class="jxr_linenumber" name="L212" href="#L212">212</a>         assertNull(hc);
 <a class="jxr_linenumber" name="L213" href="#L213">213</a>     }
 <a class="jxr_linenumber" name="L214" href="#L214">214</a>     
 <a class="jxr_linenumber" name="L215" href="#L215">215</a>     @Test(expected = IllegalArgumentException.<strong class="jxr_keyword">class</strong>)
 <a class="jxr_linenumber" name="L216" href="#L216">216</a>     <strong class="jxr_keyword">public</strong> <strong class="jxr_keyword">void</strong> testCreateIllegalIFitsHeaderCard4() <strong class="jxr_keyword">throws</strong> Exception {
-<a class="jxr_linenumber" name="L217" href="#L217">217</a>         HeaderCard hc = HeaderCard.create(<strong class="jxr_keyword">new</strong> <a href="../../../../nom/tam/fits/test/HeaderCardStaticTest.html">CustomIFitsHeader</a>(<span class="jxr_string">"TEST\t"</span>, <strong class="jxr_keyword">null</strong>, VALUE.ANY), <strong class="jxr_keyword">new</strong> ComplexValue(-1.0, 2.0));
+<a class="jxr_linenumber" name="L217" href="#L217">217</a>         HeaderCard hc = HeaderCard.create(<strong class="jxr_keyword">new</strong> CustomIFitsHeader(<span class="jxr_string">"TEST\t"</span>, <strong class="jxr_keyword">null</strong>, VALUE.ANY), <strong class="jxr_keyword">new</strong> ComplexValue(-1.0, 2.0));
 <a class="jxr_linenumber" name="L218" href="#L218">218</a>         assertNull(hc);
 <a class="jxr_linenumber" name="L219" href="#L219">219</a>     }
 <a class="jxr_linenumber" name="L220" href="#L220">220</a>     
 <a class="jxr_linenumber" name="L221" href="#L221">221</a>     @Test(expected = IllegalArgumentException.<strong class="jxr_keyword">class</strong>)
 <a class="jxr_linenumber" name="L222" href="#L222">222</a>     <strong class="jxr_keyword">public</strong> <strong class="jxr_keyword">void</strong> testCreateIllegalIFitsHeaderCard5() <strong class="jxr_keyword">throws</strong> Exception {
-<a class="jxr_linenumber" name="L223" href="#L223">223</a>         HeaderCard hc = HeaderCard.create(<strong class="jxr_keyword">new</strong> <a href="../../../../nom/tam/fits/test/HeaderCardStaticTest.html">CustomIFitsHeader</a>(<span class="jxr_string">"TEST\t"</span>, <strong class="jxr_keyword">null</strong>, VALUE.ANY), <span class="jxr_string">"value"</span>);
+<a class="jxr_linenumber" name="L223" href="#L223">223</a>         HeaderCard hc = HeaderCard.create(<strong class="jxr_keyword">new</strong> CustomIFitsHeader(<span class="jxr_string">"TEST\t"</span>, <strong class="jxr_keyword">null</strong>, VALUE.ANY), <span class="jxr_string">"value"</span>);
 <a class="jxr_linenumber" name="L224" href="#L224">224</a>         assertNull(hc);
 <a class="jxr_linenumber" name="L225" href="#L225">225</a>     }
 <a class="jxr_linenumber" name="L226" href="#L226">226</a> 
 <a class="jxr_linenumber" name="L227" href="#L227">227</a>     @Test
 <a class="jxr_linenumber" name="L228" href="#L228">228</a>     <strong class="jxr_keyword">public</strong> <strong class="jxr_keyword">void</strong> testCreateWrongValueTypeFitsCard1() <strong class="jxr_keyword">throws</strong> Exception {
-<a class="jxr_linenumber" name="L229" href="#L229">229</a>         HeaderCard hc = HeaderCard.create(<strong class="jxr_keyword">new</strong> <a href="../../../../nom/tam/fits/test/HeaderCardStaticTest.html">CustomIFitsHeader</a>(<span class="jxr_string">"TEST"</span>, <strong class="jxr_keyword">null</strong>, VALUE.STRING), 1);
+<a class="jxr_linenumber" name="L229" href="#L229">229</a>         HeaderCard hc = HeaderCard.create(<strong class="jxr_keyword">new</strong> CustomIFitsHeader(<span class="jxr_string">"TEST"</span>, <strong class="jxr_keyword">null</strong>, VALUE.STRING), 1);
 <a class="jxr_linenumber" name="L230" href="#L230">230</a>         assertNotNull(hc);
 <a class="jxr_linenumber" name="L231" href="#L231">231</a>     }
 <a class="jxr_linenumber" name="L232" href="#L232">232</a>     
-<a class="jxr_linenumber" name="L233" href="#L233">233</a>     <strong class="jxr_keyword">private</strong> <strong class="jxr_keyword">class</strong> <a href="../../../../nom/tam/fits/test/HeaderCardStaticTest.html">CustomIFitsHeader</a> <strong class="jxr_keyword">implements</strong> IFitsHeader {
+<a class="jxr_linenumber" name="L233" href="#L233">233</a>     <strong class="jxr_keyword">private</strong> <strong class="jxr_keyword">class</strong> CustomIFitsHeader <strong class="jxr_keyword">implements</strong> IFitsHeader {
 <a class="jxr_linenumber" name="L234" href="#L234">234</a>         String key, comment;
 <a class="jxr_linenumber" name="L235" href="#L235">235</a>         VALUE type;
 <a class="jxr_linenumber" name="L236" href="#L236">236</a>         
-<a class="jxr_linenumber" name="L237" href="#L237">237</a>         <strong class="jxr_keyword">public</strong> <a href="../../../../nom/tam/fits/test/HeaderCardStaticTest.html">CustomIFitsHeader</a>(String key, String comment, VALUE type) {
+<a class="jxr_linenumber" name="L237" href="#L237">237</a>         <strong class="jxr_keyword">public</strong> CustomIFitsHeader(String key, String comment, VALUE type) {
 <a class="jxr_linenumber" name="L238" href="#L238">238</a>             <strong class="jxr_keyword">this</strong>.key = key;
 <a class="jxr_linenumber" name="L239" href="#L239">239</a>             <strong class="jxr_keyword">this</strong>.comment = comment;
 <a class="jxr_linenumber" name="L240" href="#L240">240</a>             <strong class="jxr_keyword">this</strong>.type = type;

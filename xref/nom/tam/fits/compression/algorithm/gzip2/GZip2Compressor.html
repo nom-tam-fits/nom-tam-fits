@@ -56,12 +56,12 @@
 <a class="jxr_linenumber" name="L48" href="#L48">48</a>  
 <a class="jxr_linenumber" name="L49" href="#L49">49</a>  <strong class="jxr_keyword">public</strong> <strong class="jxr_keyword">abstract</strong> <strong class="jxr_keyword">class</strong> GZip2Compressor&lt;T <strong class="jxr_keyword">extends</strong> Buffer&gt; <strong class="jxr_keyword">extends</strong> GZipCompressor&lt;T&gt; {
 <a class="jxr_linenumber" name="L50" href="#L50">50</a>  
-<a class="jxr_linenumber" name="L51" href="#L51">51</a>      <strong class="jxr_keyword">public</strong> <strong class="jxr_keyword">static</strong> <strong class="jxr_keyword">class</strong> <a href="../../../../../../nom/tam/fits/compression/algorithm/gzip2/GZip2Compressor.html">ByteGZip2Compressor</a> <strong class="jxr_keyword">extends</strong> <a href="../../../../../../nom/tam/fits/compression/algorithm/gzip/GZipCompressor.html">ByteGZipCompressor</a> {
+<a class="jxr_linenumber" name="L51" href="#L51">51</a>      <strong class="jxr_keyword">public</strong> <strong class="jxr_keyword">static</strong> <strong class="jxr_keyword">class</strong> ByteGZip2Compressor <strong class="jxr_keyword">extends</strong> ByteGZipCompressor {
 <a class="jxr_linenumber" name="L52" href="#L52">52</a>      }
 <a class="jxr_linenumber" name="L53" href="#L53">53</a>  
-<a class="jxr_linenumber" name="L54" href="#L54">54</a>      <strong class="jxr_keyword">public</strong> <strong class="jxr_keyword">static</strong> <strong class="jxr_keyword">class</strong> <a href="../../../../../../nom/tam/fits/compression/algorithm/gzip2/GZip2Compressor.html">IntGZip2Compressor</a> <strong class="jxr_keyword">extends</strong> GZip2Compressor&lt;IntBuffer&gt; {
+<a class="jxr_linenumber" name="L54" href="#L54">54</a>      <strong class="jxr_keyword">public</strong> <strong class="jxr_keyword">static</strong> <strong class="jxr_keyword">class</strong> IntGZip2Compressor <strong class="jxr_keyword">extends</strong> GZip2Compressor&lt;IntBuffer&gt; {
 <a class="jxr_linenumber" name="L55" href="#L55">55</a>  
-<a class="jxr_linenumber" name="L56" href="#L56">56</a>          <strong class="jxr_keyword">public</strong> <a href="../../../../../../nom/tam/fits/compression/algorithm/gzip2/GZip2Compressor.html">IntGZip2Compressor</a>() {
+<a class="jxr_linenumber" name="L56" href="#L56">56</a>          <strong class="jxr_keyword">public</strong> IntGZip2Compressor() {
 <a class="jxr_linenumber" name="L57" href="#L57">57</a>              <strong class="jxr_keyword">super</strong>(ElementType.INT.size());
 <a class="jxr_linenumber" name="L58" href="#L58">58</a>          }
 <a class="jxr_linenumber" name="L59" href="#L59">59</a>  
@@ -77,9 +77,9 @@
 <a class="jxr_linenumber" name="L69" href="#L69">69</a>          }
 <a class="jxr_linenumber" name="L70" href="#L70">70</a>      }
 <a class="jxr_linenumber" name="L71" href="#L71">71</a>  
-<a class="jxr_linenumber" name="L72" href="#L72">72</a>      <strong class="jxr_keyword">public</strong> <strong class="jxr_keyword">static</strong> <strong class="jxr_keyword">class</strong> <a href="../../../../../../nom/tam/fits/compression/algorithm/gzip2/GZip2Compressor.html">FloatGZip2Compressor</a> <strong class="jxr_keyword">extends</strong> GZip2Compressor&lt;FloatBuffer&gt; {
+<a class="jxr_linenumber" name="L72" href="#L72">72</a>      <strong class="jxr_keyword">public</strong> <strong class="jxr_keyword">static</strong> <strong class="jxr_keyword">class</strong> FloatGZip2Compressor <strong class="jxr_keyword">extends</strong> GZip2Compressor&lt;FloatBuffer&gt; {
 <a class="jxr_linenumber" name="L73" href="#L73">73</a>  
-<a class="jxr_linenumber" name="L74" href="#L74">74</a>          <strong class="jxr_keyword">public</strong> <a href="../../../../../../nom/tam/fits/compression/algorithm/gzip2/GZip2Compressor.html">FloatGZip2Compressor</a>() {
+<a class="jxr_linenumber" name="L74" href="#L74">74</a>          <strong class="jxr_keyword">public</strong> FloatGZip2Compressor() {
 <a class="jxr_linenumber" name="L75" href="#L75">75</a>              <strong class="jxr_keyword">super</strong>(ElementType.FLOAT.size());
 <a class="jxr_linenumber" name="L76" href="#L76">76</a>          }
 <a class="jxr_linenumber" name="L77" href="#L77">77</a>  
@@ -95,9 +95,9 @@
 <a class="jxr_linenumber" name="L87" href="#L87">87</a>          }
 <a class="jxr_linenumber" name="L88" href="#L88">88</a>      }
 <a class="jxr_linenumber" name="L89" href="#L89">89</a>  
-<a class="jxr_linenumber" name="L90" href="#L90">90</a>      <strong class="jxr_keyword">public</strong> <strong class="jxr_keyword">static</strong> <strong class="jxr_keyword">class</strong> <a href="../../../../../../nom/tam/fits/compression/algorithm/gzip2/GZip2Compressor.html">LongGZip2Compressor</a> <strong class="jxr_keyword">extends</strong> GZip2Compressor&lt;LongBuffer&gt; {
+<a class="jxr_linenumber" name="L90" href="#L90">90</a>      <strong class="jxr_keyword">public</strong> <strong class="jxr_keyword">static</strong> <strong class="jxr_keyword">class</strong> LongGZip2Compressor <strong class="jxr_keyword">extends</strong> GZip2Compressor&lt;LongBuffer&gt; {
 <a class="jxr_linenumber" name="L91" href="#L91">91</a>  
-<a class="jxr_linenumber" name="L92" href="#L92">92</a>          <strong class="jxr_keyword">public</strong> <a href="../../../../../../nom/tam/fits/compression/algorithm/gzip2/GZip2Compressor.html">LongGZip2Compressor</a>() {
+<a class="jxr_linenumber" name="L92" href="#L92">92</a>          <strong class="jxr_keyword">public</strong> LongGZip2Compressor() {
 <a class="jxr_linenumber" name="L93" href="#L93">93</a>              <strong class="jxr_keyword">super</strong>(ElementType.LONG.size());
 <a class="jxr_linenumber" name="L94" href="#L94">94</a>          }
 <a class="jxr_linenumber" name="L95" href="#L95">95</a>  
@@ -113,9 +113,9 @@
 <a class="jxr_linenumber" name="L105" href="#L105">105</a>         }
 <a class="jxr_linenumber" name="L106" href="#L106">106</a>     }
 <a class="jxr_linenumber" name="L107" href="#L107">107</a> 
-<a class="jxr_linenumber" name="L108" href="#L108">108</a>     <strong class="jxr_keyword">public</strong> <strong class="jxr_keyword">static</strong> <strong class="jxr_keyword">class</strong> <a href="../../../../../../nom/tam/fits/compression/algorithm/gzip2/GZip2Compressor.html">DoubleGZip2Compressor</a> <strong class="jxr_keyword">extends</strong> GZip2Compressor&lt;DoubleBuffer&gt; {
+<a class="jxr_linenumber" name="L108" href="#L108">108</a>     <strong class="jxr_keyword">public</strong> <strong class="jxr_keyword">static</strong> <strong class="jxr_keyword">class</strong> DoubleGZip2Compressor <strong class="jxr_keyword">extends</strong> GZip2Compressor&lt;DoubleBuffer&gt; {
 <a class="jxr_linenumber" name="L109" href="#L109">109</a> 
-<a class="jxr_linenumber" name="L110" href="#L110">110</a>         <strong class="jxr_keyword">public</strong> <a href="../../../../../../nom/tam/fits/compression/algorithm/gzip2/GZip2Compressor.html">DoubleGZip2Compressor</a>() {
+<a class="jxr_linenumber" name="L110" href="#L110">110</a>         <strong class="jxr_keyword">public</strong> DoubleGZip2Compressor() {
 <a class="jxr_linenumber" name="L111" href="#L111">111</a>             <strong class="jxr_keyword">super</strong>(ElementType.DOUBLE.size());
 <a class="jxr_linenumber" name="L112" href="#L112">112</a>         }
 <a class="jxr_linenumber" name="L113" href="#L113">113</a> 
@@ -131,9 +131,9 @@
 <a class="jxr_linenumber" name="L123" href="#L123">123</a>         }
 <a class="jxr_linenumber" name="L124" href="#L124">124</a>     }
 <a class="jxr_linenumber" name="L125" href="#L125">125</a> 
-<a class="jxr_linenumber" name="L126" href="#L126">126</a>     <strong class="jxr_keyword">public</strong> <strong class="jxr_keyword">static</strong> <strong class="jxr_keyword">class</strong> <a href="../../../../../../nom/tam/fits/compression/algorithm/gzip2/GZip2Compressor.html">ShortGZip2Compressor</a> <strong class="jxr_keyword">extends</strong> GZip2Compressor&lt;ShortBuffer&gt; {
+<a class="jxr_linenumber" name="L126" href="#L126">126</a>     <strong class="jxr_keyword">public</strong> <strong class="jxr_keyword">static</strong> <strong class="jxr_keyword">class</strong> ShortGZip2Compressor <strong class="jxr_keyword">extends</strong> GZip2Compressor&lt;ShortBuffer&gt; {
 <a class="jxr_linenumber" name="L127" href="#L127">127</a> 
-<a class="jxr_linenumber" name="L128" href="#L128">128</a>         <strong class="jxr_keyword">public</strong> <a href="../../../../../../nom/tam/fits/compression/algorithm/gzip2/GZip2Compressor.html">ShortGZip2Compressor</a>() {
+<a class="jxr_linenumber" name="L128" href="#L128">128</a>         <strong class="jxr_keyword">public</strong> ShortGZip2Compressor() {
 <a class="jxr_linenumber" name="L129" href="#L129">129</a>             <strong class="jxr_keyword">super</strong>(ElementType.SHORT.size());
 <a class="jxr_linenumber" name="L130" href="#L130">130</a>         }
 <a class="jxr_linenumber" name="L131" href="#L131">131</a> 
@@ -149,7 +149,7 @@
 <a class="jxr_linenumber" name="L141" href="#L141">141</a>         }
 <a class="jxr_linenumber" name="L142" href="#L142">142</a>     }
 <a class="jxr_linenumber" name="L143" href="#L143">143</a> 
-<a class="jxr_linenumber" name="L144" href="#L144">144</a>     <strong class="jxr_keyword">public</strong> <a href="../../../../../../nom/tam/fits/compression/algorithm/gzip2/GZip2Compressor.html">GZip2Compressor</a>(<strong class="jxr_keyword">int</strong> primitiveSize) {
+<a class="jxr_linenumber" name="L144" href="#L144">144</a>     <strong class="jxr_keyword">public</strong> <a name="GZip2Compressor" href="../../../../../../nom/tam/fits/compression/algorithm/gzip2/GZip2Compressor.html#GZip2Compressor">GZip2Compressor</a>(<strong class="jxr_keyword">int</strong> primitiveSize) {
 <a class="jxr_linenumber" name="L145" href="#L145">145</a>         <strong class="jxr_keyword">super</strong>(primitiveSize);
 <a class="jxr_linenumber" name="L146" href="#L146">146</a>     }
 <a class="jxr_linenumber" name="L147" href="#L147">147</a> 

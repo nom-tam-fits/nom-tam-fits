@@ -47,7 +47,7 @@
 <a class="jxr_linenumber" name="L39" href="#L39">39</a>  <em class="jxr_javadoccomment"> * This view on the image data represents a tileOperation that is row based, so</em>
 <a class="jxr_linenumber" name="L40" href="#L40">40</a>  <em class="jxr_javadoccomment"> * a tileOperation that fills the whole width of the image.</em>
 <a class="jxr_linenumber" name="L41" href="#L41">41</a>  <em class="jxr_javadoccomment"> */</em>
-<a class="jxr_linenumber" name="L42" href="#L42">42</a>  <strong class="jxr_keyword">public</strong> <strong class="jxr_keyword">abstract</strong> <strong class="jxr_keyword">class</strong> <a href="../../../../../../nom/tam/image/tile/operation/buffer/TileBuffer.html">TileBuffer</a> {
+<a class="jxr_linenumber" name="L42" href="#L42">42</a>  <strong class="jxr_keyword">public</strong> <strong class="jxr_keyword">abstract</strong> <strong class="jxr_keyword">class</strong> <a name="TileBuffer" href="../../../../../../nom/tam/image/tile/operation/buffer/TileBuffer.html#TileBuffer">TileBuffer</a> {
 <a class="jxr_linenumber" name="L43" href="#L43">43</a>  
 <a class="jxr_linenumber" name="L44" href="#L44">44</a>      <strong class="jxr_keyword">private</strong> Buffer imageBuffer;
 <a class="jxr_linenumber" name="L45" href="#L45">45</a>  
@@ -62,7 +62,7 @@
 <a class="jxr_linenumber" name="L54" href="#L54">54</a>  
 <a class="jxr_linenumber" name="L55" href="#L55">55</a>      <strong class="jxr_keyword">private</strong> <strong class="jxr_keyword">final</strong> <strong class="jxr_keyword">int</strong> width;
 <a class="jxr_linenumber" name="L56" href="#L56">56</a>  
-<a class="jxr_linenumber" name="L57" href="#L57">57</a>      <strong class="jxr_keyword">protected</strong> <a href="../../../../../../nom/tam/image/tile/operation/buffer/TileBuffer.html">TileBuffer</a>(ElementType&lt;Buffer&gt; baseType, <strong class="jxr_keyword">int</strong> dataOffset, <strong class="jxr_keyword">int</strong> width, <strong class="jxr_keyword">int</strong> height) {
+<a class="jxr_linenumber" name="L57" href="#L57">57</a>      <strong class="jxr_keyword">protected</strong> <a name="TileBuffer" href="../../../../../../nom/tam/image/tile/operation/buffer/TileBuffer.html#TileBuffer">TileBuffer</a>(ElementType&lt;Buffer&gt; baseType, <strong class="jxr_keyword">int</strong> dataOffset, <strong class="jxr_keyword">int</strong> width, <strong class="jxr_keyword">int</strong> height) {
 <a class="jxr_linenumber" name="L58" href="#L58">58</a>          <strong class="jxr_keyword">this</strong>.baseType = baseType;
 <a class="jxr_linenumber" name="L59" href="#L59">59</a>          <strong class="jxr_keyword">this</strong>.offset = dataOffset;
 <a class="jxr_linenumber" name="L60" href="#L60">60</a>          <strong class="jxr_keyword">this</strong>.width = width;
@@ -97,7 +97,7 @@
 <a class="jxr_linenumber" name="L89" href="#L89">89</a>          <strong class="jxr_keyword">return</strong> <strong class="jxr_keyword">this</strong>.width;
 <a class="jxr_linenumber" name="L90" href="#L90">90</a>      }
 <a class="jxr_linenumber" name="L91" href="#L91">91</a>  
-<a class="jxr_linenumber" name="L92" href="#L92">92</a>      <strong class="jxr_keyword">public</strong> <a href="../../../../../../nom/tam/image/tile/operation/buffer/TileBuffer.html">TileBuffer</a> setData(Buffer value) {
+<a class="jxr_linenumber" name="L92" href="#L92">92</a>      <strong class="jxr_keyword">public</strong> <a name="TileBuffer" href="../../../../../../nom/tam/image/tile/operation/buffer/TileBuffer.html#TileBuffer">TileBuffer</a> setData(Buffer value) {
 <a class="jxr_linenumber" name="L93" href="#L93">93</a>          value.position(<strong class="jxr_keyword">this</strong>.offset);
 <a class="jxr_linenumber" name="L94" href="#L94">94</a>          <strong class="jxr_keyword">this</strong>.imageBuffer = <strong class="jxr_keyword">this</strong>.baseType.sliceBuffer(value);
 <a class="jxr_linenumber" name="L95" href="#L95">95</a>          <strong class="jxr_keyword">return</strong> <strong class="jxr_keyword">this</strong>;

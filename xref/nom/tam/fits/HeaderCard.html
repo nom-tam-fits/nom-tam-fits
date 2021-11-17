@@ -69,7 +69,7 @@
 <a class="jxr_linenumber" name="L61" href="#L61">61</a>  <em class="jxr_javadoccomment"> * An individual entry in the FITS Header, such as a key/value pair with an optional comment field, or a comment-style only</em>
 <a class="jxr_linenumber" name="L62" href="#L62">62</a>  <em class="jxr_javadoccomment"> * entry.</em>
 <a class="jxr_linenumber" name="L63" href="#L63">63</a>  <em class="jxr_javadoccomment"> */</em>
-<a class="jxr_linenumber" name="L64" href="#L64">64</a>  <strong class="jxr_keyword">public</strong> <strong class="jxr_keyword">class</strong> <a href="../../../nom/tam/fits/HeaderCard.html">HeaderCard</a> <strong class="jxr_keyword">implements</strong> CursorValue&lt;String&gt;, Cloneable {
+<a class="jxr_linenumber" name="L64" href="#L64">64</a>  <strong class="jxr_keyword">public</strong> <strong class="jxr_keyword">class</strong> <a name="HeaderCard" href="../../../nom/tam/fits/HeaderCard.html#HeaderCard">HeaderCard</a> <strong class="jxr_keyword">implements</strong> CursorValue&lt;String&gt;, Cloneable {
 <a class="jxr_linenumber" name="L65" href="#L65">65</a>  
 <a class="jxr_linenumber" name="L66" href="#L66">66</a>      <strong class="jxr_keyword">private</strong> <strong class="jxr_keyword">static</strong> <strong class="jxr_keyword">final</strong> Logger LOG = Logger.getLogger(HeaderCard.<strong class="jxr_keyword">class</strong>.getName());
 <a class="jxr_linenumber" name="L67" href="#L67">67</a>      
@@ -132,7 +132,7 @@
 <a class="jxr_linenumber" name="L124" href="#L124">124</a>     <strong class="jxr_keyword">private</strong> Class&lt;?&gt; type;
 <a class="jxr_linenumber" name="L125" href="#L125">125</a>     
 <a class="jxr_linenumber" name="L126" href="#L126">126</a>     <em class="jxr_javadoccomment">/** Private constructor for an empty card, used by other constructors. */</em>
-<a class="jxr_linenumber" name="L127" href="#L127">127</a>     <strong class="jxr_keyword">private</strong> <a href="../../../nom/tam/fits/HeaderCard.html">HeaderCard</a>() {   
+<a class="jxr_linenumber" name="L127" href="#L127">127</a>     <strong class="jxr_keyword">private</strong> <a name="HeaderCard" href="../../../nom/tam/fits/HeaderCard.html#HeaderCard">HeaderCard</a>() {   
 <a class="jxr_linenumber" name="L128" href="#L128">128</a>     }
 <a class="jxr_linenumber" name="L129" href="#L129">129</a> 
 <a class="jxr_linenumber" name="L130" href="#L130">130</a>     <em class="jxr_javadoccomment">/**</em>
@@ -152,8 +152,8 @@
 <a class="jxr_linenumber" name="L144" href="#L144">144</a> <em class="jxr_javadoccomment">     * @see FitsFactory#setLongStringsEnabled(boolean)</em>
 <a class="jxr_linenumber" name="L145" href="#L145">145</a> <em class="jxr_javadoccomment">     */</em>
 <a class="jxr_linenumber" name="L146" href="#L146">146</a>     @SuppressWarnings(<span class="jxr_string">"deprecation"</span>)
-<a class="jxr_linenumber" name="L147" href="#L147">147</a>     <strong class="jxr_keyword">public</strong> <a href="../../../nom/tam/fits/HeaderCard.html">HeaderCard</a>(<a href="../../../nom/tam/util/ArrayDataInput.html">ArrayDataInput</a> dis) <strong class="jxr_keyword">throws</strong> UnclosedQuoteException, TruncatedFileException, IOException {
-<a class="jxr_linenumber" name="L148" href="#L148">148</a>         <strong class="jxr_keyword">this</strong>(<strong class="jxr_keyword">new</strong> <a href="../../../nom/tam/fits/HeaderCardCountingArrayDataInput.html">HeaderCardCountingArrayDataInput</a>(dis));
+<a class="jxr_linenumber" name="L147" href="#L147">147</a>     <strong class="jxr_keyword">public</strong> <a name="HeaderCard" href="../../../nom/tam/fits/HeaderCard.html#HeaderCard">HeaderCard</a>(<a name="ArrayDataInput" href="../../../nom/tam/util/ArrayDataInput.html#ArrayDataInput">ArrayDataInput</a> dis) <strong class="jxr_keyword">throws</strong> UnclosedQuoteException, TruncatedFileException, IOException {
+<a class="jxr_linenumber" name="L148" href="#L148">148</a>         <strong class="jxr_keyword">this</strong>(<strong class="jxr_keyword">new</strong> <a name="HeaderCardCountingArrayDataInput" href="../../../nom/tam/fits/HeaderCardCountingArrayDataInput.html#HeaderCardCountingArrayDataInput">HeaderCardCountingArrayDataInput</a>(dis));
 <a class="jxr_linenumber" name="L149" href="#L149">149</a>     }
 <a class="jxr_linenumber" name="L150" href="#L150">150</a> 
 <a class="jxr_linenumber" name="L151" href="#L151">151</a>     <em class="jxr_javadoccomment">/**</em>
@@ -182,7 +182,7 @@
 <a class="jxr_linenumber" name="L174" href="#L174">174</a> <em class="jxr_javadoccomment">     * </em>
 <a class="jxr_linenumber" name="L175" href="#L175">175</a> <em class="jxr_javadoccomment">     */</em>
 <a class="jxr_linenumber" name="L176" href="#L176">176</a>     @Deprecated
-<a class="jxr_linenumber" name="L177" href="#L177">177</a>     <strong class="jxr_keyword">public</strong> <a href="../../../nom/tam/fits/HeaderCard.html">HeaderCard</a>(<a href="../../../nom/tam/fits/HeaderCardCountingArrayDataInput.html">HeaderCardCountingArrayDataInput</a> dis) <strong class="jxr_keyword">throws</strong> UnclosedQuoteException, TruncatedFileException, IOException {
+<a class="jxr_linenumber" name="L177" href="#L177">177</a>     <strong class="jxr_keyword">public</strong> <a name="HeaderCard" href="../../../nom/tam/fits/HeaderCard.html#HeaderCard">HeaderCard</a>(<a name="HeaderCardCountingArrayDataInput" href="../../../nom/tam/fits/HeaderCardCountingArrayDataInput.html#HeaderCardCountingArrayDataInput">HeaderCardCountingArrayDataInput</a> dis) <strong class="jxr_keyword">throws</strong> UnclosedQuoteException, TruncatedFileException, IOException {
 <a class="jxr_linenumber" name="L178" href="#L178">178</a>         <strong class="jxr_keyword">this</strong>();
 <a class="jxr_linenumber" name="L179" href="#L179">179</a>         <strong class="jxr_keyword">this</strong>.key = <strong class="jxr_keyword">null</strong>;
 <a class="jxr_linenumber" name="L180" href="#L180">180</a>         <strong class="jxr_keyword">this</strong>.value = <strong class="jxr_keyword">null</strong>;
@@ -191,7 +191,7 @@
 <a class="jxr_linenumber" name="L183" href="#L183">183</a> 
 <a class="jxr_linenumber" name="L184" href="#L184">184</a>         String card = readOneHeaderLine(dis);
 <a class="jxr_linenumber" name="L185" href="#L185">185</a>         
-<a class="jxr_linenumber" name="L186" href="#L186">186</a>         <a href="../../../nom/tam/fits/HeaderCardParser.html">HeaderCardParser</a> parsed = <strong class="jxr_keyword">new</strong> <a href="../../../nom/tam/fits/HeaderCardParser.html">HeaderCardParser</a>(card);
+<a class="jxr_linenumber" name="L186" href="#L186">186</a>         <a name="HeaderCardParser" href="../../../nom/tam/fits/HeaderCardParser.html#HeaderCardParser">HeaderCardParser</a> parsed = <strong class="jxr_keyword">new</strong> <a name="HeaderCardParser" href="../../../nom/tam/fits/HeaderCardParser.html#HeaderCardParser">HeaderCardParser</a>(card);
 <a class="jxr_linenumber" name="L187" href="#L187">187</a> 
 <a class="jxr_linenumber" name="L188" href="#L188">188</a>         <em class="jxr_comment">// extract the key</em>
 <a class="jxr_linenumber" name="L189" href="#L189">189</a>         <strong class="jxr_keyword">this</strong>.key = parsed.getKey();
@@ -225,7 +225,7 @@
 <a class="jxr_linenumber" name="L217" href="#L217">217</a> <em class="jxr_javadoccomment">     * @see #create(IFitsHeader, Number)</em>
 <a class="jxr_linenumber" name="L218" href="#L218">218</a> <em class="jxr_javadoccomment">     * @see FitsFactory#setUseExponentD(boolean)</em>
 <a class="jxr_linenumber" name="L219" href="#L219">219</a> <em class="jxr_javadoccomment">     */</em>
-<a class="jxr_linenumber" name="L220" href="#L220">220</a>     <strong class="jxr_keyword">public</strong> <a href="../../../nom/tam/fits/HeaderCard.html">HeaderCard</a>(String key, Number value) <strong class="jxr_keyword">throws</strong> HeaderCardException {
+<a class="jxr_linenumber" name="L220" href="#L220">220</a>     <strong class="jxr_keyword">public</strong> <a name="HeaderCard" href="../../../nom/tam/fits/HeaderCard.html#HeaderCard">HeaderCard</a>(String key, Number value) <strong class="jxr_keyword">throws</strong> <a name="HeaderCardException" href="../../../nom/tam/fits/HeaderCardException.html#HeaderCardException">HeaderCardException</a> {
 <a class="jxr_linenumber" name="L221" href="#L221">221</a>         <strong class="jxr_keyword">this</strong>(key, value, FlexFormat.AUTO_PRECISION, <strong class="jxr_keyword">null</strong>);
 <a class="jxr_linenumber" name="L222" href="#L222">222</a>     }
 <a class="jxr_linenumber" name="L223" href="#L223">223</a>     
@@ -246,7 +246,7 @@
 <a class="jxr_linenumber" name="L238" href="#L238">238</a> <em class="jxr_javadoccomment">     * @see #create(IFitsHeader, Number)</em>
 <a class="jxr_linenumber" name="L239" href="#L239">239</a> <em class="jxr_javadoccomment">     * @see FitsFactory#setUseExponentD(boolean)</em>
 <a class="jxr_linenumber" name="L240" href="#L240">240</a> <em class="jxr_javadoccomment">     */</em>
-<a class="jxr_linenumber" name="L241" href="#L241">241</a>     <strong class="jxr_keyword">public</strong> <a href="../../../nom/tam/fits/HeaderCard.html">HeaderCard</a>(String key, Number value, String comment) <strong class="jxr_keyword">throws</strong> HeaderCardException {
+<a class="jxr_linenumber" name="L241" href="#L241">241</a>     <strong class="jxr_keyword">public</strong> <a name="HeaderCard" href="../../../nom/tam/fits/HeaderCard.html#HeaderCard">HeaderCard</a>(String key, Number value, String comment) <strong class="jxr_keyword">throws</strong> <a name="HeaderCardException" href="../../../nom/tam/fits/HeaderCardException.html#HeaderCardException">HeaderCardException</a> {
 <a class="jxr_linenumber" name="L242" href="#L242">242</a>         <strong class="jxr_keyword">this</strong>(key, value, FlexFormat.AUTO_PRECISION, comment);
 <a class="jxr_linenumber" name="L243" href="#L243">243</a>     }
 <a class="jxr_linenumber" name="L244" href="#L244">244</a> 
@@ -268,7 +268,7 @@
 <a class="jxr_linenumber" name="L260" href="#L260">260</a> <em class="jxr_javadoccomment">     * @see #create(IFitsHeader, Number)</em>
 <a class="jxr_linenumber" name="L261" href="#L261">261</a> <em class="jxr_javadoccomment">     * @see FitsFactory#setUseExponentD(boolean)</em>
 <a class="jxr_linenumber" name="L262" href="#L262">262</a> <em class="jxr_javadoccomment">     */</em>
-<a class="jxr_linenumber" name="L263" href="#L263">263</a>     <strong class="jxr_keyword">public</strong> <a href="../../../nom/tam/fits/HeaderCard.html">HeaderCard</a>(String key, Number value, <strong class="jxr_keyword">int</strong> decimals, String comment) <strong class="jxr_keyword">throws</strong> HeaderCardException {
+<a class="jxr_linenumber" name="L263" href="#L263">263</a>     <strong class="jxr_keyword">public</strong> <a name="HeaderCard" href="../../../nom/tam/fits/HeaderCard.html#HeaderCard">HeaderCard</a>(String key, Number value, <strong class="jxr_keyword">int</strong> decimals, String comment) <strong class="jxr_keyword">throws</strong> <a name="HeaderCardException" href="../../../nom/tam/fits/HeaderCardException.html#HeaderCardException">HeaderCardException</a> {
 <a class="jxr_linenumber" name="L264" href="#L264">264</a>         <strong class="jxr_keyword">if</strong> (value == <strong class="jxr_keyword">null</strong>) {
 <a class="jxr_linenumber" name="L265" href="#L265">265</a>             set(key, <strong class="jxr_keyword">null</strong>, comment, Integer.<strong class="jxr_keyword">class</strong>);
 <a class="jxr_linenumber" name="L266" href="#L266">266</a>             <strong class="jxr_keyword">return</strong>;
@@ -277,9 +277,9 @@
 <a class="jxr_linenumber" name="L269" href="#L269">269</a>         <strong class="jxr_keyword">try</strong> { 
 <a class="jxr_linenumber" name="L270" href="#L270">270</a>             checkNumber(value);        
 <a class="jxr_linenumber" name="L271" href="#L271">271</a>         } <strong class="jxr_keyword">catch</strong> (NumberFormatException e) {
-<a class="jxr_linenumber" name="L272" href="#L272">272</a>             <strong class="jxr_keyword">throw</strong> <strong class="jxr_keyword">new</strong> <a href="../../../nom/tam/fits/HeaderCardException.html">HeaderCardException</a>(<span class="jxr_string">"FITS headers may not contain NaN or Infinite values"</span>, e);
+<a class="jxr_linenumber" name="L272" href="#L272">272</a>             <strong class="jxr_keyword">throw</strong> <strong class="jxr_keyword">new</strong> <a name="HeaderCardException" href="../../../nom/tam/fits/HeaderCardException.html#HeaderCardException">HeaderCardException</a>(<span class="jxr_string">"FITS headers may not contain NaN or Infinite values"</span>, e);
 <a class="jxr_linenumber" name="L273" href="#L273">273</a>         }
-<a class="jxr_linenumber" name="L274" href="#L274">274</a>         set(key, <strong class="jxr_keyword">new</strong> <a href="../../../nom/tam/util/FlexFormat.html">FlexFormat</a>().setWidth(spaceForValue(key)).setPrecision(decimals).format(value), comment, value.getClass());
+<a class="jxr_linenumber" name="L274" href="#L274">274</a>         set(key, <strong class="jxr_keyword">new</strong> <a name="FlexFormat" href="../../../nom/tam/util/FlexFormat.html#FlexFormat">FlexFormat</a>().setWidth(spaceForValue(key)).setPrecision(decimals).format(value), comment, value.getClass());
 <a class="jxr_linenumber" name="L275" href="#L275">275</a>     }
 <a class="jxr_linenumber" name="L276" href="#L276">276</a> 
 <a class="jxr_linenumber" name="L277" href="#L277">277</a>     <em class="jxr_javadoccomment">/**</em>
@@ -293,7 +293,7 @@
 <a class="jxr_linenumber" name="L285" href="#L285">285</a> <em class="jxr_javadoccomment">     * @see #HeaderCard(String, Boolean, String)</em>
 <a class="jxr_linenumber" name="L286" href="#L286">286</a> <em class="jxr_javadoccomment">     * @see #create(IFitsHeader, Boolean)</em>
 <a class="jxr_linenumber" name="L287" href="#L287">287</a> <em class="jxr_javadoccomment">     */</em>
-<a class="jxr_linenumber" name="L288" href="#L288">288</a>     <strong class="jxr_keyword">public</strong> <a href="../../../nom/tam/fits/HeaderCard.html">HeaderCard</a>(String key, Boolean value) <strong class="jxr_keyword">throws</strong> HeaderCardException {
+<a class="jxr_linenumber" name="L288" href="#L288">288</a>     <strong class="jxr_keyword">public</strong> <a name="HeaderCard" href="../../../nom/tam/fits/HeaderCard.html#HeaderCard">HeaderCard</a>(String key, Boolean value) <strong class="jxr_keyword">throws</strong> <a name="HeaderCardException" href="../../../nom/tam/fits/HeaderCardException.html#HeaderCardException">HeaderCardException</a> {
 <a class="jxr_linenumber" name="L289" href="#L289">289</a>         <strong class="jxr_keyword">this</strong>(key, value, <strong class="jxr_keyword">null</strong>);
 <a class="jxr_linenumber" name="L290" href="#L290">290</a>     }
 <a class="jxr_linenumber" name="L291" href="#L291">291</a> 
@@ -309,7 +309,7 @@
 <a class="jxr_linenumber" name="L301" href="#L301">301</a> <em class="jxr_javadoccomment">     * @see #HeaderCard(String, Boolean)</em>
 <a class="jxr_linenumber" name="L302" href="#L302">302</a> <em class="jxr_javadoccomment">     * @see #create(IFitsHeader, Boolean)</em>
 <a class="jxr_linenumber" name="L303" href="#L303">303</a> <em class="jxr_javadoccomment">     */</em>
-<a class="jxr_linenumber" name="L304" href="#L304">304</a>     <strong class="jxr_keyword">public</strong> <a href="../../../nom/tam/fits/HeaderCard.html">HeaderCard</a>(String key, Boolean value, String comment) <strong class="jxr_keyword">throws</strong> HeaderCardException {
+<a class="jxr_linenumber" name="L304" href="#L304">304</a>     <strong class="jxr_keyword">public</strong> <a name="HeaderCard" href="../../../nom/tam/fits/HeaderCard.html#HeaderCard">HeaderCard</a>(String key, Boolean value, String comment) <strong class="jxr_keyword">throws</strong> <a name="HeaderCardException" href="../../../nom/tam/fits/HeaderCardException.html#HeaderCardException">HeaderCardException</a> {
 <a class="jxr_linenumber" name="L305" href="#L305">305</a>         <strong class="jxr_keyword">this</strong>(key, value == <strong class="jxr_keyword">null</strong> ? <strong class="jxr_keyword">null</strong> : (value ? <span class="jxr_string">"T"</span> : <span class="jxr_string">"F"</span>), comment, Boolean.<strong class="jxr_keyword">class</strong>);
 <a class="jxr_linenumber" name="L306" href="#L306">306</a>     }
 <a class="jxr_linenumber" name="L307" href="#L307">307</a>     
@@ -326,7 +326,7 @@
 <a class="jxr_linenumber" name="L318" href="#L318">318</a> <em class="jxr_javadoccomment">     * @see #HeaderCard(String, ComplexValue, String)</em>
 <a class="jxr_linenumber" name="L319" href="#L319">319</a> <em class="jxr_javadoccomment">     * @see #HeaderCard(String, ComplexValue, int, String)</em>
 <a class="jxr_linenumber" name="L320" href="#L320">320</a> <em class="jxr_javadoccomment">     */</em>
-<a class="jxr_linenumber" name="L321" href="#L321">321</a>     <strong class="jxr_keyword">public</strong> <a href="../../../nom/tam/fits/HeaderCard.html">HeaderCard</a>(String key, <a href="../../../nom/tam/util/ComplexValue.html">ComplexValue</a> value) <strong class="jxr_keyword">throws</strong> HeaderCardException {
+<a class="jxr_linenumber" name="L321" href="#L321">321</a>     <strong class="jxr_keyword">public</strong> <a name="HeaderCard" href="../../../nom/tam/fits/HeaderCard.html#HeaderCard">HeaderCard</a>(String key, <a name="ComplexValue" href="../../../nom/tam/util/ComplexValue.html#ComplexValue">ComplexValue</a> value) <strong class="jxr_keyword">throws</strong> <a name="HeaderCardException" href="../../../nom/tam/fits/HeaderCardException.html#HeaderCardException">HeaderCardException</a> {
 <a class="jxr_linenumber" name="L322" href="#L322">322</a>         <strong class="jxr_keyword">this</strong>(key, value, <strong class="jxr_keyword">null</strong>);
 <a class="jxr_linenumber" name="L323" href="#L323">323</a>     }
 <a class="jxr_linenumber" name="L324" href="#L324">324</a>     
@@ -344,7 +344,7 @@
 <a class="jxr_linenumber" name="L336" href="#L336">336</a> <em class="jxr_javadoccomment">     * @see #HeaderCard(String, ComplexValue)</em>
 <a class="jxr_linenumber" name="L337" href="#L337">337</a> <em class="jxr_javadoccomment">     * @see #HeaderCard(String, ComplexValue, int, String)</em>
 <a class="jxr_linenumber" name="L338" href="#L338">338</a> <em class="jxr_javadoccomment">     */</em>
-<a class="jxr_linenumber" name="L339" href="#L339">339</a>     <strong class="jxr_keyword">public</strong> <a href="../../../nom/tam/fits/HeaderCard.html">HeaderCard</a>(String key, <a href="../../../nom/tam/util/ComplexValue.html">ComplexValue</a> value, String comment) <strong class="jxr_keyword">throws</strong> HeaderCardException {
+<a class="jxr_linenumber" name="L339" href="#L339">339</a>     <strong class="jxr_keyword">public</strong> <a name="HeaderCard" href="../../../nom/tam/fits/HeaderCard.html#HeaderCard">HeaderCard</a>(String key, <a name="ComplexValue" href="../../../nom/tam/util/ComplexValue.html#ComplexValue">ComplexValue</a> value, String comment) <strong class="jxr_keyword">throws</strong> <a name="HeaderCardException" href="../../../nom/tam/fits/HeaderCardException.html#HeaderCardException">HeaderCardException</a> {
 <a class="jxr_linenumber" name="L340" href="#L340">340</a>         <strong class="jxr_keyword">this</strong>();
 <a class="jxr_linenumber" name="L341" href="#L341">341</a>         
 <a class="jxr_linenumber" name="L342" href="#L342">342</a>         <strong class="jxr_keyword">if</strong> (value == <strong class="jxr_keyword">null</strong>) {
@@ -353,7 +353,7 @@
 <a class="jxr_linenumber" name="L345" href="#L345">345</a>         }
 <a class="jxr_linenumber" name="L346" href="#L346">346</a>         
 <a class="jxr_linenumber" name="L347" href="#L347">347</a>         <strong class="jxr_keyword">if</strong> (!value.isFinite()) {
-<a class="jxr_linenumber" name="L348" href="#L348">348</a>             <strong class="jxr_keyword">throw</strong> <strong class="jxr_keyword">new</strong> <a href="../../../nom/tam/fits/HeaderCardException.html">HeaderCardException</a>(<span class="jxr_string">"Cannot represent "</span> + value + <span class="jxr_string">" in FITS headers."</span>);
+<a class="jxr_linenumber" name="L348" href="#L348">348</a>             <strong class="jxr_keyword">throw</strong> <strong class="jxr_keyword">new</strong> <a name="HeaderCardException" href="../../../nom/tam/fits/HeaderCardException.html#HeaderCardException">HeaderCardException</a>(<span class="jxr_string">"Cannot represent "</span> + value + <span class="jxr_string">" in FITS headers."</span>);
 <a class="jxr_linenumber" name="L349" href="#L349">349</a>         }
 <a class="jxr_linenumber" name="L350" href="#L350">350</a>         set(key, value.toBoundedString(spaceForValue(key)), comment, ComplexValue.<strong class="jxr_keyword">class</strong>);
 <a class="jxr_linenumber" name="L351" href="#L351">351</a>     }
@@ -374,7 +374,7 @@
 <a class="jxr_linenumber" name="L366" href="#L366">366</a> <em class="jxr_javadoccomment">     * @see #HeaderCard(String, ComplexValue)</em>
 <a class="jxr_linenumber" name="L367" href="#L367">367</a> <em class="jxr_javadoccomment">     * @see #HeaderCard(String, ComplexValue, String)</em>
 <a class="jxr_linenumber" name="L368" href="#L368">368</a> <em class="jxr_javadoccomment">     */</em>
-<a class="jxr_linenumber" name="L369" href="#L369">369</a>     <strong class="jxr_keyword">public</strong> <a href="../../../nom/tam/fits/HeaderCard.html">HeaderCard</a>(String key, <a href="../../../nom/tam/util/ComplexValue.html">ComplexValue</a> value, <strong class="jxr_keyword">int</strong> decimals, String comment) <strong class="jxr_keyword">throws</strong> HeaderCardException {
+<a class="jxr_linenumber" name="L369" href="#L369">369</a>     <strong class="jxr_keyword">public</strong> <a name="HeaderCard" href="../../../nom/tam/fits/HeaderCard.html#HeaderCard">HeaderCard</a>(String key, <a name="ComplexValue" href="../../../nom/tam/util/ComplexValue.html#ComplexValue">ComplexValue</a> value, <strong class="jxr_keyword">int</strong> decimals, String comment) <strong class="jxr_keyword">throws</strong> <a name="HeaderCardException" href="../../../nom/tam/fits/HeaderCardException.html#HeaderCardException">HeaderCardException</a> {
 <a class="jxr_linenumber" name="L370" href="#L370">370</a>         <strong class="jxr_keyword">this</strong>();
 <a class="jxr_linenumber" name="L371" href="#L371">371</a>         
 <a class="jxr_linenumber" name="L372" href="#L372">372</a>         <strong class="jxr_keyword">if</strong> (value == <strong class="jxr_keyword">null</strong>) {
@@ -383,7 +383,7 @@
 <a class="jxr_linenumber" name="L375" href="#L375">375</a>         }
 <a class="jxr_linenumber" name="L376" href="#L376">376</a>         
 <a class="jxr_linenumber" name="L377" href="#L377">377</a>         <strong class="jxr_keyword">if</strong> (!value.isFinite()) {
-<a class="jxr_linenumber" name="L378" href="#L378">378</a>             <strong class="jxr_keyword">throw</strong> <strong class="jxr_keyword">new</strong> <a href="../../../nom/tam/fits/HeaderCardException.html">HeaderCardException</a>(<span class="jxr_string">"Cannot represent "</span> + value + <span class="jxr_string">" in FITS headers."</span>);
+<a class="jxr_linenumber" name="L378" href="#L378">378</a>             <strong class="jxr_keyword">throw</strong> <strong class="jxr_keyword">new</strong> <a name="HeaderCardException" href="../../../nom/tam/fits/HeaderCardException.html#HeaderCardException">HeaderCardException</a>(<span class="jxr_string">"Cannot represent "</span> + value + <span class="jxr_string">" in FITS headers."</span>);
 <a class="jxr_linenumber" name="L379" href="#L379">379</a>         }
 <a class="jxr_linenumber" name="L380" href="#L380">380</a>         set(key, value.toString(decimals), comment, ComplexValue.<strong class="jxr_keyword">class</strong>);
 <a class="jxr_linenumber" name="L381" href="#L381">381</a>     }
@@ -415,7 +415,7 @@
 <a class="jxr_linenumber" name="L407" href="#L407">407</a> <em class="jxr_javadoccomment">     * @deprecated Use {@link #HeaderCard(String, String, String)}, or {@link #createCommentStyleCard(String, String)} instead.</em>
 <a class="jxr_linenumber" name="L408" href="#L408">408</a> <em class="jxr_javadoccomment">     */</em>
 <a class="jxr_linenumber" name="L409" href="#L409">409</a>     @Deprecated
-<a class="jxr_linenumber" name="L410" href="#L410">410</a>     <strong class="jxr_keyword">public</strong> <a href="../../../nom/tam/fits/HeaderCard.html">HeaderCard</a>(String key, String comment, <strong class="jxr_keyword">boolean</strong> withNullValue) <strong class="jxr_keyword">throws</strong> HeaderCardException {
+<a class="jxr_linenumber" name="L410" href="#L410">410</a>     <strong class="jxr_keyword">public</strong> <a name="HeaderCard" href="../../../nom/tam/fits/HeaderCard.html#HeaderCard">HeaderCard</a>(String key, String comment, <strong class="jxr_keyword">boolean</strong> withNullValue) <strong class="jxr_keyword">throws</strong> <a name="HeaderCardException" href="../../../nom/tam/fits/HeaderCardException.html#HeaderCardException">HeaderCardException</a> {
 <a class="jxr_linenumber" name="L411" href="#L411">411</a>         <strong class="jxr_keyword">this</strong>(key, <strong class="jxr_keyword">null</strong>, comment, withNullValue);
 <a class="jxr_linenumber" name="L412" href="#L412">412</a>     }
 <a class="jxr_linenumber" name="L413" href="#L413">413</a>   
@@ -448,7 +448,7 @@
 <a class="jxr_linenumber" name="L440" href="#L440">440</a> <em class="jxr_javadoccomment">     * @deprecated Use {@link #HeaderCard(String, String, String)}, or {@link #createCommentStyleCard(String, String)} instead.</em>
 <a class="jxr_linenumber" name="L441" href="#L441">441</a> <em class="jxr_javadoccomment">     */</em>
 <a class="jxr_linenumber" name="L442" href="#L442">442</a>     @Deprecated
-<a class="jxr_linenumber" name="L443" href="#L443">443</a>     <strong class="jxr_keyword">public</strong> <a href="../../../nom/tam/fits/HeaderCard.html">HeaderCard</a>(String key, String value, String comment, <strong class="jxr_keyword">boolean</strong> nullable) <strong class="jxr_keyword">throws</strong> HeaderCardException {
+<a class="jxr_linenumber" name="L443" href="#L443">443</a>     <strong class="jxr_keyword">public</strong> <a name="HeaderCard" href="../../../nom/tam/fits/HeaderCard.html#HeaderCard">HeaderCard</a>(String key, String value, String comment, <strong class="jxr_keyword">boolean</strong> nullable) <strong class="jxr_keyword">throws</strong> <a name="HeaderCardException" href="../../../nom/tam/fits/HeaderCardException.html#HeaderCardException">HeaderCardException</a> {
 <a class="jxr_linenumber" name="L444" href="#L444">444</a>         <strong class="jxr_keyword">this</strong>(key, value, comment, (nullable || value != <strong class="jxr_keyword">null</strong>) ? String.<strong class="jxr_keyword">class</strong> : <strong class="jxr_keyword">null</strong>);
 <a class="jxr_linenumber" name="L445" href="#L445">445</a>     }
 <a class="jxr_linenumber" name="L446" href="#L446">446</a> 
@@ -463,7 +463,7 @@
 <a class="jxr_linenumber" name="L455" href="#L455">455</a> <em class="jxr_javadoccomment">     * @see #HeaderCard(String, String, String)</em>
 <a class="jxr_linenumber" name="L456" href="#L456">456</a> <em class="jxr_javadoccomment">     * @see #create(IFitsHeader, String)</em>
 <a class="jxr_linenumber" name="L457" href="#L457">457</a> <em class="jxr_javadoccomment">     */</em>
-<a class="jxr_linenumber" name="L458" href="#L458">458</a>     <strong class="jxr_keyword">public</strong> <a href="../../../nom/tam/fits/HeaderCard.html">HeaderCard</a>(String key, String value) <strong class="jxr_keyword">throws</strong> HeaderCardException {
+<a class="jxr_linenumber" name="L458" href="#L458">458</a>     <strong class="jxr_keyword">public</strong> <a name="HeaderCard" href="../../../nom/tam/fits/HeaderCard.html#HeaderCard">HeaderCard</a>(String key, String value) <strong class="jxr_keyword">throws</strong> <a name="HeaderCardException" href="../../../nom/tam/fits/HeaderCardException.html#HeaderCardException">HeaderCardException</a> {
 <a class="jxr_linenumber" name="L459" href="#L459">459</a>         <strong class="jxr_keyword">this</strong>(key, value, <strong class="jxr_keyword">null</strong>, String.<strong class="jxr_keyword">class</strong>);
 <a class="jxr_linenumber" name="L460" href="#L460">460</a>     }   
 <a class="jxr_linenumber" name="L461" href="#L461">461</a>     
@@ -479,7 +479,7 @@
 <a class="jxr_linenumber" name="L471" href="#L471">471</a> <em class="jxr_javadoccomment">     * @see #HeaderCard(String, String)</em>
 <a class="jxr_linenumber" name="L472" href="#L472">472</a> <em class="jxr_javadoccomment">     * @see #create(IFitsHeader, String)</em>
 <a class="jxr_linenumber" name="L473" href="#L473">473</a> <em class="jxr_javadoccomment">     */</em>
-<a class="jxr_linenumber" name="L474" href="#L474">474</a>     <strong class="jxr_keyword">public</strong> <a href="../../../nom/tam/fits/HeaderCard.html">HeaderCard</a>(String key, String value, String comment) <strong class="jxr_keyword">throws</strong> HeaderCardException {
+<a class="jxr_linenumber" name="L474" href="#L474">474</a>     <strong class="jxr_keyword">public</strong> <a name="HeaderCard" href="../../../nom/tam/fits/HeaderCard.html#HeaderCard">HeaderCard</a>(String key, String value, String comment) <strong class="jxr_keyword">throws</strong> <a name="HeaderCardException" href="../../../nom/tam/fits/HeaderCardException.html#HeaderCardException">HeaderCardException</a> {
 <a class="jxr_linenumber" name="L475" href="#L475">475</a>         <strong class="jxr_keyword">this</strong>(key, value, comment, String.<strong class="jxr_keyword">class</strong>);
 <a class="jxr_linenumber" name="L476" href="#L476">476</a>     } 
 <a class="jxr_linenumber" name="L477" href="#L477">477</a>     
@@ -497,7 +497,7 @@
 <a class="jxr_linenumber" name="L489" href="#L489">489</a> <em class="jxr_javadoccomment">     * </em>
 <a class="jxr_linenumber" name="L490" href="#L490">490</a> <em class="jxr_javadoccomment">     * @see #set(String, String, String, Class)</em>
 <a class="jxr_linenumber" name="L491" href="#L491">491</a> <em class="jxr_javadoccomment">     */</em>
-<a class="jxr_linenumber" name="L492" href="#L492">492</a>     <strong class="jxr_keyword">private</strong> <a href="../../../nom/tam/fits/HeaderCard.html">HeaderCard</a>(String key, String value, String comment, Class&lt;?&gt; type) <strong class="jxr_keyword">throws</strong> HeaderCardException {
+<a class="jxr_linenumber" name="L492" href="#L492">492</a>     <strong class="jxr_keyword">private</strong> <a name="HeaderCard" href="../../../nom/tam/fits/HeaderCard.html#HeaderCard">HeaderCard</a>(String key, String value, String comment, Class&lt;?&gt; type) <strong class="jxr_keyword">throws</strong> <a name="HeaderCardException" href="../../../nom/tam/fits/HeaderCardException.html#HeaderCardException">HeaderCardException</a> {
 <a class="jxr_linenumber" name="L493" href="#L493">493</a>         set(key, value, comment, type);         
 <a class="jxr_linenumber" name="L494" href="#L494">494</a>         <strong class="jxr_keyword">this</strong>.type = type;
 <a class="jxr_linenumber" name="L495" href="#L495">495</a>     }
@@ -513,7 +513,7 @@
 <a class="jxr_linenumber" name="L505" href="#L505">505</a> <em class="jxr_javadoccomment">     * </em>
 <a class="jxr_linenumber" name="L506" href="#L506">506</a> <em class="jxr_javadoccomment">     * @throws HeaderCardException for any invalid keyword or value</em>
 <a class="jxr_linenumber" name="L507" href="#L507">507</a> <em class="jxr_javadoccomment">     */</em>
-<a class="jxr_linenumber" name="L508" href="#L508">508</a>     <strong class="jxr_keyword">private</strong> <strong class="jxr_keyword">synchronized</strong> <strong class="jxr_keyword">void</strong> set(String aKey, String aValue, String aComment, Class&lt;?&gt; aType) <strong class="jxr_keyword">throws</strong> HeaderCardException {
+<a class="jxr_linenumber" name="L508" href="#L508">508</a>     <strong class="jxr_keyword">private</strong> <strong class="jxr_keyword">synchronized</strong> <strong class="jxr_keyword">void</strong> set(String aKey, String aValue, String aComment, Class&lt;?&gt; aType) <strong class="jxr_keyword">throws</strong> <a name="HeaderCardException" href="../../../nom/tam/fits/HeaderCardException.html#HeaderCardException">HeaderCardException</a> {
 <a class="jxr_linenumber" name="L509" href="#L509">509</a>         <em class="jxr_comment">// TODO we never call with null type and non-null value internally, so this is dead code here...</em>
 <a class="jxr_linenumber" name="L510" href="#L510">510</a> <em class="jxr_comment">//        if (aType == null &amp;&amp; aValue != null) {</em>
 <a class="jxr_linenumber" name="L511" href="#L511">511</a> <em class="jxr_comment">//            throw new HeaderCardException("Null type for value: [" + sanitize(aValue) + "]");</em>
@@ -530,13 +530,13 @@
 <a class="jxr_linenumber" name="L522" href="#L522">522</a>         }
 <a class="jxr_linenumber" name="L523" href="#L523">523</a>       
 <a class="jxr_linenumber" name="L524" href="#L524">524</a>         <strong class="jxr_keyword">if</strong> (aKey.isEmpty() &amp;&amp; aValue != <strong class="jxr_keyword">null</strong>) {
-<a class="jxr_linenumber" name="L525" href="#L525">525</a>             <strong class="jxr_keyword">throw</strong> <strong class="jxr_keyword">new</strong> <a href="../../../nom/tam/fits/HeaderCardException.html">HeaderCardException</a>(<span class="jxr_string">"Blank or null key for value: ["</span> + sanitize(aValue) + <span class="jxr_string">"]"</span>);
+<a class="jxr_linenumber" name="L525" href="#L525">525</a>             <strong class="jxr_keyword">throw</strong> <strong class="jxr_keyword">new</strong> <a name="HeaderCardException" href="../../../nom/tam/fits/HeaderCardException.html#HeaderCardException">HeaderCardException</a>(<span class="jxr_string">"Blank or null key for value: ["</span> + sanitize(aValue) + <span class="jxr_string">"]"</span>);
 <a class="jxr_linenumber" name="L526" href="#L526">526</a>         } 
 <a class="jxr_linenumber" name="L527" href="#L527">527</a>         
 <a class="jxr_linenumber" name="L528" href="#L528">528</a>         <strong class="jxr_keyword">try</strong> {
 <a class="jxr_linenumber" name="L529" href="#L529">529</a>             validateKey(aKey);
 <a class="jxr_linenumber" name="L530" href="#L530">530</a>         } <strong class="jxr_keyword">catch</strong> (RuntimeException e) {
-<a class="jxr_linenumber" name="L531" href="#L531">531</a>             <strong class="jxr_keyword">throw</strong> <strong class="jxr_keyword">new</strong> <a href="../../../nom/tam/fits/HeaderCardException.html">HeaderCardException</a>(<span class="jxr_string">"Invalid FITS keyword: ["</span> + sanitize(aKey) + <span class="jxr_string">"]"</span>, e);
+<a class="jxr_linenumber" name="L531" href="#L531">531</a>             <strong class="jxr_keyword">throw</strong> <strong class="jxr_keyword">new</strong> <a name="HeaderCardException" href="../../../nom/tam/fits/HeaderCardException.html#HeaderCardException">HeaderCardException</a>(<span class="jxr_string">"Invalid FITS keyword: ["</span> + sanitize(aKey) + <span class="jxr_string">"]"</span>, e);
 <a class="jxr_linenumber" name="L532" href="#L532">532</a>         }
 <a class="jxr_linenumber" name="L533" href="#L533">533</a> 
 <a class="jxr_linenumber" name="L534" href="#L534">534</a>         <strong class="jxr_keyword">this</strong>.key = aKey;
@@ -544,7 +544,7 @@
 <a class="jxr_linenumber" name="L536" href="#L536">536</a>         <strong class="jxr_keyword">try</strong> {
 <a class="jxr_linenumber" name="L537" href="#L537">537</a>             validateChars(aComment);
 <a class="jxr_linenumber" name="L538" href="#L538">538</a>         } <strong class="jxr_keyword">catch</strong> (IllegalArgumentException e) {
-<a class="jxr_linenumber" name="L539" href="#L539">539</a>             <strong class="jxr_keyword">throw</strong> <strong class="jxr_keyword">new</strong> <a href="../../../nom/tam/fits/HeaderCardException.html">HeaderCardException</a>(<span class="jxr_string">"Invalid FITS comment: ["</span> + sanitize(aComment) + <span class="jxr_string">"]"</span>, e);
+<a class="jxr_linenumber" name="L539" href="#L539">539</a>             <strong class="jxr_keyword">throw</strong> <strong class="jxr_keyword">new</strong> <a name="HeaderCardException" href="../../../nom/tam/fits/HeaderCardException.html#HeaderCardException">HeaderCardException</a>(<span class="jxr_string">"Invalid FITS comment: ["</span> + sanitize(aComment) + <span class="jxr_string">"]"</span>, e);
 <a class="jxr_linenumber" name="L540" href="#L540">540</a>         }
 <a class="jxr_linenumber" name="L541" href="#L541">541</a>        
 <a class="jxr_linenumber" name="L542" href="#L542">542</a>         <strong class="jxr_keyword">this</strong>.comment = aComment;
@@ -552,7 +552,7 @@
 <a class="jxr_linenumber" name="L544" href="#L544">544</a>         <strong class="jxr_keyword">try</strong> {
 <a class="jxr_linenumber" name="L545" href="#L545">545</a>             validateChars(aValue);
 <a class="jxr_linenumber" name="L546" href="#L546">546</a>         } <strong class="jxr_keyword">catch</strong> (IllegalArgumentException e) {
-<a class="jxr_linenumber" name="L547" href="#L547">547</a>             <strong class="jxr_keyword">throw</strong> <strong class="jxr_keyword">new</strong> <a href="../../../nom/tam/fits/HeaderCardException.html">HeaderCardException</a>(<span class="jxr_string">"Invalid FITS value: ["</span> + sanitize(aValue) + <span class="jxr_string">"]"</span>, e);
+<a class="jxr_linenumber" name="L547" href="#L547">547</a>             <strong class="jxr_keyword">throw</strong> <strong class="jxr_keyword">new</strong> <a name="HeaderCardException" href="../../../nom/tam/fits/HeaderCardException.html#HeaderCardException">HeaderCardException</a>(<span class="jxr_string">"Invalid FITS value: ["</span> + sanitize(aValue) + <span class="jxr_string">"]"</span>, e);
 <a class="jxr_linenumber" name="L548" href="#L548">548</a>         }
 <a class="jxr_linenumber" name="L549" href="#L549">549</a>         
 <a class="jxr_linenumber" name="L550" href="#L550">550</a>         <strong class="jxr_keyword">if</strong> (aValue == <strong class="jxr_keyword">null</strong>) {
@@ -576,7 +576,7 @@
 <a class="jxr_linenumber" name="L568" href="#L568">568</a> 
 <a class="jxr_linenumber" name="L569" href="#L569">569</a>             <em class="jxr_comment">// Check that the value fits in the space available for it.</em>
 <a class="jxr_linenumber" name="L570" href="#L570">570</a>             <strong class="jxr_keyword">if</strong> (!FitsFactory.isLongStringsEnabled() &amp;&amp; (printValue.length() + STRING_QUOTES_LENGTH) &gt; spaceForValue()) {
-<a class="jxr_linenumber" name="L571" href="#L571">571</a>                 <strong class="jxr_keyword">throw</strong> <strong class="jxr_keyword">new</strong> <a href="../../../nom/tam/fits/HeaderCardException.html">HeaderCardException</a>(<span class="jxr_string">"value too long: ["</span> + sanitize(aValue) + <span class="jxr_string">"]"</span>, <strong class="jxr_keyword">new</strong> <a href="../../../nom/tam/fits/LongStringsNotEnabledException.html">LongStringsNotEnabledException</a>(key));
+<a class="jxr_linenumber" name="L571" href="#L571">571</a>                 <strong class="jxr_keyword">throw</strong> <strong class="jxr_keyword">new</strong> <a name="HeaderCardException" href="../../../nom/tam/fits/HeaderCardException.html#HeaderCardException">HeaderCardException</a>(<span class="jxr_string">"value too long: ["</span> + sanitize(aValue) + <span class="jxr_string">"]"</span>, <strong class="jxr_keyword">new</strong> <a name="LongStringsNotEnabledException" href="../../../nom/tam/fits/LongStringsNotEnabledException.html#LongStringsNotEnabledException">LongStringsNotEnabledException</a>(key));
 <a class="jxr_linenumber" name="L572" href="#L572">572</a>             }
 <a class="jxr_linenumber" name="L573" href="#L573">573</a> 
 <a class="jxr_linenumber" name="L574" href="#L574">574</a>         } <strong class="jxr_keyword">else</strong> {
@@ -584,7 +584,7 @@
 <a class="jxr_linenumber" name="L576" href="#L576">576</a> 
 <a class="jxr_linenumber" name="L577" href="#L577">577</a>             <em class="jxr_comment">// Check that the value fits in the space available for it.</em>
 <a class="jxr_linenumber" name="L578" href="#L578">578</a>             <strong class="jxr_keyword">if</strong> (aValue.length() &gt; spaceForValue()) {
-<a class="jxr_linenumber" name="L579" href="#L579">579</a>                 <strong class="jxr_keyword">throw</strong> <strong class="jxr_keyword">new</strong> <a href="../../../nom/tam/fits/HeaderCardException.html">HeaderCardException</a>(<span class="jxr_string">"Value too long: ["</span> + sanitize(aValue) + <span class="jxr_string">"]"</span>, <strong class="jxr_keyword">new</strong> <a href="../../../nom/tam/fits/LongValueException.html">LongValueException</a>(key, spaceForValue()));
+<a class="jxr_linenumber" name="L579" href="#L579">579</a>                 <strong class="jxr_keyword">throw</strong> <strong class="jxr_keyword">new</strong> <a name="HeaderCardException" href="../../../nom/tam/fits/HeaderCardException.html#HeaderCardException">HeaderCardException</a>(<span class="jxr_string">"Value too long: ["</span> + sanitize(aValue) + <span class="jxr_string">"]"</span>, <strong class="jxr_keyword">new</strong> <a name="LongValueException" href="../../../nom/tam/fits/LongValueException.html#LongValueException">LongValueException</a>(key, spaceForValue()));
 <a class="jxr_linenumber" name="L580" href="#L580">580</a>             }
 <a class="jxr_linenumber" name="L581" href="#L581">581</a>         }
 <a class="jxr_linenumber" name="L582" href="#L582">582</a>         
@@ -593,9 +593,9 @@
 <a class="jxr_linenumber" name="L585" href="#L585">585</a> 
 <a class="jxr_linenumber" name="L586" href="#L586">586</a>     
 <a class="jxr_linenumber" name="L587" href="#L587">587</a>     @Override
-<a class="jxr_linenumber" name="L588" href="#L588">588</a>     <strong class="jxr_keyword">protected</strong> <a href="../../../nom/tam/fits/HeaderCard.html">HeaderCard</a> clone() {
+<a class="jxr_linenumber" name="L588" href="#L588">588</a>     <strong class="jxr_keyword">protected</strong> <a name="HeaderCard" href="../../../nom/tam/fits/HeaderCard.html#HeaderCard">HeaderCard</a> clone() {
 <a class="jxr_linenumber" name="L589" href="#L589">589</a>         <strong class="jxr_keyword">try</strong> { 
-<a class="jxr_linenumber" name="L590" href="#L590">590</a>             <strong class="jxr_keyword">return</strong> (HeaderCard) <strong class="jxr_keyword">super</strong>.clone(); 
+<a class="jxr_linenumber" name="L590" href="#L590">590</a>             <strong class="jxr_keyword">return</strong> (<a name="HeaderCard" href="../../../nom/tam/fits/HeaderCard.html#HeaderCard">HeaderCard</a>) <strong class="jxr_keyword">super</strong>.clone(); 
 <a class="jxr_linenumber" name="L591" href="#L591">591</a>         } <strong class="jxr_keyword">catch</strong> (CloneNotSupportedException e) {
 <a class="jxr_linenumber" name="L592" href="#L592">592</a>             <strong class="jxr_keyword">return</strong> <strong class="jxr_keyword">null</strong>;
 <a class="jxr_linenumber" name="L593" href="#L593">593</a>         }
@@ -622,8 +622,8 @@
 <a class="jxr_linenumber" name="L614" href="#L614">614</a> <em class="jxr_javadoccomment">     * </em>
 <a class="jxr_linenumber" name="L615" href="#L615">615</a> <em class="jxr_javadoccomment">     * @return  a copy of this carf.</em>
 <a class="jxr_linenumber" name="L616" href="#L616">616</a> <em class="jxr_javadoccomment">     */</em>
-<a class="jxr_linenumber" name="L617" href="#L617">617</a>     <strong class="jxr_keyword">public</strong> <a href="../../../nom/tam/fits/HeaderCard.html">HeaderCard</a> copy() {
-<a class="jxr_linenumber" name="L618" href="#L618">618</a>         <a href="../../../nom/tam/fits/HeaderCard.html">HeaderCard</a> copy = clone();
+<a class="jxr_linenumber" name="L617" href="#L617">617</a>     <strong class="jxr_keyword">public</strong> <a name="HeaderCard" href="../../../nom/tam/fits/HeaderCard.html#HeaderCard">HeaderCard</a> copy() {
+<a class="jxr_linenumber" name="L618" href="#L618">618</a>         <a name="HeaderCard" href="../../../nom/tam/fits/HeaderCard.html#HeaderCard">HeaderCard</a> copy = clone();
 <a class="jxr_linenumber" name="L619" href="#L619">619</a>         <strong class="jxr_keyword">return</strong> copy;
 <a class="jxr_linenumber" name="L620" href="#L620">620</a>     }
 <a class="jxr_linenumber" name="L621" href="#L621">621</a> 
@@ -722,7 +722,7 @@
 <a class="jxr_linenumber" name="L714" href="#L714">714</a>             <strong class="jxr_keyword">return</strong> asType.<strong class="jxr_keyword">cast</strong>(getBooleanValue((Boolean) defaultValue));
 <a class="jxr_linenumber" name="L715" href="#L715">715</a>         }
 <a class="jxr_linenumber" name="L716" href="#L716">716</a>         <strong class="jxr_keyword">if</strong> (ComplexValue.<strong class="jxr_keyword">class</strong>.isAssignableFrom(asType)) {
-<a class="jxr_linenumber" name="L717" href="#L717">717</a>             <strong class="jxr_keyword">return</strong> asType.<strong class="jxr_keyword">cast</strong>(<strong class="jxr_keyword">new</strong> <a href="../../../nom/tam/util/ComplexValue.html">ComplexValue</a>(value)); 
+<a class="jxr_linenumber" name="L717" href="#L717">717</a>             <strong class="jxr_keyword">return</strong> asType.<strong class="jxr_keyword">cast</strong>(<strong class="jxr_keyword">new</strong> <a name="ComplexValue" href="../../../nom/tam/util/ComplexValue.html#ComplexValue">ComplexValue</a>(value)); 
 <a class="jxr_linenumber" name="L718" href="#L718">718</a>         }   
 <a class="jxr_linenumber" name="L719" href="#L719">719</a>         <strong class="jxr_keyword">if</strong> (Number.<strong class="jxr_keyword">class</strong>.isAssignableFrom(asType)) {
 <a class="jxr_linenumber" name="L720" href="#L720">720</a>             <strong class="jxr_keyword">try</strong> {
@@ -876,7 +876,7 @@
 <a class="jxr_linenumber" name="L868" href="#L868">868</a> <em class="jxr_javadoccomment">     * </em>
 <a class="jxr_linenumber" name="L869" href="#L869">869</a> <em class="jxr_javadoccomment">     * @see #setValue(Number, int)</em>
 <a class="jxr_linenumber" name="L870" href="#L870">870</a> <em class="jxr_javadoccomment">     */</em>
-<a class="jxr_linenumber" name="L871" href="#L871">871</a>     <strong class="jxr_keyword">public</strong> <strong class="jxr_keyword">final</strong> <a href="../../../nom/tam/fits/HeaderCard.html">HeaderCard</a> setValue(Number update) <strong class="jxr_keyword">throws</strong> NumberFormatException, LongValueException {
+<a class="jxr_linenumber" name="L871" href="#L871">871</a>     <strong class="jxr_keyword">public</strong> <strong class="jxr_keyword">final</strong> <a name="HeaderCard" href="../../../nom/tam/fits/HeaderCard.html#HeaderCard">HeaderCard</a> setValue(Number update) <strong class="jxr_keyword">throws</strong> NumberFormatException, <a name="LongValueException" href="../../../nom/tam/fits/LongValueException.html#LongValueException">LongValueException</a> {
 <a class="jxr_linenumber" name="L872" href="#L872">872</a>         <strong class="jxr_keyword">return</strong> setValue(update, FlexFormat.AUTO_PRECISION);
 <a class="jxr_linenumber" name="L873" href="#L873">873</a>     }
 <a class="jxr_linenumber" name="L874" href="#L874">874</a> 
@@ -896,13 +896,13 @@
 <a class="jxr_linenumber" name="L888" href="#L888">888</a> <em class="jxr_javadoccomment">     * </em>
 <a class="jxr_linenumber" name="L889" href="#L889">889</a> <em class="jxr_javadoccomment">     * @see #setValue(Number)</em>
 <a class="jxr_linenumber" name="L890" href="#L890">890</a> <em class="jxr_javadoccomment">     */</em>
-<a class="jxr_linenumber" name="L891" href="#L891">891</a>     <strong class="jxr_keyword">public</strong> <strong class="jxr_keyword">synchronized</strong> <a href="../../../nom/tam/fits/HeaderCard.html">HeaderCard</a> setValue(Number update, <strong class="jxr_keyword">int</strong> decimals) <strong class="jxr_keyword">throws</strong> NumberFormatException, LongValueException {
+<a class="jxr_linenumber" name="L891" href="#L891">891</a>     <strong class="jxr_keyword">public</strong> <strong class="jxr_keyword">synchronized</strong> <a name="HeaderCard" href="../../../nom/tam/fits/HeaderCard.html#HeaderCard">HeaderCard</a> setValue(Number update, <strong class="jxr_keyword">int</strong> decimals) <strong class="jxr_keyword">throws</strong> NumberFormatException, <a name="LongValueException" href="../../../nom/tam/fits/LongValueException.html#LongValueException">LongValueException</a> {
 <a class="jxr_linenumber" name="L892" href="#L892">892</a>         <strong class="jxr_keyword">if</strong> (update == <strong class="jxr_keyword">null</strong>) {
 <a class="jxr_linenumber" name="L893" href="#L893">893</a>             <strong class="jxr_keyword">this</strong>.value = <strong class="jxr_keyword">null</strong>;
 <a class="jxr_linenumber" name="L894" href="#L894">894</a>             <strong class="jxr_keyword">this</strong>.type = Integer.<strong class="jxr_keyword">class</strong>;
 <a class="jxr_linenumber" name="L895" href="#L895">895</a>         } <strong class="jxr_keyword">else</strong> {
 <a class="jxr_linenumber" name="L896" href="#L896">896</a>             checkNumber(update);
-<a class="jxr_linenumber" name="L897" href="#L897">897</a>             setUnquotedValue(<strong class="jxr_keyword">new</strong> <a href="../../../nom/tam/util/FlexFormat.html">FlexFormat</a>().forCard(<strong class="jxr_keyword">this</strong>).setPrecision(decimals).format(update));
+<a class="jxr_linenumber" name="L897" href="#L897">897</a>             setUnquotedValue(<strong class="jxr_keyword">new</strong> <a name="FlexFormat" href="../../../nom/tam/util/FlexFormat.html#FlexFormat">FlexFormat</a>().forCard(<strong class="jxr_keyword">this</strong>).setPrecision(decimals).format(update));
 <a class="jxr_linenumber" name="L898" href="#L898">898</a> 
 <a class="jxr_linenumber" name="L899" href="#L899">899</a>             <strong class="jxr_keyword">this</strong>.type = update.getClass();
 <a class="jxr_linenumber" name="L900" href="#L900">900</a>         }
@@ -923,11 +923,11 @@
 <a class="jxr_linenumber" name="L915" href="#L915">915</a> <em class="jxr_javadoccomment">     * </em>
 <a class="jxr_linenumber" name="L916" href="#L916">916</a> <em class="jxr_javadoccomment">     * @return the card itself</em>
 <a class="jxr_linenumber" name="L917" href="#L917">917</a> <em class="jxr_javadoccomment">     */</em>
-<a class="jxr_linenumber" name="L918" href="#L918">918</a>     <strong class="jxr_keyword">public</strong> <strong class="jxr_keyword">synchronized</strong> <a href="../../../nom/tam/fits/HeaderCard.html">HeaderCard</a> setValue(Boolean update) <strong class="jxr_keyword">throws</strong> LongValueException {
+<a class="jxr_linenumber" name="L918" href="#L918">918</a>     <strong class="jxr_keyword">public</strong> <strong class="jxr_keyword">synchronized</strong> <a name="HeaderCard" href="../../../nom/tam/fits/HeaderCard.html#HeaderCard">HeaderCard</a> setValue(Boolean update) <strong class="jxr_keyword">throws</strong> <a name="LongValueException" href="../../../nom/tam/fits/LongValueException.html#LongValueException">LongValueException</a> {
 <a class="jxr_linenumber" name="L919" href="#L919">919</a>         <strong class="jxr_keyword">if</strong> (update == <strong class="jxr_keyword">null</strong>) {
 <a class="jxr_linenumber" name="L920" href="#L920">920</a>             <strong class="jxr_keyword">this</strong>.value = <strong class="jxr_keyword">null</strong>;
 <a class="jxr_linenumber" name="L921" href="#L921">921</a>         } <strong class="jxr_keyword">else</strong> <strong class="jxr_keyword">if</strong> (spaceForValue() &lt; 1) {
-<a class="jxr_linenumber" name="L922" href="#L922">922</a>             <strong class="jxr_keyword">throw</strong> <strong class="jxr_keyword">new</strong> <a href="../../../nom/tam/fits/LongValueException.html">LongValueException</a>(key, spaceForValue());
+<a class="jxr_linenumber" name="L922" href="#L922">922</a>             <strong class="jxr_keyword">throw</strong> <strong class="jxr_keyword">new</strong> <a name="LongValueException" href="../../../nom/tam/fits/LongValueException.html#LongValueException">LongValueException</a>(key, spaceForValue());
 <a class="jxr_linenumber" name="L923" href="#L923">923</a>         } <strong class="jxr_keyword">else</strong> {
 <a class="jxr_linenumber" name="L924" href="#L924">924</a>             <em class="jxr_comment">// There is always room for a boolean value. :-)</em>
 <a class="jxr_linenumber" name="L925" href="#L925">925</a>             <strong class="jxr_keyword">this</strong>.value = update ? <span class="jxr_string">"T"</span> : <span class="jxr_string">"F"</span>;
@@ -953,7 +953,7 @@
 <a class="jxr_linenumber" name="L945" href="#L945">945</a> <em class="jxr_javadoccomment">     * </em>
 <a class="jxr_linenumber" name="L946" href="#L946">946</a> <em class="jxr_javadoccomment">     * @since 1.16</em>
 <a class="jxr_linenumber" name="L947" href="#L947">947</a> <em class="jxr_javadoccomment">     */</em>
-<a class="jxr_linenumber" name="L948" href="#L948">948</a>     <strong class="jxr_keyword">public</strong> <strong class="jxr_keyword">final</strong> <a href="../../../nom/tam/fits/HeaderCard.html">HeaderCard</a> setValue(<a href="../../../nom/tam/util/ComplexValue.html">ComplexValue</a> update) <strong class="jxr_keyword">throws</strong> NumberFormatException, LongValueException {
+<a class="jxr_linenumber" name="L948" href="#L948">948</a>     <strong class="jxr_keyword">public</strong> <strong class="jxr_keyword">final</strong> <a name="HeaderCard" href="../../../nom/tam/fits/HeaderCard.html#HeaderCard">HeaderCard</a> setValue(<a name="ComplexValue" href="../../../nom/tam/util/ComplexValue.html#ComplexValue">ComplexValue</a> update) <strong class="jxr_keyword">throws</strong> NumberFormatException, <a name="LongValueException" href="../../../nom/tam/fits/LongValueException.html#LongValueException">LongValueException</a> {
 <a class="jxr_linenumber" name="L949" href="#L949">949</a>         <strong class="jxr_keyword">return</strong> setValue(update, FlexFormat.AUTO_PRECISION);
 <a class="jxr_linenumber" name="L950" href="#L950">950</a>     }
 <a class="jxr_linenumber" name="L951" href="#L951">951</a>     
@@ -975,7 +975,7 @@
 <a class="jxr_linenumber" name="L967" href="#L967">967</a> <em class="jxr_javadoccomment">     * </em>
 <a class="jxr_linenumber" name="L968" href="#L968">968</a> <em class="jxr_javadoccomment">     * @since 1.16</em>
 <a class="jxr_linenumber" name="L969" href="#L969">969</a> <em class="jxr_javadoccomment">     */</em>
-<a class="jxr_linenumber" name="L970" href="#L970">970</a>     <strong class="jxr_keyword">public</strong> <strong class="jxr_keyword">synchronized</strong> <a href="../../../nom/tam/fits/HeaderCard.html">HeaderCard</a> setValue(<a href="../../../nom/tam/util/ComplexValue.html">ComplexValue</a> update, <strong class="jxr_keyword">int</strong> decimals) <strong class="jxr_keyword">throws</strong> LongValueException {
+<a class="jxr_linenumber" name="L970" href="#L970">970</a>     <strong class="jxr_keyword">public</strong> <strong class="jxr_keyword">synchronized</strong> <a name="HeaderCard" href="../../../nom/tam/fits/HeaderCard.html#HeaderCard">HeaderCard</a> setValue(<a name="ComplexValue" href="../../../nom/tam/util/ComplexValue.html#ComplexValue">ComplexValue</a> update, <strong class="jxr_keyword">int</strong> decimals) <strong class="jxr_keyword">throws</strong> <a name="LongValueException" href="../../../nom/tam/fits/LongValueException.html#LongValueException">LongValueException</a> {
 <a class="jxr_linenumber" name="L971" href="#L971">971</a>         <strong class="jxr_keyword">if</strong> (update == <strong class="jxr_keyword">null</strong>) {
 <a class="jxr_linenumber" name="L972" href="#L972">972</a>             <strong class="jxr_keyword">this</strong>.value = <strong class="jxr_keyword">null</strong>;
 <a class="jxr_linenumber" name="L973" href="#L973">973</a>         } <strong class="jxr_keyword">else</strong> {
@@ -996,9 +996,9 @@
 <a class="jxr_linenumber" name="L988" href="#L988">988</a> <em class="jxr_javadoccomment">     * @param update                    the new unquoted header value for this card, as a string.</em>
 <a class="jxr_linenumber" name="L989" href="#L989">989</a> <em class="jxr_javadoccomment">     * @throws LongValueException       if the value is too long to fit in the available space.</em>
 <a class="jxr_linenumber" name="L990" href="#L990">990</a> <em class="jxr_javadoccomment">     */</em>
-<a class="jxr_linenumber" name="L991" href="#L991">991</a>     <strong class="jxr_keyword">private</strong> <strong class="jxr_keyword">synchronized</strong> <strong class="jxr_keyword">void</strong> setUnquotedValue(String update) <strong class="jxr_keyword">throws</strong> LongValueException {
+<a class="jxr_linenumber" name="L991" href="#L991">991</a>     <strong class="jxr_keyword">private</strong> <strong class="jxr_keyword">synchronized</strong> <strong class="jxr_keyword">void</strong> setUnquotedValue(String update) <strong class="jxr_keyword">throws</strong> <a name="LongValueException" href="../../../nom/tam/fits/LongValueException.html#LongValueException">LongValueException</a> {
 <a class="jxr_linenumber" name="L992" href="#L992">992</a>         <strong class="jxr_keyword">if</strong> (update.length() &gt; spaceForValue()) {
-<a class="jxr_linenumber" name="L993" href="#L993">993</a>             <strong class="jxr_keyword">throw</strong> <strong class="jxr_keyword">new</strong> <a href="../../../nom/tam/fits/LongValueException.html">LongValueException</a>(spaceForValue(), key, value);
+<a class="jxr_linenumber" name="L993" href="#L993">993</a>             <strong class="jxr_keyword">throw</strong> <strong class="jxr_keyword">new</strong> <a name="LongValueException" href="../../../nom/tam/fits/LongValueException.html#LongValueException">LongValueException</a>(spaceForValue(), key, value);
 <a class="jxr_linenumber" name="L994" href="#L994">994</a>         }
 <a class="jxr_linenumber" name="L995" href="#L995">995</a>         <strong class="jxr_keyword">this</strong>.value = update;
 <a class="jxr_linenumber" name="L996" href="#L996">996</a>     }
@@ -1013,7 +1013,7 @@
 <a class="jxr_linenumber" name="L1005" href="#L1005">1005</a> <em class="jxr_javadoccomment">     * </em>
 <a class="jxr_linenumber" name="L1006" href="#L1006">1006</a> <em class="jxr_javadoccomment">     * @since 1.16</em>
 <a class="jxr_linenumber" name="L1007" href="#L1007">1007</a> <em class="jxr_javadoccomment">     */</em>
-<a class="jxr_linenumber" name="L1008" href="#L1008">1008</a>     <strong class="jxr_keyword">public</strong> <strong class="jxr_keyword">synchronized</strong> <a href="../../../nom/tam/fits/HeaderCard.html">HeaderCard</a> setHexValue(<strong class="jxr_keyword">long</strong> update) <strong class="jxr_keyword">throws</strong> LongValueException {
+<a class="jxr_linenumber" name="L1008" href="#L1008">1008</a>     <strong class="jxr_keyword">public</strong> <strong class="jxr_keyword">synchronized</strong> <a name="HeaderCard" href="../../../nom/tam/fits/HeaderCard.html#HeaderCard">HeaderCard</a> setHexValue(<strong class="jxr_keyword">long</strong> update) <strong class="jxr_keyword">throws</strong> <a name="LongValueException" href="../../../nom/tam/fits/LongValueException.html#LongValueException">LongValueException</a> {
 <a class="jxr_linenumber" name="L1009" href="#L1009">1009</a>         setUnquotedValue(Long.toHexString(update));
 <a class="jxr_linenumber" name="L1010" href="#L1010">1010</a>         <strong class="jxr_keyword">this</strong>.type = (update == (<strong class="jxr_keyword">int</strong>) update) ? Integer.<strong class="jxr_keyword">class</strong> : Long.<strong class="jxr_keyword">class</strong>;
 <a class="jxr_linenumber" name="L1011" href="#L1011">1011</a>         <strong class="jxr_keyword">return</strong> <strong class="jxr_keyword">this</strong>;
@@ -1034,7 +1034,7 @@
 <a class="jxr_linenumber" name="L1026" href="#L1026">1026</a> <em class="jxr_javadoccomment">     * @see FitsFactory#setLongStringsEnabled(boolean)</em>
 <a class="jxr_linenumber" name="L1027" href="#L1027">1027</a> <em class="jxr_javadoccomment">     * @see #validateChars(String)</em>
 <a class="jxr_linenumber" name="L1028" href="#L1028">1028</a> <em class="jxr_javadoccomment">     */</em>
-<a class="jxr_linenumber" name="L1029" href="#L1029">1029</a>     <strong class="jxr_keyword">public</strong> <strong class="jxr_keyword">synchronized</strong> <a href="../../../nom/tam/fits/HeaderCard.html">HeaderCard</a> setValue(String update) <strong class="jxr_keyword">throws</strong> IllegalArgumentException, LongStringsNotEnabledException {
+<a class="jxr_linenumber" name="L1029" href="#L1029">1029</a>     <strong class="jxr_keyword">public</strong> <strong class="jxr_keyword">synchronized</strong> <a name="HeaderCard" href="../../../nom/tam/fits/HeaderCard.html#HeaderCard">HeaderCard</a> setValue(String update) <strong class="jxr_keyword">throws</strong> IllegalArgumentException, <a name="LongStringsNotEnabledException" href="../../../nom/tam/fits/LongStringsNotEnabledException.html#LongStringsNotEnabledException">LongStringsNotEnabledException</a> {
 <a class="jxr_linenumber" name="L1030" href="#L1030">1030</a>         <strong class="jxr_keyword">if</strong> (update == <strong class="jxr_keyword">null</strong>) {
 <a class="jxr_linenumber" name="L1031" href="#L1031">1031</a>             <em class="jxr_comment">// There is always room for an empty string...</em>
 <a class="jxr_linenumber" name="L1032" href="#L1032">1032</a>             <strong class="jxr_keyword">this</strong>.value = <strong class="jxr_keyword">null</strong>;
@@ -1042,7 +1042,7 @@
 <a class="jxr_linenumber" name="L1034" href="#L1034">1034</a>             validateChars(update);
 <a class="jxr_linenumber" name="L1035" href="#L1035">1035</a>             <strong class="jxr_keyword">int</strong> l = STRING_QUOTES_LENGTH + update.length();
 <a class="jxr_linenumber" name="L1036" href="#L1036">1036</a>             <strong class="jxr_keyword">if</strong> (!FitsFactory.isLongStringsEnabled() &amp;&amp; l &gt; spaceForValue(key)) {
-<a class="jxr_linenumber" name="L1037" href="#L1037">1037</a>                 <strong class="jxr_keyword">throw</strong> <strong class="jxr_keyword">new</strong> <a href="../../../nom/tam/fits/LongStringsNotEnabledException.html">LongStringsNotEnabledException</a>(<span class="jxr_string">"New string value for ["</span> + key + <span class="jxr_string">"] is too long."</span>
+<a class="jxr_linenumber" name="L1037" href="#L1037">1037</a>                 <strong class="jxr_keyword">throw</strong> <strong class="jxr_keyword">new</strong> <a name="LongStringsNotEnabledException" href="../../../nom/tam/fits/LongStringsNotEnabledException.html#LongStringsNotEnabledException">LongStringsNotEnabledException</a>(<span class="jxr_string">"New string value for ["</span> + key + <span class="jxr_string">"] is too long."</span>
 <a class="jxr_linenumber" name="L1038" href="#L1038">1038</a>                         + <span class="jxr_string">"\n\n --&gt; You can enable long string support by FitsFactory.setLongStringEnabled(true).\n"</span>);
 <a class="jxr_linenumber" name="L1039" href="#L1039">1039</a>             }
 <a class="jxr_linenumber" name="L1040" href="#L1040">1040</a>             <strong class="jxr_keyword">this</strong>.value = update;
@@ -1069,7 +1069,7 @@
 <a class="jxr_linenumber" name="L1061" href="#L1061">1061</a> <em class="jxr_javadoccomment">     * @see FitsFactory#setLongStringsEnabled(boolean)</em>
 <a class="jxr_linenumber" name="L1062" href="#L1062">1062</a> <em class="jxr_javadoccomment">     */</em>
 <a class="jxr_linenumber" name="L1063" href="#L1063">1063</a>     @Override
-<a class="jxr_linenumber" name="L1064" href="#L1064">1064</a>     <strong class="jxr_keyword">public</strong> String toString() <strong class="jxr_keyword">throws</strong> LongValueException, LongStringsNotEnabledException, HierarchNotEnabledException {
+<a class="jxr_linenumber" name="L1064" href="#L1064">1064</a>     <strong class="jxr_keyword">public</strong> String toString() <strong class="jxr_keyword">throws</strong> LongValueException, LongStringsNotEnabledException, <a name="HierarchNotEnabledException" href="../../../nom/tam/fits/HierarchNotEnabledException.html#HierarchNotEnabledException">HierarchNotEnabledException</a> {
 <a class="jxr_linenumber" name="L1065" href="#L1065">1065</a>         <strong class="jxr_keyword">return</strong> toString(FitsFactory.current());
 <a class="jxr_linenumber" name="L1066" href="#L1066">1066</a>     }
 <a class="jxr_linenumber" name="L1067" href="#L1067">1067</a> 
@@ -1089,9 +1089,9 @@
 <a class="jxr_linenumber" name="L1081" href="#L1081">1081</a> <em class="jxr_javadoccomment">     *                                      </em>
 <a class="jxr_linenumber" name="L1082" href="#L1082">1082</a> <em class="jxr_javadoccomment">     * @see FitsFactory#setLongStringsEnabled(boolean)</em>
 <a class="jxr_linenumber" name="L1083" href="#L1083">1083</a> <em class="jxr_javadoccomment">     */</em>
-<a class="jxr_linenumber" name="L1084" href="#L1084">1084</a>     <strong class="jxr_keyword">protected</strong> <strong class="jxr_keyword">synchronized</strong> String toString(<strong class="jxr_keyword">final</strong> <a href="../../../nom/tam/fits/FitsFactory.html">FitsSettings</a> settings) 
-<a class="jxr_linenumber" name="L1085" href="#L1085">1085</a>             <strong class="jxr_keyword">throws</strong> LongValueException, LongStringsNotEnabledException, <a href="../../../nom/tam/fits/HierarchNotEnabledException.html">HierarchNotEnabledException</a> {
-<a class="jxr_linenumber" name="L1086" href="#L1086">1086</a>         <strong class="jxr_keyword">return</strong> <strong class="jxr_keyword">new</strong> <a href="../../../nom/tam/fits/HeaderCardFormatter.html">HeaderCardFormatter</a>(settings).toString(<strong class="jxr_keyword">this</strong>);
+<a class="jxr_linenumber" name="L1084" href="#L1084">1084</a>     <strong class="jxr_keyword">protected</strong> <strong class="jxr_keyword">synchronized</strong> String toString(<strong class="jxr_keyword">final</strong> FitsSettings settings) 
+<a class="jxr_linenumber" name="L1085" href="#L1085">1085</a>             <strong class="jxr_keyword">throws</strong> LongValueException, LongStringsNotEnabledException, <a name="HierarchNotEnabledException" href="../../../nom/tam/fits/HierarchNotEnabledException.html#HierarchNotEnabledException">HierarchNotEnabledException</a> {
+<a class="jxr_linenumber" name="L1086" href="#L1086">1086</a>         <strong class="jxr_keyword">return</strong> <strong class="jxr_keyword">new</strong> <a name="HeaderCardFormatter" href="../../../nom/tam/fits/HeaderCardFormatter.html#HeaderCardFormatter">HeaderCardFormatter</a>(settings).toString(<strong class="jxr_keyword">this</strong>);
 <a class="jxr_linenumber" name="L1087" href="#L1087">1087</a>     }
 <a class="jxr_linenumber" name="L1088" href="#L1088">1088</a> 
 <a class="jxr_linenumber" name="L1089" href="#L1089">1089</a>     <em class="jxr_javadoccomment">/**</em>
@@ -1137,8 +1137,8 @@
 <a class="jxr_linenumber" name="L1129" href="#L1129">1129</a> <em class="jxr_javadoccomment">     *                                  an 80-character record.</em>
 <a class="jxr_linenumber" name="L1130" href="#L1130">1130</a> <em class="jxr_javadoccomment">     */</em>
 <a class="jxr_linenumber" name="L1131" href="#L1131">1131</a>     @SuppressWarnings(<span class="jxr_string">"deprecation"</span>)
-<a class="jxr_linenumber" name="L1132" href="#L1132">1132</a>     <strong class="jxr_keyword">private</strong> <strong class="jxr_keyword">synchronized</strong> <strong class="jxr_keyword">void</strong> parseLongStringCard(<a href="../../../nom/tam/fits/HeaderCardCountingArrayDataInput.html">HeaderCardCountingArrayDataInput</a> dis, <a href="../../../nom/tam/fits/HeaderCardParser.html">HeaderCardParser</a> next)
-<a class="jxr_linenumber" name="L1133" href="#L1133">1133</a>             <strong class="jxr_keyword">throws</strong> IOException, <a href="../../../nom/tam/fits/TruncatedFileException.html">TruncatedFileException</a> {
+<a class="jxr_linenumber" name="L1132" href="#L1132">1132</a>     <strong class="jxr_keyword">private</strong> <strong class="jxr_keyword">synchronized</strong> <strong class="jxr_keyword">void</strong> parseLongStringCard(<a name="HeaderCardCountingArrayDataInput" href="../../../nom/tam/fits/HeaderCardCountingArrayDataInput.html#HeaderCardCountingArrayDataInput">HeaderCardCountingArrayDataInput</a> dis, <a name="HeaderCardParser" href="../../../nom/tam/fits/HeaderCardParser.html#HeaderCardParser">HeaderCardParser</a> next)
+<a class="jxr_linenumber" name="L1133" href="#L1133">1133</a>             <strong class="jxr_keyword">throws</strong> IOException, <a name="TruncatedFileException" href="../../../nom/tam/fits/TruncatedFileException.html#TruncatedFileException">TruncatedFileException</a> {
 <a class="jxr_linenumber" name="L1134" href="#L1134">1134</a> 
 <a class="jxr_linenumber" name="L1135" href="#L1135">1135</a>         StringBuilder longValue = <strong class="jxr_keyword">new</strong> StringBuilder();
 <a class="jxr_linenumber" name="L1136" href="#L1136">1136</a>         StringBuilder longComment = <strong class="jxr_keyword">null</strong>;       
@@ -1170,7 +1170,7 @@
 <a class="jxr_linenumber" name="L1162" href="#L1162">1162</a>             
 <a class="jxr_linenumber" name="L1163" href="#L1163">1163</a>             <strong class="jxr_keyword">try</strong> {
 <a class="jxr_linenumber" name="L1164" href="#L1164">1164</a>                 <em class="jxr_comment">// Check if we should continue parsing this card...</em>
-<a class="jxr_linenumber" name="L1165" href="#L1165">1165</a>                 next = <strong class="jxr_keyword">new</strong> <a href="../../../nom/tam/fits/HeaderCardParser.html">HeaderCardParser</a>(readOneHeaderLine(dis));
+<a class="jxr_linenumber" name="L1165" href="#L1165">1165</a>                 next = <strong class="jxr_keyword">new</strong> <a name="HeaderCardParser" href="../../../nom/tam/fits/HeaderCardParser.html#HeaderCardParser">HeaderCardParser</a>(readOneHeaderLine(dis));
 <a class="jxr_linenumber" name="L1166" href="#L1166">1166</a>                 <strong class="jxr_keyword">if</strong> (valuePart.endsWith(<span class="jxr_string">"&amp;"</span>) &amp;&amp; CONTINUE.key().equals(next.getKey())) {
 <a class="jxr_linenumber" name="L1167" href="#L1167">1167</a>                     <em class="jxr_comment">// Remove '&amp; from the value part...</em>
 <a class="jxr_linenumber" name="L1168" href="#L1168">1168</a>                     valueEnd--;
@@ -1275,9 +1275,9 @@
 <a class="jxr_linenumber" name="L1267" href="#L1267">1267</a>         validateKey(newKey);
 <a class="jxr_linenumber" name="L1268" href="#L1268">1268</a>         <strong class="jxr_keyword">if</strong> (getHeaderValueSize() &gt; spaceForValue(newKey)) {
 <a class="jxr_linenumber" name="L1269" href="#L1269">1269</a>             <strong class="jxr_keyword">if</strong> (!isStringValue()) {
-<a class="jxr_linenumber" name="L1270" href="#L1270">1270</a>                 <strong class="jxr_keyword">throw</strong> <strong class="jxr_keyword">new</strong> <a href="../../../nom/tam/fits/LongValueException.html">LongValueException</a>(spaceForValue(newKey), newKey + <span class="jxr_string">"= "</span> + value);
+<a class="jxr_linenumber" name="L1270" href="#L1270">1270</a>                 <strong class="jxr_keyword">throw</strong> <strong class="jxr_keyword">new</strong> <a name="LongValueException" href="../../../nom/tam/fits/LongValueException.html#LongValueException">LongValueException</a>(spaceForValue(newKey), newKey + <span class="jxr_string">"= "</span> + value);
 <a class="jxr_linenumber" name="L1271" href="#L1271">1271</a>             } <strong class="jxr_keyword">else</strong> <strong class="jxr_keyword">if</strong> (!FitsFactory.isLongStringsEnabled()) {
-<a class="jxr_linenumber" name="L1272" href="#L1272">1272</a>                 <strong class="jxr_keyword">throw</strong> <strong class="jxr_keyword">new</strong> <a href="../../../nom/tam/fits/LongStringsNotEnabledException.html">LongStringsNotEnabledException</a>(newKey);
+<a class="jxr_linenumber" name="L1272" href="#L1272">1272</a>                 <strong class="jxr_keyword">throw</strong> <strong class="jxr_keyword">new</strong> <a name="LongStringsNotEnabledException" href="../../../nom/tam/fits/LongStringsNotEnabledException.html#LongStringsNotEnabledException">LongStringsNotEnabledException</a>(newKey);
 <a class="jxr_linenumber" name="L1273" href="#L1273">1273</a>             }
 <a class="jxr_linenumber" name="L1274" href="#L1274">1274</a>         }
 <a class="jxr_linenumber" name="L1275" href="#L1275">1275</a>         <strong class="jxr_keyword">this</strong>.key = newKey;
@@ -1373,9 +1373,9 @@
 <a class="jxr_linenumber" name="L1365" href="#L1365">1365</a> <em class="jxr_javadoccomment">     * @see FitsFactory#setUseHierarch(boolean)</em>
 <a class="jxr_linenumber" name="L1366" href="#L1366">1366</a> <em class="jxr_javadoccomment">     * @see nom.tam.fits.header.hierarch.IHierarchKeyFormatter#setCaseSensitive(boolean)</em>
 <a class="jxr_linenumber" name="L1367" href="#L1367">1367</a> <em class="jxr_javadoccomment">     */</em>
-<a class="jxr_linenumber" name="L1368" href="#L1368">1368</a>     <strong class="jxr_keyword">public</strong> <strong class="jxr_keyword">static</strong> <a href="../../../nom/tam/fits/HeaderCard.html">HeaderCard</a> create(String line) <strong class="jxr_keyword">throws</strong> IllegalArgumentException {
-<a class="jxr_linenumber" name="L1369" href="#L1369">1369</a>         <strong class="jxr_keyword">try</strong> (ArrayDataInput in = stringToArrayInputStream(line)) {
-<a class="jxr_linenumber" name="L1370" href="#L1370">1370</a>             <strong class="jxr_keyword">return</strong> <strong class="jxr_keyword">new</strong> <a href="../../../nom/tam/fits/HeaderCard.html">HeaderCard</a>(in);
+<a class="jxr_linenumber" name="L1368" href="#L1368">1368</a>     <strong class="jxr_keyword">public</strong> <strong class="jxr_keyword">static</strong> <a name="HeaderCard" href="../../../nom/tam/fits/HeaderCard.html#HeaderCard">HeaderCard</a> create(String line) <strong class="jxr_keyword">throws</strong> IllegalArgumentException {
+<a class="jxr_linenumber" name="L1369" href="#L1369">1369</a>         <strong class="jxr_keyword">try</strong> (<a name="ArrayDataInput" href="../../../nom/tam/util/ArrayDataInput.html#ArrayDataInput">ArrayDataInput</a> in = stringToArrayInputStream(line)) {
+<a class="jxr_linenumber" name="L1370" href="#L1370">1370</a>             <strong class="jxr_keyword">return</strong> <strong class="jxr_keyword">new</strong> <a name="HeaderCard" href="../../../nom/tam/fits/HeaderCard.html#HeaderCard">HeaderCard</a>(in);
 <a class="jxr_linenumber" name="L1371" href="#L1371">1371</a>         } <strong class="jxr_keyword">catch</strong> (Exception e) {
 <a class="jxr_linenumber" name="L1372" href="#L1372">1372</a>             <strong class="jxr_keyword">throw</strong> <strong class="jxr_keyword">new</strong> IllegalArgumentException(<span class="jxr_string">"card not legal"</span>, e);
 <a class="jxr_linenumber" name="L1373" href="#L1373">1373</a>         }
@@ -1399,7 +1399,7 @@
 <a class="jxr_linenumber" name="L1391" href="#L1391">1391</a> <em class="jxr_javadoccomment">     * </em>
 <a class="jxr_linenumber" name="L1392" href="#L1392">1392</a> <em class="jxr_javadoccomment">     * @since 1.16</em>
 <a class="jxr_linenumber" name="L1393" href="#L1393">1393</a> <em class="jxr_javadoccomment">     */</em>
-<a class="jxr_linenumber" name="L1394" href="#L1394">1394</a>     <strong class="jxr_keyword">private</strong> <strong class="jxr_keyword">static</strong> <strong class="jxr_keyword">void</strong> checkType(<a href="../../../nom/tam/fits/header/IFitsHeader.html">IFitsHeader</a> key, <a href="../../../nom/tam/fits/header/IFitsHeader.html">VALUE</a> type) {
+<a class="jxr_linenumber" name="L1394" href="#L1394">1394</a>     <strong class="jxr_keyword">private</strong> <strong class="jxr_keyword">static</strong> <strong class="jxr_keyword">void</strong> checkType(<a name="IFitsHeader" href="../../../nom/tam/fits/header/IFitsHeader.html#IFitsHeader">IFitsHeader</a> key, VALUE type) {
 <a class="jxr_linenumber" name="L1395" href="#L1395">1395</a>         <strong class="jxr_keyword">if</strong> (key.valueType() != VALUE.ANY &amp;&amp; key.valueType() != type) {
 <a class="jxr_linenumber" name="L1396" href="#L1396">1396</a>             LOG.log(Level.WARNING, <span class="jxr_string">"["</span> + key + <span class="jxr_string">"] created with unexpected value type."</span>, <strong class="jxr_keyword">new</strong> IllegalArgumentException(<span class="jxr_string">"Expected "</span> + type + <span class="jxr_string">", got "</span> + key.valueType()));
 <a class="jxr_linenumber" name="L1397" href="#L1397">1397</a>         }
@@ -1423,12 +1423,12 @@
 <a class="jxr_linenumber" name="L1415" href="#L1415">1415</a> <em class="jxr_javadoccomment">     *                  </em>
 <a class="jxr_linenumber" name="L1416" href="#L1416">1416</a> <em class="jxr_javadoccomment">     * @since 1.16</em>
 <a class="jxr_linenumber" name="L1417" href="#L1417">1417</a> <em class="jxr_javadoccomment">     */</em>
-<a class="jxr_linenumber" name="L1418" href="#L1418">1418</a>     <strong class="jxr_keyword">public</strong> <strong class="jxr_keyword">static</strong> <a href="../../../nom/tam/fits/HeaderCard.html">HeaderCard</a> create(<a href="../../../nom/tam/fits/header/IFitsHeader.html">IFitsHeader</a> key, Boolean value) <strong class="jxr_keyword">throws</strong> IllegalArgumentException {
+<a class="jxr_linenumber" name="L1418" href="#L1418">1418</a>     <strong class="jxr_keyword">public</strong> <strong class="jxr_keyword">static</strong> <a name="HeaderCard" href="../../../nom/tam/fits/HeaderCard.html#HeaderCard">HeaderCard</a> create(<a name="IFitsHeader" href="../../../nom/tam/fits/header/IFitsHeader.html#IFitsHeader">IFitsHeader</a> key, Boolean value) <strong class="jxr_keyword">throws</strong> IllegalArgumentException {
 <a class="jxr_linenumber" name="L1419" href="#L1419">1419</a>         checkType(key, VALUE.LOGICAL);
 <a class="jxr_linenumber" name="L1420" href="#L1420">1420</a>         
 <a class="jxr_linenumber" name="L1421" href="#L1421">1421</a>         <strong class="jxr_keyword">try</strong> {
-<a class="jxr_linenumber" name="L1422" href="#L1422">1422</a>             <strong class="jxr_keyword">return</strong> <strong class="jxr_keyword">new</strong> <a href="../../../nom/tam/fits/HeaderCard.html">HeaderCard</a>(key.key(), value, key.comment());
-<a class="jxr_linenumber" name="L1423" href="#L1423">1423</a>         } <strong class="jxr_keyword">catch</strong> (HeaderCardException e) {
+<a class="jxr_linenumber" name="L1422" href="#L1422">1422</a>             <strong class="jxr_keyword">return</strong> <strong class="jxr_keyword">new</strong> <a name="HeaderCard" href="../../../nom/tam/fits/HeaderCard.html#HeaderCard">HeaderCard</a>(key.key(), value, key.comment());
+<a class="jxr_linenumber" name="L1423" href="#L1423">1423</a>         } <strong class="jxr_keyword">catch</strong> (<a name="HeaderCardException" href="../../../nom/tam/fits/HeaderCardException.html#HeaderCardException">HeaderCardException</a> e) {
 <a class="jxr_linenumber" name="L1424" href="#L1424">1424</a>             <strong class="jxr_keyword">throw</strong> <strong class="jxr_keyword">new</strong> IllegalArgumentException(<span class="jxr_string">"Invalid standard key ["</span> + key.key() + <span class="jxr_string">"]"</span>, e);
 <a class="jxr_linenumber" name="L1425" href="#L1425">1425</a>         }
 <a class="jxr_linenumber" name="L1426" href="#L1426">1426</a>     }
@@ -1450,7 +1450,7 @@
 <a class="jxr_linenumber" name="L1442" href="#L1442">1442</a> <em class="jxr_javadoccomment">     *                  </em>
 <a class="jxr_linenumber" name="L1443" href="#L1443">1443</a> <em class="jxr_javadoccomment">     * @since 1.6</em>
 <a class="jxr_linenumber" name="L1444" href="#L1444">1444</a> <em class="jxr_javadoccomment">     */</em>
-<a class="jxr_linenumber" name="L1445" href="#L1445">1445</a>     <strong class="jxr_keyword">public</strong> <strong class="jxr_keyword">static</strong> <a href="../../../nom/tam/fits/HeaderCard.html">HeaderCard</a> create(<a href="../../../nom/tam/fits/header/IFitsHeader.html">IFitsHeader</a> key, Number value)  <strong class="jxr_keyword">throws</strong> IllegalArgumentException  {
+<a class="jxr_linenumber" name="L1445" href="#L1445">1445</a>     <strong class="jxr_keyword">public</strong> <strong class="jxr_keyword">static</strong> <a name="HeaderCard" href="../../../nom/tam/fits/HeaderCard.html#HeaderCard">HeaderCard</a> create(<a name="IFitsHeader" href="../../../nom/tam/fits/header/IFitsHeader.html#IFitsHeader">IFitsHeader</a> key, Number value)  <strong class="jxr_keyword">throws</strong> IllegalArgumentException  {
 <a class="jxr_linenumber" name="L1446" href="#L1446">1446</a>         <strong class="jxr_keyword">if</strong> (value instanceof Float || value instanceof Double || value instanceof BigInteger) {
 <a class="jxr_linenumber" name="L1447" href="#L1447">1447</a>             checkType(key, VALUE.REAL);
 <a class="jxr_linenumber" name="L1448" href="#L1448">1448</a>         } <strong class="jxr_keyword">else</strong> {       
@@ -1458,8 +1458,8 @@
 <a class="jxr_linenumber" name="L1450" href="#L1450">1450</a>         }
 <a class="jxr_linenumber" name="L1451" href="#L1451">1451</a>             
 <a class="jxr_linenumber" name="L1452" href="#L1452">1452</a>         <strong class="jxr_keyword">try</strong> {
-<a class="jxr_linenumber" name="L1453" href="#L1453">1453</a>             <strong class="jxr_keyword">return</strong> <strong class="jxr_keyword">new</strong> <a href="../../../nom/tam/fits/HeaderCard.html">HeaderCard</a>(key.key(), value, key.comment());
-<a class="jxr_linenumber" name="L1454" href="#L1454">1454</a>         } <strong class="jxr_keyword">catch</strong> (HeaderCardException e) {
+<a class="jxr_linenumber" name="L1453" href="#L1453">1453</a>             <strong class="jxr_keyword">return</strong> <strong class="jxr_keyword">new</strong> <a name="HeaderCard" href="../../../nom/tam/fits/HeaderCard.html#HeaderCard">HeaderCard</a>(key.key(), value, key.comment());
+<a class="jxr_linenumber" name="L1454" href="#L1454">1454</a>         } <strong class="jxr_keyword">catch</strong> (<a name="HeaderCardException" href="../../../nom/tam/fits/HeaderCardException.html#HeaderCardException">HeaderCardException</a> e) {
 <a class="jxr_linenumber" name="L1455" href="#L1455">1455</a>             <strong class="jxr_keyword">throw</strong> <strong class="jxr_keyword">new</strong> IllegalArgumentException(<span class="jxr_string">"Invalid standard key ["</span> + key.key() + <span class="jxr_string">"]"</span>, e);
 <a class="jxr_linenumber" name="L1456" href="#L1456">1456</a>         }
 <a class="jxr_linenumber" name="L1457" href="#L1457">1457</a>     }
@@ -1481,12 +1481,12 @@
 <a class="jxr_linenumber" name="L1473" href="#L1473">1473</a> <em class="jxr_javadoccomment">     *                  </em>
 <a class="jxr_linenumber" name="L1474" href="#L1474">1474</a> <em class="jxr_javadoccomment">     * @since 1.6</em>
 <a class="jxr_linenumber" name="L1475" href="#L1475">1475</a> <em class="jxr_javadoccomment">     */</em>
-<a class="jxr_linenumber" name="L1476" href="#L1476">1476</a>     <strong class="jxr_keyword">public</strong> <strong class="jxr_keyword">static</strong> <a href="../../../nom/tam/fits/HeaderCard.html">HeaderCard</a> create(<a href="../../../nom/tam/fits/header/IFitsHeader.html">IFitsHeader</a> key, <a href="../../../nom/tam/util/ComplexValue.html">ComplexValue</a> value)  <strong class="jxr_keyword">throws</strong> IllegalArgumentException  {
+<a class="jxr_linenumber" name="L1476" href="#L1476">1476</a>     <strong class="jxr_keyword">public</strong> <strong class="jxr_keyword">static</strong> <a name="HeaderCard" href="../../../nom/tam/fits/HeaderCard.html#HeaderCard">HeaderCard</a> create(<a name="IFitsHeader" href="../../../nom/tam/fits/header/IFitsHeader.html#IFitsHeader">IFitsHeader</a> key, <a name="ComplexValue" href="../../../nom/tam/util/ComplexValue.html#ComplexValue">ComplexValue</a> value)  <strong class="jxr_keyword">throws</strong> IllegalArgumentException  {
 <a class="jxr_linenumber" name="L1477" href="#L1477">1477</a>         checkType(key, VALUE.COMPLEX);
 <a class="jxr_linenumber" name="L1478" href="#L1478">1478</a>             
 <a class="jxr_linenumber" name="L1479" href="#L1479">1479</a>         <strong class="jxr_keyword">try</strong> {
-<a class="jxr_linenumber" name="L1480" href="#L1480">1480</a>             <strong class="jxr_keyword">return</strong> <strong class="jxr_keyword">new</strong> <a href="../../../nom/tam/fits/HeaderCard.html">HeaderCard</a>(key.key(), value, key.comment());
-<a class="jxr_linenumber" name="L1481" href="#L1481">1481</a>         } <strong class="jxr_keyword">catch</strong> (HeaderCardException e) {
+<a class="jxr_linenumber" name="L1480" href="#L1480">1480</a>             <strong class="jxr_keyword">return</strong> <strong class="jxr_keyword">new</strong> <a name="HeaderCard" href="../../../nom/tam/fits/HeaderCard.html#HeaderCard">HeaderCard</a>(key.key(), value, key.comment());
+<a class="jxr_linenumber" name="L1481" href="#L1481">1481</a>         } <strong class="jxr_keyword">catch</strong> (<a name="HeaderCardException" href="../../../nom/tam/fits/HeaderCardException.html#HeaderCardException">HeaderCardException</a> e) {
 <a class="jxr_linenumber" name="L1482" href="#L1482">1482</a>             <strong class="jxr_keyword">throw</strong> <strong class="jxr_keyword">new</strong> IllegalArgumentException(<span class="jxr_string">"Invalid standard key ["</span> + key.key() + <span class="jxr_string">"]"</span>, e);
 <a class="jxr_linenumber" name="L1483" href="#L1483">1483</a>         }
 <a class="jxr_linenumber" name="L1484" href="#L1484">1484</a>     }
@@ -1510,13 +1510,13 @@
 <a class="jxr_linenumber" name="L1502" href="#L1502">1502</a> <em class="jxr_javadoccomment">     *                  range, or if the standard key was ill-defined.</em>
 <a class="jxr_linenumber" name="L1503" href="#L1503">1503</a> <em class="jxr_javadoccomment">     *                  </em>
 <a class="jxr_linenumber" name="L1504" href="#L1504">1504</a> <em class="jxr_javadoccomment">     */</em>
-<a class="jxr_linenumber" name="L1505" href="#L1505">1505</a>     <strong class="jxr_keyword">public</strong> <strong class="jxr_keyword">static</strong> <a href="../../../nom/tam/fits/HeaderCard.html">HeaderCard</a> create(<a href="../../../nom/tam/fits/header/IFitsHeader.html">IFitsHeader</a> key, String value) <strong class="jxr_keyword">throws</strong> IllegalArgumentException {
+<a class="jxr_linenumber" name="L1505" href="#L1505">1505</a>     <strong class="jxr_keyword">public</strong> <strong class="jxr_keyword">static</strong> <a name="HeaderCard" href="../../../nom/tam/fits/HeaderCard.html#HeaderCard">HeaderCard</a> create(<a name="IFitsHeader" href="../../../nom/tam/fits/header/IFitsHeader.html#IFitsHeader">IFitsHeader</a> key, String value) <strong class="jxr_keyword">throws</strong> IllegalArgumentException {
 <a class="jxr_linenumber" name="L1506" href="#L1506">1506</a>         checkType(key, VALUE.STRING);        
 <a class="jxr_linenumber" name="L1507" href="#L1507">1507</a>         validateChars(value);
 <a class="jxr_linenumber" name="L1508" href="#L1508">1508</a>         
 <a class="jxr_linenumber" name="L1509" href="#L1509">1509</a>         <strong class="jxr_keyword">try</strong> {
-<a class="jxr_linenumber" name="L1510" href="#L1510">1510</a>             <strong class="jxr_keyword">return</strong> <strong class="jxr_keyword">new</strong> <a href="../../../nom/tam/fits/HeaderCard.html">HeaderCard</a>(key.key(), value, key.comment());
-<a class="jxr_linenumber" name="L1511" href="#L1511">1511</a>         } <strong class="jxr_keyword">catch</strong> (HeaderCardException e) {
+<a class="jxr_linenumber" name="L1510" href="#L1510">1510</a>             <strong class="jxr_keyword">return</strong> <strong class="jxr_keyword">new</strong> <a name="HeaderCard" href="../../../nom/tam/fits/HeaderCard.html#HeaderCard">HeaderCard</a>(key.key(), value, key.comment());
+<a class="jxr_linenumber" name="L1511" href="#L1511">1511</a>         } <strong class="jxr_keyword">catch</strong> (<a name="HeaderCardException" href="../../../nom/tam/fits/HeaderCardException.html#HeaderCardException">HeaderCardException</a> e) {
 <a class="jxr_linenumber" name="L1512" href="#L1512">1512</a>             <strong class="jxr_keyword">throw</strong> <strong class="jxr_keyword">new</strong> IllegalArgumentException(<span class="jxr_string">"Invalid standard key ["</span> + key.key() + <span class="jxr_string">"]"</span>, e);
 <a class="jxr_linenumber" name="L1513" href="#L1513">1513</a>         }
 <a class="jxr_linenumber" name="L1514" href="#L1514">1514</a>     }
@@ -1537,13 +1537,13 @@
 <a class="jxr_linenumber" name="L1529" href="#L1529">1529</a> <em class="jxr_javadoccomment">     * @see Header#insertCommentStyle(String, String)</em>
 <a class="jxr_linenumber" name="L1530" href="#L1530">1530</a> <em class="jxr_javadoccomment">     * @see Header#insertCommentStyleMultiline(String, String)</em>
 <a class="jxr_linenumber" name="L1531" href="#L1531">1531</a> <em class="jxr_javadoccomment">     */</em>
-<a class="jxr_linenumber" name="L1532" href="#L1532">1532</a>     <strong class="jxr_keyword">public</strong> <strong class="jxr_keyword">static</strong> <a href="../../../nom/tam/fits/HeaderCard.html">HeaderCard</a> createCommentStyleCard(String key, String comment) <strong class="jxr_keyword">throws</strong> HeaderCardException, LongValueException {
+<a class="jxr_linenumber" name="L1532" href="#L1532">1532</a>     <strong class="jxr_keyword">public</strong> <strong class="jxr_keyword">static</strong> <a name="HeaderCard" href="../../../nom/tam/fits/HeaderCard.html#HeaderCard">HeaderCard</a> createCommentStyleCard(String key, String comment) <strong class="jxr_keyword">throws</strong> HeaderCardException, <a name="LongValueException" href="../../../nom/tam/fits/LongValueException.html#LongValueException">LongValueException</a> {
 <a class="jxr_linenumber" name="L1533" href="#L1533">1533</a>         <strong class="jxr_keyword">if</strong> (comment == <strong class="jxr_keyword">null</strong>) {
 <a class="jxr_linenumber" name="L1534" href="#L1534">1534</a>             comment = <span class="jxr_string">""</span>;
 <a class="jxr_linenumber" name="L1535" href="#L1535">1535</a>         } <strong class="jxr_keyword">else</strong> <strong class="jxr_keyword">if</strong> (comment.length() &gt; MAX_COMMENT_CARD_COMMENT_LENGTH) {
-<a class="jxr_linenumber" name="L1536" href="#L1536">1536</a>             <strong class="jxr_keyword">throw</strong> <strong class="jxr_keyword">new</strong> <a href="../../../nom/tam/fits/LongValueException.html">LongValueException</a>(MAX_COMMENT_CARD_COMMENT_LENGTH, key, comment);
+<a class="jxr_linenumber" name="L1536" href="#L1536">1536</a>             <strong class="jxr_keyword">throw</strong> <strong class="jxr_keyword">new</strong> <a name="LongValueException" href="../../../nom/tam/fits/LongValueException.html#LongValueException">LongValueException</a>(MAX_COMMENT_CARD_COMMENT_LENGTH, key, comment);
 <a class="jxr_linenumber" name="L1537" href="#L1537">1537</a>         }
-<a class="jxr_linenumber" name="L1538" href="#L1538">1538</a>         <a href="../../../nom/tam/fits/HeaderCard.html">HeaderCard</a> card = <strong class="jxr_keyword">new</strong> <a href="../../../nom/tam/fits/HeaderCard.html">HeaderCard</a>();
+<a class="jxr_linenumber" name="L1538" href="#L1538">1538</a>         <a name="HeaderCard" href="../../../nom/tam/fits/HeaderCard.html#HeaderCard">HeaderCard</a> card = <strong class="jxr_keyword">new</strong> <a name="HeaderCard" href="../../../nom/tam/fits/HeaderCard.html#HeaderCard">HeaderCard</a>();
 <a class="jxr_linenumber" name="L1539" href="#L1539">1539</a>         card.set(key, <strong class="jxr_keyword">null</strong>, comment, <strong class="jxr_keyword">null</strong>);
 <a class="jxr_linenumber" name="L1540" href="#L1540">1540</a>         <strong class="jxr_keyword">return</strong> card;
 <a class="jxr_linenumber" name="L1541" href="#L1541">1541</a>     }
@@ -1563,7 +1563,7 @@
 <a class="jxr_linenumber" name="L1555" href="#L1555">1555</a> <em class="jxr_javadoccomment">     * @see #createCommentStyleCard(String, String)</em>
 <a class="jxr_linenumber" name="L1556" href="#L1556">1556</a> <em class="jxr_javadoccomment">     * @see Header#insertUnkeyedComment(String)</em>
 <a class="jxr_linenumber" name="L1557" href="#L1557">1557</a> <em class="jxr_javadoccomment">     */</em>
-<a class="jxr_linenumber" name="L1558" href="#L1558">1558</a>     <strong class="jxr_keyword">public</strong> <strong class="jxr_keyword">static</strong> <a href="../../../nom/tam/fits/HeaderCard.html">HeaderCard</a> createUnkeyedCommentCard(String text) <strong class="jxr_keyword">throws</strong> HeaderCardException, LongValueException {
+<a class="jxr_linenumber" name="L1558" href="#L1558">1558</a>     <strong class="jxr_keyword">public</strong> <strong class="jxr_keyword">static</strong> <a name="HeaderCard" href="../../../nom/tam/fits/HeaderCard.html#HeaderCard">HeaderCard</a> createUnkeyedCommentCard(String text) <strong class="jxr_keyword">throws</strong> HeaderCardException, <a name="LongValueException" href="../../../nom/tam/fits/LongValueException.html#LongValueException">LongValueException</a> {
 <a class="jxr_linenumber" name="L1559" href="#L1559">1559</a>         <strong class="jxr_keyword">return</strong> createCommentStyleCard(BLANKS.key(), text);
 <a class="jxr_linenumber" name="L1560" href="#L1560">1560</a>     }
 <a class="jxr_linenumber" name="L1561" href="#L1561">1561</a>     
@@ -1582,7 +1582,7 @@
 <a class="jxr_linenumber" name="L1574" href="#L1574">1574</a> <em class="jxr_javadoccomment">     * @see #createCommentStyleCard(String, String)</em>
 <a class="jxr_linenumber" name="L1575" href="#L1575">1575</a> <em class="jxr_javadoccomment">     * @see Header#insertComment(String)</em>
 <a class="jxr_linenumber" name="L1576" href="#L1576">1576</a> <em class="jxr_javadoccomment">     */</em>
-<a class="jxr_linenumber" name="L1577" href="#L1577">1577</a>     <strong class="jxr_keyword">public</strong> <strong class="jxr_keyword">static</strong> <a href="../../../nom/tam/fits/HeaderCard.html">HeaderCard</a> createCommentCard(String text) <strong class="jxr_keyword">throws</strong> HeaderCardException, LongValueException {
+<a class="jxr_linenumber" name="L1577" href="#L1577">1577</a>     <strong class="jxr_keyword">public</strong> <strong class="jxr_keyword">static</strong> <a name="HeaderCard" href="../../../nom/tam/fits/HeaderCard.html#HeaderCard">HeaderCard</a> createCommentCard(String text) <strong class="jxr_keyword">throws</strong> HeaderCardException, <a name="LongValueException" href="../../../nom/tam/fits/LongValueException.html#LongValueException">LongValueException</a> {
 <a class="jxr_linenumber" name="L1578" href="#L1578">1578</a>         <strong class="jxr_keyword">return</strong> createCommentStyleCard(COMMENT.key(), text);
 <a class="jxr_linenumber" name="L1579" href="#L1579">1579</a>     }
 <a class="jxr_linenumber" name="L1580" href="#L1580">1580</a>     
@@ -1602,7 +1602,7 @@
 <a class="jxr_linenumber" name="L1594" href="#L1594">1594</a> <em class="jxr_javadoccomment">     * @see #createCommentStyleCard(String, String)</em>
 <a class="jxr_linenumber" name="L1595" href="#L1595">1595</a> <em class="jxr_javadoccomment">     * @see Header#insertHistory(String)</em>
 <a class="jxr_linenumber" name="L1596" href="#L1596">1596</a> <em class="jxr_javadoccomment">     */</em>
-<a class="jxr_linenumber" name="L1597" href="#L1597">1597</a>     <strong class="jxr_keyword">public</strong> <strong class="jxr_keyword">static</strong> <a href="../../../nom/tam/fits/HeaderCard.html">HeaderCard</a> createHistoryCard(String text) <strong class="jxr_keyword">throws</strong> HeaderCardException, LongValueException {
+<a class="jxr_linenumber" name="L1597" href="#L1597">1597</a>     <strong class="jxr_keyword">public</strong> <strong class="jxr_keyword">static</strong> <a name="HeaderCard" href="../../../nom/tam/fits/HeaderCard.html#HeaderCard">HeaderCard</a> createHistoryCard(String text) <strong class="jxr_keyword">throws</strong> HeaderCardException, <a name="LongValueException" href="../../../nom/tam/fits/LongValueException.html#LongValueException">LongValueException</a> {
 <a class="jxr_linenumber" name="L1598" href="#L1598">1598</a>         <strong class="jxr_keyword">return</strong> createCommentStyleCard(HISTORY.key(), text);
 <a class="jxr_linenumber" name="L1599" href="#L1599">1599</a>     }
 <a class="jxr_linenumber" name="L1600" href="#L1600">1600</a>     
@@ -1620,7 +1620,7 @@
 <a class="jxr_linenumber" name="L1612" href="#L1612">1612</a> <em class="jxr_javadoccomment">     * @see #getHexValue()</em>
 <a class="jxr_linenumber" name="L1613" href="#L1613">1613</a> <em class="jxr_javadoccomment">     * @see Header#getHexValue(String)</em>
 <a class="jxr_linenumber" name="L1614" href="#L1614">1614</a> <em class="jxr_javadoccomment">     */</em>
-<a class="jxr_linenumber" name="L1615" href="#L1615">1615</a>     <strong class="jxr_keyword">public</strong> <strong class="jxr_keyword">static</strong> <a href="../../../nom/tam/fits/HeaderCard.html">HeaderCard</a> createHexValueCard(String key, <strong class="jxr_keyword">long</strong> value) <strong class="jxr_keyword">throws</strong> HeaderCardException {
+<a class="jxr_linenumber" name="L1615" href="#L1615">1615</a>     <strong class="jxr_keyword">public</strong> <strong class="jxr_keyword">static</strong> <a name="HeaderCard" href="../../../nom/tam/fits/HeaderCard.html#HeaderCard">HeaderCard</a> createHexValueCard(String key, <strong class="jxr_keyword">long</strong> value) <strong class="jxr_keyword">throws</strong> <a name="HeaderCardException" href="../../../nom/tam/fits/HeaderCardException.html#HeaderCardException">HeaderCardException</a> {
 <a class="jxr_linenumber" name="L1616" href="#L1616">1616</a>         <strong class="jxr_keyword">return</strong> createHexValueCard(key, value, <strong class="jxr_keyword">null</strong>);
 <a class="jxr_linenumber" name="L1617" href="#L1617">1617</a>     }
 <a class="jxr_linenumber" name="L1618" href="#L1618">1618</a>     
@@ -1639,8 +1639,8 @@
 <a class="jxr_linenumber" name="L1631" href="#L1631">1631</a> <em class="jxr_javadoccomment">     * @see #getHexValue()</em>
 <a class="jxr_linenumber" name="L1632" href="#L1632">1632</a> <em class="jxr_javadoccomment">     * @see Header#getHexValue(String)</em>
 <a class="jxr_linenumber" name="L1633" href="#L1633">1633</a> <em class="jxr_javadoccomment">     */</em>
-<a class="jxr_linenumber" name="L1634" href="#L1634">1634</a>     <strong class="jxr_keyword">public</strong> <strong class="jxr_keyword">static</strong> <a href="../../../nom/tam/fits/HeaderCard.html">HeaderCard</a> createHexValueCard(String key, <strong class="jxr_keyword">long</strong> value, String comment) <strong class="jxr_keyword">throws</strong> HeaderCardException {
-<a class="jxr_linenumber" name="L1635" href="#L1635">1635</a>         <strong class="jxr_keyword">return</strong> <strong class="jxr_keyword">new</strong> <a href="../../../nom/tam/fits/HeaderCard.html">HeaderCard</a>(key, Long.toHexString(value), comment, Long.<strong class="jxr_keyword">class</strong>);
+<a class="jxr_linenumber" name="L1634" href="#L1634">1634</a>     <strong class="jxr_keyword">public</strong> <strong class="jxr_keyword">static</strong> <a name="HeaderCard" href="../../../nom/tam/fits/HeaderCard.html#HeaderCard">HeaderCard</a> createHexValueCard(String key, <strong class="jxr_keyword">long</strong> value, String comment) <strong class="jxr_keyword">throws</strong> <a name="HeaderCardException" href="../../../nom/tam/fits/HeaderCardException.html#HeaderCardException">HeaderCardException</a> {
+<a class="jxr_linenumber" name="L1635" href="#L1635">1635</a>         <strong class="jxr_keyword">return</strong> <strong class="jxr_keyword">new</strong> <a name="HeaderCard" href="../../../nom/tam/fits/HeaderCard.html#HeaderCard">HeaderCard</a>(key, Long.toHexString(value), comment, Long.<strong class="jxr_keyword">class</strong>);
 <a class="jxr_linenumber" name="L1636" href="#L1636">1636</a>     }
 <a class="jxr_linenumber" name="L1637" href="#L1637">1637</a> 
 <a class="jxr_linenumber" name="L1638" href="#L1638">1638</a>     <em class="jxr_javadoccomment">/**</em>
@@ -1655,7 +1655,7 @@
 <a class="jxr_linenumber" name="L1647" href="#L1647">1647</a> <em class="jxr_javadoccomment">     * @throws IOException              if the input stream could not be read</em>
 <a class="jxr_linenumber" name="L1648" href="#L1648">1648</a> <em class="jxr_javadoccomment">     */</em>
 <a class="jxr_linenumber" name="L1649" href="#L1649">1649</a>     @SuppressWarnings({ <span class="jxr_string">"resource"</span>, <span class="jxr_string">"deprecation"</span> })
-<a class="jxr_linenumber" name="L1650" href="#L1650">1650</a>     <strong class="jxr_keyword">private</strong> <strong class="jxr_keyword">static</strong> String readOneHeaderLine(<a href="../../../nom/tam/fits/HeaderCardCountingArrayDataInput.html">HeaderCardCountingArrayDataInput</a> dis) <strong class="jxr_keyword">throws</strong> IOException, TruncatedFileException {
+<a class="jxr_linenumber" name="L1650" href="#L1650">1650</a>     <strong class="jxr_keyword">private</strong> <strong class="jxr_keyword">static</strong> String readOneHeaderLine(<a name="HeaderCardCountingArrayDataInput" href="../../../nom/tam/fits/HeaderCardCountingArrayDataInput.html#HeaderCardCountingArrayDataInput">HeaderCardCountingArrayDataInput</a> dis) <strong class="jxr_keyword">throws</strong> IOException, <a name="TruncatedFileException" href="../../../nom/tam/fits/TruncatedFileException.html#TruncatedFileException">TruncatedFileException</a> {
 <a class="jxr_linenumber" name="L1651" href="#L1651">1651</a>         byte[] buffer = <strong class="jxr_keyword">new</strong> byte[FITS_HEADER_CARD_SIZE];       
 <a class="jxr_linenumber" name="L1652" href="#L1652">1652</a>        
 <a class="jxr_linenumber" name="L1653" href="#L1653">1653</a>         <strong class="jxr_keyword">int</strong> got = 0;
@@ -1680,7 +1680,7 @@
 <a class="jxr_linenumber" name="L1672" href="#L1672">1672</a>         
 <a class="jxr_linenumber" name="L1673" href="#L1673">1673</a>         <strong class="jxr_keyword">if</strong> (got &lt; buffer.length) {
 <a class="jxr_linenumber" name="L1674" href="#L1674">1674</a>             <em class="jxr_comment">// Got an incomplete header card...</em>
-<a class="jxr_linenumber" name="L1675" href="#L1675">1675</a>             <strong class="jxr_keyword">throw</strong> <strong class="jxr_keyword">new</strong> <a href="../../../nom/tam/fits/TruncatedFileException.html">TruncatedFileException</a>(<span class="jxr_string">"Got only "</span> + got + <span class="jxr_string">" of "</span> + buffer.length + <span class="jxr_string">" bytes expected for a header card"</span>); 
+<a class="jxr_linenumber" name="L1675" href="#L1675">1675</a>             <strong class="jxr_keyword">throw</strong> <strong class="jxr_keyword">new</strong> <a name="TruncatedFileException" href="../../../nom/tam/fits/TruncatedFileException.html#TruncatedFileException">TruncatedFileException</a>(<span class="jxr_string">"Got only "</span> + got + <span class="jxr_string">" of "</span> + buffer.length + <span class="jxr_string">" bytes expected for a header card"</span>); 
 <a class="jxr_linenumber" name="L1676" href="#L1676">1676</a>         }
 <a class="jxr_linenumber" name="L1677" href="#L1677">1677</a>             
 <a class="jxr_linenumber" name="L1678" href="#L1678">1678</a>         dis.cardRead();
@@ -1704,7 +1704,7 @@
 <a class="jxr_linenumber" name="L1696" href="#L1696">1696</a>         <strong class="jxr_keyword">return</strong> FITS_HEADER_CARD_SIZE - (Math.max(key.length(), MAX_KEYWORD_LENGTH) + HeaderCardFormatter.getAssignLength());
 <a class="jxr_linenumber" name="L1697" href="#L1697">1697</a>     }
 <a class="jxr_linenumber" name="L1698" href="#L1698">1698</a> 
-<a class="jxr_linenumber" name="L1699" href="#L1699">1699</a>     <strong class="jxr_keyword">private</strong> <strong class="jxr_keyword">static</strong> <a href="../../../nom/tam/util/ArrayDataInput.html">ArrayDataInput</a> stringToArrayInputStream(String card) {
+<a class="jxr_linenumber" name="L1699" href="#L1699">1699</a>     <strong class="jxr_keyword">private</strong> <strong class="jxr_keyword">static</strong> <a name="ArrayDataInput" href="../../../nom/tam/util/ArrayDataInput.html#ArrayDataInput">ArrayDataInput</a> stringToArrayInputStream(String card) {
 <a class="jxr_linenumber" name="L1700" href="#L1700">1700</a>         byte[] bytes = AsciiFuncs.getBytes(card);
 <a class="jxr_linenumber" name="L1701" href="#L1701">1701</a>         <strong class="jxr_keyword">if</strong> (bytes.length % FITS_HEADER_CARD_SIZE != 0) {
 <a class="jxr_linenumber" name="L1702" href="#L1702">1702</a>             byte[] newBytes = <strong class="jxr_keyword">new</strong> byte[bytes.length + FITS_HEADER_CARD_SIZE - bytes.length % FITS_HEADER_CARD_SIZE];
@@ -1712,7 +1712,7 @@
 <a class="jxr_linenumber" name="L1704" href="#L1704">1704</a>             Arrays.fill(newBytes, bytes.length, newBytes.length, (byte) ' ');
 <a class="jxr_linenumber" name="L1705" href="#L1705">1705</a>             bytes = newBytes;
 <a class="jxr_linenumber" name="L1706" href="#L1706">1706</a>         }
-<a class="jxr_linenumber" name="L1707" href="#L1707">1707</a>         <strong class="jxr_keyword">return</strong> <strong class="jxr_keyword">new</strong> <a href="../../../nom/tam/util/FitsInputStream.html">FitsInputStream</a>(<strong class="jxr_keyword">new</strong> ByteArrayInputStream(bytes));
+<a class="jxr_linenumber" name="L1707" href="#L1707">1707</a>         <strong class="jxr_keyword">return</strong> <strong class="jxr_keyword">new</strong> <a name="FitsInputStream" href="../../../nom/tam/util/FitsInputStream.html#FitsInputStream">FitsInputStream</a>(<strong class="jxr_keyword">new</strong> ByteArrayInputStream(bytes));
 <a class="jxr_linenumber" name="L1708" href="#L1708">1708</a>     }
 <a class="jxr_linenumber" name="L1709" href="#L1709">1709</a> 
 <a class="jxr_linenumber" name="L1710" href="#L1710">1710</a>     <em class="jxr_javadoccomment">/**</em>
@@ -1733,10 +1733,10 @@
 <a class="jxr_linenumber" name="L1725" href="#L1725">1725</a> <em class="jxr_javadoccomment">     *                  </em>
 <a class="jxr_linenumber" name="L1726" href="#L1726">1726</a> <em class="jxr_javadoccomment">     */</em>
 <a class="jxr_linenumber" name="L1727" href="#L1727">1727</a>     @Deprecated
-<a class="jxr_linenumber" name="L1728" href="#L1728">1728</a>     <strong class="jxr_keyword">public</strong> <strong class="jxr_keyword">static</strong> <a href="../../../nom/tam/fits/HeaderCard.html">HeaderCard</a> saveNewHeaderCard(String key, String comment, <strong class="jxr_keyword">boolean</strong> hasValue) <strong class="jxr_keyword">throws</strong> IllegalStateException {
+<a class="jxr_linenumber" name="L1728" href="#L1728">1728</a>     <strong class="jxr_keyword">public</strong> <strong class="jxr_keyword">static</strong> <a name="HeaderCard" href="../../../nom/tam/fits/HeaderCard.html#HeaderCard">HeaderCard</a> saveNewHeaderCard(String key, String comment, <strong class="jxr_keyword">boolean</strong> hasValue) <strong class="jxr_keyword">throws</strong> IllegalStateException {
 <a class="jxr_linenumber" name="L1729" href="#L1729">1729</a>         <strong class="jxr_keyword">try</strong> {
-<a class="jxr_linenumber" name="L1730" href="#L1730">1730</a>             <strong class="jxr_keyword">return</strong> <strong class="jxr_keyword">new</strong> <a href="../../../nom/tam/fits/HeaderCard.html">HeaderCard</a>(key, <strong class="jxr_keyword">null</strong>, comment, hasValue ? String.<strong class="jxr_keyword">class</strong> : <strong class="jxr_keyword">null</strong>);
-<a class="jxr_linenumber" name="L1731" href="#L1731">1731</a>         } <strong class="jxr_keyword">catch</strong> (HeaderCardException e) {
+<a class="jxr_linenumber" name="L1730" href="#L1730">1730</a>             <strong class="jxr_keyword">return</strong> <strong class="jxr_keyword">new</strong> <a name="HeaderCard" href="../../../nom/tam/fits/HeaderCard.html#HeaderCard">HeaderCard</a>(key, <strong class="jxr_keyword">null</strong>, comment, hasValue ? String.<strong class="jxr_keyword">class</strong> : <strong class="jxr_keyword">null</strong>);
+<a class="jxr_linenumber" name="L1731" href="#L1731">1731</a>         } <strong class="jxr_keyword">catch</strong> (<a name="HeaderCardException" href="../../../nom/tam/fits/HeaderCardException.html#HeaderCardException">HeaderCardException</a> e) {
 <a class="jxr_linenumber" name="L1732" href="#L1732">1732</a>             LOG.log(Level.SEVERE, <span class="jxr_string">"Impossible Exception for internal card creation:"</span> + key, e);
 <a class="jxr_linenumber" name="L1733" href="#L1733">1733</a>             <strong class="jxr_keyword">throw</strong> <strong class="jxr_keyword">new</strong> IllegalStateException(e);
 <a class="jxr_linenumber" name="L1734" href="#L1734">1734</a>         }
@@ -1841,7 +1841,7 @@
 <a class="jxr_linenumber" name="L1833" href="#L1833">1833</a>         <strong class="jxr_keyword">int</strong> maxLength = MAX_KEYWORD_LENGTH;
 <a class="jxr_linenumber" name="L1834" href="#L1834">1834</a>         <strong class="jxr_keyword">if</strong> (isHierarchKey(key)) {
 <a class="jxr_linenumber" name="L1835" href="#L1835">1835</a>             <strong class="jxr_keyword">if</strong> (!FitsFactory.getUseHierarch()) {
-<a class="jxr_linenumber" name="L1836" href="#L1836">1836</a>                 <strong class="jxr_keyword">throw</strong> <strong class="jxr_keyword">new</strong> <a href="../../../nom/tam/fits/HierarchNotEnabledException.html">HierarchNotEnabledException</a>(key);
+<a class="jxr_linenumber" name="L1836" href="#L1836">1836</a>                 <strong class="jxr_keyword">throw</strong> <strong class="jxr_keyword">new</strong> <a name="HierarchNotEnabledException" href="../../../nom/tam/fits/HierarchNotEnabledException.html#HierarchNotEnabledException">HierarchNotEnabledException</a>(key);
 <a class="jxr_linenumber" name="L1837" href="#L1837">1837</a>             }
 <a class="jxr_linenumber" name="L1838" href="#L1838">1838</a>             
 <a class="jxr_linenumber" name="L1839" href="#L1839">1839</a>             maxLength = MAX_HIERARCH_KEYWORD_LENGTH;

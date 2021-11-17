@@ -86,9 +86,9 @@
 <a class="jxr_linenumber" name="L78" href="#L78">78</a>  <em class="jxr_javadoccomment"> * methods, the BufferedDataXPUT classes using the methods of DataXput, the</em>
 <a class="jxr_linenumber" name="L79" href="#L79">79</a>  <em class="jxr_javadoccomment"> * traditional I/O classes, or any combination thereof.</em>
 <a class="jxr_linenumber" name="L80" href="#L80">80</a>  <em class="jxr_javadoccomment"> */</em>
-<a class="jxr_linenumber" name="L81" href="#L81">81</a>  <strong class="jxr_keyword">public</strong> <strong class="jxr_keyword">class</strong> <a href="../../../../nom/tam/util/BufferedFileTest.html">BufferedFileTest</a> {
+<a class="jxr_linenumber" name="L81" href="#L81">81</a>  <strong class="jxr_keyword">public</strong> <strong class="jxr_keyword">class</strong> <a name="BufferedFileTest" href="../../../../nom/tam/util/BufferedFileTest.html#BufferedFileTest">BufferedFileTest</a> {
 <a class="jxr_linenumber" name="L82" href="#L82">82</a>  
-<a class="jxr_linenumber" name="L83" href="#L83">83</a>      <strong class="jxr_keyword">private</strong> <strong class="jxr_keyword">static</strong> <strong class="jxr_keyword">final</strong> <strong class="jxr_keyword">class</strong> <a href="../../../../nom/tam/util/test/BufferedFileTest.html">InputStreamControl</a> <strong class="jxr_keyword">extends</strong> ByteArrayInputStream {
+<a class="jxr_linenumber" name="L83" href="#L83">83</a>      <strong class="jxr_keyword">private</strong> <strong class="jxr_keyword">static</strong> <strong class="jxr_keyword">final</strong> <strong class="jxr_keyword">class</strong> InputStreamControl <strong class="jxr_keyword">extends</strong> ByteArrayInputStream {
 <a class="jxr_linenumber" name="L84" href="#L84">84</a>  
 <a class="jxr_linenumber" name="L85" href="#L85">85</a>          <strong class="jxr_keyword">boolean</strong> started = false;
 <a class="jxr_linenumber" name="L86" href="#L86">86</a>  
@@ -98,7 +98,7 @@
 <a class="jxr_linenumber" name="L90" href="#L90">90</a>  
 <a class="jxr_linenumber" name="L91" href="#L91">91</a>          <strong class="jxr_keyword">boolean</strong> exception = false;
 <a class="jxr_linenumber" name="L92" href="#L92">92</a>  
-<a class="jxr_linenumber" name="L93" href="#L93">93</a>          <strong class="jxr_keyword">private</strong> <a href="../../../../nom/tam/util/test/BufferedFileTest.html">InputStreamControl</a>() {
+<a class="jxr_linenumber" name="L93" href="#L93">93</a>          <strong class="jxr_keyword">private</strong> InputStreamControl() {
 <a class="jxr_linenumber" name="L94" href="#L94">94</a>              <strong class="jxr_keyword">super</strong>(<strong class="jxr_keyword">new</strong> byte[5]);
 <a class="jxr_linenumber" name="L95" href="#L95">95</a>          }
 <a class="jxr_linenumber" name="L96" href="#L96">96</a>  
@@ -136,7 +136,7 @@
 <a class="jxr_linenumber" name="L128" href="#L128">128</a>         }
 <a class="jxr_linenumber" name="L129" href="#L129">129</a>     }
 <a class="jxr_linenumber" name="L130" href="#L130">130</a> 
-<a class="jxr_linenumber" name="L131" href="#L131">131</a>     <strong class="jxr_keyword">private</strong> <strong class="jxr_keyword">static</strong> <strong class="jxr_keyword">final</strong> <strong class="jxr_keyword">class</strong> <a href="../../../../nom/tam/util/test/BufferedFileTest.html">OutputStreamControl</a> <strong class="jxr_keyword">extends</strong> ByteArrayOutputStream {
+<a class="jxr_linenumber" name="L131" href="#L131">131</a>     <strong class="jxr_keyword">private</strong> <strong class="jxr_keyword">static</strong> <strong class="jxr_keyword">final</strong> <strong class="jxr_keyword">class</strong> OutputStreamControl <strong class="jxr_keyword">extends</strong> ByteArrayOutputStream {
 <a class="jxr_linenumber" name="L132" href="#L132">132</a> 
 <a class="jxr_linenumber" name="L133" href="#L133">133</a>         <strong class="jxr_keyword">boolean</strong> started = false;
 <a class="jxr_linenumber" name="L134" href="#L134">134</a> 
@@ -172,13 +172,13 @@
 <a class="jxr_linenumber" name="L164" href="#L164">164</a>         }
 <a class="jxr_linenumber" name="L165" href="#L165">165</a>     }
 <a class="jxr_linenumber" name="L166" href="#L166">166</a> 
-<a class="jxr_linenumber" name="L167" href="#L167">167</a>     <strong class="jxr_keyword">private</strong> <strong class="jxr_keyword">static</strong> <strong class="jxr_keyword">final</strong> <strong class="jxr_keyword">class</strong> <a href="../../../../nom/tam/util/test/BufferedFileTest.html">ProcessSimulator</a> <strong class="jxr_keyword">extends</strong> Process {
+<a class="jxr_linenumber" name="L167" href="#L167">167</a>     <strong class="jxr_keyword">private</strong> <strong class="jxr_keyword">static</strong> <strong class="jxr_keyword">final</strong> <strong class="jxr_keyword">class</strong> ProcessSimulator <strong class="jxr_keyword">extends</strong> Process {
 <a class="jxr_linenumber" name="L168" href="#L168">168</a> 
-<a class="jxr_linenumber" name="L169" href="#L169">169</a>         <strong class="jxr_keyword">private</strong> <a href="../../../../nom/tam/util/test/BufferedFileTest.html">OutputStreamControl</a> out = <strong class="jxr_keyword">new</strong> <a href="../../../../nom/tam/util/test/BufferedFileTest.html">OutputStreamControl</a>();
+<a class="jxr_linenumber" name="L169" href="#L169">169</a>         <strong class="jxr_keyword">private</strong> OutputStreamControl out = <strong class="jxr_keyword">new</strong> OutputStreamControl();
 <a class="jxr_linenumber" name="L170" href="#L170">170</a> 
-<a class="jxr_linenumber" name="L171" href="#L171">171</a>         <strong class="jxr_keyword">private</strong> <a href="../../../../nom/tam/util/test/BufferedFileTest.html">InputStreamControl</a> in = <strong class="jxr_keyword">new</strong> <a href="../../../../nom/tam/util/test/BufferedFileTest.html">InputStreamControl</a>();
+<a class="jxr_linenumber" name="L171" href="#L171">171</a>         <strong class="jxr_keyword">private</strong> InputStreamControl in = <strong class="jxr_keyword">new</strong> InputStreamControl();
 <a class="jxr_linenumber" name="L172" href="#L172">172</a> 
-<a class="jxr_linenumber" name="L173" href="#L173">173</a>         <strong class="jxr_keyword">private</strong> <a href="../../../../nom/tam/util/test/BufferedFileTest.html">InputStreamControl</a> err = <strong class="jxr_keyword">new</strong> <a href="../../../../nom/tam/util/test/BufferedFileTest.html">InputStreamControl</a>();
+<a class="jxr_linenumber" name="L173" href="#L173">173</a>         <strong class="jxr_keyword">private</strong> InputStreamControl err = <strong class="jxr_keyword">new</strong> InputStreamControl();
 <a class="jxr_linenumber" name="L174" href="#L174">174</a> 
 <a class="jxr_linenumber" name="L175" href="#L175">175</a>         @Override
 <a class="jxr_linenumber" name="L176" href="#L176">176</a>         <strong class="jxr_keyword">public</strong> <strong class="jxr_keyword">int</strong> waitFor() <strong class="jxr_keyword">throws</strong> InterruptedException {
@@ -1055,9 +1055,9 @@
 <a class="jxr_linenumber" name="L1047" href="#L1047">1047</a> 
 <a class="jxr_linenumber" name="L1048" href="#L1048">1048</a>     @Test
 <a class="jxr_linenumber" name="L1049" href="#L1049">1049</a>     <strong class="jxr_keyword">public</strong> <strong class="jxr_keyword">void</strong> testCloseIS() <strong class="jxr_keyword">throws</strong> Exception {
-<a class="jxr_linenumber" name="L1050" href="#L1050">1050</a>         <strong class="jxr_keyword">final</strong> <a href="../../../../nom/tam/util/test/BufferedFileTest.html">ProcessSimulator</a> proc = <strong class="jxr_keyword">new</strong> <a href="../../../../nom/tam/util/test/BufferedFileTest.html">ProcessSimulator</a>();
+<a class="jxr_linenumber" name="L1050" href="#L1050">1050</a>         <strong class="jxr_keyword">final</strong> ProcessSimulator proc = <strong class="jxr_keyword">new</strong> ProcessSimulator();
 <a class="jxr_linenumber" name="L1051" href="#L1051">1051</a> 
-<a class="jxr_linenumber" name="L1052" href="#L1052">1052</a>         <a href="../../../../nom/tam/util/test/BufferedFileTest.html">InputStreamControl</a> compressed = <strong class="jxr_keyword">new</strong> <a href="../../../../nom/tam/util/test/BufferedFileTest.html">InputStreamControl</a>();
+<a class="jxr_linenumber" name="L1052" href="#L1052">1052</a>         InputStreamControl compressed = <strong class="jxr_keyword">new</strong> InputStreamControl();
 <a class="jxr_linenumber" name="L1053" href="#L1053">1053</a>         CloseIS closeIs = <strong class="jxr_keyword">new</strong> CloseIS(proc, compressed);
 <a class="jxr_linenumber" name="L1054" href="#L1054">1054</a>         <strong class="jxr_keyword">long</strong> start = System.currentTimeMillis();
 <a class="jxr_linenumber" name="L1055" href="#L1055">1055</a>         <strong class="jxr_keyword">while</strong> (!proc.err.started || !compressed.started) {

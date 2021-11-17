@@ -52,7 +52,7 @@
 <a class="jxr_linenumber" name="L44" href="#L44">44</a>  
 <a class="jxr_linenumber" name="L45" href="#L45">45</a>  <strong class="jxr_keyword">import</strong> nom.tam.fits.FitsException;
 <a class="jxr_linenumber" name="L46" href="#L46">46</a>  
-<a class="jxr_linenumber" name="L47" href="#L47">47</a>  <strong class="jxr_keyword">public</strong> <strong class="jxr_keyword">final</strong> <strong class="jxr_keyword">class</strong> <a href="../../../../nom/tam/fits/compress/CompressionManager.html">CompressionManager</a> {
+<a class="jxr_linenumber" name="L47" href="#L47">47</a>  <strong class="jxr_keyword">public</strong> <strong class="jxr_keyword">final</strong> <strong class="jxr_keyword">class</strong> <a name="CompressionManager" href="../../../../nom/tam/fits/compress/CompressionManager.html#CompressionManager">CompressionManager</a> {
 <a class="jxr_linenumber" name="L48" href="#L48">48</a>  
 <a class="jxr_linenumber" name="L49" href="#L49">49</a>      <strong class="jxr_keyword">private</strong> <strong class="jxr_keyword">static</strong> <strong class="jxr_keyword">final</strong> String BZIP2_EXTENTION = <span class="jxr_string">".bz2"</span>;
 <a class="jxr_linenumber" name="L50" href="#L50">50</a>  
@@ -67,7 +67,7 @@
 <a class="jxr_linenumber" name="L59" href="#L59">59</a>  <em class="jxr_javadoccomment">     */</em>
 <a class="jxr_linenumber" name="L60" href="#L60">60</a>      <strong class="jxr_keyword">private</strong> <strong class="jxr_keyword">static</strong> <strong class="jxr_keyword">final</strong> Logger LOG = getLogger(CompressionManager.<strong class="jxr_keyword">class</strong>);
 <a class="jxr_linenumber" name="L61" href="#L61">61</a>  
-<a class="jxr_linenumber" name="L62" href="#L62">62</a>      <strong class="jxr_keyword">private</strong> <a href="../../../../nom/tam/fits/compress/CompressionManager.html">CompressionManager</a>() {
+<a class="jxr_linenumber" name="L62" href="#L62">62</a>      <strong class="jxr_keyword">private</strong> <a name="CompressionManager" href="../../../../nom/tam/fits/compress/CompressionManager.html#CompressionManager">CompressionManager</a>() {
 <a class="jxr_linenumber" name="L63" href="#L63">63</a>      }
 <a class="jxr_linenumber" name="L64" href="#L64">64</a>  
 <a class="jxr_linenumber" name="L65" href="#L65">65</a>      <em class="jxr_javadoccomment">/**</em>
@@ -82,7 +82,7 @@
 <a class="jxr_linenumber" name="L74" href="#L74">74</a>  <em class="jxr_javadoccomment">     * @throws FitsException</em>
 <a class="jxr_linenumber" name="L75" href="#L75">75</a>  <em class="jxr_javadoccomment">     *             when the stream could not be read or decompressed</em>
 <a class="jxr_linenumber" name="L76" href="#L76">76</a>  <em class="jxr_javadoccomment">     */</em>
-<a class="jxr_linenumber" name="L77" href="#L77">77</a>      <strong class="jxr_keyword">public</strong> <strong class="jxr_keyword">static</strong> InputStream decompress(InputStream compressed) <strong class="jxr_keyword">throws</strong> FitsException {
+<a class="jxr_linenumber" name="L77" href="#L77">77</a>      <strong class="jxr_keyword">public</strong> <strong class="jxr_keyword">static</strong> InputStream decompress(InputStream compressed) <strong class="jxr_keyword">throws</strong> <a name="FitsException" href="../../../../nom/tam/fits/FitsException.html#FitsException">FitsException</a> {
 <a class="jxr_linenumber" name="L78" href="#L78">78</a>          BufferedInputStream pb = <strong class="jxr_keyword">new</strong> BufferedInputStream(compressed, ONE_MEGABYTE);
 <a class="jxr_linenumber" name="L79" href="#L79">79</a>          pb.mark(2);
 <a class="jxr_linenumber" name="L80" href="#L80">80</a>          <strong class="jxr_keyword">int</strong> mag1 = -1;
@@ -93,14 +93,14 @@
 <a class="jxr_linenumber" name="L85" href="#L85">85</a>              mag2 = pb.read();
 <a class="jxr_linenumber" name="L86" href="#L86">86</a>              <em class="jxr_comment">// Push the data back into the stream</em>
 <a class="jxr_linenumber" name="L87" href="#L87">87</a>              pb.reset();
-<a class="jxr_linenumber" name="L88" href="#L88">88</a>              <a href="../../../../nom/tam/fits/compress/ICompressProvider.html">ICompressProvider</a> selectedProvider = selectCompressionProvider(mag1, mag2);
+<a class="jxr_linenumber" name="L88" href="#L88">88</a>              <a name="ICompressProvider" href="../../../../nom/tam/fits/compress/ICompressProvider.html#ICompressProvider">ICompressProvider</a> selectedProvider = selectCompressionProvider(mag1, mag2);
 <a class="jxr_linenumber" name="L89" href="#L89">89</a>              <strong class="jxr_keyword">if</strong> (selectedProvider != <strong class="jxr_keyword">null</strong>) {
 <a class="jxr_linenumber" name="L90" href="#L90">90</a>                  <strong class="jxr_keyword">return</strong> selectedProvider.decompress(pb);
 <a class="jxr_linenumber" name="L91" href="#L91">91</a>              }
 <a class="jxr_linenumber" name="L92" href="#L92">92</a>              <strong class="jxr_keyword">return</strong> pb;
 <a class="jxr_linenumber" name="L93" href="#L93">93</a>          } <strong class="jxr_keyword">catch</strong> (IOException e) {
 <a class="jxr_linenumber" name="L94" href="#L94">94</a>              <em class="jxr_comment">// This is probably a prelude to failure...</em>
-<a class="jxr_linenumber" name="L95" href="#L95">95</a>              <strong class="jxr_keyword">throw</strong> <strong class="jxr_keyword">new</strong> <a href="../../../../nom/tam/fits/FitsException.html">FitsException</a>(<span class="jxr_string">"Unable to analyze input stream"</span>, e);
+<a class="jxr_linenumber" name="L95" href="#L95">95</a>              <strong class="jxr_keyword">throw</strong> <strong class="jxr_keyword">new</strong> <a name="FitsException" href="../../../../nom/tam/fits/FitsException.html#FitsException">FitsException</a>(<span class="jxr_string">"Unable to analyze input stream"</span>, e);
 <a class="jxr_linenumber" name="L96" href="#L96">96</a>          }
 <a class="jxr_linenumber" name="L97" href="#L97">97</a>      }
 <a class="jxr_linenumber" name="L98" href="#L98">98</a>  
@@ -151,19 +151,19 @@
 <a class="jxr_linenumber" name="L143" href="#L143">143</a>                 filename.substring(len - BZIP2_EXTENTION.length()).equals(BZIP2_EXTENTION));
 <a class="jxr_linenumber" name="L144" href="#L144">144</a>     }
 <a class="jxr_linenumber" name="L145" href="#L145">145</a> 
-<a class="jxr_linenumber" name="L146" href="#L146">146</a>     <strong class="jxr_keyword">private</strong> <strong class="jxr_keyword">static</strong> <a href="../../../../nom/tam/fits/compress/ICompressProvider.html">ICompressProvider</a> selectCompressionProvider(<strong class="jxr_keyword">int</strong> mag1, <strong class="jxr_keyword">int</strong> mag2) {
+<a class="jxr_linenumber" name="L146" href="#L146">146</a>     <strong class="jxr_keyword">private</strong> <strong class="jxr_keyword">static</strong> <a name="ICompressProvider" href="../../../../nom/tam/fits/compress/ICompressProvider.html#ICompressProvider">ICompressProvider</a> selectCompressionProvider(<strong class="jxr_keyword">int</strong> mag1, <strong class="jxr_keyword">int</strong> mag2) {
 <a class="jxr_linenumber" name="L147" href="#L147">147</a>         <strong class="jxr_keyword">return</strong> nextCompressionProvider(mag1, mag2, <strong class="jxr_keyword">null</strong>);
 <a class="jxr_linenumber" name="L148" href="#L148">148</a>     }
 <a class="jxr_linenumber" name="L149" href="#L149">149</a> 
-<a class="jxr_linenumber" name="L150" href="#L150">150</a>     <strong class="jxr_keyword">protected</strong> <strong class="jxr_keyword">static</strong> <a href="../../../../nom/tam/fits/compress/ICompressProvider.html">ICompressProvider</a> nextCompressionProvider(<strong class="jxr_keyword">int</strong> mag1, <strong class="jxr_keyword">int</strong> mag2, <a href="../../../../nom/tam/fits/compress/ICompressProvider.html">ICompressProvider</a> old) {
-<a class="jxr_linenumber" name="L151" href="#L151">151</a>         <a href="../../../../nom/tam/fits/compress/ICompressProvider.html">ICompressProvider</a> selectedProvider = <strong class="jxr_keyword">null</strong>;
+<a class="jxr_linenumber" name="L150" href="#L150">150</a>     <strong class="jxr_keyword">protected</strong> <strong class="jxr_keyword">static</strong> <a name="ICompressProvider" href="../../../../nom/tam/fits/compress/ICompressProvider.html#ICompressProvider">ICompressProvider</a> nextCompressionProvider(<strong class="jxr_keyword">int</strong> mag1, <strong class="jxr_keyword">int</strong> mag2, <a name="ICompressProvider" href="../../../../nom/tam/fits/compress/ICompressProvider.html#ICompressProvider">ICompressProvider</a> old) {
+<a class="jxr_linenumber" name="L151" href="#L151">151</a>         <a name="ICompressProvider" href="../../../../nom/tam/fits/compress/ICompressProvider.html#ICompressProvider">ICompressProvider</a> selectedProvider = <strong class="jxr_keyword">null</strong>;
 <a class="jxr_linenumber" name="L152" href="#L152">152</a>         <strong class="jxr_keyword">int</strong> priority = 0;
 <a class="jxr_linenumber" name="L153" href="#L153">153</a>         <strong class="jxr_keyword">int</strong> maxPriority = Integer.MAX_VALUE;
 <a class="jxr_linenumber" name="L154" href="#L154">154</a>         <strong class="jxr_keyword">if</strong> (old != <strong class="jxr_keyword">null</strong>) {
 <a class="jxr_linenumber" name="L155" href="#L155">155</a>             maxPriority = old.priority();
 <a class="jxr_linenumber" name="L156" href="#L156">156</a>         }
 <a class="jxr_linenumber" name="L157" href="#L157">157</a>         ServiceLoader&lt;ICompressProvider&gt; compressionProviders = ServiceLoader.load(ICompressProvider.<strong class="jxr_keyword">class</strong>, Thread.currentThread().getContextClassLoader());
-<a class="jxr_linenumber" name="L158" href="#L158">158</a>         <strong class="jxr_keyword">for</strong> (ICompressProvider provider : compressionProviders) {
+<a class="jxr_linenumber" name="L158" href="#L158">158</a>         <strong class="jxr_keyword">for</strong> (<a name="ICompressProvider" href="../../../../nom/tam/fits/compress/ICompressProvider.html#ICompressProvider">ICompressProvider</a> provider : compressionProviders) {
 <a class="jxr_linenumber" name="L159" href="#L159">159</a>             <strong class="jxr_keyword">if</strong> (provider.priority() &gt; Math.max(0, priority) &amp;&amp; provider.priority() &lt; maxPriority &amp;&amp; provider != old &amp;&amp; <em class="jxr_comment">//</em>
 <a class="jxr_linenumber" name="L160" href="#L160">160</a>                     provider.provides(mag1, mag2)) {
 <a class="jxr_linenumber" name="L161" href="#L161">161</a>                 priority = provider.priority();

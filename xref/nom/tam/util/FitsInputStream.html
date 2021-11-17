@@ -78,7 +78,7 @@
 <a class="jxr_linenumber" name="L70" href="#L70">70</a>  <em class="jxr_javadoccomment"> * @see FitsFile</em>
 <a class="jxr_linenumber" name="L71" href="#L71">71</a>  <em class="jxr_javadoccomment"> */</em>
 <a class="jxr_linenumber" name="L72" href="#L72">72</a>  @SuppressWarnings(<span class="jxr_string">"deprecation"</span>)
-<a class="jxr_linenumber" name="L73" href="#L73">73</a>  <strong class="jxr_keyword">public</strong> <strong class="jxr_keyword">class</strong> <a href="../../../nom/tam/util/FitsInputStream.html">FitsInputStream</a> <strong class="jxr_keyword">extends</strong> <a href="../../../nom/tam/util/ArrayInputStream.html">ArrayInputStream</a> <strong class="jxr_keyword">implements</strong> <a href="../../../nom/tam/util/ArrayDataInput.html">ArrayDataInput</a> {
+<a class="jxr_linenumber" name="L73" href="#L73">73</a>  <strong class="jxr_keyword">public</strong> <strong class="jxr_keyword">class</strong> <a name="FitsInputStream" href="../../../nom/tam/util/FitsInputStream.html#FitsInputStream">FitsInputStream</a> <strong class="jxr_keyword">extends</strong> <a name="ArrayInputStream" href="../../../nom/tam/util/ArrayInputStream.html#ArrayInputStream">ArrayInputStream</a> <strong class="jxr_keyword">implements</strong> <a name="ArrayDataInput" href="../../../nom/tam/util/ArrayDataInput.html#ArrayDataInput">ArrayDataInput</a> {
 <a class="jxr_linenumber" name="L74" href="#L74">74</a>  
 <a class="jxr_linenumber" name="L75" href="#L75">75</a>      <strong class="jxr_keyword">private</strong> <strong class="jxr_keyword">static</strong> <strong class="jxr_keyword">final</strong> Logger LOG = getLogger(FitsInputStream.<strong class="jxr_keyword">class</strong>);
 <a class="jxr_linenumber" name="L76" href="#L76">76</a>          
@@ -94,10 +94,10 @@
 <a class="jxr_linenumber" name="L86" href="#L86">86</a>  <em class="jxr_javadoccomment">     * @param bufLength</em>
 <a class="jxr_linenumber" name="L87" href="#L87">87</a>  <em class="jxr_javadoccomment">     *            the buffer length to use.</em>
 <a class="jxr_linenumber" name="L88" href="#L88">88</a>  <em class="jxr_javadoccomment">     */</em>
-<a class="jxr_linenumber" name="L89" href="#L89">89</a>      <strong class="jxr_keyword">public</strong> <a href="../../../nom/tam/util/FitsInputStream.html">FitsInputStream</a>(InputStream i, <strong class="jxr_keyword">int</strong> bufLength) { 
+<a class="jxr_linenumber" name="L89" href="#L89">89</a>      <strong class="jxr_keyword">public</strong> <a name="FitsInputStream" href="../../../nom/tam/util/FitsInputStream.html#FitsInputStream">FitsInputStream</a>(InputStream i, <strong class="jxr_keyword">int</strong> bufLength) { 
 <a class="jxr_linenumber" name="L90" href="#L90">90</a>          <strong class="jxr_keyword">super</strong>(i, bufLength);
 <a class="jxr_linenumber" name="L91" href="#L91">91</a>          data = <strong class="jxr_keyword">new</strong> DataInputStream(<strong class="jxr_keyword">this</strong>);
-<a class="jxr_linenumber" name="L92" href="#L92">92</a>          setDecoder(<strong class="jxr_keyword">new</strong> <a href="../../../nom/tam/util/FitsDecoder.html">FitsDecoder</a>(<strong class="jxr_keyword">this</strong>));
+<a class="jxr_linenumber" name="L92" href="#L92">92</a>          setDecoder(<strong class="jxr_keyword">new</strong> <a name="FitsDecoder" href="../../../nom/tam/util/FitsDecoder.html#FitsDecoder">FitsDecoder</a>(<strong class="jxr_keyword">this</strong>));
 <a class="jxr_linenumber" name="L93" href="#L93">93</a>      }
 <a class="jxr_linenumber" name="L94" href="#L94">94</a>      
 <a class="jxr_linenumber" name="L95" href="#L95">95</a>      <em class="jxr_javadoccomment">/**</em>
@@ -106,13 +106,13 @@
 <a class="jxr_linenumber" name="L98" href="#L98">98</a>  <em class="jxr_javadoccomment">     * @param o</em>
 <a class="jxr_linenumber" name="L99" href="#L99">99</a>  <em class="jxr_javadoccomment">     *            the input stream to use for reading.</em>
 <a class="jxr_linenumber" name="L100" href="#L100">100</a> <em class="jxr_javadoccomment">     */</em>
-<a class="jxr_linenumber" name="L101" href="#L101">101</a>     <strong class="jxr_keyword">public</strong> <a href="../../../nom/tam/util/FitsInputStream.html">FitsInputStream</a>(InputStream o) {
+<a class="jxr_linenumber" name="L101" href="#L101">101</a>     <strong class="jxr_keyword">public</strong> <a name="FitsInputStream" href="../../../nom/tam/util/FitsInputStream.html#FitsInputStream">FitsInputStream</a>(InputStream o) {
 <a class="jxr_linenumber" name="L102" href="#L102">102</a>         <strong class="jxr_keyword">this</strong>(o, FitsIO.DEFAULT_BUFFER_SIZE);
 <a class="jxr_linenumber" name="L103" href="#L103">103</a>     }
 <a class="jxr_linenumber" name="L104" href="#L104">104</a>     
 <a class="jxr_linenumber" name="L105" href="#L105">105</a>     @Override
-<a class="jxr_linenumber" name="L106" href="#L106">106</a>     <strong class="jxr_keyword">protected</strong> <a href="../../../nom/tam/util/FitsDecoder.html">FitsDecoder</a> getDecoder() {
-<a class="jxr_linenumber" name="L107" href="#L107">107</a>         <strong class="jxr_keyword">return</strong> (FitsDecoder) <strong class="jxr_keyword">super</strong>.getDecoder();
+<a class="jxr_linenumber" name="L106" href="#L106">106</a>     <strong class="jxr_keyword">protected</strong> <a name="FitsDecoder" href="../../../nom/tam/util/FitsDecoder.html#FitsDecoder">FitsDecoder</a> getDecoder() {
+<a class="jxr_linenumber" name="L107" href="#L107">107</a>         <strong class="jxr_keyword">return</strong> (<a name="FitsDecoder" href="../../../nom/tam/util/FitsDecoder.html#FitsDecoder">FitsDecoder</a>) <strong class="jxr_keyword">super</strong>.getDecoder();
 <a class="jxr_linenumber" name="L108" href="#L108">108</a>     }
 <a class="jxr_linenumber" name="L109" href="#L109">109</a>     
 <a class="jxr_linenumber" name="L110" href="#L110">110</a>     @Override

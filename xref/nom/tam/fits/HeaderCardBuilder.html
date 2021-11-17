@@ -49,22 +49,22 @@
 <a class="jxr_linenumber" name="L41" href="#L41">41</a>  <em class="jxr_javadoccomment"> * </em>
 <a class="jxr_linenumber" name="L42" href="#L42">42</a>  <em class="jxr_javadoccomment"> * @author nir</em>
 <a class="jxr_linenumber" name="L43" href="#L43">43</a>  <em class="jxr_javadoccomment"> */</em>
-<a class="jxr_linenumber" name="L44" href="#L44">44</a>  <strong class="jxr_keyword">public</strong> <strong class="jxr_keyword">class</strong> <a href="../../../nom/tam/fits/HeaderCardBuilder.html">HeaderCardBuilder</a> {
+<a class="jxr_linenumber" name="L44" href="#L44">44</a>  <strong class="jxr_keyword">public</strong> <strong class="jxr_keyword">class</strong> <a name="HeaderCardBuilder" href="../../../nom/tam/fits/HeaderCardBuilder.html#HeaderCardBuilder">HeaderCardBuilder</a> {
 <a class="jxr_linenumber" name="L45" href="#L45">45</a>  
 <a class="jxr_linenumber" name="L46" href="#L46">46</a>      <em class="jxr_javadoccomment">/**</em>
 <a class="jxr_linenumber" name="L47" href="#L47">47</a>  <em class="jxr_javadoccomment">     * the header to fill.</em>
 <a class="jxr_linenumber" name="L48" href="#L48">48</a>  <em class="jxr_javadoccomment">     */</em>
-<a class="jxr_linenumber" name="L49" href="#L49">49</a>      <strong class="jxr_keyword">private</strong> <strong class="jxr_keyword">final</strong> <a href="../../../nom/tam/fits/Header.html">Header</a> header;
+<a class="jxr_linenumber" name="L49" href="#L49">49</a>      <strong class="jxr_keyword">private</strong> <strong class="jxr_keyword">final</strong> <a name="Header" href="../../../nom/tam/fits/Header.html#Header">Header</a> header;
 <a class="jxr_linenumber" name="L50" href="#L50">50</a>  
 <a class="jxr_linenumber" name="L51" href="#L51">51</a>      <em class="jxr_javadoccomment">/**</em>
 <a class="jxr_linenumber" name="L52" href="#L52">52</a>  <em class="jxr_javadoccomment">     * the current card to fill.</em>
 <a class="jxr_linenumber" name="L53" href="#L53">53</a>  <em class="jxr_javadoccomment">     */</em>
-<a class="jxr_linenumber" name="L54" href="#L54">54</a>      <strong class="jxr_keyword">private</strong> <a href="../../../nom/tam/fits/HeaderCard.html">HeaderCard</a> card;
+<a class="jxr_linenumber" name="L54" href="#L54">54</a>      <strong class="jxr_keyword">private</strong> <a name="HeaderCard" href="../../../nom/tam/fits/HeaderCard.html#HeaderCard">HeaderCard</a> card;
 <a class="jxr_linenumber" name="L55" href="#L55">55</a>  
 <a class="jxr_linenumber" name="L56" href="#L56">56</a>      <em class="jxr_javadoccomment">/**</em>
 <a class="jxr_linenumber" name="L57" href="#L57">57</a>  <em class="jxr_javadoccomment">     * the current selected key.</em>
 <a class="jxr_linenumber" name="L58" href="#L58">58</a>  <em class="jxr_javadoccomment">     */</em>
-<a class="jxr_linenumber" name="L59" href="#L59">59</a>      <strong class="jxr_keyword">private</strong> <a href="../../../nom/tam/fits/header/IFitsHeader.html">IFitsHeader</a> key;
+<a class="jxr_linenumber" name="L59" href="#L59">59</a>      <strong class="jxr_keyword">private</strong> <a name="IFitsHeader" href="../../../nom/tam/fits/header/IFitsHeader.html#IFitsHeader">IFitsHeader</a> key;
 <a class="jxr_linenumber" name="L60" href="#L60">60</a>  
 <a class="jxr_linenumber" name="L61" href="#L61">61</a>      <em class="jxr_javadoccomment">/**</em>
 <a class="jxr_linenumber" name="L62" href="#L62">62</a>  <em class="jxr_javadoccomment">     * scale to use for decimal values.</em>
@@ -79,7 +79,7 @@
 <a class="jxr_linenumber" name="L71" href="#L71">71</a>  <em class="jxr_javadoccomment">     * @param key</em>
 <a class="jxr_linenumber" name="L72" href="#L72">72</a>  <em class="jxr_javadoccomment">     *            the first header card to set.</em>
 <a class="jxr_linenumber" name="L73" href="#L73">73</a>  <em class="jxr_javadoccomment">     */</em>
-<a class="jxr_linenumber" name="L74" href="#L74">74</a>      <strong class="jxr_keyword">protected</strong> <a href="../../../nom/tam/fits/HeaderCardBuilder.html">HeaderCardBuilder</a>(<a href="../../../nom/tam/fits/Header.html">Header</a> header, <a href="../../../nom/tam/fits/header/IFitsHeader.html">IFitsHeader</a> key) {
+<a class="jxr_linenumber" name="L74" href="#L74">74</a>      <strong class="jxr_keyword">protected</strong> <a name="HeaderCardBuilder" href="../../../nom/tam/fits/HeaderCardBuilder.html#HeaderCardBuilder">HeaderCardBuilder</a>(<a name="Header" href="../../../nom/tam/fits/Header.html#Header">Header</a> header, <a name="IFitsHeader" href="../../../nom/tam/fits/header/IFitsHeader.html#IFitsHeader">IFitsHeader</a> key) {
 <a class="jxr_linenumber" name="L75" href="#L75">75</a>          <strong class="jxr_keyword">this</strong>.header = header;
 <a class="jxr_linenumber" name="L76" href="#L76">76</a>          card(key);
 <a class="jxr_linenumber" name="L77" href="#L77">77</a>      }
@@ -89,7 +89,7 @@
 <a class="jxr_linenumber" name="L81" href="#L81">81</a>  <em class="jxr_javadoccomment">     * </em>
 <a class="jxr_linenumber" name="L82" href="#L82">82</a>  <em class="jxr_javadoccomment">     * @return the current card</em>
 <a class="jxr_linenumber" name="L83" href="#L83">83</a>  <em class="jxr_javadoccomment">     */</em>
-<a class="jxr_linenumber" name="L84" href="#L84">84</a>      <strong class="jxr_keyword">public</strong> <a href="../../../nom/tam/fits/HeaderCard.html">HeaderCard</a> card() {
+<a class="jxr_linenumber" name="L84" href="#L84">84</a>      <strong class="jxr_keyword">public</strong> <a name="HeaderCard" href="../../../nom/tam/fits/HeaderCard.html#HeaderCard">HeaderCard</a> card() {
 <a class="jxr_linenumber" name="L85" href="#L85">85</a>          <strong class="jxr_keyword">return</strong> <strong class="jxr_keyword">this</strong>.card;
 <a class="jxr_linenumber" name="L86" href="#L86">86</a>      }
 <a class="jxr_linenumber" name="L87" href="#L87">87</a>  
@@ -101,7 +101,7 @@
 <a class="jxr_linenumber" name="L93" href="#L93">93</a>  <em class="jxr_javadoccomment">     *            the new card to set</em>
 <a class="jxr_linenumber" name="L94" href="#L94">94</a>  <em class="jxr_javadoccomment">     * @return this</em>
 <a class="jxr_linenumber" name="L95" href="#L95">95</a>  <em class="jxr_javadoccomment">     */</em>
-<a class="jxr_linenumber" name="L96" href="#L96">96</a>      <strong class="jxr_keyword">public</strong> <a href="../../../nom/tam/fits/HeaderCardBuilder.html">HeaderCardBuilder</a> card(<a href="../../../nom/tam/fits/header/IFitsHeader.html">IFitsHeader</a> newKey) {
+<a class="jxr_linenumber" name="L96" href="#L96">96</a>      <strong class="jxr_keyword">public</strong> <a name="HeaderCardBuilder" href="../../../nom/tam/fits/HeaderCardBuilder.html#HeaderCardBuilder">HeaderCardBuilder</a> card(<a name="IFitsHeader" href="../../../nom/tam/fits/header/IFitsHeader.html#IFitsHeader">IFitsHeader</a> newKey) {
 <a class="jxr_linenumber" name="L97" href="#L97">97</a>          <strong class="jxr_keyword">this</strong>.key = newKey;
 <a class="jxr_linenumber" name="L98" href="#L98">98</a>          <strong class="jxr_keyword">this</strong>.card = <strong class="jxr_keyword">this</strong>.header.findCard(<strong class="jxr_keyword">this</strong>.key);
 <a class="jxr_linenumber" name="L99" href="#L99">99</a>          <strong class="jxr_keyword">return</strong> <strong class="jxr_keyword">this</strong>;
@@ -118,9 +118,9 @@
 <a class="jxr_linenumber" name="L110" href="#L110">110</a> <em class="jxr_javadoccomment">     * @throws HeaderCardException</em>
 <a class="jxr_linenumber" name="L111" href="#L111">111</a> <em class="jxr_javadoccomment">     *             if the card creation failed.</em>
 <a class="jxr_linenumber" name="L112" href="#L112">112</a> <em class="jxr_javadoccomment">     */</em>
-<a class="jxr_linenumber" name="L113" href="#L113">113</a>     <strong class="jxr_keyword">public</strong> <a href="../../../nom/tam/fits/HeaderCardBuilder.html">HeaderCardBuilder</a> comment(String newComment) <strong class="jxr_keyword">throws</strong> HeaderCardException {
+<a class="jxr_linenumber" name="L113" href="#L113">113</a>     <strong class="jxr_keyword">public</strong> <a name="HeaderCardBuilder" href="../../../nom/tam/fits/HeaderCardBuilder.html#HeaderCardBuilder">HeaderCardBuilder</a> comment(String newComment) <strong class="jxr_keyword">throws</strong> <a name="HeaderCardException" href="../../../nom/tam/fits/HeaderCardException.html#HeaderCardException">HeaderCardException</a> {
 <a class="jxr_linenumber" name="L114" href="#L114">114</a>         <strong class="jxr_keyword">if</strong> (<strong class="jxr_keyword">this</strong>.card == <strong class="jxr_keyword">null</strong>) {
-<a class="jxr_linenumber" name="L115" href="#L115">115</a>             <strong class="jxr_keyword">this</strong>.card = <strong class="jxr_keyword">new</strong> <a href="../../../nom/tam/fits/HeaderCard.html">HeaderCard</a>(<strong class="jxr_keyword">this</strong>.key.key(), (String) <strong class="jxr_keyword">null</strong>, <strong class="jxr_keyword">null</strong>);
+<a class="jxr_linenumber" name="L115" href="#L115">115</a>             <strong class="jxr_keyword">this</strong>.card = <strong class="jxr_keyword">new</strong> <a name="HeaderCard" href="../../../nom/tam/fits/HeaderCard.html#HeaderCard">HeaderCard</a>(<strong class="jxr_keyword">this</strong>.key.key(), (String) <strong class="jxr_keyword">null</strong>, <strong class="jxr_keyword">null</strong>);
 <a class="jxr_linenumber" name="L116" href="#L116">116</a>             <strong class="jxr_keyword">this</strong>.header.addLine(<strong class="jxr_keyword">this</strong>.card);
 <a class="jxr_linenumber" name="L117" href="#L117">117</a>         }
 <a class="jxr_linenumber" name="L118" href="#L118">118</a>         <strong class="jxr_keyword">this</strong>.card.setComment(newComment);
@@ -137,9 +137,9 @@
 <a class="jxr_linenumber" name="L129" href="#L129">129</a> <em class="jxr_javadoccomment">     * @throws HeaderCardException</em>
 <a class="jxr_linenumber" name="L130" href="#L130">130</a> <em class="jxr_javadoccomment">     *             if the card creation failed.</em>
 <a class="jxr_linenumber" name="L131" href="#L131">131</a> <em class="jxr_javadoccomment">     */</em>
-<a class="jxr_linenumber" name="L132" href="#L132">132</a>     <strong class="jxr_keyword">public</strong> <a href="../../../nom/tam/fits/HeaderCardBuilder.html">HeaderCardBuilder</a> value(<strong class="jxr_keyword">boolean</strong> newValue) <strong class="jxr_keyword">throws</strong> HeaderCardException {
+<a class="jxr_linenumber" name="L132" href="#L132">132</a>     <strong class="jxr_keyword">public</strong> <a name="HeaderCardBuilder" href="../../../nom/tam/fits/HeaderCardBuilder.html#HeaderCardBuilder">HeaderCardBuilder</a> value(<strong class="jxr_keyword">boolean</strong> newValue) <strong class="jxr_keyword">throws</strong> <a name="HeaderCardException" href="../../../nom/tam/fits/HeaderCardException.html#HeaderCardException">HeaderCardException</a> {
 <a class="jxr_linenumber" name="L133" href="#L133">133</a>         <strong class="jxr_keyword">if</strong> (<strong class="jxr_keyword">this</strong>.card == <strong class="jxr_keyword">null</strong>) {
-<a class="jxr_linenumber" name="L134" href="#L134">134</a>             <strong class="jxr_keyword">this</strong>.card = <strong class="jxr_keyword">new</strong> <a href="../../../nom/tam/fits/HeaderCard.html">HeaderCard</a>(<strong class="jxr_keyword">this</strong>.key.key(), newValue, <strong class="jxr_keyword">null</strong>);
+<a class="jxr_linenumber" name="L134" href="#L134">134</a>             <strong class="jxr_keyword">this</strong>.card = <strong class="jxr_keyword">new</strong> <a name="HeaderCard" href="../../../nom/tam/fits/HeaderCard.html#HeaderCard">HeaderCard</a>(<strong class="jxr_keyword">this</strong>.key.key(), newValue, <strong class="jxr_keyword">null</strong>);
 <a class="jxr_linenumber" name="L135" href="#L135">135</a>             <strong class="jxr_keyword">this</strong>.header.addLine(<strong class="jxr_keyword">this</strong>.card);
 <a class="jxr_linenumber" name="L136" href="#L136">136</a>         } <strong class="jxr_keyword">else</strong> {
 <a class="jxr_linenumber" name="L137" href="#L137">137</a>             <strong class="jxr_keyword">this</strong>.card.setValue(newValue);
@@ -157,7 +157,7 @@
 <a class="jxr_linenumber" name="L149" href="#L149">149</a> <em class="jxr_javadoccomment">     * @throws HeaderCardException</em>
 <a class="jxr_linenumber" name="L150" href="#L150">150</a> <em class="jxr_javadoccomment">     *             if the card creation failed.</em>
 <a class="jxr_linenumber" name="L151" href="#L151">151</a> <em class="jxr_javadoccomment">     */</em>
-<a class="jxr_linenumber" name="L152" href="#L152">152</a>     <strong class="jxr_keyword">public</strong> <a href="../../../nom/tam/fits/HeaderCardBuilder.html">HeaderCardBuilder</a> value(Date newValue) <strong class="jxr_keyword">throws</strong> HeaderCardException {
+<a class="jxr_linenumber" name="L152" href="#L152">152</a>     <strong class="jxr_keyword">public</strong> <a name="HeaderCardBuilder" href="../../../nom/tam/fits/HeaderCardBuilder.html#HeaderCardBuilder">HeaderCardBuilder</a> value(Date newValue) <strong class="jxr_keyword">throws</strong> <a name="HeaderCardException" href="../../../nom/tam/fits/HeaderCardException.html#HeaderCardException">HeaderCardException</a> {
 <a class="jxr_linenumber" name="L153" href="#L153">153</a>         <strong class="jxr_keyword">return</strong> value(FitsDate.getFitsDateString(newValue));
 <a class="jxr_linenumber" name="L154" href="#L154">154</a>     }
 <a class="jxr_linenumber" name="L155" href="#L155">155</a> 
@@ -172,9 +172,9 @@
 <a class="jxr_linenumber" name="L164" href="#L164">164</a> <em class="jxr_javadoccomment">     *                  if the number value cannot be represented in the space available</em>
 <a class="jxr_linenumber" name="L165" href="#L165">165</a> <em class="jxr_javadoccomment">     *                  for it in the 80-character wide FITS header record.    </em>
 <a class="jxr_linenumber" name="L166" href="#L166">166</a> <em class="jxr_javadoccomment">     */</em>
-<a class="jxr_linenumber" name="L167" href="#L167">167</a>     <strong class="jxr_keyword">public</strong> <a href="../../../nom/tam/fits/HeaderCardBuilder.html">HeaderCardBuilder</a> value(Number value) <strong class="jxr_keyword">throws</strong> HeaderCardException, LongValueException {
+<a class="jxr_linenumber" name="L167" href="#L167">167</a>     <strong class="jxr_keyword">public</strong> <a name="HeaderCardBuilder" href="../../../nom/tam/fits/HeaderCardBuilder.html#HeaderCardBuilder">HeaderCardBuilder</a> value(Number value) <strong class="jxr_keyword">throws</strong> HeaderCardException, <a name="LongValueException" href="../../../nom/tam/fits/LongValueException.html#LongValueException">LongValueException</a> {
 <a class="jxr_linenumber" name="L168" href="#L168">168</a>         <strong class="jxr_keyword">if</strong> (<strong class="jxr_keyword">this</strong>.card == <strong class="jxr_keyword">null</strong>) {
-<a class="jxr_linenumber" name="L169" href="#L169">169</a>             <strong class="jxr_keyword">this</strong>.card = <strong class="jxr_keyword">new</strong> <a href="../../../nom/tam/fits/HeaderCard.html">HeaderCard</a>(<strong class="jxr_keyword">this</strong>.key.key(), value, precision, <strong class="jxr_keyword">null</strong>);
+<a class="jxr_linenumber" name="L169" href="#L169">169</a>             <strong class="jxr_keyword">this</strong>.card = <strong class="jxr_keyword">new</strong> <a name="HeaderCard" href="../../../nom/tam/fits/HeaderCard.html#HeaderCard">HeaderCard</a>(<strong class="jxr_keyword">this</strong>.key.key(), value, precision, <strong class="jxr_keyword">null</strong>);
 <a class="jxr_linenumber" name="L170" href="#L170">170</a>             <strong class="jxr_keyword">this</strong>.header.addLine(<strong class="jxr_keyword">this</strong>.card);
 <a class="jxr_linenumber" name="L171" href="#L171">171</a>         } <strong class="jxr_keyword">else</strong> {
 <a class="jxr_linenumber" name="L172" href="#L172">172</a>             <strong class="jxr_keyword">this</strong>.card.setValue(value, precision);
@@ -195,9 +195,9 @@
 <a class="jxr_linenumber" name="L187" href="#L187">187</a> <em class="jxr_javadoccomment">     *             if the number value cannot be represented in the space available</em>
 <a class="jxr_linenumber" name="L188" href="#L188">188</a> <em class="jxr_javadoccomment">     *             for it in the 80-character wide FITS header record.</em>
 <a class="jxr_linenumber" name="L189" href="#L189">189</a> <em class="jxr_javadoccomment">     */</em>
-<a class="jxr_linenumber" name="L190" href="#L190">190</a>     <strong class="jxr_keyword">public</strong> <a href="../../../nom/tam/fits/HeaderCardBuilder.html">HeaderCardBuilder</a> value(String newValue) <strong class="jxr_keyword">throws</strong> HeaderCardException, LongValueException {
+<a class="jxr_linenumber" name="L190" href="#L190">190</a>     <strong class="jxr_keyword">public</strong> <a name="HeaderCardBuilder" href="../../../nom/tam/fits/HeaderCardBuilder.html#HeaderCardBuilder">HeaderCardBuilder</a> value(String newValue) <strong class="jxr_keyword">throws</strong> HeaderCardException, <a name="LongValueException" href="../../../nom/tam/fits/LongValueException.html#LongValueException">LongValueException</a> {
 <a class="jxr_linenumber" name="L191" href="#L191">191</a>         <strong class="jxr_keyword">if</strong> (<strong class="jxr_keyword">this</strong>.card == <strong class="jxr_keyword">null</strong>) {
-<a class="jxr_linenumber" name="L192" href="#L192">192</a>             <strong class="jxr_keyword">this</strong>.card = <strong class="jxr_keyword">new</strong> <a href="../../../nom/tam/fits/HeaderCard.html">HeaderCard</a>(<strong class="jxr_keyword">this</strong>.key.key(), newValue, <strong class="jxr_keyword">null</strong>);
+<a class="jxr_linenumber" name="L192" href="#L192">192</a>             <strong class="jxr_keyword">this</strong>.card = <strong class="jxr_keyword">new</strong> <a name="HeaderCard" href="../../../nom/tam/fits/HeaderCard.html#HeaderCard">HeaderCard</a>(<strong class="jxr_keyword">this</strong>.key.key(), newValue, <strong class="jxr_keyword">null</strong>);
 <a class="jxr_linenumber" name="L193" href="#L193">193</a>             <strong class="jxr_keyword">this</strong>.header.addLine(<strong class="jxr_keyword">this</strong>.card);
 <a class="jxr_linenumber" name="L194" href="#L194">194</a>         } <strong class="jxr_keyword">else</strong> {
 <a class="jxr_linenumber" name="L195" href="#L195">195</a>             <strong class="jxr_keyword">this</strong>.card.setValue(newValue);
@@ -215,7 +215,7 @@
 <a class="jxr_linenumber" name="L207" href="#L207">207</a> <em class="jxr_javadoccomment">     * @deprecated Use {@link #precision(int)} instead.</em>
 <a class="jxr_linenumber" name="L208" href="#L208">208</a> <em class="jxr_javadoccomment">     */</em>
 <a class="jxr_linenumber" name="L209" href="#L209">209</a>     @Deprecated
-<a class="jxr_linenumber" name="L210" href="#L210">210</a>     <strong class="jxr_keyword">public</strong> <a href="../../../nom/tam/fits/HeaderCardBuilder.html">HeaderCardBuilder</a> scale(<strong class="jxr_keyword">int</strong> decimals) {
+<a class="jxr_linenumber" name="L210" href="#L210">210</a>     <strong class="jxr_keyword">public</strong> <a name="HeaderCardBuilder" href="../../../nom/tam/fits/HeaderCardBuilder.html#HeaderCardBuilder">HeaderCardBuilder</a> scale(<strong class="jxr_keyword">int</strong> decimals) {
 <a class="jxr_linenumber" name="L211" href="#L211">211</a>         <strong class="jxr_keyword">this</strong>.precision = decimals;
 <a class="jxr_linenumber" name="L212" href="#L212">212</a>         <strong class="jxr_keyword">return</strong> <strong class="jxr_keyword">this</strong>;
 <a class="jxr_linenumber" name="L213" href="#L213">213</a>     }
@@ -231,7 +231,7 @@
 <a class="jxr_linenumber" name="L223" href="#L223">223</a> <em class="jxr_javadoccomment">     * </em>
 <a class="jxr_linenumber" name="L224" href="#L224">224</a> <em class="jxr_javadoccomment">     * @since 1.16</em>
 <a class="jxr_linenumber" name="L225" href="#L225">225</a> <em class="jxr_javadoccomment">     */</em>
-<a class="jxr_linenumber" name="L226" href="#L226">226</a>     <strong class="jxr_keyword">public</strong> <a href="../../../nom/tam/fits/HeaderCardBuilder.html">HeaderCardBuilder</a> precision(<strong class="jxr_keyword">int</strong> decimals) {
+<a class="jxr_linenumber" name="L226" href="#L226">226</a>     <strong class="jxr_keyword">public</strong> <a name="HeaderCardBuilder" href="../../../nom/tam/fits/HeaderCardBuilder.html#HeaderCardBuilder">HeaderCardBuilder</a> precision(<strong class="jxr_keyword">int</strong> decimals) {
 <a class="jxr_linenumber" name="L227" href="#L227">227</a>         <strong class="jxr_keyword">this</strong>.precision = decimals;
 <a class="jxr_linenumber" name="L228" href="#L228">228</a>         <strong class="jxr_keyword">return</strong> <strong class="jxr_keyword">this</strong>;
 <a class="jxr_linenumber" name="L229" href="#L229">229</a>     }
@@ -244,7 +244,7 @@
 <a class="jxr_linenumber" name="L236" href="#L236">236</a> <em class="jxr_javadoccomment">     * @deprecated Use {@link #autoPrecision()} instead</em>
 <a class="jxr_linenumber" name="L237" href="#L237">237</a> <em class="jxr_javadoccomment">     */</em>
 <a class="jxr_linenumber" name="L238" href="#L238">238</a>     @Deprecated
-<a class="jxr_linenumber" name="L239" href="#L239">239</a>     <strong class="jxr_keyword">public</strong> <a href="../../../nom/tam/fits/HeaderCardBuilder.html">HeaderCardBuilder</a> noScale() {
+<a class="jxr_linenumber" name="L239" href="#L239">239</a>     <strong class="jxr_keyword">public</strong> <a name="HeaderCardBuilder" href="../../../nom/tam/fits/HeaderCardBuilder.html#HeaderCardBuilder">HeaderCardBuilder</a> noScale() {
 <a class="jxr_linenumber" name="L240" href="#L240">240</a>         <strong class="jxr_keyword">this</strong>.precision = -1;
 <a class="jxr_linenumber" name="L241" href="#L241">241</a>         <strong class="jxr_keyword">return</strong> <strong class="jxr_keyword">this</strong>;
 <a class="jxr_linenumber" name="L242" href="#L242">242</a>     }
@@ -257,7 +257,7 @@
 <a class="jxr_linenumber" name="L249" href="#L249">249</a> <em class="jxr_javadoccomment">     * </em>
 <a class="jxr_linenumber" name="L250" href="#L250">250</a> <em class="jxr_javadoccomment">     * @since 1.16</em>
 <a class="jxr_linenumber" name="L251" href="#L251">251</a> <em class="jxr_javadoccomment">     */</em>
-<a class="jxr_linenumber" name="L252" href="#L252">252</a>     <strong class="jxr_keyword">public</strong> <a href="../../../nom/tam/fits/HeaderCardBuilder.html">HeaderCardBuilder</a> autoPrecision() {
+<a class="jxr_linenumber" name="L252" href="#L252">252</a>     <strong class="jxr_keyword">public</strong> <a name="HeaderCardBuilder" href="../../../nom/tam/fits/HeaderCardBuilder.html#HeaderCardBuilder">HeaderCardBuilder</a> autoPrecision() {
 <a class="jxr_linenumber" name="L253" href="#L253">253</a>         <strong class="jxr_keyword">this</strong>.precision = -1;
 <a class="jxr_linenumber" name="L254" href="#L254">254</a>         <strong class="jxr_keyword">return</strong> <strong class="jxr_keyword">this</strong>;
 <a class="jxr_linenumber" name="L255" href="#L255">255</a>     }
@@ -265,7 +265,7 @@
 <a class="jxr_linenumber" name="L257" href="#L257">257</a>     <em class="jxr_javadoccomment">/**</em>
 <a class="jxr_linenumber" name="L258" href="#L258">258</a> <em class="jxr_javadoccomment">     * @return the filled header.</em>
 <a class="jxr_linenumber" name="L259" href="#L259">259</a> <em class="jxr_javadoccomment">     */</em>
-<a class="jxr_linenumber" name="L260" href="#L260">260</a>     <strong class="jxr_keyword">public</strong> <a href="../../../nom/tam/fits/Header.html">Header</a> header() {
+<a class="jxr_linenumber" name="L260" href="#L260">260</a>     <strong class="jxr_keyword">public</strong> <a name="Header" href="../../../nom/tam/fits/Header.html#Header">Header</a> header() {
 <a class="jxr_linenumber" name="L261" href="#L261">261</a>         <strong class="jxr_keyword">return</strong> header;
 <a class="jxr_linenumber" name="L262" href="#L262">262</a>     }
 <a class="jxr_linenumber" name="L263" href="#L263">263</a> }

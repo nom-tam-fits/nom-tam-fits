@@ -55,7 +55,7 @@
 <a class="jxr_linenumber" name="L47" href="#L47">47</a>  <em class="jxr_javadoccomment"> * </em>
 <a class="jxr_linenumber" name="L48" href="#L48">48</a>  <em class="jxr_javadoccomment"> * @author Richard van Nieuwenhoven.</em>
 <a class="jxr_linenumber" name="L49" href="#L49">49</a>  <em class="jxr_javadoccomment"> */</em>
-<a class="jxr_linenumber" name="L50" href="#L50">50</a>  <strong class="jxr_keyword">public</strong> enum <a href="../../../../../nom/tam/fits/header/extra/NOAOExt.html">NOAOExt</a> <strong class="jxr_keyword">implements</strong> <a href="../../../../../nom/tam/fits/header/IFitsHeader.html">IFitsHeader</a> {
+<a class="jxr_linenumber" name="L50" href="#L50">50</a>  <strong class="jxr_keyword">public</strong> enum <a name="NOAOExt" href="../../../../../nom/tam/fits/header/extra/NOAOExt.html#NOAOExt">NOAOExt</a> <strong class="jxr_keyword">implements</strong> <a name="IFitsHeader" href="../../../../../nom/tam/fits/header/IFitsHeader.html#IFitsHeader">IFitsHeader</a> {
 <a class="jxr_linenumber" name="L51" href="#L51">51</a>      <em class="jxr_javadoccomment">/**</em>
 <a class="jxr_linenumber" name="L52" href="#L52">52</a>  <em class="jxr_javadoccomment">     * &lt;p&gt;</em>
 <a class="jxr_linenumber" name="L53" href="#L53">53</a>  <em class="jxr_javadoccomment">     * default value = none</em>
@@ -8153,14 +8153,14 @@
 <a class="jxr_linenumber" name="L8145" href="#L8145">8145</a>     MJD_OBS(<span class="jxr_string">"MJD-OBS"</span>, HDU.PRIMARY_EXTENSION, VALUE.REAL, <span class="jxr_string">"MJD of exposure start"</span>);
 <a class="jxr_linenumber" name="L8146" href="#L8146">8146</a> 
 <a class="jxr_linenumber" name="L8147" href="#L8147">8147</a>     @SuppressWarnings(<span class="jxr_string">"CPD-START"</span>)
-<a class="jxr_linenumber" name="L8148" href="#L8148">8148</a>     <strong class="jxr_keyword">private</strong> <strong class="jxr_keyword">final</strong> <a href="../../../../../nom/tam/fits/header/IFitsHeader.html">IFitsHeader</a> key;
+<a class="jxr_linenumber" name="L8148" href="#L8148">8148</a>     <strong class="jxr_keyword">private</strong> <strong class="jxr_keyword">final</strong> <a name="IFitsHeader" href="../../../../../nom/tam/fits/header/IFitsHeader.html#IFitsHeader">IFitsHeader</a> key;
 <a class="jxr_linenumber" name="L8149" href="#L8149">8149</a> 
-<a class="jxr_linenumber" name="L8150" href="#L8150">8150</a>     <a href="../../../../../nom/tam/fits/header/extra/NOAOExt.html">NOAOExt</a>(<a href="../../../../../nom/tam/fits/header/IFitsHeader.html">HDU</a> hdu, <a href="../../../../../nom/tam/fits/header/IFitsHeader.html">VALUE</a> valueType, String comment) {
-<a class="jxr_linenumber" name="L8151" href="#L8151">8151</a>         <strong class="jxr_keyword">this</strong>.key = <strong class="jxr_keyword">new</strong> <a href="../../../../../nom/tam/fits/header/FitsHeaderImpl.html">FitsHeaderImpl</a>(name(), IFitsHeader.SOURCE.NOAO, hdu, valueType, comment);
+<a class="jxr_linenumber" name="L8150" href="#L8150">8150</a>     <a name="NOAOExt" href="../../../../../nom/tam/fits/header/extra/NOAOExt.html#NOAOExt">NOAOExt</a>(HDU hdu, VALUE valueType, String comment) {
+<a class="jxr_linenumber" name="L8151" href="#L8151">8151</a>         <strong class="jxr_keyword">this</strong>.key = <strong class="jxr_keyword">new</strong> <a name="FitsHeaderImpl" href="../../../../../nom/tam/fits/header/FitsHeaderImpl.html#FitsHeaderImpl">FitsHeaderImpl</a>(name(), IFitsHeader.SOURCE.NOAO, hdu, valueType, comment);
 <a class="jxr_linenumber" name="L8152" href="#L8152">8152</a>     }
 <a class="jxr_linenumber" name="L8153" href="#L8153">8153</a> 
-<a class="jxr_linenumber" name="L8154" href="#L8154">8154</a>     <a href="../../../../../nom/tam/fits/header/extra/NOAOExt.html">NOAOExt</a>(String key, <a href="../../../../../nom/tam/fits/header/IFitsHeader.html">HDU</a> hdu, <a href="../../../../../nom/tam/fits/header/IFitsHeader.html">VALUE</a> valueType, String comment) {
-<a class="jxr_linenumber" name="L8155" href="#L8155">8155</a>         <strong class="jxr_keyword">this</strong>.key = <strong class="jxr_keyword">new</strong> <a href="../../../../../nom/tam/fits/header/FitsHeaderImpl.html">FitsHeaderImpl</a>(name(), IFitsHeader.SOURCE.NOAO, hdu, valueType, comment);
+<a class="jxr_linenumber" name="L8154" href="#L8154">8154</a>     <a name="NOAOExt" href="../../../../../nom/tam/fits/header/extra/NOAOExt.html#NOAOExt">NOAOExt</a>(String key, HDU hdu, VALUE valueType, String comment) {
+<a class="jxr_linenumber" name="L8155" href="#L8155">8155</a>         <strong class="jxr_keyword">this</strong>.key = <strong class="jxr_keyword">new</strong> <a name="FitsHeaderImpl" href="../../../../../nom/tam/fits/header/FitsHeaderImpl.html#FitsHeaderImpl">FitsHeaderImpl</a>(name(), IFitsHeader.SOURCE.NOAO, hdu, valueType, comment);
 <a class="jxr_linenumber" name="L8156" href="#L8156">8156</a>     }
 <a class="jxr_linenumber" name="L8157" href="#L8157">8157</a> 
 <a class="jxr_linenumber" name="L8158" href="#L8158">8158</a>     @Override
@@ -8169,7 +8169,7 @@
 <a class="jxr_linenumber" name="L8161" href="#L8161">8161</a>     }
 <a class="jxr_linenumber" name="L8162" href="#L8162">8162</a> 
 <a class="jxr_linenumber" name="L8163" href="#L8163">8163</a>     @Override
-<a class="jxr_linenumber" name="L8164" href="#L8164">8164</a>     <strong class="jxr_keyword">public</strong> <a href="../../../../../nom/tam/fits/header/IFitsHeader.html">HDU</a> hdu() {
+<a class="jxr_linenumber" name="L8164" href="#L8164">8164</a>     <strong class="jxr_keyword">public</strong> HDU hdu() {
 <a class="jxr_linenumber" name="L8165" href="#L8165">8165</a>         <strong class="jxr_keyword">return</strong> <strong class="jxr_keyword">this</strong>.key.hdu();
 <a class="jxr_linenumber" name="L8166" href="#L8166">8166</a>     }
 <a class="jxr_linenumber" name="L8167" href="#L8167">8167</a> 
@@ -8179,18 +8179,18 @@
 <a class="jxr_linenumber" name="L8171" href="#L8171">8171</a>     }
 <a class="jxr_linenumber" name="L8172" href="#L8172">8172</a> 
 <a class="jxr_linenumber" name="L8173" href="#L8173">8173</a>     @Override
-<a class="jxr_linenumber" name="L8174" href="#L8174">8174</a>     <strong class="jxr_keyword">public</strong> <a href="../../../../../nom/tam/fits/header/IFitsHeader.html">IFitsHeader</a> n(<strong class="jxr_keyword">int</strong>... number) {
+<a class="jxr_linenumber" name="L8174" href="#L8174">8174</a>     <strong class="jxr_keyword">public</strong> <a name="IFitsHeader" href="../../../../../nom/tam/fits/header/IFitsHeader.html#IFitsHeader">IFitsHeader</a> n(<strong class="jxr_keyword">int</strong>... number) {
 <a class="jxr_linenumber" name="L8175" href="#L8175">8175</a>         <strong class="jxr_keyword">return</strong> <strong class="jxr_keyword">this</strong>.key.n(number);
 <a class="jxr_linenumber" name="L8176" href="#L8176">8176</a>     }
 <a class="jxr_linenumber" name="L8177" href="#L8177">8177</a> 
 <a class="jxr_linenumber" name="L8178" href="#L8178">8178</a>     @Override
-<a class="jxr_linenumber" name="L8179" href="#L8179">8179</a>     <strong class="jxr_keyword">public</strong> <a href="../../../../../nom/tam/fits/header/IFitsHeader.html">SOURCE</a> status() {
+<a class="jxr_linenumber" name="L8179" href="#L8179">8179</a>     <strong class="jxr_keyword">public</strong> SOURCE status() {
 <a class="jxr_linenumber" name="L8180" href="#L8180">8180</a>         <strong class="jxr_keyword">return</strong> <strong class="jxr_keyword">this</strong>.key.status();
 <a class="jxr_linenumber" name="L8181" href="#L8181">8181</a>     }
 <a class="jxr_linenumber" name="L8182" href="#L8182">8182</a> 
 <a class="jxr_linenumber" name="L8183" href="#L8183">8183</a>     @Override
 <a class="jxr_linenumber" name="L8184" href="#L8184">8184</a>     @SuppressWarnings(<span class="jxr_string">"CPD-END"</span>)
-<a class="jxr_linenumber" name="L8185" href="#L8185">8185</a>     <strong class="jxr_keyword">public</strong> <a href="../../../../../nom/tam/fits/header/IFitsHeader.html">VALUE</a> valueType() {
+<a class="jxr_linenumber" name="L8185" href="#L8185">8185</a>     <strong class="jxr_keyword">public</strong> VALUE valueType() {
 <a class="jxr_linenumber" name="L8186" href="#L8186">8186</a>         <strong class="jxr_keyword">return</strong> <strong class="jxr_keyword">this</strong>.key.valueType();
 <a class="jxr_linenumber" name="L8187" href="#L8187">8187</a>     }
 <a class="jxr_linenumber" name="L8188" href="#L8188">8188</a> }

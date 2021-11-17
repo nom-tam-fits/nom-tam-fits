@@ -42,7 +42,7 @@
 <a class="jxr_linenumber" name="L34" href="#L34">34</a>  <em class="jxr_comment"> * #L%</em>
 <a class="jxr_linenumber" name="L35" href="#L35">35</a>  <em class="jxr_comment"> */</em>
 <a class="jxr_linenumber" name="L36" href="#L36">36</a>  
-<a class="jxr_linenumber" name="L37" href="#L37">37</a>  <strong class="jxr_keyword">public</strong> <strong class="jxr_keyword">class</strong> <a href="../../../../../../nom/tam/fits/compression/algorithm/quant/QuantizeOption.html">QuantizeOption</a> <strong class="jxr_keyword">implements</strong> <a href="../../../../../../nom/tam/fits/compression/algorithm/api/ICompressOption.html">ICompressOption</a> {
+<a class="jxr_linenumber" name="L37" href="#L37">37</a>  <strong class="jxr_keyword">public</strong> <strong class="jxr_keyword">class</strong> <a name="QuantizeOption" href="../../../../../../nom/tam/fits/compression/algorithm/quant/QuantizeOption.html#QuantizeOption">QuantizeOption</a> <strong class="jxr_keyword">implements</strong> <a name="ICompressOption" href="../../../../../../nom/tam/fits/compression/algorithm/api/ICompressOption.html#ICompressOption">ICompressOption</a> {
 <a class="jxr_linenumber" name="L38" href="#L38">38</a>  
 <a class="jxr_linenumber" name="L39" href="#L39">39</a>      <em class="jxr_javadoccomment">/**</em>
 <a class="jxr_linenumber" name="L40" href="#L40">40</a>  <em class="jxr_javadoccomment">     * and including NULL_VALUE. These values may not be used to represent the</em>
@@ -54,7 +54,7 @@
 <a class="jxr_linenumber" name="L46" href="#L46">46</a>  <em class="jxr_javadoccomment">     */</em>
 <a class="jxr_linenumber" name="L47" href="#L47">47</a>      <strong class="jxr_keyword">private</strong> <strong class="jxr_keyword">static</strong> <strong class="jxr_keyword">final</strong> <strong class="jxr_keyword">int</strong> NULL_VALUE = Integer.MIN_VALUE + 1;
 <a class="jxr_linenumber" name="L48" href="#L48">48</a>  
-<a class="jxr_linenumber" name="L49" href="#L49">49</a>      <strong class="jxr_keyword">protected</strong> <a href="../../../../../../nom/tam/fits/compression/provider/param/api/ICompressParameters.html">ICompressParameters</a> parameters;
+<a class="jxr_linenumber" name="L49" href="#L49">49</a>      <strong class="jxr_keyword">protected</strong> <a name="ICompressParameters" href="../../../../../../nom/tam/fits/compression/provider/param/api/ICompressParameters.html#ICompressParameters">ICompressParameters</a> parameters;
 <a class="jxr_linenumber" name="L50" href="#L50">50</a>  
 <a class="jxr_linenumber" name="L51" href="#L51">51</a>      <strong class="jxr_keyword">private</strong> <strong class="jxr_keyword">double</strong> bScale = Double.NaN;
 <a class="jxr_linenumber" name="L52" href="#L52">52</a>  
@@ -90,12 +90,12 @@
 <a class="jxr_linenumber" name="L82" href="#L82">82</a>  
 <a class="jxr_linenumber" name="L83" href="#L83">83</a>      <strong class="jxr_keyword">private</strong> <strong class="jxr_keyword">int</strong> tileWidth;
 <a class="jxr_linenumber" name="L84" href="#L84">84</a>  
-<a class="jxr_linenumber" name="L85" href="#L85">85</a>      <strong class="jxr_keyword">private</strong> <a href="../../../../../../nom/tam/fits/compression/algorithm/quant/QuantizeOption.html">QuantizeOption</a> original;
+<a class="jxr_linenumber" name="L85" href="#L85">85</a>      <strong class="jxr_keyword">private</strong> <a name="QuantizeOption" href="../../../../../../nom/tam/fits/compression/algorithm/quant/QuantizeOption.html#QuantizeOption">QuantizeOption</a> original;
 <a class="jxr_linenumber" name="L86" href="#L86">86</a>  
 <a class="jxr_linenumber" name="L87" href="#L87">87</a>      @Override
-<a class="jxr_linenumber" name="L88" href="#L88">88</a>      <strong class="jxr_keyword">public</strong> <a href="../../../../../../nom/tam/fits/compression/algorithm/quant/QuantizeOption.html">QuantizeOption</a> copy() {
+<a class="jxr_linenumber" name="L88" href="#L88">88</a>      <strong class="jxr_keyword">public</strong> <a name="QuantizeOption" href="../../../../../../nom/tam/fits/compression/algorithm/quant/QuantizeOption.html#QuantizeOption">QuantizeOption</a> copy() {
 <a class="jxr_linenumber" name="L89" href="#L89">89</a>          <strong class="jxr_keyword">try</strong> {
-<a class="jxr_linenumber" name="L90" href="#L90">90</a>              <strong class="jxr_keyword">return</strong> ((QuantizeOption) clone()).setOriginal(<strong class="jxr_keyword">this</strong>);
+<a class="jxr_linenumber" name="L90" href="#L90">90</a>              <strong class="jxr_keyword">return</strong> ((<a name="QuantizeOption" href="../../../../../../nom/tam/fits/compression/algorithm/quant/QuantizeOption.html#QuantizeOption">QuantizeOption</a>) clone()).setOriginal(<strong class="jxr_keyword">this</strong>);
 <a class="jxr_linenumber" name="L91" href="#L91">91</a>          } <strong class="jxr_keyword">catch</strong> (CloneNotSupportedException e) {
 <a class="jxr_linenumber" name="L92" href="#L92">92</a>              <strong class="jxr_keyword">throw</strong> <strong class="jxr_keyword">new</strong> IllegalStateException(<span class="jxr_string">"option could not be cloned"</span>, e);
 <a class="jxr_linenumber" name="L93" href="#L93">93</a>          }
@@ -114,7 +114,7 @@
 <a class="jxr_linenumber" name="L106" href="#L106">106</a>     }
 <a class="jxr_linenumber" name="L107" href="#L107">107</a> 
 <a class="jxr_linenumber" name="L108" href="#L108">108</a>     @Override
-<a class="jxr_linenumber" name="L109" href="#L109">109</a>     <strong class="jxr_keyword">public</strong> <a href="../../../../../../nom/tam/fits/compression/provider/param/api/ICompressParameters.html">ICompressParameters</a> getCompressionParameters() {
+<a class="jxr_linenumber" name="L109" href="#L109">109</a>     <strong class="jxr_keyword">public</strong> <a name="ICompressParameters" href="../../../../../../nom/tam/fits/compression/provider/param/api/ICompressParameters.html#ICompressParameters">ICompressParameters</a> getCompressionParameters() {
 <a class="jxr_linenumber" name="L110" href="#L110">110</a>         <strong class="jxr_keyword">return</strong> <strong class="jxr_keyword">this</strong>.parameters;
 <a class="jxr_linenumber" name="L111" href="#L111">111</a>     }
 <a class="jxr_linenumber" name="L112" href="#L112">112</a> 
@@ -146,7 +146,7 @@
 <a class="jxr_linenumber" name="L138" href="#L138">138</a>         <strong class="jxr_keyword">return</strong> <strong class="jxr_keyword">this</strong>.nullValueIndicator;
 <a class="jxr_linenumber" name="L139" href="#L139">139</a>     }
 <a class="jxr_linenumber" name="L140" href="#L140">140</a> 
-<a class="jxr_linenumber" name="L141" href="#L141">141</a>     <strong class="jxr_keyword">public</strong> <a href="../../../../../../nom/tam/fits/compression/algorithm/quant/QuantizeOption.html">QuantizeOption</a> getOriginal() {
+<a class="jxr_linenumber" name="L141" href="#L141">141</a>     <strong class="jxr_keyword">public</strong> <a name="QuantizeOption" href="../../../../../../nom/tam/fits/compression/algorithm/quant/QuantizeOption.html#QuantizeOption">QuantizeOption</a> getOriginal() {
 <a class="jxr_linenumber" name="L142" href="#L142">142</a>         <strong class="jxr_keyword">return</strong> <strong class="jxr_keyword">this</strong>.original;
 <a class="jxr_linenumber" name="L143" href="#L143">143</a>     }
 <a class="jxr_linenumber" name="L144" href="#L144">144</a> 
@@ -191,7 +191,7 @@
 <a class="jxr_linenumber" name="L183" href="#L183">183</a>         <strong class="jxr_keyword">return</strong> <strong class="jxr_keyword">true</strong>;
 <a class="jxr_linenumber" name="L184" href="#L184">184</a>     }
 <a class="jxr_linenumber" name="L185" href="#L185">185</a> 
-<a class="jxr_linenumber" name="L186" href="#L186">186</a>     <strong class="jxr_keyword">public</strong> <a href="../../../../../../nom/tam/fits/compression/algorithm/api/ICompressOption.html">ICompressOption</a> setBNull(Integer blank) {
+<a class="jxr_linenumber" name="L186" href="#L186">186</a>     <strong class="jxr_keyword">public</strong> <a name="ICompressOption" href="../../../../../../nom/tam/fits/compression/algorithm/api/ICompressOption.html#ICompressOption">ICompressOption</a> setBNull(Integer blank) {
 <a class="jxr_linenumber" name="L187" href="#L187">187</a>         <strong class="jxr_keyword">if</strong> (blank != <strong class="jxr_keyword">null</strong>) {
 <a class="jxr_linenumber" name="L188" href="#L188">188</a>             <strong class="jxr_keyword">this</strong>.checkNull = <strong class="jxr_keyword">true</strong>;
 <a class="jxr_linenumber" name="L189" href="#L189">189</a>             <strong class="jxr_keyword">this</strong>.nullValueIndicator = blank;
@@ -199,22 +199,22 @@
 <a class="jxr_linenumber" name="L191" href="#L191">191</a>         <strong class="jxr_keyword">return</strong> <strong class="jxr_keyword">this</strong>;
 <a class="jxr_linenumber" name="L192" href="#L192">192</a>     }
 <a class="jxr_linenumber" name="L193" href="#L193">193</a> 
-<a class="jxr_linenumber" name="L194" href="#L194">194</a>     <strong class="jxr_keyword">public</strong> <a href="../../../../../../nom/tam/fits/compression/algorithm/quant/QuantizeOption.html">QuantizeOption</a> setBScale(<strong class="jxr_keyword">double</strong> value) {
+<a class="jxr_linenumber" name="L194" href="#L194">194</a>     <strong class="jxr_keyword">public</strong> <a name="QuantizeOption" href="../../../../../../nom/tam/fits/compression/algorithm/quant/QuantizeOption.html#QuantizeOption">QuantizeOption</a> setBScale(<strong class="jxr_keyword">double</strong> value) {
 <a class="jxr_linenumber" name="L195" href="#L195">195</a>         <strong class="jxr_keyword">this</strong>.bScale = value;
 <a class="jxr_linenumber" name="L196" href="#L196">196</a>         <strong class="jxr_keyword">return</strong> <strong class="jxr_keyword">this</strong>;
 <a class="jxr_linenumber" name="L197" href="#L197">197</a>     }
 <a class="jxr_linenumber" name="L198" href="#L198">198</a> 
-<a class="jxr_linenumber" name="L199" href="#L199">199</a>     <strong class="jxr_keyword">public</strong> <a href="../../../../../../nom/tam/fits/compression/algorithm/quant/QuantizeOption.html">QuantizeOption</a> setBZero(<strong class="jxr_keyword">double</strong> value) {
+<a class="jxr_linenumber" name="L199" href="#L199">199</a>     <strong class="jxr_keyword">public</strong> <a name="QuantizeOption" href="../../../../../../nom/tam/fits/compression/algorithm/quant/QuantizeOption.html#QuantizeOption">QuantizeOption</a> setBZero(<strong class="jxr_keyword">double</strong> value) {
 <a class="jxr_linenumber" name="L200" href="#L200">200</a>         <strong class="jxr_keyword">this</strong>.bZero = value;
 <a class="jxr_linenumber" name="L201" href="#L201">201</a>         <strong class="jxr_keyword">return</strong> <strong class="jxr_keyword">this</strong>;
 <a class="jxr_linenumber" name="L202" href="#L202">202</a>     }
 <a class="jxr_linenumber" name="L203" href="#L203">203</a> 
-<a class="jxr_linenumber" name="L204" href="#L204">204</a>     <strong class="jxr_keyword">public</strong> <a href="../../../../../../nom/tam/fits/compression/algorithm/quant/QuantizeOption.html">QuantizeOption</a> setCenterOnZero(<strong class="jxr_keyword">boolean</strong> value) {
+<a class="jxr_linenumber" name="L204" href="#L204">204</a>     <strong class="jxr_keyword">public</strong> <a name="QuantizeOption" href="../../../../../../nom/tam/fits/compression/algorithm/quant/QuantizeOption.html#QuantizeOption">QuantizeOption</a> setCenterOnZero(<strong class="jxr_keyword">boolean</strong> value) {
 <a class="jxr_linenumber" name="L205" href="#L205">205</a>         <strong class="jxr_keyword">this</strong>.centerOnZero = value;
 <a class="jxr_linenumber" name="L206" href="#L206">206</a>         <strong class="jxr_keyword">return</strong> <strong class="jxr_keyword">this</strong>;
 <a class="jxr_linenumber" name="L207" href="#L207">207</a>     }
 <a class="jxr_linenumber" name="L208" href="#L208">208</a> 
-<a class="jxr_linenumber" name="L209" href="#L209">209</a>     <strong class="jxr_keyword">public</strong> <a href="../../../../../../nom/tam/fits/compression/algorithm/quant/QuantizeOption.html">QuantizeOption</a> setCheckNull(<strong class="jxr_keyword">boolean</strong> value) {
+<a class="jxr_linenumber" name="L209" href="#L209">209</a>     <strong class="jxr_keyword">public</strong> <a name="QuantizeOption" href="../../../../../../nom/tam/fits/compression/algorithm/quant/QuantizeOption.html#QuantizeOption">QuantizeOption</a> setCheckNull(<strong class="jxr_keyword">boolean</strong> value) {
 <a class="jxr_linenumber" name="L210" href="#L210">210</a>         <strong class="jxr_keyword">this</strong>.checkNull = value;
 <a class="jxr_linenumber" name="L211" href="#L211">211</a>         <strong class="jxr_keyword">if</strong> (<strong class="jxr_keyword">this</strong>.nullValueIndicator == <strong class="jxr_keyword">null</strong>) {
 <a class="jxr_linenumber" name="L212" href="#L212">212</a>             <strong class="jxr_keyword">this</strong>.nullValueIndicator = NULL_VALUE;
@@ -222,69 +222,69 @@
 <a class="jxr_linenumber" name="L214" href="#L214">214</a>         <strong class="jxr_keyword">return</strong> <strong class="jxr_keyword">this</strong>;
 <a class="jxr_linenumber" name="L215" href="#L215">215</a>     }
 <a class="jxr_linenumber" name="L216" href="#L216">216</a> 
-<a class="jxr_linenumber" name="L217" href="#L217">217</a>     <strong class="jxr_keyword">public</strong> <a href="../../../../../../nom/tam/fits/compression/algorithm/quant/QuantizeOption.html">QuantizeOption</a> setCheckZero(<strong class="jxr_keyword">boolean</strong> value) {
+<a class="jxr_linenumber" name="L217" href="#L217">217</a>     <strong class="jxr_keyword">public</strong> <a name="QuantizeOption" href="../../../../../../nom/tam/fits/compression/algorithm/quant/QuantizeOption.html#QuantizeOption">QuantizeOption</a> setCheckZero(<strong class="jxr_keyword">boolean</strong> value) {
 <a class="jxr_linenumber" name="L218" href="#L218">218</a>         <strong class="jxr_keyword">this</strong>.checkZero = value;
 <a class="jxr_linenumber" name="L219" href="#L219">219</a>         <strong class="jxr_keyword">return</strong> <strong class="jxr_keyword">this</strong>;
 <a class="jxr_linenumber" name="L220" href="#L220">220</a>     }
 <a class="jxr_linenumber" name="L221" href="#L221">221</a> 
-<a class="jxr_linenumber" name="L222" href="#L222">222</a>     <strong class="jxr_keyword">public</strong> <a href="../../../../../../nom/tam/fits/compression/algorithm/quant/QuantizeOption.html">QuantizeOption</a> setDither(<strong class="jxr_keyword">boolean</strong> value) {
+<a class="jxr_linenumber" name="L222" href="#L222">222</a>     <strong class="jxr_keyword">public</strong> <a name="QuantizeOption" href="../../../../../../nom/tam/fits/compression/algorithm/quant/QuantizeOption.html#QuantizeOption">QuantizeOption</a> setDither(<strong class="jxr_keyword">boolean</strong> value) {
 <a class="jxr_linenumber" name="L223" href="#L223">223</a>         <strong class="jxr_keyword">this</strong>.dither = value;
 <a class="jxr_linenumber" name="L224" href="#L224">224</a>         <strong class="jxr_keyword">return</strong> <strong class="jxr_keyword">this</strong>;
 <a class="jxr_linenumber" name="L225" href="#L225">225</a>     }
 <a class="jxr_linenumber" name="L226" href="#L226">226</a> 
-<a class="jxr_linenumber" name="L227" href="#L227">227</a>     <strong class="jxr_keyword">public</strong> <a href="../../../../../../nom/tam/fits/compression/algorithm/quant/QuantizeOption.html">QuantizeOption</a> setDither2(<strong class="jxr_keyword">boolean</strong> value) {
+<a class="jxr_linenumber" name="L227" href="#L227">227</a>     <strong class="jxr_keyword">public</strong> <a name="QuantizeOption" href="../../../../../../nom/tam/fits/compression/algorithm/quant/QuantizeOption.html#QuantizeOption">QuantizeOption</a> setDither2(<strong class="jxr_keyword">boolean</strong> value) {
 <a class="jxr_linenumber" name="L228" href="#L228">228</a>         <strong class="jxr_keyword">this</strong>.dither2 = value;
 <a class="jxr_linenumber" name="L229" href="#L229">229</a>         <strong class="jxr_keyword">return</strong> <strong class="jxr_keyword">this</strong>;
 <a class="jxr_linenumber" name="L230" href="#L230">230</a>     }
 <a class="jxr_linenumber" name="L231" href="#L231">231</a> 
-<a class="jxr_linenumber" name="L232" href="#L232">232</a>     <strong class="jxr_keyword">public</strong> <a href="../../../../../../nom/tam/fits/compression/algorithm/quant/QuantizeOption.html">QuantizeOption</a> setIntMaxValue(<strong class="jxr_keyword">int</strong> value) {
+<a class="jxr_linenumber" name="L232" href="#L232">232</a>     <strong class="jxr_keyword">public</strong> <a name="QuantizeOption" href="../../../../../../nom/tam/fits/compression/algorithm/quant/QuantizeOption.html#QuantizeOption">QuantizeOption</a> setIntMaxValue(<strong class="jxr_keyword">int</strong> value) {
 <a class="jxr_linenumber" name="L233" href="#L233">233</a>         <strong class="jxr_keyword">this</strong>.intMaxValue = value;
 <a class="jxr_linenumber" name="L234" href="#L234">234</a>         <strong class="jxr_keyword">return</strong> <strong class="jxr_keyword">this</strong>;
 <a class="jxr_linenumber" name="L235" href="#L235">235</a>     }
 <a class="jxr_linenumber" name="L236" href="#L236">236</a> 
-<a class="jxr_linenumber" name="L237" href="#L237">237</a>     <strong class="jxr_keyword">public</strong> <a href="../../../../../../nom/tam/fits/compression/algorithm/quant/QuantizeOption.html">QuantizeOption</a> setIntMinValue(<strong class="jxr_keyword">int</strong> value) {
+<a class="jxr_linenumber" name="L237" href="#L237">237</a>     <strong class="jxr_keyword">public</strong> <a name="QuantizeOption" href="../../../../../../nom/tam/fits/compression/algorithm/quant/QuantizeOption.html#QuantizeOption">QuantizeOption</a> setIntMinValue(<strong class="jxr_keyword">int</strong> value) {
 <a class="jxr_linenumber" name="L238" href="#L238">238</a>         <strong class="jxr_keyword">this</strong>.intMinValue = value;
 <a class="jxr_linenumber" name="L239" href="#L239">239</a>         <strong class="jxr_keyword">return</strong> <strong class="jxr_keyword">this</strong>;
 <a class="jxr_linenumber" name="L240" href="#L240">240</a>     }
 <a class="jxr_linenumber" name="L241" href="#L241">241</a> 
-<a class="jxr_linenumber" name="L242" href="#L242">242</a>     <strong class="jxr_keyword">public</strong> <a href="../../../../../../nom/tam/fits/compression/algorithm/quant/QuantizeOption.html">QuantizeOption</a> setMaxValue(<strong class="jxr_keyword">double</strong> value) {
+<a class="jxr_linenumber" name="L242" href="#L242">242</a>     <strong class="jxr_keyword">public</strong> <a name="QuantizeOption" href="../../../../../../nom/tam/fits/compression/algorithm/quant/QuantizeOption.html#QuantizeOption">QuantizeOption</a> setMaxValue(<strong class="jxr_keyword">double</strong> value) {
 <a class="jxr_linenumber" name="L243" href="#L243">243</a>         <strong class="jxr_keyword">this</strong>.maxValue = value;
 <a class="jxr_linenumber" name="L244" href="#L244">244</a>         <strong class="jxr_keyword">return</strong> <strong class="jxr_keyword">this</strong>;
 <a class="jxr_linenumber" name="L245" href="#L245">245</a>     }
 <a class="jxr_linenumber" name="L246" href="#L246">246</a> 
-<a class="jxr_linenumber" name="L247" href="#L247">247</a>     <strong class="jxr_keyword">public</strong> <a href="../../../../../../nom/tam/fits/compression/algorithm/quant/QuantizeOption.html">QuantizeOption</a> setMinValue(<strong class="jxr_keyword">double</strong> value) {
+<a class="jxr_linenumber" name="L247" href="#L247">247</a>     <strong class="jxr_keyword">public</strong> <a name="QuantizeOption" href="../../../../../../nom/tam/fits/compression/algorithm/quant/QuantizeOption.html#QuantizeOption">QuantizeOption</a> setMinValue(<strong class="jxr_keyword">double</strong> value) {
 <a class="jxr_linenumber" name="L248" href="#L248">248</a>         <strong class="jxr_keyword">this</strong>.minValue = value;
 <a class="jxr_linenumber" name="L249" href="#L249">249</a>         <strong class="jxr_keyword">return</strong> <strong class="jxr_keyword">this</strong>;
 <a class="jxr_linenumber" name="L250" href="#L250">250</a>     }
 <a class="jxr_linenumber" name="L251" href="#L251">251</a> 
-<a class="jxr_linenumber" name="L252" href="#L252">252</a>     <strong class="jxr_keyword">public</strong> <a href="../../../../../../nom/tam/fits/compression/algorithm/quant/QuantizeOption.html">QuantizeOption</a> setNullValue(<strong class="jxr_keyword">double</strong> value) {
+<a class="jxr_linenumber" name="L252" href="#L252">252</a>     <strong class="jxr_keyword">public</strong> <a name="QuantizeOption" href="../../../../../../nom/tam/fits/compression/algorithm/quant/QuantizeOption.html#QuantizeOption">QuantizeOption</a> setNullValue(<strong class="jxr_keyword">double</strong> value) {
 <a class="jxr_linenumber" name="L253" href="#L253">253</a>         <strong class="jxr_keyword">this</strong>.nullValue = value;
 <a class="jxr_linenumber" name="L254" href="#L254">254</a>         <strong class="jxr_keyword">return</strong> <strong class="jxr_keyword">this</strong>;
 <a class="jxr_linenumber" name="L255" href="#L255">255</a>     }
 <a class="jxr_linenumber" name="L256" href="#L256">256</a> 
 <a class="jxr_linenumber" name="L257" href="#L257">257</a>     @Override
-<a class="jxr_linenumber" name="L258" href="#L258">258</a>     <strong class="jxr_keyword">public</strong> <strong class="jxr_keyword">void</strong> setParameters(<a href="../../../../../../nom/tam/fits/compression/provider/param/api/ICompressParameters.html">ICompressParameters</a> parameters) {
+<a class="jxr_linenumber" name="L258" href="#L258">258</a>     <strong class="jxr_keyword">public</strong> <strong class="jxr_keyword">void</strong> setParameters(<a name="ICompressParameters" href="../../../../../../nom/tam/fits/compression/provider/param/api/ICompressParameters.html#ICompressParameters">ICompressParameters</a> parameters) {
 <a class="jxr_linenumber" name="L259" href="#L259">259</a>         <strong class="jxr_keyword">this</strong>.parameters = parameters;
 <a class="jxr_linenumber" name="L260" href="#L260">260</a>     }
 <a class="jxr_linenumber" name="L261" href="#L261">261</a> 
-<a class="jxr_linenumber" name="L262" href="#L262">262</a>     <strong class="jxr_keyword">public</strong> <a href="../../../../../../nom/tam/fits/compression/algorithm/quant/QuantizeOption.html">QuantizeOption</a> setQlevel(<strong class="jxr_keyword">double</strong> value) {
+<a class="jxr_linenumber" name="L262" href="#L262">262</a>     <strong class="jxr_keyword">public</strong> <a name="QuantizeOption" href="../../../../../../nom/tam/fits/compression/algorithm/quant/QuantizeOption.html#QuantizeOption">QuantizeOption</a> setQlevel(<strong class="jxr_keyword">double</strong> value) {
 <a class="jxr_linenumber" name="L263" href="#L263">263</a>         <strong class="jxr_keyword">this</strong>.qlevel = value;
 <a class="jxr_linenumber" name="L264" href="#L264">264</a>         <strong class="jxr_keyword">return</strong> <strong class="jxr_keyword">this</strong>;
 <a class="jxr_linenumber" name="L265" href="#L265">265</a>     }
 <a class="jxr_linenumber" name="L266" href="#L266">266</a> 
-<a class="jxr_linenumber" name="L267" href="#L267">267</a>     <strong class="jxr_keyword">public</strong> <a href="../../../../../../nom/tam/fits/compression/algorithm/quant/QuantizeOption.html">QuantizeOption</a> setSeed(<strong class="jxr_keyword">long</strong> value) {
+<a class="jxr_linenumber" name="L267" href="#L267">267</a>     <strong class="jxr_keyword">public</strong> <a name="QuantizeOption" href="../../../../../../nom/tam/fits/compression/algorithm/quant/QuantizeOption.html#QuantizeOption">QuantizeOption</a> setSeed(<strong class="jxr_keyword">long</strong> value) {
 <a class="jxr_linenumber" name="L268" href="#L268">268</a>         <strong class="jxr_keyword">this</strong>.seed = value;
 <a class="jxr_linenumber" name="L269" href="#L269">269</a>         <strong class="jxr_keyword">return</strong> <strong class="jxr_keyword">this</strong>;
 <a class="jxr_linenumber" name="L270" href="#L270">270</a>     }
 <a class="jxr_linenumber" name="L271" href="#L271">271</a> 
 <a class="jxr_linenumber" name="L272" href="#L272">272</a>     @Override
-<a class="jxr_linenumber" name="L273" href="#L273">273</a>     <strong class="jxr_keyword">public</strong> <a href="../../../../../../nom/tam/fits/compression/algorithm/quant/QuantizeOption.html">QuantizeOption</a> setTileHeight(<strong class="jxr_keyword">int</strong> value) {
+<a class="jxr_linenumber" name="L273" href="#L273">273</a>     <strong class="jxr_keyword">public</strong> <a name="QuantizeOption" href="../../../../../../nom/tam/fits/compression/algorithm/quant/QuantizeOption.html#QuantizeOption">QuantizeOption</a> setTileHeight(<strong class="jxr_keyword">int</strong> value) {
 <a class="jxr_linenumber" name="L274" href="#L274">274</a>         <strong class="jxr_keyword">this</strong>.tileHeight = value;
 <a class="jxr_linenumber" name="L275" href="#L275">275</a>         <strong class="jxr_keyword">return</strong> <strong class="jxr_keyword">this</strong>;
 <a class="jxr_linenumber" name="L276" href="#L276">276</a>     }
 <a class="jxr_linenumber" name="L277" href="#L277">277</a> 
 <a class="jxr_linenumber" name="L278" href="#L278">278</a>     @Override
-<a class="jxr_linenumber" name="L279" href="#L279">279</a>     <strong class="jxr_keyword">public</strong> <a href="../../../../../../nom/tam/fits/compression/algorithm/quant/QuantizeOption.html">QuantizeOption</a> setTileWidth(<strong class="jxr_keyword">int</strong> value) {
+<a class="jxr_linenumber" name="L279" href="#L279">279</a>     <strong class="jxr_keyword">public</strong> <a name="QuantizeOption" href="../../../../../../nom/tam/fits/compression/algorithm/quant/QuantizeOption.html#QuantizeOption">QuantizeOption</a> setTileWidth(<strong class="jxr_keyword">int</strong> value) {
 <a class="jxr_linenumber" name="L280" href="#L280">280</a>         <strong class="jxr_keyword">this</strong>.tileWidth = value;
 <a class="jxr_linenumber" name="L281" href="#L281">281</a>         <strong class="jxr_keyword">return</strong> <strong class="jxr_keyword">this</strong>;
 <a class="jxr_linenumber" name="L282" href="#L282">282</a>     }
@@ -297,7 +297,7 @@
 <a class="jxr_linenumber" name="L289" href="#L289">289</a>         <strong class="jxr_keyword">return</strong> <strong class="jxr_keyword">null</strong>;
 <a class="jxr_linenumber" name="L290" href="#L290">290</a>     }
 <a class="jxr_linenumber" name="L291" href="#L291">291</a> 
-<a class="jxr_linenumber" name="L292" href="#L292">292</a>     <strong class="jxr_keyword">private</strong> <a href="../../../../../../nom/tam/fits/compression/algorithm/quant/QuantizeOption.html">QuantizeOption</a> setOriginal(<a href="../../../../../../nom/tam/fits/compression/algorithm/quant/QuantizeOption.html">QuantizeOption</a> quantizeOption) {
+<a class="jxr_linenumber" name="L292" href="#L292">292</a>     <strong class="jxr_keyword">private</strong> <a name="QuantizeOption" href="../../../../../../nom/tam/fits/compression/algorithm/quant/QuantizeOption.html#QuantizeOption">QuantizeOption</a> setOriginal(<a name="QuantizeOption" href="../../../../../../nom/tam/fits/compression/algorithm/quant/QuantizeOption.html#QuantizeOption">QuantizeOption</a> quantizeOption) {
 <a class="jxr_linenumber" name="L293" href="#L293">293</a>         <strong class="jxr_keyword">this</strong>.original = quantizeOption;
 <a class="jxr_linenumber" name="L294" href="#L294">294</a>         <strong class="jxr_keyword">this</strong>.parameters = <strong class="jxr_keyword">this</strong>.parameters.copy(<strong class="jxr_keyword">this</strong>);
 <a class="jxr_linenumber" name="L295" href="#L295">295</a>         <strong class="jxr_keyword">return</strong> <strong class="jxr_keyword">this</strong>;

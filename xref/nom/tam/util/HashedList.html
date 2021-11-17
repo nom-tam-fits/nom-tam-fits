@@ -77,7 +77,7 @@
 <a class="jxr_linenumber" name="L69" href="#L69">69</a>  
 <a class="jxr_linenumber" name="L70" href="#L70">70</a>          <strong class="jxr_keyword">private</strong> <strong class="jxr_keyword">final</strong> Comparator&lt;String&gt; comp;
 <a class="jxr_linenumber" name="L71" href="#L71">71</a>  
-<a class="jxr_linenumber" name="L72" href="#L72">72</a>          <strong class="jxr_keyword">private</strong> <a href="../../../nom/tam/util/HashedList.html">EntryComparator</a>(Comparator&lt;String&gt; comp) {
+<a class="jxr_linenumber" name="L72" href="#L72">72</a>          <strong class="jxr_keyword">private</strong> EntryComparator(Comparator&lt;String&gt; comp) {
 <a class="jxr_linenumber" name="L73" href="#L73">73</a>              <strong class="jxr_keyword">this</strong>.comp = comp;
 <a class="jxr_linenumber" name="L74" href="#L74">74</a>          }
 <a class="jxr_linenumber" name="L75" href="#L75">75</a>  
@@ -87,7 +87,7 @@
 <a class="jxr_linenumber" name="L79" href="#L79">79</a>          }
 <a class="jxr_linenumber" name="L80" href="#L80">80</a>      }
 <a class="jxr_linenumber" name="L81" href="#L81">81</a>  
-<a class="jxr_linenumber" name="L82" href="#L82">82</a>      <strong class="jxr_keyword">private</strong> <strong class="jxr_keyword">class</strong> <a href="../../../nom/tam/util/HashedList.html">HashedListIterator</a> <strong class="jxr_keyword">implements</strong> Cursor&lt;String, VALUE&gt; {
+<a class="jxr_linenumber" name="L82" href="#L82">82</a>      <strong class="jxr_keyword">private</strong> <strong class="jxr_keyword">class</strong> HashedListIterator <strong class="jxr_keyword">implements</strong> Cursor&lt;String, VALUE&gt; {
 <a class="jxr_linenumber" name="L83" href="#L83">83</a>  
 <a class="jxr_linenumber" name="L84" href="#L84">84</a>          <em class="jxr_javadoccomment">/**</em>
 <a class="jxr_linenumber" name="L85" href="#L85">85</a>  <em class="jxr_javadoccomment">         * This index points to the value that would be returned in the next</em>
@@ -95,7 +95,7 @@
 <a class="jxr_linenumber" name="L87" href="#L87">87</a>  <em class="jxr_javadoccomment">         */</em>
 <a class="jxr_linenumber" name="L88" href="#L88">88</a>          <strong class="jxr_keyword">private</strong> <strong class="jxr_keyword">int</strong> current;
 <a class="jxr_linenumber" name="L89" href="#L89">89</a>  
-<a class="jxr_linenumber" name="L90" href="#L90">90</a>          <a href="../../../nom/tam/util/HashedList.html">HashedListIterator</a>(<strong class="jxr_keyword">int</strong> start) {
+<a class="jxr_linenumber" name="L90" href="#L90">90</a>          HashedListIterator(<strong class="jxr_keyword">int</strong> start) {
 <a class="jxr_linenumber" name="L91" href="#L91">91</a>              <strong class="jxr_keyword">this</strong>.current = start;
 <a class="jxr_linenumber" name="L92" href="#L92">92</a>          }
 <a class="jxr_linenumber" name="L93" href="#L93">93</a>  
@@ -185,7 +185,7 @@
 <a class="jxr_linenumber" name="L177" href="#L177">177</a>     <em class="jxr_javadoccomment">/**</em>
 <a class="jxr_linenumber" name="L178" href="#L178">178</a> <em class="jxr_javadoccomment">     * This maintains a 'current' position in the list...</em>
 <a class="jxr_linenumber" name="L179" href="#L179">179</a> <em class="jxr_javadoccomment">     */</em>
-<a class="jxr_linenumber" name="L180" href="#L180">180</a>     <strong class="jxr_keyword">private</strong> <a href="../../../nom/tam/util/HashedList.html">HashedListIterator</a> cursor = <strong class="jxr_keyword">new</strong> <a href="../../../nom/tam/util/HashedList.html">HashedListIterator</a>(0);
+<a class="jxr_linenumber" name="L180" href="#L180">180</a>     <strong class="jxr_keyword">private</strong> HashedListIterator cursor = <strong class="jxr_keyword">new</strong> HashedListIterator(0);
 <a class="jxr_linenumber" name="L181" href="#L181">181</a> 
 <a class="jxr_linenumber" name="L182" href="#L182">182</a> 
 <a class="jxr_linenumber" name="L183" href="#L183">183</a>     <em class="jxr_javadoccomment">/**</em>
@@ -349,8 +349,8 @@
 <a class="jxr_linenumber" name="L341" href="#L341">341</a> <em class="jxr_javadoccomment">     * @return a HashedListIterator over the entire list.</em>
 <a class="jxr_linenumber" name="L342" href="#L342">342</a> <em class="jxr_javadoccomment">     */</em>
 <a class="jxr_linenumber" name="L343" href="#L343">343</a>     @Override
-<a class="jxr_linenumber" name="L344" href="#L344">344</a>     <strong class="jxr_keyword">public</strong> <a href="../../../nom/tam/util/HashedList.html">HashedListIterator</a> iterator() {
-<a class="jxr_linenumber" name="L345" href="#L345">345</a>         <strong class="jxr_keyword">return</strong> <strong class="jxr_keyword">new</strong> <a href="../../../nom/tam/util/HashedList.html">HashedListIterator</a>(0);
+<a class="jxr_linenumber" name="L344" href="#L344">344</a>     <strong class="jxr_keyword">public</strong> HashedListIterator iterator() {
+<a class="jxr_linenumber" name="L345" href="#L345">345</a>         <strong class="jxr_keyword">return</strong> <strong class="jxr_keyword">new</strong> HashedListIterator(0);
 <a class="jxr_linenumber" name="L346" href="#L346">346</a>     }
 <a class="jxr_linenumber" name="L347" href="#L347">347</a> 
 <a class="jxr_linenumber" name="L348" href="#L348">348</a>     <em class="jxr_javadoccomment">/**</em>
@@ -360,7 +360,7 @@
 <a class="jxr_linenumber" name="L352" href="#L352">352</a> <em class="jxr_javadoccomment">     */</em>
 <a class="jxr_linenumber" name="L353" href="#L353">353</a>     <strong class="jxr_keyword">public</strong> Cursor&lt;String, VALUE&gt; iterator(<strong class="jxr_keyword">int</strong> n) {
 <a class="jxr_linenumber" name="L354" href="#L354">354</a>         <strong class="jxr_keyword">if</strong> (n &gt;= 0 &amp;&amp; n &lt;= <strong class="jxr_keyword">this</strong>.ordered.size()) {
-<a class="jxr_linenumber" name="L355" href="#L355">355</a>             <strong class="jxr_keyword">return</strong> <strong class="jxr_keyword">new</strong> <a href="../../../nom/tam/util/HashedList.html">HashedListIterator</a>(n);
+<a class="jxr_linenumber" name="L355" href="#L355">355</a>             <strong class="jxr_keyword">return</strong> <strong class="jxr_keyword">new</strong> HashedListIterator(n);
 <a class="jxr_linenumber" name="L356" href="#L356">356</a>         }
 <a class="jxr_linenumber" name="L357" href="#L357">357</a>         <strong class="jxr_keyword">throw</strong> <strong class="jxr_keyword">new</strong> NoSuchElementException(<span class="jxr_string">"Invalid index for iterator:"</span> + n);
 <a class="jxr_linenumber" name="L358" href="#L358">358</a>     }
@@ -385,10 +385,10 @@
 <a class="jxr_linenumber" name="L377" href="#L377">377</a> <em class="jxr_javadoccomment">     * @param key</em>
 <a class="jxr_linenumber" name="L378" href="#L378">378</a> <em class="jxr_javadoccomment">     *            the key to use as a start point</em>
 <a class="jxr_linenumber" name="L379" href="#L379">379</a> <em class="jxr_javadoccomment">     */</em>
-<a class="jxr_linenumber" name="L380" href="#L380">380</a>     <strong class="jxr_keyword">public</strong> <a href="../../../nom/tam/util/HashedList.html">HashedListIterator</a> iterator(String key) {
+<a class="jxr_linenumber" name="L380" href="#L380">380</a>     <strong class="jxr_keyword">public</strong> HashedListIterator iterator(String key) {
 <a class="jxr_linenumber" name="L381" href="#L381">381</a>         VALUE entry = <strong class="jxr_keyword">this</strong>.keyed.get(key);
 <a class="jxr_linenumber" name="L382" href="#L382">382</a>         <strong class="jxr_keyword">if</strong> (entry != <strong class="jxr_keyword">null</strong>) {
-<a class="jxr_linenumber" name="L383" href="#L383">383</a>             <strong class="jxr_keyword">return</strong> <strong class="jxr_keyword">new</strong> <a href="../../../nom/tam/util/HashedList.html">HashedListIterator</a>(indexOf(entry));
+<a class="jxr_linenumber" name="L383" href="#L383">383</a>             <strong class="jxr_keyword">return</strong> <strong class="jxr_keyword">new</strong> HashedListIterator(indexOf(entry));
 <a class="jxr_linenumber" name="L384" href="#L384">384</a>         }
 <a class="jxr_linenumber" name="L385" href="#L385">385</a>         <strong class="jxr_keyword">throw</strong> <strong class="jxr_keyword">new</strong> NoSuchElementException(<span class="jxr_string">"Unknown key for iterator:"</span> + key);
 <a class="jxr_linenumber" name="L386" href="#L386">386</a>     }

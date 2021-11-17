@@ -52,7 +52,7 @@
 <a class="jxr_linenumber" name="L44" href="#L44">44</a>  <em class="jxr_javadoccomment"> *</em>
 <a class="jxr_linenumber" name="L45" href="#L45">45</a>  <em class="jxr_javadoccomment"> * @author ritchie</em>
 <a class="jxr_linenumber" name="L46" href="#L46">46</a>  <em class="jxr_javadoccomment"> */</em>
-<a class="jxr_linenumber" name="L47" href="#L47">47</a>  <strong class="jxr_keyword">public</strong> <strong class="jxr_keyword">final</strong> <strong class="jxr_keyword">class</strong> <a href="../../../../nom/tam/fits/header/GenericKey.html">GenericKey</a> {
+<a class="jxr_linenumber" name="L47" href="#L47">47</a>  <strong class="jxr_keyword">public</strong> <strong class="jxr_keyword">final</strong> <strong class="jxr_keyword">class</strong> <a name="GenericKey" href="../../../../nom/tam/fits/header/GenericKey.html#GenericKey">GenericKey</a> {
 <a class="jxr_linenumber" name="L48" href="#L48">48</a>  
 <a class="jxr_linenumber" name="L49" href="#L49">49</a>      <strong class="jxr_keyword">private</strong> <strong class="jxr_keyword">static</strong> <strong class="jxr_keyword">final</strong> <strong class="jxr_keyword">int</strong> NUMBER_BASE = 10;
 <a class="jxr_linenumber" name="L50" href="#L50">50</a>  
@@ -63,25 +63,25 @@
 <a class="jxr_linenumber" name="L55" href="#L55">55</a>  
 <a class="jxr_linenumber" name="L56" href="#L56">56</a>      <strong class="jxr_keyword">static</strong> {
 <a class="jxr_linenumber" name="L57" href="#L57">57</a>          Map&lt;String, IFitsHeader&gt; headers = <strong class="jxr_keyword">new</strong> HashMap&lt;&gt;();
-<a class="jxr_linenumber" name="L58" href="#L58">58</a>          <strong class="jxr_keyword">for</strong> (IFitsHeader key : Standard.values()) {
+<a class="jxr_linenumber" name="L58" href="#L58">58</a>          <strong class="jxr_keyword">for</strong> (<a name="IFitsHeader" href="../../../../nom/tam/fits/header/IFitsHeader.html#IFitsHeader">IFitsHeader</a> key : Standard.values()) {
 <a class="jxr_linenumber" name="L59" href="#L59">59</a>              headers.put(key.key(), key);
 <a class="jxr_linenumber" name="L60" href="#L60">60</a>          }
-<a class="jxr_linenumber" name="L61" href="#L61">61</a>          <strong class="jxr_keyword">for</strong> (IFitsHeader key : Checksum.values()) {
+<a class="jxr_linenumber" name="L61" href="#L61">61</a>          <strong class="jxr_keyword">for</strong> (<a name="IFitsHeader" href="../../../../nom/tam/fits/header/IFitsHeader.html#IFitsHeader">IFitsHeader</a> key : Checksum.values()) {
 <a class="jxr_linenumber" name="L62" href="#L62">62</a>              headers.put(key.key(), key);
 <a class="jxr_linenumber" name="L63" href="#L63">63</a>          }
-<a class="jxr_linenumber" name="L64" href="#L64">64</a>          <strong class="jxr_keyword">for</strong> (IFitsHeader key : Compression.values()) {
+<a class="jxr_linenumber" name="L64" href="#L64">64</a>          <strong class="jxr_keyword">for</strong> (<a name="IFitsHeader" href="../../../../nom/tam/fits/header/IFitsHeader.html#IFitsHeader">IFitsHeader</a> key : Compression.values()) {
 <a class="jxr_linenumber" name="L65" href="#L65">65</a>              headers.put(key.key(), key);
 <a class="jxr_linenumber" name="L66" href="#L66">66</a>          }
-<a class="jxr_linenumber" name="L67" href="#L67">67</a>          <strong class="jxr_keyword">for</strong> (IFitsHeader key : DataDescription.values()) {
+<a class="jxr_linenumber" name="L67" href="#L67">67</a>          <strong class="jxr_keyword">for</strong> (<a name="IFitsHeader" href="../../../../nom/tam/fits/header/IFitsHeader.html#IFitsHeader">IFitsHeader</a> key : DataDescription.values()) {
 <a class="jxr_linenumber" name="L68" href="#L68">68</a>              headers.put(key.key(), key);
 <a class="jxr_linenumber" name="L69" href="#L69">69</a>          }
-<a class="jxr_linenumber" name="L70" href="#L70">70</a>          <strong class="jxr_keyword">for</strong> (IFitsHeader key : InstrumentDescription.values()) {
+<a class="jxr_linenumber" name="L70" href="#L70">70</a>          <strong class="jxr_keyword">for</strong> (<a name="IFitsHeader" href="../../../../nom/tam/fits/header/IFitsHeader.html#IFitsHeader">IFitsHeader</a> key : InstrumentDescription.values()) {
 <a class="jxr_linenumber" name="L71" href="#L71">71</a>              headers.put(key.key(), key);
 <a class="jxr_linenumber" name="L72" href="#L72">72</a>          }
-<a class="jxr_linenumber" name="L73" href="#L73">73</a>          <strong class="jxr_keyword">for</strong> (IFitsHeader key : NonStandard.values()) {
+<a class="jxr_linenumber" name="L73" href="#L73">73</a>          <strong class="jxr_keyword">for</strong> (<a name="IFitsHeader" href="../../../../nom/tam/fits/header/IFitsHeader.html#IFitsHeader">IFitsHeader</a> key : NonStandard.values()) {
 <a class="jxr_linenumber" name="L74" href="#L74">74</a>              headers.put(key.key(), key);
 <a class="jxr_linenumber" name="L75" href="#L75">75</a>          }
-<a class="jxr_linenumber" name="L76" href="#L76">76</a>          <strong class="jxr_keyword">for</strong> (IFitsHeader key : ObservationDescription.values()) {
+<a class="jxr_linenumber" name="L76" href="#L76">76</a>          <strong class="jxr_keyword">for</strong> (<a name="IFitsHeader" href="../../../../nom/tam/fits/header/IFitsHeader.html#IFitsHeader">IFitsHeader</a> key : ObservationDescription.values()) {
 <a class="jxr_linenumber" name="L77" href="#L77">77</a>              headers.put(key.key(), key);
 <a class="jxr_linenumber" name="L78" href="#L78">78</a>          }
 <a class="jxr_linenumber" name="L79" href="#L79">79</a>          STANDARD_KEYS = Collections.unmodifiableMap(headers);
@@ -94,10 +94,10 @@
 <a class="jxr_linenumber" name="L86" href="#L86">86</a>  <em class="jxr_javadoccomment">     *            the string to create the key for</em>
 <a class="jxr_linenumber" name="L87" href="#L87">87</a>  <em class="jxr_javadoccomment">     * @return the IFitsHeader implementation for the key.</em>
 <a class="jxr_linenumber" name="L88" href="#L88">88</a>  <em class="jxr_javadoccomment">     */</em>
-<a class="jxr_linenumber" name="L89" href="#L89">89</a>      <strong class="jxr_keyword">public</strong> <strong class="jxr_keyword">static</strong> <a href="../../../../nom/tam/fits/header/IFitsHeader.html">IFitsHeader</a> create(String key) {
-<a class="jxr_linenumber" name="L90" href="#L90">90</a>          <a href="../../../../nom/tam/fits/header/IFitsHeader.html">IFitsHeader</a> result = STANDARD_KEYS.get(key);
+<a class="jxr_linenumber" name="L89" href="#L89">89</a>      <strong class="jxr_keyword">public</strong> <strong class="jxr_keyword">static</strong> <a name="IFitsHeader" href="../../../../nom/tam/fits/header/IFitsHeader.html#IFitsHeader">IFitsHeader</a> create(String key) {
+<a class="jxr_linenumber" name="L90" href="#L90">90</a>          <a name="IFitsHeader" href="../../../../nom/tam/fits/header/IFitsHeader.html#IFitsHeader">IFitsHeader</a> result = STANDARD_KEYS.get(key);
 <a class="jxr_linenumber" name="L91" href="#L91">91</a>          <strong class="jxr_keyword">if</strong> (result == <strong class="jxr_keyword">null</strong>) {
-<a class="jxr_linenumber" name="L92" href="#L92">92</a>              result = <strong class="jxr_keyword">new</strong> <a href="../../../../nom/tam/fits/header/FitsHeaderImpl.html">FitsHeaderImpl</a>(key, SOURCE.UNKNOWN, HDU.ANY, VALUE.ANY, <span class="jxr_string">""</span>);
+<a class="jxr_linenumber" name="L92" href="#L92">92</a>              result = <strong class="jxr_keyword">new</strong> <a name="FitsHeaderImpl" href="../../../../nom/tam/fits/header/FitsHeaderImpl.html#FitsHeaderImpl">FitsHeaderImpl</a>(key, SOURCE.UNKNOWN, HDU.ANY, VALUE.ANY, <span class="jxr_string">""</span>);
 <a class="jxr_linenumber" name="L93" href="#L93">93</a>          }
 <a class="jxr_linenumber" name="L94" href="#L94">94</a>          <strong class="jxr_keyword">return</strong> result;
 <a class="jxr_linenumber" name="L95" href="#L95">95</a>      }
@@ -109,8 +109,8 @@
 <a class="jxr_linenumber" name="L101" href="#L101">101</a> <em class="jxr_javadoccomment">     *            the array of string keys</em>
 <a class="jxr_linenumber" name="L102" href="#L102">102</a> <em class="jxr_javadoccomment">     * @return the array of IFitsHeaderKeys.</em>
 <a class="jxr_linenumber" name="L103" href="#L103">103</a> <em class="jxr_javadoccomment">     */</em>
-<a class="jxr_linenumber" name="L104" href="#L104">104</a>     <strong class="jxr_keyword">public</strong> <strong class="jxr_keyword">static</strong> <a href="../../../../nom/tam/fits/header/IFitsHeader.html">IFitsHeader</a>[] create(String[] keys) {
-<a class="jxr_linenumber" name="L105" href="#L105">105</a>         <a href="../../../../nom/tam/fits/header/IFitsHeader.html">IFitsHeader</a>[] result = <strong class="jxr_keyword">new</strong> <a href="../../../../nom/tam/fits/header/IFitsHeader.html">IFitsHeader</a>[keys.length];
+<a class="jxr_linenumber" name="L104" href="#L104">104</a>     <strong class="jxr_keyword">public</strong> <strong class="jxr_keyword">static</strong> <a name="IFitsHeader" href="../../../../nom/tam/fits/header/IFitsHeader.html#IFitsHeader">IFitsHeader</a>[] create(String[] keys) {
+<a class="jxr_linenumber" name="L105" href="#L105">105</a>         <a name="IFitsHeader" href="../../../../nom/tam/fits/header/IFitsHeader.html#IFitsHeader">IFitsHeader</a>[] result = <strong class="jxr_keyword">new</strong> <a name="IFitsHeader" href="../../../../nom/tam/fits/header/IFitsHeader.html#IFitsHeader">IFitsHeader</a>[keys.length];
 <a class="jxr_linenumber" name="L106" href="#L106">106</a>         <strong class="jxr_keyword">for</strong> (<strong class="jxr_keyword">int</strong> index = 0; index &lt; result.length; index++) {
 <a class="jxr_linenumber" name="L107" href="#L107">107</a>             result[index] = create(keys[index]);
 <a class="jxr_linenumber" name="L108" href="#L108">108</a>         }
@@ -136,7 +136,7 @@
 <a class="jxr_linenumber" name="L128" href="#L128">128</a> <em class="jxr_javadoccomment">     *            the fits key to search.</em>
 <a class="jxr_linenumber" name="L129" href="#L129">129</a> <em class="jxr_javadoccomment">     * @return the found fits key or null</em>
 <a class="jxr_linenumber" name="L130" href="#L130">130</a> <em class="jxr_javadoccomment">     */</em>
-<a class="jxr_linenumber" name="L131" href="#L131">131</a>     <strong class="jxr_keyword">public</strong> <strong class="jxr_keyword">static</strong> <a href="../../../../nom/tam/fits/header/IFitsHeader.html">IFitsHeader</a> lookup(String key) {
+<a class="jxr_linenumber" name="L131" href="#L131">131</a>     <strong class="jxr_keyword">public</strong> <strong class="jxr_keyword">static</strong> <a name="IFitsHeader" href="../../../../nom/tam/fits/header/IFitsHeader.html#IFitsHeader">IFitsHeader</a> lookup(String key) {
 <a class="jxr_linenumber" name="L132" href="#L132">132</a>         <strong class="jxr_keyword">int</strong> keyLength = key.length();
 <a class="jxr_linenumber" name="L133" href="#L133">133</a>         <strong class="jxr_keyword">if</strong> (keyLength &gt; 0 &amp;&amp; Character.isDigit(key.charAt(keyLength - 1))) {
 <a class="jxr_linenumber" name="L134" href="#L134">134</a>             StringBuilder builder = <strong class="jxr_keyword">new</strong> StringBuilder();
@@ -158,7 +158,7 @@
 <a class="jxr_linenumber" name="L150" href="#L150">150</a>     <em class="jxr_javadoccomment">/**</em>
 <a class="jxr_linenumber" name="L151" href="#L151">151</a> <em class="jxr_javadoccomment">     * utility class do not instanciate it.</em>
 <a class="jxr_linenumber" name="L152" href="#L152">152</a> <em class="jxr_javadoccomment">     */</em>
-<a class="jxr_linenumber" name="L153" href="#L153">153</a>     <strong class="jxr_keyword">private</strong> <a href="../../../../nom/tam/fits/header/GenericKey.html">GenericKey</a>() {
+<a class="jxr_linenumber" name="L153" href="#L153">153</a>     <strong class="jxr_keyword">private</strong> <a name="GenericKey" href="../../../../nom/tam/fits/header/GenericKey.html#GenericKey">GenericKey</a>() {
 <a class="jxr_linenumber" name="L154" href="#L154">154</a>     }
 <a class="jxr_linenumber" name="L155" href="#L155">155</a> }
 </pre>

@@ -63,15 +63,15 @@
 <a class="jxr_linenumber" name="L55" href="#L55">55</a>  <em class="jxr_javadoccomment"> * @author William Pence</em>
 <a class="jxr_linenumber" name="L56" href="#L56">56</a>  <em class="jxr_javadoccomment"> * @author Richard van Nieuwenhoven</em>
 <a class="jxr_linenumber" name="L57" href="#L57">57</a>  <em class="jxr_javadoccomment"> */</em>
-<a class="jxr_linenumber" name="L58" href="#L58">58</a>  <strong class="jxr_keyword">public</strong> <strong class="jxr_keyword">class</strong> <a href="../../../../../../nom/tam/fits/compression/algorithm/hcompress/HDecompress.html">HDecompress</a> {
+<a class="jxr_linenumber" name="L58" href="#L58">58</a>  <strong class="jxr_keyword">public</strong> <strong class="jxr_keyword">class</strong> <a name="HDecompress" href="../../../../../../nom/tam/fits/compression/algorithm/hcompress/HDecompress.html#HDecompress">HDecompress</a> {
 <a class="jxr_linenumber" name="L59" href="#L59">59</a>  
-<a class="jxr_linenumber" name="L60" href="#L60">60</a>      <strong class="jxr_keyword">private</strong> <strong class="jxr_keyword">static</strong> <strong class="jxr_keyword">class</strong> <a href="../../../../../../nom/tam/fits/compression/algorithm/hcompress/HDecompress.html">LongArrayPointer</a> {
+<a class="jxr_linenumber" name="L60" href="#L60">60</a>      <strong class="jxr_keyword">private</strong> <strong class="jxr_keyword">static</strong> <strong class="jxr_keyword">class</strong> LongArrayPointer {
 <a class="jxr_linenumber" name="L61" href="#L61">61</a>  
 <a class="jxr_linenumber" name="L62" href="#L62">62</a>          <strong class="jxr_keyword">private</strong> <strong class="jxr_keyword">final</strong> <strong class="jxr_keyword">long</strong>[] a;
 <a class="jxr_linenumber" name="L63" href="#L63">63</a>  
 <a class="jxr_linenumber" name="L64" href="#L64">64</a>          <strong class="jxr_keyword">private</strong> <strong class="jxr_keyword">int</strong> offset;
 <a class="jxr_linenumber" name="L65" href="#L65">65</a>  
-<a class="jxr_linenumber" name="L66" href="#L66">66</a>          <a href="../../../../../../nom/tam/fits/compression/algorithm/hcompress/HDecompress.html">LongArrayPointer</a>(<strong class="jxr_keyword">long</strong>[] tmp) {
+<a class="jxr_linenumber" name="L66" href="#L66">66</a>          LongArrayPointer(<strong class="jxr_keyword">long</strong>[] tmp) {
 <a class="jxr_linenumber" name="L67" href="#L67">67</a>              <strong class="jxr_keyword">this</strong>.a = tmp;
 <a class="jxr_linenumber" name="L68" href="#L68">68</a>              <strong class="jxr_keyword">this</strong>.offset = 0;
 <a class="jxr_linenumber" name="L69" href="#L69">69</a>          }
@@ -81,8 +81,8 @@
 <a class="jxr_linenumber" name="L73" href="#L73">73</a>  
 <a class="jxr_linenumber" name="L74" href="#L74">74</a>          }
 <a class="jxr_linenumber" name="L75" href="#L75">75</a>  
-<a class="jxr_linenumber" name="L76" href="#L76">76</a>          <strong class="jxr_keyword">public</strong> <a href="../../../../../../nom/tam/fits/compression/algorithm/hcompress/HDecompress.html">LongArrayPointer</a> copy(<strong class="jxr_keyword">int</strong> extraOffset) {
-<a class="jxr_linenumber" name="L77" href="#L77">77</a>              <a href="../../../../../../nom/tam/fits/compression/algorithm/hcompress/HDecompress.html">LongArrayPointer</a> intAP = <strong class="jxr_keyword">new</strong> <a href="../../../../../../nom/tam/fits/compression/algorithm/hcompress/HDecompress.html">LongArrayPointer</a>(<strong class="jxr_keyword">this</strong>.a);
+<a class="jxr_linenumber" name="L76" href="#L76">76</a>          <strong class="jxr_keyword">public</strong> LongArrayPointer copy(<strong class="jxr_keyword">int</strong> extraOffset) {
+<a class="jxr_linenumber" name="L77" href="#L77">77</a>              LongArrayPointer intAP = <strong class="jxr_keyword">new</strong> LongArrayPointer(<strong class="jxr_keyword">this</strong>.a);
 <a class="jxr_linenumber" name="L78" href="#L78">78</a>              intAP.offset = <strong class="jxr_keyword">this</strong>.offset + extraOffset;
 <a class="jxr_linenumber" name="L79" href="#L79">79</a>              <strong class="jxr_keyword">return</strong> intAP;
 <a class="jxr_linenumber" name="L80" href="#L80">80</a>          }
@@ -213,7 +213,7 @@
 <a class="jxr_linenumber" name="L205" href="#L205">205</a> <em class="jxr_javadoccomment">     * @param infile</em>
 <a class="jxr_linenumber" name="L206" href="#L206">206</a> <em class="jxr_javadoccomment">     * @param a</em>
 <a class="jxr_linenumber" name="L207" href="#L207">207</a> <em class="jxr_javadoccomment">     */</em>
-<a class="jxr_linenumber" name="L208" href="#L208">208</a>     <strong class="jxr_keyword">private</strong> <strong class="jxr_keyword">void</strong> decode64(ByteBuffer infile, <a href="../../../../../../nom/tam/fits/compression/algorithm/hcompress/HDecompress.html">LongArrayPointer</a> a) {
+<a class="jxr_linenumber" name="L208" href="#L208">208</a>     <strong class="jxr_keyword">private</strong> <strong class="jxr_keyword">void</strong> decode64(ByteBuffer infile, LongArrayPointer a) {
 <a class="jxr_linenumber" name="L209" href="#L209">209</a>         byte[] nbitplanes = <strong class="jxr_keyword">new</strong> byte[N03];
 <a class="jxr_linenumber" name="L210" href="#L210">210</a>         byte[] tmagic = <strong class="jxr_keyword">new</strong> byte[2];
 <a class="jxr_linenumber" name="L211" href="#L211">211</a> 
@@ -263,7 +263,7 @@
 <a class="jxr_linenumber" name="L255" href="#L255">255</a> <em class="jxr_javadoccomment">     */</em>
 <a class="jxr_linenumber" name="L256" href="#L256">256</a>     <strong class="jxr_keyword">public</strong> <strong class="jxr_keyword">void</strong> decompress(ByteBuffer input, <strong class="jxr_keyword">boolean</strong> smooth, <strong class="jxr_keyword">long</strong>[] aa) {
 <a class="jxr_linenumber" name="L257" href="#L257">257</a> 
-<a class="jxr_linenumber" name="L258" href="#L258">258</a>         <a href="../../../../../../nom/tam/fits/compression/algorithm/hcompress/HDecompress.html">LongArrayPointer</a> a = <strong class="jxr_keyword">new</strong> <a href="../../../../../../nom/tam/fits/compression/algorithm/hcompress/HDecompress.html">LongArrayPointer</a>(aa);
+<a class="jxr_linenumber" name="L258" href="#L258">258</a>         LongArrayPointer a = <strong class="jxr_keyword">new</strong> LongArrayPointer(aa);
 <a class="jxr_linenumber" name="L259" href="#L259">259</a> 
 <a class="jxr_linenumber" name="L260" href="#L260">260</a>         <em class="jxr_comment">/* decode the input tiledImageOperation */</em>
 <a class="jxr_linenumber" name="L261" href="#L261">261</a> 
@@ -285,7 +285,7 @@
 <a class="jxr_linenumber" name="L277" href="#L277">277</a> <em class="jxr_javadoccomment">     * long a[]; int nx,ny; Array dimensions are [nx][ny] unsigned char</em>
 <a class="jxr_linenumber" name="L278" href="#L278">278</a> <em class="jxr_javadoccomment">     * nbitplanes[3]; Number of bit planes in quadrants</em>
 <a class="jxr_linenumber" name="L279" href="#L279">279</a> <em class="jxr_javadoccomment">     */</em>
-<a class="jxr_linenumber" name="L280" href="#L280">280</a>     <strong class="jxr_keyword">private</strong> <strong class="jxr_keyword">int</strong> dodecode64(ByteBuffer infile, <a href="../../../../../../nom/tam/fits/compression/algorithm/hcompress/HDecompress.html">LongArrayPointer</a> a, byte[] nbitplanes) {
+<a class="jxr_linenumber" name="L280" href="#L280">280</a>     <strong class="jxr_keyword">private</strong> <strong class="jxr_keyword">int</strong> dodecode64(ByteBuffer infile, LongArrayPointer a, byte[] nbitplanes) {
 <a class="jxr_linenumber" name="L281" href="#L281">281</a>         <strong class="jxr_keyword">int</strong> nel = <strong class="jxr_keyword">this</strong>.nx * <strong class="jxr_keyword">this</strong>.ny;
 <a class="jxr_linenumber" name="L282" href="#L282">282</a>         <strong class="jxr_keyword">int</strong> nx2 = (<strong class="jxr_keyword">this</strong>.nx + 1) / 2;
 <a class="jxr_linenumber" name="L283" href="#L283">283</a>         <strong class="jxr_keyword">int</strong> ny2 = (<strong class="jxr_keyword">this</strong>.ny + 1) / 2;
@@ -334,7 +334,7 @@
 <a class="jxr_linenumber" name="L326" href="#L326">326</a> <em class="jxr_javadoccomment">     * int smooth; 0 for no smoothing, else smooth during inversion int scale;</em>
 <a class="jxr_linenumber" name="L327" href="#L327">327</a> <em class="jxr_javadoccomment">     * used if smoothing is specified</em>
 <a class="jxr_linenumber" name="L328" href="#L328">328</a> <em class="jxr_javadoccomment">     */</em>
-<a class="jxr_linenumber" name="L329" href="#L329">329</a>     <strong class="jxr_keyword">private</strong> <strong class="jxr_keyword">int</strong> hinv64(<a href="../../../../../../nom/tam/fits/compression/algorithm/hcompress/HDecompress.html">LongArrayPointer</a> a, <strong class="jxr_keyword">boolean</strong> smooth) {
+<a class="jxr_linenumber" name="L329" href="#L329">329</a>     <strong class="jxr_keyword">private</strong> <strong class="jxr_keyword">int</strong> hinv64(LongArrayPointer a, <strong class="jxr_keyword">boolean</strong> smooth) {
 <a class="jxr_linenumber" name="L330" href="#L330">330</a>         <strong class="jxr_keyword">int</strong> nmax = <strong class="jxr_keyword">this</strong>.nx &gt; <strong class="jxr_keyword">this</strong>.ny ? <strong class="jxr_keyword">this</strong>.nx : <strong class="jxr_keyword">this</strong>.ny;
 <a class="jxr_linenumber" name="L331" href="#L331">331</a>         <strong class="jxr_keyword">int</strong> log2n = calculateLog2N(nmax);
 <a class="jxr_linenumber" name="L332" href="#L332">332</a>         <em class="jxr_comment">// get temporary storage for shuffling elements</em>
@@ -479,7 +479,7 @@
 <a class="jxr_linenumber" name="L471" href="#L471">471</a> <em class="jxr_javadoccomment">     * dimension of tiledImageOperation int scale; truncation scale factor that</em>
 <a class="jxr_linenumber" name="L472" href="#L472">472</a> <em class="jxr_javadoccomment">     * was used</em>
 <a class="jxr_linenumber" name="L473" href="#L473">473</a> <em class="jxr_javadoccomment">     */</em>
-<a class="jxr_linenumber" name="L474" href="#L474">474</a>     <strong class="jxr_keyword">private</strong> <strong class="jxr_keyword">void</strong> hsmooth64(<a href="../../../../../../nom/tam/fits/compression/algorithm/hcompress/HDecompress.html">LongArrayPointer</a> a, <strong class="jxr_keyword">int</strong> nxtop, <strong class="jxr_keyword">int</strong> nytop) {
+<a class="jxr_linenumber" name="L474" href="#L474">474</a>     <strong class="jxr_keyword">private</strong> <strong class="jxr_keyword">void</strong> hsmooth64(LongArrayPointer a, <strong class="jxr_keyword">int</strong> nxtop, <strong class="jxr_keyword">int</strong> nytop) {
 <a class="jxr_linenumber" name="L475" href="#L475">475</a>         <strong class="jxr_keyword">int</strong> i, j;
 <a class="jxr_linenumber" name="L476" href="#L476">476</a>         <strong class="jxr_keyword">int</strong> ny2, s10, s00;
 <a class="jxr_linenumber" name="L477" href="#L477">477</a>         <strong class="jxr_keyword">long</strong> hm, h0, hp, hmm, hpm, hmp, hpp, hx2, hy2, diff, dmax, dmin, s, smax, m1, m2;
@@ -825,7 +825,7 @@
 <a class="jxr_linenumber" name="L817" href="#L817">817</a> <em class="jxr_javadoccomment">     * same tiledImageOperation (it wouldn't make sense to be inserting bits</em>
 <a class="jxr_linenumber" name="L818" href="#L818">818</a> <em class="jxr_javadoccomment">     * into the same tiledImageOperation anyway.)</em>
 <a class="jxr_linenumber" name="L819" href="#L819">819</a> <em class="jxr_javadoccomment">     */</em>
-<a class="jxr_linenumber" name="L820" href="#L820">820</a>     <strong class="jxr_keyword">private</strong> <strong class="jxr_keyword">void</strong> qtreeBitins64(byte[] a, <strong class="jxr_keyword">int</strong> lnx, <strong class="jxr_keyword">int</strong> lny, <a href="../../../../../../nom/tam/fits/compression/algorithm/hcompress/HDecompress.html">LongArrayPointer</a> b, <strong class="jxr_keyword">int</strong> n, <strong class="jxr_keyword">int</strong> bit) {
+<a class="jxr_linenumber" name="L820" href="#L820">820</a>     <strong class="jxr_keyword">private</strong> <strong class="jxr_keyword">void</strong> qtreeBitins64(byte[] a, <strong class="jxr_keyword">int</strong> lnx, <strong class="jxr_keyword">int</strong> lny, LongArrayPointer b, <strong class="jxr_keyword">int</strong> n, <strong class="jxr_keyword">int</strong> bit) {
 <a class="jxr_linenumber" name="L821" href="#L821">821</a>         <strong class="jxr_keyword">int</strong> i, j, s00;
 <a class="jxr_linenumber" name="L822" href="#L822">822</a>         <strong class="jxr_keyword">long</strong> planeVal = 1L &lt;&lt; bit;
 <a class="jxr_linenumber" name="L823" href="#L823">823</a>         <em class="jxr_comment">// expand each 2x2 block</em>
@@ -961,7 +961,7 @@
 <a class="jxr_linenumber" name="L953" href="#L953">953</a> <em class="jxr_javadoccomment">     * decode int nqy; partial length of column (&lt;=n) int nbitplanes; number of</em>
 <a class="jxr_linenumber" name="L954" href="#L954">954</a> <em class="jxr_javadoccomment">     * bitplanes to decode</em>
 <a class="jxr_linenumber" name="L955" href="#L955">955</a> <em class="jxr_javadoccomment">     */</em>
-<a class="jxr_linenumber" name="L956" href="#L956">956</a>     <strong class="jxr_keyword">private</strong> <strong class="jxr_keyword">int</strong> qtreeDecode64(ByteBuffer infile, <a href="../../../../../../nom/tam/fits/compression/algorithm/hcompress/HDecompress.html">LongArrayPointer</a> a, <strong class="jxr_keyword">int</strong> n, <strong class="jxr_keyword">int</strong> nqx, <strong class="jxr_keyword">int</strong> nqy, <strong class="jxr_keyword">int</strong> nbitplanes) {
+<a class="jxr_linenumber" name="L956" href="#L956">956</a>     <strong class="jxr_keyword">private</strong> <strong class="jxr_keyword">int</strong> qtreeDecode64(ByteBuffer infile, LongArrayPointer a, <strong class="jxr_keyword">int</strong> n, <strong class="jxr_keyword">int</strong> nqx, <strong class="jxr_keyword">int</strong> nqy, <strong class="jxr_keyword">int</strong> nbitplanes) {
 <a class="jxr_linenumber" name="L957" href="#L957">957</a>         <strong class="jxr_keyword">int</strong> k, bit, b;
 <a class="jxr_linenumber" name="L958" href="#L958">958</a>         <strong class="jxr_keyword">int</strong> nx2, ny2, nfx, nfy, c;
 <a class="jxr_linenumber" name="L959" href="#L959">959</a>         byte[] scratch;
@@ -1061,7 +1061,7 @@
 <a class="jxr_linenumber" name="L1053" href="#L1053">1053</a>         }
 <a class="jxr_linenumber" name="L1054" href="#L1054">1054</a>     }
 <a class="jxr_linenumber" name="L1055" href="#L1055">1055</a> 
-<a class="jxr_linenumber" name="L1056" href="#L1056">1056</a>     <strong class="jxr_keyword">private</strong> <strong class="jxr_keyword">void</strong> readBdirect64(ByteBuffer infile, <a href="../../../../../../nom/tam/fits/compression/algorithm/hcompress/HDecompress.html">LongArrayPointer</a> a, <strong class="jxr_keyword">int</strong> n, <strong class="jxr_keyword">int</strong> nqx, <strong class="jxr_keyword">int</strong> nqy, byte[] scratch, <strong class="jxr_keyword">int</strong> bit) {
+<a class="jxr_linenumber" name="L1056" href="#L1056">1056</a>     <strong class="jxr_keyword">private</strong> <strong class="jxr_keyword">void</strong> readBdirect64(ByteBuffer infile, LongArrayPointer a, <strong class="jxr_keyword">int</strong> n, <strong class="jxr_keyword">int</strong> nqx, <strong class="jxr_keyword">int</strong> nqy, byte[] scratch, <strong class="jxr_keyword">int</strong> bit) {
 <a class="jxr_linenumber" name="L1057" href="#L1057">1057</a>         <em class="jxr_comment">/*</em>
 <a class="jxr_linenumber" name="L1058" href="#L1058">1058</a> <em class="jxr_comment">         * read bit image packed 4 pixels/nybble</em>
 <a class="jxr_linenumber" name="L1059" href="#L1059">1059</a> <em class="jxr_comment">         */</em>
@@ -1088,7 +1088,7 @@
 <a class="jxr_linenumber" name="L1080" href="#L1080">1080</a>         <strong class="jxr_keyword">this</strong>.bitsToGo = 0;
 <a class="jxr_linenumber" name="L1081" href="#L1081">1081</a>     }
 <a class="jxr_linenumber" name="L1082" href="#L1082">1082</a> 
-<a class="jxr_linenumber" name="L1083" href="#L1083">1083</a>     <strong class="jxr_keyword">private</strong> <strong class="jxr_keyword">void</strong> undigitize64(<a href="../../../../../../nom/tam/fits/compression/algorithm/hcompress/HDecompress.html">LongArrayPointer</a> a) {
+<a class="jxr_linenumber" name="L1083" href="#L1083">1083</a>     <strong class="jxr_keyword">private</strong> <strong class="jxr_keyword">void</strong> undigitize64(LongArrayPointer a) {
 <a class="jxr_linenumber" name="L1084" href="#L1084">1084</a>         <strong class="jxr_keyword">long</strong> scale64;
 <a class="jxr_linenumber" name="L1085" href="#L1085">1085</a> 
 <a class="jxr_linenumber" name="L1086" href="#L1086">1086</a>         <em class="jxr_comment">/*</em>
@@ -1110,16 +1110,16 @@
 <a class="jxr_linenumber" name="L1102" href="#L1102">1102</a> <em class="jxr_javadoccomment">     * long a[]; tiledImageOperation to shuffle int n; number of elements to</em>
 <a class="jxr_linenumber" name="L1103" href="#L1103">1103</a> <em class="jxr_javadoccomment">     * shuffle int n2; second dimension long tmp[]; scratch storage</em>
 <a class="jxr_linenumber" name="L1104" href="#L1104">1104</a> <em class="jxr_javadoccomment">     */</em>
-<a class="jxr_linenumber" name="L1105" href="#L1105">1105</a>     <strong class="jxr_keyword">private</strong> <strong class="jxr_keyword">void</strong> unshuffle64(<a href="../../../../../../nom/tam/fits/compression/algorithm/hcompress/HDecompress.html">LongArrayPointer</a> a, <strong class="jxr_keyword">int</strong> n, <strong class="jxr_keyword">int</strong> n2, <strong class="jxr_keyword">long</strong>[] tmp) {
+<a class="jxr_linenumber" name="L1105" href="#L1105">1105</a>     <strong class="jxr_keyword">private</strong> <strong class="jxr_keyword">void</strong> unshuffle64(LongArrayPointer a, <strong class="jxr_keyword">int</strong> n, <strong class="jxr_keyword">int</strong> n2, <strong class="jxr_keyword">long</strong>[] tmp) {
 <a class="jxr_linenumber" name="L1106" href="#L1106">1106</a>         <strong class="jxr_keyword">int</strong> i;
 <a class="jxr_linenumber" name="L1107" href="#L1107">1107</a>         <strong class="jxr_keyword">int</strong> nhalf;
-<a class="jxr_linenumber" name="L1108" href="#L1108">1108</a>         <a href="../../../../../../nom/tam/fits/compression/algorithm/hcompress/HDecompress.html">LongArrayPointer</a> p1, p2, pt;
+<a class="jxr_linenumber" name="L1108" href="#L1108">1108</a>         LongArrayPointer p1, p2, pt;
 <a class="jxr_linenumber" name="L1109" href="#L1109">1109</a> 
 <a class="jxr_linenumber" name="L1110" href="#L1110">1110</a>         <em class="jxr_comment">/*</em>
 <a class="jxr_linenumber" name="L1111" href="#L1111">1111</a> <em class="jxr_comment">         * copy 2nd half of tiledImageOperation to tmp</em>
 <a class="jxr_linenumber" name="L1112" href="#L1112">1112</a> <em class="jxr_comment">         */</em>
 <a class="jxr_linenumber" name="L1113" href="#L1113">1113</a>         nhalf = n + 1 &gt;&gt; 1;
-<a class="jxr_linenumber" name="L1114" href="#L1114">1114</a>         pt = <strong class="jxr_keyword">new</strong> <a href="../../../../../../nom/tam/fits/compression/algorithm/hcompress/HDecompress.html">LongArrayPointer</a>(tmp);
+<a class="jxr_linenumber" name="L1114" href="#L1114">1114</a>         pt = <strong class="jxr_keyword">new</strong> LongArrayPointer(tmp);
 <a class="jxr_linenumber" name="L1115" href="#L1115">1115</a>         p1 = a.copy(n2 * nhalf); <em class="jxr_comment">/* pointer to a[i] */</em>
 <a class="jxr_linenumber" name="L1116" href="#L1116">1116</a>         <strong class="jxr_keyword">for</strong> (i = nhalf; i &lt; n; i++) {
 <a class="jxr_linenumber" name="L1117" href="#L1117">1117</a>             pt.set(p1.get());
@@ -1140,7 +1140,7 @@
 <a class="jxr_linenumber" name="L1132" href="#L1132">1132</a> <em class="jxr_comment">         * now distribute 2nd half of tiledImageOperation (in tmp) to odd</em>
 <a class="jxr_linenumber" name="L1133" href="#L1133">1133</a> <em class="jxr_comment">         * elements</em>
 <a class="jxr_linenumber" name="L1134" href="#L1134">1134</a> <em class="jxr_comment">         */</em>
-<a class="jxr_linenumber" name="L1135" href="#L1135">1135</a>         pt = <strong class="jxr_keyword">new</strong> <a href="../../../../../../nom/tam/fits/compression/algorithm/hcompress/HDecompress.html">LongArrayPointer</a>(tmp);
+<a class="jxr_linenumber" name="L1135" href="#L1135">1135</a>         pt = <strong class="jxr_keyword">new</strong> LongArrayPointer(tmp);
 <a class="jxr_linenumber" name="L1136" href="#L1136">1136</a>         p1 = a.copy(n2); <em class="jxr_comment">/* pointer to a[i] */</em>
 <a class="jxr_linenumber" name="L1137" href="#L1137">1137</a>         <strong class="jxr_keyword">for</strong> (i = 1; i &lt; n; i += 2) {
 <a class="jxr_linenumber" name="L1138" href="#L1138">1138</a>             p1.set(pt.get());

@@ -97,7 +97,7 @@
 <a class="jxr_linenumber" name="L89" href="#L89">89</a>  <em class="jxr_javadoccomment">     * @param type              The second character of the Java array type, e.g. `J` from `[J` for `long[]`. </em>
 <a class="jxr_linenumber" name="L90" href="#L90">90</a>  <em class="jxr_javadoccomment">     * @param bitPix            The BITPIX header value for an image HDU of this type.</em>
 <a class="jxr_linenumber" name="L91" href="#L91">91</a>  <em class="jxr_javadoccomment">     */</em>
-<a class="jxr_linenumber" name="L92" href="#L92">92</a>      <strong class="jxr_keyword">protected</strong> <a href="../../../../nom/tam/util/type/ElementType.html">ElementType</a>(<strong class="jxr_keyword">int</strong> size, <strong class="jxr_keyword">boolean</strong> varSize, Class&lt;?&gt; primitiveClass, Class&lt;?&gt; wrapperClass, Class&lt;B&gt; bufferClass, <strong class="jxr_keyword">char</strong> type, <strong class="jxr_keyword">int</strong> bitPix) {
+<a class="jxr_linenumber" name="L92" href="#L92">92</a>      <strong class="jxr_keyword">protected</strong> <a name="ElementType" href="../../../../nom/tam/util/type/ElementType.html#ElementType">ElementType</a>(<strong class="jxr_keyword">int</strong> size, <strong class="jxr_keyword">boolean</strong> varSize, Class&lt;?&gt; primitiveClass, Class&lt;?&gt; wrapperClass, Class&lt;B&gt; bufferClass, <strong class="jxr_keyword">char</strong> type, <strong class="jxr_keyword">int</strong> bitPix) {
 <a class="jxr_linenumber" name="L93" href="#L93">93</a>          <strong class="jxr_keyword">this</strong>.size = varSize ? VARIABLE_SIZE : size;
 <a class="jxr_linenumber" name="L94" href="#L94">94</a>          <strong class="jxr_keyword">this</strong>.primitiveClass = primitiveClass;
 <a class="jxr_linenumber" name="L95" href="#L95">95</a>          <strong class="jxr_keyword">this</strong>.wrapperClass = wrapperClass;
@@ -253,25 +253,25 @@
 <a class="jxr_linenumber" name="L245" href="#L245">245</a>         <strong class="jxr_keyword">return</strong> <strong class="jxr_keyword">this</strong>.wrapperClass;
 <a class="jxr_linenumber" name="L246" href="#L246">246</a>     }
 <a class="jxr_linenumber" name="L247" href="#L247">247</a>     
-<a class="jxr_linenumber" name="L248" href="#L248">248</a>     <strong class="jxr_keyword">public</strong> <strong class="jxr_keyword">static</strong> <strong class="jxr_keyword">final</strong> ElementType&lt;Buffer&gt; BOOLEAN = <strong class="jxr_keyword">new</strong> <a href="../../../../nom/tam/util/type/BooleanType.html">BooleanType</a>();
+<a class="jxr_linenumber" name="L248" href="#L248">248</a>     <strong class="jxr_keyword">public</strong> <strong class="jxr_keyword">static</strong> <strong class="jxr_keyword">final</strong> ElementType&lt;Buffer&gt; BOOLEAN = <strong class="jxr_keyword">new</strong> <a name="BooleanType" href="../../../../nom/tam/util/type/BooleanType.html#BooleanType">BooleanType</a>();
 <a class="jxr_linenumber" name="L249" href="#L249">249</a> 
-<a class="jxr_linenumber" name="L250" href="#L250">250</a>     <strong class="jxr_keyword">public</strong> <strong class="jxr_keyword">static</strong> <strong class="jxr_keyword">final</strong> ElementType&lt;ByteBuffer&gt; BYTE = <strong class="jxr_keyword">new</strong> <a href="../../../../nom/tam/util/type/ByteType.html">ByteType</a>();
+<a class="jxr_linenumber" name="L250" href="#L250">250</a>     <strong class="jxr_keyword">public</strong> <strong class="jxr_keyword">static</strong> <strong class="jxr_keyword">final</strong> ElementType&lt;ByteBuffer&gt; BYTE = <strong class="jxr_keyword">new</strong> <a name="ByteType" href="../../../../nom/tam/util/type/ByteType.html#ByteType">ByteType</a>();
 <a class="jxr_linenumber" name="L251" href="#L251">251</a> 
-<a class="jxr_linenumber" name="L252" href="#L252">252</a>     <strong class="jxr_keyword">public</strong> <strong class="jxr_keyword">static</strong> <strong class="jxr_keyword">final</strong> ElementType&lt;ByteBuffer&gt; CHAR = <strong class="jxr_keyword">new</strong> <a href="../../../../nom/tam/util/type/CharType.html">CharType</a>();
+<a class="jxr_linenumber" name="L252" href="#L252">252</a>     <strong class="jxr_keyword">public</strong> <strong class="jxr_keyword">static</strong> <strong class="jxr_keyword">final</strong> ElementType&lt;ByteBuffer&gt; CHAR = <strong class="jxr_keyword">new</strong> <a name="CharType" href="../../../../nom/tam/util/type/CharType.html#CharType">CharType</a>();
 <a class="jxr_linenumber" name="L253" href="#L253">253</a> 
-<a class="jxr_linenumber" name="L254" href="#L254">254</a>     <strong class="jxr_keyword">public</strong> <strong class="jxr_keyword">static</strong> <strong class="jxr_keyword">final</strong> ElementType&lt;DoubleBuffer&gt; DOUBLE = <strong class="jxr_keyword">new</strong> <a href="../../../../nom/tam/util/type/DoubleType.html">DoubleType</a>();
+<a class="jxr_linenumber" name="L254" href="#L254">254</a>     <strong class="jxr_keyword">public</strong> <strong class="jxr_keyword">static</strong> <strong class="jxr_keyword">final</strong> ElementType&lt;DoubleBuffer&gt; DOUBLE = <strong class="jxr_keyword">new</strong> <a name="DoubleType" href="../../../../nom/tam/util/type/DoubleType.html#DoubleType">DoubleType</a>();
 <a class="jxr_linenumber" name="L255" href="#L255">255</a> 
-<a class="jxr_linenumber" name="L256" href="#L256">256</a>     <strong class="jxr_keyword">public</strong> <strong class="jxr_keyword">static</strong> <strong class="jxr_keyword">final</strong> ElementType&lt;FloatBuffer&gt; FLOAT = <strong class="jxr_keyword">new</strong> <a href="../../../../nom/tam/util/type/FloatType.html">FloatType</a>();
+<a class="jxr_linenumber" name="L256" href="#L256">256</a>     <strong class="jxr_keyword">public</strong> <strong class="jxr_keyword">static</strong> <strong class="jxr_keyword">final</strong> ElementType&lt;FloatBuffer&gt; FLOAT = <strong class="jxr_keyword">new</strong> <a name="FloatType" href="../../../../nom/tam/util/type/FloatType.html#FloatType">FloatType</a>();
 <a class="jxr_linenumber" name="L257" href="#L257">257</a> 
-<a class="jxr_linenumber" name="L258" href="#L258">258</a>     <strong class="jxr_keyword">public</strong> <strong class="jxr_keyword">static</strong> <strong class="jxr_keyword">final</strong> ElementType&lt;IntBuffer&gt; INT = <strong class="jxr_keyword">new</strong> <a href="../../../../nom/tam/util/type/IntType.html">IntType</a>();
+<a class="jxr_linenumber" name="L258" href="#L258">258</a>     <strong class="jxr_keyword">public</strong> <strong class="jxr_keyword">static</strong> <strong class="jxr_keyword">final</strong> ElementType&lt;IntBuffer&gt; INT = <strong class="jxr_keyword">new</strong> <a name="IntType" href="../../../../nom/tam/util/type/IntType.html#IntType">IntType</a>();
 <a class="jxr_linenumber" name="L259" href="#L259">259</a> 
-<a class="jxr_linenumber" name="L260" href="#L260">260</a>     <strong class="jxr_keyword">public</strong> <strong class="jxr_keyword">static</strong> <strong class="jxr_keyword">final</strong> ElementType&lt;LongBuffer&gt; LONG = <strong class="jxr_keyword">new</strong> <a href="../../../../nom/tam/util/type/LongType.html">LongType</a>();
+<a class="jxr_linenumber" name="L260" href="#L260">260</a>     <strong class="jxr_keyword">public</strong> <strong class="jxr_keyword">static</strong> <strong class="jxr_keyword">final</strong> ElementType&lt;LongBuffer&gt; LONG = <strong class="jxr_keyword">new</strong> <a name="LongType" href="../../../../nom/tam/util/type/LongType.html#LongType">LongType</a>();
 <a class="jxr_linenumber" name="L261" href="#L261">261</a> 
-<a class="jxr_linenumber" name="L262" href="#L262">262</a>     <strong class="jxr_keyword">public</strong> <strong class="jxr_keyword">static</strong> <strong class="jxr_keyword">final</strong> ElementType&lt;ShortBuffer&gt; SHORT = <strong class="jxr_keyword">new</strong> <a href="../../../../nom/tam/util/type/ShortType.html">ShortType</a>();
+<a class="jxr_linenumber" name="L262" href="#L262">262</a>     <strong class="jxr_keyword">public</strong> <strong class="jxr_keyword">static</strong> <strong class="jxr_keyword">final</strong> ElementType&lt;ShortBuffer&gt; SHORT = <strong class="jxr_keyword">new</strong> <a name="ShortType" href="../../../../nom/tam/util/type/ShortType.html#ShortType">ShortType</a>();
 <a class="jxr_linenumber" name="L263" href="#L263">263</a> 
-<a class="jxr_linenumber" name="L264" href="#L264">264</a>     <strong class="jxr_keyword">public</strong> <strong class="jxr_keyword">static</strong> <strong class="jxr_keyword">final</strong> ElementType&lt;Buffer&gt; STRING = <strong class="jxr_keyword">new</strong> <a href="../../../../nom/tam/util/type/StringType.html">StringType</a>();
+<a class="jxr_linenumber" name="L264" href="#L264">264</a>     <strong class="jxr_keyword">public</strong> <strong class="jxr_keyword">static</strong> <strong class="jxr_keyword">final</strong> ElementType&lt;Buffer&gt; STRING = <strong class="jxr_keyword">new</strong> <a name="StringType" href="../../../../nom/tam/util/type/StringType.html#StringType">StringType</a>();
 <a class="jxr_linenumber" name="L265" href="#L265">265</a>     
-<a class="jxr_linenumber" name="L266" href="#L266">266</a>     <strong class="jxr_keyword">public</strong> <strong class="jxr_keyword">static</strong> <strong class="jxr_keyword">final</strong> ElementType&lt;Buffer&gt; UNKNOWN = <strong class="jxr_keyword">new</strong> <a href="../../../../nom/tam/util/type/UnknownType.html">UnknownType</a>();
+<a class="jxr_linenumber" name="L266" href="#L266">266</a>     <strong class="jxr_keyword">public</strong> <strong class="jxr_keyword">static</strong> <strong class="jxr_keyword">final</strong> ElementType&lt;Buffer&gt; UNKNOWN = <strong class="jxr_keyword">new</strong> <a name="UnknownType" href="../../../../nom/tam/util/type/UnknownType.html#UnknownType">UnknownType</a>();
 <a class="jxr_linenumber" name="L267" href="#L267">267</a> 
 <a class="jxr_linenumber" name="L268" href="#L268">268</a>     
 <a class="jxr_linenumber" name="L269" href="#L269">269</a>     <strong class="jxr_keyword">private</strong> <strong class="jxr_keyword">static</strong> Map&lt;Class&lt;?&gt;, ElementType&lt;?&gt;&gt; byClass;
@@ -319,7 +319,7 @@
 <a class="jxr_linenumber" name="L311" href="#L311">311</a>     <strong class="jxr_keyword">public</strong> <strong class="jxr_keyword">static</strong> ElementType&lt;Buffer&gt; forBitpix(<strong class="jxr_keyword">int</strong> bitPix) {
 <a class="jxr_linenumber" name="L312" href="#L312">312</a>         <strong class="jxr_keyword">try</strong> {
 <a class="jxr_linenumber" name="L313" href="#L313">313</a>             <strong class="jxr_keyword">return</strong> <strong class="jxr_keyword">cast</strong>(Bitpix.forValue(bitPix).getElementType());
-<a class="jxr_linenumber" name="L314" href="#L314">314</a>         } <strong class="jxr_keyword">catch</strong> (FitsException e) {
+<a class="jxr_linenumber" name="L314" href="#L314">314</a>         } <strong class="jxr_keyword">catch</strong> (<a name="FitsException" href="../../../../nom/tam/fits/FitsException.html#FitsException">FitsException</a> e) {
 <a class="jxr_linenumber" name="L315" href="#L315">315</a>             <strong class="jxr_keyword">return</strong> <strong class="jxr_keyword">null</strong>;
 <a class="jxr_linenumber" name="L316" href="#L316">316</a>         }
 <a class="jxr_linenumber" name="L317" href="#L317">317</a>     }
@@ -327,7 +327,7 @@
 <a class="jxr_linenumber" name="L319" href="#L319">319</a>     <strong class="jxr_keyword">public</strong> <strong class="jxr_keyword">static</strong> ElementType&lt;Buffer&gt; forNearestBitpix(<strong class="jxr_keyword">int</strong> bitPix) {
 <a class="jxr_linenumber" name="L320" href="#L320">320</a>         <strong class="jxr_keyword">try</strong> {
 <a class="jxr_linenumber" name="L321" href="#L321">321</a>             <strong class="jxr_keyword">return</strong> <strong class="jxr_keyword">cast</strong>(Bitpix.forValue(bitPix, <strong class="jxr_keyword">true</strong>).getElementType());
-<a class="jxr_linenumber" name="L322" href="#L322">322</a>         } <strong class="jxr_keyword">catch</strong> (FitsException e) {
+<a class="jxr_linenumber" name="L322" href="#L322">322</a>         } <strong class="jxr_keyword">catch</strong> (<a name="FitsException" href="../../../../nom/tam/fits/FitsException.html#FitsException">FitsException</a> e) {
 <a class="jxr_linenumber" name="L323" href="#L323">323</a>             <strong class="jxr_keyword">return</strong> UNKNOWN;
 <a class="jxr_linenumber" name="L324" href="#L324">324</a>         }
 <a class="jxr_linenumber" name="L325" href="#L325">325</a>     }
@@ -338,7 +338,7 @@
 <a class="jxr_linenumber" name="L330" href="#L330">330</a>     }
 <a class="jxr_linenumber" name="L331" href="#L331">331</a> 
 <a class="jxr_linenumber" name="L332" href="#L332">332</a>     <strong class="jxr_keyword">private</strong> <strong class="jxr_keyword">static</strong> ElementType&lt;?&gt;[] values() {
-<a class="jxr_linenumber" name="L333" href="#L333">333</a>         <strong class="jxr_keyword">return</strong> <strong class="jxr_keyword">new</strong> <a href="../../../../nom/tam/util/type/ElementType.html">ElementType</a>[]{
+<a class="jxr_linenumber" name="L333" href="#L333">333</a>         <strong class="jxr_keyword">return</strong> <strong class="jxr_keyword">new</strong> <a name="ElementType" href="../../../../nom/tam/util/type/ElementType.html#ElementType">ElementType</a>[]{
 <a class="jxr_linenumber" name="L334" href="#L334">334</a>             BOOLEAN,
 <a class="jxr_linenumber" name="L335" href="#L335">335</a>             BYTE,
 <a class="jxr_linenumber" name="L336" href="#L336">336</a>             CHAR,

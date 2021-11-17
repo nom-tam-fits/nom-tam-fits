@@ -55,7 +55,7 @@
 <a class="jxr_linenumber" name="L47" href="#L47">47</a>  <em class="jxr_javadoccomment"> * @see ArrayInputStream</em>
 <a class="jxr_linenumber" name="L48" href="#L48">48</a>  <em class="jxr_javadoccomment"> * @see ArrayOutputStream</em>
 <a class="jxr_linenumber" name="L49" href="#L49">49</a>  <em class="jxr_javadoccomment"> */</em>
-<a class="jxr_linenumber" name="L50" href="#L50">50</a>  <strong class="jxr_keyword">public</strong> <strong class="jxr_keyword">abstract</strong> <strong class="jxr_keyword">class</strong> <a href="../../../nom/tam/util/ArrayEncoder.html">ArrayEncoder</a> {
+<a class="jxr_linenumber" name="L50" href="#L50">50</a>  <strong class="jxr_keyword">public</strong> <strong class="jxr_keyword">abstract</strong> <strong class="jxr_keyword">class</strong> <a name="ArrayEncoder" href="../../../nom/tam/util/ArrayEncoder.html#ArrayEncoder">ArrayEncoder</a> {
 <a class="jxr_linenumber" name="L51" href="#L51">51</a>  
 <a class="jxr_linenumber" name="L52" href="#L52">52</a>      <em class="jxr_javadoccomment">/**</em>
 <a class="jxr_linenumber" name="L53" href="#L53">53</a>  <em class="jxr_javadoccomment">     * The default local buffer size to use for encoding data into binary format</em>
@@ -66,13 +66,13 @@
 <a class="jxr_linenumber" name="L58" href="#L58">58</a>  <em class="jxr_javadoccomment">     * The output to which to write encoded data (directly or from the</em>
 <a class="jxr_linenumber" name="L59" href="#L59">59</a>  <em class="jxr_javadoccomment">     * conversion buffer)</em>
 <a class="jxr_linenumber" name="L60" href="#L60">60</a>  <em class="jxr_javadoccomment">     */</em>
-<a class="jxr_linenumber" name="L61" href="#L61">61</a>      <strong class="jxr_keyword">private</strong> <a href="../../../nom/tam/util/OutputWriter.html">OutputWriter</a> out;
+<a class="jxr_linenumber" name="L61" href="#L61">61</a>      <strong class="jxr_keyword">private</strong> <a name="OutputWriter" href="../../../nom/tam/util/OutputWriter.html#OutputWriter">OutputWriter</a> out;
 <a class="jxr_linenumber" name="L62" href="#L62">62</a>  
 <a class="jxr_linenumber" name="L63" href="#L63">63</a>      <em class="jxr_javadoccomment">/**</em>
 <a class="jxr_linenumber" name="L64" href="#L64">64</a>  <em class="jxr_javadoccomment">     * A local buffer for efficient conversions before bulk writing to the</em>
 <a class="jxr_linenumber" name="L65" href="#L65">65</a>  <em class="jxr_javadoccomment">     * output</em>
 <a class="jxr_linenumber" name="L66" href="#L66">66</a>  <em class="jxr_javadoccomment">     */</em>
-<a class="jxr_linenumber" name="L67" href="#L67">67</a>      <strong class="jxr_keyword">private</strong> <a href="../../../nom/tam/util/ArrayEncoder.html">OutputBuffer</a> buf;
+<a class="jxr_linenumber" name="L67" href="#L67">67</a>      <strong class="jxr_keyword">private</strong> OutputBuffer buf;
 <a class="jxr_linenumber" name="L68" href="#L68">68</a>  
 <a class="jxr_linenumber" name="L69" href="#L69">69</a>      <em class="jxr_javadoccomment">/**</em>
 <a class="jxr_linenumber" name="L70" href="#L70">70</a>  <em class="jxr_javadoccomment">     * Instantiates a new Java-to-binary encoder for arrays. To be used by</em>
@@ -80,8 +80,8 @@
 <a class="jxr_linenumber" name="L72" href="#L72">72</a>  <em class="jxr_javadoccomment">     * </em>
 <a class="jxr_linenumber" name="L73" href="#L73">73</a>  <em class="jxr_javadoccomment">     * @see #setOutput(OutputWriter)</em>
 <a class="jxr_linenumber" name="L74" href="#L74">74</a>  <em class="jxr_javadoccomment">     */</em>
-<a class="jxr_linenumber" name="L75" href="#L75">75</a>      <strong class="jxr_keyword">protected</strong> <a href="../../../nom/tam/util/ArrayEncoder.html">ArrayEncoder</a>() {
-<a class="jxr_linenumber" name="L76" href="#L76">76</a>          buf = <strong class="jxr_keyword">new</strong> <a href="../../../nom/tam/util/ArrayEncoder.html">OutputBuffer</a>(BUFFER_SIZE);
+<a class="jxr_linenumber" name="L75" href="#L75">75</a>      <strong class="jxr_keyword">protected</strong> <a name="ArrayEncoder" href="../../../nom/tam/util/ArrayEncoder.html#ArrayEncoder">ArrayEncoder</a>() {
+<a class="jxr_linenumber" name="L76" href="#L76">76</a>          buf = <strong class="jxr_keyword">new</strong> OutputBuffer(BUFFER_SIZE);
 <a class="jxr_linenumber" name="L77" href="#L77">77</a>      }
 <a class="jxr_linenumber" name="L78" href="#L78">78</a>  
 <a class="jxr_linenumber" name="L79" href="#L79">79</a>      <em class="jxr_javadoccomment">/**</em>
@@ -91,7 +91,7 @@
 <a class="jxr_linenumber" name="L83" href="#L83">83</a>  <em class="jxr_javadoccomment">     * @param o</em>
 <a class="jxr_linenumber" name="L84" href="#L84">84</a>  <em class="jxr_javadoccomment">     *            the output to which encoded data is to be written.</em>
 <a class="jxr_linenumber" name="L85" href="#L85">85</a>  <em class="jxr_javadoccomment">     */</em>
-<a class="jxr_linenumber" name="L86" href="#L86">86</a>      <strong class="jxr_keyword">public</strong> <a href="../../../nom/tam/util/ArrayEncoder.html">ArrayEncoder</a>(<a href="../../../nom/tam/util/OutputWriter.html">OutputWriter</a> o) {
+<a class="jxr_linenumber" name="L86" href="#L86">86</a>      <strong class="jxr_keyword">public</strong> <a name="ArrayEncoder" href="../../../nom/tam/util/ArrayEncoder.html#ArrayEncoder">ArrayEncoder</a>(<a name="OutputWriter" href="../../../nom/tam/util/OutputWriter.html#OutputWriter">OutputWriter</a> o) {
 <a class="jxr_linenumber" name="L87" href="#L87">87</a>          <strong class="jxr_keyword">this</strong>();
 <a class="jxr_linenumber" name="L88" href="#L88">88</a>          setOutput(o);
 <a class="jxr_linenumber" name="L89" href="#L89">89</a>      }
@@ -103,7 +103,7 @@
 <a class="jxr_linenumber" name="L95" href="#L95">95</a>  <em class="jxr_javadoccomment">     * @param o</em>
 <a class="jxr_linenumber" name="L96" href="#L96">96</a>  <em class="jxr_javadoccomment">     *            the new output to which encoded data is to be written.</em>
 <a class="jxr_linenumber" name="L97" href="#L97">97</a>  <em class="jxr_javadoccomment">     */</em>
-<a class="jxr_linenumber" name="L98" href="#L98">98</a>      <strong class="jxr_keyword">protected</strong> <strong class="jxr_keyword">synchronized</strong> <strong class="jxr_keyword">void</strong> setOutput(<a href="../../../nom/tam/util/OutputWriter.html">OutputWriter</a> o) {
+<a class="jxr_linenumber" name="L98" href="#L98">98</a>      <strong class="jxr_keyword">protected</strong> <strong class="jxr_keyword">synchronized</strong> <strong class="jxr_keyword">void</strong> setOutput(<a name="OutputWriter" href="../../../nom/tam/util/OutputWriter.html#OutputWriter">OutputWriter</a> o) {
 <a class="jxr_linenumber" name="L99" href="#L99">99</a>          <strong class="jxr_keyword">this</strong>.out = o;
 <a class="jxr_linenumber" name="L100" href="#L100">100</a>     }
 <a class="jxr_linenumber" name="L101" href="#L101">101</a> 
@@ -114,7 +114,7 @@
 <a class="jxr_linenumber" name="L106" href="#L106">106</a> <em class="jxr_javadoccomment">     * </em>
 <a class="jxr_linenumber" name="L107" href="#L107">107</a> <em class="jxr_javadoccomment">     * @return the conversion buffer used by this encoder.</em>
 <a class="jxr_linenumber" name="L108" href="#L108">108</a> <em class="jxr_javadoccomment">     */</em>
-<a class="jxr_linenumber" name="L109" href="#L109">109</a>     <strong class="jxr_keyword">protected</strong> <a href="../../../nom/tam/util/ArrayEncoder.html">OutputBuffer</a> getOutputBuffer() {
+<a class="jxr_linenumber" name="L109" href="#L109">109</a>     <strong class="jxr_keyword">protected</strong> OutputBuffer getOutputBuffer() {
 <a class="jxr_linenumber" name="L110" href="#L110">110</a>         <strong class="jxr_keyword">return</strong> buf;
 <a class="jxr_linenumber" name="L111" href="#L111">111</a>     }
 <a class="jxr_linenumber" name="L112" href="#L112">112</a> 
@@ -244,7 +244,7 @@
 <a class="jxr_linenumber" name="L236" href="#L236">236</a> <em class="jxr_javadoccomment">     * </em>
 <a class="jxr_linenumber" name="L237" href="#L237">237</a> <em class="jxr_javadoccomment">     * @author Attila Kovacs</em>
 <a class="jxr_linenumber" name="L238" href="#L238">238</a> <em class="jxr_javadoccomment">     */</em>
-<a class="jxr_linenumber" name="L239" href="#L239">239</a>     <strong class="jxr_keyword">protected</strong> <strong class="jxr_keyword">final</strong> <strong class="jxr_keyword">class</strong> <a href="../../../nom/tam/util/ArrayEncoder.html">OutputBuffer</a> {
+<a class="jxr_linenumber" name="L239" href="#L239">239</a>     <strong class="jxr_keyword">protected</strong> <strong class="jxr_keyword">final</strong> <strong class="jxr_keyword">class</strong> OutputBuffer {
 <a class="jxr_linenumber" name="L240" href="#L240">240</a> 
 <a class="jxr_linenumber" name="L241" href="#L241">241</a>         <em class="jxr_javadoccomment">/** the byte array that stores pending data to be written to the output */</em>
 <a class="jxr_linenumber" name="L242" href="#L242">242</a>         <strong class="jxr_keyword">private</strong> <strong class="jxr_keyword">final</strong> byte[] data;
@@ -252,7 +252,7 @@
 <a class="jxr_linenumber" name="L244" href="#L244">244</a>         <em class="jxr_javadoccomment">/** the buffer wrapped for NIO access */</em>
 <a class="jxr_linenumber" name="L245" href="#L245">245</a>         <strong class="jxr_keyword">private</strong> <strong class="jxr_keyword">final</strong> ByteBuffer buffer;
 <a class="jxr_linenumber" name="L246" href="#L246">246</a> 
-<a class="jxr_linenumber" name="L247" href="#L247">247</a>         <strong class="jxr_keyword">private</strong> <a href="../../../nom/tam/util/ArrayEncoder.html">OutputBuffer</a>(<strong class="jxr_keyword">int</strong> size) {
+<a class="jxr_linenumber" name="L247" href="#L247">247</a>         <strong class="jxr_keyword">private</strong> OutputBuffer(<strong class="jxr_keyword">int</strong> size) {
 <a class="jxr_linenumber" name="L248" href="#L248">248</a>             <strong class="jxr_keyword">this</strong>.data = <strong class="jxr_keyword">new</strong> byte[size];
 <a class="jxr_linenumber" name="L249" href="#L249">249</a>             buffer = ByteBuffer.wrap(data);
 <a class="jxr_linenumber" name="L250" href="#L250">250</a>         }

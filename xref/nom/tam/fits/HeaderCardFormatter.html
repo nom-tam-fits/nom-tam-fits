@@ -54,7 +54,7 @@
 <a class="jxr_linenumber" name="L46" href="#L46">46</a>  <em class="jxr_javadoccomment"> * </em>
 <a class="jxr_linenumber" name="L47" href="#L47">47</a>  <em class="jxr_javadoccomment"> * @since 1.16</em>
 <a class="jxr_linenumber" name="L48" href="#L48">48</a>  <em class="jxr_javadoccomment"> */</em>
-<a class="jxr_linenumber" name="L49" href="#L49">49</a>  <strong class="jxr_keyword">class</strong> <a href="../../../nom/tam/fits/HeaderCardFormatter.html">HeaderCardFormatter</a> {
+<a class="jxr_linenumber" name="L49" href="#L49">49</a>  <strong class="jxr_keyword">class</strong> <a name="HeaderCardFormatter" href="../../../nom/tam/fits/HeaderCardFormatter.html#HeaderCardFormatter">HeaderCardFormatter</a> {
 <a class="jxr_linenumber" name="L50" href="#L50">50</a>      
 <a class="jxr_linenumber" name="L51" href="#L51">51</a>      <em class="jxr_javadoccomment">/**</em>
 <a class="jxr_linenumber" name="L52" href="#L52">52</a>  <em class="jxr_javadoccomment">     * The FITS settings to use, such as support for long strings, support for HIERARCH-style cards, or the</em>
@@ -62,7 +62,7 @@
 <a class="jxr_linenumber" name="L54" href="#L54">54</a>  <em class="jxr_javadoccomment">     * are represented exactly in the FITS header.</em>
 <a class="jxr_linenumber" name="L55" href="#L55">55</a>  <em class="jxr_javadoccomment">     * </em>
 <a class="jxr_linenumber" name="L56" href="#L56">56</a>  <em class="jxr_javadoccomment">     */</em>
-<a class="jxr_linenumber" name="L57" href="#L57">57</a>      <strong class="jxr_keyword">private</strong> <a href="../../../nom/tam/fits/FitsFactory.html">FitsSettings</a> settings;
+<a class="jxr_linenumber" name="L57" href="#L57">57</a>      <strong class="jxr_keyword">private</strong> FitsSettings settings;
 <a class="jxr_linenumber" name="L58" href="#L58">58</a>      
 <a class="jxr_linenumber" name="L59" href="#L59">59</a>      <em class="jxr_javadoccomment">/** The length of two single quotes. */</em>
 <a class="jxr_linenumber" name="L60" href="#L60">60</a>      <strong class="jxr_keyword">private</strong> <strong class="jxr_keyword">static</strong> <strong class="jxr_keyword">final</strong> <strong class="jxr_keyword">int</strong> QUOTES_LENGTH = 2;
@@ -110,7 +110,7 @@
 <a class="jxr_linenumber" name="L102" href="#L102">102</a> <em class="jxr_javadoccomment">     * </em>
 <a class="jxr_linenumber" name="L103" href="#L103">103</a> <em class="jxr_javadoccomment">     * @see #HeaderCardFormatter()</em>
 <a class="jxr_linenumber" name="L104" href="#L104">104</a> <em class="jxr_javadoccomment">     */</em>
-<a class="jxr_linenumber" name="L105" href="#L105">105</a>     <a href="../../../nom/tam/fits/HeaderCardFormatter.html">HeaderCardFormatter</a>(<a href="../../../nom/tam/fits/FitsFactory.html">FitsSettings</a> settings) {
+<a class="jxr_linenumber" name="L105" href="#L105">105</a>     <a name="HeaderCardFormatter" href="../../../nom/tam/fits/HeaderCardFormatter.html#HeaderCardFormatter">HeaderCardFormatter</a>(FitsSettings settings) {
 <a class="jxr_linenumber" name="L106" href="#L106">106</a>         <strong class="jxr_keyword">this</strong>.settings = settings;
 <a class="jxr_linenumber" name="L107" href="#L107">107</a>     }
 <a class="jxr_linenumber" name="L108" href="#L108">108</a>     
@@ -136,8 +136,8 @@
 <a class="jxr_linenumber" name="L128" href="#L128">128</a> <em class="jxr_javadoccomment">     *                      </em>
 <a class="jxr_linenumber" name="L129" href="#L129">129</a> <em class="jxr_javadoccomment">     * @see FitsFactory#setLongStringsEnabled(boolean)</em>
 <a class="jxr_linenumber" name="L130" href="#L130">130</a> <em class="jxr_javadoccomment">     */</em>
-<a class="jxr_linenumber" name="L131" href="#L131">131</a>     String toString(<a href="../../../nom/tam/fits/HeaderCard.html">HeaderCard</a> card) 
-<a class="jxr_linenumber" name="L132" href="#L132">132</a>             <strong class="jxr_keyword">throws</strong> HierarchNotEnabledException, LongValueException, <a href="../../../nom/tam/fits/LongStringsNotEnabledException.html">LongStringsNotEnabledException</a> {
+<a class="jxr_linenumber" name="L131" href="#L131">131</a>     String toString(<a name="HeaderCard" href="../../../nom/tam/fits/HeaderCard.html#HeaderCard">HeaderCard</a> card) 
+<a class="jxr_linenumber" name="L132" href="#L132">132</a>             <strong class="jxr_keyword">throws</strong> HierarchNotEnabledException, LongValueException, <a name="LongStringsNotEnabledException" href="../../../nom/tam/fits/LongStringsNotEnabledException.html#LongStringsNotEnabledException">LongStringsNotEnabledException</a> {
 <a class="jxr_linenumber" name="L133" href="#L133">133</a>         StringBuffer buf = <strong class="jxr_keyword">new</strong> StringBuffer(HeaderCard.FITS_HEADER_CARD_SIZE);
 <a class="jxr_linenumber" name="L134" href="#L134">134</a>         
 <a class="jxr_linenumber" name="L135" href="#L135">135</a>         appendKey(buf, card);
@@ -171,19 +171,19 @@
 <a class="jxr_linenumber" name="L163" href="#L163">163</a> <em class="jxr_javadoccomment">     *                      </em>
 <a class="jxr_linenumber" name="L164" href="#L164">164</a> <em class="jxr_javadoccomment">     * @see FitsFactory#setUseHierarch(boolean)</em>
 <a class="jxr_linenumber" name="L165" href="#L165">165</a> <em class="jxr_javadoccomment">     */</em>
-<a class="jxr_linenumber" name="L166" href="#L166">166</a>     <strong class="jxr_keyword">private</strong> <strong class="jxr_keyword">void</strong> appendKey(StringBuffer buf, <a href="../../../nom/tam/fits/HeaderCard.html">HeaderCard</a> card) <strong class="jxr_keyword">throws</strong> HierarchNotEnabledException, LongValueException {
+<a class="jxr_linenumber" name="L166" href="#L166">166</a>     <strong class="jxr_keyword">private</strong> <strong class="jxr_keyword">void</strong> appendKey(StringBuffer buf, <a name="HeaderCard" href="../../../nom/tam/fits/HeaderCard.html#HeaderCard">HeaderCard</a> card) <strong class="jxr_keyword">throws</strong> HierarchNotEnabledException, <a name="LongValueException" href="../../../nom/tam/fits/LongValueException.html#LongValueException">LongValueException</a> {
 <a class="jxr_linenumber" name="L167" href="#L167">167</a>         String key = card.getKey();
 <a class="jxr_linenumber" name="L168" href="#L168">168</a> 
 <a class="jxr_linenumber" name="L169" href="#L169">169</a>         <strong class="jxr_keyword">if</strong> (card.hasHierarchKey()) {
 <a class="jxr_linenumber" name="L170" href="#L170">170</a>             <strong class="jxr_keyword">if</strong> (!settings.isUseHierarch()) {
-<a class="jxr_linenumber" name="L171" href="#L171">171</a>                 <strong class="jxr_keyword">throw</strong> <strong class="jxr_keyword">new</strong> <a href="../../../nom/tam/fits/HierarchNotEnabledException.html">HierarchNotEnabledException</a>(key);
+<a class="jxr_linenumber" name="L171" href="#L171">171</a>                 <strong class="jxr_keyword">throw</strong> <strong class="jxr_keyword">new</strong> <a name="HierarchNotEnabledException" href="../../../nom/tam/fits/HierarchNotEnabledException.html#HierarchNotEnabledException">HierarchNotEnabledException</a>(key);
 <a class="jxr_linenumber" name="L172" href="#L172">172</a>             }
 <a class="jxr_linenumber" name="L173" href="#L173">173</a>             key = settings.getHierarchKeyFormatter().toHeaderString(key);
 <a class="jxr_linenumber" name="L174" href="#L174">174</a>             <strong class="jxr_keyword">if</strong> (key.length() &gt; HeaderCard.MAX_HIERARCH_KEYWORD_LENGTH) {
 <a class="jxr_linenumber" name="L175" href="#L175">175</a>                 <em class="jxr_comment">// Truncate HIERARCH keywords as necessary to fit.</em>
 <a class="jxr_linenumber" name="L176" href="#L176">176</a>                 <em class="jxr_comment">// This is really just a second parachute here. Normally, HeaderCards</em>
 <a class="jxr_linenumber" name="L177" href="#L177">177</a>                 <em class="jxr_comment">// won't allow creation or setting longer keywords...</em>
-<a class="jxr_linenumber" name="L178" href="#L178">178</a>                 <strong class="jxr_keyword">throw</strong> <strong class="jxr_keyword">new</strong> <a href="../../../nom/tam/fits/LongValueException.html">LongValueException</a>(key, HeaderCard.MAX_HIERARCH_KEYWORD_LENGTH);
+<a class="jxr_linenumber" name="L178" href="#L178">178</a>                 <strong class="jxr_keyword">throw</strong> <strong class="jxr_keyword">new</strong> <a name="LongValueException" href="../../../nom/tam/fits/LongValueException.html#LongValueException">LongValueException</a>(key, HeaderCard.MAX_HIERARCH_KEYWORD_LENGTH);
 <a class="jxr_linenumber" name="L179" href="#L179">179</a>             }            
 <a class="jxr_linenumber" name="L180" href="#L180">180</a>         } <strong class="jxr_keyword">else</strong> {
 <a class="jxr_linenumber" name="L181" href="#L181">181</a>             <em class="jxr_comment">// Just to be certain, we'll make sure base keywords are upper-case, if they</em>
@@ -215,7 +215,7 @@
 <a class="jxr_linenumber" name="L207" href="#L207">207</a> <em class="jxr_javadoccomment">     *                  a single header record, and the use of long string is</em>
 <a class="jxr_linenumber" name="L208" href="#L208">208</a> <em class="jxr_javadoccomment">     *                  not enabled in the FITS settings used by this formatter.</em>
 <a class="jxr_linenumber" name="L209" href="#L209">209</a> <em class="jxr_javadoccomment">     */</em>
-<a class="jxr_linenumber" name="L210" href="#L210">210</a>     <strong class="jxr_keyword">private</strong> <strong class="jxr_keyword">int</strong> appendValue(StringBuffer buf, <a href="../../../nom/tam/fits/HeaderCard.html">HeaderCard</a> card) <strong class="jxr_keyword">throws</strong> LongValueException, LongStringsNotEnabledException {
+<a class="jxr_linenumber" name="L210" href="#L210">210</a>     <strong class="jxr_keyword">private</strong> <strong class="jxr_keyword">int</strong> appendValue(StringBuffer buf, <a name="HeaderCard" href="../../../nom/tam/fits/HeaderCard.html#HeaderCard">HeaderCard</a> card) <strong class="jxr_keyword">throws</strong> LongValueException, <a name="LongStringsNotEnabledException" href="../../../nom/tam/fits/LongStringsNotEnabledException.html#LongStringsNotEnabledException">LongStringsNotEnabledException</a> {
 <a class="jxr_linenumber" name="L211" href="#L211">211</a>         String value = card.getValue();
 <a class="jxr_linenumber" name="L212" href="#L212">212</a>         
 <a class="jxr_linenumber" name="L213" href="#L213">213</a>         <strong class="jxr_keyword">if</strong> (card.isCommentStyleCard()) {
@@ -257,7 +257,7 @@
 <a class="jxr_linenumber" name="L249" href="#L249">249</a> <em class="jxr_javadoccomment">     * @param card      The header card to be formatted.</em>
 <a class="jxr_linenumber" name="L250" href="#L250">250</a> <em class="jxr_javadoccomment">     * @return          the length of the first word in the comment string</em>
 <a class="jxr_linenumber" name="L251" href="#L251">251</a> <em class="jxr_javadoccomment">     */</em>
-<a class="jxr_linenumber" name="L252" href="#L252">252</a>     <strong class="jxr_keyword">private</strong> <strong class="jxr_keyword">int</strong> getMinTruncatedCommentSize(<a href="../../../nom/tam/fits/HeaderCard.html">HeaderCard</a> card) {
+<a class="jxr_linenumber" name="L252" href="#L252">252</a>     <strong class="jxr_keyword">private</strong> <strong class="jxr_keyword">int</strong> getMinTruncatedCommentSize(<a name="HeaderCard" href="../../../nom/tam/fits/HeaderCard.html#HeaderCard">HeaderCard</a> card) {
 <a class="jxr_linenumber" name="L253" href="#L253">253</a>         String comment = card.getComment();
 <a class="jxr_linenumber" name="L254" href="#L254">254</a>         
 <a class="jxr_linenumber" name="L255" href="#L255">255</a>         <em class="jxr_comment">// TODO We check for null before calling, so this is dead code here...</em>
@@ -283,7 +283,7 @@
 <a class="jxr_linenumber" name="L275" href="#L275">275</a> <em class="jxr_javadoccomment">     *                  record, or &lt;code&gt;false&lt;/code&gt; if it was truncated or fully</em>
 <a class="jxr_linenumber" name="L276" href="#L276">276</a> <em class="jxr_javadoccomment">     *                  ommitted.</em>
 <a class="jxr_linenumber" name="L277" href="#L277">277</a> <em class="jxr_javadoccomment">     */</em>
-<a class="jxr_linenumber" name="L278" href="#L278">278</a>     <strong class="jxr_keyword">private</strong> <strong class="jxr_keyword">boolean</strong> appendComment(StringBuffer buf, <a href="../../../nom/tam/fits/HeaderCard.html">HeaderCard</a> card) {
+<a class="jxr_linenumber" name="L278" href="#L278">278</a>     <strong class="jxr_keyword">private</strong> <strong class="jxr_keyword">boolean</strong> appendComment(StringBuffer buf, <a name="HeaderCard" href="../../../nom/tam/fits/HeaderCard.html#HeaderCard">HeaderCard</a> card) {
 <a class="jxr_linenumber" name="L279" href="#L279">279</a>         String comment = card.getComment();
 <a class="jxr_linenumber" name="L280" href="#L280">280</a>         <strong class="jxr_keyword">if</strong> (comment == <strong class="jxr_keyword">null</strong>) {
 <a class="jxr_linenumber" name="L281" href="#L281">281</a>             <strong class="jxr_keyword">return</strong> <strong class="jxr_keyword">true</strong>;
@@ -401,7 +401,7 @@
 <a class="jxr_linenumber" name="L393" href="#L393">393</a> <em class="jxr_javadoccomment">     * @param buf       The string buffer in which we are building the header record.</em>
 <a class="jxr_linenumber" name="L394" href="#L394">394</a> <em class="jxr_javadoccomment">     * @param card      The header card to be formatted.</em>
 <a class="jxr_linenumber" name="L395" href="#L395">395</a> <em class="jxr_javadoccomment">     */</em>
-<a class="jxr_linenumber" name="L396" href="#L396">396</a>     <strong class="jxr_keyword">private</strong> <strong class="jxr_keyword">void</strong> appendLongStringComment(StringBuffer buf, <a href="../../../nom/tam/fits/HeaderCard.html">HeaderCard</a> card) {     
+<a class="jxr_linenumber" name="L396" href="#L396">396</a>     <strong class="jxr_keyword">private</strong> <strong class="jxr_keyword">void</strong> appendLongStringComment(StringBuffer buf, <a name="HeaderCard" href="../../../nom/tam/fits/HeaderCard.html#HeaderCard">HeaderCard</a> card) {     
 <a class="jxr_linenumber" name="L397" href="#L397">397</a>         <em class="jxr_comment">// We can wrap the comment to our delight, with CONTINUE!</em>
 <a class="jxr_linenumber" name="L398" href="#L398">398</a>         <strong class="jxr_keyword">int</strong> iLast = buf.length() - 1;
 <a class="jxr_linenumber" name="L399" href="#L399">399</a>         String comment = card.getComment();
@@ -485,7 +485,7 @@
 <a class="jxr_linenumber" name="L477" href="#L477">477</a> <em class="jxr_javadoccomment">     *                  from the number of characters deposited as each single quote in</em>
 <a class="jxr_linenumber" name="L478" href="#L478">478</a> <em class="jxr_javadoccomment">     *                  the input string is represented as 2 single quotes in the record.</em>
 <a class="jxr_linenumber" name="L479" href="#L479">479</a> <em class="jxr_javadoccomment">     */</em>
-<a class="jxr_linenumber" name="L480" href="#L480">480</a>     <strong class="jxr_keyword">private</strong> <strong class="jxr_keyword">int</strong> appendQuotedValue(StringBuffer buf, <a href="../../../nom/tam/fits/HeaderCard.html">HeaderCard</a> card, <strong class="jxr_keyword">int</strong> from) {
+<a class="jxr_linenumber" name="L480" href="#L480">480</a>     <strong class="jxr_keyword">private</strong> <strong class="jxr_keyword">int</strong> appendQuotedValue(StringBuffer buf, <a name="HeaderCard" href="../../../nom/tam/fits/HeaderCard.html#HeaderCard">HeaderCard</a> card, <strong class="jxr_keyword">int</strong> from) {
 <a class="jxr_linenumber" name="L481" href="#L481">481</a>         <em class="jxr_comment">// Always leave room for an extra &amp; character at the end...</em>
 <a class="jxr_linenumber" name="L482" href="#L482">482</a>         <strong class="jxr_keyword">int</strong> available = getAvailable(buf) - QUOTES_LENGTH;
 <a class="jxr_linenumber" name="L483" href="#L483">483</a>         
@@ -527,7 +527,7 @@
 <a class="jxr_linenumber" name="L519" href="#L519">519</a>         }
 <a class="jxr_linenumber" name="L520" href="#L520">520</a>         
 <a class="jxr_linenumber" name="L521" href="#L521">521</a>         <strong class="jxr_keyword">if</strong> (!FitsFactory.isLongStringsEnabled()) {
-<a class="jxr_linenumber" name="L522" href="#L522">522</a>             <strong class="jxr_keyword">throw</strong> <strong class="jxr_keyword">new</strong> <a href="../../../nom/tam/fits/LongStringsNotEnabledException.html">LongStringsNotEnabledException</a>(card.getKey() + <span class="jxr_string">"= "</span> + card.getValue());
+<a class="jxr_linenumber" name="L522" href="#L522">522</a>             <strong class="jxr_keyword">throw</strong> <strong class="jxr_keyword">new</strong> <a name="LongStringsNotEnabledException" href="../../../nom/tam/fits/LongStringsNotEnabledException.html#LongStringsNotEnabledException">LongStringsNotEnabledException</a>(card.getKey() + <span class="jxr_string">"= "</span> + card.getValue());
 <a class="jxr_linenumber" name="L523" href="#L523">523</a>         }
 <a class="jxr_linenumber" name="L524" href="#L524">524</a>         
 <a class="jxr_linenumber" name="L525" href="#L525">525</a>         <em class="jxr_comment">// Now, we definitely need space for '&amp;' at the end...</em>

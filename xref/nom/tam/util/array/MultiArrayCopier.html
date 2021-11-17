@@ -59,7 +59,7 @@
 <a class="jxr_linenumber" name="L51" href="#L51">51</a>  
 <a class="jxr_linenumber" name="L52" href="#L52">52</a>      <strong class="jxr_keyword">private</strong> <strong class="jxr_keyword">final</strong> MultiArrayCopyFactory&lt;Source, Destination&gt; copyFactory;
 <a class="jxr_linenumber" name="L53" href="#L53">53</a>  
-<a class="jxr_linenumber" name="L54" href="#L54">54</a>      <strong class="jxr_keyword">private</strong> <a href="../../../../nom/tam/util/array/MultiArrayCopier.html">MultiArrayCopier</a>(Source fromArray, Destination toArray) {
+<a class="jxr_linenumber" name="L54" href="#L54">54</a>      <strong class="jxr_keyword">private</strong> <a name="MultiArrayCopier" href="../../../../nom/tam/util/array/MultiArrayCopier.html#MultiArrayCopier">MultiArrayCopier</a>(Source fromArray, Destination toArray) {
 <a class="jxr_linenumber" name="L55" href="#L55">55</a>          <strong class="jxr_keyword">this</strong>.from = <strong class="jxr_keyword">new</strong> MultiArrayIterator&lt;&gt;(fromArray);
 <a class="jxr_linenumber" name="L56" href="#L56">56</a>          <strong class="jxr_keyword">this</strong>.to = <strong class="jxr_keyword">new</strong> MultiArrayIterator&lt;&gt;(toArray);
 <a class="jxr_linenumber" name="L57" href="#L57">57</a>          <strong class="jxr_keyword">this</strong>.copyFactory = (MultiArrayCopyFactory&lt;Source, Destination&gt;) MultiArrayCopyFactory.select(<strong class="jxr_keyword">this</strong>.from.deepComponentType(), <strong class="jxr_keyword">this</strong>.to.deepComponentType());

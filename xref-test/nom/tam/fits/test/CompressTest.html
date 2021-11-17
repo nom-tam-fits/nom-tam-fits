@@ -76,9 +76,9 @@
 <a class="jxr_linenumber" name="L68" href="#L68">68</a>  <em class="jxr_javadoccomment">/**</em>
 <a class="jxr_linenumber" name="L69" href="#L69">69</a>  <em class="jxr_javadoccomment"> * Test reading .Z and .gz compressed files.</em>
 <a class="jxr_linenumber" name="L70" href="#L70">70</a>  <em class="jxr_javadoccomment"> */</em>
-<a class="jxr_linenumber" name="L71" href="#L71">71</a>  <strong class="jxr_keyword">public</strong> <strong class="jxr_keyword">class</strong> <a href="../../../../nom/tam/fits/test/CompressTest.html">CompressTest</a> {
+<a class="jxr_linenumber" name="L71" href="#L71">71</a>  <strong class="jxr_keyword">public</strong> <strong class="jxr_keyword">class</strong> <a name="CompressTest" href="../../../../nom/tam/fits/test/CompressTest.html#CompressTest">CompressTest</a> {
 <a class="jxr_linenumber" name="L72" href="#L72">72</a>  
-<a class="jxr_linenumber" name="L73" href="#L73">73</a>      <strong class="jxr_keyword">static</strong> <strong class="jxr_keyword">class</strong> <a href="../../../../nom/tam/fits/test/CompressTest.html">DummyProcess</a> <strong class="jxr_keyword">extends</strong> Process {
+<a class="jxr_linenumber" name="L73" href="#L73">73</a>      <strong class="jxr_keyword">static</strong> <strong class="jxr_keyword">class</strong> DummyProcess <strong class="jxr_keyword">extends</strong> Process {
 <a class="jxr_linenumber" name="L74" href="#L74">74</a>  
 <a class="jxr_linenumber" name="L75" href="#L75">75</a>          <strong class="jxr_keyword">private</strong> <strong class="jxr_keyword">final</strong> OutputStream out;
 <a class="jxr_linenumber" name="L76" href="#L76">76</a>  
@@ -86,7 +86,7 @@
 <a class="jxr_linenumber" name="L78" href="#L78">78</a>  
 <a class="jxr_linenumber" name="L79" href="#L79">79</a>          <strong class="jxr_keyword">private</strong> <strong class="jxr_keyword">final</strong> InputStream err;
 <a class="jxr_linenumber" name="L80" href="#L80">80</a>  
-<a class="jxr_linenumber" name="L81" href="#L81">81</a>          <strong class="jxr_keyword">public</strong> <a href="../../../../nom/tam/fits/test/CompressTest.html">DummyProcess</a>(InputStream in, OutputStream out, InputStream err) {
+<a class="jxr_linenumber" name="L81" href="#L81">81</a>          <strong class="jxr_keyword">public</strong> DummyProcess(InputStream in, OutputStream out, InputStream err) {
 <a class="jxr_linenumber" name="L82" href="#L82">82</a>              <strong class="jxr_keyword">super</strong>();
 <a class="jxr_linenumber" name="L83" href="#L83">83</a>              <strong class="jxr_keyword">this</strong>.in = in;
 <a class="jxr_linenumber" name="L84" href="#L84">84</a>              <strong class="jxr_keyword">this</strong>.out = out;
@@ -438,11 +438,11 @@
 <a class="jxr_linenumber" name="L430" href="#L430">430</a>     <em class="jxr_javadoccomment">/**</em>
 <a class="jxr_linenumber" name="L431" href="#L431">431</a> <em class="jxr_javadoccomment">     * Inconsistent implementation of File that leads to an IOException when</em>
 <a class="jxr_linenumber" name="L432" href="#L432">432</a> <em class="jxr_javadoccomment">     */</em>
-<a class="jxr_linenumber" name="L433" href="#L433">433</a>     <strong class="jxr_keyword">private</strong> <strong class="jxr_keyword">static</strong> <strong class="jxr_keyword">class</strong> <a href="../../../../nom/tam/fits/test/CompressTest.html">PseudoFile</a> <strong class="jxr_keyword">extends</strong> File {
+<a class="jxr_linenumber" name="L433" href="#L433">433</a>     <strong class="jxr_keyword">private</strong> <strong class="jxr_keyword">static</strong> <strong class="jxr_keyword">class</strong> PseudoFile <strong class="jxr_keyword">extends</strong> File {
 <a class="jxr_linenumber" name="L434" href="#L434">434</a> 
 <a class="jxr_linenumber" name="L435" href="#L435">435</a>         <strong class="jxr_keyword">private</strong> <strong class="jxr_keyword">static</strong> <strong class="jxr_keyword">final</strong> <strong class="jxr_keyword">long</strong> serialVersionUID = 1L;
 <a class="jxr_linenumber" name="L436" href="#L436">436</a> 
-<a class="jxr_linenumber" name="L437" href="#L437">437</a>         <strong class="jxr_keyword">public</strong> <a href="../../../../nom/tam/fits/test/CompressTest.html">PseudoFile</a>(String pathname) {
+<a class="jxr_linenumber" name="L437" href="#L437">437</a>         <strong class="jxr_keyword">public</strong> PseudoFile(String pathname) {
 <a class="jxr_linenumber" name="L438" href="#L438">438</a>             <strong class="jxr_keyword">super</strong>(pathname);
 <a class="jxr_linenumber" name="L439" href="#L439">439</a>         }
 <a class="jxr_linenumber" name="L440" href="#L440">440</a> 
@@ -454,7 +454,7 @@
 <a class="jxr_linenumber" name="L446" href="#L446">446</a> 
 <a class="jxr_linenumber" name="L447" href="#L447">447</a>     @Test
 <a class="jxr_linenumber" name="L448" href="#L448">448</a>     <strong class="jxr_keyword">public</strong> <strong class="jxr_keyword">void</strong> testIsCompressedSpecialCase() <strong class="jxr_keyword">throws</strong> Exception {
-<a class="jxr_linenumber" name="L449" href="#L449">449</a>         assertFalse(CompressionManager.isCompressed(<strong class="jxr_keyword">new</strong> <a href="../../../../nom/tam/fits/test/CompressTest.html">PseudoFile</a>(<span class="jxr_string">"Wrong\0000Name"</span>)));
+<a class="jxr_linenumber" name="L449" href="#L449">449</a>         assertFalse(CompressionManager.isCompressed(<strong class="jxr_keyword">new</strong> PseudoFile(<span class="jxr_string">"Wrong\0000Name"</span>)));
 <a class="jxr_linenumber" name="L450" href="#L450">450</a>     }
 <a class="jxr_linenumber" name="L451" href="#L451">451</a> 
 <a class="jxr_linenumber" name="L452" href="#L452">452</a>     @Test
@@ -542,7 +542,7 @@
 <a class="jxr_linenumber" name="L534" href="#L534">534</a>         InputStream err = <strong class="jxr_keyword">new</strong> ByteArrayInputStream(<strong class="jxr_keyword">new</strong> byte[0]);
 <a class="jxr_linenumber" name="L535" href="#L535">535</a>         InputStream compressed = <strong class="jxr_keyword">new</strong> ByteArrayInputStream(<strong class="jxr_keyword">new</strong> byte[0]);
 <a class="jxr_linenumber" name="L536" href="#L536">536</a>         InputStream in = <strong class="jxr_keyword">new</strong> ByteArrayInputStream(<strong class="jxr_keyword">new</strong> byte[0]);
-<a class="jxr_linenumber" name="L537" href="#L537">537</a>         CloseIS close = <strong class="jxr_keyword">new</strong> CloseIS(<strong class="jxr_keyword">new</strong> <a href="../../../../nom/tam/fits/test/CompressTest.html">DummyProcess</a>(in, out, err), compressed);
+<a class="jxr_linenumber" name="L537" href="#L537">537</a>         CloseIS close = <strong class="jxr_keyword">new</strong> CloseIS(<strong class="jxr_keyword">new</strong> DummyProcess(in, out, err), compressed);
 <a class="jxr_linenumber" name="L538" href="#L538">538</a>         close.read();
 <a class="jxr_linenumber" name="L539" href="#L539">539</a>     }
 <a class="jxr_linenumber" name="L540" href="#L540">540</a> 
@@ -559,7 +559,7 @@
 <a class="jxr_linenumber" name="L551" href="#L551">551</a>         InputStream err = <strong class="jxr_keyword">new</strong> ByteArrayInputStream(<span class="jxr_string">"Error"</span>.getBytes());
 <a class="jxr_linenumber" name="L552" href="#L552">552</a>         InputStream compressed = <strong class="jxr_keyword">new</strong> ByteArrayInputStream(<strong class="jxr_keyword">new</strong> byte[100]);
 <a class="jxr_linenumber" name="L553" href="#L553">553</a>         InputStream in = <strong class="jxr_keyword">new</strong> ByteArrayInputStream(<strong class="jxr_keyword">new</strong> byte[0]);
-<a class="jxr_linenumber" name="L554" href="#L554">554</a>         CloseIS close = <strong class="jxr_keyword">new</strong> CloseIS(<strong class="jxr_keyword">new</strong> <a href="../../../../nom/tam/fits/test/CompressTest.html">DummyProcess</a>(in, out, err), compressed);
+<a class="jxr_linenumber" name="L554" href="#L554">554</a>         CloseIS close = <strong class="jxr_keyword">new</strong> CloseIS(<strong class="jxr_keyword">new</strong> DummyProcess(in, out, err), compressed);
 <a class="jxr_linenumber" name="L555" href="#L555">555</a>         Thread.sleep(10L);
 <a class="jxr_linenumber" name="L556" href="#L556">556</a>         <strong class="jxr_keyword">while</strong> (err.available() &gt; 0 || compressed.available() &gt; 0) {
 <a class="jxr_linenumber" name="L557" href="#L557">557</a>             Thread.sleep(100L);
@@ -588,7 +588,7 @@
 <a class="jxr_linenumber" name="L580" href="#L580">580</a>                 <strong class="jxr_keyword">return</strong> -1;
 <a class="jxr_linenumber" name="L581" href="#L581">581</a>             }
 <a class="jxr_linenumber" name="L582" href="#L582">582</a>         };
-<a class="jxr_linenumber" name="L583" href="#L583">583</a>         CloseIS close = <strong class="jxr_keyword">new</strong> CloseIS(<strong class="jxr_keyword">new</strong> <a href="../../../../nom/tam/fits/test/CompressTest.html">DummyProcess</a>(in, out, err), compressed);
+<a class="jxr_linenumber" name="L583" href="#L583">583</a>         CloseIS close = <strong class="jxr_keyword">new</strong> CloseIS(<strong class="jxr_keyword">new</strong> DummyProcess(in, out, err), compressed);
 <a class="jxr_linenumber" name="L584" href="#L584">584</a>         Thread.sleep(10L);
 <a class="jxr_linenumber" name="L585" href="#L585">585</a>         <strong class="jxr_keyword">while</strong> (err.available() &gt; 0 || compressed.available() &gt; 0) {
 <a class="jxr_linenumber" name="L586" href="#L586">586</a>             Thread.sleep(100L);
@@ -626,7 +626,7 @@
 <a class="jxr_linenumber" name="L618" href="#L618">618</a>             }
 <a class="jxr_linenumber" name="L619" href="#L619">619</a>         };
 <a class="jxr_linenumber" name="L620" href="#L620">620</a>         InputStream in = <strong class="jxr_keyword">new</strong> ByteArrayInputStream(<strong class="jxr_keyword">new</strong> byte[0]);
-<a class="jxr_linenumber" name="L621" href="#L621">621</a>         CloseIS close = <strong class="jxr_keyword">new</strong> CloseIS(<strong class="jxr_keyword">new</strong> <a href="../../../../nom/tam/fits/test/CompressTest.html">DummyProcess</a>(in, out, err), compressed);
+<a class="jxr_linenumber" name="L621" href="#L621">621</a>         CloseIS close = <strong class="jxr_keyword">new</strong> CloseIS(<strong class="jxr_keyword">new</strong> DummyProcess(in, out, err), compressed);
 <a class="jxr_linenumber" name="L622" href="#L622">622</a> 
 <a class="jxr_linenumber" name="L623" href="#L623">623</a>         Exception actual = <strong class="jxr_keyword">null</strong>;
 <a class="jxr_linenumber" name="L624" href="#L624">624</a>         <strong class="jxr_keyword">try</strong> {
@@ -651,7 +651,7 @@
 <a class="jxr_linenumber" name="L643" href="#L643">643</a>             }
 <a class="jxr_linenumber" name="L644" href="#L644">644</a>         };
 <a class="jxr_linenumber" name="L645" href="#L645">645</a>         InputStream in = <strong class="jxr_keyword">new</strong> ByteArrayInputStream(<strong class="jxr_keyword">new</strong> byte[0]);
-<a class="jxr_linenumber" name="L646" href="#L646">646</a>         CloseIS close = <strong class="jxr_keyword">new</strong> CloseIS(<strong class="jxr_keyword">new</strong> <a href="../../../../nom/tam/fits/test/CompressTest.html">DummyProcess</a>(in, out, err), compressed);
+<a class="jxr_linenumber" name="L646" href="#L646">646</a>         CloseIS close = <strong class="jxr_keyword">new</strong> CloseIS(<strong class="jxr_keyword">new</strong> DummyProcess(in, out, err), compressed);
 <a class="jxr_linenumber" name="L647" href="#L647">647</a> 
 <a class="jxr_linenumber" name="L648" href="#L648">648</a>         Exception actual = <strong class="jxr_keyword">null</strong>;
 <a class="jxr_linenumber" name="L649" href="#L649">649</a>         <strong class="jxr_keyword">try</strong> {
@@ -677,7 +677,7 @@
 <a class="jxr_linenumber" name="L669" href="#L669">669</a>         };
 <a class="jxr_linenumber" name="L670" href="#L670">670</a>         InputStream compressed = <strong class="jxr_keyword">new</strong> ByteArrayInputStream(<strong class="jxr_keyword">new</strong> byte[100]);
 <a class="jxr_linenumber" name="L671" href="#L671">671</a>         InputStream in = <strong class="jxr_keyword">new</strong> ByteArrayInputStream(<strong class="jxr_keyword">new</strong> byte[0]);
-<a class="jxr_linenumber" name="L672" href="#L672">672</a>         CloseIS close = <strong class="jxr_keyword">new</strong> CloseIS(<strong class="jxr_keyword">new</strong> <a href="../../../../nom/tam/fits/test/CompressTest.html">DummyProcess</a>(in, out, err), compressed);
+<a class="jxr_linenumber" name="L672" href="#L672">672</a>         CloseIS close = <strong class="jxr_keyword">new</strong> CloseIS(<strong class="jxr_keyword">new</strong> DummyProcess(in, out, err), compressed);
 <a class="jxr_linenumber" name="L673" href="#L673">673</a> 
 <a class="jxr_linenumber" name="L674" href="#L674">674</a>         Exception actual = <strong class="jxr_keyword">null</strong>;
 <a class="jxr_linenumber" name="L675" href="#L675">675</a>         <strong class="jxr_keyword">try</strong> {
@@ -695,7 +695,7 @@
 <a class="jxr_linenumber" name="L687" href="#L687">687</a>         InputStream err = <strong class="jxr_keyword">new</strong> ByteArrayInputStream(<strong class="jxr_keyword">new</strong> byte[0]);
 <a class="jxr_linenumber" name="L688" href="#L688">688</a>         InputStream compressed = <strong class="jxr_keyword">new</strong> ByteArrayInputStream(<strong class="jxr_keyword">new</strong> byte[0]);
 <a class="jxr_linenumber" name="L689" href="#L689">689</a>         InputStream in = <strong class="jxr_keyword">new</strong> ByteArrayInputStream(<strong class="jxr_keyword">new</strong> byte[0]);
-<a class="jxr_linenumber" name="L690" href="#L690">690</a>         CloseIS close = <strong class="jxr_keyword">new</strong> CloseIS(<strong class="jxr_keyword">new</strong> <a href="../../../../nom/tam/fits/test/CompressTest.html">DummyProcess</a>(in, out, err) {
+<a class="jxr_linenumber" name="L690" href="#L690">690</a>         CloseIS close = <strong class="jxr_keyword">new</strong> CloseIS(<strong class="jxr_keyword">new</strong> DummyProcess(in, out, err) {
 <a class="jxr_linenumber" name="L691" href="#L691">691</a> 
 <a class="jxr_linenumber" name="L692" href="#L692">692</a>             @Override
 <a class="jxr_linenumber" name="L693" href="#L693">693</a>             <strong class="jxr_keyword">public</strong> <strong class="jxr_keyword">int</strong> exitValue() {
@@ -711,7 +711,7 @@
 <a class="jxr_linenumber" name="L703" href="#L703">703</a>         InputStream err = <strong class="jxr_keyword">new</strong> ByteArrayInputStream(<strong class="jxr_keyword">new</strong> byte[0]);
 <a class="jxr_linenumber" name="L704" href="#L704">704</a>         InputStream compressed = <strong class="jxr_keyword">new</strong> ByteArrayInputStream(<strong class="jxr_keyword">new</strong> byte[0]);
 <a class="jxr_linenumber" name="L705" href="#L705">705</a>         InputStream in = <strong class="jxr_keyword">new</strong> ByteArrayInputStream(<strong class="jxr_keyword">new</strong> byte[0]);
-<a class="jxr_linenumber" name="L706" href="#L706">706</a>         CloseIS close = <strong class="jxr_keyword">new</strong> CloseIS(<strong class="jxr_keyword">new</strong> <a href="../../../../nom/tam/fits/test/CompressTest.html">DummyProcess</a>(in, out, err) {
+<a class="jxr_linenumber" name="L706" href="#L706">706</a>         CloseIS close = <strong class="jxr_keyword">new</strong> CloseIS(<strong class="jxr_keyword">new</strong> DummyProcess(in, out, err) {
 <a class="jxr_linenumber" name="L707" href="#L707">707</a> 
 <a class="jxr_linenumber" name="L708" href="#L708">708</a>             @Override
 <a class="jxr_linenumber" name="L709" href="#L709">709</a>             <strong class="jxr_keyword">public</strong> <strong class="jxr_keyword">int</strong> exitValue() {

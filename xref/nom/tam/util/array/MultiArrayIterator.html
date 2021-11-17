@@ -56,12 +56,12 @@
 <a class="jxr_linenumber" name="L48" href="#L48">48</a>  
 <a class="jxr_linenumber" name="L49" href="#L49">49</a>      <strong class="jxr_keyword">private</strong> <strong class="jxr_keyword">boolean</strong> baseNextCalled = false;
 <a class="jxr_linenumber" name="L50" href="#L50">50</a>  
-<a class="jxr_linenumber" name="L51" href="#L51">51</a>      <strong class="jxr_keyword">private</strong> <strong class="jxr_keyword">final</strong> <a href="../../../../nom/tam/util/array/MultiArrayPointer.html">MultiArrayPointer</a> pointer;
+<a class="jxr_linenumber" name="L51" href="#L51">51</a>      <strong class="jxr_keyword">private</strong> <strong class="jxr_keyword">final</strong> <a name="MultiArrayPointer" href="../../../../nom/tam/util/array/MultiArrayPointer.html#MultiArrayPointer">MultiArrayPointer</a> pointer;
 <a class="jxr_linenumber" name="L52" href="#L52">52</a>  
-<a class="jxr_linenumber" name="L53" href="#L53">53</a>      <strong class="jxr_keyword">public</strong> <a href="../../../../nom/tam/util/array/MultiArrayIterator.html">MultiArrayIterator</a>(BaseArray baseArray) {
+<a class="jxr_linenumber" name="L53" href="#L53">53</a>      <strong class="jxr_keyword">public</strong> <a name="MultiArrayIterator" href="../../../../nom/tam/util/array/MultiArrayIterator.html#MultiArrayIterator">MultiArrayIterator</a>(BaseArray baseArray) {
 <a class="jxr_linenumber" name="L54" href="#L54">54</a>          <strong class="jxr_keyword">this</strong>.baseArray = baseArray;
 <a class="jxr_linenumber" name="L55" href="#L55">55</a>          <strong class="jxr_keyword">this</strong>.baseIsNoSubArray = !MultiArrayPointer.isSubArray(<strong class="jxr_keyword">this</strong>.baseArray);
-<a class="jxr_linenumber" name="L56" href="#L56">56</a>          <strong class="jxr_keyword">this</strong>.pointer = <strong class="jxr_keyword">new</strong> <a href="../../../../nom/tam/util/array/MultiArrayPointer.html">MultiArrayPointer</a>(<strong class="jxr_keyword">this</strong>.baseArray);
+<a class="jxr_linenumber" name="L56" href="#L56">56</a>          <strong class="jxr_keyword">this</strong>.pointer = <strong class="jxr_keyword">new</strong> <a name="MultiArrayPointer" href="../../../../nom/tam/util/array/MultiArrayPointer.html#MultiArrayPointer">MultiArrayPointer</a>(<strong class="jxr_keyword">this</strong>.baseArray);
 <a class="jxr_linenumber" name="L57" href="#L57">57</a>      }
 <a class="jxr_linenumber" name="L58" href="#L58">58</a>  
 <a class="jxr_linenumber" name="L59" href="#L59">59</a>      <strong class="jxr_keyword">public</strong> Class&lt;?&gt; deepComponentType() {

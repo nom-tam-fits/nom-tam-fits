@@ -54,7 +54,7 @@
 <a class="jxr_linenumber" name="L46" href="#L46">46</a>  <em class="jxr_javadoccomment"> * Generally the FITS file have already added any HDUs prior to the truncated</em>
 <a class="jxr_linenumber" name="L47" href="#L47">47</a>  <em class="jxr_javadoccomment"> * one.</em>
 <a class="jxr_linenumber" name="L48" href="#L48">48</a>  <em class="jxr_javadoccomment"> */</em>
-<a class="jxr_linenumber" name="L49" href="#L49">49</a>  <strong class="jxr_keyword">public</strong> <strong class="jxr_keyword">class</strong> <a href="../../../nom/tam/fits/PaddingException.html">PaddingException</a> <strong class="jxr_keyword">extends</strong> <a href="../../../nom/tam/fits/FitsException.html">FitsException</a> {
+<a class="jxr_linenumber" name="L49" href="#L49">49</a>  <strong class="jxr_keyword">public</strong> <strong class="jxr_keyword">class</strong> <a name="PaddingException" href="../../../nom/tam/fits/PaddingException.html#PaddingException">PaddingException</a> <strong class="jxr_keyword">extends</strong> <a name="FitsException" href="../../../nom/tam/fits/FitsException.html#FitsException">FitsException</a> {
 <a class="jxr_linenumber" name="L50" href="#L50">50</a>  
 <a class="jxr_linenumber" name="L51" href="#L51">51</a>  
 <a class="jxr_linenumber" name="L52" href="#L52">52</a>      <em class="jxr_javadoccomment">/**</em>
@@ -66,7 +66,7 @@
 <a class="jxr_linenumber" name="L58" href="#L58">58</a>  <em class="jxr_javadoccomment">     */</em>
 <a class="jxr_linenumber" name="L59" href="#L59">59</a>      <strong class="jxr_keyword">private</strong> BasicHDU&lt;?&gt; truncatedHDU;
 <a class="jxr_linenumber" name="L60" href="#L60">60</a>  
-<a class="jxr_linenumber" name="L61" href="#L61">61</a>      <strong class="jxr_keyword">public</strong> <a href="../../../nom/tam/fits/PaddingException.html">PaddingException</a>(String msg, <a href="../../../nom/tam/fits/Data.html">Data</a> data, Exception cause) <strong class="jxr_keyword">throws</strong> FitsException {
+<a class="jxr_linenumber" name="L61" href="#L61">61</a>      <strong class="jxr_keyword">public</strong> <a name="PaddingException" href="../../../nom/tam/fits/PaddingException.html#PaddingException">PaddingException</a>(String msg, <a name="Data" href="../../../nom/tam/fits/Data.html#Data">Data</a> data, Exception cause) <strong class="jxr_keyword">throws</strong> <a name="FitsException" href="../../../nom/tam/fits/FitsException.html#FitsException">FitsException</a> {
 <a class="jxr_linenumber" name="L62" href="#L62">62</a>          <strong class="jxr_keyword">super</strong>(msg, cause);
 <a class="jxr_linenumber" name="L63" href="#L63">63</a>          <strong class="jxr_keyword">try</strong> {
 <a class="jxr_linenumber" name="L64" href="#L64">64</a>              <strong class="jxr_keyword">this</strong>.truncatedHDU = FitsFactory.hduFactory(data.getKernel());
@@ -80,7 +80,7 @@
 <a class="jxr_linenumber" name="L72" href="#L72">72</a>          <strong class="jxr_keyword">return</strong> <strong class="jxr_keyword">this</strong>.truncatedHDU;
 <a class="jxr_linenumber" name="L73" href="#L73">73</a>      }
 <a class="jxr_linenumber" name="L74" href="#L74">74</a>  
-<a class="jxr_linenumber" name="L75" href="#L75">75</a>      <strong class="jxr_keyword">void</strong> updateHeader(<a href="../../../nom/tam/fits/Header.html">Header</a> hdr) <strong class="jxr_keyword">throws</strong> FitsException {
+<a class="jxr_linenumber" name="L75" href="#L75">75</a>      <strong class="jxr_keyword">void</strong> updateHeader(<a name="Header" href="../../../nom/tam/fits/Header.html#Header">Header</a> hdr) <strong class="jxr_keyword">throws</strong> <a name="FitsException" href="../../../nom/tam/fits/FitsException.html#FitsException">FitsException</a> {
 <a class="jxr_linenumber" name="L76" href="#L76">76</a>          <strong class="jxr_keyword">this</strong>.truncatedHDU = FitsFactory.hduFactory(hdr, <strong class="jxr_keyword">this</strong>.truncatedHDU.getData());
 <a class="jxr_linenumber" name="L77" href="#L77">77</a>      }
 <a class="jxr_linenumber" name="L78" href="#L78">78</a>  }

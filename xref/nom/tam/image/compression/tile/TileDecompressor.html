@@ -46,16 +46,16 @@
 <a class="jxr_linenumber" name="L38" href="#L38">38</a>  <strong class="jxr_keyword">import</strong> nom.tam.image.compression.tile.mask.NullPixelMaskRestorer;
 <a class="jxr_linenumber" name="L39" href="#L39">39</a>  <strong class="jxr_keyword">import</strong> nom.tam.image.tile.operation.TileArea;
 <a class="jxr_linenumber" name="L40" href="#L40">40</a>  
-<a class="jxr_linenumber" name="L41" href="#L41">41</a>  <strong class="jxr_keyword">public</strong> <strong class="jxr_keyword">class</strong> <a href="../../../../../nom/tam/image/compression/tile/TileDecompressor.html">TileDecompressor</a> <strong class="jxr_keyword">extends</strong> <a href="../../../../../nom/tam/image/compression/tile/TileCompressionOperation.html">TileCompressionOperation</a> {
+<a class="jxr_linenumber" name="L41" href="#L41">41</a>  <strong class="jxr_keyword">public</strong> <strong class="jxr_keyword">class</strong> <a name="TileDecompressor" href="../../../../../nom/tam/image/compression/tile/TileDecompressor.html#TileDecompressor">TileDecompressor</a> <strong class="jxr_keyword">extends</strong> <a name="TileCompressionOperation" href="../../../../../nom/tam/image/compression/tile/TileCompressionOperation.html#TileCompressionOperation">TileCompressionOperation</a> {
 <a class="jxr_linenumber" name="L42" href="#L42">42</a>  
 <a class="jxr_linenumber" name="L43" href="#L43">43</a>      <em class="jxr_javadoccomment">/**</em>
 <a class="jxr_linenumber" name="L44" href="#L44">44</a>  <em class="jxr_javadoccomment">     * logger to log to.</em>
 <a class="jxr_linenumber" name="L45" href="#L45">45</a>  <em class="jxr_javadoccomment">     */</em>
 <a class="jxr_linenumber" name="L46" href="#L46">46</a>      <strong class="jxr_keyword">private</strong> <strong class="jxr_keyword">static</strong> <strong class="jxr_keyword">final</strong> Logger LOG = Logger.getLogger(TileDecompressor.<strong class="jxr_keyword">class</strong>.getName());
 <a class="jxr_linenumber" name="L47" href="#L47">47</a>  
-<a class="jxr_linenumber" name="L48" href="#L48">48</a>      <strong class="jxr_keyword">private</strong> <a href="../../../../../nom/tam/image/compression/tile/mask/NullPixelMaskRestorer.html">NullPixelMaskRestorer</a> nullPixelMaskRestorer;
+<a class="jxr_linenumber" name="L48" href="#L48">48</a>      <strong class="jxr_keyword">private</strong> <a name="NullPixelMaskRestorer" href="../../../../../nom/tam/image/compression/tile/mask/NullPixelMaskRestorer.html#NullPixelMaskRestorer">NullPixelMaskRestorer</a> nullPixelMaskRestorer;
 <a class="jxr_linenumber" name="L49" href="#L49">49</a>  
-<a class="jxr_linenumber" name="L50" href="#L50">50</a>      <strong class="jxr_keyword">protected</strong> <a href="../../../../../nom/tam/image/compression/tile/TileDecompressor.html">TileDecompressor</a>(<a href="../../../../../nom/tam/image/compression/tile/TiledImageCompressionOperation.html">TiledImageCompressionOperation</a> array, <strong class="jxr_keyword">int</strong> tileIndex, <a href="../../../../../nom/tam/image/tile/operation/TileArea.html">TileArea</a> area) {
+<a class="jxr_linenumber" name="L50" href="#L50">50</a>      <strong class="jxr_keyword">protected</strong> <a name="TileDecompressor" href="../../../../../nom/tam/image/compression/tile/TileDecompressor.html#TileDecompressor">TileDecompressor</a>(<a name="TiledImageCompressionOperation" href="../../../../../nom/tam/image/compression/tile/TiledImageCompressionOperation.html#TiledImageCompressionOperation">TiledImageCompressionOperation</a> array, <strong class="jxr_keyword">int</strong> tileIndex, <a name="TileArea" href="../../../../../nom/tam/image/tile/operation/TileArea.html#TileArea">TileArea</a> area) {
 <a class="jxr_linenumber" name="L51" href="#L51">51</a>          <strong class="jxr_keyword">super</strong>(array, tileIndex, area);
 <a class="jxr_linenumber" name="L52" href="#L52">52</a>      }
 <a class="jxr_linenumber" name="L53" href="#L53">53</a>  
@@ -85,7 +85,7 @@
 <a class="jxr_linenumber" name="L77" href="#L77">77</a>      }
 <a class="jxr_linenumber" name="L78" href="#L78">78</a>  
 <a class="jxr_linenumber" name="L79" href="#L79">79</a>      @Override
-<a class="jxr_linenumber" name="L80" href="#L80">80</a>      <strong class="jxr_keyword">protected</strong> <a href="../../../../../nom/tam/image/compression/tile/mask/NullPixelMaskRestorer.html">NullPixelMaskRestorer</a> createImageNullPixelMask(<a href="../../../../../nom/tam/image/compression/tile/mask/ImageNullPixelMask.html">ImageNullPixelMask</a> imageNullPixelMask) {
+<a class="jxr_linenumber" name="L80" href="#L80">80</a>      <strong class="jxr_keyword">protected</strong> <a name="NullPixelMaskRestorer" href="../../../../../nom/tam/image/compression/tile/mask/NullPixelMaskRestorer.html#NullPixelMaskRestorer">NullPixelMaskRestorer</a> createImageNullPixelMask(<a name="ImageNullPixelMask" href="../../../../../nom/tam/image/compression/tile/mask/ImageNullPixelMask.html#ImageNullPixelMask">ImageNullPixelMask</a> imageNullPixelMask) {
 <a class="jxr_linenumber" name="L81" href="#L81">81</a>          <strong class="jxr_keyword">if</strong> (imageNullPixelMask != <strong class="jxr_keyword">null</strong>) {
 <a class="jxr_linenumber" name="L82" href="#L82">82</a>              <strong class="jxr_keyword">this</strong>.nullPixelMaskRestorer = imageNullPixelMask.createTileRestorer(getTileBuffer(), getTileIndex());
 <a class="jxr_linenumber" name="L83" href="#L83">83</a>          }

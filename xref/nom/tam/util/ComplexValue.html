@@ -63,18 +63,18 @@
 <a class="jxr_linenumber" name="L55" href="#L55">55</a>  <em class="jxr_javadoccomment"> * @since 1.16</em>
 <a class="jxr_linenumber" name="L56" href="#L56">56</a>  <em class="jxr_javadoccomment"> * </em>
 <a class="jxr_linenumber" name="L57" href="#L57">57</a>  <em class="jxr_javadoccomment"> */</em>
-<a class="jxr_linenumber" name="L58" href="#L58">58</a>  <strong class="jxr_keyword">public</strong> <strong class="jxr_keyword">class</strong> <a href="../../../nom/tam/util/ComplexValue.html">ComplexValue</a> {
+<a class="jxr_linenumber" name="L58" href="#L58">58</a>  <strong class="jxr_keyword">public</strong> <strong class="jxr_keyword">class</strong> <a name="ComplexValue" href="../../../nom/tam/util/ComplexValue.html#ComplexValue">ComplexValue</a> {
 <a class="jxr_linenumber" name="L59" href="#L59">59</a>      
 <a class="jxr_linenumber" name="L60" href="#L60">60</a>      <strong class="jxr_keyword">private</strong> <strong class="jxr_keyword">static</strong> <strong class="jxr_keyword">final</strong> Logger LOG = Logger.getLogger(ComplexValue.<strong class="jxr_keyword">class</strong>.getName());
 <a class="jxr_linenumber" name="L61" href="#L61">61</a>  
 <a class="jxr_linenumber" name="L62" href="#L62">62</a>      <em class="jxr_javadoccomment">/** The complex zero **/</em>
-<a class="jxr_linenumber" name="L63" href="#L63">63</a>      <strong class="jxr_keyword">public</strong> <strong class="jxr_keyword">static</strong> <strong class="jxr_keyword">final</strong> <a href="../../../nom/tam/util/ComplexValue.html">ComplexValue</a> ZERO = <strong class="jxr_keyword">new</strong> <a href="../../../nom/tam/util/ComplexValue.html">ComplexValue</a>(0.0, 0.0);
+<a class="jxr_linenumber" name="L63" href="#L63">63</a>      <strong class="jxr_keyword">public</strong> <strong class="jxr_keyword">static</strong> <strong class="jxr_keyword">final</strong> <a name="ComplexValue" href="../../../nom/tam/util/ComplexValue.html#ComplexValue">ComplexValue</a> ZERO = <strong class="jxr_keyword">new</strong> <a name="ComplexValue" href="../../../nom/tam/util/ComplexValue.html#ComplexValue">ComplexValue</a>(0.0, 0.0);
 <a class="jxr_linenumber" name="L64" href="#L64">64</a>      
 <a class="jxr_linenumber" name="L65" href="#L65">65</a>      <em class="jxr_javadoccomment">/** The complex unity along the real axis, or (1.0, 0.0) **/</em>
-<a class="jxr_linenumber" name="L66" href="#L66">66</a>      <strong class="jxr_keyword">public</strong> <strong class="jxr_keyword">static</strong> <strong class="jxr_keyword">final</strong> <a href="../../../nom/tam/util/ComplexValue.html">ComplexValue</a> ONE = <strong class="jxr_keyword">new</strong> <a href="../../../nom/tam/util/ComplexValue.html">ComplexValue</a>(1.0, 0.0);
+<a class="jxr_linenumber" name="L66" href="#L66">66</a>      <strong class="jxr_keyword">public</strong> <strong class="jxr_keyword">static</strong> <strong class="jxr_keyword">final</strong> <a name="ComplexValue" href="../../../nom/tam/util/ComplexValue.html#ComplexValue">ComplexValue</a> ONE = <strong class="jxr_keyword">new</strong> <a name="ComplexValue" href="../../../nom/tam/util/ComplexValue.html#ComplexValue">ComplexValue</a>(1.0, 0.0);
 <a class="jxr_linenumber" name="L67" href="#L67">67</a>      
 <a class="jxr_linenumber" name="L68" href="#L68">68</a>      <em class="jxr_javadoccomment">/** The unity along the imaginary axis &lt;i&gt;i&lt;/i&gt;, or (0.0, 1.0) **/</em>
-<a class="jxr_linenumber" name="L69" href="#L69">69</a>      <strong class="jxr_keyword">public</strong> <strong class="jxr_keyword">static</strong> <strong class="jxr_keyword">final</strong> <a href="../../../nom/tam/util/ComplexValue.html">ComplexValue</a> I = <strong class="jxr_keyword">new</strong> <a href="../../../nom/tam/util/ComplexValue.html">ComplexValue</a>(0.0, 1.0);
+<a class="jxr_linenumber" name="L69" href="#L69">69</a>      <strong class="jxr_keyword">public</strong> <strong class="jxr_keyword">static</strong> <strong class="jxr_keyword">final</strong> <a name="ComplexValue" href="../../../nom/tam/util/ComplexValue.html#ComplexValue">ComplexValue</a> I = <strong class="jxr_keyword">new</strong> <a name="ComplexValue" href="../../../nom/tam/util/ComplexValue.html#ComplexValue">ComplexValue</a>(0.0, 1.0);
 <a class="jxr_linenumber" name="L70" href="#L70">70</a>      
 <a class="jxr_linenumber" name="L71" href="#L71">71</a>      <em class="jxr_javadoccomment">/** The real and imaginary parts */</em>
 <a class="jxr_linenumber" name="L72" href="#L72">72</a>      <strong class="jxr_keyword">private</strong> <strong class="jxr_keyword">double</strong> re, im;
@@ -91,7 +91,7 @@
 <a class="jxr_linenumber" name="L83" href="#L83">83</a>  <em class="jxr_javadoccomment">     * @param re    the real part</em>
 <a class="jxr_linenumber" name="L84" href="#L84">84</a>  <em class="jxr_javadoccomment">     * @param im    thei maginary part</em>
 <a class="jxr_linenumber" name="L85" href="#L85">85</a>  <em class="jxr_javadoccomment">     */</em>
-<a class="jxr_linenumber" name="L86" href="#L86">86</a>      <strong class="jxr_keyword">public</strong> <a href="../../../nom/tam/util/ComplexValue.html">ComplexValue</a>(<strong class="jxr_keyword">double</strong> re, <strong class="jxr_keyword">double</strong> im) {
+<a class="jxr_linenumber" name="L86" href="#L86">86</a>      <strong class="jxr_keyword">public</strong> <a name="ComplexValue" href="../../../nom/tam/util/ComplexValue.html#ComplexValue">ComplexValue</a>(<strong class="jxr_keyword">double</strong> re, <strong class="jxr_keyword">double</strong> im) {
 <a class="jxr_linenumber" name="L87" href="#L87">87</a>          <strong class="jxr_keyword">this</strong>.re = re;
 <a class="jxr_linenumber" name="L88" href="#L88">88</a>          <strong class="jxr_keyword">this</strong>.im = im;
 <a class="jxr_linenumber" name="L89" href="#L89">89</a>      }
@@ -129,11 +129,11 @@
 <a class="jxr_linenumber" name="L121" href="#L121">121</a>             <strong class="jxr_keyword">return</strong> <strong class="jxr_keyword">true</strong>;
 <a class="jxr_linenumber" name="L122" href="#L122">122</a>         }
 <a class="jxr_linenumber" name="L123" href="#L123">123</a>         
-<a class="jxr_linenumber" name="L124" href="#L124">124</a>         <strong class="jxr_keyword">if</strong> (!(o instanceof ComplexValue)) {
+<a class="jxr_linenumber" name="L124" href="#L124">124</a>         <strong class="jxr_keyword">if</strong> (!(o instanceof <a name="ComplexValue" href="../../../nom/tam/util/ComplexValue.html#ComplexValue">ComplexValue</a>)) {
 <a class="jxr_linenumber" name="L125" href="#L125">125</a>             <strong class="jxr_keyword">return</strong> false;
 <a class="jxr_linenumber" name="L126" href="#L126">126</a>         }
 <a class="jxr_linenumber" name="L127" href="#L127">127</a>         
-<a class="jxr_linenumber" name="L128" href="#L128">128</a>         <a href="../../../nom/tam/util/ComplexValue.html">ComplexValue</a> z = (ComplexValue) o;
+<a class="jxr_linenumber" name="L128" href="#L128">128</a>         <a name="ComplexValue" href="../../../nom/tam/util/ComplexValue.html#ComplexValue">ComplexValue</a> z = (<a name="ComplexValue" href="../../../nom/tam/util/ComplexValue.html#ComplexValue">ComplexValue</a>) o;
 <a class="jxr_linenumber" name="L129" href="#L129">129</a>         <strong class="jxr_keyword">return</strong> z.re() == re() &amp;&amp; z.im() == im();        
 <a class="jxr_linenumber" name="L130" href="#L130">130</a>     }
 <a class="jxr_linenumber" name="L131" href="#L131">131</a>     
@@ -176,7 +176,7 @@
 <a class="jxr_linenumber" name="L168" href="#L168">168</a> <em class="jxr_javadoccomment">     * @see FlexFormat</em>
 <a class="jxr_linenumber" name="L169" href="#L169">169</a> <em class="jxr_javadoccomment">     */</em>
 <a class="jxr_linenumber" name="L170" href="#L170">170</a>     <strong class="jxr_keyword">public</strong> String toString(<strong class="jxr_keyword">int</strong> decimals) {
-<a class="jxr_linenumber" name="L171" href="#L171">171</a>         <a href="../../../nom/tam/util/FlexFormat.html">FlexFormat</a> f = <strong class="jxr_keyword">new</strong> <a href="../../../nom/tam/util/FlexFormat.html">FlexFormat</a>().setPrecision(decimals); 
+<a class="jxr_linenumber" name="L171" href="#L171">171</a>         <a name="FlexFormat" href="../../../nom/tam/util/FlexFormat.html#FlexFormat">FlexFormat</a> f = <strong class="jxr_keyword">new</strong> <a name="FlexFormat" href="../../../nom/tam/util/FlexFormat.html#FlexFormat">FlexFormat</a>().setPrecision(decimals); 
 <a class="jxr_linenumber" name="L172" href="#L172">172</a>         <strong class="jxr_keyword">return</strong> <span class="jxr_string">"("</span> + f.format(re()) + <span class="jxr_string">","</span> + f.format(im()) + <span class="jxr_string">")"</span>;
 <a class="jxr_linenumber" name="L173" href="#L173">173</a>     }
 <a class="jxr_linenumber" name="L174" href="#L174">174</a>     
@@ -206,7 +206,7 @@
 <a class="jxr_linenumber" name="L198" href="#L198">198</a> <em class="jxr_javadoccomment">     *                  </em>
 <a class="jxr_linenumber" name="L199" href="#L199">199</a> <em class="jxr_javadoccomment">     * @see FitsFactory#setAllowHeaderRepairs(boolean)</em>
 <a class="jxr_linenumber" name="L200" href="#L200">200</a> <em class="jxr_javadoccomment">     */</em>
-<a class="jxr_linenumber" name="L201" href="#L201">201</a>     <strong class="jxr_keyword">public</strong> <a href="../../../nom/tam/util/ComplexValue.html">ComplexValue</a>(String text) <strong class="jxr_keyword">throws</strong> IllegalArgumentException {        
+<a class="jxr_linenumber" name="L201" href="#L201">201</a>     <strong class="jxr_keyword">public</strong> <a name="ComplexValue" href="../../../nom/tam/util/ComplexValue.html#ComplexValue">ComplexValue</a>(String text) <strong class="jxr_keyword">throws</strong> IllegalArgumentException {        
 <a class="jxr_linenumber" name="L202" href="#L202">202</a>         <em class="jxr_comment">// Allow the use of 'D' or 'd' to mark the exponent, instead of the standard 'E' or 'e'...</em>
 <a class="jxr_linenumber" name="L203" href="#L203">203</a>         text = text.trim().toUpperCase().replace('D', 'E');
 <a class="jxr_linenumber" name="L204" href="#L204">204</a>         
@@ -257,9 +257,9 @@
 <a class="jxr_linenumber" name="L249" href="#L249">249</a> <em class="jxr_javadoccomment">     *                      if the space was too short to fit the value even</em>
 <a class="jxr_linenumber" name="L250" href="#L250">250</a> <em class="jxr_javadoccomment">     *                      with the minimal (1-digit) precision.</em>
 <a class="jxr_linenumber" name="L251" href="#L251">251</a> <em class="jxr_javadoccomment">     */</em>
-<a class="jxr_linenumber" name="L252" href="#L252">252</a>     <strong class="jxr_keyword">public</strong> String toBoundedString(<strong class="jxr_keyword">int</strong> maxLength) <strong class="jxr_keyword">throws</strong> LongValueException {
+<a class="jxr_linenumber" name="L252" href="#L252">252</a>     <strong class="jxr_keyword">public</strong> String toBoundedString(<strong class="jxr_keyword">int</strong> maxLength) <strong class="jxr_keyword">throws</strong> <a name="LongValueException" href="../../../nom/tam/fits/LongValueException.html#LongValueException">LongValueException</a> {
 <a class="jxr_linenumber" name="L253" href="#L253">253</a>         <strong class="jxr_keyword">if</strong> (maxLength &lt; MIN_STRING_LENGTH) {
-<a class="jxr_linenumber" name="L254" href="#L254">254</a>             <strong class="jxr_keyword">throw</strong> <strong class="jxr_keyword">new</strong> <a href="../../../nom/tam/fits/LongValueException.html">LongValueException</a>(maxLength, toString());
+<a class="jxr_linenumber" name="L254" href="#L254">254</a>             <strong class="jxr_keyword">throw</strong> <strong class="jxr_keyword">new</strong> <a name="LongValueException" href="../../../nom/tam/fits/LongValueException.html#LongValueException">LongValueException</a>(maxLength, toString());
 <a class="jxr_linenumber" name="L255" href="#L255">255</a>         }
 <a class="jxr_linenumber" name="L256" href="#L256">256</a>         
 <a class="jxr_linenumber" name="L257" href="#L257">257</a>         String s = toString();
@@ -275,7 +275,7 @@
 <a class="jxr_linenumber" name="L267" href="#L267">267</a>             decimals -= (s.length() - maxLength + 1) / 2;
 <a class="jxr_linenumber" name="L268" href="#L268">268</a>             
 <a class="jxr_linenumber" name="L269" href="#L269">269</a>             <strong class="jxr_keyword">if</strong> (decimals &lt; 0) {
-<a class="jxr_linenumber" name="L270" href="#L270">270</a>                 <strong class="jxr_keyword">throw</strong> <strong class="jxr_keyword">new</strong> <a href="../../../nom/tam/fits/LongValueException.html">LongValueException</a>(maxLength, toString());
+<a class="jxr_linenumber" name="L270" href="#L270">270</a>                 <strong class="jxr_keyword">throw</strong> <strong class="jxr_keyword">new</strong> <a name="LongValueException" href="../../../nom/tam/fits/LongValueException.html#LongValueException">LongValueException</a>(maxLength, toString());
 <a class="jxr_linenumber" name="L271" href="#L271">271</a>             }
 <a class="jxr_linenumber" name="L272" href="#L272">272</a>             s = toString(decimals);
 <a class="jxr_linenumber" name="L273" href="#L273">273</a>         }
