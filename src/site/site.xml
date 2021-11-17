@@ -33,6 +33,7 @@
 			<item name="Getting Started" href="index.html" />
 			<item name="API Documentation" href="apidocs/index.html" />
 			<item name="Download" href="download.html" />
+			<item name="Changes" href="changes-report.html" />
 		  <item name="About" href="about.html" />
 		</menu>
 		<menu ref="modules" />

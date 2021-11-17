@@ -95,6 +95,9 @@
 			<action type="fix" dev="mbtaylor" issue="143">
 				"I10" format ASCII tables are parsed as 32-bit 'int[]' by default (for back compatibility), unless 'TLMIN/TLMAX' or 'TDMIN/TDMAX' header entries indicate a more extended range. Added new 'AsciiTable(Header, boolean)' constructor to optionally change the preference to read "I10" ASCII table data as 64-bit 'long[]' columns.
 			</action>
+			<action type="fix" dev="attipaci" issue="190">
+				Changed to generated serialVersionUIDs from 1L for classes that require it.
+			</action>
 			<action type="fix" dev="attipaci">
 				Various smaller fixes and improvements throughout, increased unit test coverage, and more comprehensive unit tests.
 			</action>
