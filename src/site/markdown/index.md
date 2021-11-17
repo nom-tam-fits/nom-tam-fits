@@ -667,6 +667,7 @@ Last, we pad the fits file and close the open `FitsFile`.
  - [Accessing header values](#accessing-header-values)
  - [Standard and conventional FITS header keywords](#standard-and-conventional-fits-header-keywords)
  - [Long string values](#long-string-values)
+ - [HIERARCH-style header keywords](#hierarch-style-header-keywords)
  - [Checksums](#checksums)
  - [Preallocated header space](#preallocated-header-space)
  - [Standard compliance](#standard-compliance)
@@ -824,7 +825,7 @@ You can use the compiler to check your keywords, and also use your IDE to easily
 The standard maximum length for string values in the header is 68 characters. As of FITS 4.0, the OGIP 1.0 long string convention is part of the standard. And, as of version 1.16 of this library, it is supported by default. Support for long strings can be toggled via `FitsFactory.setLongStringEnabled(boolean)` if necessary. If the settings is disabled, any attempt to set a header value to a string longer than the space available for it in a single 80-character header record will throw a `LongStringsNotEnabledException` runtime exception.
 
 
-<a name="fits-headers"></a>
+<a name="hierarch-style-header-keywords"></a>
 ### HIERARCH style header keywords
 
 The standard FITS header keywords consists of maximum 8 upper case letters or number, plus dash `-` and underscore `_`. The HIERARCH keyword convention allows for longer and/or hierarchical sets of FITS keywords, and/or for supporting a more extended set of ASCII characters (in the range of `0x20` to `0x7E`).  Support for HIERARCH-style keywords is enabled by default as of version 1.16. HIERARCH support can be toggled if needed via `FitsFactory.setUseHierarch(boolean)`. By default, HIERARCH keywords are converted to upper-case only (__cfitsio__ convention), so
@@ -1052,7 +1053,7 @@ The _nom-tam-fits_ library is a community-maintained project. We absolutely rely
 
    - Add __Javadoc__ your new code. You can keep it sweet and simple, but make sure it properly explains your methods, their arguments and return values, and why an what exceptions may be thrown. You should also cross-reference other methods that are similar, related, or relevant to what you just added.
 
-   - __Unit Tests__. Make sure your new code has as close to full unit test coverage as possible. You should aim for 100% diff coverage. When pushing changes to your fork, you can get a coverage report by checking the Github Actions result of your commit (click the Codecov link), and you can analyze what line(s) of code need to have tests added. Try to create tests that are simple but meaningful (i.e. check for valid results, rather than just confirm existing behaior), and try to cover as many realistic scenarios as appropriate. Write lots of tests if you need to. It's OK to write 100 lines of test code for 5 lines of change. Go for it!
+   - __Unit Tests__. Make sure your new code has as close to full unit test coverage as possible. You should aim for 100% diff coverage. When pushing changes to your fork, you can get a coverage report by checking the Github Actions result of your commit (click the Codecov link), and you can analyze what line(s) of code need to have tests added. Try to create tests that are simple but meaningful (i.e. check for valid results, rather than just confirm existing behaior), and try to cover as many realistic scenarios as appropriate. Write lots of tests if you need to. It's OK to write 100 lines of test code for 5 lines of change. Go for it! And, you will get extra kudos for filling unit testing holes outside of your area of development!
 
 4. __Pull Request__. Once you feel your work can be integrated, create a pull request from your fork/branch. You can do that easily from the github page of your fork/branch directly. In the pull request, provide a concise description of what you added or changed. You may get some feedback at this point, and maybe there will be discussions about possible improvements or regressions etc. It's a good thing too, and your changes will likely end up with added polish as a result. You can be all the more proud of it in the end!
 
