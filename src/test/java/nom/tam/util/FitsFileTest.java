@@ -96,17 +96,6 @@ public class FitsFileTest {
         }
     }
     
-    @Test
-    public void testTruncated() throws Exception {
-        try (FitsFile f = new FitsFile("fftest.bin", "rw", 100)) {
-            f.seek(10);
-            f.setLength(5);
-            assertEquals(5, f.getFilePointer());
-            assertFalse(f.checkTruncated());
-            f.seek(10);
-            assertTrue(f.checkTruncated());
-        }
-    }
     
     @Test
     public void testPosition() throws Exception {

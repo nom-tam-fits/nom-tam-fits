@@ -397,26 +397,6 @@ public interface ArrayDataInput extends InputReader, DataInput, FitsIO {
      *             if the underlying stream failed
      */
     void skipAllBytes(int toSkip) throws IOException;
-
-    /**
-     * Checks if the file ends before the current read positon, and if so, it 
-     * may log a warning. This may happen with {@link FitsFile} where the 
-     * contract of {@link RandomAccess} allows for skipping ahead beyond the 
-     * end of file, since expanding the file is allowed when writing. Only a 
-     * subsequent read call would fail.
-     *
-     * @return      <code>true</code> if the current read position is beyond
-     *              the end-of-file, otherwise <code>false</code>.
-     * @throws IOException  if there was an IO error accessing the file or stream.
-     * 
-     * @see #skip(long)
-     * @see #skipBytes(int)
-     * @see #skipAllBytes(long)
-     * 
-     * 
-     * @since 1.16
-     */
-    boolean checkTruncated() throws IOException;
     
     /**
      * Read a buffer and signal an EOF if the requested elements cannot be read.

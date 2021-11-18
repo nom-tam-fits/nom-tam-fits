@@ -127,7 +127,7 @@ public class ImageProtectedTest {
         // However, the contract of RandomAccess is to allow skipAllBytes() to move beyond
         // the file's end. But, we can check if the file pointer is beyond the current
         // end-of-file, so that's what we will check for from now on.
-        Assert.assertTrue(input.checkTruncated());
+        Assert.assertTrue(Fits.checkTruncated(input));
         input.close();
     }
 

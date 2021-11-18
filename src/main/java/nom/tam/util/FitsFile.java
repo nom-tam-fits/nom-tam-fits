@@ -523,17 +523,6 @@ public class FitsFile extends ArrayDataFile implements RandomAccess, ArrayDataOu
     public synchronized void write(String[] s, int start, int length) throws IOException {
         getEncoder().write(s, start, length);
     }
-    
-    @Override
-    public synchronized boolean checkTruncated() throws IOException {
-        long pos = getFilePointer();
-        long len = length();
-        if (pos > len) {
-            LOG.log(Level.WARNING, "Premature file end at " + len + " (expected " + pos + ")", new Throwable());
-            return true;
-        }
-        return false;
-    }
 
     @Override
     public final synchronized long position() {

@@ -355,11 +355,4 @@ public class FitsInputStream extends ArrayInputStream implements ArrayDataInput 
         return super.toString() + "[count=" + this.count + ",pos=" + this.pos + "]";
     }
     
-
-    @Override
-    public final boolean checkTruncated() throws IOException {
-        // We cannot skip more than is available in an input stream.
-        return false;
-    }
-
 }

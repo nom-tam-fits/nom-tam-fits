@@ -1642,7 +1642,7 @@ public class Header implements FitsElement {
         }
       
         // AK: Log if the file ends before the expected end-of-header position.
-        if (dis.checkTruncated()) {
+        if (Fits.checkTruncated(dis)) {
             // No biggy. We got a complete header just fine, it's only that there was no
             // padding before EOF. We'll just log that, but otherwise keep going.
             LOG.warning("Premature end-of-file: no padding after header.");
