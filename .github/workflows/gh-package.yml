@@ -17,9 +17,15 @@ jobs:
           java-version: '11'
           distribution: 'adopt'
           cache: 'maven'
-          gpg-private-key: ${{ secrets.GPG_PRIVATE_KEY }}
-          gpg-passphrase: ${{ secrets.GPG_PASSPHRASE }}
                    
+      - name: Import GPG key
+        id: import_gpg
+        uses: crazy-max/ghaction-import-gpg@v4
+        with:
+          gpg_private_key: ${{ secrets.GPG_PRIVATE_KEY }}
+          passphrase: ${{ secrets.GPG_PASSPHRASE }}
+          git_user_signingkey: true
+          
       - name: Publish to GitHub Packages
         run: mvn -B deploy -DskipTests -Pgithub-repo
         env:

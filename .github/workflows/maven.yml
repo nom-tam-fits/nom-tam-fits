@@ -60,15 +60,13 @@ jobs:
         name: codecov
         verbose: true
         
-
   release:
     name: Publish
     needs: build
-    continue-on-error: true
     runs-on: ubuntu-latest
+    if: ${{ github.repository_owner == 'nom-tam-fits' && github.ref_name == 'master' }}
     permissions: 
       contents: read
-      packages: write 
     
     steps:
     
@@ -80,12 +78,18 @@ jobs:
         java-version: '11'
         distribution: 'adopt'
         cache: maven
-        server-id: 'nexus'
-        server-username: ${{ secrets.NEXUS_USERNAME }}
-        server-password: ${{ secrets.NEXUS_PASSWORD }}
-        gpg-private-key: ${{ secrets.GPG_PRIVATE_KEY }}
-        gpg-passphrase: ${{ secrets.GPG_PASSPHRASE }}
+
+    - name: Import GPG key
+      id: import_gpg
+      uses: crazy-max/ghaction-import-gpg@v4
+      with:
+        gpg_private_key: ${{ secrets.GPG_PRIVATE_KEY }}
+        passphrase: ${{ secrets.GPG_PASSPHRASE }}
+        git_user_signingkey: true
 
     - name: Publish to Nexus
-      run: mvn -B deploy -DskipTests
+      env:
+        NEXUS_USERNAME: ${{ secrets.NEXUS_USERNAME }}
+        NEXUS_PASSWORD: ${{ secrets.NEXUS_PASSWORD }}
+      run: mvn -B deploy -DskipTests --settings settings.xml
       
