@@ -58,14 +58,9 @@ jobs:
         flags: unittests
         name: codecov
         verbose: true
-        
-    - name: Check package version
-      id: check-version
-      continue-on-error: true
-      run: echo "set-output name=version::$(mvn org.apache.maven.plugins:maven-help-plugin:3.2.0:evaluate -Dexpression=project.version -q)"
 
     - name: SNAPSHOT release
-      if: ${{ github.repository_owner == 'nom-tam-fits' && contains(steps.check-version.outputs.version, 'SNAPSHOT') }}
+      if: ${{ github.repository_owner == 'nom-tam-fits' }}
       continue-on-error: true
       env:
         CI_DEPLOY_USERNAME: ${{ secrets.NEXUS_USERNAME }}
