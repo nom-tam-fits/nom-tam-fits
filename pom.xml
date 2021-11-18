@@ -124,12 +124,17 @@
 	</scm>
 	<distributionManagement>
 		<repository>
-			<id>sonatype-nexus-staging</id>
+			<id>nexus</id>
 			<name>i4j sonatype Maven 2 repository</name>
 			<url>https://oss.sonatype.org/service/local/staging/deploy/maven2</url>
 		</repository>
+		<repository>
+		  <id>github</id>
+      <name>GitHub nom-tam-fits Apache Maven Packages</name>
+      <url>https://maven.pkg.github.com/nom-tam-fits/nom-tam-fits</url>
+    </repository>
 		<snapshotRepository>
-			<id>sonatype-nexus-staging</id>
+			<id>nexus</id>
 			<name>i4j sonatype Snapshot Maven 2 repository</name>
 			<url>https://oss.sonatype.org/content/repositories/snapshots</url>
 		</snapshotRepository>
@@ -208,7 +213,21 @@
 				<version>3.0.1</version>
 				<configuration>
 					<passphraseServerId>gpg</passphraseServerId>
+					<!-- Prevent gpg from using pinentry programs -->
+          <gpgArguments>
+            <arg>--pinentry-mode</arg>
+            <arg>loopback</arg>
+          </gpgArguments>
 				</configuration>
+				<executions>
+				  <execution>
+						<id>sign-artifacts</id>
+						<phase>verify</phase>
+						<goals>
+							<goal>sign</goal>
+						</goals>
+					</execution>
+				</executions>
 			</plugin>
 			<plugin>
 				<groupId>org.apache.maven.plugins</groupId>
@@ -641,27 +660,6 @@
 		<project.scm.id>nom-tam-fits-deploy</project.scm.id>
 	</properties>
 	<profiles>
-		<profile>
-			<id>release-profile</id>
-			<build>
-				<plugins>
-					<plugin>
-						<groupId>org.apache.maven.plugins</groupId>
-						<artifactId>maven-gpg-plugin</artifactId>
-						<version>3.0.1</version>
-						<executions>
-							<execution>
-								<id>sign-artifacts</id>
-								<phase>verify</phase>
-								<goals>
-									<goal>sign</goal>
-								</goals>
-							</execution>
-						</executions>
-					</plugin>
-				</plugins>
-			</build>
-		</profile>
 		<profile>
 			<id>createHeasarcZip</id>
 			<activation>

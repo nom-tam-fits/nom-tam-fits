@@ -2,19 +2,6 @@
   <proxies>
   </proxies>
   <servers>
-    <server>
-      <id>gpg.passphrase</id>
-      <passphrase>${env.GPG_PASSPHRASE}</passphrase>
-    </server>
-    <server>
-      <id>sonatype-nexus-staging</id>
-      <username>${env.NEXUS_USERNAME}</username>
-      <password>${env.NEXUS_PASSWORD}</password>
-    </server>
-    <server>
-      <id>github-project-site</id>
-      <username>git</username>
-    </server>
   </servers>
   <mirrors>
   </mirrors>
