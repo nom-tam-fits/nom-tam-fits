@@ -67,7 +67,7 @@ jobs:
         CI_DEPLOY_PASSWORD: ${{ secrets.NEXUS_PASSWORD }}
       run: |
         cd nom-tam-fits
-        mvn deploy -Prelease-profile --settings=settings.xml
+        mvn deploy -Dmaven.test.skip=true --settings settings.xml -Prelease-profile
 #      uses: qcastel/github-actions-maven-release@v1.12.27
 #      with:
 #        maven-project-folder: 'nom-tam-fits'
