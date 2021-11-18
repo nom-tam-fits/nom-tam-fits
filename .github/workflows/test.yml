@@ -70,7 +70,7 @@ jobs:
       run: |
         echo -n "$GPG_SIGNING_KEY" | base64 --decode | gpg --batch --passphrase="$GPG_PASSPHRASE" --import
         cd nom-tam-fits
-        mvn clean deploy -Dmaven.test.skip=true --settings settings.xml -Prelease-profile
+        mvn clean deploy -DskipTests=true --settings settings.xml -Prelease-profile
 #      uses: qcastel/github-actions-maven-release@v1.12.27
 #      with:
 #        maven-project-folder: 'nom-tam-fits'
