@@ -58,6 +58,15 @@ jobs:
         flags: unittests
         name: codecov
         verbose: true
+        
+    - name: Release Maven package
+      uses: samuelmeuli/action-maven-publish@v1
+      with:
+        maven_args: '-Prelease-profile'
+        gpg_private_key: ${{ secrets.GPG_PRIVATE_KEY }}
+        gpg_passphrase: ${{ secrets.GPG_PASSPHRASE }}
+        nexus_username: ${{ secrets.NEXUS_USERNAME }}
+        nexus_password: ${{ secrets.NEXUS_PASSWORD }}
 
     - name: SNAPSHOT release
       if: ${{ github.repository_owner == 'nom-tam-fits' }}
@@ -68,7 +77,8 @@ jobs:
         CI_DEPLOY_USERNAME: ${{ secrets.NEXUS_USERNAME }}
         CI_DEPLOY_PASSWORD: ${{ secrets.NEXUS_PASSWORD }}
       run: |
-        echo -n "$GPG_SIGNING_KEY" | base64 --decode | gpg --batch --passphrase="$GPG_PASSPHRASE" --import
+#       gpg-agent --daemon --default-cache-ttl 7200
+        echo -e "${{ secrets.GPG_PRIVATE_KEY }}" | gpg --batch --import --no-tty
         cd nom-tam-fits
         mvn clean deploy -DskipTests=true --settings settings.xml -Prelease-profile
 #      uses: qcastel/github-actions-maven-release@v1.12.27
