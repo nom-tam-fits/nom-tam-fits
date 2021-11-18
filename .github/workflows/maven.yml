@@ -84,5 +84,4 @@ jobs:
         GPG_PASSPHRASE: ${{ secrets.GPG_PASSPHRASE }}
         NEXUS_USERNAME: ${{ secrets.NEXUS_USERNAME }}
         NEXUS_PASSWORD: ${{ secrets.NEXUS_PASSWORD }}
-      run: |
-        mvn deploy --settings settings.xml -DskipTests 
+      run: mvn deploy --settings settings.xml -DskipTests 
