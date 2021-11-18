@@ -65,10 +65,10 @@ jobs:
       env:
         CI_DEPLOY_USERNAME: ${{ secrets.NEXUS_USERNAME }}
         CI_DEPLOY_PASSWORD: ${{ secrets.NEXUS_PASSWORD }}
-      uses: qcastel/github-actions-maven-release@v1.12.27
       run: |
         cd nom-tam-fits
         mvn release -Prelease --settings=settings.xml
+#      uses: qcastel/github-actions-maven-release@v1.12.27
 #      with:
 #        maven-project-folder: 'nom-tam-fits'
 #        ssh-private-key: ${{ secrets.SSH_PRIVATE_KEY }}
