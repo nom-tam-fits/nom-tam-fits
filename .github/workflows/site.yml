@@ -35,6 +35,7 @@ jobs:
         java-version: '11'
         distribution: 'adopt'
         cache: maven
+        server-username: 'git'
         
     - name: Build, test, and deploy with Maven
       run: mvn clean site

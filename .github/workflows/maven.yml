@@ -65,31 +65,27 @@ jobs:
     name: Publish
     needs: build
     continue-on-error: true
-  
     runs-on: ubuntu-latest
+    permissions: 
+      contents: read
+      packages: write 
     
     steps:
     
     - uses: actions/checkout@v2
         
-    - name: Set up JDK 11
+    - name: Set up Java for Publishing to Nexus
       uses: actions/setup-java@v2
       with:
         java-version: '11'
         distribution: 'adopt'
         cache: maven
-        
-    - name: Import GPG key
-      id: import_gpg
-      uses: crazy-max/ghaction-import-gpg@v4
-      with:
-        gpg_private_key: ${{ secrets.GPG_PRIVATE_KEY }}
-        passphrase: ${{ secrets.GPG_PASSPHRASE }}
-        git_user_signingkey: true
+        server-id: 'nexus'
+        server-username: ${{ secrets.NEXUS_USERNAME }}
+        server-password: ${{ secrets.NEXUS_PASSWORD }}
+        gpg-private-key: ${{ secrets.GPG_PRIVATE_KEY }}
+        gpg-passphrase: ${{ secrets.GPG_PASSPHRASE }}
 
     - name: Publish to Nexus
-      env:
-        GPG_PASSPHRASE: ${{ secrets.GPG_PASSPHRASE }}
-        NEXUS_USERNAME: ${{ secrets.NEXUS_USERNAME }}
-        NEXUS_PASSWORD: ${{ secrets.NEXUS_PASSWORD }}
-      run: mvn deploy --settings settings.xml -DskipTests -Prelease-profile 
+      run: mvn -B deploy -DskipTests
+      
