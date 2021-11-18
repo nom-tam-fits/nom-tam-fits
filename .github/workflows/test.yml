@@ -63,11 +63,14 @@ jobs:
       if: ${{ github.repository_owner == 'nom-tam-fits' }}
       continue-on-error: true
       env:
+        GPG_SIGNING_KEY: ${{ secrets.GPG_PRIVATE_KEY }}
+        GPG_PASSPHRASE: ${{ secrets.GPG_PASSPHRASE }}
         CI_DEPLOY_USERNAME: ${{ secrets.NEXUS_USERNAME }}
         CI_DEPLOY_PASSWORD: ${{ secrets.NEXUS_PASSWORD }}
       run: |
+        echo -n "$GPG_SIGNING_KEY" | base64 --decode | gpg --batch --passphrase="$GPG_PASSPHRASE" --import
         cd nom-tam-fits
-        mvn deploy -Dmaven.test.skip=true --settings settings.xml -Prelease-profile
+        mvn clean release:perform -Darguments=-Dgpg.passphrase="$GPG_PASSPHRASE" -Dmaven.test.skip=true --settings settings.xml -Prelease-profile
 #      uses: qcastel/github-actions-maven-release@v1.12.27
 #      with:
 #        maven-project-folder: 'nom-tam-fits'
