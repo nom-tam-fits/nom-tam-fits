@@ -86,5 +86,5 @@ jobs:
         NEXUS_PASSWORD: ${{ secrets.NEXUS_PASSWORD }}
       run: |
         echo -e "${{ secrets.GPG_PRIVATE_KEY }}" | gpg --import --batch --no-tty
-        mv deploy --settings settings.xml -DskipTests=true -Prelease-profile
+        mvn deploy --settings settings.xml -DskipTests=true -Prelease-profile
     
