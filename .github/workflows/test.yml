@@ -60,14 +60,6 @@ jobs:
         name: codecov
         verbose: true
         
-    - name: Release Maven package
-      uses: samuelmeuli/action-maven-publish@v1
-      with:
-        maven_args: '-Prelease-profile'
-        gpg_private_key: ${{ secrets.GPG_PRIVATE_KEY }}
-        gpg_passphrase: ${{ secrets.GPG_PASSPHRASE }}
-        nexus_username: ${{ secrets.NEXUS_USERNAME }}
-        nexus_password: ${{ secrets.NEXUS_PASSWORD }}
 
   release:
     name: Release
@@ -88,15 +80,12 @@ jobs:
         java-version: '11'
         distribution: 'adopt'
         cache: maven
-        
-    - name: Publish to Nexus
-      if: ${{ github.repository_owner == 'nom-tam-fits' }}
-      continue-on-error: true
-      env:
-        GPG_SIGNING_KEY: ${{ secrets.GPG_PRIVATE_KEY }}
-        GPG_PASSPHRASE: ${{ secrets.GPG_PASSPHRASE }}
-        CI_DEPLOY_USERNAME: ${{ secrets.NEXUS_USERNAME }}
-        CI_DEPLOY_PASSWORD: ${{ secrets.NEXUS_PASSWORD }}
-      run: |
-        echo -e "${{ secrets.GPG_PRIVATE_KEY }}" | gpg --batch --import --no-tty
-        mvn clean deploy -DskipTests=true --settings settings.xml -Prelease-profile
+
+    - name: Release Maven package
+      uses: samuelmeuli/action-maven-publish@v1
+      with:
+        maven_args: '-DskipTests=true --settings settings.xml -Prelease-profile'
+        gpg_private_key: ${{ secrets.GPG_PRIVATE_KEY }}
+        gpg_passphrase: ${{ secrets.GPG_PASSPHRASE }}
+        nexus_username: ${{ secrets.NEXUS_USERNAME }}
+        nexus_password: ${{ secrets.NEXUS_PASSWORD }}
