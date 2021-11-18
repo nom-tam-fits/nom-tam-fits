@@ -123,16 +123,12 @@
 		<tag>HEAD</tag>
 	</scm>
 	<distributionManagement>
+    <!-- We'll use profiles to select which repository to use -->
 		<repository>
-			<id>nexus</id>
-			<name>i4j sonatype Maven 2 repository</name>
-			<url>https://oss.sonatype.org/service/local/staging/deploy/maven2</url>
+			<id>${repo-id}</id>
+			<name>${repo-name}</name>
+			<url>${repo-url}</url>
 		</repository>
-		<repository>
-		  <id>github</id>
-      <name>GitHub nom-tam-fits Apache Maven Packages</name>
-      <url>https://maven.pkg.github.com/nom-tam-fits/nom-tam-fits</url>
-    </repository>
 		<snapshotRepository>
 			<id>nexus</id>
 			<name>i4j sonatype Snapshot Maven 2 repository</name>
@@ -660,6 +656,26 @@
 		<project.scm.id>nom-tam-fits-deploy</project.scm.id>
 	</properties>
 	<profiles>
+	  <profile>
+	    <id>nexus-repo</id>
+	    <activation>
+        <activeByDefault>true</activeByDefault>
+      </activation>
+      <properties>
+	      <repo-id>nexus</repo-id>
+			  <repo-name>i4j sonatype Maven 2 repository</repo-name>
+			  <repo-url>https://oss.sonatype.org/service/local/staging/deploy/maven2</repo-url>
+			</properties>
+	  </profile>
+	  <profile>
+	    <id>github-repo</id>
+	    <repository>
+	    <properties>
+  		  <repo-id>github</repo-id>
+        <repo-name>GitHub nom-tam-fits Apache Maven Packages</repo-name>
+        <repo-url>https://maven.pkg.github.com/nom-tam-fits/nom-tam-fits</repo-url>
+      </properties>
+	  </profile>
 		<profile>
 			<id>createHeasarcZip</id>
 			<activation>

@@ -21,6 +21,6 @@ jobs:
           gpg-passphrase: ${{ secrets.GPG_PASSPHRASE }}
                    
       - name: Publish to GitHub Packages
-        run: mvn -B deploy -DskipTests
+        run: mvn -B deploy -DskipTests -Pgithub-repo
         env:
           GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
