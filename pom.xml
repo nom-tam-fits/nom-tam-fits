@@ -669,7 +669,6 @@
 	  </profile>
 	  <profile>
 	    <id>github-repo</id>
-	    <repository>
 	    <properties>
   		  <repo-id>github</repo-id>
         <repo-name>GitHub nom-tam-fits Apache Maven Packages</repo-name>
