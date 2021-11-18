@@ -77,7 +77,6 @@ jobs:
         CI_DEPLOY_USERNAME: ${{ secrets.NEXUS_USERNAME }}
         CI_DEPLOY_PASSWORD: ${{ secrets.NEXUS_PASSWORD }}
       run: |
-#       gpg-agent --daemon --default-cache-ttl 7200
         echo -e "${{ secrets.GPG_PRIVATE_KEY }}" | gpg --batch --import --no-tty
         cd nom-tam-fits
         mvn clean deploy -DskipTests=true --settings settings.xml -Prelease-profile
