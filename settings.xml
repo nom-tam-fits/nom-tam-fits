@@ -3,6 +3,10 @@
   </proxies>
   <servers>
     <server>
+      <id>gpg.passphrase</id>
+      <passphrase>${env.GPG_PASSPHRASE}</passphrase>
+    </server>
+    <server>
       <id>sonatype-nexus-staging</id>
       <username>${env.CI_DEPLOY_USERNAME}</username>
       <password>${env.CI_DEPLOY_PASSWORD}</password>
