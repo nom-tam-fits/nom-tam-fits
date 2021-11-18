@@ -4,6 +4,7 @@
 ![Build Status](https://github.com/nom-tam-fits/nom-tam-fits/actions/workflows/test.yml/badge.svg)
 [![codecov](https://codecov.io/gh/nom-tam-fits/nom-tam-fits/branch/master/graph/badge.svg?token=8rFyA5YzE5)](https://codecov.io/gh/nom-tam-fits/nom-tam-fits)
 [![Maven Central](https://maven-badges.herokuapp.com/maven-central/gov.nasa.gsfc.heasarc/nom-tam-fits/badge.svg)](https://maven-badges.herokuapp.com/maven-central/gov.nasa.gsfc.heasarc/nom-tam-fits)
+[![Project Site](https://github.com/nom-tam-fits/nom-tam-fits/actions/workflows/site.yml/badge.svg?branch=master)](https://github.com/nom-tam-fits/nom-tam-fits/actions/workflows/site.yml)
 
 
  - [Introduction](#introduction)
@@ -29,7 +30,7 @@ Only a general introduction on how to use the library is given here. More detail
 FITS, the Flexible Image Transport System, is the format commonly used in the archiving and transport of astronomical data.
 This document assumes a general knowledge of FITS and Java but starts with a brief overview of FITS to set the context and terminology used.
 
-As of version 1.16 of this library, we provide full support for the [FITS 4.0 standard](#https://fits.gsfc.nasa.gov/fits_standard.html) for reading and writing, although some parts of the standard (such as WCS coordinate systems) may require further interpretation beyond what is offered by the library.
+As of version 1.16 of this library, we provide full support for the [FITS 4.0 standard](https://fits.gsfc.nasa.gov/fits_standard.html) for reading and writing, although some parts of the standard (such as WCS coordinate systems) may require further interpretation beyond what is offered by the library.
 
 This is an open-source project hosted on github as [nom-tam-fits](https://github.com/nom-tam-fits/nom-tam-fits). Further information and documentation, including API docs, can be found on the [project site](http://nom-tam-fits.github.io/nom-tam-fits/index.html).
 

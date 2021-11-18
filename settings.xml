@@ -3,6 +3,11 @@
   </proxies>
   <servers>
     <server>
+￼			<id>sonatype-nexus-staging</id>
+￼			<username>${env.CI_DEPLOY_USERNAME}</username>		
+￼			<password>${env.CI_DEPLOY_PASSWORD}</password>		
+￼		</server>
+    <server>
 		  <id>github-project-site</id>
       <username>git</username>
     </server>
