@@ -85,12 +85,8 @@ jobs:
         NEXUS_USERNAME: ${{ secrets.NEXUS_USERNAME }}
         NEXUS_PASSWORD: ${{ secrets.NEXUS_PASSWORD }}
         
-      uses: samuelmeuli/action-maven-publish@v1
-      with:
-        gpg_private_key: ${{ secrets.GPG_PRIVATE_KEY }}
-        gpg_passphrase: ${{ secrets.GPG_PASSPHRASE }}
-        nexus_username: ${{ secrets.NEXUS_USERNAME }}
-        nexus_password: ${{ secrets.NEXUS_PASSWORD }}
-        maven_profiles: 'release-profile'
-        maven_args: '-DskipTests=true'
-    
+     run: |
+        echo -e "${{ secrets.GPG_PRIVATE_KEY }}" > sign.gpg
+        gpg --batch --import --no-tty sign.gpg
+        rm -f sign.gpg
+        mvn deploy --settings settings.xml -DskipTests -Prelease-profile 
