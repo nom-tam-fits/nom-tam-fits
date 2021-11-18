@@ -66,14 +66,17 @@ jobs:
         CI_DEPLOY_USERNAME: ${{ secrets.NEXUS_USERNAME }}
         CI_DEPLOY_PASSWORD: ${{ secrets.NEXUS_PASSWORD }}
       uses: qcastel/github-actions-maven-release@v1.12.27
-      with:
-        maven-project-folder: 'nom-tam-fits'
-        ssh-private-key: ${{ secrets.SSH_PRIVATE_KEY }}
-        gpg-enabled: true
-        gpg-key-id: ${{ secrets.GPG_KEY_ID }}
-        gpg-key: ${{ secrets.GPG_PRIVATE_KEY }}
-        gpg-passphrase: ${{ secrets.GPG_PASSPHRASE }}
-        maven-args: '-Prelease-profile --settings settings.xml'
+      run: |
+        cd nom-tam-fits
+        mvn release -Prelease --settings=settings.xml
+#      with:
+#        maven-project-folder: 'nom-tam-fits'
+#        ssh-private-key: ${{ secrets.SSH_PRIVATE_KEY }}
+#        gpg-enabled: true
+#        gpg-key-id: ${{ secrets.GPG_KEY_ID }}
+#        gpg-key: ${{ secrets.GPG_PRIVATE_KEY }}
+#        gpg-passphrase: ${{ secrets.GPG_PASSPHRASE }}
+#        maven-args: '-Prelease-profile --settings settings.xml'
       
       
 #    - name: Upload JaCoCo coverage report
