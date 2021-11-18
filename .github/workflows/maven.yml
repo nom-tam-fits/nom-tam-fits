@@ -85,6 +85,7 @@ jobs:
         NEXUS_USERNAME: ${{ secrets.NEXUS_USERNAME }}
         NEXUS_PASSWORD: ${{ secrets.NEXUS_PASSWORD }}
       run: |
+        gpg-agent --daemon --default-cache-ttl 7200
         echo -e "${{ secrets.GPG_PRIVATE_KEY }}" | gpg --import --batch --no-tty
         mvn deploy --settings settings.xml -DskipTests=true -Prelease-profile
     
