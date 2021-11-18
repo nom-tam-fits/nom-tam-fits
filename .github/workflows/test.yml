@@ -67,6 +67,7 @@ jobs:
         CI_DEPLOY_PASSWORD: ${{ secrets.NEXUS_PASSWORD }}
       uses: qcastel/github-actions-maven-release@v1.12.27
       with:
+        maven-project-folder: 'nom-tam-fits'
         ssh-private-key: ${{ secrets.SSH_PRIVATE_KEY }}
         gpg-enabled: true
         gpg-key-id: ${{ secrets.GPG_KEY_ID }}
