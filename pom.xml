@@ -209,11 +209,6 @@
 				<version>3.0.1</version>
 				<configuration>
 					<passphraseServerId>gpg</passphraseServerId>
-					<!-- Prevent gpg from using pinentry programs -->
-          <gpgArguments>
-            <arg>--pinentry-mode</arg>
-            <arg>loopback</arg>
-          </gpgArguments>
 				</configuration>
 				<executions>
 				  <execution>
