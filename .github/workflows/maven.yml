@@ -84,8 +84,7 @@ jobs:
         GPG_PASSPHRASE: ${{ secrets.GPG_PASSPHRASE }}
         NEXUS_USERNAME: ${{ secrets.NEXUS_USERNAME }}
         NEXUS_PASSWORD: ${{ secrets.NEXUS_PASSWORD }}
-        
-     run: |
+      run: |
         echo -e "${{ secrets.GPG_PRIVATE_KEY }}" > sign.gpg
         gpg --batch --import --no-tty sign.gpg
         rm -f sign.gpg
