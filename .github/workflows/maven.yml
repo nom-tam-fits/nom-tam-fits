@@ -62,7 +62,7 @@ jobs:
         
 
   release:
-    name: Release
+    name: Publish
     needs: build
     continue-on-error: true
   
@@ -80,10 +80,11 @@ jobs:
         cache: maven
 
     - name: Publish to Nexus
-      uses: samuelmeuli/action-maven-publish@v1
-      with:
-        maven_args: '-DskipTests=true -Prelease-profile'
-        gpg_private_key: ${{ secrets.GPG_PRIVATE_KEY }}
-        gpg_passphrase: ${{ secrets.GPG_PASSPHRASE }}
-        nexus_username: ${{ secrets.NEXUS_USERNAME }}
-        nexus_password: ${{ secrets.NEXUS_PASSWORD }}
+      env:
+        GPG_PASSPHRASE: ${{ secrets.GPG_PASSPHRASE }}
+        NEXUS_USERNAME: ${{ secrets.NEXUS_USERNAME }}
+        NEXUS_PASSWORD: ${{ secrets.NEXUS_PASSWORD }}
+      run: |
+        echo -e "${{ secrets.GPG_PRIVATE_KEY }}" | --import --batch --no-tty
+        mv deploy --settings settings.xml -DskipTests=true -Prelease-profile
+    
