@@ -1016,12 +1016,12 @@ public class Fits implements Closeable {
      * @since 1.16
      */
     static boolean checkTruncated(ArrayDataInput in) throws IOException {
-        if (!(in instanceof ArrayDataFile)) {
+        if (!(in instanceof RandomAccess)) {
             // We cannot skip more than is available in an input stream.
             return false;
         }
         
-        ArrayDataFile f = (ArrayDataFile) in;
+        RandomAccess f = (RandomAccess) in;
         long pos = f.getFilePointer();
         long len = f.length();
         if (pos > len) {
