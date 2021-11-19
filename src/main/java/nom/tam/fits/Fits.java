@@ -50,7 +50,6 @@ import java.util.logging.Logger;
 import edu.umd.cs.findbugs.annotations.SuppressFBWarnings;
 import nom.tam.fits.compress.CompressionManager;
 import nom.tam.fits.utilities.FitsCheckSum;
-import nom.tam.util.ArrayDataFile;
 import nom.tam.util.ArrayDataInput;
 import nom.tam.util.ArrayDataOutput;
 import nom.tam.util.FitsInputStream;
