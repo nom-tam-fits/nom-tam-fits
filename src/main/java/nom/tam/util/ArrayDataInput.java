@@ -61,7 +61,9 @@ public interface ArrayDataInput extends InputReader, DataInput, FitsIO {
      * @return  true if this stream instance supports the mark and
      *               reset methods; false otherwise.
      */
-    boolean markSupported();
+    default boolean markSupported() {
+        return false;
+    }
 
     /**
      * Read an array of byte's. The call generally follows the contract of
