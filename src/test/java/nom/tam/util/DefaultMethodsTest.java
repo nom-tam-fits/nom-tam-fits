@@ -67,7 +67,7 @@ public class DefaultMethodsTest {
     @Test
     public void testReadBooleanArray() throws Exception {
         Boolean[] b = new Boolean[1];
-        assertEquals(b.length, new DefaultInput().read(b, 0, b.length));
+        assertEquals(b.length, new DefaultInput().read(b));
         assertEquals(false, b[0]);
     }
 
