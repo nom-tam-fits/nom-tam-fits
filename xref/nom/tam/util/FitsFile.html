@@ -272,7 +272,7 @@
 <a class="jxr_linenumber" name="L264" href="#L264">264</a>     <strong class="jxr_keyword">public</strong> <strong class="jxr_keyword">synchronized</strong> <strong class="jxr_keyword">int</strong> read(<strong class="jxr_keyword">boolean</strong>[] b, <strong class="jxr_keyword">int</strong> start, <strong class="jxr_keyword">int</strong> length) <strong class="jxr_keyword">throws</strong> IOException {
 <a class="jxr_linenumber" name="L265" href="#L265">265</a>         <strong class="jxr_keyword">return</strong> getDecoder().read(b, start, length);
 <a class="jxr_linenumber" name="L266" href="#L266">266</a>     }
-<a class="jxr_linenumber" name="L267" href="#L267">267</a>     
+<a class="jxr_linenumber" name="L267" href="#L267">267</a> 
 <a class="jxr_linenumber" name="L268" href="#L268">268</a>     @Override
 <a class="jxr_linenumber" name="L269" href="#L269">269</a>     <strong class="jxr_keyword">public</strong> <strong class="jxr_keyword">final</strong> <strong class="jxr_keyword">synchronized</strong> <strong class="jxr_keyword">int</strong> read(Boolean[] buf) <strong class="jxr_keyword">throws</strong> IOException {
 <a class="jxr_linenumber" name="L270" href="#L270">270</a>         <strong class="jxr_keyword">return</strong> read(buf, 0, buf.length);
@@ -396,164 +396,138 @@
 <a class="jxr_linenumber" name="L388" href="#L388">388</a>     <strong class="jxr_keyword">public</strong> <strong class="jxr_keyword">synchronized</strong> <strong class="jxr_keyword">void</strong> writeBoolean(<strong class="jxr_keyword">boolean</strong> v) <strong class="jxr_keyword">throws</strong> IOException {
 <a class="jxr_linenumber" name="L389" href="#L389">389</a>         getEncoder().writeBoolean(v);
 <a class="jxr_linenumber" name="L390" href="#L390">390</a>     }
-<a class="jxr_linenumber" name="L391" href="#L391">391</a> 
+<a class="jxr_linenumber" name="L391" href="#L391">391</a>     
 <a class="jxr_linenumber" name="L392" href="#L392">392</a>     @Override
-<a class="jxr_linenumber" name="L393" href="#L393">393</a>     <strong class="jxr_keyword">public</strong> <strong class="jxr_keyword">synchronized</strong> <strong class="jxr_keyword">void</strong> writeBoolean(Boolean v) <strong class="jxr_keyword">throws</strong> IOException {
-<a class="jxr_linenumber" name="L394" href="#L394">394</a>         getEncoder().writeBoolean(v);
+<a class="jxr_linenumber" name="L393" href="#L393">393</a>     <strong class="jxr_keyword">public</strong> <strong class="jxr_keyword">synchronized</strong> <strong class="jxr_keyword">void</strong> writeChar(<strong class="jxr_keyword">int</strong> v) <strong class="jxr_keyword">throws</strong> IOException {
+<a class="jxr_linenumber" name="L394" href="#L394">394</a>         getEncoder().writeChar(v);
 <a class="jxr_linenumber" name="L395" href="#L395">395</a>     }
 <a class="jxr_linenumber" name="L396" href="#L396">396</a> 
 <a class="jxr_linenumber" name="L397" href="#L397">397</a>     @Override
-<a class="jxr_linenumber" name="L398" href="#L398">398</a>     <strong class="jxr_keyword">public</strong> <strong class="jxr_keyword">synchronized</strong> <strong class="jxr_keyword">void</strong> writeChar(<strong class="jxr_keyword">int</strong> v) <strong class="jxr_keyword">throws</strong> IOException {
-<a class="jxr_linenumber" name="L399" href="#L399">399</a>         getEncoder().writeChar(v);
+<a class="jxr_linenumber" name="L398" href="#L398">398</a>     <strong class="jxr_keyword">public</strong> <strong class="jxr_keyword">final</strong> <strong class="jxr_keyword">synchronized</strong> <strong class="jxr_keyword">void</strong> writeShort(<strong class="jxr_keyword">int</strong> v) <strong class="jxr_keyword">throws</strong> IOException {
+<a class="jxr_linenumber" name="L399" href="#L399">399</a>         getEncoder().writeShort(v);
 <a class="jxr_linenumber" name="L400" href="#L400">400</a>     }
 <a class="jxr_linenumber" name="L401" href="#L401">401</a> 
 <a class="jxr_linenumber" name="L402" href="#L402">402</a>     @Override
-<a class="jxr_linenumber" name="L403" href="#L403">403</a>     <strong class="jxr_keyword">public</strong> <strong class="jxr_keyword">final</strong> <strong class="jxr_keyword">synchronized</strong> <strong class="jxr_keyword">void</strong> writeShort(<strong class="jxr_keyword">int</strong> v) <strong class="jxr_keyword">throws</strong> IOException {
-<a class="jxr_linenumber" name="L404" href="#L404">404</a>         getEncoder().writeShort(v);
+<a class="jxr_linenumber" name="L403" href="#L403">403</a>     <strong class="jxr_keyword">public</strong> <strong class="jxr_keyword">final</strong> <strong class="jxr_keyword">synchronized</strong> <strong class="jxr_keyword">void</strong> writeInt(<strong class="jxr_keyword">int</strong> v) <strong class="jxr_keyword">throws</strong> IOException {
+<a class="jxr_linenumber" name="L404" href="#L404">404</a>         getEncoder().writeInt(v);
 <a class="jxr_linenumber" name="L405" href="#L405">405</a>     }
 <a class="jxr_linenumber" name="L406" href="#L406">406</a> 
 <a class="jxr_linenumber" name="L407" href="#L407">407</a>     @Override
-<a class="jxr_linenumber" name="L408" href="#L408">408</a>     <strong class="jxr_keyword">public</strong> <strong class="jxr_keyword">final</strong> <strong class="jxr_keyword">synchronized</strong> <strong class="jxr_keyword">void</strong> writeInt(<strong class="jxr_keyword">int</strong> v) <strong class="jxr_keyword">throws</strong> IOException {
-<a class="jxr_linenumber" name="L409" href="#L409">409</a>         getEncoder().writeInt(v);
+<a class="jxr_linenumber" name="L408" href="#L408">408</a>     <strong class="jxr_keyword">public</strong> <strong class="jxr_keyword">final</strong> <strong class="jxr_keyword">synchronized</strong> <strong class="jxr_keyword">void</strong> writeLong(<strong class="jxr_keyword">long</strong> v) <strong class="jxr_keyword">throws</strong> IOException {
+<a class="jxr_linenumber" name="L409" href="#L409">409</a>         getEncoder().writeLong(v);
 <a class="jxr_linenumber" name="L410" href="#L410">410</a>     }
 <a class="jxr_linenumber" name="L411" href="#L411">411</a> 
 <a class="jxr_linenumber" name="L412" href="#L412">412</a>     @Override
-<a class="jxr_linenumber" name="L413" href="#L413">413</a>     <strong class="jxr_keyword">public</strong> <strong class="jxr_keyword">final</strong> <strong class="jxr_keyword">synchronized</strong> <strong class="jxr_keyword">void</strong> writeLong(<strong class="jxr_keyword">long</strong> v) <strong class="jxr_keyword">throws</strong> IOException {
-<a class="jxr_linenumber" name="L414" href="#L414">414</a>         getEncoder().writeLong(v);
+<a class="jxr_linenumber" name="L413" href="#L413">413</a>     <strong class="jxr_keyword">public</strong> <strong class="jxr_keyword">final</strong> <strong class="jxr_keyword">synchronized</strong> <strong class="jxr_keyword">void</strong> writeFloat(<strong class="jxr_keyword">float</strong> v) <strong class="jxr_keyword">throws</strong> IOException {
+<a class="jxr_linenumber" name="L414" href="#L414">414</a>         getEncoder().writeFloat(v);
 <a class="jxr_linenumber" name="L415" href="#L415">415</a>     }
 <a class="jxr_linenumber" name="L416" href="#L416">416</a> 
 <a class="jxr_linenumber" name="L417" href="#L417">417</a>     @Override
-<a class="jxr_linenumber" name="L418" href="#L418">418</a>     <strong class="jxr_keyword">public</strong> <strong class="jxr_keyword">final</strong> <strong class="jxr_keyword">synchronized</strong> <strong class="jxr_keyword">void</strong> writeFloat(<strong class="jxr_keyword">float</strong> v) <strong class="jxr_keyword">throws</strong> IOException {
-<a class="jxr_linenumber" name="L419" href="#L419">419</a>         getEncoder().writeFloat(v);
+<a class="jxr_linenumber" name="L418" href="#L418">418</a>     <strong class="jxr_keyword">public</strong> <strong class="jxr_keyword">final</strong> <strong class="jxr_keyword">synchronized</strong> <strong class="jxr_keyword">void</strong> writeDouble(<strong class="jxr_keyword">double</strong> v) <strong class="jxr_keyword">throws</strong> IOException {
+<a class="jxr_linenumber" name="L419" href="#L419">419</a>         getEncoder().writeDouble(v);
 <a class="jxr_linenumber" name="L420" href="#L420">420</a>     }
 <a class="jxr_linenumber" name="L421" href="#L421">421</a> 
 <a class="jxr_linenumber" name="L422" href="#L422">422</a>     @Override
-<a class="jxr_linenumber" name="L423" href="#L423">423</a>     <strong class="jxr_keyword">public</strong> <strong class="jxr_keyword">final</strong> <strong class="jxr_keyword">synchronized</strong> <strong class="jxr_keyword">void</strong> writeDouble(<strong class="jxr_keyword">double</strong> v) <strong class="jxr_keyword">throws</strong> IOException {
-<a class="jxr_linenumber" name="L424" href="#L424">424</a>         getEncoder().writeDouble(v);
+<a class="jxr_linenumber" name="L423" href="#L423">423</a>     <strong class="jxr_keyword">public</strong> <strong class="jxr_keyword">final</strong> <strong class="jxr_keyword">synchronized</strong> <strong class="jxr_keyword">void</strong> writeBytes(String s) <strong class="jxr_keyword">throws</strong> IOException {
+<a class="jxr_linenumber" name="L424" href="#L424">424</a>         getEncoder().writeBytes(s);
 <a class="jxr_linenumber" name="L425" href="#L425">425</a>     }
 <a class="jxr_linenumber" name="L426" href="#L426">426</a> 
 <a class="jxr_linenumber" name="L427" href="#L427">427</a>     @Override
-<a class="jxr_linenumber" name="L428" href="#L428">428</a>     <strong class="jxr_keyword">public</strong> <strong class="jxr_keyword">final</strong> <strong class="jxr_keyword">synchronized</strong> <strong class="jxr_keyword">void</strong> writeBytes(String s) <strong class="jxr_keyword">throws</strong> IOException {
-<a class="jxr_linenumber" name="L429" href="#L429">429</a>         getEncoder().writeBytes(s);
+<a class="jxr_linenumber" name="L428" href="#L428">428</a>     <strong class="jxr_keyword">public</strong> <strong class="jxr_keyword">final</strong> <strong class="jxr_keyword">synchronized</strong> <strong class="jxr_keyword">void</strong> writeChars(String s) <strong class="jxr_keyword">throws</strong> IOException {
+<a class="jxr_linenumber" name="L429" href="#L429">429</a>         getEncoder().writeChars(s);
 <a class="jxr_linenumber" name="L430" href="#L430">430</a>     }
 <a class="jxr_linenumber" name="L431" href="#L431">431</a> 
 <a class="jxr_linenumber" name="L432" href="#L432">432</a>     @Override
-<a class="jxr_linenumber" name="L433" href="#L433">433</a>     <strong class="jxr_keyword">public</strong> <strong class="jxr_keyword">final</strong> <strong class="jxr_keyword">synchronized</strong> <strong class="jxr_keyword">void</strong> writeChars(String s) <strong class="jxr_keyword">throws</strong> IOException {
-<a class="jxr_linenumber" name="L434" href="#L434">434</a>         getEncoder().writeChars(s);
+<a class="jxr_linenumber" name="L433" href="#L433">433</a>     <strong class="jxr_keyword">public</strong> <strong class="jxr_keyword">final</strong> <strong class="jxr_keyword">synchronized</strong> <strong class="jxr_keyword">void</strong> write(<strong class="jxr_keyword">boolean</strong>[] b) <strong class="jxr_keyword">throws</strong> IOException {
+<a class="jxr_linenumber" name="L434" href="#L434">434</a>         write(b, 0, b.length);
 <a class="jxr_linenumber" name="L435" href="#L435">435</a>     }
 <a class="jxr_linenumber" name="L436" href="#L436">436</a> 
 <a class="jxr_linenumber" name="L437" href="#L437">437</a>     @Override
-<a class="jxr_linenumber" name="L438" href="#L438">438</a>     <strong class="jxr_keyword">public</strong> <strong class="jxr_keyword">final</strong> <strong class="jxr_keyword">synchronized</strong> <strong class="jxr_keyword">void</strong> write(<strong class="jxr_keyword">boolean</strong>[] b) <strong class="jxr_keyword">throws</strong> IOException {
-<a class="jxr_linenumber" name="L439" href="#L439">439</a>         write(b, 0, b.length);
+<a class="jxr_linenumber" name="L438" href="#L438">438</a>     <strong class="jxr_keyword">public</strong> <strong class="jxr_keyword">synchronized</strong> <strong class="jxr_keyword">void</strong> write(<strong class="jxr_keyword">boolean</strong>[] b, <strong class="jxr_keyword">int</strong> start, <strong class="jxr_keyword">int</strong> length) <strong class="jxr_keyword">throws</strong> IOException {
+<a class="jxr_linenumber" name="L439" href="#L439">439</a>         getEncoder().write(b, start, length);
 <a class="jxr_linenumber" name="L440" href="#L440">440</a>     }
 <a class="jxr_linenumber" name="L441" href="#L441">441</a> 
 <a class="jxr_linenumber" name="L442" href="#L442">442</a>     @Override
-<a class="jxr_linenumber" name="L443" href="#L443">443</a>     <strong class="jxr_keyword">public</strong> <strong class="jxr_keyword">synchronized</strong> <strong class="jxr_keyword">void</strong> write(<strong class="jxr_keyword">boolean</strong>[] b, <strong class="jxr_keyword">int</strong> start, <strong class="jxr_keyword">int</strong> length) <strong class="jxr_keyword">throws</strong> IOException {
-<a class="jxr_linenumber" name="L444" href="#L444">444</a>         getEncoder().write(b, start, length);
+<a class="jxr_linenumber" name="L443" href="#L443">443</a>     <strong class="jxr_keyword">public</strong> <strong class="jxr_keyword">final</strong> <strong class="jxr_keyword">synchronized</strong> <strong class="jxr_keyword">void</strong> write(Boolean[] buf) <strong class="jxr_keyword">throws</strong> IOException {
+<a class="jxr_linenumber" name="L444" href="#L444">444</a>         write(buf, 0, buf.length);
 <a class="jxr_linenumber" name="L445" href="#L445">445</a>     }
 <a class="jxr_linenumber" name="L446" href="#L446">446</a> 
 <a class="jxr_linenumber" name="L447" href="#L447">447</a>     @Override
-<a class="jxr_linenumber" name="L448" href="#L448">448</a>     <strong class="jxr_keyword">public</strong> <strong class="jxr_keyword">final</strong> <strong class="jxr_keyword">synchronized</strong> <strong class="jxr_keyword">void</strong> write(Boolean[] buf) <strong class="jxr_keyword">throws</strong> IOException {
-<a class="jxr_linenumber" name="L449" href="#L449">449</a>         write(buf, 0, buf.length);
+<a class="jxr_linenumber" name="L448" href="#L448">448</a>     <strong class="jxr_keyword">public</strong> <strong class="jxr_keyword">synchronized</strong> <strong class="jxr_keyword">void</strong> write(Boolean[] buf, <strong class="jxr_keyword">int</strong> offset, <strong class="jxr_keyword">int</strong> size) <strong class="jxr_keyword">throws</strong> IOException {
+<a class="jxr_linenumber" name="L449" href="#L449">449</a>         getEncoder().write(buf, offset, size);
 <a class="jxr_linenumber" name="L450" href="#L450">450</a>     }
-<a class="jxr_linenumber" name="L451" href="#L451">451</a> 
+<a class="jxr_linenumber" name="L451" href="#L451">451</a>     
 <a class="jxr_linenumber" name="L452" href="#L452">452</a>     @Override
-<a class="jxr_linenumber" name="L453" href="#L453">453</a>     <strong class="jxr_keyword">public</strong> <strong class="jxr_keyword">synchronized</strong> <strong class="jxr_keyword">void</strong> write(Boolean[] buf, <strong class="jxr_keyword">int</strong> offset, <strong class="jxr_keyword">int</strong> size) <strong class="jxr_keyword">throws</strong> IOException {
-<a class="jxr_linenumber" name="L454" href="#L454">454</a>         getEncoder().write(buf, offset, size);
+<a class="jxr_linenumber" name="L453" href="#L453">453</a>     <strong class="jxr_keyword">public</strong> <strong class="jxr_keyword">final</strong> <strong class="jxr_keyword">synchronized</strong> <strong class="jxr_keyword">void</strong> write(<strong class="jxr_keyword">char</strong>[] c) <strong class="jxr_keyword">throws</strong> IOException {
+<a class="jxr_linenumber" name="L454" href="#L454">454</a>         write(c, 0, c.length);
 <a class="jxr_linenumber" name="L455" href="#L455">455</a>     }
-<a class="jxr_linenumber" name="L456" href="#L456">456</a>     
+<a class="jxr_linenumber" name="L456" href="#L456">456</a> 
 <a class="jxr_linenumber" name="L457" href="#L457">457</a>     @Override
-<a class="jxr_linenumber" name="L458" href="#L458">458</a>     <strong class="jxr_keyword">public</strong> <strong class="jxr_keyword">final</strong> <strong class="jxr_keyword">synchronized</strong> <strong class="jxr_keyword">void</strong> write(<strong class="jxr_keyword">char</strong>[] c) <strong class="jxr_keyword">throws</strong> IOException {
-<a class="jxr_linenumber" name="L459" href="#L459">459</a>         write(c, 0, c.length);
+<a class="jxr_linenumber" name="L458" href="#L458">458</a>     <strong class="jxr_keyword">public</strong> <strong class="jxr_keyword">synchronized</strong> <strong class="jxr_keyword">void</strong> write(<strong class="jxr_keyword">char</strong>[] c, <strong class="jxr_keyword">int</strong> start, <strong class="jxr_keyword">int</strong> length) <strong class="jxr_keyword">throws</strong> IOException {
+<a class="jxr_linenumber" name="L459" href="#L459">459</a>         getEncoder().write(c, start, length);
 <a class="jxr_linenumber" name="L460" href="#L460">460</a>     }
 <a class="jxr_linenumber" name="L461" href="#L461">461</a> 
 <a class="jxr_linenumber" name="L462" href="#L462">462</a>     @Override
-<a class="jxr_linenumber" name="L463" href="#L463">463</a>     <strong class="jxr_keyword">public</strong> <strong class="jxr_keyword">synchronized</strong> <strong class="jxr_keyword">void</strong> write(<strong class="jxr_keyword">char</strong>[] c, <strong class="jxr_keyword">int</strong> start, <strong class="jxr_keyword">int</strong> length) <strong class="jxr_keyword">throws</strong> IOException {
-<a class="jxr_linenumber" name="L464" href="#L464">464</a>         getEncoder().write(c, start, length);
+<a class="jxr_linenumber" name="L463" href="#L463">463</a>     <strong class="jxr_keyword">public</strong> <strong class="jxr_keyword">final</strong> <strong class="jxr_keyword">synchronized</strong> <strong class="jxr_keyword">void</strong> write(<strong class="jxr_keyword">short</strong>[] s) <strong class="jxr_keyword">throws</strong> IOException {
+<a class="jxr_linenumber" name="L464" href="#L464">464</a>         write(s, 0, s.length);
 <a class="jxr_linenumber" name="L465" href="#L465">465</a>     }
 <a class="jxr_linenumber" name="L466" href="#L466">466</a> 
 <a class="jxr_linenumber" name="L467" href="#L467">467</a>     @Override
-<a class="jxr_linenumber" name="L468" href="#L468">468</a>     <strong class="jxr_keyword">public</strong> <strong class="jxr_keyword">final</strong> <strong class="jxr_keyword">synchronized</strong> <strong class="jxr_keyword">void</strong> write(<strong class="jxr_keyword">short</strong>[] s) <strong class="jxr_keyword">throws</strong> IOException {
-<a class="jxr_linenumber" name="L469" href="#L469">469</a>         write(s, 0, s.length);
+<a class="jxr_linenumber" name="L468" href="#L468">468</a>     <strong class="jxr_keyword">public</strong> <strong class="jxr_keyword">synchronized</strong> <strong class="jxr_keyword">void</strong> write(<strong class="jxr_keyword">short</strong>[] s, <strong class="jxr_keyword">int</strong> start, <strong class="jxr_keyword">int</strong> length) <strong class="jxr_keyword">throws</strong> IOException {
+<a class="jxr_linenumber" name="L469" href="#L469">469</a>         getEncoder().write(s, start, length);
 <a class="jxr_linenumber" name="L470" href="#L470">470</a>     }
 <a class="jxr_linenumber" name="L471" href="#L471">471</a> 
 <a class="jxr_linenumber" name="L472" href="#L472">472</a>     @Override
-<a class="jxr_linenumber" name="L473" href="#L473">473</a>     <strong class="jxr_keyword">public</strong> <strong class="jxr_keyword">synchronized</strong> <strong class="jxr_keyword">void</strong> write(<strong class="jxr_keyword">short</strong>[] s, <strong class="jxr_keyword">int</strong> start, <strong class="jxr_keyword">int</strong> length) <strong class="jxr_keyword">throws</strong> IOException {
-<a class="jxr_linenumber" name="L474" href="#L474">474</a>         getEncoder().write(s, start, length);
+<a class="jxr_linenumber" name="L473" href="#L473">473</a>     <strong class="jxr_keyword">public</strong> <strong class="jxr_keyword">final</strong> <strong class="jxr_keyword">synchronized</strong> <strong class="jxr_keyword">void</strong> write(<strong class="jxr_keyword">int</strong>[] i) <strong class="jxr_keyword">throws</strong> IOException {
+<a class="jxr_linenumber" name="L474" href="#L474">474</a>         write(i, 0, i.length);
 <a class="jxr_linenumber" name="L475" href="#L475">475</a>     }
 <a class="jxr_linenumber" name="L476" href="#L476">476</a> 
 <a class="jxr_linenumber" name="L477" href="#L477">477</a>     @Override
-<a class="jxr_linenumber" name="L478" href="#L478">478</a>     <strong class="jxr_keyword">public</strong> <strong class="jxr_keyword">final</strong> <strong class="jxr_keyword">synchronized</strong> <strong class="jxr_keyword">void</strong> write(<strong class="jxr_keyword">int</strong>[] i) <strong class="jxr_keyword">throws</strong> IOException {
-<a class="jxr_linenumber" name="L479" href="#L479">479</a>         write(i, 0, i.length);
+<a class="jxr_linenumber" name="L478" href="#L478">478</a>     <strong class="jxr_keyword">public</strong> <strong class="jxr_keyword">synchronized</strong> <strong class="jxr_keyword">void</strong> write(<strong class="jxr_keyword">int</strong>[] i, <strong class="jxr_keyword">int</strong> start, <strong class="jxr_keyword">int</strong> length) <strong class="jxr_keyword">throws</strong> IOException {
+<a class="jxr_linenumber" name="L479" href="#L479">479</a>         getEncoder().write(i, start, length);
 <a class="jxr_linenumber" name="L480" href="#L480">480</a>     }
 <a class="jxr_linenumber" name="L481" href="#L481">481</a> 
 <a class="jxr_linenumber" name="L482" href="#L482">482</a>     @Override
-<a class="jxr_linenumber" name="L483" href="#L483">483</a>     <strong class="jxr_keyword">public</strong> <strong class="jxr_keyword">synchronized</strong> <strong class="jxr_keyword">void</strong> write(<strong class="jxr_keyword">int</strong>[] i, <strong class="jxr_keyword">int</strong> start, <strong class="jxr_keyword">int</strong> length) <strong class="jxr_keyword">throws</strong> IOException {
-<a class="jxr_linenumber" name="L484" href="#L484">484</a>         getEncoder().write(i, start, length);
+<a class="jxr_linenumber" name="L483" href="#L483">483</a>     <strong class="jxr_keyword">public</strong> <strong class="jxr_keyword">final</strong> <strong class="jxr_keyword">synchronized</strong> <strong class="jxr_keyword">void</strong> write(<strong class="jxr_keyword">long</strong>[] l) <strong class="jxr_keyword">throws</strong> IOException {
+<a class="jxr_linenumber" name="L484" href="#L484">484</a>         write(l, 0, l.length);
 <a class="jxr_linenumber" name="L485" href="#L485">485</a>     }
 <a class="jxr_linenumber" name="L486" href="#L486">486</a> 
 <a class="jxr_linenumber" name="L487" href="#L487">487</a>     @Override
-<a class="jxr_linenumber" name="L488" href="#L488">488</a>     <strong class="jxr_keyword">public</strong> <strong class="jxr_keyword">final</strong> <strong class="jxr_keyword">synchronized</strong> <strong class="jxr_keyword">void</strong> write(<strong class="jxr_keyword">long</strong>[] l) <strong class="jxr_keyword">throws</strong> IOException {
-<a class="jxr_linenumber" name="L489" href="#L489">489</a>         write(l, 0, l.length);
+<a class="jxr_linenumber" name="L488" href="#L488">488</a>     <strong class="jxr_keyword">public</strong> <strong class="jxr_keyword">synchronized</strong> <strong class="jxr_keyword">void</strong> write(<strong class="jxr_keyword">long</strong>[] l, <strong class="jxr_keyword">int</strong> start, <strong class="jxr_keyword">int</strong> length) <strong class="jxr_keyword">throws</strong> IOException {
+<a class="jxr_linenumber" name="L489" href="#L489">489</a>         getEncoder().write(l, start, length);
 <a class="jxr_linenumber" name="L490" href="#L490">490</a>     }
 <a class="jxr_linenumber" name="L491" href="#L491">491</a> 
 <a class="jxr_linenumber" name="L492" href="#L492">492</a>     @Override
-<a class="jxr_linenumber" name="L493" href="#L493">493</a>     <strong class="jxr_keyword">public</strong> <strong class="jxr_keyword">synchronized</strong> <strong class="jxr_keyword">void</strong> write(<strong class="jxr_keyword">long</strong>[] l, <strong class="jxr_keyword">int</strong> start, <strong class="jxr_keyword">int</strong> length) <strong class="jxr_keyword">throws</strong> IOException {
-<a class="jxr_linenumber" name="L494" href="#L494">494</a>         getEncoder().write(l, start, length);
+<a class="jxr_linenumber" name="L493" href="#L493">493</a>     <strong class="jxr_keyword">public</strong> <strong class="jxr_keyword">final</strong> <strong class="jxr_keyword">synchronized</strong> <strong class="jxr_keyword">void</strong> write(<strong class="jxr_keyword">float</strong>[] f) <strong class="jxr_keyword">throws</strong> IOException {
+<a class="jxr_linenumber" name="L494" href="#L494">494</a>         write(f, 0, f.length);
 <a class="jxr_linenumber" name="L495" href="#L495">495</a>     }
 <a class="jxr_linenumber" name="L496" href="#L496">496</a> 
 <a class="jxr_linenumber" name="L497" href="#L497">497</a>     @Override
-<a class="jxr_linenumber" name="L498" href="#L498">498</a>     <strong class="jxr_keyword">public</strong> <strong class="jxr_keyword">final</strong> <strong class="jxr_keyword">synchronized</strong> <strong class="jxr_keyword">void</strong> write(<strong class="jxr_keyword">float</strong>[] f) <strong class="jxr_keyword">throws</strong> IOException {
-<a class="jxr_linenumber" name="L499" href="#L499">499</a>         write(f, 0, f.length);
+<a class="jxr_linenumber" name="L498" href="#L498">498</a>     <strong class="jxr_keyword">public</strong> <strong class="jxr_keyword">synchronized</strong> <strong class="jxr_keyword">void</strong> write(<strong class="jxr_keyword">float</strong>[] f, <strong class="jxr_keyword">int</strong> start, <strong class="jxr_keyword">int</strong> length) <strong class="jxr_keyword">throws</strong> IOException {
+<a class="jxr_linenumber" name="L499" href="#L499">499</a>         getEncoder().write(f, start, length);
 <a class="jxr_linenumber" name="L500" href="#L500">500</a>     }
 <a class="jxr_linenumber" name="L501" href="#L501">501</a> 
 <a class="jxr_linenumber" name="L502" href="#L502">502</a>     @Override
-<a class="jxr_linenumber" name="L503" href="#L503">503</a>     <strong class="jxr_keyword">public</strong> <strong class="jxr_keyword">synchronized</strong> <strong class="jxr_keyword">void</strong> write(<strong class="jxr_keyword">float</strong>[] f, <strong class="jxr_keyword">int</strong> start, <strong class="jxr_keyword">int</strong> length) <strong class="jxr_keyword">throws</strong> IOException {
-<a class="jxr_linenumber" name="L504" href="#L504">504</a>         getEncoder().write(f, start, length);
+<a class="jxr_linenumber" name="L503" href="#L503">503</a>     <strong class="jxr_keyword">public</strong> <strong class="jxr_keyword">final</strong> <strong class="jxr_keyword">synchronized</strong> <strong class="jxr_keyword">void</strong> write(<strong class="jxr_keyword">double</strong>[] d) <strong class="jxr_keyword">throws</strong> IOException {
+<a class="jxr_linenumber" name="L504" href="#L504">504</a>         write(d, 0, d.length);
 <a class="jxr_linenumber" name="L505" href="#L505">505</a>     }
 <a class="jxr_linenumber" name="L506" href="#L506">506</a> 
 <a class="jxr_linenumber" name="L507" href="#L507">507</a>     @Override
-<a class="jxr_linenumber" name="L508" href="#L508">508</a>     <strong class="jxr_keyword">public</strong> <strong class="jxr_keyword">final</strong> <strong class="jxr_keyword">synchronized</strong> <strong class="jxr_keyword">void</strong> write(<strong class="jxr_keyword">double</strong>[] d) <strong class="jxr_keyword">throws</strong> IOException {
-<a class="jxr_linenumber" name="L509" href="#L509">509</a>         write(d, 0, d.length);
+<a class="jxr_linenumber" name="L508" href="#L508">508</a>     <strong class="jxr_keyword">public</strong> <strong class="jxr_keyword">synchronized</strong> <strong class="jxr_keyword">void</strong> write(<strong class="jxr_keyword">double</strong>[] d, <strong class="jxr_keyword">int</strong> start, <strong class="jxr_keyword">int</strong> length) <strong class="jxr_keyword">throws</strong> IOException {
+<a class="jxr_linenumber" name="L509" href="#L509">509</a>         getEncoder().write(d, start, length);
 <a class="jxr_linenumber" name="L510" href="#L510">510</a>     }
 <a class="jxr_linenumber" name="L511" href="#L511">511</a> 
 <a class="jxr_linenumber" name="L512" href="#L512">512</a>     @Override
-<a class="jxr_linenumber" name="L513" href="#L513">513</a>     <strong class="jxr_keyword">public</strong> <strong class="jxr_keyword">synchronized</strong> <strong class="jxr_keyword">void</strong> write(<strong class="jxr_keyword">double</strong>[] d, <strong class="jxr_keyword">int</strong> start, <strong class="jxr_keyword">int</strong> length) <strong class="jxr_keyword">throws</strong> IOException {
-<a class="jxr_linenumber" name="L514" href="#L514">514</a>         getEncoder().write(d, start, length);
+<a class="jxr_linenumber" name="L513" href="#L513">513</a>     <strong class="jxr_keyword">public</strong> <strong class="jxr_keyword">final</strong> <strong class="jxr_keyword">synchronized</strong> <strong class="jxr_keyword">void</strong> write(String[] s) <strong class="jxr_keyword">throws</strong> IOException {
+<a class="jxr_linenumber" name="L514" href="#L514">514</a>         write(s, 0, s.length);
 <a class="jxr_linenumber" name="L515" href="#L515">515</a>     }
 <a class="jxr_linenumber" name="L516" href="#L516">516</a> 
 <a class="jxr_linenumber" name="L517" href="#L517">517</a>     @Override
-<a class="jxr_linenumber" name="L518" href="#L518">518</a>     <strong class="jxr_keyword">public</strong> <strong class="jxr_keyword">final</strong> <strong class="jxr_keyword">synchronized</strong> <strong class="jxr_keyword">void</strong> write(String[] s) <strong class="jxr_keyword">throws</strong> IOException {
-<a class="jxr_linenumber" name="L519" href="#L519">519</a>         write(s, 0, s.length);
+<a class="jxr_linenumber" name="L518" href="#L518">518</a>     <strong class="jxr_keyword">public</strong> <strong class="jxr_keyword">synchronized</strong> <strong class="jxr_keyword">void</strong> write(String[] s, <strong class="jxr_keyword">int</strong> start, <strong class="jxr_keyword">int</strong> length) <strong class="jxr_keyword">throws</strong> IOException {
+<a class="jxr_linenumber" name="L519" href="#L519">519</a>         getEncoder().write(s, start, length);
 <a class="jxr_linenumber" name="L520" href="#L520">520</a>     }
-<a class="jxr_linenumber" name="L521" href="#L521">521</a> 
-<a class="jxr_linenumber" name="L522" href="#L522">522</a>     @Override
-<a class="jxr_linenumber" name="L523" href="#L523">523</a>     <strong class="jxr_keyword">public</strong> <strong class="jxr_keyword">synchronized</strong> <strong class="jxr_keyword">void</strong> write(String[] s, <strong class="jxr_keyword">int</strong> start, <strong class="jxr_keyword">int</strong> length) <strong class="jxr_keyword">throws</strong> IOException {
-<a class="jxr_linenumber" name="L524" href="#L524">524</a>         getEncoder().write(s, start, length);
-<a class="jxr_linenumber" name="L525" href="#L525">525</a>     }
-<a class="jxr_linenumber" name="L526" href="#L526">526</a>     
-<a class="jxr_linenumber" name="L527" href="#L527">527</a>     @Override
-<a class="jxr_linenumber" name="L528" href="#L528">528</a>     <strong class="jxr_keyword">public</strong> <strong class="jxr_keyword">synchronized</strong> <strong class="jxr_keyword">boolean</strong> checkTruncated() <strong class="jxr_keyword">throws</strong> IOException {
-<a class="jxr_linenumber" name="L529" href="#L529">529</a>         <strong class="jxr_keyword">long</strong> pos = getFilePointer();
-<a class="jxr_linenumber" name="L530" href="#L530">530</a>         <strong class="jxr_keyword">long</strong> len = length();
-<a class="jxr_linenumber" name="L531" href="#L531">531</a>         <strong class="jxr_keyword">if</strong> (pos &gt; len) {
-<a class="jxr_linenumber" name="L532" href="#L532">532</a>             LOG.log(Level.WARNING, <span class="jxr_string">"Premature file end at "</span> + len + <span class="jxr_string">" (expected "</span> + pos + <span class="jxr_string">")"</span>, <strong class="jxr_keyword">new</strong> Throwable());
-<a class="jxr_linenumber" name="L533" href="#L533">533</a>             <strong class="jxr_keyword">return</strong> <strong class="jxr_keyword">true</strong>;
-<a class="jxr_linenumber" name="L534" href="#L534">534</a>         }
-<a class="jxr_linenumber" name="L535" href="#L535">535</a>         <strong class="jxr_keyword">return</strong> false;
-<a class="jxr_linenumber" name="L536" href="#L536">536</a>     }
-<a class="jxr_linenumber" name="L537" href="#L537">537</a> 
-<a class="jxr_linenumber" name="L538" href="#L538">538</a>     @Override
-<a class="jxr_linenumber" name="L539" href="#L539">539</a>     <strong class="jxr_keyword">public</strong> <strong class="jxr_keyword">final</strong> <strong class="jxr_keyword">synchronized</strong> <strong class="jxr_keyword">long</strong> position() {
-<a class="jxr_linenumber" name="L540" href="#L540">540</a>         <strong class="jxr_keyword">return</strong> getFilePointer();
-<a class="jxr_linenumber" name="L541" href="#L541">541</a>     }
-<a class="jxr_linenumber" name="L542" href="#L542">542</a> 
-<a class="jxr_linenumber" name="L543" href="#L543">543</a>     @Override
-<a class="jxr_linenumber" name="L544" href="#L544">544</a>     <strong class="jxr_keyword">public</strong> <strong class="jxr_keyword">final</strong> <strong class="jxr_keyword">synchronized</strong> <strong class="jxr_keyword">void</strong> position(<strong class="jxr_keyword">long</strong> n) <strong class="jxr_keyword">throws</strong> IOException {
-<a class="jxr_linenumber" name="L545" href="#L545">545</a>         seek(n);
-<a class="jxr_linenumber" name="L546" href="#L546">546</a>     }
-<a class="jxr_linenumber" name="L547" href="#L547">547</a>   
-<a class="jxr_linenumber" name="L548" href="#L548">548</a> }
+<a class="jxr_linenumber" name="L521" href="#L521">521</a>   
+<a class="jxr_linenumber" name="L522" href="#L522">522</a> }
 </pre>
 <hr/>
 <div id="footer">Copyright &#169; 1996&#x2013;2021 nom-tam-fits. All rights reserved.</div>

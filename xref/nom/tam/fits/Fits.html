@@ -669,7 +669,7 @@
 <a class="jxr_linenumber" name="L661" href="#L661">661</a> 
 <a class="jxr_linenumber" name="L662" href="#L662">662</a>         <em class="jxr_comment">// Check for truncation even if we successfully skipped to the expected end</em>
 <a class="jxr_linenumber" name="L663" href="#L663">663</a>         <em class="jxr_comment">// since skip may allow going beyond the EOF.</em>
-<a class="jxr_linenumber" name="L664" href="#L664">664</a>         <strong class="jxr_keyword">if</strong> (<strong class="jxr_keyword">this</strong>.dataStr.checkTruncated()) {
+<a class="jxr_linenumber" name="L664" href="#L664">664</a>         <strong class="jxr_keyword">if</strong> (Fits.checkTruncated(<strong class="jxr_keyword">this</strong>.dataStr)) {
 <a class="jxr_linenumber" name="L665" href="#L665">665</a>             <em class="jxr_comment">// File ends before required padding after data...</em>
 <a class="jxr_linenumber" name="L666" href="#L666">666</a>             <em class="jxr_comment">// (files allow skipping beyond the end, which is why we don't</em>
 <a class="jxr_linenumber" name="L667" href="#L667">667</a>             <em class="jxr_comment">// catch it above)</em>
@@ -1001,7 +1001,43 @@
 <a class="jxr_linenumber" name="L993" href="#L993">993</a>     <strong class="jxr_keyword">public</strong> <strong class="jxr_keyword">static</strong> <strong class="jxr_keyword">long</strong> checksum(<strong class="jxr_keyword">final</strong> byte[] data) {
 <a class="jxr_linenumber" name="L994" href="#L994">994</a>         <strong class="jxr_keyword">return</strong> FitsCheckSum.checksum(data);
 <a class="jxr_linenumber" name="L995" href="#L995">995</a>     }
-<a class="jxr_linenumber" name="L996" href="#L996">996</a> }
+<a class="jxr_linenumber" name="L996" href="#L996">996</a>     
+<a class="jxr_linenumber" name="L997" href="#L997">997</a>     
+<a class="jxr_linenumber" name="L998" href="#L998">998</a>     <em class="jxr_javadoccomment">/**</em>
+<a class="jxr_linenumber" name="L999" href="#L999">999</a> <em class="jxr_javadoccomment">     * Checks if the file ends before the current read positon, and if so, it </em>
+<a class="jxr_linenumber" name="L1000" href="#L1000">1000</a> <em class="jxr_javadoccomment">     * may log a warning. This may happen with {@link FitsFile} where the </em>
+<a class="jxr_linenumber" name="L1001" href="#L1001">1001</a> <em class="jxr_javadoccomment">     * contract of {@link RandomAccess} allows for skipping ahead beyond the </em>
+<a class="jxr_linenumber" name="L1002" href="#L1002">1002</a> <em class="jxr_javadoccomment">     * end of file, since expanding the file is allowed when writing. Only a </em>
+<a class="jxr_linenumber" name="L1003" href="#L1003">1003</a> <em class="jxr_javadoccomment">     * subsequent read call would fail.</em>
+<a class="jxr_linenumber" name="L1004" href="#L1004">1004</a> <em class="jxr_javadoccomment">     *</em>
+<a class="jxr_linenumber" name="L1005" href="#L1005">1005</a> <em class="jxr_javadoccomment">     * @param in    the input from which the FITS content was read.</em>
+<a class="jxr_linenumber" name="L1006" href="#L1006">1006</a> <em class="jxr_javadoccomment">     * @return      &lt;code&gt;true&lt;/code&gt; if the current read position is beyond</em>
+<a class="jxr_linenumber" name="L1007" href="#L1007">1007</a> <em class="jxr_javadoccomment">     *              the end-of-file, otherwise &lt;code&gt;false&lt;/code&gt;.</em>
+<a class="jxr_linenumber" name="L1008" href="#L1008">1008</a> <em class="jxr_javadoccomment">     * @throws IOException  if there was an IO error accessing the file or stream.</em>
+<a class="jxr_linenumber" name="L1009" href="#L1009">1009</a> <em class="jxr_javadoccomment">     * </em>
+<a class="jxr_linenumber" name="L1010" href="#L1010">1010</a> <em class="jxr_javadoccomment">     * @see #skip(long)</em>
+<a class="jxr_linenumber" name="L1011" href="#L1011">1011</a> <em class="jxr_javadoccomment">     * @see #skipBytes(int)</em>
+<a class="jxr_linenumber" name="L1012" href="#L1012">1012</a> <em class="jxr_javadoccomment">     * @see #skipAllBytes(long)</em>
+<a class="jxr_linenumber" name="L1013" href="#L1013">1013</a> <em class="jxr_javadoccomment">     * </em>
+<a class="jxr_linenumber" name="L1014" href="#L1014">1014</a> <em class="jxr_javadoccomment">     * </em>
+<a class="jxr_linenumber" name="L1015" href="#L1015">1015</a> <em class="jxr_javadoccomment">     * @since 1.16</em>
+<a class="jxr_linenumber" name="L1016" href="#L1016">1016</a> <em class="jxr_javadoccomment">     */</em>
+<a class="jxr_linenumber" name="L1017" href="#L1017">1017</a>     <strong class="jxr_keyword">static</strong> <strong class="jxr_keyword">boolean</strong> checkTruncated(<a name="ArrayDataInput" href="../../../nom/tam/util/ArrayDataInput.html#ArrayDataInput">ArrayDataInput</a> in) <strong class="jxr_keyword">throws</strong> IOException {
+<a class="jxr_linenumber" name="L1018" href="#L1018">1018</a>         <strong class="jxr_keyword">if</strong> (!(in instanceof <a name="RandomAccess" href="../../../nom/tam/util/RandomAccess.html#RandomAccess">RandomAccess</a>)) {
+<a class="jxr_linenumber" name="L1019" href="#L1019">1019</a>             <em class="jxr_comment">// We cannot skip more than is available in an input stream.</em>
+<a class="jxr_linenumber" name="L1020" href="#L1020">1020</a>             <strong class="jxr_keyword">return</strong> false;
+<a class="jxr_linenumber" name="L1021" href="#L1021">1021</a>         }
+<a class="jxr_linenumber" name="L1022" href="#L1022">1022</a>         
+<a class="jxr_linenumber" name="L1023" href="#L1023">1023</a>         <a name="RandomAccess" href="../../../nom/tam/util/RandomAccess.html#RandomAccess">RandomAccess</a> f = (<a name="RandomAccess" href="../../../nom/tam/util/RandomAccess.html#RandomAccess">RandomAccess</a>) in;
+<a class="jxr_linenumber" name="L1024" href="#L1024">1024</a>         <strong class="jxr_keyword">long</strong> pos = f.getFilePointer();
+<a class="jxr_linenumber" name="L1025" href="#L1025">1025</a>         <strong class="jxr_keyword">long</strong> len = f.length();
+<a class="jxr_linenumber" name="L1026" href="#L1026">1026</a>         <strong class="jxr_keyword">if</strong> (pos &gt; len) {
+<a class="jxr_linenumber" name="L1027" href="#L1027">1027</a>             LOG.log(Level.WARNING, <span class="jxr_string">"Premature file end at "</span> + len + <span class="jxr_string">" (expected "</span> + pos + <span class="jxr_string">")"</span>, <strong class="jxr_keyword">new</strong> Throwable());
+<a class="jxr_linenumber" name="L1028" href="#L1028">1028</a>             <strong class="jxr_keyword">return</strong> <strong class="jxr_keyword">true</strong>;
+<a class="jxr_linenumber" name="L1029" href="#L1029">1029</a>         }
+<a class="jxr_linenumber" name="L1030" href="#L1030">1030</a>         <strong class="jxr_keyword">return</strong> false;
+<a class="jxr_linenumber" name="L1031" href="#L1031">1031</a>     }
+<a class="jxr_linenumber" name="L1032" href="#L1032">1032</a> }
 </pre>
 <hr/>
 <div id="footer">Copyright &#169; 1996&#x2013;2021 nom-tam-fits. All rights reserved.</div>

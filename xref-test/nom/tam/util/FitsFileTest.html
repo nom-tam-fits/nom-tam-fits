@@ -79,52 +79,24 @@
 <a class="jxr_linenumber" name="L71" href="#L71">71</a>          }
 <a class="jxr_linenumber" name="L72" href="#L72">72</a>      }
 <a class="jxr_linenumber" name="L73" href="#L73">73</a>      
-<a class="jxr_linenumber" name="L74" href="#L74">74</a>      @Test
-<a class="jxr_linenumber" name="L75" href="#L75">75</a>      <strong class="jxr_keyword">public</strong> <strong class="jxr_keyword">void</strong> testReadWriteBooleanObject() <strong class="jxr_keyword">throws</strong> Exception {
+<a class="jxr_linenumber" name="L74" href="#L74">74</a>      @Test(expected = IOException.<strong class="jxr_keyword">class</strong>)
+<a class="jxr_linenumber" name="L75" href="#L75">75</a>      <strong class="jxr_keyword">public</strong> <strong class="jxr_keyword">void</strong> testSkipBeforeBeginninng() <strong class="jxr_keyword">throws</strong> Exception {
 <a class="jxr_linenumber" name="L76" href="#L76">76</a>          <strong class="jxr_keyword">try</strong> (FitsFile f = <strong class="jxr_keyword">new</strong> FitsFile(<span class="jxr_string">"fftest.bin"</span>, <span class="jxr_string">"rw"</span>, 100)) {
-<a class="jxr_linenumber" name="L77" href="#L77">77</a>              Boolean[] b = <strong class="jxr_keyword">new</strong> Boolean[] { Boolean.TRUE, <strong class="jxr_keyword">null</strong>, Boolean.FALSE };
-<a class="jxr_linenumber" name="L78" href="#L78">78</a>              <strong class="jxr_keyword">for</strong> (<strong class="jxr_keyword">int</strong> i=0; i&lt;b.length; i++) {
-<a class="jxr_linenumber" name="L79" href="#L79">79</a>                  f.writeBoolean(b[i]);
-<a class="jxr_linenumber" name="L80" href="#L80">80</a>              }
-<a class="jxr_linenumber" name="L81" href="#L81">81</a>              f.seek(0);
-<a class="jxr_linenumber" name="L82" href="#L82">82</a>              Boolean[] b2 = <strong class="jxr_keyword">new</strong> Boolean[b.length];
-<a class="jxr_linenumber" name="L83" href="#L83">83</a>              f.read(b2);
-<a class="jxr_linenumber" name="L84" href="#L84">84</a>              f.close();
-<a class="jxr_linenumber" name="L85" href="#L85">85</a>              <strong class="jxr_keyword">for</strong> (<strong class="jxr_keyword">int</strong> i=0; i&lt;b.length; i++) {
-<a class="jxr_linenumber" name="L86" href="#L86">86</a>                  assertEquals(<span class="jxr_string">"["</span> + i + <span class="jxr_string">"]"</span>, b[i], b2[i]);
-<a class="jxr_linenumber" name="L87" href="#L87">87</a>              }
+<a class="jxr_linenumber" name="L77" href="#L77">77</a>              f.seek(10);
+<a class="jxr_linenumber" name="L78" href="#L78">78</a>              f.skipAllBytes(-11);
+<a class="jxr_linenumber" name="L79" href="#L79">79</a>          }
+<a class="jxr_linenumber" name="L80" href="#L80">80</a>      }
+<a class="jxr_linenumber" name="L81" href="#L81">81</a>      
+<a class="jxr_linenumber" name="L82" href="#L82">82</a>      
+<a class="jxr_linenumber" name="L83" href="#L83">83</a>      @Test
+<a class="jxr_linenumber" name="L84" href="#L84">84</a>      <strong class="jxr_keyword">public</strong> <strong class="jxr_keyword">void</strong> testPosition() <strong class="jxr_keyword">throws</strong> Exception {
+<a class="jxr_linenumber" name="L85" href="#L85">85</a>          <strong class="jxr_keyword">try</strong> (FitsFile f = <strong class="jxr_keyword">new</strong> FitsFile(<span class="jxr_string">"fftest.bin"</span>, <span class="jxr_string">"rw"</span>, 100)) {
+<a class="jxr_linenumber" name="L86" href="#L86">86</a>              f.position(10);
+<a class="jxr_linenumber" name="L87" href="#L87">87</a>              assertEquals(10, f.position());
 <a class="jxr_linenumber" name="L88" href="#L88">88</a>          }
 <a class="jxr_linenumber" name="L89" href="#L89">89</a>      }
 <a class="jxr_linenumber" name="L90" href="#L90">90</a>      
-<a class="jxr_linenumber" name="L91" href="#L91">91</a>      @Test(expected = IOException.<strong class="jxr_keyword">class</strong>)
-<a class="jxr_linenumber" name="L92" href="#L92">92</a>      <strong class="jxr_keyword">public</strong> <strong class="jxr_keyword">void</strong> testSkipBeforeBeginninng() <strong class="jxr_keyword">throws</strong> Exception {
-<a class="jxr_linenumber" name="L93" href="#L93">93</a>          <strong class="jxr_keyword">try</strong> (FitsFile f = <strong class="jxr_keyword">new</strong> FitsFile(<span class="jxr_string">"fftest.bin"</span>, <span class="jxr_string">"rw"</span>, 100)) {
-<a class="jxr_linenumber" name="L94" href="#L94">94</a>              f.seek(10);
-<a class="jxr_linenumber" name="L95" href="#L95">95</a>              f.skipAllBytes(-11);
-<a class="jxr_linenumber" name="L96" href="#L96">96</a>          }
-<a class="jxr_linenumber" name="L97" href="#L97">97</a>      }
-<a class="jxr_linenumber" name="L98" href="#L98">98</a>      
-<a class="jxr_linenumber" name="L99" href="#L99">99</a>      @Test
-<a class="jxr_linenumber" name="L100" href="#L100">100</a>     <strong class="jxr_keyword">public</strong> <strong class="jxr_keyword">void</strong> testTruncated() <strong class="jxr_keyword">throws</strong> Exception {
-<a class="jxr_linenumber" name="L101" href="#L101">101</a>         <strong class="jxr_keyword">try</strong> (FitsFile f = <strong class="jxr_keyword">new</strong> FitsFile(<span class="jxr_string">"fftest.bin"</span>, <span class="jxr_string">"rw"</span>, 100)) {
-<a class="jxr_linenumber" name="L102" href="#L102">102</a>             f.seek(10);
-<a class="jxr_linenumber" name="L103" href="#L103">103</a>             f.setLength(5);
-<a class="jxr_linenumber" name="L104" href="#L104">104</a>             assertEquals(5, f.getFilePointer());
-<a class="jxr_linenumber" name="L105" href="#L105">105</a>             assertFalse(f.checkTruncated());
-<a class="jxr_linenumber" name="L106" href="#L106">106</a>             f.seek(10);
-<a class="jxr_linenumber" name="L107" href="#L107">107</a>             assertTrue(f.checkTruncated());
-<a class="jxr_linenumber" name="L108" href="#L108">108</a>         }
-<a class="jxr_linenumber" name="L109" href="#L109">109</a>     }
-<a class="jxr_linenumber" name="L110" href="#L110">110</a>     
-<a class="jxr_linenumber" name="L111" href="#L111">111</a>     @Test
-<a class="jxr_linenumber" name="L112" href="#L112">112</a>     <strong class="jxr_keyword">public</strong> <strong class="jxr_keyword">void</strong> testPosition() <strong class="jxr_keyword">throws</strong> Exception {
-<a class="jxr_linenumber" name="L113" href="#L113">113</a>         <strong class="jxr_keyword">try</strong> (FitsFile f = <strong class="jxr_keyword">new</strong> FitsFile(<span class="jxr_string">"fftest.bin"</span>, <span class="jxr_string">"rw"</span>, 100)) {
-<a class="jxr_linenumber" name="L114" href="#L114">114</a>             f.position(10);
-<a class="jxr_linenumber" name="L115" href="#L115">115</a>             assertEquals(10, f.position());
-<a class="jxr_linenumber" name="L116" href="#L116">116</a>         }
-<a class="jxr_linenumber" name="L117" href="#L117">117</a>     }
-<a class="jxr_linenumber" name="L118" href="#L118">118</a>     
-<a class="jxr_linenumber" name="L119" href="#L119">119</a> }
+<a class="jxr_linenumber" name="L91" href="#L91">91</a>  }
 </pre>
 <hr/>
 <div id="footer">Copyright &#169; 1996&#x2013;2021 nom-tam-fits. All rights reserved.</div>

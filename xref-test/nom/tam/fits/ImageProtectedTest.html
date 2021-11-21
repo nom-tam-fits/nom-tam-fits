@@ -135,7 +135,7 @@
 <a class="jxr_linenumber" name="L127" href="#L127">127</a>         <em class="jxr_comment">// However, the contract of RandomAccess is to allow skipAllBytes() to move beyond</em>
 <a class="jxr_linenumber" name="L128" href="#L128">128</a>         <em class="jxr_comment">// the file's end. But, we can check if the file pointer is beyond the current</em>
 <a class="jxr_linenumber" name="L129" href="#L129">129</a>         <em class="jxr_comment">// end-of-file, so that's what we will check for from now on.</em>
-<a class="jxr_linenumber" name="L130" href="#L130">130</a>         Assert.assertTrue(input.checkTruncated());
+<a class="jxr_linenumber" name="L130" href="#L130">130</a>         Assert.assertTrue(Fits.checkTruncated(input));
 <a class="jxr_linenumber" name="L131" href="#L131">131</a>         input.close();
 <a class="jxr_linenumber" name="L132" href="#L132">132</a>     }
 <a class="jxr_linenumber" name="L133" href="#L133">133</a> 

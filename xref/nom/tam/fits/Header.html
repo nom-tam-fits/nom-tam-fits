@@ -1650,7 +1650,7 @@
 <a class="jxr_linenumber" name="L1642" href="#L1642">1642</a>         }
 <a class="jxr_linenumber" name="L1643" href="#L1643">1643</a>       
 <a class="jxr_linenumber" name="L1644" href="#L1644">1644</a>         <em class="jxr_comment">// AK: Log if the file ends before the expected end-of-header position.</em>
-<a class="jxr_linenumber" name="L1645" href="#L1645">1645</a>         <strong class="jxr_keyword">if</strong> (dis.checkTruncated()) {
+<a class="jxr_linenumber" name="L1645" href="#L1645">1645</a>         <strong class="jxr_keyword">if</strong> (Fits.checkTruncated(dis)) {
 <a class="jxr_linenumber" name="L1646" href="#L1646">1646</a>             <em class="jxr_comment">// No biggy. We got a complete header just fine, it's only that there was no</em>
 <a class="jxr_linenumber" name="L1647" href="#L1647">1647</a>             <em class="jxr_comment">// padding before EOF. We'll just log that, but otherwise keep going.</em>
 <a class="jxr_linenumber" name="L1648" href="#L1648">1648</a>             LOG.warning(<span class="jxr_string">"Premature end-of-file: no padding after header."</span>);
