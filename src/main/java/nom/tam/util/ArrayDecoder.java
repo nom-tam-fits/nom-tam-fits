@@ -188,7 +188,7 @@ public abstract class ArrayDecoder {
      */
     public void readArrayFully(Object o) throws IOException, IllegalArgumentException {
         if (readArray(o) != FitsEncoder.computeSize(o)) {
-            throw new EOFException("Incomplete array read.");
+            throw new EOFException("Incomplete array read (FITS encoding).");
         }
     }
 

@@ -1,6 +1,7 @@
 package nom.tam.util;
 
 import java.io.DataInput;
+import java.io.EOFException;
 
 /*
  * #%L
@@ -114,11 +115,17 @@ public interface ArrayDataInput extends InputReader, DataInput, FitsIO {
      *            array of boolean's.
      * @throws IOException
      *             if one of the underlying read operations failed
+     * @since 1.16
      */
-    int read(Boolean[] buf) throws IOException;
+    default int read(Boolean[] buf) throws IOException {
+        return read(buf, 0, buf.length);
+    }
 
     /**
-     * Read a segment of an array of booleans, including <code>null</code> values.
+     * Reads into an array of booleans, including legal <code>null</code> values.
+     * The method has a default implementation, which calls {@link #readBoolean()}
+     * element by element. Classes that implement this interface might want to
+     * replace that with a more efficient block read implementation.
      * 
      * @return number of bytes read.
      * @param buf
@@ -129,8 +136,15 @@ public interface ArrayDataInput extends InputReader, DataInput, FitsIO {
      *            number of array elements to read
      * @throws IOException
      *             if one of the underlying read operations failed
+     * @since 1.16
      */
-    int read(Boolean[] buf, int offset, int size) throws IOException;
+    default int read(Boolean[] buf, int offset, int size) throws IOException {
+        int to = offset + size;
+        for (int i = offset; i < to; i++) {
+            buf[i] = readBoolean();
+        }
+        return size;
+    }
     
     
     /**
@@ -340,8 +354,14 @@ public interface ArrayDataInput extends InputReader, DataInput, FitsIO {
      *              Java types that are not supported by the decoder.
      * 
      * @see #readLArray(Object)
+     * 
+     * @since 1.16
      */
-    void readArrayFully(Object o) throws IOException, IllegalArgumentException;
+    default void readArrayFully(Object o) throws IOException, IllegalArgumentException {
+        if (readLArray(o) != FitsEncoder.computeSize(o)) {
+            throw new EOFException("Incomplete array read (assuming default FITS format).");
+        }
+    }
     
     /**
      * See the general contract of the <code>reset</code> method of
@@ -412,6 +432,7 @@ public interface ArrayDataInput extends InputReader, DataInput, FitsIO {
      *            The requested offset into the buffer.
      * @param len
      *            The number of bytes requested.
+     *            
      */
     @Override
     void readFully(byte[] b, int off, int len) throws IOException;

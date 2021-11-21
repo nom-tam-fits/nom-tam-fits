@@ -264,7 +264,7 @@ public class FitsFile extends ArrayDataFile implements RandomAccess, ArrayDataOu
     public synchronized int read(boolean[] b, int start, int length) throws IOException {
         return getDecoder().read(b, start, length);
     }
-    
+
     @Override
     public final synchronized int read(Boolean[] buf) throws IOException {
         return read(buf, 0, buf.length);
@@ -522,16 +522,6 @@ public class FitsFile extends ArrayDataFile implements RandomAccess, ArrayDataOu
     @Override
     public synchronized void write(String[] s, int start, int length) throws IOException {
         getEncoder().write(s, start, length);
-    }
-
-    @Override
-    public final synchronized long position() {
-        return getFilePointer();
-    }
-
-    @Override
-    public final synchronized void position(long n) throws IOException {
-        seek(n);
     }
   
 }

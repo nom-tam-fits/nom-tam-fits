@@ -50,7 +50,11 @@ public interface ArrayDataOutput extends DataOutput, Closeable {
     void flush() throws IOException;
 
     /**
-     * Writes a boolean value to the output.
+     * Writes a boolean value to the output, including support for legal 
+     * <code>null</code> values. The method's default implementation is
+     * to write <code>null</code> as the byte -1. Classes that implement
+     * this interface may want to override this behavior to represent
+     * <code>null</code> differently.
      * 
      * @param b
      *            the boolean value. Subclass implementations may allow
@@ -58,8 +62,17 @@ public interface ArrayDataOutput extends DataOutput, Closeable {
      *            format.
      * @throws IOException
      *             if there was an IO error writing the value to the output.
+     *             
+     * @since 1.16
      */
-    void writeBoolean(Boolean b) throws IOException;
+    default void writeBoolean(Boolean b) throws IOException {
+        if (b == null) {
+            write(-1);
+        } else {
+            writeBoolean(b.booleanValue());
+        }
+        
+    }
 
     /**
      * Write an array of boolean's.
@@ -92,12 +105,19 @@ public interface ArrayDataOutput extends DataOutput, Closeable {
      *            array of booleans.
      * @throws IOException
      *             if one of the underlying write operations failed
+     *             
+     * @since 1.16
      */
-    void write(Boolean[] buf) throws IOException;
+    default void write(Boolean[] buf) throws IOException {
+        write(buf, 0, buf.length);
+    }
 
     /**
      * Write a segment of an array of booleans, including legal
      * <code>null</code> values.
+     * The method has a default implementation, which calls {@link #writeBoolean(Boolean)}
+     * element by element. Classes that implement this interface might want to
+     * replace that with a more efficient block read implementation.
      * 
      * @param buf
      *            array of booleans.
@@ -107,8 +127,16 @@ public interface ArrayDataOutput extends DataOutput, Closeable {
      *            number of array elements to write
      * @throws IOException
      *             if one of the underlying write operations failed
+     *             
+     * @since 1.16
      */
-    void write(Boolean[] buf, int offset, int size) throws IOException;
+    default void write(Boolean[] buf, int offset, int size) throws IOException {
+       int to = offset + size;
+
+       for (int i = offset; i < to; i++) {
+           writeBoolean(buf[i]);
+       }
+    }
 
     /**
      * Write an array of char's.

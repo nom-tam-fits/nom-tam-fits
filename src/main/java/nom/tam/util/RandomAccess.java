@@ -54,4 +54,15 @@ public interface RandomAccess extends ReadWriteAccess, ArrayDataInput {
      *             if the operation fails
      */
     void seek(long offsetFromStart) throws IOException;
+    
+    @Override
+    default long position() throws IOException {
+        return getFilePointer();
+    }
+    
+    @Override
+    default void position(long pos) throws IOException {
+        seek(pos);
+    }
+    
 }
