@@ -63,7 +63,7 @@ public interface ArrayDataInput extends InputReader, DataInput, FitsIO {
      *               reset methods; false otherwise.
      */
     default boolean markSupported() {
-        return false;
+        return true;
     }
 
     /**
