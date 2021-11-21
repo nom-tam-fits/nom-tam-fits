@@ -1,4 +1,4 @@
-package nom.tam.fits.test;
+package nom.tam.fits;
 
 /*
  * #%L
@@ -1054,8 +1054,8 @@ public class HeaderTest {
         try {
             fits = new Fits("target/ht1_truncated.fits");
             ImageHDU hdu = (ImageHDU) fits.getHDU(0);
-            Header hdr = hdu.getHeader();
-            isTruncated = fits.getStream().checkTruncated();
+            hdu.getHeader();
+            isTruncated = Fits.checkTruncated(fits.getStream());
         } finally {
             SafeClose.close(fits);
         }

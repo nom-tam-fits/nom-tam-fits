@@ -1,6 +1,7 @@
 package nom.tam.util;
 
 import java.io.DataInput;
+import java.io.EOFException;
 
 /*
  * #%L
@@ -61,7 +62,9 @@ public interface ArrayDataInput extends InputReader, DataInput, FitsIO {
      * @return  true if this stream instance supports the mark and
      *               reset methods; false otherwise.
      */
-    boolean markSupported();
+    default boolean markSupported() {
+        return true;
+    }
 
     /**
      * Read an array of byte's. The call generally follows the contract of
@@ -105,18 +108,25 @@ public interface ArrayDataInput extends InputReader, DataInput, FitsIO {
     int read(boolean[] buf, int offset, int size) throws IOException;
 
     /**
-     * Read an array of booleans, including legal <code>null</code> values. 
+     * Read an array of booleans, possibly including legal <code>null</code> values. 
      * 
      * @return number of bytes read.
      * @param buf
      *            array of boolean's.
      * @throws IOException
      *             if one of the underlying read operations failed
+     * @since 1.16
      */
-    int read(Boolean[] buf) throws IOException;
+    default int read(Boolean[] buf) throws IOException {
+        return read(buf, 0, buf.length);
+    }
 
     /**
-     * Read a segment of an array of booleans, including <code>null</code> values.
+     * Reads into an array of booleans, possibly including legal <code>null</code> values.
+     * The method has a default implementation, calls {@link #readBoolean()}
+     * element by element. Classes that implement this interface might want to
+     * replace that with a more efficient block read implementation and/or
+     * to add the desired translation for <code>null</code> values.
      * 
      * @return number of bytes read.
      * @param buf
@@ -127,8 +137,15 @@ public interface ArrayDataInput extends InputReader, DataInput, FitsIO {
      *            number of array elements to read
      * @throws IOException
      *             if one of the underlying read operations failed
+     * @since 1.16
      */
-    int read(Boolean[] buf, int offset, int size) throws IOException;
+    default int read(Boolean[] buf, int offset, int size) throws IOException {
+        int to = offset + size;
+        for (int i = offset; i < to; i++) {
+            buf[i] = readBoolean();
+        }
+        return size;
+    }
     
     
     /**
@@ -338,8 +355,14 @@ public interface ArrayDataInput extends InputReader, DataInput, FitsIO {
      *              Java types that are not supported by the decoder.
      * 
      * @see #readLArray(Object)
+     * 
+     * @since 1.16
      */
-    void readArrayFully(Object o) throws IOException, IllegalArgumentException;
+    default void readArrayFully(Object o) throws IOException, IllegalArgumentException {
+        if (readLArray(o) != FitsEncoder.computeSize(o)) {
+            throw new EOFException("Incomplete array read (assuming default FITS format).");
+        }
+    }
     
     /**
      * See the general contract of the <code>reset</code> method of
@@ -397,26 +420,6 @@ public interface ArrayDataInput extends InputReader, DataInput, FitsIO {
      *             if the underlying stream failed
      */
     void skipAllBytes(int toSkip) throws IOException;
-
-    /**
-     * Checks if the file ends before the current read positon, and if so, it 
-     * may log a warning. This may happen with {@link FitsFile} where the 
-     * contract of {@link RandomAccess} allows for skipping ahead beyond the 
-     * end of file, since expanding the file is allowed when writing. Only a 
-     * subsequent read call would fail.
-     *
-     * @return      <code>true</code> if the current read position is beyond
-     *              the end-of-file, otherwise <code>false</code>.
-     * @throws IOException  if there was an IO error accessing the file or stream.
-     * 
-     * @see #skip(long)
-     * @see #skipBytes(int)
-     * @see #skipAllBytes(long)
-     * 
-     * 
-     * @since 1.16
-     */
-    boolean checkTruncated() throws IOException;
     
     /**
      * Read a buffer and signal an EOF if the requested elements cannot be read.
@@ -430,6 +433,7 @@ public interface ArrayDataInput extends InputReader, DataInput, FitsIO {
      *            The requested offset into the buffer.
      * @param len
      *            The number of bytes requested.
+     *            
      */
     @Override
     void readFully(byte[] b, int off, int len) throws IOException;

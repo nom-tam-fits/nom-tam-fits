@@ -71,23 +71,6 @@ public class FitsFileTest {
         }
     }
     
-    @Test
-    public void testReadWriteBooleanObject() throws Exception {
-        try (FitsFile f = new FitsFile("fftest.bin", "rw", 100)) {
-            Boolean[] b = new Boolean[] { Boolean.TRUE, null, Boolean.FALSE };
-            for (int i=0; i<b.length; i++) {
-                f.writeBoolean(b[i]);
-            }
-            f.seek(0);
-            Boolean[] b2 = new Boolean[b.length];
-            f.read(b2);
-            f.close();
-            for (int i=0; i<b.length; i++) {
-                assertEquals("[" + i + "]", b[i], b2[i]);
-            }
-        }
-    }
-    
     @Test(expected = IOException.class)
     public void testSkipBeforeBeginninng() throws Exception {
         try (FitsFile f = new FitsFile("fftest.bin", "rw", 100)) {
@@ -96,17 +79,6 @@ public class FitsFileTest {
         }
     }
     
-    @Test
-    public void testTruncated() throws Exception {
-        try (FitsFile f = new FitsFile("fftest.bin", "rw", 100)) {
-            f.seek(10);
-            f.setLength(5);
-            assertEquals(5, f.getFilePointer());
-            assertFalse(f.checkTruncated());
-            f.seek(10);
-            assertTrue(f.checkTruncated());
-        }
-    }
     
     @Test
     public void testPosition() throws Exception {

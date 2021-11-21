@@ -109,7 +109,7 @@ These are represented as `float[2]` and `double[2]` arrays in the `nom.tam` libr
 
 As of version 1.16, we added a `ComplexValue` object for use in headers. At this point, 
 the new type is not being used with tables to maintain backward compatibility to the original behavior described above.
-This may change in a future release to make the use of `ComplexValue` more universally.
+This may change in a future release to use `ComplexValue` more universally.
 
 #### Strings
 

@@ -50,18 +50,6 @@ public interface ArrayDataOutput extends DataOutput, Closeable {
     void flush() throws IOException;
 
     /**
-     * Writes a boolean value to the output.
-     * 
-     * @param b
-     *            the boolean value. Subclass implementations may allow
-     *            <code>null</code> if it can be supported by the output data
-     *            format.
-     * @throws IOException
-     *             if there was an IO error writing the value to the output.
-     */
-    void writeBoolean(Boolean b) throws IOException;
-
-    /**
      * Write an array of boolean's.
      * 
      * @param buf
@@ -92,12 +80,19 @@ public interface ArrayDataOutput extends DataOutput, Closeable {
      *            array of booleans.
      * @throws IOException
      *             if one of the underlying write operations failed
+     *             
+     * @since 1.16
      */
-    void write(Boolean[] buf) throws IOException;
+    default void write(Boolean[] buf) throws IOException {
+        write(buf, 0, buf.length);
+    }
 
     /**
-     * Write a segment of an array of booleans, including legal
+     * Write a segment of an array of booleans, possibly including legal
      * <code>null</code> values.
+     * The method has a default implementation, which calls {@link #writeBoolean(boolean)}
+     * element by element. Classes that implement this interface might want to
+     * replace that with a more efficient block read implementation/
      * 
      * @param buf
      *            array of booleans.
@@ -107,8 +102,16 @@ public interface ArrayDataOutput extends DataOutput, Closeable {
      *            number of array elements to write
      * @throws IOException
      *             if one of the underlying write operations failed
+     *             
+     * @since 1.16
      */
-    void write(Boolean[] buf, int offset, int size) throws IOException;
+    default void write(Boolean[] buf, int offset, int size) throws IOException {
+       int to = offset + size;
+
+       for (int i = offset; i < to; i++) {
+           writeBoolean(buf[i].booleanValue());
+       }
+    }
 
     /**
      * Write an array of char's.

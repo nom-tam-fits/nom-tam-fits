@@ -661,7 +661,7 @@ public class Fits implements Closeable {
 
         // Check for truncation even if we successfully skipped to the expected end
         // since skip may allow going beyond the EOF.
-        if (this.dataStr.checkTruncated()) {
+        if (Fits.checkTruncated(this.dataStr)) {
             // File ends before required padding after data...
             // (files allow skipping beyond the end, which is why we don't
             // catch it above)
@@ -992,5 +992,41 @@ public class Fits implements Closeable {
     @Deprecated
     public static long checksum(final byte[] data) {
         return FitsCheckSum.checksum(data);
+    }
+    
+    
+    /**
+     * Checks if the file ends before the current read positon, and if so, it 
+     * may log a warning. This may happen with {@link FitsFile} where the 
+     * contract of {@link RandomAccess} allows for skipping ahead beyond the 
+     * end of file, since expanding the file is allowed when writing. Only a 
+     * subsequent read call would fail.
+     *
+     * @param in    the input from which the FITS content was read.
+     * @return      <code>true</code> if the current read position is beyond
+     *              the end-of-file, otherwise <code>false</code>.
+     * @throws IOException  if there was an IO error accessing the file or stream.
+     * 
+     * @see #skip(long)
+     * @see #skipBytes(int)
+     * @see #skipAllBytes(long)
+     * 
+     * 
+     * @since 1.16
+     */
+    static boolean checkTruncated(ArrayDataInput in) throws IOException {
+        if (!(in instanceof RandomAccess)) {
+            // We cannot skip more than is available in an input stream.
+            return false;
+        }
+        
+        RandomAccess f = (RandomAccess) in;
+        long pos = f.getFilePointer();
+        long len = f.length();
+        if (pos > len) {
+            LOG.log(Level.WARNING, "Premature file end at " + len + " (expected " + pos + ")", new Throwable());
+            return true;
+        }
+        return false;
     }
 }
