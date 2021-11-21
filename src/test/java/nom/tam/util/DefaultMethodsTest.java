@@ -74,7 +74,7 @@ public class DefaultMethodsTest {
     @Test
     public void testWriteBooleanArray() throws Exception {
         Boolean[] b = new Boolean[] { null, Boolean.TRUE, Boolean.FALSE };
-        new DefaultOutput().write(b, 0, b.length);
+        new DefaultOutput().write(b);
         // No exception thrown...
     }
    
