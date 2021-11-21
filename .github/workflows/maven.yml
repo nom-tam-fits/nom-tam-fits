@@ -91,5 +91,5 @@ jobs:
       env:
         NEXUS_USERNAME: ${{ secrets.NEXUS_USERNAME }}
         NEXUS_PASSWORD: ${{ secrets.NEXUS_PASSWORD }}
-      run: mvn -B deploy -DskipTests --settings settings.xml
+      run: mvn -B deploy -DskipTests -Pnexus-repo --settings settings.xml
       

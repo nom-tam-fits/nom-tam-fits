@@ -656,19 +656,23 @@
 	    <activation>
         <activeByDefault>true</activeByDefault>
       </activation>
-      <properties>
-	      <repo-id>nexus</repo-id>
-			  <repo-name>i4j sonatype Maven 2 repository</repo-name>
-			  <repo-url>https://oss.sonatype.org/service/local/staging/deploy/maven2</repo-url>
-			</properties>
-	  </profile>
+      <distributionManagement>
+    		<repository>
+		    	<id>nexus</id>
+	    		<name>i4j sonatype Snapshot Maven 2 repository</name>
+			    <url>https://oss.sonatype.org/content/repositories/snapshots</url>
+		    </repository>
+		  </distributionManagement>
+    </profile>  
 	  <profile>
 	    <id>github-repo</id>
-	    <properties>
-  		  <repo-id>github</repo-id>
-        <repo-name>GitHub nom-tam-fits Apache Maven Packages</repo-name>
-        <repo-url>https://maven.pkg.github.com/nom-tam-fits/nom-tam-fits</repo-url>
-      </properties>
+	    <distributionManagement>
+    		<repository>
+		    	<id>github</id>
+	    		<name>GitHub nom-tam-fits Apache Maven Packages</name>
+			    <url>https://maven.pkg.github.com/nom-tam-fits/nom-tam-fits</url>
+		    </repository>
+		  </distributionManagement>
 	  </profile>
 		<profile>
 			<id>createHeasarcZip</id>
