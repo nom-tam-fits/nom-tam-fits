@@ -123,12 +123,7 @@
 		<tag>HEAD</tag>
 	</scm>
 	<distributionManagement>
-    <!-- We'll use profiles to select which repository to use -->
-		<repository>
-			<id>${repo-id}</id>
-			<name>${repo-name}</name>
-			<url>${repo-url}</url>
-		</repository>
+	  <!-- We'll use profiles to define the standard repository --> 
 		<snapshotRepository>
 			<id>nexus</id>
 			<name>i4j sonatype Snapshot Maven 2 repository</name>
