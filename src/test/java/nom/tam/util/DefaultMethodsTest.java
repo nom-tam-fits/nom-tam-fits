@@ -73,11 +73,17 @@ public class DefaultMethodsTest {
 
     @Test
     public void testWriteBooleanArray() throws Exception {
-        Boolean[] b = new Boolean[] { null, Boolean.TRUE, Boolean.FALSE };
+        Boolean[] b = new Boolean[] { Boolean.TRUE, Boolean.FALSE };
         new DefaultOutput().write(b);
         // No exception thrown...
     }
-   
+    
+    @Test(expected = NullPointerException.class)
+    public void testWriteBooleanNull() throws Exception {
+        Boolean[] b = new Boolean[] { Boolean.TRUE, Boolean.FALSE, null };
+        new DefaultOutput().write(b);
+        // A NullPointerException is thrown, because the deffault implementation does not handle null...
+    }
     
     class DefaultInput implements ArrayDataInput {
 

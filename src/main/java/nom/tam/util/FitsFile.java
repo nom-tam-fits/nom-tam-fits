@@ -388,12 +388,7 @@ public class FitsFile extends ArrayDataFile implements RandomAccess, ArrayDataOu
     public synchronized void writeBoolean(boolean v) throws IOException {
         getEncoder().writeBoolean(v);
     }
-
-    @Override
-    public synchronized void writeBoolean(Boolean v) throws IOException {
-        getEncoder().writeBoolean(v);
-    }
-
+    
     @Override
     public synchronized void writeChar(int v) throws IOException {
         getEncoder().writeChar(v);

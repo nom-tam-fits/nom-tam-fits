@@ -50,31 +50,6 @@ public interface ArrayDataOutput extends DataOutput, Closeable {
     void flush() throws IOException;
 
     /**
-     * Writes a boolean value to the output, including support for legal 
-     * <code>null</code> values. The method's default implementation is
-     * to write <code>null</code> as the byte -1. Classes that implement
-     * this interface may want to override this behavior to represent
-     * <code>null</code> differently.
-     * 
-     * @param b
-     *            the boolean value. Subclass implementations may allow
-     *            <code>null</code> if it can be supported by the output data
-     *            format.
-     * @throws IOException
-     *             if there was an IO error writing the value to the output.
-     *             
-     * @since 1.16
-     */
-    default void writeBoolean(Boolean b) throws IOException {
-        if (b == null) {
-            write(-1);
-        } else {
-            writeBoolean(b.booleanValue());
-        }
-        
-    }
-
-    /**
      * Write an array of boolean's.
      * 
      * @param buf
@@ -113,11 +88,11 @@ public interface ArrayDataOutput extends DataOutput, Closeable {
     }
 
     /**
-     * Write a segment of an array of booleans, including legal
+     * Write a segment of an array of booleans, possibly including legal
      * <code>null</code> values.
-     * The method has a default implementation, which calls {@link #writeBoolean(Boolean)}
+     * The method has a default implementation, which calls {@link #writeBoolean(boolean)}
      * element by element. Classes that implement this interface might want to
-     * replace that with a more efficient block read implementation.
+     * replace that with a more efficient block read implementation/
      * 
      * @param buf
      *            array of booleans.
@@ -134,7 +109,7 @@ public interface ArrayDataOutput extends DataOutput, Closeable {
        int to = offset + size;
 
        for (int i = offset; i < to; i++) {
-           writeBoolean(buf[i]);
+           writeBoolean(buf[i].booleanValue());
        }
     }
 

@@ -207,11 +207,6 @@ public class FitsOutputStream extends ArrayOutputStream implements ArrayDataOutp
     }
     
     @Override
-    public synchronized void writeBoolean(Boolean b) throws IOException {
-        getEncoder().writeBoolean(b);
-    }
-
-    @Override
     public synchronized void writeChar(int c) throws IOException {
         getEncoder().writeChar(c);
     }

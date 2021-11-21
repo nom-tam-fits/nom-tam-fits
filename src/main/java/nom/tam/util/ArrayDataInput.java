@@ -108,7 +108,7 @@ public interface ArrayDataInput extends InputReader, DataInput, FitsIO {
     int read(boolean[] buf, int offset, int size) throws IOException;
 
     /**
-     * Read an array of booleans, including legal <code>null</code> values. 
+     * Read an array of booleans, possibly including legal <code>null</code> values. 
      * 
      * @return number of bytes read.
      * @param buf
@@ -122,10 +122,11 @@ public interface ArrayDataInput extends InputReader, DataInput, FitsIO {
     }
 
     /**
-     * Reads into an array of booleans, including legal <code>null</code> values.
-     * The method has a default implementation, which calls {@link #readBoolean()}
+     * Reads into an array of booleans, possibly including legal <code>null</code> values.
+     * The method has a default implementation, calls {@link #readBoolean()}
      * element by element. Classes that implement this interface might want to
-     * replace that with a more efficient block read implementation.
+     * replace that with a more efficient block read implementation and/or
+     * to add the desired translation for <code>null</code> values.
      * 
      * @return number of bytes read.
      * @param buf
