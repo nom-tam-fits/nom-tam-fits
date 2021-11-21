@@ -652,10 +652,10 @@
         <activeByDefault>true</activeByDefault>
       </activation>
       <distributionManagement>
-    		<repository>
-		    	<id>nexus</id>
-	    		<name>i4j sonatype Snapshot Maven 2 repository</name>
-			    <url>https://oss.sonatype.org/content/repositories/snapshots</url>
+        <repository>
+			    <id>sonatype-nexus-staging</id>
+			    <name>i4j sonatype Maven 2 repository</name>
+			    <url>https://oss.sonatype.org/service/local/staging/deploy/maven2</url>
 		    </repository>
 		  </distributionManagement>
     </profile>  
