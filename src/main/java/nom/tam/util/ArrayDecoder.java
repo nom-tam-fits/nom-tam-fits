@@ -338,8 +338,8 @@ public abstract class ArrayDecoder {
         protected boolean loadOne(int size) throws IOException {
             this.pending = size;
             buffer.rewind();
-            buffer.limit(Math.max(0, in.read(data, 0, size)));
-            return buffer.limit() == size;
+            buffer.limit(0);
+            return makeAvailable(size);
         }
 
         /**
