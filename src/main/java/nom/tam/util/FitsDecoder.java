@@ -159,10 +159,11 @@ public class FitsDecoder extends ArrayDecoder {
      */
     @Deprecated
     protected synchronized char readChar() throws IOException {
-        if (FitsFactory.isUseUnicodeChars()) {
-            return (char) readUnsignedShort();
+        int b = FitsFactory.isUseUnicodeChars() ? readUnsignedShort() : read();
+        if (b < 0) {
+            throw new EOFException();
         }
-        return (char) readUnsignedByte();
+        return (char) b;
     }
 
     /**

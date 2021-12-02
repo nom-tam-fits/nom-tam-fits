@@ -1656,7 +1656,7 @@ public class HeaderCard implements CursorValue<String>, Cloneable {
             // Read as long as there is more available, even if it comes in a trickle...
             while (got < buffer.length) {
                 int n = dis.in().read(buffer, got, buffer.length - got);
-                if (n <= 0) {
+                if (n < 0) {
                     break;
                 }
                 got += n;
