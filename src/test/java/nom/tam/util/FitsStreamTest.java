@@ -38,6 +38,7 @@ import static org.junit.Assert.assertTrue;
 
 import java.io.ByteArrayInputStream;
 import java.io.ByteArrayOutputStream;
+import java.io.EOFException;
 import java.io.IOException;
 import java.io.InputStream;
 import java.util.Random;
@@ -145,6 +146,31 @@ public class FitsStreamTest {
         }  
     }
     
+    
+    @Test(expected = EOFException.class)
+    public void testTrickleReadFullyEOF() throws Exception {
+        Random random = new Random();
+        
+        InputStream reader = new InputStream() {
+
+            @Override
+            public int read() throws IOException {
+                return 1;
+            }
+
+            @Override
+            public int read(byte[] b, int from, int length) throws IOException {
+                return random.nextBoolean() ? 1 : 0;
+            }            
+        };
+        
+        try(FitsInputStream in = new FitsInputStream(reader)) {
+            in.setAllowBlocking(false);
+            assertFalse(in.isAllowBlocking());
+            // This should throw an EOFException if the stream is blocked.
+            in.readFully(new byte[100]);
+        }  
+    }
    
     @Test
     public void testTrickleDecode() throws Exception {
@@ -167,6 +193,31 @@ public class FitsStreamTest {
             in.setAllowBlocking(true);
             assertTrue(in.isAllowBlocking());
             // Despite the trickle, this should not block...
+            in.readArrayFully(new double[100]);
+        }  
+    }
+    
+    @Test(expected = EOFException.class)
+    public void testTrickleDecodeEOF() throws Exception {
+        Random random = new Random();
+        
+        InputStream reader = new InputStream() {
+
+            @Override
+            public int read() throws IOException {
+                return 1;
+            }
+
+            @Override
+            public int read(byte[] b, int from, int length) throws IOException {
+                return random.nextBoolean() ? 1 : 0;
+            }            
+        };
+        
+        try(FitsInputStream in = new FitsInputStream(reader)) {
+            in.setAllowBlocking(false);
+            assertFalse(in.isAllowBlocking());
+            // This should throw an EOFException if the stream is blocked.
             in.readArrayFully(new double[100]);
         }  
     }

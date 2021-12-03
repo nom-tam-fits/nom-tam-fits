@@ -1,6 +1,7 @@
 package nom.tam.util;
 
 import static org.junit.Assert.assertNotEquals;
+import static org.junit.Assert.assertNull;
 import static org.junit.Assert.assertTrue;
 
 /*
@@ -169,4 +170,33 @@ public class BufferedFileTest {
         }
     }
     
+    @Test
+    public void testTrickleReadFully() throws Exception {
+        double[] d = new double[6];
+        
+        FitsFile f = new FitsFile("target/trickleTest", "rw");
+        f.write(d);
+        f.setLength(100);
+
+        final Exception[] ex = new Exception[1];
+        
+        Thread writer = new Thread() {
+            @Override
+            public void run() {
+                try {
+                    Thread.sleep(100);
+                    f.position(0);
+                } catch (Exception e) {
+                    ex[0] = e;
+                }
+            }
+        };
+        
+        writer.start();
+        f.readArrayFully(d);
+        
+        assertNull(ex[0]);
+        
+        writer.join(1000);
+    }
 }
