@@ -47,10 +47,7 @@ public class ArrayInputStream extends BufferedInputStream implements InputReader
 
     /** conversion from FITS binary representation to Java arrays */
     private ArrayDecoder decoder;
-    private InputStream is;
 
-    private boolean allowBlocking = true;
-    
     /**
      * Instantiates a new input stream for efficient array transactions. For use
      * by subclass constructors only.
@@ -62,7 +59,6 @@ public class ArrayInputStream extends BufferedInputStream implements InputReader
      */
     protected ArrayInputStream(InputStream i, int bufLength) {
         super(i, bufLength);
-        this.is = i;
     }
 
     /**
@@ -79,35 +75,6 @@ public class ArrayInputStream extends BufferedInputStream implements InputReader
     ArrayInputStream(InputStream i, int bufLength, ArrayDecoder bin2java) {
         this(i, bufLength);
         setDecoder(bin2java);
-    }
-    
-    /**
-     * Set whether read calls are allowed to block on this input stream. By default,
-     * we allow blocking reads, for backward compatibility, but disabling it more
-     * consistent with the behavior of {@link BufferedInputStream}. When blocking
-     * is disabled, any read operation that would block will behave as if it
-     * reached the end-of-stream or EOF.
-     * 
-     * @param value     whether read calls may block.
-     * 
-     * @see #isAllowBlocking()
-     */
-    public void setAllowBlocking(boolean value) {
-        this.allowBlocking = value;
-    }
-    
-    /**
-     * Checks if read calls are allowed to block. When blocking
-     * is disabled, any read operation that would block will behave as if it
-     * reached the end-of-stream or EOF.
-     * 
-     * @return      <code>true</code> if reads calls may block on the underlying
-     *              stream, or else <code>false</code>
-     *              
-     * @see #setAllowBlocking(boolean)
-     */
-    public final boolean isAllowBlocking() {
-        return allowBlocking;
     }
 
     /**
@@ -134,28 +101,6 @@ public class ArrayInputStream extends BufferedInputStream implements InputReader
      */
     protected ArrayDecoder getDecoder() {
         return decoder;
-    }
-
-    @Override
-    public int read() throws IOException {
-        int n = super.read();     
-        if (n < 0 && allowBlocking) {
-            // Would block, or reached end-of-stream, so try read directly from
-            // the underlying stream to distinguish...
-            return is.read();
-        }
-        return n;        
-    }
-    
-    @Override
-    public int read(byte[] b, int off, int len) throws IOException {
-        int n = super.read(b, off, len);
-        if (n < 0 && allowBlocking) {
-            // Would block, or reached end-of-stream, so try read directly from
-            // the underlying stream to distinguish...
-            return is.read(b, off, len);
-        }
-        return n;
     }
 
     /**

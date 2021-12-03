@@ -84,8 +84,7 @@ public abstract class BufferDecoder extends FitsDecoder {
             @Override
             public int read(byte[] b, int from, int length) throws IOException {
                 return BufferDecoder.this.read(b, from, length);
-            }
-            
+            }    
         });
     }
     

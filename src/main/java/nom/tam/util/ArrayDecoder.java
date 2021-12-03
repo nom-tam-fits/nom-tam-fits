@@ -347,7 +347,8 @@ public abstract class ArrayDecoder {
          * attempting to fill the buffer if possible.
          * 
          * @return <code>true</code> if data was successfully buffered from the
-         *         underlying intput. Othwrwise <code>false</code>.
+         *         underlying intput or the buffer is already full. Otherwise
+         *         <code>false</code>.
          * @throws IOException
          *             if there as an IO error, other than the end of file,
          *             while trying to read more data from the underlying input
@@ -359,14 +360,11 @@ public abstract class ArrayDecoder {
             if (remaining > 0) {
                 System.arraycopy(data, buffer.position(), data, 0, remaining);
             }
-
             buffer.rewind();
 
             int n = (int) Math.min(pending, data.length - remaining);
             n = in.read(data, remaining, n);
             if (n < 0) {
-                // Let's not be selfish, in case we come back for more...
-                Thread.yield();
                 return false;
             }
             buffer.limit(remaining + n);
