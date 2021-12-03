@@ -44,12 +44,12 @@ import nom.tam.fits.FitsFactory;
  * 
  * @author Attila Kovacs
  * @since 1.16
- * @see ArrayEncoder
+ * @see OutputEncoder
  * @see ArrayDataFile
  * @see ArrayInputStream
  * @see ArrayOutputStream
  */
-public abstract class ArrayDecoder {
+public abstract class InputDecoder {
 
     /** The buffer size for array translation */
     private static final int BUFFER_SIZE = FitsFactory.FITS_BLOCK_SIZE;
@@ -72,7 +72,7 @@ public abstract class ArrayDecoder {
      * 
      * @see #setInput(InputReader)
      */
-    protected ArrayDecoder() {
+    protected InputDecoder() {
         buf = new InputBuffer(BUFFER_SIZE);
     }
 
@@ -83,7 +83,7 @@ public abstract class ArrayDecoder {
      * @param i
      *            the binary input.
      */
-    public ArrayDecoder(InputReader i) {
+    public InputDecoder(InputReader i) {
         this();
         setInput(i);
     }

@@ -185,7 +185,6 @@ public class FitsDecoderTest {
             assertEquals(0, e.readChar());
         }
         e.readChar(); // should throw exception.
-   
     }
     
     @Test(expected = EOFException.class)

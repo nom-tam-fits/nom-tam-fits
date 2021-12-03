@@ -48,7 +48,7 @@ import nom.tam.util.type.ElementType;
  * @see FitsInputStream
  * @see FitsFile
  */
-public class FitsDecoder extends ArrayDecoder {
+public class FitsDecoder extends InputDecoder {
 
     /** The FITS byte value for the binary representation of a boolean 'true' value */
     private static final byte FITS_TRUE = (byte) 'T';

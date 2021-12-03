@@ -63,5 +63,4 @@ public class FitsStreamTest {
         assertEquals("standalone", b[0].booleanValue(), i.readBoolean());
     }
 
-    
 }

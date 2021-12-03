@@ -48,10 +48,10 @@ import java.io.IOException;
 public class ArrayDataFile extends BufferedFileIO {
 
     /** conversion from Java arrays to FITS binary representation */
-    private ArrayEncoder encoder;
+    private OutputEncoder encoder;
 
     /** conversion from FITS binary representation to Java arrays */
-    private ArrayDecoder decoder;
+    private InputDecoder decoder;
 
     /**
      * Instantiates a new file for high-performance array IO operations. For use
@@ -80,9 +80,9 @@ public class ArrayDataFile extends BufferedFileIO {
      *            the conversion from Java arrays to their binary representation
      *            in file
      * @see #getEncoder()
-     * @see #setDecoder(ArrayDecoder)
+     * @see #setDecoder(InputDecoder)
      */
-    protected void setEncoder(ArrayEncoder java2bin) {
+    protected void setEncoder(OutputEncoder java2bin) {
         this.encoder = java2bin;
     }
 
@@ -93,10 +93,10 @@ public class ArrayDataFile extends BufferedFileIO {
      * 
      * @return the conversion from Java arrays to their binary representation in
      *         file
-     * @see #setEncoder(ArrayEncoder)
+     * @see #setEncoder(OutputEncoder)
      * @see #getDecoder()
      */
-    protected ArrayEncoder getEncoder() {
+    protected OutputEncoder getEncoder() {
         return encoder;
     }
 
@@ -108,9 +108,9 @@ public class ArrayDataFile extends BufferedFileIO {
      *            the conversion from the binary representation of arrays in the
      *            file to Java arrays.
      * @see #getDecoder()
-     * @see #setEncoder(ArrayEncoder)
+     * @see #setEncoder(OutputEncoder)
      */
-    protected void setDecoder(ArrayDecoder bin2java) {
+    protected void setDecoder(InputDecoder bin2java) {
         this.decoder = bin2java;
     }
 
@@ -121,10 +121,10 @@ public class ArrayDataFile extends BufferedFileIO {
      * 
      * @return the conversion from the binary representation of arrays in the
      *         file to Java arrays
-     * @see #setDecoder(ArrayDecoder)
+     * @see #setDecoder(InputDecoder)
      * @see #getEncoder()
      */
-    protected ArrayDecoder getDecoder() {
+    protected InputDecoder getDecoder() {
         return decoder;
     }
 
