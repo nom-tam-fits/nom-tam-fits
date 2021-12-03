@@ -32,9 +32,17 @@ package nom.tam.util;
  */
 
 import static org.junit.Assert.assertEquals;
+import static org.junit.Assert.assertFalse;
+import static org.junit.Assert.assertNotEquals;
+import static org.junit.Assert.assertTrue;
 
 import java.io.ByteArrayInputStream;
 import java.io.ByteArrayOutputStream;
+import java.io.EOFException;
+import java.io.IOException;
+import java.io.InputStream;
+import java.util.Arrays;
+import java.util.Random;
 
 import org.junit.Test;
 
@@ -63,5 +71,54 @@ public class FitsStreamTest {
         assertEquals("standalone", b[0].booleanValue(), i.readBoolean());
     }
     
+    @Test
+    public void testCloggedInputStream() throws Exception {
+        Random random = new Random();
+        
+        InputStream reader = new InputStream() {
+
+            @Override
+            public int read() throws IOException {
+                return 1;
+            }
+
+            @Override
+            public int read(byte[] b, int from, int length) throws IOException {
+                return random.nextBoolean() ? 1 : 0;
+            }            
+        };
+        
+        try(FitsInputStream in = new FitsInputStream(reader)) {
+            in.setAllowBlocking(true);
+            assertTrue(in.isAllowBlocking());
+            for(int i=0; i<100; i++) {
+                assertNotEquals(-1, in.readByte());
+            }
+        }  
+    }
+    
+    @Test(expected = EOFException.class)
+    public void testCloggedInputStreamEOF() throws Exception {
+        InputStream reader = new InputStream() {
+
+            @Override
+            public int read() throws IOException {
+                return 1;
+            }
+
+            @Override
+            public int read(byte[] b, int from, int length) throws IOException {
+                return 0;
+            }            
+        };
+        
+        try(FitsInputStream in = new FitsInputStream(reader)) {
+            in.setAllowBlocking(false);
+            assertFalse(in.isAllowBlocking());
+            
+            // We expect an exception when the underlying read ea
+            in.readByte();
+        }  
+    }
     
 }
