@@ -135,7 +135,6 @@ public class ArrayInputStream extends BufferedInputStream implements InputReader
     protected ArrayDecoder getDecoder() {
         return decoder;
     }
-    
 
     @Override
     public int read() throws IOException {

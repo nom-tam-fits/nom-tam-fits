@@ -1654,12 +1654,19 @@ public class HeaderCard implements CursorValue<String>, Cloneable {
         
         try {
             // Read as long as there is more available, even if it comes in a trickle...
-            while (got < buffer.length) {
+            for (;;) {
                 int n = dis.in().read(buffer, got, buffer.length - got);
                 if (n < 0) {
                     break;
                 }
                 got += n;
+
+                // We'll keep trying but let's not be selfish about it...
+                if (got < buffer.length) {
+                    Thread.yield();
+                } else {
+                    break;
+                }
             }
         } catch (EOFException e) {
             // Just in case read throws EOFException instead of returning -1 by contract.

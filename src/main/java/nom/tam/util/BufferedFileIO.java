@@ -442,11 +442,15 @@ class BufferedFileIO implements InputReader, OutputWriter, Flushable, Closeable 
     public synchronized void readFully(byte[] b, int off, int len) throws IOException { 
         while (len > 0) {
             int n = read(b, off, len);
-            if (n < 0) {
+            if (n > 0) {
+                off += n;
+                len -= n;
+            } else if (n < 0) {
                 throw new EOFException();
+            } else {
+                // We'll keep trying but let's not be selfish about it...
+                Thread.yield();
             }
-            off += n;
-            len -= n;
         }
     }
     

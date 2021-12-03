@@ -365,6 +365,8 @@ public abstract class ArrayDecoder {
             int n = (int) Math.min(pending, data.length - remaining);
             n = in.read(data, remaining, n);
             if (n < 0) {
+                // Let's not be selfish, in case we come back for more...
+                Thread.yield();
                 return false;
             }
             buffer.limit(remaining + n);

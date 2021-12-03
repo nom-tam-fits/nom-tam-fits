@@ -38,10 +38,8 @@ import static org.junit.Assert.assertTrue;
 
 import java.io.ByteArrayInputStream;
 import java.io.ByteArrayOutputStream;
-import java.io.EOFException;
 import java.io.IOException;
 import java.io.InputStream;
-import java.util.Arrays;
 import java.util.Random;
 
 import org.junit.Test;
@@ -72,7 +70,7 @@ public class FitsStreamTest {
     }
     
     @Test
-    public void testCloggedInputStream() throws Exception {
+    public void testTrickleInputStream() throws Exception {
         Random random = new Random();
         
         InputStream reader = new InputStream() {
@@ -92,13 +90,14 @@ public class FitsStreamTest {
             in.setAllowBlocking(true);
             assertTrue(in.isAllowBlocking());
             for(int i=0; i<100; i++) {
-                assertNotEquals(-1, in.readByte());
+                // read() should never return -1 (EOF), but may block a while...
+                assertNotEquals(-1, in.read());
             }
         }  
     }
     
-    @Test(expected = EOFException.class)
-    public void testCloggedInputStreamEOF() throws Exception {
+    @Test
+    public void testTrickleInputStreamEOF() throws Exception {
         InputStream reader = new InputStream() {
 
             @Override
@@ -116,8 +115,59 @@ public class FitsStreamTest {
             in.setAllowBlocking(false);
             assertFalse(in.isAllowBlocking());
             
-            // We expect an exception when the underlying read ea
-            in.readByte();
+            // We expect an exception from the underlying would block read
+            assertEquals(-1, in.read());
+        }  
+    }
+    
+    @Test
+    public void testTrickleReadFully() throws Exception {
+        Random random = new Random();
+        
+        InputStream reader = new InputStream() {
+
+            @Override
+            public int read() throws IOException {
+                return 1;
+            }
+
+            @Override
+            public int read(byte[] b, int from, int length) throws IOException {
+                return random.nextBoolean() ? 1 : 0;
+            }            
+        };
+        
+        try(FitsInputStream in = new FitsInputStream(reader)) {
+            in.setAllowBlocking(true);
+            assertTrue(in.isAllowBlocking());
+            // Despite the trickle, this should not block...
+            in.readFully(new byte[100]);
+        }  
+    }
+    
+   
+    @Test
+    public void testTrickleDecode() throws Exception {
+        Random random = new Random();
+        
+        InputStream reader = new InputStream() {
+
+            @Override
+            public int read() throws IOException {
+                return 1;
+            }
+
+            @Override
+            public int read(byte[] b, int from, int length) throws IOException {
+                return random.nextBoolean() ? 1 : 0;
+            }            
+        };
+        
+        try(FitsInputStream in = new FitsInputStream(reader)) {
+            in.setAllowBlocking(true);
+            assertTrue(in.isAllowBlocking());
+            // Despite the trickle, this should not block...
+            in.readArrayFully(new double[100]);
         }  
     }
     
