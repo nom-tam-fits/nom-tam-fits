@@ -44,26 +44,32 @@ import org.junit.Test;
 
 public class BufferedFileIOTest {
     
+    private String fileName = "target/biotest.bin";
+    
+    private File getFile() {
+        return new File(fileName);
+    }
+    
     @After
     public void cleanup() {
-        new File("biotest.bin").delete();
+        getFile().delete();
     }
 
     @Test(expected = IllegalArgumentException.class)
     public void testNegativeSeek() throws Exception {
-        BufferedFileIO b = new BufferedFileIO(new File("biotest.bin"), "rw", 256);
+        BufferedFileIO b = new BufferedFileIO(getFile(), "rw", 256);
         b.seek(-1);
     }
     
     @Test
     public void testGetFD() throws Exception {
-        BufferedFileIO b = new BufferedFileIO(new File("biotest.bin"), "rw", 256);
+        BufferedFileIO b = new BufferedFileIO(getFile(), "rw", 256);
         assertNotNull(b.getFD());
     }
     
     @Test
     public void testNotAvailable() throws Exception {
-        BufferedFileIO b = new BufferedFileIO(new File("biotest.bin"), "rw", 256);
+        BufferedFileIO b = new BufferedFileIO(getFile(), "rw", 256);
         
         b.setLength(10);
         assertEquals("length", 10, b.length());
@@ -74,7 +80,7 @@ public class BufferedFileIOTest {
     
     @Test
     public void testTruncate() throws Exception {
-        BufferedFileIO b = new BufferedFileIO(new File("biotest.bin"), "rw", 256);
+        BufferedFileIO b = new BufferedFileIO(getFile(), "rw", 256);
  
         b.setLength(10);
         assertEquals("length", 10, b.length());
@@ -89,7 +95,7 @@ public class BufferedFileIOTest {
     
     @Test
     public void testFlushNone() throws Exception {
-        BufferedFileIO b = new BufferedFileIO(new File("biotest.bin"), "rw", 256);
+        BufferedFileIO b = new BufferedFileIO(getFile(), "rw", 256);
         b.write(1);
         b.setLength(0);
         b.flush();
@@ -97,7 +103,7 @@ public class BufferedFileIOTest {
     
     @Test
     public void testWriteBeyond() throws Exception {
-        BufferedFileIO b = new BufferedFileIO(new File("biotest.bin"), "rw", 256);
+        BufferedFileIO b = new BufferedFileIO(getFile(), "rw", 256);
         b.setLength(10);
         assertEquals("length0", 10, b.length());
         
@@ -116,7 +122,7 @@ public class BufferedFileIOTest {
     
     @Test
     public void testWriteBeyondBuf() throws Exception {
-        BufferedFileIO b = new BufferedFileIO(new File("biotest.bin"), "rw", 16);
+        BufferedFileIO b = new BufferedFileIO(getFile(), "rw", 16);
         b.setLength(10);
         assertEquals("length0", 10, b.length());
         
@@ -135,7 +141,7 @@ public class BufferedFileIOTest {
     
     @Test
     public void testReadBeyond() throws Exception {
-        BufferedFileIO b = new BufferedFileIO(new File("biotest.bin"), "rw", 256);
+        BufferedFileIO b = new BufferedFileIO(getFile(), "rw", 256);
         b.setLength(10);
         assertEquals("length0", 10, b.length());
         
@@ -149,7 +155,7 @@ public class BufferedFileIOTest {
     
     @Test(expected = EOFException.class)
     public void testReadFullyBeyond() throws Exception {
-        BufferedFileIO b = new BufferedFileIO(new File("biotest.bin"), "rw", 256);
+        BufferedFileIO b = new BufferedFileIO(getFile(), "rw", 256);
         b.setLength(10);
         assertEquals("length0", 10, b.length());
         b.readFully(new byte[40], 0, 40);
@@ -157,7 +163,7 @@ public class BufferedFileIOTest {
     
     @Test
     public void testSkipBackBuffer() throws Exception {
-        BufferedFileIO b = new BufferedFileIO(new File("biotest.bin"), "rw", 100);
+        BufferedFileIO b = new BufferedFileIO(getFile(), "rw", 100);
         b.seek(100);
         b.write(1);
         
@@ -168,7 +174,7 @@ public class BufferedFileIOTest {
     
     @Test
     public void testWriteManySingles() throws Exception {
-        BufferedFileIO b = new BufferedFileIO(new File("biotest.bin"), "rw", 100);
+        BufferedFileIO b = new BufferedFileIO(getFile(), "rw", 100);
         for(int i=0; i<300; i++) {
             b.write(i);
         }
@@ -176,7 +182,7 @@ public class BufferedFileIOTest {
     
     @Test
     public void testWriteAhead() throws Exception {
-        BufferedFileIO b = new BufferedFileIO(new File("biotest.bin"), "rw", 100);
+        BufferedFileIO b = new BufferedFileIO(getFile(), "rw", 100);
         b.setLength(10);
         b.seek(200);
         b.write(1);
@@ -185,7 +191,7 @@ public class BufferedFileIOTest {
     
     @Test
     public void testWriteAgain() throws Exception {
-        BufferedFileIO b = new BufferedFileIO(new File("biotest.bin"), "rw", 100);
+        BufferedFileIO b = new BufferedFileIO(getFile(), "rw", 100);
         b.write(1);
         b.seek(0);
         b.write(2);
