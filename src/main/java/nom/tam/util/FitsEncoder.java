@@ -48,7 +48,7 @@ import nom.tam.util.type.ElementType;
  * @see FitsFile
  * @see FitsInputStream
  */
-public class FitsEncoder extends ArrayEncoder {
+public class FitsEncoder extends OutputEncoder {
     
     private static final Logger LOG = Logger.getLogger(FitsEncoder.class.getName());
 
@@ -555,7 +555,7 @@ public class FitsEncoder extends ArrayEncoder {
      * </p>
      * <p>
      * The caller may put multiple data object into
-     * the conversion buffer before eventually calling {@link nom.tam.util.ArrayEncoder.OutputBuffer#flush()} to ensure
+     * the conversion buffer before eventually calling {@link nom.tam.util.OutputEncoder.OutputBuffer#flush()} to ensure
      * that everything is written to the output. Note, the this call may flush the contents
      * of the conversion buffer to the output if it needs more conversion space than
      * what is avaiable.

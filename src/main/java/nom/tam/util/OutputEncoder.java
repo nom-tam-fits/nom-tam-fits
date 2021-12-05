@@ -42,12 +42,12 @@ import nom.tam.fits.FitsFactory;
  * 
  * @author Attila Kovacs
  * @since 1.16
- * @see ArrayDecoder
+ * @see InputDecoder
  * @see ArrayDataFile
  * @see ArrayInputStream
  * @see ArrayOutputStream
  */
-public abstract class ArrayEncoder {
+public abstract class OutputEncoder {
 
     /**
      * The default local buffer size to use for encoding data into binary format
@@ -72,7 +72,7 @@ public abstract class ArrayEncoder {
      * 
      * @see #setOutput(OutputWriter)
      */
-    protected ArrayEncoder() {
+    protected OutputEncoder() {
         buf = new OutputBuffer(BUFFER_SIZE);
     }
 
@@ -83,7 +83,7 @@ public abstract class ArrayEncoder {
      * @param o
      *            the output to which encoded data is to be written.
      */
-    public ArrayEncoder(OutputWriter o) {
+    public OutputEncoder(OutputWriter o) {
         this();
         setOutput(o);
     }

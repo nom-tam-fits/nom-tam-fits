@@ -48,7 +48,7 @@ import nom.tam.util.type.ElementType;
  * @see FitsInputStream
  * @see FitsFile
  */
-public class FitsDecoder extends ArrayDecoder {
+public class FitsDecoder extends InputDecoder {
 
     /** The FITS byte value for the binary representation of a boolean 'true' value */
     private static final byte FITS_TRUE = (byte) 'T';
@@ -159,10 +159,11 @@ public class FitsDecoder extends ArrayDecoder {
      */
     @Deprecated
     protected synchronized char readChar() throws IOException {
-        if (FitsFactory.isUseUnicodeChars()) {
-            return (char) readUnsignedShort();
+        int b = FitsFactory.isUseUnicodeChars() ? readUnsignedShort() : read();
+        if (b < 0) {
+            throw new EOFException();
         }
-        return (char) readUnsignedByte();
+        return (char) b;
     }
 
     /**

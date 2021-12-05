@@ -44,12 +44,12 @@ import nom.tam.fits.FitsFactory;
  * 
  * @author Attila Kovacs
  * @since 1.16
- * @see ArrayEncoder
+ * @see OutputEncoder
  * @see ArrayDataFile
  * @see ArrayInputStream
  * @see ArrayOutputStream
  */
-public abstract class ArrayDecoder {
+public abstract class InputDecoder {
 
     /** The buffer size for array translation */
     private static final int BUFFER_SIZE = FitsFactory.FITS_BLOCK_SIZE;
@@ -72,7 +72,7 @@ public abstract class ArrayDecoder {
      * 
      * @see #setInput(InputReader)
      */
-    protected ArrayDecoder() {
+    protected InputDecoder() {
         buf = new InputBuffer(BUFFER_SIZE);
     }
 
@@ -83,7 +83,7 @@ public abstract class ArrayDecoder {
      * @param i
      *            the binary input.
      */
-    public ArrayDecoder(InputReader i) {
+    public InputDecoder(InputReader i) {
         this();
         setInput(i);
     }
@@ -338,8 +338,8 @@ public abstract class ArrayDecoder {
         protected boolean loadOne(int size) throws IOException {
             this.pending = size;
             buffer.rewind();
-            buffer.limit(Math.max(0, in.read(data, 0, size)));
-            return buffer.limit() == size;
+            buffer.limit(0);
+            return makeAvailable(size);
         }
 
         /**
@@ -347,7 +347,8 @@ public abstract class ArrayDecoder {
          * attempting to fill the buffer if possible.
          * 
          * @return <code>true</code> if data was successfully buffered from the
-         *         underlying intput. Othwrwise <code>false</code>.
+         *         underlying intput or the buffer is already full. Otherwise
+         *         <code>false</code>.
          * @throws IOException
          *             if there as an IO error, other than the end of file,
          *             while trying to read more data from the underlying input
@@ -359,7 +360,6 @@ public abstract class ArrayDecoder {
             if (remaining > 0) {
                 System.arraycopy(data, buffer.position(), data, 0, remaining);
             }
-
             buffer.rewind();
 
             int n = (int) Math.min(pending, data.length - remaining);

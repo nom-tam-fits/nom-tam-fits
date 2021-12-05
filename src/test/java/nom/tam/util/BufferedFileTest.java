@@ -1,5 +1,9 @@
 package nom.tam.util;
 
+import static org.junit.Assert.assertNotEquals;
+import static org.junit.Assert.assertNull;
+import static org.junit.Assert.assertTrue;
+
 /*
  * #%L
  * nom.tam FITS library
@@ -33,6 +37,8 @@ package nom.tam.util;
 
 import java.io.EOFException;
 import java.io.IOException;
+import java.io.InputStream;
+import java.util.Random;
 
 import org.junit.Assert;
 import org.junit.Test;

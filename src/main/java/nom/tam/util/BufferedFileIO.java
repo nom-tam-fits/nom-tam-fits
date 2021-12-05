@@ -190,7 +190,7 @@ class BufferedFileIO implements InputReader, OutputWriter, Flushable, Closeable 
         // Buffer as much as we can.
         seek(getFilePointer());
         end = file.read(buf, 0, buf.length);
-        
+
         return end > 0;
     }
     
@@ -442,7 +442,7 @@ class BufferedFileIO implements InputReader, OutputWriter, Flushable, Closeable 
             int n = read(b, off, len);
             if (n < 0) {
                 throw new EOFException();
-            }
+            }      
             off += n;
             len -= n;
         }

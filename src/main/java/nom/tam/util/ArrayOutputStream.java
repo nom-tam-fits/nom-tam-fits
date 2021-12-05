@@ -46,7 +46,7 @@ import java.io.OutputStream;
 public class ArrayOutputStream extends BufferedOutputStream implements OutputWriter {
 
     /** conversion from Java arrays to FITS binary representation */
-    private ArrayEncoder encoder;
+    private OutputEncoder encoder;
 
     /**
      * Instantiates a new output stream for efficient array transactions. For
@@ -72,7 +72,7 @@ public class ArrayOutputStream extends BufferedOutputStream implements OutputWri
      *            the conversion from Java arrays to the binary representation
      *            in the stream.
      */
-    public ArrayOutputStream(OutputStream o, int bufLength, ArrayEncoder java2bin) {
+    public ArrayOutputStream(OutputStream o, int bufLength, OutputEncoder java2bin) {
         this(o, bufLength);
         setEncoder(java2bin);
     }
@@ -86,7 +86,7 @@ public class ArrayOutputStream extends BufferedOutputStream implements OutputWri
      *            in stream
      * @see #getEncoder()
      */
-    protected void setEncoder(ArrayEncoder java2bin) {
+    protected void setEncoder(OutputEncoder java2bin) {
         this.encoder = java2bin;
     }
 
@@ -97,9 +97,9 @@ public class ArrayOutputStream extends BufferedOutputStream implements OutputWri
      * 
      * @return the conversion from Java arrays to their binary representation in
      *         stream
-     * @see #setEncoder(ArrayEncoder)
+     * @see #setEncoder(OutputEncoder)
      */
-    protected ArrayEncoder getEncoder() {
+    protected OutputEncoder getEncoder() {
         return encoder;
     }
 

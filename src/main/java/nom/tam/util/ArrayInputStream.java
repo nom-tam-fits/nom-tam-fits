@@ -46,7 +46,7 @@ import java.io.InputStream;
 public class ArrayInputStream extends BufferedInputStream implements InputReader {
 
     /** conversion from FITS binary representation to Java arrays */
-    private ArrayDecoder decoder;
+    private InputDecoder decoder;
 
     /**
      * Instantiates a new input stream for efficient array transactions. For use
@@ -72,7 +72,7 @@ public class ArrayInputStream extends BufferedInputStream implements InputReader
      *            the conversion from the binary representation of arrays in the
      *            file to Java arrays.
      */
-    ArrayInputStream(InputStream i, int bufLength, ArrayDecoder bin2java) {
+    ArrayInputStream(InputStream i, int bufLength, InputDecoder bin2java) {
         this(i, bufLength);
         setDecoder(bin2java);
     }
@@ -86,7 +86,7 @@ public class ArrayInputStream extends BufferedInputStream implements InputReader
      *            stream to Java arrays.
      * @see #getDecoder()
      */
-    protected void setDecoder(ArrayDecoder bin2java) {
+    protected void setDecoder(InputDecoder bin2java) {
         this.decoder = bin2java;
     }
 
@@ -97,9 +97,9 @@ public class ArrayInputStream extends BufferedInputStream implements InputReader
      * 
      * @return the conversion from the binary representation of arrays in the
      *         stream to Java arrays
-     * @see #setDecoder(ArrayDecoder)
+     * @see #setDecoder(InputDecoder)
      */
-    protected ArrayDecoder getDecoder() {
+    protected InputDecoder getDecoder() {
         return decoder;
     }
 

@@ -38,7 +38,7 @@ import java.io.IOException;
 /**
  * @deprecated  This is a rusty rail implementation only, unsafe for general use.
  *      Use {@link FitsDecoder} instead, which provides a similar function but in
- *      a more consistent way and with a less misleading name, or else use {@link ArrayDecoder}
+ *      a more consistent way and with a less misleading name, or else use {@link InputDecoder}
  *      as a base for implementing efficient custom decoding of binary inputs. 
  *      
  *      
@@ -84,8 +84,7 @@ public abstract class BufferDecoder extends FitsDecoder {
             @Override
             public int read(byte[] b, int from, int length) throws IOException {
                 return BufferDecoder.this.read(b, from, length);
-            }
-            
+            }    
         });
     }
     

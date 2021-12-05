@@ -7,11 +7,13 @@ on:
   push:
     paths:
       - 'src/main/java/**'
+      - 'src/test/java/**'
       - 'pom.xml'
   
   pull_request:
     paths:
       - 'src/main/java/**'
+      - 'src/test/java/**'
       - 'pom.xml'
 
 jobs:

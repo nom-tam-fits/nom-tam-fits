@@ -38,15 +38,21 @@ import static org.junit.Assert.*;
 import java.io.ByteArrayInputStream;
 import java.io.EOFException;
 import java.io.IOException;
-import java.io.InputStream;
 import java.math.BigInteger;
 import java.nio.ByteBuffer;
 import java.nio.ByteOrder;
 
+import org.junit.After;
 import org.junit.Test;
+
+import nom.tam.fits.FitsFactory;
 
 public class FitsDecoderTest {
 
+    @After
+    public void setDefaults() {
+        FitsFactory.setDefaults();
+    }
     
     @Test
     public void testIncomleteReadByteArray() throws Exception {
@@ -167,6 +173,18 @@ public class FitsDecoderTest {
         }
         e.readShort(); // should throw exception.
    
+    }
+    
+    @Test(expected = EOFException.class)
+    public void testReadCharEOF() throws Exception {
+        FitsFactory.setUseUnicodeChars(false);
+        byte[] data = new byte[100];
+        FitsDecoder e = new FitsDecoder(InputReader.from(new ByteArrayInputStream(data)));
+        int n = data.length;
+        for(int i=0; i<n; i++) {
+            assertEquals(0, e.readChar());
+        }
+        e.readChar(); // should throw exception.
     }
     
     @Test(expected = EOFException.class)
