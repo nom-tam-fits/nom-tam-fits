@@ -198,7 +198,7 @@
 <a class="jxr_linenumber" name="L190" href="#L190">190</a>         <em class="jxr_comment">// Buffer as much as we can.</em>
 <a class="jxr_linenumber" name="L191" href="#L191">191</a>         seek(getFilePointer());
 <a class="jxr_linenumber" name="L192" href="#L192">192</a>         end = file.read(buf, 0, buf.length);
-<a class="jxr_linenumber" name="L193" href="#L193">193</a>         
+<a class="jxr_linenumber" name="L193" href="#L193">193</a> 
 <a class="jxr_linenumber" name="L194" href="#L194">194</a>         <strong class="jxr_keyword">return</strong> end &gt; 0;
 <a class="jxr_linenumber" name="L195" href="#L195">195</a>     }
 <a class="jxr_linenumber" name="L196" href="#L196">196</a>     
@@ -450,7 +450,7 @@
 <a class="jxr_linenumber" name="L442" href="#L442">442</a>             <strong class="jxr_keyword">int</strong> n = read(b, off, len);
 <a class="jxr_linenumber" name="L443" href="#L443">443</a>             <strong class="jxr_keyword">if</strong> (n &lt; 0) {
 <a class="jxr_linenumber" name="L444" href="#L444">444</a>                 <strong class="jxr_keyword">throw</strong> <strong class="jxr_keyword">new</strong> EOFException();
-<a class="jxr_linenumber" name="L445" href="#L445">445</a>             }
+<a class="jxr_linenumber" name="L445" href="#L445">445</a>             }      
 <a class="jxr_linenumber" name="L446" href="#L446">446</a>             off += n;
 <a class="jxr_linenumber" name="L447" href="#L447">447</a>             len -= n;
 <a class="jxr_linenumber" name="L448" href="#L448">448</a>         }

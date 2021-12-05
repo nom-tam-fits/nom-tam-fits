@@ -1664,7 +1664,7 @@
 <a class="jxr_linenumber" name="L1656" href="#L1656">1656</a>             <em class="jxr_comment">// Read as long as there is more available, even if it comes in a trickle...</em>
 <a class="jxr_linenumber" name="L1657" href="#L1657">1657</a>             <strong class="jxr_keyword">while</strong> (got &lt; buffer.length) {
 <a class="jxr_linenumber" name="L1658" href="#L1658">1658</a>                 <strong class="jxr_keyword">int</strong> n = dis.in().read(buffer, got, buffer.length - got);
-<a class="jxr_linenumber" name="L1659" href="#L1659">1659</a>                 <strong class="jxr_keyword">if</strong> (n &lt;= 0) {
+<a class="jxr_linenumber" name="L1659" href="#L1659">1659</a>                 <strong class="jxr_keyword">if</strong> (n &lt; 0) {
 <a class="jxr_linenumber" name="L1660" href="#L1660">1660</a>                     <strong class="jxr_keyword">break</strong>;
 <a class="jxr_linenumber" name="L1661" href="#L1661">1661</a>                 }
 <a class="jxr_linenumber" name="L1662" href="#L1662">1662</a>                 got += n;
