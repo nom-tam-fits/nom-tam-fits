@@ -11,6 +11,7 @@ on:
     paths:
       - 'src/site/**'
       - 'pom.xml'
+      - '.github/workflows/site.yml'
    
 jobs:  
   build:
