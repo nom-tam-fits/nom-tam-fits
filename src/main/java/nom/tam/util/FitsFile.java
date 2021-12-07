@@ -256,18 +256,8 @@ public class FitsFile extends ArrayDataFile implements RandomAccess, ArrayDataOu
     }
 
     @Override
-    public final synchronized int read(boolean[] b) throws IOException {
-        return read(b, 0, b.length);
-    }
-
-    @Override
     public synchronized int read(boolean[] b, int start, int length) throws IOException {
         return getDecoder().read(b, start, length);
-    }
-
-    @Override
-    public final synchronized int read(Boolean[] buf) throws IOException {
-        return read(buf, 0, buf.length);
     }
 
     @Override
@@ -276,18 +266,8 @@ public class FitsFile extends ArrayDataFile implements RandomAccess, ArrayDataOu
     }
 
     @Override
-    public final synchronized int read(char[] c) throws IOException {
-        return read(c, 0, c.length);
-    }
-
-    @Override
     public synchronized int read(char[] c, int start, int length) throws IOException {
         return getDecoder().read(c, start, length);
-    }
-
-    @Override
-    public final synchronized int read(short[] s) throws IOException {
-        return read(s, 0, s.length);
     }
 
     @Override
@@ -296,18 +276,8 @@ public class FitsFile extends ArrayDataFile implements RandomAccess, ArrayDataOu
     }
 
     @Override
-    public final synchronized int read(int[] i) throws IOException {
-        return read(i, 0, i.length);
-    }
-
-    @Override
     public synchronized int read(int[] i, int start, int length) throws IOException {
         return getDecoder().read(i, start, length);
-    }
-
-    @Override
-    public final synchronized int read(long[] l) throws IOException {
-        return read(l, 0, l.length);
     }
 
     @Override
@@ -316,18 +286,8 @@ public class FitsFile extends ArrayDataFile implements RandomAccess, ArrayDataOu
     }
 
     @Override
-    public final synchronized int read(float[] f) throws IOException {
-        return read(f, 0, f.length);
-    }
-
-    @Override
     public synchronized int read(float[] f, int start, int length) throws IOException {
         return getDecoder().read(f, start, length);
-    }
-
-    @Override
-    public final synchronized int read(double[] d) throws IOException {
-        return read(d, 0, d.length);
     }
 
     @Override
@@ -365,12 +325,7 @@ public class FitsFile extends ArrayDataFile implements RandomAccess, ArrayDataOu
     }
 
     @Override
-    public final synchronized void skipAllBytes(int toSkip) throws IOException {
-        skipAllBytes((long) toSkip);
-    }
-
-    @Override
-    public synchronized void skipAllBytes(long toSkip) throws IOException {        
+    public synchronized void skipAllBytes(long toSkip) throws EOFException, IOException {        
         long n = skip(toSkip);
         
         // Note that we allow negative skips...
@@ -430,18 +385,8 @@ public class FitsFile extends ArrayDataFile implements RandomAccess, ArrayDataOu
     }
 
     @Override
-    public final synchronized void write(boolean[] b) throws IOException {
-        write(b, 0, b.length);
-    }
-
-    @Override
     public synchronized void write(boolean[] b, int start, int length) throws IOException {
         getEncoder().write(b, start, length);
-    }
-
-    @Override
-    public final synchronized void write(Boolean[] buf) throws IOException {
-        write(buf, 0, buf.length);
     }
 
     @Override
@@ -450,38 +395,18 @@ public class FitsFile extends ArrayDataFile implements RandomAccess, ArrayDataOu
     }
     
     @Override
-    public final synchronized void write(char[] c) throws IOException {
-        write(c, 0, c.length);
-    }
-
-    @Override
     public synchronized void write(char[] c, int start, int length) throws IOException {
         getEncoder().write(c, start, length);
-    }
-
-    @Override
-    public final synchronized void write(short[] s) throws IOException {
-        write(s, 0, s.length);
     }
 
     @Override
     public synchronized void write(short[] s, int start, int length) throws IOException {
         getEncoder().write(s, start, length);
     }
-
-    @Override
-    public final synchronized void write(int[] i) throws IOException {
-        write(i, 0, i.length);
-    }
-
+    
     @Override
     public synchronized void write(int[] i, int start, int length) throws IOException {
         getEncoder().write(i, start, length);
-    }
-
-    @Override
-    public final synchronized void write(long[] l) throws IOException {
-        write(l, 0, l.length);
     }
 
     @Override
@@ -490,28 +415,13 @@ public class FitsFile extends ArrayDataFile implements RandomAccess, ArrayDataOu
     }
 
     @Override
-    public final synchronized void write(float[] f) throws IOException {
-        write(f, 0, f.length);
-    }
-
-    @Override
     public synchronized void write(float[] f, int start, int length) throws IOException {
         getEncoder().write(f, start, length);
     }
 
     @Override
-    public final synchronized void write(double[] d) throws IOException {
-        write(d, 0, d.length);
-    }
-
-    @Override
     public synchronized void write(double[] d, int start, int length) throws IOException {
         getEncoder().write(d, start, length);
-    }
-
-    @Override
-    public final synchronized void write(String[] s) throws IOException {
-        write(s, 0, s.length);
     }
 
     @Override

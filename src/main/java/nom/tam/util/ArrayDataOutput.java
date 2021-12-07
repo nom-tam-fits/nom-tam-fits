@@ -57,7 +57,9 @@ public interface ArrayDataOutput extends DataOutput, Closeable {
      * @throws IOException
      *             if one of the underlying write operations failed
      */
-    void write(boolean[] buf) throws IOException;
+    default void write(boolean[] buf) throws IOException {
+        write(buf, 0, buf.length);
+    }
 
     /**
      * Write a segment of an array of boolean's.
@@ -121,7 +123,9 @@ public interface ArrayDataOutput extends DataOutput, Closeable {
      * @throws IOException
      *             if one of the underlying write operations failed
      */
-    void write(char[] buf) throws IOException;
+    default void write(char[] buf) throws IOException {
+        write(buf, 0, buf.length);
+    }
 
     /**
      * Write a segment of an array of char's.
@@ -145,7 +149,9 @@ public interface ArrayDataOutput extends DataOutput, Closeable {
      * @throws IOException
      *             if one of the underlying write operations failed
      */
-    void write(double[] buf) throws IOException;
+    default void write(double[] buf) throws IOException {
+        write(buf, 0, buf.length);
+    }
 
     /**
      * Write a segment of an array of double's.
@@ -169,7 +175,9 @@ public interface ArrayDataOutput extends DataOutput, Closeable {
      * @throws IOException
      *             if one of the underlying write operations failed
      */
-    void write(float[] buf) throws IOException;
+    default void write(float[] buf) throws IOException {
+        write(buf, 0, buf.length);
+    }
 
     /**
      * Write a segment of an array of float's.
@@ -193,7 +201,9 @@ public interface ArrayDataOutput extends DataOutput, Closeable {
      * @throws IOException
      *             if one of the underlying write operations failed
      */
-    void write(int[] buf) throws IOException;
+    default void write(int[] buf) throws IOException {
+        write(buf, 0, buf.length);
+    }
 
     /**
      * Write a segment of an array of int's.
@@ -217,7 +227,9 @@ public interface ArrayDataOutput extends DataOutput, Closeable {
      * @throws IOException
      *             if one of the underlying write operations failed
      */
-    void write(long[] buf) throws IOException;
+    default void write(long[] buf) throws IOException {
+        write(buf, 0, buf.length);
+    }
 
     /**
      * Write a segment of an array of longs.
@@ -241,7 +253,9 @@ public interface ArrayDataOutput extends DataOutput, Closeable {
      * @throws IOException
      *             if one of the underlying write operations failed
      */
-    void write(short[] buf) throws IOException;
+    default void write(short[] buf) throws IOException {
+        write(buf, 0, buf.length);
+    }
 
     /**
      * Write a segment of an array of shorts.
@@ -266,7 +280,9 @@ public interface ArrayDataOutput extends DataOutput, Closeable {
      * @throws IOException
      *             if one of the underlying write operations failed
      */
-    void write(String[] buf) throws IOException;
+    default void write(String[] buf) throws IOException {
+        write(buf, 0, buf.length);
+    }
 
     /**
      * Write a segment of an array of Strings. Equivalent to calling writeBytes

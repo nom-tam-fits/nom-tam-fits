@@ -323,11 +323,17 @@ public final class FitsUtil {
      *             if the operation was failed or not possible
      */
     public static void reposition(Closeable o, long offset) throws FitsException {
+        // TODO AK: argument should be RandomAccess instead of Closeable, since
+        // that's the only type we actually handle...
+
         if (o == null) {
             throw new FitsException("Attempt to reposition null stream");
-        } else if (!(o instanceof RandomAccess) || offset < 0) {
+        }
+
+        if (!(o instanceof RandomAccess) || offset < 0) {
             throw new FitsException("Invalid attempt to reposition stream " + o + " of type " + o.getClass().getName() + " to " + offset);
         }
+
         try {
             ((RandomAccess) o).seek(offset);
         } catch (IOException e) {

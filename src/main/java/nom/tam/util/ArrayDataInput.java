@@ -78,7 +78,9 @@ public interface ArrayDataInput extends InputReader, DataInput, FitsIO {
      * @throws IOException
      *             if one of the underlying read operations failed
      */
-    int read(byte[] buf) throws IOException;
+    default int read(byte[] buf) throws IOException {
+        return read(buf, 0, buf.length);
+    }
 
 
     /**
@@ -90,7 +92,9 @@ public interface ArrayDataInput extends InputReader, DataInput, FitsIO {
      * @throws IOException
      *             if one of the underlying read operations failed
      */
-    int read(boolean[] buf) throws IOException;
+    default int read(boolean[] buf) throws IOException {
+        return read(buf, 0, buf.length);
+    }
 
     /**
      * Read a segment of an array of boolean's.
@@ -157,7 +161,9 @@ public interface ArrayDataInput extends InputReader, DataInput, FitsIO {
      * @throws IOException
      *             if one of the underlying read operations failed
      */
-    int read(char[] buf) throws IOException;
+    default int read(char[] buf) throws IOException {
+        return read(buf, 0, buf.length);
+    }
 
     /**
      * Read a segment of an array of char's.
@@ -183,7 +189,9 @@ public interface ArrayDataInput extends InputReader, DataInput, FitsIO {
      * @throws IOException
      *             if one of the underlying read operations failed
      */
-    int read(double[] buf) throws IOException;
+    default int read(double[] buf) throws IOException {
+        return read(buf, 0, buf.length);
+    }
 
     /**
      * Read a segment of an array of double's.
@@ -209,7 +217,9 @@ public interface ArrayDataInput extends InputReader, DataInput, FitsIO {
      * @throws IOException
      *             if one of the underlying read operations failed
      */
-    int read(float[] buf) throws IOException;
+    default int read(float[] buf) throws IOException {
+        return read(buf, 0, buf.length);
+    }
 
     /**
      * Read a segment of an array of float's.
@@ -235,7 +245,9 @@ public interface ArrayDataInput extends InputReader, DataInput, FitsIO {
      * @throws IOException
      *             if one of the underlying read operations failed
      */
-    int read(int[] buf) throws IOException;
+    default int read(int[] buf) throws IOException {
+        return read(buf, 0, buf.length);
+    }
 
     /**
      * Read a segment of an array of int's.
@@ -261,7 +273,9 @@ public interface ArrayDataInput extends InputReader, DataInput, FitsIO {
      * @throws IOException
      *             if one of the underlying read operations failed
      */
-    int read(long[] buf) throws IOException;
+    default int read(long[] buf) throws IOException {
+        return read(buf, 0, buf.length);
+    }
 
     /**
      * Read a segment of an array of long's.
@@ -287,7 +301,9 @@ public interface ArrayDataInput extends InputReader, DataInput, FitsIO {
      * @throws IOException
      *             if one of the underlying read operations failed
      */
-    int read(short[] buf) throws IOException;
+    default int read(short[] buf) throws IOException {
+        return read(buf, 0, buf.length);
+    }
 
     /**
      * Read a segment of an array of short's.
@@ -318,7 +334,9 @@ public interface ArrayDataInput extends InputReader, DataInput, FitsIO {
      *              Java types that are not supported by the decoder.
      */
     @Deprecated
-    int readArray(Object o) throws IOException, IllegalArgumentException;
+    default int readArray(Object o) throws IOException, IllegalArgumentException {
+        return (int) readLArray(o);
+    }
 
     /**
      * Reads a Java array from the input, translating it from its binary representation to
@@ -388,38 +406,58 @@ public interface ArrayDataInput extends InputReader, DataInput, FitsIO {
      * there is probably no operational difference).
      * 
      * @param distance
-     *            the number of bytes to skip
-     * @return the number of bytes really skipped
+     *            the number of bytes to skip. Negative arguments are generally 
+     *            allowed, and subclass implementations may support it or
+     *            else return 0 when a negative distance is specified.
+     * @return the number of bytes actually skipped
      * @throws IOException
      *             if the underlying stream failed
+     *             
+     * @see java.io.InputStream#skip(long)
+     * @see #skipAllBytes(long)
      */
     long skip(long distance) throws IOException;
 
     /**
-     * Skip the number of bytes. This differs from the skip method in that it
-     * will throw an EOF if a forward skip cannot be fully accomplished...
-     * (However that isn't supposed to happen with a random access file, so
-     * there is probably no operational difference).
+     * Skips a number of bytes from the input. This differs from the {@link #skip(long)} method in 
+     * that it will throw an EOF if the skip cannot be fully accomplished as requested...
      * 
      * @param toSkip
-     *            the number of bytes to skip
+     *              the number of bytes to skip forward. Subclass implementations may
+     *              support negative valued arguments for a backward skip also.
+     * @throws EOFException
+     *              if the end (or beginning) of the stream was reached before skipping
+     *              the required number of bytes. This does not happen
+     *              typically with forward skips on random access files, where positioning
+     *              beyond the EOF is generally allowed for writing.
      * @throws IOException
-     *             if the underlying stream failed
+     *              if there was an underlying IO failure.
+     *              
+     * @see #skip(long)
      */
-    void skipAllBytes(long toSkip) throws IOException;
+    void skipAllBytes(long toSkip) throws EOFException, IOException;
 
     /**
-     * Skip the number of bytes. This differs from the skip method in that it
-     * will throw an EOF if a forward skip cannot be fully accomplished...
-     * (However that isn't supposed to happen with a random access file, so
-     * there is probably no operational difference).
+     * @deprecated This call is handled by {@link #skipAllBytes(long)}, without the need for a separate
+     *          implementation.
+     * 
+     * Skips a number of bytes from the input. See {@link #skipAllBytes(long)}.
      * 
      * @param toSkip
-     *            the number of bytes to skip
+     *              the number of bytes to skip forward. Subclass implementations may
+     *              support negative valued arguments for a backward skip also.
+     * @throws EOFException
+     *              if the end (or beginning) of the stream was reached before skipping
+     *              the required number of bytes. This does not happen
+     *              typically with forward skips on random access files, where positioning
+     *              beyond the EOF is generally allowed for writing.
      * @throws IOException
-     *             if the underlying stream failed
+     *              if there was an underlying IO failure.
      */
-    void skipAllBytes(int toSkip) throws IOException;
+    @Deprecated
+    default void skipAllBytes(int toSkip) throws EOFException, IOException {
+        skipAllBytes((long) toSkip);
+    }
     
     /**
      * Read a buffer and signal an EOF if the requested elements cannot be read.

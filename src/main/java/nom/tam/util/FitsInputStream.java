@@ -118,28 +118,13 @@ public class FitsInputStream extends ArrayInputStream implements ArrayDataInput 
     }
 
     @Override
-    public final synchronized int read(boolean[] b) throws IOException {
-        return read(b, 0, b.length);
-    }
-
-    @Override
     public synchronized int read(boolean[] b, int start, int length) throws IOException {
         return getDecoder().read(b, start, length);
     }
 
     @Override
-    public final synchronized int read(Boolean[] b) throws IOException {
-        return read(b, 0, b.length);
-    }
-
-    @Override
     public synchronized int read(Boolean[] b, int start, int length) throws IOException {
         return getDecoder().read(b, start, length);
-    }
-   
-    @Override
-    public final synchronized int read(char[] c) throws IOException {
-        return read(c, 0, c.length);
     }
 
     @Override
@@ -148,19 +133,8 @@ public class FitsInputStream extends ArrayInputStream implements ArrayDataInput 
     }
 
     @Override
-    public final synchronized int read(short[] s) throws IOException {
-        return read(s, 0, s.length);
-    }
-
-    @Override
     public synchronized int read(short[] s, int start, int length) throws IOException {
         return getDecoder().read(s, start, length);
-    }
-
-
-    @Override
-    public final synchronized int read(int[] i) throws IOException {
-        return read(i, 0, i.length);
     }
 
     @Override
@@ -169,42 +143,20 @@ public class FitsInputStream extends ArrayInputStream implements ArrayDataInput 
     }
 
     @Override
-    public final synchronized int read(long[] l) throws IOException {
-        return read(l, 0, l.length);
-    }
-
-
-    @Override
     public synchronized int read(long[] l, int start, int length) throws IOException {
         return getDecoder().read(l, start, length);
-    }
-
-    @Override
-    public final synchronized int read(float[] f) throws IOException {
-        return read(f, 0, f.length);
     }
 
     @Override
     public synchronized int read(float[] f, int start, int length) throws IOException {
         return getDecoder().read(f, start, length);
     }
-
-    @Override
-    public final synchronized int read(double[] d) throws IOException {
-        return read(d, 0, d.length);
-    }
-
+    
     @Override
     public synchronized int read(double[] d, int start, int length) throws IOException {
         return getDecoder().read(d, start, length);
     }
 
-    @Deprecated
-    @Override
-    public final synchronized int readArray(Object o) throws IOException {
-        return (int) readLArray(o);
-    }
- 
     /**
      * This routine provides efficient reading of arrays of any primitive type.
      * It is an error to invoke this method with an object that is not an array
@@ -253,15 +205,8 @@ public class FitsInputStream extends ArrayInputStream implements ArrayDataInput 
         return (int) super.skip(n);
     }
     
-    
     @Override
-    public final synchronized void skipAllBytes(int toSkip) throws IOException {
-        skipAllBytes((long) toSkip);
-    }
-
-    
-    @Override
-    public synchronized void skipAllBytes(long toSkip) throws IOException {
+    public synchronized void skipAllBytes(long toSkip) throws EOFException, IOException {
         long got = 0;
         
         while (got < toSkip) {

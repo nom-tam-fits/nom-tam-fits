@@ -316,12 +316,6 @@ public class DefaultMethodsTest {
         }
 
         @Override
-        public void skipAllBytes(int toSkip) throws IOException {
-            // TODO Auto-generated method stub
-
-        }
-
-        @Override
         public void readFully(byte[] b, int off, int len) throws IOException {
             // TODO Auto-generated method stub
 
