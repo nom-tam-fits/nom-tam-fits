@@ -78,9 +78,7 @@ public interface ArrayDataInput extends InputReader, DataInput, FitsIO {
      * @throws IOException
      *             if one of the underlying read operations failed
      */
-    default int read(byte[] buf) throws IOException {
-        return read(buf, 0, buf.length);
-    }
+    int read(byte[] buf) throws IOException;
 
 
     /**
