@@ -38,14 +38,17 @@ jobs:
         cache: maven
         server-username: 'git'
         
+    - name: Get current site
+      run: |
+        cd site
+        git pull
+        
     - name: Build, test, and deploy with Maven
       run: mvn clean site
       working-directory: ./nom-tam-fits
         
     - name: Update site
       run: |
-        cd site
-        git pull
         cp -a ../nom-tam-fits/target/site/*
         git config --global user.email "$GITHUB_JOB+github-actions[bot]@users.noreply.github.com"
         git config --global user.name "github-actions"
