@@ -116,7 +116,6 @@
 	      A lot of the Javadoc API documentation has been revised and improved.
 			</action>
 	  </release>
-	  
 		<release version="1.15.2" date="2017-04-28" description="Maintenance release with bug fixes.">
 			<action type="update">
 				Maintenance release with bug fixes.
