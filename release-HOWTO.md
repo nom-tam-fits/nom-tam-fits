@@ -42,13 +42,12 @@ Once you are confident that everything is in perfect order for the next release,
  * Sleep on it. So far so good, but this is also you last chance to fix anything before the package really goes public, so don't rush it. Take some time to reflect on it, double or triple-check everything, before moving to the next step...
 
  * On Github, click on _Releases_, and create a new release:
-
-  - Name and tag the release with `nom-tam-fits-` followed by the version, such as `nom-tam-fits-1.17.0-rc1`.
-  - Link the release to the last master commit of the repo.
-  - If it is not a final release, be sure to check the box for _pre-release_ near the bottom (when checked the CI will not publish a Github package for this release).
-  - Write up a summary of what's in the release. It can be a digested version of the changes, or some other concise summary.
-  - Attach the signed package and javadoc JARs. (Best to use the signed JAR that has been uploaded to Nexus staging.)
-  - After creating the release, delete any prior pre-releases (We should only track final releases in the long run).
+   - Name and tag the release with `nom-tam-fits-` followed by the version, such as `nom-tam-fits-1.17.0-rc1`.
+   - Link the release to the last master commit of the repo.
+   - If it is not a final release, be sure to check the box for _pre-release_ near the bottom (when checked the CI will not publish a Github package for this release).
+   - Write up a summary of what's in the release. It can be a digested version of the changes, or some other concise summary.
+   - Attach the signed package and javadoc JARs. (Best to use the signed JAR that has been uploaded to Nexus staging.)
+   - After creating the release, delete any prior pre-releases (We should only track final releases in the long run).
 
  * After your upload to Sonatype Nexus, you need _Close_ the release, s.t. it cannot be modified further. (Prior to closing, in principle you could upload more artifacts from the same host as before -- but since we used the github CI to upload, there is little you can do to add anything really). Name the release with the version number, such as `1.17.0-rc4`.
  
