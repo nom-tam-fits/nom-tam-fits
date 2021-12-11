@@ -131,21 +131,21 @@ If you want to try the bleeding edge version of nom-tam-fits, you can get it fro
 
 ```xml
 <dependencies>
-	<dependency>
-		<groupId>gov.nasa.gsfc.heasarc</groupId>
-		<artifactId>nom-tam-fits</artifactId>
-		<version>xxxxx-SNAPSHOT</version>
-	</dependency>
+  <dependency>
+    <groupId>gov.nasa.gsfc.heasarc</groupId>
+    <artifactId>nom-tam-fits</artifactId>
+    <version>xxxxx-SNAPSHOT</version>
+  </dependency>
 </dependencies>
 ...
 <repositories>
-	<repository>
-		<id>sonatype-snapshots</id>
-		<url>https://oss.sonatype.org/content/repositories/snapshots</url>
-		<snapshots>
-			<enabled>true</enabled>
-		</snapshots>
-	</repository>
+  <repository>
+    <id>sonatype-snapshots</id>
+    <url>https://oss.sonatype.org/content/repositories/snapshots</url>
+    <snapshots>
+      <enabled>true</enabled>
+    </snapshots>
+  </repository>
 </repositories>    
 ```
 
@@ -175,7 +175,7 @@ The simplest example of reading an image contained in the first HDU (zero based 
 is given below:
 
 ```java
-  Fits f = new Fits(“myfile.fits”);
+  Fits f = new Fits("myfile.fits");
   ImageHDU hdu = (ImageHDU) f.getHDU(0);
   int[][] image = (int[][]) hdu.getKernel();
 ```
@@ -243,7 +243,7 @@ Since Java allows 0-length arrays, missing data is represented by such an array,
 Suppose we have a FITS table of sources with the name, RA and Dec of a set of sources and two additional columns with a time series and spectrum for the source.
 
 ```java
-  Fits f = new Fits(“sourcetable.fits”);
+  Fits f = new Fits("sourcetable.fits");
 
   Object[] cols = (Object[]) f.getHDU(1).getColumns();
 
@@ -311,7 +311,7 @@ Suppose we want to get the average value of a 100,000x20,000 pixel image.
 If the pixels are ints, that’s  an 8 GB file.  We can do
 
 ```java
-  Fits f = new Fits(“bigimg.fits”);
+  Fits f = new Fits("bigimg.fits");
   BasicHDU img = f.getHDU(0);
   if (img.getData().reset()) {
       int[] line = new int[100000];
@@ -326,7 +326,7 @@ If the pixels are ints, that’s  an 8 GB file.  We can do
       }
       double avg = ((double) sum)/count;
   } else {
-      System.err.println(“Unable to seek to data”);
+      System.err.println("Unable to seek to data”);
   }
 ```
     
@@ -347,7 +347,7 @@ Then we use the `nom.tam.utils.FitsEncoder.computeSize` method to get the size i
 of each row.
 
 ```java
-  Fits f = new Fits(“bigtable.fits”);
+  Fits f = new Fits("bigtable.fits");
      
   BinaryTableHDU bhdu = (BinaryTableHDU) f.getHDU(1);
   Object[] row = bhdu.getData().getModelRow();
@@ -491,7 +491,7 @@ The user can then modify elements either by directly modifying the kernel object
 Suppose we have just a couple of specific elements we know we need to change in a given file:
 
 ```java
-  Fits f = new Fits(“mod.fits”);
+  Fits f = new Fits("mod.fits");
      
   ImageHDU ihdu = (ImageHDU) f.getHDU(0);
   int[][] img = (int[][]) ihdu.getKernel();
@@ -507,7 +507,7 @@ Suppose we have just a couple of specific elements we know we need to change in 
   ihdu.rewrite();
      
   TableHDU thdu = (TableHDU) f.getHDU(1);
-  thdu.setElement(3, 0, ”NewName”);
+  thdu.setElement(3, 0, "NewName");
   thdu.rewrite();
 ```
 
@@ -679,7 +679,7 @@ The metadata that describes the FITS files contents is stored in the headers of 
 <a name="accessing-header-values"></a>
 ### Accessing header values
 
-There are two basic ways to access these data.
+There are two basic ways to access these data:
 
 
 #### A. Direct access header values
@@ -690,15 +690,15 @@ To set values use the `addValue` method.
 To find out the telescope used you might want to know the value of the `TELESCOP` key.
 
 ```java
-  Fits f = new Fits('img.fits')
+  Fits f = new Fits("img.fits")
   Header header = f.getHDU(0).getHeader();
-  String telescope =  header.getStringValue(“TELESCOP”);
+  String telescope =  header.getStringValue("TELESCOP");
 ```
 
 Or if we want to know the RA of the center of the image:
 
 ```java
-  double ra = header.getDoubleValue(“CRVAL1”); 
+  double ra = header.getDoubleValue("CRVAL1"); 
 ```
 
 [The FITS WCS convention is being used here.
@@ -709,7 +709,7 @@ Perhaps we have a FITS file where the RA was not originally known, or for which 
 To add or change the RA we use:
 
 ```java
-  header.addValue(“CRVAL1”, updatedRA, “Corrected RA”);
+  header.addValue("CRVAL1", updatedRA, "Corrected RA");
 ```
 
 The second argument is our new RA.
@@ -733,6 +733,7 @@ Comment and history header cards can be created and added to the header.
 
 For tables much of the metadata describes individual columns.
 There are a set of `setTableMeta()` methods that can be used to help organize these as the user wishes.
+
 
 <a name="standard-and-conventional-fits-header-keywords"></a>
 ### Standard and conventional FITS header keywords
@@ -849,11 +850,11 @@ You can use `FitsFactory.getHierarchFormater().setCaseSensitive(true)` to allow 
 
 You may note a few other properties of HIERARCH keywords as implemented by this library:
 
- 1. The convention of the library is to refer to HIERARCH keywords internally as a dot-separated hierarchy, preceded by `HIERARCH.`.
+ 1. The convention of the library is to refer to HIERARCH keywords internally as a dot-separated hierarchy, preceded by `HIERARCH.`, e.g. `HIERARCH.my.keyword`.
  2. The HIERARCH keywords may contain all printable standard ASCII characters that are allowed in FITS headers (`0x20` thru `0x7E`). As such, we take a liberal reading of the ESO convention, which designated only upper-case letters, numbers, plus dash `-` and underscore `_`. If you want to conform to the ESO convention more closely, you should avoid using characters outside of the set of the original convention.
  3. The library adds a space between the keywords and the `=` sign, as prescribed by the __cfitsio__ convention. The original ESO convention does not require such a space (but certainly allows for it). We add the extra space to offer better compatibility with __cfitsio__.
  4. The HIERARCH parsing is tolerant, and does not care about extra space (or spaces) between the hierarchical components or before `=`. It also recognises `.` as a separator of hierarchy besides the conventional white space.
- 5. The case sensitive setting (above) also determines whether or not HIERARCH keywords are converted to upper-case upon parsing. As such, the header entry in last example above can be referred either as `HIERARCH.MY.LOWER.CASE.KEYWORD[!]` or as `HIERARCH.my.lower.case.keyword[!]` internally after parsing.
+ 5. The case sensitive setting (above) also determines whether or not HIERARCH keywords are converted to upper-case upon parsing. As such, the header entry in last example above may be referred either as `HIERARCH.my.lower.case.keyword[!]` or as `HIERARCH.MY.LOWER.CASE.KEYWORD[!]` internally after parsing, depending on whether case-sensitive mode is enabled or not.
  6. If `FitsFactory` has HIERARCH support disabled, any attempt to define a HIERARCH-style long keyword will throw a `HierarchNotEnabledException` runtime exception. (However, just `HIERARCH` by itself will still be allowed as a standard 8-character FITS keyword on its own). 
  
 <a name="checksums"></a>
@@ -864,7 +865,7 @@ Checksums can be added to the Headers for HDUs that can be used to ensure the fa
 <a name="preallocated-header-space"></a>
 ### Preallocated header space
 
-Many FITS files are created by live-recording of data, e.g. from astronomical instruments. As such not all header values may be defined as one needs to start writing the data segment of the HDU that follows the header. For example, we do not know in advance how many rows the binary table will contain, which will depend on when once stops the recording at a later point. Other metadata may simply not be provided until a later time. For this reason version 4.0 of the FITS standard has specified preallocating header space as some number of blank header records between the last defined header entry and the `END` keyword.
+Many FITS files are created by live-recording of data, e.g. from astronomical instruments. As such not all header values may be defined as one needs to start writing the data segment of the HDU that follows the header. For example, we do not know in advance how many rows the binary table will contain, which will depend on when the recording stops at a later point. Other metadata may simply not be provided until a later time. For this reason version 4.0 of the FITS standard has specified preallocating header space as some number of blank header records between the last defined header entry and the `END` keyword.
 
 As of version 1.16, this library support preallocated header space via `Header.ensureCardSpace(int)`, which can be used to ensure that the header can contain _at least_ the specified number of 80-character records when written to the output. (In reality it may accommodate somewhat more even because of the required padding to multiples of 2880 bytes or 36 records -- and you can use `Header.getMinimumSize()` to find out just how many bytes are reserved/used by any header object at any point). 
 
@@ -897,8 +898,7 @@ For example,
   h.rewrite();
 ```
 
-Preallocated header space is also preserved when reading the data in. Any trailing blank header records (before the `END` key) are counted without adding them as blank cards when
-the header is parsed. (Internal blank cards, between two regular keyword entries, are however preserved as blank comment cards and their space will not be reusable unless these cards are explicitly removed firts). After reading a header with preallocated space, the user can add at least as many new cards into that header as trailing blank records were found, and still call `rewrite()` on that header without any problems.
+Preallocated header space is also preserved when reading the data in. When parsing headers trailing blank header records (before the `END` key) are counted as reserved card space. (Internal blank cards, between two regular keyword entries, are however preserved as blank comment cards and their space will not be reusable unless these cards are explicitly removed first). After reading a header with preallocated space, the user can add at least as many new cards into that header as trailing blank records were found, and still call `rewrite()` on that header without any problems.
 
 
 
@@ -907,14 +907,14 @@ the header is parsed. (Internal blank cards, between two regular keyword entries
 <a name="standard-compliance"></a>
 ### Standard compliance
 
-The library offers a two-pronged approach to ensure header compliance to the [FITS standard](#https://fits.gsfc.nasa.gov/fits_standard.html). 
+As of version 1.16, the library offers a two-pronged approach to ensure header compliance to the [FITS standard](#https://fits.gsfc.nasa.gov/fits_standard.html). 
 
-- First, we fully enforce the standards when creating FITS headers using this library, and we do it in a way that is compliant with earlier FITS specifications (prior to 4.0) also. We will prevent the creation of non-standard header entries (cards) by throwing appropriate runtime exceptions (such as `IllegalArgumentException`, `LongValueException`, `LongStringsNotEnabledException`, `HierarchNotEnabledException`) as soon as one attempts to set a header component that is supported by FITS or by the set of standards selected in the current `FitsFactory` settings.
+- First, we fully enforce the standards when creating FITS headers using this library, and we do it in a way that is compliant with earlier FITS specifications (prior to 4.0) also. We will prevent the creation of non-standard header entries (cards) by throwing appropriate runtime exceptions (such as `IllegalArgumentException`, `LongValueException`, `LongStringsNotEnabledException`, `HierarchNotEnabledException`) as soon as one attempts to set a header component that is not supported by FITS or by the set of standards selected in the current `FitsFactory` settings.
 
-- Second, we offer the choice between tolerant and strict interpretation of 3rd-party FITS headers when parsing these. In tolerant mode (default), the parser will do its best to overcome standard violations as much as possible, such that the header can be parsed as fully as possible, even if some entries may have corrupted content. The user may enable `Header.setParserWarningsEnabled(true)` to log each violation detected by the parser as warnings, so these can be inspected if the user cares to know. Stricter parsing can be enabled by `FitsFactory.setAllowHeaderRepairs(false)`. In this mode, the parser will throw an exception when it encounters a severely corrupted header entry, such as a string value with no closing quote (`UnclosedQuoteException`) or a complex value without a closing bracket (`IllegalArgumentException`). (And, slighter violations can still be logged, the same way.)
+- Second, we offer the choice between tolerant and strict interpretation of 3rd-party FITS headers when parsing these. In tolerant mode (default), the parser will do its best to overcome standard violations as much as possible, such that the header can be parsed as fully as possible, even if some entries may have malformed content. The user may enable `Header.setParserWarningsEnabled(true)` to log each violation detected by the parser as warnings, so these can be inspected if the user cares to know. Stricter parsing can be enabled by `FitsFactory.setAllowHeaderRepairs(false)`. In this mode, the parser will throw an exception when it encounters a severely corrupted header entry, such as a string value with no closing quote (`UnclosedQuoteException`) or a complex value without a closing bracket (`IllegalArgumentException`). Wlighter violations can still be logged, the same way as in tolerant mode.
 
 
-Additionally, we provide `HeaderCard.sanitize(String)` method that the user can call to ensure that `String`s can be used in FITS headers. The method will replace illegal character (outside of the range of `0x20` thru `0x7E`) with `?`.
+Additionally, we provide `HeaderCard.sanitize(String)` method that the user can call to ensure that `String`s can be used in FITS headers. The method will replace illegal characters (outside of the range of `0x20` thru `0x7E`) with `?`.
 
 
 
@@ -1054,11 +1054,11 @@ The _nom-tam-fits_ library is a community-maintained project. We absolutely rely
 
    - Add __Javadoc__ your new code. You can keep it sweet and simple, but make sure it properly explains your methods, their arguments and return values, and why an what exceptions may be thrown. You should also cross-reference other methods that are similar, related, or relevant to what you just added.
 
-   - __Unit Tests__. Make sure your new code has as close to full unit test coverage as possible. You should aim for 100% diff coverage. When pushing changes to your fork, you can get a coverage report by checking the Github Actions result of your commit (click the Codecov link), and you can analyze what line(s) of code need to have tests added. Try to create tests that are simple but meaningful (i.e. check for valid results, rather than just confirm existing behaior), and try to cover as many realistic scenarios as appropriate. Write lots of tests if you need to. It's OK to write 100 lines of test code for 5 lines of change. Go for it! And, you will get extra kudos for filling unit testing holes outside of your area of development!
+   - Add __Unit Tests__. Make sure your new code has as close to full unit test coverage as possible. You should aim for 100% diff coverage. When pushing changes to your fork, you can get a coverage report by checking the Github Actions result of your commit (click the Codecov link), and you can analyze what line(s) of code need to have tests added. Try to create tests that are simple but meaningful (i.e. check for valid results, rather than just confirm existing behaior), and try to cover as many realistic scenarios as appropriate. Write lots of tests if you need to. It's OK to write 100 lines of test code for 5 lines of change. Go for it! And, you will get extra kudos for filling unit testing holes outside of your area of development!
 
 4. __Pull Request__. Once you feel your work can be integrated, create a pull request from your fork/branch. You can do that easily from the github page of your fork/branch directly. In the pull request, provide a concise description of what you added or changed. You may get some feedback at this point, and maybe there will be discussions about possible improvements or regressions etc. It's a good thing too, and your changes will likely end up with added polish as a result. You can be all the more proud of it in the end!
 
-5. If all goes well (and why would it not?), your pull-request will get merged, and will be included in the next release of _nom-tam-fits_. Congratulations for your excellent work, and many thanks for dedicating some of your time for making this library a little bit better. There will be many who will appreciate it. :-)
+5. If all goes well (and why would it not?), your pull-request will get merged, and will be included in the upcoming release of _nom-tam-fits_. Congratulations for your excellent work, and many thanks for dedicating some of your time for making this library a little bit better. There will be many who will appreciate it. :-)
 
 
 If at any point you have questions, or need feedback, don't be afraid to ask. You can put your questions into the issue you found or created, or your pull-request, or as a Q&amp;A in [Discussions](https://github.com/nom-tam-fits/nom-tam-fits/discussions).

@@ -9,12 +9,14 @@ on:
       - 'src/main/java/**'
       - 'src/test/java/**'
       - 'pom.xml'
-  
+      - '.github/workflows/maven.yml'
+
   pull_request:
     paths:
       - 'src/main/java/**'
       - 'src/test/java/**'
       - 'pom.xml'
+      - '.github/workflows/maven.yml'
 
 jobs:
   build:
