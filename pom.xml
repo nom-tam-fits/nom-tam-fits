@@ -8,7 +8,7 @@
 	</parent>
 	<groupId>gov.nasa.gsfc.heasarc</groupId>
 	<artifactId>nom-tam-fits</artifactId>
-	<version>1.16.0</version>
+	<version>1.16.1-SNAPSHOT</version>
 	<packaging>jar</packaging>
 	<name>nom.tam FITS library</name>
 	<description>Java library for reading and writing FITS files. FITS, the Flexible Image Transport System, is the format commonly used in the archiving and transport of astronomical data.</description>
@@ -41,7 +41,7 @@
 		</developer>
 		<developer>
 		  <id>attipaci</id>
-			<name>Attila Kov&aacute;cs</name>
+			<name>Attila Kovacs</name>
 			<email>attila [dot] kovacs [at] cfa [dot] harvard [dot] edu</email>
 			<roles>
 			  <role>Maintainer</role>
