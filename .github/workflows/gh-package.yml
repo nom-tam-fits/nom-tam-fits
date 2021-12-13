@@ -34,6 +34,6 @@ jobs:
       - name: Publish to GitHub Packages
         env:
           GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
-        run: mvn -B deploy -DskipTests -Pgithub-repo
+        run: mvn -B -e deploy -Dmaven.wagon.http.pool=false -DskipTests -Pgithub-repo
 
 
