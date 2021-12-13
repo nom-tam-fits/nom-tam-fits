@@ -10,9 +10,17 @@ updates:
     schedule:
       interval: "weekly"
     ignore:
-      - dependency-name: "checkstyle"
-      - dependency-name: "nanohttpd-webserver"
-      - dependency-name: "doxia-module-markdown"
+      - dependency-name: "com.puppycrawl.tools:checkstyle"
+        versions:
+          - ">= 8.29"
+        
+      - dependency-name: "com.nanohttpd:nanohttpd-webserver"
+        versions:
+          - ">= 2.1.0"
+        
+      - dependency-name: "org.apache.maven.doxia:doxia-module-markdown"
+        versions: 
+          - ">= 1.9.1"
 
   - package-ecosystem: "github-actions"
     directory: "/"
