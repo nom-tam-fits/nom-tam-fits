@@ -2,15 +2,20 @@ name: GitHub Package
 on:
   release:
     types: [released]
+#  push:
+#    paths:
+#      - '.github/workflows/gh-package.yml'
+
 jobs:
   publish:
     runs-on: ubuntu-latest 
     permissions: 
       contents: read
-      packages: write 
+      packages: write
       
     steps:
-    
+      - uses: actions/checkout@v2
+        
       - name: Set up Java
         uses: actions/setup-java@v2
         with:
@@ -27,6 +32,9 @@ jobs:
           git_user_signingkey: true
           
       - name: Publish to GitHub Packages
-        run: mvn -B deploy -DskipTests -Pgithub-repo
         env:
-          GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+          PKG_USERNAME: x-access-token
+          PKG_PASSWORD: ${{ secrets.GITHUB_TOKEN }}
+        run: mvn -B deploy -Dmaven.wagon.httpconnectionManager.ttlSeconds=25 -Dmaven.wagon.http.retryHandler.count=3 -Dmaven.javadoc.skip=true -DskipTests -Pgithub-repo --settings settings.xml
+
+

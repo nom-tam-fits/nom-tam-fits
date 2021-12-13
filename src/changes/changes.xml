@@ -1,12 +1,14 @@
 <document xmlns="http://maven.apache.org/changes/1.0.0" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:schemaLocation="http://maven.apache.org/changes/1.0.0 http://maven.apache.org/xsd/changes-1.0.0.xsd">
 	<body>
-	
-	  <release version="1.16.0-rc2" date="2021-11-16" description="Compliance to FITS 4.0 standard, plus many more fixes and improvements.">
+	  <release version="1.16.0" date="2021-12-13" description="Compliance to FITS 4.0 standard, plus many more fixes and improvements.">
+	    <action type="update" dev="attipaci" issue="197">
+	      This release contains numerous API changes and additions. While the source code is generally back-compatible with previous versions of this library for compiling, some method signatures have changed, and as a result the JAR should not be used as a drop-in replacement for applications that were compiled against earlier versions. To use version 1.16.0 of this library you should always compile your application against it.
+	    </action>
 	    <action type="update" dev="attipaci" issue="161">
 				Long strings enabled by default (FITS 4.0 standard).
 			</action>	
 			<action type="update" dev="attipaci" issue="195">
-				Permissive default 'FitsFactory' settings: error-free reading of some flawed 3rd party files by default (as long as they can be made sense of). However, issued encountered with 3rd party FITS files are logged so they can be inspected.
+				Permissive default 'FitsFactory' settings: error-free reading of some flawed 3rd party files by default (as long as they can be made sense of). However, issued encountered with 3rd party FITS files are logged so they can be inspected. Added new 'FitsFactory.setDefaults()' method to restore default settings more easily.
 			</action>	
 			<action type="update" dev="olebole" issue="125">
 				Set 'FitsFactory.useHierarch(true)' by default. HIERARCH style keys are written upper-case only by default, but case-sensitive support can also be enabled via a call to the 'setCaseSensitive(boolean)' method of the 'IHierarchKeyFormatter' instance used by 'FitsFactory'.
@@ -35,11 +37,17 @@
 			<action type="update" dev="attipaci" issue="173">
 				Fully preserve long comments for string values, including internal spaces in the comment, using the now standard long string convention.
 			</action>
+			<action type="update" dev="attipaci" issue="170">
+			  Simpler, better methods for adding creating comment and history entries in headers, such as via 'Header.insertComment(String)' or '.insertHistory(String)', or via 'HeaderCard.createCommentCard(String)' or '.createHistoryCard(String)'.
+			</action>
+			<action type="update" dev="attipaci" issue="170">
+			  'Header.addValue(...)' and 'Header.insert...(...)' methods now return the newly created 'HeaderCard' objects for convenience.
+			</action>
 			<action type="update" dev="attipaci" issue="121">
 				More predictable header card ordering when editing headers, both directly or indirectly via an iterator. 
 			</action>
 			<action type="update" dev="attipaci" issue="192">
-				New FITS IO class hierarchies for better layering and separation of functionality. Standard IO functions (for reading, writing, positioning, and skipping) now conform to their canonical contracts in the core Java API. The messy old IO API is also supported, though deprecated, to provide back compatibility until the next major release. The new IO classes are also 2 to 4 times faster than before. 
+				New FITS IO class hierarchies for better layering and separation of functionality. Standard IO functions (for reading, writing, positioning, and skipping) now conform to their canonical contracts in the core Java API. The messy old IO API is also supported, though deprecated, to provide back compatibility until the next major release. The new IO classes are also 2 to 3 times faster than before. 
 			</action>
 			<action type="update" dev="attipaci" issue="188">
 				'FitsHeap' access made a lot more efficient with true random access.
@@ -57,10 +65,10 @@
 				Replace fragmented 'PrimitiveType...' hierarchy with a more aptly named one-stop 'ElementType' class. The old hierarchy is also available, albeit in deprecated form.
 			</action>
 			<action type="add" dev="attipaci" issue="191">
-				Type safe BITPIX values via new 'Bitpix' enum providing a restricted set. The unsafe BITPIX methods have been deprecated for removal in a future major release.
+				Type safe BITPIX values via new 'Bitpix' enum providing a restricted set. The unsafe BITPIX methods have been deprecated for removal in a future release.
 			</action>
 			<action type="add" dev="attipaci" issue="175">
-				Added new 'Header.setParseWarningsEnabled(boolean)' option to log FITS standard violations when reading (3rd party) headers.
+				Added new 'Header.setParserWarningsEnabled(boolean)' option to log FITS standard violations when reading (3rd party) headers.
 			</action>
 			<action type="fix" dev="attipaci" issue="153">
 				no more 'Logger' warnings on multiple CONTINUE keywords, tolerant HIERARCH parsing, and other small fixes.
@@ -102,13 +110,12 @@
 				Various smaller fixes and improvements throughout, increased unit test coverage, and more comprehensive unit tests.
 			</action>
 			<action type="fix" dev="attipaci">
-	      Deprecated classes and methods that (a) were exposed in the public API even though they should not have been, (b) had names that poorly reflected their function, (c) were poorly conceived/designed in the first place, and (d) allowed misuse with unpredictable results. The deprecated API remains supported nonetheless, and slated for removal in the next major release (2.0) only.
+	      Deprecated classes and methods that (a) were exposed in the public API even though they should not have been, (b) had names that poorly reflected their function, (c) were poorly conceived/designed in the first place, and/or (d) were prone to misuse with unpredictable results. The deprecated API remains supported nonetheless, and slated for removal in the next major release (2.0) only.
 			</action>
 	    <action type="fix" dev="attipaci">
 	      A lot of the Javadoc API documentation has been revised and improved.
 			</action>
 	  </release>
-	  
 		<release version="1.15.2" date="2017-04-28" description="Maintenance release with bug fixes.">
 			<action type="update">
 				Maintenance release with bug fixes.
