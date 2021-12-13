@@ -9,7 +9,7 @@
     </server>
     <server>
       <id>github</id>
-      <username>x-access-token</username>
+      <username>nom-tam-fits</username>
       <password>${env.GITHUB_TOKEN}</password>
     </server>
   </servers>
