@@ -64,6 +64,9 @@ jobs:
         name: codecov
         verbose: true
         
+    - name: Check Project Site
+      run: mvn -B site:stage
+        
   release:
     name: Publish
     needs: build
