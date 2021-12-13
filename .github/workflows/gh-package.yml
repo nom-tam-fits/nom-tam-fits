@@ -35,5 +35,5 @@ jobs:
         env:
           PKG_USERNAME: x-access-token
           PKG_PASSWORD: ${{ secrets.GITHUB_TOKEN }}
-        run: mvn -B deploy -Dmaven.wagon.http.pool=false -Dmaven.javadoc.skip=true -DskipTests -Pgithub-repo --settings settings.xml
+        run: mvn -B deploy -Dmaven.wagon.http.pool=false -Dmaven.javadoc.skip=true -Dmaven.source.skip=true -DskipTests -Pgithub-repo --settings settings.xml
 
