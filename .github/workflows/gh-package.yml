@@ -37,3 +37,4 @@ jobs:
           PKG_PASSWORD: ${{ secrets.GITHUB_TOKEN }}
         run: mvn -B deploy -Dmaven.wagon.httpconnectionManager.ttlSeconds=25 -DskipTests -Pgithub-repo --settings settings.xml
 
+
