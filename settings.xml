@@ -9,7 +9,6 @@
     </server>
     <server>
       <id>github</id>
-      <id>github</id>
       <configuration>
         <httpHeaders>
           <property>

@@ -36,4 +36,3 @@ jobs:
           GITHUB_TOKEN: ${{ github.token }}
         run: mvn -B deploy -DskipTests -Pgithub-repo --settings=settings.xml
 
-
