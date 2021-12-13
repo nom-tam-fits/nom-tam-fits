@@ -89,12 +89,6 @@ public class FitsOutputStream extends ArrayOutputStream implements ArrayDataOutp
     protected FitsEncoder getEncoder() {
         return (FitsEncoder) super.getEncoder();
     }
-    
-
-    @Override
-    public final synchronized void write(boolean[] b) throws IOException {
-        write(b, 0, b.length);
-    }
 
     @Override
     public synchronized void write(boolean[] b, int start, int length) throws IOException {
@@ -102,18 +96,8 @@ public class FitsOutputStream extends ArrayOutputStream implements ArrayDataOutp
     }
 
     @Override
-    public final synchronized void write(Boolean[] buf) throws IOException {
-        write(buf, 0, buf.length);
-    }
-
-    @Override
     public synchronized void write(Boolean[] buf, int offset, int size) throws IOException {
         getEncoder().write(buf, offset, size);
-    }
-    
-    @Override
-    public final synchronized void write(char[] c) throws IOException {
-        write(c, 0, c.length);
     }
 
     @Override
@@ -122,18 +106,8 @@ public class FitsOutputStream extends ArrayOutputStream implements ArrayDataOutp
     }
 
     @Override
-    public final synchronized void write(short[] s) throws IOException {
-        write(s, 0, s.length);
-    }
-
-    @Override
     public synchronized void write(short[] s, int start, int length) throws IOException {
         getEncoder().write(s, start, length);
-    }
-
-    @Override
-    public final synchronized void write(int[] i) throws IOException {
-        write(i, 0, i.length);
     }
 
     @Override
@@ -142,18 +116,8 @@ public class FitsOutputStream extends ArrayOutputStream implements ArrayDataOutp
     }
 
     @Override
-    public final synchronized void write(long[] l) throws IOException {
-        write(l, 0, l.length);
-    }
-
-    @Override
     public synchronized void write(long[] l, int start, int length) throws IOException {
         getEncoder().write(l, start, length);
-    }
-
-    @Override
-    public final synchronized void write(float[] f) throws IOException {
-        write(f, 0, f.length);
     }
 
     @Override
@@ -162,18 +126,8 @@ public class FitsOutputStream extends ArrayOutputStream implements ArrayDataOutp
     }
 
     @Override
-    public final synchronized void write(double[] d) throws IOException {
-        write(d, 0, d.length);
-    }
-
-    @Override
     public synchronized void write(double[] d, int start, int length) throws IOException {
         getEncoder().write(d, start, length);
-    }
-
-    @Override
-    public final synchronized void write(String[] s) throws IOException {
-        write(s, 0, s.length);
     }
 
     @Override
