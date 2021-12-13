@@ -2,6 +2,9 @@ name: GitHub Package
 on:
   release:
     types: [released]
+  push:
+    paths:
+      - '.github/workflows/gh-package.yml'
 jobs:
   publish:
     runs-on: ubuntu-latest 
@@ -10,7 +13,8 @@ jobs:
       packages: write 
       
     steps:
-    
+      - uses: actions/checkout@v2
+        
       - name: Set up Java
         uses: actions/setup-java@v2
         with:
