@@ -9,8 +9,15 @@
     </server>
     <server>
       <id>github</id>
-      <username>${env.PKG_USERNAME}</username>
-      <password>${env.PKG_PASSWORD}</password>
+      <id>github</id>
+      <configuration>
+        <httpHeaders>
+          <property>
+            <name>Authorization</name>
+            <value>Bearer $(env.GITHUB_TOKEN}</value>
+          </property>
+        </httpHeaders>
+      </configuration>
     </server>
   </servers>
   <mirrors>
