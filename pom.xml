@@ -660,7 +660,7 @@
     		<repository>
 		    	<id>github</id>
 	    		<name>GitHub nom-tam-fits Apache Maven Packages</name>
-			    <url>https://maven.pkg.github.com/nom-tam-fits/nom-tam-fits</url>
+			    <url>https://maven.pkg.github.com/nom-tam-fits</url>
 		    </repository>
 		  </distributionManagement>
 	  </profile>
