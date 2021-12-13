@@ -2,9 +2,9 @@ name: GitHub Package
 on:
   release:
     types: [released]
-#  push:
-#    paths:
-#      - '.github/workflows/gh-package.yml'
+  push:
+    paths:
+      - '.github/workflows/gh-package.yml'
 
 jobs:
   publish:
