@@ -11,14 +11,8 @@ updates:
       interval: "weekly"
     ignore:
       - dependency-name: "checkstyle"
-        versions:
-          - ">= 8.29"
       - dependency-name: "nanohttpd-webserver"
-        versions:
-          - ">= 2.1.0"
       - dependency-name: "doxia-module-markdown"
-        versions:
-          - ">= 1.9.1"
 
   - package-ecosystem: "github-actions"
     directory: "/"
