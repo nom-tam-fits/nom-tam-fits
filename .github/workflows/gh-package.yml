@@ -33,6 +33,7 @@ jobs:
           
       - name: Publish to GitHub Packages
         env:
-          GITHUB_TOKEN: ${{ github.token }}
+          PKG_USERNAME: ${{ github.actor }}
+          PKG_PASSWORD: ${{ github.token }}
         run: mvn -B deploy -DskipTests -Pgithub-repo --settings=settings.xml
 
