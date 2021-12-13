@@ -9,6 +9,13 @@ updates:
     directory: "/"
     schedule:
       interval: "weekly"
+    ignore:
+      - dependency-name: "checkstyle"
+        versions:
+          - ">= 8.29"
+      - dependency-name: "nanohttpd-webserver"
+        versions:
+          - ">= 2.1.0"
 
   - package-ecosystem: "github-actions"
     directory: "/"
