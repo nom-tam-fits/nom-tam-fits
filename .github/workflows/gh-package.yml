@@ -11,7 +11,7 @@ jobs:
     runs-on: ubuntu-latest 
     permissions: 
       contents: read
-      packages: write 
+      packages: write
       
     steps:
       - uses: actions/checkout@v2
@@ -32,6 +32,8 @@ jobs:
           git_user_signingkey: true
           
       - name: Publish to GitHub Packages
-        run: mvn -B deploy -DskipTests -Pgithub-repo
         env:
-          GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+          PKG_USERNAME: ${{ env.GITHUB_ACTOR }}
+          PKG_PASSWORD: ${{ secrets.GITHUB_TOKEN }}
+        run: mvn -B deploy -DskipTests -Pgithub-repo --settings=settings.xml
+
