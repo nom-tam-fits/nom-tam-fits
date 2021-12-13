@@ -678,7 +678,7 @@
             </executions>
           </plugin>
         </plugins>
-      <build>
+      </build>
 	  </profile>
 		<profile>
 			<id>createHeasarcZip</id>
