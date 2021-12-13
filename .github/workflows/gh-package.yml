@@ -35,5 +35,5 @@ jobs:
         env:
           PKG_USERNAME: ${{ github.actor }}
           PKG_PASSWORD: ${{ github.token }}
-        run: mvn -B deploy -DskipTests -Pgithub-repo --settings=settings.xml
+        run: mvn -B deploy -DskipTests -Pgithub-repo --settings settings.xml
 
