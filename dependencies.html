@@ -142,7 +142,7 @@
 <tr class="b">
 <td>com.google.code.findbugs</td>
 <td><a class="externalLink" href="http://findbugs.sourceforge.net/">annotations</a></td>
-<td>3.0.0</td>
+<td>3.0.1u2</td>
 <td>jar</td>
 <td><a class="externalLink" href="http://www.gnu.org/licenses/lgpl.html">GNU Lesser Public License</a></td></tr></table></section></section><a name="Project_Transitive_Dependencies"></a><section>
 <h2><a name="Project_Transitive_Dependencies"></a>Project Transitive Dependencies</h2>
@@ -179,7 +179,28 @@
 <td><a class="externalLink" href="https://github.com/hamcrest/JavaHamcrest/hamcrest-core">hamcrest-core</a></td>
 <td>1.3</td>
 <td>jar</td>
-<td><a class="externalLink" href="http://www.opensource.org/licenses/bsd-license.php">New BSD License</a></td></tr></table></section></section><a name="Project_Dependency_Graph"></a><section>
+<td><a class="externalLink" href="http://www.opensource.org/licenses/bsd-license.php">New BSD License</a></td></tr></table></section><a name="Project_Transitive_Dependencies_provided"></a><section>
+<h3><a name="provided"></a>provided</h3>
+<p>The following is a list of provided dependencies for this project. These dependencies are required to compile the application, but should be provided by default when using the library:</p>
+<table border="0" class="table table-striped">
+<tr class="a">
+<th>GroupId</th>
+<th>ArtifactId</th>
+<th>Version</th>
+<th>Type</th>
+<th>Licenses</th></tr>
+<tr class="b">
+<td>com.google.code.findbugs</td>
+<td><a class="externalLink" href="http://findbugs.sourceforge.net/">jsr305</a></td>
+<td>3.0.1</td>
+<td>jar</td>
+<td><a class="externalLink" href="http://www.apache.org/licenses/LICENSE-2.0.txt">The Apache Software License, Version 2.0</a></td></tr>
+<tr class="a">
+<td>net.jcip</td>
+<td><a class="externalLink" href="http://jcip.net/">jcip-annotations</a></td>
+<td>1.0</td>
+<td>jar</td>
+<td>-</td></tr></table></section></section><a name="Project_Dependency_Graph"></a><section>
 <h2><a name="Project_Dependency_Graph"></a>Project Dependency Graph</h2>
 <script language="javascript" type="text/javascript">
       function toggleDependencyDetails( divId, imgId )
@@ -225,16 +246,35 @@ lzma, xz, Snappy, traditional Unix Compress, DEFLATE, DEFLATE64, LZ4,
 Brotli, Zstandard and ar, cpio, jar, tar, zip, dump, 7z, arj.</p>
 <p><b>URL: </b><a class="externalLink" href="https://commons.apache.org/proper/commons-compress/">https://commons.apache.org/proper/commons-compress/</a></p>
 <p><b>Project Licenses: </b><a class="externalLink" href="https://www.apache.org/licenses/LICENSE-2.0.txt">Apache License, Version 2.0</a></p></td></tr></table></div></li>
-<li>com.google.code.findbugs:annotations:jar:3.0.0 (provided) <img id="_img5" src="./images/icon_info_sml.gif" alt="[Information]" onclick="toggleDependencyDetails( '_dep4', '_img5' );" style="cursor: pointer; vertical-align: text-bottom;"></img><div id="_dep4" style="display:none">
+<li>com.google.code.findbugs:annotations:jar:3.0.1u2 (provided) <img id="_img5" src="./images/icon_info_sml.gif" alt="[Information]" onclick="toggleDependencyDetails( '_dep4', '_img5' );" style="cursor: pointer; vertical-align: text-bottom;"></img><div id="_dep4" style="display:none">
 <table border="0" class="table table-striped">
 <tr class="a">
 <th>FindBugs-Annotations</th></tr>
 <tr class="b">
 <td>
-<p><b>Description: </b>Annotation supports the FindBugs tool</p>
+<p><b>Description: </b>Annotation the FindBugs tool supports</p>
 <p><b>URL: </b><a class="externalLink" href="http://findbugs.sourceforge.net/">http://findbugs.sourceforge.net/</a></p>
-<p><b>Project Licenses: </b><a class="externalLink" href="http://www.gnu.org/licenses/lgpl.html">GNU Lesser Public License</a></p></td></tr></table></div></li>
-<li>junit:junit:jar:4.13.1 (test) <img id="_img7" src="./images/icon_info_sml.gif" alt="[Information]" onclick="toggleDependencyDetails( '_dep6', '_img7' );" style="cursor: pointer; vertical-align: text-bottom;"></img><div id="_dep6" style="display:none">
+<p><b>Project Licenses: </b><a class="externalLink" href="http://www.gnu.org/licenses/lgpl.html">GNU Lesser Public License</a></p></td></tr></table></div>
+<ul>
+<li>net.jcip:jcip-annotations:jar:1.0 (provided) <img id="_img7" src="./images/icon_info_sml.gif" alt="[Information]" onclick="toggleDependencyDetails( '_dep6', '_img7' );" style="cursor: pointer; vertical-align: text-bottom;"></img><div id="_dep6" style="display:none">
+<table border="0" class="table table-striped">
+<tr class="a">
+<th>&quot;Java Concurrency in Practice&quot; book annotations</th></tr>
+<tr class="b">
+<td>
+<p><b>Description: </b>There is currently no description associated with this project.</p>
+<p><b>URL: </b><a class="externalLink" href="http://jcip.net/">http://jcip.net/</a></p>
+<p><b>Project Licenses: </b>No licenses are defined for this project.</p></td></tr></table></div></li>
+<li>com.google.code.findbugs:jsr305:jar:3.0.1 (provided) <img id="_img9" src="./images/icon_info_sml.gif" alt="[Information]" onclick="toggleDependencyDetails( '_dep8', '_img9' );" style="cursor: pointer; vertical-align: text-bottom;"></img><div id="_dep8" style="display:none">
+<table border="0" class="table table-striped">
+<tr class="a">
+<th>FindBugs-jsr305</th></tr>
+<tr class="b">
+<td>
+<p><b>Description: </b>JSR305 Annotations for Findbugs</p>
+<p><b>URL: </b><a class="externalLink" href="http://findbugs.sourceforge.net/">http://findbugs.sourceforge.net/</a></p>
+<p><b>Project Licenses: </b><a class="externalLink" href="http://www.apache.org/licenses/LICENSE-2.0.txt">The Apache Software License, Version 2.0</a></p></td></tr></table></div></li></ul></li>
+<li>junit:junit:jar:4.13.1 (test) <img id="_img11" src="./images/icon_info_sml.gif" alt="[Information]" onclick="toggleDependencyDetails( '_dep10', '_img11' );" style="cursor: pointer; vertical-align: text-bottom;"></img><div id="_dep10" style="display:none">
 <table border="0" class="table table-striped">
 <tr class="a">
 <th>JUnit</th></tr>
@@ -244,7 +284,7 @@ Brotli, Zstandard and ar, cpio, jar, tar, zip, dump, 7z, arj.</p>
 <p><b>URL: </b><a class="externalLink" href="http://junit.org">http://junit.org</a></p>
 <p><b>Project Licenses: </b><a class="externalLink" href="http://www.eclipse.org/legal/epl-v10.html">Eclipse Public License 1.0</a></p></td></tr></table></div>
 <ul>
-<li>org.hamcrest:hamcrest-core:jar:1.3 (test) <img id="_img9" src="./images/icon_info_sml.gif" alt="[Information]" onclick="toggleDependencyDetails( '_dep8', '_img9' );" style="cursor: pointer; vertical-align: text-bottom;"></img><div id="_dep8" style="display:none">
+<li>org.hamcrest:hamcrest-core:jar:1.3 (test) <img id="_img13" src="./images/icon_info_sml.gif" alt="[Information]" onclick="toggleDependencyDetails( '_dep12', '_img13' );" style="cursor: pointer; vertical-align: text-bottom;"></img><div id="_dep12" style="display:none">
 <table border="0" class="table table-striped">
 <tr class="a">
 <th>Hamcrest Core</th></tr>
@@ -253,7 +293,7 @@ Brotli, Zstandard and ar, cpio, jar, tar, zip, dump, 7z, arj.</p>
 <p><b>Description: </b>This is the core API of hamcrest matcher framework to be used by third-party framework providers. This includes the a foundation set of matcher implementations for common operations.</p>
 <p><b>URL: </b><a class="externalLink" href="https://github.com/hamcrest/JavaHamcrest/hamcrest-core">https://github.com/hamcrest/JavaHamcrest/hamcrest-core</a></p>
 <p><b>Project Licenses: </b><a class="externalLink" href="http://www.opensource.org/licenses/bsd-license.php">New BSD License</a></p></td></tr></table></div></li></ul></li>
-<li>com.nanohttpd:nanohttpd-webserver:jar:2.1.0 (test) <img id="_img11" src="./images/icon_info_sml.gif" alt="[Information]" onclick="toggleDependencyDetails( '_dep10', '_img11' );" style="cursor: pointer; vertical-align: text-bottom;"></img><div id="_dep10" style="display:none">
+<li>com.nanohttpd:nanohttpd-webserver:jar:2.1.0 (test) <img id="_img15" src="./images/icon_info_sml.gif" alt="[Information]" onclick="toggleDependencyDetails( '_dep14', '_img15' );" style="cursor: pointer; vertical-align: text-bottom;"></img><div id="_dep14" style="display:none">
 <table border="0" class="table table-striped">
 <tr class="a">
 <th>NanoHttpd-Webserver</th></tr>
@@ -263,7 +303,7 @@ Brotli, Zstandard and ar, cpio, jar, tar, zip, dump, 7z, arj.</p>
 <p><b>URL: </b><a class="externalLink" href="https://github.com/NanoHttpd/nanohttpd/nanohttpd-webserver">https://github.com/NanoHttpd/nanohttpd/nanohttpd-webserver</a></p>
 <p><b>Project Licenses: </b><a class="externalLink" href="http://opensource.org/licenses/BSD-3-Clause">The BSD 3-Clause License</a></p></td></tr></table></div>
 <ul>
-<li>com.nanohttpd:nanohttpd:jar:2.1.0 (test) <img id="_img13" src="./images/icon_info_sml.gif" alt="[Information]" onclick="toggleDependencyDetails( '_dep12', '_img13' );" style="cursor: pointer; vertical-align: text-bottom;"></img><div id="_dep12" style="display:none">
+<li>com.nanohttpd:nanohttpd:jar:2.1.0 (test) <img id="_img17" src="./images/icon_info_sml.gif" alt="[Information]" onclick="toggleDependencyDetails( '_dep16', '_img17' );" style="cursor: pointer; vertical-align: text-bottom;"></img><div id="_dep16" style="display:none">
 <table border="0" class="table table-striped">
 <tr class="a">
 <th>NanoHttpd-Core</th></tr>
@@ -272,7 +312,7 @@ Brotli, Zstandard and ar, cpio, jar, tar, zip, dump, 7z, arj.</p>
 <p><b>Description: </b>NanoHttpd is a light-weight HTTP server designed for embedding in other applications.</p>
 <p><b>URL: </b><a class="externalLink" href="https://github.com/NanoHttpd/nanohttpd/nanohttpd">https://github.com/NanoHttpd/nanohttpd/nanohttpd</a></p>
 <p><b>Project Licenses: </b><a class="externalLink" href="http://opensource.org/licenses/BSD-3-Clause">The BSD 3-Clause License</a></p></td></tr></table></div></li></ul></li>
-<li>org.openjdk.jmh:jmh-core:jar:1.33 (test) <img id="_img15" src="./images/icon_info_sml.gif" alt="[Information]" onclick="toggleDependencyDetails( '_dep14', '_img15' );" style="cursor: pointer; vertical-align: text-bottom;"></img><div id="_dep14" style="display:none">
+<li>org.openjdk.jmh:jmh-core:jar:1.33 (test) <img id="_img19" src="./images/icon_info_sml.gif" alt="[Information]" onclick="toggleDependencyDetails( '_dep18', '_img19' );" style="cursor: pointer; vertical-align: text-bottom;"></img><div id="_dep18" style="display:none">
 <table border="0" class="table table-striped">
 <tr class="a">
 <th>JMH Core</th></tr>
@@ -284,7 +324,7 @@ Brotli, Zstandard and ar, cpio, jar, tar, zip, dump, 7z, arj.</p>
 <p><b>URL: </b><a class="externalLink" href="http://openjdk.java.net/projects/code-tools/jmh/jmh-core/">http://openjdk.java.net/projects/code-tools/jmh/jmh-core/</a></p>
 <p><b>Project Licenses: </b><a class="externalLink" href="http://openjdk.java.net/legal/gplv2+ce.html">GNU General Public License (GPL), version 2, with the Classpath exception</a></p></td></tr></table></div>
 <ul>
-<li>net.sf.jopt-simple:jopt-simple:jar:4.6 (test) <img id="_img17" src="./images/icon_info_sml.gif" alt="[Information]" onclick="toggleDependencyDetails( '_dep16', '_img17' );" style="cursor: pointer; vertical-align: text-bottom;"></img><div id="_dep16" style="display:none">
+<li>net.sf.jopt-simple:jopt-simple:jar:4.6 (test) <img id="_img21" src="./images/icon_info_sml.gif" alt="[Information]" onclick="toggleDependencyDetails( '_dep20', '_img21' );" style="cursor: pointer; vertical-align: text-bottom;"></img><div id="_dep20" style="display:none">
 <table border="0" class="table table-striped">
 <tr class="a">
 <th>JOpt Simple</th></tr>
@@ -293,7 +333,7 @@ Brotli, Zstandard and ar, cpio, jar, tar, zip, dump, 7z, arj.</p>
 <p><b>Description: </b>A Java library for parsing command line options</p>
 <p><b>URL: </b><a class="externalLink" href="http://pholser.github.com/jopt-simple">http://pholser.github.com/jopt-simple</a></p>
 <p><b>Project Licenses: </b><a class="externalLink" href="http://www.opensource.org/licenses/mit-license.php">The MIT License</a></p></td></tr></table></div></li>
-<li>org.apache.commons:commons-math3:jar:3.2 (test) <img id="_img19" src="./images/icon_info_sml.gif" alt="[Information]" onclick="toggleDependencyDetails( '_dep18', '_img19' );" style="cursor: pointer; vertical-align: text-bottom;"></img><div id="_dep18" style="display:none">
+<li>org.apache.commons:commons-math3:jar:3.2 (test) <img id="_img23" src="./images/icon_info_sml.gif" alt="[Information]" onclick="toggleDependencyDetails( '_dep22', '_img23' );" style="cursor: pointer; vertical-align: text-bottom;"></img><div id="_dep22" style="display:none">
 <table border="0" class="table table-striped">
 <tr class="a">
 <th>Commons Math</th></tr>
@@ -302,7 +342,7 @@ Brotli, Zstandard and ar, cpio, jar, tar, zip, dump, 7z, arj.</p>
 <p><b>Description: </b>The Math project is a library of lightweight, self-contained mathematics and statistics components addressing the most common practical problems not immediately available in the Java programming language or commons-lang.</p>
 <p><b>URL: </b><a class="externalLink" href="http://commons.apache.org/proper/commons-math/">http://commons.apache.org/proper/commons-math/</a></p>
 <p><b>Project Licenses: </b><a class="externalLink" href="http://www.apache.org/licenses/LICENSE-2.0.txt">The Apache Software License, Version 2.0</a></p></td></tr></table></div></li></ul></li>
-<li>org.openjdk.jmh:jmh-generator-annprocess:jar:1.33 (test) <img id="_img21" src="./images/icon_info_sml.gif" alt="[Information]" onclick="toggleDependencyDetails( '_dep20', '_img21' );" style="cursor: pointer; vertical-align: text-bottom;"></img><div id="_dep20" style="display:none">
+<li>org.openjdk.jmh:jmh-generator-annprocess:jar:1.33 (test) <img id="_img25" src="./images/icon_info_sml.gif" alt="[Information]" onclick="toggleDependencyDetails( '_dep24', '_img25' );" style="cursor: pointer; vertical-align: text-bottom;"></img><div id="_dep24" style="display:none">
 <table border="0" class="table table-striped">
 <tr class="a">
 <th>JMH Generators: Annotation Processors</th></tr>
@@ -311,7 +351,7 @@ Brotli, Zstandard and ar, cpio, jar, tar, zip, dump, 7z, arj.</p>
 <p><b>Description: </b>JMH benchmark generator, based on annotation processors.</p>
 <p><b>URL: </b><a class="externalLink" href="http://openjdk.java.net/projects/code-tools/jmh/jmh-generator-annprocess/">http://openjdk.java.net/projects/code-tools/jmh/jmh-generator-annprocess/</a></p>
 <p><b>Project Licenses: </b><a class="externalLink" href="http://openjdk.java.net/legal/gplv2+ce.html">GNU General Public License (GPL), version 2, with the Classpath exception</a></p></td></tr></table></div></li>
-<li>javax.annotation:javax.annotation-api:jar:1.3.2 (compile) <img id="_img23" src="./images/icon_info_sml.gif" alt="[Information]" onclick="toggleDependencyDetails( '_dep22', '_img23' );" style="cursor: pointer; vertical-align: text-bottom;"></img><div id="_dep22" style="display:none">
+<li>javax.annotation:javax.annotation-api:jar:1.3.2 (compile) <img id="_img27" src="./images/icon_info_sml.gif" alt="[Information]" onclick="toggleDependencyDetails( '_dep26', '_img27' );" style="cursor: pointer; vertical-align: text-bottom;"></img><div id="_dep26" style="display:none">
 <table border="0" class="table table-striped">
 <tr class="a">
 <th>javax.annotation API</th></tr>
@@ -321,6 +361,7 @@ Brotli, Zstandard and ar, cpio, jar, tar, zip, dump, 7z, arj.</p>
 <p><b>URL: </b><a class="externalLink" href="http://jcp.org/en/jsr/detail?id=250">http://jcp.org/en/jsr/detail?id=250</a></p>
 <p><b>Project Licenses: </b><a class="externalLink" href="https://github.com/javaee/javax.annotation/blob/master/LICENSE">CDDL + GPLv2 with classpath exception</a></p></td></tr></table></div></li></ul></li></ul></section></section><a name="Licenses"></a><section>
 <h2><a name="Licenses"></a>Licenses</h2>
+<p><b>Unknown: </b>&quot;Java Concurrency in Practice&quot; book annotations</p>
 <p><b>The BSD 3-Clause License: </b>NanoHttpd-Core, NanoHttpd-Webserver</p>
 <p><b>Eclipse Public License 1.0: </b>JUnit</p>
 <p><b>The MIT License: </b>JOpt Simple</p>
@@ -330,7 +371,7 @@ Brotli, Zstandard and ar, cpio, jar, tar, zip, dump, 7z, arj.</p>
 <p><b>GNU General Public License (GPL), version 2, with the Classpath exception: </b>JMH Core, JMH Generators: Annotation Processors</p>
 <p><b>New BSD License: </b>Hamcrest Core</p>
 <p><b>GNU Lesser Public License: </b>FindBugs-Annotations</p>
-<p><b>The Apache Software License, Version 2.0: </b>Commons Math</p></section>
+<p><b>The Apache Software License, Version 2.0: </b>Commons Math, FindBugs-jsr305</p></section>
         </main>
       </div>
     </div>
