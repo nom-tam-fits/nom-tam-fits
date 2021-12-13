@@ -191,8 +191,7 @@
 			<plugin>
 				<groupId>org.apache.maven.plugins</groupId>
 				<artifactId>maven-deploy-plugin</artifactId>
-				<!-- TODO upgrade to 3.0.0-M1 or later... -->
-				<version>2.8.2</version>
+				<version>3.0.0-M1</version>
 			</plugin>
 			<plugin>
 				<groupId>org.apache.maven.plugins</groupId>
