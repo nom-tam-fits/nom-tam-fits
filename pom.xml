@@ -668,14 +668,10 @@
 		      <plugin>
 		        <groupId>org.apache.maven.plugins</groupId>
             <artifactId>maven-source-plugin</artifactId>
-            <executions>
-              <execution>
-                <configuration>
-                  <!-- The below specified attribute 'attach' will disable the sources.jar not included in the artifact list -->
-                  <attach>false</attach>
-                </configuration>
-              </execution>
-            </executions>
+            <configuration>
+              <!-- The below specified attribute 'attach' will disable the sources.jar not included in the artifact list -->
+              <attach>false</attach>
+            </configuration>
           </plugin>
         </plugins>
       </build>
