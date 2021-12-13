@@ -33,8 +33,7 @@ jobs:
           
       - name: Publish to GitHub Packages
         env:
-          PKG_USERNAME: ${{ env.GITHUB_ACTOR }}
-          PKG_PASSWORD: ${{ secrets.GITHUB_TOKEN }}
-        run: mvn -B deploy -Dmaven.wagon.http.pool=false -Dmaven.javadoc.skip -DskipTests -Pgithub-repo --settings settings.xml
+          GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+        run: mvn -B deploy -Dmaven.wagon.http.pool=false -Dmaven.javadoc.skip -DskipTests -Pgithub-repo
 
 
