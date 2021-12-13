@@ -35,6 +35,6 @@ jobs:
         env:
           PKG_USERNAME: ${{ env.GITHUB_ACTOR }}
           PKG_PASSWORD: ${{ secrets.GITHUB_TOKEN }}
-        run: mvn -B deploy -DskipTests -Pgithub-repo --settings settings.xml
+        run: mvn -B deploy -Dmaven.wagon.http.pool=false -DskipTests -Pgithub-repo --settings settings.xml
 
 
