@@ -66,6 +66,7 @@ jobs:
         
     - name: Check Project Site
       run: mvn -B site:stage
+      working-directory: ./nom-tam-fits
         
   release:
     name: Publish
