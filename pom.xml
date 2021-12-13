@@ -157,7 +157,7 @@
 			<extension>
 				<groupId>org.apache.maven.scm</groupId>
 				<artifactId>maven-scm-manager-plexus</artifactId>
-				<version>1.3</version>
+				<version>1.12.0</version>
 			</extension>
 			<extension>
 				<groupId>com.github.stephenc.wagon</groupId>
