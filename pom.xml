@@ -663,18 +663,6 @@
 			    <url>https://maven.pkg.github.com/nom-tam-fits/nom-tam-fits</url>
 		    </repository>
 		  </distributionManagement>
-		  <build>
-		    <plugins>
-		      <plugin>
-		        <groupId>org.apache.maven.plugins</groupId>
-            <artifactId>maven-source-plugin</artifactId>
-            <configuration>
-              <!-- The below specified attribute 'attach' will disable the sources.jar not included in the artifact list -->
-              <attach>false</attach>
-            </configuration>
-          </plugin>
-        </plugins>
-      </build>
 	  </profile>
 		<profile>
 			<id>createHeasarcZip</id>
