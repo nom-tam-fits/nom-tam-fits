@@ -23,7 +23,7 @@
 			<name>Thomas A Mcglynn</name>
 			<email>Thomas.A.McGlynn [at] NASA [dot] gov</email>
 			<roles>
-			  <role>Creator</role>
+				<role>Creator</role>
 				<role>Admin</role>
 			</roles>
 		</developer>
@@ -40,11 +40,11 @@
 			</properties>
 		</developer>
 		<developer>
-		  <id>attipaci</id>
+			<id>attipaci</id>
 			<name>Attila Kovacs</name>
 			<email>attila [dot] kovacs [at] cfa [dot] harvard [dot] edu</email>
 			<roles>
-			  <role>Maintainer</role>
+				<role>Maintainer</role>
 				<role>Developer</role>
 				<role>Admin</role>
 			</roles>
@@ -67,7 +67,7 @@
 		</developer>
 	</developers>
 	<contributors>
-    <contributor>
+		<contributor>
 			<name>William H. Cleveland Jr.</name>
 			<email>whclevelandjr [at] gmail [dot] com</email>
 		</contributor>
@@ -119,7 +119,7 @@
 		<tag>HEAD</tag>
 	</scm>
 	<distributionManagement>
-	  <!-- We'll use profiles to define the standard repository --> 
+		<!-- We'll use profiles to define the standard repository -->
 		<snapshotRepository>
 			<id>nexus</id>
 			<name>i4j sonatype Snapshot Maven 2 repository</name>
@@ -201,7 +201,7 @@
 					<passphraseServerId>gpg</passphraseServerId>
 				</configuration>
 				<executions>
-				  <execution>
+					<execution>
 						<id>sign-artifacts</id>
 						<phase>verify</phase>
 						<goals>
@@ -224,7 +224,7 @@
 				<artifactId>maven-javadoc-plugin</artifactId>
 				<version>3.3.1</version>
 				<configuration>
-				  <source>8</source>
+					<source>8</source>
 					<aggregate>false</aggregate>
 					<failOnError>true</failOnError>
 				</configuration>
@@ -409,10 +409,10 @@
 				</executions>
 			</plugin>
 			<plugin>
-        <groupId>com.github.spotbugs</groupId>
-        <artifactId>spotbugs-maven-plugin</artifactId>
-        <version>4.5.0.0</version>
-        <executions>
+				<groupId>com.github.spotbugs</groupId>
+				<artifactId>spotbugs-maven-plugin</artifactId>
+				<version>4.5.0.0</version>
+				<executions>
 					<execution>
 						<goals>
 							<goal>check</goal>
@@ -421,11 +421,11 @@
 					</execution>
 				</executions>
 				<configuration>
-          <!-- Skip bug warnings for EI_EXPOSE_REP and EI_EXPOSE_REP2
+					<!-- Skip bug warnings for EI_EXPOSE_REP and EI_EXPOSE_REP2
                we know we exposse some internal data of our classes -->
-          <omitVisitors>FindReturnRef</omitVisitors>
-        </configuration>
-      </plugin>
+					<omitVisitors>FindReturnRef</omitVisitors>
+				</configuration>
+			</plugin>
 			<plugin>
 				<groupId>org.apache.maven.plugins</groupId>
 				<artifactId>maven-surefire-plugin</artifactId>
@@ -518,13 +518,15 @@
 				<artifactId>maven-javadoc-plugin</artifactId>
 				<version>3.3.1</version>
 				<configuration>
-				  <source>8</source>
+					<source>8</source>
 					<failOnError>false</failOnError>
 					<aggregate>false</aggregate>
 				</configuration>
 				<reportSets>
-					<reportSet><!-- by default, id = "default" -->
-						<reports><!-- select non-aggregate reports -->
+					<reportSet>
+						<!-- by default, id = "default" -->
+						<reports>
+							<!-- select non-aggregate reports -->
 							<report>javadoc-no-fork</report>
 						</reports>
 					</reportSet>
@@ -567,28 +569,28 @@
 				<artifactId>taglist-maven-plugin</artifactId>
 				<version>2.4</version>
 			</plugin>
-      <plugin>
-        <groupId>com.github.spotbugs</groupId>
-        <artifactId>spotbugs-maven-plugin</artifactId>
-        <version>4.5.0.0</version>
-        <configuration>
-          <!-- Skip bug warnings for EI_EXPOSE_REP and EI_EXPOSE_REP2
+			<plugin>
+				<groupId>com.github.spotbugs</groupId>
+				<artifactId>spotbugs-maven-plugin</artifactId>
+				<version>4.5.0.0</version>
+				<configuration>
+					<!-- Skip bug warnings for EI_EXPOSE_REP and EI_EXPOSE_REP2
                we know we exposse some internal data of our classes -->
-          <omitVisitors>FindReturnRef</omitVisitors>
-        </configuration>
-      </plugin>
+					<omitVisitors>FindReturnRef</omitVisitors>
+				</configuration>
+			</plugin>
 			<plugin>
 				<groupId>org.jacoco</groupId>
 				<artifactId>jacoco-maven-plugin</artifactId>
 				<version>0.8.7</version>
 				<reportSets>
-          <reportSet>
-            <reports>
-              <!-- select non-aggregate reports -->
-              <report>report</report>
-            </reports>
-          </reportSet>
-        </reportSets>
+					<reportSet>
+						<reports>
+							<!-- select non-aggregate reports -->
+							<report>report</report>
+						</reports>
+					</reportSet>
+				</reportSets>
 			</plugin>
 		</plugins>
 	</reporting>
@@ -603,7 +605,7 @@
 			<groupId>com.google.code.findbugs</groupId>
 			<artifactId>annotations</artifactId>
 			<version>3.0.1u2</version>
-			<scope>provided</scope>
+			<scope>compile</scope>
 		</dependency>
 		<dependency>
 			<groupId>junit</groupId>
@@ -630,40 +632,41 @@
 			<scope>test</scope>
 		</dependency>
 		<!-- https://mvnrepository.com/artifact/javax.annotation/javax.annotation-api -->
-    <dependency>
-      <groupId>javax.annotation</groupId>
-      <artifactId>javax.annotation-api</artifactId>
-      <version>1.3.2</version>
-    </dependency>
+		<dependency>
+			<groupId>javax.annotation</groupId>
+			<artifactId>javax.annotation-api</artifactId>
+			<version>1.3.2</version>
+			<scope>compile</scope>
+		</dependency>
 	</dependencies>
 	<properties>
 		<project.build.sourceEncoding>UTF-8</project.build.sourceEncoding>
 		<project.scm.id>nom-tam-fits-deploy</project.scm.id>
 	</properties>
 	<profiles>
-	  <profile>
-	    <id>nexus-repo</id>
-	    <activation>
-        <activeByDefault>true</activeByDefault>
-      </activation>
-      <distributionManagement>
-        <repository>
-			    <id>nexus</id>
-			    <name>i4j sonatype Maven 2 repository</name>
-			    <url>https://oss.sonatype.org/service/local/staging/deploy/maven2</url>
-		    </repository>
-		  </distributionManagement>
-    </profile>  
-	  <profile>
-	    <id>github-repo</id>
-	    <distributionManagement>
-    		<repository>
-		    	<id>github</id>
-	    		<name>GitHub nom-tam-fits Apache Maven Packages</name>
-			    <url>https://maven.pkg.github.com/nom-tam-fits/nom-tam-fits</url>
-		    </repository>
-		  </distributionManagement>
-	  </profile>
+		<profile>
+			<id>nexus-repo</id>
+			<activation>
+				<activeByDefault>true</activeByDefault>
+			</activation>
+			<distributionManagement>
+				<repository>
+					<id>nexus</id>
+					<name>i4j sonatype Maven 2 repository</name>
+					<url>https://oss.sonatype.org/service/local/staging/deploy/maven2</url>
+				</repository>
+			</distributionManagement>
+		</profile>
+		<profile>
+			<id>github-repo</id>
+			<distributionManagement>
+				<repository>
+					<id>github</id>
+					<name>GitHub nom-tam-fits Apache Maven Packages</name>
+					<url>https://maven.pkg.github.com/nom-tam-fits/nom-tam-fits</url>
+				</repository>
+			</distributionManagement>
+		</profile>
 		<profile>
 			<id>createHeasarcZip</id>
 			<activation>
@@ -720,4 +723,3 @@
 		</profile>
 	</profiles>
 </project>
-
