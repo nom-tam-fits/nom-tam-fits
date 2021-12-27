@@ -411,7 +411,7 @@
 			<plugin>
 				<groupId>com.github.spotbugs</groupId>
 				<artifactId>spotbugs-maven-plugin</artifactId>
-				<version>4.5.0.0</version>
+				<version>4.5.2.0</version>
 				<executions>
 					<execution>
 						<goals>
@@ -572,7 +572,7 @@
 			<plugin>
 				<groupId>com.github.spotbugs</groupId>
 				<artifactId>spotbugs-maven-plugin</artifactId>
-				<version>4.5.0.0</version>
+				<version>4.5.2.0</version>
 				<configuration>
 					<!-- Skip bug warnings for EI_EXPOSE_REP and EI_EXPOSE_REP2
                we know we exposse some internal data of our classes -->
