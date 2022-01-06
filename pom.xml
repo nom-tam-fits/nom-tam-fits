@@ -152,7 +152,7 @@
 			<extension>
 				<groupId>org.apache.maven.scm</groupId>
 				<artifactId>maven-scm-provider-gitexe</artifactId>
-				<version>1.12.2</version>
+				<version>1.12.0</version>
 			</extension>
 			<extension>
 				<groupId>org.apache.maven.scm</groupId>
@@ -277,7 +277,7 @@
 			<plugin>
 				<groupId>org.apache.maven.plugins</groupId>
 				<artifactId>maven-site-plugin</artifactId>
-				<version>3.10.0</version>
+				<version>3.9.1</version>
 				<configuration>
 					<chmod>false</chmod>
 				</configuration>
@@ -411,7 +411,7 @@
 			<plugin>
 				<groupId>com.github.spotbugs</groupId>
 				<artifactId>spotbugs-maven-plugin</artifactId>
-				<version>4.5.2.0</version>
+				<version>4.5.0.0</version>
 				<executions>
 					<execution>
 						<goals>
@@ -572,7 +572,7 @@
 			<plugin>
 				<groupId>com.github.spotbugs</groupId>
 				<artifactId>spotbugs-maven-plugin</artifactId>
-				<version>4.5.2.0</version>
+				<version>4.5.0.0</version>
 				<configuration>
 					<!-- Skip bug warnings for EI_EXPOSE_REP and EI_EXPOSE_REP2
                we know we exposse some internal data of our classes -->
