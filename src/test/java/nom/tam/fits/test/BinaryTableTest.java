@@ -1925,7 +1925,7 @@ public class BinaryTableTest {
         ByteArrayOutputStream out = new ByteArrayOutputStream();
         PrintStream stream = new PrintStream(out);
         tableHdu.info(stream);
-        Assert.assertTrue(out.toString().contains("No data present"));
+        Assert.assertFalse(out.toString().contains("Number of rows="));
     }
 
     @Test(expected = TableException.class)
