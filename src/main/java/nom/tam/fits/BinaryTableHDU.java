@@ -189,17 +189,18 @@ public class BinaryTableHDU extends TableHDU<BinaryTable> {
         }
 
         stream.println("      Data Information:");
-        if (myData == null || this.myData.getNRows() == 0 || this.myData.getNCols() == 0) {
+        if (myData == null) {
             stream.println("         No data present");
+        } else if (this.myData.getNRows() == 0 || this.myData.getNCols() == 0) {
+            stream.println("         Empty data content");
             if (this.myData.getHeapSize() > 0) {
                 stream.println("         Heap size is: " + this.myData.getHeapSize() + " bytes");
             }
         } else {
-
             stream.println("          Number of rows=" + this.myData.getNRows());
             stream.println("          Number of columns=" + this.myData.getNCols());
             if (this.myData.getHeapSize() > 0) {
-                stream.println("          Heap size is: " + this.myData.getHeapSize() + " bytes");
+                stream.println("         Heap size is: " + this.myData.getHeapSize() + " bytes");
             }
             Object[] cols = this.myData.getFlatColumns();
             for (int i = 0; i < cols.length; i += 1) {

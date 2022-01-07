@@ -152,12 +152,12 @@
 			<extension>
 				<groupId>org.apache.maven.scm</groupId>
 				<artifactId>maven-scm-provider-gitexe</artifactId>
-				<version>1.12.0</version>
+				<version>1.12.2</version>
 			</extension>
 			<extension>
 				<groupId>org.apache.maven.scm</groupId>
 				<artifactId>maven-scm-manager-plexus</artifactId>
-				<version>1.12.0</version>
+				<version>1.12.2</version>
 			</extension>
 			<extension>
 				<groupId>com.github.stephenc.wagon</groupId>
@@ -191,7 +191,7 @@
 			<plugin>
 				<groupId>org.apache.maven.plugins</groupId>
 				<artifactId>maven-deploy-plugin</artifactId>
-				<version>3.0.0-M1</version>
+				<version>3.0.0-M2</version>
 			</plugin>
 			<plugin>
 				<groupId>org.apache.maven.plugins</groupId>
@@ -254,7 +254,7 @@
 				<groupId>org.apache.maven.plugins</groupId>
 				<artifactId>maven-release-plugin</artifactId>
 				<!-- TODO Update to 3.0.0-M4 or later -->
-				<version>3.0.0-M4</version>
+				<version>3.0.0-M5</version>
 				<configuration>
 					<mavenExecutorId>forked-path</mavenExecutorId>
 					<pushChanges>false</pushChanges>
@@ -295,7 +295,7 @@
 					<dependency>
 						<groupId>org.apache.maven.doxia</groupId>
 						<artifactId>doxia-module-markdown</artifactId>
-						<version>1.9.1</version>
+						<version>1.11.1</version>
 					</dependency>
 				</dependencies>
 			</plugin>
@@ -348,7 +348,7 @@
 					<dependency>
 						<groupId>com.puppycrawl.tools</groupId>
 						<artifactId>checkstyle</artifactId>
-						<version>8.29</version>
+						<version>9.2</version>
 					</dependency>
 				</dependencies>
 				<executions>
@@ -411,7 +411,7 @@
 			<plugin>
 				<groupId>com.github.spotbugs</groupId>
 				<artifactId>spotbugs-maven-plugin</artifactId>
-				<version>4.5.0.0</version>
+				<version>4.5.3.0</version>
 				<executions>
 					<execution>
 						<goals>
@@ -572,7 +572,7 @@
 			<plugin>
 				<groupId>com.github.spotbugs</groupId>
 				<artifactId>spotbugs-maven-plugin</artifactId>
-				<version>4.5.0.0</version>
+				<version>4.5.3.0</version>
 				<configuration>
 					<!-- Skip bug warnings for EI_EXPOSE_REP and EI_EXPOSE_REP2
                we know we exposse some internal data of our classes -->
@@ -622,13 +622,13 @@
 		<dependency>
 			<groupId>org.openjdk.jmh</groupId>
 			<artifactId>jmh-core</artifactId>
-			<version>1.33</version>
+			<version>1.34</version>
 			<scope>test</scope>
 		</dependency>
 		<dependency>
 			<groupId>org.openjdk.jmh</groupId>
 			<artifactId>jmh-generator-annprocess</artifactId>
-			<version>1.33</version>
+			<version>1.34</version>
 			<scope>test</scope>
 		</dependency>
 		<!-- https://mvnrepository.com/artifact/javax.annotation/javax.annotation-api -->

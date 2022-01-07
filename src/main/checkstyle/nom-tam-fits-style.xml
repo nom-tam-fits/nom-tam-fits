@@ -103,7 +103,11 @@
 		<module name="MethodParamPad" />
 		<module name="NoWhitespaceAfter" />
 		<module name="NoWhitespaceBefore" />
-		<module name="OperatorWrap" />
+		<module name="OperatorWrap">
+		  <property name="tokens"
+        value="QUESTION, COLON, EQUAL, NOT_EQUAL, SR, BSR, GE, GT, SL, LE, LT, TYPE_EXTENSION_AND, LITERAL_INSTANCEOF"/>
+   <property name="option" value="eol"/>
+		</module>
 		<module name="ParenPad" />
 		<module name="TypecastParenPad" />
 		<module name="WhitespaceAfter" />

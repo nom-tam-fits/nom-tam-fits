@@ -1620,8 +1620,8 @@ public class Header implements FitsElement {
             if (e instanceof TruncatedFileException) {
                 throw (TruncatedFileException) e;
             }
-            throw new IOException("Invalid FITS Header" + (isEmpty() 
-                    ? "" : ":\n\n --> Try FitsFactory.setAllowTerminalJunk(true) prior to reading to work around.\n"), e);
+            throw new IOException("Invalid FITS Header" + (isEmpty() ? 
+                    "" : ":\n\n --> Try FitsFactory.setAllowTerminalJunk(true) prior to reading to work around.\n"), e);
         }        
         
         if (this.fileOffset >= 0) {
