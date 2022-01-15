@@ -1933,7 +1933,7 @@
 <a class="jxr_linenumber" name="L1925" href="#L1925">1925</a>         ByteArrayOutputStream out = <strong class="jxr_keyword">new</strong> ByteArrayOutputStream();
 <a class="jxr_linenumber" name="L1926" href="#L1926">1926</a>         PrintStream stream = <strong class="jxr_keyword">new</strong> PrintStream(out);
 <a class="jxr_linenumber" name="L1927" href="#L1927">1927</a>         tableHdu.info(stream);
-<a class="jxr_linenumber" name="L1928" href="#L1928">1928</a>         Assert.assertFalse(out.toString().contains(<span class="jxr_string">"Number of rows="</span>));
+<a class="jxr_linenumber" name="L1928" href="#L1928">1928</a>         Assert.assertTrue(out.toString().contains(<span class="jxr_string">"No data present"</span>));
 <a class="jxr_linenumber" name="L1929" href="#L1929">1929</a>     }
 <a class="jxr_linenumber" name="L1930" href="#L1930">1930</a> 
 <a class="jxr_linenumber" name="L1931" href="#L1931">1931</a>     @Test(expected = TableException.<strong class="jxr_keyword">class</strong>)

@@ -1628,8 +1628,8 @@
 <a class="jxr_linenumber" name="L1620" href="#L1620">1620</a>             <strong class="jxr_keyword">if</strong> (e instanceof <a name="TruncatedFileException" href="../../../nom/tam/fits/TruncatedFileException.html#TruncatedFileException">TruncatedFileException</a>) {
 <a class="jxr_linenumber" name="L1621" href="#L1621">1621</a>                 <strong class="jxr_keyword">throw</strong> (<a name="TruncatedFileException" href="../../../nom/tam/fits/TruncatedFileException.html#TruncatedFileException">TruncatedFileException</a>) e;
 <a class="jxr_linenumber" name="L1622" href="#L1622">1622</a>             }
-<a class="jxr_linenumber" name="L1623" href="#L1623">1623</a>             <strong class="jxr_keyword">throw</strong> <strong class="jxr_keyword">new</strong> IOException(<span class="jxr_string">"Invalid FITS Header"</span> + (isEmpty() ? 
-<a class="jxr_linenumber" name="L1624" href="#L1624">1624</a>                     <span class="jxr_string">""</span> : <span class="jxr_string">":\n\n --&gt; Try FitsFactory.setAllowTerminalJunk(true) prior to reading to work around.\n"</span>), e);
+<a class="jxr_linenumber" name="L1623" href="#L1623">1623</a>             <strong class="jxr_keyword">throw</strong> <strong class="jxr_keyword">new</strong> IOException(<span class="jxr_string">"Invalid FITS Header"</span> + (isEmpty() 
+<a class="jxr_linenumber" name="L1624" href="#L1624">1624</a>                     ? <span class="jxr_string">""</span> : <span class="jxr_string">":\n\n --&gt; Try FitsFactory.setAllowTerminalJunk(true) prior to reading to work around.\n"</span>), e);
 <a class="jxr_linenumber" name="L1625" href="#L1625">1625</a>         }        
 <a class="jxr_linenumber" name="L1626" href="#L1626">1626</a>         
 <a class="jxr_linenumber" name="L1627" href="#L1627">1627</a>         <strong class="jxr_keyword">if</strong> (<strong class="jxr_keyword">this</strong>.fileOffset &gt;= 0) {
