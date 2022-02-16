@@ -1,5 +1,24 @@
 <document xmlns="http://maven.apache.org/changes/1.0.0" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:schemaLocation="http://maven.apache.org/changes/1.0.0 http://maven.apache.org/xsd/changes-1.0.0.xsd">
 	<body>
+	
+	  <release version="1.16.1-SNAPSHOT" date="2022-02-08" description="Maintenance release with bug fixes.">
+	    <action type="fix" dev="attipaci" issue="252">
+				Fix broken Java 8 compatibility due to Java compiler flags in POM. Note, after the change the build itself will require Java 9 or later!
+			</action>
+	    <action type="fix" dev="attipaci" issue="243">
+				Fix potential uncheched null in BinaryTableHDU.
+			</action>
+      <action type="update" dev="attipaci" issue="210">
+				Add default ArrayDataInput/Output implementations.
+			</action>
+			<action type="update" dev="attipaci" issue="229">
+				Remove runtime dependency on javax.annotation-api.
+			</action>
+			<action type="update" dev="dependabot">
+				(Semi)-automated updates of dependencies.
+			</action>
+	  </release>
+	
 	  <release version="1.16.0" date="2021-12-13" description="Compliance to FITS 4.0 standard, plus many more fixes and improvements.">
 	    <action type="update" dev="attipaci" issue="197">
 	      This release contains numerous API changes and additions. While the source code is generally back-compatible with previous versions of this library for compiling, some method signatures have changed, and as a result the JAR should not be used as a drop-in replacement for applications that were compiled against earlier versions. To use version 1.16.0 of this library you should always compile your application against it.
@@ -116,6 +135,7 @@
 	      A lot of the Javadoc API documentation has been revised and improved.
 			</action>
 	  </release>
+	  
 		<release version="1.15.2" date="2017-04-28" description="Maintenance release with bug fixes.">
 			<action type="update">
 				Maintenance release with bug fixes.
