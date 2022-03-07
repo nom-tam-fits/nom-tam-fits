@@ -25,12 +25,12 @@ jobs:
     runs-on: ubuntu-latest
 
     steps:
-    - uses: actions/checkout@v2
+    - uses: actions/checkout@v3
       with:
         path: nom-tam-fits
         
     - name: Check out blackbox images 
-      uses: actions/checkout@v2
+      uses: actions/checkout@v3
       with:
         repository: nom-tam-fits/blackbox-images
         path: blackbox-images
@@ -78,7 +78,7 @@ jobs:
     
     steps:
     
-    - uses: actions/checkout@v2
+    - uses: actions/checkout@v3
         
     - name: Set up Java for Publishing to Nexus
       uses: actions/setup-java@v2
