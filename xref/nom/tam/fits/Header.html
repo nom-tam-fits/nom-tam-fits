@@ -2021,358 +2021,360 @@
 <a class="jxr_linenumber" name="L2013" href="#L2013">2013</a>         <strong class="jxr_keyword">if</strong> (dup.isCommentStyleCard() || CONTINUE.key().equals(dup.getKey())) {
 <a class="jxr_linenumber" name="L2014" href="#L2014">2014</a>             <strong class="jxr_keyword">return</strong>;
 <a class="jxr_linenumber" name="L2015" href="#L2015">2015</a>         }
-<a class="jxr_linenumber" name="L2016" href="#L2016">2016</a>         LOG.log(Level.WARNING, <span class="jxr_string">"Multiple occurrences of key:"</span> + dup.getKey());
-<a class="jxr_linenumber" name="L2017" href="#L2017">2017</a>         <strong class="jxr_keyword">if</strong> (<strong class="jxr_keyword">this</strong>.duplicates == <strong class="jxr_keyword">null</strong>) {
-<a class="jxr_linenumber" name="L2018" href="#L2018">2018</a>             <strong class="jxr_keyword">this</strong>.duplicates = <strong class="jxr_keyword">new</strong> ArrayList&lt;&gt;();
-<a class="jxr_linenumber" name="L2019" href="#L2019">2019</a>         }
-<a class="jxr_linenumber" name="L2020" href="#L2020">2020</a>         <strong class="jxr_keyword">this</strong>.duplicates.add(dup);
-<a class="jxr_linenumber" name="L2021" href="#L2021">2021</a>     }
-<a class="jxr_linenumber" name="L2022" href="#L2022">2022</a> 
-<a class="jxr_linenumber" name="L2023" href="#L2023">2023</a>     <em class="jxr_javadoccomment">/**</em>
-<a class="jxr_linenumber" name="L2024" href="#L2024">2024</a> <em class="jxr_javadoccomment">     * Check if the given key is the next one available in the header.</em>
-<a class="jxr_linenumber" name="L2025" href="#L2025">2025</a> <em class="jxr_javadoccomment">     */</em>
-<a class="jxr_linenumber" name="L2026" href="#L2026">2026</a>     <strong class="jxr_keyword">private</strong> <strong class="jxr_keyword">void</strong> cardCheck(Cursor&lt;String, HeaderCard&gt; iter, <a name="IFitsHeader" href="../../../nom/tam/fits/header/IFitsHeader.html#IFitsHeader">IFitsHeader</a> key) <strong class="jxr_keyword">throws</strong> <a name="FitsException" href="../../../nom/tam/fits/FitsException.html#FitsException">FitsException</a> {
-<a class="jxr_linenumber" name="L2027" href="#L2027">2027</a>         cardCheck(iter, key.key());
-<a class="jxr_linenumber" name="L2028" href="#L2028">2028</a>     }
-<a class="jxr_linenumber" name="L2029" href="#L2029">2029</a> 
-<a class="jxr_linenumber" name="L2030" href="#L2030">2030</a>     <em class="jxr_javadoccomment">/**</em>
-<a class="jxr_linenumber" name="L2031" href="#L2031">2031</a> <em class="jxr_javadoccomment">     * Check if the given key is the next one available in the header.</em>
-<a class="jxr_linenumber" name="L2032" href="#L2032">2032</a> <em class="jxr_javadoccomment">     */</em>
-<a class="jxr_linenumber" name="L2033" href="#L2033">2033</a>     <strong class="jxr_keyword">private</strong> <strong class="jxr_keyword">void</strong> cardCheck(Cursor&lt;String, HeaderCard&gt; iter, String key) <strong class="jxr_keyword">throws</strong> <a name="FitsException" href="../../../nom/tam/fits/FitsException.html#FitsException">FitsException</a> {
-<a class="jxr_linenumber" name="L2034" href="#L2034">2034</a>         <strong class="jxr_keyword">if</strong> (!iter.hasNext()) {
-<a class="jxr_linenumber" name="L2035" href="#L2035">2035</a>             <strong class="jxr_keyword">throw</strong> <strong class="jxr_keyword">new</strong> <a name="FitsException" href="../../../nom/tam/fits/FitsException.html#FitsException">FitsException</a>(<span class="jxr_string">"Header terminates before "</span> + key);
-<a class="jxr_linenumber" name="L2036" href="#L2036">2036</a>         }
-<a class="jxr_linenumber" name="L2037" href="#L2037">2037</a>         <a name="HeaderCard" href="../../../nom/tam/fits/HeaderCard.html#HeaderCard">HeaderCard</a> card = iter.next();
-<a class="jxr_linenumber" name="L2038" href="#L2038">2038</a>         <strong class="jxr_keyword">if</strong> (!card.getKey().equals(key)) {
-<a class="jxr_linenumber" name="L2039" href="#L2039">2039</a>             <strong class="jxr_keyword">throw</strong> <strong class="jxr_keyword">new</strong> <a name="FitsException" href="../../../nom/tam/fits/FitsException.html#FitsException">FitsException</a>(<span class="jxr_string">"Key "</span> + key + <span class="jxr_string">" not found where expected."</span> + <span class="jxr_string">"Found "</span> + card.getKey());
-<a class="jxr_linenumber" name="L2040" href="#L2040">2040</a>         }
-<a class="jxr_linenumber" name="L2041" href="#L2041">2041</a>     }
-<a class="jxr_linenumber" name="L2042" href="#L2042">2042</a> 
-<a class="jxr_linenumber" name="L2043" href="#L2043">2043</a>     <strong class="jxr_keyword">private</strong> <strong class="jxr_keyword">void</strong> checkFirstCard(String key) <strong class="jxr_keyword">throws</strong> <a name="FitsException" href="../../../nom/tam/fits/FitsException.html#FitsException">FitsException</a> {
-<a class="jxr_linenumber" name="L2044" href="#L2044">2044</a>         <em class="jxr_comment">// AK: key cannot be null by the caller already, so checking for it makes dead code.</em>
-<a class="jxr_linenumber" name="L2045" href="#L2045">2045</a>         <strong class="jxr_keyword">if</strong> (!SIMPLE.key().equals(key) &amp;&amp; !XTENSION.key().equals(key)) {
-<a class="jxr_linenumber" name="L2046" href="#L2046">2046</a>             <strong class="jxr_keyword">throw</strong> <strong class="jxr_keyword">new</strong> <a name="FitsException" href="../../../nom/tam/fits/FitsException.html#FitsException">FitsException</a>(<span class="jxr_string">"Not a proper FITS header: "</span> + HeaderCard.sanitize(key) + <span class="jxr_string">" at "</span> + <strong class="jxr_keyword">this</strong>.fileOffset);
-<a class="jxr_linenumber" name="L2047" href="#L2047">2047</a>         }
-<a class="jxr_linenumber" name="L2048" href="#L2048">2048</a>     }
-<a class="jxr_linenumber" name="L2049" href="#L2049">2049</a> 
-<a class="jxr_linenumber" name="L2050" href="#L2050">2050</a>     <strong class="jxr_keyword">private</strong> <strong class="jxr_keyword">void</strong> doCardChecks(Cursor&lt;String, HeaderCard&gt; iter, <strong class="jxr_keyword">boolean</strong> isTable, <strong class="jxr_keyword">boolean</strong> isExtension) <strong class="jxr_keyword">throws</strong> <a name="FitsException" href="../../../nom/tam/fits/FitsException.html#FitsException">FitsException</a> {
-<a class="jxr_linenumber" name="L2051" href="#L2051">2051</a>         cardCheck(iter, BITPIX);
-<a class="jxr_linenumber" name="L2052" href="#L2052">2052</a>         cardCheck(iter, NAXIS);
-<a class="jxr_linenumber" name="L2053" href="#L2053">2053</a>         <strong class="jxr_keyword">int</strong> nax = getIntValue(NAXIS);
-<a class="jxr_linenumber" name="L2054" href="#L2054">2054</a> 
-<a class="jxr_linenumber" name="L2055" href="#L2055">2055</a>         <strong class="jxr_keyword">for</strong> (<strong class="jxr_keyword">int</strong> i = 1; i &lt;= nax; i += 1) {
-<a class="jxr_linenumber" name="L2056" href="#L2056">2056</a>             cardCheck(iter, NAXISn.n(i));
-<a class="jxr_linenumber" name="L2057" href="#L2057">2057</a>         }
-<a class="jxr_linenumber" name="L2058" href="#L2058">2058</a>         <strong class="jxr_keyword">if</strong> (isExtension) {
-<a class="jxr_linenumber" name="L2059" href="#L2059">2059</a>             cardCheck(iter, PCOUNT);
-<a class="jxr_linenumber" name="L2060" href="#L2060">2060</a>             cardCheck(iter, GCOUNT);
-<a class="jxr_linenumber" name="L2061" href="#L2061">2061</a>             <strong class="jxr_keyword">if</strong> (isTable) {
-<a class="jxr_linenumber" name="L2062" href="#L2062">2062</a>                 cardCheck(iter, TFIELDS);
-<a class="jxr_linenumber" name="L2063" href="#L2063">2063</a>             }
-<a class="jxr_linenumber" name="L2064" href="#L2064">2064</a>         }
-<a class="jxr_linenumber" name="L2065" href="#L2065">2065</a>         <em class="jxr_comment">// This does not check for the EXTEND keyword which</em>
-<a class="jxr_linenumber" name="L2066" href="#L2066">2066</a>         <em class="jxr_comment">// if present in the primary array must immediately follow</em>
-<a class="jxr_linenumber" name="L2067" href="#L2067">2067</a>         <em class="jxr_comment">// the NAXISn.</em>
-<a class="jxr_linenumber" name="L2068" href="#L2068">2068</a>     }
-<a class="jxr_linenumber" name="L2069" href="#L2069">2069</a> 
-<a class="jxr_linenumber" name="L2070" href="#L2070">2070</a>     <em class="jxr_javadoccomment">/**</em>
-<a class="jxr_linenumber" name="L2071" href="#L2071">2071</a> <em class="jxr_javadoccomment">     * Move after the EXTEND keyword in images. Used in bug fix noted by V.</em>
-<a class="jxr_linenumber" name="L2072" href="#L2072">2072</a> <em class="jxr_javadoccomment">     * Forchi</em>
-<a class="jxr_linenumber" name="L2073" href="#L2073">2073</a> <em class="jxr_javadoccomment">     */</em>
-<a class="jxr_linenumber" name="L2074" href="#L2074">2074</a>     <strong class="jxr_keyword">void</strong> afterExtend() {
-<a class="jxr_linenumber" name="L2075" href="#L2075">2075</a>         <strong class="jxr_keyword">if</strong> (findCard(EXTEND) != <strong class="jxr_keyword">null</strong>) {
-<a class="jxr_linenumber" name="L2076" href="#L2076">2076</a>             nextCard();
-<a class="jxr_linenumber" name="L2077" href="#L2077">2077</a>         }
-<a class="jxr_linenumber" name="L2078" href="#L2078">2078</a>     }
-<a class="jxr_linenumber" name="L2079" href="#L2079">2079</a> 
-<a class="jxr_linenumber" name="L2080" href="#L2080">2080</a>     <em class="jxr_javadoccomment">/**</em>
-<a class="jxr_linenumber" name="L2081" href="#L2081">2081</a> <em class="jxr_javadoccomment">     * Ensure that the header begins with a valid set of keywords. Note that we</em>
-<a class="jxr_linenumber" name="L2082" href="#L2082">2082</a> <em class="jxr_javadoccomment">     * do not check the values of these keywords.</em>
-<a class="jxr_linenumber" name="L2083" href="#L2083">2083</a> <em class="jxr_javadoccomment">     */</em>
-<a class="jxr_linenumber" name="L2084" href="#L2084">2084</a>     <strong class="jxr_keyword">void</strong> checkBeginning() <strong class="jxr_keyword">throws</strong> <a name="FitsException" href="../../../nom/tam/fits/FitsException.html#FitsException">FitsException</a> {
-<a class="jxr_linenumber" name="L2085" href="#L2085">2085</a>         Cursor&lt;String, HeaderCard&gt; iter = iterator();
-<a class="jxr_linenumber" name="L2086" href="#L2086">2086</a>         <strong class="jxr_keyword">if</strong> (!iter.hasNext()) {
-<a class="jxr_linenumber" name="L2087" href="#L2087">2087</a>             <strong class="jxr_keyword">throw</strong> <strong class="jxr_keyword">new</strong> <a name="FitsException" href="../../../nom/tam/fits/FitsException.html#FitsException">FitsException</a>(<span class="jxr_string">"Empty Header"</span>);
-<a class="jxr_linenumber" name="L2088" href="#L2088">2088</a>         }
-<a class="jxr_linenumber" name="L2089" href="#L2089">2089</a>         <a name="HeaderCard" href="../../../nom/tam/fits/HeaderCard.html#HeaderCard">HeaderCard</a> card = iter.next();
-<a class="jxr_linenumber" name="L2090" href="#L2090">2090</a>         String key = card.getKey();
-<a class="jxr_linenumber" name="L2091" href="#L2091">2091</a>         <strong class="jxr_keyword">if</strong> (!key.equals(SIMPLE.key()) &amp;&amp; !key.equals(XTENSION.key())) {
-<a class="jxr_linenumber" name="L2092" href="#L2092">2092</a>             <strong class="jxr_keyword">throw</strong> <strong class="jxr_keyword">new</strong> <a name="FitsException" href="../../../nom/tam/fits/FitsException.html#FitsException">FitsException</a>(<span class="jxr_string">"No SIMPLE or XTENSION at beginning of Header"</span>);
-<a class="jxr_linenumber" name="L2093" href="#L2093">2093</a>         }
-<a class="jxr_linenumber" name="L2094" href="#L2094">2094</a>         <strong class="jxr_keyword">boolean</strong> isTable = false;
-<a class="jxr_linenumber" name="L2095" href="#L2095">2095</a>         <strong class="jxr_keyword">boolean</strong> isExtension = false;
-<a class="jxr_linenumber" name="L2096" href="#L2096">2096</a>         <strong class="jxr_keyword">if</strong> (key.equals(XTENSION.key())) {
-<a class="jxr_linenumber" name="L2097" href="#L2097">2097</a>             String value = card.getValue();
-<a class="jxr_linenumber" name="L2098" href="#L2098">2098</a>             <strong class="jxr_keyword">if</strong> (value == <strong class="jxr_keyword">null</strong> || value.isEmpty()) {
-<a class="jxr_linenumber" name="L2099" href="#L2099">2099</a>                 <strong class="jxr_keyword">throw</strong> <strong class="jxr_keyword">new</strong> <a name="FitsException" href="../../../nom/tam/fits/FitsException.html#FitsException">FitsException</a>(<span class="jxr_string">"Empty XTENSION keyword"</span>);
-<a class="jxr_linenumber" name="L2100" href="#L2100">2100</a>             }
-<a class="jxr_linenumber" name="L2101" href="#L2101">2101</a>             isExtension = <strong class="jxr_keyword">true</strong>;
-<a class="jxr_linenumber" name="L2102" href="#L2102">2102</a>             <strong class="jxr_keyword">if</strong> (value.equals(XTENSION_BINTABLE) || value.equals(<span class="jxr_string">"A3DTABLE"</span>) || value.equals(<span class="jxr_string">"TABLE"</span>)) {
-<a class="jxr_linenumber" name="L2103" href="#L2103">2103</a>                 isTable = <strong class="jxr_keyword">true</strong>;
-<a class="jxr_linenumber" name="L2104" href="#L2104">2104</a>             }
-<a class="jxr_linenumber" name="L2105" href="#L2105">2105</a>         }
-<a class="jxr_linenumber" name="L2106" href="#L2106">2106</a>         doCardChecks(iter, isTable, isExtension);
-<a class="jxr_linenumber" name="L2107" href="#L2107">2107</a>         
-<a class="jxr_linenumber" name="L2108" href="#L2108">2108</a>         Bitpix.fromHeader(<strong class="jxr_keyword">this</strong>, false);
-<a class="jxr_linenumber" name="L2109" href="#L2109">2109</a>     }
-<a class="jxr_linenumber" name="L2110" href="#L2110">2110</a> 
-<a class="jxr_linenumber" name="L2111" href="#L2111">2111</a>     <em class="jxr_javadoccomment">/**</em>
-<a class="jxr_linenumber" name="L2112" href="#L2112">2112</a> <em class="jxr_javadoccomment">     * Ensure that the header has exactly one END keyword in the appropriate</em>
-<a class="jxr_linenumber" name="L2113" href="#L2113">2113</a> <em class="jxr_javadoccomment">     * location.</em>
-<a class="jxr_linenumber" name="L2114" href="#L2114">2114</a> <em class="jxr_javadoccomment">     */</em>
-<a class="jxr_linenumber" name="L2115" href="#L2115">2115</a>     <strong class="jxr_keyword">void</strong> checkEnd() {
-<a class="jxr_linenumber" name="L2116" href="#L2116">2116</a>         <em class="jxr_comment">// Ensure we have an END card only at the end of the</em>
-<a class="jxr_linenumber" name="L2117" href="#L2117">2117</a>         <em class="jxr_comment">// header.</em>
-<a class="jxr_linenumber" name="L2118" href="#L2118">2118</a>         Cursor&lt;String, HeaderCard&gt; iter = iterator();
-<a class="jxr_linenumber" name="L2119" href="#L2119">2119</a> 
-<a class="jxr_linenumber" name="L2120" href="#L2120">2120</a>         <a name="HeaderCard" href="../../../nom/tam/fits/HeaderCard.html#HeaderCard">HeaderCard</a> card;
+<a class="jxr_linenumber" name="L2016" href="#L2016">2016</a>         <strong class="jxr_keyword">if</strong> (isParserWarningsEnabled()) {
+<a class="jxr_linenumber" name="L2017" href="#L2017">2017</a>             LOG.log(Level.WARNING, <span class="jxr_string">"Multiple occurrences of key:"</span> + dup.getKey());
+<a class="jxr_linenumber" name="L2018" href="#L2018">2018</a>         }
+<a class="jxr_linenumber" name="L2019" href="#L2019">2019</a>         <strong class="jxr_keyword">if</strong> (<strong class="jxr_keyword">this</strong>.duplicates == <strong class="jxr_keyword">null</strong>) {
+<a class="jxr_linenumber" name="L2020" href="#L2020">2020</a>             <strong class="jxr_keyword">this</strong>.duplicates = <strong class="jxr_keyword">new</strong> ArrayList&lt;&gt;();
+<a class="jxr_linenumber" name="L2021" href="#L2021">2021</a>         }
+<a class="jxr_linenumber" name="L2022" href="#L2022">2022</a>         <strong class="jxr_keyword">this</strong>.duplicates.add(dup);
+<a class="jxr_linenumber" name="L2023" href="#L2023">2023</a>     }
+<a class="jxr_linenumber" name="L2024" href="#L2024">2024</a> 
+<a class="jxr_linenumber" name="L2025" href="#L2025">2025</a>     <em class="jxr_javadoccomment">/**</em>
+<a class="jxr_linenumber" name="L2026" href="#L2026">2026</a> <em class="jxr_javadoccomment">     * Check if the given key is the next one available in the header.</em>
+<a class="jxr_linenumber" name="L2027" href="#L2027">2027</a> <em class="jxr_javadoccomment">     */</em>
+<a class="jxr_linenumber" name="L2028" href="#L2028">2028</a>     <strong class="jxr_keyword">private</strong> <strong class="jxr_keyword">void</strong> cardCheck(Cursor&lt;String, HeaderCard&gt; iter, <a name="IFitsHeader" href="../../../nom/tam/fits/header/IFitsHeader.html#IFitsHeader">IFitsHeader</a> key) <strong class="jxr_keyword">throws</strong> <a name="FitsException" href="../../../nom/tam/fits/FitsException.html#FitsException">FitsException</a> {
+<a class="jxr_linenumber" name="L2029" href="#L2029">2029</a>         cardCheck(iter, key.key());
+<a class="jxr_linenumber" name="L2030" href="#L2030">2030</a>     }
+<a class="jxr_linenumber" name="L2031" href="#L2031">2031</a> 
+<a class="jxr_linenumber" name="L2032" href="#L2032">2032</a>     <em class="jxr_javadoccomment">/**</em>
+<a class="jxr_linenumber" name="L2033" href="#L2033">2033</a> <em class="jxr_javadoccomment">     * Check if the given key is the next one available in the header.</em>
+<a class="jxr_linenumber" name="L2034" href="#L2034">2034</a> <em class="jxr_javadoccomment">     */</em>
+<a class="jxr_linenumber" name="L2035" href="#L2035">2035</a>     <strong class="jxr_keyword">private</strong> <strong class="jxr_keyword">void</strong> cardCheck(Cursor&lt;String, HeaderCard&gt; iter, String key) <strong class="jxr_keyword">throws</strong> <a name="FitsException" href="../../../nom/tam/fits/FitsException.html#FitsException">FitsException</a> {
+<a class="jxr_linenumber" name="L2036" href="#L2036">2036</a>         <strong class="jxr_keyword">if</strong> (!iter.hasNext()) {
+<a class="jxr_linenumber" name="L2037" href="#L2037">2037</a>             <strong class="jxr_keyword">throw</strong> <strong class="jxr_keyword">new</strong> <a name="FitsException" href="../../../nom/tam/fits/FitsException.html#FitsException">FitsException</a>(<span class="jxr_string">"Header terminates before "</span> + key);
+<a class="jxr_linenumber" name="L2038" href="#L2038">2038</a>         }
+<a class="jxr_linenumber" name="L2039" href="#L2039">2039</a>         <a name="HeaderCard" href="../../../nom/tam/fits/HeaderCard.html#HeaderCard">HeaderCard</a> card = iter.next();
+<a class="jxr_linenumber" name="L2040" href="#L2040">2040</a>         <strong class="jxr_keyword">if</strong> (!card.getKey().equals(key)) {
+<a class="jxr_linenumber" name="L2041" href="#L2041">2041</a>             <strong class="jxr_keyword">throw</strong> <strong class="jxr_keyword">new</strong> <a name="FitsException" href="../../../nom/tam/fits/FitsException.html#FitsException">FitsException</a>(<span class="jxr_string">"Key "</span> + key + <span class="jxr_string">" not found where expected."</span> + <span class="jxr_string">"Found "</span> + card.getKey());
+<a class="jxr_linenumber" name="L2042" href="#L2042">2042</a>         }
+<a class="jxr_linenumber" name="L2043" href="#L2043">2043</a>     }
+<a class="jxr_linenumber" name="L2044" href="#L2044">2044</a> 
+<a class="jxr_linenumber" name="L2045" href="#L2045">2045</a>     <strong class="jxr_keyword">private</strong> <strong class="jxr_keyword">void</strong> checkFirstCard(String key) <strong class="jxr_keyword">throws</strong> <a name="FitsException" href="../../../nom/tam/fits/FitsException.html#FitsException">FitsException</a> {
+<a class="jxr_linenumber" name="L2046" href="#L2046">2046</a>         <em class="jxr_comment">// AK: key cannot be null by the caller already, so checking for it makes dead code.</em>
+<a class="jxr_linenumber" name="L2047" href="#L2047">2047</a>         <strong class="jxr_keyword">if</strong> (!SIMPLE.key().equals(key) &amp;&amp; !XTENSION.key().equals(key)) {
+<a class="jxr_linenumber" name="L2048" href="#L2048">2048</a>             <strong class="jxr_keyword">throw</strong> <strong class="jxr_keyword">new</strong> <a name="FitsException" href="../../../nom/tam/fits/FitsException.html#FitsException">FitsException</a>(<span class="jxr_string">"Not a proper FITS header: "</span> + HeaderCard.sanitize(key) + <span class="jxr_string">" at "</span> + <strong class="jxr_keyword">this</strong>.fileOffset);
+<a class="jxr_linenumber" name="L2049" href="#L2049">2049</a>         }
+<a class="jxr_linenumber" name="L2050" href="#L2050">2050</a>     }
+<a class="jxr_linenumber" name="L2051" href="#L2051">2051</a> 
+<a class="jxr_linenumber" name="L2052" href="#L2052">2052</a>     <strong class="jxr_keyword">private</strong> <strong class="jxr_keyword">void</strong> doCardChecks(Cursor&lt;String, HeaderCard&gt; iter, <strong class="jxr_keyword">boolean</strong> isTable, <strong class="jxr_keyword">boolean</strong> isExtension) <strong class="jxr_keyword">throws</strong> <a name="FitsException" href="../../../nom/tam/fits/FitsException.html#FitsException">FitsException</a> {
+<a class="jxr_linenumber" name="L2053" href="#L2053">2053</a>         cardCheck(iter, BITPIX);
+<a class="jxr_linenumber" name="L2054" href="#L2054">2054</a>         cardCheck(iter, NAXIS);
+<a class="jxr_linenumber" name="L2055" href="#L2055">2055</a>         <strong class="jxr_keyword">int</strong> nax = getIntValue(NAXIS);
+<a class="jxr_linenumber" name="L2056" href="#L2056">2056</a> 
+<a class="jxr_linenumber" name="L2057" href="#L2057">2057</a>         <strong class="jxr_keyword">for</strong> (<strong class="jxr_keyword">int</strong> i = 1; i &lt;= nax; i += 1) {
+<a class="jxr_linenumber" name="L2058" href="#L2058">2058</a>             cardCheck(iter, NAXISn.n(i));
+<a class="jxr_linenumber" name="L2059" href="#L2059">2059</a>         }
+<a class="jxr_linenumber" name="L2060" href="#L2060">2060</a>         <strong class="jxr_keyword">if</strong> (isExtension) {
+<a class="jxr_linenumber" name="L2061" href="#L2061">2061</a>             cardCheck(iter, PCOUNT);
+<a class="jxr_linenumber" name="L2062" href="#L2062">2062</a>             cardCheck(iter, GCOUNT);
+<a class="jxr_linenumber" name="L2063" href="#L2063">2063</a>             <strong class="jxr_keyword">if</strong> (isTable) {
+<a class="jxr_linenumber" name="L2064" href="#L2064">2064</a>                 cardCheck(iter, TFIELDS);
+<a class="jxr_linenumber" name="L2065" href="#L2065">2065</a>             }
+<a class="jxr_linenumber" name="L2066" href="#L2066">2066</a>         }
+<a class="jxr_linenumber" name="L2067" href="#L2067">2067</a>         <em class="jxr_comment">// This does not check for the EXTEND keyword which</em>
+<a class="jxr_linenumber" name="L2068" href="#L2068">2068</a>         <em class="jxr_comment">// if present in the primary array must immediately follow</em>
+<a class="jxr_linenumber" name="L2069" href="#L2069">2069</a>         <em class="jxr_comment">// the NAXISn.</em>
+<a class="jxr_linenumber" name="L2070" href="#L2070">2070</a>     }
+<a class="jxr_linenumber" name="L2071" href="#L2071">2071</a> 
+<a class="jxr_linenumber" name="L2072" href="#L2072">2072</a>     <em class="jxr_javadoccomment">/**</em>
+<a class="jxr_linenumber" name="L2073" href="#L2073">2073</a> <em class="jxr_javadoccomment">     * Move after the EXTEND keyword in images. Used in bug fix noted by V.</em>
+<a class="jxr_linenumber" name="L2074" href="#L2074">2074</a> <em class="jxr_javadoccomment">     * Forchi</em>
+<a class="jxr_linenumber" name="L2075" href="#L2075">2075</a> <em class="jxr_javadoccomment">     */</em>
+<a class="jxr_linenumber" name="L2076" href="#L2076">2076</a>     <strong class="jxr_keyword">void</strong> afterExtend() {
+<a class="jxr_linenumber" name="L2077" href="#L2077">2077</a>         <strong class="jxr_keyword">if</strong> (findCard(EXTEND) != <strong class="jxr_keyword">null</strong>) {
+<a class="jxr_linenumber" name="L2078" href="#L2078">2078</a>             nextCard();
+<a class="jxr_linenumber" name="L2079" href="#L2079">2079</a>         }
+<a class="jxr_linenumber" name="L2080" href="#L2080">2080</a>     }
+<a class="jxr_linenumber" name="L2081" href="#L2081">2081</a> 
+<a class="jxr_linenumber" name="L2082" href="#L2082">2082</a>     <em class="jxr_javadoccomment">/**</em>
+<a class="jxr_linenumber" name="L2083" href="#L2083">2083</a> <em class="jxr_javadoccomment">     * Ensure that the header begins with a valid set of keywords. Note that we</em>
+<a class="jxr_linenumber" name="L2084" href="#L2084">2084</a> <em class="jxr_javadoccomment">     * do not check the values of these keywords.</em>
+<a class="jxr_linenumber" name="L2085" href="#L2085">2085</a> <em class="jxr_javadoccomment">     */</em>
+<a class="jxr_linenumber" name="L2086" href="#L2086">2086</a>     <strong class="jxr_keyword">void</strong> checkBeginning() <strong class="jxr_keyword">throws</strong> <a name="FitsException" href="../../../nom/tam/fits/FitsException.html#FitsException">FitsException</a> {
+<a class="jxr_linenumber" name="L2087" href="#L2087">2087</a>         Cursor&lt;String, HeaderCard&gt; iter = iterator();
+<a class="jxr_linenumber" name="L2088" href="#L2088">2088</a>         <strong class="jxr_keyword">if</strong> (!iter.hasNext()) {
+<a class="jxr_linenumber" name="L2089" href="#L2089">2089</a>             <strong class="jxr_keyword">throw</strong> <strong class="jxr_keyword">new</strong> <a name="FitsException" href="../../../nom/tam/fits/FitsException.html#FitsException">FitsException</a>(<span class="jxr_string">"Empty Header"</span>);
+<a class="jxr_linenumber" name="L2090" href="#L2090">2090</a>         }
+<a class="jxr_linenumber" name="L2091" href="#L2091">2091</a>         <a name="HeaderCard" href="../../../nom/tam/fits/HeaderCard.html#HeaderCard">HeaderCard</a> card = iter.next();
+<a class="jxr_linenumber" name="L2092" href="#L2092">2092</a>         String key = card.getKey();
+<a class="jxr_linenumber" name="L2093" href="#L2093">2093</a>         <strong class="jxr_keyword">if</strong> (!key.equals(SIMPLE.key()) &amp;&amp; !key.equals(XTENSION.key())) {
+<a class="jxr_linenumber" name="L2094" href="#L2094">2094</a>             <strong class="jxr_keyword">throw</strong> <strong class="jxr_keyword">new</strong> <a name="FitsException" href="../../../nom/tam/fits/FitsException.html#FitsException">FitsException</a>(<span class="jxr_string">"No SIMPLE or XTENSION at beginning of Header"</span>);
+<a class="jxr_linenumber" name="L2095" href="#L2095">2095</a>         }
+<a class="jxr_linenumber" name="L2096" href="#L2096">2096</a>         <strong class="jxr_keyword">boolean</strong> isTable = false;
+<a class="jxr_linenumber" name="L2097" href="#L2097">2097</a>         <strong class="jxr_keyword">boolean</strong> isExtension = false;
+<a class="jxr_linenumber" name="L2098" href="#L2098">2098</a>         <strong class="jxr_keyword">if</strong> (key.equals(XTENSION.key())) {
+<a class="jxr_linenumber" name="L2099" href="#L2099">2099</a>             String value = card.getValue();
+<a class="jxr_linenumber" name="L2100" href="#L2100">2100</a>             <strong class="jxr_keyword">if</strong> (value == <strong class="jxr_keyword">null</strong> || value.isEmpty()) {
+<a class="jxr_linenumber" name="L2101" href="#L2101">2101</a>                 <strong class="jxr_keyword">throw</strong> <strong class="jxr_keyword">new</strong> <a name="FitsException" href="../../../nom/tam/fits/FitsException.html#FitsException">FitsException</a>(<span class="jxr_string">"Empty XTENSION keyword"</span>);
+<a class="jxr_linenumber" name="L2102" href="#L2102">2102</a>             }
+<a class="jxr_linenumber" name="L2103" href="#L2103">2103</a>             isExtension = <strong class="jxr_keyword">true</strong>;
+<a class="jxr_linenumber" name="L2104" href="#L2104">2104</a>             <strong class="jxr_keyword">if</strong> (value.equals(XTENSION_BINTABLE) || value.equals(<span class="jxr_string">"A3DTABLE"</span>) || value.equals(<span class="jxr_string">"TABLE"</span>)) {
+<a class="jxr_linenumber" name="L2105" href="#L2105">2105</a>                 isTable = <strong class="jxr_keyword">true</strong>;
+<a class="jxr_linenumber" name="L2106" href="#L2106">2106</a>             }
+<a class="jxr_linenumber" name="L2107" href="#L2107">2107</a>         }
+<a class="jxr_linenumber" name="L2108" href="#L2108">2108</a>         doCardChecks(iter, isTable, isExtension);
+<a class="jxr_linenumber" name="L2109" href="#L2109">2109</a>         
+<a class="jxr_linenumber" name="L2110" href="#L2110">2110</a>         Bitpix.fromHeader(<strong class="jxr_keyword">this</strong>, false);
+<a class="jxr_linenumber" name="L2111" href="#L2111">2111</a>     }
+<a class="jxr_linenumber" name="L2112" href="#L2112">2112</a> 
+<a class="jxr_linenumber" name="L2113" href="#L2113">2113</a>     <em class="jxr_javadoccomment">/**</em>
+<a class="jxr_linenumber" name="L2114" href="#L2114">2114</a> <em class="jxr_javadoccomment">     * Ensure that the header has exactly one END keyword in the appropriate</em>
+<a class="jxr_linenumber" name="L2115" href="#L2115">2115</a> <em class="jxr_javadoccomment">     * location.</em>
+<a class="jxr_linenumber" name="L2116" href="#L2116">2116</a> <em class="jxr_javadoccomment">     */</em>
+<a class="jxr_linenumber" name="L2117" href="#L2117">2117</a>     <strong class="jxr_keyword">void</strong> checkEnd() {
+<a class="jxr_linenumber" name="L2118" href="#L2118">2118</a>         <em class="jxr_comment">// Ensure we have an END card only at the end of the</em>
+<a class="jxr_linenumber" name="L2119" href="#L2119">2119</a>         <em class="jxr_comment">// header.</em>
+<a class="jxr_linenumber" name="L2120" href="#L2120">2120</a>         Cursor&lt;String, HeaderCard&gt; iter = iterator();
 <a class="jxr_linenumber" name="L2121" href="#L2121">2121</a> 
-<a class="jxr_linenumber" name="L2122" href="#L2122">2122</a>         <strong class="jxr_keyword">while</strong> (iter.hasNext()) {
-<a class="jxr_linenumber" name="L2123" href="#L2123">2123</a>             card = iter.next();
-<a class="jxr_linenumber" name="L2124" href="#L2124">2124</a>             <strong class="jxr_keyword">if</strong> (!card.isKeyValuePair() &amp;&amp; card.getKey().equals(END.key())) {
-<a class="jxr_linenumber" name="L2125" href="#L2125">2125</a>                 iter.remove();
-<a class="jxr_linenumber" name="L2126" href="#L2126">2126</a>             }
-<a class="jxr_linenumber" name="L2127" href="#L2127">2127</a>         }
-<a class="jxr_linenumber" name="L2128" href="#L2128">2128</a>         <em class="jxr_comment">// End cannot have a comment</em>
-<a class="jxr_linenumber" name="L2129" href="#L2129">2129</a>         
-<a class="jxr_linenumber" name="L2130" href="#L2130">2130</a>         <strong class="jxr_keyword">try</strong> {
-<a class="jxr_linenumber" name="L2131" href="#L2131">2131</a>             iter.add(HeaderCard.createCommentStyleCard(END.key(), <strong class="jxr_keyword">null</strong>));
-<a class="jxr_linenumber" name="L2132" href="#L2132">2132</a>         } <strong class="jxr_keyword">catch</strong> (<a name="HeaderCardException" href="../../../nom/tam/fits/HeaderCardException.html#HeaderCardException">HeaderCardException</a> e) {
-<a class="jxr_linenumber" name="L2133" href="#L2133">2133</a>             <em class="jxr_comment">// Cannot happen.</em>
-<a class="jxr_linenumber" name="L2134" href="#L2134">2134</a>         }
-<a class="jxr_linenumber" name="L2135" href="#L2135">2135</a>         
-<a class="jxr_linenumber" name="L2136" href="#L2136">2136</a>     }
-<a class="jxr_linenumber" name="L2137" href="#L2137">2137</a> 
-<a class="jxr_linenumber" name="L2138" href="#L2138">2138</a>     <em class="jxr_javadoccomment">/**</em>
-<a class="jxr_linenumber" name="L2139" href="#L2139">2139</a> <em class="jxr_javadoccomment">     * Return the size of the header data including padding, or 0 if the header is invalid.</em>
-<a class="jxr_linenumber" name="L2140" href="#L2140">2140</a> <em class="jxr_javadoccomment">     *</em>
-<a class="jxr_linenumber" name="L2141" href="#L2141">2141</a> <em class="jxr_javadoccomment">     * @return the header size including any needed padding, or 0 if the header is invalid.</em>
-<a class="jxr_linenumber" name="L2142" href="#L2142">2142</a> <em class="jxr_javadoccomment">     * </em>
-<a class="jxr_linenumber" name="L2143" href="#L2143">2143</a> <em class="jxr_javadoccomment">     * @see #isValidHeader()</em>
-<a class="jxr_linenumber" name="L2144" href="#L2144">2144</a> <em class="jxr_javadoccomment">     */</em>
-<a class="jxr_linenumber" name="L2145" href="#L2145">2145</a>     <strong class="jxr_keyword">int</strong> headerSize() {
-<a class="jxr_linenumber" name="L2146" href="#L2146">2146</a>         <strong class="jxr_keyword">if</strong> (!isValidHeader()) {
-<a class="jxr_linenumber" name="L2147" href="#L2147">2147</a>             <strong class="jxr_keyword">return</strong> 0;
-<a class="jxr_linenumber" name="L2148" href="#L2148">2148</a>         }
-<a class="jxr_linenumber" name="L2149" href="#L2149">2149</a> 
-<a class="jxr_linenumber" name="L2150" href="#L2150">2150</a>         <strong class="jxr_keyword">return</strong> FitsUtil.addPadding(Math.max(minCards, getNumberOfPhysicalCards()) * HeaderCard.FITS_HEADER_CARD_SIZE);
-<a class="jxr_linenumber" name="L2151" href="#L2151">2151</a>     }
-<a class="jxr_linenumber" name="L2152" href="#L2152">2152</a> 
-<a class="jxr_linenumber" name="L2153" href="#L2153">2153</a>     <em class="jxr_javadoccomment">/**</em>
-<a class="jxr_linenumber" name="L2154" href="#L2154">2154</a> <em class="jxr_javadoccomment">     * Is this a valid header.</em>
-<a class="jxr_linenumber" name="L2155" href="#L2155">2155</a> <em class="jxr_javadoccomment">     *</em>
-<a class="jxr_linenumber" name="L2156" href="#L2156">2156</a> <em class="jxr_javadoccomment">     * @return &lt;CODE&gt;true&lt;/CODE&gt; for a valid header, &lt;CODE&gt;false&lt;/CODE&gt;</em>
-<a class="jxr_linenumber" name="L2157" href="#L2157">2157</a> <em class="jxr_javadoccomment">     *         otherwise.</em>
-<a class="jxr_linenumber" name="L2158" href="#L2158">2158</a> <em class="jxr_javadoccomment">     */</em>
-<a class="jxr_linenumber" name="L2159" href="#L2159">2159</a>     <strong class="jxr_keyword">boolean</strong> isValidHeader() {
-<a class="jxr_linenumber" name="L2160" href="#L2160">2160</a>         <strong class="jxr_keyword">if</strong> (getNumberOfCards() &lt; MIN_NUMBER_OF_CARDS_FOR_VALID_HEADER) {
-<a class="jxr_linenumber" name="L2161" href="#L2161">2161</a>             <strong class="jxr_keyword">return</strong> false;
-<a class="jxr_linenumber" name="L2162" href="#L2162">2162</a>         }
-<a class="jxr_linenumber" name="L2163" href="#L2163">2163</a>         Cursor&lt;String, HeaderCard&gt; iter = iterator();
-<a class="jxr_linenumber" name="L2164" href="#L2164">2164</a>         String key = iter.next().getKey();
-<a class="jxr_linenumber" name="L2165" href="#L2165">2165</a>         <strong class="jxr_keyword">if</strong> (!key.equals(SIMPLE.key()) &amp;&amp; !key.equals(XTENSION.key())) {
-<a class="jxr_linenumber" name="L2166" href="#L2166">2166</a>             <strong class="jxr_keyword">return</strong> false;
-<a class="jxr_linenumber" name="L2167" href="#L2167">2167</a>         }
-<a class="jxr_linenumber" name="L2168" href="#L2168">2168</a>         key = iter.next().getKey();
-<a class="jxr_linenumber" name="L2169" href="#L2169">2169</a>         <strong class="jxr_keyword">if</strong> (!key.equals(BITPIX.key())) {
-<a class="jxr_linenumber" name="L2170" href="#L2170">2170</a>             <strong class="jxr_keyword">return</strong> false;
-<a class="jxr_linenumber" name="L2171" href="#L2171">2171</a>         }
-<a class="jxr_linenumber" name="L2172" href="#L2172">2172</a>         key = iter.next().getKey();
-<a class="jxr_linenumber" name="L2173" href="#L2173">2173</a>         <strong class="jxr_keyword">if</strong> (!key.equals(NAXIS.key())) {
-<a class="jxr_linenumber" name="L2174" href="#L2174">2174</a>             <strong class="jxr_keyword">return</strong> false;
-<a class="jxr_linenumber" name="L2175" href="#L2175">2175</a>         }
-<a class="jxr_linenumber" name="L2176" href="#L2176">2176</a>         <strong class="jxr_keyword">while</strong> (iter.hasNext()) {
-<a class="jxr_linenumber" name="L2177" href="#L2177">2177</a>             key = iter.next().getKey();
-<a class="jxr_linenumber" name="L2178" href="#L2178">2178</a>         }
-<a class="jxr_linenumber" name="L2179" href="#L2179">2179</a>         <strong class="jxr_keyword">return</strong> key.equals(END.key());
-<a class="jxr_linenumber" name="L2180" href="#L2180">2180</a>     }
-<a class="jxr_linenumber" name="L2181" href="#L2181">2181</a> 
-<a class="jxr_linenumber" name="L2182" href="#L2182">2182</a>     <em class="jxr_javadoccomment">/**</em>
-<a class="jxr_linenumber" name="L2183" href="#L2183">2183</a> <em class="jxr_javadoccomment">     * Create a header for a null image.</em>
-<a class="jxr_linenumber" name="L2184" href="#L2184">2184</a> <em class="jxr_javadoccomment">     */</em>
-<a class="jxr_linenumber" name="L2185" href="#L2185">2185</a>     <strong class="jxr_keyword">void</strong> nullImage() {
-<a class="jxr_linenumber" name="L2186" href="#L2186">2186</a>         Cursor&lt;String, HeaderCard&gt; iter = iterator();
-<a class="jxr_linenumber" name="L2187" href="#L2187">2187</a>         iter.add(HeaderCard.create(SIMPLE, <strong class="jxr_keyword">true</strong>));
-<a class="jxr_linenumber" name="L2188" href="#L2188">2188</a>         iter.add(Bitpix.BYTE.getHeaderCard());
-<a class="jxr_linenumber" name="L2189" href="#L2189">2189</a>         iter.add(HeaderCard.create(NAXIS, 0));
-<a class="jxr_linenumber" name="L2190" href="#L2190">2190</a>         iter.add(HeaderCard.create(EXTEND, <strong class="jxr_keyword">true</strong>));
-<a class="jxr_linenumber" name="L2191" href="#L2191">2191</a>     }
-<a class="jxr_linenumber" name="L2192" href="#L2192">2192</a> 
-<a class="jxr_linenumber" name="L2193" href="#L2193">2193</a>     <em class="jxr_javadoccomment">/**</em>
-<a class="jxr_linenumber" name="L2194" href="#L2194">2194</a> <em class="jxr_javadoccomment">     * Find the end of a set of keywords describing a column or axis (or</em>
-<a class="jxr_linenumber" name="L2195" href="#L2195">2195</a> <em class="jxr_javadoccomment">     * anything else terminated by an index. This routine leaves the header</em>
-<a class="jxr_linenumber" name="L2196" href="#L2196">2196</a> <em class="jxr_javadoccomment">     * ready to add keywords after any existing keywords with the index</em>
-<a class="jxr_linenumber" name="L2197" href="#L2197">2197</a> <em class="jxr_javadoccomment">     * specified. The user should specify a prefix to a keyword that is</em>
-<a class="jxr_linenumber" name="L2198" href="#L2198">2198</a> <em class="jxr_javadoccomment">     * guaranteed to be present.</em>
-<a class="jxr_linenumber" name="L2199" href="#L2199">2199</a> <em class="jxr_javadoccomment">     */</em>
-<a class="jxr_linenumber" name="L2200" href="#L2200">2200</a>     Cursor&lt;String, HeaderCard&gt; positionAfterIndex(<a name="IFitsHeader" href="../../../nom/tam/fits/header/IFitsHeader.html#IFitsHeader">IFitsHeader</a> prefix, <strong class="jxr_keyword">int</strong> col) {
-<a class="jxr_linenumber" name="L2201" href="#L2201">2201</a>         String colnum = String.valueOf(col);
-<a class="jxr_linenumber" name="L2202" href="#L2202">2202</a>         cursor().setKey(prefix.n(col).key());
-<a class="jxr_linenumber" name="L2203" href="#L2203">2203</a>         <strong class="jxr_keyword">if</strong> (cursor().hasNext()) {
-<a class="jxr_linenumber" name="L2204" href="#L2204">2204</a>             <em class="jxr_comment">// Bug fix (references to forward) here by Laurent Borges</em>
-<a class="jxr_linenumber" name="L2205" href="#L2205">2205</a>             <strong class="jxr_keyword">boolean</strong> toFar = false;
-<a class="jxr_linenumber" name="L2206" href="#L2206">2206</a>             <strong class="jxr_keyword">while</strong> (cursor().hasNext()) {
-<a class="jxr_linenumber" name="L2207" href="#L2207">2207</a>                 String key = cursor().next().getKey().trim();
-<a class="jxr_linenumber" name="L2208" href="#L2208">2208</a>                 <em class="jxr_comment">// AK: getKey() cannot return null so no need to check.</em>
-<a class="jxr_linenumber" name="L2209" href="#L2209">2209</a>                 <strong class="jxr_keyword">if</strong> (key.length() &lt;= colnum.length() || !key.substring(key.length() - colnum.length()).equals(colnum)) {
-<a class="jxr_linenumber" name="L2210" href="#L2210">2210</a>                     toFar = <strong class="jxr_keyword">true</strong>;
-<a class="jxr_linenumber" name="L2211" href="#L2211">2211</a>                     <strong class="jxr_keyword">break</strong>;
-<a class="jxr_linenumber" name="L2212" href="#L2212">2212</a>                 }
-<a class="jxr_linenumber" name="L2213" href="#L2213">2213</a>             }
-<a class="jxr_linenumber" name="L2214" href="#L2214">2214</a>             <strong class="jxr_keyword">if</strong> (toFar) {
-<a class="jxr_linenumber" name="L2215" href="#L2215">2215</a>                 cursor().prev(); <em class="jxr_comment">// Gone one too far, so skip back an element.</em>
-<a class="jxr_linenumber" name="L2216" href="#L2216">2216</a>             }
-<a class="jxr_linenumber" name="L2217" href="#L2217">2217</a>         }
-<a class="jxr_linenumber" name="L2218" href="#L2218">2218</a>         <strong class="jxr_keyword">return</strong> cursor();
-<a class="jxr_linenumber" name="L2219" href="#L2219">2219</a>     }
-<a class="jxr_linenumber" name="L2220" href="#L2220">2220</a> 
-<a class="jxr_linenumber" name="L2221" href="#L2221">2221</a>     <em class="jxr_javadoccomment">/**</em>
-<a class="jxr_linenumber" name="L2222" href="#L2222">2222</a> <em class="jxr_javadoccomment">     * Replace the key with a new key. Typically this is used when deleting or</em>
-<a class="jxr_linenumber" name="L2223" href="#L2223">2223</a> <em class="jxr_javadoccomment">     * inserting columns so that TFORMx -&gt; TFORMx-1</em>
-<a class="jxr_linenumber" name="L2224" href="#L2224">2224</a> <em class="jxr_javadoccomment">     *</em>
-<a class="jxr_linenumber" name="L2225" href="#L2225">2225</a> <em class="jxr_javadoccomment">     * @param oldKey</em>
-<a class="jxr_linenumber" name="L2226" href="#L2226">2226</a> <em class="jxr_javadoccomment">     *            The old header keyword.</em>
-<a class="jxr_linenumber" name="L2227" href="#L2227">2227</a> <em class="jxr_javadoccomment">     * @param newKey</em>
-<a class="jxr_linenumber" name="L2228" href="#L2228">2228</a> <em class="jxr_javadoccomment">     *            the new header keyword.</em>
-<a class="jxr_linenumber" name="L2229" href="#L2229">2229</a> <em class="jxr_javadoccomment">     * @return &lt;CODE&gt;true&lt;/CODE&gt; if the card was replaced.</em>
-<a class="jxr_linenumber" name="L2230" href="#L2230">2230</a> <em class="jxr_javadoccomment">     * @exception HeaderCardException</em>
-<a class="jxr_linenumber" name="L2231" href="#L2231">2231</a> <em class="jxr_javadoccomment">     *                If &lt;CODE&gt;newKey&lt;/CODE&gt; is not a valid FITS keyword.</em>
-<a class="jxr_linenumber" name="L2232" href="#L2232">2232</a> <em class="jxr_javadoccomment">     */</em>
-<a class="jxr_linenumber" name="L2233" href="#L2233">2233</a>     <strong class="jxr_keyword">boolean</strong> replaceKey(<a name="IFitsHeader" href="../../../nom/tam/fits/header/IFitsHeader.html#IFitsHeader">IFitsHeader</a> oldKey, <a name="IFitsHeader" href="../../../nom/tam/fits/header/IFitsHeader.html#IFitsHeader">IFitsHeader</a> newKey) <strong class="jxr_keyword">throws</strong> <a name="HeaderCardException" href="../../../nom/tam/fits/HeaderCardException.html#HeaderCardException">HeaderCardException</a> {
-<a class="jxr_linenumber" name="L2234" href="#L2234">2234</a>         <strong class="jxr_keyword">return</strong> replaceKey(oldKey.key(), newKey.key());
-<a class="jxr_linenumber" name="L2235" href="#L2235">2235</a>     }
-<a class="jxr_linenumber" name="L2236" href="#L2236">2236</a> 
-<a class="jxr_linenumber" name="L2237" href="#L2237">2237</a>     <em class="jxr_javadoccomment">/**</em>
-<a class="jxr_linenumber" name="L2238" href="#L2238">2238</a> <em class="jxr_javadoccomment">     * Replace the key with a new key. Typically this is used when deleting or</em>
-<a class="jxr_linenumber" name="L2239" href="#L2239">2239</a> <em class="jxr_javadoccomment">     * inserting columns so that TFORMx -&gt; TFORMx-1</em>
-<a class="jxr_linenumber" name="L2240" href="#L2240">2240</a> <em class="jxr_javadoccomment">     *</em>
-<a class="jxr_linenumber" name="L2241" href="#L2241">2241</a> <em class="jxr_javadoccomment">     * @param oldKey</em>
-<a class="jxr_linenumber" name="L2242" href="#L2242">2242</a> <em class="jxr_javadoccomment">     *            The old header keyword.</em>
-<a class="jxr_linenumber" name="L2243" href="#L2243">2243</a> <em class="jxr_javadoccomment">     * @param newKey</em>
-<a class="jxr_linenumber" name="L2244" href="#L2244">2244</a> <em class="jxr_javadoccomment">     *            the new header keyword.</em>
-<a class="jxr_linenumber" name="L2245" href="#L2245">2245</a> <em class="jxr_javadoccomment">     * @return &lt;CODE&gt;true&lt;/CODE&gt; if the card was replaced.</em>
-<a class="jxr_linenumber" name="L2246" href="#L2246">2246</a> <em class="jxr_javadoccomment">     * @exception HeaderCardException</em>
-<a class="jxr_linenumber" name="L2247" href="#L2247">2247</a> <em class="jxr_javadoccomment">     *                If &lt;CODE&gt;newKey&lt;/CODE&gt; is not a valid FITS keyword.</em>
-<a class="jxr_linenumber" name="L2248" href="#L2248">2248</a> <em class="jxr_javadoccomment">     */</em>
-<a class="jxr_linenumber" name="L2249" href="#L2249">2249</a>     <strong class="jxr_keyword">boolean</strong> replaceKey(String oldKey, String newKey) <strong class="jxr_keyword">throws</strong> <a name="HeaderCardException" href="../../../nom/tam/fits/HeaderCardException.html#HeaderCardException">HeaderCardException</a> {
-<a class="jxr_linenumber" name="L2250" href="#L2250">2250</a>         <a name="HeaderCard" href="../../../nom/tam/fits/HeaderCard.html#HeaderCard">HeaderCard</a> oldCard = findCard(oldKey);
-<a class="jxr_linenumber" name="L2251" href="#L2251">2251</a>         <strong class="jxr_keyword">if</strong> (oldCard == <strong class="jxr_keyword">null</strong>) {
-<a class="jxr_linenumber" name="L2252" href="#L2252">2252</a>             <strong class="jxr_keyword">return</strong> false;
-<a class="jxr_linenumber" name="L2253" href="#L2253">2253</a>         }
-<a class="jxr_linenumber" name="L2254" href="#L2254">2254</a>         <strong class="jxr_keyword">if</strong> (!<strong class="jxr_keyword">this</strong>.cards.replaceKey(oldKey, newKey)) {
-<a class="jxr_linenumber" name="L2255" href="#L2255">2255</a>             <strong class="jxr_keyword">throw</strong> <strong class="jxr_keyword">new</strong> <a name="HeaderCardException" href="../../../nom/tam/fits/HeaderCardException.html#HeaderCardException">HeaderCardException</a>(<span class="jxr_string">"Duplicate key ["</span> + newKey + <span class="jxr_string">"] in replace"</span>);
-<a class="jxr_linenumber" name="L2256" href="#L2256">2256</a>         }
-<a class="jxr_linenumber" name="L2257" href="#L2257">2257</a>         <strong class="jxr_keyword">try</strong> {
-<a class="jxr_linenumber" name="L2258" href="#L2258">2258</a>             oldCard.changeKey(newKey);
-<a class="jxr_linenumber" name="L2259" href="#L2259">2259</a>         } <strong class="jxr_keyword">catch</strong> (IllegalArgumentException e) {
-<a class="jxr_linenumber" name="L2260" href="#L2260">2260</a>             <strong class="jxr_keyword">throw</strong> <strong class="jxr_keyword">new</strong> <a name="HeaderCardException" href="../../../nom/tam/fits/HeaderCardException.html#HeaderCardException">HeaderCardException</a>(<span class="jxr_string">"New key ["</span> + newKey + <span class="jxr_string">"] is invalid or too long for existing value."</span>, e);
-<a class="jxr_linenumber" name="L2261" href="#L2261">2261</a>         }
-<a class="jxr_linenumber" name="L2262" href="#L2262">2262</a>         <strong class="jxr_keyword">return</strong> <strong class="jxr_keyword">true</strong>;
-<a class="jxr_linenumber" name="L2263" href="#L2263">2263</a>     }
-<a class="jxr_linenumber" name="L2264" href="#L2264">2264</a> 
-<a class="jxr_linenumber" name="L2265" href="#L2265">2265</a>     <em class="jxr_javadoccomment">/**</em>
-<a class="jxr_linenumber" name="L2266" href="#L2266">2266</a> <em class="jxr_javadoccomment">     * Calculate the unpadded size of the data segment from the header</em>
-<a class="jxr_linenumber" name="L2267" href="#L2267">2267</a> <em class="jxr_javadoccomment">     * information.</em>
-<a class="jxr_linenumber" name="L2268" href="#L2268">2268</a> <em class="jxr_javadoccomment">     *</em>
-<a class="jxr_linenumber" name="L2269" href="#L2269">2269</a> <em class="jxr_javadoccomment">     * @return the unpadded data segment size.</em>
-<a class="jxr_linenumber" name="L2270" href="#L2270">2270</a> <em class="jxr_javadoccomment">     */</em>
-<a class="jxr_linenumber" name="L2271" href="#L2271">2271</a>     <strong class="jxr_keyword">long</strong> trueDataSize() {
-<a class="jxr_linenumber" name="L2272" href="#L2272">2272</a> 
-<a class="jxr_linenumber" name="L2273" href="#L2273">2273</a>         <em class="jxr_comment">// AK: No need to be too strict here. We can get a data size even if the</em>
-<a class="jxr_linenumber" name="L2274" href="#L2274">2274</a>         <em class="jxr_comment">// header isn't 100% to spec,</em>
-<a class="jxr_linenumber" name="L2275" href="#L2275">2275</a>         <em class="jxr_comment">// as long as the necessary keys are present. So, just check for the</em>
-<a class="jxr_linenumber" name="L2276" href="#L2276">2276</a>         <em class="jxr_comment">// required keys, and no more...</em>
-<a class="jxr_linenumber" name="L2277" href="#L2277">2277</a>         <strong class="jxr_keyword">if</strong> (!containsKey(BITPIX.key())) {
-<a class="jxr_linenumber" name="L2278" href="#L2278">2278</a>             <strong class="jxr_keyword">return</strong> 0L;
-<a class="jxr_linenumber" name="L2279" href="#L2279">2279</a>         }
-<a class="jxr_linenumber" name="L2280" href="#L2280">2280</a> 
-<a class="jxr_linenumber" name="L2281" href="#L2281">2281</a>         <strong class="jxr_keyword">if</strong> (!containsKey(NAXIS.key())) {
-<a class="jxr_linenumber" name="L2282" href="#L2282">2282</a>             <strong class="jxr_keyword">return</strong> 0L;
-<a class="jxr_linenumber" name="L2283" href="#L2283">2283</a>         }
-<a class="jxr_linenumber" name="L2284" href="#L2284">2284</a> 
-<a class="jxr_linenumber" name="L2285" href="#L2285">2285</a>         <strong class="jxr_keyword">int</strong> naxis = getIntValue(NAXIS, 0);
+<a class="jxr_linenumber" name="L2122" href="#L2122">2122</a>         <a name="HeaderCard" href="../../../nom/tam/fits/HeaderCard.html#HeaderCard">HeaderCard</a> card;
+<a class="jxr_linenumber" name="L2123" href="#L2123">2123</a> 
+<a class="jxr_linenumber" name="L2124" href="#L2124">2124</a>         <strong class="jxr_keyword">while</strong> (iter.hasNext()) {
+<a class="jxr_linenumber" name="L2125" href="#L2125">2125</a>             card = iter.next();
+<a class="jxr_linenumber" name="L2126" href="#L2126">2126</a>             <strong class="jxr_keyword">if</strong> (!card.isKeyValuePair() &amp;&amp; card.getKey().equals(END.key())) {
+<a class="jxr_linenumber" name="L2127" href="#L2127">2127</a>                 iter.remove();
+<a class="jxr_linenumber" name="L2128" href="#L2128">2128</a>             }
+<a class="jxr_linenumber" name="L2129" href="#L2129">2129</a>         }
+<a class="jxr_linenumber" name="L2130" href="#L2130">2130</a>         <em class="jxr_comment">// End cannot have a comment</em>
+<a class="jxr_linenumber" name="L2131" href="#L2131">2131</a>         
+<a class="jxr_linenumber" name="L2132" href="#L2132">2132</a>         <strong class="jxr_keyword">try</strong> {
+<a class="jxr_linenumber" name="L2133" href="#L2133">2133</a>             iter.add(HeaderCard.createCommentStyleCard(END.key(), <strong class="jxr_keyword">null</strong>));
+<a class="jxr_linenumber" name="L2134" href="#L2134">2134</a>         } <strong class="jxr_keyword">catch</strong> (<a name="HeaderCardException" href="../../../nom/tam/fits/HeaderCardException.html#HeaderCardException">HeaderCardException</a> e) {
+<a class="jxr_linenumber" name="L2135" href="#L2135">2135</a>             <em class="jxr_comment">// Cannot happen.</em>
+<a class="jxr_linenumber" name="L2136" href="#L2136">2136</a>         }
+<a class="jxr_linenumber" name="L2137" href="#L2137">2137</a>         
+<a class="jxr_linenumber" name="L2138" href="#L2138">2138</a>     }
+<a class="jxr_linenumber" name="L2139" href="#L2139">2139</a> 
+<a class="jxr_linenumber" name="L2140" href="#L2140">2140</a>     <em class="jxr_javadoccomment">/**</em>
+<a class="jxr_linenumber" name="L2141" href="#L2141">2141</a> <em class="jxr_javadoccomment">     * Return the size of the header data including padding, or 0 if the header is invalid.</em>
+<a class="jxr_linenumber" name="L2142" href="#L2142">2142</a> <em class="jxr_javadoccomment">     *</em>
+<a class="jxr_linenumber" name="L2143" href="#L2143">2143</a> <em class="jxr_javadoccomment">     * @return the header size including any needed padding, or 0 if the header is invalid.</em>
+<a class="jxr_linenumber" name="L2144" href="#L2144">2144</a> <em class="jxr_javadoccomment">     * </em>
+<a class="jxr_linenumber" name="L2145" href="#L2145">2145</a> <em class="jxr_javadoccomment">     * @see #isValidHeader()</em>
+<a class="jxr_linenumber" name="L2146" href="#L2146">2146</a> <em class="jxr_javadoccomment">     */</em>
+<a class="jxr_linenumber" name="L2147" href="#L2147">2147</a>     <strong class="jxr_keyword">int</strong> headerSize() {
+<a class="jxr_linenumber" name="L2148" href="#L2148">2148</a>         <strong class="jxr_keyword">if</strong> (!isValidHeader()) {
+<a class="jxr_linenumber" name="L2149" href="#L2149">2149</a>             <strong class="jxr_keyword">return</strong> 0;
+<a class="jxr_linenumber" name="L2150" href="#L2150">2150</a>         }
+<a class="jxr_linenumber" name="L2151" href="#L2151">2151</a> 
+<a class="jxr_linenumber" name="L2152" href="#L2152">2152</a>         <strong class="jxr_keyword">return</strong> FitsUtil.addPadding(Math.max(minCards, getNumberOfPhysicalCards()) * HeaderCard.FITS_HEADER_CARD_SIZE);
+<a class="jxr_linenumber" name="L2153" href="#L2153">2153</a>     }
+<a class="jxr_linenumber" name="L2154" href="#L2154">2154</a> 
+<a class="jxr_linenumber" name="L2155" href="#L2155">2155</a>     <em class="jxr_javadoccomment">/**</em>
+<a class="jxr_linenumber" name="L2156" href="#L2156">2156</a> <em class="jxr_javadoccomment">     * Is this a valid header.</em>
+<a class="jxr_linenumber" name="L2157" href="#L2157">2157</a> <em class="jxr_javadoccomment">     *</em>
+<a class="jxr_linenumber" name="L2158" href="#L2158">2158</a> <em class="jxr_javadoccomment">     * @return &lt;CODE&gt;true&lt;/CODE&gt; for a valid header, &lt;CODE&gt;false&lt;/CODE&gt;</em>
+<a class="jxr_linenumber" name="L2159" href="#L2159">2159</a> <em class="jxr_javadoccomment">     *         otherwise.</em>
+<a class="jxr_linenumber" name="L2160" href="#L2160">2160</a> <em class="jxr_javadoccomment">     */</em>
+<a class="jxr_linenumber" name="L2161" href="#L2161">2161</a>     <strong class="jxr_keyword">boolean</strong> isValidHeader() {
+<a class="jxr_linenumber" name="L2162" href="#L2162">2162</a>         <strong class="jxr_keyword">if</strong> (getNumberOfCards() &lt; MIN_NUMBER_OF_CARDS_FOR_VALID_HEADER) {
+<a class="jxr_linenumber" name="L2163" href="#L2163">2163</a>             <strong class="jxr_keyword">return</strong> false;
+<a class="jxr_linenumber" name="L2164" href="#L2164">2164</a>         }
+<a class="jxr_linenumber" name="L2165" href="#L2165">2165</a>         Cursor&lt;String, HeaderCard&gt; iter = iterator();
+<a class="jxr_linenumber" name="L2166" href="#L2166">2166</a>         String key = iter.next().getKey();
+<a class="jxr_linenumber" name="L2167" href="#L2167">2167</a>         <strong class="jxr_keyword">if</strong> (!key.equals(SIMPLE.key()) &amp;&amp; !key.equals(XTENSION.key())) {
+<a class="jxr_linenumber" name="L2168" href="#L2168">2168</a>             <strong class="jxr_keyword">return</strong> false;
+<a class="jxr_linenumber" name="L2169" href="#L2169">2169</a>         }
+<a class="jxr_linenumber" name="L2170" href="#L2170">2170</a>         key = iter.next().getKey();
+<a class="jxr_linenumber" name="L2171" href="#L2171">2171</a>         <strong class="jxr_keyword">if</strong> (!key.equals(BITPIX.key())) {
+<a class="jxr_linenumber" name="L2172" href="#L2172">2172</a>             <strong class="jxr_keyword">return</strong> false;
+<a class="jxr_linenumber" name="L2173" href="#L2173">2173</a>         }
+<a class="jxr_linenumber" name="L2174" href="#L2174">2174</a>         key = iter.next().getKey();
+<a class="jxr_linenumber" name="L2175" href="#L2175">2175</a>         <strong class="jxr_keyword">if</strong> (!key.equals(NAXIS.key())) {
+<a class="jxr_linenumber" name="L2176" href="#L2176">2176</a>             <strong class="jxr_keyword">return</strong> false;
+<a class="jxr_linenumber" name="L2177" href="#L2177">2177</a>         }
+<a class="jxr_linenumber" name="L2178" href="#L2178">2178</a>         <strong class="jxr_keyword">while</strong> (iter.hasNext()) {
+<a class="jxr_linenumber" name="L2179" href="#L2179">2179</a>             key = iter.next().getKey();
+<a class="jxr_linenumber" name="L2180" href="#L2180">2180</a>         }
+<a class="jxr_linenumber" name="L2181" href="#L2181">2181</a>         <strong class="jxr_keyword">return</strong> key.equals(END.key());
+<a class="jxr_linenumber" name="L2182" href="#L2182">2182</a>     }
+<a class="jxr_linenumber" name="L2183" href="#L2183">2183</a> 
+<a class="jxr_linenumber" name="L2184" href="#L2184">2184</a>     <em class="jxr_javadoccomment">/**</em>
+<a class="jxr_linenumber" name="L2185" href="#L2185">2185</a> <em class="jxr_javadoccomment">     * Create a header for a null image.</em>
+<a class="jxr_linenumber" name="L2186" href="#L2186">2186</a> <em class="jxr_javadoccomment">     */</em>
+<a class="jxr_linenumber" name="L2187" href="#L2187">2187</a>     <strong class="jxr_keyword">void</strong> nullImage() {
+<a class="jxr_linenumber" name="L2188" href="#L2188">2188</a>         Cursor&lt;String, HeaderCard&gt; iter = iterator();
+<a class="jxr_linenumber" name="L2189" href="#L2189">2189</a>         iter.add(HeaderCard.create(SIMPLE, <strong class="jxr_keyword">true</strong>));
+<a class="jxr_linenumber" name="L2190" href="#L2190">2190</a>         iter.add(Bitpix.BYTE.getHeaderCard());
+<a class="jxr_linenumber" name="L2191" href="#L2191">2191</a>         iter.add(HeaderCard.create(NAXIS, 0));
+<a class="jxr_linenumber" name="L2192" href="#L2192">2192</a>         iter.add(HeaderCard.create(EXTEND, <strong class="jxr_keyword">true</strong>));
+<a class="jxr_linenumber" name="L2193" href="#L2193">2193</a>     }
+<a class="jxr_linenumber" name="L2194" href="#L2194">2194</a> 
+<a class="jxr_linenumber" name="L2195" href="#L2195">2195</a>     <em class="jxr_javadoccomment">/**</em>
+<a class="jxr_linenumber" name="L2196" href="#L2196">2196</a> <em class="jxr_javadoccomment">     * Find the end of a set of keywords describing a column or axis (or</em>
+<a class="jxr_linenumber" name="L2197" href="#L2197">2197</a> <em class="jxr_javadoccomment">     * anything else terminated by an index. This routine leaves the header</em>
+<a class="jxr_linenumber" name="L2198" href="#L2198">2198</a> <em class="jxr_javadoccomment">     * ready to add keywords after any existing keywords with the index</em>
+<a class="jxr_linenumber" name="L2199" href="#L2199">2199</a> <em class="jxr_javadoccomment">     * specified. The user should specify a prefix to a keyword that is</em>
+<a class="jxr_linenumber" name="L2200" href="#L2200">2200</a> <em class="jxr_javadoccomment">     * guaranteed to be present.</em>
+<a class="jxr_linenumber" name="L2201" href="#L2201">2201</a> <em class="jxr_javadoccomment">     */</em>
+<a class="jxr_linenumber" name="L2202" href="#L2202">2202</a>     Cursor&lt;String, HeaderCard&gt; positionAfterIndex(<a name="IFitsHeader" href="../../../nom/tam/fits/header/IFitsHeader.html#IFitsHeader">IFitsHeader</a> prefix, <strong class="jxr_keyword">int</strong> col) {
+<a class="jxr_linenumber" name="L2203" href="#L2203">2203</a>         String colnum = String.valueOf(col);
+<a class="jxr_linenumber" name="L2204" href="#L2204">2204</a>         cursor().setKey(prefix.n(col).key());
+<a class="jxr_linenumber" name="L2205" href="#L2205">2205</a>         <strong class="jxr_keyword">if</strong> (cursor().hasNext()) {
+<a class="jxr_linenumber" name="L2206" href="#L2206">2206</a>             <em class="jxr_comment">// Bug fix (references to forward) here by Laurent Borges</em>
+<a class="jxr_linenumber" name="L2207" href="#L2207">2207</a>             <strong class="jxr_keyword">boolean</strong> toFar = false;
+<a class="jxr_linenumber" name="L2208" href="#L2208">2208</a>             <strong class="jxr_keyword">while</strong> (cursor().hasNext()) {
+<a class="jxr_linenumber" name="L2209" href="#L2209">2209</a>                 String key = cursor().next().getKey().trim();
+<a class="jxr_linenumber" name="L2210" href="#L2210">2210</a>                 <em class="jxr_comment">// AK: getKey() cannot return null so no need to check.</em>
+<a class="jxr_linenumber" name="L2211" href="#L2211">2211</a>                 <strong class="jxr_keyword">if</strong> (key.length() &lt;= colnum.length() || !key.substring(key.length() - colnum.length()).equals(colnum)) {
+<a class="jxr_linenumber" name="L2212" href="#L2212">2212</a>                     toFar = <strong class="jxr_keyword">true</strong>;
+<a class="jxr_linenumber" name="L2213" href="#L2213">2213</a>                     <strong class="jxr_keyword">break</strong>;
+<a class="jxr_linenumber" name="L2214" href="#L2214">2214</a>                 }
+<a class="jxr_linenumber" name="L2215" href="#L2215">2215</a>             }
+<a class="jxr_linenumber" name="L2216" href="#L2216">2216</a>             <strong class="jxr_keyword">if</strong> (toFar) {
+<a class="jxr_linenumber" name="L2217" href="#L2217">2217</a>                 cursor().prev(); <em class="jxr_comment">// Gone one too far, so skip back an element.</em>
+<a class="jxr_linenumber" name="L2218" href="#L2218">2218</a>             }
+<a class="jxr_linenumber" name="L2219" href="#L2219">2219</a>         }
+<a class="jxr_linenumber" name="L2220" href="#L2220">2220</a>         <strong class="jxr_keyword">return</strong> cursor();
+<a class="jxr_linenumber" name="L2221" href="#L2221">2221</a>     }
+<a class="jxr_linenumber" name="L2222" href="#L2222">2222</a> 
+<a class="jxr_linenumber" name="L2223" href="#L2223">2223</a>     <em class="jxr_javadoccomment">/**</em>
+<a class="jxr_linenumber" name="L2224" href="#L2224">2224</a> <em class="jxr_javadoccomment">     * Replace the key with a new key. Typically this is used when deleting or</em>
+<a class="jxr_linenumber" name="L2225" href="#L2225">2225</a> <em class="jxr_javadoccomment">     * inserting columns so that TFORMx -&gt; TFORMx-1</em>
+<a class="jxr_linenumber" name="L2226" href="#L2226">2226</a> <em class="jxr_javadoccomment">     *</em>
+<a class="jxr_linenumber" name="L2227" href="#L2227">2227</a> <em class="jxr_javadoccomment">     * @param oldKey</em>
+<a class="jxr_linenumber" name="L2228" href="#L2228">2228</a> <em class="jxr_javadoccomment">     *            The old header keyword.</em>
+<a class="jxr_linenumber" name="L2229" href="#L2229">2229</a> <em class="jxr_javadoccomment">     * @param newKey</em>
+<a class="jxr_linenumber" name="L2230" href="#L2230">2230</a> <em class="jxr_javadoccomment">     *            the new header keyword.</em>
+<a class="jxr_linenumber" name="L2231" href="#L2231">2231</a> <em class="jxr_javadoccomment">     * @return &lt;CODE&gt;true&lt;/CODE&gt; if the card was replaced.</em>
+<a class="jxr_linenumber" name="L2232" href="#L2232">2232</a> <em class="jxr_javadoccomment">     * @exception HeaderCardException</em>
+<a class="jxr_linenumber" name="L2233" href="#L2233">2233</a> <em class="jxr_javadoccomment">     *                If &lt;CODE&gt;newKey&lt;/CODE&gt; is not a valid FITS keyword.</em>
+<a class="jxr_linenumber" name="L2234" href="#L2234">2234</a> <em class="jxr_javadoccomment">     */</em>
+<a class="jxr_linenumber" name="L2235" href="#L2235">2235</a>     <strong class="jxr_keyword">boolean</strong> replaceKey(<a name="IFitsHeader" href="../../../nom/tam/fits/header/IFitsHeader.html#IFitsHeader">IFitsHeader</a> oldKey, <a name="IFitsHeader" href="../../../nom/tam/fits/header/IFitsHeader.html#IFitsHeader">IFitsHeader</a> newKey) <strong class="jxr_keyword">throws</strong> <a name="HeaderCardException" href="../../../nom/tam/fits/HeaderCardException.html#HeaderCardException">HeaderCardException</a> {
+<a class="jxr_linenumber" name="L2236" href="#L2236">2236</a>         <strong class="jxr_keyword">return</strong> replaceKey(oldKey.key(), newKey.key());
+<a class="jxr_linenumber" name="L2237" href="#L2237">2237</a>     }
+<a class="jxr_linenumber" name="L2238" href="#L2238">2238</a> 
+<a class="jxr_linenumber" name="L2239" href="#L2239">2239</a>     <em class="jxr_javadoccomment">/**</em>
+<a class="jxr_linenumber" name="L2240" href="#L2240">2240</a> <em class="jxr_javadoccomment">     * Replace the key with a new key. Typically this is used when deleting or</em>
+<a class="jxr_linenumber" name="L2241" href="#L2241">2241</a> <em class="jxr_javadoccomment">     * inserting columns so that TFORMx -&gt; TFORMx-1</em>
+<a class="jxr_linenumber" name="L2242" href="#L2242">2242</a> <em class="jxr_javadoccomment">     *</em>
+<a class="jxr_linenumber" name="L2243" href="#L2243">2243</a> <em class="jxr_javadoccomment">     * @param oldKey</em>
+<a class="jxr_linenumber" name="L2244" href="#L2244">2244</a> <em class="jxr_javadoccomment">     *            The old header keyword.</em>
+<a class="jxr_linenumber" name="L2245" href="#L2245">2245</a> <em class="jxr_javadoccomment">     * @param newKey</em>
+<a class="jxr_linenumber" name="L2246" href="#L2246">2246</a> <em class="jxr_javadoccomment">     *            the new header keyword.</em>
+<a class="jxr_linenumber" name="L2247" href="#L2247">2247</a> <em class="jxr_javadoccomment">     * @return &lt;CODE&gt;true&lt;/CODE&gt; if the card was replaced.</em>
+<a class="jxr_linenumber" name="L2248" href="#L2248">2248</a> <em class="jxr_javadoccomment">     * @exception HeaderCardException</em>
+<a class="jxr_linenumber" name="L2249" href="#L2249">2249</a> <em class="jxr_javadoccomment">     *                If &lt;CODE&gt;newKey&lt;/CODE&gt; is not a valid FITS keyword.</em>
+<a class="jxr_linenumber" name="L2250" href="#L2250">2250</a> <em class="jxr_javadoccomment">     */</em>
+<a class="jxr_linenumber" name="L2251" href="#L2251">2251</a>     <strong class="jxr_keyword">boolean</strong> replaceKey(String oldKey, String newKey) <strong class="jxr_keyword">throws</strong> <a name="HeaderCardException" href="../../../nom/tam/fits/HeaderCardException.html#HeaderCardException">HeaderCardException</a> {
+<a class="jxr_linenumber" name="L2252" href="#L2252">2252</a>         <a name="HeaderCard" href="../../../nom/tam/fits/HeaderCard.html#HeaderCard">HeaderCard</a> oldCard = findCard(oldKey);
+<a class="jxr_linenumber" name="L2253" href="#L2253">2253</a>         <strong class="jxr_keyword">if</strong> (oldCard == <strong class="jxr_keyword">null</strong>) {
+<a class="jxr_linenumber" name="L2254" href="#L2254">2254</a>             <strong class="jxr_keyword">return</strong> false;
+<a class="jxr_linenumber" name="L2255" href="#L2255">2255</a>         }
+<a class="jxr_linenumber" name="L2256" href="#L2256">2256</a>         <strong class="jxr_keyword">if</strong> (!<strong class="jxr_keyword">this</strong>.cards.replaceKey(oldKey, newKey)) {
+<a class="jxr_linenumber" name="L2257" href="#L2257">2257</a>             <strong class="jxr_keyword">throw</strong> <strong class="jxr_keyword">new</strong> <a name="HeaderCardException" href="../../../nom/tam/fits/HeaderCardException.html#HeaderCardException">HeaderCardException</a>(<span class="jxr_string">"Duplicate key ["</span> + newKey + <span class="jxr_string">"] in replace"</span>);
+<a class="jxr_linenumber" name="L2258" href="#L2258">2258</a>         }
+<a class="jxr_linenumber" name="L2259" href="#L2259">2259</a>         <strong class="jxr_keyword">try</strong> {
+<a class="jxr_linenumber" name="L2260" href="#L2260">2260</a>             oldCard.changeKey(newKey);
+<a class="jxr_linenumber" name="L2261" href="#L2261">2261</a>         } <strong class="jxr_keyword">catch</strong> (IllegalArgumentException e) {
+<a class="jxr_linenumber" name="L2262" href="#L2262">2262</a>             <strong class="jxr_keyword">throw</strong> <strong class="jxr_keyword">new</strong> <a name="HeaderCardException" href="../../../nom/tam/fits/HeaderCardException.html#HeaderCardException">HeaderCardException</a>(<span class="jxr_string">"New key ["</span> + newKey + <span class="jxr_string">"] is invalid or too long for existing value."</span>, e);
+<a class="jxr_linenumber" name="L2263" href="#L2263">2263</a>         }
+<a class="jxr_linenumber" name="L2264" href="#L2264">2264</a>         <strong class="jxr_keyword">return</strong> <strong class="jxr_keyword">true</strong>;
+<a class="jxr_linenumber" name="L2265" href="#L2265">2265</a>     }
+<a class="jxr_linenumber" name="L2266" href="#L2266">2266</a> 
+<a class="jxr_linenumber" name="L2267" href="#L2267">2267</a>     <em class="jxr_javadoccomment">/**</em>
+<a class="jxr_linenumber" name="L2268" href="#L2268">2268</a> <em class="jxr_javadoccomment">     * Calculate the unpadded size of the data segment from the header</em>
+<a class="jxr_linenumber" name="L2269" href="#L2269">2269</a> <em class="jxr_javadoccomment">     * information.</em>
+<a class="jxr_linenumber" name="L2270" href="#L2270">2270</a> <em class="jxr_javadoccomment">     *</em>
+<a class="jxr_linenumber" name="L2271" href="#L2271">2271</a> <em class="jxr_javadoccomment">     * @return the unpadded data segment size.</em>
+<a class="jxr_linenumber" name="L2272" href="#L2272">2272</a> <em class="jxr_javadoccomment">     */</em>
+<a class="jxr_linenumber" name="L2273" href="#L2273">2273</a>     <strong class="jxr_keyword">long</strong> trueDataSize() {
+<a class="jxr_linenumber" name="L2274" href="#L2274">2274</a> 
+<a class="jxr_linenumber" name="L2275" href="#L2275">2275</a>         <em class="jxr_comment">// AK: No need to be too strict here. We can get a data size even if the</em>
+<a class="jxr_linenumber" name="L2276" href="#L2276">2276</a>         <em class="jxr_comment">// header isn't 100% to spec,</em>
+<a class="jxr_linenumber" name="L2277" href="#L2277">2277</a>         <em class="jxr_comment">// as long as the necessary keys are present. So, just check for the</em>
+<a class="jxr_linenumber" name="L2278" href="#L2278">2278</a>         <em class="jxr_comment">// required keys, and no more...</em>
+<a class="jxr_linenumber" name="L2279" href="#L2279">2279</a>         <strong class="jxr_keyword">if</strong> (!containsKey(BITPIX.key())) {
+<a class="jxr_linenumber" name="L2280" href="#L2280">2280</a>             <strong class="jxr_keyword">return</strong> 0L;
+<a class="jxr_linenumber" name="L2281" href="#L2281">2281</a>         }
+<a class="jxr_linenumber" name="L2282" href="#L2282">2282</a> 
+<a class="jxr_linenumber" name="L2283" href="#L2283">2283</a>         <strong class="jxr_keyword">if</strong> (!containsKey(NAXIS.key())) {
+<a class="jxr_linenumber" name="L2284" href="#L2284">2284</a>             <strong class="jxr_keyword">return</strong> 0L;
+<a class="jxr_linenumber" name="L2285" href="#L2285">2285</a>         }
 <a class="jxr_linenumber" name="L2286" href="#L2286">2286</a> 
-<a class="jxr_linenumber" name="L2287" href="#L2287">2287</a>         <em class="jxr_comment">// If there are no axes then there is no data.</em>
-<a class="jxr_linenumber" name="L2288" href="#L2288">2288</a>         <strong class="jxr_keyword">if</strong> (naxis == 0) {
-<a class="jxr_linenumber" name="L2289" href="#L2289">2289</a>             <strong class="jxr_keyword">return</strong> 0L;
-<a class="jxr_linenumber" name="L2290" href="#L2290">2290</a>         }
-<a class="jxr_linenumber" name="L2291" href="#L2291">2291</a> 
-<a class="jxr_linenumber" name="L2292" href="#L2292">2292</a>         <strong class="jxr_keyword">int</strong>[] axes = <strong class="jxr_keyword">new</strong> <strong class="jxr_keyword">int</strong>[naxis];
+<a class="jxr_linenumber" name="L2287" href="#L2287">2287</a>         <strong class="jxr_keyword">int</strong> naxis = getIntValue(NAXIS, 0);
+<a class="jxr_linenumber" name="L2288" href="#L2288">2288</a> 
+<a class="jxr_linenumber" name="L2289" href="#L2289">2289</a>         <em class="jxr_comment">// If there are no axes then there is no data.</em>
+<a class="jxr_linenumber" name="L2290" href="#L2290">2290</a>         <strong class="jxr_keyword">if</strong> (naxis == 0) {
+<a class="jxr_linenumber" name="L2291" href="#L2291">2291</a>             <strong class="jxr_keyword">return</strong> 0L;
+<a class="jxr_linenumber" name="L2292" href="#L2292">2292</a>         }
 <a class="jxr_linenumber" name="L2293" href="#L2293">2293</a> 
-<a class="jxr_linenumber" name="L2294" href="#L2294">2294</a>         <strong class="jxr_keyword">for</strong> (<strong class="jxr_keyword">int</strong> axis = 1; axis &lt;= naxis; axis += 1) {
-<a class="jxr_linenumber" name="L2295" href="#L2295">2295</a>             axes[axis - 1] = getIntValue(NAXISn.n(axis), 0);
-<a class="jxr_linenumber" name="L2296" href="#L2296">2296</a>         }
-<a class="jxr_linenumber" name="L2297" href="#L2297">2297</a> 
-<a class="jxr_linenumber" name="L2298" href="#L2298">2298</a>         <strong class="jxr_keyword">boolean</strong> isGroup = getBooleanValue(GROUPS, false);
+<a class="jxr_linenumber" name="L2294" href="#L2294">2294</a>         <strong class="jxr_keyword">int</strong>[] axes = <strong class="jxr_keyword">new</strong> <strong class="jxr_keyword">int</strong>[naxis];
+<a class="jxr_linenumber" name="L2295" href="#L2295">2295</a> 
+<a class="jxr_linenumber" name="L2296" href="#L2296">2296</a>         <strong class="jxr_keyword">for</strong> (<strong class="jxr_keyword">int</strong> axis = 1; axis &lt;= naxis; axis += 1) {
+<a class="jxr_linenumber" name="L2297" href="#L2297">2297</a>             axes[axis - 1] = getIntValue(NAXISn.n(axis), 0);
+<a class="jxr_linenumber" name="L2298" href="#L2298">2298</a>         }
 <a class="jxr_linenumber" name="L2299" href="#L2299">2299</a> 
-<a class="jxr_linenumber" name="L2300" href="#L2300">2300</a>         <strong class="jxr_keyword">int</strong> pcount = getIntValue(PCOUNT, 0);
-<a class="jxr_linenumber" name="L2301" href="#L2301">2301</a>         <strong class="jxr_keyword">int</strong> gcount = getIntValue(GCOUNT, 1);
-<a class="jxr_linenumber" name="L2302" href="#L2302">2302</a> 
-<a class="jxr_linenumber" name="L2303" href="#L2303">2303</a>         <strong class="jxr_keyword">int</strong> startAxis = 0;
+<a class="jxr_linenumber" name="L2300" href="#L2300">2300</a>         <strong class="jxr_keyword">boolean</strong> isGroup = getBooleanValue(GROUPS, false);
+<a class="jxr_linenumber" name="L2301" href="#L2301">2301</a> 
+<a class="jxr_linenumber" name="L2302" href="#L2302">2302</a>         <strong class="jxr_keyword">int</strong> pcount = getIntValue(PCOUNT, 0);
+<a class="jxr_linenumber" name="L2303" href="#L2303">2303</a>         <strong class="jxr_keyword">int</strong> gcount = getIntValue(GCOUNT, 1);
 <a class="jxr_linenumber" name="L2304" href="#L2304">2304</a> 
-<a class="jxr_linenumber" name="L2305" href="#L2305">2305</a>         <strong class="jxr_keyword">if</strong> (isGroup &amp;&amp; naxis &gt; 1 &amp;&amp; axes[0] == 0) {
-<a class="jxr_linenumber" name="L2306" href="#L2306">2306</a>             startAxis = 1;
-<a class="jxr_linenumber" name="L2307" href="#L2307">2307</a>         }
-<a class="jxr_linenumber" name="L2308" href="#L2308">2308</a> 
-<a class="jxr_linenumber" name="L2309" href="#L2309">2309</a>         <strong class="jxr_keyword">long</strong> size = 1;
-<a class="jxr_linenumber" name="L2310" href="#L2310">2310</a>         <strong class="jxr_keyword">for</strong> (<strong class="jxr_keyword">int</strong> i = startAxis; i &lt; naxis; i += 1) {
-<a class="jxr_linenumber" name="L2311" href="#L2311">2311</a>             size *= axes[i];
-<a class="jxr_linenumber" name="L2312" href="#L2312">2312</a>         }
-<a class="jxr_linenumber" name="L2313" href="#L2313">2313</a> 
-<a class="jxr_linenumber" name="L2314" href="#L2314">2314</a>         size += pcount;
-<a class="jxr_linenumber" name="L2315" href="#L2315">2315</a>         size *= gcount;
-<a class="jxr_linenumber" name="L2316" href="#L2316">2316</a> 
-<a class="jxr_linenumber" name="L2317" href="#L2317">2317</a>         <em class="jxr_comment">// Now multiply by the number of bits per pixel and</em>
-<a class="jxr_linenumber" name="L2318" href="#L2318">2318</a>         <em class="jxr_comment">// convert to bytes.</em>
-<a class="jxr_linenumber" name="L2319" href="#L2319">2319</a>         size *= Math.abs(getIntValue(BITPIX, 0)) / FitsIO.BITS_OF_1_BYTE;
-<a class="jxr_linenumber" name="L2320" href="#L2320">2320</a> 
-<a class="jxr_linenumber" name="L2321" href="#L2321">2321</a>         <strong class="jxr_keyword">return</strong> size;
-<a class="jxr_linenumber" name="L2322" href="#L2322">2322</a>     }
-<a class="jxr_linenumber" name="L2323" href="#L2323">2323</a>     
-<a class="jxr_linenumber" name="L2324" href="#L2324">2324</a>     <em class="jxr_javadoccomment">/**</em>
-<a class="jxr_linenumber" name="L2325" href="#L2325">2325</a> <em class="jxr_javadoccomment">     * &lt;p&gt;</em>
-<a class="jxr_linenumber" name="L2326" href="#L2326">2326</a> <em class="jxr_javadoccomment">     * Sets whether warnings about FITS standard violations are logged when a header is being read (parsed).</em>
-<a class="jxr_linenumber" name="L2327" href="#L2327">2327</a> <em class="jxr_javadoccomment">     * Enabling this feature can help identifying various standard violations in existing FITS headers,</em>
-<a class="jxr_linenumber" name="L2328" href="#L2328">2328</a> <em class="jxr_javadoccomment">     * which nevertheless do not prevent the successful reading of the header by this library. </em>
-<a class="jxr_linenumber" name="L2329" href="#L2329">2329</a> <em class="jxr_javadoccomment">     * &lt;/p&gt;</em>
-<a class="jxr_linenumber" name="L2330" href="#L2330">2330</a> <em class="jxr_javadoccomment">     * &lt;p&gt;</em>
-<a class="jxr_linenumber" name="L2331" href="#L2331">2331</a> <em class="jxr_javadoccomment">     * If {@link FitsFactory#setAllowHeaderRepairs(boolean)} is set &lt;code&gt;false&lt;/code&gt;, this will affect</em>
-<a class="jxr_linenumber" name="L2332" href="#L2332">2332</a> <em class="jxr_javadoccomment">     * only minor violations (e.g. a misplaced '=', missing space after '=', non-standard characters</em>
-<a class="jxr_linenumber" name="L2333" href="#L2333">2333</a> <em class="jxr_javadoccomment">     * in header etc.), which nevertheless do not interfere with the unamiguous parsing of the header</em>
-<a class="jxr_linenumber" name="L2334" href="#L2334">2334</a> <em class="jxr_javadoccomment">     * information. More severe standard violations, where some guessing may be required about the</em>
-<a class="jxr_linenumber" name="L2335" href="#L2335">2335</a> <em class="jxr_javadoccomment">     * intent of some malformed header record, will throw appropriate exceptions. If, however,</em>
-<a class="jxr_linenumber" name="L2336" href="#L2336">2336</a> <em class="jxr_javadoccomment">     * {@link FitsFactory#setAllowHeaderRepairs(boolean)} is set &lt;code&gt;true&lt;/code&gt;, the </em>
-<a class="jxr_linenumber" name="L2337" href="#L2337">2337</a> <em class="jxr_javadoccomment">     * parsing will throw fewer exceptions, and the additional issues may get logged as </em>
-<a class="jxr_linenumber" name="L2338" href="#L2338">2338</a> <em class="jxr_javadoccomment">     * additional warning instead.</em>
-<a class="jxr_linenumber" name="L2339" href="#L2339">2339</a> <em class="jxr_javadoccomment">     * </em>
-<a class="jxr_linenumber" name="L2340" href="#L2340">2340</a> <em class="jxr_javadoccomment">     * @param value     &lt;code&gt;true&lt;/code&gt; if parser warnings about FITS standard violations when reading in</em>
-<a class="jxr_linenumber" name="L2341" href="#L2341">2341</a> <em class="jxr_javadoccomment">     *                  existing FITS headers are to be logged, otherwise &lt;code&gt;false&lt;/code&gt;</em>
-<a class="jxr_linenumber" name="L2342" href="#L2342">2342</a> <em class="jxr_javadoccomment">     * </em>
-<a class="jxr_linenumber" name="L2343" href="#L2343">2343</a> <em class="jxr_javadoccomment">     * @see FitsFactory#setAllowHeaderRepairs(boolean)</em>
+<a class="jxr_linenumber" name="L2305" href="#L2305">2305</a>         <strong class="jxr_keyword">int</strong> startAxis = 0;
+<a class="jxr_linenumber" name="L2306" href="#L2306">2306</a> 
+<a class="jxr_linenumber" name="L2307" href="#L2307">2307</a>         <strong class="jxr_keyword">if</strong> (isGroup &amp;&amp; naxis &gt; 1 &amp;&amp; axes[0] == 0) {
+<a class="jxr_linenumber" name="L2308" href="#L2308">2308</a>             startAxis = 1;
+<a class="jxr_linenumber" name="L2309" href="#L2309">2309</a>         }
+<a class="jxr_linenumber" name="L2310" href="#L2310">2310</a> 
+<a class="jxr_linenumber" name="L2311" href="#L2311">2311</a>         <strong class="jxr_keyword">long</strong> size = 1;
+<a class="jxr_linenumber" name="L2312" href="#L2312">2312</a>         <strong class="jxr_keyword">for</strong> (<strong class="jxr_keyword">int</strong> i = startAxis; i &lt; naxis; i += 1) {
+<a class="jxr_linenumber" name="L2313" href="#L2313">2313</a>             size *= axes[i];
+<a class="jxr_linenumber" name="L2314" href="#L2314">2314</a>         }
+<a class="jxr_linenumber" name="L2315" href="#L2315">2315</a> 
+<a class="jxr_linenumber" name="L2316" href="#L2316">2316</a>         size += pcount;
+<a class="jxr_linenumber" name="L2317" href="#L2317">2317</a>         size *= gcount;
+<a class="jxr_linenumber" name="L2318" href="#L2318">2318</a> 
+<a class="jxr_linenumber" name="L2319" href="#L2319">2319</a>         <em class="jxr_comment">// Now multiply by the number of bits per pixel and</em>
+<a class="jxr_linenumber" name="L2320" href="#L2320">2320</a>         <em class="jxr_comment">// convert to bytes.</em>
+<a class="jxr_linenumber" name="L2321" href="#L2321">2321</a>         size *= Math.abs(getIntValue(BITPIX, 0)) / FitsIO.BITS_OF_1_BYTE;
+<a class="jxr_linenumber" name="L2322" href="#L2322">2322</a> 
+<a class="jxr_linenumber" name="L2323" href="#L2323">2323</a>         <strong class="jxr_keyword">return</strong> size;
+<a class="jxr_linenumber" name="L2324" href="#L2324">2324</a>     }
+<a class="jxr_linenumber" name="L2325" href="#L2325">2325</a>     
+<a class="jxr_linenumber" name="L2326" href="#L2326">2326</a>     <em class="jxr_javadoccomment">/**</em>
+<a class="jxr_linenumber" name="L2327" href="#L2327">2327</a> <em class="jxr_javadoccomment">     * &lt;p&gt;</em>
+<a class="jxr_linenumber" name="L2328" href="#L2328">2328</a> <em class="jxr_javadoccomment">     * Sets whether warnings about FITS standard violations are logged when a header is being read (parsed).</em>
+<a class="jxr_linenumber" name="L2329" href="#L2329">2329</a> <em class="jxr_javadoccomment">     * Enabling this feature can help identifying various standard violations in existing FITS headers,</em>
+<a class="jxr_linenumber" name="L2330" href="#L2330">2330</a> <em class="jxr_javadoccomment">     * which nevertheless do not prevent the successful reading of the header by this library. </em>
+<a class="jxr_linenumber" name="L2331" href="#L2331">2331</a> <em class="jxr_javadoccomment">     * &lt;/p&gt;</em>
+<a class="jxr_linenumber" name="L2332" href="#L2332">2332</a> <em class="jxr_javadoccomment">     * &lt;p&gt;</em>
+<a class="jxr_linenumber" name="L2333" href="#L2333">2333</a> <em class="jxr_javadoccomment">     * If {@link FitsFactory#setAllowHeaderRepairs(boolean)} is set &lt;code&gt;false&lt;/code&gt;, this will affect</em>
+<a class="jxr_linenumber" name="L2334" href="#L2334">2334</a> <em class="jxr_javadoccomment">     * only minor violations (e.g. a misplaced '=', missing space after '=', non-standard characters</em>
+<a class="jxr_linenumber" name="L2335" href="#L2335">2335</a> <em class="jxr_javadoccomment">     * in header etc.), which nevertheless do not interfere with the unamiguous parsing of the header</em>
+<a class="jxr_linenumber" name="L2336" href="#L2336">2336</a> <em class="jxr_javadoccomment">     * information. More severe standard violations, where some guessing may be required about the</em>
+<a class="jxr_linenumber" name="L2337" href="#L2337">2337</a> <em class="jxr_javadoccomment">     * intent of some malformed header record, will throw appropriate exceptions. If, however,</em>
+<a class="jxr_linenumber" name="L2338" href="#L2338">2338</a> <em class="jxr_javadoccomment">     * {@link FitsFactory#setAllowHeaderRepairs(boolean)} is set &lt;code&gt;true&lt;/code&gt;, the </em>
+<a class="jxr_linenumber" name="L2339" href="#L2339">2339</a> <em class="jxr_javadoccomment">     * parsing will throw fewer exceptions, and the additional issues may get logged as </em>
+<a class="jxr_linenumber" name="L2340" href="#L2340">2340</a> <em class="jxr_javadoccomment">     * additional warning instead.</em>
+<a class="jxr_linenumber" name="L2341" href="#L2341">2341</a> <em class="jxr_javadoccomment">     * </em>
+<a class="jxr_linenumber" name="L2342" href="#L2342">2342</a> <em class="jxr_javadoccomment">     * @param value     &lt;code&gt;true&lt;/code&gt; if parser warnings about FITS standard violations when reading in</em>
+<a class="jxr_linenumber" name="L2343" href="#L2343">2343</a> <em class="jxr_javadoccomment">     *                  existing FITS headers are to be logged, otherwise &lt;code&gt;false&lt;/code&gt;</em>
 <a class="jxr_linenumber" name="L2344" href="#L2344">2344</a> <em class="jxr_javadoccomment">     * </em>
-<a class="jxr_linenumber" name="L2345" href="#L2345">2345</a> <em class="jxr_javadoccomment">     * @since 1.16</em>
-<a class="jxr_linenumber" name="L2346" href="#L2346">2346</a> <em class="jxr_javadoccomment">     */</em>
-<a class="jxr_linenumber" name="L2347" href="#L2347">2347</a>     <strong class="jxr_keyword">public</strong> <strong class="jxr_keyword">static</strong> <strong class="jxr_keyword">void</strong> setParserWarningsEnabled(<strong class="jxr_keyword">boolean</strong> value) {
-<a class="jxr_linenumber" name="L2348" href="#L2348">2348</a>         Level level = value ? Level.WARNING : Level.SEVERE;
-<a class="jxr_linenumber" name="L2349" href="#L2349">2349</a>         LoggerHelper.getLogger(HeaderCardParser.<strong class="jxr_keyword">class</strong>).setLevel(level);
-<a class="jxr_linenumber" name="L2350" href="#L2350">2350</a>         LoggerHelper.getLogger(ComplexValue.<strong class="jxr_keyword">class</strong>).setLevel(level);
-<a class="jxr_linenumber" name="L2351" href="#L2351">2351</a>     }
-<a class="jxr_linenumber" name="L2352" href="#L2352">2352</a>     
-<a class="jxr_linenumber" name="L2353" href="#L2353">2353</a>     <em class="jxr_javadoccomment">/**</em>
-<a class="jxr_linenumber" name="L2354" href="#L2354">2354</a> <em class="jxr_javadoccomment">     * Checks whether warnings about FITS standard violations are logged when a header is being read </em>
-<a class="jxr_linenumber" name="L2355" href="#L2355">2355</a> <em class="jxr_javadoccomment">     * (parsed).</em>
-<a class="jxr_linenumber" name="L2356" href="#L2356">2356</a> <em class="jxr_javadoccomment">     * </em>
-<a class="jxr_linenumber" name="L2357" href="#L2357">2357</a> <em class="jxr_javadoccomment">     * @return      &lt;code&gt;true&lt;/code&gt; if parser warnings about FITS standard violations when reading in</em>
-<a class="jxr_linenumber" name="L2358" href="#L2358">2358</a> <em class="jxr_javadoccomment">     *              existing FITS headers are enabled and logged, otherwise &lt;code&gt;false&lt;/code&gt;</em>
-<a class="jxr_linenumber" name="L2359" href="#L2359">2359</a> <em class="jxr_javadoccomment">     *              </em>
-<a class="jxr_linenumber" name="L2360" href="#L2360">2360</a> <em class="jxr_javadoccomment">     * @see #setParserWarningsEnabled(boolean)</em>
-<a class="jxr_linenumber" name="L2361" href="#L2361">2361</a> <em class="jxr_javadoccomment">     * </em>
-<a class="jxr_linenumber" name="L2362" href="#L2362">2362</a> <em class="jxr_javadoccomment">     * @since 1.16</em>
-<a class="jxr_linenumber" name="L2363" href="#L2363">2363</a> <em class="jxr_javadoccomment">     */</em>
-<a class="jxr_linenumber" name="L2364" href="#L2364">2364</a>     <strong class="jxr_keyword">public</strong> <strong class="jxr_keyword">static</strong> <strong class="jxr_keyword">boolean</strong> isParserWarningsEnabled() {
-<a class="jxr_linenumber" name="L2365" href="#L2365">2365</a>         <strong class="jxr_keyword">return</strong> !Logger.getLogger(HeaderCardParser.<strong class="jxr_keyword">class</strong>.getName()).getLevel().equals(Level.SEVERE);
-<a class="jxr_linenumber" name="L2366" href="#L2366">2366</a>     }
-<a class="jxr_linenumber" name="L2367" href="#L2367">2367</a> }
+<a class="jxr_linenumber" name="L2345" href="#L2345">2345</a> <em class="jxr_javadoccomment">     * @see FitsFactory#setAllowHeaderRepairs(boolean)</em>
+<a class="jxr_linenumber" name="L2346" href="#L2346">2346</a> <em class="jxr_javadoccomment">     * </em>
+<a class="jxr_linenumber" name="L2347" href="#L2347">2347</a> <em class="jxr_javadoccomment">     * @since 1.16</em>
+<a class="jxr_linenumber" name="L2348" href="#L2348">2348</a> <em class="jxr_javadoccomment">     */</em>
+<a class="jxr_linenumber" name="L2349" href="#L2349">2349</a>     <strong class="jxr_keyword">public</strong> <strong class="jxr_keyword">static</strong> <strong class="jxr_keyword">void</strong> setParserWarningsEnabled(<strong class="jxr_keyword">boolean</strong> value) {
+<a class="jxr_linenumber" name="L2350" href="#L2350">2350</a>         Level level = value ? Level.WARNING : Level.SEVERE;
+<a class="jxr_linenumber" name="L2351" href="#L2351">2351</a>         LoggerHelper.getLogger(HeaderCardParser.<strong class="jxr_keyword">class</strong>).setLevel(level);
+<a class="jxr_linenumber" name="L2352" href="#L2352">2352</a>         LoggerHelper.getLogger(ComplexValue.<strong class="jxr_keyword">class</strong>).setLevel(level);
+<a class="jxr_linenumber" name="L2353" href="#L2353">2353</a>     }
+<a class="jxr_linenumber" name="L2354" href="#L2354">2354</a>     
+<a class="jxr_linenumber" name="L2355" href="#L2355">2355</a>     <em class="jxr_javadoccomment">/**</em>
+<a class="jxr_linenumber" name="L2356" href="#L2356">2356</a> <em class="jxr_javadoccomment">     * Checks whether warnings about FITS standard violations are logged when a header is being read </em>
+<a class="jxr_linenumber" name="L2357" href="#L2357">2357</a> <em class="jxr_javadoccomment">     * (parsed).</em>
+<a class="jxr_linenumber" name="L2358" href="#L2358">2358</a> <em class="jxr_javadoccomment">     * </em>
+<a class="jxr_linenumber" name="L2359" href="#L2359">2359</a> <em class="jxr_javadoccomment">     * @return      &lt;code&gt;true&lt;/code&gt; if parser warnings about FITS standard violations when reading in</em>
+<a class="jxr_linenumber" name="L2360" href="#L2360">2360</a> <em class="jxr_javadoccomment">     *              existing FITS headers are enabled and logged, otherwise &lt;code&gt;false&lt;/code&gt;</em>
+<a class="jxr_linenumber" name="L2361" href="#L2361">2361</a> <em class="jxr_javadoccomment">     *              </em>
+<a class="jxr_linenumber" name="L2362" href="#L2362">2362</a> <em class="jxr_javadoccomment">     * @see #setParserWarningsEnabled(boolean)</em>
+<a class="jxr_linenumber" name="L2363" href="#L2363">2363</a> <em class="jxr_javadoccomment">     * </em>
+<a class="jxr_linenumber" name="L2364" href="#L2364">2364</a> <em class="jxr_javadoccomment">     * @since 1.16</em>
+<a class="jxr_linenumber" name="L2365" href="#L2365">2365</a> <em class="jxr_javadoccomment">     */</em>
+<a class="jxr_linenumber" name="L2366" href="#L2366">2366</a>     <strong class="jxr_keyword">public</strong> <strong class="jxr_keyword">static</strong> <strong class="jxr_keyword">boolean</strong> isParserWarningsEnabled() {
+<a class="jxr_linenumber" name="L2367" href="#L2367">2367</a>         <strong class="jxr_keyword">return</strong> !Logger.getLogger(HeaderCardParser.<strong class="jxr_keyword">class</strong>.getName()).getLevel().equals(Level.SEVERE);
+<a class="jxr_linenumber" name="L2368" href="#L2368">2368</a>     }
+<a class="jxr_linenumber" name="L2369" href="#L2369">2369</a> }
 </pre>
 <hr/>
 <div id="footer">Copyright &#169; 1996&#x2013;2022 nom-tam-fits. All rights reserved.</div>
