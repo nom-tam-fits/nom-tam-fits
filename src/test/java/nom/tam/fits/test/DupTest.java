@@ -31,6 +31,7 @@ package nom.tam.fits.test;
  * #L%
  */
 
+import static org.junit.Assert.assertNotEquals;
 import static org.junit.Assert.assertEquals;
 import static org.junit.Assert.assertFalse;
 import static org.junit.Assert.assertTrue;
@@ -38,6 +39,10 @@ import static org.junit.Assert.assertTrue;
 import java.io.DataOutputStream;
 import java.io.FileOutputStream;
 import java.util.List;
+import java.util.logging.Handler;
+import java.util.logging.Level;
+import java.util.logging.LogRecord;
+import java.util.logging.Logger;
 
 import nom.tam.fits.Fits;
 import nom.tam.fits.Header;
@@ -53,6 +58,28 @@ import org.junit.Test;
  */
 public class DupTest {
 
+    class LogCounter extends Handler {
+        private int count = 0;
+        
+        @Override
+        public void close() throws SecurityException {}
+
+        @Override
+        public void flush() {}
+
+        @Override
+        public void publish(LogRecord arg0) { 
+            count++; 
+            System.err.println("### MESSAGE: " + arg0.getMessage());
+        }
+        
+        public int getCount() { 
+            
+            return count; 
+            
+        }
+    };
+    
     @Test
     public void test() throws Exception {
 
@@ -83,4 +110,46 @@ public class DupTest {
         assertFalse("No duplicates", hdr.hadDuplicates());
         assertTrue("Dups is null", hdr.getDuplicates() == null);
     }
+    
+    @Test
+    public void dupesWarningsOn() throws Exception {
+        Logger l = Logger.getLogger(Header.class.getName());
+        l.setLevel(Level.WARNING);                      // Make sure we log warnings to Header
+        
+        LogCounter counter = new LogCounter();
+        l.addHandler(counter);
+        
+        int initCount = counter.getCount();
+        
+        Header.setParserWarningsEnabled(true);
+        assertTrue(Header.isParserWarningsEnabled());   // Check that warings are enabled
+        
+        Fits f = new Fits("src/test/resources/nom/tam/fits/test/test_dup.fits");
+        Header h = f.readHDU().getHeader();
+        
+        assertTrue("Has dups:", h.hadDuplicates());     // Check that we did indeed have duplicates
+        assertNotEquals(initCount, counter.getCount()); // Check that logger was called on them
+    }
+    
+    @Test
+    public void dupesWarningsOff() throws Exception {
+        Logger l = Logger.getLogger(Header.class.getName());
+        l.setLevel(Level.WARNING);                      // Make sure we log warnings to Header
+        LogCounter counter = new LogCounter();
+        l.addHandler(counter);
+        
+        int initCount = counter.getCount();
+        
+        Header.setParserWarningsEnabled(false);
+        assertFalse(Header.isParserWarningsEnabled());  // Check that warings are enabled
+        
+        Fits f = new Fits("src/test/resources/nom/tam/fits/test/test_dup.fits");
+        Header h = f.readHDU().getHeader();
+        
+        assertTrue("Has dups:", h.hadDuplicates());     // Check that we did indeed have duplicates
+        assertEquals(initCount, counter.getCount());    // Check that logger was NOT called on them
+        
+        l.removeHandler(counter);
+    }
+    
 }

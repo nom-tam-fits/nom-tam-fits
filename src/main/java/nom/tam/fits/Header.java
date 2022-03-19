@@ -2013,7 +2013,9 @@ public class Header implements FitsElement {
         if (dup.isCommentStyleCard() || CONTINUE.key().equals(dup.getKey())) {
             return;
         }
-        LOG.log(Level.WARNING, "Multiple occurrences of key:" + dup.getKey());
+        if (isParserWarningsEnabled()) {
+            LOG.log(Level.WARNING, "Multiple occurrences of key:" + dup.getKey());
+        }
         if (this.duplicates == null) {
             this.duplicates = new ArrayList<>();
         }
