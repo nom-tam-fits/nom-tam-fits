@@ -52,7 +52,7 @@ import java.io.OutputStream;
  * @see FitsFile
  */
 @SuppressWarnings("deprecation")
-public class FitsOutputStream extends ArrayOutputStream implements ArrayDataOutput {
+public class FitsOutputStream extends ArrayOutputStream implements FitsOutput {
 
     /** the output, as accessible via the <code>DataInput</code> interface */
     private final DataOutput data;
@@ -203,4 +203,10 @@ public class FitsOutputStream extends ArrayOutputStream implements ArrayDataOutp
     public final synchronized void writePrimitiveArray(Object o) throws IOException {
         writeArray(o);
     }
+
+    @Override
+    public boolean isAtStart() {
+        return getEncoder().getCount() == 0;
+    }
+
 }

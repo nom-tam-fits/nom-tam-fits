@@ -90,10 +90,10 @@ import java.util.logging.Logger;
  * @since 1.16
  */
 @SuppressWarnings("deprecation")
-public class FitsFile extends ArrayDataFile implements RandomAccess, ArrayDataOutput {
+public class FitsFile extends ArrayDataFile implements FitsOutput, RandomAccess {
 
     private static final Logger LOG = Logger.getLogger(FitsFile.class.getName());
-    
+
     /**
      * marker position
      */
@@ -200,6 +200,11 @@ public class FitsFile extends ArrayDataFile implements RandomAccess, ArrayDataOu
         return (FitsDecoder) super.getDecoder();
     }
   
+    @Override
+    public boolean isAtStart() {
+        return getFilePointer() == 0;
+    }
+    
     @Override
     public final synchronized int readUnsignedByte() throws IOException {
         return getDecoder().readUnsignedByte();
@@ -428,5 +433,4 @@ public class FitsFile extends ArrayDataFile implements RandomAccess, ArrayDataOu
     public synchronized void write(String[] s, int start, int length) throws IOException {
         getEncoder().write(s, start, length);
     }
-  
 }

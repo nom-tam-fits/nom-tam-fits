@@ -65,7 +65,7 @@ public class FitsEncoder extends OutputEncoder {
     protected FitsEncoder() {
         super();
     }
-    
+
     /**
      * Instantiates a new FITS binary data encoder for converting Java arrays into
      * FITS data representations

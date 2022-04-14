@@ -90,7 +90,7 @@ public interface OutputWriter {
             @Override
             public void write(byte[] b, int from, int length) throws IOException {
                 o.write(b, from, length);
-            }            
+            }
         };
     }
 }

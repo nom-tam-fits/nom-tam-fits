@@ -1,6 +1,13 @@
 <document xmlns="http://maven.apache.org/changes/1.0.0" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:schemaLocation="http://maven.apache.org/changes/1.0.0 http://maven.apache.org/xsd/changes-1.0.0.xsd">
 	<body>
 	
+	  <release version="1.17.0-SNAPSHOT" date="2022-04-14" description="Improved incremental output and other enhancements.">
+	    <action type="update" dev="attipaci" issue="266">
+				Safe incremental HDU writing via new FitsOutput interface, which is used to check whether HDUs should be set primary or not
+				depending on where it is located in the output.
+			</action>
+	  </release>
+	  
 	  <release version="1.16.1" date="2022-03-21" description="Maintenance release with bug fixes.">
 	    <action type="fix" dev="attipaci" issue="252">
 				Fixed broken Java 8 compatibility of 1.16.0 due to Java compiler flags in POM. Note, after the change the build itself will require Java 9 or later!
