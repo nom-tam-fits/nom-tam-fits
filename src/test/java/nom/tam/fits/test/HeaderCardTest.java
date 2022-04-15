@@ -73,6 +73,7 @@ public class HeaderCardTest {
     @After
     public void after() {
         FitsFactory.setDefaults();
+        Header.setCommentAlignPosition(Header.DEFAULT_COMMENT_ALIGN);
     }
 
 //    @Rule
@@ -129,7 +130,7 @@ public class HeaderCardTest {
     public void test3() throws Exception {
 
         HeaderCard p = new HeaderCard("KEY", "VALUE", "COMMENT");
-        assertEquals("x1", "KEY     = 'VALUE   '           / COMMENT                                        ", p.toString());
+        assertEquals("x1", "KEY     =              'VALUE' / COMMENT                                        ", p.toString());
 
         p = new HeaderCard("KEY", 123, "COMMENT");
         assertEquals("x2", "KEY     =                  123 / COMMENT                                        ", p.toString());
@@ -448,11 +449,11 @@ public class HeaderCardTest {
         FitsFactory.setUseHierarch(true);
         HeaderCard hc;
         hc = new HeaderCard("HIERARCH.TEST1.INT", "xx", "Comment");
-        assertTrue(hc.toString().startsWith("HIERARCH TEST1 INT = 'xx' "));
+        assertTrue(hc.toString().startsWith("HIERARCH TEST1 INT = "));
         hc = new HeaderCard("HIERARCH.TEST1.TEST2.INT", "xx", "Comment");
-        assertTrue(hc.toString().startsWith("HIERARCH TEST1 TEST2 INT = 'xx' "));
+        assertTrue(hc.toString().startsWith("HIERARCH TEST1 TEST2 INT = "));
         hc = new HeaderCard("HIERARCH.TEST1.TEST3.B", "xx", "Comment");
-        assertTrue(hc.toString().startsWith("HIERARCH TEST1 TEST3 B = 'xx' "));
+        assertTrue(hc.toString().startsWith("HIERARCH TEST1 TEST3 B = "));
     }
 
     @Test
@@ -773,7 +774,7 @@ public class HeaderCardTest {
     @Test
     public void testSanitize() throws Exception {
         String card = "CARD = 'abc\t\r\n\bdef'";
-        String sanitized = "CARD    = 'abc????def'";
+        String sanitized = "CARD    =         'abc????def'";
         HeaderCard hc = HeaderCard.create(card);
         assertEquals(sanitized, hc.toString().substring(0, sanitized.length()));
     }
@@ -1014,13 +1015,13 @@ public class HeaderCardTest {
     @Test
     public void testKeyWordNullability() throws Exception {
         HeaderCard hc = new HeaderCard("TEST", "VALUE", "COMMENT", true);
-        assertEquals("TEST    = 'VALUE   '           / COMMENT                                        ", hc.toString());
+        assertEquals("TEST    =              'VALUE' / COMMENT                                        ", hc.toString());
         assertTrue(hc.isKeyValuePair());
         assertFalse(hc.isCommentStyleCard());
         assertEquals(hc.toString(), HeaderCard.create(hc.toString()).toString());
         
         hc = new HeaderCard("TEST", "VALUE", "COMMENT", false);
-        assertEquals("TEST    = 'VALUE   '           / COMMENT                                        ", hc.toString());
+        assertEquals("TEST    =              'VALUE' / COMMENT                                        ", hc.toString());
         assertTrue(hc.isKeyValuePair());
         assertFalse(hc.isCommentStyleCard());
         assertEquals(hc.toString(), HeaderCard.create(hc.toString()).toString());
@@ -1046,7 +1047,29 @@ public class HeaderCardTest {
         }
         Assert.assertNotNull(actual);
     }
-
+    
+    @Test
+    public void testCommentAlign() throws Exception {
+        assertEquals(Header.DEFAULT_COMMENT_ALIGN, Header.getCommentAlignPosition());
+        
+        HeaderCard hc = new HeaderCard("TEST", "VALUE", "COMMENT");
+        assertEquals("TEST    =              'VALUE' / COMMENT                                        ", hc.toString());
+        
+        Header.setCommentAlignPosition(25);
+        assertEquals(25, Header.getCommentAlignPosition());
+        assertEquals("TEST    =         'VALUE' / COMMENT                                             ", hc.toString());
+    }
+        
+    @Test(expected = IllegalArgumentException.class)
+    public void testCommentAlignLow() throws Exception {
+        Header.setCommentAlignPosition(Header.MIN_COMMENT_ALIGN - 1);
+    }
+    
+    @Test(expected = IllegalArgumentException.class)
+    public void testCommentAlignHigh() throws Exception {
+        Header.setCommentAlignPosition(Header.MAX_COMMENT_ALIGN + 1);
+    }
+    
     @Test
     public void testHierarchAlternativesWithSkippedBlank() throws Exception {
         FitsFactory.setSkipBlankAfterAssign(true);
@@ -1065,14 +1088,13 @@ public class HeaderCardTest {
         assertEquals("HIERARCH.TEST1.TEST2.TEST3.TEST4.TEST5.TEST6", headerCard.getKey());
         assertEquals("HIERARCH  TEST1.TEST2.TEST3.TEST4.TEST5.TEST6 ='xy'                             ", headerCard.toString());
         assertEquals("HIERARCH.TEST1.TEST2.TEST3.TEST4.TEST5.TEST6", new HeaderCard(headerCardToStream(headerCard)).getKey());
-
     }
 
     @Test
     public void testKeyWordNullabilityWithSkippedBlank() throws Exception {
         FitsFactory.setSkipBlankAfterAssign(true);
-        assertEquals("TEST    ='VALUE    '           / COMMENT                                        ", new HeaderCard("TEST", "VALUE", "COMMENT", true).toString());
-        assertEquals("TEST    ='VALUE    '           / COMMENT                                        ", new HeaderCard("TEST", "VALUE", "COMMENT", false).toString());
+        assertEquals("TEST    ='SOMEVERYLONGLONGVALUE' / COMMENT                                      ", new HeaderCard("TEST", "SOMEVERYLONGLONGVALUE", "COMMENT", true).toString());
+        assertEquals("TEST    ='SOMEVERYLONGLONGVALUE' / COMMENT                                      ", new HeaderCard("TEST", "SOMEVERYLONGLONGVALUE", "COMMENT", false).toString());
         assertEquals("TEST    =                      / COMMENT                                        ", new HeaderCard("TEST", null, "COMMENT", true).toString());
         // AK: Fixed because comment can start at or after byte 11 only!
         assertEquals("TEST     COMMENT                                                                ", new HeaderCard("TEST", null, "COMMENT", false).toString());
@@ -1087,7 +1109,6 @@ public class HeaderCardTest {
         assertTrue(new HeaderCard("TEST", "VALUE", "COMMENT", false).isKeyValuePair());
         assertFalse(new HeaderCard("TEST", null, "COMMENT", true).isKeyValuePair());
         assertFalse(new HeaderCard("TEST", null, "COMMENT", false).isKeyValuePair());
-
     }
 
     @Test(expected = TruncatedFileException.class)
@@ -1631,13 +1652,13 @@ public class HeaderCardTest {
         assertEquals("UTC", card.getValue());
         assertEquals("All dates are in UTC time", card.getComment());
         assertEquals("TIMESYS", card.getKey());
-        assertEquals("TIMESYS ='UTC      '           / All dates are in UTC time                      ", card.toString());
+        assertEquals("TIMESYS =                'UTC' / All dates are in UTC time                      ", card.toString());
 
         card = HeaderCard.create("TIMESYS ='UTC ' / All dates are in UTC time");
         assertEquals("UTC", card.getValue());
         assertEquals("All dates are in UTC time", card.getComment());
         assertEquals("TIMESYS", card.getKey());
-        assertEquals("TIMESYS ='UTC      '           / All dates are in UTC time                      ", card.toString());
+        assertEquals("TIMESYS =                'UTC' / All dates are in UTC time                      ", card.toString());
     }
 
     @Test

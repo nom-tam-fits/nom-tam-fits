@@ -34,7 +34,7 @@ package nom.tam.fits;
 import static nom.tam.fits.header.Standard.CONTINUE;
 
 import nom.tam.fits.FitsFactory.FitsSettings;
-
+import static nom.tam.fits.header.Checksum.CHECKSUM;
 
 /**
  * Converts {@link HeaderCard}s into one or more 80-character wide FITS header records. It is a
@@ -74,13 +74,8 @@ class HeaderCardFormatter {
      * '/' is strongly recommended by the FITS standard.
      */
     private static final String LONG_COMMENT_PREFIX = " /";
-    
-    /** 
-     * The alignment position of card comments for a more pleasing visual experience. Comments will be
-     * aligned to this position, provided the lengths of all fields allow for it.
-     */
-    private static final int COMMENT_ALIGN = 30;
 
+    
     /**
      * In older FITS standards there was a requirement that a closing quote for string values may not
      * come before byte 20 (counted from 1) in the header record. To ensure that, strings need to be
@@ -140,7 +135,8 @@ class HeaderCardFormatter {
         appendComment(buf, card);
         
         if (!card.isCommentStyleCard()) {
-            realign(buf, card.isStringValue() ? valueEnd : valueStart, valueEnd);
+            // CHECKSUM must be left aligned, but everything else can be aligned to the right...
+            realign(buf, CHECKSUM.key().equals(card.getKey()) ? valueEnd : valueStart, valueEnd);
         }
         
         pad(buf);
@@ -344,12 +340,12 @@ class HeaderCardFormatter {
             return false;
         }
         
-        if (from > COMMENT_ALIGN) {
+        if (from >= Header.getCommentAlignPosition()) {
             // We are beyond the alignment point already...
             return false;
         }
         
-        return realign(buf, at, from, COMMENT_ALIGN);     
+        return realign(buf, at, from, Header.getCommentAlignPosition());     
     }
     
     /**
@@ -499,21 +495,19 @@ class HeaderCardFormatter {
         // quoted quotes, then it's easy...
         if (available >= text.length() - from) {
             String escaped = text.substring(from).replace("'", "''");
+            
+            // Earlier versions of the FITS standard required that the closing quote
+            // does not come before byte 20. It's no longer required but older tools
+            // may still expect it, so let's conform. This only affects single
+            // record card, but not continued long strings...         
+            if (buf.length() + escaped.length() + 1 < MIN_STRING_END) {
+                padTo(buf, MIN_STRING_END - escaped.length() - 1);
+            }
+            
             if (escaped.length() <= available) {
                 buf.append('\'');
                 buf.append(escaped);
-                
-                // Earlier versions of the FITS standard required that the closing quote
-                // does not come before byte 20. It's no longer required but older tools
-                // may still expect it, so let's conform. This only affects single
-                // record card, but not continued long strings...
-                if (buf.length() < MIN_STRING_END) {
-                    padTo(buf, MIN_STRING_END);
-                }
-                
                 buf.append('\'');
-                
-                
                 return text.length() - from;
             }
         }
@@ -649,5 +643,4 @@ class HeaderCardFormatter {
         }
         return n;
     }
-   
 }

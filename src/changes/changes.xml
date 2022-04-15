@@ -1,6 +1,16 @@
 <document xmlns="http://maven.apache.org/changes/1.0.0" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:schemaLocation="http://maven.apache.org/changes/1.0.0 http://maven.apache.org/xsd/changes-1.0.0.xsd">
 	<body>
 	
+    <release version="1.16.1" date="2022-03-21" description="Feature release with bug fixes.">
+	    <action type="add" dev="attipaci" issue="283">
+	      User adjustable inline header comment alignment position. 
+			</action>
+			<action type="update" dev="attipaci" issue="284">
+	      Pad short strings before opening quote to ensure end quote does not come before byte 20 (counted from 1), and right
+	      justify string values, if possible, like numerical values.
+			</action>
+	 </release>
+	
 	  <release version="1.16.1" date="2022-03-21" description="Maintenance release with bug fixes.">
 	    <action type="fix" dev="attipaci" issue="252">
 				Fixed broken Java 8 compatibility of 1.16.0 due to Java compiler flags in POM. Note, after the change the build itself will require Java 9 or later!

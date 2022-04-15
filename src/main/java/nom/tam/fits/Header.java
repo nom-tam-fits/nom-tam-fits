@@ -100,10 +100,32 @@ import nom.tam.util.RandomAccess;
  */
 public class Header implements FitsElement {
     
+    /**
+     * The default character position to which comments should be aligned if possible (0-based).
+     */
+    public static final int DEFAULT_COMMENT_ALIGN = 30;
+    
+    /**
+     * The earliest position (0-based) at which a comment may start for a regular key/value entry.
+     */
+    public static final int MIN_COMMENT_ALIGN = 20;
+    
+    /**
+     * The largest (0-based)  comment alignment allowed that can still contain some meaningful comment (word)
+     */
+    public static final int MAX_COMMENT_ALIGN = 70;
+    
+    /** 
+     * The alignment position of card comments for a more pleasing visual experience. Comments will be
+     * aligned to this position, provided the lengths of all fields allow for it.
+     */
+    private static int commentAlign = DEFAULT_COMMENT_ALIGN;
+    
+    
     private static final Logger LOG = Logger.getLogger(Header.class.getName());
 
     private static final int MIN_NUMBER_OF_CARDS_FOR_VALID_HEADER = 4;
-
+    
     /**
      * The actual header data stored as a HashedList of HeaderCard's.
      */
@@ -2365,5 +2387,33 @@ public class Header implements FitsElement {
      */
     public static boolean isParserWarningsEnabled() {
         return !Logger.getLogger(HeaderCardParser.class.getName()).getLevel().equals(Level.SEVERE);
+    }
+    
+    /**
+     * Returns the current preferred alignment character position of inline header comments.
+     * This is the position at which the '/' is placed for the inline comment.
+     * 
+     * @return  The current alignment position for inline comments.
+     * 
+     * @see #setCommentAlignPosition(int)
+     */
+    public static int getCommentAlignPosition() {
+        return commentAlign;
+    }
+    
+    /**
+     * Sets a new alignment position for inline header comments.
+     * 
+     * 
+     * @param pos   [20:70] The character position to which inline comments should be aligned if possible.
+     * @throws IllegalArgumentException     if the position is outside of the allowed range.
+     * 
+     * @see #getCommentAlignPosition()
+     */
+    public static void setCommentAlignPosition(int pos) throws IllegalArgumentException {
+        if (pos < Header.MIN_COMMENT_ALIGN || pos > Header.MAX_COMMENT_ALIGN) {
+            throw new IllegalArgumentException("Comment alignment " + pos + " out of range (" + MIN_COMMENT_ALIGN + ":" + MAX_COMMENT_ALIGN + ").");
+        }
+        commentAlign = pos;
     }
 }
