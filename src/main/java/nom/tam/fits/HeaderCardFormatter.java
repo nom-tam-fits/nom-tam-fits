@@ -34,7 +34,6 @@ package nom.tam.fits;
 import static nom.tam.fits.header.Standard.CONTINUE;
 
 import nom.tam.fits.FitsFactory.FitsSettings;
-import static nom.tam.fits.header.Checksum.CHECKSUM;
 
 /**
  * Converts {@link HeaderCard}s into one or more 80-character wide FITS header records. It is a
@@ -135,8 +134,8 @@ class HeaderCardFormatter {
         appendComment(buf, card);
         
         if (!card.isCommentStyleCard()) {
-            // CHECKSUM must be left aligned, but everything else can be aligned to the right...
-            realign(buf, CHECKSUM.key().equals(card.getKey()) ? valueEnd : valueStart, valueEnd);
+            // Strings must be left aligned with opening quote in byte 11 (counted from 1)
+            realign(buf, card.isStringValue() ? valueEnd : valueStart, valueEnd);
         }
         
         pad(buf);
@@ -496,17 +495,18 @@ class HeaderCardFormatter {
         if (available >= text.length() - from) {
             String escaped = text.substring(from).replace("'", "''");
             
-            // Earlier versions of the FITS standard required that the closing quote
-            // does not come before byte 20. It's no longer required but older tools
-            // may still expect it, so let's conform. This only affects single
-            // record card, but not continued long strings...         
-            if (buf.length() + escaped.length() + 1 < MIN_STRING_END) {
-                padTo(buf, MIN_STRING_END - escaped.length() - 1);
-            }
-            
             if (escaped.length() <= available) {
                 buf.append('\'');
                 buf.append(escaped);
+                
+                // Earlier versions of the FITS standard required that the closing quote
+                // does not come before byte 20. It's no longer required but older tools
+                // may still expect it, so let's conform. This only affects single
+                // record card, but not continued long strings...         
+                if (buf.length() < MIN_STRING_END) {
+                    padTo(buf, MIN_STRING_END);
+                }
+                
                 buf.append('\'');
                 return text.length() - from;
             }

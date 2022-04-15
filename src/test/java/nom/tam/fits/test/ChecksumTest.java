@@ -153,7 +153,7 @@ public class ChecksumTest {
         fits.read();
         in.close();
         fits.setChecksum();
-        assertEquals("lEmLn9mKlEmKl9mK", fits.getHDU(0).getHeader().getStringValue("CHECKSUM"));
+        assertEquals("kGpMn9mJkEmJk9mJ", fits.getHDU(0).getHeader().getStringValue("CHECKSUM"));
     }
 
     @Test
