@@ -364,7 +364,7 @@ class HeaderCardFormatter {
     private boolean realign(StringBuffer buf, int at, int from, int to) {
         int spaces = to - from;
         
-        if (spaces < 1 || spaces > getAvailable(buf)) {
+        if (spaces > getAvailable(buf)) {
             // No space left in card to align the the specified position.
             return false;
         }
