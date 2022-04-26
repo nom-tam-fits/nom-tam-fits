@@ -112,7 +112,7 @@ public abstract class OutputEncoder {
      * @see RandomAccess#getFilePointer()
      */
     public long getCount() {
-        return count;
+        return count + buf.buffer.position();
     }
 
     /**

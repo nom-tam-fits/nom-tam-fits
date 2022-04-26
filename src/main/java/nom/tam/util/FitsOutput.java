@@ -1,7 +1,5 @@
 package nom.tam.util;
 
-import java.io.IOException;
-
 /*-
  * #%L
  * nom.tam FITS library
@@ -53,7 +51,6 @@ public interface FitsOutput extends ArrayDataOutput {
      * @return <code>true</code> if we are currently at the start of stream
      *         (where a primary HDU is to be written), or <code>false</code> if
      *         we are further along, where HDUs should be written as extensions.
-     *         
      * @see RandomAccess#position()
      * @see FitsEncoder#getCount()
      */
