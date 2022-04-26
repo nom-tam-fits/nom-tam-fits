@@ -527,116 +527,117 @@
 <a class="jxr_linenumber" name="L519" href="#L519">519</a> <em class="jxr_javadoccomment">     * @param skipBlankAfterAssign</em>
 <a class="jxr_linenumber" name="L520" href="#L520">520</a> <em class="jxr_javadoccomment">     *            value to set</em>
 <a class="jxr_linenumber" name="L521" href="#L521">521</a> <em class="jxr_javadoccomment">     * </em>
-<a class="jxr_linenumber" name="L522" href="#L522">522</a> <em class="jxr_javadoccomment">     * @deprecated The FITS standard is very explicit that assignment must be "= ". If we allow</em>
-<a class="jxr_linenumber" name="L523" href="#L523">523</a> <em class="jxr_javadoccomment">     *              skipping the space, it will result in a non-standard FITS, that is likely</em>
-<a class="jxr_linenumber" name="L524" href="#L524">524</a> <em class="jxr_javadoccomment">     *              to break compatibility with other tools.</em>
-<a class="jxr_linenumber" name="L525" href="#L525">525</a> <em class="jxr_javadoccomment">     * </em>
-<a class="jxr_linenumber" name="L526" href="#L526">526</a> <em class="jxr_javadoccomment">     */</em>
-<a class="jxr_linenumber" name="L527" href="#L527">527</a>     @Deprecated
-<a class="jxr_linenumber" name="L528" href="#L528">528</a>     <strong class="jxr_keyword">public</strong> <strong class="jxr_keyword">static</strong> <strong class="jxr_keyword">void</strong> setSkipBlankAfterAssign(<strong class="jxr_keyword">boolean</strong> skipBlankAfterAssign) {
-<a class="jxr_linenumber" name="L529" href="#L529">529</a>         current().skipBlankAfterAssign = skipBlankAfterAssign;
-<a class="jxr_linenumber" name="L530" href="#L530">530</a>     }
-<a class="jxr_linenumber" name="L531" href="#L531">531</a> 
-<a class="jxr_linenumber" name="L532" href="#L532">532</a>     <em class="jxr_javadoccomment">/**</em>
-<a class="jxr_linenumber" name="L533" href="#L533">533</a> <em class="jxr_javadoccomment">     * Indicate whether ASCII tables should be used where feasible.</em>
-<a class="jxr_linenumber" name="L534" href="#L534">534</a> <em class="jxr_javadoccomment">     *</em>
-<a class="jxr_linenumber" name="L535" href="#L535">535</a> <em class="jxr_javadoccomment">     * @param useAsciiTables</em>
-<a class="jxr_linenumber" name="L536" href="#L536">536</a> <em class="jxr_javadoccomment">     *            value to set</em>
-<a class="jxr_linenumber" name="L537" href="#L537">537</a> <em class="jxr_javadoccomment">     */</em>
-<a class="jxr_linenumber" name="L538" href="#L538">538</a>     <strong class="jxr_keyword">public</strong> <strong class="jxr_keyword">static</strong> <strong class="jxr_keyword">void</strong> setUseAsciiTables(<strong class="jxr_keyword">boolean</strong> useAsciiTables) {
-<a class="jxr_linenumber" name="L539" href="#L539">539</a>         current().useAsciiTables = useAsciiTables;
-<a class="jxr_linenumber" name="L540" href="#L540">540</a>     }
-<a class="jxr_linenumber" name="L541" href="#L541">541</a> 
-<a class="jxr_linenumber" name="L542" href="#L542">542</a>     <em class="jxr_javadoccomment">/**</em>
-<a class="jxr_linenumber" name="L543" href="#L543">543</a> <em class="jxr_javadoccomment">     * Enable/Disable hierarchical keyword processing.</em>
-<a class="jxr_linenumber" name="L544" href="#L544">544</a> <em class="jxr_javadoccomment">     *</em>
-<a class="jxr_linenumber" name="L545" href="#L545">545</a> <em class="jxr_javadoccomment">     * @param useHierarch</em>
-<a class="jxr_linenumber" name="L546" href="#L546">546</a> <em class="jxr_javadoccomment">     *            value to set</em>
-<a class="jxr_linenumber" name="L547" href="#L547">547</a> <em class="jxr_javadoccomment">     */</em>
-<a class="jxr_linenumber" name="L548" href="#L548">548</a>     <strong class="jxr_keyword">public</strong> <strong class="jxr_keyword">static</strong> <strong class="jxr_keyword">void</strong> setUseHierarch(<strong class="jxr_keyword">boolean</strong> useHierarch) {
-<a class="jxr_linenumber" name="L549" href="#L549">549</a>         current().useHierarch = useHierarch;
-<a class="jxr_linenumber" name="L550" href="#L550">550</a>     }
-<a class="jxr_linenumber" name="L551" href="#L551">551</a> 
-<a class="jxr_linenumber" name="L552" href="#L552">552</a>     <em class="jxr_javadoccomment">/**</em>
-<a class="jxr_linenumber" name="L553" href="#L553">553</a> <em class="jxr_javadoccomment">     * &lt;p&gt;</em>
-<a class="jxr_linenumber" name="L554" href="#L554">554</a> <em class="jxr_javadoccomment">     * Enable/Disable writing &lt;code&gt;char[]&lt;/code&gt; arrays as &lt;code&gt;short[]&lt;/code&gt; in FITS binary tables</em>
-<a class="jxr_linenumber" name="L555" href="#L555">555</a> <em class="jxr_javadoccomment">     * (with column type 'I'), instead of as standard FITS 1-byte ASCII characters (with column type 'A').</em>
-<a class="jxr_linenumber" name="L556" href="#L556">556</a> <em class="jxr_javadoccomment">     * The old default of this library has been to use unicode, and that behavior is retained</em>
-<a class="jxr_linenumber" name="L557" href="#L557">557</a> <em class="jxr_javadoccomment">     * by setting the argument to &lt;code&gt;true&lt;/code&gt;. On the flipside, setting it to &lt;code&gt;false&lt;/code&gt;</em>
-<a class="jxr_linenumber" name="L558" href="#L558">558</a> <em class="jxr_javadoccomment">     * provides more ocnvergence between the handling of &lt;code&gt;char[]&lt;/code&gt; columns and the nearly</em>
-<a class="jxr_linenumber" name="L559" href="#L559">559</a> <em class="jxr_javadoccomment">     * identical &lt;code&gt;String&lt;/code&gt; columns, which have already been restricted to ASCII before.</em>
-<a class="jxr_linenumber" name="L560" href="#L560">560</a> <em class="jxr_javadoccomment">     * &lt;/p&gt;</em>
-<a class="jxr_linenumber" name="L561" href="#L561">561</a> <em class="jxr_javadoccomment">     * </em>
-<a class="jxr_linenumber" name="L562" href="#L562">562</a> <em class="jxr_javadoccomment">     *</em>
-<a class="jxr_linenumber" name="L563" href="#L563">563</a> <em class="jxr_javadoccomment">     * @param value     &lt;code&gt;true&lt;/code&gt; to write &lt;code&gt;char[]&lt;/code&gt; arrays as if &lt;code&gt;short[]&lt;/code&gt;</em>
-<a class="jxr_linenumber" name="L564" href="#L564">564</a> <em class="jxr_javadoccomment">     *                  with column type 'I' to binary tables (old behaviour), or else &lt;code&gt;false&lt;/code&gt;</em>
-<a class="jxr_linenumber" name="L565" href="#L565">565</a> <em class="jxr_javadoccomment">     *                  to write them as &lt;code&gt;byte[]&lt;/code&gt; with column type 'A', the same as</em>
-<a class="jxr_linenumber" name="L566" href="#L566">566</a> <em class="jxr_javadoccomment">     *                  for &lt;code&gt;String&lt;/code&gt; (preferred behaviour)</em>
-<a class="jxr_linenumber" name="L567" href="#L567">567</a> <em class="jxr_javadoccomment">     * </em>
-<a class="jxr_linenumber" name="L568" href="#L568">568</a> <em class="jxr_javadoccomment">     * @since 1.16</em>
-<a class="jxr_linenumber" name="L569" href="#L569">569</a> <em class="jxr_javadoccomment">     *                  </em>
-<a class="jxr_linenumber" name="L570" href="#L570">570</a> <em class="jxr_javadoccomment">     * @see #isUseUnicodeChars()</em>
-<a class="jxr_linenumber" name="L571" href="#L571">571</a> <em class="jxr_javadoccomment">     * </em>
-<a class="jxr_linenumber" name="L572" href="#L572">572</a> <em class="jxr_javadoccomment">     */</em>
-<a class="jxr_linenumber" name="L573" href="#L573">573</a>     <strong class="jxr_keyword">public</strong> <strong class="jxr_keyword">static</strong> <strong class="jxr_keyword">void</strong> setUseUnicodeChars(<strong class="jxr_keyword">boolean</strong> value) {
-<a class="jxr_linenumber" name="L574" href="#L574">574</a>         current().useUnicodeChars = value;
-<a class="jxr_linenumber" name="L575" href="#L575">575</a>     }
-<a class="jxr_linenumber" name="L576" href="#L576">576</a>     
-<a class="jxr_linenumber" name="L577" href="#L577">577</a>     <strong class="jxr_keyword">public</strong> <strong class="jxr_keyword">static</strong> ExecutorService threadPool() {
-<a class="jxr_linenumber" name="L578" href="#L578">578</a>         <strong class="jxr_keyword">if</strong> (threadPool == <strong class="jxr_keyword">null</strong>) {
-<a class="jxr_linenumber" name="L579" href="#L579">579</a>             initializeThreadPool();
-<a class="jxr_linenumber" name="L580" href="#L580">580</a>         }
-<a class="jxr_linenumber" name="L581" href="#L581">581</a>         <strong class="jxr_keyword">return</strong> threadPool;
-<a class="jxr_linenumber" name="L582" href="#L582">582</a>     }
-<a class="jxr_linenumber" name="L583" href="#L583">583</a> 
-<a class="jxr_linenumber" name="L584" href="#L584">584</a>     <em class="jxr_javadoccomment">/**</em>
-<a class="jxr_linenumber" name="L585" href="#L585">585</a> <em class="jxr_javadoccomment">     * Use thread local settings for the current thread instead of the global</em>
-<a class="jxr_linenumber" name="L586" href="#L586">586</a> <em class="jxr_javadoccomment">     * ones if the parameter is set to true, else use the shared global</em>
-<a class="jxr_linenumber" name="L587" href="#L587">587</a> <em class="jxr_javadoccomment">     * settings.</em>
-<a class="jxr_linenumber" name="L588" href="#L588">588</a> <em class="jxr_javadoccomment">     *</em>
-<a class="jxr_linenumber" name="L589" href="#L589">589</a> <em class="jxr_javadoccomment">     * @param useThreadSettings</em>
-<a class="jxr_linenumber" name="L590" href="#L590">590</a> <em class="jxr_javadoccomment">     *            true if the thread should not share the global settings.</em>
-<a class="jxr_linenumber" name="L591" href="#L591">591</a> <em class="jxr_javadoccomment">     */</em>
-<a class="jxr_linenumber" name="L592" href="#L592">592</a>     <strong class="jxr_keyword">public</strong> <strong class="jxr_keyword">static</strong> <strong class="jxr_keyword">void</strong> useThreadLocalSettings(<strong class="jxr_keyword">boolean</strong> useThreadSettings) {
-<a class="jxr_linenumber" name="L593" href="#L593">593</a>         <strong class="jxr_keyword">if</strong> (useThreadSettings) {
-<a class="jxr_linenumber" name="L594" href="#L594">594</a>             LOCAL_SETTINGS.set(GLOBAL_SETTINGS.copy());
-<a class="jxr_linenumber" name="L595" href="#L595">595</a>         } <strong class="jxr_keyword">else</strong> {
-<a class="jxr_linenumber" name="L596" href="#L596">596</a>             LOCAL_SETTINGS.remove();
-<a class="jxr_linenumber" name="L597" href="#L597">597</a>         }
-<a class="jxr_linenumber" name="L598" href="#L598">598</a>     }
-<a class="jxr_linenumber" name="L599" href="#L599">599</a> 
-<a class="jxr_linenumber" name="L600" href="#L600">600</a>     <strong class="jxr_keyword">private</strong> <strong class="jxr_keyword">static</strong> <strong class="jxr_keyword">void</strong> initializeThreadPool() {
-<a class="jxr_linenumber" name="L601" href="#L601">601</a>         <strong class="jxr_keyword">synchronized</strong> (GLOBAL_SETTINGS) {
-<a class="jxr_linenumber" name="L602" href="#L602">602</a>             <strong class="jxr_keyword">if</strong> (threadPool == <strong class="jxr_keyword">null</strong>) {
-<a class="jxr_linenumber" name="L603" href="#L603">603</a>                 <em class="jxr_comment">// 1.5 thread per core</em>
-<a class="jxr_linenumber" name="L604" href="#L604">604</a>                 threadPool = Executors.newFixedThreadPool(Runtime.getRuntime().availableProcessors() * 2, <em class="jxr_comment">//</em>
-<a class="jxr_linenumber" name="L605" href="#L605">605</a>                         <strong class="jxr_keyword">new</strong> ThreadFactory() {
-<a class="jxr_linenumber" name="L606" href="#L606">606</a> 
-<a class="jxr_linenumber" name="L607" href="#L607">607</a>                             <strong class="jxr_keyword">private</strong> <strong class="jxr_keyword">int</strong> counter = 1;
-<a class="jxr_linenumber" name="L608" href="#L608">608</a> 
-<a class="jxr_linenumber" name="L609" href="#L609">609</a>                             @Override
-<a class="jxr_linenumber" name="L610" href="#L610">610</a>                             <strong class="jxr_keyword">public</strong> Thread newThread(Runnable r) {
-<a class="jxr_linenumber" name="L611" href="#L611">611</a>                                 Thread thread = <strong class="jxr_keyword">new</strong> Thread(r, <span class="jxr_string">"nom-tam-fits worker "</span> + <strong class="jxr_keyword">this</strong>.counter++);
-<a class="jxr_linenumber" name="L612" href="#L612">612</a>                                 thread.setDaemon(<strong class="jxr_keyword">true</strong>);
-<a class="jxr_linenumber" name="L613" href="#L613">613</a>                                 <strong class="jxr_keyword">return</strong> thread;
-<a class="jxr_linenumber" name="L614" href="#L614">614</a>                             }
-<a class="jxr_linenumber" name="L615" href="#L615">615</a>                         });
-<a class="jxr_linenumber" name="L616" href="#L616">616</a>             }
-<a class="jxr_linenumber" name="L617" href="#L617">617</a>         }
-<a class="jxr_linenumber" name="L618" href="#L618">618</a>     }
-<a class="jxr_linenumber" name="L619" href="#L619">619</a> 
-<a class="jxr_linenumber" name="L620" href="#L620">620</a>     <strong class="jxr_keyword">protected</strong> <strong class="jxr_keyword">static</strong> FitsSettings current() {
-<a class="jxr_linenumber" name="L621" href="#L621">621</a>         FitsSettings settings = LOCAL_SETTINGS.get();
-<a class="jxr_linenumber" name="L622" href="#L622">622</a>         <strong class="jxr_keyword">if</strong> (settings == <strong class="jxr_keyword">null</strong>) {
-<a class="jxr_linenumber" name="L623" href="#L623">623</a>             <strong class="jxr_keyword">return</strong> GLOBAL_SETTINGS;
-<a class="jxr_linenumber" name="L624" href="#L624">624</a>         }
-<a class="jxr_linenumber" name="L625" href="#L625">625</a>         <strong class="jxr_keyword">return</strong> settings;
-<a class="jxr_linenumber" name="L626" href="#L626">626</a>     }
-<a class="jxr_linenumber" name="L627" href="#L627">627</a> 
+<a class="jxr_linenumber" name="L522" href="#L522">522</a> <em class="jxr_javadoccomment">     * @deprecated The FITS standard is very explicit that assignment must be "= ". It is</em>
+<a class="jxr_linenumber" name="L523" href="#L523">523</a> <em class="jxr_javadoccomment">     *              also very specific that string values must have their opening quote in</em>
+<a class="jxr_linenumber" name="L524" href="#L524">524</a> <em class="jxr_javadoccomment">     *              byte 11 (counted from 1). If we allow skipping the space, we will violate</em>
+<a class="jxr_linenumber" name="L525" href="#L525">525</a> <em class="jxr_javadoccomment">     *              both standards in a way that is likely to break compatibility with other tools.</em>
+<a class="jxr_linenumber" name="L526" href="#L526">526</a> <em class="jxr_javadoccomment">     * </em>
+<a class="jxr_linenumber" name="L527" href="#L527">527</a> <em class="jxr_javadoccomment">     */</em>
+<a class="jxr_linenumber" name="L528" href="#L528">528</a>     @Deprecated
+<a class="jxr_linenumber" name="L529" href="#L529">529</a>     <strong class="jxr_keyword">public</strong> <strong class="jxr_keyword">static</strong> <strong class="jxr_keyword">void</strong> setSkipBlankAfterAssign(<strong class="jxr_keyword">boolean</strong> skipBlankAfterAssign) {
+<a class="jxr_linenumber" name="L530" href="#L530">530</a>         current().skipBlankAfterAssign = skipBlankAfterAssign;
+<a class="jxr_linenumber" name="L531" href="#L531">531</a>     }
+<a class="jxr_linenumber" name="L532" href="#L532">532</a> 
+<a class="jxr_linenumber" name="L533" href="#L533">533</a>     <em class="jxr_javadoccomment">/**</em>
+<a class="jxr_linenumber" name="L534" href="#L534">534</a> <em class="jxr_javadoccomment">     * Indicate whether ASCII tables should be used where feasible.</em>
+<a class="jxr_linenumber" name="L535" href="#L535">535</a> <em class="jxr_javadoccomment">     *</em>
+<a class="jxr_linenumber" name="L536" href="#L536">536</a> <em class="jxr_javadoccomment">     * @param useAsciiTables</em>
+<a class="jxr_linenumber" name="L537" href="#L537">537</a> <em class="jxr_javadoccomment">     *            value to set</em>
+<a class="jxr_linenumber" name="L538" href="#L538">538</a> <em class="jxr_javadoccomment">     */</em>
+<a class="jxr_linenumber" name="L539" href="#L539">539</a>     <strong class="jxr_keyword">public</strong> <strong class="jxr_keyword">static</strong> <strong class="jxr_keyword">void</strong> setUseAsciiTables(<strong class="jxr_keyword">boolean</strong> useAsciiTables) {
+<a class="jxr_linenumber" name="L540" href="#L540">540</a>         current().useAsciiTables = useAsciiTables;
+<a class="jxr_linenumber" name="L541" href="#L541">541</a>     }
+<a class="jxr_linenumber" name="L542" href="#L542">542</a> 
+<a class="jxr_linenumber" name="L543" href="#L543">543</a>     <em class="jxr_javadoccomment">/**</em>
+<a class="jxr_linenumber" name="L544" href="#L544">544</a> <em class="jxr_javadoccomment">     * Enable/Disable hierarchical keyword processing.</em>
+<a class="jxr_linenumber" name="L545" href="#L545">545</a> <em class="jxr_javadoccomment">     *</em>
+<a class="jxr_linenumber" name="L546" href="#L546">546</a> <em class="jxr_javadoccomment">     * @param useHierarch</em>
+<a class="jxr_linenumber" name="L547" href="#L547">547</a> <em class="jxr_javadoccomment">     *            value to set</em>
+<a class="jxr_linenumber" name="L548" href="#L548">548</a> <em class="jxr_javadoccomment">     */</em>
+<a class="jxr_linenumber" name="L549" href="#L549">549</a>     <strong class="jxr_keyword">public</strong> <strong class="jxr_keyword">static</strong> <strong class="jxr_keyword">void</strong> setUseHierarch(<strong class="jxr_keyword">boolean</strong> useHierarch) {
+<a class="jxr_linenumber" name="L550" href="#L550">550</a>         current().useHierarch = useHierarch;
+<a class="jxr_linenumber" name="L551" href="#L551">551</a>     }
+<a class="jxr_linenumber" name="L552" href="#L552">552</a> 
+<a class="jxr_linenumber" name="L553" href="#L553">553</a>     <em class="jxr_javadoccomment">/**</em>
+<a class="jxr_linenumber" name="L554" href="#L554">554</a> <em class="jxr_javadoccomment">     * &lt;p&gt;</em>
+<a class="jxr_linenumber" name="L555" href="#L555">555</a> <em class="jxr_javadoccomment">     * Enable/Disable writing &lt;code&gt;char[]&lt;/code&gt; arrays as &lt;code&gt;short[]&lt;/code&gt; in FITS binary tables</em>
+<a class="jxr_linenumber" name="L556" href="#L556">556</a> <em class="jxr_javadoccomment">     * (with column type 'I'), instead of as standard FITS 1-byte ASCII characters (with column type 'A').</em>
+<a class="jxr_linenumber" name="L557" href="#L557">557</a> <em class="jxr_javadoccomment">     * The old default of this library has been to use unicode, and that behavior is retained</em>
+<a class="jxr_linenumber" name="L558" href="#L558">558</a> <em class="jxr_javadoccomment">     * by setting the argument to &lt;code&gt;true&lt;/code&gt;. On the flipside, setting it to &lt;code&gt;false&lt;/code&gt;</em>
+<a class="jxr_linenumber" name="L559" href="#L559">559</a> <em class="jxr_javadoccomment">     * provides more ocnvergence between the handling of &lt;code&gt;char[]&lt;/code&gt; columns and the nearly</em>
+<a class="jxr_linenumber" name="L560" href="#L560">560</a> <em class="jxr_javadoccomment">     * identical &lt;code&gt;String&lt;/code&gt; columns, which have already been restricted to ASCII before.</em>
+<a class="jxr_linenumber" name="L561" href="#L561">561</a> <em class="jxr_javadoccomment">     * &lt;/p&gt;</em>
+<a class="jxr_linenumber" name="L562" href="#L562">562</a> <em class="jxr_javadoccomment">     * </em>
+<a class="jxr_linenumber" name="L563" href="#L563">563</a> <em class="jxr_javadoccomment">     *</em>
+<a class="jxr_linenumber" name="L564" href="#L564">564</a> <em class="jxr_javadoccomment">     * @param value     &lt;code&gt;true&lt;/code&gt; to write &lt;code&gt;char[]&lt;/code&gt; arrays as if &lt;code&gt;short[]&lt;/code&gt;</em>
+<a class="jxr_linenumber" name="L565" href="#L565">565</a> <em class="jxr_javadoccomment">     *                  with column type 'I' to binary tables (old behaviour), or else &lt;code&gt;false&lt;/code&gt;</em>
+<a class="jxr_linenumber" name="L566" href="#L566">566</a> <em class="jxr_javadoccomment">     *                  to write them as &lt;code&gt;byte[]&lt;/code&gt; with column type 'A', the same as</em>
+<a class="jxr_linenumber" name="L567" href="#L567">567</a> <em class="jxr_javadoccomment">     *                  for &lt;code&gt;String&lt;/code&gt; (preferred behaviour)</em>
+<a class="jxr_linenumber" name="L568" href="#L568">568</a> <em class="jxr_javadoccomment">     * </em>
+<a class="jxr_linenumber" name="L569" href="#L569">569</a> <em class="jxr_javadoccomment">     * @since 1.16</em>
+<a class="jxr_linenumber" name="L570" href="#L570">570</a> <em class="jxr_javadoccomment">     *                  </em>
+<a class="jxr_linenumber" name="L571" href="#L571">571</a> <em class="jxr_javadoccomment">     * @see #isUseUnicodeChars()</em>
+<a class="jxr_linenumber" name="L572" href="#L572">572</a> <em class="jxr_javadoccomment">     * </em>
+<a class="jxr_linenumber" name="L573" href="#L573">573</a> <em class="jxr_javadoccomment">     */</em>
+<a class="jxr_linenumber" name="L574" href="#L574">574</a>     <strong class="jxr_keyword">public</strong> <strong class="jxr_keyword">static</strong> <strong class="jxr_keyword">void</strong> setUseUnicodeChars(<strong class="jxr_keyword">boolean</strong> value) {
+<a class="jxr_linenumber" name="L575" href="#L575">575</a>         current().useUnicodeChars = value;
+<a class="jxr_linenumber" name="L576" href="#L576">576</a>     }
+<a class="jxr_linenumber" name="L577" href="#L577">577</a>     
+<a class="jxr_linenumber" name="L578" href="#L578">578</a>     <strong class="jxr_keyword">public</strong> <strong class="jxr_keyword">static</strong> ExecutorService threadPool() {
+<a class="jxr_linenumber" name="L579" href="#L579">579</a>         <strong class="jxr_keyword">if</strong> (threadPool == <strong class="jxr_keyword">null</strong>) {
+<a class="jxr_linenumber" name="L580" href="#L580">580</a>             initializeThreadPool();
+<a class="jxr_linenumber" name="L581" href="#L581">581</a>         }
+<a class="jxr_linenumber" name="L582" href="#L582">582</a>         <strong class="jxr_keyword">return</strong> threadPool;
+<a class="jxr_linenumber" name="L583" href="#L583">583</a>     }
+<a class="jxr_linenumber" name="L584" href="#L584">584</a> 
+<a class="jxr_linenumber" name="L585" href="#L585">585</a>     <em class="jxr_javadoccomment">/**</em>
+<a class="jxr_linenumber" name="L586" href="#L586">586</a> <em class="jxr_javadoccomment">     * Use thread local settings for the current thread instead of the global</em>
+<a class="jxr_linenumber" name="L587" href="#L587">587</a> <em class="jxr_javadoccomment">     * ones if the parameter is set to true, else use the shared global</em>
+<a class="jxr_linenumber" name="L588" href="#L588">588</a> <em class="jxr_javadoccomment">     * settings.</em>
+<a class="jxr_linenumber" name="L589" href="#L589">589</a> <em class="jxr_javadoccomment">     *</em>
+<a class="jxr_linenumber" name="L590" href="#L590">590</a> <em class="jxr_javadoccomment">     * @param useThreadSettings</em>
+<a class="jxr_linenumber" name="L591" href="#L591">591</a> <em class="jxr_javadoccomment">     *            true if the thread should not share the global settings.</em>
+<a class="jxr_linenumber" name="L592" href="#L592">592</a> <em class="jxr_javadoccomment">     */</em>
+<a class="jxr_linenumber" name="L593" href="#L593">593</a>     <strong class="jxr_keyword">public</strong> <strong class="jxr_keyword">static</strong> <strong class="jxr_keyword">void</strong> useThreadLocalSettings(<strong class="jxr_keyword">boolean</strong> useThreadSettings) {
+<a class="jxr_linenumber" name="L594" href="#L594">594</a>         <strong class="jxr_keyword">if</strong> (useThreadSettings) {
+<a class="jxr_linenumber" name="L595" href="#L595">595</a>             LOCAL_SETTINGS.set(GLOBAL_SETTINGS.copy());
+<a class="jxr_linenumber" name="L596" href="#L596">596</a>         } <strong class="jxr_keyword">else</strong> {
+<a class="jxr_linenumber" name="L597" href="#L597">597</a>             LOCAL_SETTINGS.remove();
+<a class="jxr_linenumber" name="L598" href="#L598">598</a>         }
+<a class="jxr_linenumber" name="L599" href="#L599">599</a>     }
+<a class="jxr_linenumber" name="L600" href="#L600">600</a> 
+<a class="jxr_linenumber" name="L601" href="#L601">601</a>     <strong class="jxr_keyword">private</strong> <strong class="jxr_keyword">static</strong> <strong class="jxr_keyword">void</strong> initializeThreadPool() {
+<a class="jxr_linenumber" name="L602" href="#L602">602</a>         <strong class="jxr_keyword">synchronized</strong> (GLOBAL_SETTINGS) {
+<a class="jxr_linenumber" name="L603" href="#L603">603</a>             <strong class="jxr_keyword">if</strong> (threadPool == <strong class="jxr_keyword">null</strong>) {
+<a class="jxr_linenumber" name="L604" href="#L604">604</a>                 <em class="jxr_comment">// 1.5 thread per core</em>
+<a class="jxr_linenumber" name="L605" href="#L605">605</a>                 threadPool = Executors.newFixedThreadPool(Runtime.getRuntime().availableProcessors() * 2, <em class="jxr_comment">//</em>
+<a class="jxr_linenumber" name="L606" href="#L606">606</a>                         <strong class="jxr_keyword">new</strong> ThreadFactory() {
+<a class="jxr_linenumber" name="L607" href="#L607">607</a> 
+<a class="jxr_linenumber" name="L608" href="#L608">608</a>                             <strong class="jxr_keyword">private</strong> <strong class="jxr_keyword">int</strong> counter = 1;
+<a class="jxr_linenumber" name="L609" href="#L609">609</a> 
+<a class="jxr_linenumber" name="L610" href="#L610">610</a>                             @Override
+<a class="jxr_linenumber" name="L611" href="#L611">611</a>                             <strong class="jxr_keyword">public</strong> Thread newThread(Runnable r) {
+<a class="jxr_linenumber" name="L612" href="#L612">612</a>                                 Thread thread = <strong class="jxr_keyword">new</strong> Thread(r, <span class="jxr_string">"nom-tam-fits worker "</span> + <strong class="jxr_keyword">this</strong>.counter++);
+<a class="jxr_linenumber" name="L613" href="#L613">613</a>                                 thread.setDaemon(<strong class="jxr_keyword">true</strong>);
+<a class="jxr_linenumber" name="L614" href="#L614">614</a>                                 <strong class="jxr_keyword">return</strong> thread;
+<a class="jxr_linenumber" name="L615" href="#L615">615</a>                             }
+<a class="jxr_linenumber" name="L616" href="#L616">616</a>                         });
+<a class="jxr_linenumber" name="L617" href="#L617">617</a>             }
+<a class="jxr_linenumber" name="L618" href="#L618">618</a>         }
+<a class="jxr_linenumber" name="L619" href="#L619">619</a>     }
+<a class="jxr_linenumber" name="L620" href="#L620">620</a> 
+<a class="jxr_linenumber" name="L621" href="#L621">621</a>     <strong class="jxr_keyword">protected</strong> <strong class="jxr_keyword">static</strong> FitsSettings current() {
+<a class="jxr_linenumber" name="L622" href="#L622">622</a>         FitsSettings settings = LOCAL_SETTINGS.get();
+<a class="jxr_linenumber" name="L623" href="#L623">623</a>         <strong class="jxr_keyword">if</strong> (settings == <strong class="jxr_keyword">null</strong>) {
+<a class="jxr_linenumber" name="L624" href="#L624">624</a>             <strong class="jxr_keyword">return</strong> GLOBAL_SETTINGS;
+<a class="jxr_linenumber" name="L625" href="#L625">625</a>         }
+<a class="jxr_linenumber" name="L626" href="#L626">626</a>         <strong class="jxr_keyword">return</strong> settings;
+<a class="jxr_linenumber" name="L627" href="#L627">627</a>     }
 <a class="jxr_linenumber" name="L628" href="#L628">628</a> 
-<a class="jxr_linenumber" name="L629" href="#L629">629</a>     <strong class="jxr_keyword">private</strong> <a name="FitsFactory" href="../../../nom/tam/fits/FitsFactory.html#FitsFactory">FitsFactory</a>() {
-<a class="jxr_linenumber" name="L630" href="#L630">630</a>     }
-<a class="jxr_linenumber" name="L631" href="#L631">631</a> }
+<a class="jxr_linenumber" name="L629" href="#L629">629</a> 
+<a class="jxr_linenumber" name="L630" href="#L630">630</a>     <strong class="jxr_keyword">private</strong> <a name="FitsFactory" href="../../../nom/tam/fits/FitsFactory.html#FitsFactory">FitsFactory</a>() {
+<a class="jxr_linenumber" name="L631" href="#L631">631</a>     }
+<a class="jxr_linenumber" name="L632" href="#L632">632</a> }
 </pre>
 <hr/>
 <div id="footer">Copyright &#169; 1996&#x2013;2022 nom-tam-fits. All rights reserved.</div>

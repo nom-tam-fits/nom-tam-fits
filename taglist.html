@@ -35,7 +35,7 @@
 </li>
       <li class=""><a href="index.html" title="nom.tam FITS library">nom.tam FITS library</a><span class="divider">/</span></li>
     <li class="active ">Tag List report</li>
-      <li id="projectVersion" class="pull-right">Version: 1.16.2-SNAPSHOT</li>
+      <li id="projectVersion" class="pull-right">Version: 1.17.0-SNAPSHOT</li>
           </ul>
         </div>
       </header>
@@ -107,7 +107,7 @@
 <th>Line</th></tr>
 <tr class="a">
 <td>For DataOutputStream this one conflicts with write(DataOutput). However once that one is deprecated, this one can be exposed safely. public void write(OutputStream os) throws IOException, FitsException { write(new FitsOutputStream(os)); }</td>
-<td><a href="./xref/nom/tam/fits/Fits.html#L883">883</a></td></tr>
+<td><a href="./xref/nom/tam/fits/Fits.html#L1005">1005</a></td></tr>
 <tr class="b">
 <th>nom.tam.fits.FitsFactory</th>
 <th>Line</th></tr>
@@ -137,19 +137,19 @@
 <th>Line</th></tr>
 <tr class="a">
 <td>We prevent the creation of cards with longer values, so the following check is dead code here. } else if (value.length() &gt; available) { throw new LongValueException(available, card.getKey(), card.getValue());</td>
-<td><a href="./xref/nom/tam/fits/HeaderCardFormatter.html#L235">235</a></td></tr>
+<td><a href="./xref/nom/tam/fits/HeaderCardFormatter.html#L230">230</a></td></tr>
 <tr class="b">
 <td>We check for null before calling, so this is dead code here... if (comment == null) { return 0; }</td>
-<td><a href="./xref/nom/tam/fits/HeaderCardFormatter.html#L255">255</a></td></tr>
+<td><a href="./xref/nom/tam/fits/HeaderCardFormatter.html#L250">250</a></td></tr>
 <tr class="a">
 <td>We check for null before calling, so this is dead code here... if (text == null) { return 0; }</td>
-<td><a href="./xref/nom/tam/fits/HeaderCardFormatter.html#L493">493</a></td></tr>
+<td><a href="./xref/nom/tam/fits/HeaderCardFormatter.html#L488">488</a></td></tr>
 <tr class="b">
 <td>Again we prevent this ever occuring before we reach this point, so it is dead code... if (available &lt; 1) { return 0; }</td>
-<td><a href="./xref/nom/tam/fits/HeaderCardFormatter.html#L529">529</a></td></tr>
+<td><a href="./xref/nom/tam/fits/HeaderCardFormatter.html#L523">523</a></td></tr>
 <tr class="a">
 <td>We already know we cannot show the whole string on one line, so this is dead code... if (from + i &gt;= text.length()) { // Reached end of string; break; }</td>
-<td><a href="./xref/nom/tam/fits/HeaderCardFormatter.html#L541">541</a></td></tr>
+<td><a href="./xref/nom/tam/fits/HeaderCardFormatter.html#L535">535</a></td></tr>
 <tr class="b">
 <th>nom.tam.fits.HeaderCardParser</th>
 <th>Line</th></tr>
@@ -203,7 +203,7 @@
 <th>Line</th></tr>
 <tr class="a">
 <td>activate this assertEquals(&quot;CVfXFTeVCTeVCTeV&quot;, imageHdu.getHeader().card(CHECKSUM).card().getValue());</td>
-<td><a href="./xref-test/nom/tam/fits/test/ChecksumTest.html#L172">172</a></td></tr>
+<td><a href="./xref-test/nom/tam/fits/test/ChecksumTest.html#L175">175</a></td></tr>
 <tr class="b">
 <th>nom.tam.image.compression.hdu.CompressedTableBlackBoxTest</th>
 <th>Line</th></tr>
