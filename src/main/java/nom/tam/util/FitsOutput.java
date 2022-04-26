@@ -1,5 +1,7 @@
 package nom.tam.util;
 
+import java.io.IOException;
+
 /*-
  * #%L
  * nom.tam FITS library
