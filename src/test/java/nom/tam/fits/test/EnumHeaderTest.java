@@ -221,7 +221,7 @@ public class EnumHeaderTest {
     public void testIFitsHeader() throws Exception {
         assertEquals(9, IFitsHeader.HDU.values().length);
         assertSame(IFitsHeader.HDU.ANY, IFitsHeader.HDU.valueOf(IFitsHeader.HDU.ANY.name()));
-        assertEquals(14, IFitsHeader.SOURCE.values().length);
+        assertEquals(15, IFitsHeader.SOURCE.values().length);
         assertSame(IFitsHeader.SOURCE.UNKNOWN, IFitsHeader.SOURCE.valueOf(IFitsHeader.SOURCE.UNKNOWN.name()));
         assertEquals(7, IFitsHeader.VALUE.values().length);
         assertSame(IFitsHeader.VALUE.ANY, IFitsHeader.VALUE.valueOf(IFitsHeader.VALUE.ANY.name()));
