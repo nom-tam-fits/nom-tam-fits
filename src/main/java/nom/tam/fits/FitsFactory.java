@@ -519,9 +519,10 @@ public final class FitsFactory {
      * @param skipBlankAfterAssign
      *            value to set
      * 
-     * @deprecated The FITS standard is very explicit that assignment must be "= ". If we allow
-     *              skipping the space, it will result in a non-standard FITS, that is likely
-     *              to break compatibility with other tools.
+     * @deprecated The FITS standard is very explicit that assignment must be "= ". It is
+     *              also very specific that string values must have their opening quote in
+     *              byte 11 (counted from 1). If we allow skipping the space, we will violate
+     *              both standards in a way that is likely to break compatibility with other tools.
      * 
      */
     @Deprecated

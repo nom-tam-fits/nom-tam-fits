@@ -73,6 +73,7 @@ public class HeaderCardTest {
     @After
     public void after() {
         FitsFactory.setDefaults();
+        Header.setCommentAlignPosition(Header.DEFAULT_COMMENT_ALIGN);
     }
 
 //    @Rule
@@ -448,11 +449,11 @@ public class HeaderCardTest {
         FitsFactory.setUseHierarch(true);
         HeaderCard hc;
         hc = new HeaderCard("HIERARCH.TEST1.INT", "xx", "Comment");
-        assertTrue(hc.toString().startsWith("HIERARCH TEST1 INT = 'xx' "));
+        assertTrue(hc.toString().startsWith("HIERARCH TEST1 INT = "));
         hc = new HeaderCard("HIERARCH.TEST1.TEST2.INT", "xx", "Comment");
-        assertTrue(hc.toString().startsWith("HIERARCH TEST1 TEST2 INT = 'xx' "));
+        assertTrue(hc.toString().startsWith("HIERARCH TEST1 TEST2 INT = "));
         hc = new HeaderCard("HIERARCH.TEST1.TEST3.B", "xx", "Comment");
-        assertTrue(hc.toString().startsWith("HIERARCH TEST1 TEST3 B = 'xx' "));
+        assertTrue(hc.toString().startsWith("HIERARCH TEST1 TEST3 B = "));
     }
 
     @Test
@@ -1046,7 +1047,29 @@ public class HeaderCardTest {
         }
         Assert.assertNotNull(actual);
     }
-
+    
+    @Test
+    public void testCommentAlign() throws Exception {
+        assertEquals(Header.DEFAULT_COMMENT_ALIGN, Header.getCommentAlignPosition());
+        
+        HeaderCard hc = new HeaderCard("TEST", "VALUE", "COMMENT");
+        assertEquals("TEST    = 'VALUE   '           / COMMENT                                        ", hc.toString());
+        
+        Header.setCommentAlignPosition(25);
+        assertEquals(25, Header.getCommentAlignPosition());
+        assertEquals("TEST    = 'VALUE   '      / COMMENT                                             ", hc.toString());
+    }
+        
+    @Test(expected = IllegalArgumentException.class)
+    public void testCommentAlignLow() throws Exception {
+        Header.setCommentAlignPosition(Header.MIN_COMMENT_ALIGN - 1);
+    }
+    
+    @Test(expected = IllegalArgumentException.class)
+    public void testCommentAlignHigh() throws Exception {
+        Header.setCommentAlignPosition(Header.MAX_COMMENT_ALIGN + 1);
+    }
+    
     @Test
     public void testHierarchAlternativesWithSkippedBlank() throws Exception {
         FitsFactory.setSkipBlankAfterAssign(true);
@@ -1065,7 +1088,6 @@ public class HeaderCardTest {
         assertEquals("HIERARCH.TEST1.TEST2.TEST3.TEST4.TEST5.TEST6", headerCard.getKey());
         assertEquals("HIERARCH  TEST1.TEST2.TEST3.TEST4.TEST5.TEST6 ='xy'                             ", headerCard.toString());
         assertEquals("HIERARCH.TEST1.TEST2.TEST3.TEST4.TEST5.TEST6", new HeaderCard(headerCardToStream(headerCard)).getKey());
-
     }
 
     @Test
@@ -1087,7 +1109,6 @@ public class HeaderCardTest {
         assertTrue(new HeaderCard("TEST", "VALUE", "COMMENT", false).isKeyValuePair());
         assertFalse(new HeaderCard("TEST", null, "COMMENT", true).isKeyValuePair());
         assertFalse(new HeaderCard("TEST", null, "COMMENT", false).isKeyValuePair());
-
     }
 
     @Test(expected = TruncatedFileException.class)
