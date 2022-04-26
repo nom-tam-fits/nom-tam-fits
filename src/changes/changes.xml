@@ -1,21 +1,30 @@
 <document xmlns="http://maven.apache.org/changes/1.0.0" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:schemaLocation="http://maven.apache.org/changes/1.0.0 http://maven.apache.org/xsd/changes-1.0.0.xsd">
 	<body>
 	
-	  <release version="1.16.1-SNAPSHOT" date="2022-02-08" description="Maintenance release with bug fixes.">
+	  <release version="1.17.0" date="2022-04-17" description="Minor feature update release.">
+	    <action type="new" dev="attipaci" issue="145">
+				New nethods to get HDU from Fits by name/extension.
+			</action>
+	  </release>
+	
+	  <release version="1.16.1" date="2022-03-21" description="Maintenance release with bug fixes.">
 	    <action type="fix" dev="attipaci" issue="252">
-				Fix broken Java 8 compatibility due to Java compiler flags in POM. Note, after the change the build itself will require Java 9 or later!
+				Fixed broken Java 8 compatibility of 1.16.0 due to Java compiler flags in POM. Note, after the change the build itself will require Java 9 or later!
 			</action>
 	    <action type="fix" dev="attipaci" issue="243">
-				Fix potential uncheched null in BinaryTableHDU.
+				Fixed potential unchecked null in BinaryTableHDU.
+			</action>
+			<action type="update" dev="attipaci" issue="257">
+				No Logger warnings about duplicate header cards if Header parser warnings are disabled.
 			</action>
       <action type="update" dev="attipaci" issue="210">
-				Add default ArrayDataInput/Output implementations.
+				Added default ArrayDataInput/Output implementations.
 			</action>
 			<action type="update" dev="attipaci" issue="229">
-				Remove runtime dependency on javax.annotation-api.
+				Removed runtime dependency on javax.annotation-api.
 			</action>
 			<action type="update" dev="dependabot">
-				(Semi)-automated updates of dependencies.
+				Mostly automated updates of dependencies.
 			</action>
 	  </release>
 	
