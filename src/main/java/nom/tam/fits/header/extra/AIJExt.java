@@ -46,7 +46,7 @@ public enum AIJExt implements IFitsHeader {
     private static final ThreadLocal<Class<?>> COMMENT_CONTEXT = new ThreadLocal<Class<?>>();
 
     AIJExt(SOURCE status) {
-        this.key = new FitsHeaderImpl(name(), status, HDU.IMAGE, VALUE.STRING, null);
+        this.key = new FitsHeaderImpl(name(), status, HDU.IMAGE, null, null);
     }
 
     @Override
