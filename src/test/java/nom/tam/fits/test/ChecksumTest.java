@@ -54,6 +54,7 @@ import nom.tam.util.FitsOutputStream;
 import nom.tam.util.Cursor;
 import nom.tam.util.test.ThrowAnyException;
 
+import org.junit.Ignore;
 import org.junit.Test;
 
 /**
@@ -98,6 +99,8 @@ public class ChecksumTest {
 
     @Test
     public void testChecksum() throws Exception {
+     // AK: This test requires long strings to be disabled.
+        FitsFactory.setLongStringsEnabled(false);
         Fits f = new Fits();
         int[][] data = new int[][]{
             {
