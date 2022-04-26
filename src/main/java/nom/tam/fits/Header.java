@@ -48,7 +48,7 @@ import static nom.tam.fits.header.Standard.TFIELDS;
 import static nom.tam.fits.header.Standard.XTENSION;
 import static nom.tam.fits.header.Standard.XTENSION_BINTABLE;
 import static nom.tam.fits.header.extra.CXCExt.LONGSTRN;
-import static nom.tam.fits.header.Aij.ANNOTATE;
+import static nom.tam.fits.header.extra.AIJExt.ANNOTATE;
 
 import java.io.EOFException;
 import java.io.IOException;
