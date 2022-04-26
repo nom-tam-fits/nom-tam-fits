@@ -48,6 +48,7 @@ import static nom.tam.fits.header.Standard.TFIELDS;
 import static nom.tam.fits.header.Standard.XTENSION;
 import static nom.tam.fits.header.Standard.XTENSION_BINTABLE;
 import static nom.tam.fits.header.extra.CXCExt.LONGSTRN;
+import static nom.tam.fits.header.Aij.ANNOTATE;
 
 import java.io.EOFException;
 import java.io.IOException;
@@ -1937,6 +1938,8 @@ public class Header implements FitsElement {
                 insertComment(nextHCard.getComment());
             } else if (nextHCard.getKey().equals(HISTORY.key())) {
                 insertHistory(nextHCard.getComment());
+            } else if (nextHCard.getKey().equals(ANNOTATE.key())) {
+                updateLine(ANNOTATE.key(), nextHCard);
             } else {
                 updateLine(nextHCard.getKey(), nextHCard);
             }

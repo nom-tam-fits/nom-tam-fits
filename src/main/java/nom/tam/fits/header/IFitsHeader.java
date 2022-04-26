@@ -46,6 +46,7 @@ public interface IFitsHeader {
     }
 
     enum SOURCE {
+        AIJ("https://astroimagej.com"),
         /**
          * <pre>
          *  @see <a href="http://heasarc.gsfc.nasa.gov/docs/heasarc/ofwg/docs/general/checksum/checksum.html">checksum doc</a>

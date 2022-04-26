@@ -228,7 +228,7 @@ public class HashedList<VALUE extends CursorValue<String>> implements Collection
     }
 
     private static boolean unkeyedKey(String key) {
-        return "COMMENT".equals(key) || "HISTORY".equals(key) || key.trim().isEmpty();
+        return "COMMENT".equals(key) || "HISTORY".equals(key) || key.trim().isEmpty() || "ANNOTATE".equals(key);
     }
 
     @Override
