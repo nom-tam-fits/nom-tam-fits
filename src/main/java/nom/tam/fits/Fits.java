@@ -58,6 +58,9 @@ import nom.tam.util.FitsFile;
 import nom.tam.util.RandomAccess;
 import nom.tam.util.SafeClose;
 
+import static nom.tam.fits.header.Standard.EXTNAME;
+import static nom.tam.fits.header.Standard.EXTVER;
+
 /**
  * This class provides access to routines to allow users to read and write FITS
  * files. <br>
@@ -485,10 +488,13 @@ public class Fits implements Closeable {
      *             if the header could not be read
      * @throws IOException
      *             if the underlying buffer threw an error
+     *             
+     * @see #getHDU(String)
+     * @see #getHDU(String, int)
      */
     public BasicHDU<?> getHDU(int n) throws FitsException, IOException {
         int size = getNumberOfHDUs();
-        for (int i = size; i <= n; i += 1) {
+        for (int i = size; i <= n; i++) {
             BasicHDU<?> hdu = readHDU();
             if (hdu == null) {
                 return null;
@@ -497,6 +503,122 @@ public class Fits implements Closeable {
         return this.hduList.get(n);
     }
 
+    /**
+     * Checks if the value of the EXTNAME keyword of the specified HDU matches the specified name.
+     * 
+     * @param hdu   The HDU whose EXTNAME to check
+     * @param name  The expected name
+     * @return      <code>true</code> if the HDU has an EXTNAME keyword whose value matches the
+     *              specified name (case sensitive!), otherwise <code>false</code>
+     *              
+     * @see #getHDU(String)
+     */
+    private boolean isNameMatch(BasicHDU<?> hdu, String name) {
+        Header h = hdu.getHeader();
+        if (!h.containsKey(EXTNAME)) {
+            return false;
+        }
+        return name.equals(hdu.getHeader().getStringValue(EXTNAME));
+    }
+    
+    /**
+     * Checks if the value of the EXTNAME and EXTVER keywords of the specified HDU match the specified name 
+     * and version.
+     * 
+     * @param hdu       The HDU whose EXTNAME to check
+     * @param name      The expected name
+     * @param version   The expected extension version
+     * @return          <code>true</code> if the HDU has an EXTNAME keyword whose value matches the
+     *                  specified name (case sensitive!) AND has an EXTVER keyword whose value
+     *                  matches the specified integer version. In all other cases <code>false</code>
+     *                  is returned.
+     *                  
+     * @see #getHDU(String, int)
+     */
+    private boolean isNameVersionMatch(BasicHDU<?> hdu, String name, int version) {
+        Header h = hdu.getHeader();
+        if (!h.containsKey(EXTNAME)) {
+            return false;
+        }
+        if (!name.equals(h.getStringValue(EXTNAME))) {
+            return false;
+        }
+        if (!h.containsKey(EXTVER)) {
+            return false;
+        }
+        return h.getIntValue(EXTVER) == version;
+    }
+    
+    /**
+     * Returns the HDU by the given extension name (defined by EXTNAME). This method checks only for EXTNAME
+     * but will ignore the version (defined by EXTVER). If multiple HDUs have the same matching EXTNAME,
+     * this method will return the first match only.
+     * 
+     * @param name          The name of the HDU as defined by EXTNAME (case sensitive)
+     * @return              The first HDU that matches the specified extension name and version, or <code>null</code> if
+     *                      the FITS does not contain a matching HDU.
+     * @throws FitsException    if the header could not be read
+     * @throws IOException      if the underlying buffer threw an error
+     * 
+     * @since 1.17.0
+     * 
+     * @see #getHDU(String, int)
+     * @see #getHDU(int)
+     */
+    public BasicHDU<?> getHDU(String name) throws FitsException, IOException {
+        // Check HDUs we already read...
+        for (BasicHDU<?> hdu : hduList) {
+            if (isNameMatch(hdu, name)) {
+                return hdu;
+            }
+        }
+        
+        // Read additional HDUs as necessary...
+        BasicHDU<?> hdu;
+        while ((hdu = readHDU()) != null) {
+            if (isNameMatch(hdu, name)) {
+                return hdu;
+            }
+        }
+        
+        return null;
+    }
+    
+    /**
+     * Returns the HDU by the given extension name and version (defined by EXTNAME and EXTVER keywords).
+     * If multiple HDUs have the same matching name and version, this method will return the first match only.
+     * 
+     * @param name          The name of the HDU as defined by EXTNAME (case sensitive)
+     * @param version       The extension version as defined by EXTVER in the matching HDU.
+     * @return              The first HDU that matches the specified extension name and version, or <code>null</code> if
+     *                      the FITS does not contain a matching HDU.
+     * @throws FitsException    if the header could not be read
+     * @throws IOException      if the underlying buffer threw an error
+     * 
+     * @since 1.17.0
+     * 
+     * @see #getHDU(String)
+     * @see #getHDU(int)
+     */
+    public BasicHDU<?> getHDU(String name, int version) throws FitsException, IOException {
+        // Check HDUs we already read...
+        for (BasicHDU<?> hdu : hduList) {
+            if (isNameVersionMatch(hdu, name, version)) {
+                return hdu;
+            }
+        }
+        
+        // Read additional HDUs as necessary...
+        BasicHDU<?> hdu;
+        while ((hdu = readHDU()) != null) {
+            if (isNameVersionMatch(hdu, name, version)) {
+                return hdu;
+            }
+        }
+        
+        return null;
+    }
+    
     /**
      * Get the current number of HDUs in the Fits object.
      * 
