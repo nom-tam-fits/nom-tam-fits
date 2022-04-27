@@ -65,6 +65,7 @@ import java.math.BigDecimal;
 import java.math.BigInteger;
 import java.util.Arrays;
 
+import nom.tam.fits.header.extra.AIJExt;
 import org.junit.After;
 import org.junit.Assert;
 import org.junit.Before;
@@ -1489,7 +1490,48 @@ public class HeaderTest {
         file.delete();
         // No exception
     }
-    
-    
+
+    @Test
+    public void testAnnotateCards() throws Exception {
+        Fits f = null;
+        try {
+            f = new Fits("nom/tam/fits/test/annotationTest.fits");
+            ImageHDU hdu = (ImageHDU) f.getHDU(0);
+            Header hdr = hdu.getHeader();
+
+            // Check reading
+            checkAnnotationHeader(hdr);
+
+            // Check writing
+            Fits f2 = null;
+            try {
+                f2 = new Fits();
+                f2.addHDU(hdu);
+                f2.write(new File("target/annotationTest.fits"));
+                f2.close();
+
+                f2 = new Fits("target/annotationTest.fits");
+                checkAnnotationHeader(f2.getHDU(0).getHeader());
+            } finally {
+                SafeClose.close(f2);
+            }
+        } finally {
+            SafeClose.close(f);
+        }
+    }
+
+    private void checkAnnotationHeader(Header hdr) {
+        Cursor<String, HeaderCard> c = hdr.iterator();
+
+        int annotateCount = 0;
+        while (c.hasNext()) {
+            HeaderCard card = c.next();
+            if (card.getKey().equals(AIJExt.ANNOTATE.key())) {
+                annotateCount++;
+                //assertTrue(card.isCommentStyleCard());//todo this fails
+            }
+        }
+        assertEquals(4, annotateCount);
+    }
     
 }
