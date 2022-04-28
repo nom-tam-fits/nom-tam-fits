@@ -61,12 +61,7 @@ import nom.tam.fits.header.ObservationDescription;
 import nom.tam.fits.header.ObservationDurationDescription;
 import nom.tam.fits.header.Standard;
 import nom.tam.fits.header.Synonyms;
-import nom.tam.fits.header.extra.CXCExt;
-import nom.tam.fits.header.extra.CXCStclSharedExt;
-import nom.tam.fits.header.extra.MaxImDLExt;
-import nom.tam.fits.header.extra.NOAOExt;
-import nom.tam.fits.header.extra.SBFitsExt;
-import nom.tam.fits.header.extra.STScIExt;
+import nom.tam.fits.header.extra.*;
 
 import org.junit.Assert;
 import org.junit.Test;
@@ -145,7 +140,8 @@ public class EnumHeaderTest {
             SBFitsExt.class,
             Standard.class,
             STScIExt.class,
-            Compression.class
+            Compression.class,
+            AIJExt.class
         };
         for (Class<?> class1 : classes) {
             for (Object enumConst : class1.getEnumConstants()) {

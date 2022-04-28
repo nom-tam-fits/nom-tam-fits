@@ -45,16 +45,10 @@ import static nom.tam.fits.header.extra.NOAOExt.CRVAL1;
 import static nom.tam.fits.header.extra.NOAOExt.CRVAL2;
 import static nom.tam.fits.header.extra.NOAOExt.CTYPE1;
 import static nom.tam.fits.header.extra.NOAOExt.CTYPE2;
-import static org.junit.Assert.assertEquals;
-import static org.junit.Assert.assertFalse;
-import static org.junit.Assert.assertNotNull;
-import static org.junit.Assert.assertNull;
-import static org.junit.Assert.assertTrue;
-import static org.junit.Assert.fail;
+import static org.junit.Assert.*;
 
 import java.io.ByteArrayInputStream;
 import java.io.ByteArrayOutputStream;
-import java.io.DataOutputStream;
 import java.io.EOFException;
 import java.io.File;
 import java.io.FileInputStream;
@@ -65,30 +59,19 @@ import java.math.BigDecimal;
 import java.math.BigInteger;
 import java.util.Arrays;
 
+import nom.tam.fits.header.IFitsHeader;
 import nom.tam.fits.header.extra.AIJExt;
 import org.junit.After;
 import org.junit.Assert;
 import org.junit.Before;
 import org.junit.Test;
 
-import nom.tam.fits.BasicHDU;
-import nom.tam.fits.Fits;
-import nom.tam.fits.FitsException;
-import nom.tam.fits.FitsFactory;
-import nom.tam.fits.Header;
-import nom.tam.fits.HeaderCard;
-import nom.tam.fits.HeaderCardException;
-import nom.tam.fits.HeaderCommentsMap;
-import nom.tam.fits.HeaderOrder;
-import nom.tam.fits.ImageHDU;
-import nom.tam.fits.TruncatedFileException;
 import nom.tam.fits.header.Standard;
 import nom.tam.fits.header.hierarch.BlanksDotHierarchKeyFormatter;
 import nom.tam.util.ArrayDataOutput;
 import nom.tam.util.AsciiFuncs;
 import nom.tam.util.FitsInputStream;
 import nom.tam.util.FitsOutputStream;
-import nom.tam.util.InputReader;
 import nom.tam.util.FitsFile;
 import nom.tam.util.ComplexValue;
 import nom.tam.util.Cursor;
@@ -1493,6 +1476,16 @@ public class HeaderTest {
 
     @Test
     public void testAnnotateCards() throws Exception {
+        HeaderCard testCard = HeaderCard.create(AIJExt.ANNOTATE, "coordinates");
+        testCard.setComment("name");
+
+        assertEquals("ANNOTATE", testCard.getKey());
+        assertEquals("coordinates", testCard.getValue());
+        assertEquals("name", testCard.getComment());
+
+        assertSame(AIJExt.ANNOTATE.valueType(), IFitsHeader.VALUE.STRING);
+        assertSame(AIJExt.ANNOTATE.valueType(), IFitsHeader.VALUE.STRING);
+
         Fits f = null;
         try {
             f = new Fits("nom/tam/fits/test/annotationTest.fits");

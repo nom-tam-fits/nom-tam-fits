@@ -43,10 +43,8 @@ public enum AIJExt implements IFitsHeader {
     @SuppressWarnings("CPD-START")
     private final IFitsHeader key;
 
-    private static final ThreadLocal<Class<?>> COMMENT_CONTEXT = new ThreadLocal<Class<?>>();
-
     AIJExt(SOURCE status) {
-        this.key = new FitsHeaderImpl(name(), status, HDU.IMAGE, VALUE.STRING, null);
+        this.key = new FitsHeaderImpl(name(), status, HDU.IMAGE, VALUE.STRING, "");
     }
 
     @Override
@@ -78,9 +76,5 @@ public enum AIJExt implements IFitsHeader {
     @SuppressWarnings("CPD-END")
     public VALUE valueType() {
         return this.key.valueType();
-    }
-
-    public static void context(Class<?> clazz) {
-        COMMENT_CONTEXT.set(clazz);
     }
 }
