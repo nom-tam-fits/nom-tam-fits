@@ -60,7 +60,7 @@
 <a class="jxr_linenumber" name="L52" href="#L52">52</a>  <em class="jxr_javadoccomment"> * @see FitsFile</em>
 <a class="jxr_linenumber" name="L53" href="#L53">53</a>  <em class="jxr_javadoccomment"> */</em>
 <a class="jxr_linenumber" name="L54" href="#L54">54</a>  @SuppressWarnings(<span class="jxr_string">"deprecation"</span>)
-<a class="jxr_linenumber" name="L55" href="#L55">55</a>  <strong class="jxr_keyword">public</strong> <strong class="jxr_keyword">class</strong> <a name="FitsOutputStream" href="../../../nom/tam/util/FitsOutputStream.html#FitsOutputStream">FitsOutputStream</a> <strong class="jxr_keyword">extends</strong> <a name="ArrayOutputStream" href="../../../nom/tam/util/ArrayOutputStream.html#ArrayOutputStream">ArrayOutputStream</a> <strong class="jxr_keyword">implements</strong> <a name="ArrayDataOutput" href="../../../nom/tam/util/ArrayDataOutput.html#ArrayDataOutput">ArrayDataOutput</a> {
+<a class="jxr_linenumber" name="L55" href="#L55">55</a>  <strong class="jxr_keyword">public</strong> <strong class="jxr_keyword">class</strong> <a name="FitsOutputStream" href="../../../nom/tam/util/FitsOutputStream.html#FitsOutputStream">FitsOutputStream</a> <strong class="jxr_keyword">extends</strong> <a name="ArrayOutputStream" href="../../../nom/tam/util/ArrayOutputStream.html#ArrayOutputStream">ArrayOutputStream</a> <strong class="jxr_keyword">implements</strong> <a name="FitsOutput" href="../../../nom/tam/util/FitsOutput.html#FitsOutput">FitsOutput</a> {
 <a class="jxr_linenumber" name="L56" href="#L56">56</a>  
 <a class="jxr_linenumber" name="L57" href="#L57">57</a>      <em class="jxr_javadoccomment">/** the output, as accessible via the &lt;code&gt;DataInput&lt;/code&gt; interface */</em>
 <a class="jxr_linenumber" name="L58" href="#L58">58</a>      <strong class="jxr_keyword">private</strong> <strong class="jxr_keyword">final</strong> DataOutput data;
@@ -211,7 +211,13 @@
 <a class="jxr_linenumber" name="L203" href="#L203">203</a>     <strong class="jxr_keyword">public</strong> <strong class="jxr_keyword">final</strong> <strong class="jxr_keyword">synchronized</strong> <strong class="jxr_keyword">void</strong> writePrimitiveArray(Object o) <strong class="jxr_keyword">throws</strong> IOException {
 <a class="jxr_linenumber" name="L204" href="#L204">204</a>         writeArray(o);
 <a class="jxr_linenumber" name="L205" href="#L205">205</a>     }
-<a class="jxr_linenumber" name="L206" href="#L206">206</a> }
+<a class="jxr_linenumber" name="L206" href="#L206">206</a> 
+<a class="jxr_linenumber" name="L207" href="#L207">207</a>     @Override
+<a class="jxr_linenumber" name="L208" href="#L208">208</a>     <strong class="jxr_keyword">public</strong> <strong class="jxr_keyword">boolean</strong> isAtStart() {
+<a class="jxr_linenumber" name="L209" href="#L209">209</a>         <strong class="jxr_keyword">return</strong> getEncoder().getCount() == 0;
+<a class="jxr_linenumber" name="L210" href="#L210">210</a>     }
+<a class="jxr_linenumber" name="L211" href="#L211">211</a> 
+<a class="jxr_linenumber" name="L212" href="#L212">212</a> }
 </pre>
 <hr/>
 <div id="footer">Copyright &#169; 1996&#x2013;2022 nom-tam-fits. All rights reserved.</div>
