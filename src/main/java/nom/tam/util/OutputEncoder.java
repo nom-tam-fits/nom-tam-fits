@@ -159,6 +159,7 @@ public abstract class OutputEncoder {
     protected synchronized void flush() throws IOException {
         int n = buf.buffer.position();
         out.write(buf.data, 0, n);
+        count += n;
         buf.buffer.rewind();
     }
 
