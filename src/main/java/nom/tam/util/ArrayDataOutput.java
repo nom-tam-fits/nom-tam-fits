@@ -40,7 +40,7 @@ import java.io.IOException;
  * Interface for writing array data to outputs.
  */
 public interface ArrayDataOutput extends DataOutput, Closeable {
-
+    
     /**
      * Flush the output buffer
      * 

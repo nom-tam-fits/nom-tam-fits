@@ -58,7 +58,10 @@ public abstract class OutputEncoder {
      * The output to which to write encoded data (directly or from the
      * conversion buffer)
      */
-    private OutputWriter out;
+    protected OutputWriter out;
+
+    /** Cumulative bytes written to the output, including over-writes */
+    private long count = 0;
 
     /**
      * A local buffer for efficient conversions before bulk writing to the
@@ -97,6 +100,19 @@ public abstract class OutputEncoder {
      */
     protected synchronized void setOutput(OutputWriter o) {
         this.out = o;
+    }
+
+    /**
+     * Returns the position in file or stream at which the next write will take
+     * place. For random access files, this is the current file pointer, while
+     * for streams it is the cumulative count of bytes previously written.
+     * 
+     * @return the byte offset in the file or stream at which the next write
+     *         will act.
+     * @see RandomAccess#getFilePointer()
+     */
+    public long getCount() {
+        return count + buf.buffer.position();
     }
 
     /**
@@ -143,6 +159,7 @@ public abstract class OutputEncoder {
     protected synchronized void flush() throws IOException {
         int n = buf.buffer.position();
         out.write(buf.data, 0, n);
+        count += n;
         buf.buffer.rewind();
     }
 
@@ -159,6 +176,7 @@ public abstract class OutputEncoder {
     protected synchronized void write(int b) throws IOException {
         flush();
         out.write(b);
+        count++;
     }
 
     /**
@@ -179,6 +197,7 @@ public abstract class OutputEncoder {
     protected synchronized void write(byte[] b, int start, int length) throws IOException {
         flush();
         out.write(b, start, length);
+        count += length;
     }
 
     /**
