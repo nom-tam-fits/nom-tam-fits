@@ -1528,7 +1528,7 @@ public class HeaderTest {
             HeaderCard card = c.next();
             if (card.getKey().equals(AIJExt.ANNOTATE.key())) {
                 annotateCount++;
-                //assertTrue(card.isCommentStyleCard());//todo this fails
+                assertFalse(card.isCommentStyleCard());
             }
         }
         assertEquals(4, annotateCount);
