@@ -118,6 +118,7 @@ public class JunkTest {
             SafeClose.close(f);
         }
     
+        FitsFactory.setDefaults();
         assertTrue("allow junk", FitsFactory.getAllowTerminalJunk());
 
         FitsFactory.setAllowTerminalJunk(true);

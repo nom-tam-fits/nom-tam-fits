@@ -57,6 +57,8 @@ import java.util.Iterator;
 import java.util.List;
 import java.util.NoSuchElementException;
 
+import nom.tam.fits.header.FitsHeaderImpl;
+
 /**
  * a ordered hash map implementation.
  *
@@ -228,7 +230,7 @@ public class HashedList<VALUE extends CursorValue<String>> implements Collection
     }
 
     private static boolean unkeyedKey(String key) {
-        return "COMMENT".equals(key) || "HISTORY".equals(key) || key.trim().isEmpty();
+        return FitsHeaderImpl.isCommentStyleKey(key) || key.trim().isEmpty();
     }
 
     @Override

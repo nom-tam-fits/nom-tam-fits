@@ -32,6 +32,7 @@ package nom.tam.fits;
  */
 
 import static nom.tam.fits.header.Standard.BITPIX;
+import static nom.tam.fits.header.Standard.BLOCKED;
 import static nom.tam.fits.header.Standard.END;
 import static nom.tam.fits.header.Standard.EXTEND;
 import static nom.tam.fits.header.Standard.NAXIS;
@@ -719,10 +720,10 @@ public class HeaderTest {
             assertEquals(hdr.getBooleanValue(CTYPE1.name()), false);
             assertEquals(hdr.getBooleanValue(CTYPE1), false);
 
-            hdu.addValue(CTYPE1.name(), 5, "bla");
-            assertEquals(hdr.getIntValue(CTYPE1.name()), 5);
-            assertEquals(hdr.getIntValue(CTYPE1), 5);
-            assertEquals(hdr.getIntValue(CTYPE1, -1), 5);
+            hdu.addValue(NAXISn.n(1).key(), 5, "bla");
+            assertEquals(hdr.getIntValue(NAXISn.n(1).key()), 5);
+            assertEquals(hdr.getIntValue(NAXISn.n(1)), 5);
+            assertEquals(hdr.getIntValue(NAXISn.n(1), -1), 5);
             assertEquals(hdr.getIntValue("ZZZ", -1), -1);
 
             hdu.addValue(CTYPE1.name(), "XX", "bla");
@@ -732,45 +733,45 @@ public class HeaderTest {
             assertEquals(hdr.getStringValue(CTYPE1, "yy"), "XX");
             assertEquals(hdr.getStringValue("ZZZ", "yy"), "yy");
        
-            hdr.addValue(CTYPE2, true);
-            assertEquals(hdr.getBooleanValue(CTYPE2.name()), true);
-            assertEquals(hdr.getBooleanValue(CTYPE2), true);
+            hdr.addValue(BLOCKED, true);
+            assertEquals(hdr.getBooleanValue(BLOCKED.name()), true);
+            assertEquals(hdr.getBooleanValue(BLOCKED), true);
             assertEquals(hdr.getBooleanValue("ZZZ", true), true);
 
-            hdr.addValue(CTYPE2, 5.0);
-            assertEquals(hdr.getDoubleValue(CTYPE2.name()), 5.0, 0.000001);
-            assertEquals(hdr.getDoubleValue(CTYPE2), 5.0, 0.000001);
+            hdr.addValue(CRVAL2, 5.0);
+            assertEquals(hdr.getDoubleValue(CRVAL2.name()), 5.0, 0.000001);
+            assertEquals(hdr.getDoubleValue(CRVAL2), 5.0, 0.000001);
             assertEquals(hdr.getDoubleValue("ZZZ", -1.0), -1.0, 0.000001);
 
-            hdr.addValue(CTYPE2.key(), 5.0, 6, "precision control.");
-            assertEquals(hdr.getDoubleValue(CTYPE2.name()), 5.0, 0.000001);
-            assertEquals(hdr.getDoubleValue(CTYPE2), 5.0, 0.000001);
+            hdr.addValue(CRVAL2.key(), 5.0, 6, "precision control.");
+            assertEquals(hdr.getDoubleValue(CRVAL2.name()), 5.0, 0.000001);
+            assertEquals(hdr.getDoubleValue(CRVAL2), 5.0, 0.000001);
             assertEquals(hdr.getDoubleValue("ZZZ", -1.0), -1.0, 0.000001);
 
-            hdr.addValue(CTYPE2.name(), BigDecimal.valueOf(5.0), "nothing special");
-            assertEquals(hdr.getDoubleValue(CTYPE2.name()), 5.0, 0.000001);
-            assertEquals(hdr.getDoubleValue(CTYPE2, -1d), 5.0, 0.000001);
-            assertEquals(hdr.getDoubleValue(CTYPE2), 5.0, 0.000001);
-            assertEquals(hdr.getBigDecimalValue(CTYPE2.name()), BigDecimal.valueOf(5.0));
-            assertEquals(hdr.getBigDecimalValue(CTYPE2), BigDecimal.valueOf(5.0));
-            assertEquals(hdr.getBigDecimalValue(CTYPE2, BigDecimal.ZERO), BigDecimal.valueOf(5.0));
+            hdr.addValue(CRVAL2.name(), BigDecimal.valueOf(5.0), "nothing special");
+            assertEquals(hdr.getDoubleValue(CRVAL2.name()), 5.0, 0.000001);
+            assertEquals(hdr.getDoubleValue(CRVAL2, -1d), 5.0, 0.000001);
+            assertEquals(hdr.getDoubleValue(CRVAL2), 5.0, 0.000001);
+            assertEquals(hdr.getBigDecimalValue(CRVAL2.name()), BigDecimal.valueOf(5.0));
+            assertEquals(hdr.getBigDecimalValue(CRVAL2), BigDecimal.valueOf(5.0));
+            assertEquals(hdr.getBigDecimalValue(CRVAL2, BigDecimal.ZERO), BigDecimal.valueOf(5.0));
             assertEquals(hdr.getBigDecimalValue("ZZZ", BigDecimal.valueOf(-1.0)), BigDecimal.valueOf(-1.0));
 
-            hdr.addValue(CTYPE2.name(), 5.0f, "nothing special");
-            assertEquals(hdr.getFloatValue(CTYPE2.name()), 5.0f, 0.000001);
-            assertEquals(hdr.getFloatValue(CTYPE2), 5.0f, 0.000001);
-            assertEquals(hdr.getFloatValue(CTYPE2.name(), -1f), 5.0f, 0.000001);
-            assertEquals(hdr.getFloatValue(CTYPE2, -1f), 5.0f, 0.000001);
+            hdr.addValue(CRVAL2.name(), 5.0f, "nothing special");
+            assertEquals(hdr.getFloatValue(CRVAL2.name()), 5.0f, 0.000001);
+            assertEquals(hdr.getFloatValue(CRVAL2), 5.0f, 0.000001);
+            assertEquals(hdr.getFloatValue(CRVAL2.name(), -1f), 5.0f, 0.000001);
+            assertEquals(hdr.getFloatValue(CRVAL2, -1f), 5.0f, 0.000001);
             assertEquals(hdr.getFloatValue("ZZZ", -1f), -1f, 0.000001);
 
-            hdr.addValue(CTYPE2.name(), BigInteger.valueOf(5), "nothing special");
-            assertEquals(hdr.getIntValue(CTYPE2.name()), 5);
-            assertEquals(hdr.getIntValue(CTYPE2), 5);
+            hdr.addValue(NAXISn.n(2).key(), BigInteger.valueOf(5), "nothing special");
+            assertEquals(hdr.getIntValue(NAXISn.n(2).key()), 5);
+            assertEquals(hdr.getIntValue(NAXISn.n(2)), 5);
             assertEquals(hdr.getIntValue("ZZZ", 0), 0);
-            assertEquals(hdr.getBigIntegerValue(CTYPE2.name()), BigInteger.valueOf(5));
-            assertEquals(hdr.getBigIntegerValue(CTYPE2.name(), BigInteger.valueOf(-1)), BigInteger.valueOf(5));
-            assertEquals(hdr.getBigIntegerValue(CTYPE2), BigInteger.valueOf(5));
-            assertEquals(hdr.getBigIntegerValue(CTYPE2, BigInteger.valueOf(-1)), BigInteger.valueOf(5));
+            assertEquals(hdr.getBigIntegerValue(NAXISn.n(2).key()), BigInteger.valueOf(5));
+            assertEquals(hdr.getBigIntegerValue(NAXISn.n(2).key(), BigInteger.valueOf(-1)), BigInteger.valueOf(5));
+            assertEquals(hdr.getBigIntegerValue(NAXISn.n(2).key()), BigInteger.valueOf(5));
+            assertEquals(hdr.getBigIntegerValue(NAXISn.n(2).key(), BigInteger.valueOf(-1)), BigInteger.valueOf(5));
             assertEquals(hdr.getBigIntegerValue("ZZZ", BigInteger.valueOf(-1)), BigInteger.valueOf(-1));
         } finally {
             SafeClose.close(in);
@@ -1029,7 +1030,7 @@ public class HeaderTest {
         header.addValue(SIMPLE, true);
         header.addValue(BITPIX, 8);
         header.addValue(NAXIS, 0);
-        header.addValue(END, true);
+        header.insertCommentStyle(END.key(), null);
 
         header.write(dos);
     }

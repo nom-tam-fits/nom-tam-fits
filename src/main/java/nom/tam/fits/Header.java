@@ -64,6 +64,7 @@ import java.util.logging.Logger;
 import nom.tam.fits.FitsFactory.FitsSettings;
 import nom.tam.fits.header.Bitpix;
 import nom.tam.fits.header.IFitsHeader;
+import nom.tam.fits.header.IFitsHeader.VALUE;
 import nom.tam.util.ArrayDataInput;
 import nom.tam.util.ArrayDataOutput;
 import nom.tam.util.AsciiFuncs;
@@ -293,7 +294,7 @@ public class Header implements FitsElement {
             cursor().add(fcard);
         }
     }
-
+ 
     /**
      * Add or replace a key with the given boolean value and comment.
      *
@@ -304,11 +305,20 @@ public class Header implements FitsElement {
      * @return    the new card that was added.
      * @throws HeaderCardException
      *             If the parameters cannot build a valid FITS card.
+     * @throws IllegalArgumentException
+     *             If the keyword cannot be used with a boolean value.
      *             
      * @see #addValue(String, Boolean, String)
      */
-    public HeaderCard addValue(IFitsHeader key, Boolean val) throws HeaderCardException {
+    public HeaderCard addValue(IFitsHeader key, Boolean val) throws HeaderCardException, IllegalArgumentException {
+        if (key.valueType() != VALUE.LOGICAL && key.valueType() != VALUE.ANY) {
+            throw new IllegalArgumentException(key.key() + " does not support boolean values.");
+        }
         return addValue(key.key(), val, key.comment());
+    }
+    
+    private boolean isDecimalType(Class<?> cls) {
+        return (Float.class.isAssignableFrom(cls) || Double.class.isAssignableFrom(cls) || BigDecimal.class.isAssignableFrom(cls));
     }
 
     /**
@@ -322,10 +332,19 @@ public class Header implements FitsElement {
      * @return    the new card that was added.
      * @throws HeaderCardException
      *             If the parameters cannot build a valid FITS card.
+     * @throws IllegalArgumentException
+     *             If the keyword cannot be used with a number value, or the keyword requires an integer
+     *             but the supplied value was a decimal.
      * 
      * @see #addValue(String, Number, String)
      */
-    public HeaderCard addValue(IFitsHeader key, Number val) throws HeaderCardException {
+    public HeaderCard addValue(IFitsHeader key, Number val) throws HeaderCardException, IllegalArgumentException {
+        VALUE type = key.valueType();
+        if (type == VALUE.INTEGER && isDecimalType(val.getClass())) {
+            throw new IllegalArgumentException(key.key() + " does not support decimal values.");
+        } else if (type != VALUE.REAL && type != VALUE.INTEGER && type != VALUE.COMPLEX && type != VALUE.ANY) {
+            throw new IllegalArgumentException(key.key() + " does not support numerical values.");
+        }
         return addValue(key.key(), val, key.comment());
     }
 
@@ -339,14 +358,42 @@ public class Header implements FitsElement {
      * @return    the new card that was added.
      * @throws HeaderCardException
      *             If the parameters cannot build a valid FITS card.
+     * @throws IllegalArgumentException
+     *             If the keyword cannot be used with a number value.
      *             
      * @see #addValue(String, String, String)
      */
-    public HeaderCard addValue(IFitsHeader key, String val) throws HeaderCardException {
+    public HeaderCard addValue(IFitsHeader key, String val) throws HeaderCardException, IllegalArgumentException {
+        if (key.valueType() != VALUE.STRING && key.valueType() != VALUE.ANY) {
+            throw new IllegalArgumentException(key.key() + " does not support string values.");
+        }
         return addValue(key.key(), val, key.comment());
     }
 
-   
+    /**
+     * Add or replace a key with the given string value and comment.
+     *
+     * @param key
+     *            The header key.
+     * @param val
+     *            The complex value.
+     * @return    the new card that was added.
+     * @throws HeaderCardException
+     *             If the parameters cannot build a valid FITS card.
+     * @throws IllegalArgumentException
+     *             If the keyword cannot be used with a complex value.
+     *             
+     * @see #addValue(String, ComplexValue, String)
+     * 
+     * @since 1.17
+     */
+    public HeaderCard addValue(IFitsHeader key, ComplexValue val) throws HeaderCardException, IllegalArgumentException {
+        if (key.valueType() != VALUE.COMPLEX && key.valueType() != VALUE.ANY) {
+            throw new IllegalArgumentException(key.key() + " does not support complex values.");
+        }
+        return addValue(key.key(), val, key.comment());
+    }
+
     /**
      * Add or replace a key with the given boolean value and comment.
      *
@@ -524,7 +571,6 @@ public class Header implements FitsElement {
         addLine(hc);
         return hc;
     }
-
     
     /**
      * get a builder for filling the header cards using the builder pattern.
@@ -1952,15 +1998,11 @@ public class Header implements FitsElement {
         Cursor<String, HeaderCard> j = newHdr.iterator();
 
         while (j.hasNext()) {
-            HeaderCard nextHCard = j.next();
-            // updateLine() doesn't work with COMMENT and HISTORYs because
-            // this would allow only one COMMENT in total in each header
-            if (nextHCard.getKey().equals(COMMENT.key())) {
-                insertComment(nextHCard.getComment());
-            } else if (nextHCard.getKey().equals(HISTORY.key())) {
-                insertHistory(nextHCard.getComment());
+            HeaderCard card = j.next();
+            if (card.isCommentStyleCard()) {
+                insertCommentStyle(card.getKey(), card.getComment());
             } else {
-                updateLine(nextHCard.getKey(), nextHCard);
+                updateLine(card.getKey(), card);
             }
         }
     }
@@ -2251,10 +2293,34 @@ public class Header implements FitsElement {
      * @param newKey
      *            the new header keyword.
      * @return <CODE>true</CODE> if the card was replaced.
-     * @exception HeaderCardException
+     * @throws HeaderCardException
      *                If <CODE>newKey</CODE> is not a valid FITS keyword.
+     * @throws IllegalArgumentException
+     *                If the new keyword cannot support the existing value type of the old keyword.            
      */
     boolean replaceKey(IFitsHeader oldKey, IFitsHeader newKey) throws HeaderCardException {
+        HeaderCard card = findCard(oldKey);
+        VALUE newType = newKey.valueType();
+
+        if (card != null && oldKey.valueType() != newType && newType != VALUE.ANY) {
+            Class<?> type = card.valueType();
+            
+            // Check that the exisating cards value is compatible with the expected type of the new key.
+            if (newType == VALUE.NONE) {
+                throw new IllegalArgumentException(newKey.key() + " cannot replace comment-style " + oldKey.key());
+            } else if (Boolean.class.isAssignableFrom(type) && newType != VALUE.LOGICAL) {
+                throw new IllegalArgumentException(newKey.key() + " cannot not support the existing boolean value.");
+            } else if (isDecimalType(type) && newType != VALUE.REAL) {
+                throw new IllegalArgumentException(newKey.key() + " cannot not support the existing decimal values.");
+            } else if (Number.class.isAssignableFrom(type) && newType != VALUE.REAL && newType != VALUE.INTEGER && newType != VALUE.COMPLEX) {
+                throw new IllegalArgumentException(newKey.key() + " cannot not support the existing numerical value.");
+            } else if (ComplexValue.class.isAssignableFrom(type) && newType != VALUE.COMPLEX) {
+                throw new IllegalArgumentException(newKey.key() + " cannot not support the existing complex value.");
+            } else if (String.class.isAssignableFrom(type) && newType != VALUE.STRING) {
+                throw new IllegalArgumentException(newKey.key() + " cannot not support the existing string value.");
+            }
+        }
+    
         return replaceKey(oldKey.key(), newKey.key());
     }
 
