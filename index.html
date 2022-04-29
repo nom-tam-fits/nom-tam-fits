@@ -457,14 +457,11 @@ The library can&#x2019;t see row to row variations since there is only a single 
 <p>It is possible to mix these approaches: e.g., use addColumn to build up an initial set of rows and then add additional rows to the specified structure.</p>
 <p><a name="incremental-writing"></a></p></section></section><section>
 <h3><a name="Incremental_writing"></a>Incremental writing</h3>
-<p>Sometimes you do not want to add all your HDUs to a <code>Fits</code> object before writing it out to a file or stream. Maybe because they use up too much RAM, or you are recording from a live stream and want to add HDUs to the file as they come in. As of version <b>1.17</b> of the library, you can write FITS files one HDU at a time without having to place them in a <code>Fits</code> object first. Or you can write a <code>Fits</code> object with some number of HDUs, but then keep appending further HDUs after. The <code>FitsFile</code> or <code>FitsOutputStream</code> object will keep track of where it is in the file or stream, and set the required header keywords for the appended HDUs as appropriate for a primary or extension HDU automatically.</p>
+<p>Sometimes you do not want to add all your HDUs to a <code>Fits</code> object before writing it out to a file or stream. Maybe because they use up too much RAM, or you are recording from a live stream and want to add HDUs to the file as they come in. As of version <b>1.17</b> of the library, you can write FITS files one HDU at a time without having to place them in a <code>Fits</code> object first, or having to worry about the mandatory keywords having been set for primary or extension HDUs. Or, you can write a <code>Fits</code> object with some number of HDUs, but then keep appending further HDUs after, worry-free. The <code>FitsFile</code> or <code>FitsOutputStream</code> object will keep track of where it is in the file or stream, and set the required header keywords for the appended HDUs as appropriate for a primary or extension HDU automatically.</p>
 <p>Here is an example of how building a FITS file HDU-by-HDU without the need to create a <code>Fits</code> object as a holding container:</p>
 
-<div class="source"><pre class="prettyprint"><code class="language-java">  File outFile;        // the file to which you want to write...
-  ...  
-  
-  // Create the stream to which to write the HDUs as they come
-  FitsOutputStream out = new FitsOutputStream(new FileOutputStream(outFile));
+<div class="source"><pre class="prettyprint"><code class="language-java">  // Create the stream to which to write the HDUs as they come
+  FitsOutputStream out = new FitsOutputStream(new FileOutputStream(&quot;my-incremental.fits&quot;));
   ...
 
   // you can append 'hdu' objects to the FITS file (stream) as:
