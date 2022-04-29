@@ -58,6 +58,7 @@ import java.util.Arrays;
 import java.util.Comparator;
 import java.util.HashSet;
 import java.util.List;
+import java.util.Set;
 import java.util.logging.Level;
 import java.util.logging.Logger;
 
@@ -970,14 +971,14 @@ public class Header implements FitsElement {
      * header.
      * 
      * @return  the set of header keywords that were assigned more than once in the
-     *          same header.
+     *          same header, or <code>null</code> if there were no duplicate assignments.
      *          
      * @see #hadDuplicates()
      * @see #getDuplicates()
      * 
      * @since 1.17
      */
-    public HashSet<String> getDuplicateKeySet() {
+    public Set<String> getDuplicateKeySet() {
         return dupKeys;
     }
     
