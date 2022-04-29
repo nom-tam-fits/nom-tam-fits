@@ -486,16 +486,13 @@ It is possible to mix these approaches: e.g., use addColumn to build up an initi
 <a name="incremental-writing"></a>
 ### Incremental writing
 
-Sometimes you do not want to add all your HDUs to a `Fits` object before writing it out to a file or stream. Maybe because they use up too much RAM, or you are recording from a live stream and want to add HDUs to the file as they come in. As of version __1.17__ of the library, you can write FITS files one HDU at a time without having to place them in a `Fits` object first. Or you can write a `Fits` object with some number of HDUs, but then keep appending further HDUs after. The `FitsFile` or `FitsOutputStream` object will keep track of where it is in the file or stream, and set the required header keywords for the appended HDUs as appropriate for a primary or extension HDU automatically.
+Sometimes you do not want to add all your HDUs to a `Fits` object before writing it out to a file or stream. Maybe because they use up too much RAM, or you are recording from a live stream and want to add HDUs to the file as they come in. As of version __1.17__ of the library, you can write FITS files one HDU at a time without having to place them in a `Fits` object first, or having to worry about the mandatory keywords having been set for primary or extension HDUs. Or, you can write a `Fits` object with some number of HDUs, but then keep appending further HDUs after, worry-free. The `FitsFile` or `FitsOutputStream` object will keep track of where it is in the file or stream, and set the required header keywords for the appended HDUs as appropriate for a primary or extension HDU automatically.
 
 Here is an example of how building a FITS file HDU-by-HDU without the need to create a `Fits` object as a holding container:
 
 ```java
-  File outFile;        // the file to which you want to write...
-  ...  
-  
   // Create the stream to which to write the HDUs as they come
-  FitsOutputStream out = new FitsOutputStream(new FileOutputStream(outFile));
+  FitsOutputStream out = new FitsOutputStream(new FileOutputStream("my-incremental.fits"));
   ...
 
   // you can append 'hdu' objects to the FITS file (stream) as:
