@@ -376,6 +376,7 @@ By default the library will be tolerant to FITS standard violations when parsing
 
  - [Writing images](#writing-images)
  - [Writing tables](#writing-tables)
+ - [Incremental writing](#incremental-writing)
  - [Modifying existing files](#modifying-existing-files)
  - [Low-level writes](#low-level-writes)
  - [Writing GZIP-ed outputs](#writing-gzipped-outputs)
@@ -482,10 +483,44 @@ The library can’t see row to row variations since there is only a single row.
 
 It is possible to mix these approaches: e.g., use addColumn to build up an initial set of rows and then add additional rows to the specified structure.
 
+<a name="incremental-writing"></a>
+### Incremental writing
+
+Sometimes you do not want to add all your HDUs to a `Fits` object before writing it out to a file or stream. Maybe because they use up too much RAM, or you are recording from a live stream and want to add HDUs to the file as they come in. As of version __1.17__ of the library, you can write FITS files one HDU at a time without having to place them in a `Fits` object first. Or you can write a `Fits` object with some number of HDUs, but then keep appending further HDUs after. The `FitsFile` or `FitsOutputStream` object will keep track of where it is in the file or stream, and set the required header keywords for the appended HDUs as appropriate for a primary or extension HDU automatically.
+
+Here is an example of how building a FITS file HDU-by-HDU without the need to create a `Fits` object as a holding container:
+
+```java
+  File outFile;        // the file to which you want to write...
+  ...  
+  
+  // Create the stream to which to write the HDUs as they come
+  FitsOutputStream out = new FitsOutputStream(new FileOutputStream(outFile));
+  ...
+
+  // you can append 'hdu' objects to the FITS file (stream) as:
+  // The first HDU will be set primary (if possible), and following HDUs will be extensions. 
+  hdu.write(out);
+  ...
+ 
+  // When you are all done you can close the FITS file/stream
+  out.close(); 
+```
+
+Of course, you can use a `FitsFile` as opposed to a stream as the output also, e.g.:
+
+```java
+  FitsFile out = new FitsFile("my-incremental.fits", "rw");
+  ...
+```
+
+In this case you can use random access, which means you can go back and re-write HDUs in place. If you do go all the way back to the head of the file, and re-write the first HDU, you can be assured that it will contain the necessary header entries for a primary HDU, even if you did not set them yourself. Easy as pie.
+
+
+
 <a name="modifying-existing-files"></a>
 ### Modifying existing files
-An existing FITS file can be modified in place in some circumstances.
-The file must be an uncompressed file.
+An existing FITS file can be modified in place in some circumstances. The file must be an uncompressed file.
 The user can then modify elements either by directly modifying the kernel object gotten for image data, or by using the `setElement` or similar methods for tables.
 
 Suppose we have just a couple of specific elements we know we need to change in a given file:
