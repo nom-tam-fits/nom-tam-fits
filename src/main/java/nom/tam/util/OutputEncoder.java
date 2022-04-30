@@ -111,7 +111,7 @@ public abstract class OutputEncoder {
      *         will act.
      * @see RandomAccess#getFilePointer()
      */
-    public long getCount() {
+    public synchronized long getCount() {
         return count + buf.buffer.position();
     }
 
