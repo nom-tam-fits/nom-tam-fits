@@ -42,9 +42,7 @@ import static nom.tam.fits.header.Standard.DATE;
 import static nom.tam.fits.header.Standard.DATE_OBS;
 import static nom.tam.fits.header.Standard.EPOCH;
 import static nom.tam.fits.header.Standard.EQUINOX;
-import static nom.tam.fits.header.Standard.EXTEND;
 import static nom.tam.fits.header.Standard.GCOUNT;
-import static nom.tam.fits.header.Standard.GROUPS;
 import static nom.tam.fits.header.Standard.INSTRUME;
 import static nom.tam.fits.header.Standard.NAXIS;
 import static nom.tam.fits.header.Standard.NAXISn;
@@ -582,54 +580,12 @@ public abstract class BasicHDU<DataClass extends Data> implements FitsElement {
      *             if the operation failed
      */
     void setPrimaryHDU(boolean newPrimary) throws FitsException {
-
         if (newPrimary && !canBePrimary()) {
             throw new FitsException("Invalid attempt to make HDU of type:" + this.getClass().getName() + " primary.");
         } 
         
+        myHeader.editRequiredKeys(newPrimary);
         this.isPrimary = newPrimary;
-       
-        // Some FITS readers don't like the PCOUNT and GCOUNT keywords
-        // in a primary array or they EXTEND keyword in extensions.
-
-        if (this.isPrimary && !this.myHeader.getBooleanValue(GROUPS, false)) {
-            this.myHeader.deleteKey(PCOUNT);
-            this.myHeader.deleteKey(GCOUNT);
-        }
-
-        if (this.isPrimary) {
-            HeaderCard card = this.myHeader.findCard(EXTEND);
-            if (card == null) {
-                getAxes(); // Leaves the iterator pointing to the last NAXISn
-                           // card.
-                this.myHeader.nextCard();
-                this.myHeader.addValue(EXTEND, true);
-            }
-        }
-
-        if (!this.isPrimary) {
-
-            this.myHeader.iterator();
-
-            int pcount = this.myHeader.getIntValue(PCOUNT, 0);
-            int gcount = this.myHeader.getIntValue(GCOUNT, 1);
-            int naxis = this.myHeader.getIntValue(NAXIS, 0);
-            this.myHeader.deleteKey(EXTEND);
-            HeaderCard pcard = this.myHeader.findCard(PCOUNT);
-            HeaderCard gcard = this.myHeader.findCard(GCOUNT);
-
-            //this.myHeader.getCard(2 + naxis);
-            this.myHeader.findCard(NAXIS.key() + naxis);
-            
-            if (pcard == null) {
-                this.myHeader.addValue(PCOUNT, pcount);
-            }
-            if (gcard == null) {
-                this.myHeader.addValue(GCOUNT, gcount);
-            }
-            this.myHeader.iterator();
-        }
-
     }
 
     @Override

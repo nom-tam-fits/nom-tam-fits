@@ -168,30 +168,16 @@ public class BasicHduFailureTest {
         Assert.assertNull(dummyHDU.getObservationDate());
     }
 
-    @Test
+    @Test(expected = FitsException.class)
     public void testRewriteFailuer() throws Exception {
-        FitsException actual = null;
-        try {
-            BasicHDU<?> dummyHDU = BasicHDU.getDummyHDU();
-            dummyHDU.rewrite();
-        } catch (FitsException e) {
-            actual = e;
-        }
-        Assert.assertNotNull(actual);
-        Assert.assertTrue(actual.getMessage().contains("rewrite"));
+        BasicHDU<?> dummyHDU = BasicHDU.getDummyHDU();
+        dummyHDU.rewrite();
     }
 
-    @Test
+    @Test(expected = FitsException.class)
     public void testSetPrimaryFailuer() throws Exception {
         UndefinedData data = new UndefinedData(new long[10]);
         BasicHDU<?> dummyHDU = new UndefinedHDU(UndefinedHDU.manufactureHeader(data), data);
-        FitsException actual = null;
-        try {
-            dummyHDU.setPrimaryHDU(true);
-        } catch (FitsException e) {
-            actual = e;
-        }
-        Assert.assertNotNull(actual);
-        Assert.assertTrue(actual.getMessage().contains("primary"));
+        dummyHDU.setPrimaryHDU(true);
     }
 }

@@ -71,6 +71,7 @@ import nom.tam.util.AsciiFuncs;
 import nom.tam.util.ComplexValue;
 import nom.tam.util.Cursor;
 import nom.tam.util.FitsIO;
+import nom.tam.util.FitsOutput;
 import nom.tam.util.HashedList;
 import nom.tam.util.LoggerHelper;
 import nom.tam.util.RandomAccess;
@@ -194,7 +195,7 @@ public class Header implements FitsElement {
         FitsFactory.setLongStringsEnabled(flag);
     }
 
-    /** Create an empty header */
+    /** Create a new header with the required default keywords for a standalone header. */
     public Header() {
         this.cards = new HashedList<>();
         this.headerSorter = new HeaderOrder();
@@ -311,15 +312,12 @@ public class Header implements FitsElement {
      * @see #addValue(String, Boolean, String)
      */
     public HeaderCard addValue(IFitsHeader key, Boolean val) throws HeaderCardException, IllegalArgumentException {
-        if (key.valueType() != VALUE.LOGICAL && key.valueType() != VALUE.ANY) {
-            throw new IllegalArgumentException(key.key() + " does not support boolean values.");
-        }
-        return addValue(key.key(), val, key.comment());
+        HeaderCard card = HeaderCard.create(key, val);
+        addLine(card);
+        return card;
     }
     
-    private boolean isDecimalType(Class<?> cls) {
-        return (Float.class.isAssignableFrom(cls) || Double.class.isAssignableFrom(cls) || BigDecimal.class.isAssignableFrom(cls));
-    }
+   
 
     /**
      * Add or replace a key with the given double value and comment. Note that
@@ -339,13 +337,9 @@ public class Header implements FitsElement {
      * @see #addValue(String, Number, String)
      */
     public HeaderCard addValue(IFitsHeader key, Number val) throws HeaderCardException, IllegalArgumentException {
-        VALUE type = key.valueType();
-        if (type == VALUE.INTEGER && isDecimalType(val.getClass())) {
-            throw new IllegalArgumentException(key.key() + " does not support decimal values.");
-        } else if (type != VALUE.REAL && type != VALUE.INTEGER && type != VALUE.COMPLEX && type != VALUE.ANY) {
-            throw new IllegalArgumentException(key.key() + " does not support numerical values.");
-        }
-        return addValue(key.key(), val, key.comment());
+        HeaderCard card = HeaderCard.create(key, val);
+        addLine(card);
+        return card;
     }
 
     /**
@@ -364,10 +358,9 @@ public class Header implements FitsElement {
      * @see #addValue(String, String, String)
      */
     public HeaderCard addValue(IFitsHeader key, String val) throws HeaderCardException, IllegalArgumentException {
-        if (key.valueType() != VALUE.STRING && key.valueType() != VALUE.ANY) {
-            throw new IllegalArgumentException(key.key() + " does not support string values.");
-        }
-        return addValue(key.key(), val, key.comment());
+        HeaderCard card = HeaderCard.create(key, val);
+        addLine(card);
+        return card;
     }
 
     /**
@@ -388,10 +381,9 @@ public class Header implements FitsElement {
      * @since 1.17
      */
     public HeaderCard addValue(IFitsHeader key, ComplexValue val) throws HeaderCardException, IllegalArgumentException {
-        if (key.valueType() != VALUE.COMPLEX && key.valueType() != VALUE.ANY) {
-            throw new IllegalArgumentException(key.key() + " does not support complex values.");
-        }
-        return addValue(key.key(), val, key.comment());
+        HeaderCard card = HeaderCard.create(key, val);
+        addLine(card);
+        return card;
     }
 
     /**
@@ -2027,7 +2019,96 @@ public class Header implements FitsElement {
             dos.write(blank);
         }
     }
+   
+    /**
+     * Add required keywords, and removes conflicting ones depending on whether it is designated
+     * as a primary header or not.
+     * 
+     * @param isPrimary         <code>true</code> if this is to be a primary header, otherwise <code>false</code>
+     * @throws FitsException    if there was an error trying to edit the header.
+     * 
+     * @since 1.17
+     * 
+     * @see #validateFor(FitsOutput)
+     */
+    void editRequiredKeys(boolean isPrimary) throws FitsException {
+       
+        if (isPrimary) {
+            // Delete keys that cannot be in primary
+            deleteKey(XTENSION);
+            
+            // Some FITS readers don't like the PCOUNT and GCOUNT keywords in the primary header
+            if (!getBooleanValue(GROUPS, false)) {
+                deleteKey(PCOUNT);
+                deleteKey(GCOUNT);
+            }
+            
+            // Make sure we have SIMPLE
+            addValue(SIMPLE, true);
+        } else {
+            // Delete keys that cannot be in extensions
+            deleteKey(SIMPLE);
+            
+            // Some FITS readers don't like the EXTEND keyword in extensions.
+            deleteKey(EXTEND);
+            
+            // Make sure we have XTENSION
+            addValue(XTENSION, getStringValue(XTENSION, "UNKNOWN"));
+        }
         
+        // Make sure we have BITPIX
+        addValue(BITPIX, getIntValue(BITPIX, Bitpix.VALUE_FOR_INT));
+        
+        int naxes = getIntValue(NAXIS, 0);
+        addValue(NAXIS, naxes);
+        
+        for (int i = 1; i <= naxes; i++) {
+            IFitsHeader naxisi = NAXISn.n(i);
+            addValue(naxisi, getIntValue(naxisi, 1));
+        }
+        
+        if (isPrimary) {
+            addValue(EXTEND, true);
+        } else {
+            addValue(PCOUNT, getIntValue(PCOUNT, 0));
+            addValue(GCOUNT, getIntValue(GCOUNT, 1));
+        }
+    }
+    
+    /**
+     * <p>
+     * Validates this header immediately before writing it to a FITS output. If the header is
+     * to be written to the beginning of the output it will be edited as necessary for a primary header.
+     * Othwreise it will be edited as needed for an extension header. In both cases it means adding
+     * required keywords if missing, and removing conflicting cards. Then ordering is checked and
+     * corrected as necessary and ensures that the <code>END</code> card is at the tail. 
+     * 
+     * 
+     * @param out               The output (file or stream) to which this header is about to be written next
+     * @throws FitsException    If there was an issue getting the header into proper form.
+     * 
+     * @since 1.17
+     */
+    public void validateFor(FitsOutput out) throws FitsException {
+        editRequiredKeys(out.isAtStart());
+        validate();
+    }   
+        
+    /**
+     * Validates the header making sure it has the required keywords and that the essential
+     * keywords appeat in the in the required order
+     * 
+     * @throws FitsException    If there was an issue getting the header into proper form.
+     */
+    private void validate() throws FitsException {
+        // Ensure that all cards are in the proper order.
+        if (this.headerSorter != null) {
+            this.cards.sort(this.headerSorter);
+        }
+        checkBeginning();
+        checkEnd();
+    }
+    
     /**
      * Write the current header (including any needed padding) to the output
      * stream.
@@ -2040,14 +2121,11 @@ public class Header implements FitsElement {
      */
     @Override
     public void write(ArrayDataOutput dos) throws FitsException {
+        validate();
+        
         FitsSettings settings = FitsFactory.current();
         this.fileOffset = FitsUtil.findOffset(dos);
-        // Ensure that all cards are in the proper order.
-        if (this.headerSorter != null) {
-            this.cards.sort(this.headerSorter);
-        }
-        checkBeginning();
-        checkEnd();
+        
         Cursor<String, HeaderCard> writeIterator = this.cards.iterator(0);
         try {
             int size = 0;
@@ -2310,7 +2388,7 @@ public class Header implements FitsElement {
                 throw new IllegalArgumentException(newKey.key() + " cannot replace comment-style " + oldKey.key());
             } else if (Boolean.class.isAssignableFrom(type) && newType != VALUE.LOGICAL) {
                 throw new IllegalArgumentException(newKey.key() + " cannot not support the existing boolean value.");
-            } else if (isDecimalType(type) && newType != VALUE.REAL) {
+            } else if (!card.isDecimalType() && newType == VALUE.REAL) {
                 throw new IllegalArgumentException(newKey.key() + " cannot not support the existing decimal values.");
             } else if (Number.class.isAssignableFrom(type) && newType != VALUE.REAL && newType != VALUE.INTEGER && newType != VALUE.COMPLEX) {
                 throw new IllegalArgumentException(newKey.key() + " cannot not support the existing numerical value.");
