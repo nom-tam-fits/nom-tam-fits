@@ -113,4 +113,28 @@ public class HeaderOrderTest {
     public void testSaveNewCard() {
         HeaderCard.saveNewHeaderCard("XXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXX", "", false);
     }
+    
+    @Test
+    public void testBadNaxis1() {
+        assertEquals(1, new HeaderOrder().compare("NAXIS-1", "THEAP"));
+    }
+    
+    @Test
+    public void testBadNaxis2() {
+        assertEquals(1, new HeaderOrder().compare("NAXIS1000", "THEAP"));
+    }
+    
+    @Test
+    public void testBadNaxis3() {
+        assertEquals(1, new HeaderOrder().compare("NAXISA", "THEAP"));
+    }
+    
+    @Test
+    public void testNullOrder() {
+        assertEquals(1, new HeaderOrder().compare(null, "THEAP"));
+        assertEquals(0, new HeaderOrder().compare(null, "WHATEVER"));
+        assertEquals(-1, new HeaderOrder().compare(null, "END"));
+    }
 }
+
+

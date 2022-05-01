@@ -2029,7 +2029,7 @@ public class Header implements FitsElement {
      * 
      * @since 1.17
      * 
-     * @see #validateFor(FitsOutput)
+     * @see #validate(FitsOutput)
      */
     void editRequiredKeys(boolean isPrimary) throws FitsException {
        
@@ -2077,20 +2077,18 @@ public class Header implements FitsElement {
     
     /**
      * <p>
-     * Validates this header immediately before writing it to a FITS output. If the header is
-     * to be written to the beginning of the output it will be edited as necessary for a primary header.
-     * Othwreise it will be edited as needed for an extension header. In both cases it means adding
+     * Validates this header by making it a proper primary or extension header. In both cases it means adding
      * required keywords if missing, and removing conflicting cards. Then ordering is checked and
      * corrected as necessary and ensures that the <code>END</code> card is at the tail. 
      * 
      * 
-     * @param out               The output (file or stream) to which this header is about to be written next
+     * @param asPrimary         <code>true</code> if this header is to be a primary FITS header
      * @throws FitsException    If there was an issue getting the header into proper form.
      * 
      * @since 1.17
      */
-    public void validateFor(FitsOutput out) throws FitsException {
-        editRequiredKeys(out.isAtStart());
+    public void validate(boolean asPrimary) throws FitsException {
+        editRequiredKeys(asPrimary);
         validate();
     }   
         

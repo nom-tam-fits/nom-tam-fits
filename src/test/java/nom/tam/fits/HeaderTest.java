@@ -1491,6 +1491,53 @@ public class HeaderTest {
         // No exception
     }
     
+    private void checkPrimary(Header h) throws Exception {
+        Cursor<String, HeaderCard> c = h.iterator();
+        assertEquals("SIMPLE", "SIMPLE", c.next().getKey());
+        assertEquals("BITPIX", "BITPIX", c.next().getKey());
+        assertEquals("NAXIS", "NAXIS", c.next().getKey());
+        assertEquals("EXTEND", "EXTEND", c.next().getKey());
+        assertFalse("!XTENSION", h.containsKey("XTENSION"));
+    }
     
+    private void checkXtension(Header h) throws Exception {
+        Cursor<String, HeaderCard> c = h.iterator();
+        assertEquals("XTENSION", "XTENSION", c.next().getKey());
+        assertEquals("BITPIX", "BITPIX", c.next().getKey());
+        assertEquals("NAXIS", "NAXIS", c.next().getKey());
+        assertEquals("PCOUNT", "PCOUNT", c.next().getKey());
+        assertEquals("GCOUNT", "GCOUNT", c.next().getKey());
+        assertFalse("!SIMPLE", h.containsKey("SIMPLE"));
+        assertFalse("!EXTEND", h.containsKey("EXTEND"));
+    }
     
+    @Test
+    public void testValidateForPrimary() throws Exception {
+        Header h = new Header();
+        h.validate(true);
+        checkPrimary(h);
+    }
+    
+    @Test
+    public void testValidateForXtension() throws Exception {
+        Header h = new Header();
+        h.validate(false);
+        checkXtension(h);
+    }
+    
+    @Test
+    public void testRevalidateForPrimary() throws Exception {
+        Header h = new Header();
+        h.validate(false);
+        h.validate(true);
+        checkPrimary(h);
+    }
+    
+    @Test
+    public void testRevalidateForXtension() throws Exception {
+        Header h = new Header();
+        h.validate(true);
+        h.validate(false);
+        checkXtension(h);
+    }
 }
