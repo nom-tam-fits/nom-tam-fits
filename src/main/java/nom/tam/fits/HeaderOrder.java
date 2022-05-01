@@ -13,6 +13,7 @@ import static nom.tam.fits.header.Standard.THEAP;
 import static nom.tam.fits.header.Standard.XTENSION;
 
 import java.io.Serializable;
+import java.util.Hashtable;
 
 /*
  * #%L
@@ -57,6 +58,78 @@ public class HeaderOrder implements java.util.Comparator<String>, Serializable {
     private static final long serialVersionUID = -5900038332559417655L;
 
     /**
+     * This array defines the order of ordered keywords, except END (which we handle separately)
+     * 
+     */
+    @SuppressWarnings("deprecation")
+    private static final String[] ORDER = {SIMPLE.key(), XTENSION.key(), BITPIX.key(), NAXIS.key(), EXTEND.key(), 
+            PCOUNT.key(), GCOUNT.key(), TFIELDS.key(), BLOCKED.key(), THEAP.key()};
+   
+    /**
+     * Every keyword is assigned an index. Because NAXIS can have 999 NAXISn variants, we'll space
+     * the indices of the ordered keys by 1000, to allow adding in 999 ordered variants between
+     * the major slots.
+     * 
+     */
+    private static final int SPACING = 1000;
+    
+    /**
+     * Keys that do not need ordering get an index that comes after the last ordered key, but before END.
+     */
+    private static final int UNORDERED = SPACING * ORDER.length;
+    
+    /**
+     * The END keyword comes last, so assign it an index after unordered.
+     */
+    private static final int LAST = UNORDERED + SPACING;
+   
+    /**
+     * Hash table for looking up the index of ordered keys.
+     * 
+     */
+    private static final Hashtable<String, Integer> LOOKUP = new Hashtable<>();
+    
+    // Initialize the hash lookup from the order array
+    static {
+        for (int i = 0; i < ORDER.length; i++) {
+            LOOKUP.put(ORDER[i], SPACING * i);
+        }
+    }
+
+    /**
+     * Returns a virtual ordering index of a given keyword. Keywords with lower indices should
+     * precede keywords that have higher indices. Order does not matter if the indices are the same.
+     * 
+     * @param key   FITS keyword
+     * @return      The ordering index of that key
+     */
+    private static int indexOf(String key) {
+        if (key == null) {
+            return UNORDERED;
+        }
+        if (key.startsWith(NAXIS.key())) {
+            if (NAXIS.key().length() == key.length()) {
+                return LOOKUP.get(NAXIS.key());
+            }
+            try {
+                int i = Integer.parseInt(key.substring(NAXIS.key().length()));
+                if (i < 0 || i >= SPACING) {
+                    return UNORDERED;
+                }
+                return LOOKUP.get(NAXIS.key()) + i;
+            } catch (NumberFormatException e) {
+                return UNORDERED;
+            }
+        }
+        if (key.equals(END.key())) {
+            return LAST;
+        }
+        Integer i = LOOKUP.get(key);
+        return i == null ? UNORDERED : i;
+    }
+   
+    
+    /**
      * Which order should the cards indexed by these keys be written out? This
      * method assumes that the arguments are either the FITS Header keywords as
      * strings, and some other type (or null) for comment style keywords.
@@ -65,104 +138,15 @@ public class HeaderOrder implements java.util.Comparator<String>, Serializable {
      *         1 if the second argument should be written first <br>
      *         0 if either is legal.
      */
-    @SuppressWarnings("deprecation")
     @Override
     public int compare(String c1, String c2) {
-        // Note that we look at each of the ordered FITS keywords in the
-        // required
-        // order.
-
-        // Equals are equal
-        if (c1.equals(c2)) {
+        int i1 = indexOf(c1);
+        int i2 = indexOf(c2);
+        if (i1 == i2) {
             return 0;
         }
-
-        // Now search in the order in which cards must appear
-        // in the header.
-        if (c1.equals(SIMPLE.key()) || c1.equals(XTENSION.key())) {
-            return -1;
-        } else if (c2.equals(SIMPLE.key()) || c2.equals(XTENSION.key())) {
-            return 1;
-        } else if (c1.equals(BITPIX.key())) {
-            return -1;
-        } else if (c2.equals(BITPIX.key())) {
-            return 1;
-        } else if (c1.equals(NAXIS.key())) {
-            return -1;
-        } else if (c2.equals(NAXIS.key())) {
-            return 1;
-        }
-
-        // Check the NAXISn cards. These must
-        // be in axis order.
-        final int naxisNc1 = naxisN(c1);
-        final int naxisNc2 = naxisN(c2);
-        if (naxisNc1 > 0) {
-            if (naxisNc2 > 0) {
-                if (naxisNc1 < naxisNc2) {
-                    return -1;
-                }
-                return 1;
-            }
-            return -1;
-        } else if (naxisNc2 > 0) {
-            return 1;
-        }
-
-        // The EXTEND keyword is no longer required in the FITS standard
-        // but in earlier versions of the standard it was required to
-        // be here if present in the primary data array.
-        if (c1.equals(EXTEND.key())) {
-            return -1;
-        } else if (c2.equals(EXTEND.key())) {
-            return 1;
-        } else if (c1.equals(PCOUNT.key())) {
-            return -1;
-        } else if (c2.equals(PCOUNT.key())) {
-            return 1;
-        } else if (c1.equals(GCOUNT.key())) {
-            return -1;
-        } else if (c2.equals(GCOUNT.key())) {
-            return 1;
-        } else if (c1.equals(TFIELDS.key())) {
-            return -1;
-        } else if (c2.equals(TFIELDS.key())) {
-            return 1;
-        }
-
-        // In principal this only needs to be in the first 36 cards,
-        // but we put it here since it's convenient. BLOCKED is
-        // deprecated currently.
-        if (c1.equals(BLOCKED.key())) {
-            return -1;
-        } else if (c2.equals(BLOCKED.key())) {
-            return 1;
-        }
-
-        // Note that this must be at the end, so the
-        // values returned are inverted. THEAP is put to the end of the file
-        // because os a bug in cfitsio that causes confusion when the header
-        // appears befor any compression headers.
-        if (c1.equals(THEAP.key())) {
-            return 1;
-        } else if (c2.equals(THEAP.key())) {
-            return -1;
-        } else if (c1.equals(END.key())) {
-            return 1;
-        } else if (c2.equals(END.key())) {
-            return -1;
-        }
-
-        // All other cards can be in any order.
-        return 0;
+        return i1 < i2 ? -1 : 1;
     }
 
-    /** Find the index for NAXISn keywords */
-    private static int naxisN(String key) {
-        int startOfNumber = NAXIS.key().length();
-        if (key.length() > startOfNumber && key.startsWith(NAXIS.key()) && Character.isDigit(key.charAt(startOfNumber))) {
-            return Integer.parseInt(key.substring(startOfNumber));
-        }
-        return -1;
-    }
+    
 }
