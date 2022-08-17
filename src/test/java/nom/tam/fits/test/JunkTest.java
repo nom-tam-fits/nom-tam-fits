@@ -32,8 +32,13 @@ package nom.tam.fits.test;
  */
 
 import static org.junit.Assert.assertTrue;
+
+import org.junit.After;
+import org.junit.Before;
+
 import nom.tam.fits.Fits;
 import nom.tam.fits.FitsFactory;
+import nom.tam.fits.Header;
 import nom.tam.util.FitsFile;
 import nom.tam.util.SafeClose;
 
@@ -46,6 +51,17 @@ import org.junit.Test;
  * succeed after FitsFactory.setAllowTerminalJunk(true).
  */
 public class JunkTest {
+    
+    @Before
+    public void before() {
+        FitsFactory.setDefaults();
+    }
+
+    @After
+    public void after() {
+        FitsFactory.setDefaults();
+        Header.setCommentAlignPosition(Header.DEFAULT_COMMENT_ALIGN);
+    }
 
     boolean readSuccess(String file) {
         Fits f = null;
