@@ -2364,7 +2364,6 @@ public class Header implements FitsElement {
      *                  existing FITS headers are to be logged, otherwise <code>false</code>
      * 
      * @see #isParserWarningsEnabled()
-     * @see #getParserLogger()
      * @see FitsFactory#setAllowHeaderRepairs(boolean)
      * 
      * @since 1.16
@@ -2383,7 +2382,6 @@ public class Header implements FitsElement {
      *              existing FITS headers are enabled and logged, otherwise <code>false</code>
      *              
      * @see #setParserWarningsEnabled(boolean)
-     * @see #getParserLogger()
      * 
      * @since 1.16
      */
@@ -2402,7 +2400,7 @@ public class Header implements FitsElement {
      * @see #setParserWarningsEnabled(boolean)
      * @see #isParserWarningsEnabled()
      */
-    public static Logger getParserLogger() {
+    private static Logger getParserLogger() {
         return Logger.getLogger(HeaderCardParser.class.getName());
     }
     

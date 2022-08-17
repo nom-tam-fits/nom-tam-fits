@@ -79,6 +79,10 @@ public class DupTest {
         }
     };
     
+    public Logger getParserLogger() {
+        return Logger.getLogger("nom.tam.fits.HeaderCardParser");
+    }
+    
     @Test
     public void test() throws Exception {
 
@@ -112,7 +116,7 @@ public class DupTest {
     
     @Test
     public void dupesWarningsOn() throws Exception {
-        Logger l = Header.getParserLogger();
+        Logger l = getParserLogger();
         l.setLevel(Level.WARNING);                      // Make sure we log warnings to Header
         
         LogCounter counter = new LogCounter();
@@ -132,7 +136,7 @@ public class DupTest {
     
     @Test
     public void dupesWarningsOff() throws Exception {
-        Logger l = Header.getParserLogger();
+        Logger l = getParserLogger();
         l.setLevel(Level.WARNING);                      // Make sure we log warnings to Header
         LogCounter counter = new LogCounter();
         l.addHandler(counter);
