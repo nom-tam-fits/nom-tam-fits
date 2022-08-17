@@ -112,7 +112,7 @@ public class DupTest {
     
     @Test
     public void dupesWarningsOn() throws Exception {
-        Logger l = Logger.getLogger("nom.tam.fits.HeaderCardParser");
+        Logger l = Header.getParserLogger();
         l.setLevel(Level.WARNING);                      // Make sure we log warnings to Header
         
         LogCounter counter = new LogCounter();
@@ -132,7 +132,7 @@ public class DupTest {
     
     @Test
     public void dupesWarningsOff() throws Exception {
-        Logger l = Logger.getLogger("nom.tam.fits.HeaderCardParser");
+        Logger l = Header.getParserLogger();
         l.setLevel(Level.WARNING);                      // Make sure we log warnings to Header
         LogCounter counter = new LogCounter();
         l.addHandler(counter);
