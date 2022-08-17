@@ -79,10 +79,6 @@ public class DupTest {
         }
     };
     
-    public Logger getParserLogger() {
-        return Logger.getLogger("nom.tam.fits.HeaderCardParser");
-    }
-    
     @Test
     public void test() throws Exception {
 
@@ -112,6 +108,10 @@ public class DupTest {
         assertTrue("Now rewriteable", hdr.rewriteable());
         assertFalse("No duplicates", hdr.hadDuplicates());
         assertTrue("Dups is null", hdr.getDuplicates() == null);
+    }
+    
+    private Logger getParserLogger() {
+        return Logger.getLogger("nom.tam.fits.HeaderCardParser");
     }
     
     @Test
