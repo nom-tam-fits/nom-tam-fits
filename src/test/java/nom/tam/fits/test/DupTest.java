@@ -39,6 +39,7 @@ import static org.junit.Assert.assertTrue;
 import java.io.DataOutputStream;
 import java.io.FileOutputStream;
 import java.util.List;
+import java.util.Set;
 import java.util.logging.Handler;
 import java.util.logging.Level;
 import java.util.logging.LogRecord;
@@ -153,6 +154,15 @@ public class DupTest {
         assertEquals(initCount, counter.getCount());    // Check that logger was NOT called on them
         
         l.removeHandler(counter);
+    }
+    
+    @Test
+    public void dupesSetTest() throws Exception {
+        Fits f = new Fits("src/test/resources/nom/tam/fits/test/test_dup.fits");
+        Header h = f.readHDU().getHeader();
+        
+        Set<?> keys = h.getDuplicateKeySet(); 
+        assertTrue(keys.contains("CARD"));
     }
     
 }

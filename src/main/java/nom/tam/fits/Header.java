@@ -34,7 +34,6 @@ package nom.tam.fits;
 import static nom.tam.fits.header.Standard.BITPIX;
 import static nom.tam.fits.header.Standard.BLANKS;
 import static nom.tam.fits.header.Standard.COMMENT;
-import static nom.tam.fits.header.Standard.CONTINUE;
 import static nom.tam.fits.header.Standard.END;
 import static nom.tam.fits.header.Standard.EXTEND;
 import static nom.tam.fits.header.Standard.GCOUNT;
@@ -57,7 +56,9 @@ import java.math.BigInteger;
 import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.Comparator;
+import java.util.HashSet;
 import java.util.List;
+import java.util.Set;
 import java.util.logging.Level;
 import java.util.logging.Logger;
 
@@ -134,6 +135,8 @@ public class Header implements FitsElement {
     private long fileOffset;
 
     private List<HeaderCard> duplicates;
+    
+    private HashSet<String> dupKeys;
 
     /** Input descriptor last time header was read */
     private ArrayDataInput input;
@@ -929,17 +932,55 @@ public class Header implements FitsElement {
     }
 
     /**
+     * <p>
+     * Returns the list of duplicate cards in the order they appeared in the parsed header.
+     * You can access the first occurence of each of every duplicated FITS keyword 
+     * using the usual <code>Header.getValue()</code>, and find further occurrences
+     * in the list returned here.
+     * </p>
+     * <p>
+     * The FITS standared strongly discourages using the keywords multiple times with assigned
+     * values, and specifies that the values of such keywords are undefined by definitions.
+     * Our library is thus far more tolerant than the FITS standard, allowing you to access
+     * each and every value that was specified for the same keyword.
+     * </p>
+     * <p>
+     * On the other hand FITS does not limit how many times you can add comment-style
+     * keywords to a header. If you must used the same keyword multiple times in your
+     * header, you should consider using comment-style entries instead.
+     * </p>
+     * 
+     * 
      * @return the list of duplicate cards. Note that when the header is read
      *         in, only the last entry for a given keyword is retained in the
      *         active header. This method returns earlier cards that have been
      *         discarded in the order in which they were encountered in the
      *         header. It is possible for there to be many cards with the same
      *         keyword in this list.
+     *         
+     * @see #hadDuplicates()
+     * @see #getDuplicateKeySet()
      */
     public List<HeaderCard> getDuplicates() {
         return this.duplicates;
     }
 
+    /**
+     * Returns the set of keywords that had more than one value assignment in the parsed
+     * header.
+     * 
+     * @return  the set of header keywords that were assigned more than once in the
+     *          same header, or <code>null</code> if there were no duplicate assignments.
+     *          
+     * @see #hadDuplicates()
+     * @see #getDuplicates()
+     * 
+     * @since 1.17
+     */
+    public Set<String> getDuplicateKeySet() {
+        return dupKeys;
+    }
+    
     /**
      * @return Get the offset of this header
      */
@@ -1540,6 +1581,7 @@ public class Header implements FitsElement {
     private void clear() {
         cards.clear();
         duplicates = null;
+        dupKeys = null;
         readSize = 0;
         fileOffset = -1;
         minCards = 0;
@@ -2031,16 +2073,19 @@ public class Header implements FitsElement {
 
     private void addDuplicate(HeaderCard dup) { 
         // AK: Don't worry about duplicates for comment-style cards in general.
-        if (dup.isCommentStyleCard() || CONTINUE.key().equals(dup.getKey())) {
+        if (dup.isCommentStyleCard()) {
             return;
         }
 
-        HeaderCardParser.getLogger().log(Level.WARNING, "Multiple occurrences of key:" + dup.getKey());
-        
-        if (this.duplicates == null) {
-            this.duplicates = new ArrayList<>();
+        if (duplicates == null) {
+            duplicates = new ArrayList<>();
+            dupKeys = new HashSet<>();
         }
-        this.duplicates.add(dup);
+
+        HeaderCardParser.getLogger().log(Level.WARNING, "Multiple occurrences of key:" + dup.getKey());
+
+        duplicates.add(dup);
+        dupKeys.add(dup.getKey());
     }
 
     /**
