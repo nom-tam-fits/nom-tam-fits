@@ -2085,6 +2085,7 @@ public class Header implements FitsElement {
         HeaderCardParser.getLogger().log(Level.WARNING, "Multiple occurrences of key:" + dup.getKey());
 
         duplicates.add(dup);
+        dupKeys.add(dup.getKey());
     }
 
     /**
