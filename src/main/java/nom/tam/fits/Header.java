@@ -2035,7 +2035,7 @@ public class Header implements FitsElement {
             return;
         }
 
-        getParserLogger().log(Level.WARNING, "Multiple occurrences of key:" + dup.getKey());
+        HeaderCardParser.getLogger().log(Level.WARNING, "Multiple occurrences of key:" + dup.getKey());
         
         if (this.duplicates == null) {
             this.duplicates = new ArrayList<>();
@@ -2370,7 +2370,7 @@ public class Header implements FitsElement {
      */
     public static void setParserWarningsEnabled(boolean value) {
         Level level = value ? Level.WARNING : Level.SEVERE;
-        getParserLogger().setLevel(level);
+        HeaderCardParser.getLogger().setLevel(level);
         Logger.getLogger(ComplexValue.class.getName()).setLevel(level);
     }
     
@@ -2386,22 +2386,7 @@ public class Header implements FitsElement {
      * @since 1.16
      */
     public static boolean isParserWarningsEnabled() {        
-        return !getParserLogger().getLevel().equals(Level.SEVERE);
-    }
-    
-    /**
-     * Returns the logger for the header parser. This logger logs specifically FITS standard
-     * violations during parsing of (3rd party) headers. It is managed independently of the 
-     * verbosity of the Header's own logging.
-     * 
-     * @return      The logger instance used for reporting FITS standard violations when parsing
-     *              headers.
-     *              
-     * @see #setParserWarningsEnabled(boolean)
-     * @see #isParserWarningsEnabled()
-     */
-    private static Logger getParserLogger() {
-        return Logger.getLogger(HeaderCardParser.class.getName());
+        return !HeaderCardParser.getLogger().getLevel().equals(Level.SEVERE);
     }
     
     /**
