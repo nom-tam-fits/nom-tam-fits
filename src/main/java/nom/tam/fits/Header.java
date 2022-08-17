@@ -297,7 +297,9 @@ public class Header implements FitsElement {
     }
  
     /**
-     * Add or replace a key with the given boolean value and comment.
+     * Add or replace a key with the given boolean value and its standardized comment.
+     * If the value is not compatible with the convention of the keyword, a warning message is
+     * logged but no exception is thrown (at this point).
      *
      * @param key
      *            The header key.
@@ -307,7 +309,7 @@ public class Header implements FitsElement {
      * @throws HeaderCardException
      *             If the parameters cannot build a valid FITS card.
      * @throws IllegalArgumentException
-     *             If the keyword cannot be used with a boolean value.
+     *             If the keyword is invalid
      *             
      * @see #addValue(String, Boolean, String)
      */
@@ -320,8 +322,9 @@ public class Header implements FitsElement {
    
 
     /**
-     * Add or replace a key with the given double value and comment. Note that
-     * float values will be promoted to doubles.
+     * Add or replace a key with the given double value and its standardized comment.
+     * If the value is not compatible with the convention of the keyword, a warning message is
+     * logged but no exception is thrown (at this point).
      *
      * @param key
      *            The header key.
@@ -331,8 +334,7 @@ public class Header implements FitsElement {
      * @throws HeaderCardException
      *             If the parameters cannot build a valid FITS card.
      * @throws IllegalArgumentException
-     *             If the keyword cannot be used with a number value, or the keyword requires an integer
-     *             but the supplied value was a decimal.
+     *             If the keyword is invalid
      * 
      * @see #addValue(String, Number, String)
      */
@@ -343,7 +345,9 @@ public class Header implements FitsElement {
     }
 
     /**
-     * Add or replace a key with the given string value and comment.
+     * Add or replace a key with the given string value and its standardized comment. 
+     * If the value is not compatible with the convention of the keyword, a warning message is
+     * logged but no exception is thrown (at this point).
      *
      * @param key
      *            The header key.
@@ -353,7 +357,7 @@ public class Header implements FitsElement {
      * @throws HeaderCardException
      *             If the parameters cannot build a valid FITS card.
      * @throws IllegalArgumentException
-     *             If the keyword cannot be used with a number value.
+     *             If the keyword is invalid
      *             
      * @see #addValue(String, String, String)
      */
@@ -364,7 +368,9 @@ public class Header implements FitsElement {
     }
 
     /**
-     * Add or replace a key with the given string value and comment.
+     * Add or replace a key with the given complex value and its standardized comment.
+     * If the value is not compatible with the convention of the keyword, a warning message is
+     * logged but no exception is thrown (at this point).
      *
      * @param key
      *            The header key.
@@ -374,7 +380,7 @@ public class Header implements FitsElement {
      * @throws HeaderCardException
      *             If the parameters cannot build a valid FITS card.
      * @throws IllegalArgumentException
-     *             If the keyword cannot be used with a complex value.
+     *             If the keyword is invalid
      *             
      * @see #addValue(String, ComplexValue, String)
      * 
@@ -1595,7 +1601,6 @@ public class Header implements FitsElement {
         return cards.isEmpty();
     }
 
-    
     /**
      * <p>
      * Reads new header data from an input, discarding any prior content.
@@ -2362,7 +2367,8 @@ public class Header implements FitsElement {
 
     /**
      * Replace the key with a new key. Typically this is used when deleting or
-     * inserting columns so that TFORMx -> TFORMx-1
+     * inserting columns. If the convention of the new keyword is not compatible with the existing value 
+     * a warning message is logged but no exception is thrown (at this point).
      *
      * @param oldKey
      *            The old header keyword.
@@ -2370,9 +2376,7 @@ public class Header implements FitsElement {
      *            the new header keyword.
      * @return <CODE>true</CODE> if the card was replaced.
      * @throws HeaderCardException
-     *                If <CODE>newKey</CODE> is not a valid FITS keyword.
-     * @throws IllegalArgumentException
-     *                If the new keyword cannot support the existing value type of the old keyword.            
+     *                If <CODE>newKey</CODE> is not a valid FITS keyword.           
      */
     boolean replaceKey(IFitsHeader oldKey, IFitsHeader newKey) throws HeaderCardException {
         HeaderCard card = findCard(oldKey);
@@ -2380,20 +2384,26 @@ public class Header implements FitsElement {
 
         if (card != null && oldKey.valueType() != newType && newType != VALUE.ANY) {
             Class<?> type = card.valueType();
+            Exception e = null;
+            
             
             // Check that the exisating cards value is compatible with the expected type of the new key.
             if (newType == VALUE.NONE) {
-                throw new IllegalArgumentException(newKey.key() + " cannot replace comment-style " + oldKey.key());
+                e = new IllegalArgumentException(newKey.key() + " cannot replace comment-style " + oldKey.key());
             } else if (Boolean.class.isAssignableFrom(type) && newType != VALUE.LOGICAL) {
-                throw new IllegalArgumentException(newKey.key() + " cannot not support the existing boolean value.");
+                e = new IllegalArgumentException(newKey.key() + " cannot not support the existing boolean value.");
             } else if (!card.isDecimalType() && newType == VALUE.REAL) {
-                throw new IllegalArgumentException(newKey.key() + " cannot not support the existing decimal values.");
+                e = new IllegalArgumentException(newKey.key() + " cannot not support the existing decimal values.");
             } else if (Number.class.isAssignableFrom(type) && newType != VALUE.REAL && newType != VALUE.INTEGER && newType != VALUE.COMPLEX) {
-                throw new IllegalArgumentException(newKey.key() + " cannot not support the existing numerical value.");
+                e = new IllegalArgumentException(newKey.key() + " cannot not support the existing numerical value.");
             } else if (ComplexValue.class.isAssignableFrom(type) && newType != VALUE.COMPLEX) {
-                throw new IllegalArgumentException(newKey.key() + " cannot not support the existing complex value.");
+                e = new IllegalArgumentException(newKey.key() + " cannot not support the existing complex value.");
             } else if (String.class.isAssignableFrom(type) && newType != VALUE.STRING) {
-                throw new IllegalArgumentException(newKey.key() + " cannot not support the existing string value.");
+                e = new IllegalArgumentException(newKey.key() + " cannot not support the existing string value.");
+            }
+            
+            if (e != null) {
+                LOG.log(Level.WARNING, e.getMessage(), e);
             }
         }
     
