@@ -68,15 +68,13 @@ public class DupTest {
         public void flush() {}
 
         @Override
-        public void publish(LogRecord arg0) { 
+        public synchronized void publish(LogRecord arg0) { 
             count++; 
             System.err.println("### MESSAGE: " + arg0.getMessage());
         }
         
-        public int getCount() { 
-            
+        public synchronized int getCount() { 
             return count; 
-            
         }
     };
     
