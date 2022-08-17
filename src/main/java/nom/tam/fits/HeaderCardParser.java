@@ -66,7 +66,7 @@ import nom.tam.util.FlexFormat;
  */
 class HeaderCardParser {
 
-    private static final Logger LOG = Logger.getLogger(HeaderCardParser.class.getName());
+    private static final Logger LOG = Header.getParserLogger();
     
     static {
         // Do not log warnings by default.

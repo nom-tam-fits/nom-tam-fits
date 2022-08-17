@@ -71,7 +71,6 @@ import nom.tam.util.ComplexValue;
 import nom.tam.util.Cursor;
 import nom.tam.util.FitsIO;
 import nom.tam.util.HashedList;
-import nom.tam.util.LoggerHelper;
 import nom.tam.util.RandomAccess;
 
 /**
@@ -2035,9 +2034,9 @@ public class Header implements FitsElement {
         if (dup.isCommentStyleCard() || CONTINUE.key().equals(dup.getKey())) {
             return;
         }
-        if (isParserWarningsEnabled()) {
-            LOG.log(Level.WARNING, "Multiple occurrences of key:" + dup.getKey());
-        }
+
+        getParserLogger().log(Level.WARNING, "Multiple occurrences of key:" + dup.getKey());
+        
         if (this.duplicates == null) {
             this.duplicates = new ArrayList<>();
         }
@@ -2370,8 +2369,8 @@ public class Header implements FitsElement {
      */
     public static void setParserWarningsEnabled(boolean value) {
         Level level = value ? Level.WARNING : Level.SEVERE;
-        LoggerHelper.getLogger(HeaderCardParser.class).setLevel(level);
-        LoggerHelper.getLogger(ComplexValue.class).setLevel(level);
+        getParserLogger().setLevel(level);
+        Logger.getLogger(ComplexValue.class.getName()).setLevel(level);
     }
     
     /**
@@ -2385,8 +2384,20 @@ public class Header implements FitsElement {
      * 
      * @since 1.16
      */
-    public static boolean isParserWarningsEnabled() {
-        return !Logger.getLogger(HeaderCardParser.class.getName()).getLevel().equals(Level.SEVERE);
+    public static boolean isParserWarningsEnabled() {        
+        return !getParserLogger().getLevel().equals(Level.SEVERE);
+    }
+    
+    /**
+     * Returns the logger for the header parser. This logger logs specifically FITS standard
+     * violations during parsing of (3rd party) headers. It is managed independently of the 
+     * verbosity of the Header's own logging.
+     * 
+     * @return      The logger instance used for reporting FITS standard violations when parsing
+     *              headers.
+     */
+    public static Logger getParserLogger() {
+        return Logger.getLogger(HeaderCardParser.class.getName());
     }
     
     /**
