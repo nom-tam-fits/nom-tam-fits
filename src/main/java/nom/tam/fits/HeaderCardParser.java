@@ -644,6 +644,9 @@ class HeaderCardParser {
         return HeaderCard.sanitize(text);
     }
     
+    static Logger getLogger() {
+        return LOG;
+    }
     
     
 }
