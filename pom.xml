@@ -152,12 +152,12 @@
 			<extension>
 				<groupId>org.apache.maven.scm</groupId>
 				<artifactId>maven-scm-provider-gitexe</artifactId>
-				<version>1.12.2</version>
+				<version>1.13.0</version>
 			</extension>
 			<extension>
 				<groupId>org.apache.maven.scm</groupId>
 				<artifactId>maven-scm-manager-plexus</artifactId>
-				<version>1.12.2</version>
+				<version>1.13.0</version>
 			</extension>
 			<extension>
 				<groupId>com.github.stephenc.wagon</groupId>
@@ -347,7 +347,7 @@
 					<dependency>
 						<groupId>com.puppycrawl.tools</groupId>
 						<artifactId>checkstyle</artifactId>
-						<version>10.2</version>
+						<version>10.3.2</version>
 					</dependency>
 				</dependencies>
 				<executions>
@@ -410,7 +410,7 @@
 			<plugin>
 				<groupId>com.github.spotbugs</groupId>
 				<artifactId>spotbugs-maven-plugin</artifactId>
-				<version>4.6.0.0</version>
+				<version>4.7.1.1</version>
 				<executions>
 					<execution>
 						<goals>
@@ -472,7 +472,7 @@
 			<plugin>
 				<groupId>org.apache.maven.plugins</groupId>
 				<artifactId>maven-project-info-reports-plugin</artifactId>
-				<version>3.2.2</version>
+				<version>3.3.0</version>
 				<configuration>
 					<dependencyDetailsEnabled>false</dependencyDetailsEnabled>
 					<dependencyLocationsEnabled>false</dependencyLocationsEnabled>
@@ -554,7 +554,7 @@
 			<plugin>
 				<groupId>org.apache.maven.plugins</groupId>
 				<artifactId>maven-pmd-plugin</artifactId>
-				<version>3.16.0</version>
+				<version>3.17.0</version>
 				<configuration>
 					<linkXref>true</linkXref>
 					<sourceEncoding>UTF-8</sourceEncoding>
@@ -571,7 +571,7 @@
 			<plugin>
 				<groupId>com.github.spotbugs</groupId>
 				<artifactId>spotbugs-maven-plugin</artifactId>
-				<version>4.6.0.0</version>
+				<version>4.7.1.1</version>
 				<configuration>
 					<!-- Skip bug warnings for EI_EXPOSE_REP and EI_EXPOSE_REP2
                we know we exposse some internal data of our classes -->
