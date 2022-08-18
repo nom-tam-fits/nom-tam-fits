@@ -1948,17 +1948,22 @@ public class Header implements FitsElement {
     }
 
     /**
-     * Update a line in the header
+     * Update a valued entry in the header, or adds a new header entry. If the header does not 
+     * contain a prior entry for the specific keyword, or if the keyword is a comment-style key, 
+     * a new entry is added at the current editing position. Otherwise, the matching existing
+     * entry is updated in situ.
      *
      * @param key
-     *            The key of the card to be replaced.
+     *            The key of the card to be replaced (or added).
      * @param card
      *            A new card
      * @throws HeaderCardException
      *             if the operation failed
      */
     public void updateLine(IFitsHeader key, HeaderCard card) throws HeaderCardException {
-        deleteKey(key);
+        if (key.valueType() != VALUE.NONE) {
+            deleteKey(key);
+        }
         cursor().add(card);
     }
 
@@ -2378,6 +2383,11 @@ public class Header implements FitsElement {
      *                If <CODE>newKey</CODE> is not a valid FITS keyword.           
      */
     boolean replaceKey(IFitsHeader oldKey, IFitsHeader newKey) throws HeaderCardException {
+        
+        if (oldKey.valueType() == VALUE.NONE) {
+            throw new IllegalArgumentException("cannot replace comment-style " + oldKey.key());
+        }
+        
         HeaderCard card = findCard(oldKey);
         VALUE newType = newKey.valueType();
 
@@ -2385,20 +2395,19 @@ public class Header implements FitsElement {
             Class<?> type = card.valueType();
             Exception e = null;
             
-            
             // Check that the exisating cards value is compatible with the expected type of the new key.
             if (newType == VALUE.NONE) {
-                e = new IllegalArgumentException(newKey.key() + " cannot replace comment-style " + oldKey.key());
+                e = new IllegalArgumentException("comment-style " + newKey.key() + " cannot replace valued key " + oldKey.key());
             } else if (Boolean.class.isAssignableFrom(type) && newType != VALUE.LOGICAL) {
                 e = new IllegalArgumentException(newKey.key() + " cannot not support the existing boolean value.");
-            } else if (!card.isDecimalType() && newType == VALUE.REAL) {
+            } else if (String.class.isAssignableFrom(type) && newType != VALUE.STRING) {
+                e = new IllegalArgumentException(newKey.key() + " cannot not support the existing string value.");
+            } else if (ComplexValue.class.isAssignableFrom(type) && newType != VALUE.COMPLEX) {
+                e = new IllegalArgumentException(newKey.key() + " cannot not support the existing complex value.");
+            } else if (card.isDecimalType() && newType != VALUE.REAL && newType != VALUE.COMPLEX) {
                 e = new IllegalArgumentException(newKey.key() + " cannot not support the existing decimal values.");
             } else if (Number.class.isAssignableFrom(type) && newType != VALUE.REAL && newType != VALUE.INTEGER && newType != VALUE.COMPLEX) {
                 e = new IllegalArgumentException(newKey.key() + " cannot not support the existing numerical value.");
-            } else if (ComplexValue.class.isAssignableFrom(type) && newType != VALUE.COMPLEX) {
-                e = new IllegalArgumentException(newKey.key() + " cannot not support the existing complex value.");
-            } else if (String.class.isAssignableFrom(type) && newType != VALUE.STRING) {
-                e = new IllegalArgumentException(newKey.key() + " cannot not support the existing string value.");
             }
             
             if (e != null) {

@@ -1403,7 +1403,7 @@ public class HeaderCard implements CursorValue<String>, Cloneable {
         if (key.valueType() == VALUE.REAL && type == VALUE.INTEGER) {
             return true;
         }
-
+        
         LOG.log(Level.WARNING, "[" + key + "] with unexpected value type.", new IllegalArgumentException("Expected " + type + ", got " + key.valueType()));
         return false;
     }

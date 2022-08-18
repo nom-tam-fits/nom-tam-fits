@@ -82,6 +82,8 @@ import nom.tam.fits.HeaderCommentsMap;
 import nom.tam.fits.HeaderOrder;
 import nom.tam.fits.ImageHDU;
 import nom.tam.fits.TruncatedFileException;
+import nom.tam.fits.header.GenericKey;
+import nom.tam.fits.header.IFitsHeader;
 import nom.tam.fits.header.Standard;
 import nom.tam.fits.header.hierarch.BlanksDotHierarchKeyFormatter;
 import nom.tam.util.ArrayDataOutput;
@@ -779,6 +781,18 @@ public class HeaderTest {
         }
     }
 
+    @Test 
+    public void addIFitsComplexTest() throws Exception {
+        Header h = new Header();
+        IFitsHeader key = GenericKey.create("TEST");
+        ComplexValue z0 = new ComplexValue(1.0, 2.0);
+        h.addValue(key, z0);
+        assertTrue(h.containsKey(key));
+        assertTrue(h.containsKey(key.key()));
+        ComplexValue z = h.getComplexValue(key.key());
+        assertEquals(z0, z);
+    }
+    
     @Test
     public void dumpHeaderTests() throws Exception {
         Fits f = null;
@@ -1539,5 +1553,21 @@ public class HeaderTest {
         h.validate(true);
         h.validate(false);
         checkXtension(h);
+    }
+    
+    @Test
+    public void updateCommentKey() throws Exception {
+        Header h = new Header();
+        h.insertComment("existing comment");
+        h.updateLine(Standard.COMMENT, HeaderCard.createCommentCard("new comment"));
+        assertEquals(2, h.getNumberOfCards());
+    }
+    
+    @Test
+    public void updateEmptyKey() throws Exception {
+        Header h = new Header();
+        h.insertCommentStyle("", "existing comment");
+        h.updateLine("", HeaderCard.createCommentCard("new comment"));
+        assertEquals(2, h.getNumberOfCards());
     }
 }
