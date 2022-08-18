@@ -107,6 +107,10 @@ public class KeyTypeTest {
         }
     };
 
+    class ComplexDerived extends ComplexValue {
+        public ComplexDerived(double re, double im) { super(re, im); }
+    }
+    
     private LogCounter initLogCounter(Class<?> c) {
         Logger l = Logger.getLogger(c.getName());
         l.setLevel(Level.WARNING);                      // Make sure we log warnings to Header
@@ -202,7 +206,7 @@ public class KeyTypeTest {
         Header h = new Header();
         ComplexKey k1 = new ComplexKey("CVAL1");
         ComplexKey k2  = new ComplexKey("CVAL2");
-        HeaderCard c = h.addValue(k1, new ComplexValue(1.0, -1.0));
+        HeaderCard c = h.addValue(k1, new ComplexDerived(1.0, -1.0));
         h.replaceKey(k1, k2);
         assertEquals(k2.key(), c.getKey());
     }
@@ -211,7 +215,7 @@ public class KeyTypeTest {
     public void replaceComplexKeyWarning() throws Exception {
         Header h = new Header();
         ComplexKey k = new ComplexKey("CVAL");
-        h.addValue(k, new ComplexValue(1.0, -1.0));
+        h.addValue(k, new ComplexDerived(1.0, -1.0));
         LogCounter counter = initLogCounter(Header.class);
         int i = counter.getCount();
         h.replaceKey(k, Standard.BZERO);

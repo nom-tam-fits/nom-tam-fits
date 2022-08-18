@@ -1570,4 +1570,12 @@ public class HeaderTest {
         h.updateLine("", HeaderCard.createCommentCard("new comment"));
         assertEquals(2, h.getNumberOfCards());
     }
+    
+    @Test
+    public void updateKey() throws Exception {
+        Header h = new Header();
+        h.addValue("TEST1", 1, "comment");
+        h.updateLine("TEST1", new HeaderCard("TEST2", 2, "comment"));
+        assertEquals(1, h.getNumberOfCards());
+    }
 }
