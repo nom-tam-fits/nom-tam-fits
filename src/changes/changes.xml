@@ -1,20 +1,29 @@
 <document xmlns="http://maven.apache.org/changes/1.0.0" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:schemaLocation="http://maven.apache.org/changes/1.0.0 http://maven.apache.org/xsd/changes-1.0.0.xsd">
 	<body>
 
-    <release version="1.16.1" date="2022-03-21" description="Feature release with bug fixes.">
-	    <action type="add" dev="attipaci" issue="283">
-	      User adjustable inline header comment alignment position. 
+    <release version="1.17.0-rc1" date="2022-08-18" description="Feature release with bug fixes.">
+    	<action type="add" dev="attipaci" issue="283">
+	      User adjustable inline header comment alignment position via Header.setCommentAlignPosition(int). 
 			</action>
-			<action type="update" dev="attipaci" issue="284">
-	      Pad short strings before opening quote to ensure end quote does not come before byte 20 (counted from 1), and right
-	      justify string values, if possible, like numerical values.
+    	<action type="add" dev="attipaci" issue="145">
+				New Fits.getHDU() nethods to get HDU from Fits by name (and version).
 			</action>
-	    <action type="new" dev="attipaci" issue="145">
-				New nethods to get HDU from Fits by name/extension.
-			</action>
-	  </release>
-	
-	  <release version="1.17.0-SNAPSHOT" date="2022-04-14" description="Improved incremental output and other enhancements.">
+      <action type="update" dev="attipaci" issue="311">
+        Duplicate header keys, when parsing, are repoted though separate logger instance from Header's, with verbosity
+        controlled via Header.setParserWarningEnabled(boolean). 
+      </action>
+      <action type="update" dev="attipaci" issue="292">
+        Suppress repeated duplicate keyword warnings when parsing and improve checks for FITS standard violations.
+      </action>
+      <action type="update" dev="attipaci" issue="292">
+        Replacing header keys logs a warning when existing value type is mismatched for new standardized keyword.
+      </action>
+      <action type="update" dev="attipaci" issue="292">
+        Creation of header entries with standardized keywords logs a warning if value type is incompatible with the keyword. 
+      </action>
+      <action type="update" dev="attipaci" issue="292">
+        Improved header card ordering implementation.
+      </action>
 	    <action type="update" dev="attipaci" issue="266">
 				Safe incremental HDU writing via new FitsOutput interface, which is used to check whether HDUs should be set primary or not
 				depending on where it is located in the output.
