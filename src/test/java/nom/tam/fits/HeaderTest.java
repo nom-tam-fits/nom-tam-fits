@@ -1566,8 +1566,8 @@ public class HeaderTest {
     @Test
     public void updateEmptyKey() throws Exception {
         Header h = new Header();
-        h.insertCommentStyle("", "existing comment");
-        h.updateLine("", HeaderCard.createCommentCard("new comment"));
+        h.insertCommentStyle("  ", "existing comment");
+        h.updateLine("  ", HeaderCard.createCommentCard("new comment"));
         assertEquals(2, h.getNumberOfCards());
     }
     
