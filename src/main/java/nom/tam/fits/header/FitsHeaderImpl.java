@@ -110,6 +110,6 @@ public class FitsHeaderImpl implements IFitsHeader, Serializable {
      * @since 1.17
      */
     public static boolean isCommentStyleKey(String key) {
-        return commentStyleKeys.contains(key) || key.isEmpty();
+        return commentStyleKeys.contains(key) || key.trim().isEmpty();
     }
 }
