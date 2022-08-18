@@ -76,6 +76,7 @@ import nom.tam.fits.header.Standard;
 import nom.tam.fits.utilities.FitsCheckSum;
 import nom.tam.util.ArrayDataInput;
 import nom.tam.util.ArrayFuncs;
+import nom.tam.util.ByteBufferOutputStream;
 import nom.tam.util.FitsInputStream;
 import nom.tam.util.FitsOutputStream;
 import nom.tam.util.FitsFile;
@@ -1169,7 +1170,7 @@ public class BaseFitsTest {
         byte[] b = new byte[80];
         Exception ex = null;
         
-        FileInputStream in = new FileInputStream( new File("src/test/resources/nom/tam/fits/test/test.fits.gz"));
+        FileInputStream in = new FileInputStream(new File("src/test/resources/nom/tam/fits/test/test.fits.gz"));
         
         assertEquals(b.length, in.read(b));
         
@@ -1225,6 +1226,39 @@ public class BaseFitsTest {
         };
         new Fits().write((DataOutput) o);
         o.close();
+    }
+    
+    @Test
+    public void nAxisNullTest() throws Exception {
+        Header h = new Header();
+        h.setNaxes(0);
+        BasicHDU<?> hdu = new ImageHDU(h, null);
+        assertNull(hdu.getAxes());
+    }
+    
+    @Test
+    public void writeEmptyHDUTest() throws Exception {
+        byte[] preamble = new byte[100];
+        File f = new File(TMP_FITS_NAME);
+        FitsOutputStream o = new FitsOutputStream(new FileOutputStream(f));
+        BasicHDU<?> hdu = new ImageHDU(null, null);
+        hdu.write(o);
+        o.flush();
+        assertEquals(hdu.getHeader().getSize(), f.length());
+    }
+    
+    @Test
+    public void emptyHDUTest() throws Exception {
+        BasicHDU<?> hdu = new ImageHDU(null, null);
+        assertEquals(0, hdu.getSize());
+    }
+    
+    @Test
+    public void trimmedCommentStringTest() throws Exception {
+        Header h = new Header();
+        h.insertComment("comment");
+        BasicHDU<?> hdu = new ImageHDU(h, null);
+        assertNull(hdu.getTrimmedString(Standard.COMMENT));
     }
     
 }

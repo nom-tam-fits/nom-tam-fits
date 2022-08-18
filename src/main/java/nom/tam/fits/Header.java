@@ -65,12 +65,14 @@ import java.util.logging.Logger;
 import nom.tam.fits.FitsFactory.FitsSettings;
 import nom.tam.fits.header.Bitpix;
 import nom.tam.fits.header.IFitsHeader;
+import nom.tam.fits.header.IFitsHeader.VALUE;
 import nom.tam.util.ArrayDataInput;
 import nom.tam.util.ArrayDataOutput;
 import nom.tam.util.AsciiFuncs;
 import nom.tam.util.ComplexValue;
 import nom.tam.util.Cursor;
 import nom.tam.util.FitsIO;
+import nom.tam.util.FitsOutput;
 import nom.tam.util.HashedList;
 import nom.tam.util.RandomAccess;
 
@@ -195,7 +197,7 @@ public class Header implements FitsElement {
         FitsFactory.setLongStringsEnabled(flag);
     }
 
-    /** Create an empty header */
+    /** Create a new header with the required default keywords for a standalone header. */
     public Header() {
         this.cards = new HashedList<>();
         this.headerSorter = new HeaderOrder();
@@ -295,9 +297,11 @@ public class Header implements FitsElement {
             cursor().add(fcard);
         }
     }
-
+ 
     /**
-     * Add or replace a key with the given boolean value and comment.
+     * Add or replace a key with the given boolean value and its standardized comment.
+     * If the value is not compatible with the convention of the keyword, a warning message is
+     * logged but no exception is thrown (at this point).
      *
      * @param key
      *            The header key.
@@ -306,16 +310,23 @@ public class Header implements FitsElement {
      * @return    the new card that was added.
      * @throws HeaderCardException
      *             If the parameters cannot build a valid FITS card.
+     * @throws IllegalArgumentException
+     *             If the keyword is invalid
      *             
      * @see #addValue(String, Boolean, String)
      */
-    public HeaderCard addValue(IFitsHeader key, Boolean val) throws HeaderCardException {
-        return addValue(key.key(), val, key.comment());
+    public HeaderCard addValue(IFitsHeader key, Boolean val) throws HeaderCardException, IllegalArgumentException {
+        HeaderCard card = HeaderCard.create(key, val);
+        addLine(card);
+        return card;
     }
+    
+   
 
     /**
-     * Add or replace a key with the given double value and comment. Note that
-     * float values will be promoted to doubles.
+     * Add or replace a key with the given double value and its standardized comment.
+     * If the value is not compatible with the convention of the keyword, a warning message is
+     * logged but no exception is thrown (at this point).
      *
      * @param key
      *            The header key.
@@ -324,15 +335,21 @@ public class Header implements FitsElement {
      * @return    the new card that was added.
      * @throws HeaderCardException
      *             If the parameters cannot build a valid FITS card.
+     * @throws IllegalArgumentException
+     *             If the keyword is invalid
      * 
      * @see #addValue(String, Number, String)
      */
-    public HeaderCard addValue(IFitsHeader key, Number val) throws HeaderCardException {
-        return addValue(key.key(), val, key.comment());
+    public HeaderCard addValue(IFitsHeader key, Number val) throws HeaderCardException, IllegalArgumentException {
+        HeaderCard card = HeaderCard.create(key, val);
+        addLine(card);
+        return card;
     }
 
     /**
-     * Add or replace a key with the given string value and comment.
+     * Add or replace a key with the given string value and its standardized comment. 
+     * If the value is not compatible with the convention of the keyword, a warning message is
+     * logged but no exception is thrown (at this point).
      *
      * @param key
      *            The header key.
@@ -341,14 +358,42 @@ public class Header implements FitsElement {
      * @return    the new card that was added.
      * @throws HeaderCardException
      *             If the parameters cannot build a valid FITS card.
+     * @throws IllegalArgumentException
+     *             If the keyword is invalid
      *             
      * @see #addValue(String, String, String)
      */
-    public HeaderCard addValue(IFitsHeader key, String val) throws HeaderCardException {
-        return addValue(key.key(), val, key.comment());
+    public HeaderCard addValue(IFitsHeader key, String val) throws HeaderCardException, IllegalArgumentException {
+        HeaderCard card = HeaderCard.create(key, val);
+        addLine(card);
+        return card;
     }
 
-   
+    /**
+     * Add or replace a key with the given complex value and its standardized comment.
+     * If the value is not compatible with the convention of the keyword, a warning message is
+     * logged but no exception is thrown (at this point).
+     *
+     * @param key
+     *            The header key.
+     * @param val
+     *            The complex value.
+     * @return    the new card that was added.
+     * @throws HeaderCardException
+     *             If the parameters cannot build a valid FITS card.
+     * @throws IllegalArgumentException
+     *             If the keyword is invalid
+     *             
+     * @see #addValue(String, ComplexValue, String)
+     * 
+     * @since 1.17
+     */
+    public HeaderCard addValue(IFitsHeader key, ComplexValue val) throws HeaderCardException, IllegalArgumentException {
+        HeaderCard card = HeaderCard.create(key, val);
+        addLine(card);
+        return card;
+    }
+
     /**
      * Add or replace a key with the given boolean value and comment.
      *
@@ -526,7 +571,6 @@ public class Header implements FitsElement {
         addLine(hc);
         return hc;
     }
-
     
     /**
      * get a builder for filling the header cards using the builder pattern.
@@ -1598,7 +1642,6 @@ public class Header implements FitsElement {
         return cards.isEmpty();
     }
 
-    
     /**
      * <p>
      * Reads new header data from an input, discarding any prior content.
@@ -1947,17 +1990,22 @@ public class Header implements FitsElement {
     }
 
     /**
-     * Update a line in the header
+     * Update a valued entry in the header, or adds a new header entry. If the header does not 
+     * contain a prior entry for the specific keyword, or if the keyword is a comment-style key, 
+     * a new entry is added at the current editing position. Otherwise, the matching existing
+     * entry is updated in situ.
      *
      * @param key
-     *            The key of the card to be replaced.
+     *            The key of the card to be replaced (or added).
      * @param card
      *            A new card
      * @throws HeaderCardException
      *             if the operation failed
      */
     public void updateLine(IFitsHeader key, HeaderCard card) throws HeaderCardException {
-        deleteKey(key);
+        if (key.valueType() != VALUE.NONE) {
+            deleteKey(key);
+        }
         cursor().add(card);
     }
 
@@ -1993,15 +2041,11 @@ public class Header implements FitsElement {
         Cursor<String, HeaderCard> j = newHdr.iterator();
 
         while (j.hasNext()) {
-            HeaderCard nextHCard = j.next();
-            // updateLine() doesn't work with COMMENT and HISTORYs because
-            // this would allow only one COMMENT in total in each header
-            if (nextHCard.getKey().equals(COMMENT.key())) {
-                insertComment(nextHCard.getComment());
-            } else if (nextHCard.getKey().equals(HISTORY.key())) {
-                insertHistory(nextHCard.getComment());
+            HeaderCard card = j.next();
+            if (card.isCommentStyleCard()) {
+                insertCommentStyle(card.getKey(), card.getComment());
             } else {
-                updateLine(nextHCard.getKey(), nextHCard);
+                updateLine(card.getKey(), card);
             }
         }
     }
@@ -2026,7 +2070,94 @@ public class Header implements FitsElement {
             dos.write(blank);
         }
     }
+   
+    /**
+     * Add required keywords, and removes conflicting ones depending on whether it is designated
+     * as a primary header or not.
+     * 
+     * @param isPrimary         <code>true</code> if this is to be a primary header, otherwise <code>false</code>
+     * @throws FitsException    if there was an error trying to edit the header.
+     * 
+     * @since 1.17
+     * 
+     * @see #validate(FitsOutput)
+     */
+    void editRequiredKeys(boolean isPrimary) throws FitsException {
+       
+        if (isPrimary) {
+            // Delete keys that cannot be in primary
+            deleteKey(XTENSION);
+            
+            // Some FITS readers don't like the PCOUNT and GCOUNT keywords in the primary header
+            if (!getBooleanValue(GROUPS, false)) {
+                deleteKey(PCOUNT);
+                deleteKey(GCOUNT);
+            }
+            
+            // Make sure we have SIMPLE
+            addValue(SIMPLE, true);
+        } else {
+            // Delete keys that cannot be in extensions
+            deleteKey(SIMPLE);
+            
+            // Some FITS readers don't like the EXTEND keyword in extensions.
+            deleteKey(EXTEND);
+            
+            // Make sure we have XTENSION
+            addValue(XTENSION, getStringValue(XTENSION, "UNKNOWN"));
+        }
         
+        // Make sure we have BITPIX
+        addValue(BITPIX, getIntValue(BITPIX, Bitpix.VALUE_FOR_INT));
+        
+        int naxes = getIntValue(NAXIS, 0);
+        addValue(NAXIS, naxes);
+        
+        for (int i = 1; i <= naxes; i++) {
+            IFitsHeader naxisi = NAXISn.n(i);
+            addValue(naxisi, getIntValue(naxisi, 1));
+        }
+        
+        if (isPrimary) {
+            addValue(EXTEND, true);
+        } else {
+            addValue(PCOUNT, getIntValue(PCOUNT, 0));
+            addValue(GCOUNT, getIntValue(GCOUNT, 1));
+        }
+    }
+    
+    /**
+     * <p>
+     * Validates this header by making it a proper primary or extension header. In both cases it means adding
+     * required keywords if missing, and removing conflicting cards. Then ordering is checked and
+     * corrected as necessary and ensures that the <code>END</code> card is at the tail. 
+     * 
+     * 
+     * @param asPrimary         <code>true</code> if this header is to be a primary FITS header
+     * @throws FitsException    If there was an issue getting the header into proper form.
+     * 
+     * @since 1.17
+     */
+    public void validate(boolean asPrimary) throws FitsException {
+        editRequiredKeys(asPrimary);
+        validate();
+    }   
+        
+    /**
+     * Validates the header making sure it has the required keywords and that the essential
+     * keywords appeat in the in the required order
+     * 
+     * @throws FitsException    If there was an issue getting the header into proper form.
+     */
+    private void validate() throws FitsException {
+        // Ensure that all cards are in the proper order.
+        if (this.headerSorter != null) {
+            this.cards.sort(this.headerSorter);
+        }
+        checkBeginning();
+        checkEnd();
+    }
+    
     /**
      * Write the current header (including any needed padding) to the output
      * stream.
@@ -2039,14 +2170,11 @@ public class Header implements FitsElement {
      */
     @Override
     public void write(ArrayDataOutput dos) throws FitsException {
+        validate();
+        
         FitsSettings settings = FitsFactory.current();
         this.fileOffset = FitsUtil.findOffset(dos);
-        // Ensure that all cards are in the proper order.
-        if (this.headerSorter != null) {
-            this.cards.sort(this.headerSorter);
-        }
-        checkBeginning();
-        checkEnd();
+        
         Cursor<String, HeaderCard> writeIterator = this.cards.iterator(0);
         try {
             int size = 0;
@@ -2288,17 +2416,50 @@ public class Header implements FitsElement {
 
     /**
      * Replace the key with a new key. Typically this is used when deleting or
-     * inserting columns so that TFORMx -> TFORMx-1
+     * inserting columns. If the convention of the new keyword is not compatible with the existing value 
+     * a warning message is logged but no exception is thrown (at this point).
      *
      * @param oldKey
      *            The old header keyword.
      * @param newKey
      *            the new header keyword.
      * @return <CODE>true</CODE> if the card was replaced.
-     * @exception HeaderCardException
-     *                If <CODE>newKey</CODE> is not a valid FITS keyword.
+     * @throws HeaderCardException
+     *                If <CODE>newKey</CODE> is not a valid FITS keyword.           
      */
     boolean replaceKey(IFitsHeader oldKey, IFitsHeader newKey) throws HeaderCardException {
+        
+        if (oldKey.valueType() == VALUE.NONE) {
+            throw new IllegalArgumentException("cannot replace comment-style " + oldKey.key());
+        }
+        
+        HeaderCard card = findCard(oldKey);
+        VALUE newType = newKey.valueType();
+
+        if (card != null && oldKey.valueType() != newType && newType != VALUE.ANY) {
+            Class<?> type = card.valueType();
+            Exception e = null;
+            
+            // Check that the exisating cards value is compatible with the expected type of the new key.
+            if (newType == VALUE.NONE) {
+                e = new IllegalArgumentException("comment-style " + newKey.key() + " cannot replace valued key " + oldKey.key());
+            } else if (Boolean.class.isAssignableFrom(type) && newType != VALUE.LOGICAL) {
+                e = new IllegalArgumentException(newKey.key() + " cannot not support the existing boolean value.");
+            } else if (String.class.isAssignableFrom(type) && newType != VALUE.STRING) {
+                e = new IllegalArgumentException(newKey.key() + " cannot not support the existing string value.");
+            } else if (ComplexValue.class.isAssignableFrom(type) && newType != VALUE.COMPLEX) {
+                e = new IllegalArgumentException(newKey.key() + " cannot not support the existing complex value.");
+            } else if (card.isDecimalType() && newType != VALUE.REAL && newType != VALUE.COMPLEX) {
+                e = new IllegalArgumentException(newKey.key() + " cannot not support the existing decimal values.");
+            } else if (Number.class.isAssignableFrom(type) && newType != VALUE.REAL && newType != VALUE.INTEGER && newType != VALUE.COMPLEX) {
+                e = new IllegalArgumentException(newKey.key() + " cannot not support the existing numerical value.");
+            }
+            
+            if (e != null) {
+                LOG.log(Level.WARNING, e.getMessage(), e);
+            }
+        }
+    
         return replaceKey(oldKey.key(), newKey.key());
     }
 

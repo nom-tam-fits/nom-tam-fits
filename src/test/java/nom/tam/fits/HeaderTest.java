@@ -32,6 +32,7 @@ package nom.tam.fits;
  */
 
 import static nom.tam.fits.header.Standard.BITPIX;
+import static nom.tam.fits.header.Standard.BLOCKED;
 import static nom.tam.fits.header.Standard.END;
 import static nom.tam.fits.header.Standard.EXTEND;
 import static nom.tam.fits.header.Standard.NAXIS;
@@ -81,6 +82,8 @@ import nom.tam.fits.HeaderCommentsMap;
 import nom.tam.fits.HeaderOrder;
 import nom.tam.fits.ImageHDU;
 import nom.tam.fits.TruncatedFileException;
+import nom.tam.fits.header.GenericKey;
+import nom.tam.fits.header.IFitsHeader;
 import nom.tam.fits.header.Standard;
 import nom.tam.fits.header.hierarch.BlanksDotHierarchKeyFormatter;
 import nom.tam.util.ArrayDataOutput;
@@ -719,10 +722,10 @@ public class HeaderTest {
             assertEquals(hdr.getBooleanValue(CTYPE1.name()), false);
             assertEquals(hdr.getBooleanValue(CTYPE1), false);
 
-            hdu.addValue(CTYPE1.name(), 5, "bla");
-            assertEquals(hdr.getIntValue(CTYPE1.name()), 5);
-            assertEquals(hdr.getIntValue(CTYPE1), 5);
-            assertEquals(hdr.getIntValue(CTYPE1, -1), 5);
+            hdu.addValue(NAXISn.n(1).key(), 5, "bla");
+            assertEquals(hdr.getIntValue(NAXISn.n(1).key()), 5);
+            assertEquals(hdr.getIntValue(NAXISn.n(1)), 5);
+            assertEquals(hdr.getIntValue(NAXISn.n(1), -1), 5);
             assertEquals(hdr.getIntValue("ZZZ", -1), -1);
 
             hdu.addValue(CTYPE1.name(), "XX", "bla");
@@ -732,45 +735,45 @@ public class HeaderTest {
             assertEquals(hdr.getStringValue(CTYPE1, "yy"), "XX");
             assertEquals(hdr.getStringValue("ZZZ", "yy"), "yy");
        
-            hdr.addValue(CTYPE2, true);
-            assertEquals(hdr.getBooleanValue(CTYPE2.name()), true);
-            assertEquals(hdr.getBooleanValue(CTYPE2), true);
+            hdr.addValue(BLOCKED, true);
+            assertEquals(hdr.getBooleanValue(BLOCKED.name()), true);
+            assertEquals(hdr.getBooleanValue(BLOCKED), true);
             assertEquals(hdr.getBooleanValue("ZZZ", true), true);
 
-            hdr.addValue(CTYPE2, 5.0);
-            assertEquals(hdr.getDoubleValue(CTYPE2.name()), 5.0, 0.000001);
-            assertEquals(hdr.getDoubleValue(CTYPE2), 5.0, 0.000001);
+            hdr.addValue(CRVAL2, 5.0);
+            assertEquals(hdr.getDoubleValue(CRVAL2.name()), 5.0, 0.000001);
+            assertEquals(hdr.getDoubleValue(CRVAL2), 5.0, 0.000001);
             assertEquals(hdr.getDoubleValue("ZZZ", -1.0), -1.0, 0.000001);
 
-            hdr.addValue(CTYPE2.key(), 5.0, 6, "precision control.");
-            assertEquals(hdr.getDoubleValue(CTYPE2.name()), 5.0, 0.000001);
-            assertEquals(hdr.getDoubleValue(CTYPE2), 5.0, 0.000001);
+            hdr.addValue(CRVAL2.key(), 5.0, 6, "precision control.");
+            assertEquals(hdr.getDoubleValue(CRVAL2.name()), 5.0, 0.000001);
+            assertEquals(hdr.getDoubleValue(CRVAL2), 5.0, 0.000001);
             assertEquals(hdr.getDoubleValue("ZZZ", -1.0), -1.0, 0.000001);
 
-            hdr.addValue(CTYPE2.name(), BigDecimal.valueOf(5.0), "nothing special");
-            assertEquals(hdr.getDoubleValue(CTYPE2.name()), 5.0, 0.000001);
-            assertEquals(hdr.getDoubleValue(CTYPE2, -1d), 5.0, 0.000001);
-            assertEquals(hdr.getDoubleValue(CTYPE2), 5.0, 0.000001);
-            assertEquals(hdr.getBigDecimalValue(CTYPE2.name()), BigDecimal.valueOf(5.0));
-            assertEquals(hdr.getBigDecimalValue(CTYPE2), BigDecimal.valueOf(5.0));
-            assertEquals(hdr.getBigDecimalValue(CTYPE2, BigDecimal.ZERO), BigDecimal.valueOf(5.0));
+            hdr.addValue(CRVAL2.name(), BigDecimal.valueOf(5.0), "nothing special");
+            assertEquals(hdr.getDoubleValue(CRVAL2.name()), 5.0, 0.000001);
+            assertEquals(hdr.getDoubleValue(CRVAL2, -1d), 5.0, 0.000001);
+            assertEquals(hdr.getDoubleValue(CRVAL2), 5.0, 0.000001);
+            assertEquals(hdr.getBigDecimalValue(CRVAL2.name()), BigDecimal.valueOf(5.0));
+            assertEquals(hdr.getBigDecimalValue(CRVAL2), BigDecimal.valueOf(5.0));
+            assertEquals(hdr.getBigDecimalValue(CRVAL2, BigDecimal.ZERO), BigDecimal.valueOf(5.0));
             assertEquals(hdr.getBigDecimalValue("ZZZ", BigDecimal.valueOf(-1.0)), BigDecimal.valueOf(-1.0));
 
-            hdr.addValue(CTYPE2.name(), 5.0f, "nothing special");
-            assertEquals(hdr.getFloatValue(CTYPE2.name()), 5.0f, 0.000001);
-            assertEquals(hdr.getFloatValue(CTYPE2), 5.0f, 0.000001);
-            assertEquals(hdr.getFloatValue(CTYPE2.name(), -1f), 5.0f, 0.000001);
-            assertEquals(hdr.getFloatValue(CTYPE2, -1f), 5.0f, 0.000001);
+            hdr.addValue(CRVAL2.name(), 5.0f, "nothing special");
+            assertEquals(hdr.getFloatValue(CRVAL2.name()), 5.0f, 0.000001);
+            assertEquals(hdr.getFloatValue(CRVAL2), 5.0f, 0.000001);
+            assertEquals(hdr.getFloatValue(CRVAL2.name(), -1f), 5.0f, 0.000001);
+            assertEquals(hdr.getFloatValue(CRVAL2, -1f), 5.0f, 0.000001);
             assertEquals(hdr.getFloatValue("ZZZ", -1f), -1f, 0.000001);
 
-            hdr.addValue(CTYPE2.name(), BigInteger.valueOf(5), "nothing special");
-            assertEquals(hdr.getIntValue(CTYPE2.name()), 5);
-            assertEquals(hdr.getIntValue(CTYPE2), 5);
+            hdr.addValue(NAXISn.n(2).key(), BigInteger.valueOf(5), "nothing special");
+            assertEquals(hdr.getIntValue(NAXISn.n(2).key()), 5);
+            assertEquals(hdr.getIntValue(NAXISn.n(2)), 5);
             assertEquals(hdr.getIntValue("ZZZ", 0), 0);
-            assertEquals(hdr.getBigIntegerValue(CTYPE2.name()), BigInteger.valueOf(5));
-            assertEquals(hdr.getBigIntegerValue(CTYPE2.name(), BigInteger.valueOf(-1)), BigInteger.valueOf(5));
-            assertEquals(hdr.getBigIntegerValue(CTYPE2), BigInteger.valueOf(5));
-            assertEquals(hdr.getBigIntegerValue(CTYPE2, BigInteger.valueOf(-1)), BigInteger.valueOf(5));
+            assertEquals(hdr.getBigIntegerValue(NAXISn.n(2).key()), BigInteger.valueOf(5));
+            assertEquals(hdr.getBigIntegerValue(NAXISn.n(2).key(), BigInteger.valueOf(-1)), BigInteger.valueOf(5));
+            assertEquals(hdr.getBigIntegerValue(NAXISn.n(2).key()), BigInteger.valueOf(5));
+            assertEquals(hdr.getBigIntegerValue(NAXISn.n(2).key(), BigInteger.valueOf(-1)), BigInteger.valueOf(5));
             assertEquals(hdr.getBigIntegerValue("ZZZ", BigInteger.valueOf(-1)), BigInteger.valueOf(-1));
         } finally {
             SafeClose.close(in);
@@ -778,6 +781,18 @@ public class HeaderTest {
         }
     }
 
+    @Test 
+    public void addIFitsComplexTest() throws Exception {
+        Header h = new Header();
+        IFitsHeader key = GenericKey.create("TEST");
+        ComplexValue z0 = new ComplexValue(1.0, 2.0);
+        h.addValue(key, z0);
+        assertTrue(h.containsKey(key));
+        assertTrue(h.containsKey(key.key()));
+        ComplexValue z = h.getComplexValue(key.key());
+        assertEquals(z0, z);
+    }
+    
     @Test
     public void dumpHeaderTests() throws Exception {
         Fits f = null;
@@ -1029,7 +1044,7 @@ public class HeaderTest {
         header.addValue(SIMPLE, true);
         header.addValue(BITPIX, 8);
         header.addValue(NAXIS, 0);
-        header.addValue(END, true);
+        header.insertCommentStyle(END.key(), null);
 
         header.write(dos);
     }
@@ -1490,6 +1505,85 @@ public class HeaderTest {
         // No exception
     }
     
+    private void checkPrimary(Header h) throws Exception {
+        Cursor<String, HeaderCard> c = h.iterator();
+        assertEquals("SIMPLE", "SIMPLE", c.next().getKey());
+        assertEquals("BITPIX", "BITPIX", c.next().getKey());
+        assertEquals("NAXIS", "NAXIS", c.next().getKey());
+        assertEquals("EXTEND", "EXTEND", c.next().getKey());
+        assertFalse("!XTENSION", h.containsKey("XTENSION"));
+    }
     
+    private void checkXtension(Header h) throws Exception {
+        Cursor<String, HeaderCard> c = h.iterator();
+        assertEquals("XTENSION", "XTENSION", c.next().getKey());
+        assertEquals("BITPIX", "BITPIX", c.next().getKey());
+        assertEquals("NAXIS", "NAXIS", c.next().getKey());
+        assertEquals("PCOUNT", "PCOUNT", c.next().getKey());
+        assertEquals("GCOUNT", "GCOUNT", c.next().getKey());
+        assertFalse("!SIMPLE", h.containsKey("SIMPLE"));
+        assertFalse("!EXTEND", h.containsKey("EXTEND"));
+    }
     
+    @Test
+    public void testValidateForPrimary() throws Exception {
+        Header h = new Header();
+        h.validate(true);
+        checkPrimary(h);
+    }
+    
+    @Test
+    public void testValidateForXtension() throws Exception {
+        Header h = new Header();
+        h.validate(false);
+        checkXtension(h);
+    }
+    
+    @Test
+    public void testRevalidateForPrimary() throws Exception {
+        Header h = new Header();
+        h.validate(false);
+        h.validate(true);
+        checkPrimary(h);
+    }
+    
+    @Test
+    public void testRevalidateForXtension() throws Exception {
+        Header h = new Header();
+        h.validate(true);
+        h.validate(false);
+        checkXtension(h);
+    }
+    
+    @Test
+    public void updateCommentKey() throws Exception {
+        Header h = new Header();
+        h.insertComment("existing comment");
+        h.updateLine(Standard.COMMENT, HeaderCard.createCommentCard("new comment"));
+        assertEquals(2, h.getNumberOfCards());
+    }
+    
+    @Test
+    public void updateEmptyKey() throws Exception {
+        Header h = new Header();
+        h.insertCommentStyle("  ", "existing comment");
+        h.updateLine("  ", HeaderCard.createCommentCard("new comment"));
+        assertEquals(2, h.getNumberOfCards());
+    }
+    
+    @Test
+    public void updateKey() throws Exception {
+        Header h = new Header();
+        h.addValue("TEST1", 1, "comment");
+        h.updateLine("TEST1", new HeaderCard("TEST2", 2, "comment"));
+        assertEquals(1, h.getNumberOfCards());
+    }
+    
+    @Test
+    public void invalidHeaderSizeTest() throws Exception {
+        Header h = new Header();
+        h.addValue("TEST", 1.0, "Some value");
+        assertFalse(h.isValidHeader());
+        assertEquals(0, h.headerSize());
+    }
 }

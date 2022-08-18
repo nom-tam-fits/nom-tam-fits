@@ -55,6 +55,7 @@ import nom.tam.util.FitsInputStream;
 import nom.tam.util.ComplexValue;
 import nom.tam.util.CursorValue;
 import nom.tam.util.FlexFormat;
+import nom.tam.util.InputReader;
 
 
 /**
@@ -199,7 +200,7 @@ public class HeaderCard implements CursorValue<String>, Cloneable {
         }
 
     }
-   
+    
     /**
      * Creates a new card with a number value. The card will be created either in the integer, fixed-decimal, or
      * format, with the native precision. If the native precision cannot be fitted in the available card space,
@@ -583,7 +584,6 @@ public class HeaderCard implements CursorValue<String>, Cloneable {
         this.value = aValue;
     }
 
-    
     @Override
     protected HeaderCard clone() {
         try { 
@@ -1149,7 +1149,7 @@ public class HeaderCard implements CursorValue<String>, Cloneable {
             int valueEnd = valuePart.length();
             
             
-            // Check if there card continues inot the next record. The value
+            // Check if there card continues into the next record. The value
             // must end with '&' and the next card must be a CONTINUE card.
             // If so, remove the '&' from the value part, and parse in the next 
             // card for the next iteration...
@@ -1389,12 +1389,23 @@ public class HeaderCard implements CursorValue<String>, Cloneable {
      * @param key       The standard or conventional FITS keyword
      * @param type      The type we want to use with that key
      * 
+     * @throws IllegalArgumentException if the keyword does not support the given value type.
+     * 
      * @since 1.16
      */
-    private static void checkType(IFitsHeader key, VALUE type) {
-        if (key.valueType() != VALUE.ANY && key.valueType() != type) {
-            LOG.log(Level.WARNING, "[" + key + "] created with unexpected value type.", new IllegalArgumentException("Expected " + type + ", got " + key.valueType()));
+    private static boolean checkType(IFitsHeader key, VALUE type) throws IllegalArgumentException {
+        if (key.valueType() == type || key.valueType() == VALUE.ANY) {
+            return true;
         }
+        if (key.valueType() == VALUE.COMPLEX && (type == VALUE.REAL || type == VALUE.INTEGER)) {
+            return true;
+        }
+        if (key.valueType() == VALUE.REAL && type == VALUE.INTEGER) {
+            return true;
+        }
+        
+        LOG.log(Level.WARNING, "[" + key + "] with unexpected value type.", new IllegalArgumentException("Expected " + type + ", got " + key.valueType()));
+        return false;
     }
     
     /**
@@ -1421,15 +1432,24 @@ public class HeaderCard implements CursorValue<String>, Cloneable {
         try {
             return new HeaderCard(key.key(), value, key.comment());
         } catch (HeaderCardException e) {
-            throw new IllegalArgumentException("Invalid standard key [" + key.key() + "]", e);
+            throw new IllegalArgumentException("Invalid sconventional key [" + key.key() + "]", e);
         }
     }
     
     /**
+     * <p>
      * Creates a new card with a standard or conventional keyword and a number value, with
      * the default comment associated with the keyword. Unlike {@link #HeaderCard(String, Number)},
-     * this call does not throw an exception, since the keyword and comment should be valid 
-     * by design.
+     * this call does not throw a hard {@link HeaderCardException} exception, since the keyword and
+     * comment should be valid by design. (A runtime {@link IllegalArgumentException} may still be
+     * thrown in the event that the supplied conventional keywords itself is ill-defined -- but
+     * this should not happen unless something was poorly coded in this library, on in an
+     * extension of it).
+     * </p>
+     * <p>
+     * If the value is not compatible with the convention of the keyword, a warning message is
+     * logged but no exception is thrown (at this point).
+     * </p> 
      * 
      * @param key       The standard or conventional keyword with its associated default comment.
      * @param value     the integer value associated to the keyword.
@@ -1438,12 +1458,12 @@ public class HeaderCard implements CursorValue<String>, Cloneable {
      *                  and the specified value.
      *                  
      * @throws IllegalArgumentException     
-     *                  if the standard key was ill-defined.
+     *                  if the standard key itself was ill-defined.
      *                  
-     * @since 1.6
+     * @since 1.16
      */
     public static HeaderCard create(IFitsHeader key, Number value)  throws IllegalArgumentException  {
-        if (value instanceof Float || value instanceof Double || value instanceof BigInteger) {
+        if (value instanceof Float || value instanceof Double || value instanceof BigDecimal) {
             checkType(key, VALUE.REAL);
         } else {       
             checkType(key, VALUE.INTEGER);
@@ -1452,7 +1472,7 @@ public class HeaderCard implements CursorValue<String>, Cloneable {
         try {
             return new HeaderCard(key.key(), value, key.comment());
         } catch (HeaderCardException e) {
-            throw new IllegalArgumentException("Invalid standard key [" + key.key() + "]", e);
+            throw new IllegalArgumentException("Invalid conventional key [" + key.key() + "]", e);
         }
     }
     
@@ -1471,7 +1491,7 @@ public class HeaderCard implements CursorValue<String>, Cloneable {
      * @throws IllegalArgumentException     
      *                  if the standard key was ill-defined.
      *                  
-     * @since 1.6
+     * @since 1.16
      */
     public static HeaderCard create(IFitsHeader key, ComplexValue value)  throws IllegalArgumentException  {
         checkType(key, VALUE.COMPLEX);
@@ -1479,7 +1499,7 @@ public class HeaderCard implements CursorValue<String>, Cloneable {
         try {
             return new HeaderCard(key.key(), value, key.comment());
         } catch (HeaderCardException e) {
-            throw new IllegalArgumentException("Invalid standard key [" + key.key() + "]", e);
+            throw new IllegalArgumentException("Invalid conventional key [" + key.key() + "]", e);
         }
     }
     
@@ -1509,7 +1529,7 @@ public class HeaderCard implements CursorValue<String>, Cloneable {
         try {
             return new HeaderCard(key.key(), value, key.comment());
         } catch (HeaderCardException e) {
-            throw new IllegalArgumentException("Invalid standard key [" + key.key() + "]", e);
+            throw new IllegalArgumentException("Invalid conventional key [" + key.key() + "]", e);
         }
     }
     
@@ -1635,27 +1655,25 @@ public class HeaderCard implements CursorValue<String>, Cloneable {
         return new HeaderCard(key, Long.toHexString(value), comment, Long.class);
     }
 
+
     /**
-     * Read exactly one complete fits header line from the input.
-     *
-     * @param dis the data input stream to read the line
+     * Reads an 80-byte card record from an input.
      * 
-     * @return a string of exactly 80 characters
-     *
-     * @throwa EOFException             if already at the end of file.
-     * @throws TruncatedFileException   if there was not a complete line available in the input.
-     * @throws IOException              if the input stream could not be read
+     * @param in        The input to read from
+     * @return          The raw, undigested header record as a string.
+     * 
+     * @throws IOException              if already at the end of file.
+     * @throws TruncatedFileException   if there was not a complete record available in the input.
      */
-    @SuppressWarnings({ "resource", "deprecation" })
-    private static String readOneHeaderLine(HeaderCardCountingArrayDataInput dis) throws IOException, TruncatedFileException {
-        byte[] buffer = new byte[FITS_HEADER_CARD_SIZE];       
+    private static String readRecord(InputReader in) throws IOException, TruncatedFileException {
+        byte[] buffer = new byte[FITS_HEADER_CARD_SIZE];
        
         int got = 0;
         
         try {
             // Read as long as there is more available, even if it comes in a trickle...
             while (got < buffer.length) {
-                int n = dis.in().read(buffer, got, buffer.length - got);
+                int n = in.read(buffer, got, buffer.length - got);
                 if (n < 0) {
                     break;
                 }
@@ -1674,12 +1692,28 @@ public class HeaderCard implements CursorValue<String>, Cloneable {
             // Got an incomplete header card...
             throw new TruncatedFileException("Got only " + got + " of " + buffer.length + " bytes expected for a header card"); 
         }
-            
-        dis.cardRead();
         
         return AsciiFuncs.asciiString(buffer);
     }
 
+    /**
+     * Read exactly one complete fits header line from the input.
+     *
+     * @param dis the data input stream to read the line
+     * 
+     * @return a string of exactly 80 characters
+     *
+     * @throwa EOFException             if already at the end of file.
+     * @throws TruncatedFileException   if there was not a complete line available in the input.
+     * @throws IOException              if the input stream could not be read
+     */
+    @SuppressWarnings({ "resource", "deprecation" })
+    private static String readOneHeaderLine(HeaderCardCountingArrayDataInput dis) throws IOException, TruncatedFileException {
+        String s = readRecord(dis.in());
+        dis.cardRead();
+        return s;
+    }
+    
     /**
      * Returns the maximum number of characters that can be used for a value field in a single FITS header
      * record (80 characters wide), after the specified keyword.

@@ -76,7 +76,6 @@ public class DupTest {
         
         public synchronized int getCount() { 
             return count; 
-            
         }
     };
     

@@ -76,12 +76,12 @@ public class HeaderOrderTest {
         ArrayDataOutput dos = new FitsOutputStream(new ByteArrayOutputStream(), 80);
         Header header = new Header();
         
-        header.addValue(BLOCKED, 1);
+        header.addValue(BLOCKED, true);
         header.addValue(SIMPLE, true);
         header.addValue(BITPIX, 8);
         header.addValue(THEAP, 1);  
         header.addValue(NAXIS, 0);
-        header.addValue(END, true);
+        header.insertCommentStyle(END.key(), null);
        
         
         // Check that the order is what we expect...
@@ -99,9 +99,9 @@ public class HeaderOrderTest {
         header.addValue(SIMPLE, true);
         header.addValue(BITPIX, 8);
         header.addValue(NAXIS, 0);
-        header.addValue(END, true);
+        header.insertCommentStyle(END.key(), null);
         header.addValue(THEAP, 1);
-        header.addValue(BLOCKED, 1);
+        header.addValue(BLOCKED, true);
         Assert.assertEquals(END.key(), header.iterator(3).next().getKey());
         header.write(dos);
         Assert.assertEquals(THEAP.key(), header.iterator(4).next().getKey());
@@ -113,4 +113,28 @@ public class HeaderOrderTest {
     public void testSaveNewCard() {
         HeaderCard.saveNewHeaderCard("XXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXX", "", false);
     }
+    
+    @Test
+    public void testBadNaxis1() {
+        assertEquals(1, new HeaderOrder().compare("NAXIS-1", "THEAP"));
+    }
+    
+    @Test
+    public void testBadNaxis2() {
+        assertEquals(1, new HeaderOrder().compare("NAXIS1000", "THEAP"));
+    }
+    
+    @Test
+    public void testBadNaxis3() {
+        assertEquals(1, new HeaderOrder().compare("NAXISA", "THEAP"));
+    }
+    
+    @Test
+    public void testNullOrder() {
+        assertEquals(1, new HeaderOrder().compare(null, "THEAP"));
+        assertEquals(0, new HeaderOrder().compare(null, "WHATEVER"));
+        assertEquals(-1, new HeaderOrder().compare(null, "END"));
+    }
 }
+
+
