@@ -176,33 +176,19 @@
 <a class="jxr_linenumber" name="L168" href="#L168">168</a>         Assert.assertNull(dummyHDU.getObservationDate());
 <a class="jxr_linenumber" name="L169" href="#L169">169</a>     }
 <a class="jxr_linenumber" name="L170" href="#L170">170</a> 
-<a class="jxr_linenumber" name="L171" href="#L171">171</a>     @Test
+<a class="jxr_linenumber" name="L171" href="#L171">171</a>     @Test(expected = FitsException.<strong class="jxr_keyword">class</strong>)
 <a class="jxr_linenumber" name="L172" href="#L172">172</a>     <strong class="jxr_keyword">public</strong> <strong class="jxr_keyword">void</strong> testRewriteFailuer() <strong class="jxr_keyword">throws</strong> Exception {
-<a class="jxr_linenumber" name="L173" href="#L173">173</a>         FitsException actual = <strong class="jxr_keyword">null</strong>;
-<a class="jxr_linenumber" name="L174" href="#L174">174</a>         <strong class="jxr_keyword">try</strong> {
-<a class="jxr_linenumber" name="L175" href="#L175">175</a>             BasicHDU&lt;?&gt; dummyHDU = BasicHDU.getDummyHDU();
-<a class="jxr_linenumber" name="L176" href="#L176">176</a>             dummyHDU.rewrite();
-<a class="jxr_linenumber" name="L177" href="#L177">177</a>         } <strong class="jxr_keyword">catch</strong> (FitsException e) {
-<a class="jxr_linenumber" name="L178" href="#L178">178</a>             actual = e;
-<a class="jxr_linenumber" name="L179" href="#L179">179</a>         }
-<a class="jxr_linenumber" name="L180" href="#L180">180</a>         Assert.assertNotNull(actual);
-<a class="jxr_linenumber" name="L181" href="#L181">181</a>         Assert.assertTrue(actual.getMessage().contains(<span class="jxr_string">"rewrite"</span>));
+<a class="jxr_linenumber" name="L173" href="#L173">173</a>         BasicHDU&lt;?&gt; dummyHDU = BasicHDU.getDummyHDU();
+<a class="jxr_linenumber" name="L174" href="#L174">174</a>         dummyHDU.rewrite();
+<a class="jxr_linenumber" name="L175" href="#L175">175</a>     }
+<a class="jxr_linenumber" name="L176" href="#L176">176</a> 
+<a class="jxr_linenumber" name="L177" href="#L177">177</a>     @Test(expected = FitsException.<strong class="jxr_keyword">class</strong>)
+<a class="jxr_linenumber" name="L178" href="#L178">178</a>     <strong class="jxr_keyword">public</strong> <strong class="jxr_keyword">void</strong> testSetPrimaryFailuer() <strong class="jxr_keyword">throws</strong> Exception {
+<a class="jxr_linenumber" name="L179" href="#L179">179</a>         UndefinedData data = <strong class="jxr_keyword">new</strong> UndefinedData(<strong class="jxr_keyword">new</strong> <strong class="jxr_keyword">long</strong>[10]);
+<a class="jxr_linenumber" name="L180" href="#L180">180</a>         BasicHDU&lt;?&gt; dummyHDU = <strong class="jxr_keyword">new</strong> UndefinedHDU(UndefinedHDU.manufactureHeader(data), data);
+<a class="jxr_linenumber" name="L181" href="#L181">181</a>         dummyHDU.setPrimaryHDU(<strong class="jxr_keyword">true</strong>);
 <a class="jxr_linenumber" name="L182" href="#L182">182</a>     }
-<a class="jxr_linenumber" name="L183" href="#L183">183</a> 
-<a class="jxr_linenumber" name="L184" href="#L184">184</a>     @Test
-<a class="jxr_linenumber" name="L185" href="#L185">185</a>     <strong class="jxr_keyword">public</strong> <strong class="jxr_keyword">void</strong> testSetPrimaryFailuer() <strong class="jxr_keyword">throws</strong> Exception {
-<a class="jxr_linenumber" name="L186" href="#L186">186</a>         UndefinedData data = <strong class="jxr_keyword">new</strong> UndefinedData(<strong class="jxr_keyword">new</strong> <strong class="jxr_keyword">long</strong>[10]);
-<a class="jxr_linenumber" name="L187" href="#L187">187</a>         BasicHDU&lt;?&gt; dummyHDU = <strong class="jxr_keyword">new</strong> UndefinedHDU(UndefinedHDU.manufactureHeader(data), data);
-<a class="jxr_linenumber" name="L188" href="#L188">188</a>         FitsException actual = <strong class="jxr_keyword">null</strong>;
-<a class="jxr_linenumber" name="L189" href="#L189">189</a>         <strong class="jxr_keyword">try</strong> {
-<a class="jxr_linenumber" name="L190" href="#L190">190</a>             dummyHDU.setPrimaryHDU(<strong class="jxr_keyword">true</strong>);
-<a class="jxr_linenumber" name="L191" href="#L191">191</a>         } <strong class="jxr_keyword">catch</strong> (FitsException e) {
-<a class="jxr_linenumber" name="L192" href="#L192">192</a>             actual = e;
-<a class="jxr_linenumber" name="L193" href="#L193">193</a>         }
-<a class="jxr_linenumber" name="L194" href="#L194">194</a>         Assert.assertNotNull(actual);
-<a class="jxr_linenumber" name="L195" href="#L195">195</a>         Assert.assertTrue(actual.getMessage().contains(<span class="jxr_string">"primary"</span>));
-<a class="jxr_linenumber" name="L196" href="#L196">196</a>     }
-<a class="jxr_linenumber" name="L197" href="#L197">197</a> }
+<a class="jxr_linenumber" name="L183" href="#L183">183</a> }
 </pre>
 <hr/>
 <div id="footer">Copyright &#169; 1996&#x2013;2022 nom-tam-fits. All rights reserved.</div>
