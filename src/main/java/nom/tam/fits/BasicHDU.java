@@ -527,11 +527,7 @@ public abstract class BasicHDU<DataClass extends Data> implements FitsElement {
      *         stripped.
      */
     public String getTrimmedString(IFitsHeader keyword) {
-        String s = this.myHeader.getStringValue(keyword);
-        if (s != null) {
-            s = s.trim();
-        }
-        return s;
+        return getTrimmedString(keyword.key());
     }
 
     /**
@@ -590,13 +586,17 @@ public abstract class BasicHDU<DataClass extends Data> implements FitsElement {
 
     @Override
     public void write(ArrayDataOutput stream) throws FitsException {
+        if (myHeader == null) {
+            myHeader = new Header();
+        }
+        
         if (stream instanceof FitsOutput) {
             boolean isFirst = ((FitsOutput) stream).isAtStart();
             setPrimaryHDU(canBePrimary() && isFirst);
         }
-        if (this.myHeader != null) {
-            this.myHeader.write(stream);
-        }
+        
+        this.myHeader.write(stream);
+        
         if (this.myData != null) {
             this.myData.write(stream);
         }

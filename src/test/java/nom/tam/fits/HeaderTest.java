@@ -1578,4 +1578,12 @@ public class HeaderTest {
         h.updateLine("TEST1", new HeaderCard("TEST2", 2, "comment"));
         assertEquals(1, h.getNumberOfCards());
     }
+    
+    @Test
+    public void invalidHeaderSizeTest() throws Exception {
+        Header h = new Header();
+        h.addValue("TEST", 1.0, "Some value");
+        assertFalse(h.isValidHeader());
+        assertEquals(0, h.headerSize());
+    }
 }
