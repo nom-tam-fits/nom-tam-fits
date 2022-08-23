@@ -1,25 +1,25 @@
 <document xmlns="http://maven.apache.org/changes/1.0.0" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:schemaLocation="http://maven.apache.org/changes/1.0.0 http://maven.apache.org/xsd/changes-1.0.0.xsd">
 	<body>
 
-    <release version="1.17.0-rc1" date="2022-08-18" description="Feature release with bug fixes.">
+    <release version="1.17.0-rc1" date="2022-08-18" description="Minor feature release.">
     	<action type="add" dev="attipaci" issue="283">
-	      User adjustable inline header comment alignment position via Header.setCommentAlignPosition(int). 
+	      User adjustable header comment alignment position via Header.setCommentAlignPosition(int). 
 			</action>
     	<action type="add" dev="attipaci" issue="145">
-				New Fits.getHDU() nethods to get HDU from Fits by name (and version).
+				New Fits.getHDU() methods to select HDU from Fits by name (and version).
 			</action>
       <action type="update" dev="attipaci" issue="311">
-        Duplicate header keys, when parsing, are repoted though separate logger instance from Header's, with verbosity
-        controlled via Header.setParserWarningEnabled(boolean). 
+        Duplicate header keys, during parsing, are repoted though separate logger instance from Header's, with verbosity
+        controlled via Header.setParserWarningsEnabled(boolean). 
       </action>
       <action type="update" dev="attipaci" issue="292">
         Suppress repeated duplicate keyword warnings when parsing and improve checks for FITS standard violations.
       </action>
       <action type="update" dev="attipaci" issue="292">
-        Replacing header keys logs a warning when existing value type is mismatched for new standardized keyword.
+        Replacing header keys logs a warning when existing value type is incompatible wth the newly associated standardized keyword.
       </action>
       <action type="update" dev="attipaci" issue="292">
-        Creation of header entries with standardized keywords logs a warning if value type is incompatible with the keyword. 
+        Creation of header entries with standardized keywords logs a warning if associated value type is incompatible with the keyword. 
       </action>
       <action type="update" dev="attipaci" issue="292">
         Improved header card ordering implementation.
@@ -27,6 +27,9 @@
 	    <action type="update" dev="attipaci" issue="266">
 				Safe incremental HDU writing via new FitsOutput interface, which is used to check whether HDUs should be set primary or not
 				depending on where it is located in the output.
+			</action>
+			<action type="update" dev="attipaci" issue="74">
+        New logo.
 			</action>
 	  </release>
 	  
