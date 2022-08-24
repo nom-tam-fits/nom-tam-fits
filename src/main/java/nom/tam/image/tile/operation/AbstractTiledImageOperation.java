@@ -94,25 +94,14 @@ public abstract class AbstractTiledImageOperation<OPERATION extends ITileOperati
      */
     public void setTileAxes(int[] value) throws FitsException {
         this.tileAxes = Arrays.copyOf(value, value.length);
-        for (int index = 0; index < tileAxes.length; index++) {
-            if (tileAxes[index] <= 0) {
-                tileAxes[index] = axes[index];
-            }
-        }
     }
 
     protected boolean hasAxes() {
-        if (axes == null) {
-            return false;
-        }
-        return axes.length > 0;
+        return axes != null;
     }
 
     protected boolean hasTileAxes() {
-        if (tileAxes == null) {
-            return false;
-        }
-        return tileAxes.length > 0;
+        return tileAxes != null;
     }
 
     protected void createTiles(ITileOperationInitialisation<OPERATION> init) throws FitsException {
