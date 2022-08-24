@@ -49,7 +49,7 @@ class TileBufferColumnBased extends TileBuffer {
      * for the data copy is allocates as early as needed and freed as soon as
      * possible.
      */
-    private Buffer gapLessBuffer;
+    private Buffer packed;
 
     /**
      * the width of the image in pixels, that differs from the width of the
@@ -69,30 +69,34 @@ class TileBufferColumnBased extends TileBuffer {
 
     @Override
     public Buffer getBuffer() {
-        if (this.gapLessBuffer == null) {
-            createGapLessBuffer();
+        if (packed == null) {
+            createPackedBuffer();
         }
-        return this.gapLessBuffer;
+        return packed;
     }
 
     /**
      * create the temporary buffer that contains no data gaps.
      */
-    private void createGapLessBuffer() {
-        final int gap = this.imageWidth - getWidth();
-        final int pixelSizeInData = getPixelSizeInData();
-        Buffer imagebuffer = getImageBuffer();
-        imagebuffer.position(0);
-        imagebuffer.limit(0);
+    private void createPackedBuffer() {
+        final int gap = imageWidth - getWidth();
+         
+        Buffer raw = getImageBuffer();
+        final int imLength = Math.min(raw.capacity(), getPixelSizeInData());
+        
+        raw.position(0);
+        
         ElementType<Buffer> type = elementType();
-        this.gapLessBuffer = type.newBuffer(getPixelSize());
-        while (imagebuffer.limit() < pixelSizeInData) {
-            imagebuffer.limit(imagebuffer.position() + getWidth());
-            type.appendBuffer(this.gapLessBuffer, imagebuffer);
-            imagebuffer.limit(Math.min(pixelSizeInData, imagebuffer.position() + gap));
-            imagebuffer.position(imagebuffer.limit());
+        packed = type.newBuffer(getPixelSize());
+        
+        for (int i = 0; i < getHeight(); i++) {
+            raw.limit(raw.position() + getWidth());
+            type.appendBuffer(packed, raw);
+            raw.limit(Math.min(raw.position() + gap, imLength));
+            raw.position(raw.limit());
         }
-        this.gapLessBuffer.rewind();
+        packed.rewind();
+        raw.limit(imLength);
     }
 
     /**
@@ -100,20 +104,20 @@ class TileBufferColumnBased extends TileBuffer {
      * back into the image buffer.
      */
     private void desolveGapLessBuffer() {
-        final int gap = this.imageWidth - getWidth();
-        final int pixelSize = getPixelSize();
-        Buffer imagebuffer = getImageBuffer();
-        imagebuffer.limit(getPixelSizeInData());
-        imagebuffer.rewind();
-        this.gapLessBuffer.rewind();
-        this.gapLessBuffer.limit(0);
+        final int gap = imageWidth - getWidth();
+        Buffer raw = getImageBuffer();
+        raw.position(0);
+        raw.limit(getPixelSizeInData());
+        packed.rewind();
+
         ElementType<Buffer> type = elementType();
-        while (this.gapLessBuffer.limit() < pixelSize) {
-            this.gapLessBuffer.limit(this.gapLessBuffer.position() + getWidth());
-            type.appendBuffer(imagebuffer, this.gapLessBuffer);
-            imagebuffer.position(Math.min(imagebuffer.position() + gap, imagebuffer.limit()));
+        
+        for (int i = 0; i < getHeight(); i++) {
+            packed.limit(packed.position() + getWidth());
+            type.appendBuffer(raw, packed);
+            raw.position(Math.min(raw.position() + gap, raw.limit()));
         }
-        this.gapLessBuffer = null;
+        packed = null;
     }
 
     /**
@@ -122,7 +126,7 @@ class TileBufferColumnBased extends TileBuffer {
      *         would go over the image data limit.
      */
     private int getPixelSizeInData() {
-        return (getHeight() - 1) * this.imageWidth + getWidth();
+        return (getHeight() - 1) * imageWidth + getWidth();
     }
 
     private ElementType<Buffer> elementType() {
