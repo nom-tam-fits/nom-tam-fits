@@ -32,8 +32,6 @@ package nom.tam.image.tile.operation;
  */
 
 import java.lang.reflect.Array;
-import java.math.BigDecimal;
-import java.math.RoundingMode;
 import java.nio.Buffer;
 import java.util.Arrays;
 
@@ -49,12 +47,13 @@ public abstract class AbstractTiledImageOperation<OPERATION extends ITileOperati
      */
     private ElementType<Buffer> baseType;
 
+    /** Tile dimensions in Java array index order (x is last!) */
     private int[] tileAxes;
 
     private OPERATION[] tileOperations;
 
     private final Class<OPERATION> operationClass;
-
+    
     public AbstractTiledImageOperation(Class<OPERATION> operationClass) {
         this.operationClass = operationClass;
     }
@@ -66,7 +65,7 @@ public abstract class AbstractTiledImageOperation<OPERATION extends ITileOperati
 
     public int getBufferSize() {
         int bufferSize = 1;
-        for (int axisValue : this.axes) {
+        for (int axisValue : axes) {
             bufferSize *= axisValue;
         }
         return bufferSize;
@@ -74,7 +73,7 @@ public abstract class AbstractTiledImageOperation<OPERATION extends ITileOperati
 
     @Override
     public int getImageWidth() {
-        return this.axes[0];
+        return axes[axes.length - 1];
     }
 
     @Override
@@ -86,47 +85,48 @@ public abstract class AbstractTiledImageOperation<OPERATION extends ITileOperati
         this.axes = Arrays.copyOf(axes, axes.length);
     }
 
+    /**
+     * Sets the tile dimension. Here the dimensions are in Java array index order, that is the
+     * x-dimension (width of tile) is last!
+     * 
+     * @param value     The tile dimensions in Java array index order (x is last!)
+     * @throws FitsException
+     */
     public void setTileAxes(int[] value) throws FitsException {
         this.tileAxes = Arrays.copyOf(value, value.length);
-        for (int index = 0; index < this.tileAxes.length; index++) {
-            if (this.tileAxes[index] <= 0) {
-                this.tileAxes[index] = this.axes[index];
-            }
-        }
     }
 
-    protected boolean areAxesUndefined() {
-        return this.axes == null || this.axes.length == 0;
+    protected boolean hasAxes() {
+        return axes != null;
     }
 
-    protected boolean areTileAxesUndefined() {
-        return this.tileAxes == null || this.tileAxes.length == 0;
+    protected boolean hasTileAxes() {
+        return tileAxes != null;
     }
 
     protected void createTiles(ITileOperationInitialisation<OPERATION> init) throws FitsException {
-        final int imageWidth = this.axes[0];
-        final int imageHeight = this.axes[1];
-        final int tileWidth = this.tileAxes[0];
-        final int tileHeight = this.tileAxes[1];
-        final int nrOfTilesOnXAxis = BigDecimal.valueOf((double) imageWidth / (double) tileWidth).setScale(0, RoundingMode.CEILING).intValue();
-        final int nrOfTilesOnYAxis = BigDecimal.valueOf((double) imageHeight / (double) tileHeight).setScale(0, RoundingMode.CEILING).intValue();
-        int lastTileWidth = imageWidth - (nrOfTilesOnXAxis - 1) * tileWidth;
-        int lastTileHeight = imageHeight - (nrOfTilesOnYAxis - 1) * tileHeight;
+        final int imageWidth = this.axes[1];
+        final int imageHeight = this.axes[0];
+        final int tileWidth = this.tileAxes[1];
+        final int tileHeight = this.tileAxes[0];
+        final int nx = (imageWidth + tileWidth - 1) / tileWidth;
+        final int ny = (imageHeight + tileHeight - 1) / tileHeight;
+  
         int tileIndex = 0;
         @SuppressWarnings("unchecked")
-        OPERATION[] operations = (OPERATION[]) Array.newInstance(this.operationClass, nrOfTilesOnXAxis * nrOfTilesOnYAxis);
+        OPERATION[] operations = (OPERATION[]) Array.newInstance(this.operationClass, ny * nx);
         this.tileOperations = operations;
         init.tileCount(this.tileOperations.length);
+
         for (int y = 0; y < imageHeight; y += tileHeight) {
-            boolean lastY = y + tileHeight >= imageHeight;
-            for (int x = 0; x < imageWidth; x += tileWidth) {
-                boolean lastX = x + tileWidth >= imageWidth;
+            int h = Math.min(tileHeight, imageHeight - y);
+            for (int x = 0; x < imageWidth; x += tileWidth, tileIndex++) {
+                int w = Math.min(tileWidth, imageWidth - x);
                 int dataOffset = y * imageWidth + x;
                 OPERATION tileOperation = init.createTileOperation(tileIndex, new TileArea().start(x, y));
-                tileOperation.setDimensions(dataOffset, lastX ? lastTileWidth : tileWidth, lastY ? lastTileHeight : tileHeight);
+                tileOperation.setDimensions(dataOffset, w, h);
                 this.tileOperations[tileIndex] = tileOperation;
                 init.init(tileOperation);
-                tileIndex++;
             }
         }
     }
@@ -139,6 +139,12 @@ public abstract class AbstractTiledImageOperation<OPERATION extends ITileOperati
         return this.tileOperations.length;
     }
 
+    /**
+     * Returns the reference to the tile dimensions array. The dimensions are stored in Java array
+     * index order, i.e., the x-dimension (width) is last. 
+     * 
+     * @return      The tile dimensions in Java array index order (x is last!).
+     */
     protected int[] getTileAxes() {
         return this.tileAxes;
     }

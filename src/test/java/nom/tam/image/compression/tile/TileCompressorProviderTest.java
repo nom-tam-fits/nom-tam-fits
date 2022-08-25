@@ -395,7 +395,7 @@ public class TileCompressorProviderTest {
         }
     }
 
-    private void testTileSizes(int tileWidth, int tileHeigth) throws HeaderCardException, FitsException {
+    private void testTileSizes(int tileWidth, int tileHeight) throws HeaderCardException, FitsException {
         int imageSize = 100;
         TiledImageCompressionOperation operationsOfImage = new TiledImageCompressionOperation(null);
         Buffer buffer = IntBuffer.allocate(imageSize * imageSize);
@@ -405,7 +405,7 @@ public class TileCompressorProviderTest {
         header.addValue(ZNAXISn.n(1), imageSize);
         header.addValue(ZNAXISn.n(2), imageSize);
         header.addValue(ZTILEn.n(1), tileWidth);
-        header.addValue(ZTILEn.n(2), tileHeigth);
+        header.addValue(ZTILEn.n(2), tileHeight);
 
         operationsOfImage.readPrimaryHeaders(header);
         operationsOfImage.prepareUncompressedData(buffer);
@@ -416,7 +416,7 @@ public class TileCompressorProviderTest {
         for (TileCompressionOperation tileOperation : tiles) {
             if (tileWidth == imageSize) {
                 heigth += Access.getTileBuffer(tileOperation).getHeight();
-            } else if (tileHeigth == imageSize) {
+            } else if (tileHeight == imageSize) {
                 width += Access.getTileBuffer(tileOperation).getWidth();
             }
             pixels += Access.getTileBuffer(tileOperation).getHeight() * Access.getTileBuffer(tileOperation).getWidth();

@@ -51,7 +51,6 @@ import static nom.tam.image.compression.tile.TileCompressionType.UNCOMPRESSED;
 import java.lang.reflect.Array;
 import java.nio.Buffer;
 import java.nio.ByteBuffer;
-import java.util.Arrays;
 import java.util.concurrent.ExecutorService;
 
 import nom.tam.fits.BinaryTable;
@@ -282,18 +281,19 @@ public class TiledImageCompressionOperation extends AbstractTiledImageOperation<
     }
 
     private void readAxis(Header header) throws FitsException {
-        if (areAxesUndefined()) {
-            int naxis = header.getIntValue(ZNAXIS);
-            int[] axes = new int[naxis];
-            for (int i = 1; i <= naxis; i++) {
-                int axisValue = header.getIntValue(ZNAXISn.n(i), -1);
-                axes[i - 1] = axisValue;
-                if (axes[i - 1] == -1) {
-                    throw new FitsException("Required ZNAXISn not found");
-                }
-            }
-            setAxes(axes);
+        if (hasAxes()) {
+            return;
         }
+        int naxis = header.getIntValue(ZNAXIS);
+        int[] axes = new int[naxis];
+        for (int i = 1; i <= naxis; i++) {
+            int axisValue = header.getIntValue(ZNAXISn.n(i), -1);
+            if (axisValue == -1) {
+                throw new FitsException("Required ZNAXISn not found");
+            }
+            axes[naxis - i] = axisValue;
+        }
+        setAxes(axes);
     }
 
     private void readBaseType(Header header) {
@@ -312,18 +312,20 @@ public class TiledImageCompressionOperation extends AbstractTiledImageOperation<
     }
 
     private void readTileAxis(Header header) throws FitsException {
-        if (areTileAxesUndefined()) {
-            int[] tileAxes = new int[getNAxes()];
-            Arrays.fill(tileAxes, 1);
-            tileAxes[0] = -1;
-            for (int i = 1; i <= tileAxes.length; i++) {
-                HeaderCard card = header.findCard(ZTILEn.n(i));
-                if (card != null) {
-                    tileAxes[i - 1] = card.getValue(Integer.class, -1);
-                }
-            }
-            setTileAxes(tileAxes);
+        if (hasTileAxes()) {
+            return;
         }
+        
+        int naxes = getNAxes();
+        int[] tileAxes = new int[naxes]; 
+        // TODO
+        // The FITS default is to tile by row (Pence, W., et al. 2000, ASPC, 216, 551)
+        // However, this library defaulted to full image size by default...
+        for (int i = 1; i <= naxes; i++) {
+            tileAxes[naxes - i] = header.getIntValue(ZTILEn.n(i), i == 1 ? header.getIntValue(ZNAXISn.n(1)) : 1);
+        }
+
+        setTileAxes(tileAxes);
     }
 
     private <T> Object setInColumn(Object column, boolean predicate, TileCompressionOperation tileOperation, Class<T> clazz, T value) {
@@ -366,8 +368,9 @@ public class TiledImageCompressionOperation extends AbstractTiledImageOperation<
                 .card(ZBITPIX).value(getBaseType().bitPix())//
                 .card(ZCMPTYPE).value(this.compressAlgorithm);
         int[] tileAxes = getTileAxes();
-        for (int i = 1; i <= tileAxes.length; i++) {
-            cardBuilder.card(ZTILEn.n(i)).value(tileAxes[i - 1]);
+        int naxes = tileAxes.length;
+        for (int i = 1; i <= naxes; i++) {
+            cardBuilder.card(ZTILEn.n(i)).value(tileAxes[naxes - i]);
         }
         compressOptions().getCompressionParameters().setValuesInHeader(new HeaderAccess(header));
         if (this.imageNullPixelMask != null) {

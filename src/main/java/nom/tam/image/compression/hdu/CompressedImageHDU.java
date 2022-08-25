@@ -82,7 +82,8 @@ public class CompressedImageHDU extends BinaryTableHDU {
      * @param imageHDU
      *            the image to compress
      * @param tileAxis
-     *            the axis of the tiles in the image
+     *            the tile sizes in pixels in x, y, z... order (i.e. opposite of the Java array
+     *            indexing order!).
      * @return the prepared compressed image hdu.
      * @throws FitsException
      *             if the image could not be used to create a compressed image.
@@ -90,10 +91,21 @@ public class CompressedImageHDU extends BinaryTableHDU {
     public static CompressedImageHDU fromImageHDU(ImageHDU imageHDU, int... tileAxis) throws FitsException {
         Header header = new Header();
         CompressedImageData compressedData = new CompressedImageData();
-        compressedData.setAxis(imageHDU.getAxes());
-        if (tileAxis.length > 0) {
-            compressedData.setTileSize(tileAxis);
+        int[] size = imageHDU.getAxes();
+        int[] tileSize = Arrays.copyOf(size, size.length);
+        compressedData.setAxis(size);
+        
+        int nm1 = size.length - 1;
+        
+        // Check and apply tile sizes.
+        int n = Math.min(size.length, tileAxis.length);
+        for (int i = 0; i < n; i++) {
+            if (tileAxis[i] > 0 && tileAxis[i] < size[nm1 - i]) { 
+                tileSize[nm1 - i] = tileAxis[i];
+            }
         }
+        compressedData.setTileSize(tileSize);
+        
         compressedData.fillHeader(header);
         Cursor<String, HeaderCard> iterator = header.iterator();
         Cursor<String, HeaderCard> imageIterator = imageHDU.getHeader().iterator();
