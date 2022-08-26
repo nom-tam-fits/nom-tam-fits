@@ -42,7 +42,8 @@ import nom.tam.util.type.ElementType;
 
 public abstract class AbstractTiledImageOperation<OPERATION extends ITileOperation> implements ITiledImageOperation {
 
-    /** Image sixe in Java array index order (is is last!). */
+
+    /** Image axes in Java array index order (is is last!). */
     private int[] axes;
 
     /**
@@ -105,17 +106,18 @@ public abstract class AbstractTiledImageOperation<OPERATION extends ITileOperati
      * </p>
      * 
      * @param value     The tile dimensions in Java array index order (x is last!). Only up to
-     *                  the first 2 components are considered. The rest will be assumed to have
+     *                  the last 2 components are considered. The rest will be assumed to have
      *                  values equals to 1.
-     * @throws FitsException    If the higher dimensions (above 2) have sizes not equal to 1
+     * @throws FitsException    If the leading dimensions (before the last 2) have sizes not equal to 1
      */
     public void setTileAxes(int[] value) throws FitsException {
-        tileAxes = Arrays.copyOf(value, value.length);
         for (int i = value.length - 2; --i >= 0;) {
             if (value[i] != 1) {
-                throw new FitsException("Tile sizes in higher dimensions (>2) must be 1 as per the FITSIO convention.");
+                throw new FitsException("Tile sizes in higher dimensions (>2) must be 1 as per the FITSIO convention (" 
+                        + i + ":" + value[i] + ")");
             }
         }
+        tileAxes = Arrays.copyOf(value, value.length);
     }
     
     protected boolean hasAxes() {

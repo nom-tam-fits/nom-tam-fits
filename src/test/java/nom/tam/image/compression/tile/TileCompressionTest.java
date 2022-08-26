@@ -88,4 +88,62 @@ public class TileCompressionTest {
         Assert.assertArrayEquals(im, im2);
     }
     
+    @Test
+    public void tileCompress3DTest() throws Exception {
+        int[][][] im = new int[23][17][13];
+        
+        String fileName = "target/tile1D.fits.fz";
+
+        ImageHDU hdu = (ImageHDU) FitsFactory.hduFactory(im);
+        CompressedImageHDU cHDU = CompressedImageHDU.fromImageHDU(hdu, 8, 8);
+
+        cHDU.setCompressAlgorithm(Compression.ZCMPTYPE_RICE_1)
+        .setQuantAlgorithm(null)
+        .getCompressOption(RiceCompressOption.class)
+        .setBlockSize(32);
+
+        cHDU.compress();
+
+        Fits f = new Fits();
+        f.addHDU(cHDU);
+        f.write(fileName);
+
+        f = new Fits(fileName);
+        cHDU = (CompressedImageHDU) f.read()[1];
+
+        hdu = cHDU.asImageHDU();
+        int[][][] im2 = (int[][][]) hdu.getKernel();
+        
+        Assert.assertArrayEquals(im, im2);
+    }
+    
+    
+    @Test
+    public void tileCompress1DTest() throws Exception {
+        int[] im = new int[10000];
+        
+        String fileName = "target/tile1D.fits.fz";
+
+        ImageHDU hdu = (ImageHDU) FitsFactory.hduFactory(im);
+        CompressedImageHDU cHDU = CompressedImageHDU.fromImageHDU(hdu, 1024);
+
+        cHDU.setCompressAlgorithm(Compression.ZCMPTYPE_RICE_1)
+        .setQuantAlgorithm(null)
+        .getCompressOption(RiceCompressOption.class)
+        .setBlockSize(32);
+
+        cHDU.compress();
+
+        Fits f = new Fits();
+        f.addHDU(cHDU);
+        f.write(fileName);
+
+        f = new Fits(fileName);
+        cHDU = (CompressedImageHDU) f.read()[1];
+
+        hdu = cHDU.asImageHDU();
+        int[] im2 = (int[]) hdu.getKernel();
+        
+        Assert.assertArrayEquals(im, im2);
+    }
 }
