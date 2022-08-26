@@ -964,7 +964,13 @@ Starting with version 1.15.0 compression of both images and tables is fully supp
 <a name="image-compression"></a>
 ### Image compression
 
-Image compression and tiling are now fully supported by nom-tam-fits.
+Image compression and tiling are fully supported by nom-tam-fits as of 1.17.0, including images of 
+any dimensionality and rectangular morphologies. (Releases between 1.15.0 and 1.17.0 had partial image
+compression support for 2D square images only.). 
+
+The tiling of non-2D images follows the 
+[CFITSIO convention](https://heasarc.gsfc.nasa.gov/docs/software/fitsio/compression.html) with 2D tiles, 
+where the tile size is set to 1 in the extra dimensions.
 
 When [de]compressing all available CPU's are automatically utilized.
 
@@ -1049,7 +1055,7 @@ Please read the original FITS documentation for further information on the diffe
 <a name="table-compression"></a>
 ### Table compression
 
-Table compression is also fully supported in nom-tam-fits from version 1.15.0, including any-dimensional and non-square images since 1.17.0. When a table is compressed the effect is that within each column we compress 'tiles' that are sets of contiguous rows.  E.g., if we use a 'tile' size of 10, then for the first column we concatenate the data from the first 10 rows and compress the resulting sequence of bytes.  The result of this compression will be stored in the heap area of the FITS file since its length will likely vary from tile to tile.  We then do the same for the first 10 rows of the second column and every other column in the table. After we finish we are ready to write the first row of the compressed table.  We then repeat for sets of 10 rows until we reach the end of the input table.  The result is a new binary table with the same number of columns but with the number of rows decreased by ~10 (in our example). Thus, just as with images, we can get the ability to efficiently compress the data without losing the ability to retrieve only the rows we are interested in when we are reading from a large table.
+Table compression is also fully supported in nom-tam-fits from version 1.15.0. When a table is compressed the effect is that within each column we compress 'tiles' that are sets of contiguous rows.  E.g., if we use a 'tile' size of 10, then for the first column we concatenate the data from the first 10 rows and compress the resulting sequence of bytes.  The result of this compression will be stored in the heap area of the FITS file since its length will likely vary from tile to tile.  We then do the same for the first 10 rows of the second column and every other column in the table. After we finish we are ready to write the first row of the compressed table.  We then repeat for sets of 10 rows until we reach the end of the input table.  The result is a new binary table with the same number of columns but with the number of rows decreased by ~10 (in our example). Thus, just as with images, we can get the ability to efficiently compress the data without losing the ability to retrieve only the rows we are interested in when we are reading from a large table.
 
 The compression alögorithms are the same as the ones provided for image compression. Default compression is GZIP_2 but every column can use a different algorithm. The tile size is the same for every column.  To compress
 an existing binary table using a tile size of 10 rows:
