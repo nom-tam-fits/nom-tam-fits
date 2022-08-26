@@ -49,24 +49,47 @@ public class TileArea {
     }
 
     /**
+     * Returns the dimensionality of the tile area.
+     * 
+     * @return      The dimensionality of the tile area or 0 if the tile is uninitialized.
+     * 
+     * @since 1.17
+     */
+    public int dimension() {
+        return startPoint == null ? 0 : startPoint.length;
+    }
+    
+    /**
      * @param other
      *            the tile to test intersection with
      * @return true if the tile intersects with the specified other tile?
+     * 
+     * @throws IllegalArgumentException if the two tiles have different dimensionalities.
      */
-    public boolean intersects(TileArea other) {
-        double x0 = this.startPoint[0];
-        double y0 = this.startPoint[1];
-        return other.endPoint[0] > x0 && //
-                other.endPoint[1] > y0 && //
-                other.startPoint[0] < this.endPoint[0] && //
-                other.startPoint[1] < this.endPoint[1];
+    public boolean intersects(TileArea other) throws IllegalArgumentException {
+        if (other.dimension() != dimension()) {
+            throw new IllegalArgumentException("Tiles of different dimensionalities (" 
+                    + other.dimension() + " vs " + dimension() + ".");
+        }
+        
+        for (int i = dimension(); --i >= 0;) {
+            if (other.startPoint[i] >= endPoint[i]) {
+                return false;
+            }
+            if (startPoint[i] >= other.endPoint[i]) {
+                return false;
+            }
+        }
+        
+        return true;
     }
 
-    public void size(int... sizes) {
+    public TileArea size(int... sizes) {
         this.endPoint = new int[this.startPoint.length];
         for (int index = 0; index < this.startPoint.length; index++) {
-            this.endPoint[index] = this.startPoint[index] + sizes[index];
+            this.endPoint[index] = this.startPoint[index] + (index < sizes.length ? sizes[index] : 1);
         }
+        return this;
     }
 
     public TileArea start(int... newStartPoint) {

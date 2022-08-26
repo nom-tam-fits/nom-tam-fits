@@ -52,6 +52,21 @@ public final class ArrayFuncs {
     }
 
     /**
+     * Retuens a copy of the input array with the order of elements reversed.
+     * 
+     * @param index     the input array
+     * @return          a copy of the input array in reversed order
+     */
+    public static int[] getReversed(int... index) {
+        int[] rev = new int[index.length];
+        int nm1 = index.length - 1;
+        for (int i = index.length; --i >= 0;) {
+            rev[i] = index[nm1 - i];
+        }
+        return rev;
+    }
+    
+    /**
      * @return a description of an array (presumed rectangular).
      * @param o
      *            The array to be described.

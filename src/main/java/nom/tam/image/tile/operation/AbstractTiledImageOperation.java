@@ -33,13 +33,16 @@ package nom.tam.image.tile.operation;
 
 import java.lang.reflect.Array;
 import java.nio.Buffer;
+import java.util.ArrayList;
 import java.util.Arrays;
 
 import nom.tam.fits.FitsException;
+import nom.tam.util.ArrayFuncs;
 import nom.tam.util.type.ElementType;
 
 public abstract class AbstractTiledImageOperation<OPERATION extends ITileOperation> implements ITiledImageOperation {
 
+    /** Image sixe in Java array index order (is is last!). */
     private int[] axes;
 
     /**
@@ -60,7 +63,7 @@ public abstract class AbstractTiledImageOperation<OPERATION extends ITileOperati
 
     @Override
     public ElementType<Buffer> getBaseType() {
-        return this.baseType;
+        return baseType;
     }
 
     public int getBufferSize() {
@@ -78,24 +81,43 @@ public abstract class AbstractTiledImageOperation<OPERATION extends ITileOperati
 
     @Override
     public OPERATION getTileOperation(int i) {
-        return this.tileOperations[i];
+        return tileOperations[i];
     }
 
+    /**
+     * Sets the image dimensions, in Java array index order.
+     * 
+     * @param axes  Image dimensions in Java array index order (x is last!).
+     */
     public void setAxes(int[] axes) {
         this.axes = Arrays.copyOf(axes, axes.length);
     }
 
     /**
+     * <p>
      * Sets the tile dimension. Here the dimensions are in Java array index order, that is the
      * x-dimension (width of tile) is last!
+     * </p>
+     * <p>
+     * Note, that because tile compression is essentially 2D, the tile sizes in higher
+     * dimensions will be forced to 1, even if specified otherwise by the argument (see 
+     * <a href="https://heasarc.gsfc.nasa.gov/docs/software/fitsio/compression.html">FITSIO convention</a>).
+     * </p>
      * 
-     * @param value     The tile dimensions in Java array index order (x is last!)
-     * @throws FitsException
+     * @param value     The tile dimensions in Java array index order (x is last!). Only up to
+     *                  the first 2 components are considered. The rest will be assumed to have
+     *                  values equals to 1.
+     * @throws FitsException    If the higher dimensions (above 2) have sizes not equal to 1
      */
     public void setTileAxes(int[] value) throws FitsException {
-        this.tileAxes = Arrays.copyOf(value, value.length);
+        tileAxes = Arrays.copyOf(value, value.length);
+        for (int i = value.length - 2; --i >= 0;) {
+            if (value[i] != 1) {
+                throw new FitsException("Tile sizes in higher dimensions (>2) must be 1 as per the FITSIO convention.");
+            }
+        }
     }
-
+    
     protected boolean hasAxes() {
         return axes != null;
     }
@@ -103,31 +125,75 @@ public abstract class AbstractTiledImageOperation<OPERATION extends ITileOperati
     protected boolean hasTileAxes() {
         return tileAxes != null;
     }
+    
+    
+    private int getBufferOffset(int[] index) {
+        int l = 0;
+        int blockSize = 1;
+        for (int i = index.length; --i >= 0;) {
+            l += index[i] * blockSize;
+            blockSize *= axes[i];
+        }
+        return l;
+    }
 
+    @SuppressWarnings("unchecked")
     protected void createTiles(ITileOperationInitialisation<OPERATION> init) throws FitsException {
-        final int imageWidth = this.axes[1];
-        final int imageHeight = this.axes[0];
-        final int tileWidth = this.tileAxes[1];
-        final int tileHeight = this.tileAxes[0];
-        final int nx = (imageWidth + tileWidth - 1) / tileWidth;
-        final int ny = (imageHeight + tileHeight - 1) / tileHeight;
-  
-        int tileIndex = 0;
-        @SuppressWarnings("unchecked")
-        OPERATION[] operations = (OPERATION[]) Array.newInstance(this.operationClass, ny * nx);
-        this.tileOperations = operations;
-        init.tileCount(this.tileOperations.length);
-
-        for (int y = 0; y < imageHeight; y += tileHeight) {
-            int h = Math.min(tileHeight, imageHeight - y);
-            for (int x = 0; x < imageWidth; x += tileWidth, tileIndex++) {
-                int w = Math.min(tileWidth, imageWidth - x);
-                int dataOffset = y * imageWidth + x;
-                OPERATION tileOperation = init.createTileOperation(tileIndex, new TileArea().start(x, y));
-                tileOperation.setDimensions(dataOffset, w, h);
-                this.tileOperations[tileIndex] = tileOperation;
-                init.init(tileOperation);
+        int[] offset = new int[axes.length];        // Tile start in image (Java index order)
+        int[] tileSize = new int[2];                // {w, h}
+        int pos = 0;
+        
+        int imLength = 1;
+        for (int i = axes.length; --i >= 0;) {
+            imLength *= axes[i];
+        }
+        
+        tileSize[1] = 1;
+        
+        // If tile is not defined along all axes, pad with 1.
+        if (tileAxes.length < axes.length) {
+            int[] tile = new int[axes.length];
+            System.arraycopy(tileAxes, 0, tile, tile.length - tileAxes.length, tileAxes.length);
+            Arrays.fill(tile, 0, tile.length - tileAxes.length, 1);
+            tileAxes = tile;
+        }
+        
+        ArrayList<OPERATION> opList = new ArrayList<>();
+        
+        // Create 2D tiles to cover image (in N dimensions, where N need not be 2)
+        for (int tileIndex = 0; pos < imLength; tileIndex++) {
+            // Calculate the actual size of the current tile
+            for (int i = Math.min(tileSize.length, tileAxes.length); --i >= 0;) {
+                int k = axes.length - 1 - i;
+                tileSize[i] = (offset[k] + tileAxes[k] > axes[k]) ? axes[k] - offset[k] : tileAxes[k];
             }
+                
+            // Create the tile at the current buffer offset and tile size
+            OPERATION op = init.createTileOperation(tileIndex, new TileArea().start(ArrayFuncs.getReversed(offset)));
+            op.setDimensions(pos, tileSize[0], tileSize[1]);
+            opList.add(op);
+    
+            // Calculate the image indices where the next tile starts.
+            for (int k = axes.length; --k >= 0;) {
+                offset[k] += tileAxes[k];   // Try next tile along the current dimension...
+                if (offset[k] < axes[k]) {
+                    break;              // OK, tile is within image bounds
+                } else if (k > 0) {
+                    offset[k] = 0;      // Otherwise reset the tile pos in the subarray dimensions
+                }
+            }
+
+            // Calculate the buffer position where the next tile starts.
+            pos = getBufferOffset(offset);
+        }
+        
+        tileOperations = (OPERATION[]) Array.newInstance(operationClass, opList.size());
+        opList.toArray(tileOperations);
+        
+        init.tileCount(tileOperations.length);
+
+        for (OPERATION op : tileOperations) {
+            init.init(op);
         }
     }
 
