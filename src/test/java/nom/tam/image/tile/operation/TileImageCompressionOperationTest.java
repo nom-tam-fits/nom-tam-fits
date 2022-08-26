@@ -1,7 +1,4 @@
-package nom.tam.image.compression.tile;
-
-import java.nio.Buffer;
-import java.nio.ByteBuffer;
+package nom.tam.image.tile.operation;
 
 /*-
  * #%L
@@ -34,58 +31,34 @@ import java.nio.ByteBuffer;
  * #L%
  */
 
+import java.nio.Buffer;
+import java.nio.ByteBuffer;
+
 import org.junit.Assert;
 import org.junit.Test;
 
 import nom.tam.fits.BinaryTable;
-import nom.tam.fits.Fits;
 import nom.tam.fits.FitsException;
-import nom.tam.fits.FitsFactory;
-import nom.tam.fits.ImageHDU;
-import nom.tam.fits.header.Compression;
-import nom.tam.fits.compression.algorithm.rice.RiceCompressOption;
-import nom.tam.image.compression.hdu.CompressedImageHDU;
-import nom.tam.image.tile.operation.TileArea;
+import nom.tam.image.compression.tile.TiledImageCompressionOperation;
+import nom.tam.util.type.ElementType;
 
-
-public class TileCompressionTest {
-
-    public int[][] getRectangularImage(int nx, int ny) {
-        int[][] im = new int[ny][nx];
-
-        for (int y = 0; y < im.length; y++) for (int x = 0; x < im[y].length; x++) {
-            im[y][x] = x + y;
-        }
-
-        return im;
+public class TileImageCompressionOperationTest {
+    @Test(expected = FitsException.class)
+    public void tileImageOpMultiDimOverrideTest() throws Exception {
+        TiledImageCompressionOperation op = new TiledImageCompressionOperation(null);
+        op.setTileAxes(new int[] {2, 3, 4});
     }
     
     @Test
-    public void rectangularRiceCompressTest() throws Exception {
-        int[][] im = getRectangularImage(32, 80);
-        String fileName = "target/rect_comp.fits.fz";
-
-        ImageHDU hdu = (ImageHDU) FitsFactory.hduFactory(im);
-        CompressedImageHDU cHDU = CompressedImageHDU.fromImageHDU(hdu, -1, 1);
-
-        cHDU.setCompressAlgorithm(Compression.ZCMPTYPE_RICE_1)
-        .setQuantAlgorithm(null)
-        .getCompressOption(RiceCompressOption.class)
-        .setBlockSize(32);
-
-        cHDU.compress();
-
-        Fits f = new Fits();
-        f.addHDU(cHDU);
-        f.write(fileName);
-
-        f = new Fits(fileName);
-        cHDU = (CompressedImageHDU) f.read()[1];
-
-        hdu = cHDU.asImageHDU();
-        int[][] im2 = (int[][]) hdu.getKernel();
+    public void tileImageSubtileTest() throws Exception {
+        Buffer buf = ByteBuffer.wrap(new byte[10000]);
         
-        Assert.assertArrayEquals(im, im2);
+        TiledImageCompressionOperation op = new TiledImageCompressionOperation(new BinaryTable());
+        op.setTileAxes(new int[] {10});
+        op.setAxes(new int[] { 100, 100 });
+        op.setBaseType(ElementType.forNearestBitpix(8));
+        op.prepareUncompressedData(buf);
+        Assert.assertArrayEquals(new int[] { 1,  10}, op.getTileAxes());
     }
     
 }

@@ -95,8 +95,8 @@ public abstract class AbstractTiledImageOperation<OPERATION extends ITileOperati
 
     /**
      * <p>
-     * Sets the tile dimension. Here the dimensions are in FITS array index order, that is the
-     * x-dimension (width of tile) is first!
+     * Sets the tile dimension. Here the dimensions are in Java array index order, that is the
+     * x-dimension (width of tile) is last!
      * </p>
      * <p>
      * Note, that because tile compression is essentially 2D, the tile sizes in higher
@@ -107,12 +107,14 @@ public abstract class AbstractTiledImageOperation<OPERATION extends ITileOperati
      * @param value     The tile dimensions in Java array index order (x is last!). Only up to
      *                  the first 2 components are considered. The rest will be assumed to have
      *                  values equals to 1.
-     * @throws FitsException
+     * @throws FitsException    If the higher dimensions (above 2) have sizes not equal to 1
      */
     public void setTileAxes(int[] value) throws FitsException {
         tileAxes = Arrays.copyOf(value, value.length);
-        if (value.length > 2) {
-            Arrays.fill(tileAxes, 0, value.length - 2, 1);
+        for (int i = value.length - 2; --i >= 0;) {
+            if (value[i] != 1) {
+                throw new FitsException("Tile sizes in higher dimensions (>2) must be 1 as per the FITSIO convention.");
+            }
         }
     }
     

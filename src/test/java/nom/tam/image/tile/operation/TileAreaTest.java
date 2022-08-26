@@ -1,5 +1,8 @@
 package nom.tam.image.tile.operation;
 
+import java.nio.Buffer;
+import java.nio.ByteBuffer;
+
 /*
  * #%L
  * nom.tam FITS library
@@ -34,6 +37,9 @@ package nom.tam.image.tile.operation;
 import org.junit.Assert;
 import org.junit.Test;
 
+import nom.tam.fits.BinaryTable;
+import nom.tam.image.compression.tile.TiledImageCompressionOperation;
+
 public class TileAreaTest {
 
     @Test
@@ -46,5 +52,20 @@ public class TileAreaTest {
         Assert.assertFalse(new TileArea().start(170, 0).end(185, 300).intersects(middle));
         Assert.assertFalse(new TileArea().start(0, 170).end(300, 175).intersects(middle));
 
+    }
+    
+    @Test(expected = IllegalArgumentException.class)
+    public void testIntersectException() throws Exception {
+        TileArea middle = new TileArea().start(140, 140).end(160, 160);
+        middle.intersects(new TileArea().start(2, 3, 4));
+    }
+    
+    @Test
+    public void tileAreaSubsizeTest() throws Exception {
+        TileArea area = new TileArea().start(2, 3, 4).size(5);
+        Assert.assertTrue(area.intersects(new TileArea().start(6, 3, 4).size(1)));
+        Assert.assertFalse(area.intersects(new TileArea().start(7, 3, 4).size(1)));
+        Assert.assertFalse(area.intersects(new TileArea().start(6, 4, 4).size(1)));
+        Assert.assertFalse(area.intersects(new TileArea().start(6, 3, 5).size(1)));
     }
 }
