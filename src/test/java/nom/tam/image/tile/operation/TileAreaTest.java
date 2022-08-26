@@ -68,4 +68,10 @@ public class TileAreaTest {
         Assert.assertFalse(area.intersects(new TileArea().start(6, 4, 4).size(1)));
         Assert.assertFalse(area.intersects(new TileArea().start(6, 3, 5).size(1)));
     }
+    @Test
+    public void emptyTileTest() throws Exception {
+        Assert.assertEquals(0, new TileArea().dimension());
+    }
+    
+    
 }

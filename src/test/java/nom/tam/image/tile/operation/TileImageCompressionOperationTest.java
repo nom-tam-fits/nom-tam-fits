@@ -61,4 +61,9 @@ public class TileImageCompressionOperationTest {
         Assert.assertArrayEquals(new int[] { 1,  10}, op.getTileAxes());
     }
     
+    @Test(expected = FitsException.class)
+    public void illegalTileSizeTest() throws Exception {
+        TiledImageCompressionOperation op = new TiledImageCompressionOperation(new BinaryTable());
+        op.setTileAxes(new int[] {2, 3, 4});
+    }
 }
