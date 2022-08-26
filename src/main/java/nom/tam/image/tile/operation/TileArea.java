@@ -65,7 +65,7 @@ public class TileArea {
     public void size(int... sizes) {
         this.endPoint = new int[this.startPoint.length];
         for (int index = 0; index < this.startPoint.length; index++) {
-            this.endPoint[index] = this.startPoint[index] + sizes[index];
+            this.endPoint[index] = this.startPoint[index] + (index < sizes.length ? sizes[index] : 1);
         }
     }
 

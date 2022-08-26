@@ -62,18 +62,18 @@ public abstract class AbstractTileOperation implements Runnable, ITileOperation 
     }
 
     public TileArea getArea() {
-        return this.area;
+        return area;
     }
 
     /**
      * @return the number of pixels in this tile.
      */
     public int getPixelSize() {
-        return this.tileBuffer.getPixelSize();
+        return tileBuffer.getPixelSize();
     }
 
     public int getTileIndex() {
-        return this.tileIndex;
+        return tileIndex;
     }
 
     /**
@@ -102,28 +102,28 @@ public abstract class AbstractTileOperation implements Runnable, ITileOperation 
     }
 
     protected ElementType<Buffer> getBaseType() {
-        return this.tiledImageOperation.getBaseType();
+        return tiledImageOperation.getBaseType();
     }
 
     protected ITileOperation getPreviousTileOperation() {
-        return this.tiledImageOperation.getTileOperation(getTileIndex() - 1);
+        return tiledImageOperation.getTileOperation(getTileIndex() - 1);
     }
 
     protected TileBuffer getTileBuffer() {
-        return this.tileBuffer;
+        return tileBuffer;
     }
 
     protected ITiledImageOperation getTiledImageOperation() {
-        return this.tiledImageOperation;
+        return tiledImageOperation;
     }
 
     @Override
     public ITileOperation setDimensions(int dataOffset, int width, int height) {
         setTileBuffer(TileBufferFactory.createTileBuffer(getBaseType(), //
                 dataOffset, //
-                this.tiledImageOperation.getImageWidth(), //
+                tiledImageOperation.getImageWidth(), //
                 width, height));
-        this.area.size(width, height);
+        area.size(width, height);
         return this;
     }
 
