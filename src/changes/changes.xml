@@ -6,7 +6,7 @@
 	      Generalize tile compression for any-dimensional images based on the FITSIO convention. 
       </action>
       <action type="fix" dev="attipaci" issue="318">
-	      Fix broken tile compression of non-square images. 
+	      Fixied broken tile compression of non-square images. 
       </action>
     	<action type="add" dev="attipaci" issue="283">
 	      User adjustable header comment alignment position via Header.setCommentAlignPosition(int). 
@@ -22,17 +22,19 @@
         Suppress repeated duplicate keyword warnings when parsing and improve checks for FITS standard violations.
       </action>
       <action type="update" dev="attipaci" issue="292">
-        Replacing header keys logs a warning when existing value type is incompatible wth the newly associated standardized keyword.
+        Replacing header keys logs a warning when existing value type is incompatible wth the newly associated 
+        standardized keyword.
       </action>
       <action type="update" dev="attipaci" issue="292">
-        Creation of header entries with standardized keywords logs a warning if associated value type is incompatible with the keyword. 
+        Creation of header entries with standardized keywords logs a warning if associated value type is incompatible 
+        with the keyword. 
       </action>
       <action type="update" dev="attipaci" issue="292">
         Improved header card ordering implementation.
       </action>
 	    <action type="update" dev="attipaci" issue="266">
-				Safe incremental HDU writing via new FitsOutput interface, which is used to check whether HDUs should be set primary or not
-				depending on where it is located in the output.
+				Safe incremental HDU writing via new FitsOutput interface, which is used to check whether HDUs should be set 
+				primary or not depending on where it is located in the output.
 			</action>
 			<action type="update" dev="attipaci" issue="74">
         New logo.
