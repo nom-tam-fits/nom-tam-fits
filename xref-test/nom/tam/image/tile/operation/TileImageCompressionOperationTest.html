@@ -69,12 +69,18 @@
 <a class="jxr_linenumber" name="L61" href="#L61">61</a>          Assert.assertArrayEquals(<strong class="jxr_keyword">new</strong> <strong class="jxr_keyword">int</strong>[] { 1,  10}, op.getTileAxes());
 <a class="jxr_linenumber" name="L62" href="#L62">62</a>      }
 <a class="jxr_linenumber" name="L63" href="#L63">63</a>      
-<a class="jxr_linenumber" name="L64" href="#L64">64</a>      @Test(expected = FitsException.<strong class="jxr_keyword">class</strong>)
-<a class="jxr_linenumber" name="L65" href="#L65">65</a>      <strong class="jxr_keyword">public</strong> <strong class="jxr_keyword">void</strong> illegalTileSizeTest() <strong class="jxr_keyword">throws</strong> Exception {
+<a class="jxr_linenumber" name="L64" href="#L64">64</a>      @Test
+<a class="jxr_linenumber" name="L65" href="#L65">65</a>      <strong class="jxr_keyword">public</strong> <strong class="jxr_keyword">void</strong> tileSize3DTest() <strong class="jxr_keyword">throws</strong> Exception {
 <a class="jxr_linenumber" name="L66" href="#L66">66</a>          TiledImageCompressionOperation op = <strong class="jxr_keyword">new</strong> TiledImageCompressionOperation(<strong class="jxr_keyword">new</strong> BinaryTable());
-<a class="jxr_linenumber" name="L67" href="#L67">67</a>          op.setTileAxes(<strong class="jxr_keyword">new</strong> <strong class="jxr_keyword">int</strong>[] {2, 3, 4});
+<a class="jxr_linenumber" name="L67" href="#L67">67</a>          op.setTileAxes(<strong class="jxr_keyword">new</strong> <strong class="jxr_keyword">int</strong>[] {1, 3, 4});
 <a class="jxr_linenumber" name="L68" href="#L68">68</a>      }
-<a class="jxr_linenumber" name="L69" href="#L69">69</a>  }
+<a class="jxr_linenumber" name="L69" href="#L69">69</a>      
+<a class="jxr_linenumber" name="L70" href="#L70">70</a>      @Test(expected = FitsException.<strong class="jxr_keyword">class</strong>)
+<a class="jxr_linenumber" name="L71" href="#L71">71</a>      <strong class="jxr_keyword">public</strong> <strong class="jxr_keyword">void</strong> illegalTileSizeTest() <strong class="jxr_keyword">throws</strong> Exception {
+<a class="jxr_linenumber" name="L72" href="#L72">72</a>          TiledImageCompressionOperation op = <strong class="jxr_keyword">new</strong> TiledImageCompressionOperation(<strong class="jxr_keyword">new</strong> BinaryTable());
+<a class="jxr_linenumber" name="L73" href="#L73">73</a>          op.setTileAxes(<strong class="jxr_keyword">new</strong> <strong class="jxr_keyword">int</strong>[] {2, 3, 4});
+<a class="jxr_linenumber" name="L74" href="#L74">74</a>      }
+<a class="jxr_linenumber" name="L75" href="#L75">75</a>  }
 </pre>
 <hr/>
 <div id="footer">Copyright &#169; 1996&#x2013;2022 nom-tam-fits. All rights reserved.</div>
