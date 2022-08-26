@@ -5,6 +5,12 @@ on:
   release: 
     types: [published, unpublished, created, edited, deleted]
   
+  pull_request:
+    paths:
+      - 'src/**'
+      - 'pom.xml'
+      - '.github/workflows/site.yml'
+  
   push:
     branches:
       - master
