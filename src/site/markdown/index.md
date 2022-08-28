@@ -892,14 +892,19 @@ You may note a few other properties of HIERARCH keywords as implemented by this 
 <a name="checksums"></a>
 ### Checksums
 
-Checksums can be added to the Headers for HDUs that can be used to ensure the faithful copying of the FITS data. `Fits.setChecksum()` can be used to set these.  Setting the checksum should be the users last action before writing the FITS file.
+Checksums can be added to the Headers for HDUs that can be used to ensure the faithful copying of the FITS data. `Fits.setChecksum()` can be used to set these.  Setting the checksum should be the users last action before writing the FITS file. 
+
+As of version 1.17, it is also possible to apply incremental updates to existing checksums. See the various static
+methods of the `nom.tam.utilities.FitsChecksum` class on updating checksums for modified headers or data. There are also
+new methods to simplify verification of checksums when reading FITS files, and for calculating checksums directly from
+a file without the need for reading and storing potentially huge amounts of data in RAM. Calculating data checksums directly from the file is now default (as of 1.17) for data that is in deferred read (i.e. not currently loaded into RAM), making it possible to checksum huge FITS files without having to load all data into RAM.
 
 <a name="preallocated-header-space"></a>
 ### Preallocated header space
 
-Many FITS files are created by live-recording of data, e.g. from astronomical instruments. As such not all header values may be defined as one needs to start writing the data segment of the HDU that follows the header. For example, we do not know in advance how many rows the binary table will contain, which will depend on when the recording stops at a later point. Other metadata may simply not be provided until a later time. For this reason version 4.0 of the FITS standard has specified preallocating header space as some number of blank header records between the last defined header entry and the `END` keyword.
+Many FITS files are created by live-recording of data, e.g. from astronomical instruments. As such not all header values may be defined when writing the data segment of the HDU that follows the header. For example, we do not know in advance how many rows the binary table will contain, which will depend on when the recording stops at a later point. Other metadata may simply not be provided until a later time. For this reason version 4.0 of the FITS standard has specified preallocating header space as some number of blank header records between the last defined header entry and the `END` keyword.
 
-As of version 1.16, this library support preallocated header space via `Header.ensureCardSpace(int)`, which can be used to ensure that the header can contain _at least_ the specified number of 80-character records when written to the output. (In reality it may accommodate somewhat more even because of the required padding to multiples of 2880 bytes or 36 records -- and you can use `Header.getMinimumSize()` to find out just how many bytes are reserved/used by any header object at any point). 
+As of version 1.16, this library supports preallocated header space via `Header.ensureCardSpace(int)`, which can be used to ensure that the header can contain _at least_ the specified number of 80-character records when written to the output. (In reality it may accommodate somewhat more than that because of the required padding to multiples of 2880 bytes or 36 records -- and you can use `Header.getMinimumSize()` to find out just how many bytes are reserved/used by any header object at any point). 
 
 Once the space has been reserved, the header can be written to the output, and one may begin recording data after it. Cards may be filled later, up to the number of records defined (and sometimes beyond), and the header can be rewritten at a later point in place, with the additional entries.
 
@@ -945,9 +950,7 @@ As of version 1.16, the library offers a two-pronged approach to ensure header c
 
 - Second, we offer the choice between tolerant and strict interpretation of 3rd-party FITS headers when parsing these. In tolerant mode (default), the parser will do its best to overcome standard violations as much as possible, such that the header can be parsed as fully as possible, even if some entries may have malformed content. The user may enable `Header.setParserWarningsEnabled(true)` to log each violation detected by the parser as warnings, so these can be inspected if the user cares to know. Stricter parsing can be enabled by `FitsFactory.setAllowHeaderRepairs(false)`. In this mode, the parser will throw an exception when it encounters a severely corrupted header entry, such as a string value with no closing quote (`UnclosedQuoteException`) or a complex value without a closing bracket (`IllegalArgumentException`). Lesser violations can still be logged, the same way as in tolerant mode.
 
-
 Additionally, we provide `HeaderCard.sanitize(String)` method that the user can call to ensure that `String`s can be used in FITS headers. The method will replace illegal characters (outside of the range of `0x20` thru `0x7E`) with `?`.
-
 
 
 
@@ -1084,7 +1087,7 @@ Because there is no place to store the compression options in the header, only c
 
 The _nom-tam-fits_ library is a community-maintained project. We absolutely rely on developers like you to make it better and to keep it going. Whether there is a nagging issue you would like to fix, or a new feature you'd like to see, you can make a difference yourself. We welcome you as a contributor. More than that, we feel like you became part of our community the moment you landed on this page. We very much encourange you to make this project a little bit your own, by submitting pull requests with fixes and enhancement. When you are ready, here are the typical steps for contributing to the project:
 
-1. Old or new __Issue__? Whether you just found a bug, or you are missing a much needed feature, start by checking open [Issues](https://github.com/nom-tam-fits/nom-tam-fits/issues). If an existing issue seems like a good match to yours, feel free to raise your hand and comment on it, to make your voice heard, or to offer help in resolving it. If you find no issues that match, go ahead and create a new one.
+1. Old or new __Issue__? Whether you just found a bug, or you are missing a much needed feature, start by checking open (and closed) [Issues](https://github.com/nom-tam-fits/nom-tam-fits/issues). If an existing issue seems like a good match to yours, feel free to raise your hand and comment on it, to make your voice heard, or to offer help in resolving it. If you find no issues that match, go ahead and create a new one.
 
 2. __Fork__. Is it something you'd like to help resolve? Great! You should start by creating your own fork of the repository so you can work freely on your solution. We also recommend that you place your work on a branch of your fork, which is named either after the issue number, e.g. `issue-192`, or some other descriptive name, such as `implement-foreign-hdu`.
 
@@ -1092,7 +1095,7 @@ The _nom-tam-fits_ library is a community-maintained project. We absolutely rely
 
    - Add __Javadoc__ your new code. You can keep it sweet and simple, but make sure it properly explains your methods, their arguments and return values, and why an what exceptions may be thrown. You should also cross-reference other methods that are similar, related, or relevant to what you just added.
 
-   - Add __Unit Tests__. Make sure your new code has as close to full unit test coverage as possible. You should aim for 100% diff coverage. When pushing changes to your fork, you can get a coverage report by checking the Github Actions result of your commit (click the Codecov link), and you can analyze what line(s) of code need to have tests added. Try to create tests that are simple but meaningful (i.e. check for valid results, rather than just confirm existing behaior), and try to cover as many realistic scenarios as appropriate. Write lots of tests if you need to. It's OK to write 100 lines of test code for 5 lines of change. Go for it! And, you will get extra kudos for filling unit testing holes outside of your area of development!
+   - Add __Unit Tests__. Make sure your new code has as close to full unit test coverage as possible. You should aim for 100% diff coverage. When pushing changes to your fork, you can get a coverage report by checking the Github Actions result of your commit (click the Codecov link), and you can analyze what line(s) of code need to have tests added. Try to create tests that are simple but meaningful (i.e. check for valid results, rather than just confirm existing behavior), and try to cover as many realistic scenarios as appropriate. Write lots of tests if you need to. It's OK to write 100 lines of test code for 5 lines of change. Go for it! And, you will get extra kudos for filling unit testing holes outside of your area of development!
 
 4. __Pull Request__. Once you feel your work can be integrated, create a pull request from your fork/branch. You can do that easily from the github page of your fork/branch directly. In the pull request, provide a concise description of what you added or changed. You may get some feedback at this point, and maybe there will be discussions about possible improvements or regressions etc. It's a good thing too, and your changes will likely end up with added polish as a result. You can be all the more proud of it in the end!
 

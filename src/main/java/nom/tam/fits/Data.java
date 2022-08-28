@@ -126,7 +126,7 @@ public abstract class Data implements FitsElement {
 
     @Override
     public abstract void read(ArrayDataInput in) throws FitsException;
-
+    
     @Override
     public boolean reset() {
         try {

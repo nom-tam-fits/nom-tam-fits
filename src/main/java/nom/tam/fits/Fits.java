@@ -818,18 +818,29 @@ public class Fits implements Closeable {
         }
     }
 
-
     /**
-     * Add or Modify the CHECKSUM keyword in all headers. by R J Mathar
+     * Add or modify the CHECKSUM keyword in all headers. As of 1.17 the checksum for deferred
+     * data is calculated directly from the file (if possible), without loading the entire 
+     * (potentially huge) data into RAM for the calculation.
      * 
      * @throws FitsException
      *             if the operation failed
      * @throws IOException
      *             if the underlying stream failed
+     *             
+     * @author R J Mather, Attila Kovacs
      */
     public void setChecksum() throws FitsException, IOException {
         for (int i = 0; i < getNumberOfHDUs(); i += 1) {
-            setChecksum(getHDU(i));
+            BasicHDU<?> hdu = getHDU(i);
+            Data data = hdu.getData();
+            if (data.isDeferred() && dataStr instanceof RandomAccess) {
+                // Compute datasum directly from file...
+                long datasum = FitsCheckSum.checksum((RandomAccess) dataStr, data.getFileOffset(), data.getSize());
+                FitsCheckSum.setChecksum(hdu.getHeader(), datasum);
+            } else {
+                FitsCheckSum.setChecksum(hdu);
+            }
         }
     }
 

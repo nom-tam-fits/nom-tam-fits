@@ -75,6 +75,19 @@ public interface FitsElement {
      */
     @Deprecated
     void read(ArrayDataInput in) throws FitsException, IOException;
+    
+    /**
+     * Checks if the data is in should be assumed to be in deferred read mode. The default
+     * implementation is to return <code>false</code>, but concrete subclasses may override
+     * this to make this method more informative.
+     * 
+     * @return      <code>true</code> if it is set for deferred reading at a later time, or else
+     *              <code>false</code> if this data is currently loaded into RAM. 
+     *              
+     */
+    default boolean isDeferred() {
+        return false;
+    }
 
     /**
      * Reset the input stream to point to the beginning of this element

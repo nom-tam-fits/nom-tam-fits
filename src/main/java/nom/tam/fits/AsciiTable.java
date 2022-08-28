@@ -689,6 +689,11 @@ public class AsciiTable extends AbstractTableData {
         ensureData();
         return this.data[col];
     }
+    
+    @Override
+    public boolean isDeferred() {
+        return buffer == null;
+    }
 
     /**
      * Get the ASCII table information. This will actually do the read if it had
@@ -710,7 +715,7 @@ public class AsciiTable extends AbstractTableData {
                 this.data[i] = ArrayFuncs.newInstance(this.types[i], this.nRows);
             }
 
-            if (this.buffer == null) {
+            if (isDeferred()) {
                 long newOffset = FitsUtil.findOffset(this.currInput);
                 try {
                     getBuffer(this.nRows * this.rowLen, this.fileOffset);

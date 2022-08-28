@@ -33,13 +33,16 @@ package nom.tam.fits.utilities;
  */
 
 import java.io.ByteArrayOutputStream;
+import java.io.IOException;
 import java.nio.ByteBuffer;
 import java.nio.ByteOrder;
 import java.nio.IntBuffer;
 import java.nio.charset.StandardCharsets;
 import java.util.Arrays;
+
 import nom.tam.fits.BasicHDU;
 import nom.tam.fits.Data;
+import nom.tam.fits.FitsElement;
 import nom.tam.fits.FitsException;
 import nom.tam.fits.Header;
 import nom.tam.fits.HeaderCard;
@@ -48,6 +51,7 @@ import static nom.tam.fits.header.Checksum.DATASUM;
 import nom.tam.util.AsciiFuncs;
 import nom.tam.util.FitsIO;
 import nom.tam.util.FitsOutputStream;
+import nom.tam.util.RandomAccess;
 
 /**
  * <p>
@@ -55,7 +59,8 @@ import nom.tam.util.FitsOutputStream;
  * is a little more flexible than the prior incarnation, specifically that it allows the checksum 
  * to be accumulated across several invocations of the {@link #updateChecksum(Header, long)} method, 
  * and allows for the DATASUM keyword to be updated after data has been changed. It also 
- * provides a method for decoding an encoded checksum.
+ * provides a method for decoding an encoded checksum, and for calculating checksums directly
+ * from files without the need to read potentially huge data into RAM first.
  * </p>
  * <p>
  * Implements the Seaman-Pence 32-bit 1's complement checksum calculation. 
@@ -82,21 +87,23 @@ public final class FitsCheckSum {
     private static final int MASK_2_BYTES = 0xffff;
     private static final int MASK_BYTE = 0xff;
     private static final int ASCII_ZERO = '0';
+    private static final int BUFFER_SIZE = 0x8000; // 32 kB
 
     private static final int[] SELECT_BYTE = {24, 16, 8, 0}; 
     private static final String EXCLUDE = ":;<=>?@[\\]^_`";
 
     private FitsCheckSum() {
     }
+    
     /**
-     * Class for handling FITS checksums. 
+     * Internal class for accumulating FITS checksums. 
      */
     private static class Checksum {
         private long h, l;
 
-        Checksum(long sum) throws IllegalArgumentException {
-            h = (sum >>> SHIFT_2_BYTES) & MASK_2_BYTES;
-            l = sum & MASK_2_BYTES;
+        Checksum(long prior) throws IllegalArgumentException {
+            h = (prior >>> SHIFT_2_BYTES) & MASK_2_BYTES;
+            l = prior & MASK_2_BYTES;
         }
 
         void add(int i) {
@@ -122,19 +129,36 @@ public final class FitsCheckSum {
 
     }
     
-    
     /**
-     
+     * Computes the checksum for a byte array.
      * 
      * @param data      the byte sequence for which to calculate a chekcsum
      * @return the 32bit checksum in the range from 0 to 2^32-1
+     * 
+     * @see #checksum(byte[], int, int)
      */
     public static long checksum(byte[] data) {
         return checksum(ByteBuffer.wrap(data));
     }
 
     /**
-     * Compute a FITS check sum from a ByteBuffer
+     * Computes the checksum for a segment of a byte array.
+     * 
+     * @param data      the byte sequence for which to calculate a chekcsum
+     * @param from      Stating index of bytes to include in checksum calculation
+     * @param to        Ending index (exclusive) of bytes to include in checksum
+     * @return the 32bit checksum in the range from 0 to 2^32-1
+     * 
+     * @see #checksum(RandomAccess, long, long)
+     * 
+     * @since 1.17
+     */
+    public static long checksum(byte[] data, int from, int to) {
+        return checksum(ByteBuffer.wrap(data, from, to));
+    }
+    
+    /**
+     * Computes the checksum from a ByteBuffer
      * 
      * @param data      The ByteBuffer for which to calculated a (partial) checksum
      * @return The      computed check sum
@@ -150,6 +174,19 @@ public final class FitsCheckSum {
         return update(data, 0);
     }
 
+    private static long computeFrom(FitsElement data) throws FitsException {
+        ByteArrayOutputStream stream = new ByteArrayOutputStream();
+        FitsOutputStream fos = new FitsOutputStream(stream);
+
+        // DATASUM keyword.
+        try {
+            data.write(fos);
+        } catch (IOException e) {
+            throw new FitsException("IO error while checking checksum of FITS element", e);
+        }
+        return checksum(stream.toByteArray());
+    }
+    
     /**
      * Computes the checksum for a FITS data object, e.g. to be used with
      * {@link #updateDatasum(Header, long)}
@@ -159,18 +196,14 @@ public final class FitsCheckSum {
      * 
      * @throws FitsException    If there was an error serializing the data object
      * 
+     * @see #checksum(RandomAccess, long, long)
      * @see #updateDatasum(Header, long)
      * @see #setChecksum(BasicHDU)
      * 
      * @since 1.17
      */
     public static long checksum(Data data) throws FitsException {
-        ByteArrayOutputStream stream = new ByteArrayOutputStream();
-        FitsOutputStream bdos = new FitsOutputStream(stream);
-
-        // DATASUM keyword.
-        data.write(bdos);
-        return checksum(stream.toByteArray());
+        return computeFrom(data);
     }
     
     /**
@@ -178,10 +211,10 @@ public final class FitsCheckSum {
      * incremental checksums via {@link #updateChecksum(Header, long)} after 
      * updating a header
      * 
-     * @param header    The FITS header for which to calculate a checksum
-     * @return          The checksum of the header
+     * @param header    the FITS header for which to calculate a checksum
+     * @return          the checksum of the header
      * 
-     * @throws FitsException    If there was an error serializing the data object
+     * @throws FitsException    if there was an error serializing the data object
      * 
      * @see #updateDatasum(Header, long)
      * @see #setChecksum(BasicHDU)
@@ -189,14 +222,39 @@ public final class FitsCheckSum {
      * @since 1.17
      */
     public static long checksum(Header header) throws FitsException {
-        ByteArrayOutputStream stream = new ByteArrayOutputStream();
-        FitsOutputStream bdos = new FitsOutputStream(stream);
-
         header.addValue(CHECKSUM, "0000000000000000");
-        
-        // DATASUM keyword.
-        header.write(bdos);
-        return checksum(stream.toByteArray());
+        return computeFrom(header);
+    }
+    
+    /**
+     * Computes the checksum directly from a region of a random access file, by buffering
+     * moderately sized chunks from the file as necessary. The file may be very large, up to the
+     * full range of 64-bit addresses.
+     * 
+     * @param f     the random access file, from which to compute a checksum
+     * @param from  the starting position in the file, where to start computing the checksum from.
+     * @param size  the number of bytes in the file to include in the checksum calculation.
+     * 
+     * @return      the checksum for the given segment of the file
+     * 
+     * @throws IOException if there was a problem accessing the file during the computation.
+     * 
+     * @since 1.17
+     * 
+     */
+    public static long checksum(RandomAccess f, long from, long size) throws IOException {
+        int len = (int) Math.min(BUFFER_SIZE, size);
+        byte[] buf = new byte[len];
+        long oldpos = f.position();
+        f.position(from);
+        long sum = 0;
+        for (; size > 0; from += len, size -= len) {
+            len = (int) Math.min(BUFFER_SIZE, size);
+            f.read(buf);
+            sum = sumOf(sum, checksum(buf, 0, len));
+        }
+        f.position(oldpos);
+        return sum;
     }
     
     /**
@@ -363,7 +421,7 @@ public final class FitsCheckSum {
         final HeaderCard sumCard = header.findCard(CHECKSUM);
         
         if (sumCard == null) {
-            throw new FitsException("Header does not have a DATASUM keyword to update.");
+            throw new FitsException("Header does not have a CHECKSUM keyword to update.");
         }
 
         long cksum = (~FitsCheckSum.decode(sumCard.getValue())) & FitsIO.INTEGER_MASK;
@@ -413,6 +471,40 @@ public final class FitsCheckSum {
         return wrap(total - part);
     }
     
+    /**
+     * Sets the DATASUM and CHECKSUM keywords in a FITS header, based on the provided
+     * checksum of the data (calculated elsewhere) and the checksum calculated afresh
+     * for the header.
+     * 
+     * @param h             the header in which to store the DATASUM and CHECKSUM values
+     * @param datasum       the checksum for the data segment that follows the header in the HDU.
+     * @throws FitsException    
+     *             if there was an error serializing the header. Note, the method never throws
+     *             any other type of exception (including runtime exceptions), which are
+     *             instead wrapped into a <code>FitsException</code> when they occur.
+     */
+    public static void setChecksum(Header h, long datasum) throws FitsException {
+        // Add the freshly calculated datasum to the header, before calculating the checksum
+        h.addValue(DATASUM, Long.toString(datasum));
+        
+        long hsum;
+        
+        try {
+            hsum = checksum(h);
+        } catch (FitsException e) {
+            throw e;
+        } catch (Exception e) {
+            throw new FitsException("Exception while computing header checksum: " + e.getMessage(), e);
+        }
+        
+        /*
+         * This time we do not use a deleteKey() to ensure that the keyword is
+         * replaced "in place". Note that the value of the checksum is actually
+         * independent to a permutation of the 80-byte records within the
+         * header.
+         */
+        h.addValue(CHECKSUM, encode(sumOf(hsum, datasum), true));
+    }
     
     /**
      * Computes and sets the DATASUM and CHECKSUM keywords for a given HDU. This method
@@ -424,7 +516,9 @@ public final class FitsCheckSum {
      * @param hdu
      *            the HDU to be updated.
      * @throws FitsException
-     *             if there was an error serializing the HDU
+     *             if there was an error serializing the HDU. Note, the method never throws
+     *             any other type of exception (including runtime exceptions), which are
+     *             instead wrapped into a <code>FitsException</code> when they occur.
      * 
      * @see #updateDatasum(Header, long)
      * @see #updateChecksum(Header, long)
@@ -435,31 +529,102 @@ public final class FitsCheckSum {
      *             
      */
     public static void setChecksum(BasicHDU<?> hdu) throws FitsException {
+        long csd;
+        
         try {
-            applyTo(hdu);
+            csd = checksum(hdu.getData());
         } catch (FitsException e) {
             throw e;
         } catch (Exception e) {
-            throw new FitsException("Unexpected exception in checksum calculation", e);
+            throw new FitsException("Exception while computing data checksum: " + e.getMessage(), e);
         }
+
+        setChecksum(hdu.getHeader(), csd);
+    }
+        
+    /**
+     * Checks if the DATASUM stored in a HDU's header matches the actual checksum
+     * of the HDU's data.
+     * 
+     * @param hdu       The HDU for which to verify the checksum
+     * @return          <code>true</code> if the HDU's data matches the stored DATASUM,
+     *                  or else <code>false</code>
+     *                  
+     * @throws FitsException if the HDU's header does not contain a DATASUM keyword.
+     * 
+     * @see #verifyChecksum(BasicHDU, boolean)
+     * @see #checksum(Data) 
+     * 
+     * @since 1.17
+     */
+    public static boolean verifyDatasum(BasicHDU<?> hdu) throws FitsException {
+        HeaderCard hc = hdu.getHeader().findCard(DATASUM);
+        
+        if (hc == null) {
+            throw new FitsException("Header does not have a DATASUM keyword to update.");
+        }
+        
+        return checksum(hdu.getData()) == hc.getValue(Long.class, 0L);
+    }
+
+    /**
+     * <p>
+     * Checks if the CHECKSUM stored in a HDU's header matches the actual checksum
+     * of the HDU (header + data). If the <code>trustDataSum</code> argument is
+     * <code>true</code> and the HDU's header contains a DATASUM keyword, it will
+     * be trusted and used -- thereby skipping the computationally expensive recalculation
+     * of the datasum, computing the checksum for the header alone. Otherwise, the checksum
+     * is recalculated for the entire HDU (header + data).
+     * </p>
+     * <p>
+     * The <code>trustDataSum</code> option is conveninent especially if one wants to
+     * verify the DATASUM separately, e.g.:
+     * </p>
+     * <pre>
+     *    boolean isMatch = verifyDatasum(hdu);
+     *    if (!isMatch) {
+     *         System.err.println("WARNING! Actual data sum does not match the stored DATASUM value.);
+          }
+     *    if( verifyChecksum(hdu, isMatch);
+               System.err.println("WARNING! Actual HDU checksum does not match the stored CHECKSUM value.);
+     *    }
+     * </pre>
+     * <p>
+     * In the above example, the checksum is computed for the data segment only once for
+     * both checks.
+     * </p>
+     * 
+     * @param hdu               The HDU for which to verify the checksum
+     * @param trustDatasum      If <code>true</code> and the HDU's header contains a
+     *                          DATASUM keyword, the computation of the checksum for the
+     *                          data segment will be skipped, and the value of the DATASUM
+     *                          keyword will be used instead. Otherwise, the checksum 
+     *                          will be (re)computed for both the header and data segments
+     *                          of the HD
+     *                          U.
+     * @return          <code>true</code> if the HDU's data matches the stored CHECKSUM,
+     *                  or else <code>false</code>
+     *                  
+     * @throws FitsException if the HDU's header does not contain a CHECKSUM keyword. 
+     * 
+     * @see #verifyDatasum(BasicHDU)
+     * @see #setChecksum(BasicHDU)
+     * 
+     * @since 1.17
+     */
+    public static boolean verifyChecksum(BasicHDU<?> hdu, boolean trustDatasum) throws FitsException {
+        Header h = hdu.getHeader();
+        HeaderCard hc = h.findCard(CHECKSUM);
+        
+        if (hc == null) {
+            throw new FitsException("Header does not have a DATASUM keyword to update.");
+        }
+        
+        long datasum = (trustDatasum && h.containsKey(DATASUM)) ?
+                h.findCard(DATASUM).getValue(Long.class, 0L) : checksum(hdu.getData());
+       
+        
+        return decode(hc.getValue()) == sumOf(datasum, checksum(h));
     }
     
-    // Same as setChecksum(), but may throw exceptions other than FitsException
-    private static void applyTo(BasicHDU<?> hdu) throws Exception {
-        long csd = checksum(hdu.getData());
-
-        // Add the freshly calculated datasum to the header, before calculating the checksum
-        hdu.addValue(DATASUM, Long.toString(csd));
-        
-        long csh = checksum(hdu.getHeader());
-        
-        /*
-         * This time we do not use a deleteKey() to ensure that the keyword is
-         * replaced "in place". Note that the value of the checksum is actually
-         * independent to a permutation of the 80-byte records within the
-         * header.
-         */
-        hdu.addValue(CHECKSUM, encode(sumOf(csh, csd), true));
-    }
-
 }

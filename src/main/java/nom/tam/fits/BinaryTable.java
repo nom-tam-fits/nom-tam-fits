@@ -636,10 +636,15 @@ public class BinaryTable extends AbstractTableData {
         res = encurl(res, col, this.nRow);
         return res;
     }
+    
+    @Override
+    public boolean isDeferred() {
+        return table == null;
+    }
 
     @Override
     public ColumnTable<SaveState> getData() throws FitsException {
-        if (this.table == null) {
+        if (isDeferred()) {
             if (this.currInput == null) {
                 throw new FitsException("Cannot find input for deferred read");
             }

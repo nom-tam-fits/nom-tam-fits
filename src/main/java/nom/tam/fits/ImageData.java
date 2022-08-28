@@ -154,6 +154,11 @@ public class ImageData extends Data {
         this.dataArray = x;
         this.byteSize = FitsEncoder.computeSize(x);
     }
+    
+    @Override
+    public boolean isDeferred() {
+        return dataArray == null;
+    }
 
     /**
      * Return the actual data. Note that this may return a null when the data is
@@ -164,7 +169,7 @@ public class ImageData extends Data {
     @Override
     public Object getData() {
 
-        if (this.dataArray == null && this.tiler != null) {
+        if (isDeferred() && this.tiler != null) {
             try {
                 this.dataArray = this.tiler.getCompleteImage();
             } catch (Exception e) {
