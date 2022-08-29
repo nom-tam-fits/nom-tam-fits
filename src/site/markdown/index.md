@@ -892,12 +892,103 @@ You may note a few other properties of HIERARCH keywords as implemented by this 
 <a name="checksums"></a>
 ### Checksums
 
-Checksums can be added to the Headers for HDUs that can be used to ensure the faithful copying of the FITS data. `Fits.setChecksum()` can be used to set these.  Setting the checksum should be the users last action before writing the FITS file. 
+Checksums can be added to / updated in the headers of HDUs to allow checking the integrity of the FITS data at a later time.
 
 As of version 1.17, it is also possible to apply incremental updates to existing checksums. See the various static
 methods of the `nom.tam.utilities.FitsChecksum` class on updating checksums for modified headers or data. There are also
 new methods to simplify verification of checksums when reading FITS files, and for calculating checksums directly from
 a file without the need for reading and storing potentially huge amounts of data in RAM. Calculating data checksums directly from the file is now default (as of 1.17) for data that is in deferred read (i.e. not currently loaded into RAM), making it possible to checksum huge FITS files without having to load all data into RAM.
+
+Setting the checksums (CHECKSUM and DATASUM keywords) should be the last action on the FITS object or HDU before 
+writing it out. Here is an example of settting a checksum for an HDU before you write it to disk:
+
+```java
+  ImageHDU im;
+         
+  // ... prepare the image and header ...
+   
+  FitsCheckSum.setCheckSum(im);
+  
+  FitsFile out = new FitsFile("my-checksummed-image.fits");
+  im.write(out);
+  
+  // ... maybe write more HDUs to the file ...
+  
+  out.close();
+```
+
+Or you can set checksums for all HDUs in your `Fits` in one go before writing the entire `Fits` 
+object out to disk:
+
+```java
+  Fits f = new Fits();
+  
+  // ... Compose the FITS with the HDUs ...
+  
+  f.setChecksum();
+  f.write(new FitsFile("my-checksummed-image.fits"));
+  f.close();
+```
+
+Then later you can verify the integrity of FITS files using the stored checksums just as easily too:
+
+```java
+  Fits f = new Fits("my-huge-fits-file.fits");
+  
+  // We'll check the integrity of the first HDU without loading its
+  // potentially huge data into RAM (staying in deferred mode).
+  BasicHDU<?> hdu = f.readHDU();
+  
+  // Calculate the HDU's checksum (still in deferred mode), and check...
+  if (fits.calcChecksum(0) != hdu.getStoredChecksum()) {
+      System.err.println("WARNING! checksums for HDU " + i + " don't match!");
+  }
+  
+  f.close();
+```
+
+(Note that `Fits.calcChecksum(int)` will compute the checksum from the file only if the data
+has not been loaded into RAM (in deferred mode). Otherwise, it will compute the checksum from
+the data that was loaded. You can also calculate the checksums from the file (equivalently to
+ the above) via:
+
+```java
+  FitsFile in = new FitsFile("my-huge-fits-file.fits");
+  Fits f = new Fits(in);
+ 
+  BasicHDU<?> hdu = f.read();
+
+  // Calculate checksum directly from the file
+  long actual = FitsCheckSum.checksum(in, hdu.getFileOffset(), hdu.getSize());
+  if (actual != f.getHDU(i).getStoredChecksum()) {
+      System.err.println("WARNING! The HDU might be corruputed.");
+  }
+
+  f.close();
+```
+
+And, if you want to verify the integrity of the data segment by itself (ignoring the header) 
+you might use `getStoredDataSum()` instead and changing the checksum range to correspond to 
+the location of the data block in the file. 
+
+Finally, consider updating the checksums for a FITS you want to modify in place:
+
+```java
+  Fits f = new Fits("my.fits");
+  
+  // We'll modify the fist HDU...
+  ImageHDU im = (ImageHDU) f.readHDU();
+  float[][] data = (float[][]) im.getData():
+  
+  // Offset the data by 1.12
+  for (int i = 0; i < data.length; i++) 
+      for (int j = 0; i < data[0].length; j++)
+          data[i][j] += 1.12;
+    
+  // Calculate new checksums for the HDU      
+  FitsCheckSum.setChecksum(im);
+  im.rewrite();
+```
 
 <a name="preallocated-header-space"></a>
 ### Preallocated header space
