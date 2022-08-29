@@ -50,6 +50,7 @@ jobs:
       working-directory: ./nom-tam-fits
         
     - name: Update site
+      if: ${{ github.repository_owner == 'nom-tam-fits' && github.ref_name == 'master' }}
       run: |
         cp -a nom-tam-fits/target/site/* site/
         cd site
