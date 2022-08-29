@@ -2210,10 +2210,12 @@ public class Header implements FitsElement {
             dupKeys = new HashSet<>();
         }
 
-        HeaderCardParser.getLogger().log(Level.WARNING, "Multiple occurrences of key:" + dup.getKey());
+        if (!dupKeys.contains(dup.getKey())) {
+            HeaderCardParser.getLogger().log(Level.WARNING, "Multiple occurrences of key:" + dup.getKey());
+            dupKeys.add(dup.getKey());
+        }
 
-        duplicates.add(dup);
-        dupKeys.add(dup.getKey());
+        duplicates.add(dup)
     }
 
     /**
