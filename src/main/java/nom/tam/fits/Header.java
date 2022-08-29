@@ -2215,7 +2215,7 @@ public class Header implements FitsElement {
             dupKeys.add(dup.getKey());
         }
 
-        duplicates.add(dup)
+        duplicates.add(dup);
     }
 
     /**
