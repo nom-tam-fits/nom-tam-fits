@@ -833,17 +833,24 @@ public class Fits implements Closeable {
     public void setChecksum() throws FitsException, IOException {
         for (int i = 0; i < getNumberOfHDUs(); i += 1) {
             BasicHDU<?> hdu = getHDU(i);
-            Data data = hdu.getData();
-            if (data.isDeferred() && dataStr instanceof RandomAccess) {
-                // Compute datasum directly from file...
-                long datasum = FitsCheckSum.checksum((RandomAccess) dataStr, data.getFileOffset(), data.getSize());
-                FitsCheckSum.setChecksum(hdu.getHeader(), datasum);
-            } else {
-                FitsCheckSum.setChecksum(hdu);
-            }
+            FitsCheckSum.setDatasum(hdu.getHeader(), calcDatasum(i));
         }
     }
-
+    
+    public long calcDatasum(int hduIndex) throws FitsException, IOException {
+        BasicHDU<?> hdu = getHDU(hduIndex);
+        Data data = hdu.getData();
+        if (data.isDeferred() && dataStr instanceof RandomAccess) {
+            // Compute datasum directly from file...
+            return FitsCheckSum.checksum((RandomAccess) dataStr, data.getFileOffset(), data.getSize());
+        } 
+        return FitsCheckSum.checksum(data);
+    }
+    
+    public long calcChecksum(int hduIndex) throws FitsException, IOException {
+        return FitsCheckSum.sumOf(FitsCheckSum.checksum(getHDU(hduIndex).getHeader()), calcDatasum(hduIndex));
+    }
+    
     /**
      * @deprecated This method is poorly conceived as we cannot really read FITS from 
      *              just any <code>ArrayDataInput</code> but only those,

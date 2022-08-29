@@ -48,29 +48,27 @@ import nom.tam.fits.Header;
 import nom.tam.fits.HeaderCard;
 import static nom.tam.fits.header.Checksum.CHECKSUM;
 import static nom.tam.fits.header.Checksum.DATASUM;
-import nom.tam.util.AsciiFuncs;
 import nom.tam.util.FitsIO;
 import nom.tam.util.FitsOutputStream;
 import nom.tam.util.RandomAccess;
 
 /**
  * <p>
- * Helper class for dealing with FITS checksums. This updated version of the class
- * is a little more flexible than the prior incarnation, specifically that it allows the checksum 
- * to be accumulated across several invocations of the {@link #updateChecksum(Header, long)} method, 
- * and allows for the DATASUM keyword to be updated after data has been changed. It also 
- * provides a method for decoding an encoded checksum, and for calculating checksums directly
- * from files without the need to read potentially huge data into RAM first.
+ * Helper class for dealing with FITS checksums. It implements the Seaman-Pence 32-bit 1's 
+ * complement checksum calculation. The implementation accumulates in two 64-bit integer 
+ * values the low and high-order 16-bits of adjacent 4-byte groups. A carry-over of bits are 
+ * calculated only at the end of the loop. Given the use of 64-bit accumulators, overflow would 
+ * occur approximately at 280 billion short values.
  * </p>
  * <p>
- * Implements the Seaman-Pence 32-bit 1's complement checksum calculation. 
- * The implementation accumulates in two 64-bit integer values the low and high-order
- * 16-bits of adjacent 4-byte groups. A carry-over of bits are calculate only
- * at the end of the loop. Given the use of 64-bit accumulators, overflow would occur
- * approximately at 280 billion short values. As such the class is not suitable for 
- * processing FITS HDUs over 580 GB (although it can be done by aggregating sums from
- * partial datablocks each of which are of smaller size).
- * </P>
+ * This updated version of the class is a little more flexible than the prior incarnation. 
+ * Specifically it allows incremental updates to data sums, and provides methods for dealing 
+ * with partial checksums (e.g. from modified segments of the data), which may be used e.g. 
+ * to calculate delta sums from changed blocks of data. The new implementation  provides methods 
+ * for decoding encoded checksums, and for calculating  checksums directly from files without 
+ * the need to read potentially huge data into RAM first, and for easily accessing the values 
+ * stored in FITS headers.
+ * </p>
  * 
  * @author R J Mather, Tony Johnson, Attila Kovacs
  * 
@@ -90,7 +88,8 @@ public final class FitsCheckSum {
     private static final int BUFFER_SIZE = 0x8000; // 32 kB
 
     private static final int[] SELECT_BYTE = {24, 16, 8, 0}; 
-    private static final String EXCLUDE = ":;<=>?@[\\]^_`";
+    private static final String EXCLUDE = ":;<=>?@[\\]^_`";    
+    private static final String CHECKSUM_DEFAULT = "0000000000000000";
 
     private FitsCheckSum() {
     }
@@ -158,7 +157,14 @@ public final class FitsCheckSum {
     }
     
     /**
-     * Computes the checksum from a ByteBuffer
+     * Computes the checksum from a ByteBuffer. This method can be used to calculate
+     * partial checksums for any data that can be wrapped into a buffer one way or another.
+     * As such it is suitable for calculating partial sums from segments of data that
+     * can be used to update datasums incrementally (e.g. by incrementing the datasum
+     * with the difference of the checksum of the new data segment vs the old data segment),
+     * or for updating the checksum for new data that has been added to the existing data
+     * (e.g. new rows in a binary table) as long as the modified data segment is a multiple
+     * of 4 bytes.
      * 
      * @param data      The ByteBuffer for which to calculated a (partial) checksum
      * @return The      computed check sum
@@ -168,28 +174,35 @@ public final class FitsCheckSum {
      * @see #checksum(Data)
      * @see #checksum(Header)
      * @see #sumOf(long...)
-     * @see #subtractFrom(long, long)
+     * @see #differenceOf(long, long)
      */
     public static long checksum(ByteBuffer data) {
-        return update(data, 0);
+        Checksum sum = new Checksum(0);
+        if (!(data.remaining() % CHECKSUM_BLOCK_SIZE == 0)) {
+            throw new IllegalArgumentException("fits blocks must always be divisible by 4");
+        }
+        data.position(0);
+        data.order(ByteOrder.BIG_ENDIAN);
+        IntBuffer iData = data.asIntBuffer();
+        while (iData.hasRemaining()) {
+            sum.add(iData.get());
+        }
+        return sum.getCheckSum();
     }
 
-    private static long computeFrom(FitsElement data) throws FitsException {
+    private static long compute(FitsElement data) throws FitsException {
         ByteArrayOutputStream stream = new ByteArrayOutputStream();
-        FitsOutputStream fos = new FitsOutputStream(stream);
-
-        // DATASUM keyword.
         try {
-            data.write(fos);
+            data.write(new FitsOutputStream(stream));
         } catch (IOException e) {
-            throw new FitsException("IO error while checking checksum of FITS element", e);
+            throw new FitsException("I/O error while checking checksum of FITS element", e);
         }
         return checksum(stream.toByteArray());
     }
     
     /**
      * Computes the checksum for a FITS data object, e.g. to be used with
-     * {@link #updateDatasum(Header, long)}
+     * {@link #setDatasum(Header, long)}
      * 
      * @param data      The FITS data object for which to calculate a checksum
      * @return          The checksum of the data
@@ -197,33 +210,63 @@ public final class FitsCheckSum {
      * @throws FitsException    If there was an error serializing the data object
      * 
      * @see #checksum(RandomAccess, long, long)
-     * @see #updateDatasum(Header, long)
+     * @see #setDatasum(Header, long)
      * @see #setChecksum(BasicHDU)
      * 
      * @since 1.17
      */
     public static long checksum(Data data) throws FitsException {
-        return computeFrom(data);
+        return compute(data);
     }
     
     /**
-     * Computes the checksum for a FITS header object, e.g. for calculating 
-     * incremental checksums via {@link #updateChecksum(Header, long)} after 
-     * updating a header
+     * Computes the checksum for a FITS header object. If the header already contained 
+     * a CHECKSUM card, it will be kept. Otherwise, it will add a CHECKSUM card
+     * to the header with the newly calculated sum.
      * 
-     * @param header    the FITS header for which to calculate a checksum
-     * @return          the checksum of the header
+     * @param header    The FITS header object for which to calculate a checksum
+     * @return          The checksum of the data
      * 
-     * @throws FitsException    if there was an error serializing the data object
+     * @throws FitsException    If there was an error serializing the FITS header
      * 
-     * @see #updateDatasum(Header, long)
-     * @see #setChecksum(BasicHDU)
+     * @see #checksum(Data)
      * 
      * @since 1.17
      */
-    public static long checksum(Header header) throws FitsException {
-        header.addValue(CHECKSUM, "0000000000000000");
-        return computeFrom(header);
+    public static long checksum(Header header) throws FitsException {   
+        HeaderCard hc = header.findCard(CHECKSUM);
+        String prior = null;
+
+        if (hc != null) {
+            prior = hc.getValue();
+            hc.setValue(CHECKSUM_DEFAULT);
+        } else {
+            hc = header.addValue(CHECKSUM, CHECKSUM_DEFAULT);
+        }
+        
+        long sum = compute(header);
+        
+        hc.setValue(prior == null ? encode(sum) : prior);
+
+        return sum;
+    }
+    
+    /**
+     * Calculates the FITS checksum for a HDU, e.g to compare agains the value stored
+     * under the CHECKSUM header keyword. The 
+     * 
+     * @param hdu       The Fits HDU for which to calculate a checksum, including both the
+     *                  header and data segments.
+     * @return          The calculated checksum for the given HDU.
+     * @throws FitsException        if there was an error accessing the contents of the HDU.
+     * 
+     * @see #checksum(Data)
+     * @see #sumOf(long...)
+     *
+     * @since 1.17
+     */
+    public static long checksum(BasicHDU<?> hdu) throws FitsException {
+        return sumOf(checksum(hdu.getHeader()), checksum(hdu.getData()));
     }
     
     /**
@@ -256,50 +299,6 @@ public final class FitsCheckSum {
         f.position(oldpos);
         return sum;
     }
-    
-    /**
-     * Update a checksum from a ByteBuffer
-     *
-     * @param data      The ByteBuffer to use as a source of data
-     * @param prior     The previously accumulated 32-but checksum.
-     * with the additional data.
-     * 
-     * @return The aggregated checksum
-     * 
-     * @throws IllegalArgumentException  if the prior is not a valid 32-bit checksum
-     *                  (i.e. it has bits in the higher 4 bytes).
-     */
-    private static long update(ByteBuffer data, long prior) {
-        Checksum sum = new Checksum(prior);
-        
-        if (!(data.remaining() % CHECKSUM_BLOCK_SIZE == 0)) {
-            throw new IllegalArgumentException("fits blocks must always be divisible by 4");
-        }
-        data.position(0);
-        data.order(ByteOrder.BIG_ENDIAN);
-        IntBuffer iData = data.asIntBuffer();
-        while (iData.hasRemaining()) {
-            sum.add(iData.get());
-        }
-        return sum.getCheckSum();
-    }
-    /**
-     * Encode a 32bit integer according to the Seaman-Pence proposal.
-     * 
-     * @see <a
-     *      href="http://heasarc.gsfc.nasa.gov/docs/heasarc/ofwg/docs/general/checksum/node14.html#SECTION00035000000000000000">heasarc
-     *      checksum doc</a>
-     * @param c
-     *            the checksum previously calculated
-     * @param compl
-     *            complement the value
-     * @return the encoded string of 16 bytes.
-     * 
-     * @since 1.17
-     */
-    public static String encode(final long c, final boolean compl) {
-        return encode(compl ? ~c : c);
-    }
 
     /**
      * @deprecated Use {@link #encode(long, boolean)} instead.
@@ -309,17 +308,39 @@ public final class FitsCheckSum {
         return encode(c, compl);
     }
 
-    
     /**
-     * Encode the given checksum, including the rotating the result right by one byte.
+     * Encodes the complemented checksum. It is the same as <code>encode(checksum, true)</code>.
      * 
      * @param checksum      The calculated 32-bit (unsigned) checksum
+     * @return              The encoded checksum, suitably encoded for use with the CHECKSUM header
      * 
-     * @return The encoded checksum, suitably encoded for use with the CHECKSUM header
+     * @see #decode(String)
      * 
      * @since 1.17
      */
-    public static String encode(final long checksum) {
+    public static String encode(long checksum) {
+        return encode(checksum, true);
+    }
+    
+    /**
+     * Encodes the given checksum as is or by its complement.
+     * 
+     * @param checksum      The calculated 32-bit (unsigned) checksum
+     * @param compl         If <code>true</code> the complement of the specified value
+     *                      will be encoded. Otherwise, the value as is will be encoded.
+     *                      (FITS normally uses the complemenyed value).
+     * 
+     * @return The encoded checksum, suitably encoded for use with the CHECKSUM header
+     * 
+     * @see #decode(String, boolean)
+     * 
+     * @since 1.17
+     */
+    public static String encode(long checksum, boolean compl) {
+        if (compl) {
+            checksum = ~checksum & FitsIO.INTEGER_MASK;
+        }
+        
         final byte[] asc = new byte[CHECKSUM_STRING_SIZE];
         final byte[] ch = new byte[CHECKSUM_BLOCK_SIZE];
         final int sum = (int) checksum;
@@ -347,85 +368,66 @@ public final class FitsCheckSum {
         
         return new String(asc);
     }
+
     /**
-     * Decodes an encoded checksum, the opposite of {@link #encode}
+     * Decodes an encoded (and complemented) checksum. The same as <code>decode(encoded, true)</code>,
+     * and the the inverse of {@link #encode(long)}.
      * 
      * @param encoded The encoded checksum (16 character string)
      * 
-     * @return The unsigned 32-bit integer checksum.
+     * @return The unsigned 32-bit integer complemeted checksum.
+     * 
+     * @throws IllegalArgumentException     if the checksum string is invalid (wrong length or
+     *                                      contains illegal ASCII characters)
+     *                                      
+     * @see #encode(long)
+     * 
+     * @since 1.17
      */
-    public static long decode(String encoded) {
+    public static long decode(String encoded) throws IllegalArgumentException {
+        return decode(encoded, true);
+    }
+    
+    /**
+     * Decodes an encoded checksum, comoplementing it as required. It is the inverse of 
+     * {@link #encode(long, boolean)}.
+     * 
+     * @param encoded   the encoded checksum (16 character string)
+     * @param compl     whether to complement the checksum after decoding. Normally FITS
+     *                  uses complemented 32-bit checksums, so typically this optional
+     *                  argument should be <code>true</code>.
+     * 
+     * @return The unsigned 32-bit integer checksum.
+     * 
+     * @throws IllegalArgumentException     if the checksum string is invalid (wrong length or
+     *                                      contains illegal ASCII characters)
+     *                                      
+     * @see #encode(long, boolean)
+     * 
+     * @since 1.17
+     */
+    public static long decode(String encoded, boolean compl) throws IllegalArgumentException {
         byte[] bytes = encoded.getBytes(StandardCharsets.US_ASCII);
         if (bytes.length != CHECKSUM_STRING_SIZE) {
             throw new IllegalArgumentException("Bad checksum with " + bytes.length + " chars (expected 16)");
         }
-        // Shift the bytes one to the left circularly
+        // Rotate the bytes one to the left
         byte tmp = bytes[0];
         System.arraycopy(bytes, 1, bytes, 0, CHECKSUM_STRING_SIZE - 1);
         bytes[CHECKSUM_STRING_SIZE - 1] = tmp;
+        
         for (int i = 0; i < CHECKSUM_STRING_SIZE; i++) {
+            if (bytes[i] < ASCII_ZERO) {
+                throw new IllegalArgumentException("Bad checksum with illegal char " + 
+                        Integer.toHexString(bytes[i]) + " at pos " + i + " (ASCII below 0x30)");
+            }
             bytes[i] -= ASCII_ZERO;
         }
-        ByteBuffer bb = ByteBuffer.wrap(bytes);
-        bb.order(ByteOrder.BIG_ENDIAN);
-        long result = 0;
-        result += bb.getInt();
-        result += bb.getInt();
-        result += bb.getInt();
-        result += bb.getInt();
-        return result & FitsIO.INTEGER_MASK;
-    }
-    
-    
-    /**
-     * Apply an incremental update to the datasum, as a result of changing one of more records.
-     * It will 
-     * 
-     * @param header            The header to update
-     * @param dataSum           The new data checksum
-     * @throws FitsException    if the header did not contain a DATASUM keyword.
-     * 
-     * @since 1.17
-     */    
-    public static void updateDatasum(Header header, long dataSum) throws FitsException {
-        final HeaderCard sumCard = header.findCard(DATASUM);
         
-        if (sumCard == null) {
-            throw new FitsException("Header does not have a DATASUM keyword to update.");
-        }
+        ByteBuffer bb = ByteBuffer.wrap(bytes).order(ByteOrder.BIG_ENDIAN);
         
-        final long oldSum = sumCard.getValue(Long.class, 0L);
-        
-        long oldCardSum = checksum(AsciiFuncs.getBytes(sumCard.toString()));
-        sumCard.setValue(dataSum);
-        long newCardSum = checksum(AsciiFuncs.getBytes(sumCard.toString()));
-        
-        // Updating the datasum also changes the CHECKSUM, so that must be recomputed too.
-        // Checksum is affected both by the data changing, and by the DATASUM header changing
-        // Fortunately this is (relatively) easy to do.
-        long delta = dataSum - oldSum + (newCardSum - oldCardSum);
-        
-        updateChecksum(header, delta);
-    }
-
-    /**
-     * Apply an incremental update to the checksum, as a result of changing one of more records
-     * 
-     * @param header            The header to update
-     * @param delta             The change in the checksum
-     * @throws FitsException    if the header did not contain a DATASUM keyword.
-     * 
-     * @since 1.17
-     */
-    public static void updateChecksum(Header header, long delta) throws FitsException {
-        final HeaderCard sumCard = header.findCard(CHECKSUM);
-        
-        if (sumCard == null) {
-            throw new FitsException("Header does not have a CHECKSUM keyword to update.");
-        }
-
-        long cksum = (~FitsCheckSum.decode(sumCard.getValue())) & FitsIO.INTEGER_MASK;
-        sumCard.setValue(FitsCheckSum.encode(sumOf(cksum, delta)));
+        long sum = (bb.getInt() + bb.getInt() + bb.getInt() + bb.getInt());
+        return (compl ? ~sum : sum) & FitsIO.INTEGER_MASK;
     }
     
     
@@ -443,6 +445,8 @@ public final class FitsCheckSum {
      * 
      * @param parts     The partial sums that are to be added together.
      * @return          The aggregated checksum as a 32-bit unsigned value. 
+     * 
+     * @see #differenceOf(long, long)
      * 
      * @since 1.17
      */
@@ -465,9 +469,11 @@ public final class FitsCheckSum {
      * @param part      The partial checksum to be subtracted from a.
      * @return          The checksum after subtracting the partial sum, as a 32-bit unsigned value.
      * 
+     * @see #sumOf(long...)
+     * 
      * @since 1.17
      */
-    public static long subtractFrom(long total, long part) {
+    public static long differenceOf(long total, long part) {
         return wrap(total - part);
     }
     
@@ -476,36 +482,25 @@ public final class FitsCheckSum {
      * checksum of the data (calculated elsewhere) and the checksum calculated afresh
      * for the header.
      * 
-     * @param h             the header in which to store the DATASUM and CHECKSUM values
+     * @param header        the header in which to store the DATASUM and CHECKSUM values
      * @param datasum       the checksum for the data segment that follows the header in the HDU.
      * @throws FitsException    
      *             if there was an error serializing the header. Note, the method never throws
      *             any other type of exception (including runtime exceptions), which are
      *             instead wrapped into a <code>FitsException</code> when they occur.
+     *             
+     * @see #setChecksum(BasicHDU) 
+     * @see #getStoredChecksum(Header)
+     * @see #getStoredDatasum(Header)    
+     * 
+     * @since 1.17
      */
-    public static void setChecksum(Header h, long datasum) throws FitsException {
+    public static void setDatasum(Header header, long datasum) throws FitsException {
         // Add the freshly calculated datasum to the header, before calculating the checksum
-        h.addValue(DATASUM, Long.toString(datasum));
-        
-        long hsum;
-        
-        try {
-            hsum = checksum(h);
-        } catch (FitsException e) {
-            throw e;
-        } catch (Exception e) {
-            throw new FitsException("Exception while computing header checksum: " + e.getMessage(), e);
-        }
-        
-        /*
-         * This time we do not use a deleteKey() to ensure that the keyword is
-         * replaced "in place". Note that the value of the checksum is actually
-         * independent to a permutation of the 80-byte records within the
-         * header.
-         */
-        h.addValue(CHECKSUM, encode(sumOf(hsum, datasum), true));
+        header.addValue(DATASUM, Long.toString(datasum));
+        header.addValue(CHECKSUM, encode(sumOf(checksum(header), datasum)));
     }
-    
+        
     /**
      * Computes and sets the DATASUM and CHECKSUM keywords for a given HDU. This method
      * calculates the sums from scratch, and can be computationally expensive. There are 
@@ -520,111 +515,60 @@ public final class FitsCheckSum {
      *             any other type of exception (including runtime exceptions), which are
      *             instead wrapped into a <code>FitsException</code> when they occur.
      * 
-     * @see #updateDatasum(Header, long)
-     * @see #updateChecksum(Header, long)
+     * @see #setDatasum(Header, long)
+     * @see #getStoredChecksum(Header)
      * @see #sumOf(long...)
-     * @see #subtractFrom(long, long)
+     * @see #differenceOf(long, long)
      * 
      * @author R J Mather, Attila Kovacs
      *             
      */
-    public static void setChecksum(BasicHDU<?> hdu) throws FitsException {
-        long csd;
-        
+    public static void setChecksum(BasicHDU<?> hdu) throws FitsException { 
         try {
-            csd = checksum(hdu.getData());
+            setDatasum(hdu.getHeader(), checksum(hdu.getData()));
         } catch (FitsException e) {
             throw e;
         } catch (Exception e) {
             throw new FitsException("Exception while computing data checksum: " + e.getMessage(), e);
         }
-
-        setChecksum(hdu.getHeader(), csd);
-    }
-        
-    /**
-     * Checks if the DATASUM stored in a HDU's header matches the actual checksum
-     * of the HDU's data.
-     * 
-     * @param hdu       The HDU for which to verify the checksum
-     * @return          <code>true</code> if the HDU's data matches the stored DATASUM,
-     *                  or else <code>false</code>
-     *                  
-     * @throws FitsException if the HDU's header does not contain a DATASUM keyword.
-     * 
-     * @see #verifyChecksum(BasicHDU, boolean)
-     * @see #checksum(Data) 
-     * 
-     * @since 1.17
-     */
-    public static boolean verifyDatasum(BasicHDU<?> hdu) throws FitsException {
-        HeaderCard hc = hdu.getHeader().findCard(DATASUM);
-        
-        if (hc == null) {
-            throw new FitsException("Header does not have a DATASUM keyword to update.");
-        }
-        
-        return checksum(hdu.getData()) == hc.getValue(Long.class, 0L);
-    }
-
-    /**
-     * <p>
-     * Checks if the CHECKSUM stored in a HDU's header matches the actual checksum
-     * of the HDU (header + data). If the <code>trustDataSum</code> argument is
-     * <code>true</code> and the HDU's header contains a DATASUM keyword, it will
-     * be trusted and used -- thereby skipping the computationally expensive recalculation
-     * of the datasum, computing the checksum for the header alone. Otherwise, the checksum
-     * is recalculated for the entire HDU (header + data).
-     * </p>
-     * <p>
-     * The <code>trustDataSum</code> option is conveninent especially if one wants to
-     * verify the DATASUM separately, e.g.:
-     * </p>
-     * <pre>
-     *    boolean isMatch = verifyDatasum(hdu);
-     *    if (!isMatch) {
-     *         System.err.println("WARNING! Actual data sum does not match the stored DATASUM value.);
-          }
-     *    if( verifyChecksum(hdu, isMatch);
-               System.err.println("WARNING! Actual HDU checksum does not match the stored CHECKSUM value.);
-     *    }
-     * </pre>
-     * <p>
-     * In the above example, the checksum is computed for the data segment only once for
-     * both checks.
-     * </p>
-     * 
-     * @param hdu               The HDU for which to verify the checksum
-     * @param trustDatasum      If <code>true</code> and the HDU's header contains a
-     *                          DATASUM keyword, the computation of the checksum for the
-     *                          data segment will be skipped, and the value of the DATASUM
-     *                          keyword will be used instead. Otherwise, the checksum 
-     *                          will be (re)computed for both the header and data segments
-     *                          of the HD
-     *                          U.
-     * @return          <code>true</code> if the HDU's data matches the stored CHECKSUM,
-     *                  or else <code>false</code>
-     *                  
-     * @throws FitsException if the HDU's header does not contain a CHECKSUM keyword. 
-     * 
-     * @see #verifyDatasum(BasicHDU)
-     * @see #setChecksum(BasicHDU)
-     * 
-     * @since 1.17
-     */
-    public static boolean verifyChecksum(BasicHDU<?> hdu, boolean trustDatasum) throws FitsException {
-        Header h = hdu.getHeader();
-        HeaderCard hc = h.findCard(CHECKSUM);
-        
-        if (hc == null) {
-            throw new FitsException("Header does not have a DATASUM keyword to update.");
-        }
-        
-        long datasum = (trustDatasum && h.containsKey(DATASUM)) ?
-                h.findCard(DATASUM).getValue(Long.class, 0L) : checksum(hdu.getData());
-       
-        
-        return decode(hc.getValue()) == sumOf(datasum, checksum(h));
     }
     
+    /**
+     * Returns the DATASUM value stored in a FITS header.
+     * 
+     * @param header            the FITS header
+     * @return                  The stored datasum value (unsigned 32-bit integer) as a Java <code>long</code>.
+     * @throws FitsException    if the header does not contain a DATASUM entry.
+     * 
+     * @since 1.17
+     * 
+     * @see #getStoredChecksum(Header)
+     * @see #setDatasum(Header, long)
+     */
+    public static long getStoredDatasum(Header header) throws FitsException { 
+        HeaderCard hc = header.findCard(DATASUM);
+        
+        if (hc == null) {
+            throw new FitsException("Header does not have a DATASUM value.");
+        }
+        
+        return hc.getValue(Long.class, 0L) & FitsIO.INTEGER_MASK;
+    }
+
+    /**
+     * Returns the CHECKSUM value stored in a FITS header.
+     * 
+     * @param header            the FITS header
+     * @return                  The stored HDU checksum value (unsigned 32-bit integer) as a Java <code>long</code>.
+     * @throws FitsException    if the header does not contain a CHECKSUM entry, or it is invalid.
+     */
+    public static long getStoredChecksum(Header header) throws FitsException { 
+        String encoded = header.getStringValue(CHECKSUM);
+        
+        if (encoded == null) {
+            throw new FitsException("Header does not have a CHECKUM value.");
+        }
+        
+        return decode(encoded);
+    }
 }

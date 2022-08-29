@@ -62,6 +62,7 @@ import java.util.logging.Logger;
 
 import nom.tam.fits.header.Bitpix;
 import nom.tam.fits.header.IFitsHeader;
+import nom.tam.fits.utilities.FitsCheckSum;
 import nom.tam.util.ArrayDataInput;
 import nom.tam.util.ArrayDataOutput;
 import nom.tam.util.FitsOutput;
@@ -365,7 +366,15 @@ public abstract class BasicHDU<DataClass extends Data> implements FitsElement {
     public int getGroupCount() {
         return this.myHeader.getIntValue(GCOUNT, 1);
     }
+    
+    public long getStoredChecksum() throws FitsException {
+        return FitsCheckSum.getStoredChecksum(myHeader);
+    }
 
+    public long getStoredDatasum() throws FitsException {
+        return FitsCheckSum.getStoredDatasum(myHeader);
+    }
+    
     /**
      * @return the associated header
      */

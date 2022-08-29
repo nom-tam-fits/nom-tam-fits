@@ -33,6 +33,9 @@ package nom.tam.fits.test;
 
 import static nom.tam.fits.header.Checksum.CHECKSUM;
 import static org.junit.Assert.assertEquals;
+import static org.junit.Assert.assertNotEquals;
+import static org.junit.Assert.assertFalse;
+import static org.junit.Assert.assertTrue;
 
 import java.io.ByteArrayOutputStream;
 import java.io.FileInputStream;
@@ -52,6 +55,7 @@ import nom.tam.fits.utilities.FitsCheckSum;
 import nom.tam.util.FitsInputStream;
 import nom.tam.util.FitsOutputStream;
 import nom.tam.util.Cursor;
+import nom.tam.util.FitsIO;
 import nom.tam.util.test.ThrowAnyException;
 
 import org.junit.Ignore;
@@ -174,5 +178,126 @@ public class ChecksumTest {
         }
         // TODO: activate this
       //  assertEquals("CVfXFTeVCTeVCTeV", imageHdu.getHeader().card(CHECKSUM).card().getValue());
+    }
+    
+    @Test
+    public void testCheckSumDeferred() throws Exception {
+        Fits fits = new Fits("src/test/resources/nom/tam/fits/test/test.fits");
+        ImageHDU im = (ImageHDU) fits.readHDU();
+        
+        assertTrue("deferred before checksum", im.getData().isDeferred());
+        fits.setChecksum();
+        assertTrue("deferrred after checksum", im.getData().isDeferred());  
+        String sum1 = im.getHeader().getStringValue(CHECKSUM);
+        
+        // Now load the data in RAM and repeat.
+        im.getData().getData();
+        assertFalse("loaded before checksum", im.getData().isDeferred());
+        fits.setChecksum();
+        
+        String sum2 = im.getHeader().getStringValue(CHECKSUM);
+        assertEquals(sum1, sum2);
+    }
+
+    @Test
+    public void testCheckSumVerify() throws Exception {
+        Fits fits = new Fits("src/test/resources/nom/tam/fits/test/test.fits");
+        fits.read();
+        fits.setChecksum();
+        
+        ImageHDU im = (ImageHDU) fits.getHDU(0);
+        Header h = im.getHeader();
+        
+        assertEquals(FitsCheckSum.checksum(im.getData()), im.getStoredDatasum());
+        assertEquals(FitsCheckSum.checksum(im), im.getStoredChecksum());
+    }
+    
+    @Test
+    public void testCheckSumVerifyFail() throws Exception {
+        Fits fits = new Fits("src/test/resources/nom/tam/fits/test/test.fits");
+        fits.read();
+        fits.setChecksum();
+        
+        ImageHDU im = (ImageHDU) fits.getHDU(0);
+        Header h = im.getHeader();
+        
+        short[][] data = (short[][]) im.getData().getData();
+        data[0][0]++;
+        
+        assertNotEquals(FitsCheckSum.checksum(im.getData()), im.getStoredDatasum());
+        assertNotEquals(FitsCheckSum.checksum(im), im.getStoredChecksum());
+    }
+    
+    @Test
+    public void testCheckSumIncrement() throws Exception {
+        Fits fits = new Fits("src/test/resources/nom/tam/fits/test/test.fits");
+        fits.read();
+        fits.setChecksum();
+        
+        ImageHDU im = (ImageHDU) fits.getHDU(0);
+        Header h = im.getHeader();
+        
+        short[][] data = (short[][]) im.getData().getData();
+        
+        data[0][0]++;
+        
+        FitsCheckSum.setDatasum(h, FitsCheckSum.checksum(im.getData()));
+        
+        assertEquals(FitsCheckSum.checksum(im.getData()), im.getStoredDatasum());
+        assertEquals(FitsCheckSum.checksum(im), im.getStoredChecksum());
+    }
+    
+    @Test
+    public void testCheckSumDecode() throws Exception {
+        long sum = 20220829;
+        assertEquals(sum, FitsCheckSum.decode(FitsCheckSum.encode(sum)));
+        assertEquals(sum, FitsCheckSum.decode(FitsCheckSum.encode(sum, false), false));
+        assertEquals(sum, FitsCheckSum.decode(FitsCheckSum.encode(sum, true), true));
+    }
+    
+    @Test(expected = IllegalArgumentException.class)
+    public void testCheckSumDecodeInvalidLength() throws Exception {
+        FitsCheckSum.decode("");
+    }
+
+    @Test(expected = IllegalArgumentException.class)
+    public void testCheckSumDecodeInvalidChars() throws Exception {
+        byte[] b = new byte[10];
+        Arrays.fill(b, (byte) 0x2f);
+        FitsCheckSum.decode(new String(b));
+    }
+    
+    @Test(expected = FitsException.class)
+    public void testCheckSumNoDatasum() throws Exception {
+        FitsCheckSum.getStoredDatasum(new Header());
+    }
+
+    @Test(expected = FitsException.class)
+    public void testCheckSumNoChecksum() throws Exception {
+        FitsCheckSum.getStoredChecksum(new Header());
+    }
+    
+    public void testCheckSumAutoAdd() throws Exception {
+        Header h = new Header();
+        FitsCheckSum.checksum(h);
+        assertTrue(h.containsKey(CHECKSUM));
+    }
+
+    public void testCheckSumKeep() throws Exception {
+        Header h = new Header();
+        h.addValue(CHECKSUM, "blah");
+        FitsCheckSum.checksum(h);
+        assertEquals("blah", h.getStringValue(CHECKSUM));
+    }
+    
+    @Test
+    public void testCheckSumSubtract() throws Exception {
+        long a = 20220829;
+        long b = 19740131;
+        
+        long sum = FitsCheckSum.sumOf(a, b);
+    
+        assertEquals(b, FitsCheckSum.differenceOf(sum, a));
+        assertEquals(a, FitsCheckSum.differenceOf(sum, b));
     }
 }
