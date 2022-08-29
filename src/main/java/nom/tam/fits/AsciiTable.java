@@ -866,13 +866,10 @@ public class AsciiTable extends AbstractTableData {
         }
         res[0] = ArrayFuncs.newInstance(this.types[col], 1);
 
-        if (extractElement(0, this.lengths[col], res, 0, 0, this.nulls[col])) {
-            this.buffer = null;
-            return res[0];
-        } 
-
+        boolean success = extractElement(0, this.lengths[col], res, 0, 0, this.nulls[col]);
         this.buffer = null;
-        return null;
+                
+        return success ? res[0] : null;
     }
 
     /**
@@ -942,7 +939,6 @@ public class AsciiTable extends AbstractTableData {
      * @throws FitsException
      *             if the operation failed
      */
-
     @Override
     public void setColumn(int col, Object newData) throws FitsException {
         ensureData();

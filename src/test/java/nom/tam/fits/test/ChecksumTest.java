@@ -39,9 +39,11 @@ import static org.junit.Assert.assertTrue;
 
 import java.io.ByteArrayOutputStream;
 import java.io.FileInputStream;
+import java.io.IOException;
 import java.util.Arrays;
 
 import nom.tam.fits.BasicHDU;
+import nom.tam.fits.Data;
 import nom.tam.fits.Fits;
 import nom.tam.fits.FitsException;
 import nom.tam.fits.FitsFactory;
@@ -54,6 +56,8 @@ import nom.tam.fits.header.Standard;
 import nom.tam.fits.utilities.FitsCheckSum;
 import nom.tam.util.FitsInputStream;
 import nom.tam.util.FitsOutputStream;
+import nom.tam.util.ArrayDataInput;
+import nom.tam.util.ArrayDataOutput;
 import nom.tam.util.Cursor;
 import nom.tam.util.FitsIO;
 import nom.tam.util.test.ThrowAnyException;
@@ -317,4 +321,24 @@ public class ChecksumTest {
         assertEquals(b, FitsCheckSum.differenceOf(sum, a));
         assertEquals(a, FitsCheckSum.differenceOf(sum, b));
     }
+    
+    
+    @Test(expected = FitsException.class)
+    public void testSetChecksumFitsException() throws Exception {
+        ImageData data = new ImageData() {
+            @Override
+            public void write(ArrayDataOutput bdos) throws FitsException {
+                throw new FitsException("no header");
+            }
+        };
+        
+        Header h = new Header();
+        h.setSimple(true);
+        h.setBitpix(Bitpix.INTEGER);
+        h.setNaxes(0);
+        
+        ImageHDU im = new ImageHDU(h, data);
+        FitsCheckSum.checksum(im);
+    }
+    
 }

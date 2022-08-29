@@ -34,6 +34,7 @@ package nom.tam.fits.test;
 import static org.junit.Assert.assertEquals;
 import static org.junit.Assert.assertNotNull;
 import static org.junit.Assert.assertTrue;
+import static org.junit.Assert.assertFalse;
 
 import java.io.ByteArrayInputStream;
 import java.io.ByteArrayOutputStream;
@@ -88,6 +89,34 @@ import static nom.tam.fits.header.DataDescription.TLMAXn;
  * null elements.
  */
 public class AsciiTableTest {
+    
+    @Test(expected = FitsException.class)
+    public void testDeferredClosedError() throws Exception {
+        Fits f = makeAsciiTable();
+        f.write("target/at1.fits");
+        
+        // Read back the data from the file.
+        f = new Fits("target/at1.fits");
+        f.read();
+        AsciiTableHDU hdu = (AsciiTableHDU) f.getHDU(1);
+        
+        assertTrue(hdu.getData().isDeferred());
+        f.close();
+        hdu.getData().getData();
+    }
+    
+    public void testDeferredStream() throws Exception {
+        Fits f = makeAsciiTable();
+        f.write("target/at1.fits");
+        
+        // Read back the data from the file.
+        f = new Fits(new FitsInputStream(new FileInputStream("target/at1.fits")));
+        f.read();
+        AsciiTableHDU hdu = (AsciiTableHDU) f.getHDU(1);
+        
+        assertFalse(hdu.getData().isDeferred());
+        f.close();
+    }
 
     public void createByColumn() throws Exception {
         Fits f = makeAsciiTable();
@@ -107,7 +136,6 @@ public class AsciiTableTest {
         } finally {
             SafeClose.close(f2);
         }
-
     }
 
     protected void checkByColumn(AsciiTableHDU hdu) {

@@ -192,11 +192,7 @@ public final class FitsCheckSum {
 
     private static long compute(FitsElement data) throws FitsException {
         ByteArrayOutputStream stream = new ByteArrayOutputStream();
-        try {
-            data.write(new FitsOutputStream(stream));
-        } catch (IOException e) {
-            throw new FitsException("I/O error while checking checksum of FITS element", e);
-        }
+        data.write(new FitsOutputStream(stream));
         return checksum(stream.toByteArray());
     }
     
@@ -432,8 +428,8 @@ public final class FitsCheckSum {
     
     
     private static long wrap(long sum) { 
-        while ((sum & FitsIO.HIGH_INTEGER_MASK) != 0) {
-            sum = (sum & FitsIO.INTEGER_MASK) + (sum >> Integer.SIZE);
+        while ((sum >>> Integer.SIZE) != 0) {
+            sum = (sum & FitsIO.INTEGER_MASK) + (sum >>> Integer.SIZE);
         }
         return sum;
     }

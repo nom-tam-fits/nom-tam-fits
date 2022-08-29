@@ -116,9 +116,7 @@ public interface FitsElement {
      *            The data sink.
      * @throws FitsException
      *             if the write was unsuccessful.
-     * @throws IOException
-     *             if the write was unsuccessful.
      */
     @Deprecated
-    void write(ArrayDataOutput out) throws FitsException, IOException;
+    void write(ArrayDataOutput out) throws FitsException;
 }
