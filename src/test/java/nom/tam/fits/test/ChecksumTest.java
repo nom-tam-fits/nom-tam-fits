@@ -39,7 +39,6 @@ import static org.junit.Assert.assertTrue;
 
 import java.io.ByteArrayOutputStream;
 import java.io.FileInputStream;
-import java.io.IOException;
 import java.util.Arrays;
 
 import nom.tam.fits.BasicHDU;
@@ -50,6 +49,7 @@ import nom.tam.fits.Header;
 import nom.tam.fits.HeaderCard;
 import nom.tam.fits.ImageData;
 import nom.tam.fits.ImageHDU;
+import nom.tam.fits.header.Bitpix;
 import nom.tam.fits.header.Standard;
 import nom.tam.fits.utilities.FitsCheckSum;
 import nom.tam.util.FitsInputStream;
@@ -58,7 +58,6 @@ import nom.tam.util.Cursor;
 import nom.tam.util.FitsIO;
 import nom.tam.util.test.ThrowAnyException;
 
-import org.junit.Ignore;
 import org.junit.Test;
 
 /**
@@ -210,6 +209,7 @@ public class ChecksumTest {
         
         assertEquals(FitsCheckSum.checksum(im.getData()), im.getStoredDatasum());
         assertEquals(FitsCheckSum.checksum(im), im.getStoredChecksum());
+        assertEquals(fits.calcChecksum(0), im.getStoredChecksum());
     }
     
     @Test
@@ -226,6 +226,7 @@ public class ChecksumTest {
         
         assertNotEquals(FitsCheckSum.checksum(im.getData()), im.getStoredDatasum());
         assertNotEquals(FitsCheckSum.checksum(im), im.getStoredChecksum());
+        assertNotEquals(fits.calcChecksum(0), im.getStoredChecksum());
     }
     
     @Test
@@ -245,6 +246,7 @@ public class ChecksumTest {
         
         assertEquals(FitsCheckSum.checksum(im.getData()), im.getStoredDatasum());
         assertEquals(FitsCheckSum.checksum(im), im.getStoredChecksum());
+        assertEquals(fits.calcChecksum(0), im.getStoredChecksum());
     }
     
     @Test
@@ -277,14 +279,27 @@ public class ChecksumTest {
         FitsCheckSum.getStoredChecksum(new Header());
     }
     
+    @Test
+    public void testCheckSumwWrap() throws Exception {
+        assertEquals(0, FitsCheckSum.sumOf(Integer.MAX_VALUE, Integer.MAX_VALUE) & ~FitsIO.INTEGER_MASK);
+    }
+    
+    @Test
     public void testCheckSumAutoAdd() throws Exception {
         Header h = new Header();
+        h.setSimple(true);
+        h.setBitpix(Bitpix.INTEGER);
+        h.setNaxes(0);
         FitsCheckSum.checksum(h);
         assertTrue(h.containsKey(CHECKSUM));
     }
 
+    @Test
     public void testCheckSumKeep() throws Exception {
         Header h = new Header();
+        h.setSimple(true);
+        h.setBitpix(Bitpix.INTEGER);
+        h.setNaxes(0);
         h.addValue(CHECKSUM, "blah");
         FitsCheckSum.checksum(h);
         assertEquals("blah", h.getStringValue(CHECKSUM));

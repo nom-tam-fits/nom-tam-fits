@@ -1363,9 +1363,6 @@ public class BinaryTable extends AbstractTableData {
         if (!isDeferred()) {
             return;
         }
-        if (this.currInput == null) {
-            throw new FitsException("Cannot find input for deferred read");
-        }
         this.table = createTable();
         long currentOffset = FitsUtil.findOffset(this.currInput);
         FitsUtil.reposition(this.currInput, this.fileOffset);

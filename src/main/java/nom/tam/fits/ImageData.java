@@ -157,18 +157,18 @@ public class ImageData extends Data {
     
     @Override
     public boolean isDeferred() {
-        return getFileOffset() >= 0 && dataArray == null;
+        return getFileOffset() >= 0 && tiler != null && dataArray == null;
     }
 
     private void ensureData() {
-        if (isDeferred() && tiler != null) {
-            try {
-                dataArray = tiler.getCompleteImage();
-            } catch (Exception e) {
-                LOG.log(Level.SEVERE, "Unable to get complete image", e);
-            }
+        if (!isDeferred()) {
+            return;
         }
-
+        try {
+            dataArray = tiler.getCompleteImage();
+        } catch (Exception e) {
+            LOG.log(Level.SEVERE, "Unable to get complete image", e);
+        }
     }
     
     /**
