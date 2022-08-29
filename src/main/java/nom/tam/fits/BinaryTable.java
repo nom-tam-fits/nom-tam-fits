@@ -639,21 +639,15 @@ public class BinaryTable extends AbstractTableData {
     
     @Override
     public boolean isDeferred() {
-        return table == null;
+        if (currInput == null) {
+            return false;
+        }
+        return (currInput instanceof RandomAccess) && table == null;
     }
 
     @Override
     public ColumnTable<SaveState> getData() throws FitsException {
-        if (isDeferred()) {
-            if (this.currInput == null) {
-                throw new FitsException("Cannot find input for deferred read");
-            }
-            this.table = createTable();
-            long currentOffset = FitsUtil.findOffset(this.currInput);
-            FitsUtil.reposition(this.currInput, this.fileOffset);
-            readTrueData(this.input);
-            FitsUtil.reposition(this.currInput, currentOffset);
-        }
+        ensureData();
         return this.table;
     }
 
@@ -1366,7 +1360,17 @@ public class BinaryTable extends AbstractTableData {
     }
 
     private void ensureData() throws FitsException {
-        getData();
+        if (!isDeferred()) {
+            return;
+        }
+        if (this.currInput == null) {
+            throw new FitsException("Cannot find input for deferred read");
+        }
+        this.table = createTable();
+        long currentOffset = FitsUtil.findOffset(this.currInput);
+        FitsUtil.reposition(this.currInput, this.fileOffset);
+        readTrueData(this.input);
+        FitsUtil.reposition(this.currInput, currentOffset);
     }
 
     private void ensureDataSilent() {

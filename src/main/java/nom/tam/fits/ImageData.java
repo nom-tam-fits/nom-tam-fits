@@ -157,9 +157,20 @@ public class ImageData extends Data {
     
     @Override
     public boolean isDeferred() {
-        return dataArray == null;
+        return getFileOffset() >= 0 && dataArray == null;
     }
 
+    private void ensureData() {
+        if (isDeferred() && tiler != null) {
+            try {
+                dataArray = tiler.getCompleteImage();
+            } catch (Exception e) {
+                LOG.log(Level.SEVERE, "Unable to get complete image", e);
+            }
+        }
+
+    }
+    
     /**
      * Return the actual data. Note that this may return a null when the data is
      * not readable. It might be better to throw a FitsException, but this is a
@@ -168,21 +179,12 @@ public class ImageData extends Data {
      */
     @Override
     public Object getData() {
-
-        if (isDeferred() && this.tiler != null) {
-            try {
-                this.dataArray = this.tiler.getCompleteImage();
-            } catch (Exception e) {
-                LOG.log(Level.SEVERE, "Unable to get complete image", e);
-                return null;
-            }
-        }
-
-        return this.dataArray;
+        ensureData();
+        return dataArray;
     }
 
     public StandardImageTiler getTiler() {
-        return this.tiler;
+        return tiler;
     }
 
     @Override

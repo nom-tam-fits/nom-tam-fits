@@ -101,33 +101,33 @@ import nom.tam.util.RandomAccess;
  * the FITS header, but this is not done automatically for the user.
  */
 public class Header implements FitsElement {
-    
+
     /**
      * The default character position to which comments should be aligned if possible (0-based).
      */
     public static final int DEFAULT_COMMENT_ALIGN = 30;
-    
+
     /**
      * The earliest position (0-based) at which a comment may start for a regular key/value entry.
      */
     public static final int MIN_COMMENT_ALIGN = 20;
-    
+
     /**
      * The largest (0-based)  comment alignment allowed that can still contain some meaningful comment (word)
      */
     public static final int MAX_COMMENT_ALIGN = 70;
-    
+
     /** 
      * The alignment position of card comments for a more pleasing visual experience. Comments will be
      * aligned to this position, provided the lengths of all fields allow for it.
      */
     private static int commentAlign = DEFAULT_COMMENT_ALIGN;
-    
-    
+
+
     private static final Logger LOG = Logger.getLogger(Header.class.getName());
 
     private static final int MIN_NUMBER_OF_CARDS_FOR_VALID_HEADER = 4;
-    
+
     /**
      * The actual header data stored as a HashedList of HeaderCard's.
      */
@@ -137,7 +137,7 @@ public class Header implements FitsElement {
     private long fileOffset;
 
     private List<HeaderCard> duplicates;
-    
+
     private HashSet<String> dupKeys;
 
     /** Input descriptor last time header was read */
@@ -148,19 +148,19 @@ public class Header implements FitsElement {
      * described in the FITS 4.0 standard.
      */
     private int minCards;
-    
+
     /**
      * The number of bytes that this header occupied in file.
      * (for re-writing).
      */
     private long readSize;
-    
+
     /**
      * the sorter used to sort the header cards defore writing the header.
      */
     private Comparator<String> headerSorter;
 
-    
+
     /**
      * Create a header by reading the information from the input stream.
      *
@@ -283,7 +283,7 @@ public class Header implements FitsElement {
         }
         this.minCards = nCards;
     }
-    
+
     /**
      * Insert a new header card at the current position, deleting any prior
      * occurence of the same card while maintaining the current position to
@@ -297,7 +297,7 @@ public class Header implements FitsElement {
             cursor().add(fcard);
         }
     }
- 
+
     /**
      * Add or replace a key with the given boolean value and its standardized comment.
      * If the value is not compatible with the convention of the keyword, a warning message is
@@ -320,8 +320,8 @@ public class Header implements FitsElement {
         addLine(card);
         return card;
     }
-    
-   
+
+
 
     /**
      * Add or replace a key with the given double value and its standardized comment.
@@ -416,7 +416,7 @@ public class Header implements FitsElement {
         return hc;
     }
 
-    
+
     /**
      * Add or replace a key with the given number value and comment. The value will be represented in the
      * header card with use the native precision of the value or at least {@link nom.tam.util.FlexFormat#DOUBLE_DECIMALS},
@@ -441,8 +441,8 @@ public class Header implements FitsElement {
         addLine(hc);
         return hc;
     }
-    
- 
+
+
     /**
      * Add or replace a key with the given number value and comment, using up to the specified decimal
      * places after the leading figure. Trailing zeroes will be ommitted.
@@ -469,8 +469,8 @@ public class Header implements FitsElement {
         addLine(hc);
         return hc;
     }
-    
-    
+
+
     /**
      * Add or replace a key with the given complex number value and comment. Trailing zeroes will be ommitted.
      *
@@ -523,7 +523,7 @@ public class Header implements FitsElement {
         addLine(hc);
         return hc;
     }
-    
+
     /**
      * Add or replace a key with the given integer value in hexadecimal representation,
      * and comment.
@@ -571,7 +571,7 @@ public class Header implements FitsElement {
         addLine(hc);
         return hc;
     }
-    
+
     /**
      * get a builder for filling the header cards using the builder pattern.
      *
@@ -715,7 +715,7 @@ public class Header implements FitsElement {
     public final BigDecimal getBigDecimalValue(IFitsHeader key, BigDecimal dft) {
         return getBigDecimalValue(key.key(), dft);
     }
-    
+
     /**
      * Get the big decimal value associated with the given key.
      *
@@ -756,7 +756,7 @@ public class Header implements FitsElement {
         return getBigIntegerValue(key.key());
     }
 
-    
+
     /**
      * Get the big integer value associated with the given key.
      *
@@ -797,8 +797,8 @@ public class Header implements FitsElement {
         }
         return fcard.getValue(BigInteger.class, dft);
     }
-    
-    
+
+
     /**
      * Get the complex number value associated with the given key.
      *
@@ -1024,7 +1024,7 @@ public class Header implements FitsElement {
     public Set<String> getDuplicateKeySet() {
         return dupKeys;
     }
-    
+
     /**
      * @return Get the offset of this header
      */
@@ -1126,8 +1126,8 @@ public class Header implements FitsElement {
         return (int) getLongValue(key, dft);
     }
 
-    
-  
+
+
     /**
      * Get the n'th key in the header.
      *
@@ -1243,8 +1243,8 @@ public class Header implements FitsElement {
             return dft;
         }
     }
-   
-    
+
+
     /**
      * Returns the nominal number of currently defined cards in this header. Each card can 
      * consist of one or more 80-character wide header records.
@@ -1271,12 +1271,12 @@ public class Header implements FitsElement {
         for (HeaderCard card : this.cards) {
             count += card.cardSize();
         }
-        
+
         // AK: Count the END card, which may not have been added yet...
         if (!containsKey(END)) {
             count++;
         }
-        
+
         return count;
     }
 
@@ -1297,7 +1297,7 @@ public class Header implements FitsElement {
     public long getMinimumSize() {
         return FitsUtil.addPadding((long) this.minCards * HeaderCard.FITS_HEADER_CARD_SIZE);
     }
-    
+
     /**
      * Returns the original size of the header in the stream from which it was read. 
      * 
@@ -1310,7 +1310,7 @@ public class Header implements FitsElement {
     public final long getOriginalSize() {
         return readSize;
     }
-    
+
     /**
      * Returns the current byte size of this header.
      * 
@@ -1338,7 +1338,7 @@ public class Header implements FitsElement {
     public final String getStringValue(IFitsHeader key) {
         return getStringValue(key.key());
     }
-    
+
     /**
      * Get the <CODE>String</CODE> value associated with the given standard key.
      *
@@ -1356,8 +1356,8 @@ public class Header implements FitsElement {
     public final String getStringValue(IFitsHeader key, String dft) {
         return getStringValue(key.key(), dft);
     }
-    
-    
+
+
     /**
      * Get the <CODE>String</CODE> value associated with the given key.
      *
@@ -1429,7 +1429,7 @@ public class Header implements FitsElement {
             comment = comment.substring(0, HeaderCard.MAX_COMMENT_CARD_COMMENT_LENGTH);
             LOG.warning("Truncated comment to fit card: [" + comment + "]");
         }
-        
+
         try {
             HeaderCard hc = HeaderCard.createCommentStyleCard(key, HeaderCard.sanitize(comment));
             cursor().add(hc);
@@ -1463,7 +1463,7 @@ public class Header implements FitsElement {
      * @see #insertHistory(String)
      */
     public int insertCommentStyleMultiline(String key, String comment) {
-        
+
         // Empty comments must have at least one space char to write at least one
         // comment card...
         if (comment == null) {
@@ -1471,9 +1471,9 @@ public class Header implements FitsElement {
         } else if (comment.isEmpty()) {
             comment = " ";
         }  
-        
+
         int n = 0;    
-        
+
         for (int from = 0; from < comment.length();) {
             int to = from + HeaderCard.MAX_COMMENT_CARD_COMMENT_LENGTH;
             String part = null;
@@ -1482,17 +1482,17 @@ public class Header implements FitsElement {
             } else {
                 part = comment.substring(from);
             }
-            
+
             if (insertCommentStyle(key, part) == null) {
                 return n;
             }
             from = to;
             n++;
         }
-        
+
         return n;
     }
-    
+
     /**
      * Adds one or more consecutive COMMENT records, wrapping the comment text as necessary.
      *
@@ -1508,7 +1508,7 @@ public class Header implements FitsElement {
     public int insertComment(String value) {
         return insertCommentStyleMultiline(COMMENT.key(), value);
     }
-    
+
     /**
      * Adds one or more consecutive comment records with no keyword (bytes 1-9 left blank), 
      * wrapping the comment text as necessary.
@@ -1528,7 +1528,7 @@ public class Header implements FitsElement {
     public int insertUnkeyedComment(String value) {
         return insertCommentStyleMultiline(BLANKS.key(), value);
     }
-    
+
     /**
      * Adds a blank card into the header.
      * 
@@ -1539,7 +1539,7 @@ public class Header implements FitsElement {
     public void insertBlankCard() {
         insertCommentStyle(null, null);
     }
-    
+
     /**
      * Adds one or more consecutive a HISTORY records, wrapping the comment text as necessary.
      *
@@ -1617,7 +1617,7 @@ public class Header implements FitsElement {
     public void pointToData(Data o) throws FitsException {
         o.fillHeader(this);
     }
-    
+
     /**
      * Remove all cards and reset the header to its default status.
      * 
@@ -1630,7 +1630,7 @@ public class Header implements FitsElement {
         fileOffset = -1;
         minCards = 0;
     }
-    
+
     /**
      * Checks if the header is empty, that is if it contains no cards at all.
      * 
@@ -1666,23 +1666,23 @@ public class Header implements FitsElement {
     public void read(ArrayDataInput dis) throws TruncatedFileException, IOException {
         // AK: Start afresh, in case the header had prior contents from before.
         clear();
-        
+
         if (dis instanceof RandomAccess) {
             this.fileOffset = FitsUtil.findOffset(dis);
         } else {
             this.fileOffset = -1;
         }
-        
+
         int trailingBlanks = 0;
-        
+
         HeaderCardCountingArrayDataInput cardCountingArray = new HeaderCardCountingArrayDataInput(dis);
         try {
             for (;;) {
                 HeaderCard fcard = new HeaderCard(cardCountingArray);
-                
+
                 // AK: Note, 'key' can never be null, as per contract of getKey(). So no need to check...
                 String key = fcard.getKey();
-                
+
                 if (isEmpty()) {
                     checkFirstCard(key);
                 } else if (fcard.isBlank()) {
@@ -1700,14 +1700,14 @@ public class Header implements FitsElement {
                     // reading the header.
                     FitsFactory.setLongStringsEnabled(true);
                 }
-                            
+
                 // AK: The preceding blank spaces were internal, not trailing
                 // so add them back in now...
                 for (int i = 0; i < trailingBlanks; i++) {
                     insertBlankCard();
                 }
                 trailingBlanks = 0;
-                
+
                 if (this.cards.containsKey(key)) {
                     addDuplicate(this.cards.get(key));
                 }
@@ -1729,14 +1729,14 @@ public class Header implements FitsElement {
             throw new IOException("Invalid FITS Header" + (isEmpty() ? 
                     "" : ":\n\n --> Try FitsFactory.setAllowTerminalJunk(true) prior to reading to work around.\n"), e);
         }        
-        
+
         if (this.fileOffset >= 0) {
             this.input = dis;
         }
-        
+
         ensureCardSpace(cardCountingArray.getPhysicalCardsRead());
         readSize = FitsUtil.addPadding(this.minCards * HeaderCard.FITS_HEADER_CARD_SIZE);
-        
+
         // Read to the end of the current FITS block.
         //
         try {
@@ -1746,7 +1746,7 @@ public class Header implements FitsElement {
             // padding before EOF. We'll just log that, but otherwise keep going.
             LOG.log(Level.WARNING, "Premature end-of-file: no padding after header.", e);
         }
-      
+
         // AK: Log if the file ends before the expected end-of-header position.
         if (Fits.checkTruncated(dis)) {
             // No biggy. We got a complete header just fine, it's only that there was no
@@ -1754,7 +1754,7 @@ public class Header implements FitsElement {
             LOG.warning("Premature end-of-file: no padding after header.");
         }
     }
-    
+
     /**
      * Forces an EOFException to be thrown when some other exception happened, essentially
      * treating the exception to force  a normal end the reading of the header.
@@ -1881,7 +1881,7 @@ public class Header implements FitsElement {
         iter.next();
         iter.add(bitpix.getHeaderCard());
     }
-    
+
     /**
      * Overwite the default header card sorter.
      *
@@ -2049,7 +2049,7 @@ public class Header implements FitsElement {
             }
         }
     }
-    
+
     /**
      * Writes a number of blank header records, for example to create preallocated
      * blank header space as described by the FITS 4.0 standard.
@@ -2065,12 +2065,12 @@ public class Header implements FitsElement {
     private void writeBlankCards(ArrayDataOutput dos, int n) throws IOException {
         byte[] blank = new byte[HeaderCard.FITS_HEADER_CARD_SIZE];
         Arrays.fill(blank, (byte) ' ');
-        
+
         while (--n >= 0) {
             dos.write(blank);
         }
     }
-   
+
     /**
      * Add required keywords, and removes conflicting ones depending on whether it is designated
      * as a primary header or not.
@@ -2083,41 +2083,41 @@ public class Header implements FitsElement {
      * @see #validate(FitsOutput)
      */
     void editRequiredKeys(boolean isPrimary) throws FitsException {
-       
+
         if (isPrimary) {
             // Delete keys that cannot be in primary
             deleteKey(XTENSION);
-            
+
             // Some FITS readers don't like the PCOUNT and GCOUNT keywords in the primary header
             if (!getBooleanValue(GROUPS, false)) {
                 deleteKey(PCOUNT);
                 deleteKey(GCOUNT);
             }
-            
+
             // Make sure we have SIMPLE
             addValue(SIMPLE, true);
         } else {
             // Delete keys that cannot be in extensions
             deleteKey(SIMPLE);
-            
+
             // Some FITS readers don't like the EXTEND keyword in extensions.
             deleteKey(EXTEND);
-            
+
             // Make sure we have XTENSION
             addValue(XTENSION, getStringValue(XTENSION, "UNKNOWN"));
         }
-        
+
         // Make sure we have BITPIX
         addValue(BITPIX, getIntValue(BITPIX, Bitpix.VALUE_FOR_INT));
-        
+
         int naxes = getIntValue(NAXIS, 0);
         addValue(NAXIS, naxes);
-        
+
         for (int i = 1; i <= naxes; i++) {
             IFitsHeader naxisi = NAXISn.n(i);
             addValue(naxisi, getIntValue(naxisi, 1));
         }
-        
+
         if (isPrimary) {
             addValue(EXTEND, true);
         } else {
@@ -2125,7 +2125,7 @@ public class Header implements FitsElement {
             addValue(GCOUNT, getIntValue(GCOUNT, 1));
         }
     }
-    
+
     /**
      * <p>
      * Validates this header by making it a proper primary or extension header. In both cases it means adding
@@ -2142,7 +2142,7 @@ public class Header implements FitsElement {
         editRequiredKeys(asPrimary);
         validate();
     }   
-        
+
     /**
      * Validates the header making sure it has the required keywords and that the essential
      * keywords appeat in the in the required order
@@ -2157,7 +2157,7 @@ public class Header implements FitsElement {
         checkBeginning();
         checkEnd();
     }
-    
+
     /**
      * Write the current header (including any needed padding) to the output
      * stream.
@@ -2171,25 +2171,25 @@ public class Header implements FitsElement {
     @Override
     public void write(ArrayDataOutput dos) throws FitsException {
         validate();
-        
+
         FitsSettings settings = FitsFactory.current();
         this.fileOffset = FitsUtil.findOffset(dos);
-        
+
         Cursor<String, HeaderCard> writeIterator = this.cards.iterator(0);
         try {
             int size = 0;
-            
+
             while (writeIterator.hasNext()) {
                 HeaderCard card = writeIterator.next();
                 byte[] b = AsciiFuncs.getBytes(card.toString(settings));
                 size += b.length;
-                
+
                 if (END.key().equals(card.getKey()) && minCards * HeaderCard.FITS_HEADER_CARD_SIZE > size) {
                     // AK: Add preallocated blank header space before the END key.
                     writeBlankCards(dos, minCards - size / HeaderCard.FITS_HEADER_CARD_SIZE);
                     size = minCards;
                 }
-               
+
                 dos.write(b);
             }
             FitsUtil.pad(dos, size, (byte) ' ');
@@ -2300,7 +2300,7 @@ public class Header implements FitsElement {
             }
         }
         doCardChecks(iter, isTable, isExtension);
-        
+
         Bitpix.fromHeader(this, false);
     }
 
@@ -2322,13 +2322,13 @@ public class Header implements FitsElement {
             }
         }
         // End cannot have a comment
-        
+
         try {
             iter.add(HeaderCard.createCommentStyleCard(END.key(), null));
         } catch (HeaderCardException e) {
             // Cannot happen.
         }
-        
+
     }
 
     /**
@@ -2428,18 +2428,18 @@ public class Header implements FitsElement {
      *                If <CODE>newKey</CODE> is not a valid FITS keyword.           
      */
     boolean replaceKey(IFitsHeader oldKey, IFitsHeader newKey) throws HeaderCardException {
-        
+
         if (oldKey.valueType() == VALUE.NONE) {
             throw new IllegalArgumentException("cannot replace comment-style " + oldKey.key());
         }
-        
+
         HeaderCard card = findCard(oldKey);
         VALUE newType = newKey.valueType();
 
         if (card != null && oldKey.valueType() != newType && newType != VALUE.ANY) {
             Class<?> type = card.valueType();
             Exception e = null;
-            
+
             // Check that the exisating cards value is compatible with the expected type of the new key.
             if (newType == VALUE.NONE) {
                 e = new IllegalArgumentException("comment-style " + newKey.key() + " cannot replace valued key " + oldKey.key());
@@ -2454,12 +2454,12 @@ public class Header implements FitsElement {
             } else if (Number.class.isAssignableFrom(type) && newType != VALUE.REAL && newType != VALUE.INTEGER && newType != VALUE.COMPLEX) {
                 e = new IllegalArgumentException(newKey.key() + " cannot not support the existing numerical value.");
             }
-            
+
             if (e != null) {
                 LOG.log(Level.WARNING, e.getMessage(), e);
             }
         }
-    
+
         return replaceKey(oldKey.key(), newKey.key());
     }
 
@@ -2549,7 +2549,7 @@ public class Header implements FitsElement {
 
         return size;
     }
-    
+
     /**
      * <p>
      * Sets whether warnings about FITS standard violations are logged when a header is being read (parsed).
@@ -2579,7 +2579,7 @@ public class Header implements FitsElement {
         HeaderCardParser.getLogger().setLevel(level);
         Logger.getLogger(ComplexValue.class.getName()).setLevel(level);
     }
-    
+
     /**
      * Checks whether warnings about FITS standard violations are logged when a header is being read 
      * (parsed).
@@ -2594,7 +2594,7 @@ public class Header implements FitsElement {
     public static boolean isParserWarningsEnabled() {        
         return !HeaderCardParser.getLogger().getLevel().equals(Level.SEVERE);
     }
-    
+
     /**
      * Returns the current preferred alignment character position of inline header comments.
      * This is the position at which the '/' is placed for the inline comment.
@@ -2606,7 +2606,7 @@ public class Header implements FitsElement {
     public static int getCommentAlignPosition() {
         return commentAlign;
     }
-    
+
     /**
      * Sets a new alignment position for inline header comments.
      * 

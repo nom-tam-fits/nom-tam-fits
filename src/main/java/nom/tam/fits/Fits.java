@@ -493,8 +493,7 @@ public class Fits implements Closeable {
      * @see #getHDU(String, int)
      */
     public BasicHDU<?> getHDU(int n) throws FitsException, IOException {
-        int size = getNumberOfHDUs();
-        for (int i = size; i <= n; i++) {
+        for (int i = getNumberOfHDUs(); i <= n; i++) {
             BasicHDU<?> hdu = readHDU();
             if (hdu == null) {
                 return null;

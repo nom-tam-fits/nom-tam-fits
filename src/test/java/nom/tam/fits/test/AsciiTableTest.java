@@ -95,6 +95,7 @@ public class AsciiTableTest {
 
         // Read back the data from the file.
         f = new Fits("target/at1.fits");
+        f.read();
         AsciiTableHDU hdu = (AsciiTableHDU) f.getHDU(1);
         checkByColumn(hdu);
         Fits f2 = null;
@@ -118,7 +119,7 @@ public class AsciiTableTest {
         }
 
         for (int j = 0; j < 5; j += 1) {
-            assertEquals("ByCol:" + j, true, TestArrayFuncs.arrayEquals(inputs[j], outputs[j], 1.e-6, 1.e-14));
+            assertTrue("ByCol:" + j, TestArrayFuncs.arrayEquals(inputs[j], outputs[j], 1.e-6, 1.e-14));
         }
     }
 
@@ -576,8 +577,8 @@ public class AsciiTableTest {
             actual = e;
         }
         Assert.assertNotNull(actual);
-        Assert.assertTrue(actual instanceof FitsException);
-        Assert.assertTrue(actual.getCause() instanceof NullPointerException);
+        Assert.assertEquals(FitsException.class, actual.getClass());
+        Assert.assertEquals(NullPointerException.class, actual.getCause().getClass());
 
         setFieldNull(data, "data");
         actual = null;
@@ -587,8 +588,11 @@ public class AsciiTableTest {
             actual = e;
         }
         Assert.assertNotNull(actual);
-        Assert.assertTrue(actual instanceof FitsException);
-        Assert.assertTrue(actual.getCause() instanceof IOException);
+        Assert.assertEquals(FitsException.class, actual.getClass());
+        // The cause should not be IOException, since the operation should
+        // never include IO in the fist place. And indded it's no longer IOException
+        // as of 1.17...
+        //Assert.assertTrue(actual.getCause() instanceof IOException);
 
         setFieldNull(data, "types");
         actual = null;
@@ -601,7 +605,7 @@ public class AsciiTableTest {
             actual = e;
         }
         Assert.assertNotNull(actual);
-        Assert.assertTrue(actual instanceof FitsException);
+        Assert.assertEquals(FitsException.class, actual.getClass());
         Assert.assertTrue(actual.getCause() instanceof NullPointerException);
 
         actual = null;
@@ -830,19 +834,18 @@ public class AsciiTableTest {
         FitsException actual = null;
         try {
             new AsciiTable(hdr) {
-
-                // to get over ensure data
-                public Object getData() throws FitsException {
+                @Override
+                public void write(ArrayDataOutput str) throws FitsException {
                     try {
                         Field field = AsciiTable.class.getDeclaredField("data");
                         field.setAccessible(true);
-                        field.set(this, new Object[]{
+                        field.set(this, new Object[] {
                             new int[10]
                         });
                     } catch (Exception e) {
                         throw new RuntimeException(e);
                     }
-                    return super.getData();
+                    super.write(str);
                 };
             }.write(str);
         } catch (FitsException e) {
