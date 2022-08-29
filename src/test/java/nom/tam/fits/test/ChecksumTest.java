@@ -255,6 +255,8 @@ public class ChecksumTest {
         assertEquals(sum, FitsCheckSum.decode(FitsCheckSum.encode(sum)));
         assertEquals(sum, FitsCheckSum.decode(FitsCheckSum.encode(sum, false), false));
         assertEquals(sum, FitsCheckSum.decode(FitsCheckSum.encode(sum, true), true));
+        assertEquals(sum, FitsCheckSum.decode(FitsCheckSum.checksumEnc(sum, false), false));
+        assertEquals(sum, FitsCheckSum.decode(FitsCheckSum.checksumEnc(sum, true), true));
     }
     
     @Test(expected = IllegalArgumentException.class)
@@ -264,7 +266,7 @@ public class ChecksumTest {
 
     @Test(expected = IllegalArgumentException.class)
     public void testCheckSumDecodeInvalidChars() throws Exception {
-        byte[] b = new byte[10];
+        byte[] b = new byte[16];
         Arrays.fill(b, (byte) 0x2f);
         FitsCheckSum.decode(new String(b));
     }

@@ -433,8 +433,7 @@ public final class FitsCheckSum {
     
     private static long wrap(long sum) { 
         while ((sum & FitsIO.HIGH_INTEGER_MASK) != 0) {
-            long i = sum & FitsIO.INTEGER_MASK;
-            sum = i + 1;
+            sum = (sum & FitsIO.INTEGER_MASK) + (sum >> Integer.SIZE);
         }
         return sum;
     }

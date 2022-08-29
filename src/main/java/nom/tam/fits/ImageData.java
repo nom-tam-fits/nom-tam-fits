@@ -157,7 +157,7 @@ public class ImageData extends Data {
     
     @Override
     public boolean isDeferred() {
-        return getFileOffset() >= 0 && tiler != null && dataArray == null;
+        return getFileOffset() >= 0 && dataArray == null;
     }
 
     private void ensureData() {

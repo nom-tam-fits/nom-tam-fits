@@ -839,7 +839,7 @@ public class Fits implements Closeable {
     public long calcDatasum(int hduIndex) throws FitsException, IOException {
         BasicHDU<?> hdu = getHDU(hduIndex);
         Data data = hdu.getData();
-        if (data.isDeferred() && dataStr instanceof RandomAccess) {
+        if (data.isDeferred()) {
             // Compute datasum directly from file...
             return FitsCheckSum.checksum((RandomAccess) dataStr, data.getFileOffset(), data.getSize());
         } 
