@@ -76,7 +76,6 @@ import nom.tam.fits.header.Standard;
 import nom.tam.fits.utilities.FitsCheckSum;
 import nom.tam.util.ArrayDataInput;
 import nom.tam.util.ArrayFuncs;
-import nom.tam.util.ByteBufferOutputStream;
 import nom.tam.util.FitsInputStream;
 import nom.tam.util.FitsOutputStream;
 import nom.tam.util.FitsFile;
@@ -93,7 +92,6 @@ import org.junit.Test;
 import org.junit.rules.MethodRule;
 import org.junit.rules.TestRule;
 import org.junit.rules.TestWatcher;
-import org.junit.rules.TestWatchman;
 import org.junit.runner.Description;
 import org.junit.runners.model.FrameworkMethod;
 
@@ -1261,4 +1259,23 @@ public class BaseFitsTest {
         assertNull(hdu.getTrimmedString(Standard.COMMENT));
     }
     
+
+    @Test
+    public void rewriteTest() throws Exception {
+        Fits fits = new Fits(new File("src/test/resources/nom/tam/fits/test/test.fits"));
+        fits.read();
+        fits.rewrite();
+    }
+    
+    @Test(expected = FitsException.class)
+    public void rewriteTestException() throws Exception {
+        Fits fits = new Fits(new File("src/test/resources/nom/tam/fits/test/test.fits"));
+        Header h = fits.readHDU().getHeader();
+        for (int i = 0; i < 36; i++) {
+            h.addValue("TEST" + (i+1), "blah", "blah");
+        }
+        fits.rewrite();
+    }
+    
+
 }

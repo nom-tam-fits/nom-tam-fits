@@ -91,6 +91,20 @@ public abstract class Data implements FitsElement {
     abstract void fillHeader(Header head) throws FitsException;
 
     /**
+     * Checks if the data should be assumed to be in deferred read mode. The default
+     * implementation is to return <code>false</code>, but concrete subclasses should override
+     * this as appropriate.
+     * 
+     * @return      <code>true</code> if it is set for deferred reading at a later time, or else
+     *              <code>false</code> if this data is currently loaded into RAM. 
+     * 
+     * @since 1.17  
+     */
+    public boolean isDeferred() {
+        return false;
+    }
+    
+    /**
      * @return the data array object.
      * @throws FitsException
      *             if the data could not be gathered .
@@ -126,7 +140,7 @@ public abstract class Data implements FitsElement {
 
     @Override
     public abstract void read(ArrayDataInput in) throws FitsException;
-
+    
     @Override
     public boolean reset() {
         try {
@@ -140,11 +154,14 @@ public abstract class Data implements FitsElement {
 
     @Override
     public void rewrite() throws FitsException {
-
+        if (isDeferred()) {
+            return;             // Nothing to do...
+        }
+        
         if (!rewriteable()) {
             throw new FitsException("Illegal attempt to rewrite data");
         }
-
+        
         FitsUtil.reposition(this.input, this.fileOffset);
         write((ArrayDataOutput) this.input);
         try {

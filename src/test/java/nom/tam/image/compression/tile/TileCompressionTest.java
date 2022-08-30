@@ -37,15 +37,12 @@ import java.nio.ByteBuffer;
 import org.junit.Assert;
 import org.junit.Test;
 
-import nom.tam.fits.BinaryTable;
 import nom.tam.fits.Fits;
-import nom.tam.fits.FitsException;
 import nom.tam.fits.FitsFactory;
 import nom.tam.fits.ImageHDU;
 import nom.tam.fits.header.Compression;
 import nom.tam.fits.compression.algorithm.rice.RiceCompressOption;
 import nom.tam.image.compression.hdu.CompressedImageHDU;
-import nom.tam.image.tile.operation.TileArea;
 
 
 public class TileCompressionTest {

@@ -124,7 +124,6 @@ public class AsciiTable extends AbstractTableData {
 
     /** Create an empty ASCII table */
     public AsciiTable() {
-
         this.data = new Object[0];
         this.buffer = null;
         this.nFields = 0;
@@ -147,8 +146,8 @@ public class AsciiTable extends AbstractTableData {
     public AsciiTable(Header hdr) throws FitsException {
         this(hdr, true);
     }
-    
-   
+
+
     /**
      * <p>
      * Create an ASCII table given a header, with custom integer handling
@@ -185,7 +184,7 @@ public class AsciiTable extends AbstractTableData {
         this.offsets = new int[this.nFields];
         this.lengths = new int[this.nFields];
         this.nulls = new String[this.nFields];
-        
+
 
         for (int i = 0; i < this.nFields; i += 1) {
             this.offsets[i] = hdr.getIntValue(TBCOLn.n(i + 1)) - 1;
@@ -202,25 +201,25 @@ public class AsciiTable extends AbstractTableData {
             this.lengths[i] = Integer.parseInt(s);
 
             switch (c) {
-                case 'A':
-                    this.types[i] = String.class;
-                    break;
-                case 'I':
-                    if (this.lengths[i] == MAX_INTEGER_LENGTH) {
-                        this.types[i] = guessI10Type(i, hdr, preferInt);
-                    } else {
-                        this.types[i] = this.lengths[i] > MAX_INTEGER_LENGTH ? long.class : int.class;
-                    }
-                    break;
-                case 'F':
-                case 'E':
-                    this.types[i] = float.class;
-                    break;
-                case 'D':
-                    this.types[i] = double.class;
-                    break;
-                default:
-                    throw new FitsException("could not parse column type of ascii table");
+            case 'A':
+                this.types[i] = String.class;
+                break;
+            case 'I':
+                if (this.lengths[i] == MAX_INTEGER_LENGTH) {
+                    this.types[i] = guessI10Type(i, hdr, preferInt);
+                } else {
+                    this.types[i] = this.lengths[i] > MAX_INTEGER_LENGTH ? long.class : int.class;
+                }
+                break;
+            case 'F':
+            case 'E':
+                this.types[i] = float.class;
+                break;
+            case 'D':
+                this.types[i] = double.class;
+                break;
+            default:
+                throw new FitsException("could not parse column type of ascii table");
             }
 
             this.nulls[i] = hdr.getStringValue(TNULLn.n(i + 1));
@@ -229,7 +228,7 @@ public class AsciiTable extends AbstractTableData {
             }
         }
     }
-    
+
     /**
      * Checks if the integer value of a specific key requires <code>long</code>
      * value type to store.
@@ -249,7 +248,7 @@ public class AsciiTable extends AbstractTableData {
 
         return (l < Integer.MIN_VALUE || l > Integer.MAX_VALUE);
     }
-    
+
     /**
      * Guesses what type of values to use to return I10 type table values. Depending on the
      * range of represented values I10 may fit into <code>int</code> types, or else
@@ -272,7 +271,7 @@ public class AsciiTable extends AbstractTableData {
      */
     private Class<?> guessI10Type(int col, Header h, boolean preferInt) {
         col++;
-        
+
         if (requiresLong(h, TLMINn.n(col), Long.MAX_VALUE)) {
             return long.class;
         }
@@ -285,13 +284,13 @@ public class AsciiTable extends AbstractTableData {
         if (requiresLong(h, TDMAXn.n(col), Long.MIN_VALUE)) {
             return long.class;
         }
-        
+
         if ((h.containsKey(TLMINn.n(col)) || h.containsKey(TDMINn.n(col))) //
                 && (h.containsKey(TLMAXn.n(col)) || h.containsKey(TDMAXn.n(col)))) {
             // There are keywords defining both min/max values, and none of them require long types...
             return int.class;
         }
-        
+
         return preferInt ? int.class : long.class;
     }
 
@@ -307,7 +306,7 @@ public class AsciiTable extends AbstractTableData {
     public final Class<?> getColumnType(int col) {
         return types[col];
     }
-    
+
     int addColInfo(int col, Cursor<String, HeaderCard> iter) throws HeaderCardException {
 
         String tform = null;
@@ -571,7 +570,40 @@ public class AsciiTable extends AbstractTableData {
      *             if the operation failed
      */
     private void ensureData() throws FitsException {
-        getData();
+        if (data != null || currInput == null) {
+            return;
+        }
+        
+        data = new Object[nFields];
+        for (int i = 0; i < nFields; i += 1) {
+            data[i] = ArrayFuncs.newInstance(types[i], nRows);
+        }
+
+        if (buffer == null) {
+            long pos = FitsUtil.findOffset(currInput);
+            try {
+                getBuffer(nRows * rowLen, fileOffset);
+            } catch (IOException e) {
+                throw new FitsException("Error in deferred read -- file closed prematurely?:" + e.getMessage(), e);
+            }
+            FitsUtil.reposition(currInput, pos);
+        }
+
+        this.bp.setOffset(0);
+
+        int rowOffset;
+        for (int i = 0; i < nRows; i += 1) {
+            rowOffset = rowLen * i;
+            for (int j = 0; j < nFields; j += 1) {
+                if (!extractElement(rowOffset + offsets[j], lengths[j], data, j, i, nulls[j])) {
+                    if (isNull == null) {
+                        isNull = new boolean[nRows * nFields];
+                    }
+
+                    isNull[j + i * this.nFields] = true;
+                }
+            }
+        }
     }
 
     /**
@@ -665,6 +697,10 @@ public class AsciiTable extends AbstractTableData {
         if (this.currInput == null) {
             throw new IOException("No stream open to read");
         }
+        
+        if ((long) rowLen * nRows > Integer.MAX_VALUE) {
+            throw new FitsException("Cannot read ASCII table > 2 GB");
+        }
 
         this.buffer = new byte[size];
         if (offset != 0) {
@@ -690,6 +726,14 @@ public class AsciiTable extends AbstractTableData {
         return this.data[col];
     }
 
+    @Override
+    public boolean isDeferred() {
+        if (currInput == null) {
+            return false;
+        }
+        return (currInput instanceof RandomAccess) && data == null;
+    }
+
     /**
      * Get the ASCII table information. This will actually do the read if it had
      * previously been deferred
@@ -701,42 +745,7 @@ public class AsciiTable extends AbstractTableData {
     @Override
     @SuppressFBWarnings(value = "EI_EXPOSE_REP", justification = "intended exposure of mutable data")
     public Object getData() throws FitsException {
-
-        if (this.data == null) {
-
-            this.data = new Object[this.nFields];
-
-            for (int i = 0; i < this.nFields; i += 1) {
-                this.data[i] = ArrayFuncs.newInstance(this.types[i], this.nRows);
-            }
-
-            if (this.buffer == null) {
-                long newOffset = FitsUtil.findOffset(this.currInput);
-                try {
-                    getBuffer(this.nRows * this.rowLen, this.fileOffset);
-
-                } catch (IOException e) {
-                    throw new FitsException("Error in deferred read -- file closed prematurely?:" + e.getMessage(), e);
-                }
-                FitsUtil.reposition(this.currInput, newOffset);
-            }
-
-            this.bp.setOffset(0);
-
-            int rowOffset;
-            for (int i = 0; i < this.nRows; i += 1) {
-                rowOffset = this.rowLen * i;
-                for (int j = 0; j < this.nFields; j += 1) {
-                    if (!extractElement(rowOffset + this.offsets[j], this.lengths[j], this.data, j, i, this.nulls[j])) {
-                        if (this.isNull == null) {
-                            this.isNull = new boolean[this.nRows * this.nFields];
-                        }
-
-                        this.isNull[j + i * this.nFields] = true;
-                    }
-                }
-            }
-        }
+        ensureData();
         return this.data;
     }
 
@@ -857,13 +866,10 @@ public class AsciiTable extends AbstractTableData {
         }
         res[0] = ArrayFuncs.newInstance(this.types[col], 1);
 
-        if (extractElement(0, this.lengths[col], res, 0, 0, this.nulls[col])) {
-            this.buffer = null;
-            return res[0];
-        } 
-        
+        boolean success = extractElement(0, this.lengths[col], res, 0, 0, this.nulls[col]);
         this.buffer = null;
-        return null;
+                
+        return success ? res[0] : null;
     }
 
     /**
@@ -906,19 +912,16 @@ public class AsciiTable extends AbstractTableData {
      */
 
     @Override
-    public void read(ArrayDataInput str) throws FitsException {
+    public void read(ArrayDataInput str) throws FitsException {        
         try {
             setFileOffset(str);
             this.currInput = str;
             if (str instanceof RandomAccess) {
-                str.skipAllBytes((long) this.nRows * this.rowLen);
+                str.skipAllBytes((long) nRows * rowLen);
             } else {
-                if ((long) this.rowLen * this.nRows > Integer.MAX_VALUE) {
-                    throw new FitsException("Cannot read ASCII table > 2 GB");
-                }
                 getBuffer(this.rowLen * this.nRows, 0);
             }
-            str.skipAllBytes(FitsUtil.padding(this.nRows * this.rowLen));
+            str.skipAllBytes(FitsUtil.padding(nRows * rowLen));
         } catch (EOFException e) {
             throw new PaddingException("EOF skipping padding after ASCII Table", this, e);
         } catch (IOException e) {
@@ -936,7 +939,6 @@ public class AsciiTable extends AbstractTableData {
      * @throws FitsException
      *             if the operation failed
      */
-
     @Override
     public void setColumn(int col, Object newData) throws FitsException {
         ensureData();
@@ -1118,55 +1120,52 @@ public class AsciiTable extends AbstractTableData {
     public void write(ArrayDataOutput str) throws FitsException {
         // Make sure we have the data in hand.
         ensureData();
+
         // If buffer is still around we can just reuse it,
         // since nothing we've done has invalidated it.
+        if (data == null) {
+            throw new FitsException("Attempt to write undefined ASCII Table");
+        }
 
-        if (this.buffer == null) {
+        if ((long) nRows * rowLen > Integer.MAX_VALUE) {
+            throw new FitsException("Cannot write ASCII table > 2 GB");
+        }
 
-            if (this.data == null) {
-                throw new FitsException("Attempt to write undefined ASCII Table");
-            }
+        buffer = new byte[nRows * rowLen];
 
-            if ((long) this.nRows * this.rowLen > Integer.MAX_VALUE) {
-                throw new FitsException("Cannot write ASCII table > 2 GB");
-            }
+        bp = new ByteParser(this.buffer);
+        for (int i = 0; i < this.buffer.length; i += 1) {
+            buffer[i] = (byte) ' ';
+        }
 
-            this.buffer = new byte[this.nRows * this.rowLen];
+        ByteFormatter bf = new ByteFormatter();
 
-            this.bp = new ByteParser(this.buffer);
-            for (int i = 0; i < this.buffer.length; i += 1) {
-                this.buffer[i] = (byte) ' ';
-            }
+        for (int i = 0; i < nRows; i += 1) {
 
-            ByteFormatter bf = new ByteFormatter();
-
-            for (int i = 0; i < this.nRows; i += 1) {
-
-                for (int j = 0; j < this.nFields; j += 1) {
-                    int offset = i * this.rowLen + this.offsets[j];
-                    int len = this.lengths[j];
-                    if (this.isNull != null && this.isNull[i * this.nFields + j]) {
-                        if (this.nulls[j] == null) {
-                            throw new FitsException("No null value set when needed");
-                        }
-                        bf.format(this.nulls[j], this.buffer, offset, len);
-                    } else {
-                        if (this.types[j] == String.class) {
-                            String[] s = (String[]) this.data[j];
-                            bf.format(s[i], this.buffer, offset, len);
-                        } else if (this.types[j] == int.class) {
-                            int[] ia = (int[]) this.data[j];
-                            bf.format(ia[i], this.buffer, offset, len);
-                        } else if (this.types[j] == float.class) {
-                            float[] fa = (float[]) this.data[j];
-                            bf.format(fa[i], this.buffer, offset, len);
-                        } else if (this.types[j] == double.class) {
-                            double[] da = (double[]) this.data[j];
-                            bf.format(da[i], this.buffer, offset, len);
-                        } else if (this.types[j] == long.class) {
-                            long[] la = (long[]) this.data[j];
-                            bf.format(la[i], this.buffer, offset, len);
-                        }
+            for (int j = 0; j < nFields; j += 1) {
+                int offset = i * rowLen + offsets[j];
+                int len = this.lengths[j];
+                if (isNull != null && isNull[i * nFields + j]) {
+                    if (nulls[j] == null) {
+                        throw new FitsException("No null value set when needed");
+                    }
+                    bf.format(nulls[j], buffer, offset, len);
+                } else {
+                    if (types[j] == String.class) {
+                        String[] s = (String[]) data[j];
+                        bf.format(s[i], buffer, offset, len);
+                    } else if (types[j] == int.class) {
+                        int[] ia = (int[]) data[j];
+                        bf.format(ia[i], buffer, offset, len);
+                    } else if (types[j] == float.class) {
+                        float[] fa = (float[]) data[j];
+                        bf.format(fa[i], buffer, offset, len);
+                    } else if (types[j] == double.class) {
+                        double[] da = (double[]) data[j];
+                        bf.format(da[i], this.buffer, offset, len);
+                    } else if (types[j] == long.class) {
+                        long[] la = (long[]) data[j];
+                        bf.format(la[i], buffer, offset, len);
                     }
                 }
             }
@@ -1174,8 +1173,8 @@ public class AsciiTable extends AbstractTableData {
 
         // Now write the buffer.
         try {
-            str.write(this.buffer);
-            FitsUtil.pad(str, this.buffer.length, (byte) ' ');
+            str.write(buffer);
+            FitsUtil.pad(str, buffer.length, (byte) ' ');
         } catch (IOException e) {
             throw new FitsException("Error writing ASCII Table data", e);
         }

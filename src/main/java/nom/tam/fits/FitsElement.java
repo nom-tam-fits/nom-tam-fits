@@ -75,7 +75,7 @@ public interface FitsElement {
      */
     @Deprecated
     void read(ArrayDataInput in) throws FitsException, IOException;
-
+    
     /**
      * Reset the input stream to point to the beginning of this element
      * 
@@ -98,7 +98,7 @@ public interface FitsElement {
     /**
      * @return <code>true</code> if this element can be rewritten?
      */
-    boolean rewriteable();    
+    boolean rewriteable();
     
     /**
      * @deprecated This method is poorly conceived as we cannot really write FITS content to 
@@ -116,9 +116,7 @@ public interface FitsElement {
      *            The data sink.
      * @throws FitsException
      *             if the write was unsuccessful.
-     * @throws IOException
-     *             if the write was unsuccessful.
      */
     @Deprecated
-    void write(ArrayDataOutput out) throws FitsException, IOException;
+    void write(ArrayDataOutput out) throws FitsException;
 }

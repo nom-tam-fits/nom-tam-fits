@@ -34,6 +34,7 @@ package nom.tam.fits.test;
 import static org.junit.Assert.assertEquals;
 import static org.junit.Assert.assertNotNull;
 import static org.junit.Assert.assertTrue;
+import static org.junit.Assert.assertFalse;
 
 import java.io.ByteArrayInputStream;
 import java.io.ByteArrayOutputStream;
@@ -88,6 +89,35 @@ import static nom.tam.fits.header.DataDescription.TLMAXn;
  * null elements.
  */
 public class AsciiTableTest {
+    
+    @Test(expected = FitsException.class)
+    public void testDeferredClosedError() throws Exception {
+        Fits f = makeAsciiTable();
+        f.write("target/at1.fits");
+        
+        // Read back the data from the file.
+        File file = new File("target/at1.fits");
+        f = new Fits(file);
+        f.read();
+        AsciiTableHDU hdu = (AsciiTableHDU) f.getHDU(1);
+        
+        assertTrue(hdu.getData().isDeferred());
+        f.getStream().close();
+        hdu.getData().getData();
+    }
+    
+    public void testDeferredStream() throws Exception {
+        Fits f = makeAsciiTable();
+        f.write("target/at1.fits");
+        
+        // Read back the data from the file.
+        f = new Fits(new FitsInputStream(new FileInputStream("target/at1.fits")));
+        f.read();
+        AsciiTableHDU hdu = (AsciiTableHDU) f.getHDU(1);
+        
+        assertFalse(hdu.getData().isDeferred());
+        f.close();
+    }
 
     public void createByColumn() throws Exception {
         Fits f = makeAsciiTable();
@@ -95,6 +125,7 @@ public class AsciiTableTest {
 
         // Read back the data from the file.
         f = new Fits("target/at1.fits");
+        f.read();
         AsciiTableHDU hdu = (AsciiTableHDU) f.getHDU(1);
         checkByColumn(hdu);
         Fits f2 = null;
@@ -106,7 +137,6 @@ public class AsciiTableTest {
         } finally {
             SafeClose.close(f2);
         }
-
     }
 
     protected void checkByColumn(AsciiTableHDU hdu) {
@@ -118,7 +148,7 @@ public class AsciiTableTest {
         }
 
         for (int j = 0; j < 5; j += 1) {
-            assertEquals("ByCol:" + j, true, TestArrayFuncs.arrayEquals(inputs[j], outputs[j], 1.e-6, 1.e-14));
+            assertTrue("ByCol:" + j, TestArrayFuncs.arrayEquals(inputs[j], outputs[j], 1.e-6, 1.e-14));
         }
     }
 
@@ -576,8 +606,8 @@ public class AsciiTableTest {
             actual = e;
         }
         Assert.assertNotNull(actual);
-        Assert.assertTrue(actual instanceof FitsException);
-        Assert.assertTrue(actual.getCause() instanceof NullPointerException);
+        Assert.assertEquals(FitsException.class, actual.getClass());
+        Assert.assertEquals(NullPointerException.class, actual.getCause().getClass());
 
         setFieldNull(data, "data");
         actual = null;
@@ -587,8 +617,11 @@ public class AsciiTableTest {
             actual = e;
         }
         Assert.assertNotNull(actual);
-        Assert.assertTrue(actual instanceof FitsException);
-        Assert.assertTrue(actual.getCause() instanceof IOException);
+        Assert.assertEquals(FitsException.class, actual.getClass());
+        // The cause should not be IOException, since the operation should
+        // never include IO in the fist place. And indded it's no longer IOException
+        // as of 1.17...
+        //Assert.assertTrue(actual.getCause() instanceof IOException);
 
         setFieldNull(data, "types");
         actual = null;
@@ -601,7 +634,7 @@ public class AsciiTableTest {
             actual = e;
         }
         Assert.assertNotNull(actual);
-        Assert.assertTrue(actual instanceof FitsException);
+        Assert.assertEquals(FitsException.class, actual.getClass());
         Assert.assertTrue(actual.getCause() instanceof NullPointerException);
 
         actual = null;
@@ -830,19 +863,18 @@ public class AsciiTableTest {
         FitsException actual = null;
         try {
             new AsciiTable(hdr) {
-
-                // to get over ensure data
-                public Object getData() throws FitsException {
+                @Override
+                public void write(ArrayDataOutput str) throws FitsException {
                     try {
                         Field field = AsciiTable.class.getDeclaredField("data");
                         field.setAccessible(true);
-                        field.set(this, new Object[]{
+                        field.set(this, new Object[] {
                             new int[10]
                         });
                     } catch (Exception e) {
                         throw new RuntimeException(e);
                     }
-                    return super.getData();
+                    super.write(str);
                 };
             }.write(str);
         } catch (FitsException e) {

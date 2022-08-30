@@ -493,8 +493,7 @@ public class Fits implements Closeable {
      * @see #getHDU(String, int)
      */
     public BasicHDU<?> getHDU(int n) throws FitsException, IOException {
-        int size = getNumberOfHDUs();
-        for (int i = size; i <= n; i++) {
+        for (int i = getNumberOfHDUs(); i <= n; i++) {
             BasicHDU<?> hdu = readHDU();
             if (hdu == null) {
                 return null;
@@ -818,21 +817,104 @@ public class Fits implements Closeable {
         }
     }
 
-
     /**
-     * Add or Modify the CHECKSUM keyword in all headers. by R J Mathar
+     * <p>
+     * Add or modify the CHECKSUM keyword in all headers. As of 1.17 the checksum for deferred
+     * data is calculated directly from the file (if possible), without loading the entire 
+     * (potentially huge) data into RAM for the calculation.
+     * </p>
+     * <p>
+     * As of 1.17, the routine calculates checksums both for HDUs that are in RAM, as well as
+     * HDUs that were not yet loaded from the input (if any). Any HDUs not in RAM at the
+     * time of the call will stay in deferred mode (if the HDU itself supports it). After
+     * setting (new) checksums, you may want to call #rewrite()
+     * </p>
      * 
      * @throws FitsException
      *             if the operation failed
      * @throws IOException
      *             if the underlying stream failed
+     *             
+     * @author R J Mather, Attila Kovacs
+     * 
+     * @see #rewrite()
      */
     public void setChecksum() throws FitsException, IOException {
-        for (int i = 0; i < getNumberOfHDUs(); i += 1) {
-            setChecksum(getHDU(i));
+        int i = 0;
+        
+        // Start with HDU's already loaded, leaving deferred data in unloaded state
+        for (; i < getNumberOfHDUs(); i++) {
+            BasicHDU<?> hdu = getHDU(i);
+            FitsCheckSum.setDatasum(hdu.getHeader(), calcDatasum(i));
+        }
+        
+        // Check if Fits is read from an input of sorts, with potentially more HDUs there...
+        if (dataStr == null) {
+            return;
+        }
+        
+        // Continue with unread HDUs (if any...)
+        BasicHDU<?> hdu = null;
+        while ((hdu = readHDU()) != null) {
+            FitsCheckSum.setDatasum(hdu.getHeader(), calcDatasum(i++));
         }
     }
-
+    
+    /**
+     * Calculates the data checksum for a given HDU in the Fits. If the HDU does not currently
+     * have data loaded from disk (in deferred read mode), the method will calculate the
+     * checksum directly from disk. Otherwise, it will calculate the datasim from the data
+     * in memory.
+     * 
+     * @param hduIndex          The index of the HDU for which to calculate the data checksum
+     * @return                  The data checksum, e.g. for comparing against
+     *                          {@link BasicHDU#getStoredDatasum()}
+     * @throws FitsException    if there was an error processing the HDU.
+     * @throws IOException      if there was an I/O error accessing the input.
+     * 
+     * @see #calcChecksum(int)
+     * @see BasicHDU#getStoredDatasum()
+     * @see #setChecksum()
+     * @see FitsCheckSum#checksum(Data)
+     * @see FitsCheckSum#setDatasum(Header, long)
+     * 
+     * @since 1.17
+     * 
+     */
+    public long calcDatasum(int hduIndex) throws FitsException, IOException {
+        BasicHDU<?> hdu = getHDU(hduIndex);
+        Data data = hdu.getData();
+        if (data.isDeferred()) {
+            // Compute datasum directly from file...
+            return FitsCheckSum.checksum((RandomAccess) dataStr, data.getFileOffset(), data.getSize());
+        } 
+        return FitsCheckSum.checksum(data);
+    }
+    
+    /**
+     * Calculates the FITS checksum for a given HDU in the Fits. If the HDU does not currently
+     * have data loaded from disk (i.e. in deferred read mode), the method will compute the
+     * checksum directly from disk. Otherwise, it will calculate the checksum from the data
+     * in memory.
+     * 
+     * @param hduIndex          The index of the HDU for which to calculate the HDU checksum
+     * @return                  The HDU's checksum, e.g. for comparing against
+     *                          {@link BasicHDU#getStoredChecksum()}
+     * @throws FitsException    if there was an error processing the HDU.
+     * @throws IOException      if there was an I/O error accessing the input.
+     * 
+     * @see #calcDatasum(int)
+     * @see BasicHDU#getStoredChecksum()
+     * @see #setChecksum()
+     * @see FitsCheckSum#setChecksum(BasicHDU)
+     * 
+     * @since 1.17
+     * 
+     */
+    public long calcChecksum(int hduIndex) throws FitsException, IOException {
+        return FitsCheckSum.sumOf(FitsCheckSum.checksum(getHDU(hduIndex).getHeader()), calcDatasum(hduIndex));
+    }
+    
     /**
      * @deprecated This method is poorly conceived as we cannot really read FITS from 
      *              just any <code>ArrayDataInput</code> but only those,
@@ -986,6 +1068,33 @@ public class Fits implements Closeable {
         }
     }
 
+    /**
+     * Re-writes all HDUs that have been loaded (and possibly modified) to the disk, if possible
+     * -- or else does nothing.  For HDUs that are in deferred mode (data unloaded and unchanged), 
+     * only the header is re-written to disk. Otherwise, both header and data is re-written. Of 
+     * course, rewriting is possible only if the sizes of all headers and data segments remain 
+     * the same as before.
+     * 
+     * @throws FitsException    If one or more of the HDUs cannot be re-written, or if there
+     *                          was some other error serializing the HDUs to disk.
+     * @throws IOException      If there was an I/O error accessing the output file.
+     * 
+     * @since 1.17
+     * 
+     * @see BasicHDU#rewriteable()
+     */
+    public void rewrite() throws FitsException, IOException {
+        for (int i = 0; i < getNumberOfHDUs(); i++) {
+            if (!getHDU(i).rewriteable()) {
+                throw new FitsException("HDU[" + i + "] cannot be re-written in place. Aborting rewrite.");
+            }
+        }
+        
+        for (int i = 0; i < getNumberOfHDUs(); i++) {
+            getHDU(i).rewrite();
+        }
+    }
+    
     /**
      * Writes the contents to the specified file. It simply wraps {@link #write(File)}
      * for convenience.

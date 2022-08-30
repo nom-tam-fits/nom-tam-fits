@@ -62,6 +62,7 @@ import java.util.logging.Logger;
 
 import nom.tam.fits.header.Bitpix;
 import nom.tam.fits.header.IFitsHeader;
+import nom.tam.fits.utilities.FitsCheckSum;
 import nom.tam.util.ArrayDataInput;
 import nom.tam.util.ArrayDataOutput;
 import nom.tam.util.FitsOutput;
@@ -365,7 +366,39 @@ public abstract class BasicHDU<DataClass extends Data> implements FitsElement {
     public int getGroupCount() {
         return this.myHeader.getIntValue(GCOUNT, 1);
     }
+    
+    /**
+     * Returns the decoded checksum that is stored in the header of this HDU under the <code>CHECKSUM</code>
+     * keyword.
+     * 
+     * @return      the decoded FITS checksum value recorded in the HDU 
+     * @throws FitsException    if the HDU's header does not contain a <code>CHECKSUM</code> keyword.
+     * 
+     * @see #getStoredDatasum()
+     * @see FitsCheckSum#getStoredDatasum(Header)
+     * 
+     * @since 1.17
+     */
+    public long getStoredChecksum() throws FitsException {
+        return FitsCheckSum.getStoredChecksum(myHeader);
+    }
 
+    /**
+     * Returns the FITS checksum for the HDU's data that is stored in the header of this HDU under 
+     * the <code>DATASUM</code> keyword.
+     * 
+     * @return      the FITS <code>DATASUM</code> value recorded in the HDU 
+     * @throws FitsException    if the HDU's header does not contain a <code>DATASUM</code> keyword.
+     * 
+     * @see #getStoredChecksum()
+     * @see FitsCheckSum#getStoredChecksum(Header)
+     * 
+     * @since 1.17
+     */
+    public long getStoredDatasum() throws FitsException {
+        return FitsCheckSum.getStoredDatasum(myHeader);
+    }
+    
     /**
      * @return the associated header
      */
@@ -553,10 +586,11 @@ public abstract class BasicHDU<DataClass extends Data> implements FitsElement {
 
     @Override
     public void rewrite() throws FitsException, IOException {
-
         if (rewriteable()) {
-            this.myHeader.rewrite();
-            this.myData.rewrite();
+            myHeader.rewrite();
+            if (!myData.isDeferred()) {
+                myData.rewrite();
+            }
         } else {
             throw new FitsException("Invalid attempt to rewrite HDU");
         }
@@ -564,7 +598,7 @@ public abstract class BasicHDU<DataClass extends Data> implements FitsElement {
 
     @Override
     public boolean rewriteable() {
-        return this.myHeader.rewriteable() && this.myData.rewriteable();
+        return myHeader.rewriteable() && myData.rewriteable();
     }
 
     /**
@@ -598,7 +632,7 @@ public abstract class BasicHDU<DataClass extends Data> implements FitsElement {
         this.myHeader.write(stream);
         
         if (this.myData != null) {
-            this.myData.write(stream);
+            myData.write(stream);
         }
         try {
             stream.flush();

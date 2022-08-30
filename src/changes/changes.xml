@@ -1,12 +1,34 @@
 <document xmlns="http://maven.apache.org/changes/1.0.0" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:schemaLocation="http://maven.apache.org/changes/1.0.0 http://maven.apache.org/xsd/changes-1.0.0.xsd">
 	<body>
 
-    <release version="1.17.0-rc3" date="2022-08-26" description="Minor feature release.">
+    <release version="1.17.0-SNAPSHOT" date="2022-08-28" description="Minor feature release.">
       <action type="add" dev="attipaci" issue="319">
-	      Generalize tile compression for any-dimensional images based on the FITSIO convention. 
+	      Generalized tile compression for any-dimensional images based on the FITSIO convention. 
       </action>
       <action type="fix" dev="attipaci" issue="318">
-	      Fixied broken tile compression of non-square images. 
+	      Fixed broken tile compression of non-square images. 
+      </action>
+      <action type="update" dev="attipaci" issue="266">
+				Safe incremental HDU writing via new FitsOutput interface, which is used to check whether HDUs should be set 
+				primary or not depending on where it is located in the output.
+			</action>
+      <action type="update" dev="attipaci" issue="323">
+	      Simpler, faster, and more versatile FitsChecksum class, with support for incremental checksum updates, 
+	      checksum retrieval, and checksum computations directly from files.
+      </action>
+      <action type="update" dev="attipaci" issue="323">
+        Fits.setChecksum() and calcChecksum(int) compute checksum directly from the file, if possible, for 
+        deferred read data (i.e. data not currently loaded into RAM). This eliminates the need to load 
+        potentially huge data volumes into RAM when computing or updating checksums in an existing FITS file.
+      </action>
+      <action type="update" dev="attipaci" issue="323">
+        Fits.setChecksum() will now checksum any HDUs not already loaded from disk without loading data into memory 
+        (in deferred read mode) if possible.
+      </action>
+      <action type="add" dev="attipaci" issue="323">
+        Added Fits.rewrite() to simplify re-writing the entire Fits objects, e.g. after updating checksums. The 
+        implementation is efficient by not processing any data segments in deferred read mode. BasicHDU.rewrite() 
+        is modified to make it efficient also.
       </action>
     	<action type="add" dev="attipaci" issue="283">
 	      User adjustable header comment alignment position via Header.setCommentAlignPosition(int). 
@@ -32,10 +54,13 @@
       <action type="update" dev="attipaci" issue="292">
         Improved header card ordering implementation.
       </action>
-	    <action type="update" dev="attipaci" issue="266">
-				Safe incremental HDU writing via new FitsOutput interface, which is used to check whether HDUs should be set 
-				primary or not depending on where it is located in the output.
-			</action>
+  		<action type="add" dev="attipaci" issue="323">
+	      Added FitsElement.isDeferred() method (defaulting to false) that can be used to check if a FITS Data 
+	      object might be in deferred read mode, that is if it may not be fully loaded into RAM. Note, that while 
+	      the method is properly implemented for the built-in data types of the library, it may not properly reflect 
+	      the deferred status of external data implementations unless these override the method with something 
+	      meaningful also.
+      </action>
 			<action type="update" dev="attipaci" issue="74">
         New logo.
 			</action>
