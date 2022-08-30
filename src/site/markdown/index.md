@@ -892,15 +892,11 @@ You may note a few other properties of HIERARCH keywords as implemented by this 
 <a name="checksums"></a>
 ### Checksums
 
-Checksums can be added to / updated in the headers of HDUs to allow checking the integrity of the FITS data at a later time.
+Checksums can be added to (and updated in) the headers of HDUs to allow checking the integrity of the FITS data at a later time.
 
-As of version 1.17, it is also possible to apply incremental updates to existing checksums. See the various static
-methods of the `nom.tam.utilities.FitsChecksum` class on updating checksums for modified headers or data. There are also
-new methods to simplify verification of checksums when reading FITS files, and for calculating checksums directly from
-a file without the need for reading and storing potentially huge amounts of data in RAM. Calculating data checksums directly from the file is now default (as of 1.17) for data that is in deferred read (i.e. not currently loaded into RAM), making it possible to checksum huge FITS files without having to load all data into RAM.
+As of version 1.17, it is also possible to apply incremental updates to existing checksums. See the various static methods of the `nom.tam.utilities.FitsChecksum` class on updating checksums for modified headers or data. There are also methods to simplify verification of checksums when reading FITS files, and for calculating checksums directly from a file without the need for reading and storing potentially huge amounts of data in RAM. Calculating data checksums directly from the file is now default (as of 1.17) for data that is in deferred read (i.e. not currently loaded into RAM), making it possible to checksum huge FITS files without having to load all data into RAM.
 
-Setting the checksums (CHECKSUM and DATASUM keywords) should be the last action on the FITS object or HDU before 
-writing it out. Here is an example of settting a checksum for an HDU before you write it to disk:
+Setting the checksums (`CHECKSUM` and `DATASUM` keywords) should be the last action on the FITS object or HDU before writing it out. Here is an example of settting a checksum for an HDU before you write it to disk:
 
 ```java
   ImageHDU im;
@@ -911,14 +907,9 @@ writing it out. Here is an example of settting a checksum for an HDU before you 
   
   FitsFile out = new FitsFile("my-checksummed-image.fits");
   im.write(out);
-  
-  // ... maybe write more HDUs to the file ...
-  
-  out.close();
 ```
 
-Or you can set checksums for all HDUs in your `Fits` in one go before writing the entire `Fits` 
-object out to disk:
+Or you can set checksums for all HDUs in your `Fits` in one go before writing the entire `Fits` object out to disk:
 
 ```java
   Fits f = new Fits();
@@ -927,7 +918,6 @@ object out to disk:
   
   f.setChecksum();
   f.write(new FitsFile("my-checksummed-image.fits"));
-  f.close();
 ```
 
 Then later you can verify the integrity of FITS files using the stored checksums just as easily too:
@@ -941,16 +931,11 @@ Then later you can verify the integrity of FITS files using the stored checksums
   
   // Calculate the HDU's checksum (still in deferred mode), and check...
   if (fits.calcChecksum(0) != hdu.getStoredChecksum()) {
-      System.err.println("WARNING! checksums for HDU " + i + " don't match!");
+      System.err.println("WARNING! The HDU might be corrupted.");
   }
-  
-  f.close();
 ```
 
-(Note that `Fits.calcChecksum(int)` will compute the checksum from the file only if the data
-has not been loaded into RAM (in deferred mode). Otherwise, it will compute the checksum from
-the data that was loaded. You can also calculate the checksums from the file (equivalently to
- the above) via:
+(Note that `Fits.calcChecksum(int)` will compute the checksum from the file only if the data has not been loaded into RAM (in deferred mode). Otherwise, it will compute the checksum from the data that was loaded. You can also calculate the checksums from the file (equivalently to the above) via:
 
 ```java
   FitsFile in = new FitsFile("my-huge-fits-file.fits");
@@ -963,15 +948,11 @@ the data that was loaded. You can also calculate the checksums from the file (eq
   if (actual != f.getHDU(i).getStoredChecksum()) {
       System.err.println("WARNING! The HDU might be corruputed.");
   }
-
-  f.close();
 ```
 
-And, if you want to verify the integrity of the data segment by itself (ignoring the header) 
-you might use `getStoredDataSum()` instead and changing the checksum range to correspond to 
-the location of the data block in the file. 
+And, if you want to verify the integrity of the data segment in itself (ignoring the header) you might use `getStoredDatasum()` instead and changing the checksum range to correspond to the location of the data block in the file. 
 
-Finally, consider updating the checksums for a FITS you want to modify in place:
+Finally, you might want to update the checksums for a FITS you modify in place:
 
 ```java
   Fits f = new Fits("my.fits");
@@ -989,6 +970,15 @@ Finally, consider updating the checksums for a FITS you want to modify in place:
   FitsCheckSum.setChecksum(im);
   im.rewrite();
 ```
+Or, (re)calculate checksums for the entire FITS file, once again leaving deferred data in unloaded state and computing the checksums for these directly from disk.:
+
+```java
+  Fits f = new Fits("my.fits");
+  f.setChecksum();
+  f.rewrite();
+```
+
+The above will work as expected provided the original FITS already had `CHECKSUM` and `DATASUM` keys in the HDUs, or else the headers had enough unused space for adding these without growing the size of the headers. If any of the headers or data in the `Fits` have changed size, the `Fits.rewrite()` call will throw a `FitsException` without modifying any of the records. You may alternatively proceed re-writing a selection of the HDUs, or else write the `Fits` to a new file with a different size.
 
 <a name="preallocated-header-space"></a>
 ### Preallocated header space
@@ -1014,10 +1004,11 @@ For example,
   // We can now write the header, knowing we can fill it with up to
   // 200 records in total at a later point
   h.write(out);
+```
   
-  // Now we record data, such as a binary table row-by-row
-  // ...
-  
+Now you can proceed to recording the data, such as a binary table row-by-row. Once you are done with it, you can go back and make edits to the header, adding more header cards, in the space you reserved earlier, and rewrite the header in front of the data without issues:
+ 
+``` java
   // Once the data has been recorded we can proceed to fill in 
   // the additional header values, such as the end time of observation
   h.addValue("DATE-END", FitsDate.getFitsDateString(), "end of observation");

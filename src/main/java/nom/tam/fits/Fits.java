@@ -818,9 +818,17 @@ public class Fits implements Closeable {
     }
 
     /**
+     * <p>
      * Add or modify the CHECKSUM keyword in all headers. As of 1.17 the checksum for deferred
      * data is calculated directly from the file (if possible), without loading the entire 
      * (potentially huge) data into RAM for the calculation.
+     * </p>
+     * <p>
+     * As of 1.17, the routine calculates checksums both for HDUs that are in RAM, as well as
+     * HDUs that were not yet loaded from the input (if any). Any HDUs not in RAM at the
+     * time of the call will stay in deferred mode (if the HDU itself supports it). After
+     * setting (new) checksums, you may want to call #rewrite()
+     * </p>
      * 
      * @throws FitsException
      *             if the operation failed
@@ -828,11 +836,25 @@ public class Fits implements Closeable {
      *             if the underlying stream failed
      *             
      * @author R J Mather, Attila Kovacs
+     * 
+     * @see #rewrite()
      */
     public void setChecksum() throws FitsException, IOException {
-        for (int i = 0; i < getNumberOfHDUs(); i += 1) {
+        int i;
+        
+        // Start with HDU's already loaded, leaving deferred data in unloaded state
+        for (i = 0; i < getNumberOfHDUs(); i++) {
             BasicHDU<?> hdu = getHDU(i);
             FitsCheckSum.setDatasum(hdu.getHeader(), calcDatasum(i));
+        }
+        if (dataStr == null) {
+            return;
+        }
+        
+        // Continue with unread HDUs (if any...)
+        BasicHDU<?> hdu = null;
+        while ((hdu = readHDU()) != null) {
+            FitsCheckSum.setDatasum(hdu.getHeader(), calcDatasum(i++));
         }
     }
     
@@ -1003,6 +1025,35 @@ public class Fits implements Closeable {
         }
     }
 
+    /**
+     * Re-writes all HDUs that have been loaded (and possibly modified) to the disk, if possible
+     * -- or else does nothing.  For HDUs that are in deferred mode (data unloaded and unchanged), 
+     * only the header is re-written to disk. Otherwise, both header and data is re-written. Of 
+     * course, rewriting is possible only if the sizes of all headers and data segments remain 
+     * the same as before.
+     * 
+     * @throws FitsException    If one or more of the HDUs cannot be re-written, or if there
+     *                          was some other error serializing the HDUs to disk.
+     * @throws IOException      If there was an I/O error accessing the output file.
+     * 
+     * @since 1.17
+     * 
+     * @see BasicHDU#rewriteable()
+     */
+    public void rewrite() throws FitsException, IOException {
+
+        for (int i = 0; i < getNumberOfHDUs(); i++) {
+            if (!getHDU(i).rewriteable()) {
+                throw new FitsException("HDU[" + i + "] cannot be re-written in place. Aborting rewrite.");
+            }
+        }
+        
+        
+        for (int i = 0; i < getNumberOfHDUs(); i++) {
+            getHDU(i).rewrite();
+        }
+    }
+    
     /**
      * Writes the contents to the specified file. It simply wraps {@link #write(File)}
      * for convenience.

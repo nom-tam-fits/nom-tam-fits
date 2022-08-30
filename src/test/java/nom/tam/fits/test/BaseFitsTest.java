@@ -1261,4 +1261,21 @@ public class BaseFitsTest {
         assertNull(hdu.getTrimmedString(Standard.COMMENT));
     }
     
+    
+    @Test
+    public void rewriteTest() throws Exception {
+        Fits fits = new Fits("nom/tam/fits/test/test.fits");
+        fits.rewrite();
+    }
+
+    @Test(expected = FitsException.class)
+    public void rewriteTestException() throws Exception {
+        Fits fits = new Fits("nom/tam/fits/test/test.fits");
+        Header h = fits.readHDU().getHeader();
+        for (int i = 0; i < 36; i++) {
+            h.addValue("TEST" + (i+1), "blah", "blah");
+        }
+        fits.rewrite();
+    }
+    
 }

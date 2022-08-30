@@ -562,10 +562,11 @@ public abstract class BasicHDU<DataClass extends Data> implements FitsElement {
 
     @Override
     public void rewrite() throws FitsException, IOException {
-
         if (rewriteable()) {
-            this.myHeader.rewrite();
-            this.myData.rewrite();
+            myHeader.rewrite();
+            if (!myData.isDeferred()) {
+                myData.rewrite();
+            }
         } else {
             throw new FitsException("Invalid attempt to rewrite HDU");
         }
@@ -573,7 +574,7 @@ public abstract class BasicHDU<DataClass extends Data> implements FitsElement {
 
     @Override
     public boolean rewriteable() {
-        return this.myHeader.rewriteable() && this.myData.rewriteable();
+        return myHeader.rewriteable() && myData.rewriteable();
     }
 
     /**
@@ -607,7 +608,7 @@ public abstract class BasicHDU<DataClass extends Data> implements FitsElement {
         this.myHeader.write(stream);
         
         if (this.myData != null) {
-            this.myData.write(stream);
+            myData.write(stream);
         }
         try {
             stream.flush();

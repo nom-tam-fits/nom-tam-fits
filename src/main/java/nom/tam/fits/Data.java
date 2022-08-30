@@ -154,11 +154,14 @@ public abstract class Data implements FitsElement {
 
     @Override
     public void rewrite() throws FitsException {
-
+        if (isDeferred()) {
+            return;             // Nothing to do...
+        }
+        
         if (!rewriteable()) {
             throw new FitsException("Illegal attempt to rewrite data");
         }
-
+        
         FitsUtil.reposition(this.input, this.fileOffset);
         write((ArrayDataOutput) this.input);
         try {
