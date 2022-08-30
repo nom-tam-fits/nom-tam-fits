@@ -43,12 +43,12 @@ public class DeferredTest {
     public void isDeferredAsciiTableNew() throws Exception {
         assertFalse(new AsciiTable().isDeferred());
     }
-    
+
     @Test 
     public void isDeferredBinaryTableNew() throws Exception {
         assertFalse(new BinaryTable().isDeferred());
     }
-    
+
     @Test 
     public void isDeferredImageDataNew() throws Exception {
         assertFalse(new ImageData().isDeferred());
@@ -58,46 +58,46 @@ public class DeferredTest {
     public void isDeferredRandomGroupsDataNew() throws Exception {
         assertFalse(new RandomGroupsData().isDeferred());
     }
-    
+
     @Test 
     public void isDeferredUndefinedDataNew() throws Exception {
         assertFalse(new UndefinedData(new int[10]).isDeferred());
     }
-    
+
     @Test 
     public void isDeferredDataNew() throws Exception {
-        assertFalse(new Data() {
-            @Override
-            void fillHeader(Header head) throws FitsException {
-                // TODO Auto-generated method stub
-                
-            }
-
-            @Override
-            public Object getData() throws FitsException {
-                // TODO Auto-generated method stub
-                return null;
-            }
-
-            @Override
-            long getTrueSize() {
-                // TODO Auto-generated method stub
-                return 0;
-            }
-
-            @Override
-            public void read(ArrayDataInput in) throws FitsException {
-                // TODO Auto-generated method stub
-                
-            }
-
-            @Override
-            public void write(ArrayDataOutput o) throws FitsException {
-                // TODO Auto-generated method stub
-                
-            }
-            
-        }.isDeferred());
+        assertFalse(new DefaultData().isDeferred());
     }
     
+    @Test(expected = FitsException.class)
+    public void deferredDataRewriteException() throws Exception {
+        new DefaultData().rewrite(); // No expection is good enough!
+    }
+
+
+    class DefaultData extends Data {
+        @Override
+        void fillHeader(Header head) throws FitsException {
+        }
+
+        @Override
+        public Object getData() throws FitsException {
+            return null;
+        }
+
+        @Override
+        long getTrueSize() {
+            return 0;
+        }
+
+        @Override
+        public void read(ArrayDataInput in) throws FitsException {
+            throw new FitsException("not implemented");
+        }
+
+        @Override
+        public void write(ArrayDataOutput o) throws FitsException {
+            throw new FitsException("not implemented");
+        }
+    }
 }

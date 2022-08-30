@@ -32,18 +32,18 @@ package nom.tam.fits.test;
  */
 
 import static nom.tam.fits.header.Checksum.CHECKSUM;
+import static nom.tam.fits.header.Checksum.DATASUM;
 import static org.junit.Assert.assertEquals;
 import static org.junit.Assert.assertNotEquals;
 import static org.junit.Assert.assertFalse;
 import static org.junit.Assert.assertTrue;
 
 import java.io.ByteArrayOutputStream;
+import java.io.File;
 import java.io.FileInputStream;
-import java.io.IOException;
 import java.util.Arrays;
 
 import nom.tam.fits.BasicHDU;
-import nom.tam.fits.Data;
 import nom.tam.fits.Fits;
 import nom.tam.fits.FitsException;
 import nom.tam.fits.FitsFactory;
@@ -56,7 +56,6 @@ import nom.tam.fits.header.Standard;
 import nom.tam.fits.utilities.FitsCheckSum;
 import nom.tam.util.FitsInputStream;
 import nom.tam.util.FitsOutputStream;
-import nom.tam.util.ArrayDataInput;
 import nom.tam.util.ArrayDataOutput;
 import nom.tam.util.Cursor;
 import nom.tam.util.FitsIO;
@@ -328,7 +327,7 @@ public class ChecksumTest {
         ImageData data = new ImageData() {
             @Override
             public void write(ArrayDataOutput bdos) throws FitsException {
-                throw new FitsException("no header");
+                throw new FitsException("not implemented");
             }
         };
         
@@ -338,7 +337,47 @@ public class ChecksumTest {
         h.setNaxes(0);
         
         ImageHDU im = new ImageHDU(h, data);
-        FitsCheckSum.checksum(im);
+        FitsCheckSum.setChecksum(im);
+    }
+    
+    @Test
+    public void testChecksumFitsLoaded() throws Exception {
+        Fits fits = new Fits(new File("src/test/resources/nom/tam/fits/test/test.fits"));
+        fits.read();
+        fits.setChecksum();
+        BasicHDU<?> hdu = fits.getHDU(0);
+        Header h = hdu.getHeader();
+        assertTrue(h.containsKey(CHECKSUM));
+        assertTrue(h.containsKey(DATASUM));
+        assertNotEquals(0, hdu.getStoredChecksum());
+        assertNotEquals(0, hdu.getStoredDatasum());
+    }
+
+    @Test
+    public void testChecksumFitsUnloaded() throws Exception {
+        Fits fits = new Fits(new File("src/test/resources/nom/tam/fits/test/test.fits"));
+        fits.setChecksum();
+        BasicHDU<?> hdu = fits.getHDU(0);
+        Header h = hdu.getHeader();
+        assertTrue(h.containsKey(CHECKSUM));
+        assertTrue(h.containsKey(DATASUM));
+        assertNotEquals(0, hdu.getStoredChecksum());
+        assertNotEquals(0, hdu.getStoredDatasum());
+    }
+    
+    @Test
+    public void testChecksumFitsCreated() throws Exception {
+        int[][] data = new int[5][5];
+        data[0][0] = 1;
+        Fits fits = new Fits();
+        fits.addHDU(FitsFactory.hduFactory(data));
+        fits.setChecksum();
+        BasicHDU<?> hdu = fits.getHDU(0);
+        Header h = hdu.getHeader();
+        assertTrue(h.containsKey(CHECKSUM));
+        assertTrue(h.containsKey(DATASUM));
+        assertNotEquals(0, hdu.getStoredChecksum());
+        assertNotEquals(0, hdu.getStoredDatasum());
     }
     
 }

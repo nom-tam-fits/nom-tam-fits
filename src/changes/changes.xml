@@ -21,6 +21,15 @@
         deferred read data (i.e. data not currently loaded into RAM). This eliminates the need to load 
         potentially huge data volumes into RAM when computing or updating checksums in an existing FITS file.
       </action>
+      <action type="update" dev="attipaci" issue="323">
+        Fits.setChecksum() will now checksum any HDUs not already loaded from disk without loading data into memory 
+        (in deferred read mode) if possible.
+      </action>
+      <action type="add" dev="attipaci" issue="323">
+        Added Fits.rewrite() to simplify re-writing the entire Fits objects, e.g. after updating checksums. The 
+        implementation is efficient by not processing any data segments in deferred read mode. BasicHDU.rewrite() 
+        is modified to make it efficient also.
+      </action>
     	<action type="add" dev="attipaci" issue="283">
 	      User adjustable header comment alignment position via Header.setCommentAlignPosition(int). 
       </action>

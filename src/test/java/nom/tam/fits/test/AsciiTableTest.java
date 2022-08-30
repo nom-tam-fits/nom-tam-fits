@@ -96,7 +96,7 @@ public class AsciiTableTest {
         f.write("target/at1.fits");
         
         // Read back the data from the file.
-        f = new Fits("target/at1.fits");
+        f = new Fits(new File("target/at1.fits"));
         f.read();
         AsciiTableHDU hdu = (AsciiTableHDU) f.getHDU(1);
         

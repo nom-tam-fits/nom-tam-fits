@@ -840,13 +840,15 @@ public class Fits implements Closeable {
      * @see #rewrite()
      */
     public void setChecksum() throws FitsException, IOException {
-        int i;
+        int i = 0;
         
         // Start with HDU's already loaded, leaving deferred data in unloaded state
-        for (i = 0; i < getNumberOfHDUs(); i++) {
+        for (; i < getNumberOfHDUs(); i++) {
             BasicHDU<?> hdu = getHDU(i);
             FitsCheckSum.setDatasum(hdu.getHeader(), calcDatasum(i));
         }
+        
+        // Check if Fits is read from an input of sorts, with potentially more HDUs there...
         if (dataStr == null) {
             return;
         }
@@ -858,6 +860,27 @@ public class Fits implements Closeable {
         }
     }
     
+    /**
+     * Calculates the data checksum for a given HDU in the Fits. If the HDU does not currently
+     * have data loaded from disk (in deferred read mode), the method will calculate the
+     * checksum directly from disk. Otherwise, it will calculate the datasim from the data
+     * in memory.
+     * 
+     * @param hduIndex          The index of the HDU for which to calculate the data checksum
+     * @return                  The data checksum, e.g. for comparing against
+     *                          {@link BasicHDU#getStoredDatasum()}
+     * @throws FitsException    if there was an error processing the HDU.
+     * @throws IOException      if there was an I/O error accessing the input.
+     * 
+     * @see #calcChecksum(int)
+     * @see BasicHDU#getStoredDatasum()
+     * @see #setChecksum()
+     * @see FitsCheckSum#checksum(Data)
+     * @see FitsCheckSum#setDatasum(Header, long)
+     * 
+     * @since 1.17
+     * 
+     */
     public long calcDatasum(int hduIndex) throws FitsException, IOException {
         BasicHDU<?> hdu = getHDU(hduIndex);
         Data data = hdu.getData();
@@ -868,6 +891,26 @@ public class Fits implements Closeable {
         return FitsCheckSum.checksum(data);
     }
     
+    /**
+     * Calculates the FITS checksum for a given HDU in the Fits. If the HDU does not currently
+     * have data loaded from disk (i.e. in deferred read mode), the method will compute the
+     * checksum directly from disk. Otherwise, it will calculate the checksum from the data
+     * in memory.
+     * 
+     * @param hduIndex          The index of the HDU for which to calculate the HDU checksum
+     * @return                  The HDU's checksum, e.g. for comparing against
+     *                          {@link BasicHDU#getStoredChecksum()}
+     * @throws FitsException    if there was an error processing the HDU.
+     * @throws IOException      if there was an I/O error accessing the input.
+     * 
+     * @see #calcDatasum(int)
+     * @see BasicHDU#getStoredChecksum()
+     * @see #setChecksum()
+     * @see FitsCheckSum#setChecksum(BasicHDU)
+     * 
+     * @since 1.17
+     * 
+     */
     public long calcChecksum(int hduIndex) throws FitsException, IOException {
         return FitsCheckSum.sumOf(FitsCheckSum.checksum(getHDU(hduIndex).getHeader()), calcDatasum(hduIndex));
     }
@@ -1041,13 +1084,11 @@ public class Fits implements Closeable {
      * @see BasicHDU#rewriteable()
      */
     public void rewrite() throws FitsException, IOException {
-
         for (int i = 0; i < getNumberOfHDUs(); i++) {
             if (!getHDU(i).rewriteable()) {
                 throw new FitsException("HDU[" + i + "] cannot be re-written in place. Aborting rewrite.");
             }
         }
-        
         
         for (int i = 0; i < getNumberOfHDUs(); i++) {
             getHDU(i).rewrite();

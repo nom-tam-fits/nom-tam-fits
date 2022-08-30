@@ -904,9 +904,7 @@ Setting the checksums (`CHECKSUM` and `DATASUM` keywords) should be the last act
   // ... prepare the image and header ...
    
   FitsCheckSum.setCheckSum(im);
-  
-  FitsFile out = new FitsFile("my-checksummed-image.fits");
-  im.write(out);
+  im.write(new FitsFile("my-checksummed-image.fits"));
 ```
 
 Or you can set checksums for all HDUs in your `Fits` in one go before writing the entire `Fits` object out to disk:
@@ -978,7 +976,7 @@ Or, (re)calculate checksums for the entire FITS file, once again leaving deferre
   f.rewrite();
 ```
 
-The above will work as expected provided the original FITS already had `CHECKSUM` and `DATASUM` keys in the HDUs, or else the headers had enough unused space for adding these without growing the size of the headers. If any of the headers or data in the `Fits` have changed size, the `Fits.rewrite()` call will throw a `FitsException` without modifying any of the records. You may alternatively proceed re-writing a selection of the HDUs, or else write the `Fits` to a new file with a different size.
+The above will work as expected provided the original FITS already had `CHECKSUM` and `DATASUM` keys in the HDUs, or else the headers had enough unused space for adding these without growing the size of the headers. If any of the headers or data in the `Fits` have changed size, the `Fits.rewrite()` call will throw a `FitsException` without modifying any of the records. In such cases You may proceed re-writing a selection of the HDUs, or else write the `Fits` to a new file with a different size.
 
 <a name="preallocated-header-space"></a>
 ### Preallocated header space
