@@ -69,9 +69,14 @@ public class DeferredTest {
         assertFalse(new DefaultData().isDeferred());
     }
     
-    @Test(expected = FitsException.class)
-    public void deferredDataRewriteException() throws Exception {
-        new DefaultData().rewrite(); // No expection is good enough!
+    @Test
+    public void deferredDataRewrite() throws Exception {
+        new DefaultData() {
+            @Override
+            public boolean isDeferred() {
+                return true;
+            }
+        }.rewrite(); // No exception is good enough!
     }
 
 
