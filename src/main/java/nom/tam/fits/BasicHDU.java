@@ -367,10 +367,34 @@ public abstract class BasicHDU<DataClass extends Data> implements FitsElement {
         return this.myHeader.getIntValue(GCOUNT, 1);
     }
     
+    /**
+     * Returns the decoded checksum that is stored in the header of this HDU under the <code>CHECKSUM</code>
+     * keyword.
+     * 
+     * @return      the decoded FITS checksum value recorded in the HDU 
+     * @throws FitsException    if the HDU's header does not contain a <code>CHECKSUM</code> keyword.
+     * 
+     * @see #getStoredDatasum()
+     * @see FitsCheckSum#getStoredDatasum(Header)
+     * 
+     * @since 1.17
+     */
     public long getStoredChecksum() throws FitsException {
         return FitsCheckSum.getStoredChecksum(myHeader);
     }
 
+    /**
+     * Returns the FITS checksum for the HDU's data that is stored in the header of this HDU under 
+     * the <code>DATASUM</code> keyword.
+     * 
+     * @return      the FITS <code>DATASUM</code> value recorded in the HDU 
+     * @throws FitsException    if the HDU's header does not contain a <code>DATASUM</code> keyword.
+     * 
+     * @see #getStoredChecksum()
+     * @see FitsCheckSum#getStoredChecksum(Header)
+     * 
+     * @since 1.17
+     */
     public long getStoredDatasum() throws FitsException {
         return FitsCheckSum.getStoredDatasum(myHeader);
     }

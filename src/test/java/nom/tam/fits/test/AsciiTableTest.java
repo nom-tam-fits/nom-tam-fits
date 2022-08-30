@@ -96,12 +96,13 @@ public class AsciiTableTest {
         f.write("target/at1.fits");
         
         // Read back the data from the file.
-        f = new Fits(new File("target/at1.fits"));
+        File file = new File("target/at1.fits");
+        f = new Fits(file);
         f.read();
         AsciiTableHDU hdu = (AsciiTableHDU) f.getHDU(1);
         
         assertTrue(hdu.getData().isDeferred());
-        f.close();
+        file.close();
         hdu.getData().getData();
     }
     

@@ -894,9 +894,9 @@ You may note a few other properties of HIERARCH keywords as implemented by this 
 
 Checksums can be added to (and updated in) the headers of HDUs to allow checking the integrity of the FITS data at a later time.
 
-As of version 1.17, it is also possible to apply incremental updates to existing checksums. See the various static methods of the `nom.tam.utilities.FitsChecksum` class on updating checksums for modified headers or data. There are also methods to simplify verification of checksums when reading FITS files, and for calculating checksums directly from a file without the need for reading and storing potentially huge amounts of data in RAM. Calculating data checksums directly from the file is now default (as of 1.17) for data that is in deferred read (i.e. not currently loaded into RAM), making it possible to checksum huge FITS files without having to load all data into RAM.
+As of version 1.17, it is also possible to apply incremental updates to existing checksums. See the various static methods of the `nom.tam.utilities.FitsChecksum` class on updating checksums for modified headers or data. There are also methods to simplify verification of checksums when reading FITS files, and for calculating checksums directly from a file without the need for reading and storing potentially huge amounts of data in RAM. Calculating data checksums directly from the file is now default (as of 1.17) for data that is in deferred read mode (i.e. not currently loaded into RAM), making it possible to checksum huge FITS files without having to load entire segments of data into RAM at any point.
 
-Setting the checksums (`CHECKSUM` and `DATASUM` keywords) should be the last action on the FITS object or HDU before writing it out. Here is an example of settting a checksum for an HDU before you write it to disk:
+Setting the checksums (`CHECKSUM` and `DATASUM` keywords) should be the last modification to the FITS object or HDU before writing. Here is an example of settting a checksum for an HDU before you write it to disk:
 
 ```java
   ImageHDU im;
@@ -933,7 +933,7 @@ Then later you can verify the integrity of FITS files using the stored checksums
   }
 ```
 
-(Note that `Fits.calcChecksum(int)` will compute the checksum from the file only if the data has not been loaded into RAM (in deferred mode). Otherwise, it will compute the checksum from the data that was loaded. You can also calculate the checksums from the file (equivalently to the above) via:
+(Note that `Fits.calcChecksum(int)` will compute the checksum from the file only if the data has not been loaded into RAM already (in deferred read mode). Otherwise, it will compute the checksum from the data that was loaded into memory. You can also calculate the checksums from the file (equivalently to the above) via:
 
 ```java
   FitsFile in = new FitsFile("my-huge-fits-file.fits");
@@ -948,7 +948,7 @@ Then later you can verify the integrity of FITS files using the stored checksums
   }
 ```
 
-And, if you want to verify the integrity of the data segment in itself (ignoring the header) you might use `getStoredDatasum()` instead and changing the checksum range to correspond to the location of the data block in the file. 
+And, if you want to verify the integrity of the data segment separately (without the header) you might use `getStoredDatasum()` instead and changing the `checksum()` call range to correspond to the location of the data block in the file. 
 
 Finally, you might want to update the checksums for a FITS you modify in place:
 
@@ -968,7 +968,8 @@ Finally, you might want to update the checksums for a FITS you modify in place:
   FitsCheckSum.setChecksum(im);
   im.rewrite();
 ```
-Or, (re)calculate checksums for the entire FITS file, once again leaving deferred data in unloaded state and computing the checksums for these directly from disk.:
+
+Or, (re)calculate and set checksums for all HDUs in a FITS file, once again leaving deferred data in unloaded state and computing the checksums for these directly from disk.:
 
 ```java
   Fits f = new Fits("my.fits");
