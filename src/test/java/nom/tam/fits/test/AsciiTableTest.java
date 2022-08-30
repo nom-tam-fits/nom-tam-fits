@@ -102,7 +102,7 @@ public class AsciiTableTest {
         AsciiTableHDU hdu = (AsciiTableHDU) f.getHDU(1);
         
         assertTrue(hdu.getData().isDeferred());
-        file.close();
+        f.getStream().close();
         hdu.getData().getData();
     }
     
