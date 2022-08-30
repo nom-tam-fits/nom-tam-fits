@@ -296,7 +296,7 @@ public final class FitsCheckSum {
         long sum = 0;
         for (; size > 0; from += len, size -= len) {
             len = (int) Math.min(BUFFER_SIZE, size);
-            f.read(buf);
+            len = f.read(buf);
             sum = sumOf(sum, checksum(buf, 0, len));
         }
         f.position(oldpos);
@@ -369,7 +369,7 @@ public final class FitsCheckSum {
             }
         }
         
-        return new String(asc);
+        return new String(asc, StandardCharsets.US_ASCII);
     }
 
     /**
