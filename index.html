@@ -35,7 +35,7 @@
 </li>
       <li class=""><a href="index.html" title="nom.tam FITS library">nom.tam FITS library</a><span class="divider">/</span></li>
     <li class="active ">Getting started with the nom.tam.fits library.</li>
-      <li id="projectVersion" class="pull-right">Version: 1.17.0-rc1</li>
+      <li id="projectVersion" class="pull-right">Version: 1.17.0-SNAPSHOT</li>
           </ul>
         </div>
       </header>
@@ -794,11 +794,81 @@ a pull request will work best.</p><section>
 </ol>
 <p><a name="checksums"></a></p></section><section>
 <h3><a name="Checksums"></a>Checksums</h3>
-<p>Checksums can be added to the Headers for HDUs that can be used to ensure the faithful copying of the FITS data. <code>Fits.setChecksum()</code> can be used to set these.  Setting the checksum should be the users last action before writing the FITS file.</p>
+<p>Checksums can be added to (and updated in) the headers of HDUs to allow checking the integrity of the FITS data at a later time.</p>
+<p>As of version 1.17, it is also possible to apply incremental updates to existing checksums. See the various static methods of the <code>nom.tam.utilities.FitsChecksum</code> class on updating checksums for modified headers or data. There are also methods to simplify verification of checksums when reading FITS files, and for calculating checksums directly from a file without the need for reading and storing potentially huge amounts of data in RAM. Calculating data checksums directly from the file is now default (as of 1.17) for data that is in deferred read mode (i.e. not currently loaded into RAM), making it possible to checksum huge FITS files without having to load entire segments of data into RAM at any point.</p>
+<p>Setting the checksums (<code>CHECKSUM</code> and <code>DATASUM</code> keywords) should be the last modification to the FITS object or HDU before writing. Here is an example of settting a checksum for an HDU before you write it to disk:</p>
+
+<div class="source"><pre class="prettyprint"><code class="language-java">  ImageHDU im;
+         
+  // ... prepare the image and header ...
+   
+  FitsCheckSum.setCheckSum(im);
+  im.write(new FitsFile(&quot;my-checksummed-image.fits&quot;));
+</code></pre></div>
+<p>Or you can set checksums for all HDUs in your <code>Fits</code> in one go before writing the entire <code>Fits</code> object out to disk:</p>
+
+<div class="source"><pre class="prettyprint"><code class="language-java">  Fits f = new Fits();
+  
+  // ... Compose the FITS with the HDUs ...
+  
+  f.setChecksum();
+  f.write(new FitsFile(&quot;my-checksummed-image.fits&quot;));
+</code></pre></div>
+<p>Then later you can verify the integrity of FITS files using the stored checksums just as easily too:</p>
+
+<div class="source"><pre class="prettyprint"><code class="language-java">  Fits f = new Fits(&quot;my-huge-fits-file.fits&quot;);
+  
+  // We'll check the integrity of the first HDU without loading its
+  // potentially huge data into RAM (staying in deferred mode).
+  BasicHDU&lt;?&gt; hdu = f.readHDU();
+  
+  // Calculate the HDU's checksum (still in deferred mode), and check...
+  if (fits.calcChecksum(0) != hdu.getStoredChecksum()) {
+      System.err.println(&quot;WARNING! The HDU might be corrupted.&quot;);
+  }
+</code></pre></div>
+<p>(Note that <code>Fits.calcChecksum(int)</code> will compute the checksum from the file only if the data has not been loaded into RAM already (in deferred read mode). Otherwise, it will compute the checksum from the data that was loaded into memory. You can also calculate the checksums from the file (equivalently to the above) via:</p>
+
+<div class="source"><pre class="prettyprint"><code class="language-java">  FitsFile in = new FitsFile(&quot;my-huge-fits-file.fits&quot;);
+  Fits f = new Fits(in);
+ 
+  BasicHDU&lt;?&gt; hdu = f.read();
+
+  // Calculate checksum directly from the file
+  long actual = FitsCheckSum.checksum(in, hdu.getFileOffset(), hdu.getSize());
+  if (actual != f.getHDU(i).getStoredChecksum()) {
+      System.err.println(&quot;WARNING! The HDU might be corruputed.&quot;);
+  }
+</code></pre></div>
+<p>And, if you want to verify the integrity of the data segment separately (without the header) you might use <code>getStoredDatasum()</code> instead and changing the <code>checksum()</code> call range to correspond to the location of the data block in the file.</p>
+<p>Finally, you might want to update the checksums for a FITS you modify in place:</p>
+
+<div class="source"><pre class="prettyprint"><code class="language-java">  Fits f = new Fits(&quot;my.fits&quot;);
+  
+  // We'll modify the fist HDU...
+  ImageHDU im = (ImageHDU) f.readHDU();
+  float[][] data = (float[][]) im.getData():
+  
+  // Offset the data by 1.12
+  for (int i = 0; i &lt; data.length; i++) 
+      for (int j = 0; i &lt; data[0].length; j++)
+          data[i][j] += 1.12;
+    
+  // Calculate new checksums for the HDU      
+  FitsCheckSum.setChecksum(im);
+  im.rewrite();
+</code></pre></div>
+<p>Or, (re)calculate and set checksums for all HDUs in a FITS file, once again leaving deferred data in unloaded state and computing the checksums for these directly from disk.:</p>
+
+<div class="source"><pre class="prettyprint"><code class="language-java">  Fits f = new Fits(&quot;my.fits&quot;);
+  f.setChecksum();
+  f.rewrite();
+</code></pre></div>
+<p>The above will work as expected provided the original FITS already had <code>CHECKSUM</code> and <code>DATASUM</code> keys in the HDUs, or else the headers had enough unused space for adding these without growing the size of the headers. If any of the headers or data in the <code>Fits</code> have changed size, the <code>Fits.rewrite()</code> call will throw a <code>FitsException</code> without modifying any of the records. In such cases You may proceed re-writing a selection of the HDUs, or else write the <code>Fits</code> to a new file with a different size.</p>
 <p><a name="preallocated-header-space"></a></p></section><section>
 <h3><a name="Preallocated_header_space"></a>Preallocated header space</h3>
-<p>Many FITS files are created by live-recording of data, e.g. from astronomical instruments. As such not all header values may be defined as one needs to start writing the data segment of the HDU that follows the header. For example, we do not know in advance how many rows the binary table will contain, which will depend on when the recording stops at a later point. Other metadata may simply not be provided until a later time. For this reason version 4.0 of the FITS standard has specified preallocating header space as some number of blank header records between the last defined header entry and the <code>END</code> keyword.</p>
-<p>As of version 1.16, this library support preallocated header space via <code>Header.ensureCardSpace(int)</code>, which can be used to ensure that the header can contain <i>at least</i> the specified number of 80-character records when written to the output. (In reality it may accommodate somewhat more even because of the required padding to multiples of 2880 bytes or 36 records &#x2013; and you can use <code>Header.getMinimumSize()</code> to find out just how many bytes are reserved/used by any header object at any point).</p>
+<p>Many FITS files are created by live-recording of data, e.g. from astronomical instruments. As such not all header values may be defined when writing the data segment of the HDU that follows the header. For example, we do not know in advance how many rows the binary table will contain, which will depend on when the recording stops at a later point. Other metadata may simply not be provided until a later time. For this reason version 4.0 of the FITS standard has specified preallocating header space as some number of blank header records between the last defined header entry and the <code>END</code> keyword.</p>
+<p>As of version 1.16, this library supports preallocated header space via <code>Header.ensureCardSpace(int)</code>, which can be used to ensure that the header can contain <i>at least</i> the specified number of 80-character records when written to the output. (In reality it may accommodate somewhat more than that because of the required padding to multiples of 2880 bytes or 36 records &#x2013; and you can use <code>Header.getMinimumSize()</code> to find out just how many bytes are reserved/used by any header object at any point).</p>
 <p>Once the space has been reserved, the header can be written to the output, and one may begin recording data after it. Cards may be filled later, up to the number of records defined (and sometimes beyond), and the header can be rewritten at a later point in place, with the additional entries.</p>
 <p>For example,</p>
 
@@ -813,11 +883,10 @@ a pull request will work best.</p><section>
   // We can now write the header, knowing we can fill it with up to
   // 200 records in total at a later point
   h.write(out);
-  
-  // Now we record data, such as a binary table row-by-row
-  // ...
-  
-  // Once the data has been recorded we can proceed to fill in 
+</code></pre></div>
+<p>Now you can proceed to recording the data, such as a binary table row-by-row. Once you are done with it, you can go back and make edits to the header, adding more header cards, in the space you reserved earlier, and rewrite the header in front of the data without issues:</p>
+
+<div class="source"><pre class="prettyprint"><code class="language-java">  // Once the data has been recorded we can proceed to fill in 
   // the additional header values, such as the end time of observation
   h.addValue(&quot;DATE-END&quot;, FitsDate.getFitsDateString(), &quot;end of observation&quot;);
   
@@ -850,7 +919,12 @@ a pull request will work best.</p><section>
 <p>Starting with version 1.15.0 compression of both images and tables is fully supported.  A 100% Java implementation of the compression libraries available in cfitsio was implemented and can be used through the Java API.</p>
 <p><a name="image-compression"></a></p><section>
 <h3><a name="Image_compression"></a>Image compression</h3>
-<p>Image compression and tiling are now fully supported by nom-tam-fits.</p>
+<p>Image compression and tiling are fully supported by nom-tam-fits as of 1.17.0, including images of
+any dimensionality and rectangular morphologies. (Releases between 1.15.0 and 1.17.0 had partial image
+compression support for 2D square images only.).</p>
+<p>The tiling of non-2D images follows the
+<a class="externalLink" href="https://heasarc.gsfc.nasa.gov/docs/software/fitsio/compression.html">CFITSIO convention</a> with 2D tiles,
+where the tile size is set to 1 in the extra dimensions.</p>
 <p>When [de]compressing all available CPU's are automatically utilized.</p>
 <p>Internal compression allows FITS files to be created where the data are efficiently stored, but the
 metadata is still easily accessible. The tiling of images is particularly critical
@@ -948,7 +1022,7 @@ another set of options is available.</p>
 <p>Please read the original FITS documentation for further information on the different compression options and their possible values.</p>
 <p><a name="table-compression"></a></p></section><section>
 <h3><a name="Table_compression"></a>Table compression</h3>
-<p>Table compression is also supported in nom-tam-fits from version 1.15.0. When a table is compressed the effect is that within each column we compress &#x2018;tiles&#x2019; that are sets of contiguous rows.  E.g., if we use a &#x2018;tile&#x2019; size of 10, then for the first column we concatenate the data from the first 10 rows and compress the resulting sequence of bytes.  The result of this compression will be stored in the heap area of the FITS file since its length will likely vary from tile to tile.  We then do the same for the first 10 rows of the second column and every other column in the table. After we finish we are ready to write the first row of the compressed table.  We then repeat for sets of 10 rows until we reach the end of the input table.  The result is a new binary table with the same number of columns but with the number of rows decreased by ~10 (in our example). Thus, just as with images, we can get the ability to efficiently compress the data without losing the ability to retrieve only the rows we are interested in when we are reading from a large table.</p>
+<p>Table compression is also fully supported in nom-tam-fits from version 1.15.0. When a table is compressed the effect is that within each column we compress &#x2018;tiles&#x2019; that are sets of contiguous rows.  E.g., if we use a &#x2018;tile&#x2019; size of 10, then for the first column we concatenate the data from the first 10 rows and compress the resulting sequence of bytes.  The result of this compression will be stored in the heap area of the FITS file since its length will likely vary from tile to tile.  We then do the same for the first 10 rows of the second column and every other column in the table. After we finish we are ready to write the first row of the compressed table.  We then repeat for sets of 10 rows until we reach the end of the input table.  The result is a new binary table with the same number of columns but with the number of rows decreased by ~10 (in our example). Thus, just as with images, we can get the ability to efficiently compress the data without losing the ability to retrieve only the rows we are interested in when we are reading from a large table.</p>
 <p>The compression al&#xf6;gorithms are the same as the ones provided for image compression. Default compression is GZIP_2 but every column can use a different algorithm. The tile size is the same for every column.  To compress
 an existing binary table using a tile size of 10 rows:</p>
 
@@ -969,7 +1043,7 @@ an existing binary table using a tile size of 10 rows:</p>
 
 <li>
 
-<p>Old or new <b>Issue</b>? Whether you just found a bug, or you are missing a much needed feature, start by checking open <a class="externalLink" href="https://github.com/nom-tam-fits/nom-tam-fits/issues">Issues</a>. If an existing issue seems like a good match to yours, feel free to raise your hand and comment on it, to make your voice heard, or to offer help in resolving it. If you find no issues that match, go ahead and create a new one.</p>
+<p>Old or new <b>Issue</b>? Whether you just found a bug, or you are missing a much needed feature, start by checking open (and closed) <a class="externalLink" href="https://github.com/nom-tam-fits/nom-tam-fits/issues">Issues</a>. If an existing issue seems like a good match to yours, feel free to raise your hand and comment on it, to make your voice heard, or to offer help in resolving it. If you find no issues that match, go ahead and create a new one.</p>
 </li>
 <li>
 
@@ -986,7 +1060,7 @@ an existing binary table using a tile size of 10 rows:</p>
 </li>
 <li>
 
-<p>Add <b>Unit Tests</b>. Make sure your new code has as close to full unit test coverage as possible. You should aim for 100% diff coverage. When pushing changes to your fork, you can get a coverage report by checking the Github Actions result of your commit (click the Codecov link), and you can analyze what line(s) of code need to have tests added. Try to create tests that are simple but meaningful (i.e. check for valid results, rather than just confirm existing behaior), and try to cover as many realistic scenarios as appropriate. Write lots of tests if you need to. It's OK to write 100 lines of test code for 5 lines of change. Go for it! And, you will get extra kudos for filling unit testing holes outside of your area of development!</p>
+<p>Add <b>Unit Tests</b>. Make sure your new code has as close to full unit test coverage as possible. You should aim for 100% diff coverage. When pushing changes to your fork, you can get a coverage report by checking the Github Actions result of your commit (click the Codecov link), and you can analyze what line(s) of code need to have tests added. Try to create tests that are simple but meaningful (i.e. check for valid results, rather than just confirm existing behavior), and try to cover as many realistic scenarios as appropriate. Write lots of tests if you need to. It's OK to write 100 lines of test code for 5 lines of change. Go for it! And, you will get extra kudos for filling unit testing holes outside of your area of development!</p>
 </li>
 </ul>
 </li>

@@ -403,7 +403,7 @@
 <a class="jxr_linenumber" name="L395" href="#L395">395</a>         }
 <a class="jxr_linenumber" name="L396" href="#L396">396</a>     }
 <a class="jxr_linenumber" name="L397" href="#L397">397</a> 
-<a class="jxr_linenumber" name="L398" href="#L398">398</a>     <strong class="jxr_keyword">private</strong> <strong class="jxr_keyword">void</strong> testTileSizes(<strong class="jxr_keyword">int</strong> tileWidth, <strong class="jxr_keyword">int</strong> tileHeigth) <strong class="jxr_keyword">throws</strong> HeaderCardException, FitsException {
+<a class="jxr_linenumber" name="L398" href="#L398">398</a>     <strong class="jxr_keyword">private</strong> <strong class="jxr_keyword">void</strong> testTileSizes(<strong class="jxr_keyword">int</strong> tileWidth, <strong class="jxr_keyword">int</strong> tileHeight) <strong class="jxr_keyword">throws</strong> HeaderCardException, FitsException {
 <a class="jxr_linenumber" name="L399" href="#L399">399</a>         <strong class="jxr_keyword">int</strong> imageSize = 100;
 <a class="jxr_linenumber" name="L400" href="#L400">400</a>         TiledImageCompressionOperation operationsOfImage = <strong class="jxr_keyword">new</strong> TiledImageCompressionOperation(<strong class="jxr_keyword">null</strong>);
 <a class="jxr_linenumber" name="L401" href="#L401">401</a>         Buffer buffer = IntBuffer.allocate(imageSize * imageSize);
@@ -413,7 +413,7 @@
 <a class="jxr_linenumber" name="L405" href="#L405">405</a>         header.addValue(ZNAXISn.n(1), imageSize);
 <a class="jxr_linenumber" name="L406" href="#L406">406</a>         header.addValue(ZNAXISn.n(2), imageSize);
 <a class="jxr_linenumber" name="L407" href="#L407">407</a>         header.addValue(ZTILEn.n(1), tileWidth);
-<a class="jxr_linenumber" name="L408" href="#L408">408</a>         header.addValue(ZTILEn.n(2), tileHeigth);
+<a class="jxr_linenumber" name="L408" href="#L408">408</a>         header.addValue(ZTILEn.n(2), tileHeight);
 <a class="jxr_linenumber" name="L409" href="#L409">409</a> 
 <a class="jxr_linenumber" name="L410" href="#L410">410</a>         operationsOfImage.readPrimaryHeaders(header);
 <a class="jxr_linenumber" name="L411" href="#L411">411</a>         operationsOfImage.prepareUncompressedData(buffer);
@@ -424,7 +424,7 @@
 <a class="jxr_linenumber" name="L416" href="#L416">416</a>         <strong class="jxr_keyword">for</strong> (TileCompressionOperation tileOperation : tiles) {
 <a class="jxr_linenumber" name="L417" href="#L417">417</a>             <strong class="jxr_keyword">if</strong> (tileWidth == imageSize) {
 <a class="jxr_linenumber" name="L418" href="#L418">418</a>                 heigth += Access.getTileBuffer(tileOperation).getHeight();
-<a class="jxr_linenumber" name="L419" href="#L419">419</a>             } <strong class="jxr_keyword">else</strong> <strong class="jxr_keyword">if</strong> (tileHeigth == imageSize) {
+<a class="jxr_linenumber" name="L419" href="#L419">419</a>             } <strong class="jxr_keyword">else</strong> <strong class="jxr_keyword">if</strong> (tileHeight == imageSize) {
 <a class="jxr_linenumber" name="L420" href="#L420">420</a>                 width += Access.getTileBuffer(tileOperation).getWidth();
 <a class="jxr_linenumber" name="L421" href="#L421">421</a>             }
 <a class="jxr_linenumber" name="L422" href="#L422">422</a>             pixels += Access.getTileBuffer(tileOperation).getHeight() * Access.getTileBuffer(tileOperation).getWidth();
