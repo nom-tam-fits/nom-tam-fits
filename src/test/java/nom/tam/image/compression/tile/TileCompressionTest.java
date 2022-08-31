@@ -89,7 +89,12 @@ public class TileCompressionTest {
     public void tileCompress3DTest() throws Exception {
         int[][][] im = new int[23][17][13];
         
-        String fileName = "target/tile1D.fits.fz";
+        for (int i = 0; i < im.length; i++) 
+            for (int j = 0; j < im[0].length; j++)
+                for (int k = 0; k < im[0][0].length; k++)
+                    im[i][j][k] = i + j + k;
+        
+        String fileName = "target/tile3D.fits.fz";
 
         ImageHDU hdu = (ImageHDU) FitsFactory.hduFactory(im);
         CompressedImageHDU cHDU = CompressedImageHDU.fromImageHDU(hdu, 8, 8);
@@ -118,6 +123,8 @@ public class TileCompressionTest {
     @Test
     public void tileCompress1DTest() throws Exception {
         int[] im = new int[10000];
+        
+        for (int i = 0; i < im.length; i++) im[i] = i;
         
         String fileName = "target/tile1D.fits.fz";
 
