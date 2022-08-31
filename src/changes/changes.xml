@@ -1,7 +1,7 @@
 <document xmlns="http://maven.apache.org/changes/1.0.0" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:schemaLocation="http://maven.apache.org/changes/1.0.0 http://maven.apache.org/xsd/changes-1.0.0.xsd">
 	<body>
 
-    <release version="1.17.0-rc3" date="2022-08-30" description="Minor feature release.">
+    <release version="1.17.0-rc4" date="2022-08-31" description="Minor feature release.">
       <action type="add" dev="attipaci" issue="319">
 	      Generalized tile compression for any-dimensional images based on the FITSIO convention. 
       </action>
@@ -13,8 +13,10 @@
 				primary or not depending on where it is located in the output.
 			</action>
       <action type="update" dev="attipaci" issue="323">
-	      Simpler, faster, and more versatile FitsChecksum class, with support for incremental checksum updates, 
-	      checksum retrieval, and checksum computations directly from files.
+	      Simpler, faster, and more versatile FitsChecksum class, with support for incremental checksum updates, checksum retrieval, and checksum computations directly from files.
+      </action>
+      <action type="update" dev="attipaci" issue="328">
+	      Checksum in-memory headers/data with less overhead through piped streams.
       </action>
       <action type="update" dev="attipaci" issue="323">
         Fits.setChecksum() and calcChecksum(int) compute checksum directly from the file, if possible, for 
