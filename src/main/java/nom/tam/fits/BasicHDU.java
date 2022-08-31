@@ -374,6 +374,8 @@ public abstract class BasicHDU<DataClass extends Data> implements FitsElement {
      * @return      the decoded FITS checksum value recorded in the HDU 
      * @throws FitsException    if the HDU's header does not contain a <code>CHECKSUM</code> keyword.
      * 
+     * @see #calcChecksum()
+     * @see Fits#calcChecksum(int)
      * @see #getStoredDatasum()
      * @see FitsCheckSum#getStoredDatasum(Header)
      * 
@@ -390,6 +392,8 @@ public abstract class BasicHDU<DataClass extends Data> implements FitsElement {
      * @return      the FITS <code>DATASUM</code> value recorded in the HDU 
      * @throws FitsException    if the HDU's header does not contain a <code>DATASUM</code> keyword.
      * 
+     * @see Data#calcChecksum()
+     * @see Fits#calcDatasum(int)
      * @see #getStoredChecksum()
      * @see FitsCheckSum#getStoredChecksum(Header)
      * 
@@ -397,6 +401,49 @@ public abstract class BasicHDU<DataClass extends Data> implements FitsElement {
      */
     public long getStoredDatasum() throws FitsException {
         return FitsCheckSum.getStoredDatasum(myHeader);
+    }
+    
+    /**
+     * <p>
+     * Computes the checksums for this HDU and stores the <code>CHECKSUM</code> and <code>DATASUM</code> 
+     * values in the header. This should be the last modification to the HDU before writing it.
+     * </p>
+     * <p>
+     * Note, that this method will always calculate the checksum in memory. As a result it will load
+     * data in deferred read mode into RAM for performaing the calculation. If you prefer to keep
+     * deferred read mode data unloaded, you should use {@link Fits#setChecksum(int)} instead.
+     * 
+     * @throws FitsException  if there was an error serializing the HDU for the checksum computation.
+     * 
+     * @see Fits#setChecksum(int)
+     * @see FitsCheckSum#setChecksum(BasicHDU)
+     * @see #getStoredChecksum()
+     * @see #getStoredDatasum()
+     * 
+     * @since 1.17
+     */
+    public void setChecksum() throws FitsException {
+        FitsCheckSum.setChecksum(this);
+    }
+    
+    /**
+     * Computes and returns the FITS checksum for this HDU, e.g. to compare agains the 
+     * stored <code>CHECKSUM</code> in the FITS header. This method always computes the
+     * checksum from data fully loaded in memory. As such it will load deferred read mode 
+     * data into RAM to perform the calculation. If you prefer to leave the data in deferred 
+     * read mode, you can use {@link Fits#calcChecksum(int)} instead.
+     * 
+     * @return      the computed HDU checksum (in memory).
+     * @throws FitsException    if there was an error while calculating the checksum
+     * 
+     * @see Data#calcChecksum()
+     * @see Fits#calcChecksum(int)
+     * @see FitsCheckSum#checksum(BasicHDU)
+     * 
+     * @since 1.17
+     */
+    public long calcChecksum() throws FitsException {
+        return FitsCheckSum.checksum(this);
     }
     
     /**

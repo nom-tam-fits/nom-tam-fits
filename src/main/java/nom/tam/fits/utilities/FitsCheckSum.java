@@ -271,6 +271,8 @@ public final class FitsCheckSum {
      * 
      * @throws FitsException    If there was an error serializing the data object
      * 
+     * @see Data#calcChecksum()
+     * @see nom.tam.fits.Fits#calcDatasum(int)
      * @see #checksum(RandomAccess, long, long)
      * @see #setDatasum(Header, long)
      * @see #setChecksum(BasicHDU)
@@ -322,6 +324,7 @@ public final class FitsCheckSum {
      * @return          The calculated checksum for the given HDU.
      * @throws FitsException        if there was an error accessing the contents of the HDU.
      * 
+     * @see BasicHDU#calcChecksum()
      * @see #checksum(Data)
      * @see #sumOf(long...)
      *

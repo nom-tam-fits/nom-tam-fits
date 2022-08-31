@@ -179,9 +179,13 @@ public class ChecksumTest {
             System.out.println(headerCard);
         }
         // TODO: activate this
-      //  assertEquals("CVfXFTeVCTeVCTeV", imageHdu.getHeader().card(CHECKSUM).card().getValue());
+        assertEquals("CVfXFTeVCTeVCTeV", imageHdu.getHeader().card(CHECKSUM).card().getValue());
     }
     
+    public void testCheckSumInMemory() throws Exception {
+    
+    }
+        
     @Test
     public void testCheckSumDeferred() throws Exception {
         Fits fits = new Fits("src/test/resources/nom/tam/fits/test/test.fits");
@@ -210,9 +214,15 @@ public class ChecksumTest {
         ImageHDU im = (ImageHDU) fits.getHDU(0);
         Header h = im.getHeader();
         
+        // Deferred read
         assertEquals(FitsCheckSum.checksum(im.getData()), im.getStoredDatasum());
         assertEquals(FitsCheckSum.checksum(im), im.getStoredChecksum());
         assertEquals(fits.calcChecksum(0), im.getStoredChecksum());
+        
+        // in-memory
+        im.setChecksum();
+        assertEquals(im.getData().calcChecksum(), im.getStoredDatasum());
+        assertEquals(im.calcChecksum(), im.getStoredChecksum());
     }
     
     @Test
@@ -227,9 +237,14 @@ public class ChecksumTest {
         short[][] data = (short[][]) im.getData().getData();
         data[0][0]++;
         
+        // Deferree read
         assertNotEquals(FitsCheckSum.checksum(im.getData()), im.getStoredDatasum());
         assertNotEquals(FitsCheckSum.checksum(im), im.getStoredChecksum());
         assertNotEquals(fits.calcChecksum(0), im.getStoredChecksum());
+        
+        // in-memory
+        assertNotEquals(im.getData().calcChecksum(), im.getStoredDatasum());
+        assertNotEquals(im.calcChecksum(), im.getStoredChecksum());
     }
     
     @Test
@@ -247,9 +262,15 @@ public class ChecksumTest {
         
         FitsCheckSum.setDatasum(h, FitsCheckSum.checksum(im.getData()));
         
+        // Deferred read
         assertEquals(FitsCheckSum.checksum(im.getData()), im.getStoredDatasum());
         assertEquals(FitsCheckSum.checksum(im), im.getStoredChecksum());
         assertEquals(fits.calcChecksum(0), im.getStoredChecksum());
+        
+        // in-memory
+        im.setChecksum();
+        assertEquals(im.getData().calcChecksum(), im.getStoredDatasum());
+        assertEquals(im.calcChecksum(), im.getStoredChecksum());
     }
     
     @Test

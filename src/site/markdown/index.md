@@ -903,7 +903,7 @@ Setting the checksums (`CHECKSUM` and `DATASUM` keywords) should be the last mod
          
   // ... prepare the image and header ...
    
-  FitsCheckSum.setCheckSum(im);
+  im.setChecksum();
   im.write(new FitsFile("my-checksummed-image.fits"));
 ```
 
@@ -933,7 +933,7 @@ Then later you can verify the integrity of FITS files using the stored checksums
   }
 ```
 
-(Note that `Fits.calcChecksum(int)` will compute the checksum from the file only if the data has not been loaded into RAM already (in deferred read mode). Otherwise, it will compute the checksum from the data that was loaded into memory. You can also calculate the checksums from the file (equivalently to the above) via:
+(Note that `Fits.calcChecksum(int)` will compute the checksum from the file if the data has not been loaded into RAM already (in deferred read mode). Otherwise, it will compute the checksum from the data that was loaded into memory. You can also calculate the checksums from the file (equivalently to the above) via:
 
 ```java
   FitsFile in = new FitsFile("my-huge-fits-file.fits");
@@ -965,7 +965,7 @@ Finally, you might want to update the checksums for a FITS you modify in place:
           data[i][j] += 1.12;
     
   // Calculate new checksums for the HDU      
-  FitsCheckSum.setChecksum(im);
+  im.setChecksum();
   im.rewrite();
 ```
 
