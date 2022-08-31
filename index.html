@@ -802,7 +802,7 @@ a pull request will work best.</p><section>
          
   // ... prepare the image and header ...
    
-  FitsCheckSum.setCheckSum(im);
+  im.setChecksum();
   im.write(new FitsFile(&quot;my-checksummed-image.fits&quot;));
 </code></pre></div>
 <p>Or you can set checksums for all HDUs in your <code>Fits</code> in one go before writing the entire <code>Fits</code> object out to disk:</p>
@@ -827,7 +827,7 @@ a pull request will work best.</p><section>
       System.err.println(&quot;WARNING! The HDU might be corrupted.&quot;);
   }
 </code></pre></div>
-<p>(Note that <code>Fits.calcChecksum(int)</code> will compute the checksum from the file only if the data has not been loaded into RAM already (in deferred read mode). Otherwise, it will compute the checksum from the data that was loaded into memory. You can also calculate the checksums from the file (equivalently to the above) via:</p>
+<p>(Note that <code>Fits.calcChecksum(int)</code> will compute the checksum from the file if the data has not been loaded into RAM already (in deferred read mode). Otherwise, it will compute the checksum from the data that was loaded into memory. You can also calculate the checksums from the file (equivalently to the above) via:</p>
 
 <div class="source"><pre class="prettyprint"><code class="language-java">  FitsFile in = new FitsFile(&quot;my-huge-fits-file.fits&quot;);
   Fits f = new Fits(in);
@@ -855,7 +855,7 @@ a pull request will work best.</p><section>
           data[i][j] += 1.12;
     
   // Calculate new checksums for the HDU      
-  FitsCheckSum.setChecksum(im);
+  im.setChecksum();
   im.rewrite();
 </code></pre></div>
 <p>Or, (re)calculate and set checksums for all HDUs in a FITS file, once again leaving deferred data in unloaded state and computing the checksums for these directly from disk.:</p>
