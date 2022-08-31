@@ -819,6 +819,31 @@ public class Fits implements Closeable {
 
     /**
      * <p>
+     * Computes the <code>CHECKSUM</code> and <code>DATASUM</code> values for the specified 
+     * HDU index and stores them in the HUS's header. For deferred data the data sum is 
+     * calculated directly from the file (if possible), without loading the entire (potentially 
+     * huge) data into RAM for the calculation.
+     * </p>
+     * 
+     * @param hduIndex      The index of the HDU for which to compute and set the 
+     *                      <code>CHECKSUM</code> and <code>DATASUM</code> header values.
+     * 
+     * @throws FitsException
+     *             if there was a problem computing the checksum for the HDU
+     * @throws IOException
+     *             if there was an I/O error while accessing the data from the input
+     *            
+     * @see #calcChecksum(int)
+     * @see #setChecksum()
+     * 
+     * @since 1.17
+     */
+    public void setChecksum(int hduIndex) throws FitsException, IOException {
+        FitsCheckSum.setDatasum(getHDU(hduIndex).getHeader(), calcDatasum(hduIndex));
+    }
+    
+    /**
+     * <p>
      * Add or modify the CHECKSUM keyword in all headers. As of 1.17 the checksum for deferred
      * data is calculated directly from the file (if possible), without loading the entire 
      * (potentially huge) data into RAM for the calculation.
@@ -831,11 +856,15 @@ public class Fits implements Closeable {
      * </p>
      * 
      * @throws FitsException
-     *             if the operation failed
+     *             if there was an error during the checksumming operation
      * @throws IOException
-     *             if the underlying stream failed
+     *             if there was an I/O error while accessing the data from the input
      *             
      * @author R J Mather, Attila Kovacs
+     * 
+     * @see #setChecksum(int)
+     * @see BasicHDU#getStoredChecksum()
+     * @see BasicHDU#getStoredDatasum()
      * 
      * @see #rewrite()
      */
@@ -844,8 +873,7 @@ public class Fits implements Closeable {
         
         // Start with HDU's already loaded, leaving deferred data in unloaded state
         for (; i < getNumberOfHDUs(); i++) {
-            BasicHDU<?> hdu = getHDU(i);
-            FitsCheckSum.setDatasum(hdu.getHeader(), calcDatasum(i));
+            setChecksum(i);
         }
         
         // Check if Fits is read from an input of sorts, with potentially more HDUs there...
@@ -854,9 +882,8 @@ public class Fits implements Closeable {
         }
         
         // Continue with unread HDUs (if any...)
-        BasicHDU<?> hdu = null;
-        while ((hdu = readHDU()) != null) {
-            FitsCheckSum.setDatasum(hdu.getHeader(), calcDatasum(i++));
+        while (readHDU() != null) {
+            setChecksum(i++);
         }
     }
     
@@ -872,10 +899,10 @@ public class Fits implements Closeable {
      * @throws FitsException    if there was an error processing the HDU.
      * @throws IOException      if there was an I/O error accessing the input.
      * 
+     * @see Data#calcChecksum()
      * @see #calcChecksum(int)
+     * @see #setChecksum(int)
      * @see BasicHDU#getStoredDatasum()
-     * @see #setChecksum()
-     * @see FitsCheckSum#checksum(Data)
      * @see FitsCheckSum#setDatasum(Header, long)
      * 
      * @since 1.17
@@ -903,10 +930,10 @@ public class Fits implements Closeable {
      * @throws FitsException    if there was an error processing the HDU.
      * @throws IOException      if there was an I/O error accessing the input.
      * 
+     * @see BasicHDU#calcChecksum()
      * @see #calcDatasum(int)
+     * @see #setChecksum(int)
      * @see BasicHDU#getStoredChecksum()
-     * @see #setChecksum()
-     * @see FitsCheckSum#setChecksum(BasicHDU)
      * 
      * @since 1.17
      * 
@@ -914,6 +941,7 @@ public class Fits implements Closeable {
     public long calcChecksum(int hduIndex) throws FitsException, IOException {
         return FitsCheckSum.sumOf(FitsCheckSum.checksum(getHDU(hduIndex).getHeader()), calcDatasum(hduIndex));
     }
+
     
     /**
      * @deprecated This method is poorly conceived as we cannot really read FITS from 

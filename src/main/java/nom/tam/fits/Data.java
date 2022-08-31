@@ -37,6 +37,7 @@ import java.io.IOException;
 import java.util.logging.Level;
 import java.util.logging.Logger;
 
+import nom.tam.fits.utilities.FitsCheckSum;
 import nom.tam.util.ArrayDataInput;
 import nom.tam.util.ArrayDataOutput;
 import nom.tam.util.RandomAccess;
@@ -102,6 +103,28 @@ public abstract class Data implements FitsElement {
      */
     public boolean isDeferred() {
         return false;
+    }
+
+    /**
+     * Computes and returns the FITS checksum for this data, e.g. to compare agains the 
+     * stored <code>DATASUM</code> in the FITS header. This method always computes the
+     * checksum from data in into memory. As such it will fully load deferred read mode data 
+     * into RAM to perform the calculation. If you prefer to leave the data in deferred read 
+     * mode, you can use {@link FitsCheckSum#checksum(RandomAccess, long, long)} instead 
+     * directly on the input with this data's {@link #getFileOffset()} and {@link #getSize()} 
+     * arguments; or equivalently use {@link Fits#calcDatasum(int)}.
+     * 
+     * @return      the computed FITS checksum from the data (fully loaded in memory).
+     * @throws FitsException    if there was an error while calculating the checksum
+     * 
+     * @see Fits#calcDatasum(int)
+     * @see FitsCheckSum#checksum(RandomAccess, long, long)
+     * @see FitsCheckSum#checksum(Data)
+     * 
+     * @since 1.17
+     */
+    public long calcChecksum() throws FitsException {
+        return FitsCheckSum.checksum(this);
     }
     
     /**
