@@ -32,8 +32,12 @@ package nom.tam.fits.utilities;
  * #L%
  */
 
-import java.io.ByteArrayOutputStream;
+import java.io.DataInputStream;
+import java.io.EOFException;
 import java.io.IOException;
+import java.io.InputStream;
+import java.io.PipedInputStream;
+import java.io.PipedOutputStream;
 import java.nio.ByteBuffer;
 import java.nio.ByteOrder;
 import java.nio.IntBuffer;
@@ -110,7 +114,7 @@ public final class FitsCheckSum {
             l += i & MASK_2_BYTES;
         }
 
-        long getCheckSum() {
+        long getChecksum() {
             long hi = h;
             long lo = l;
             
@@ -127,6 +131,32 @@ public final class FitsCheckSum {
         }
 
     }
+    
+    private static class PipeWriter extends Thread {
+        private Exception exception;
+        private PipedOutputStream out;
+        private FitsElement data;
+        
+        PipeWriter(FitsElement data, PipedInputStream in) throws IOException {
+            this.data = data;
+            this.out = new PipedOutputStream(in);
+        }
+        
+        @Override
+        public void run() {
+            exception = null;
+            try (FitsOutputStream fos = new FitsOutputStream(out)) { 
+                data.write(fos); 
+            } catch (Exception e) {
+                exception = e;
+            }
+        }
+        
+        public Exception getException() {
+            return exception;
+        }
+    }
+
     
     /**
      * Computes the checksum for a byte array.
@@ -187,13 +217,45 @@ public final class FitsCheckSum {
         while (iData.hasRemaining()) {
             sum.add(iData.get());
         }
-        return sum.getCheckSum();
+        return sum.getChecksum();
     }
 
-    private static long compute(FitsElement data) throws FitsException {
-        ByteArrayOutputStream stream = new ByteArrayOutputStream();
-        data.write(new FitsOutputStream(stream));
-        return checksum(stream.toByteArray());
+    private static long checksum(InputStream in) throws IOException {
+        Checksum sum = new Checksum(0);
+        DataInputStream din = new DataInputStream(in);
+        
+        for (;;) {
+            try {
+                sum.add(din.readInt());
+            } catch (EOFException e) {
+                break;
+            }
+        }
+        
+        return sum.getChecksum();
+    }
+    
+
+    private static long compute(final FitsElement data) throws FitsException {
+        try (PipedInputStream in = new PipedInputStream()) {
+            PipeWriter writer = new PipeWriter(data, in);
+            writer.start();
+
+            long sum = checksum(in);
+            in.close();
+            
+            writer.join();
+            if (writer.getException() != null) {
+                throw writer.getException();
+            }
+            
+            return sum;
+        } catch (Exception e) {
+            if (e instanceof FitsException) {
+                throw (FitsException) e;
+            }
+            throw new FitsException("Exception while checksumming FITS element: " + e.getMessage(), e);
+        }
     }
     
     /**
