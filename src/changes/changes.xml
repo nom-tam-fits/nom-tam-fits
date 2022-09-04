@@ -1,12 +1,15 @@
 <document xmlns="http://maven.apache.org/changes/1.0.0" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:schemaLocation="http://maven.apache.org/changes/1.0.0 http://maven.apache.org/xsd/changes-1.0.0.xsd">
 	<body>
 
-    <release version="1.17.0-rc4" date="2022-08-31" description="Minor feature release.">
+    <release version="1.17.0-rc4" date="2022-09-04" description="Minor feature release.">
       <action type="add" dev="attipaci" issue="319">
 	      Generalized tile compression for any-dimensional images based on the FITSIO convention. 
       </action>
       <action type="fix" dev="attipaci" issue="318">
 	      Fixed broken tile compression of non-square images. 
+      </action>
+      <action type="fix" dev="attipaci" issue="318">
+	      CompressedImageHDU.fromInageHDU() now defaults to tiling by row if tile size is not explicitly specified, as per FITS specification and also for consistent behavior in higher dimensions.
       </action>
       <action type="update" dev="attipaci" issue="266">
 				Safe incremental HDU writing via new FitsOutput interface, which is used to check whether HDUs should be set 
@@ -15,25 +18,28 @@
       <action type="update" dev="attipaci" issue="323">
 	      Simpler, faster, and more versatile FitsChecksum class, with support for incremental checksum updates, checksum retrieval, and checksum computations directly from files.
       </action>
+      <action type="add" dev="attipaci" issue="323">
+	      New checksumming methods: BasicHDU.calcChecksum(), .setChecksum(), .getStoredChecksum(), and .getStoredDataSum(); Data.calcChecksum(); Fits.calcChecksum(int) and .setChecksum(int) -- as well as an extended static API for `FitsCheckSum`.
+      </action>
       <action type="update" dev="attipaci" issue="328">
 	      Checksum in-memory headers/data with less overhead through piped streams.
       </action>
       <action type="update" dev="attipaci" issue="323">
-        Fits.setChecksum() and calcChecksum(int) compute checksum directly from the file, if possible, for 
-        deferred read data (i.e. data not currently loaded into RAM). This eliminates the need to load 
-        potentially huge data volumes into RAM when computing or updating checksums in an existing FITS file.
+        Fits.setChecksum(), .setCheckSum(int), and .calcChecksum(int) compute checksum directly from the file, if possible, for 
+        deferred read data (i.e. data not currently loaded into RAM). This eliminates the need to keep 
+        potentially huge data volumes in RAM when computing or updating checksums in an existing FITS file.
       </action>
       <action type="update" dev="attipaci" issue="323">
-        Fits.setChecksum() will now checksum any HDUs not already loaded from disk without loading data into memory 
+        Fits.setChecksum() will now checksum all HDUs, including those not already loaded from disk without loading data into memory 
         (in deferred read mode) if possible.
       </action>
       <action type="add" dev="attipaci" issue="323">
         Added Fits.rewrite() to simplify re-writing the entire Fits objects, e.g. after updating checksums. The 
-        implementation is efficient by not processing any data segments in deferred read mode. BasicHDU.rewrite() 
+        implementation is efficient in that it skips data segments in deferred read mode. BasicHDU.rewrite()
         is modified to make it efficient also.
       </action>
     	<action type="add" dev="attipaci" issue="283">
-	      User adjustable header comment alignment position via Header.setCommentAlignPosition(int). 
+	      User adjustable header comment alignment position via Header.setCommentAlignPosition(int) and checking via .getCommentAlignPosition(). 
       </action>
     	<action type="add" dev="attipaci" issue="145">
 				New Fits.getHDU() methods to select HDU from Fits by name (and version).
@@ -43,7 +49,7 @@
         controlled via Header.setParserWarningsEnabled(boolean). 
       </action>
       <action type="update" dev="attipaci" issue="292">
-        Suppress repeated duplicate keyword warnings when parsing and improve checks for FITS standard violations.
+        Suppress repeated duplicate keyword warnings when parsing and improve checks for FITS standard violations. Added Header.getDuplicateKeySet() method to check which keywords have duplicates. 
       </action>
       <action type="update" dev="attipaci" issue="292">
         Replacing header keys logs a warning when existing value type is incompatible wth the newly associated 
