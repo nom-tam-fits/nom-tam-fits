@@ -899,12 +899,12 @@ As of version 1.17, it is also possible to apply incremental updates to existing
 Setting the checksums (`CHECKSUM` and `DATASUM` keywords) should be the last modification to the FITS object or HDU before writing. Here is an example of settting a checksum for an HDU before you write it to disk:
 
 ```java
-  ImageHDU im;
+  BasicHDU<?> hdu;
          
-  // ... prepare the image and header ...
+  // ... prepare the HDU and header ...
    
-  im.setChecksum();
-  im.write(new FitsFile("my-checksummed-image.fits"));
+  hdu.setChecksum();
+  hdu.write(new FitsFile("my-checksummed-image.fits"));
 ```
 
 Or you can set checksums for all HDUs in your `Fits` in one go before writing the entire `Fits` object out to disk:

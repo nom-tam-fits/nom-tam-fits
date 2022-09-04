@@ -42,7 +42,7 @@ Once you are confident that everything is in perfect order for the next release,
  * Sleep on it. So far so good, but this is also you last chance to fix anything before the package really goes public, so don't rush it. Take some time to reflect on it, double or triple-check everything, before moving to the next step...
 
  * On Github, click on _Releases_, and create a new release:
-   - Name and tag the release with `nom-tam-fits-` followed by the version, such as `nom-tam-fits-1.17.0-rc1`.
+   - Name and tag the release with by the version, such as `1.17.0-rc1` (Note, before 1.17.0 the tag included a 'nom-tam-fits-' prefix as well, which resulted in source tarballs named as nom-tam-fits-nom-tam-fits-<version> -- therefore starting with 1.17.0 we'll omit that).
    - Link the release to the last master commit of the repo.
    - If it is not a final release, be sure to check the box for _pre-release_ near the bottom (when checked the CI will not publish a Github package for this release).
    - Write up a summary of what's in the release. It can be a digested version of the changes, or some other concise summary.
