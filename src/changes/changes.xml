@@ -1,7 +1,7 @@
 <document xmlns="http://maven.apache.org/changes/1.0.0" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:schemaLocation="http://maven.apache.org/changes/1.0.0 http://maven.apache.org/xsd/changes-1.0.0.xsd">
 	<body>
 
-    <release version="1.17.0-rc4" date="2022-09-04" description="Minor feature release.">
+    <release version="1.17.0" date="2022-09-11" description="Improved image compression, checksum support, and incremental writing">
       <action type="add" dev="attipaci" issue="319">
 	      Generalized tile compression for any-dimensional images based on the FITSIO convention. 
       </action>
@@ -30,8 +30,8 @@
         potentially huge data volumes in RAM when computing or updating checksums in an existing FITS file.
       </action>
       <action type="update" dev="attipaci" issue="323">
-        Fits.setChecksum() will now checksum all HDUs, including those not already loaded from disk without loading data into memory 
-        (in deferred read mode) if possible.
+        Fits.setChecksum() will now checksum all HDUs, including those not already loaded from disk -- 
+        keeping data in deferred read mode if possible.
       </action>
       <action type="add" dev="attipaci" issue="323">
         Added Fits.rewrite() to simplify re-writing the entire Fits objects, e.g. after updating checksums. The 
