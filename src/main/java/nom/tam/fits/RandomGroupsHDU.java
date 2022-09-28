@@ -44,6 +44,7 @@ import static nom.tam.fits.header.Standard.XTENSION_IMAGE;
 import java.io.PrintStream;
 
 import nom.tam.fits.header.Bitpix;
+import nom.tam.fits.header.Standard;
 import nom.tam.util.ArrayFuncs;
 
 /**
@@ -57,6 +58,11 @@ import nom.tam.util.ArrayFuncs;
  */
 public class RandomGroupsHDU extends BasicHDU<RandomGroupsData> {
 
+    @Override
+    protected final String getCanonicalXtension() {
+        return Standard.XTENSION_IMAGE;
+    }
+    
     public static RandomGroupsData encapsulate(Object o) throws FitsException {
         if (o instanceof Object[][]) {
             return new RandomGroupsData((Object[][]) o);
@@ -200,11 +206,6 @@ public class RandomGroupsHDU extends BasicHDU<RandomGroupsData> {
     }
 
     @Override
-    protected boolean canBePrimary() {
-        return true;
-    }
-
-    @Override
     public void info(PrintStream stream) {
 
         stream.println("Random Groups HDU");
@@ -244,21 +245,5 @@ public class RandomGroupsHDU extends BasicHDU<RandomGroupsData> {
         return isHeader(this.myHeader);
     }
 
-    /**
-     * Move a RandomGroupsHDU to or from the beginning of a FITS file. Note that
-     * the FITS standard only supports Random Groups data at the beginning of
-     * the file, but we allow it within Image extensions.
-     * 
-     * @param status
-     *            <code>true</code> if the header should be primary
-     */
-    @Override
-    protected void setPrimaryHDU(boolean status) throws FitsException {
-        super.setPrimaryHDU(status);
-        if (status) {
-            this.myHeader.setSimple(true);
-        } else {
-            this.myHeader.setXtension(XTENSION_IMAGE);
-        }
-    }
+
 }

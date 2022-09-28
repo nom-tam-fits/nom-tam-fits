@@ -297,25 +297,4 @@ public class ImageTest {
         Assert.assertTrue(out.toString().contains("Unable"));
 
     }
-
-    @Test
-    public void testSetFailedPrimaryHdu() throws FitsException {
-        Fits f = new Fits();
-        ImageHDU image = (ImageHDU) FitsFactory.hduFactory(new byte[10][10]);
-        f.insertHDU(image, 0);
-        ImageData imageData = new ImageData(new byte[10][10]);
-        Header header = new Header() {
-
-            @Override
-            public boolean getBooleanValue(String key, boolean dft) {
-                // ok we are in the parent setPrimary not let it fail ;-)
-                ThrowAnyException.throwFitsException("");
-                return super.getBooleanValue(key, dft);
-            }
-        };
-        image = new ImageHDU(header, imageData);
-        f.insertHDU(image, 0);
-
-    }
-    
 }

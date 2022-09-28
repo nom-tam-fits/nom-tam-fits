@@ -62,6 +62,7 @@ import java.util.logging.Logger;
 
 import nom.tam.fits.header.Bitpix;
 import nom.tam.fits.header.IFitsHeader;
+import nom.tam.fits.header.Standard;
 import nom.tam.fits.utilities.FitsCheckSum;
 import nom.tam.util.ArrayDataInput;
 import nom.tam.util.ArrayDataOutput;
@@ -122,8 +123,6 @@ public abstract class BasicHDU<DataClass extends Data> implements FitsElement {
     /** The associated data unit. */
     protected DataClass myData = null;
 
-    /** Is this the first HDU in a FITS file? */
-    protected boolean isPrimary = false;
 
     protected BasicHDU(Header myHeader, DataClass myData) {
         this.myHeader = myHeader;
@@ -218,8 +217,8 @@ public abstract class BasicHDU<DataClass extends Data> implements FitsElement {
      *         overriden in HDU types which can appear at the beginning of a
      *         FITS file.
      */
-    boolean canBePrimary() {
-        return false;
+    final boolean canBePrimary() {
+        return Standard.XTENSION_IMAGE.equals(getCanonicalXtension());
     }
 
     /**
@@ -234,7 +233,7 @@ public abstract class BasicHDU<DataClass extends Data> implements FitsElement {
 
     /**
      * In FITS files the index represented by NAXIS1 is the index that changes
-     * most rapidly. This reflects the behavior of Fortran where there are true
+     * most rapidly. This reflectsf the behavior of Fortran where there are true
      * multidimensional arrays. In Java in a multidimensional array is an array
      * of arrays and the first index is the index that changes slowest. So at
      * some point a client of the library is going to have to invert the order.
@@ -651,18 +650,32 @@ public abstract class BasicHDU<DataClass extends Data> implements FitsElement {
     /**
      * Indicate that an HDU is the first element of a FITS file.
      * 
-     * @param newPrimary
+     * @param value
      *            value to set
      * @throws FitsException
      *             if the operation failed
      */
-    void setPrimaryHDU(boolean newPrimary) throws FitsException {
-        if (newPrimary && !canBePrimary()) {
+    void setPrimaryHDU(boolean value) throws FitsException {
+        if (value && !canBePrimary()) {
             throw new FitsException("Invalid attempt to make HDU of type:" + this.getClass().getName() + " primary.");
         } 
         
-        myHeader.editRequiredKeys(newPrimary);
-        this.isPrimary = newPrimary;
+        myHeader.setRequiredKeys(value ? null : getCanonicalXtension());
+    }
+    
+    /**
+     * Returns the canonical (expected) value for the XTENSION keywords for this type of HDU. Concrete HDU 
+     * implementations should override this method as appropriate. As of FITS version 4, only the following 
+     * XTENSION values are recognised: 'IMAGE', 'TABLE', and 'BINTABLE'.
+     * 
+     * @return The value to use for the XTENSION keyword.
+     * 
+     * @since 1.18
+     */
+    protected String getCanonicalXtension() {
+        // TODO this should become an abstract method for 2.0. Prior to that we provide a default
+        //      implementation for API back-compatibility reasons for any 3rd-party HDU implementations.
+        return "UNKNOWN";
     }
 
     @Override
