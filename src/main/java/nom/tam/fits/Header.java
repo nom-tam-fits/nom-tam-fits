@@ -677,13 +677,17 @@ public class Header implements FitsElement {
     }
 
     /**
+     * @deprecated Use {@link #findCard(String)} instead.
+     * 
      * Find the card associated with a given key.
      *
      * @param key
      *            The header key.
      * @return <CODE>null</CODE> if the keyword could not be found; return the
      *         card image otherwise.
+     *         
      */
+    @Deprecated
     public String findKey(String key) {
         HeaderCard card = findCard(key);
         if (card == null) {
@@ -1026,11 +1030,15 @@ public class Header implements FitsElement {
     }
 
     /**
-     * @return Get the offset of this header
+     * Returns the file position at which this header is stored. If the header is
+     * not stored in an input file 0 is returned as per default.
+     * 
+     * @return  the position at which this header is stored in the input, or 0 if there
+     *          if this header isn't read from an input  
      */
     @Override
     public long getFileOffset() {
-        return this.fileOffset;
+        return fileOffset;
     }
 
     /**
@@ -1299,6 +1307,8 @@ public class Header implements FitsElement {
     }
 
     /**
+     * @deprecated Will be removed from the public API in 2.0
+     * 
      * Returns the original size of the header in the stream from which it was read. 
      * 
      * @return  the size of the original header in bytes, or 0 if the header was not 
@@ -1307,6 +1317,7 @@ public class Header implements FitsElement {
      * @see #read(ArrayDataInput)
      * @see #getMinimumSize()
      */
+    @Deprecated
     public final long getOriginalSize() {
         return readSize;
     }
@@ -1321,7 +1332,11 @@ public class Header implements FitsElement {
      */
     @Override
     public final long getSize() {
-        return headerSize();
+        if (!isValidHeader()) {
+            return 0;
+        }
+
+        return FitsUtil.addPadding(Math.max(minCards, getNumberOfPhysicalCards()) * HeaderCard.FITS_HEADER_CARD_SIZE);
     }
 
     /**
@@ -1562,10 +1577,15 @@ public class Header implements FitsElement {
     }
 
     /**
+     * @deprecated We should never use indexed access to the header. This function
+     * will be removed in 2.0.
+     * 
      * @return an iterator over the header cards starting at an index
      * @param index
      *            the card index to start the iterator
+     *           
      */
+    @Deprecated
     public Cursor<String, HeaderCard> iterator(int index) {
         return this.cards.iterator(index);
     }
@@ -1585,11 +1605,19 @@ public class Header implements FitsElement {
     }
 
     /**
+     * @deprecated Normally we either want to write a Java object to FITS (in which case
+     * we have the dataand want to make a header for it), or we read some data from a
+     * FITS input. In either case, there is no benefit of exposing such a function as
+     * this to the user.
+     * 
      * @return Create the data element corresponding to the current header
      * @throws FitsException
      *             if the header did not contain enough information to detect
      *             the type of the data
+     *             
+     *
      */
+    @Deprecated
     public Data makeData() throws FitsException {
         return FitsFactory.dataFactory(this);
     }
@@ -1824,13 +1852,13 @@ public class Header implements FitsElement {
     public void rewrite() throws FitsException, IOException {
         ArrayDataOutput dos = (ArrayDataOutput) this.input;
 
-        if (rewriteable()) {
-            FitsUtil.reposition(dos, this.fileOffset);
-            write(dos);
-            dos.flush();
-        } else {
+        if (!rewriteable()) {
             throw new FitsException("Invalid attempt to rewrite Header.");
         }
+        
+        FitsUtil.reposition(dos, this.fileOffset);
+        write(dos);
+        dos.flush();
     }
 
     @Override
@@ -1869,6 +1897,8 @@ public class Header implements FitsElement {
     }
 
     /**
+     * @deprecated Will be removed from the public API in 2.0
+     * 
      * Sets a standard BITPIX value for the header.
      * 
      * @param bitpix    The predefined enum value, e.g. {@link Bitpix#INTEGER}.
@@ -1876,6 +1906,7 @@ public class Header implements FitsElement {
      * 
      * @see #setBitpix(int)
      */
+    @Deprecated
     public void setBitpix(Bitpix bitpix)  {
         Cursor<String, HeaderCard> iter = iterator();
         iter.next();
@@ -1893,11 +1924,14 @@ public class Header implements FitsElement {
     }
 
     /**
+     * @deprecated Will be removed from the public API in 2.0
+     * 
      * Set the value of the NAXIS keyword
      *
      * @param val
      *            The dimensionality of the data.
      */
+    @Deprecated
     public void setNaxes(int val) {
         Cursor<String, HeaderCard> iter = iterator();
         iter.setKey(BITPIX.key());
@@ -1908,6 +1942,8 @@ public class Header implements FitsElement {
     }
 
     /**
+     * @deprecated Will be removed from the public API in 2.0
+     * 
      * Set the dimension for a given axis.
      *
      * @param axis
@@ -1915,6 +1951,7 @@ public class Header implements FitsElement {
      * @param dim
      *            The dimension
      */
+    @Deprecated
     public void setNaxis(int axis, int dim) {
         Cursor<String, HeaderCard> iter = iterator();
         if (axis <= 0) {
@@ -1933,11 +1970,13 @@ public class Header implements FitsElement {
     }
 
     /**
+     * @deprecated Will be removed from the public API in 2.0
      * Set the SIMPLE keyword to the given value.
      *
      * @param val
      *            The boolean value -- Should be true for FITS data.
      */
+    @Deprecated
     public void setSimple(boolean val) {
         deleteKey(SIMPLE);
         deleteKey(XTENSION);
@@ -1962,6 +2001,8 @@ public class Header implements FitsElement {
     }
 
     /**
+     * @deprecated Will be removed from the public API in 2.0
+     * 
      * Set the XTENSION keyword to the given value.
      *
      * @param val
@@ -1971,6 +2012,7 @@ public class Header implements FitsElement {
      *                  FITS headers, that is characters outside of the 0x20 thru 0x7E
      *                  range.
      */
+    @Deprecated
     public void setXtension(String val) throws IllegalArgumentException {
         deleteKey(SIMPLE);
         deleteKey(XTENSION);
@@ -2266,20 +2308,10 @@ public class Header implements FitsElement {
     }
 
     /**
-     * Move after the EXTEND keyword in images. Used in bug fix noted by V.
-     * Forchi
-     */
-    void afterExtend() {
-        if (findCard(EXTEND) != null) {
-            nextCard();
-        }
-    }
-
-    /**
      * Ensure that the header begins with a valid set of keywords. Note that we
      * do not check the values of these keywords.
      */
-    void checkBeginning() throws FitsException {
+    private void checkBeginning() throws FitsException {
         Cursor<String, HeaderCard> iter = iterator();
         if (!iter.hasNext()) {
             throw new FitsException("Empty Header");
@@ -2310,7 +2342,7 @@ public class Header implements FitsElement {
      * Ensure that the header has exactly one END keyword in the appropriate
      * location.
      */
-    void checkEnd() {
+    private void checkEnd() {
         // Ensure we have an END card only at the end of the
         // header.
         Cursor<String, HeaderCard> iter = iterator();
@@ -2334,27 +2366,14 @@ public class Header implements FitsElement {
     }
 
     /**
-     * Return the size of the header data including padding, or 0 if the header is invalid.
-     *
-     * @return the header size including any needed padding, or 0 if the header is invalid.
-     * 
-     * @see #isValidHeader()
-     */
-    int headerSize() {
-        if (!isValidHeader()) {
-            return 0;
-        }
-
-        return FitsUtil.addPadding(Math.max(minCards, getNumberOfPhysicalCards()) * HeaderCard.FITS_HEADER_CARD_SIZE);
-    }
-
-    /**
      * Is this a valid header.
      *
      * @return <CODE>true</CODE> for a valid header, <CODE>false</CODE>
      *         otherwise.
+     *         
      */
-    boolean isValidHeader() {
+    // TODO retire?
+    private boolean isValidHeader() {
         if (getNumberOfCards() < MIN_NUMBER_OF_CARDS_FOR_VALID_HEADER) {
             return false;
         }
@@ -2476,6 +2495,8 @@ public class Header implements FitsElement {
      * @return <CODE>true</CODE> if the card was replaced.
      * @exception HeaderCardException
      *                If <CODE>newKey</CODE> is not a valid FITS keyword.
+     *                
+     * TODO should be private
      */
     boolean replaceKey(String oldKey, String newKey) throws HeaderCardException {
         HeaderCard oldCard = findCard(oldKey);
@@ -2499,7 +2520,7 @@ public class Header implements FitsElement {
      *
      * @return the unpadded data segment size.
      */
-    long trueDataSize() {
+    private long trueDataSize() {
 
         // AK: No need to be too strict here. We can get a data size even if the
         // header isn't 100% to spec,

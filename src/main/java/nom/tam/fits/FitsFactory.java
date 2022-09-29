@@ -4,6 +4,7 @@ import java.util.concurrent.ExecutorService;
 import java.util.concurrent.Executors;
 import java.util.concurrent.ThreadFactory;
 
+import nom.tam.fits.header.Standard;
 import nom.tam.fits.header.hierarch.IHierarchKeyFormatter;
 import nom.tam.fits.header.hierarch.StandardIHierarchKeyFormatter;
 import nom.tam.image.compression.hdu.CompressedImageData;
@@ -203,7 +204,10 @@ public final class FitsFactory {
 
         if (ImageHDU.isHeader(hdr)) {
             Data d = ImageHDU.manufactureData(hdr);
-            hdr.afterExtend(); // Fix for positioning error noted by V. Forchi
+            // Fix for positioning error noted by V. Forchi
+            if (hdr.findCard(Standard.EXTEND) != null) {
+                hdr.nextCard();
+            }
             return d;
         } else if (RandomGroupsHDU.isHeader(hdr)) {
             return RandomGroupsHDU.manufactureData(hdr);

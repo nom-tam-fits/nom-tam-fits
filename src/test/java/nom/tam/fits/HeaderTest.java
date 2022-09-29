@@ -1583,7 +1583,6 @@ public class HeaderTest {
     public void invalidHeaderSizeTest() throws Exception {
         Header h = new Header();
         h.addValue("TEST", 1.0, "Some value");
-        assertFalse(h.isValidHeader());
-        assertEquals(0, h.headerSize());
+        assertEquals(0, h.getSize());
     }
 }

@@ -122,7 +122,12 @@ public abstract class BasicHDU<DataClass extends Data> implements FitsElement {
     /** The associated data unit. */
     protected DataClass myData = null;
 
-    /** Is this the first HDU in a FITS file? */
+    /**
+     * @deprecated Unused internally, and it should be a dynamic property not a static one.
+     *  
+     * Is this the first HDU in a FITS file? 
+     */
+    @Deprecated
     protected boolean isPrimary = false;
 
     protected BasicHDU(Header myHeader, DataClass myData) {
@@ -329,10 +334,12 @@ public abstract class BasicHDU<DataClass extends Data> implements FitsElement {
     }
 
     /**
+     * Returns the data component of this HDU.
+     * 
      * @return the associated Data object
      */
     public DataClass getData() {
-        return this.myData;
+        return myData;
     }
 
     /**
@@ -591,7 +598,7 @@ public abstract class BasicHDU<DataClass extends Data> implements FitsElement {
      *         stripped.
      */
     public String getTrimmedString(String keyword) {
-        String s = this.myHeader.getStringValue(keyword);
+        String s = myHeader.getStringValue(keyword);
         if (s != null) {
             s = s.trim();
         }
@@ -621,9 +628,9 @@ public abstract class BasicHDU<DataClass extends Data> implements FitsElement {
     @SuppressWarnings("unchecked")
     @Override
     public void read(ArrayDataInput stream) throws FitsException, IOException {
-        this.myHeader = Header.readHeader(stream);
-        this.myData = (DataClass) this.myHeader.makeData();
-        this.myData.read(stream);
+        myHeader = Header.readHeader(stream);
+        myData = (DataClass) FitsFactory.dataFactory(myHeader);
+        myData.read(stream);
     }
 
     @Override
