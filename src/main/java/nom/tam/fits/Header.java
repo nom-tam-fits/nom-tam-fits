@@ -2375,8 +2375,12 @@ public class Header implements FitsElement {
     }
 
     /**
+     * @deprecated  Use {@link HeaderOnlyHDU} instead.
+     * 
      * Create a header for a null image.
+     * 
      */
+    @Deprecated
     void nullImage() {
         Cursor<String, HeaderCard> iter = iterator();
         iter.add(HeaderCard.create(SIMPLE, true));

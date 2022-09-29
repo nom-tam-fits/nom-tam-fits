@@ -130,8 +130,14 @@ public abstract class BasicHDU<DataClass extends Data> implements FitsElement {
     }
 
     /**
+     * @derecated Use {@link HeaderOnlyHDU} instead.
+     * 
+     * Gets a HDU with no data, only header.
+     * 
      * @return an HDU without content
+     * 
      */
+    @Deprecated
     public static BasicHDU<?> getDummyHDU() {
         try {
             // Update suggested by Laurent Bourges
