@@ -681,6 +681,8 @@ public abstract class BasicHDU<DataClass extends Data> implements FitsElement {
     protected String getCanonicalXtension() {
         // TODO this should become an abstract method for 2.0. Prior to that we provide a default
         //      implementation for API back-compatibility reasons for any 3rd-party HDU implementations.
+        // To warn that this should be ovewritten, we'll log a warning...
+        LOG.warning(getClass().getName() + " should override getCanonicalXtension() method as appropriate.");
         return "UNKNOWN";
     }
 
