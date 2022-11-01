@@ -171,19 +171,9 @@ public class ChecksumTest {
         ImageHDU imageHdu = new ImageHDU(ImageHDU.manufactureHeader(imageData), imageData);
         // now force no now date in the header (will change the checksum)
         imageHdu.card(Standard.SIMPLE).comment("XXX").value(true);
-
-        FitsCheckSum.setChecksum(imageHdu);
-        Cursor<String, HeaderCard> iter = imageHdu.getHeader().iterator();
-        while (iter.hasNext()) {
-            HeaderCard headerCard = iter.next();
-            System.out.println(headerCard);
-        }
+        imageHdu.setChecksum();
         // TODO: activate this
         assertEquals("CVfXFTeVCTeVCTeV", imageHdu.getHeader().card(CHECKSUM).card().getValue());
-    }
-    
-    public void testCheckSumInMemory() throws Exception {
-    
     }
         
     @Test
