@@ -163,7 +163,7 @@ public class ChecksumTest {
     }
 
     // TODO This test fails in the CI for some reason, but not locally. 
-    @Ignore 
+    @Ignored 
     @Test
     public void testIntegerOverflowChecksum() throws Exception {
         byte[][] data = new byte[2][1440];
