@@ -62,6 +62,7 @@ import nom.tam.util.FitsIO;
 import nom.tam.util.test.ThrowAnyException;
 
 import org.junit.Test;
+import org.junit.Ignore;
 
 /**
  * @author tmcglynn
@@ -163,7 +164,7 @@ public class ChecksumTest {
     }
 
     // TODO This test fails in the CI for some reason, but not locally. 
-    @Ignored 
+    @Ignore
     @Test
     public void testIntegerOverflowChecksum() throws Exception {
         byte[][] data = new byte[2][1440];
