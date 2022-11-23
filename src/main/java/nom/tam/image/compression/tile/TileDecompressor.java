@@ -66,7 +66,7 @@ public class TileDecompressor extends TileCompressionOperation {
                 this.nullPixelMaskRestorer.restoreNulls();
             }
         } else if (this.compressionType == TileCompressionType.GZIP_COMPRESSED) {
-            getGzipCompressorControl().decompress(this.compressedData, getTileBuffer().getBuffer(), null);
+            getGzipCompressorControl().decompress(this.compressedData, getTileBuffer().getBuffer(), this.tileOptions);
         } else if (this.compressionType == TileCompressionType.UNCOMPRESSED) {
             Buffer typedBuffer = getBaseType().asTypedBuffer(this.compressedData);
             getBaseType().appendBuffer(getTileBuffer().getBuffer(), typedBuffer);
