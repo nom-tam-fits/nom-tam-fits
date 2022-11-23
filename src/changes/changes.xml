@@ -1,6 +1,12 @@
 <document xmlns="http://maven.apache.org/changes/1.0.0" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:schemaLocation="http://maven.apache.org/changes/1.0.0 http://maven.apache.org/xsd/changes-1.0.0.xsd">
 	<body>
 
+    <release version="1.17.1-SNAPSHOT" date="2022-10-11" description="Maintenance release with bug fixes.">
+      <action type="fix" dev="keastrid" issue="342">
+	      Fix occasional NullPointerException in tiled image compression resulting from incomplete initializiation of TiledImageCompressionOperation.
+      </action>
+    </release>
+
     <release version="1.17.0" date="2022-09-11" description="Improved image compression, checksum support, and incremental writing">
       <action type="add" dev="attipaci" issue="319">
 	      Generalized tile compression for any-dimensional images based on the FITSIO convention. 

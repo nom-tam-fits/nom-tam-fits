@@ -260,6 +260,8 @@ public class TiledImageCompressionOperation extends AbstractTiledImageOperation<
                 throw new IllegalStateException("Found no compressor control for compression algorithm:" + this.compressAlgorithm + //
                         " (quantize algorithm = " + this.quantAlgorithm + ", base type = " + getBaseType().primitiveClass() + ")");
             }
+        }
+        if (imageOptions == null) {
             initImageOptions();
         }
     }
