@@ -734,7 +734,7 @@ public class BaseFitsTest {
         try {
             fits = new Fits("nom/tam/fits/test/test.fits", false);
             Assert.assertNotNull(fits.readHDU());
-            Assert.assertEquals(1, fits.currentSize());
+            Assert.assertEquals(1, fits.getNumberOfHDUs());
         } finally {
             SafeClose.close(fits);
         }

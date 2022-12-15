@@ -51,14 +51,14 @@ class BufferedFileIO implements InputReader, OutputWriter, Flushable, Closeable 
     
     protected static final int BYTE_MASK = 0xFF;
     
-    /** The undelying unbuffere random access file IO */
-    private RandomAccessFile file;
+    /** The underlying unbuffered random access file IO */
+    private final RandomAccessDataObject file;
     
     /** The file position at which the buffer begins */
     private long startOfBuf;
     
     /** The buffer */
-    private byte[] buf;
+    private final byte[] buf;
     
     /** Pointer to the next byte to read/write */
     private int offset;
@@ -84,7 +84,19 @@ class BufferedFileIO implements InputReader, OutputWriter, Flushable, Closeable 
      * @throws IOException  if there was an IO error getting the required access to the file.
      */
     BufferedFileIO(File f, String mode, int bufferSize) throws IOException {
-        this.file = new RandomAccessFile(f, mode);
+        this(new RandomAccessDataFile(f, mode), bufferSize);
+    }
+
+    /**
+     * Instantiates a new buffered random access file with the provided RandomAccessDataObject and buffer size.  This
+     * allows implementors to provide alternate RandomAccessFile-like implementations, such as network accessed (byte
+     * range request) files.
+     *
+     * @param f             the RandomAccessDataObject implementation
+     * @param bufferSize    the size of the buffer in bytes
+     */
+    BufferedFileIO(RandomAccessDataObject f, int bufferSize) {
+        this.file = f;
         buf = new byte[bufferSize];
         startOfBuf = 0;
         offset = 0;
@@ -126,8 +138,8 @@ class BufferedFileIO implements InputReader, OutputWriter, Flushable, Closeable 
      * Get the channel associated with this file. Note that this returns the
      * channel of the associated RandomAccessFile. Note that since the
      * BufferedFile buffers the I/O's to the underlying file, the offset of the
-     * channel may be different than the offset of the BufferedFile. This is
-     * different than for a RandomAccessFile where the offsets are guaranteed to
+     * channel may be different from the offset of the BufferedFile. This is
+     * different for a RandomAccessFile where the offsets are guaranteed to
      * be the same.
      * 
      * @return the file channel

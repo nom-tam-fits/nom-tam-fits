@@ -35,11 +35,11 @@ import java.io.Closeable;
 import java.io.DataOutput;
 import java.io.DataOutputStream;
 import java.io.File;
-import java.io.FileInputStream;
 import java.io.FileOutputStream;
 import java.io.IOException;
 import java.io.InputStream;
 import java.net.URL;
+import java.nio.file.Files;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.NoSuchElementException;
@@ -56,6 +56,7 @@ import nom.tam.util.FitsInputStream;
 import nom.tam.util.FitsOutputStream;
 import nom.tam.util.FitsFile;
 import nom.tam.util.RandomAccess;
+import nom.tam.util.RandomAccessDataObject;
 import nom.tam.util.SafeClose;
 
 import static nom.tam.fits.header.Standard.EXTNAME;
@@ -195,6 +196,18 @@ public class Fits implements Closeable {
     }
 
     /**
+     * Associate the Fits object with a data source that supports random access.
+     *
+     * @param src
+     *              the random access data to read
+     * @throws FitsException
+     *              if the operation failed
+     */
+    public Fits(RandomAccessDataObject src) throws FitsException {
+        randomInit(src);
+    }
+
+    /**
      * Create a Fits object associated with the given data stream. Compression
      * is determined from the first few bytes of the stream.
      * 
@@ -252,7 +265,7 @@ public class Fits implements Closeable {
      * Associate the FITS object with a file or URL. The string is assumed to be
      * a URL if it begins one of the protocol strings. If the string ends in .gz
      * it is assumed that the data is in a compressed format. All string
-     * comparisons are case insensitive.
+     * comparisons are case-insensitive.
      * 
      * @param filename
      *            The name of the file or URL to be processed. The content of
@@ -468,7 +481,7 @@ public class Fits implements Closeable {
     protected void fileInit(File myFile, boolean compressed) throws FitsException {
         try {
             if (compressed) {
-                streamInit(new FileInputStream(myFile));
+                streamInit(Files.newInputStream(myFile.toPath()));
             } else {
                 randomInit(myFile);
             }
@@ -704,6 +717,24 @@ public class Fits implements Closeable {
             ((FitsFile) this.dataStr).seek(0);
         } catch (IOException e) {
             throw new FitsException("Unable to open file " + file.getPath(), e);
+        }
+    }
+
+    /**
+     * Initialize using buffered random access. This implies that the data is
+     * uncompressed.
+     *
+     * @param src
+     *          the random access data
+     * @throws FitsException
+     * `        if the data is not readable
+     */
+    protected void randomInit(RandomAccessDataObject src) throws FitsException {
+        try {
+            this.dataStr = new FitsFile(src, FitsFile.DEFAULT_BUFFER_SIZE);
+            ((FitsFile) this.dataStr).seek(0);
+        } catch (IOException e) {
+            throw new FitsException("Unable to open data " + src, e);
         }
     }
 
@@ -950,7 +981,7 @@ public class Fits implements Closeable {
      *              FITS binary format, such as {@link FitsInputStream} or {@link FitsFile} 
      *              (or else a wrapped <code>DataInputStream</code>).
      *              As such, this method is inherently unsafe as it can be used to parse
-     *              FITS content iscorrectly. It will be removed from the public API in a 
+     *              FITS content incorrectly. It will be removed from the public API in a
      *              future major release.
      * 
      * Set the data stream to be used for future input.
@@ -979,7 +1010,7 @@ public class Fits implements Closeable {
      *             exhausted before getting the number of HDUs then use the
      *             sequence: <code>
      *    read(); 
-     *    getNumberofHDUs();
+     *    getNumberOfHDUs();
      * </code>
      * @throws FitsException
      *             if the file could not be read.
@@ -1266,9 +1297,9 @@ public class Fits implements Closeable {
      *              the end-of-file, otherwise <code>false</code>.
      * @throws IOException  if there was an IO error accessing the file or stream.
      * 
-     * @see #skip(long)
-     * @see #skipBytes(int)
-     * @see #skipAllBytes(long)
+     * @see ArrayDataInput#skip(long)
+     * @see ArrayDataInput#skipBytes(int)
+     * @see ArrayDataInput#skipAllBytes(long)
      * 
      * 
      * @since 1.16
