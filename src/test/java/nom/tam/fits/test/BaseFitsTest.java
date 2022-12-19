@@ -41,6 +41,7 @@ import java.io.DataOutputStream;
 import java.io.EOFException;
 import java.io.File;
 import java.io.FileInputStream;
+import java.io.FileNotFoundException;
 import java.io.FileOutputStream;
 import java.io.IOException;
 import java.io.InputStream;
@@ -81,19 +82,14 @@ import nom.tam.util.FitsOutputStream;
 import nom.tam.util.FitsFile;
 import nom.tam.util.Cursor;
 import nom.tam.util.LoggerHelper;
+import nom.tam.util.RandomAccessFileIO;
 import nom.tam.util.SafeClose;
 import nom.tam.util.test.ThrowAnyException;
 
 import org.junit.After;
 import org.junit.Assert;
 import org.junit.Before;
-import org.junit.Rule;
 import org.junit.Test;
-import org.junit.rules.MethodRule;
-import org.junit.rules.TestRule;
-import org.junit.rules.TestWatcher;
-import org.junit.runner.Description;
-import org.junit.runners.model.FrameworkMethod;
 
 public class BaseFitsTest {
 
@@ -1266,7 +1262,15 @@ public class BaseFitsTest {
         fits.read();
         fits.rewrite();
     }
-    
+
+    @Test
+    public void testRandomAccessInit() throws Exception {
+        try (final Fits fits = new Fits(new TestRandomAccessFileIO())) {
+            fits.read();
+            fits.rewrite();
+        }
+    }
+
     @Test(expected = FitsException.class)
     public void rewriteTestException() throws Exception {
         Fits fits = new Fits(new File("src/test/resources/nom/tam/fits/test/test.fits"));
@@ -1276,6 +1280,20 @@ public class BaseFitsTest {
         }
         fits.rewrite();
     }
-    
 
+    private final static class TestRandomAccessFileIO extends java.io.RandomAccessFile implements RandomAccessFileIO {
+        public TestRandomAccessFileIO() throws FileNotFoundException {
+            super("src/test/resources/nom/tam/fits/test/test.fits", "rw");
+        }
+
+        @Override
+        public long position() throws IOException {
+            return super.getFilePointer();
+        }
+
+        @Override
+        public void position(long n) throws IOException {
+            super.seek(n);
+        }
+    }
 }
