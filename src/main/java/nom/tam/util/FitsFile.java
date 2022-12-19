@@ -153,7 +153,7 @@ public class FitsFile extends ArrayDataFile implements FitsOutput, RandomAccess 
      * @throws IOException
      *              if data could not be read
      */
-    public FitsFile(RandomAccessDataObject src, int bufferSize) throws IOException {
+    public FitsFile(RandomAccessFileIO src, int bufferSize) throws IOException {
         super(src, bufferSize);
         setDecoder(new FitsDecoder(this));
         setEncoder(new FitsEncoder(this));

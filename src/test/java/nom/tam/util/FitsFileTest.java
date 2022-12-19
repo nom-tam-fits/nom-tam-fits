@@ -89,8 +89,8 @@ public class FitsFileTest {
 
     @Test
     public void testAltRandomAccess() throws Exception {
-        try (final FitsFile f = new FitsFile(new RandomAccessDataFile(new File("fftest.bin"), "rw"),
-                                             1024)) {
+        try (final FitsFile f = new FitsFile(new BufferedFileIO.RandomFileIO(
+                new File("fftest.bin"), "rw"), 1024)) {
             f.seek(12L);
             assertEquals("Wrong position", 12L, f.position());
         }

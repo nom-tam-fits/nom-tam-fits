@@ -77,11 +77,11 @@ public class ArrayDataFile extends BufferedFileIO {
      * by subclass constructors only
      * 
      * @param f
-     *            the RandomAccessDataObject file
+     *            the RandomAccessFileIO file
      * @param bufferSize
      *            the size of the buffer in bytes
      */
-    protected ArrayDataFile(RandomAccessDataObject f, int bufferSize) {
+    protected ArrayDataFile(RandomAccessFileIO f, int bufferSize) {
         super(f, bufferSize);
     }
 

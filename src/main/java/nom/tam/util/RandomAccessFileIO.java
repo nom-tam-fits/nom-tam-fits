@@ -34,51 +34,50 @@ package nom.tam.util;
 import java.io.Closeable;
 import java.io.FileDescriptor;
 import java.io.IOException;
+import java.io.RandomAccessFile;
 import java.nio.channels.FileChannel;
 
 /**
  * Minimal interface for underlying data object that supports random access. The
  * methods defined here are those used by FitsFile to access a RandomAccessFile.
- * The RandomAccessFileExt class adds this interface to RandomAccessFile, but other
- * systems could provide an alternate implementation of this interface to access
- * an arbitrary FITS data object.
+ * The RandomAccessFileExt class adds this interface to RandomAccessFile, but
+ * other systems could provide an alternate implementation of this interface to
+ * access an arbitrary FITS data object.
  * 
  * @author pdowler
  */
-public interface RandomAccessDataObject extends Closeable {
+public interface RandomAccessFileIO extends ReadWriteAccess, Closeable {
 
-    @Override
-    void close() throws IOException;
+    default int read(byte[] bytes) throws IOException {
+        return read(bytes, 0, bytes.length);
+    }
 
-    // read methods from RandomAccessFile
-    
-    long length() throws IOException;
-
-    void seek(long l) throws IOException;
-
-    long getFilePointer() throws IOException;
-
-    int read() throws IOException;
-    
-    int read(byte[] bytes) throws IOException;
-
-    int read(byte[] bytes, int offset, int length) throws IOException;
-    
     String readUTF() throws IOException;
 
+    /**
+     * Obtain the current FileChannel instance. For instances that do not use
+     * File backed sources
+     * 
+     * @see RandomAccessFile#getChannel()
+     * @return FileChannel instance, possibly null.
+     */
     FileChannel getChannel();
 
+    /**
+     * Obtain the current FileDescriptor instance.
+     * 
+     * @see RandomAccessFile#getFD()
+     * @return FileDescriptor instance, or possibly null.
+     * @throws IOException
+     *             For any I/O errors.
+     */
     FileDescriptor getFD() throws IOException;
 
-    // write methods from RandomAccessFile
-    
-    void setLength(long l) throws IOException;
+    default void write(byte[] bytes) throws IOException {
+        write(bytes, 0, bytes.length);
+    }
 
-    void write(byte[] bytes, int i, int i1) throws IOException;
+    void setLength(long length) throws IOException;
 
-    void write(byte[] bytes) throws IOException;
-
-    void write(int i) throws IOException;
-    
     void writeUTF(String s) throws IOException;
 }

@@ -56,7 +56,7 @@ import nom.tam.util.FitsInputStream;
 import nom.tam.util.FitsOutputStream;
 import nom.tam.util.FitsFile;
 import nom.tam.util.RandomAccess;
-import nom.tam.util.RandomAccessDataObject;
+import nom.tam.util.RandomAccessFileIO;
 import nom.tam.util.SafeClose;
 
 import static nom.tam.fits.header.Standard.EXTNAME;
@@ -203,7 +203,7 @@ public class Fits implements Closeable {
      * @throws FitsException
      *              if the operation failed
      */
-    public Fits(RandomAccessDataObject src) throws FitsException {
+    public Fits(RandomAccessFileIO src) throws FitsException {
         randomInit(src);
     }
 
@@ -729,7 +729,7 @@ public class Fits implements Closeable {
      * @throws FitsException
      * `        if the data is not readable
      */
-    protected void randomInit(RandomAccessDataObject src) throws FitsException {
+    protected void randomInit(RandomAccessFileIO src) throws FitsException {
         try {
             this.dataStr = new FitsFile(src, FitsFile.DEFAULT_BUFFER_SIZE);
             ((FitsFile) this.dataStr).seek(0);
