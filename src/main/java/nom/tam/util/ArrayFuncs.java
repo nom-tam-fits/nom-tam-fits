@@ -456,6 +456,15 @@ public final class ArrayFuncs {
     }
 
     /**
+     * Convenience method to check a generic Array object.
+     * @param o     The Array to check.
+     * @return      True if it's empty, False otherwise.
+     */
+    public static boolean isEmpty(final Object o) {
+        return (o == null || Array.getLength(o) == 0);
+    }
+
+    /**
      * @return Count the number of elements in an array.
      * @param o
      *            the array to count the elements

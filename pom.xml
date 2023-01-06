@@ -215,7 +215,8 @@
 				<artifactId>maven-compiler-plugin</artifactId>
 				<version>3.10.1</version>
 				<configuration>
-					<release>8</release>
+					<source>1.8</source>
+					<target>1.8</target>
 				</configuration>
 			</plugin>
 			<plugin>
@@ -343,13 +344,6 @@
 				<groupId>org.apache.maven.plugins</groupId>
 				<artifactId>maven-checkstyle-plugin</artifactId>
 				<version>3.2.0</version>
-				<dependencies>
-					<dependency>
-						<groupId>com.puppycrawl.tools</groupId>
-						<artifactId>checkstyle</artifactId>
-						<version>10.3.4</version>
-					</dependency>
-				</dependencies>
 				<executions>
 					<execution>
 						<goals>
@@ -558,7 +552,8 @@
 				<configuration>
 					<linkXref>true</linkXref>
 					<sourceEncoding>UTF-8</sourceEncoding>
-					<targetJdk>1.7</targetJdk>
+					<targetJdk>1.8</targetJdk>
+					<sourceJdk>1.8</sourceJdk>
 					<skipEmptyReport>false</skipEmptyReport>
 					<minimumTokens>50</minimumTokens>
 				</configuration>

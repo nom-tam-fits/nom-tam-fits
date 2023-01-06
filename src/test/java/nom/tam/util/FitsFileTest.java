@@ -87,5 +87,4 @@ public class FitsFileTest {
             assertEquals(10, f.position());
         }
     }
-    
 }
