@@ -153,7 +153,9 @@ public abstract class StandardImageTiler implements ImageTiler {
     }
 
     /**
-     * File a tile segment from a file.
+     * File a tile segment from a file into the given stream.  This will deal only with bytes to avoid having to check
+     * the base type and calling a specific method.  Converting the base type to a byte is a simple multiplication
+     * operation anyway.
      *
      * @param output       The output tile.
      * @param delta        The offset from the beginning of the image in bytes.
@@ -163,68 +165,16 @@ public abstract class StandardImageTiler implements ImageTiler {
      */
     @SuppressFBWarnings(value = "RR_NOT_CHECKED", justification = "this read will never return less than the requested length")
     protected void fillFileData(ArrayDataOutput output, long delta, int outputOffset, int segment) throws IOException {
-        final int toRead = Math.min(IO_BUFFER_SIZE, segment);
         final int byteSize = ElementType.forClass(this.base).size();
+        final int bytesToRead = Math.min(IO_BUFFER_SIZE, segment * byteSize);
         this.randomAccessFile.seek(this.fileOffset + delta);
 
-        if (this.base == float.class) {
-            float[] buffer = new float[toRead];
-            int readCount = this.randomAccessFile.read(buffer, outputOffset, toRead) / byteSize;
-            while (readCount <= toRead && readCount > 0) {
-                output.write(buffer, 0, readCount);
-                buffer = new float[toRead - readCount];
-                readCount = this.randomAccessFile.read(buffer, outputOffset, buffer.length) / byteSize;
-            }
-        } else if (this.base == int.class) {
-            int[] buffer = new int[toRead];
-            int readCount = this.randomAccessFile.read(buffer, outputOffset, toRead) / byteSize;
-            while (readCount <= toRead && readCount > 0) {
-                output.write(buffer, 0, readCount);
-                buffer = new int[toRead - readCount];
-                readCount = this.randomAccessFile.read(buffer, outputOffset, buffer.length) / byteSize;
-            }
-        } else if (this.base == short.class) {
-            short[] buffer = new short[toRead];
-            int readCount = this.randomAccessFile.read(buffer, outputOffset, toRead) / byteSize;
-            while (readCount <= toRead && readCount > 0) {
-                output.write(buffer, 0, readCount);
-                buffer = new short[toRead - readCount];
-                readCount = this.randomAccessFile.read(buffer, outputOffset, buffer.length) / byteSize;
-            }
-        } else if (this.base == double.class) {
-            double[] buffer = new double[toRead];
-            int readCount = this.randomAccessFile.read(buffer, outputOffset, toRead) / byteSize;
-            while (readCount <= toRead && readCount > 0) {
-                output.write(buffer, 0, readCount);
-                buffer = new double[toRead - readCount];
-                readCount = this.randomAccessFile.read(buffer, outputOffset, buffer.length) / byteSize;
-            }
-        } else if (this.base == byte.class) {
-            byte[] buffer = new byte[toRead];
-            int readCount = this.randomAccessFile.read(buffer, outputOffset, toRead) / byteSize;
-            while (readCount <= toRead && readCount > 0) {
-                output.write(buffer, 0, readCount);
-                buffer = new byte[toRead - readCount];
-                readCount = this.randomAccessFile.read(buffer, outputOffset, buffer.length) / byteSize;
-            }
-        } else if (this.base == long.class) {
-            long[] buffer = new long[toRead];
-            int readCount = this.randomAccessFile.read(buffer, outputOffset, toRead) / byteSize;
-            while (readCount <= toRead && readCount > 0) {
-                output.write(buffer, 0, readCount);
-                buffer = new long[toRead - readCount];
-                readCount = this.randomAccessFile.read(buffer, outputOffset, buffer.length) / byteSize;
-            }
-        } else if (this.base == char.class) {
-            char[] buffer = new char[toRead];
-            int readCount = this.randomAccessFile.read(buffer, outputOffset, toRead) / byteSize;
-            while (readCount <= toRead && readCount > 0) {
-                output.write(buffer, 0, readCount);
-                buffer = new char[toRead - readCount];
-                readCount = this.randomAccessFile.read(buffer, outputOffset, buffer.length) / byteSize;
-            }
-        } else {
-            throw new IOException("Invalid type for tile array");
+        byte[] buffer = new byte[bytesToRead];
+        int readCount = this.randomAccessFile.read(buffer, outputOffset, bytesToRead);
+        while (readCount <= bytesToRead && readCount > 0) {
+            output.write(buffer, 0, readCount);
+            buffer = new byte[bytesToRead - readCount];
+            readCount = this.randomAccessFile.read(buffer, outputOffset, buffer.length);
         }
 
         output.flush();
@@ -332,6 +282,9 @@ public abstract class StandardImageTiler implements ImageTiler {
 
         int outputOffset = 0;
 
+        // Flag to indicate something was written out.  This is only relevant if the output is an ArrayDataOutput.
+        boolean hasNoOverlap = true;
+
         do {
 
             // This implies there is some overlap
@@ -355,6 +308,7 @@ public abstract class StandardImageTiler implements ImageTiler {
             }
 
             if (validSegment) {
+                hasNoOverlap = false;
                 if (data != null) {
                     fillMemData(data, posits, segment, o, outputOffset, 0);
                 } else {
@@ -383,6 +337,10 @@ public abstract class StandardImageTiler implements ImageTiler {
         } while (incrementPosition(corners, posits, lengths));
         if (data == null) {
             this.randomAccessFile.seek(currentOffset);
+        }
+
+        if (isStreaming && hasNoOverlap) {
+            throw new IOException("Sub-image not within image");
         }
     }
 
