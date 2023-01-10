@@ -91,8 +91,7 @@ public class StreamingTileImageData extends ImageData {
     public void write(ArrayDataOutput o) throws FitsException {
         try {
             final ImageTiler tiler = this.getTiler();
-            final long trueSize = getTrueSize();
-            if (tiler == null || trueSize == 0) {
+            if (tiler == null || getTrueSize() == 0) {
                 // Defer writing of unknowns to the parent.
                 super.write(o);
             } else {

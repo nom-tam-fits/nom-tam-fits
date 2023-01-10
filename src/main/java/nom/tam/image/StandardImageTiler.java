@@ -120,14 +120,14 @@ public abstract class StandardImageTiler implements ImageTiler {
     /**
      * File a tile segment from a file.
      *
-     * @param output       The output tile.
+     * @param output       The output to send data.  This can be an ArrayDataOutput to stream data to and prevent
+     *                     memory consumption of a tile being in memory.
      * @param delta        The offset from the beginning of the image in bytes.
      * @param outputOffset The index into the output array.
      * @param segment      The number of elements to be read for this segment.
      * @throws IOException if the underlying stream failed
      */
-    @SuppressFBWarnings(value = "RR_NOT_CHECKED",
-            justification = "this read will never return less than the requested length")
+    @SuppressFBWarnings(value = "RR_NOT_CHECKED", justification = "this read will never return less than the requested length")
     protected void fillFileData(Object output, long delta, int outputOffset, int segment) throws IOException {
         if (output instanceof ArrayDataOutput) {
             this.fillFileData((ArrayDataOutput) output, delta, outputOffset, segment);
