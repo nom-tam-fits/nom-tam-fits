@@ -365,6 +365,7 @@ public class ChecksumTest {
         assertNotEquals(0, hdu.getStoredDatasum());
     }
 
+    @Test
     public void testChecksumNullFile() throws Exception {
         assertEquals(0, FitsCheckSum.checksum((RandomAccess) null, 0, 1000));
     }
