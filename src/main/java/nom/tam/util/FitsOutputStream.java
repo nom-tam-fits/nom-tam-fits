@@ -53,7 +53,7 @@ public class FitsOutputStream extends ArrayOutputStream implements FitsOutput {
     private final DataOutput data;
 
     /** Unencoded output byte count */
-    private int count;
+    private int unencodedCount;
 
     /**
      * Use the BufferedOutputStream constructor
@@ -88,13 +88,13 @@ public class FitsOutputStream extends ArrayOutputStream implements FitsOutput {
     @Override
     public synchronized void write(int b) throws IOException {
         super.write(b);
-        count++;
+        unencodedCount++;
     }
 
     @Override
     public synchronized void write(byte[] b, int start, int length) throws IOException {
         super.write(b, start, length);
-        count += length;
+        unencodedCount += length;
     }
 
     @Override
@@ -213,7 +213,7 @@ public class FitsOutputStream extends ArrayOutputStream implements FitsOutput {
 
     @Override
     public boolean isAtStart() {
-        return (count + getEncoder().getCount()) == 0;
+        return (unencodedCount + getEncoder().getCount()) == 0;
     }
 
 }
