@@ -84,6 +84,7 @@ public final class FitsCheckSum {
     private static final int CHECKSUM_STRING_SIZE = 16;
     private static final int SHIFT_2_BYTES = 16;
     private static final int MASK_2_BYTES = 0xffff;
+    private static final int MASK_4_BYTES = 0xffffffff;
     private static final int MASK_BYTE = 0xff;
     private static final int ASCII_ZERO = '0';
     private static final int BUFFER_SIZE = 0x8000; // 32 kB
@@ -112,8 +113,8 @@ public final class FitsCheckSum {
         }
 
         long getChecksum() {
-            long hi = h;
-            long lo = l;
+            long hi = h & MASK_4_BYTES; // as unsigned 32-bit integer
+            long lo = l & MASK_4_BYTES;
 
             for (;;) {
                 long hicarry = hi >>> SHIFT_2_BYTES;
@@ -533,7 +534,7 @@ public final class FitsCheckSum {
      */
     public static long differenceOf(long total, long part) {
         Checksum sum = new Checksum(total);
-        sum.h -= part >>> SHIFT_2_BYTES;
+        sum.h -= (part >>> SHIFT_2_BYTES);
         sum.l -= part & MASK_2_BYTES;
         return sum.getChecksum();
     }
