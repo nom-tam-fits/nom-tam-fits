@@ -84,6 +84,7 @@ public final class FitsCheckSum {
     private static final int CHECKSUM_STRING_SIZE = 16;
     private static final int SHIFT_2_BYTES = 16;
     private static final int MASK_2_BYTES = 0xffff;
+    private static final int MASK_4_BYTES = 0xffffffff;
     private static final int MASK_BYTE = 0xff;
     private static final int ASCII_ZERO = '0';
     private static final int BUFFER_SIZE = 0x8000; // 32 kB
@@ -112,8 +113,8 @@ public final class FitsCheckSum {
         }
 
         long getChecksum() {
-            long hi = h;
-            long lo = l;
+            long hi = h & MASK_4_BYTES; // as unsigned 32-bit integer
+            long lo = l & MASK_4_BYTES;
 
             for (;;) {
                 long hicarry = hi >>> SHIFT_2_BYTES;
@@ -357,11 +358,15 @@ public final class FitsCheckSum {
         long oldpos = f.position();
         f.position(from);
         long sum = 0;
-        for (; size > 0; from += len, size -= len) {
+
+        while (size > 0) {
             len = (int) Math.min(BUFFER_SIZE, size);
-            len = f.read(buf);
+            len = f.read(buf, 0, len);
             sum = sumOf(sum, checksum(buf, 0, len));
+            from += len;
+            size -= len;
         }
+
         f.position(oldpos);
         return sum;
     }
@@ -494,12 +499,6 @@ public final class FitsCheckSum {
         return (compl ? ~sum : sum) & FitsIO.INTEGER_MASK;
     }
 
-    private static long wrap(long sum) {
-        while ((sum >>> Integer.SIZE) != 0) {
-            sum = (sum & FitsIO.INTEGER_MASK) + (sum >>> Integer.SIZE);
-        }
-        return sum;
-    }
 
     /**
      * Calculates the total checksum from partial sums. For example combining checksums from a header and data segment
@@ -514,11 +513,13 @@ public final class FitsCheckSum {
      * @since 1.17
      */
     public static long sumOf(long... parts) {
-        long sum = 0;
+        Checksum sum = new Checksum(0);
+
         for (long part : parts) {
-            sum += part;
+            sum.h += part >>> SHIFT_2_BYTES;
+            sum.l += part & MASK_2_BYTES;
         }
-        return wrap(sum);
+        return sum.getChecksum();
     }
 
     /**
@@ -537,7 +538,10 @@ public final class FitsCheckSum {
      * @since 1.17
      */
     public static long differenceOf(long total, long part) {
-        return wrap(total - part);
+        Checksum sum = new Checksum(total);
+        sum.h -= (part >>> SHIFT_2_BYTES);
+        sum.l -= part & MASK_2_BYTES;
+        return sum.getChecksum();
     }
 
     /**

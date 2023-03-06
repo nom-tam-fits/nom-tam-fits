@@ -147,7 +147,7 @@
 			<extension>
 				<groupId>org.apache.maven.wagon</groupId>
 				<artifactId>wagon-ssh</artifactId>
-				<version>3.5.2</version>
+				<version>3.5.3</version>
 			</extension>
 			<extension>
 				<groupId>org.apache.maven.scm</groupId>
@@ -191,7 +191,7 @@
 			<plugin>
 				<groupId>org.apache.maven.plugins</groupId>
 				<artifactId>maven-deploy-plugin</artifactId>
-				<version>3.0.0-M2</version>
+				<version>3.1.0</version>
 			</plugin>
 			<plugin>
 				<groupId>org.apache.maven.plugins</groupId>
@@ -213,7 +213,7 @@
 			<plugin>
 				<groupId>org.apache.maven.plugins</groupId>
 				<artifactId>maven-compiler-plugin</artifactId>
-				<version>3.10.1</version>
+				<version>3.11.0</version>
 				<configuration>
 					<release>8</release>
 				</configuration>
@@ -221,7 +221,7 @@
 			<plugin>
 				<groupId>org.apache.maven.plugins</groupId>
 				<artifactId>maven-javadoc-plugin</artifactId>
-				<version>3.4.1</version>
+				<version>3.5.0</version>
 				<configuration>
 					<source>8</source>
 					<aggregate>false</aggregate>
@@ -260,20 +260,6 @@
 				</configuration>
 			</plugin>
 			<plugin>
-				<groupId>org.tinyjee.dim</groupId>
-				<artifactId>doxia-include-macro</artifactId>
-				<version>1.1</version>
-				<executions>
-					<execution>
-						<id>initialize-doxia-include-macro</id>
-						<phase>pre-site</phase>
-						<goals>
-							<goal>initialize</goal>
-						</goals>
-					</execution>
-				</executions>
-			</plugin>
-			<plugin>
 				<groupId>org.apache.maven.plugins</groupId>
 				<artifactId>maven-site-plugin</artifactId>
 				<version>3.12.1</version>
@@ -284,17 +270,12 @@
 					<dependency>
 						<groupId>org.apache.maven.wagon</groupId>
 						<artifactId>wagon-ssh</artifactId>
-						<version>3.5.2</version>
-					</dependency>
-					<dependency>
-						<groupId>org.tinyjee.dim</groupId>
-						<artifactId>doxia-include-macro</artifactId>
-						<version>1.1</version>
+						<version>3.5.3</version>
 					</dependency>
 					<dependency>
 						<groupId>org.apache.maven.doxia</groupId>
 						<artifactId>doxia-module-markdown</artifactId>
-						<version>1.11.1</version>
+						<version>1.12.0</version>
 					</dependency>
 				</dependencies>
 			</plugin>
@@ -342,7 +323,7 @@
 			<plugin>
 				<groupId>org.apache.maven.plugins</groupId>
 				<artifactId>maven-checkstyle-plugin</artifactId>
-				<version>3.2.0</version>
+				<version>3.2.1</version>
 				<dependencies>
 					<dependency>
 						<groupId>com.puppycrawl.tools</groupId>
@@ -428,7 +409,7 @@
 			<plugin>
 				<groupId>org.apache.maven.plugins</groupId>
 				<artifactId>maven-surefire-plugin</artifactId>
-				<version>3.0.0-M7</version>
+				<version>3.0.0-M9</version>
 				<configuration>
 					<forkCount>1.5C</forkCount>
 					<argLine>-Xmx2G @{argLine}</argLine>
@@ -472,7 +453,7 @@
 			<plugin>
 				<groupId>org.apache.maven.plugins</groupId>
 				<artifactId>maven-project-info-reports-plugin</artifactId>
-				<version>3.4.1</version>
+				<version>3.4.2</version>
 				<configuration>
 					<dependencyDetailsEnabled>false</dependencyDetailsEnabled>
 					<dependencyLocationsEnabled>false</dependencyLocationsEnabled>
@@ -494,7 +475,7 @@
 			<plugin>
 				<groupId>org.apache.maven.plugins</groupId>
 				<artifactId>maven-checkstyle-plugin</artifactId>
-				<version>3.2.0</version>
+				<version>3.2.1</version>
 				<configuration>
 					<configLocation>${project.basedir}/src/main/checkstyle/nom-tam-fits-style.xml</configLocation>
 					<suppressionsLocation>${project.basedir}/src/main/checkstyle/checkstyle-suppressions.xml</suppressionsLocation>
@@ -515,7 +496,7 @@
 			<plugin>
 				<groupId>org.apache.maven.plugins</groupId>
 				<artifactId>maven-javadoc-plugin</artifactId>
-				<version>3.4.1</version>
+				<version>3.5.0</version>
 				<configuration>
 					<source>8</source>
 					<failOnError>false</failOnError>
@@ -554,7 +535,7 @@
 			<plugin>
 				<groupId>org.apache.maven.plugins</groupId>
 				<artifactId>maven-pmd-plugin</artifactId>
-				<version>3.19.0</version>
+				<version>3.20.0</version>
 				<configuration>
 					<linkXref>true</linkXref>
 					<sourceEncoding>UTF-8</sourceEncoding>
@@ -694,7 +675,7 @@
 					</plugin>
 					<plugin>
 						<artifactId>maven-assembly-plugin</artifactId>
-						<version>3.4.2</version>
+						<version>3.5.0</version>
 						<configuration>
 							<attach>false</attach>
 							<descriptors>
