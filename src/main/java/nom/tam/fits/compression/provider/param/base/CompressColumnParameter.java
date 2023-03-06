@@ -49,8 +49,8 @@ import nom.tam.fits.compression.provider.param.api.ICompressColumnParameter;
  * 
  * @author Attila Kovacs
  *
- * @param <T>
- * @param <OPTION>
+ * @param <T> The generic array type that contains the individual parameters for each tile as a table column.
+ * @param <OPTION> The generic type of compression option that is associated with these parameters
  */
 public abstract class CompressColumnParameter<T, OPTION> extends CompressParameter<OPTION>
         implements ICompressColumnParameter {
