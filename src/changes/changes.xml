@@ -1,9 +1,21 @@
 <document xmlns="http://maven.apache.org/changes/1.0.0" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:schemaLocation="http://maven.apache.org/changes/1.0.0 http://maven.apache.org/xsd/changes-1.0.0.xsd">
 	<body>
 
-    <release version="1.17.1-SNAPSHOT" date="2022-10-11" description="Maintenance release with bug fixes.">
+    <release version="1.17.1" date="2023-03-15" description="Maintenance release with critical bug fixes.">
+      <action type="fix" dev="attipaci" issue="368">
+	      Fix first extension written as primary if primary HDU contained no data (affects 1.17.0).
+      </action>
+      <action type="fix" dev="attipaci" issue="367">
+	      Fix incorrect checksum calculated directly from file in multu-HDU FITS, and other checksum fixes (affects 1.17.0).
+      </action>
       <action type="fix" dev="keastrid" issue="342">
 	      Fix occasional NullPointerException in tiled image compression resulting from incomplete initializiation of TiledImageCompressionOperation.
+      </action>
+      <action type="fix" dev="keastrid" issue="342">
+	      Fix occasional NullPointerException in tiled image compression resulting from incomplete initializiation of TiledImageCompressionOperation.
+      </action>
+	  <action type="add" dev="attipaci" issue="373">
+	      Fix GitHub Actions site build error, by removing unused broken dependencay from POM.
       </action>
     </release>
 
