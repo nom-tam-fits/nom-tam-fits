@@ -349,6 +349,10 @@ public final class FitsCheckSum {
      * @see #checksum(Data)
      */
     public static long checksum(RandomAccess f, long from, long size) throws IOException {
+        if (f == null) {
+            return 0L;
+        }
+
         int len = (int) Math.min(BUFFER_SIZE, size);
         byte[] buf = new byte[len];
         long oldpos = f.position();
@@ -494,6 +498,7 @@ public final class FitsCheckSum {
         long sum = (bb.getInt() + bb.getInt() + bb.getInt() + bb.getInt());
         return (compl ? ~sum : sum) & FitsIO.INTEGER_MASK;
     }
+
 
     /**
      * Calculates the total checksum from partial sums. For example combining checksums from a header and data segment

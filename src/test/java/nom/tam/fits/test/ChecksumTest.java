@@ -60,6 +60,7 @@ import nom.tam.util.ArrayDataOutput;
 import nom.tam.util.FitsIO;
 import nom.tam.util.FitsInputStream;
 import nom.tam.util.FitsOutputStream;
+import nom.tam.util.RandomAccess;
 import nom.tam.util.test.ThrowAnyException;
 
 /**
@@ -362,6 +363,11 @@ public class ChecksumTest {
         assertTrue(h.containsKey(DATASUM));
         assertNotEquals(0, hdu.getStoredChecksum());
         assertNotEquals(0, hdu.getStoredDatasum());
+    }
+
+    @Test
+    public void testChecksumNullFile() throws Exception {
+        assertEquals(0, FitsCheckSum.checksum((RandomAccess) null, 0, 1000));
     }
 
     @Test
