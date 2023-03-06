@@ -259,6 +259,7 @@
 					<pushChanges>false</pushChanges>
 				</configuration>
 			</plugin>
+			<!--
 			<plugin>
 				<groupId>org.tinyjee.dim</groupId>
 				<artifactId>doxia-include-macro</artifactId>
@@ -273,6 +274,7 @@
 					</execution>
 				</executions>
 			</plugin>
+			-->
 			<plugin>
 				<groupId>org.apache.maven.plugins</groupId>
 				<artifactId>maven-site-plugin</artifactId>
