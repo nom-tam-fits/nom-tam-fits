@@ -60,6 +60,7 @@ import nom.tam.util.ArrayDataOutput;
 import nom.tam.util.FitsIO;
 import nom.tam.util.FitsInputStream;
 import nom.tam.util.FitsOutputStream;
+import nom.tam.util.RandomAccess;
 import nom.tam.util.test.ThrowAnyException;
 
 /**
@@ -364,4 +365,31 @@ public class ChecksumTest {
         assertNotEquals(0, hdu.getStoredDatasum());
     }
 
+    @Test
+    public void testChecksumNullFile() throws Exception {
+        assertEquals(0, FitsCheckSum.checksum((RandomAccess) null, 0, 1000));
+    }
+
+    @Test
+    public void testDeferredChecksumRange() throws Exception {
+        int[][] im = new int[10][10];
+
+        for (int i = 0; i < 10; i++)
+            for (int j = 0; j < 10; j++)
+                im[i][j] = i + j;
+
+        ImageHDU hdu = (ImageHDU) FitsFactory.hduFactory(im);
+        long sum = hdu.getData().calcChecksum();
+
+        Fits fits = new Fits();
+        fits.addHDU(hdu);
+        fits.addHDU(hdu);
+
+        fits.write("target/checksumRangeTest.fits");
+        fits.close();
+
+        fits = new Fits("target/checksumRangeTest.fits");
+        assertEquals(sum, fits.calcDatasum(0));
+        fits.close();
+    }
 }

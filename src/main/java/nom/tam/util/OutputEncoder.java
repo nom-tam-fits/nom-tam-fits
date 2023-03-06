@@ -60,7 +60,10 @@ public abstract class OutputEncoder {
      */
     protected OutputWriter out;
 
-    /** Cumulative bytes written to the output, including over-writes */
+    /**
+     * Cumulative encoded byte count written to the output, including
+     * over-writes
+     */
     private long count = 0;
 
     /**
@@ -103,12 +106,12 @@ public abstract class OutputEncoder {
     }
 
     /**
-     * Returns the position in file or stream at which the next write will take
-     * place. For random access files, this is the current file pointer, while
-     * for streams it is the cumulative count of bytes previously written.
+     * Returns the number of <i>encoded</i> bytes that were written to the
+     * output. It does not include bytes written directly (unencoded) to the
+     * output, such as via {@link #write(int)} or
+     * {@link #write(byte[], int, int)}.
      * 
-     * @return the byte offset in the file or stream at which the next write
-     *         will act.
+     * @return the number of encoded bytes written to the output.
      * @see RandomAccess#getFilePointer()
      */
     public synchronized long getCount() {
@@ -164,8 +167,10 @@ public abstract class OutputEncoder {
     }
 
     /**
-     * Writes a byte. See the general contract of
-     * {@link java.io.DataOutputStream#write(int)}.
+     * Writes a byte directly to the output. See the general contract of
+     * {@link java.io.DataOutputStream#write(int)}. Unencoded bytes written by
+     * this method are not reflected in the value returned by
+     * {@link #getCount()}.
      * 
      * @param b
      *            the (unsigned) byte value to write.
@@ -176,13 +181,14 @@ public abstract class OutputEncoder {
     protected synchronized void write(int b) throws IOException {
         flush();
         out.write(b);
-        count++;
     }
 
     /**
-     * Writes up to the specified number of bytes from a buffer to the stream.
-     * See the general contract of
-     * {@link java.io.DataOutputStream#write(byte[], int, int)}.
+     * Writes up to the specified number of bytes from a buffer directly to the
+     * output. See the general contract of
+     * {@link java.io.DataOutputStream#write(byte[], int, int)}. The number of
+     * unencoded bytes written by this method are not reflected in the value
+     * returned by {@link #getCount()}.
      * 
      * @param b
      *            the buffer
@@ -197,7 +203,6 @@ public abstract class OutputEncoder {
     protected synchronized void write(byte[] b, int start, int length) throws IOException {
         flush();
         out.write(b, start, length);
-        count += length;
     }
 
     /**
