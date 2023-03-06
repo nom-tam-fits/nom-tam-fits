@@ -42,7 +42,6 @@ public interface ITileOption {
      * Returns the current tile height for the implementing class.
      * 
      * @return (pixels) the current tile height.
-     * 
      * @see #setTileHeight(int)
      * @see #getTileWidth()
      */
@@ -52,7 +51,6 @@ public interface ITileOption {
      * Returns the current tile width for the implementing class.
      * 
      * @return (pixels) the current tile width.
-     * 
      * @see #setTileWidth(int)
      * @see #getTileHeight()
      */
@@ -61,10 +59,9 @@ public interface ITileOption {
     /**
      * Sets a new tile height for the implementing class.
      * 
-     * @param value (pixels) the new tile height.
-     * 
+     * @param value
+     *            (pixels) the new tile height.
      * @return itself
-     * 
      * @see #getTileHeight()
      * @see #setTileWidth(int)
      */
@@ -73,10 +70,9 @@ public interface ITileOption {
     /**
      * Sets a new tile width for the implementing class.
      * 
-     * @param value (pixels) the new tile width.
-     * 
+     * @param value
+     *            (pixels) the new tile width.
      * @return itself
-     * 
      * @see #getTileWidth()
      * @see #setTileHeight(int)
      */
