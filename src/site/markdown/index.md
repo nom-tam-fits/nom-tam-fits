@@ -171,12 +171,11 @@ When FITS data are being read from a non-compressed file (`FitsFile`), the `read
 <a name="reading-images"></a>
 ### Reading Images
 
-The simplest example of reading an image contained in the first HDU (zero based indexing)
-is given below:
+The simplest example of reading an image contained in the first HDU is given below:
 
 ```java
   Fits f = new Fits("myfile.fits");
-  ImageHDU hdu = (ImageHDU) f.getHDU(0);
+  ImageHDU hdu = (ImageHDU) f.readHDU();
   int[][] image = (int[][]) hdu.getKernel();
 ```
 
