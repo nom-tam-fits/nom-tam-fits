@@ -286,11 +286,13 @@
 						<artifactId>wagon-ssh</artifactId>
 						<version>3.5.3</version>
 					</dependency>
+					<!--
 					<dependency>
 						<groupId>org.tinyjee.dim</groupId>
 						<artifactId>doxia-include-macro</artifactId>
 						<version>1.1</version>
 					</dependency>
+					-->
 					<dependency>
 						<groupId>org.apache.maven.doxia</groupId>
 						<artifactId>doxia-module-markdown</artifactId>
