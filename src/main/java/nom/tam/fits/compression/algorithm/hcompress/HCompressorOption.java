@@ -33,13 +33,15 @@ package nom.tam.fits.compression.algorithm.hcompress;
 
 import nom.tam.fits.compression.algorithm.api.ICompressOption;
 import nom.tam.fits.compression.provider.param.api.ICompressParameters;
+import nom.tam.fits.compression.provider.param.hcompress.HCompressParameters;
+import nom.tam.image.ITileOption;
 
-public class HCompressorOption implements ICompressOption {
+public class HCompressorOption implements ICompressOption, ITileOption {
 
     /**
      * circular dependency, has to be cut.
      */
-    private ICompressParameters parameters;
+    private HCompressParameters parameters;
 
     private int scale;
 
@@ -48,18 +50,24 @@ public class HCompressorOption implements ICompressOption {
     private int tileHeight;
 
     private int tileWidth;
-
+    
+    public HCompressorOption() {
+        setParameters(new HCompressParameters(this));
+    }
+    
     @Override
     public HCompressorOption copy() {
         try {
-            return ((HCompressorOption) clone()).setOriginal(this);
+            HCompressorOption copy = (HCompressorOption) clone();
+            copy.parameters = parameters.copy(copy);
+            return copy;
         } catch (CloneNotSupportedException e) {
             throw new IllegalStateException("option could not be cloned", e);
         }
     }
 
     @Override
-    public ICompressParameters getCompressionParameters() {
+    public HCompressParameters getCompressionParameters() {
         return this.parameters;
     }
 
@@ -67,10 +75,12 @@ public class HCompressorOption implements ICompressOption {
         return this.scale;
     }
 
+    @Override
     public int getTileHeight() {
         return this.tileHeight;
     }
 
+    @Override
     public int getTileWidth() {
         return this.tileWidth;
     }
@@ -86,7 +96,11 @@ public class HCompressorOption implements ICompressOption {
 
     @Override
     public void setParameters(ICompressParameters parameters) {
-        this.parameters = parameters;
+        if (parameters instanceof HCompressParameters) {
+            this.parameters = (HCompressParameters) parameters;
+        } else {
+            throw new IllegalArgumentException("Wrong type of parameters: " + parameters.getClass().getName());
+        }
     }
 
     public HCompressorOption setScale(int value) {
@@ -99,17 +113,7 @@ public class HCompressorOption implements ICompressOption {
         return this;
     }
 
-    @Override
-    public HCompressorOption setTileHeight(int value) {
-        this.tileHeight = value;
-        return this;
-    }
 
-    @Override
-    public HCompressorOption setTileWidth(int value) {
-        this.tileWidth = value;
-        return this;
-    }
 
     @Override
     public <T> T unwrap(Class<T> clazz) {
@@ -119,8 +123,15 @@ public class HCompressorOption implements ICompressOption {
         return null;
     }
 
-    private HCompressorOption setOriginal(HCompressorOption hCompressorOption) {
-        this.parameters = this.parameters.copy(this);
+    @Override
+    public HCompressorOption setTileHeight(int value) {
+        this.tileHeight = value;
+        return this;
+    }
+
+    @Override
+    public HCompressorOption setTileWidth(int value) {
+        this.tileWidth = value;
         return this;
     }
 }

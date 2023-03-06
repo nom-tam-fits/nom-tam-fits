@@ -40,23 +40,21 @@ import java.nio.FloatBuffer;
 import java.nio.IntBuffer;
 import java.util.Arrays;
 
+import org.junit.Assert;
+import org.junit.Test;
+
 import nom.tam.fits.BinaryTableHDU;
 import nom.tam.fits.FitsFactory;
 import nom.tam.fits.Header;
 import nom.tam.fits.HeaderCardException;
-import nom.tam.fits.compression.algorithm.api.ICompressOption;
 import nom.tam.fits.compression.algorithm.quant.QuantizeProcessor.FloatQuantCompressor;
 import nom.tam.fits.compression.provider.param.api.HeaderAccess;
 import nom.tam.fits.compression.provider.param.api.ICompressColumnParameter;
 import nom.tam.fits.compression.provider.param.api.ICompressHeaderParameter;
-import nom.tam.fits.compression.provider.param.api.ICompressParameters;
 import nom.tam.fits.compression.provider.param.quant.QuantizeParameters;
 import nom.tam.fits.header.Compression;
 import nom.tam.util.ArrayFuncs;
 import nom.tam.util.SafeClose;
-
-import org.junit.Assert;
-import org.junit.Test;
 
 public class QuantizeTest {
 
@@ -66,11 +64,7 @@ public class QuantizeTest {
 
         public QuantizeTestParameters(QuantizeOption option) {
             super(option);
-        }
 
-        @Override
-        public ICompressParameters copy(ICompressOption option) {
-            return copyColumnDetails(new QuantizeTestParameters((QuantizeOption) option));
         }
 
         @Override
@@ -87,7 +81,8 @@ public class QuantizeTest {
 
     private static final double NULL_VALUE = -9.1191291391491004e-36;
 
-    private void checkRequantedValues(QuantizeProcessor quantize, IntBuffer buffer, double[] doubles, QuantizeOption option, boolean check) {
+    private void checkRequantedValues(QuantizeProcessor quantize, IntBuffer buffer, double[] doubles,
+            QuantizeOption option, boolean check) {
         double[] output = new double[option.getTileWidth() * option.getTileHeight()];
         quantize.unquantize(buffer, DoubleBuffer.wrap(output));
         if (check) {
@@ -111,215 +106,38 @@ public class QuantizeTest {
         final int ysize = 2;
         double[] matrix;
         int[][] expectedData = {
-            {
-                -2147483646,
-                -2139144306,
-                -2130805810,
-                -2122468981,
-                -2114134654,
-                -2105803661,
-                -2097476837,
-                -2089155012,
-                -2147483647,
-                -2147483647,
-                -2147483647,
-                -2147483647,
-                -2047650006,
-                -2039375639,
-                -2031112082,
-                -2022860162,
-                -2014620704,
-                -2006394533,
-                -1998182470,
-                -1989985337,
-                -1981803954,
-                -1973639139,
-                -1965491708,
-                -1957362476
-            },
-            {
-                -2147483637,
-                -2139144306,
-                -2130805810,
-                -2122468981,
-                -2114134654,
-                -2105803661,
-                -2097476837,
-                -2147483647,
-                -2147483647,
-                -2147483647,
-                -2147483647,
-                -2147483647,
-                -2047650006,
-                -2039375639,
-                -2031112082,
-                -2022860162,
-                -2014620704,
-                -2006394533,
-                -1998182470,
-                -1989985337,
-                -1981803954,
-                -1973639139,
-                -1965491708,
-                -1957362476
-            },
-            {
-                -2147483646,
-                -2139144306,
-                -2130805810,
-                -2122468981,
-                -2114134654,
-                -2105803661,
-                -2147483647,
-                -2147483647,
-                -2147483647,
-                -2147483647,
-                -2147483647,
-                -2147483647,
-                -2047650006,
-                -2039375639,
-                -2031112082,
-                -2022860162,
-                -2014620704,
-                -2006394533,
-                -1998182470,
-                -1989985337,
-                -1981803954,
-                -1973639139,
-                -1965491708,
-                -1957362476
-            },
-            {
-                -2147483637,
-                -2139144306,
-                -2130805810,
-                -2122468981,
-                -2114134654,
-                -2147483647,
-                -2147483647,
-                -2147483647,
-                -2147483647,
-                -2147483647,
-                -2147483647,
-                -2147483647,
-                -2047650006,
-                -2039375639,
-                -2031112082,
-                -2022860162,
-                -2014620704,
-                -2006394533,
-                -1998182470,
-                -1989985337,
-                -1981803954,
-                -1973639139,
-                -1965491708,
-                -1957362476
-            },
-            {
-                -2147483646,
-                -2139144306,
-                -2130805810,
-                -2122468981,
-                -2147483647,
-                -2147483647,
-                -2147483647,
-                -2147483647,
-                -2147483647,
-                -2147483647,
-                -2147483647,
-                -2147483647,
-                -2047650006,
-                -2039375639,
-                -2031112082,
-                -2022860162,
-                -2014620704,
-                -2006394533,
-                -1998182470,
-                -1989985337,
-                -1981803954,
-                -1973639139,
-                -1965491708,
-                -1957362476
-            },
-            {
-                -2147483637,
-                -2139144306,
-                -2130805810,
-                -2147483647,
-                -2147483647,
-                -2147483647,
-                -2147483647,
-                -2147483647,
-                -2147483647,
-                -2147483647,
-                -2147483647,
-                -2147483647,
-                -2047650006,
-                -2039375639,
-                -2031112082,
-                -2022860162,
-                -2014620704,
-                -2006394533,
-                -1998182470,
-                -1989985337,
-                -1981803954,
-                -1973639139,
-                -1965491708,
-                -1957362476
-            },
-            {
-                -2147483646,
-                -2139144306,
-                -2147483647,
-                -2147483647,
-                -2147483647,
-                -2147483647,
-                -2147483647,
-                -2147483647,
-                -2147483647,
-                -2147483647,
-                -2147483647,
-                -2147483647,
-                -2047650006,
-                -2039375639,
-                -2031112082,
-                -2022860162,
-                -2014620704,
-                -2006394533,
-                -1998182470,
-                -1989985337,
-                -1981803954,
-                -1973639139,
-                -1965491708,
-                -1957362476
-            },
-            {
-                -2147483637,
-                -2147483647,
-                -2147483647,
-                -2147483647,
-                -2147483647,
-                -2147483647,
-                -2147483647,
-                -2147483647,
-                -2147483647,
-                -2147483647,
-                -2147483647,
-                -2147483647,
-                -2047650006,
-                -2039375639,
-                -2031112082,
-                -2022860162,
-                -2014620704,
-                -2006394533,
-                -1998182470,
-                -1989985337,
-                -1981803954,
-                -1973639139,
-                -1965491708,
-                -1957362476
-            }
-        };
+                {-2147483646, -2139144306, -2130805810, -2122468981, -2114134654, -2105803661, -2097476837, -2089155012,
+                        -2147483647, -2147483647, -2147483647, -2147483647, -2047650006, -2039375639, -2031112082,
+                        -2022860162, -2014620704, -2006394533, -1998182470, -1989985337, -1981803954, -1973639139,
+                        -1965491708, -1957362476},
+                {-2147483637, -2139144306, -2130805810, -2122468981, -2114134654, -2105803661, -2097476837, -2147483647,
+                        -2147483647, -2147483647, -2147483647, -2147483647, -2047650006, -2039375639, -2031112082,
+                        -2022860162, -2014620704, -2006394533, -1998182470, -1989985337, -1981803954, -1973639139,
+                        -1965491708, -1957362476},
+                {-2147483646, -2139144306, -2130805810, -2122468981, -2114134654, -2105803661, -2147483647, -2147483647,
+                        -2147483647, -2147483647, -2147483647, -2147483647, -2047650006, -2039375639, -2031112082,
+                        -2022860162, -2014620704, -2006394533, -1998182470, -1989985337, -1981803954, -1973639139,
+                        -1965491708, -1957362476},
+                {-2147483637, -2139144306, -2130805810, -2122468981, -2114134654, -2147483647, -2147483647, -2147483647,
+                        -2147483647, -2147483647, -2147483647, -2147483647, -2047650006, -2039375639, -2031112082,
+                        -2022860162, -2014620704, -2006394533, -1998182470, -1989985337, -1981803954, -1973639139,
+                        -1965491708, -1957362476},
+                {-2147483646, -2139144306, -2130805810, -2122468981, -2147483647, -2147483647, -2147483647, -2147483647,
+                        -2147483647, -2147483647, -2147483647, -2147483647, -2047650006, -2039375639, -2031112082,
+                        -2022860162, -2014620704, -2006394533, -1998182470, -1989985337, -1981803954, -1973639139,
+                        -1965491708, -1957362476},
+                {-2147483637, -2139144306, -2130805810, -2147483647, -2147483647, -2147483647, -2147483647, -2147483647,
+                        -2147483647, -2147483647, -2147483647, -2147483647, -2047650006, -2039375639, -2031112082,
+                        -2022860162, -2014620704, -2006394533, -1998182470, -1989985337, -1981803954, -1973639139,
+                        -1965491708, -1957362476},
+                {-2147483646, -2139144306, -2147483647, -2147483647, -2147483647, -2147483647, -2147483647, -2147483647,
+                        -2147483647, -2147483647, -2147483647, -2147483647, -2047650006, -2039375639, -2031112082,
+                        -2022860162, -2014620704, -2006394533, -1998182470, -1989985337, -1981803954, -1973639139,
+                        -1965491708, -1957362476},
+                {-2147483637, -2147483647, -2147483647, -2147483647, -2147483647, -2147483647, -2147483647, -2147483647,
+                        -2147483647, -2147483647, -2147483647, -2147483647, -2047650006, -2039375639, -2031112082,
+                        -2022860162, -2014620704, -2006394533, -1998182470, -1989985337, -1981803954, -1973639139,
+                        -1965491708, -1957362476}};
         int expectedIndex = 0;
         for (int index = 8; index > 0; index--) {
             // quantize =
@@ -436,31 +254,10 @@ public class QuantizeTest {
 
         checkRequantedValues(quantProcessor, quants, matrix, option, false);
 
-        Assert.assertArrayEquals(new int[]{
-            -2147483646,
-            -2147483634,
-            -2147483632,
-            -2147483629,
-            -2147483627,
-            -2147483625,
-            -2147483622,
-            -2147483619,
-            -2147483617,
-            -2147483615,
-            -2147483612,
-            -2147483609,
-            -2147483607,
-            -2147483604,
-            -2147483602,
-            -2147483599,
-            -2147483597,
-            -2147483595,
-            -2147483593,
-            -2147483590,
-            -2147483587,
-            -2147483585,
-            -2147483582,
-            -2147483580
+        Assert.assertArrayEquals(new int[] {-2147483646, -2147483634, -2147483632, -2147483629, -2147483627,
+                -2147483625, -2147483622, -2147483619, -2147483617, -2147483615, -2147483612, -2147483609, -2147483607,
+                -2147483604, -2147483602, -2147483599, -2147483597, -2147483595, -2147483593, -2147483590, -2147483587,
+                -2147483585, -2147483582, -2147483580
 
         }, quants.array());
         Assert.assertEquals(4.000000e+00, option.getBScale(), 1e-20);
@@ -581,31 +378,10 @@ public class QuantizeTest {
 
         checkRequantedValues(quantProcessor, quants, matrix, option, true);
 
-        Assert.assertArrayEquals(new int[]{
-            -2147483647,
-            -2147483647,
-            -2147483647,
-            -2147483647,
-            -2147483647,
-            -2147483647,
-            -2147483647,
-            -2147483647,
-            -2147483647,
-            -2147483647,
-            -2147483647,
-            -2147483647,
-            -2147483647,
-            -2147483647,
-            -2147483647,
-            -2147483647,
-            -2147483647,
-            -2147483647,
-            -2147483647,
-            -2147483647,
-            -2147483647,
-            -2147483647,
-            -2147483647,
-            -2147483647
+        Assert.assertArrayEquals(new int[] {-2147483647, -2147483647, -2147483647, -2147483647, -2147483647,
+                -2147483647, -2147483647, -2147483647, -2147483647, -2147483647, -2147483647, -2147483647, -2147483647,
+                -2147483647, -2147483647, -2147483647, -2147483647, -2147483647, -2147483647, -2147483647, -2147483647,
+                -2147483647, -2147483647, -2147483647
 
         }, quants.array());
         Assert.assertEquals(2.50000000000000000000e-01, option.getBScale(), 1e-20);
@@ -740,7 +516,8 @@ public class QuantizeTest {
     public void testQuant1FloatFail() throws Exception {
         QuantizeOption quantizeOption = new QuantizeOption();
         FloatQuantCompressor floatQuantCompressor = new FloatQuantCompressor(quantizeOption, null);
-        Assert.assertFalse(floatQuantCompressor.compress(FloatBuffer.wrap(new float[4]), ByteBuffer.wrap(new byte[100])));
+        Assert.assertFalse(
+                floatQuantCompressor.compress(FloatBuffer.wrap(new float[4]), ByteBuffer.wrap(new byte[100])));
     }
 
     @Test
@@ -748,15 +525,18 @@ public class QuantizeTest {
         QuantizeOption baseOption = new QuantizeOption();
         QuantizeTestParameters base = new QuantizeTestParameters(baseOption);
         baseOption.setParameters(base);
-        Assert.assertEquals(2, base.headerParameters().length);
+        Assert.assertEquals(1, base.headerParameters().length);
+
+        base.initializeColumns(2);
 
         QuantizeOption optionCopy = baseOption.copy();
         QuantizeTestParameters parameters = (QuantizeTestParameters) optionCopy.getCompressionParameters();
         Assert.assertEquals(1, parameters.headerParameters().length);
 
+        optionCopy.setBNull(-999);
+        Assert.assertEquals(2, parameters.headerParameters().length);
         optionCopy.setBNull(99);
 
-        base.initializeColumns(2);
         parameters.initializeTestColumn();
         parameters.getValuesFromColumn(0);
         base.getValuesFromColumn(0);
@@ -766,10 +546,7 @@ public class QuantizeTest {
         BinaryTableHDU hdu = (BinaryTableHDU) FitsFactory.hduFactory(new String[2][3][3]);
         base.addColumnsToTable(hdu);
         int[] column = (int[]) hdu.getColumn(Compression.ZBLANK_COLUMN);
-        Assert.assertArrayEquals(new int[]{
-            99,
-            0
-        }, column);
+        Assert.assertArrayEquals(new int[] {99, 0}, column);
 
         baseOption.setDither(false);
         base.setValuesInHeader(new HeaderAccess(hdu.getHeader()));
@@ -778,7 +555,8 @@ public class QuantizeTest {
         baseOption.setDither(true);
         baseOption.setDither2(false);
         base.setValuesInHeader(new HeaderAccess(hdu.getHeader()));
-        Assert.assertEquals(Compression.ZQUANTIZ_SUBTRACTIVE_DITHER_1, hdu.getHeader().getStringValue(Compression.ZQUANTIZ));
+        Assert.assertEquals(Compression.ZQUANTIZ_SUBTRACTIVE_DITHER_1,
+                hdu.getHeader().getStringValue(Compression.ZQUANTIZ));
     }
 
     @Test

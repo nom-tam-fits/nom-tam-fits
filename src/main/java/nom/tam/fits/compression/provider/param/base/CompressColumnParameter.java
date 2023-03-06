@@ -35,54 +35,65 @@ import java.lang.reflect.Array;
 
 import nom.tam.fits.compression.provider.param.api.ICompressColumnParameter;
 
-public abstract class CompressColumnParameter<T, OPTION> extends CompressParameter<OPTION> implements ICompressColumnParameter {
+/**
+ * <p>
+ * Compression parameters that are stored in the table along with the compressed data. Each parameter is associated to a
+ * comlumn in the table, and the parameter takes the value that is stored in the same row as the compressed data
+ * themselves.
+ * </p>
+ * <p>
+ * It is possible to make independent copies of a set of such parameters, e.g. for parallel processing. In such cases
+ * all copies share their underlying column data with the original, so changing the sotrage array of column data in
+ * either the original or any of its decendants will affect the original and all decendans equally.
+ * </p>
+ * 
+ * @author Attila Kovacs
+ *
+ * @param <T>
+ * @param <OPTION>
+ */
+public abstract class CompressColumnParameter<T, OPTION> extends CompressParameter<OPTION>
+        implements ICompressColumnParameter {
 
-    protected T column;
+    private Data column;
 
-    private final Class<T> clazz;
+    private final Class<T> type;
 
-    private int size;
-
-    protected CompressColumnParameter<T, OPTION> original;
-
-    protected CompressColumnParameter(String name, OPTION option, Class<T> clazz) {
+    protected CompressColumnParameter(String name, OPTION option, Class<T> type) {
         super(name, option);
-        this.clazz = clazz;
+        this.column = new Data();
+        this.type = type;
     }
 
     @Override
-    public T column() {
-        return this.column;
+    public T getColumnData() {
+        return column.values;
     }
 
     @Override
-    public void column(Object columnValue, int sizeValue) {
-        this.column = this.clazz.cast(columnValue);
-        this.size = sizeValue;
+    public synchronized void setColumnData(Object columnValue, int sizeValue) {
+        column.create(columnValue, sizeValue);
     }
 
-    protected final T initializedColumn() {
-        if (this.original != null) {
-            return this.original.initializedColumn();
-        }
-        final int arraySize = this.size;
-        final Class<T> arrayClass = this.clazz;
-        synchronized (this) {
-            if (this.column == null) {
-                this.column = arrayClass.cast(Array.newInstance(arrayClass.getComponentType(), arraySize));
+    /**
+     * The shared column data across all copies and the original column parameter.
+     * 
+     * @author Attila Kovacs
+     *
+     * @since 1.18
+     */
+    private class Data {
+        private T values;
+
+        private synchronized void create(Object columnValue, int sizeValue) {
+            if (sizeValue <= 0) {
+                values = null;
+            } else {
+                if (columnValue == null) {
+                    columnValue = Array.newInstance(type.getComponentType(), sizeValue);
+                }
+                values = type.cast(columnValue);
             }
         }
-        return this.column;
-    }
-
-    protected final T originalColumn() {
-        if (this.original != null) {
-            return this.original.originalColumn();
-        }
-        return this.column;
-    }
-
-    public void setOriginal(CompressColumnParameter<T, OPTION> value) {
-        this.original = value;
     }
 }

@@ -110,7 +110,7 @@ public interface ICompressParameters {
      * @param index
      *            the index in the columns to set.
      */
-    void setValueFromColumn(int index);
+    void setValueInColumn(int index);
 
     /**
      * set the options values, that are hdu based, into the header.

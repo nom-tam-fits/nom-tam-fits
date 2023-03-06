@@ -2,6 +2,9 @@ package nom.tam.fits.compression.algorithm.quant;
 
 import nom.tam.fits.compression.algorithm.api.ICompressOption;
 import nom.tam.fits.compression.provider.param.api.ICompressParameters;
+import nom.tam.fits.compression.provider.param.base.BundledParameters;
+import nom.tam.fits.compression.provider.param.quant.QuantizeParameters;
+import nom.tam.image.ITileOption;
 
 /*
  * #%L
@@ -37,16 +40,16 @@ import nom.tam.fits.compression.provider.param.api.ICompressParameters;
 public class QuantizeOption implements ICompressOption {
 
     /**
-     * and including NULL_VALUE. These values may not be used to represent the
-     * quantized and scaled floating point pixel values If lossy Hcompression is
-     * used, and the tiledImageOperation contains null values, then it is also
-     * possible for the compressed values to slightly exceed the range of the
-     * actual (lossless) values so we must reserve a little more space value
-     * used to represent undefined pixels
+     * and including NULL_VALUE. These values may not be used to represent the quantized and scaled floating point pixel
+     * values If lossy Hcompression is used, and the tiledImageOperation contains null values, then it is also possible
+     * for the compressed values to slightly exceed the range of the actual (lossless) values so we must reserve a
+     * little more space value used to represent undefined pixels
      */
     private static final int NULL_VALUE = Integer.MIN_VALUE + 1;
 
-    protected ICompressParameters parameters;
+    protected QuantizeParameters parameters;
+
+    private ICompressOption compressOption;
 
     private double bScale = Double.NaN;
 
@@ -82,12 +85,33 @@ public class QuantizeOption implements ICompressOption {
 
     private int tileWidth;
 
-    private QuantizeOption original;
+    QuantizeOption() {
+        this(null);
+    }
+
+    /**
+     * Creates a new set of qunatization options, to be used together with the specified compression options.
+     * 
+     * @param compressOption Compression-specific options to pair with these quantization options, or <code>null</code>.
+     * 
+     * @since 1.18
+     */
+    public QuantizeOption(ICompressOption compressOption) {
+        parameters = new QuantizeParameters(this);
+        this.compressOption = compressOption;
+    }
 
     @Override
     public QuantizeOption copy() {
         try {
-            return ((QuantizeOption) clone()).setOriginal(this);
+            QuantizeOption copy = (QuantizeOption) clone();
+            if (compressOption != null) {
+                copy.compressOption = compressOption.copy();
+            }
+            if (parameters != null) {
+                copy.parameters = this.parameters.copy(copy);
+            }
+            return copy;
         } catch (CloneNotSupportedException e) {
             throw new IllegalStateException("option could not be cloned", e);
         }
@@ -107,11 +131,18 @@ public class QuantizeOption implements ICompressOption {
 
     @Override
     public ICompressParameters getCompressionParameters() {
-        return this.parameters;
+        if (compressOption == null) {
+            return this.parameters;
+        }
+        return new BundledParameters(this.parameters, compressOption.getCompressionParameters());
     }
 
     public <T> T getCompressOption(Class<T> clazz) {
         return unwrap(clazz);
+    }
+
+    public final ICompressOption getCompressOption() {
+        return compressOption;
     }
 
     public int getIntMaxValue() {
@@ -136,10 +167,6 @@ public class QuantizeOption implements ICompressOption {
 
     public Integer getNullValueIndicator() {
         return this.nullValueIndicator;
-    }
-
-    public QuantizeOption getOriginal() {
-        return this.original;
     }
 
     public double getQLevel() {
@@ -256,7 +283,16 @@ public class QuantizeOption implements ICompressOption {
 
     @Override
     public void setParameters(ICompressParameters parameters) {
-        this.parameters = parameters;
+        if (parameters instanceof QuantizeParameters) {
+            this.parameters = (QuantizeParameters) parameters.copy(this);
+        } else if (parameters instanceof BundledParameters) {
+            BundledParameters bundle = (BundledParameters) parameters;
+            for (int i = 0; i < bundle.size(); i++) {
+                setParameters(bundle.get(i));
+            }
+        } else if (compressOption != null) {
+            compressOption.setParameters(parameters);
+        }
     }
 
     public QuantizeOption setQlevel(double value) {
@@ -272,12 +308,18 @@ public class QuantizeOption implements ICompressOption {
     @Override
     public QuantizeOption setTileHeight(int value) {
         this.tileHeight = value;
+        if (compressOption instanceof ITileOption) {
+            ((ITileOption) compressOption).setTileHeight(value);
+        }
         return this;
     }
 
     @Override
     public QuantizeOption setTileWidth(int value) {
         this.tileWidth = value;
+        if (compressOption instanceof ITileOption) {
+            ((ITileOption) compressOption).setTileWidth(value);
+        }
         return this;
     }
 
@@ -286,12 +328,11 @@ public class QuantizeOption implements ICompressOption {
         if (clazz.isAssignableFrom(this.getClass())) {
             return clazz.cast(this);
         }
+        if (compressOption != null) {
+            if (clazz.isAssignableFrom(compressOption.getClass())) {
+                return clazz.cast(compressOption);
+            }
+        }
         return null;
-    }
-
-    private QuantizeOption setOriginal(QuantizeOption quantizeOption) {
-        this.original = quantizeOption;
-        this.parameters = this.parameters.copy(this);
-        return this;
     }
 }

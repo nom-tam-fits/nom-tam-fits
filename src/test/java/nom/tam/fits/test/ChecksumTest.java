@@ -34,8 +34,8 @@ package nom.tam.fits.test;
 import static nom.tam.fits.header.Checksum.CHECKSUM;
 import static nom.tam.fits.header.Checksum.DATASUM;
 import static org.junit.Assert.assertEquals;
-import static org.junit.Assert.assertNotEquals;
 import static org.junit.Assert.assertFalse;
+import static org.junit.Assert.assertNotEquals;
 import static org.junit.Assert.assertTrue;
 
 import java.io.ByteArrayOutputStream;
@@ -43,26 +43,24 @@ import java.io.File;
 import java.io.FileInputStream;
 import java.util.Arrays;
 
+import org.junit.Ignore;
+import org.junit.Test;
+
 import nom.tam.fits.BasicHDU;
 import nom.tam.fits.Fits;
 import nom.tam.fits.FitsException;
 import nom.tam.fits.FitsFactory;
 import nom.tam.fits.Header;
-import nom.tam.fits.HeaderCard;
 import nom.tam.fits.ImageData;
 import nom.tam.fits.ImageHDU;
 import nom.tam.fits.header.Bitpix;
 import nom.tam.fits.header.Standard;
 import nom.tam.fits.utilities.FitsCheckSum;
+import nom.tam.util.ArrayDataOutput;
+import nom.tam.util.FitsIO;
 import nom.tam.util.FitsInputStream;
 import nom.tam.util.FitsOutputStream;
-import nom.tam.util.ArrayDataOutput;
-import nom.tam.util.Cursor;
-import nom.tam.util.FitsIO;
 import nom.tam.util.test.ThrowAnyException;
-
-import org.junit.Test;
-import org.junit.Ignore;
 
 /**
  * @author tmcglynn
@@ -76,20 +74,7 @@ public class ChecksumTest {
 
     @Test(expected = FitsException.class)
     public void testChecksumDataFailException() throws Exception {
-        int[][] data = new int[][]{
-            {
-                1,
-                2
-            },
-            {
-                3,
-                4
-            },
-            {
-                5,
-                6
-            }
-        };
+        int[][] data = new int[][] {{1, 2}, {3, 4}, {5, 6}};
         ImageData d = ImageHDU.encapsulate(data);
         Header h = ImageHDU.manufactureHeader(d);
         BasicHDU<?> bhdu = new ImageHDU(h, d) {
@@ -106,23 +91,10 @@ public class ChecksumTest {
 
     @Test
     public void testChecksum() throws Exception {
-     // AK: This test requires long strings to be disabled.
+        // AK: This test requires long strings to be disabled.
         FitsFactory.setLongStringsEnabled(false);
         Fits f = new Fits();
-        int[][] data = new int[][]{
-            {
-                1,
-                2
-            },
-            {
-                3,
-                4
-            },
-            {
-                5,
-                6
-            }
-        };
+        int[][] data = new int[][] {{1, 2}, {3, 4}, {5, 6}};
         BasicHDU<?> bhdu1 = FitsFactory.hduFactory(data);
 
         BasicHDU<?> bhdu = bhdu1;
@@ -163,7 +135,7 @@ public class ChecksumTest {
         assertEquals("kGpMn9mJkEmJk9mJ", fits.getHDU(0).getHeader().getStringValue("CHECKSUM"));
     }
 
-    // TODO This test fails in the CI for some reason, but not locally. 
+    // TODO This test fails in the CI for some reason, but not locally.
     @Ignore
     @Test
     public void testIntegerOverflowChecksum() throws Exception {
@@ -177,22 +149,22 @@ public class ChecksumTest {
         imageHdu.setChecksum();
         assertEquals("CVfXFTeVCTeVCTeV", imageHdu.getHeader().card(CHECKSUM).card().getValue());
     }
-        
+
     @Test
     public void testCheckSumDeferred() throws Exception {
         Fits fits = new Fits("src/test/resources/nom/tam/fits/test/test.fits");
         ImageHDU im = (ImageHDU) fits.readHDU();
-        
+
         assertTrue("deferred before checksum", im.getData().isDeferred());
         fits.setChecksum();
-        assertTrue("deferrred after checksum", im.getData().isDeferred());  
+        assertTrue("deferrred after checksum", im.getData().isDeferred());
         String sum1 = im.getHeader().getStringValue(CHECKSUM);
-        
+
         // Now load the data in RAM and repeat.
         im.getData().getData();
         assertFalse("loaded before checksum", im.getData().isDeferred());
         fits.setChecksum();
-        
+
         String sum2 = im.getHeader().getStringValue(CHECKSUM);
         assertEquals(sum1, sum2);
     }
@@ -202,69 +174,69 @@ public class ChecksumTest {
         Fits fits = new Fits("src/test/resources/nom/tam/fits/test/test.fits");
         fits.read();
         fits.setChecksum();
-        
+
         ImageHDU im = (ImageHDU) fits.getHDU(0);
         Header h = im.getHeader();
-        
+
         // Deferred read
         assertEquals(FitsCheckSum.checksum(im.getData()), im.getStoredDatasum());
         assertEquals(FitsCheckSum.checksum(im), im.getStoredChecksum());
         assertEquals(fits.calcChecksum(0), im.getStoredChecksum());
-        
+
         // in-memory
         im.setChecksum();
         assertEquals(im.getData().calcChecksum(), im.getStoredDatasum());
         assertEquals(im.calcChecksum(), im.getStoredChecksum());
     }
-    
+
     @Test
     public void testCheckSumVerifyFail() throws Exception {
         Fits fits = new Fits("src/test/resources/nom/tam/fits/test/test.fits");
         fits.read();
         fits.setChecksum();
-        
+
         ImageHDU im = (ImageHDU) fits.getHDU(0);
         Header h = im.getHeader();
-        
+
         short[][] data = (short[][]) im.getData().getData();
         data[0][0]++;
-        
+
         // Deferree read
         assertNotEquals(FitsCheckSum.checksum(im.getData()), im.getStoredDatasum());
         assertNotEquals(FitsCheckSum.checksum(im), im.getStoredChecksum());
         assertNotEquals(fits.calcChecksum(0), im.getStoredChecksum());
-        
+
         // in-memory
         assertNotEquals(im.getData().calcChecksum(), im.getStoredDatasum());
         assertNotEquals(im.calcChecksum(), im.getStoredChecksum());
     }
-    
+
     @Test
     public void testCheckSumIncrement() throws Exception {
         Fits fits = new Fits("src/test/resources/nom/tam/fits/test/test.fits");
         fits.read();
         fits.setChecksum();
-        
+
         ImageHDU im = (ImageHDU) fits.getHDU(0);
         Header h = im.getHeader();
-        
+
         short[][] data = (short[][]) im.getData().getData();
-        
+
         data[0][0]++;
-        
+
         FitsCheckSum.setDatasum(h, FitsCheckSum.checksum(im.getData()));
-        
+
         // Deferred read
         assertEquals(FitsCheckSum.checksum(im.getData()), im.getStoredDatasum());
         assertEquals(FitsCheckSum.checksum(im), im.getStoredChecksum());
         assertEquals(fits.calcChecksum(0), im.getStoredChecksum());
-        
+
         // in-memory
         im.setChecksum();
         assertEquals(im.getData().calcChecksum(), im.getStoredDatasum());
         assertEquals(im.calcChecksum(), im.getStoredChecksum());
     }
-    
+
     @Test
     public void testCheckSumDecode() throws Exception {
         long sum = 20220829;
@@ -274,7 +246,7 @@ public class ChecksumTest {
         assertEquals(sum, FitsCheckSum.decode(FitsCheckSum.checksumEnc(sum, false), false));
         assertEquals(sum, FitsCheckSum.decode(FitsCheckSum.checksumEnc(sum, true), true));
     }
-    
+
     @Test(expected = IllegalArgumentException.class)
     public void testCheckSumDecodeInvalidLength() throws Exception {
         FitsCheckSum.decode("");
@@ -286,7 +258,7 @@ public class ChecksumTest {
         Arrays.fill(b, (byte) 0x2f);
         FitsCheckSum.decode(new String(b));
     }
-    
+
     @Test(expected = FitsException.class)
     public void testCheckSumNoDatasum() throws Exception {
         FitsCheckSum.getStoredDatasum(new Header());
@@ -296,12 +268,12 @@ public class ChecksumTest {
     public void testCheckSumNoChecksum() throws Exception {
         FitsCheckSum.getStoredChecksum(new Header());
     }
-    
+
     @Test
     public void testCheckSumwWrap() throws Exception {
         assertEquals(0, FitsCheckSum.sumOf(Integer.MAX_VALUE, Integer.MAX_VALUE) & ~FitsIO.INTEGER_MASK);
     }
-    
+
     @Test
     public void testCheckSumAutoAdd() throws Exception {
         Header h = new Header();
@@ -322,19 +294,18 @@ public class ChecksumTest {
         FitsCheckSum.checksum(h);
         assertEquals("blah", h.getStringValue(CHECKSUM));
     }
-    
+
     @Test
     public void testCheckSumSubtract() throws Exception {
         long a = 20220829;
         long b = 19740131;
-        
+
         long sum = FitsCheckSum.sumOf(a, b);
-    
+
         assertEquals(b, FitsCheckSum.differenceOf(sum, a));
         assertEquals(a, FitsCheckSum.differenceOf(sum, b));
     }
-    
-    
+
     @Test(expected = FitsException.class)
     public void testSetChecksumFitsException() throws Exception {
         ImageData data = new ImageData() {
@@ -343,16 +314,16 @@ public class ChecksumTest {
                 throw new FitsException("not implemented");
             }
         };
-        
+
         Header h = new Header();
         h.setSimple(true);
         h.setBitpix(Bitpix.INTEGER);
         h.setNaxes(0);
-        
+
         ImageHDU im = new ImageHDU(h, data);
         FitsCheckSum.setChecksum(im);
     }
-    
+
     @Test
     public void testChecksumFitsLoaded() throws Exception {
         Fits fits = new Fits(new File("src/test/resources/nom/tam/fits/test/test.fits"));
@@ -377,7 +348,7 @@ public class ChecksumTest {
         assertNotEquals(0, hdu.getStoredChecksum());
         assertNotEquals(0, hdu.getStoredDatasum());
     }
-    
+
     @Test
     public void testChecksumFitsCreated() throws Exception {
         int[][] data = new int[5][5];
@@ -392,5 +363,5 @@ public class ChecksumTest {
         assertNotEquals(0, hdu.getStoredChecksum());
         assertNotEquals(0, hdu.getStoredDatasum());
     }
-    
+
 }

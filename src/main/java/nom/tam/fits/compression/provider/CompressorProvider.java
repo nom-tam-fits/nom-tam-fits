@@ -58,16 +58,15 @@ import nom.tam.fits.compression.algorithm.gzip2.GZip2Compressor.IntGZip2Compress
 import nom.tam.fits.compression.algorithm.gzip2.GZip2Compressor.LongGZip2Compressor;
 import nom.tam.fits.compression.algorithm.gzip2.GZip2Compressor.ShortGZip2Compressor;
 import nom.tam.fits.compression.algorithm.hcompress.HCompressor.ByteHCompressor;
-import nom.tam.fits.compression.algorithm.hcompress.HCompressor.DoubleHCompressor;
-import nom.tam.fits.compression.algorithm.hcompress.HCompressor.FloatHCompressor;
 import nom.tam.fits.compression.algorithm.hcompress.HCompressor.IntHCompressor;
 import nom.tam.fits.compression.algorithm.hcompress.HCompressor.ShortHCompressor;
 import nom.tam.fits.compression.algorithm.plio.PLIOCompress.BytePLIOCompressor;
 import nom.tam.fits.compression.algorithm.plio.PLIOCompress.IntPLIOCompressor;
 import nom.tam.fits.compression.algorithm.plio.PLIOCompress.ShortPLIOCompressor;
+import nom.tam.fits.compression.algorithm.quant.QuantizeOption;
+import nom.tam.fits.compression.algorithm.quant.QuantizeProcessor.DoubleQuantCompressor;
+import nom.tam.fits.compression.algorithm.quant.QuantizeProcessor.FloatQuantCompressor;
 import nom.tam.fits.compression.algorithm.rice.RiceCompressor.ByteRiceCompressor;
-import nom.tam.fits.compression.algorithm.rice.RiceCompressor.DoubleRiceCompressor;
-import nom.tam.fits.compression.algorithm.rice.RiceCompressor.FloatRiceCompressor;
 import nom.tam.fits.compression.algorithm.rice.RiceCompressor.IntRiceCompressor;
 import nom.tam.fits.compression.algorithm.rice.RiceCompressor.ShortRiceCompressor;
 import nom.tam.fits.compression.algorithm.uncompressed.NoCompressCompressor.ByteNoCompressCompressor;
@@ -80,9 +79,7 @@ import nom.tam.fits.compression.provider.api.ICompressorProvider;
 import nom.tam.fits.compression.provider.param.api.ICompressParameters;
 import nom.tam.fits.compression.provider.param.api.IHeaderAccess;
 import nom.tam.fits.compression.provider.param.hcompress.HCompressParameters;
-import nom.tam.fits.compression.provider.param.hcompress.HCompressQuantizeParameters;
 import nom.tam.fits.compression.provider.param.rice.RiceCompressParameters;
-import nom.tam.fits.compression.provider.param.rice.RiceQuantizeCompressParameters;
 
 /**
  * Standard implementation of the {@code ICompressorProvider} interface.
@@ -90,8 +87,8 @@ import nom.tam.fits.compression.provider.param.rice.RiceQuantizeCompressParamete
 public class CompressorProvider implements ICompressorProvider {
 
     /**
-     * private implementation of the tile compression provider, all is based on
-     * the option based constructor of the compressors.
+     * private implementation of the tile compression provider, all is based on the option based constructor of the
+     * compressors.
      */
     protected static class TileCompressorControl implements ICompressorControl {
 
@@ -99,7 +96,7 @@ public class CompressorProvider implements ICompressorProvider {
 
         private final Class<? extends ICompressOption> optionClass;
 
-        private final Constructor<ICompressParameters> parametersConstructor;
+        private Class<?> quantType;
 
         protected TileCompressorControl(Class<?> compressorClass) {
             this(compressorClass, null);
@@ -108,12 +105,24 @@ public class CompressorProvider implements ICompressorProvider {
         @SuppressWarnings("unchecked")
         protected TileCompressorControl(Class<?> compressorClass, Class<?> parametersClass) {
             this.constructor = (Constructor<ICompressor<Buffer>>) compressorClass.getConstructors()[0];
-            this.optionClass = (Class<? extends ICompressOption>) (this.constructor.getParameterTypes().length == 0 ? null : this.constructor.getParameterTypes()[0]);
-            if (parametersClass != null) {
-                this.parametersConstructor = (Constructor<ICompressParameters>) parametersClass.getConstructors()[0];
-            } else {
-                this.parametersConstructor = null;
-            }
+            this.optionClass = (Class<? extends ICompressOption>) (this.constructor.getParameterTypes().length == 0 ?
+                    null :
+                    this.constructor.getParameterTypes()[0]);
+        }
+
+        /**
+         * Creates a new tile compression provider with the specify compression, and quantization, and associated
+         * parameter types.
+         * 
+         * @param quantType Qunatization class
+         * @param compressorClass Compression class
+         * @param parametersClass Compression/Qunatization parameter class
+         * 
+         * @since 1.18
+         */
+        protected TileCompressorControl(Class<?> quantType, Class<?> compressorClass, Class<?> parametersClass) {
+            this(compressorClass, parametersClass);
+            this.quantType = quantType;
         }
 
         @Override
@@ -121,7 +130,9 @@ public class CompressorProvider implements ICompressorProvider {
             try {
                 return newCompressor(option).compress(in, out);
             } catch (Exception e) {
-                LOG.log(Level.FINE, "could not compress using " + this.constructor + " must fallback to other compression method", e);
+                LOG.log(Level.FINE,
+                        "could not compress using " + this.constructor + " must fallback to other compression method",
+                        e);
                 return false;
             }
         }
@@ -137,24 +148,49 @@ public class CompressorProvider implements ICompressorProvider {
 
         @Override
         public ICompressOption option() {
+            ICompressOption option = null;
             if (this.optionClass != null) {
                 try {
-                    ICompressOption option = this.optionClass.newInstance();
-                    if (this.parametersConstructor != null) {
-                        option.setParameters(this.parametersConstructor.newInstance(option));
-                    } else {
-                        option.setParameters(NULL_PARAMETERS);
-                    }
-                    return option;
+                    option = this.optionClass.newInstance();
                 } catch (Exception e) {
                     throw new IllegalStateException("could not instantiate option class for " + this.constructor, e);
                 }
             }
-            return NULL_OPTION;
+
+            if (option == null) {
+                option = NULL_OPTION;
+            }
+
+            if (quantType != null) {
+                return new QuantizeOption(option);
+            }
+
+            return option;
         }
 
-        private ICompressor<Buffer> newCompressor(ICompressOption option) throws InstantiationException, IllegalAccessException, InvocationTargetException {
-            return this.constructor.getParameterTypes().length == 0 ? this.constructor.newInstance() : this.constructor.newInstance(option);
+        @SuppressWarnings({"unchecked", "rawtypes"})
+        private ICompressor<Buffer> newCompressor(ICompressOption option)
+                throws InstantiationException, IllegalAccessException, InvocationTargetException {
+            QuantizeOption quantOption = null;
+
+            if (option instanceof QuantizeOption) {
+                quantOption = (QuantizeOption) option;
+                option = quantOption.getCompressOption();
+            }
+
+            ICompressor<Buffer> compressor = this.constructor.getParameterTypes().length == 0 ?
+                    this.constructor.newInstance() :
+                    this.constructor.newInstance(option);
+
+            if (quantOption != null && quantType != null) {
+                if (quantType.equals(double.class)) {
+                    compressor = (ICompressor) new DoubleQuantCompressor(quantOption, (ICompressor) compressor);
+                } else if (quantType.equals(float.class)) {
+                    compressor = (ICompressor) new FloatQuantCompressor(quantOption, (ICompressor) compressor);
+                }
+            }
+
+            return compressor;
         }
     }
 
@@ -223,7 +259,7 @@ public class CompressorProvider implements ICompressorProvider {
         }
 
         @Override
-        public void setValueFromColumn(int index) {
+        public void setValueInColumn(int index) {
         }
 
         @Override
@@ -232,40 +268,17 @@ public class CompressorProvider implements ICompressorProvider {
     };
 
     // @formatter:off
-    private static final Class<?>[][] AVAILABLE_COMPRESSORS = {
-        {ByteRiceCompressor.class, RiceCompressParameters.class},
-        {ShortRiceCompressor.class, RiceCompressParameters.class},
-        {IntRiceCompressor.class, RiceCompressParameters.class},
-        {FloatRiceCompressor.class, RiceQuantizeCompressParameters.class},
-        {DoubleRiceCompressor.class, RiceQuantizeCompressParameters.class},
-        {BytePLIOCompressor.class},
-        {ShortPLIOCompressor.class},
-        {IntPLIOCompressor.class},
-        {ByteHCompressor.class, HCompressParameters.class},
-        {ShortHCompressor.class, HCompressParameters.class},
-        {IntHCompressor.class, HCompressParameters.class},
-        {FloatHCompressor.class, HCompressQuantizeParameters.class},
-        {DoubleHCompressor.class, HCompressQuantizeParameters.class},
-        {DoubleHCompressor.class},
-        {ByteGZip2Compressor.class},
-        {ShortGZip2Compressor.class},
-        {IntGZip2Compressor.class},
-        {FloatGZip2Compressor.class},
-        {DoubleGZip2Compressor.class},        
-        {LongGZip2Compressor.class},
-        {ByteGZipCompressor.class},
-        {ShortGZipCompressor.class},
-        {IntGZipCompressor.class},
-        {LongGZipCompressor.class},
-        {FloatGZipCompressor.class},
-        {DoubleGZipCompressor.class},
-        {ByteNoCompressCompressor.class},
-        {ShortNoCompressCompressor.class},
-        {IntNoCompressCompressor.class},
-        {LongNoCompressCompressor.class},
-        {FloatNoCompressCompressor.class},
-        {DoubleNoCompressCompressor.class},
-    };
+    private static final Class<?>[][] AVAILABLE_COMPRESSORS = {{ByteRiceCompressor.class, RiceCompressParameters.class},
+            {ShortRiceCompressor.class, RiceCompressParameters.class},
+            {IntRiceCompressor.class, RiceCompressParameters.class}, {BytePLIOCompressor.class},
+            {ShortPLIOCompressor.class}, {IntPLIOCompressor.class}, {ByteHCompressor.class, HCompressParameters.class},
+            {ShortHCompressor.class, HCompressParameters.class}, {IntHCompressor.class, HCompressParameters.class},
+            {ByteGZip2Compressor.class}, {ShortGZip2Compressor.class}, {IntGZip2Compressor.class},
+            {FloatGZip2Compressor.class}, {DoubleGZip2Compressor.class}, {LongGZip2Compressor.class},
+            {ByteGZipCompressor.class}, {ShortGZipCompressor.class}, {IntGZipCompressor.class},
+            {LongGZipCompressor.class}, {FloatGZipCompressor.class}, {DoubleGZipCompressor.class},
+            {ByteNoCompressCompressor.class}, {ShortNoCompressCompressor.class}, {IntNoCompressCompressor.class},
+            {LongNoCompressCompressor.class}, {FloatNoCompressCompressor.class}, {DoubleNoCompressCompressor.class}};
     // @formatter:on
 
     private static final CompressorControlNameComputer NAME_COMPUTER = new CompressorControlNameComputer();
@@ -275,38 +288,50 @@ public class CompressorProvider implements ICompressorProvider {
      */
     private static final Logger LOG = Logger.getLogger(CompressorProvider.class.getName());
 
-    public static ICompressorControl findCompressorControl(String quantAlgorithm, String compressionAlgorithm, Class<?> baseType) {
-        ICompressorProvider defaultProvider = null;
-        for (ICompressorProvider iTileCompressorProvider : ServiceLoader.load(ICompressorProvider.class, Thread.currentThread().getContextClassLoader())) {
-            if (iTileCompressorProvider instanceof CompressorProvider) {
-                defaultProvider = iTileCompressorProvider;
-            } else {
-                ICompressorControl result = iTileCompressorProvider.createCompressorControl(quantAlgorithm, compressionAlgorithm, baseType);
-                if (result != null) {
-                    return result;
-                }
+    public static ICompressorControl findCompressorControl(String quantAlgorithm, String compressionAlgorithm,
+            Class<?> baseType) {
+        for (ICompressorProvider iTileCompressorProvider : ServiceLoader.load(ICompressorProvider.class,
+                Thread.currentThread().getContextClassLoader())) {
+            ICompressorControl result = iTileCompressorProvider.createCompressorControl(quantAlgorithm,
+                    compressionAlgorithm, baseType);
+            if (result != null) {
+                return result;
             }
         }
-        if (defaultProvider == null) {
-            return null;
-        }
-        return defaultProvider.createCompressorControl(quantAlgorithm, compressionAlgorithm, baseType);
+        return new CompressorProvider().createCompressorControl(quantAlgorithm, compressionAlgorithm, baseType);
     }
 
     @Override
-    public ICompressorControl createCompressorControl(String quantAlgorithm, String compressionAlgorithm, Class<?> baseType) {
+    public ICompressorControl createCompressorControl(String quantAlgorithm, String compressionAlgorithm,
+            Class<?> baseType) {
+        Class<?> quantType = null;
 
-        String className = NAME_COMPUTER.createCompressorClassName(quantAlgorithm, compressionAlgorithm, baseType);
-        for (Class<?>[] clazz : AVAILABLE_COMPRESSORS) {
-            Class<?> compressorClass = clazz[0];
-            if (compressorClass.getSimpleName().equals(className)) {
-                if (clazz.length > 1) {
-                    Class<?> parametersClass = clazz[1];
-                    return new TileCompressorControl(compressorClass, parametersClass);
-                }
-                return new TileCompressorControl(compressorClass);
+        // System.err.println(" ### quant = " + quantAlgorithm + ", algo = " + compressionAlgorithm + ", base = " +
+        // baseType.getSimpleName());
+
+        if (quantAlgorithm != null) {
+            if (baseType.equals(double.class) || baseType.equals(float.class)) {
+                quantType = baseType;
+                baseType = int.class;
+                quantAlgorithm = null;
             }
         }
+
+        String className = NAME_COMPUTER.createCompressorClassName(quantAlgorithm, compressionAlgorithm, baseType);
+        for (Class<?>[] types : AVAILABLE_COMPRESSORS) {
+            Class<?> compressorClass = types[0];
+            if (compressorClass.getSimpleName().equals(className)) {
+                TileCompressorControl tc = null;
+                if (types.length > 1) {
+                    tc = new TileCompressorControl(compressorClass, types[1]);
+                } else {
+                    tc = new TileCompressorControl(compressorClass);
+                }
+                tc.quantType = quantType;
+                return tc;
+            }
+        }
+
         return null;
     }
 }

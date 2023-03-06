@@ -54,9 +54,8 @@ public class TileCompressor extends TileCompressionOperation {
     }
 
     /**
-     * lets close the gaps in the data as soon as the previous tiles are also
-     * compressed. the compressed data of the first tile is used to append the
-     * complete block.
+     * lets close the gaps in the data as soon as the previous tiles are also compressed. the compressed data of the
+     * first tile is used to append the complete block.
      */
     private void compactCompressedData() {
         if (getTileIndex() > 0) {
@@ -74,31 +73,44 @@ public class TileCompressor extends TileCompressionOperation {
 
     private void compress() {
         initTileOptions();
+
         this.compressedData.limit(getTileBuffer().getPixelSize() * getBaseType().size());
         this.compressionType = TileCompressionType.COMPRESSED;
         boolean compressSuccess = false;
         boolean tryNormalCompression = !(this.tileOptions.isLossyCompression() && this.forceNoLoss);
+
         if (tryNormalCompression) {
-            compressSuccess = getCompressorControl().compress(getTileBuffer().getBuffer(), this.compressedData, this.tileOptions);
-            if (compressSuccess && this.nullPixelMaskPerserver != null) {
-                this.nullPixelMaskPerserver.preserveNull();
+            compressSuccess = getCompressorControl().compress(getTileBuffer().getBuffer(), this.compressedData,
+                    this.tileOptions);
+            if (compressSuccess) {
+                if (this.nullPixelMaskPerserver != null) {
+                    this.nullPixelMaskPerserver.preserveNull();
+                }
+                this.tileOptions.getCompressionParameters().setValueInColumn(getTileIndex());
             }
         }
+
         if (!compressSuccess) {
             this.compressionType = TileCompressionType.GZIP_COMPRESSED;
             this.compressedData.rewind();
             getTileBuffer().getBuffer().rewind();
-            compressSuccess = getGzipCompressorControl().compress(getTileBuffer().getBuffer(), this.compressedData, null);
+            compressSuccess = getGzipCompressorControl().compress(getTileBuffer().getBuffer(), this.compressedData,
+                    null);
+            if (compressSuccess) {
+                this.tileOptions.getCompressionParameters().setValueInColumn(getTileIndex());
+            }
         }
+
         if (!compressSuccess) {
             this.compressionType = TileCompressionType.UNCOMPRESSED;
             this.compressedData.rewind();
             getTileBuffer().getBuffer().rewind();
             getBaseType().appendToByteBuffer(this.compressedData, getTileBuffer().getBuffer());
         }
+
         this.compressedData.limit(this.compressedData.position());
         this.compressedData.rewind();
-        this.tileOptions.getCompressionParameters().setValueFromColumn(getTileIndex());
+
         compactCompressedData();
     }
 
