@@ -259,22 +259,6 @@
 					<pushChanges>false</pushChanges>
 				</configuration>
 			</plugin>
-			<!--
-			<plugin>
-				<groupId>org.tinyjee.dim</groupId>
-				<artifactId>doxia-include-macro</artifactId>
-				<version>1.1</version>
-				<executions>
-					<execution>
-						<id>initialize-doxia-include-macro</id>
-						<phase>pre-site</phase>
-						<goals>
-							<goal>initialize</goal>
-						</goals>
-					</execution>
-				</executions>
-			</plugin>
-			-->
 			<plugin>
 				<groupId>org.apache.maven.plugins</groupId>
 				<artifactId>maven-site-plugin</artifactId>
@@ -288,13 +272,6 @@
 						<artifactId>wagon-ssh</artifactId>
 						<version>3.5.3</version>
 					</dependency>
-					<!--
-					<dependency>
-						<groupId>org.tinyjee.dim</groupId>
-						<artifactId>doxia-include-macro</artifactId>
-						<version>1.1</version>
-					</dependency>
-					-->
 					<dependency>
 						<groupId>org.apache.maven.doxia</groupId>
 						<artifactId>doxia-module-markdown</artifactId>
