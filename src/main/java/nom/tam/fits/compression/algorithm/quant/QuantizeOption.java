@@ -108,9 +108,7 @@ public class QuantizeOption implements ICompressOption {
             if (compressOption != null) {
                 copy.compressOption = compressOption.copy();
             }
-            if (parameters != null) {
-                copy.parameters = this.parameters.copy(copy);
-            }
+            copy.parameters = this.parameters.copy(copy);
             return copy;
         } catch (CloneNotSupportedException e) {
             throw new IllegalStateException("option could not be cloned", e);

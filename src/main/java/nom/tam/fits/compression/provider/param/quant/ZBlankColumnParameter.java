@@ -41,13 +41,6 @@ public final class ZBlankColumnParameter extends CompressColumnParameter<int[], 
         super(Compression.ZBLANK_COLUMN, quantizeOption, int[].class);
     }
 
-    private static boolean equals(Integer i1, Integer i2) {
-        if (i1 == null) {
-            return i2 == null;
-        }
-        return i1.equals(i2);
-    }
-
     @Override
     public void getValueFromColumn(int index) {
         if (getOption().isCheckNull()) {
@@ -68,7 +61,7 @@ public final class ZBlankColumnParameter extends CompressColumnParameter<int[], 
         }
 
         int[] col = getColumnData();
-        if (col != null && blankValue != null) {
+        if (col != null) {
             col[index] = blankValue;
         }
     }

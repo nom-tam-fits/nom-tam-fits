@@ -77,21 +77,12 @@ public class QuantizeParameters extends CompressParameters {
             QuantizeOption qo = (QuantizeOption) option;
 
             QuantizeParameters p = (QuantizeParameters) super.clone();
-            if (quantz != null) {
-                p.quantz = (ZQuantizeParameter) quantz.copy(qo);
-            }
-            if (blank != null) {
-                p.blank = (ZBlankParameter) blank.copy(qo);
-            }
-            if (blankColumn != null) {
-                p.blankColumn = (ZBlankColumnParameter) blankColumn.copy(qo);
-            }
-            if (zero != null) {
-                p.zero = (ZZeroColumnParameter) zero.copy(qo);
-            }
-            if (scale != null) {
-                p.scale = (ZScaleColumnParameter) scale.copy(qo);
-            }
+            p.quantz = (ZQuantizeParameter) quantz.copy(qo);
+            p.blank = (ZBlankParameter) blank.copy(qo);
+            p.blankColumn = (ZBlankColumnParameter) blankColumn.copy(qo);
+            p.zero = (ZZeroColumnParameter) zero.copy(qo);
+            p.scale = (ZScaleColumnParameter) scale.copy(qo);
+
             return p;
         }
         return null;

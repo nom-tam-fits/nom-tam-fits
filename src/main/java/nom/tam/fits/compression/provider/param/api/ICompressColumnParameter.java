@@ -79,11 +79,15 @@ public interface ICompressColumnParameter extends ICompressParameter {
     }
 
     /**
-     * Sets the data for each compressed row to be stored along as a separate parameter column in the compressed table.
+     * Sets new parameter data for each compressed row to be stored along as a separate parameter column in the
+     * compressed table. To discard prior column data with no replacement, you can call this as
+     * <code>setColumnData(null, 0)</code>.
      * 
      * @param column The array that contains the data for each compressed row. If not <code>null</code> the
      *            <code>size</code> parameter is ignored, and the size of the array is used instead.
-     * @param size The number of compressed rows in the table, if the <code>column</code> argument is <code>null</code>
+     * @param size The number of compressed rows in the table, if the <code>column</code> argument is <code>null</code>.
+     *            If <code>size</code> is zero or negative, any prior column data will be discarded and
+     *            <code>null</code> will be set.
      * 
      * @see #getColumnData()
      */

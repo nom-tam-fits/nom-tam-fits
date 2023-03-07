@@ -111,18 +111,18 @@ public class CompressorProvider implements ICompressorProvider {
         }
 
         /**
-         * Creates a new tile compression provider with the specify compression, and quantization, and associated
-         * parameter types.
+         * Sets the floating-point type to quantize to use for this tile compressor.
          * 
-         * @param quantType Qunatization class
-         * @param compressorClass Compression class
-         * @param parametersClass Compression/Qunatization parameter class
+         * @param floatingPointType Floating-point primitive type to quantize. Must be either <code>double.class</code>
+         *            or else <code>float.class</code>.
+         * 
+         * @return itself
          * 
          * @since 1.18
          */
-        protected TileCompressorControl(Class<?> quantType, Class<?> compressorClass, Class<?> parametersClass) {
-            this(compressorClass, parametersClass);
-            this.quantType = quantType;
+        protected TileCompressorControl setQuantType(Class<?> floatingPointType) {
+            this.quantType = floatingPointType;
+            return this;
         }
 
         @Override
@@ -309,6 +309,9 @@ public class CompressorProvider implements ICompressorProvider {
         // System.err.println(" ### quant = " + quantAlgorithm + ", algo = " + compressionAlgorithm + ", base = " +
         // baseType.getSimpleName());
 
+        // TODO Currently always quantizes floating-point into 32-bit integers, but one could of course quantize
+        // into narrower integer types such as 16-bit shorts or 8-bit bytes also... We don't really have
+        // the API set up right now to choose the quantization target type separately...
         if (quantAlgorithm != null) {
             if (baseType.equals(double.class) || baseType.equals(float.class)) {
                 quantType = baseType;
@@ -327,7 +330,7 @@ public class CompressorProvider implements ICompressorProvider {
                 } else {
                     tc = new TileCompressorControl(compressorClass);
                 }
-                tc.quantType = quantType;
+                tc.setQuantType(quantType);
                 return tc;
             }
         }

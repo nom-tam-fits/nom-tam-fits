@@ -52,12 +52,10 @@ public class RiceCompressParameters extends CompressParameters {
         if (option instanceof RiceCompressOption) {
             RiceCompressOption ro = (RiceCompressOption) option;
             RiceCompressParameters p = (RiceCompressParameters) super.clone();
-            if (blockSize != null) {
-                p.blockSize = (RiceBlockSizeParameter) blockSize.copy(ro);
-            }
-            if (bytePix != null) {
-                p.bytePix = (RiceBytePixParameter) bytePix.copy(ro);
-            }
+
+            p.blockSize = (RiceBlockSizeParameter) blockSize.copy(ro);
+            p.bytePix = (RiceBytePixParameter) bytePix.copy(ro);
+
             return p;
         }
         return null;
