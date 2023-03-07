@@ -66,7 +66,7 @@ jobs:
         
     - name: Upload coverage to Coveralls.io
       continue-on-error: true
-      run: mvn org.eluder.coveralls:coveralls-maven-plugin:report --define repoToken=${{ secrets.COVERALL_ALT_TOKEN }}
+      run: mvn coveralls:report --define repoToken=${{ secrets.COVERALL_ALT_TOKEN }}
       with:
         working-directory: ./nom-tam-fits
         
