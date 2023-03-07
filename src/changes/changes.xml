@@ -14,6 +14,10 @@
 	  <action type="update" dev="attipaci" issue="373">
 	      Fixed GitHub Actions site build error, by removing unused broken dependency from POM.
       </action>
+      <action type="add" dev="attipaci" issue="376">
+	      Upload coverage report to Coveralls.io also (forks need to set a repo token via the repo secret COVERALLS_REPO_TOKEN if want to
+	      enable reporting also).
+      </action>
     </release>
 
     <release version="1.17.0" date="2022-09-11" description="Improved image compression, checksum support, and incremental writing">
