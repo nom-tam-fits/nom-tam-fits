@@ -1,7 +1,4 @@
 <settings>
-  <pluginGroups>
-    <pluginGroup>org.eluder.coveralls</pluginGroup>
-	</pluginGroups>
   <servers>
     <server>
       <id>nexus</id>
