@@ -11,7 +11,7 @@
       <action type="fix" dev="keastrid" issue="341">
 	      Fixed occasional NullPointerException in tiled image compression resulting from incomplete initializiation of TiledImageCompressionOperation.
       </action>
-	  <action type="add" dev="attipaci" issue="373">
+	  <action type="update" dev="attipaci" issue="373">
 	      Fixed GitHub Actions site build error, by removing unused broken dependency from POM.
       </action>
     </release>
