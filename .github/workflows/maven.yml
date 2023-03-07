@@ -68,7 +68,7 @@ jobs:
       env:
         COVERALLS_TOKEN: ${{ secrets.COVERALLS_REPO_TOKEN }}
       continue-on-error: true
-      run: mvn -DrepoToken=${{ env.COVERALLS_TOKEN }} coveralls:report
+      run: mvn -DrepoToken=$COVERALLS_TOKEN coveralls:report
       working-directory: ./nom-tam-fits
         
     - name: Check Project Site
