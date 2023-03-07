@@ -64,7 +64,8 @@ jobs:
         name: codecov
         verbose: true
         
-    - name: Coveralls report
+    - name: Upload coverage to Coveralls.io
+      continue-on-error: true
       run: mvn coveralls:report --define repoToken=${{ secrets.COVERALLS_TOKEN }}
         
     - name: Check Project Site
