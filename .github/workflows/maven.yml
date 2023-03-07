@@ -66,7 +66,7 @@ jobs:
         
     - name: Upload coverage to Coveralls.io
       continue-on-error: true
-      run: mvn coveralls:report -DrepoToken=${{ secrets.COVERALLS_REPO_TOKEN }}
+      run: mvn coveralls:report -DrepoToken=${{secrets.COVERALLS_REPO_TOKEN}}
       working-directory: ./nom-tam-fits
         
     - name: Check Project Site
