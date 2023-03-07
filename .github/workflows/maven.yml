@@ -64,6 +64,9 @@ jobs:
         name: codecov
         verbose: true
         
+    - name: Coveralls report
+      run: mvn coveralls:report --define repoToken=${{ secrets.COVERALLS_TOKEN }}
+        
     - name: Check Project Site
       run: mvn -B site:stage
       working-directory: ./nom-tam-fits
