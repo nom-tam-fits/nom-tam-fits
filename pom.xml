@@ -252,7 +252,6 @@
 			<plugin>
 				<groupId>org.apache.maven.plugins</groupId>
 				<artifactId>maven-release-plugin</artifactId>
-				<!-- TODO Update to 3.0.0-M4 or later -->
 				<version>3.0.0-M7</version>
 				<configuration>
 					<mavenExecutorId>forked-path</mavenExecutorId>
