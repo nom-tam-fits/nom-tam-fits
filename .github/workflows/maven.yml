@@ -64,6 +64,14 @@ jobs:
         name: codecov
         verbose: true
         
+    - name: Upload coverage to Coveralls.io
+      continue-on-error: true
+      env:
+        COVERALLS_TOKEN: ${{ secrets.COVERALLS_REPO_TOKEN }}
+      run: |
+        mvn coveralls:report -DrepoToken=$COVERALLS_TOKEN
+      working-directory: ./nom-tam-fits
+        
     - name: Check Project Site
       run: mvn -B site:stage
       working-directory: ./nom-tam-fits
