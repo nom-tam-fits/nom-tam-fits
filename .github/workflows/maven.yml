@@ -66,7 +66,7 @@ jobs:
         
     - name: Upload coverage to Coveralls.io
       continue-on-error: true
-      run: mvn coveralls:report --define repoToken=${{ secrets.COVERALLS_TOKEN }}
+      run: mvn coveralls:report --define repoToken=${{ secrets.COVERALL_ALT_TOKEN }}
         
     - name: Check Project Site
       run: mvn -B site:stage
