@@ -65,8 +65,10 @@ jobs:
         verbose: true
         
     - name: Upload coverage to Coveralls.io
+      env:
+        COVERALLS_TOKEN: ${{ secrets.COVERALLS_REPO_TOKEN }}
       continue-on-error: true
-      run: mvn coveralls:report -Dcoveralls.repoToken=${{secrets.COVERALLS_REPO_TOKEN}}
+      run: mvn coveralls:report
       working-directory: ./nom-tam-fits
         
     - name: Check Project Site
