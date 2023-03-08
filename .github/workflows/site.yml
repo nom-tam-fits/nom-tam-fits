@@ -54,8 +54,9 @@ jobs:
         echo github.repository_owner = ${{ github.repository_owner }}
         echo github.ref_name = ${{ github.ref_name }}
     
+    # Upload site only for official releases or if master commit message contains 'site update'
     - name: Update site
-      if: (github.event_name == 'release' && github.repository_owner == 'nom-tam-fits' && github.ref_name == 'master') || contains(github.event.head_commit.message, 'site update')
+      if: (github.repository_owner == 'nom-tam-fits' && github.ref_name == 'master') && (github.event_name == 'release' || contains(github.event.head_commit.message, 'site update'))
       run: |
         cp -a nom-tam-fits/target/site/* site/
         cd site
