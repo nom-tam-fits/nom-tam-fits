@@ -48,7 +48,13 @@ jobs:
     - name: Build site with Maven
       run: mvn clean site
       working-directory: ./nom-tam-fits
-        
+    
+    - name: About this workflow...
+      run: |
+        echo github.event_name = ${{ github.event_name }}
+        echo github.repository_owner = ${{ github.repository_owner }}
+        echo github.ref_name = ${{ github.ref_name }}
+    
     - name: Update site
       if: ${{ github.event_name == 'release' && github.repository_owner == 'nom-tam-fits' && github.ref_name == 'master' }}
       run: |
