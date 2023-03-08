@@ -34,41 +34,29 @@ package nom.tam.fits.header;
 public interface IFitsHeader {
 
     enum HDU {
-        ANY,
-        ASCII_TABLE,
-        BINTABLE,
-        EXTENSION,
-        GROUPS,
-        IMAGE,
-        PRIMARY,
-        PRIMARY_EXTENSION,
-        TABLE
+        ANY, ASCII_TABLE, BINTABLE, EXTENSION, GROUPS, IMAGE, PRIMARY, PRIMARY_EXTENSION, TABLE
     }
 
     enum SOURCE {
         /**
-         * <pre>
-         *  @see <a href="http://heasarc.gsfc.nasa.gov/docs/heasarc/ofwg/docs/general/checksum/checksum.html">checksum doc</a>
-         * </pre>
+         * Checksum keywords. See
+         * <a href="http://heasarc.gsfc.nasa.gov/docs/heasarc/ofwg/docs/general/checksum/checksum.html">checksum doc</a>
          */
         CHECKSUM("http://heasarc.gsfc.nasa.gov/docs/heasarc/ofwg/docs/general/checksum/checksum.html"),
 
         /**
-         * <pre>
-         * @see <a href="http://cxc.harvard.edu/contrib/arots/fits/content.txt">http://cxc.harvard.edu/contrib/arots/fits/content.txt</a>
-         * </pre>
+         * CXC keywords. See <a href=
+         * "http://cxc.harvard.edu/contrib/arots/fits/content.txt">http://cxc.harvard.edu/contrib/arots/fits/content.txt</a>
          */
         CXC("http://cxc.harvard.edu/contrib/arots/fits/content.txt"),
         /**
-         * <pre>
-         *  @see <a href="http://arcdev.hq.eso.org/dicb/dicd/dic-1-1.4.html">http://arcdev.hq.eso.org/dicb/dicd/dic-1-1.4.html</a>
-         * </pre>
+         * ESO keywords. See <a href=
+         * "http://arcdev.hq.eso.org/dicb/dicd/dic-1-1.4.html">http://arcdev.hq.eso.org/dicb/dicd/dic-1-1.4.html</a>
          */
         ESO("http://arcdev.hq.eso.org/dicb/dicd/dic-1-1.4.html"),
         /**
-         * <pre>
-         *  @see <a href="http://heasarc.gsfc.nasa.gov/docs/heasarc/ofwg/docs/ofwg_recomm/r13.html">http://heasarc.gsfc.nasa.gov/docs/heasarc/ofwg/docs/ofwg_recomm/r13.html</a>
-         * </pre>
+         * HEASARC keywords. See <a href=
+         * "http://heasarc.gsfc.nasa.gov/docs/heasarc/ofwg/docs/ofwg_recomm/r13.html">http://heasarc.gsfc.nasa.gov/docs/heasarc/ofwg/docs/ofwg_recomm/r13.html</a>
          */
         HEASARC("http://heasarc.gsfc.nasa.gov/docs/heasarc/ofwg/docs/ofwg_recomm/r13.html"),
         /**
@@ -76,45 +64,39 @@ public interface IFitsHeader {
          */
         INTEGRAL(null),
         /**
-         * defined mandatory by the fits standard.
+         * Mandatory keywords defined by the fits standard.
          */
         MANDATORY("http://heasarc.gsfc.nasa.gov/docs/fcg/standard_dict.html"),
         /**
-         * <pre>
-         * @see <a href="http://www.cyanogen.com/help/maximdl/FITS_File_Header_Definitions.htm">http://www.cyanogen.com/help/maximdl/FITS_File_Header_Definitions.htm</a>
-         * </pre>
+         * MaxImDL keywords. See <a href=
+         * "http://www.cyanogen.com/help/maximdl/FITS_File_Header_Definitions.htm">http://www.cyanogen.com/help/maximdl/FITS_File_Header_Definitions.htm</a>
          */
         MaxImDL("http://www.cyanogen.com/help/maximdl/FITS_File_Header_Definitions.htm"),
         /**
-         * <pre>
-         *  @see <a href="http://iraf.noao.edu/iraf/web/projects/ccdmosaic/imagedef/fitsdic.html">http://iraf.noao.edu/iraf/web/projects/ccdmosaic/imagedef/fitsdic.html</a>
-         * </pre>
+         * NOAO keywords. See <a href=
+         * "http://iraf.noao.edu/iraf/web/projects/ccdmosaic/imagedef/fitsdic.html">http://iraf.noao.edu/iraf/web/projects/ccdmosaic/imagedef/fitsdic.html</a>
          */
         NOAO("http://iraf.noao.edu/iraf/web/projects/ccdmosaic/imagedef/fitsdic.html"),
         /**
-         * defined reserved by the fits standard.
+         * Reserved keywords specified by the FITS standard.
          */
         RESERVED("http://heasarc.gsfc.nasa.gov/docs/fcg/standard_dict.html"),
         /**
-         * rosat no link available.
+         * ROSAT keywords. (No link available.)
          */
         ROSAT(null),
         /**
-         * <pre>
-         * @see <a href="http://archive.sbig.com/pdffiles/SBFITSEXT_1r0.pdf">http://archive.sbig.com/pdffiles/SBFITSEXT_1r0.pdf</a>
-         * </pre>
+         * SBIG keywords. See <a href=
+         * "http://archive.sbig.com/pdffiles/SBFITSEXT_1r0.pdf">http://archive.sbig.com/pdffiles/SBFITSEXT_1r0.pdf</a>
          */
         SBIG("http://archive.sbig.com/pdffiles/SBFITSEXT_1r0.pdf"),
         /**
-         * <pre>
-         *  @see <a href="http://tucana.noao.edu/ADASS/adass_proc/adass_95/zaraten/zaraten.html">http://tucana.noao.edu/ADASS/adass_proc/adass_95/zaraten/zaraten.html</a>
-         * </pre>
+         * STScI keywords. See <a href=
+         * "http://tucana.noao.edu/ADASS/adass_proc/adass_95/zaraten/zaraten.html">http://tucana.noao.edu/ADASS/adass_proc/adass_95/zaraten/zaraten.html</a>
          */
         STScI("http://tucana.noao.edu/ADASS/adass_proc/adass_95/zaraten/zaraten.html"),
         /**
-         * <pre>
-         *  @see <a href="http://www.ucolick.org">http://www.ucolick.org</a>
-         * </pre>
+         * UCOLICK keywords. See <a href="http://www.ucolick.org">http://www.ucolick.org</a>
          */
         UCOLICK("http://www.ucolick.org"),
         /**
@@ -134,13 +116,7 @@ public interface IFitsHeader {
     }
 
     enum VALUE {
-        INTEGER,
-        LOGICAL,
-        NONE,
-        REAL,
-        COMPLEX,
-        STRING,
-        ANY
+        INTEGER, LOGICAL, NONE, REAL, COMPLEX, STRING, ANY
     }
 
     String comment();

@@ -35,11 +35,13 @@ import nom.tam.fits.header.FitsHeaderImpl;
 import nom.tam.fits.header.IFitsHeader;
 
 /**
+ * <p>
  * This keyword dictionary gathered form STScI.
- * 
- * <pre>
- *  @see <a href="http://tucana.noao.edu/ADASS/adass_proc/adass_95/zaraten/zaraten.html">http://tucana.noao.edu/ADASS/adass_proc/adass_95/zaraten/zaraten.html</a>
- * </pre>
+ * </p>
+ * <p>
+ * See <a href=
+ * "http://tucana.noao.edu/ADASS/adass_proc/adass_95/zaraten/zaraten.html">http://tucana.noao.edu/ADASS/adass_proc/adass_95/zaraten/zaraten.html</a>
+ * </p>
  * 
  * @author Richard van Nieuwenhoven.
  */
@@ -169,9 +171,8 @@ public enum STScIExt implements IFitsHeader {
      */
     TCTYPn(""),
     /**
-     * Default time system. All times which do not have a "timesys" element
-     * associated with them in this dictionary default to this keyword. time
-     * system (same as IRAS)
+     * Default time system. All times which do not have a "timesys" element associated with them in this dictionary
+     * default to this keyword. time system (same as IRAS)
      */
     TIMESYS("Default time system"),
     /**
@@ -199,8 +200,8 @@ public enum STScIExt implements IFitsHeader {
      */
     ZLREMOV("signal from zodiacal dust remains in map"),
     /**
-     * Modified Julian date at the start of the exposure. The fractional part of
-     * the date is given to better than a second of time.
+     * Modified Julian date at the start of the exposure. The fractional part of the date is given to better than a
+     * second of time.
      * <p>
      * units = 'd'
      * </p>
