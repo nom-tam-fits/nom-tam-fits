@@ -2,8 +2,7 @@
 name: Project Site
 
 on: 
-  release: 
-    types: [published, unpublished, created, edited, deleted]
+  release:
   
   pull_request:
     paths:
