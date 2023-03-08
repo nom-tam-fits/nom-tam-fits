@@ -55,7 +55,7 @@ jobs:
         echo github.ref_name = ${{ github.ref_name }}
     
     - name: Update site
-      if: ${{ github.event_name == 'release' && github.repository_owner == 'nom-tam-fits' && github.ref_name == 'master' }}
+      if: (github.event_name == 'release' && github.repository_owner == 'nom-tam-fits' && github.ref_name == 'master') || contains(github.event.head_commit.message, 'site update')
       run: |
         cp -a nom-tam-fits/target/site/* site/
         cd site
