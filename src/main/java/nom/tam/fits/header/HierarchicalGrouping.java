@@ -32,13 +32,14 @@ package nom.tam.fits.header;
  */
 
 /**
- * This data dictionary contains FITS keywords that have been widely used within
- * the astronomical community. It is recommended that these keywords only be
- * used as defined here. These are the Hierarchical file grouping keywords.
- * 
- * <pre>
- * @see <a href="http://heasarc.gsfc.nasa.gov/docs/fcg/common_dict.html">http://heasarc.gsfc.nasa.gov/docs/fcg/common_dict.html</a>
- * </pre>
+ * <p>
+ * This data dictionary contains FITS keywords that have been widely used within the astronomical community. It is
+ * recommended that these keywords only be used as defined here. These are the Hierarchical file grouping keywords.
+ * </p>
+ * <p>
+ * See <a href=
+ * "http://heasarc.gsfc.nasa.gov/docs/fcg/common_dict.html">http://heasarc.gsfc.nasa.gov/docs/fcg/common_dict.html</a>
+ * </p>
  * 
  * @author Richard van Nieuwenhoven
  */
