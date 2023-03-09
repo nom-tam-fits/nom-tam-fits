@@ -33,14 +33,11 @@ package nom.tam.fits;
 
 import nom.tam.fits.header.Bitpix;
 import nom.tam.image.StandardImageTiler;
-import nom.tam.util.FitsFile;
 import org.junit.Assert;
 import org.junit.Test;
 
 import java.io.File;
-import java.io.FileOutputStream;
-import java.io.OutputStream;
-import java.nio.file.Files;
+import java.io.IOException;
 import java.util.Random;
 
 
@@ -96,11 +93,8 @@ public class StreamingTileImageDataTest {
         }
 
         try (final Fits sourceFits = new Fits(fitsFile);
-             final Fits outputFits = new Fits();
-             final OutputStream outputStream = Files.newOutputStream(outputFitsFile.toPath());
-             final FitsFile streamFitsFile = new FitsFile(outputFitsFile)) {
+             final Fits outputFits = new Fits()) {
             final ImageHDU imageHDU = (ImageHDU) sourceFits.getHDU(0);
-            final ImageData imageData = imageHDU.getData();
 
             final Header tileHeader = imageHDU.getHeader();
             final int[] tileStarts = new int[]{100, 100};
@@ -108,10 +102,58 @@ public class StreamingTileImageDataTest {
             final StreamingTileImageData streamingTileImageData =
                     new StreamingTileImageData(tileHeader, imageHDU.getTiler(), tileStarts, tileLengths);
             outputFits.addHDU(FitsFactory.hduFactory(tileHeader, streamingTileImageData));
+            outputFits.write(outputFitsFile);
+        }
+
+        try (final Fits sourceFits = new Fits(fitsFile);
+             final Fits outputFits = new Fits()) {
+            final ImageHDU imageHDU = (ImageHDU) sourceFits.getHDU(0);
+
+            final Header tileHeader = imageHDU.getHeader();
+            final int[] tileStarts = new int[]{100, 100};
+            final int[] tileLengths = new int[]{25, 45};
+            final StreamingTileImageData streamingTileImageData =
+                    new StreamingTileImageData(tileHeader, null, tileStarts, tileLengths);
+            outputFits.addHDU(FitsFactory.hduFactory(tileHeader, streamingTileImageData));
+            outputFits.write(outputFitsFile);
+        }
+
+        try (final Fits sourceFits = new Fits(fitsFile);
+             final Fits outputFits = new Fits()) {
+            final ImageHDU imageHDU = (ImageHDU) sourceFits.getHDU(0);
+
+            final Header tileHeader = imageHDU.getHeader();
+            final int[] tileStarts = new int[]{100, 100};
+            final int[] tileLengths = new int[]{25, 45};
+            final StreamingTileImageData streamingTileImageData =
+                    new StreamingTileImageData(tileHeader, imageHDU.getTiler(), tileStarts, tileLengths) {
+                        @Override
+                        protected long getTrueSize() {
+                            return 0;
+                        }
+                    };
+            outputFits.addHDU(FitsFactory.hduFactory(tileHeader, streamingTileImageData));
+            outputFits.write(outputFitsFile);
+        }
+
+        try (final Fits sourceFits = new Fits(fitsFile);
+             final Fits outputFits = new Fits()) {
+            final ImageHDU imageHDU = (ImageHDU) sourceFits.getHDU(0);
+
+            final Header tileHeader = imageHDU.getHeader();
+            final int[] tileStarts = new int[]{100, 100};
+            final int[] tileLengths = new int[]{25, 45};
+            final StreamingTileImageData streamingTileImageData =
+                    new StreamingTileImageData(tileHeader, new ErrorTestTiler(), tileStarts, tileLengths);
+            outputFits.addHDU(FitsFactory.hduFactory(tileHeader, streamingTileImageData));
+            outputFits.write(outputFitsFile);
+            Assert.fail("Should throw FitsException.");
+        } catch (FitsException fitsException) {
+            Assert.assertEquals("Wrong message.", "Simulated error.", fitsException.getMessage());
         }
     }
 
-    private final static class TestTiler extends StandardImageTiler {
+    private static class TestTiler extends StandardImageTiler {
         public TestTiler() {
             super(null, 0L, new int[]{200, 200}, int.class);
         }
@@ -119,6 +161,13 @@ public class StreamingTileImageDataTest {
         @Override
         protected Object getMemoryImage() {
             return new int[0];
+        }
+    }
+
+    private class ErrorTestTiler extends TestTiler {
+        @Override
+        public void getTile(Object output, int[] corners, int[] lengths) throws IOException {
+            throw new IOException("Simulated error.");
         }
     }
 }
