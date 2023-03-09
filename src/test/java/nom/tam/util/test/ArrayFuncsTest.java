@@ -740,6 +740,17 @@ public class ArrayFuncsTest {
         assertTrue(Arrays.equals(i, (int[]) to[0]));
         assertTrue(Arrays.equals(d, (double[]) to[1]));
     }
+
+    @Test
+    public void testIsEmpty() {
+        Assert.assertTrue("Null should be empty.", ArrayFuncs.isEmpty(null));
+        Assert.assertTrue("Empty array should be empty.", ArrayFuncs.isEmpty(new int[0]));
+        Assert.assertTrue("2-D should be empty.", ArrayFuncs.isEmpty(new int[0][0]));
+
+        Assert.assertFalse("2-D should not be empty.", ArrayFuncs.isEmpty(new int[][]{new int[3]}));
+        Assert.assertFalse("Should not be empty.", ArrayFuncs.isEmpty(new int[]{4, 6}));
+        Assert.assertFalse("Should not be empty.", ArrayFuncs.isEmpty(new Object[]{"1"}));
+    }
     
     
     @Test(expected = IllegalArgumentException.class)

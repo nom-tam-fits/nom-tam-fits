@@ -39,16 +39,15 @@ import java.io.IOException;
 import java.lang.reflect.Array;
 
 import nom.tam.fits.Fits;
-import nom.tam.fits.FitsException;
 import nom.tam.fits.ImageHDU;
 import nom.tam.image.ImageTiler;
 import nom.tam.image.StandardImageTiler;
 import nom.tam.util.ArrayDataInput;
 import nom.tam.util.ArrayDataOutput;
 import nom.tam.util.ArrayFuncs;
-import nom.tam.util.BufferedDataInputStream;
-import nom.tam.util.BufferedDataOutputStream;
 import nom.tam.util.FitsFile;
+import nom.tam.util.FitsInputStream;
+import nom.tam.util.FitsOutputStream;
 import nom.tam.util.SafeClose;
 
 import org.junit.Assert;
@@ -97,7 +96,7 @@ public class TilerTest {
         return true;
     }
 
-    private boolean doTile2(String test, Object data, StandardImageTiler t, int x, int y, int nx, int ny) throws Exception {
+    private void doTile2(String test, Object data, StandardImageTiler t, int x, int y, int nx, int ny) throws Exception {
 
         Object tile = t.getTile(new int[]{
             y,
@@ -114,22 +113,20 @@ public class TilerTest {
         for (int i = 0; i < nx; i += 1) {
             for (int j = 0; j < ny; j += 1) {
                 int tileOffset = i + j * nx;
-                if (tileOffset >= length) {
-                    return false;
+                if (tileOffset < length) {
+                    sum0 += ((Number) Array.get(tile, tileOffset)).doubleValue();
+                    sum1 += ((Number) Array.get(Array.get(data, j + y), i + x)).doubleValue();
                 }
-                sum0 += ((Number) Array.get(tile, tileOffset)).doubleValue();
-                sum1 += ((Number) Array.get(Array.get(data, j + y), i + x)).doubleValue();
             }
         }
 
         assertEquals("Tiler" + test, sum0, sum1, 0);
-        return true;
     }
 
-    private boolean doTile3(final String test, final Object data, final ImageTiler t, final int x, final int y,
-                            final int nx, final int ny) throws Exception {
+    private void doTile3(final String test, final Object data, final ImageTiler t, final int x, final int y,
+                         final int nx, final int ny) throws Exception {
         final ByteArrayOutputStream byteArrayOutputStream = new ByteArrayOutputStream();
-        final ArrayDataOutput output = new BufferedDataOutputStream(byteArrayOutputStream);
+        final ArrayDataOutput output = new FitsOutputStream(byteArrayOutputStream);
 
         t.getTile(output, new int[]{
                 y,
@@ -143,7 +140,7 @@ public class TilerTest {
         float expectedSum = 0;
         final ByteArrayInputStream byteArrayInputStream =
                 new ByteArrayInputStream(byteArrayOutputStream.toByteArray());
-        final ArrayDataInput input = new BufferedDataInputStream(byteArrayInputStream);
+        final ArrayDataInput input = new FitsInputStream(byteArrayInputStream);
         final Class<?> type = ArrayFuncs.getBaseClass(data);
         final Object testOutput = ArrayFuncs.newInstance(type, ny * nx);
 
@@ -153,17 +150,14 @@ public class TilerTest {
         for (int i = 0; i < nx; i += 1) {
             for (int j = 0; j < ny; j += 1) {
                 int tileOffset = i + j * nx;
-                if (tileOffset >= length) {
-                    return false;
+                if (tileOffset < length) {
+                    resultSum += ((Number) Array.get(testOutput, tileOffset)).doubleValue();
+                    expectedSum += ((Number) Array.get(Array.get(data, j + y), i + x)).doubleValue();
                 }
-                resultSum += ((Number) Array.get(testOutput, tileOffset)).doubleValue();
-                expectedSum += ((Number) Array.get(Array.get(data, j + y), i + x)).doubleValue();
             }
         }
 
         assertEquals("StreamTiler_" + test, expectedSum, resultSum, 0);
-
-        return true;
     }
 
     @Test
@@ -238,7 +232,7 @@ public class TilerTest {
         doTest(data, "long");
     }
 
-    private void doTest(Object data, String suffix) throws IOException, FitsException, Exception {
+    private void doTest(Object data, String suffix) throws Exception {
         Fits f = null;
         FitsFile bf = null;
         try {

@@ -219,20 +219,17 @@ public abstract class StandardImageTiler implements ImageTiler {
             }
 
             if (output instanceof ArrayDataOutput) {
+                // Intentionally missing char and boolean here as they are not valid BITPIX values.
                 final ArrayDataOutput arrayDataOutput = ((ArrayDataOutput) output);
                 for (int i = startFrom; i < startFrom + copyLength; i++) {
                     if (this.base == float.class) {
                         arrayDataOutput.writeFloat(Array.getFloat(data, i));
-                    } else if (this.base == char.class) {
-                        arrayDataOutput.writeChar(Array.getChar(data, i));
                     } else if (this.base == int.class) {
                         arrayDataOutput.writeInt(Array.getInt(data, i));
                     } else if (this.base == double.class) {
                         arrayDataOutput.writeDouble(Array.getDouble(data, i));
                     } else if (this.base == long.class) {
                         arrayDataOutput.writeLong(Array.getLong(data, i));
-                    } else if (this.base == boolean.class) {
-                        arrayDataOutput.writeBoolean(Array.getBoolean(data, i));
                     } else if (this.base == short.class) {
                         arrayDataOutput.writeShort(Array.getShort(data, i));
                     } else if (this.base == byte.class) {
@@ -254,7 +251,7 @@ public abstract class StandardImageTiler implements ImageTiler {
      * @param data    The memory-resident data image. This may be null if the image
      *                is to be read from a file. This should be a multidimensional
      *                primitive array.
-     * @param o       The tile to be filled. This is a simple primitive array.
+     * @param o       The tile to be filled. This is a simple primitive array, or an ArrayDataOutput instance.
      * @param newDims The dimensions of the full image.
      * @param corners The indices of the corner of the image.
      * @param lengths The dimensions of the subset.
@@ -320,7 +317,7 @@ public abstract class StandardImageTiler implements ImageTiler {
                     long actualOffset = offset;
                     int actualOutput = outputOffset;
                     if (posits[mx] < 0) {
-                        actualOffset -= posits[mx] * baseLength;
+                        actualOffset -= (long) posits[mx] * baseLength;
                         actualOutput -= posits[mx];
                         actualLen += posits[mx];
                     }
