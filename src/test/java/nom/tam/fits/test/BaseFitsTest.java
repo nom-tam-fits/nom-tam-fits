@@ -50,6 +50,7 @@ import java.io.FileOutputStream;
 import java.io.IOException;
 import java.io.InputStream;
 import java.io.PrintStream;
+import java.io.RandomAccessFile;
 import java.lang.reflect.Constructor;
 import java.lang.reflect.InvocationHandler;
 import java.lang.reflect.Method;
@@ -1244,18 +1245,39 @@ public class BaseFitsTest {
             fits.rewrite();
         }
 
-        try (final Fits ignored = new Fits(new TestRandomAccessFileIO() {
-            @Override
-            public void position(long n) throws IOException {
-                throw new IOException("Simulated error.");
-            }
-        })) {
+        try {
+            new Fits(new TestRandomAccessFileIO() {
+                @Override
+                public void position(long n) throws IOException {
+                    throw new IOException("Simulated error.");
+                }
+            });
         } catch (FitsException fitsException) {
             // Good.
             Assert.assertEquals("Wrong message.",
                                 "Unable to open data src/test/resources/nom/tam/fits/test/test.fits",
                                 fitsException.getMessage());
         }
+    }
+
+    @Test
+    public void testRandomAccessSkipHDU() throws Exception {
+        makeAsciiTable();
+        try (final Fits fits = new Fits(new TestRandomAccessFileIO(TARGET_BASIC_FITS_TEST_FITS, "rw"))) {
+            BasicHDU<?> image = fits.readHDU();
+            Assert.assertEquals(0L, image.getHeader().getFileOffset());
+
+            fits.readHDU();
+            fits.skipHDU(2);
+            AsciiTableHDU hdu3 = (AsciiTableHDU) fits.readHDU();
+            Assert.assertEquals(28800L, hdu3.getHeader().getFileOffset());
+        }
+    }
+
+    @Test
+    public void testDeprecatedCurrentSize() throws Exception {
+        final Fits fits = makeAsciiTable();
+        Assert.assertEquals("Wrong size.", fits.getNumberOfHDUs(), fits.currentSize());
     }
 
     @Test(expected = FitsException.class)
@@ -1290,9 +1312,14 @@ public class BaseFitsTest {
     }
 
     private static class TestRandomAccessFileIO extends java.io.RandomAccessFile implements RandomAccessFileIO {
-
+        final String name;
         public TestRandomAccessFileIO() throws FileNotFoundException {
-            super("src/test/resources/nom/tam/fits/test/test.fits", "rw");
+            this("src/test/resources/nom/tam/fits/test/test.fits", "rw");
+        }
+
+        public TestRandomAccessFileIO(String name, String mode) throws FileNotFoundException {
+            super(name, mode);
+            this.name = name;
         }
 
         @Override
@@ -1307,7 +1334,7 @@ public class BaseFitsTest {
 
         @Override
         public String toString() {
-            return "src/test/resources/nom/tam/fits/test/test.fits";
+            return name;
         }
     }
 }
