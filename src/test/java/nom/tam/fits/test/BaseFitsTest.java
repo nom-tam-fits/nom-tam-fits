@@ -1243,6 +1243,19 @@ public class BaseFitsTest {
             fits.read();
             fits.rewrite();
         }
+
+        try (final Fits ignored = new Fits(new TestRandomAccessFileIO() {
+            @Override
+            public void position(long n) throws IOException {
+                throw new IOException("Simulated error.");
+            }
+        })) {
+        } catch (FitsException fitsException) {
+            // Good.
+            Assert.assertEquals("Wrong message.",
+                                "Unable to open data src/test/resources/nom/tam/fits/test/test.fits",
+                                fitsException.getMessage());
+        }
     }
 
     @Test(expected = FitsException.class)
@@ -1276,7 +1289,8 @@ public class BaseFitsTest {
         assertTrue(hdus[1].getHeader().containsKey(Standard.XTENSION));
     }
 
-    private final static class TestRandomAccessFileIO extends java.io.RandomAccessFile implements RandomAccessFileIO {
+    private static class TestRandomAccessFileIO extends java.io.RandomAccessFile implements RandomAccessFileIO {
+
         public TestRandomAccessFileIO() throws FileNotFoundException {
             super("src/test/resources/nom/tam/fits/test/test.fits", "rw");
         }
@@ -1289,6 +1303,11 @@ public class BaseFitsTest {
         @Override
         public void position(long n) throws IOException {
             super.seek(n);
+        }
+
+        @Override
+        public String toString() {
+            return "src/test/resources/nom/tam/fits/test/test.fits";
         }
     }
 }
