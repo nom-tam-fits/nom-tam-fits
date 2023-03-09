@@ -7,6 +7,7 @@
 [![Project Site](https://github.com/nom-tam-fits/nom-tam-fits/actions/workflows/site.yml/badge.svg)](https://github.com/nom-tam-fits/nom-tam-fits/actions/workflows/site.yml)
 
 
+ - [Known Issues](#known-issues)
  - [Introduction](#introduction)
  - [Where to get it](#where-to-get-it)
  - [Reading FITS files](#reading-fits-files)
@@ -14,6 +15,15 @@
  - [FITS headers](#fits-headers)
  - [Compression support](#compression-support)
  - [How to contribute](#contribute)
+
+<a name="known-issues"></a>
+## Known issues
+
+The following outstanding issues are known to affect the current release from the inception. They will be addressed in the next release (1.18.0) targeted for 6/15/2023. The fixes may also be avaiable earlier from the master branch of the Github repository, or as SNAPSHOT releases generated from it on Sonatype (see further below on how to get these).
+
+ - [#349](https://github.com/nom-tam-fits/nom-tam-fits/issues/349): Problems with some quantized tile (de)compressions, e.g. when GZIP is used.
+
+ - [#377](https://github.com/nom-tam-fits/nom-tam-fits/issues/377): When using dithering, the `ZDITHER0` header keyword is not used to record the random seed used for compression, or to seed the random generator for decompression.
 
 
 <a name="introduction"></a>
@@ -171,12 +181,11 @@ When FITS data are being read from a non-compressed file (`FitsFile`), the `read
 <a name="reading-images"></a>
 ### Reading Images
 
-The simplest example of reading an image contained in the first HDU (zero based indexing)
-is given below:
+The simplest example of reading an image contained in the first HDU is given below:
 
 ```java
   Fits f = new Fits("myfile.fits");
-  ImageHDU hdu = (ImageHDU) f.getHDU(0);
+  ImageHDU hdu = (ImageHDU) f.readHDU();
   int[][] image = (int[][]) hdu.getKernel();
 ```
 
