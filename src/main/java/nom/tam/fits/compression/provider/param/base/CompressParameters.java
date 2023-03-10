@@ -110,8 +110,10 @@ public abstract class CompressParameters implements ICompressParameters, Cloneab
             throws FitsException {
         for (int i = 1; i <= binaryTable.getNCols(); i++) {
             HeaderCard card = header.findCard(TTYPEn.n(i));
-            if (card != null && card.getValue().trim().equals(columnName)) {
-                return binaryTable.getColumn(i - 1);
+            if (card != null) {
+                if (card.getValue().trim().equals(columnName)) {
+                    return binaryTable.getColumn(i - 1);
+                }
             }
         }
         return null;

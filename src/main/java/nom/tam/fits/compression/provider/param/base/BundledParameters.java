@@ -92,12 +92,11 @@ public class BundledParameters extends CompressParameters {
      * 
      * @return the compression parameters for the particular bundle component.
      * 
+     * @throws IndexOutOfBoundsException if the index it negative or beyond the index of the last component.
+     * 
      * @see #size()
      */
     public ICompressParameters get(int index) {
-        if (index < 0 || index > bundle.size()) {
-            return null;
-        }
         return bundle.get(index);
     }
 

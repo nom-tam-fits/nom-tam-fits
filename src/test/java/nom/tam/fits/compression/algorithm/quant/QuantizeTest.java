@@ -46,6 +46,7 @@ import org.junit.Test;
 import nom.tam.fits.BinaryTableHDU;
 import nom.tam.fits.FitsFactory;
 import nom.tam.fits.Header;
+import nom.tam.fits.HeaderCard;
 import nom.tam.fits.HeaderCardException;
 import nom.tam.fits.compression.algorithm.hcompress.HCompressorOption;
 import nom.tam.fits.compression.algorithm.quant.QuantizeProcessor.FloatQuantCompressor;
@@ -60,6 +61,7 @@ import nom.tam.fits.compression.provider.param.quant.QuantizeParameters;
 import nom.tam.fits.compression.provider.param.quant.ZBlankColumnParameter;
 import nom.tam.fits.header.Compression;
 import nom.tam.util.ArrayFuncs;
+import nom.tam.util.Cursor;
 import nom.tam.util.SafeClose;
 
 public class QuantizeTest {
@@ -739,6 +741,53 @@ public class QuantizeTest {
         o.setBNull(-999);
         p.setValueFromColumn(0);
         Assert.assertEquals(-999, ((int[]) p.column())[0]);
+    }
+
+    @Test
+    public void testBundledParameters() throws Exception {
+        HCompressorOption co = new HCompressorOption();
+        QuantizeOption qo = new QuantizeOption(co);
+
+        QuantizeParameters q = new QuantizeParameters(qo);
+        HCompressParameters c = new HCompressParameters(co);
+
+        BundledParameters p = new BundledParameters(q, c);
+
+        p.initializeColumns(10);
+
+        Header h1 = new Header();
+        HeaderAccess a1 = new HeaderAccess(h1);
+        q.setValuesInHeader(a1);
+        c.setValuesInHeader(a1);
+
+        Header h2 = new Header();
+        HeaderAccess a2 = new HeaderAccess(h2);
+        p.setValuesInHeader(a2);
+
+        Assert.assertEquals(h1.getNumberOfCards(), h2.getNumberOfCards());
+
+        Cursor<String, HeaderCard> i = h1.iterator();
+        while (i.hasNext()) {
+            HeaderCard card = i.next();
+            Assert.assertEquals(card.getKey(), card.getValue(), h2.findCard(card.getKey()).getValue());
+        }
+    }
+
+    @Test
+    public void testBundledParametersNullComponent() throws Exception {
+        QuantizeParameters q = new QuantizeParameters(null);
+        HCompressParameters c = new HCompressParameters(null);
+        BundledParameters p = new BundledParameters(q, null, c);
+        Assert.assertEquals(2, p.size());
+
+        Assert.assertEquals(q, p.get(0));
+        Assert.assertEquals(c, p.get(1));
+    }
+
+    @Test(expected = UnsupportedOperationException.class)
+    public void testBundledParametersCopyException() throws Exception {
+        BundledParameters p = new BundledParameters();
+        p.copy(new QuantizeOption());
     }
 
 }
