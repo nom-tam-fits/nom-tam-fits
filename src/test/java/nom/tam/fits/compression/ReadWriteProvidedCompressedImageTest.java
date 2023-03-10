@@ -90,6 +90,8 @@ public class ReadWriteProvidedCompressedImageTest {
 
     private final boolean showImage = false;
 
+    private static int assertionCounter = 1;
+
     private void assert_float_image(float[][] actual, float[][] expected, float delta) {
         Assert.assertEquals(expected.length, actual.length);
         for (int axis0 = 0; axis0 < expected.length; axis0++) {
@@ -161,6 +163,8 @@ public class ReadWriteProvidedCompressedImageTest {
                 T compressedData = (T) uncompHdu.asImageHDU().getData().getData();
                 T orgData = (T) hdu.getData().getData();
 
+                // show travis something is going on
+                System.out.println("Asserting image data! " + (assertionCounter++));
                 reader.assertData(orgData, compressedData);
 
                 hdu = readHDU(unFits, ImageHDU.class);

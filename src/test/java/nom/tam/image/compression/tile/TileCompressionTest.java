@@ -1,8 +1,5 @@
 package nom.tam.image.compression.tile;
 
-import java.nio.Buffer;
-import java.nio.ByteBuffer;
-
 /*-
  * #%L
  * nom.tam FITS library
@@ -39,24 +36,25 @@ import org.junit.Test;
 
 import nom.tam.fits.Fits;
 import nom.tam.fits.FitsFactory;
+import nom.tam.fits.Header;
 import nom.tam.fits.ImageHDU;
-import nom.tam.fits.header.Compression;
 import nom.tam.fits.compression.algorithm.rice.RiceCompressOption;
+import nom.tam.fits.header.Compression;
 import nom.tam.image.compression.hdu.CompressedImageHDU;
-
 
 public class TileCompressionTest {
 
     public int[][] getRectangularImage(int nx, int ny) {
         int[][] im = new int[ny][nx];
 
-        for (int y = 0; y < im.length; y++) for (int x = 0; x < im[y].length; x++) {
-            im[y][x] = x + y;
-        }
+        for (int y = 0; y < im.length; y++)
+            for (int x = 0; x < im[y].length; x++) {
+                im[y][x] = x + y;
+            }
 
         return im;
     }
-    
+
     @Test
     public void rectangularRiceCompressTest() throws Exception {
         int[][] im = getRectangularImage(32, 80);
@@ -65,10 +63,8 @@ public class TileCompressionTest {
         ImageHDU hdu = (ImageHDU) FitsFactory.hduFactory(im);
         CompressedImageHDU cHDU = CompressedImageHDU.fromImageHDU(hdu, -1, 1);
 
-        cHDU.setCompressAlgorithm(Compression.ZCMPTYPE_RICE_1)
-        .setQuantAlgorithm(null)
-        .getCompressOption(RiceCompressOption.class)
-        .setBlockSize(32);
+        cHDU.setCompressAlgorithm(Compression.ZCMPTYPE_RICE_1).setQuantAlgorithm(null)
+                .getCompressOption(RiceCompressOption.class).setBlockSize(32);
 
         cHDU.compress();
 
@@ -81,28 +77,26 @@ public class TileCompressionTest {
 
         hdu = cHDU.asImageHDU();
         int[][] im2 = (int[][]) hdu.getKernel();
-        
+
         Assert.assertArrayEquals(im, im2);
     }
-    
+
     @Test
     public void tileCompress3DTest() throws Exception {
         int[][][] im = new int[23][17][13];
-        
-        for (int i = 0; i < im.length; i++) 
+
+        for (int i = 0; i < im.length; i++)
             for (int j = 0; j < im[0].length; j++)
                 for (int k = 0; k < im[0][0].length; k++)
                     im[i][j][k] = i + j + k;
-        
+
         String fileName = "target/tile3D.fits.fz";
 
         ImageHDU hdu = (ImageHDU) FitsFactory.hduFactory(im);
         CompressedImageHDU cHDU = CompressedImageHDU.fromImageHDU(hdu, 8, 8);
 
-        cHDU.setCompressAlgorithm(Compression.ZCMPTYPE_RICE_1)
-        .setQuantAlgorithm(null)
-        .getCompressOption(RiceCompressOption.class)
-        .setBlockSize(32);
+        cHDU.setCompressAlgorithm(Compression.ZCMPTYPE_RICE_1).setQuantAlgorithm(null)
+                .getCompressOption(RiceCompressOption.class).setBlockSize(32);
 
         cHDU.compress();
 
@@ -115,26 +109,24 @@ public class TileCompressionTest {
 
         hdu = cHDU.asImageHDU();
         int[][][] im2 = (int[][][]) hdu.getKernel();
-        
+
         Assert.assertArrayEquals(im, im2);
     }
-    
-    
+
     @Test
     public void tileCompress1DTest() throws Exception {
         int[] im = new int[10000];
-        
-        for (int i = 0; i < im.length; i++) im[i] = i;
-        
+
+        for (int i = 0; i < im.length; i++)
+            im[i] = i;
+
         String fileName = "target/tile1D.fits.fz";
 
         ImageHDU hdu = (ImageHDU) FitsFactory.hduFactory(im);
         CompressedImageHDU cHDU = CompressedImageHDU.fromImageHDU(hdu, 1024);
 
-        cHDU.setCompressAlgorithm(Compression.ZCMPTYPE_RICE_1)
-        .setQuantAlgorithm(null)
-        .getCompressOption(RiceCompressOption.class)
-        .setBlockSize(32);
+        cHDU.setCompressAlgorithm(Compression.ZCMPTYPE_RICE_1).setQuantAlgorithm(null)
+                .getCompressOption(RiceCompressOption.class).setBlockSize(32);
 
         cHDU.compress();
 
@@ -147,7 +139,15 @@ public class TileCompressionTest {
 
         hdu = cHDU.asImageHDU();
         int[] im2 = (int[]) hdu.getKernel();
-        
+
         Assert.assertArrayEquals(im, im2);
+    }
+
+    @Test(expected = IllegalArgumentException.class)
+    public void testZBitPixException() throws Exception {
+        Header h = new Header();
+        h.addValue(Compression.ZBITPIX, 0);
+        TiledImageCompressionOperation op = new TiledImageCompressionOperation(null);
+        op.readPrimaryHeaders(h);
     }
 }
