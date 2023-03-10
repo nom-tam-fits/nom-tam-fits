@@ -39,10 +39,11 @@ import nom.tam.fits.compression.provider.param.api.ICompressHeaderParameter;
 import nom.tam.fits.compression.provider.param.api.ICompressParameters;
 
 /**
- * Compression parameters that are bundled together from sparate compression parameter instances. For example, tiled
- * image compression classes will take parameters that consits of spearate compression and quantization parameters, so
- * this class helps manage such scenarios. The bundle behaves as it it were a single set of all parameters across all
- * its components.
+ * Compression parameters that are bundled together from distinct sets of component parameters. For example, some tiled
+ * image compression methods will take parameters that consist of those specifically for the compression algorithm (e.g.
+ * Rice vs HCompress) and a set of common parameters for the quantization (floating-point to integer conversion). This
+ * class helps manage such composite parameter sets. The bundle behaves as it it were a single set of all parameters
+ * across all its components.
  * 
  * @author Attila Kovacs
  *
@@ -105,10 +106,8 @@ public class BundledParameters extends CompressParameters {
         ArrayList<ICompressColumnParameter> list = new ArrayList<>();
 
         for (ICompressParameters parms : bundle) {
-            if (parms instanceof CompressParameters) {
-                for (ICompressColumnParameter p : ((CompressParameters) parms).columnParameters()) {
-                    list.add(p);
-                }
+            for (ICompressColumnParameter p : ((CompressParameters) parms).columnParameters()) {
+                list.add(p);
             }
         }
 
@@ -120,10 +119,8 @@ public class BundledParameters extends CompressParameters {
     protected ICompressHeaderParameter[] headerParameters() {
         ArrayList<ICompressHeaderParameter> list = new ArrayList<>();
         for (ICompressParameters parms : bundle) {
-            if (parms instanceof CompressParameters) {
-                for (ICompressHeaderParameter p : ((CompressParameters) parms).headerParameters()) {
-                    list.add(p);
-                }
+            for (ICompressHeaderParameter p : ((CompressParameters) parms).headerParameters()) {
+                list.add(p);
             }
         }
 

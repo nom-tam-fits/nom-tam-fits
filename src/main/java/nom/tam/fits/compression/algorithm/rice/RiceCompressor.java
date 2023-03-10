@@ -402,7 +402,8 @@ public abstract class RiceCompressor<T extends Buffer> implements ICompressor<T>
             lastpix = readBuffer.get() & UNSIGNED_BYTE_MASK;
         } else if (this.bitsPerPixel == ElementType.SHORT.bitPix()) {
             lastpix = readBuffer.getShort() & UNSIGNED_SHORT_MASK;
-        } else if (this.bitsPerPixel == ElementType.INT.bitPix()) {
+        } else {
+            // Must be (this.bitsPerPixel == ElementType.INT.bitPix())
             lastpix = readBuffer.getInt() & UNSIGNED_INTEGER_MASK;
         }
         long b = readBuffer.get() & BYTE_MASK; /* bit buffer */

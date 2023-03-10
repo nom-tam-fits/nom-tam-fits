@@ -73,7 +73,7 @@ public abstract class HCompressor<T extends Buffer> implements ICompressor<T> {
     }
 
     public static class IntHCompressor extends HCompressor<IntBuffer> {
-        
+
         public IntHCompressor(HCompressorOption options) {
             super(options);
         }
@@ -125,31 +125,28 @@ public abstract class HCompressor<T extends Buffer> implements ICompressor<T> {
         }
     }
 
-    private HCompress compress;
+    private final HCompress compress;
 
-    private HDecompress decompress;
+    private final HDecompress decompress;
 
     private final HCompressorOption options;
 
     public HCompressor(HCompressorOption options) {
         this.options = options;
+        this.compress = new HCompress();
+        this.decompress = new HDecompress();
     }
 
     private HCompress compress() {
-        if (this.compress == null) {
-            this.compress = new HCompress();
-        }
         return this.compress;
     }
 
     protected void compress(long[] longArray, ByteBuffer compressed) {
-        compress().compress(longArray, this.options.getTileHeight(), this.options.getTileWidth(), this.options.getScale(), compressed);
+        compress().compress(longArray, this.options.getTileHeight(), this.options.getTileWidth(),
+                this.options.getScale(), compressed);
     }
 
     private HDecompress decompress() {
-        if (this.decompress == null) {
-            this.decompress = new HDecompress();
-        }
         return this.decompress;
     }
 
