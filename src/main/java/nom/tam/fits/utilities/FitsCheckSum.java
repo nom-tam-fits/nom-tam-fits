@@ -71,10 +71,12 @@ import nom.tam.util.RandomAccess;
  * without the need to read potentially huge data into RAM first, and for easily accessing the values stored in FITS
  * headers.
  * </p>
+ * <p>
+ * See <a href="http://arxiv.org/abs/1201.1345" target="@top">FITS Checksum Proposal</a>
+ * </p>
  * 
  * @author R J Mather, Tony Johnson, Attila Kovacs
  * 
- * @see <a href="http://arxiv.org/abs/1201.1345" target="@top">FITS Checksum Proposal</a>
  * @see nom.tam.fits.header.Checksum#CHECKSUM
  */
 public final class FitsCheckSum {
@@ -373,6 +375,11 @@ public final class FitsCheckSum {
 
     /**
      * @deprecated Use {@link #encode(long, boolean)} instead.
+     * 
+     * @param c The calculated 32-bit (unsigned) checksum
+     * @param compl Whether to complement the raw checksum (as defined by the convention).
+     * 
+     * @return The encoded checksum, suitably encoded for use with the CHECKSUM header
      */
     @Deprecated
     public static String checksumEnc(final long c, final boolean compl) {
@@ -498,7 +505,6 @@ public final class FitsCheckSum {
         long sum = (bb.getInt() + bb.getInt() + bb.getInt() + bb.getInt());
         return (compl ? ~sum : sum) & FitsIO.INTEGER_MASK;
     }
-
 
     /**
      * Calculates the total checksum from partial sums. For example combining checksums from a header and data segment

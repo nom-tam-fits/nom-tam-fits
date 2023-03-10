@@ -1,9 +1,22 @@
 <document xmlns="http://maven.apache.org/changes/1.0.0" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:schemaLocation="http://maven.apache.org/changes/1.0.0 http://maven.apache.org/xsd/changes-1.0.0.xsd">
 	<body>
 
-    <release version="1.17.1-SNAPSHOT" date="2022-10-11" description="Maintenance release with bug fixes.">
-      <action type="fix" dev="keastrid" issue="342">
-	      Fix occasional NullPointerException in tiled image compression resulting from incomplete initializiation of TiledImageCompressionOperation.
+    <release version="1.17.1" date="2023-03-15" description="Maintenance release with critical bug fixes.">
+      <action type="fix" dev="attipaci" issue="368">
+	      Fixed first extension written as primary if primary HDU contained no data (affects 1.17.0).
+      </action>
+      <action type="fix" dev="attipaci" issue="367">
+	      Fixed incorrect checksum calculated directly from file in multi-HDU FITS, and other checksum fixes (affects 1.17.0).
+      </action>
+      <action type="fix" dev="keastrid" issue="341">
+	      Fixed occasional NullPointerException in tiled image compression resulting from incomplete initializiation of TiledImageCompressionOperation.
+      </action>
+	  <action type="update" dev="attipaci" issue="373">
+	      Fixed GitHub Actions site build error, by removing unused broken dependency from POM.
+      </action>
+      <action type="add" dev="attipaci" issue="376">
+	      Upload coverage report to Coveralls.io also (forks need to set a repo token via the repo secret COVERALLS_REPO_TOKEN if want to
+	      enable reporting also).
       </action>
     </release>
 

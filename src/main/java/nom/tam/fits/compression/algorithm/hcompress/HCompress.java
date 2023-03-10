@@ -44,8 +44,9 @@ import java.nio.LongBuffer;
  * far as possible. The original site for the algorithm is
  * </p>
  * <p>
- * <a href="http://www.stsci.edu/software/hcompress.html">http://www.stsci.edu/
- * software/hcompress.html</a>
+ * See <a
+ * href="http://www.stsci.edu/software/hcompress.html">http://www.stsci.edu
+ * /software/hcompress.html</a>
  * </p>
  * 
  * @author Richard White
