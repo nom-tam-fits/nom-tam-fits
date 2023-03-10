@@ -753,8 +753,6 @@ public class QuantizeTest {
 
         BundledParameters p = new BundledParameters(q, c);
 
-        p.initializeColumns(10);
-
         Header h1 = new Header();
         HeaderAccess a1 = new HeaderAccess(h1);
         q.setValuesInHeader(a1);

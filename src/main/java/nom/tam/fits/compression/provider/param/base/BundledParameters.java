@@ -33,15 +33,10 @@ package nom.tam.fits.compression.provider.param.base;
 
 import java.util.ArrayList;
 
-import nom.tam.fits.BinaryTable;
-import nom.tam.fits.BinaryTableHDU;
-import nom.tam.fits.FitsException;
-import nom.tam.fits.HeaderCardException;
 import nom.tam.fits.compression.algorithm.api.ICompressOption;
 import nom.tam.fits.compression.provider.param.api.ICompressColumnParameter;
 import nom.tam.fits.compression.provider.param.api.ICompressHeaderParameter;
 import nom.tam.fits.compression.provider.param.api.ICompressParameters;
-import nom.tam.fits.compression.provider.param.api.IHeaderAccess;
 
 /**
  * Compression parameters that are bundled together from sparate compression parameter instances. For example, tiled
@@ -103,55 +98,6 @@ public class BundledParameters extends CompressParameters {
     @Override
     public BundledParameters copy(ICompressOption option) {
         throw new UnsupportedOperationException("Cannot copy parameter bundle");
-    }
-
-    @Override
-    public void addColumnsToTable(BinaryTableHDU hdu) throws FitsException {
-        for (ICompressParameters parms : bundle) {
-            parms.addColumnsToTable(hdu);
-        }
-    }
-
-    @Override
-    public void getValuesFromColumn(int index) {
-        for (ICompressParameters parms : bundle) {
-            parms.getValuesFromColumn(index);
-        }
-    }
-
-    @Override
-    public void getValuesFromHeader(IHeaderAccess header) {
-        for (ICompressParameters parms : bundle) {
-            parms.getValuesFromHeader(header);
-        }
-    }
-
-    @Override
-    public void initializeColumns(IHeaderAccess header, BinaryTable binaryTable, int size) throws FitsException {
-        for (ICompressParameters parms : bundle) {
-            parms.initializeColumns(header, binaryTable, size);
-        }
-    }
-
-    @Override
-    public void initializeColumns(int size) {
-        for (ICompressParameters parms : bundle) {
-            parms.initializeColumns(size);
-        }
-    }
-
-    @Override
-    public void setValuesInColumn(int index) {
-        for (ICompressParameters parms : bundle) {
-            parms.setValuesInColumn(index);
-        }
-    }
-
-    @Override
-    public void setValuesInHeader(IHeaderAccess header) throws HeaderCardException {
-        for (ICompressParameters parms : bundle) {
-            parms.setValuesInHeader(header);
-        }
     }
 
     @Override
