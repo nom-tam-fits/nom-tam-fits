@@ -47,11 +47,17 @@ import nom.tam.fits.BinaryTableHDU;
 import nom.tam.fits.FitsFactory;
 import nom.tam.fits.Header;
 import nom.tam.fits.HeaderCardException;
+import nom.tam.fits.compression.algorithm.hcompress.HCompressorOption;
 import nom.tam.fits.compression.algorithm.quant.QuantizeProcessor.FloatQuantCompressor;
+import nom.tam.fits.compression.algorithm.rice.RiceCompressOption;
 import nom.tam.fits.compression.provider.param.api.HeaderAccess;
 import nom.tam.fits.compression.provider.param.api.ICompressColumnParameter;
 import nom.tam.fits.compression.provider.param.api.ICompressHeaderParameter;
+import nom.tam.fits.compression.provider.param.api.ICompressParameters;
+import nom.tam.fits.compression.provider.param.base.BundledParameters;
+import nom.tam.fits.compression.provider.param.hcompress.HCompressParameters;
 import nom.tam.fits.compression.provider.param.quant.QuantizeParameters;
+import nom.tam.fits.compression.provider.param.quant.ZBlankColumnParameter;
 import nom.tam.fits.header.Compression;
 import nom.tam.util.ArrayFuncs;
 import nom.tam.util.SafeClose;
@@ -525,13 +531,13 @@ public class QuantizeTest {
         QuantizeOption baseOption = new QuantizeOption();
         QuantizeTestParameters base = new QuantizeTestParameters(baseOption);
         baseOption.setParameters(base);
-        Assert.assertEquals(1, base.headerParameters().length);
+        Assert.assertEquals(2, base.headerParameters().length);
 
         base.initializeColumns(2);
 
         QuantizeOption optionCopy = baseOption.copy();
         QuantizeTestParameters parameters = (QuantizeTestParameters) optionCopy.getCompressionParameters();
-        Assert.assertEquals(1, parameters.headerParameters().length);
+        Assert.assertEquals(2, parameters.headerParameters().length);
 
         optionCopy.setBNull(-999);
         Assert.assertEquals(2, parameters.headerParameters().length);
@@ -589,6 +595,150 @@ public class QuantizeTest {
         declaredField.setAccessible(true);
         Assert.assertEquals(Integer.valueOf(0), declaredField.get(filter));
 
+    }
+
+    @Test
+    public void testSetParameters() throws Exception {
+        QuantizeOption o = new QuantizeOption(new HCompressorOption());
+
+        QuantizeParameters q = new QuantizeParameters(null);
+        HCompressParameters c = new HCompressParameters(null);
+
+        o.setParameters(new BundledParameters(q, c));
+
+        ICompressParameters p = o.getCompressionParameters();
+
+        Assert.assertEquals(BundledParameters.class, p.getClass());
+
+        BundledParameters b = (BundledParameters) p;
+        Assert.assertEquals(2, b.size());
+
+        Assert.assertEquals(QuantizeParameters.class, b.get(0).getClass());
+        Assert.assertEquals(HCompressParameters.class, b.get(1).getClass());
+    }
+
+    @Test
+    public void testSetParametersNoCompressOption() throws Exception {
+        QuantizeOption o = new QuantizeOption(null);
+
+        QuantizeParameters q = new QuantizeParameters(null);
+        HCompressParameters c = new HCompressParameters(null);
+
+        o.setParameters(new BundledParameters(q, c));
+
+        Assert.assertEquals(QuantizeParameters.class, o.getCompressionParameters().getClass());
+    }
+
+    @Test
+    public void testUwrapOptionNull() throws Exception {
+        QuantizeOption o = new QuantizeOption(new HCompressorOption());
+        Assert.assertNull(o.unwrap(RiceCompressOption.class));
+    }
+
+    @Test
+    public void testUwrapOptionNullNoCompressOption() throws Exception {
+        QuantizeOption o = new QuantizeOption(null);
+        Assert.assertNull(o.unwrap(RiceCompressOption.class));
+    }
+
+    @Test
+    public void testHeaderBlankParameter() throws Exception {
+        QuantizeParameters q = new QuantizeParameters(new QuantizeOption());
+        Header h = new Header();
+
+        h.addValue(Compression.ZQUANTIZ, "UNKNOWN");
+        h.addValue(Compression.ZBLANK, -999);
+
+        q.getValuesFromHeader(new HeaderAccess(h));
+
+        Header h2 = new Header();
+        q.setValuesInHeader(new HeaderAccess(h2));
+
+        Assert.assertEquals(Compression.ZQUANTIZ_NO_DITHER, h2.getStringValue(Compression.ZQUANTIZ));
+        Assert.assertEquals(-999, h2.getIntValue(Compression.ZBLANK));
+    }
+
+    @Test
+    public void testHeaderBlankParameterMissing() throws Exception {
+        QuantizeParameters q = new QuantizeParameters(new QuantizeOption());
+        Header h = new Header();
+
+        q.getValuesFromHeader(new HeaderAccess(h));
+
+        Header h2 = new Header();
+        q.setValuesInHeader(new HeaderAccess(h2));
+
+        Assert.assertEquals(Compression.ZQUANTIZ_NO_DITHER, h2.getStringValue(Compression.ZQUANTIZ));
+        Assert.assertEquals(0, h2.getIntValue(Compression.ZBLANK));
+    }
+
+    @Test
+    public void testHeaderBlankParameterNoOption() throws Exception {
+        QuantizeParameters q = new QuantizeParameters(null);
+        Header h = new Header();
+
+        h.addValue(Compression.ZQUANTIZ, "UNKNOWN");
+        h.addValue(Compression.ZBLANK, -999);
+
+        q.getValuesFromHeader(new HeaderAccess(h));
+
+        Header h2 = new Header();
+        q.setValuesInHeader(new HeaderAccess(h2));
+
+        Assert.assertEquals(null, h2.getStringValue(Compression.ZQUANTIZ));
+        Assert.assertEquals(0, h2.getIntValue(Compression.ZBLANK));
+    }
+
+    @Test
+    public void testColumnParameterCreateData() throws Exception {
+        QuantizeOption o = new QuantizeOption();
+        ZBlankColumnParameter p = new ZBlankColumnParameter(o);
+
+        p.setColumnData(null, 10);
+        Assert.assertEquals(10, p.getColumnData().length);
+
+        p.setColumnData(null, 0);
+        Assert.assertNull(p.getColumnData());
+
+        p.setColumnData(null, 10);
+        Assert.assertEquals(10, p.getColumnData().length);
+
+        p.setColumnData(null, -1);
+        Assert.assertNull(p.getColumnData());
+    }
+
+    @Test
+    public void testNullColumnData() throws Exception {
+        QuantizeOption o = new QuantizeOption();
+        QuantizeParameters p = new QuantizeParameters(o);
+
+        p.getValuesFromColumn(0);
+        Assert.assertNull(o.getBNull());
+        Assert.assertEquals(1.0, o.getBScale(), 1e-6);
+        Assert.assertEquals(0.0, o.getBZero(), 1e-6);
+
+        p.setValuesInColumn(0);
+        p.setValueInColumn(0); // deprecated old form...
+    }
+
+    @Test
+    public void testCopyWrongOption() throws Exception {
+        QuantizeParameters p = new QuantizeParameters(null);
+        Assert.assertNull(p.copy(new RiceCompressOption()));
+    }
+
+    @Test
+    public void testDeprecatedMethods() throws Exception {
+        QuantizeOption o = new QuantizeOption();
+        ZBlankColumnParameter p = new ZBlankColumnParameter(o);
+
+        p.column(null, 10);
+        Assert.assertEquals(10, ((int[]) p.column()).length);
+        Assert.assertEquals(10, ((int[]) p.initializedColumn()).length);
+
+        o.setBNull(-999);
+        p.setValueFromColumn(0);
+        Assert.assertEquals(-999, ((int[]) p.column())[0]);
     }
 
 }

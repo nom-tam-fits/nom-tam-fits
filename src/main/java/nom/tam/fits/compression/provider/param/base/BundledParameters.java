@@ -142,9 +142,9 @@ public class BundledParameters extends CompressParameters {
     }
 
     @Override
-    public void setValueInColumn(int index) {
+    public void setValuesInColumn(int index) {
         for (ICompressParameters parms : bundle) {
-            parms.setValueInColumn(index);
+            parms.setValuesInColumn(index);
         }
     }
 

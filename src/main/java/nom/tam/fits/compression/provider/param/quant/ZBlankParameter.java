@@ -48,6 +48,10 @@ final class ZBlankParameter extends CompressHeaderParameter<QuantizeOption> {
 
     @Override
     public void getValueFromHeader(IHeaderAccess header) {
+        if (getOption() == null) {
+            return;
+        }
+
         HeaderCard card = header.findCard(getName());
         if (card != null) {
             getOption().setBNull(card.getValue(Integer.class, getOption().getBNull()));
@@ -56,13 +60,14 @@ final class ZBlankParameter extends CompressHeaderParameter<QuantizeOption> {
 
     @Override
     public void setValueInHeader(IHeaderAccess header) {
-        Integer bNull = getOption().getBNull();
-        if (bNull != null) {
-            header.addValue(Compression.ZBLANK, bNull);
+        if (getOption() == null) {
+            return;
+        }
+
+        Integer blank = getOption().getBNull();
+        if (blank != null) {
+            header.addValue(Compression.ZBLANK, blank);
         }
     }
 
-    protected boolean isActive() {
-        return getOption().getBNull() != null;
-    }
 }

@@ -93,7 +93,7 @@ public abstract class CompressParameters implements ICompressParameters, Cloneab
     }
 
     @Override
-    public void setValueInColumn(int index) {
+    public void setValuesInColumn(int index) {
         for (ICompressColumnParameter parameter : columnParameters()) {
             parameter.setValueInColumn(index);
         }

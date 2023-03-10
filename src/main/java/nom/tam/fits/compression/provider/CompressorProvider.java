@@ -259,7 +259,7 @@ public class CompressorProvider implements ICompressorProvider {
         }
 
         @Override
-        public void setValueInColumn(int index) {
+        public void setValuesInColumn(int index) {
         }
 
         @Override
@@ -309,10 +309,8 @@ public class CompressorProvider implements ICompressorProvider {
         // System.err.println(" ### quant = " + quantAlgorithm + ", algo = " + compressionAlgorithm + ", base = " +
         // baseType.getSimpleName());
 
-        // TODO Currently always quantizes floating-point into 32-bit integers, but one could of course quantize
-        // into narrower integer types such as 16-bit shorts or 8-bit bytes also... We don't really have
-        // the API set up right now to choose the quantization target type separately...
         if (quantAlgorithm != null) {
+            // Standard compression via 32-bit integers...
             if (baseType.equals(double.class) || baseType.equals(float.class)) {
                 quantType = baseType;
                 baseType = int.class;

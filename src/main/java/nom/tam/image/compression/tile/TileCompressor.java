@@ -86,7 +86,7 @@ public class TileCompressor extends TileCompressionOperation {
                 if (this.nullPixelMaskPerserver != null) {
                     this.nullPixelMaskPerserver.preserveNull();
                 }
-                this.tileOptions.getCompressionParameters().setValueInColumn(getTileIndex());
+                this.tileOptions.getCompressionParameters().setValuesInColumn(getTileIndex());
             }
         }
 
@@ -97,7 +97,7 @@ public class TileCompressor extends TileCompressionOperation {
             compressSuccess = getGzipCompressorControl().compress(getTileBuffer().getBuffer(), this.compressedData,
                     null);
             if (compressSuccess) {
-                this.tileOptions.getCompressionParameters().setValueInColumn(getTileIndex());
+                this.tileOptions.getCompressionParameters().setValuesInColumn(getTileIndex());
             }
         }
 

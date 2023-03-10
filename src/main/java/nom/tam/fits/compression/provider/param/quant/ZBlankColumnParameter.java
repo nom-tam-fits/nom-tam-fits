@@ -43,6 +43,10 @@ public final class ZBlankColumnParameter extends CompressColumnParameter<int[], 
 
     @Override
     public void getValueFromColumn(int index) {
+        if (getOption() == null) {
+            return;
+        }
+
         if (getOption().isCheckNull()) {
             int[] col = getColumnData();
             if (col != null) {
@@ -55,9 +59,13 @@ public final class ZBlankColumnParameter extends CompressColumnParameter<int[], 
 
     @Override
     public void setValueInColumn(int index) {
-        Integer blankValue = getOption().getBNull();
-        if (blankValue == null) {
-            blankValue = Integer.MIN_VALUE;
+
+        Integer blankValue = Integer.MIN_VALUE;
+
+        if (getOption() != null) {
+            if (getOption().getBNull() != null) {
+                blankValue = getOption().getBNull();
+            }
         }
 
         int[] col = getColumnData();

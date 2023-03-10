@@ -65,10 +65,7 @@ public class QuantizeParameters extends CompressParameters {
 
     @Override
     protected ICompressHeaderParameter[] headerParameters() {
-        if (this.blank.isActive()) {
-            return new ICompressHeaderParameter[] {this.quantz, this.blank};
-        }
-        return new ICompressHeaderParameter[] {this.quantz};
+        return new ICompressHeaderParameter[] {this.quantz, this.blank};
     }
 
     @Override
