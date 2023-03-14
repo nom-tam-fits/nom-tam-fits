@@ -215,7 +215,7 @@ public class ImageData extends Data {
             this.tiler = new ImageDataTiler(null, 0, this.dataDescription);
         }
 
-        int pad = FitsUtil.padding(getTrueSize());
+        long pad = FitsUtil.padding(getTrueSize());
         try {
             i.skipAllBytes(pad);
         } catch (EOFException e) {

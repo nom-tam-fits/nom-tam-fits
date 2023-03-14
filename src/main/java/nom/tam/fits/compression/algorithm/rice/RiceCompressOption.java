@@ -33,6 +33,7 @@ package nom.tam.fits.compression.algorithm.rice;
 
 import nom.tam.fits.compression.algorithm.api.ICompressOption;
 import nom.tam.fits.compression.provider.param.api.ICompressParameters;
+import nom.tam.fits.compression.provider.param.rice.RiceCompressParameters;
 import nom.tam.util.type.ElementType;
 
 public class RiceCompressOption implements ICompressOption {
@@ -44,33 +45,37 @@ public class RiceCompressOption implements ICompressOption {
     /**
      * this is a circular dependency that still has to be cut.
      */
-    private ICompressParameters parameters;
+    private RiceCompressParameters parameters;
 
     private int blockSize = DEFAULT_RICE_BLOCKSIZE;
 
     private Integer bytePix = null;
 
-    private RiceCompressOption original;
+    public RiceCompressOption() {
+        parameters = new RiceCompressParameters(this);
+    }
 
     @Override
     public RiceCompressOption copy() {
         try {
-            return ((RiceCompressOption) clone()).setOriginal(this);
+            RiceCompressOption copy = (RiceCompressOption) clone();
+            copy.parameters = this.parameters.copy(copy);
+            return copy;
         } catch (CloneNotSupportedException e) {
             throw new IllegalStateException("option could not be cloned", e);
         }
     }
 
-    public int getBlockSize() {
+    public final int getBlockSize() {
         return this.blockSize;
     }
 
-    public int getBytePix() {
-        return this.bytePix;
+    public final int getBytePix() {
+        return this.bytePix == null ? DEFAULT_RICE_BYTEPIX : this.bytePix;
     }
 
     @Override
-    public ICompressParameters getCompressionParameters() {
+    public RiceCompressParameters getCompressionParameters() {
         return this.parameters;
     }
 
@@ -89,9 +94,20 @@ public class RiceCompressOption implements ICompressOption {
         return this;
     }
 
+    protected RiceCompressOption setDefaultBytePix(int value) {
+        if (this.bytePix == null) {
+            this.bytePix = value;
+        }
+        return this;
+    }
+
     @Override
     public void setParameters(ICompressParameters parameters) {
-        this.parameters = parameters;
+        if (parameters instanceof RiceCompressParameters) {
+            this.parameters = (RiceCompressParameters) parameters.copy(this);
+        } else {
+            throw new IllegalArgumentException("Wrong type of parameters: " + parameters.getClass().getName());
+        }
     }
 
     @Override
@@ -110,21 +126,5 @@ public class RiceCompressOption implements ICompressOption {
             return clazz.cast(this);
         }
         return null;
-    }
-
-    private RiceCompressOption setOriginal(RiceCompressOption riceCompressOption) {
-        this.original = riceCompressOption;
-        this.parameters = this.parameters.copy(this);
-        return this;
-    }
-
-    protected RiceCompressOption setDefaultBytePix(int defaultBytePix) {
-        if (this.original != null) {
-            this.original.setDefaultBytePix(defaultBytePix);
-            this.bytePix = this.original.getBytePix();
-        } else if (this.bytePix == null) {
-            this.bytePix = defaultBytePix;
-        }
-        return this;
     }
 }

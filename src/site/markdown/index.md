@@ -7,6 +7,7 @@
 [![Project Site](https://github.com/nom-tam-fits/nom-tam-fits/actions/workflows/site.yml/badge.svg)](https://github.com/nom-tam-fits/nom-tam-fits/actions/workflows/site.yml)
 
 
+ - [Known Issues](#known-issues)
  - [Introduction](#introduction)
  - [Where to get it](#where-to-get-it)
  - [Reading FITS files](#reading-fits-files)
@@ -14,6 +15,15 @@
  - [FITS headers](#fits-headers)
  - [Compression support](#compression-support)
  - [How to contribute](#contribute)
+
+<a name="known-issues"></a>
+## Known issues
+
+The following outstanding issues are known to affect the current release (1.17.1) from the inception. They will be addressed in the next release (1.18.0) targeted for 6/15/2023. The fixes may also be avaiable earlier from the master branch of the Github repository, or as SNAPSHOT releases generated from it on Sonatype (see further below on how to get these).
+
+ - [#349](https://github.com/nom-tam-fits/nom-tam-fits/issues/349): Problems with some quantized tile (de)compressions, e.g. when GZIP is used.
+
+ - [#377](https://github.com/nom-tam-fits/nom-tam-fits/issues/377): When using dithering, the `ZDITHER0` header keyword is not used to record the random seed used for compression, or to seed the random generator for decompression.
 
 
 <a name="introduction"></a>
@@ -171,12 +181,11 @@ When FITS data are being read from a non-compressed file (`FitsFile`), the `read
 <a name="reading-images"></a>
 ### Reading Images
 
-The simplest example of reading an image contained in the first HDU (zero based indexing)
-is given below:
+The simplest example of reading an image contained in the first HDU is given below:
 
 ```java
   Fits f = new Fits("myfile.fits");
-  ImageHDU hdu = (ImageHDU) f.getHDU(0);
+  ImageHDU hdu = (ImageHDU) f.readHDU();
   int[][] image = (int[][]) hdu.getKernel();
 ```
 
@@ -367,7 +376,7 @@ It is also harder to do if there are variable length records although something 
 
 ### Tolerance to standard violations in 3rd party FITS files.
 
-By default the library will be tolerant to FITS standard violations when parsing 3rd-party FITS files. We believe that if you use this library to read a FITS produced by other software, you are mainly interested to find out what's inside it, rather than know if it was written properly. However, problems such as missing padding at the end of the file, or an unexpected end-of-file before content was fully parsed, will be logged so they can be inspected. Soft violations of header standards (those that can be overcome with educated guesses) are also tolerared when reading, but logging for these is not enabled by default (since they may be many, and likely you don't care). You can enable logging standard violations in 3rd-party headers by `Header.setParserWarningsEnabled(true)`. You can also enforce stricter compliance to standard when reading FITS files via `FitsFactory.setAllowHeaderRepairs(true)` and `FitsFactory.setAllowTerminalJunk(false)`. When violations are not tolerated, appropriate exceptions will be thrown during reading.
+By default the library will be tolerant to FITS standard violations when parsing 3rd-party FITS files. We believe that if you use this library to read a FITS produced by other software, you are mainly interested to find out what's inside it, rather than know if it was written properly. However, problems such as missing padding at the end of the file, or an unexpected end-of-file before content was fully parsed, will be logged so they can be inspected. Soft violations of header standards (those that can be overcome with educated guesses) are also tolerared when reading, but logging for these is not enabled by default (since they may be many, and likely you don't care). You can enable logging standard violations in 3rd-party headers by `Header.setParserWarningsEnabled(true)`. You can also enforce stricter compliance to standard when reading FITS files via `FitsFactory.setAllowHeaderRepairs(false)` and `FitsFactory.setAllowTerminalJunk(false)`. When violations are not tolerated, appropriate exceptions will be thrown during reading.
 
 
 

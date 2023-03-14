@@ -41,36 +41,29 @@ public final class ZBlankColumnParameter extends CompressColumnParameter<int[], 
         super(Compression.ZBLANK_COLUMN, quantizeOption, int[].class);
     }
 
-    private static boolean equals(Integer i1, Integer i2) {
-        if (i1 == null) {
-            return i2 == null;
-        }
-        return i1.equals(i2);
-    }
-
     @Override
     public void getValueFromColumn(int index) {
-        Integer bNull;
-        if (this.original != null) {
-            bNull = getOption().getOriginal().getBNull();
-        } else {
-            bNull = getOption().getBNull();
-        }
-        if (bNull == null) {
-            int[] originalColumn = originalColumn();
-            if (originalColumn != null) {
-                bNull = originalColumn[index];
+        if (getOption().isCheckNull()) {
+            int[] col = getColumnData();
+            if (col != null) {
+                getOption().setBNull(col[index]);
+                return;
             }
         }
-        if (bNull != null) {
-            getOption().setBNull(bNull);
-        }
+        getOption().setBNull(null);
     }
 
     @Override
     public void setValueInColumn(int index) {
-        if (this.original != null && !equals(getOption().getBNull(), getOption().getOriginal().getBNull())) {
-            initializedColumn()[index] = getOption().getBNull();
+        Integer blankValue = Integer.MIN_VALUE;
+
+        if (getOption().getBNull() != null) {
+            blankValue = getOption().getBNull();
+        }
+
+        int[] col = getColumnData();
+        if (col != null) {
+            col[index] = blankValue;
         }
     }
 }

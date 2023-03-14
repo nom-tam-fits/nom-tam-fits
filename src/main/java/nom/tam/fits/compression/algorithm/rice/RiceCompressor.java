@@ -7,8 +7,6 @@ import java.nio.ShortBuffer;
 import java.util.logging.Logger;
 
 import nom.tam.fits.compression.algorithm.api.ICompressor;
-import nom.tam.fits.compression.algorithm.quant.QuantizeProcessor.DoubleQuantCompressor;
-import nom.tam.fits.compression.algorithm.quant.QuantizeProcessor.FloatQuantCompressor;
 import nom.tam.util.FitsIO;
 import nom.tam.util.type.ElementType;
 
@@ -44,12 +42,10 @@ import nom.tam.util.type.ElementType;
  */
 
 /**
- * The original compression was designed by Rice, Yeh, and Miller the code was
- * written by Richard White at STSc at the STScI and included (ported to c and
- * adapted) in cfitsio by William Pence, NASA/GSFC. That code was then ported to
- * java by R. van Nieuwenhoven. Later it was massively refactored to harmonize
- * the different compression algorithms and reduce the duplicate code pieces
- * without obscuring the algorithm itself as far as possible.
+ * The original compression was designed by Rice, Yeh, and Miller the code was written by Richard White at STSc at the
+ * STScI and included (ported to c and adapted) in cfitsio by William Pence, NASA/GSFC. That code was then ported to
+ * java by R. van Nieuwenhoven. Later it was massively refactored to harmonize the different compression algorithms and
+ * reduce the duplicate code pieces without obscuring the algorithm itself as far as possible.
  *
  * @author Richard White
  * @author William Pence
@@ -70,7 +66,8 @@ public abstract class RiceCompressor<T extends Buffer> implements ICompressor<T>
         @Override
         public boolean compress(ByteBuffer buffer, ByteBuffer writeBuffer) {
             this.pixelBuffer = buffer;
-            super.compress(buffer.limit(), this.pixelBuffer.get(this.pixelBuffer.position()), new BitBuffer(writeBuffer));
+            super.compress(buffer.limit(), this.pixelBuffer.get(this.pixelBuffer.position()),
+                    new BitBuffer(writeBuffer));
             return true;
         }
 
@@ -91,20 +88,6 @@ public abstract class RiceCompressor<T extends Buffer> implements ICompressor<T>
         }
     }
 
-    public static class DoubleRiceCompressor extends DoubleQuantCompressor {
-
-        public DoubleRiceCompressor(RiceQuantizeCompressOption options) {
-            super(options, new IntRiceCompressor(options.getRiceCompressOption()));
-        }
-    }
-
-    public static class FloatRiceCompressor extends FloatQuantCompressor {
-
-        public FloatRiceCompressor(RiceQuantizeCompressOption options) {
-            super(options, new IntRiceCompressor(options.getRiceCompressOption()));
-        }
-    }
-
     public static class IntRiceCompressor extends RiceCompressor<IntBuffer> {
 
         private IntBuffer pixelBuffer;
@@ -116,7 +99,8 @@ public abstract class RiceCompressor<T extends Buffer> implements ICompressor<T>
         @Override
         public boolean compress(IntBuffer buffer, ByteBuffer writeBuffer) {
             this.pixelBuffer = buffer;
-            super.compress(buffer.limit(), this.pixelBuffer.get(this.pixelBuffer.position()), new BitBuffer(writeBuffer));
+            super.compress(buffer.limit(), this.pixelBuffer.get(this.pixelBuffer.position()),
+                    new BitBuffer(writeBuffer));
             return true;
         }
 
@@ -148,7 +132,8 @@ public abstract class RiceCompressor<T extends Buffer> implements ICompressor<T>
         @Override
         public boolean compress(ShortBuffer buffer, ByteBuffer writeBuffer) {
             this.pixelBuffer = buffer;
-            super.compress(buffer.limit(), this.pixelBuffer.get(this.pixelBuffer.position()), new BitBuffer(writeBuffer));
+            super.compress(buffer.limit(), this.pixelBuffer.get(this.pixelBuffer.position()),
+                    new BitBuffer(writeBuffer));
             return true;
         }
 
@@ -208,29 +193,19 @@ public abstract class RiceCompressor<T extends Buffer> implements ICompressor<T>
     private static final int FS_MAX_FOR_SHORT = 14;
 
     /*
-     * nonzero_count is lookup table giving number of bits in 8-bit values not
-     * including leading zeros used in fits_rdecomp, fits_rdecomp_short and
-     * fits_rdecomp_byte.
+     * nonzero_count is lookup table giving number of bits in 8-bit values not including leading zeros used in
+     * fits_rdecomp, fits_rdecomp_short and fits_rdecomp_byte.
+     * 
      * @formatter:off
      */
-    private static final int[] NONZERO_COUNT = {
-        0, 1, 2, 2, 3, 3, 3, 3, 4, 4, 4, 4, 4, 4, 4, 4,
-        5, 5, 5, 5, 5, 5, 5, 5, 5, 5, 5, 5, 5, 5, 5, 5,
-        6, 6, 6, 6, 6, 6, 6, 6, 6, 6, 6, 6, 6, 6, 6, 6,
-        6, 6, 6, 6, 6, 6, 6, 6, 6, 6, 6, 6, 6, 6, 6, 6,
-        7, 7, 7, 7, 7, 7, 7, 7, 7, 7, 7, 7, 7, 7, 7, 7,
-        7, 7, 7, 7, 7, 7, 7, 7, 7, 7, 7, 7, 7, 7, 7, 7,
-        7, 7, 7, 7, 7, 7, 7, 7, 7, 7, 7, 7, 7, 7, 7, 7,
-        7, 7, 7, 7, 7, 7, 7, 7, 7, 7, 7, 7, 7, 7, 7, 7,
-        8, 8, 8, 8, 8, 8, 8, 8, 8, 8, 8, 8, 8, 8, 8, 8,
-        8, 8, 8, 8, 8, 8, 8, 8, 8, 8, 8, 8, 8, 8, 8, 8,
-        8, 8, 8, 8, 8, 8, 8, 8, 8, 8, 8, 8, 8, 8, 8, 8,
-        8, 8, 8, 8, 8, 8, 8, 8, 8, 8, 8, 8, 8, 8, 8, 8,
-        8, 8, 8, 8, 8, 8, 8, 8, 8, 8, 8, 8, 8, 8, 8, 8,
-        8, 8, 8, 8, 8, 8, 8, 8, 8, 8, 8, 8, 8, 8, 8, 8,
-        8, 8, 8, 8, 8, 8, 8, 8, 8, 8, 8, 8, 8, 8, 8, 8,
-        8, 8, 8, 8, 8, 8, 8, 8, 8, 8, 8, 8, 8, 8, 8, 8
-    };
+    private static final int[] NONZERO_COUNT = {0, 1, 2, 2, 3, 3, 3, 3, 4, 4, 4, 4, 4, 4, 4, 4, 5, 5, 5, 5, 5, 5, 5, 5,
+            5, 5, 5, 5, 5, 5, 5, 5, 6, 6, 6, 6, 6, 6, 6, 6, 6, 6, 6, 6, 6, 6, 6, 6, 6, 6, 6, 6, 6, 6, 6, 6, 6, 6, 6, 6,
+            6, 6, 6, 6, 7, 7, 7, 7, 7, 7, 7, 7, 7, 7, 7, 7, 7, 7, 7, 7, 7, 7, 7, 7, 7, 7, 7, 7, 7, 7, 7, 7, 7, 7, 7, 7,
+            7, 7, 7, 7, 7, 7, 7, 7, 7, 7, 7, 7, 7, 7, 7, 7, 7, 7, 7, 7, 7, 7, 7, 7, 7, 7, 7, 7, 7, 7, 7, 7, 8, 8, 8, 8,
+            8, 8, 8, 8, 8, 8, 8, 8, 8, 8, 8, 8, 8, 8, 8, 8, 8, 8, 8, 8, 8, 8, 8, 8, 8, 8, 8, 8, 8, 8, 8, 8, 8, 8, 8, 8,
+            8, 8, 8, 8, 8, 8, 8, 8, 8, 8, 8, 8, 8, 8, 8, 8, 8, 8, 8, 8, 8, 8, 8, 8, 8, 8, 8, 8, 8, 8, 8, 8, 8, 8, 8, 8,
+            8, 8, 8, 8, 8, 8, 8, 8, 8, 8, 8, 8, 8, 8, 8, 8, 8, 8, 8, 8, 8, 8, 8, 8, 8, 8, 8, 8, 8, 8, 8, 8, 8, 8, 8, 8,
+            8, 8, 8, 8, 8, 8, 8, 8, 8, 8, 8, 8, 8, 8, 8, 8};
     // @formatter:on
 
     private final int bBits;
@@ -261,27 +236,24 @@ public abstract class RiceCompressor<T extends Buffer> implements ICompressor<T>
             throw new UnsupportedOperationException("Rice only supports 1/2/4 type per pixel");
         }
         /*
-         * From bsize derive: FSBITS = # bits required to store FS FSMAX =
-         * maximum value for FS BBITS = bits/pixel for direct coding
+         * From bsize derive: FSBITS = # bits required to store FS FSMAX = maximum value for FS BBITS = bits/pixel for
+         * direct coding
          */
         this.bBits = 1 << this.fsBits;
     }
 
     /**
      * <p>
-     * undo mapping and differencing Note that some of these operations will
-     * overflow the unsigned int arithmetic -- that's OK, it all works out to
-     * give the right answers in the output file.
+     * undo mapping and differencing Note that some of these operations will overflow the unsigned int arithmetic --
+     * that's OK, it all works out to give the right answers in the output file.
      * </p>
      * <p>
-     * In java this is more complicated because of the missing unsigned
-     * integers. trying to simulate the behavior
+     * In java this is more complicated because of the missing unsigned integers. trying to simulate the behavior
      * </p>
      *
-     * @param lastpix
-     *            the current last pix value
-     * @param diff
-     *            the difference to "add"
+     * @param lastpix the current last pix value
+     * @param diff the difference to "add"
+     * 
      * @return return the new lastpiy value
      */
     private long undoMappingAndDifferencing(long lastpix, long diff) {
@@ -297,15 +269,11 @@ public abstract class RiceCompressor<T extends Buffer> implements ICompressor<T>
     }
 
     /**
-     * compress the integer tiledImageOperation on a rise compressed byte
-     * buffer.
+     * compress the integer tiledImageOperation on a rise compressed byte buffer.
      *
-     * @param dataLength
-     *            length of the data to compress
-     * @param firstPixel
-     *            the value of the first pixel
-     * @param buffer
-     *            the buffer to write to
+     * @param dataLength length of the data to compress
+     * @param firstPixel the value of the first pixel
+     * @param buffer the buffer to write to
      */
     protected void compress(final int dataLength, int firstPixel, BitBuffer buffer) {
         /* the first difference will always be zero */
@@ -319,13 +287,11 @@ public abstract class RiceCompressor<T extends Buffer> implements ICompressor<T>
                 thisblock = dataLength - i;
             }
             /*
-             * Compute differences of adjacent pixels and map them to unsigned
-             * values. Note that this may overflow the integer variables --
-             * that's OK, because we can recover when decompressing. If we were
-             * compressing shorts or bytes, would want to do this arithmetic
-             * with short/byte working variables (though diff will still be
-             * passed as an int.) compute sum of mapped pixel values at same
-             * time use double precision for sum to allow 32-bit integer inputs
+             * Compute differences of adjacent pixels and map them to unsigned values. Note that this may overflow the
+             * integer variables -- that's OK, because we can recover when decompressing. If we were compressing shorts
+             * or bytes, would want to do this arithmetic with short/byte working variables (though diff will still be
+             * passed as an int.) compute sum of mapped pixel values at same time use double precision for sum to allow
+             * 32-bit integer inputs
              */
             long[] diff = new long[this.blockSize];
             double pixelsum = 0.0;
@@ -359,8 +325,8 @@ public abstract class RiceCompressor<T extends Buffer> implements ICompressor<T>
              */
             if (fs >= this.fsMax) {
                 /*
-                 * Special high entropy case when FS >= fsmax Just write pixel
-                 * difference values directly, no Rice coding at all.
+                 * Special high entropy case when FS >= fsmax Just write pixel difference values directly, no Rice
+                 * coding at all.
                  */
                 buffer.putInt(this.fsMax + 1, this.fsBits);
                 for (int j = 0; j < thisblock; j++) {
@@ -368,8 +334,8 @@ public abstract class RiceCompressor<T extends Buffer> implements ICompressor<T>
                 }
             } else if (fs == 0 && pixelsum == 0) { // NOSONAR
                 /*
-                 * special low entropy case when FS = 0 and pixelsum=0 (all
-                 * pixels in block are zero.) Output a 0 and return
+                 * special low entropy case when FS = 0 and pixelsum=0 (all pixels in block are zero.) Output a 0 and
+                 * return
                  */
                 buffer.putInt(0, this.fsBits);
             } else {
@@ -402,10 +368,9 @@ public abstract class RiceCompressor<T extends Buffer> implements ICompressor<T>
                         bitsToGo = BITS_OF_1_BYTE - 1 - top;
                     }
                     /*
-                     * bottom FS bits are written without coding code is
-                     * output_nbits, moved into this routine to reduce overheads
-                     * This code potentially breaks if FS>24, so I am limiting
-                     * FS to 24 by choice of FSMAX above.
+                     * bottom FS bits are written without coding code is output_nbits, moved into this routine to reduce
+                     * overheads This code potentially breaks if FS>24, so I am limiting FS to 24 by choice of FSMAX
+                     * above.
                      */
                     if (fs > 0) {
                         bitBuffer <<= fs;
@@ -426,10 +391,8 @@ public abstract class RiceCompressor<T extends Buffer> implements ICompressor<T>
     /**
      * decompress the readbuffer and fill the pixelarray.
      *
-     * @param readBuffer
-     *            input buffer
-     * @param nx
-     *            the number of pixel to uncompress
+     * @param readBuffer input buffer
+     * @param nx the number of pixel to uncompress
      */
     protected void decompressBuffer(final ByteBuffer readBuffer, final int nx) {
         /* first x bytes of input buffer contain the value of the first */
@@ -439,7 +402,8 @@ public abstract class RiceCompressor<T extends Buffer> implements ICompressor<T>
             lastpix = readBuffer.get() & UNSIGNED_BYTE_MASK;
         } else if (this.bitsPerPixel == ElementType.SHORT.bitPix()) {
             lastpix = readBuffer.getShort() & UNSIGNED_SHORT_MASK;
-        } else if (this.bitsPerPixel == ElementType.INT.bitPix()) {
+        } else {
+            // Must be (this.bitsPerPixel == ElementType.INT.bitPix())
             lastpix = readBuffer.getInt() & UNSIGNED_INTEGER_MASK;
         }
         long b = readBuffer.get() & BYTE_MASK; /* bit buffer */
@@ -508,7 +472,8 @@ public abstract class RiceCompressor<T extends Buffer> implements ICompressor<T>
             }
         }
         if (readBuffer.limit() > readBuffer.position()) {
-            LOG.warning("decompressing left over some extra bytes got: " + readBuffer.limit() + " but needed only " + readBuffer.position());
+            LOG.warning("decompressing left over some extra bytes got: " + readBuffer.limit() + " but needed only "
+                    + readBuffer.position());
         }
 
     }

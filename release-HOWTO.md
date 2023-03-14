@@ -25,7 +25,7 @@ To release packages, you will need to:
  
  * Edit `src/changes/changes.xml` to summarize the changes for the release, linking entries to issues or pull request as appropriate. Commit and push the updates as necessary. Note any issues pertainig to compatibility at the top of the list of actions.
  
- * Update `pom.xml` with the latest (or best fit) plugin versions. Test them locally with `mvn clean package` before committing and pushing the POM to the repo.
+ * Update `pom.xml` with the latest (or best fit) plugin versions. Test them locally with `mvn clean package` before committing and pushing the POM to the repo. Alternatively, if dependabot is generating update PRs, make sure you integrate all that pass the CI.
  
  * Make sure the [Project Site](http://nom-tam-fits.github.io/nom-tam-fits/index.html) is in good shape. Click through the menu on the left panel and check that all content is current. Check that the changes are properly shown. Check that the _Getting Started_ guide has up-to-date instructions for using the library.
  

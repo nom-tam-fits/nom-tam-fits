@@ -48,6 +48,10 @@ final class ZQuantizeParameter extends CompressHeaderParameter<QuantizeOption> {
 
     @Override
     public void getValueFromHeader(IHeaderAccess header) {
+        if (getOption() == null) {
+            return;
+        }
+
         HeaderCard card = header.findCard(getName());
         String value = card != null ? card.getValue() : null;
         if (Compression.ZQUANTIZ_SUBTRACTIVE_DITHER_2.equals(value)) {
@@ -64,7 +68,12 @@ final class ZQuantizeParameter extends CompressHeaderParameter<QuantizeOption> {
 
     @Override
     public void setValueInHeader(IHeaderAccess header) {
+        if (getOption() == null) {
+            return;
+        }
+
         String value;
+
         if (getOption().isDither2()) {
             value = Compression.ZQUANTIZ_SUBTRACTIVE_DITHER_2;
         } else if (getOption().isDither()) {

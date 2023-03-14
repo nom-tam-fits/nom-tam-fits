@@ -33,15 +33,21 @@ package nom.tam.fits.test;
 
 import static org.junit.Assert.assertEquals;
 
+import java.io.ByteArrayInputStream;
+import java.io.ByteArrayOutputStream;
 import java.io.IOException;
 import java.lang.reflect.Array;
 
 import nom.tam.fits.Fits;
-import nom.tam.fits.FitsException;
 import nom.tam.fits.ImageHDU;
+import nom.tam.image.ImageTiler;
 import nom.tam.image.StandardImageTiler;
+import nom.tam.util.ArrayDataInput;
+import nom.tam.util.ArrayDataOutput;
 import nom.tam.util.ArrayFuncs;
 import nom.tam.util.FitsFile;
+import nom.tam.util.FitsInputStream;
+import nom.tam.util.FitsOutputStream;
 import nom.tam.util.SafeClose;
 
 import org.junit.Assert;
@@ -90,7 +96,7 @@ public class TilerTest {
         return true;
     }
 
-    private boolean doTile2(String test, Object data, StandardImageTiler t, int x, int y, int nx, int ny) throws Exception {
+    private void doTile2(String test, Object data, StandardImageTiler t, int x, int y, int nx, int ny) throws Exception {
 
         Object tile = t.getTile(new int[]{
             y,
@@ -107,16 +113,51 @@ public class TilerTest {
         for (int i = 0; i < nx; i += 1) {
             for (int j = 0; j < ny; j += 1) {
                 int tileOffset = i + j * nx;
-                if (tileOffset >= length) {
-                    return false;
+                if (tileOffset < length) {
+                    sum0 += ((Number) Array.get(tile, tileOffset)).doubleValue();
+                    sum1 += ((Number) Array.get(Array.get(data, j + y), i + x)).doubleValue();
                 }
-                sum0 += ((Number) Array.get(tile, tileOffset)).doubleValue();
-                sum1 += ((Number) Array.get(Array.get(data, j + y), i + x)).doubleValue();
             }
         }
 
         assertEquals("Tiler" + test, sum0, sum1, 0);
-        return true;
+    }
+
+    private void doTile3(final String test, final Object data, final ImageTiler t, final int x, final int y,
+                         final int nx, final int ny) throws Exception {
+        final ByteArrayOutputStream byteArrayOutputStream = new ByteArrayOutputStream();
+        final ArrayDataOutput output = new FitsOutputStream(byteArrayOutputStream);
+
+        t.getTile(output, new int[]{
+                y,
+                x
+        }, new int[]{
+                ny,
+                nx
+        });
+
+        float resultSum = 0;
+        float expectedSum = 0;
+        final ByteArrayInputStream byteArrayInputStream =
+                new ByteArrayInputStream(byteArrayOutputStream.toByteArray());
+        final ArrayDataInput input = new FitsInputStream(byteArrayInputStream);
+        final Class<?> type = ArrayFuncs.getBaseClass(data);
+        final Object testOutput = ArrayFuncs.newInstance(type, ny * nx);
+
+        input.readLArray(testOutput);
+
+        int length = Array.getLength(testOutput);
+        for (int i = 0; i < nx; i += 1) {
+            for (int j = 0; j < ny; j += 1) {
+                int tileOffset = i + j * nx;
+                if (tileOffset < length) {
+                    resultSum += ((Number) Array.get(testOutput, tileOffset)).doubleValue();
+                    expectedSum += ((Number) Array.get(Array.get(data, j + y), i + x)).doubleValue();
+                }
+            }
+        }
+
+        assertEquals("StreamTiler_" + test, expectedSum, resultSum, 0);
     }
 
     @Test
@@ -191,7 +232,7 @@ public class TilerTest {
         doTest(data, "long");
     }
 
-    private void doTest(Object data, String suffix) throws IOException, FitsException, Exception {
+    private void doTest(Object data, String suffix) throws Exception {
         Fits f = null;
         FitsFile bf = null;
         try {
@@ -211,19 +252,32 @@ public class TilerTest {
             StandardImageTiler t = h.getTiler();
             doTile("t1", data, t, 200, 200, 50, 50);
             doTile2("t1", data, t, 200, 200, 50, 50);
+            doTile3("t1", data, t, 200, 200, 50, 50);
             doTile("t2", data, t, 133, 133, 72, 26);
             doTile2("t2", data, t, 133, 133, 72, 26);
+            doTile3("t2", data, t, 133, 133, 72, 26);
 
             h.getData().getKernel();
             doTile("t3", data, t, 200, 200, 50, 50);
             doTile2("t3", data, t, 200, 200, 50, 50);
+            doTile3("t3", data, t, 200, 200, 50, 50);
             doTile("t4", data, t, 133, 133, 72, 26);
             doTile2("t4", data, t, 133, 133, 72, 26);
+            doTile3("t4", data, t, 133, 133, 72, 26);
 
             Assert.assertFalse(doTile("t5", data, t, 500, 500, 72, 26));
             IOException expected = null;
             try {
                 doTile2("t5", data, t, 500, 500, 72, 26);
+            } catch (IOException e) {
+                expected = e;
+            }
+            Assert.assertNotNull(expected);
+            Assert.assertTrue(expected.getMessage().contains("within"));
+
+            expected = null;
+            try {
+                doTile3("t5", data, t, 500, 500, 72, 26);
             } catch (IOException e) {
                 expected = e;
             }

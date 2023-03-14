@@ -34,14 +34,13 @@ package nom.tam.fits.compression.provider.param.rice;
 import nom.tam.fits.compression.algorithm.api.ICompressOption;
 import nom.tam.fits.compression.algorithm.rice.RiceCompressOption;
 import nom.tam.fits.compression.provider.param.api.ICompressHeaderParameter;
-import nom.tam.fits.compression.provider.param.api.ICompressParameters;
 import nom.tam.fits.compression.provider.param.base.CompressParameters;
 
 public class RiceCompressParameters extends CompressParameters {
 
-    private final RiceBlockSizeParameter blockSize;
+    private RiceBlockSizeParameter blockSize;
 
-    private final RiceBytePixParameter bytePix;
+    private RiceBytePixParameter bytePix;
 
     public RiceCompressParameters(RiceCompressOption option) {
         this.blockSize = new RiceBlockSizeParameter(option);
@@ -49,15 +48,21 @@ public class RiceCompressParameters extends CompressParameters {
     }
 
     @Override
-    public ICompressParameters copy(ICompressOption option) {
-        return new RiceCompressParameters((RiceCompressOption) option);
+    public RiceCompressParameters copy(ICompressOption option) {
+        if (option instanceof RiceCompressOption) {
+            RiceCompressOption ro = (RiceCompressOption) option;
+            RiceCompressParameters p = (RiceCompressParameters) super.clone();
+
+            p.blockSize = (RiceBlockSizeParameter) blockSize.copy(ro);
+            p.bytePix = (RiceBytePixParameter) bytePix.copy(ro);
+
+            return p;
+        }
+        return null;
     }
 
     @Override
     protected ICompressHeaderParameter[] headerParameters() {
-        return new ICompressHeaderParameter[]{
-            this.blockSize,
-            this.bytePix
-        };
+        return new ICompressHeaderParameter[] {this.blockSize, this.bytePix};
     }
 }
