@@ -1,5 +1,17 @@
 <document xmlns="http://maven.apache.org/changes/1.0.0" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:schemaLocation="http://maven.apache.org/changes/1.0.0 http://maven.apache.org/xsd/changes-1.0.0.xsd">
 	<body>
+	
+	  <release version="1.18.0-SNAPSHOT" date="2023-03-15" description="Feature release (under construction).">
+      <action type="fix" dev="attipaci" issue="349">
+	      Fixed tiled (de)compresssion of some quantized images via GZIP.
+      </action>
+      <action type="add" dev="at88mph" issue="356">
+	      Added ability to stream image cutouts.
+      </action>
+      <action type="add" dev="at88mph" issue="352">
+	      Added support for alternative RandomAccess immplementations.
+      </action>
+    </release>
 
     <release version="1.17.1" date="2023-03-15" description="Maintenance release with critical bug fixes.">
       <action type="fix" dev="attipaci" issue="368">

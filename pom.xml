@@ -68,6 +68,12 @@
 	</developers>
 	<contributors>
 		<contributor>
+			<name>Dustin Jenkins</name>
+		</controbutor>
+		<contributor>
+			<name>Kevin Eastridge</name>
+		</controbutor>
+		<contributor>
 			<name>William H. Cleveland Jr.</name>
 			<email>whclevelandjr [at] gmail [dot] com</email>
 		</contributor>
