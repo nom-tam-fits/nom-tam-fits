@@ -67,7 +67,7 @@ public abstract class CompressColumnParameter<T, OPTION> extends CompressParamet
 
     @Override
     public synchronized T getColumnData() {
-        return column.values;
+        return column.getValues();
     }
 
     @Override
@@ -84,6 +84,10 @@ public abstract class CompressColumnParameter<T, OPTION> extends CompressParamet
      */
     private class Data {
         private T values;
+
+        private synchronized T getValues() {
+          return values;
+        }
 
         private synchronized void create(Object columnValue, int sizeValue) {
             if (sizeValue <= 0) {
