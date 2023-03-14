@@ -64,6 +64,18 @@ jobs:
         name: codecov
         verbose: true
         
+    - name: Upload coverage to Coveralls.io
+      continue-on-error: true
+      env:
+        COVERALLS_TOKEN: ${{ secrets.COVERALLS_REPO_TOKEN }}
+      run: |
+        if [ "$COVERALS_TOKEN" != "" ] ; then 
+           mvn coveralls:report -DrepoToken=$COVERALLS_TOKEN
+        else
+           echo "WARNING! COVERALLS_REPO_TOKEN secret is undefined. Skipping Coveralls.io upload."
+        fi
+      working-directory: ./nom-tam-fits
+        
     - name: Check Project Site
       run: mvn -B site:stage
       working-directory: ./nom-tam-fits

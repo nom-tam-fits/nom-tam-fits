@@ -59,7 +59,7 @@ public class CompressionProviderTest {
 
         parameters.addColumnsToTable(null);// nothinh should happen ;-)
         Assert.assertSame(parameters, parameters.copy(option));
-        parameters.setValueFromColumn(10000);// nothinh should happen ;-)
+        parameters.setValuesInColumn(10000);// nothinh should happen ;-)
         parameters.setValuesInHeader(null);// nothinh should happen ;-)
     }
 }

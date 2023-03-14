@@ -35,15 +35,16 @@ import nom.tam.fits.header.FitsHeaderImpl;
 import nom.tam.fits.header.IFitsHeader;
 
 /**
- * This keyword dictionary defines keywords which may be used in image data
- * recorded by the data acquisition system. It currently does not consider
- * keywords for data processing. Most of the keywords defined here will not be
- * used. New parameters must be added to the logical class heirarchy and then a
- * keyword defined in this dictionary before use in image data.
- * 
- * <pre>
- *  @see <a href="http://iraf.noao.edu/iraf/web/projects/ccdmosaic/imagedef/fitsdic.html">http://iraf.noao.edu/iraf/web/projects/ccdmosaic/imagedef/fitsdic.html</a>
- * </pre>
+ * <p>
+ * This keyword dictionary defines keywords which may be used in image data recorded by the data acquisition system. It
+ * currently does not consider keywords for data processing. Most of the keywords defined here will not be used. New
+ * parameters must be added to the logical class heirarchy and then a keyword defined in this dictionary before use in
+ * image data.
+ * </p>
+ * <p>
+ * See <a href=
+ * "http://iraf.noao.edu/iraf/web/projects/ccdmosaic/imagedef/fitsdic.html">http://iraf.noao.edu/iraf/web/projects/ccdmosaic/imagedef/fitsdic.html</a>
+ * </p>
  * 
  * @author Richard van Nieuwenhoven.
  */
@@ -67,8 +68,7 @@ public enum NOAOExt implements IFitsHeader {
      */
     ACTHWV(HDU.PRIMARY, VALUE.STRING, ""),
     /**
-     * Times for the active optics sensor measurements given as modified Julian
-     * dates.
+     * Times for the active optics sensor measurements given as modified Julian dates.
      * <p>
      * units = 'd'
      * </p>
@@ -81,8 +81,7 @@ public enum NOAOExt implements IFitsHeader {
      */
     ACTMJD(HDU.PRIMARY, VALUE.REAL, ""),
     /**
-     * Times for the active optics sensor measurements given as modified Julian
-     * dates.
+     * Times for the active optics sensor measurements given as modified Julian dates.
      * <p>
      * units = 'd'
      * </p>
@@ -115,8 +114,7 @@ public enum NOAOExt implements IFitsHeader {
      */
     ACTPANn(HDU.PRIMARY, VALUE.REAL, ""),
     /**
-     * Active optics system linear position sensor measurements in appropriate
-     * units.
+     * Active optics system linear position sensor measurements in appropriate units.
      * <p>
      * default value = none none
      * </p>
@@ -126,8 +124,7 @@ public enum NOAOExt implements IFitsHeader {
      */
     ACTPOS(HDU.PRIMARY, VALUE.REAL, ""),
     /**
-     * Active optics system linear position sensor measurements in appropriate
-     * units.
+     * Active optics system linear position sensor measurements in appropriate units.
      * <p>
      * default value = none none
      * </p>
@@ -637,8 +634,7 @@ public enum NOAOExt implements IFitsHeader {
      */
     ADOEPOCH(HDU.PRIMARY, VALUE.NONE, ""),
     /**
-     * Object coordinate system equinox for wavefront sensing. A value before
-     * 1984 is Besselian otherwise it is Julian.
+     * Object coordinate system equinox for wavefront sensing. A value before 1984 is Besselian otherwise it is Julian.
      * <p>
      * default value = TELEQUIN
      * </p>
@@ -666,8 +662,7 @@ public enum NOAOExt implements IFitsHeader {
      */
     ADOHWV(HDU.PRIMARY, VALUE.NONE, ""),
     /**
-     * Times for the adaptive optics sensor measurements given as modified
-     * Julian dates.
+     * Times for the adaptive optics sensor measurements given as modified Julian dates.
      * <p>
      * units = 'd'
      * </p>
@@ -680,8 +675,7 @@ public enum NOAOExt implements IFitsHeader {
      */
     ADOMJD(HDU.PRIMARY, VALUE.REAL, ""),
     /**
-     * Times for the adaptive optics sensor measurements given as modified
-     * Julian dates.
+     * Times for the adaptive optics sensor measurements given as modified Julian dates.
      * <p>
      * units = 'd'
      * </p>
@@ -714,8 +708,7 @@ public enum NOAOExt implements IFitsHeader {
      */
     ADOPANn(HDU.PRIMARY, VALUE.REAL, ""),
     /**
-     * Adaptive optics system linear position sensor measurements in appropriate
-     * units.
+     * Adaptive optics system linear position sensor measurements in appropriate units.
      * <p>
      * default value = none none
      * </p>
@@ -725,8 +718,7 @@ public enum NOAOExt implements IFitsHeader {
      */
     ADOPOS(HDU.PRIMARY, VALUE.REAL, ""),
     /**
-     * Adaptive optics system linear position sensor measurements in appropriate
-     * units.
+     * Adaptive optics system linear position sensor measurements in appropriate units.
      * <p>
      * default value = none none
      * </p>
@@ -813,8 +805,7 @@ public enum NOAOExt implements IFitsHeader {
      */
     ADOSWV(HDU.PRIMARY, VALUE.NONE, ""),
     /**
-     * Adaptive optics system temperature sensor measurements in degrees
-     * Celsius.
+     * Adaptive optics system temperature sensor measurements in degrees Celsius.
      * <p>
      * units = UNITTEMP
      * </p>
@@ -827,8 +818,7 @@ public enum NOAOExt implements IFitsHeader {
      */
     ADOTEM(HDU.PRIMARY, VALUE.REAL, ""),
     /**
-     * Adaptive optics system temperature sensor measurements in degrees
-     * Celsius.
+     * Adaptive optics system temperature sensor measurements in degrees Celsius.
      * <p>
      * units = UNITTEMP
      * </p>
@@ -890,8 +880,7 @@ public enum NOAOExt implements IFitsHeader {
      */
     AEPOnnn(HDU.PRIMARY, VALUE.REAL, "Aperture coordinate epoch"),
     /**
-     * Coordinate system equinox for the aperture(s). A value before 1984 is
-     * Besselian otherwise it is Julian.
+     * Coordinate system equinox for the aperture(s). A value before 1984 is Besselian otherwise it is Julian.
      * <p>
      * units = 'yr'
      * </p>
@@ -914,9 +903,8 @@ public enum NOAOExt implements IFitsHeader {
      */
     AIRMASSn(HDU.PRIMARY, VALUE.REAL, "Airmass"),
     /**
-     * Times for the airmass calculation given as modified Julian dates. The
-     * MJDHDR keyword may be used for the time at which the image header is
-     * created or the MJD-OBS keyword may be used for the time of observation.
+     * Times for the airmass calculation given as modified Julian dates. The MJDHDR keyword may be used for the time at
+     * which the image header is created or the MJD-OBS keyword may be used for the time of observation.
      * <p>
      * units = 'd'
      * </p>
@@ -929,9 +917,8 @@ public enum NOAOExt implements IFitsHeader {
      */
     AMMJD(HDU.PRIMARY, VALUE.REAL, "MJD of airmass"),
     /**
-     * Times for the airmass calculation given as modified Julian dates. The
-     * MJDHDR keyword may be used for the time at which the image header is
-     * created or the MJD-OBS keyword may be used for the time of observation.
+     * Times for the airmass calculation given as modified Julian dates. The MJDHDR keyword may be used for the time at
+     * which the image header is created or the MJD-OBS keyword may be used for the time of observation.
      * <p>
      * units = 'd'
      * </p>
@@ -957,10 +944,8 @@ public enum NOAOExt implements IFitsHeader {
      */
     AMPINTEG(HDU.PRIMARY_EXTENSION, VALUE.REAL, "Amplifier integration/sample time"),
     /**
-     * Times for the amplifier sensor measurements given as modified Julian
-     * dates. The MJDHDR keyword may be used for the time at which the image
-     * header is created or the MJD-OBS keyword may be used for the time of
-     * observation.
+     * Times for the amplifier sensor measurements given as modified Julian dates. The MJDHDR keyword may be used for
+     * the time at which the image header is created or the MJD-OBS keyword may be used for the time of observation.
      * <p>
      * units = 'd'
      * </p>
@@ -973,10 +958,8 @@ public enum NOAOExt implements IFitsHeader {
      */
     AMPMJD(HDU.PRIMARY_EXTENSION, VALUE.REAL, ""),
     /**
-     * Times for the amplifier sensor measurements given as modified Julian
-     * dates. The MJDHDR keyword may be used for the time at which the image
-     * header is created or the MJD-OBS keyword may be used for the time of
-     * observation.
+     * Times for the amplifier sensor measurements given as modified Julian dates. The MJDHDR keyword may be used for
+     * the time at which the image header is created or the MJD-OBS keyword may be used for the time of observation.
      * <p>
      * units = 'd'
      * </p>
@@ -1078,8 +1061,7 @@ public enum NOAOExt implements IFitsHeader {
      */
     AMPREAD(HDU.PRIMARY_EXTENSION, VALUE.REAL, "Unbinned pixel read time"),
     /**
-     * CCD amplifier sampling method used. This may also include any integration
-     * times.
+     * CCD amplifier sampling method used. This may also include any integration times.
      * <p>
      * default value = none
      * </p>
@@ -1099,8 +1081,8 @@ public enum NOAOExt implements IFitsHeader {
      */
     AMPSEC(HDU.EXTENSION, VALUE.STRING, "Amplifier section"),
     /**
-     * The logical unbinned size of the amplifier readout in section notation.
-     * This includes drift scanning if applicable.
+     * The logical unbinned size of the amplifier readout in section notation. This includes drift scanning if
+     * applicable.
      * <p>
      * default value = none
      * </p>
@@ -1195,8 +1177,8 @@ public enum NOAOExt implements IFitsHeader {
      */
     APDECU(HDU.PRIMARY, VALUE.STRING, "Declination unit"),
     /**
-     * Aperture diameter of the aperture(s) for circular apertures and fibers.
-     * This is also used as an approximation to the size of hexagonal lenses.
+     * Aperture diameter of the aperture(s) for circular apertures and fibers. This is also used as an approximation to
+     * the size of hexagonal lenses.
      * <p>
      * units = APUNIT
      * </p>
@@ -1222,8 +1204,7 @@ public enum NOAOExt implements IFitsHeader {
      */
     APEPOCH(HDU.PRIMARY, VALUE.REAL, "Aperture coordinate epoch"),
     /**
-     * Coordinate system equinox for the aperture(s). A value before 1984 is
-     * Besselian otherwise it is Julian.
+     * Coordinate system equinox for the aperture(s). A value before 1984 is Besselian otherwise it is Julian.
      * <p>
      * units = 'yr'
      * </p>
@@ -1236,8 +1217,8 @@ public enum NOAOExt implements IFitsHeader {
      */
     APEQUIN(HDU.PRIMARY, VALUE.REAL, "Aperture coordinate equinox"),
     /**
-     * Aperture diameter of the aperture(s) for circular apertures and fibers.
-     * This is also used as an approximation to the size of hexagonal lenses.
+     * Aperture diameter of the aperture(s) for circular apertures and fibers. This is also used as an approximation to
+     * the size of hexagonal lenses.
      * <p>
      * units = APUNIT
      * </p>
@@ -1263,11 +1244,10 @@ public enum NOAOExt implements IFitsHeader {
      */
     APERLEN(HDU.PRIMARY, VALUE.REAL, "Slit length"),
     /**
-     * Aperture identification. This can be a physical aperture identification,
-     * the name of a mask, a fiber configuration, etc. When there are many
-     * apertures the keyword APERTURE may be used to specify a configuration or
-     * mask identification and the APER%4d keywords can be used to identify some
-     * information about the aperture such as a fiber number.
+     * Aperture identification. This can be a physical aperture identification, the name of a mask, a fiber
+     * configuration, etc. When there are many apertures the keyword APERTURE may be used to specify a configuration or
+     * mask identification and the APER%4d keywords can be used to identify some information about the aperture such as
+     * a fiber number.
      * <p>
      * default value = none APERTURE
      * </p>
@@ -1277,9 +1257,8 @@ public enum NOAOExt implements IFitsHeader {
      */
     APERnnn(HDU.PRIMARY, VALUE.STRING, "Aperture identification"),
     /**
-     * Aperture position angle of the aperture(s) on the sky. This is measured
-     * using the longest dimension from north to east for slits. For hexagonal
-     * lenslets it gives the position angle for one of the sides.
+     * Aperture position angle of the aperture(s) on the sky. This is measured using the longest dimension from north to
+     * east for slits. For hexagonal lenslets it gives the position angle for one of the sides.
      * <p>
      * units = APPAUNIT
      * </p>
@@ -1292,11 +1271,10 @@ public enum NOAOExt implements IFitsHeader {
      */
     APERPA(HDU.PRIMARY, VALUE.REAL, "Aperture position angle"),
     /**
-     * Aperture identification. This can be a physical aperture identification,
-     * the name of a mask, a fiber configuration, etc. When there are many
-     * apertures the keyword APERTURE may be used to specify a configuration or
-     * mask identification and the APER%4d keywords can be used to identify some
-     * information about the aperture such as a fiber number.
+     * Aperture identification. This can be a physical aperture identification, the name of a mask, a fiber
+     * configuration, etc. When there are many apertures the keyword APERTURE may be used to specify a configuration or
+     * mask identification and the APER%4d keywords can be used to identify some information about the aperture such as
+     * a fiber number.
      * <p>
      * default value = none APERTURE
      * </p>
@@ -1319,9 +1297,8 @@ public enum NOAOExt implements IFitsHeader {
      */
     APLEnnn(HDU.PRIMARY, VALUE.REAL, "Slit length"),
     /**
-     * Aperture position angle of the aperture(s) on the sky. This is measured
-     * using the longest dimension from north to east for slits. For hexagonal
-     * lenslets it gives the position angle for one of the sides.
+     * Aperture position angle of the aperture(s) on the sky. This is measured using the longest dimension from north to
+     * east for slits. For hexagonal lenslets it gives the position angle for one of the sides.
      * <p>
      * units = APPAUNIT
      * </p>
@@ -1377,11 +1354,9 @@ public enum NOAOExt implements IFitsHeader {
      */
     APRAU(HDU.PRIMARY, VALUE.STRING, "Right ascension unit"),
     /**
-     * Aperture type. This is an from a dictionary. The common types are "slit",
-     * "hole", "fiber", "hexlens", "hexlens+fiber" and "none". The last type is
-     * for aperture-less spectroscopy such as with objective prisms. Typically
-     * for multiobject spectroscopy all the aperture types will be the same and
-     * the keyword will be APTYPE.
+     * Aperture type. This is an from a dictionary. The common types are "slit", "hole", "fiber", "hexlens",
+     * "hexlens+fiber" and "none". The last type is for aperture-less spectroscopy such as with objective prisms.
+     * Typically for multiobject spectroscopy all the aperture types will be the same and the keyword will be APTYPE.
      * <p>
      * default value = none APTYPE
      * </p>
@@ -1391,11 +1366,9 @@ public enum NOAOExt implements IFitsHeader {
      */
     APTYnnn(HDU.PRIMARY, VALUE.STRING, "Aperture type"),
     /**
-     * Aperture type. This is an from a dictionary. The common types are "slit",
-     * "hole", "fiber", "hexlens", "hexlens+fiber" and "none". The last type is
-     * for aperture-less spectroscopy such as with objective prisms. Typically
-     * for multiobject spectroscopy all the aperture types will be the same and
-     * the keyword will be APTYPE.
+     * Aperture type. This is an from a dictionary. The common types are "slit", "hole", "fiber", "hexlens",
+     * "hexlens+fiber" and "none". The last type is for aperture-less spectroscopy such as with objective prisms.
+     * Typically for multiobject spectroscopy all the aperture types will be the same and the keyword will be APTYPE.
      * <p>
      * default value = none APTYPE
      * </p>
@@ -1405,9 +1378,8 @@ public enum NOAOExt implements IFitsHeader {
      */
     APTYPE(HDU.PRIMARY, VALUE.STRING, "Aperture type"),
     /**
-     * Units of aperture dimensions. This applies to slit widths and lengths,
-     * fiber diameters, lenslet diameters, etc. It may be a physical dimension
-     * or a projected angle on the sky.
+     * Units of aperture dimensions. This applies to slit widths and lengths, fiber diameters, lenslet diameters, etc.
+     * It may be a physical dimension or a projected angle on the sky.
      * <p>
      * default value = UNITAP APUNIT
      * </p>
@@ -1417,9 +1389,8 @@ public enum NOAOExt implements IFitsHeader {
      */
     APUNIT(HDU.PRIMARY, VALUE.STRING, "Aperture dimension unit"),
     /**
-     * Units of aperture dimensions. This applies to slit widths and lengths,
-     * fiber diameters, lenslet diameters, etc. It may be a physical dimension
-     * or a projected angle on the sky.
+     * Units of aperture dimensions. This applies to slit widths and lengths, fiber diameters, lenslet diameters, etc.
+     * It may be a physical dimension or a projected angle on the sky.
      * <p>
      * default value = UNITAP APUNIT
      * </p>
@@ -1475,8 +1446,7 @@ public enum NOAOExt implements IFitsHeader {
      */
     ARCHHWV(HDU.PRIMARY, VALUE.STRING, "Archive hardware"),
     /**
-     * Archive identification. This may be the same as the observation
-     * identification.
+     * Archive identification. This may be the same as the observation identification.
      * <p>
      * default value = OBSID none
      * </p>
@@ -1516,9 +1486,8 @@ public enum NOAOExt implements IFitsHeader {
      */
     ARCHSWV(HDU.PRIMARY, VALUE.STRING, "Archive software version"),
     /**
-     * Arcon predicted gain. This is the gain measured in the laboratory. The
-     * GAIN keyword may also have this value initially but it is updated to the
-     * most recent estimate of the gain.
+     * Arcon predicted gain. This is the gain measured in the laboratory. The GAIN keyword may also have this value
+     * initially but it is updated to the most recent estimate of the gain.
      * <p>
      * units = 'e/counts'
      * </p>
@@ -1541,9 +1510,8 @@ public enum NOAOExt implements IFitsHeader {
      */
     ARCONGI(HDU.EXTENSION, VALUE.INTEGER, "Gain selection"),
     /**
-     * Arcon predicted RMS readout noise. This is the value measured in the
-     * laboratory. The RDNOISE keyword may also have this value initially but it
-     * is updated to the most current estimate.
+     * Arcon predicted RMS readout noise. This is the value measured in the laboratory. The RDNOISE keyword may also
+     * have this value initially but it is updated to the most current estimate.
      * <p>
      * units = 'e'
      * </p>
@@ -1586,9 +1554,8 @@ public enum NOAOExt implements IFitsHeader {
      */
     ARDSnnn(HDU.PRIMARY, VALUE.STRING, "Aperture coordinate system"),
     /**
-     * Transformation matrix between CCD and amplifier coordinates. Normally
-     * only two values will be non-zero and will have values of 1 or -1. If
-     * missing the default is an identify matrix.
+     * Transformation matrix between CCD and amplifier coordinates. Normally only two values will be non-zero and will
+     * have values of 1 or -1. If missing the default is an identify matrix.
      * <p>
      * default value = 0.(i!=j),1.(i=j)
      * </p>
@@ -1608,11 +1575,9 @@ public enum NOAOExt implements IFitsHeader {
      */
     ATVn(HDU.EXTENSION, VALUE.REAL, "Amplifier transformation vector"),
     /**
-     * Section of the recorded image containing overscan or prescan data. This
-     * will be in binned pixels if binning is done. Multiple regions may be
-     * recorded and specified, such as both prescan and overscan, but the first
-     * section given by this parameter is likely to be the one used during
-     * calibration.
+     * Section of the recorded image containing overscan or prescan data. This will be in binned pixels if binning is
+     * done. Multiple regions may be recorded and specified, such as both prescan and overscan, but the first section
+     * given by this parameter is likely to be the one used during calibration.
      * <p>
      * default value = none none
      * </p>
@@ -1622,11 +1587,9 @@ public enum NOAOExt implements IFitsHeader {
      */
     BIASnnn(HDU.EXTENSION, VALUE.STRING, "Bias section"),
     /**
-     * Section of the recorded image containing overscan or prescan data. This
-     * will be in binned pixels if binning is done. Multiple regions may be
-     * recorded and specified, such as both prescan and overscan, but the first
-     * section given by this parameter is likely to be the one used during
-     * calibration.
+     * Section of the recorded image containing overscan or prescan data. This will be in binned pixels if binning is
+     * done. Multiple regions may be recorded and specified, such as both prescan and overscan, but the first section
+     * given by this parameter is likely to be the one used during calibration.
      * <p>
      * default value = none none
      * </p>
@@ -1689,8 +1652,7 @@ public enum NOAOExt implements IFitsHeader {
      */
     CAMHWV(HDU.PRIMARY, VALUE.STRING, "Camera version"),
     /**
-     * Times for the instrument sensor measurements given as modified Julian
-     * dates.
+     * Times for the instrument sensor measurements given as modified Julian dates.
      * <p>
      * units = 'd'
      * </p>
@@ -1703,8 +1665,7 @@ public enum NOAOExt implements IFitsHeader {
      */
     CAMMJD(HDU.PRIMARY, VALUE.REAL, ""),
     /**
-     * Times for the instrument sensor measurements given as modified Julian
-     * dates.
+     * Times for the instrument sensor measurements given as modified Julian dates.
      * <p>
      * units = 'd'
      * </p>
@@ -1897,8 +1858,7 @@ public enum NOAOExt implements IFitsHeader {
      */
     CCDEPOCH(HDU.PRIMARY_EXTENSION, VALUE.REAL, "CCD coordinate epoch"),
     /**
-     * CCD coordinate system equinox. A value before 1984 is Besselian otherwise
-     * it is Julian.
+     * CCD coordinate system equinox. A value before 1984 is Besselian otherwise it is Julian.
      * <p>
      * units = 'yr'
      * </p>
@@ -1921,9 +1881,8 @@ public enum NOAOExt implements IFitsHeader {
      */
     CCDHWV(HDU.PRIMARY_EXTENSION, VALUE.STRING, "CCD version"),
     /**
-     * Times for the CCD sensor measurements given as modified Julian dates. The
-     * MJDHDR keyword may be used for the time at which the image header is
-     * created or the MJD-OBS keyword may be used for the time of observation.
+     * Times for the CCD sensor measurements given as modified Julian dates. The MJDHDR keyword may be used for the time
+     * at which the image header is created or the MJD-OBS keyword may be used for the time of observation.
      * <p>
      * units = 'd'
      * </p>
@@ -1936,9 +1895,8 @@ public enum NOAOExt implements IFitsHeader {
      */
     CCDMJD(HDU.PRIMARY_EXTENSION, VALUE.REAL, ""),
     /**
-     * Times for the CCD sensor measurements given as modified Julian dates. The
-     * MJDHDR keyword may be used for the time at which the image header is
-     * created or the MJD-OBS keyword may be used for the time of observation.
+     * Times for the CCD sensor measurements given as modified Julian dates. The MJDHDR keyword may be used for the time
+     * at which the image header is created or the MJD-OBS keyword may be used for the time of observation.
      * <p>
      * units = 'd'
      * </p>
@@ -1961,8 +1919,7 @@ public enum NOAOExt implements IFitsHeader {
      */
     CCDNAME(HDU.PRIMARY_EXTENSION, VALUE.STRING, "CCD identification"),
     /**
-     * Number of amplifiers used to readout the CCD. This keyword may be absent
-     * if only one amplifier is used.
+     * Number of amplifiers used to readout the CCD. This keyword may be absent if only one amplifier is used.
      * <p>
      * default value = 1
      * </p>
@@ -2038,8 +1995,7 @@ public enum NOAOExt implements IFitsHeader {
      */
     CCDPREn(HDU.PRIMARY_EXTENSION, VALUE.REAL, ""),
     /**
-     * The actual format size of the CCD. This is the same as the CCDSIZE
-     * keyword except in the case of drift scanning.
+     * The actual format size of the CCD. This is the same as the CCDSIZE keyword except in the case of drift scanning.
      * <p>
      * default value = none
      * </p>
@@ -2082,13 +2038,11 @@ public enum NOAOExt implements IFitsHeader {
      */
     CCDRAU(HDU.PRIMARY_EXTENSION, VALUE.STRING, "Right ascension unit"),
     /**
-     * The unbinned section of the logical CCD pixel raster covered by the
-     * amplifier readout in section notation. The section must map directly to
-     * the specified data section through the binning and CCD to image
-     * coordiante transformation. The image data section (DATASEC) is specified
-     * with the starting pixel less than the ending pixel. Thus the order of
-     * this section may be flipped depending on the coordinate transformation
-     * (which depends on how the CCD coordinate system is defined).
+     * The unbinned section of the logical CCD pixel raster covered by the amplifier readout in section notation. The
+     * section must map directly to the specified data section through the binning and CCD to image coordiante
+     * transformation. The image data section (DATASEC) is specified with the starting pixel less than the ending pixel.
+     * Thus the order of this section may be flipped depending on the coordinate transformation (which depends on how
+     * the CCD coordinate system is defined).
      * <p>
      * default value = CCDSIZE
      * </p>
@@ -2098,9 +2052,8 @@ public enum NOAOExt implements IFitsHeader {
      */
     CCDSEC(HDU.EXTENSION, VALUE.STRING, "Region of CCD read"),
     /**
-     * The logical unbinned size of the CCD in section notation. Normally this
-     * would be the physical size of the CCD unless drift scanning is done. This
-     * is the full size even when subraster readouts are done.
+     * The logical unbinned size of the CCD in section notation. Normally this would be the physical size of the CCD
+     * unless drift scanning is done. This is the full size even when subraster readouts are done.
      * <p>
      * default value = DETSIZE
      * </p>
@@ -2110,17 +2063,13 @@ public enum NOAOExt implements IFitsHeader {
      */
     CCDSIZE(HDU.PRIMARY_EXTENSION, VALUE.STRING, "CCD size"),
     /**
-     * CCD on-chip summing given as two or four integer numbers. These define
-     * the summing of CCD pixels in the amplifier readout order. The first two
-     * numbers give the number of pixels summed in the serial and parallel
-     * directions respectively. If the first pixel read out consists of fewer
-     * unbinned pixels along either direction the next two numbers give the
-     * number of pixels summed for the first serial and parallel pixels. From
-     * this it is implicit how many pixels are summed for the last pixels given
-     * the size of the CCD section (CCDSEC). It is highly recommended that
-     * controllers read out all pixels with the same summing in which case the
-     * size of the CCD section will be the summing factors times the size of the
-     * data section.
+     * CCD on-chip summing given as two or four integer numbers. These define the summing of CCD pixels in the amplifier
+     * readout order. The first two numbers give the number of pixels summed in the serial and parallel directions
+     * respectively. If the first pixel read out consists of fewer unbinned pixels along either direction the next two
+     * numbers give the number of pixels summed for the first serial and parallel pixels. From this it is implicit how
+     * many pixels are summed for the last pixels given the size of the CCD section (CCDSEC). It is highly recommended
+     * that controllers read out all pixels with the same summing in which case the size of the CCD section will be the
+     * summing factors times the size of the data section.
      * <p>
      * default value = '1 1'
      * </p>
@@ -2192,9 +2141,8 @@ public enum NOAOExt implements IFitsHeader {
      */
     CCDVOLn(HDU.PRIMARY_EXTENSION, VALUE.REAL, ""),
     /**
-     * Spectrum coordinate matrix. World coordinate axis 1 is defined to be the
-     * dispersion and the other axes are spatial. The matrix implies a
-     * dispersion axis in the image coordinates.
+     * Spectrum coordinate matrix. World coordinate axis 1 is defined to be the dispersion and the other axes are
+     * spatial. The matrix implies a dispersion axis in the image coordinates.
      * <p>
      * units = CUNIT1/pixel CUN1%4d/pixel
      * </p>
@@ -2207,9 +2155,8 @@ public enum NOAOExt implements IFitsHeader {
      */
     CD1_1(HDU.EXTENSION, VALUE.REAL, "Coordinate scale matrix"),
     /**
-     * Spectrum coordinate matrix. World coordinate axis 1 is defined to be the
-     * dispersion and the other axes are spatial. The matrix implies a
-     * dispersion axis in the image coordinates.
+     * Spectrum coordinate matrix. World coordinate axis 1 is defined to be the dispersion and the other axes are
+     * spatial. The matrix implies a dispersion axis in the image coordinates.
      * <p>
      * units = CUNIT1/pixel CUN1%4d/pixel
      * </p>
@@ -2222,9 +2169,8 @@ public enum NOAOExt implements IFitsHeader {
      */
     CD1_2(HDU.EXTENSION, VALUE.REAL, "Coordinate scale matrix"),
     /**
-     * Spectrum coordinate matrix. World coordinate axis 1 is defined to be the
-     * dispersion and the other axes are spatial. The matrix implies a
-     * dispersion axis in the image coordinates.
+     * Spectrum coordinate matrix. World coordinate axis 1 is defined to be the dispersion and the other axes are
+     * spatial. The matrix implies a dispersion axis in the image coordinates.
      * <p>
      * units = CUNIT1/pixel CUN1%4d/pixel
      * </p>
@@ -2237,9 +2183,8 @@ public enum NOAOExt implements IFitsHeader {
      */
     CD11nnn(HDU.EXTENSION, VALUE.REAL, "Coordinate scale matrix"),
     /**
-     * Spectrum coordinate matrix. World coordinate axis 1 is defined to be the
-     * dispersion and the other axes are spatial. The matrix implies a
-     * dispersion axis in the image coordinates.
+     * Spectrum coordinate matrix. World coordinate axis 1 is defined to be the dispersion and the other axes are
+     * spatial. The matrix implies a dispersion axis in the image coordinates.
      * <p>
      * units = CUNIT1/pixel CUN1%4d/pixel
      * </p>
@@ -2252,9 +2197,8 @@ public enum NOAOExt implements IFitsHeader {
      */
     CD12nnn(HDU.EXTENSION, VALUE.REAL, "Coordinate scale matrix"),
     /**
-     * Spectrum coordinate matrix. World coordinate axis 1 is defined to be the
-     * dispersion and the other axes are spatial. The matrix implies a
-     * dispersion axis in the image coordinates.
+     * Spectrum coordinate matrix. World coordinate axis 1 is defined to be the dispersion and the other axes are
+     * spatial. The matrix implies a dispersion axis in the image coordinates.
      * <p>
      * units = CUNIT2/pixel CUN2%4d/pixel
      * </p>
@@ -2267,9 +2211,8 @@ public enum NOAOExt implements IFitsHeader {
      */
     CD2_1(HDU.EXTENSION, VALUE.REAL, "Coordinate scale matrix"),
     /**
-     * Spectrum coordinate matrix. World coordinate axis 1 is defined to be the
-     * dispersion and the other axes are spatial. The matrix implies a
-     * dispersion axis in the image coordinates.
+     * Spectrum coordinate matrix. World coordinate axis 1 is defined to be the dispersion and the other axes are
+     * spatial. The matrix implies a dispersion axis in the image coordinates.
      * <p>
      * units = CUNIT2/pixel CUN2%4d/pixel
      * </p>
@@ -2282,9 +2225,8 @@ public enum NOAOExt implements IFitsHeader {
      */
     CD2_2(HDU.EXTENSION, VALUE.REAL, "Coordinate scale matrix"),
     /**
-     * Spectrum coordinate matrix. World coordinate axis 1 is defined to be the
-     * dispersion and the other axes are spatial. The matrix implies a
-     * dispersion axis in the image coordinates.
+     * Spectrum coordinate matrix. World coordinate axis 1 is defined to be the dispersion and the other axes are
+     * spatial. The matrix implies a dispersion axis in the image coordinates.
      * <p>
      * units = CUNIT2/pixel CUN2%4d/pixel
      * </p>
@@ -2297,9 +2239,8 @@ public enum NOAOExt implements IFitsHeader {
      */
     CD21nnn(HDU.EXTENSION, VALUE.REAL, "Coordinate scale matrix"),
     /**
-     * Spectrum coordinate matrix. World coordinate axis 1 is defined to be the
-     * dispersion and the other axes are spatial. The matrix implies a
-     * dispersion axis in the image coordinates.
+     * Spectrum coordinate matrix. World coordinate axis 1 is defined to be the dispersion and the other axes are
+     * spatial. The matrix implies a dispersion axis in the image coordinates.
      * <p>
      * units = CUNIT2/pixel CUN2%4d/pixel
      * </p>
@@ -2312,8 +2253,8 @@ public enum NOAOExt implements IFitsHeader {
      */
     CD22nnn(HDU.EXTENSION, VALUE.REAL, "Spec coord matrix"),
     /**
-     * Coordinate scale matrix for image world coordinates. This describes the
-     * scales and rotations of the coordinate axes.
+     * Coordinate scale matrix for image world coordinates. This describes the scales and rotations of the coordinate
+     * axes.
      * <p>
      * units = CUNIT2/pixel CUN2%4d/pixel
      * </p>
@@ -2353,8 +2294,7 @@ public enum NOAOExt implements IFitsHeader {
      */
     CHPHWV(HDU.PRIMARY, VALUE.NONE, ""),
     /**
-     * Times for the chopping system sensor measurements given as modified
-     * Julian dates.
+     * Times for the chopping system sensor measurements given as modified Julian dates.
      * <p>
      * units = 'd'
      * </p>
@@ -2367,8 +2307,7 @@ public enum NOAOExt implements IFitsHeader {
      */
     CHPMJD(HDU.PRIMARY, VALUE.REAL, ""),
     /**
-     * Times for the chopping system sensor measurements given as modified
-     * Julian dates.
+     * Times for the chopping system sensor measurements given as modified Julian dates.
      * <p>
      * units = 'd'
      * </p>
@@ -2390,9 +2329,8 @@ public enum NOAOExt implements IFitsHeader {
      */
     CHPNCHOP(HDU.PRIMARY, VALUE.NONE, ""),
     /**
-     * Chopping system position angle measurements in appropriate units. Note
-     * that CHPANGLE should be used for the chopping angle and these keywords
-     * are for other system position angle measurements.
+     * Chopping system position angle measurements in appropriate units. Note that CHPANGLE should be used for the
+     * chopping angle and these keywords are for other system position angle measurements.
      * <p>
      * default value = none none
      * </p>
@@ -2402,9 +2340,8 @@ public enum NOAOExt implements IFitsHeader {
      */
     CHPPAN(HDU.PRIMARY, VALUE.REAL, ""),
     /**
-     * Chopping system position angle measurements in appropriate units. Note
-     * that CHPANGLE should be used for the chopping angle and these keywords
-     * are for other system position angle measurements.
+     * Chopping system position angle measurements in appropriate units. Note that CHPANGLE should be used for the
+     * chopping angle and these keywords are for other system position angle measurements.
      * <p>
      * default value = none none
      * </p>
@@ -2737,10 +2674,8 @@ public enum NOAOExt implements IFitsHeader {
      */
     CROSVAL(HDU.PRIMARY_EXTENSION, VALUE.REAL, "Cross dispersion coordinate"),
     /**
-     * Reference spectrum pixel coordinate. Generally this should be the at the
-     * center of the spectrum. In raw data the spectrum position(s) may be
-     * predicted apart from an offset that will be determined during data
-     * reduction.
+     * Reference spectrum pixel coordinate. Generally this should be the at the center of the spectrum. In raw data the
+     * spectrum position(s) may be predicted apart from an offset that will be determined during data reduction.
      * <p>
      * units = 'pixel' 'pixel'
      * </p>
@@ -2753,10 +2688,8 @@ public enum NOAOExt implements IFitsHeader {
      */
     CRP1nnn(HDU.EXTENSION, VALUE.REAL, "Coordinate reference pixel"),
     /**
-     * Reference spectrum pixel coordinate. Generally this should be the at the
-     * center of the spectrum. In raw data the spectrum position(s) may be
-     * predicted apart from an offset that will be determined during data
-     * reduction.
+     * Reference spectrum pixel coordinate. Generally this should be the at the center of the spectrum. In raw data the
+     * spectrum position(s) may be predicted apart from an offset that will be determined during data reduction.
      * <p>
      * units = 'pixel' 'pixel'
      * </p>
@@ -2769,10 +2702,8 @@ public enum NOAOExt implements IFitsHeader {
      */
     CRP2nnn(HDU.EXTENSION, VALUE.REAL, "Coordinate reference pixel"),
     /**
-     * Reference spectrum pixel coordinate. Generally this should be the at the
-     * center of the spectrum. In raw data the spectrum position(s) may be
-     * predicted apart from an offset that will be determined during data
-     * reduction.
+     * Reference spectrum pixel coordinate. Generally this should be the at the center of the spectrum. In raw data the
+     * spectrum position(s) may be predicted apart from an offset that will be determined during data reduction.
      * <p>
      * units = 'pixel' 'pixel'
      * </p>
@@ -2785,10 +2716,8 @@ public enum NOAOExt implements IFitsHeader {
      */
     CRPIX1(HDU.EXTENSION, VALUE.REAL, "Coordinate reference pixel"),
     /**
-     * Reference spectrum pixel coordinate. Generally this should be the at the
-     * center of the spectrum. In raw data the spectrum position(s) may be
-     * predicted apart from an offset that will be determined during data
-     * reduction.
+     * Reference spectrum pixel coordinate. Generally this should be the at the center of the spectrum. In raw data the
+     * spectrum position(s) may be predicted apart from an offset that will be determined during data reduction.
      * <p>
      * units = 'pixel' 'pixel'
      * </p>
@@ -2801,12 +2730,10 @@ public enum NOAOExt implements IFitsHeader {
      */
     CRPIX2(HDU.EXTENSION, VALUE.REAL, "Coordinate reference pixel"),
     /**
-     * Spectrum reference dispersion coordinate corresponding to the spectrum
-     * reference pixel coordinate. Note that by definition WCS axis 1 is always
-     * the dispersion axis. The mapping of this WCS axis to the dispersion
-     * direction in the image is given by the coordinate transformation matrix
-     * keywords. In raw data the reference dispersion coordinate may be
-     * approximately predicted. This will be refined during data reductions.
+     * Spectrum reference dispersion coordinate corresponding to the spectrum reference pixel coordinate. Note that by
+     * definition WCS axis 1 is always the dispersion axis. The mapping of this WCS axis to the dispersion direction in
+     * the image is given by the coordinate transformation matrix keywords. In raw data the reference dispersion
+     * coordinate may be approximately predicted. This will be refined during data reductions.
      * <p>
      * units = CUNIT1 CUN1%4d
      * </p>
@@ -2819,12 +2746,10 @@ public enum NOAOExt implements IFitsHeader {
      */
     CRV1nnn(HDU.EXTENSION, VALUE.REAL, "Coordinate reference value"),
     /**
-     * Spectrum reference dispersion coordinate corresponding to the spectrum
-     * reference pixel coordinate. Note that by definition WCS axis 1 is always
-     * the dispersion axis. The mapping of this WCS axis to the dispersion
-     * direction in the image is given by the coordinate transformation matrix
-     * keywords. In raw data the reference dispersion coordinate may be
-     * approximately predicted. This will be refined during data reductions.
+     * Spectrum reference dispersion coordinate corresponding to the spectrum reference pixel coordinate. Note that by
+     * definition WCS axis 1 is always the dispersion axis. The mapping of this WCS axis to the dispersion direction in
+     * the image is given by the coordinate transformation matrix keywords. In raw data the reference dispersion
+     * coordinate may be approximately predicted. This will be refined during data reductions.
      * <p>
      * units = CUNIT1 CUN1%4d
      * </p>
@@ -2837,12 +2762,10 @@ public enum NOAOExt implements IFitsHeader {
      */
     CRV2nnn(HDU.EXTENSION, VALUE.REAL, "Coordinate reference value"),
     /**
-     * Spectrum reference dispersion coordinate corresponding to the spectrum
-     * reference pixel coordinate. Note that by definition WCS axis 1 is always
-     * the dispersion axis. The mapping of this WCS axis to the dispersion
-     * direction in the image is given by the coordinate transformation matrix
-     * keywords. In raw data the reference dispersion coordinate may be
-     * approximately predicted. This will be refined during data reductions.
+     * Spectrum reference dispersion coordinate corresponding to the spectrum reference pixel coordinate. Note that by
+     * definition WCS axis 1 is always the dispersion axis. The mapping of this WCS axis to the dispersion direction in
+     * the image is given by the coordinate transformation matrix keywords. In raw data the reference dispersion
+     * coordinate may be approximately predicted. This will be refined during data reductions.
      * <p>
      * units = CUNIT1 CUN1%4d
      * </p>
@@ -2855,12 +2778,10 @@ public enum NOAOExt implements IFitsHeader {
      */
     CRVAL1(HDU.EXTENSION, VALUE.REAL, "Spectrum dispersion center"),
     /**
-     * Reference right ascension coordinate corresponding to the image reference
-     * pixel coordinate. Note that by definition WCS axis 1 is always the right
-     * ascension axis. The mapping of this WCS axis to the right ascension
-     * direction in the image is given by the coordinate transformation matrix
-     * keywords. In raw data the reference right ascension coordinate may be
-     * only approximate. This will be refined during data reductions.
+     * Reference right ascension coordinate corresponding to the image reference pixel coordinate. Note that by
+     * definition WCS axis 1 is always the right ascension axis. The mapping of this WCS axis to the right ascension
+     * direction in the image is given by the coordinate transformation matrix keywords. In raw data the reference right
+     * ascension coordinate may be only approximate. This will be refined during data reductions.
      * <p>
      * units = CUNIT1 CUN1%4d
      * </p>
@@ -2873,12 +2794,10 @@ public enum NOAOExt implements IFitsHeader {
      */
     CRVAL2(HDU.EXTENSION, VALUE.REAL, "Spectrum cross-dispersion center"),
     /**
-     * Reference declination coordinate corresponding to the image reference
-     * pixel coordinate. Note that by definition WCS axis 1 is always the
-     * declination axis. The mapping of this WCS axis to the declination
-     * direction in the image is given by the coordinate transformation matrix
-     * keywords. In raw data the reference right ascension coordinate may be
-     * only approximate. This will be refined during data reductions.
+     * Reference declination coordinate corresponding to the image reference pixel coordinate. Note that by definition
+     * WCS axis 1 is always the declination axis. The mapping of this WCS axis to the declination direction in the image
+     * is given by the coordinate transformation matrix keywords. In raw data the reference right ascension coordinate
+     * may be only approximate. This will be refined during data reductions.
      * <p>
      * units = CUNIT2 CUN2%4d
      * </p>
@@ -2891,8 +2810,8 @@ public enum NOAOExt implements IFitsHeader {
      */
     CTY1nnn(HDU.EXTENSION, VALUE.STRING, "Spectrum coordinate type"),
     /**
-     * Coordinate type for image world coordinates. The IRAF WCS standards are
-     * used (which is generally the FITS standard).
+     * Coordinate type for image world coordinates. The IRAF WCS standards are used (which is generally the FITS
+     * standard).
      * <p>
      * default value = 'LINEAR' CTYPE1
      * </p>
@@ -2902,8 +2821,8 @@ public enum NOAOExt implements IFitsHeader {
      */
     CTY2nnn(HDU.EXTENSION, VALUE.STRING, "Spectrum coordinate type"),
     /**
-     * Coordinate type for image world coordinates. The IRAF WCS standards are
-     * used (which is generally the FITS standard).
+     * Coordinate type for image world coordinates. The IRAF WCS standards are used (which is generally the FITS
+     * standard).
      * <p>
      * default value = 'LINEAR' CTYPE2
      * </p>
@@ -2923,8 +2842,8 @@ public enum NOAOExt implements IFitsHeader {
      */
     CTYPE1(HDU.EXTENSION, VALUE.STRING, "Spectrum coordinate type"),
     /**
-     * Coordinate type for image world coordinates. The IRAF WCS standards are
-     * used (which is generally the FITS standard).
+     * Coordinate type for image world coordinates. The IRAF WCS standards are used (which is generally the FITS
+     * standard).
      * <p>
      * default value = 'LINEAR' CTYPE1
      * </p>
@@ -2934,8 +2853,8 @@ public enum NOAOExt implements IFitsHeader {
      */
     CTYPE2(HDU.EXTENSION, VALUE.STRING, "Spectrum coordinate type"),
     /**
-     * Coordinate type for image world coordinates. The IRAF WCS standards are
-     * used (which is generally the FITS standard).
+     * Coordinate type for image world coordinates. The IRAF WCS standards are used (which is generally the FITS
+     * standard).
      * <p>
      * default value = 'LINEAR' CTYPE2
      * </p>
@@ -2975,9 +2894,8 @@ public enum NOAOExt implements IFitsHeader {
      */
     CUNIT2(HDU.EXTENSION, VALUE.STRING, "Coordinate reference unit"),
     /**
-     * Total dark time of the observation. This is the total time during which
-     * dark current is collected by the detector. If the times in the extension
-     * are different the primary HDU gives one of the extension times.
+     * Total dark time of the observation. This is the total time during which dark current is collected by the
+     * detector. If the times in the extension are different the primary HDU gives one of the extension times.
      * <p>
      * units = UNITTIME
      * </p>
@@ -3020,9 +2938,8 @@ public enum NOAOExt implements IFitsHeader {
      */
     DATEHDR(HDU.PRIMARY_EXTENSION, VALUE.STRING, "Date of header creation"),
     /**
-     * Default date for the observation. This keyword is generally not used and
-     * is DATE-OBS keyword for the start of the exposure on the detector is
-     * used.
+     * Default date for the observation. This keyword is generally not used and is DATE-OBS keyword for the start of the
+     * exposure on the detector is used.
      * <p>
      * default value = DATE-OBS
      * </p>
@@ -3032,8 +2949,8 @@ public enum NOAOExt implements IFitsHeader {
      */
     DATEOBS(HDU.PRIMARY_EXTENSION, VALUE.STRING, "Date of observation"),
     /**
-     * Projected position angle of the positive declination axis on the
-     * detector. The position angle is measured clockwise from the image y axis.
+     * Projected position angle of the positive declination axis on the detector. The position angle is measured
+     * clockwise from the image y axis.
      * <p>
      * units = UNITPA
      * </p>
@@ -3112,8 +3029,7 @@ public enum NOAOExt implements IFitsHeader {
      */
     DETEPOCH(HDU.PRIMARY, VALUE.REAL, "Detector coordinate epoch"),
     /**
-     * Detector coordinate system equinox. A value before 1984 is Besselian
-     * otherwise it is Julian.
+     * Detector coordinate system equinox. A value before 1984 is Besselian otherwise it is Julian.
      * <p>
      * units = 'yr'
      * </p>
@@ -3136,10 +3052,8 @@ public enum NOAOExt implements IFitsHeader {
      */
     DETHWV(HDU.PRIMARY, VALUE.STRING, "Detector version"),
     /**
-     * Times for the detector sensor measurements given as modified Julian
-     * dates. The MJDHDR keyword may be used for the time at which the image
-     * header is created or the MJD-OBS keyword may be used for the time of
-     * observation.
+     * Times for the detector sensor measurements given as modified Julian dates. The MJDHDR keyword may be used for the
+     * time at which the image header is created or the MJD-OBS keyword may be used for the time of observation.
      * <p>
      * units = 'd'
      * </p>
@@ -3152,10 +3066,8 @@ public enum NOAOExt implements IFitsHeader {
      */
     DETMJD(HDU.PRIMARY, VALUE.REAL, ""),
     /**
-     * Times for the detector sensor measurements given as modified Julian
-     * dates. The MJDHDR keyword may be used for the time at which the image
-     * header is created or the MJD-OBS keyword may be used for the time of
-     * observation.
+     * Times for the detector sensor measurements given as modified Julian dates. The MJDHDR keyword may be used for the
+     * time at which the image header is created or the MJD-OBS keyword may be used for the time of observation.
      * <p>
      * units = 'd'
      * </p>
@@ -3277,10 +3189,8 @@ public enum NOAOExt implements IFitsHeader {
      */
     DETSEC(HDU.EXTENSION, VALUE.STRING, "Detector data section"),
     /**
-     * The logical unbinned size of the detector in section notation. This is
-     * the full pixel raster size including, if applicable, drift scanning or a
-     * mosaic format. This is the full size even when subraster readouts are
-     * done.
+     * The logical unbinned size of the detector in section notation. This is the full pixel raster size including, if
+     * applicable, drift scanning or a mosaic format. This is the full size even when subraster readouts are done.
      * <p>
      * default value = none
      * </p>
@@ -3300,8 +3210,7 @@ public enum NOAOExt implements IFitsHeader {
      */
     DETSTAT(HDU.PRIMARY, VALUE.STRING, "Detector status"),
     /**
-     * Detector software version. This will not generally be used and the
-     * controller software version will apply.
+     * Detector software version. This will not generally be used and the controller software version will apply.
      * <p>
      * default value = none
      * </p>
@@ -3383,9 +3292,8 @@ public enum NOAOExt implements IFitsHeader {
      */
     DEWHWV(HDU.PRIMARY_EXTENSION, VALUE.STRING, "Dewar hardware"),
     /**
-     * Times for the dewar sensor measurements given as modified Julian dates.
-     * The MJDHDR keyword may be used for the time at which the image header is
-     * created or the MJD-OBS keyword may be used for the time of observation.
+     * Times for the dewar sensor measurements given as modified Julian dates. The MJDHDR keyword may be used for the
+     * time at which the image header is created or the MJD-OBS keyword may be used for the time of observation.
      * <p>
      * units = 'd'
      * </p>
@@ -3398,9 +3306,8 @@ public enum NOAOExt implements IFitsHeader {
      */
     DEWMJD(HDU.PRIMARY_EXTENSION, VALUE.REAL, ""),
     /**
-     * Times for the dewar sensor measurements given as modified Julian dates.
-     * The MJDHDR keyword may be used for the time at which the image header is
-     * created or the MJD-OBS keyword may be used for the time of observation.
+     * Times for the dewar sensor measurements given as modified Julian dates. The MJDHDR keyword may be used for the
+     * time at which the image header is created or the MJD-OBS keyword may be used for the time of observation.
      * <p>
      * units = 'd'
      * </p>
@@ -3551,8 +3458,7 @@ public enum NOAOExt implements IFitsHeader {
      */
     DEWVOLn(HDU.PRIMARY_EXTENSION, VALUE.REAL, ""),
     /**
-     * Times for the disperser sensor measurements given as modified Julian
-     * dates.
+     * Times for the disperser sensor measurements given as modified Julian dates.
      * <p>
      * units = 'd'
      * </p>
@@ -3565,8 +3471,7 @@ public enum NOAOExt implements IFitsHeader {
      */
     DISMJD(HDU.PRIMARY, VALUE.REAL, ""),
     /**
-     * Times for the disperser sensor measurements given as modified Julian
-     * dates.
+     * Times for the disperser sensor measurements given as modified Julian dates.
      * <p>
      * units = 'd'
      * </p>
@@ -3776,8 +3681,7 @@ public enum NOAOExt implements IFitsHeader {
      */
     DISVOLn(HDU.PRIMARY, VALUE.REAL, ""),
     /**
-     * Average wind direction measurements measured east of north over the
-     * sampling period inside the dome.
+     * Average wind direction measurements measured east of north over the sampling period inside the dome.
      * <p>
      * units = UNITPA
      * </p>
@@ -3790,8 +3694,7 @@ public enum NOAOExt implements IFitsHeader {
      */
     DMEDIR(HDU.PRIMARY, VALUE.REAL, "Average wind direction"),
     /**
-     * Average wind direction measurements measured east of north over the
-     * sampling period inside the dome.
+     * Average wind direction measurements measured east of north over the sampling period inside the dome.
      * <p>
      * units = UNITPA
      * </p>
@@ -3830,8 +3733,8 @@ public enum NOAOExt implements IFitsHeader {
      */
     DMEGUSn(HDU.PRIMARY, VALUE.REAL, "Maximum dome wind speed"),
     /**
-     * Times for the dome environment measurements given as modified Julian. For
-     * the wind measurements this is the start of the sampling period.
+     * Times for the dome environment measurements given as modified Julian. For the wind measurements this is the start
+     * of the sampling period.
      * <p>
      * units = 'd'
      * </p>
@@ -3844,8 +3747,8 @@ public enum NOAOExt implements IFitsHeader {
      */
     DMEMJD(HDU.PRIMARY, VALUE.REAL, ""),
     /**
-     * Times for the dome environment measurements given as modified Julian. For
-     * the wind measurements this is the start of the sampling period.
+     * Times for the dome environment measurements given as modified Julian. For the wind measurements this is the start
+     * of the sampling period.
      * <p>
      * units = 'd'
      * </p>
@@ -3858,8 +3761,8 @@ public enum NOAOExt implements IFitsHeader {
      */
     DMEMJDn(HDU.PRIMARY, VALUE.REAL, ""),
     /**
-     * Wind sampling period for the wind measurements inside the dome. If no
-     * value is given then the measurements are assumed to be 'instantaneous'.
+     * Wind sampling period for the wind measurements inside the dome. If no value is given then the measurements are
+     * assumed to be 'instantaneous'.
      * <p>
      * units = UNITTIME
      * </p>
@@ -3872,8 +3775,8 @@ public enum NOAOExt implements IFitsHeader {
      */
     DMEPER(HDU.PRIMARY, VALUE.REAL, "Dome wind sampling"),
     /**
-     * Wind sampling period for the wind measurements inside the dome. If no
-     * value is given then the measurements are assumed to be 'instantaneous'.
+     * Wind sampling period for the wind measurements inside the dome. If no value is given then the measurements are
+     * assumed to be 'instantaneous'.
      * <p>
      * units = UNITTIME
      * </p>
@@ -3964,8 +3867,7 @@ public enum NOAOExt implements IFitsHeader {
      */
     DOMMJDn(HDU.PRIMARY, VALUE.REAL, ""),
     /**
-     * Dome position angle sensor measurements. This should be in degrees east
-     * of north for the center of the dome slit.
+     * Dome position angle sensor measurements. This should be in degrees east of north for the center of the dome slit.
      * <p>
      * default value = none none
      * </p>
@@ -3975,8 +3877,7 @@ public enum NOAOExt implements IFitsHeader {
      */
     DOMPAN(HDU.PRIMARY, VALUE.REAL, ""),
     /**
-     * Dome position angle sensor measurements. This should be in degrees east
-     * of north for the center of the dome slit.
+     * Dome position angle sensor measurements. This should be in degrees east of north for the center of the dome slit.
      * <p>
      * default value = none none
      * </p>
@@ -4094,8 +3995,7 @@ public enum NOAOExt implements IFitsHeader {
      */
     DOMVOLn(HDU.PRIMARY, VALUE.REAL, ""),
     /**
-     * Transformation matrix between CCD and detector coordinates. If missing
-     * the default is an identify matrix.
+     * Transformation matrix between CCD and detector coordinates. If missing the default is an identify matrix.
      * <p>
      * default value = 0.(i!=j),1.(i=j)
      * </p>
@@ -4115,8 +4015,8 @@ public enum NOAOExt implements IFitsHeader {
      */
     DTVn(HDU.EXTENSION, VALUE.REAL, "Detector transformation vector"),
     /**
-     * Average wind direction measurements measured east of north over the
-     * sampling period outside the dome at times given by ENVMJDn keywords.
+     * Average wind direction measurements measured east of north over the sampling period outside the dome at times
+     * given by ENVMJDn keywords.
      * <p>
      * units = UNITPA
      * </p>
@@ -4129,8 +4029,8 @@ public enum NOAOExt implements IFitsHeader {
      */
     ENVDIR(HDU.PRIMARY, VALUE.REAL, "Average wind direction"),
     /**
-     * Average wind direction measurements measured east of north over the
-     * sampling period outside the dome at times given by ENVMJDn keywords.
+     * Average wind direction measurements measured east of north over the sampling period outside the dome at times
+     * given by ENVMJDn keywords.
      * <p>
      * units = UNITPA
      * </p>
@@ -4143,8 +4043,7 @@ public enum NOAOExt implements IFitsHeader {
      */
     ENVDIRn(HDU.PRIMARY, VALUE.REAL, "Average wind direction"),
     /**
-     * Maximum wind speed in km/s over the sampling period outside the dome at
-     * times given by ENVMJDn keywords.
+     * Maximum wind speed in km/s over the sampling period outside the dome at times given by ENVMJDn keywords.
      * <p>
      * units = UNITVEL
      * </p>
@@ -4157,8 +4056,7 @@ public enum NOAOExt implements IFitsHeader {
      */
     ENVGUS(HDU.PRIMARY, VALUE.REAL, "Maximum gust speed"),
     /**
-     * Maximum wind speed in km/s over the sampling period outside the dome at
-     * times given by ENVMJDn keywords.
+     * Maximum wind speed in km/s over the sampling period outside the dome at times given by ENVMJDn keywords.
      * <p>
      * units = UNITVEL
      * </p>
@@ -4197,8 +4095,8 @@ public enum NOAOExt implements IFitsHeader {
      */
     ENVHUMn(HDU.PRIMARY, VALUE.REAL, "Relative humidity"),
     /**
-     * Times for the site environment measurements given as modified Julian. For
-     * the wind measurements this is the start of the sampling period.
+     * Times for the site environment measurements given as modified Julian. For the wind measurements this is the start
+     * of the sampling period.
      * <p>
      * units = 'd'
      * </p>
@@ -4211,8 +4109,8 @@ public enum NOAOExt implements IFitsHeader {
      */
     ENVMJD(HDU.PRIMARY, VALUE.REAL, "Environment measurement time"),
     /**
-     * Times for the site environment measurements given as modified Julian. For
-     * the wind measurements this is the start of the sampling period.
+     * Times for the site environment measurements given as modified Julian. For the wind measurements this is the start
+     * of the sampling period.
      * <p>
      * units = 'd'
      * </p>
@@ -4225,9 +4123,8 @@ public enum NOAOExt implements IFitsHeader {
      */
     ENVMJDn(HDU.PRIMARY, VALUE.REAL, "Environment measurement time"),
     /**
-     * Wind sampling period for the wind measurements outside the dome at times
-     * given by ENVMJDn keywords. If no value is given then the measurements are
-     * assumed to be 'instantaneous'.
+     * Wind sampling period for the wind measurements outside the dome at times given by ENVMJDn keywords. If no value
+     * is given then the measurements are assumed to be 'instantaneous'.
      * <p>
      * units = UNITTIME
      * </p>
@@ -4240,9 +4137,8 @@ public enum NOAOExt implements IFitsHeader {
      */
     ENVPER(HDU.PRIMARY, VALUE.REAL, "Wind sampling period"),
     /**
-     * Wind sampling period for the wind measurements outside the dome at times
-     * given by ENVMJDn keywords. If no value is given then the measurements are
-     * assumed to be 'instantaneous'.
+     * Wind sampling period for the wind measurements outside the dome at times given by ENVMJDn keywords. If no value
+     * is given then the measurements are assumed to be 'instantaneous'.
      * <p>
      * units = UNITTIME
      * </p>
@@ -4333,8 +4229,7 @@ public enum NOAOExt implements IFitsHeader {
      */
     ENVWATn(HDU.PRIMARY, VALUE.REAL, "Precipitable water vapor"),
     /**
-     * Average wind speeds over the sampling period outside the dome at times
-     * given by ENVMJDn keywords.
+     * Average wind speeds over the sampling period outside the dome at times given by ENVMJDn keywords.
      * <p>
      * units = UNITVEL
      * </p>
@@ -4347,8 +4242,7 @@ public enum NOAOExt implements IFitsHeader {
      */
     ENVWIN(HDU.PRIMARY, VALUE.REAL, "Average wind speed"),
     /**
-     * Average wind speeds over the sampling period outside the dome at times
-     * given by ENVMJDn keywords.
+     * Average wind speeds over the sampling period outside the dome at times given by ENVMJDn keywords.
      * <p>
      * units = UNITVEL
      * </p>
@@ -4361,8 +4255,7 @@ public enum NOAOExt implements IFitsHeader {
      */
     ENVWINn(HDU.PRIMARY, VALUE.REAL, "Average wind speed"),
     /**
-     * Error information. The sequence numbers are used to order the
-     * information.
+     * Error information. The sequence numbers are used to order the information.
      * <p>
      * default value = none
      * </p>
@@ -4385,10 +4278,9 @@ public enum NOAOExt implements IFitsHeader {
      */
     EXPREQ(HDU.PRIMARY_EXTENSION, VALUE.REAL, "Requested exposure time"),
     /**
-     * Fiber identification for the fiber(s). The string consists of a fiber
-     * number, an object type number (0=sky, 1=object, etc.), the right
-     * ascension and declination, and the object name or title. This can replace
-     * OBJNAME, APRA/OBJRA, and APDEC/OBJDEC.
+     * Fiber identification for the fiber(s). The string consists of a fiber number, an object type number (0=sky,
+     * 1=object, etc.), the right ascension and declination, and the object name or title. This can replace OBJNAME,
+     * APRA/OBJRA, and APDEC/OBJDEC.
      * <p>
      * default value = none none
      * </p>
@@ -4398,10 +4290,9 @@ public enum NOAOExt implements IFitsHeader {
      */
     FIBER(HDU.PRIMARY, VALUE.STRING, ""),
     /**
-     * Fiber identification for the fiber(s). The string consists of a fiber
-     * number, an object type number (0=sky, 1=object, etc.), the right
-     * ascension and declination, and the object name or title. This can replace
-     * OBJNAME, APRA/OBJRA, and APDEC/OBJDEC.
+     * Fiber identification for the fiber(s). The string consists of a fiber number, an object type number (0=sky,
+     * 1=object, etc.), the right ascension and declination, and the object name or title. This can replace OBJNAME,
+     * APRA/OBJRA, and APDEC/OBJDEC.
      * <p>
      * default value = none none
      * </p>
@@ -4411,8 +4302,7 @@ public enum NOAOExt implements IFitsHeader {
      */
     FIBnnn(HDU.PRIMARY, VALUE.STRING, ""),
     /**
-     * Filter position given as filter wheel number or other filter system
-     * position measurement.
+     * Filter position given as filter wheel number or other filter system position measurement.
      * <p>
      * units = 'instrumental'
      * </p>
@@ -4425,8 +4315,7 @@ public enum NOAOExt implements IFitsHeader {
      */
     FILPOS(HDU.PRIMARY, VALUE.REAL, "Filter system position"),
     /**
-     * Filter position given as filter wheel number or other filter system
-     * position measurement.
+     * Filter position given as filter wheel number or other filter system position measurement.
      * <p>
      * units = 'instrumental'
      * </p>
@@ -4439,8 +4328,7 @@ public enum NOAOExt implements IFitsHeader {
      */
     FILPOSn(HDU.PRIMARY, VALUE.REAL, "Filter system position"),
     /**
-     * Filter type. This is the technical specification or observatory
-     * identification name.
+     * Filter type. This is the technical specification or observatory identification name.
      * <p>
      * default value = none none
      * </p>
@@ -4450,8 +4338,7 @@ public enum NOAOExt implements IFitsHeader {
      */
     FILTYP(HDU.PRIMARY, VALUE.STRING, "Filter type"),
     /**
-     * Filter type. This is the technical specification or observatory
-     * identification name.
+     * Filter type. This is the technical specification or observatory identification name.
      * <p>
      * default value = none none
      * </p>
@@ -4510,8 +4397,7 @@ public enum NOAOExt implements IFitsHeader {
      */
     FOCSTEP(HDU.PRIMARY, VALUE.REAL, "Focus step"),
     /**
-     * Amplifier gain in electrons per analog unit. This is the most current
-     * estimate of the gain.
+     * Amplifier gain in electrons per analog unit. This is the most current estimate of the gain.
      * <p>
      * units = 'e/count'
      * </p>
@@ -4534,9 +4420,8 @@ public enum NOAOExt implements IFitsHeader {
      */
     GTV(HDU.PRIMARY, VALUE.STRING, "Guider TV"),
     /**
-     * Guider TV filter names. This name is the astronomical standard name if
-     * applicable; i.e. U, B, Gunn I, etc. The filter type and filter device
-     * position are given by other keywords.
+     * Guider TV filter names. This name is the astronomical standard name if applicable; i.e. U, B, Gunn I, etc. The
+     * filter type and filter device position are given by other keywords.
      * <p>
      * default value = TVFILT GTVFIL
      * </p>
@@ -4546,9 +4431,8 @@ public enum NOAOExt implements IFitsHeader {
      */
     GTVFIL(HDU.PRIMARY, VALUE.STRING, "Filter name"),
     /**
-     * Guider TV filter names. This name is the astronomical standard name if
-     * applicable; i.e. U, B, Gunn I, etc. The filter type and filter device
-     * position are given by other keywords.
+     * Guider TV filter names. This name is the astronomical standard name if applicable; i.e. U, B, Gunn I, etc. The
+     * filter type and filter device position are given by other keywords.
      * <p>
      * default value = TVFILT GTVFIL
      * </p>
@@ -4558,8 +4442,7 @@ public enum NOAOExt implements IFitsHeader {
      */
     GTVFILn(HDU.PRIMARY, VALUE.STRING, "Filter name"),
     /**
-     * Guider TV filter position given as filter wheel number or other filter
-     * system position measurement.
+     * Guider TV filter position given as filter wheel number or other filter system position measurement.
      * <p>
      * units = 'instrumental'
      * </p>
@@ -4572,8 +4455,7 @@ public enum NOAOExt implements IFitsHeader {
      */
     GTVFPO(HDU.PRIMARY, VALUE.REAL, "Filter system position"),
     /**
-     * Guider TV filter position given as filter wheel number or other filter
-     * system position measurement.
+     * Guider TV filter position given as filter wheel number or other filter system position measurement.
      * <p>
      * units = 'instrumental'
      * </p>
@@ -4586,8 +4468,7 @@ public enum NOAOExt implements IFitsHeader {
      */
     GTVFPOn(HDU.PRIMARY, VALUE.REAL, "Filter system position"),
     /**
-     * Guider TV filter type. This is the technical specification or observatory
-     * identification name.
+     * Guider TV filter type. This is the technical specification or observatory identification name.
      * <p>
      * default value = TVFTYP TVFTYP%d
      * </p>
@@ -4597,8 +4478,7 @@ public enum NOAOExt implements IFitsHeader {
      */
     GTVFTY(HDU.PRIMARY, VALUE.STRING, "Filter type"),
     /**
-     * Guider TV filter type. This is the technical specification or observatory
-     * identification name.
+     * Guider TV filter type. This is the technical specification or observatory identification name.
      * <p>
      * default value = TVFTYP TVFTYP%d
      * </p>
@@ -4618,8 +4498,7 @@ public enum NOAOExt implements IFitsHeader {
      */
     GTVHWV(HDU.PRIMARY, VALUE.STRING, ""),
     /**
-     * Times for the guider television sensor measurements given as modified
-     * Julian dates.
+     * Times for the guider television sensor measurements given as modified Julian dates.
      * <p>
      * units = 'd'
      * </p>
@@ -4632,8 +4511,7 @@ public enum NOAOExt implements IFitsHeader {
      */
     GTVMJD(HDU.PRIMARY, VALUE.REAL, ""),
     /**
-     * Times for the guider television sensor measurements given as modified
-     * Julian dates.
+     * Times for the guider television sensor measurements given as modified Julian dates.
      * <p>
      * units = 'd'
      * </p>
@@ -4666,8 +4544,7 @@ public enum NOAOExt implements IFitsHeader {
      */
     GTVPANn(HDU.PRIMARY, VALUE.REAL, ""),
     /**
-     * Guider television linear position sensor measurements in appropriate
-     * units.
+     * Guider television linear position sensor measurements in appropriate units.
      * <p>
      * default value = TVPOS TVPOS%d
      * </p>
@@ -4677,8 +4554,7 @@ public enum NOAOExt implements IFitsHeader {
      */
     GTVPOS(HDU.PRIMARY, VALUE.REAL, "Television position ()"),
     /**
-     * Guider television linear position sensor measurements in appropriate
-     * units.
+     * Guider television linear position sensor measurements in appropriate units.
      * <p>
      * default value = TVPOS TVPOS%d
      * </p>
@@ -4819,8 +4695,7 @@ public enum NOAOExt implements IFitsHeader {
      */
     GUIDEHWV(HDU.PRIMARY, VALUE.NONE, ""),
     /**
-     * Guider name. Two of the names are 'manual' and 'none' for manual guiding
-     * or no guider, respectively.
+     * Guider name. Two of the names are 'manual' and 'none' for manual guiding or no guider, respectively.
      * <p>
      * default value = none
      * </p>
@@ -4850,8 +4725,7 @@ public enum NOAOExt implements IFitsHeader {
      */
     GUIEPOCH(HDU.PRIMARY, VALUE.NONE, ""),
     /**
-     * Guide object coordinate system equinox. A value before 1984 is Besselian
-     * otherwise it is Julian.
+     * Guide object coordinate system equinox. A value before 1984 is Besselian otherwise it is Julian.
      * <p>
      * default value = TELEQUIN
      * </p>
@@ -4907,8 +4781,7 @@ public enum NOAOExt implements IFitsHeader {
      */
     GUIPANn(HDU.PRIMARY, VALUE.REAL, ""),
     /**
-     * Guider linear position sensor measurements in appropriate units. This
-     * might be used for guide probe positions.
+     * Guider linear position sensor measurements in appropriate units. This might be used for guide probe positions.
      * <p>
      * default value = none none
      * </p>
@@ -4918,8 +4791,7 @@ public enum NOAOExt implements IFitsHeader {
      */
     GUIPOS(HDU.PRIMARY, VALUE.REAL, "Guider position ()"),
     /**
-     * Guider linear position sensor measurements in appropriate units. This
-     * might be used for guide probe positions.
+     * Guider linear position sensor measurements in appropriate units. This might be used for guide probe positions.
      * <p>
      * default value = none none
      * </p>
@@ -5086,9 +4958,8 @@ public enum NOAOExt implements IFitsHeader {
      */
     IMAGEHWV(HDU.PRIMARY, VALUE.STRING, "Image creation hardware version"),
     /**
-     * The image identification when there are multiple images within an
-     * observation. For detectors with CCDs this would be a unique number
-     * assigned to each amplifier in the detector.
+     * The image identification when there are multiple images within an observation. For detectors with CCDs this would
+     * be a unique number assigned to each amplifier in the detector.
      * <p>
      * default value = none
      * </p>
@@ -5121,8 +4992,7 @@ public enum NOAOExt implements IFitsHeader {
      */
     INSFOCUS(HDU.PRIMARY, VALUE.REAL, "Instrument focus"),
     /**
-     * Times for the instrument sensor measurements given as modified Julian
-     * dates.
+     * Times for the instrument sensor measurements given as modified Julian dates.
      * <p>
      * units = 'd'
      * </p>
@@ -5135,8 +5005,7 @@ public enum NOAOExt implements IFitsHeader {
      */
     INSMJD(HDU.PRIMARY, VALUE.REAL, ""),
     /**
-     * Times for the instrument sensor measurements given as modified Julian
-     * dates.
+     * Times for the instrument sensor measurements given as modified Julian dates.
      * <p>
      * units = 'd'
      * </p>
@@ -5271,8 +5140,7 @@ public enum NOAOExt implements IFitsHeader {
      */
     INSTHWV(HDU.PRIMARY, VALUE.STRING, "Instrument hardware version"),
     /**
-     * Instrument software version.
-     * ------------------------------------------------------------------
+     * Instrument software version. ------------------------------------------------------------------
      * <p>
      * default value = none
      * </p>
@@ -5308,8 +5176,7 @@ public enum NOAOExt implements IFitsHeader {
      */
     INSVOLn(HDU.PRIMARY, VALUE.REAL, ""),
     /**
-     * The keyword dictionary defining the keywords. This dictionary should be
-     * archived with the data.
+     * The keyword dictionary defining the keywords. This dictionary should be archived with the data.
      * <p>
      * default value = none
      * </p>
@@ -5339,9 +5206,8 @@ public enum NOAOExt implements IFitsHeader {
      */
     LAMPTYPE(HDU.PRIMARY, VALUE.STRING, "Lamp type"),
     /**
-     * Times for the lamp sensor measurements given as modified Julian dates.
-     * The MJDHDR keyword may be used for the time at which the image header is
-     * created or the MJD-OBS keyword may be used for the time of observation.
+     * Times for the lamp sensor measurements given as modified Julian dates. The MJDHDR keyword may be used for the
+     * time at which the image header is created or the MJD-OBS keyword may be used for the time of observation.
      * <p>
      * units = 'd'
      * </p>
@@ -5354,9 +5220,8 @@ public enum NOAOExt implements IFitsHeader {
      */
     LMPMJD(HDU.PRIMARY, VALUE.REAL, ""),
     /**
-     * Times for the lamp sensor measurements given as modified Julian dates.
-     * The MJDHDR keyword may be used for the time at which the image header is
-     * created or the MJD-OBS keyword may be used for the time of observation.
+     * Times for the lamp sensor measurements given as modified Julian dates. The MJDHDR keyword may be used for the
+     * time at which the image header is created or the MJD-OBS keyword may be used for the time of observation.
      * <p>
      * units = 'd'
      * </p>
@@ -5389,8 +5254,7 @@ public enum NOAOExt implements IFitsHeader {
      */
     LMPPANn(HDU.PRIMARY, VALUE.REAL, ""),
     /**
-     * Calibration lamp linear position sensor measurements in appropriate
-     * units.
+     * Calibration lamp linear position sensor measurements in appropriate units.
      * <p>
      * default value = none none
      * </p>
@@ -5400,8 +5264,7 @@ public enum NOAOExt implements IFitsHeader {
      */
     LMPPOS(HDU.PRIMARY, VALUE.REAL, ""),
     /**
-     * Calibration lamp linear position sensor measurements in appropriate
-     * units.
+     * Calibration lamp linear position sensor measurements in appropriate units.
      * <p>
      * default value = none none
      * </p>
@@ -5528,9 +5391,8 @@ public enum NOAOExt implements IFitsHeader {
      */
     LSTHDR(HDU.PRIMARY_EXTENSION, VALUE.STRING, "LST of header creation"),
     /**
-     * Default local siderial time for the observation. This keyword is
-     * generally not used and is LST-OBS keyword for the start of the exposure
-     * on the detector is used.
+     * Default local siderial time for the observation. This keyword is generally not used and is LST-OBS keyword for
+     * the start of the exposure on the detector is used.
      * <p>
      * units = UNITHOUR
      * </p>
@@ -5543,8 +5405,7 @@ public enum NOAOExt implements IFitsHeader {
      */
     LSTOBS(HDU.PRIMARY_EXTENSION, VALUE.STRING, "LST of observation"),
     /**
-     * Transformation matrix between CCD and image coordinates. If missing the
-     * default is an identify matrix.
+     * Transformation matrix between CCD and image coordinates. If missing the default is an identify matrix.
      * <p>
      * default value = 0.(i!=j),1.(i=j)
      * </p>
@@ -5564,9 +5425,8 @@ public enum NOAOExt implements IFitsHeader {
      */
     LTVn(HDU.EXTENSION, VALUE.REAL, "Image transformation vector"),
     /**
-     * The maximum number of scanned (unbinned) lines used to form an output
-     * line. This is used with drift scanning or a scan table. For long drift
-     * scans this will be the number of lines in the CCD.
+     * The maximum number of scanned (unbinned) lines used to form an output line. This is used with drift scanning or a
+     * scan table. For long drift scans this will be the number of lines in the CCD.
      * <p>
      * default value = none
      * </p>
@@ -5576,10 +5436,9 @@ public enum NOAOExt implements IFitsHeader {
      */
     MAXNSCAN(HDU.EXTENSION, VALUE.INTEGER, "Maximum number of scanned lines"),
     /**
-     * The minimum number of scanned (unbinned) lines used to form an output
-     * line. This is used with drift scanning or a scan table. This will only
-     * differ from MAXNSCAN if the initial lines in the output image are from
-     * the initial ramp-up.
+     * The minimum number of scanned (unbinned) lines used to form an output line. This is used with drift scanning or a
+     * scan table. This will only differ from MAXNSCAN if the initial lines in the output image are from the initial
+     * ramp-up.
      * <p>
      * default value = MAXNSCAN
      * </p>
@@ -5590,10 +5449,9 @@ public enum NOAOExt implements IFitsHeader {
     MINNSCAN(HDU.EXTENSION, VALUE.INTEGER, "Minimum number of scanned lines"),
 
     /**
-     * Modified Julian date when the image header was created by the software.
-     * The fractional part of the date is given to better than a second of time.
-     * Many header keywords may be sampled or computed at this time and this
-     * keyword is the default for these.
+     * Modified Julian date when the image header was created by the software. The fractional part of the date is given
+     * to better than a second of time. Many header keywords may be sampled or computed at this time and this keyword is
+     * the default for these.
      * <p>
      * units = 'd'
      * </p>
@@ -5606,10 +5464,9 @@ public enum NOAOExt implements IFitsHeader {
      */
     MJDHDR(HDU.PRIMARY_EXTENSION, VALUE.REAL, "MJD of header creation"),
     /**
-     * Default modified Julian date for the observation. The fractional part of
-     * the date is given to better than a second of time. This keyword is
-     * generally not used and is MJD-OBS keyword for the start of the exposure
-     * on the detector is used.
+     * Default modified Julian date for the observation. The fractional part of the date is given to better than a
+     * second of time. This keyword is generally not used and is MJD-OBS keyword for the start of the exposure on the
+     * detector is used.
      * <p>
      * units = 'd'
      * </p>
@@ -5622,8 +5479,8 @@ public enum NOAOExt implements IFitsHeader {
      */
     MJDOBS(HDU.PRIMARY_EXTENSION, VALUE.REAL, "MJD of observation"),
     /**
-     * The number of amplifiers in the detector. When there is only a single
-     * amplifier used it may be absent since the default value is 1.
+     * The number of amplifiers in the detector. When there is only a single amplifier used it may be absent since the
+     * default value is 1.
      * <p>
      * default value = 1
      * </p>
@@ -5633,9 +5490,8 @@ public enum NOAOExt implements IFitsHeader {
      */
     NAMPS(HDU.PRIMARY, VALUE.INTEGER, "Number of Amplifiers"),
     /**
-     * The number of CCDs in the detector. This is used with mosaics of CCD
-     * detectors. For a single CCD it may be absent since the default value is
-     * 1.
+     * The number of CCDs in the detector. This is used with mosaics of CCD detectors. For a single CCD it may be absent
+     * since the default value is 1.
      * <p>
      * default value = 1
      * </p>
@@ -5681,8 +5537,7 @@ public enum NOAOExt implements IFitsHeader {
      */
     NODHWV(HDU.PRIMARY, VALUE.NONE, ""),
     /**
-     * Times for the nodding system sensor measurements given as modified Julian
-     * dates.
+     * Times for the nodding system sensor measurements given as modified Julian dates.
      * <p>
      * units = 'd'
      * </p>
@@ -5695,8 +5550,7 @@ public enum NOAOExt implements IFitsHeader {
      */
     NODMJD(HDU.PRIMARY, VALUE.REAL, ""),
     /**
-     * Times for the nodding system sensor measurements given as modified Julian
-     * dates.
+     * Times for the nodding system sensor measurements given as modified Julian dates.
      * <p>
      * units = 'd'
      * </p>
@@ -5718,9 +5572,8 @@ public enum NOAOExt implements IFitsHeader {
      */
     NODNCHOP(HDU.PRIMARY, VALUE.NONE, ""),
     /**
-     * Nodding position angle measurements in appropriate units. Note that
-     * NODANGLE should be used for the nodding angle and these keywords are for
-     * other system position angle measurements.
+     * Nodding position angle measurements in appropriate units. Note that NODANGLE should be used for the nodding angle
+     * and these keywords are for other system position angle measurements.
      * <p>
      * default value = none none
      * </p>
@@ -5730,9 +5583,8 @@ public enum NOAOExt implements IFitsHeader {
      */
     NODPAN(HDU.PRIMARY, VALUE.REAL, ""),
     /**
-     * Nodding position angle measurements in appropriate units. Note that
-     * NODANGLE should be used for the nodding angle and these keywords are for
-     * other system position angle measurements.
+     * Nodding position angle measurements in appropriate units. Note that NODANGLE should be used for the nodding angle
+     * and these keywords are for other system position angle measurements.
      * <p>
      * default value = none none
      * </p>
@@ -5858,8 +5710,7 @@ public enum NOAOExt implements IFitsHeader {
      */
     NODVOLn(HDU.PRIMARY, VALUE.REAL, ""),
     /**
-     * Number of coadded subexposures. When charge shuffling this gives the
-     * number of charge shuffled exposures.
+     * Number of coadded subexposures. When charge shuffling this gives the number of charge shuffled exposures.
      * <p>
      * default value = 1
      * </p>
@@ -5892,8 +5743,7 @@ public enum NOAOExt implements IFitsHeader {
      */
     OBJDECU(HDU.PRIMARY, VALUE.STRING, "Declination unit"),
     /**
-     * Epoch of the target astronomical object coordinate(s). This is given in
-     * years.
+     * Epoch of the target astronomical object coordinate(s). This is given in years.
      * <p>
      * units = 'yr'
      * </p>
@@ -5906,8 +5756,8 @@ public enum NOAOExt implements IFitsHeader {
      */
     OBJEPOCH(HDU.PRIMARY, VALUE.REAL, "Epoch of object coordinates"),
     /**
-     * Coordinate system equinox for the target astronomical object(s). A value
-     * before 1984 is Besselian otherwise it is Julian.
+     * Coordinate system equinox for the target astronomical object(s). A value before 1984 is Besselian otherwise it is
+     * Julian.
      * <p>
      * units = 'yr'
      * </p>
@@ -5920,9 +5770,8 @@ public enum NOAOExt implements IFitsHeader {
      */
     OBJEQUIN(HDU.PRIMARY, VALUE.REAL, "Object coordinate equinox"),
     /**
-     * Standard reference or catalog name for the target astronomical object(s).
-     * The name should follow IAU standards. These keywords differ from the
-     * OBJECT keyword which is used to identify the observation.
+     * Standard reference or catalog name for the target astronomical object(s). The name should follow IAU standards.
+     * These keywords differ from the OBJECT keyword which is used to identify the observation.
      * <p>
      * default value = OBJECT OBJNAME
      * </p>
@@ -5965,9 +5814,8 @@ public enum NOAOExt implements IFitsHeader {
      */
     OBJRAU(HDU.PRIMARY, VALUE.STRING, "Right ascension unit"),
     /**
-     * Type of target astronomical object(s). This is taken from a dictionary of
-     * names yet to be defined. Some common types are 'galaxy', 'star', and
-     * 'sky'. If not particular object is targeted the type 'field' may be used.
+     * Type of target astronomical object(s). This is taken from a dictionary of names yet to be defined. Some common
+     * types are 'galaxy', 'star', and 'sky'. If not particular object is targeted the type 'field' may be used.
      * <p>
      * default value = none OBJTYPE
      * </p>
@@ -5977,9 +5825,8 @@ public enum NOAOExt implements IFitsHeader {
      */
     OBJTnnn(HDU.PRIMARY, VALUE.STRING, "Type of object"),
     /**
-     * Type of target astronomical object(s). This is taken from a dictionary of
-     * names yet to be defined. Some common types are 'galaxy', 'star', and
-     * 'sky'. If not particular object is targeted the type 'field' may be used.
+     * Type of target astronomical object(s). This is taken from a dictionary of names yet to be defined. Some common
+     * types are 'galaxy', 'star', and 'sky'. If not particular object is targeted the type 'field' may be used.
      * <p>
      * default value = none OBJTYPE
      * </p>
@@ -5989,9 +5836,8 @@ public enum NOAOExt implements IFitsHeader {
      */
     OBJTYPE(HDU.PRIMARY, VALUE.STRING, "Type of object"),
     /**
-     * Declination of the observation. This may be distinct from the object
-     * coordinates and the telescope coordinates. It may be used to indicate the
-     * requested observation coordinates.
+     * Declination of the observation. This may be distinct from the object coordinates and the telescope coordinates.
+     * It may be used to indicate the requested observation coordinates.
      * <p>
      * units = OBSDECU
      * </p>
@@ -6027,8 +5873,7 @@ public enum NOAOExt implements IFitsHeader {
      */
     OBSEPOCH(HDU.PRIMARY, VALUE.REAL, "Observation coordinate epoch"),
     /**
-     * Equinox of coordinates used in observation coordinates. A value before
-     * 1984 is Besselian otherwise it is Julian.
+     * Equinox of coordinates used in observation coordinates. A value before 1984 is Besselian otherwise it is Julian.
      * <p>
      * units = 'yr'
      * </p>
@@ -6051,8 +5896,7 @@ public enum NOAOExt implements IFitsHeader {
      */
     OBSERVAT(HDU.PRIMARY, VALUE.STRING, "Observatory"),
     /**
-     * The unique observatory observation identification. This serves to
-     * identify all data from the same observation.
+     * The unique observatory observation identification. This serves to identify all data from the same observation.
      * <p>
      * default value = none
      * </p>
@@ -6062,9 +5906,8 @@ public enum NOAOExt implements IFitsHeader {
      */
     OBSID(HDU.PRIMARY_EXTENSION, VALUE.STRING, "Observation identification"),
     /**
-     * Right ascension of the observation. This may be distinct from the object
-     * coordinates and the telescope coordinates. It may be used to indicate the
-     * requested observation coordinates.
+     * Right ascension of the observation. This may be distinct from the object coordinates and the telescope
+     * coordinates. It may be used to indicate the requested observation coordinates.
      * <p>
      * units = OBSRAU
      * </p>
@@ -6107,8 +5950,7 @@ public enum NOAOExt implements IFitsHeader {
      */
     OBSRVRnn(HDU.PRIMARY, VALUE.STRING, "Observer(s)"),
     /**
-     * Status of the observation.
-     * -----------------------------------------------------------------
+     * Status of the observation. -----------------------------------------------------------------
      * <p>
      * default value = none
      * </p>
@@ -6118,8 +5960,7 @@ public enum NOAOExt implements IFitsHeader {
      */
     OBSSTAT(HDU.PRIMARY, VALUE.STRING, "Observation status"),
     /**
-     * The type of observation such as an astronomical exposure or a particular
-     * type of calibration exposure.
+     * The type of observation such as an astronomical exposure or a particular type of calibration exposure.
      * <p>
      * default value = none
      * </p>
@@ -6152,8 +5993,7 @@ public enum NOAOExt implements IFitsHeader {
      */
     ODEUnnn(HDU.PRIMARY, VALUE.STRING, "Declination unit"),
     /**
-     * Epoch of the target astronomical object coordinate(s). This is given in
-     * years.
+     * Epoch of the target astronomical object coordinate(s). This is given in years.
      * <p>
      * units = 'yr'
      * </p>
@@ -6166,8 +6006,8 @@ public enum NOAOExt implements IFitsHeader {
      */
     OEPOnnn(HDU.PRIMARY, VALUE.REAL, "Epoch of object coordinates"),
     /**
-     * Coordinate system equinox for the target astronomical object(s). A value
-     * before 1984 is Besselian otherwise it is Julian.
+     * Coordinate system equinox for the target astronomical object(s). A value before 1984 is Besselian otherwise it is
+     * Julian.
      * <p>
      * units = 'yr'
      * </p>
@@ -6213,9 +6053,8 @@ public enum NOAOExt implements IFitsHeader {
      */
     ORDSnnn(HDU.PRIMARY, VALUE.STRING, "Object coordinate system"),
     /**
-     * Status of calibration to data proportional to photons. For CCD data this
-     * means bias section correction, zero level calibration, dark count
-     * calibration, and flat field calibration.
+     * Status of calibration to data proportional to photons. For CCD data this means bias section correction, zero
+     * level calibration, dark count calibration, and flat field calibration.
      * <p>
      * default value = F
      * </p>
@@ -6298,9 +6137,8 @@ public enum NOAOExt implements IFitsHeader {
      */
     PIXSCALn(HDU.PRIMARY, VALUE.REAL, "Pixel scale"),
     /**
-     * Unbinned pixel size along each dimension given in appropriate units. The
-     * units should be indicated in the comment. The projected pixel size in arc
-     * seconds or wavelength are given by other parameters.
+     * Unbinned pixel size along each dimension given in appropriate units. The units should be indicated in the
+     * comment. The projected pixel size in arc seconds or wavelength are given by other parameters.
      * <p>
      * units = 'um'
      * </p>
@@ -6417,8 +6255,7 @@ public enum NOAOExt implements IFitsHeader {
      */
     PMX2n(HDU.EXTENSION, VALUE.REAL, "Spectrum pixel limit"),
     /**
-     * CCD preflash time. If the times in the extension are different the
-     * primary HDU gives one of the extension times.
+     * CCD preflash time. If the times in the extension are different the primary HDU gives one of the extension times.
      * <p>
      * units = UNITTIME
      * </p>
@@ -6491,8 +6328,8 @@ public enum NOAOExt implements IFitsHeader {
      */
     PROPSRnn(HDU.PRIMARY, VALUE.STRING, "Proposer(s)"),
     /**
-     * Default coordinate system equinox. A value before 1984 is Besselian
-     * otherwise it is Julian. If absent the default is J2000.
+     * Default coordinate system equinox. A value before 1984 is Besselian otherwise it is Julian. If absent the default
+     * is J2000.
      * <p>
      * units = 'yr'
      * </p>
@@ -6506,8 +6343,8 @@ public enum NOAOExt implements IFitsHeader {
     RADECEQ(HDU.PRIMARY_EXTENSION, VALUE.REAL, "Default coordinate equinox"),
 
     /**
-     * Projected position angle of the positive right ascension axis on the
-     * detector. The position angle is measured clockwise from the image y axis.
+     * Projected position angle of the positive right ascension axis on the detector. The position angle is measured
+     * clockwise from the image y axis.
      * <p>
      * units = UNITPA
      * </p>
@@ -6556,8 +6393,7 @@ public enum NOAOExt implements IFitsHeader {
      */
     READTIME(HDU.PRIMARY_EXTENSION, VALUE.REAL, "Unbinned pixel read time"),
     /**
-     * Archive identification. This may be the same as the observation
-     * identification.
+     * Archive identification. This may be the same as the observation identification.
      * <p>
      * default value = OBSID none
      * </p>
@@ -6567,9 +6403,8 @@ public enum NOAOExt implements IFitsHeader {
      */
     RECNO(HDU.PRIMARY, VALUE.STRING, "Archive identification"),
     /**
-     * Seeing estimates specified as the stellar full-width at half-maximum in
-     * arc seconds. There may be more than one estimate. The times of the
-     * estimates are given by the SEEMJDn keyword.
+     * Seeing estimates specified as the stellar full-width at half-maximum in arc seconds. There may be more than one
+     * estimate. The times of the estimates are given by the SEEMJDn keyword.
      * <p>
      * units = UNITSEP
      * </p>
@@ -6582,9 +6417,8 @@ public enum NOAOExt implements IFitsHeader {
      */
     SEEING(HDU.PRIMARY, VALUE.REAL, "FWHM"),
     /**
-     * Seeing estimates specified as the stellar full-width at half-maximum in
-     * arc seconds. There may be more than one estimate. The times of the
-     * estimates are given by the SEEMJDn keyword.
+     * Seeing estimates specified as the stellar full-width at half-maximum in arc seconds. There may be more than one
+     * estimate. The times of the estimates are given by the SEEMJDn keyword.
      * <p>
      * units = UNITSEP
      * </p>
@@ -6623,11 +6457,10 @@ public enum NOAOExt implements IFitsHeader {
      */
     SEEMJDn(HDU.PRIMARY, VALUE.REAL, "MJD for seeing estimate"),
     /**
-     * Exposure time of the nth subexposure. If all subexposures are the same
-     * length then only the first keyword, SEXP, is needed. For charge shuffling
-     * the subexposure time is the total time for each charge shuffled exposure.
-     * There is no finer division of the exposure times. Comments would be used
-     * to describe the subexposures of each charge shuffled subexposure.
+     * Exposure time of the nth subexposure. If all subexposures are the same length then only the first keyword, SEXP,
+     * is needed. For charge shuffling the subexposure time is the total time for each charge shuffled exposure. There
+     * is no finer division of the exposure times. Comments would be used to describe the subexposures of each charge
+     * shuffled subexposure.
      * <p>
      * units = UNITTIME
      * </p>
@@ -6640,11 +6473,10 @@ public enum NOAOExt implements IFitsHeader {
      */
     SEXP(HDU.PRIMARY_EXTENSION, VALUE.REAL, "Subexposure time"),
     /**
-     * Exposure time of the nth subexposure. If all subexposures are the same
-     * length then only the first keyword, SEXP, is needed. For charge shuffling
-     * the subexposure time is the total time for each charge shuffled exposure.
-     * There is no finer division of the exposure times. Comments would be used
-     * to describe the subexposures of each charge shuffled subexposure.
+     * Exposure time of the nth subexposure. If all subexposures are the same length then only the first keyword, SEXP,
+     * is needed. For charge shuffling the subexposure time is the total time for each charge shuffled exposure. There
+     * is no finer division of the exposure times. Comments would be used to describe the subexposures of each charge
+     * shuffled subexposure.
      * <p>
      * units = UNITTIME
      * </p>
@@ -6713,11 +6545,9 @@ public enum NOAOExt implements IFitsHeader {
      */
     SHUTSWV(HDU.PRIMARY, VALUE.STRING, "Shutter software version"),
     /**
-     * Slit or mask hole identification for the aperture(s). The string consists
-     * of a number, an object type number (0=sky, 1=object, etc.), the right
-     * ascension and declination, and the object name or title. declination, and
-     * the object name or title. This can replace OBJNAME, APRA/OBJRA, and
-     * APDEC/OBJDEC.
+     * Slit or mask hole identification for the aperture(s). The string consists of a number, an object type number
+     * (0=sky, 1=object, etc.), the right ascension and declination, and the object name or title. declination, and the
+     * object name or title. This can replace OBJNAME, APRA/OBJRA, and APDEC/OBJDEC.
      * <p>
      * default value = none none
      * </p>
@@ -6727,11 +6557,9 @@ public enum NOAOExt implements IFitsHeader {
      */
     SLIT(HDU.PRIMARY, VALUE.STRING, ""),
     /**
-     * Slit or mask hole identification for the aperture(s). The string consists
-     * of a number, an object type number (0=sky, 1=object, etc.), the right
-     * ascension and declination, and the object name or title. declination, and
-     * the object name or title. This can replace OBJNAME, APRA/OBJRA, and
-     * APDEC/OBJDEC.
+     * Slit or mask hole identification for the aperture(s). The string consists of a number, an object type number
+     * (0=sky, 1=object, etc.), the right ascension and declination, and the object name or title. declination, and the
+     * object name or title. This can replace OBJNAME, APRA/OBJRA, and APDEC/OBJDEC.
      * <p>
      * default value = none none
      * </p>
@@ -6741,10 +6569,8 @@ public enum NOAOExt implements IFitsHeader {
      */
     SLITnnn(HDU.PRIMARY, VALUE.STRING, ""),
     /**
-     * FWHM of the object spectrum profile on the detector. The width is in the
-     * units of the spatial world coordinate system. This may be approximate. It
-     * is particularly useful for specifying the profile width of fiber fed
-     * spectra.
+     * FWHM of the object spectrum profile on the detector. The width is in the units of the spatial world coordinate
+     * system. This may be approximate. It is particularly useful for specifying the profile width of fiber fed spectra.
      * <p>
      * units = CUNIT2 CUN2%4d
      * </p>
@@ -6783,10 +6609,8 @@ public enum NOAOExt implements IFitsHeader {
      */
     SUTn(HDU.PRIMARY_EXTENSION, VALUE.STRING, "UTC of subexposure start"),
     /**
-     * FWHM of the object spectrum profile on the detector. The width is in the
-     * units of the spatial world coordinate system. This may be approximate. It
-     * is particularly useful for specifying the profile width of fiber fed
-     * spectra.
+     * FWHM of the object spectrum profile on the detector. The width is in the units of the spatial world coordinate
+     * system. This may be approximate. It is particularly useful for specifying the profile width of fiber fed spectra.
      * <p>
      * units = CUNIT2 CUN2%4d
      * </p>
@@ -6838,8 +6662,7 @@ public enum NOAOExt implements IFitsHeader {
      */
     TELAZ(HDU.PRIMARY, VALUE.STRING, "Telescope azimuth"),
     /**
-     * Telescope configuration. The configuration defines the mirrors,
-     * correctors, light paths, etc.
+     * Telescope configuration. The configuration defines the mirrors, correctors, light paths, etc.
      * <p>
      * default value = none
      * </p>
@@ -6885,8 +6708,7 @@ public enum NOAOExt implements IFitsHeader {
      */
     TELEPOCH(HDU.PRIMARY, VALUE.REAL, "Telescope coordinate epoch"),
     /**
-     * Telescope pointing coordinate system equinox. A value before 1984 is
-     * Besselian otherwise it is Julian.
+     * Telescope pointing coordinate system equinox. A value before 1984 is Besselian otherwise it is Julian.
      * <p>
      * units = 'yr'
      * </p>
@@ -6925,8 +6747,7 @@ public enum NOAOExt implements IFitsHeader {
      */
     TELMJD(HDU.PRIMARY, VALUE.REAL, "Time of zenith distance and hour angle"),
     /**
-     * Times for the telescope sensor measurements given as modified Julian
-     * dates.
+     * Times for the telescope sensor measurements given as modified Julian dates.
      * <p>
      * units = 'd'
      * </p>
@@ -6939,8 +6760,7 @@ public enum NOAOExt implements IFitsHeader {
      */
     TELMJDn(HDU.PRIMARY, VALUE.REAL, ""),
     /**
-     * Telescope position angle measurements in appropriate units. This could
-     * include altitude and azimuth measurements.
+     * Telescope position angle measurements in appropriate units. This could include altitude and azimuth measurements.
      * <p>
      * default value = none none
      * </p>
@@ -6950,8 +6770,7 @@ public enum NOAOExt implements IFitsHeader {
      */
     TELPAN(HDU.PRIMARY, VALUE.REAL, ""),
     /**
-     * Telescope position angle measurements in appropriate units. This could
-     * include altitude and azimuth measurements.
+     * Telescope position angle measurements in appropriate units. This could include altitude and azimuth measurements.
      * <p>
      * default value = none none
      * </p>
@@ -7060,8 +6879,8 @@ public enum NOAOExt implements IFitsHeader {
      */
     TELTCS(HDU.PRIMARY, VALUE.STRING, "Telescope control system"),
     /**
-     * Telescope temperature sensor measurements in degrees Celsius. The comment
-     * string may be modified to indicate the location of the measurement.
+     * Telescope temperature sensor measurements in degrees Celsius. The comment string may be modified to indicate the
+     * location of the measurement.
      * <p>
      * units = UNITTEMP
      * </p>
@@ -7074,8 +6893,8 @@ public enum NOAOExt implements IFitsHeader {
      */
     TELTEM(HDU.PRIMARY, VALUE.REAL, "Telescope temperature"),
     /**
-     * Telescope temperature sensor measurements in degrees Celsius. The comment
-     * string may be modified to indicate the location of the measurement.
+     * Telescope temperature sensor measurements in degrees Celsius. The comment string may be modified to indicate the
+     * location of the measurement.
      * <p>
      * units = UNITTEMP
      * </p>
@@ -7101,8 +6920,7 @@ public enum NOAOExt implements IFitsHeader {
      */
     TELTKDEC(HDU.PRIMARY, VALUE.REAL, "Tracking rate from siderial"),
     /**
-     * Right ascension telescope tracking rate from siderial in arc seconds per
-     * second.
+     * Right ascension telescope tracking rate from siderial in arc seconds per second.
      * <p>
      * units = UNITRATE
      * </p>
@@ -7177,8 +6995,8 @@ public enum NOAOExt implements IFitsHeader {
      */
     TIMEHDR(HDU.PRIMARY_EXTENSION, VALUE.STRING, "Time of header creation"),
     /**
-     * Default time system. All times which do not have a "timesys" element
-     * associated with them in this dictionary default to this keyword. .
+     * Default time system. All times which do not have a "timesys" element associated with them in this dictionary
+     * default to this keyword. .
      * <p>
      * default value = 'UTC'
      * </p>
@@ -7188,9 +7006,8 @@ public enum NOAOExt implements IFitsHeader {
      */
     TIMESYS(HDU.PRIMARY, VALUE.STRING, "Default time system"),
     /**
-     * Section of the recorded image to be kept after calibration processing.
-     * This is generally the part of the data section containing useful data.
-     * The section is in in binned pixels if binning is done.
+     * Section of the recorded image to be kept after calibration processing. This is generally the part of the data
+     * section containing useful data. The section is in in binned pixels if binning is done.
      * <p>
      * default value = DATASEC
      * </p>
@@ -7240,9 +7057,8 @@ public enum NOAOExt implements IFitsHeader {
      */
     TV(HDU.PRIMARY, VALUE.STRING, "TV"),
     /**
-     * TV filter names. This name is the astronomical standard name if
-     * applicable; i.e. U, B, Gunn I, etc. The filter type and filter device
-     * position are given by other keywords.
+     * TV filter names. This name is the astronomical standard name if applicable; i.e. U, B, Gunn I, etc. The filter
+     * type and filter device position are given by other keywords.
      * <p>
      * default value = none none
      * </p>
@@ -7265,8 +7081,7 @@ public enum NOAOExt implements IFitsHeader {
      */
     TVFOCn(HDU.PRIMARY, VALUE.REAL, "Television focus"),
     /**
-     * TV filter position given as filter wheel number or other filter system
-     * position measurement.
+     * TV filter position given as filter wheel number or other filter system position measurement.
      * <p>
      * units = 'instrumental'
      * </p>
@@ -7279,8 +7094,7 @@ public enum NOAOExt implements IFitsHeader {
      */
     TVFPOSn(HDU.PRIMARY, VALUE.REAL, "Filter system position"),
     /**
-     * TV filter type. This is the technical specification or observatory
-     * identification name.
+     * TV filter type. This is the technical specification or observatory identification name.
      * <p>
      * default value = none none
      * </p>
@@ -7300,8 +7114,7 @@ public enum NOAOExt implements IFitsHeader {
      */
     TVHWV(HDU.PRIMARY, VALUE.STRING, "TV Hardware"),
     /**
-     * Times for the guider television sensor measurements given as modified
-     * Julian dates.
+     * Times for the guider television sensor measurements given as modified Julian dates.
      * <p>
      * units = 'd'
      * </p>
@@ -7324,9 +7137,8 @@ public enum NOAOExt implements IFitsHeader {
      */
     TVn(HDU.PRIMARY, VALUE.STRING, "TV"),
     /**
-     * TV filter names. This name is the astronomical standard name if
-     * applicable; i.e. U, B, Gunn I, etc. The filter type and filter device
-     * position are given by other keywords.
+     * TV filter names. This name is the astronomical standard name if applicable; i.e. U, B, Gunn I, etc. The filter
+     * type and filter device position are given by other keywords.
      * <p>
      * default value = none none
      * </p>
@@ -7349,8 +7161,7 @@ public enum NOAOExt implements IFitsHeader {
      */
     TVnFOCn(HDU.PRIMARY, VALUE.REAL, "Television focus"),
     /**
-     * TV filter position given as filter wheel number or other filter system
-     * position measurement.
+     * TV filter position given as filter wheel number or other filter system position measurement.
      * <p>
      * units = 'instrumental'
      * </p>
@@ -7363,8 +7174,7 @@ public enum NOAOExt implements IFitsHeader {
      */
     TVnFPOSn(HDU.PRIMARY, VALUE.REAL, "Filter system position"),
     /**
-     * TV filter type. This is the technical specification or observatory
-     * identification name.
+     * TV filter type. This is the technical specification or observatory identification name.
      * <p>
      * default value = none none
      * </p>
@@ -7384,8 +7194,7 @@ public enum NOAOExt implements IFitsHeader {
      */
     TVnHWV(HDU.PRIMARY, VALUE.STRING, "TV Hardware"),
     /**
-     * Times for the guider television sensor measurements given as modified
-     * Julian dates.
+     * Times for the guider television sensor measurements given as modified Julian dates.
      * <p>
      * units = 'd'
      * </p>
@@ -7746,8 +7555,7 @@ public enum NOAOExt implements IFitsHeader {
      */
     UNITLAT(HDU.PRIMARY, VALUE.STRING, "Latitude unit"),
     /**
-     * Length unit. A wavelength unit is also provided so this unit is primarily
-     * used to instrumental descriptions.
+     * Length unit. A wavelength unit is also provided so this unit is primarily used to instrumental descriptions.
      * <p>
      * default value = 'm'
      * </p>
@@ -7986,9 +7794,8 @@ public enum NOAOExt implements IFitsHeader {
      */
     UTCHDR(HDU.PRIMARY_EXTENSION, VALUE.STRING, "UTC of header creation"),
     /**
-     * Default UTC time for the observation. This keyword is generally not used
-     * and is UTC-OBS keyword for the start of the exposure on the detector is
-     * used.
+     * Default UTC time for the observation. This keyword is generally not used and is UTC-OBS keyword for the start of
+     * the exposure on the detector is used.
      * <p>
      * units = UNITHOUR
      * </p>
@@ -8001,8 +7808,7 @@ public enum NOAOExt implements IFitsHeader {
      */
     UTCOBS(HDU.PRIMARY_EXTENSION, VALUE.STRING, "UTC of observation"),
     /**
-     * IRAF WCS attribute strings for all axes. These are defined by the IRAF
-     * WCS system.
+     * IRAF WCS attribute strings for all axes. These are defined by the IRAF WCS system.
      * <p>
      * default value = none
      * </p>
@@ -8022,9 +7828,8 @@ public enum NOAOExt implements IFitsHeader {
      */
     WATn_nnn(HDU.PRIMARY_EXTENSION, VALUE.STRING, ""),
     /**
-     * Descriptive string identifying the source of the astrometry used to
-     * derive the WCS. One example is the exposure used to derive a WCS apart
-     * from the reference coordinate.
+     * Descriptive string identifying the source of the astrometry used to derive the WCS. One example is the exposure
+     * used to derive a WCS apart from the reference coordinate.
      * <p>
      * default value = none WCSASTRM
      * </p>
@@ -8034,9 +7839,8 @@ public enum NOAOExt implements IFitsHeader {
      */
     WCSAnnn(HDU.PRIMARY_EXTENSION, VALUE.STRING, "WCS Source"),
     /**
-     * Descriptive string identifying the source of the astrometry used to
-     * derive the WCS. One example is the exposure used to derive a WCS apart
-     * from the reference coordinate.
+     * Descriptive string identifying the source of the astrometry used to derive the WCS. One example is the exposure
+     * used to derive a WCS apart from the reference coordinate.
      * <p>
      * default value = none WCSASTRM
      * </p>
@@ -8046,8 +7850,7 @@ public enum NOAOExt implements IFitsHeader {
      */
     WCSASTRM(HDU.PRIMARY_EXTENSION, VALUE.STRING, "WCS Source"),
     /**
-     * Dimensionality of the WCS physical system. In IRAF a WCS can have a
-     * higher dimensionality than the image.
+     * Dimensionality of the WCS physical system. In IRAF a WCS can have a higher dimensionality than the image.
      * <p>
      * default value = none
      * </p>
@@ -8070,8 +7873,8 @@ public enum NOAOExt implements IFitsHeader {
      */
     WCSEnnn(HDU.PRIMARY_EXTENSION, VALUE.REAL, "WCS coordinate epoch"),
     /**
-     * Equinox when equatorial coordinates are used in the world coordinate
-     * system. A value before 1984 is Besselian otherwise it is Julian.
+     * Equinox when equatorial coordinates are used in the world coordinate system. A value before 1984 is Besselian
+     * otherwise it is Julian.
      * <p>
      * units = 'yr' 'yr'
      * </p>
@@ -8084,8 +7887,7 @@ public enum NOAOExt implements IFitsHeader {
      */
     WCSEPOCH(HDU.PRIMARY_EXTENSION, VALUE.REAL, "WCS coordinate epoch"),
     /**
-     * Coordinate system type when equatorial coordinates are used in the world
-     * coordinate system.
+     * Coordinate system type when equatorial coordinates are used in the world coordinate system.
      * <p>
      * default value = CCDRADEC WCSRADEC
      * </p>
@@ -8095,8 +7897,7 @@ public enum NOAOExt implements IFitsHeader {
      */
     WCSRADEC(HDU.PRIMARY_EXTENSION, VALUE.STRING, "WCS coordinate system"),
     /**
-     * Coordinate system type when equatorial coordinates are used in the world
-     * coordinate system.
+     * Coordinate system type when equatorial coordinates are used in the world coordinate system.
      * <p>
      * default value = CCDRADEC WCSRADEC
      * </p>
@@ -8106,8 +7907,7 @@ public enum NOAOExt implements IFitsHeader {
      */
     WCSRnnn(HDU.PRIMARY_EXTENSION, VALUE.STRING, "WCS coordinate system"),
     /**
-     * Weather condition description. Generally this would be either 'clear' or
-     * 'partly cloudy'.
+     * Weather condition description. Generally this would be either 'clear' or 'partly cloudy'.
      * <p>
      * default value = none
      * </p>
@@ -8130,8 +7930,8 @@ public enum NOAOExt implements IFitsHeader {
      */
     ZD(HDU.PRIMARY, VALUE.REAL, "Zenith distance"),
     /**
-     * Modified Julian date at the start of the exposure. The fractional part of
-     * the date is given to better than a second of time.
+     * Modified Julian date at the start of the exposure. The fractional part of the date is given to better than a
+     * second of time.
      * <p>
      * units = 'd'
      * </p>

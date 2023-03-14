@@ -103,10 +103,9 @@ public class CompressorControlNameComputer {
     public String createCompressorClassName(String quantAlgorithm, String compressionAlgorithm, Class<?> baseType) {
         StringBuilder className = new StringBuilder();
         className.append(standardizeBaseType(baseType.getSimpleName()));
-        if (className.indexOf(Float.class.getSimpleName()) == 0 || className.indexOf(Double.class.getSimpleName()) == 0) {
-            quantAlgorithm = null; // default so not in the className
+        if (className.indexOf(Float.class.getSimpleName()) < 0 && className.indexOf(Double.class.getSimpleName()) < 0) {
+            className.append(standardizeQuantAlgorithm(quantAlgorithm));
         }
-        className.append(standardizeQuantAlgorithm(quantAlgorithm));
         className.append(standardizeCompressionAlgorithm(compressionAlgorithm));
         className.append(COMPRESSOR_CLASS_SUFFIX);
         return className.toString();

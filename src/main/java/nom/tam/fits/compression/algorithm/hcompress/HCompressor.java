@@ -37,8 +37,6 @@ import java.nio.IntBuffer;
 import java.nio.ShortBuffer;
 
 import nom.tam.fits.compression.algorithm.api.ICompressor;
-import nom.tam.fits.compression.algorithm.quant.QuantizeProcessor.DoubleQuantCompressor;
-import nom.tam.fits.compression.algorithm.quant.QuantizeProcessor.FloatQuantCompressor;
 import nom.tam.util.ArrayFuncs;
 
 public abstract class HCompressor<T extends Buffer> implements ICompressor<T> {
@@ -72,20 +70,6 @@ public abstract class HCompressor<T extends Buffer> implements ICompressor<T> {
             }
         }
 
-    }
-
-    public static class DoubleHCompressor extends DoubleQuantCompressor {
-
-        public DoubleHCompressor(HCompressorQuantizeOption options) {
-            super(options, new IntHCompressor(options.getHCompressorOption()));
-        }
-    }
-
-    public static class FloatHCompressor extends FloatQuantCompressor {
-
-        public FloatHCompressor(HCompressorQuantizeOption options) {
-            super(options, new IntHCompressor(options.getHCompressorOption()));
-        }
     }
 
     public static class IntHCompressor extends HCompressor<IntBuffer> {
@@ -141,31 +125,28 @@ public abstract class HCompressor<T extends Buffer> implements ICompressor<T> {
         }
     }
 
-    private HCompress compress;
+    private final HCompress compress;
 
-    private HDecompress decompress;
+    private final HDecompress decompress;
 
     private final HCompressorOption options;
 
     public HCompressor(HCompressorOption options) {
         this.options = options;
+        this.compress = new HCompress();
+        this.decompress = new HDecompress();
     }
 
     private HCompress compress() {
-        if (this.compress == null) {
-            this.compress = new HCompress();
-        }
         return this.compress;
     }
 
     protected void compress(long[] longArray, ByteBuffer compressed) {
-        compress().compress(longArray, this.options.getTileHeight(), this.options.getTileWidth(), this.options.getScale(), compressed);
+        compress().compress(longArray, this.options.getTileHeight(), this.options.getTileWidth(),
+                this.options.getScale(), compressed);
     }
 
     private HDecompress decompress() {
-        if (this.decompress == null) {
-            this.decompress = new HDecompress();
-        }
         return this.decompress;
     }
 

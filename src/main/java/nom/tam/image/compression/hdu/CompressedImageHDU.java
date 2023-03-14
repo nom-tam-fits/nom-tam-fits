@@ -222,14 +222,14 @@ public class CompressedImageHDU extends BinaryTableHDU {
     }
 
     public CompressedImageHDU setCompressAlgorithm(String compressAlgorithm) throws FitsException {
-        HeaderCard compressAlgorithmCard = getHeader().card(Compression.ZCMPTYPE).value(compressAlgorithm).card();
+        HeaderCard compressAlgorithmCard = HeaderCard.create(Compression.ZCMPTYPE, compressAlgorithm);
         getData().setCompressAlgorithm(compressAlgorithmCard);
         return this;
     }
 
     public CompressedImageHDU setQuantAlgorithm(String quantAlgorithm) throws FitsException {
         if (quantAlgorithm != null && !quantAlgorithm.isEmpty()) {
-            HeaderCard quantAlgorithmCard = getHeader().card(Compression.ZQUANTIZ).value(quantAlgorithm).card();
+            HeaderCard quantAlgorithmCard = HeaderCard.create(Compression.ZQUANTIZ, quantAlgorithm);
             getData().setQuantAlgorithm(quantAlgorithmCard);
         } else {
             getData().setQuantAlgorithm(null);

@@ -43,14 +43,17 @@ final class ZZeroColumnParameter extends CompressColumnParameter<double[], Quant
 
     @Override
     public void getValueFromColumn(int index) {
-        getOption().setBZero(initializedColumn()[index]);
-
+        getOption().setBZero(getColumnData() == null ? 0.0 : getColumnData()[index]);
     }
 
     @Override
     public void setValueInColumn(int index) {
+        if (getColumnData() == null) {
+            return;
+        }
+
         if (!Double.isNaN(getOption().getBZero())) {
-            initializedColumn()[index] = getOption().getBZero();
+            getColumnData()[index] = getOption().getBZero();
         }
     }
 
