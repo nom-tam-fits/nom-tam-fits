@@ -44,7 +44,9 @@ import java.io.DataOutput;
 import java.io.DataOutputStream;
 import java.io.EOFException;
 import java.io.File;
+import java.io.FileDescriptor;
 import java.io.FileInputStream;
+import java.io.FileNotFoundException;
 import java.io.FileOutputStream;
 import java.io.IOException;
 import java.io.InputStream;
@@ -54,6 +56,7 @@ import java.lang.reflect.InvocationHandler;
 import java.lang.reflect.Method;
 import java.lang.reflect.Proxy;
 import java.net.URL;
+import java.nio.channels.FileChannel;
 import java.util.Arrays;
 
 import org.junit.After;
@@ -90,8 +93,10 @@ import nom.tam.util.FitsFile;
 import nom.tam.util.FitsInputStream;
 import nom.tam.util.FitsOutputStream;
 import nom.tam.util.LoggerHelper;
+import nom.tam.util.RandomAccessFileIO;
 import nom.tam.util.SafeClose;
 import nom.tam.util.test.ThrowAnyException;
+
 
 public class BaseFitsTest {
 
@@ -704,7 +709,7 @@ public class BaseFitsTest {
         try {
             fits = new Fits("nom/tam/fits/test/test.fits", false);
             Assert.assertNotNull(fits.readHDU());
-            Assert.assertEquals(1, fits.currentSize());
+            Assert.assertEquals(1, fits.getNumberOfHDUs());
         } finally {
             SafeClose.close(fits);
         }
@@ -1234,6 +1239,62 @@ public class BaseFitsTest {
         fits.rewrite();
     }
 
+    @Test
+    public void testRandomAccessInit() throws Exception {
+        try (final Fits fits = new Fits(new TestRandomAccessFileIO())) {
+            fits.read();
+            fits.rewrite();
+        }
+
+        try {
+            new Fits(new TestRandomAccessFileIO() {
+                @Override
+                public void position(long n) throws IOException {
+                    throw new IOException("Simulated error.");
+                }
+            });
+        } catch (FitsException fitsException) {
+            // Good.
+            Assert.assertEquals("Wrong message.",
+                                "Unable to open data src/test/resources/nom/tam/fits/test/test.fits",
+                                fitsException.getMessage());
+        }
+    }
+
+    @Test
+    public void testRandomAccessSkipHDU() throws Exception {
+        makeAsciiTable();
+        try (final Fits fits = new Fits(new TestRandomAccessFileIO(TARGET_BASIC_FITS_TEST_FITS, "rw"))) {
+            BasicHDU<?> image = fits.readHDU();
+            Assert.assertEquals(0L, image.getHeader().getFileOffset());
+
+            fits.readHDU();
+            fits.skipHDU(2);
+            AsciiTableHDU hdu3 = (AsciiTableHDU) fits.readHDU();
+            Assert.assertEquals(28800L, hdu3.getHeader().getFileOffset());
+        }
+    }
+
+    @Test
+    public void testDeprecatedCurrentSize() throws Exception {
+        final Fits fits = makeAsciiTable();
+        Assert.assertEquals("Wrong size.", fits.getNumberOfHDUs(), fits.currentSize());
+    }
+
+    @Test
+    public void testDefaultMethods() throws Exception {
+        makeAsciiTable();
+        final byte[] buffer = new byte[24];
+        try (final RandomAccessFileIO randomAccessFileIO = new EmptyRandomAccessFileIO()) {
+            final int bytesRead = randomAccessFileIO.read(buffer);
+            Assert.assertEquals("Wrong read bytes.", bytesRead, 24);
+        }
+
+        try (final RandomAccessFileIO randomAccessFileIO = new EmptyRandomAccessFileIO()) {
+            randomAccessFileIO.write(buffer);
+        }
+    }
+
     @Test(expected = FitsException.class)
     public void rewriteTestException() throws Exception {
         Fits fits = new Fits(new File("src/test/resources/nom/tam/fits/test/test.fits"));
@@ -1265,4 +1326,100 @@ public class BaseFitsTest {
         assertTrue(hdus[1].getHeader().containsKey(Standard.XTENSION));
     }
 
+    private static class TestRandomAccessFileIO extends java.io.RandomAccessFile implements RandomAccessFileIO {
+        final String name;
+        public TestRandomAccessFileIO() throws FileNotFoundException {
+            this("src/test/resources/nom/tam/fits/test/test.fits", "rw");
+        }
+
+        public TestRandomAccessFileIO(String name, String mode) throws FileNotFoundException {
+            super(name, mode);
+            this.name = name;
+        }
+
+        @Override
+        public long position() throws IOException {
+            return super.getFilePointer();
+        }
+
+        @Override
+        public void position(long n) throws IOException {
+            super.seek(n);
+        }
+
+        @Override
+        public String toString() {
+            return name;
+        }
+    }
+
+    /**
+     * Used to test the default methods.
+     */
+    private static class EmptyRandomAccessFileIO implements RandomAccessFileIO {
+        @Override
+        public String readUTF() throws IOException {
+            return null;
+        }
+
+        @Override
+        public FileChannel getChannel() {
+            return null;
+        }
+
+        @Override
+        public FileDescriptor getFD() throws IOException {
+            return null;
+        }
+
+        @Override
+        public void close() throws IOException {
+
+        }
+
+        @Override
+        public void setLength(long length) throws IOException {
+
+        }
+
+        @Override
+        public void writeUTF(String s) throws IOException {
+
+        }
+
+        @Override
+        public int read() throws IOException {
+            return 0;
+        }
+
+        @Override
+        public int read(byte[] b, int from, int length) throws IOException {
+            return length;
+        }
+
+        @Override
+        public void write(int b) throws IOException {
+
+        }
+
+        @Override
+        public void write(byte[] b, int from, int length) throws IOException {
+
+        }
+
+        @Override
+        public long position() throws IOException {
+            return 0;
+        }
+
+        @Override
+        public void position(long n) throws IOException {
+
+        }
+
+        @Override
+        public long length() throws IOException {
+            return 0;
+        }
+    }
 }
