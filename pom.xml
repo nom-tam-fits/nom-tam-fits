@@ -551,7 +551,8 @@
 				<configuration>
 					<linkXref>true</linkXref>
 					<sourceEncoding>UTF-8</sourceEncoding>
-					<targetJdk>1.7</targetJdk>
+					<targetJdk>1.8</targetJdk>
+					<sourceJdk>1.8</sourceJdk>
 					<skipEmptyReport>false</skipEmptyReport>
 					<minimumTokens>50</minimumTokens>
 				</configuration>
