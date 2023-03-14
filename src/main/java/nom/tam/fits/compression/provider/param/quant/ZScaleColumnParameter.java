@@ -43,13 +43,17 @@ final class ZScaleColumnParameter extends CompressColumnParameter<double[], Quan
 
     @Override
     public void getValueFromColumn(int index) {
-        getOption().setBScale(initializedColumn()[index]);
+        getOption().setBScale(getColumnData() == null ? 1.0 : getColumnData()[index]);
     }
 
     @Override
     public void setValueInColumn(int index) {
+        if (getColumnData() == null) {
+            return;
+        }
+
         if (!Double.isNaN(getOption().getBScale())) {
-            initializedColumn()[index] = getOption().getBScale();
+            getColumnData()[index] = getOption().getBScale();
         }
     }
 

@@ -59,13 +59,15 @@ public class TileDecompressor extends TileCompressionOperation {
 
     private void decompress() {
         initTileOptions();
-        this.tileOptions.getCompressionParameters().getValuesFromColumn(getTileIndex());
+
         if (this.compressionType == TileCompressionType.COMPRESSED) {
+            this.tileOptions.getCompressionParameters().getValuesFromColumn(getTileIndex());
             getCompressorControl().decompress(this.compressedData, getTileBuffer().getBuffer(), this.tileOptions);
             if (this.nullPixelMaskRestorer != null) {
                 this.nullPixelMaskRestorer.restoreNulls();
             }
         } else if (this.compressionType == TileCompressionType.GZIP_COMPRESSED) {
+            this.tileOptions.getCompressionParameters().getValuesFromColumn(getTileIndex());
             getGzipCompressorControl().decompress(this.compressedData, getTileBuffer().getBuffer(), null);
         } else if (this.compressionType == TileCompressionType.UNCOMPRESSED) {
             Buffer typedBuffer = getBaseType().asTypedBuffer(this.compressedData);

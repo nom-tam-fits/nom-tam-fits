@@ -114,10 +114,11 @@ public abstract class GZipCompressor<T extends Buffer> implements ICompressor<T>
         }
     }
 
+
     public static class IntGZipCompressor extends GZipCompressor<IntBuffer> {
 
         protected static final int BYTE_SIZE_OF_INT = 4;
-
+        
         public IntGZipCompressor() {
             super(BYTE_SIZE_OF_INT);
             this.nioBuffer = ByteBuffer.wrap(this.buffer).asIntBuffer();

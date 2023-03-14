@@ -31,15 +31,37 @@ package nom.tam.fits.compression.provider.param.base;
  * #L%
  */
 
-public class CompressParameter<OPTION> {
+public class CompressParameter<OPTION> implements Cloneable {
 
     private final String name;
 
-    private final OPTION option;
+    private OPTION option;
 
     protected CompressParameter(String name, OPTION option) {
         this.name = name;
         this.option = option;
+    }
+
+    /**
+     * Returns an independent copy of these parameters to associate with the specific instance of compression options.
+     * As a result, updating these parameters in the copy will affect only the specified compression options, but not
+     * the compression options associated to this originating instance.
+     * 
+     * @param opt The compression options that are linked to the copy of the parameters
+     * 
+     * @return A copy of these parameters, linked to the specified compression options.
+     * 
+     * @since 1.18
+     */
+    public CompressParameter<OPTION> copy(OPTION opt) {
+        try {
+            @SuppressWarnings("unchecked")
+            CompressParameter<OPTION> p = (CompressParameter<OPTION>) super.clone();
+            p.option = opt;
+            return p;
+        } catch (CloneNotSupportedException e) {
+            return null;
+        }
     }
 
     public final String getName() {
@@ -49,4 +71,5 @@ public class CompressParameter<OPTION> {
     protected final OPTION getOption() {
         return this.option;
     }
+
 }
