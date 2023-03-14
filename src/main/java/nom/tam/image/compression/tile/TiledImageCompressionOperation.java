@@ -224,7 +224,7 @@ public class TiledImageCompressionOperation extends AbstractTiledImageOperation<
         return this.imageNullPixelMask;
     }
 
-    private void setQuantAlgorithm(final Header header) {
+    private synchronized void setQuantAlgorithm(final Header header) {
         setQuantAlgorithm(header.findCard(ZQUANTIZ));
 
         if (quantAlgorithm != null) {
@@ -284,7 +284,7 @@ public class TiledImageCompressionOperation extends AbstractTiledImageOperation<
         return this;
     }
 
-    public TiledImageCompressionOperation setQuantAlgorithm(HeaderCard quantAlgorithmCard) {
+    public synchronized TiledImageCompressionOperation setQuantAlgorithm(HeaderCard quantAlgorithmCard) {
         if (quantAlgorithmCard != null) {
             this.quantAlgorithm = quantAlgorithmCard.getValue();
         } else {
@@ -373,7 +373,7 @@ public class TiledImageCompressionOperation extends AbstractTiledImageOperation<
         return column;
     }
 
-    private void writeColumns(BinaryTableHDU hdu) throws FitsException {
+    private synchronized void writeColumns(BinaryTableHDU hdu) throws FitsException {
         Object compressedColumn = null;
         Object uncompressedColumn = null;
         Object gzipColumn = null;

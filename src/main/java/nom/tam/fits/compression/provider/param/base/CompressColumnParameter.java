@@ -66,7 +66,7 @@ public abstract class CompressColumnParameter<T, OPTION> extends CompressParamet
     }
 
     @Override
-    public T getColumnData() {
+    public synchronized T getColumnData() {
         return column.values;
     }
 
