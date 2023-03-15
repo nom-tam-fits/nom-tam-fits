@@ -144,6 +144,22 @@ public class FitsFile extends ArrayDataFile implements FitsOutput, RandomAccess 
     }
 
     /**
+     * Create a buffered file from a random access data object.
+     *
+     * @param src
+     *              random access data
+     * @param bufferSize
+     *              the dataBuffer's buffer size to use
+     * @throws IOException
+     *              if data could not be read
+     */
+    public FitsFile(RandomAccessFileIO src, int bufferSize) throws IOException {
+        super(src, bufferSize);
+        setDecoder(new FitsDecoder(this));
+        setEncoder(new FitsEncoder(this));
+    }
+
+    /**
      * Create a read-only buffered file
      * 
      * @param filename

@@ -556,7 +556,7 @@ public final class FitsFactory {
      * (with column type 'I'), instead of as standard FITS 1-byte ASCII characters (with column type 'A').
      * The old default of this library has been to use unicode, and that behavior is retained
      * by setting the argument to <code>true</code>. On the flipside, setting it to <code>false</code>
-     * provides more ocnvergence between the handling of <code>char[]</code> columns and the nearly
+     * provides more convergence between the handling of <code>char[]</code> columns and the nearly
      * identical <code>String</code> columns, which have already been restricted to ASCII before.
      * </p>
      * 

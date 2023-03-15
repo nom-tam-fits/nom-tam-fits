@@ -1,8 +1,7 @@
 package nom.tam.util;
 
 import static org.junit.Assert.assertEquals;
-import static org.junit.Assert.assertFalse;
-import static org.junit.Assert.assertTrue;
+
 
 /*
  * #%L
@@ -52,7 +51,7 @@ public class FitsFileTest {
     public void testWriteNotArray() throws Exception {
         try (FitsFile f = new FitsFile("fftest.bin", "rw", 100)) {
             // Not an array
-            f.writeArray(new String("hello"));
+            f.writeArray("hello");
         }
     }
    
@@ -72,10 +71,10 @@ public class FitsFileTest {
     }
     
     @Test(expected = IOException.class)
-    public void testSkipBeforeBeginninng() throws Exception {
+    public void testSkipBeforeBeginning() throws Exception {
         try (FitsFile f = new FitsFile("fftest.bin", "rw", 100)) {
             f.seek(10);
-            f.skipAllBytes(-11);
+            f.skipAllBytes(-11L);
         }
     }
     
@@ -87,5 +86,13 @@ public class FitsFileTest {
             assertEquals(10, f.position());
         }
     }
-    
+
+    @Test
+    public void testAltRandomAccess() throws Exception {
+        try (final FitsFile f = new FitsFile(new BufferedFileIO.RandomFileIO(
+                new File("fftest.bin"), "rw"), 1024)) {
+            f.seek(12L);
+            assertEquals("Wrong position", 12L, f.position());
+        }
+    }
 }

@@ -114,9 +114,8 @@ public class ReadWriteProvidedCompressedImageTest {
     }
 
     /**
-     * This is an assertion for a special case when a loss full algorithm is
-     * used and a quantification with null checks. The will result in wrong null
-     * values, because some of the values representing blank will be lost.
+     * This is an assertion for a special case when a loss full algorithm is used and a quantification with null checks.
+     * The will result in wrong null values, because some of the values representing blank will be lost.
      */
     private void assertArrayEquals(double[] expected, double[] actual, double delta, boolean checkNaN) {
         Assert.assertEquals(expected.length, actual.length);
@@ -142,24 +141,32 @@ public class ReadWriteProvidedCompressedImageTest {
     }
 
     /**
-     * Assert two files files (one compressed and one uncompressed and use as
-     * few memory as possible.
+     * Assert two files files (one compressed and one uncompressed and use as little memory as possible.
      */
-    private <T> void assertCompressedToUncompressedImage(String fileName, String unCompfileName, Class<T> clazz, IHDUAsserter<T> reader) throws Exception {
+    private <T> void assertCompressedToUncompressedImage(String fileName, String unCompfileName, Class<T> clazz,
+            IHDUAsserter<T> reader) throws Exception {
         Fits f = null;
+
+        // System.out.println(" checking file: " + fileName);
+
         try {
             f = new Fits(fileName);
             Fits unFits = new Fits(unCompfileName);
+
+            int hduIndex = 0;
             ImageHDU hdu = readHDU(unFits, ImageHDU.class);
             unFits.deleteHDU(0);
             CompressedImageHDU uncompHdu = readHDU(f, CompressedImageHDU.class);
+
             f.deleteHDU(0);
             while (hdu != null && uncompHdu != null) {
                 T compressedData = (T) uncompHdu.asImageHDU().getData().getData();
                 T orgData = (T) hdu.getData().getData();
+
                 // show travis something is going on
                 System.out.println("Asserting image data! " + (assertionCounter++));
                 reader.assertData(orgData, compressedData);
+
                 hdu = readHDU(unFits, ImageHDU.class);
                 if (hdu != null) {
                     unFits.deleteHDU(0);
@@ -173,6 +180,8 @@ public class ReadWriteProvidedCompressedImageTest {
         } finally {
             SafeClose.close(f);
         }
+
+        // System.out.println(" done.");
     }
 
     private void assertData(float[][] data) {
@@ -223,7 +232,8 @@ public class ReadWriteProvidedCompressedImageTest {
     @Test
     public void blackboxTest_c4s_060126_182642_zri() throws Exception {
         assertCompressedToUncompressedImage(resolveLocalOrRemoteFileName("c4s_060126_182642_zri.fits.fz"), //
-                resolveLocalOrRemoteFileName("c4s_060126_182642_zri.fits"), short[][].class, new IHDUAsserter<short[][]>() {
+                resolveLocalOrRemoteFileName("c4s_060126_182642_zri.fits"), short[][].class,
+                new IHDUAsserter<short[][]>() {
 
                     @Override
                     public void assertData(short[][] expected, short[][] actual) {
@@ -235,7 +245,8 @@ public class ReadWriteProvidedCompressedImageTest {
     @Test
     public void blackboxTest_c4s_060127_070751_cri() throws Exception {
         assertCompressedToUncompressedImage(resolveLocalOrRemoteFileName("c4s_060127_070751_cri.fits.fz"), //
-                resolveLocalOrRemoteFileName("c4s_060127_070751_cri.fits"), short[][].class, new IHDUAsserter<short[][]>() {
+                resolveLocalOrRemoteFileName("c4s_060127_070751_cri.fits"), short[][].class,
+                new IHDUAsserter<short[][]>() {
 
                     @Override
                     public void assertData(short[][] expected, short[][] actual) {
@@ -247,7 +258,8 @@ public class ReadWriteProvidedCompressedImageTest {
     @Test
     public void blackboxTest_kwi_041217_212603_fri() throws Exception {
         assertCompressedToUncompressedImage(resolveLocalOrRemoteFileName("kwi_041217_212603_fri.fits.fz"), //
-                resolveLocalOrRemoteFileName("kwi_041217_212603_fri.fits"), short[][].class, new IHDUAsserter<short[][]>() {
+                resolveLocalOrRemoteFileName("kwi_041217_212603_fri.fits"), short[][].class,
+                new IHDUAsserter<short[][]>() {
 
                     @Override
                     public void assertData(short[][] expected, short[][] actual) {
@@ -259,7 +271,8 @@ public class ReadWriteProvidedCompressedImageTest {
     @Test
     public void blackboxTest_kwi_041217_213100_fri() throws Exception {
         assertCompressedToUncompressedImage(resolveLocalOrRemoteFileName("kwi_041217_213100_fri.fits.fz"), //
-                resolveLocalOrRemoteFileName("kwi_041217_213100_fri.fits"), short[][].class, new IHDUAsserter<short[][]>() {
+                resolveLocalOrRemoteFileName("kwi_041217_213100_fri.fits"), short[][].class,
+                new IHDUAsserter<short[][]>() {
 
                     @Override
                     public void assertData(short[][] expected, short[][] actual) {
@@ -271,7 +284,8 @@ public class ReadWriteProvidedCompressedImageTest {
     @Test
     public void blackboxTest_psa_140305_191552_zri() throws Exception {
         assertCompressedToUncompressedImage(resolveLocalOrRemoteFileName("psa_140305_191552_zri.fits.fz"), //
-                resolveLocalOrRemoteFileName("psa_140305_191552_zri.fits"), short[][].class, new IHDUAsserter<short[][]>() {
+                resolveLocalOrRemoteFileName("psa_140305_191552_zri.fits"), short[][].class,
+                new IHDUAsserter<short[][]>() {
 
                     @Override
                     public void assertData(short[][] expected, short[][] actual) {
@@ -283,7 +297,8 @@ public class ReadWriteProvidedCompressedImageTest {
     @Test
     public void blackboxTest_psa_140305_194520_fri() throws Exception {
         assertCompressedToUncompressedImage(resolveLocalOrRemoteFileName("psa_140305_194520_fri.fits.fz"), //
-                resolveLocalOrRemoteFileName("psa_140305_194520_fri.fits"), short[][].class, new IHDUAsserter<short[][]>() {
+                resolveLocalOrRemoteFileName("psa_140305_194520_fri.fits"), short[][].class,
+                new IHDUAsserter<short[][]>() {
 
                     @Override
                     public void assertData(short[][] expected, short[][] actual) {
@@ -319,15 +334,18 @@ public class ReadWriteProvidedCompressedImageTest {
 
     @Test
     public void blackboxTest1_1() throws Exception {
-        FloatBuffer result = (FloatBuffer) readAll(resolveLocalOrRemoteFileName("DECam_00149774_40_DESX0332-2742.fits.fz"), 1);
-        float[][] expected = (float[][]) readAll(resolveLocalOrRemoteFileName("DECam_00149774_40_DESX0332-2742.fits"), 0);
+        FloatBuffer result = (FloatBuffer) readAll(
+                resolveLocalOrRemoteFileName("DECam_00149774_40_DESX0332-2742.fits.fz"), 1);
+        float[][] expected = (float[][]) readAll(resolveLocalOrRemoteFileName("DECam_00149774_40_DESX0332-2742.fits"),
+                0);
         result.rewind();
         assertFloatImage(result, expected, 6f);
     }
 
     @Test
     public void blackboxTest1_2() throws Exception {
-        IntBuffer result = (IntBuffer) readAll(resolveLocalOrRemoteFileName("DECam_00149774_40_DESX0332-2742.fits.fz"), 2);
+        IntBuffer result = (IntBuffer) readAll(resolveLocalOrRemoteFileName("DECam_00149774_40_DESX0332-2742.fits.fz"),
+                2);
         int[][] expected = (int[][]) readAll(resolveLocalOrRemoteFileName("DECam_00149774_40_DESX0332-2742.fits"), 1);
         result.rewind();
         assertIntImage(result, expected);
@@ -335,8 +353,10 @@ public class ReadWriteProvidedCompressedImageTest {
 
     @Test
     public void blackboxTest1_3() throws Exception {
-        FloatBuffer result = (FloatBuffer) readAll(resolveLocalOrRemoteFileName("DECam_00149774_40_DESX0332-2742.fits.fz"), 3);
-        float[][] expected = (float[][]) readAll(resolveLocalOrRemoteFileName("DECam_00149774_40_DESX0332-2742.fits"), 2);
+        FloatBuffer result = (FloatBuffer) readAll(
+                resolveLocalOrRemoteFileName("DECam_00149774_40_DESX0332-2742.fits.fz"), 3);
+        float[][] expected = (float[][]) readAll(resolveLocalOrRemoteFileName("DECam_00149774_40_DESX0332-2742.fits"),
+                2);
         result.rewind();
         assertFloatImage(result, expected, 0.0005f);
     }
@@ -514,13 +534,7 @@ public class ReadWriteProvidedCompressedImageTest {
     private void doTile(String test, Object data, StandardImageTiler t, int x, int y, int nx, int ny) throws Exception {
         Class<?> baseClass = ArrayFuncs.getBaseClass(data);
         Object tile = Array.newInstance(baseClass, nx * ny);
-        t.getTile(tile, new int[]{
-            y,
-            x
-        }, new int[]{
-            ny,
-            nx
-        });
+        t.getTile(tile, new int[] {y, x}, new int[] {ny, nx});
 
         float sum0 = 0;
         float sum1 = 0;
@@ -544,22 +558,14 @@ public class ReadWriteProvidedCompressedImageTest {
 
     @Before
     public void setup() throws Exception {
-        Fits f = null;
-        try {
-            f = new Fits("src/test/resources/nom/tam/image/provided/m13.fits");
+        try (Fits f = new Fits("src/test/resources/nom/tam/image/provided/m13.fits")) {
             this.m13 = (ImageHDU) f.getHDU(0);
             this.m13_data = (short[][]) this.m13.getData().getData();
-        } finally {
-            SafeClose.close(f);
         }
-        try {
-            f = new Fits("src/test/resources/nom/tam/image/provided/m13real.fits");
+        try (Fits f = new Fits("src/test/resources/nom/tam/image/provided/m13real.fits")) {
             this.m13real = (ImageHDU) f.getHDU(0);
             this.m13_data_real = (float[][]) this.m13real.getData().getData();
-        } finally {
-            SafeClose.close(f);
         }
-
     }
 
     @Test
@@ -575,18 +581,19 @@ public class ReadWriteProvidedCompressedImageTest {
         int blanks = 0;
         for (int index1 = 0; index1 < 100; index1++) {
             for (int index2 = 0; index2 < 100; index2++) {
-                data[index1][index2] = value;
+                value += 0.12345d;
                 if (blanks++ % 20 == 0) {
-                    value = Double.NaN;
+                    data[index1][index2] = Double.NaN;
                 } else {
-                    value += 0.12345d;
+                    data[index1][index2] = value;
                 }
             }
         }
         Fits f = null;
         try {
             f = new Fits();
-            FitsOutputStream bdos = new FitsOutputStream(new FileOutputStream("target/testBlanksInCompressedFloatImage.fits"));
+            FitsOutputStream bdos = new FitsOutputStream(
+                    new FileOutputStream("target/testBlanksInCompressedFloatImage.fits"));
             ImageData imageData = new ImageData(data);
             ImageHDU hdu = new ImageHDU(ImageHDU.manufactureHeader(imageData), imageData);
             f.addHDU(hdu);
@@ -596,7 +603,8 @@ public class ReadWriteProvidedCompressedImageTest {
         }
         try {
             f = new Fits();
-            FitsOutputStream bdos = new FitsOutputStream(new FileOutputStream("target/testBlanksInCompressedFloatImage.fits.fz"));
+            FitsOutputStream bdos = new FitsOutputStream(
+                    new FileOutputStream("target/testBlanksInCompressedFloatImage.fits.fz"));
             ImageData imageData = new ImageData(data);
             ImageHDU hdu = new ImageHDU(ImageHDU.manufactureHeader(imageData), imageData);
             CompressedImageHDU compressedHdu = CompressedImageHDU.fromImageHDU(hdu, 100, 15);
@@ -628,43 +636,8 @@ public class ReadWriteProvidedCompressedImageTest {
 
     @Test
     public void testGzipFallbackCompressed() throws Exception {
-        short[][] array = new short[][]{
-            {
-                1000,
-                -2000,
-                3000,
-                -3000,
-                4000
-            },
-            {
-                1000,
-                -2000,
-                3000,
-                -3000,
-                4000
-            },
-            {
-                1000,
-                -2000,
-                3000,
-                -3000,
-                4000
-            },
-            {
-                1000,
-                -2000,
-                3000,
-                -3000,
-                4000
-            },
-            {
-                1000,
-                -2000,
-                3000,
-                -3000,
-                4000
-            }
-        };
+        short[][] array = new short[][] {{1000, -2000, 3000, -3000, 4000}, {1000, -2000, 3000, -3000, 4000},
+                {1000, -2000, 3000, -3000, 4000}, {1000, -2000, 3000, -3000, 4000}, {1000, -2000, 3000, -3000, 4000}};
         Fits f = null;
         try {
             f = new Fits();
@@ -702,7 +675,8 @@ public class ReadWriteProvidedCompressedImageTest {
         Fits f = null;
         try {
             f = new Fits();
-            FitsOutputStream bdos = new FitsOutputStream(new FileOutputStream("target/testSomeBlanksInCompressedFloatImage.fits.fz"));
+            FitsOutputStream bdos = new FitsOutputStream(
+                    new FileOutputStream("target/testSomeBlanksInCompressedFloatImage.fits.fz"));
             ImageData imageData = new ImageData(data);
             ImageHDU hdu = new ImageHDU(ImageHDU.manufactureHeader(imageData), imageData);
             CompressedImageHDU compressedHdu = CompressedImageHDU.fromImageHDU(hdu, 100, 15);
@@ -716,7 +690,8 @@ public class ReadWriteProvidedCompressedImageTest {
             compressedHdu.compress();
             f.addHDU(compressedHdu);
             f.write(bdos);
-            Assert.assertEquals(Compression.COMPRESSED_DATA_COLUMN, compressedHdu.getHeader().findCard(Standard.TTYPEn.n(1)).getValue());
+            Assert.assertEquals(Compression.COMPRESSED_DATA_COLUMN,
+                    compressedHdu.getHeader().findCard(Standard.TTYPEn.n(1)).getValue());
         } finally {
             SafeClose.close(f);
         }
@@ -848,7 +823,8 @@ public class ReadWriteProvidedCompressedImageTest {
                     /**/.setScale(1);
             // ansure same instances of the options
             Assert.assertSame(compressedHdu.getCompressOption(HCompressorOption.class), option);
-            Assert.assertSame(compressedHdu.getCompressOption(QuantizeOption.class), compressedHdu.getCompressOption(QuantizeOption.class));
+            Assert.assertSame(compressedHdu.getCompressOption(QuantizeOption.class),
+                    compressedHdu.getCompressOption(QuantizeOption.class));
             compressedHdu.compress();
             f.addHDU(compressedHdu);
             compressedHdu = CompressedImageHDU.fromImageHDU(this.m13real, 300, 1);
@@ -912,14 +888,16 @@ public class ReadWriteProvidedCompressedImageTest {
             compressedHdu.setCompressAlgorithm(Compression.ZCMPTYPE_RICE_1)//
                     .setQuantAlgorithm((String) null)//
                     .getCompressOption(RiceCompressOption.class)//
-                    /**/.setBlockSize(32);
+                    /**/.setBlockSize(32)//
+                    /**/.setBytePix(2);
             compressedHdu.compress();
             f.addHDU(compressedHdu);
             compressedHdu = CompressedImageHDU.fromImageHDU(this.m13, 100, 300);
             compressedHdu.setCompressAlgorithm(Compression.ZCMPTYPE_RICE_1)//
                     .setQuantAlgorithm((String) null)//
                     .getCompressOption(RiceCompressOption.class)//
-                    /**/.setBlockSize(32);
+                    /**/.setBlockSize(32)//
+                    /**/.setBytePix(2);
             compressedHdu.compress();
             f.addHDU(compressedHdu);
             FitsOutputStream bdos = null;
@@ -935,18 +913,22 @@ public class ReadWriteProvidedCompressedImageTest {
         try {
             f = new Fits("target/write_m13_own.fits.fz");
             f.readHDU();// the primary
+
             CompressedImageHDU hdu = (CompressedImageHDU) f.readHDU();
             Assert.assertEquals("2", findCompressOption(hdu.getHeader(), Compression.BYTEPIX).getValue());
             short[][] actualShortArray = (short[][]) hdu.asImageHDU().getData().getData();
             Assert.assertArrayEquals(this.m13_data, actualShortArray);
+
             hdu = (CompressedImageHDU) f.readHDU();
             Assert.assertEquals("2", findCompressOption(hdu.getHeader(), Compression.BYTEPIX).getValue());
             actualShortArray = (short[][]) hdu.asImageHDU().getData().getData();
             Assert.assertArrayEquals(this.m13_data, actualShortArray);
+
             hdu = (CompressedImageHDU) f.readHDU();
             Assert.assertEquals("2", findCompressOption(hdu.getHeader(), Compression.BYTEPIX).getValue());
             actualShortArray = (short[][]) hdu.asImageHDU().getData().getData();
             Assert.assertArrayEquals(this.m13_data, actualShortArray);
+
         } finally {
             SafeClose.close(f);
         }
@@ -962,7 +944,8 @@ public class ReadWriteProvidedCompressedImageTest {
             expectedIntData = (int[][]) uncompressed.getData().getData();
             f.close();
             f = new Fits();
-            CompressedImageHDU compressedHdu = CompressedImageHDU.fromImageHDU(uncompressed, uncompressed.getAxes()[0], 4);
+            CompressedImageHDU compressedHdu = CompressedImageHDU.fromImageHDU(uncompressed, uncompressed.getAxes()[0],
+                    4);
             compressedHdu.setCompressAlgorithm(Compression.ZCMPTYPE_RICE_1)//
                     .setQuantAlgorithm((String) null)//
                     .getCompressOption(RiceCompressOption.class)//
@@ -999,6 +982,7 @@ public class ReadWriteProvidedCompressedImageTest {
     @Test
     public void writeRiceFloat() throws Exception {
         Fits f = null;
+
         try {
             f = new Fits();
             CompressedImageHDU compressedHdu = CompressedImageHDU.fromImageHDU(this.m13real, 300, 15);
@@ -1156,7 +1140,8 @@ public class ReadWriteProvidedCompressedImageTest {
             compressedHdu.compress();
             f.addHDU(compressedHdu);
             f.write(bdos);
-            Assert.assertEquals(Compression.COMPRESSED_DATA_COLUMN, compressedHdu.getHeader().findCard(Standard.TTYPEn.n(1)).getValue());
+            Assert.assertEquals(Compression.COMPRESSED_DATA_COLUMN,
+                    compressedHdu.getHeader().findCard(Standard.TTYPEn.n(1)).getValue());
         } finally {
             SafeClose.close(bdos);
             SafeClose.close(f);
@@ -1177,7 +1162,8 @@ public class ReadWriteProvidedCompressedImageTest {
         }
     }
 
-    protected double[][] newTestImageWithSomeBlanks(String suffix) throws FitsException, IOException, FileNotFoundException {
+    protected double[][] newTestImageWithSomeBlanks(String suffix)
+            throws FitsException, IOException, FileNotFoundException {
         try {
             new File("target/testSomeBlanksInCompressedFloatImage" + suffix + ".fits").delete();
             new File("target/testSomeBlanksInCompressedFloatImage" + suffix + ".fits.fz").delete();
@@ -1203,7 +1189,8 @@ public class ReadWriteProvidedCompressedImageTest {
         FitsOutputStream bdos = null;
         try {
             f = new Fits();
-            bdos = new FitsOutputStream(new FileOutputStream("target/testSomeBlanksInCompressedFloatImage" + suffix + ".fits"));
+            bdos = new FitsOutputStream(
+                    new FileOutputStream("target/testSomeBlanksInCompressedFloatImage" + suffix + ".fits"));
             ImageData imageData = new ImageData(data);
             ImageHDU hdu = new ImageHDU(ImageHDU.manufactureHeader(imageData), imageData);
             f.addHDU(hdu);
@@ -1218,25 +1205,29 @@ public class ReadWriteProvidedCompressedImageTest {
     @Test
     public void testImagePlusCompressedImage1() throws Exception {
         FitsFactory.setAllowHeaderRepairs(true);
-        testImagePlusCompressedImage(resolveLocalOrRemoteFileName("03h-80dec--C_CVT_2013-12-29-MW1-03h_Light_600SecISO200_000042.fit"));
+        testImagePlusCompressedImage(
+                resolveLocalOrRemoteFileName("03h-80dec--C_CVT_2013-12-29-MW1-03h_Light_600SecISO200_000042.fit"));
     }
 
     @Test
     public void testImagePlusCompressedImage2() throws Exception {
         FitsFactory.setAllowHeaderRepairs(true);
-        testImagePlusCompressedImage(resolveLocalOrRemoteFileName("17h-75dec--BINT_C_CVT_2014-06-25-MW1-17h_Light_600SecISO200_000031.fit"));
+        testImagePlusCompressedImage(
+                resolveLocalOrRemoteFileName("17h-75dec--BINT_C_CVT_2014-06-25-MW1-17h_Light_600SecISO200_000031.fit"));
     }
-    
+
     @Test(expected = FitsException.class)
     public void testImagePlusCompressedImage1A() throws Exception {
         FitsFactory.setAllowHeaderRepairs(false);
-        testImagePlusCompressedImage(resolveLocalOrRemoteFileName("03h-80dec--C_CVT_2013-12-29-MW1-03h_Light_600SecISO200_000042.fit"));
+        testImagePlusCompressedImage(
+                resolveLocalOrRemoteFileName("03h-80dec--C_CVT_2013-12-29-MW1-03h_Light_600SecISO200_000042.fit"));
     }
 
     @Test(expected = FitsException.class)
     public void testImagePlusCompressedImage2A() throws Exception {
         FitsFactory.setAllowHeaderRepairs(false);
-        testImagePlusCompressedImage(resolveLocalOrRemoteFileName("17h-75dec--BINT_C_CVT_2014-06-25-MW1-17h_Light_600SecISO200_000031.fit"));
+        testImagePlusCompressedImage(
+                resolveLocalOrRemoteFileName("17h-75dec--BINT_C_CVT_2014-06-25-MW1-17h_Light_600SecISO200_000031.fit"));
     }
 
     private void testImagePlusCompressedImage(String imageFile) throws Exception {

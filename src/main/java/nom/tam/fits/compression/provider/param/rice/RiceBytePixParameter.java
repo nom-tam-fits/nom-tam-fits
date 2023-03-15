@@ -47,7 +47,7 @@ public final class RiceBytePixParameter extends CompressHeaderParameter<RiceComp
     public void getValueFromHeader(IHeaderAccess header) {
         HeaderCard value = findZVal(header);
         if (value != null) {
-            getOption().setBytePix(value.getValue(Integer.class, RiceCompressOption.DEFAULT_RICE_BYTEPIX));
+            getOption().setBytePix(value.getValue(Integer.class, getOption().getBytePix()));
         } else {
             getOption().setBytePix(RiceCompressOption.DEFAULT_RICE_BYTEPIX);
         }

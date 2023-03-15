@@ -32,92 +32,75 @@ package nom.tam.fits.header;
  */
 
 /**
- * This data dictionary contains FITS keywords that have been widely used within
- * the astronomical community. It is recommended that these keywords only be
- * used as defined here. These are the Keywords that describe the observation.
- * 
- * <pre>
- * @see <a href="http://heasarc.gsfc.nasa.gov/docs/fcg/common_dict.html">http://heasarc.gsfc.nasa.gov/docs/fcg/common_dict.html</a>
- * </pre>
+ * <p>
+ * This data dictionary contains FITS keywords that have been widely used within the astronomical community. It is
+ * recommended that these keywords only be used as defined here. These are the Keywords that describe the observation.
+ * </p>
+ * <p>
+ * See <a href=
+ * "http://heasarc.gsfc.nasa.gov/docs/fcg/common_dict.html">http://heasarc.gsfc.nasa.gov/docs/fcg/common_dict.html</a>
+ * </p>
  * 
  * @author Richard van Nieuwenhoven
  */
 public enum ObservationDurationDescription implements IFitsHeader {
     /**
-     * The value field shall contain a character string that gives the date on
-     * which the observation ended. This keyword has the same format, and is
-     * used in conjunction with, the standard DATA-OBS keyword that gives the
-     * starting date of the observation. These 2 keywords may give either the
-     * calendar date using the 'yyyy-mm-dd' format, or may give the full date
-     * and time using the 'yyyy-mm-ddThh:mm:ss.sss' format.
+     * The value field shall contain a character string that gives the date on which the observation ended. This keyword
+     * has the same format, and is used in conjunction with, the standard DATA-OBS keyword that gives the starting date
+     * of the observation. These 2 keywords may give either the calendar date using the 'yyyy-mm-dd' format, or may give
+     * the full date and time using the 'yyyy-mm-ddThh:mm:ss.sss' format.
      */
     DATE_END("DATE-END", SOURCE.HEASARC, HDU.ANY, VALUE.STRING, "date of the end of observation"),
     /**
-     * The value field shall contain a floating point number giving the
-     * difference between the stop and start times of the observation in units
-     * of seconds. This keyword is synonymous with the TELAPSE keyword.
+     * The value field shall contain a floating point number giving the difference between the stop and start times of
+     * the observation in units of seconds. This keyword is synonymous with the TELAPSE keyword.
      */
     ELAPTIME(SOURCE.UCOLICK, HDU.ANY, VALUE.REAL, "elapsed time of the observation"),
     /**
-     * The value field shall contain a floating point number giving the exposure
-     * time of the observation in units of seconds. The exact definition of
-     * 'exposure time' is mission dependent and may, for example, include
-     * corrections for shutter open and close duration, detector dead time,
-     * vignetting, or other effects. This keyword is synonymous with the EXPTIME
-     * keyword.
+     * The value field shall contain a floating point number giving the exposure time of the observation in units of
+     * seconds. The exact definition of 'exposure time' is mission dependent and may, for example, include corrections
+     * for shutter open and close duration, detector dead time, vignetting, or other effects. This keyword is synonymous
+     * with the EXPTIME keyword.
      */
     EXPOSURE(SOURCE.HEASARC, HDU.ANY, VALUE.REAL, "exposure time"),
     /**
-     * The value field shall contain a floating point number giving the exposure
-     * time of the observation in units of seconds. The exact definition of
-     * 'exposure time' is mission dependent and may, for example, include
-     * corrections for shutter open and close duration, detector dead time,
-     * vignetting, or other effects. This keyword is synonymous with the
-     * EXPOSURE keyword.
+     * The value field shall contain a floating point number giving the exposure time of the observation in units of
+     * seconds. The exact definition of 'exposure time' is mission dependent and may, for example, include corrections
+     * for shutter open and close duration, detector dead time, vignetting, or other effects. This keyword is synonymous
+     * with the EXPOSURE keyword.
      */
     EXPTIME(SOURCE.NOAO, HDU.ANY, VALUE.REAL, "exposure time"),
     /**
-     * The value field shall contain a floating point number giving the total
-     * integrated exposure time in units of seconds corrected for detector 'dead
-     * time' effects which reduce the net efficiency of the detector. The ratio
-     * of LIVETIME/ONTIME gives the mean dead time correction during the
-     * observation, which lies in the range 0.0 to 1.0.
+     * The value field shall contain a floating point number giving the total integrated exposure time in units of
+     * seconds corrected for detector 'dead time' effects which reduce the net efficiency of the detector. The ratio of
+     * LIVETIME/ONTIME gives the mean dead time correction during the observation, which lies in the range 0.0 to 1.0.
      */
     LIVETIME(SOURCE.HEASARC, HDU.ANY, VALUE.REAL, "exposure time after deadtime correction"),
     /**
-     * The value field shall contain a floating point number giving the total
-     * integrated exposure time of the observation in units of seconds. ONTIME
-     * may be less than TELAPSE if there were intevals during the observation in
-     * which the target was not observed (e.g., the shutter was closed, or the
-     * detector power was turned off).
+     * The value field shall contain a floating point number giving the total integrated exposure time of the
+     * observation in units of seconds. ONTIME may be less than TELAPSE if there were intevals during the observation in
+     * which the target was not observed (e.g., the shutter was closed, or the detector power was turned off).
      */
     ONTIME(SOURCE.HEASARC, HDU.ANY, VALUE.REAL, "integration time during the observation"),
     /**
-     * The value field shall contain a floating point number giving the
-     * difference between the stop and start times of the observation in units
-     * of seconds. This keyword is synonymous with the ELAPTIME keyword.
+     * The value field shall contain a floating point number giving the difference between the stop and start times of
+     * the observation in units of seconds. This keyword is synonymous with the ELAPTIME keyword.
      */
     TELAPSE(SOURCE.HEASARC, HDU.ANY, VALUE.REAL, "elapsed time of the observation"),
     /**
-     * The value field shall contain a character string that gives the time at
-     * which the observation ended. This keyword is used in conjunction with the
-     * DATE-END keyword to give the ending time of the observation; the DATE-END
-     * keyword gives the ending calendar date, with format 'yyyy-mm-dd', and
-     * TIME-END gives the time within that day using the format
-     * 'hh:mm:ss.sss...'. This keyword should not be used if the time is
-     * included directly as part of the DATE-END keyword value with the format
-     * 'yyyy-mm-ddThh:mm:ss.sss'.
+     * The value field shall contain a character string that gives the time at which the observation ended. This keyword
+     * is used in conjunction with the DATE-END keyword to give the ending time of the observation; the DATE-END keyword
+     * gives the ending calendar date, with format 'yyyy-mm-dd', and TIME-END gives the time within that day using the
+     * format 'hh:mm:ss.sss...'. This keyword should not be used if the time is included directly as part of the
+     * DATE-END keyword value with the format 'yyyy-mm-ddThh:mm:ss.sss'.
      */
     TIME_END("TIME-END", SOURCE.HEASARC, HDU.ANY, VALUE.STRING, "time at the end of the observation"),
     /**
-     * The value field shall contain a character string that gives the time at
-     * which the observation started. This keyword is used in conjunction with
-     * the standard DATE-OBS keyword to give the starting time of the
-     * observation; the DATE-OBS keyword gives the starting calendar date, with
-     * format 'yyyy-mm-dd', and TIME-OBS gives the time within that day using
-     * the format 'hh:mm:ss.sss...'. This keyword should not be used if the time
-     * is included directly as part of the DATE-OBS keyword value with the
-     * format 'yyyy-mm-ddThh:mm:ss.sss'.
+     * The value field shall contain a character string that gives the time at which the observation started. This
+     * keyword is used in conjunction with the standard DATE-OBS keyword to give the starting time of the observation;
+     * the DATE-OBS keyword gives the starting calendar date, with format 'yyyy-mm-dd', and TIME-OBS gives the time
+     * within that day using the format 'hh:mm:ss.sss...'. This keyword should not be used if the time is included
+     * directly as part of the DATE-OBS keyword value with the format 'yyyy-mm-ddThh:mm:ss.sss'.
      */
     TIME_OBS("TIME-OBS", SOURCE.HEASARC, HDU.ANY, VALUE.STRING, "time at the start of the observation");
 

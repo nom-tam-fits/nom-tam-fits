@@ -35,16 +35,19 @@ import java.nio.LongBuffer;
  */
 
 /**
+ * <p>
  * The original compression code was written by Richard White at the STScI and
  * included (ported to c and adapted) in cfitsio by William Pence, NASA/GSFC.
  * That code was then ported to java by R. van Nieuwenhoven. Later it was
  * massively refactored to harmonize the different compression algorithms and
  * reduce the duplicate code pieces without obscuring the algorithm itself as
  * far as possible. The original site for the algorithm is
- * 
- * <pre>
- *  @see <a href="http://www.stsci.edu/software/hcompress.html">http://www.stsci.edu/software/hcompress.html</a>
- * </pre>
+ * </p>
+ * <p>
+ * See <a
+ * href="http://www.stsci.edu/software/hcompress.html">http://www.stsci.edu
+ * /software/hcompress.html</a>
+ * </p>
  * 
  * @author Richard White
  * @author William Pence

@@ -8,7 +8,7 @@
 	</parent>
 	<groupId>gov.nasa.gsfc.heasarc</groupId>
 	<artifactId>nom-tam-fits</artifactId>
-	<version>1.17.1-SNAPSHOT</version>
+	<version>1.18.0-SNAPSHOT</version>
 	<packaging>jar</packaging>
 	<name>nom.tam FITS library</name>
 	<description>Java library for reading and writing FITS files. FITS, the Flexible Image Transport System, is the format commonly used in the archiving and transport of astronomical data.</description>
@@ -67,6 +67,12 @@
 		</developer>
 	</developers>
 	<contributors>
+		<contributor>
+			<name>Dustin Jenkins</name>
+		</contributor>
+		<contributor>
+			<name>Kevin Eastridge</name>
+		</contributor>
 		<contributor>
 			<name>William H. Cleveland Jr.</name>
 			<email>whclevelandjr [at] gmail [dot] com</email>
@@ -147,7 +153,7 @@
 			<extension>
 				<groupId>org.apache.maven.wagon</groupId>
 				<artifactId>wagon-ssh</artifactId>
-				<version>3.5.2</version>
+				<version>3.5.3</version>
 			</extension>
 			<extension>
 				<groupId>org.apache.maven.scm</groupId>
@@ -191,7 +197,7 @@
 			<plugin>
 				<groupId>org.apache.maven.plugins</groupId>
 				<artifactId>maven-deploy-plugin</artifactId>
-				<version>3.0.0-M2</version>
+				<version>3.1.0</version>
 			</plugin>
 			<plugin>
 				<groupId>org.apache.maven.plugins</groupId>
@@ -213,7 +219,7 @@
 			<plugin>
 				<groupId>org.apache.maven.plugins</groupId>
 				<artifactId>maven-compiler-plugin</artifactId>
-				<version>3.10.1</version>
+				<version>3.11.0</version>
 				<configuration>
 					<release>8</release>
 				</configuration>
@@ -221,7 +227,7 @@
 			<plugin>
 				<groupId>org.apache.maven.plugins</groupId>
 				<artifactId>maven-javadoc-plugin</artifactId>
-				<version>3.4.1</version>
+				<version>3.5.0</version>
 				<configuration>
 					<source>8</source>
 					<aggregate>false</aggregate>
@@ -239,7 +245,7 @@
 			<plugin>
 				<groupId>org.apache.maven.plugins</groupId>
 				<artifactId>maven-jar-plugin</artifactId>
-				<version>3.2.2</version>
+				<version>3.3.0</version>
 				<configuration>
 					<archive>
 						<manifest>
@@ -252,26 +258,11 @@
 			<plugin>
 				<groupId>org.apache.maven.plugins</groupId>
 				<artifactId>maven-release-plugin</artifactId>
-				<!-- TODO Update to 3.0.0-M4 or later -->
-				<version>3.0.0-M6</version>
+				<version>3.0.0-M7</version>
 				<configuration>
 					<mavenExecutorId>forked-path</mavenExecutorId>
 					<pushChanges>false</pushChanges>
 				</configuration>
-			</plugin>
-			<plugin>
-				<groupId>org.tinyjee.dim</groupId>
-				<artifactId>doxia-include-macro</artifactId>
-				<version>1.1</version>
-				<executions>
-					<execution>
-						<id>initialize-doxia-include-macro</id>
-						<phase>pre-site</phase>
-						<goals>
-							<goal>initialize</goal>
-						</goals>
-					</execution>
-				</executions>
 			</plugin>
 			<plugin>
 				<groupId>org.apache.maven.plugins</groupId>
@@ -284,17 +275,12 @@
 					<dependency>
 						<groupId>org.apache.maven.wagon</groupId>
 						<artifactId>wagon-ssh</artifactId>
-						<version>3.5.2</version>
-					</dependency>
-					<dependency>
-						<groupId>org.tinyjee.dim</groupId>
-						<artifactId>doxia-include-macro</artifactId>
-						<version>1.1</version>
+						<version>3.5.3</version>
 					</dependency>
 					<dependency>
 						<groupId>org.apache.maven.doxia</groupId>
 						<artifactId>doxia-module-markdown</artifactId>
-						<version>1.11.1</version>
+						<version>1.12.0</version>
 					</dependency>
 				</dependencies>
 			</plugin>
@@ -342,12 +328,12 @@
 			<plugin>
 				<groupId>org.apache.maven.plugins</groupId>
 				<artifactId>maven-checkstyle-plugin</artifactId>
-				<version>3.2.0</version>
+				<version>3.2.1</version>
 				<dependencies>
 					<dependency>
 						<groupId>com.puppycrawl.tools</groupId>
 						<artifactId>checkstyle</artifactId>
-						<version>10.3.3</version>
+						<version>10.3.4</version>
 					</dependency>
 				</dependencies>
 				<executions>
@@ -408,9 +394,22 @@
 				</executions>
 			</plugin>
 			<plugin>
+        <!-- Coveralls integration -->
+        <groupId>org.eluder.coveralls</groupId>
+        <artifactId>coveralls-maven-plugin</artifactId>
+        <version>4.3.0</version>
+        <dependencies>
+          <dependency>
+            <groupId>javax.xml.bind</groupId>
+            <artifactId>jaxb-api</artifactId>
+            <version>2.3.1</version>
+          </dependency>
+        </dependencies>
+      </plugin>
+			<plugin>
 				<groupId>com.github.spotbugs</groupId>
 				<artifactId>spotbugs-maven-plugin</artifactId>
-				<version>4.7.2.0</version>
+				<version>4.7.2.1</version>
 				<executions>
 					<execution>
 						<goals>
@@ -428,7 +427,7 @@
 			<plugin>
 				<groupId>org.apache.maven.plugins</groupId>
 				<artifactId>maven-surefire-plugin</artifactId>
-				<version>3.0.0-M7</version>
+				<version>3.0.0-M9</version>
 				<configuration>
 					<forkCount>1.5C</forkCount>
 					<argLine>-Xmx2G @{argLine}</argLine>
@@ -472,7 +471,7 @@
 			<plugin>
 				<groupId>org.apache.maven.plugins</groupId>
 				<artifactId>maven-project-info-reports-plugin</artifactId>
-				<version>3.4.1</version>
+				<version>3.4.2</version>
 				<configuration>
 					<dependencyDetailsEnabled>false</dependencyDetailsEnabled>
 					<dependencyLocationsEnabled>false</dependencyLocationsEnabled>
@@ -494,7 +493,7 @@
 			<plugin>
 				<groupId>org.apache.maven.plugins</groupId>
 				<artifactId>maven-checkstyle-plugin</artifactId>
-				<version>3.2.0</version>
+				<version>3.2.1</version>
 				<configuration>
 					<configLocation>${project.basedir}/src/main/checkstyle/nom-tam-fits-style.xml</configLocation>
 					<suppressionsLocation>${project.basedir}/src/main/checkstyle/checkstyle-suppressions.xml</suppressionsLocation>
@@ -515,7 +514,7 @@
 			<plugin>
 				<groupId>org.apache.maven.plugins</groupId>
 				<artifactId>maven-javadoc-plugin</artifactId>
-				<version>3.4.1</version>
+				<version>3.5.0</version>
 				<configuration>
 					<source>8</source>
 					<failOnError>false</failOnError>
@@ -554,11 +553,12 @@
 			<plugin>
 				<groupId>org.apache.maven.plugins</groupId>
 				<artifactId>maven-pmd-plugin</artifactId>
-				<version>3.19.0</version>
+				<version>3.20.0</version>
 				<configuration>
 					<linkXref>true</linkXref>
 					<sourceEncoding>UTF-8</sourceEncoding>
-					<targetJdk>1.7</targetJdk>
+					<targetJdk>1.8</targetJdk>
+					<sourceJdk>1.8</sourceJdk>
 					<skipEmptyReport>false</skipEmptyReport>
 					<minimumTokens>50</minimumTokens>
 				</configuration>
@@ -571,7 +571,7 @@
 			<plugin>
 				<groupId>com.github.spotbugs</groupId>
 				<artifactId>spotbugs-maven-plugin</artifactId>
-				<version>4.7.2.0</version>
+				<version>4.7.2.1</version>
 				<configuration>
 					<!-- Skip bug warnings for EI_EXPOSE_REP and EI_EXPOSE_REP2
                we know we exposse some internal data of our classes -->
@@ -597,7 +597,7 @@
 		<dependency>
 			<groupId>org.apache.commons</groupId>
 			<artifactId>commons-compress</artifactId>
-			<version>1.21</version>
+			<version>1.22</version>
 			<optional>true</optional>
 		</dependency>
 		<dependency>
@@ -621,13 +621,13 @@
 		<dependency>
 			<groupId>org.openjdk.jmh</groupId>
 			<artifactId>jmh-core</artifactId>
-			<version>1.35</version>
+			<version>1.36</version>
 			<scope>test</scope>
 		</dependency>
 		<dependency>
 			<groupId>org.openjdk.jmh</groupId>
 			<artifactId>jmh-generator-annprocess</artifactId>
-			<version>1.35</version>
+			<version>1.36</version>
 			<scope>test</scope>
 		</dependency>
 		<!-- https://mvnrepository.com/artifact/javax.annotation/javax.annotation-api -->
@@ -694,7 +694,7 @@
 					</plugin>
 					<plugin>
 						<artifactId>maven-assembly-plugin</artifactId>
-						<version>3.4.2</version>
+						<version>3.5.0</version>
 						<configuration>
 							<attach>false</attach>
 							<descriptors>

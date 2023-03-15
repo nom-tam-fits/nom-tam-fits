@@ -44,9 +44,9 @@ public class QuantizeProcessor {
 
         private final ICompressor<IntBuffer> postCompressor;
 
-        public DoubleQuantCompressor(QuantizeOption quantizeOption, ICompressor<IntBuffer> postCompressor) {
+        public DoubleQuantCompressor(QuantizeOption quantizeOption, ICompressor<IntBuffer> compressor) {
             super(quantizeOption);
-            this.postCompressor = postCompressor;
+            this.postCompressor = compressor;
         }
 
         @Override

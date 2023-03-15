@@ -1,10 +1,10 @@
-package nom.tam.fits.compression.provider.param.hcompress;
+package nom.tam.image;
 
-/*
+/*-
  * #%L
  * nom.tam FITS library
  * %%
- * Copyright (C) 1996 - 2021 nom-tam-fits
+ * Copyright (C) 1996 - 2022 nom-tam-fits
  * %%
  * This is free and unencumbered software released into the public domain.
  * 
@@ -31,35 +31,51 @@ package nom.tam.fits.compression.provider.param.hcompress;
  * #L%
  */
 
-import nom.tam.fits.compression.algorithm.api.ICompressOption;
-import nom.tam.fits.compression.algorithm.hcompress.HCompressorOption;
-import nom.tam.fits.compression.provider.param.api.ICompressHeaderParameter;
-import nom.tam.fits.compression.provider.param.base.CompressParameters;
+/**
+ * Provides 2D tiling support for images.
+ * 
+ * @author Attila Kovacs #since 1.18
+ */
+public interface ITileOption {
 
-public class HCompressParameters extends CompressParameters {
+    /**
+     * Returns the current tile height for the implementing class.
+     * 
+     * @return (pixels) the current tile height.
+     * @see #setTileHeight(int)
+     * @see #getTileWidth()
+     */
+    int getTileHeight();
 
-    private final HCompressScaleParameter scale;
+    /**
+     * Returns the current tile width for the implementing class.
+     * 
+     * @return (pixels) the current tile width.
+     * @see #setTileWidth(int)
+     * @see #getTileHeight()
+     */
+    int getTileWidth();
 
-    private final HCompressSmoothParameter smooth;
+    /**
+     * Sets a new tile height for the implementing class.
+     * 
+     * @param value
+     *            (pixels) the new tile height.
+     * @return itself
+     * @see #getTileHeight()
+     * @see #setTileWidth(int)
+     */
+    ITileOption setTileHeight(int value);
 
-    public HCompressParameters(HCompressorOption option) {
-        this.scale = new HCompressScaleParameter(option);
-        this.smooth = new HCompressSmoothParameter(option);
-    }
+    /**
+     * Sets a new tile width for the implementing class.
+     * 
+     * @param value
+     *            (pixels) the new tile width.
+     * @return itself
+     * @see #getTileWidth()
+     * @see #setTileHeight(int)
+     */
+    ITileOption setTileWidth(int value);
 
-    @Override
-    public HCompressParameters copy(ICompressOption option) {
-        if (option instanceof HCompressorOption) {
-            return new HCompressParameters((HCompressorOption) option);
-        }
-        return null;
-    }
-
-    @Override
-    protected ICompressHeaderParameter[] headerParameters() {
-        return new ICompressHeaderParameter[]{
-            this.scale,
-            this.smooth
-        };
-    }
 }

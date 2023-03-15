@@ -1,5 +1,7 @@
 package nom.tam.fits.compression.provider.param.quant;
 
+import nom.tam.fits.compression.algorithm.api.ICompressOption;
+
 /*
  * #%L
  * nom.tam FITS library
@@ -34,20 +36,19 @@ package nom.tam.fits.compression.provider.param.quant;
 import nom.tam.fits.compression.algorithm.quant.QuantizeOption;
 import nom.tam.fits.compression.provider.param.api.ICompressColumnParameter;
 import nom.tam.fits.compression.provider.param.api.ICompressHeaderParameter;
-import nom.tam.fits.compression.provider.param.api.ICompressParameters;
 import nom.tam.fits.compression.provider.param.base.CompressParameters;
 
-public abstract class QuantizeParameters extends CompressParameters {
+public class QuantizeParameters extends CompressParameters {
 
-    private final ZQuantizeParameter quantz;
+    private ZQuantizeParameter quantz;
 
-    private final ZBlankParameter blank;
+    private ZBlankParameter blank;
 
-    private final ZBlankColumnParameter blankColumn;
+    private ZBlankColumnParameter blankColumn;
 
-    private final ZZeroColumnParameter zero;
+    private ZZeroColumnParameter zero;
 
-    private final ZScaleColumnParameter scale;
+    private ZScaleColumnParameter scale;
 
     public QuantizeParameters(QuantizeOption option) {
         this.quantz = new ZQuantizeParameter(option);
@@ -59,30 +60,28 @@ public abstract class QuantizeParameters extends CompressParameters {
 
     @Override
     protected ICompressColumnParameter[] columnParameters() {
-        return new ICompressColumnParameter[]{
-            this.blankColumn,
-            this.zero,
-            this.scale
-        };
-    }
-
-    protected ICompressParameters copyColumnDetails(QuantizeParameters quantizeParameters) {
-        quantizeParameters.blankColumn.setOriginal(this.blankColumn);
-        quantizeParameters.zero.setOriginal(this.zero);
-        quantizeParameters.scale.setOriginal(this.scale);
-        return quantizeParameters;
+        return new ICompressColumnParameter[] {this.blankColumn, this.zero, this.scale};
     }
 
     @Override
     protected ICompressHeaderParameter[] headerParameters() {
-        if (this.blank.isActive()) {
-            return new ICompressHeaderParameter[]{
-                this.quantz,
-                this.blank
-            };
+        return new ICompressHeaderParameter[] {this.quantz, this.blank};
+    }
+
+    @Override
+    public QuantizeParameters copy(ICompressOption option) {
+        if (option instanceof QuantizeOption) {
+            QuantizeOption qo = (QuantizeOption) option;
+
+            QuantizeParameters p = (QuantizeParameters) super.clone();
+            p.quantz = (ZQuantizeParameter) quantz.copy(qo);
+            p.blank = (ZBlankParameter) blank.copy(qo);
+            p.blankColumn = (ZBlankColumnParameter) blankColumn.copy(qo);
+            p.zero = (ZZeroColumnParameter) zero.copy(qo);
+            p.scale = (ZScaleColumnParameter) scale.copy(qo);
+
+            return p;
         }
-        return new ICompressHeaderParameter[]{
-            this.quantz
-        };
+        return null;
     }
 }

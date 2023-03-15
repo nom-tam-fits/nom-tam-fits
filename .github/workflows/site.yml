@@ -2,8 +2,7 @@
 name: Project Site
 
 on: 
-  release: 
-    types: [published, unpublished, created, edited, deleted]
+  release:
   
   pull_request:
     paths:
@@ -48,9 +47,16 @@ jobs:
     - name: Build site with Maven
       run: mvn clean site
       working-directory: ./nom-tam-fits
-        
+    
+    - name: About this workflow...
+      run: |
+        echo github.event_name = ${{ github.event_name }}
+        echo github.repository_owner = ${{ github.repository_owner }}
+        echo github.ref_name = ${{ github.ref_name }}
+    
+    # Upload site only for official releases or if master commit message contains 'site update'
     - name: Update site
-      if: ${{ github.repository_owner == 'nom-tam-fits' && github.ref_name == 'master' }}
+      if: github.repository_owner == 'nom-tam-fits' && (github.event_name == 'release' || contains(github.event.head_commit.message, 'site update'))
       run: |
         cp -a nom-tam-fits/target/site/* site/
         cd site

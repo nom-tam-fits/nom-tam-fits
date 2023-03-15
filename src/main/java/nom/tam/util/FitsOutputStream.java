@@ -35,18 +35,13 @@ import java.io.DataOutputStream;
 import java.io.IOException;
 import java.io.OutputStream;
 
-
 /**
- * This class is intended for high performance writing FITS files or 
- * FITS data blocks.
- *
+ * This class is intended for high performance writing FITS files or FITS data blocks.
  * <p>
- * Testing and timing for this class is performed in the
- * nom.tam.util.test.BufferedFileTester class.
- * 
+ * Testing and timing for this class is performed in the nom.tam.util.test.BufferedFileTester class.
  * <p>
- * Version 2.0 -- October 30, 2021: Completely overhauled, with new name and 
- * hierarchy. Performance is 2-4 times better than before. (Attila Kovacs)
+ * Version 2.0 -- October 30, 2021: Completely overhauled, with new name and hierarchy. Performance is 2-4 times better
+ * than before. (Attila Kovacs)
  * 
  * @see FitsInputStream
  * @see FitsFile
@@ -56,12 +51,14 @@ public class FitsOutputStream extends ArrayOutputStream implements FitsOutput {
 
     /** the output, as accessible via the <code>DataInput</code> interface */
     private final DataOutput data;
-    
+
+    /** Unencoded output byte count */
+    private int unencodedCount;
+
     /**
      * Use the BufferedOutputStream constructor
      * 
-     * @param o
-     *            An open output stream.
+     * @param o An open output stream.
      */
     public FitsOutputStream(OutputStream o) {
         this(o, FitsIO.DEFAULT_BUFFER_SIZE);
@@ -70,10 +67,8 @@ public class FitsOutputStream extends ArrayOutputStream implements FitsOutput {
     /**
      * Use the BufferedOutputStream constructor
      * 
-     * @param o
-     *            An open output stream.
-     * @param bufLength
-     *            The buffer size.
+     * @param o An open output stream.
+     * @param bufLength The buffer size.
      */
     public FitsOutputStream(OutputStream o, int bufLength) {
         super(o, bufLength);
@@ -84,10 +79,22 @@ public class FitsOutputStream extends ArrayOutputStream implements FitsOutput {
             data = new DataOutputStream(o);
         }
     }
-    
+
     @Override
     protected FitsEncoder getEncoder() {
         return (FitsEncoder) super.getEncoder();
+    }
+
+    @Override
+    public synchronized void write(int b) throws IOException {
+        super.write(b);
+        unencodedCount++;
+    }
+
+    @Override
+    public synchronized void write(byte[] b, int start, int length) throws IOException {
+        super.write(b, start, length);
+        unencodedCount += length;
     }
 
     @Override
@@ -152,14 +159,14 @@ public class FitsOutputStream extends ArrayOutputStream implements FitsOutput {
 
     @Override
     public synchronized void writeByte(int b) throws IOException {
-        getEncoder().writeByte(b);        
+        getEncoder().writeByte(b);
     }
 
     @Override
     public synchronized void writeBoolean(boolean b) throws IOException {
         getEncoder().writeBoolean(b);
     }
-    
+
     @Override
     public synchronized void writeChar(int c) throws IOException {
         getEncoder().writeChar(c);
@@ -193,10 +200,10 @@ public class FitsOutputStream extends ArrayOutputStream implements FitsOutput {
     /**
      * Deprecated use {@link #writeArray(Object)}.
      * 
-     * @param o
-     *            The object to be written.
-     * @throws IOException
-     *             if one of the underlying write operations failed
+     * @param o The object to be written.
+     * 
+     * @throws IOException if one of the underlying write operations failed
+     * 
      * @deprecated use {@link #writeArray(Object)} instead
      */
     @Deprecated
@@ -206,7 +213,7 @@ public class FitsOutputStream extends ArrayOutputStream implements FitsOutput {
 
     @Override
     public boolean isAtStart() {
-        return getEncoder().getCount() == 0;
+        return (unencodedCount + getEncoder().getCount()) == 0;
     }
 
 }

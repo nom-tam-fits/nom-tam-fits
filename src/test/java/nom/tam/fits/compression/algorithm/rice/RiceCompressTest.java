@@ -37,19 +37,21 @@ import java.nio.ByteBuffer;
 import java.nio.IntBuffer;
 import java.nio.ShortBuffer;
 
+import org.junit.Assert;
+import org.junit.Test;
+
 import nom.tam.fits.Header;
 import nom.tam.fits.HeaderCardException;
+import nom.tam.fits.compression.algorithm.hcompress.HCompressorOption;
 import nom.tam.fits.compression.algorithm.rice.RiceCompressor.ByteRiceCompressor;
 import nom.tam.fits.compression.algorithm.rice.RiceCompressor.IntRiceCompressor;
 import nom.tam.fits.compression.algorithm.rice.RiceCompressor.ShortRiceCompressor;
 import nom.tam.fits.compression.provider.param.api.HeaderAccess;
+import nom.tam.fits.compression.provider.param.hcompress.HCompressParameters;
 import nom.tam.fits.compression.provider.param.rice.RiceCompressParameters;
 import nom.tam.fits.header.Compression;
 import nom.tam.util.SafeClose;
 import nom.tam.util.type.PrimitiveTypes;
-
-import org.junit.Assert;
-import org.junit.Test;
 
 public class RiceCompressTest {
 
@@ -195,30 +197,12 @@ public class RiceCompressTest {
         bitBuffer.putLong(99L, 0);
         Assert.assertArrayEquals(expected, bytes);
         bitBuffer.putLong(2L * ((long) Integer.MAX_VALUE), 40);
-        expected = new byte[]{
-            0,
-            -1,
-            -1,
-            -1,
-            -2,
-            0,
-            0,
-            0
-        };
+        expected = new byte[] {0, -1, -1, -1, -2, 0, 0, 0};
         Assert.assertArrayEquals(expected, bytes);
         bytes = new byte[8];
         bitBuffer = new BitBuffer(ByteBuffer.wrap(bytes));
         bitBuffer.putLong(3L, 3);
-        expected = new byte[]{
-            96,
-            0,
-            0,
-            0,
-            0,
-            0,
-            0,
-            0
-        };
+        expected = new byte[] {96, 0, 0, 0, 0, 0, 0, 0};
         Assert.assertArrayEquals(expected, bytes);
 
     }
@@ -249,5 +233,17 @@ public class RiceCompressTest {
             Assert.assertTrue(e.getMessage().contains("only"));
             throw e;
         }
+    }
+
+    @Test(expected = IllegalArgumentException.class)
+    public void testWrongParameters() throws Exception {
+        RiceCompressOption o = new RiceCompressOption();
+        o.setParameters(new HCompressParameters(null));
+    }
+
+    @Test
+    public void testCopyWrongOption() throws Exception {
+        RiceCompressParameters p = new RiceCompressParameters(null);
+        Assert.assertNull(p.copy(new HCompressorOption()));
     }
 }

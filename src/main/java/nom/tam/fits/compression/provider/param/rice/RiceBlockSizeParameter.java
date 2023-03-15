@@ -47,7 +47,7 @@ public final class RiceBlockSizeParameter extends CompressHeaderParameter<RiceCo
     public void getValueFromHeader(IHeaderAccess header) {
         HeaderCard value = super.findZVal(header);
         if (value != null) {
-            getOption().setBlockSize(value.getValue(Integer.class, RiceCompressOption.DEFAULT_RICE_BLOCKSIZE));
+            getOption().setBlockSize(value.getValue(Integer.class, getOption().getBlockSize()));
         } else {
             getOption().setBlockSize(RiceCompressOption.DEFAULT_RICE_BLOCKSIZE);
         }

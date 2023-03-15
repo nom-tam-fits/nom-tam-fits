@@ -73,6 +73,19 @@ public class ArrayDataFile extends BufferedFileIO {
     }
 
     /**
+     * Instantiates a new file for high-performance array IO operations. For use
+     * by subclass constructors only
+     * 
+     * @param f
+     *            the RandomAccessFileIO file
+     * @param bufferSize
+     *            the size of the buffer in bytes
+     */
+    protected ArrayDataFile(RandomAccessFileIO f, int bufferSize) {
+        super(f, bufferSize);
+    }
+
+    /**
      * Sets the conversion from Java arrays to their binary representation in
      * file. For use by subclass constructors only.
      * 
@@ -88,7 +101,7 @@ public class ArrayDataFile extends BufferedFileIO {
 
     /**
      * Returns the conversion from Java arrays to their binary representation in
-     * file. Subclass implementeations can use this to access the required
+     * file. Subclass implementations can use this to access the required
      * conversion when writing data to file.
      * 
      * @return the conversion from Java arrays to their binary representation in
