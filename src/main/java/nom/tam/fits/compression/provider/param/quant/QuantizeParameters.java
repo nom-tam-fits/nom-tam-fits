@@ -44,6 +44,8 @@ public class QuantizeParameters extends CompressParameters {
 
     private ZBlankParameter blank;
 
+    private ZDither0Parameter seed;
+
     private ZBlankColumnParameter blankColumn;
 
     private ZZeroColumnParameter zero;
@@ -53,6 +55,7 @@ public class QuantizeParameters extends CompressParameters {
     public QuantizeParameters(QuantizeOption option) {
         this.quantz = new ZQuantizeParameter(option);
         this.blank = new ZBlankParameter(option);
+        this.seed = new ZDither0Parameter(option);
         this.blankColumn = new ZBlankColumnParameter(option);
         this.zero = new ZZeroColumnParameter(option);
         this.scale = new ZScaleColumnParameter(option);
@@ -65,7 +68,12 @@ public class QuantizeParameters extends CompressParameters {
 
     @Override
     protected ICompressHeaderParameter[] headerParameters() {
-        return new ICompressHeaderParameter[] {this.quantz, this.blank};
+        return new ICompressHeaderParameter[] {this.quantz, this.blank, this.seed};
+    }
+
+    @Override
+    public void setTileIndex(int index) {
+        seed.setTileIndex(index);
     }
 
     @Override
@@ -76,6 +84,7 @@ public class QuantizeParameters extends CompressParameters {
             QuantizeParameters p = (QuantizeParameters) super.clone();
             p.quantz = (ZQuantizeParameter) quantz.copy(qo);
             p.blank = (ZBlankParameter) blank.copy(qo);
+            p.seed = (ZDither0Parameter) seed.copy(qo);
             p.blankColumn = (ZBlankColumnParameter) blankColumn.copy(qo);
             p.zero = (ZZeroColumnParameter) zero.copy(qo);
             p.scale = (ZScaleColumnParameter) scale.copy(qo);

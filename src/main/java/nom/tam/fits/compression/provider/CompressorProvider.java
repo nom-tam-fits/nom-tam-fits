@@ -265,6 +265,10 @@ public class CompressorProvider implements ICompressorProvider {
         @Override
         public void setValuesInHeader(IHeaderAccess header) {
         }
+
+        @Override
+        public void setTileIndex(int index) {
+        }
     };
 
     // @formatter:off

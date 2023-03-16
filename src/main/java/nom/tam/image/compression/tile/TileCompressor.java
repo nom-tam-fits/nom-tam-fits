@@ -79,6 +79,8 @@ public class TileCompressor extends TileCompressionOperation {
         boolean compressSuccess = false;
         boolean tryNormalCompression = !(this.tileOptions.isLossyCompression() && this.forceNoLoss);
 
+        this.tileOptions.getCompressionParameters().setTileIndex(getTileIndex());
+
         if (tryNormalCompression) {
             compressSuccess = getCompressorControl().compress(getTileBuffer().getBuffer(), this.compressedData,
                     this.tileOptions);
