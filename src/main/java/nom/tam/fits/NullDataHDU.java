@@ -44,13 +44,13 @@ import nom.tam.fits.header.Standard;
  * 
  * @since 1.18
  */
-public class HeaderOnlyHDU extends BasicHDU<NullData> {
+public class NullDataHDU extends BasicHDU<NullData> {
 
     /**
      * Instantiates a new HDU with a default header and no associated data, using the
      * supplied header.
      */
-    public HeaderOnlyHDU() {
+    public NullDataHDU() {
         this(new Header());
         getData().fillHeader(getHeader());
     }
@@ -61,7 +61,7 @@ public class HeaderOnlyHDU extends BasicHDU<NullData> {
      * 
      * @param myHeader      the FITS header for this HDU
      */
-    public HeaderOnlyHDU(Header myHeader) {
+    public NullDataHDU(Header myHeader) {
         super(myHeader, new NullData());
     }
 

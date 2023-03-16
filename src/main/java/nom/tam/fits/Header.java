@@ -2375,7 +2375,7 @@ public class Header implements FitsElement {
     }
 
     /**
-     * @deprecated  Use {@link HeaderOnlyHDU} instead.
+     * @deprecated  Use {@link NullDataHDU} instead.
      * 
      * Create a header for a null image.
      * 
