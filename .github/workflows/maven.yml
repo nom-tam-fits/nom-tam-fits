@@ -69,7 +69,7 @@ jobs:
       continue-on-error: true
       with:
         base-path: nom-tam-fits/src/main/java
-        file: nom-tam-fits/target/jacoco-report/jacoco.xml
+        file: nom-tam-fits/target/site/jacoco/jacoco.xml
         
     - name: Check Project Site
       run: mvn -B site:stage
