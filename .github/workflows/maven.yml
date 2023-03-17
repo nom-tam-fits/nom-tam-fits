@@ -65,16 +65,11 @@ jobs:
         verbose: true
         
     - name: Upload coverage to Coveralls.io
+      uses: coverallsapp/github-action@v2
       continue-on-error: true
-      env:
-        COVERALLS_TOKEN: ${{ secrets.COVERALLS_REPO_TOKEN }}
-      run: |
-        if [ "$COVERALLS_TOKEN" != "" ] ; then 
-           mvn coveralls:report -DrepoToken=$COVERALLS_TOKEN
-        else
-           echo "WARNING! COVERALLS_REPO_TOKEN secret is undefined. Skipping Coveralls.io upload."
-        fi
-      working-directory: ./nom-tam-fits
+      with:
+        base-path: nom-tam-fits/src/main/java
+        file: nom-tam-fits/target/jacoco-report/jacoco.xml
         
     - name: Check Project Site
       run: mvn -B site:stage
