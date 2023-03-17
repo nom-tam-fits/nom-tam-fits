@@ -37,9 +37,43 @@ import nom.tam.fits.compression.provider.param.api.IHeaderAccess;
 import nom.tam.fits.compression.provider.param.base.CompressHeaderParameter;
 import nom.tam.fits.header.Compression;
 
+/**
+ * <p>
+ * The random seed initialization parameter for consistent dither implementations. Dithering adds a small amount of
+ * noise (at the level of the quantization level increments) to remove possible systematics biases of the quantization.
+ * Since the quantization (integer representation of floating-point values) is inherently lossy (noisy) the added
+ * dithering noise is generally inconsequential in terms of preseving information in the original image. As such, the
+ * image can be recovered close enough to the original, within the level of the quantization noise, without knowing the
+ * exact random sequence that was used to generate the dither.
+ * </p>
+ * <p>
+ * However, The FITS standard requires that when dithering is used in the compression the same tool (or library) should
+ * also undo the dithering exactly using the same sequence of random numbers as was used when compressing the image.
+ * Furthermore, the standard makes some explicit suggestions on how pseudo-random sequences should be generated, and
+ * offers a specific convention for an algorithm that may be used to provide consistent dithering across tools,
+ * platforms, and library implementations.
+ * </p>
+ * <p>
+ * For the dithering to be reversible, the FITS header should store the integer value, usually between 1 and 10000
+ * inclusive, under the <code>ZDITHER0</code> keyword to indicate the value (random sequence index) that was used for
+ * seeding the random number generator according to the described standard.
+ * </p>
+ * <p>
+ * The nom-tam FITS library implements the suggested convention for the random number generator, and this parameter
+ * deals with recording the corresponding random seed value via the <code>ZDITHER0</code> keyword in the compressed
+ * image headers; as well as retrieving this value to seed the random number generator when decompressing the image, in
+ * a way that is consistent with the FITS standard and recommended convention.
+ * </p>
+ * 
+ * @author Attila Kovacs
+ */
 final class ZDither0Parameter extends CompressHeaderParameter<QuantizeOption> {
+
     /**
-     * @param quantizeOption
+     * Creates a new compression parameter that can be used to configure the quantization options when cmpressing /
+     * decompressing image tiles.
+     * 
+     * @param quantizeOption The quantization option that will be configured using this particular parameter.
      */
     ZDither0Parameter(QuantizeOption quantizeOption) {
         super(Compression.ZDITHER0.name(), quantizeOption);

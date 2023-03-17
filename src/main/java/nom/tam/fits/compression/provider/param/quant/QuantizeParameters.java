@@ -38,6 +38,12 @@ import nom.tam.fits.compression.provider.param.api.ICompressColumnParameter;
 import nom.tam.fits.compression.provider.param.api.ICompressHeaderParameter;
 import nom.tam.fits.compression.provider.param.base.CompressParameters;
 
+/**
+ * A set of compression parameters used for quantization of floating point data. Quantization is the process of
+ * representing floating-point values by integers.
+ * 
+ * @author Attila Kovacs
+ */
 public class QuantizeParameters extends CompressParameters {
 
     private ZQuantizeParameter quantz;
@@ -52,6 +58,12 @@ public class QuantizeParameters extends CompressParameters {
 
     private ZScaleColumnParameter scale;
 
+    /**
+     * Creates a set of compression parameters used for quantization of floating point data. Quantization is the process
+     * of representing floating-point values by integers.
+     * 
+     * @param option The compression option that is configured with the particular parameter values of this object.
+     */
     public QuantizeParameters(QuantizeOption option) {
         this.quantz = new ZQuantizeParameter(option);
         this.blank = new ZBlankParameter(option);
