@@ -19,7 +19,7 @@
 <a name="known-issues"></a>
 ## Known issues
 
-The following issues are known to affect the current and prior releases (&lt;= 1.17.1) from the inception. Fixed for these issues are included on the master branch of the Github repository, and available as SNAPSHOT releases generated from it on Sonatype (see further below on how to get these).
+The following issues are known to affect the current and prior releases (&lt;= 1.17.1) from the inception. These issues are fixed on the master branch of the Github repository, and available as SNAPSHOT releases generated from it on Sonatype (see further below on how to get these).
 
  - [#349](https://github.com/nom-tam-fits/nom-tam-fits/issues/349): Problems with some quantized tile (de)compressions, e.g. when GZIP is used.
 
