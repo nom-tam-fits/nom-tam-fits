@@ -533,16 +533,16 @@ public class QuantizeTest {
         QuantizeOption baseOption = new QuantizeOption();
         QuantizeTestParameters base = new QuantizeTestParameters(baseOption);
         baseOption.setParameters(base);
-        Assert.assertEquals(2, base.headerParameters().length);
+        Assert.assertEquals(3, base.headerParameters().length);
 
         base.initializeColumns(2);
 
         QuantizeOption optionCopy = baseOption.copy();
         QuantizeTestParameters parameters = (QuantizeTestParameters) optionCopy.getCompressionParameters();
-        Assert.assertEquals(2, parameters.headerParameters().length);
+        Assert.assertEquals(3, parameters.headerParameters().length);
 
         optionCopy.setBNull(-999);
-        Assert.assertEquals(2, parameters.headerParameters().length);
+        Assert.assertEquals(3, parameters.headerParameters().length);
         optionCopy.setBNull(99);
 
         parameters.initializeTestColumn();
