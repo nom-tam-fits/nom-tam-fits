@@ -66,8 +66,8 @@ public class StreamingTileImageDataTest {
         }
 
         try {
-            new StreamingTileImageData(header, new TestTiler(), new int[2], null, new int[]{-1, 1});
-            Assert.fail("Should throw IllegalArgumentException");
+            new StreamingTileImageData(header, new TestTiler(), new int[2], new int[2], new int[]{-1, 1});
+            Assert.fail("Should throw IllegalArgumentException for negative steps");
         } catch (IllegalArgumentException _ignored) {
             // Good!
         }
