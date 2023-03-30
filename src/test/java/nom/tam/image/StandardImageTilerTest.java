@@ -31,12 +31,14 @@ package nom.tam.image;
  * #L%
  */
 
+import java.io.ByteArrayOutputStream;
 import java.io.IOException;
 import java.lang.reflect.Field;
 import java.util.Arrays;
 
 import nom.tam.util.ArrayFuncs;
 import nom.tam.util.FitsFile;
+import nom.tam.util.FitsOutputStream;
 import nom.tam.util.RandomAccess;
 
 import org.junit.Assert;
@@ -101,6 +103,18 @@ public class StandardImageTilerTest {
         Assert.assertNotNull(actual);
         Assert.assertTrue(actual.getMessage().contains("No data"));
 
+    }
+
+    @Test
+    public void testFailedGetTileStep() {
+        try {
+            tiler.getTile(new int[]{0, 0}, new int[]{5, 5}, new int[]{1, -1});
+            Assert.fail("Should throw IOException");
+        } catch (IOException ioException) {
+            // Good.
+            Assert.assertEquals("Wrong message", "Step value cannot be less than 1.",
+                                ioException.getMessage());
+        }
     }
 
     @Test
@@ -182,7 +196,21 @@ public class StandardImageTilerTest {
         }
         Assert.assertNotNull(actual);
         Assert.assertTrue(actual.getMessage().contains("Invalid type"));
+    }
 
+    @Test
+    public void testFailedFillFileData() throws Exception {
+        final int baseLength = ArrayFuncs.getBaseLength(dataArray);
+        final int length = 10;
+        final int step = 2;
+        try (final ByteArrayOutputStream byteArrayOutputStream = new ByteArrayOutputStream();
+             final FitsOutputStream fitsOutputStream = new FitsOutputStream(byteArrayOutputStream)) {
+            tiler.fillFileData(fitsOutputStream, 0, length, step);
+            fitsOutputStream.flush();
+
+            final byte[] output = byteArrayOutputStream.toByteArray();
+            Assert.assertEquals("Wrong length", (length / step) * baseLength, output.length);
+        }
     }
 
     @Test
