@@ -115,13 +115,29 @@ public abstract class StandardImageTiler implements ImageTiler {
     }
 
     /**
-     * File a tile segment from a file.
+     * File a tile segment from a file using a default value for striding.
      *
      * @param output       The output to send data.  This can be an ArrayDataOutput to stream data to and prevent
      *                     memory consumption of a tile being in memory.
      * @param delta        The offset from the beginning of the image in bytes.
      * @param outputOffset The index into the output array.
      * @param segment      The number of elements to be read for this segment.
+     * @throws IOException if the underlying stream failed
+     */
+    @SuppressFBWarnings(value = "RR_NOT_CHECKED", justification = "this read will never return less than the requested length")
+    protected void fillFileData(Object output, long delta, int outputOffset, int segment) throws IOException {
+        fillFileData(output, delta, outputOffset, segment, 1);
+    }
+
+    /**
+     * File a tile segment from a file, jumping each step number of values to the next read.
+     *
+     * @param output       The output to send data.  This can be an ArrayDataOutput to stream data to and prevent
+     *                     memory consumption of a tile being in memory.
+     * @param delta        The offset from the beginning of the image in bytes.
+     * @param outputOffset The index into the output array.
+     * @param segment      The number of elements to be read for this segment.
+     * @param step         The number of jumps until the next read.  Only works for streaming out data.
      * @throws IOException if the underlying stream failed
      */
     @SuppressFBWarnings(value = "RR_NOT_CHECKED", justification = "this read will never return less than the requested length")
@@ -147,6 +163,21 @@ public abstract class StandardImageTiler implements ImageTiler {
                 throw new IOException("Invalid type for tile array");
             }
         }
+    }
+
+    /**
+     * File a tile segment from a file into the given stream.  This will deal only with bytes to avoid having to check
+     * the base type and calling a specific method.  Converting the base type to a byte is a simple multiplication
+     * operation anyway.  Uses a default value for striding (1).
+     *
+     * @param output       The output stream.
+     * @param delta        The offset from the beginning of the image in bytes.
+     * @param segment      The number of elements to be read for this segment.
+     * @throws IOException if the underlying stream failed
+     */
+    @SuppressFBWarnings(value = "RR_NOT_CHECKED", justification = "this read will never return less than the requested length")
+    protected void fillFileData(ArrayDataOutput output, long delta, int segment) throws IOException {
+        fillFileData(output, delta, segment, 1);
     }
 
     /**
@@ -196,9 +227,31 @@ public abstract class StandardImageTiler implements ImageTiler {
 
     /**
      * Fill a single segment from memory. This routine is called recursively to
-     * handle multi-dimensional arrays. E.g., if data is three-dimensional, this
+     * handle multidimensional arrays. E.g., if data is three-dimensional, this
      * will recurse two levels until we get a call with a single dimensional
      * datum. At that point the appropriate data will be copied into the output.
+     * Uses a default value for striding (1).
+     *
+     * @param data         The in-memory image data.
+     * @param posits       The current position for which data is requested.
+     * @param length       The size of the segments.
+     * @param output       The output tile.
+     * @param outputOffset The current offset into the output tile.
+     * @param dim          The current dimension being
+
+     * @throws IOException If the output is a stream and there is an I/O error.
+     */
+    protected void fillMemData(Object data, int[] posits, int length, Object output, int outputOffset, int dim)
+            throws IOException {
+        fillMemData(data, posits, length, output, outputOffset, dim, 1);
+    }
+
+    /**
+     * Fill a single segment from memory. This routine is called recursively to
+     * handle multidimensional arrays. E.g., if data is three-dimensional, this
+     * will recurse two levels until we get a call with a single dimensional
+     * datum. At that point the appropriate data will be copied into the output,
+     * jumping the number of step values.
      *
      * @param data         The in-memory image data.
      * @param posits       The current position for which data is requested.
@@ -261,7 +314,27 @@ public abstract class StandardImageTiler implements ImageTiler {
     }
 
     /**
-     * Fill the subset.
+     * Fill the subset using a default value for striding.
+     *
+     * @param data    The memory-resident data image. This may be null if the image
+     *                is to be read from a file. This should be a multidimensional
+     *                primitive array.
+     * @param o       The tile to be filled. This is a simple primitive array, or an ArrayDataOutput instance.
+     * @param newDims The dimensions of the full image.
+     * @param corners The indices of the corner of the image.
+     * @param lengths The dimensions of the subset.
+     *
+     * @throws IOException if the underlying stream failed
+     */
+    protected void fillTile(Object data, Object o, int[] newDims, int[] corners, int[] lengths)
+            throws IOException {
+        final int[] steps = new int[corners.length];
+        Arrays.fill(steps, 1);
+        fillTile(data, o, newDims, corners, lengths, steps);
+    }
+
+    /**
+     * Fill the subset, jumping each step value to the next read.
      *
      * @param data    The memory-resident data image. This may be null if the image
      *                is to be read from a file. This should be a multidimensional

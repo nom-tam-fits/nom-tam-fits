@@ -142,16 +142,12 @@ public class StandardImageTilerTest {
             -1,
             -1
         };
-        int[] steps = new int[] {
-            1,
-            1
-        };
         int[] newDims = new int[]{
             2,
             2
         };
         int[] tile = new int[25];
-        tiler.fillTile(null, tile, newDims, corners, lengths, steps);
+        tiler.fillTile(null, tile, newDims, corners, lengths);
         Assert.assertEquals(1, tile[3]);
         tile[3] = 0;
         // check the rest should be 0
@@ -169,16 +165,12 @@ public class StandardImageTilerTest {
             1,
             1
         };
-        int[] steps = new int[] {
-                1,
-                1
-        };
         int[] newDims = new int[]{
             2,
             2
         };
         int[] tile = new int[25];
-        tiler.fillTile(null, tile, newDims, corners, lengths, steps);
+        tiler.fillTile(null, tile, newDims, corners, lengths);
         Assert.assertEquals(1, tile[0]);
         tile[0] = 0;
         // check the rest should be 0
@@ -190,7 +182,7 @@ public class StandardImageTilerTest {
         tiler.setBase(char.class);
         IOException actual = null;
         try {
-            tiler.fillFileData(new char[100], 0, 0, 0, 1);
+            tiler.fillFileData(new char[100], 0, 0, 0);
         } catch (IOException e) {
             actual = e;
         }
@@ -199,7 +191,15 @@ public class StandardImageTilerTest {
     }
 
     @Test
-    public void testFailedFillFileData() throws Exception {
+    public void testFillFileData() throws Exception {
+        final int length = 10;
+        final int[] output = new int[10];
+        tiler.fillFileData(output, 0L, 0, length);
+        Assert.assertEquals("Wrong length", length, output.length);
+    }
+
+    @Test
+    public void testFillFileDataStep() throws Exception {
         final int baseLength = ArrayFuncs.getBaseLength(dataArray);
         final int length = 10;
         final int step = 2;
@@ -214,6 +214,20 @@ public class StandardImageTilerTest {
     }
 
     @Test
+    public void testFillFileDataDefaultStep() throws Exception {
+        final int baseLength = ArrayFuncs.getBaseLength(dataArray);
+        final int length = 12;
+        try (final ByteArrayOutputStream byteArrayOutputStream = new ByteArrayOutputStream();
+             final FitsOutputStream fitsOutputStream = new FitsOutputStream(byteArrayOutputStream)) {
+            tiler.fillFileData(fitsOutputStream, 0, length);
+            fitsOutputStream.flush();
+
+            final byte[] output = byteArrayOutputStream.toByteArray();
+            Assert.assertEquals("Wrong length", length * baseLength, output.length);
+        }
+    }
+
+    @Test
     public void testFillMemdataTileNegativeBounds() throws Exception {
 
         int[] corners = new int[]{
@@ -223,7 +237,7 @@ public class StandardImageTilerTest {
         int[] tile = new int[25];
         int[] data = new int[50];
         Arrays.fill(data, 1);
-        tiler.fillMemData(data, corners, 2, tile, 0, 0, 1);
+        tiler.fillMemData(data, corners, 2, tile, 0, 0);
         Assert.assertEquals(1, tile[1]);
         tile[1] = 0;
         // check the rest should be 0
