@@ -286,4 +286,21 @@ public class StandardImageTilerTest {
         expectedTile = new int[] {3, 5, 7, 9};
         Assert.assertArrayEquals("Wrong tile array from memdata.", expectedTile, tile);
     }
+
+    @Test
+    public void testIncrementPositionBackwardCompatibility() {
+        final int[] start = new int[] {0, 0};
+        final int[] current = new int[] {0, 0};
+        final int[] lengths = new int[] {3, 3};
+        Assert.assertTrue("Should increment properly",
+                          StandardImageTiler.incrementPosition(start, current, lengths));
+        Assert.assertArrayEquals("Wrong current.", new int[]{1, 0}, current);
+
+        Assert.assertTrue("Should increment properly",
+                          StandardImageTiler.incrementPosition(start, current, lengths));
+        Assert.assertArrayEquals("Wrong current.", new int[]{2, 0}, current);
+
+        Assert.assertFalse("Should not increment",
+                          StandardImageTiler.incrementPosition(start, current, lengths));
+    }
 }

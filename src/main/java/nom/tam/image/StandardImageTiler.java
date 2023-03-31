@@ -71,6 +71,22 @@ public abstract class StandardImageTiler implements ImageTiler {
      * @param start   The starting corner values.
      * @param current The current offsets.
      * @param lengths The desired dimensions of the subset.
+     * @return <code>true</code> if the current array was changed
+     */
+    protected static boolean incrementPosition(int[] start, int[] current, int[] lengths) {
+        final int[] steps = new int[start.length];
+        Arrays.fill(steps, 1);
+        return StandardImageTiler.incrementPosition(start, current, lengths, steps);
+    }
+
+    /**
+     * Increment the offset within the position array. Note that we never look
+     * at the last index since we copy data a block at a time and not byte by
+     * byte.
+     *
+     * @param start   The starting corner values.
+     * @param current The current offsets.
+     * @param lengths The desired dimensions of the subset.
      * @param steps   The desired number of steps to take until the next position.
      * @return <code>true</code> if the current array was changed
      */
