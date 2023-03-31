@@ -267,15 +267,6 @@ public class CompressedImageTiler implements ImageTiler {
     }
 
     /**
-     * Ensure the Buffer has data that can be used.  Tests can override.
-     * @param buffer    The buffer to check.
-     * @return  True if there is an array, even an empty one.  False otherwise.
-     */
-    boolean hasData(final Buffer buffer) {
-        return buffer.hasArray();
-    }
-
-    /**
      * Decompress the given ByteBuffer into a primitive class based Buffer.
      * @param row           The row array data.
      * @param compressed    The compressed data.
@@ -285,13 +276,51 @@ public class CompressedImageTiler implements ImageTiler {
         final ElementType<Buffer> bufferElementType = getBaseType();
         final Buffer tileBuffer = bufferElementType.newBuffer(getTileSize());
         tileBuffer.rewind();
-        final ICompressorControl compressorControl = getCompressorControl(getBaseCompressedType());
+        final ICompressorControl compressorControl = getCompressorControl(getBaseType());
         final ICompressOption option = initCompressionOption(compressorControl.option(), bufferElementType.size());
         initRowOption(option, row);
         compressorControl.decompress(compressed, tileBuffer, option);
 
         tileBuffer.rewind();
         return tileBuffer;
+    }
+
+    ICompressorControl getCompressorControl(final ElementType<? extends Buffer> elementType) {
+        return CompressorProvider.findCompressorControl(getQuantizAlgorithmName(),
+                                                        getCompressionAlgorithmName(),
+                                                        elementType.primitiveClass());
+    }
+
+    ICompressOption initCompressionOption(final ICompressOption option, final int bytePix) {
+        if (option instanceof RiceCompressOption) {
+            ((RiceCompressOption) option).setBlockSize(getBlockSize());
+            ((RiceCompressOption) option).setBytePix(bytePix);
+        } else if (option instanceof QuantizeOption) {
+            initCompressionOption(((QuantizeOption) option).getCompressOption(), bytePix);
+        }
+
+        option.setTileHeight(getTileHeight()).setTileWidth(getTileWidth());
+
+        return option;
+    }
+
+    ElementType<Buffer> getBaseType() {
+        final int zBitPix = getZBitPix();
+        final ElementType<Buffer> bufferElementType = ElementType.forBitpix(zBitPix);
+        if (bufferElementType == null) {
+            return ElementType.forNearestBitpix(zBitPix);
+        } else {
+            return bufferElementType;
+        }
+    }
+
+    /**
+     * Ensure the Buffer has data that can be used.  Tests can override.
+     * @param buffer    The buffer to check.
+     * @return  True if there is an array, even an empty one.  False otherwise.
+     */
+    boolean hasData(final Buffer buffer) {
+        return buffer.hasArray();
     }
 
     /**
@@ -449,45 +478,6 @@ public class CompressedImageTiler implements ImageTiler {
         }
     }
 
-    ICompressorControl getCompressorControl(final ElementType<? extends Buffer> elementType) {
-        return CompressorProvider.findCompressorControl(getQuantizAlgorithmName(),
-                                                        getCompressionAlgorithmName(),
-                                                        elementType.primitiveClass());
-    }
-
-    ICompressOption initCompressionOption(final ICompressOption option, final int bytePix) {
-        if (option instanceof RiceCompressOption) {
-            ((RiceCompressOption) option).setBlockSize(getBlockSize());
-            ((RiceCompressOption) option).setBytePix(bytePix);
-        } else if (option instanceof QuantizeOption) {
-            initCompressionOption(((QuantizeOption) option).getCompressOption(), bytePix);
-        }
-
-        option.setTileHeight(getTileHeight()).setTileWidth(getTileWidth());
-
-        return option;
-    }
-
-    ElementType<Buffer> getBaseType() {
-        final int zBitPix = getZBitPix();
-        final ElementType<Buffer> bufferElementType = ElementType.forBitpix(zBitPix);
-        if (bufferElementType == null) {
-            return ElementType.forNearestBitpix(zBitPix);
-        } else {
-            return bufferElementType;
-        }
-    }
-
-    ElementType<Buffer> getBaseCompressedType() {
-        final int bitPix = getBitPix();
-        final ElementType<Buffer> bufferElementType = ElementType.forBitpix(bitPix);
-        if (bufferElementType == null) {
-            return ElementType.forNearestBitpix(bitPix);
-        } else {
-            return bufferElementType;
-        }
-    }
-
     Header getHeader() {
         return this.compressedImageHDU.getHeader();
     }
@@ -523,10 +513,6 @@ public class CompressedImageTiler implements ImageTiler {
 
     int getZBitPix() {
         return getHeader().getIntValue(Compression.ZBITPIX);
-    }
-
-    int getBitPix() {
-        return getHeader().getIntValue(Standard.BITPIX);
     }
 
     int getImageAxisLength(final int axis) {
