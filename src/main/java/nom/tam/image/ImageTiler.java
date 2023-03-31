@@ -46,6 +46,10 @@ public interface ImageTiler {
 
     Object getTile(int[] corners, int[] lengths) throws IOException;
 
+    Object getTile(int[] corners, int[] lengths, int[] steps) throws IOException;
+
     void getTile(Object array, int[] corners, int[] lengths) throws IOException;
+
+    void getTile(Object array, int[] corners, int[] lengths, int[] steps) throws IOException;
 
 }

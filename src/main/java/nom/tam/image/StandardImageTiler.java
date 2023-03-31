@@ -33,6 +33,7 @@ package nom.tam.image;
 
 import java.io.IOException;
 import java.lang.reflect.Array;
+import java.util.Arrays;
 
 import edu.umd.cs.findbugs.annotations.SuppressFBWarnings;
 import nom.tam.util.ArrayDataOutput;
@@ -45,10 +46,6 @@ import nom.tam.util.type.ElementType;
  * by T. McGlynn to permit tiles that go off the edge of the image.
  */
 public abstract class StandardImageTiler implements ImageTiler {
-
-    // 8KB buffer for streaming.
-    private static final int IO_BUFFER_SIZE = 1024 * 8;
-
     /**
      * @param dims The dimensions of the array.
      * @param pos  The index requested.
@@ -74,15 +71,15 @@ public abstract class StandardImageTiler implements ImageTiler {
      * @param start   The starting corner values.
      * @param current The current offsets.
      * @param lengths The desired dimensions of the subset.
+     * @param steps   The desired number of steps to take until the next position.
      * @return <code>true</code> if the current array was changed
      */
-    protected static boolean incrementPosition(int[] start, int[] current, int[] lengths) {
-
+    protected static boolean incrementPosition(int[] start, int[] current, int[] lengths, int[] steps) {
         for (int i = start.length - 2; i >= 0; i -= 1) {
-            if (current[i] - start[i] < lengths[i] - 1) {
-                current[i] += 1;
-                for (int j = i + 1; j < start.length - 1; j += 1) {
-                    current[j] = start[j];
+            if (current[i] - start[i] < lengths[i] - steps[i]) {
+                current[i] += steps[i];
+                if (start.length - 1 - (i + 1) >= 0) {
+                    System.arraycopy(start, i + 1, current, i + 1, start.length - 1 - (i + 1));
                 }
                 return true;
             }
@@ -128,9 +125,9 @@ public abstract class StandardImageTiler implements ImageTiler {
      * @throws IOException if the underlying stream failed
      */
     @SuppressFBWarnings(value = "RR_NOT_CHECKED", justification = "this read will never return less than the requested length")
-    protected void fillFileData(Object output, long delta, int outputOffset, int segment) throws IOException {
+    protected void fillFileData(Object output, long delta, int outputOffset, int segment, int step) throws IOException {
         if (output instanceof ArrayDataOutput) {
-            this.fillFileData((ArrayDataOutput) output, delta, outputOffset, segment);
+            this.fillFileData((ArrayDataOutput) output, delta, segment, step);
         } else {
             this.randomAccessFile.seek(this.fileOffset + delta);
 
@@ -157,24 +154,41 @@ public abstract class StandardImageTiler implements ImageTiler {
      * the base type and calling a specific method.  Converting the base type to a byte is a simple multiplication
      * operation anyway.
      *
-     * @param output       The output tile.
+     * @param output       The output stream.
      * @param delta        The offset from the beginning of the image in bytes.
-     * @param outputOffset The index into the output array.
      * @param segment      The number of elements to be read for this segment.
+     * @param step         The number of elements until the next read.
      * @throws IOException if the underlying stream failed
      */
     @SuppressFBWarnings(value = "RR_NOT_CHECKED", justification = "this read will never return less than the requested length")
-    protected void fillFileData(ArrayDataOutput output, long delta, int outputOffset, int segment) throws IOException {
+    protected void fillFileData(ArrayDataOutput output, long delta, int segment, int step) throws IOException {
         final int byteSize = ElementType.forClass(this.base).size();
-        final int bytesToRead = Math.min(IO_BUFFER_SIZE, segment * byteSize);
+
+        // Subtract one from the step since when we read from a stream, an actual "step" only exists if it's greater
+        // than 1.
+        final int stepSize = (step - 1) * byteSize;
         this.randomAccessFile.seek(this.fileOffset + delta);
 
-        byte[] buffer = new byte[bytesToRead];
-        int readCount = this.randomAccessFile.read(buffer, outputOffset, bytesToRead);
-        while (readCount <= bytesToRead && readCount > 0) {
-            output.write(buffer, 0, readCount);
-            buffer = new byte[bytesToRead - readCount];
-            readCount = this.randomAccessFile.read(buffer, outputOffset, buffer.length);
+        // One value at a time
+        final byte[] buffer = new byte[byteSize];
+        long seekOffset = this.randomAccessFile.position();
+        int bytesRead = 0;
+
+        // This is the byte count that will be read.
+        final int expectedBytes = segment * byteSize;
+        while (bytesRead < expectedBytes) {
+            // Prepare for the next read by seeking to the next step
+            this.randomAccessFile.seek(seekOffset);
+            final int currReadByteCount = this.randomAccessFile.read(buffer, 0, buffer.length);
+
+            // Stop if there is no more to read.
+            if (currReadByteCount < 0) {
+                break;
+            } else {
+                output.write(buffer, 0, currReadByteCount);
+                seekOffset = this.randomAccessFile.position() + stepSize;
+                bytesRead += currReadByteCount + stepSize;
+            }
         }
 
         output.flush();
@@ -192,15 +206,17 @@ public abstract class StandardImageTiler implements ImageTiler {
      * @param output       The output tile.
      * @param outputOffset The current offset into the output tile.
      * @param dim          The current dimension being
+     * @param step         The number of jumps to the next value.
      * @throws IOException If the output is a stream and there is an I/O error.
      */
-    protected void fillMemData(Object data, int[] posits, int length, Object output, int outputOffset, int dim)
+    protected void fillMemData(Object data, int[] posits, int length, Object output, int outputOffset, int dim,
+                               int step)
             throws IOException {
 
         if (data instanceof Object[]) {
 
             Object[] xo = (Object[]) data;
-            fillMemData(xo[posits[dim]], posits, length, output, outputOffset, dim + 1);
+            fillMemData(xo[posits[dim]], posits, length, output, outputOffset, dim + 1, step);
 
         } else {
 
@@ -221,7 +237,7 @@ public abstract class StandardImageTiler implements ImageTiler {
             if (output instanceof ArrayDataOutput) {
                 // Intentionally missing char and boolean here as they are not valid BITPIX values.
                 final ArrayDataOutput arrayDataOutput = ((ArrayDataOutput) output);
-                for (int i = startFrom; i < startFrom + copyLength; i++) {
+                for (int i = startFrom; i < startFrom + copyLength; i += step) {
                     if (this.base == float.class) {
                         arrayDataOutput.writeFloat(Array.getFloat(data, i));
                     } else if (this.base == int.class) {
@@ -239,8 +255,7 @@ public abstract class StandardImageTiler implements ImageTiler {
 
                 arrayDataOutput.flush();
             } else {
-                // Assume an array.
-                System.arraycopy(data, startFrom, output, startTo, copyLength);
+                ArrayFuncs.copy(data, startFrom, output, startTo, copyLength, step);
             }
         }
     }
@@ -255,9 +270,12 @@ public abstract class StandardImageTiler implements ImageTiler {
      * @param newDims The dimensions of the full image.
      * @param corners The indices of the corner of the image.
      * @param lengths The dimensions of the subset.
+     * @param steps   The number of steps to take until the next read in each axis.
+     *
      * @throws IOException if the underlying stream failed
      */
-    protected void fillTile(Object data, Object o, int[] newDims, int[] corners, int[] lengths) throws IOException {
+    protected void fillTile(Object data, Object o, int[] newDims, int[] corners, int[] lengths, int[] steps)
+            throws IOException {
 
         int n = newDims.length;
         int[] posits = new int[n];
@@ -270,6 +288,7 @@ public abstract class StandardImageTiler implements ImageTiler {
         final int baseLength = isStreaming ? ElementType.forClass(this.base).size() : ArrayFuncs.getBaseLength(o);
 
         int segment = lengths[n - 1];
+        int segmentStep = steps[n - 1];
 
         System.arraycopy(corners, 0, posits, 0, n);
         long currentOffset = 0;
@@ -307,7 +326,7 @@ public abstract class StandardImageTiler implements ImageTiler {
             if (validSegment) {
                 hasNoOverlap = false;
                 if (data != null) {
-                    fillMemData(data, posits, segment, o, outputOffset, 0);
+                    fillMemData(data, posits, segment, o, outputOffset, 0, segmentStep);
                 } else {
                     long offset = getOffset(newDims, posits) * baseLength;
 
@@ -324,14 +343,14 @@ public abstract class StandardImageTiler implements ImageTiler {
                     if (posits[mx] + segment > newDims[mx]) {
                         actualLen -= posits[mx] + segment - newDims[mx];
                     }
-                    fillFileData(o, actualOffset, actualOutput, actualLen);
+                    fillFileData(o, actualOffset, actualOutput, actualLen, segmentStep);
                 }
             }
             if (!isStreaming) {
                 outputOffset += segment;
             }
 
-        } while (incrementPosition(corners, posits, lengths));
+        } while (incrementPosition(corners, posits, lengths, steps));
         if (data == null) {
             this.randomAccessFile.seek(currentOffset);
         }
@@ -378,6 +397,22 @@ public abstract class StandardImageTiler implements ImageTiler {
      */
     @Override
     public Object getTile(int[] corners, int[] lengths) throws IOException {
+        final int[] steps = new int[corners.length];
+        Arrays.fill(steps, 1);
+        return getTile(corners, lengths, steps);
+    }
+
+    /**
+     * Get a subset of the image. An image tile is returned as a one-dimensional
+     * array although the image will normally be multidimensional.
+     *
+     * @param corners The starting corner (using 0 as the start) for the image.
+     * @param lengths The length requested in each dimension.
+     * @param steps   The number of steps to take until the next read in each axis. Default should be 1 (next value).
+     * @throws IOException if the underlying stream failed
+     */
+    @Override
+    public Object getTile(int[] corners, int[] lengths, int[] steps) throws IOException {
 
         if (corners.length != this.dims.length || lengths.length != this.dims.length) {
             throw new IOException("Inconsistent sub-image request");
@@ -388,6 +423,8 @@ public abstract class StandardImageTiler implements ImageTiler {
 
             if (corners[i] < 0 || lengths[i] < 0 || corners[i] + lengths[i] > this.dims[i]) {
                 throw new IOException("Sub-image not within image");
+            } else if (steps[i] < 1) {
+                throw new IOException("Step value cannot be less than 1.");
             }
 
             arraySize *= lengths[i];
@@ -395,7 +432,7 @@ public abstract class StandardImageTiler implements ImageTiler {
 
         Object outArray = ArrayFuncs.newInstance(this.base, arraySize);
 
-        getTile(outArray, corners, lengths);
+        getTile(outArray, corners, lengths, steps);
         return outArray;
     }
 
@@ -415,12 +452,34 @@ public abstract class StandardImageTiler implements ImageTiler {
      */
     @Override
     public void getTile(Object output, int[] corners, int[] lengths) throws IOException {
+        final int[] steps = new int[corners.length];
+        Arrays.fill(steps, 1);
+        this.getTile(output, corners, lengths, steps);
+    }
 
+    /**
+     * Get a tile, filling in a pre-specified array or writing to a stream. This version does not check
+     * that the user hase entered a valid set of corner and length arrays.
+     * ensure that out matches the length implied by the lengths array.
+     *
+     * @param output  A one-dimensional output array or stream. Data not
+     *                within the valid limits of the image will be left unchanged.
+     *                For an array, the length should be the product of lengths.
+     *                Optionally provide an ArrayDataOutput to stream out data and not fill memory; useful for web
+     *                applications.
+     * @param corners The corners of the tile.
+     * @param lengths The dimensions of the tile.
+     * @param steps   The number of steps to take until the next read in each axis. Default should be 1 (next value).
+     * @throws IOException if the underlying stream failed
+     */
+    @Override
+    public void getTile(Object output, int[] corners, int[] lengths, int[] steps) throws IOException {
         Object data = getMemoryImage();
 
         if (data == null && this.randomAccessFile == null) {
             throw new IOException("No data source for tile subset");
         }
-        fillTile(data, output, this.dims, corners, lengths);
+
+        fillTile(data, output, this.dims, corners, lengths, steps);
     }
 }
