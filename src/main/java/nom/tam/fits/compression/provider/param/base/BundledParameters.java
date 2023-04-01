@@ -128,4 +128,10 @@ public class BundledParameters extends CompressParameters {
         return list.toArray(array);
     }
 
+    @Override
+    public void setTileIndex(int index) {
+        for (ICompressParameters parms : bundle) {
+            parms.setTileIndex(index);
+        }
+    }
 }

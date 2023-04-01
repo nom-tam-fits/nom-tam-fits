@@ -1247,4 +1247,18 @@ public class ReadWriteProvidedCompressedImageTest {
             }
         }
     }
+
+    @Test
+    public void testDitherDecompress() throws Exception {
+        Fits fits = new Fits("../blackbox-images/fpack.fits.fz");
+        fits.readHDU();
+        ImageHDU im = ((CompressedImageHDU) fits.readHDU()).asImageHDU();
+        fits.close();
+
+        fits = new Fits("../blackbox-images/funpack.fits");
+        ImageHDU ref = (ImageHDU) fits.readHDU();
+
+        assertArrayEquals((float[][]) ref.getData().getData(), (float[][]) im.getData().getData(), 0.01f);
+        fits.close();
+    }
 }

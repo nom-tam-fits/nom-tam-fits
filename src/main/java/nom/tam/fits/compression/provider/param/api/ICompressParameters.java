@@ -60,6 +60,13 @@ public interface ICompressParameters {
     ICompressParameters copy(ICompressOption option);
 
     /**
+     * Initialize parameters for the given tile index
+     * 
+     * @param index the 0-based tile index
+     */
+    void setTileIndex(int index);
+
+    /**
      * extract the option data from the column and set it in the option.
      * 
      * @param index the index in the column.

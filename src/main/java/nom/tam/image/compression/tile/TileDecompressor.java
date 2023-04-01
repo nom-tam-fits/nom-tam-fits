@@ -60,6 +60,8 @@ public class TileDecompressor extends TileCompressionOperation {
     private void decompress() {
         initTileOptions();
 
+        this.tileOptions.getCompressionParameters().setTileIndex(getTileIndex());
+
         if (this.compressionType == TileCompressionType.COMPRESSED) {
             this.tileOptions.getCompressionParameters().getValuesFromColumn(getTileIndex());
             getCompressorControl().decompress(this.compressedData, getTileBuffer().getBuffer(), this.tileOptions);

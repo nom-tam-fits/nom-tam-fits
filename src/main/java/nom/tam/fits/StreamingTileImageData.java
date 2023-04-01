@@ -37,6 +37,7 @@ import nom.tam.util.ArrayDataOutput;
 import nom.tam.util.ArrayFuncs;
 
 import java.io.IOException;
+import java.util.Arrays;
 
 /**
  * Simple implementation that will cut a tile out to the given stream.  Useful for web applications that provide
@@ -50,9 +51,11 @@ import java.io.IOException;
  *     Header tileHeader = adjustHeaderToTile(imageHDU.getHeader());
  *     int[] tileStarts = new int[]{10, 10};
  *     int[] tileLengths = new int[]{45, 60};
+ *     int[] tileSteps = new int[]{1, 1};
  *     if (overlap(imageHDU.getData())) {
  *         StreamingTileImageData streamingTileImageData = new StreamingTileImageData(tileHeader, imageHDU.getTiler(),
- *                                                                                    tileStarts, tileLengths);
+ *                                                                                    tileStarts, tileLengths,
+ *                                                                                    tileSteps);
  *         output.addHDU(FitsFactory.hduFactory(tileHeader, streamingTileImageData));
  *     }
  *     output.write(outputStream);  // The cutout happens at write time!
@@ -61,24 +64,34 @@ import java.io.IOException;
 public class StreamingTileImageData extends ImageData {
     private final int[] corners;
     private final int[] lengths;
+    private final int[] steps;
 
 
     /**
      * Constructor for a tile image data object.
-     * @param header        The header representing the desired cutout.  It is the responsibility of the caller to
-     *                      adjust the header appropriately.
-     * @param tiler         The tiler from the original ImageData object.
-     * @param corners       The corners to start tiling.
-     * @param lengths       The count of values to extract.
-     * @throws FitsException    If the provided Header is unreadable
+     *
+     * @param header  The header representing the desired cutout.  It is the responsibility of the caller to
+     *                adjust the header appropriately.
+     * @param tiler   The tiler from the original ImageData object.
+     * @param corners The corners to start tiling.
+     * @param lengths The count of values to extract.
+     * @param steps   The number of jumps to make to the next read.  Optional, defaults to 1 for each axis.
+     * @throws FitsException If the provided Header is unreadable
      */
     public StreamingTileImageData(final Header header, final StandardImageTiler tiler, final int[] corners,
-                                  final int[] lengths) throws FitsException {
+                                  final int[] lengths, int[] steps) throws FitsException {
         super(header);
 
         if (ArrayFuncs.isEmpty(corners) || ArrayFuncs.isEmpty(lengths)) {
             throw new IllegalArgumentException("Cannot tile out with empty corners or lengths.  Use ImageData if no "
                                                + "tiling is desired.");
+        } else if (ArrayFuncs.isEmpty(steps)) {
+            this.steps = new int[corners.length];
+            Arrays.fill(this.steps, 1);
+        } else if (Arrays.stream(steps).anyMatch(i -> i < 1)) {
+            throw new IllegalArgumentException("Negative or zero step values not supported.");
+        } else {
+            this.steps = steps;
         }
 
         super.setTiler(tiler);
@@ -86,6 +99,12 @@ public class StreamingTileImageData extends ImageData {
         this.lengths = lengths;
     }
 
+    public int[] getSteps() {
+        final int[] stepsCopy = new int[steps.length];
+        System.arraycopy(steps, 0, stepsCopy, 0, stepsCopy.length);
+
+        return stepsCopy;
+    }
 
     @Override
     public void write(ArrayDataOutput o) throws FitsException {
@@ -95,7 +114,8 @@ public class StreamingTileImageData extends ImageData {
                 // Defer writing of unknowns to the parent.
                 super.write(o);
             } else {
-                tiler.getTile(o, this.corners, this.lengths);
+                tiler.getTile(o, this.corners, this.lengths, this.steps);
+                FitsUtil.pad(o, getTrueSize());
             }
         } catch (IOException ioException) {
             throw new FitsException(ioException.getMessage(), ioException);

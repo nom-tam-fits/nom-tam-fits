@@ -69,7 +69,7 @@ jobs:
       env:
         COVERALLS_TOKEN: ${{ secrets.COVERALLS_REPO_TOKEN }}
       run: |
-        if [ "$COVERALS_TOKEN" != "" ] ; then 
+        if [ "$COVERALLS_TOKEN" != "" ] ; then 
            mvn coveralls:report -DrepoToken=$COVERALLS_TOKEN
         else
            echo "WARNING! COVERALLS_REPO_TOKEN secret is undefined. Skipping Coveralls.io upload."
