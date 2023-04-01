@@ -44,10 +44,10 @@ import org.junit.Test;
 import nom.tam.fits.Header;
 import nom.tam.fits.HeaderCardException;
 import nom.tam.fits.compression.algorithm.hcompress.HCompressor.ByteHCompressor;
+import nom.tam.fits.compression.algorithm.hcompress.HCompressor.DoubleHCompressor;
+import nom.tam.fits.compression.algorithm.hcompress.HCompressor.FloatHCompressor;
 import nom.tam.fits.compression.algorithm.hcompress.HCompressor.IntHCompressor;
 import nom.tam.fits.compression.algorithm.hcompress.HCompressor.ShortHCompressor;
-import nom.tam.fits.compression.algorithm.quant.QuantizeOption;
-import nom.tam.fits.compression.algorithm.quant.QuantizeProcessor;
 import nom.tam.fits.compression.algorithm.rice.RiceCompressOption;
 import nom.tam.fits.compression.provider.param.api.HeaderAccess;
 import nom.tam.fits.compression.provider.param.hcompress.HCompressParameters;
@@ -177,8 +177,7 @@ public class HCompressTest {
         RandomAccessFile file = null;
         try {
             file = new RandomAccessFile("src/test/resources/nom/tam/image/comp/bare/test100Data-64.bin", "r");
-            HCompressorOption hopt = new HCompressorOption();
-            QuantizeOption quant = new QuantizeOption(hopt);
+            HCompressorQuantizeOption quant = new HCompressorQuantizeOption();
             quant.setDither(true);
             quant.setSeed(8864L);
             quant.setQlevel(4);
@@ -186,8 +185,7 @@ public class HCompressTest {
             quant.setTileHeight(100);
             quant.setTileWidth(100);
             quant.unwrap(HCompressorOption.class).setScale(0);
-            QuantizeProcessor.DoubleQuantCompressor doubleHCompress = new QuantizeProcessor.DoubleQuantCompressor(quant,
-                    new HCompressor.IntHCompressor(hopt));
+            DoubleHCompressor doubleHCompress = new DoubleHCompressor(quant);
 
             byte[] bytes = new byte[(int) file.length()];
             file.read(bytes);
@@ -216,8 +214,7 @@ public class HCompressTest {
         RandomAccessFile file = null;
         try {
             file = new RandomAccessFile("src/test/resources/nom/tam/image/comp/bare/test100Data-32.bin", "r");
-            HCompressorOption hopt = new HCompressorOption();
-            QuantizeOption quant = new QuantizeOption(hopt);
+            HCompressorQuantizeOption quant = new HCompressorQuantizeOption();
             quant.setDither(true);
             quant.setSeed(8864L);
             quant.setQlevel(4);
@@ -225,8 +222,7 @@ public class HCompressTest {
             quant.setTileHeight(100);
             quant.setTileWidth(100);
             quant.unwrap(HCompressorOption.class).setScale(0);
-            QuantizeProcessor.FloatQuantCompressor floatHCompress = new QuantizeProcessor.FloatQuantCompressor(quant,
-                    new HCompressor.IntHCompressor(hopt));
+            FloatHCompressor floatHCompress = new FloatHCompressor(quant);
 
             byte[] bytes = new byte[(int) file.length()];
             file.read(bytes);
