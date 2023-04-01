@@ -34,6 +34,8 @@ package nom.tam.fits.compression.algorithm.rice;
 import java.io.RandomAccessFile;
 import java.nio.BufferUnderflowException;
 import java.nio.ByteBuffer;
+import java.nio.DoubleBuffer;
+import java.nio.FloatBuffer;
 import java.nio.IntBuffer;
 import java.nio.ShortBuffer;
 
@@ -246,4 +248,77 @@ public class RiceCompressTest {
         RiceCompressParameters p = new RiceCompressParameters(null);
         Assert.assertNull(p.copy(new HCompressorOption()));
     }
+
+    @Test
+    public void testRiceCompressFloat() throws Exception {
+        RandomAccessFile file = null;
+        try {
+            file = new RandomAccessFile("src/test/resources/nom/tam/image/comp/bare/test100Data-32.bin", "r");
+            RiceQuantizeCompressOption quant = new RiceQuantizeCompressOption();
+            quant.setDither(true);
+            quant.setSeed(8864L);
+            quant.setQlevel(4);
+            quant.setCheckNull(false);
+            quant.setTileHeight(100);
+            quant.setTileWidth(100);
+            RiceCompressor.FloatRiceCompressor floatCompress = new RiceCompressor.FloatRiceCompressor(quant);
+
+            byte[] bytes = new byte[(int) file.length()];
+            file.read(bytes);
+
+            float[] floatArray = new float[bytes.length / 4];
+            FloatBuffer floatBuffer = ByteBuffer.wrap(bytes).asFloatBuffer();
+            floatBuffer.get(floatArray).rewind();
+
+            ByteBuffer compressed = ByteBuffer.wrap(new byte[bytes.length]);
+            floatCompress.compress(floatBuffer, compressed);
+
+            byte[] compressedArray = new byte[compressed.position()];
+            compressed.rewind();
+            compressed.get(compressedArray, 0, compressedArray.length);
+
+            float[] decompressedArray = new float[floatArray.length];
+            floatCompress.decompress(ByteBuffer.wrap(compressedArray), FloatBuffer.wrap(decompressedArray));
+            Assert.assertArrayEquals(floatArray, decompressedArray, (float) (quant.getBScale() * 1.5));
+        } finally {
+            SafeClose.close(file);
+        }
+    }
+
+    @Test
+    public void testRiceCompressDouble() throws Exception {
+        RandomAccessFile file = null;
+        try {
+            file = new RandomAccessFile("src/test/resources/nom/tam/image/comp/bare/test100Data-64.bin", "r");
+            RiceQuantizeCompressOption quant = new RiceQuantizeCompressOption();
+            quant.setDither(true);
+            quant.setSeed(8864L);
+            quant.setQlevel(4);
+            quant.setCheckNull(false);
+            quant.setTileHeight(100);
+            quant.setTileWidth(100);
+            RiceCompressor.DoubleRiceCompressor doubleCompress = new RiceCompressor.DoubleRiceCompressor(quant);
+
+            byte[] bytes = new byte[(int) file.length()];
+            file.read(bytes);
+
+            double[] doubleArray = new double[bytes.length / 8];
+            DoubleBuffer doubleBuffer = ByteBuffer.wrap(bytes).asDoubleBuffer();
+            doubleBuffer.get(doubleArray).rewind();
+
+            ByteBuffer compressed = ByteBuffer.wrap(new byte[bytes.length]);
+            doubleCompress.compress(doubleBuffer, compressed);
+
+            byte[] compressedArray = new byte[compressed.position()];
+            compressed.rewind();
+            compressed.get(compressedArray, 0, compressedArray.length);
+
+            double[] decompressedArray = new double[doubleArray.length];
+            doubleCompress.decompress(ByteBuffer.wrap(compressedArray), DoubleBuffer.wrap(decompressedArray));
+            Assert.assertArrayEquals(doubleArray, decompressedArray, quant.getBScale() * 1.5);
+        } finally {
+            SafeClose.close(file);
+        }
+    }
+
 }
