@@ -37,6 +37,8 @@ import java.nio.IntBuffer;
 import java.nio.ShortBuffer;
 
 import nom.tam.fits.compression.algorithm.api.ICompressor;
+import nom.tam.fits.compression.algorithm.quant.QuantizeProcessor.DoubleQuantCompressor;
+import nom.tam.fits.compression.algorithm.quant.QuantizeProcessor.FloatQuantCompressor;
 import nom.tam.util.ArrayFuncs;
 
 public abstract class HCompressor<T extends Buffer> implements ICompressor<T> {
@@ -70,6 +72,18 @@ public abstract class HCompressor<T extends Buffer> implements ICompressor<T> {
             }
         }
 
+    }
+
+    public static class DoubleHCompressor extends DoubleQuantCompressor {
+        public DoubleHCompressor(HCompressorQuantizeOption options) {
+            super(options, new IntHCompressor(options.getHCompressorOption()));
+        }
+    }
+
+    public static class FloatHCompressor extends FloatQuantCompressor {
+        public FloatHCompressor(HCompressorQuantizeOption options) {
+            super(options, new IntHCompressor(options.getHCompressorOption()));
+        }
     }
 
     public static class IntHCompressor extends HCompressor<IntBuffer> {
