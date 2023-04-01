@@ -31,19 +31,20 @@ package nom.tam.image;
  * #L%
  */
 
+import java.io.ByteArrayOutputStream;
 import java.io.IOException;
 import java.lang.reflect.Field;
 import java.util.Arrays;
 
 import nom.tam.util.ArrayFuncs;
 import nom.tam.util.FitsFile;
+import nom.tam.util.FitsOutputStream;
 import nom.tam.util.RandomAccess;
-import nom.tam.util.SafeClose;
 
-import org.junit.After;
 import org.junit.Assert;
 import org.junit.Before;
 import org.junit.Test;
+
 
 public class StandardImageTilerTest {
 
@@ -74,17 +75,13 @@ public class StandardImageTilerTest {
 
     private TestImageTiler tiler;
 
-    private FitsFile file;
-
     private int[][] dataArray;
 
     @Before
     public void setup() throws Exception {
         dataArray = new int[10][10];
-        for (int index = 0; index < dataArray.length; index++) {
-            for (int index2 = 0; index2 < dataArray[index].length; index2++) {
-                dataArray[index][index2] = 1;
-            }
+        for (int[] intArray : dataArray) {
+            Arrays.fill(intArray, 1);
         }
         FitsFile file = new FitsFile("target/StandardImageTilerTest", "rw");
         file.writeArray(dataArray);
@@ -93,24 +90,31 @@ public class StandardImageTilerTest {
 
     }
 
-    @After
-    public void close() {
-        SafeClose.close(file);
-    }
-
     @Test
     public void testFailedGetTile() throws Exception {
         dataArray = null;
         tiler.setFile(null);
         IOException actual = null;
         try {
-            tiler.getTile(null, new int[2], new int[2]);
+            tiler.getTile((Object) null, new int[2], new int[2]);
         } catch (IOException e) {
             actual = e;
         }
         Assert.assertNotNull(actual);
         Assert.assertTrue(actual.getMessage().contains("No data"));
 
+    }
+
+    @Test
+    public void testFailedGetTileStep() {
+        try {
+            tiler.getTile(new int[]{0, 0}, new int[]{5, 5}, new int[]{1, -1});
+            Assert.fail("Should throw IOException");
+        } catch (IOException ioException) {
+            // Good.
+            Assert.assertEquals("Wrong message", "Step value cannot be less than 1.",
+                                ioException.getMessage());
+        }
     }
 
     @Test
@@ -184,7 +188,43 @@ public class StandardImageTilerTest {
         }
         Assert.assertNotNull(actual);
         Assert.assertTrue(actual.getMessage().contains("Invalid type"));
+    }
 
+    @Test
+    public void testFillFileData() throws Exception {
+        final int length = 10;
+        final int[] output = new int[10];
+        tiler.fillFileData(output, 0L, 0, length);
+        Assert.assertEquals("Wrong length", length, output.length);
+    }
+
+    @Test
+    public void testFillFileDataStep() throws Exception {
+        final int baseLength = ArrayFuncs.getBaseLength(dataArray);
+        final int length = 10;
+        final int step = 2;
+        try (final ByteArrayOutputStream byteArrayOutputStream = new ByteArrayOutputStream();
+             final FitsOutputStream fitsOutputStream = new FitsOutputStream(byteArrayOutputStream)) {
+            tiler.fillFileData(fitsOutputStream, 0, length, step);
+            fitsOutputStream.flush();
+
+            final byte[] output = byteArrayOutputStream.toByteArray();
+            Assert.assertEquals("Wrong length", (length / step) * baseLength, output.length);
+        }
+    }
+
+    @Test
+    public void testFillFileDataDefaultStep() throws Exception {
+        final int baseLength = ArrayFuncs.getBaseLength(dataArray);
+        final int length = 12;
+        try (final ByteArrayOutputStream byteArrayOutputStream = new ByteArrayOutputStream();
+             final FitsOutputStream fitsOutputStream = new FitsOutputStream(byteArrayOutputStream)) {
+            tiler.fillFileData(fitsOutputStream, 0, length);
+            fitsOutputStream.flush();
+
+            final byte[] output = byteArrayOutputStream.toByteArray();
+            Assert.assertEquals("Wrong length", length * baseLength, output.length);
+        }
     }
 
     @Test
@@ -214,11 +254,53 @@ public class StandardImageTilerTest {
         int[] tile = new int[25];
         int[] data = new int[50];
         Arrays.fill(data, 1);
-        tiler.fillMemData(data, corners, 2, tile, 0, 0);
+        tiler.fillMemData(data, corners, 2, tile, 0, 0, 1);
         Assert.assertEquals(1, tile[0]);
         tile[0] = 0;
         // check the rest should be 0
         Assert.assertArrayEquals(new int[25], tile);
     }
 
+    @Test
+    public void testFillMemdataTileStep() throws Exception {
+        int step = 2;
+        int[] corners = new int[]{
+                0,
+                0
+        };
+        int[][] data = new int[8][8];
+        for (int i = 0; i < data.length; i++) {
+            for (int j = 0; j < data[i].length; j++) {
+                data[i][j] = i + j;
+            }
+        }
+        int[] tile = new int[data[2].length / step];
+
+        tiler.fillMemData(data[2], corners, data[2].length, tile, 0, 0, step);
+        int[] expectedTile = new int[] {2, 4, 6, 8};
+        Assert.assertArrayEquals("Wrong tile array from memdata.", expectedTile, tile);
+
+        tile = new int[data[3].length / step];
+
+        tiler.fillMemData(data[3], corners, data[3].length, tile, 0, 0, step);
+        expectedTile = new int[] {3, 5, 7, 9};
+        Assert.assertArrayEquals("Wrong tile array from memdata.", expectedTile, tile);
+    }
+
+    @Test
+    public void testIncrementPositionBackwardCompatibility() {
+        final int[] start = new int[] {0, 0};
+        final int[] current = new int[] {0, 0};
+        final int[] lengths = new int[] {3, 3};
+        Assert.assertTrue("Should increment properly",
+                          StandardImageTiler.incrementPosition(start, current, lengths));
+        Assert.assertArrayEquals("Wrong current.", new int[]{1, 0}, current);
+
+        Assert.assertTrue("Should increment properly",
+                          StandardImageTiler.incrementPosition(start, current, lengths));
+        Assert.assertArrayEquals("Wrong current.", new int[]{2, 0}, current);
+
+        Assert.assertFalse("Should not increment",
+                          StandardImageTiler.incrementPosition(start, current, lengths));
+    }
 }

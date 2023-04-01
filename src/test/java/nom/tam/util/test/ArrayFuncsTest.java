@@ -751,7 +751,46 @@ public class ArrayFuncsTest {
         Assert.assertFalse("Should not be empty.", ArrayFuncs.isEmpty(new int[]{4, 6}));
         Assert.assertFalse("Should not be empty.", ArrayFuncs.isEmpty(new Object[]{"1"}));
     }
-    
+
+    @Test
+    public void testCopyStep() {
+        final int stepValue = 3;
+        final int offset = 165;
+        final int[] from = new int[200];
+        for (int i = 0; i < from.length; i++) {
+            from[i] = i;
+        }
+
+        final int[] to = new int[((from.length - offset) / stepValue) + 1];
+        ArrayFuncs.copy(from, offset, to, 0, from.length - offset, stepValue);
+
+        Assert.assertArrayEquals("Wrong step copy",
+                                 new int[] {
+                                    165, 168, 171, 174, 177, 180, 183, 186, 189, 192, 195, 198
+                                 }, to);
+    }
+
+    @Test
+    public void testMultiDimensionalCopyStep() {
+        final int stepValue = 2;
+        final int[][] from = new int[10][10];
+        for (int i = 0; i < from.length; i++) {
+            for (int j = 0; j < from[i].length; j++) {
+                from[i][j] = i + j;
+            }
+        }
+
+        final int[][] to = new int[from[0].length / stepValue][from[1].length / stepValue];
+        ArrayFuncs.copy(from, 0, to, 0, from.length, stepValue);
+        Assert.assertArrayEquals("Wrong multi dimensional step copy",
+                                 new int[][] {
+                                         new int[] { 0, 2, 4, 6, 8 },
+                                         new int[] { 2, 4, 6, 8, 10 },
+                                         new int[] { 4, 6, 8, 10, 12 },
+                                         new int[] { 6, 8, 10, 12, 14 },
+                                         new int[] { 8, 10, 12, 14, 16 }
+                                 }, to);
+    }
     
     @Test(expected = IllegalArgumentException.class)
     public void testCopyNotArray() throws Exception {
