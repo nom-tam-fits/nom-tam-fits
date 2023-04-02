@@ -37,13 +37,13 @@ import static nom.tam.fits.header.Standard.NAXIS;
 import static nom.tam.fits.header.Standard.NAXISn;
 import static nom.tam.fits.header.Standard.SIMPLE;
 import static nom.tam.fits.header.Standard.XTENSION;
-import static nom.tam.fits.header.Standard.XTENSION_IMAGE;
 import static nom.tam.util.LoggerHelper.getLogger;
 
 import java.io.PrintStream;
 import java.util.logging.Level;
 import java.util.logging.Logger;
 
+import nom.tam.fits.header.Standard;
 import nom.tam.image.StandardImageTiler;
 import nom.tam.util.ArrayFuncs;
 import nom.tam.util.type.ElementType;
@@ -55,6 +55,12 @@ public class ImageHDU extends BasicHDU<ImageData> {
 
     private static final Logger LOG = getLogger(ImageHDU.class);
 
+    
+    @Override
+    protected final String getCanonicalXtension() {
+        return Standard.XTENSION_IMAGE;
+    }
+    
     /**
      * @return Encapsulate an object as an ImageHDU.
      * @param o
@@ -94,7 +100,7 @@ public class ImageHDU extends BasicHDU<ImageData> {
         if (!found) {
             String xtension = hdr.getStringValue(XTENSION);
             xtension = xtension == null ? "" : xtension.trim();
-            if (XTENSION_IMAGE.equals(xtension) || "IUEIMAGE".equals(xtension)) {
+            if (Standard.XTENSION_IMAGE.equals(xtension) || "IUEIMAGE".equals(xtension)) {
                 found = true;
             }
         }
@@ -140,12 +146,6 @@ public class ImageHDU extends BasicHDU<ImageData> {
         super(h, d);
     }
 
-    /** Indicate that Images can appear at the beginning of a FITS dataset */
-    @Override
-    protected boolean canBePrimary() {
-        return true;
-    }
-
     public StandardImageTiler getTiler() {
         return this.myData.getTiler();
     }
@@ -179,23 +179,6 @@ public class ImageHDU extends BasicHDU<ImageData> {
         } catch (Exception e) {
             LOG.log(Level.SEVERE, "Unable to get image data", e);
             stream.println("      Unable to get data");
-        }
-    }
-
-    /** Change the Image from/to primary */
-    @Override
-    protected void setPrimaryHDU(boolean status) {
-
-        try {
-            super.setPrimaryHDU(status);
-        } catch (FitsException e) {
-            LOG.log(Level.SEVERE, "Impossible exception in ImageData", e);
-        }
-
-        if (status) {
-            this.myHeader.setSimple(true);
-        } else {
-            this.myHeader.setXtension(XTENSION_IMAGE);
         }
     }
 }

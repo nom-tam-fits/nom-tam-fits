@@ -540,6 +540,11 @@ public enum Standard implements IFitsHeader {
     /**
      * The value of the XTENSION keword in case of a binary table.
      */
+    public static final String XTENSION_ASCIITABLE = "TABLE";
+    
+    /**
+     * The value of the XTENSION keword in case of a binary table.
+     */
     public static final String XTENSION_BINTABLE = "BINTABLE";
 
     /**
