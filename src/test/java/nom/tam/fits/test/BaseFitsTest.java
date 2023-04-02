@@ -97,7 +97,6 @@ import nom.tam.util.RandomAccessFileIO;
 import nom.tam.util.SafeClose;
 import nom.tam.util.test.ThrowAnyException;
 
-
 public class BaseFitsTest {
 
     private static final class TestUndefinedData extends UndefinedData {
@@ -1255,9 +1254,8 @@ public class BaseFitsTest {
             });
         } catch (FitsException fitsException) {
             // Good.
-            Assert.assertEquals("Wrong message.",
-                                "Unable to open data src/test/resources/nom/tam/fits/test/test.fits",
-                                fitsException.getMessage());
+            Assert.assertEquals("Wrong message.", "Unable to open data src/test/resources/nom/tam/fits/test/test.fits",
+                    fitsException.getMessage());
         }
     }
 
@@ -1328,6 +1326,7 @@ public class BaseFitsTest {
 
     private static class TestRandomAccessFileIO extends java.io.RandomAccessFile implements RandomAccessFileIO {
         final String name;
+
         public TestRandomAccessFileIO() throws FileNotFoundException {
             this("src/test/resources/nom/tam/fits/test/test.fits", "rw");
         }
