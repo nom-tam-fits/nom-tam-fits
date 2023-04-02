@@ -1220,7 +1220,7 @@ public class Fits implements Closeable {
     public void write(File file) throws IOException, FitsException {
         try (FileOutputStream o = new FileOutputStream(file)) {
             write(new FitsOutputStream(o));
-            o.close();
+            o.flush();
         }
     }
 

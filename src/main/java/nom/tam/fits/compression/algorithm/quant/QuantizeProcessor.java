@@ -51,7 +51,8 @@ public class QuantizeProcessor {
 
         @Override
         public boolean compress(DoubleBuffer buffer, ByteBuffer compressed) {
-            IntBuffer intData = IntBuffer.wrap(new int[this.quantizeOption.getTileHeight() * this.quantizeOption.getTileWidth()]);
+            IntBuffer intData = IntBuffer
+                    .wrap(new int[this.quantizeOption.getTileHeight() * this.quantizeOption.getTileWidth()]);
             double[] doubles = new double[this.quantizeOption.getTileHeight() * this.quantizeOption.getTileWidth()];
             buffer.get(doubles);
             if (!this.quantize(doubles, intData)) {
@@ -64,7 +65,8 @@ public class QuantizeProcessor {
 
         @Override
         public void decompress(ByteBuffer compressed, DoubleBuffer buffer) {
-            IntBuffer intData = IntBuffer.wrap(new int[this.quantizeOption.getTileHeight() * this.quantizeOption.getTileWidth()]);
+            IntBuffer intData = IntBuffer
+                    .wrap(new int[this.quantizeOption.getTileHeight() * this.quantizeOption.getTileWidth()]);
             this.postCompressor.decompress(compressed, intData);
             intData.rewind();
             unquantize(intData, buffer);
@@ -91,7 +93,8 @@ public class QuantizeProcessor {
             for (int index = 0; index < doubles.length; index++) {
                 doubles[index] = floats[index];
             }
-            IntBuffer intData = IntBuffer.wrap(new int[this.quantizeOption.getTileHeight() * this.quantizeOption.getTileWidth()]);
+            IntBuffer intData = IntBuffer
+                    .wrap(new int[this.quantizeOption.getTileHeight() * this.quantizeOption.getTileWidth()]);
             if (!this.quantize(doubles, intData)) {
                 return false;
             }
@@ -102,7 +105,8 @@ public class QuantizeProcessor {
 
         @Override
         public void decompress(ByteBuffer compressed, FloatBuffer buffer) {
-            IntBuffer intData = IntBuffer.wrap(new int[this.quantizeOption.getTileHeight() * this.quantizeOption.getTileWidth()]);
+            IntBuffer intData = IntBuffer
+                    .wrap(new int[this.quantizeOption.getTileHeight() * this.quantizeOption.getTileWidth()]);
             this.postCompressor.decompress(compressed, intData);
             intData.rewind();
             double[] doubles = new double[this.quantizeOption.getTileHeight() * this.quantizeOption.getTileWidth()];
@@ -164,6 +168,10 @@ public class QuantizeProcessor {
 
         public void initialize(long ditherSeed) {
             this.iseed = (int) ((ditherSeed - 1) % N_RANDOM);
+            initI1();
+        }
+
+        private void initI1() {
             this.nextRandom = (int) (this.randomValues[this.iseed] * RANDOM_MULTIPLICATOR);
         }
 
@@ -185,13 +193,11 @@ public class QuantizeProcessor {
             double[] randomValue = new double[N_RANDOM];
 
             /*
-             * We need a portable algorithm that anyone can use to generate this
-             * exact same sequence of random number. The C 'rand' function is
-             * not suitable because it is not available to Fortran or Java
-             * programmers. Instead, use a well known simple algorithm published
-             * here: "Random number generators: good ones are hard to find",
-             * Communications of the ACM, Volume 31 , Issue 10 (October 1988)
-             * Pages: 1192 - 1201
+             * We need a portable algorithm that anyone can use to generate this exact same sequence of random number.
+             * The C 'rand' function is not suitable because it is not available to Fortran or Java programmers.
+             * Instead, use a well known simple algorithm published here:
+             * "Random number generators: good ones are hard to find", Communications of the ACM, Volume 31 , Issue 10
+             * (October 1988) Pages: 1192 - 1201
              */
 
             /* initialize the random numbers */
@@ -203,8 +209,8 @@ public class QuantizeProcessor {
             }
 
             /*
-             * IMPORTANT NOTE: the 10000th seed value must have the value
-             * 1043618065 if the algorithm has been implemented correctly
+             * IMPORTANT NOTE: the 10000th seed value must have the value 1043618065 if the algorithm has been
+             * implemented correctly
              */
 
             if ((int) seed != LAST_RANDOM_VALUE) {
@@ -221,18 +227,20 @@ public class QuantizeProcessor {
                 if (this.iseed >= N_RANDOM) {
                     this.iseed = 0;
                 }
-                this.nextRandom = (int) (this.randomValues[this.iseed] * RANDOM_MULTIPLICATOR);
+                initI1();
             }
         }
 
         @Override
         protected double toDouble(int pixel) {
-            return (pixel - nextRandom() + ROUNDING_HALF) * QuantizeProcessor.this.bScale + QuantizeProcessor.this.bZero;
+            return (pixel - nextRandom() + ROUNDING_HALF) * QuantizeProcessor.this.bScale
+                    + QuantizeProcessor.this.bZero;
         }
 
         @Override
         protected int toInt(double pixel) {
-            return nint((pixel - QuantizeProcessor.this.bZero) / QuantizeProcessor.this.bScale + nextRandom() - ROUNDING_HALF);
+            return nint((pixel - QuantizeProcessor.this.bZero) / QuantizeProcessor.this.bScale + nextRandom()
+                    - ROUNDING_HALF);
         }
     }
 
@@ -349,11 +357,11 @@ public class QuantizeProcessor {
         PixelFilter filter = null;
         boolean localCenterOnZero = quantizeOption.isCenterOnZero();
         if (quantizeOption.isDither2()) {
-            filter = new DitherFilter(quantizeOption.getSeed());
+            filter = new DitherFilter(quantizeOption.getSeed() + quantizeOption.getTileIndex());
             localCenterOnZero = true;
             quantizeOption.setCheckZero(true);
         } else if (quantizeOption.isDither()) {
-            filter = new DitherFilter(quantizeOption.getSeed());
+            filter = new DitherFilter(quantizeOption.getSeed() + quantizeOption.getTileIndex());
         } else {
             filter = new BaseFilter();
         }
@@ -361,7 +369,8 @@ public class QuantizeProcessor {
             filter = new ZeroFilter(filter);
         }
         if (quantizeOption.isCheckNull()) {
-            final NullFilter nullFilter = new NullFilter(quantizeOption.getNullValue(), quantizeOption.getNullValueIndicator(), filter);
+            final NullFilter nullFilter = new NullFilter(quantizeOption.getNullValue(),
+                    quantizeOption.getNullValueIndicator(), filter);
             filter = nullFilter;
             this.quantize = new Quantize(quantizeOption) {
 
@@ -390,10 +399,12 @@ public class QuantizeProcessor {
     }
 
     public boolean quantize(double[] doubles, IntBuffer quants) {
-        boolean success = this.quantize.quantize(doubles, this.quantizeOption.getTileWidth(), this.quantizeOption.getTileHeight());
+        boolean success = this.quantize.quantize(doubles, this.quantizeOption.getTileWidth(),
+                this.quantizeOption.getTileHeight());
         if (success) {
             calculateBZeroAndBscale();
-            quantize(DoubleBuffer.wrap(doubles, 0, this.quantizeOption.getTileWidth() * this.quantizeOption.getTileHeight()), quants);
+            quantize(DoubleBuffer.wrap(doubles, 0,
+                    this.quantizeOption.getTileWidth() * this.quantizeOption.getTileHeight()), quants);
         }
         return success;
     }

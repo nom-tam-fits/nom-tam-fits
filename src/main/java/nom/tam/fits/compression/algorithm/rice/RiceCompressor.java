@@ -7,6 +7,8 @@ import java.nio.ShortBuffer;
 import java.util.logging.Logger;
 
 import nom.tam.fits.compression.algorithm.api.ICompressor;
+import nom.tam.fits.compression.algorithm.quant.QuantizeProcessor.DoubleQuantCompressor;
+import nom.tam.fits.compression.algorithm.quant.QuantizeProcessor.FloatQuantCompressor;
 import nom.tam.util.FitsIO;
 import nom.tam.util.type.ElementType;
 
@@ -85,6 +87,18 @@ public abstract class RiceCompressor<T extends Buffer> implements ICompressor<T>
         @Override
         protected void nextPixel(int pixel) {
             this.pixelBuffer.put((byte) pixel);
+        }
+    }
+
+    public static class DoubleRiceCompressor extends DoubleQuantCompressor {
+        public DoubleRiceCompressor(RiceQuantizeCompressOption options) {
+            super(options, new IntRiceCompressor(options.getRiceCompressOption()));
+        }
+    }
+
+    public static class FloatRiceCompressor extends FloatQuantCompressor {
+        public FloatRiceCompressor(RiceQuantizeCompressOption options) {
+            super(options, new IntRiceCompressor(options.getRiceCompressOption()));
         }
     }
 

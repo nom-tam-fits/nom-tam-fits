@@ -1,14 +1,10 @@
-/*
- * To change this template, choose Tools | Templates
- * and open the template in the editor.
- */
-package nom.tam.image;
+package nom.tam.fits.compression.algorithm.rice;
 
 /*
  * #%L
  * nom.tam FITS library
  * %%
- * Copyright (C) 2004 - 2021 nom-tam-fits
+ * Copyright (C) 1996 - 2021 nom-tam-fits
  * %%
  * This is free and unencumbered software released into the public domain.
  * 
@@ -35,24 +31,15 @@ package nom.tam.image;
  * #L%
  */
 
-import java.io.IOException;
+import nom.tam.fits.compression.algorithm.quant.QuantizeOption;
 
-/**
- * @author tmcglynn
- */
-public interface ImageTiler {
+public class RiceQuantizeCompressOption extends QuantizeOption {
 
-    Object getCompleteImage() throws IOException;
-
-    Object getTile(int[] corners, int[] lengths) throws IOException;
-
-    default Object getTile(int[] corners, int[] lengths, int[] steps) throws IOException {
-        throw new UnsupportedOperationException("Striding feature not yet implemented.");
+    public RiceQuantizeCompressOption() {
+        super(new RiceCompressOption());
     }
 
-    void getTile(Object array, int[] corners, int[] lengths) throws IOException;
-
-    default void getTile(Object array, int[] corners, int[] lengths, int[] steps) throws IOException {
-        throw new UnsupportedOperationException("Striding feature not yet implemented.");
+    public RiceCompressOption getRiceCompressOption() {
+        return (RiceCompressOption) super.getCompressOption();
     }
 }

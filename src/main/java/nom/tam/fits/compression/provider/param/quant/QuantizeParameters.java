@@ -38,11 +38,19 @@ import nom.tam.fits.compression.provider.param.api.ICompressColumnParameter;
 import nom.tam.fits.compression.provider.param.api.ICompressHeaderParameter;
 import nom.tam.fits.compression.provider.param.base.CompressParameters;
 
+/**
+ * A set of compression parameters used for quantization of floating point data. Quantization is the process of
+ * representing floating-point values by integers.
+ * 
+ * @author Attila Kovacs
+ */
 public class QuantizeParameters extends CompressParameters {
 
     private ZQuantizeParameter quantz;
 
     private ZBlankParameter blank;
+
+    private ZDither0Parameter seed;
 
     private ZBlankColumnParameter blankColumn;
 
@@ -50,9 +58,16 @@ public class QuantizeParameters extends CompressParameters {
 
     private ZScaleColumnParameter scale;
 
+    /**
+     * Creates a set of compression parameters used for quantization of floating point data. Quantization is the process
+     * of representing floating-point values by integers.
+     * 
+     * @param option The compression option that is configured with the particular parameter values of this object.
+     */
     public QuantizeParameters(QuantizeOption option) {
         this.quantz = new ZQuantizeParameter(option);
         this.blank = new ZBlankParameter(option);
+        this.seed = new ZDither0Parameter(option);
         this.blankColumn = new ZBlankColumnParameter(option);
         this.zero = new ZZeroColumnParameter(option);
         this.scale = new ZScaleColumnParameter(option);
@@ -65,7 +80,12 @@ public class QuantizeParameters extends CompressParameters {
 
     @Override
     protected ICompressHeaderParameter[] headerParameters() {
-        return new ICompressHeaderParameter[] {this.quantz, this.blank};
+        return new ICompressHeaderParameter[] {this.quantz, this.blank, this.seed};
+    }
+
+    @Override
+    public void setTileIndex(int index) {
+        seed.setTileIndex(index);
     }
 
     @Override
@@ -76,6 +96,7 @@ public class QuantizeParameters extends CompressParameters {
             QuantizeParameters p = (QuantizeParameters) super.clone();
             p.quantz = (ZQuantizeParameter) quantz.copy(qo);
             p.blank = (ZBlankParameter) blank.copy(qo);
+            p.seed = (ZDither0Parameter) seed.copy(qo);
             p.blankColumn = (ZBlankColumnParameter) blankColumn.copy(qo);
             p.zero = (ZZeroColumnParameter) zero.copy(qo);
             p.scale = (ZScaleColumnParameter) scale.copy(qo);

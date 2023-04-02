@@ -43,8 +43,13 @@ import nom.tam.util.FitsEncoder;
  */
 public class UndefinedHDU extends BasicHDU<UndefinedData> {
 
+    @Override
+    protected String getCanonicalXtension() {
+        return "UNKNOWN";
+    }
+    
     /**
-     * @return Encapsulate an object as an ImageHDU.
+     * @return Encapsulate an object as an UndefinedHDU.
      * @param o
      *            the object to encapsulate
      * @throws FitsException

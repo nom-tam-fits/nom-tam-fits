@@ -1940,7 +1940,7 @@ public class Header implements FitsElement {
         }
         iter.add(HeaderCard.create(NAXIS, val));
     }
-
+    
     /**
      * @deprecated Will be removed from the public API in 2.0
      * 
@@ -1973,31 +1973,30 @@ public class Header implements FitsElement {
      * @deprecated Will be removed from the public API in 2.0
      * Set the SIMPLE keyword to the given value.
      *
-     * @param val
-     *            The boolean value -- Should be true for FITS data.
+     * @param val       <code>true</code> for the primary header, otherwise <code>false</code> 
+     *            
      */
     @Deprecated
     public void setSimple(boolean val) {
         deleteKey(SIMPLE);
         deleteKey(XTENSION);
+        deleteKey(EXTEND);
 
         Cursor<String, HeaderCard> iter = iterator();
 
+        iter.add(HeaderCard.create(SIMPLE, val));
+        
         // If we're flipping back to and from the primary header
         // we need to add in the EXTEND keyword whenever we become
         // a primary, because it's not permitted in the extensions
         // (at least not where it needs to be in the primary array).
         if (findCard(NAXIS) != null) {
-            int nax = getIntValue(NAXIS);
-
-            if (findCard(NAXISn.n(nax)) != null) {
+            if (findCard(NAXISn.n(getIntValue(NAXIS))) != null) {
                 iter.next();
-                deleteKey(EXTEND);
-                iter.add(HeaderCard.create(EXTEND, true));
             }
         }
 
-        iter.add(HeaderCard.create(SIMPLE, val));
+        iter.add(HeaderCard.create(EXTEND, true));
     }
 
     /**
@@ -2017,8 +2016,7 @@ public class Header implements FitsElement {
         deleteKey(SIMPLE);
         deleteKey(XTENSION);
         deleteKey(EXTEND);
-        Cursor<String, HeaderCard> iter = iterator();
-        iter.add(HeaderCard.create(XTENSION, val));
+        iterator().add(HeaderCard.create(XTENSION, val));
     }
 
     /**
@@ -2117,16 +2115,16 @@ public class Header implements FitsElement {
      * Add required keywords, and removes conflicting ones depending on whether it is designated
      * as a primary header or not.
      * 
-     * @param isPrimary         <code>true</code> if this is to be a primary header, otherwise <code>false</code>
+     * @param xType             The value for the XTENSION keyword, or <code>null</code> if primary HDU.
      * @throws FitsException    if there was an error trying to edit the header.
      * 
      * @since 1.17
      * 
      * @see #validate(FitsOutput)
      */
-    void editRequiredKeys(boolean isPrimary) throws FitsException {
+    void setRequiredKeys(String xType) throws FitsException {
 
-        if (isPrimary) {
+        if (xType == null) {
             // Delete keys that cannot be in primary
             deleteKey(XTENSION);
 
@@ -2146,7 +2144,7 @@ public class Header implements FitsElement {
             deleteKey(EXTEND);
 
             // Make sure we have XTENSION
-            addValue(XTENSION, getStringValue(XTENSION, "UNKNOWN"));
+            addValue(XTENSION, xType);
         }
 
         // Make sure we have BITPIX
@@ -2160,7 +2158,7 @@ public class Header implements FitsElement {
             addValue(naxisi, getIntValue(naxisi, 1));
         }
 
-        if (isPrimary) {
+        if (xType == null) {
             addValue(EXTEND, true);
         } else {
             addValue(PCOUNT, getIntValue(PCOUNT, 0));
@@ -2169,7 +2167,6 @@ public class Header implements FitsElement {
     }
 
     /**
-     * <p>
      * Validates this header by making it a proper primary or extension header. In both cases it means adding
      * required keywords if missing, and removing conflicting cards. Then ordering is checked and
      * corrected as necessary and ensures that the <code>END</code> card is at the tail. 
@@ -2181,7 +2178,7 @@ public class Header implements FitsElement {
      * @since 1.17
      */
     public void validate(boolean asPrimary) throws FitsException {
-        editRequiredKeys(asPrimary);
+        setRequiredKeys(asPrimary ? null : getStringValue(XTENSION, "UNKNOWN"));
         validate();
     }   
 
@@ -2397,8 +2394,12 @@ public class Header implements FitsElement {
     }
 
     /**
+     * @deprecated  Use {@link NullDataHDU} instead.
+     * 
      * Create a header for a null image.
+     * 
      */
+    @Deprecated
     void nullImage() {
         Cursor<String, HeaderCard> iter = iterator();
         iter.add(HeaderCard.create(SIMPLE, true));

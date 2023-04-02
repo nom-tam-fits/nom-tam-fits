@@ -41,6 +41,7 @@ import static nom.tam.fits.header.Standard.TTYPEn;
 import static nom.tam.fits.header.Standard.TUNITn;
 import static nom.tam.fits.header.Standard.TZEROn;
 import static nom.tam.fits.header.Standard.XTENSION;
+import static nom.tam.fits.header.Standard.XTENSION_ASCIITABLE;
 
 import java.io.PrintStream;
 
@@ -77,6 +78,11 @@ public class AsciiTableHDU extends TableHDU<AsciiTable> {
      */
     public AsciiTableHDU(Header h, AsciiTable d) {
         super(h, d);
+    }
+    
+    @Override
+    protected final String getCanonicalXtension() {
+        return XTENSION_ASCIITABLE;
     }
 
     /**
@@ -131,7 +137,7 @@ public class AsciiTableHDU extends TableHDU<AsciiTable> {
     public static boolean isHeader(Header header) {
         String xtension = header.getStringValue(XTENSION);
         xtension = xtension == null ? "" : xtension.trim();
-        return "TABLE".equals(xtension);
+        return XTENSION_ASCIITABLE.equals(xtension);
     }
 
     /**

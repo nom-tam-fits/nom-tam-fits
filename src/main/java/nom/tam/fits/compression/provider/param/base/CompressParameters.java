@@ -65,6 +65,10 @@ public abstract class CompressParameters implements ICompressParameters, Cloneab
     }
 
     @Override
+    public void setTileIndex(int index) {
+    }
+
+    @Override
     public void getValuesFromColumn(int index) {
         for (ICompressColumnParameter parameter : columnParameters()) {
             parameter.getValueFromColumn(index);

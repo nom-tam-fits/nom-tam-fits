@@ -1,14 +1,10 @@
-/*
- * To change this template, choose Tools | Templates
- * and open the template in the editor.
- */
-package nom.tam.image;
+package nom.tam.fits;
 
-/*
+/*-
  * #%L
  * nom.tam FITS library
  * %%
- * Copyright (C) 2004 - 2021 nom-tam-fits
+ * Copyright (C) 1996 - 2023 nom-tam-fits
  * %%
  * This is free and unencumbered software released into the public domain.
  * 
@@ -35,24 +31,23 @@ package nom.tam.image;
  * #L%
  */
 
-import java.io.IOException;
+import static org.junit.Assert.assertEquals;
 
-/**
- * @author tmcglynn
- */
-public interface ImageTiler {
+import java.io.PrintStream;
 
-    Object getCompleteImage() throws IOException;
+import org.junit.Test;
 
-    Object getTile(int[] corners, int[] lengths) throws IOException;
+public class BasicHDUTest {
 
-    default Object getTile(int[] corners, int[] lengths, int[] steps) throws IOException {
-        throw new UnsupportedOperationException("Striding feature not yet implemented.");
+    @Test
+    public void testDefaultHDUExtension() throws Exception {
+        BasicHDU<NullData> hdu = new BasicHDU(null, null) {
+            @Override
+            public void info(PrintStream stream) {
+            }
+        };
+
+        assertEquals("UNKNOWN", hdu.getCanonicalXtension());
     }
 
-    void getTile(Object array, int[] corners, int[] lengths) throws IOException;
-
-    default void getTile(Object array, int[] corners, int[] lengths, int[] steps) throws IOException {
-        throw new UnsupportedOperationException("Striding feature not yet implemented.");
-    }
 }

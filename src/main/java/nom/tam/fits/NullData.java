@@ -1,14 +1,10 @@
-/*
- * To change this template, choose Tools | Templates
- * and open the template in the editor.
- */
-package nom.tam.image;
+package nom.tam.fits;
 
-/*
+/*-
  * #%L
  * nom.tam FITS library
  * %%
- * Copyright (C) 2004 - 2021 nom-tam-fits
+ * Copyright (C) 1996 - 2022 nom-tam-fits
  * %%
  * This is free and unencumbered software released into the public domain.
  * 
@@ -35,24 +31,57 @@ package nom.tam.image;
  * #L%
  */
 
-import java.io.IOException;
+import nom.tam.fits.header.Bitpix;
+import nom.tam.util.ArrayDataInput;
+import nom.tam.util.ArrayDataOutput;
+
+import static nom.tam.fits.header.Standard.EXTEND;
+import static nom.tam.fits.header.Standard.GCOUNT;
+import static nom.tam.fits.header.Standard.PCOUNT;
 
 /**
- * @author tmcglynn
+ * A subclass of <code>Data</code> containing no actual Data. It wraps an underlying data of
+ * <code>null</code>.
+ * 
+ * @author Attila Kovacs
+ * 
+ * @since 1.18
+ *
  */
-public interface ImageTiler {
+public final class NullData extends Data {
 
-    Object getCompleteImage() throws IOException;
-
-    Object getTile(int[] corners, int[] lengths) throws IOException;
-
-    default Object getTile(int[] corners, int[] lengths, int[] steps) throws IOException {
-        throw new UnsupportedOperationException("Striding feature not yet implemented.");
+    @Override
+    void fillHeader(Header head) {
+        head.setSimple(true);
+        head.setBitpix(Bitpix.INTEGER);
+        head.setNaxes(0);
+     
+        try {
+            // Just in case!
+            head.addValue(EXTEND, true);
+            head.addValue(GCOUNT, 1);
+            head.addValue(PCOUNT, 0);
+        } catch (HeaderCardException e) {
+            // we don't really care...
+        }
     }
 
-    void getTile(Object array, int[] corners, int[] lengths) throws IOException;
-
-    default void getTile(Object array, int[] corners, int[] lengths, int[] steps) throws IOException {
-        throw new UnsupportedOperationException("Striding feature not yet implemented.");
+    @Override
+    public Void getData() {
+        return null;
     }
+
+    @Override
+    long getTrueSize() {
+        return 0;
+    }
+
+    @Override
+    public void read(ArrayDataInput in) {
+    }
+
+    @Override
+    public void write(ArrayDataOutput o) {
+    }
+
 }

@@ -81,6 +81,8 @@ public class QuantizeOption implements ICompressOption {
 
     private long seed = 1L;
 
+    private int tileIndex = 0;
+
     private int tileHeight;
 
     private int tileWidth;
@@ -173,6 +175,10 @@ public class QuantizeOption implements ICompressOption {
 
     public long getSeed() {
         return this.seed;
+    }
+
+    public long getTileIndex() {
+        return this.tileIndex;
     }
 
     public int getTileHeight() {
@@ -298,8 +304,32 @@ public class QuantizeOption implements ICompressOption {
         return this;
     }
 
+    /**
+     * Sets the seed value for the dither random generator
+     * 
+     * @param value The seed value, as in <code>ZDITHER0</code>, normally a number between 1 and 10000 (inclusive).
+     * 
+     * @return itself
+     * 
+     * @see #setTileIndex(int)
+     */
     public QuantizeOption setSeed(long value) {
         this.seed = value;
+        return this;
+    }
+
+    /**
+     * Sets the tile index for which to initialize the random number generator with the given seed (i.e.
+     * <code>ZDITHER0</code> value).
+     * 
+     * @param index The 0-based tile index
+     * 
+     * @return itself
+     * 
+     * @see #setSeed(long)
+     */
+    public QuantizeOption setTileIndex(int index) {
+        this.tileIndex = index;
         return this;
     }
 

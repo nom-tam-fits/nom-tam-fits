@@ -1,14 +1,10 @@
-/*
- * To change this template, choose Tools | Templates
- * and open the template in the editor.
- */
-package nom.tam.image;
+package nom.tam.fits;
 
-/*
+/*-
  * #%L
  * nom.tam FITS library
  * %%
- * Copyright (C) 2004 - 2021 nom-tam-fits
+ * Copyright (C) 1996 - 2022 nom-tam-fits
  * %%
  * This is free and unencumbered software released into the public domain.
  * 
@@ -35,24 +31,47 @@ package nom.tam.image;
  * #L%
  */
 
-import java.io.IOException;
+import java.io.PrintStream;
+
+import nom.tam.fits.header.Standard;
 
 /**
- * @author tmcglynn
+ * A class of HDU that contains a FITS header only with no associated data object.
+ * Such HDUs are commonly used as the primary HDU in FITS files where the leading
+ * data is not an image, since only images may constitute the primary HDU. 
+ * 
+ * @author Attila Kovacs
+ * 
+ * @since 1.18
  */
-public interface ImageTiler {
+public class NullDataHDU extends BasicHDU<NullData> {
 
-    Object getCompleteImage() throws IOException;
-
-    Object getTile(int[] corners, int[] lengths) throws IOException;
-
-    default Object getTile(int[] corners, int[] lengths, int[] steps) throws IOException {
-        throw new UnsupportedOperationException("Striding feature not yet implemented.");
+    /**
+     * Instantiates a new HDU with a default header and no associated data, using the
+     * supplied header.
+     */
+    public NullDataHDU() {
+        this(new Header());
+        getData().fillHeader(getHeader());
+    }
+    
+    /**
+     * Instantiates a new HDU with only a header and no associated data, using the
+     * supplied header.
+     * 
+     * @param myHeader      the FITS header for this HDU
+     */
+    public NullDataHDU(Header myHeader) {
+        super(myHeader, new NullData());
     }
 
-    void getTile(Object array, int[] corners, int[] lengths) throws IOException;
-
-    default void getTile(Object array, int[] corners, int[] lengths, int[] steps) throws IOException {
-        throw new UnsupportedOperationException("Striding feature not yet implemented.");
+    @Override
+    public void info(PrintStream stream) {
+        stream.println("  Header Only");
+    }
+    
+    @Override
+    protected String getCanonicalXtension() {
+        return Standard.XTENSION_IMAGE;
     }
 }

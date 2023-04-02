@@ -19,7 +19,7 @@
 <a name="known-issues"></a>
 ## Known issues
 
-The following outstanding issues are known to affect the current release (1.17.1) from the inception. They will be addressed in the next release (1.18.0) targeted for 6/15/2023. The fixes may also be avaiable earlier from the master branch of the Github repository, or as SNAPSHOT releases generated from it on Sonatype (see further below on how to get these).
+The following issues are known to affect the current and prior releases (&lt;= 1.17.1) from the inception. These issues are fixed on the master branch of the Github repository, and available as SNAPSHOT releases generated from it on Sonatype (see further below on how to get these).
 
  - [#349](https://github.com/nom-tam-fits/nom-tam-fits/issues/349): Problems with some quantized tile (de)compressions, e.g. when GZIP is used.
 
