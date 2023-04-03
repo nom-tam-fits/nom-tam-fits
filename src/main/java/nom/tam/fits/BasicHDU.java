@@ -312,10 +312,12 @@ public abstract class BasicHDU<DataClass extends Data> implements FitsElement {
     }
 
     /**
+     * Returns the data component of this HDU.
+     * 
      * @return the associated Data object
      */
     public DataClass getData() {
-        return this.myData;
+        return myData;
     }
 
     /**
@@ -572,7 +574,7 @@ public abstract class BasicHDU<DataClass extends Data> implements FitsElement {
      * @return either <CODE>null</CODE> or a String with leading/trailing blanks stripped.
      */
     public String getTrimmedString(String keyword) {
-        String s = this.myHeader.getStringValue(keyword);
+        String s = myHeader.getStringValue(keyword);
         if (s != null) {
             s = s.trim();
         }
@@ -600,9 +602,9 @@ public abstract class BasicHDU<DataClass extends Data> implements FitsElement {
     @SuppressWarnings("unchecked")
     @Override
     public void read(ArrayDataInput stream) throws FitsException, IOException {
-        this.myHeader = Header.readHeader(stream);
-        this.myData = (DataClass) this.myHeader.makeData();
-        this.myData.read(stream);
+        myHeader = Header.readHeader(stream);
+        myData = (DataClass) FitsFactory.dataFactory(myHeader);
+        myData.read(stream);
     }
 
     @Override

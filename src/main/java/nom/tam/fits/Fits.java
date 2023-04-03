@@ -576,6 +576,8 @@ public class Fits implements Closeable {
     }
 
     /**
+     * @deprecated Will be private in 2.0.
+     * 
      * Get a stream from the file and then use the stream initialization.
      * 
      * @param myFile The File to be associated.
@@ -583,6 +585,8 @@ public class Fits implements Closeable {
      * 
      * @throws FitsException if the opening of the file failed.
      */
+    // TODO Make private
+    @Deprecated
     @SuppressWarnings("resource")
     @SuppressFBWarnings(value = "OBL_UNSATISFIED_OBLIGATION", justification = "stream stays open, and will be read when nessesary.")
     protected void fileInit(File myFile, boolean compressed) throws FitsException {
@@ -810,6 +814,8 @@ public class Fits implements Closeable {
      *
      * @see #randomInit(RandomAccessFileIO)
      */
+    // TODO make private
+    @Deprecated
     protected void randomInit(File file) throws FitsException {
 
         String permissions = "r";
@@ -910,7 +916,7 @@ public class Fits implements Closeable {
             return null;
         }
 
-        Data data = hdr.makeData();
+        Data data = FitsFactory.dataFactory(hdr);
         try {
             data.read(this.dataStr);
         } catch (PaddingException e) {

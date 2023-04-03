@@ -91,24 +91,24 @@ public class HeaderProtectedTest {
     }
     
     @Test
-    public void testTrueDataSize() throws Exception {
+    public void testDataSize() throws Exception {
         Header header = new Header();
         // No BITPIX
-        Assert.assertEquals(0L, header.trueDataSize()); 
+        Assert.assertEquals(0L, header.getDataSize()); 
         header.addValue(Standard.BITPIX, 32);
         // No NAXIS
-        Assert.assertEquals(0L, header.trueDataSize()); 
+        Assert.assertEquals(0L, header.getDataSize()); 
         
         header = new Header();
         header.nullImage();
         header.write(new FitsOutputStream(new ByteArrayOutputStream(), 80));
-        Assert.assertEquals(0L, header.trueDataSize());
+        Assert.assertEquals(0L, header.getDataSize());
         header.setNaxes(2);
         header.setNaxis(1, 0);
         header.setNaxis(2, 2);
         header.addValue(GROUPS, true);
         header.write(new FitsOutputStream(new ByteArrayOutputStream(), 80));
-        Assert.assertEquals(2L, header.trueDataSize());
+        Assert.assertEquals(FitsUtil.addPadding(2L), header.getDataSize());
     }
 
     @Test
