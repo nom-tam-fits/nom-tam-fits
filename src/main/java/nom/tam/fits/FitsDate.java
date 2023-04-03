@@ -58,7 +58,7 @@ public class FitsDate implements Comparable<FitsDate> {
 
     private static final int FITS_DATE_STRING_SIZE = 23;
 
-    private static final TimeZone GMT = TimeZone.getTimeZone("GMT");
+    private static final TimeZone UTC = TimeZone.getTimeZone("UTC");
 
     private static final int NEW_FORMAT_DAY_OF_MONTH_GROUP = 4;
 
@@ -114,7 +114,7 @@ public class FitsDate implements Comparable<FitsDate> {
      * @param timeOfDay Should time of day information be included?
      */
     public static String getFitsDateString(Date epoch, boolean timeOfDay) {
-        Calendar cal = Calendar.getInstance(FitsDate.GMT);
+        Calendar cal = Calendar.getInstance(UTC);
         cal.setTime(epoch);
         StringBuilder fitsDate = new StringBuilder();
         DecimalFormat df = new DecimalFormat("0000");
@@ -220,40 +220,43 @@ public class FitsDate implements Comparable<FitsDate> {
      */
     @SuppressFBWarnings(value = "EI_EXPOSE_REP", justification = "intended exposure of mutable data")
     public Date toDate() {
-        if (this.date == null && this.year != -1) {
-            Calendar cal = Calendar.getInstance(FitsDate.GMT);
-
-            cal.set(Calendar.YEAR, this.year);
-            cal.set(Calendar.MONTH, this.month - 1);
-            cal.set(Calendar.DAY_OF_MONTH, this.mday);
-            if (FitsDate.LOG.isLoggable(Level.FINEST)) {
-                FitsDate.LOG.log(Level.FINEST, "At this point:" + cal.getTime());
-            }
-
-            if (this.hour == -1) {
-
-                cal.set(Calendar.HOUR_OF_DAY, 0);
-                cal.set(Calendar.MINUTE, 0);
-                cal.set(Calendar.SECOND, 0);
-                cal.set(Calendar.MILLISECOND, 0);
-                if (FitsDate.LOG.isLoggable(Level.FINEST)) {
-                    FitsDate.LOG.log(Level.FINEST, "2At this point:" + cal.getTime());
-                }
-            } else {
-                cal.set(Calendar.HOUR_OF_DAY, this.hour);
-                cal.set(Calendar.MINUTE, this.minute);
-                cal.set(Calendar.SECOND, this.second);
-                if (this.millisecond == -1) {
-                    cal.set(Calendar.MILLISECOND, 0);
-                } else {
-                    cal.set(Calendar.MILLISECOND, this.millisecond);
-                }
-                if (FitsDate.LOG.isLoggable(Level.FINEST)) {
-                    FitsDate.LOG.log(Level.FINEST, "3At this point:" + cal.getTime());
-                }
-            }
-            this.date = cal.getTime();
+        if (this.year == -1) {
+            return null;
         }
+
+        Calendar cal = Calendar.getInstance(UTC);
+
+        cal.set(Calendar.YEAR, this.year);
+        cal.set(Calendar.MONTH, this.month - 1);
+        cal.set(Calendar.DAY_OF_MONTH, this.mday);
+        if (FitsDate.LOG.isLoggable(Level.FINEST)) {
+            FitsDate.LOG.log(Level.FINEST, "At this point:" + cal.getTime());
+        }
+
+        if (this.hour == -1) {
+
+            cal.set(Calendar.HOUR_OF_DAY, 0);
+            cal.set(Calendar.MINUTE, 0);
+            cal.set(Calendar.SECOND, 0);
+            cal.set(Calendar.MILLISECOND, 0);
+            if (FitsDate.LOG.isLoggable(Level.FINEST)) {
+                FitsDate.LOG.log(Level.FINEST, "2At this point:" + cal.getTime());
+            }
+        } else {
+            cal.set(Calendar.HOUR_OF_DAY, this.hour);
+            cal.set(Calendar.MINUTE, this.minute);
+            cal.set(Calendar.SECOND, this.second);
+            if (this.millisecond == -1) {
+                cal.set(Calendar.MILLISECOND, 0);
+            } else {
+                cal.set(Calendar.MILLISECOND, this.millisecond);
+            }
+            if (FitsDate.LOG.isLoggable(Level.FINEST)) {
+                FitsDate.LOG.log(Level.FINEST, "3At this point:" + cal.getTime());
+            }
+        }
+        this.date = cal.getTime();
+
         if (FitsDate.LOG.isLoggable(Level.FINEST)) {
             FitsDate.LOG.log(Level.FINEST, "  date:" + this.date);
             FitsDate.LOG.log(Level.FINEST, "  year:" + this.year);
