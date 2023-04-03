@@ -306,7 +306,8 @@ public final class FitsUtil {
      * random accessible. Othewise, an exception will be thrown.
      * 
      * @deprecated This method wraps an {@link IOException} into a {@link FitsException} for no good reason really. A
-     *                 revision of the API should eliminate this method, and procees the underlying exception instead.
+     *                 revision of the API could redice the visibility of this method, and/or procees the underlying
+     *                 exception instead.
      * 
      * @param o the FITS input or output
      * @param offset the offset to position it to.
