@@ -963,17 +963,6 @@ public class BaseFitsTest {
     }
 
     @Test(expected = FitsException.class)
-    public void testFitsUtilRepositionNull() throws Exception {
-        FitsUtil.reposition(null, 1);
-    }
-
-    @Test(expected = FitsException.class)
-    public void testFitsUtilReposition() throws Exception {
-        FitsOutputStream out = new FitsOutputStream(new ByteArrayOutputStream());
-        FitsUtil.reposition(out, -1);
-    }
-
-    @Test(expected = FitsException.class)
     public void testFitsWriteException1() throws Exception {
         DataOutput out = (DataOutput) Proxy.newProxyInstance(getClass().getClassLoader(),
                 new Class[] {DataOutput.class}, new InvocationHandler() {

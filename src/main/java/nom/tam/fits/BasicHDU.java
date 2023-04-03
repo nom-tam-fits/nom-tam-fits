@@ -127,7 +127,7 @@ public abstract class BasicHDU<DataClass extends Data> implements FitsElement {
     }
 
     /**
-     * @derecated Use {@link NullDataHDU} instead. Gets a HDU with no data, only header.
+     * @deprecated Use {@link NullDataHDU} instead. Gets a HDU with no data, only header.
      * 
      * @return an HDU without content
      */

@@ -44,11 +44,11 @@ import java.util.logging.Logger;
 
 import nom.tam.util.ArrayDataOutput;
 import nom.tam.util.AsciiFuncs;
+import nom.tam.util.FitsIO;
 import nom.tam.util.RandomAccess;
 
 /**
- * This class comprises static utility functions used throughout the FITS
- * classes.
+ * This class comprises static utility functions used throughout the FITS classes.
  */
 public final class FitsUtil {
 
@@ -70,20 +70,18 @@ public final class FitsUtil {
     }
 
     /**
-     * @return Total size of blocked FITS element, using e.v. padding to fits
-     *         block size.
-     * @param size
-     *            the current size.
+     * @return Total size of blocked FITS element, using e.v. padding to fits block size.
+     * 
+     * @param size the current size.
      */
     public static int addPadding(int size) {
         return size + padding(size);
     }
 
     /**
-     * @return Total size of blocked FITS element, using e.v. padding to fits
-     *         block size.
-     * @param size
-     *            the current size.
+     * @return Total size of blocked FITS element, using e.v. padding to fits block size.
+     * 
+     * @param size the current size.
      */
     public static long addPadding(long size) {
         return size + padding(size);
@@ -91,8 +89,8 @@ public final class FitsUtil {
 
     /**
      * @return Convert an array of booleans to bytes.
-     * @param bool
-     *            array of booleans
+     * 
+     * @param bool array of booleans
      */
     static byte[] booleanToByte(boolean[] bool) {
 
@@ -105,10 +103,9 @@ public final class FitsUtil {
 
     /**
      * @return Convert bytes to Strings.
-     * @param bytes
-     *            byte array to convert
-     * @param maxLen
-     *            the max string length
+     * 
+     * @param bytes byte array to convert
+     * @param maxLen the max string length
      */
     public static String[] byteArrayToStrings(byte[] bytes, int maxLen) {
         boolean checking = FitsFactory.getCheckAsciiStrings();
@@ -185,8 +182,8 @@ public final class FitsUtil {
 
     /**
      * @return Convert an array of bytes to booleans.
-     * @param bytes
-     *            the array of bytes to get the booleans from.
+     * 
+     * @param bytes the array of bytes to get the booleans from.
      */
     static boolean[] byteToBoolean(byte[] bytes) {
         boolean[] bool = new boolean[bytes.length];
@@ -199,8 +196,8 @@ public final class FitsUtil {
 
     /**
      * @return Find out where we are in a random access file .
-     * @param o
-     *            the stream to get the position
+     * 
+     * @param o the stream to get the position
      */
     public static long findOffset(Closeable o) {
         if (o instanceof RandomAccess) {
@@ -210,16 +207,13 @@ public final class FitsUtil {
     }
 
     /**
-     * @return Get a stream to a URL accommodating possible redirections. Note
-     *         that if a redirection request points to a different protocol than
-     *         the original request, then the redirection is not handled
-     *         automatically.
-     * @param url
-     *            the url to get the stream from
-     * @param level
-     *            max levels of redirection
-     * @throws IOException
-     *             if the operation failed
+     * @return Get a stream to a URL accommodating possible redirections. Note that if a redirection request points to a
+     *             different protocol than the original request, then the redirection is not handled automatically.
+     * 
+     * @param url the url to get the stream from
+     * @param level max levels of redirection
+     * 
+     * @throws IOException if the operation failed
      */
     public static InputStream getURLStream(URL url, int level) throws IOException {
         URLConnection conn = null;
@@ -238,10 +232,10 @@ public final class FitsUtil {
 
     /**
      * @return Get the maximum length of a String in a String array.
-     * @param strings
-     *            array of strings to check
-     * @throws FitsException
-     *             if the operation failed
+     * 
+     * @param strings array of strings to check
+     * 
+     * @throws FitsException if the operation failed
      */
     public static int maxLength(String[] strings) throws FitsException {
 
@@ -257,12 +251,10 @@ public final class FitsUtil {
     /**
      * Add padding to an output stream.
      * 
-     * @param stream
-     *            stream to pad
-     * @param size
-     *            the current size
-     * @throws FitsException
-     *             if the operation failed
+     * @param stream stream to pad
+     * @param size the current size
+     * 
+     * @throws FitsException if the operation failed
      */
     public static void pad(ArrayDataOutput stream, long size) throws FitsException {
         pad(stream, size, (byte) 0);
@@ -271,14 +263,11 @@ public final class FitsUtil {
     /**
      * Add padding to an output stream.
      * 
-     * @param stream
-     *            stream to pad
-     * @param size
-     *            the current size
-     * @param fill
-     *            the fill byte to use
-     * @throws FitsException
-     *             if the operation failed
+     * @param stream stream to pad
+     * @param size the current size
+     * @param fill the fill byte to use
+     * 
+     * @throws FitsException if the operation failed
      */
     public static void pad(ArrayDataOutput stream, long size, byte fill) throws FitsException {
         int len = padding(size);
@@ -296,8 +285,8 @@ public final class FitsUtil {
 
     /**
      * @return How many bytes are needed to fill a 2880 block?
-     * @param size
-     *            the size without padding
+     * 
+     * @param size the size without padding
      */
     public static int padding(int size) {
         return padding((long) size);
@@ -313,16 +302,21 @@ public final class FitsUtil {
     }
 
     /**
-     * Reposition a random access stream to a requested offset.
+     * Attempts to reposition a FITS input ot output. The call will succeed only if the underlying input or output is
+     * random accessible. Othewise, an exception will be thrown.
      * 
-     * @param o
-     *            the closable to reposition
-     * @param offset
-     *            the offset to position it to.
-     * @throws FitsException
-     *             if the operation was failed or not possible
+     * @deprecated This method wraps an {@link IOException} into a {@link FitsException} for no good reason really. A
+     *                 revision of the API could redice the visibility of this method, and/or procees the underlying
+     *                 exception instead.
+     * 
+     * @param o the FITS input or output
+     * @param offset the offset to position it to.
+     * 
+     * @throws FitsException if the underlying input/output is not random accessible or if the requested position is
+     *             invalid.
      */
-    public static void reposition(Closeable o, long offset) throws FitsException {
+    @Deprecated
+    public static void reposition(FitsIO o, long offset) throws FitsException {
         // TODO AK: argument should be RandomAccess instead of Closeable, since
         // that's the only type we actually handle...
 
@@ -331,13 +325,15 @@ public final class FitsUtil {
         }
 
         if (!(o instanceof RandomAccess) || offset < 0) {
-            throw new FitsException("Invalid attempt to reposition stream " + o + " of type " + o.getClass().getName() + " to " + offset);
+            throw new FitsException("Invalid attempt to reposition stream " + o + " of type " + o.getClass().getName()
+                    + " to " + offset);
         }
 
         try {
             ((RandomAccess) o).seek(offset);
         } catch (IOException e) {
-            throw new FitsException("Unable to repostion stream " + o + " of type " + o.getClass().getName() + " to " + offset + ": " + e.getMessage(), e);
+            throw new FitsException("Unable to repostion stream " + o + " of type " + o.getClass().getName() + " to "
+                    + offset + ": " + e.getMessage(), e);
         }
     }
 
@@ -345,10 +341,9 @@ public final class FitsUtil {
      * Convert an array of Strings to bytes.
      * 
      * @return the resulting bytes
-     * @param stringArray
-     *            the array with Strings
-     * @param maxLen
-     *            the max length (in bytes) of every String
+     * 
+     * @param stringArray the array with Strings
+     * @param maxLen the max length (in bytes) of every String
      */
     public static byte[] stringsToByteArray(String[] stringArray, int maxLen) {
         byte[] res = new byte[stringArray.length * maxLen];
