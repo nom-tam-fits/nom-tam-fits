@@ -35,8 +35,6 @@ import java.text.DecimalFormat;
 import java.util.Calendar;
 import java.util.Date;
 import java.util.TimeZone;
-import java.util.logging.Level;
-import java.util.logging.Logger;
 import java.util.regex.Matcher;
 import java.util.regex.Pattern;
 
@@ -50,7 +48,6 @@ public class FitsDate implements Comparable<FitsDate> {
     /**
      * logger to log to.
      */
-    private static final Logger LOG = Logger.getLogger(FitsDate.class.getName());
 
     private static final int FIRST_THREE_CHARACTER_VALUE = 100;
 
@@ -229,19 +226,12 @@ public class FitsDate implements Comparable<FitsDate> {
         cal.set(Calendar.YEAR, this.year);
         cal.set(Calendar.MONTH, this.month - 1);
         cal.set(Calendar.DAY_OF_MONTH, this.mday);
-        if (FitsDate.LOG.isLoggable(Level.FINEST)) {
-            FitsDate.LOG.log(Level.FINEST, "At this point:" + cal.getTime());
-        }
 
         if (this.hour == -1) {
-
             cal.set(Calendar.HOUR_OF_DAY, 0);
             cal.set(Calendar.MINUTE, 0);
             cal.set(Calendar.SECOND, 0);
             cal.set(Calendar.MILLISECOND, 0);
-            if (FitsDate.LOG.isLoggable(Level.FINEST)) {
-                FitsDate.LOG.log(Level.FINEST, "2At this point:" + cal.getTime());
-            }
         } else {
             cal.set(Calendar.HOUR_OF_DAY, this.hour);
             cal.set(Calendar.MINUTE, this.minute);
@@ -251,19 +241,8 @@ public class FitsDate implements Comparable<FitsDate> {
             } else {
                 cal.set(Calendar.MILLISECOND, this.millisecond);
             }
-            if (FitsDate.LOG.isLoggable(Level.FINEST)) {
-                FitsDate.LOG.log(Level.FINEST, "3At this point:" + cal.getTime());
-            }
         }
         this.date = cal.getTime();
-
-        if (FitsDate.LOG.isLoggable(Level.FINEST)) {
-            FitsDate.LOG.log(Level.FINEST, "  date:" + this.date);
-            FitsDate.LOG.log(Level.FINEST, "  year:" + this.year);
-            FitsDate.LOG.log(Level.FINEST, "  month:" + this.month);
-            FitsDate.LOG.log(Level.FINEST, "  mday:" + this.mday);
-            FitsDate.LOG.log(Level.FINEST, "  hour:" + this.hour);
-        }
         return this.date;
     }
 
