@@ -20,6 +20,12 @@
       <action type="add" dev="attipaci" issue="335">
 	      Added NullDataHDU for more intuitive support for header only HDUs with no associated data.
       </action>
+      <action type="update" dev="attipaci" issue="209">
+	      FitsUtil.reposition() deprecated and changed to take FitsIO argument to match usage.
+      </action>
+      <action type="update" dev="attipaci" issue="394">
+	      Various tweaks to FitsDate that should not affect user behavior.
+      </action>
     </release>
 
     <release version="1.17.1" date="2023-03-15" description="Maintenance release with critical bug fixes.">
