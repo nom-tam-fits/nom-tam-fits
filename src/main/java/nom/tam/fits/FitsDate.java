@@ -299,24 +299,13 @@ public class FitsDate implements Comparable<FitsDate> {
             return false;
         }
 
-        FitsDate fitsDate = (FitsDate) o;
-        return hour == fitsDate.hour && mday == fitsDate.mday && millisecond == fitsDate.millisecond
-                && minute == fitsDate.minute && month == fitsDate.month && second == fitsDate.second
-                && year == fitsDate.year;
+        return compareTo((FitsDate) o) == 0;
     }
 
     @Override
     public int hashCode() {
-        final int prime = 31;
-        int result = prime * hour;
-        result = prime * result + mday;
-        result = prime * result + millisecond;
-        result = prime * result + minute;
-        result = prime * result + month;
-        result = prime * result + second;
-        result = prime * result + year;
-
-        return result;
+        return Integer.hashCode(year) ^ Integer.hashCode(month) ^ Integer.hashCode(mday) ^ Integer.hashCode(hour)
+                ^ Integer.hashCode(minute) ^ Integer.hashCode(second) ^ Integer.hashCode(millisecond);
     }
 
     @Override

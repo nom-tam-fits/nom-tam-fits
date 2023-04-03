@@ -55,7 +55,7 @@ public class FitsDateTest {
     }
 
     @Test
-    public void testFitsDateEquals() throws FitsException {
+    public void testFitsDateCompare() throws FitsException {
         Assert.assertEquals(new FitsDate("2018-11-28T12:13:14.15"), new FitsDate("2018-11-28T12:13:14.15"));
         Assert.assertNotEquals(new FitsDate("2018-11-28T12:13:14.151"), new FitsDate("2018-11-28T12:13:14.15"));
         Assert.assertNotEquals(new FitsDate("2018-11-28T12:13:13.15"), new FitsDate("2018-11-28T12:13:14.15"));
