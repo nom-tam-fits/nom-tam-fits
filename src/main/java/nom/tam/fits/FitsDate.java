@@ -74,8 +74,8 @@ public class FitsDate implements Comparable<FitsDate> {
 
     private static final int NEW_FORMAT_YEAR_GROUP = 2;
 
-    private static final Pattern NORMAL_REGEX = Pattern
-            .compile("\\s*(([0-9][0-9][0-9][0-9])-([0-9][0-9])-([0-9][0-9]))(T([0-9][0-9]):([0-9][0-9]):([0-9][0-9])(\\.([0-9]+))?)?\\s*");
+    private static final Pattern NORMAL_REGEX = Pattern.compile(
+            "\\s*(([0-9][0-9][0-9][0-9])-([0-9][0-9])-([0-9][0-9]))(T([0-9][0-9]):([0-9][0-9]):([0-9][0-9])(\\.([0-9]+))?)?\\s*");
 
     private static final int OLD_FORMAT_DAY_OF_MONTH_GROUP = 1;
 
@@ -86,9 +86,9 @@ public class FitsDate implements Comparable<FitsDate> {
     private static final Pattern OLD_REGEX = Pattern.compile("\\s*([0-9][0-9])/([0-9][0-9])/([0-9][0-9])\\s*");
 
     private static final int YEAR_OFFSET = 1900;
-    
+
     private static final int NB_DIGITS_MILLIS = 3;
-    
+
     private static final int POW_TEN = 10;
 
     /**
@@ -100,20 +100,18 @@ public class FitsDate implements Comparable<FitsDate> {
 
     /**
      * @return a created FITS format date string Java Date object.
-     * @param epoch
-     *            The epoch to be converted to FITS format.
+     * 
+     * @param epoch The epoch to be converted to FITS format.
      */
     public static String getFitsDateString(Date epoch) {
         return getFitsDateString(epoch, true);
     }
 
     /**
-     * @return a created FITS format date string. Note that the date is not
-     *         rounded.
-     * @param epoch
-     *            The epoch to be converted to FITS format.
-     * @param timeOfDay
-     *            Should time of day information be included?
+     * @return a created FITS format date string. Note that the date is not rounded.
+     * 
+     * @param epoch The epoch to be converted to FITS format.
+     * @param timeOfDay Should time of day information be included?
      */
     public static String getFitsDateString(Date epoch, boolean timeOfDay) {
         Calendar cal = Calendar.getInstance(FitsDate.GMT);
@@ -161,10 +159,9 @@ public class FitsDate implements Comparable<FitsDate> {
     /**
      * Convert a FITS date string to a Java <CODE>Date</CODE> object.
      * 
-     * @param dStr
-     *            the FITS date
-     * @throws FitsException
-     *             if <CODE>dStr</CODE> does not contain a valid FITS date.
+     * @param dStr the FITS date
+     * 
+     * @throws FitsException if <CODE>dStr</CODE> does not contain a valid FITS date.
      */
     public FitsDate(String dStr) throws FitsException {
         // if the date string is null, we are done
@@ -304,9 +301,9 @@ public class FitsDate implements Comparable<FitsDate> {
 
         FitsDate fitsDate = (FitsDate) o;
         return hour == fitsDate.hour && mday == fitsDate.mday && millisecond == fitsDate.millisecond
-                && minute == fitsDate.minute && month == fitsDate.month && second == fitsDate.second && year == fitsDate.year;
+                && minute == fitsDate.minute && month == fitsDate.month && second == fitsDate.second
+                && year == fitsDate.year;
     }
-
 
     @Override
     public int hashCode() {
@@ -325,25 +322,36 @@ public class FitsDate implements Comparable<FitsDate> {
     @Override
     public int compareTo(FitsDate fitsDate) {
         int result = Integer.compare(year, fitsDate.year);
-        if (result == 0) {
-            result = Integer.compare(month, fitsDate.month);
-            if (result == 0) {
-                result = Integer.compare(mday, fitsDate.mday);
-                if (result == 0) {
-                    result = Integer.compare(hour, fitsDate.hour);
-                    if (result == 0) {
-                        result = Integer.compare(minute, fitsDate.minute);
-                        if (result == 0) {
-                            result = Integer.compare(second, fitsDate.second);
-                            if (result == 0) {
-                                result = Integer.compare(millisecond, fitsDate.millisecond);
-                            }
-                        }
-                    }
-                }
-            }
+        if (result != 0) {
+            return result;
         }
-        return result;
+
+        result = Integer.compare(month, fitsDate.month);
+        if (result != 0) {
+            return result;
+        }
+
+        result = Integer.compare(mday, fitsDate.mday);
+        if (result != 0) {
+            return result;
+        }
+
+        result = Integer.compare(hour, fitsDate.hour);
+        if (result != 0) {
+            return result;
+        }
+
+        result = Integer.compare(minute, fitsDate.minute);
+        if (result != 0) {
+            return result;
+        }
+
+        result = Integer.compare(second, fitsDate.second);
+        if (result != 0) {
+            return result;
+        }
+
+        return Integer.compare(millisecond, fitsDate.millisecond);
     }
 
     private void appendThreeDigitValue(StringBuilder buf, int value) {
