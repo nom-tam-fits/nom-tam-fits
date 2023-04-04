@@ -70,7 +70,7 @@ public final class NullData extends Data {
     }
 
     @Override
-    public Void getCurrentData() {
+    protected Void getCurrentData() {
         return null;
     }
 

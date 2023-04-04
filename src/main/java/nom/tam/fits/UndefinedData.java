@@ -130,10 +130,6 @@ public class UndefinedData extends Data {
 
     @Override
     public byte[] getData() throws FitsException {
-        if (byteSize == 0) {
-            return null;
-        }
-
         byte[] bytes = (byte[]) super.getData();
         if (bytes != null) {
             return bytes;

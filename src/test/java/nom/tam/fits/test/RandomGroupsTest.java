@@ -236,7 +236,60 @@ public class RandomGroupsTest {
         RandomGroupsHDU newHdu = (RandomGroupsHDU) Fits.makeHDU(hdr);
         RandomGroupsData recreatedData = newHdu.getData();
         Assert.assertEquals(Bitpix.forValue(bipix).getPrimitiveType(), recreatedData.getElementType());
-        Assert.assertArrayEquals(new int[] {3}, recreatedData.getParameterDims());
+        Assert.assertEquals(3, recreatedData.getParameterCount());
         Assert.assertArrayEquals(new int[] {20, 20}, recreatedData.getDataDims());
+    }
+
+    @Test
+    public void testCreateNullData() throws Exception {
+        RandomGroupsData g = new RandomGroupsData(null);
+        Object[][] data = g.getData();
+        Assert.assertNotNull(data);
+        Assert.assertEquals(0, data.length);
+        Assert.assertTrue(g.isEmpty());
+        Assert.assertNull(g.getElementType());
+        Assert.assertEquals(-1, g.getParameterCount());
+        Assert.assertNull(g.getDataDims());
+    }
+
+    @Test(expected = FitsException.class)
+    public void testMismatchedDataFillHeader() throws Exception {
+        class RGData extends RandomGroupsData {
+            public RGData() {
+                super();
+            }
+
+            @Override
+            public void fillHeader(Header h) throws FitsException {
+                super.fillHeader(h);
+            }
+        }
+
+        new RGData().fillHeader(new Header());
+    }
+
+    @Test
+    public void testCreateParmOnly() throws Exception {
+        RandomGroupsData g = new RandomGroupsData(new Object[][] {{new int[4], null}});
+    }
+
+    @Test(expected = IllegalArgumentException.class)
+    public void testCreateWrongParDim() throws Exception {
+        RandomGroupsData g = new RandomGroupsData(new Object[][] {{new int[4][4], new int[10]}});
+    }
+
+    @Test(expected = IllegalArgumentException.class)
+    public void testCreateWrongDim1() throws Exception {
+        RandomGroupsData g = new RandomGroupsData(new Object[5][3]);
+    }
+
+    @Test(expected = IllegalArgumentException.class)
+    public void testCreateMismatchedType() throws Exception {
+        RandomGroupsData g = new RandomGroupsData(new Object[5][1]);
+    }
+
+    @Test(expected = IllegalArgumentException.class)
+    public void testCreateWrongDim2() throws Exception {
+        RandomGroupsData g = new RandomGroupsData(new Object[][] {{new int[] {1, 2}, new double[] {3.0, 4.0, 5.0}}});
     }
 }

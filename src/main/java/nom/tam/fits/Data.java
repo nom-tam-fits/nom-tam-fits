@@ -116,6 +116,8 @@ public abstract class Data implements FitsElement {
      * 
      * @see #isDeferred()
      * @see #getCurrentData()
+     * 
+     * @since 1.18
      */
     public boolean isEmpty() {
         return getCurrentData() == null;
@@ -166,12 +168,17 @@ public abstract class Data implements FitsElement {
      * @see #getData()
      * @see #ensureData()
      * @see #isDeferred()
-     * @see #isEmpty();
+     * @see #isEmpty()
+     * 
+     * @since 1.18
      */
     protected abstract Object getCurrentData();
 
     /**
-     * @return the file offset
+     * Gets the offset of the data segment in the FITS file, from the start of the file. It is used for accessing the
+     * data from a radomly accessible input only.
+     * 
+     * @return the file offset (in bytes), or -1 if reading was from an input that is not random accessible
      */
     @Override
     public long getFileOffset() {
@@ -207,7 +214,8 @@ public abstract class Data implements FitsElement {
     /**
      * Load data from the current position of the input into memory. This may be triggered immediately when calling
      * {@link #read(ArrayDataInput)} if called on a non random accessible input, or else later when data is accessed via
-     * {@link #ensureData()}, for example as a result of a {@link #getData()} call.
+     * {@link #ensureData()}, for example as a result of a {@link #getData()} call. This method will not be called
+     * unless there is actual data of non-zero size to be read.
      * 
      * @param in The input from which to load data
      * 
@@ -218,6 +226,8 @@ public abstract class Data implements FitsElement {
      * @see #ensureData()
      * @see #getData()
      * @see #isDeferred()
+     * 
+     * @ince 1.18
      */
     protected abstract void loadData(ArrayDataInput in) throws IOException, FitsException;
 
@@ -229,6 +239,8 @@ public abstract class Data implements FitsElement {
      * @see #getData()
      * @see #read(ArrayDataInput)
      * @see #isDeferred()
+     * 
+     * @since 1.18
      */
     protected void ensureData() throws FitsException {
         if (!isDeferred()) {
@@ -245,6 +257,22 @@ public abstract class Data implements FitsElement {
         }
     }
 
+    /**
+     * <p>
+     * Reads the data or skips over it for reading latet, depending on whether reading from a stream or a random
+     * acessible input, respectively.
+     * </p>
+     * <p>
+     * In case the argument is a an instance of {@link RandomAccess} input (such as a {@link nom.tam.util.FitsFile}, the
+     * call will simply note where in the file the data segment can be found for reading at a later point, only when the
+     * data content is accessed. This 'deferred' reading behavior make it possible to process large HDUs even with small
+     * amount of RAM, and can result in a significant performance boost when inspectring large FITS files, or using only
+     * select content from large FITS files.
+     * </p>
+     * 
+     * @see #getData()
+     * @see #ensureData()
+     */
     @Override
     public void read(ArrayDataInput in) throws FitsException {
         clearFileOffset();
@@ -328,9 +356,11 @@ public abstract class Data implements FitsElement {
     }
 
     /**
-     * Set the fields needed for a re-read.
+     * Record the information necessary for eading the data content at a later time (deferred reading).
      * 
      * @param o reread information.
+     * 
+     * @see #isDeferred()
      */
     protected void setFileOffset(ArrayDataInput o) {
         if (o instanceof RandomAccess) {

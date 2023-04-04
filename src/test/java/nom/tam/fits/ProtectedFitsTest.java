@@ -133,15 +133,14 @@ public class ProtectedFitsTest {
         Assert.assertEquals(IllegalArgumentException.class, actual.getClass());
 
         dataArray = new Object[][] {new Object[] {new int[10][10], new int[10],}};
-        data = new RandomGroupsData(dataArray);
         actual = null;
         try {
-            data.fillHeader(new Header());
-        } catch (FitsException e) {
+            data = new RandomGroupsData(dataArray);
+        } catch (Exception e) {
             actual = e;
         }
         Assert.assertNotNull(actual);
-        Assert.assertTrue(actual.getMessage().toLowerCase().contains("not 1 d array"));
+        Assert.assertEquals(IllegalArgumentException.class, actual.getClass());
         dataArray = new Object[][] {new Object[] {new String[10], new String[10],}};
         data = new RandomGroupsData(dataArray);
         actual = null;
