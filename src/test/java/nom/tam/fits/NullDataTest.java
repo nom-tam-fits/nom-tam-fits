@@ -52,7 +52,7 @@ public class NullDataTest {
 
         Data data = hdu.getData();
         Assert.assertEquals(0, data.getTrueSize());
-
+        Assert.assertTrue(data.isEmpty());
         Assert.assertNull(data.getData());
 
         data.read(null); // Should not throw exception

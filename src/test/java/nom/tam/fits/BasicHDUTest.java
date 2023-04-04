@@ -35,7 +35,10 @@ import static org.junit.Assert.assertEquals;
 
 import java.io.PrintStream;
 
+import org.junit.Assert;
 import org.junit.Test;
+
+import nom.tam.fits.header.Standard;
 
 public class BasicHDUTest {
 
@@ -50,4 +53,23 @@ public class BasicHDUTest {
         assertEquals("UNKNOWN", hdu.getCanonicalXtension());
     }
 
+    @Test
+    public void testUndefinedDataNoAxis() throws Exception {
+        Header h = new Header();
+        h.addValue(Standard.BITPIX, 8);
+        h.addValue(Standard.NAXIS, 0);
+        Assert.assertTrue(new UndefinedData(h).isEmpty());
+    }
+
+    @Test
+    public void testReadNullInput() throws Exception {
+        Header h = new Header();
+        h.addValue(Standard.BITPIX, -32);
+        h.addValue(Standard.NAXIS, 2);
+        h.addValue(Standard.NAXISn.n(1), 10);
+        h.addValue(Standard.NAXISn.n(2), 10);
+        ImageData im = new ImageData(h);
+        im.read(null);
+        Assert.assertTrue(im.isEmpty());
+    }
 }

@@ -38,13 +38,13 @@ import java.io.ByteArrayOutputStream;
 import java.io.IOException;
 import java.lang.reflect.Field;
 
-import nom.tam.util.FitsInputStream;
-import nom.tam.util.FitsOutputStream;
-import nom.tam.util.FitsFile;
-import nom.tam.util.test.ThrowAnyException;
-
 import org.junit.Assert;
 import org.junit.Test;
+
+import nom.tam.util.FitsFile;
+import nom.tam.util.FitsInputStream;
+import nom.tam.util.FitsOutputStream;
+import nom.tam.util.test.ThrowAnyException;
 
 public class ImageProtectedTest {
 
@@ -56,21 +56,17 @@ public class ImageProtectedTest {
 
     @Test(expected = FitsException.class)
     public void testImageDataFailWrongDatatype() throws Exception {
-        ImageData data = new ImageData(new String[]{
-            "test"
-        });
+        ImageData data = new ImageData(new String[] {"test"});
         data.fillHeader(new Header());
     }
 
     @Test(expected = FitsException.class)
     public void testImageDataFailUnfilledDimention() throws Exception {
-        ImageData data = new ImageData(new int[][]{
-            null
-        });
+        ImageData data = new ImageData(new int[][] {null});
         data.fillHeader(new Header());
     }
 
-    @Test
+    @Test(expected = FitsException.class)
     public void testGetDataFromFileFailing() throws Exception {
         Header header = new Header();
         header.nullImage();
@@ -84,8 +80,7 @@ public class ImageProtectedTest {
         input = new FitsFile("target/testGetDataFromFileFailing.bin", "rw");
         data.read(input);
         input.close();
-        // file closed so no possibility to get the image data.
-        Assert.assertNull(data.getData());
+        data.getData();
     }
 
     @Test(expected = FitsException.class)
@@ -110,7 +105,7 @@ public class ImageProtectedTest {
     }
 
     public void testReadFileFailing() throws Exception {
-        
+
         Header header = new Header();
         header.nullImage();
         header.setNaxes(2);
@@ -122,7 +117,7 @@ public class ImageProtectedTest {
         input.close();
         input = new FitsFile("target/truncated.bin", "rw");
         data.read(input);
-        
+
         // AK: read used to throw an exception as skipAllByes failed beyond the file's end.
         // However, the contract of RandomAccess is to allow skipAllBytes() to move beyond
         // the file's end. But, we can check if the file pointer is beyond the current
@@ -171,16 +166,7 @@ public class ImageProtectedTest {
 
     @Test(expected = FitsException.class)
     public void testWriteFailing() throws Exception {
-        ImageData data = new ImageData(new int[][]{
-            {
-                1,
-                2
-            },
-            {
-                3,
-                4
-            }
-        });
+        ImageData data = new ImageData(new int[][] {{1, 2}, {3, 4}});
         FitsOutputStream out = new FitsOutputStream(new ByteArrayOutputStream()) {
 
             @Override
@@ -210,7 +196,7 @@ public class ImageProtectedTest {
         data.write(out);
     }
 
-    @Test
+    @Test(expected = FitsException.class)
     public void testGetDataHeaderduringWriteFailing() throws Exception {
         Header header = new Header();
         header.nullImage();
@@ -228,13 +214,9 @@ public class ImageProtectedTest {
         ByteArrayOutputStream outputStream = new ByteArrayOutputStream();
         FitsOutputStream out = new FitsOutputStream(outputStream);
         data.write(out);
-        out.close();
-        for (byte outByte : outputStream.toByteArray()) {
-            Assert.assertEquals(0, outByte);
-        }
     }
 
-    @Test
+    @Test(expected = FitsException.class)
     public void testGetDataHeaderduringWriteImposibleFailing() throws Exception {
         Header header = new Header();
         header.nullImage();
@@ -257,14 +239,6 @@ public class ImageProtectedTest {
 
         ByteArrayOutputStream outputStream = new ByteArrayOutputStream();
         FitsOutputStream out = new FitsOutputStream(outputStream);
-        FitsException actual = null;
-        try {
-            data.write(out);
-        } catch (FitsException e) {
-            actual = e;
-        }
-        Assert.assertNotNull(actual);
-        Assert.assertEquals("Null image data", actual.getMessage());
-
+        data.write(out);
     }
 }

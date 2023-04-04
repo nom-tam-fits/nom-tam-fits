@@ -37,7 +37,7 @@ import nom.tam.util.ArrayDataOutput;
 public class BadData extends Data {
 
     @Override
-    void fillHeader(Header head) throws FitsException {
+    protected void fillHeader(Header head) throws FitsException {
 
     }
 
@@ -47,7 +47,7 @@ public class BadData extends Data {
     }
 
     @Override
-    long getTrueSize() {
+    protected long getTrueSize() {
         return 0;
     }
 
@@ -58,6 +58,18 @@ public class BadData extends Data {
 
     @Override
     public void write(ArrayDataOutput o) throws FitsException {
+
+    }
+
+    @Override
+    protected Object getCurrentData() {
+        // TODO Auto-generated method stub
+        return null;
+    }
+
+    @Override
+    protected void loadData(ArrayDataInput in) {
+        // TODO Auto-generated method stub
 
     }
 

@@ -552,7 +552,7 @@ public class BaseFitsTest {
     }
 
     @Test
-    public void testFitsRandomGroupHDUmanufactureData() throws Exception {
+    public void testFitsRandomGroupHDUmanufactureNullData() throws Exception {
         Header header = new Header()//
                 .card(Standard.GROUPS).value(true)//
                 .card(Standard.GCOUNT).value(0)//
@@ -563,8 +563,7 @@ public class BaseFitsTest {
                 .card(Standard.NAXIS.BITPIX).value(32)//
                 .header();
         RandomGroupsData data = RandomGroupsHDU.manufactureData(header);
-        Object[][] dataArray = (Object[][]) data.getData();
-        Assert.assertEquals(0, dataArray.length);
+        Assert.assertEquals(0, data.getData().length);
 
         RandomGroupsHDU randomGroupsHDU = new RandomGroupsHDU(header, data);
         ByteArrayOutputStream out = new ByteArrayOutputStream();
@@ -621,7 +620,7 @@ public class BaseFitsTest {
             actual = e;
         }
         Assert.assertNotNull(actual);
-        Assert.assertTrue(actual.getMessage().toLowerCase().contains("eof reading padding"));
+        Assert.assertTrue(actual.getMessage().toLowerCase().contains("eof"));
 
         outBytes.write(new byte[2880]);
         in = new FitsInputStream(new ByteArrayInputStream(outBytes.toByteArray())) {
@@ -656,7 +655,7 @@ public class BaseFitsTest {
         new Header(hdu.getData()) {
 
             public void addValue(IFitsHeader key, int val) throws HeaderCardException {
-                throw new HeaderCardException("sothing wrong");
+                throw new HeaderCardException("something wrong");
             }
         };
     }
@@ -1293,6 +1292,14 @@ public class BaseFitsTest {
     }
 
     @Test
+    public void resetNonRandomAccess() throws Exception {
+        Fits fits = new Fits(
+                new FitsInputStream(new FileInputStream("src/test/resources/nom/tam/fits/test/test.fits")));
+        fits.read();
+        assertFalse(fits.getHDU(0).getData().reset());
+    }
+
+    @Test
     public void autoExtensionTest() throws Exception {
         Fits fits = new Fits();
 
@@ -1311,6 +1318,11 @@ public class BaseFitsTest {
 
         assertFalse(hdus[1].getHeader().containsKey(Standard.SIMPLE));
         assertTrue(hdus[1].getHeader().containsKey(Standard.XTENSION));
+    }
+
+    @Test(expected = FitsException.class)
+    public void repositionFailTest() throws Exception {
+        FitsUtil.reposition(new FitsFile("src/test/resources/nom/tam/fits/test/test.fits", "rw"), -1);
     }
 
     private static class TestRandomAccessFileIO extends java.io.RandomAccessFile implements RandomAccessFileIO {
