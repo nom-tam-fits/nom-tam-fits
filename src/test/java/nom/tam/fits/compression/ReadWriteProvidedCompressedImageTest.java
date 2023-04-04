@@ -92,6 +92,11 @@ public class ReadWriteProvidedCompressedImageTest {
 
     private static int assertionCounter = 1;
 
+    @Before
+    public void setDefaults() {
+        FitsFactory.setDefaults();
+    }
+
     private void assert_float_image(float[][] actual, float[][] expected, float delta) {
         Assert.assertEquals(expected.length, actual.length);
         for (int axis0 = 0; axis0 < expected.length; axis0++) {
@@ -1204,28 +1209,34 @@ public class ReadWriteProvidedCompressedImageTest {
 
     @Test
     public void testImagePlusCompressedImage1() throws Exception {
-        FitsFactory.setAllowHeaderRepairs(true);
+        FitsFactory.setAllowTerminalJunk(true);
+        // Test using a FITS file with junk at the end...
         testImagePlusCompressedImage(
                 resolveLocalOrRemoteFileName("03h-80dec--C_CVT_2013-12-29-MW1-03h_Light_600SecISO200_000042.fit"));
+        // No exception thrown
     }
 
     @Test
     public void testImagePlusCompressedImage2() throws Exception {
-        FitsFactory.setAllowHeaderRepairs(true);
+        FitsFactory.setAllowTerminalJunk(true);
+        // Test using a FITS file with junk at the end...
         testImagePlusCompressedImage(
                 resolveLocalOrRemoteFileName("17h-75dec--BINT_C_CVT_2014-06-25-MW1-17h_Light_600SecISO200_000031.fit"));
+        // No exception thrown
     }
 
     @Test(expected = FitsException.class)
     public void testImagePlusCompressedImage1A() throws Exception {
-        FitsFactory.setAllowHeaderRepairs(false);
+        FitsFactory.setAllowTerminalJunk(false);
+        // Test using a FITS file with junk at the end...
         testImagePlusCompressedImage(
                 resolveLocalOrRemoteFileName("03h-80dec--C_CVT_2013-12-29-MW1-03h_Light_600SecISO200_000042.fit"));
     }
 
     @Test(expected = FitsException.class)
     public void testImagePlusCompressedImage2A() throws Exception {
-        FitsFactory.setAllowHeaderRepairs(false);
+        FitsFactory.setAllowTerminalJunk(false);
+        // Test using a FITS file with junk at the end...
         testImagePlusCompressedImage(
                 resolveLocalOrRemoteFileName("17h-75dec--BINT_C_CVT_2014-06-25-MW1-17h_Light_600SecISO200_000031.fit"));
     }
