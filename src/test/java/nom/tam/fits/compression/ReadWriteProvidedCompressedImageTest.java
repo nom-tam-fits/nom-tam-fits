@@ -1235,8 +1235,6 @@ public class ReadWriteProvidedCompressedImageTest {
         InputStream fileStream = new BufferedInputStream(new FileInputStream(imageFile));
         Fits fitsFile = new Fits(fileStream);
         fitsFileHDU = fitsFile.read();
-        fitsFile.close();
-        fileStream.close();
         for (int i = 0; i < fitsFileHDU.length; i++) {
             if (fitsFileHDU[i].getHeader().containsKey("ZIMAGE")) {
                 if (fitsFileHDU[i].getHeader().getBooleanValue("ZIMAGE")) {
@@ -1246,6 +1244,8 @@ public class ReadWriteProvidedCompressedImageTest {
                 }
             }
         }
+        fitsFile.close();
+        fileStream.close();
     }
 
     @Test
