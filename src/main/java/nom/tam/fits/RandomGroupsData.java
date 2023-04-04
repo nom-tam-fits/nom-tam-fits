@@ -146,7 +146,7 @@ public class RandomGroupsData extends Data {
      * 
      * @return The dimensions of the parameters, or <code>null</code> if not defined.
      * 
-     * @see #getParameterDims()
+     * @see #getParameterCount()
      * 
      * @since 1.18
      */

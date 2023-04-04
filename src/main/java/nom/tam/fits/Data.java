@@ -232,7 +232,7 @@ public abstract class Data implements FitsElement {
      * @see #getData()
      * @see #isDeferred()
      * 
-     * @ince 1.18
+     * @since 1.18
      */
     protected abstract void loadData(ArrayDataInput in) throws IOException, FitsException;
 

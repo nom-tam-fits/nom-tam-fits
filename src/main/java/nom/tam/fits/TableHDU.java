@@ -99,6 +99,7 @@ public abstract class TableHDU<T extends AbstractTableData> extends BasicHDU<T> 
      * @return the number of rows in the adapted table
      * @param newRows
      *            rows to add to the table
+     * @return the number of rows in the table
      * @throws FitsException
      *             if the operation failed
      */
