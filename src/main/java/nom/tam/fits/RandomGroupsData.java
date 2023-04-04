@@ -160,8 +160,6 @@ public class RandomGroupsData extends Data {
             throw new FitsException("Invalid (empty) random group data");
         }
         Standard.context(RandomGroupsData.class);
-        Object paraSamp = sampleRow[0];
-        Object dataSamp = sampleRow[1];
 
         int np = getParameterCount();
         int[] ddims = getDataDims();
