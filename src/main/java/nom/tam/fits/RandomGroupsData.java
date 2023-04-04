@@ -156,8 +156,8 @@ public class RandomGroupsData extends Data {
 
     @Override
     protected void fillHeader(Header h) throws FitsException {
-        if (groups <= 0 || sampleRow.length != 2) {
-            throw new FitsException("Data not conformable to Random Groups");
+        if (groups <= 0) {
+            throw new FitsException("Invalid (empty) random group data");
         }
         Standard.context(RandomGroupsData.class);
         Object paraSamp = sampleRow[0];

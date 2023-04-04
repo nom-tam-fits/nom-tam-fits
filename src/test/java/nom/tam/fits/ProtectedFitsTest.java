@@ -121,7 +121,7 @@ public class ProtectedFitsTest {
             actual = e;
         }
         Assert.assertNotNull(actual);
-        Assert.assertTrue(actual.getMessage().toLowerCase().contains("not conform"));
+        Assert.assertEquals(FitsException.class, actual.getClass());
         Object[][] dataArray = {new Object[] {new double[10], new int[10],}};
 
         try {

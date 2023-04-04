@@ -292,4 +292,10 @@ public class RandomGroupsTest {
     public void testCreateWrongDim2() throws Exception {
         RandomGroupsData g = new RandomGroupsData(new Object[][] {{new int[] {1, 2}, new double[] {3.0, 4.0, 5.0}}});
     }
+
+    @Test
+    public void testNullDataWrite() throws Exception {
+        new RandomGroupsData(null).write(null);
+        // No exception should be throwm.
+    }
 }
