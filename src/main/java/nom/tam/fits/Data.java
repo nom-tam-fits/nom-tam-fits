@@ -94,7 +94,7 @@ public abstract class Data implements FitsElement {
      * 
      * @throws FitsException if the operation fails
      */
-    abstract void fillHeader(Header head) throws FitsException;
+    protected abstract void fillHeader(Header head) throws FitsException;
 
     /**
      * Checks if the data should be assumed to be in deferred read mode.
@@ -209,13 +209,18 @@ public abstract class Data implements FitsElement {
      * 
      * @return the calculated byte size for the data.
      */
-    abstract long getTrueSize();
+    protected abstract long getTrueSize();
 
     /**
+     * <p>
      * Load data from the current position of the input into memory. This may be triggered immediately when calling
      * {@link #read(ArrayDataInput)} if called on a non random accessible input, or else later when data is accessed via
      * {@link #ensureData()}, for example as a result of a {@link #getData()} call. This method will not be called
      * unless there is actual data of non-zero size to be read.
+     * </p>
+     * <p>
+     * Implementations should create appropriate data structures and populate them from the specified input.
+     * </p>
      * 
      * @param in The input from which to load data
      * 

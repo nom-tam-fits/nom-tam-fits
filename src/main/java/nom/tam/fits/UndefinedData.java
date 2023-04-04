@@ -118,7 +118,7 @@ public class UndefinedData extends Data {
 
     @Override
     @SuppressFBWarnings(value = "EI_EXPOSE_REP", justification = "intended exposure of mutable data")
-    public Object getCurrentData() {
+    protected Object getCurrentData() {
         return this.data;
     }
 

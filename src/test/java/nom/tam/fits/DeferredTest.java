@@ -81,7 +81,7 @@ public class DeferredTest {
 
     class DefaultData extends Data {
         @Override
-        void fillHeader(Header head) throws FitsException {
+        protected void fillHeader(Header head) throws FitsException {
         }
 
         @Override
@@ -90,7 +90,7 @@ public class DeferredTest {
         }
 
         @Override
-        long getTrueSize() {
+        protected long getTrueSize() {
             return 0;
         }
 

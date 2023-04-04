@@ -37,7 +37,7 @@ import nom.tam.util.ArrayDataOutput;
 public class BadData extends Data {
 
     @Override
-    void fillHeader(Header head) throws FitsException {
+    protected void fillHeader(Header head) throws FitsException {
 
     }
 
@@ -47,7 +47,7 @@ public class BadData extends Data {
     }
 
     @Override
-    long getTrueSize() {
+    protected long getTrueSize() {
         return 0;
     }
 

@@ -130,7 +130,6 @@ public class ImageData extends Data {
      * @throws FitsException if there was a problem with the header description.
      */
     public ImageData(Header h) throws FitsException {
-
         this.dataDescription = parseHeader(h);
     }
 

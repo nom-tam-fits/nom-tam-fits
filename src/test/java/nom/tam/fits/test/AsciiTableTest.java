@@ -357,8 +357,6 @@ public class AsciiTableTest {
 
     private void addDeleteColumn(AsciiTableHDU asciiHdu) throws FitsException {
         AsciiTable tab = asciiHdu.getData();
-        tab.fillHeader(asciiHdu.getHeader());
-
         String[] col4 = (String[]) tab.getColumn(4);
         int[] newCol = new int[50];
         for (int index = 0; index < newCol.length; index++) {
@@ -602,8 +600,13 @@ public class AsciiTableTest {
             public void close() throws SecurityException {
             }
         });
-        data.fillHeader(new Header() {
 
+        new AsciiTable() {
+            @Override
+            public void fillHeader(Header hdr) {
+                super.fillHeader(hdr);
+            }
+        }.fillHeader(new Header() {
             @Override
             public Cursor<String, HeaderCard> iterator() {
                 ThrowAnyException.throwHeaderCardException("all is broken");

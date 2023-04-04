@@ -630,13 +630,14 @@ public class AsciiTable extends AbstractTableData {
     }
 
     /**
-     * Fill in a header with information that points to this data.
+     * Fill in a header with information that points to this data. Even though it is a public method, it is meant for
+     * internal use only.
      *
      * @param hdr The header to be updated with information appropriate to the current table data.
      */
 
     @Override
-    public void fillHeader(Header hdr) {
+    protected void fillHeader(Header hdr) {
         try {
             Standard.context(AsciiTable.class);
             hdr.setXtension(Standard.XTENSION_ASCIITABLE);

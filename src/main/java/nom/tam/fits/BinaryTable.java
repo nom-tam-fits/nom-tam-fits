@@ -558,7 +558,10 @@ public class BinaryTable extends AbstractTableData {
     }
 
     /**
-     * Update a FITS header to reflect the current state of the data. * @throws FitsException if the operation failed
+     * Update a FITS header to reflect the current state of the data. Its really for internal use only, but it's public
+     * to allow access by the compression clases.
+     * 
+     * @throws FitsException if the operation failed
      */
     @Override
     public void fillHeader(Header h) throws FitsException {
@@ -779,7 +782,7 @@ public class BinaryTable extends AbstractTableData {
      * Get the size of the data in the HDU sans padding.
      */
     @Override
-    public long getTrueSize() {
+    protected long getTrueSize() {
         long len = (long) this.nRow * this.rowLen;
         if (this.heap.size() > 0) {
             len += this.heap.size() + this.heapOffset;

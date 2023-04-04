@@ -49,7 +49,7 @@ import nom.tam.util.ArrayDataOutput;
 public final class NullData extends Data {
 
     @Override
-    void fillHeader(Header head) {
+    protected void fillHeader(Header head) {
         head.setSimple(true);
         head.setBitpix(Bitpix.INTEGER);
         head.setNaxes(0);
@@ -75,7 +75,7 @@ public final class NullData extends Data {
     }
 
     @Override
-    long getTrueSize() {
+    protected long getTrueSize() {
         return 0;
     }
 
