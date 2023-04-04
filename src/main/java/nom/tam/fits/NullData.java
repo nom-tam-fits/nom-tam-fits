@@ -1,5 +1,9 @@
 package nom.tam.fits;
 
+import static nom.tam.fits.header.Standard.EXTEND;
+import static nom.tam.fits.header.Standard.GCOUNT;
+import static nom.tam.fits.header.Standard.PCOUNT;
+
 /*-
  * #%L
  * nom.tam FITS library
@@ -35,18 +39,12 @@ import nom.tam.fits.header.Bitpix;
 import nom.tam.util.ArrayDataInput;
 import nom.tam.util.ArrayDataOutput;
 
-import static nom.tam.fits.header.Standard.EXTEND;
-import static nom.tam.fits.header.Standard.GCOUNT;
-import static nom.tam.fits.header.Standard.PCOUNT;
-
 /**
- * A subclass of <code>Data</code> containing no actual Data. It wraps an underlying data of
- * <code>null</code>.
+ * A subclass of <code>Data</code> containing no actual Data. It wraps an underlying data of <code>null</code>.
  * 
  * @author Attila Kovacs
  * 
  * @since 1.18
- *
  */
 public final class NullData extends Data {
 
@@ -55,7 +53,7 @@ public final class NullData extends Data {
         head.setSimple(true);
         head.setBitpix(Bitpix.INTEGER);
         head.setNaxes(0);
-     
+
         try {
             // Just in case!
             head.addValue(EXTEND, true);
@@ -67,7 +65,12 @@ public final class NullData extends Data {
     }
 
     @Override
-    public Void getData() {
+    protected void loadData(ArrayDataInput in) {
+        return;
+    }
+
+    @Override
+    public Void getCurrentData() {
         return null;
     }
 

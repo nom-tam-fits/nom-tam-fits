@@ -38,7 +38,6 @@ import static nom.tam.fits.header.Standard.NAXISn;
 import static nom.tam.fits.header.Standard.PCOUNT;
 import static nom.tam.util.LoggerHelper.getLogger;
 
-import java.io.EOFException;
 import java.io.IOException;
 import java.util.logging.Level;
 import java.util.logging.Logger;
@@ -52,13 +51,13 @@ import nom.tam.util.ArrayFuncs;
 import nom.tam.util.FitsEncoder;
 
 /**
- * This class provides a simple holder for data which is not handled by other
- * classes.
+ * This class provides a simple holder for data which is not handled by other classes.
  */
 public class UndefinedData extends Data {
 
     private static final Logger LOG = getLogger(UndefinedData.class);
 
+    private int byteSize = 0;
     private byte[] data;
 
     public UndefinedData(Header h) throws FitsException {
@@ -79,25 +78,24 @@ public class UndefinedData extends Data {
         }
         size *= Bitpix.fromHeader(h).byteSize();
 
-        this.data = new byte[size];
+        this.byteSize = size;
     }
 
     /**
      * Create an UndefinedData object using the specified object.
      * 
-     * @param x
-     *            object to create the hdu from
+     * @param x object to create the hdu from
      */
     public UndefinedData(Object x) {
-        this.data = new byte[(int) FitsEncoder.computeSize(x)];
+        this.byteSize = (int) FitsEncoder.computeSize(x);
+        this.data = new byte[byteSize];
         ArrayFuncs.copyInto(x, this.data);
     }
 
     /**
      * Fill header with keywords that describe data.
      * 
-     * @param head
-     *            The FITS header
+     * @param head The FITS header
      */
     @Override
     protected void fillHeader(Header head) {
@@ -106,7 +104,7 @@ public class UndefinedData extends Data {
             head.setXtension("UNKNOWN");
             head.setBitpix(Bitpix.BYTE);
             head.setNaxes(1);
-            head.addValue(NAXISn.n(1), this.data.length);
+            head.addValue(NAXISn.n(1), this.byteSize);
             head.addValue(PCOUNT, 0);
             head.addValue(GCOUNT, 1);
             // Just in case!
@@ -119,43 +117,41 @@ public class UndefinedData extends Data {
     }
 
     @Override
-    public boolean isDeferred() {
-        return false;
-    }
-    
-    @Override
     @SuppressFBWarnings(value = "EI_EXPOSE_REP", justification = "intended exposure of mutable data")
-    public Object getData() {
+    public Object getCurrentData() {
         return this.data;
     }
 
     /** Get the size in bytes of the data */
     @Override
     protected long getTrueSize() {
-        return this.data.length;
+        return this.byteSize;
     }
 
     @Override
-    public void read(ArrayDataInput i) throws FitsException {
-        setFileOffset(i);
-        try {
-            i.readFully(this.data);
-        } catch (IOException e) {
-            throw new FitsException("Unable to read unknown data:", e);
+    public byte[] getData() throws FitsException {
+        if (byteSize == 0) {
+            return null;
         }
 
-        int pad = FitsUtil.padding(getTrueSize());
-        try {
-            i.skipAllBytes(pad);
-        } catch (EOFException e) {
-            throw new PaddingException("EOF skipping padding in undefined data", this, e);
-        } catch (IOException e) {
-            throw new FitsException("Error skipping padding in undefined data", e);
+        byte[] bytes = (byte[]) super.getData();
+        if (bytes != null) {
+            return bytes;
         }
+
+        data = new byte[byteSize];
+        return data;
+    }
+
+    @Override
+    protected void loadData(ArrayDataInput in) throws IOException {
+        this.data = new byte[byteSize];
+        in.readFully(this.data);
     }
 
     @Override
     public void write(ArrayDataOutput o) throws FitsException {
+        ensureData();
         try {
             o.write(this.data);
         } catch (IOException e) {

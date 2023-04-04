@@ -46,7 +46,6 @@ import static nom.tam.fits.header.Standard.TUNITn;
 import static nom.tam.fits.header.Standard.TZEROn;
 import static nom.tam.fits.header.Standard.XTENSION;
 
-
 import java.io.PrintStream;
 
 import nom.tam.fits.header.IFitsHeader;
@@ -58,33 +57,27 @@ import nom.tam.util.ArrayFuncs;
 public class BinaryTableHDU extends TableHDU<BinaryTable> {
 
     /** The standard column keywords for a binary table. */
-    private static final IFitsHeader[] KEY_STEMS = {
-        TTYPEn,
-        TFORMn,
-        TUNITn,
-        TNULLn,
-        TSCALn,
-        TZEROn,
-        TDISPn,
-        TDIMn
-    };
+    private static final IFitsHeader[] KEY_STEMS = {TTYPEn, TFORMn, TUNITn, TNULLn, TSCALn, TZEROn, TDISPn, TDIMn};
 
     public BinaryTableHDU(Header hdr, BinaryTable datum) {
         super(hdr, datum);
     }
-    
+
     @Override
     protected final String getCanonicalXtension() {
         return Standard.XTENSION_BINTABLE;
     }
 
     /**
+     * @deprecated This should be for internal use only. Will reduce visibility in the future
+     * 
      * @return Encapsulate data in a BinaryTable data type
-     * @param o
-     *            data to encapsulate
-     * @throws FitsException
-     *             if the type of the data is not usable as data
+     * 
+     * @param o data to encapsulate
+     * 
+     * @throws FitsException if the type of the data is not usable as data
      */
+    @Deprecated
     public static BinaryTable encapsulate(Object o) throws FitsException {
         if (o instanceof nom.tam.util.ColumnTable) {
             return new BinaryTable((nom.tam.util.ColumnTable<?>) o);
@@ -93,27 +86,34 @@ public class BinaryTableHDU extends TableHDU<BinaryTable> {
         } else if (o instanceof Object[]) {
             return new BinaryTable((Object[]) o);
         } else {
-            throw new FitsException("Unable to encapsulate object of type:" + o.getClass().getName() + " as BinaryTable");
+            throw new FitsException(
+                    "Unable to encapsulate object of type:" + o.getClass().getName() + " as BinaryTable");
         }
     }
 
-    /*
-     * Check if this data object is consistent with a binary table. There are
-     * three options: a column table object, an Object[][], or an Object[]. This
-     * routine doesn't check that the dimensions of arrays are properly
-     * consistent.
+    /**
+     * Check if this data object is consistent with a binary table.
+     * 
+     * @param o a column table object, an Object[][], or an Object[]. This routine doesn't check that the dimensions of
+     *            arrays are properly consistent.
+     * 
+     * @deprecated This should be for internal use only. Will reduce visibility in the future
      */
+    @Deprecated
     public static boolean isData(Object o) {
         return o instanceof nom.tam.util.ColumnTable || o instanceof Object[][] || o instanceof Object[];
     }
 
     /**
      * Check that this is a valid binary table header.
+     * 
+     * @deprecated This should be for internal use only. Will reduce visibility in the future
      *
-     * @param header
-     *            to validate.
+     * @param header to validate.
+     * 
      * @return <CODE>true</CODE> if this is a binary table header.
      */
+    @Deprecated
     public static boolean isHeader(Header header) {
         String xten = header.getStringValue(XTENSION);
         if (xten == null) {
@@ -124,24 +124,31 @@ public class BinaryTableHDU extends TableHDU<BinaryTable> {
     }
 
     /**
-     * @return a new created data from a binary table header.
-     * @param header
-     *            the template specifying the binary table.
-     * @throws FitsException
-     *             if there was a problem with the header.
+     * Prepares a data object into which the actual data can be read from an input subsequently or at a later time.
+     * 
+     * @deprecated This should be for internal use only. Will reduce visibility in the future
+     * 
+     * @param header The FITS header that describes the data
+     * 
+     * @return A data object that support reading content from a stream.
+     * 
+     * @throws FitsException if the data could not be prepared to prescriotion.
      */
+    @Deprecated
     public static BinaryTable manufactureData(Header header) throws FitsException {
         return new BinaryTable(header);
     }
 
     /**
+     * @deprecated This should be for internal use only. Will reduce visibility in the future
+     * 
      * @return a newly created binary table HDU from the supplied data.
-     * @param data
-     *            the data used to build the binary table. This is typically
-     *            some kind of array of objects.
-     * @throws FitsException
-     *             if there was a problem with the data.
+     * 
+     * @param data the data used to build the binary table. This is typically some kind of array of objects.
+     * 
+     * @throws FitsException if there was a problem with the data.
      */
+    @Deprecated
     public static Header manufactureHeader(Data data) throws FitsException {
         Header hdr = new Header();
         data.fillHeader(hdr);
@@ -217,8 +224,11 @@ public class BinaryTableHDU extends TableHDU<BinaryTable> {
     /**
      * Check that this HDU has a valid header.
      *
+     * @deprecated This should be for internal use only. Will reduce visibility in the future
+     *
      * @return <CODE>true</CODE> if this HDU has a valid header.
      */
+    @Deprecated
     public boolean isHeader() {
         return isHeader(this.myHeader);
     }
@@ -231,15 +241,14 @@ public class BinaryTableHDU extends TableHDU<BinaryTable> {
     }
 
     /**
-     * Convert a column in the table to complex. Only tables with appropriate
-     * types and dimensionalities can be converted. It is legal to call this on
-     * a column that is already complex.
+     * Convert a column in the table to complex. Only tables with appropriate types and dimensionalities can be
+     * converted. It is legal to call this on a column that is already complex.
      *
-     * @param index
-     *            The 0-based index of the column to be converted.
+     * @param index The 0-based index of the column to be converted.
+     * 
      * @return Whether the column can be converted
-     * @throws FitsException
-     *             if the header could not be adapted
+     * 
+     * @throws FitsException if the header could not be adapted
      */
     public boolean setComplexColumn(int index) throws FitsException {
         Standard.context(BinaryTable.class);
@@ -308,7 +317,8 @@ public class BinaryTableHDU extends TableHDU<BinaryTable> {
             this.myHeader.deleteKey(THEAP);
         } else {
             this.myHeader.getIntValue(TFIELDS);
-            int offset = this.myHeader.getIntValue(NAXIS1) * this.myHeader.getIntValue(NAXIS2) + this.myData.getHeapOffset();
+            int offset = this.myHeader.getIntValue(NAXIS1) * this.myHeader.getIntValue(NAXIS2)
+                    + this.myData.getHeapOffset();
             this.myHeader.addValue(THEAP, offset);
         }
 

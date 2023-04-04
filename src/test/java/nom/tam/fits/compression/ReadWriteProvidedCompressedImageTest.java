@@ -418,7 +418,7 @@ public class ReadWriteProvidedCompressedImageTest {
         }
     }
 
-    private boolean isEmptyImage(BasicHDU<?> result) {
+    private boolean isEmptyImage(BasicHDU<?> result) throws FitsException {
         return result instanceof ImageHDU && ((ImageHDU) result).getData().getData() == null;
     }
 

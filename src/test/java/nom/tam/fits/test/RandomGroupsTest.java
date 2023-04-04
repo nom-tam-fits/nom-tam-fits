@@ -36,19 +36,20 @@ import static org.junit.Assert.assertEquals;
 import java.io.ByteArrayOutputStream;
 import java.io.PrintStream;
 
+import org.junit.Assert;
+import org.junit.Test;
+
 import nom.tam.fits.BasicHDU;
 import nom.tam.fits.Fits;
+import nom.tam.fits.FitsException;
 import nom.tam.fits.FitsUtil;
 import nom.tam.fits.Header;
 import nom.tam.fits.RandomGroupsData;
 import nom.tam.fits.RandomGroupsHDU;
-import nom.tam.fits.FitsException;
+import nom.tam.fits.header.Bitpix;
 import nom.tam.util.ArrayFuncs;
 import nom.tam.util.FitsFile;
 import nom.tam.util.SafeClose;
-
-import org.junit.Assert;
-import org.junit.Test;
 
 /**
  * Test random groups formats in FITS data. Write and read random groups data
@@ -103,6 +104,7 @@ public class RandomGroupsTest {
             BasicHDU<?>[] hdus = f.read();
 
             data = (Object[][]) hdus[0].getKernel();
+            System.err.println("### [1] " + data.length);
 
             for (int i = 0; i < data.length; i += 1) {
 
@@ -125,6 +127,7 @@ public class RandomGroupsTest {
             f = new Fits();
             bf = new FitsFile("target/rg2.fits", "rw");
             // Generate a FITS HDU from the kernel.
+            System.err.println("### [2] " + data.length);
             f.addHDU(Fits.makeHDU(data));
             f.write(bf);
 
@@ -212,7 +215,8 @@ public class RandomGroupsTest {
         }
     }
 
-    private void testGroupCreationAndRecreationByType(Object fa, Object pa, int bipix, String typeName) throws Exception {
+    private void testGroupCreationAndRecreationByType(Object fa, Object pa, int bipix, String typeName)
+            throws Exception {
         Object[][] data = new Object[1][2];
         data[0][0] = pa;
         data[0][1] = fa;
@@ -230,10 +234,9 @@ public class RandomGroupsTest {
         Assert.assertEquals(bipix, hdr.getIntValue("BITPIX"));
 
         RandomGroupsHDU newHdu = (RandomGroupsHDU) Fits.makeHDU(hdr);
-        Object[][] recreatedData = (Object[][]) newHdu.getData().getData();
-        Assert.assertEquals(1, recreatedData.length);
-        Assert.assertEquals(2, recreatedData[0].length);
-        Assert.assertEquals(typeName + "[3]", ArrayFuncs.arrayDescription(recreatedData[0][0]));
-        Assert.assertEquals(typeName + "[20, 20]", ArrayFuncs.arrayDescription(recreatedData[0][1]));
+        RandomGroupsData recreatedData = newHdu.getData();
+        Assert.assertEquals(Bitpix.forValue(bipix).getPrimitiveType(), recreatedData.getElementType());
+        Assert.assertArrayEquals(new int[] {3}, recreatedData.getParameterDims());
+        Assert.assertArrayEquals(new int[] {20, 20}, recreatedData.getDataDims());
     }
 }

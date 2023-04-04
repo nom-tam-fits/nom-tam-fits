@@ -61,4 +61,16 @@ public class BadData extends Data {
 
     }
 
+    @Override
+    protected Object getCurrentData() {
+        // TODO Auto-generated method stub
+        return null;
+    }
+
+    @Override
+    protected void loadData(ArrayDataInput in) {
+        // TODO Auto-generated method stub
+
+    }
+
 }

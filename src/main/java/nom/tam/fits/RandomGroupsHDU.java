@@ -48,13 +48,11 @@ import nom.tam.fits.header.Standard;
 import nom.tam.util.ArrayFuncs;
 
 /**
- * Random groups HDUs. Note that the internal storage of random groups is a
- * Object[ngroup][2] array. The first element of each group is the parameter
- * data from that group. The second element is the data. The parameters should
- * be a one dimensional array of the primitive types byte, short, int, long,
- * float or double. The second element is a n-dimensional array of the same
- * type. When analyzing group data structure only the first group is examined,
- * but for a valid FITS file all groups must have the same structure.
+ * Random groups HDUs. Note that the internal storage of random groups is a Object[ngroup][2] array. The first element
+ * of each group is the parameter data from that group. The second element is the data. The parameters should be a one
+ * dimensional array of the primitive types byte, short, int, long, float or double. The second element is a
+ * n-dimensional array of the same type. When analyzing group data structure only the first group is examined, but for a
+ * valid FITS file all groups must have the same structure.
  */
 public class RandomGroupsHDU extends BasicHDU<RandomGroupsData> {
 
@@ -62,7 +60,17 @@ public class RandomGroupsHDU extends BasicHDU<RandomGroupsData> {
     protected final String getCanonicalXtension() {
         return Standard.XTENSION_IMAGE;
     }
-    
+
+    /**
+     * @deprecated This should be for internal use only. Will reduce visibility in the future
+     * 
+     * @return a random groups data structure from an array of objects representing the data.
+     * 
+     * @param o the array of object to create the random groups
+     * 
+     * @throws FitsException if the data could not be created.
+     */
+    @Deprecated
     public static RandomGroupsData encapsulate(Object o) throws FitsException {
         if (o instanceof Object[][]) {
             return new RandomGroupsData((Object[][]) o);
@@ -98,15 +106,17 @@ public class RandomGroupsHDU extends BasicHDU<RandomGroupsData> {
     }
 
     /**
-     * Check if this data is compatible with Random Groups structure. Must be an
-     * Object[ngr][2] structure with both elements of each group having the same
-     * base type and the first element being a simple primitive array. We do not
+     * Check if this data is compatible with Random Groups structure. Must be an Object[ngr][2] structure with both
+     * elements of each group having the same base type and the first element being a simple primitive array. We do not
      * check anything but the first row.
      * 
-     * @param potentialData
-     *            data to check
+     * @deprecated This should be for internal use only. Will reduce visibility in the future
+     * 
+     * @param potentialData data to check
+     * 
      * @return is this data compatible with Random Groups structure
      */
+    @Deprecated
     public static boolean isData(Object potentialData) {
         if (potentialData instanceof Object[][]) {
             Object[][] o = (Object[][]) potentialData;
@@ -122,10 +132,13 @@ public class RandomGroupsHDU extends BasicHDU<RandomGroupsData> {
     }
 
     /**
+     * @deprecated This should be for internal use only. Will reduce visibility in the future
+     * 
      * @return Is this a random groups header?
-     * @param hdr
-     *            The header to be tested.
+     * 
+     * @param hdr The header to be tested.
      */
+    @Deprecated
     public static boolean isHeader(Header hdr) {
 
         if (hdr.getBooleanValue(SIMPLE)) {
@@ -142,45 +155,38 @@ public class RandomGroupsHDU extends BasicHDU<RandomGroupsData> {
     }
 
     /**
-     * @return Create FITS data object corresponding to a given header.
-     * @param header
-     *            header for the data creation
-     * @throws FitsException
-     *             if the operation failed
+     * Prepares a data object into which the actual data can be read from an input subsequently or at a later time.
+     * 
+     * @deprecated This should be for internal use only. Will reduce visibility in the future
+     * 
+     * @param header The FITS header that describes the data
+     * 
+     * @return A data object that support reading content from a stream.
+     * 
+     * @throws FitsException if the data could not be prepared to prescriotion.
      */
+    @Deprecated
     public static RandomGroupsData manufactureData(Header header) throws FitsException {
 
         int gcount = header.getIntValue(GCOUNT, -1);
         int pcount = header.getIntValue(PCOUNT, -1);
 
-        if (!header.getBooleanValue(GROUPS) || header.getIntValue(NAXISn.n(1), -1) != 0 || gcount < 0 || pcount < 0 || header.getIntValue(NAXIS) < 2) {
+        if (!header.getBooleanValue(GROUPS) || header.getIntValue(NAXISn.n(1), -1) != 0 || gcount < 0 || pcount < 0
+                || header.getIntValue(NAXIS) < 2) {
             throw new FitsException("Invalid Random Groups Parameters");
         }
 
-        // Allocate the object.
-        Object[][] dataArray;
-
-        if (gcount > 0) {
-            dataArray = new Object[gcount][2];
-        } else {
-            dataArray = new Object[0][];
-        }
-
-        Object[] sampleRow = generateSampleRow(header);
-        for (int i = 0; i < gcount; i += 1) {
-            dataArray[i][0] = ((Object[]) ArrayFuncs.deepClone(sampleRow))[0];
-            dataArray[i][1] = ((Object[]) ArrayFuncs.deepClone(sampleRow))[1];
-        }
-        return new RandomGroupsData(dataArray);
-
+        return new RandomGroupsData(gcount, generateSampleRow(header));
     }
 
     /**
+     * @deprecated This should be for internal use only. Will reduce visibility in the future
+     * 
      * @return Make a header point to the given object.
-     * @param d
-     *            The random groups data the header should describe.
-     * @throws FitsException
-     *             if the operation failed
+     * 
+     * @param d The random groups data the header should describe.
+     * 
+     * @throws FitsException if the operation failed
      */
     static Header manufactureHeader(Data d) throws FitsException {
 
@@ -196,10 +202,8 @@ public class RandomGroupsHDU extends BasicHDU<RandomGroupsData> {
     /**
      * Create an HDU from the given header and data .
      * 
-     * @param header
-     *            header to use
-     * @param data
-     *            data to use
+     * @param header header to use
+     * @param data data to use
      */
     public RandomGroupsHDU(Header header, RandomGroupsData data) {
         super(header, data);
@@ -224,7 +228,11 @@ public class RandomGroupsHDU extends BasicHDU<RandomGroupsData> {
 
         Object[][] data = null;
         if (this.myData != null) {
-            data = (Object[][]) this.myData.getData();
+            try {
+                data = this.myData.getData();
+            } catch (FitsException e) {
+                // nothing to do...
+            }
         }
 
         if (data == null || data.length < 1 || data[0].length != 2) {
@@ -244,6 +252,5 @@ public class RandomGroupsHDU extends BasicHDU<RandomGroupsData> {
     public boolean isHeader() {
         return isHeader(this.myHeader);
     }
-
 
 }

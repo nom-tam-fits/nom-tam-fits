@@ -1,5 +1,10 @@
 package nom.tam.fits;
 
+import static nom.tam.fits.header.DataDescription.TDMAXn;
+import static nom.tam.fits.header.DataDescription.TDMINn;
+import static nom.tam.fits.header.DataDescription.TLMAXn;
+import static nom.tam.fits.header.DataDescription.TLMINn;
+
 /*
  * #%L
  * nom.tam FITS library
@@ -40,12 +45,6 @@ import static nom.tam.fits.header.Standard.TFIELDS;
 import static nom.tam.fits.header.Standard.TFORMn;
 import static nom.tam.fits.header.Standard.TNULLn;
 
-import static nom.tam.fits.header.DataDescription.TDMINn;
-import static nom.tam.fits.header.DataDescription.TDMAXn;
-import static nom.tam.fits.header.DataDescription.TLMINn;
-import static nom.tam.fits.header.DataDescription.TLMAXn;
-
-import java.io.EOFException;
 import java.io.IOException;
 import java.lang.reflect.Array;
 import java.util.logging.Level;
@@ -62,7 +61,6 @@ import nom.tam.util.ByteFormatter;
 import nom.tam.util.ByteParser;
 import nom.tam.util.Cursor;
 import nom.tam.util.FormatException;
-import nom.tam.util.RandomAccess;
 
 /**
  * This class represents the data in an ASCII table
@@ -138,41 +136,31 @@ public class AsciiTable extends AbstractTableData {
     /**
      * Create an ASCII table given a header
      *
-     * @param hdr
-     *            The header describing the table
-     * @throws FitsException
-     *             if the operation failed
+     * @param hdr The header describing the table
+     * 
+     * @throws FitsException if the operation failed
      */
     public AsciiTable(Header hdr) throws FitsException {
         this(hdr, true);
     }
 
-
     /**
      * <p>
-     * Create an ASCII table given a header, with custom integer handling
-     * support.
+     * Create an ASCII table given a header, with custom integer handling support.
      * </p>
-     *
-     * <p>The <code>preferInt</code> parameter controls how columns
-     * with format "<code>I10</code>" are handled; this is tricky because some,
-     * but not all, integers that can be represented in 10 characters can
-     * be represented as 32-bit integers.  Setting it <code>true</code> may make it
-     * more likely to avoid unexpected type changes during round-tripping,
-     * but it also means that some (large number) data in I10 columns may
-     * be impossible to read.
+     * <p>
+     * The <code>preferInt</code> parameter controls how columns with format "<code>I10</code>" are handled; this is
+     * tricky because some, but not all, integers that can be represented in 10 characters can be represented as 32-bit
+     * integers. Setting it <code>true</code> may make it more likely to avoid unexpected type changes during
+     * round-tripping, but it also means that some (large number) data in I10 columns may be impossible to read.
      * </p>
      * 
-     * @param hdr
-     *            The header describing the table
-     * @param preferInt
-     *            if <code>true</code>, format "I10" columns will be assumed
-     *            <code>int.class</code>, provided TLMINn/TLMAXn or TDMINn/TDMAXn 
-     *            limits (if defined) allow it. 
-     *            if <code>false</code>, I10 columns that have no clear indication 
-     *            of data range will be assumed <code>long.class</code>.
-     * @throws FitsException
-     *             if the operation failed
+     * @param hdr The header describing the table
+     * @param preferInt if <code>true</code>, format "I10" columns will be assumed <code>int.class</code>, provided
+     *            TLMINn/TLMAXn or TDMINn/TDMAXn limits (if defined) allow it. if <code>false</code>, I10 columns that
+     *            have no clear indication of data range will be assumed <code>long.class</code>.
+     * 
+     * @throws FitsException if the operation failed
      */
     public AsciiTable(Header hdr, boolean preferInt) throws FitsException {
 
@@ -184,7 +172,6 @@ public class AsciiTable extends AbstractTableData {
         this.offsets = new int[this.nFields];
         this.lengths = new int[this.nFields];
         this.nulls = new String[this.nFields];
-
 
         for (int i = 0; i < this.nFields; i += 1) {
             this.offsets[i] = hdr.getIntValue(TBCOLn.n(i + 1)) - 1;
@@ -230,14 +217,14 @@ public class AsciiTable extends AbstractTableData {
     }
 
     /**
-     * Checks if the integer value of a specific key requires <code>long</code>
-     * value type to store.
+     * Checks if the integer value of a specific key requires <code>long</code> value type to store.
      * 
-     * @param h     the header
-     * @param key   the keyword to check
-     * @return      <code>true</code> if the keyword exists and has an integer value that is
-     *              outside the range of <code>int</code>. Otherwise <code>false</code>
-     *              
+     * @param h the header
+     * @param key the keyword to check
+     * 
+     * @return <code>true</code> if the keyword exists and has an integer value that is outside the range of
+     *             <code>int</code>. Otherwise <code>false</code>
+     * 
      * @see #guessI10Type(int, Header, boolean)
      */
     private boolean requiresLong(Header h, IFitsHeader key, Long dft) {
@@ -250,23 +237,20 @@ public class AsciiTable extends AbstractTableData {
     }
 
     /**
-     * Guesses what type of values to use to return I10 type table values. Depending on the
-     * range of represented values I10 may fit into <code>int</code> types, or else
-     * require <code>long</code> type arrays. Therefore, the method checks for the
-     * presence of standard column limit keywords TLMINn/TLMAXn and TDMINn/TDMAXn
-     * and if these exist and are outside of the range of an <code>int</code> then
-     * the call will return <code>long.class</code>. If the header does not define the
-     * data limits (fully), it will return the class the caller prefers. Otherwise (data limits
-     * were defined and fit into the <code>int</code> range) <code>int.class</code> will
-     * be returned.
+     * Guesses what type of values to use to return I10 type table values. Depending on the range of represented values
+     * I10 may fit into <code>int</code> types, or else require <code>long</code> type arrays. Therefore, the method
+     * checks for the presence of standard column limit keywords TLMINn/TLMAXn and TDMINn/TDMAXn and if these exist and
+     * are outside of the range of an <code>int</code> then the call will return <code>long.class</code>. If the header
+     * does not define the data limits (fully), it will return the class the caller prefers. Otherwise (data limits were
+     * defined and fit into the <code>int</code> range) <code>int.class</code> will be returned.
      * 
-     * @param col           the 0-based table column index
-     * @param h             the header
-     * @param preferInt     whether we prefer <code>int.class</code> over <code>long.class</code>
-     *                      in case the header does not provide us with a clue. 
-     * @return              <code>long.class</code> if the data requires long or
-     *                      we prefer it. Othwerwise <code>int.class</code>
-     *                      
+     * @param col the 0-based table column index
+     * @param h the header
+     * @param preferInt whether we prefer <code>int.class</code> over <code>long.class</code> in case the header does
+     *            not provide us with a clue.
+     * 
+     * @return <code>long.class</code> if the data requires long or we prefer it. Othwerwise <code>int.class</code>
+     * 
      * @see #AsciiTable(Header, boolean)
      */
     private Class<?> guessI10Type(int col, Header h, boolean preferInt) {
@@ -294,12 +278,12 @@ public class AsciiTable extends AbstractTableData {
         return preferInt ? int.class : long.class;
     }
 
-
     /**
      * Return the data type in the specified column, such as <code>int.class</code> or <code>String.class</code>.
      * 
-     * @param col   The 0-based column index
-     * @return      the class of data in the specified column.
+     * @param col The 0-based column index
+     * 
+     * @return the class of data in the specified column.
      * 
      * @since 1.16
      */
@@ -359,16 +343,14 @@ public class AsciiTable extends AbstractTableData {
     }
 
     /**
-     * This version of addColumn allows the user to override the default length
-     * associated with each column type.
+     * This version of addColumn allows the user to override the default length associated with each column type.
      *
-     * @param newCol
-     *            The new column data
-     * @param length
-     *            the requested length for the column
+     * @param newCol The new column data
+     * @param length the requested length for the column
+     * 
      * @return the number of columns after this one is added.
-     * @throws FitsException
-     *             if the operation failed
+     * 
+     * @throws FitsException if the operation failed
      */
     public int addColumn(Object newCol, int length) throws FitsException {
 
@@ -456,12 +438,10 @@ public class AsciiTable extends AbstractTableData {
     /**
      * Delete columns from the table.
      *
-     * @param start
-     *            The first, 0-indexed, column to be deleted.
-     * @param len
-     *            The number of columns to be deleted.
-     * @throws FitsException
-     *             if the operation failed
+     * @param start The first, 0-indexed, column to be deleted.
+     * @param len The number of columns to be deleted.
+     * 
+     * @throws FitsException if the operation failed
      */
 
     @Override
@@ -530,12 +510,10 @@ public class AsciiTable extends AbstractTableData {
     /**
      * Delete rows from a FITS table
      *
-     * @param start
-     *            The first (0-indexed) row to be deleted.
-     * @param len
-     *            The number of rows to be deleted.
-     * @throws FitsException
-     *             if the operation failed
+     * @param start The first (0-indexed) row to be deleted.
+     * @param len The number of rows to be deleted.
+     * 
+     * @throws FitsException if the operation failed
      */
 
     @Override
@@ -563,30 +541,21 @@ public class AsciiTable extends AbstractTableData {
     }
 
     /**
-     * be sure that the data is filled. because the getData already tests null
-     * the getData is called without check.
+     * be sure that the data is filled. because the getData already tests null the getData is called without check.
      *
-     * @throws FitsException
-     *             if the operation failed
+     * @throws FitsException if the operation failed
      */
-    private void ensureData() throws FitsException {
-        if (data != null || currInput == null) {
-            return;
+    @Override
+    protected void loadData(ArrayDataInput in) throws IOException, FitsException {
+        currInput = in;
+
+        if (buffer == null) {
+            getBuffer((long) nRows * rowLen, 0);
         }
-        
+
         data = new Object[nFields];
         for (int i = 0; i < nFields; i += 1) {
             data[i] = ArrayFuncs.newInstance(types[i], nRows);
-        }
-
-        if (buffer == null) {
-            long pos = FitsUtil.findOffset(currInput);
-            try {
-                getBuffer(nRows * rowLen, fileOffset);
-            } catch (IOException e) {
-                throw new FitsException("Error in deferred read -- file closed prematurely?:" + e.getMessage(), e);
-            }
-            FitsUtil.reposition(currInput, pos);
         }
 
         this.bp.setOffset(0);
@@ -595,36 +564,41 @@ public class AsciiTable extends AbstractTableData {
         for (int i = 0; i < nRows; i += 1) {
             rowOffset = rowLen * i;
             for (int j = 0; j < nFields; j += 1) {
-                if (!extractElement(rowOffset + offsets[j], lengths[j], data, j, i, nulls[j])) {
-                    if (isNull == null) {
-                        isNull = new boolean[nRows * nFields];
-                    }
+                try {
+                    if (!extractElement(rowOffset + offsets[j], lengths[j], data, j, i, nulls[j])) {
+                        if (isNull == null) {
+                            isNull = new boolean[nRows * nFields];
+                        }
 
-                    isNull[j + i * this.nFields] = true;
+                        isNull[j + i * this.nFields] = true;
+                    }
+                } catch (ArrayIndexOutOfBoundsException e) {
+                    throw new FitsException("not enough data: " + e, e);
                 }
             }
         }
     }
 
+    @Override
+    public void read(ArrayDataInput in) throws FitsException {
+        this.currInput = in;
+        super.read(in);
+    }
+
     /**
      * Move an element from the buffer into a data array.
      *
-     * @param offset
-     *            The offset within buffer at which the element starts.
-     * @param length
-     *            The number of bytes in the buffer for the element.
-     * @param array
-     *            An array of objects, each of which is a simple array.
-     * @param col
-     *            Which element of array is to be modified?
-     * @param row
-     *            Which index into that element is to be modified?
-     * @param nullFld
-     *            What string signifies a null element?
-     * @throws FitsException
-     *             if the operation failed
+     * @param offset The offset within buffer at which the element starts.
+     * @param length The number of bytes in the buffer for the element.
+     * @param array An array of objects, each of which is a simple array.
+     * @param col Which element of array is to be modified?
+     * @param row Which index into that element is to be modified?
+     * @param nullFld What string signifies a null element?
+     * 
+     * @throws FitsException if the operation failed
      */
-    private boolean extractElement(int offset, int length, Object[] array, int col, int row, String nullFld) throws FitsException {
+    private boolean extractElement(int offset, int length, Object[] array, int col, int row, String nullFld)
+            throws FitsException {
 
         this.bp.setOffset(offset);
 
@@ -658,9 +632,7 @@ public class AsciiTable extends AbstractTableData {
     /**
      * Fill in a header with information that points to this data.
      *
-     * @param hdr
-     *            The header to be updated with information appropriate to the
-     *            current table data.
+     * @param hdr The header to be updated with information appropriate to the current table data.
      */
 
     @Override
@@ -692,17 +664,17 @@ public class AsciiTable extends AbstractTableData {
     /**
      * Read some data into the buffer.
      */
-    private void getBuffer(int size, long offset) throws IOException, FitsException {
+    private void getBuffer(long size, long offset) throws IOException, FitsException {
 
         if (this.currInput == null) {
             throw new IOException("No stream open to read");
         }
-        
-        if ((long) rowLen * nRows > Integer.MAX_VALUE) {
+
+        if (size > Integer.MAX_VALUE) {
             throw new FitsException("Cannot read ASCII table > 2 GB");
         }
 
-        this.buffer = new byte[size];
+        this.buffer = new byte[(int) size];
         if (offset != 0) {
             FitsUtil.reposition(this.currInput, offset);
         }
@@ -713,11 +685,11 @@ public class AsciiTable extends AbstractTableData {
     /**
      * Get a column of data
      *
-     * @param col
-     *            The 0-indexed column to be returned.
+     * @param col The 0-indexed column to be returned.
+     * 
      * @return The column object -- typically as a 1-d array.
-     * @throws FitsException
-     *             if the operation failed
+     * 
+     * @throws FitsException if the operation failed
      */
 
     @Override
@@ -726,40 +698,32 @@ public class AsciiTable extends AbstractTableData {
         return this.data[col];
     }
 
-    @Override
-    public boolean isDeferred() {
-        if (currInput == null) {
-            return false;
-        }
-        return (currInput instanceof RandomAccess) && data == null;
-    }
-
     /**
-     * Get the ASCII table information. This will actually do the read if it had
-     * previously been deferred
+     * Get the ASCII table information. This will actually do the read if it had previously been deferred
      *
      * @return The table data as an Object[] array.
-     * @throws FitsException
-     *             if the operation failed
      */
     @Override
     @SuppressFBWarnings(value = "EI_EXPOSE_REP", justification = "intended exposure of mutable data")
-    public Object getData() throws FitsException {
-        ensureData();
+    protected Object[] getCurrentData() {
         return this.data;
     }
 
+    @Override
+    public Object[] getData() throws FitsException {
+        return (Object[]) super.getData();
+    }
+
     /**
-     * Get a single element as a one-d array. We return String's as arrays for
-     * consistency though they could be returned as a scalar.
+     * Get a single element as a one-d array. We return String's as arrays for consistency though they could be returned
+     * as a scalar.
      *
-     * @param row
-     *            The 0-based row
-     * @param col
-     *            The 0-based column
+     * @param row The 0-based row
+     * @param col The 0-based column
+     * 
      * @return The requested cell data.
-     * @throws FitsException
-     *             when unable to get the data.
+     * 
+     * @throws FitsException when unable to get the data.
      */
 
     @Override
@@ -795,11 +759,11 @@ public class AsciiTable extends AbstractTableData {
     /**
      * Get a row. If the data has not yet been read just read this row.
      *
-     * @param row
-     *            The 0-indexed row to be returned.
+     * @param row The 0-indexed row to be returned.
+     * 
      * @return A row of data.
-     * @throws FitsException
-     *             if the operation failed
+     * 
+     * @throws FitsException if the operation failed
      */
 
     @Override
@@ -807,7 +771,7 @@ public class AsciiTable extends AbstractTableData {
 
         if (this.data != null) {
             return singleRow(row);
-        } 
+        }
         return parseSingleRow(row);
     }
 
@@ -823,8 +787,7 @@ public class AsciiTable extends AbstractTableData {
     /**
      * Return the size of the data section
      *
-     * @return The size in bytes of the data section, not includeing the
-     *         padding.
+     * @return The size in bytes of the data section, not includeing the padding.
      */
 
     @Override
@@ -835,10 +798,9 @@ public class AsciiTable extends AbstractTableData {
     /**
      * See if an element is null.
      *
-     * @param row
-     *            The 0-based row
-     * @param col
-     *            The 0-based column
+     * @param row The 0-based row
+     * @param col The 0-based column
+     * 
      * @return if the given element has been nulled.
      */
     public boolean isNull(int row, int col) {
@@ -849,17 +811,15 @@ public class AsciiTable extends AbstractTableData {
     }
 
     /**
-     * Read a single element from the table. This returns an array of dimension
-     * 1.
+     * Read a single element from the table. This returns an array of dimension 1.
      *
-     * @throws FitsException
-     *             if the operation failed
+     * @throws FitsException if the operation failed
      */
     private Object parseSingleElement(int row, int col) throws FitsException {
 
         Object[] res = new Object[1];
         try {
-            getBuffer(this.lengths[col], this.fileOffset + (long) row * (long) this.rowLen + this.offsets[col]);
+            getBuffer(this.lengths[col], getFileOffset() + (long) row * (long) this.rowLen + this.offsets[col]);
         } catch (IOException e) {
             this.buffer = null;
             throw new FitsException("Unable to read element", e);
@@ -868,23 +828,21 @@ public class AsciiTable extends AbstractTableData {
 
         boolean success = extractElement(0, this.lengths[col], res, 0, 0, this.nulls[col]);
         this.buffer = null;
-                
+
         return success ? res[0] : null;
     }
 
     /**
-     * Read a single row from the table. This returns a set of arrays of
-     * dimension 1.
+     * Read a single row from the table. This returns a set of arrays of dimension 1.
      *
-     * @throws FitsException
-     *             if the operation failed
+     * @throws FitsException if the operation failed
      */
     private Object[] parseSingleRow(int row) throws FitsException {
 
         Object[] res = new Object[this.nFields];
 
         try {
-            getBuffer(this.rowLen, this.fileOffset + (long) row * (long) this.rowLen);
+            getBuffer(this.rowLen, getFileOffset() + (long) row * (long) this.rowLen);
         } catch (IOException e) {
             throw new FitsException("Unable to read row", e);
         }
@@ -902,47 +860,18 @@ public class AsciiTable extends AbstractTableData {
     }
 
     /**
-     * Read in an ASCII table. Reading is deferred if we are reading from a
-     * random access device
-     *
-     * @param str
-     *            the stream to read from
-     * @throws FitsException
-     *             if the operation failed
-     */
-
-    @Override
-    public void read(ArrayDataInput str) throws FitsException {        
-        try {
-            setFileOffset(str);
-            this.currInput = str;
-            if (str instanceof RandomAccess) {
-                str.skipAllBytes((long) nRows * rowLen);
-            } else {
-                getBuffer(this.rowLen * this.nRows, 0);
-            }
-            str.skipAllBytes(FitsUtil.padding(nRows * rowLen));
-        } catch (EOFException e) {
-            throw new PaddingException("EOF skipping padding after ASCII Table", this, e);
-        } catch (IOException e) {
-            throw new FitsException("Error skipping padding after ASCII Table", e);
-        }
-    }
-
-    /**
      * Replace a column with new data.
      *
-     * @param col
-     *            The 0-based index to the column
-     * @param newData
-     *            The column data. This is typically a 1-d array.
-     * @throws FitsException
-     *             if the operation failed
+     * @param col The 0-based index to the column
+     * @param newData The column data. This is typically a 1-d array.
+     * 
+     * @throws FitsException if the operation failed
      */
     @Override
     public void setColumn(int col, Object newData) throws FitsException {
         ensureData();
-        if (col < 0 || col >= this.nFields || newData.getClass() != this.data[col].getClass() || Array.getLength(newData) != Array.getLength(this.data[col])) {
+        if (col < 0 || col >= this.nFields || newData.getClass() != this.data[col].getClass()
+                || Array.getLength(newData) != Array.getLength(this.data[col])) {
             throw new FitsException("Invalid column/column mismatch:" + col);
         }
         this.data[col] = newData;
@@ -955,14 +884,11 @@ public class AsciiTable extends AbstractTableData {
     /**
      * Modify an element in the table
      *
-     * @param row
-     *            the 0-based row
-     * @param col
-     *            the 0-based column
-     * @param newData
-     *            The new value for the column. Typically a primitive[1] array.
-     * @throws FitsException
-     *             if the operation failed
+     * @param row the 0-based row
+     * @param col the 0-based column
+     * @param newData The new value for the column. Typically a primitive[1] array.
+     * 
+     * @throws FitsException if the operation failed
      */
 
     @Override
@@ -981,17 +907,12 @@ public class AsciiTable extends AbstractTableData {
     }
 
     /**
-     * Mark (or unmark) an element as null. Note that if this FITS file is
-     * latter written out, a TNULL keyword needs to be defined in the
-     * corresponding header. This routine does not add an element for String
-     * columns.
+     * Mark (or unmark) an element as null. Note that if this FITS file is latter written out, a TNULL keyword needs to
+     * be defined in the corresponding header. This routine does not add an element for String columns.
      *
-     * @param row
-     *            The 0-based row.
-     * @param col
-     *            The 0-based column.
-     * @param flag
-     *            True if the element is to be set to null.
+     * @param row The 0-based row.
+     * @param col The 0-based column.
+     * @param flag True if the element is to be set to null.
      */
     public void setNull(int row, int col, boolean flag) {
         if (flag) {
@@ -1008,9 +929,8 @@ public class AsciiTable extends AbstractTableData {
     }
 
     /**
-     * Set the null string for a columns. This is not a public method since we
-     * want users to call the method in AsciiTableHDU and update the header
-     * also.
+     * Set the null string for a columns. This is not a public method since we want users to call the method in
+     * AsciiTableHDU and update the header also.
      */
     void setNullString(int col, String newNull) {
         if (col >= 0 && col < this.nulls.length) {
@@ -1021,13 +941,10 @@ public class AsciiTable extends AbstractTableData {
     /**
      * Modify a row in the table
      *
-     * @param row
-     *            The 0-based index of the row
-     * @param newData
-     *            The new data. Each element of this array is typically a
-     *            primitive[1] array.
-     * @throws FitsException
-     *             if the operation failed
+     * @param row The 0-based index of the row
+     * @param newData The new data. Each element of this array is typically a primitive[1] array.
+     * 
+     * @throws FitsException if the operation failed
      */
 
     @Override
@@ -1064,8 +981,7 @@ public class AsciiTable extends AbstractTableData {
     }
 
     /**
-     * Extract a single row from a table. This returns an array of Objects each
-     * of which is an array of length 1.
+     * Extract a single row from a table. This returns an array of Objects each of which is an array of length 1.
      */
     private Object[] singleRow(int row) {
 
@@ -1080,14 +996,10 @@ public class AsciiTable extends AbstractTableData {
     }
 
     /**
-     * This is called after we delete columns. The HDU doesn't know how to
-     * update the TBCOL entries.
+     * This is called after we delete columns. The HDU doesn't know how to update the TBCOL entries.
      *
-     * @param oldNCol
-     *            The number of columns we had before deletion.
-     * @param hdr
-     *            The associated header. @throws FitsException if the operation
-     *            failed
+     * @param oldNCol The number of columns we had before deletion.
+     * @param hdr The associated header. @throws FitsException if the operation failed
      */
 
     @Override
@@ -1109,11 +1021,9 @@ public class AsciiTable extends AbstractTableData {
     /**
      * Write the data to an output stream.
      *
-     * @param str
-     *            The output stream to be written to
-     * @throws FitsException
-     *             if any IO exception is found or some inconsistency the FITS
-     *             file arises.
+     * @param str The output stream to be written to
+     * 
+     * @throws FitsException if any IO exception is found or some inconsistency the FITS file arises.
      */
 
     @Override

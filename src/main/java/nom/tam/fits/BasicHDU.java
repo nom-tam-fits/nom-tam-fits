@@ -461,9 +461,9 @@ public abstract class BasicHDU<DataClass extends Data> implements FitsElement {
     }
 
     /**
-     * @return the non-FITS data object
+     * @return the non-FITS data object. Same as {@link #getData()}.<code>getKernel()</code>.
      */
-    public Object getKernel() {
+    public final Object getKernel() {
         try {
             return this.myData.getKernel();
         } catch (FitsException e) {

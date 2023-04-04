@@ -38,10 +38,10 @@ import java.io.ByteArrayOutputStream;
 import java.io.PrintStream;
 import java.util.NoSuchElementException;
 
-import nom.tam.fits.header.Standard;
-
 import org.junit.Assert;
 import org.junit.Test;
+
+import nom.tam.fits.header.Standard;
 
 public class ProtectedFitsTest {
 
@@ -114,7 +114,7 @@ public class ProtectedFitsTest {
     @Test
     public void testFitsRandomGroupData() throws Exception {
         RandomGroupsData data = new RandomGroupsData(new Object[0][]);
-        FitsException actual = null;
+        Exception actual = null;
         try {
             data.fillHeader(new Header());
         } catch (FitsException e) {
@@ -122,27 +122,17 @@ public class ProtectedFitsTest {
         }
         Assert.assertNotNull(actual);
         Assert.assertTrue(actual.getMessage().toLowerCase().contains("not conform"));
-        Object[][] dataArray = {
-            new Object[]{
-                new double[10],
-                new int[10],
-            }
-        };
-        data = new RandomGroupsData(dataArray);
-        actual = null;
+        Object[][] dataArray = {new Object[] {new double[10], new int[10],}};
+
         try {
-            data.fillHeader(new Header());
-        } catch (FitsException e) {
+            data = new RandomGroupsData(dataArray);
+        } catch (IllegalArgumentException e) {
             actual = e;
         }
         Assert.assertNotNull(actual);
-        Assert.assertTrue(actual.getMessage().toLowerCase().contains("not agree"));
-        dataArray = new Object[][]{
-            new Object[]{
-                new int[10][10],
-                new int[10],
-            }
-        };
+        Assert.assertEquals(IllegalArgumentException.class, actual.getClass());
+
+        dataArray = new Object[][] {new Object[] {new int[10][10], new int[10],}};
         data = new RandomGroupsData(dataArray);
         actual = null;
         try {
@@ -152,12 +142,7 @@ public class ProtectedFitsTest {
         }
         Assert.assertNotNull(actual);
         Assert.assertTrue(actual.getMessage().toLowerCase().contains("not 1 d array"));
-        dataArray = new Object[][]{
-            new Object[]{
-                new String[10],
-                new String[10],
-            }
-        };
+        dataArray = new Object[][] {new Object[] {new String[10], new String[10],}};
         data = new RandomGroupsData(dataArray);
         actual = null;
         try {

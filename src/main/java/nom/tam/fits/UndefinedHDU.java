@@ -47,29 +47,34 @@ public class UndefinedHDU extends BasicHDU<UndefinedData> {
     protected String getCanonicalXtension() {
         return "UNKNOWN";
     }
-    
+
     /**
+     * @deprecated This should be for internal use only. Will reduce visibility in the future
+     * 
      * @return Encapsulate an object as an UndefinedHDU.
-     * @param o
-     *            the object to encapsulate
-     * @throws FitsException
-     *             if the operation failed
+     * 
+     * @param o the object to encapsulate
+     * 
+     * @throws FitsException if the operation failed
      */
+    @Deprecated
     public static UndefinedData encapsulate(Object o) throws FitsException {
         return new UndefinedData(o);
     }
 
     /**
-     * Check if we can use the following object as in an Undefined FITS block.
-     * We allow this so long as computeLSize can get a size. Note that
-     * computeLSize may be wrong!
+     * Check if we can use the following object as in an Undefined FITS block. We allow this so long as computeLSize can
+     * get a size. Note that computeLSize may be wrong!
      * 
-     * @param o
-     *            The Object being tested.
+     * @deprecated This should be for internal use only. Will reduce visibility in the future
+     * 
+     * @param o The Object being tested.
+     * 
      * @return true if o can be an Undefined FITS block.
      */
+    @Deprecated
     public static boolean isData(Object o) {
-        try { 
+        try {
             return FitsEncoder.computeSize(o) > 0;
         } catch (IllegalArgumentException e) {
             return false;
@@ -79,10 +84,13 @@ public class UndefinedHDU extends BasicHDU<UndefinedData> {
     /**
      * Check if we can find the length of the data for this header.
      * 
-     * @param hdr
-     *            header to check.
+     * @deprecated This should be for internal use only. Will reduce visibility in the future
+     * 
+     * @param hdr header to check.
+     * 
      * @return <CODE>true</CODE> if this HDU has a valid header.
      */
+    @Deprecated
     public static boolean isHeader(Header hdr) {
         if (hdr.getStringValue(XTENSION) != null && hdr.getIntValue(NAXIS, -1) >= 0) {
             return true;
@@ -90,17 +98,32 @@ public class UndefinedHDU extends BasicHDU<UndefinedData> {
         return false;
     }
 
+    /**
+     * Prepares a data object into which the actual data can be read from an input subsequently or at a later time.
+     * 
+     * @deprecated This should be for internal use only. Will reduce visibility in the future
+     * 
+     * @param hdr The FITS header that describes the data
+     * 
+     * @return A data object that support reading content from a stream.
+     * 
+     * @throws FitsException if the data could not be prepared to prescriotion.
+     */
+    @Deprecated
     public static Data manufactureData(Header hdr) throws FitsException {
         return new UndefinedData(hdr);
     }
 
     /**
+     * @deprecated This should be for internal use only. Will reduce visibility in the future
+     * 
      * @return Create a header that describes the given image data.
-     * @param d
-     *            The image to be described.
-     * @throws FitsException
-     *             if the object does not contain valid image data.
+     * 
+     * @param d The image to be described.
+     * 
+     * @throws FitsException if the object does not contain valid image data.
      */
+    @Deprecated
     public static Header manufactureHeader(Data d) throws FitsException {
 
         Header h = new Header();
@@ -112,12 +135,10 @@ public class UndefinedHDU extends BasicHDU<UndefinedData> {
     /**
      * Build an image HDU using the supplied data.
      * 
-     * @param h
-     *            the header for this HDU
-     * @param d
-     *            the data used to build the image.
-     * @throws FitsException
-     *             if there was a problem with the data.
+     * @param h the header for this HDU
+     * @param d the data used to build the image.
+     * 
+     * @throws FitsException if there was a problem with the data.
      */
     public UndefinedHDU(Header h, UndefinedData d) throws FitsException {
         super(h, d);
