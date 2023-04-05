@@ -1,10 +1,10 @@
 package nom.tam.fits;
 
-/*
+/*-
  * #%L
  * nom.tam FITS library
  * %%
- * Copyright (C) 1996 - 2021 nom-tam-fits
+ * Copyright (C) 1996 - 2023 nom-tam-fits
  * %%
  * This is free and unencumbered software released into the public domain.
  * 
@@ -31,46 +31,23 @@ package nom.tam.fits;
  * #L%
  */
 
-import nom.tam.util.ArrayDataInput;
-import nom.tam.util.ArrayDataOutput;
+import java.io.ByteArrayOutputStream;
 
-public class BadData extends Data {
+import org.junit.Test;
 
-    @Override
-    protected void fillHeader(Header head) throws FitsException {
+import nom.tam.util.FitsOutputStream;
 
+public class RepositionTest {
+
+    @Test(expected = FitsException.class)
+    public void testFitsUtilRepositionNull() throws Exception {
+        FitsUtil.reposition(null, 1);
     }
 
-    @Override
-    public Object getData() throws FitsException {
-        return null;
-    }
-
-    @Override
-    protected long getTrueSize() {
-        return 0;
-    }
-
-    @Override
-    public void read(ArrayDataInput in) throws FitsException {
-
-    }
-
-    @Override
-    public void write(ArrayDataOutput o) throws FitsException {
-
-    }
-
-    @Override
-    protected Object getCurrentData() {
-        // TODO Auto-generated method stub
-        return null;
-    }
-
-    @Override
-    protected void loadData(ArrayDataInput in) {
-        // TODO Auto-generated method stub
-
+    @Test(expected = FitsException.class)
+    public void testFitsUtilReposition() throws Exception {
+        FitsOutputStream out = new FitsOutputStream(new ByteArrayOutputStream());
+        FitsUtil.reposition(out, -1);
     }
 
 }

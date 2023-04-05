@@ -1,4 +1,4 @@
-package nom.tam.fits;
+package nom.tam.fits.compression.algorithm.hcompress;
 
 /*
  * #%L
@@ -31,46 +31,16 @@ package nom.tam.fits;
  * #L%
  */
 
-import nom.tam.util.ArrayDataInput;
-import nom.tam.util.ArrayDataOutput;
+import nom.tam.fits.compression.algorithm.quant.QuantizeOption;
 
-public class BadData extends Data {
+public class HCompressorQuantizeOption extends QuantizeOption {
 
-    @Override
-    protected void fillHeader(Header head) throws FitsException {
-
+    public HCompressorQuantizeOption() {
+        super(new HCompressorOption());
     }
 
-    @Override
-    public Object getData() throws FitsException {
-        return null;
-    }
-
-    @Override
-    protected long getTrueSize() {
-        return 0;
-    }
-
-    @Override
-    public void read(ArrayDataInput in) throws FitsException {
-
-    }
-
-    @Override
-    public void write(ArrayDataOutput o) throws FitsException {
-
-    }
-
-    @Override
-    protected Object getCurrentData() {
-        // TODO Auto-generated method stub
-        return null;
-    }
-
-    @Override
-    protected void loadData(ArrayDataInput in) {
-        // TODO Auto-generated method stub
-
+    public HCompressorOption getHCompressorOption() {
+        return (HCompressorOption) getCompressOption();
     }
 
 }

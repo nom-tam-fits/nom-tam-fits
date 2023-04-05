@@ -1,10 +1,10 @@
 package nom.tam.fits;
 
-/*
+/*-
  * #%L
  * nom.tam FITS library
  * %%
- * Copyright (C) 1996 - 2021 nom-tam-fits
+ * Copyright (C) 1996 - 2023 nom-tam-fits
  * %%
  * This is free and unencumbered software released into the public domain.
  * 
@@ -31,46 +31,45 @@ package nom.tam.fits;
  * #L%
  */
 
-import nom.tam.util.ArrayDataInput;
-import nom.tam.util.ArrayDataOutput;
+import static org.junit.Assert.assertEquals;
 
-public class BadData extends Data {
+import java.io.PrintStream;
 
-    @Override
-    protected void fillHeader(Header head) throws FitsException {
+import org.junit.Assert;
+import org.junit.Test;
 
+import nom.tam.fits.header.Standard;
+
+public class BasicHDUTest {
+
+    @Test
+    public void testDefaultHDUExtension() throws Exception {
+        BasicHDU<NullData> hdu = new BasicHDU(null, null) {
+            @Override
+            public void info(PrintStream stream) {
+            }
+        };
+
+        assertEquals("UNKNOWN", hdu.getCanonicalXtension());
     }
 
-    @Override
-    public Object getData() throws FitsException {
-        return null;
+    @Test
+    public void testUndefinedDataNoAxis() throws Exception {
+        Header h = new Header();
+        h.addValue(Standard.BITPIX, 8);
+        h.addValue(Standard.NAXIS, 0);
+        Assert.assertTrue(new UndefinedData(h).isEmpty());
     }
 
-    @Override
-    protected long getTrueSize() {
-        return 0;
+    @Test
+    public void testReadNullInput() throws Exception {
+        Header h = new Header();
+        h.addValue(Standard.BITPIX, -32);
+        h.addValue(Standard.NAXIS, 2);
+        h.addValue(Standard.NAXISn.n(1), 10);
+        h.addValue(Standard.NAXISn.n(2), 10);
+        ImageData im = new ImageData(h);
+        im.read(null);
+        Assert.assertTrue(im.isEmpty());
     }
-
-    @Override
-    public void read(ArrayDataInput in) throws FitsException {
-
-    }
-
-    @Override
-    public void write(ArrayDataOutput o) throws FitsException {
-
-    }
-
-    @Override
-    protected Object getCurrentData() {
-        // TODO Auto-generated method stub
-        return null;
-    }
-
-    @Override
-    protected void loadData(ArrayDataInput in) {
-        // TODO Auto-generated method stub
-
-    }
-
 }

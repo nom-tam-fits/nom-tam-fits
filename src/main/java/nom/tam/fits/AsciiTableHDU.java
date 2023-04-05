@@ -41,6 +41,7 @@ import static nom.tam.fits.header.Standard.TTYPEn;
 import static nom.tam.fits.header.Standard.TUNITn;
 import static nom.tam.fits.header.Standard.TZEROn;
 import static nom.tam.fits.header.Standard.XTENSION;
+import static nom.tam.fits.header.Standard.XTENSION_ASCIITABLE;
 
 import java.io.PrintStream;
 
@@ -55,38 +56,36 @@ import nom.tam.util.Cursor;
 public class AsciiTableHDU extends TableHDU<AsciiTable> {
 
     /**
-     * The standard column stems for an ASCII table. Note that TBCOL is not
-     * included here -- it needs to be handled specially since it does not
-     * simply shift.
+     * The standard column stems for an ASCII table. Note that TBCOL is not included here -- it needs to be handled
+     * specially since it does not simply shift.
      */
-    private static final IFitsHeader[] KEY_STEMS = {
-        TFORMn,
-        TZEROn,
-        TNULLn,
-        TTYPEn,
-        TUNITn
-    };
+    private static final IFitsHeader[] KEY_STEMS = {TFORMn, TZEROn, TNULLn, TTYPEn, TUNITn};
 
     /**
      * Create an ASCII table header/data unit.
      *
-     * @param h
-     *            the template specifying the ASCII table.
-     * @param d
-     *            the FITS data structure containing the table data.
+     * @param h the template specifying the ASCII table.
+     * @param d the FITS data structure containing the table data.
      */
     public AsciiTableHDU(Header h, AsciiTable d) {
         super(h, d);
     }
 
+    @Override
+    protected final String getCanonicalXtension() {
+        return XTENSION_ASCIITABLE;
+    }
+
     /**
-     * @return a ASCII table data structure from an array of objects
-     *         representing the columns.
-     * @param o
-     *            the array of object to create the ASCII table
-     * @throws FitsException
-     *             if the table could not be created.
+     * @deprecated This should be for internal use only. Will reduce visibility in the future
+     * 
+     * @return a ASCII table data structure from an array of objects representing the columns.
+     * 
+     * @param o the array of object to create the ASCII table
+     * 
+     * @throws FitsException if the table could not be created.
      */
+    @Deprecated
     public static AsciiTable encapsulate(Object o) throws FitsException {
 
         Object[] oo = (Object[]) o;
@@ -98,10 +97,13 @@ public class AsciiTableHDU extends TableHDU<AsciiTable> {
     }
 
     /**
+     * @deprecated This should be for internal use only. Will reduce visibility in the future
+     * 
      * @return true if this data is usable as an ASCII table.
-     * @param o
-     *            object representing the data
+     * 
+     * @param o object representing the data
      */
+    @Deprecated
     public static boolean isData(Object o) {
 
         if (o instanceof Object[]) {
@@ -117,45 +119,52 @@ public class AsciiTableHDU extends TableHDU<AsciiTable> {
             }
             return true;
         }
-        
+
         return false;
     }
 
     /**
      * Check that this is a valid ascii table header.
      *
-     * @param header
-     *            to validate.
+     * @deprecated This should be for internal use only. Will reduce visibility in the future
+     * 
+     * @param header to validate.
+     * 
      * @return <CODE>true</CODE> if this is an ascii table header.
      */
+    @Deprecated
     public static boolean isHeader(Header header) {
         String xtension = header.getStringValue(XTENSION);
         xtension = xtension == null ? "" : xtension.trim();
-        return "TABLE".equals(xtension);
+        return XTENSION_ASCIITABLE.equals(xtension);
     }
 
     /**
-     * Create a Data object to correspond to the header description.
-     *
-     * @param hdr
-     *            the header to create the data for
-     * @return An unfilled Data object which can be used to read in the data for
-     *         this HDU.
-     * @throws FitsException
-     *             if the Data object could not be created from this HDU's
-     *             Header
+     * Prepares a data object into which the actual data can be read from an input subsequently or at a later time.
+     * 
+     * @deprecated This should be for internal use only. Will reduce visibility in the future
+     * 
+     * @param hdr The FITS header that describes the data
+     * 
+     * @return A data object that support reading content from a stream.
+     * 
+     * @throws FitsException if the data could not be prepared to prescriotion.
      */
+    @Deprecated
     public static Data manufactureData(Header hdr) throws FitsException {
         return new AsciiTable(hdr);
     }
 
     /**
+     * @deprecated This should be for internal use only. Will reduce visibility in the future
+     * 
      * @return a created header to match the input data.
-     * @param d
-     *            data to create a header for
-     * @throws FitsException
-     *             if the header could not b e created
+     * 
+     * @param d data to create a header for
+     * 
+     * @throws FitsException if the header could not b e created
      */
+    @Deprecated
     public static Header manufactureHeader(Data d) throws FitsException {
         Header hdr = new Header();
         d.fillHeader(hdr);
@@ -201,10 +210,9 @@ public class AsciiTableHDU extends TableHDU<AsciiTable> {
     }
 
     /**
-     * @param row
-     *            row index of the element
-     * @param col
-     *            column index of the element
+     * @param row row index of the element
+     * @param col column index of the element
+     * 
      * @return <code>true</code> if an element is null
      */
     public boolean isNull(int row, int col) {
@@ -214,12 +222,9 @@ public class AsciiTableHDU extends TableHDU<AsciiTable> {
     /**
      * Mark an entry as null.
      *
-     * @param row
-     *            row index of the element
-     * @param col
-     *            column index of the element
-     * @param flag
-     *            set to null or not
+     * @param row row index of the element
+     * @param col column index of the element
+     * @param flag set to null or not
      */
     public void setNull(int row, int col, boolean flag) {
 
@@ -235,14 +240,11 @@ public class AsciiTableHDU extends TableHDU<AsciiTable> {
     /**
      * Set the null string for a column.
      *
-     * @param col
-     *            the column index
-     * @param newNull
-     *            the String representing null
-     * @throws IllegalArgumentException     
-     *            if the string argument contains characters that are not allowed in FITS
-     *            headers. That is if it contains characters outside the range of 0x20
-     *            thru 0x7E.
+     * @param col the column index
+     * @param newNull the String representing null
+     * 
+     * @throws IllegalArgumentException if the string argument contains characters that are not allowed in FITS headers.
+     *             That is if it contains characters outside the range of 0x20 thru 0x7E.
      */
     public void setNullString(int col, String newNull) throws IllegalArgumentException {
         this.myHeader.positionAfterIndex(TBCOLn, col + 1);

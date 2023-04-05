@@ -35,8 +35,6 @@ import java.text.DecimalFormat;
 import java.util.Calendar;
 import java.util.Date;
 import java.util.TimeZone;
-import java.util.logging.Level;
-import java.util.logging.Logger;
 import java.util.regex.Matcher;
 import java.util.regex.Pattern;
 
@@ -50,7 +48,6 @@ public class FitsDate implements Comparable<FitsDate> {
     /**
      * logger to log to.
      */
-    private static final Logger LOG = Logger.getLogger(FitsDate.class.getName());
 
     private static final int FIRST_THREE_CHARACTER_VALUE = 100;
 
@@ -58,7 +55,7 @@ public class FitsDate implements Comparable<FitsDate> {
 
     private static final int FITS_DATE_STRING_SIZE = 23;
 
-    private static final TimeZone GMT = TimeZone.getTimeZone("GMT");
+    private static final TimeZone UTC = TimeZone.getTimeZone("UTC");
 
     private static final int NEW_FORMAT_DAY_OF_MONTH_GROUP = 4;
 
@@ -74,8 +71,8 @@ public class FitsDate implements Comparable<FitsDate> {
 
     private static final int NEW_FORMAT_YEAR_GROUP = 2;
 
-    private static final Pattern NORMAL_REGEX = Pattern
-            .compile("\\s*(([0-9][0-9][0-9][0-9])-([0-9][0-9])-([0-9][0-9]))(T([0-9][0-9]):([0-9][0-9]):([0-9][0-9])(\\.([0-9]+))?)?\\s*");
+    private static final Pattern NORMAL_REGEX = Pattern.compile(
+            "\\s*(([0-9][0-9][0-9][0-9])-([0-9][0-9])-([0-9][0-9]))(T([0-9][0-9]):([0-9][0-9]):([0-9][0-9])(\\.([0-9]+))?)?\\s*");
 
     private static final int OLD_FORMAT_DAY_OF_MONTH_GROUP = 1;
 
@@ -86,9 +83,9 @@ public class FitsDate implements Comparable<FitsDate> {
     private static final Pattern OLD_REGEX = Pattern.compile("\\s*([0-9][0-9])/([0-9][0-9])/([0-9][0-9])\\s*");
 
     private static final int YEAR_OFFSET = 1900;
-    
+
     private static final int NB_DIGITS_MILLIS = 3;
-    
+
     private static final int POW_TEN = 10;
 
     /**
@@ -100,23 +97,21 @@ public class FitsDate implements Comparable<FitsDate> {
 
     /**
      * @return a created FITS format date string Java Date object.
-     * @param epoch
-     *            The epoch to be converted to FITS format.
+     * 
+     * @param epoch The epoch to be converted to FITS format.
      */
     public static String getFitsDateString(Date epoch) {
         return getFitsDateString(epoch, true);
     }
 
     /**
-     * @return a created FITS format date string. Note that the date is not
-     *         rounded.
-     * @param epoch
-     *            The epoch to be converted to FITS format.
-     * @param timeOfDay
-     *            Should time of day information be included?
+     * @return a created FITS format date string. Note that the date is not rounded.
+     * 
+     * @param epoch The epoch to be converted to FITS format.
+     * @param timeOfDay Should time of day information be included?
      */
     public static String getFitsDateString(Date epoch, boolean timeOfDay) {
-        Calendar cal = Calendar.getInstance(FitsDate.GMT);
+        Calendar cal = Calendar.getInstance(UTC);
         cal.setTime(epoch);
         StringBuilder fitsDate = new StringBuilder();
         DecimalFormat df = new DecimalFormat("0000");
@@ -161,10 +156,9 @@ public class FitsDate implements Comparable<FitsDate> {
     /**
      * Convert a FITS date string to a Java <CODE>Date</CODE> object.
      * 
-     * @param dStr
-     *            the FITS date
-     * @throws FitsException
-     *             if <CODE>dStr</CODE> does not contain a valid FITS date.
+     * @param dStr the FITS date
+     * 
+     * @throws FitsException if <CODE>dStr</CODE> does not contain a valid FITS date.
      */
     public FitsDate(String dStr) throws FitsException {
         // if the date string is null, we are done
@@ -223,47 +217,32 @@ public class FitsDate implements Comparable<FitsDate> {
      */
     @SuppressFBWarnings(value = "EI_EXPOSE_REP", justification = "intended exposure of mutable data")
     public Date toDate() {
-        if (this.date == null && this.year != -1) {
-            Calendar cal = Calendar.getInstance(FitsDate.GMT);
+        if (this.year == -1) {
+            return null;
+        }
 
-            cal.set(Calendar.YEAR, this.year);
-            cal.set(Calendar.MONTH, this.month - 1);
-            cal.set(Calendar.DAY_OF_MONTH, this.mday);
-            if (FitsDate.LOG.isLoggable(Level.FINEST)) {
-                FitsDate.LOG.log(Level.FINEST, "At this point:" + cal.getTime());
-            }
+        Calendar cal = Calendar.getInstance(UTC);
 
-            if (this.hour == -1) {
+        cal.set(Calendar.YEAR, this.year);
+        cal.set(Calendar.MONTH, this.month - 1);
+        cal.set(Calendar.DAY_OF_MONTH, this.mday);
 
-                cal.set(Calendar.HOUR_OF_DAY, 0);
-                cal.set(Calendar.MINUTE, 0);
-                cal.set(Calendar.SECOND, 0);
+        if (this.hour == -1) {
+            cal.set(Calendar.HOUR_OF_DAY, 0);
+            cal.set(Calendar.MINUTE, 0);
+            cal.set(Calendar.SECOND, 0);
+            cal.set(Calendar.MILLISECOND, 0);
+        } else {
+            cal.set(Calendar.HOUR_OF_DAY, this.hour);
+            cal.set(Calendar.MINUTE, this.minute);
+            cal.set(Calendar.SECOND, this.second);
+            if (this.millisecond == -1) {
                 cal.set(Calendar.MILLISECOND, 0);
-                if (FitsDate.LOG.isLoggable(Level.FINEST)) {
-                    FitsDate.LOG.log(Level.FINEST, "2At this point:" + cal.getTime());
-                }
             } else {
-                cal.set(Calendar.HOUR_OF_DAY, this.hour);
-                cal.set(Calendar.MINUTE, this.minute);
-                cal.set(Calendar.SECOND, this.second);
-                if (this.millisecond == -1) {
-                    cal.set(Calendar.MILLISECOND, 0);
-                } else {
-                    cal.set(Calendar.MILLISECOND, this.millisecond);
-                }
-                if (FitsDate.LOG.isLoggable(Level.FINEST)) {
-                    FitsDate.LOG.log(Level.FINEST, "3At this point:" + cal.getTime());
-                }
+                cal.set(Calendar.MILLISECOND, this.millisecond);
             }
-            this.date = cal.getTime();
         }
-        if (FitsDate.LOG.isLoggable(Level.FINEST)) {
-            FitsDate.LOG.log(Level.FINEST, "  date:" + this.date);
-            FitsDate.LOG.log(Level.FINEST, "  year:" + this.year);
-            FitsDate.LOG.log(Level.FINEST, "  month:" + this.month);
-            FitsDate.LOG.log(Level.FINEST, "  mday:" + this.mday);
-            FitsDate.LOG.log(Level.FINEST, "  hour:" + this.hour);
-        }
+        this.date = cal.getTime();
         return this.date;
     }
 
@@ -302,48 +281,48 @@ public class FitsDate implements Comparable<FitsDate> {
             return false;
         }
 
-        FitsDate fitsDate = (FitsDate) o;
-        return hour == fitsDate.hour && mday == fitsDate.mday && millisecond == fitsDate.millisecond
-                && minute == fitsDate.minute && month == fitsDate.month && second == fitsDate.second && year == fitsDate.year;
+        return compareTo((FitsDate) o) == 0;
     }
-
 
     @Override
     public int hashCode() {
-        final int prime = 31;
-        int result = prime * hour;
-        result = prime * result + mday;
-        result = prime * result + millisecond;
-        result = prime * result + minute;
-        result = prime * result + month;
-        result = prime * result + second;
-        result = prime * result + year;
-
-        return result;
+        return Integer.hashCode(year) ^ Integer.hashCode(month) ^ Integer.hashCode(mday) ^ Integer.hashCode(hour)
+                ^ Integer.hashCode(minute) ^ Integer.hashCode(second) ^ Integer.hashCode(millisecond);
     }
 
     @Override
     public int compareTo(FitsDate fitsDate) {
         int result = Integer.compare(year, fitsDate.year);
-        if (result == 0) {
-            result = Integer.compare(month, fitsDate.month);
-            if (result == 0) {
-                result = Integer.compare(mday, fitsDate.mday);
-                if (result == 0) {
-                    result = Integer.compare(hour, fitsDate.hour);
-                    if (result == 0) {
-                        result = Integer.compare(minute, fitsDate.minute);
-                        if (result == 0) {
-                            result = Integer.compare(second, fitsDate.second);
-                            if (result == 0) {
-                                result = Integer.compare(millisecond, fitsDate.millisecond);
-                            }
-                        }
-                    }
-                }
-            }
+        if (result != 0) {
+            return result;
         }
-        return result;
+
+        result = Integer.compare(month, fitsDate.month);
+        if (result != 0) {
+            return result;
+        }
+
+        result = Integer.compare(mday, fitsDate.mday);
+        if (result != 0) {
+            return result;
+        }
+
+        result = Integer.compare(hour, fitsDate.hour);
+        if (result != 0) {
+            return result;
+        }
+
+        result = Integer.compare(minute, fitsDate.minute);
+        if (result != 0) {
+            return result;
+        }
+
+        result = Integer.compare(second, fitsDate.second);
+        if (result != 0) {
+            return result;
+        }
+
+        return Integer.compare(millisecond, fitsDate.millisecond);
     }
 
     private void appendThreeDigitValue(StringBuilder buf, int value) {

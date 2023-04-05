@@ -215,18 +215,16 @@ public class Fits implements Closeable {
      * Creates a new (empty) FITS container associated with an input that supports generalized random access.
      * </p>
      * <p>
-     * While the FITS object is associated with the specified input, it is initialized as an empty container with
-     * no data loaded from the input automatically. You may want to call {@link #read()} to load all data from the input
+     * While the FITS object is associated with the specified input, it is initialized as an empty container with no
+     * data loaded from the input automatically. You may want to call {@link #read()} to load all data from the input
      * and/or {@link #readHDU()}/{@link #getHDU(int)} for select HDUs, which you can then add via
      * {@link #addHDU(BasicHDU)} to the container.
      * </p>
      *
-     * @param src
-     *              the random access input. The content of this input will not be read into the Fits object until the 
-     *               user makes some explicit request.
-     *  
-     * @throws FitsException
-     *              if the operation failed
+     * @param src the random access input. The content of this input will not be read into the Fits object until the
+     *            user makes some explicit request.
+     * 
+     * @throws FitsException if the operation failed
      *
      * @see #Fits(File, boolean)
      * @see #read()
@@ -238,7 +236,7 @@ public class Fits implements Closeable {
     public Fits(RandomAccessFileIO src) throws FitsException {
         randomInit(src);
     }
-    
+
     /**
      * <p>
      * Creates a new (empty) FITS container associated with the given input stream. Compression is determined from the
@@ -576,13 +574,15 @@ public class Fits implements Closeable {
     }
 
     /**
-     * Get a stream from the file and then use the stream initialization.
+     * @deprecated Will be private in 2.0. Get a stream from the file and then use the stream initialization.
      * 
      * @param myFile The File to be associated.
      * @param compressed Is the data compressed?
      * 
      * @throws FitsException if the opening of the file failed.
      */
+    // TODO Make private
+    @Deprecated
     @SuppressWarnings("resource")
     @SuppressFBWarnings(value = "OBL_UNSATISFIED_OBLIGATION", justification = "stream stays open, and will be read when nessesary.")
     protected void fileInit(File myFile, boolean compressed) throws FitsException {
@@ -810,6 +810,8 @@ public class Fits implements Closeable {
      *
      * @see #randomInit(RandomAccessFileIO)
      */
+    // TODO make private
+    @Deprecated
     protected void randomInit(File file) throws FitsException {
 
         String permissions = "r";
@@ -828,13 +830,11 @@ public class Fits implements Closeable {
     }
 
     /**
-     * Initialize using buffered random access. This implies that the data is
-     * uncompressed.
+     * Initialize using buffered random access. This implies that the data is uncompressed.
      *
-     * @param src
-     *          the random access data
-     * @throws FitsException
-     * `        if the data is not readable
+     * @param src the random access data
+     * 
+     * @throws FitsException ` if the data is not readable
      *
      * @see #randomInit(File)
      */
@@ -910,7 +910,7 @@ public class Fits implements Closeable {
             return null;
         }
 
-        Data data = hdr.makeData();
+        Data data = FitsFactory.dataFactory(hdr);
         try {
             data.read(this.dataStr);
         } catch (PaddingException e) {
@@ -951,7 +951,7 @@ public class Fits implements Closeable {
                 }
             }
         } catch (IOException e) {
-            throw new FitsException("Corrupted FITS file.", e);
+            throw new FitsException("Corrupted FITS file: " + e, e);
         }
     }
 

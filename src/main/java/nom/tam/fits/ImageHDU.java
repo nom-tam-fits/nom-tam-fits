@@ -37,13 +37,13 @@ import static nom.tam.fits.header.Standard.NAXIS;
 import static nom.tam.fits.header.Standard.NAXISn;
 import static nom.tam.fits.header.Standard.SIMPLE;
 import static nom.tam.fits.header.Standard.XTENSION;
-import static nom.tam.fits.header.Standard.XTENSION_IMAGE;
 import static nom.tam.util.LoggerHelper.getLogger;
 
 import java.io.PrintStream;
 import java.util.logging.Level;
 import java.util.logging.Logger;
 
+import nom.tam.fits.header.Standard;
 import nom.tam.image.StandardImageTiler;
 import nom.tam.util.ArrayFuncs;
 import nom.tam.util.type.ElementType;
@@ -55,22 +55,33 @@ public class ImageHDU extends BasicHDU<ImageData> {
 
     private static final Logger LOG = getLogger(ImageHDU.class);
 
+    @Override
+    protected final String getCanonicalXtension() {
+        return Standard.XTENSION_IMAGE;
+    }
+
     /**
+     * @deprecated This should be for internal use only. Will reduce visibility in the future
+     * 
      * @return Encapsulate an object as an ImageHDU.
-     * @param o
-     *            object to encapsulate
-     * @throws FitsException
-     *             if the operation failed
+     * 
+     * @param o object to encapsulate
+     * 
+     * @throws FitsException if the operation failed
      */
+    @Deprecated
     public static ImageData encapsulate(Object o) throws FitsException {
         return new ImageData(o);
     }
 
     /**
+     * @deprecated This should be for internal use only. Will reduce visibility in the future
+     * 
      * @return is this object can be described as a FITS image.
-     * @param o
-     *            The Object being tested.
+     * 
+     * @param o The Object being tested.
      */
+    @Deprecated
     public static boolean isData(Object o) {
         if (o.getClass().isArray()) {
             ElementType<?> type = ElementType.forClass(ArrayFuncs.getBaseClass(o));
@@ -85,16 +96,19 @@ public class ImageHDU extends BasicHDU<ImageData> {
     /**
      * Check that this HDU has a valid header for this type.
      * 
-     * @param hdr
-     *            header to check
+     * @deprecated This should be for internal use only. Will reduce visibility in the future
+     * 
+     * @param hdr header to check
+     * 
      * @return <CODE>true</CODE> if this HDU has a valid header.
      */
+    @Deprecated
     public static boolean isHeader(Header hdr) {
         boolean found = hdr.getBooleanValue(SIMPLE);
         if (!found) {
             String xtension = hdr.getStringValue(XTENSION);
             xtension = xtension == null ? "" : xtension.trim();
-            if (XTENSION_IMAGE.equals(xtension) || "IUEIMAGE".equals(xtension)) {
+            if (Standard.XTENSION_IMAGE.equals(xtension) || "IUEIMAGE".equals(xtension)) {
                 found = true;
             }
         }
@@ -104,17 +118,34 @@ public class ImageHDU extends BasicHDU<ImageData> {
         return !hdr.getBooleanValue(GROUPS);
     }
 
+    /**
+     * Prepares a data object into which the actual data can be read from an input subsequently or at a later time.
+     * 
+     * @deprecated This should be for internal use only. Will reduce visibility in the future
+     * 
+     * @param hdr The FITS header that describes the data
+     * 
+     * @return A data object that support reading content from a stream.
+     * 
+     * @throws FitsException if the data could not be prepared to prescriotion.
+     */
+    @Deprecated
     public static Data manufactureData(Header hdr) throws FitsException {
         return new ImageData(hdr);
     }
 
     /**
-     * @return Create a header that describes the given image data.
-     * @param d
-     *            The image to be described.
-     * @throws FitsException
-     *             if the object does not contain valid image data.
+     * Prepares a data object into which the actual data can be read from an input subsequently or at a later time.
+     * 
+     * @deprecated This should be for internal use only. Will reduce visibility in the future
+     * 
+     * @param d The FITS data content of this HDU
+     * 
+     * @return A data object that support reading content from a stream.
+     * 
+     * @throws FitsException if the data could not be prepared to prescriotion.
      */
+    @Deprecated
     public static Header manufactureHeader(Data d) throws FitsException {
         if (d == null) {
             return null;
@@ -129,21 +160,13 @@ public class ImageHDU extends BasicHDU<ImageData> {
     /**
      * Build an image HDU using the supplied data.
      * 
-     * @param h
-     *            the header for the image.
-     * @param d
-     *            the data used in the image.
-     * @throws FitsException
-     *             if there was a problem with the data.
+     * @param h the header for the image.
+     * @param d the data used in the image.
+     * 
+     * @throws FitsException if there was a problem with the data.
      */
     public ImageHDU(Header h, ImageData d) throws FitsException {
         super(h, d);
-    }
-
-    /** Indicate that Images can appear at the beginning of a FITS dataset */
-    @Override
-    protected boolean canBePrimary() {
-        return true;
     }
 
     public StandardImageTiler getTiler() {
@@ -179,23 +202,6 @@ public class ImageHDU extends BasicHDU<ImageData> {
         } catch (Exception e) {
             LOG.log(Level.SEVERE, "Unable to get image data", e);
             stream.println("      Unable to get data");
-        }
-    }
-
-    /** Change the Image from/to primary */
-    @Override
-    protected void setPrimaryHDU(boolean status) {
-
-        try {
-            super.setPrimaryHDU(status);
-        } catch (FitsException e) {
-            LOG.log(Level.SEVERE, "Impossible exception in ImageData", e);
-        }
-
-        if (status) {
-            this.myHeader.setSimple(true);
-        } else {
-            this.myHeader.setXtension(XTENSION_IMAGE);
         }
     }
 }

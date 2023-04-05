@@ -1,10 +1,10 @@
 package nom.tam.fits;
 
-/*
+/*-
  * #%L
  * nom.tam FITS library
  * %%
- * Copyright (C) 1996 - 2021 nom-tam-fits
+ * Copyright (C) 1996 - 2022 nom-tam-fits
  * %%
  * This is free and unencumbered software released into the public domain.
  * 
@@ -31,46 +31,47 @@ package nom.tam.fits;
  * #L%
  */
 
-import nom.tam.util.ArrayDataInput;
-import nom.tam.util.ArrayDataOutput;
+import java.io.PrintStream;
 
-public class BadData extends Data {
+import nom.tam.fits.header.Standard;
 
-    @Override
-    protected void fillHeader(Header head) throws FitsException {
+/**
+ * A class of HDU that contains a FITS header only with no associated data object.
+ * Such HDUs are commonly used as the primary HDU in FITS files where the leading
+ * data is not an image, since only images may constitute the primary HDU. 
+ * 
+ * @author Attila Kovacs
+ * 
+ * @since 1.18
+ */
+public class NullDataHDU extends BasicHDU<NullData> {
 
+    /**
+     * Instantiates a new HDU with a default header and no associated data, using the
+     * supplied header.
+     */
+    public NullDataHDU() {
+        this(new Header());
+        getData().fillHeader(getHeader());
+    }
+    
+    /**
+     * Instantiates a new HDU with only a header and no associated data, using the
+     * supplied header.
+     * 
+     * @param myHeader      the FITS header for this HDU
+     */
+    public NullDataHDU(Header myHeader) {
+        super(myHeader, new NullData());
     }
 
     @Override
-    public Object getData() throws FitsException {
-        return null;
+    public void info(PrintStream stream) {
+        stream.println("  Header Only");
     }
-
+    
     @Override
-    protected long getTrueSize() {
-        return 0;
+    protected String getCanonicalXtension() {
+        return Standard.XTENSION_IMAGE;
     }
-
-    @Override
-    public void read(ArrayDataInput in) throws FitsException {
-
-    }
-
-    @Override
-    public void write(ArrayDataOutput o) throws FitsException {
-
-    }
-
-    @Override
-    protected Object getCurrentData() {
-        // TODO Auto-generated method stub
-        return null;
-    }
-
-    @Override
-    protected void loadData(ArrayDataInput in) {
-        // TODO Auto-generated method stub
-
-    }
-
 }

@@ -30,8 +30,8 @@ package nom.tam.fits;
  * OTHER DEALINGS IN THE SOFTWARE.
  * #L%
  */
+import static org.junit.Assert.assertFalse;
 
-import static org.junit.Assert.*;
 import org.junit.Test;
 
 import nom.tam.util.ArrayDataInput;
@@ -39,36 +39,36 @@ import nom.tam.util.ArrayDataOutput;
 
 public class DeferredTest {
 
-    @Test 
+    @Test
     public void isDeferredAsciiTableNew() throws Exception {
         assertFalse(new AsciiTable().isDeferred());
     }
 
-    @Test 
+    @Test
     public void isDeferredBinaryTableNew() throws Exception {
         assertFalse(new BinaryTable().isDeferred());
     }
 
-    @Test 
+    @Test
     public void isDeferredImageDataNew() throws Exception {
         assertFalse(new ImageData().isDeferred());
     }
 
-    @Test 
+    @Test
     public void isDeferredRandomGroupsDataNew() throws Exception {
         assertFalse(new RandomGroupsData().isDeferred());
     }
 
-    @Test 
+    @Test
     public void isDeferredUndefinedDataNew() throws Exception {
         assertFalse(new UndefinedData(new int[10]).isDeferred());
     }
 
-    @Test 
+    @Test
     public void isDeferredDataNew() throws Exception {
         assertFalse(new DefaultData().isDeferred());
     }
-    
+
     @Test
     public void deferredDataRewrite() throws Exception {
         new DefaultData() {
@@ -79,10 +79,9 @@ public class DeferredTest {
         }.rewrite(); // No exception is good enough!
     }
 
-
     class DefaultData extends Data {
         @Override
-        void fillHeader(Header head) throws FitsException {
+        protected void fillHeader(Header head) throws FitsException {
         }
 
         @Override
@@ -91,7 +90,7 @@ public class DeferredTest {
         }
 
         @Override
-        long getTrueSize() {
+        protected long getTrueSize() {
             return 0;
         }
 
@@ -103,6 +102,18 @@ public class DeferredTest {
         @Override
         public void write(ArrayDataOutput o) throws FitsException {
             throw new FitsException("not implemented");
+        }
+
+        @Override
+        protected Object getCurrentData() {
+            // TODO Auto-generated method stub
+            return null;
+        }
+
+        @Override
+        protected void loadData(ArrayDataInput in) {
+            // TODO Auto-generated method stub
+
         }
     }
 }

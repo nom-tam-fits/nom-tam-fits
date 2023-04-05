@@ -1,10 +1,16 @@
 package nom.tam.fits;
 
-/*
+import static nom.tam.fits.header.Standard.EXTEND;
+import static nom.tam.fits.header.Standard.GCOUNT;
+import static nom.tam.fits.header.Standard.NAXIS;
+import static nom.tam.fits.header.Standard.NAXISn;
+import static nom.tam.fits.header.Standard.PCOUNT;
+
+/*-
  * #%L
  * nom.tam FITS library
  * %%
- * Copyright (C) 2004 - 2021 nom-tam-fits
+ * Copyright (C) 1996 - 2023 nom-tam-fits
  * %%
  * This is free and unencumbered software released into the public domain.
  * 
@@ -31,17 +37,10 @@ package nom.tam.fits;
  * #L%
  */
 
-import static nom.tam.fits.header.Standard.EXTEND;
-import static nom.tam.fits.header.Standard.GCOUNT;
-import static nom.tam.fits.header.Standard.NAXIS;
-import static nom.tam.fits.header.Standard.NAXISn;
-import static nom.tam.fits.header.Standard.PCOUNT;
 import static nom.tam.util.LoggerHelper.getLogger;
 
-import java.io.EOFException;
 import java.io.IOException;
 import java.nio.Buffer;
-import java.util.logging.Level;
 import java.util.logging.Logger;
 
 import nom.tam.fits.header.Bitpix;
@@ -56,16 +55,13 @@ import nom.tam.util.array.MultiArrayIterator;
 import nom.tam.util.type.ElementType;
 
 /**
- * This class instantiates FITS primary HDU and IMAGE extension data.
- * Essentially these data are a primitive multi-dimensional array.
+ * This class instantiates FITS primary HDU and IMAGE extension data. Essentially these data are a primitive
+ * multi-dimensional array.
  * <p>
- * Starting in version 0.9 of the FITS library, this routine allows users to
- * defer the reading of images if the FITS data is being read from a file. An
- * ImageTiler object is supplied which can return an arbitrary subset of the
- * image as a one dimensional array -- suitable for manipulation by standard
- * Java libraries. A call to the getData() method will still return a
- * multi-dimensional array, but the image data will not be read until the user
- * explicitly requests. it.
+ * Starting in version 0.9 of the FITS library, this routine allows users to defer the reading of images if the FITS
+ * data is being read from a file. An ImageTiler object is supplied which can return an arbitrary subset of the image as
+ * a one dimensional array -- suitable for manipulation by standard Java libraries. A call to the getData() method will
+ * still return a multi-dimensional array, but the image data will not be read until the user explicitly requests. it.
  */
 public class ImageData extends Data {
 
@@ -85,8 +81,7 @@ public class ImageData extends Data {
     }
 
     /**
-     * This inner class allows the ImageTiler to see if the user has read in the
-     * data.
+     * This inner class allows the ImageTiler to see if the user has read in the data.
      */
     protected class ImageDataTiler extends StandardImageTiler {
 
@@ -106,9 +101,8 @@ public class ImageData extends Data {
     private long byteSize;
 
     /**
-     * The actual array of data. This is normally a multi-dimensional primitive
-     * array. It may be null until the getData() routine is invoked, or it may
-     * be filled by during the read call when a non-random access device is
+     * The actual array of data. This is normally a multi-dimensional primitive array. It may be null until the
+     * getData() routine is invoked, or it may be filled by during the read call when a non-random access device is
      * used.
      */
     private Object dataArray;
@@ -128,101 +122,57 @@ public class ImageData extends Data {
     }
 
     /**
-     * Create an array from a header description. This is typically how data
-     * will be created when reading FITS data from a file where the header is
-     * read first. This creates an empty array.
+     * Create an array from a header description. This is typically how data will be created when reading FITS data from
+     * a file where the header is read first. This creates an empty array.
      *
-     * @param h
-     *            header to be used as a template.
-     * @throws FitsException
-     *             if there was a problem with the header description.
+     * @param h header to be used as a template.
+     * 
+     * @throws FitsException if there was a problem with the header description.
      */
     public ImageData(Header h) throws FitsException {
-
         this.dataDescription = parseHeader(h);
     }
 
     /**
-     * Create an ImageData object using the specified object to initialize the
-     * data array.
+     * Create an ImageData object using the specified object to initialize the data array.
      *
-     * @param x
-     *            The initial data array. This should be a primitive array but
-     *            this is not checked currently.
+     * @param x The initial data array. This should be a primitive array but this is not checked currently.
      */
     public ImageData(Object x) {
         this.dataArray = x;
         this.byteSize = FitsEncoder.computeSize(x);
     }
-    
+
     @Override
-    public boolean isDeferred() {
-        return getFileOffset() >= 0 && dataArray == null;
+    protected void loadData(ArrayDataInput in) throws IOException, FitsException {
+        if (tiler != null) {
+            dataArray = tiler.getCompleteImage();
+        } else {
+            dataArray = ArrayFuncs.newInstance(this.dataDescription.type, this.dataDescription.dims);
+            in.readArrayFully(dataArray);
+        }
     }
 
-    private void ensureData() {
-        if (!isDeferred()) {
-            return;
-        }
-        try {
-            dataArray = tiler.getCompleteImage();
-        } catch (Exception e) {
-            LOG.log(Level.SEVERE, "Unable to get complete image", e);
-        }
+    @Override
+    public void read(ArrayDataInput in) throws FitsException {
+        tiler = (in instanceof RandomAccess) ?
+                new ImageDataTiler((RandomAccess) in, ((RandomAccess) in).getFilePointer(), this.dataDescription) :
+                null;
+        super.read(in);
     }
-    
+
     /**
-     * Return the actual data. Note that this may return a null when the data is
-     * not readable. It might be better to throw a FitsException, but this is a
-     * very commonly called method and we prefered not to change how users must
+     * Return the actual data. Note that this may return a null when the data is not readable. It might be better to
+     * throw a FitsException, but this is a very commonly called method and we prefered not to change how users must
      * invoke it.
      */
     @Override
-    public Object getData() {
-        ensureData();
+    protected Object getCurrentData() {
         return dataArray;
     }
 
     public StandardImageTiler getTiler() {
         return tiler;
-    }
-
-    @Override
-    public void read(ArrayDataInput i) throws FitsException {
-        // Don't need to read null data (noted by Jens Knudstrup)
-        if (this.byteSize == 0) {
-            return;
-        }
-        setFileOffset(i);
-        
-        if (i instanceof RandomAccess) {
-            this.tiler = new ImageDataTiler((RandomAccess) i, ((RandomAccess) i).getFilePointer(), this.dataDescription);
-            try {
-                // Handle long skips.
-                i.skipAllBytes(this.byteSize);
-            } catch (IOException e) {
-                throw new FitsException("Unable to skip over image:" + e);
-            }
-
-        } else {
-            this.dataArray = ArrayFuncs.newInstance(this.dataDescription.type, this.dataDescription.dims);
-            try {
-                i.readArrayFully(this.dataArray);
-            } catch (IOException e) {
-                throw new FitsException("Unable to read image data:" + e);
-            }
-
-            this.tiler = new ImageDataTiler(null, 0, this.dataDescription);
-        }
-
-        long pad = FitsUtil.padding(getTrueSize());
-        try {
-            i.skipAllBytes(pad);
-        } catch (EOFException e) {
-            throw new PaddingException("EOF while skipping padding after image", this, e);
-        } catch (IOException e) {
-            throw new FitsException("IO error while skipping padding after image", e);
-        }
     }
 
     public void setBuffer(Buffer data) {
@@ -245,25 +195,7 @@ public class ImageData extends Data {
             return;
         }
 
-        if (this.dataArray == null) {
-            if (this.tiler != null) {
-
-                // Need to read in the whole image first.
-                try {
-                    this.dataArray = this.tiler.getCompleteImage();
-                } catch (IOException e) {
-                    throw new FitsException("Error attempting to fill image", e);
-                }
-
-            } else if (this.dataArray == null && this.dataDescription != null) {
-                // Need to create an array to match a specified header.
-                this.dataArray = ArrayFuncs.newInstance(this.dataDescription.type, this.dataDescription.dims);
-
-            } else {
-                // This image isn't ready to be written!
-                throw new FitsException("Null image data");
-            }
-        }
+        ensureData();
 
         try {
             o.writeArray(this.dataArray);
@@ -277,10 +209,9 @@ public class ImageData extends Data {
     /**
      * Fill header with keywords that describe image data.
      *
-     * @param head
-     *            The FITS header
-     * @throws FitsException
-     *             if the object does not contain valid image data.
+     * @param head The FITS header
+     * 
+     * @throws FitsException if the object does not contain valid image data.
      */
     @Override
     protected void fillHeader(Header head) throws FitsException {
@@ -332,7 +263,7 @@ public class ImageData extends Data {
         if (gCount > 1 || pCount != 0) {
             throw new FitsException("Group data treated as images");
         }
-        
+
         Bitpix bitpix = Bitpix.fromHeader(h);
         Class<?> baseClass = bitpix.getPrimitiveType();
         int ndim = h.getIntValue(NAXIS, 0);
