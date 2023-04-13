@@ -45,12 +45,15 @@ import nom.tam.fits.BinaryTableHDU;
 import nom.tam.fits.FitsException;
 import nom.tam.fits.Header;
 import nom.tam.fits.HeaderCard;
+import nom.tam.fits.HeaderCardException;
 import nom.tam.fits.ImageData;
 import nom.tam.fits.ImageHDU;
+import nom.tam.fits.StreamingTileImageData;
 import nom.tam.fits.compression.algorithm.api.ICompressOption;
 import nom.tam.fits.header.Compression;
 import nom.tam.fits.header.GenericKey;
 import nom.tam.fits.header.IFitsHeader;
+import nom.tam.image.compression.CompressedImageTiler;
 import nom.tam.util.Cursor;
 
 /**
@@ -61,6 +64,7 @@ import nom.tam.util.Cursor;
  * in the tile.
  */
 public class CompressedImageHDU extends BinaryTableHDU {
+    public static final int MAX_NAXIS_ALLOWED = 999;
 
     /**
      * keys that are only valid in tables and should not go into the
@@ -142,6 +146,60 @@ public class CompressedImageHDU extends BinaryTableHDU {
     }
 
     public ImageHDU asImageHDU() throws FitsException {
+        final Header header = getGenericHeader();
+        ImageData data = (ImageData) ImageHDU.manufactureData(header);
+        ImageHDU imageHDU = new ImageHDU(header, data);
+        data.setBuffer(getUncompressedData());
+        return imageHDU;
+    }
+
+    /**
+     * Obtain a streaming ImageHDU with preset tile configuration.  This is used to tile from a large CompressedImageHDU
+     * where decompressing the entire file into memory is impossible.  This is quite different from the asImageHDU()
+     * and is therefore a separate function.
+     * @param corners   The corners to start tiling in each axis.
+     * @param lengths   The lengths of data to write in each axis.
+     * @param steps     The number of jumps to the next read in each axis.
+     * @return          An ImageHDU instance.  Never null.
+     * @throws FitsException    Any FITS errors in reading or creating image data instances.
+     */
+    public ImageHDU asTiledImageHDU(final int[] corners, final int[] lengths, final int[] steps) throws FitsException {
+        final Header header = getGenericHeader();
+        final CompressedImageTiler compressedImageTiler = new CompressedImageTiler(this);
+        final StreamingTileImageData streamingTileImageData = new StreamingTileImageData(header, compressedImageTiler,
+                                                                                         corners, lengths, steps);
+        return new ImageHDU(header, streamingTileImageData);
+    }
+
+    /**
+     * Given this compressed HDU, get the original (decompressed) axes.
+     *
+     * @return the dimensions of the axis.
+     * @throws FitsException
+     *             if the axis are configured wrong.
+     */
+    public int[] getDecompressedAxes() throws FitsException {
+        int nAxis = this.myHeader.getIntValue(Compression.ZNAXIS);
+        if (nAxis < 0) {
+            throw new FitsException("Negative ZNAXIS (or NAXIS) value " + nAxis);
+        }
+        if (nAxis > CompressedImageHDU.MAX_NAXIS_ALLOWED) {
+            throw new FitsException("ZNAXIS/NAXIS value " + nAxis + " too large");
+        }
+
+        if (nAxis == 0) {
+            return null;
+        }
+
+        final int[] axes = new int[nAxis];
+        for (int i = 1; i <= nAxis; i++) {
+            axes[nAxis - i] = this.myHeader.getIntValue(Compression.ZNAXISn.n(i));
+        }
+
+        return axes;
+    }
+
+    private Header getGenericHeader() throws HeaderCardException {
         Header header = new Header();
         Cursor<String, HeaderCard> imageIterator = header.iterator();
         Cursor<String, HeaderCard> iterator = getHeader().iterator();
@@ -151,10 +209,7 @@ public class CompressedImageHDU extends BinaryTableHDU {
                 BackupRestoreUnCompressedHeaderCard.backup(card, imageIterator);
             }
         }
-        ImageData data = (ImageData) ImageHDU.manufactureData(header);
-        ImageHDU imageHDU = new ImageHDU(header, data);
-        data.setBuffer(getUncompressedData());
-        return imageHDU;
+        return header;
     }
 
     public void compress() throws FitsException {

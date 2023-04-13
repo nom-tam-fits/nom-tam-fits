@@ -104,7 +104,7 @@ users may need to be careful of Java’s automated conversion of bytes to intege
 E.g.
 
 ```java
-  byte[] bimg = …
+  byte[] bimg = new byte[100]; // data
   for (int i=0; i<bimg.length; i += 1) {
        bimg[i] = (byte)(bimg[i]&0xFF - offset);
   }
@@ -201,7 +201,7 @@ which is actually a short hand for getting the data unit and the data within:
   int[][] image = (int[][]) imageData.getData();
 ```
 
-However the user will be responsible for casting this to an appropriate type if they want to use the data inside their program.
+However, the user will be responsible for casting this to an appropriate type if they want to use the data inside their program.
 It is possible to build tools that will handle arbitrary array types, but it is not trivial.
 
 When reading FITS data using the nom.tam library the user will often need to cast the results to the appropriate type.
@@ -340,8 +340,98 @@ If the pixels are ints, that’s  an 8 GB file.  We can do
 ```
     
 The `reset()` method causes the internal stream to seek to the beginning of the data area.
-If that’s not possible it returns false. 
+If that’s not possible it returns false.
 
+#### Random Access
+It is possible to specify alternate random access by implementing the `RandomAccessFileIO` interface.  This is useful
+when a Fits file isn't necessarily on disk, but rather in object storage on the web, for example, or any other
+network access.
+
+```java
+import nom.tam.util.RandomAccessFileIO;
+
+import java.io.FileDescriptor;
+import java.io.IOException;
+import java.nio.channels.FileChannel;
+
+public final class S3RandomAccessFileIO implements RandomAccessFileIO {
+  private final AmazonS3 s3client;
+  
+  public S3RandomAccessFileIO(AmazonS3 client) {
+      this.s3client = client;
+  }
+    
+  @Override
+  public String readUTF() throws IOException {
+    return this.s3client;
+  }
+
+  @Override
+  public FileChannel getChannel() {
+    return null;
+  }
+
+  @Override
+  public FileDescriptor getFD() throws IOException {
+    return null;
+  }
+
+  @Override
+  public void setLength(long length) throws IOException {
+
+  }
+
+  @Override
+  public void writeUTF(String s) throws IOException {
+
+  }
+}
+```
+
+#### Streaming cutouts
+Added `StreamingTileImageData` class.
+For large files, it is possible to stream out a cutout (using the `RandomAccessIO` above):
+
+```java
+final RandomAccessFileIO s3RandomFile = S3RandomAccessFileIO(...);
+Fits source = new Fits(s3RandomFile);
+Fits output = new Fits();
+ImageHDU imageHDU = source.getHDU(1);
+Header tileHeader = adjustHeaderToTile(imageHDU.getHeader());
+int[] tileStarts = new int[]{10, 10};
+int[] tileLengths = new int[]{45, 60};
+int[] tileSteps = new int[]{1, 1};
+if (overlap(imageHDU.getData())) {
+    StreamingTileImageData streamingTileImageData = new StreamingTileImageData(tileHeader, imageHDU.getTiler(),
+                                                                               tileStarts, tileLengths,
+                                                                               tileSteps);
+    output.addHDU(FitsFactory.hduFactory(tileHeader, streamingTileImageData));
+}
+output.write(outputStream);  // The cutout happens at write time!
+```
+
+#### Compressed Streaming cutouts
+Added `CompressedImageTiler` class.
+For cutouts from large compressed files, the `asImageHDU()` method will decompress into memory.  To prevent that, use the 
+`CompressedImageTiler` class.
+
+```java
+final RandomAccessFileIO compressedS3RandomFile = S3RandomAccessFileIO(...);
+Fits source = new Fits(compressedS3RandomFile);
+Fits output = new Fits();
+CompressedImageHDU imageHDU = source.getHDU(1);
+Header tileHeader = adjustHeaderToTile(imageHDU.getHeader());
+int[] tileStarts = new int[]{10, 10};
+int[] tileLengths = new int[]{45, 60};
+int[] tileSteps = new int[]{1, 1};
+if (overlap(imageHDU.getData())) {
+    StreamingTileImageData streamingTileImageData = new StreamingTileImageData(tileHeader, imageHDU.getTiler(),
+                                                                               tileStarts, tileLengths,
+                                                                               tileSteps);
+    output.addHDU(FitsFactory.hduFactory(tileHeader, streamingTileImageData));
+}
+output.write(outputStream);  // The cutout happens at write time!
+```
 
 #### Tables
 We can process binary tables in a similar way, if they have a fixed structure.

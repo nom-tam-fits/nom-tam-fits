@@ -77,7 +77,7 @@ public final class ArrayFuncs {
      * @param step      The number of jumps to the next read.
      */
     public static void copy(Object src, int srcPos, Object dest, int destPos, int length, int step) {
-        if (src instanceof Object[]) {
+        if (src instanceof Object[] && dest instanceof Object[]) {
             final Object[] from = (Object[]) src;
             final Object[] to = (Object[]) dest;
             int toIndex = 0;
@@ -87,12 +87,14 @@ public final class ArrayFuncs {
         } else if (step == 1) {
             System.arraycopy(src, srcPos, dest, destPos, length);
         } else {
-            for (int i = srcPos; i < srcPos + length; i += step) {
+            final int srcLength = Array.getLength(src);
+            final int loopLength = Math.min(srcLength, srcPos + length);
+            for (int i = srcPos; i < loopLength; i += step) {
                 Array.set(dest, destPos++, Array.get(src, i));
             }
         }
     }
-    
+
     /**
      * @return a description of an array (presumed rectangular).
      * @param o
@@ -103,9 +105,7 @@ public final class ArrayFuncs {
         if (base == Void.TYPE) {
             return "NULL";
         }
-        return new StringBuffer(base.getSimpleName())//
-                .append(Arrays.toString(getDimensions(o)))//
-                .toString();
+        return base.getSimpleName() + Arrays.toString(getDimensions(o));
     }
 
     /**
