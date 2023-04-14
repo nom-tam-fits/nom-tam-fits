@@ -39,9 +39,6 @@ import java.util.ServiceLoader;
 import java.util.logging.Level;
 import java.util.logging.Logger;
 
-import nom.tam.fits.BinaryTable;
-import nom.tam.fits.BinaryTableHDU;
-import nom.tam.fits.FitsException;
 import nom.tam.fits.compression.algorithm.api.ICompressOption;
 import nom.tam.fits.compression.algorithm.api.ICompressor;
 import nom.tam.fits.compression.algorithm.api.ICompressorControl;
@@ -76,8 +73,9 @@ import nom.tam.fits.compression.algorithm.uncompressed.NoCompressCompressor.IntN
 import nom.tam.fits.compression.algorithm.uncompressed.NoCompressCompressor.LongNoCompressCompressor;
 import nom.tam.fits.compression.algorithm.uncompressed.NoCompressCompressor.ShortNoCompressCompressor;
 import nom.tam.fits.compression.provider.api.ICompressorProvider;
+import nom.tam.fits.compression.provider.param.api.ICompressHeaderParameter;
 import nom.tam.fits.compression.provider.param.api.ICompressParameters;
-import nom.tam.fits.compression.provider.param.api.IHeaderAccess;
+import nom.tam.fits.compression.provider.param.base.CompressParameters;
 import nom.tam.fits.compression.provider.param.hcompress.HCompressParameters;
 import nom.tam.fits.compression.provider.param.rice.RiceCompressParameters;
 
@@ -231,43 +229,16 @@ public class CompressorProvider implements ICompressorProvider {
         }
     };
 
-    private static final ICompressParameters NULL_PARAMETERS = new ICompressParameters() {
+    private static final ICompressParameters NULL_PARAMETERS = new CompressParameters() {
 
         @Override
-        public void addColumnsToTable(BinaryTableHDU hdu) {
+        protected ICompressHeaderParameter[] headerParameters() {
+            return new ICompressHeaderParameter[0];
         }
 
         @Override
-        public ICompressParameters copy(ICompressOption clone) {
+        public ICompressParameters copy(ICompressOption option) {
             return this;
-        }
-
-        @Override
-        public void getValuesFromColumn(int index) {
-        }
-
-        @Override
-        public void getValuesFromHeader(IHeaderAccess header) {
-        }
-
-        @Override
-        public void initializeColumns(IHeaderAccess header, BinaryTable binaryTable, int size) throws FitsException {
-        }
-
-        @Override
-        public void initializeColumns(int length) {
-        }
-
-        @Override
-        public void setValuesInColumn(int index) {
-        }
-
-        @Override
-        public void setValuesInHeader(IHeaderAccess header) {
-        }
-
-        @Override
-        public void setTileIndex(int index) {
         }
     };
 
