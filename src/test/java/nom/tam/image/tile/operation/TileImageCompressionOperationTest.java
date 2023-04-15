@@ -90,5 +90,37 @@ public class TileImageCompressionOperationTest {
 
         op.setQuantAlgorithm(HeaderCard.create(Compression.ZQUANTIZ, "invalid value"));
         Assert.assertNull(op.getQuantAlgorithm());
+
+        op.setQuantAlgorithm(null);
+        Assert.assertNull(op.getQuantAlgorithm());
+    }
+
+    @Test
+    public void testZcmptypeValues() throws Exception {
+        TiledImageCompressionOperation op = new TiledImageCompressionOperation(null);
+
+        op.setCompressAlgorithm(HeaderCard.create(Compression.ZCMPTYPE, Compression.ZCMPTYPE_NOCOMPRESS));
+        Assert.assertEquals(op.getCompressAlgorithm(), Compression.ZCMPTYPE_NOCOMPRESS);
+
+        op.setCompressAlgorithm(HeaderCard.create(Compression.ZCMPTYPE, Compression.ZCMPTYPE_GZIP_1));
+        Assert.assertEquals(op.getCompressAlgorithm(), Compression.ZCMPTYPE_GZIP_1);
+
+        op.setCompressAlgorithm(HeaderCard.create(Compression.ZCMPTYPE, Compression.ZCMPTYPE_GZIP_2));
+        Assert.assertEquals(op.getCompressAlgorithm(), Compression.ZCMPTYPE_GZIP_2);
+
+        op.setCompressAlgorithm(HeaderCard.create(Compression.ZCMPTYPE, Compression.ZCMPTYPE_RICE_1));
+        Assert.assertEquals(op.getCompressAlgorithm(), Compression.ZCMPTYPE_RICE_1);
+
+        op.setCompressAlgorithm(HeaderCard.create(Compression.ZCMPTYPE, Compression.ZCMPTYPE_PLIO_1));
+        Assert.assertEquals(op.getCompressAlgorithm(), Compression.ZCMPTYPE_PLIO_1);
+
+        op.setCompressAlgorithm(HeaderCard.create(Compression.ZCMPTYPE, Compression.ZCMPTYPE_HCOMPRESS_1));
+        Assert.assertEquals(op.getCompressAlgorithm(), Compression.ZCMPTYPE_HCOMPRESS_1);
+
+        op.setCompressAlgorithm(HeaderCard.create(Compression.ZCMPTYPE, "invalid value"));
+        Assert.assertNull(op.getCompressAlgorithm());
+
+        op.setCompressAlgorithm(null);
+        Assert.assertNull(op.getCompressAlgorithm());
     }
 }
