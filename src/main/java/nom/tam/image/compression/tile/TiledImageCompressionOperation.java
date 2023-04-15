@@ -285,6 +285,21 @@ public class TiledImageCompressionOperation extends AbstractTiledImageOperation<
         return this;
     }
 
+    /**
+     * Returns the name of the currently configured quantization algorithm.
+     * 
+     * @return The name of the standard quantization algorithm (i.e. a FITS standard value for the <code>ZQUANTIZ</code>
+     *             keyword), or <code>null</code> if not quantization is currently defined, possibly because an invalid
+     *             value was set before.
+     * 
+     * @see #setQuantAlgorithm(HeaderCard)
+     * 
+     * @since 1.18
+     */
+    public String getQuantAlgorithm() {
+        return this.quantAlgorithm;
+    }
+
     public synchronized TiledImageCompressionOperation setQuantAlgorithm(HeaderCard quantAlgorithmCard) {
         this.quantAlgorithm = null;
 
