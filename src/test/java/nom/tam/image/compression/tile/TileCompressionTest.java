@@ -150,4 +150,5 @@ public class TileCompressionTest {
         TiledImageCompressionOperation op = new TiledImageCompressionOperation(null);
         op.readPrimaryHeaders(h);
     }
+
 }

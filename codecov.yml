@@ -7,6 +7,11 @@ coverage:
   range: "80...100"
   status:
     patch: off
+    project:
+      default:
+        target: auto
+        threshold: 0.03%
+        removed_code_behavior: adjust_base
 
 parsers:
   gcov:

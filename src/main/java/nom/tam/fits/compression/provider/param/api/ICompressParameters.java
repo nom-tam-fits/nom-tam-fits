@@ -5,6 +5,7 @@ import nom.tam.fits.BinaryTableHDU;
 import nom.tam.fits.FitsException;
 import nom.tam.fits.HeaderCardException;
 import nom.tam.fits.compression.algorithm.api.ICompressOption;
+import nom.tam.fits.compression.provider.param.base.CompressParameters;
 
 /*
  * #%L
@@ -36,8 +37,17 @@ import nom.tam.fits.compression.algorithm.api.ICompressOption;
  * OTHER DEALINGS IN THE SOFTWARE.
  * #L%
  */
+
 /**
+ * <p>
  * Group of parameters that must be synchronized with the hdu meta data for a specific compression algorithm.
+ * </p>
+ * <p>
+ * NOTE, this interface is meant for internal use only. Implementing it externally to this library might not result in
+ * the desired behavior. If you feed the need to implement compression parameters externally to what is privided by this
+ * library, you are advised to extend the abstract {@link CompressParameters} class or of of its known subclasses
+ * instead
+ * </p>
  */
 public interface ICompressParameters {
 

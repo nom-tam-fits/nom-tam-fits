@@ -39,6 +39,8 @@ import org.junit.Test;
 
 import nom.tam.fits.BinaryTable;
 import nom.tam.fits.FitsException;
+import nom.tam.fits.HeaderCard;
+import nom.tam.fits.header.Compression;
 import nom.tam.image.compression.tile.TiledImageCompressionOperation;
 import nom.tam.util.type.ElementType;
 
@@ -48,28 +50,77 @@ public class TileImageCompressionOperationTest {
         TiledImageCompressionOperation op = new TiledImageCompressionOperation(null);
         op.setTileAxes(new int[] {2, 3, 4});
     }
-    
+
     @Test
     public void tileImageSubtileTest() throws Exception {
         Buffer buf = ByteBuffer.wrap(new byte[10000]);
-        
+
         TiledImageCompressionOperation op = new TiledImageCompressionOperation(new BinaryTable());
         op.setTileAxes(new int[] {10});
-        op.setAxes(new int[] { 100, 100 });
+        op.setAxes(new int[] {100, 100});
         op.setBaseType(ElementType.forNearestBitpix(8));
         op.prepareUncompressedData(buf);
-        Assert.assertArrayEquals(new int[] { 1,  10}, op.getTileAxes());
+        Assert.assertArrayEquals(new int[] {1, 10}, op.getTileAxes());
     }
-    
+
     @Test
     public void tileSize3DTest() throws Exception {
         TiledImageCompressionOperation op = new TiledImageCompressionOperation(new BinaryTable());
         op.setTileAxes(new int[] {1, 3, 4});
     }
-    
+
     @Test(expected = FitsException.class)
     public void illegalTileSizeTest() throws Exception {
         TiledImageCompressionOperation op = new TiledImageCompressionOperation(new BinaryTable());
         op.setTileAxes(new int[] {2, 3, 4});
+    }
+
+    @Test
+    public void testZquantizValues() throws Exception {
+        TiledImageCompressionOperation op = new TiledImageCompressionOperation(null);
+
+        op.setQuantAlgorithm(HeaderCard.create(Compression.ZQUANTIZ, Compression.ZQUANTIZ_NO_DITHER));
+        Assert.assertEquals(op.getQuantAlgorithm(), Compression.ZQUANTIZ_NO_DITHER);
+
+        op.setQuantAlgorithm(HeaderCard.create(Compression.ZQUANTIZ, Compression.ZQUANTIZ_SUBTRACTIVE_DITHER_1));
+        Assert.assertEquals(op.getQuantAlgorithm(), Compression.ZQUANTIZ_SUBTRACTIVE_DITHER_1);
+
+        op.setQuantAlgorithm(HeaderCard.create(Compression.ZQUANTIZ, Compression.ZQUANTIZ_SUBTRACTIVE_DITHER_2));
+        Assert.assertEquals(op.getQuantAlgorithm(), Compression.ZQUANTIZ_SUBTRACTIVE_DITHER_2);
+
+        op.setQuantAlgorithm(HeaderCard.create(Compression.ZQUANTIZ, "invalid value"));
+        Assert.assertNull(op.getQuantAlgorithm());
+
+        op.setQuantAlgorithm(null);
+        Assert.assertNull(op.getQuantAlgorithm());
+    }
+
+    @Test
+    public void testZcmptypeValues() throws Exception {
+        TiledImageCompressionOperation op = new TiledImageCompressionOperation(null);
+
+        op.setCompressAlgorithm(HeaderCard.create(Compression.ZCMPTYPE, Compression.ZCMPTYPE_NOCOMPRESS));
+        Assert.assertEquals(op.getCompressAlgorithm(), Compression.ZCMPTYPE_NOCOMPRESS);
+
+        op.setCompressAlgorithm(HeaderCard.create(Compression.ZCMPTYPE, Compression.ZCMPTYPE_GZIP_1));
+        Assert.assertEquals(op.getCompressAlgorithm(), Compression.ZCMPTYPE_GZIP_1);
+
+        op.setCompressAlgorithm(HeaderCard.create(Compression.ZCMPTYPE, Compression.ZCMPTYPE_GZIP_2));
+        Assert.assertEquals(op.getCompressAlgorithm(), Compression.ZCMPTYPE_GZIP_2);
+
+        op.setCompressAlgorithm(HeaderCard.create(Compression.ZCMPTYPE, Compression.ZCMPTYPE_RICE_1));
+        Assert.assertEquals(op.getCompressAlgorithm(), Compression.ZCMPTYPE_RICE_1);
+
+        op.setCompressAlgorithm(HeaderCard.create(Compression.ZCMPTYPE, Compression.ZCMPTYPE_PLIO_1));
+        Assert.assertEquals(op.getCompressAlgorithm(), Compression.ZCMPTYPE_PLIO_1);
+
+        op.setCompressAlgorithm(HeaderCard.create(Compression.ZCMPTYPE, Compression.ZCMPTYPE_HCOMPRESS_1));
+        Assert.assertEquals(op.getCompressAlgorithm(), Compression.ZCMPTYPE_HCOMPRESS_1);
+
+        op.setCompressAlgorithm(HeaderCard.create(Compression.ZCMPTYPE, "invalid value"));
+        Assert.assertNull(op.getCompressAlgorithm());
+
+        op.setCompressAlgorithm(null);
+        Assert.assertNull(op.getCompressAlgorithm());
     }
 }

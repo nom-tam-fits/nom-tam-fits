@@ -54,7 +54,9 @@ import static nom.tam.image.compression.tile.TileCompressionType.UNCOMPRESSED;
 import java.lang.reflect.Array;
 import java.nio.Buffer;
 import java.nio.ByteBuffer;
+import java.util.Locale;
 import java.util.concurrent.ExecutorService;
+import java.util.logging.Logger;
 
 import nom.tam.fits.BinaryTable;
 import nom.tam.fits.BinaryTableHDU;
@@ -279,18 +281,98 @@ public class TiledImageCompressionOperation extends AbstractTiledImageOperation<
         readTileAxis(header);
     }
 
+    /**
+     * Sets the compression algorithm, via a <code>ZCMPTYPE</code> header card or equivalent. The card must contain one
+     * of the values recognized by the FITS standard. If not, <code>null</code> will be set instead.
+     * 
+     * @param compressAlgorithmCard The header card that specifies the compression algorithm, with one of the standard
+     *            recognized values such as {@link Compression#ZCMPTYPE_GZIP_1}, or <code>null</code>.
+     * 
+     * @return itself
+     * 
+     * @see #getCompressAlgorithm()
+     * @see #setQuantAlgorithm(HeaderCard)
+     */
     public TiledImageCompressionOperation setCompressAlgorithm(HeaderCard compressAlgorithmCard) {
-        this.compressAlgorithm = compressAlgorithmCard.getValue();
+        this.compressAlgorithm = null;
+
+        if (compressAlgorithmCard == null) {
+            return this;
+        }
+
+        String algo = compressAlgorithmCard.getValue().toUpperCase(Locale.US);
+        if (algo.equals(Compression.ZCMPTYPE_GZIP_1) || algo.equals(Compression.ZCMPTYPE_GZIP_2)
+                || algo.equals(Compression.ZCMPTYPE_RICE_1) || algo.equals(Compression.ZCMPTYPE_PLIO_1)
+                || algo.equals(Compression.ZCMPTYPE_HCOMPRESS_1) || algo.equals(Compression.ZCMPTYPE_NOCOMPRESS)) {
+            this.compressAlgorithm = algo;
+        } else {
+            Logger.getLogger(Header.class.getName()).warning("Ignored invalid ZCMPTYPE value: " + algo);
+        }
+
         return this;
     }
 
+    /**
+     * Sets the quantization algorithm, via a <code>ZQUANTIZ</code> header card or equivalent. The card must contain one
+     * of the values recognized by the FITS standard. If not, <code>null</code> will be set instead.
+     * 
+     * @param quantAlgorithmCard The header card that specifies the compression algorithm, with one of the standard
+     *            recognized values such as {@link Compression#ZQUANTIZ_NO_DITHER}, or <code>null</code>.
+     * 
+     * @return itself
+     * 
+     * @see #getQuantAlgorithm()
+     * @see #setCompressAlgorithm(HeaderCard)
+     */
     public synchronized TiledImageCompressionOperation setQuantAlgorithm(HeaderCard quantAlgorithmCard) {
-        if (quantAlgorithmCard != null) {
-            this.quantAlgorithm = quantAlgorithmCard.getValue();
-        } else {
-            this.quantAlgorithm = null;
+        this.quantAlgorithm = null;
+
+        if (quantAlgorithmCard == null) {
+            return this;
         }
+
+        String algo = quantAlgorithmCard.getValue().toUpperCase();
+
+        if (algo.equals(Compression.ZQUANTIZ_NO_DITHER) || algo.equals(Compression.ZQUANTIZ_SUBTRACTIVE_DITHER_1)
+                || algo.equals(Compression.ZQUANTIZ_SUBTRACTIVE_DITHER_2)) {
+            this.quantAlgorithm = algo;
+        } else {
+            Logger.getLogger(Header.class.getName()).warning("Ignored invalid ZQUANTIZ value: " + algo);
+        }
+
         return this;
+    }
+
+    /**
+     * Returns the name of the currently configured quantization algorithm.
+     * 
+     * @return The name of the standard quantization algorithm (i.e. a FITS standard value for the <code>ZQUANTIZ</code>
+     *             keyword), or <code>null</code> if not quantization is currently defined, possibly because an invalid
+     *             value was set before.
+     * 
+     * @see #setQuantAlgorithm(HeaderCard)
+     * @see #getCompressAlgorithm()
+     * 
+     * @since 1.18
+     */
+    public String getQuantAlgorithm() {
+        return this.quantAlgorithm;
+    }
+
+    /**
+     * Returns the name of the currently configured compression algorithm.
+     * 
+     * @return The name of the standard compression algorithm (i.e. a FITS standard value for the <code>ZCMPTYPE</code>
+     *             keyword), or <code>null</code> if not quantization is currently defined, possibly because an invalid
+     *             value was set before.
+     * 
+     * @see #setCompressAlgorithm(HeaderCard)
+     * @see #getQuantAlgorithm()
+     * 
+     * @since 1.18
+     */
+    public String getCompressAlgorithm() {
+        return this.compressAlgorithm;
     }
 
     private <T> T getNullableColumn(Header header, Class<T> class1, String columnName) throws FitsException {
