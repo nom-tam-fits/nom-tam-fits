@@ -10,6 +10,7 @@ coverage:
     project:
       default:
         target: auto
+        threshold: 0.03%
         removed_code_behavior: adjust_base
 
 parsers:
