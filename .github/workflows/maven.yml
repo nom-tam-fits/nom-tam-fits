@@ -57,7 +57,6 @@ jobs:
       continue-on-error: true
       with:
 #        token: ${{ secrets.CODECOV_TOKEN }}
-        working-directory: ./nom-tam-fits
         fail_ci_if_error: false
         flags: unittests
         name: codecov
