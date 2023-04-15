@@ -55,6 +55,7 @@ import java.lang.reflect.Array;
 import java.nio.Buffer;
 import java.nio.ByteBuffer;
 import java.util.concurrent.ExecutorService;
+import java.util.logging.Logger;
 
 import nom.tam.fits.BinaryTable;
 import nom.tam.fits.BinaryTableHDU;
@@ -287,14 +288,19 @@ public class TiledImageCompressionOperation extends AbstractTiledImageOperation<
     public synchronized TiledImageCompressionOperation setQuantAlgorithm(HeaderCard quantAlgorithmCard) {
         this.quantAlgorithm = null;
 
-        if (quantAlgorithmCard != null) {
-            String algo = quantAlgorithmCard.getValue().toUpperCase();
-
-            if (algo.equals(Compression.ZQUANTIZ_NO_DITHER) || algo.equals(Compression.ZQUANTIZ_SUBTRACTIVE_DITHER_1)
-                    || algo.equals(Compression.ZQUANTIZ_SUBTRACTIVE_DITHER_2)) {
-                this.quantAlgorithm = algo;
-            }
+        if (quantAlgorithmCard == null) {
+            return this;
         }
+
+        String algo = quantAlgorithmCard.getValue().toUpperCase();
+
+        if (algo.equals(Compression.ZQUANTIZ_NO_DITHER) || algo.equals(Compression.ZQUANTIZ_SUBTRACTIVE_DITHER_1)
+                || algo.equals(Compression.ZQUANTIZ_SUBTRACTIVE_DITHER_2)) {
+            this.quantAlgorithm = algo;
+        } else {
+            Logger.getLogger(Header.class.getName()).warning("Ignored invalid ZQUANTIZ value: " + algo);
+        }
+
         return this;
     }
 
