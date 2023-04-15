@@ -58,7 +58,6 @@ jobs:
       with:
 #        token: ${{ secrets.CODECOV_TOKEN }}
         working-directory: ./nom-tam-fits
-        files: ./target/site/jacoco/jacoco.xml
         fail_ci_if_error: false
         flags: unittests
         name: codecov
