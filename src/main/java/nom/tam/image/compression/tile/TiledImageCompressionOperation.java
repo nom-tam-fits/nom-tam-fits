@@ -355,7 +355,7 @@ public class TiledImageCompressionOperation extends AbstractTiledImageOperation<
      * 
      * @since 1.18
      */
-    public String getQuantAlgorithm() {
+    public synchronized String getQuantAlgorithm() {
         return this.quantAlgorithm;
     }
 
