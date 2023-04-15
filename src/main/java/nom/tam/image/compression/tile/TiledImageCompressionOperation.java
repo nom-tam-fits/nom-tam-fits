@@ -285,10 +285,15 @@ public class TiledImageCompressionOperation extends AbstractTiledImageOperation<
     }
 
     public synchronized TiledImageCompressionOperation setQuantAlgorithm(HeaderCard quantAlgorithmCard) {
+        this.quantAlgorithm = null;
+
         if (quantAlgorithmCard != null) {
-            this.quantAlgorithm = quantAlgorithmCard.getValue();
-        } else {
-            this.quantAlgorithm = null;
+            String algo = quantAlgorithmCard.getValue().toUpperCase();
+
+            if (algo.equals(Compression.ZQUANTIZ_NO_DITHER) || algo.equals(Compression.ZQUANTIZ_SUBTRACTIVE_DITHER_1)
+                    || algo.equals(Compression.ZQUANTIZ_SUBTRACTIVE_DITHER_2)) {
+                this.quantAlgorithm = algo;
+            }
         }
         return this;
     }
