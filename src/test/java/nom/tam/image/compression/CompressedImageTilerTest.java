@@ -105,6 +105,7 @@ import nom.tam.fits.FitsFactory;
 import nom.tam.fits.FitsUtil;
 import nom.tam.fits.Header;
 import nom.tam.fits.ImageHDU;
+import nom.tam.fits.StreamingTileImageData;
 import nom.tam.fits.compression.algorithm.api.ICompressOption;
 import nom.tam.fits.compression.algorithm.api.ICompressorControl;
 import nom.tam.fits.compression.algorithm.hcompress.HCompressorOption;
@@ -159,11 +160,24 @@ public class CompressedImageTilerTest {
              final FitsOutputStream fitsOutputStream = new FitsOutputStream(byteArrayOutputStream);
              final Fits outputFits = new Fits()) {
             final CompressedImageHDU compressedImageHDU = (CompressedImageHDU) sourceFits.getHDU(1);
-            final ImageHDU cutoutImageHDU = compressedImageHDU.asTiledImageHDU(cornerStarts, lengths, steps);
 
-            final Header header = cutoutImageHDU.getHeader();
-            header.addValue(Standard.NAXISn.n(1), 5);
-            header.addValue(Standard.NAXISn.n(2), 10);
+            // Adjust the Header.
+            final Header compressedImageHDUHeader = compressedImageHDU.getHeader();
+
+            // Copy the header
+            final Header cutoutHeader = new Header();
+            compressedImageHDUHeader.iterator().forEachRemaining(cutoutHeader::addLine);
+
+            cutoutHeader.addValue(Standard.NAXISn.n(1), 5);
+            cutoutHeader.addValue(Standard.NAXISn.n(2), 10);
+            cutoutHeader.addValue(Standard.PCOUNT, 0);
+            cutoutHeader.addValue(Standard.GCOUNT, 1);
+            cutoutHeader.setSimple(true);
+
+            final CompressedImageTiler compressedImageTiler = new CompressedImageTiler(compressedImageHDU);
+            final StreamingTileImageData streamingTileImageData =
+                    new StreamingTileImageData(cutoutHeader, compressedImageTiler, cornerStarts, lengths, steps);
+            final ImageHDU cutoutImageHDU = new ImageHDU(cutoutHeader, streamingTileImageData);
 
             outputFits.addHDU(cutoutImageHDU);
             outputFits.write(fitsOutputStream);

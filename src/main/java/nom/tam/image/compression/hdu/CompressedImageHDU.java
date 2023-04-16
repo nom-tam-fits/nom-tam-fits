@@ -48,12 +48,10 @@ import nom.tam.fits.HeaderCard;
 import nom.tam.fits.HeaderCardException;
 import nom.tam.fits.ImageData;
 import nom.tam.fits.ImageHDU;
-import nom.tam.fits.StreamingTileImageData;
 import nom.tam.fits.compression.algorithm.api.ICompressOption;
 import nom.tam.fits.header.Compression;
 import nom.tam.fits.header.GenericKey;
 import nom.tam.fits.header.IFitsHeader;
-import nom.tam.image.compression.CompressedImageTiler;
 import nom.tam.util.Cursor;
 
 /**
@@ -153,25 +151,7 @@ public class CompressedImageHDU extends BinaryTableHDU {
         return imageHDU;
     }
 
-    /**
-     * Obtain a streaming ImageHDU with preset tile configuration.  This is used to tile from a large CompressedImageHDU
-     * where decompressing the entire file into memory is impossible.  This is quite different from the asImageHDU()
-     * and is therefore a separate function.
-     * @param corners   The corners to start tiling in each axis.
-     * @param lengths   The lengths of data to write in each axis.
-     * @param steps     The number of jumps to the next read in each axis.
-     * @return          An ImageHDU instance.  Never null.
-     * @throws FitsException    Any FITS errors in reading or creating image data instances.
-     */
-    public ImageHDU asTiledImageHDU(final int[] corners, final int[] lengths, final int[] steps) throws FitsException {
-        final Header header = getGenericHeader();
-        final CompressedImageTiler compressedImageTiler = new CompressedImageTiler(this);
-        final StreamingTileImageData streamingTileImageData = new StreamingTileImageData(header, compressedImageTiler,
-                                                                                         corners, lengths, steps);
-        return new ImageHDU(header, streamingTileImageData);
-    }
-
-    /**
+     /**
      * Given this compressed HDU, get the original (decompressed) axes.
      *
      * @return the dimensions of the axis.
@@ -199,7 +179,13 @@ public class CompressedImageHDU extends BinaryTableHDU {
         return axes;
     }
 
-    private Header getGenericHeader() throws HeaderCardException {
+    /**
+     * Obtain a header representative of a decompressed ImageHDU.
+     * @return Header with decompressed cards.
+     * @throws HeaderCardException
+     *          if the card could not be copied
+     */
+    public Header getGenericHeader() throws HeaderCardException {
         Header header = new Header();
         Cursor<String, HeaderCard> imageIterator = header.iterator();
         Cursor<String, HeaderCard> iterator = getHeader().iterator();
@@ -212,7 +198,7 @@ public class CompressedImageHDU extends BinaryTableHDU {
         return header;
     }
 
-    public void compress() throws FitsException {
+     public void compress() throws FitsException {
         getData().compress(this);
     }
 

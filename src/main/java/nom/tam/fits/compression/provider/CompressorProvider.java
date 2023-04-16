@@ -173,7 +173,9 @@ public class CompressorProvider implements ICompressorProvider {
                 throws InstantiationException, IllegalAccessException, InvocationTargetException {
             QuantizeOption quantOption = null;
 
-            if (option instanceof QuantizeOption) {
+            if (option instanceof RiceQuantizeCompressOption) {
+                quantOption = (RiceQuantizeCompressOption) option;
+            } else if (option instanceof QuantizeOption) {
                 quantOption = (QuantizeOption) option;
                 option = quantOption.getCompressOption();
             }

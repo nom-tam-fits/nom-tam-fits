@@ -92,7 +92,7 @@ public class QuantizeOption implements ICompressOption {
     }
 
     /**
-     * Creates a new set of qunatization options, to be used together with the specified compression options.
+     * Creates a new set of quantization options, to be used together with the specified compression options.
      * 
      * @param compressOption Compression-specific options to pair with these quantization options, or <code>null</code>.
      * 

@@ -493,7 +493,7 @@ public class CompressedImageTiler implements ImageTiler {
     }
 
     private String getQuantizAlgorithmName() {
-        return getHeader().getStringValue(Compression.ZQUANTIZ, Compression.ZQUANTIZ_NO_DITHER);
+        return getHeader().getStringValue(Compression.ZQUANTIZ);
     }
 
     private String getCompressionAlgorithmName() {
