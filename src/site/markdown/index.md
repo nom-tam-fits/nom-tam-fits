@@ -208,7 +208,7 @@ When reading FITS data using the nom.tam library the user will often need to cas
 Given that the FITS file may contain many different kinds of data and that Java provides us with no class that can point to different kinds of primitive arrays other than Object, this downcasting is inevitable if you want to use the data from the FITS files.
 
 
-#### Reading parts of an image only
+#### Reading parts of an image only (cutouts)
 
 When reading image data users may not want to read an entire array especially if the data is very large.
 An `ImageTiler` can be used to read in only a portion of an array.
@@ -227,6 +227,52 @@ This can be achieved with
 The tiler needs to know the corners and size of the tile we want.
 Note that we can tile an image of any dimensionality.
 `getTile()` returns a one-dimensional array with the flattend image.
+
+##### Streaming cutouts
+Added `StreamingTileImageData` class.
+For large files, it is possible to stream out a cutout (using the `RandomAccessIO` above):
+
+```java
+final RandomAccessFileIO s3RandomFile = S3RandomAccessFileIO(...);  // S3RandomAccessFileIO does not exist, example only
+Fits source = new Fits(s3RandomFile);
+Fits output = new Fits();
+ImageHDU imageHDU = source.getHDU(1);
+Header cutoutHeader = adjustHeaderToTile(imageHDU.getHeader());
+int[] tileStarts = new int[]{10, 10};
+int[] tileLengths = new int[]{45, 60};
+int[] tileSteps = new int[]{1, 1};
+if (overlap(imageHDU.getData())) {
+    StreamingTileImageData streamingTileImageData = new StreamingTileImageData(cutoutHeader, imageHDU.getTiler(),
+                                                                               tileStarts, tileLengths,
+                                                                               tileSteps);
+    output.addHDU(FitsFactory.hduFactory(cutoutHeader, streamingTileImageData));
+}
+output.write(outputStream);  // The cutout happens at write time!
+```
+
+##### Compressed Streaming cutouts
+Added `CompressedImageTiler` class.
+For cutouts from large compressed files, the `asImageHDU()` method will decompress into memory.  To prevent that, use the
+`CompressedImageTiler` class.
+
+```java
+final RandomAccessFileIO compressedS3RandomFile = S3RandomAccessFileIO(...);  // S3RandomAccessFileIO does not exist, example only
+Fits source = new Fits(compressedS3RandomFile);
+Fits output = new Fits();
+CompressedImageHDU compressedImageHDU = source.getHDU(1);
+Header cutoutHeader = adjustHeaderToTile(compressedImageHDU.getHeader());
+int[] tileStarts = new int[]{10, 10};
+int[] tileLengths = new int[]{45, 60};
+int[] tileSteps = new int[]{1, 1};
+if (overlap(compressedImageHDU.getData())) {
+    CompressedImageTiler compressedImageTiler = new CompressedImageTiler(compressedImageHDU);
+    StreamingTileImageData streamingTileImageData = new StreamingTileImageData(cutoutHeader, compressedImageTiler, 
+                                                                               corners, lengths, steps);
+    output.addHDU(new ImageHDU(cutoutHeader, streamingTileImageData));
+}
+output.write(outputStream);  // The cutout happens at write time!
+```
+
 
 <a name="reading-tables"></a>
 ### Reading Tables
@@ -386,51 +432,6 @@ public final class S3RandomAccessFileIO implements RandomAccessFileIO {
 
   }
 }
-```
-
-#### Streaming cutouts
-Added `StreamingTileImageData` class.
-For large files, it is possible to stream out a cutout (using the `RandomAccessIO` above):
-
-```java
-final RandomAccessFileIO s3RandomFile = S3RandomAccessFileIO(...);
-Fits source = new Fits(s3RandomFile);
-Fits output = new Fits();
-ImageHDU imageHDU = source.getHDU(1);
-Header tileHeader = adjustHeaderToTile(imageHDU.getHeader());
-int[] tileStarts = new int[]{10, 10};
-int[] tileLengths = new int[]{45, 60};
-int[] tileSteps = new int[]{1, 1};
-if (overlap(imageHDU.getData())) {
-    StreamingTileImageData streamingTileImageData = new StreamingTileImageData(tileHeader, imageHDU.getTiler(),
-                                                                               tileStarts, tileLengths,
-                                                                               tileSteps);
-    output.addHDU(FitsFactory.hduFactory(tileHeader, streamingTileImageData));
-}
-output.write(outputStream);  // The cutout happens at write time!
-```
-
-#### Compressed Streaming cutouts
-Added `CompressedImageTiler` class.
-For cutouts from large compressed files, the `asImageHDU()` method will decompress into memory.  To prevent that, use the 
-`CompressedImageTiler` class.
-
-```java
-final RandomAccessFileIO compressedS3RandomFile = S3RandomAccessFileIO(...);
-Fits source = new Fits(compressedS3RandomFile);
-Fits output = new Fits();
-CompressedImageHDU imageHDU = source.getHDU(1);
-Header tileHeader = adjustHeaderToTile(imageHDU.getHeader());
-int[] tileStarts = new int[]{10, 10};
-int[] tileLengths = new int[]{45, 60};
-int[] tileSteps = new int[]{1, 1};
-if (overlap(imageHDU.getData())) {
-    StreamingTileImageData streamingTileImageData = new StreamingTileImageData(tileHeader, imageHDU.getTiler(),
-                                                                               tileStarts, tileLengths,
-                                                                               tileSteps);
-    output.addHDU(FitsFactory.hduFactory(tileHeader, streamingTileImageData));
-}
-output.write(outputStream);  // The cutout happens at write time!
 ```
 
 #### Tables
