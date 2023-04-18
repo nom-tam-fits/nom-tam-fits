@@ -114,7 +114,6 @@ import nom.tam.fits.compression.algorithm.rice.RiceCompressOption;
 import nom.tam.fits.compression.provider.param.rice.RiceCompressParameters;
 import nom.tam.fits.header.Compression;
 import nom.tam.fits.header.Standard;
-import nom.tam.image.compression.hdu.CompressedImageData;
 import nom.tam.image.compression.hdu.CompressedImageHDU;
 import nom.tam.util.ArrayDataOutput;
 import nom.tam.util.ArrayFuncs;
@@ -1013,20 +1012,20 @@ public class CompressedImageTilerTest {
     }
 
     @Test
-    public void testGetDecompressedAxes() throws Exception {
+    public void testGetImageAxes() throws Exception {
         final File sourceFile = new File("src/test/resources/nom/tam/image/provided/m13real_rice.fits");
         try (final Fits sourceFits = new Fits(sourceFile, true)) {
             final CompressedImageHDU compressedImageHDU = (CompressedImageHDU) sourceFits.getHDU(1);
 
             Assert.assertArrayEquals("Wrong decompressed axes.", new int[]{300, 300},
-                                     compressedImageHDU.getDecompressedAxes());
+                                     compressedImageHDU.getImageAxes());
 
             compressedImageHDU.getHeader().findCard(Compression.ZNAXIS).setValue(0);
-            Assert.assertNull("Should be null origin axes.", compressedImageHDU.getDecompressedAxes());
+            Assert.assertNull("Should be null origin axes.", compressedImageHDU.getImageAxes());
 
             compressedImageHDU.getHeader().findCard(Compression.ZNAXIS).setValue(-1);
             try {
-                compressedImageHDU.getDecompressedAxes();
+                compressedImageHDU.getImageAxes();
                 fail("Should throw FitsException.");
             } catch (FitsException fitsException) {
                 // Good.
@@ -1035,7 +1034,7 @@ public class CompressedImageTilerTest {
             compressedImageHDU.getHeader().findCard(Compression.ZNAXIS)
                               .setValue(CompressedImageHDU.MAX_NAXIS_ALLOWED + 1);
             try {
-                compressedImageHDU.getDecompressedAxes();
+                compressedImageHDU.getImageAxes();
                 fail("Should throw FitsException.");
             } catch (FitsException fitsException) {
                 // Good.

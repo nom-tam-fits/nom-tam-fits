@@ -181,6 +181,19 @@ When FITS data are being read from a non-compressed file (`FitsFile`), the `read
 <a name="reading-images"></a>
 ### Reading Images
 
+#### Random Access
+It is possible to specify alternate random access by implementing the `RandomAccessFileIO` interface.  This is useful
+when a Fits file isn't necessarily on disk, but rather in object storage on the web, for example, or any other
+network access.
+
+```java
+import nom.tam.util.RandomAccessFileIO;
+
+public final class S3RandomAccessFileIO implements RandomAccessFileIO {
+  // ...
+}
+```
+
 The simplest example of reading an image contained in the first HDU is given below:
 
 ```java
@@ -253,14 +266,14 @@ output.write(outputStream);  // The cutout happens at write time!
 ##### Compressed Streaming cutouts
 Added `CompressedImageTiler` class.
 For cutouts from large compressed files, the `asImageHDU()` method will decompress into memory.  To prevent that, use the
-`CompressedImageTiler` class.
+`CompressedImageTiler` class.  This will write out an ImageHDU, *not* a compressed format.
 
 ```java
 final RandomAccessFileIO compressedS3RandomFile = S3RandomAccessFileIO(...);  // S3RandomAccessFileIO does not exist, example only
 Fits source = new Fits(compressedS3RandomFile);
 Fits output = new Fits();
 CompressedImageHDU compressedImageHDU = source.getHDU(1);
-Header cutoutHeader = adjustHeaderToTile(compressedImageHDU.getHeader());
+Header cutoutHeader = adjustHeaderToTile(compressedImageHDU.getImageHeader());  // Use the decompressed header.
 int[] tileStarts = new int[]{10, 10};
 int[] tileLengths = new int[]{45, 60};
 int[] tileSteps = new int[]{1, 1};
@@ -387,52 +400,6 @@ If the pixels are ints, that’s  an 8 GB file.  We can do
     
 The `reset()` method causes the internal stream to seek to the beginning of the data area.
 If that’s not possible it returns false.
-
-#### Random Access
-It is possible to specify alternate random access by implementing the `RandomAccessFileIO` interface.  This is useful
-when a Fits file isn't necessarily on disk, but rather in object storage on the web, for example, or any other
-network access.
-
-```java
-import nom.tam.util.RandomAccessFileIO;
-
-import java.io.FileDescriptor;
-import java.io.IOException;
-import java.nio.channels.FileChannel;
-
-public final class S3RandomAccessFileIO implements RandomAccessFileIO {
-  private final AmazonS3 s3client;
-  
-  public S3RandomAccessFileIO(AmazonS3 client) {
-      this.s3client = client;
-  }
-    
-  @Override
-  public String readUTF() throws IOException {
-    return this.s3client;
-  }
-
-  @Override
-  public FileChannel getChannel() {
-    return null;
-  }
-
-  @Override
-  public FileDescriptor getFD() throws IOException {
-    return null;
-  }
-
-  @Override
-  public void setLength(long length) throws IOException {
-
-  }
-
-  @Override
-  public void writeUTF(String s) throws IOException {
-
-  }
-}
-```
 
 #### Tables
 We can process binary tables in a similar way, if they have a fixed structure.

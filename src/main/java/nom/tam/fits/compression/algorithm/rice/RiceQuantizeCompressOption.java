@@ -31,7 +31,6 @@ package nom.tam.fits.compression.algorithm.rice;
  * #L%
  */
 
-import nom.tam.fits.compression.algorithm.api.ICompressOption;
 import nom.tam.fits.compression.algorithm.quant.QuantizeOption;
 
 public class RiceQuantizeCompressOption extends QuantizeOption {
@@ -40,7 +39,7 @@ public class RiceQuantizeCompressOption extends QuantizeOption {
         super(new RiceCompressOption());
     }
 
-    public RiceQuantizeCompressOption(ICompressOption compressOption) {
+    public RiceQuantizeCompressOption(RiceCompressOption compressOption) {
         super(compressOption);
     }
 

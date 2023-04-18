@@ -32,11 +32,16 @@ package nom.tam.fits.compression.algorithm.hcompress;
  */
 
 import nom.tam.fits.compression.algorithm.quant.QuantizeOption;
+import nom.tam.fits.compression.algorithm.rice.RiceCompressOption;
 
 public class HCompressorQuantizeOption extends QuantizeOption {
 
     public HCompressorQuantizeOption() {
         super(new HCompressorOption());
+    }
+
+    public HCompressorQuantizeOption(RiceCompressOption compressOption) {
+        super(compressOption);
     }
 
     public HCompressorOption getHCompressorOption() {

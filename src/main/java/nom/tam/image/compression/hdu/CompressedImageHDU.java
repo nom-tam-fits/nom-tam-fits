@@ -144,7 +144,7 @@ public class CompressedImageHDU extends BinaryTableHDU {
     }
 
     public ImageHDU asImageHDU() throws FitsException {
-        final Header header = getGenericHeader();
+        final Header header = getImageHeader();
         ImageData data = (ImageData) ImageHDU.manufactureData(header);
         ImageHDU imageHDU = new ImageHDU(header, data);
         data.setBuffer(getUncompressedData());
@@ -158,7 +158,7 @@ public class CompressedImageHDU extends BinaryTableHDU {
      * @throws FitsException
      *             if the axis are configured wrong.
      */
-    public int[] getDecompressedAxes() throws FitsException {
+    public int[] getImageAxes() throws FitsException {
         int nAxis = this.myHeader.getIntValue(Compression.ZNAXIS);
         if (nAxis < 0) {
             throw new FitsException("Negative ZNAXIS (or NAXIS) value " + nAxis);
@@ -185,7 +185,7 @@ public class CompressedImageHDU extends BinaryTableHDU {
      * @throws HeaderCardException
      *          if the card could not be copied
      */
-    public Header getGenericHeader() throws HeaderCardException {
+    public Header getImageHeader() throws HeaderCardException {
         Header header = new Header();
         Cursor<String, HeaderCard> imageIterator = header.iterator();
         Cursor<String, HeaderCard> iterator = getHeader().iterator();
