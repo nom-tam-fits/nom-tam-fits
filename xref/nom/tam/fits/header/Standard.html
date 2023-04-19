@@ -548,118 +548,123 @@
 <a class="jxr_linenumber" name="L540" href="#L540">540</a>     <em class="jxr_javadoccomment">/**</em>
 <a class="jxr_linenumber" name="L541" href="#L541">541</a> <em class="jxr_javadoccomment">     * The value of the XTENSION keword in case of a binary table.</em>
 <a class="jxr_linenumber" name="L542" href="#L542">542</a> <em class="jxr_javadoccomment">     */</em>
-<a class="jxr_linenumber" name="L543" href="#L543">543</a>     <strong class="jxr_keyword">public</strong> <strong class="jxr_keyword">static</strong> <strong class="jxr_keyword">final</strong> String XTENSION_BINTABLE = <span class="jxr_string">"BINTABLE"</span>;
-<a class="jxr_linenumber" name="L544" href="#L544">544</a> 
+<a class="jxr_linenumber" name="L543" href="#L543">543</a>     <strong class="jxr_keyword">public</strong> <strong class="jxr_keyword">static</strong> <strong class="jxr_keyword">final</strong> String XTENSION_ASCIITABLE = <span class="jxr_string">"TABLE"</span>;
+<a class="jxr_linenumber" name="L544" href="#L544">544</a>     
 <a class="jxr_linenumber" name="L545" href="#L545">545</a>     <em class="jxr_javadoccomment">/**</em>
-<a class="jxr_linenumber" name="L546" href="#L546">546</a> <em class="jxr_javadoccomment">     * The value of the XTENSION keword in case of an image.</em>
+<a class="jxr_linenumber" name="L546" href="#L546">546</a> <em class="jxr_javadoccomment">     * The value of the XTENSION keword in case of a binary table.</em>
 <a class="jxr_linenumber" name="L547" href="#L547">547</a> <em class="jxr_javadoccomment">     */</em>
-<a class="jxr_linenumber" name="L548" href="#L548">548</a>     <strong class="jxr_keyword">public</strong> <strong class="jxr_keyword">static</strong> <strong class="jxr_keyword">final</strong> String XTENSION_IMAGE = <span class="jxr_string">"IMAGE"</span>;
+<a class="jxr_linenumber" name="L548" href="#L548">548</a>     <strong class="jxr_keyword">public</strong> <strong class="jxr_keyword">static</strong> <strong class="jxr_keyword">final</strong> String XTENSION_BINTABLE = <span class="jxr_string">"BINTABLE"</span>;
 <a class="jxr_linenumber" name="L549" href="#L549">549</a> 
-<a class="jxr_linenumber" name="L550" href="#L550">550</a>     <strong class="jxr_keyword">private</strong> <strong class="jxr_keyword">final</strong> <a name="StandardCommentReplacement" href="../../../../nom/tam/fits/header/StandardCommentReplacement.html#StandardCommentReplacement">StandardCommentReplacement</a>[] commentReplacements;
-<a class="jxr_linenumber" name="L551" href="#L551">551</a> 
-<a class="jxr_linenumber" name="L552" href="#L552">552</a>     @SuppressWarnings(<span class="jxr_string">"CPD-START"</span>)
-<a class="jxr_linenumber" name="L553" href="#L553">553</a>     <strong class="jxr_keyword">private</strong> <strong class="jxr_keyword">final</strong> <a name="IFitsHeader" href="../../../../nom/tam/fits/header/IFitsHeader.html#IFitsHeader">IFitsHeader</a> key;
+<a class="jxr_linenumber" name="L550" href="#L550">550</a>     <em class="jxr_javadoccomment">/**</em>
+<a class="jxr_linenumber" name="L551" href="#L551">551</a> <em class="jxr_javadoccomment">     * The value of the XTENSION keword in case of an image.</em>
+<a class="jxr_linenumber" name="L552" href="#L552">552</a> <em class="jxr_javadoccomment">     */</em>
+<a class="jxr_linenumber" name="L553" href="#L553">553</a>     <strong class="jxr_keyword">public</strong> <strong class="jxr_keyword">static</strong> <strong class="jxr_keyword">final</strong> String XTENSION_IMAGE = <span class="jxr_string">"IMAGE"</span>;
 <a class="jxr_linenumber" name="L554" href="#L554">554</a> 
-<a class="jxr_linenumber" name="L555" href="#L555">555</a>     <a name="Standard" href="../../../../nom/tam/fits/header/Standard.html#Standard">Standard</a>(SOURCE status, HDU hdu, VALUE valueType, String comment, StandardCommentReplacement... replacements) {
-<a class="jxr_linenumber" name="L556" href="#L556">556</a>         <strong class="jxr_keyword">this</strong>.key = <strong class="jxr_keyword">new</strong> <a name="FitsHeaderImpl" href="../../../../nom/tam/fits/header/FitsHeaderImpl.html#FitsHeaderImpl">FitsHeaderImpl</a>(name(), status, hdu, valueType, comment);
-<a class="jxr_linenumber" name="L557" href="#L557">557</a>         <strong class="jxr_keyword">this</strong>.commentReplacements = replacements;
-<a class="jxr_linenumber" name="L558" href="#L558">558</a>     }
+<a class="jxr_linenumber" name="L555" href="#L555">555</a>     <strong class="jxr_keyword">private</strong> <strong class="jxr_keyword">final</strong> <a name="StandardCommentReplacement" href="../../../../nom/tam/fits/header/StandardCommentReplacement.html#StandardCommentReplacement">StandardCommentReplacement</a>[] commentReplacements;
+<a class="jxr_linenumber" name="L556" href="#L556">556</a> 
+<a class="jxr_linenumber" name="L557" href="#L557">557</a>     @SuppressWarnings(<span class="jxr_string">"CPD-START"</span>)
+<a class="jxr_linenumber" name="L558" href="#L558">558</a>     <strong class="jxr_keyword">private</strong> <strong class="jxr_keyword">final</strong> <a name="IFitsHeader" href="../../../../nom/tam/fits/header/IFitsHeader.html#IFitsHeader">IFitsHeader</a> key;
 <a class="jxr_linenumber" name="L559" href="#L559">559</a> 
-<a class="jxr_linenumber" name="L560" href="#L560">560</a>     <a name="Standard" href="../../../../nom/tam/fits/header/Standard.html#Standard">Standard</a>(String headerName, SOURCE status, HDU hdu, VALUE valueType, String comment,
-<a class="jxr_linenumber" name="L561" href="#L561">561</a>             StandardCommentReplacement... replacements) {
-<a class="jxr_linenumber" name="L562" href="#L562">562</a>         <strong class="jxr_keyword">this</strong>.key = <strong class="jxr_keyword">new</strong> <a name="FitsHeaderImpl" href="../../../../nom/tam/fits/header/FitsHeaderImpl.html#FitsHeaderImpl">FitsHeaderImpl</a>(headerName == <strong class="jxr_keyword">null</strong> ? name() : headerName, status, hdu, valueType, comment);
-<a class="jxr_linenumber" name="L563" href="#L563">563</a>         <strong class="jxr_keyword">this</strong>.commentReplacements = replacements;
-<a class="jxr_linenumber" name="L564" href="#L564">564</a>     }
-<a class="jxr_linenumber" name="L565" href="#L565">565</a> 
-<a class="jxr_linenumber" name="L566" href="#L566">566</a>     @Override
-<a class="jxr_linenumber" name="L567" href="#L567">567</a>     <strong class="jxr_keyword">public</strong> String comment() {
-<a class="jxr_linenumber" name="L568" href="#L568">568</a>         Class&lt;?&gt; contextClass = COMMENT_CONTEXT.get();
-<a class="jxr_linenumber" name="L569" href="#L569">569</a>         <strong class="jxr_keyword">if</strong> (contextClass == <strong class="jxr_keyword">null</strong>) {
-<a class="jxr_linenumber" name="L570" href="#L570">570</a>             contextClass = Object.<strong class="jxr_keyword">class</strong>;
-<a class="jxr_linenumber" name="L571" href="#L571">571</a>         }
-<a class="jxr_linenumber" name="L572" href="#L572">572</a>         <strong class="jxr_keyword">for</strong> (<a name="StandardCommentReplacement" href="../../../../nom/tam/fits/header/StandardCommentReplacement.html#StandardCommentReplacement">StandardCommentReplacement</a> stdCommentReplacement : commentReplacements) {
-<a class="jxr_linenumber" name="L573" href="#L573">573</a>             <strong class="jxr_keyword">if</strong> (stdCommentReplacement.getContext().isAssignableFrom(contextClass)) {
-<a class="jxr_linenumber" name="L574" href="#L574">574</a>                 <strong class="jxr_keyword">if</strong> (stdCommentReplacement.getComment() != <strong class="jxr_keyword">null</strong>) {
-<a class="jxr_linenumber" name="L575" href="#L575">575</a>                     <strong class="jxr_keyword">return</strong> stdCommentReplacement.getComment();
-<a class="jxr_linenumber" name="L576" href="#L576">576</a>                 }
-<a class="jxr_linenumber" name="L577" href="#L577">577</a>             }
-<a class="jxr_linenumber" name="L578" href="#L578">578</a>         }
-<a class="jxr_linenumber" name="L579" href="#L579">579</a>         <strong class="jxr_keyword">return</strong> <strong class="jxr_keyword">this</strong>.key.comment();
-<a class="jxr_linenumber" name="L580" href="#L580">580</a>     }
-<a class="jxr_linenumber" name="L581" href="#L581">581</a> 
-<a class="jxr_linenumber" name="L582" href="#L582">582</a>     @Override
-<a class="jxr_linenumber" name="L583" href="#L583">583</a>     <strong class="jxr_keyword">public</strong> HDU hdu() {
-<a class="jxr_linenumber" name="L584" href="#L584">584</a>         <strong class="jxr_keyword">return</strong> <strong class="jxr_keyword">this</strong>.key.hdu();
+<a class="jxr_linenumber" name="L560" href="#L560">560</a>     <a name="Standard" href="../../../../nom/tam/fits/header/Standard.html#Standard">Standard</a>(SOURCE status, HDU hdu, VALUE valueType, String comment, StandardCommentReplacement... replacements) {
+<a class="jxr_linenumber" name="L561" href="#L561">561</a>         <strong class="jxr_keyword">this</strong>.key = <strong class="jxr_keyword">new</strong> <a name="FitsHeaderImpl" href="../../../../nom/tam/fits/header/FitsHeaderImpl.html#FitsHeaderImpl">FitsHeaderImpl</a>(name(), status, hdu, valueType, comment);
+<a class="jxr_linenumber" name="L562" href="#L562">562</a>         <strong class="jxr_keyword">this</strong>.commentReplacements = replacements;
+<a class="jxr_linenumber" name="L563" href="#L563">563</a>     }
+<a class="jxr_linenumber" name="L564" href="#L564">564</a> 
+<a class="jxr_linenumber" name="L565" href="#L565">565</a>     <a name="Standard" href="../../../../nom/tam/fits/header/Standard.html#Standard">Standard</a>(String headerName, SOURCE status, HDU hdu, VALUE valueType, String comment,
+<a class="jxr_linenumber" name="L566" href="#L566">566</a>             StandardCommentReplacement... replacements) {
+<a class="jxr_linenumber" name="L567" href="#L567">567</a>         <strong class="jxr_keyword">this</strong>.key = <strong class="jxr_keyword">new</strong> <a name="FitsHeaderImpl" href="../../../../nom/tam/fits/header/FitsHeaderImpl.html#FitsHeaderImpl">FitsHeaderImpl</a>(headerName == <strong class="jxr_keyword">null</strong> ? name() : headerName, status, hdu, valueType, comment);
+<a class="jxr_linenumber" name="L568" href="#L568">568</a>         <strong class="jxr_keyword">this</strong>.commentReplacements = replacements;
+<a class="jxr_linenumber" name="L569" href="#L569">569</a>     }
+<a class="jxr_linenumber" name="L570" href="#L570">570</a> 
+<a class="jxr_linenumber" name="L571" href="#L571">571</a>     @Override
+<a class="jxr_linenumber" name="L572" href="#L572">572</a>     <strong class="jxr_keyword">public</strong> String comment() {
+<a class="jxr_linenumber" name="L573" href="#L573">573</a>         Class&lt;?&gt; contextClass = COMMENT_CONTEXT.get();
+<a class="jxr_linenumber" name="L574" href="#L574">574</a>         <strong class="jxr_keyword">if</strong> (contextClass == <strong class="jxr_keyword">null</strong>) {
+<a class="jxr_linenumber" name="L575" href="#L575">575</a>             contextClass = Object.<strong class="jxr_keyword">class</strong>;
+<a class="jxr_linenumber" name="L576" href="#L576">576</a>         }
+<a class="jxr_linenumber" name="L577" href="#L577">577</a>         <strong class="jxr_keyword">for</strong> (<a name="StandardCommentReplacement" href="../../../../nom/tam/fits/header/StandardCommentReplacement.html#StandardCommentReplacement">StandardCommentReplacement</a> stdCommentReplacement : commentReplacements) {
+<a class="jxr_linenumber" name="L578" href="#L578">578</a>             <strong class="jxr_keyword">if</strong> (stdCommentReplacement.getContext().isAssignableFrom(contextClass)) {
+<a class="jxr_linenumber" name="L579" href="#L579">579</a>                 <strong class="jxr_keyword">if</strong> (stdCommentReplacement.getComment() != <strong class="jxr_keyword">null</strong>) {
+<a class="jxr_linenumber" name="L580" href="#L580">580</a>                     <strong class="jxr_keyword">return</strong> stdCommentReplacement.getComment();
+<a class="jxr_linenumber" name="L581" href="#L581">581</a>                 }
+<a class="jxr_linenumber" name="L582" href="#L582">582</a>             }
+<a class="jxr_linenumber" name="L583" href="#L583">583</a>         }
+<a class="jxr_linenumber" name="L584" href="#L584">584</a>         <strong class="jxr_keyword">return</strong> <strong class="jxr_keyword">this</strong>.key.comment();
 <a class="jxr_linenumber" name="L585" href="#L585">585</a>     }
 <a class="jxr_linenumber" name="L586" href="#L586">586</a> 
 <a class="jxr_linenumber" name="L587" href="#L587">587</a>     @Override
-<a class="jxr_linenumber" name="L588" href="#L588">588</a>     <strong class="jxr_keyword">public</strong> String key() {
-<a class="jxr_linenumber" name="L589" href="#L589">589</a>         <strong class="jxr_keyword">return</strong> <strong class="jxr_keyword">this</strong>.key.key();
+<a class="jxr_linenumber" name="L588" href="#L588">588</a>     <strong class="jxr_keyword">public</strong> HDU hdu() {
+<a class="jxr_linenumber" name="L589" href="#L589">589</a>         <strong class="jxr_keyword">return</strong> <strong class="jxr_keyword">this</strong>.key.hdu();
 <a class="jxr_linenumber" name="L590" href="#L590">590</a>     }
 <a class="jxr_linenumber" name="L591" href="#L591">591</a> 
 <a class="jxr_linenumber" name="L592" href="#L592">592</a>     @Override
-<a class="jxr_linenumber" name="L593" href="#L593">593</a>     <strong class="jxr_keyword">public</strong> <a name="IFitsHeader" href="../../../../nom/tam/fits/header/IFitsHeader.html#IFitsHeader">IFitsHeader</a> n(<strong class="jxr_keyword">int</strong>... number) {
-<a class="jxr_linenumber" name="L594" href="#L594">594</a>         <strong class="jxr_keyword">return</strong> <strong class="jxr_keyword">this</strong>.key.n(number);
+<a class="jxr_linenumber" name="L593" href="#L593">593</a>     <strong class="jxr_keyword">public</strong> String key() {
+<a class="jxr_linenumber" name="L594" href="#L594">594</a>         <strong class="jxr_keyword">return</strong> <strong class="jxr_keyword">this</strong>.key.key();
 <a class="jxr_linenumber" name="L595" href="#L595">595</a>     }
 <a class="jxr_linenumber" name="L596" href="#L596">596</a> 
 <a class="jxr_linenumber" name="L597" href="#L597">597</a>     @Override
-<a class="jxr_linenumber" name="L598" href="#L598">598</a>     <strong class="jxr_keyword">public</strong> SOURCE status() {
-<a class="jxr_linenumber" name="L599" href="#L599">599</a>         <strong class="jxr_keyword">return</strong> <strong class="jxr_keyword">this</strong>.key.status();
+<a class="jxr_linenumber" name="L598" href="#L598">598</a>     <strong class="jxr_keyword">public</strong> <a name="IFitsHeader" href="../../../../nom/tam/fits/header/IFitsHeader.html#IFitsHeader">IFitsHeader</a> n(<strong class="jxr_keyword">int</strong>... number) {
+<a class="jxr_linenumber" name="L599" href="#L599">599</a>         <strong class="jxr_keyword">return</strong> <strong class="jxr_keyword">this</strong>.key.n(number);
 <a class="jxr_linenumber" name="L600" href="#L600">600</a>     }
 <a class="jxr_linenumber" name="L601" href="#L601">601</a> 
 <a class="jxr_linenumber" name="L602" href="#L602">602</a>     @Override
-<a class="jxr_linenumber" name="L603" href="#L603">603</a>     @SuppressWarnings(<span class="jxr_string">"CPD-END"</span>)
-<a class="jxr_linenumber" name="L604" href="#L604">604</a>     <strong class="jxr_keyword">public</strong> VALUE valueType() {
-<a class="jxr_linenumber" name="L605" href="#L605">605</a>         <strong class="jxr_keyword">return</strong> <strong class="jxr_keyword">this</strong>.key.valueType();
-<a class="jxr_linenumber" name="L606" href="#L606">606</a>     }
-<a class="jxr_linenumber" name="L607" href="#L607">607</a> 
-<a class="jxr_linenumber" name="L608" href="#L608">608</a>     <strong class="jxr_keyword">public</strong> <strong class="jxr_keyword">static</strong> <strong class="jxr_keyword">void</strong> context(Class&lt;?&gt; clazz) {
-<a class="jxr_linenumber" name="L609" href="#L609">609</a>         COMMENT_CONTEXT.set(clazz);
-<a class="jxr_linenumber" name="L610" href="#L610">610</a>     }
-<a class="jxr_linenumber" name="L611" href="#L611">611</a> 
-<a class="jxr_linenumber" name="L612" href="#L612">612</a>     <em class="jxr_javadoccomment">/**</em>
-<a class="jxr_linenumber" name="L613" href="#L613">613</a> <em class="jxr_javadoccomment">     * scan for a comment with the specified reference key.</em>
-<a class="jxr_linenumber" name="L614" href="#L614">614</a> <em class="jxr_javadoccomment">     * </em>
-<a class="jxr_linenumber" name="L615" href="#L615">615</a> <em class="jxr_javadoccomment">     * @param commentKey the reference key</em>
-<a class="jxr_linenumber" name="L616" href="#L616">616</a> <em class="jxr_javadoccomment">     * </em>
-<a class="jxr_linenumber" name="L617" href="#L617">617</a> <em class="jxr_javadoccomment">     * @return the comment for the reference key</em>
-<a class="jxr_linenumber" name="L618" href="#L618">618</a> <em class="jxr_javadoccomment">     */</em>
-<a class="jxr_linenumber" name="L619" href="#L619">619</a>     <strong class="jxr_keyword">public</strong> String getCommentByKey(String commentKey) {
-<a class="jxr_linenumber" name="L620" href="#L620">620</a>         <strong class="jxr_keyword">for</strong> (<a name="StandardCommentReplacement" href="../../../../nom/tam/fits/header/StandardCommentReplacement.html#StandardCommentReplacement">StandardCommentReplacement</a> commentReplacement : commentReplacements) {
-<a class="jxr_linenumber" name="L621" href="#L621">621</a>             <strong class="jxr_keyword">if</strong> (commentReplacement.getRef().equals(commentKey)) {
-<a class="jxr_linenumber" name="L622" href="#L622">622</a>                 String foundcommentReplacement = commentReplacement.getComment();
-<a class="jxr_linenumber" name="L623" href="#L623">623</a>                 <strong class="jxr_keyword">if</strong> (foundcommentReplacement == <strong class="jxr_keyword">null</strong>) {
-<a class="jxr_linenumber" name="L624" href="#L624">624</a>                     <strong class="jxr_keyword">return</strong> comment();
-<a class="jxr_linenumber" name="L625" href="#L625">625</a>                 }
-<a class="jxr_linenumber" name="L626" href="#L626">626</a>                 <strong class="jxr_keyword">return</strong> foundcommentReplacement;
-<a class="jxr_linenumber" name="L627" href="#L627">627</a>             }
-<a class="jxr_linenumber" name="L628" href="#L628">628</a>         }
-<a class="jxr_linenumber" name="L629" href="#L629">629</a>         <strong class="jxr_keyword">return</strong> <strong class="jxr_keyword">null</strong>;
-<a class="jxr_linenumber" name="L630" href="#L630">630</a>     }
-<a class="jxr_linenumber" name="L631" href="#L631">631</a> 
-<a class="jxr_linenumber" name="L632" href="#L632">632</a>     <em class="jxr_javadoccomment">/**</em>
-<a class="jxr_linenumber" name="L633" href="#L633">633</a> <em class="jxr_javadoccomment">     * set the comment for the specified reference key.</em>
-<a class="jxr_linenumber" name="L634" href="#L634">634</a> <em class="jxr_javadoccomment">     * </em>
-<a class="jxr_linenumber" name="L635" href="#L635">635</a> <em class="jxr_javadoccomment">     * @param commentKey the reference key</em>
-<a class="jxr_linenumber" name="L636" href="#L636">636</a> <em class="jxr_javadoccomment">     * @param value the comment to set when the fits key is used.</em>
-<a class="jxr_linenumber" name="L637" href="#L637">637</a> <em class="jxr_javadoccomment">     */</em>
-<a class="jxr_linenumber" name="L638" href="#L638">638</a>     <strong class="jxr_keyword">public</strong> <strong class="jxr_keyword">void</strong> setCommentByKey(String commentKey, String value) {
-<a class="jxr_linenumber" name="L639" href="#L639">639</a>         <strong class="jxr_keyword">for</strong> (<a name="StandardCommentReplacement" href="../../../../nom/tam/fits/header/StandardCommentReplacement.html#StandardCommentReplacement">StandardCommentReplacement</a> commentReplacement : commentReplacements) {
-<a class="jxr_linenumber" name="L640" href="#L640">640</a>             <strong class="jxr_keyword">if</strong> (commentReplacement.getRef().equals(commentKey)) {
-<a class="jxr_linenumber" name="L641" href="#L641">641</a>                 commentReplacement.setComment(value);
-<a class="jxr_linenumber" name="L642" href="#L642">642</a>                 <strong class="jxr_keyword">return</strong>;
-<a class="jxr_linenumber" name="L643" href="#L643">643</a>             }
-<a class="jxr_linenumber" name="L644" href="#L644">644</a>         }
-<a class="jxr_linenumber" name="L645" href="#L645">645</a>     }
-<a class="jxr_linenumber" name="L646" href="#L646">646</a> 
-<a class="jxr_linenumber" name="L647" href="#L647">647</a>     <strong class="jxr_keyword">private</strong> <strong class="jxr_keyword">static</strong> <a name="StandardCommentReplacement" href="../../../../nom/tam/fits/header/StandardCommentReplacement.html#StandardCommentReplacement">StandardCommentReplacement</a> replaceable(String string, Class&lt;?&gt; clazz) {
-<a class="jxr_linenumber" name="L648" href="#L648">648</a>         <strong class="jxr_keyword">return</strong> <strong class="jxr_keyword">new</strong> <a name="StandardCommentReplacement" href="../../../../nom/tam/fits/header/StandardCommentReplacement.html#StandardCommentReplacement">StandardCommentReplacement</a>(string, clazz);
-<a class="jxr_linenumber" name="L649" href="#L649">649</a>     }
-<a class="jxr_linenumber" name="L650" href="#L650">650</a> 
-<a class="jxr_linenumber" name="L651" href="#L651">651</a>     <strong class="jxr_keyword">private</strong> <strong class="jxr_keyword">static</strong> <a name="StandardCommentReplacement" href="../../../../nom/tam/fits/header/StandardCommentReplacement.html#StandardCommentReplacement">StandardCommentReplacement</a> replaceable(String string, Class&lt;?&gt; clazz, String comment) {
-<a class="jxr_linenumber" name="L652" href="#L652">652</a>         <strong class="jxr_keyword">return</strong> <strong class="jxr_keyword">new</strong> <a name="StandardCommentReplacement" href="../../../../nom/tam/fits/header/StandardCommentReplacement.html#StandardCommentReplacement">StandardCommentReplacement</a>(string, clazz, comment);
-<a class="jxr_linenumber" name="L653" href="#L653">653</a>     }
-<a class="jxr_linenumber" name="L654" href="#L654">654</a> }
+<a class="jxr_linenumber" name="L603" href="#L603">603</a>     <strong class="jxr_keyword">public</strong> SOURCE status() {
+<a class="jxr_linenumber" name="L604" href="#L604">604</a>         <strong class="jxr_keyword">return</strong> <strong class="jxr_keyword">this</strong>.key.status();
+<a class="jxr_linenumber" name="L605" href="#L605">605</a>     }
+<a class="jxr_linenumber" name="L606" href="#L606">606</a> 
+<a class="jxr_linenumber" name="L607" href="#L607">607</a>     @Override
+<a class="jxr_linenumber" name="L608" href="#L608">608</a>     @SuppressWarnings(<span class="jxr_string">"CPD-END"</span>)
+<a class="jxr_linenumber" name="L609" href="#L609">609</a>     <strong class="jxr_keyword">public</strong> VALUE valueType() {
+<a class="jxr_linenumber" name="L610" href="#L610">610</a>         <strong class="jxr_keyword">return</strong> <strong class="jxr_keyword">this</strong>.key.valueType();
+<a class="jxr_linenumber" name="L611" href="#L611">611</a>     }
+<a class="jxr_linenumber" name="L612" href="#L612">612</a> 
+<a class="jxr_linenumber" name="L613" href="#L613">613</a>     <strong class="jxr_keyword">public</strong> <strong class="jxr_keyword">static</strong> <strong class="jxr_keyword">void</strong> context(Class&lt;?&gt; clazz) {
+<a class="jxr_linenumber" name="L614" href="#L614">614</a>         COMMENT_CONTEXT.set(clazz);
+<a class="jxr_linenumber" name="L615" href="#L615">615</a>     }
+<a class="jxr_linenumber" name="L616" href="#L616">616</a> 
+<a class="jxr_linenumber" name="L617" href="#L617">617</a>     <em class="jxr_javadoccomment">/**</em>
+<a class="jxr_linenumber" name="L618" href="#L618">618</a> <em class="jxr_javadoccomment">     * scan for a comment with the specified reference key.</em>
+<a class="jxr_linenumber" name="L619" href="#L619">619</a> <em class="jxr_javadoccomment">     * </em>
+<a class="jxr_linenumber" name="L620" href="#L620">620</a> <em class="jxr_javadoccomment">     * @param commentKey the reference key</em>
+<a class="jxr_linenumber" name="L621" href="#L621">621</a> <em class="jxr_javadoccomment">     * </em>
+<a class="jxr_linenumber" name="L622" href="#L622">622</a> <em class="jxr_javadoccomment">     * @return the comment for the reference key</em>
+<a class="jxr_linenumber" name="L623" href="#L623">623</a> <em class="jxr_javadoccomment">     */</em>
+<a class="jxr_linenumber" name="L624" href="#L624">624</a>     <strong class="jxr_keyword">public</strong> String getCommentByKey(String commentKey) {
+<a class="jxr_linenumber" name="L625" href="#L625">625</a>         <strong class="jxr_keyword">for</strong> (<a name="StandardCommentReplacement" href="../../../../nom/tam/fits/header/StandardCommentReplacement.html#StandardCommentReplacement">StandardCommentReplacement</a> commentReplacement : commentReplacements) {
+<a class="jxr_linenumber" name="L626" href="#L626">626</a>             <strong class="jxr_keyword">if</strong> (commentReplacement.getRef().equals(commentKey)) {
+<a class="jxr_linenumber" name="L627" href="#L627">627</a>                 String foundcommentReplacement = commentReplacement.getComment();
+<a class="jxr_linenumber" name="L628" href="#L628">628</a>                 <strong class="jxr_keyword">if</strong> (foundcommentReplacement == <strong class="jxr_keyword">null</strong>) {
+<a class="jxr_linenumber" name="L629" href="#L629">629</a>                     <strong class="jxr_keyword">return</strong> comment();
+<a class="jxr_linenumber" name="L630" href="#L630">630</a>                 }
+<a class="jxr_linenumber" name="L631" href="#L631">631</a>                 <strong class="jxr_keyword">return</strong> foundcommentReplacement;
+<a class="jxr_linenumber" name="L632" href="#L632">632</a>             }
+<a class="jxr_linenumber" name="L633" href="#L633">633</a>         }
+<a class="jxr_linenumber" name="L634" href="#L634">634</a>         <strong class="jxr_keyword">return</strong> <strong class="jxr_keyword">null</strong>;
+<a class="jxr_linenumber" name="L635" href="#L635">635</a>     }
+<a class="jxr_linenumber" name="L636" href="#L636">636</a> 
+<a class="jxr_linenumber" name="L637" href="#L637">637</a>     <em class="jxr_javadoccomment">/**</em>
+<a class="jxr_linenumber" name="L638" href="#L638">638</a> <em class="jxr_javadoccomment">     * set the comment for the specified reference key.</em>
+<a class="jxr_linenumber" name="L639" href="#L639">639</a> <em class="jxr_javadoccomment">     * </em>
+<a class="jxr_linenumber" name="L640" href="#L640">640</a> <em class="jxr_javadoccomment">     * @param commentKey the reference key</em>
+<a class="jxr_linenumber" name="L641" href="#L641">641</a> <em class="jxr_javadoccomment">     * @param value the comment to set when the fits key is used.</em>
+<a class="jxr_linenumber" name="L642" href="#L642">642</a> <em class="jxr_javadoccomment">     */</em>
+<a class="jxr_linenumber" name="L643" href="#L643">643</a>     <strong class="jxr_keyword">public</strong> <strong class="jxr_keyword">void</strong> setCommentByKey(String commentKey, String value) {
+<a class="jxr_linenumber" name="L644" href="#L644">644</a>         <strong class="jxr_keyword">for</strong> (<a name="StandardCommentReplacement" href="../../../../nom/tam/fits/header/StandardCommentReplacement.html#StandardCommentReplacement">StandardCommentReplacement</a> commentReplacement : commentReplacements) {
+<a class="jxr_linenumber" name="L645" href="#L645">645</a>             <strong class="jxr_keyword">if</strong> (commentReplacement.getRef().equals(commentKey)) {
+<a class="jxr_linenumber" name="L646" href="#L646">646</a>                 commentReplacement.setComment(value);
+<a class="jxr_linenumber" name="L647" href="#L647">647</a>                 <strong class="jxr_keyword">return</strong>;
+<a class="jxr_linenumber" name="L648" href="#L648">648</a>             }
+<a class="jxr_linenumber" name="L649" href="#L649">649</a>         }
+<a class="jxr_linenumber" name="L650" href="#L650">650</a>     }
+<a class="jxr_linenumber" name="L651" href="#L651">651</a> 
+<a class="jxr_linenumber" name="L652" href="#L652">652</a>     <strong class="jxr_keyword">private</strong> <strong class="jxr_keyword">static</strong> <a name="StandardCommentReplacement" href="../../../../nom/tam/fits/header/StandardCommentReplacement.html#StandardCommentReplacement">StandardCommentReplacement</a> replaceable(String string, Class&lt;?&gt; clazz) {
+<a class="jxr_linenumber" name="L653" href="#L653">653</a>         <strong class="jxr_keyword">return</strong> <strong class="jxr_keyword">new</strong> <a name="StandardCommentReplacement" href="../../../../nom/tam/fits/header/StandardCommentReplacement.html#StandardCommentReplacement">StandardCommentReplacement</a>(string, clazz);
+<a class="jxr_linenumber" name="L654" href="#L654">654</a>     }
+<a class="jxr_linenumber" name="L655" href="#L655">655</a> 
+<a class="jxr_linenumber" name="L656" href="#L656">656</a>     <strong class="jxr_keyword">private</strong> <strong class="jxr_keyword">static</strong> <a name="StandardCommentReplacement" href="../../../../nom/tam/fits/header/StandardCommentReplacement.html#StandardCommentReplacement">StandardCommentReplacement</a> replaceable(String string, Class&lt;?&gt; clazz, String comment) {
+<a class="jxr_linenumber" name="L657" href="#L657">657</a>         <strong class="jxr_keyword">return</strong> <strong class="jxr_keyword">new</strong> <a name="StandardCommentReplacement" href="../../../../nom/tam/fits/header/StandardCommentReplacement.html#StandardCommentReplacement">StandardCommentReplacement</a>(string, clazz, comment);
+<a class="jxr_linenumber" name="L658" href="#L658">658</a>     }
+<a class="jxr_linenumber" name="L659" href="#L659">659</a> }
 </pre>
 <hr/>
 <div id="footer">Copyright &#169; 1996&#x2013;2023 nom-tam-fits. All rights reserved.</div>

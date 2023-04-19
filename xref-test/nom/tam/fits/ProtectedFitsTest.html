@@ -46,10 +46,10 @@
 <a class="jxr_linenumber" name="L38" href="#L38">38</a>  <strong class="jxr_keyword">import</strong> java.io.PrintStream;
 <a class="jxr_linenumber" name="L39" href="#L39">39</a>  <strong class="jxr_keyword">import</strong> java.util.NoSuchElementException;
 <a class="jxr_linenumber" name="L40" href="#L40">40</a>  
-<a class="jxr_linenumber" name="L41" href="#L41">41</a>  <strong class="jxr_keyword">import</strong> nom.tam.fits.header.Standard;
-<a class="jxr_linenumber" name="L42" href="#L42">42</a>  
-<a class="jxr_linenumber" name="L43" href="#L43">43</a>  <strong class="jxr_keyword">import</strong> org.junit.Assert;
-<a class="jxr_linenumber" name="L44" href="#L44">44</a>  <strong class="jxr_keyword">import</strong> org.junit.Test;
+<a class="jxr_linenumber" name="L41" href="#L41">41</a>  <strong class="jxr_keyword">import</strong> org.junit.Assert;
+<a class="jxr_linenumber" name="L42" href="#L42">42</a>  <strong class="jxr_keyword">import</strong> org.junit.Test;
+<a class="jxr_linenumber" name="L43" href="#L43">43</a>  
+<a class="jxr_linenumber" name="L44" href="#L44">44</a>  <strong class="jxr_keyword">import</strong> nom.tam.fits.header.Standard;
 <a class="jxr_linenumber" name="L45" href="#L45">45</a>  
 <a class="jxr_linenumber" name="L46" href="#L46">46</a>  <strong class="jxr_keyword">public</strong> <strong class="jxr_keyword">class</strong> <a name="ProtectedFitsTest" href="../../../nom/tam/fits/ProtectedFitsTest.html#ProtectedFitsTest">ProtectedFitsTest</a> {
 <a class="jxr_linenumber" name="L47" href="#L47">47</a>  
@@ -122,61 +122,45 @@
 <a class="jxr_linenumber" name="L114" href="#L114">114</a>     @Test
 <a class="jxr_linenumber" name="L115" href="#L115">115</a>     <strong class="jxr_keyword">public</strong> <strong class="jxr_keyword">void</strong> testFitsRandomGroupData() <strong class="jxr_keyword">throws</strong> Exception {
 <a class="jxr_linenumber" name="L116" href="#L116">116</a>         RandomGroupsData data = <strong class="jxr_keyword">new</strong> RandomGroupsData(<strong class="jxr_keyword">new</strong> Object[0][]);
-<a class="jxr_linenumber" name="L117" href="#L117">117</a>         FitsException actual = <strong class="jxr_keyword">null</strong>;
+<a class="jxr_linenumber" name="L117" href="#L117">117</a>         Exception actual = <strong class="jxr_keyword">null</strong>;
 <a class="jxr_linenumber" name="L118" href="#L118">118</a>         <strong class="jxr_keyword">try</strong> {
 <a class="jxr_linenumber" name="L119" href="#L119">119</a>             data.fillHeader(<strong class="jxr_keyword">new</strong> Header());
 <a class="jxr_linenumber" name="L120" href="#L120">120</a>         } <strong class="jxr_keyword">catch</strong> (FitsException e) {
 <a class="jxr_linenumber" name="L121" href="#L121">121</a>             actual = e;
 <a class="jxr_linenumber" name="L122" href="#L122">122</a>         }
 <a class="jxr_linenumber" name="L123" href="#L123">123</a>         Assert.assertNotNull(actual);
-<a class="jxr_linenumber" name="L124" href="#L124">124</a>         Assert.assertTrue(actual.getMessage().toLowerCase().contains(<span class="jxr_string">"not conform"</span>));
-<a class="jxr_linenumber" name="L125" href="#L125">125</a>         Object[][] dataArray = {
-<a class="jxr_linenumber" name="L126" href="#L126">126</a>             <strong class="jxr_keyword">new</strong> Object[]{
-<a class="jxr_linenumber" name="L127" href="#L127">127</a>                 <strong class="jxr_keyword">new</strong> <strong class="jxr_keyword">double</strong>[10],
-<a class="jxr_linenumber" name="L128" href="#L128">128</a>                 <strong class="jxr_keyword">new</strong> <strong class="jxr_keyword">int</strong>[10],
-<a class="jxr_linenumber" name="L129" href="#L129">129</a>             }
-<a class="jxr_linenumber" name="L130" href="#L130">130</a>         };
-<a class="jxr_linenumber" name="L131" href="#L131">131</a>         data = <strong class="jxr_keyword">new</strong> RandomGroupsData(dataArray);
-<a class="jxr_linenumber" name="L132" href="#L132">132</a>         actual = <strong class="jxr_keyword">null</strong>;
-<a class="jxr_linenumber" name="L133" href="#L133">133</a>         <strong class="jxr_keyword">try</strong> {
-<a class="jxr_linenumber" name="L134" href="#L134">134</a>             data.fillHeader(<strong class="jxr_keyword">new</strong> Header());
-<a class="jxr_linenumber" name="L135" href="#L135">135</a>         } <strong class="jxr_keyword">catch</strong> (FitsException e) {
-<a class="jxr_linenumber" name="L136" href="#L136">136</a>             actual = e;
-<a class="jxr_linenumber" name="L137" href="#L137">137</a>         }
-<a class="jxr_linenumber" name="L138" href="#L138">138</a>         Assert.assertNotNull(actual);
-<a class="jxr_linenumber" name="L139" href="#L139">139</a>         Assert.assertTrue(actual.getMessage().toLowerCase().contains(<span class="jxr_string">"not agree"</span>));
-<a class="jxr_linenumber" name="L140" href="#L140">140</a>         dataArray = <strong class="jxr_keyword">new</strong> Object[][]{
-<a class="jxr_linenumber" name="L141" href="#L141">141</a>             <strong class="jxr_keyword">new</strong> Object[]{
-<a class="jxr_linenumber" name="L142" href="#L142">142</a>                 <strong class="jxr_keyword">new</strong> <strong class="jxr_keyword">int</strong>[10][10],
-<a class="jxr_linenumber" name="L143" href="#L143">143</a>                 <strong class="jxr_keyword">new</strong> <strong class="jxr_keyword">int</strong>[10],
-<a class="jxr_linenumber" name="L144" href="#L144">144</a>             }
-<a class="jxr_linenumber" name="L145" href="#L145">145</a>         };
-<a class="jxr_linenumber" name="L146" href="#L146">146</a>         data = <strong class="jxr_keyword">new</strong> RandomGroupsData(dataArray);
-<a class="jxr_linenumber" name="L147" href="#L147">147</a>         actual = <strong class="jxr_keyword">null</strong>;
-<a class="jxr_linenumber" name="L148" href="#L148">148</a>         <strong class="jxr_keyword">try</strong> {
-<a class="jxr_linenumber" name="L149" href="#L149">149</a>             data.fillHeader(<strong class="jxr_keyword">new</strong> Header());
-<a class="jxr_linenumber" name="L150" href="#L150">150</a>         } <strong class="jxr_keyword">catch</strong> (FitsException e) {
-<a class="jxr_linenumber" name="L151" href="#L151">151</a>             actual = e;
-<a class="jxr_linenumber" name="L152" href="#L152">152</a>         }
-<a class="jxr_linenumber" name="L153" href="#L153">153</a>         Assert.assertNotNull(actual);
-<a class="jxr_linenumber" name="L154" href="#L154">154</a>         Assert.assertTrue(actual.getMessage().toLowerCase().contains(<span class="jxr_string">"not 1 d array"</span>));
-<a class="jxr_linenumber" name="L155" href="#L155">155</a>         dataArray = <strong class="jxr_keyword">new</strong> Object[][]{
-<a class="jxr_linenumber" name="L156" href="#L156">156</a>             <strong class="jxr_keyword">new</strong> Object[]{
-<a class="jxr_linenumber" name="L157" href="#L157">157</a>                 <strong class="jxr_keyword">new</strong> String[10],
-<a class="jxr_linenumber" name="L158" href="#L158">158</a>                 <strong class="jxr_keyword">new</strong> String[10],
-<a class="jxr_linenumber" name="L159" href="#L159">159</a>             }
-<a class="jxr_linenumber" name="L160" href="#L160">160</a>         };
-<a class="jxr_linenumber" name="L161" href="#L161">161</a>         data = <strong class="jxr_keyword">new</strong> RandomGroupsData(dataArray);
-<a class="jxr_linenumber" name="L162" href="#L162">162</a>         actual = <strong class="jxr_keyword">null</strong>;
-<a class="jxr_linenumber" name="L163" href="#L163">163</a>         <strong class="jxr_keyword">try</strong> {
-<a class="jxr_linenumber" name="L164" href="#L164">164</a>             data.fillHeader(<strong class="jxr_keyword">new</strong> Header());
-<a class="jxr_linenumber" name="L165" href="#L165">165</a>         } <strong class="jxr_keyword">catch</strong> (FitsException e) {
-<a class="jxr_linenumber" name="L166" href="#L166">166</a>             actual = e;
-<a class="jxr_linenumber" name="L167" href="#L167">167</a>         }
-<a class="jxr_linenumber" name="L168" href="#L168">168</a>         Assert.assertNotNull(actual);
-<a class="jxr_linenumber" name="L169" href="#L169">169</a>         Assert.assertTrue(actual.getMessage().toLowerCase().contains(<span class="jxr_string">"string"</span>));
-<a class="jxr_linenumber" name="L170" href="#L170">170</a>     }
-<a class="jxr_linenumber" name="L171" href="#L171">171</a> }
+<a class="jxr_linenumber" name="L124" href="#L124">124</a>         Assert.assertEquals(FitsException.<strong class="jxr_keyword">class</strong>, actual.getClass());
+<a class="jxr_linenumber" name="L125" href="#L125">125</a>         Object[][] dataArray = {<strong class="jxr_keyword">new</strong> Object[] {<strong class="jxr_keyword">new</strong> <strong class="jxr_keyword">double</strong>[10], <strong class="jxr_keyword">new</strong> <strong class="jxr_keyword">int</strong>[10],}};
+<a class="jxr_linenumber" name="L126" href="#L126">126</a> 
+<a class="jxr_linenumber" name="L127" href="#L127">127</a>         <strong class="jxr_keyword">try</strong> {
+<a class="jxr_linenumber" name="L128" href="#L128">128</a>             data = <strong class="jxr_keyword">new</strong> RandomGroupsData(dataArray);
+<a class="jxr_linenumber" name="L129" href="#L129">129</a>         } <strong class="jxr_keyword">catch</strong> (IllegalArgumentException e) {
+<a class="jxr_linenumber" name="L130" href="#L130">130</a>             actual = e;
+<a class="jxr_linenumber" name="L131" href="#L131">131</a>         }
+<a class="jxr_linenumber" name="L132" href="#L132">132</a>         Assert.assertNotNull(actual);
+<a class="jxr_linenumber" name="L133" href="#L133">133</a>         Assert.assertEquals(IllegalArgumentException.<strong class="jxr_keyword">class</strong>, actual.getClass());
+<a class="jxr_linenumber" name="L134" href="#L134">134</a> 
+<a class="jxr_linenumber" name="L135" href="#L135">135</a>         dataArray = <strong class="jxr_keyword">new</strong> Object[][] {<strong class="jxr_keyword">new</strong> Object[] {<strong class="jxr_keyword">new</strong> <strong class="jxr_keyword">int</strong>[10][10], <strong class="jxr_keyword">new</strong> <strong class="jxr_keyword">int</strong>[10],}};
+<a class="jxr_linenumber" name="L136" href="#L136">136</a>         actual = <strong class="jxr_keyword">null</strong>;
+<a class="jxr_linenumber" name="L137" href="#L137">137</a>         <strong class="jxr_keyword">try</strong> {
+<a class="jxr_linenumber" name="L138" href="#L138">138</a>             data = <strong class="jxr_keyword">new</strong> RandomGroupsData(dataArray);
+<a class="jxr_linenumber" name="L139" href="#L139">139</a>         } <strong class="jxr_keyword">catch</strong> (Exception e) {
+<a class="jxr_linenumber" name="L140" href="#L140">140</a>             actual = e;
+<a class="jxr_linenumber" name="L141" href="#L141">141</a>         }
+<a class="jxr_linenumber" name="L142" href="#L142">142</a>         Assert.assertNotNull(actual);
+<a class="jxr_linenumber" name="L143" href="#L143">143</a>         Assert.assertEquals(IllegalArgumentException.<strong class="jxr_keyword">class</strong>, actual.getClass());
+<a class="jxr_linenumber" name="L144" href="#L144">144</a>         dataArray = <strong class="jxr_keyword">new</strong> Object[][] {<strong class="jxr_keyword">new</strong> Object[] {<strong class="jxr_keyword">new</strong> String[10], <strong class="jxr_keyword">new</strong> String[10],}};
+<a class="jxr_linenumber" name="L145" href="#L145">145</a>         data = <strong class="jxr_keyword">new</strong> RandomGroupsData(dataArray);
+<a class="jxr_linenumber" name="L146" href="#L146">146</a>         actual = <strong class="jxr_keyword">null</strong>;
+<a class="jxr_linenumber" name="L147" href="#L147">147</a>         <strong class="jxr_keyword">try</strong> {
+<a class="jxr_linenumber" name="L148" href="#L148">148</a>             data.fillHeader(<strong class="jxr_keyword">new</strong> Header());
+<a class="jxr_linenumber" name="L149" href="#L149">149</a>         } <strong class="jxr_keyword">catch</strong> (FitsException e) {
+<a class="jxr_linenumber" name="L150" href="#L150">150</a>             actual = e;
+<a class="jxr_linenumber" name="L151" href="#L151">151</a>         }
+<a class="jxr_linenumber" name="L152" href="#L152">152</a>         Assert.assertNotNull(actual);
+<a class="jxr_linenumber" name="L153" href="#L153">153</a>         Assert.assertTrue(actual.getMessage().toLowerCase().contains(<span class="jxr_string">"string"</span>));
+<a class="jxr_linenumber" name="L154" href="#L154">154</a>     }
+<a class="jxr_linenumber" name="L155" href="#L155">155</a> }
 </pre>
 <hr/>
 <div id="footer">Copyright &#169; 1996&#x2013;2023 nom-tam-fits. All rights reserved.</div>

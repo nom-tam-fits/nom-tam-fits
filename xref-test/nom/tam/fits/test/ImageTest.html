@@ -76,7 +76,7 @@
 <a class="jxr_linenumber" name="L68" href="#L68">68</a>  <strong class="jxr_keyword">import</strong> org.junit.Test;
 <a class="jxr_linenumber" name="L69" href="#L69">69</a>  
 <a class="jxr_linenumber" name="L70" href="#L70">70</a>  <em class="jxr_javadoccomment">/**</em>
-<a class="jxr_linenumber" name="L71" href="#L71">71</a>  <em class="jxr_javadoccomment"> * Test the ImageHDU, ImageData and ImageTiler classes. - multiple HDU's in a</em>
+<a class="jxr_linenumber" name="L71" href="#L71">71</a>  <em class="jxr_javadoccomment"> * Test the ImageHDU, ImageData and ImageTiler classes. - multiple HDUs in a</em>
 <a class="jxr_linenumber" name="L72" href="#L72">72</a>  <em class="jxr_javadoccomment"> * single file - deferred input of HDUs - creating and reading arrays of all</em>
 <a class="jxr_linenumber" name="L73" href="#L73">73</a>  <em class="jxr_javadoccomment"> * permitted types. - Tiles of 1, 2 and 3 dimensions - from a file - from</em>
 <a class="jxr_linenumber" name="L74" href="#L74">74</a>  <em class="jxr_javadoccomment"> * internal data - Multiple tiles extracted from an image.</em>
@@ -305,28 +305,7 @@
 <a class="jxr_linenumber" name="L297" href="#L297">297</a>         Assert.assertTrue(out.toString().contains(<span class="jxr_string">"Unable"</span>));
 <a class="jxr_linenumber" name="L298" href="#L298">298</a> 
 <a class="jxr_linenumber" name="L299" href="#L299">299</a>     }
-<a class="jxr_linenumber" name="L300" href="#L300">300</a> 
-<a class="jxr_linenumber" name="L301" href="#L301">301</a>     @Test
-<a class="jxr_linenumber" name="L302" href="#L302">302</a>     <strong class="jxr_keyword">public</strong> <strong class="jxr_keyword">void</strong> testSetFailedPrimaryHdu() <strong class="jxr_keyword">throws</strong> FitsException {
-<a class="jxr_linenumber" name="L303" href="#L303">303</a>         Fits f = <strong class="jxr_keyword">new</strong> Fits();
-<a class="jxr_linenumber" name="L304" href="#L304">304</a>         ImageHDU image = (ImageHDU) FitsFactory.hduFactory(<strong class="jxr_keyword">new</strong> byte[10][10]);
-<a class="jxr_linenumber" name="L305" href="#L305">305</a>         f.insertHDU(image, 0);
-<a class="jxr_linenumber" name="L306" href="#L306">306</a>         ImageData imageData = <strong class="jxr_keyword">new</strong> ImageData(<strong class="jxr_keyword">new</strong> byte[10][10]);
-<a class="jxr_linenumber" name="L307" href="#L307">307</a>         Header header = <strong class="jxr_keyword">new</strong> Header() {
-<a class="jxr_linenumber" name="L308" href="#L308">308</a> 
-<a class="jxr_linenumber" name="L309" href="#L309">309</a>             @Override
-<a class="jxr_linenumber" name="L310" href="#L310">310</a>             <strong class="jxr_keyword">public</strong> <strong class="jxr_keyword">boolean</strong> getBooleanValue(String key, <strong class="jxr_keyword">boolean</strong> dft) {
-<a class="jxr_linenumber" name="L311" href="#L311">311</a>                 <em class="jxr_comment">// ok we are in the parent setPrimary not let it fail ;-)</em>
-<a class="jxr_linenumber" name="L312" href="#L312">312</a>                 ThrowAnyException.throwFitsException(<span class="jxr_string">""</span>);
-<a class="jxr_linenumber" name="L313" href="#L313">313</a>                 <strong class="jxr_keyword">return</strong> <strong class="jxr_keyword">super</strong>.getBooleanValue(key, dft);
-<a class="jxr_linenumber" name="L314" href="#L314">314</a>             }
-<a class="jxr_linenumber" name="L315" href="#L315">315</a>         };
-<a class="jxr_linenumber" name="L316" href="#L316">316</a>         image = <strong class="jxr_keyword">new</strong> ImageHDU(header, imageData);
-<a class="jxr_linenumber" name="L317" href="#L317">317</a>         f.insertHDU(image, 0);
-<a class="jxr_linenumber" name="L318" href="#L318">318</a> 
-<a class="jxr_linenumber" name="L319" href="#L319">319</a>     }
-<a class="jxr_linenumber" name="L320" href="#L320">320</a>     
-<a class="jxr_linenumber" name="L321" href="#L321">321</a> }
+<a class="jxr_linenumber" name="L300" href="#L300">300</a> }
 </pre>
 <hr/>
 <div id="footer">Copyright &#169; 1996&#x2013;2023 nom-tam-fits. All rights reserved.</div>

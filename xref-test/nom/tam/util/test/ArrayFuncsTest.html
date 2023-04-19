@@ -748,23 +748,73 @@
 <a class="jxr_linenumber" name="L740" href="#L740">740</a>         assertTrue(Arrays.equals(i, (<strong class="jxr_keyword">int</strong>[]) to[0]));
 <a class="jxr_linenumber" name="L741" href="#L741">741</a>         assertTrue(Arrays.equals(d, (<strong class="jxr_keyword">double</strong>[]) to[1]));
 <a class="jxr_linenumber" name="L742" href="#L742">742</a>     }
-<a class="jxr_linenumber" name="L743" href="#L743">743</a>     
-<a class="jxr_linenumber" name="L744" href="#L744">744</a>     
-<a class="jxr_linenumber" name="L745" href="#L745">745</a>     @Test(expected = IllegalArgumentException.<strong class="jxr_keyword">class</strong>)
-<a class="jxr_linenumber" name="L746" href="#L746">746</a>     <strong class="jxr_keyword">public</strong> <strong class="jxr_keyword">void</strong> testCopyNotArray() <strong class="jxr_keyword">throws</strong> Exception {
-<a class="jxr_linenumber" name="L747" href="#L747">747</a>         ArrayFuncs.copyArray(<strong class="jxr_keyword">new</strong> Header(), <strong class="jxr_keyword">new</strong> Header());
-<a class="jxr_linenumber" name="L748" href="#L748">748</a>     }
-<a class="jxr_linenumber" name="L749" href="#L749">749</a>     
-<a class="jxr_linenumber" name="L750" href="#L750">750</a>     @Test(expected = IllegalArgumentException.<strong class="jxr_keyword">class</strong>)
-<a class="jxr_linenumber" name="L751" href="#L751">751</a>     <strong class="jxr_keyword">public</strong> <strong class="jxr_keyword">void</strong> testCopyMismatchedType() <strong class="jxr_keyword">throws</strong> Exception {
-<a class="jxr_linenumber" name="L752" href="#L752">752</a>         ArrayFuncs.copyArray(<strong class="jxr_keyword">new</strong> <strong class="jxr_keyword">int</strong>[3], <strong class="jxr_keyword">new</strong> <strong class="jxr_keyword">double</strong>[3]);
+<a class="jxr_linenumber" name="L743" href="#L743">743</a> 
+<a class="jxr_linenumber" name="L744" href="#L744">744</a>     @Test
+<a class="jxr_linenumber" name="L745" href="#L745">745</a>     <strong class="jxr_keyword">public</strong> <strong class="jxr_keyword">void</strong> testIsEmpty() {
+<a class="jxr_linenumber" name="L746" href="#L746">746</a>         Assert.assertTrue(<span class="jxr_string">"Null should be empty."</span>, ArrayFuncs.isEmpty(<strong class="jxr_keyword">null</strong>));
+<a class="jxr_linenumber" name="L747" href="#L747">747</a>         Assert.assertTrue(<span class="jxr_string">"Empty array should be empty."</span>, ArrayFuncs.isEmpty(<strong class="jxr_keyword">new</strong> <strong class="jxr_keyword">int</strong>[0]));
+<a class="jxr_linenumber" name="L748" href="#L748">748</a>         Assert.assertTrue(<span class="jxr_string">"2-D should be empty."</span>, ArrayFuncs.isEmpty(<strong class="jxr_keyword">new</strong> <strong class="jxr_keyword">int</strong>[0][0]));
+<a class="jxr_linenumber" name="L749" href="#L749">749</a> 
+<a class="jxr_linenumber" name="L750" href="#L750">750</a>         Assert.assertFalse(<span class="jxr_string">"2-D should not be empty."</span>, ArrayFuncs.isEmpty(<strong class="jxr_keyword">new</strong> <strong class="jxr_keyword">int</strong>[][]{<strong class="jxr_keyword">new</strong> <strong class="jxr_keyword">int</strong>[3]}));
+<a class="jxr_linenumber" name="L751" href="#L751">751</a>         Assert.assertFalse(<span class="jxr_string">"Should not be empty."</span>, ArrayFuncs.isEmpty(<strong class="jxr_keyword">new</strong> <strong class="jxr_keyword">int</strong>[]{4, 6}));
+<a class="jxr_linenumber" name="L752" href="#L752">752</a>         Assert.assertFalse(<span class="jxr_string">"Should not be empty."</span>, ArrayFuncs.isEmpty(<strong class="jxr_keyword">new</strong> Object[]{<span class="jxr_string">"1"</span>}));
 <a class="jxr_linenumber" name="L753" href="#L753">753</a>     }
-<a class="jxr_linenumber" name="L754" href="#L754">754</a>     
-<a class="jxr_linenumber" name="L755" href="#L755">755</a>     @Test(expected = IllegalArgumentException.<strong class="jxr_keyword">class</strong>)
-<a class="jxr_linenumber" name="L756" href="#L756">756</a>     <strong class="jxr_keyword">public</strong> <strong class="jxr_keyword">void</strong> testCopyMismatchedSize() <strong class="jxr_keyword">throws</strong> Exception {
-<a class="jxr_linenumber" name="L757" href="#L757">757</a>         ArrayFuncs.copyArray(<strong class="jxr_keyword">new</strong> <strong class="jxr_keyword">int</strong>[3], <strong class="jxr_keyword">new</strong> <strong class="jxr_keyword">int</strong>[4]);
-<a class="jxr_linenumber" name="L758" href="#L758">758</a>     }
-<a class="jxr_linenumber" name="L759" href="#L759">759</a> }
+<a class="jxr_linenumber" name="L754" href="#L754">754</a> 
+<a class="jxr_linenumber" name="L755" href="#L755">755</a>     @Test
+<a class="jxr_linenumber" name="L756" href="#L756">756</a>     <strong class="jxr_keyword">public</strong> <strong class="jxr_keyword">void</strong> testCopyStep() {
+<a class="jxr_linenumber" name="L757" href="#L757">757</a>         <strong class="jxr_keyword">final</strong> <strong class="jxr_keyword">int</strong> stepValue = 3;
+<a class="jxr_linenumber" name="L758" href="#L758">758</a>         <strong class="jxr_keyword">final</strong> <strong class="jxr_keyword">int</strong> offset = 165;
+<a class="jxr_linenumber" name="L759" href="#L759">759</a>         <strong class="jxr_keyword">final</strong> <strong class="jxr_keyword">int</strong>[] from = <strong class="jxr_keyword">new</strong> <strong class="jxr_keyword">int</strong>[200];
+<a class="jxr_linenumber" name="L760" href="#L760">760</a>         <strong class="jxr_keyword">for</strong> (<strong class="jxr_keyword">int</strong> i = 0; i &lt; from.length; i++) {
+<a class="jxr_linenumber" name="L761" href="#L761">761</a>             from[i] = i;
+<a class="jxr_linenumber" name="L762" href="#L762">762</a>         }
+<a class="jxr_linenumber" name="L763" href="#L763">763</a> 
+<a class="jxr_linenumber" name="L764" href="#L764">764</a>         <strong class="jxr_keyword">final</strong> <strong class="jxr_keyword">int</strong>[] to = <strong class="jxr_keyword">new</strong> <strong class="jxr_keyword">int</strong>[((from.length - offset) / stepValue) + 1];
+<a class="jxr_linenumber" name="L765" href="#L765">765</a>         ArrayFuncs.copy(from, offset, to, 0, from.length - offset, stepValue);
+<a class="jxr_linenumber" name="L766" href="#L766">766</a> 
+<a class="jxr_linenumber" name="L767" href="#L767">767</a>         Assert.assertArrayEquals(<span class="jxr_string">"Wrong step copy"</span>,
+<a class="jxr_linenumber" name="L768" href="#L768">768</a>                                  <strong class="jxr_keyword">new</strong> <strong class="jxr_keyword">int</strong>[] {
+<a class="jxr_linenumber" name="L769" href="#L769">769</a>                                     165, 168, 171, 174, 177, 180, 183, 186, 189, 192, 195, 198
+<a class="jxr_linenumber" name="L770" href="#L770">770</a>                                  }, to);
+<a class="jxr_linenumber" name="L771" href="#L771">771</a>     }
+<a class="jxr_linenumber" name="L772" href="#L772">772</a> 
+<a class="jxr_linenumber" name="L773" href="#L773">773</a>     @Test
+<a class="jxr_linenumber" name="L774" href="#L774">774</a>     <strong class="jxr_keyword">public</strong> <strong class="jxr_keyword">void</strong> testMultiDimensionalCopyStep() {
+<a class="jxr_linenumber" name="L775" href="#L775">775</a>         <strong class="jxr_keyword">final</strong> <strong class="jxr_keyword">int</strong> stepValue = 2;
+<a class="jxr_linenumber" name="L776" href="#L776">776</a>         <strong class="jxr_keyword">final</strong> <strong class="jxr_keyword">int</strong>[][] from = <strong class="jxr_keyword">new</strong> <strong class="jxr_keyword">int</strong>[10][10];
+<a class="jxr_linenumber" name="L777" href="#L777">777</a>         <strong class="jxr_keyword">for</strong> (<strong class="jxr_keyword">int</strong> i = 0; i &lt; from.length; i++) {
+<a class="jxr_linenumber" name="L778" href="#L778">778</a>             <strong class="jxr_keyword">for</strong> (<strong class="jxr_keyword">int</strong> j = 0; j &lt; from[i].length; j++) {
+<a class="jxr_linenumber" name="L779" href="#L779">779</a>                 from[i][j] = i + j;
+<a class="jxr_linenumber" name="L780" href="#L780">780</a>             }
+<a class="jxr_linenumber" name="L781" href="#L781">781</a>         }
+<a class="jxr_linenumber" name="L782" href="#L782">782</a> 
+<a class="jxr_linenumber" name="L783" href="#L783">783</a>         <strong class="jxr_keyword">final</strong> <strong class="jxr_keyword">int</strong>[][] to = <strong class="jxr_keyword">new</strong> <strong class="jxr_keyword">int</strong>[from[0].length / stepValue][from[1].length / stepValue];
+<a class="jxr_linenumber" name="L784" href="#L784">784</a>         ArrayFuncs.copy(from, 0, to, 0, from.length, stepValue);
+<a class="jxr_linenumber" name="L785" href="#L785">785</a>         Assert.assertArrayEquals(<span class="jxr_string">"Wrong multi dimensional step copy"</span>,
+<a class="jxr_linenumber" name="L786" href="#L786">786</a>                                  <strong class="jxr_keyword">new</strong> <strong class="jxr_keyword">int</strong>[][] {
+<a class="jxr_linenumber" name="L787" href="#L787">787</a>                                          <strong class="jxr_keyword">new</strong> <strong class="jxr_keyword">int</strong>[] { 0, 2, 4, 6, 8 },
+<a class="jxr_linenumber" name="L788" href="#L788">788</a>                                          <strong class="jxr_keyword">new</strong> <strong class="jxr_keyword">int</strong>[] { 2, 4, 6, 8, 10 },
+<a class="jxr_linenumber" name="L789" href="#L789">789</a>                                          <strong class="jxr_keyword">new</strong> <strong class="jxr_keyword">int</strong>[] { 4, 6, 8, 10, 12 },
+<a class="jxr_linenumber" name="L790" href="#L790">790</a>                                          <strong class="jxr_keyword">new</strong> <strong class="jxr_keyword">int</strong>[] { 6, 8, 10, 12, 14 },
+<a class="jxr_linenumber" name="L791" href="#L791">791</a>                                          <strong class="jxr_keyword">new</strong> <strong class="jxr_keyword">int</strong>[] { 8, 10, 12, 14, 16 }
+<a class="jxr_linenumber" name="L792" href="#L792">792</a>                                  }, to);
+<a class="jxr_linenumber" name="L793" href="#L793">793</a>     }
+<a class="jxr_linenumber" name="L794" href="#L794">794</a>     
+<a class="jxr_linenumber" name="L795" href="#L795">795</a>     @Test(expected = IllegalArgumentException.<strong class="jxr_keyword">class</strong>)
+<a class="jxr_linenumber" name="L796" href="#L796">796</a>     <strong class="jxr_keyword">public</strong> <strong class="jxr_keyword">void</strong> testCopyNotArray() <strong class="jxr_keyword">throws</strong> Exception {
+<a class="jxr_linenumber" name="L797" href="#L797">797</a>         ArrayFuncs.copyArray(<strong class="jxr_keyword">new</strong> Header(), <strong class="jxr_keyword">new</strong> Header());
+<a class="jxr_linenumber" name="L798" href="#L798">798</a>     }
+<a class="jxr_linenumber" name="L799" href="#L799">799</a>     
+<a class="jxr_linenumber" name="L800" href="#L800">800</a>     @Test(expected = IllegalArgumentException.<strong class="jxr_keyword">class</strong>)
+<a class="jxr_linenumber" name="L801" href="#L801">801</a>     <strong class="jxr_keyword">public</strong> <strong class="jxr_keyword">void</strong> testCopyMismatchedType() <strong class="jxr_keyword">throws</strong> Exception {
+<a class="jxr_linenumber" name="L802" href="#L802">802</a>         ArrayFuncs.copyArray(<strong class="jxr_keyword">new</strong> <strong class="jxr_keyword">int</strong>[3], <strong class="jxr_keyword">new</strong> <strong class="jxr_keyword">double</strong>[3]);
+<a class="jxr_linenumber" name="L803" href="#L803">803</a>     }
+<a class="jxr_linenumber" name="L804" href="#L804">804</a>     
+<a class="jxr_linenumber" name="L805" href="#L805">805</a>     @Test(expected = IllegalArgumentException.<strong class="jxr_keyword">class</strong>)
+<a class="jxr_linenumber" name="L806" href="#L806">806</a>     <strong class="jxr_keyword">public</strong> <strong class="jxr_keyword">void</strong> testCopyMismatchedSize() <strong class="jxr_keyword">throws</strong> Exception {
+<a class="jxr_linenumber" name="L807" href="#L807">807</a>         ArrayFuncs.copyArray(<strong class="jxr_keyword">new</strong> <strong class="jxr_keyword">int</strong>[3], <strong class="jxr_keyword">new</strong> <strong class="jxr_keyword">int</strong>[4]);
+<a class="jxr_linenumber" name="L808" href="#L808">808</a>     }
+<a class="jxr_linenumber" name="L809" href="#L809">809</a> }
 </pre>
 <hr/>
 <div id="footer">Copyright &#169; 1996&#x2013;2023 nom-tam-fits. All rights reserved.</div>
