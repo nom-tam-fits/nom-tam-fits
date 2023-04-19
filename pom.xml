@@ -8,7 +8,7 @@
 	</parent>
 	<groupId>gov.nasa.gsfc.heasarc</groupId>
 	<artifactId>nom-tam-fits</artifactId>
-	<version>1.18.0-SNAPSHOT</version>
+	<version>1.18.0-rc1</version>
 	<packaging>jar</packaging>
 	<name>nom.tam FITS library</name>
 	<description>Java library for reading and writing FITS files. FITS, the Flexible Image Transport System, is the format commonly used in the archiving and transport of astronomical data.</description>
@@ -18,6 +18,32 @@
 	</organization>
 	<url>http://nom-tam-fits.github.io/nom-tam-fits</url>
 	<developers>
+		<developer>
+			<id>attipaci</id>
+			<name>Attila Kovacs</name>
+			<email>attila [dot] kovacs [at] cfa [dot] harvard [dot] edu</email>
+			<roles>
+				<role>Maintainer</role>
+				<role>Developer</role>
+				<role>Admin</role>
+			</roles>
+			<properties>
+				<picUrl>http://1.gravatar.com/avatar/cc5454473320275f87bcae3c13aec99d</picUrl>
+			</properties>
+			<url>https://www.sigmyne.com/attila</url>
+		</developer>
+		<developer>
+			<id>at88mph</id>
+			<name>Dustin Jenkins</name>
+			<email>djenkins.cadc [at] gmail [dot] com</email>
+			<roles>
+				<role>Developer</role>
+				<role>Admin</role>
+			</roles>
+			<properties>
+				<picUrl>https://avatars.githubusercontent.com/u/1671908?v=4</picUrl>
+			</properties>
+		</developer>
 		<developer>
 			<id>tmcglynn</id>
 			<name>Thomas A Mcglynn</name>
@@ -40,20 +66,6 @@
 			</properties>
 		</developer>
 		<developer>
-			<id>attipaci</id>
-			<name>Attila Kovacs</name>
-			<email>attila [dot] kovacs [at] cfa [dot] harvard [dot] edu</email>
-			<roles>
-				<role>Maintainer</role>
-				<role>Developer</role>
-				<role>Admin</role>
-			</roles>
-			<properties>
-				<picUrl>http://1.gravatar.com/avatar/cc5454473320275f87bcae3c13aec99d</picUrl>
-			</properties>
-			<url>https://www.sigmyne.com/attila</url>
-		</developer>
-		<developer>
 			<id>erikfk</id>
 			<name>Erik Koerber</name>
 			<email>erik.koerber [at] gmail [dot] com</email>
@@ -67,9 +79,6 @@
 		</developer>
 	</developers>
 	<contributors>
-		<contributor>
-			<name>Dustin Jenkins</name>
-		</contributor>
 		<contributor>
 			<name>Kevin Eastridge</name>
 		</contributor>

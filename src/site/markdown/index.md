@@ -6,8 +6,6 @@
 [![Maven Central](https://maven-badges.herokuapp.com/maven-central/gov.nasa.gsfc.heasarc/nom-tam-fits/badge.svg)](https://maven-badges.herokuapp.com/maven-central/gov.nasa.gsfc.heasarc/nom-tam-fits)
 [![Project Site](https://github.com/nom-tam-fits/nom-tam-fits/actions/workflows/site.yml/badge.svg)](https://github.com/nom-tam-fits/nom-tam-fits/actions/workflows/site.yml)
 
-
- - [Known Issues](#known-issues)
  - [Introduction](#introduction)
  - [Where to get it](#where-to-get-it)
  - [Reading FITS files](#reading-fits-files)
@@ -15,15 +13,6 @@
  - [FITS headers](#fits-headers)
  - [Compression support](#compression-support)
  - [How to contribute](#contribute)
-
-<a name="known-issues"></a>
-## Known issues
-
-The following issues are known to affect the current and prior releases (&lt;= 1.17.1) from the inception. These issues are fixed on the master branch of the Github repository, and available as SNAPSHOT releases generated from it on Sonatype (see further below on how to get these).
-
- - [#349](https://github.com/nom-tam-fits/nom-tam-fits/issues/349): Problems with some quantized tile (de)compressions, e.g. when GZIP is used.
-
- - [#377](https://github.com/nom-tam-fits/nom-tam-fits/issues/377): When using dithering, the `ZDITHER0` header keyword is not used to record the random seed used for compression, or to seed the random generator for decompression.
 
 
 <a name="introduction"></a>
