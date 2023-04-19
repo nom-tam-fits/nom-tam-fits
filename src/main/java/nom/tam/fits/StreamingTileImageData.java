@@ -32,7 +32,6 @@ package nom.tam.fits;
  */
 
 import nom.tam.image.ImageTiler;
-import nom.tam.image.StandardImageTiler;
 import nom.tam.util.ArrayDataOutput;
 import nom.tam.util.ArrayFuncs;
 
@@ -43,7 +42,6 @@ import java.util.Arrays;
  * Simple implementation that will cut a tile out to the given stream.  Useful for web applications that provide
  * a cutout service.  The idea is that the ImageData object will be extracted from an overlapping HDU (without first
  * reading so as not to fill up the memory), and one of these objects are created for the output.
- *
  * <code>
  *     Fits source = new Fits(myFile);
  *     Fits output = new Fits();
@@ -65,6 +63,7 @@ public class StreamingTileImageData extends ImageData {
     private final int[] corners;
     private final int[] lengths;
     private final int[] steps;
+    private final ImageTiler imageTiler;
 
 
     /**
@@ -72,13 +71,13 @@ public class StreamingTileImageData extends ImageData {
      *
      * @param header  The header representing the desired cutout.  It is the responsibility of the caller to
      *                adjust the header appropriately.
-     * @param tiler   The tiler from the original ImageData object.
+     * @param tiler   The tiler to slice pixels out with.
      * @param corners The corners to start tiling.
      * @param lengths The count of values to extract.
      * @param steps   The number of jumps to make to the next read.  Optional, defaults to 1 for each axis.
      * @throws FitsException If the provided Header is unreadable
      */
-    public StreamingTileImageData(final Header header, final StandardImageTiler tiler, final int[] corners,
+    public StreamingTileImageData(final Header header, final ImageTiler tiler, final int[] corners,
                                   final int[] lengths, int[] steps) throws FitsException {
         super(header);
 
@@ -94,7 +93,7 @@ public class StreamingTileImageData extends ImageData {
             this.steps = steps;
         }
 
-        super.setTiler(tiler);
+        this.imageTiler = tiler;
         this.corners = corners;
         this.lengths = lengths;
     }
@@ -109,7 +108,7 @@ public class StreamingTileImageData extends ImageData {
     @Override
     public void write(ArrayDataOutput o) throws FitsException {
         try {
-            final ImageTiler tiler = this.getTiler();
+            final ImageTiler tiler = this.imageTiler;
             if (tiler == null || getTrueSize() == 0) {
                 // Defer writing of unknowns to the parent.
                 super.write(o);

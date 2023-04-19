@@ -39,6 +39,10 @@ public class RiceQuantizeCompressOption extends QuantizeOption {
         super(new RiceCompressOption());
     }
 
+    public RiceQuantizeCompressOption(RiceCompressOption compressOption) {
+        super(compressOption);
+    }
+
     public RiceCompressOption getRiceCompressOption() {
         return (RiceCompressOption) super.getCompressOption();
     }

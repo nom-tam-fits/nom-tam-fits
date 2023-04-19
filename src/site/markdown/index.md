@@ -104,7 +104,7 @@ users may need to be careful of Java’s automated conversion of bytes to intege
 E.g.
 
 ```java
-  byte[] bimg = …
+  byte[] bimg = new byte[100]; // data
   for (int i=0; i<bimg.length; i += 1) {
        bimg[i] = (byte)(bimg[i]&0xFF - offset);
   }
@@ -181,6 +181,19 @@ When FITS data are being read from a non-compressed file (`FitsFile`), the `read
 <a name="reading-images"></a>
 ### Reading Images
 
+#### Random Access
+It is possible to specify alternate random access by implementing the `RandomAccessFileIO` interface.  This is useful
+when a Fits file isn't necessarily on disk, but rather in object storage on the web, for example, or any other
+network access.
+
+```java
+import nom.tam.util.RandomAccessFileIO;
+
+public final class S3RandomAccessFileIO implements RandomAccessFileIO {
+  // ...
+}
+```
+
 The simplest example of reading an image contained in the first HDU is given below:
 
 ```java
@@ -201,14 +214,14 @@ which is actually a short hand for getting the data unit and the data within:
   int[][] image = (int[][]) imageData.getData();
 ```
 
-However the user will be responsible for casting this to an appropriate type if they want to use the data inside their program.
+However, the user will be responsible for casting this to an appropriate type if they want to use the data inside their program.
 It is possible to build tools that will handle arbitrary array types, but it is not trivial.
 
 When reading FITS data using the nom.tam library the user will often need to cast the results to the appropriate type.
 Given that the FITS file may contain many different kinds of data and that Java provides us with no class that can point to different kinds of primitive arrays other than Object, this downcasting is inevitable if you want to use the data from the FITS files.
 
 
-#### Reading parts of an image only
+#### Reading parts of an image only (cutouts)
 
 When reading image data users may not want to read an entire array especially if the data is very large.
 An `ImageTiler` can be used to read in only a portion of an array.
@@ -227,6 +240,52 @@ This can be achieved with
 The tiler needs to know the corners and size of the tile we want.
 Note that we can tile an image of any dimensionality.
 `getTile()` returns a one-dimensional array with the flattend image.
+
+##### Streaming cutouts
+Added `StreamingTileImageData` class.
+For large files, it is possible to stream out a cutout (using the `RandomAccessIO` above):
+
+```java
+final RandomAccessFileIO s3RandomFile = S3RandomAccessFileIO(...);  // S3RandomAccessFileIO does not exist, example only
+Fits source = new Fits(s3RandomFile);
+Fits output = new Fits();
+ImageHDU imageHDU = source.getHDU(1);
+Header cutoutHeader = adjustHeaderToTile(imageHDU.getHeader());
+int[] tileStarts = new int[]{10, 10};
+int[] tileLengths = new int[]{45, 60};
+int[] tileSteps = new int[]{1, 1};
+if (overlap(imageHDU.getData())) {
+    StreamingTileImageData streamingTileImageData = new StreamingTileImageData(cutoutHeader, imageHDU.getTiler(),
+                                                                               tileStarts, tileLengths,
+                                                                               tileSteps);
+    output.addHDU(FitsFactory.hduFactory(cutoutHeader, streamingTileImageData));
+}
+output.write(outputStream);  // The cutout happens at write time!
+```
+
+##### Compressed Streaming cutouts
+Added `CompressedImageTiler` class.
+For cutouts from large compressed files, the `asImageHDU()` method will decompress into memory.  To prevent that, use the
+`CompressedImageTiler` class.  This will write out an ImageHDU, *not* a compressed format.
+
+```java
+final RandomAccessFileIO compressedS3RandomFile = S3RandomAccessFileIO(...);  // S3RandomAccessFileIO does not exist, example only
+Fits source = new Fits(compressedS3RandomFile);
+Fits output = new Fits();
+CompressedImageHDU compressedImageHDU = source.getHDU(1);
+Header cutoutHeader = adjustHeaderToTile(compressedImageHDU.getImageHeader());  // Use the decompressed header.
+int[] tileStarts = new int[]{10, 10};
+int[] tileLengths = new int[]{45, 60};
+int[] tileSteps = new int[]{1, 1};
+if (overlap(compressedImageHDU.getData())) {
+    CompressedImageTiler compressedImageTiler = new CompressedImageTiler(compressedImageHDU);
+    StreamingTileImageData streamingTileImageData = new StreamingTileImageData(cutoutHeader, compressedImageTiler, 
+                                                                               corners, lengths, steps);
+    output.addHDU(new ImageHDU(cutoutHeader, streamingTileImageData));
+}
+output.write(outputStream);  // The cutout happens at write time!
+```
+
 
 <a name="reading-tables"></a>
 ### Reading Tables
@@ -340,8 +399,7 @@ If the pixels are ints, that’s  an 8 GB file.  We can do
 ```
     
 The `reset()` method causes the internal stream to seek to the beginning of the data area.
-If that’s not possible it returns false. 
-
+If that’s not possible it returns false.
 
 #### Tables
 We can process binary tables in a similar way, if they have a fixed structure.

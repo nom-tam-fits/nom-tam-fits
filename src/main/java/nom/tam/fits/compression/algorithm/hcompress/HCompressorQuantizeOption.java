@@ -39,6 +39,10 @@ public class HCompressorQuantizeOption extends QuantizeOption {
         super(new HCompressorOption());
     }
 
+    public HCompressorQuantizeOption(HCompressorOption compressOption) {
+        super(compressOption);
+    }
+
     public HCompressorOption getHCompressorOption() {
         return (HCompressorOption) getCompressOption();
     }

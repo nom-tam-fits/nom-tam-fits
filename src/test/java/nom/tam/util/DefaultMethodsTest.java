@@ -323,7 +323,7 @@ public class DefaultMethodsTest {
     }
 
 
-    class DefaultOutput implements ArrayDataOutput {
+    public static class DefaultOutput implements ArrayDataOutput {
 
         @Override
         public void write(int b) throws IOException {
