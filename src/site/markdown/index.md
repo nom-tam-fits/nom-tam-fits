@@ -23,38 +23,32 @@
  - [General philosophy](#general-philosophy)
  - [FITS vs Java data types](#fits-vs-java-data-types)
 
-This document describes the nom.tam FITS library, a full-function Java library for reading and writing FITS files.
-Only a general introduction on how to use the library is given here. More detailed documentation for the classes is given in their JavaDocs.
-
-FITS, the Flexible Image Transport System, is the format commonly used in the archiving and transport of astronomical data.
-This document assumes a general knowledge of FITS and Java but starts with a brief overview of FITS to set the context and terminology used.
+This document describes the nom.tam FITS library, a full-function Java library for reading and writing FITS files. More detailed documentation for the classes is given in their JavaDocs.
 
 As of version 1.16 of this library, we provide full support for the [FITS 4.0 standard](https://fits.gsfc.nasa.gov/fits_standard.html) for reading and writing, although some parts of the standard (such as WCS coordinate systems) may require further interpretation beyond what is offered by the library.
 
-This is an open-source project hosted on github as [nom-tam-fits](https://github.com/nom-tam-fits/nom-tam-fits). Further information and documentation, including API docs, can be found on the [project site](http://nom-tam-fits.github.io/nom-tam-fits/index.html).
+This is an open-source, community maintained, project hosted on github as [nom-tam-fits](https://github.com/nom-tam-fits/nom-tam-fits). Further information and documentation, including API docs, can be found on the [project site](http://nom-tam-fits.github.io/nom-tam-fits/index.html).
 
 <a name="what-is-fits"></a>
 ### What is FITS?
 
-FITS (Flexible Image Transport System) is a binary format devised and primarily used for the storage of astronomical datasets.
-A FITS file is composed of one or more *Header-Data Units* *(HDUs)*.
-As their name suggests, each *HDU* has a *header* which can contain comments and associated metadata as key-value pairs.
-Most *HDUs* also have a *data* section which can store a (possibly multidimensional) array of data or a table of values.
+FITS (Flexible Image Transport System) is a binary format devised and primarily used for the storage of astronomical datasets. A FITS file is composed of one or more *Header-Data Units* *(HDUs)*.
+As their name suggests, each *HDU* has a *header* which can contain comments and associated metadata as key-value pairs. Most *HDUs* also have a *data* section which can store a (possibly multidimensional) array of data or a table of values.
 
 The current FITS standard (4.0) recognizes the following principal types of HDUs: 
 
-1. **Image HDUs** can store an array (the image) of 1-8 dimensions with a type corresponding to Java bytes, shorts, ints, longs, floats or double:  e.g., a one-dimensional time series where each bin in the array represents a constant interval, or a three-dimensional image cube with separate channels for different energies.
+ 1. **Image HDUs** can store an array (the image) of 1-8 dimensions with a type corresponding to Java bytes, shorts, ints, longs, floats or double:  e.g., a one-dimensional time series where each bin in the array represents a constant interval, or a three-dimensional image cube with separate channels for different energies.
 
-2. **Random-Groups HDUs** can contain a set of images of the same type and dimensions. Header values might describe the images individually.
+ 2. **Random-Groups HDUs** can contain a set of images of the same type and dimensions. Header values might describe the images individually.
 
-3. **ASCII Table HDUs** can store floating point, string, and integer scalars.
+ 3. **ASCII Table HDUs** can store floating point, string, and integer scalars.
 The data are stored as ASCII strings using a fixed format within the table for each column.
 There are essentially no limits on the size and precision of the values to be represented.
 In principle, ASCII tables can represent data that cannot be conveniently represented using Java primitive types.
 In practice the source data are common computer types and the nom.tam library is able to accurately decode the table values.
 An ASCII table might represent a catalog of sources.
 
-4. **Binary table HDUs** can store a table where each element of the table can be a scalar or an array of any dimensionality.
+ 4. **Binary table HDUs** can store a table where each element of the table can be a scalar or an array of any dimensionality.
 In addition to the types supported for *image* and *random groups* HDUs the elements of a binary table can be single and double precision complex values, booleans, and bit strings.
 A column in a binary table can be of either fixed format or a variable length array.
 Variable length arrays can be only one-dimensional but the length of the array can vary from row to row.
@@ -63,18 +57,13 @@ Any number of HDUs can be strung together in a FITS file.
 The first HDU must be either an image or random-groups HDU.
 Often a null-image is used: this is possible by requesting an image HDU with an image dimensionality 0 or where one of the dimensions is 0.
 
-5. **Compressed Image HDUs** can store an image HDU in a compressed manner. There are a set of available compression algorithms and compression parameters available.
+ 5. **Compressed Image HDUs** can store an image HDU in a compressed manner. There are a set of available compression algorithms and compression parameters available.
 
-6. **Foreign File HDUs** can encapsulate various other files within the FITS. Foreign file HDUs are a recognised convention, but not (yet) officially part of the FITS standard. We do not support foreign file encapsulation yet, but it is something that we are considering for a future release.
+ 6. **Foreign File HDUs** can encapsulate various other files within the FITS. Foreign file HDUs are a recognised convention, but not (yet) officially part of the FITS standard. We do not support foreign file encapsulation yet, but it is something that we are considering for a future release.
 
   
 <a name="general-philosophy"></a>
 ### General philosophy
-
-The approach of the nom.tam FITS library is to try to hide as many of the details of the organization of the FITS data from the user as possible.
-To write FITS data the user provides data in Java primitive and String arrays and these data are automatically organized images or tables and written to the output.
-When reading data, the user can get Java primitive types and Strings from the HDUs only knowing the general characteristics of the table, not anything about how the data is stored in FITS.
-Users who wish to delve into the intricacies of the FITS representation can generally do so using  methods in some of the classes that were intended primarily for internal use but which are made available to the general user.
 
 This library is concerned only with the structural issues for transforming between the internal Java and external FITS representations. 
 It knows nothing about the semantics of FITS files, including conventions ratified as FITS standards such as the FITS world coordinate systems. 
@@ -159,6 +148,7 @@ If you want to try the bleeding edge version of nom-tam-fits, you can get it fro
  - [Reading images](#reading-images)
  - [Reading tables](#reading-tables)
  - [Low-level reads](#low-level-reads)
+ - [Tolerance to standard violations in 3rd party FITS files](#read-tolerance)
 
 To read a FITS file the user typically might open a `Fits` object, get the appropriate HDU using the `getHDU` method and then get the data using `getKernel()`.
 
@@ -167,21 +157,17 @@ To read a FITS file the user typically might open a `Fits` object, get the appro
 
 When FITS data are being read from a non-compressed file (`FitsFile`), the `read()` call will parse all HDU headers but will typically skip over the data segments (noting their position in the file however). Only when the user tries to access data from a HDU, will the library load that data from the previously noted file position. The behavior allows to inspect the contents of a FITS file very quickly even when the file is large, and reduces the need for IO when only parts of the whole are of interest to the user. Deferred input, however, is not possible when the input is compressed or if it is uses an stream rather than a random-access `FitsFile`.
 
+As of version 1.18, all data classes of the library support deferred reading.
+
 <a name="reading-images"></a>
 ### Reading Images
 
-#### Random Access
-It is possible to specify alternate random access by implementing the `RandomAccessFileIO` interface.  This is useful
-when a Fits file isn't necessarily on disk, but rather in object storage on the web, for example, or any other
-network access.
+- [Reading whole images](#reading-whole-images)
+- [Reading selected parts of images only (cutouts)](#reading-cutouts)
+- [Streaming image cutouts)](#streaming-cutouts)
 
-```java
-import nom.tam.util.RandomAccessFileIO;
-
-public final class S3RandomAccessFileIO implements RandomAccessFileIO {
-  // ...
-}
-```
+<a name="reading-whole-images"></a>
+#### Reading whole images
 
 The simplest example of reading an image contained in the first HDU is given below:
 
@@ -192,7 +178,7 @@ The simplest example of reading an image contained in the first HDU is given bel
 ```
 
 First we create a new instance of `Fits` with the filename as first and only argument.
-Then we can get first HDU using the `getHDU` method.
+Then we can get first HDU using the `getHDU()` method.
 Note the casting into an `ImageHDU`.
 
 Now we are ready to get the image data with the `getKernel()` method of the hdu,
@@ -210,79 +196,85 @@ When reading FITS data using the nom.tam library the user will often need to cas
 Given that the FITS file may contain many different kinds of data and that Java provides us with no class that can point to different kinds of primitive arrays other than Object, this downcasting is inevitable if you want to use the data from the FITS files.
 
 
-#### Reading parts of an image only (cutouts)
+<a name="reading-cutouts"></a>
+#### Reading selected parts of an image only (cutouts)
 
-When reading image data users may not want to read an entire array especially if the data is very large.
-An `ImageTiler` can be used to read in only a portion of an array.
+Since 1.18, it is possible to read select cutouts of large images, including sparse spampling of specific image regions. When reading image data users may not want to read an entire array especially if the data is very large. An `ImageTiler` can be used to read in only a portion of an array.
 The user can specify a box (or a sequence of boxes) within the image and extract the desired subsets.
 `ImageTiler`s can be used for any image.
 The library will try to only read the subsets requested if the FITS data is being read from an uncompressed file but in many cases it will need to read in the entire image before subsetting.
 
-Suppose the image we retrieve above has 2000x2000 pixels, but we only want to see the innermost 100x100 pixels.
-This can be achieved with
+Suppose the image we retrieve above has 2000x2000 pixels, but we only want to see the innermost 100x100 pixels. This can be achieved with
 
 ```java
   ImageTiler tiler = hdu.getTiler();
   short[] center = (short[]) tiler.getTile({950, 950}, {100, 100});
 ```
 
-The tiler needs to know the corners and size of the tile we want.
-Note that we can tile an image of any dimensionality.
-`getTile()` returns a one-dimensional array with the flattend image.
+The tiler needs to know the corners and size of the tile we want. Note that we can tile an image of any dimensionality. `getTile()` returns a one-dimensional array with the flattend image.
 
-##### Streaming cutouts
-Added `StreamingTileImageData` class.
-For large files, it is possible to stream out a cutout (using the `RandomAccessIO` above):
+
+<a name="reading-streaming-cutouts"></a>
+#### Streaming image cutouts
+Since version 1.18 it it is possible to stream cutouts, using the `StreamingTileImageData` class. The streaming can be used with any source that implements the `RandomAccessFileIO` interface, which provides
+file-like random access, for example for a resource on the Amazon S3 cloud:
 
 ```java
-final RandomAccessFileIO s3RandomFile = S3RandomAccessFileIO(...);  // S3RandomAccessFileIO does not exist, example only
-Fits source = new Fits(s3RandomFile);
-Fits output = new Fits();
-ImageHDU imageHDU = source.getHDU(1);
-Header cutoutHeader = adjustHeaderToTile(imageHDU.getHeader());
-int[] tileStarts = new int[]{10, 10};
-int[] tileLengths = new int[]{45, 60};
-int[] tileSteps = new int[]{1, 1};
-if (overlap(imageHDU.getData())) {
-    StreamingTileImageData streamingTileImageData = new StreamingTileImageData(cutoutHeader, imageHDU.getTiler(),
-                                                                               tileStarts, tileLengths,
-                                                                               tileSteps);
-    output.addHDU(FitsFactory.hduFactory(cutoutHeader, streamingTileImageData));
-}
-output.write(outputStream);  // The cutout happens at write time!
+  import nom.tam.util.RandomAccessFileIO;
+
+  public final class S3RandomAccessFileIO implements RandomAccessFileIO {
+      // ...
+  }
 ```
 
-##### Compressed Streaming cutouts
-Added `CompressedImageTiler` class.
-For cutouts from large compressed files, the `asImageHDU()` method will decompress into memory.  To prevent that, use the
-`CompressedImageTiler` class.  This will write out an ImageHDU, *not* a compressed format.
+Below is an example code sketch for streaming image cutouts from very large image residing on Amazon S3:
 
 ```java
-final RandomAccessFileIO compressedS3RandomFile = S3RandomAccessFileIO(...);  // S3RandomAccessFileIO does not exist, example only
-Fits source = new Fits(compressedS3RandomFile);
-Fits output = new Fits();
-CompressedImageHDU compressedImageHDU = source.getHDU(1);
-Header cutoutHeader = adjustHeaderToTile(compressedImageHDU.getImageHeader());  // Use the decompressed header.
-int[] tileStarts = new int[]{10, 10};
-int[] tileLengths = new int[]{45, 60};
-int[] tileSteps = new int[]{1, 1};
-if (overlap(compressedImageHDU.getData())) {
-    CompressedImageTiler compressedImageTiler = new CompressedImageTiler(compressedImageHDU);
-    StreamingTileImageData streamingTileImageData = new StreamingTileImageData(cutoutHeader, compressedImageTiler, 
-                                                                               corners, lengths, steps);
-    output.addHDU(new ImageHDU(cutoutHeader, streamingTileImageData));
-}
-output.write(outputStream);  // The cutout happens at write time!
+  Fits source = new Fits(new S3RandomAccessFileIO(...));
+  ImageHDU imageHDU = source.getHDU(...);
+  
+  // Manually set up the header for the cutout image as necessary
+  Header cutoutHeader = ...
+  
+  // Define the image cutout region we want 
+  int[] tileStarts, tileLengths, tileSteps;
+  ...
+
+  // Create the cutout with the specified parameters
+  StreamingTileImageData streamingTileImageData = new StreamingTileImageData(cutoutHeader, imageHDU.getTiler(), tileStarts, tileLengths, tileSteps);
+      
+  // Add the cutout region to a new FITS object
+  Fits output = new Fits();
+  output.addHDU(FitsFactory.hduFactory(cutoutHeader, streamingTileImageData));
+      
+  // The cutout is processed at write time!  
+  output.write(outputStream);
+```
+
+As of version 1.18 it is also possible to stream cutouts from compressed images using the `CompressedImageTiler` class. Whereas the `asImageHDU()` method decompresses the entire image in memory, the `CompressedImageTiler` will decompress only the tiles necessary for obtaining the desired cutout. 
+For example, consider writing the cutout from a compressed image as a regular non-compressed `ImageHDU`. 
+This can be achieved much the same way as in the above example, replacing `imageHDU.getTiler()` with a `CompressedImageTiler` step, such as:
+
+```java
+  ...
+  CompressedImageTiler compressedImageTiler = new CompressedImageTiler(compressedImageHDU);
+  StreamingTileImageData streamingTileImageData = new StreamingTileImageData(cutoutHeader, compressedImageTiler, corners, lengths, steps);
+  ...
 ```
 
 
 <a name="reading-tables"></a>
 ### Reading Tables
 
+ - [Reading complete tables](#reading-complete-tables)
+ - [Reading specific columns](#reading-columns)
+ - [Reading by row](#reading-rows)
+ 
+
 When reading tabular data the user has a variety of ways to read the data.
 The entire table can be read at once, or the data can be read in pieces, by row, by column or just an individual element.
 
-
+<a name="reading-complete-tables"></a>
 #### Reading a complete table at once
 
 When an entire table is read at once, the user gets back an `Object[]` array.
@@ -317,7 +309,7 @@ Tables can never be the first HDU in a FITS file.
 If there is no image data to be written, then typically a null image is written as the first HDU.
 The header for this image may include metadata of interest but we just skip it here. 
 
-
+<a name="reading-columns"></a>
 #### Reading specific columns
 Often a table will have a large number of columns and we are only interested in a few.
 After opening the Fits object we might try:
@@ -334,7 +326,8 @@ The library will still need to read in the entire FITS file even if we only use 
 We can read data by row if we want to get results without reading the entire file.
 
 
-#### Reading rows
+<a name="reading-rows"></a>
+#### Reading by row
 
 After getting the TableHDU, instead of getting columns we can get the first row.
 
@@ -360,9 +353,13 @@ A user can read rows in any order.
 <a name="low-level-reads"></a>
 ### Low-level reads
 
+ - [Images](#low-level-image-read)
+ - [Tables](#low-level-table-read)
+
 A user can get access to the special stream that is used to read the FITS information and then process the data at a lower level using the nom.tam libraries special I/O objects.
 This can be a bit more efficient for large datasets.
 
+<a name="low-level-image-read"></a>
 #### Images
 Suppose we want to get the average value of a 100,000x20,000 pixel image.
 If the pixels are ints, that’s  an 8 GB file.  We can do
@@ -390,6 +387,7 @@ If the pixels are ints, that’s  an 8 GB file.  We can do
 The `reset()` method causes the internal stream to seek to the beginning of the data area.
 If that’s not possible it returns false.
 
+<a name="low-level-table-read"></a>
 #### Tables
 We can process binary tables in a similar way, if they have a fixed structure.
 Since tables are stored row-by-row internally in FITS we first need to get a model row and then we can read in each row in turn.
@@ -421,6 +419,7 @@ Of course the user can build up a template array directly if they know the struc
 This is not possible for ASCII tables, since the FITS and Java representations of the data are very different.
 It is also harder to do if there are variable length records although something is are possible if the user is willing to deal directly with the FITS heap using the `FitsHeap` class.
 
+<a name="read-tolerance"></a>
 ### Tolerance to standard violations in 3rd party FITS files.
 
 By default the library will be tolerant to FITS standard violations when parsing 3rd-party FITS files. We believe that if you use this library to read a FITS produced by other software, you are mainly interested to find out what's inside it, rather than know if it was written properly. However, problems such as missing padding at the end of the file, or an unexpected end-of-file before content was fully parsed, will be logged so they can be inspected. Soft violations of header standards (those that can be overcome with educated guesses) are also tolerared when reading, but logging for these is not enabled by default (since they may be many, and likely you don't care). You can enable logging standard violations in 3rd-party headers by `Header.setParserWarningsEnabled(true)`. You can also enforce stricter compliance to standard when reading FITS files via `FitsFactory.setAllowHeaderRepairs(false)` and `FitsFactory.setAllowTerminalJunk(false)`. When violations are not tolerated, appropriate exceptions will be thrown during reading.
