@@ -241,7 +241,9 @@ Below is an example code sketch for streaming image cutouts from very large imag
   ...
 
   // Create the cutout with the specified parameters
-  StreamingTileImageData streamingTileImageData = new StreamingTileImageData(cutoutHeader, imageHDU.getTiler(), tileStarts, tileLengths, tileSteps);
+  StreamingTileImageData streamingTileImageData = new StreamingTileImageData(
+      cutoutHeader, imageHDU.getTiler(), tileStarts, tileLengths, tileSteps
+  );
       
   // Add the cutout region to a new FITS object
   Fits output = new Fits();
@@ -258,7 +260,9 @@ This can be achieved much the same way as in the above example, replacing `image
 ```java
   ...
   CompressedImageTiler compressedImageTiler = new CompressedImageTiler(compressedImageHDU);
-  StreamingTileImageData streamingTileImageData = new StreamingTileImageData(cutoutHeader, compressedImageTiler, corners, lengths, steps);
+  StreamingTileImageData streamingTileImageData = new StreamingTileImageData(
+      cutoutHeader, compressedImageTiler, corners, lengths, steps
+  );
   ...
 ```
 
