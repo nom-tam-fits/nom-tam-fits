@@ -164,7 +164,7 @@ As of version 1.18, all data classes of the library support deferred reading.
 
 - [Reading whole images](#reading-whole-images)
 - [Reading selected parts of images only (cutouts)](#reading-cutouts)
-- [Streaming image cutouts)](#streaming-cutouts)
+- [Streaming image cutouts](#streaming-cutouts)
 
 <a name="reading-whole-images"></a>
 #### Reading whole images
