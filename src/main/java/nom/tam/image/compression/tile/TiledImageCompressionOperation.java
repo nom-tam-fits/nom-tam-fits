@@ -305,8 +305,8 @@ public class TiledImageCompressionOperation extends AbstractTiledImageOperation<
                 || algo.equals(Compression.ZCMPTYPE_RICE_1) || algo.equals(Compression.ZCMPTYPE_PLIO_1)
                 || algo.equals(Compression.ZCMPTYPE_HCOMPRESS_1) || algo.equals(Compression.ZCMPTYPE_NOCOMPRESS)) {
             this.compressAlgorithm = algo;
-        } else if (Header.isParserWarningsEnabled()) {
-            Logger.getLogger(Header.class.getName()).warning("Ignored invalid ZCMPTYPE value: " + algo);
+        } else {
+            Logger.getLogger(HeaderCard.class.getName()).warning("Ignored invalid ZCMPTYPE value: " + algo);
         }
 
         return this;
@@ -336,8 +336,8 @@ public class TiledImageCompressionOperation extends AbstractTiledImageOperation<
         if (algo.equals(Compression.ZQUANTIZ_NO_DITHER) || algo.equals(Compression.ZQUANTIZ_SUBTRACTIVE_DITHER_1)
                 || algo.equals(Compression.ZQUANTIZ_SUBTRACTIVE_DITHER_2)) {
             this.quantAlgorithm = algo;
-        } else if (Header.isParserWarningsEnabled()) {
-            Logger.getLogger(Header.class.getName()).warning("Ignored invalid ZQUANTIZ value: " + algo);
+        } else {
+            Logger.getLogger(HeaderCard.class.getName()).warning("Ignored invalid ZQUANTIZ value: " + algo);
         }
 
         return this;
