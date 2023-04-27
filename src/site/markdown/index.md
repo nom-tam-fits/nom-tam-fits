@@ -620,18 +620,6 @@ Thus the user may need to modify the header data appropriately.
 
 It's not hard to address these, but the user needs some familiarity with the internals of the FITS representation.
 
-<a name="writing-gzipped-outputs"></a>
-### Writing GZIP-ed outputs
-
-It is common practice to compress FITS files using __gzip__ so they can be exchanged in a more compact form. The library supports the creation of
-gzipped fits out of the box, by wrapping the file's output stream into a `GZIPOutputStream`, such as:
-
-```java
-  Fits f = new Fits();
-  
-  FitsOutputStream out = new FitsOutputStream(new GZIPOutputStream(new FileOutputStream(new File("mydata.fits.gz"))));
-  f.write(out);
-```
 
 
 #### Images
@@ -751,6 +739,20 @@ We use a `ByteBuffer` to store the data of each row.
 After we updated the `ByteBuffer`, we write it to the `FitsFile`.
 
 Last, we pad the fits file and close the open `FitsFile`.
+
+
+<a name="writing-gzipped-outputs"></a>
+### Writing GZIP-ed outputs
+
+It is common practice to compress FITS files using __gzip__ so they can be exchanged in a more compact form. The library supports the creation of
+gzipped fits out of the box, by wrapping the file's output stream into a `GZIPOutputStream`, such as:
+
+```java
+  Fits f = new Fits();
+  
+  FitsOutputStream out = new FitsOutputStream(new GZIPOutputStream(new FileOutputStream(new File("mydata.fits.gz"))));
+  f.write(out);
+```
 
 
 <a name="fits-headers"></a>
