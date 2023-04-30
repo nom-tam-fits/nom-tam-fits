@@ -75,6 +75,7 @@ public final class ArrayFuncs {
      * @param destPos   Starting position in the destination data.
      * @param length    The number of array elements to be read.
      * @param step      The number of jumps to the next read.
+     * @since 1.18
      */
     public static void copy(Object src, int srcPos, Object dest, int destPos, int length, int step) {
         if (src instanceof Object[] && dest instanceof Object[]) {
@@ -486,6 +487,8 @@ public final class ArrayFuncs {
      * Convenience method to check a generic Array object.
      * @param o     The Array to check.
      * @return      True if it's empty, False otherwise.
+     *
+     * @since 1.18
      */
     public static boolean isEmpty(final Object o) {
         return (o == null || Array.getLength(o) == 0);

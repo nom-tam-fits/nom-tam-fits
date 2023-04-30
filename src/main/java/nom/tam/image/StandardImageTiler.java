@@ -206,6 +206,8 @@ public abstract class StandardImageTiler implements ImageTiler {
      * @param segment      The number of elements to be read for this segment.
      * @param step         The number of elements until the next read.
      * @throws IOException if the underlying stream failed
+     *
+     * @since 1.18
      */
     @SuppressFBWarnings(value = "RR_NOT_CHECKED", justification = "this read will never return less than the requested length")
     protected void fillFileData(ArrayDataOutput output, long delta, int segment, int step) throws IOException {
@@ -277,6 +279,8 @@ public abstract class StandardImageTiler implements ImageTiler {
      * @param dim          The current dimension being
      * @param step         The number of jumps to the next value.
      * @throws IOException If the output is a stream and there is an I/O error.
+     * 
+     * @since 1.18
      */
     protected void fillMemData(Object data, int[] posits, int length, Object output, int outputOffset, int dim,
                                int step)

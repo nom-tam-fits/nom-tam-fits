@@ -157,6 +157,7 @@ public class CompressedImageHDU extends BinaryTableHDU {
      * @return the dimensions of the axis.
      * @throws FitsException
      *             if the axis are configured wrong.
+     * @since 1.18
      */
     public int[] getImageAxes() throws FitsException {
         int nAxis = this.myHeader.getIntValue(Compression.ZNAXIS);
@@ -184,6 +185,7 @@ public class CompressedImageHDU extends BinaryTableHDU {
      * @return Header with decompressed cards.
      * @throws HeaderCardException
      *          if the card could not be copied
+     * @since 1.18
      */
     public Header getImageHeader() throws HeaderCardException {
         Header header = new Header();

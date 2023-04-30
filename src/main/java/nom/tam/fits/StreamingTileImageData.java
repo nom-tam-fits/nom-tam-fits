@@ -64,6 +64,8 @@ import nom.tam.util.ArrayFuncs;
  *     // The cutout happens at write time!
  *     output.write(outputStream);  
  * </code>
+ *
+ * @since 1.18
  */
 public class StreamingTileImageData extends ImageData {
     private final int[] corners;
