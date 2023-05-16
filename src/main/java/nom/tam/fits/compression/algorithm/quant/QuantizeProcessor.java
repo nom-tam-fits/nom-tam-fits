@@ -40,6 +40,56 @@ import nom.tam.fits.compression.algorithm.api.ICompressor;
 
 public class QuantizeProcessor {
 
+    private static final int LAST_RANDOM_VALUE = 1043618065;
+    private static final double MAX_INT_AS_DOUBLE = Integer.MAX_VALUE;
+    /**
+     * DO NOT CHANGE THIS; used when quantizing real numbers
+     */
+    private static final int N_RANDOM = 10000;
+    private static final int RANDOM_MULTIPLICATOR = 500;
+    private static final double RANDOM_START_VALUE = 16807.0;
+    private static double[] randomValues = initRandoms();
+
+    private static double[] initRandoms() {
+
+        /* initialize an tiledImageOperation of random numbers */
+
+        int ii;
+        double a = RANDOM_START_VALUE;
+        double m = MAX_INT_AS_DOUBLE;
+        double temp;
+        double seed;
+
+        /* allocate tiledImageOperation for the random number sequence */
+        double[] randomValue = new double[N_RANDOM];
+
+        /*
+         * We need a portable algorithm that anyone can use to generate this exact same sequence of random number.
+         * The C 'rand' function is not suitable because it is not available to Fortran or Java programmers.
+         * Instead, use a well known simple algorithm published here:
+         * "Random number generators: good ones are hard to find", Communications of the ACM, Volume 31 , Issue 10
+         * (October 1988) Pages: 1192 - 1201
+         */
+
+        /* initialize the random numbers */
+        seed = 1;
+        for (ii = 0; ii < N_RANDOM; ii++) {
+            temp = a * seed;
+            seed = temp - m * (int) (temp / m);
+            randomValue[ii] = seed / m;
+        }
+
+        /*
+         * IMPORTANT NOTE: the 10000th seed value must have the value 1043618065 if the algorithm has been
+         * implemented correctly
+         */
+
+        if ((int) seed != LAST_RANDOM_VALUE) {
+            throw new IllegalArgumentException("randomValue generated incorrect random number sequence");
+        }
+        return randomValue;
+    }
+
     public static class DoubleQuantCompressor extends QuantizeProcessor implements ICompressor<DoubleBuffer> {
 
         private final ICompressor<IntBuffer> postCompressor;
@@ -140,22 +190,6 @@ public class QuantizeProcessor {
     }
 
     private class DitherFilter extends PixelFilter {
-
-        private static final int LAST_RANDOM_VALUE = 1043618065;
-
-        private static final double MAX_INT_AS_DOUBLE = Integer.MAX_VALUE;
-
-        /**
-         * DO NOT CHANGE THIS; used when quantizing real numbers
-         */
-        private static final int N_RANDOM = 10000;
-
-        private static final int RANDOM_MULTIPLICATOR = 500;
-
-        private static final double RANDOM_START_VALUE = 16807.0;
-
-        private static final double[] RANDOM_VALUES = initRandoms();
-
         private int iseed = 0;
 
         private int nextRandom = 0;
@@ -167,55 +201,20 @@ public class QuantizeProcessor {
 
         public void initialize(long ditherSeed) {
             this.iseed = (int) ((ditherSeed - 1) % N_RANDOM);
+            synchronized (randomValues) {
+                if (randomValues == null) {
+                    randomValues = initRandoms();
+                }
+            }
             initI1();
         }
 
         private void initI1() {
-            this.nextRandom = (int) (RANDOM_VALUES[this.iseed] * RANDOM_MULTIPLICATOR);
+            this.nextRandom = (int) (randomValues[this.iseed] * RANDOM_MULTIPLICATOR);
         }
 
         public double nextRandom() {
-            return RANDOM_VALUES[this.nextRandom];
-        }
-
-        private static double[] initRandoms() {
-
-            /* initialize an tiledImageOperation of random numbers */
-
-            int ii;
-            double a = RANDOM_START_VALUE;
-            double m = MAX_INT_AS_DOUBLE;
-            double temp;
-            double seed;
-
-            /* allocate tiledImageOperation for the random number sequence */
-            double[] randomValue = new double[N_RANDOM];
-
-            /*
-             * We need a portable algorithm that anyone can use to generate this exact same sequence of random number.
-             * The C 'rand' function is not suitable because it is not available to Fortran or Java programmers.
-             * Instead, use a well known simple algorithm published here:
-             * "Random number generators: good ones are hard to find", Communications of the ACM, Volume 31 , Issue 10
-             * (October 1988) Pages: 1192 - 1201
-             */
-
-            /* initialize the random numbers */
-            seed = 1;
-            for (ii = 0; ii < N_RANDOM; ii++) {
-                temp = a * seed;
-                seed = temp - m * (int) (temp / m);
-                randomValue[ii] = seed / m;
-            }
-
-            /*
-             * IMPORTANT NOTE: the 10000th seed value must have the value 1043618065 if the algorithm has been
-             * implemented correctly
-             */
-
-            if ((int) seed != LAST_RANDOM_VALUE) {
-                throw new IllegalArgumentException("randomValue generated incorrect random number sequence");
-            }
-            return randomValue;
+            return randomValues[this.nextRandom];
         }
 
         @Override
