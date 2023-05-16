@@ -40,48 +40,54 @@ import nom.tam.fits.compression.algorithm.api.ICompressor;
 
 public class QuantizeProcessor {
 
-    private static final int LAST_RANDOM_VALUE = 1043618065;
-
-    /**
-     * DO NOT CHANGE THIS; used when quantizing real numbers
-     */
-    private static final int N_RANDOM = 10000;
-
-    private static final int RANDOM_MULTIPLICATOR = 500;
-
-    private static final int RANDOM_FACTOR = 16807;
-
-    /**
-     * This is our cached fixed random sequence that we will use over and over, but we defer initializing it until we
-     * actually need it.
-     */
-    private static double[] randomValues = null;
-
     /**
      * This is a modified (improved) version of the random sequence implementation in Appendix I of the
      * <a href="https://fits.gsfc.nasa.gov/standard40/fits_standard40aa-le.pdf">FITS 4.0 standard</a>, using integer
      * arithmetics for better performance -- but still providing the same sequence as the original algorithm.
      */
-    private static synchronized void initRandoms() {
-        if (randomValues != null) {
-            return;
-        }
+    private static class RandomSequence {
 
-        randomValues = new double[N_RANDOM];
-
-        long ival = 1L;
-        for (int i = 0; i < N_RANDOM; i++) {
-            ival = (ival * RANDOM_FACTOR) % Integer.MAX_VALUE;
-            randomValues[i] = (double) ival / Integer.MAX_VALUE;
-        }
-
-        /*
-         * IMPORTANT NOTE: the 10000th seed value must have the value 1043618065 if the algorithm has been implemented
-         * correctly
+        /**
+         * DO NOT CHANGE THIS; used when quantizing real numbers
          */
-        if ((int) ival != LAST_RANDOM_VALUE) {
-            // This should never be thrown if we did things correctly above.
-            throw new IllegalStateException("randomValue generated incorrect random number sequence");
+        private static final int N_RANDOM = 10000;
+
+        private static final int RANDOM_FACTOR = 16807;
+
+        private static final int LAST_RANDOM_VALUE = 1043618065;
+
+        /**
+         * This is our cached fixed random sequence that we will use over and over, but we defer initializing it until
+         * we actually need it.
+         */
+        private static final double[] VALUES = new double[N_RANDOM];
+
+        /**
+         * Static initialization for the fixed sequence of random values.
+         */
+        static {
+            long ival = 1L;
+            for (int i = 0; i < N_RANDOM; i++) {
+                ival = (ival * RANDOM_FACTOR) % Integer.MAX_VALUE;
+                VALUES[i] = (double) ival / Integer.MAX_VALUE;
+            }
+
+            /*
+             * IMPORTANT NOTE: the 10000th seed value must have the value 1043618065 if the algorithm has been
+             * implemented correctly
+             */
+            if ((int) ival != LAST_RANDOM_VALUE) {
+                // This should never be thrown if we did things correctly above.
+                throw new IllegalStateException("randomValue generated incorrect random number sequence");
+            }
+        }
+
+        static double get(int i) {
+            return VALUES[i];
+        }
+
+        static int length() {
+            return N_RANDOM;
         }
     }
 
@@ -186,6 +192,8 @@ public class QuantizeProcessor {
 
     private class DitherFilter extends PixelFilter {
 
+        private static final int RANDOM_MULTIPLICATOR = 500;
+
         private int iseed = 0;
 
         private int nextRandom = 0;
@@ -196,25 +204,24 @@ public class QuantizeProcessor {
         }
 
         public void initialize(long ditherSeed) {
-            initRandoms();
-            this.iseed = (int) ((ditherSeed - 1) % N_RANDOM);
+            this.iseed = (int) ((ditherSeed - 1) % RandomSequence.length());
             initI1();
         }
 
         private void initI1() {
-            this.nextRandom = (int) (randomValues[this.iseed] * RANDOM_MULTIPLICATOR);
+            this.nextRandom = (int) (RandomSequence.get(this.iseed) * RANDOM_MULTIPLICATOR);
         }
 
         public double nextRandom() {
-            return randomValues[this.nextRandom];
+            return RandomSequence.get(this.nextRandom);
         }
 
         @Override
         protected void nextPixel() {
             this.nextRandom++;
-            if (this.nextRandom >= N_RANDOM) {
+            if (this.nextRandom >= RandomSequence.length()) {
                 this.iseed++;
-                if (this.iseed >= N_RANDOM) {
+                if (this.iseed >= RandomSequence.length()) {
                     this.iseed = 0;
                 }
                 initI1();
