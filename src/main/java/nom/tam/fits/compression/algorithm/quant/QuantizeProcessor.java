@@ -40,57 +40,6 @@ import nom.tam.fits.compression.algorithm.api.ICompressor;
 
 public class QuantizeProcessor {
 
-    /**
-     * This is a modified (improved) version of the random sequence implementation in Appendix I of the
-     * <a href="https://fits.gsfc.nasa.gov/standard40/fits_standard40aa-le.pdf">FITS 4.0 standard</a>, using integer
-     * arithmetics for better performance -- but still providing the same sequence as the original algorithm.
-     */
-    private static class RandomSequence {
-
-        /**
-         * DO NOT CHANGE THIS; used when quantizing real numbers
-         */
-        private static final int N_RANDOM = 10000;
-
-        private static final int RANDOM_FACTOR = 16807;
-
-        private static final int LAST_RANDOM_VALUE = 1043618065;
-
-        /**
-         * This is our cached fixed random sequence that we will use over and over, but we defer initializing it until
-         * we actually need it.
-         */
-        private static final double[] VALUES = new double[N_RANDOM];
-
-        /**
-         * Static initialization for the fixed sequence of random values.
-         */
-        static {
-            long ival = 1L;
-            for (int i = 0; i < N_RANDOM; i++) {
-                ival = (ival * RANDOM_FACTOR) % Integer.MAX_VALUE;
-                VALUES[i] = (double) ival / Integer.MAX_VALUE;
-            }
-
-            /*
-             * IMPORTANT NOTE: the 10000th seed value must have the value 1043618065 if the algorithm has been
-             * implemented correctly
-             */
-            if ((int) ival != LAST_RANDOM_VALUE) {
-                // This should never be thrown if we did things correctly above.
-                throw new IllegalStateException("randomValue generated incorrect random number sequence");
-            }
-        }
-
-        static double get(int i) {
-            return VALUES[i];
-        }
-
-        static int length() {
-            return N_RANDOM;
-        }
-    }
-
     public static class DoubleQuantCompressor extends QuantizeProcessor implements ICompressor<DoubleBuffer> {
 
         private final ICompressor<IntBuffer> postCompressor;

@@ -788,4 +788,15 @@ public class QuantizeTest {
         p.copy(new QuantizeOption());
     }
 
+    @Test
+    public void testDitherSequence() throws Exception {
+
+        /*
+         * IMPORTANT NOTE: the 10000th seed value must have the value 1043618065 if the algorithm has been implemented
+         * correctly
+         */
+        final double LAST_RANDOM_VALUE = 1043618065.0 / Integer.MAX_VALUE;
+
+        Assert.assertEquals(RandomSequence.get(RandomSequence.length() - 1), LAST_RANDOM_VALUE, 0.1);
+    }
 }
