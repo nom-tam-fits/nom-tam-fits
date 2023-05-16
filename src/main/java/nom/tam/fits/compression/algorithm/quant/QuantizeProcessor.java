@@ -40,6 +40,50 @@ import nom.tam.fits.compression.algorithm.api.ICompressor;
 
 public class QuantizeProcessor {
 
+    private static final int LAST_RANDOM_VALUE = 1043618065;
+
+    /**
+     * DO NOT CHANGE THIS; used when quantizing real numbers
+     */
+    private static final int N_RANDOM = 10000;
+
+    private static final int RANDOM_MULTIPLICATOR = 500;
+
+    private static final int RANDOM_START_VALUE = 16807;
+
+    /**
+     * This is our cached fixed random sequence that we will use over and over, but we defer initializing it until we
+     * actually need it.
+     */
+    private static double[] randomValues = null;
+
+    /**
+     * This is a modified (improved) version of the random sequence implementation in Appendix I of the
+     * <a href="https://fits.gsfc.nasa.gov/standard40/fits_standard40aa-le.pdf">FITS 4.0 standard</a>, using integer
+     * arithmetics for better performance -- but still providing the same sequence as the original algorithm.
+     */
+    private static synchronized void initRandoms() {
+        if (randomValues != null) {
+            return;
+        }
+        randomValues = new double[N_RANDOM];
+
+        long seed = 1L;
+        for (int ii = 0; ii < N_RANDOM; ii++) {
+            seed = (seed * RANDOM_START_VALUE) % Integer.MAX_VALUE;
+            randomValues[ii] = (double) seed / Integer.MAX_VALUE;
+        }
+
+        /*
+         * IMPORTANT NOTE: the 10000th seed value must have the value 1043618065 if the algorithm has been implemented
+         * correctly
+         */
+        if ((int) seed != LAST_RANDOM_VALUE) {
+            // This should never be thrown if we did things correctly above.
+            throw new IllegalStateException("randomValue generated incorrect random number sequence");
+        }
+    }
+
     public static class DoubleQuantCompressor extends QuantizeProcessor implements ICompressor<DoubleBuffer> {
 
         private final ICompressor<IntBuffer> postCompressor;
@@ -141,82 +185,27 @@ public class QuantizeProcessor {
 
     private class DitherFilter extends PixelFilter {
 
-        private static final int LAST_RANDOM_VALUE = 1043618065;
-
-        private static final double MAX_INT_AS_DOUBLE = Integer.MAX_VALUE;
-
-        /**
-         * DO NOT CHANGE THIS; used when quantizing real numbers
-         */
-        private static final int N_RANDOM = 10000;
-
-        private static final int RANDOM_MULTIPLICATOR = 500;
-
-        private static final double RANDOM_START_VALUE = 16807.0;
-
         private int iseed = 0;
 
         private int nextRandom = 0;
 
-        private final double[] randomValues;
-
         DitherFilter(long seed) {
             super(null);
-            this.randomValues = initRandoms();
             initialize(seed);
         }
 
         public void initialize(long ditherSeed) {
+            initRandoms();
             this.iseed = (int) ((ditherSeed - 1) % N_RANDOM);
             initI1();
         }
 
         private void initI1() {
-            this.nextRandom = (int) (this.randomValues[this.iseed] * RANDOM_MULTIPLICATOR);
+            this.nextRandom = (int) (randomValues[this.iseed] * RANDOM_MULTIPLICATOR);
         }
 
         public double nextRandom() {
-            return this.randomValues[this.nextRandom];
-        }
-
-        private double[] initRandoms() {
-
-            /* initialize an tiledImageOperation of random numbers */
-
-            int ii;
-            double a = RANDOM_START_VALUE;
-            double m = MAX_INT_AS_DOUBLE;
-            double temp;
-            double seed;
-
-            /* allocate tiledImageOperation for the random number sequence */
-            double[] randomValue = new double[N_RANDOM];
-
-            /*
-             * We need a portable algorithm that anyone can use to generate this exact same sequence of random number.
-             * The C 'rand' function is not suitable because it is not available to Fortran or Java programmers.
-             * Instead, use a well known simple algorithm published here:
-             * "Random number generators: good ones are hard to find", Communications of the ACM, Volume 31 , Issue 10
-             * (October 1988) Pages: 1192 - 1201
-             */
-
-            /* initialize the random numbers */
-            seed = 1;
-            for (ii = 0; ii < N_RANDOM; ii++) {
-                temp = a * seed;
-                seed = temp - m * (int) (temp / m);
-                randomValue[ii] = seed / m;
-            }
-
-            /*
-             * IMPORTANT NOTE: the 10000th seed value must have the value 1043618065 if the algorithm has been
-             * implemented correctly
-             */
-
-            if ((int) seed != LAST_RANDOM_VALUE) {
-                throw new IllegalArgumentException("randomValue generated incorrect random number sequence");
-            }
-            return randomValue;
+            return randomValues[this.nextRandom];
         }
 
         @Override
