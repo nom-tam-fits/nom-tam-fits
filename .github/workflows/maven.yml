@@ -56,11 +56,13 @@ jobs:
       uses: codecov/codecov-action@v3
       continue-on-error: true
       with:
-#        token: ${{ secrets.CODECOV_TOKEN }}
+        working-directory: ./nom-tam-fits
+        files: ./target/site/jacoco/jacoco.xml
         fail_ci_if_error: false
         flags: unittests
         name: codecov
         verbose: true
+#        token: ${{ secrets.CODECOV_TOKEN }}
         
     - name: Upload coverage to Coveralls.io
       continue-on-error: true
