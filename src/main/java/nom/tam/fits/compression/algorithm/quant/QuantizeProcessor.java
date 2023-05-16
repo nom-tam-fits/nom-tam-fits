@@ -40,16 +40,6 @@ import nom.tam.fits.compression.algorithm.api.ICompressor;
 
 public class QuantizeProcessor {
 
-    private static final int LAST_RANDOM_VALUE = 1043618065;
-    private static final double MAX_INT_AS_DOUBLE = Integer.MAX_VALUE;
-    /**
-     * DO NOT CHANGE THIS; used when quantizing real numbers
-     */
-    private static final int N_RANDOM = 10000;
-    private static final int RANDOM_MULTIPLICATOR = 500;
-    private static final double RANDOM_START_VALUE = 16807.0;
-    private static double[] randomValues = initRandoms();
-
     private static double[] initRandoms() {
 
         /* initialize an tiledImageOperation of random numbers */
@@ -321,6 +311,15 @@ public class QuantizeProcessor {
             return super.toInt(pixel);
         }
     }
+
+    private static final int LAST_RANDOM_VALUE = 1043618065;
+    /**
+     * DO NOT CHANGE THIS; used when quantizing real numbers
+     */
+    private static final int N_RANDOM = 10000;
+    private static final int RANDOM_MULTIPLICATOR = 500;
+    private static final double RANDOM_START_VALUE = 16807.0;
+    private static double[] randomValues = initRandoms();
 
     private static final double MAX_INT_AS_DOUBLE = Integer.MAX_VALUE;
 
