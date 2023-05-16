@@ -49,7 +49,7 @@ public class QuantizeProcessor {
 
     private static final int RANDOM_MULTIPLICATOR = 500;
 
-    private static final int RANDOM_START_VALUE = 16807;
+    private static final int RANDOM_FACTOR = 16807;
 
     /**
      * This is our cached fixed random sequence that we will use over and over, but we defer initializing it until we
@@ -66,19 +66,20 @@ public class QuantizeProcessor {
         if (randomValues != null) {
             return;
         }
+
         randomValues = new double[N_RANDOM];
 
-        long seed = 1L;
-        for (int ii = 0; ii < N_RANDOM; ii++) {
-            seed = (seed * RANDOM_START_VALUE) % Integer.MAX_VALUE;
-            randomValues[ii] = (double) seed / Integer.MAX_VALUE;
+        long ival = 1L;
+        for (int i = 0; i < N_RANDOM; i++) {
+            ival = (ival * RANDOM_FACTOR) % Integer.MAX_VALUE;
+            randomValues[i] = (double) ival / Integer.MAX_VALUE;
         }
 
         /*
          * IMPORTANT NOTE: the 10000th seed value must have the value 1043618065 if the algorithm has been implemented
          * correctly
          */
-        if ((int) seed != LAST_RANDOM_VALUE) {
+        if ((int) ival != LAST_RANDOM_VALUE) {
             // This should never be thrown if we did things correctly above.
             throw new IllegalStateException("randomValue generated incorrect random number sequence");
         }
