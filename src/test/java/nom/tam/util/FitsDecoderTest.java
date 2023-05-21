@@ -273,6 +273,7 @@ public class FitsDecoderTest {
 
     @Test(expected = EOFException.class)
     public void testCharsEOFAtStart() throws Exception {
+        FitsFactory.setUseUnicodeChars(false);
         byte[] data = new byte[1];
         FitsDecoder e = new FitsDecoder(InputReader.from(new ByteArrayInputStream(data)));
         e.read();
