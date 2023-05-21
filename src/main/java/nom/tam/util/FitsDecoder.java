@@ -300,7 +300,7 @@ public class FitsDecoder extends InputDecoder {
                 }
                 throw new EOFException();
             }
-            if (c == '\n' || c == '\0') {
+            if (c == '\n') {
                 break;
             }
             str.append((char) c);

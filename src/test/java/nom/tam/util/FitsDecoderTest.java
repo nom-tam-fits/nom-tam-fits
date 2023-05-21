@@ -213,6 +213,22 @@ public class FitsDecoderTest {
     }
 
     @Test(expected = EOFException.class)
+    public void testBooleanArrayEOFAtStart() throws Exception {
+        byte[] data = new byte[1];
+        FitsDecoder e = new FitsDecoder(InputReader.from(new ByteArrayInputStream(data)));
+        e.read();
+        e.read(new boolean[10], 0, 10);
+    }
+
+    @Test(expected = EOFException.class)
+    public void testBooleanObjectsEOFAtStart() throws Exception {
+        byte[] data = new byte[1];
+        FitsDecoder e = new FitsDecoder(InputReader.from(new ByteArrayInputStream(data)));
+        e.read();
+        e.read(new Boolean[10], 0, 10);
+    }
+
+    @Test(expected = EOFException.class)
     public void testAsciiLineEOFAtStart() throws Exception {
         byte[] data = new byte[1];
         FitsDecoder e = new FitsDecoder(InputReader.from(new ByteArrayInputStream(data)));
@@ -228,6 +244,13 @@ public class FitsDecoderTest {
     }
 
     @Test
+    public void testAsciiLineReadDElimited() throws Exception {
+        byte[] data = "one\ntwo".getBytes();
+        FitsDecoder e = new FitsDecoder(InputReader.from(new ByteArrayInputStream(data)));
+        assertEquals("one", e.readAsciiLine());
+    }
+
+    @Test
     public void testReadEmptyBoolean() throws Exception {
         byte[] data = new byte[10];
         FitsDecoder e = new FitsDecoder(InputReader.from(new ByteArrayInputStream(data)));
@@ -238,7 +261,7 @@ public class FitsDecoderTest {
     public void testReadEmptyBooleanObject() throws Exception {
         byte[] data = new byte[10];
         FitsDecoder e = new FitsDecoder(InputReader.from(new ByteArrayInputStream(data)));
-        assertEquals(0, e.read(new boolean[10], 5, 0));
+        assertEquals(0, e.read(new Boolean[10], 5, 0));
     }
 
     @Test
@@ -272,12 +295,12 @@ public class FitsDecoderTest {
     private static class EOFExceptionInputReader implements InputReader {
         @Override
         public int read(byte[] b, int off, int len) throws IOException {
-            throw new EOFException();
+            return -1;
         }
 
         @Override
         public int read() throws IOException {
-            throw new EOFException();
+            return -1;
         }
     }
 }
