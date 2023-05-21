@@ -44,10 +44,12 @@ import nom.tam.image.compression.hdu.CompressedTableHDU;
  */
 
 /**
- * This class contains the code which associates particular FITS types with header and data configurations. It comprises
- * a set of Factory methods which call appropriate methods in the HDU classes. If -- God forbid -- a new FITS HDU type
- * were created, then the XXHDU, XXData classes would need to be added and this file modified but no other changes
- * should be needed in the FITS libraries.
+ * This class contains the code which associates particular FITS types with
+ * header and data configurations. It comprises a set of Factory methods which
+ * call appropriate methods in the HDU classes. If -- God forbid -- a new FITS
+ * HDU type were created, then the XXHDU, XXData classes would need to be added
+ * and this file modified but no other changes should be needed in the FITS
+ * libraries.
  */
 public final class FitsFactory {
 
@@ -70,8 +72,8 @@ public final class FitsFactory {
     private static final boolean DEFAULT_CASE_SENSITIVE_HIERARCH = false;
 
     /**
-     * AK: true is the legacy behavior TODO If and when it is changed to false, the corresponding Logger warnings in
-     * BinaryTable should also be removed.
+     * AK: true is the legacy behavior TODO If and when it is changed to false,
+     * the corresponding Logger warnings in BinaryTable should also be removed.
      */
     private static final boolean DEFAULT_USE_UNICODE_CHARS = true;
 
@@ -148,11 +150,13 @@ public final class FitsFactory {
         }
 
         /**
-         * @deprecated The FITS standard is very explicit that assignment must be "= ". If we allow skipping the space,
-         *                 it will result in a non-standard FITS, that is likely to break compatibility with other
-         *                 tools.
+         * @deprecated The FITS standard is very explicit that assignment must be
+         *                 "= ". If we allow skipping the space, it will result
+         *                 in a non-standard FITS, that is likely to break
+         *                 compatibility with other tools.
          * 
-         * @return whether to use only "=", instead of the standard "= " between the keyword and the value.
+         * @return whether to use only "=", instead of the standard "= " between
+         *             the keyword and the value.
          */
         protected boolean isSkipBlankAfterAssign() {
             return this.skipBlankAfterAssign;
@@ -185,13 +189,15 @@ public final class FitsFactory {
     public static final int FITS_BLOCK_SIZE = 2880;
 
     /**
-     * @deprecated This should be for internal use only. Will reduce visibility in the future
+     * @deprecated This should be for internal use only. Will reduce visibility
+     *                 in the future
      * 
      * @return Given a Header construct an appropriate data.
      * 
      * @param hdr header to create the data from
      * 
-     * @throws FitsException if the header did not contain enough information to detect the type of the data
+     * @throws FitsException if the header did not contain enough information to
+     *             detect the type of the data
      */
     @Deprecated
     public static Data dataFactory(Header hdr) throws FitsException {
@@ -231,13 +237,15 @@ public final class FitsFactory {
     }
 
     /**
-     * Whether <code>char[]</code> arrays are written as 16-bit integers (<code>short[]</code>) int binary tables as
-     * opposed as FITS character arrays (<code>byte[]</code> with column type 'A'). See more explanation in
+     * Whether <code>char[]</code> arrays are written as 16-bit integers
+     * (<code>short[]</code>) int binary tables as opposed as FITS character
+     * arrays (<code>byte[]</code> with column type 'A'). See more explanation in
      * {@link #setUseUnicodeChars(boolean)}.
      * 
-     * @return <code>true</code> if <code>char[]</code> get written as 16-bit integers in binary table columns (column
-     *             type 'I'), or as FITS 1-byte ASCII character arrays (as is always the case for <code>String</code>)
-     *             with column type 'A'.
+     * @return <code>true</code> if <code>char[]</code> get written as 16-bit
+     *             integers in binary table columns (column type 'I'), or as FITS
+     *             1-byte ASCII character arrays (as is always the case for
+     *             <code>String</code>) with column type 'A'.
      * 
      * @since 1.16
      */
@@ -246,7 +254,8 @@ public final class FitsFactory {
     }
 
     /**
-     * @return Is terminal junk (i.e., non-FITS data following a valid HDU) allowed.
+     * @return Is terminal junk (i.e., non-FITS data following a valid HDU)
+     *             allowed.
      */
     public static boolean getAllowTerminalJunk() {
         return current().isAllowTerminalJunk();
@@ -299,10 +308,13 @@ public final class FitsFactory {
     }
 
     /**
-     * @return whether to use only "=", instead of the standard "= " between the keyword and the value.
+     * @return whether to use only "=", instead of the standard "= " between the
+     *             keyword and the value.
      * 
-     * @deprecated The FITS standard is very explicit that assignment must be "= ". If we allow skipping the space, it
-     *                 will result in a non-standard FITS, that is likely to break compatibility with other tools.
+     * @deprecated The FITS standard is very explicit that assignment must be "=
+     *                 ". If we allow skipping the space, it will result in a
+     *                 non-standard FITS, that is likely to break compatibility
+     *                 with other tools.
      */
     @Deprecated
     public static boolean isSkipBlankAfterAssign() {
@@ -310,7 +322,8 @@ public final class FitsFactory {
     }
 
     /**
-     * @deprecated This should be for internal use only. Will reduce visibility in the future
+     * @deprecated This should be for internal use only. Will reduce visibility
+     *                 in the future
      * 
      * @return Given Header and data objects return the appropriate type of HDU.
      * 
@@ -322,8 +335,7 @@ public final class FitsFactory {
      */
     @Deprecated
     @SuppressWarnings("unchecked")
-    public static <DataClass extends Data> BasicHDU<DataClass> hduFactory(Header hdr, DataClass d)
-            throws FitsException {
+    public static <DataClass extends Data> BasicHDU<DataClass> hduFactory(Header hdr, DataClass d) throws FitsException {
         if (d instanceof ImageData) {
             return (BasicHDU<DataClass>) new ImageHDU(hdr, (ImageData) d);
         } else if (d instanceof CompressedImageData) {
@@ -343,7 +355,8 @@ public final class FitsFactory {
     }
 
     /**
-     * @return Given an object, create the appropriate FITS header to describe it.
+     * @return Given an object, create the appropriate FITS header to describe
+     *             it.
      * 
      * @param o The object to be described.
      * 
@@ -380,8 +393,8 @@ public final class FitsFactory {
 
     // CHECKSTYLE:OFF
     /**
-     * @deprecated This should be for internal use only. Will redice visibility in the future. SAme as
-     *                 {@link #hduFactory(Header, Data)}.
+     * @deprecated This should be for internal use only. Will redice visibility
+     *                 in the future. SAme as {@link #hduFactory(Header, Data)}.
      * 
      * @return Given Header and data objects return the appropriate type of HDU.
      * 
@@ -392,8 +405,7 @@ public final class FitsFactory {
      * @throws FitsException if the operation failed
      */
     @Deprecated
-    public static <DataClass extends Data> BasicHDU<DataClass> HDUFactory(Header hdr, DataClass d)
-            throws FitsException {
+    public static <DataClass extends Data> BasicHDU<DataClass> HDUFactory(Header hdr, DataClass d) throws FitsException {
         return hduFactory(hdr, d);
     }
 
@@ -401,7 +413,8 @@ public final class FitsFactory {
 
     // CHECKSTYLE:OFF
     /**
-     * @return Given an object, create the appropriate FITS header to describe it.
+     * @return Given an object, create the appropriate FITS header to describe
+     *             it.
      * 
      * @param o The object to be described.
      * 
@@ -437,11 +450,12 @@ public final class FitsFactory {
     }
 
     /**
-     * Do we allow 'D' instead of E to mark the exponent for a floating point value with precision beyond that of a
-     * 32-bit float?
+     * Do we allow 'D' instead of E to mark the exponent for a floating point
+     * value with precision beyond that of a 32-bit float?
      *
-     * @param allowExponentD if <code>true</code> D will be used instead of E to indicate the exponent of a decimal with
-     *            more precision than a 32-bit float.
+     * @param allowExponentD if <code>true</code> D will be used instead of E to
+     *            indicate the exponent of a decimal with more precision than a
+     *            32-bit float.
      * 
      * @since 1.16
      */
@@ -468,8 +482,9 @@ public final class FitsFactory {
     }
 
     /**
-     * Enable/Disable checking of strings values used in tables to ensure that they are within the range specified by
-     * the FITS standard. The standard only allows the values 0x20 - 0x7E with null bytes allowed in one limited
+     * Enable/Disable checking of strings values used in tables to ensure that
+     * they are within the range specified by the FITS standard. The standard
+     * only allows the values 0x20 - 0x7E with null bytes allowed in one limited
      * context. Disabled by default.
      *
      * @param checkAsciiStrings value to set
@@ -479,8 +494,9 @@ public final class FitsFactory {
     }
 
     /**
-     * There is not a real standard how to write hierarch keys, default we use the one where every key is separated by a
-     * blank. If you want or need another format assing the formater here.
+     * There is not a real standard how to write hierarch keys, default we use
+     * the one where every key is separated by a blank. If you want or need
+     * another format assing the formater here.
      *
      * @param formatter the hierarch key formatter.
      */
@@ -498,14 +514,18 @@ public final class FitsFactory {
     }
 
     /**
-     * If set to true the blank after the assign in the header cards in not written. The blank is stronly recommendet
-     * but in some cases it is important that it can be ommitted.
+     * If set to true the blank after the assign in the header cards in not
+     * written. The blank is stronly recommendet but in some cases it is
+     * important that it can be ommitted.
      *
      * @param skipBlankAfterAssign value to set
      * 
-     * @deprecated The FITS standard is very explicit that assignment must be "= ". It is also very specific that string
-     *                 values must have their opening quote in byte 11 (counted from 1). If we allow skipping the space,
-     *                 we will violate both standards in a way that is likely to break compatibility with other tools.
+     * @deprecated The FITS standard is very explicit that assignment must be "=
+     *                 ". It is also very specific that string values must have
+     *                 their opening quote in byte 11 (counted from 1). If we
+     *                 allow skipping the space, we will violate both standards
+     *                 in a way that is likely to break compatibility with other
+     *                 tools.
      */
     @Deprecated
     public static void setSkipBlankAfterAssign(boolean skipBlankAfterAssign) {
@@ -532,16 +552,22 @@ public final class FitsFactory {
 
     /**
      * <p>
-     * Enable/Disable writing <code>char[]</code> arrays as <code>short[]</code> in FITS binary tables (with column type
-     * 'I'), instead of as standard FITS 1-byte ASCII characters (with column type 'A'). The old default of this library
-     * has been to use unicode, and that behavior is retained by setting the argument to <code>true</code>. On the
-     * flipside, setting it to <code>false</code> provides more convergence between the handling of <code>char[]</code>
-     * columns and the nearly identical <code>String</code> columns, which have already been restricted to ASCII before.
+     * Enable/Disable writing <code>char[]</code> arrays as <code>short[]</code>
+     * in FITS binary tables (with column type 'I'), instead of as standard FITS
+     * 1-byte ASCII characters (with column type 'A'). The old default of this
+     * library has been to use unicode, and that behavior remains the default
+     * &mdash; the same as setting the argument to <code>true</code>. On the
+     * flipside, setting it to <code>false</code> provides more convergence
+     * between the handling of <code>char[]</code> columns and the nearly
+     * identical <code>String</code> columns, which have already been restricted
+     * to ASCII before.
      * </p>
      * 
-     * @param value <code>true</code> to write <code>char[]</code> arrays as if <code>short[]</code> with column type
-     *            'I' to binary tables (old behaviour), or else <code>false</code> to write them as <code>byte[]</code>
-     *            with column type 'A', the same as for <code>String</code> (preferred behaviour)
+     * @param value <code>true</code> to write <code>char[]</code> arrays as if
+     *            <code>short[]</code> with column type 'I' to binary tables (old
+     *            behaviour, and hence default), or else <code>false</code> to
+     *            write them as <code>byte[]</code> with column type 'A', the
+     *            same as for <code>String</code> (preferred behaviour)
      * 
      * @since 1.16
      * 
@@ -559,10 +585,11 @@ public final class FitsFactory {
     }
 
     /**
-     * Use thread local settings for the current thread instead of the global ones if the parameter is set to true, else
-     * use the shared global settings.
+     * Use thread local settings for the current thread instead of the global
+     * ones if the parameter is set to true, else use the shared global settings.
      *
-     * @param useThreadSettings true if the thread should not share the global settings.
+     * @param useThreadSettings true if the thread should not share the global
+     *            settings.
      */
     public static void useThreadLocalSettings(boolean useThreadSettings) {
         if (useThreadSettings) {
