@@ -152,7 +152,9 @@ public abstract class OutputEncoder {
         // should become
         // a private method of OutputBuffer, with leading 'buf.' references
         // stripped.
-        buf.makeSpaceFor(bytes);
+        if (buf.buffer.remaining() < bytes) {
+            flush();
+        }
     }
 
     /**
@@ -265,7 +267,9 @@ public abstract class OutputEncoder {
      */
     protected final class OutputBuffer {
 
-        /** the byte array that stores pending data to be written to the output */
+        /**
+         * the byte array that stores pending data to be written to the output
+         */
         private final byte[] data;
 
         /** the buffer wrapped for NIO access */
@@ -302,25 +306,6 @@ public abstract class OutputEncoder {
         }
 
         /**
-         * Makes sure that there is room in the conversion buffer for an
-         * upcoming element conversion, and flushes the buffer as necessary to
-         * make room. Subclass implementations should call this method before
-         * attempting a conversion operation.
-         * 
-         * @param bytes
-         *            the size of an element we will want to convert. It cannot
-         *            exceed the size of the conversion buffer.
-         * @throws IOException
-         *             if the conversion buffer could not be flushed to the
-         *             output to make room for the new conversion.
-         */
-        private void makeSpaceFor(int bytes) throws IOException {
-            if (buffer.remaining() < bytes) {
-                flush();
-            }
-        }
-
-        /**
          * Puts a single byte into the conversion buffer, making space for it as
          * needed by flushing the current buffer contents to the output as
          * necessary.
@@ -333,7 +318,7 @@ public abstract class OutputEncoder {
          * @see #flush()
          */
         protected void putByte(byte b) throws IOException {
-            makeSpaceFor(1);
+            need(1);
             buffer.put(b);
         }
 
@@ -350,7 +335,7 @@ public abstract class OutputEncoder {
          * @see #flush()
          */
         protected void putShort(short s) throws IOException {
-            makeSpaceFor(FitsIO.BYTES_IN_SHORT);
+            need(Short.BYTES);
             buffer.putShort(s);
         }
 
@@ -367,7 +352,7 @@ public abstract class OutputEncoder {
          * @see #flush()
          */
         protected void putInt(int i) throws IOException {
-            makeSpaceFor(FitsIO.BYTES_IN_INTEGER);
+            need(Integer.BYTES);
             buffer.putInt(i);
         }
 
@@ -384,7 +369,7 @@ public abstract class OutputEncoder {
          * @see #flush()
          */
         protected void putLong(long l) throws IOException {
-            makeSpaceFor(FitsIO.BYTES_IN_LONG);
+            need(Long.BYTES);
             buffer.putLong(l);
         }
 
@@ -401,7 +386,7 @@ public abstract class OutputEncoder {
          * @see #flush()
          */
         protected void putFloat(float f) throws IOException {
-            makeSpaceFor(FitsIO.BYTES_IN_FLOAT);
+            need(Float.BYTES);
             buffer.putFloat(f);
         }
 
@@ -418,7 +403,7 @@ public abstract class OutputEncoder {
          * @see #flush()
          */
         protected void putDouble(double d) throws IOException {
-            makeSpaceFor(FitsIO.BYTES_IN_DOUBLE);
+            need(Double.BYTES);
             buffer.putDouble(d);
         }
 
@@ -449,7 +434,7 @@ public abstract class OutputEncoder {
             int got = 0;
 
             while (got < length) {
-                makeSpaceFor(Short.BYTES);
+                need(Short.BYTES);
                 ShortBuffer b = buffer.asShortBuffer();
                 int n = Math.min(length - got, b.remaining());
                 b.put(src, start + got, n);
@@ -481,7 +466,7 @@ public abstract class OutputEncoder {
             int got = 0;
 
             while (got < length) {
-                makeSpaceFor(Integer.BYTES);
+                need(Integer.BYTES);
                 IntBuffer b = buffer.asIntBuffer();
                 int n = Math.min(length - got, b.remaining());
                 b.put(src, start + got, n);
@@ -513,7 +498,7 @@ public abstract class OutputEncoder {
             int got = 0;
 
             while (got < length) {
-                makeSpaceFor(Long.BYTES);
+                need(Long.BYTES);
                 LongBuffer b = buffer.asLongBuffer();
                 int n = Math.min(length - got, b.remaining());
                 b.put(src, start + got, n);
@@ -546,7 +531,7 @@ public abstract class OutputEncoder {
             int got = 0;
 
             while (got < length) {
-                makeSpaceFor(Float.BYTES);
+                need(Float.BYTES);
                 FloatBuffer b = buffer.asFloatBuffer();
                 int n = Math.min(length - got, b.remaining());
                 b.put(src, start + got, n);
@@ -579,7 +564,7 @@ public abstract class OutputEncoder {
             int got = 0;
 
             while (got < length) {
-                makeSpaceFor(Double.BYTES);
+                need(Double.BYTES);
                 DoubleBuffer b = buffer.asDoubleBuffer();
                 int n = Math.min(length - got, b.remaining());
                 b.put(src, start + got, n);
