@@ -134,7 +134,12 @@ public abstract class InputDecoder {
     boolean makeAvailable(int size) throws IOException {
         // TODO Once the deprecated BufferDecoder is retired, this should become
         // a private method of InputBuffer (with buf. prefixed removed below).
-        return buf.makeAvailable(size);
+        while (buf.buffer.remaining() < size) {
+            if (!buf.fetch()) {
+                return false;
+            }
+        }
+        return true;
     }
 
     /**
@@ -426,30 +431,6 @@ public abstract class InputDecoder {
             buffer.limit(remaining + n);
             pending -= n;
 
-            return true;
-        }
-
-        /**
-         * Makes sure that an elements of the specified size is fully available
-         * in the buffer, prompting additional reading of the underlying stream
-         * as appropriate (but not beyond the limit set by
-         * {@link #loadBytes(long, int)}.
-         * 
-         * @param size
-         *            the number of bytes we need at once from the buffer
-         * @return <code>true</code> if the requested number of bytes are, or
-         *         could be made, available. Otherwise <code>false</code>.
-         * @throws IOException
-         *             if there was an underlying IO error, other than the end
-         *             of file, while trying to fetch additional data from the
-         *             underlying input
-         */
-        private boolean makeAvailable(int size) throws IOException {
-            while (buffer.remaining() < size) {
-                if (!fetch()) {
-                    return false;
-                }
-            }
             return true;
         }
 
