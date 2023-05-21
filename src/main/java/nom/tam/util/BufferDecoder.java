@@ -31,44 +31,36 @@ package nom.tam.util;
  * #L%
  */
 
-
 import java.io.EOFException;
 import java.io.IOException;
 
 /**
- * @deprecated  This is a rusty rail implementation only, unsafe for general use.
- *      Use {@link FitsDecoder} instead, which provides a similar function but in
- *      a more consistent way and with a less misleading name, or else use {@link InputDecoder}
- *      as a base for implementing efficient custom decoding of binary inputs. 
- *      
- *      
- *
+ * @deprecated This is a rusty rail implementation only, unsafe for general use. Use {@link FitsDecoder} instead, which
+ *                 provides a similar function but in a more consistent way and with a less misleading name, or else use
+ *                 {@link InputDecoder} as a base for implementing efficient custom decoding of binary inputs.
+ * 
  * @see FitsDecoder
  */
 @Deprecated
 public abstract class BufferDecoder extends FitsDecoder {
 
-   
-    
     private BufferPointer p;
-    
+
     /**
-     * 
-     * @param p     Unused, but the position and length fields are set/reset as to pretend that half of
-     *              the buffer is perpetually available for reading.
-     *              However, at no point will there be any data actually in the buffer of this object,
-     *              and you should by all means avoid directly loading data from the stream into this
-     *              dead-end buffer, other than the hopefully untiggered existing implementation
-     *              of <code>checkBuffer(int)</code> (and it's safest if you don't override
-     *              or ever call <code>checkBuffer(int)</code> from your code!).
+     * @param p Unused, but the position and length fields are set/reset as to pretend that half of the buffer is
+     *            perpetually available for reading. However, at no point will there be any data actually in the buffer
+     *            of this object, and you should by all means avoid directly loading data from the stream into this
+     *            dead-end buffer, other than the hopefully untiggered existing implementation of
+     *            <code>checkBuffer(int)</code> (and it's safest if you don't override or ever call
+     *            <code>checkBuffer(int)</code> from your code!).
      */
     public BufferDecoder(BufferPointer p) {
         super();
-        
+
         this.p = p;
-        
+
         pretendHalfPopulated();
-        
+
         setInput(new InputReader() {
             private byte[] b1 = new byte[1];
 
@@ -84,78 +76,78 @@ public abstract class BufferDecoder extends FitsDecoder {
             @Override
             public int read(byte[] b, int from, int length) throws IOException {
                 return BufferDecoder.this.read(b, from, length);
-            }    
+            }
         });
     }
-    
+
     /**
-     * We'll always pretend the buffer to be half populated at pos=0, in order to avoid triggering
-     * a read from the input into the unused buffer of BufferPointer, or a write to the
-     * output from that buffer... If the pointer has no buffer, length will be 0 also.
+     * We'll always pretend the buffer to be half populated at pos=0, in order to avoid triggering a read from the input
+     * into the unused buffer of BufferPointer, or a write to the output from that buffer... If the pointer has no
+     * buffer, length will be 0 also.
      */
     private void pretendHalfPopulated() {
-        p.pos = 0; 
-        p.length = p.buffer == null ? 0 : p.buffer.length >>> 1;   
+        p.pos = 0;
+        p.length = p.buffer == null ? 0 : p.buffer.length >>> 1;
     }
-    
+
     @Override
     boolean makeAvailable(int needBytes) throws IOException {
         pretendHalfPopulated();
         boolean result = super.makeAvailable(needBytes);
         return result;
     }
-    
+
     /**
-     * @deprecated  No longer used internally, kept only for back-compatibility since it used to be a needed abstract method.
-     *              It's safest if you never override or call this method from your code!
-     *             
-     * @param needBytes     the number of byte we need available to decode the next element
-     * @throws IOException  if the data could not be made available due to an IO error of the underlying input.
+     * @deprecated No longer used internally, kept only for back-compatibility since it used to be a needed abstract
+     *                 method. It's safest if you never override or call this method from your code!
+     * 
+     * @param needBytes the number of byte we need available to decode the next element
+     * 
+     * @throws IOException if the data could not be made available due to an IO error of the underlying input.
      */
     protected void checkBuffer(int needBytes) throws IOException {
     }
-    
+
     @Override
     protected int read(byte[] buf, int offset, int length) throws IOException {
-        throw new UnsupportedOperationException("You need to override this with an implementation that reads from the desired input.");
+        throw new UnsupportedOperationException(
+                "You need to override this with an implementation that reads from the desired input.");
     }
-    
+
     /**
-     * @deprecated  No longer used internally, kept only for back-compatibility since it used to be a needed abstract method.
+     * @deprecated No longer used internally, kept only for back-compatibility since it used to be a needed abstract
+     *                 method.
      * 
-     * @param e     the <code>EOFException</code> thrown by one of the read calls.
+     * @param e the <code>EOFException</code> thrown by one of the read calls.
      * @param start the index of the first array element we wanted to fill
      * @param index the array index of the element during which the exception was thrown
      * @param elementSize the number of bytes per element we were processing
      * 
      * @return the numer of bytes successfully processed from the input before the exception occurred.
-     * @throws EOFException
-     *              if the input had no more data to process
+     * 
+     * @throws EOFException if the input had no more data to process
      */
     protected int eofCheck(EOFException e, int start, int index, int elementSize) throws EOFException {
-        return super.eofCheck(e, (index - start), -1) * elementSize;
+        return (int) super.eofCheck(e, (index - start), -1) * elementSize;
     }
-    
+
     /**
      * See the contract of {@link ArrayDataInput#readLArray(Object)}.
      * 
-     * @param o
-     *            an array, to be populated
-     * @return the actual number of bytes read from the input, or -1 if already
-     *         at the end-of-file.
-     * @throws IllegalArgumentException
-     *             if the argument is not an array or if it contains an element
-     *             that is not supported for decoding.
-     * @throws IOException
-     *             if there was an IO error reading from the input
+     * @param o an array, to be populated
+     * 
+     * @return the actual number of bytes read from the input, or -1 if already at the end-of-file.
+     * 
+     * @throws IllegalArgumentException if the argument is not an array or if it contains an element that is not
+     *             supported for decoding.
+     * @throws IOException if there was an IO error reading from the input
      */
     protected long readLArray(Object o) throws IOException {
-        try { 
-            return super.readArray(o); 
+        try {
+            return super.readArray(o);
         } catch (IllegalArgumentException e) {
             throw new IOException(e);
         }
     }
- 
-    
+
 }

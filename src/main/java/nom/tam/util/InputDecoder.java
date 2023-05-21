@@ -36,6 +36,11 @@ import java.io.IOException;
 import java.io.InputStream;
 import java.nio.ByteBuffer;
 import java.nio.ByteOrder;
+import java.nio.DoubleBuffer;
+import java.nio.FloatBuffer;
+import java.nio.IntBuffer;
+import java.nio.LongBuffer;
+import java.nio.ShortBuffer;
 
 import nom.tam.fits.FitsFactory;
 
@@ -52,7 +57,7 @@ import nom.tam.fits.FitsFactory;
 public abstract class InputDecoder {
 
     /** The buffer size for array translation */
-    private static final int BUFFER_SIZE = FitsFactory.FITS_BLOCK_SIZE;
+    private static final int BUFFER_SIZE = 8 * FitsFactory.FITS_BLOCK_SIZE;
 
     /** bit mask for 1 byte */
     private static final int BYTE_MASK = 0xFF;
@@ -129,12 +134,7 @@ public abstract class InputDecoder {
     boolean makeAvailable(int size) throws IOException {
         // TODO Once the deprecated BufferDecoder is retired, this should become
         // a private method of InputBuffer (with buf. prefixed removed below).
-        while (buf.buffer.remaining() < size) {
-            if (!buf.fetch()) {
-                return false;
-            }
-        }
-        return true;
+        return buf.makeAvailable(size);
     }
 
     /**
@@ -168,6 +168,33 @@ public abstract class InputDecoder {
      */
     protected synchronized int read(byte[] b, int start, int length) throws IOException {
         return in.read(b, start, length);
+    }
+
+    /**
+     * Reads bytes to fill the supplied buffer with the requested number of
+     * bytes from the given starting buffer index. If not enough bytes are
+     * avaialable in the file to deliver the reqauested number of bytes the
+     * buffer, an {@link EOFException} will be thrown.
+     * 
+     * @param b
+     *            the buffer
+     * @param off
+     *            the buffer index at which to start reading data
+     * @param len
+     *            the total number of bytes to read.
+     * @throws IOException
+     *             if there was an IO error before the requested number of bytes
+     *             could all be read.
+     */
+    protected void readFully(byte[] b, int off, int len) throws IOException {
+        while (len > 0) {
+            int n = read(b, off, len);
+            if (n < 0) {
+                throw new EOFException();
+            }
+            off += n;
+            len -= n;
+        }
     }
 
     /**
@@ -207,6 +234,35 @@ public abstract class InputDecoder {
      * @see #readArrayFully(Object)
      */
     public abstract long readArray(Object o) throws IOException, IllegalArgumentException;
+
+    /**
+     * Decides what to do when an {@link EOFException} is encountered after
+     * having read some number of bytes from the input. The default behavior is
+     * to re-throw the exception only if no data at all was obtained from the
+     * input, otherwise return the non-zero byte count of data that were
+     * successfully read. Subclass implementations may override this method to
+     * adjust if an when {@link EOFException} is thrown upon an incomplete read.
+     * 
+     * @param e
+     *            the exception that was thrown, or <code>null</code>.
+     * @param got
+     *            the number of elements successfully read
+     * @param expected
+     *            the number of elements expected
+     * @return the number of elements successfully read (same as
+     *         <code>got</code> ).
+     * @throws EOFException
+     *             the rethrown exception, or a new one, as appropriate
+     */
+    long eofCheck(EOFException e, long got, long expected) throws EOFException {
+        if (got == 0) {
+            if (e == null) {
+                throw new EOFException();
+            }
+            throw e;
+        }
+        return got;
+    }
 
     /**
      * <p>
@@ -374,7 +430,37 @@ public abstract class InputDecoder {
         }
 
         /**
-         * Retrieves a single byte from the buffer.
+         * Makes sure that an elements of the specified size is fully available
+         * in the buffer, prompting additional reading of the underlying stream
+         * as appropriate (but not beyond the limit set by
+         * {@link #loadBytes(long, int)}.
+         * 
+         * @param size
+         *            the number of bytes we need at once from the buffer
+         * @return <code>true</code> if the requested number of bytes are, or
+         *         could be made, available. Otherwise <code>false</code>.
+         * @throws IOException
+         *             if there was an underlying IO error, other than the end
+         *             of file, while trying to fetch additional data from the
+         *             underlying input
+         */
+        private boolean makeAvailable(int size) throws IOException {
+            while (buffer.remaining() < size) {
+                if (!fetch()) {
+                    return false;
+                }
+            }
+            return true;
+        }
+
+        /**
+         * Retrieves a single byte from the buffer. Before data can be retrieved
+         * with this method the should be 'loaded' into the buffer via
+         * {@link #loadOne(int)} or {@link #loadBytes(long, int)}. This method
+         * is appropriate for retrieving one or a fwew bytes at a time. For bulk
+         * input of bytes, you should use
+         * {@link InputDecoder#read(byte[], int, int)} instead for superior
+         * performance.
          * 
          * @return the byte value, or -1 if no more data is available from the
          *         buffer or the underlying input.
@@ -382,6 +468,8 @@ public abstract class InputDecoder {
          *             if there as an IO error, other than the end of file,
          *             while trying to read more data from the underlying input
          *             into the buffer.
+         * @see #loadOne(int)
+         * @see #loadBytes(long, int)
          */
         protected int get() throws IOException {
             if (makeAvailable(1)) {
@@ -391,7 +479,9 @@ public abstract class InputDecoder {
         }
 
         /**
-         * Retrieves a 2-byte unsidned integer from the buffer.
+         * Retrieves a 2-byte unsigned integer from the buffer. Before data can
+         * be retrieved with this method the should be 'loaded' into the buffer
+         * via {@link #loadOne(int)} or {@link #loadBytes(long, int)}.
          * 
          * @return the 16-bit integer value, or -1 if no more data is available
          *         from the buffer or the underlying input.
@@ -399,43 +489,51 @@ public abstract class InputDecoder {
          *             if there as an IO error, other than the end of file,
          *             while trying to read more data from the underlying input
          *             into the buffer.
+         * @see #loadOne(int)
+         * @see #loadBytes(long, int)
          */
         protected int getUnsignedShort() throws IOException {
-            if (makeAvailable(FitsIO.BYTES_IN_SHORT)) {
+            if (makeAvailable(Short.BYTES)) {
                 return buffer.getShort() & SHORT_MASK;
             }
             return -1;
         }
 
         /**
-         * Retrieves a 4-byte integer from the buffer.
+         * Retrieves a 4-byte integer from the buffer. Before data can be
+         * retrieved with this method the should be 'loaded' into the buffer via
+         * {@link #loadOne(int)} or {@link #loadBytes(long, int)}.
          * 
          * @return the 32-bit integer value.
+         * @throws EOFException
+         *             if already at the end of file.
          * @throws IOException
-         *             if there as an IO error, including and
-         *             {@link EOFException} if the end of file was reached,
-         *             while trying to read more data from the underlying input
-         *             into the buffer.
+         *             if there as an IO error
+         * @see #loadOne(int)
+         * @see #loadBytes(long, int)
          */
-        protected int getInt() throws IOException {
-            if (makeAvailable(FitsIO.BYTES_IN_INTEGER)) {
+        protected int getInt() throws EOFException, IOException {
+            if (makeAvailable(Integer.BYTES)) {
                 return buffer.getInt();
             }
             throw new EOFException();
         }
 
         /**
-         * Retrieves a 8-byte integer from the buffer.
+         * Retrieves a 8-byte integer from the buffer. Before data can be
+         * retrieved with this method the should be 'loaded' into the buffer via
+         * {@link #loadOne(int)} or {@link #loadBytes(long, int)}.
          * 
          * @return the 64-bit integer value.
+         * @throws EOFException
+         *             if already at the end of file.
          * @throws IOException
-         *             if there as an IO error, including and
-         *             {@link EOFException} if the end of file was reached,
-         *             while trying to read more data from the underlying input
-         *             into the buffer.
+         *             if there as an IO error
+         * @see #loadOne(int)
+         * @see #loadBytes(long, int)
          */
-        protected long getLong() throws IOException {
-            if (makeAvailable(FitsIO.BYTES_IN_LONG)) {
+        protected long getLong() throws EOFException, IOException {
+            if (makeAvailable(Long.BYTES)) {
                 return buffer.getLong();
             }
             throw new EOFException();
@@ -443,17 +541,20 @@ public abstract class InputDecoder {
 
         /**
          * Retrieves a 4-byte single-precision floating point value from the
-         * buffer.
+         * buffer. Before data can be retrieved with this method the shold be
+         * 'loaded' into the buffer via {@link #loadOne(int)} or
+         * {@link #loadBytes(long, int)}.
          * 
          * @return the 32-bit single-precision floating-point value.
+         * @throws EOFException
+         *             if already at the end of file.
          * @throws IOException
-         *             if there as an IO error, including and
-         *             {@link EOFException} if the end of file was reached,
-         *             while trying to read more data from the underlying input
-         *             into the buffer.
+         *             if there as an IO error
+         * @see #loadOne(int)
+         * @see #loadBytes(long, int)
          */
-        protected float getFloat() throws IOException {
-            if (makeAvailable(FitsIO.BYTES_IN_FLOAT)) {
+        protected float getFloat() throws EOFException, IOException {
+            if (makeAvailable(Float.BYTES)) {
                 return buffer.getFloat();
             }
             throw new EOFException();
@@ -461,20 +562,246 @@ public abstract class InputDecoder {
 
         /**
          * Retrieves a 8-byte double-precision floating point value from the
-         * buffer.
+         * buffer. Before data can be retrieved with this method the should be
+         * 'loaded' into the buffer via {@link #loadOne(int)} or
+         * {@link #loadBytes(long, int)}.
          * 
          * @return the 64-bit double-precision floating-point value.
+         * @throws EOFException
+         *             if already at the end of file.
          * @throws IOException
-         *             if there as an IO error, including and
-         *             {@link EOFException} if the end of file was reached,
-         *             while trying to read more data from the underlying input
-         *             into the buffer.
+         *             if there as an IO error
+         * @see #loadOne(int)
+         * @see #loadBytes(long, int)
          */
-        protected double getDouble() throws IOException {
-            if (makeAvailable(FitsIO.BYTES_IN_DOUBLE)) {
+        protected double getDouble() throws EOFException, IOException {
+            if (makeAvailable(Double.BYTES)) {
                 return buffer.getDouble();
             }
             throw new EOFException();
+        }
+
+        private void skip(int bytes) {
+            buffer.position(buffer.position() + bytes);
+        }
+
+        /**
+         * Retrieves a sequence of big-endian 16-bit signed integers from the
+         * buffer. Before data can be retrieved with this method the should be
+         * 'loaded' into the buffer via {@link #loadBytes(long, int)}.
+         * 
+         * @param dst
+         *            Java array in which to store the retrieved sequence of
+         *            elements
+         * @param from
+         *            the array index for storing the first element retrieved
+         * @param n
+         *            the number of elements to retrieve
+         * @return the number of elements successfully retrieved
+         * @throws EOFException
+         *             if already at the end of file.
+         * @throws IOException
+         *             if there was an IO error before, before requested number
+         *             of bytes could be read
+         * @see #loadBytes(long, int)
+         * @since 1.18
+         */
+        protected int get(short[] dst, int from, int n) throws EOFException, IOException {
+            if (n == 1) {
+                n = getUnsignedShort();
+                if (n < 0) {
+                    throw new EOFException();
+                }
+                dst[from] = (short) n;
+                return 1;
+            }
+
+            int got = 0;
+
+            while (got < n) {
+                if (!makeAvailable(Short.BYTES)) {
+                    return (int) eofCheck(null, got, n);
+                }
+                ShortBuffer b = buffer.asShortBuffer();
+                int m = Math.min(n - got, b.remaining());
+                b.get(dst, from + got, m);
+                skip(m * Short.BYTES);
+                got += m;
+            }
+
+            return got;
+        }
+
+        /**
+         * Retrieves a sequence of big-endian 32-bit signed integers from the
+         * buffer. Before data can be retrieved with this method the should be
+         * 'loaded' into the buffer via {@link #loadBytes(long, int)}.
+         * 
+         * @param dst
+         *            Java array in which to store the retrieved sequence of
+         *            elements
+         * @param from
+         *            the array index for storing the first element retrieved
+         * @param n
+         *            the number of elements to retrieve
+         * @return the number of elements successfully retrieved
+         * @throws EOFException
+         *             if already at the end of file.
+         * @throws IOException
+         *             if there was an IO error before, before requested number
+         *             of bytes could be read
+         * @see #loadBytes(long, int)
+         * @since 1.18
+         */
+        protected int get(int[] dst, int from, int n) throws EOFException, IOException {
+            if (n == 1) {
+                dst[from] = getInt();
+                return 1;
+            }
+
+            int got = 0;
+
+            while (got < n) {
+                if (!makeAvailable(Integer.BYTES)) {
+                    return (int) eofCheck(null, got, n);
+                }
+                IntBuffer b = buffer.asIntBuffer();
+                int m = Math.min(n - got, b.remaining());
+                b.get(dst, from + got, m);
+                skip(m * Integer.BYTES);
+                got += m;
+            }
+
+            return got;
+        }
+
+        /**
+         * Retrieves a sequence of big-endian 64-bit signed integers from the
+         * buffer. Before data can be retrieved with this method the should be
+         * 'loaded' into the buffer via {@link #loadBytes(long, int)}.
+         * 
+         * @param dst
+         *            Java array in which to store the retrieved sequence of
+         *            elements
+         * @param from
+         *            the array index for storing the first element retrieved
+         * @param n
+         *            the number of elements to retrieve
+         * @return the number of elements successfully retrieved
+         * @throws EOFException
+         *             if already at the end of file.
+         * @throws IOException
+         *             if there was an IO error before, before requested number
+         *             of bytes could be read
+         * @see #loadBytes(long, int)
+         * @since 1.18
+         */
+        protected int get(long[] dst, int from, int n) throws EOFException, IOException {
+            if (n == 1) {
+                dst[from] = getLong();
+                return 1;
+            }
+
+            int got = 0;
+
+            while (got < n) {
+                if (!makeAvailable(Long.BYTES)) {
+                    return (int) eofCheck(null, got, n);
+                }
+                LongBuffer b = buffer.asLongBuffer();
+                int m = Math.min(n - got, b.remaining());
+                b.get(dst, from + got, m);
+                skip(m * Long.BYTES);
+                got += m;
+            }
+
+            return got;
+        }
+
+        /**
+         * Retrieves a sequence of big-endian 32-bit floating-point values from
+         * the buffer. Before data can be retrieved with this method the should
+         * be 'loaded' into the buffer via {@link #loadBytes(long, int)}.
+         * 
+         * @param dst
+         *            Java array in which to store the retrieved sequence of
+         *            elements
+         * @param from
+         *            the array index for storing the first element retrieved
+         * @param n
+         *            the number of elements to retrieve
+         * @return the number of elements successfully retrieved
+         * @throws EOFException
+         *             if already at the end of file.
+         * @throws IOException
+         *             if there was an IO error before, before requested number
+         *             of bytes could be read
+         * @see #loadBytes(long, int)
+         * @since 1.18
+         */
+        protected int get(float[] dst, int from, int n) throws EOFException, IOException {
+            if (n == 1) {
+                dst[from] = getFloat();
+                return 1;
+            }
+
+            int got = 0;
+
+            while (got < n) {
+                if (!makeAvailable(Float.BYTES)) {
+                    return (int) eofCheck(null, got, n);
+                }
+                FloatBuffer b = buffer.asFloatBuffer();
+                int m = Math.min(n - got, b.remaining());
+                b.get(dst, from + got, m);
+                skip(m * Float.BYTES);
+                got += m;
+            }
+
+            return got;
+        }
+
+        /**
+         * Retrieves a sequence of big-endian 64-bit floating-point values from
+         * the buffer. Before data can be retrieved with this method the should
+         * be 'loaded' into the buffer via {@link #loadBytes(long, int)}.
+         * 
+         * @param dst
+         *            Java array in which to store the retrieved sequence of
+         *            elements
+         * @param from
+         *            the array index for storing the first element retrieved
+         * @param n
+         *            the number of elements to retrieve
+         * @return the number of elements successfully retrieved
+         * @throws EOFException
+         *             if already at the end of file.
+         * @throws IOException
+         *             if there was an IO error before, before requested number
+         *             of bytes could be read
+         * @see #loadBytes(long, int)
+         * @since 1.18
+         */
+        protected int get(double[] dst, int from, int n) throws EOFException, IOException {
+            if (n == 1) {
+                dst[from] = getDouble();
+                return 1;
+            }
+
+            int got = 0;
+
+            while (got < n) {
+                if (!makeAvailable(Double.BYTES)) {
+                    return (int) eofCheck(null, got, n);
+                }
+                DoubleBuffer b = buffer.asDoubleBuffer();
+                int m = Math.min(n - got, b.remaining());
+                b.get(dst, from + got, m);
+                skip(m * Double.BYTES);
+                got += m;
+            }
+
+            return got;
         }
     }
 }
