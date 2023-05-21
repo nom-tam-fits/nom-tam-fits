@@ -34,6 +34,11 @@ package nom.tam.util;
 import java.io.IOException;
 import java.nio.ByteBuffer;
 import java.nio.ByteOrder;
+import java.nio.DoubleBuffer;
+import java.nio.FloatBuffer;
+import java.nio.IntBuffer;
+import java.nio.LongBuffer;
+import java.nio.ShortBuffer;
 
 import nom.tam.fits.FitsFactory;
 
@@ -147,9 +152,7 @@ public abstract class OutputEncoder {
         // should become
         // a private method of OutputBuffer, with leading 'buf.' references
         // stripped.
-        if (buf.buffer.remaining() < bytes) {
-            flush();
-        }
+        buf.makeSpaceFor(bytes);
     }
 
     /**
@@ -299,6 +302,25 @@ public abstract class OutputEncoder {
         }
 
         /**
+         * Makes sure that there is room in the conversion buffer for an
+         * upcoming element conversion, and flushes the buffer as necessary to
+         * make room. Subclass implementations should call this method before
+         * attempting a conversion operation.
+         * 
+         * @param bytes
+         *            the size of an element we will want to convert. It cannot
+         *            exceed the size of the conversion buffer.
+         * @throws IOException
+         *             if the conversion buffer could not be flushed to the
+         *             output to make room for the new conversion.
+         */
+        private void makeSpaceFor(int bytes) throws IOException {
+            if (buffer.remaining() < bytes) {
+                flush();
+            }
+        }
+
+        /**
          * Puts a single byte into the conversion buffer, making space for it as
          * needed by flushing the current buffer contents to the output as
          * necessary.
@@ -311,7 +333,7 @@ public abstract class OutputEncoder {
          * @see #flush()
          */
         protected void putByte(byte b) throws IOException {
-            need(1);
+            makeSpaceFor(1);
             buffer.put(b);
         }
 
@@ -328,7 +350,7 @@ public abstract class OutputEncoder {
          * @see #flush()
          */
         protected void putShort(short s) throws IOException {
-            need(FitsIO.BYTES_IN_SHORT);
+            makeSpaceFor(FitsIO.BYTES_IN_SHORT);
             buffer.putShort(s);
         }
 
@@ -345,7 +367,7 @@ public abstract class OutputEncoder {
          * @see #flush()
          */
         protected void putInt(int i) throws IOException {
-            need(FitsIO.BYTES_IN_INTEGER);
+            makeSpaceFor(FitsIO.BYTES_IN_INTEGER);
             buffer.putInt(i);
         }
 
@@ -362,7 +384,7 @@ public abstract class OutputEncoder {
          * @see #flush()
          */
         protected void putLong(long l) throws IOException {
-            need(FitsIO.BYTES_IN_LONG);
+            makeSpaceFor(FitsIO.BYTES_IN_LONG);
             buffer.putLong(l);
         }
 
@@ -379,7 +401,7 @@ public abstract class OutputEncoder {
          * @see #flush()
          */
         protected void putFloat(float f) throws IOException {
-            need(FitsIO.BYTES_IN_FLOAT);
+            makeSpaceFor(FitsIO.BYTES_IN_FLOAT);
             buffer.putFloat(f);
         }
 
@@ -396,15 +418,19 @@ public abstract class OutputEncoder {
          * @see #flush()
          */
         protected void putDouble(double d) throws IOException {
-            need(FitsIO.BYTES_IN_DOUBLE);
+            makeSpaceFor(FitsIO.BYTES_IN_DOUBLE);
             buffer.putDouble(d);
+        }
+
+        private void skip(int bytes) {
+            buffer.position(buffer.position() + bytes);
         }
 
         /**
          * Puts an array of 16-bit integers into the conversion buffer, flushing
          * the buffer intermittently as necessary to make room as it goes.
          * 
-         * @param s
+         * @param src
          *            an array of 16-bit integer values
          * @param start
          *            the index of the first element to convert
@@ -414,10 +440,21 @@ public abstract class OutputEncoder {
          *             if the conversion buffer could not be flushed to the
          *             output to make room for the new conversion.
          */
-        protected void put(short[] s, int start, int length) throws IOException {
-            length += start;
-            while (start < length) {
-                putShort(s[start++]);
+        protected void put(short[] src, int start, int length) throws IOException {
+            if (length == 1) {
+                putShort(src[start]);
+                return;
+            }
+
+            int got = 0;
+
+            while (got < length) {
+                makeSpaceFor(Short.BYTES);
+                ShortBuffer b = buffer.asShortBuffer();
+                int n = Math.min(length - got, b.remaining());
+                b.put(src, start + got, n);
+                skip(n * Short.BYTES);
+                got += n;
             }
         }
 
@@ -425,7 +462,7 @@ public abstract class OutputEncoder {
          * Puts an array of 32-bit integers into the conversion buffer, flushing
          * the buffer intermittently as necessary to make room as it goes.
          * 
-         * @param i
+         * @param src
          *            an array of 32-bit integer values
          * @param start
          *            the index of the first element to convert
@@ -435,10 +472,21 @@ public abstract class OutputEncoder {
          *             if the conversion buffer could not be flushed to the
          *             output to make room for the new conversion.
          */
-        protected void put(int[] i, int start, int length) throws IOException {
-            length += start;
-            while (start < length) {
-                putInt(i[start++]);
+        protected void put(int[] src, int start, int length) throws IOException {
+            if (length == 1) {
+                putInt(src[start]);
+                return;
+            }
+
+            int got = 0;
+
+            while (got < length) {
+                makeSpaceFor(Integer.BYTES);
+                IntBuffer b = buffer.asIntBuffer();
+                int n = Math.min(length - got, b.remaining());
+                b.put(src, start + got, n);
+                skip(n * Integer.BYTES);
+                got += n;
             }
         }
 
@@ -446,7 +494,7 @@ public abstract class OutputEncoder {
          * Puts an array of 64-bit integers into the conversion buffer, flushing
          * the buffer intermittently as necessary to make room as it goes.
          * 
-         * @param l
+         * @param src
          *            an array of 64-bit integer values
          * @param start
          *            the index of the first element to convert
@@ -456,10 +504,21 @@ public abstract class OutputEncoder {
          *             if the conversion buffer could not be flushed to the
          *             output to make room for the new conversion.
          */
-        protected void put(long[] l, int start, int length) throws IOException {
-            length += start;
-            while (start < length) {
-                putLong(l[start++]);
+        protected void put(long[] src, int start, int length) throws IOException {
+            if (length == 1) {
+                putLong(src[start]);
+                return;
+            }
+
+            int got = 0;
+
+            while (got < length) {
+                makeSpaceFor(Long.BYTES);
+                LongBuffer b = buffer.asLongBuffer();
+                int n = Math.min(length - got, b.remaining());
+                b.put(src, start + got, n);
+                skip(n * Long.BYTES);
+                got += n;
             }
         }
 
@@ -468,7 +527,7 @@ public abstract class OutputEncoder {
          * the conversion buffer, flushing the buffer intermittently as
          * necessary to make room as it goes.
          * 
-         * @param f
+         * @param src
          *            an array of 32-bit single-precision floating point values
          * @param start
          *            the index of the first element to convert
@@ -478,10 +537,21 @@ public abstract class OutputEncoder {
          *             if the conversion buffer could not be flushed to the
          *             output to make room for the new conversion.
          */
-        protected void put(float[] f, int start, int length) throws IOException {
-            length += start;
-            while (start < length) {
-                putFloat(f[start++]);
+        protected void put(float[] src, int start, int length) throws IOException {
+            if (length == 1) {
+                putFloat(src[start]);
+                return;
+            }
+
+            int got = 0;
+
+            while (got < length) {
+                makeSpaceFor(Float.BYTES);
+                FloatBuffer b = buffer.asFloatBuffer();
+                int n = Math.min(length - got, b.remaining());
+                b.put(src, start + got, n);
+                skip(n * Float.BYTES);
+                got += n;
             }
         }
 
@@ -490,7 +560,7 @@ public abstract class OutputEncoder {
          * the conversion buffer, flushing the buffer intermittently as
          * necessary to make room as it goes.
          * 
-         * @param d
+         * @param src
          *            an array of 64-bit double-precision floating point values
          * @param start
          *            the index of the first element to convert
@@ -500,12 +570,22 @@ public abstract class OutputEncoder {
          *             if the conversion buffer could not be flushed to the
          *             output to make room for the new conversion.
          */
-        protected void put(double[] d, int start, int length) throws IOException {
-            length += start;
-            while (start < length) {
-                putDouble(d[start++]);
+        protected void put(double[] src, int start, int length) throws IOException {
+            if (length == 1) {
+                putDouble(src[start]);
+                return;
+            }
+
+            int got = 0;
+
+            while (got < length) {
+                makeSpaceFor(Double.BYTES);
+                DoubleBuffer b = buffer.asDoubleBuffer();
+                int n = Math.min(length - got, b.remaining());
+                b.put(src, start + got, n);
+                skip(n * Double.BYTES);
+                got += n;
             }
         }
-
     }
 }
