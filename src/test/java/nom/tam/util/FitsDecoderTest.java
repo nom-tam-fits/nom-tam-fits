@@ -244,7 +244,7 @@ public class FitsDecoderTest {
     }
 
     @Test
-    public void testAsciiLineReadDElimited() throws Exception {
+    public void testAsciiLineReadDelimited() throws Exception {
         byte[] data = "one\ntwo".getBytes();
         FitsDecoder e = new FitsDecoder(InputReader.from(new ByteArrayInputStream(data)));
         assertEquals("one", e.readAsciiLine());
@@ -290,6 +290,55 @@ public class FitsDecoderTest {
         for (int i = 0; i < data.length; i++) {
             assertEquals(i, e.getInputBuffer().get());
         }
+    }
+
+    @Test
+    public void testGetByteEOF() throws Exception {
+        byte[] data = new byte[1];
+        FitsDecoder e = new FitsDecoder(InputReader.from(new ByteArrayInputStream(data)));
+        e.getInputBuffer().loadBytes(data.length, 2);
+        e.read();
+        assertEquals(-1, e.getInputBuffer().get());
+    }
+
+    @Test(expected = EOFException.class)
+    public void testGetShortEOF() throws Exception {
+        byte[] data = new byte[1];
+        FitsDecoder e = new FitsDecoder(InputReader.from(new ByteArrayInputStream(data)));
+        e.read();
+        e.read(new short[10], 5, 1);
+    }
+
+    @Test(expected = EOFException.class)
+    public void testGetIntEOF() throws Exception {
+        byte[] data = new byte[1];
+        FitsDecoder e = new FitsDecoder(InputReader.from(new ByteArrayInputStream(data)));
+        e.read();
+        e.read(new int[10], 5, 1);
+    }
+
+    @Test(expected = EOFException.class)
+    public void testGetLongEOF() throws Exception {
+        byte[] data = new byte[1];
+        FitsDecoder e = new FitsDecoder(InputReader.from(new ByteArrayInputStream(data)));
+        e.read();
+        e.read(new long[10], 5, 1);
+    }
+
+    @Test(expected = EOFException.class)
+    public void testGetFloatEOF() throws Exception {
+        byte[] data = new byte[1];
+        FitsDecoder e = new FitsDecoder(InputReader.from(new ByteArrayInputStream(data)));
+        e.read();
+        e.read(new float[10], 5, 1);
+    }
+
+    @Test(expected = EOFException.class)
+    public void testGetDoubleEOF() throws Exception {
+        byte[] data = new byte[1];
+        FitsDecoder e = new FitsDecoder(InputReader.from(new ByteArrayInputStream(data)));
+        e.read();
+        e.read(new double[10], 5, 1);
     }
 
     private static class EOFExceptionInputReader implements InputReader {
