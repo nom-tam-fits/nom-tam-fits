@@ -39,6 +39,7 @@ import static org.junit.Assert.assertTrue;
 
 import java.io.ByteArrayInputStream;
 import java.io.EOFException;
+import java.io.File;
 import java.io.IOException;
 import java.math.BigInteger;
 import java.nio.ByteBuffer;
@@ -303,7 +304,7 @@ public class FitsDecoderTest {
     }
 
     @Test(expected = EOFException.class)
-    public void testGetShortEOF() throws Exception {
+    public void testGetShortsEOF() throws Exception {
         byte[] data = new byte[1];
         FitsDecoder e = new FitsDecoder(InputReader.from(new ByteArrayInputStream(data)));
         e.read();
@@ -311,7 +312,7 @@ public class FitsDecoderTest {
     }
 
     @Test(expected = EOFException.class)
-    public void testGetIntEOF() throws Exception {
+    public void testGetIntsEOF() throws Exception {
         byte[] data = new byte[1];
         FitsDecoder e = new FitsDecoder(InputReader.from(new ByteArrayInputStream(data)));
         e.read();
@@ -319,7 +320,7 @@ public class FitsDecoderTest {
     }
 
     @Test(expected = EOFException.class)
-    public void testGetLongEOF() throws Exception {
+    public void testGetLongsEOF() throws Exception {
         byte[] data = new byte[1];
         FitsDecoder e = new FitsDecoder(InputReader.from(new ByteArrayInputStream(data)));
         e.read();
@@ -327,7 +328,7 @@ public class FitsDecoderTest {
     }
 
     @Test(expected = EOFException.class)
-    public void testGetFloatEOF() throws Exception {
+    public void testGetFloatsEOF() throws Exception {
         byte[] data = new byte[1];
         FitsDecoder e = new FitsDecoder(InputReader.from(new ByteArrayInputStream(data)));
         e.read();
@@ -335,11 +336,71 @@ public class FitsDecoderTest {
     }
 
     @Test(expected = EOFException.class)
-    public void testGetDoubleEOF() throws Exception {
+    public void testGetDoublesEOF() throws Exception {
         byte[] data = new byte[1];
         FitsDecoder e = new FitsDecoder(InputReader.from(new ByteArrayInputStream(data)));
         e.read();
         e.read(new double[10], 5, 1);
+    }
+
+    @Test(expected = EOFException.class)
+    public void testGetSingleByteEOF() throws Exception {
+        byte[] data = new byte[1];
+        FitsDecoder e = new FitsDecoder(InputReader.from(new ByteArrayInputStream(data)));
+        e.getInputBuffer().loadBytes(2, 1);
+        e.read();
+        e.getInputBuffer().get(new byte[10], 5, 1);
+    }
+
+    @Test(expected = EOFException.class)
+    public void testGetBytesEOF() throws Exception {
+        byte[] data = new byte[1];
+        FitsDecoder e = new FitsDecoder(InputReader.from(new ByteArrayInputStream(data)));
+        e.getInputBuffer().loadBytes(11, 1);
+        e.read();
+        e.getInputBuffer().get(new byte[10], 0, 10);
+    }
+
+    public void testGetMixed() throws Exception {
+        byte[] data = new byte[200];
+        FitsDecoder e = new FitsDecoder(InputReader.from(new ByteArrayInputStream(data)));
+        e.getInputBuffer().loadBytes(200, 1);
+        assertEquals(1, e.getInputBuffer().get(new byte[10], 5, 1));
+        assertEquals(1, e.getInputBuffer().get(new short[10], 5, 1));
+        assertEquals(1, e.getInputBuffer().get(new short[10], 5, 1));
+        assertEquals(1, e.getInputBuffer().get(new int[10], 5, 1));
+        assertEquals(1, e.getInputBuffer().get(new int[10], 5, 1));
+        assertEquals(1, e.getInputBuffer().get(new long[10], 5, 1));
+        assertEquals(1, e.getInputBuffer().get(new long[10], 5, 1));
+        assertEquals(1, e.getInputBuffer().get(new float[10], 5, 1));
+        assertEquals(1, e.getInputBuffer().get(new float[10], 5, 1));
+        assertEquals(1, e.getInputBuffer().get(new double[10], 5, 1));
+        assertEquals(1, e.getInputBuffer().get(new double[10], 5, 1));
+        assertEquals(1, e.getInputBuffer().get(new short[10], 5, 1));
+        assertEquals(1, e.getInputBuffer().get(new short[10], 5, 1));
+    }
+
+    @Test
+    public void testReadNullImage() throws Exception {
+        byte[] data = new byte[100];
+        FitsDecoder e = new FitsDecoder(InputReader.from(new ByteArrayInputStream(data)));
+        e.readImage(null);
+        // No exception.
+    }
+
+    @Test
+    public void testReadEmptyImage() throws Exception {
+        byte[] data = new byte[100];
+        FitsDecoder e = new FitsDecoder(InputReader.from(new ByteArrayInputStream(data)));
+        e.readImage(new double[0]);
+        // No exception.
+    }
+
+    @Test(expected = IllegalArgumentException.class)
+    public void testReadNonImage() throws Exception {
+        byte[] data = new byte[100];
+        FitsDecoder e = new FitsDecoder(InputReader.from(new ByteArrayInputStream(data)));
+        e.readImage(new File("blah"));
     }
 
     private static class EOFExceptionInputReader implements InputReader {

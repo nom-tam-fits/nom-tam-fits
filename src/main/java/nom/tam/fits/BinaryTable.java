@@ -1331,7 +1331,7 @@ public class BinaryTable extends AbstractTableData {
                     this.currInput.readArrayFully(data[col]);
                 }
             } catch (IOException e) {
-                throw new FitsException("Error in deferred row read", e);
+                throw new FitsException("Error in file row read", e);
             }
 
             data[col] = columnToArray(colDesc, data[col], 1);
