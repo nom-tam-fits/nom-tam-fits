@@ -43,7 +43,9 @@ import java.io.IOException;
  * binary representation in file.
  * 
  * @author Attila Kovacs
+ * 
  * @since 1.16
+ * 
  * @see ArrayInputStream
  * @see ArrayOutputStream
  */
@@ -59,16 +61,13 @@ public class ArrayDataFile extends BufferedFileIO {
      * Instantiates a new file for high-performance array IO operations. For use
      * by subclass constructors only
      * 
-     * @param f
-     *            the file
-     * @param mode
-     *            the access mode, such as "rw" (see
+     * @param f the file
+     * @param mode the access mode, such as "rw" (see
      *            {@link java.io.RandomAccessFile} for more info).
-     * @param bufferSize
-     *            the size of the buffer in bytes
-     * @throws IOException
-     *             if there was an IO error getting the required access to the
-     *             file.
+     * @param bufferSize the size of the buffer in bytes
+     * 
+     * @throws IOException if there was an IO error getting the required access
+     *             to the file.
      */
     protected ArrayDataFile(File f, String mode, int bufferSize) throws IOException {
         super(f, mode, bufferSize);
@@ -78,10 +77,8 @@ public class ArrayDataFile extends BufferedFileIO {
      * Instantiates a new file for high-performance array IO operations. For use
      * by subclass constructors only
      * 
-     * @param f
-     *            the RandomAccessFileIO file
-     * @param bufferSize
-     *            the size of the buffer in bytes
+     * @param f the RandomAccessFileIO file
+     * @param bufferSize the size of the buffer in bytes
      */
     protected ArrayDataFile(RandomAccessFileIO f, int bufferSize) {
         super(f, bufferSize);
@@ -91,9 +88,9 @@ public class ArrayDataFile extends BufferedFileIO {
      * Sets the conversion from Java arrays to their binary representation in
      * file. For use by subclass constructors only.
      * 
-     * @param java2bin
-     *            the conversion from Java arrays to their binary representation
-     *            in file
+     * @param java2bin the conversion from Java arrays to their binary
+     *            representation in file
+     * 
      * @see #getEncoder()
      * @see #setDecoder(InputDecoder)
      */
@@ -107,7 +104,8 @@ public class ArrayDataFile extends BufferedFileIO {
      * conversion when writing data to file.
      * 
      * @return the conversion from Java arrays to their binary representation in
-     *         file
+     *             file
+     * 
      * @see #setEncoder(OutputEncoder)
      * @see #getDecoder()
      */
@@ -119,9 +117,9 @@ public class ArrayDataFile extends BufferedFileIO {
      * Sets the conversion from the binary representation of arrays in file to
      * Java arrays. For use by subclass constructors only.
      * 
-     * @param bin2java
-     *            the conversion from the binary representation of arrays in the
-     *            file to Java arrays.
+     * @param bin2java the conversion from the binary representation of arrays in
+     *            the file to Java arrays.
+     * 
      * @see #getDecoder()
      * @see #setEncoder(OutputEncoder)
      */
@@ -130,12 +128,13 @@ public class ArrayDataFile extends BufferedFileIO {
     }
 
     /**
-     * Returns the conversion from the binary representation of arrays in file
-     * to Java arrays. Subclass implementeations can use this to access the
-     * required conversion when writing data to file.
+     * Returns the conversion from the binary representation of arrays in file to
+     * Java arrays. Subclass implementeations can use this to access the required
+     * conversion when writing data to file.
      * 
      * @return the conversion from the binary representation of arrays in the
-     *         file to Java arrays
+     *             file to Java arrays
+     * 
      * @see #setDecoder(InputDecoder)
      * @see #getEncoder()
      */
@@ -147,15 +146,15 @@ public class ArrayDataFile extends BufferedFileIO {
      * See {@link ArrayDataInput#readLArray(Object)} for a contract of this
      * method.
      * 
-     * @param o
-     *            an array, to be populated
+     * @param o an array, to be populated
+     * 
      * @return the actual number of bytes read from the input, or -1 if already
-     *         at the end-of-file.
-     * @throws IllegalArgumentException
-     *             if the argument is not an array or if it contains an element
-     *             that is not supported for decoding.
-     * @throws IOException
-     *             if there was an IO error reading from the input
+     *             at the end-of-file.
+     * 
+     * @throws IllegalArgumentException if the argument is not an array or if it
+     *             contains an element that is not supported for decoding.
+     * @throws IOException if there was an IO error reading from the input
+     * 
      * @see #readArrayFully(Object)
      * @see #readImage(Object)
      */
@@ -167,13 +166,12 @@ public class ArrayDataFile extends BufferedFileIO {
      * See {@link ArrayDataInput#readArrayFully(Object)} for a contract of this
      * method.
      * 
-     * @param o
-     *            an array, to be populated
-     * @throws IllegalArgumentException
-     *             if the argument is not an array or if it contains an element
-     *             that is not supported for decoding.
-     * @throws IOException
-     *             if there was an IO error reading from the input
+     * @param o an array, to be populated
+     * 
+     * @throws IllegalArgumentException if the argument is not an array or if it
+     *             contains an element that is not supported for decoding.
+     * @throws IOException if there was an IO error reading from the input
+     * 
      * @see #readLArray(Object)
      * @see #readImage(Object)
      */
@@ -185,16 +183,16 @@ public class ArrayDataFile extends BufferedFileIO {
      * Like {@link #readArrayFully(Object)} but strictly for numerical types
      * only.
      * 
-     * @param o
-     *            An any-dimensional array containing only numerical types
-     * @throws IllegalArgumentException
-     *             if the argument is not an array or if it contains an element
-     *             that is not supported for decoding.
-     * @throws IOException
-     *             if there was an IO error, uncluding end-of-file (
+     * @param o An any-dimensional array containing only numerical types
+     * 
+     * @throws IllegalArgumentException if the argument is not an array or if it
+     *             contains an element that is not supported.
+     * @throws IOException if there was an IO error, uncluding end-of-file (
      *             {@link EOFException}, before all components of the supplied
      *             array were populated from the input.
+     * 
      * @see #readArrayFully(Object)
+     * 
      * @since 1.18
      */
     public void readImage(Object o) throws IOException, IllegalArgumentException {
@@ -205,13 +203,11 @@ public class ArrayDataFile extends BufferedFileIO {
      * See {@link ArrayDataOutput#writeArray(Object)} for a contract of this
      * method.
      * 
-     * @param o
-     *            an array ot any type.
-     * @throws IllegalArgumentException
-     *             if the argument is not an array or if it contains an element
-     *             that is not supported for encoding.
-     * @throws IOException
-     *             if there was an IO error writing to the output.
+     * @param o an array ot any type.
+     * 
+     * @throws IllegalArgumentException if the argument is not an array or if it
+     *             contains an element that is not supported for encoding.
+     * @throws IOException if there was an IO error writing to the output.
      */
     public synchronized void writeArray(Object o) throws IOException, IllegalArgumentException {
         try {

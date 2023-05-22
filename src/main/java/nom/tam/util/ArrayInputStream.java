@@ -40,7 +40,9 @@ import java.io.InputStream;
  * Efficient reading of binary arrays from streams with custom binary encoding.
  * 
  * @author Attila Kovacs
+ * 
  * @since 1.16
+ * 
  * @see ArrayOutputStream
  * @see ArrayDataFile
  */
@@ -53,10 +55,8 @@ public class ArrayInputStream extends BufferedInputStream implements InputReader
      * Instantiates a new input stream for efficient array transactions. For use
      * by subclass constructors only.
      * 
-     * @param i
-     *            the underlying input stream
-     * @param bufLength
-     *            the buffer size in bytes.
+     * @param i the underlying input stream
+     * @param bufLength the buffer size in bytes.
      */
     protected ArrayInputStream(InputStream i, int bufLength) {
         super(i, bufLength);
@@ -65,13 +65,10 @@ public class ArrayInputStream extends BufferedInputStream implements InputReader
     /**
      * Instantiates a new input stream for efficient array transactions.
      * 
-     * @param i
-     *            the underlying input stream
-     * @param bufLength
-     *            the buffer size in bytes.
-     * @param bin2java
-     *            the conversion from the binary representation of arrays in the
-     *            file to Java arrays.
+     * @param i the underlying input stream
+     * @param bufLength the buffer size in bytes.
+     * @param bin2java the conversion from the binary representation of arrays in
+     *            the file to Java arrays.
      */
     ArrayInputStream(InputStream i, int bufLength, InputDecoder bin2java) {
         this(i, bufLength);
@@ -82,9 +79,9 @@ public class ArrayInputStream extends BufferedInputStream implements InputReader
      * Sets the conversion from the binary representation of arrays in stream to
      * Java arrays. For use by subclass constructors only.
      * 
-     * @param bin2java
-     *            the conversion from the binary representation of arrays in the
-     *            stream to Java arrays.
+     * @param bin2java the conversion from the binary representation of arrays in
+     *            the stream to Java arrays.
+     * 
      * @see #getDecoder()
      */
     protected void setDecoder(InputDecoder bin2java) {
@@ -97,7 +94,8 @@ public class ArrayInputStream extends BufferedInputStream implements InputReader
      * required conversion when writing data to file.
      * 
      * @return the conversion from the binary representation of arrays in the
-     *         stream to Java arrays
+     *             stream to Java arrays
+     * 
      * @see #setDecoder(InputDecoder)
      */
     protected InputDecoder getDecoder() {
@@ -108,15 +106,15 @@ public class ArrayInputStream extends BufferedInputStream implements InputReader
      * See {@link ArrayDataInput#readLArray(Object)} for a contract of this
      * method.
      * 
-     * @param o
-     *            an array, to be populated
+     * @param o an array, to be populated
+     * 
      * @return the actual number of bytes read from the input, or -1 if already
-     *         at the end-of-file.
-     * @throws IllegalArgumentException
-     *             if the argument is not an array or if it contains an element
-     *             that is not supported for decoding.
-     * @throws IOException
-     *             if there was an IO error reading from the input
+     *             at the end-of-file.
+     * 
+     * @throws IllegalArgumentException if the argument is not an array or if it
+     *             contains an element that is not supported for decoding.
+     * @throws IOException if there was an IO error reading from the input
+     * 
      * @see #readArrayFully(Object)
      */
     public synchronized long readLArray(Object o) throws IOException, IllegalArgumentException {
@@ -131,13 +129,12 @@ public class ArrayInputStream extends BufferedInputStream implements InputReader
      * See {@link ArrayDataInput#readArrayFully(Object)} for a contract of this
      * method.
      * 
-     * @param o
-     *            an array, to be populated
-     * @throws IllegalArgumentException
-     *             if the argument is not an array or if it contains an element
-     *             that is not supported for decoding.
-     * @throws IOException
-     *             if there was an IO error reading from the input
+     * @param o an array, to be populated
+     * 
+     * @throws IllegalArgumentException if the argument is not an array or if it
+     *             contains an element that is not supported for decoding.
+     * @throws IOException if there was an IO error reading from the input
+     * 
      * @see #readLArray(Object)
      * @see #readImage(Object)
      */
@@ -149,16 +146,16 @@ public class ArrayInputStream extends BufferedInputStream implements InputReader
      * Like {@link #readArrayFully(Object)} but strictly for numerical types
      * only.
      * 
-     * @param o
-     *            An any-dimensional array containing only numerical types
-     * @throws IllegalArgumentException
-     *             if the argument is not an array or if it contains an element
-     *             that is not supported for decoding.
-     * @throws IOException
-     *             if there was an IO error, uncluding end-of-file (
+     * @param o An any-dimensional array containing only numerical types
+     * 
+     * @throws IllegalArgumentException if the argument is not an array or if it
+     *             contains an element that is not supported.
+     * @throws IOException if there was an IO error, uncluding end-of-file (
      *             {@link EOFException}, before all components of the supplied
      *             array were populated from the input.
+     * 
      * @see #readArrayFully(Object)
+     * 
      * @since 1.18
      */
     public void readImage(Object o) throws IOException, IllegalArgumentException {

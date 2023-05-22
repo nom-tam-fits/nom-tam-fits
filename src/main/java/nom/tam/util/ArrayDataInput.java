@@ -378,9 +378,11 @@ public interface ArrayDataInput extends InputReader, DataInput, FitsIO {
      * @param o An any-dimensional array containing only numerical types
      * 
      * @throws IllegalArgumentException if the argument is not an array or if it
-     *             contains an element that is not supported for decoding.
-     * @throws IOException if there was an IO error, uncluding end-of-file ({@link EOFException}, before all components of the supplied
+     *             contains an element that is not supported.
+     * @throws IOException if there was an IO error, uncluding end-of-file
+     *             ({@link EOFException}, before all components of the supplied
      *             array were populated from the input.
+     * 
      * @see #readArrayFully(Object)
      * 
      * @since 1.18
