@@ -689,6 +689,7 @@ public abstract class InputDecoder {
                 return 1;
             }
 
+            view = null;
             int got = 0;
 
             while (got < n) {
