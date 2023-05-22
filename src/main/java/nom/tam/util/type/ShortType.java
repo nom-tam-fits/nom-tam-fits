@@ -68,8 +68,8 @@ class ShortType extends ElementType<ShortBuffer> {
     }
 
     @Override
-    public void putArray(ShortBuffer buffer, Object array, int length) {
-        buffer.put((short[]) array, 0, length);
+    public void putArray(ShortBuffer buffer, Object array, int offset, int length) {
+        buffer.put((short[]) array, offset, length);
     }
 
     @Override
