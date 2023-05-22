@@ -324,8 +324,8 @@ public abstract class InputDecoder {
      * @param got the number of elements successfully read
      * @param expected the number of elements expected
      * 
-     * @return the number of elements successfully read (same as <code>got</code>
-     *             ).
+     * @return the number of elements successfully read (same as
+     *             <code>got</code>).
      * 
      * @throws EOFException the rethrown exception, or a new one, as appropriate
      */
