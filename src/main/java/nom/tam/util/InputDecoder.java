@@ -546,6 +546,7 @@ public abstract class InputDecoder {
          */
         protected int get() throws IOException {
             if (makeAvailable(1)) {
+                view = null;
                 return buffer.get() & BYTE_MASK;
             }
             return -1;
@@ -568,6 +569,7 @@ public abstract class InputDecoder {
          */
         protected int getUnsignedShort() throws IOException {
             if (makeAvailable(Short.BYTES)) {
+                view = null;
                 return buffer.getShort() & SHORT_MASK;
             }
             return -1;
@@ -588,6 +590,7 @@ public abstract class InputDecoder {
          */
         protected int getInt() throws EOFException, IOException {
             if (makeAvailable(Integer.BYTES)) {
+                view = null;
                 return buffer.getInt();
             }
             throw new EOFException();
@@ -608,6 +611,7 @@ public abstract class InputDecoder {
          */
         protected long getLong() throws EOFException, IOException {
             if (makeAvailable(Long.BYTES)) {
+                view = null;
                 return buffer.getLong();
             }
             throw new EOFException();
@@ -629,6 +633,7 @@ public abstract class InputDecoder {
          */
         protected float getFloat() throws EOFException, IOException {
             if (makeAvailable(Float.BYTES)) {
+                view = null;
                 return buffer.getFloat();
             }
             throw new EOFException();
@@ -650,6 +655,7 @@ public abstract class InputDecoder {
          */
         protected double getDouble() throws EOFException, IOException {
             if (makeAvailable(Double.BYTES)) {
+                view = null;
                 return buffer.getDouble();
             }
             throw new EOFException();
