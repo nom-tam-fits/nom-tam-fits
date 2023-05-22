@@ -37,7 +37,6 @@ import nom.tam.fits.header.Bitpix;
 
 class ByteType extends ElementType<ByteBuffer> {
 
-
     protected ByteType() {
         super(1, false, byte.class, Byte.class, ByteBuffer.class, 'B', Bitpix.VALUE_FOR_BYTE);
     }
@@ -68,8 +67,8 @@ class ByteType extends ElementType<ByteBuffer> {
     }
 
     @Override
-    public void putArray(ByteBuffer buffer, Object array, int length) {
-        buffer.put((byte[]) array, 0, length);
+    public void putArray(ByteBuffer buffer, Object array, int offset, int length) {
+        buffer.put((byte[]) array, offset, length);
     }
 
     @Override
