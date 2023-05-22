@@ -34,6 +34,7 @@ package nom.tam.util;
 import java.io.EOFException;
 import java.io.IOException;
 import java.io.InputStream;
+import java.lang.reflect.Array;
 import java.nio.Buffer;
 import java.nio.ByteBuffer;
 import java.nio.ByteOrder;
@@ -207,6 +208,9 @@ public abstract class InputDecoder {
      * @throws IllegalArgumentException if the argument is not a Java array, or
      *             is or contains elements that do not have supported conversions
      *             from binary representation.
+     * 
+     * @see #readArray(Object)
+     * @see #readImage(Object)
      */
     public void readArrayFully(Object o) throws IOException, IllegalArgumentException {
         if (readArray(o) != FitsEncoder.computeSize(o)) {
@@ -229,6 +233,84 @@ public abstract class InputDecoder {
      * @see #readArrayFully(Object)
      */
     public abstract long readArray(Object o) throws IOException, IllegalArgumentException;
+
+    /**
+     * Like {@link #readArrayFully(Object)} but strictly for numerical types
+     * only.
+     * 
+     * @param o An any-dimensional array containing only numerical types
+     * 
+     * @throws IllegalArgumentException if the argument is not an array or if it
+     *             contains an element that is not supported for decoding.
+     * @throws IOException if there was an IO error, uncluding end-of-file (
+     *             {@link EOFException}, before all components of the supplied
+     *             array were populated from the input.
+     * 
+     * @see #readArrayFully(Object)
+     * 
+     * @since 1.18
+     */
+    public void readImage(Object o) throws IOException, IllegalArgumentException {
+        if (o == null) {
+            return;
+        }
+
+        if (!o.getClass().isArray()) {
+            throw new IllegalArgumentException("Not an array: " + o.getClass().getName());
+        }
+
+        long size = FitsEncoder.computeSize(o);
+        if (size == 0) {
+            return;
+        }
+
+        getInputBuffer().loadBytes(size, 1);
+        if (fetchImage(o) != size) {
+            throw new EOFException("Incomplete image read.");
+        }
+    }
+
+    private long fetchImage(Object o) throws IOException, IllegalArgumentException {
+        int length = Array.getLength(o);
+        if (length == 0) {
+            return 0L;
+        }
+
+        if (o instanceof byte[]) {
+            return buf.get((byte[]) o, 0, length);
+        }
+        if (o instanceof short[]) {
+            return buf.get((short[]) o, 0, length) * Short.BYTES;
+        }
+        if (o instanceof int[]) {
+            return buf.get((int[]) o, 0, length) * Integer.BYTES;
+        }
+        if (o instanceof float[]) {
+            return buf.get((float[]) o, 0, length) * Float.BYTES;
+        }
+        if (o instanceof long[]) {
+            return buf.get((long[]) o, 0, length) * Long.BYTES;
+        }
+        if (o instanceof double[]) {
+            return buf.get((double[]) o, 0, length) * Double.BYTES;
+        }
+        if (!(o instanceof Object[])) {
+            throw new IllegalArgumentException("Not a numerical image type: " + o.getClass().getName());
+        }
+
+        Object[] array = (Object[]) o;
+        long count = 0L;
+
+        // Process multidim arrays recursively.
+        for (int i = 0; i < length; i++) {
+            try {
+                count += fetchImage(array[i]);
+            } catch (EOFException e) {
+                return eofCheck(e, count, -1L);
+            }
+        }
+        return count;
+    }
 
     /**
      * Decides what to do when an {@link EOFException} is encountered after
@@ -575,6 +657,50 @@ public abstract class InputDecoder {
 
         private void skip(int bytes) {
             buffer.position(buffer.position() + bytes);
+        }
+
+        /**
+         * Retrieves a sequence of signed bytes from the buffer. Before data can
+         * be retrieved with this method the should be 'loaded' into the buffer
+         * via {@link #loadBytes(long, int)}.
+         * 
+         * @param dst Java array in which to store the retrieved sequence of
+         *            elements
+         * @param from the array index for storing the first element retrieved
+         * @param n the number of elements to retrieve
+         * 
+         * @return the number of elements successfully retrieved
+         * 
+         * @throws EOFException if already at the end of file.
+         * @throws IOException if there was an IO error before, before requested
+         *             number of bytes could be read
+         * 
+         * @see #loadBytes(long, int)
+         * 
+         * @since 1.18
+         */
+        protected int get(byte[] dst, int from, int n) throws EOFException, IOException {
+            if (n == 1) {
+                int i = get();
+                if (i < 0) {
+                    throw new EOFException();
+                }
+                dst[from] = (byte) i;
+                return 1;
+            }
+
+            int got = 0;
+
+            while (got < n) {
+                if (!makeAvailable(1)) {
+                    return (int) eofCheck(null, got, n);
+                }
+                int m = Math.min(n - got, buffer.remaining());
+                buffer.get(dst, from + got, m);
+                got += m;
+            }
+
+            return got;
         }
 
         /**

@@ -207,7 +207,7 @@ public class RandomGroupsData extends Data {
             dataArray[i][1] = ((Object[]) ArrayFuncs.deepClone(sampleRow))[1];
         }
 
-        in.readArrayFully(this.dataArray);
+        in.readImage(this.dataArray);
     }
 
     @Override

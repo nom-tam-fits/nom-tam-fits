@@ -32,6 +32,7 @@
 package nom.tam.util;
 
 import java.io.BufferedInputStream;
+import java.io.EOFException;
 import java.io.IOException;
 import java.io.InputStream;
 
@@ -138,9 +139,30 @@ public class ArrayInputStream extends BufferedInputStream implements InputReader
      * @throws IOException
      *             if there was an IO error reading from the input
      * @see #readLArray(Object)
+     * @see #readImage(Object)
      */
     public synchronized void readArrayFully(Object o) throws IOException, IllegalArgumentException {
         decoder.readArrayFully(o);
+    }
+
+    /**
+     * Like {@link #readArrayFully(Object)} but strictly for numerical types
+     * only.
+     * 
+     * @param o
+     *            An any-dimensional array containing only numerical types
+     * @throws IllegalArgumentException
+     *             if the argument is not an array or if it contains an element
+     *             that is not supported for decoding.
+     * @throws IOException
+     *             if there was an IO error, uncluding end-of-file (
+     *             {@link EOFException}, before all components of the supplied
+     *             array were populated from the input.
+     * @see #readArrayFully(Object)
+     * @since 1.18
+     */
+    public void readImage(Object o) throws IOException, IllegalArgumentException {
+        decoder.readImage(o);
     }
 
 }
