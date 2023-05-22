@@ -241,7 +241,7 @@ public abstract class InputDecoder {
      * @param o An any-dimensional array containing only numerical types
      * 
      * @throws IllegalArgumentException if the argument is not an array or if it
-     *             contains an element that is not supported for decoding.
+     *             contains an element that is not supported.
      * @throws IOException if there was an IO error, uncluding end-of-file (
      *             {@link EOFException}, before all components of the supplied
      *             array were populated from the input.
@@ -265,12 +265,12 @@ public abstract class InputDecoder {
         }
 
         getInputBuffer().loadBytes(size, 1);
-        if (fetchImage(o) != size) {
+        if (getImage(o) != size) {
             throw new EOFException("Incomplete image read.");
         }
     }
 
-    private long fetchImage(Object o) throws IOException, IllegalArgumentException {
+    private long getImage(Object o) throws IOException, IllegalArgumentException {
         int length = Array.getLength(o);
         if (length == 0) {
             return 0L;
@@ -304,7 +304,7 @@ public abstract class InputDecoder {
         // Process multidim arrays recursively.
         for (int i = 0; i < length; i++) {
             try {
-                count += fetchImage(array[i]);
+                count += getImage(array[i]);
             } catch (EOFException e) {
                 return eofCheck(e, count, -1L);
             }
@@ -661,10 +661,6 @@ public abstract class InputDecoder {
             throw new EOFException();
         }
 
-        private void skip(int bytes) {
-            buffer.position(buffer.position() + bytes);
-        }
-
         /**
          * Retrieves a sequence of signed bytes from the buffer. Before data can
          * be retrieved with this method the should be 'loaded' into the buffer
@@ -885,7 +881,7 @@ public abstract class InputDecoder {
                 assertView(e);
                 int m = Math.min(n - got, view.remaining());
                 e.getArray((B) view, dst, from + got, m);
-                skip(m * e.size());
+                buffer.position(buffer.position() + m * e.size());
                 got += m;
             }
 

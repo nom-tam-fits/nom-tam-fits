@@ -428,10 +428,6 @@ public abstract class OutputEncoder {
             buffer.putDouble(d);
         }
 
-        private void skip(int bytes) {
-            buffer.position(buffer.position() + bytes);
-        }
-
         /**
          * Puts an array of bytes into the conversion buffer, flushing the buffer
          * intermittently as necessary to make room as it goes.
@@ -581,7 +577,7 @@ public abstract class OutputEncoder {
                 assertView(e);
                 int m = Math.min(n - got, view.remaining());
                 e.putArray((B) view, dst, from + got, m);
-                skip(m * e.size());
+                buffer.position(buffer.position() + m * e.size());
                 got += m;
             }
         }
