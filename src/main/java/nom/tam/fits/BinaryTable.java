@@ -786,13 +786,10 @@ public class BinaryTable extends AbstractTableData {
             throw new FitsException("Invalid row");
         }
 
-        Object[] res;
         if (this.table != null) {
-            res = getMemoryRow(row);
-        } else {
-            res = getFileRow(row);
-        }
-        return res;
+            return getMemoryRow(row);
+        } 
+        return getFileRow(row);
     }
 
     public int[] getSizes() {

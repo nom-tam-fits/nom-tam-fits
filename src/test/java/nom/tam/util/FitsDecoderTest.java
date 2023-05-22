@@ -366,17 +366,32 @@ public class FitsDecoderTest {
         FitsDecoder e = new FitsDecoder(InputReader.from(new ByteArrayInputStream(data)));
         e.getInputBuffer().loadBytes(200, 1);
         assertEquals(1, e.getInputBuffer().get(new byte[10], 5, 1));
+
+        // no view / wrong view
         assertEquals(1, e.getInputBuffer().get(new short[10], 5, 1));
+        // creates view
+        assertEquals(1, e.getInputBuffer().get(new short[10], 5, 2));
+        // using view
         assertEquals(1, e.getInputBuffer().get(new short[10], 5, 1));
+
         assertEquals(1, e.getInputBuffer().get(new int[10], 5, 1));
+        assertEquals(1, e.getInputBuffer().get(new int[10], 5, 2));
         assertEquals(1, e.getInputBuffer().get(new int[10], 5, 1));
+
         assertEquals(1, e.getInputBuffer().get(new long[10], 5, 1));
+        assertEquals(1, e.getInputBuffer().get(new long[10], 5, 2));
         assertEquals(1, e.getInputBuffer().get(new long[10], 5, 1));
+
         assertEquals(1, e.getInputBuffer().get(new float[10], 5, 1));
+        assertEquals(1, e.getInputBuffer().get(new float[10], 5, 2));
         assertEquals(1, e.getInputBuffer().get(new float[10], 5, 1));
+
         assertEquals(1, e.getInputBuffer().get(new double[10], 5, 1));
+        assertEquals(1, e.getInputBuffer().get(new double[10], 5, 2));
         assertEquals(1, e.getInputBuffer().get(new double[10], 5, 1));
+
         assertEquals(1, e.getInputBuffer().get(new short[10], 5, 1));
+        assertEquals(1, e.getInputBuffer().get(new short[10], 5, 2));
         assertEquals(1, e.getInputBuffer().get(new short[10], 5, 1));
     }
 
@@ -392,7 +407,7 @@ public class FitsDecoderTest {
     public void testReadEmptyImage() throws Exception {
         byte[] data = new byte[100];
         FitsDecoder e = new FitsDecoder(InputReader.from(new ByteArrayInputStream(data)));
-        e.readImage(new double[0]);
+        e.readImage(new Object[] {new byte[10], new double[0]});
         // No exception.
     }
 
@@ -400,7 +415,7 @@ public class FitsDecoderTest {
     public void testReadNonImage() throws Exception {
         byte[] data = new byte[100];
         FitsDecoder e = new FitsDecoder(InputReader.from(new ByteArrayInputStream(data)));
-        e.readImage(new File("blah"));
+        e.readImage(new Object[] {new byte[10], new File("blah")});
     }
 
     private static class EOFExceptionInputReader implements InputReader {
