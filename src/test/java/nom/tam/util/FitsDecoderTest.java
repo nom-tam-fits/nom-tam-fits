@@ -356,42 +356,50 @@ public class FitsDecoderTest {
     public void testGetBytesEOF() throws Exception {
         byte[] data = new byte[1];
         FitsDecoder e = new FitsDecoder(InputReader.from(new ByteArrayInputStream(data)));
-        e.getInputBuffer().loadBytes(11, 1);
         e.read();
+        e.getInputBuffer().loadBytes(11, 1);
         e.getInputBuffer().get(new byte[10], 0, 10);
     }
 
+    @Test
     public void testGetMixed() throws Exception {
-        byte[] data = new byte[200];
+        byte[] data = new byte[400];
         FitsDecoder e = new FitsDecoder(InputReader.from(new ByteArrayInputStream(data)));
-        e.getInputBuffer().loadBytes(200, 1);
+        e.getInputBuffer().loadBytes(400, 1);
         assertEquals(1, e.getInputBuffer().get(new byte[10], 5, 1));
 
-        // no view / wrong view
+        // no view / wrong view (single element)
         assertEquals(1, e.getInputBuffer().get(new short[10], 5, 1));
-        // creates view
-        assertEquals(1, e.getInputBuffer().get(new short[10], 5, 2));
-        // using view
+        // creates view (multiple elements)
+        assertEquals(2, e.getInputBuffer().get(new short[10], 5, 2));
+        // uses existing view (multiple elements)
+        assertEquals(2, e.getInputBuffer().get(new short[10], 5, 2));
+        // using view for single element
         assertEquals(1, e.getInputBuffer().get(new short[10], 5, 1));
 
         assertEquals(1, e.getInputBuffer().get(new int[10], 5, 1));
-        assertEquals(1, e.getInputBuffer().get(new int[10], 5, 2));
+        assertEquals(2, e.getInputBuffer().get(new int[10], 5, 2));
+        assertEquals(2, e.getInputBuffer().get(new int[10], 5, 2));
         assertEquals(1, e.getInputBuffer().get(new int[10], 5, 1));
 
         assertEquals(1, e.getInputBuffer().get(new long[10], 5, 1));
-        assertEquals(1, e.getInputBuffer().get(new long[10], 5, 2));
+        assertEquals(2, e.getInputBuffer().get(new long[10], 5, 2));
+        assertEquals(2, e.getInputBuffer().get(new long[10], 5, 2));
         assertEquals(1, e.getInputBuffer().get(new long[10], 5, 1));
 
         assertEquals(1, e.getInputBuffer().get(new float[10], 5, 1));
-        assertEquals(1, e.getInputBuffer().get(new float[10], 5, 2));
+        assertEquals(2, e.getInputBuffer().get(new float[10], 5, 2));
+        assertEquals(2, e.getInputBuffer().get(new float[10], 5, 2));
         assertEquals(1, e.getInputBuffer().get(new float[10], 5, 1));
 
         assertEquals(1, e.getInputBuffer().get(new double[10], 5, 1));
-        assertEquals(1, e.getInputBuffer().get(new double[10], 5, 2));
+        assertEquals(2, e.getInputBuffer().get(new double[10], 5, 2));
+        assertEquals(2, e.getInputBuffer().get(new double[10], 5, 2));
         assertEquals(1, e.getInputBuffer().get(new double[10], 5, 1));
 
         assertEquals(1, e.getInputBuffer().get(new short[10], 5, 1));
-        assertEquals(1, e.getInputBuffer().get(new short[10], 5, 2));
+        assertEquals(2, e.getInputBuffer().get(new short[10], 5, 2));
+        assertEquals(2, e.getInputBuffer().get(new short[10], 5, 2));
         assertEquals(1, e.getInputBuffer().get(new short[10], 5, 1));
     }
 
@@ -412,10 +420,17 @@ public class FitsDecoderTest {
     }
 
     @Test(expected = IllegalArgumentException.class)
+    public void testReadImageNotArray() throws Exception {
+        byte[] data = new byte[100];
+        FitsDecoder e = new FitsDecoder(InputReader.from(new ByteArrayInputStream(data)));
+        e.readImage(new File("blah"));
+    }
+
+    @Test(expected = IllegalArgumentException.class)
     public void testReadNonImage() throws Exception {
         byte[] data = new byte[100];
         FitsDecoder e = new FitsDecoder(InputReader.from(new ByteArrayInputStream(data)));
-        e.readImage(new Object[] {new byte[10], new File("blah")});
+        e.readImage(new boolean[10]);
     }
 
     private static class EOFExceptionInputReader implements InputReader {

@@ -67,4 +67,14 @@ public class ArrayStreamTest {
         i.readArrayFully(array);
     }
 
+    @Test(expected = IllegalArgumentException.class)
+    public void testReadImageWrongType() throws Exception {
+        Object[] array = {new byte[1], new boolean[1], new char[1], new short[1], new int[1], new long[1], new float[1],
+                new double[1]};
+        ByteArrayInputStream bi = new ByteArrayInputStream(new byte[100]);
+        ArrayInputStream i = new ArrayInputStream(bi, 100, new FitsDecoder(InputReader.from(bi)));
+        // boolean[] and char[] not supported by readImage...
+        i.readImage(array);
+    }
+
 }
