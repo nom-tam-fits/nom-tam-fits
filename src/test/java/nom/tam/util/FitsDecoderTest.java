@@ -362,6 +362,14 @@ public class FitsDecoderTest {
     }
 
     @Test
+    public void testGetBytesPartial() throws Exception {
+        byte[] data = new byte[9];
+        FitsDecoder e = new FitsDecoder(InputReader.from(new ByteArrayInputStream(data)));
+        e.getInputBuffer().loadBytes(10, 1);
+        assertEquals(9, e.getInputBuffer().get(new byte[10], 0, 10));
+    }
+
+    @Test
     public void testGetMixed() throws Exception {
         byte[] data = new byte[400];
         FitsDecoder e = new FitsDecoder(InputReader.from(new ByteArrayInputStream(data)));

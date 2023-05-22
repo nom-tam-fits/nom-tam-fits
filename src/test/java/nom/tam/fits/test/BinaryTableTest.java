@@ -1,38 +1,5 @@
 package nom.tam.fits.test;
 
-/*
- * #%L
- * nom.tam FITS library
- * %%
- * Copyright (C) 2004 - 2021 nom-tam-fits
- * %%
- * This is free and unencumbered software released into the public domain.
- * 
- * Anyone is free to copy, modify, publish, use, compile, sell, or
- * distribute this software, either in source code form or as a compiled
- * binary, for any purpose, commercial or non-commercial, and by any
- * means.
- * 
- * In jurisdictions that recognize copyright laws, the author or authors
- * of this software dedicate any and all copyright interest in the
- * software to the public domain. We make this dedication for the benefit
- * of the public at large and to the detriment of our heirs and
- * successors. We intend this dedication to be an overt act of
- * relinquishment in perpetuity of all present and future rights to this
- * software under copyright law.
- * 
- * THE SOFTWARE IS PROVIDED "AS IS", WITHOUT WARRANTY OF ANY KIND,
- * EXPRESS OR IMPLIED, INCLUDING BUT NOT LIMITED TO THE WARRANTIES OF
- * MERCHANTABILITY, FITNESS FOR A PARTICULAR PURPOSE AND NONINFRINGEMENT.
- * IN NO EVENT SHALL THE AUTHORS BE LIABLE FOR ANY CLAIM, DAMAGES OR
- * OTHER LIABILITY, WHETHER IN AN ACTION OF CONTRACT, TORT OR OTHERWISE,
- * ARISING FROM, OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR
- * OTHER DEALINGS IN THE SOFTWARE.
- * #L%
- */
-
-import static nom.tam.fits.header.Standard.XTENSION;
-import static nom.tam.fits.header.Standard.XTENSION_BINTABLE;
 import static org.junit.Assert.assertArrayEquals;
 import static org.junit.Assert.assertEquals;
 import static org.junit.Assert.assertNotNull;
@@ -77,9 +44,44 @@ import nom.tam.util.TableException;
 import nom.tam.util.TestArrayFuncs;
 import nom.tam.util.test.ThrowAnyException;
 
+/*
+ * #%L
+ * nom.tam FITS library
+ * %%
+ * Copyright (C) 2004 - 2021 nom-tam-fits
+ * %%
+ * This is free and unencumbered software released into the public domain.
+ * 
+ * Anyone is free to copy, modify, publish, use, compile, sell, or
+ * distribute this software, either in source code form or as a compiled
+ * binary, for any purpose, commercial or non-commercial, and by any
+ * means.
+ * 
+ * In jurisdictions that recognize copyright laws, the author or authors
+ * of this software dedicate any and all copyright interest in the
+ * software to the public domain. We make this dedication for the benefit
+ * of the public at large and to the detriment of our heirs and
+ * successors. We intend this dedication to be an overt act of
+ * relinquishment in perpetuity of all present and future rights to this
+ * software under copyright law.
+ * 
+ * THE SOFTWARE IS PROVIDED "AS IS", WITHOUT WARRANTY OF ANY KIND,
+ * EXPRESS OR IMPLIED, INCLUDING BUT NOT LIMITED TO THE WARRANTIES OF
+ * MERCHANTABILITY, FITNESS FOR A PARTICULAR PURPOSE AND NONINFRINGEMENT.
+ * IN NO EVENT SHALL THE AUTHORS BE LIABLE FOR ANY CLAIM, DAMAGES OR
+ * OTHER LIABILITY, WHETHER IN AN ACTION OF CONTRACT, TORT OR OTHERWISE,
+ * ARISING FROM, OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR
+ * OTHER DEALINGS IN THE SOFTWARE.
+ * #L%
+ */
+
+import static nom.tam.fits.header.Standard.XTENSION;
+import static nom.tam.fits.header.Standard.XTENSION_BINTABLE;
+
 /**
- * This class tests the binary table classes for the Java FITS library, notably BinaryTableHDU, BinaryTable, FitsHeap
- * and the utility class ColumnTable. Tests include:
+ * This class tests the binary table classes for the Java FITS library, notably
+ * BinaryTableHDU, BinaryTable, FitsHeap and the utility class ColumnTable. Tests
+ * include:
  * 
  * <pre>
  *     Reading and writing data of all valid types.
@@ -100,8 +102,7 @@ import nom.tam.util.test.ThrowAnyException;
  */
 public class BinaryTableTest {
 
-    private static final Object[] TEST_ROW = new Object[] {new float[] {1f}, new int[] {2, 2},
-            new double[] {3d, 3d, 3d}};
+    private static final Object[] TEST_ROW = new Object[] {new float[] {1f}, new int[] {2, 2}, new double[] {3d, 3d, 3d}};
 
     private static final int NROWS = 50;
 
@@ -569,8 +570,7 @@ public class BinaryTableTest {
 
     @Test
     public void specialStringsTest() throws Exception {
-        String[] strings = new String[] {"abc", "abc\000", "abc\012abc", "abc\000abc", "abc\177",
-                "abc\001def\002ghi\003"};
+        String[] strings = new String[] {"abc", "abc\000", "abc\012abc", "abc\000abc", "abc\177", "abc\001def\002ghi\003"};
 
         String[] results1 = new String[] {strings[0], strings[0], strings[2], strings[0], strings[4], strings[5]};
         String[] results2 = new String[] {strings[0], strings[0], "abc abc", strings[0], "abc ", "abc def ghi "};
@@ -716,8 +716,8 @@ public class BinaryTableTest {
     @Test
     public void testMultHDU() throws Exception {
         FitsFile ff = new FitsFile("target/bt9.fits", "rw");
-        Object[] data = new Object[] {this.bytes, this.bits, this.bools, this.shorts, this.ints, this.floats,
-                this.doubles, this.longs, this.strings};
+        Object[] data = new Object[] {this.bytes, this.bits, this.bools, this.shorts, this.ints, this.floats, this.doubles,
+                this.longs, this.strings};
 
         Fits f = new Fits();
 
@@ -962,9 +962,8 @@ public class BinaryTableTest {
         FitsFactory.setUseAsciiTables(false);
 
         Fits f = new Fits();
-        Object[] data = new Object[] {this.bytes, this.bits, this.bools, this.shorts, this.ints, this.floats,
-                this.doubles, this.longs, this.strings, this.complex, this.dcomplex, this.complex_arr,
-                this.dcomplex_arr};
+        Object[] data = new Object[] {this.bytes, this.bits, this.bools, this.shorts, this.ints, this.floats, this.doubles,
+                this.longs, this.strings, this.complex, this.dcomplex, this.complex_arr, this.dcomplex_arr};
         f.addHDU(Fits.makeHDU(data));
 
         BinaryTableHDU bhdu = (BinaryTableHDU) f.getHDU(1);
@@ -1134,7 +1133,8 @@ public class BinaryTableTest {
             actual = exception;
         }
         assertNotNull(actual);
-        // assertEquals("reading data of binary table failed!", logs.get(0).getMessage());
+        // assertEquals("reading data of binary table failed!",
+        // logs.get(0).getMessage());
 
     }
 
@@ -1547,8 +1547,10 @@ public class BinaryTableTest {
         btab = (BinaryTable) f.getHDU(1).getData();
 
         // very strange cast to short?
-        // -- AK: It's because we were writing char[] as short[] (while String as byte[])
-        // It's better write them both as byte[] as per FITS standard for character array columns.
+        // -- AK: It's because we were writing char[] as short[] (while String as
+        // byte[])
+        // It's better write them both as byte[] as per FITS standard for
+        // character array columns.
         assertEquals((short) 'a', ((short[]) btab.getData().getColumn(0))[0]);
         assertEquals((short) 'b', ((short[]) btab.getData().getColumn(0))[1]);
         assertEquals((short) 'c', ((short[]) btab.getData().getColumn(0))[2]);
@@ -1585,8 +1587,10 @@ public class BinaryTableTest {
         btab = (BinaryTable) f.getHDU(1).getData();
 
         // very strange cast to short?
-        // -- AK: It's because we were writing char[] as short[] (while String as byte[])
-        // It's better write them both as byte[] as per FITS standard for character array columns.
+        // -- AK: It's because we were writing char[] as short[] (while String as
+        // byte[])
+        // It's better write them both as byte[] as per FITS standard for
+        // character array columns.
         assertEquals((byte) 'a', ((byte[]) btab.getData().getColumn(0))[0]);
         assertEquals((byte) 'b', ((byte[]) btab.getData().getColumn(0))[1]);
         assertEquals((byte) 'c', ((byte[]) btab.getData().getColumn(0))[2]);
@@ -1669,6 +1673,27 @@ public class BinaryTableTest {
     public void testCouldNotEncapsulate() throws Exception {
         BinaryTable btab = new BinaryTable();
         new BinaryTableHDU(BinaryTableHDU.manufactureHeader(btab), btab).encapsulate(Integer.valueOf(1));
+    }
+
+    @Test(expected = FitsException.class)
+    public void testReadByRowEOF() throws Exception {
+        String fileName = "target/bte.fits";
+        FitsFile ff = new FitsFile(fileName, "rw");
+        Object[] data = new Object[] {this.bytes, this.bits, this.bools, this.shorts, this.ints, this.floats, this.doubles,
+                this.longs, this.strings};
+
+        Fits f = new Fits();
+
+        // Add two identical HDUs
+        f.addHDU(Fits.makeHDU(data));
+        f.write(ff);
+
+        f = new Fits(ff);
+        BinaryTableHDU hdu = (BinaryTableHDU) f.getHDU(1);
+
+        ff.setLength(hdu.getData().getFileOffset() + 10);
+
+        hdu.getData().getRow(0);
     }
 
     private BinaryTable createTestTable() throws FitsException {
