@@ -52,21 +52,29 @@ public class FitsEncoder extends OutputEncoder {
 
     private static final Logger LOG = Logger.getLogger(FitsEncoder.class.getName());
 
-    /** The FITS byte value for the binary representation of a boolean 'true' value */
+    /**
+     * The FITS byte value for the binary representation of a boolean 'true'
+     * value
+     */
     private static final byte BYTE_TRUE = (byte) 'T';
 
-    /** The FITS byte value for the binary representation of a boolean 'false' value */
+    /**
+     * The FITS byte value for the binary representation of a boolean 'false'
+     * value
+     */
     private static final byte BYTE_FALSE = (byte) 'F';
 
     /**
-     * Instantiates a new encoder from Java arrays to FITS binary output. To be used by subclass constructors only.
+     * Instantiates a new encoder from Java arrays to FITS binary output. To be
+     * used by subclass constructors only.
      */
     protected FitsEncoder() {
         super();
     }
 
     /**
-     * Instantiates a new FITS binary data encoder for converting Java arrays into FITS data representations
+     * Instantiates a new FITS binary data encoder for converting Java arrays
+     * into FITS data representations
      * 
      * @param o the FITS output.
      */
@@ -75,10 +83,12 @@ public class FitsEncoder extends OutputEncoder {
     }
 
     /**
-     * Returns the FITS byte value representing a logical value. This call supports <code>null</code> values, which are
-     * allowed by the FITS standard. FITS defines 'T' as true, 'F' as false, and 0 as null. Prior versions of this
-     * library have used the value 1 for true, and 0 for false. Therefore, this implementation will recognise both 'T'
-     * and 1 as <code>true</code>, but 0 will map to <code>null</code> and everything else will return
+     * Returns the FITS byte value representing a logical value. This call
+     * supports <code>null</code> values, which are allowed by the FITS standard.
+     * FITS defines 'T' as true, 'F' as false, and 0 as null. Prior versions of
+     * this library have used the value 1 for true, and 0 for false. Therefore,
+     * this implementation will recognise both 'T' and 1 as <code>true</code>,
+     * but 0 will map to <code>null</code> and everything else will return
      * <code>false</code>.
      */
     private static byte byteForBoolean(Boolean b) {
@@ -89,7 +99,8 @@ public class FitsEncoder extends OutputEncoder {
     }
 
     /**
-     * @deprecated Low-level reading/writing should be handled internally as arrays by this library only.
+     * @deprecated Low-level reading/writing should be handled internally as
+     *                 arrays by this library only.
      * 
      * @param b a boolean value or <code>null</code>.
      * 
@@ -101,7 +112,8 @@ public class FitsEncoder extends OutputEncoder {
     }
 
     /**
-     * @deprecated Low-level reading/writing should be handled internally as arrays by this library only.
+     * @deprecated Low-level reading/writing should be handled internally as
+     *                 arrays by this library only.
      * 
      * @param c An ASCII character.
      * 
@@ -117,17 +129,22 @@ public class FitsEncoder extends OutputEncoder {
     }
 
     /**
-     * Puts a boolean array into the conversion buffer, but with no guarantee of flushing the conversion buffer to the
-     * underlying output. The caller may put multiple data object into the conversion buffer before eventually calling
-     * {@link OutputBuffer#flush()} to ensure that everything is written to the output. Note, the this call may flush
-     * the contents of the conversion buffer to the output if it needs more conversion space than what is avaiable.
+     * Puts a boolean array into the conversion buffer, but with no guarantee of
+     * flushing the conversion buffer to the underlying output. The caller may
+     * put multiple data object into the conversion buffer before eventually
+     * calling {@link OutputBuffer#flush()} to ensure that everything is written
+     * to the output. Note, the this call may flush the contents of the
+     * conversion buffer to the output if it needs more conversion space than
+     * what is avaiable.
      * 
      * @param b the Java array containing the values
-     * @param start the offset in the array from where to start converting values.
+     * @param start the offset in the array from where to start converting
+     *            values.
      * @param length the number of values to convert to FITS representation
      * 
-     * @throws IOException if there was an IO error while trying to flush the conversion buffer to the stream before all
-     *             elements were converted.
+     * @throws IOException if there was an IO error while trying to flush the
+     *             conversion buffer to the stream before all elements were
+     *             converted.
      * 
      * @see #byteForBoolean(Boolean)
      * @see #put(Boolean[], int, int)
@@ -147,17 +164,22 @@ public class FitsEncoder extends OutputEncoder {
     }
 
     /**
-     * Puts a boolean array into the conversion buffer, but with no guarantee of flushing the conversion buffer to the
-     * underlying output. The caller may put multiple data object into the conversion buffer before eventually calling
-     * {@link OutputBuffer#flush()} to ensure that everything is written to the output. Note, the this call may flush
-     * the contents of the conversion buffer to the output if it needs more conversion space than what is avaiable.
+     * Puts a boolean array into the conversion buffer, but with no guarantee of
+     * flushing the conversion buffer to the underlying output. The caller may
+     * put multiple data object into the conversion buffer before eventually
+     * calling {@link OutputBuffer#flush()} to ensure that everything is written
+     * to the output. Note, the this call may flush the contents of the
+     * conversion buffer to the output if it needs more conversion space than
+     * what is avaiable.
      * 
      * @param b the Java array containing the values
-     * @param start the offset in the array from where to start converting values.
+     * @param start the offset in the array from where to start converting
+     *            values.
      * @param length the number of values to convert to FITS representation
      * 
-     * @throws IOException if there was an IO error while trying to flush the conversion buffer to the stream before all
-     *             elements were converted.
+     * @throws IOException if there was an IO error while trying to flush the
+     *             conversion buffer to the stream before all elements were
+     *             converted.
      * 
      * @see #byteForBoolean(Boolean)
      * @see #put(boolean[], int, int)
@@ -177,17 +199,22 @@ public class FitsEncoder extends OutputEncoder {
     }
 
     /**
-     * Puts a character array into the conversion buffer, but with no guarantee of flushing the conversion buffer to the
-     * underlying output. The caller may put multiple data object into the conversion buffer before eventually calling
-     * {@link OutputBuffer#flush()} to ensure that everything is written to the output. Note, the this call may flush
-     * the contents of the conversion buffer to the output if it needs more conversion space than what is avaiable.
+     * Puts a character array into the conversion buffer, but with no guarantee
+     * of flushing the conversion buffer to the underlying output. The caller may
+     * put multiple data object into the conversion buffer before eventually
+     * calling {@link OutputBuffer#flush()} to ensure that everything is written
+     * to the output. Note, the this call may flush the contents of the
+     * conversion buffer to the output if it needs more conversion space than
+     * what is avaiable.
      * 
      * @param b the Java array containing the values
-     * @param start the offset in the array from where to start converting values.
+     * @param start the offset in the array from where to start converting
+     *            values.
      * @param length the number of values to convert to FITS representation
      * 
-     * @throws IOException if there was an IO error while trying to flush the conversion buffer to the stream before all
-     *             elements were converted.
+     * @throws IOException if there was an IO error while trying to flush the
+     *             conversion buffer to the stream before all elements were
+     *             converted.
      * 
      * @see #write(char[], int, int)
      * @see #put(String)
@@ -218,17 +245,22 @@ public class FitsEncoder extends OutputEncoder {
     }
 
     /**
-     * Puts a string array into the conversion buffer, but with no guarantee of flushing the conversion buffer to the
-     * underlying output. The caller may put multiple data object into the conversion buffer before eventually calling
-     * {@link OutputBuffer#flush()} to ensure that everything is written to the output. Note, the this call may flush
-     * the contents of the conversion buffer to the output if it needs more conversion space than what is avaiable.
+     * Puts a string array into the conversion buffer, but with no guarantee of
+     * flushing the conversion buffer to the underlying output. The caller may
+     * put multiple data object into the conversion buffer before eventually
+     * calling {@link OutputBuffer#flush()} to ensure that everything is written
+     * to the output. Note, the this call may flush the contents of the
+     * conversion buffer to the output if it needs more conversion space than
+     * what is avaiable.
      * 
      * @param b the Java array containing the values
-     * @param start the offset in the array from where to start converting values.
+     * @param start the offset in the array from where to start converting
+     *            values.
      * @param length the number of values to convert to FITS representation
      * 
-     * @throws IOException if there was an IO error while trying to flush the conversion buffer to the stream before all
-     *             elements were converted.
+     * @throws IOException if there was an IO error while trying to flush the
+     *             conversion buffer to the stream before all elements were
+     *             converted.
      * 
      * @see #put(String)
      */
@@ -240,16 +272,19 @@ public class FitsEncoder extends OutputEncoder {
     }
 
     /**
-     * Puts a string into the conversion buffer. According to FITS standard, string should be represented by the
-     * restricted set of ASCII characters, or 1-byte per character. The caller may put multiple data object into the
-     * conversion buffer before eventually calling {@link OutputBuffer#flush()} to ensure that everything is written to
-     * the output. Note, the this call may flush the contents of the conversion buffer to the output if it needs more
-     * conversion space than what is avaiable.
+     * Puts a string into the conversion buffer. According to FITS standard,
+     * string should be represented by the restricted set of ASCII characters, or
+     * 1-byte per character. The caller may put multiple data object into the
+     * conversion buffer before eventually calling {@link OutputBuffer#flush()}
+     * to ensure that everything is written to the output. Note, the this call
+     * may flush the contents of the conversion buffer to the output if it needs
+     * more conversion space than what is avaiable.
      * 
      * @param str the Java string
      * 
-     * @throws IOException if there was an IO error while trying to flush the conversion buffer to the stream before all
-     *             elements were converted.
+     * @throws IOException if there was an IO error while trying to flush the
+     *             conversion buffer to the stream before all elements were
+     *             converted.
      * 
      * @see #writeBytes(String)
      */
@@ -261,8 +296,9 @@ public class FitsEncoder extends OutputEncoder {
     }
 
     /**
-     * See {@link ArrayDataOutput#write(boolean[], int, int)} for the general contract of this method. In FITS,
-     * <code>true</code> values are represented by the ASCII byte for 'T', whereas <code>false</code> is represented by
+     * See {@link ArrayDataOutput#write(boolean[], int, int)} for the general
+     * contract of this method. In FITS, <code>true</code> values are represented
+     * by the ASCII byte for 'T', whereas <code>false</code> is represented by
      * the ASCII byte for 'F'.
      * 
      * @param b array of booleans.
@@ -277,9 +313,11 @@ public class FitsEncoder extends OutputEncoder {
     }
 
     /**
-     * See {@link ArrayDataOutput#write(Boolean[], int, int)} for the general contract of this method. In FITS,
-     * <code>true</code> values are represented by the ASCII byte for 'T', <code>false</code> is represented by the
-     * ASCII byte for 'F', while <code>null</code> values are represented by the value 0.
+     * See {@link ArrayDataOutput#write(Boolean[], int, int)} for the general
+     * contract of this method. In FITS, <code>true</code> values are represented
+     * by the ASCII byte for 'T', <code>false</code> is represented by the ASCII
+     * byte for 'F', while <code>null</code> values are represented by the value
+     * 0.
      * 
      * @param b array of booleans.
      * @param start the index of the first element in the array to write
@@ -293,7 +331,8 @@ public class FitsEncoder extends OutputEncoder {
     }
 
     /**
-     * @deprecated Low-level reading/writing should be handled internally as arrays by this library only.
+     * @deprecated Low-level reading/writing should be handled internally as
+     *                 arrays by this library only.
      * 
      * @param b a single byte.
      * 
@@ -305,7 +344,8 @@ public class FitsEncoder extends OutputEncoder {
     }
 
     /**
-     * @deprecated Low-level reading/writing should be handled internally as arrays by this library only.
+     * @deprecated Low-level reading/writing should be handled internally as
+     *                 arrays by this library only.
      * 
      * @param s a 16-bit integer value.
      * 
@@ -318,7 +358,8 @@ public class FitsEncoder extends OutputEncoder {
     }
 
     /**
-     * @deprecated Low-level reading/writing should be handled internally as arrays by this library only.
+     * @deprecated Low-level reading/writing should be handled internally as
+     *                 arrays by this library only.
      * 
      * @param i a 32-bit integer value.
      * 
@@ -331,7 +372,8 @@ public class FitsEncoder extends OutputEncoder {
     }
 
     /**
-     * @deprecated Low-level reading/writing should be handled internally as arrays by this library only.
+     * @deprecated Low-level reading/writing should be handled internally as
+     *                 arrays by this library only.
      * 
      * @param l a 64-bit integer value.
      * 
@@ -344,7 +386,8 @@ public class FitsEncoder extends OutputEncoder {
     }
 
     /**
-     * @deprecated Low-level reading/writing should be handled internally by this library only.
+     * @deprecated Low-level reading/writing should be handled internally by this
+     *                 library only.
      * 
      * @param f a single-precision (32-bit) floating point value.
      * 
@@ -357,7 +400,8 @@ public class FitsEncoder extends OutputEncoder {
     }
 
     /**
-     * @deprecated Low-level reading/writing should be handled internally as arrays by this library only.
+     * @deprecated Low-level reading/writing should be handled internally as
+     *                 arrays by this library only.
      * 
      * @param d a double-precision (64-bit) floating point value.
      * 
@@ -370,8 +414,10 @@ public class FitsEncoder extends OutputEncoder {
     }
 
     /**
-     * Writes a Java string as a sequence of ASCII bytes to the output. FITS does not support unicode characters in its
-     * version of strings (character arrays), but instead it is restricted to the ASCII set of 1-byte characters.
+     * Writes a Java string as a sequence of ASCII bytes to the output. FITS does
+     * not support unicode characters in its version of strings (character
+     * arrays), but instead it is restricted to the ASCII set of 1-byte
+     * characters.
      * 
      * @param s the Java string
      * 
@@ -385,14 +431,17 @@ public class FitsEncoder extends OutputEncoder {
     }
 
     /**
-     * In FITS characters are usually represented as 1-byte ASCII, not as the 2-byte Java types. However, previous
-     * implementations if this library have erroneously written 2-byte characters into the FITS. For compatibility both
-     * the FITS standard of 1-byte ASCII and the old 2-byte behaviour are supported, and can be selected via
+     * In FITS characters are usually represented as 1-byte ASCII, not as the
+     * 2-byte Java types. However, previous implementations if this library have
+     * erroneously written 2-byte characters into the FITS. For compatibility
+     * both the FITS standard of 1-byte ASCII and the old 2-byte behaviour are
+     * supported, and can be selected via
      * {@link FitsFactory#setUseUnicodeChars(boolean)}.
      * 
      * @param s a string containing ASCII-only characters
      * 
-     * @throws IOException if there was an IO error writing all the characters to the output.
+     * @throws IOException if there was an IO error writing all the characters to
+     *             the output.
      * 
      * @see #writeBytes(String)
      * @see FitsFactory#setUseUnicodeChars(boolean)
@@ -411,10 +460,12 @@ public class FitsEncoder extends OutputEncoder {
     }
 
     /**
-     * See {@link ArrayDataOutput#write(char[], int, int)} for the general contract of this method. In FITS characters
-     * are usually represented as 1-byte ASCII, not as the 2-byte Java types. However, previous implementations if this
-     * library have erroneously written 2-byte characters into the FITS. For compatibility both the FITS standard of
-     * 1-byte ASCII and the old 2-byte behaviour are supported, and can be selected via
+     * See {@link ArrayDataOutput#write(char[], int, int)} for the general
+     * contract of this method. In FITS characters are usually represented as
+     * 1-byte ASCII, not as the 2-byte Java types. However, previous
+     * implementations if this library have erroneously written 2-byte characters
+     * into the FITS. For compatibility both the FITS standard of 1-byte ASCII
+     * and the old 2-byte behaviour are supported, and can be selected via
      * {@link FitsFactory#setUseUnicodeChars(boolean)}.
      * 
      * @param c array of character (ASCII only is supported).
@@ -431,7 +482,8 @@ public class FitsEncoder extends OutputEncoder {
     }
 
     /**
-     * See {@link ArrayDataOutput#write(short[], int, int)} for a contract of this method.
+     * See {@link ArrayDataOutput#write(short[], int, int)} for a contract of
+     * this method.
      * 
      * @param s array of 16-bit integers.
      * @param start the index of the first element in the array to write
@@ -445,7 +497,8 @@ public class FitsEncoder extends OutputEncoder {
     }
 
     /**
-     * See {@link ArrayDataOutput#write(int[], int, int)} for a contract of this method.
+     * See {@link ArrayDataOutput#write(int[], int, int)} for a contract of this
+     * method.
      * 
      * @param i array of 32-bit integers.
      * @param start the index of the first element in the array to write
@@ -459,7 +512,8 @@ public class FitsEncoder extends OutputEncoder {
     }
 
     /**
-     * See {@link ArrayDataOutput#write(long[], int, int)} for a contract of this method.
+     * See {@link ArrayDataOutput#write(long[], int, int)} for a contract of this
+     * method.
      * 
      * @param l array of 64-bit integers.
      * @param start the index of the first element in the array to write
@@ -473,7 +527,8 @@ public class FitsEncoder extends OutputEncoder {
     }
 
     /**
-     * See {@link ArrayDataOutput#write(float[], int, int)} for a contract of this method.
+     * See {@link ArrayDataOutput#write(float[], int, int)} for a contract of
+     * this method.
      * 
      * @param f array of single precision (32-bit) floating point values.
      * @param start the index of the first element in the array to write
@@ -487,7 +542,8 @@ public class FitsEncoder extends OutputEncoder {
     }
 
     /**
-     * See {@link ArrayDataOutput#write(double[], int, int)} for a contract of this method.
+     * See {@link ArrayDataOutput#write(double[], int, int)} for a contract of
+     * this method.
      * 
      * @param d array of double-precision (64-bit) floating point values.
      * @param start the index of the first element in the array to write
@@ -501,7 +557,8 @@ public class FitsEncoder extends OutputEncoder {
     }
 
     /**
-     * See {@link ArrayDataOutput#write(String[], int, int)} for a contract of this method.
+     * See {@link ArrayDataOutput#write(String[], int, int)} for a contract of
+     * this method.
      * 
      * @param str array of strings (containing ASCII characters only).
      * @param start the index of the first element in the array to write
@@ -524,23 +581,28 @@ public class FitsEncoder extends OutputEncoder {
 
     /**
      * <p>
-     * Puts a Java array into the conversion buffer, but with no guarantee of flushing the conversion buffer to the
-     * underlying output. The argument may be any Java array of the types supported in FITS, including multi-dimensional
-     * arrays and heterogeneous arrays of arrays.
+     * Puts a Java array into the conversion buffer, but with no guarantee of
+     * flushing the conversion buffer to the underlying output. The argument may
+     * be any Java array of the types supported in FITS, including
+     * multi-dimensional arrays and heterogeneous arrays of arrays.
      * </p>
      * <p>
-     * The caller may put multiple data object into the conversion buffer before eventually calling
-     * {@link nom.tam.util.OutputEncoder.OutputBuffer#flush()} to ensure that everything is written to the output. Note,
-     * the this call may flush the contents of the conversion buffer to the output if it needs more conversion space
-     * than what is avaiable.
+     * The caller may put multiple data object into the conversion buffer before
+     * eventually calling {@link nom.tam.util.OutputEncoder.OutputBuffer#flush()}
+     * to ensure that everything is written to the output. Note, the this call
+     * may flush the contents of the conversion buffer to the output if it needs
+     * more conversion space than what is avaiable.
      * </p>
      * 
-     * @param o A Java array, including multi-dimensional arrays and heterogeneous arrays of arrays.
+     * @param o A Java array, including multi-dimensional arrays and
+     *            heterogeneous arrays of arrays.
      * 
-     * @throws IOException if there was an IO error while trying to flush the conversion buffer to the stream before all
-     *             elements were converted.
-     * @throws IllegalArgumentException if the argument is not an array, or if it is or contains an element that does
-     *             not have a known FITS representation.
+     * @throws IOException if there was an IO error while trying to flush the
+     *             conversion buffer to the stream before all elements were
+     *             converted.
+     * @throws IllegalArgumentException if the argument is not an array, or if it
+     *             is or contains an element that does not have a known FITS
+     *             representation.
      * 
      * @see #writeArray(Object)
      */
@@ -559,11 +621,7 @@ public class FitsEncoder extends OutputEncoder {
         }
 
         if (o instanceof byte[]) {
-            // Bytes can be written directly to the stream, which is fastest
-            // However, before that we need to flush any pending output in the
-            // conversion buffer...
-            flush();
-            write((byte[]) o, 0, length);
+            getOutputBuffer().put((byte[]) o, 0, length);
         } else if (o instanceof boolean[]) {
             put((boolean[]) o, 0, length);
         } else if (o instanceof char[]) {
@@ -592,12 +650,14 @@ public class FitsEncoder extends OutputEncoder {
     }
 
     /**
-     * Returns the size of this object as the number of bytes in a FITS binary representation.
+     * Returns the size of this object as the number of bytes in a FITS binary
+     * representation.
      * 
      * @param o the object
      * 
-     * @return the number of bytes in the FITS binary representation of the object or 0 if the object has no FITS
-     *             representation. (Also elements not known to FITS will count as 0 sized).
+     * @return the number of bytes in the FITS binary representation of the
+     *             object or 0 if the object has no FITS representation. (Also
+     *             elements not known to FITS will count as 0 sized).
      */
     public static long computeSize(Object o) {
         if (o == null) {
@@ -613,8 +673,7 @@ public class FitsEncoder extends OutputEncoder {
         }
 
         Class<?> type = o.getClass();
-        ElementType<?> eType = type.isArray() ? ElementType.forClass(type.getComponentType()) :
-                ElementType.forClass(type);
+        ElementType<?> eType = type.isArray() ? ElementType.forClass(type.getComponentType()) : ElementType.forClass(type);
 
         if (eType == ElementType.UNKNOWN) {
             LOG.log(Level.WARNING, "computeSize() called with unknown type.",

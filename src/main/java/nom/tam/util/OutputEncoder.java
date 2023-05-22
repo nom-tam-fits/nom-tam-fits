@@ -334,6 +334,7 @@ public abstract class OutputEncoder {
          */
         protected void putByte(byte b) throws IOException {
             need(1);
+            view = null;
             buffer.put(b);
         }
 
@@ -351,6 +352,7 @@ public abstract class OutputEncoder {
          */
         protected void putShort(short s) throws IOException {
             need(Short.BYTES);
+            view = null;
             buffer.putShort(s);
         }
 
@@ -368,6 +370,7 @@ public abstract class OutputEncoder {
          */
         protected void putInt(int i) throws IOException {
             need(Integer.BYTES);
+            view = null;
             buffer.putInt(i);
         }
 
@@ -385,6 +388,7 @@ public abstract class OutputEncoder {
          */
         protected void putLong(long l) throws IOException {
             need(Long.BYTES);
+            view = null;
             buffer.putLong(l);
         }
 
@@ -402,6 +406,7 @@ public abstract class OutputEncoder {
          */
         protected void putFloat(float f) throws IOException {
             need(Float.BYTES);
+            view = null;
             buffer.putFloat(f);
         }
 
@@ -419,11 +424,42 @@ public abstract class OutputEncoder {
          */
         protected void putDouble(double d) throws IOException {
             need(Double.BYTES);
+            view = null;
             buffer.putDouble(d);
         }
 
         private void skip(int bytes) {
             buffer.position(buffer.position() + bytes);
+        }
+
+        /**
+         * Puts an array of bytes into the conversion buffer, flushing the buffer
+         * intermittently as necessary to make room as it goes.
+         * 
+         * @param src an array of byte values
+         * @param start the index of the first element to convert
+         * @param length the number of elements to convert
+         * 
+         * @throws IOException if the conversion buffer could not be flushed to
+         *             the output to make room for the new conversion.
+         */
+        protected void put(byte[] src, int start, int length) throws IOException {
+            if (length == 1) {
+                need(1);
+                buffer.put(src[start]);
+                return;
+            }
+
+            view = null;
+
+            int got = 0;
+
+            while (got < length) {
+                need(1);
+                int m = Math.min(length - got, buffer.remaining());
+                buffer.put(src, start + got, m);
+                got += m;
+            }
         }
 
         /**

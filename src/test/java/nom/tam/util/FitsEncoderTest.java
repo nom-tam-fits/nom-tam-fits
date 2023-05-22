@@ -172,4 +172,47 @@ public class FitsEncoderTest {
         d.read(data, 0, 1);
         assertEquals('b', data[0]);
     }
+
+    @Test
+    public void testPutMixed() throws Exception {
+        FitsEncoder e = new FitsEncoder(OutputWriter.from(new ByteArrayOutputStream(400)));
+        e.getOutputBuffer().put(new byte[10], 5, 1);
+
+        // no view / wrong view (single element)
+        e.getOutputBuffer().put(new short[10], 5, 1);
+        // creates view (multiple elements)
+        e.getOutputBuffer().put(new short[10], 5, 2);
+        // uses existing view (multiple elements)
+        e.getOutputBuffer().put(new short[10], 5, 2);
+        // using view for single element
+        e.getOutputBuffer().put(new short[10], 5, 1);
+
+        e.getOutputBuffer().put(new int[10], 5, 1);
+        e.getOutputBuffer().put(new int[10], 5, 2);
+        e.getOutputBuffer().put(new int[10], 5, 2);
+        e.getOutputBuffer().put(new int[10], 5, 1);
+
+        e.getOutputBuffer().put(new long[10], 5, 1);
+        e.getOutputBuffer().put(new long[10], 5, 2);
+        e.getOutputBuffer().put(new long[10], 5, 2);
+        e.getOutputBuffer().put(new long[10], 5, 1);
+
+        e.getOutputBuffer().put(new float[10], 5, 1);
+        e.getOutputBuffer().put(new float[10], 5, 2);
+        e.getOutputBuffer().put(new float[10], 5, 2);
+        e.getOutputBuffer().put(new float[10], 5, 1);
+
+        e.getOutputBuffer().put(new double[10], 5, 1);
+        e.getOutputBuffer().put(new double[10], 5, 2);
+        e.getOutputBuffer().put(new double[10], 5, 2);
+        e.getOutputBuffer().put(new double[10], 5, 1);
+
+        e.getOutputBuffer().put(new short[10], 5, 1);
+        e.getOutputBuffer().put(new short[10], 5, 2);
+        e.getOutputBuffer().put(new short[10], 5, 2);
+        e.getOutputBuffer().put(new short[10], 5, 1);
+
+        /* No exception */
+    }
+
 }
