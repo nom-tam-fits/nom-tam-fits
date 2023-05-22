@@ -38,24 +38,43 @@ import org.junit.Test;
 
 public class ArrayStreamTest {
 
-    
     @Test
     public void testPublicInputConstructor() throws Exception {
         ByteArrayOutputStream bo = new ByteArrayOutputStream(100);
         ArrayOutputStream o = new ArrayOutputStream(bo, 100, new FitsEncoder(OutputWriter.from(bo)));
         o.write(1);
         o.close();
-        
+
         // All is good if wse got this far without an exception.
     }
-    
+
     @Test
     public void testPublicOutputConstructors() throws Exception {
-        ByteArrayInputStream bi = new ByteArrayInputStream(new byte[100]);        
+        ByteArrayInputStream bi = new ByteArrayInputStream(new byte[100]);
         ArrayInputStream i = new ArrayInputStream(bi, 100, new FitsDecoder(InputReader.from(bi)));
         i.read();
         i.close();
-        
+
         // All is good if wse got this far without an exception.
     }
+
+    @Test
+    public void testReadArrayFully() throws Exception {
+        Object[] array = {new byte[1], new boolean[1], new char[1], new short[1], new int[1], new long[1], new float[1],
+                new double[1]};
+        ByteArrayInputStream bi = new ByteArrayInputStream(new byte[100]);
+        ArrayInputStream i = new ArrayInputStream(bi, 100, new FitsDecoder(InputReader.from(bi)));
+        i.readArrayFully(array);
+    }
+
+    @Test(expected = IllegalArgumentException.class)
+    public void testReadImageWrongType() throws Exception {
+        Object[] array = {new byte[1], new boolean[1], new char[1], new short[1], new int[1], new long[1], new float[1],
+                new double[1]};
+        ByteArrayInputStream bi = new ByteArrayInputStream(new byte[100]);
+        ArrayInputStream i = new ArrayInputStream(bi, 100, new FitsDecoder(InputReader.from(bi)));
+        // boolean[] and char[] not supported by readImage...
+        i.readImage(array);
+    }
+
 }

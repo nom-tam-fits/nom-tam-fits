@@ -50,89 +50,94 @@ public class ElementTypeTest {
         assertEquals(0, ElementType.DOUBLE.size(null));
         assertEquals(0, ElementType.STRING.size(null));
     }
-    
+
     @Test
     public void testDefaultSizeOfBoolean() throws Exception {
         assertEquals(ElementType.BOOLEAN.size(), ElementType.BOOLEAN.size(Boolean.FALSE));
     }
-    
+
     @Test
     public void testDefaultSizeOfByte() throws Exception {
         assertEquals(ElementType.BYTE.size(), ElementType.BYTE.size(new Byte((byte) 0)));
     }
-    
+
     @Test
     public void testDefaultSizeOfChar() throws Exception {
         assertEquals(ElementType.CHAR.size(), ElementType.CHAR.size(new Character('X')));
     }
-    
+
     @Test
     public void testDefaultSizeOfShort() throws Exception {
         assertEquals(ElementType.SHORT.size(), ElementType.SHORT.size(new Short((short) 1)));
     }
-    
+
     @Test
     public void testDefaultSizeOfInt() throws Exception {
         assertEquals(ElementType.INT.size(), ElementType.INT.size(new Integer(2)));
     }
-    
+
     @Test
     public void testDefaultSizeOfLong() throws Exception {
         assertEquals(ElementType.LONG.size(), ElementType.LONG.size(new Long(3L)));
     }
-    
+
     @Test
     public void testDefaultSizeOfFloat() throws Exception {
         assertEquals(ElementType.FLOAT.size(), ElementType.FLOAT.size(new Float(4.0F)));
     }
-    
+
     @Test
     public void testDefaultSizeOfDouble() throws Exception {
-        assertEquals(ElementType.DOUBLE.size(), ElementType.DOUBLE.size(new Double(5.0)));   
+        assertEquals(ElementType.DOUBLE.size(), ElementType.DOUBLE.size(new Double(5.0)));
     }
-    
+
     @Test(expected = IllegalArgumentException.class)
     public void testDefaultSizeOfNotBoolean() throws Exception {
         ElementType.BOOLEAN.size(new Object());
     }
-    
+
     @Test(expected = IllegalArgumentException.class)
     public void testDefaultSizeOfNotByte() throws Exception {
         ElementType.BYTE.size(new Object());
     }
-    
+
     @Test(expected = IllegalArgumentException.class)
     public void testDefaultSizeOfNotChar() throws Exception {
         ElementType.CHAR.size(new Object());
     }
-    
+
     @Test(expected = IllegalArgumentException.class)
     public void testDefaultSizeOfNotShort() throws Exception {
         ElementType.SHORT.size(new Object());
     }
-    
+
     @Test(expected = IllegalArgumentException.class)
     public void testDefaultSizeOfNotInt() throws Exception {
         ElementType.INT.size(new Object());
     }
-    
+
     @Test(expected = IllegalArgumentException.class)
     public void testDefaultSizeOfNotLong() throws Exception {
         ElementType.LONG.size(new Object());
     }
-    
+
     @Test(expected = IllegalArgumentException.class)
     public void testDefaultSizeOfNotFloat() throws Exception {
         ElementType.FLOAT.size(new Object());
     }
-    
+
     @Test(expected = IllegalArgumentException.class)
     public void testDefaultSizeOfNotDouble() throws Exception {
         ElementType.DOUBLE.size(new Object());
     }
-    
+
     @Test(expected = IllegalArgumentException.class)
     public void testDefaultSizeOfNotString() throws Exception {
         ElementType.STRING.size(new Object());
+    }
+
+    @Test(expected = IllegalArgumentException.class)
+    public void testUnsupportedBufferSize() throws Exception {
+        ElementType.INT.newBuffer(Integer.MAX_VALUE + 1L);
     }
 }

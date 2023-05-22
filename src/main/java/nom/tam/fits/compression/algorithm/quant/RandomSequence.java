@@ -32,9 +32,11 @@ package nom.tam.fits.compression.algorithm.quant;
  */
 
 /**
- * This is a modified (improved) version of the random sequence implementation in Appendix I of the
- * <a href="https://fits.gsfc.nasa.gov/standard40/fits_standard40aa-le.pdf">FITS 4.0 standard</a>, using integer
- * arithmetics for better performance -- but still providing the same sequence as the original algorithm.
+ * This is a modified (improved) version of the random sequence implementation
+ * in Appendix I of the <a
+ * href="https://fits.gsfc.nasa.gov/standard40/fits_standard40aa-le.pdf">FITS
+ * 4.0 standard</a>, using integer arithmetics for better performance -- but
+ * still providing the same sequence as the original algorithm.
  */
 public final class RandomSequence {
 
@@ -46,8 +48,8 @@ public final class RandomSequence {
     private static final int RANDOM_FACTOR = 16807;
 
     /**
-     * This is our cached fixed random sequence that we will use over and over, but we defer initializing it until we
-     * actually need it.
+     * This is our cached fixed random sequence that we will use over and over,
+     * but we defer initializing it until we actually need it.
      */
     private static final double[] VALUES = new double[N_RANDOM];
 
@@ -69,10 +71,10 @@ public final class RandomSequence {
     /**
      * Returns the <i>i</i><sup>th</sup> random value from the sequence
      * 
-     * @param i The index between 0 and {@link #length()} (exclusive).
-     * 
-     * @return The fixed uniform random deviate value at that index in the range of 0.0 to 1.0 (exclusive).
-     * 
+     * @param i
+     *            The index between 0 and {@link #length()} (exclusive).
+     * @return The fixed uniform random deviate value at that index in the range
+     *         of 0.0 to 1.0 (exclusive).
      * @see #length()
      */
     public static double get(int i) {

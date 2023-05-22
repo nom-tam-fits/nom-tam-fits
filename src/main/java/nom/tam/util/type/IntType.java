@@ -70,8 +70,8 @@ class IntType extends ElementType<IntBuffer> {
     }
 
     @Override
-    public void putArray(IntBuffer buffer, Object array, int length) {
-        buffer.put((int[]) array, 0, length);
+    public void putArray(IntBuffer buffer, Object array, int offset, int length) {
+        buffer.put((int[]) array, offset, length);
     }
 
     @Override

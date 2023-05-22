@@ -30,8 +30,9 @@ package nom.tam.util;
  * OTHER DEALINGS IN THE SOFTWARE.
  * #L%
  */
-
-import static org.junit.Assert.*;
+import static org.junit.Assert.assertEquals;
+import static org.junit.Assert.assertNotEquals;
+import static org.junit.Assert.assertTrue;
 
 import java.io.ByteArrayInputStream;
 import java.io.ByteArrayOutputStream;
@@ -39,66 +40,179 @@ import java.math.BigInteger;
 import java.nio.ByteBuffer;
 import java.nio.ByteOrder;
 
+import org.junit.Before;
 import org.junit.Test;
 
+import nom.tam.fits.FitsFactory;
+
 public class FitsEncoderTest {
+
+    @Before
+    public void reset() {
+        FitsFactory.setDefaults();
+    }
 
     @Test
     public void testWriteNullArray() throws Exception {
         FitsEncoder e = new FitsEncoder(OutputWriter.from(new ByteArrayOutputStream(100)));
         e.writeArray(null);
     }
-    
+
     @Test(expected = IllegalArgumentException.class)
     public void testWriteInvalidArray() throws Exception {
         FitsEncoder e = new FitsEncoder(OutputWriter.from(new ByteArrayOutputStream(100)));
-        Object[] array = new Object[] { new BigInteger("123235536566547747") };
+        Object[] array = new Object[] {new BigInteger("123235536566547747")};
         e.writeArray(array);
     }
-    
+
     @Test
-    public void testByteOrder() throws Exception {   
+    public void testByteOrder() throws Exception {
         ByteArrayOutputStream o = new ByteArrayOutputStream(100);
         FitsEncoder e = new FitsEncoder(OutputWriter.from(o));
         FitsEncoder.OutputBuffer buf = e.getOutputBuffer();
-        
+
         buf.putDouble(Math.PI);
         buf.setByteOrder(ByteOrder.LITTLE_ENDIAN);
         assertEquals("byteorder", ByteOrder.LITTLE_ENDIAN, buf.byteOrder());
         buf.putDouble(Math.PI);
         e.flush();
-        
+
         ByteBuffer b = ByteBuffer.wrap(o.toByteArray());
         assertEquals("BE", Math.PI, b.getDouble(), 1e-12);
         assertNotEquals("!BE", Math.PI, b.getDouble(), 1e-12);
-        
+
         b.position(0);
         b.order(ByteOrder.LITTLE_ENDIAN);
         assertNotEquals("!LE", Math.PI, b.getDouble(), 1e-12);
         assertEquals("LE", Math.PI, b.getDouble(), 1e-12);
     }
-    
+
     @Test
     public void testBoolean() throws Exception {
         ByteArrayOutputStream o = new ByteArrayOutputStream(100);
         FitsEncoder e = new FitsEncoder(OutputWriter.from(o));
-        Boolean[] b = new Boolean[] { Boolean.TRUE, Boolean.FALSE, null };
+        Boolean[] b = new Boolean[] {Boolean.TRUE, Boolean.FALSE, null};
         e.writeArray(b);
-        
+
         byte[] data = o.toByteArray();
         assertEquals("true", 'T', data[0]);
         assertEquals("false", 'F', data[1]);
-        assertEquals("null", 0, data[2]); 
+        assertEquals("null", 0, data[2]);
     }
-    
+
     @Test
     public void testReadWriteOneByte() throws Exception {
         ByteArrayOutputStream o = new ByteArrayOutputStream(100);
         FitsEncoder e = new FitsEncoder(OutputWriter.from(o));
-        
+
         e.write(1);
-        
+
         FitsDecoder d = new FitsDecoder(InputReader.from(new ByteArrayInputStream(o.toByteArray())));
         assertEquals(1, d.read());
     }
+
+    @Test
+    public void testPutSingleBoolean() throws Exception {
+        ByteArrayOutputStream o = new ByteArrayOutputStream(100);
+        FitsEncoder e = new FitsEncoder(OutputWriter.from(o));
+        boolean[] data = {false, true, false};
+
+        // Write out second element only
+        e.write(data, 1, 1);
+
+        FitsDecoder d = new FitsDecoder(InputReader.from(new ByteArrayInputStream(o.toByteArray())));
+        // Read back second element to first
+        d.read(data, 0, 1);
+        assertTrue(data[0]);
+    }
+
+    @Test
+    public void testPutSingleBooleanObject() throws Exception {
+        ByteArrayOutputStream o = new ByteArrayOutputStream(100);
+        FitsEncoder e = new FitsEncoder(OutputWriter.from(o));
+        Boolean[] data = {false, true, false};
+
+        // Write out second element only
+        e.write(data, 1, 1);
+
+        FitsDecoder d = new FitsDecoder(InputReader.from(new ByteArrayInputStream(o.toByteArray())));
+        // Read back second element to first
+        d.read(data, 0, 1);
+        assertTrue(data[0]);
+    }
+
+    @Test
+    public void testPutSingle1ByteChar() throws Exception {
+        ByteArrayOutputStream o = new ByteArrayOutputStream(100);
+        FitsEncoder e = new FitsEncoder(OutputWriter.from(o));
+        char[] data = {'a', 'b', 'c'};
+        FitsFactory.setUseUnicodeChars(false);
+
+        // Write out second element only
+        e.write(data, 1, 1);
+
+        FitsDecoder d = new FitsDecoder(InputReader.from(new ByteArrayInputStream(o.toByteArray())));
+        // Read back second element to first
+        d.read(data, 0, 1);
+        assertEquals('b', data[0]);
+    }
+
+    @Test
+    public void testPutSingle2ByteChar() throws Exception {
+        ByteArrayOutputStream o = new ByteArrayOutputStream(100);
+        FitsEncoder e = new FitsEncoder(OutputWriter.from(o));
+        char[] data = {'a', 'b', 'c'};
+        FitsFactory.setUseUnicodeChars(true);
+
+        // Write out second element only
+        e.write(data, 1, 1);
+
+        FitsDecoder d = new FitsDecoder(InputReader.from(new ByteArrayInputStream(o.toByteArray())));
+        // Read back second element to first
+        d.read(data, 0, 1);
+        assertEquals('b', data[0]);
+    }
+
+    @Test
+    public void testPutMixed() throws Exception {
+        FitsEncoder e = new FitsEncoder(OutputWriter.from(new ByteArrayOutputStream(400)));
+        e.getOutputBuffer().put(new byte[10], 5, 1);
+
+        // no view / wrong view (single element)
+        e.getOutputBuffer().put(new short[10], 5, 1);
+        // creates view (multiple elements)
+        e.getOutputBuffer().put(new short[10], 5, 2);
+        // uses existing view (multiple elements)
+        e.getOutputBuffer().put(new short[10], 5, 2);
+        // using view for single element
+        e.getOutputBuffer().put(new short[10], 5, 1);
+
+        e.getOutputBuffer().put(new int[10], 5, 1);
+        e.getOutputBuffer().put(new int[10], 5, 2);
+        e.getOutputBuffer().put(new int[10], 5, 2);
+        e.getOutputBuffer().put(new int[10], 5, 1);
+
+        e.getOutputBuffer().put(new long[10], 5, 1);
+        e.getOutputBuffer().put(new long[10], 5, 2);
+        e.getOutputBuffer().put(new long[10], 5, 2);
+        e.getOutputBuffer().put(new long[10], 5, 1);
+
+        e.getOutputBuffer().put(new float[10], 5, 1);
+        e.getOutputBuffer().put(new float[10], 5, 2);
+        e.getOutputBuffer().put(new float[10], 5, 2);
+        e.getOutputBuffer().put(new float[10], 5, 1);
+
+        e.getOutputBuffer().put(new double[10], 5, 1);
+        e.getOutputBuffer().put(new double[10], 5, 2);
+        e.getOutputBuffer().put(new double[10], 5, 2);
+        e.getOutputBuffer().put(new double[10], 5, 1);
+
+        e.getOutputBuffer().put(new short[10], 5, 1);
+        e.getOutputBuffer().put(new short[10], 5, 2);
+        e.getOutputBuffer().put(new short[10], 5, 2);
+        e.getOutputBuffer().put(new short[10], 5, 1);
+
+        /* No exception */
+    }
+
 }
