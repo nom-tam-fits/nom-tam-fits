@@ -1,5 +1,19 @@
 package nom.tam.fits.test;
 
+import static org.junit.Assert.assertEquals;
+
+import org.junit.Test;
+
+import nom.tam.fits.BasicHDU;
+import nom.tam.fits.Fits;
+import nom.tam.fits.Header;
+import nom.tam.fits.HeaderCard;
+import nom.tam.fits.ImageHDU;
+import nom.tam.image.StandardImageTiler;
+import nom.tam.util.Cursor;
+import nom.tam.util.FitsFile;
+import nom.tam.util.SafeClose;
+
 /*
  * #%L
  * nom.tam FITS library
@@ -32,22 +46,9 @@ package nom.tam.fits.test;
  */
 
 import static nom.tam.fits.header.Standard.XTENSION_IMAGE;
-import static org.junit.Assert.assertEquals;
-import nom.tam.fits.BasicHDU;
-import nom.tam.fits.Fits;
-import nom.tam.fits.Header;
-import nom.tam.fits.HeaderCard;
-import nom.tam.fits.ImageHDU;
-import nom.tam.fits.PaddingException;
-import nom.tam.util.FitsFile;
-import nom.tam.util.Cursor;
-import nom.tam.util.SafeClose;
-
-import org.junit.Test;
 
 /**
- * Test that we can read files that fail due to lack of padding in the final
- * HDU.
+ * Test that we can read files that fail due to lack of padding in the final HDU.
  */
 public class PaddingTest {
 
@@ -81,13 +82,9 @@ public class PaddingTest {
         try {
             f = new Fits("target/padding1.fits");
 
-            try {
-                f.read();
-            } catch (PaddingException e) {
-                assertEquals("HDUCount", 0, f.getNumberOfHDUs());
-                f.addHDU(e.getTruncatedHDU());
-                assertEquals("HDUCount2", 1, f.getNumberOfHDUs());
-            }
+            f.read();
+            assertEquals("HDUCount2", 1, f.getNumberOfHDUs());
+
             ImageHDU hdu0 = (ImageHDU) f.getHDU(0);
             byte[][] aa = (byte[][]) hdu0.getKernel();
             int miss = 0;
@@ -101,24 +98,18 @@ public class PaddingTest {
                     }
                 }
             }
-            assertEquals("PadMiss1:", miss, 0);
-            assertEquals("PadMatch1:", match, 400);
+            assertEquals("PadMiss1:", 0, miss);
+            assertEquals("PadMatch1:", 400, match);
             // Make sure we got the real header and not the one generated
             // strictly
             // from the data.
             assertEquals("Update header:", hdu0.getHeader().getStringValue("NEWKEY"), "TESTVALUE");
 
-            nom.tam.image.StandardImageTiler it = hdu0.getTiler();
+            StandardImageTiler it = hdu0.getTiler();
 
             // Remember that the tile is always a flattened
             // 1-D representation of the data.
-            byte[] data = (byte[]) it.getTile(new int[]{
-                2,
-                2
-            }, new int[]{
-                2,
-                2
-            });
+            byte[] data = (byte[]) it.getTile(new int[] {2, 2}, new int[] {2, 2});
 
             assertEquals("tilet1:", data.length, 4);
             assertEquals("tilet2:", data[0] + 0, 4);
@@ -180,13 +171,9 @@ public class PaddingTest {
         // Now try reading this back.
         try {
             f = new Fits("target/padding2.fits");
-            try {
-                f.read();
-            } catch (PaddingException e) {
-                assertEquals("HDUCount", 1, f.getNumberOfHDUs());
-                f.addHDU(e.getTruncatedHDU());
-                assertEquals("HDUCount2", 2, f.getNumberOfHDUs());
-            }
+            f.read();
+
+            assertEquals("HDUCount2", 2, f.getNumberOfHDUs());
 
             ImageHDU hdu0 = (ImageHDU) f.getHDU(0);
             ImageHDU hdu1 = (ImageHDU) f.getHDU(1);
@@ -203,10 +190,19 @@ public class PaddingTest {
                     }
                 }
             }
-            assertEquals("PadMiss2:", miss, 0);
-            assertEquals("PadMatch2:", match, 400);
+            assertEquals("PadMiss2:", 0, miss);
+            assertEquals("PadMatch2:", 400, match);
         } finally {
             SafeClose.close(f);
         }
     }
+
+    // @Test
+    // public void testPaddingException() throws Exception {
+    // float[][] data = new float[10][10];
+    // BasicHDU<?> hdu = FitsFactory.hduFactory(data);
+    //
+    // PaddingException e = new PaddingException("hello", hdu.getData(), null);
+    // e.up
+    // }
 }
