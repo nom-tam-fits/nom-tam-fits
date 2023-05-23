@@ -286,7 +286,7 @@ public abstract class Data implements FitsElement {
      * select content from large FITS files.
      * </p>
      * 
-     * @throws PaddingException if there is no padding between the end of the data segment and the enf-of-file.
+     * @throws PaddingException if there is missing padding between the end of the data segment and the enf-of-file.
      * @throws FitsException    if the data appears to be corrupted.
      * 
      * @see                     #getData()
