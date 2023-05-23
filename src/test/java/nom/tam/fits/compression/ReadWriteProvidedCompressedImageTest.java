@@ -1,6 +1,6 @@
 package nom.tam.fits.compression;
 
-import static org.junit.Assert.assertEquals;
+import static org.junit.Assert.*;
 
 /*
  * #%L
@@ -234,8 +234,7 @@ public class ReadWriteProvidedCompressedImageTest {
     @Test
     public void blackboxTest_c4s_060126_182642_zri() throws Exception {
         assertCompressedToUncompressedImage(resolveLocalOrRemoteFileName("c4s_060126_182642_zri.fits.fz"), //
-                resolveLocalOrRemoteFileName("c4s_060126_182642_zri.fits"), short[][].class,
-                new IHDUAsserter<short[][]>() {
+                resolveLocalOrRemoteFileName("c4s_060126_182642_zri.fits"), short[][].class, new IHDUAsserter<short[][]>() {
 
                     @Override
                     public void assertData(short[][] expected, short[][] actual) {
@@ -247,8 +246,7 @@ public class ReadWriteProvidedCompressedImageTest {
     @Test
     public void blackboxTest_c4s_060127_070751_cri() throws Exception {
         assertCompressedToUncompressedImage(resolveLocalOrRemoteFileName("c4s_060127_070751_cri.fits.fz"), //
-                resolveLocalOrRemoteFileName("c4s_060127_070751_cri.fits"), short[][].class,
-                new IHDUAsserter<short[][]>() {
+                resolveLocalOrRemoteFileName("c4s_060127_070751_cri.fits"), short[][].class, new IHDUAsserter<short[][]>() {
 
                     @Override
                     public void assertData(short[][] expected, short[][] actual) {
@@ -260,8 +258,7 @@ public class ReadWriteProvidedCompressedImageTest {
     @Test
     public void blackboxTest_kwi_041217_212603_fri() throws Exception {
         assertCompressedToUncompressedImage(resolveLocalOrRemoteFileName("kwi_041217_212603_fri.fits.fz"), //
-                resolveLocalOrRemoteFileName("kwi_041217_212603_fri.fits"), short[][].class,
-                new IHDUAsserter<short[][]>() {
+                resolveLocalOrRemoteFileName("kwi_041217_212603_fri.fits"), short[][].class, new IHDUAsserter<short[][]>() {
 
                     @Override
                     public void assertData(short[][] expected, short[][] actual) {
@@ -273,8 +270,7 @@ public class ReadWriteProvidedCompressedImageTest {
     @Test
     public void blackboxTest_kwi_041217_213100_fri() throws Exception {
         assertCompressedToUncompressedImage(resolveLocalOrRemoteFileName("kwi_041217_213100_fri.fits.fz"), //
-                resolveLocalOrRemoteFileName("kwi_041217_213100_fri.fits"), short[][].class,
-                new IHDUAsserter<short[][]>() {
+                resolveLocalOrRemoteFileName("kwi_041217_213100_fri.fits"), short[][].class, new IHDUAsserter<short[][]>() {
 
                     @Override
                     public void assertData(short[][] expected, short[][] actual) {
@@ -286,8 +282,7 @@ public class ReadWriteProvidedCompressedImageTest {
     @Test
     public void blackboxTest_psa_140305_191552_zri() throws Exception {
         assertCompressedToUncompressedImage(resolveLocalOrRemoteFileName("psa_140305_191552_zri.fits.fz"), //
-                resolveLocalOrRemoteFileName("psa_140305_191552_zri.fits"), short[][].class,
-                new IHDUAsserter<short[][]>() {
+                resolveLocalOrRemoteFileName("psa_140305_191552_zri.fits"), short[][].class, new IHDUAsserter<short[][]>() {
 
                     @Override
                     public void assertData(short[][] expected, short[][] actual) {
@@ -299,8 +294,7 @@ public class ReadWriteProvidedCompressedImageTest {
     @Test
     public void blackboxTest_psa_140305_194520_fri() throws Exception {
         assertCompressedToUncompressedImage(resolveLocalOrRemoteFileName("psa_140305_194520_fri.fits.fz"), //
-                resolveLocalOrRemoteFileName("psa_140305_194520_fri.fits"), short[][].class,
-                new IHDUAsserter<short[][]>() {
+                resolveLocalOrRemoteFileName("psa_140305_194520_fri.fits"), short[][].class, new IHDUAsserter<short[][]>() {
 
                     @Override
                     public void assertData(short[][] expected, short[][] actual) {
@@ -336,18 +330,16 @@ public class ReadWriteProvidedCompressedImageTest {
 
     @Test
     public void blackboxTest1_1() throws Exception {
-        FloatBuffer result = (FloatBuffer) readAll(
-                resolveLocalOrRemoteFileName("DECam_00149774_40_DESX0332-2742.fits.fz"), 1);
-        float[][] expected = (float[][]) readAll(resolveLocalOrRemoteFileName("DECam_00149774_40_DESX0332-2742.fits"),
-                0);
+        FloatBuffer result = (FloatBuffer) readAll(resolveLocalOrRemoteFileName("DECam_00149774_40_DESX0332-2742.fits.fz"),
+                1);
+        float[][] expected = (float[][]) readAll(resolveLocalOrRemoteFileName("DECam_00149774_40_DESX0332-2742.fits"), 0);
         result.rewind();
         assertFloatImage(result, expected, 6f);
     }
 
     @Test
     public void blackboxTest1_2() throws Exception {
-        IntBuffer result = (IntBuffer) readAll(resolveLocalOrRemoteFileName("DECam_00149774_40_DESX0332-2742.fits.fz"),
-                2);
+        IntBuffer result = (IntBuffer) readAll(resolveLocalOrRemoteFileName("DECam_00149774_40_DESX0332-2742.fits.fz"), 2);
         int[][] expected = (int[][]) readAll(resolveLocalOrRemoteFileName("DECam_00149774_40_DESX0332-2742.fits"), 1);
         result.rewind();
         assertIntImage(result, expected);
@@ -355,10 +347,9 @@ public class ReadWriteProvidedCompressedImageTest {
 
     @Test
     public void blackboxTest1_3() throws Exception {
-        FloatBuffer result = (FloatBuffer) readAll(
-                resolveLocalOrRemoteFileName("DECam_00149774_40_DESX0332-2742.fits.fz"), 3);
-        float[][] expected = (float[][]) readAll(resolveLocalOrRemoteFileName("DECam_00149774_40_DESX0332-2742.fits"),
-                2);
+        FloatBuffer result = (FloatBuffer) readAll(resolveLocalOrRemoteFileName("DECam_00149774_40_DESX0332-2742.fits.fz"),
+                3);
+        float[][] expected = (float[][]) readAll(resolveLocalOrRemoteFileName("DECam_00149774_40_DESX0332-2742.fits"), 2);
         result.rewind();
         assertFloatImage(result, expected, 0.0005f);
     }
@@ -946,8 +937,7 @@ public class ReadWriteProvidedCompressedImageTest {
             expectedIntData = (int[][]) uncompressed.getData().getData();
             f.close();
             f = new Fits();
-            CompressedImageHDU compressedHdu = CompressedImageHDU.fromImageHDU(uncompressed, uncompressed.getAxes()[0],
-                    4);
+            CompressedImageHDU compressedHdu = CompressedImageHDU.fromImageHDU(uncompressed, uncompressed.getAxes()[0], 4);
             compressedHdu.setCompressAlgorithm(Compression.ZCMPTYPE_RICE_1)//
                     .setQuantAlgorithm((String) null)//
                     .getCompressOption(RiceCompressOption.class)//
@@ -1206,7 +1196,6 @@ public class ReadWriteProvidedCompressedImageTest {
 
     @Test
     public void testImagePlusCompressedImage1() throws Exception {
-        FitsFactory.setAllowTerminalJunk(true);
         // Test using a FITS file with junk at the end...
         testImagePlusCompressedImage(
                 resolveLocalOrRemoteFileName("03h-80dec--C_CVT_2013-12-29-MW1-03h_Light_600SecISO200_000042.fit"));
@@ -1215,27 +1204,10 @@ public class ReadWriteProvidedCompressedImageTest {
 
     @Test
     public void testImagePlusCompressedImage2() throws Exception {
-        FitsFactory.setAllowTerminalJunk(true);
         // Test using a FITS file with junk at the end...
         testImagePlusCompressedImage(
                 resolveLocalOrRemoteFileName("17h-75dec--BINT_C_CVT_2014-06-25-MW1-17h_Light_600SecISO200_000031.fit"));
         // No exception thrown
-    }
-
-    @Test(expected = FitsException.class)
-    public void testImagePlusCompressedImage1A() throws Exception {
-        FitsFactory.setAllowTerminalJunk(false);
-        // Test using a FITS file with junk at the end...
-        testImagePlusCompressedImage(
-                resolveLocalOrRemoteFileName("03h-80dec--C_CVT_2013-12-29-MW1-03h_Light_600SecISO200_000042.fit"));
-    }
-
-    @Test(expected = FitsException.class)
-    public void testImagePlusCompressedImage2A() throws Exception {
-        FitsFactory.setAllowTerminalJunk(false);
-        // Test using a FITS file with junk at the end...
-        testImagePlusCompressedImage(
-                resolveLocalOrRemoteFileName("17h-75dec--BINT_C_CVT_2014-06-25-MW1-17h_Light_600SecISO200_000031.fit"));
     }
 
     private void testImagePlusCompressedImage(String imageFile) throws Exception {
