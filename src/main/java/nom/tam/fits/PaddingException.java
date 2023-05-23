@@ -32,47 +32,23 @@ package nom.tam.fits;
  */
 
 /**
- * This exception is thrown if an error is found reading the padding following a
- * valid FITS HDU. This padding is required by the FITS standard, but some FITS
- * writes forego writing it. To access such data users can use something like:
- * <code>
- *     Fits f = new Fits("somefile");
- *     try {
- *          f.read();
- *     } catch (PaddingException e) {
- *          f.addHDU(e.getHDU());
- *     }
- * </code> to ensure that a truncated HDU is included in the FITS object.
- * Generally the FITS file have already added any HDUs prior to the truncated
- * one.
+ * This exception is thrown if padding is missing between the end of a FITS data
+ * segment and the end-of-file. This padding is required by the FITS standard,
+ * but some FITS writers may not add it. As of 1.17 our `Fits` class deals
+ * seamlessly with such data, since the missing padding at the end-of-file is
+ * harmless when reading in data. It will log a warning but proceed normally.
+ * However, the exception is still thrown when using low-level
+ * {@link Data#read(nom.tam.util.ArrayDataInput)} to allow expert users to deal
+ * with this issue in any way they see fit.
  */
 public class PaddingException extends FitsException {
-
 
     /**
      * 
      */
     private static final long serialVersionUID = 8716484905278318366L;
-    /**
-     * The HDU where the error happened.
-     */
-    private BasicHDU<?> truncatedHDU;
 
-    public PaddingException(String msg, Data data, Exception cause) throws FitsException {
+    PaddingException(String msg, Exception cause) throws FitsException {
         super(msg, cause);
-        try {
-            this.truncatedHDU = FitsFactory.hduFactory(data.getKernel());
-            //this.truncatedHDU = FitsFactory.hduFactory(this.truncatedHDU.getHeader(), data);
-        } catch (Exception e) {
-            // TODO nothing to do
-        }
-    }
-
-    public BasicHDU<?> getTruncatedHDU() {
-        return this.truncatedHDU;
-    }
-
-    void updateHeader(Header hdr) throws FitsException {
-        this.truncatedHDU = FitsFactory.hduFactory(hdr, this.truncatedHDU.getData());
     }
 }

@@ -31,7 +31,6 @@ package nom.tam.fits;
  * #L%
  */
 
-import java.io.EOFException;
 import java.io.IOException;
 import java.lang.reflect.Array;
 import java.util.ArrayList;
@@ -61,6 +60,7 @@ import static nom.tam.fits.header.Standard.TFIELDS;
 import static nom.tam.fits.header.Standard.TFORMn;
 import static nom.tam.fits.header.Standard.THEAP;
 import static nom.tam.fits.header.Standard.XTENSION_BINTABLE;
+
 
 
 /**
@@ -1601,13 +1601,6 @@ public class BinaryTable extends AbstractTableData {
 
         } catch (IOException e) {
             throw new FitsException("Error reading binary table data:" + e, e);
-        }
-        try {
-            i.skipAllBytes(FitsUtil.padding(getTrueSize()));
-        } catch (EOFException e) {
-            throw new PaddingException("Error skipping padding after binary table", this, e);
-        } catch (IOException e) {
-            throw new FitsException("Error reading binary table data padding", e);
         }
     }
 

@@ -79,9 +79,8 @@ import static nom.tam.fits.header.Standard.XTENSION;
 import static nom.tam.fits.header.Standard.XTENSION_BINTABLE;
 
 /**
- * This class tests the binary table classes for the Java FITS library, notably
- * BinaryTableHDU, BinaryTable, FitsHeap and the utility class ColumnTable. Tests
- * include:
+ * This class tests the binary table classes for the Java FITS library, notably BinaryTableHDU, BinaryTable, FitsHeap
+ * and the utility class ColumnTable. Tests include:
  * 
  * <pre>
  *     Reading and writing data of all valid types.
@@ -1208,7 +1207,6 @@ public class BinaryTableTest {
         }
         assertNotNull(actual);
         assertEquals(PaddingException.class, actual.getClass());
-
     }
 
     @Test
@@ -1274,7 +1272,6 @@ public class BinaryTableTest {
         }
         assertNotNull(actual);
         assertEquals(PaddingException.class, actual.getClass());
-
     }
 
     @Test
