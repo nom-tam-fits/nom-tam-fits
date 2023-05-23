@@ -1,7 +1,5 @@
 package nom.tam.fits;
 
-import static nom.tam.util.LoggerHelper.getLogger;
-
 import java.io.EOFException;
 
 /*
@@ -44,20 +42,20 @@ import nom.tam.util.ArrayDataInput;
 import nom.tam.util.ArrayDataOutput;
 import nom.tam.util.RandomAccess;
 
+import static nom.tam.util.LoggerHelper.getLogger;
+
 /**
  * This class provides methods to access the data segment of an HDU.
  * <p>
  * This is the object which contains the actual data for the HDU.
  * </p>
  * <ul>
- * <li>For images and primary data this is a simple (but possibly
- * multi-dimensional) primitive array. When group data is supported it will be a
- * possibly multidimensional array of group objects.
- * <li>For ASCII data it is a two dimensional Object array where each of the
- * constituent objects is a primitive array of length 1.
- * <li>For Binary data it is a two dimensional Object array where each of the
- * constituent objects is a primitive array of arbitrary (more or less)
- * dimensionality.
+ * <li>For images and primary data this is a simple (but possibly multi-dimensional) primitive array. When group data is
+ * supported it will be a possibly multidimensional array of group objects.
+ * <li>For ASCII data it is a two dimensional Object array where each of the constituent objects is a primitive array of
+ * length 1.
+ * <li>For Binary data it is a two dimensional Object array where each of the constituent objects is a primitive array
+ * of arbitrary (more or less) dimensionality.
  * </ul>
  */
 public abstract class Data implements FitsElement {
@@ -67,22 +65,19 @@ public abstract class Data implements FitsElement {
     private static final int FITS_BLOCK_SIZE_MINUS_ONE = FitsFactory.FITS_BLOCK_SIZE - 1;
 
     /**
-     * @deprecated Will be private. Access via {@link #getFileOffset()} The
-     *                 starting location of the data when last read
+     * @deprecated Will be private. Access via {@link #getFileOffset()} The starting location of the data when last read
      */
     @Deprecated
     protected long fileOffset = -1;
 
     /**
-     * @deprecated Will be removed. Use {@link #getTrueSize()} instead. The size
-     *                 of the data when last read
+     * @deprecated Will be removed. Use {@link #getTrueSize()} instead. The size of the data when last read
      */
     @Deprecated
     protected long dataSize;
 
     /**
-     * @deprecated Will be private. Use {@link #getRandomAccessInput()} instead.
-     *                 The input stream used.
+     * @deprecated Will be private. Use {@link #getRandomAccessInput()} instead. The input stream used.
      */
     @Deprecated
     protected RandomAccess input;
@@ -92,11 +87,10 @@ public abstract class Data implements FitsElement {
     }
 
     /**
-     * Modify a header to point to this data, this differs per subclass, they all
-     * need oder provided different informations to the header. Basically they
-     * describe the structure of this data object.
+     * Modify a header to point to this data, this differs per subclass, they all need oder provided different
+     * informations to the header. Basically they describe the structure of this data object.
      * 
-     * @param head header to fill with the data from the current data object
+     * @param  head          header to fill with the data from the current data object
      * 
      * @throws FitsException if the operation fails
      */
@@ -105,11 +99,10 @@ public abstract class Data implements FitsElement {
     /**
      * Checks if the data should be assumed to be in deferred read mode.
      * 
-     * @return <code>true</code> if it is set for deferred reading at a later
-     *             time, or else <code>false</code> if this data is currently
-     *             loaded into RAM.
+     * @return <code>true</code> if it is set for deferred reading at a later time, or else <code>false</code> if this
+     *             data is currently loaded into RAM.
      * 
-     * @since 1.17
+     * @since  1.17
      */
     @SuppressWarnings("resource")
     public boolean isDeferred() {
@@ -117,54 +110,49 @@ public abstract class Data implements FitsElement {
     }
 
     /**
-     * Checks if the data content is currently empty, i.e. no actual data is
-     * currently stored in memory.
+     * Checks if the data content is currently empty, i.e. no actual data is currently stored in memory.
      * 
-     * @return <code>true</code> if there is no actual data in memory, otherwise
-     *             <code>false</code>
+     * @return <code>true</code> if there is no actual data in memory, otherwise <code>false</code>
      * 
-     * @see #isDeferred()
-     * @see #getCurrentData()
+     * @see    #isDeferred()
+     * @see    #getCurrentData()
      * 
-     * @since 1.18
+     * @since  1.18
      */
     public boolean isEmpty() {
         return getCurrentData() == null;
     }
 
     /**
-     * Computes and returns the FITS checksum for this data, e.g. to compare
-     * agains the stored <code>DATASUM</code> in the FITS header. This method
-     * always computes the checksum from data in into memory. As such it will
-     * fully load deferred read mode data into RAM to perform the calculation. If
-     * you prefer to leave the data in deferred read mode, you can use
-     * {@link FitsCheckSum#checksum(RandomAccess, long, long)} instead directly
-     * on the input with this data's {@link #getFileOffset()} and
-     * {@link #getSize()} arguments; or equivalently use
+     * Computes and returns the FITS checksum for this data, e.g. to compare agains the stored <code>DATASUM</code> in
+     * the FITS header. This method always computes the checksum from data in into memory. As such it will fully load
+     * deferred read mode data into RAM to perform the calculation. If you prefer to leave the data in deferred read
+     * mode, you can use {@link FitsCheckSum#checksum(RandomAccess, long, long)} instead directly on the input with this
+     * data's {@link #getFileOffset()} and {@link #getSize()} arguments; or equivalently use
      * {@link Fits#calcDatasum(int)}.
      * 
-     * @return the computed FITS checksum from the data (fully loaded in memory).
+     * @return               the computed FITS checksum from the data (fully loaded in memory).
      * 
      * @throws FitsException if there was an error while calculating the checksum
      * 
-     * @see Fits#calcDatasum(int)
-     * @see FitsCheckSum#checksum(RandomAccess, long, long)
-     * @see FitsCheckSum#checksum(Data)
+     * @see                  Fits#calcDatasum(int)
+     * @see                  FitsCheckSum#checksum(RandomAccess, long, long)
+     * @see                  FitsCheckSum#checksum(Data)
      * 
-     * @since 1.17
+     * @since                1.17
      */
     public long calcChecksum() throws FitsException {
         return FitsCheckSum.checksum(this);
     }
 
     /**
-     * @return the underlying Java representation of the data core object, such
-     *             as a multi-dimensional Java array.
+     * @return               the underlying Java representation of the data core object, such as a multi-dimensional
+     *                           Java array.
      * 
      * @throws FitsException if the data could not be gathered.
      * 
-     * @see #isDeferred()
-     * @see #ensureData()
+     * @see                  #isDeferred()
+     * @see                  #ensureData()
      */
     public Object getData() throws FitsException {
         ensureData();
@@ -172,30 +160,26 @@ public abstract class Data implements FitsElement {
     }
 
     /**
-     * Returns the data content that is currently in memory. In case of a data
-     * object in deferred read state (that is its prescription has been parsed
-     * from the header, but no data content was loaded yet from a random
-     * accessible input), this call may return <code>null</code> or an object
-     * representing empty data.
+     * Returns the data content that is currently in memory. In case of a data object in deferred read state (that is
+     * its prescription has been parsed from the header, but no data content was loaded yet from a random accessible
+     * input), this call may return <code>null</code> or an object representing empty data.
      * 
      * @return The current data content in memory.
      * 
-     * @see #getData()
-     * @see #ensureData()
-     * @see #isDeferred()
-     * @see #isEmpty()
+     * @see    #getData()
+     * @see    #ensureData()
+     * @see    #isDeferred()
+     * @see    #isEmpty()
      * 
-     * @since 1.18
+     * @since  1.18
      */
     protected abstract Object getCurrentData();
 
     /**
-     * Gets the offset of the data segment in the FITS file, from the start of
-     * the file. It is used for accessing the data from a radomly accessible
-     * input only.
+     * Gets the offset of the data segment in the FITS file, from the start of the file. It is used for accessing the
+     * data from a radomly accessible input only.
      * 
-     * @return the file offset (in bytes), or -1 if reading was from an input
-     *             that is not random accessible
+     * @return the file offset (in bytes), or -1 if reading was from an input that is not random accessible
      */
     @Override
     public long getFileOffset() {
@@ -205,7 +189,7 @@ public abstract class Data implements FitsElement {
     /**
      * Same as {@link #getData()}.
      * 
-     * @return The data content as represented by a Java object..
+     * @return               The data content as represented by a Java object..
      * 
      * @throws FitsException if the data could not be gathered .
      */
@@ -222,8 +206,7 @@ public abstract class Data implements FitsElement {
     }
 
     /**
-     * Returns the calculated byte size of the data, regardless of whether the
-     * data is currently in memory or not.
+     * Returns the calculated byte size of the data, regardless of whether the data is currently in memory or not.
      * 
      * @return the calculated byte size for the data.
      */
@@ -231,29 +214,26 @@ public abstract class Data implements FitsElement {
 
     /**
      * <p>
-     * Load data from the current position of the input into memory. This may be
-     * triggered immediately when calling {@link #read(ArrayDataInput)} if called
-     * on a non random accessible input, or else later when data is accessed via
-     * {@link #ensureData()}, for example as a result of a {@link #getData()}
-     * call. This method will not be called unless there is actual data of
-     * non-zero size to be read.
+     * Load data from the current position of the input into memory. This may be triggered immediately when calling
+     * {@link #read(ArrayDataInput)} if called on a non random accessible input, or else later when data is accessed via
+     * {@link #ensureData()}, for example as a result of a {@link #getData()} call. This method will not be called
+     * unless there is actual data of non-zero size to be read.
      * </p>
      * <p>
-     * Implementations should create appropriate data structures and populate
-     * them from the specified input.
+     * Implementations should create appropriate data structures and populate them from the specified input.
      * </p>
      * 
-     * @param in The input from which to load data
+     * @param  in            The input from which to load data
      * 
-     * @throws IOException if the data could not be loaded from the input.
+     * @throws IOException   if the data could not be loaded from the input.
      * @throws FitsException if the data is garbled.
      * 
-     * @see #read(ArrayDataInput)
-     * @see #ensureData()
-     * @see #getData()
-     * @see #isDeferred()
+     * @see                  #read(ArrayDataInput)
+     * @see                  #ensureData()
+     * @see                  #getData()
+     * @see                  #isDeferred()
      * 
-     * @since 1.18
+     * @since                1.18
      */
     protected abstract void loadData(ArrayDataInput in) throws IOException, FitsException;
 
@@ -261,23 +241,22 @@ public abstract class Data implements FitsElement {
         try {
             in.skipAllBytes((long) FitsUtil.padding(getTrueSize()));
         } catch (EOFException e) {
-            throw new PaddingException("EOF while skipping padding after data segment", this, e);
+            throw new PaddingException("EOF while skipping padding after data segment", e);
         } catch (IOException e) {
             throw new FitsException("IO error while skipping padding after data segment", e);
         }
     }
 
     /**
-     * Makes sure that data that may have been deferred earlier from a random
-     * access input is now loaded into memory.
+     * Makes sure that data that may have been deferred earlier from a random access input is now loaded into memory.
      * 
      * @throws FitsException if the deferred data could not be loaded.
      * 
-     * @see #getData()
-     * @see #read(ArrayDataInput)
-     * @see #isDeferred()
+     * @see                  #getData()
+     * @see                  #read(ArrayDataInput)
+     * @see                  #isDeferred()
      * 
-     * @since 1.18
+     * @since                1.18
      */
     protected void ensureData() throws FitsException {
         if (!isDeferred()) {
@@ -296,24 +275,25 @@ public abstract class Data implements FitsElement {
 
     /**
      * <p>
-     * Reads the data or skips over it for reading latet, depending on whether
-     * reading from a stream or a random acessible input, respectively.
+     * Reads the data or skips over it for reading latet, depending on whether reading from a stream or a random
+     * acessible input, respectively.
      * </p>
      * <p>
-     * In case the argument is a an instance of {@link RandomAccess} input (such
-     * as a {@link nom.tam.util.FitsFile}, the call will simply note where in the
-     * file the data segment can be found for reading at a later point, only when
-     * the data content is accessed. This 'deferred' reading behavior make it
-     * possible to process large HDUs even with small amount of RAM, and can
-     * result in a significant performance boost when inspectring large FITS
-     * files, or using only select content from large FITS files.
+     * In case the argument is a an instance of {@link RandomAccess} input (such as a {@link nom.tam.util.FitsFile}, the
+     * call will simply note where in the file the data segment can be found for reading at a later point, only when the
+     * data content is accessed. This 'deferred' reading behavior make it possible to process large HDUs even with small
+     * amount of RAM, and can result in a significant performance boost when inspectring large FITS files, or using only
+     * select content from large FITS files.
      * </p>
      * 
-     * @see #getData()
-     * @see #ensureData()
+     * @throws PaddingException if there is no padding between the end of the data segment and the enf-of-file.
+     * @throws FitsException    if the data appears to be corrupted.
+     * 
+     * @see                     #getData()
+     * @see                     #ensureData()
      */
     @Override
-    public void read(ArrayDataInput in) throws FitsException {
+    public void read(ArrayDataInput in) throws PaddingException, FitsException {
         clearFileOffset();
 
         if (in == null) {
@@ -387,12 +367,11 @@ public abstract class Data implements FitsElement {
     }
 
     /**
-     * Record the information necessary for eading the data content at a later
-     * time (deferred reading).
+     * Record the information necessary for eading the data content at a later time (deferred reading).
      * 
      * @param o reread information.
      * 
-     * @see #isDeferred()
+     * @see     #isDeferred()
      */
     protected void setFileOffset(ArrayDataInput o) {
         if (o instanceof RandomAccess) {
