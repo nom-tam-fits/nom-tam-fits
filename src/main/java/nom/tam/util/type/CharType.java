@@ -35,6 +35,14 @@ import java.nio.ByteBuffer;
 
 import nom.tam.fits.FitsFactory;
 
+/**
+ * A FITS character element. Unlike Java characters, which use unicode, Java has only ASCII character type. For
+ * historical reasons we store Java Unicode characters as 16-bit short values by default, but the more conventional FITS
+ * standard is to store them as 8-bit ASCII. You can select which method to use to store <code>char[]</code> arrays in
+ * FITS binary tables using {@link FitsFactory#setUseUnicodeChars(boolean)}.
+ * 
+ * @see FitsFactory#setUseUnicodeChars(boolean)
+ */
 class CharType extends ElementType<ByteBuffer> {
 
     protected CharType() {

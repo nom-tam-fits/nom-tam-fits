@@ -84,6 +84,7 @@ class BufferedFileIO implements InputReader, OutputWriter, Flushable, Closeable 
      *
      * @throws IOException if there was an IO error getting the required access to the file.
      */
+    @SuppressWarnings("resource")
     BufferedFileIO(File f, String mode, int bufferSize) throws IOException {
         this(new RandomFileIO(f, mode), bufferSize);
     }

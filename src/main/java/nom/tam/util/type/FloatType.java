@@ -36,6 +36,9 @@ import java.nio.FloatBuffer;
 
 import nom.tam.fits.header.Bitpix;
 
+/**
+ * A FITS single-precision floating point element. It is the same as the standard IEEE 32-bit floating-point value,
+ */
 class FloatType extends ElementType<FloatBuffer> {
 
     private static final int SIZE = 4;

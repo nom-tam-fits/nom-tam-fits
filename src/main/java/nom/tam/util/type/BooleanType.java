@@ -33,6 +33,9 @@ package nom.tam.util.type;
 
 import java.nio.Buffer;
 
+/**
+ * A FITS boolean element, represented by a 'T' or 'F' or '0' (<code>null</code>/undefined) byte value.
+ */
 class BooleanType extends ElementType<Buffer> {
 
     protected BooleanType() {

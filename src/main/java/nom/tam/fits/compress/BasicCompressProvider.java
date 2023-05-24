@@ -40,6 +40,21 @@ import nom.tam.fits.FitsException;
 
 import static nom.tam.util.LoggerHelper.getLogger;
 
+/**
+ * UNIX compressed (<code>.Z</code>) input stream decompression with a preference for using an external system command.
+ * You can use this class to decompress files that have been compressed with the UNIX <b>compress</b> tool (or via
+ * <b>gzip</b>) and have the characteristic <code>.Z</code> file name extension. It effectively provides the same
+ * functionality as {@link ZCompressionProvider}, but has a preference for calling on the system <b>uncompress</b>
+ * command first to do the lifting. If that fails it will call on {@link CompressionManager} to provide a suitable
+ * decompressor (which will give it {@link ZCompressionProvider}). Since the <b>compress</b> tool is UNIX-specific, it
+ * is not entirely portable. As a result, you are probably better off relying on those other classes directly.
+ * 
+ * @see        CompressionManager
+ * 
+ * @deprecated Use {@link ZCompressionProvider} or the more generic {@link CompressionManager} (which will prefer using
+ *                 the system tool is possible) instead.
+ */
+@Deprecated
 public class BasicCompressProvider implements ICompressProvider {
 
     private static final int PRIORITY = 10;

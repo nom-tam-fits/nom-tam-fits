@@ -77,6 +77,11 @@ public final class FitsFactory {
 
     private static final IHierarchKeyFormatter DEFAULT_HIERARCH_FORMATTER = new StandardIHierarchKeyFormatter();
 
+    /**
+     * An class for aggregating all the settings internal to {@link FitsFactory}.
+     * 
+     * @author Attila Kovacs
+     */
     protected static final class FitsSettings implements Cloneable {
 
         private boolean useAsciiTables;

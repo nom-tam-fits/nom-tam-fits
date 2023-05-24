@@ -35,6 +35,9 @@ import java.nio.ByteBuffer;
 
 import nom.tam.fits.header.Bitpix;
 
+/**
+ * A FITS byte element (signed).
+ */
 class ByteType extends ElementType<ByteBuffer> {
 
     protected ByteType() {

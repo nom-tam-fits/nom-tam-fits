@@ -35,8 +35,8 @@ import java.io.IOException;
 import java.io.InputStream;
 
 /**
- * Indirect Apache compression access. This indirection keeps the classes
- * loadable.
+ * Shorthand access to Apache <b>commons-compress</b> stream decompressors.
+ * Forgive the awkward name.
  * 
  * @author Richard van Nieuwenhoven
  */
