@@ -144,7 +144,7 @@ public final class FitsUtil {
                 }
             }
 
-            for (; end > start; end -= 1) {
+            for (; end > start; end--) {
                 if (bytes[end - 1] != BYTE_REPRESENTING_BLANK) {
                     break;
                 }

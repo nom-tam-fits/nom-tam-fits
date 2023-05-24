@@ -339,12 +339,12 @@ public class HDecompress {
         nxtop = nxtop << 1;
         nytop = nytop << 1;
         if (nxf <= c) {
-            nxtop -= 1;
+            nxtop--;
         } else {
             nxf -= c;
         }
         if (nyf <= c) {
-            nytop -= 1;
+            nytop--;
         } else {
             nyf -= c;
         }
@@ -592,7 +592,7 @@ public class HDecompress {
         /*
          * Return the next bit
          */
-        bitsToGo -= 1;
+        bitsToGo--;
         return buffer2 >> bitsToGo & 1;
     }
 
@@ -863,7 +863,7 @@ public class HDecompress {
             s00 = 2 * (n * i + ny2 - 1); /* s00 is index of b[2*i,2*j] */
             for (j = ny2 - 1; j >= 0; j--) {
                 b[s00] = a[k];
-                k -= 1;
+                k--;
                 s00 -= 2;
             }
         }
@@ -965,12 +965,12 @@ public class HDecompress {
                 nx2 = nx2 << 1;
                 ny2 = ny2 << 1;
                 if (nfx <= c) {
-                    nx2 -= 1;
+                    nx2--;
                 } else {
                     nfx -= c;
                 }
                 if (nfy <= c) {
-                    ny2 -= 1;
+                    ny2--;
                 } else {
                     nfy -= c;
                 }

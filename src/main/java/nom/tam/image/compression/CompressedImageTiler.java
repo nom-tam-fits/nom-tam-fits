@@ -77,7 +77,7 @@ public class CompressedImageTiler implements ImageTiler {
      * @return <code>true</code> if the current array was changed
      */
     static boolean incrementPosition(int[] start, int[] current, int[] lengths, int[] steps) {
-        for (int i = start.length - 2; i >= 0; i -= 1) {
+        for (int i = start.length - 2; i >= 0; i--) {
             if (current[i] - start[i] < lengths[i] - steps[i]) {
                 current[i] += steps[i];
                 if (start.length - 1 - (i + 1) >= 0) {

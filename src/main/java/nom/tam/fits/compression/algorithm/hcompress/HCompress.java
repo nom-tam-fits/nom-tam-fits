@@ -304,14 +304,14 @@ public class HCompress {
                  * positive element, put zero at end of buffer
                  */
                 signbits[nsign] <<= 1;
-                bitsToGo -= 1;
+                bitsToGo--;
             } else if (a.get(i) < 0) {
                 /*
                  * negative element, shift in a one
                  */
                 signbits[nsign] <<= 1;
                 signbits[nsign] |= 1;
-                bitsToGo -= 1;
+                bitsToGo--;
                 /*
                  * replace a by absolute value
                  */

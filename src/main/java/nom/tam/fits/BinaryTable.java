@@ -391,7 +391,7 @@ public class BinaryTable extends AbstractTableData {
             int dim = st.countTokens();
             if (dim > 0) {
                 dims = new int[dim];
-                for (int i = dim - 1; i >= 0; i -= 1) {
+                for (int i = dim - 1; i >= 0; i--) {
                     dims[i] = Integer.parseInt(st.nextToken().trim());
                 }
             }
@@ -550,7 +550,7 @@ public class BinaryTable extends AbstractTableData {
         try {
             table.deleteColumns(start, len);
             // Need to get rid of the column level metadata.
-            for (int i = start + len - 1; i >= start; i -= 1) {
+            for (int i = start + len - 1; i >= start; i--) {
                 if (i >= 0 && i <= columnList.size()) {
                     ColumnDesc columnDesc = columnList.get(i);
                     rowLen -= columnDesc.rowLen();
@@ -1761,7 +1761,7 @@ public class BinaryTable extends AbstractTableData {
         if (colDesc.dimens.length > 0 && !colDesc.isVarying) {
             StringBuffer tdim = new StringBuffer();
             char comma = '(';
-            for (int i = colDesc.dimens.length - 1; i >= 0; i -= 1) {
+            for (int i = colDesc.dimens.length - 1; i >= 0; i--) {
                 tdim.append(comma);
                 tdim.append(colDesc.dimens[i]);
                 comma = ',';
