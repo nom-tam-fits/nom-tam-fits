@@ -338,8 +338,8 @@ public class ArrayFuncsTest {
         };
         int[][] result = (int[][]) nom.tam.util.ArrayFuncs.deepClone(test);
 
-        for (int i = 0; i < test.length; i += 1) {
-            for (int j = 0; j < test[i].length; j += 1) {
+        for (int i = 0; i < test.length; i++) {
+            for (int j = 0; j < test[i].length; j++) {
                 assertEquals(test[i][j], result[i][j]);
             }
         }
@@ -508,7 +508,7 @@ public class ArrayFuncsTest {
 
         int[] x = (int[]) o;
         int[] y = (int[]) result;
-        for (int i = 0; i < x.length; i += 1) {
+        for (int i = 0; i < x.length; i++) {
             assertEquals(x[i], y[i]);
         }
         CloneTest xa = new CloneTest();

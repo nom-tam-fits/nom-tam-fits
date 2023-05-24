@@ -171,7 +171,7 @@ public class RandomGroupsData extends Data {
         h.setBitpix(Bitpix.forPrimitiveType(getElementType()));
         h.setNaxes(ddims.length + 1);
         h.addValue(NAXISn.n(1), 0);
-        for (int i = 2; i <= ddims.length + 1; i += 1) {
+        for (int i = 2; i <= ddims.length + 1; i++) {
             h.addValue(NAXISn.n(i), ddims[i - 2]);
         }
 

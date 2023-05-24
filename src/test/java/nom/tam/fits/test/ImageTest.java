@@ -78,8 +78,8 @@ public class ImageTest {
     public void fileTest() throws Exception {
         test();
         byte[][] bimg = new byte[40][40];
-        for (int i = 10; i < 30; i += 1) {
-            for (int j = 10; j < 30; j += 1) {
+        for (int i = 10; i < 30; i++) {
+            for (int j = 10; j < 30; j++) {
                 bimg[i][j] = (byte) (i + j);
             }
         }
@@ -90,9 +90,9 @@ public class ImageTest {
         float[][] fimg = (float[][]) ArrayFuncs.convertArray(bimg, float.class);
         double[][] dimg = (double[][]) ArrayFuncs.convertArray(bimg, double.class);
         int[][][] img3 = new int[10][20][30];
-        for (int i = 0; i < 10; i += 1) {
-            for (int j = 0; j < 20; j += 1) {
-                for (int k = 0; k < 30; k += 1) {
+        for (int i = 0; i < 10; i++) {
+            for (int j = 0; j < 20; j++) {
+                for (int k = 0; k < 30; k++) {
                     img3[i][j][k] = i + j + k;
                 }
             }
@@ -122,8 +122,8 @@ public class ImageTest {
     public void test() throws Exception {
 
         byte[][] bimg = new byte[40][40];
-        for (int i = 10; i < 30; i += 1) {
-            for (int j = 10; j < 30; j += 1) {
+        for (int i = 10; i < 30; i++) {
+            for (int j = 10; j < 30; j++) {
                 bimg[i][j] = (byte) (i + j);
             }
         }
@@ -134,9 +134,9 @@ public class ImageTest {
         float[][] fimg = (float[][]) ArrayFuncs.convertArray(bimg, float.class);
         double[][] dimg = (double[][]) ArrayFuncs.convertArray(bimg, double.class);
         int[][][] img3 = new int[10][20][30];
-        for (int i = 0; i < 10; i += 1) {
-            for (int j = 0; j < 20; j += 1) {
-                for (int k = 0; k < 30; k += 1) {
+        for (int i = 0; i < 10; i++) {
+            for (int j = 0; j < 20; j++) {
+                for (int k = 0; k < 30; k++) {
                     img3[i][j][k] = i + j + k;
                 }
             }

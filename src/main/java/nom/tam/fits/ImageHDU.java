@@ -188,7 +188,7 @@ public class ImageHDU extends BasicHDU<ImageData> {
         stream.println("         BITPIX=" + myHeader.getIntValue(BITPIX, -1));
         int naxis = myHeader.getIntValue(NAXIS, -1);
         stream.println("         NAXIS=" + naxis);
-        for (int i = 1; i <= naxis; i += 1) {
+        for (int i = 1; i <= naxis; i++) {
             stream.println("         NAXIS" + i + "=" + myHeader.getIntValue(NAXISn.n(i), -1));
         }
 

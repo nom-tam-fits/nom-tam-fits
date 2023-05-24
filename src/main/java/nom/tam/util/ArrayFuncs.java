@@ -462,7 +462,7 @@ public final class ArrayFuncs {
         Class<?> arrayClass = array.getClass();
         while (arrayClass.isArray()) {
             arrayClass = arrayClass.getComponentType();
-            dims += 1;
+            dims++;
         }
 
         if (dims <= 1) {
@@ -475,7 +475,7 @@ public final class ArrayFuncs {
 
         Object mimic = ArrayFuncs.newInstance(newType, dimens);
 
-        for (int i = 0; i < xarray.length; i += 1) {
+        for (int i = 0; i < xarray.length; i++) {
             Object temp = mimicArray(xarray[i], newType);
             ((Object[]) mimic)[i] = temp;
         }
@@ -581,7 +581,7 @@ public final class ArrayFuncs {
     public static int[] reverseIndices(int[] indices) {
         int[] result = new int[indices.length];
         int len = indices.length;
-        for (int i = 0; i < indices.length; i += 1) {
+        for (int i = 0; i < indices.length; i++) {
             result[len - i - 1] = indices[i];
         }
         return result;

@@ -175,7 +175,7 @@ public class AsciiTable extends AbstractTableData {
         lengths = new int[nFields];
         nulls = new String[nFields];
 
-        for (int i = 0; i < nFields; i += 1) {
+        for (int i = 0; i < nFields; i++) {
             offsets[i] = hdr.getIntValue(TBCOLn.n(i + 1)) - 1;
             String s = hdr.getStringValue(TFORMn.n(i + 1));
             if (offsets[i] < 0 || s == null) {
@@ -385,9 +385,9 @@ public class AsciiTable extends AbstractTableData {
             boolean[] newIsNull = new boolean[nRows * (nFields + 1)];
             // Fix the null pointers.
             int add = 0;
-            for (int i = 0; i < isNull.length; i += 1) {
+            for (int i = 0; i < isNull.length; i++) {
                 if (i % nFields == 0) {
-                    add += 1;
+                    add++;
                 }
                 if (isNull[i]) {
                     newIsNull[i + add] = true;
@@ -395,7 +395,7 @@ public class AsciiTable extends AbstractTableData {
             }
             isNull = newIsNull;
         }
-        nFields += 1;
+        nFields++;
 
         // Invalidate the buffer
         buffer = null;
@@ -414,13 +414,13 @@ public class AsciiTable extends AbstractTableData {
                     addColumn(element);
                 }
             } else {
-                for (int i = 0; i < nFields; i += 1) {
+                for (int i = 0; i < nFields; i++) {
                     Object o = ArrayFuncs.newInstance(types[i], nRows + 1);
                     System.arraycopy(data[i], 0, o, 0, nRows);
                     System.arraycopy(newRow[i], 0, o, nRows, 1);
                     data[i] = o;
                 }
-                nRows += 1;
+                nRows++;
             }
             // Invalidate the buffer
             buffer = null;
@@ -463,7 +463,7 @@ public class AsciiTable extends AbstractTableData {
         System.arraycopy(types, start + len, newTypes, start, nFields - start - len);
         System.arraycopy(nulls, start + len, newNulls, start, nFields - start - len);
 
-        for (int i = start; i < start + len; i += 1) {
+        for (int i = start; i < start + len; i++) {
             rowLen -= lengths[i] + 1;
         }
 
@@ -477,14 +477,14 @@ public class AsciiTable extends AbstractTableData {
             boolean found = false;
 
             boolean[] newIsNull = new boolean[nRows * (nFields - len)];
-            for (int i = 0; i < nRows; i += 1) {
+            for (int i = 0; i < nRows; i++) {
                 int oldOff = nFields * i;
                 int newOff = (nFields - len) * i;
-                for (int col = 0; col < start; col += 1) {
+                for (int col = 0; col < start; col++) {
                     newIsNull[newOff + col] = isNull[oldOff + col];
                     found = found || isNull[oldOff + col];
                 }
-                for (int col = start + len; col < nFields; col += 1) {
+                for (int col = start + len; col < nFields; col++) {
                     newIsNull[newOff + col - len] = isNull[oldOff + col];
                     found = found || isNull[oldOff + col];
                 }
@@ -521,7 +521,7 @@ public class AsciiTable extends AbstractTableData {
                 len = nRows - start;
             }
             ensureData();
-            for (int i = 0; i < nFields; i += 1) {
+            for (int i = 0; i < nFields; i++) {
                 Object o = ArrayFuncs.newInstance(types[i], nRows - len);
                 System.arraycopy(data[i], 0, o, 0, start);
                 System.arraycopy(data[i], start + len, o, start, nRows - len - start);
@@ -549,16 +549,16 @@ public class AsciiTable extends AbstractTableData {
         }
 
         data = new Object[nFields];
-        for (int i = 0; i < nFields; i += 1) {
+        for (int i = 0; i < nFields; i++) {
             data[i] = ArrayFuncs.newInstance(types[i], nRows);
         }
 
         bp.setOffset(0);
 
         int rowOffset;
-        for (int i = 0; i < nRows; i += 1) {
+        for (int i = 0; i < nRows; i++) {
             rowOffset = rowLen * i;
-            for (int j = 0; j < nFields; j += 1) {
+            for (int j = 0; j < nFields; j++) {
                 try {
                     if (!extractElement(rowOffset + offsets[j], lengths[j], data, j, i, nulls[j])) {
                         if (isNull == null) {
@@ -647,7 +647,7 @@ public class AsciiTable extends AbstractTableData {
             iter.add(new HeaderCard(GCOUNT.key(), 1, GCOUNT.comment()));
             iter.add(new HeaderCard(TFIELDS.key(), nFields, TFIELDS.comment()));
 
-            for (int i = 0; i < nFields; i += 1) {
+            for (int i = 0; i < nFields; i++) {
                 addColInfo(i, iter);
             }
         } catch (HeaderCardException e) {
@@ -843,7 +843,7 @@ public class AsciiTable extends AbstractTableData {
             throw new FitsException("Unable to read row", e);
         }
 
-        for (int i = 0; i < nFields; i += 1) {
+        for (int i = 0; i < nFields; i++) {
             res[i] = ArrayFuncs.newInstance(types[i], 1);
             if (!extractElement(offsets[i], lengths[i], res, i, 0, nulls[i])) {
                 res[i] = null;
@@ -949,7 +949,7 @@ public class AsciiTable extends AbstractTableData {
             throw new FitsException("Invalid row in setRow");
         }
         ensureData();
-        for (int i = 0; i < nFields; i += 1) {
+        for (int i = 0; i < nFields; i++) {
             try {
                 System.arraycopy(newData[i], 0, data[i], row, 1);
             } catch (Exception e) {
@@ -982,7 +982,7 @@ public class AsciiTable extends AbstractTableData {
     private Object[] singleRow(int row) {
 
         Object[] res = new Object[nFields];
-        for (int i = 0; i < nFields; i += 1) {
+        for (int i = 0; i < nFields; i++) {
             if (isNull == null || !isNull[row * nFields + i]) {
                 res[i] = ArrayFuncs.newInstance(types[i], 1);
                 System.arraycopy(data[i], row, res[i], 0, 1);
@@ -1002,12 +1002,12 @@ public class AsciiTable extends AbstractTableData {
     public void updateAfterDelete(int oldNCol, Header hdr) throws FitsException {
 
         int offset = 0;
-        for (int i = 0; i < nFields; i += 1) {
+        for (int i = 0; i < nFields; i++) {
             offsets[i] = offset;
             hdr.addValue(TBCOLn.n(i + 1), offset + 1);
             offset += lengths[i] + 1;
         }
-        for (int i = nFields; i < oldNCol; i += 1) {
+        for (int i = nFields; i < oldNCol; i++) {
             hdr.deleteKey(TBCOLn.n(i + 1));
         }
 
@@ -1040,15 +1040,15 @@ public class AsciiTable extends AbstractTableData {
         buffer = new byte[nRows * rowLen];
 
         bp = new ByteParser(buffer);
-        for (int i = 0; i < buffer.length; i += 1) {
+        for (int i = 0; i < buffer.length; i++) {
             buffer[i] = (byte) ' ';
         }
 
         ByteFormatter bf = new ByteFormatter();
 
-        for (int i = 0; i < nRows; i += 1) {
+        for (int i = 0; i < nRows; i++) {
 
-            for (int j = 0; j < nFields; j += 1) {
+            for (int j = 0; j < nFields; j++) {
                 int offset = i * rowLen + offsets[j];
                 int len = lengths[j];
                 if (isNull != null && isNull[i * nFields + j]) {

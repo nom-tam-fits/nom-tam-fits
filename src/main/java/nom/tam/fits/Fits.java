@@ -1175,7 +1175,7 @@ public class Fits implements Closeable {
      * @see                  #skipHDU()
      */
     public void skipHDU(int n) throws FitsException, IOException {
-        for (int i = 0; i < n; i += 1) {
+        for (int i = 0; i < n; i++) {
             skipHDU();
         }
     }

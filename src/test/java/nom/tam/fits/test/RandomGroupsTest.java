@@ -77,12 +77,12 @@ public class RandomGroupsTest {
             hdr.addValue("GCOUNT", 20, "Number of groups");
             hdr.write(bf);
 
-            for (int i = 0; i < 20; i += 1) {
+            for (int i = 0; i < 20; i++) {
 
-                for (int j = 0; j < pa.length; j += 1) {
+                for (int j = 0; j < pa.length; j++) {
                     pa[j] = i + j;
                 }
-                for (int j = 0; j < fa.length; j += 1) {
+                for (int j = 0; j < fa.length; j++) {
                     fa[j][j] = i * j;
                 }
                 // Write a group
@@ -106,14 +106,14 @@ public class RandomGroupsTest {
             data = (Object[][]) hdus[0].getKernel();
             System.err.println("### [1] " + data.length);
 
-            for (int i = 0; i < data.length; i += 1) {
+            for (int i = 0; i < data.length; i++) {
 
                 pa = (float[]) data[i][0];
                 fa = (float[][]) data[i][1];
-                for (int j = 0; j < pa.length; j += 1) {
+                for (int j = 0; j < pa.length; j++) {
                     assertEquals("paramTest:" + i + " " + j, i + j, pa[j], 0);
                 }
-                for (int j = 0; j < fa.length; j += 1) {
+                for (int j = 0; j < fa.length; j++) {
                     assertEquals("dataTest:" + i + " " + j, i * j, fa[j][j], 0);
                 }
             }
@@ -141,14 +141,14 @@ public class RandomGroupsTest {
             f = new Fits("target/rg2.fits");
             BasicHDU<?> groupHDU = f.read()[0];
             data = (Object[][]) groupHDU.getKernel();
-            for (int i = 0; i < data.length; i += 1) {
+            for (int i = 0; i < data.length; i++) {
 
                 pa = (float[]) data[i][0];
                 fa = (float[][]) data[i][1];
-                for (int j = 0; j < pa.length; j += 1) {
+                for (int j = 0; j < pa.length; j++) {
                     assertEquals("paramTest:" + i + " " + j, i + j, pa[j], 0);
                 }
-                for (int j = 0; j < fa.length; j += 1) {
+                for (int j = 0; j < fa.length; j++) {
                     assertEquals("dataTest:" + i + " " + j, i * j, fa[j][j], 0);
                 }
             }

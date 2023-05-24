@@ -90,7 +90,7 @@ public class RandomGroupsHDU extends BasicHDU<RandomGroupsData> {
         // are generating. Also recall that NAXIS1=0, so that
         // we have an 'extra' dimension.
 
-        for (int i = 0; i < ndim; i += 1) {
+        for (int i = 0; i < ndim; i++) {
             long cdim = h.getIntValue(NAXISn.n(i + 2), 0);
             if (cdim < 0) {
                 throw new FitsException("Invalid array dimension:" + cdim);
@@ -220,7 +220,7 @@ public class RandomGroupsHDU extends BasicHDU<RandomGroupsData> {
             stream.println("     Npar:   " + myHeader.getIntValue(PCOUNT));
             stream.println("     BITPIX: " + myHeader.getIntValue(BITPIX));
             stream.println("     NAXIS:  " + myHeader.getIntValue(NAXIS));
-            for (int i = 0; i < myHeader.getIntValue(NAXIS); i += 1) {
+            for (int i = 0; i < myHeader.getIntValue(NAXIS); i++) {
                 stream.println("      NAXIS" + (i + 1) + "= " + myHeader.getIntValue(NAXISn.n(i + 1)));
             }
         } else {

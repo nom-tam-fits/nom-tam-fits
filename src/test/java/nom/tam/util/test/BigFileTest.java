@@ -56,7 +56,7 @@ public class BigFileTest {
             FitsFile bf = new FitsFile(fname, "rw");
             byte sample = 13;
 
-            for (int i = 0; i < 30; i += 1) {
+            for (int i = 0; i < 30; i++) {
                 bf.write(buf); // 30 x 100 MB = 3 GB.
                 if (i == 24) {
                     bf.write(new byte[]{

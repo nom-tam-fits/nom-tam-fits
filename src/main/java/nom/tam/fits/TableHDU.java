@@ -186,14 +186,14 @@ public abstract class TableHDU<T extends AbstractTableData> extends BasicHDU<T> 
         myData.deleteColumns(column, len);
 
         // Get rid of the keywords for the deleted columns
-        for (int col = column; col < column + len; col += 1) {
+        for (int col = column; col < column + len; col++) {
             for (IFitsHeader field : fields) {
                 myHeader.deleteKey(field.n(col + 1));
             }
         }
 
         // Shift the keywords for the columns after the deleted columns
-        for (int col = column + len; col < ncol; col += 1) {
+        for (int col = column + len; col < ncol; col++) {
             for (IFitsHeader field : fields) {
                 IFitsHeader oldKey = field.n(col + 1);
                 IFitsHeader newKey = field.n(col + 1 - len);
@@ -262,7 +262,7 @@ public abstract class TableHDU<T extends AbstractTableData> extends BasicHDU<T> 
      *            the name of the column
      */
     public int findColumn(String colName) {
-        for (int i = 0; i < getNCols(); i += 1) {
+        for (int i = 0; i < getNCols(); i++) {
             String val = myHeader.getStringValue(TTYPEn.n(i + 1));
             if (val != null && val.trim().equals(colName)) {
                 return i;
@@ -351,7 +351,7 @@ public abstract class TableHDU<T extends AbstractTableData> extends BasicHDU<T> 
      */
     public Object[] getColumns() throws FitsException {
         Object[] result = new Object[getNCols()];
-        for (int i = 0; i < result.length; i += 1) {
+        for (int i = 0; i < result.length; i++) {
             result[i] = getColumn(i);
         }
         return result;

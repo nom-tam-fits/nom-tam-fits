@@ -465,7 +465,7 @@ public class ColumnTable<T> implements DataTable {
         types = new char[newArrays.length];
         bases = new Class[newArrays.length];
 
-        for (int i = 0; i < newArrays.length; i += 1) {
+        for (int i = 0; i < newArrays.length; i++) {
 
             String classname = newArrays[i].getClass().getName();
 
@@ -598,7 +598,7 @@ public class ColumnTable<T> implements DataTable {
             return;
         }
 
-        for (int col = 0; col < arrays.length; col += 1) {
+        for (int col = 0; col < arrays.length; col++) {
 
             int sz = sizes[col];
             int newSize = sz * (nrow - length);
@@ -713,7 +713,7 @@ public class ColumnTable<T> implements DataTable {
     public Object getRow(int row) {
 
         Object[] x = new Object[arrays.length];
-        for (int col = 0; col < arrays.length; col += 1) {
+        for (int col = 0; col < arrays.length; col++) {
             x[col] = getElement(row, col);
         }
         return x;
@@ -740,7 +740,7 @@ public class ColumnTable<T> implements DataTable {
      */
     protected void initializePointers() {
         int[] columnIndex = new int[MAX_COLUMN_INDEXES];
-        for (int col = 0; col < arrays.length; col += 1) {
+        for (int col = 0; col < arrays.length; col++) {
             columnIndex[types[col]]++;
         }
         // Allocate the pointer arrays. Note that many will be
@@ -755,7 +755,7 @@ public class ColumnTable<T> implements DataTable {
         booleanPointers = new boolean[columnIndex[ElementType.BOOLEAN.type()]][];
         // Now set the pointers.
         Arrays.fill(columnIndex, 0);
-        for (int col = 0; col < arrays.length; col += 1) {
+        for (int col = 0; col < arrays.length; col++) {
             char colType = types[col];
             PointerAccess<?> accessor = POINTER_ACCESSORS_BY_TYPE[colType];
             Array.set(accessor.get(this), columnIndex[colType], arrays[col]);
@@ -774,16 +774,16 @@ public class ColumnTable<T> implements DataTable {
     public void read(ArrayDataInput is) throws IOException {
         int[] columnIndex = new int[MAX_COLUMN_INDEXES];
         // While we have not finished reading the table..
-        for (int row = 0; row < nrow; row += 1) {
+        for (int row = 0; row < nrow; row++) {
             Arrays.fill(columnIndex, 0);
             // Loop over the columns within the row.
-            for (int col = 0; col < arrays.length; col += 1) {
+            for (int col = 0; col < arrays.length; col++) {
                 int arrOffset = sizes[col] * row;
                 int size = sizes[col];
                 char colType = types[col];
                 PointerAccess<?> accessor = POINTER_ACCESSORS_BY_TYPE[colType];
                 accessor.read(this, is, columnIndex[colType], arrOffset, size);
-                columnIndex[colType] += 1;
+                columnIndex[colType]++;
             }
         }
     }
@@ -874,7 +874,7 @@ public class ColumnTable<T> implements DataTable {
             throw new TableException("setRow: Incompatible row");
         }
 
-        for (int col = 0; col < arrays.length; col += 1) {
+        for (int col = 0; col < arrays.length; col++) {
             setElement(row, col, ((Object[]) x)[col]);
         }
     }
@@ -905,17 +905,17 @@ public class ColumnTable<T> implements DataTable {
      */
     public void write(ArrayDataOutput os) throws IOException {
         int[] columnIndex = new int[MAX_COLUMN_INDEXES];
-        for (int row = 0; row < nrow; row += 1) {
+        for (int row = 0; row < nrow; row++) {
             Arrays.fill(columnIndex, 0);
             // Loop over the columns within the row.
-            for (int col = 0; col < arrays.length; col += 1) {
+            for (int col = 0; col < arrays.length; col++) {
 
                 int arrOffset = sizes[col] * row;
                 int size = sizes[col];
 
                 char colType = types[col];
                 POINTER_ACCESSORS_BY_TYPE[colType].write(this, os, columnIndex[colType], arrOffset, size);
-                columnIndex[colType] += 1;
+                columnIndex[colType]++;
             }
         }
     }
@@ -936,11 +936,11 @@ public class ColumnTable<T> implements DataTable {
      */
     public void write(ArrayDataOutput os, int rowStart, int rowEnd, int columnNr) throws IOException {
         int[] columnIndex = new int[MAX_COLUMN_INDEXES];
-        for (int row = 0; row < nrow; row += 1) {
+        for (int row = 0; row < nrow; row++) {
             if (row >= rowStart && row < rowEnd) {
                 Arrays.fill(columnIndex, 0);
                 // Loop over the columns within the row.
-                for (int col = 0; col < arrays.length; col += 1) {
+                for (int col = 0; col < arrays.length; col++) {
 
                     int arrOffset = sizes[col] * row;
                     int size = sizes[col];
@@ -949,7 +949,7 @@ public class ColumnTable<T> implements DataTable {
                     if (columnNr == col) {
                         POINTER_ACCESSORS_BY_TYPE[colType].write(this, os, columnIndex[colType], arrOffset, size);
                     }
-                    columnIndex[colType] += 1;
+                    columnIndex[colType]++;
                 }
             }
         }
@@ -972,18 +972,18 @@ public class ColumnTable<T> implements DataTable {
     public void read(ArrayDataInput is, int rowStart, int rowEnd, int columnNr) throws IOException {
         int[] columnIndex = new int[MAX_COLUMN_INDEXES];
         // While we have not finished reading the table..
-        for (int row = 0; row < nrow; row += 1) {
+        for (int row = 0; row < nrow; row++) {
             if (row >= rowStart && row < rowEnd) {
                 Arrays.fill(columnIndex, 0);
                 // Loop over the columns within the row.
-                for (int col = 0; col < arrays.length; col += 1) {
+                for (int col = 0; col < arrays.length; col++) {
                     int arrOffset = sizes[col] * row;
                     int size = sizes[col];
                     char colType = types[col];
                     if (col == columnNr) {
                         POINTER_ACCESSORS_BY_TYPE[colType].read(this, is, columnIndex[colType], arrOffset, size);
                     }
-                    columnIndex[colType] += 1;
+                    columnIndex[colType]++;
                 }
             }
         }

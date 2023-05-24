@@ -178,7 +178,7 @@ public class HDecompress {
         int log2n;
         log2n = (int) (Math.log(nmax) / Math.log(2.0) + ROUNDING_HALF);
         if (nmax > 1 << log2n) {
-            log2n += 1;
+            log2n++;
         }
         return log2n;
     }
@@ -1068,7 +1068,7 @@ public class HDecompress {
         for (i = nhalf; i < n; i++) {
             pt.set(p1.get());
             p1.offset += n2;
-            pt.offset += 1;
+            pt.offset++;
         }
         /*
          * distribute 1st half of tiledImageOperation to even elements
@@ -1088,7 +1088,7 @@ public class HDecompress {
         for (i = 1; i < n; i += 2) {
             p1.set(pt.get());
             p1.offset += n2 + n2;
-            pt.offset += 1;
+            pt.offset++;
         }
     }
 }

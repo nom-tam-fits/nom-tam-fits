@@ -241,35 +241,35 @@ public class BufferedFileTest {
         BufferedFile f = new BufferedFile(filename, "rw");
 
         resetTime();
-        for (int i = 0; i < iter; i += 1) {
+        for (int i = 0; i < iter; i++) {
             f.writeArray(db);
         }
         System.out.println("  BF  Dbl write: " + (1e-6 * Double.BYTES * dim * iter / deltaTime()) + " MB/s");
-        for (int i = 0; i < iter; i += 1) {
+        for (int i = 0; i < iter; i++) {
             f.writeArray(fl);
         }
         System.out.println("  BF  Flt write: " + (1e-6 * Float.BYTES * dim * iter / deltaTime()) + " MB/s");
-        for (int i = 0; i < iter; i += 1) {
+        for (int i = 0; i < iter; i++) {
             f.writeArray(in);
         }
         System.out.println("  BF  Int write: " + (1e-6 * Integer.BYTES * dim * iter / deltaTime()) + " MB/s");
-        for (int i = 0; i < iter; i += 1) {
+        for (int i = 0; i < iter; i++) {
             f.writeArray(ln);
         }
         System.out.println("  BF  Lng write: " + (1e-6 * Long.BYTES * dim * iter / deltaTime()) + " MB/s");
-        for (int i = 0; i < iter; i += 1) {
+        for (int i = 0; i < iter; i++) {
             f.writeArray(sh);
         }
         System.out.println("  BF  Sht write: " + (1e-6 * Short.BYTES * dim * iter / deltaTime()) + " MB/s");
-        for (int i = 0; i < iter; i += 1) {
+        for (int i = 0; i < iter; i++) {
             f.writeArray(ch);
         }
         System.out.println("  BF  Chr write: " + (1e-6 * dim * iter / deltaTime()) + " MB/s");
-        for (int i = 0; i < iter; i += 1) {
+        for (int i = 0; i < iter; i++) {
             f.writeArray(by);
         }
         System.out.println("  BF  Byt write: " + (1e-6 * dim * iter / deltaTime()) + " MB/s");
-        for (int i = 0; i < iter; i += 1) {
+        for (int i = 0; i < iter; i++) {
             f.writeArray(bl);
         }
         System.out.println("  BF  Boo write: " + (1e-6 * dim * iter / deltaTime()) + " MB/s");
@@ -287,35 +287,35 @@ public class BufferedFileTest {
         f.seek(0);
 
         resetTime();
-        for (int i = 0; i < iter; i += 1) {
+        for (int i = 0; i < iter; i++) {
             f.readLArray(db2);
         }
         System.out.println("  BF  Dbl read:  " + (1e-6 * Double.BYTES * dim * iter / deltaTime()) + " MB/s");
-        for (int i = 0; i < iter; i += 1) {
+        for (int i = 0; i < iter; i++) {
             f.readLArray(fl2);
         }
         System.out.println("  BF  Flt read:  " + (1e-6 * Float.BYTES * dim * iter / deltaTime()) + " MB/s");
-        for (int i = 0; i < iter; i += 1) {
+        for (int i = 0; i < iter; i++) {
             f.readLArray(in2);
         }
         System.out.println("  BF  Int read:  " + (1e-6 * Integer.BYTES * dim * iter / deltaTime()) + " MB/s");
-        for (int i = 0; i < iter; i += 1) {
+        for (int i = 0; i < iter; i++) {
             f.readLArray(ln2);
         }
         System.out.println("  BF  Lng read:  " + (1e-6 * Long.BYTES * dim * iter / deltaTime()) + " MB/s");
-        for (int i = 0; i < iter; i += 1) {
+        for (int i = 0; i < iter; i++) {
             f.readLArray(sh2);
         }
         System.out.println("  BF  Sht read:  " + (1e-6 * Short.BYTES * dim * iter / deltaTime()) + " MB/s");
-        for (int i = 0; i < iter; i += 1) {
+        for (int i = 0; i < iter; i++) {
             f.readLArray(ch2);
         }
         System.out.println("  BF  Chr read:  " + (1e-6 * dim * iter / deltaTime()) + " MB/s");
-        for (int i = 0; i < iter; i += 1) {
+        for (int i = 0; i < iter; i++) {
             f.readLArray(by2);
         }
         System.out.println("  BF  Byt read:  " + (1e-6 * dim * iter / deltaTime()) + " MB/s");
-        for (int i = 0; i < iter; i += 1) {
+        for (int i = 0; i < iter; i++) {
             f.readLArray(bl2);
         }
         System.out.println("  BF  Boo read:  " + (1e-6 * dim * iter / deltaTime()) + " MB/s");
@@ -330,7 +330,7 @@ public class BufferedFileTest {
         bls2 = f.readBoolean();
 
         // Now read only pieces of the multidimensional tiledImageOperation.
-        for (int i = 0; i < 5; i += 1) {
+        for (int i = 0; i < 5; i++) {
             // Skip the odd initial indices and
             // read the evens.
             f.skipBytes(4000);
@@ -340,7 +340,7 @@ public class BufferedFileTest {
         System.out.println("BufferedFile Verification:");
         System.out.println("  Arrays:");
 
-        for (int i = 0; i < dim; i += 1) {
+        for (int i = 0; i < dim; i++) {
             if (!Double.isNaN(db[i])) {
                 assertFalse("Double error at " + i, db[i] != db2[i]);
             }
@@ -368,7 +368,7 @@ public class BufferedFileTest {
         assertTrue("mismatch", ds == ds2);
 
         System.out.println("  Multi: odd rows should match");
-        for (int i = 0; i < 10; i += 1) {
+        for (int i = 0; i < 10; i++) {
             System.out.println("      " + i + " " + multi[i][i][i][i] + " " + multi2[i][i][i][i]);
             if (i % 2 == 1) {
                 assertEquals(i, multi[i][i][i][i]);
@@ -409,35 +409,35 @@ public class BufferedFileTest {
             BufferedDataOutputStream f = new BufferedDataOutputStream(new FileOutputStream(filename));
 
             resetTime();
-            for (int i = 0; i < iter; i += 1) {
+            for (int i = 0; i < iter; i++) {
                 f.writeArray(db);
             }
             System.out.println("  BDS Dbl write: " + (1e-6 * Double.BYTES * dim * iter / deltaTime()) + " MB/s");
-            for (int i = 0; i < iter; i += 1) {
+            for (int i = 0; i < iter; i++) {
                 f.writeArray(fl);
             }
             System.out.println("  BDS Flt write: " + (1e-6 * Float.BYTES * dim * iter / deltaTime()) + " MB/s");
-            for (int i = 0; i < iter; i += 1) {
+            for (int i = 0; i < iter; i++) {
                 f.writeArray(in);
             }
             System.out.println("  BDS Int write: " + (1e-6 * Integer.BYTES * dim * iter / deltaTime()) + " MB/s");
-            for (int i = 0; i < iter; i += 1) {
+            for (int i = 0; i < iter; i++) {
                 f.writeArray(ln);
             }
             System.out.println("  BDS Lng write: " + (1e-6 * Long.BYTES * dim * iter / deltaTime()) + " MB/s");
-            for (int i = 0; i < iter; i += 1) {
+            for (int i = 0; i < iter; i++) {
                 f.writeArray(sh);
             }
             System.out.println("  BDS Sht write: " + (1e-6 * Short.BYTES * dim * iter / deltaTime()) + " MB/s");
-            for (int i = 0; i < iter; i += 1) {
+            for (int i = 0; i < iter; i++) {
                 f.writeArray(ch);
             }
             System.out.println("  BDS Chr write: " + (1e-6 * dim * iter / deltaTime()) + " MB/s");
-            for (int i = 0; i < iter; i += 1) {
+            for (int i = 0; i < iter; i++) {
                 f.writeArray(by);
             }
             System.out.println("  BDS Byt write: " + (1e-6 * dim * iter / deltaTime()) + " MB/s");
-            for (int i = 0; i < iter; i += 1) {
+            for (int i = 0; i < iter; i++) {
                 f.writeArray(bl);
             }
             System.out.println("  BDS Boo write: " + (1e-6 * dim * iter / deltaTime()) + " MB/s");
@@ -460,35 +460,35 @@ public class BufferedFileTest {
             BufferedDataInputStream f = new BufferedDataInputStream(new FileInputStream(filename));
 
             resetTime();
-            for (int i = 0; i < iter; i += 1) {
+            for (int i = 0; i < iter; i++) {
                 f.readLArray(db2);
             }
             System.out.println("  BDS Dbl read:  " + (1e-6 * Double.BYTES * dim * iter / deltaTime()) + " MB/s");
-            for (int i = 0; i < iter; i += 1) {
+            for (int i = 0; i < iter; i++) {
                 f.readLArray(fl2);
             }
             System.out.println("  BDS Flt read:  " + (1e-6 * Float.BYTES * dim * iter / deltaTime()) + " MB/s");
-            for (int i = 0; i < iter; i += 1) {
+            for (int i = 0; i < iter; i++) {
                 f.readLArray(in2);
             }
             System.out.println("  BDS Int read:  " + (1e-6 * Integer.BYTES * dim * iter / deltaTime()) + " MB/s");
-            for (int i = 0; i < iter; i += 1) {
+            for (int i = 0; i < iter; i++) {
                 f.readLArray(ln2);
             }
             System.out.println("  BDS Lng read:  " + (1e-6 * Long.BYTES * dim * iter / deltaTime()) + " MB/s");
-            for (int i = 0; i < iter; i += 1) {
+            for (int i = 0; i < iter; i++) {
                 f.readLArray(sh2);
             }
             System.out.println("  BDS Sht read:  " + (1e-6 * Short.BYTES * dim * iter / deltaTime()) + " MB/s");
-            for (int i = 0; i < iter; i += 1) {
+            for (int i = 0; i < iter; i++) {
                 f.readLArray(ch2);
             }
             System.out.println("  BDS Chr read:  " + (1e-6 * dim * iter / deltaTime()) + " MB/s");
-            for (int i = 0; i < iter; i += 1) {
+            for (int i = 0; i < iter; i++) {
                 f.readLArray(by2);
             }
             System.out.println("  BDS Byt read:  " + (1e-6 * dim * iter / deltaTime()) + " MB/s");
-            for (int i = 0; i < iter; i += 1) {
+            for (int i = 0; i < iter; i++) {
                 f.readLArray(bl2);
             }
             System.out.println("  BDS Boo read:  " + (1e-6 * dim * iter / deltaTime()) + " MB/s");
@@ -502,12 +502,12 @@ public class BufferedFileTest {
             ds2 = f.readDouble();
             bls2 = f.readBoolean();
 
-            for (int i = 0; i < 10; i += 1) {
+            for (int i = 0; i < 10; i++) {
                 multi2[i][i][i][i] = 0;
             }
 
             // Now read only pieces of the multidimensional tiledImageOperation.
-            for (int i = 0; i < 5; i += 1) {
+            for (int i = 0; i < 5; i++) {
                 System.out.println("Multiread:" + i);
                 // Skip the odd initial indices and
                 // read the evens.
@@ -520,7 +520,7 @@ public class BufferedFileTest {
         System.out.println("Stream Verification:");
         System.out.println("  Arrays:");
 
-        for (int i = 0; i < dim; i += 1) {
+        for (int i = 0; i < dim; i++) {
 
             if (!Double.isNaN(db[i])) {
                 assertFalse("Double error at " + i, db[i] != db2[i]);
@@ -550,7 +550,7 @@ public class BufferedFileTest {
         assertTrue("mismatch", ds == ds2);
 
         System.out.println("  Multi: odd rows should match");
-        for (int i = 0; i < 10; i += 1) {
+        for (int i = 0; i < 10; i++) {
             System.out.println("      " + i + " " + multi[i][i][i][i] + " " + multi2[i][i][i][i]);
         }
         System.out.println("Done BufferedStream Tests");
@@ -563,8 +563,8 @@ public class BufferedFileTest {
         BufferedDataOutputStream f = new BufferedDataOutputStream(new FileOutputStream(filename), 32768);
         resetTime();
         int dim = in.length;
-        for (int j = 0; j < iter; j += 1) {
-            for (int i = 0; i < dim; i += 1) {
+        for (int j = 0; j < iter; j++) {
+            for (int i = 0; i < dim; i++) {
                 f.writeInt(in[i]);
             }
         }
@@ -575,8 +575,8 @@ public class BufferedFileTest {
         BufferedDataInputStream is = new BufferedDataInputStream(
                 new BufferedInputStream(new FileInputStream(filename), 32768));
         resetTime();
-        for (int j = 0; j < iter; j += 1) {
-            for (int i = 0; i < dim; i += 1) {
+        for (int j = 0; j < iter; j++) {
+            for (int i = 0; i < dim; i++) {
                 in2[i] = is.readInt();
             }
         }
@@ -624,7 +624,7 @@ public class BufferedFileTest {
 
         System.out.println("Initializing arrays -- may take a while");
         int sign = 1;
-        for (int i = 0; i < dim; i += 1) {
+        for (int i = 0; i < dim; i++) {
 
             double x = sign * Math.pow(10., 20 * Math.random());
             db[i] = x;
@@ -682,7 +682,7 @@ public class BufferedFileTest {
 
         int[][][][] multi = new int[10][10][10][10];
         int[][][][] multi2 = new int[10][10][10][10];
-        for (int i = 0; i < 10; i += 1) {
+        for (int i = 0; i < 10; i++) {
             multi[i][i][i][i] = i;
         }
 
@@ -712,16 +712,16 @@ public class BufferedFileTest {
             int dim = in.length;
             resetTime();
             f.seek(0);
-            for (int j = 0; j < iter; j += 1) {
-                for (int i = 0; i < dim; i += 1) {
+            for (int j = 0; j < iter; j++) {
+                for (int i = 0; i < dim; i++) {
                     f.writeInt(in[i]);
                 }
             }
             System.out.println("  RAF Int write: " + (1e-6 * Integer.BYTES * dim * iter / deltaTime()) + " MB/s");
             f.seek(0);
             resetTime();
-            for (int j = 0; j < iter; j += 1) {
-                for (int i = 0; i < dim; i += 1) {
+            for (int j = 0; j < iter; j++) {
+                for (int i = 0; i < dim; i++) {
                     in2[i] = f.readInt();
                 }
             }
@@ -729,8 +729,8 @@ public class BufferedFileTest {
 
             synchronized (f) {
                 f.seek(0);
-                for (int j = 0; j < iter; j += 1) {
-                    for (int i = 0; i < dim; i += 1) {
+                for (int j = 0; j < iter; j++) {
+                    for (int i = 0; i < dim; i++) {
                         f.writeInt(in[i]);
                     }
                 }
@@ -738,8 +738,8 @@ public class BufferedFileTest {
                 .println("  SyncRAF Int write: " + (1e-6 * Integer.BYTES * dim * iter / deltaTime()) + " MB/s");
                 f.seek(0);
                 resetTime();
-                for (int j = 0; j < iter; j += 1) {
-                    for (int i = 0; i < dim; i += 1) {
+                for (int j = 0; j < iter; j++) {
+                    for (int i = 0; i < dim; i++) {
                         in2[i] = f.readInt();
                     }
                 }
@@ -759,8 +759,8 @@ public class BufferedFileTest {
             f = new DataOutputStream(new BufferedOutputStream(new FileOutputStream(filename), 32768));
             resetTime();
             int dim = in.length;
-            for (int j = 0; j < iter; j += 1) {
-                for (int i = 0; i < dim; i += 1) {
+            for (int j = 0; j < iter; j++) {
+                for (int i = 0; i < dim; i++) {
                     f.writeInt(in[i]);
                 }
             }
@@ -770,8 +770,8 @@ public class BufferedFileTest {
 
             is = new DataInputStream(new BufferedInputStream(new FileInputStream(filename), 32768));
             resetTime();
-            for (int j = 0; j < iter; j += 1) {
-                for (int i = 0; i < dim; i += 1) {
+            for (int j = 0; j < iter; j++) {
+                for (int i = 0; i < dim; i++) {
                     in2[i] = is.readInt();
                 }
             }
@@ -782,8 +782,8 @@ public class BufferedFileTest {
             resetTime();
             dim = in.length;
             synchronized (f) {
-                for (int j = 0; j < iter; j += 1) {
-                    for (int i = 0; i < dim; i += 1) {
+                for (int j = 0; j < iter; j++) {
+                    for (int i = 0; i < dim; i++) {
                         f.writeInt(in[i]);
                     }
                 }
@@ -793,8 +793,8 @@ public class BufferedFileTest {
 
                 is = new DataInputStream(new BufferedInputStream(new FileInputStream(filename), 32768));
                 resetTime();
-                for (int j = 0; j < iter; j += 1) {
-                    for (int i = 0; i < dim; i += 1) {
+                for (int j = 0; j < iter; j++) {
+                    for (int i = 0; i < dim; i++) {
                         in2[i] = is.readInt();
                     }
                 }
@@ -818,30 +818,30 @@ public class BufferedFileTest {
     public void testBufferedFile() throws Exception {
 
         double[][] td = new double[100][600];
-        for (int i = 0; i < 100; i += 1) {
-            for (int j = 0; j < 600; j += 1) {
+        for (int i = 0; i < 100; i++) {
+            for (int j = 0; j < 600; j++) {
                 td[i][j] = i + 2 * j;
             }
         }
         int[][][] ti = new int[5][4][3];
-        for (int i = 0; i < 5; i += 1) {
-            for (int j = 0; j < 4; j += 1) {
-                for (int k = 0; k < 3; k += 1) {
+        for (int i = 0; i < 5; i++) {
+            for (int j = 0; j < 4; j++) {
+                for (int k = 0; k < 3; k++) {
                     ti[i][j][k] = i * j * k;
                 }
             }
         }
 
         float[][] tf = new float[10][];
-        for (int i = 0; i < 10; i += 1) {
+        for (int i = 0; i < 10; i++) {
             tf[i] = new float[i];
-            for (int j = 0; j < i; j += 1) {
+            for (int j = 0; j < i; j++) {
                 tf[i][j] = (float) Math.sin(i * j);
             }
         }
 
         boolean[] tb = new boolean[100];
-        for (int i = 2; i < 100; i += 1) {
+        for (int i = 2; i < 100; i++) {
             tb[i] = !tb[i - 1];
         }
 
@@ -849,7 +849,7 @@ public class BufferedFileTest {
         ts[2][2] = 222;
 
         byte[] tbyte = new byte[1024];
-        for (int i = 0; i < tbyte.length; i += 1) {
+        for (int i = 0; i < tbyte.length; i++) {
             tbyte[i] = (byte) i;
         }
 
@@ -909,30 +909,30 @@ public class BufferedFileTest {
     public void testBufferedStreams() throws Exception {
 
         double[][] td = new double[100][600];
-        for (int i = 0; i < 100; i += 1) {
-            for (int j = 0; j < 600; j += 1) {
+        for (int i = 0; i < 100; i++) {
+            for (int j = 0; j < 600; j++) {
                 td[i][j] = i + 2 * j;
             }
         }
         int[][][] ti = new int[5][4][3];
-        for (int i = 0; i < 5; i += 1) {
-            for (int j = 0; j < 4; j += 1) {
-                for (int k = 0; k < 3; k += 1) {
+        for (int i = 0; i < 5; i++) {
+            for (int j = 0; j < 4; j++) {
+                for (int k = 0; k < 3; k++) {
                     ti[i][j][k] = i * j * k;
                 }
             }
         }
 
         float[][] tf = new float[10][];
-        for (int i = 0; i < 10; i += 1) {
+        for (int i = 0; i < 10; i++) {
             tf[i] = new float[i];
-            for (int j = 0; j < i; j += 1) {
+            for (int j = 0; j < i; j++) {
                 tf[i][j] = (float) Math.sin(i * j);
             }
         }
 
         boolean[] tb = new boolean[100];
-        for (int i = 2; i < 100; i += 1) {
+        for (int i = 2; i < 100; i++) {
             tb[i] = !tb[i - 1];
         }
 
@@ -940,7 +940,7 @@ public class BufferedFileTest {
         ts[2][2] = 222;
 
         byte[] tbyte = new byte[1024];
-        for (int i = 0; i < tbyte.length; i += 1) {
+        for (int i = 0; i < tbyte.length; i++) {
             tbyte[i] = (byte) i;
         }
 

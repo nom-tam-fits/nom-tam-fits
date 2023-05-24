@@ -204,7 +204,7 @@ public class AsciiTableHDU extends TableHDU<AsciiTable> {
         stream.println("    Length of row:   " + myHeader.getIntValue(NAXIS1));
         stream.println("  Data:");
         Object[] data = (Object[]) getKernel();
-        for (int i = 0; i < getNCols(); i += 1) {
+        for (int i = 0; i < getNCols(); i++) {
             stream.println("      " + i + ":" + ArrayFuncs.arrayDescription(data[i]));
         }
     }

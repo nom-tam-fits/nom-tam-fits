@@ -89,8 +89,8 @@ public class StreamingTileImageDataTest {
         final int axis2 = 200;
         final Random random = new Random();
         final int[][] testData = new int[axis1][axis2];
-        for (int x = 0; x < axis1; x += 1) {
-            for (int y = 0; y < axis2; y += 1) {
+        for (int x = 0; x < axis1; x++) {
+            for (int y = 0; y < axis2; y++) {
                 testData[x][y] = random.nextInt() * x + y;
             }
         }
@@ -140,8 +140,8 @@ public class StreamingTileImageDataTest {
         final int axis2 = 200;
         final Random random = new Random();
         final int[][] testData = new int[axis1][axis2];
-        for (int x = 0; x < axis1; x += 1) {
-            for (int y = 0; y < axis2; y += 1) {
+        for (int x = 0; x < axis1; x++) {
+            for (int y = 0; y < axis2; y++) {
                 testData[x][y] = random.nextInt() * x + y;
             }
         }

@@ -185,7 +185,7 @@ public class BinaryTableTest {
         assertEquals("col8", true, TestArrayFuncs.arrayEquals(multiString, bhdu.getColumns()[7]));
 
         String[] col = (String[]) bhdu.getColumn(2);
-        for (int i = 0; i < col.length; i += 1) {
+        for (int i = 0; i < col.length; i++) {
             col[i] = col[i].trim();
         }
         assertEquals("coi3", true, TestArrayFuncs.arrayEquals(strings, col));
@@ -212,7 +212,7 @@ public class BinaryTableTest {
         String oldString = strings[0];
         // Ensure that the first string is long...
         strings[0] = "abcdefghijklmnopqrstuvwxyz";
-        for (int i = 0; i < NROWS; i += 1) {
+        for (int i = 0; i < NROWS; i++) {
             tab.addRow(new Object[] {strings[i], shorts[i], floats[i], new double[] {doubles[i]}, multiString[i]});
         }
         Header hdr = new Header();
@@ -237,7 +237,7 @@ public class BinaryTableTest {
             // should fit.
             String[] res = (String[]) btu.getColumn(0);
 
-            for (int i = 0; i < NROWS; i += 1) {
+            for (int i = 0; i < NROWS; i++) {
                 System.out.println(i + "  " + res[i] + " :: " + strings[i] + " " + strings[i].equals(res[i]));
             }
             assertEquals("bfe0", true, TestArrayFuncs.arrayEquals(btu.getColumn(0), strings));
@@ -250,15 +250,15 @@ public class BinaryTableTest {
             String[][] results = (String[][]) btu.getColumn(4);
             assertEquals("bfe4", false, TestArrayFuncs.arrayEquals(results, multiString));
             int max = 0;
-            for (int i = 0; i < 3; i += 1) {
+            for (int i = 0; i < 3; i++) {
                 if (multiString[0][i].length() > max) {
                     max = multiString[0][i].length();
                 }
             }
             // Now check that within the truncation limit the strings are
             // identical.
-            for (int i = 0; i < NROWS; i += 1) {
-                for (int j = 0; j < 3; j += 1) {
+            for (int i = 0; i < NROWS; i++) {
+                for (int j = 0; j < 3; j++) {
                     String test = multiString[i][j];
                     if (test.length() > max) {
                         test = test.substring(0, max);
@@ -280,7 +280,7 @@ public class BinaryTableTest {
         f.read();
         BinaryTableHDU bhdu = (BinaryTableHDU) f.getHDU(1);
         BinaryTable btab = bhdu.getData();
-        for (int i = 0; i < NROWS; i += 1) {
+        for (int i = 0; i < NROWS; i++) {
 
             Object[] row = btab.getRow(i);
             float[][] p = (float[][]) row[0];
@@ -322,8 +322,8 @@ public class BinaryTableTest {
 
         }
         float[][][] cmplx = (float[][][]) btab.getColumn(6);
-        for (int i = 0; i < vc.length; i += 1) {
-            for (int j = 0; j < vc[i].length; j += 1) {
+        for (int i = 0; i < vc.length; i++) {
+            for (int j = 0; j < vc[i].length; j++) {
                 assertEquals("rowvc" + i + "_" + j, true,
                         TestArrayFuncs.arrayEquals(vc[i][j], cmplx[i + vc.length][j]));
             }
@@ -355,7 +355,7 @@ public class BinaryTableTest {
         f.read();
         BinaryTableHDU bhdu = (BinaryTableHDU) f.getHDU(1);
         BinaryTable btab = bhdu.getData();
-        for (int i = 0; i < NROWS; i += 1) {
+        for (int i = 0; i < NROWS; i++) {
 
             Object[] row = btab.getRow(i);
             float[][] p = (float[][]) row[0];
@@ -395,8 +395,8 @@ public class BinaryTableTest {
 
         }
         float[][][] cmplx = (float[][][]) btab.getColumn(6);
-        for (int i = 0; i < vc.length; i += 1) {
-            for (int j = 0; j < vc[i].length; j += 1) {
+        for (int i = 0; i < vc.length; i++) {
+            for (int j = 0; j < vc[i].length; j++) {
                 assertEquals("rowvc" + i + "_" + j, true,
                         TestArrayFuncs.arrayEquals(vc[i][j], cmplx[i + vc.length][j]));
             }
@@ -439,7 +439,7 @@ public class BinaryTableTest {
         // TTYPE, TCOMM, TFORM, [TDIM,] TUNIT, TX, TY
         int oldNCols = bhdu.getNCols();
 
-        for (int i = 0; i < bhdu.getNCols(); i += 1) {
+        for (int i = 0; i < bhdu.getNCols(); i++) {
             bhdu.setColumnMeta(i, "TTYPE", "NAM" + (i + 1), null, false);
             bhdu.setColumnMeta(i, "TCOMM", true, "Comment in comment", false);
             bhdu.setColumnMeta(i, "TUNIT", "UNIT" + (i + 1), null, true);
@@ -459,7 +459,7 @@ public class BinaryTableTest {
         bhdu = (BinaryTableHDU) f.getHDU(1);
         Header hdr = bhdu.getHeader();
         assertEquals("metaCount", oldNCols, bhdu.getNCols());
-        for (int i = 0; i < bhdu.getNCols(); i += 1) {
+        for (int i = 0; i < bhdu.getNCols(); i++) {
             // If this worked, the first header should be the TTYPE
             hdr.findCard("TTYPE" + (i + 1));
             HeaderCard hc = hdr.nextCard();
@@ -500,7 +500,7 @@ public class BinaryTableTest {
     @Before
     public void initialize() {
 
-        for (int i = 0; i < NROWS; i += 1) {
+        for (int i = 0; i < NROWS; i++) {
             bytes[i] = (byte) (2 * i);
             bits[i][0] = bytes[i];
             bits[i][1] = (byte) ~bytes[i];
@@ -511,8 +511,8 @@ public class BinaryTableTest {
             shorts[i][2] = (short) (4 * i);
 
             ints[i] = i * i;
-            for (int j = 0; j < 4; j += 1) {
-                for (int k = 0; k < 4; k += 1) {
+            for (int j = 0; j < 4; j++) {
+                for (int k = 0; k < 4; k++) {
                     floats[i][j][k] = (float) (i + j * Math.exp(k));
                 }
             }
@@ -533,13 +533,13 @@ public class BinaryTableTest {
 
             int m5 = i % 5;
             vc[i] = new float[m5][];
-            for (int j = 0; j < m5; j += 1) {
+            for (int j = 0; j < m5; j++) {
                 vc[i][j] = new float[2];
                 vc[i][j][0] = i;
                 vc[i][j][1] = -j;
             }
             vdc[i] = new double[m5][];
-            for (int j = 0; j < m5; j += 1) {
+            for (int j = 0; j < m5; j++) {
                 vdc[i][j] = new double[2];
                 vdc[i][j][0] = -j;
                 vdc[i][j][1] = i;
@@ -550,7 +550,7 @@ public class BinaryTableTest {
             complex[i][1] = (float) Math.sin(rad);
             dcomplex[i][0] = complex[i][0];
             dcomplex[i][1] = complex[i][1];
-            for (int j = 0; j < 4; j += 1) {
+            for (int j = 0; j < 4; j++) {
                 complex_arr[i][j][0] = (j + 1) * complex[i][0];
                 complex_arr[i][j][1] = (j + 1) * complex[i][1];
                 dcomplex_arr[i][j][0] = (j + 1) * complex[i][0];
@@ -558,11 +558,11 @@ public class BinaryTableTest {
             }
             int vcl = i % 3 + 1;
             vcomplex[i] = new double[vcl][2];
-            for (int j = 0; j < vcl; j += 1) {
+            for (int j = 0; j < vcl; j++) {
                 vcomplex[i][j][0] = i + j;
                 vcomplex[i][j][1] = i - j;
             }
-            for (int j = 0; j < 3; j += 1) {
+            for (int j = 0; j < 3; j++) {
                 multiString[i][j] = i + " " + "xxxxxx".substring(j) + " " + j;
             }
         }
@@ -592,7 +592,7 @@ public class BinaryTableTest {
         f = new Fits("target/bt11a.fits");
         bhdu = (BinaryTableHDU) f.getHDU(1);
         String[] vals = (String[]) bhdu.getColumn(0);
-        for (int i = 0; i < strings.length; i += 1) {
+        for (int i = 0; i < strings.length; i++) {
             assertEquals("ssa" + i, results1[i], vals[i]);
         }
 
@@ -610,7 +610,7 @@ public class BinaryTableTest {
         f = new Fits("target/bt11b.fits");
         bhdu = (BinaryTableHDU) f.getHDU(1);
         vals = (String[]) bhdu.getColumn(0);
-        for (int i = 0; i < strings.length; i += 1) {
+        for (int i = 0; i < strings.length; i++) {
             assertEquals("ssb" + i, results2[i], vals[i]);
         }
 
@@ -688,7 +688,7 @@ public class BinaryTableTest {
         int[][] ia = new int[10][0];
         Fits f = new Fits();
 
-        for (int i = 0; i < sa.length; i += 1) {
+        for (int i = 0; i < sa.length; i++) {
             sa[i] = "";
         }
 
@@ -739,9 +739,9 @@ public class BinaryTableTest {
                 firstHdu = hdu;
             }
             int nrow = hdu.getHeader().getIntValue("NAXIS2");
-            count += 1;
+            count++;
             assertEquals(nrow, NROWS);
-            for (int i = 0; i < nrow; i += 1) {
+            for (int i = 0; i < nrow; i++) {
                 Object o = hdu.getRow(i);
             }
         }
@@ -764,7 +764,7 @@ public class BinaryTableTest {
 
         /*** Create a binary table from an Object[][] tiledImageOperation */
         Object[][] x = new Object[5][3];
-        for (int i = 0; i < 5; i += 1) {
+        for (int i = 0; i < 5; i++) {
             x[i][0] = new float[] {i};
             x[i][1] = new String("AString" + i);
             x[i][2] = new int[][] {{i, 2 * i}, {3 * i, 4 * i}};
@@ -935,13 +935,13 @@ public class BinaryTableTest {
 
             BinaryTableHDU thdu = (BinaryTableHDU) f.getHDU(1);
 
-            for (int i = 0; i < data.length; i += 1) {
+            for (int i = 0; i < data.length; i++) {
 
                 Object col = thdu.getColumn(i);
                 if (i == 8) {
                     String[] st = (String[]) col;
 
-                    for (int j = 0; j < st.length; j += 1) {
+                    for (int j = 0; j < st.length; j++) {
                         st[j] = st[j].trim();
                     }
                 }
@@ -992,12 +992,12 @@ public class BinaryTableTest {
         assertEquals("HDR5", "bytes", hdr.getStringValue("TTYPE1"));
         assertEquals("HDR6", "doubles", hdr.getStringValue("TTYPE7"));
 
-        for (int i = 0; i < data.length; i += 1) {
+        for (int i = 0; i < data.length; i++) {
             Object col = thdu.getColumn(i);
             if (i == 8) {
                 String[] st = (String[]) col;
 
-                for (int j = 0; j < st.length; j += 1) {
+                for (int j = 0; j < st.length; j++) {
                     st[j] = st[j].trim();
                 }
             }
@@ -1025,7 +1025,7 @@ public class BinaryTableTest {
             assertEquals("var1", true, hdr.getIntValue("PCOUNT") > 0);
             assertEquals("var2", data.length, hdr.getIntValue("TFIELDS"));
 
-            for (int i = 0; i < data.length; i += 1) {
+            for (int i = 0; i < data.length; i++) {
                 assertEquals("vardata" + i, true, TestArrayFuncs.arrayEquals(data[i], bhdu.getColumn(i)));
             }
 

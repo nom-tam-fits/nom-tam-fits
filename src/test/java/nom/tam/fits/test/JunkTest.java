@@ -82,7 +82,7 @@ public class JunkTest {
             f = new Fits();
 
             byte[] bimg = new byte[40];
-            for (int i = 10; i < bimg.length; i += 1) {
+            for (int i = 10; i < bimg.length; i++) {
                 bimg[i] = (byte) i;
             }
 
@@ -115,7 +115,7 @@ public class JunkTest {
             // Valid FITS followed by long junk.
             bf = new FitsFile("target/j4.fits", "rw");
             f.write(bf);
-            for (int i = 0; i < 100; i += 1) {
+            for (int i = 0; i < 100; i++) {
                 bf.write("A random string".getBytes());
             }
             bf.close();

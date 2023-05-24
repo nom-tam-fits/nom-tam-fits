@@ -102,9 +102,9 @@ public class ArrayFuncs2Test {
             System.out.println("Unable to allocate large tiledImageOperation. Test skipped");
         }
 
-        for (int i = 0; i < test1.length; i += 1) {
-            for (int j = 0; j < test1[i].length; j += 1) {
-                for (int k = 0; k < test1[i][j].length; k += 1) {
+        for (int i = 0; i < test1.length; i++) {
+            for (int j = 0; j < test1[i].length; j++) {
+                for (int k = 0; k < test1[i][j].length; k++) {
                     test1[i][j][k] = i + j + k;
                 }
             }
@@ -185,7 +185,7 @@ public class ArrayFuncs2Test {
                 5
         };
         double[] y = new double[x.length];
-        for (int i = 0; i < y.length; i += 1) {
+        for (int i = 0; i < y.length; i++) {
             y[i] = x[i] + 1.E-10;
         }
 
@@ -203,7 +203,7 @@ public class ArrayFuncs2Test {
                 5
         };
         float[] fy = new float[fx.length];
-        for (int i = 0; i < fy.length; i += 1) {
+        for (int i = 0; i < fy.length; i++) {
             fy[i] = fx[i] + 1.E-5F;
         }
 

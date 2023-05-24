@@ -70,7 +70,7 @@ public class UndefinedData extends Data {
         int naxis = h.getIntValue(NAXIS);
 
         int size = naxis > 0 ? 1 : 0;
-        for (int i = 0; i < naxis; i += 1) {
+        for (int i = 0; i < naxis; i++) {
             size *= h.getIntValue(NAXISn.n(i + 1));
         }
         size += h.getIntValue(PCOUNT);
