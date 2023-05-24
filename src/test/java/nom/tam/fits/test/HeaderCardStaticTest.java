@@ -1,6 +1,5 @@
 package nom.tam.fits.test;
 
-
 /*
  * #%L
  * nom.tam FITS library
@@ -48,7 +47,6 @@ import nom.tam.fits.header.IFitsHeader.VALUE;
 import nom.tam.fits.header.Standard;
 import nom.tam.util.ComplexValue;
 
-
 public class HeaderCardStaticTest {
 
     @Test
@@ -83,7 +81,6 @@ public class HeaderCardStaticTest {
         assertFalse(hc.isKeyValuePair());
     }
 
-
     @Test
     public void testCreateHistoryCard() throws Exception {
         String text = "my comment here";
@@ -117,7 +114,6 @@ public class HeaderCardStaticTest {
         assertTrue(hc.isIntegerType());
         assertTrue(hc.isKeyValuePair());
     }
-
 
     @Test
     public void testCreateIFitsHeaderCommentCard() throws Exception {
@@ -167,7 +163,8 @@ public class HeaderCardStaticTest {
         assertEquals(Double.class, hc.valueType());
         assertEquals(3.0024553, hc.getValue(Double.class, 0.0).doubleValue(), 1e-12);
 
-        hc = HeaderCard.create(Standard.BSCALE, new BigDecimal("3.002455343245466030630655356643636346034056666034624354230636705034682857256756"));
+        hc = HeaderCard.create(Standard.BSCALE,
+                new BigDecimal("3.002455343245466030630655356643636346034056666034624354230636705034682857256756"));
         assertTrue(hc.isKeyValuePair());
         assertEquals(Standard.BSCALE.key(), hc.getKey());
         assertEquals(BigDecimal.class, hc.valueType());

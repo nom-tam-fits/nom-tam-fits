@@ -185,18 +185,7 @@ public class GZip2CompressTest {
 
     @Test
     public void testByteBuffers() throws Exception {
-        byte[] expected = {
-                1,
-                2,
-                3,
-                4,
-                5,
-                6,
-                7,
-                8,
-                9,
-                10
-        };
+        byte[] expected = {1, 2, 3, 4, 5, 6, 7, 8, 9, 10};
         byte[] array = new byte[10];
         OutputStream out = null;
         try {

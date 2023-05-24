@@ -51,8 +51,7 @@ public class QuantizeProcessor {
 
         @Override
         public boolean compress(DoubleBuffer buffer, ByteBuffer compressed) {
-            IntBuffer intData = IntBuffer
-                    .wrap(new int[quantizeOption.getTileHeight() * quantizeOption.getTileWidth()]);
+            IntBuffer intData = IntBuffer.wrap(new int[quantizeOption.getTileHeight() * quantizeOption.getTileWidth()]);
             double[] doubles = new double[quantizeOption.getTileHeight() * quantizeOption.getTileWidth()];
             buffer.get(doubles);
             if (!this.quantize(doubles, intData)) {
@@ -65,8 +64,7 @@ public class QuantizeProcessor {
 
         @Override
         public void decompress(ByteBuffer compressed, DoubleBuffer buffer) {
-            IntBuffer intData = IntBuffer
-                    .wrap(new int[quantizeOption.getTileHeight() * quantizeOption.getTileWidth()]);
+            IntBuffer intData = IntBuffer.wrap(new int[quantizeOption.getTileHeight() * quantizeOption.getTileWidth()]);
             postCompressor.decompress(compressed, intData);
             intData.rewind();
             unquantize(intData, buffer);
@@ -93,8 +91,7 @@ public class QuantizeProcessor {
             for (int index = 0; index < doubles.length; index++) {
                 doubles[index] = floats[index];
             }
-            IntBuffer intData = IntBuffer
-                    .wrap(new int[quantizeOption.getTileHeight() * quantizeOption.getTileWidth()]);
+            IntBuffer intData = IntBuffer.wrap(new int[quantizeOption.getTileHeight() * quantizeOption.getTileWidth()]);
             if (!this.quantize(doubles, intData)) {
                 return false;
             }
@@ -105,8 +102,7 @@ public class QuantizeProcessor {
 
         @Override
         public void decompress(ByteBuffer compressed, FloatBuffer buffer) {
-            IntBuffer intData = IntBuffer
-                    .wrap(new int[quantizeOption.getTileHeight() * quantizeOption.getTileWidth()]);
+            IntBuffer intData = IntBuffer.wrap(new int[quantizeOption.getTileHeight() * quantizeOption.getTileWidth()]);
             postCompressor.decompress(compressed, intData);
             intData.rewind();
             double[] doubles = new double[quantizeOption.getTileHeight() * quantizeOption.getTileWidth()];
@@ -179,14 +175,12 @@ public class QuantizeProcessor {
 
         @Override
         protected double toDouble(int pixel) {
-            return (pixel - nextRandom() + ROUNDING_HALF) * bScale
-                    + bZero;
+            return (pixel - nextRandom() + ROUNDING_HALF) * bScale + bZero;
         }
 
         @Override
         protected int toInt(double pixel) {
-            return nint((pixel - bZero) / bScale + nextRandom()
-            - ROUNDING_HALF);
+            return nint((pixel - bZero) / bScale + nextRandom() - ROUNDING_HALF);
         }
     }
 
@@ -345,12 +339,10 @@ public class QuantizeProcessor {
     }
 
     public boolean quantize(double[] doubles, IntBuffer quants) {
-        boolean success = quantize.quantize(doubles, quantizeOption.getTileWidth(),
-                quantizeOption.getTileHeight());
+        boolean success = quantize.quantize(doubles, quantizeOption.getTileWidth(), quantizeOption.getTileHeight());
         if (success) {
             calculateBZeroAndBscale();
-            quantize(DoubleBuffer.wrap(doubles, 0,
-                    quantizeOption.getTileWidth() * quantizeOption.getTileHeight()), quants);
+            quantize(DoubleBuffer.wrap(doubles, 0, quantizeOption.getTileWidth() * quantizeOption.getTileHeight()), quants);
         }
         return success;
     }

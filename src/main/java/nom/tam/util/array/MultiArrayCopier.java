@@ -54,7 +54,8 @@ public final class MultiArrayCopier<Source, Destination> {
     private MultiArrayCopier(Source fromArray, Destination toArray) {
         from = new MultiArrayIterator<>(fromArray);
         to = new MultiArrayIterator<>(toArray);
-        copyFactory = (MultiArrayCopyFactory<Source, Destination>) MultiArrayCopyFactory.select(from.deepComponentType(), to.deepComponentType());
+        copyFactory = (MultiArrayCopyFactory<Source, Destination>) MultiArrayCopyFactory.select(from.deepComponentType(),
+                to.deepComponentType());
     }
 
     private void copyInto() {
@@ -74,7 +75,8 @@ public final class MultiArrayCopier<Source, Destination> {
                 currentToArrayOffset = 0;
                 currentToArrayLength = Array.getLength(currentToArray);
             }
-            int length = Math.min(currentToArrayLength - currentToArrayOffset, currentFromArrayLength - currentFromArrayOffset);
+            int length = Math.min(currentToArrayLength - currentToArrayOffset,
+                    currentFromArrayLength - currentFromArrayOffset);
             copyFactory.arraycopy(currentFromArray, currentFromArrayOffset, currentToArray, currentToArrayOffset, length);
             currentFromArrayOffset += length;
             currentToArrayOffset += length;

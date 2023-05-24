@@ -53,9 +53,9 @@ public final class AsciiFuncs {
     /**
      * Convert to ASCII or return null if not compatible.
      *
-     * @return the String represented by the bytes
-     * @param buf
-     *            the bytes representing a string
+     * @return     the String represented by the bytes
+     *
+     * @param  buf the bytes representing a string
      */
     public static String asciiString(byte[] buf) {
         return asciiString(buf, 0, buf.length);
@@ -64,13 +64,11 @@ public final class AsciiFuncs {
     /**
      * Convert to ASCII or return null if not compatible.
      *
-     * @param buf
-     *            buffer to get the string bytes from
-     * @param start
-     *            the position where the string starts
-     * @param len
-     *            the length of the string
-     * @return the extracted string
+     * @param  buf   buffer to get the string bytes from
+     * @param  start the position where the string starts
+     * @param  len   the length of the string
+     *
+     * @return       the extracted string
      */
     public static String asciiString(byte[] buf, int start, int len) {
         return new String(buf, start, len, US_ASCII);
@@ -79,19 +77,20 @@ public final class AsciiFuncs {
     /**
      * Convert an ASCII string to bytes.
      *
-     * @return the string converted to bytes
-     * @param in
-     *            the string to convert
+     * @return    the string converted to bytes
+     *
+     * @param  in the string to convert
      */
     public static byte[] getBytes(String in) {
         return in.getBytes(US_ASCII);
     }
 
     /**
-     * @deprecated Use {@link Character#isWhitespace(char)} instead.
+     * @deprecated   Use {@link Character#isWhitespace(char)} instead.
      *
-     * @param c     the character to check
-     * @return      <code>true</code> if it is a white-space character, otherwise <code>false</code>.
+     * @param      c the character to check
+     *
+     * @return       <code>true</code> if it is a white-space character, otherwise <code>false</code>.
      */
     @Deprecated
     public static boolean isWhitespace(char c) {

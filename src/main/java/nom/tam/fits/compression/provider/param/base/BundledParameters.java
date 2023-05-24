@@ -47,7 +47,7 @@ import nom.tam.fits.compression.provider.param.api.ICompressParameters;
  *
  * @author Attila Kovacs
  *
- * @since 1.18
+ * @since  1.18
  */
 public class BundledParameters extends CompressParameters {
 
@@ -57,9 +57,9 @@ public class BundledParameters extends CompressParameters {
      * Creates a new set of bundled compression parameters from the specified separate parameter components.
      *
      * @param components The components, which are to be bundled to provide a single set of parameters that span all of
-     *            them.
+     *                       them.
      *
-     * @see #get(int)
+     * @see              #get(int)
      */
     public BundledParameters(ICompressParameters... components) {
         bundle = new ArrayList<>();
@@ -75,7 +75,7 @@ public class BundledParameters extends CompressParameters {
      *
      * @return the number of component compression parameter sets in this bundle.
      *
-     * @see #get(int)
+     * @see    #get(int)
      */
     public int size() {
         return bundle.size();
@@ -84,13 +84,13 @@ public class BundledParameters extends CompressParameters {
     /**
      * Resturn the compression parameters for the specified component index.
      *
-     * @param index the index of the paramete set in the bundle.
+     * @param  index                     the index of the paramete set in the bundle.
      *
-     * @return the compression parameters for the particular bundle component.
+     * @return                           the compression parameters for the particular bundle component.
      *
      * @throws IndexOutOfBoundsException if the index it negative or beyond the index of the last component.
      *
-     * @see #size()
+     * @see                              #size()
      */
     public ICompressParameters get(int index) {
         return bundle.get(index);

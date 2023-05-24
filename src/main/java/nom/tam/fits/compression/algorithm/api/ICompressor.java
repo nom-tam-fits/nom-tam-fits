@@ -35,34 +35,28 @@ import java.nio.Buffer;
 import java.nio.ByteBuffer;
 
 /**
- * Compressor that can compress a Buffer into a ByteBuffer and vize versa. the
- * Byte buffer must have enough space allocated else an exception will be
- * thrown.
+ * Compressor that can compress a Buffer into a ByteBuffer and vize versa. the Byte buffer must have enough space
+ * allocated else an exception will be thrown.
  *
- * @param <T>  The generic type of NIO buffer on which this compressor operates.
+ * @param <T> The generic type of NIO buffer on which this compressor operates.
  */
 public interface ICompressor<T extends Buffer> {
 
     /**
-     * compress the buffer into the byte buffer. Attention enough space must
-     * already be allocated.
+     * compress the buffer into the byte buffer. Attention enough space must already be allocated.
      *
-     * @param buffer
-     *            the buffer to compress.
-     * @param compressed
-     *            the compressed data
-     * @return true if the compression succeeded.
+     * @param  buffer     the buffer to compress.
+     * @param  compressed the compressed data
+     *
+     * @return            true if the compression succeeded.
      */
     boolean compress(T buffer, ByteBuffer compressed);
 
     /**
-     * Decompress the byte buffer and restore the buffer from it, again enough
-     * space must already be allocated.
+     * Decompress the byte buffer and restore the buffer from it, again enough space must already be allocated.
      *
-     * @param compressed
-     *            the compressed data
-     * @param buffer
-     *            the buffer to fill with the uncompressed data.
+     * @param compressed the compressed data
+     * @param buffer     the buffer to fill with the uncompressed data.
      */
     void decompress(ByteBuffer compressed, T buffer);
 }

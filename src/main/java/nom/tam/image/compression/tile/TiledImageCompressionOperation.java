@@ -147,7 +147,7 @@ public class TiledImageCompressionOperation extends AbstractTiledImageOperation<
             compressOptions = compressorControl.option();
             if (quantAlgorithm != null) {
                 compressOptions.getCompressionParameters()
-                .getValuesFromHeader(new HeaderCardAccess(ZQUANTIZ, quantAlgorithm));
+                        .getValuesFromHeader(new HeaderCardAccess(ZQUANTIZ, quantAlgorithm));
             }
             compressOptions.getCompressionParameters().initializeColumns(getNumberOfTileOperations());
         }
@@ -186,8 +186,8 @@ public class TiledImageCompressionOperation extends AbstractTiledImageOperation<
             if (compressorControl == null) {
                 throw new IllegalStateException(
                         "Found no compressor control for compression algorithm:" + compressAlgorithm + //
-                        " (quantize algorithm = " + quantAlgorithm + ", base type = "
-                        + getBaseType().primitiveClass() + ")");
+                                " (quantize algorithm = " + quantAlgorithm + ", base type = "
+                                + getBaseType().primitiveClass() + ")");
             }
         }
         return compressorControl;
@@ -213,10 +213,10 @@ public class TiledImageCompressionOperation extends AbstractTiledImageOperation<
      * preserve null values, where the value representing null is specified as a parameter. This parameter is ignored
      * for floating point values where NaN is used as null value.
      *
-     * @param nullValue the value representing null for byte/short and integer pixel values
-     * @param compressionAlgorithm compression algorithm to use for the null pixel mask
+     * @param  nullValue            the value representing null for byte/short and integer pixel values
+     * @param  compressionAlgorithm compression algorithm to use for the null pixel mask
      *
-     * @return the created null pixel mask
+     * @return                      the created null pixel mask
      */
     public ImageNullPixelMask preserveNulls(long nullValue, String compressionAlgorithm) {
         imageNullPixelMask = new ImageNullPixelMask(getTileOperations().length, nullValue, compressionAlgorithm);
@@ -285,13 +285,14 @@ public class TiledImageCompressionOperation extends AbstractTiledImageOperation<
      * Sets the compression algorithm, via a <code>ZCMPTYPE</code> header card or equivalent. The card must contain one
      * of the values recognized by the FITS standard. If not, <code>null</code> will be set instead.
      *
-     * @param compressAlgorithmCard The header card that specifies the compression algorithm, with one of the standard
-     *            recognized values such as {@link Compression#ZCMPTYPE_GZIP_1}, or <code>null</code>.
+     * @param  compressAlgorithmCard The header card that specifies the compression algorithm, with one of the standard
+     *                                   recognized values such as {@link Compression#ZCMPTYPE_GZIP_1}, or
+     *                                   <code>null</code>.
      *
-     * @return itself
+     * @return                       itself
      *
-     * @see #getCompressAlgorithm()
-     * @see #setQuantAlgorithm(HeaderCard)
+     * @see                          #getCompressAlgorithm()
+     * @see                          #setQuantAlgorithm(HeaderCard)
      */
     public TiledImageCompressionOperation setCompressAlgorithm(HeaderCard compressAlgorithmCard) {
         compressAlgorithm = null;
@@ -316,13 +317,14 @@ public class TiledImageCompressionOperation extends AbstractTiledImageOperation<
      * Sets the quantization algorithm, via a <code>ZQUANTIZ</code> header card or equivalent. The card must contain one
      * of the values recognized by the FITS standard. If not, <code>null</code> will be set instead.
      *
-     * @param quantAlgorithmCard The header card that specifies the compression algorithm, with one of the standard
-     *            recognized values such as {@link Compression#ZQUANTIZ_NO_DITHER}, or <code>null</code>.
+     * @param  quantAlgorithmCard The header card that specifies the compression algorithm, with one of the standard
+     *                                recognized values such as {@link Compression#ZQUANTIZ_NO_DITHER}, or
+     *                                <code>null</code>.
      *
-     * @return itself
+     * @return                    itself
      *
-     * @see #getQuantAlgorithm()
-     * @see #setCompressAlgorithm(HeaderCard)
+     * @see                       #getQuantAlgorithm()
+     * @see                       #setCompressAlgorithm(HeaderCard)
      */
     public synchronized TiledImageCompressionOperation setQuantAlgorithm(HeaderCard quantAlgorithmCard) {
         quantAlgorithm = null;
@@ -350,10 +352,10 @@ public class TiledImageCompressionOperation extends AbstractTiledImageOperation<
      *             keyword), or <code>null</code> if not quantization is currently defined, possibly because an invalid
      *             value was set before.
      *
-     * @see #setQuantAlgorithm(HeaderCard)
-     * @see #getCompressAlgorithm()
+     * @see    #setQuantAlgorithm(HeaderCard)
+     * @see    #getCompressAlgorithm()
      *
-     * @since 1.18
+     * @since  1.18
      */
     public synchronized String getQuantAlgorithm() {
         return quantAlgorithm;
@@ -366,10 +368,10 @@ public class TiledImageCompressionOperation extends AbstractTiledImageOperation<
      *             keyword), or <code>null</code> if not quantization is currently defined, possibly because an invalid
      *             value was set before.
      *
-     * @see #setCompressAlgorithm(HeaderCard)
-     * @see #getQuantAlgorithm()
+     * @see    #setCompressAlgorithm(HeaderCard)
+     * @see    #getQuantAlgorithm()
      *
-     * @since 1.18
+     * @since  1.18
      */
     public String getCompressAlgorithm() {
         return compressAlgorithm;
@@ -444,8 +446,8 @@ public class TiledImageCompressionOperation extends AbstractTiledImageOperation<
         setTileAxes(tileAxes);
     }
 
-    private <T> Object setInColumn(Object column, boolean predicate, TileCompressionOperation tileOperation,
-            Class<T> clazz, T value) {
+    private <T> Object setInColumn(Object column, boolean predicate, TileCompressionOperation tileOperation, Class<T> clazz,
+            T value) {
         if (predicate) {
             if (column == null) {
                 column = Array.newInstance(clazz, getNumberOfTileOperations());
@@ -467,8 +469,8 @@ public class TiledImageCompressionOperation extends AbstractTiledImageOperation<
                     compressedData);
             gzipColumn = setInColumn(gzipColumn, compression == GZIP_COMPRESSED, tileOperation, byte[].class,
                     compressedData);
-            uncompressedColumn = setInColumn(uncompressedColumn, compression == UNCOMPRESSED, tileOperation,
-                    byte[].class, compressedData);
+            uncompressedColumn = setInColumn(uncompressedColumn, compression == UNCOMPRESSED, tileOperation, byte[].class,
+                    compressedData);
         }
         setNullEntries(compressedColumn, new byte[0]);
         setNullEntries(gzipColumn, new byte[0]);

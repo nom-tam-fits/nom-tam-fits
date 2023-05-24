@@ -34,8 +34,7 @@ package nom.tam.image.tile.operation;
 import java.util.Arrays;
 
 /**
- * Description of the erea the tile covers of an image, at the moment only 2
- * dimentional tiles are supported.
+ * Description of the erea the tile covers of an image, at the moment only 2 dimentional tiles are supported.
  */
 public class TileArea {
 
@@ -51,25 +50,25 @@ public class TileArea {
     /**
      * Returns the dimensionality of the tile area.
      *
-     * @return      The dimensionality of the tile area or 0 if the tile is uninitialized.
+     * @return The dimensionality of the tile area or 0 if the tile is uninitialized.
      *
-     * @since 1.17
+     * @since  1.17
      */
     public int dimension() {
         return startPoint == null ? 0 : startPoint.length;
     }
 
     /**
-     * @param other
-     *            the tile to test intersection with
-     * @return true if the tile intersects with the specified other tile?
+     * @param  other                    the tile to test intersection with
+     *
+     * @return                          true if the tile intersects with the specified other tile?
      *
      * @throws IllegalArgumentException if the two tiles have different dimensionalities.
      */
     public boolean intersects(TileArea other) throws IllegalArgumentException {
         if (other.dimension() != dimension()) {
-            throw new IllegalArgumentException("Tiles of different dimensionalities ("
-                    + other.dimension() + " vs " + dimension() + ".");
+            throw new IllegalArgumentException(
+                    "Tiles of different dimensionalities (" + other.dimension() + " vs " + dimension() + ".");
         }
 
         for (int i = dimension(); --i >= 0;) {

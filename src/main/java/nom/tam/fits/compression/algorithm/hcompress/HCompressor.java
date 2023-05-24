@@ -156,8 +156,7 @@ public abstract class HCompressor<T extends Buffer> implements ICompressor<T> {
     }
 
     protected void compress(long[] longArray, ByteBuffer compressed) {
-        compress().compress(longArray, options.getTileHeight(), options.getTileWidth(),
-                options.getScale(), compressed);
+        compress().compress(longArray, options.getTileHeight(), options.getTileWidth(), options.getScale(), compressed);
     }
 
     private HDecompress decompress() {

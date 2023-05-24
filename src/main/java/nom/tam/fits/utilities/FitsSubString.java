@@ -32,15 +32,13 @@ package nom.tam.fits.utilities;
  */
 
 /**
- * This class is a pointer into a part of an other string, it can be manipulated
- * by changing the position pointers into the "original" string. This class is
- * aware of the escape quote, two quotes in sequence the respresent a single
- * quote.
+ * This class is a pointer into a part of an other string, it can be manipulated by changing the position pointers into
+ * the "original" string. This class is aware of the escape quote, two quotes in sequence the respresent a single quote.
  *
- * @author Richard van Nieuwenhoven
+ * @author     Richard van Nieuwenhoven
  *
- * @deprecated Was needed by {@link FitsLineAppender} only, which itself is deprecated in
- *              favor of the package-level <code>nom.tam.fits.HeaderCardFormatter</code>.
+ * @deprecated Was needed by {@link FitsLineAppender} only, which itself is deprecated in favor of the package-level
+ *                 <code>nom.tam.fits.HeaderCardFormatter</code>.
  */
 @Deprecated
 public class FitsSubString {
@@ -63,8 +61,7 @@ public class FitsSubString {
     /**
      * constructor for the substring, start by representing the whole string.
      *
-     * @param originalString
-     *            the string to represent.
+     * @param originalString the string to represent.
      */
     public FitsSubString(String originalString) {
         this.originalString = originalString == null ? "" : originalString;
@@ -75,8 +72,7 @@ public class FitsSubString {
     /**
      * append the current string representation to the StringBuffer.
      *
-     * @param buffer
-     *            the buffer to append to.
+     * @param buffer the buffer to append to.
      */
     public void appendTo(StringBuilder buffer) {
         buffer.append(originalString, offset, offset + length);
@@ -85,9 +81,9 @@ public class FitsSubString {
     /**
      * get the character at the specified position.
      *
-     * @param pos
-     *            the position the get the character from
-     * @return the character at the specified position
+     * @param  pos the position the get the character from
+     *
+     * @return     the character at the specified position
      */
     public char charAt(int pos) {
         return originalString.charAt(pos + offset);
@@ -101,12 +97,10 @@ public class FitsSubString {
     }
 
     /**
-     * check the string and set it to the maximum length specified. if a escaped
-     * quote is on the boundary the length is reduced in a way that the string
-     * does not separate an escape quote.
+     * check the string and set it to the maximum length specified. if a escaped quote is on the boundary the length is
+     * reduced in a way that the string does not separate an escape quote.
      *
-     * @param max
-     *            the maximum string legth to set.
+     * @param max the maximum string legth to set.
      */
     public void getAdjustedLength(int max) {
         if (max <= 0) {
@@ -130,9 +124,8 @@ public class FitsSubString {
     }
 
     /**
-     * shift the sting to the rest of the string, the part of the original
-     * string that is after the part of the string this instance currently
-     * represents.
+     * shift the sting to the rest of the string, the part of the original string that is after the part of the string
+     * this instance currently represents.
      */
     public void rest() {
         offset += length;
@@ -142,8 +135,7 @@ public class FitsSubString {
     /**
      * skip over the specified number of characters.
      *
-     * @param count
-     *            the number of chars to skip
+     * @param count the number of chars to skip
      */
     public void skip(int count) {
         offset += count;
@@ -151,9 +143,9 @@ public class FitsSubString {
     }
 
     /**
-     * @param string
-     *            the string to check
-     * @return true if the current string starts with the specified string.
+     * @param  string the string to check
+     *
+     * @return        true if the current string starts with the specified string.
      */
     public boolean startsWith(String string) {
         return originalString.regionMatches(offset, string, 0, string.length());

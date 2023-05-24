@@ -39,7 +39,6 @@ import nom.tam.fits.FitsFactory;
 
 public class ArrayDataOutputTest {
 
-
     @Test
     public void testHDUWriteNonFitsStream() throws Exception {
         int[][] data = new int[2][2];
@@ -47,82 +46,106 @@ public class ArrayDataOutputTest {
         ArrayDataOutput o = new ArrayDataOutput() {
 
             @Override
-            public void write(int b) throws IOException {}
+            public void write(int b) throws IOException {
+            }
 
             @Override
-            public void write(byte[] b) throws IOException {}
+            public void write(byte[] b) throws IOException {
+            }
 
             @Override
-            public void write(byte[] b, int off, int len) throws IOException {}
+            public void write(byte[] b, int off, int len) throws IOException {
+            }
 
             @Override
-            public void writeBoolean(boolean v) throws IOException {}
+            public void writeBoolean(boolean v) throws IOException {
+            }
 
             @Override
-            public void writeByte(int v) throws IOException {}
+            public void writeByte(int v) throws IOException {
+            }
 
             @Override
-            public void writeBytes(String s) throws IOException {}
+            public void writeBytes(String s) throws IOException {
+            }
 
             @Override
-            public void writeChar(int v) throws IOException {}
+            public void writeChar(int v) throws IOException {
+            }
 
             @Override
-            public void writeChars(String s) throws IOException {}
+            public void writeChars(String s) throws IOException {
+            }
 
             @Override
-            public void writeDouble(double v) throws IOException {}
+            public void writeDouble(double v) throws IOException {
+            }
 
             @Override
-            public void writeFloat(float v) throws IOException {}
+            public void writeFloat(float v) throws IOException {
+            }
 
             @Override
-            public void writeInt(int v) throws IOException {}
+            public void writeInt(int v) throws IOException {
+            }
 
             @Override
-            public void writeLong(long v) throws IOException {}
+            public void writeLong(long v) throws IOException {
+            }
 
             @Override
-            public void writeShort(int v) throws IOException {}
+            public void writeShort(int v) throws IOException {
+            }
 
             @Override
-            public void writeUTF(String s) throws IOException {}
+            public void writeUTF(String s) throws IOException {
+            }
 
             @Override
-            public void close() throws IOException {}
+            public void close() throws IOException {
+            }
 
             @Override
-            public void flush() throws IOException {}
+            public void flush() throws IOException {
+            }
 
             @Override
-            public void write(boolean[] buf, int offset, int size) throws IOException {}
+            public void write(boolean[] buf, int offset, int size) throws IOException {
+            }
 
             @Override
-            public void write(char[] buf, int offset, int size) throws IOException {}
+            public void write(char[] buf, int offset, int size) throws IOException {
+            }
 
             @Override
-            public void write(double[] buf, int offset, int size) throws IOException {}
+            public void write(double[] buf, int offset, int size) throws IOException {
+            }
 
             @Override
-            public void write(float[] buf, int offset, int size) throws IOException {}
+            public void write(float[] buf, int offset, int size) throws IOException {
+            }
 
             @Override
-            public void write(int[] buf, int offset, int size) throws IOException {}
+            public void write(int[] buf, int offset, int size) throws IOException {
+            }
 
             @Override
-            public void write(long[] buf, int offset, int size) throws IOException {}
+            public void write(long[] buf, int offset, int size) throws IOException {
+            }
 
             @Override
-            public void write(short[] buf, int offset, int size) throws IOException {}
+            public void write(short[] buf, int offset, int size) throws IOException {
+            }
 
             @Override
-            public void write(String[] buf, int offset, int size) throws IOException {}
+            public void write(String[] buf, int offset, int size) throws IOException {
+            }
 
             @Override
-            public void writeArray(Object o) throws IOException, IllegalArgumentException {}
+            public void writeArray(Object o) throws IOException, IllegalArgumentException {
+            }
 
         };
-
 
         FitsFactory.hduFactory(data).write(o);
 

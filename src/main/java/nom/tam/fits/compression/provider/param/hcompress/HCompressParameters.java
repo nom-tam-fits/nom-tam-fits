@@ -57,9 +57,6 @@ public class HCompressParameters extends CompressParameters {
 
     @Override
     protected ICompressHeaderParameter[] headerParameters() {
-        return new ICompressHeaderParameter[]{
-                scale,
-                smooth
-        };
+        return new ICompressHeaderParameter[] {scale, smooth};
     }
 }

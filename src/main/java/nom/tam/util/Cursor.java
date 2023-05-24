@@ -32,37 +32,32 @@ package nom.tam.util;
  */
 
 /**
- * This interface extends the Iterator interface to allow insertion of data and
- * move to previous entries in a collection.
+ * This interface extends the Iterator interface to allow insertion of data and move to previous entries in a
+ * collection.
  *
- * @param <KEY>       the generic type of the keyword element
- * @param <VALUE>     the generic type of the associated value
+ * @param <KEY>   the generic type of the keyword element
+ * @param <VALUE> the generic type of the associated value
  */
 public interface Cursor<KEY, VALUE> extends java.util.Iterator<VALUE> {
 
     /**
-     * Add a keyed entry at the current location. The new entry is inserted
-     * before the entry that would be returned in the next invocation of 'next'.
-     * The new element is placed such that it will be called by a prev() call,
-     * but not a next() call.The return value for that call is unaffected. Note:
-     * this method is not in the Iterator interface.
+     * Add a keyed entry at the current location. The new entry is inserted before the entry that would be returned in
+     * the next invocation of 'next'. The new element is placed such that it will be called by a prev() call, but not a
+     * next() call.The return value for that call is unaffected. Note: this method is not in the Iterator interface.
      *
-     * @param key
-     *            the key of the value to add
-     * @param reference
-     *            the value to add
-     * @deprecated use key parameter can be omitted, so use {@link #add(Object)}
-     *             instead
+     * @param      key       the key of the value to add
+     * @param      reference the value to add
+     *
+     * @deprecated           use key parameter can be omitted, so use {@link #add(Object)} instead
      */
     @Deprecated
     void add(KEY key, VALUE reference);
 
     /**
-     * Add an unkeyed element to the collection. The new element is placed such
-     * that it will be called by a prev() call, but not a next() call.
+     * Add an unkeyed element to the collection. The new element is placed such that it will be called by a prev() call,
+     * but not a next() call.
      *
-     * @param reference
-     *            the value to add
+     * @param reference the value to add
      */
     void add(VALUE reference);
 
@@ -81,11 +76,11 @@ public interface Cursor<KEY, VALUE> extends java.util.Iterator<VALUE> {
     /**
      * Returns the count next element in the iteration.
      *
-     * @param count
-     *            the offset
-     * @return the n'th next element in the iteration
-     * @throws java.util.NoSuchElementException
-     *             if the iteration has no more elements
+     * @param  count                            the offset
+     *
+     * @return                                  the n'th next element in the iteration
+     *
+     * @throws java.util.NoSuchElementException if the iteration has no more elements
      */
     VALUE next(int count);
 
@@ -95,12 +90,10 @@ public interface Cursor<KEY, VALUE> extends java.util.Iterator<VALUE> {
     VALUE prev();
 
     /**
-     * Point the iterator to a particular keyed entry. Point to the end of the
-     * list if the key is not found.This method is not in the Iterator
-     * interface.
+     * Point the iterator to a particular keyed entry. Point to the end of the list if the key is not found.This method
+     * is not in the Iterator interface.
      *
-     * @param key
-     *            the key to search for
+     * @param key the key to search for
      */
     void setKey(KEY key);
 }

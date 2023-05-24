@@ -49,13 +49,13 @@ public class UndefinedHDU extends BasicHDU<UndefinedData> {
     }
 
     /**
-     * @deprecated This should be for internal use only. Will reduce visibility in the future
+     * @deprecated               This should be for internal use only. Will reduce visibility in the future
      *
-     * @return Encapsulate an object as an UndefinedHDU.
+     * @return                   Encapsulate an object as an UndefinedHDU.
      *
-     * @param o the object to encapsulate
+     * @param      o             the object to encapsulate
      *
-     * @throws FitsException if the operation failed
+     * @throws     FitsException if the operation failed
      */
     @Deprecated
     public static UndefinedData encapsulate(Object o) throws FitsException {
@@ -66,11 +66,11 @@ public class UndefinedHDU extends BasicHDU<UndefinedData> {
      * Check if we can use the following object as in an Undefined FITS block. We allow this so long as computeLSize can
      * get a size. Note that computeLSize may be wrong!
      *
-     * @deprecated This should be for internal use only. Will reduce visibility in the future
+     * @deprecated   This should be for internal use only. Will reduce visibility in the future
      *
-     * @param o The Object being tested.
+     * @param      o The Object being tested.
      *
-     * @return true if o can be an Undefined FITS block.
+     * @return       true if o can be an Undefined FITS block.
      */
     @Deprecated
     public static boolean isData(Object o) {
@@ -84,11 +84,11 @@ public class UndefinedHDU extends BasicHDU<UndefinedData> {
     /**
      * Check if we can find the length of the data for this header.
      *
-     * @deprecated This should be for internal use only. Will reduce visibility in the future
+     * @deprecated     This should be for internal use only. Will reduce visibility in the future
      *
-     * @param hdr header to check.
+     * @param      hdr header to check.
      *
-     * @return <CODE>true</CODE> if this HDU has a valid header.
+     * @return         <CODE>true</CODE> if this HDU has a valid header.
      */
     @Deprecated
     public static boolean isHeader(Header hdr) {
@@ -101,13 +101,13 @@ public class UndefinedHDU extends BasicHDU<UndefinedData> {
     /**
      * Prepares a data object into which the actual data can be read from an input subsequently or at a later time.
      *
-     * @deprecated This should be for internal use only. Will reduce visibility in the future
+     * @deprecated               This should be for internal use only. Will reduce visibility in the future
      *
-     * @param hdr The FITS header that describes the data
+     * @param      hdr           The FITS header that describes the data
      *
-     * @return A data object that support reading content from a stream.
+     * @return                   A data object that support reading content from a stream.
      *
-     * @throws FitsException if the data could not be prepared to prescriotion.
+     * @throws     FitsException if the data could not be prepared to prescriotion.
      */
     @Deprecated
     public static Data manufactureData(Header hdr) throws FitsException {
@@ -115,13 +115,13 @@ public class UndefinedHDU extends BasicHDU<UndefinedData> {
     }
 
     /**
-     * @deprecated This should be for internal use only. Will reduce visibility in the future
+     * @deprecated               This should be for internal use only. Will reduce visibility in the future
      *
-     * @return Create a header that describes the given image data.
+     * @return                   Create a header that describes the given image data.
      *
-     * @param d The image to be described.
+     * @param      d             The image to be described.
      *
-     * @throws FitsException if the object does not contain valid image data.
+     * @throws     FitsException if the object does not contain valid image data.
      */
     @Deprecated
     public static Header manufactureHeader(Data d) throws FitsException {
@@ -135,8 +135,8 @@ public class UndefinedHDU extends BasicHDU<UndefinedData> {
     /**
      * Build an image HDU using the supplied data.
      *
-     * @param h the header for this HDU
-     * @param d the data used to build the image.
+     * @param  h             the header for this HDU
+     * @param  d             the data used to build the image.
      *
      * @throws FitsException if there was a problem with the data.
      */

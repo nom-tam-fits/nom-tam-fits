@@ -35,10 +35,9 @@ import nom.tam.fits.header.FitsHeaderImpl;
 import nom.tam.fits.header.IFitsHeader;
 
 /**
- * This is the file content.txt that presents a comprehensive compilation of all
- * classes of data products in the Chandra Data Archive for the "flight"
- * dataset. This file is the definitive authority on the values of various FITS
- * header keywords.
+ * This is the file content.txt that presents a comprehensive compilation of all classes of data products in the Chandra
+ * Data Archive for the "flight" dataset. This file is the definitive authority on the values of various FITS header
+ * keywords.
  * <p>
  * All files are identified by the CONTENT value of their principal HDUs.
  * </p>

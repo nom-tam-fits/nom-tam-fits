@@ -50,18 +50,18 @@ public interface ICompressColumnParameter extends ICompressParameter {
      *
      * @return The array that contains the data for each compressed row.
      *
-     * @see #setColumnData(Object, int)
-     * @see #getValueFromColumn(int)
-     * @see #setValueInColumn(int)
+     * @see    #setColumnData(Object, int)
+     * @see    #getValueFromColumn(int)
+     * @see    #setValueInColumn(int)
      *
-     * @since 1.18
+     * @since  1.18
      */
     Object getColumnData();
 
     /**
      * @deprecated Provided for back compatibility only. Use {@link #getColumnData()} instead.
      *
-     * @return The array that contains the data for each compressed row.
+     * @return     The array that contains the data for each compressed row.
      */
     @Deprecated
     default Object column() {
@@ -71,7 +71,7 @@ public interface ICompressColumnParameter extends ICompressParameter {
     /**
      * @deprecated Provided for back compatibility only. Use {@link #getColumnData()} instead.
      *
-     * @return The array that contains the data for each compressed row.
+     * @return     The array that contains the data for each compressed row.
      */
     @Deprecated
     default Object initializedColumn() {
@@ -84,21 +84,22 @@ public interface ICompressColumnParameter extends ICompressParameter {
      * <code>setColumnData(null, 0)</code>.
      *
      * @param column The array that contains the data for each compressed row. If not <code>null</code> the
-     *            <code>size</code> parameter is ignored, and the size of the array is used instead.
-     * @param size The number of compressed rows in the table, if the <code>column</code> argument is <code>null</code>.
-     *            If <code>size</code> is zero or negative, any prior column data will be discarded and
-     *            <code>null</code> will be set.
+     *                   <code>size</code> parameter is ignored, and the size of the array is used instead.
+     * @param size   The number of compressed rows in the table, if the <code>column</code> argument is
+     *                   <code>null</code>. If <code>size</code> is zero or negative, any prior column data will be
+     *                   discarded and <code>null</code> will be set.
      *
-     * @see #getColumnData()
+     * @see          #getColumnData()
      */
     void setColumnData(Object column, int size);
 
     /**
-     * @deprecated Provided for back compatibility only. Use {@link #setColumnData(Object, int)} instead.
+     * @deprecated        Provided for back compatibility only. Use {@link #setColumnData(Object, int)} instead.
      *
-     * @param column The array that contains the data for each compressed row. If not <code>null</code> the
-     *            <code>size</code> parameter is ignored, and the size of the array is used instead.
-     * @param size The number of compressed rows in the table, if the <code>column</code> argument is <code>null</code>
+     * @param      column The array that contains the data for each compressed row. If not <code>null</code> the
+     *                        <code>size</code> parameter is ignored, and the size of the array is used instead.
+     * @param      size   The number of compressed rows in the table, if the <code>column</code> argument is
+     *                        <code>null</code>
      */
     @Deprecated
     default void column(Object column, int size) {
@@ -111,8 +112,8 @@ public interface ICompressColumnParameter extends ICompressParameter {
      *
      * @param index the tile index, a.k.a. row index in the compressed data table.
      *
-     * @see #setValueInColumn(int)
-     * @see #setColumnData(Object, int)
+     * @see         #setValueInColumn(int)
+     * @see         #setColumnData(Object, int)
      */
     void getValueFromColumn(int index);
 
@@ -121,15 +122,15 @@ public interface ICompressColumnParameter extends ICompressParameter {
      *
      * @param index the tile index, a.k.a. row index in the compressed data table.
      *
-     * @see #getValueFromColumn(int)
-     * @see #setColumnData(Object, int)
+     * @see         #getValueFromColumn(int)
+     * @see         #setColumnData(Object, int)
      */
     void setValueInColumn(int index);
 
     /**
-     * @deprecated Provided for back compatibility only. Use {@link #setValueInColumn(int)} instead.
+     * @deprecated       Provided for back compatibility only. Use {@link #setValueInColumn(int)} instead.
      *
-     * @param index the tile index, a.k.a. row index in the compressed data table.
+     * @param      index the tile index, a.k.a. row index in the compressed data table.
      */
     @Deprecated
     default void setValueFromColumn(int index) {

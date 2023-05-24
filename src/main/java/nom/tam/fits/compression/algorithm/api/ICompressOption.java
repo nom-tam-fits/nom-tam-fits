@@ -34,14 +34,12 @@ import nom.tam.fits.compression.provider.param.api.ICompressParameters;
  */
 
 /**
- * Option for the compression algorithm, implementors are used to control the
- * compression algorithm.
+ * Option for the compression algorithm, implementors are used to control the compression algorithm.
  */
 public interface ICompressOption extends Cloneable {
 
     /**
-     * @return copy the option (normally the option from with the copy happened
-     *         is saved as original).
+     * @return copy the option (normally the option from with the copy happened is saved as original).
      */
     ICompressOption copy();
 
@@ -51,46 +49,43 @@ public interface ICompressOption extends Cloneable {
     ICompressParameters getCompressionParameters();
 
     /**
-     * @return true if the compression done with this specified options uses
-     *         approximations. That means if the reconstruction of the data is
-     *         excact the return should be false.
+     * @return true if the compression done with this specified options uses approximations. That means if the
+     *             reconstruction of the data is excact the return should be false.
      */
     boolean isLossyCompression();
 
     /**
      * set the parameters that must be synchronized with the hdu meta data.
      *
-     * @param parameters
-     *            the parameters to synchronized
+     * @param parameters the parameters to synchronized
      */
     void setParameters(ICompressParameters parameters);
 
     /**
      * set the tile height in pixel.
      *
-     * @param value
-     *            the number of pixel.
-     * @return this (builder pattern)
+     * @param  value the number of pixel.
+     *
+     * @return       this (builder pattern)
      */
     ICompressOption setTileHeight(int value);
 
     /**
      * set the tile width.
      *
-     * @param value
-     *            the number of pixel.
-     * @return this (builder pattern)
+     * @param  value the number of pixel.
+     *
+     * @return       this (builder pattern)
      */
     ICompressOption setTileWidth(int value);
 
     /**
      * un wrap a specific implementation detail.
      *
-     * @param clazz
-     *            the type to unwrap
-     * @param <T>
-     *            the class to unrwap
-     * @return the implementation detail or null if no such detail is avalable.
+     * @param  clazz the type to unwrap
+     * @param  <T>   the class to unrwap
+     *
+     * @return       the implementation detail or null if no such detail is avalable.
      */
     <T> T unwrap(Class<T> clazz);
 }

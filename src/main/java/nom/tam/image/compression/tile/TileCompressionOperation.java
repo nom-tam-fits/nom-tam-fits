@@ -63,8 +63,7 @@ abstract class TileCompressionOperation extends AbstractTileOperation implements
 
     @Override
     public String toString() {
-        return getClass().getSimpleName() + "(" + getTileIndex() + "," + compressionType + ","
-                + compressedOffset + ")";
+        return getClass().getSimpleName() + "(" + getTileIndex() + "," + compressionType + "," + compressedOffset + ")";
     }
 
     private ByteBuffer convertToBuffer(Object data) {

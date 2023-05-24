@@ -734,10 +734,10 @@ public class AsciiTableTest {
     public void testToInvalidTable() throws Exception {
         Header hdr = new Header();
         hdr.card(Standard.NAXIS1).value(Integer.MAX_VALUE)//
-        .card(Standard.NAXIS2).value(Integer.MAX_VALUE)//
-        .card(Standard.TFIELDS).value(1)//
-        .card(Standard.TBCOLn.n(1)).value(4)//
-        .card(Standard.TFORMn.n(1)).value(4);
+                .card(Standard.NAXIS2).value(Integer.MAX_VALUE)//
+                .card(Standard.TFIELDS).value(1)//
+                .card(Standard.TBCOLn.n(1)).value(4)//
+                .card(Standard.TFORMn.n(1)).value(4);
         FitsException actual = null;
         try {
             new AsciiTable(hdr);
@@ -763,10 +763,10 @@ public class AsciiTableTest {
     public void testToBigTable() throws Exception {
         Header hdr = new Header();
         hdr.card(Standard.NAXIS1).value(Integer.MAX_VALUE)//
-        .card(Standard.NAXIS2).value(Integer.MAX_VALUE)//
-        .card(Standard.TFIELDS).value(1)//
-        .card(Standard.TBCOLn.n(1)).value(4)//
-        .card(Standard.TFORMn.n(1)).value("I1");
+                .card(Standard.NAXIS2).value(Integer.MAX_VALUE)//
+                .card(Standard.TFIELDS).value(1)//
+                .card(Standard.TBCOLn.n(1)).value(4)//
+                .card(Standard.TFORMn.n(1)).value("I1");
         ArrayDataInput str = new FitsInputStream(new ByteArrayInputStream(new byte[10]));
         FitsException actual = null;
         try {
@@ -782,10 +782,10 @@ public class AsciiTableTest {
     public void testToBigTable2() throws Exception {
         Header hdr = new Header();
         hdr.card(Standard.NAXIS1).value(Integer.MAX_VALUE)//
-        .card(Standard.NAXIS2).value(Integer.MAX_VALUE)//
-        .card(Standard.TFIELDS).value(1)//
-        .card(Standard.TBCOLn.n(1)).value(4)//
-        .card(Standard.TFORMn.n(1)).value("I1");
+                .card(Standard.NAXIS2).value(Integer.MAX_VALUE)//
+                .card(Standard.TFIELDS).value(1)//
+                .card(Standard.TBCOLn.n(1)).value(4)//
+                .card(Standard.TFORMn.n(1)).value("I1");
         ArrayDataOutput str = new FitsOutputStream(new ByteArrayOutputStream());
         FitsException actual = null;
         try {
@@ -813,10 +813,10 @@ public class AsciiTableTest {
     public void testToFailedWrite() throws Exception {
         Header hdr = new Header();
         hdr.card(Standard.NAXIS1).value(Integer.MAX_VALUE)//
-        .card(Standard.NAXIS2).value(Integer.MAX_VALUE)//
-        .card(Standard.TFIELDS).value(1)//
-        .card(Standard.TBCOLn.n(1)).value(4)//
-        .card(Standard.TFORMn.n(1)).value("I1");
+                .card(Standard.NAXIS2).value(Integer.MAX_VALUE)//
+                .card(Standard.TFIELDS).value(1)//
+                .card(Standard.TBCOLn.n(1)).value(4)//
+                .card(Standard.TFORMn.n(1)).value("I1");
         ArrayDataOutput str = new FitsOutputStream(new ByteArrayOutputStream());
         FitsException actual = null;
         try {
@@ -865,10 +865,10 @@ public class AsciiTableTest {
     public void testFailingGetElementTable() throws Exception {
         Header hdr = new Header();
         hdr.card(Standard.NAXIS1).value(Integer.MAX_VALUE)//
-        .card(Standard.NAXIS2).value(Integer.MAX_VALUE)//
-        .card(Standard.TFIELDS).value(1)//
-        .card(Standard.TBCOLn.n(1)).value(4)//
-        .card(Standard.TFORMn.n(1)).value("I1");
+                .card(Standard.NAXIS2).value(Integer.MAX_VALUE)//
+                .card(Standard.TFIELDS).value(1)//
+                .card(Standard.TBCOLn.n(1)).value(4)//
+                .card(Standard.TFORMn.n(1)).value("I1");
         FitsException actual = null;
         try {
             new AsciiTable(hdr).getElement(0, 0);
@@ -883,10 +883,10 @@ public class AsciiTableTest {
     public void testFailingGetRowTable() throws Exception {
         Header hdr = new Header();
         hdr.card(Standard.NAXIS1).value(Integer.MAX_VALUE)//
-        .card(Standard.NAXIS2).value(Integer.MAX_VALUE)//
-        .card(Standard.TFIELDS).value(1)//
-        .card(Standard.TBCOLn.n(1)).value(4)//
-        .card(Standard.TFORMn.n(1)).value("I1");
+                .card(Standard.NAXIS2).value(Integer.MAX_VALUE)//
+                .card(Standard.TFIELDS).value(1)//
+                .card(Standard.TBCOLn.n(1)).value(4)//
+                .card(Standard.TFORMn.n(1)).value("I1");
         FitsException actual = null;
         try {
             new AsciiTable(hdr).getRow(0);
@@ -901,10 +901,10 @@ public class AsciiTableTest {
     public void testIncompatibleElement() throws Exception {
         Header hdr = new Header();
         hdr.card(Standard.NAXIS1).value(1)//
-        .card(Standard.NAXIS2).value(1)//
-        .card(Standard.TFIELDS).value(1)//
-        .card(Standard.TBCOLn.n(1)).value(2)//
-        .card(Standard.TFORMn.n(1)).value("I1");
+                .card(Standard.NAXIS2).value(1)//
+                .card(Standard.TFIELDS).value(1)//
+                .card(Standard.TBCOLn.n(1)).value(2)//
+                .card(Standard.TFORMn.n(1)).value("I1");
         ArrayDataInput str = new FitsInputStream(new ByteArrayInputStream(new byte[2880 * 2]));
         FitsException actual = null;
         try {
@@ -923,10 +923,10 @@ public class AsciiTableTest {
     public void testIllegalSetRow() throws Exception {
         Header hdr = new Header();
         hdr.card(Standard.NAXIS1).value(1)//
-        .card(Standard.NAXIS2).value(1)//
-        .card(Standard.TFIELDS).value(1)//
-        .card(Standard.TBCOLn.n(1)).value(2)//
-        .card(Standard.TFORMn.n(1)).value("I1");
+                .card(Standard.NAXIS2).value(1)//
+                .card(Standard.TFIELDS).value(1)//
+                .card(Standard.TBCOLn.n(1)).value(2)//
+                .card(Standard.TFORMn.n(1)).value("I1");
         FitsException actual = null;
         try {
             AsciiTable asciiTable = new AsciiTable(hdr) {
@@ -949,10 +949,10 @@ public class AsciiTableTest {
     public void testIllegalSetRow2() throws Exception {
         Header hdr = new Header();
         hdr.card(Standard.NAXIS1).value(1)//
-        .card(Standard.NAXIS2).value(1)//
-        .card(Standard.TFIELDS).value(1)//
-        .card(Standard.TBCOLn.n(1)).value(2)//
-        .card(Standard.TFORMn.n(1)).value("I1");
+                .card(Standard.NAXIS2).value(1)//
+                .card(Standard.TFIELDS).value(1)//
+                .card(Standard.TBCOLn.n(1)).value(2)//
+                .card(Standard.TFORMn.n(1)).value("I1");
         FitsException actual = null;
         try {
             AsciiTable asciiTable = new AsciiTable(hdr);
@@ -968,10 +968,10 @@ public class AsciiTableTest {
     public void testFailedRead() throws Exception {
         Header hdr = new Header();
         hdr.card(Standard.NAXIS1).value(1)//
-        .card(Standard.NAXIS2).value(1)//
-        .card(Standard.TFIELDS).value(1)//
-        .card(Standard.TBCOLn.n(1)).value(2)//
-        .card(Standard.TFORMn.n(1)).value("I1");
+                .card(Standard.NAXIS2).value(1)//
+                .card(Standard.TFIELDS).value(1)//
+                .card(Standard.TBCOLn.n(1)).value(2)//
+                .card(Standard.TFORMn.n(1)).value("I1");
         ArrayDataInput str = new FitsInputStream(new ByteArrayInputStream(new byte[2880 - 1]));
 
         AsciiTable asciiTable = new AsciiTable(hdr) {
@@ -993,10 +993,10 @@ public class AsciiTableTest {
     public void testFailedRead2() throws Exception {
         Header hdr = new Header();
         hdr.card(Standard.NAXIS1).value(1)//
-        .card(Standard.NAXIS2).value(1)//
-        .card(Standard.TFIELDS).value(1)//
-        .card(Standard.TBCOLn.n(1)).value(2)//
-        .card(Standard.TFORMn.n(1)).value("I1");
+                .card(Standard.NAXIS2).value(1)//
+                .card(Standard.TFIELDS).value(1)//
+                .card(Standard.TBCOLn.n(1)).value(2)//
+                .card(Standard.TFORMn.n(1)).value("I1");
         ArrayDataInput str = new FitsInputStream(new ByteArrayInputStream(new byte[2880 - 1]));
 
         AsciiTable asciiTable = new AsciiTable(hdr);

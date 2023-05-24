@@ -43,27 +43,19 @@ import java.util.logging.Logger;
 import static nom.tam.util.LoggerHelper.getLogger;
 
 /**
- * This class is intended for high performance reading FITS files or blocks
- * of FITS data.
- *
+ * This class is intended for high performance reading FITS files or blocks of FITS data.
  * <p>
- * Testing and timing routines are provided in the
- * nom.tam.util.test.BufferedFileTester class.
- *
- * <p>Prior versions under the old <code>BufferedDataInputStream</code>:
+ * Testing and timing routines are provided in the nom.tam.util.test.BufferedFileTester class.
+ * <p>
+ * Prior versions under the old <code>BufferedDataInputStream</code>:
  * <ul>
- * <li>
- * Version 1.1 -- October 12, 2000:
- * Fixed handling of EOF to return partially read arrays when EOF is detected</li>
- * <li>
- * Version 1.2 -- July 20, 2009: Added handling of very large Object arrays.
- * Additional work is required to handle very large arrays generally.</li>
+ * <li>Version 1.1 -- October 12, 2000: Fixed handling of EOF to return partially read arrays when EOF is detected</li>
+ * <li>Version 1.2 -- July 20, 2009: Added handling of very large Object arrays. Additional work is required to handle
+ * very large arrays generally.</li>
  * </ul>
- *
  * <p>
- * Version 2.0 -- October 30, 2021: Completely overhauled, with new name and
- * hierarchy. Performance is 2-4 times better than before (Attila Kovacs)
- *
+ * Version 2.0 -- October 30, 2021: Completely overhauled, with new name and hierarchy. Performance is 2-4 times better
+ * than before (Attila Kovacs)
  *
  * @see FitsInputStream
  * @see FitsFile
@@ -77,13 +69,10 @@ public class FitsInputStream extends ArrayInputStream implements ArrayDataInput 
     private DataInput data;
 
     /**
-     * Create a BufferedInputStream based on a input stream with a specified
-     * buffer size.
+     * Create a BufferedInputStream based on a input stream with a specified buffer size.
      *
-     * @param i
-     *            the input stream to use for reading.
-     * @param bufLength
-     *            the buffer length to use.
+     * @param i         the input stream to use for reading.
+     * @param bufLength the buffer length to use.
      */
     public FitsInputStream(InputStream i, int bufLength) {
         super(i, bufLength);
@@ -94,8 +83,7 @@ public class FitsInputStream extends ArrayInputStream implements ArrayDataInput 
     /**
      * Create a BufferedInputStream based on an input stream.
      *
-     * @param o
-     *            the input stream to use for reading.
+     * @param o the input stream to use for reading.
      */
     public FitsInputStream(InputStream o) {
         this(o, FitsIO.DEFAULT_BUFFER_SIZE);
@@ -157,25 +145,22 @@ public class FitsInputStream extends ArrayInputStream implements ArrayDataInput 
     }
 
     /**
-     * This routine provides efficient reading of arrays of any primitive type.
-     * It is an error to invoke this method with an object that is not an array
-     * of some primitive type. Note that there is no corresponding capability to
-     * writePrimitiveArray in BufferedDataOutputStream to read in an array of
-     * Strings.
+     * This routine provides efficient reading of arrays of any primitive type. It is an error to invoke this method
+     * with an object that is not an array of some primitive type. Note that there is no corresponding capability to
+     * writePrimitiveArray in BufferedDataOutputStream to read in an array of Strings.
      *
-     * @return number of bytes read.
-     * @param o
-     *            The object to be read. It must be an array of a primitive
-     *            type, or an array of Object's.
-     * @throws IOException
-     *             if the underlying read operation fails
-     * @deprecated use {@link #readLArray(Object)} instead
+     * @return                 number of bytes read.
+     *
+     * @param      o           The object to be read. It must be an array of a primitive type, or an array of Object's.
+     *
+     * @throws     IOException if the underlying read operation fails
+     *
+     * @deprecated             use {@link #readLArray(Object)} instead
      */
     @Deprecated
     public final synchronized int readPrimitiveArray(Object o) throws IOException {
         return (int) readLArray(o);
     }
-
 
     @Override
     public synchronized long skip(long n) throws IOException {
@@ -197,7 +182,6 @@ public class FitsInputStream extends ArrayInputStream implements ArrayDataInput 
         }
         return skipped;
     }
-
 
     @Override
     public synchronized int skipBytes(int n) throws IOException {
@@ -221,78 +205,65 @@ public class FitsInputStream extends ArrayInputStream implements ArrayDataInput 
         }
     }
 
-
     @Override
     public synchronized boolean readBoolean() throws IOException {
         return getDecoder().readBoolean();
     }
-
 
     @Override
     public synchronized int readUnsignedByte() throws IOException {
         return getDecoder().readUnsignedByte();
     }
 
-
     @Override
     public synchronized byte readByte() throws IOException {
         return getDecoder().readByte();
     }
-
 
     @Override
     public synchronized char readChar() throws IOException {
         return getDecoder().readChar();
     }
 
-
     @Override
     public synchronized int readUnsignedShort() throws IOException {
         return getDecoder().readUnsignedShort();
     }
-
 
     @Override
     public synchronized short readShort() throws IOException {
         return getDecoder().readShort();
     }
 
-
     @Override
     public synchronized int readInt() throws IOException {
         return getDecoder().readInt();
     }
-
 
     @Override
     public synchronized long readLong() throws IOException {
         return getDecoder().readLong();
     }
 
-
     @Override
     public synchronized float readFloat() throws IOException {
         return getDecoder().readFloat();
     }
-
 
     @Override
     public synchronized double readDouble() throws IOException {
         return getDecoder().readDouble();
     }
 
-
     @Override
     public synchronized String readUTF() throws IOException {
         return data.readUTF();
     }
 
-
     @Override
     public final synchronized String readLine() throws IOException {
         return getDecoder().readAsciiLine();
     }
-
 
     @Override
     public String toString() {

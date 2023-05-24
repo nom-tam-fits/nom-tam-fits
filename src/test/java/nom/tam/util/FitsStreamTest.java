@@ -44,7 +44,7 @@ public class FitsStreamTest {
     public void testReadWriteBooleanObjects() throws Exception {
         ByteArrayOutputStream bo = new ByteArrayOutputStream(100);
 
-        Boolean[] b = new Boolean[] { Boolean.TRUE, Boolean.FALSE, null };
+        Boolean[] b = new Boolean[] {Boolean.TRUE, Boolean.FALSE, null};
 
         FitsOutputStream o = new FitsOutputStream(bo);
         o.write(b);
@@ -56,7 +56,7 @@ public class FitsStreamTest {
         Boolean[] b2 = new Boolean[b.length];
         i.read(b2);
 
-        for(int k=0; k<b.length; k++) {
+        for (int k = 0; k < b.length; k++) {
             assertEquals("[" + k + "]", b[k], b2[k]);
         }
 

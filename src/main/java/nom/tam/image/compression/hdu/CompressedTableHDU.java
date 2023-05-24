@@ -45,26 +45,21 @@ import static nom.tam.fits.header.Compression.ZTABLE;
 public class CompressedTableHDU extends BinaryTableHDU {
 
     /**
-     * Prepare a compressed binary table HDU for the specified binary table.
-     * When the tile row size is specified with -1, the value will be set ti the
-     * number of rows in the table. The table will be compressed in "rows" that
-     * are defined by the tile size. Next step would be to set the compression
-     * options into the HDU and then compress it.
+     * Prepare a compressed binary table HDU for the specified binary table. When the tile row size is specified with
+     * -1, the value will be set ti the number of rows in the table. The table will be compressed in "rows" that are
+     * defined by the tile size. Next step would be to set the compression options into the HDU and then compress it.
      *
-     * @param binaryTableHDU
-     *            the binary table to compress
-     * @param tileRows
-     *            the number of rows that should be compressed per tile.
-     * @param columnCompressionAlgorithms
-     *            the compression algorithms to use for the columns (optional
-     *            default compression will be used if a column has no
-     *            compression specified)
-     * @return the prepared compressed binary table HDU.
-     * @throws FitsException
-     *             if the binary table could not be used to create a compressed
-     *             binary table.
+     * @param  binaryTableHDU              the binary table to compress
+     * @param  tileRows                    the number of rows that should be compressed per tile.
+     * @param  columnCompressionAlgorithms the compression algorithms to use for the columns (optional default
+     *                                         compression will be used if a column has no compression specified)
+     *
+     * @return                             the prepared compressed binary table HDU.
+     *
+     * @throws FitsException               if the binary table could not be used to create a compressed binary table.
      */
-    public static CompressedTableHDU fromBinaryTableHDU(BinaryTableHDU binaryTableHDU, int tileRows, String... columnCompressionAlgorithms) throws FitsException {
+    public static CompressedTableHDU fromBinaryTableHDU(BinaryTableHDU binaryTableHDU, int tileRows,
+            String... columnCompressionAlgorithms) throws FitsException {
         Header header = new Header();
         CompressedTableData compressedData = new CompressedTableData();
 
@@ -87,9 +82,9 @@ public class CompressedTableHDU extends BinaryTableHDU {
     /**
      * Check that this HDU has a valid header for this type.
      *
-     * @param hdr
-     *            header to check
-     * @return <CODE>true</CODE> if this HDU has a valid header.
+     * @param  hdr header to check
+     *
+     * @return     <CODE>true</CODE> if this HDU has a valid header.
      */
     public static boolean isHeader(Header hdr) {
         return hdr.getBooleanValue(ZTABLE, false);

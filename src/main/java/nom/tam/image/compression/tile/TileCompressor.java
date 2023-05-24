@@ -82,8 +82,7 @@ public class TileCompressor extends TileCompressionOperation {
         tileOptions.getCompressionParameters().setTileIndex(getTileIndex());
 
         if (tryNormalCompression) {
-            compressSuccess = getCompressorControl().compress(getTileBuffer().getBuffer(), compressedData,
-                    tileOptions);
+            compressSuccess = getCompressorControl().compress(getTileBuffer().getBuffer(), compressedData, tileOptions);
             if (compressSuccess) {
                 if (nullPixelMaskPerserver != null) {
                     nullPixelMaskPerserver.preserveNull();
@@ -96,8 +95,7 @@ public class TileCompressor extends TileCompressionOperation {
             compressionType = TileCompressionType.GZIP_COMPRESSED;
             compressedData.rewind();
             getTileBuffer().getBuffer().rewind();
-            compressSuccess = getGzipCompressorControl().compress(getTileBuffer().getBuffer(), compressedData,
-                    null);
+            compressSuccess = getGzipCompressorControl().compress(getTileBuffer().getBuffer(), compressedData, null);
             if (compressSuccess) {
                 tileOptions.getCompressionParameters().setValuesInColumn(getTileIndex());
             }

@@ -131,26 +131,14 @@ public class EnumHeaderTest {
 
     @Test
     public void testAllHeaders() throws Exception {
-        Class<?>[] classes = new Class<?>[]{
-            Checksum.class,
-            CXCExt.class,
-            CXCStclSharedExt.class,
-            DataDescription.class,
-            HierarchicalGrouping.class,
-            InstrumentDescription.class,
-            MaxImDLExt.class,
-            NOAOExt.class,
-            NonStandard.class,
-            ObservationDescription.class,
-            ObservationDurationDescription.class,
-            SBFitsExt.class,
-            Standard.class,
-            STScIExt.class,
-            Compression.class
-        };
+        Class<?>[] classes = new Class<?>[] {Checksum.class, CXCExt.class, CXCStclSharedExt.class, DataDescription.class,
+                HierarchicalGrouping.class, InstrumentDescription.class, MaxImDLExt.class, NOAOExt.class, NonStandard.class,
+                ObservationDescription.class, ObservationDurationDescription.class, SBFitsExt.class, Standard.class,
+                STScIExt.class, Compression.class};
         for (Class<?> class1 : classes) {
             for (Object enumConst : class1.getEnumConstants()) {
-                Assert.assertNotNull(class1.getMethod("valueOf", String.class).invoke(class1, enumConst.getClass().getMethod("name").invoke(enumConst)));
+                Assert.assertNotNull(class1.getMethod("valueOf", String.class).invoke(class1,
+                        enumConst.getClass().getMethod("name").invoke(enumConst)));
                 IFitsHeader iFitsHeader = (IFitsHeader) enumConst;
                 if (class1 != Standard.class) {
                     Assert.assertNotNull(iFitsHeader.comment());
@@ -182,9 +170,7 @@ public class EnumHeaderTest {
     public void testSynonyms() throws Exception {
         Assert.assertEquals(Standard.EQUINOX, Synonyms.primaryKeyword(Standard.EPOCH));
         Assert.assertEquals("EQUINOX", Synonyms.primaryKeyword("EPOCH"));
-        Assert.assertArrayEquals(new IFitsHeader[]{
-                Standard.EPOCH
-        }, Synonyms.EQUINOX.getSynonyms());
+        Assert.assertArrayEquals(new IFitsHeader[] {Standard.EPOCH}, Synonyms.EQUINOX.getSynonyms());
 
         Assert.assertEquals(Standard.SIMPLE, Synonyms.primaryKeyword(Standard.SIMPLE));
         Assert.assertEquals("SIMPLE", Synonyms.primaryKeyword("SIMPLE"));
@@ -201,11 +187,7 @@ public class EnumHeaderTest {
 
     @Test
     public void testReuseStandard() throws Exception {
-        IFitsHeader[] result = GenericKey.create(new String[]{
-                "BITPIX",
-                "SIMPLE",
-                "UNKOWN"
-        });
+        IFitsHeader[] result = GenericKey.create(new String[] {"BITPIX", "SIMPLE", "UNKOWN"});
         assertSame(Standard.BITPIX, result[0]);
         assertSame(Standard.SIMPLE, result[1]);
         assertTrue(result[2] instanceof FitsHeaderImpl);

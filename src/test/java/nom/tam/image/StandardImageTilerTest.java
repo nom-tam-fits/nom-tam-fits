@@ -45,7 +45,6 @@ import nom.tam.util.FitsFile;
 import nom.tam.util.FitsOutputStream;
 import nom.tam.util.RandomAccess;
 
-
 public class StandardImageTilerTest {
 
     private final class TestImageTiler extends StandardImageTiler {
@@ -108,12 +107,11 @@ public class StandardImageTilerTest {
     @Test
     public void testFailedGetTileStep() {
         try {
-            tiler.getTile(new int[]{0, 0}, new int[]{5, 5}, new int[]{1, -1});
+            tiler.getTile(new int[] {0, 0}, new int[] {5, 5}, new int[] {1, -1});
             Assert.fail("Should throw IOException");
         } catch (IOException ioException) {
             // Good.
-            Assert.assertEquals("Wrong message", "Step value cannot be less than 1.",
-                    ioException.getMessage());
+            Assert.assertEquals("Wrong message", "Step value cannot be less than 1.", ioException.getMessage());
         }
     }
 
@@ -134,18 +132,9 @@ public class StandardImageTilerTest {
     @Test
     public void testFillTileNegativeBounds() throws Exception {
 
-        int[] lengths = new int[]{
-                2,
-                2
-        };
-        int[] corners = new int[]{
-                -1,
-                -1
-        };
-        int[] newDims = new int[]{
-                2,
-                2
-        };
+        int[] lengths = new int[] {2, 2};
+        int[] corners = new int[] {-1, -1};
+        int[] newDims = new int[] {2, 2};
         int[] tile = new int[25];
         tiler.fillTile(null, tile, newDims, corners, lengths);
         Assert.assertEquals(1, tile[3]);
@@ -157,18 +146,9 @@ public class StandardImageTilerTest {
     @Test
     public void testFillTileOutOfBounds() throws Exception {
 
-        int[] lengths = new int[]{
-                2,
-                2
-        };
-        int[] corners = new int[]{
-                1,
-                1
-        };
-        int[] newDims = new int[]{
-                2,
-                2
-        };
+        int[] lengths = new int[] {2, 2};
+        int[] corners = new int[] {1, 1};
+        int[] newDims = new int[] {2, 2};
         int[] tile = new int[25];
         tiler.fillTile(null, tile, newDims, corners, lengths);
         Assert.assertEquals(1, tile[0]);
@@ -230,10 +210,7 @@ public class StandardImageTilerTest {
     @Test
     public void testFillMemdataTileNegativeBounds() throws Exception {
 
-        int[] corners = new int[]{
-                -1,
-                -1
-        };
+        int[] corners = new int[] {-1, -1};
         int[] tile = new int[25];
         int[] data = new int[50];
         Arrays.fill(data, 1);
@@ -247,10 +224,7 @@ public class StandardImageTilerTest {
     @Test
     public void testFillMemdataTileOutOfBounds() throws Exception {
 
-        int[] corners = new int[]{
-                9,
-                9
-        };
+        int[] corners = new int[] {9, 9};
         int[] tile = new int[25];
         int[] data = new int[50];
         Arrays.fill(data, 1);
@@ -264,10 +238,7 @@ public class StandardImageTilerTest {
     @Test
     public void testFillMemdataTileStep() throws Exception {
         int step = 2;
-        int[] corners = new int[]{
-                0,
-                0
-        };
+        int[] corners = new int[] {0, 0};
         int[][] data = new int[8][8];
         for (int i = 0; i < data.length; i++) {
             for (int j = 0; j < data[i].length; j++) {
@@ -292,15 +263,12 @@ public class StandardImageTilerTest {
         final int[] start = new int[] {0, 0};
         final int[] current = new int[] {0, 0};
         final int[] lengths = new int[] {3, 3};
-        Assert.assertTrue("Should increment properly",
-                StandardImageTiler.incrementPosition(start, current, lengths));
-        Assert.assertArrayEquals("Wrong current.", new int[]{1, 0}, current);
+        Assert.assertTrue("Should increment properly", StandardImageTiler.incrementPosition(start, current, lengths));
+        Assert.assertArrayEquals("Wrong current.", new int[] {1, 0}, current);
 
-        Assert.assertTrue("Should increment properly",
-                StandardImageTiler.incrementPosition(start, current, lengths));
-        Assert.assertArrayEquals("Wrong current.", new int[]{2, 0}, current);
+        Assert.assertTrue("Should increment properly", StandardImageTiler.incrementPosition(start, current, lengths));
+        Assert.assertArrayEquals("Wrong current.", new int[] {2, 0}, current);
 
-        Assert.assertFalse("Should not increment",
-                StandardImageTiler.incrementPosition(start, current, lengths));
+        Assert.assertFalse("Should not increment", StandardImageTiler.incrementPosition(start, current, lengths));
     }
 }

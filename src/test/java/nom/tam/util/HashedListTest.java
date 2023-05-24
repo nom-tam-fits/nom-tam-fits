@@ -42,24 +42,19 @@ import org.junit.Assert;
 import org.junit.Test;
 
 /**
- * This class tests and illustrates the use of the HashedList class. Tests are
- * in four parts.
+ * This class tests and illustrates the use of the HashedList class. Tests are in four parts.
  * <p>
- * The first section (in testCollection) tests the methods that are present in
- * the Collection interface. All of the optional methods of that interface are
- * supported. This involves tests of the HashedClass interface directly.
+ * The first section (in testCollection) tests the methods that are present in the Collection interface. All of the
+ * optional methods of that interface are supported. This involves tests of the HashedClass interface directly.
  * <p>
- * The second set of tests uses the Iterator (in testIterator) returned by the
- * iterator() method and tests the standard Iterator methods to display and
- * remove rows from the HashedList.
+ * The second set of tests uses the Iterator (in testIterator) returned by the iterator() method and tests the standard
+ * Iterator methods to display and remove rows from the HashedList.
  * <p>
- * The third set of tests (in testCursor) tests the extended capabilities of the
- * HashedListIterator to add rows to the table, and to work as a cursor to move
- * in a non-linear fashion through the list.
+ * The third set of tests (in testCursor) tests the extended capabilities of the HashedListIterator to add rows to the
+ * table, and to work as a cursor to move in a non-linear fashion through the list.
  * <p>
- * The fourth set consists of all other test methods that test special cases of
- * the implementation of the various methods of HashedList - to obtain 100% code
- * coverage for HashedList.
+ * The fourth set consists of all other test methods that test special cases of the implementation of the various
+ * methods of HashedList - to obtain 100% code coverage for HashedList.
  */
 public class HashedListTest {
 

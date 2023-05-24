@@ -216,7 +216,8 @@ public class CompressedTableTest {
         try {
             fitsUncompressed = new Fits("src/test/resources/nom/tam/table/comp/bt12.fits");
 
-            CompressedTableHDU compressedTable = CompressedTableHDU.fromBinaryTableHDU((BinaryTableHDU) fitsUncompressed.getHDU(1), 0).compress();
+            CompressedTableHDU compressedTable = CompressedTableHDU
+                    .fromBinaryTableHDU((BinaryTableHDU) fitsUncompressed.getHDU(1), 0).compress();
             compressedTable.compress();
 
             fitsOrg = new Fits("src/test/resources/nom/tam/table/comp/bt12.fits.fz");

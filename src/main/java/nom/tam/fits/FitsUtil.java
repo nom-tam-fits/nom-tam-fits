@@ -70,27 +70,27 @@ public final class FitsUtil {
     }
 
     /**
-     * @return Total size of blocked FITS element, using e.v. padding to fits block size.
+     * @return      Total size of blocked FITS element, using e.v. padding to fits block size.
      *
-     * @param size the current size.
+     * @param  size the current size.
      */
     public static int addPadding(int size) {
         return size + padding(size);
     }
 
     /**
-     * @return Total size of blocked FITS element, using e.v. padding to fits block size.
+     * @return      Total size of blocked FITS element, using e.v. padding to fits block size.
      *
-     * @param size the current size.
+     * @param  size the current size.
      */
     public static long addPadding(long size) {
         return size + padding(size);
     }
 
     /**
-     * @return Convert an array of booleans to bytes.
+     * @return      Convert an array of booleans to bytes.
      *
-     * @param bool array of booleans
+     * @param  bool array of booleans
      */
     static byte[] booleanToByte(boolean[] bool) {
 
@@ -102,10 +102,10 @@ public final class FitsUtil {
     }
 
     /**
-     * @return Convert bytes to Strings.
+     * @return        Convert bytes to Strings.
      *
-     * @param bytes byte array to convert
-     * @param maxLen the max string length
+     * @param  bytes  byte array to convert
+     * @param  maxLen the max string length
      */
     public static String[] byteArrayToStrings(byte[] bytes, int maxLen) {
         boolean checking = FitsFactory.getCheckAsciiStrings();
@@ -181,9 +181,9 @@ public final class FitsUtil {
     }
 
     /**
-     * @return Convert an array of bytes to booleans.
+     * @return       Convert an array of bytes to booleans.
      *
-     * @param bytes the array of bytes to get the booleans from.
+     * @param  bytes the array of bytes to get the booleans from.
      */
     static boolean[] byteToBoolean(byte[] bytes) {
         boolean[] bool = new boolean[bytes.length];
@@ -195,9 +195,9 @@ public final class FitsUtil {
     }
 
     /**
-     * @return Find out where we are in a random access file .
+     * @return   Find out where we are in a random access file .
      *
-     * @param o the stream to get the position
+     * @param  o the stream to get the position
      */
     public static long findOffset(Closeable o) {
         if (o instanceof RandomAccess) {
@@ -207,11 +207,12 @@ public final class FitsUtil {
     }
 
     /**
-     * @return Get a stream to a URL accommodating possible redirections. Note that if a redirection request points to a
-     *             different protocol than the original request, then the redirection is not handled automatically.
+     * @return             Get a stream to a URL accommodating possible redirections. Note that if a redirection request
+     *                         points to a different protocol than the original request, then the redirection is not
+     *                         handled automatically.
      *
-     * @param url the url to get the stream from
-     * @param level max levels of redirection
+     * @param  url         the url to get the stream from
+     * @param  level       max levels of redirection
      *
      * @throws IOException if the operation failed
      */
@@ -231,9 +232,9 @@ public final class FitsUtil {
     }
 
     /**
-     * @return Get the maximum length of a String in a String array.
+     * @return               Get the maximum length of a String in a String array.
      *
-     * @param strings array of strings to check
+     * @param  strings       array of strings to check
      *
      * @throws FitsException if the operation failed
      */
@@ -251,8 +252,8 @@ public final class FitsUtil {
     /**
      * Add padding to an output stream.
      *
-     * @param stream stream to pad
-     * @param size the current size
+     * @param  stream        stream to pad
+     * @param  size          the current size
      *
      * @throws FitsException if the operation failed
      */
@@ -263,9 +264,9 @@ public final class FitsUtil {
     /**
      * Add padding to an output stream.
      *
-     * @param stream stream to pad
-     * @param size the current size
-     * @param fill the fill byte to use
+     * @param  stream        stream to pad
+     * @param  size          the current size
+     * @param  fill          the fill byte to use
      *
      * @throws FitsException if the operation failed
      */
@@ -284,9 +285,9 @@ public final class FitsUtil {
     }
 
     /**
-     * @return How many bytes are needed to fill a 2880 block?
+     * @return      How many bytes are needed to fill a 2880 block?
      *
-     * @param size the size without padding
+     * @param  size the size without padding
      */
     public static int padding(int size) {
         return padding((long) size);
@@ -305,15 +306,15 @@ public final class FitsUtil {
      * Attempts to reposition a FITS input ot output. The call will succeed only if the underlying input or output is
      * random accessible. Othewise, an exception will be thrown.
      *
-     * @deprecated This method wraps an {@link IOException} into a {@link FitsException} for no good reason really. A
-     *                 revision of the API could reduce the visibility of this method, and/or procees the underlying
-     *                 exception instead.
+     * @deprecated               This method wraps an {@link IOException} into a {@link FitsException} for no good
+     *                               reason really. A revision of the API could reduce the visibility of this method,
+     *                               and/or procees the underlying exception instead.
      *
-     * @param o the FITS input or output
-     * @param offset the offset to position it to.
+     * @param      o             the FITS input or output
+     * @param      offset        the offset to position it to.
      *
-     * @throws FitsException if the underlying input/output is not random accessible or if the requested position is
-     *             invalid.
+     * @throws     FitsException if the underlying input/output is not random accessible or if the requested position is
+     *                               invalid.
      */
     @Deprecated
     public static void reposition(FitsIO o, long offset) throws FitsException {
@@ -325,8 +326,8 @@ public final class FitsUtil {
         }
 
         if (!(o instanceof RandomAccess) || offset < 0) {
-            throw new FitsException("Invalid attempt to reposition stream " + o + " of type " + o.getClass().getName()
-                    + " to " + offset);
+            throw new FitsException(
+                    "Invalid attempt to reposition stream " + o + " of type " + o.getClass().getName() + " to " + offset);
         }
 
         try {
@@ -340,10 +341,10 @@ public final class FitsUtil {
     /**
      * Convert an array of Strings to bytes.
      *
-     * @return the resulting bytes
+     * @return             the resulting bytes
      *
-     * @param stringArray the array with Strings
-     * @param maxLen the max length (in bytes) of every String
+     * @param  stringArray the array with Strings
+     * @param  maxLen      the max length (in bytes) of every String
      */
     public static byte[] stringsToByteArray(String[] stringArray, int maxLen) {
         byte[] res = new byte[stringArray.length * maxLen];

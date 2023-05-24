@@ -133,11 +133,7 @@ public class BufferedFileTest {
         try {
             byte[] fully = new byte[3];
             file.readFully(fully);
-            Assert.assertArrayEquals(new byte[]{
-                    -1,
-                    -1,
-                    -1
-            }, fully);
+            Assert.assertArrayEquals(new byte[] {-1, -1, -1}, fully);
         } finally {
             file.close();
         }
@@ -154,11 +150,7 @@ public class BufferedFileTest {
         try {
             byte[] fully = new byte[3];
             file.readFully(fully, 0, fully.length);
-            Assert.assertArrayEquals(new byte[]{
-                    -1,
-                    -1,
-                    -1
-            }, fully);
+            Assert.assertArrayEquals(new byte[] {-1, -1, -1}, fully);
         } finally {
             file.close();
         }

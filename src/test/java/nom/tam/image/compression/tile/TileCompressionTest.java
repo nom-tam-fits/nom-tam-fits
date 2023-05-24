@@ -65,7 +65,7 @@ public class TileCompressionTest {
         CompressedImageHDU cHDU = CompressedImageHDU.fromImageHDU(hdu, -1, 1);
 
         cHDU.setCompressAlgorithm(Compression.ZCMPTYPE_RICE_1).setQuantAlgorithm(null)
-        .getCompressOption(RiceCompressOption.class).setBlockSize(32);
+                .getCompressOption(RiceCompressOption.class).setBlockSize(32);
 
         cHDU.compress();
 
@@ -100,7 +100,7 @@ public class TileCompressionTest {
         CompressedImageHDU cHDU = CompressedImageHDU.fromImageHDU(hdu, 8, 8);
 
         cHDU.setCompressAlgorithm(Compression.ZCMPTYPE_RICE_1).setQuantAlgorithm(null)
-        .getCompressOption(RiceCompressOption.class).setBlockSize(32);
+                .getCompressOption(RiceCompressOption.class).setBlockSize(32);
 
         cHDU.compress();
 
@@ -131,7 +131,7 @@ public class TileCompressionTest {
         CompressedImageHDU cHDU = CompressedImageHDU.fromImageHDU(hdu, 1024);
 
         cHDU.setCompressAlgorithm(Compression.ZCMPTYPE_RICE_1).setQuantAlgorithm(null)
-        .getCompressOption(RiceCompressOption.class).setBlockSize(32);
+                .getCompressOption(RiceCompressOption.class).setBlockSize(32);
 
         cHDU.compress();
 

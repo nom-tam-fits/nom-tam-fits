@@ -63,7 +63,6 @@ import nom.tam.util.SafeClose;
 
 public class UserProvidedTest {
 
-
     @Before
     public void before() {
         FitsFactory.setDefaults();
@@ -89,7 +88,7 @@ public class UserProvidedTest {
             // the real test is if this throws an exception, it should not!
             headerRewriter.rewrite();
             fits.close();
-        } catch(Exception e) {
+        } catch (Exception e) {
             e.printStackTrace();
             throw e;
         } finally {
@@ -367,9 +366,11 @@ public class UserProvidedTest {
         Fits fitsSrc = null;
         try {
 
-            String file1 = BlackBoxImages.getBlackBoxImage("16bits-RGB-compressed-ScottRosen-450D-03h-80dec--C_CVT_2013-12-29-MW1-03h_Light_600SecISO200_000042.fit");
+            String file1 = BlackBoxImages.getBlackBoxImage(
+                    "16bits-RGB-compressed-ScottRosen-450D-03h-80dec--C_CVT_2013-12-29-MW1-03h_Light_600SecISO200_000042.fit");
             String file2 = BlackBoxImages.getBlackBoxImage("PetraVanDerMeijs-astroforum-sadr__001.fit");
-            String file3 = BlackBoxImages.getBlackBoxImage("16bits-RGB-M45_100mmF2_8_ISO200_300sSeries512 exp_007-Patrick Duis.fit");
+            String file3 = BlackBoxImages
+                    .getBlackBoxImage("16bits-RGB-M45_100mmF2_8_ISO200_300sSeries512 exp_007-Patrick Duis.fit");
 
             String file4 = BlackBoxImages.getBlackBoxImage("16bit-mono-M34.fit");
             String file5 = BlackBoxImages.getBlackBoxImage("8bit-mono-Convertjup_0_1_L_01.FIT");
@@ -400,55 +401,24 @@ public class UserProvidedTest {
     }
 
     private void assertCurledHdu(BinaryTableHDU bhduMain) throws FitsException {
-        //@formatter:off
+        // @formatter:off
         Object[][] expected = {
-                new double[][]{
-                    {  54237.5535530787   },
-                    {  54237.55355314815  },
-                    {  54237.553552777776 },
-                    {  54237.553552777776 },
-                    {  54237.553552777776 },
-                    {  54237.553552777776 },
-                    {  54237.553553287034 },
-                    {  54237.553552777776 },
-                    {  54237.55355329861  },
-                    {  54237.55355331019   },
-                },new String[]{
-                        "FOCOBS_X_Y_Z"      ,
-                        "PHIOBS_X_Y_Z"      ,
-                        "INCLINOMETER_3"    ,
-                        "INCLINOMETER_1"    ,
-                        "PHI_X_Y_Z"         ,
-                        "INCLINOMETER_2"    ,
-                        "LAPSE_RATE"        ,
-                        "PTC_METR_MODE"     ,
-                        "DPHI_X_Y_Z"        ,
-                        "DFOCUS_X_Y_Z"
-                }, new double[][]{
-                    {2.78, -4.4, 6.479},
-                    {0.0040, 0.0060, 0.0},
-                    {23.31, 49.64, 1.3  },
-                    {-12.26, -51.35, 2.7},
-                    {0.04, 0.0060, 0.0  },
-                    {32.86, 52.75, 0.0  },
-                    {0.0065             },
-                    {32.0               },
-                    {0.0, 0.0, 0.0      },
-                    {0.0, 0.0, 0.0      }
-                },new byte[][]{
-                    {109, 109, 32, 47, 32, 109, 109, 32, 47, 32, 109, 109},
-                    {100, 101, 103, 32, 47, 32, 100, 101, 103, 32, 47, 32, 100, 101, 103},
-                    {97, 114, 99, 115, 101, 99, 32, 47, 32, 97, 114, 99, 115, 101, 99, 32, 47, 32, 100, 101, 103, 67},
-                    {97, 114, 99, 115, 101, 99, 32, 47, 32, 97, 114, 99, 115, 101, 99, 32, 47, 32, 100, 101, 103, 67},
-                    {100, 101, 103, 32, 47, 32, 100, 101, 103, 32, 47, 32, 100, 101, 103},
-                    {97, 114, 99, 115, 101, 99, 32, 47, 32, 97, 114, 99, 115, 101, 99, 32, 47, 32, 100, 101, 103, 67},
-                    {75, 47, 109},
-                    {45},
-                    {100, 101, 103, 32, 47, 32, 100, 101, 103, 32, 47, 32, 100, 101, 103},
-                    {109, 109, 32, 47, 32, 109, 109, 32, 47, 32, 109, 109},
-                }
-        };
-        //@formatter:on
+                new double[][] {{54237.5535530787}, {54237.55355314815}, {54237.553552777776}, {54237.553552777776},
+                        {54237.553552777776}, {54237.553552777776}, {54237.553553287034}, {54237.553552777776},
+                        {54237.55355329861}, {54237.55355331019},},
+                new String[] {"FOCOBS_X_Y_Z", "PHIOBS_X_Y_Z", "INCLINOMETER_3", "INCLINOMETER_1", "PHI_X_Y_Z",
+                        "INCLINOMETER_2", "LAPSE_RATE", "PTC_METR_MODE", "DPHI_X_Y_Z", "DFOCUS_X_Y_Z"},
+                new double[][] {{2.78, -4.4, 6.479}, {0.0040, 0.0060, 0.0}, {23.31, 49.64, 1.3}, {-12.26, -51.35, 2.7},
+                        {0.04, 0.0060, 0.0}, {32.86, 52.75, 0.0}, {0.0065}, {32.0}, {0.0, 0.0, 0.0}, {0.0, 0.0, 0.0}},
+                new byte[][] {{109, 109, 32, 47, 32, 109, 109, 32, 47, 32, 109, 109},
+                        {100, 101, 103, 32, 47, 32, 100, 101, 103, 32, 47, 32, 100, 101, 103},
+                        {97, 114, 99, 115, 101, 99, 32, 47, 32, 97, 114, 99, 115, 101, 99, 32, 47, 32, 100, 101, 103, 67},
+                        {97, 114, 99, 115, 101, 99, 32, 47, 32, 97, 114, 99, 115, 101, 99, 32, 47, 32, 100, 101, 103, 67},
+                        {100, 101, 103, 32, 47, 32, 100, 101, 103, 32, 47, 32, 100, 101, 103},
+                        {97, 114, 99, 115, 101, 99, 32, 47, 32, 97, 114, 99, 115, 101, 99, 32, 47, 32, 100, 101, 103, 67},
+                        {75, 47, 109}, {45}, {100, 101, 103, 32, 47, 32, 100, 101, 103, 32, 47, 32, 100, 101, 103},
+                        {109, 109, 32, 47, 32, 109, 109, 32, 47, 32, 109, 109},}};
+        // @formatter:on
         Assert.assertEquals(4, bhduMain.getNCols());
         Assert.assertEquals(10, bhduMain.getNRows());
         for (int column = 0; column < 4; column++) {
@@ -492,13 +462,7 @@ public class UserProvidedTest {
         try {
             ImageHDU hdu = (ImageHDU) fits2.getHDU(0);
             ImageTiler tiler = hdu.getTiler();
-            double[] values = (double[]) tiler.getTile(new int[]{
-                    0,
-                    231607
-            }, new int[]{
-                    1000,
-                    1
-            });
+            double[] values = (double[]) tiler.getTile(new int[] {0, 231607}, new int[] {1000, 1});
             Assert.assertEquals(((double[][]) hdu.getKernel())[800][231607], values[800], 0.00000000001d);
             Assert.assertEquals(((double[][]) hdu.getKernel())[850][231607], values[850], 0.00000000001d);
         } finally {

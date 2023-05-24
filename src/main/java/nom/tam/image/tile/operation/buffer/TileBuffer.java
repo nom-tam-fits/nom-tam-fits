@@ -36,8 +36,8 @@ import java.nio.Buffer;
 import nom.tam.util.type.ElementType;
 
 /**
- * This view on the image data represents a tileOperation that is row based, so
- * a tileOperation that fills the whole width of the image.
+ * This view on the image data represents a tileOperation that is row based, so a tileOperation that fills the whole
+ * width of the image.
  */
 public abstract class TileBuffer {
 
@@ -62,8 +62,7 @@ public abstract class TileBuffer {
     }
 
     /**
-     * nothing to do in the normal case, overwrite this method if post
-     * processing is necessary.
+     * nothing to do in the normal case, overwrite this method if post processing is necessary.
      */
     public void finish() {
     }

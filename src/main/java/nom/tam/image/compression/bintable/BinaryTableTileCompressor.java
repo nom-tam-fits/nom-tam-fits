@@ -53,7 +53,8 @@ public class BinaryTableTileCompressor extends BinaryTableTile {
 
     private final CompressedTableData binData;
 
-    public BinaryTableTileCompressor(CompressedTableData binData, ColumnTable<?> columnTable, BinaryTableTileDescription description) {
+    public BinaryTableTileCompressor(CompressedTableData binData, ColumnTable<?> columnTable,
+            BinaryTableTileDescription description) {
         super(columnTable, description);
         this.binData = binData;
     }
@@ -69,7 +70,8 @@ public class BinaryTableTileCompressor extends BinaryTableTile {
         buffer.rewind();
         int spaceForCompression = getUncompressedSizeInBytes();
         // give the compression 10% more space and a minimum of 1024 bytes
-        spaceForCompression = Math.max(spaceForCompression * FACTOR_11 / FACTOR_10, spaceForCompression + MINIMUM_EXTRA_SPACE);
+        spaceForCompression = Math.max(spaceForCompression * FACTOR_11 / FACTOR_10,
+                spaceForCompression + MINIMUM_EXTRA_SPACE);
         ByteBuffer compressedBuffer = ByteBuffer.wrap(new byte[spaceForCompression]);
         if (!getCompressorControl().compress(type.asTypedBuffer(buffer), compressedBuffer, null)) {
             // very bad case lets try again with 50% more space

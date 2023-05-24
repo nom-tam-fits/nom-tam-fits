@@ -68,9 +68,7 @@ public class PrimitiveTypeTest {
         assertEquals(3, bufferAtPosition(PrimitiveTypes.BYTE, 6, 3).capacity());
 
         byte expectedValue = 1;
-        ByteBuffer buffer = PrimitiveTypes.BYTE.convertToByteBuffer(new byte[]{
-                1
-        });
+        ByteBuffer buffer = PrimitiveTypes.BYTE.convertToByteBuffer(new byte[] {1});
         assertEquals(expectedValue, buffer.get());
 
         testGetPutArray(PrimitiveTypes.BYTE, Byte.valueOf((byte) 1), Byte.valueOf((byte) 2));
@@ -99,9 +97,7 @@ public class PrimitiveTypeTest {
         double testValue = 567.7686876876725638752364576543d;
         long value = Double.doubleToLongBits(testValue) >> 7 * 8;
 
-        ByteBuffer buffer = PrimitiveTypes.DOUBLE.convertToByteBuffer(new double[]{
-                testValue
-        });
+        ByteBuffer buffer = PrimitiveTypes.DOUBLE.convertToByteBuffer(new double[] {testValue});
         assertEquals((byte) value, buffer.get());
 
         testGetPutArray(PrimitiveTypes.DOUBLE, Double.valueOf(1), Double.valueOf(2));
@@ -119,9 +115,7 @@ public class PrimitiveTypeTest {
         float testValue = 567.7686876876f;
         int value = Float.floatToIntBits(testValue) >> 3 * 8;
 
-        ByteBuffer buffer = PrimitiveTypes.FLOAT.convertToByteBuffer(new float[]{
-                testValue
-        });
+        ByteBuffer buffer = PrimitiveTypes.FLOAT.convertToByteBuffer(new float[] {testValue});
         assertEquals((byte) value, buffer.get());
         testGetPutArray(PrimitiveTypes.FLOAT, Float.valueOf(1), Float.valueOf(2));
 
@@ -136,9 +130,7 @@ public class PrimitiveTypeTest {
         assertEquals(3, bufferAtPosition(PrimitiveTypes.INT, 6, 3).capacity());
 
         int expectedValue = 256 * 256 * 256;
-        ByteBuffer buffer = PrimitiveTypes.INT.convertToByteBuffer(new int[]{
-                expectedValue
-        });
+        ByteBuffer buffer = PrimitiveTypes.INT.convertToByteBuffer(new int[] {expectedValue});
         assertEquals((byte) 1, buffer.get());
         testGetPutArray(PrimitiveTypes.INT, Integer.valueOf(1), Integer.valueOf(2));
 
@@ -153,9 +145,7 @@ public class PrimitiveTypeTest {
         assertEquals(3, bufferAtPosition(PrimitiveTypes.LONG, 6, 3).capacity());
 
         long expectedValue = 256L * 256L * 256L * 256L * 256L * 256L * 256L;
-        assertEquals((byte) 1, PrimitiveTypes.LONG.convertToByteBuffer(new long[]{
-                expectedValue
-        }).get());
+        assertEquals((byte) 1, PrimitiveTypes.LONG.convertToByteBuffer(new long[] {expectedValue}).get());
         testGetPutArray(PrimitiveTypes.LONG, Long.valueOf(1), Long.valueOf(2));
 
         testAppedBuffer(PrimitiveTypes.LONG, expectedValue);
@@ -177,9 +167,7 @@ public class PrimitiveTypeTest {
         assertEquals(3, bufferAtPosition(PrimitiveTypes.SHORT, 6, 3).capacity());
 
         short expectedValue = 256;
-        ByteBuffer buffer = PrimitiveTypes.SHORT.convertToByteBuffer(new short[]{
-                expectedValue
-        });
+        ByteBuffer buffer = PrimitiveTypes.SHORT.convertToByteBuffer(new short[] {expectedValue});
         assertEquals((byte) 1, buffer.get());
         testGetPutArray(PrimitiveTypes.SHORT, Short.valueOf((short) 1), Short.valueOf((short) 2));
 
@@ -260,6 +248,5 @@ public class PrimitiveTypeTest {
         assertSame(PrimitiveTypes.LONG, PrimitiveTypeHandler.nearestValueOf(40));
         assertSame(PrimitiveTypes.LONG, PrimitiveTypeHandler.nearestValueOf(80));
     }
-
 
 }

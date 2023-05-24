@@ -40,21 +40,17 @@ import static nom.tam.fits.header.Standard.TTYPEn;
  */
 
 /**
- * This class allows FITS binary and ASCII tables to be accessed via a common
- * interface.
+ * This class allows FITS binary and ASCII tables to be accessed via a common interface.
  *
  * @param <T> the generic type of table data contained in this HDU instance.
  */
 public abstract class TableHDU<T extends AbstractTableData> extends BasicHDU<T> {
 
     /**
-     * Create the TableHDU. Note that this will normally only be invoked by
-     * subclasses in the FITS package.
+     * Create the TableHDU. Note that this will normally only be invoked by subclasses in the FITS package.
      *
-     * @param hdr
-     *            the header
-     * @param td
-     *            The data for the table.
+     * @param hdr the header
+     * @param td  The data for the table.
      */
     protected TableHDU(Header hdr, T td) {
         super(hdr, td);
@@ -68,19 +64,16 @@ public abstract class TableHDU<T extends AbstractTableData> extends BasicHDU<T> 
     /**
      * Add a column to the table without any associated header information.
      *
-     * @param newCol
-     *            the new column information. the newCol should be an Object[]
-     *            where type of all of the constituents is identical. The length
-     *            of data should match the other columns. <b> Note:</b> It is
-     *            valid for data to be a 2 or higher dimensionality primitive
-     *            array. In this case the column index is the first (in Java
-     *            speak) index of the array. E.g., if called with
-     *            int[30][20][10], the number of rows in the table should be 30
-     *            and this column will have elements which are 2-d integer
-     *            arrays with TDIM = (10,20).
-     * @return the number of columns in the adapted table
-     * @throws FitsException
-     *             if the operation failed
+     * @param  newCol        the new column information. the newCol should be an Object[] where type of all of the
+     *                           constituents is identical. The length of data should match the other columns. <b>
+     *                           Note:</b> It is valid for data to be a 2 or higher dimensionality primitive array. In
+     *                           this case the column index is the first (in Java speak) index of the array. E.g., if
+     *                           called with int[30][20][10], the number of rows in the table should be 30 and this
+     *                           column will have elements which are 2-d integer arrays with TDIM = (10,20).
+     *
+     * @return               the number of columns in the adapted table
+     *
+     * @throws FitsException if the operation failed
      */
     public int addColumn(Object newCol) throws FitsException {
         int nCols = getNCols();
@@ -89,19 +82,17 @@ public abstract class TableHDU<T extends AbstractTableData> extends BasicHDU<T> 
         return nCols;
     }
 
-
-
     /**
-     * Add a row to the end of the table. If this is the first row, then this
-     * will add appropriate columns for each of the entries. The rows to add
-     * must be supplied as column based array of arrays.
+     * Add a row to the end of the table. If this is the first row, then this will add appropriate columns for each of
+     * the entries. The rows to add must be supplied as column based array of arrays.
      *
-     * @return the number of rows in the adapted table
-     * @param newRows
-     *            rows to add to the table
-     * @return the number of rows in the table
-     * @throws FitsException
-     *             if the operation failed
+     * @return               the number of rows in the adapted table
+     *
+     * @param  newRows       rows to add to the table
+     *
+     * @return               the number of rows in the table
+     *
+     * @throws FitsException if the operation failed
      */
     public int addRow(Object[] newRows) throws FitsException {
         int row = myData.addRow(newRows);
@@ -110,21 +101,18 @@ public abstract class TableHDU<T extends AbstractTableData> extends BasicHDU<T> 
     }
 
     /**
-     * @return the stems of the keywords that are associated with table columns.
-     *         Users can supplement this with their own and call the appropriate
-     *         deleteColumns fields.
+     * @return the stems of the keywords that are associated with table columns. Users can supplement this with their
+     *             own and call the appropriate deleteColumns fields.
      */
     protected abstract IFitsHeader[] columnKeyStems();
 
     /**
      * Delete a set of columns from a table.
      *
-     * @param column
-     *            The one-indexed start column.
-     * @param len
-     *            The number of columns to delete.
-     * @throws FitsException
-     *             if the operation failed
+     * @param  column        The one-indexed start column.
+     * @param  len           The number of columns to delete.
+     *
+     * @throws FitsException if the operation failed
      */
     public void deleteColumnsIndexOne(int column, int len) throws FitsException {
         deleteColumnsIndexZero(column - 1, len);
@@ -133,14 +121,11 @@ public abstract class TableHDU<T extends AbstractTableData> extends BasicHDU<T> 
     /**
      * Delete a set of columns from a table.
      *
-     * @param column
-     *            The one-indexed start column.
-     * @param len
-     *            The number of columns to delete.
-     * @param fields
-     *            Stems for the header fields to be removed for the table.
-     * @throws FitsException
-     *             if the operation failed
+     * @param  column        The one-indexed start column.
+     * @param  len           The number of columns to delete.
+     * @param  fields        Stems for the header fields to be removed for the table.
+     *
+     * @throws FitsException if the operation failed
      */
     public void deleteColumnsIndexOne(int column, int len, String[] fields) throws FitsException {
         deleteColumnsIndexZero(column - 1, len, GenericKey.create(fields));
@@ -149,12 +134,10 @@ public abstract class TableHDU<T extends AbstractTableData> extends BasicHDU<T> 
     /**
      * Delete a set of columns from a table.
      *
-     * @param column
-     *            The one-indexed start column.
-     * @param len
-     *            The number of columns to delete.
-     * @throws FitsException
-     *             if the operation failed
+     * @param  column        The one-indexed start column.
+     * @param  len           The number of columns to delete.
+     *
+     * @throws FitsException if the operation failed
      */
     public void deleteColumnsIndexZero(int column, int len) throws FitsException {
         deleteColumnsIndexZero(column, len, columnKeyStems());
@@ -163,19 +146,17 @@ public abstract class TableHDU<T extends AbstractTableData> extends BasicHDU<T> 
     /**
      * Delete a set of columns from a table.
      *
-     * @param column
-     *            The zero-indexed start column.
-     * @param len
-     *            The number of columns to delete.
-     * @param fields
-     *            Stems for the header fields to be removed for the table.
-     * @throws FitsException
-     *             if the operation failed
+     * @param  column        The zero-indexed start column.
+     * @param  len           The number of columns to delete.
+     * @param  fields        Stems for the header fields to be removed for the table.
+     *
+     * @throws FitsException if the operation failed
      */
     public void deleteColumnsIndexZero(int column, int len, IFitsHeader[] fields) throws FitsException {
 
         if (column < 0 || len < 0 || column + len > getNCols()) {
-            throw new FitsException("Illegal columns deletion request- Start:" + column + " Len:" + len + " from table with " + getNCols() + " columns");
+            throw new FitsException("Illegal columns deletion request- Start:" + column + " Len:" + len
+                    + " from table with " + getNCols() + " columns");
         }
 
         if (len == 0) {
@@ -210,33 +191,27 @@ public abstract class TableHDU<T extends AbstractTableData> extends BasicHDU<T> 
     }
 
     /**
-     * Remove all rows from the table starting at some specific index from the
-     * table. Inspired by a routine by R. Mathar but re-implemented using the
-     * DataTable and changes to AsciiTable so that it can be done easily for
-     * both Binary and ASCII tables.
+     * Remove all rows from the table starting at some specific index from the table. Inspired by a routine by R. Mathar
+     * but re-implemented using the DataTable and changes to AsciiTable so that it can be done easily for both Binary
+     * and ASCII tables.
      *
-     * @param row
-     *            the (0-based) index of the first row to be deleted.
-     * @throws FitsException
-     *             if an error occurs.
+     * @param  row           the (0-based) index of the first row to be deleted.
+     *
+     * @throws FitsException if an error occurs.
      */
     public void deleteRows(final int row) throws FitsException {
         deleteRows(row, getNRows() - row);
     }
 
     /**
-     * Remove a number of adjacent rows from the table. This routine was
-     * inspired by code by R.Mathar but re-implemented using changes in the
-     * ColumnTable class abd AsciiTable so that we can do it for all FITS
-     * tables.
+     * Remove a number of adjacent rows from the table. This routine was inspired by code by R.Mathar but re-implemented
+     * using changes in the ColumnTable class abd AsciiTable so that we can do it for all FITS tables.
      *
-     * @param firstRow
-     *            the (0-based) index of the first row to be deleted. This is
-     *            zero-based indexing: 0&lt;=firstrow&lt; number of rows.
-     * @param nRow
-     *            the total number of rows to be deleted.
-     * @throws FitsException
-     *             If an error occurs in the deletion.
+     * @param  firstRow      the (0-based) index of the first row to be deleted. This is zero-based indexing:
+     *                           0&lt;=firstrow&lt; number of rows.
+     * @param  nRow          the total number of rows to be deleted.
+     *
+     * @throws FitsException If an error occurs in the deletion.
      */
     public void deleteRows(final int firstRow, int nRow) throws FitsException {
 
@@ -257,9 +232,9 @@ public abstract class TableHDU<T extends AbstractTableData> extends BasicHDU<T> 
     /**
      * Find the 0-based column index corresponding to a particular column name.
      *
-     * @return index of the column
-     * @param colName
-     *            the name of the column
+     * @return         index of the column
+     *
+     * @param  colName the name of the column
      */
     public int findColumn(String colName) {
         for (int i = 0; i < getNCols(); i++) {
@@ -272,23 +247,23 @@ public abstract class TableHDU<T extends AbstractTableData> extends BasicHDU<T> 
     }
 
     /**
-     * @return a specific column from the table using 0-based column indexing.
-     * @param col
-     *            column index to get
-     * @throws FitsException
-     *             if the operation failed
+     * @return               a specific column from the table using 0-based column indexing.
+     *
+     * @param  col           column index to get
+     *
+     * @throws FitsException if the operation failed
      */
     public Object getColumn(int col) throws FitsException {
         return myData.getColumn(col);
     }
 
     /**
-     * @return a specific column of the table where the column name is specified
-     *         using the TTYPEn keywords in the header.
-     * @param colName
-     *            The name of the column to be extracted.
-     * @throws FitsException
-     *             if the operation failed
+     * @return               a specific column of the table where the column name is specified using the TTYPEn keywords
+     *                           in the header.
+     *
+     * @param  colName       The name of the column to be extracted.
+     *
+     * @throws FitsException if the operation failed
      */
     public Object getColumn(String colName) throws FitsException {
         return getColumn(findColumn(colName));
@@ -297,11 +272,11 @@ public abstract class TableHDU<T extends AbstractTableData> extends BasicHDU<T> 
     /**
      * Get the FITS type of a column in the table.
      *
-     * @param index
-     *            The 0-based index of the column.
-     * @return The FITS type.
-     * @throws FitsException
-     *             if an invalid index was requested.
+     * @param  index         The 0-based index of the column.
+     *
+     * @return               The FITS type.
+     *
+     * @throws FitsException if an invalid index was requested.
      */
     public String getColumnFormat(int index) throws FitsException {
         int flds = myHeader.getIntValue(TFIELDS, 0);
@@ -313,15 +288,13 @@ public abstract class TableHDU<T extends AbstractTableData> extends BasicHDU<T> 
     }
 
     /**
-     * Convenience method for getting column data. Note that this works only for
-     * metadata that returns a string value. This is equivalent to
-     * getStringValue(type+index);
+     * Convenience method for getting column data. Note that this works only for metadata that returns a string value.
+     * This is equivalent to getStringValue(type+index);
      *
-     * @return meta data string value
-     * @param index
-     *            index of the colum
-     * @param type
-     *            the key type to get
+     * @return       meta data string value
+     *
+     * @param  index index of the colum
+     * @param  type  the key type to get
      */
     public String getColumnMeta(int index, String type) {
         return myHeader.getStringValue(type + (index + 1));
@@ -330,9 +303,9 @@ public abstract class TableHDU<T extends AbstractTableData> extends BasicHDU<T> 
     /**
      * Get the name of a column in the table.
      *
-     * @param index
-     *            The 0-based column index.
-     * @return The column name.
+     * @param  index The 0-based column index.
+     *
+     * @return       The column name.
      */
     public String getColumnName(int index) {
 
@@ -343,11 +316,10 @@ public abstract class TableHDU<T extends AbstractTableData> extends BasicHDU<T> 
         return ttype;
     }
 
-
     /**
-     * @return all of the columns of the table.
-     * @throws FitsException
-     *             if the operation failed
+     * @return               all of the columns of the table.
+     *
+     * @throws FitsException if the operation failed
      */
     public Object[] getColumns() throws FitsException {
         Object[] result = new Object[getNCols()];
@@ -358,13 +330,12 @@ public abstract class TableHDU<T extends AbstractTableData> extends BasicHDU<T> 
     }
 
     /**
-     * @return a specific element of the table using 0-based indices.
-     * @param row
-     *            the row index of the element
-     * @param col
-     *            the column index of the element
-     * @throws FitsException
-     *             if the operation failed
+     * @return               a specific element of the table using 0-based indices.
+     *
+     * @param  row           the row index of the element
+     * @param  col           the column index of the element
+     *
+     * @throws FitsException if the operation failed
      */
     public Object getElement(int row, int col) throws FitsException {
         return myData.getElement(row, col);
@@ -389,213 +360,173 @@ public abstract class TableHDU<T extends AbstractTableData> extends BasicHDU<T> 
     }
 
     /**
-     * @return a specific row of the table.
-     * @param row
-     *            the index of the row to retreive
-     * @throws FitsException
-     *             if the operation failed
+     * @return               a specific row of the table.
+     *
+     * @param  row           the index of the row to retreive
+     *
+     * @throws FitsException if the operation failed
      */
     public Object[] getRow(int row) throws FitsException {
         return myData.getRow(row);
     }
 
     /**
-     * Update a column within a table. The new column should have the same
-     * format ast the column being replaced.
+     * Update a column within a table. The new column should have the same format ast the column being replaced.
      *
-     * @param col
-     *            index of the column to replace
-     * @param newCol
-     *            the replacement column
-     * @throws FitsException
-     *             if the operation failed
+     * @param  col           index of the column to replace
+     * @param  newCol        the replacement column
+     *
+     * @throws FitsException if the operation failed
      */
     public void setColumn(int col, Object newCol) throws FitsException {
         myData.setColumn(col, newCol);
     }
 
     /**
-     * Update a column within a table. The new column should have the same
-     * format as the column being replaced.
+     * Update a column within a table. The new column should have the same format as the column being replaced.
      *
-     * @param colName
-     *            name of the column to replace
-     * @param newCol
-     *            the replacement column
-     * @throws FitsException
-     *             if the operation failed
+     * @param  colName       name of the column to replace
+     * @param  newCol        the replacement column
+     *
+     * @throws FitsException if the operation failed
      */
     public void setColumn(String colName, Object newCol) throws FitsException {
         setColumn(findColumn(colName), newCol);
     }
 
     /**
-     * Specify column metadata for a given column in a way that allows all of
-     * the column metadata for a given column to be organized together.
+     * Specify column metadata for a given column in a way that allows all of the column metadata for a given column to
+     * be organized together.
      *
-     * @param index
-     *            The 0-based index of the column
-     * @param key
-     *            The column key. I.e., the keyword will be key+(index+1)
-     * @param value
-     *            The value to be placed in the header.
-     * @param comment
-     *            The comment for the header
-     * @param after
-     *            Should the header card be after the current column metadata
-     *            block (<code>true</code>), or immediately before the TFORM card
-     *            (<code>false</code>).
-     * @throws HeaderCardException
-     *             if the header could not be updated
+     * @param  index               The 0-based index of the column
+     * @param  key                 The column key. I.e., the keyword will be key+(index+1)
+     * @param  value               The value to be placed in the header.
+     * @param  comment             The comment for the header
+     * @param  after               Should the header card be after the current column metadata block
+     *                                 (<code>true</code>), or immediately before the TFORM card (<code>false</code>).
+     *
+     * @throws HeaderCardException if the header could not be updated
      */
-    public void setColumnMeta(int index, IFitsHeader key, String value, String comment, boolean after) throws HeaderCardException {
+    public void setColumnMeta(int index, IFitsHeader key, String value, String comment, boolean after)
+            throws HeaderCardException {
         setCurrentColumn(index, after);
         myHeader.addLine(new HeaderCard(key.n(index + 1).key(), value, comment));
     }
 
     /**
-     * Specify column metadata for a given column in a way that allows all of
-     * the column metadata for a given column to be organized together.
+     * Specify column metadata for a given column in a way that allows all of the column metadata for a given column to
+     * be organized together.
      *
-     * @param index
-     *            The 0-based index of the column
-     * @param key
-     *            The column key. I.e., the keyword will be key+(index+1)
-     * @param value
-     *            The value to be placed in the header.
-     * @param comment
-     *            The comment for the header
-     * @param after
-     *            Should the header card be after the current column metadata
-     *            block (<code>true</code>), or immediately before the TFORM card
-     *            (<code>false</code>).
-     * @throws HeaderCardException
-     *             if the header could not be updated
+     * @param  index               The 0-based index of the column
+     * @param  key                 The column key. I.e., the keyword will be key+(index+1)
+     * @param  value               The value to be placed in the header.
+     * @param  comment             The comment for the header
+     * @param  after               Should the header card be after the current column metadata block
+     *                                 (<code>true</code>), or immediately before the TFORM card (<code>false</code>).
      *
-     * @since 1.16
+     * @throws HeaderCardException if the header could not be updated
+     *
+     * @since                      1.16
      */
-    public void setColumnMeta(int index, IFitsHeader key, Number value, String comment, boolean after) throws HeaderCardException {
+    public void setColumnMeta(int index, IFitsHeader key, Number value, String comment, boolean after)
+            throws HeaderCardException {
         setCurrentColumn(index, after);
         myHeader.addLine(new HeaderCard(key.n(index + 1).key(), value, comment));
     }
 
     /**
-     * Specify column metadata for a given column in a way that allows all of
-     * the column metadata for a given column to be organized together.
+     * Specify column metadata for a given column in a way that allows all of the column metadata for a given column to
+     * be organized together.
      *
-     * @param index
-     *            The 0-based index of the column
-     * @param key
-     *            The column key. I.e., the keyword will be key+(index+1)
-     * @param value
-     *            The value to be placed in the header.
-     * @param comment
-     *            The comment for the header
-     * @param after
-     *            Should the header card be after the current column metadata
-     *            block (<code>true</code>), or immediately before the TFORM card
-     *            (<code>false</code>).
-     * @throws HeaderCardException
-     *             if the header could not be updated
+     * @param  index               The 0-based index of the column
+     * @param  key                 The column key. I.e., the keyword will be key+(index+1)
+     * @param  value               The value to be placed in the header.
+     * @param  comment             The comment for the header
+     * @param  after               Should the header card be after the current column metadata block
+     *                                 (<code>true</code>), or immediately before the TFORM card (<code>false</code>).
+     *
+     * @throws HeaderCardException if the header could not be updated
      */
-    public void setColumnMeta(int index, String key, Boolean value, String comment, boolean after) throws HeaderCardException {
+    public void setColumnMeta(int index, String key, Boolean value, String comment, boolean after)
+            throws HeaderCardException {
         setCurrentColumn(index, after);
         myHeader.addLine(new HeaderCard(key + (index + 1), value, comment));
     }
 
     /**
-     * Specify column metadata for a given column in a way that allows all of
-     * the column metadata for a given column to be organized together.
+     * Specify column metadata for a given column in a way that allows all of the column metadata for a given column to
+     * be organized together.
      *
-     * @param index
-     *            The 0-based index of the column
-     * @param key
-     *            The column key. I.e., the keyword will be key+(index+1)
-     * @param value
-     *            The value to be placed in the header.
-     * @param comment
-     *            The comment for the header
-     * @param after
-     *            Should the header card be after the current column metadata
-     *            block (<code>true</code>), or immediately before the TFORM card
-     *            (<code>false</code>).
-     * @throws HeaderCardException
-     *             if the header could not be updated
+     * @param  index               The 0-based index of the column
+     * @param  key                 The column key. I.e., the keyword will be key+(index+1)
+     * @param  value               The value to be placed in the header.
+     * @param  comment             The comment for the header
+     * @param  after               Should the header card be after the current column metadata block
+     *                                 (<code>true</code>), or immediately before the TFORM card (<code>false</code>).
+     *
+     * @throws HeaderCardException if the header could not be updated
      */
-    public void setColumnMeta(int index, String key, Number value, String comment, boolean after) throws HeaderCardException {
+    public void setColumnMeta(int index, String key, Number value, String comment, boolean after)
+            throws HeaderCardException {
         setCurrentColumn(index, after);
         myHeader.addLine(new HeaderCard(key + (index + 1), value, comment));
     }
 
     /**
-     * Specify column metadata for a given column in a way that allows all of
-     * the column metadata for a given column to be organized together.
+     * Specify column metadata for a given column in a way that allows all of the column metadata for a given column to
+     * be organized together.
      *
-     * @param index
-     *            The 0-based index of the column
-     * @param key
-     *            The column key. I.e., the keyword will be key+(index+1)
-     * @param value
-     *            The value to be placed in the header.
-     * @param precision
-     *            The maximum number of decimal places to show after the leading figure. (Trailing zeroes will be ommitted.)
-     * @param comment
-     *            The comment for the header
-     * @param after
-     *            Should the header card be after the current column metadata
-     *            block (<code>true</code>), or immediately before the TFORM card
-     *            (<code>false</code>).
-     * @throws HeaderCardException
-     *             if the header could not be updated
+     * @param  index               The 0-based index of the column
+     * @param  key                 The column key. I.e., the keyword will be key+(index+1)
+     * @param  value               The value to be placed in the header.
+     * @param  precision           The maximum number of decimal places to show after the leading figure. (Trailing
+     *                                 zeroes will be ommitted.)
+     * @param  comment             The comment for the header
+     * @param  after               Should the header card be after the current column metadata block
+     *                                 (<code>true</code>), or immediately before the TFORM card (<code>false</code>).
+     *
+     * @throws HeaderCardException if the header could not be updated
      */
-    public void setColumnMeta(int index, String key, Number value, int precision, String comment, boolean after) throws HeaderCardException {
+    public void setColumnMeta(int index, String key, Number value, int precision, String comment, boolean after)
+            throws HeaderCardException {
         setCurrentColumn(index, after);
         myHeader.addLine(new HeaderCard(key + (index + 1), value, precision, comment));
     }
 
-
     /**
-     * Specify column metadata for a given column in a way that allows all of
-     * the column metadata for a given column to be organized together.
+     * Specify column metadata for a given column in a way that allows all of the column metadata for a given column to
+     * be organized together.
      *
-     * @param index
-     *            The 0-based index of the column
-     * @param key
-     *            The column key. I.e., the keyword will be key+(index+1)
-     * @param value
-     *            The value to be placed in the header.
-     * @param comment
-     *            The comment for the header
-     * @throws HeaderCardException
-     *             if the header could not be updated
+     * @param  index               The 0-based index of the column
+     * @param  key                 The column key. I.e., the keyword will be key+(index+1)
+     * @param  value               The value to be placed in the header.
+     * @param  comment             The comment for the header
+     *
+     * @throws HeaderCardException if the header could not be updated
      */
     public void setColumnMeta(int index, String key, String value, String comment) throws HeaderCardException {
         setColumnMeta(index, key, value, comment, true);
     }
 
     /**
-     * Specify column metadata for a given column in a way that allows all of
-     * the column metadata for a given column to be organized together.
+     * Specify column metadata for a given column in a way that allows all of the column metadata for a given column to
+     * be organized together.
      *
-     * @param index
-     *            The 0-based index of the column
-     * @param key
-     *            The column key. I.e., the keyword will be key+(index+1)
-     * @param value
-     *            The value to be placed in the header.
-     * @param comment
-     *            The comment for the header
-     * @param after
-     *            Should the header card be after the current column metadata
-     *            block (true), or immediately before the TFORM card (false). @throws
-     *            FitsException if the operation failed
-     * @throws HeaderCardException
-     *             if the header could not be updated
-     * @deprecated use
-     *             {@link #setColumnMeta(int, IFitsHeader, String, String, boolean)}
+     * @param      index               The 0-based index of the column
+     * @param      key                 The column key. I.e., the keyword will be key+(index+1)
+     * @param      value               The value to be placed in the header.
+     * @param      comment             The comment for the header
+     * @param      after               Should the header card be after the current column metadata block (true), or
+     *                                     immediately before the TFORM card (false). @throws FitsException if the
+     *                                     operation failed
+     *
+     * @throws     HeaderCardException if the header could not be updated
+     *
+     * @deprecated                     use {@link #setColumnMeta(int, IFitsHeader, String, String, boolean)}
      */
     @Deprecated
-    public void setColumnMeta(int index, String key, String value, String comment, boolean after) throws HeaderCardException {
+    public void setColumnMeta(int index, String key, String value, String comment, boolean after)
+            throws HeaderCardException {
         setCurrentColumn(index, after);
         myHeader.addLine(new HeaderCard(key + (index + 1), value, comment));
     }
@@ -612,36 +543,30 @@ public abstract class TableHDU<T extends AbstractTableData> extends BasicHDU<T> 
         // This should not break anything in principle, but can increase header size,
         // and therefore some of out unit tests may fail, unless adjusted...
 
-        //        try {
-        //            setColumnName(index, "Column" + (index + 1), "default column name");
-        //        } catch (Exception e) {
-        //            // Should not happen.
-        //            e.printStackTrace();
-        //        }
+        // try {
+        // setColumnName(index, "Column" + (index + 1), "default column name");
+        // } catch (Exception e) {
+        // // Should not happen.
+        // e.printStackTrace();
+        // }
     }
 
     /**
-     * Set the cursor in the header to point after the metadata for the
-     * specified column
+     * Set the cursor in the header to point after the metadata for the specified column
      *
-     * @param col
-     *            The 0-based index of the column
+     * @param col The 0-based index of the column
      */
     public void setCurrentColumn(int col) {
         setCurrentColumn(col, true);
     }
 
     /**
-     * Set the cursor in the header to point either before the TFORM value or
-     * after the column metadat
+     * Set the cursor in the header to point either before the TFORM value or after the column metadat
      *
-     * @param col
-     *            The 0-based index of the column
-     * @param after
-     *            True if the cursor should be placed after the existing column
-     *            metadata or false if the cursor is to be placed before the
-     *            TFORM value. If no corresponding TFORM is found, the cursoe
-     *            will be placed at the end of current header.
+     * @param col   The 0-based index of the column
+     * @param after True if the cursor should be placed after the existing column metadata or false if the cursor is to
+     *                  be placed before the TFORM value. If no corresponding TFORM is found, the cursoe will be placed
+     *                  at the end of current header.
      */
     public void setCurrentColumn(int col, boolean after) {
         if (after) {
@@ -654,14 +579,11 @@ public abstract class TableHDU<T extends AbstractTableData> extends BasicHDU<T> 
     /**
      * Update a single element within the table.
      *
-     * @param row
-     *            the row index
-     * @param col
-     *            the column index
-     * @param element
-     *            the replacement element
-     * @throws FitsException
-     *             if the operation failed
+     * @param  row           the row index
+     * @param  col           the column index
+     * @param  element       the replacement element
+     *
+     * @throws FitsException if the operation failed
      */
     public void setElement(int row, int col, Object element) throws FitsException {
         myData.setElement(row, col, element);
@@ -670,12 +592,10 @@ public abstract class TableHDU<T extends AbstractTableData> extends BasicHDU<T> 
     /**
      * Update a row within a table.
      *
-     * @param row
-     *            row index
-     * @param newRow
-     *            the replacement row
-     * @throws FitsException
-     *             if the operation failed
+     * @param  row           row index
+     * @param  newRow        the replacement row
+     *
+     * @throws FitsException if the operation failed
      */
     public void setRow(int row, Object[] newRow) throws FitsException {
         myData.setRow(row, newRow);

@@ -82,9 +82,9 @@ public final class GenericKey {
     /**
      * create a fits header key from a free string
      *
-     * @param key
-     *            the string to create the key for
-     * @return the IFitsHeader implementation for the key.
+     * @param  key the string to create the key for
+     *
+     * @return     the IFitsHeader implementation for the key.
      */
     public static IFitsHeader create(String key) {
         IFitsHeader result = STANDARD_KEYS.get(key);
@@ -97,9 +97,9 @@ public final class GenericKey {
     /**
      * create a array of generic fits header keys from a array of string keys.
      *
-     * @param keys
-     *            the array of string keys
-     * @return the array of IFitsHeaderKeys.
+     * @param  keys the array of string keys
+     *
+     * @return      the array of IFitsHeaderKeys.
      */
     public static IFitsHeader[] create(String[] keys) {
         IFitsHeader[] result = new IFitsHeader[keys.length];
@@ -124,9 +124,9 @@ public final class GenericKey {
     /**
      * lookup a string key in the standard key sets.
      *
-     * @param key
-     *            the fits key to search.
-     * @return the found fits key or null
+     * @param  key the fits key to search.
+     *
+     * @return     the found fits key or null
      */
     public static IFitsHeader lookup(String key) {
         int keyLength = key.length();

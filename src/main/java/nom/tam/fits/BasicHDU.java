@@ -129,7 +129,7 @@ public abstract class BasicHDU<DataClass extends Data> implements FitsElement {
     /**
      * @deprecated Use {@link NullDataHDU} instead. Gets a HDU with no data, only header.
      *
-     * @return an HDU without content
+     * @return     an HDU without content
      */
     @Deprecated
     public static NullDataHDU getDummyHDU() {
@@ -140,20 +140,20 @@ public abstract class BasicHDU<DataClass extends Data> implements FitsElement {
      * Check that this is a valid header for the HDU. This method is static but should be implemented by all subclasses.
      * TODO: refactor this to be in a meta object so it can inherit normally also see {@link #isData(Object)}
      *
-     * @param header to validate.
+     * @param  header to validate.
      *
-     * @return <CODE>true</CODE> if this is a valid header.
+     * @return        <CODE>true</CODE> if this is a valid header.
      */
     public static boolean isHeader(Header header) {
         return false;
     }
 
     /**
-     * @return if this object can be described as a FITS image. This method is static but should be implemented by all
-     *             subclasses. TODO: refactor this to be in a meta object so it can inherit normally also see
-     *             {@link #isHeader(Header)}
+     * @return   if this object can be described as a FITS image. This method is static but should be implemented by all
+     *               subclasses. TODO: refactor this to be in a meta object so it can inherit normally also see
+     *               {@link #isHeader(Header)}
      *
-     * @param o The Object being tested.
+     * @param  o The Object being tested.
      */
     public static boolean isData(Object o) {
         return false;
@@ -178,9 +178,9 @@ public abstract class BasicHDU<DataClass extends Data> implements FitsElement {
     /**
      * Add information to the header.
      *
-     * @param key key to add to the header
-     * @param val value for the key to add
-     * @param comment comment for the key/value pair
+     * @param  key                 key to add to the header
+     * @param  val                 value for the key to add
+     * @param  comment             comment for the key/value pair
      *
      * @throws HeaderCardException if the card does not follow the specification
      */
@@ -233,7 +233,7 @@ public abstract class BasicHDU<DataClass extends Data> implements FitsElement {
      * this will be read into a Java array short[30][20][10] so it makes sense to me at least that the returned
      * dimensions are 30,20,10
      *
-     * @return the dimensions of the axis.
+     * @return               the dimensions of the axis.
      *
      * @throws FitsException if the axis are configured wrong.
      */
@@ -261,14 +261,14 @@ public abstract class BasicHDU<DataClass extends Data> implements FitsElement {
     /**
      * Return the Bitpix enum type for this HDU.
      *
-     * @return The Bitpix enum object for this HDU.
+     * @return               The Bitpix enum object for this HDU.
      *
      * @throws FitsException if the BITPIX value in the header is absent or invalid.
      *
-     * @since 1.16
+     * @since                1.16
      *
-     * @see #getBitPix()
-     * @see Header#setBitpix(Bitpix)
+     * @see                  #getBitPix()
+     * @see                  Header#setBitpix(Bitpix)
      */
     public Bitpix getBitpix() throws FitsException {
         return Bitpix.fromHeader(myHeader);
@@ -324,7 +324,7 @@ public abstract class BasicHDU<DataClass extends Data> implements FitsElement {
      * Get the equinox in years for the celestial coordinate system in which positions given in either the header or
      * data are expressed.
      *
-     * @return either <CODE>null</CODE> or a String object
+     * @return     either <CODE>null</CODE> or a String object
      *
      * @deprecated use {@link #getEquinox()} instead
      */
@@ -356,16 +356,16 @@ public abstract class BasicHDU<DataClass extends Data> implements FitsElement {
     /**
      * Returns the decoded checksum that is stored in the header of this HDU under the <code>CHECKSUM</code> keyword.
      *
-     * @return the decoded FITS checksum value recorded in the HDU
+     * @return               the decoded FITS checksum value recorded in the HDU
      *
      * @throws FitsException if the HDU's header does not contain a <code>CHECKSUM</code> keyword.
      *
-     * @see #calcChecksum()
-     * @see Fits#calcChecksum(int)
-     * @see #getStoredDatasum()
-     * @see FitsCheckSum#getStoredDatasum(Header)
+     * @see                  #calcChecksum()
+     * @see                  Fits#calcChecksum(int)
+     * @see                  #getStoredDatasum()
+     * @see                  FitsCheckSum#getStoredDatasum(Header)
      *
-     * @since 1.17
+     * @since                1.17
      */
     public long getStoredChecksum() throws FitsException {
         return FitsCheckSum.getStoredChecksum(myHeader);
@@ -375,16 +375,16 @@ public abstract class BasicHDU<DataClass extends Data> implements FitsElement {
      * Returns the FITS checksum for the HDU's data that is stored in the header of this HDU under the
      * <code>DATASUM</code> keyword.
      *
-     * @return the FITS <code>DATASUM</code> value recorded in the HDU
+     * @return               the FITS <code>DATASUM</code> value recorded in the HDU
      *
      * @throws FitsException if the HDU's header does not contain a <code>DATASUM</code> keyword.
      *
-     * @see Data#calcChecksum()
-     * @see Fits#calcDatasum(int)
-     * @see #getStoredChecksum()
-     * @see FitsCheckSum#getStoredChecksum(Header)
+     * @see                  Data#calcChecksum()
+     * @see                  Fits#calcDatasum(int)
+     * @see                  #getStoredChecksum()
+     * @see                  FitsCheckSum#getStoredChecksum(Header)
      *
-     * @since 1.17
+     * @since                1.17
      */
     public long getStoredDatasum() throws FitsException {
         return FitsCheckSum.getStoredDatasum(myHeader);
@@ -402,12 +402,12 @@ public abstract class BasicHDU<DataClass extends Data> implements FitsElement {
      *
      * @throws FitsException if there was an error serializing the HDU for the checksum computation.
      *
-     * @see Fits#setChecksum(int)
-     * @see FitsCheckSum#setChecksum(BasicHDU)
-     * @see #getStoredChecksum()
-     * @see #getStoredDatasum()
+     * @see                  Fits#setChecksum(int)
+     * @see                  FitsCheckSum#setChecksum(BasicHDU)
+     * @see                  #getStoredChecksum()
+     * @see                  #getStoredDatasum()
      *
-     * @since 1.17
+     * @since                1.17
      */
     public void setChecksum() throws FitsException {
         FitsCheckSum.setChecksum(this);
@@ -419,15 +419,15 @@ public abstract class BasicHDU<DataClass extends Data> implements FitsElement {
      * deferred read mode data into RAM to perform the calculation. If you prefer to leave the data in deferred read
      * mode, you can use {@link Fits#calcChecksum(int)} instead.
      *
-     * @return the computed HDU checksum (in memory).
+     * @return               the computed HDU checksum (in memory).
      *
      * @throws FitsException if there was an error while calculating the checksum
      *
-     * @see Data#calcChecksum()
-     * @see Fits#calcChecksum(int)
-     * @see FitsCheckSum#checksum(BasicHDU)
+     * @see                  Data#calcChecksum()
+     * @see                  Fits#calcChecksum(int)
+     * @see                  FitsCheckSum#checksum(BasicHDU)
      *
-     * @since 1.17
+     * @since                1.17
      */
     public long calcChecksum() throws FitsException {
         return FitsCheckSum.checksum(this);
@@ -443,9 +443,9 @@ public abstract class BasicHDU<DataClass extends Data> implements FitsElement {
     /**
      * get a builder for filling the header cards using the builder pattern.
      *
-     * @param key the key for the first card.
+     * @param  key the key for the first card.
      *
-     * @return the builder for header cards.
+     * @return     the builder for header cards.
      */
     public HeaderCardBuilder card(IFitsHeader key) {
         return myHeader.card(key);
@@ -569,9 +569,9 @@ public abstract class BasicHDU<DataClass extends Data> implements FitsElement {
     /**
      * Get the String value associated with <CODE>keyword</CODE>.
      *
-     * @param keyword the FITS keyword
+     * @param  keyword the FITS keyword
      *
-     * @return either <CODE>null</CODE> or a String with leading/trailing blanks stripped.
+     * @return         either <CODE>null</CODE> or a String with leading/trailing blanks stripped.
      */
     public String getTrimmedString(String keyword) {
         String s = myHeader.getStringValue(keyword);
@@ -584,9 +584,9 @@ public abstract class BasicHDU<DataClass extends Data> implements FitsElement {
     /**
      * Get the String value associated with <CODE>keyword</CODE>.
      *
-     * @param keyword the FITS keyword
+     * @param  keyword the FITS keyword
      *
-     * @return either <CODE>null</CODE> or a String with leading/trailing blanks stripped.
+     * @return         either <CODE>null</CODE> or a String with leading/trailing blanks stripped.
      */
     public String getTrimmedString(IFitsHeader keyword) {
         return getTrimmedString(keyword.key());
@@ -631,7 +631,7 @@ public abstract class BasicHDU<DataClass extends Data> implements FitsElement {
     /**
      * Indicate that an HDU is the first element of a FITS file.
      *
-     * @param value value to set
+     * @param  value         value to set
      *
      * @throws FitsException if the operation failed
      */
@@ -650,7 +650,7 @@ public abstract class BasicHDU<DataClass extends Data> implements FitsElement {
      *
      * @return The value to use for the XTENSION keyword.
      *
-     * @since 1.18
+     * @since  1.18
      */
     protected String getCanonicalXtension() {
         // TODO this should become an abstract method for 2.0. Prior to that we provide a default

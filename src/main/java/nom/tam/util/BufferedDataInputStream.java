@@ -34,10 +34,9 @@ package nom.tam.util;
 import java.io.InputStream;
 
 /**
- * @deprecated Use {@link FitsInputStream} instead which provides the same functionality
- * with a less misleading name, or else use {@link ArrayInputStream} as a base for a more generic
- * implementation for any (non-FITS) encoding.
- *
+ * @deprecated Use {@link FitsInputStream} instead which provides the same functionality with a less misleading name, or
+ *                 else use {@link ArrayInputStream} as a base for a more generic implementation for any (non-FITS)
+ *                 encoding.
  */
 @Deprecated
 public class BufferedDataInputStream extends FitsInputStream {

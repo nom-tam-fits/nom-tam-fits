@@ -43,23 +43,17 @@ import nom.tam.util.type.ElementType;
 import edu.umd.cs.findbugs.annotations.SuppressFBWarnings;
 
 /**
- * A data table is conventionally considered to consist of rows and columns,
- * where the structure within each column is constant, but different columns may
- * have different structures. I.e., structurally columns may differ but rows are
- * identical. Typically tabular data is usually stored in row order which can
- * make it extremely difficult to access efficiently using Java. This class
- * provides efficient access to data which is stored in row order and allows
- * users to get and set the elements of the table. The table can consist only of
- * arrays of primitive types. Data stored in column order can be efficiently
- * read and written using the BufferedDataXputStream classes. The table is
- * represented entirely as a set of one-dimensional primitive arrays. For a
- * given column, a row consists of some number of contiguous elements of the
- * array. Each column is required to have the same number of rows. Information
- * regarding the dimensionality of columns and possible data pointers is
- * retained for use by clients which can understand them.
+ * A data table is conventionally considered to consist of rows and columns, where the structure within each column is
+ * constant, but different columns may have different structures. I.e., structurally columns may differ but rows are
+ * identical. Typically tabular data is usually stored in row order which can make it extremely difficult to access
+ * efficiently using Java. This class provides efficient access to data which is stored in row order and allows users to
+ * get and set the elements of the table. The table can consist only of arrays of primitive types. Data stored in column
+ * order can be efficiently read and written using the BufferedDataXputStream classes. The table is represented entirely
+ * as a set of one-dimensional primitive arrays. For a given column, a row consists of some number of contiguous
+ * elements of the array. Each column is required to have the same number of rows. Information regarding the
+ * dimensionality of columns and possible data pointers is retained for use by clients which can understand them.
  *
- * @param <T>   the generic type of extra state information associated with this table.
- *
+ * @param <T> the generic type of extra state information associated with this table.
  */
 public class ColumnTable<T> implements DataTable {
 
@@ -96,13 +90,15 @@ public class ColumnTable<T> implements DataTable {
             }
 
             @Override
-            public void write(ColumnTable<?> table, ArrayDataOutput os, int index, int arrOffset, int size) throws IOException {
+            public void write(ColumnTable<?> table, ArrayDataOutput os, int index, int arrOffset, int size)
+                    throws IOException {
                 os.write(table.bytePointers[index], arrOffset, size);
             }
 
             @Override
             @SuppressFBWarnings(value = "RR_NOT_CHECKED", justification = "this read will never return less than the requested length")
-            public void read(ColumnTable<?> table, ArrayDataInput is, int index, int arrOffset, int size) throws IOException {
+            public void read(ColumnTable<?> table, ArrayDataInput is, int index, int arrOffset, int size)
+                    throws IOException {
                 is.read(table.bytePointers[index], arrOffset, size);
             }
         };
@@ -119,12 +115,14 @@ public class ColumnTable<T> implements DataTable {
             }
 
             @Override
-            public void write(ColumnTable<?> table, ArrayDataOutput os, int index, int arrOffset, int size) throws IOException {
+            public void write(ColumnTable<?> table, ArrayDataOutput os, int index, int arrOffset, int size)
+                    throws IOException {
                 os.write(table.booleanPointers[index], arrOffset, size);
             }
 
             @Override
-            public void read(ColumnTable<?> table, ArrayDataInput is, int index, int arrOffset, int size) throws IOException {
+            public void read(ColumnTable<?> table, ArrayDataInput is, int index, int arrOffset, int size)
+                    throws IOException {
                 is.read(table.booleanPointers[index], arrOffset, size);
             }
         };
@@ -141,12 +139,14 @@ public class ColumnTable<T> implements DataTable {
             }
 
             @Override
-            public void write(ColumnTable<?> table, ArrayDataOutput os, int index, int arrOffset, int size) throws IOException {
+            public void write(ColumnTable<?> table, ArrayDataOutput os, int index, int arrOffset, int size)
+                    throws IOException {
                 os.write(table.shortPointers[index], arrOffset, size);
             }
 
             @Override
-            public void read(ColumnTable<?> table, ArrayDataInput is, int index, int arrOffset, int size) throws IOException {
+            public void read(ColumnTable<?> table, ArrayDataInput is, int index, int arrOffset, int size)
+                    throws IOException {
                 is.read(table.shortPointers[index], arrOffset, size);
             }
         };
@@ -163,13 +163,15 @@ public class ColumnTable<T> implements DataTable {
             }
 
             @Override
-            public void write(ColumnTable<?> table, ArrayDataOutput os, int index, int arrOffset, int size) throws IOException {
+            public void write(ColumnTable<?> table, ArrayDataOutput os, int index, int arrOffset, int size)
+                    throws IOException {
                 os.write(table.charPointers[index], arrOffset, size);
             }
 
             @Override
             @SuppressFBWarnings(value = "RR_NOT_CHECKED", justification = "this read will never return less than the requested length")
-            public void read(ColumnTable<?> table, ArrayDataInput is, int index, int arrOffset, int size) throws IOException {
+            public void read(ColumnTable<?> table, ArrayDataInput is, int index, int arrOffset, int size)
+                    throws IOException {
                 is.read(table.charPointers[index], arrOffset, size);
             }
         };
@@ -186,12 +188,14 @@ public class ColumnTable<T> implements DataTable {
             }
 
             @Override
-            public void write(ColumnTable<?> table, ArrayDataOutput os, int index, int arrOffset, int size) throws IOException {
+            public void write(ColumnTable<?> table, ArrayDataOutput os, int index, int arrOffset, int size)
+                    throws IOException {
                 os.write(table.intPointers[index], arrOffset, size);
             }
 
             @Override
-            public void read(ColumnTable<?> table, ArrayDataInput is, int index, int arrOffset, int size) throws IOException {
+            public void read(ColumnTable<?> table, ArrayDataInput is, int index, int arrOffset, int size)
+                    throws IOException {
                 is.read(table.intPointers[index], arrOffset, size);
             }
         };
@@ -208,12 +212,14 @@ public class ColumnTable<T> implements DataTable {
             }
 
             @Override
-            public void write(ColumnTable<?> table, ArrayDataOutput os, int index, int arrOffset, int size) throws IOException {
+            public void write(ColumnTable<?> table, ArrayDataOutput os, int index, int arrOffset, int size)
+                    throws IOException {
                 os.write(table.longPointers[index], arrOffset, size);
             }
 
             @Override
-            public void read(ColumnTable<?> table, ArrayDataInput is, int index, int arrOffset, int size) throws IOException {
+            public void read(ColumnTable<?> table, ArrayDataInput is, int index, int arrOffset, int size)
+                    throws IOException {
                 is.read(table.longPointers[index], arrOffset, size);
             }
         };
@@ -230,12 +236,14 @@ public class ColumnTable<T> implements DataTable {
             }
 
             @Override
-            public void write(ColumnTable<?> table, ArrayDataOutput os, int index, int arrOffset, int size) throws IOException {
+            public void write(ColumnTable<?> table, ArrayDataOutput os, int index, int arrOffset, int size)
+                    throws IOException {
                 os.write(table.floatPointers[index], arrOffset, size);
             }
 
             @Override
-            public void read(ColumnTable<?> table, ArrayDataInput is, int index, int arrOffset, int size) throws IOException {
+            public void read(ColumnTable<?> table, ArrayDataInput is, int index, int arrOffset, int size)
+                    throws IOException {
                 is.read(table.floatPointers[index], arrOffset, size);
             }
         };
@@ -252,12 +260,14 @@ public class ColumnTable<T> implements DataTable {
             }
 
             @Override
-            public void write(ColumnTable<?> table, ArrayDataOutput os, int index, int arrOffset, int size) throws IOException {
+            public void write(ColumnTable<?> table, ArrayDataOutput os, int index, int arrOffset, int size)
+                    throws IOException {
                 os.write(table.doublePointers[index], arrOffset, size);
             }
 
             @Override
-            public void read(ColumnTable<?> table, ArrayDataInput is, int index, int arrOffset, int size) throws IOException {
+            public void read(ColumnTable<?> table, ArrayDataInput is, int index, int arrOffset, int size)
+                    throws IOException {
                 is.read(table.doublePointers[index], arrOffset, size);
             }
         };
@@ -283,8 +293,7 @@ public class ColumnTable<T> implements DataTable {
     private int nrow;
 
     /**
-     * The base type of each row (using the second character of the [x class
-     * names of the arrays.
+     * The base type of each row (using the second character of the [x class names of the arrays.
      */
     private char[] types;
 
@@ -317,13 +326,10 @@ public class ColumnTable<T> implements DataTable {
     /**
      * Create the object after checking consistency.
      *
-     * @param arrays
-     *            An array of one-d primitive arrays.
-     * @param sizes
-     *            The number of elements in each row for the corresponding
-     *            column
-     * @throws TableException
-     *             if the structure of the columns is not consistent
+     * @param  arrays         An array of one-d primitive arrays.
+     * @param  sizes          The number of elements in each row for the corresponding column
+     *
+     * @throws TableException if the structure of the columns is not consistent
      */
     public ColumnTable(Object[] arrays, int[] sizes) throws TableException {
         setup(arrays, sizes);
@@ -332,13 +338,10 @@ public class ColumnTable<T> implements DataTable {
     /**
      * Add a column .
      *
-     * @param newColumn
-     *            the column to add.
-     * @param size
-     *            size for the column
-     * @throws TableException
-     *             if the structure of the new column does not fit the structure
-     *             of the rows/columns
+     * @param  newColumn      the column to add.
+     * @param  size           size for the column
+     *
+     * @throws TableException if the structure of the new column does not fit the structure of the rows/columns
      */
     public void addColumn(Object newColumn, int size) throws TableException {
 
@@ -372,11 +375,9 @@ public class ColumnTable<T> implements DataTable {
     /**
      * Add a pointer in the pointer lists.
      *
-     * @param data
-     *            data pointer to add
-     * @throws TableException
-     *             if the structure of the specified array does not fit the
-     *             structure of the rows/columns
+     * @param  data           data pointer to add
+     *
+     * @throws TableException if the structure of the specified array does not fit the structure of the rows/columns
      */
     protected void addPointer(Object data) throws TableException {
         PointerAccess<Object> accessor = selectPointerAccessor(data);
@@ -401,14 +402,12 @@ public class ColumnTable<T> implements DataTable {
     }
 
     /**
-     * Add a row to the table. This method is very inefficient for adding
-     * multiple rows and should be avoided if possible.
+     * Add a row to the table. This method is very inefficient for adding multiple rows and should be avoided if
+     * possible.
      *
-     * @param row
-     *            the row to add
-     * @throws TableException
-     *             if the structure of the specified array does not fit the
-     *             structure of the rows/columns
+     * @param  row            the row to add
+     *
+     * @throws TableException if the structure of the specified array does not fit the structure of the rows/columns
      */
     public void addRow(Object[] row) throws TableException {
         if (arrays.length == 0) {
@@ -442,12 +441,10 @@ public class ColumnTable<T> implements DataTable {
      * <li>the number of rows differs for the columns.
      * </ul>
      *
-     * @param newArrays
-     *            The arrays defining the columns.
-     * @param newSizes
-     *            The number of elements in each row for the column.
-     * @throws TableException
-     *             if the table was inconsistent
+     * @param  newArrays      The arrays defining the columns.
+     * @param  newSizes       The number of elements in each row for the column.
+     *
+     * @throws TableException if the table was inconsistent
      */
     protected void checkArrayConsistency(Object[] newArrays, int[] newSizes) throws TableException {
 
@@ -520,18 +517,16 @@ public class ColumnTable<T> implements DataTable {
     /**
      * Delete a contiguous set of columns from the table.
      *
-     * @param start
-     *            The first column (0-indexed) to be deleted.
-     * @param len
-     *            The number of columns to be deleted.
-     * @throws TableException
-     *             if the request goes outside the boundaries of the table or if
-     *             the length is negative.
+     * @param  start          The first column (0-indexed) to be deleted.
+     * @param  len            The number of columns to be deleted.
+     *
+     * @throws TableException if the request goes outside the boundaries of the table or if the length is negative.
      */
     public void deleteColumns(int start, int len) throws TableException {
         int ncol = arrays.length;
         if (start < 0 || len < 0 || start + len > ncol) {
-            throw new TableException("Invalid request to delete columns start: " + start + " length:" + len + " for table with " + ncol + " columns.");
+            throw new TableException("Invalid request to delete columns start: " + start + " length:" + len
+                    + " for table with " + ncol + " columns.");
         }
         if (len == 0) {
             return;
@@ -567,11 +562,9 @@ public class ColumnTable<T> implements DataTable {
     /**
      * Delete a row from the table.
      *
-     * @param row
-     *            The row (0-indexed) to be deleted.
-     * @throws TableException
-     *             if the request goes outside the boundaries of the table or if
-     *             the length is negative.
+     * @param  row            The row (0-indexed) to be deleted.
+     *
+     * @throws TableException if the request goes outside the boundaries of the table or if the length is negative.
      */
     public void deleteRow(int row) throws TableException {
         deleteRows(row, 1);
@@ -580,18 +573,16 @@ public class ColumnTable<T> implements DataTable {
     /**
      * Delete a contiguous set of rows from the table.
      *
-     * @param row
-     *            The row (0-indexed) to be deleted.
-     * @param length
-     *            The number of rows to be deleted.
-     * @throws TableException
-     *             if the request goes outside the boundaries of the table or if
-     *             the length is negative.
+     * @param  row            The row (0-indexed) to be deleted.
+     * @param  length         The number of rows to be deleted.
+     *
+     * @throws TableException if the request goes outside the boundaries of the table or if the length is negative.
      */
     public void deleteRows(int row, int length) throws TableException {
 
         if (row < 0 || length < 0 || row + length > nrow) {
-            throw new TableException("Invalid request to delete rows start: " + row + " length:" + length + " for table with " + nrow + " rows.");
+            throw new TableException("Invalid request to delete rows start: " + row + " length:" + length
+                    + " for table with " + nrow + " rows.");
         }
 
         if (length == 0) {
@@ -627,15 +618,15 @@ public class ColumnTable<T> implements DataTable {
 
     /**
      * <p>
-     * Gets a particular column in the format that it is stored in the FITS. For most column types
-     * the storage format matches the Java type, but there are exceptions:
+     * Gets a particular column in the format that it is stored in the FITS. For most column types the storage format
+     * matches the Java type, but there are exceptions:
      * </p>
      * <ul>
-     * <li>Character arrays in FITS are stored as <code>byte[]</code> or <code>short[]</code>, depending
-     * on the {@link nom.tam.fits.FitsFactory#setUseUnicodeChars(boolean)} setting, not unicode Java <code>char[]</code>.
+     * <li>Character arrays in FITS are stored as <code>byte[]</code> or <code>short[]</code>, depending on the
+     * {@link nom.tam.fits.FitsFactory#setUseUnicodeChars(boolean)} setting, not unicode Java <code>char[]</code>.
      * Therefore, this call will return <code>byte[]</code> or <code>short[]</code>, the same as for a byte or 16-bit
-     * integer array. As a result if a new table is created with the returned data, the new table column will change
-     * its FITS column type from <code>A</code> to <code>B</code> or <code>I</code>.</li>
+     * integer array. As a result if a new table is created with the returned data, the new table column will change its
+     * FITS column type from <code>A</code> to <code>B</code> or <code>I</code>.</li>
      * <li>Complex values in FITS are stored as <code>float[2]</code> or <code>double[2]</code>, not as a
      * {@link ComplexValue} type. Therefore, this call will return <code>float[]</code> or <code>double[]</code>, the
      * same as for a float array. As a result if a new table is created with the returned data, the new table column
@@ -643,10 +634,9 @@ public class ColumnTable<T> implements DataTable {
      * <code>D</code>,.</li>
      * </ul>
      *
-     * @param col
-     *            The column desired.
-     * @return an object containing the column data desired. This will be an
-     *         instance of a 1-d primitive array.
+     * @param  col The column desired.
+     *
+     * @return     an object containing the column data desired. This will be an instance of a 1-d primitive array.
      */
     @Override
     public Object getColumn(int col) {
@@ -664,12 +654,11 @@ public class ColumnTable<T> implements DataTable {
     /**
      * Get a element of the table.
      *
-     * @param row
-     *            The row desired.
-     * @param col
-     *            The column desired.
-     * @return A primitive array containing the information. Note that an array
-     *         will be returned even if the element is a scalar.
+     * @param  row The row desired.
+     * @param  col The column desired.
+     *
+     * @return     A primitive array containing the information. Note that an array will be returned even if the element
+     *                 is a scalar.
      */
     @Override
     public Object getElement(int row, int col) {
@@ -705,9 +694,9 @@ public class ColumnTable<T> implements DataTable {
     /**
      * Get a row of data.
      *
-     * @param row
-     *            The row desired.
-     * @return An array of objects each containing a primitive array.
+     * @param  row The row desired.
+     *
+     * @return     An array of objects each containing a primitive array.
      */
     @Override
     public Object getRow(int row) {
@@ -735,8 +724,7 @@ public class ColumnTable<T> implements DataTable {
     }
 
     /**
-     * Set the pointer arrays for the eight primitive types to point to the
-     * appropriate elements of arrays.
+     * Set the pointer arrays for the eight primitive types to point to the appropriate elements of arrays.
      */
     protected void initializePointers() {
         int[] columnIndex = new int[MAX_COLUMN_INDEXES];
@@ -766,10 +754,9 @@ public class ColumnTable<T> implements DataTable {
     /**
      * Read a table.
      *
-     * @param is
-     *            The input stream to read from.
-     * @throws IOException
-     *             if the reading failed
+     * @param  is          The input stream to read from.
+     *
+     * @throws IOException if the reading failed
      */
     public void read(ArrayDataInput is) throws IOException {
         int[] columnIndex = new int[MAX_COLUMN_INDEXES];
@@ -789,21 +776,18 @@ public class ColumnTable<T> implements DataTable {
     }
 
     /**
-     * Set the values in a particular column. The new values must match the old
-     * in length but not necessarily in type.
+     * Set the values in a particular column. The new values must match the old in length but not necessarily in type.
      *
-     * @param col
-     *            The column to modify.
-     * @param newColumn
-     *            The new column data. This should be a primitive array.
-     * @exception TableException
-     *                Thrown when the new data is not commenserable with
-     *                information in the table.
+     * @param     col            The column to modify.
+     * @param     newColumn      The new column data. This should be a primitive array.
+     *
+     * @exception TableException Thrown when the new data is not commenserable with information in the table.
      */
     @Override
     public void setColumn(int col, Object newColumn) throws TableException {
 
-        boolean reset = newColumn.getClass() != arrays[col].getClass() || Array.getLength(newColumn) != Array.getLength(arrays[col]);
+        boolean reset = newColumn.getClass() != arrays[col].getClass()
+                || Array.getLength(newColumn) != Array.getLength(arrays[col]);
         arrays[col] = newColumn;
         if (reset) {
             setup(arrays, sizes);
@@ -819,15 +803,11 @@ public class ColumnTable<T> implements DataTable {
     /**
      * Modify an element of the table.
      *
-     * @param row
-     *            The row containing the element.
-     * @param col
-     *            The column containing the element.
-     * @param x
-     *            The new datum. This should be 1-d primitive array.
-     * @exception TableException
-     *                Thrown when the new data is not of the same type as the
-     *                data it replaces.
+     * @param     row            The row containing the element.
+     * @param     col            The column containing the element.
+     * @param     x              The new datum. This should be 1-d primitive array.
+     *
+     * @exception TableException Thrown when the new data is not of the same type as the data it replaces.
      */
     @Override
     public void setElement(int row, int col, Object x) throws TableException {
@@ -846,11 +826,9 @@ public class ColumnTable<T> implements DataTable {
     }
 
     /**
-     * Store additional information that may be needed by the client to
-     * regenerate initial arrays.
+     * Store additional information that may be needed by the client to regenerate initial arrays.
      *
-     * @param opaque
-     *            the extra state to set.
+     * @param opaque the extra state to set.
      */
     public void setExtraState(T opaque) {
         extraState = opaque;
@@ -859,13 +837,10 @@ public class ColumnTable<T> implements DataTable {
     /**
      * Modify a row of data.
      *
-     * @param row
-     *            The row to be modified.
-     * @param x
-     *            The data to be modified. This should be an array of objects.
-     *            It is described as an Object here since other table
-     *            implementations may use other methods to store the data (e.g., @see
-     *            nom.tam.util.ColumnTable)
+     * @param row The row to be modified.
+     * @param x   The data to be modified. This should be an array of objects. It is described as an Object here since
+     *                other table implementations may use other methods to store the data (e.g., @see
+     *                nom.tam.util.ColumnTable)
      */
     @Override
     public void setRow(int row, Object x) throws TableException {
@@ -882,13 +857,10 @@ public class ColumnTable<T> implements DataTable {
     /**
      * Actually perform the initialization.
      *
-     * @param newArrays
-     *            An array of one-d primitive arrays.
-     * @param newSizes
-     *            The number of elements in each row for the corresponding
-     *            column
-     * @throws TableException
-     *             if the structure of the columns is not consistent
+     * @param  newArrays      An array of one-d primitive arrays.
+     * @param  newSizes       The number of elements in each row for the corresponding column
+     *
+     * @throws TableException if the structure of the columns is not consistent
      */
     private void setup(Object[] newArrays, int[] newSizes) throws TableException {
         checkArrayConsistency(newArrays, newSizes);
@@ -898,10 +870,9 @@ public class ColumnTable<T> implements DataTable {
     /**
      * Write a table.
      *
-     * @param os
-     *            the output stream to write to.
-     * @throws IOException
-     *             if the write operation failed
+     * @param  os          the output stream to write to.
+     *
+     * @throws IOException if the write operation failed
      */
     public void write(ArrayDataOutput os) throws IOException {
         int[] columnIndex = new int[MAX_COLUMN_INDEXES];
@@ -923,16 +894,12 @@ public class ColumnTable<T> implements DataTable {
     /**
      * Write a column of a table.
      *
-     * @param os
-     *            the output stream to write to.
-     * @param rowStart
-     *            first row to write
-     * @param rowEnd
-     *            row number that should not be written anymore
-     * @param columnNr
-     *            zero based column number to write.
-     * @throws IOException
-     *             if the write operation failed
+     * @param  os          the output stream to write to.
+     * @param  rowStart    first row to write
+     * @param  rowEnd      row number that should not be written anymore
+     * @param  columnNr    zero based column number to write.
+     *
+     * @throws IOException if the write operation failed
      */
     public void write(ArrayDataOutput os, int rowStart, int rowEnd, int columnNr) throws IOException {
         int[] columnIndex = new int[MAX_COLUMN_INDEXES];
@@ -958,16 +925,12 @@ public class ColumnTable<T> implements DataTable {
     /**
      * Read a column of a table.
      *
-     * @param is
-     *            The input stream to read from.
-     * @param rowStart
-     *            first row to read
-     * @param rowEnd
-     *            row number that should not be read anymore
-     * @param columnNr
-     *            the columnNumber to read.
-     * @throws IOException
-     *             if the reading failed
+     * @param  is          The input stream to read from.
+     * @param  rowStart    first row to read
+     * @param  rowEnd      row number that should not be read anymore
+     * @param  columnNr    the columnNumber to read.
+     *
+     * @throws IOException if the reading failed
      */
     public void read(ArrayDataInput is, int rowStart, int rowEnd, int columnNr) throws IOException {
         int[] columnIndex = new int[MAX_COLUMN_INDEXES];

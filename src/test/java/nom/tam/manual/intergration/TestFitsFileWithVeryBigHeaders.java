@@ -90,7 +90,8 @@ public class TestFitsFileWithVeryBigHeaders {
             System.gc();
             System.gc();
             Thread.sleep(2000L);
-            System.out.println("memory:" + (Runtime.getRuntime().totalMemory() - Runtime.getRuntime().freeMemory() - baseUsedMemory));
+            System.out.println(
+                    "memory:" + (Runtime.getRuntime().totalMemory() - Runtime.getRuntime().freeMemory() - baseUsedMemory));
         }
     }
 }

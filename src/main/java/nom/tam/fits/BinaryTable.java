@@ -62,16 +62,13 @@ import static nom.tam.fits.header.Standard.XTENSION_BINTABLE;
 
 import edu.umd.cs.findbugs.annotations.SuppressFBWarnings;
 
-
-
 /**
  * This class defines the methods for accessing FITS binary table data.
  */
 public class BinaryTable extends AbstractTableData {
 
     /**
-     * Collect all of the information we are using to describe a column into a
-     * single object.
+     * Collect all of the information we are using to describe a column into a single object.
      */
     protected static class ColumnDesc implements Cloneable {
 
@@ -93,32 +90,28 @@ public class BinaryTable extends AbstractTableData {
         private boolean isVarying;
 
         /**
-         * Is this a variable length column using longs? [Must have isVarying
-         * true too]
+         * Is this a variable length column using longs? [Must have isVarying true too]
          */
         private boolean isLongVary;
 
         /**
-         * Is this a complex column. Each entry will be associated with a
-         * float[2]/double[2]
+         * Is this a complex column. Each entry will be associated with a float[2]/double[2]
          */
         private boolean isComplex;
 
         /**
-         * Is this a string column. Strings will normally be converted to fixed
-         * length byte arrays with the length given by the longest string.
+         * Is this a string column. Strings will normally be converted to fixed length byte arrays with the length given
+         * by the longest string.
          */
         private boolean isString;
 
         /**
-         * Is this a boolean column? Booleans are stored as bytes with the value
-         * 'T'/'F'
+         * Is this a boolean column? Booleans are stored as bytes with the value 'T'/'F'
          */
         private boolean isBoolean;
 
         /**
-         * The flattened column data. This should be nulled when the data is
-         * copied into the ColumnTable
+         * The flattened column data. This should be nulled when the data is copied into the ColumnTable
          */
         private Object column;
 
@@ -146,10 +139,9 @@ public class BinaryTable extends AbstractTableData {
         }
 
         /**
-         * @return new instance of the array with space for the specified number
-         *             of rows.
+         * @return      new instance of the array with space for the specified number of rows.
          *
-         * @param nRow the number of rows to allocate the array for
+         * @param  nRow the number of rows to allocate the array for
          */
         public Object newInstance(int nRow) {
             return ArrayFuncs.newInstance(ArrayFuncs.getBaseClass(model), size * nRow);
@@ -160,8 +152,7 @@ public class BinaryTable extends AbstractTableData {
         }
 
         /**
-         * @return Is this a variable length column using longs? [Must have
-         *             isVarying true too]
+         * @return Is this a variable length column using longs? [Must have isVarying true too]
          */
         boolean isLongVary() {
             return isLongVary;
@@ -205,9 +196,8 @@ public class BinaryTable extends AbstractTableData {
     private int heapOffset;
 
     /**
-     * Switched to an initial value of true TAM, 11/20/12, since the heap may be
-     * generated without any I/O. In that case it's valid. We set
-     * heapReadFromStream to false when we skip input.
+     * Switched to an initial value of true TAM, 11/20/12, since the heap may be generated without any I/O. In that case
+     * it's valid. We set heapReadFromStream to false when we skip input.
      */
     private boolean heapReadFromStream = true;
 
@@ -234,9 +224,8 @@ public class BinaryTable extends AbstractTableData {
     private ColumnTable<SaveState> table;
 
     /**
-     * The stream used to input the data. This is saved so that we possibly skip
-     * reading the data if the user doesn't wish to read all or parts of this
-     * table.
+     * The stream used to input the data. This is saved so that we possibly skip reading the data if the user doesn't
+     * wish to read all or parts of this table.
      */
     private ArrayDataInput currInput;
 
@@ -284,11 +273,9 @@ public class BinaryTable extends AbstractTableData {
     /**
      * Create a binary table from given header information.
      *
-     * @param myHeader A header describing what the binary table should look
-     *            like.
+     * @param  myHeader      A header describing what the binary table should look like.
      *
-     * @throws FitsException if the specified header is not usable for a binary
-     *             table
+     * @throws FitsException if the specified header is not usable for a binary table
      */
     public BinaryTable(Header myHeader) throws FitsException {
         long heapSizeL = myHeader.getLongValue(PCOUNT);
@@ -331,10 +318,9 @@ public class BinaryTable extends AbstractTableData {
     /**
      * Create a binary table from existing data in column order.
      *
-     * @param o array of columns
+     * @param  o             array of columns
      *
-     * @throws FitsException if the data for the columns could not be used as
-     *             coulumns
+     * @throws FitsException if the data for the columns could not be used as coulumns
      */
     public BinaryTable(Object[] o) throws FitsException {
 
@@ -349,7 +335,7 @@ public class BinaryTable extends AbstractTableData {
     /**
      * Create a binary table from existing data in row order.
      *
-     * @param data The data used to initialize the binary table.
+     * @param  data          The data used to initialize the binary table.
      *
      * @throws FitsException if the data could not be converted to a binary table
      */
@@ -360,7 +346,7 @@ public class BinaryTable extends AbstractTableData {
     /**
      * TODO: this is only for internal access!
      *
-     * @param table the table to create the column data.
+     * @param  table         the table to create the column data.
      *
      * @throws FitsException if the data could not be created.
      */
@@ -369,13 +355,13 @@ public class BinaryTable extends AbstractTableData {
     }
 
     /**
-     * Parse the TDIMS value. If the TDIMS value cannot be deciphered a one-d
-     * array with the size given in arrsiz is returned.
+     * Parse the TDIMS value. If the TDIMS value cannot be deciphered a one-d array with the size given in arrsiz is
+     * returned.
      *
-     * @param tdims The value of the TDIMSn card.
+     * @param  tdims The value of the TDIMSn card.
      *
-     * @return An int array of the desired dimensions. Note that the order of the
-     *             tdims is the inverse of the order in the TDIMS key.
+     * @return       An int array of the desired dimensions. Note that the order of the tdims is the inverse of the
+     *                   order in the TDIMS key.
      */
     public static int[] getTDims(String tdims) {
 
@@ -400,10 +386,9 @@ public class BinaryTable extends AbstractTableData {
     }
 
     /**
-     * Convert a two-d table to a table of columns. Handle String specially.
-     * Every other element of data should be a primitive array of some
-     * dimensionality. Basically the translates a table expressed as objects in
-     * row order to a table with objects in column order.
+     * Convert a two-d table to a table of columns. Handle String specially. Every other element of data should be a
+     * primitive array of some dimensionality. Basically the translates a table expressed as objects in row order to a
+     * table with objects in column order.
      */
     private static Object[] convertToColumns(Object[][] data) {
         Object[] row = data[0];
@@ -501,11 +486,10 @@ public class BinaryTable extends AbstractTableData {
     /**
      * Add a column where the data is already flattened.
      *
-     * @param o The new column data. This should be a one-dimensional primitive
-     *            array.
-     * @param dims The dimensions of one row of the column.
+     * @param  o             The new column data. This should be a one-dimensional primitive array.
+     * @param  dims          The dimensions of one row of the column.
      *
-     * @return the new column size
+     * @return               the new column size
      *
      * @throws FitsException if the array could not be flattened
      */
@@ -540,9 +524,8 @@ public class BinaryTable extends AbstractTableData {
     }
 
     /**
-     * Delete a set of columns. Note that this does not fix the header, so users
-     * should normally call the routine in TableHDU. * @throws FitsException if
-     * the operation failed
+     * Delete a set of columns. Note that this does not fix the header, so users should normally call the routine in
+     * TableHDU. * @throws FitsException if the operation failed
      */
     @Override
     public void deleteColumns(int start, int len) throws FitsException {
@@ -566,8 +549,7 @@ public class BinaryTable extends AbstractTableData {
      * Delete rows from a table.
      *
      * @param row The 0-indexed start of the rows to be deleted.
-     * @param len The number of rows to be deleted. * @throws FitsException if
-     *            the operation failed
+     * @param len The number of rows to be deleted. * @throws FitsException if the operation failed
      */
     @Override
     public void deleteRows(int row, int len) throws FitsException {
@@ -577,9 +559,8 @@ public class BinaryTable extends AbstractTableData {
     }
 
     /**
-     * Update a FITS header to reflect the current state of the data. Its really
-     * for internal use only, but it's public to allow access by the compression
-     * clases.
+     * Update a FITS header to reflect the current state of the data. Its really for internal use only, but it's public
+     * to allow access by the compression clases.
      *
      * @throws FitsException if the operation failed
      */
@@ -610,8 +591,7 @@ public class BinaryTable extends AbstractTableData {
     }
 
     /**
-     * @return the types in the table, not the underlying types (e.g., for
-     *             varying length arrays or booleans).
+     * @return the types in the table, not the underlying types (e.g., for varying length arrays or booleans).
      */
     public Class<?>[] getBases() {
         return table.getBases();
@@ -620,8 +600,7 @@ public class BinaryTable extends AbstractTableData {
     /**
      * Get a given column
      *
-     * @param col The index of the column. * @throws FitsException if the
-     *            operation failed
+     * @param col The index of the column. * @throws FitsException if the operation failed
      */
     @Override
     public Object getColumn(int col) throws FitsException {
@@ -654,8 +633,7 @@ public class BinaryTable extends AbstractTableData {
      * Get a particular element from the table.
      *
      * @param i The row of the element.
-     * @param j The column of the element. * @throws FitsException if the
-     *            operation failed
+     * @param j The column of the element. * @throws FitsException if the operation failed
      */
     @Override
     public Object getElement(int i, int j) throws FitsException {
@@ -695,12 +673,11 @@ public class BinaryTable extends AbstractTableData {
     }
 
     /**
-     * @return column in flattened format. For large tables getting a column in
-     *             standard format can be inefficient because a separate object
-     *             is needed for each row. Leaving the data in flattened format
-     *             means that only a single object is created.
+     * @return               column in flattened format. For large tables getting a column in standard format can be
+     *                           inefficient because a separate object is needed for each row. Leaving the data in
+     *                           flattened format means that only a single object is created.
      *
-     * @param col the column to flatten
+     * @param  col           the column to flatten
      *
      * @throws FitsException if the column could not be flattened
      */
@@ -722,8 +699,7 @@ public class BinaryTable extends AbstractTableData {
     }
 
     /**
-     * @return the size of the heap -- including the offset from the end of the
-     *             table data.
+     * @return the size of the heap -- including the offset from the end of the table data.
      */
     public int getHeapSize() {
         return heapOffset + heap.size();
@@ -757,12 +733,11 @@ public class BinaryTable extends AbstractTableData {
     }
 
     /**
-     * @return a particular element from the table but do no processing of this
-     *             element (e.g., dimension conversion or extraction of variable
-     *             length array elements/)
+     * @return               a particular element from the table but do no processing of this element (e.g., dimension
+     *                           conversion or extraction of variable length array elements/)
      *
-     * @param i The row of the element.
-     * @param j The column of the element.
+     * @param  i             The row of the element.
+     * @param  j             The column of the element.
      *
      * @throws FitsException if the operation failed
      */
@@ -774,9 +749,9 @@ public class BinaryTable extends AbstractTableData {
     /**
      * Get a given row
      *
-     * @param row The index of the row to be returned.
+     * @param  row           The index of the row to be returned.
      *
-     * @return A row of data. *
+     * @return               A row of data. *
      *
      * @throws FitsException if the operation failed
      */
@@ -821,11 +796,10 @@ public class BinaryTable extends AbstractTableData {
     /**
      * Replace a column in the table.
      *
-     * @param col The index of the column to be replaced.
-     * @param xcol The new data for the column
+     * @param  col           The index of the column to be replaced.
+     * @param  xcol          The new data for the column
      *
-     * @throws FitsException Thrown if the data does not match the current column
-     *             description.
+     * @throws FitsException Thrown if the data does not match the current column description.
      */
     @Override
     public void setColumn(int col, Object xcol) throws FitsException {
@@ -841,8 +815,7 @@ public class BinaryTable extends AbstractTableData {
      *
      * @param i The row of the data.
      * @param j The column of the data.
-     * @param o The replacement data. * @throws FitsException if the operation
-     *            failed
+     * @param o The replacement data. * @throws FitsException if the operation failed
      */
     @Override
     public void setElement(int i, int j, Object o) throws FitsException {
@@ -869,11 +842,10 @@ public class BinaryTable extends AbstractTableData {
     /**
      * Set a column with the data already flattened.
      *
-     * @param col The index of the column to be replaced.
-     * @param data The new data array. This should be a one-d primitive array.
+     * @param  col           The index of the column to be replaced.
+     * @param  data          The new data array. This should be a one-d primitive array.
      *
-     * @throws FitsException Thrown if the type of length of the replacement data
-     *             differs from the original.
+     * @throws FitsException Thrown if the type of length of the replacement data differs from the original.
      */
     public void setFlattenedColumn(int col, Object data) throws FitsException {
         ensureData();
@@ -888,11 +860,10 @@ public class BinaryTable extends AbstractTableData {
     /**
      * Replace a row in the table.
      *
-     * @param row The index of the row to be replaced.
-     * @param data The new values for the row.
+     * @param  row           The index of the row to be replaced.
+     * @param  data          The new values for the row.
      *
-     * @throws FitsException Thrown if the new row cannot match the existing
-     *             data.
+     * @throws FitsException Thrown if the new row cannot match the existing data.
      */
     @Override
     public void setRow(int row, Object[] data) throws FitsException {
@@ -922,8 +893,7 @@ public class BinaryTable extends AbstractTableData {
     }
 
     /**
-     * Write the table, heap and padding. * @throws FitsException if the
-     * operation failed
+     * Write the table, heap and padding. * @throws FitsException if the operation failed
      */
     @Override
     public void write(ArrayDataOutput os) throws FitsException {
@@ -1027,9 +997,8 @@ public class BinaryTable extends AbstractTableData {
     }
 
     /**
-     * Convert the external representation to the BinaryTable representation.
-     * Transformation include boolean -> T/F, Strings -> byte arrays, variable
-     * length arrays -> pointers (after writing data to heap).
+     * Convert the external representation to the BinaryTable representation. Transformation include boolean -> T/F,
+     * Strings -> byte arrays, variable length arrays -> pointers (after writing data to heap).
      *
      * @throws FitsException if the operation failed
      */
@@ -1103,8 +1072,7 @@ public class BinaryTable extends AbstractTableData {
     }
 
     /**
-     * Convert data from binary table representation to external Java
-     * representation.
+     * Convert data from binary table representation to external Java representation.
      *
      * @throws FitsException if the operation failed
      */
@@ -1215,10 +1183,8 @@ public class BinaryTable extends AbstractTableData {
     }
 
     /**
-     * Create a column table given the number of rows and a model row. This is
-     * used when we defer instantiation of the ColumnTable until the user
-     * requests data from the table. * @throws FitsException if the operation
-     * failed
+     * Create a column table given the number of rows and a model row. This is used when we defer instantiation of the
+     * ColumnTable until the user requests data from the table. * @throws FitsException if the operation failed
      */
     private ColumnTable<SaveState> createTable() throws FitsException {
         int nfields = columnList.size();
@@ -1305,7 +1271,7 @@ public class BinaryTable extends AbstractTableData {
     }
 
     /**
-     * @return row from the file.
+     * @return               row from the file.
      *
      * @throws FitsException if the operation failed
      */
@@ -1382,10 +1348,9 @@ public class BinaryTable extends AbstractTableData {
     }
 
     /**
-     * Is this a variable length column? It is if it's a two-d primitive array
-     * and the second dimension is not constant. It may also be a 3-d array of
-     * type float or double where the last index is always 2 (when the second
-     * index is non-zero). In this case it can be a complex varying column.
+     * Is this a variable length column? It is if it's a two-d primitive array and the second dimension is not constant.
+     * It may also be a 3-d array of type float or double where the last index is always 2 (when the second index is
+     * non-zero). In this case it can be a complex varying column.
      */
     private boolean isVarying(Object o) {
         if (o == null || //
@@ -1420,8 +1385,7 @@ public class BinaryTable extends AbstractTableData {
     }
 
     /**
-     * Process one column from a FITS Header. * @throws FitsException if the
-     * operation failed
+     * Process one column from a FITS Header. * @throws FitsException if the operation failed
      */
     private int processCol(Header header, int col) throws FitsException {
         String tform = header.getStringValue(TFORMn.n(col + 1));
@@ -1570,12 +1534,11 @@ public class BinaryTable extends AbstractTableData {
     }
 
     /**
-     * Read the heap which contains the data for variable length arrays. A.
-     * Kovacs (4/1/08) Separated heap reading, s.t. the heap can be properly
-     * initialized even if in deferred read mode. columnToArray() checks and
-     * initializes the heap as necessary.
+     * Read the heap which contains the data for variable length arrays. A. Kovacs (4/1/08) Separated heap reading, s.t.
+     * the heap can be properly initialized even if in deferred read mode. columnToArray() checks and initializes the
+     * heap as necessary.
      *
-     * @param input stream to read from.
+     * @param  input         stream to read from.
      *
      * @throws FitsException if the heap could not be read from the stream
      */
@@ -1590,7 +1553,7 @@ public class BinaryTable extends AbstractTableData {
     /**
      * Read table, heap and padding
      *
-     * @param i the stream to read the data from.
+     * @param  i             the stream to read the data from.
      *
      * @throws FitsException if the reading failed
      */
@@ -1609,9 +1572,9 @@ public class BinaryTable extends AbstractTableData {
     /**
      * Check if the column number is valid.
      *
-     * @param j The Java index (first=0) of the column to check.
+     * @param  j The Java index (first=0) of the column to check.
      *
-     * @return <code>true</code> if the column is valid
+     * @return   <code>true</code> if the column is valid
      */
     protected boolean validColumn(int j) {
         return j >= 0 && j < getNCols();
@@ -1620,24 +1583,23 @@ public class BinaryTable extends AbstractTableData {
     /**
      * Check to see if this is a valid row.
      *
-     * @param i The Java index (first=0) of the row to check.
+     * @param  i The Java index (first=0) of the row to check.
      *
-     * @return <code>true</code> if the row is valid
+     * @return   <code>true</code> if the row is valid
      */
     protected boolean validRow(int i) {
         return getNRows() > 0 && i >= 0 && i < getNRows();
     }
 
     /**
-     * This function is needed since we had made addFlattenedColumn public so in
-     * principle a user might have called it directly.
+     * This function is needed since we had made addFlattenedColumn public so in principle a user might have called it
+     * directly.
      *
-     * @param o The new column data. This should be a one-dimensional primitive
-     *            array.
-     * @param dims The dimensions of one row of the column.
-     * @param allocated is it already in the columnList?
+     * @param  o             The new column data. This should be a one-dimensional primitive array.
+     * @param  dims          The dimensions of one row of the column.
+     * @param  allocated     is it already in the columnList?
      *
-     * @return the new column size
+     * @return               the new column size
      *
      * @throws FitsException
      */
@@ -1819,8 +1781,8 @@ public class BinaryTable extends AbstractTableData {
     }
 
     /**
-     * Update the header to reflect information about a given column. This
-     * routine tries to ensure that the Header is organized by column. *
+     * Update the header to reflect information about a given column. This routine tries to ensure that the Header is
+     * organized by column. *
      *
      * @throws FitsException if the operation failed
      */
@@ -1833,13 +1795,12 @@ public class BinaryTable extends AbstractTableData {
     }
 
     /**
-     * Convert a column from float/double to float complex/double complex. This
-     * is only possible for certain columns. The return status indicates if the
-     * conversion is possible.
+     * Convert a column from float/double to float complex/double complex. This is only possible for certain columns.
+     * The return status indicates if the conversion is possible.
      *
-     * @param index The 0-based index of the column to be reset.
+     * @param  index         The 0-based index of the column to be reset.
      *
-     * @return Whether the conversion is possible. *
+     * @return               Whether the conversion is possible. *
      *
      * @throws FitsException if the operation failed
      */
@@ -1862,7 +1823,8 @@ public class BinaryTable extends AbstractTableData {
             return true;
         }
 
-        if ((colDesc.base != float.class && colDesc.base != double.class) || (colDesc.dimens[colDesc.dimens.length - 1] != 2)) {
+        if ((colDesc.base != float.class && colDesc.base != double.class)
+                || (colDesc.dimens[colDesc.dimens.length - 1] != 2)) {
             return false;
         }
 

@@ -71,7 +71,7 @@ public class CompressedTableBlackBoxTest {
             Fits fitsCompressed = new Fits();
             fitsCompressed.addHDU(//
                     CompressedTableHDU.fromBinaryTableHDU((BinaryTableHDU) fitsOrg.readHDU(), 0)//
-                    .compress());
+                            .compress());
             fitsCompressed.write(file);
             compressedfileName = file.getAbsolutePath();
         } finally {
@@ -81,7 +81,8 @@ public class CompressedTableBlackBoxTest {
         uncompressTableAndAssert(compressedfileName, originalFileName);
     }
 
-    private void uncompressTableAndAssert(String compressedfileName, String originalFileName) throws FitsException, IOException {
+    private void uncompressTableAndAssert(String compressedfileName, String originalFileName)
+            throws FitsException, IOException {
         String tableFile;
         if (new File(compressedfileName).exists()) {
             tableFile = compressedfileName;

@@ -77,13 +77,13 @@ public class AsciiTableHDU extends TableHDU<AsciiTable> {
     }
 
     /**
-     * @deprecated This should be for internal use only. Will reduce visibility in the future
+     * @deprecated               This should be for internal use only. Will reduce visibility in the future
      *
-     * @return a ASCII table data structure from an array of objects representing the columns.
+     * @return                   a ASCII table data structure from an array of objects representing the columns.
      *
-     * @param o the array of object to create the ASCII table
+     * @param      o             the array of object to create the ASCII table
      *
-     * @throws FitsException if the table could not be created.
+     * @throws     FitsException if the table could not be created.
      */
     @Deprecated
     public static AsciiTable encapsulate(Object o) throws FitsException {
@@ -97,11 +97,11 @@ public class AsciiTableHDU extends TableHDU<AsciiTable> {
     }
 
     /**
-     * @deprecated This should be for internal use only. Will reduce visibility in the future
+     * @deprecated   This should be for internal use only. Will reduce visibility in the future
      *
-     * @return true if this data is usable as an ASCII table.
+     * @return       true if this data is usable as an ASCII table.
      *
-     * @param o object representing the data
+     * @param      o object representing the data
      */
     @Deprecated
     public static boolean isData(Object o) {
@@ -126,11 +126,11 @@ public class AsciiTableHDU extends TableHDU<AsciiTable> {
     /**
      * Check that this is a valid ascii table header.
      *
-     * @deprecated This should be for internal use only. Will reduce visibility in the future
+     * @deprecated        This should be for internal use only. Will reduce visibility in the future
      *
-     * @param header to validate.
+     * @param      header to validate.
      *
-     * @return <CODE>true</CODE> if this is an ascii table header.
+     * @return            <CODE>true</CODE> if this is an ascii table header.
      */
     @Deprecated
     public static boolean isHeader(Header header) {
@@ -142,13 +142,13 @@ public class AsciiTableHDU extends TableHDU<AsciiTable> {
     /**
      * Prepares a data object into which the actual data can be read from an input subsequently or at a later time.
      *
-     * @deprecated This should be for internal use only. Will reduce visibility in the future
+     * @deprecated               This should be for internal use only. Will reduce visibility in the future
      *
-     * @param hdr The FITS header that describes the data
+     * @param      hdr           The FITS header that describes the data
      *
-     * @return A data object that support reading content from a stream.
+     * @return                   A data object that support reading content from a stream.
      *
-     * @throws FitsException if the data could not be prepared to prescriotion.
+     * @throws     FitsException if the data could not be prepared to prescriotion.
      */
     @Deprecated
     public static Data manufactureData(Header hdr) throws FitsException {
@@ -156,13 +156,13 @@ public class AsciiTableHDU extends TableHDU<AsciiTable> {
     }
 
     /**
-     * @deprecated This should be for internal use only. Will reduce visibility in the future
+     * @deprecated               This should be for internal use only. Will reduce visibility in the future
      *
-     * @return a created header to match the input data.
+     * @return                   a created header to match the input data.
      *
-     * @param d data to create a header for
+     * @param      d             data to create a header for
      *
-     * @throws FitsException if the header could not b e created
+     * @throws     FitsException if the header could not b e created
      */
     @Deprecated
     public static Header manufactureHeader(Data d) throws FitsException {
@@ -210,10 +210,10 @@ public class AsciiTableHDU extends TableHDU<AsciiTable> {
     }
 
     /**
-     * @param row row index of the element
-     * @param col column index of the element
+     * @param  row row index of the element
+     * @param  col column index of the element
      *
-     * @return <code>true</code> if an element is null
+     * @return     <code>true</code> if an element is null
      */
     public boolean isNull(int row, int col) {
         return myData.isNull(row, col);
@@ -222,8 +222,8 @@ public class AsciiTableHDU extends TableHDU<AsciiTable> {
     /**
      * Mark an entry as null.
      *
-     * @param row row index of the element
-     * @param col column index of the element
+     * @param row  row index of the element
+     * @param col  column index of the element
      * @param flag set to null or not
      */
     public void setNull(int row, int col, boolean flag) {
@@ -240,11 +240,11 @@ public class AsciiTableHDU extends TableHDU<AsciiTable> {
     /**
      * Set the null string for a column.
      *
-     * @param col the column index
-     * @param newNull the String representing null
+     * @param  col                      the column index
+     * @param  newNull                  the String representing null
      *
      * @throws IllegalArgumentException if the string argument contains characters that are not allowed in FITS headers.
-     *             That is if it contains characters outside the range of 0x20 thru 0x7E.
+     *                                      That is if it contains characters outside the range of 0x20 thru 0x7E.
      */
     public void setNullString(int col, String newNull) throws IllegalArgumentException {
         myHeader.positionAfterIndex(TBCOLn, col + 1);

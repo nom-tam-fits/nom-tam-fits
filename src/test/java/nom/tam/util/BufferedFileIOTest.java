@@ -175,7 +175,7 @@ public class BufferedFileIOTest {
     @Test
     public void testWriteManySingles() throws Exception {
         BufferedFileIO b = new BufferedFileIO(getFile(), "rw", 100);
-        for(int i=0; i<300; i++) {
+        for (int i = 0; i < 300; i++) {
             b.write(i);
         }
     }

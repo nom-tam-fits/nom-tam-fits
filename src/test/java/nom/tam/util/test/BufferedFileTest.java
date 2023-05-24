@@ -210,9 +210,9 @@ public class BufferedFileTest {
 
     private long lastTime;
 
-    public void bufferedFileTest(String filename, int iter, double[] db, double[] db2, float[] fl, float[] fl2,
-            long[] ln, long[] ln2, int[] in, int[] in2, short[] sh, short[] sh2, char[] ch, char[] ch2, byte[] by,
-            byte[] by2, boolean[] bl, boolean[] bl2, int[][][][] multi, int[][][][] multi2) throws Exception {
+    public void bufferedFileTest(String filename, int iter, double[] db, double[] db2, float[] fl, float[] fl2, long[] ln,
+            long[] ln2, int[] in, int[] in2, short[] sh, short[] sh2, char[] ch, char[] ch2, byte[] by, byte[] by2,
+            boolean[] bl, boolean[] bl2, int[][][][] multi, int[][][][] multi2) throws Exception {
 
         int dim = db.length;
 
@@ -378,9 +378,9 @@ public class BufferedFileTest {
         System.out.println("Done BufferedFile Tests");
     }
 
-    public void bufferedStreamTest(String filename, int iter, double[] db, double[] db2, float[] fl, float[] fl2,
-            long[] ln, long[] ln2, int[] in, int[] in2, short[] sh, short[] sh2, char[] ch, char[] ch2, byte[] by,
-            byte[] by2, boolean[] bl, boolean[] bl2, int[][][][] multi, int[][][][] multi2) throws Exception {
+    public void bufferedStreamTest(String filename, int iter, double[] db, double[] db2, float[] fl, float[] fl2, long[] ln,
+            long[] ln2, int[] in, int[] in2, short[] sh, short[] sh2, char[] ch, char[] ch2, byte[] by, byte[] by2,
+            boolean[] bl, boolean[] bl2, int[][][][] multi, int[][][][] multi2) throws Exception {
 
         int dim = db.length;
 
@@ -694,8 +694,8 @@ public class BufferedFileTest {
         bufferedFileTest(filename, iter, db, db2, fl, fl2, ln, ln2, in, in2, sh, sh2, ch, ch2, by, by2, bl, bl2, multi,
                 multi2);
 
-        bufferedStreamTest(filename, iter, db, db2, fl, fl2, ln, ln2, in, in2, sh, sh2, ch, ch2, by, by2, bl, bl2,
-                multi, multi2);
+        bufferedStreamTest(filename, iter, db, db2, fl, fl2, ln, ln2, in, in2, sh, sh2, ch, ch2, by, by2, bl, bl2, multi,
+                multi2);
 
     }
 
@@ -734,8 +734,7 @@ public class BufferedFileTest {
                         f.writeInt(in[i]);
                     }
                 }
-                System.out
-                .println("  SyncRAF Int write: " + (1e-6 * Integer.BYTES * dim * iter / deltaTime()) + " MB/s");
+                System.out.println("  SyncRAF Int write: " + (1e-6 * Integer.BYTES * dim * iter / deltaTime()) + " MB/s");
                 f.seek(0);
                 resetTime();
                 for (int j = 0; j < iter; j++) {

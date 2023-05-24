@@ -38,18 +38,15 @@ import edu.umd.cs.findbugs.annotations.SuppressFBWarnings;
  */
 
 /**
- * This enum wil try to list synonyms inside or over different dictionaries. So
- * please use always the higest level keyword you can find.
+ * This enum wil try to list synonyms inside or over different dictionaries. So please use always the higest level
+ * keyword you can find.
  *
  * @author Richard van Nieuwenhoven
  */
 public enum Synonyms {
     @SuppressWarnings("deprecation")
-    EQUINOX(Standard.EQUINOX, Standard.EPOCH),
-    TIMESYS(NOAOExt.TIMESYS, STScIExt.TIMESYS),
-    @SuppressWarnings("deprecation")
-    RADESYS(Standard.RADESYS, Standard.RADECSYS),
-    DARKTIME(NOAOExt.DARKTIME, SBFitsExt.DARKTIME);
+    EQUINOX(Standard.EQUINOX, Standard.EPOCH), TIMESYS(NOAOExt.TIMESYS, STScIExt.TIMESYS), @SuppressWarnings("deprecation")
+    RADESYS(Standard.RADESYS, Standard.RADECSYS), DARKTIME(NOAOExt.DARKTIME, SBFitsExt.DARKTIME);
 
     private final IFitsHeader primaryKeyword;
 

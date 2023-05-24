@@ -77,13 +77,11 @@ public abstract class AbstractTileOperation implements Runnable, ITileOperation 
     }
 
     /**
-     * set the buffer that describes the whole image and let the tile create a
-     * slice of it from the position where the tile starts in the whole image.
-     * Attention this method is not thread-safe because it changes the position
-     * of the buffer parameter.
+     * set the buffer that describes the whole image and let the tile create a slice of it from the position where the
+     * tile starts in the whole image. Attention this method is not thread-safe because it changes the position of the
+     * buffer parameter.
      *
-     * @param buffer
-     *            the buffer that describes the whole image.
+     * @param buffer the buffer that describes the whole image.
      */
     public void setWholeImageBuffer(Buffer buffer) {
         tileBuffer.setData(buffer);

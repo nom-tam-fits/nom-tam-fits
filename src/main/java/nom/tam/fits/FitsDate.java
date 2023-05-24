@@ -96,19 +96,19 @@ public class FitsDate implements Comparable<FitsDate> {
     }
 
     /**
-     * @return a created FITS format date string Java Date object.
+     * @return       a created FITS format date string Java Date object.
      *
-     * @param epoch The epoch to be converted to FITS format.
+     * @param  epoch The epoch to be converted to FITS format.
      */
     public static String getFitsDateString(Date epoch) {
         return getFitsDateString(epoch, true);
     }
 
     /**
-     * @return a created FITS format date string. Note that the date is not rounded.
+     * @return           a created FITS format date string. Note that the date is not rounded.
      *
-     * @param epoch The epoch to be converted to FITS format.
-     * @param timeOfDay Should time of day information be included?
+     * @param  epoch     The epoch to be converted to FITS format.
+     * @param  timeOfDay Should time of day information be included?
      */
     public static String getFitsDateString(Date epoch, boolean timeOfDay) {
         Calendar cal = Calendar.getInstance(UTC);
@@ -156,7 +156,7 @@ public class FitsDate implements Comparable<FitsDate> {
     /**
      * Convert a FITS date string to a Java <CODE>Date</CODE> object.
      *
-     * @param dStr the FITS date
+     * @param  dStr          the FITS date
      *
      * @throws FitsException if <CODE>dStr</CODE> does not contain a valid FITS date.
      */

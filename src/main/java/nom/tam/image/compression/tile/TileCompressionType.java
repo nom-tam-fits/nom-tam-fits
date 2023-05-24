@@ -32,7 +32,5 @@ package nom.tam.image.compression.tile;
  */
 
 enum TileCompressionType {
-    COMPRESSED,
-    GZIP_COMPRESSED,
-    UNCOMPRESSED
+    COMPRESSED, GZIP_COMPRESSED, UNCOMPRESSED
 }

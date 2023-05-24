@@ -78,18 +78,7 @@ public class ImageMaskTest {
     }
 
     private byte[][] doTestByteMask(String compression, int... nullIndexes) {
-        byte[] orgPixels = {
-                0,
-                1,
-                2,
-                3,
-                4,
-                5,
-                6,
-                7,
-                8,
-                9
-        };
+        byte[] orgPixels = {0, 1, 2, 3, 4, 5, 6, 7, 8, 9};
         byte[] expectedPixels = Arrays.copyOf(orgPixels, orgPixels.length);
         for (int index : nullIndexes) {
             expectedPixels[index] = -1;
@@ -122,18 +111,7 @@ public class ImageMaskTest {
 
     @Test
     public void testDoubleMask() {
-        double[] orgPixels = {
-                0,
-                1,
-                2,
-                3,
-                4,
-                5,
-                6,
-                7,
-                8,
-                9
-        };
+        double[] orgPixels = {0, 1, 2, 3, 4, 5, 6, 7, 8, 9};
         double[] expectedPixels = Arrays.copyOf(orgPixels, orgPixels.length);
         expectedPixels[2] = Float.NaN;
         expectedPixels[7] = Float.NaN;
@@ -164,18 +142,7 @@ public class ImageMaskTest {
 
     @Test
     public void testFloatMask() {
-        float[] orgPixels = {
-                0,
-                1,
-                2,
-                3,
-                4,
-                5,
-                6,
-                7,
-                8,
-                9
-        };
+        float[] orgPixels = {0, 1, 2, 3, 4, 5, 6, 7, 8, 9};
         float[] expectedPixels = Arrays.copyOf(orgPixels, orgPixels.length);
         expectedPixels[2] = Float.NaN;
         expectedPixels[7] = Float.NaN;
@@ -205,18 +172,7 @@ public class ImageMaskTest {
 
     @Test
     public void testIntMask() {
-        int[] orgPixels = {
-                0,
-                1,
-                2,
-                3,
-                4,
-                5,
-                6,
-                7,
-                8,
-                9
-        };
+        int[] orgPixels = {0, 1, 2, 3, 4, 5, 6, 7, 8, 9};
         int[] expectedPixels = Arrays.copyOf(orgPixels, orgPixels.length);
         expectedPixels[2] = -1;
         expectedPixels[7] = -1;
@@ -247,18 +203,7 @@ public class ImageMaskTest {
 
     @Test
     public void testLongMask() {
-        long[] orgPixels = {
-                0,
-                1,
-                2,
-                3,
-                4,
-                5,
-                6,
-                7,
-                8,
-                9
-        };
+        long[] orgPixels = {0, 1, 2, 3, 4, 5, 6, 7, 8, 9};
         long[] expectedPixels = Arrays.copyOf(orgPixels, orgPixels.length);
         expectedPixels[2] = -1;
         expectedPixels[7] = -1;
@@ -289,18 +234,7 @@ public class ImageMaskTest {
 
     @Test
     public void testShortMask() {
-        short[] orgPixels = {
-                0,
-                1,
-                2,
-                3,
-                4,
-                5,
-                6,
-                7,
-                8,
-                9
-        };
+        short[] orgPixels = {0, 1, 2, 3, 4, 5, 6, 7, 8, 9};
         short[] expectedPixels = Arrays.copyOf(orgPixels, orgPixels.length);
         expectedPixels[2] = -1;
         expectedPixels[7] = -1;
@@ -349,7 +283,8 @@ public class ImageMaskTest {
         mask.createTilePreserver(tileBuffer, tileIndex).preserveNull();
     }
 
-    protected NullPixelMaskRestorer createTileRestorer(Buffer buffer, ImageNullPixelMask mask, ElementType type, int tileIndex) {
+    protected NullPixelMaskRestorer createTileRestorer(Buffer buffer, ImageNullPixelMask mask, ElementType type,
+            int tileIndex) {
         TileBuffer tileBuffer = createTileBuffer(buffer, type);
         return mask.createTileRestorer(tileBuffer, tileIndex);
     }

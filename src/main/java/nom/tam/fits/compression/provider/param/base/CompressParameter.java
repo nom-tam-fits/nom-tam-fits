@@ -47,11 +47,11 @@ public class CompressParameter<OPTION> implements Cloneable {
      * As a result, updating these parameters in the copy will affect only the specified compression options, but not
      * the compression options associated to this originating instance.
      *
-     * @param opt The compression options that are linked to the copy of the parameters
+     * @param  opt The compression options that are linked to the copy of the parameters
      *
-     * @return A copy of these parameters, linked to the specified compression options.
+     * @return     A copy of these parameters, linked to the specified compression options.
      *
-     * @since 1.18
+     * @since      1.18
      */
     public CompressParameter<OPTION> copy(OPTION opt) {
         try {

@@ -39,14 +39,12 @@ import nom.tam.fits.compression.algorithm.api.ICompressorControl;
 public interface ICompressorProvider {
 
     /**
-     * @return the {@code ICompressorControl} to use for the specified
-     *         quantize and compression algorithms and base type.
-     * @param quantAlgorithm
-     *            the quantification algorithm to use or null if none
-     * @param compressionAlgorithm
-     *            the compression algorithm to use
-     * @param baseType
-     *            the base type of the data to (de)compress.
+     * @return                      the {@code ICompressorControl} to use for the specified quantize and compression
+     *                                  algorithms and base type.
+     *
+     * @param  quantAlgorithm       the quantification algorithm to use or null if none
+     * @param  compressionAlgorithm the compression algorithm to use
+     * @param  baseType             the base type of the data to (de)compress.
      */
     ICompressorControl createCompressorControl(String quantAlgorithm, String compressionAlgorithm, Class<?> baseType);
 

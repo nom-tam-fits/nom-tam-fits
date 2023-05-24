@@ -59,9 +59,7 @@ public class BigFileTest {
             for (int i = 0; i < 30; i++) {
                 bf.write(buf); // 30 x 100 MB = 3 GB.
                 if (i == 24) {
-                    bf.write(new byte[]{
-                            sample
-                    });
+                    bf.write(new byte[] {sample});
                 } // Add a marker.
             }
             bf.close();

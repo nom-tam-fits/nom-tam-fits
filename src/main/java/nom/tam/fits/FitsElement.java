@@ -37,14 +37,13 @@ import nom.tam.util.ArrayDataInput;
 import nom.tam.util.ArrayDataOutput;
 
 /**
- * This interface allows to easily perform basic I/O operations on a FITS
- * element.
+ * This interface allows to easily perform basic I/O operations on a FITS element.
  */
 public interface FitsElement {
 
     /**
-     * @return the byte at which this element begins. This is only available if
-     *         the data is originally read from a random access medium.
+     * @return the byte at which this element begins. This is only available if the data is originally read from a
+     *             random access medium.
      */
     long getFileOffset();
 
@@ -54,24 +53,19 @@ public interface FitsElement {
     long getSize();
 
     /**
-     * @deprecated This method is poorly conceived as we cannot really read from
-     *              just any <code>ArrayDataInput</code> but only those that
-     *              utilize {@link nom.tam.util.FitsDecoder} to convert binary data to
-     *              Java types. As such, this method is inherently unsafe as it can
-     *              be used to properly interpret FITS files.
-     *              It will be removed in a future release of this library,
-     *              and will be replaced with a new <code>read(FitsDecoder)</code>
-     *              method that offers similar functionality in a safe way.
+     * @deprecated               This method is poorly conceived as we cannot really read from just any
+     *                               <code>ArrayDataInput</code> but only those that utilize
+     *                               {@link nom.tam.util.FitsDecoder} to convert binary data to Java types. As such,
+     *                               this method is inherently unsafe as it can be used to properly interpret FITS
+     *                               files. It will be removed in a future release of this library, and will be replaced
+     *                               with a new <code>read(FitsDecoder)</code> method that offers similar functionality
+     *                               in a safe way. Read a data array into the current object and if needed position to
+     *                               the beginning of the next FITS block.
      *
-     * Read a data array into the current object and if needed position to the
-     * beginning of the next FITS block.
+     * @param      in            The input data stream
      *
-     * @param in
-     *            The input data stream
-     * @throws FitsException
-     *             if the read was unsuccessful.
-     * @throws IOException
-     *             if the read was unsuccessful.
+     * @throws     FitsException if the read was unsuccessful.
+     * @throws     IOException   if the read was unsuccessful.
      */
     @Deprecated
     void read(ArrayDataInput in) throws FitsException, IOException;
@@ -84,14 +78,11 @@ public interface FitsElement {
     boolean reset();
 
     /**
-     * Rewrite the contents of the element in place. The data must have been
-     * originally read from a random access device, and the size of the element
-     * may not have changed.
+     * Rewrite the contents of the element in place. The data must have been originally read from a random access
+     * device, and the size of the element may not have changed.
      *
-     * @throws FitsException
-     *             if the rewrite was unsuccessful.
-     * @throws IOException
-     *             if the rewrite was unsuccessful.
+     * @throws FitsException if the rewrite was unsuccessful.
+     * @throws IOException   if the rewrite was unsuccessful.
      */
     void rewrite() throws FitsException, IOException;
 
@@ -101,21 +92,18 @@ public interface FitsElement {
     boolean rewriteable();
 
     /**
-     * @deprecated This method is poorly conceived as we cannot really write FITS content to
-     *              just any <code>ArrayDataOutput</code> but only to {@link nom.tam.util.FitsOutput},
-     *              which utilize {@link nom.tam.util.FitsEncoder} to convert Java types to FITS binary
-     *              format. As such, this
-     *              method is inherently unsafe as it can be used to create unreadable FITS files.
-     *              It will be removed from the public API in a future release of this library,
-     *              and will be replaced with a new <code>write(FitsEncoder)</code>
-     *              method that offers similar functionality in a safe way.
+     * @deprecated               This method is poorly conceived as we cannot really write FITS content to just any
+     *                               <code>ArrayDataOutput</code> but only to {@link nom.tam.util.FitsOutput}, which
+     *                               utilize {@link nom.tam.util.FitsEncoder} to convert Java types to FITS binary
+     *                               format. As such, this method is inherently unsafe as it can be used to create
+     *                               unreadable FITS files. It will be removed from the public API in a future release
+     *                               of this library, and will be replaced with a new <code>write(FitsEncoder)</code>
+     *                               method that offers similar functionality in a safe way. Write the contents of the
+     *                               element to a data sink.
      *
-     * Write the contents of the element to a data sink.
+     * @param      out           The data sink.
      *
-     * @param out
-     *            The data sink.
-     * @throws FitsException
-     *             if the write was unsuccessful.
+     * @throws     FitsException if the write was unsuccessful.
      */
     @Deprecated
     void write(ArrayDataOutput out) throws FitsException;

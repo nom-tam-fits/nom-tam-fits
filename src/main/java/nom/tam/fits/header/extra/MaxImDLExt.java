@@ -35,12 +35,10 @@ import nom.tam.fits.header.FitsHeaderImpl;
 import nom.tam.fits.header.IFitsHeader;
 
 /**
- * The Fits extension as defined by Maxim DL.Extension keywords that may be
- * added or read by MaxIm DL, depending on the current equipment and software
- * configuration.
+ * The Fits extension as defined by Maxim DL.Extension keywords that may be added or read by MaxIm DL, depending on the
+ * current equipment and software configuration.
  * <p>
- * This standard extends the @see {@link SBFitsExt} all that fields are
- * included.
+ * This standard extends the @see {@link SBFitsExt} all that fields are included.
  * </p>
  *
  * <pre>
@@ -88,8 +86,8 @@ public enum MaxImDLExt implements IFitsHeader {
      */
     BOLTWIND(VALUE.REAL, "Boltwood Cloud Sensor wind speed in km/h."),
     /**
-     * indicates calibration state of the image; B indicates bias corrected, D
-     * indicates dark corrected, F indicates flat corrected.
+     * indicates calibration state of the image; B indicates bias corrected, D indicates dark corrected, F indicates
+     * flat corrected.
      */
     CALSTAT(VALUE.REAL, "calibration state of the image"),
     /**
@@ -101,8 +99,7 @@ public enum MaxImDLExt implements IFitsHeader {
      */
     CSTRETCH(VALUE.REAL, "initial display screen stretch mode"),
     /**
-     * dark current integration time, if recorded. May be longer than exposure
-     * time.
+     * dark current integration time, if recorded. May be longer than exposure time.
      */
     DARKTIME(VALUE.REAL, "dark current integration time"),
     /**
@@ -198,8 +195,7 @@ public enum MaxImDLExt implements IFitsHeader {
      */
     OBJCTHA(VALUE.REAL, "nominal hour angle of center of image"),
     /**
-     * indicates side-of-pier status when connected to a German Equatorial
-     * mount.
+     * indicates side-of-pier status when connected to a German Equatorial mount.
      */
     PIERSIDE(VALUE.REAL, "side-of-pier status"),
     /**

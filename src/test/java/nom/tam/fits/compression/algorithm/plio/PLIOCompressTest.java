@@ -100,7 +100,7 @@ public class PLIOCompressTest {
 
         Assert.assertArrayEquals(shortArray, px_dst.array());
 
-        //now lets see if the additional bytes are set to 0.
+        // now lets see if the additional bytes are set to 0.
         compressed.rewind();
         px_dst = ShortBuffer.allocate(shortArray.length + 10);
         Arrays.fill(px_dst.array(), Short.MAX_VALUE);

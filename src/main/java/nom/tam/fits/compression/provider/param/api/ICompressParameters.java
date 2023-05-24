@@ -54,7 +54,7 @@ public interface ICompressParameters {
     /**
      * Add the columns that hold the metadata for the parameters that are column based to the dhu.
      *
-     * @param hdu the hdu to add the column
+     * @param  hdu           the hdu to add the column
      *
      * @throws FitsException if the column could not be added.
      */
@@ -63,9 +63,9 @@ public interface ICompressParameters {
     /**
      * create a copy of this parameter for another option (normally a copy of the current option).
      *
-     * @param option the new option for the copied parameter
+     * @param  option the new option for the copied parameter
      *
-     * @return this (builder pattern)
+     * @return        this (builder pattern)
      */
     ICompressParameters copy(ICompressOption option);
 
@@ -93,9 +93,9 @@ public interface ICompressParameters {
     /**
      * initialize the column based options of the compression algorithm from the binary table.
      *
-     * @param header the header of the hdu
-     * @param binaryTable the table of the hdu
-     * @param size the column size
+     * @param  header        the header of the hdu
+     * @param  binaryTable   the table of the hdu
+     * @param  size          the column size
      *
      * @throws FitsException if the column could not be initialized
      */
@@ -116,10 +116,10 @@ public interface ICompressParameters {
     void setValuesInColumn(int index);
 
     /**
-     * @deprecated Old, inconsistent method naming. Use {@link #setValuesInColumn(int)} instead. set the option values,
-     *                 that are column based, into the columns at the specified index.
+     * @deprecated       Old, inconsistent method naming. Use {@link #setValuesInColumn(int)} instead. set the option
+     *                       values, that are column based, into the columns at the specified index.
      *
-     * @param index the index in the columns to set.
+     * @param      index the index in the columns to set.
      */
     @Deprecated
     default void setValueInColumn(int index) {
@@ -129,7 +129,7 @@ public interface ICompressParameters {
     /**
      * set the options values, that are hdu based, into the header.
      *
-     * @param header the header to set the option value
+     * @param  header              the header to set the option value
      *
      * @throws HeaderCardException if the header could not be set.
      */

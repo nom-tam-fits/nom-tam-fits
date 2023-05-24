@@ -62,13 +62,13 @@ public class RandomGroupsHDU extends BasicHDU<RandomGroupsData> {
     }
 
     /**
-     * @deprecated This should be for internal use only. Will reduce visibility in the future
+     * @deprecated               This should be for internal use only. Will reduce visibility in the future
      *
-     * @return a random groups data structure from an array of objects representing the data.
+     * @return                   a random groups data structure from an array of objects representing the data.
      *
-     * @param o the array of object to create the random groups
+     * @param      o             the array of object to create the random groups
      *
-     * @throws FitsException if the data could not be created.
+     * @throws     FitsException if the data could not be created.
      */
     @Deprecated
     public static RandomGroupsData encapsulate(Object o) throws FitsException {
@@ -110,11 +110,11 @@ public class RandomGroupsHDU extends BasicHDU<RandomGroupsData> {
      * elements of each group having the same base type and the first element being a simple primitive array. We do not
      * check anything but the first row.
      *
-     * @deprecated This should be for internal use only. Will reduce visibility in the future
+     * @deprecated               This should be for internal use only. Will reduce visibility in the future
      *
-     * @param potentialData data to check
+     * @param      potentialData data to check
      *
-     * @return is this data compatible with Random Groups structure
+     * @return                   is this data compatible with Random Groups structure
      */
     @Deprecated
     public static boolean isData(Object potentialData) {
@@ -132,11 +132,11 @@ public class RandomGroupsHDU extends BasicHDU<RandomGroupsData> {
     }
 
     /**
-     * @deprecated This should be for internal use only. Will reduce visibility in the future
+     * @deprecated     This should be for internal use only. Will reduce visibility in the future
      *
-     * @return Is this a random groups header?
+     * @return         Is this a random groups header?
      *
-     * @param hdr The header to be tested.
+     * @param      hdr The header to be tested.
      */
     @Deprecated
     public static boolean isHeader(Header hdr) {
@@ -157,13 +157,13 @@ public class RandomGroupsHDU extends BasicHDU<RandomGroupsData> {
     /**
      * Prepares a data object into which the actual data can be read from an input subsequently or at a later time.
      *
-     * @deprecated This should be for internal use only. Will reduce visibility in the future
+     * @deprecated               This should be for internal use only. Will reduce visibility in the future
      *
-     * @param header The FITS header that describes the data
+     * @param      header        The FITS header that describes the data
      *
-     * @return A data object that support reading content from a stream.
+     * @return                   A data object that support reading content from a stream.
      *
-     * @throws FitsException if the data could not be prepared to prescriotion.
+     * @throws     FitsException if the data could not be prepared to prescriotion.
      */
     @Deprecated
     public static RandomGroupsData manufactureData(Header header) throws FitsException {
@@ -180,13 +180,13 @@ public class RandomGroupsHDU extends BasicHDU<RandomGroupsData> {
     }
 
     /**
-     * @deprecated This should be for internal use only. Will reduce visibility in the future
+     * @deprecated               This should be for internal use only. Will reduce visibility in the future
      *
-     * @return Make a header point to the given object.
+     * @return                   Make a header point to the given object.
      *
-     * @param d The random groups data the header should describe.
+     * @param      d             The random groups data the header should describe.
      *
-     * @throws FitsException if the operation failed
+     * @throws     FitsException if the operation failed
      */
     @Deprecated
     static Header manufactureHeader(Data d) throws FitsException {
@@ -204,7 +204,7 @@ public class RandomGroupsHDU extends BasicHDU<RandomGroupsData> {
      * Create an HDU from the given header and data .
      *
      * @param header header to use
-     * @param data data to use
+     * @param data   data to use
      */
     public RandomGroupsHDU(Header header, RandomGroupsData data) {
         super(header, data);

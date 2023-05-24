@@ -74,7 +74,6 @@ public class DeprecatedTest {
         i = new BufferedDataInputStream(bi, 16);
     }
 
-
     @Test
     public void testBufferPointer() throws Exception {
         BufferPointer p = new BufferPointer();
@@ -91,7 +90,7 @@ public class DeprecatedTest {
     @Test
     public void testBufferEncoderDecoder() throws Exception {
         ByteArrayOutputStream bo = new ByteArrayOutputStream(100);
-        int[] data = new int[] { 3, 4, 5 };
+        int[] data = new int[] {3, 4, 5};
 
         BufferPointer p = new BufferPointer(new byte[100]);
         BufferEncoder e = new BufferEncoder(p) {
@@ -101,7 +100,7 @@ public class DeprecatedTest {
             }
         };
 
-        e.needBuffer(1);        // unused, but cover anyway
+        e.needBuffer(1); // unused, but cover anyway
         e.writeUncheckedByte((byte) 1);
 
         e.writeInt(2);
@@ -126,7 +125,7 @@ public class DeprecatedTest {
         int[] in = new int[data.length];
         d.readLArray(in);
 
-        for(int i=0; i<data.length; i++) {
+        for (int i = 0; i < data.length; i++) {
             assertEquals("[" + i + "]", data[i], in[i]);
         }
 
@@ -135,7 +134,7 @@ public class DeprecatedTest {
 
     @Test(expected = EOFException.class)
     public void testBufferDecoderEOFException() throws Exception {
-        byte[] b  = new byte[100];
+        byte[] b = new byte[100];
         BufferPointer p = new BufferPointer(b);
         BufferDecoder d = new BufferDecoder(p) {
         };

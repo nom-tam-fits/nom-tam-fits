@@ -67,7 +67,7 @@ public class FitsOutputStream extends ArrayOutputStream implements FitsOutput {
     /**
      * Use the BufferedOutputStream constructor
      *
-     * @param o An open output stream.
+     * @param o         An open output stream.
      * @param bufLength The buffer size.
      */
     public FitsOutputStream(OutputStream o, int bufLength) {
@@ -200,11 +200,11 @@ public class FitsOutputStream extends ArrayOutputStream implements FitsOutput {
     /**
      * Deprecated use {@link #writeArray(Object)}.
      *
-     * @param o The object to be written.
+     * @param      o           The object to be written.
      *
-     * @throws IOException if one of the underlying write operations failed
+     * @throws     IOException if one of the underlying write operations failed
      *
-     * @deprecated use {@link #writeArray(Object)} instead
+     * @deprecated             use {@link #writeArray(Object)} instead
      */
     @Deprecated
     public final synchronized void writePrimitiveArray(Object o) throws IOException {

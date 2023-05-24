@@ -69,10 +69,10 @@ public class RandomGroupsData extends Data {
     /**
      * Constructor used by RandomGroupsHDU only...
      *
-     * @param gcount The number of parameter groups
+     * @param gcount    The number of parameter groups
      * @param sampleRow The 2-element array of a sample group.
      *
-     * @since 1.18
+     * @since           1.18
      */
     RandomGroupsData(int gcount, Object[] sampleRow) {
         this();
@@ -83,10 +83,10 @@ public class RandomGroupsData extends Data {
     /**
      * Create a RandomGroupsData object using the specified object to initialize the data array.
      *
-     * @param x The initial data array. This should a two-d array of objects as described above.
+     * @param  x                        The initial data array. This should a two-d array of objects as described above.
      *
      * @throws IllegalArgumentException if the second array dimension is specified and it is not 2, or if the parameter
-     *             arrya is not 1-dimensional, or if the parameter and data types differ.
+     *                                      arrya is not 1-dimensional, or if the parameter and data types differ.
      */
     @SuppressFBWarnings(value = "EI_EXPOSE_REP", justification = "intended exposure of mutable data")
     public RandomGroupsData(Object[][] x) throws IllegalArgumentException {
@@ -107,8 +107,8 @@ public class RandomGroupsData extends Data {
                 Class<?> dbase = ArrayFuncs.getBaseClass(dataArray[0][1]);
 
                 if (pbase != dbase) {
-                    throw new IllegalArgumentException("Mismatched parameters and data types (" + pbase.getName()
-                    + " vs " + dbase.getName() + ")");
+                    throw new IllegalArgumentException(
+                            "Mismatched parameters and data types (" + pbase.getName() + " vs " + dbase.getName() + ")");
                 }
             }
 
@@ -123,7 +123,7 @@ public class RandomGroupsData extends Data {
      *
      * @return The java class of the parameter and data elements.
      *
-     * @since 1,18
+     * @since  1,18
      */
     public Class<?> getElementType() {
         return sampleRow == null ? null : ArrayFuncs.getBaseClass(sampleRow[0]);
@@ -134,9 +134,9 @@ public class RandomGroupsData extends Data {
      *
      * @return The dimensions of the parameters or -1 if not defined.
      *
-     * @see #getDataDims()
+     * @see    #getDataDims()
      *
-     * @since 1.18
+     * @since  1.18
      */
     public int getParameterCount() {
         return sampleRow == null ? -1 : Array.getLength(sampleRow[0]);
@@ -147,9 +147,9 @@ public class RandomGroupsData extends Data {
      *
      * @return The dimensions of the parameters, or <code>null</code> if not defined.
      *
-     * @see #getParameterCount()
+     * @see    #getParameterCount()
      *
-     * @since 1.18
+     * @since  1.18
      */
     public int[] getDataDims() {
         return sampleRow == null ? null : ArrayFuncs.getDimensions(sampleRow[1]);

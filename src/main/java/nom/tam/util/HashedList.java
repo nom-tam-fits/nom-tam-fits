@@ -62,8 +62,7 @@ import nom.tam.fits.header.FitsHeaderImpl;
 /**
  * a ordered hash map implementation.
  *
- * @param <VALUE>
- *            value of the map
+ * @param <VALUE> value of the map
  */
 public class HashedList<VALUE extends CursorValue<String>> implements Collection<VALUE> {
 
@@ -84,8 +83,7 @@ public class HashedList<VALUE extends CursorValue<String>> implements Collection
     private class HashedListIterator implements Cursor<String, VALUE> {
 
         /**
-         * This index points to the value that would be returned in the next
-         * 'next' call.
+         * This index points to the value that would be returned in the next 'next' call.
          */
         private int current;
 
@@ -104,7 +102,7 @@ public class HashedList<VALUE extends CursorValue<String>> implements Collection
             current++;
 
             // AK: Do not allow the iterator to exceed the header size
-            //     prev() requires this to work properly...
+            // prev() requires this to work properly...
             if (current > HashedList.this.size()) {
                 current = HashedList.this.size();
             }
@@ -181,20 +179,14 @@ public class HashedList<VALUE extends CursorValue<String>> implements Collection
      */
     private HashedListIterator cursor = new HashedListIterator(0);
 
-
     /**
-     * Add an element to the list at a specified position. If that element was
-     * already in the list, it is first removed from the list then added again
-     * - if it was removed from a position before the position where it was to
-     * be added, that position is decremented by one.
+     * Add an element to the list at a specified position. If that element was already in the list, it is first removed
+     * from the list then added again - if it was removed from a position before the position where it was to be added,
+     * that position is decremented by one.
      *
-     * @param pos
-     *            The position at which the specified element is to be added.
-     *            If pos is bigger than the size of the list the element is
-     *            put at the end of the list.
-     * @param reference
-     *            The element to add to the list.
-     *
+     * @param pos       The position at which the specified element is to be added. If pos is bigger than the size of
+     *                      the list the element is put at the end of the list.
+     * @param reference The element to add to the list.
      */
     private void add(int pos, VALUE entry) {
         String key = entry.getKey();
@@ -208,14 +200,14 @@ public class HashedList<VALUE extends CursorValue<String>> implements Collection
         keyed.put(key, entry);
         if (pos >= ordered.size()) {
             // AK: We are adding a card to the end of the header.
-            //     If the cursor points to the end of the header, we want to increment it.
-            //     We can do this by faking 'insertion' before the last position.
-            //     The cursor will then advance at the end of this method.
-            //     Note, that if the addition of the card was done through the cursor itself
-            //     then the cursor will be incremented twice, once here, and once by the
-            //     cursor itself by the HashedListIterator.add(call).
-            //     But, this is fine, since the end position is properly checked by
-            //     HashedListIterator.add().
+            // If the cursor points to the end of the header, we want to increment it.
+            // We can do this by faking 'insertion' before the last position.
+            // The cursor will then advance at the end of this method.
+            // Note, that if the addition of the card was done through the cursor itself
+            // then the cursor will be incremented twice, once here, and once by the
+            // cursor itself by the HashedListIterator.add(call).
+            // But, this is fine, since the end position is properly checked by
+            // HashedListIterator.add().
             pos = ordered.size() - 1;
             ordered.add(entry);
         } else {
@@ -223,7 +215,7 @@ public class HashedList<VALUE extends CursorValue<String>> implements Collection
         }
 
         // AK: When inserting keys before the current position, increment the current
-        //     position so it keeps pointing to the same location in the header...
+        // position so it keeps pointing to the same location in the header...
         if (pos < cursor.current) {
             cursor.current++;
         }
@@ -236,14 +228,11 @@ public class HashedList<VALUE extends CursorValue<String>> implements Collection
     }
 
     /**
-     * Similar to add(VALUE), except this replaces an existing card that matches the specified key in-situ.
-     * At the same time, new entries are added at the current position.
+     * Similar to add(VALUE), except this replaces an existing card that matches the specified key in-situ. At the same
+     * time, new entries are added at the current position.
      *
-     * @param key
-     *            The key of the existing card (if any) to be replaced).
-     *
-     * @param entry
-     *            The element to add to the list.
+     * @param key   The key of the existing card (if any) to be replaced).
+     * @param entry The element to add to the list.
      */
     public void update(String key, VALUE entry) {
         if (keyed.containsKey(key) && !FitsHeaderImpl.isCommentStyleKey(key)) {
@@ -289,28 +278,27 @@ public class HashedList<VALUE extends CursorValue<String>> implements Collection
     }
 
     /**
-     * @return <code>true</code> if the key is included in the list.
-     * @param key
-     *            the key to search
+     * @return     <code>true</code> if the key is included in the list.
+     *
+     * @param  key the key to search
      */
     public boolean containsKey(Object key) {
         return keyed.containsKey(key);
     }
 
     /**
-     * @return the n'th entry from the beginning.
-     * @param n
-     *            the index to get
+     * @return   the n'th entry from the beginning.
+     *
+     * @param  n the index to get
      */
     public VALUE get(int n) {
         return ordered.get(n);
     }
 
     /**
-     * @return the value of a keyed entry. Non-keyed entries may be returned by
-     *         requesting an iterator.
-     * @param key
-     *            the key to search for
+     * @return     the value of a keyed entry. Non-keyed entries may be returned by requesting an iterator.
+     *
+     * @param  key the key to search for
      */
     public VALUE get(Object key) {
         return keyed.get(key);
@@ -344,9 +332,9 @@ public class HashedList<VALUE extends CursorValue<String>> implements Collection
     }
 
     /**
-     * @return an iterator starting with the n'th entry.
-     * @param n
-     *            the index to start the iterator
+     * @return   an iterator starting with the n'th entry.
+     *
+     * @param  n the index to start the iterator
      */
     public Cursor<String, VALUE> iterator(int n) {
         if (n >= 0 && n <= ordered.size()) {
@@ -355,25 +343,22 @@ public class HashedList<VALUE extends CursorValue<String>> implements Collection
         throw new NoSuchElementException("Invalid index for iterator:" + n);
     }
 
-
-    /** Return the iterator that represents the current position in the header. This provides a connection
-     *  between editing headers through Header add/append/update methods, and via Cursors, which can be
-     *  used side-by-side while maintaining desired card ordering. For the reverse direction (
-     *  translating iterator position to current position in the header), we can just use findCard().
+    /**
+     * Return the iterator that represents the current position in the header. This provides a connection between
+     * editing headers through Header add/append/update methods, and via Cursors, which can be used side-by-side while
+     * maintaining desired card ordering. For the reverse direction ( translating iterator position to current position
+     * in the header), we can just use findCard().
      *
-     *  @return the iterator representing the current position in the header.
-     *
+     * @return the iterator representing the current position in the header.
      */
     public Cursor<String, VALUE> cursor() {
         return cursor;
     }
 
-
     /**
-     * @return an iterator over the list starting with the entry with a given
-     *         key.
-     * @param key
-     *            the key to use as a start point
+     * @return     an iterator over the list starting with the entry with a given key.
+     *
+     * @param  key the key to use as a start point
      */
     public HashedListIterator iterator(String key) {
         VALUE entry = keyed.get(key);
@@ -386,9 +371,9 @@ public class HashedList<VALUE extends CursorValue<String>> implements Collection
     /**
      * Remove an object from the list giving the object index..
      *
-     * @param index
-     *            the index to remove
-     * @return true if the index was in range
+     * @param  index the index to remove
+     *
+     * @return       true if the index was in range
      */
     public boolean remove(int index) {
         if (index >= 0 && index < ordered.size()) {
@@ -397,13 +382,12 @@ public class HashedList<VALUE extends CursorValue<String>> implements Collection
         return false;
     }
 
-
     private boolean internalRemove(int index, VALUE entry) {
         keyed.remove(entry.getKey());
         ordered.remove(index);
 
         // AK: if removing a key before the current position, update the current position to
-        //     keep pointing to the same location.
+        // keep pointing to the same location.
         if (index < cursor.current) {
             cursor.current--;
         }
@@ -432,12 +416,12 @@ public class HashedList<VALUE extends CursorValue<String>> implements Collection
     }
 
     /**
-     * Remove a keyed object from the list. Unkeyed objects can be removed from
-     * the list using a HashedListIterator or using the remove(Object) method.
+     * Remove a keyed object from the list. Unkeyed objects can be removed from the list using a HashedListIterator or
+     * using the remove(Object) method.
      *
-     * @param key
-     *            the key to remove
-     * @return <code>true</code> if the key was removed
+     * @param  key the key to remove
+     *
+     * @return     <code>true</code> if the key was removed
      */
     public boolean removeKey(Object key) {
         VALUE entry = get(key);
@@ -451,11 +435,10 @@ public class HashedList<VALUE extends CursorValue<String>> implements Collection
     /**
      * Replace the key of a given element.
      *
-     * @param oldKey
-     *            The previous key. This key must be present in the hash.
-     * @param newKey
-     *            The new key. This key must not be present in the hash.
-     * @return if the replacement was successful.
+     * @param  oldKey The previous key. This key must be present in the hash.
+     * @param  newKey The new key. This key must not be present in the hash.
+     *
+     * @return        if the replacement was successful.
      */
     public boolean replaceKey(String oldKey, String newKey) {
 
@@ -492,8 +475,7 @@ public class HashedList<VALUE extends CursorValue<String>> implements Collection
     /**
      * Sort the keys into some desired order.
      *
-     * @param comp
-     *            the comparator to use for the sorting
+     * @param comp the comparator to use for the sorting
      */
     public void sort(final Comparator<String> comp) {
         java.util.Collections.sort(ordered, new EntryComparator<VALUE>(comp));

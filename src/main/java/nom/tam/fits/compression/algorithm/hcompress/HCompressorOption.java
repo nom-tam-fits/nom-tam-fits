@@ -112,8 +112,6 @@ public class HCompressorOption implements ICompressOption, ITileOption {
         return this;
     }
 
-
-
     @Override
     public <T> T unwrap(Class<T> clazz) {
         if (clazz.isAssignableFrom(this.getClass())) {

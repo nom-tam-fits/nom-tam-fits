@@ -53,9 +53,8 @@ import nom.tam.fits.Header;
 import nom.tam.fits.HeaderCard;
 
 /**
- * Test adding a little junk after a valid image. We wish to test three
- * scenarios: Junk at the beginning (should continue to fail) Short (<80 byte)
- * junk after valid HDU Long (>80 byte) junk after valid HDU The last two should
+ * Test adding a little junk after a valid image. We wish to test three scenarios: Junk at the beginning (should
+ * continue to fail) Short (<80 byte) junk after valid HDU Long (>80 byte) junk after valid HDU The last two should
  * succeed after FitsFactory.setAllowTerminalJunk(true).
  */
 public class DupTest {
@@ -64,10 +63,12 @@ public class DupTest {
         private int count = 0;
 
         @Override
-        public void close() throws SecurityException {}
+        public void close() throws SecurityException {
+        }
 
         @Override
-        public void flush() {}
+        public void flush() {
+        }
 
         @Override
         public synchronized void publish(LogRecord arg0) {
@@ -118,7 +119,7 @@ public class DupTest {
     @Test
     public void dupesWarningsOn() throws Exception {
         Logger l = getParserLogger();
-        l.setLevel(Level.WARNING);                      // Make sure we log warnings to Header
+        l.setLevel(Level.WARNING); // Make sure we log warnings to Header
 
         LogCounter counter = new LogCounter();
         l.addHandler(counter);
@@ -126,32 +127,32 @@ public class DupTest {
         int initCount = counter.getCount();
 
         Header.setParserWarningsEnabled(true);
-        assertTrue(Header.isParserWarningsEnabled());   // Check that warings are enabled
+        assertTrue(Header.isParserWarningsEnabled()); // Check that warings are enabled
 
         Fits f = new Fits("src/test/resources/nom/tam/fits/test/test_dup.fits");
         Header h = f.readHDU().getHeader();
 
-        assertTrue("Has dups:", h.hadDuplicates());     // Check that we did indeed have duplicates
+        assertTrue("Has dups:", h.hadDuplicates()); // Check that we did indeed have duplicates
         assertNotEquals(initCount, counter.getCount()); // Check that logger was called on them
     }
 
     @Test
     public void dupesWarningsOff() throws Exception {
         Logger l = getParserLogger();
-        l.setLevel(Level.WARNING);                      // Make sure we log warnings to Header
+        l.setLevel(Level.WARNING); // Make sure we log warnings to Header
         LogCounter counter = new LogCounter();
         l.addHandler(counter);
 
         int initCount = counter.getCount();
 
         Header.setParserWarningsEnabled(false);
-        assertFalse(Header.isParserWarningsEnabled());  // Check that warings are enabled
+        assertFalse(Header.isParserWarningsEnabled()); // Check that warings are enabled
 
         Fits f = new Fits("src/test/resources/nom/tam/fits/test/test_dup.fits");
         Header h = f.readHDU().getHeader();
 
-        assertTrue("Has dups:", h.hadDuplicates());     // Check that we did indeed have duplicates
-        assertEquals(initCount, counter.getCount());    // Check that logger was NOT called on them
+        assertTrue("Has dups:", h.hadDuplicates()); // Check that we did indeed have duplicates
+        assertEquals(initCount, counter.getCount()); // Check that logger was NOT called on them
 
         l.removeHandler(counter);
     }

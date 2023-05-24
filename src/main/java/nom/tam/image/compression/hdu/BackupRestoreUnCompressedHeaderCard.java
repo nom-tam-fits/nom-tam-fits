@@ -91,10 +91,7 @@ enum BackupRestoreUnCompressedHeaderCard {
             headerIterator.add(card.copy());
         }
     },
-    MAP_BITPIX(BITPIX),
-    MAP_CHECKSUM(CHECKSUM),
-    MAP_DATASUM(DATASUM),
-    MAP_EXTNAME(EXTNAME) {
+    MAP_BITPIX(BITPIX), MAP_CHECKSUM(CHECKSUM), MAP_DATASUM(DATASUM), MAP_EXTNAME(EXTNAME) {
 
         @Override
         protected void backupCard(HeaderCard card, Cursor<String, HeaderCard> headerIterator) throws HeaderCardException {
@@ -103,10 +100,7 @@ enum BackupRestoreUnCompressedHeaderCard {
             }
         }
     },
-    MAP_GCOUNT(GCOUNT),
-    MAP_NAXIS(NAXIS),
-    MAP_NAXISn(NAXISn),
-    MAP_PCOUNT(PCOUNT),
+    MAP_GCOUNT(GCOUNT), MAP_NAXIS(NAXIS), MAP_NAXISn(NAXISn), MAP_PCOUNT(PCOUNT),
     // MAP_TFIELDS(TFIELDS),
     MAP_ZFORMn(ZFORMn) {
 
@@ -123,34 +117,22 @@ enum BackupRestoreUnCompressedHeaderCard {
         }
 
     },
-    MAP_TFORMn(TFORMn),
-    MAP_XTENSION(XTENSION),
-    MAP_ZBITPIX(ZBITPIX),
-    MAP_ZBLANK(ZBLANK),
-    MAP_ZTILELEN(ZTILELEN),
-    MAP_ZCTYPn(ZCTYPn),
-    @SuppressWarnings("deprecation")
-    MAP_ZBLOCKED(ZBLOCKED),
-    MAP_ZCMPTYPE(ZCMPTYPE),
-    MAP_ZDATASUM(ZDATASUM),
-    MAP_ZDITHER0(ZDITHER0),
-    MAP_ZEXTEND(ZEXTEND),
-    MAP_ZGCOUNT(ZGCOUNT),
-    MAP_ZHECKSUM(ZHECKSUM),
-    MAP_ZIMAGE(ZIMAGE),
-    MAP_ZTABLE(ZTABLE),
-    MAP_ZNAMEn(ZNAMEn),
-    MAP_ZNAXIS(ZNAXIS),
-    MAP_THEAP(THEAP) {
+    MAP_TFORMn(TFORMn), MAP_XTENSION(XTENSION), MAP_ZBITPIX(ZBITPIX), MAP_ZBLANK(ZBLANK), MAP_ZTILELEN(
+            ZTILELEN), MAP_ZCTYPn(ZCTYPn), @SuppressWarnings("deprecation")
+    MAP_ZBLOCKED(ZBLOCKED), MAP_ZCMPTYPE(ZCMPTYPE), MAP_ZDATASUM(ZDATASUM), MAP_ZDITHER0(ZDITHER0), MAP_ZEXTEND(
+            ZEXTEND), MAP_ZGCOUNT(ZGCOUNT), MAP_ZHECKSUM(ZHECKSUM), MAP_ZIMAGE(
+                    ZIMAGE), MAP_ZTABLE(ZTABLE), MAP_ZNAMEn(ZNAMEn), MAP_ZNAXIS(ZNAXIS), MAP_THEAP(THEAP) {
 
-        @Override
-        protected void backupCard(HeaderCard card, Cursor<String, HeaderCard> headerIterator) throws HeaderCardException {
-        }
+                        @Override
+                        protected void backupCard(HeaderCard card, Cursor<String, HeaderCard> headerIterator)
+                                throws HeaderCardException {
+                        }
 
-        @Override
-        protected void restoreCard(HeaderCard card, Cursor<String, HeaderCard> headerIterator) throws HeaderCardException {
-        }
-    },
+                        @Override
+                        protected void restoreCard(HeaderCard card, Cursor<String, HeaderCard> headerIterator)
+                                throws HeaderCardException {
+                        }
+                    },
     MAP_ZNAXISn(ZNAXISn) {
 
         @Override
@@ -166,12 +148,8 @@ enum BackupRestoreUnCompressedHeaderCard {
         }
 
     },
-    MAP_ZPCOUNT(ZPCOUNT),
-    MAP_ZQUANTIZ(ZQUANTIZ),
-    MAP_ZSIMPLE(ZSIMPLE),
-    MAP_ZTENSION(ZTENSION),
-    MAP_ZTILEn(ZTILEn),
-    MAP_ZVALn(ZVALn);
+    MAP_ZPCOUNT(ZPCOUNT), MAP_ZQUANTIZ(ZQUANTIZ), MAP_ZSIMPLE(ZSIMPLE), MAP_ZTENSION(ZTENSION), MAP_ZTILEn(
+            ZTILEn), MAP_ZVALn(ZVALn);
 
     private final IFitsHeader compressedHeaderKey;
 
@@ -187,7 +165,8 @@ enum BackupRestoreUnCompressedHeaderCard {
         mapping.restoreCard(card, headerIterator);
     }
 
-    protected static BackupRestoreUnCompressedHeaderCard selectMapping(Map<IFitsHeader, BackupRestoreUnCompressedHeaderCard> mappings, HeaderCard card) {
+    protected static BackupRestoreUnCompressedHeaderCard selectMapping(
+            Map<IFitsHeader, BackupRestoreUnCompressedHeaderCard> mappings, HeaderCard card) {
         IFitsHeader key = GenericKey.lookup(card.getKey());
         if (key != null) {
             BackupRestoreUnCompressedHeaderCard mapping = mappings.get(key);
@@ -212,7 +191,8 @@ enum BackupRestoreUnCompressedHeaderCard {
         }
     }
 
-    private void addHeaderCard(HeaderCard card, Cursor<String, HeaderCard> headerIterator, IFitsHeader targetKey) throws HeaderCardException {
+    private void addHeaderCard(HeaderCard card, Cursor<String, HeaderCard> headerIterator, IFitsHeader targetKey)
+            throws HeaderCardException {
         if (targetKey != null) {
             if (targetKey.valueType() == VALUE.INTEGER) {
                 headerIterator.add(new HeaderCard(targetKey.key(), card.getValue(Integer.class, 0), card.getComment()));
@@ -225,15 +205,13 @@ enum BackupRestoreUnCompressedHeaderCard {
     }
 
     /**
-     * default behaviour is to ignore the card and by that to exclude it from
-     * the uncompressed header if it does not have a uncompressed equivalent..
+     * default behaviour is to ignore the card and by that to exclude it from the uncompressed header if it does not
+     * have a uncompressed equivalent..
      *
-     * @param card
-     *            the card from the compressed header
-     * @param headerIterator
-     *            the iterator for the uncompressed header.
-     * @throws HeaderCardException
-     *             if the card could not be copied
+     * @param  card                the card from the compressed header
+     * @param  headerIterator      the iterator for the uncompressed header.
+     *
+     * @throws HeaderCardException if the card could not be copied
      */
     protected void backupCard(HeaderCard card, Cursor<String, HeaderCard> headerIterator) throws HeaderCardException {
         IFitsHeader uncompressedKey = uncompressedHeaderKey;

@@ -35,7 +35,8 @@ import nom.tam.image.tile.operation.buffer.TileBuffer;
 
 public class Access {
 
-    private Access(){}
+    private Access() {
+    }
 
     public static TileBuffer getTileBuffer(AbstractTileOperation tileOperation) {
         return tileOperation.getTileBuffer();

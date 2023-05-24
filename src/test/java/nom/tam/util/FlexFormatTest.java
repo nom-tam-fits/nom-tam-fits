@@ -99,7 +99,7 @@ public class FlexFormatTest {
         boolean thrown = false;
         try {
             s = f.format(Math.PI);
-        } catch(LongValueException e) {
+        } catch (LongValueException e) {
             thrown = true;
         }
         assertTrue(thrown);
@@ -110,7 +110,7 @@ public class FlexFormatTest {
         thrown = false;
         try {
             s = f.format(Math.PI);
-        } catch(LongValueException e) {
+        } catch (LongValueException e) {
             thrown = true;
         }
         assertTrue(thrown);
@@ -120,12 +120,11 @@ public class FlexFormatTest {
         thrown = false;
         try {
             s = f.format(Math.PI);
-        } catch(LongValueException e) {
+        } catch (LongValueException e) {
             thrown = true;
         }
         assertTrue(thrown);
     }
-
 
     @Test(expected = LongValueException.class)
     public void noSpaceForBigIntTest() throws Exception {
