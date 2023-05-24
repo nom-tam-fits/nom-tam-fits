@@ -100,7 +100,8 @@ public class TestArrayFuncs {
         if (xClass.equals(int[].class)) {
             return Arrays.equals((int[]) x, (int[]) y);
 
-        } else if (xClass.equals(double[].class)) {
+        }
+        if (xClass.equals(double[].class)) {
             if (told == 0) {
                 return Arrays.equals((double[]) x, (double[]) y);
             } else {

@@ -67,20 +67,20 @@ public class HeaderAccess implements IHeaderAccess {
 
     @Override
     public HeaderCard findCard(IFitsHeader key) {
-        return this.header.findCard(key);
+        return header.findCard(key);
     }
 
     @Override
     public HeaderCard findCard(String key) {
-        return this.header.findCard(key);
+        return header.findCard(key);
     }
 
     private HeaderCardBuilder card(IFitsHeader key) {
-        if (this.builder == null) {
-            this.builder = this.header.card(key);
-            return this.builder;
+        if (builder == null) {
+            builder = header.card(key);
+            return builder;
         }
-        return this.builder.card(key);
+        return builder.card(key);
     }
 
 }

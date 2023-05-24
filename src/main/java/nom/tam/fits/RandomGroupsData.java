@@ -63,7 +63,7 @@ public class RandomGroupsData extends Data {
      * Create the equivalent of a null data element.
      */
     public RandomGroupsData() {
-        this.dataArray = new Object[0][];
+        dataArray = new Object[0][];
     }
 
     /**
@@ -76,7 +76,7 @@ public class RandomGroupsData extends Data {
      */
     RandomGroupsData(int gcount, Object[] sampleRow) {
         this();
-        this.groups = gcount;
+        groups = gcount;
         this.sampleRow = sampleRow;
     }
 
@@ -90,7 +90,7 @@ public class RandomGroupsData extends Data {
      */
     @SuppressFBWarnings(value = "EI_EXPOSE_REP", justification = "intended exposure of mutable data")
     public RandomGroupsData(Object[][] x) throws IllegalArgumentException {
-        this.dataArray = x == null ? new Object[0][] : x;
+        dataArray = x == null ? new Object[0][] : x;
         groups = dataArray.length;
         if (groups > 0) {
 
@@ -208,7 +208,7 @@ public class RandomGroupsData extends Data {
             dataArray[i][1] = ((Object[]) ArrayFuncs.deepClone(sampleRow))[1];
         }
 
-        in.readImage(this.dataArray);
+        in.readImage(dataArray);
     }
 
     @Override
@@ -230,7 +230,7 @@ public class RandomGroupsData extends Data {
         ensureData();
 
         try {
-            str.writeArray(this.dataArray);
+            str.writeArray(dataArray);
             FitsUtil.pad(str, getTrueSize());
         } catch (IOException e) {
             throw new FitsException("IO error writing random groups data ", e);

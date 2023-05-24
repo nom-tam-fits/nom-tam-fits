@@ -144,14 +144,14 @@ public class TiledImageCompressionOperation extends AbstractTiledImageOperation<
     public synchronized ICompressOption compressOptions() {
         if (compressorControl == null) {
             getCompressorControl();
-            compressOptions = this.compressorControl.option();
-            if (this.quantAlgorithm != null) {
-                this.compressOptions.getCompressionParameters()
-                .getValuesFromHeader(new HeaderCardAccess(ZQUANTIZ, this.quantAlgorithm));
+            compressOptions = compressorControl.option();
+            if (quantAlgorithm != null) {
+                compressOptions.getCompressionParameters()
+                .getValuesFromHeader(new HeaderCardAccess(ZQUANTIZ, quantAlgorithm));
             }
             compressOptions.getCompressionParameters().initializeColumns(getNumberOfTileOperations());
         }
-        return this.compressOptions;
+        return compressOptions;
     }
 
     public Buffer decompress() {
@@ -175,37 +175,37 @@ public class TiledImageCompressionOperation extends AbstractTiledImageOperation<
 
     @Override
     public ByteBuffer getCompressedWholeArea() {
-        return this.compressedWholeArea;
+        return compressedWholeArea;
     }
 
     @Override
     public synchronized ICompressorControl getCompressorControl() {
-        if (this.compressorControl == null) {
-            this.compressorControl = CompressorProvider.findCompressorControl(this.quantAlgorithm, compressAlgorithm,
+        if (compressorControl == null) {
+            compressorControl = CompressorProvider.findCompressorControl(quantAlgorithm, compressAlgorithm,
                     getBaseType().primitiveClass());
-            if (this.compressorControl == null) {
+            if (compressorControl == null) {
                 throw new IllegalStateException(
-                        "Found no compressor control for compression algorithm:" + this.compressAlgorithm + //
-                        " (quantize algorithm = " + this.quantAlgorithm + ", base type = "
+                        "Found no compressor control for compression algorithm:" + compressAlgorithm + //
+                        " (quantize algorithm = " + quantAlgorithm + ", base type = "
                         + getBaseType().primitiveClass() + ")");
             }
         }
-        return this.compressorControl;
+        return compressorControl;
     }
 
     @Override
     public synchronized ICompressorControl getGzipCompressorControl() {
-        if (this.gzipCompressorControl == null) {
-            this.gzipCompressorControl = CompressorProvider.findCompressorControl(null, ZCMPTYPE_GZIP_1,
+        if (gzipCompressorControl == null) {
+            gzipCompressorControl = CompressorProvider.findCompressorControl(null, ZCMPTYPE_GZIP_1,
                     getBaseType().primitiveClass());
         }
-        return this.gzipCompressorControl;
+        return gzipCompressorControl;
     }
 
     public TiledImageCompressionOperation prepareUncompressedData(final Buffer buffer) throws FitsException {
-        this.compressedWholeArea = ByteBuffer.wrap(new byte[getBaseType().size() * getBufferSize()]);
+        compressedWholeArea = ByteBuffer.wrap(new byte[getBaseType().size() * getBufferSize()]);
         createTiles(new TileCompressorInitialisation(this, buffer));
-        this.compressedWholeArea.rewind();
+        compressedWholeArea.rewind();
         return this;
     }
 
@@ -219,11 +219,11 @@ public class TiledImageCompressionOperation extends AbstractTiledImageOperation<
      * @return the created null pixel mask
      */
     public ImageNullPixelMask preserveNulls(long nullValue, String compressionAlgorithm) {
-        this.imageNullPixelMask = new ImageNullPixelMask(getTileOperations().length, nullValue, compressionAlgorithm);
+        imageNullPixelMask = new ImageNullPixelMask(getTileOperations().length, nullValue, compressionAlgorithm);
         for (TileCompressionOperation tileOperation : getTileOperations()) {
             tileOperation.createImageNullPixelMask(getImageNullPixelMask());
         }
-        return this.imageNullPixelMask;
+        return imageNullPixelMask;
     }
 
     private synchronized void setQuantAlgorithm(final Header header) {
@@ -294,7 +294,7 @@ public class TiledImageCompressionOperation extends AbstractTiledImageOperation<
      * @see #setQuantAlgorithm(HeaderCard)
      */
     public TiledImageCompressionOperation setCompressAlgorithm(HeaderCard compressAlgorithmCard) {
-        this.compressAlgorithm = null;
+        compressAlgorithm = null;
 
         if (compressAlgorithmCard == null) {
             return this;
@@ -304,7 +304,7 @@ public class TiledImageCompressionOperation extends AbstractTiledImageOperation<
         if (algo.equals(Compression.ZCMPTYPE_GZIP_1) || algo.equals(Compression.ZCMPTYPE_GZIP_2)
                 || algo.equals(Compression.ZCMPTYPE_RICE_1) || algo.equals(Compression.ZCMPTYPE_PLIO_1)
                 || algo.equals(Compression.ZCMPTYPE_HCOMPRESS_1) || algo.equals(Compression.ZCMPTYPE_NOCOMPRESS)) {
-            this.compressAlgorithm = algo;
+            compressAlgorithm = algo;
         } else {
             Logger.getLogger(HeaderCard.class.getName()).warning("Ignored invalid ZCMPTYPE value: " + algo);
         }
@@ -325,7 +325,7 @@ public class TiledImageCompressionOperation extends AbstractTiledImageOperation<
      * @see #setCompressAlgorithm(HeaderCard)
      */
     public synchronized TiledImageCompressionOperation setQuantAlgorithm(HeaderCard quantAlgorithmCard) {
-        this.quantAlgorithm = null;
+        quantAlgorithm = null;
 
         if (quantAlgorithmCard == null) {
             return this;
@@ -335,7 +335,7 @@ public class TiledImageCompressionOperation extends AbstractTiledImageOperation<
 
         if (algo.equals(Compression.ZQUANTIZ_NO_DITHER) || algo.equals(Compression.ZQUANTIZ_SUBTRACTIVE_DITHER_1)
                 || algo.equals(Compression.ZQUANTIZ_SUBTRACTIVE_DITHER_2)) {
-            this.quantAlgorithm = algo;
+            quantAlgorithm = algo;
         } else {
             Logger.getLogger(HeaderCard.class.getName()).warning("Ignored invalid ZQUANTIZ value: " + algo);
         }
@@ -356,7 +356,7 @@ public class TiledImageCompressionOperation extends AbstractTiledImageOperation<
      * @since 1.18
      */
     public synchronized String getQuantAlgorithm() {
-        return this.quantAlgorithm;
+        return quantAlgorithm;
     }
 
     /**
@@ -372,14 +372,14 @@ public class TiledImageCompressionOperation extends AbstractTiledImageOperation<
      * @since 1.18
      */
     public String getCompressAlgorithm() {
-        return this.compressAlgorithm;
+        return compressAlgorithm;
     }
 
     private <T> T getNullableColumn(Header header, Class<T> class1, String columnName) throws FitsException {
-        for (int i = 1; i <= this.binaryTable.getNCols(); i++) {
+        for (int i = 1; i <= binaryTable.getNCols(); i++) {
             String val = header.getStringValue(TTYPEn.n(i));
             if (val != null && val.trim().equals(columnName)) {
-                return class1.cast(this.binaryTable.getColumn(i - 1));
+                return class1.cast(binaryTable.getColumn(i - 1));
             }
         }
         return null;
@@ -476,34 +476,34 @@ public class TiledImageCompressionOperation extends AbstractTiledImageOperation<
         addColumnToTable(hdu, compressedColumn, COMPRESSED_DATA_COLUMN);
         addColumnToTable(hdu, gzipColumn, GZIP_COMPRESSED_DATA_COLUMN);
         addColumnToTable(hdu, uncompressedColumn, UNCOMPRESSED_DATA_COLUMN);
-        if (this.imageNullPixelMask != null) {
-            addColumnToTable(hdu, this.imageNullPixelMask.getColumn(), NULL_PIXEL_MASK_COLUMN);
+        if (imageNullPixelMask != null) {
+            addColumnToTable(hdu, imageNullPixelMask.getColumn(), NULL_PIXEL_MASK_COLUMN);
         }
-        this.compressOptions.getCompressionParameters().addColumnsToTable(hdu);
+        compressOptions.getCompressionParameters().addColumnsToTable(hdu);
         hdu.getData().fillHeader(hdu.getHeader());
     }
 
     private void writeHeader(Header header) throws FitsException {
         HeaderCardBuilder cardBuilder = header//
                 .card(ZBITPIX).value(getBaseType().bitPix())//
-                .card(ZCMPTYPE).value(this.compressAlgorithm);
+                .card(ZCMPTYPE).value(compressAlgorithm);
         int[] tileAxes = getTileAxes();
         int naxes = tileAxes.length;
         for (int i = 1; i <= naxes; i++) {
             cardBuilder.card(ZTILEn.n(i)).value(tileAxes[naxes - i]);
         }
         compressOptions().getCompressionParameters().setValuesInHeader(new HeaderAccess(header));
-        if (this.imageNullPixelMask != null) {
-            cardBuilder.card(ZMASKCMP).value(this.imageNullPixelMask.getCompressAlgorithm());
+        if (imageNullPixelMask != null) {
+            cardBuilder.card(ZMASKCMP).value(imageNullPixelMask.getCompressAlgorithm());
         }
     }
 
     protected BinaryTable getBinaryTable() {
-        return this.binaryTable;
+        return binaryTable;
     }
 
     protected ImageNullPixelMask getImageNullPixelMask() {
-        return this.imageNullPixelMask;
+        return imageNullPixelMask;
     }
 
 }

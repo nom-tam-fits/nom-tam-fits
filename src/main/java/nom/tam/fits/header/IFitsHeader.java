@@ -111,7 +111,7 @@ public interface IFitsHeader {
         }
 
         public String url() {
-            return this.url;
+            return url;
         }
     }
 

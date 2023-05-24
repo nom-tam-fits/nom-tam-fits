@@ -52,13 +52,13 @@ public abstract class AbstractTileOperation implements Runnable, ITileOperation 
     private final TileArea area;
 
     public AbstractTileOperation(ITiledImageOperation operation, int tileIndex, TileArea area) {
-        this.tiledImageOperation = operation;
+        tiledImageOperation = operation;
         this.tileIndex = tileIndex;
         this.area = area;
     }
 
     public void execute(ExecutorService threadPool) {
-        this.future = threadPool.submit(this);
+        future = threadPool.submit(this);
     }
 
     public TileArea getArea() {
@@ -86,7 +86,7 @@ public abstract class AbstractTileOperation implements Runnable, ITileOperation 
      *            the buffer that describes the whole image.
      */
     public void setWholeImageBuffer(Buffer buffer) {
-        this.tileBuffer.setData(buffer);
+        tileBuffer.setData(buffer);
     }
 
     /**
@@ -95,7 +95,7 @@ public abstract class AbstractTileOperation implements Runnable, ITileOperation 
     @Override
     public void waitForResult() {
         try {
-            this.future.get();
+            future.get();
         } catch (Exception e) {
             throw new IllegalStateException("could not process tile", e);
         }

@@ -199,16 +199,16 @@ enum BackupRestoreUnCompressedHeaderCard {
     }
 
     BackupRestoreUnCompressedHeaderCard(IFitsHeader header) {
-        this.compressedHeaderKey = header;
+        compressedHeaderKey = header;
         if (header instanceof Compression) {
-            this.uncompressedHeaderKey = ((Compression) this.compressedHeaderKey).getUncompressedKey();
+            uncompressedHeaderKey = ((Compression) compressedHeaderKey).getUncompressedKey();
 
         } else {
-            this.uncompressedHeaderKey = null;
+            uncompressedHeaderKey = null;
         }
         CompressedImageHDU.UNCOMPRESSED_HEADER_MAPPING.put(header, this);
-        if (this.uncompressedHeaderKey != null) {
-            CompressedImageHDU.COMPRESSED_HEADER_MAPPING.put(this.uncompressedHeaderKey, this);
+        if (uncompressedHeaderKey != null) {
+            CompressedImageHDU.COMPRESSED_HEADER_MAPPING.put(uncompressedHeaderKey, this);
         }
     }
 
@@ -236,19 +236,19 @@ enum BackupRestoreUnCompressedHeaderCard {
      *             if the card could not be copied
      */
     protected void backupCard(HeaderCard card, Cursor<String, HeaderCard> headerIterator) throws HeaderCardException {
-        IFitsHeader uncompressedKey = this.uncompressedHeaderKey;
+        IFitsHeader uncompressedKey = uncompressedHeaderKey;
         addHeaderCard(card, headerIterator, uncompressedKey);
     }
 
     protected IFitsHeader compressedHeaderKey() {
-        return this.compressedHeaderKey;
+        return compressedHeaderKey;
     }
 
     protected void restoreCard(HeaderCard card, Cursor<String, HeaderCard> headerIterator) throws HeaderCardException {
-        addHeaderCard(card, headerIterator, this.compressedHeaderKey);
+        addHeaderCard(card, headerIterator, compressedHeaderKey);
     }
 
     protected IFitsHeader uncompressedHeaderKey() {
-        return this.uncompressedHeaderKey;
+        return uncompressedHeaderKey;
     }
 }

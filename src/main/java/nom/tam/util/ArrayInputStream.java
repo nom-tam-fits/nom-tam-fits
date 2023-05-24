@@ -88,7 +88,7 @@ public class ArrayInputStream extends BufferedInputStream implements InputReader
      * @see #getDecoder()
      */
     protected void setDecoder(InputDecoder bin2java) {
-        this.decoder = bin2java;
+        decoder = bin2java;
     }
 
     /**

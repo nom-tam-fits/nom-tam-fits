@@ -87,7 +87,7 @@ public class ArrayOutputStream extends BufferedOutputStream implements OutputWri
      * @see #getEncoder()
      */
     protected void setEncoder(OutputEncoder java2bin) {
-        this.encoder = java2bin;
+        encoder = java2bin;
     }
 
     /**

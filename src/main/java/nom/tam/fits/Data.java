@@ -183,7 +183,7 @@ public abstract class Data implements FitsElement {
      */
     @Override
     public long getFileOffset() {
-        return this.fileOffset;
+        return fileOffset;
     }
 
     /**
@@ -302,7 +302,7 @@ public abstract class Data implements FitsElement {
 
         setFileOffset(in);
 
-        if (this.getTrueSize() == 0) {
+        if (getTrueSize() == 0) {
             return;
         }
 
@@ -327,7 +327,7 @@ public abstract class Data implements FitsElement {
     @Override
     public boolean reset() {
         try {
-            FitsUtil.reposition(this.getRandomAccessInput(), getFileOffset());
+            FitsUtil.reposition(getRandomAccessInput(), getFileOffset());
             return true;
         } catch (Exception e) {
             LOG.log(Level.SEVERE, "Unable to reset", e);
@@ -356,14 +356,14 @@ public abstract class Data implements FitsElement {
 
     @Override
     public boolean rewriteable() {
-        return this.input != null && getFileOffset() >= 0 && (getTrueSize() + FITS_BLOCK_SIZE_MINUS_ONE)
+        return input != null && getFileOffset() >= 0 && (getTrueSize() + FITS_BLOCK_SIZE_MINUS_ONE)
                 / FitsFactory.FITS_BLOCK_SIZE == (getTrueSize() + FITS_BLOCK_SIZE_MINUS_ONE) / FitsFactory.FITS_BLOCK_SIZE;
     }
 
     private void clearFileOffset() {
-        this.fileOffset = -1;
-        this.input = null;
-        this.dataSize = 0L;
+        fileOffset = -1;
+        input = null;
+        dataSize = 0L;
     }
 
     /**
@@ -375,9 +375,9 @@ public abstract class Data implements FitsElement {
      */
     protected void setFileOffset(ArrayDataInput o) {
         if (o instanceof RandomAccess) {
-            this.fileOffset = FitsUtil.findOffset(o);
-            this.dataSize = getTrueSize();
-            this.input = (RandomAccess) o;
+            fileOffset = FitsUtil.findOffset(o);
+            dataSize = getTrueSize();
+            input = (RandomAccess) o;
         } else {
             clearFileOffset();
         }

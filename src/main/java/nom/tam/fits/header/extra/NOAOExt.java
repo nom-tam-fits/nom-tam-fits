@@ -7948,7 +7948,7 @@ public enum NOAOExt implements IFitsHeader {
     private final IFitsHeader key;
 
     NOAOExt(HDU hdu, VALUE valueType, String comment) {
-        this.key = new FitsHeaderImpl(name(), IFitsHeader.SOURCE.NOAO, hdu, valueType, comment);
+        key = new FitsHeaderImpl(name(), IFitsHeader.SOURCE.NOAO, hdu, valueType, comment);
     }
 
     NOAOExt(String key, HDU hdu, VALUE valueType, String comment) {
@@ -7957,32 +7957,32 @@ public enum NOAOExt implements IFitsHeader {
 
     @Override
     public String comment() {
-        return this.key.comment();
+        return key.comment();
     }
 
     @Override
     public HDU hdu() {
-        return this.key.hdu();
+        return key.hdu();
     }
 
     @Override
     public String key() {
-        return this.key.key();
+        return key.key();
     }
 
     @Override
     public IFitsHeader n(int... number) {
-        return this.key.n(number);
+        return key.n(number);
     }
 
     @Override
     public SOURCE status() {
-        return this.key.status();
+        return key.status();
     }
 
     @Override
     @SuppressWarnings("CPD-END")
     public VALUE valueType() {
-        return this.key.valueType();
+        return key.valueType();
     }
 }

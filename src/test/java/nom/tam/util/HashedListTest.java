@@ -70,7 +70,7 @@ public class HashedListTest {
         final String value;
 
         public TestCursorValue(String value) {
-            this.key = value;
+            key = value;
             this.value = value;
         }
 
@@ -82,19 +82,19 @@ public class HashedListTest {
         @Override
         public boolean equals(Object obj) {
             if (obj instanceof TestCursorValue) {
-                return ((TestCursorValue) obj).value.equals(this.value);
+                return ((TestCursorValue) obj).value.equals(value);
             }
             return false;
         }
 
         @Override
         public String getKey() {
-            return this.key;
+            return key;
         }
 
         @Override
         public int hashCode() {
-            return this.value.hashCode();
+            return value.hashCode();
         }
     }
 

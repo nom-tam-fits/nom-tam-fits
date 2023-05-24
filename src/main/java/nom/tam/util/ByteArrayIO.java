@@ -70,9 +70,9 @@ public class ByteArrayIO implements ReadWriteAccess {
      */
     @SuppressFBWarnings(value = "EI_EXPOSE_REP2", justification = "by design this class provides an IO interface for an accessible array.")
     public ByteArrayIO(byte[] buffer) {
-        this.buf = buffer;
-        this.end = 0;
-        this.isGrowable = false;
+        buf = buffer;
+        end = 0;
+        isGrowable = false;
     }
 
     /**
@@ -88,9 +88,9 @@ public class ByteArrayIO implements ReadWriteAccess {
             throw new IllegalArgumentException("Illegal buffer size:" + initialCapacity);
         }
 
-        this.buf = new byte[initialCapacity];
-        this.end = 0;
-        this.isGrowable = true;
+        buf = new byte[initialCapacity];
+        end = 0;
+        isGrowable = true;
     }
 
     /**
@@ -102,9 +102,9 @@ public class ByteArrayIO implements ReadWriteAccess {
     public synchronized ByteArrayIO copy() {
         ByteArrayIO copy = new ByteArrayIO(Arrays.copyOf(buf, buf.length));
         synchronized (copy) {
-            copy.isGrowable = this.isGrowable;
-            copy.pos = this.pos;
-            copy.end = this.end;
+            copy.isGrowable = isGrowable;
+            copy.pos = pos;
+            copy.end = end;
         }
         return copy;
     }

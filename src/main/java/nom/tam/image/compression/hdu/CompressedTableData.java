@@ -65,10 +65,10 @@ public class CompressedTableData extends BinaryTable {
     }
 
     public void compress(Header header) throws FitsException {
-        for (BinaryTableTile binaryTableTile : this.tiles) {
+        for (BinaryTableTile binaryTableTile : tiles) {
             binaryTableTile.execute(FitsFactory.threadPool());
         }
-        for (BinaryTableTile binaryTableTile : this.tiles) {
+        for (BinaryTableTile binaryTableTile : tiles) {
             binaryTableTile.waitForResult();
             binaryTableTile.fillHeader(header);
         }
@@ -80,32 +80,32 @@ public class CompressedTableData extends BinaryTable {
         super.fillHeader(h);
         h.setNaxis(2, getData().getNRows());
         h.addValue(Compression.ZTABLE.key(), true, "this is a compressed table");
-        long ztilelenValue = this.rowsPerTile > 0 ? this.rowsPerTile : h.getIntValue(Standard.NAXIS2);
+        long ztilelenValue = rowsPerTile > 0 ? rowsPerTile : h.getIntValue(Standard.NAXIS2);
         h.addValue(Compression.ZTILELEN.key(), ztilelenValue, "number of rows in each tile");
     }
 
     public void prepareUncompressedData(ColumnTable<SaveState> data) throws FitsException {
         int nrows = data.getNRows();
         int ncols = data.getNCols();
-        if (this.rowsPerTile <= 0) {
-            this.rowsPerTile = nrows;
+        if (rowsPerTile <= 0) {
+            rowsPerTile = nrows;
         }
-        if (this.columnCompressionAlgorithms.length < ncols) {
-            this.columnCompressionAlgorithms = Arrays.copyOfRange(this.columnCompressionAlgorithms, 0, ncols);
+        if (columnCompressionAlgorithms.length < ncols) {
+            columnCompressionAlgorithms = Arrays.copyOfRange(columnCompressionAlgorithms, 0, ncols);
         }
-        this.tiles = new ArrayList<>();
+        tiles = new ArrayList<>();
         for (int column = 0; column < ncols; column++) {
             addByteVaryingColumn();
             int tileIndex = 1;
-            for (int rowStart = 0; rowStart < nrows; rowStart += this.rowsPerTile) {
+            for (int rowStart = 0; rowStart < nrows; rowStart += rowsPerTile) {
                 addRow(new byte[ncols][0]);
-                this.tiles.add(new BinaryTableTileCompressor(this, data,
+                tiles.add(new BinaryTableTileCompressor(this, data,
                         tile()//
                         .rowStart(rowStart)//
-                        .rowEnd(rowStart + this.rowsPerTile)//
+                        .rowEnd(rowStart + rowsPerTile)//
                         .column(column)//
                         .tileIndex(tileIndex++)//
-                        .compressionAlgorithm(this.columnCompressionAlgorithms[column])));
+                        .compressionAlgorithm(columnCompressionAlgorithms[column])));
             }
         }
     }
@@ -113,32 +113,32 @@ public class CompressedTableData extends BinaryTable {
     protected BinaryTable asBinaryTable(BinaryTable dataToFill, Header compressedHeader, Header targetHeader) throws FitsException {
         int nrows = targetHeader.getIntValue(Standard.NAXIS2);
         int ncols = compressedHeader.getIntValue(TFIELDS);
-        this.rowsPerTile = compressedHeader.getIntValue(Compression.ZTILELEN, nrows);
-        this.tiles = new ArrayList<>();
+        rowsPerTile = compressedHeader.getIntValue(Compression.ZTILELEN, nrows);
+        tiles = new ArrayList<>();
         BinaryTable.createColumnDataFor(dataToFill);
         for (int column = 0; column < ncols; column++) {
             int tileIndex = 1;
             String compressionAlgorithm = compressedHeader.getStringValue(Compression.ZCTYPn.n(column + 1));
-            for (int rowStart = 0; rowStart < nrows; rowStart += this.rowsPerTile) {
+            for (int rowStart = 0; rowStart < nrows; rowStart += rowsPerTile) {
                 BinaryTableTileDecompressor binaryTableTile = new BinaryTableTileDecompressor(this, dataToFill.getData(),
                         tile()//
                         .rowStart(rowStart)//
-                        .rowEnd(rowStart + this.rowsPerTile)//
+                        .rowEnd(rowStart + rowsPerTile)//
                         .column(column)//
                         .tileIndex(tileIndex++)//
                         .compressionAlgorithm(compressionAlgorithm));
-                this.tiles.add(binaryTableTile);
+                tiles.add(binaryTableTile);
                 binaryTableTile.execute(FitsFactory.threadPool());
             }
         }
-        for (BinaryTableTile binaryTableTile : this.tiles) {
+        for (BinaryTableTile binaryTableTile : tiles) {
             binaryTableTile.waitForResult();
         }
         return dataToFill;
     }
 
     protected int getRowsPerTile() {
-        return this.rowsPerTile;
+        return rowsPerTile;
     }
 
     protected void setColumnCompressionAlgorithms(String[] columnCompressionAlgorithms) {
@@ -146,7 +146,7 @@ public class CompressedTableData extends BinaryTable {
     }
 
     protected CompressedTableData setRowsPerTile(int value) {
-        this.rowsPerTile = value;
+        rowsPerTile = value;
         return this;
     }
 }

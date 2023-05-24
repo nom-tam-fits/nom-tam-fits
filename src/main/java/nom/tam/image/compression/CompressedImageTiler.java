@@ -115,8 +115,8 @@ public class CompressedImageTiler implements ImageTiler {
     }
 
     void init() {
-        final int columnCount = this.compressedImageHDU.getData().getNCols();
-        final Header header = this.compressedImageHDU.getHeader();
+        final int columnCount = compressedImageHDU.getData().getNCols();
+        final Header header = compressedImageHDU.getHeader();
 
         for (int index = 0; index < columnCount; index++) {
             final String ttype = header.getStringValue(Standard.TTYPEn.n(index + 1));
@@ -127,7 +127,7 @@ public class CompressedImageTiler implements ImageTiler {
     }
 
     void addColumn(final String column) {
-        this.columnNames.add(column);
+        columnNames.add(column);
     }
 
     /**
@@ -219,9 +219,9 @@ public class CompressedImageTiler implements ImageTiler {
      * @throws FitsException For any header read errors.
      */
     Object getDecompressedTileData(final int[] positions, final int[] tileDimensions) throws FitsException {
-        final int compressedDataColumnIndex = this.columnNames.indexOf(Compression.COMPRESSED_DATA_COLUMN);
-        final int uncompressedDataColumnIndex = this.columnNames.indexOf(Compression.UNCOMPRESSED_DATA_COLUMN);
-        final int gZipCompressedDataColumnIndex = this.columnNames.indexOf(Compression.GZIP_COMPRESSED_DATA_COLUMN);
+        final int compressedDataColumnIndex = columnNames.indexOf(Compression.COMPRESSED_DATA_COLUMN);
+        final int uncompressedDataColumnIndex = columnNames.indexOf(Compression.UNCOMPRESSED_DATA_COLUMN);
+        final int gZipCompressedDataColumnIndex = columnNames.indexOf(Compression.GZIP_COMPRESSED_DATA_COLUMN);
         final Object[] row = getRow(positions, tileDimensions);
         final Object decompressedArray;
 
@@ -350,7 +350,7 @@ public class CompressedImageTiler implements ImageTiler {
         final int[] tileIndexes = getTileIndexes(ArrayFuncs.reverseIndices(positions),
                 ArrayFuncs.reverseIndices(tileDimensions));
         final int rowNumber = getRowNumber(tileIndexes);
-        return this.compressedImageHDU.getRow(rowNumber);
+        return compressedImageHDU.getRow(rowNumber);
     }
 
     int getRowNumber(final int[] tileIndexes) throws FitsException {
@@ -409,7 +409,7 @@ public class CompressedImageTiler implements ImageTiler {
     @Override
     public Object getCompleteImage() throws IOException {
         try {
-            return this.compressedImageHDU.asImageHDU().getData().getData();
+            return compressedImageHDU.asImageHDU().getData().getData();
         } catch (FitsException fitsException) {
             throw new IOException(fitsException.getMessage(), fitsException);
         }
@@ -441,11 +441,10 @@ public class CompressedImageTiler implements ImageTiler {
         }
         if (output == null) {
             throw new IOException("Attempt to write to null data output");
-        } else {
-            for (int i = 0; i < imageDimensions.length; i++) {
-                if (corners[i] < 0 || lengths[i] < 0 || corners[i] + lengths[i] > imageDimensions[i]) {
-                    throw new IOException("Sub-image not within image");
-                }
+        }
+        for (int i = 0; i < imageDimensions.length; i++) {
+            if (corners[i] < 0 || lengths[i] < 0 || corners[i] + lengths[i] > imageDimensions[i]) {
+                throw new IOException("Sub-image not within image");
             }
         }
 
@@ -475,8 +474,8 @@ public class CompressedImageTiler implements ImageTiler {
     }
 
     void initRowOption(final ICompressOption option, final Object[] row) {
-        final int zScaleColumnIndex = this.columnNames.indexOf(Compression.ZSCALE_COLUMN);
-        final int zZeroColumnIndex = this.columnNames.indexOf(Compression.ZZERO_COLUMN);
+        final int zScaleColumnIndex = columnNames.indexOf(Compression.ZSCALE_COLUMN);
+        final int zZeroColumnIndex = columnNames.indexOf(Compression.ZZERO_COLUMN);
         if (option instanceof QuantizeOption) {
             final double bScale = zScaleColumnIndex >= 0 ? ((double[]) row[zScaleColumnIndex])[0] : Double.NaN;
             ((QuantizeOption) option).setBScale(bScale);
@@ -487,7 +486,7 @@ public class CompressedImageTiler implements ImageTiler {
     }
 
     Header getHeader() {
-        return this.compressedImageHDU.getHeader();
+        return compressedImageHDU.getHeader();
     }
 
     private String getQuantizAlgorithmName() {

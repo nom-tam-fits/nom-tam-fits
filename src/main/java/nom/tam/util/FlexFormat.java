@@ -137,7 +137,7 @@ public class FlexFormat {
      * @see #format(Number)
      */
     public synchronized FlexFormat setPrecision(int nDecimals) {
-        this.decimals = nDecimals < 0 ? AUTO_PRECISION : nDecimals;
+        decimals = nDecimals < 0 ? AUTO_PRECISION : nDecimals;
         return this;
     }
 
@@ -191,7 +191,7 @@ public class FlexFormat {
      * @see #format(Number)
      */
     public synchronized FlexFormat setWidth(int nChars) {
-        this.width = nChars > 0 ? nChars : 0;
+        width = nChars > 0 ? nChars : 0;
         return this;
     }
 
@@ -265,12 +265,11 @@ public class FlexFormat {
             if (fixed.length() <= width) {
                 return fixed;
             }
-            if (value instanceof BigInteger) {
-                // We'll try exponential with reduced precision...
-                fixed = null;
-            } else {
+            if (!(value instanceof BigInteger)) {
                 throw new LongValueException(width, fixed);
             }
+            // We'll try exponential with reduced precision...
+            fixed = null;
         } else if (decimals < 0) {
             // Don"t do fixed format if precision is set explicitly
             // (It's not really trivial to control the number of significant

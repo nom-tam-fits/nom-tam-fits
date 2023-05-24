@@ -44,7 +44,7 @@ public class TileArea {
     private int[] endPoint;
 
     public TileArea end(int... newEndPoint) {
-        this.endPoint = Arrays.copyOf(newEndPoint, newEndPoint.length);
+        endPoint = Arrays.copyOf(newEndPoint, newEndPoint.length);
         return this;
     }
 
@@ -82,15 +82,15 @@ public class TileArea {
     }
 
     public TileArea size(int... sizes) {
-        this.endPoint = new int[this.startPoint.length];
-        for (int index = 0; index < this.startPoint.length; index++) {
-            this.endPoint[index] = this.startPoint[index] + (index < sizes.length ? sizes[index] : 1);
+        endPoint = new int[startPoint.length];
+        for (int index = 0; index < startPoint.length; index++) {
+            endPoint[index] = startPoint[index] + (index < sizes.length ? sizes[index] : 1);
         }
         return this;
     }
 
     public TileArea start(int... newStartPoint) {
-        this.startPoint = Arrays.copyOf(newStartPoint, newStartPoint.length);
+        startPoint = Arrays.copyOf(newStartPoint, newStartPoint.length);
         return this;
     }
 }

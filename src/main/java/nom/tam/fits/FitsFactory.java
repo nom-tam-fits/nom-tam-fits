@@ -130,23 +130,23 @@ public final class FitsFactory {
         }
 
         protected IHierarchKeyFormatter getHierarchKeyFormatter() {
-            return this.hierarchKeyFormatter;
+            return hierarchKeyFormatter;
         }
 
         protected boolean isUseExponentD() {
-            return this.useExponentD;
+            return useExponentD;
         }
 
         protected boolean isAllowTerminalJunk() {
-            return this.allowTerminalJunk;
+            return allowTerminalJunk;
         }
 
         protected boolean isCheckAsciiStrings() {
-            return this.checkAsciiStrings;
+            return checkAsciiStrings;
         }
 
         protected boolean isLongStringsEnabled() {
-            return this.longStringsEnabled;
+            return longStringsEnabled;
         }
 
         /**
@@ -160,23 +160,23 @@ public final class FitsFactory {
          */
         @Deprecated
         protected boolean isSkipBlankAfterAssign() {
-            return this.skipBlankAfterAssign;
+            return skipBlankAfterAssign;
         }
 
         protected boolean isUseAsciiTables() {
-            return this.useAsciiTables;
+            return useAsciiTables;
         }
 
         protected boolean isUseHierarch() {
-            return this.useHierarch;
+            return useHierarch;
         }
 
         protected boolean isUseUnicodeChars() {
-            return this.useUnicodeChars;
+            return useUnicodeChars;
         }
 
         protected boolean isAllowHeaderRepairs() {
-            return this.allowHeaderRepairs;
+            return allowHeaderRepairs;
         }
 
     }
@@ -213,7 +213,8 @@ public final class FitsFactory {
         }
         if (RandomGroupsHDU.isHeader(hdr)) {
             return RandomGroupsHDU.manufactureData(hdr);
-        } else if (current().isUseAsciiTables() && AsciiTableHDU.isHeader(hdr)) {
+        }
+        if (current().isUseAsciiTables() && AsciiTableHDU.isHeader(hdr)) {
             return AsciiTableHDU.manufactureData(hdr);
         } else if (CompressedImageHDU.isHeader(hdr)) {
             return CompressedImageHDU.manufactureData(hdr);
@@ -343,7 +344,8 @@ public final class FitsFactory {
         }
         if (d instanceof CompressedImageData) {
             return (BasicHDU<DataClass>) new CompressedImageHDU(hdr, (CompressedImageData) d);
-        } else if (d instanceof RandomGroupsData) {
+        }
+        if (d instanceof RandomGroupsData) {
             return (BasicHDU<DataClass>) new RandomGroupsHDU(hdr, (RandomGroupsData) d);
         } else if (current().isUseAsciiTables() && d instanceof AsciiTable) {
             return (BasicHDU<DataClass>) new AsciiTableHDU(hdr, (AsciiTable) d);
@@ -613,7 +615,7 @@ public final class FitsFactory {
 
                     @Override
                     public Thread newThread(Runnable r) {
-                        Thread thread = new Thread(r, "nom-tam-fits worker " + this.counter++);
+                        Thread thread = new Thread(r, "nom-tam-fits worker " + counter++);
                         thread.setDaemon(true);
                         return thread;
                     }

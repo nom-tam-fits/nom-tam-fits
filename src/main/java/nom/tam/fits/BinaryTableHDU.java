@@ -84,7 +84,8 @@ public class BinaryTableHDU extends TableHDU<BinaryTable> {
         }
         if (o instanceof Object[][]) {
             return new BinaryTable((Object[][]) o);
-        } else if (o instanceof Object[]) {
+        }
+        if (o instanceof Object[]) {
             return new BinaryTable((Object[]) o);
         } else {
             throw new FitsException(
@@ -158,8 +159,8 @@ public class BinaryTableHDU extends TableHDU<BinaryTable> {
 
     @Override
     public int addColumn(Object data) throws FitsException {
-        this.myData.addColumn(data);
-        this.myData.pointToColumn(getNCols() - 1, this.myHeader);
+        myData.addColumn(data);
+        myData.pointToColumn(getNCols() - 1, myHeader);
         return super.addColumn(data);
     }
 
@@ -186,9 +187,9 @@ public class BinaryTableHDU extends TableHDU<BinaryTable> {
         stream.println("  Binary Table");
         stream.println("      Header Information:");
 
-        int nhcol = this.myHeader.getIntValue(TFIELDS, -1);
-        int nrow = this.myHeader.getIntValue(NAXIS2, -1);
-        int rowsize = this.myHeader.getIntValue(NAXIS1, -1);
+        int nhcol = myHeader.getIntValue(TFIELDS, -1);
+        int nrow = myHeader.getIntValue(NAXIS2, -1);
+        int rowsize = myHeader.getIntValue(NAXIS1, -1);
 
         stream.print("          " + nhcol + " fields");
         stream.println(", " + nrow + " rows of length " + rowsize);
@@ -231,11 +232,11 @@ public class BinaryTableHDU extends TableHDU<BinaryTable> {
      */
     @Deprecated
     public boolean isHeader() {
-        return isHeader(this.myHeader);
+        return isHeader(myHeader);
     }
 
     private void prtField(PrintStream stream, String type, String field) {
-        String val = this.myHeader.getStringValue(field);
+        String val = myHeader.getStringValue(field);
         if (val != null) {
             stream.print(type + '=' + val + "; ");
         }
@@ -254,10 +255,10 @@ public class BinaryTableHDU extends TableHDU<BinaryTable> {
     public boolean setComplexColumn(int index) throws FitsException {
         Standard.context(BinaryTable.class);
         boolean status = false;
-        if (this.myData.setComplexColumn(index)) {
+        if (myData.setComplexColumn(index)) {
             // No problem with the data. Make sure the header
             // is right.
-            BinaryTable.ColumnDesc colDesc = this.myData.getDescriptor(index);
+            BinaryTable.ColumnDesc colDesc = myData.getDescriptor(index);
             int dim = 1;
             String tdim = "";
             String sep = "";
@@ -277,27 +278,27 @@ public class BinaryTableHDU extends TableHDU<BinaryTable> {
             }
             // Worry about variable length columns.
             String prefix = "";
-            if (this.myData.getDescriptor(index).isVarying()) {
+            if (myData.getDescriptor(index).isVarying()) {
                 prefix = "P";
                 dim = 1;
-                if (this.myData.getDescriptor(index).isLongVary()) {
+                if (myData.getDescriptor(index).isLongVary()) {
                     prefix = "Q";
                 }
             }
             // Now update the header.
-            this.myHeader.findCard(TFORMn.n(index + 1));
-            HeaderCard hc = this.myHeader.nextCard();
+            myHeader.findCard(TFORMn.n(index + 1));
+            HeaderCard hc = myHeader.nextCard();
             String oldComment = hc.getComment();
             if (oldComment == null) {
                 oldComment = "Column converted to complex";
             }
-            this.myHeader.card(TFORMn.n(index + 1)).value(dim + prefix + suffix).comment(oldComment);
+            myHeader.card(TFORMn.n(index + 1)).value(dim + prefix + suffix).comment(oldComment);
             if (tdim.length() > 0) {
-                this.myHeader.addValue(TDIMn.n(index + 1), "(" + tdim + ")");
+                myHeader.addValue(TDIMn.n(index + 1), "(" + tdim + ")");
             } else {
                 // Just in case there used to be a TDIM card that's no longer
                 // needed.
-                this.myHeader.deleteKey(TDIMn.n(index + 1));
+                myHeader.deleteKey(TDIMn.n(index + 1));
             }
             status = true;
         }
@@ -309,18 +310,18 @@ public class BinaryTableHDU extends TableHDU<BinaryTable> {
     @Override
     public void write(ArrayDataOutput ado) throws FitsException {
 
-        int oldSize = this.myHeader.getIntValue(PCOUNT);
-        if (oldSize != this.myData.getHeapSize()) {
-            this.myHeader.addValue(PCOUNT, this.myData.getHeapSize());
+        int oldSize = myHeader.getIntValue(PCOUNT);
+        if (oldSize != myData.getHeapSize()) {
+            myHeader.addValue(PCOUNT, myData.getHeapSize());
         }
 
-        if (this.myHeader.getIntValue(PCOUNT) == 0) {
-            this.myHeader.deleteKey(THEAP);
+        if (myHeader.getIntValue(PCOUNT) == 0) {
+            myHeader.deleteKey(THEAP);
         } else {
-            this.myHeader.getIntValue(TFIELDS);
-            int offset = this.myHeader.getIntValue(NAXIS1) * this.myHeader.getIntValue(NAXIS2)
-                    + this.myData.getHeapOffset();
-            this.myHeader.addValue(THEAP, offset);
+            myHeader.getIntValue(TFIELDS);
+            int offset = myHeader.getIntValue(NAXIS1) * myHeader.getIntValue(NAXIS2)
+                    + myData.getHeapOffset();
+            myHeader.addValue(THEAP, offset);
         }
 
         super.write(ado);

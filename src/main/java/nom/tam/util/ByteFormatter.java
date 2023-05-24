@@ -236,7 +236,7 @@ public final class ByteFormatter {
         int lexp = 0;
 
         if (!simple) {
-            lexp = format(exp, this.tbuf2, 0, ByteFormatter.TEMP_BUFFER_SIZE);
+            lexp = format(exp, tbuf2, 0, ByteFormatter.TEMP_BUFFER_SIZE);
 
             minSize = lexp + 2; // e.g., 2e-12
             maxSize = lexp + lmant + 2; // add in "." and e
@@ -298,11 +298,11 @@ public final class ByteFormatter {
                 off--;
             }
             exp++;
-            lexp = format(exp, this.tbuf2, 0, ByteFormatter.TEMP_BUFFER_SIZE);
+            lexp = format(exp, tbuf2, 0, ByteFormatter.TEMP_BUFFER_SIZE);
         }
         buf[off] = (byte) 'E';
         off++;
-        System.arraycopy(this.tbuf2, 0, buf, off, lexp);
+        System.arraycopy(tbuf2, 0, buf, off, lexp);
         return off + lexp;
     }
 
@@ -399,7 +399,8 @@ public final class ByteFormatter {
         }
         if (Double.isNaN(val)) {
             return format(NOT_A_NUMBER, buf, off, len);
-        } else if (Double.isInfinite(val)) {
+        }
+        if (Double.isInfinite(val)) {
             if (val > 0) {
                 return format(INFINITY, buf, off, len);
             }
@@ -448,11 +449,11 @@ public final class ByteFormatter {
         numb = numb << exp - DOUBLE_EXPONENT_EXCESS;
 
         // Get a decimal mantissa.
-        int ndig = format(numb, this.tbuf1, 0, ByteFormatter.TEMP_BUFFER_SIZE);
+        int ndig = format(numb, tbuf1, 0, ByteFormatter.TEMP_BUFFER_SIZE);
 
         // Now format the double.
 
-        return combineReal(val, buf, off, len, this.tbuf1, ndig, shift);
+        return combineReal(val, buf, off, len, tbuf1, ndig, shift);
     }
 
     /**
@@ -509,7 +510,8 @@ public final class ByteFormatter {
         }
         if (Float.isNaN(val)) {
             return format(NOT_A_NUMBER, buf, off, len);
-        } else if (Float.isInfinite(val)) {
+        }
+        if (Float.isInfinite(val)) {
             if (val > 0) {
                 return format("Infinity", buf, off, len);
             }
@@ -558,11 +560,11 @@ public final class ByteFormatter {
         numb = numb << exp - FLOAT_EXPONENT_EXCESS;
 
         // Get a decimal mantissa.
-        int ndig = format(numb, this.tbuf1, 0, ByteFormatter.TEMP_BUFFER_SIZE);
+        int ndig = format(numb, tbuf1, 0, ByteFormatter.TEMP_BUFFER_SIZE);
 
         // Now format the float.
 
-        return combineReal(val, buf, off, len, this.tbuf1, ndig, shift);
+        return combineReal(val, buf, off, len, tbuf1, ndig, shift);
     }
 
     /**

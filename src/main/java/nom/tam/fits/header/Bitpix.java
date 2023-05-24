@@ -101,7 +101,7 @@ public enum Bitpix {
     Bitpix(Class<? extends Number> numberType, ElementType<?> elementType, String desc) {
         this.numberType = numberType;
         this.elementType = elementType;
-        this.description = desc;
+        description = desc;
     }
 
     public final ElementType<?> getElementType() {

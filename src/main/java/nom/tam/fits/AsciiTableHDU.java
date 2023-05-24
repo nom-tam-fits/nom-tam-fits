@@ -175,15 +175,15 @@ public class AsciiTableHDU extends TableHDU<AsciiTable> {
     @Override
     public int addColumn(Object newCol) throws FitsException {
         Standard.context(AsciiTable.class);
-        this.myData.addColumn(newCol);
+        myData.addColumn(newCol);
         // Move the iterator to point after all the data describing
         // the previous column.
 
-        Cursor<String, HeaderCard> iter = this.myHeader.positionAfterIndex(TBCOLn, this.myData.getNCols());
+        Cursor<String, HeaderCard> iter = myHeader.positionAfterIndex(TBCOLn, myData.getNCols());
 
-        int rowlen = this.myData.addColInfo(getNCols() - 1, iter);
-        int oldRowlen = this.myHeader.getIntValue(NAXIS1);
-        this.myHeader.setNaxis(1, rowlen + oldRowlen);
+        int rowlen = myData.addColInfo(getNCols() - 1, iter);
+        int oldRowlen = myHeader.getIntValue(NAXIS1);
+        myHeader.setNaxis(1, rowlen + oldRowlen);
 
         super.addColumn(newCol);
         Standard.context(null);
@@ -199,9 +199,9 @@ public class AsciiTableHDU extends TableHDU<AsciiTable> {
     public void info(PrintStream stream) {
         stream.println("ASCII Table:");
         stream.println("  Header:");
-        stream.println("    Number of fields:" + this.myHeader.getIntValue(TFIELDS));
-        stream.println("    Number of rows:  " + this.myHeader.getIntValue(NAXIS2));
-        stream.println("    Length of row:   " + this.myHeader.getIntValue(NAXIS1));
+        stream.println("    Number of fields:" + myHeader.getIntValue(TFIELDS));
+        stream.println("    Number of rows:  " + myHeader.getIntValue(NAXIS2));
+        stream.println("    Length of row:   " + myHeader.getIntValue(NAXIS1));
         stream.println("  Data:");
         Object[] data = (Object[]) getKernel();
         for (int i = 0; i < getNCols(); i += 1) {
@@ -216,7 +216,7 @@ public class AsciiTableHDU extends TableHDU<AsciiTable> {
      * @return <code>true</code> if an element is null
      */
     public boolean isNull(int row, int col) {
-        return this.myData.isNull(row, col);
+        return myData.isNull(row, col);
     }
 
     /**
@@ -229,12 +229,12 @@ public class AsciiTableHDU extends TableHDU<AsciiTable> {
     public void setNull(int row, int col, boolean flag) {
 
         if (flag) {
-            String nullStr = this.myHeader.getStringValue(TNULLn.n(col + 1));
+            String nullStr = myHeader.getStringValue(TNULLn.n(col + 1));
             if (nullStr == null) {
                 setNullString(col, "NULL");
             }
         }
-        this.myData.setNull(row, col, flag);
+        myData.setNull(row, col, flag);
     }
 
     /**
@@ -247,11 +247,11 @@ public class AsciiTableHDU extends TableHDU<AsciiTable> {
      *             That is if it contains characters outside the range of 0x20 thru 0x7E.
      */
     public void setNullString(int col, String newNull) throws IllegalArgumentException {
-        this.myHeader.positionAfterIndex(TBCOLn, col + 1);
+        myHeader.positionAfterIndex(TBCOLn, col + 1);
         HeaderCard card = HeaderCard.create(TNULLn.n(col + 1), newNull);
-        this.myHeader.deleteKey(card.getKey());
-        this.myHeader.addLine(card);
-        this.myData.setNullString(col, newNull);
+        myHeader.deleteKey(card.getKey());
+        myHeader.addLine(card);
+        myData.setNullString(col, newNull);
     }
 
 }

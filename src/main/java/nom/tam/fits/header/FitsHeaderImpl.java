@@ -53,7 +53,7 @@ public class FitsHeaderImpl implements IFitsHeader, Serializable {
     private static HashSet<String> commentStyleKeys = new HashSet<>();
 
     public FitsHeaderImpl(String headerName, SOURCE status, HDU hdu, VALUE valueType, String comment) {
-        this.key = headerName;
+        key = headerName;
         this.status = status;
         this.hdu = hdu;
         this.valueType = valueType;
@@ -65,37 +65,37 @@ public class FitsHeaderImpl implements IFitsHeader, Serializable {
 
     @Override
     public String comment() {
-        return this.comment;
+        return comment;
     }
 
     @Override
     public HDU hdu() {
-        return this.hdu;
+        return hdu;
     }
 
     @Override
     public String key() {
-        return this.key;
+        return key;
     }
 
     @Override
     public IFitsHeader n(int... numbers) {
-        StringBuffer headerName = new StringBuffer(this.key);
+        StringBuffer headerName = new StringBuffer(key);
         for (int number : numbers) {
             int indexOfN = headerName.indexOf("n");
             headerName.replace(indexOfN, indexOfN + 1, Integer.toString(number));
         }
-        return new FitsHeaderImpl(headerName.toString(), this.status, this.hdu, this.valueType, this.comment);
+        return new FitsHeaderImpl(headerName.toString(), status, hdu, valueType, comment);
     }
 
     @Override
     public SOURCE status() {
-        return this.status;
+        return status;
     }
 
     @Override
     public VALUE valueType() {
-        return this.valueType;
+        return valueType;
     }
 
     /**

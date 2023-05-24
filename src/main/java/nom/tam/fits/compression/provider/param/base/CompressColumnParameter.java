@@ -61,7 +61,7 @@ implements ICompressColumnParameter {
 
     protected CompressColumnParameter(String name, OPTION option, Class<T> type) {
         super(name, option);
-        this.column = new Data();
+        column = new Data();
         this.type = type;
     }
 

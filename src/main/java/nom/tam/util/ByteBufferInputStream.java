@@ -43,7 +43,7 @@ public class ByteBufferInputStream extends InputStream {
 
     public ByteBufferInputStream(ByteBuffer buffer) {
         super();
-        this.buf = buffer;
+        buf = buffer;
     }
 
     @Override

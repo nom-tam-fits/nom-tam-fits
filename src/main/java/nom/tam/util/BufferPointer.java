@@ -75,15 +75,15 @@ public class BufferPointer {
     }
 
     protected BufferPointer init(int bufferSize) {
-        this.buffer = new byte[bufferSize];
-        this.pos = 0;
-        this.length = 0;
+        buffer = new byte[bufferSize];
+        pos = 0;
+        length = 0;
         return this;
     }
 
     protected void invalidate() {
-        this.length = 0;
-        this.pos = 0;
+        length = 0;
+        pos = 0;
     }
 
     public int position() {

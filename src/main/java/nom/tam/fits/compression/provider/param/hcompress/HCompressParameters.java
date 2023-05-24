@@ -43,8 +43,8 @@ public class HCompressParameters extends CompressParameters {
     private final HCompressSmoothParameter smooth;
 
     public HCompressParameters(HCompressorOption option) {
-        this.scale = new HCompressScaleParameter(option);
-        this.smooth = new HCompressSmoothParameter(option);
+        scale = new HCompressScaleParameter(option);
+        smooth = new HCompressSmoothParameter(option);
     }
 
     @Override
@@ -58,8 +58,8 @@ public class HCompressParameters extends CompressParameters {
     @Override
     protected ICompressHeaderParameter[] headerParameters() {
         return new ICompressHeaderParameter[]{
-                this.scale,
-                this.smooth
+                scale,
+                smooth
         };
     }
 }

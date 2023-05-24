@@ -52,12 +52,12 @@ public class MultiArrayIterator<BaseArray> {
 
     public MultiArrayIterator(BaseArray baseArray) {
         this.baseArray = baseArray;
-        this.baseIsNoSubArray = !MultiArrayPointer.isSubArray(this.baseArray);
-        this.pointer = new MultiArrayPointer(this.baseArray);
+        baseIsNoSubArray = !MultiArrayPointer.isSubArray(this.baseArray);
+        pointer = new MultiArrayPointer(this.baseArray);
     }
 
     public Class<?> deepComponentType() {
-        Class<?> clazz = this.baseArray.getClass();
+        Class<?> clazz = baseArray.getClass();
         while (clazz.isArray()) {
             clazz = clazz.getComponentType();
         }
@@ -65,16 +65,16 @@ public class MultiArrayIterator<BaseArray> {
     }
 
     public BaseArray next() {
-        if (this.baseIsNoSubArray) {
-            if (this.baseNextCalled) {
+        if (baseIsNoSubArray) {
+            if (baseNextCalled) {
                 return null;
             }
-            this.baseNextCalled = true;
-            return this.baseArray;
+            baseNextCalled = true;
+            return baseArray;
         }
         Object result = null;
         while (result == null || Array.getLength(result) == 0) {
-            result = this.pointer.next();
+            result = pointer.next();
             if (result == MultiArrayPointer.END) {
                 return null;
             }
@@ -83,10 +83,10 @@ public class MultiArrayIterator<BaseArray> {
     }
 
     public void reset() {
-        if (this.baseIsNoSubArray) {
-            this.baseNextCalled = false;
+        if (baseIsNoSubArray) {
+            baseNextCalled = false;
         } else {
-            this.pointer.reset();
+            pointer.reset();
         }
     }
 

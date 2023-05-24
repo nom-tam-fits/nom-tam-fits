@@ -152,7 +152,7 @@ class HeaderCardParser {
      * @see FitsFactory#setUseHierarch(boolean)
      */
     String getKey() {
-        return this.key;
+        return key;
     }
 
     /**
@@ -163,7 +163,7 @@ class HeaderCardParser {
      * @see FitsFactory#setUseHierarch(boolean)
      */
     String getValue() {
-        return this.value;
+        return value;
     }
 
     /**
@@ -174,7 +174,7 @@ class HeaderCardParser {
      * @see #getTrimmedComment()
      */
     String getUntrimmedComment() {
-        return this.comment;
+        return comment;
     }
 
     /**
@@ -273,7 +273,7 @@ class HeaderCardParser {
         parsePos = endStem;
 
         // If not using HIERARCH, then be very resilient, and return whatever key the first 8 chars make...
-        
+
 
         // If the line does not have an '=', can only be a simple key
         // If it's not a HIERARCH keyword, then return the simple key.
@@ -437,7 +437,7 @@ class HeaderCardParser {
             }
             value = line.substring(parsePos, end).trim();
             parsePos = end;
-            this.type = getInferredValueType(key, value);
+            type = getInferredValueType(key, value);
         }
 
     }
@@ -487,7 +487,7 @@ class HeaderCardParser {
      * @see FitsFactory#setAllowHeaderRepairs(boolean)
      */
     private void parseStringValue() throws UnclosedQuoteException {
-        this.type = String.class;
+        type = String.class;
         StringBuilder buf = new StringBuilder(HeaderCard.MAX_VALUE_LENGTH);
 
         // Build the string value, up to the end quote and paying attention to double
@@ -540,7 +540,8 @@ class HeaderCardParser {
         }
         if (INT_REGEX.matcher(trimmedValue).matches()) {
             return getIntegerType(trimmedValue);
-        } else if (DECIMAL_REGEX.matcher(trimmedValue).matches()) {
+        }
+        if (DECIMAL_REGEX.matcher(trimmedValue).matches()) {
             return getDecimalType(trimmedValue);
         } else if (HEX_REGEX.matcher(trimmedValue).matches()) {
             return getIntegerType(trimmedValue);

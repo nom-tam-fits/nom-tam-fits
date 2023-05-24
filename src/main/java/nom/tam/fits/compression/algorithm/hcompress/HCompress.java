@@ -155,10 +155,10 @@ public class HCompress {
                 /*
                  * add Huffman code for a[i] to buffer
                  */
-                this.bitbuffer |= CODE[a[i]] << this.bitsToGo3;
-                this.bitsToGo3 += NCODE[a[i]];
-                if (this.bitsToGo3 >= BITS_OF_1_BYTE) {
-                    buffer[b] = (byte) (this.bitbuffer & BYTE_MASK);
+                bitbuffer |= CODE[a[i]] << bitsToGo3;
+                bitsToGo3 += NCODE[a[i]];
+                if (bitsToGo3 >= BITS_OF_1_BYTE) {
+                    buffer[b] = (byte) (bitbuffer & BYTE_MASK);
                     b += 1;
                     /*
                      * return warning code if we fill buffer
@@ -166,8 +166,8 @@ public class HCompress {
                     if (b >= bmax) {
                         return b;
                     }
-                    this.bitbuffer >>= BITS_OF_1_BYTE;
-                    this.bitsToGo3 -= BITS_OF_1_BYTE;
+                    bitbuffer >>= BITS_OF_1_BYTE;
+                    bitsToGo3 -= BITS_OF_1_BYTE;
                 }
             }
         }
@@ -262,10 +262,10 @@ public class HCompress {
     }
 
     private void doneOutputtingBits(ByteBuffer outfile) {
-        if (this.bitsToGo2 < BITS_OF_1_BYTE) {
+        if (bitsToGo2 < BITS_OF_1_BYTE) {
             /* putc(buffer2<<bits_to_go2,outfile); */
 
-            outfile.put((byte) (this.buffer2 << this.bitsToGo2));
+            outfile.put((byte) (buffer2 << bitsToGo2));
         }
     }
 
@@ -525,18 +525,18 @@ public class HCompress {
         /*
          * insert bits at end of buffer
          */
-        this.buffer2 <<= n;
+        buffer2 <<= n;
         /* buffer2 |= ( bits & ((1<<n)-1) ); */
-        this.buffer2 |= bits & BITS_MASK[n];
-        this.bitsToGo2 -= n;
-        if (this.bitsToGo2 <= 0) {
+        buffer2 |= bits & BITS_MASK[n];
+        bitsToGo2 -= n;
+        if (bitsToGo2 <= 0) {
             /*
              * buffer2 full, put out top 8 bits
              */
 
-            outfile.put((byte) (this.buffer2 >> -this.bitsToGo2 & BYTE_MASK));
+            outfile.put((byte) (buffer2 >> -bitsToGo2 & BYTE_MASK));
 
-            this.bitsToGo2 += BITS_OF_1_BYTE;
+            bitsToGo2 += BITS_OF_1_BYTE;
         }
     }
 
@@ -556,7 +556,7 @@ public class HCompress {
          * forcing byte alignment doesn;t help, and even makes it go slightly
          * slower if (bits_to_go2 != 8) output_nbits(outfile, kk, bits_to_go2);
          */
-        if (this.bitsToGo2 <= BITS_OF_1_NYBBLE) {
+        if (bitsToGo2 <= BITS_OF_1_NYBBLE) {
             /* just room for 1 nybble; write it out separately */
             outputNybble(outfile, array[0]);
             kk++; /* index to next tiledImageOperation element */
@@ -569,7 +569,7 @@ public class HCompress {
         }
 
         /* bits_to_go2 is now in the range 5 - 8 */
-        shift = BITS_OF_1_BYTE - this.bitsToGo2;
+        shift = BITS_OF_1_BYTE - bitsToGo2;
 
         /*
          * now write out pairs of nybbles; this does not affect value of
@@ -577,24 +577,24 @@ public class HCompress {
          */
         jj = (n - kk) / 2;
 
-        if (this.bitsToGo2 == BITS_OF_1_BYTE) {
+        if (bitsToGo2 == BITS_OF_1_BYTE) {
             /* special case if nybbles are aligned on byte boundary */
             /* this actually seems to make very little difference in speed */
-            this.buffer2 = 0;
+            buffer2 = 0;
             for (ii = 0; ii < jj; ii++) {
                 outfile.put((byte) ((array[kk] & NYBBLE_MASK) << BITS_OF_1_NYBBLE | array[kk + 1] & NYBBLE_MASK));
                 kk += 2;
             }
         } else {
             for (ii = 0; ii < jj; ii++) {
-                this.buffer2 = this.buffer2 << BITS_OF_1_BYTE | (array[kk] & NYBBLE_MASK) << BITS_OF_1_NYBBLE | array[kk + 1] & NYBBLE_MASK;
+                buffer2 = buffer2 << BITS_OF_1_BYTE | (array[kk] & NYBBLE_MASK) << BITS_OF_1_NYBBLE | array[kk + 1] & NYBBLE_MASK;
                 kk += 2;
 
                 /*
                  * buffer2 full, put out top 8 bits
                  */
 
-                outfile.put((byte) (this.buffer2 >> shift & BYTE_MASK));
+                outfile.put((byte) (buffer2 >> shift & BYTE_MASK));
             }
         }
 
@@ -608,16 +608,16 @@ public class HCompress {
         /*
          * insert 4 bits at end of buffer
          */
-        this.buffer2 = this.buffer2 << BITS_OF_1_NYBBLE | bits & NYBBLE_MASK;
-        this.bitsToGo2 -= BITS_OF_1_NYBBLE;
-        if (this.bitsToGo2 <= 0) {
+        buffer2 = buffer2 << BITS_OF_1_NYBBLE | bits & NYBBLE_MASK;
+        bitsToGo2 -= BITS_OF_1_NYBBLE;
+        if (bitsToGo2 <= 0) {
             /*
              * buffer2 full, put out top 8 bits
              */
 
-            outfile.put((byte) (this.buffer2 >> -this.bitsToGo2 & BYTE_MASK));
+            outfile.put((byte) (buffer2 >> -bitsToGo2 & BYTE_MASK));
 
-            this.bitsToGo2 += BITS_OF_1_BYTE;
+            bitsToGo2 += BITS_OF_1_BYTE;
         }
     }
 
@@ -666,8 +666,8 @@ public class HCompress {
              * initial bit buffer
              */
             b = 0;
-            this.bitbuffer = 0;
-            this.bitsToGo3 = 0;
+            bitbuffer = 0;
+            bitsToGo3 = 0;
             /*
              * on first pass copy A to scratch tiledImageOperation
              */
@@ -706,11 +706,11 @@ public class HCompress {
              */
             outputNybble(outfile, NYBBLE_MASK);
             if (b == 0) {
-                if (this.bitsToGo3 > 0) {
+                if (bitsToGo3 > 0) {
                     /*
                      * put out the last few bits
                      */
-                    outputNbits(outfile, this.bitbuffer & (1 << this.bitsToGo3) - 1, this.bitsToGo3);
+                    outputNbits(outfile, bitbuffer & (1 << bitsToGo3) - 1, bitsToGo3);
                 } else {
                     /*
                      * have to write a zero nybble if there are no 1's in
@@ -719,11 +719,11 @@ public class HCompress {
                     outputNbits(outfile, CODE[0], NCODE[0]);
                 }
             } else {
-                if (this.bitsToGo3 > 0) {
+                if (bitsToGo3 > 0) {
                     /*
                      * put out the last few bits
                      */
-                    outputNbits(outfile, this.bitbuffer & (1 << this.bitsToGo3) - 1, this.bitsToGo3);
+                    outputNbits(outfile, bitbuffer & (1 << bitsToGo3) - 1, bitsToGo3);
                 }
                 for (i = b - 1; i >= 0; i--) {
                     outputNbits(outfile, buffer[i], BITS_OF_1_BYTE);
@@ -887,8 +887,8 @@ public class HCompress {
     }
 
     private void startOutputtingBits() {
-        this.buffer2 = 0; /* Buffer is empty to start */
-        this.bitsToGo2 = BITS_OF_1_BYTE; /* with */
+        buffer2 = 0; /* Buffer is empty to start */
+        bitsToGo2 = BITS_OF_1_BYTE; /* with */
     }
 
     private void writeBdirect(ByteBuffer outfile, LongBuffer a, int n, int nqx, int nqy, byte[] scratch, int bit) {

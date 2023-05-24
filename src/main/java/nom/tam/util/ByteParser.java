@@ -122,7 +122,7 @@ public class ByteParser {
     @SuppressFBWarnings(value = "EI_EXPOSE_REP", justification = "intended exposure of mutable data")
     public ByteParser(byte[] input) {
         this.input = input;
-        this.offset = 0;
+        offset = 0;
     }
 
     /**
@@ -132,16 +132,16 @@ public class ByteParser {
      */
     private int checkSign() {
 
-        this.foundSign = false;
+        foundSign = false;
 
-        if (this.input[this.offset] == '+') {
-            this.foundSign = true;
-            this.offset++;
+        if (input[offset] == '+') {
+            foundSign = true;
+            offset++;
             return 1;
         }
-        if (this.input[this.offset] == '-') {
-            this.foundSign = true;
-            this.offset++;
+        if (input[offset] == '-') {
+            foundSign = true;
+            offset++;
             return -1;
         }
 
@@ -160,17 +160,17 @@ public class ByteParser {
      */
     private double getBareInteger(int length) {
 
-        int startOffset = this.offset;
+        int startOffset = offset;
         double number = 0;
 
-        while (length > 0 && this.input[this.offset] >= '0' && this.input[this.offset] <= '9') {
+        while (length > 0 && input[offset] >= '0' && input[offset] <= '9') {
 
             number *= ByteParser.NUMBER_BASE;
-            number += this.input[this.offset] - '0';
-            this.offset++;
+            number += input[offset] - '0';
+            offset++;
             length--;
         }
-        this.numberLength = this.offset - startOffset;
+        numberLength = offset - startOffset;
         return number;
     }
 
@@ -180,7 +180,7 @@ public class ByteParser {
      *             if the double was in an unknown format
      */
     public boolean getBoolean() throws FormatException {
-        return getBoolean(this.input.length - this.offset);
+        return getBoolean(input.length - offset);
     }
 
     /**
@@ -192,22 +192,22 @@ public class ByteParser {
      */
     public boolean getBoolean(int length) throws FormatException {
 
-        int startOffset = this.offset;
+        int startOffset = offset;
         length -= skipWhite(length);
         if (length == 0) {
             throw new FormatException("Blank boolean field");
         }
 
         boolean value = false;
-        if (this.input[this.offset] == 'T' || this.input[this.offset] == 't') {
+        if (input[offset] == 'T' || input[offset] == 't') {
             value = true;
-        } else if (this.input[this.offset] != 'F' && this.input[this.offset] != 'f') {
-            this.numberLength = 0;
-            this.offset = startOffset;
+        } else if (input[offset] != 'F' && input[offset] != 'f') {
+            numberLength = 0;
+            offset = startOffset;
             throw new FormatException("Invalid boolean value");
         }
-        this.offset++;
-        this.numberLength = this.offset - startOffset;
+        offset++;
+        numberLength = offset - startOffset;
         return value;
     }
 
@@ -216,7 +216,7 @@ public class ByteParser {
      */
     @SuppressFBWarnings(value = "EI_EXPOSE_REP", justification = "intended exposure of mutable data")
     public byte[] getBuffer() {
-        return this.input;
+        return input;
     }
 
     /**
@@ -228,7 +228,7 @@ public class ByteParser {
      *             if the double was in an unknown format
      */
     public double getDouble() throws FormatException {
-        return getDouble(this.input.length - this.offset);
+        return getDouble(input.length - offset);
     }
 
     /**
@@ -241,65 +241,65 @@ public class ByteParser {
      *             if the double was in an unknown format
      */
     public double getDouble(int length) throws FormatException {
-        int startOffset = this.offset;
+        int startOffset = offset;
         boolean error = true;
         double number;
         // Skip initial blanks.
         length -= skipWhite(length);
         if (length == 0) {
-            this.numberLength = this.offset - startOffset;
+            numberLength = offset - startOffset;
             return 0;
         }
         double mantissaSign = checkSign();
-        if (this.foundSign) {
+        if (foundSign) {
             length--;
         }
         // Look for the special strings NaN, Inf,
         if (isCaseInsensitiv(length, ByteParser.NOT_A_NUMBER_LENGTH, ByteParser.NOT_A_NUMBER_LOWER, ByteParser.NOT_A_NUMBER_UPPER)) {
             number = Double.NaN;
-            this.offset += ByteParser.NOT_A_NUMBER_LENGTH;
+            offset += ByteParser.NOT_A_NUMBER_LENGTH;
             // Look for the longer string first then try the shorter.
         } else if (isCaseInsensitiv(length, ByteParser.INFINITY_LENGTH, ByteParser.INFINITY_LOWER, ByteParser.INFINITY_UPPER)) {
             number = Double.POSITIVE_INFINITY;
-            this.offset += ByteParser.INFINITY_LENGTH;
+            offset += ByteParser.INFINITY_LENGTH;
         } else if (isCaseInsensitiv(length, ByteParser.INFINITY_SHORTCUT_LENGTH, ByteParser.INFINITY_LOWER, ByteParser.INFINITY_UPPER)) {
             number = Double.POSITIVE_INFINITY;
-            this.offset += ByteParser.INFINITY_SHORTCUT_LENGTH;
+            offset += ByteParser.INFINITY_SHORTCUT_LENGTH;
         } else {
             number = getBareInteger(length); // This will update offset
-            length -= this.numberLength; // Set by getBareInteger
-            if (this.numberLength > 0) {
+            length -= numberLength; // Set by getBareInteger
+            if (numberLength > 0) {
                 error = false;
             }
             // Check for fractional values after decimal
-            if (length > 0 && this.input[this.offset] == '.') {
-                this.offset++;
+            if (length > 0 && input[offset] == '.') {
+                offset++;
                 length--;
                 double numerator = getBareInteger(length);
                 if (numerator > 0) {
-                    number += numerator / Math.pow(ByteParser.NUMBER_BASE_DOUBLE, this.numberLength);
+                    number += numerator / Math.pow(ByteParser.NUMBER_BASE_DOUBLE, numberLength);
                 }
-                length -= this.numberLength;
-                if (this.numberLength > 0) {
+                length -= numberLength;
+                if (numberLength > 0) {
                     error = false;
                 }
             }
 
             if (error) {
-                this.offset = startOffset;
-                this.numberLength = 0;
+                offset = startOffset;
+                numberLength = 0;
                 throw new FormatException("Invalid real field");
             }
 
             // Look for an exponent ,Our Fortran heritage means that we allow
             // 'D' for the exponent
             // indicator.
-            if (length > 0 && (this.input[this.offset] == 'e' || this.input[this.offset] == 'E' || this.input[this.offset] == 'd' || this.input[this.offset] == 'D')) {
-                this.offset++;
+            if (length > 0 && (input[offset] == 'e' || input[offset] == 'E' || input[offset] == 'd' || input[offset] == 'D')) {
+                offset++;
                 length--;
                 if (length > 0) {
                     int sign = checkSign();
-                    if (this.foundSign) {
+                    if (foundSign) {
                         length--;
                     }
 
@@ -317,7 +317,7 @@ public class ByteParser {
                 }
             }
         }
-        this.numberLength = this.offset - startOffset;
+        numberLength = offset - startOffset;
         return mantissaSign * number;
     }
 
@@ -327,7 +327,7 @@ public class ByteParser {
      *             if the float was in an unknown format
      */
     public float getFloat() throws FormatException {
-        return (float) getDouble(this.input.length - this.offset);
+        return (float) getDouble(input.length - offset);
     }
 
     /**
@@ -347,7 +347,7 @@ public class ByteParser {
      *             if the integer was in an unknown format
      */
     public int getInt() throws FormatException {
-        return getInt(this.input.length - this.offset);
+        return getInt(input.length - offset);
     }
 
     /**
@@ -359,11 +359,11 @@ public class ByteParser {
      *             if the integer was in an unknown format
      */
     public int getInt(int length) throws FormatException {
-        int startOffset = this.offset;
+        int startOffset = offset;
 
         length -= skipWhite(length);
         if (length == 0) {
-            this.numberLength = this.offset - startOffset;
+            numberLength = offset - startOffset;
             return 0;
         }
 
@@ -371,23 +371,23 @@ public class ByteParser {
         boolean error = true;
 
         int sign = checkSign();
-        if (this.foundSign) {
+        if (foundSign) {
             length--;
         }
 
-        while (length > 0 && this.input[this.offset] >= '0' && this.input[this.offset] <= '9') {
-            number = number * ByteParser.NUMBER_BASE + this.input[this.offset] - '0';
-            this.offset++;
+        while (length > 0 && input[offset] >= '0' && input[offset] <= '9') {
+            number = number * ByteParser.NUMBER_BASE + input[offset] - '0';
+            offset++;
             length--;
             error = false;
         }
 
         if (error) {
-            this.numberLength = 0;
-            this.offset = startOffset;
+            numberLength = 0;
+            offset = startOffset;
             throw new FormatException("Invalid Integer");
         }
-        this.numberLength = this.offset - startOffset;
+        numberLength = offset - startOffset;
         return sign * number;
     }
 
@@ -400,12 +400,12 @@ public class ByteParser {
      */
     public long getLong(int length) throws FormatException {
 
-        int startOffset = this.offset;
+        int startOffset = offset;
 
         // Skip white space.
         length -= skipWhite(length);
         if (length == 0) {
-            this.numberLength = this.offset - startOffset;
+            numberLength = offset - startOffset;
             return 0;
         }
 
@@ -413,23 +413,23 @@ public class ByteParser {
         boolean error = true;
 
         long sign = checkSign();
-        if (this.foundSign) {
+        if (foundSign) {
             length--;
         }
 
-        while (length > 0 && this.input[this.offset] >= '0' && this.input[this.offset] <= '9') {
-            number = number * ByteParser.NUMBER_BASE + this.input[this.offset] - '0';
+        while (length > 0 && input[offset] >= '0' && input[offset] <= '9') {
+            number = number * ByteParser.NUMBER_BASE + input[offset] - '0';
             error = false;
-            this.offset++;
+            offset++;
             length--;
         }
 
         if (error) {
-            this.numberLength = 0;
-            this.offset = startOffset;
+            numberLength = 0;
+            offset = startOffset;
             throw new FormatException("Invalid long number");
         }
-        this.numberLength = this.offset - startOffset;
+        numberLength = offset - startOffset;
         return sign * number;
     }
 
@@ -438,7 +438,7 @@ public class ByteParser {
      *         the length of the previous String returned).
      */
     public int getNumberLength() {
-        return this.numberLength;
+        return numberLength;
     }
 
     /**
@@ -447,7 +447,7 @@ public class ByteParser {
      * @return The current offset within the buffer.
      */
     public int getOffset() {
-        return this.offset;
+        return offset;
     }
 
     /**
@@ -457,9 +457,9 @@ public class ByteParser {
      */
     public String getString(int length) {
 
-        String s = AsciiFuncs.asciiString(this.input, this.offset, length);
-        this.offset += length;
-        this.numberLength = length;
+        String s = AsciiFuncs.asciiString(input, offset, length);
+        offset += length;
+        numberLength = length;
         return s;
     }
 
@@ -468,7 +468,7 @@ public class ByteParser {
             return false;
         }
         for (int i = 0; i < constantLength; i++) {
-            if (this.input[this.offset + i] != lowerConstant[i] && this.input[this.offset + i] != upperConstant[i]) {
+            if (input[offset + i] != lowerConstant[i] && input[offset + i] != upperConstant[i]) {
                 return false;
             }
         }
@@ -483,8 +483,8 @@ public class ByteParser {
      */
     @SuppressFBWarnings(value = "EI_EXPOSE_REP", justification = "intended exposure of mutable data")
     public void setBuffer(byte[] buf) {
-        this.input = buf;
-        this.offset = 0;
+        input = buf;
+        offset = 0;
     }
 
     /**
@@ -504,7 +504,7 @@ public class ByteParser {
      *            number of bytes to skip
      */
     public void skip(int nBytes) {
-        this.offset += nBytes;
+        offset += nBytes;
     }
 
     /**
@@ -518,11 +518,11 @@ public class ByteParser {
     public int skipWhite(int length) {
         int i;
         for (i = 0; i < length; i++) {
-            if (this.input[this.offset + i] != ' ' && this.input[this.offset + i] != '\t' && this.input[this.offset + i] != '\n' && this.input[this.offset + i] != '\r') {
+            if (input[offset + i] != ' ' && input[offset + i] != '\t' && input[offset + i] != '\n' && input[offset + i] != '\r') {
                 break;
             }
         }
-        this.offset += i;
+        offset += i;
         return i;
     }
 }

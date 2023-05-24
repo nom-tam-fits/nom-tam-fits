@@ -558,14 +558,14 @@ public enum Standard implements IFitsHeader {
     private final IFitsHeader key;
 
     Standard(SOURCE status, HDU hdu, VALUE valueType, String comment, StandardCommentReplacement... replacements) {
-        this.key = new FitsHeaderImpl(name(), status, hdu, valueType, comment);
-        this.commentReplacements = replacements;
+        key = new FitsHeaderImpl(name(), status, hdu, valueType, comment);
+        commentReplacements = replacements;
     }
 
     Standard(String headerName, SOURCE status, HDU hdu, VALUE valueType, String comment,
             StandardCommentReplacement... replacements) {
-        this.key = new FitsHeaderImpl(headerName == null ? name() : headerName, status, hdu, valueType, comment);
-        this.commentReplacements = replacements;
+        key = new FitsHeaderImpl(headerName == null ? name() : headerName, status, hdu, valueType, comment);
+        commentReplacements = replacements;
     }
 
     @Override
@@ -581,33 +581,33 @@ public enum Standard implements IFitsHeader {
                 }
             }
         }
-        return this.key.comment();
+        return key.comment();
     }
 
     @Override
     public HDU hdu() {
-        return this.key.hdu();
+        return key.hdu();
     }
 
     @Override
     public String key() {
-        return this.key.key();
+        return key.key();
     }
 
     @Override
     public IFitsHeader n(int... number) {
-        return this.key.n(number);
+        return key.n(number);
     }
 
     @Override
     public SOURCE status() {
-        return this.key.status();
+        return key.status();
     }
 
     @Override
     @SuppressWarnings("CPD-END")
     public VALUE valueType() {
-        return this.key.valueType();
+        return key.valueType();
     }
 
     public static void context(Class<?> clazz) {

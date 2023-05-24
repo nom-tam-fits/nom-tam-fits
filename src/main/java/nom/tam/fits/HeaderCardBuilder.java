@@ -82,7 +82,7 @@ public class HeaderCardBuilder {
      * @return the current card
      */
     public HeaderCard card() {
-        return this.card;
+        return card;
     }
 
     /**
@@ -94,8 +94,8 @@ public class HeaderCardBuilder {
      * @return this
      */
     public HeaderCardBuilder card(IFitsHeader newKey) {
-        this.key = newKey;
-        this.card = this.header.findCard(this.key);
+        key = newKey;
+        card = header.findCard(key);
         return this;
     }
 
@@ -111,11 +111,11 @@ public class HeaderCardBuilder {
      *             if the card creation failed.
      */
     public HeaderCardBuilder comment(String newComment) throws HeaderCardException {
-        if (this.card == null) {
-            this.card = new HeaderCard(this.key.key(), (String) null, null);
-            this.header.addLine(this.card);
+        if (card == null) {
+            card = new HeaderCard(key.key(), (String) null, null);
+            header.addLine(card);
         }
-        this.card.setComment(newComment);
+        card.setComment(newComment);
         return this;
     }
 
@@ -130,11 +130,11 @@ public class HeaderCardBuilder {
      *             if the card creation failed.
      */
     public HeaderCardBuilder value(boolean newValue) throws HeaderCardException {
-        if (this.card == null) {
-            this.card = new HeaderCard(this.key.key(), newValue, null);
-            this.header.addLine(this.card);
+        if (card == null) {
+            card = new HeaderCard(key.key(), newValue, null);
+            header.addLine(card);
         } else {
-            this.card.setValue(newValue);
+            card.setValue(newValue);
         }
         return this;
     }
@@ -165,11 +165,11 @@ public class HeaderCardBuilder {
      *                  for it in the 80-character wide FITS header record.
      */
     public HeaderCardBuilder value(Number value) throws HeaderCardException, LongValueException {
-        if (this.card == null) {
-            this.card = new HeaderCard(this.key.key(), value, precision, null);
-            this.header.addLine(this.card);
+        if (card == null) {
+            card = new HeaderCard(key.key(), value, precision, null);
+            header.addLine(card);
         } else {
-            this.card.setValue(value, precision);
+            card.setValue(value, precision);
         }
         return this;
     }
@@ -188,11 +188,11 @@ public class HeaderCardBuilder {
      *             for it in the 80-character wide FITS header record.
      */
     public HeaderCardBuilder value(String newValue) throws HeaderCardException, LongValueException {
-        if (this.card == null) {
-            this.card = new HeaderCard(this.key.key(), newValue, null);
-            this.header.addLine(this.card);
+        if (card == null) {
+            card = new HeaderCard(key.key(), newValue, null);
+            header.addLine(card);
         } else {
-            this.card.setValue(newValue);
+            card.setValue(newValue);
         }
         return this;
     }
@@ -208,7 +208,7 @@ public class HeaderCardBuilder {
      */
     @Deprecated
     public HeaderCardBuilder scale(int decimals) {
-        this.precision = decimals;
+        precision = decimals;
         return this;
     }
 
@@ -224,7 +224,7 @@ public class HeaderCardBuilder {
      * @since 1.16
      */
     public HeaderCardBuilder precision(int decimals) {
-        this.precision = decimals;
+        precision = decimals;
         return this;
     }
 
@@ -237,7 +237,7 @@ public class HeaderCardBuilder {
      */
     @Deprecated
     public HeaderCardBuilder noScale() {
-        this.precision = -1;
+        precision = -1;
         return this;
     }
 
@@ -250,7 +250,7 @@ public class HeaderCardBuilder {
      * @since 1.16
      */
     public HeaderCardBuilder autoPrecision() {
-        this.precision = -1;
+        precision = -1;
         return this;
     }
 

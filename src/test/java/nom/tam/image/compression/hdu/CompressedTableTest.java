@@ -60,10 +60,10 @@ public class CompressedTableTest {
     public CompressedTableTest() {
         super();
         Random random = new Random();
-        for (int i1 = 0; i1 < this.doubles.length; i1++) {
-            for (int i2 = 0; i2 < this.doubles[i1].length; i2++) {
-                for (int i3 = 0; i3 < this.doubles[i1][i2].length; i3++) {
-                    this.doubles[i1][i2][i3] = random.nextDouble();
+        for (int i1 = 0; i1 < doubles.length; i1++) {
+            for (int i2 = 0; i2 < doubles[i1].length; i2++) {
+                for (int i3 = 0; i3 < doubles[i1][i2].length; i3++) {
+                    doubles[i1][i2][i3] = random.nextDouble();
                 }
             }
         }

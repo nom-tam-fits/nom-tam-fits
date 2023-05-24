@@ -79,7 +79,7 @@ public class ArrayFuncsTest {
 
         @Override
         public boolean equals(Object x) {
-            return x instanceof CloneTest && ((CloneTest) x).value == this.value;
+            return x instanceof CloneTest && ((CloneTest) x).value == value;
         }
     }
 

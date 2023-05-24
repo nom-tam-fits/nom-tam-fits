@@ -101,7 +101,7 @@ public class FitsHeap implements FitsElement {
      * @param data      the new underlying storage object for this heap instance.
      */
     protected void setData(ByteArrayIO data) {
-        this.store = data;
+        store = data;
     }
 
     /**

@@ -65,11 +65,11 @@ public class CompressParameter<OPTION> implements Cloneable {
     }
 
     public final String getName() {
-        return this.name;
+        return name;
     }
 
     protected final OPTION getOption() {
-        return this.option;
+        return option;
     }
 
 }

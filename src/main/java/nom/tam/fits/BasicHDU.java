@@ -160,19 +160,19 @@ public abstract class BasicHDU<DataClass extends Data> implements FitsElement {
     }
 
     public void addValue(IFitsHeader key, boolean val) throws HeaderCardException {
-        this.myHeader.addValue(key.key(), val, key.comment());
+        myHeader.addValue(key.key(), val, key.comment());
     }
 
     public void addValue(IFitsHeader key, double val) throws HeaderCardException {
-        this.myHeader.addValue(key.key(), val, key.comment());
+        myHeader.addValue(key.key(), val, key.comment());
     }
 
     public void addValue(IFitsHeader key, int val) throws HeaderCardException {
-        this.myHeader.addValue(key.key(), val, key.comment());
+        myHeader.addValue(key.key(), val, key.comment());
     }
 
     public void addValue(IFitsHeader key, String val) throws HeaderCardException {
-        this.myHeader.addValue(key.key(), val, key.comment());
+        myHeader.addValue(key.key(), val, key.comment());
     }
 
     /**
@@ -185,19 +185,19 @@ public abstract class BasicHDU<DataClass extends Data> implements FitsElement {
      * @throws HeaderCardException if the card does not follow the specification
      */
     public void addValue(String key, boolean val, String comment) throws HeaderCardException {
-        this.myHeader.addValue(key, val, comment);
+        myHeader.addValue(key, val, comment);
     }
 
     public void addValue(String key, double val, String comment) throws HeaderCardException {
-        this.myHeader.addValue(key, val, comment);
+        myHeader.addValue(key, val, comment);
     }
 
     public void addValue(String key, int val, String comment) throws HeaderCardException {
-        this.myHeader.addValue(key, val, comment);
+        myHeader.addValue(key, val, comment);
     }
 
     public void addValue(String key, String val, String comment) throws HeaderCardException {
-        this.myHeader.addValue(key, val, comment);
+        myHeader.addValue(key, val, comment);
     }
 
     /**
@@ -238,7 +238,7 @@ public abstract class BasicHDU<DataClass extends Data> implements FitsElement {
      * @throws FitsException if the axis are configured wrong.
      */
     public int[] getAxes() throws FitsException {
-        int nAxis = this.myHeader.getIntValue(NAXIS, 0);
+        int nAxis = myHeader.getIntValue(NAXIS, 0);
         if (nAxis < 0) {
             throw new FitsException("Negative NAXIS value " + nAxis);
         }
@@ -252,7 +252,7 @@ public abstract class BasicHDU<DataClass extends Data> implements FitsElement {
 
         int[] axes = new int[nAxis];
         for (int i = 1; i <= nAxis; i++) {
-            axes[nAxis - i] = this.myHeader.getIntValue(NAXISn.n(i), 0);
+            axes[nAxis - i] = myHeader.getIntValue(NAXISn.n(i), 0);
         }
 
         return axes;
@@ -279,14 +279,14 @@ public abstract class BasicHDU<DataClass extends Data> implements FitsElement {
     }
 
     public long getBlankValue() throws FitsException {
-        if (!this.myHeader.containsKey(BLANK.key())) {
+        if (!myHeader.containsKey(BLANK.key())) {
             throw new FitsException("BLANK undefined");
         }
-        return this.myHeader.getLongValue(BLANK);
+        return myHeader.getLongValue(BLANK);
     }
 
     public double getBScale() {
-        return this.myHeader.getDoubleValue(BSCALE, 1.0);
+        return myHeader.getDoubleValue(BSCALE, 1.0);
     }
 
     public String getBUnit() {
@@ -294,7 +294,7 @@ public abstract class BasicHDU<DataClass extends Data> implements FitsElement {
     }
 
     public double getBZero() {
-        return this.myHeader.getDoubleValue(BZERO, 0.0);
+        return myHeader.getDoubleValue(BZERO, 0.0);
     }
 
     /**
@@ -304,7 +304,7 @@ public abstract class BasicHDU<DataClass extends Data> implements FitsElement {
      */
     public Date getCreationDate() {
         try {
-            return new FitsDate(this.myHeader.getStringValue(DATE)).toDate();
+            return new FitsDate(myHeader.getStringValue(DATE)).toDate();
         } catch (FitsException e) {
             LOG.log(Level.SEVERE, "Unable to convert string to FITS date", e);
             return null;
@@ -330,7 +330,7 @@ public abstract class BasicHDU<DataClass extends Data> implements FitsElement {
      */
     @Deprecated
     public double getEpoch() {
-        return this.myHeader.getDoubleValue(EPOCH, -1.0);
+        return myHeader.getDoubleValue(EPOCH, -1.0);
     }
 
     /**
@@ -340,17 +340,17 @@ public abstract class BasicHDU<DataClass extends Data> implements FitsElement {
      * @return either <CODE>null</CODE> or a String object
      */
     public double getEquinox() {
-        return this.myHeader.getDoubleValue(EQUINOX, -1.0);
+        return myHeader.getDoubleValue(EQUINOX, -1.0);
     }
 
     /** Get the starting offset of the HDU */
     @Override
     public long getFileOffset() {
-        return this.myHeader.getFileOffset();
+        return myHeader.getFileOffset();
     }
 
     public int getGroupCount() {
-        return this.myHeader.getIntValue(GCOUNT, 1);
+        return myHeader.getIntValue(GCOUNT, 1);
     }
 
     /**
@@ -437,7 +437,7 @@ public abstract class BasicHDU<DataClass extends Data> implements FitsElement {
      * @return the associated header
      */
     public Header getHeader() {
-        return this.myHeader;
+        return myHeader;
     }
 
     /**
@@ -448,7 +448,7 @@ public abstract class BasicHDU<DataClass extends Data> implements FitsElement {
      * @return the builder for header cards.
      */
     public HeaderCardBuilder card(IFitsHeader key) {
-        return this.myHeader.card(key);
+        return myHeader.card(key);
     }
 
     /**
@@ -465,7 +465,7 @@ public abstract class BasicHDU<DataClass extends Data> implements FitsElement {
      */
     public final Object getKernel() {
         try {
-            return this.myData.getKernel();
+            return myData.getKernel();
         } catch (FitsException e) {
             LOG.log(Level.SEVERE, "Unable to get kernel data", e);
             return null;
@@ -478,7 +478,7 @@ public abstract class BasicHDU<DataClass extends Data> implements FitsElement {
      * @return minimum value.
      */
     public double getMaximumValue() {
-        return this.myHeader.getDoubleValue(DATAMAX);
+        return myHeader.getDoubleValue(DATAMAX);
     }
 
     /**
@@ -487,7 +487,7 @@ public abstract class BasicHDU<DataClass extends Data> implements FitsElement {
      * @return minimum value.
      */
     public double getMinimumValue() {
-        return this.myHeader.getDoubleValue(DATAMIN);
+        return myHeader.getDoubleValue(DATAMIN);
     }
 
     /**
@@ -506,7 +506,7 @@ public abstract class BasicHDU<DataClass extends Data> implements FitsElement {
      */
     public Date getObservationDate() {
         try {
-            return new FitsDate(this.myHeader.getStringValue(DATE_OBS)).toDate();
+            return new FitsDate(myHeader.getStringValue(DATE_OBS)).toDate();
         } catch (FitsException e) {
             LOG.log(Level.SEVERE, "Unable to convert string to FITS observation date", e);
             return null;
@@ -532,7 +532,7 @@ public abstract class BasicHDU<DataClass extends Data> implements FitsElement {
     }
 
     public int getParameterCount() {
-        return this.myHeader.getIntValue(PCOUNT, 0);
+        return myHeader.getIntValue(PCOUNT, 0);
     }
 
     /**
@@ -548,11 +548,11 @@ public abstract class BasicHDU<DataClass extends Data> implements FitsElement {
     public long getSize() {
         int size = 0;
 
-        if (this.myHeader != null) {
-            size += this.myHeader.getSize();
+        if (myHeader != null) {
+            size += myHeader.getSize();
         }
-        if (this.myData != null) {
-            size += this.myData.getSize();
+        if (myData != null) {
+            size += myData.getSize();
         }
         return size;
     }
@@ -609,7 +609,7 @@ public abstract class BasicHDU<DataClass extends Data> implements FitsElement {
 
     @Override
     public boolean reset() {
-        return this.myHeader.reset();
+        return myHeader.reset();
     }
 
     @Override
@@ -671,9 +671,9 @@ public abstract class BasicHDU<DataClass extends Data> implements FitsElement {
             setPrimaryHDU(canBePrimary() && isFirst);
         }
 
-        this.myHeader.write(stream);
+        myHeader.write(stream);
 
-        if (this.myData != null) {
+        if (myData != null) {
             myData.write(stream);
         }
         try {

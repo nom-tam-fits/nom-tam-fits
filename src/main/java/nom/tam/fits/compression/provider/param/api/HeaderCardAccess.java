@@ -49,15 +49,15 @@ public class HeaderCardAccess implements IHeaderAccess {
 
     @Override
     public void addValue(IFitsHeader key, int value) {
-        if (this.headerCard.getKey().equals(key.key())) {
-            this.headerCard.setValue(value);
+        if (headerCard.getKey().equals(key.key())) {
+            headerCard.setValue(value);
         }
     }
 
     @Override
     public void addValue(IFitsHeader key, String value) {
-        if (this.headerCard.getKey().equals(key.key())) {
-            this.headerCard.setValue(value);
+        if (headerCard.getKey().equals(key.key())) {
+            headerCard.setValue(value);
         }
     }
 
@@ -68,8 +68,8 @@ public class HeaderCardAccess implements IHeaderAccess {
 
     @Override
     public HeaderCard findCard(String key) {
-        if (this.headerCard.getKey().equals(key)) {
-            return this.headerCard;
+        if (headerCard.getKey().equals(key)) {
+            return headerCard;
         }
         return null;
     }

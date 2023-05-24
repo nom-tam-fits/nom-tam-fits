@@ -177,26 +177,26 @@ public class HeaderCard implements CursorValue<String>, Cloneable {
     @Deprecated
     public HeaderCard(HeaderCardCountingArrayDataInput dis) throws UnclosedQuoteException, TruncatedFileException, IOException {
         this();
-        this.key = null;
-        this.value = null;
-        this.comment = null;
-        this.type = null;
+        key = null;
+        value = null;
+        comment = null;
+        type = null;
 
         String card = readOneHeaderLine(dis);
 
         HeaderCardParser parsed = new HeaderCardParser(card);
 
         // extract the key
-        this.key = parsed.getKey();
-        this.type = parsed.getInferredType();
+        key = parsed.getKey();
+        type = parsed.getInferredType();
 
         if (FitsFactory.isLongStringsEnabled() && parsed.isString() && parsed.getValue().endsWith("&")) {
             // Potentially a multi-record long string card...
             parseLongStringCard(dis, parsed);
         } else {
-            this.value = parsed.getValue();
-            this.type = parsed.getInferredType();
-            this.comment = parsed.getTrimmedComment();
+            value = parsed.getValue();
+            type = parsed.getInferredType();
+            comment = parsed.getTrimmedComment();
         }
 
     }
@@ -512,7 +512,7 @@ public class HeaderCard implements CursorValue<String>, Cloneable {
         //            throw new HeaderCardException("Null type for value: [" + sanitize(aValue) + "]");
         //        }
 
-        this.type = aType;
+        type = aType;
 
         // AK: Map null and blank keys to BLANKS.key()
         // This simplifies things as we won't have to check for null keys separately!
@@ -532,7 +532,7 @@ public class HeaderCard implements CursorValue<String>, Cloneable {
             throw new HeaderCardException("Invalid FITS keyword: [" + sanitize(aKey) + "]", e);
         }
 
-        this.key = aKey;
+        key = aKey;
 
         try {
             validateChars(aComment);
@@ -540,7 +540,7 @@ public class HeaderCard implements CursorValue<String>, Cloneable {
             throw new HeaderCardException("Invalid FITS comment: [" + sanitize(aComment) + "]", e);
         }
 
-        this.comment = aComment;
+        comment = aComment;
 
         try {
             validateChars(aValue);
@@ -549,7 +549,7 @@ public class HeaderCard implements CursorValue<String>, Cloneable {
         }
 
         if (aValue == null) {
-            this.value = null;
+            value = null;
             return;
         }
         if (isStringValue()) {
@@ -582,7 +582,7 @@ public class HeaderCard implements CursorValue<String>, Cloneable {
             }
         }
 
-        this.value = aValue;
+        value = aValue;
     }
 
     @Override
@@ -601,7 +601,7 @@ public class HeaderCard implements CursorValue<String>, Cloneable {
      *              return more than one, provided support for long string is enabled.
      */
     public synchronized int cardSize() {
-        if (FitsFactory.isLongStringsEnabled() && isStringValue() && this.value != null) {
+        if (FitsFactory.isLongStringsEnabled() && isStringValue() && value != null) {
             // this is very bad for performance but it is to difficult to
             // keep the cardSize and the toString compatible at all times
             return toString().length() / FITS_HEADER_CARD_SIZE;
@@ -631,7 +631,7 @@ public class HeaderCard implements CursorValue<String>, Cloneable {
      */
     @Override
     public final synchronized String getKey() {
-        return this.key;
+        return key;
     }
 
     /**
@@ -645,7 +645,7 @@ public class HeaderCard implements CursorValue<String>, Cloneable {
      * @see #getComment()
      */
     public final synchronized String getValue() {
-        return this.value;
+        return value;
     }
 
     /**
@@ -657,7 +657,7 @@ public class HeaderCard implements CursorValue<String>, Cloneable {
      * @see #getValue()
      */
     public final synchronized String getComment() {
-        return this.comment;
+        return comment;
     }
 
 
@@ -674,7 +674,7 @@ public class HeaderCard implements CursorValue<String>, Cloneable {
         if (value == null) {
             throw new NumberFormatException("Card has a null value");
         }
-        return Long.decode("0x" + this.value);
+        return Long.decode("0x" + value);
     }
 
     /**
@@ -702,13 +702,13 @@ public class HeaderCard implements CursorValue<String>, Cloneable {
      */
     public synchronized <T> T getValue(Class<T> asType, T defaultValue) throws IllegalArgumentException {
 
-        if (this.value == null) {
+        if (value == null) {
             return defaultValue;
         }
         if (String.class.isAssignableFrom(asType)) {
-            return asType.cast(this.value);
+            return asType.cast(value);
         }
-        if (this.value.isEmpty()) {
+        if (value.isEmpty()) {
             return defaultValue;
         }
         if (Boolean.class.isAssignableFrom(asType)) {
@@ -891,13 +891,13 @@ public class HeaderCard implements CursorValue<String>, Cloneable {
      */
     public synchronized HeaderCard setValue(Number update, int decimals) throws NumberFormatException, LongValueException {
         if (update == null) {
-            this.value = null;
-            this.type = Integer.class;
+            value = null;
+            type = Integer.class;
         } else {
             checkNumber(update);
             setUnquotedValue(new FlexFormat().forCard(this).setPrecision(decimals).format(update));
 
-            this.type = update.getClass();
+            type = update.getClass();
         }
         return this;
     }
@@ -918,15 +918,15 @@ public class HeaderCard implements CursorValue<String>, Cloneable {
      */
     public synchronized HeaderCard setValue(Boolean update) throws LongValueException {
         if (update == null) {
-            this.value = null;
+            value = null;
         } else if (spaceForValue() < 1) {
             throw new LongValueException(key, spaceForValue());
         } else {
             // There is always room for a boolean value. :-)
-            this.value = update ? "T" : "F";
+            value = update ? "T" : "F";
         }
 
-        this.type = Boolean.class;
+        type = Boolean.class;
         return this;
     }
 
@@ -970,7 +970,7 @@ public class HeaderCard implements CursorValue<String>, Cloneable {
      */
     public synchronized HeaderCard setValue(ComplexValue update, int decimals) throws LongValueException {
         if (update == null) {
-            this.value = null;
+            value = null;
         } else {
             if (!update.isFinite()) {
                 throw new NumberFormatException("Cannot represent " + update + " in FITS headers.");
@@ -978,7 +978,7 @@ public class HeaderCard implements CursorValue<String>, Cloneable {
             setUnquotedValue(update.toString(decimals));
         }
 
-        this.type = ComplexValue.class;
+        type = ComplexValue.class;
         return this;
     }
 
@@ -993,7 +993,7 @@ public class HeaderCard implements CursorValue<String>, Cloneable {
         if (update.length() > spaceForValue()) {
             throw new LongValueException(spaceForValue(), key, value);
         }
-        this.value = update;
+        value = update;
     }
 
     /**
@@ -1008,7 +1008,7 @@ public class HeaderCard implements CursorValue<String>, Cloneable {
      */
     public synchronized HeaderCard setHexValue(long update) throws LongValueException {
         setUnquotedValue(Long.toHexString(update));
-        this.type = (update == (int) update) ? Integer.class : Long.class;
+        type = (update == (int) update) ? Integer.class : Long.class;
         return this;
     }
 
@@ -1030,7 +1030,7 @@ public class HeaderCard implements CursorValue<String>, Cloneable {
     public synchronized HeaderCard setValue(String update) throws IllegalArgumentException, LongStringsNotEnabledException {
         if (update == null) {
             // There is always room for an empty string...
-            this.value = null;
+            value = null;
         } else {
             validateChars(update);
             int l = STRING_QUOTES_LENGTH + update.length();
@@ -1038,10 +1038,10 @@ public class HeaderCard implements CursorValue<String>, Cloneable {
                 throw new LongStringsNotEnabledException("New string value for [" + key + "] is too long."
                         + "\n\n --> You can enable long string support by FitsFactory.setLongStringEnabled(true).\n");
             }
-            this.value = update;
+            value = update;
         }
 
-        this.type = String.class;
+        type = String.class;
         return this;
     }
 
@@ -1191,9 +1191,9 @@ public class HeaderCard implements CursorValue<String>, Cloneable {
             }
         }
 
-        this.comment = longComment == null ? null : longComment.toString().trim();
-        this.value = longValue.toString().trim();
-        this.type = String.class;
+        comment = longComment == null ? null : longComment.toString().trim();
+        value = longValue.toString().trim();
+        type = String.class;
     }
 
 
@@ -1274,7 +1274,7 @@ public class HeaderCard implements CursorValue<String>, Cloneable {
                 throw new LongStringsNotEnabledException(newKey);
             }
         }
-        this.key = newKey;
+        key = newKey;
     }
 
     /**
@@ -1899,13 +1899,7 @@ public class HeaderCard implements CursorValue<String>, Cloneable {
             if ((c >= 'a' && c <= 'z') || (c >= 'A' && c <= 'Z')) {
                 continue;
             }
-            if (c >= '0' && c <= '9') {
-                continue;
-            }
-            if (c == '-') {
-                continue;
-            }
-            if (c == '_') {
+            if ((c >= '0' && c <= '9') || (c == '-') || (c == '_')) {
                 continue;
             }
             throw new IllegalArgumentException("Keyword [" + sanitize(key) + "] contains invalid characters. Only [A-Z][a-z][0-9][-][_] are allowed.");

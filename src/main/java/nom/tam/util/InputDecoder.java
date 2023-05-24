@@ -98,7 +98,7 @@ public abstract class InputDecoder {
      * @param i the new binary input.
      */
     protected void setInput(InputReader i) {
-        this.in = i;
+        in = i;
     }
 
     /**
@@ -412,7 +412,7 @@ public abstract class InputDecoder {
         private long pending = 0;
 
         private InputBuffer(int size) {
-            this.data = new byte[size];
+            data = new byte[size];
             buffer = ByteBuffer.wrap(data);
         }
 
@@ -471,7 +471,7 @@ public abstract class InputDecoder {
         protected void loadBytes(long n, int size) {
             rewind();
             buffer.limit(0);
-            this.pending = n * size;
+            pending = n * size;
         }
 
         /**
@@ -488,7 +488,7 @@ public abstract class InputDecoder {
          *             end-of-file.
          */
         protected boolean loadOne(int size) throws IOException {
-            this.pending = size;
+            pending = size;
             rewind();
             buffer.limit(0);
             return makeAvailable(size);

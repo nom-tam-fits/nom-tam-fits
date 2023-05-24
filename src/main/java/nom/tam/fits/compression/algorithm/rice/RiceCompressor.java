@@ -67,26 +67,26 @@ public abstract class RiceCompressor<T extends Buffer> implements ICompressor<T>
 
         @Override
         public boolean compress(ByteBuffer buffer, ByteBuffer writeBuffer) {
-            this.pixelBuffer = buffer;
-            super.compress(buffer.limit(), this.pixelBuffer.get(this.pixelBuffer.position()),
+            pixelBuffer = buffer;
+            super.compress(buffer.limit(), pixelBuffer.get(pixelBuffer.position()),
                     new BitBuffer(writeBuffer));
             return true;
         }
 
         @Override
         public void decompress(ByteBuffer readBuffer, ByteBuffer buffer) {
-            this.pixelBuffer = buffer;
+            pixelBuffer = buffer;
             super.decompressBuffer(readBuffer, buffer.limit());
         }
 
         @Override
         protected int nextPixel() {
-            return this.pixelBuffer.get();
+            return pixelBuffer.get();
         }
 
         @Override
         protected void nextPixel(int pixel) {
-            this.pixelBuffer.put((byte) pixel);
+            pixelBuffer.put((byte) pixel);
         }
     }
 
@@ -112,26 +112,26 @@ public abstract class RiceCompressor<T extends Buffer> implements ICompressor<T>
 
         @Override
         public boolean compress(IntBuffer buffer, ByteBuffer writeBuffer) {
-            this.pixelBuffer = buffer;
-            super.compress(buffer.limit(), this.pixelBuffer.get(this.pixelBuffer.position()),
+            pixelBuffer = buffer;
+            super.compress(buffer.limit(), pixelBuffer.get(pixelBuffer.position()),
                     new BitBuffer(writeBuffer));
             return true;
         }
 
         @Override
         public void decompress(ByteBuffer readBuffer, IntBuffer buffer) {
-            this.pixelBuffer = buffer;
+            pixelBuffer = buffer;
             super.decompressBuffer(readBuffer, buffer.limit());
         }
 
         @Override
         protected int nextPixel() {
-            return this.pixelBuffer.get();
+            return pixelBuffer.get();
         }
 
         @Override
         protected void nextPixel(int pixel) {
-            this.pixelBuffer.put(pixel);
+            pixelBuffer.put(pixel);
         }
     }
 
@@ -145,26 +145,26 @@ public abstract class RiceCompressor<T extends Buffer> implements ICompressor<T>
 
         @Override
         public boolean compress(ShortBuffer buffer, ByteBuffer writeBuffer) {
-            this.pixelBuffer = buffer;
-            super.compress(buffer.limit(), this.pixelBuffer.get(this.pixelBuffer.position()),
+            pixelBuffer = buffer;
+            super.compress(buffer.limit(), pixelBuffer.get(pixelBuffer.position()),
                     new BitBuffer(writeBuffer));
             return true;
         }
 
         @Override
         public void decompress(ByteBuffer readBuffer, ShortBuffer buffer) {
-            this.pixelBuffer = buffer;
+            pixelBuffer = buffer;
             super.decompressBuffer(readBuffer, buffer.limit());
         }
 
         @Override
         protected int nextPixel() {
-            return this.pixelBuffer.get();
+            return pixelBuffer.get();
         }
 
         @Override
         protected void nextPixel(int pixel) {
-            this.pixelBuffer.put((short) pixel);
+            pixelBuffer.put((short) pixel);
         }
     }
 
@@ -233,19 +233,19 @@ public abstract class RiceCompressor<T extends Buffer> implements ICompressor<T>
     private final int fsMax;
 
     private RiceCompressor(RiceCompressOption option) {
-        this.blockSize = option.getBlockSize();
+        blockSize = option.getBlockSize();
         if (option.getBytePix() == ElementType.BYTE.size()) {
-            this.fsBits = FS_BITS_FOR_BYTE;
-            this.fsMax = FS_MAX_FOR_BYTE;
-            this.bitsPerPixel = FitsIO.BITS_OF_1_BYTE;
+            fsBits = FS_BITS_FOR_BYTE;
+            fsMax = FS_MAX_FOR_BYTE;
+            bitsPerPixel = FitsIO.BITS_OF_1_BYTE;
         } else if (option.getBytePix() == ElementType.SHORT.size()) {
-            this.fsBits = FS_BITS_FOR_SHORT;
-            this.fsMax = FS_MAX_FOR_SHORT;
-            this.bitsPerPixel = FitsIO.BITS_OF_2_BYTES;
+            fsBits = FS_BITS_FOR_SHORT;
+            fsMax = FS_MAX_FOR_SHORT;
+            bitsPerPixel = FitsIO.BITS_OF_2_BYTES;
         } else if (option.getBytePix() == ElementType.INT.size()) {
-            this.fsBits = FS_BITS_FOR_INT;
-            this.fsMax = FS_MAX_FOR_INT;
-            this.bitsPerPixel = FitsIO.BITS_OF_4_BYTES;
+            fsBits = FS_BITS_FOR_INT;
+            fsMax = FS_MAX_FOR_INT;
+            bitsPerPixel = FitsIO.BITS_OF_4_BYTES;
         } else {
             throw new UnsupportedOperationException("Rice only supports 1/2/4 type per pixel");
         }
@@ -253,7 +253,7 @@ public abstract class RiceCompressor<T extends Buffer> implements ICompressor<T>
          * From bsize derive: FSBITS = # bits required to store FS FSMAX = maximum value for FS BBITS = bits/pixel for
          * direct coding
          */
-        this.bBits = 1 << this.fsBits;
+        bBits = 1 << fsBits;
     }
 
     /**
@@ -293,11 +293,11 @@ public abstract class RiceCompressor<T extends Buffer> implements ICompressor<T>
         /* the first difference will always be zero */
         int lastpix = firstPixel;
         /* write out first int value to the first 4 bytes of the buffer */
-        buffer.putInt(firstPixel, this.bitsPerPixel);
-        int thisblock = this.blockSize;
-        for (int i = 0; i < dataLength; i += this.blockSize) {
+        buffer.putInt(firstPixel, bitsPerPixel);
+        int thisblock = blockSize;
+        for (int i = 0; i < dataLength; i += blockSize) {
             /* last block may be shorter */
-            if (dataLength - i < this.blockSize) {
+            if (dataLength - i < blockSize) {
                 thisblock = dataLength - i;
             }
             /*
@@ -307,7 +307,7 @@ public abstract class RiceCompressor<T extends Buffer> implements ICompressor<T>
              * passed as an int.) compute sum of mapped pixel values at same time use double precision for sum to allow
              * 32-bit integer inputs
              */
-            long[] diff = new long[this.blockSize];
+            long[] diff = new long[blockSize];
             double pixelsum = 0.0;
             int nextpix;
             /*
@@ -337,24 +337,24 @@ public abstract class RiceCompressor<T extends Buffer> implements ICompressor<T>
             /*
              * write the codes fsbits ID bits used to indicate split level
              */
-            if (fs >= this.fsMax) {
+            if (fs >= fsMax) {
                 /*
                  * Special high entropy case when FS >= fsmax Just write pixel difference values directly, no Rice
                  * coding at all.
                  */
-                buffer.putInt(this.fsMax + 1, this.fsBits);
+                buffer.putInt(fsMax + 1, fsBits);
                 for (int j = 0; j < thisblock; j++) {
-                    buffer.putLong(diff[j], this.bBits);
+                    buffer.putLong(diff[j], bBits);
                 }
             } else if (fs == 0 && pixelsum == 0) { // NOSONAR
                 /*
                  * special low entropy case when FS = 0 and pixelsum=0 (all pixels in block are zero.) Output a 0 and
                  * return
                  */
-                buffer.putInt(0, this.fsBits);
+                buffer.putInt(0, fsBits);
             } else {
                 /* normal case: not either very high or very low entropy */
-                buffer.putInt(fs + 1, this.fsBits);
+                buffer.putInt(fs + 1, fsBits);
                 int fsmask = (1 << fs) - 1;
                 /*
                  * local copies of bit buffer to improve optimization
@@ -412,9 +412,9 @@ public abstract class RiceCompressor<T extends Buffer> implements ICompressor<T>
         /* first x bytes of input buffer contain the value of the first */
         /* x byte integer value, without any encoding */
         long lastpix = 0L;
-        if (this.bitsPerPixel == ElementType.BYTE.bitPix()) {
+        if (bitsPerPixel == ElementType.BYTE.bitPix()) {
             lastpix = readBuffer.get() & UNSIGNED_BYTE_MASK;
-        } else if (this.bitsPerPixel == ElementType.SHORT.bitPix()) {
+        } else if (bitsPerPixel == ElementType.SHORT.bitPix()) {
             lastpix = readBuffer.getShort() & UNSIGNED_SHORT_MASK;
         } else {
             // Must be (this.bitsPerPixel == ElementType.INT.bitPix())
@@ -424,7 +424,7 @@ public abstract class RiceCompressor<T extends Buffer> implements ICompressor<T>
         int nbits = BITS_PER_BYTE; /* number of bits remaining in b */
         for (int i = 0; i < nx;) {
             /* get the FS value from first fsbits */
-            nbits -= this.fsBits;
+            nbits -= fsBits;
             while (nbits < 0) {
                 b = b << BITS_PER_BYTE | readBuffer.get() & BYTE_MASK;
                 nbits += BITS_PER_BYTE;
@@ -433,7 +433,7 @@ public abstract class RiceCompressor<T extends Buffer> implements ICompressor<T>
 
             b &= (1 << nbits) - 1;
             /* loop over the next block */
-            int imax = i + this.blockSize;
+            int imax = i + blockSize;
             if (imax > nx) {
                 imax = nx;
             }
@@ -442,10 +442,10 @@ public abstract class RiceCompressor<T extends Buffer> implements ICompressor<T>
                 for (; i < imax; i++) {
                     nextPixel((int) lastpix);
                 }
-            } else if (fs == this.fsMax) {
+            } else if (fs == fsMax) {
                 /* high-entropy case, directly coded pixel values */
                 for (; i < imax; i++) {
-                    int k = this.bBits - nbits;
+                    int k = bBits - nbits;
                     long diff = b << k;
                     for (k -= BITS_PER_BYTE; k >= 0; k -= BITS_PER_BYTE) {
                         b = readBuffer.get() & BYTE_MASK;

@@ -214,23 +214,23 @@ public class RandomGroupsHDU extends BasicHDU<RandomGroupsData> {
     public void info(PrintStream stream) {
 
         stream.println("Random Groups HDU");
-        if (this.myHeader != null) {
+        if (myHeader != null) {
             stream.println("   HeaderInformation:");
-            stream.println("     Ngroups:" + this.myHeader.getIntValue(GCOUNT));
-            stream.println("     Npar:   " + this.myHeader.getIntValue(PCOUNT));
-            stream.println("     BITPIX: " + this.myHeader.getIntValue(BITPIX));
-            stream.println("     NAXIS:  " + this.myHeader.getIntValue(NAXIS));
-            for (int i = 0; i < this.myHeader.getIntValue(NAXIS); i += 1) {
-                stream.println("      NAXIS" + (i + 1) + "= " + this.myHeader.getIntValue(NAXISn.n(i + 1)));
+            stream.println("     Ngroups:" + myHeader.getIntValue(GCOUNT));
+            stream.println("     Npar:   " + myHeader.getIntValue(PCOUNT));
+            stream.println("     BITPIX: " + myHeader.getIntValue(BITPIX));
+            stream.println("     NAXIS:  " + myHeader.getIntValue(NAXIS));
+            for (int i = 0; i < myHeader.getIntValue(NAXIS); i += 1) {
+                stream.println("      NAXIS" + (i + 1) + "= " + myHeader.getIntValue(NAXISn.n(i + 1)));
             }
         } else {
             stream.println("    No Header Information");
         }
 
         Object[][] data = null;
-        if (this.myData != null) {
+        if (myData != null) {
             try {
-                data = this.myData.getData();
+                data = myData.getData();
             } catch (FitsException e) {
                 // nothing to do...
             }
@@ -251,7 +251,7 @@ public class RandomGroupsHDU extends BasicHDU<RandomGroupsData> {
      * @return <CODE>true</CODE> if this HDU has a valid header.
      */
     public boolean isHeader() {
-        return isHeader(this.myHeader);
+        return isHeader(myHeader);
     }
 
 }

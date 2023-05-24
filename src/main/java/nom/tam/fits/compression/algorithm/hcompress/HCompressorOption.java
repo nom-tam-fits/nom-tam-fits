@@ -68,30 +68,30 @@ public class HCompressorOption implements ICompressOption, ITileOption {
 
     @Override
     public HCompressParameters getCompressionParameters() {
-        return this.parameters;
+        return parameters;
     }
 
     public int getScale() {
-        return this.scale;
+        return scale;
     }
 
     @Override
     public int getTileHeight() {
-        return this.tileHeight;
+        return tileHeight;
     }
 
     @Override
     public int getTileWidth() {
-        return this.tileWidth;
+        return tileWidth;
     }
 
     @Override
     public boolean isLossyCompression() {
-        return this.scale > 1 || this.smooth;
+        return scale > 1 || smooth;
     }
 
     public boolean isSmooth() {
-        return this.smooth;
+        return smooth;
     }
 
     @Override
@@ -103,12 +103,12 @@ public class HCompressorOption implements ICompressOption, ITileOption {
     }
 
     public HCompressorOption setScale(int value) {
-        this.scale = value;
+        scale = value;
         return this;
     }
 
     public HCompressorOption setSmooth(boolean value) {
-        this.smooth = value;
+        smooth = value;
         return this;
     }
 
@@ -124,13 +124,13 @@ public class HCompressorOption implements ICompressOption, ITileOption {
 
     @Override
     public HCompressorOption setTileHeight(int value) {
-        this.tileHeight = value;
+        tileHeight = value;
         return this;
     }
 
     @Override
     public HCompressorOption setTileWidth(int value) {
-        this.tileWidth = value;
+        tileWidth = value;
         return this;
     }
 }

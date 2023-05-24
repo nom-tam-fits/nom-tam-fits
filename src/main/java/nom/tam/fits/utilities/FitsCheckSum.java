@@ -139,7 +139,7 @@ public final class FitsCheckSum {
 
         PipeWriter(FitsElement data, PipedInputStream in) throws IOException {
             this.data = data;
-            this.out = new PipedOutputStream(in);
+            out = new PipedOutputStream(in);
         }
 
         @Override

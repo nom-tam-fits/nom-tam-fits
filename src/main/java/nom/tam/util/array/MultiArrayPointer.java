@@ -71,30 +71,30 @@ public class MultiArrayPointer {
     }
 
     private void activateSub(Object element) {
-        if (this.backup == null) {
-            this.backup = new MultiArrayPointer();
+        if (backup == null) {
+            backup = new MultiArrayPointer();
         }
-        this.sub = this.backup;
-        this.sub.set(element);
+        sub = backup;
+        sub.set(element);
     }
 
     private void deactivateSub() {
-        this.sub = null;
+        sub = null;
     }
 
     public Object next() {
         while (true) {
-            if (this.sub != null) {
-                Object subNext = this.sub.next();
+            if (sub != null) {
+                Object subNext = sub.next();
                 if (subNext != MultiArrayPointer.END) {
                     return subNext;
                 }
                 deactivateSub();
             }
-            if (this.index >= this.length) {
+            if (index >= length) {
                 return MultiArrayPointer.END;
             }
-            Object element = Array.get(this.array, this.index++);
+            Object element = Array.get(array, index++);
             if ((element == null) || !isSubArray(element)) {
                 return element;
             }
@@ -103,15 +103,15 @@ public class MultiArrayPointer {
     }
 
     public void reset() {
-        this.index = 0;
+        index = 0;
         deactivateSub();
     }
 
     private void set(Object newArray) {
-        this.array = newArray;
-        this.length = Array.getLength(this.array);
-        this.sub = null;
-        this.index = 0;
+        array = newArray;
+        length = Array.getLength(array);
+        sub = null;
+        index = 0;
     }
 
 }

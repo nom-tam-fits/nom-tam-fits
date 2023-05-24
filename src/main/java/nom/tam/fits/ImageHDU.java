@@ -170,7 +170,7 @@ public class ImageHDU extends BasicHDU<ImageData> {
     }
 
     public StandardImageTiler getTiler() {
-        return this.myData.getTiler();
+        return myData.getTiler();
     }
 
     /**
@@ -178,26 +178,26 @@ public class ImageHDU extends BasicHDU<ImageData> {
      */
     @Override
     public void info(PrintStream stream) {
-        if (isHeader(this.myHeader)) {
+        if (isHeader(myHeader)) {
             stream.println("  Image");
         } else {
             stream.println("  Image (bad header)");
         }
 
         stream.println("      Header Information:");
-        stream.println("         BITPIX=" + this.myHeader.getIntValue(BITPIX, -1));
-        int naxis = this.myHeader.getIntValue(NAXIS, -1);
+        stream.println("         BITPIX=" + myHeader.getIntValue(BITPIX, -1));
+        int naxis = myHeader.getIntValue(NAXIS, -1);
         stream.println("         NAXIS=" + naxis);
         for (int i = 1; i <= naxis; i += 1) {
-            stream.println("         NAXIS" + i + "=" + this.myHeader.getIntValue(NAXISn.n(i), -1));
+            stream.println("         NAXIS" + i + "=" + myHeader.getIntValue(NAXISn.n(i), -1));
         }
 
         stream.println("      Data information:");
         try {
-            if (this.myData.getData() == null) {
+            if (myData.getData() == null) {
                 stream.println("        No Data");
             } else {
-                stream.println("         " + ArrayFuncs.arrayDescription(this.myData.getData()));
+                stream.println("         " + ArrayFuncs.arrayDescription(myData.getData()));
             }
         } catch (Exception e) {
             LOG.log(Level.SEVERE, "Unable to get image data", e);

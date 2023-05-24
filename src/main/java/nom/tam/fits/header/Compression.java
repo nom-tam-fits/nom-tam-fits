@@ -508,43 +508,43 @@ public enum Compression implements IFitsHeader {
     }
 
     Compression(HDU hdu, VALUE valueType, String comment, IFitsHeader uncompressedKey) {
-        this.key = new FitsHeaderImpl(name(), IFitsHeader.SOURCE.HEASARC, hdu, valueType, comment);
+        key = new FitsHeaderImpl(name(), IFitsHeader.SOURCE.HEASARC, hdu, valueType, comment);
         this.uncompressedKey = uncompressedKey;
     }
 
     @Override
     public String comment() {
-        return this.key.comment();
+        return key.comment();
     }
 
     public IFitsHeader getUncompressedKey() {
-        return this.uncompressedKey;
+        return uncompressedKey;
     }
 
     @Override
     public HDU hdu() {
-        return this.key.hdu();
+        return key.hdu();
     }
 
     @Override
     public String key() {
-        return this.key.key();
+        return key.key();
     }
 
     @Override
     public IFitsHeader n(int... number) {
-        return this.key.n(number);
+        return key.n(number);
     }
 
     @Override
     public SOURCE status() {
-        return this.key.status();
+        return key.status();
     }
 
     @Override
     @SuppressWarnings("CPD-END")
     public VALUE valueType() {
-        return this.key.valueType();
+        return key.valueType();
     }
 
 }

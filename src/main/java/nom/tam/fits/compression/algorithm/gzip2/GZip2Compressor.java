@@ -147,10 +147,10 @@ public abstract class GZip2Compressor<T extends Buffer> extends GZipCompressor<T
     }
 
     private int[] calculateOffsets(byte[] byteArray) {
-        int[] offset = new int[this.primitiveSize];
+        int[] offset = new int[primitiveSize];
         offset[0] = 0;
-        for (int primitivIndex = 1; primitivIndex < this.primitiveSize; primitivIndex++) {
-            offset[primitivIndex] = offset[primitivIndex - 1] + byteArray.length / this.primitiveSize;
+        for (int primitivIndex = 1; primitivIndex < primitiveSize; primitivIndex++) {
+            offset[primitivIndex] = offset[primitivIndex - 1] + byteArray.length / primitiveSize;
         }
         return offset;
     }
@@ -159,7 +159,7 @@ public abstract class GZip2Compressor<T extends Buffer> extends GZipCompressor<T
     @SuppressFBWarnings(value = "RCN_REDUNDANT_NULLCHECK_WOULD_HAVE_BEEN_A_NPE", justification = "what null check is FB even referring to?")
     public boolean compress(T pixelData, ByteBuffer compressed) {
         int pixelDataLimit = pixelData.limit();
-        byte[] pixelBytes = new byte[pixelDataLimit * this.primitiveSize];
+        byte[] pixelBytes = new byte[pixelDataLimit * primitiveSize];
         getPixel(pixelData, pixelBytes);
         pixelBytes = shuffle(pixelBytes);
         try (GZIPOutputStream zip = createGZipOutputStream(pixelDataLimit, compressed)) {
@@ -174,7 +174,7 @@ public abstract class GZip2Compressor<T extends Buffer> extends GZipCompressor<T
     @Override
     public void decompress(ByteBuffer compressed, T pixelData) {
         int pixelDataLimit = pixelData.limit();
-        byte[] pixelBytes = new byte[pixelDataLimit * this.primitiveSize];
+        byte[] pixelBytes = new byte[pixelDataLimit * primitiveSize];
         try (GZIPInputStream zip = createGZipInputStream(compressed)) {
             int count = 0;
             int offset = 0;
@@ -195,8 +195,8 @@ public abstract class GZip2Compressor<T extends Buffer> extends GZipCompressor<T
         byte[] result = new byte[byteArray.length];
         int resultIndex = 0;
         int[] offset = calculateOffsets(byteArray);
-        for (int index = 0; index < byteArray.length; index += this.primitiveSize) {
-            for (int primitiveIndex = 0; primitiveIndex < this.primitiveSize; primitiveIndex++) {
+        for (int index = 0; index < byteArray.length; index += primitiveSize) {
+            for (int primitiveIndex = 0; primitiveIndex < primitiveSize; primitiveIndex++) {
                 result[resultIndex + offset[primitiveIndex]] = byteArray[index + primitiveIndex];
             }
             resultIndex++;
@@ -208,8 +208,8 @@ public abstract class GZip2Compressor<T extends Buffer> extends GZipCompressor<T
         byte[] result = new byte[byteArray.length];
         int resultIndex = 0;
         int[] offset = calculateOffsets(byteArray);
-        for (int index = 0; index < byteArray.length; index += this.primitiveSize) {
-            for (int primitiveIndex = 0; primitiveIndex < this.primitiveSize; primitiveIndex++) {
+        for (int index = 0; index < byteArray.length; index += primitiveSize) {
+            for (int primitiveIndex = 0; primitiveIndex < primitiveSize; primitiveIndex++) {
                 result[index + primitiveIndex] = byteArray[resultIndex + offset[primitiveIndex]];
             }
             resultIndex++;

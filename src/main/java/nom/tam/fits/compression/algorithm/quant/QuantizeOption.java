@@ -110,7 +110,7 @@ public class QuantizeOption implements ICompressOption {
             if (compressOption != null) {
                 copy.compressOption = compressOption.copy();
             }
-            copy.parameters = this.parameters.copy(copy);
+            copy.parameters = parameters.copy(copy);
             return copy;
         } catch (CloneNotSupportedException e) {
             throw new IllegalStateException("option could not be cloned", e);
@@ -118,23 +118,23 @@ public class QuantizeOption implements ICompressOption {
     }
 
     public Integer getBNull() {
-        return this.nullValueIndicator;
+        return nullValueIndicator;
     }
 
     public double getBScale() {
-        return this.bScale;
+        return bScale;
     }
 
     public double getBZero() {
-        return this.bZero;
+        return bZero;
     }
 
     @Override
     public ICompressParameters getCompressionParameters() {
         if (compressOption == null) {
-            return this.parameters;
+            return parameters;
         }
-        return new BundledParameters(this.parameters, compressOption.getCompressionParameters());
+        return new BundledParameters(parameters, compressOption.getCompressionParameters());
     }
 
     public <T> T getCompressOption(Class<T> clazz) {
@@ -146,67 +146,67 @@ public class QuantizeOption implements ICompressOption {
     }
 
     public int getIntMaxValue() {
-        return this.intMaxValue;
+        return intMaxValue;
     }
 
     public int getIntMinValue() {
-        return this.intMinValue;
+        return intMinValue;
     }
 
     public double getMaxValue() {
-        return this.maxValue;
+        return maxValue;
     }
 
     public double getMinValue() {
-        return this.minValue;
+        return minValue;
     }
 
     public double getNullValue() {
-        return this.nullValue;
+        return nullValue;
     }
 
     public Integer getNullValueIndicator() {
-        return this.nullValueIndicator;
+        return nullValueIndicator;
     }
 
     public double getQLevel() {
-        return this.qlevel;
+        return qlevel;
     }
 
     public long getSeed() {
-        return this.seed;
+        return seed;
     }
 
     public long getTileIndex() {
-        return this.tileIndex;
+        return tileIndex;
     }
 
     public int getTileHeight() {
-        return this.tileHeight;
+        return tileHeight;
     }
 
     public int getTileWidth() {
-        return this.tileWidth;
+        return tileWidth;
     }
 
     public boolean isCenterOnZero() {
-        return this.centerOnZero;
+        return centerOnZero;
     }
 
     public boolean isCheckNull() {
-        return this.checkNull;
+        return checkNull;
     }
 
     public boolean isCheckZero() {
-        return this.checkZero;
+        return checkZero;
     }
 
     public boolean isDither() {
-        return this.dither;
+        return dither;
     }
 
     public boolean isDither2() {
-        return this.dither2;
+        return dither2;
     }
 
     @Override
@@ -216,72 +216,72 @@ public class QuantizeOption implements ICompressOption {
 
     public ICompressOption setBNull(Integer blank) {
         if (blank != null) {
-            this.checkNull = true;
-            this.nullValueIndicator = blank;
+            checkNull = true;
+            nullValueIndicator = blank;
         }
         return this;
     }
 
     public QuantizeOption setBScale(double value) {
-        this.bScale = value;
+        bScale = value;
         return this;
     }
 
     public QuantizeOption setBZero(double value) {
-        this.bZero = value;
+        bZero = value;
         return this;
     }
 
     public QuantizeOption setCenterOnZero(boolean value) {
-        this.centerOnZero = value;
+        centerOnZero = value;
         return this;
     }
 
     public QuantizeOption setCheckNull(boolean value) {
-        this.checkNull = value;
-        if (this.nullValueIndicator == null) {
-            this.nullValueIndicator = NULL_VALUE;
+        checkNull = value;
+        if (nullValueIndicator == null) {
+            nullValueIndicator = NULL_VALUE;
         }
         return this;
     }
 
     public QuantizeOption setCheckZero(boolean value) {
-        this.checkZero = value;
+        checkZero = value;
         return this;
     }
 
     public QuantizeOption setDither(boolean value) {
-        this.dither = value;
+        dither = value;
         return this;
     }
 
     public QuantizeOption setDither2(boolean value) {
-        this.dither2 = value;
+        dither2 = value;
         return this;
     }
 
     public QuantizeOption setIntMaxValue(int value) {
-        this.intMaxValue = value;
+        intMaxValue = value;
         return this;
     }
 
     public QuantizeOption setIntMinValue(int value) {
-        this.intMinValue = value;
+        intMinValue = value;
         return this;
     }
 
     public QuantizeOption setMaxValue(double value) {
-        this.maxValue = value;
+        maxValue = value;
         return this;
     }
 
     public QuantizeOption setMinValue(double value) {
-        this.minValue = value;
+        minValue = value;
         return this;
     }
 
     public QuantizeOption setNullValue(double value) {
-        this.nullValue = value;
+        nullValue = value;
         return this;
     }
 
@@ -300,7 +300,7 @@ public class QuantizeOption implements ICompressOption {
     }
 
     public QuantizeOption setQlevel(double value) {
-        this.qlevel = value;
+        qlevel = value;
         return this;
     }
 
@@ -314,7 +314,7 @@ public class QuantizeOption implements ICompressOption {
      * @see #setTileIndex(int)
      */
     public QuantizeOption setSeed(long value) {
-        this.seed = value;
+        seed = value;
         return this;
     }
 
@@ -329,13 +329,13 @@ public class QuantizeOption implements ICompressOption {
      * @see #setSeed(long)
      */
     public QuantizeOption setTileIndex(int index) {
-        this.tileIndex = index;
+        tileIndex = index;
         return this;
     }
 
     @Override
     public QuantizeOption setTileHeight(int value) {
-        this.tileHeight = value;
+        tileHeight = value;
         if (compressOption instanceof ITileOption) {
             ((ITileOption) compressOption).setTileHeight(value);
         }
@@ -344,7 +344,7 @@ public class QuantizeOption implements ICompressOption {
 
     @Override
     public QuantizeOption setTileWidth(int value) {
-        this.tileWidth = value;
+        tileWidth = value;
         if (compressOption instanceof ITileOption) {
             ((ITileOption) compressOption).setTileWidth(value);
         }

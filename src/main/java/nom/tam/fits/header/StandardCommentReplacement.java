@@ -47,7 +47,7 @@ class StandardCommentReplacement {
     protected StandardCommentReplacement(String ref, Class<?> context) {
         this.ref = ref;
         this.context = context;
-        this.comment = null;
+        comment = null;
     }
 
     protected StandardCommentReplacement(String ref, Class<?> context, String comment) {
@@ -57,15 +57,15 @@ class StandardCommentReplacement {
     }
 
     public String getComment() {
-        return this.comment;
+        return comment;
     }
 
     public Class<?> getContext() {
-        return this.context;
+        return context;
     }
 
     public String getRef() {
-        return this.ref;
+        return ref;
     }
 
     public void setComment(String comment) {

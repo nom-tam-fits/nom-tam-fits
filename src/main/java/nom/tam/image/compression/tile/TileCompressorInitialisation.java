@@ -51,15 +51,15 @@ final class TileCompressorInitialisation implements ITileOperationInitialisation
 
     @Override
     public TileCompressionOperation createTileOperation(int tileIndex, TileArea area) {
-        return new TileCompressor(this.imageTilesOperation, tileIndex, area);
+        return new TileCompressor(imageTilesOperation, tileIndex, area);
     }
 
     @Override
     public void init(TileCompressionOperation tileOperation) {
-        tileOperation.setCompressedOffset(this.compressedOffset);
-        tileOperation.setWholeImageBuffer(this.buffer);
-        tileOperation.setWholeImageCompressedBuffer(this.imageTilesOperation.getCompressedWholeArea());
-        this.compressedOffset += tileOperation.getPixelSize();
+        tileOperation.setCompressedOffset(compressedOffset);
+        tileOperation.setWholeImageBuffer(buffer);
+        tileOperation.setWholeImageCompressedBuffer(imageTilesOperation.getCompressedWholeArea());
+        compressedOffset += tileOperation.getPixelSize();
     }
 
     @Override

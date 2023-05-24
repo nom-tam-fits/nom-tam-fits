@@ -107,7 +107,7 @@ public abstract class ElementType<B extends Buffer> {
         this.primitiveClass = primitiveClass;
         this.wrapperClass = wrapperClass;
         this.bufferClass = bufferClass;
-        this.javaType = type;
+        javaType = type;
         this.bitPix = bitPix;
     }
 
@@ -151,7 +151,7 @@ public abstract class ElementType<B extends Buffer> {
      *             type.
      */
     public int bitPix() {
-        return this.bitPix;
+        return bitPix;
     }
 
     /**
@@ -164,7 +164,7 @@ public abstract class ElementType<B extends Buffer> {
      * @see #putArray(Buffer, Object, int, int)
      */
     public Class<B> bufferClass() {
-        return this.bufferClass;
+        return bufferClass;
     }
 
     /**
@@ -264,7 +264,7 @@ public abstract class ElementType<B extends Buffer> {
      *             <code>false</code>.
      */
     public boolean is(ElementType<? extends Buffer> other) {
-        return this.bitPix == other.bitPix();
+        return bitPix == other.bitPix();
     }
 
     /**
@@ -330,7 +330,7 @@ public abstract class ElementType<B extends Buffer> {
      * @see #type()
      */
     public Class<?> primitiveClass() {
-        return this.primitiveClass;
+        return primitiveClass;
     }
 
     /**
@@ -394,7 +394,7 @@ public abstract class ElementType<B extends Buffer> {
      * @see #isVariableSize()
      */
     public int size() {
-        return this.size;
+        return size;
     }
 
     /**
@@ -450,7 +450,7 @@ public abstract class ElementType<B extends Buffer> {
      * @see #forDataID(char)
      */
     public char type() {
-        return this.javaType;
+        return javaType;
     }
 
     /**
@@ -477,7 +477,7 @@ public abstract class ElementType<B extends Buffer> {
      * @see #type()
      */
     public Class<?> wrapperClass() {
-        return this.wrapperClass;
+        return wrapperClass;
     }
 
     public static final ElementType<Buffer> BOOLEAN = new BooleanType();

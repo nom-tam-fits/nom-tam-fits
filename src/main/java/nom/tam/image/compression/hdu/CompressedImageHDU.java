@@ -160,7 +160,7 @@ public class CompressedImageHDU extends BinaryTableHDU {
      * @since 1.18
      */
     public int[] getImageAxes() throws FitsException {
-        int nAxis = this.myHeader.getIntValue(Compression.ZNAXIS);
+        int nAxis = myHeader.getIntValue(Compression.ZNAXIS);
         if (nAxis < 0) {
             throw new FitsException("Negative ZNAXIS (or NAXIS) value " + nAxis);
         }
@@ -174,7 +174,7 @@ public class CompressedImageHDU extends BinaryTableHDU {
 
         final int[] axes = new int[nAxis];
         for (int i = 1; i <= nAxis; i++) {
-            axes[nAxis - i] = this.myHeader.getIntValue(Compression.ZNAXISn.n(i));
+            axes[nAxis - i] = myHeader.getIntValue(Compression.ZNAXISn.n(i));
         }
 
         return axes;
@@ -246,7 +246,7 @@ public class CompressedImageHDU extends BinaryTableHDU {
      */
     @Override
     public boolean isHeader() {
-        return super.isHeader() && isHeader(this.myHeader);
+        return super.isHeader() && isHeader(myHeader);
     }
 
     /**

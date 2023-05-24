@@ -73,7 +73,8 @@ public class CompressorControlNameComputer {
         }
         if (Compression.ZCMPTYPE_PLIO_1.equalsIgnoreCase(compressionAlgorithm)) {
             return "PLIO";
-        } else if (Compression.ZCMPTYPE_HCOMPRESS_1.equalsIgnoreCase(compressionAlgorithm)) {
+        }
+        if (Compression.ZCMPTYPE_HCOMPRESS_1.equalsIgnoreCase(compressionAlgorithm)) {
             return "H";
         } else if (Compression.ZCMPTYPE_GZIP_2.equalsIgnoreCase(compressionAlgorithm)) {
             return "GZip2";

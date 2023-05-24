@@ -42,17 +42,17 @@ public class Quantize {
         private int startIndex;
 
         DoubleArrayPointer(double[] arrayIn) {
-            this.array = arrayIn;
+            array = arrayIn;
         }
 
         public DoubleArrayPointer copy(long l) {
-            DoubleArrayPointer result = new DoubleArrayPointer(this.array);
+            DoubleArrayPointer result = new DoubleArrayPointer(array);
             result.startIndex = (int) l;
             return result;
         }
 
         public double get(int ii) {
-            return this.array[ii + this.startIndex];
+            return array[ii + startIndex];
         }
     }
 
@@ -118,7 +118,7 @@ public class Quantize {
     private double xnoise5;
 
     public Quantize(QuantizeOption quantizeOption) {
-        this.parameter = quantizeOption;
+        parameter = quantizeOption;
     }
 
     /**
@@ -284,11 +284,11 @@ public class Quantize {
                 if (isNull(array.get(index))) {
                     continue;
                 }
-                if (array.get(index) < this.xminval) {
-                    this.xminval = array.get(index);
+                if (array.get(index) < xminval) {
+                    xminval = array.get(index);
                 }
-                if (array.get(index) > this.xmaxval) {
-                    this.xmaxval = array.get(index);
+                if (array.get(index) > xmaxval) {
+                    xmaxval = array.get(index);
                 }
                 ngoodpix++;
             }
@@ -301,24 +301,24 @@ public class Quantize {
     protected void computeMedianOfValuesEachRow(int nrows, int nrows2, double[] diffs2, double[] diffs3, double[] diffs5) {
         // compute median of the values for each row.
         if (nrows == 0) {
-            this.xnoise3 = 0;
-            this.xnoise5 = 0;
+            xnoise3 = 0;
+            xnoise5 = 0;
         } else if (nrows == 1) {
-            this.xnoise3 = diffs3[0];
-            this.xnoise5 = diffs5[0];
+            xnoise3 = diffs3[0];
+            xnoise5 = diffs5[0];
         } else {
             Arrays.sort(diffs3, 0, nrows);
             Arrays.sort(diffs5, 0, nrows);
-            this.xnoise3 = (diffs3[(nrows - 1) / 2] + diffs3[nrows / 2]) / 2.;
-            this.xnoise5 = (diffs5[(nrows - 1) / 2] + diffs5[nrows / 2]) / 2.;
+            xnoise3 = (diffs3[(nrows - 1) / 2] + diffs3[nrows / 2]) / 2.;
+            xnoise5 = (diffs5[(nrows - 1) / 2] + diffs5[nrows / 2]) / 2.;
         }
         if (nrows2 == 0) {
-            this.xnoise2 = 0;
+            xnoise2 = 0;
         } else if (nrows2 == 1) {
-            this.xnoise2 = diffs2[0];
+            xnoise2 = diffs2[0];
         } else {
             Arrays.sort(diffs2, 0, nrows2);
-            this.xnoise2 = (diffs2[(nrows2 - 1) / 2] + diffs2[nrows2 / 2]) / 2.;
+            xnoise2 = (diffs2[(nrows2 - 1) / 2] + diffs2[nrows2 / 2]) / 2.;
         }
     }
 
@@ -328,33 +328,33 @@ public class Quantize {
 
     private double getNextPixelAndCheckMinMax(DoubleArrayPointer rowpix, int ii) {
         double pixelValue = rowpix.get(ii); /* store the good pixel value */
-        if (pixelValue < this.xminval) {
-            this.xminval = pixelValue;
+        if (pixelValue < xminval) {
+            xminval = pixelValue;
         }
-        if (pixelValue > this.xmaxval) {
-            this.xmaxval = pixelValue;
+        if (pixelValue > xmaxval) {
+            xmaxval = pixelValue;
         }
         return pixelValue;
     }
 
     protected double getNoise2() {
-        return this.noise2;
+        return noise2;
     }
 
     protected double getNoise3() {
-        return this.noise3;
+        return noise3;
     }
 
     protected double getNoise5() {
-        return this.noise5;
+        return noise5;
     }
 
     private void initializeNoise() {
-        this.xnoise2 = 0;
-        this.xnoise3 = 0;
-        this.xnoise5 = 0;
-        this.xminval = Double.MAX_VALUE;
-        this.xmaxval = Double.MIN_VALUE;
+        xnoise2 = 0;
+        xnoise3 = 0;
+        xnoise5 = 0;
+        xminval = Double.MAX_VALUE;
+        xmaxval = Double.MIN_VALUE;
     }
 
     protected boolean isNull(double d) {
@@ -407,53 +407,53 @@ public class Quantize {
 
         long nx = (long) nxpix * (long) nypix;
         if (nx <= 1L) {
-            this.parameter.setBScale(1.);
-            this.parameter.setBZero(0.);
+            parameter.setBScale(1.);
+            parameter.setBZero(0.);
             return false;
         }
-        if (this.parameter.getQLevel() >= 0.) {
+        if (parameter.getQLevel() >= 0.) {
             /* estimate background noise using MAD pixel differences */
             calculateNoise(fdata, nxpix, nypix);
             // special case of an image filled with Nulls
-            if (this.parameter.isCheckNull() && this.ngood == 0) {
+            if (parameter.isCheckNull() && ngood == 0) {
                 /* set parameters to dummy values, which are not used */
-                this.minValue = 0.;
-                this.maxValue = 1.;
+                minValue = 0.;
+                maxValue = 1.;
                 stdev = 1;
             } else {
                 // use the minimum of noise2, noise3, and noise5 as the best
                 // noise value
-                stdev = this.noise3;
-                if (this.noise2 != 0. && this.noise2 < stdev) {
-                    stdev = this.noise2;
+                stdev = noise3;
+                if (noise2 != 0. && noise2 < stdev) {
+                    stdev = noise2;
                 }
-                if (this.noise5 != 0. && this.noise5 < stdev) {
-                    stdev = this.noise5;
+                if (noise5 != 0. && noise5 < stdev) {
+                    stdev = noise5;
                 }
             }
-            if (this.parameter.getQLevel() == 0.) {
+            if (parameter.getQLevel() == 0.) {
                 bScale = stdev / DEFAULT_QUANT_LEVEL; /* default quantization */
             } else {
-                bScale = stdev / this.parameter.getQLevel();
+                bScale = stdev / parameter.getQLevel();
             }
             if (bScale == 0.) {
                 return false; /* don't quantize */
             }
         } else {
             /* negative value represents the absolute quantization level */
-            bScale = -this.parameter.getQLevel();
+            bScale = -parameter.getQLevel();
             /* only nned to calculate the min and max values */
             calculateNoise(fdata, nxpix, nypix);
         }
         /* check that the range of quantized levels is not > range of int */
-        if ((this.maxValue - this.minValue) / bScale > 2. * MAX_INT_AS_DOUBLE - N_RESERVED_VALUES) {
+        if ((maxValue - minValue) / bScale > 2. * MAX_INT_AS_DOUBLE - N_RESERVED_VALUES) {
             return false; /* don't quantize */
         }
 
-        this.parameter.setBScale(bScale);
-        this.parameter.setMinValue(this.minValue);
-        this.parameter.setMaxValue(this.maxValue);
-        this.parameter.setCheckNull(this.parameter.isCheckNull() && this.ngood != nx);
+        parameter.setBScale(bScale);
+        parameter.setMinValue(minValue);
+        parameter.setMaxValue(maxValue);
+        parameter.setCheckNull(parameter.isCheckNull() && ngood != nx);
         return true; /* yes, data have been quantized */
     }
 
@@ -524,12 +524,12 @@ public class Quantize {
     }
 
     private void setNoiseResult(long ngoodpix) {
-        this.minValue = this.xminval;
-        this.maxValue = this.xmaxval;
-        this.ngood = ngoodpix;
-        this.noise2 = NOISE_2_MULTIPLICATOR * this.xnoise2;
-        this.noise3 = NOISE_3_MULTIPLICATOR * this.xnoise3;
-        this.noise5 = NOISE_5_MULTIPLICATOR * this.xnoise5;
+        minValue = xminval;
+        maxValue = xmaxval;
+        ngood = ngoodpix;
+        noise2 = NOISE_2_MULTIPLICATOR * xnoise2;
+        noise3 = NOISE_3_MULTIPLICATOR * xnoise3;
+        noise5 = NOISE_5_MULTIPLICATOR * xnoise5;
     }
 
     private void swapElements(double[] array, int one, int second) {

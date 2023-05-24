@@ -48,34 +48,34 @@ public class ImageNullPixelMask {
     private final String compressAlgorithm;
 
     public ImageNullPixelMask(int tileCount, long nullValue, String compressAlgorithm) {
-        this.nullPixelMasks = new AbstractNullPixelMask[tileCount];
+        nullPixelMasks = new AbstractNullPixelMask[tileCount];
         this.nullValue = nullValue;
         this.compressAlgorithm = compressAlgorithm;
-        this.compressorControl = CompressorProvider.findCompressorControl(null, this.compressAlgorithm, byte.class);
+        compressorControl = CompressorProvider.findCompressorControl(null, this.compressAlgorithm, byte.class);
     }
 
     public NullPixelMaskPreserver createTilePreserver(TileBuffer tileBuffer, int tileIndex) {
-        return add(new NullPixelMaskPreserver(tileBuffer, tileIndex, this.nullValue, this.compressorControl));
+        return add(new NullPixelMaskPreserver(tileBuffer, tileIndex, nullValue, compressorControl));
     }
 
     public NullPixelMaskRestorer createTileRestorer(TileBuffer tileBuffer, int tileIndex) {
-        return add(new NullPixelMaskRestorer(tileBuffer, tileIndex, this.nullValue, this.compressorControl));
+        return add(new NullPixelMaskRestorer(tileBuffer, tileIndex, nullValue, compressorControl));
     }
 
     public byte[][] getColumn() {
-        byte[][] column = new byte[this.nullPixelMasks.length][];
-        for (AbstractNullPixelMask tileMask : this.nullPixelMasks) {
+        byte[][] column = new byte[nullPixelMasks.length][];
+        for (AbstractNullPixelMask tileMask : nullPixelMasks) {
             column[tileMask.getTileIndex()] = tileMask.getMaskBytes();
         }
         return column;
     }
 
     public String getCompressAlgorithm() {
-        return this.compressAlgorithm;
+        return compressAlgorithm;
     }
 
     public void setColumn(byte[][] nullPixels) {
-        for (AbstractNullPixelMask tileMask : this.nullPixelMasks) {
+        for (AbstractNullPixelMask tileMask : nullPixelMasks) {
             byte[] tileMaskBytes = nullPixels[tileMask.getTileIndex()];
             if (tileMaskBytes != null && tileMaskBytes.length > 0) {
                 tileMask.setMask(ByteBuffer.wrap(tileMaskBytes));
@@ -84,7 +84,7 @@ public class ImageNullPixelMask {
     }
 
     private <T extends AbstractNullPixelMask> T add(T nullPixelMask) {
-        this.nullPixelMasks[nullPixelMask.getTileIndex()] = nullPixelMask;
+        nullPixelMasks[nullPixelMask.getTileIndex()] = nullPixelMask;
         return nullPixelMask;
     }
 
