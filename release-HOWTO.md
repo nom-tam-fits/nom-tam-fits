@@ -22,6 +22,8 @@ To release packages, you will need to:
  * Make sure the CI build on github passes without errors. If the CI build has issues, get them fixed before proceeding.
  
  * Check that unit tests coverage did not decrease compared to the prior release. (You should not merge pull request in the first place until they maintain or increase test coverage.) Small decrements in overall coverage due to a reduction in the total lines of code are acceptable, as long as the diff coverage itself is equal or above the previous coverage metric. (You should generally insist on 100% diff-coverage, unless there is a good reason why it cannot be attained.) 
+
+ * Clean up and format code, e.g. with Eclipse's Code Cleanup feature to ensure a degree of consistentcy across the source tree. Use the same formatting rules for subsequent releases. After the code has been cleaned/formatted, run `mvn clean test` to confirm viability before committing.
  
  * Edit `src/changes/changes.xml` to summarize the changes for the release, linking entries to issues or pull request as appropriate. Commit and push the updates as necessary. Note any issues pertainig to compatibility at the top of the list of actions.
  
