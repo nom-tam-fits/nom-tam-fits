@@ -343,29 +343,29 @@ public class ColumnTable<T> implements DataTable {
     public void addColumn(Object newColumn, int size) throws TableException {
 
         String classname = newColumn.getClass().getName();
-        this.nrow = checkColumnConsistency(newColumn, classname, this.nrow, size);
+        nrow = checkColumnConsistency(newColumn, classname, nrow, size);
 
-        int ncol = this.arrays.length;
+        int ncol = arrays.length;
 
         Object[] newArrays = new Object[ncol + 1];
         int[] newSizes = new int[ncol + 1];
         Class<?>[] newBases = new Class[ncol + 1];
         char[] newTypes = new char[ncol + 1];
 
-        System.arraycopy(this.arrays, 0, newArrays, 0, ncol);
-        System.arraycopy(this.sizes, 0, newSizes, 0, ncol);
-        System.arraycopy(this.bases, 0, newBases, 0, ncol);
-        System.arraycopy(this.types, 0, newTypes, 0, ncol);
+        System.arraycopy(arrays, 0, newArrays, 0, ncol);
+        System.arraycopy(sizes, 0, newSizes, 0, ncol);
+        System.arraycopy(bases, 0, newBases, 0, ncol);
+        System.arraycopy(types, 0, newTypes, 0, ncol);
 
-        this.arrays = newArrays;
-        this.sizes = newSizes;
-        this.bases = newBases;
-        this.types = newTypes;
+        arrays = newArrays;
+        sizes = newSizes;
+        bases = newBases;
+        types = newTypes;
 
-        this.arrays[ncol] = newColumn;
-        this.sizes[ncol] = size;
-        this.bases[ncol] = ArrayFuncs.getBaseClass(newColumn);
-        this.types[ncol] = classname.charAt(1);
+        arrays[ncol] = newColumn;
+        sizes[ncol] = size;
+        bases[ncol] = ArrayFuncs.getBaseClass(newColumn);
+        types[ncol] = classname.charAt(1);
         addPointer(newColumn);
     }
 
@@ -411,25 +411,25 @@ public class ColumnTable<T> implements DataTable {
      *             structure of the rows/columns
      */
     public void addRow(Object[] row) throws TableException {
-        if (this.arrays.length == 0) {
+        if (arrays.length == 0) {
             for (Object element : row) {
                 addColumn(element, Array.getLength(element));
             }
         } else {
-            if (row.length != this.arrays.length) {
+            if (row.length != arrays.length) {
                 throw new TableException("Row length mismatch");
             }
             for (int i = 0; i < row.length; i++) {
-                if (row[i].getClass() != this.arrays[i].getClass() || Array.getLength(row[i]) != this.sizes[i]) {
+                if (row[i].getClass() != arrays[i].getClass() || Array.getLength(row[i]) != sizes[i]) {
                     throw new TableException("Row column mismatch at column:" + i);
                 }
-                Object xarray = ArrayFuncs.newInstance(this.bases[i], (this.nrow + 1) * this.sizes[i]);
-                System.arraycopy(this.arrays[i], 0, xarray, 0, this.nrow * this.sizes[i]);
-                System.arraycopy(row[i], 0, xarray, this.nrow * this.sizes[i], this.sizes[i]);
-                this.arrays[i] = xarray;
+                Object xarray = ArrayFuncs.newInstance(bases[i], (nrow + 1) * sizes[i]);
+                System.arraycopy(arrays[i], 0, xarray, 0, nrow * sizes[i]);
+                System.arraycopy(row[i], 0, xarray, nrow * sizes[i], sizes[i]);
+                arrays[i] = xarray;
             }
             initializePointers();
-            this.nrow++;
+            nrow++;
         }
     }
 
@@ -462,8 +462,8 @@ public class ColumnTable<T> implements DataTable {
         // Now check that that we fill up all of the arrays exactly.
         int ratio = 0;
 
-        this.types = new char[newArrays.length];
-        this.bases = new Class[newArrays.length];
+        types = new char[newArrays.length];
+        bases = new Class[newArrays.length];
 
         for (int i = 0; i < newArrays.length; i += 1) {
 
@@ -471,13 +471,13 @@ public class ColumnTable<T> implements DataTable {
 
             ratio = checkColumnConsistency(newArrays[i], classname, ratio, newSizes[i]);
 
-            this.types[i] = classname.charAt(1);
-            this.bases[i] = ArrayFuncs.getBaseClass(newArrays[i]);
+            types[i] = classname.charAt(1);
+            bases[i] = ArrayFuncs.getBaseClass(newArrays[i]);
         }
 
-        this.nrow = ratio;
-        this.arrays = newArrays;
-        this.sizes = newSizes;
+        nrow = ratio;
+        arrays = newArrays;
+        sizes = newSizes;
     }
 
     private int checkColumnConsistency(Object data, String classname, int ratio, int size) throws TableException {
@@ -514,7 +514,7 @@ public class ColumnTable<T> implements DataTable {
     }
 
     public ColumnTable<T> copy() throws TableException {
-        return new ColumnTable<>((Object[]) ArrayFuncs.deepClone(this.arrays), this.sizes.clone());
+        return new ColumnTable<>((Object[]) ArrayFuncs.deepClone(arrays), sizes.clone());
     }
 
     /**
@@ -529,7 +529,7 @@ public class ColumnTable<T> implements DataTable {
      *             the length is negative.
      */
     public void deleteColumns(int start, int len) throws TableException {
-        int ncol = this.arrays.length;
+        int ncol = arrays.length;
         if (start < 0 || len < 0 || start + len > ncol) {
             throw new TableException("Invalid request to delete columns start: " + start + " length:" + len + " for table with " + ncol + " columns.");
         }
@@ -544,22 +544,22 @@ public class ColumnTable<T> implements DataTable {
         Class<?>[] newBases = new Class<?>[ncol];
         char[] newTypes = new char[ncol];
 
-        System.arraycopy(this.arrays, 0, newArrays, 0, start);
-        System.arraycopy(this.sizes, 0, newSizes, 0, start);
-        System.arraycopy(this.bases, 0, newBases, 0, start);
-        System.arraycopy(this.types, 0, newTypes, 0, start);
+        System.arraycopy(arrays, 0, newArrays, 0, start);
+        System.arraycopy(sizes, 0, newSizes, 0, start);
+        System.arraycopy(bases, 0, newBases, 0, start);
+        System.arraycopy(types, 0, newTypes, 0, start);
 
         int rem = ocol - (start + len);
 
-        System.arraycopy(this.arrays, start + len, newArrays, start, rem);
-        System.arraycopy(this.sizes, start + len, newSizes, start, rem);
-        System.arraycopy(this.bases, start + len, newBases, start, rem);
-        System.arraycopy(this.types, start + len, newTypes, start, rem);
+        System.arraycopy(arrays, start + len, newArrays, start, rem);
+        System.arraycopy(sizes, start + len, newSizes, start, rem);
+        System.arraycopy(bases, start + len, newBases, start, rem);
+        System.arraycopy(types, start + len, newTypes, start, rem);
 
-        this.arrays = newArrays;
-        this.sizes = newSizes;
-        this.bases = newBases;
-        this.types = newTypes;
+        arrays = newArrays;
+        sizes = newSizes;
+        bases = newBases;
+        types = newTypes;
 
         initializePointers();
     }
@@ -590,28 +590,28 @@ public class ColumnTable<T> implements DataTable {
      */
     public void deleteRows(int row, int length) throws TableException {
 
-        if (row < 0 || length < 0 || row + length > this.nrow) {
-            throw new TableException("Invalid request to delete rows start: " + row + " length:" + length + " for table with " + this.nrow + " rows.");
+        if (row < 0 || length < 0 || row + length > nrow) {
+            throw new TableException("Invalid request to delete rows start: " + row + " length:" + length + " for table with " + nrow + " rows.");
         }
 
         if (length == 0) {
             return;
         }
 
-        for (int col = 0; col < this.arrays.length; col += 1) {
+        for (int col = 0; col < arrays.length; col += 1) {
 
-            int sz = this.sizes[col];
-            int newSize = sz * (this.nrow - length);
-            Object newArr = ArrayFuncs.newInstance(this.bases[col], newSize);
+            int sz = sizes[col];
+            int newSize = sz * (nrow - length);
+            Object newArr = ArrayFuncs.newInstance(bases[col], newSize);
 
             // Copy whatever comes before the deletion
-            System.arraycopy(this.arrays[col], 0, newArr, 0, row * sz);
+            System.arraycopy(arrays[col], 0, newArr, 0, row * sz);
 
             // Copy whatever comes after the deletion
-            System.arraycopy(this.arrays[col], (row + length) * sz, newArr, row * sz, (this.nrow - row - length) * sz);
-            this.arrays[col] = newArr;
+            System.arraycopy(arrays[col], (row + length) * sz, newArr, row * sz, (nrow - row - length) * sz);
+            arrays[col] = newArr;
         }
-        this.nrow -= length;
+        nrow -= length;
         initializePointers();
     }
 
@@ -622,7 +622,7 @@ public class ColumnTable<T> implements DataTable {
      */
     @SuppressFBWarnings(value = "EI_EXPOSE_REP", justification = "intended exposure of mutable data")
     public Class<?>[] getBases() {
-        return this.bases;
+        return bases;
     }
 
     /**
@@ -650,7 +650,7 @@ public class ColumnTable<T> implements DataTable {
      */
     @Override
     public Object getColumn(int col) {
-        return this.arrays[col];
+        return arrays[col];
     }
 
     /**
@@ -658,7 +658,7 @@ public class ColumnTable<T> implements DataTable {
      */
     @SuppressFBWarnings(value = "EI_EXPOSE_REP", justification = "intended exposure of mutable data")
     public Object[] getColumns() {
-        return this.arrays;
+        return arrays;
     }
 
     /**
@@ -674,8 +674,8 @@ public class ColumnTable<T> implements DataTable {
     @Override
     public Object getElement(int row, int col) {
 
-        Object x = ArrayFuncs.newInstance(this.bases[col], this.sizes[col]);
-        System.arraycopy(this.arrays[col], this.sizes[col] * row, x, 0, this.sizes[col]);
+        Object x = ArrayFuncs.newInstance(bases[col], sizes[col]);
+        System.arraycopy(arrays[col], sizes[col] * row, x, 0, sizes[col]);
         return x;
     }
 
@@ -683,7 +683,7 @@ public class ColumnTable<T> implements DataTable {
      * @return the pointer state
      */
     public T getExtraState() {
-        return this.extraState;
+        return extraState;
     }
 
     /**
@@ -691,7 +691,7 @@ public class ColumnTable<T> implements DataTable {
      */
     @Override
     public int getNCols() {
-        return this.arrays.length;
+        return arrays.length;
     }
 
     /**
@@ -699,7 +699,7 @@ public class ColumnTable<T> implements DataTable {
      */
     @Override
     public int getNRows() {
-        return this.nrow;
+        return nrow;
     }
 
     /**
@@ -712,8 +712,8 @@ public class ColumnTable<T> implements DataTable {
     @Override
     public Object getRow(int row) {
 
-        Object[] x = new Object[this.arrays.length];
-        for (int col = 0; col < this.arrays.length; col += 1) {
+        Object[] x = new Object[arrays.length];
+        for (int col = 0; col < arrays.length; col += 1) {
             x[col] = getElement(row, col);
         }
         return x;
@@ -721,7 +721,7 @@ public class ColumnTable<T> implements DataTable {
 
     @SuppressFBWarnings(value = "EI_EXPOSE_REP", justification = "intended exposure of mutable data")
     public int[] getSizes() {
-        return this.sizes;
+        return sizes;
     }
 
     /**
@@ -731,7 +731,7 @@ public class ColumnTable<T> implements DataTable {
      */
     @SuppressFBWarnings(value = "EI_EXPOSE_REP", justification = "intended exposure of mutable data")
     public char[] getTypes() {
-        return this.types;
+        return types;
     }
 
     /**
@@ -740,25 +740,25 @@ public class ColumnTable<T> implements DataTable {
      */
     protected void initializePointers() {
         int[] columnIndex = new int[MAX_COLUMN_INDEXES];
-        for (int col = 0; col < this.arrays.length; col += 1) {
-            columnIndex[this.types[col]]++;
+        for (int col = 0; col < arrays.length; col += 1) {
+            columnIndex[types[col]]++;
         }
         // Allocate the pointer arrays. Note that many will be
         // zero-length.
-        this.bytePointers = new byte[columnIndex[ElementType.BYTE.type()]][];
-        this.shortPointers = new short[columnIndex[ElementType.SHORT.type()]][];
-        this.intPointers = new int[columnIndex[ElementType.INT.type()]][];
-        this.longPointers = new long[columnIndex[ElementType.LONG.type()]][];
-        this.floatPointers = new float[columnIndex[ElementType.FLOAT.type()]][];
-        this.doublePointers = new double[columnIndex[ElementType.DOUBLE.type()]][];
-        this.charPointers = new char[columnIndex[ElementType.CHAR.type()]][];
-        this.booleanPointers = new boolean[columnIndex[ElementType.BOOLEAN.type()]][];
+        bytePointers = new byte[columnIndex[ElementType.BYTE.type()]][];
+        shortPointers = new short[columnIndex[ElementType.SHORT.type()]][];
+        intPointers = new int[columnIndex[ElementType.INT.type()]][];
+        longPointers = new long[columnIndex[ElementType.LONG.type()]][];
+        floatPointers = new float[columnIndex[ElementType.FLOAT.type()]][];
+        doublePointers = new double[columnIndex[ElementType.DOUBLE.type()]][];
+        charPointers = new char[columnIndex[ElementType.CHAR.type()]][];
+        booleanPointers = new boolean[columnIndex[ElementType.BOOLEAN.type()]][];
         // Now set the pointers.
         Arrays.fill(columnIndex, 0);
-        for (int col = 0; col < this.arrays.length; col += 1) {
-            char colType = this.types[col];
+        for (int col = 0; col < arrays.length; col += 1) {
+            char colType = types[col];
             PointerAccess<?> accessor = POINTER_ACCESSORS_BY_TYPE[colType];
-            Array.set(accessor.get(this), columnIndex[colType], this.arrays[col]);
+            Array.set(accessor.get(this), columnIndex[colType], arrays[col]);
             columnIndex[colType]++;
         }
     }
@@ -774,13 +774,13 @@ public class ColumnTable<T> implements DataTable {
     public void read(ArrayDataInput is) throws IOException {
         int[] columnIndex = new int[MAX_COLUMN_INDEXES];
         // While we have not finished reading the table..
-        for (int row = 0; row < this.nrow; row += 1) {
+        for (int row = 0; row < nrow; row += 1) {
             Arrays.fill(columnIndex, 0);
             // Loop over the columns within the row.
-            for (int col = 0; col < this.arrays.length; col += 1) {
-                int arrOffset = this.sizes[col] * row;
-                int size = this.sizes[col];
-                char colType = this.types[col];
+            for (int col = 0; col < arrays.length; col += 1) {
+                int arrOffset = sizes[col] * row;
+                int size = sizes[col];
+                char colType = types[col];
                 PointerAccess<?> accessor = POINTER_ACCESSORS_BY_TYPE[colType];
                 accessor.read(this, is, columnIndex[colType], arrOffset, size);
                 columnIndex[colType] += 1;
@@ -803,10 +803,10 @@ public class ColumnTable<T> implements DataTable {
     @Override
     public void setColumn(int col, Object newColumn) throws TableException {
 
-        boolean reset = newColumn.getClass() != this.arrays[col].getClass() || Array.getLength(newColumn) != Array.getLength(this.arrays[col]);
-        this.arrays[col] = newColumn;
+        boolean reset = newColumn.getClass() != arrays[col].getClass() || Array.getLength(newColumn) != Array.getLength(arrays[col]);
+        arrays[col] = newColumn;
         if (reset) {
-            setup(this.arrays, this.sizes);
+            setup(arrays, sizes);
         } else {
             // This is required, because otherwise the typed pointer may point
             // to the old
@@ -834,15 +834,15 @@ public class ColumnTable<T> implements DataTable {
 
         String classname = x.getClass().getName();
 
-        if (!classname.equals("[" + this.types[col])) {
+        if (!classname.equals("[" + types[col])) {
             throw new TableException("setElement: Incompatible element type");
         }
 
-        if (Array.getLength(x) != this.sizes[col]) {
+        if (Array.getLength(x) != sizes[col]) {
             throw new TableException("setElement: Incompatible element size");
         }
 
-        System.arraycopy(x, 0, this.arrays[col], this.sizes[col] * row, this.sizes[col]);
+        System.arraycopy(x, 0, arrays[col], sizes[col] * row, sizes[col]);
     }
 
     /**
@@ -853,7 +853,7 @@ public class ColumnTable<T> implements DataTable {
      *            the extra state to set.
      */
     public void setExtraState(T opaque) {
-        this.extraState = opaque;
+        extraState = opaque;
     }
 
     /**
@@ -874,7 +874,7 @@ public class ColumnTable<T> implements DataTable {
             throw new TableException("setRow: Incompatible row");
         }
 
-        for (int col = 0; col < this.arrays.length; col += 1) {
+        for (int col = 0; col < arrays.length; col += 1) {
             setElement(row, col, ((Object[]) x)[col]);
         }
     }
@@ -905,15 +905,15 @@ public class ColumnTable<T> implements DataTable {
      */
     public void write(ArrayDataOutput os) throws IOException {
         int[] columnIndex = new int[MAX_COLUMN_INDEXES];
-        for (int row = 0; row < this.nrow; row += 1) {
+        for (int row = 0; row < nrow; row += 1) {
             Arrays.fill(columnIndex, 0);
             // Loop over the columns within the row.
-            for (int col = 0; col < this.arrays.length; col += 1) {
+            for (int col = 0; col < arrays.length; col += 1) {
 
-                int arrOffset = this.sizes[col] * row;
-                int size = this.sizes[col];
+                int arrOffset = sizes[col] * row;
+                int size = sizes[col];
 
-                char colType = this.types[col];
+                char colType = types[col];
                 POINTER_ACCESSORS_BY_TYPE[colType].write(this, os, columnIndex[colType], arrOffset, size);
                 columnIndex[colType] += 1;
             }
@@ -936,16 +936,16 @@ public class ColumnTable<T> implements DataTable {
      */
     public void write(ArrayDataOutput os, int rowStart, int rowEnd, int columnNr) throws IOException {
         int[] columnIndex = new int[MAX_COLUMN_INDEXES];
-        for (int row = 0; row < this.nrow; row += 1) {
+        for (int row = 0; row < nrow; row += 1) {
             if (row >= rowStart && row < rowEnd) {
                 Arrays.fill(columnIndex, 0);
                 // Loop over the columns within the row.
-                for (int col = 0; col < this.arrays.length; col += 1) {
+                for (int col = 0; col < arrays.length; col += 1) {
 
-                    int arrOffset = this.sizes[col] * row;
-                    int size = this.sizes[col];
+                    int arrOffset = sizes[col] * row;
+                    int size = sizes[col];
 
-                    char colType = this.types[col];
+                    char colType = types[col];
                     if (columnNr == col) {
                         POINTER_ACCESSORS_BY_TYPE[colType].write(this, os, columnIndex[colType], arrOffset, size);
                     }
@@ -972,14 +972,14 @@ public class ColumnTable<T> implements DataTable {
     public void read(ArrayDataInput is, int rowStart, int rowEnd, int columnNr) throws IOException {
         int[] columnIndex = new int[MAX_COLUMN_INDEXES];
         // While we have not finished reading the table..
-        for (int row = 0; row < this.nrow; row += 1) {
+        for (int row = 0; row < nrow; row += 1) {
             if (row >= rowStart && row < rowEnd) {
                 Arrays.fill(columnIndex, 0);
                 // Loop over the columns within the row.
-                for (int col = 0; col < this.arrays.length; col += 1) {
-                    int arrOffset = this.sizes[col] * row;
-                    int size = this.sizes[col];
-                    char colType = this.types[col];
+                for (int col = 0; col < arrays.length; col += 1) {
+                    int arrOffset = sizes[col] * row;
+                    int size = sizes[col];
+                    char colType = types[col];
                     if (col == columnNr) {
                         POINTER_ACCESSORS_BY_TYPE[colType].read(this, is, columnIndex[colType], arrOffset, size);
                     }

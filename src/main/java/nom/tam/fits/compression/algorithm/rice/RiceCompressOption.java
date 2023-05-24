@@ -59,7 +59,7 @@ public class RiceCompressOption implements ICompressOption {
     public RiceCompressOption copy() {
         try {
             RiceCompressOption copy = (RiceCompressOption) clone();
-            copy.parameters = this.parameters.copy(copy);
+            copy.parameters = parameters.copy(copy);
             return copy;
         } catch (CloneNotSupportedException e) {
             throw new IllegalStateException("option could not be cloned", e);
@@ -67,16 +67,16 @@ public class RiceCompressOption implements ICompressOption {
     }
 
     public final int getBlockSize() {
-        return this.blockSize;
+        return blockSize;
     }
 
     public final int getBytePix() {
-        return this.bytePix == null ? DEFAULT_RICE_BYTEPIX : this.bytePix;
+        return bytePix == null ? DEFAULT_RICE_BYTEPIX : bytePix;
     }
 
     @Override
     public RiceCompressParameters getCompressionParameters() {
-        return this.parameters;
+        return parameters;
     }
 
     @Override
@@ -85,18 +85,18 @@ public class RiceCompressOption implements ICompressOption {
     }
 
     public RiceCompressOption setBlockSize(int value) {
-        this.blockSize = value;
+        blockSize = value;
         return this;
     }
 
     public RiceCompressOption setBytePix(int value) {
-        this.bytePix = value;
+        bytePix = value;
         return this;
     }
 
     protected RiceCompressOption setDefaultBytePix(int value) {
-        if (this.bytePix == null) {
-            this.bytePix = value;
+        if (bytePix == null) {
+            bytePix = value;
         }
         return this;
     }

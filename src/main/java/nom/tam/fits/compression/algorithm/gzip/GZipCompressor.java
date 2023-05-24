@@ -60,17 +60,17 @@ public abstract class GZipCompressor<T extends Buffer> implements ICompressor<T>
 
         public ByteGZipCompressor() {
             super(1);
-            this.nioBuffer = ByteBuffer.wrap(this.buffer);
+            nioBuffer = ByteBuffer.wrap(buffer);
         }
 
         @Override
         protected void getPixel(ByteBuffer pixelData, byte[] pixelBytes) {
-            this.nioBuffer.put(pixelData);
+            nioBuffer.put(pixelData);
         }
 
         @Override
         protected void setPixel(ByteBuffer pixelData, byte[] pixelBytes) {
-            pixelData.put(this.nioBuffer);
+            pixelData.put(nioBuffer);
         }
     }
 
@@ -80,17 +80,17 @@ public abstract class GZipCompressor<T extends Buffer> implements ICompressor<T>
 
         public DoubleGZipCompressor() {
             super(BYTE_SIZE_OF_DOUBLE);
-            this.nioBuffer = ByteBuffer.wrap(this.buffer).asDoubleBuffer();
+            nioBuffer = ByteBuffer.wrap(buffer).asDoubleBuffer();
         }
 
         @Override
         protected void getPixel(DoubleBuffer pixelData, byte[] pixelBytes) {
-            this.nioBuffer.put(pixelData);
+            nioBuffer.put(pixelData);
         }
 
         @Override
         protected void setPixel(DoubleBuffer pixelData, byte[] pixelBytes) {
-            pixelData.put(this.nioBuffer);
+            pixelData.put(nioBuffer);
         }
     }
 
@@ -100,17 +100,17 @@ public abstract class GZipCompressor<T extends Buffer> implements ICompressor<T>
 
         public FloatGZipCompressor() {
             super(BYTE_SIZE_OF_FLOAT);
-            this.nioBuffer = ByteBuffer.wrap(this.buffer).asFloatBuffer();
+            nioBuffer = ByteBuffer.wrap(buffer).asFloatBuffer();
         }
 
         @Override
         protected void getPixel(FloatBuffer pixelData, byte[] pixelBytes) {
-            this.nioBuffer.put(pixelData);
+            nioBuffer.put(pixelData);
         }
 
         @Override
         protected void setPixel(FloatBuffer pixelData, byte[] pixelBytes) {
-            pixelData.put(this.nioBuffer);
+            pixelData.put(nioBuffer);
         }
     }
 
@@ -121,17 +121,17 @@ public abstract class GZipCompressor<T extends Buffer> implements ICompressor<T>
 
         public IntGZipCompressor() {
             super(BYTE_SIZE_OF_INT);
-            this.nioBuffer = ByteBuffer.wrap(this.buffer).asIntBuffer();
+            nioBuffer = ByteBuffer.wrap(buffer).asIntBuffer();
         }
 
         @Override
         protected void getPixel(IntBuffer pixelData, byte[] pixelBytes) {
-            this.nioBuffer.put(pixelData);
+            nioBuffer.put(pixelData);
         }
 
         @Override
         protected void setPixel(IntBuffer pixelData, byte[] pixelBytes) {
-            pixelData.put(this.nioBuffer);
+            pixelData.put(nioBuffer);
         }
     }
 
@@ -141,17 +141,17 @@ public abstract class GZipCompressor<T extends Buffer> implements ICompressor<T>
 
         public LongGZipCompressor() {
             super(BYTE_SIZE_OF_LONG);
-            this.nioBuffer = ByteBuffer.wrap(this.buffer).asLongBuffer();
+            nioBuffer = ByteBuffer.wrap(buffer).asLongBuffer();
         }
 
         @Override
         protected void getPixel(LongBuffer pixelData, byte[] pixelBytes) {
-            this.nioBuffer.put(pixelData);
+            nioBuffer.put(pixelData);
         }
 
         @Override
         protected void setPixel(LongBuffer pixelData, byte[] pixelBytes) {
-            pixelData.put(this.nioBuffer);
+            pixelData.put(nioBuffer);
         }
     }
 
@@ -161,17 +161,17 @@ public abstract class GZipCompressor<T extends Buffer> implements ICompressor<T>
 
         public ShortGZipCompressor() {
             super(BYTE_SIZE_OF_SHORT);
-            this.nioBuffer = ByteBuffer.wrap(this.buffer).asShortBuffer();
+            nioBuffer = ByteBuffer.wrap(buffer).asShortBuffer();
         }
 
         @Override
         protected void getPixel(ShortBuffer pixelData, byte[] pixelBytes) {
-            this.nioBuffer.put(pixelData);
+            nioBuffer.put(pixelData);
         }
 
         @Override
         protected void setPixel(ShortBuffer pixelData, byte[] pixelBytes) {
-            pixelData.put(this.nioBuffer);
+            pixelData.put(nioBuffer);
         }
     }
 
@@ -191,20 +191,20 @@ public abstract class GZipCompressor<T extends Buffer> implements ICompressor<T>
 
         private TypeConversion(ElementType<B> from) {
             this.from = from;
-            this.to = getElementType(GZipCompressor.this.primitiveSize);
-            this.toBuffer = GZipCompressor.this.nioBuffer;
-            this.fromBuffer = from.asTypedBuffer(ByteBuffer.wrap(GZipCompressor.this.buffer));
-            this.fromArray = from.newArray(DEFAULT_GZIP_BUFFER_SIZE / from.size());
-            this.toArray = this.to.newArray(DEFAULT_GZIP_BUFFER_SIZE / this.to.size());
+            to = getElementType(GZipCompressor.this.primitiveSize);
+            toBuffer = GZipCompressor.this.nioBuffer;
+            fromBuffer = from.asTypedBuffer(ByteBuffer.wrap(GZipCompressor.this.buffer));
+            fromArray = from.newArray(DEFAULT_GZIP_BUFFER_SIZE / from.size());
+            toArray = to.newArray(DEFAULT_GZIP_BUFFER_SIZE / to.size());
         }
 
         int copy(int byteCount) {
-            this.fromBuffer.rewind();
-            this.toBuffer.rewind();
-            this.from.getArray(this.fromBuffer, this.fromArray);
-            ArrayFuncs.copyInto(this.fromArray, this.toArray);
-            this.to.putArray(this.toBuffer, this.toArray);
-            return byteCount * this.to.size() / this.from.size();
+            fromBuffer.rewind();
+            toBuffer.rewind();
+            from.getArray(fromBuffer, fromArray);
+            ArrayFuncs.copyInto(fromArray, toArray);
+            to.putArray(toBuffer, toArray);
+            return byteCount * to.size() / from.size();
         }
     }
 
@@ -220,7 +220,7 @@ public abstract class GZipCompressor<T extends Buffer> implements ICompressor<T>
 
     private final byte[] sizeArray = new byte[ElementType.INT.size()];
 
-    private final IntBuffer sizeBuffer = ByteBuffer.wrap(this.sizeArray).order(ByteOrder.LITTLE_ENDIAN).asIntBuffer();
+    private final IntBuffer sizeBuffer = ByteBuffer.wrap(sizeArray).order(ByteOrder.LITTLE_ENDIAN).asIntBuffer();
 
     public GZipCompressor(int primitiveSize) {
         this.primitiveSize = primitiveSize;
@@ -228,15 +228,15 @@ public abstract class GZipCompressor<T extends Buffer> implements ICompressor<T>
 
     @Override
     public boolean compress(T pixelData, ByteBuffer compressed) {
-        this.nioBuffer.rewind();
+        nioBuffer.rewind();
         int pixelDataLimit = pixelData.limit();
         try (GZIPOutputStream zip = createGZipOutputStream(pixelDataLimit, compressed)) {
             while (pixelData.hasRemaining()) {
-                int count = Math.min(pixelData.remaining(), this.nioBuffer.capacity());
+                int count = Math.min(pixelData.remaining(), nioBuffer.capacity());
                 pixelData.limit(pixelData.position() + count);
                 getPixel(pixelData, null);
-                zip.write(this.buffer, 0, this.nioBuffer.position() * this.primitiveSize);
-                this.nioBuffer.rewind();
+                zip.write(buffer, 0, nioBuffer.position() * primitiveSize);
+                nioBuffer.rewind();
                 pixelData.limit(pixelDataLimit);
             }
         } catch (IOException e) {
@@ -248,16 +248,16 @@ public abstract class GZipCompressor<T extends Buffer> implements ICompressor<T>
 
     @Override
     public void decompress(ByteBuffer compressed, T pixelData) {
-        this.nioBuffer.rewind();
+        nioBuffer.rewind();
         TypeConversion<Buffer> typeConverter = getTypeConverter(compressed, pixelData.limit());
         try (GZIPInputStream zip = createGZipInputStream(compressed)) {
             int count;
-            while ((count = zip.read(this.buffer)) >= 0) {
+            while ((count = zip.read(buffer)) >= 0) {
                 if (typeConverter != null) {
                     count = typeConverter.copy(count);
                 }
-                this.nioBuffer.position(0);
-                this.nioBuffer.limit(count / this.primitiveSize);
+                nioBuffer.position(0);
+                nioBuffer.limit(count / primitiveSize);
                 setPixel(pixelData, null);
             }
         } catch (IOException e) {
@@ -274,14 +274,14 @@ public abstract class GZipCompressor<T extends Buffer> implements ICompressor<T>
         if (compressed.limit() > FitsIO.BYTES_IN_INTEGER) {
             int oldPosition = compressed.position();
             try {
-                compressed.position(compressed.limit() - this.sizeArray.length);
-                compressed.get(this.sizeArray);
-                int uncompressedSize = this.sizeBuffer.get(0);
+                compressed.position(compressed.limit() - sizeArray.length);
+                compressed.get(sizeArray);
+                int uncompressedSize = sizeBuffer.get(0);
                 if (uncompressedSize > 0) {
                     compressed.position(oldPosition);
                     if (uncompressedSize % nrOfPrimitiveElements == 0) {
                         int compressedPrimitiveSize = uncompressedSize / nrOfPrimitiveElements;
-                        if (compressedPrimitiveSize != this.primitiveSize) {
+                        if (compressedPrimitiveSize != primitiveSize) {
                             return new TypeConversion<>(getElementType(compressedPrimitiveSize));
                         }
                     }

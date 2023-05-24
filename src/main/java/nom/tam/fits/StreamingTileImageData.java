@@ -102,7 +102,7 @@ public class StreamingTileImageData extends ImageData {
             this.steps = steps;
         }
 
-        this.imageTiler = tiler;
+        imageTiler = tiler;
         this.corners = corners;
         this.lengths = lengths;
     }
@@ -117,12 +117,12 @@ public class StreamingTileImageData extends ImageData {
     @Override
     public void write(ArrayDataOutput o) throws FitsException {
         try {
-            final ImageTiler tiler = this.imageTiler;
+            final ImageTiler tiler = imageTiler;
             if (tiler == null || getTrueSize() == 0) {
                 // Defer writing of unknowns to the parent.
                 super.write(o);
             } else {
-                tiler.getTile(o, this.corners, this.lengths, this.steps);
+                tiler.getTile(o, corners, lengths, steps);
                 FitsUtil.pad(o, getTrueSize());
             }
         } catch (IOException ioException) {

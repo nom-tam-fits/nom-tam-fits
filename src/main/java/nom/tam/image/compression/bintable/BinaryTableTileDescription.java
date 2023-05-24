@@ -54,50 +54,50 @@ public final class BinaryTableTileDescription {
     }
 
     public BinaryTableTileDescription column(int value) {
-        this.column = value;
+        column = value;
         return this;
     }
 
     public BinaryTableTileDescription compressionAlgorithm(String value) {
-        this.compressionAlgorithm = value;
+        compressionAlgorithm = value;
         return this;
     }
 
     public BinaryTableTileDescription rowEnd(int value) {
-        this.rowEnd = value;
+        rowEnd = value;
         return this;
     }
 
     public BinaryTableTileDescription rowStart(int value) {
-        this.rowStart = value;
+        rowStart = value;
         return this;
     }
 
     public BinaryTableTileDescription tileIndex(int value) {
-        this.tileIndex = value;
+        tileIndex = value;
         return this;
     }
 
     protected int getColumn() {
-        return this.column;
+        return column;
     }
 
     protected String getCompressionAlgorithm() {
-        if (this.compressionAlgorithm == null) {
+        if (compressionAlgorithm == null) {
             return Compression.ZCMPTYPE_GZIP_2;
         }
-        return this.compressionAlgorithm;
+        return compressionAlgorithm;
     }
 
     protected int getRowEnd() {
-        return this.rowEnd;
+        return rowEnd;
     }
 
     protected int getRowStart() {
-        return this.rowStart;
+        return rowStart;
     }
 
     protected int getTileIndex() {
-        return this.tileIndex;
+        return tileIndex;
     }
 }

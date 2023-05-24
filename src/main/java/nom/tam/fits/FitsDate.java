@@ -167,13 +167,13 @@ public class FitsDate implements Comparable<FitsDate> {
         }
         Matcher match = FitsDate.NORMAL_REGEX.matcher(dStr);
         if (match.matches()) {
-            this.year = getInt(match, FitsDate.NEW_FORMAT_YEAR_GROUP);
-            this.month = getInt(match, FitsDate.NEW_FORMAT_MONTH_GROUP);
-            this.mday = getInt(match, FitsDate.NEW_FORMAT_DAY_OF_MONTH_GROUP);
-            this.hour = getInt(match, FitsDate.NEW_FORMAT_HOUR_GROUP);
-            this.minute = getInt(match, FitsDate.NEW_FORMAT_MINUTE_GROUP);
-            this.second = getInt(match, FitsDate.NEW_FORMAT_SECOND_GROUP);
-            this.millisecond = getMilliseconds(match, FitsDate.NEW_FORMAT_MILLISECOND_GROUP);
+            year = getInt(match, FitsDate.NEW_FORMAT_YEAR_GROUP);
+            month = getInt(match, FitsDate.NEW_FORMAT_MONTH_GROUP);
+            mday = getInt(match, FitsDate.NEW_FORMAT_DAY_OF_MONTH_GROUP);
+            hour = getInt(match, FitsDate.NEW_FORMAT_HOUR_GROUP);
+            minute = getInt(match, FitsDate.NEW_FORMAT_MINUTE_GROUP);
+            second = getInt(match, FitsDate.NEW_FORMAT_SECOND_GROUP);
+            millisecond = getMilliseconds(match, FitsDate.NEW_FORMAT_MILLISECOND_GROUP);
         } else {
             match = FitsDate.OLD_REGEX.matcher(dStr);
             if (!match.matches()) {
@@ -182,9 +182,9 @@ public class FitsDate implements Comparable<FitsDate> {
                 }
                 throw new FitsException("Bad FITS date string \"" + dStr + '"');
             }
-            this.year = getInt(match, FitsDate.OLD_FORMAT_YEAR_GROUP) + FitsDate.YEAR_OFFSET;
-            this.month = getInt(match, FitsDate.OLD_FORMAT_MONTH_GROUP);
-            this.mday = getInt(match, FitsDate.OLD_FORMAT_DAY_OF_MONTH_GROUP);
+            year = getInt(match, FitsDate.OLD_FORMAT_YEAR_GROUP) + FitsDate.YEAR_OFFSET;
+            month = getInt(match, FitsDate.OLD_FORMAT_MONTH_GROUP);
+            mday = getInt(match, FitsDate.OLD_FORMAT_DAY_OF_MONTH_GROUP);
         }
     }
 
@@ -216,56 +216,56 @@ public class FitsDate implements Comparable<FitsDate> {
      */
     @SuppressFBWarnings(value = "EI_EXPOSE_REP", justification = "intended exposure of mutable data")
     public Date toDate() {
-        if (this.year == -1) {
+        if (year == -1) {
             return null;
         }
 
         Calendar cal = Calendar.getInstance(UTC);
 
-        cal.set(Calendar.YEAR, this.year);
-        cal.set(Calendar.MONTH, this.month - 1);
-        cal.set(Calendar.DAY_OF_MONTH, this.mday);
+        cal.set(Calendar.YEAR, year);
+        cal.set(Calendar.MONTH, month - 1);
+        cal.set(Calendar.DAY_OF_MONTH, mday);
 
-        if (this.hour == -1) {
+        if (hour == -1) {
             cal.set(Calendar.HOUR_OF_DAY, 0);
             cal.set(Calendar.MINUTE, 0);
             cal.set(Calendar.SECOND, 0);
             cal.set(Calendar.MILLISECOND, 0);
         } else {
-            cal.set(Calendar.HOUR_OF_DAY, this.hour);
-            cal.set(Calendar.MINUTE, this.minute);
-            cal.set(Calendar.SECOND, this.second);
-            if (this.millisecond == -1) {
+            cal.set(Calendar.HOUR_OF_DAY, hour);
+            cal.set(Calendar.MINUTE, minute);
+            cal.set(Calendar.SECOND, second);
+            if (millisecond == -1) {
                 cal.set(Calendar.MILLISECOND, 0);
             } else {
-                cal.set(Calendar.MILLISECOND, this.millisecond);
+                cal.set(Calendar.MILLISECOND, millisecond);
             }
         }
-        this.date = cal.getTime();
-        return this.date;
+        date = cal.getTime();
+        return date;
     }
 
     @Override
     public String toString() {
-        if (this.year == -1) {
+        if (year == -1) {
             return "";
         }
         StringBuilder buf = new StringBuilder(FitsDate.FITS_DATE_STRING_SIZE);
-        buf.append(this.year);
+        buf.append(year);
         buf.append('-');
-        appendTwoDigitValue(buf, this.month);
+        appendTwoDigitValue(buf, month);
         buf.append('-');
         appendTwoDigitValue(buf, mday);
-        if (this.hour != -1) {
+        if (hour != -1) {
             buf.append('T');
-            appendTwoDigitValue(buf, this.hour);
+            appendTwoDigitValue(buf, hour);
             buf.append(':');
-            appendTwoDigitValue(buf, this.minute);
+            appendTwoDigitValue(buf, minute);
             buf.append(':');
-            appendTwoDigitValue(buf, this.second);
-            if (this.millisecond != -1) {
+            appendTwoDigitValue(buf, second);
+            if (millisecond != -1) {
                 buf.append('.');
-                appendThreeDigitValue(buf, this.millisecond);
+                appendThreeDigitValue(buf, millisecond);
             }
         }
         return buf.toString();

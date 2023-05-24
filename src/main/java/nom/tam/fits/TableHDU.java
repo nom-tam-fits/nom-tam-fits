@@ -84,7 +84,7 @@ public abstract class TableHDU<T extends AbstractTableData> extends BasicHDU<T> 
      */
     public int addColumn(Object newCol) throws FitsException {
         int nCols = getNCols();
-        this.myHeader.addValue(TFIELDS, nCols);
+        myHeader.addValue(TFIELDS, nCols);
         setDefaultColumnName(nCols);
         return nCols;
     }
@@ -104,8 +104,8 @@ public abstract class TableHDU<T extends AbstractTableData> extends BasicHDU<T> 
      *             if the operation failed
      */
     public int addRow(Object[] newRows) throws FitsException {
-        int row = this.myData.addRow(newRows);
-        this.myHeader.addValue(NAXISn.n(2), getNRows());
+        int row = myData.addRow(newRows);
+        myHeader.addValue(NAXISn.n(2), getNRows());
         return row;
     }
 
@@ -183,12 +183,12 @@ public abstract class TableHDU<T extends AbstractTableData> extends BasicHDU<T> 
         }
 
         int ncol = getNCols();
-        this.myData.deleteColumns(column, len);
+        myData.deleteColumns(column, len);
 
         // Get rid of the keywords for the deleted columns
         for (int col = column; col < column + len; col += 1) {
             for (IFitsHeader field : fields) {
-                this.myHeader.deleteKey(field.n(col + 1));
+                myHeader.deleteKey(field.n(col + 1));
             }
         }
 
@@ -197,16 +197,16 @@ public abstract class TableHDU<T extends AbstractTableData> extends BasicHDU<T> 
             for (IFitsHeader field : fields) {
                 IFitsHeader oldKey = field.n(col + 1);
                 IFitsHeader newKey = field.n(col + 1 - len);
-                if (this.myHeader.containsKey(oldKey)) {
-                    this.myHeader.replaceKey(oldKey, newKey);
+                if (myHeader.containsKey(oldKey)) {
+                    myHeader.replaceKey(oldKey, newKey);
                 }
             }
         }
         // Update the number of fields.
-        this.myHeader.addValue(TFIELDS, getNCols());
+        myHeader.addValue(TFIELDS, getNCols());
 
         // Give the data sections a chance to update the header too.
-        this.myData.updateAfterDelete(ncol, this.myHeader);
+        myData.updateAfterDelete(ncol, myHeader);
     }
 
     /**
@@ -250,8 +250,8 @@ public abstract class TableHDU<T extends AbstractTableData> extends BasicHDU<T> 
             nRow = getNRows() - firstRow;
         }
 
-        this.myData.deleteRows(firstRow, nRow);
-        this.myHeader.setNaxis(2, getNRows());
+        myData.deleteRows(firstRow, nRow);
+        myHeader.setNaxis(2, getNRows());
     }
 
     /**
@@ -263,7 +263,7 @@ public abstract class TableHDU<T extends AbstractTableData> extends BasicHDU<T> 
      */
     public int findColumn(String colName) {
         for (int i = 0; i < getNCols(); i += 1) {
-            String val = this.myHeader.getStringValue(TTYPEn.n(i + 1));
+            String val = myHeader.getStringValue(TTYPEn.n(i + 1));
             if (val != null && val.trim().equals(colName)) {
                 return i;
             }
@@ -279,7 +279,7 @@ public abstract class TableHDU<T extends AbstractTableData> extends BasicHDU<T> 
      *             if the operation failed
      */
     public Object getColumn(int col) throws FitsException {
-        return this.myData.getColumn(col);
+        return myData.getColumn(col);
     }
 
     /**
@@ -304,12 +304,12 @@ public abstract class TableHDU<T extends AbstractTableData> extends BasicHDU<T> 
      *             if an invalid index was requested.
      */
     public String getColumnFormat(int index) throws FitsException {
-        int flds = this.myHeader.getIntValue(TFIELDS, 0);
+        int flds = myHeader.getIntValue(TFIELDS, 0);
         if (index < 0 || index >= flds) {
             throw new FitsException("Bad column index " + index + " (only " + flds + " columns)");
         }
 
-        return this.myHeader.getStringValue(TFORMn.n(index + 1)).trim();
+        return myHeader.getStringValue(TFORMn.n(index + 1)).trim();
     }
 
     /**
@@ -324,7 +324,7 @@ public abstract class TableHDU<T extends AbstractTableData> extends BasicHDU<T> 
      *            the key type to get
      */
     public String getColumnMeta(int index, String type) {
-        return this.myHeader.getStringValue(type + (index + 1));
+        return myHeader.getStringValue(type + (index + 1));
     }
 
     /**
@@ -336,7 +336,7 @@ public abstract class TableHDU<T extends AbstractTableData> extends BasicHDU<T> 
      */
     public String getColumnName(int index) {
 
-        String ttype = this.myHeader.getStringValue(TTYPEn.n(index + 1));
+        String ttype = myHeader.getStringValue(TTYPEn.n(index + 1));
         if (ttype != null) {
             ttype = ttype.trim();
         }
@@ -367,7 +367,7 @@ public abstract class TableHDU<T extends AbstractTableData> extends BasicHDU<T> 
      *             if the operation failed
      */
     public Object getElement(int row, int col) throws FitsException {
-        return this.myData.getElement(row, col);
+        return myData.getElement(row, col);
     }
 
     /**
@@ -376,7 +376,7 @@ public abstract class TableHDU<T extends AbstractTableData> extends BasicHDU<T> 
      * @return The number of columns in the table.
      */
     public int getNCols() {
-        return this.myData.getNCols();
+        return myData.getNCols();
     }
 
     /**
@@ -385,7 +385,7 @@ public abstract class TableHDU<T extends AbstractTableData> extends BasicHDU<T> 
      * @return The number of rows in the table.
      */
     public int getNRows() {
-        return this.myData.getNRows();
+        return myData.getNRows();
     }
 
     /**
@@ -396,7 +396,7 @@ public abstract class TableHDU<T extends AbstractTableData> extends BasicHDU<T> 
      *             if the operation failed
      */
     public Object[] getRow(int row) throws FitsException {
-        return this.myData.getRow(row);
+        return myData.getRow(row);
     }
 
     /**
@@ -411,7 +411,7 @@ public abstract class TableHDU<T extends AbstractTableData> extends BasicHDU<T> 
      *             if the operation failed
      */
     public void setColumn(int col, Object newCol) throws FitsException {
-        this.myData.setColumn(col, newCol);
+        myData.setColumn(col, newCol);
     }
 
     /**
@@ -450,7 +450,7 @@ public abstract class TableHDU<T extends AbstractTableData> extends BasicHDU<T> 
      */
     public void setColumnMeta(int index, IFitsHeader key, String value, String comment, boolean after) throws HeaderCardException {
         setCurrentColumn(index, after);
-        this.myHeader.addLine(new HeaderCard(key.n(index + 1).key(), value, comment));
+        myHeader.addLine(new HeaderCard(key.n(index + 1).key(), value, comment));
     }
 
     /**
@@ -476,7 +476,7 @@ public abstract class TableHDU<T extends AbstractTableData> extends BasicHDU<T> 
      */
     public void setColumnMeta(int index, IFitsHeader key, Number value, String comment, boolean after) throws HeaderCardException {
         setCurrentColumn(index, after);
-        this.myHeader.addLine(new HeaderCard(key.n(index + 1).key(), value, comment));
+        myHeader.addLine(new HeaderCard(key.n(index + 1).key(), value, comment));
     }
 
     /**
@@ -500,7 +500,7 @@ public abstract class TableHDU<T extends AbstractTableData> extends BasicHDU<T> 
      */
     public void setColumnMeta(int index, String key, Boolean value, String comment, boolean after) throws HeaderCardException {
         setCurrentColumn(index, after);
-        this.myHeader.addLine(new HeaderCard(key + (index + 1), value, comment));
+        myHeader.addLine(new HeaderCard(key + (index + 1), value, comment));
     }
 
     /**
@@ -524,7 +524,7 @@ public abstract class TableHDU<T extends AbstractTableData> extends BasicHDU<T> 
      */
     public void setColumnMeta(int index, String key, Number value, String comment, boolean after) throws HeaderCardException {
         setCurrentColumn(index, after);
-        this.myHeader.addLine(new HeaderCard(key + (index + 1), value, comment));
+        myHeader.addLine(new HeaderCard(key + (index + 1), value, comment));
     }
 
     /**
@@ -550,7 +550,7 @@ public abstract class TableHDU<T extends AbstractTableData> extends BasicHDU<T> 
      */
     public void setColumnMeta(int index, String key, Number value, int precision, String comment, boolean after) throws HeaderCardException {
         setCurrentColumn(index, after);
-        this.myHeader.addLine(new HeaderCard(key + (index + 1), value, precision, comment));
+        myHeader.addLine(new HeaderCard(key + (index + 1), value, precision, comment));
     }
 
 
@@ -597,7 +597,7 @@ public abstract class TableHDU<T extends AbstractTableData> extends BasicHDU<T> 
     @Deprecated
     public void setColumnMeta(int index, String key, String value, String comment, boolean after) throws HeaderCardException {
         setCurrentColumn(index, after);
-        this.myHeader.addLine(new HeaderCard(key + (index + 1), value, comment));
+        myHeader.addLine(new HeaderCard(key + (index + 1), value, comment));
     }
 
     public void setColumnName(int index, String name, String comment) throws HeaderCardException {
@@ -645,9 +645,9 @@ public abstract class TableHDU<T extends AbstractTableData> extends BasicHDU<T> 
      */
     public void setCurrentColumn(int col, boolean after) {
         if (after) {
-            this.myHeader.positionAfterIndex(TFORMn, col + 1);
+            myHeader.positionAfterIndex(TFORMn, col + 1);
         } else {
-            this.myHeader.findCard(TFORMn.n(col + 1));
+            myHeader.findCard(TFORMn.n(col + 1));
         }
     }
 
@@ -664,7 +664,7 @@ public abstract class TableHDU<T extends AbstractTableData> extends BasicHDU<T> 
      *             if the operation failed
      */
     public void setElement(int row, int col, Object element) throws FitsException {
-        this.myData.setElement(row, col, element);
+        myData.setElement(row, col, element);
     }
 
     /**
@@ -678,6 +678,6 @@ public abstract class TableHDU<T extends AbstractTableData> extends BasicHDU<T> 
      *             if the operation failed
      */
     public void setRow(int row, Object[] newRow) throws FitsException {
-        this.myData.setRow(row, newRow);
+        myData.setRow(row, newRow);
     }
 }

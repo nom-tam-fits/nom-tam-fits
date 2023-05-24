@@ -103,7 +103,7 @@ public abstract class OutputEncoder {
      * @param o the new output to which encoded data is to be written.
      */
     protected synchronized void setOutput(OutputWriter o) {
-        this.out = o;
+        out = o;
     }
 
     /**
@@ -272,7 +272,7 @@ public abstract class OutputEncoder {
         private Buffer view;
 
         private OutputBuffer(int size) {
-            this.data = new byte[size];
+            data = new byte[size];
             buffer = ByteBuffer.wrap(data);
         }
 

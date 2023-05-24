@@ -79,7 +79,7 @@ public class UndefinedData extends Data {
         }
         size *= Bitpix.fromHeader(h).byteSize();
 
-        this.byteSize = size;
+        byteSize = size;
     }
 
     /**
@@ -88,9 +88,9 @@ public class UndefinedData extends Data {
      * @param x object to create the hdu from
      */
     public UndefinedData(Object x) {
-        this.byteSize = (int) FitsEncoder.computeSize(x);
-        this.data = new byte[byteSize];
-        ArrayFuncs.copyInto(x, this.data);
+        byteSize = (int) FitsEncoder.computeSize(x);
+        data = new byte[byteSize];
+        ArrayFuncs.copyInto(x, data);
     }
 
     /**
@@ -105,7 +105,7 @@ public class UndefinedData extends Data {
             head.setXtension("UNKNOWN");
             head.setBitpix(Bitpix.BYTE);
             head.setNaxes(1);
-            head.addValue(NAXISn.n(1), this.byteSize);
+            head.addValue(NAXISn.n(1), byteSize);
             head.addValue(PCOUNT, 0);
             head.addValue(GCOUNT, 1);
             // Just in case!
@@ -120,13 +120,13 @@ public class UndefinedData extends Data {
     @Override
     @SuppressFBWarnings(value = "EI_EXPOSE_REP", justification = "intended exposure of mutable data")
     protected Object getCurrentData() {
-        return this.data;
+        return data;
     }
 
     /** Get the size in bytes of the data */
     @Override
     protected long getTrueSize() {
-        return this.byteSize;
+        return byteSize;
     }
 
     @Override
@@ -142,15 +142,15 @@ public class UndefinedData extends Data {
 
     @Override
     protected void loadData(ArrayDataInput in) throws IOException {
-        this.data = new byte[byteSize];
-        in.readFully(this.data);
+        data = new byte[byteSize];
+        in.readFully(data);
     }
 
     @Override
     public void write(ArrayDataOutput o) throws FitsException {
         ensureData();
         try {
-            o.write(this.data);
+            o.write(data);
         } catch (IOException e) {
             throw new FitsException("IO Error on unknown data write", e);
         }

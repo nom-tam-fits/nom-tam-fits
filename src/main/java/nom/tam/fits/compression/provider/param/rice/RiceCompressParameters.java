@@ -43,8 +43,8 @@ public class RiceCompressParameters extends CompressParameters {
     private RiceBytePixParameter bytePix;
 
     public RiceCompressParameters(RiceCompressOption option) {
-        this.blockSize = new RiceBlockSizeParameter(option);
-        this.bytePix = new RiceBytePixParameter(option);
+        blockSize = new RiceBlockSizeParameter(option);
+        bytePix = new RiceBytePixParameter(option);
     }
 
     @Override
@@ -63,6 +63,6 @@ public class RiceCompressParameters extends CompressParameters {
 
     @Override
     protected ICompressHeaderParameter[] headerParameters() {
-        return new ICompressHeaderParameter[] {this.blockSize, this.bytePix};
+        return new ICompressHeaderParameter[] {blockSize, bytePix};
     }
 }

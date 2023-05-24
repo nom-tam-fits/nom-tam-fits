@@ -67,7 +67,7 @@ public class FitsLineAppender {
      * line.
      */
     public FitsLineAppender() {
-        this.buffer = new StringBuilder(HeaderCard.FITS_HEADER_CARD_SIZE);
+        buffer = new StringBuilder(HeaderCard.FITS_HEADER_CARD_SIZE);
     }
 
     /**
@@ -77,8 +77,8 @@ public class FitsLineAppender {
      *            the character to append to the line.
      */
     public void append(char character) {
-        this.buffer.append(character);
-        this.charCount++;
+        buffer.append(character);
+        charCount++;
     }
 
     /**
@@ -88,8 +88,8 @@ public class FitsLineAppender {
      *            the sub string to append.
      */
     public void append(FitsSubString stringValue) {
-        stringValue.appendTo(this.buffer);
-        this.charCount += stringValue.length();
+        stringValue.appendTo(buffer);
+        charCount += stringValue.length();
     }
 
     /**
@@ -100,14 +100,14 @@ public class FitsLineAppender {
      *            the string to append
      */
     public void append(String string) {
-        this.charCount = this.charCount % HeaderCard.FITS_HEADER_CARD_SIZE;
-        int newLength = this.charCount + string.length();
+        charCount = charCount % HeaderCard.FITS_HEADER_CARD_SIZE;
+        int newLength = charCount + string.length();
         if (newLength > HeaderCard.FITS_HEADER_CARD_SIZE) {
-            this.buffer.append(string, 0, HeaderCard.FITS_HEADER_CARD_SIZE - this.charCount);
-            this.charCount = 0;
+            buffer.append(string, 0, HeaderCard.FITS_HEADER_CARD_SIZE - charCount);
+            charCount = 0;
         } else {
-            this.charCount = newLength;
-            this.buffer.append(string);
+            charCount = newLength;
+            buffer.append(string);
         }
     }
 
@@ -127,12 +127,12 @@ public class FitsLineAppender {
         for (int index = 0; index < size; index++) {
             char character = key.charAt(index);
             if (character == toReplace) {
-                this.buffer.append(with);
+                buffer.append(with);
             } else {
-                this.buffer.append(character);
+                buffer.append(character);
             }
         }
-        this.charCount += size;
+        charCount += size;
     }
 
     /**
@@ -144,12 +144,12 @@ public class FitsLineAppender {
      *            the number of spaces to write.
      */
     public void appendSpacesTo(int count) {
-        this.charCount = this.charCount % HeaderCard.FITS_HEADER_CARD_SIZE;
-        if (this.charCount != 0) {
-            int spaces = count - this.charCount;
+        charCount = charCount % HeaderCard.FITS_HEADER_CARD_SIZE;
+        if (charCount != 0) {
+            int spaces = count - charCount;
             if (spaces > 0) {
-                this.buffer.append(FitsLineAppender.FULL_CARD_AS_SPACES, 0, spaces);
-                this.charCount += spaces;
+                buffer.append(FitsLineAppender.FULL_CARD_AS_SPACES, 0, spaces);
+                charCount += spaces;
             }
         }
     }
@@ -158,20 +158,20 @@ public class FitsLineAppender {
      * fill the rest of current line with spaces and start a new fits line.
      */
     public void completeLine() {
-        int count = HeaderCard.FITS_HEADER_CARD_SIZE - this.charCount % HeaderCard.FITS_HEADER_CARD_SIZE;
+        int count = HeaderCard.FITS_HEADER_CARD_SIZE - charCount % HeaderCard.FITS_HEADER_CARD_SIZE;
         if (count < HeaderCard.FITS_HEADER_CARD_SIZE) {
-            this.buffer.append(FitsLineAppender.FULL_CARD_AS_SPACES, 0, count);
+            buffer.append(FitsLineAppender.FULL_CARD_AS_SPACES, 0, count);
         }
         // line completed start with 0;
-        this.charCount = 0;
+        charCount = 0;
     }
 
     /**
      * @return the character position in the current line.
      */
     public int length() {
-        this.charCount = this.charCount % HeaderCard.FITS_HEADER_CARD_SIZE;
-        return this.charCount;
+        charCount = charCount % HeaderCard.FITS_HEADER_CARD_SIZE;
+        return charCount;
     }
 
     /**
@@ -179,17 +179,17 @@ public class FitsLineAppender {
      *         line.
      */
     public int spaceLeftInLine() {
-        this.charCount = this.charCount % HeaderCard.FITS_HEADER_CARD_SIZE;
-        return HeaderCard.FITS_HEADER_CARD_SIZE - this.charCount;
+        charCount = charCount % HeaderCard.FITS_HEADER_CARD_SIZE;
+        return HeaderCard.FITS_HEADER_CARD_SIZE - charCount;
     }
 
     @Override
     public String toString() {
-        return this.buffer.toString();
+        return buffer.toString();
     }
 
     public void append(String key, int start, int end) {
-        this.buffer.append(key, start, end);
-        this.charCount += end - start;
+        buffer.append(key, start, end);
+        charCount += end - start;
     }
 }

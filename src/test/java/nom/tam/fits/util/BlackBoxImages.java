@@ -59,7 +59,8 @@ public class BlackBoxImages {
         if (new File("../blackbox-images/" + fileName + ".gz").exists()) {
             gunzipIt(new File("../blackbox-images/" + fileName + ".gz"), new File("../blackbox-images/" + fileName));
             return "../blackbox-images/" + fileName;
-        } else if (new File("../blackbox-images/" + fileName + "00.part").exists()) {
+        }
+        if (new File("../blackbox-images/" + fileName + "00.part").exists()) {
             unsplitt(new File("../blackbox-images/" + fileName), new File("../blackbox-images/" + fileName));
             return "../blackbox-images/" + fileName;
         } else {

@@ -266,7 +266,7 @@ public class Fits implements Closeable {
      * @since                1.18
      */
     public Fits(FitsFile src) throws FitsException {
-        this.dataStr = src;
+        dataStr = src;
         try {
             src.seek(0);
         } catch (Exception e) {
@@ -599,9 +599,9 @@ public class Fits implements Closeable {
         if (n < 0 || n >= size) {
             throw new FitsException("Attempt to delete non-existent HDU:" + n);
         }
-        this.hduList.remove(n);
+        hduList.remove(n);
         if (n == 0 && size > 1) {
-            BasicHDU<?> newFirst = this.hduList.get(0);
+            BasicHDU<?> newFirst = hduList.get(0);
             if (newFirst.canBePrimary()) {
                 newFirst.setPrimaryHDU(true);
             } else {
@@ -656,7 +656,7 @@ public class Fits implements Closeable {
                 return null;
             }
         }
-        return this.hduList.get(n);
+        return hduList.get(n);
     }
 
     /**
@@ -779,7 +779,7 @@ public class Fits implements Closeable {
      * @return The number of HDU's in the object.
      */
     public int getNumberOfHDUs() {
-        return this.hduList.size();
+        return hduList.size();
     }
 
     /**
@@ -789,7 +789,7 @@ public class Fits implements Closeable {
      *             wish detailed control for writing some part of the FITS file.
      */
     public ArrayDataInput getStream() {
-        return this.dataStr;
+        return dataStr;
     }
 
     /**
@@ -814,19 +814,19 @@ public class Fits implements Closeable {
                 // we could get a lot of extraneous DummyHDUs but we currently
                 // do not worry about that.
                 if (getNumberOfHDUs() > 0) {
-                    this.hduList.get(0).setPrimaryHDU(false);
+                    hduList.get(0).setPrimaryHDU(false);
                 }
                 if (myHDU.canBePrimary()) {
                     myHDU.setPrimaryHDU(true);
-                    this.hduList.add(0, myHDU);
+                    hduList.add(0, myHDU);
                 } else {
                     insertHDU(BasicHDU.getDummyHDU(), 0);
                     myHDU.setPrimaryHDU(false);
-                    this.hduList.add(1, myHDU);
+                    hduList.add(1, myHDU);
                 }
             } else {
                 myHDU.setPrimaryHDU(false);
-                this.hduList.add(position, myHDU);
+                hduList.add(position, myHDU);
             }
         } catch (NoSuchElementException e) {
             throw new FitsException("hduList inconsistency in insertHDU", e);
@@ -854,8 +854,8 @@ public class Fits implements Closeable {
             permissions += "w";
         }
         try {
-            this.dataStr = new FitsFile(file, permissions);
-            ((FitsFile) this.dataStr).seek(0);
+            dataStr = new FitsFile(file, permissions);
+            ((FitsFile) dataStr).seek(0);
         } catch (IOException e) {
             throw new FitsException("Unable to open file " + file.getPath(), e);
         }
@@ -872,8 +872,8 @@ public class Fits implements Closeable {
      */
     protected void randomInit(RandomAccessFileIO src) throws FitsException {
         try {
-            this.dataStr = new FitsFile(src, FitsIO.DEFAULT_BUFFER_SIZE);
-            ((FitsFile) this.dataStr).seek(0);
+            dataStr = new FitsFile(src, FitsIO.DEFAULT_BUFFER_SIZE);
+            ((FitsFile) dataStr).seek(0);
         } catch (IOException e) {
             throw new FitsException("Unable to open data " + src, e);
         }
@@ -894,7 +894,7 @@ public class Fits implements Closeable {
         if (size == 0) {
             return new BasicHDU<?>[0];
         }
-        return this.hduList.toArray(new BasicHDU<?>[size]);
+        return hduList.toArray(new BasicHDU<?>[size]);
     }
 
     /**
@@ -906,9 +906,9 @@ public class Fits implements Closeable {
      */
     public void read(InputStream is) throws FitsException {
         if (is instanceof ArrayDataInput) {
-            this.dataStr = (ArrayDataInput) is;
+            dataStr = (ArrayDataInput) is;
         } else {
-            this.dataStr = new FitsInputStream(is);
+            dataStr = new FitsInputStream(is);
         }
         read();
     }
@@ -927,26 +927,26 @@ public class Fits implements Closeable {
      * @see                  #addHDU(BasicHDU)
      */
     public BasicHDU<?> readHDU() throws FitsException, IOException {
-        if (this.dataStr == null || this.atEOF) {
-            if (this.dataStr == null) {
+        if (dataStr == null || atEOF) {
+            if (dataStr == null) {
                 LOG.warning("trying to read a hdu, without an input source!");
             }
             return null;
         }
-        if (this.dataStr instanceof RandomAccess && this.lastFileOffset > 0) {
-            FitsUtil.reposition(this.dataStr, this.lastFileOffset);
+        if (dataStr instanceof RandomAccess && lastFileOffset > 0) {
+            FitsUtil.reposition(dataStr, lastFileOffset);
         }
 
-        Header hdr = Header.readHeader(this.dataStr);
+        Header hdr = Header.readHeader(dataStr);
         if (hdr == null) {
-            this.atEOF = true;
+            atEOF = true;
             return null;
         }
 
         Data data = FitsFactory.dataFactory(hdr);
         try {
-            data.read(this.dataStr);
-            if (Fits.checkTruncated(this.dataStr)) {
+            data.read(dataStr);
+            if (Fits.checkTruncated(dataStr)) {
                 // Check for truncation even if we successfully skipped to the expected
                 // end since skip may allow going beyond the EOF.
                 LOG.warning("Missing padding after data segment");
@@ -956,9 +956,9 @@ public class Fits implements Closeable {
             LOG.warning(e.getMessage());
         }
 
-        this.lastFileOffset = FitsUtil.findOffset(this.dataStr);
+        lastFileOffset = FitsUtil.findOffset(dataStr);
         BasicHDU<Data> nextHDU = FitsFactory.hduFactory(hdr, data);
-        this.hduList.add(nextHDU);
+        hduList.add(nextHDU);
 
         return nextHDU;
     }
@@ -970,7 +970,7 @@ public class Fits implements Closeable {
      */
     private void readToEnd() throws FitsException {
         try {
-            while (this.dataStr != null && !this.atEOF) {
+            while (dataStr != null && !atEOF) {
                 if (readHDU() == null) {
                     if (getNumberOfHDUs() == 0) {
                         throw new FitsException("Not FITS file.");
@@ -1114,9 +1114,9 @@ public class Fits implements Closeable {
      */
     @Deprecated
     public void setStream(ArrayDataInput stream) {
-        this.dataStr = stream;
-        this.atEOF = false;
-        this.lastFileOffset = -1;
+        dataStr = stream;
+        atEOF = false;
+        lastFileOffset = -1;
     }
 
     /**
@@ -1152,15 +1152,15 @@ public class Fits implements Closeable {
      * @see                  #readHDU()
      */
     public void skipHDU() throws FitsException, IOException {
-        if (this.atEOF) {
+        if (atEOF) {
             return;
         }
 
-        Header hdr = new Header(this.dataStr);
+        Header hdr = new Header(dataStr);
         int dataSize = (int) hdr.getDataSize();
-        this.dataStr.skipAllBytes(dataSize);
-        if (this.dataStr instanceof RandomAccess) {
-            this.lastFileOffset = ((RandomAccess) this.dataStr).getFilePointer();
+        dataStr.skipAllBytes(dataSize);
+        if (dataStr instanceof RandomAccess) {
+            lastFileOffset = ((RandomAccess) dataStr).getFilePointer();
         }
     }
 
@@ -1192,7 +1192,7 @@ public class Fits implements Closeable {
      */
     @SuppressWarnings("resource")
     protected void streamInit(InputStream inputStream) throws FitsException {
-        this.dataStr = new FitsInputStream(CompressionManager.decompress(inputStream));
+        dataStr = new FitsInputStream(CompressionManager.decompress(inputStream));
     }
 
     /**
@@ -1367,7 +1367,7 @@ public class Fits implements Closeable {
     @Override
     public void close() throws IOException {
         if (dataStr != null) {
-            this.dataStr.close();
+            dataStr.close();
         }
     }
 

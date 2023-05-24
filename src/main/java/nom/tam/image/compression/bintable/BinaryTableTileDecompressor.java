@@ -49,18 +49,18 @@ public class BinaryTableTileDecompressor extends BinaryTableTile {
 
     public BinaryTableTileDecompressor(CompressedTableData binData, ColumnTable<?> columnTable, BinaryTableTileDescription description) throws FitsException {
         super(columnTable, description);
-        this.compressedBytes = ByteBuffer.wrap((byte[]) binData.getElement(this.rowStart, this.column));
+        compressedBytes = ByteBuffer.wrap((byte[]) binData.getElement(rowStart, column));
     }
 
     @Override
     public void run() {
-        if (this.is == null) {
+        if (is == null) {
             ByteBuffer unCompressedBytes = ByteBuffer.wrap(new byte[getUncompressedSizeInBytes()]);
-            getCompressorControl().decompress(this.compressedBytes, type.asTypedBuffer(unCompressedBytes), null);
-            this.is = new FitsInputStream(new ByteArrayInputStream(unCompressedBytes.array()));
+            getCompressorControl().decompress(compressedBytes, type.asTypedBuffer(unCompressedBytes), null);
+            is = new FitsInputStream(new ByteArrayInputStream(unCompressedBytes.array()));
         }
         try {
-            this.data.read(this.is, this.rowStart, this.rowEnd, this.column);
+            data.read(is, rowStart, rowEnd, column);
         } catch (IOException e) {
             throw new IllegalStateException("could not read compressed data", e);
         }

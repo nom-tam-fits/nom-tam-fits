@@ -65,51 +65,51 @@ public class BitBuffer {
     private long position;
 
     public BitBuffer(ByteBuffer writeBuffer) {
-        this.buffer = writeBuffer;
+        buffer = writeBuffer;
     }
 
     public int bitbuffer() {
-        return this.buffer.get((int) (this.position / BITS_OF_1_BYTE));
+        return buffer.get((int) (position / BITS_OF_1_BYTE));
     }
 
     void close() {
-        if (this.position % BITS_OF_1_BYTE != 0) {
-            putByte((byte) 0, (int) (BITS_OF_1_BYTE - this.position % BITS_OF_1_BYTE));
+        if (position % BITS_OF_1_BYTE != 0) {
+            putByte((byte) 0, (int) (BITS_OF_1_BYTE - position % BITS_OF_1_BYTE));
         }
-        this.buffer.position((int) (this.position / BITS_OF_1_BYTE));
+        buffer.position((int) (position / BITS_OF_1_BYTE));
     }
 
     public int missingBitsInCurrentByte() {
-        return (int) (BITS_OF_1_BYTE - this.position % BITS_OF_1_BYTE);
+        return (int) (BITS_OF_1_BYTE - position % BITS_OF_1_BYTE);
     }
 
     public void movePosition(int i) {
-        this.position += i;
+        position += i;
     }
 
     public void putByte(byte byteToAdd) {
-        final int bytePosition = (int) (this.position / BITS_OF_1_BYTE);
-        final int positionInByte = (int) (this.position % BITS_OF_1_BYTE);
-        final byte old = (byte) (this.buffer.get(bytePosition) & (byte) ~(BYTE_MASK >>> positionInByte));
+        final int bytePosition = (int) (position / BITS_OF_1_BYTE);
+        final int positionInByte = (int) (position % BITS_OF_1_BYTE);
+        final byte old = (byte) (buffer.get(bytePosition) & (byte) ~(BYTE_MASK >>> positionInByte));
         final int byteAsInt = byteToAdd & BYTE_MASK;
-        this.buffer.put(bytePosition, (byte) (old | (byte) (byteAsInt >>> positionInByte)));
+        buffer.put(bytePosition, (byte) (old | (byte) (byteAsInt >>> positionInByte)));
         if (positionInByte > 0) {
-            this.buffer.put(bytePosition + 1, (byte) (byteAsInt << BITS_OF_1_BYTE - positionInByte));
+            buffer.put(bytePosition + 1, (byte) (byteAsInt << BITS_OF_1_BYTE - positionInByte));
         }
-        this.position += BITS_OF_1_BYTE;
+        position += BITS_OF_1_BYTE;
     }
 
     public void putByte(byte byteToAdd, int bits) {
-        final int bytePosition = (int) (this.position / BITS_OF_1_BYTE);
-        final int positionInByte = (int) (this.position % BITS_OF_1_BYTE);
-        final byte old = this.buffer.get(bytePosition);
+        final int bytePosition = (int) (position / BITS_OF_1_BYTE);
+        final int positionInByte = (int) (position % BITS_OF_1_BYTE);
+        final byte old = buffer.get(bytePosition);
         final int byteAsInt = BYTE_MASK & (byteToAdd & BYTE_MASK >>> BITS_OF_1_BYTE - bits) << BITS_OF_1_BYTE - bits;
-        this.buffer.put(bytePosition, (byte) (BYTE_MASK & //
+        buffer.put(bytePosition, (byte) (BYTE_MASK & //
                 (old & BYTE_MASK << BITS_OF_1_BYTE - positionInByte | byteAsInt >>> positionInByte)));
         if (BITS_OF_1_BYTE - positionInByte < bits) {
-            this.buffer.put(bytePosition + 1, (byte) (BYTE_MASK & byteAsInt << BITS_OF_1_BYTE - positionInByte));
+            buffer.put(bytePosition + 1, (byte) (BYTE_MASK & byteAsInt << BITS_OF_1_BYTE - positionInByte));
         }
-        this.position += bits;
+        position += bits;
     }
 
     /**

@@ -56,7 +56,7 @@ public class StandardImageTilerTest {
 
         @Override
         protected Object getMemoryImage() {
-            return StandardImageTilerTest.this.dataArray;
+            return dataArray;
         }
 
         public void setFile(Object file) throws Exception {

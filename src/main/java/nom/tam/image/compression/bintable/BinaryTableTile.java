@@ -71,41 +71,41 @@ public abstract class BinaryTableTile implements Runnable {
 
     public BinaryTableTile(ColumnTable<?> data, BinaryTableTileDescription description) {
         this.data = data;
-        this.rowStart = description.getRowStart();
-        this.rowEnd = description.getRowEnd();
-        this.column = description.getColumn();
-        this.tileIndex = description.getTileIndex();
-        this.compressionAlgorithm = description.getCompressionAlgorithm();
-        this.type = ElementType.forDataID(data.getTypes()[this.column]);
-        this.length = (this.rowEnd - this.rowStart) * data.getSizes()[this.column];
+        rowStart = description.getRowStart();
+        rowEnd = description.getRowEnd();
+        column = description.getColumn();
+        tileIndex = description.getTileIndex();
+        compressionAlgorithm = description.getCompressionAlgorithm();
+        type = ElementType.forDataID(data.getTypes()[column]);
+        length = (rowEnd - rowStart) * data.getSizes()[column];
     }
 
     public void execute(ExecutorService threadPool) {
-        this.future = threadPool.submit(this);
+        future = threadPool.submit(this);
     }
 
     public void fillHeader(Header header) throws HeaderCardException {
-        header.card(Compression.ZCTYPn.n(this.column)).value(this.compressionAlgorithm);
+        header.card(Compression.ZCTYPn.n(column)).value(compressionAlgorithm);
     }
 
     public int getTileIndex() {
-        return this.tileIndex;
+        return tileIndex;
     }
 
     public void waitForResult() {
         try {
-            this.future.get();
+            future.get();
         } catch (Exception e) {
             throw new IllegalStateException("could not process tile", e);
         }
     }
 
     protected ICompressorControl getCompressorControl() {
-        return CompressorProvider.findCompressorControl(null, this.compressionAlgorithm, type.primitiveClass());
+        return CompressorProvider.findCompressorControl(null, compressionAlgorithm, type.primitiveClass());
     }
 
     protected int getUncompressedSizeInBytes() {
-        return this.length * this.type.size();
+        return length * type.size();
     }
 
 }

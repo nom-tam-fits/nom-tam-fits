@@ -189,9 +189,9 @@ public class Header implements FitsElement {
 
     /** Create a new header with the required default keywords for a standalone header. */
     public Header() {
-        this.cards = new HashedList<>();
-        this.headerSorter = new HeaderOrder();
-        this.duplicates = null;
+        cards = new HashedList<>();
+        headerSorter = new HeaderOrder();
+        duplicates = null;
         clear();
     }
 
@@ -228,7 +228,7 @@ public class Header implements FitsElement {
     public Header(String[] newCards) {
         this();
         for (String newCard : newCards) {
-            this.cards.add(HeaderCard.create(newCard));
+            cards.add(HeaderCard.create(newCard));
         }
     }
 
@@ -263,7 +263,7 @@ public class Header implements FitsElement {
         if (nCards < 1) {
             nCards = 1;
         }
-        this.minCards = nCards;
+        minCards = nCards;
     }
 
     /**
@@ -537,7 +537,7 @@ public class Header implements FitsElement {
      * @return <code>true</code> if the specified keyword is present in this table; <code>false</code> otherwise.
      */
     public final boolean containsKey(IFitsHeader key) {
-        return this.cards.containsKey(key.key());
+        return cards.containsKey(key.key());
     }
 
     /**
@@ -548,7 +548,7 @@ public class Header implements FitsElement {
      * @return <code>true</code> if the specified keyword is present in this table; <code>false</code> otherwise.
      */
     public final boolean containsKey(String key) {
-        return this.cards.containsKey(key);
+        return cards.containsKey(key);
     }
 
     /**
@@ -569,7 +569,7 @@ public class Header implements FitsElement {
         // AK: This version will not move the current position to the deleted
         // key
         if (containsKey(key)) {
-            this.cards.remove(this.cards.get(key));
+            cards.remove(cards.get(key));
         }
     }
 
@@ -604,7 +604,7 @@ public class Header implements FitsElement {
      * @return <CODE>null</CODE> if the keyword could not be found; return the HeaderCard object otherwise.
      */
     public HeaderCard findCard(String key) {
-        HeaderCard card = this.cards.get(key);
+        HeaderCard card = cards.get(key);
         if (card != null) {
             cursor().setKey(key);
         }
@@ -828,8 +828,8 @@ public class Header implements FitsElement {
      */
     @Deprecated
     public String getCard(int n) {
-        if (n >= 0 && n < this.cards.size()) {
-            return this.cards.get(n).toString();
+        if (n >= 0 && n < cards.size()) {
+            return cards.get(n).toString();
         }
         return null;
     }
@@ -918,7 +918,7 @@ public class Header implements FitsElement {
      * @see #getDuplicateKeySet()
      */
     public List<HeaderCard> getDuplicates() {
-        return this.duplicates;
+        return duplicates;
     }
 
     /**
@@ -1049,8 +1049,8 @@ public class Header implements FitsElement {
      */
     @Deprecated
     public String getKey(int n) {
-        if (n >= 0 && n < this.cards.size()) {
-            return this.cards.get(n).getKey();
+        if (n >= 0 && n < cards.size()) {
+            return cards.get(n).getKey();
         }
         return null;
 
@@ -1158,7 +1158,7 @@ public class Header implements FitsElement {
      * @see #getNumberOfPhysicalCards()
      */
     public int getNumberOfCards() {
-        return this.cards.size();
+        return cards.size();
     }
 
     /**
@@ -1172,7 +1172,7 @@ public class Header implements FitsElement {
      */
     public int getNumberOfPhysicalCards() {
         int count = 0;
-        for (HeaderCard card : this.cards) {
+        for (HeaderCard card : cards) {
             count += card.cardSize();
         }
 
@@ -1197,7 +1197,7 @@ public class Header implements FitsElement {
      * @see #read(ArrayDataInput)
      */
     public long getMinimumSize() {
-        return FitsUtil.addPadding((long) this.minCards * HeaderCard.FITS_HEADER_CARD_SIZE);
+        return FitsUtil.addPadding((long) minCards * HeaderCard.FITS_HEADER_CARD_SIZE);
     }
 
     /**
@@ -1299,7 +1299,7 @@ public class Header implements FitsElement {
      * @return Were duplicate header keys found when this record was read in?
      */
     public boolean hadDuplicates() {
-        return this.duplicates != null;
+        return duplicates != null;
     }
 
     /**
@@ -1449,7 +1449,7 @@ public class Header implements FitsElement {
 
     /** @return an iterator over the header cards */
     public Cursor<String, HeaderCard> iterator() {
-        return this.cards.iterator(0);
+        return cards.iterator(0);
     }
 
     /**
@@ -1461,7 +1461,7 @@ public class Header implements FitsElement {
      */
     @Deprecated
     public Cursor<String, HeaderCard> iterator(int index) {
-        return this.cards.iterator(index);
+        return cards.iterator(index);
     }
 
     /**
@@ -1473,7 +1473,7 @@ public class Header implements FitsElement {
      * @return the iterator representing the current position in the header.
      */
     private Cursor<String, HeaderCard> cursor() {
-        return this.cards.cursor();
+        return cards.cursor();
     }
 
     /**
@@ -1560,9 +1560,9 @@ public class Header implements FitsElement {
         clear();
 
         if (dis instanceof RandomAccess) {
-            this.fileOffset = FitsUtil.findOffset(dis);
+            fileOffset = FitsUtil.findOffset(dis);
         } else {
-            this.fileOffset = -1;
+            fileOffset = -1;
         }
 
         int trailingBlanks = 0;
@@ -1600,8 +1600,8 @@ public class Header implements FitsElement {
                 }
                 trailingBlanks = 0;
 
-                if (this.cards.containsKey(key)) {
-                    addDuplicate(this.cards.get(key));
+                if (cards.containsKey(key)) {
+                    addDuplicate(cards.get(key));
                 }
 
                 addLine(fcard);
@@ -1613,7 +1613,7 @@ public class Header implements FitsElement {
             if (isEmpty() && FitsFactory.getAllowTerminalJunk()) {
                 // If this happened where we expect a new header to start, then
                 // treat is as if end-of-file if terminal junk is allowed
-                forceEOF("Junk detected at " + this.fileOffset + ".", e);
+                forceEOF("Junk detected at " + fileOffset + ".", e);
             }
             if (e instanceof TruncatedFileException) {
                 throw (TruncatedFileException) e;
@@ -1624,17 +1624,17 @@ public class Header implements FitsElement {
                     e);
         }
 
-        if (this.fileOffset >= 0) {
-            this.input = dis;
+        if (fileOffset >= 0) {
+            input = dis;
         }
 
         ensureCardSpace(cardCountingArray.getPhysicalCardsRead());
-        readSize = FitsUtil.addPadding(this.minCards * HeaderCard.FITS_HEADER_CARD_SIZE);
+        readSize = FitsUtil.addPadding(minCards * HeaderCard.FITS_HEADER_CARD_SIZE);
 
         // Read to the end of the current FITS block.
         //
         try {
-            dis.skipAllBytes(FitsUtil.padding(this.minCards * HeaderCard.FITS_HEADER_CARD_SIZE));
+            dis.skipAllBytes(FitsUtil.padding(minCards * HeaderCard.FITS_HEADER_CARD_SIZE));
         } catch (EOFException e) {
             // No biggy. We got a complete header just fine, it's only that there was no
             // padding before EOF. We'll just log that, but otherwise keep going.
@@ -1660,7 +1660,7 @@ public class Header implements FitsElement {
      */
     private void forceEOF(String message, Exception cause) throws EOFException {
         LOG.log(Level.WARNING, message, cause);
-        throw new EOFException("Forced EOF at " + this.fileOffset + " due to: " + message);
+        throw new EOFException("Forced EOF at " + fileOffset + " due to: " + message);
     }
 
     /**
@@ -1681,10 +1681,10 @@ public class Header implements FitsElement {
     @Override
     public boolean reset() {
         try {
-            FitsUtil.reposition(this.input, this.fileOffset);
+            FitsUtil.reposition(input, fileOffset);
             return true;
         } catch (Exception e) {
-            LOG.log(Level.WARNING, "Exception while repositioning " + this.input, e);
+            LOG.log(Level.WARNING, "Exception while repositioning " + input, e);
             return false;
         }
     }
@@ -1715,13 +1715,13 @@ public class Header implements FitsElement {
     /** Rewrite the header. */
     @Override
     public void rewrite() throws FitsException, IOException {
-        ArrayDataOutput dos = (ArrayDataOutput) this.input;
+        ArrayDataOutput dos = (ArrayDataOutput) input;
 
         if (!rewriteable()) {
             throw new FitsException("Invalid attempt to rewrite Header.");
         }
 
-        FitsUtil.reposition(dos, this.fileOffset);
+        FitsUtil.reposition(dos, fileOffset);
         write(dos);
         dos.flush();
     }
@@ -1730,7 +1730,7 @@ public class Header implements FitsElement {
     public boolean rewriteable() {
         int writeSize = FitsUtil
                 .addPadding(Math.max(minCards, getNumberOfPhysicalCards()) * HeaderCard.FITS_HEADER_CARD_SIZE);
-        return this.fileOffset >= 0 && this.input instanceof ArrayDataOutput && writeSize == getOriginalSize();
+        return fileOffset >= 0 && input instanceof ArrayDataOutput && writeSize == getOriginalSize();
     }
 
     /**
@@ -1875,7 +1875,7 @@ public class Header implements FitsElement {
      */
     @Deprecated
     public int size() {
-        return this.cards.size();
+        return cards.size();
     }
 
     /**
@@ -1908,7 +1908,7 @@ public class Header implements FitsElement {
         // Remove an existing card with the matching 'key' (even if that key
         // isn't the same
         // as the key of the card argument!)
-        this.cards.update(key, card);
+        cards.update(key, card);
     }
 
     /**
@@ -2034,8 +2034,8 @@ public class Header implements FitsElement {
      */
     private void validate() throws FitsException {
         // Ensure that all cards are in the proper order.
-        if (this.headerSorter != null) {
-            this.cards.sort(this.headerSorter);
+        if (headerSorter != null) {
+            cards.sort(headerSorter);
         }
         checkBeginning();
         checkEnd();
@@ -2053,9 +2053,9 @@ public class Header implements FitsElement {
         validate();
 
         FitsSettings settings = FitsFactory.current();
-        this.fileOffset = FitsUtil.findOffset(dos);
+        fileOffset = FitsUtil.findOffset(dos);
 
-        Cursor<String, HeaderCard> writeIterator = this.cards.iterator(0);
+        Cursor<String, HeaderCard> writeIterator = cards.iterator(0);
         try {
             int size = 0;
 
@@ -2121,7 +2121,7 @@ public class Header implements FitsElement {
     private void checkFirstCard(String key) throws FitsException {
         // AK: key cannot be null by the caller already, so checking for it makes dead code.
         if (!SIMPLE.key().equals(key) && !XTENSION.key().equals(key)) {
-            throw new FitsException("Not a proper FITS header: " + HeaderCard.sanitize(key) + " at " + this.fileOffset);
+            throw new FitsException("Not a proper FITS header: " + HeaderCard.sanitize(key) + " at " + fileOffset);
         }
     }
 
@@ -2336,7 +2336,7 @@ public class Header implements FitsElement {
         if (oldCard == null) {
             return false;
         }
-        if (!this.cards.replaceKey(oldKey, newKey)) {
+        if (!cards.replaceKey(oldKey, newKey)) {
             throw new HeaderCardException("Duplicate key [" + newKey + "] in replace");
         }
         try {

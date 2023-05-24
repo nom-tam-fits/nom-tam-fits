@@ -148,7 +148,7 @@ public class UndefinedHDU extends BasicHDU<UndefinedData> {
     @Override
     public void info(PrintStream stream) {
         stream.println("  Unhandled/Undefined/Unknown Type");
-        stream.println("  XTENSION=" + this.myHeader.getStringValue(XTENSION).trim());
-        stream.println("  Apparent size:" + this.myData.getTrueSize());
+        stream.println("  XTENSION=" + myHeader.getStringValue(XTENSION).trim());
+        stream.println("  Apparent size:" + myData.getTrueSize());
     }
 }

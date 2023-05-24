@@ -56,7 +56,7 @@ public abstract class TileBuffer {
 
     protected TileBuffer(ElementType<Buffer> baseType, int dataOffset, int width, int height) {
         this.baseType = baseType;
-        this.offset = dataOffset;
+        offset = dataOffset;
         this.width = width;
         this.height = height;
     }
@@ -69,34 +69,34 @@ public abstract class TileBuffer {
     }
 
     public ElementType<Buffer> getBaseType() {
-        return this.baseType;
+        return baseType;
     }
 
     public abstract Buffer getBuffer();
 
     public int getHeight() {
-        return this.height;
+        return height;
     }
 
     /**
      * @return the number of pixels in the tileOperation this view represents.
      */
     public int getPixelSize() {
-        return this.width * this.height;
+        return width * height;
     }
 
     public int getWidth() {
-        return this.width;
+        return width;
     }
 
     public TileBuffer setData(Buffer value) {
-        value.position(this.offset);
-        this.imageBuffer = this.baseType.sliceBuffer(value);
+        value.position(offset);
+        imageBuffer = baseType.sliceBuffer(value);
         return this;
     }
 
     protected Buffer getImageBuffer() {
-        return this.imageBuffer;
+        return imageBuffer;
     }
 
 }

@@ -62,79 +62,79 @@ public class TileCompressor extends TileCompressionOperation {
             // wait for the previous tile to finish.
             getPreviousTileOperation().waitForResult();
             ByteBuffer compressedWholeArea = getCompressedWholeArea();
-            this.compressedOffset = compressedWholeArea.position();
-            ElementType.BYTE.appendBuffer(compressedWholeArea, this.compressedData);
+            compressedOffset = compressedWholeArea.position();
+            ElementType.BYTE.appendBuffer(compressedWholeArea, compressedData);
             replaceCompressedBufferWithTargetArea(compressedWholeArea);
         } else {
-            this.compressedOffset = 0;
-            getCompressedWholeArea().position(this.compressedData.limit());
+            compressedOffset = 0;
+            getCompressedWholeArea().position(compressedData.limit());
         }
     }
 
     private void compress() {
         initTileOptions();
 
-        this.compressedData.limit(getTileBuffer().getPixelSize() * getBaseType().size());
-        this.compressionType = TileCompressionType.COMPRESSED;
+        compressedData.limit(getTileBuffer().getPixelSize() * getBaseType().size());
+        compressionType = TileCompressionType.COMPRESSED;
         boolean compressSuccess = false;
-        boolean tryNormalCompression = !(this.tileOptions.isLossyCompression() && this.forceNoLoss);
+        boolean tryNormalCompression = !(tileOptions.isLossyCompression() && forceNoLoss);
 
-        this.tileOptions.getCompressionParameters().setTileIndex(getTileIndex());
+        tileOptions.getCompressionParameters().setTileIndex(getTileIndex());
 
         if (tryNormalCompression) {
-            compressSuccess = getCompressorControl().compress(getTileBuffer().getBuffer(), this.compressedData,
-                    this.tileOptions);
+            compressSuccess = getCompressorControl().compress(getTileBuffer().getBuffer(), compressedData,
+                    tileOptions);
             if (compressSuccess) {
-                if (this.nullPixelMaskPerserver != null) {
-                    this.nullPixelMaskPerserver.preserveNull();
+                if (nullPixelMaskPerserver != null) {
+                    nullPixelMaskPerserver.preserveNull();
                 }
-                this.tileOptions.getCompressionParameters().setValuesInColumn(getTileIndex());
+                tileOptions.getCompressionParameters().setValuesInColumn(getTileIndex());
             }
         }
 
         if (!compressSuccess) {
-            this.compressionType = TileCompressionType.GZIP_COMPRESSED;
-            this.compressedData.rewind();
+            compressionType = TileCompressionType.GZIP_COMPRESSED;
+            compressedData.rewind();
             getTileBuffer().getBuffer().rewind();
-            compressSuccess = getGzipCompressorControl().compress(getTileBuffer().getBuffer(), this.compressedData,
+            compressSuccess = getGzipCompressorControl().compress(getTileBuffer().getBuffer(), compressedData,
                     null);
             if (compressSuccess) {
-                this.tileOptions.getCompressionParameters().setValuesInColumn(getTileIndex());
+                tileOptions.getCompressionParameters().setValuesInColumn(getTileIndex());
             }
         }
 
         if (!compressSuccess) {
-            this.compressionType = TileCompressionType.UNCOMPRESSED;
-            this.compressedData.rewind();
+            compressionType = TileCompressionType.UNCOMPRESSED;
+            compressedData.rewind();
             getTileBuffer().getBuffer().rewind();
-            getBaseType().appendToByteBuffer(this.compressedData, getTileBuffer().getBuffer());
+            getBaseType().appendToByteBuffer(compressedData, getTileBuffer().getBuffer());
         }
 
-        this.compressedData.limit(this.compressedData.position());
-        this.compressedData.rewind();
+        compressedData.limit(compressedData.position());
+        compressedData.rewind();
 
         compactCompressedData();
     }
 
     private void replaceCompressedBufferWithTargetArea(ByteBuffer compressedWholeArea) {
-        int compressedSize = this.compressedData.limit();
+        int compressedSize = compressedData.limit();
         int latest = compressedWholeArea.position();
-        compressedWholeArea.position(this.compressedOffset);
-        this.compressedData = compressedWholeArea.slice();
-        this.compressedData.limit(compressedSize);
+        compressedWholeArea.position(compressedOffset);
+        compressedData = compressedWholeArea.slice();
+        compressedData.limit(compressedSize);
         compressedWholeArea.position(latest);
     }
 
     @Override
     protected NullPixelMaskPreserver createImageNullPixelMask(ImageNullPixelMask imageNullPixelMask) {
         if (imageNullPixelMask != null) {
-            this.nullPixelMaskPerserver = imageNullPixelMask.createTilePreserver(getTileBuffer(), getTileIndex());
+            nullPixelMaskPerserver = imageNullPixelMask.createTilePreserver(getTileBuffer(), getTileIndex());
         }
-        return this.nullPixelMaskPerserver;
+        return nullPixelMaskPerserver;
     }
 
     @Override
     protected void forceNoLoss(boolean value) {
-        this.forceNoLoss = value;
+        forceNoLoss = value;
     }
 }

@@ -71,8 +71,8 @@ public class CloseIS extends FilterInputStream {
         }
         this.proc = proc;
         final InputStream error = proc.getErrorStream();
-        this.output = proc.getInputStream();
-        this.input = proc.getOutputStream();
+        output = proc.getInputStream();
+        input = proc.getOutputStream();
         stdError = new Thread(new Runnable() {
 
             @Override
@@ -178,8 +178,8 @@ public class CloseIS extends FilterInputStream {
     @Override
     public void close() throws IOException {
         super.close();
-        this.input.close();
-        this.output.close();
+        input.close();
+        output.close();
     }
 
 }

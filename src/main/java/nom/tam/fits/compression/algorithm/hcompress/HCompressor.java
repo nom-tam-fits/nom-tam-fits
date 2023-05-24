@@ -147,24 +147,24 @@ public abstract class HCompressor<T extends Buffer> implements ICompressor<T> {
 
     public HCompressor(HCompressorOption options) {
         this.options = options;
-        this.compress = new HCompress();
-        this.decompress = new HDecompress();
+        compress = new HCompress();
+        decompress = new HDecompress();
     }
 
     private HCompress compress() {
-        return this.compress;
+        return compress;
     }
 
     protected void compress(long[] longArray, ByteBuffer compressed) {
-        compress().compress(longArray, this.options.getTileHeight(), this.options.getTileWidth(),
-                this.options.getScale(), compressed);
+        compress().compress(longArray, options.getTileHeight(), options.getTileWidth(),
+                options.getScale(), compressed);
     }
 
     private HDecompress decompress() {
-        return this.decompress;
+        return decompress;
     }
 
     protected void decompress(ByteBuffer compressed, long[] aa) {
-        decompress().decompress(compressed, this.options.isSmooth(), aa);
+        decompress().decompress(compressed, options.isSmooth(), aa);
     }
 }

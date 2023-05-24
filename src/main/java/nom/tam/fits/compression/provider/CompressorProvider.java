@@ -102,10 +102,10 @@ public class CompressorProvider implements ICompressorProvider {
 
         @SuppressWarnings("unchecked")
         protected TileCompressorControl(Class<?> compressorClass) {
-            this.constructor = (Constructor<ICompressor<Buffer>>) compressorClass.getConstructors()[0];
-            this.optionClass = (Class<? extends ICompressOption>) (this.constructor.getParameterTypes().length == 0 ?
+            constructor = (Constructor<ICompressor<Buffer>>) compressorClass.getConstructors()[0];
+            optionClass = (Class<? extends ICompressOption>) (constructor.getParameterTypes().length == 0 ?
                     null :
-                        this.constructor.getParameterTypes()[0]);
+                        constructor.getParameterTypes()[0]);
         }
 
         /**
@@ -119,7 +119,7 @@ public class CompressorProvider implements ICompressorProvider {
          * @since 1.18
          */
         protected TileCompressorControl setQuantType(Class<?> floatingPointType) {
-            this.quantType = floatingPointType;
+            quantType = floatingPointType;
             return this;
         }
 
@@ -129,7 +129,7 @@ public class CompressorProvider implements ICompressorProvider {
                 return newCompressor(option).compress(in, out);
             } catch (Exception e) {
                 LOG.log(Level.FINE,
-                        "could not compress using " + this.constructor + " must fallback to other compression method",
+                        "could not compress using " + constructor + " must fallback to other compression method",
                         e);
                 return false;
             }
@@ -140,18 +140,18 @@ public class CompressorProvider implements ICompressorProvider {
             try {
                 newCompressor(option).decompress(in, out);
             } catch (Exception e) {
-                throw new IllegalStateException("could not decompress " + this.constructor, e);
+                throw new IllegalStateException("could not decompress " + constructor, e);
             }
         }
 
         @Override
         public ICompressOption option() {
             ICompressOption option = null;
-            if (this.optionClass != null) {
+            if (optionClass != null) {
                 try {
-                    option = this.optionClass.getDeclaredConstructor().newInstance();
+                    option = optionClass.getDeclaredConstructor().newInstance();
                 } catch (Exception e) {
-                    throw new IllegalStateException("could not instantiate option class for " + this.constructor, e);
+                    throw new IllegalStateException("could not instantiate option class for " + constructor, e);
                 }
             }
 
@@ -178,9 +178,9 @@ public class CompressorProvider implements ICompressorProvider {
                 option = quantOption.getCompressOption();
             }
 
-            ICompressor<Buffer> compressor = this.constructor.getParameterTypes().length == 0 ?
-                    this.constructor.newInstance() :
-                        this.constructor.newInstance(option);
+            ICompressor<Buffer> compressor = constructor.getParameterTypes().length == 0 ?
+                    constructor.newInstance() :
+                        constructor.newInstance(option);
 
             if (quantOption != null && quantType != null) {
                 if (quantType.equals(double.class)) {

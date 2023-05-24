@@ -65,22 +65,22 @@ public class QuantizeParameters extends CompressParameters {
      * @param option The compression option that is configured with the particular parameter values of this object.
      */
     public QuantizeParameters(QuantizeOption option) {
-        this.quantz = new ZQuantizeParameter(option);
-        this.blank = new ZBlankParameter(option);
-        this.seed = new ZDither0Parameter(option);
-        this.blankColumn = new ZBlankColumnParameter(option);
-        this.zero = new ZZeroColumnParameter(option);
-        this.scale = new ZScaleColumnParameter(option);
+        quantz = new ZQuantizeParameter(option);
+        blank = new ZBlankParameter(option);
+        seed = new ZDither0Parameter(option);
+        blankColumn = new ZBlankColumnParameter(option);
+        zero = new ZZeroColumnParameter(option);
+        scale = new ZScaleColumnParameter(option);
     }
 
     @Override
     protected ICompressColumnParameter[] columnParameters() {
-        return new ICompressColumnParameter[] {this.blankColumn, this.zero, this.scale};
+        return new ICompressColumnParameter[] {blankColumn, zero, scale};
     }
 
     @Override
     protected ICompressHeaderParameter[] headerParameters() {
-        return new ICompressHeaderParameter[] {this.quantz, this.blank, this.seed};
+        return new ICompressHeaderParameter[] {quantz, blank, seed};
     }
 
     @Override

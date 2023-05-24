@@ -62,11 +62,11 @@ public enum Synonyms {
 
     @SuppressFBWarnings(value = "EI_EXPOSE_REP", justification = "by convention the array may not be changed.")
     public IFitsHeader[] getSynonyms() {
-        return this.synonyms;
+        return synonyms;
     }
 
     public IFitsHeader primaryKeyword() {
-        return this.primaryKeyword;
+        return primaryKeyword;
     }
 
     public static IFitsHeader primaryKeyword(IFitsHeader header) {

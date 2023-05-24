@@ -57,25 +57,25 @@ public abstract class PLIOCompress {
 
         @Override
         public boolean compress(ByteBuffer buffer, ByteBuffer compressed) {
-            this.pixelData = buffer;
-            compress(compressed.asShortBuffer(), this.pixelData.limit());
+            pixelData = buffer;
+            compress(compressed.asShortBuffer(), pixelData.limit());
             return true;
         }
 
         @Override
         public void decompress(ByteBuffer compressed, ByteBuffer buffer) {
-            this.pixelData = buffer;
-            decompress(compressed.asShortBuffer(), this.pixelData.limit());
+            pixelData = buffer;
+            decompress(compressed.asShortBuffer(), pixelData.limit());
         }
 
         @Override
         protected int nextPixel() {
-            return this.pixelData.get();
+            return pixelData.get();
         }
 
         @Override
         protected void put(int index, int pixel) {
-            this.pixelData.put(index, (byte) pixel);
+            pixelData.put(index, (byte) pixel);
         }
     }
 
@@ -85,25 +85,25 @@ public abstract class PLIOCompress {
 
         @Override
         public boolean compress(ShortBuffer buffer, ByteBuffer compressed) {
-            this.pixelData = buffer;
-            super.compress(compressed.asShortBuffer(), this.pixelData.limit());
+            pixelData = buffer;
+            super.compress(compressed.asShortBuffer(), pixelData.limit());
             return true;
         }
 
         @Override
         public void decompress(ByteBuffer compressed, ShortBuffer buffer) {
-            this.pixelData = buffer;
-            decompress(compressed.asShortBuffer(), this.pixelData.limit());
+            pixelData = buffer;
+            decompress(compressed.asShortBuffer(), pixelData.limit());
         }
 
         @Override
         protected int nextPixel() {
-            return this.pixelData.get();
+            return pixelData.get();
         }
 
         @Override
         protected void put(int index, int pixel) {
-            this.pixelData.put(index, (short) pixel);
+            pixelData.put(index, (short) pixel);
         }
     }
 
@@ -116,25 +116,25 @@ public abstract class PLIOCompress {
 
         @Override
         public boolean compress(IntBuffer buffer, ByteBuffer compressed) {
-            this.pixelData = buffer;
-            super.compress(compressed.asShortBuffer(), this.pixelData.limit());
+            pixelData = buffer;
+            super.compress(compressed.asShortBuffer(), pixelData.limit());
             return true;
         }
 
         @Override
         public void decompress(ByteBuffer compressed, IntBuffer buffer) {
-            this.pixelData = buffer;
-            decompress(compressed.asShortBuffer(), this.pixelData.limit());
+            pixelData = buffer;
+            decompress(compressed.asShortBuffer(), pixelData.limit());
         }
 
         @Override
         protected int nextPixel() {
-            return this.pixelData.get();
+            return pixelData.get();
         }
 
         @Override
         protected void put(int index, int pixel) {
-            this.pixelData.put(index, (short) pixel);
+            pixelData.put(index, (short) pixel);
         }
     }
 

@@ -60,19 +60,19 @@ public class TileDecompressor extends TileCompressionOperation {
     private void decompress() {
         initTileOptions();
 
-        this.tileOptions.getCompressionParameters().setTileIndex(getTileIndex());
+        tileOptions.getCompressionParameters().setTileIndex(getTileIndex());
 
-        if (this.compressionType == TileCompressionType.COMPRESSED) {
-            this.tileOptions.getCompressionParameters().getValuesFromColumn(getTileIndex());
-            getCompressorControl().decompress(this.compressedData, getTileBuffer().getBuffer(), this.tileOptions);
-            if (this.nullPixelMaskRestorer != null) {
-                this.nullPixelMaskRestorer.restoreNulls();
+        if (compressionType == TileCompressionType.COMPRESSED) {
+            tileOptions.getCompressionParameters().getValuesFromColumn(getTileIndex());
+            getCompressorControl().decompress(compressedData, getTileBuffer().getBuffer(), tileOptions);
+            if (nullPixelMaskRestorer != null) {
+                nullPixelMaskRestorer.restoreNulls();
             }
-        } else if (this.compressionType == TileCompressionType.GZIP_COMPRESSED) {
-            this.tileOptions.getCompressionParameters().getValuesFromColumn(getTileIndex());
-            getGzipCompressorControl().decompress(this.compressedData, getTileBuffer().getBuffer(), null);
-        } else if (this.compressionType == TileCompressionType.UNCOMPRESSED) {
-            Buffer typedBuffer = getBaseType().asTypedBuffer(this.compressedData);
+        } else if (compressionType == TileCompressionType.GZIP_COMPRESSED) {
+            tileOptions.getCompressionParameters().getValuesFromColumn(getTileIndex());
+            getGzipCompressorControl().decompress(compressedData, getTileBuffer().getBuffer(), null);
+        } else if (compressionType == TileCompressionType.UNCOMPRESSED) {
+            Buffer typedBuffer = getBaseType().asTypedBuffer(compressedData);
             getBaseType().appendBuffer(getTileBuffer().getBuffer(), typedBuffer);
         } else {
             LOG.severe("Unknown compression column");
@@ -83,8 +83,8 @@ public class TileDecompressor extends TileCompressionOperation {
     @Override
     protected NullPixelMaskRestorer createImageNullPixelMask(ImageNullPixelMask imageNullPixelMask) {
         if (imageNullPixelMask != null) {
-            this.nullPixelMaskRestorer = imageNullPixelMask.createTileRestorer(getTileBuffer(), getTileIndex());
+            nullPixelMaskRestorer = imageNullPixelMask.createTileRestorer(getTileBuffer(), getTileIndex());
         }
-        return this.nullPixelMaskRestorer;
+        return nullPixelMaskRestorer;
     }
 }

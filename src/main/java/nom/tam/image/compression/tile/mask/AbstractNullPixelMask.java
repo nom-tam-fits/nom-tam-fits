@@ -63,13 +63,13 @@ public class AbstractNullPixelMask {
     }
 
     public byte[] getMaskBytes() {
-        if (this.mask == null) {
+        if (mask == null) {
             return EMPTY_BYTE_ARRAY;
         }
-        int size = this.mask.position();
+        int size = mask.position();
         byte[] result = new byte[size];
-        this.mask.rewind();
-        this.mask.get(result);
+        mask.rewind();
+        mask.get(result);
         return result;
     }
 
@@ -78,29 +78,29 @@ public class AbstractNullPixelMask {
     }
 
     protected ICompressorControl getCompressorControl() {
-        return this.compressorControl;
+        return compressorControl;
     }
 
     protected ByteBuffer getMask() {
-        return this.mask;
+        return mask;
     }
 
     protected long getNullValue() {
-        return this.nullValue;
+        return nullValue;
     }
 
     protected TileBuffer getTileBuffer() {
-        return this.tileBuffer;
+        return tileBuffer;
     }
 
     protected int getTileIndex() {
-        return this.tileIndex;
+        return tileIndex;
     }
 
     protected ByteBuffer initializedMask(int remaining) {
-        if (this.mask == null) {
-            this.mask = ByteBuffer.allocate(remaining);
+        if (mask == null) {
+            mask = ByteBuffer.allocate(remaining);
         }
-        return this.mask;
+        return mask;
     }
 }

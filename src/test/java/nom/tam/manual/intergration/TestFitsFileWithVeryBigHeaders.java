@@ -51,8 +51,8 @@ public class TestFitsFileWithVeryBigHeaders {
         try {
             f = new Fits(BlackBoxImages.getBlackBoxImage("OEP.fits"));
 
-            while ((this.hdu = f.readHDU()) != null) {
-                count = count + this.hdu.getHeader().getSize();
+            while ((hdu = f.readHDU()) != null) {
+                count = count + hdu.getHeader().getSize();
             }
         } finally {
             SafeClose.close(f);
@@ -73,7 +73,7 @@ public class TestFitsFileWithVeryBigHeaders {
     @Ignore
     public void testFileWithVeryBigHeadersAndGC() throws Exception {
         oneTest(0);
-        this.hdu = null;
+        hdu = null;
         for (int i = 0; i < 20; i++) {
             System.gc();
         }

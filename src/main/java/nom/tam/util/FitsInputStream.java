@@ -296,7 +296,7 @@ public class FitsInputStream extends ArrayInputStream implements ArrayDataInput 
 
     @Override
     public String toString() {
-        return super.toString() + "[count=" + this.count + ",pos=" + this.pos + "]";
+        return super.toString() + "[count=" + count + ",pos=" + pos + "]";
     }
 
 }

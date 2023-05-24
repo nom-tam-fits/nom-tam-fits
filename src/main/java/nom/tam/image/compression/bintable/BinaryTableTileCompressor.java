@@ -62,7 +62,7 @@ public class BinaryTableTileCompressor extends BinaryTableTile {
     public void run() {
         ByteBuffer buffer = ByteBuffer.wrap(new byte[getUncompressedSizeInBytes()]);
         try (ArrayDataOutput os = new FitsOutputStream(new ByteBufferOutputStream(buffer))) {
-            this.data.write(os, this.rowStart, this.rowEnd, this.column);
+            data.write(os, rowStart, rowEnd, column);
         } catch (IOException e) {
             throw new IllegalStateException("could not write compressed data", e);
         }
@@ -83,8 +83,8 @@ public class BinaryTableTileCompressor extends BinaryTableTile {
         compressedBuffer.rewind();
         compressedBuffer.get(compressedBytes);
         try {
-            synchronized (this.binData) {
-                this.binData.setElement(getTileIndex() - 1, this.column, compressedBytes);
+            synchronized (binData) {
+                binData.setElement(getTileIndex() - 1, column, compressedBytes);
             }
         } catch (FitsException e) {
             throw new IllegalStateException("could not include compressed data into the table", e);

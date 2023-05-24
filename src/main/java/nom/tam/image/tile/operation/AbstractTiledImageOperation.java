@@ -201,11 +201,11 @@ public abstract class AbstractTiledImageOperation<OPERATION extends ITileOperati
     }
 
     protected int getNAxes() {
-        return this.axes.length;
+        return axes.length;
     }
 
     protected int getNumberOfTileOperations() {
-        return this.tileOperations.length;
+        return tileOperations.length;
     }
 
     /**
@@ -215,11 +215,11 @@ public abstract class AbstractTiledImageOperation<OPERATION extends ITileOperati
      * @return      The tile dimensions in Java array index order (x is last!).
      */
     protected int[] getTileAxes() {
-        return this.tileAxes;
+        return tileAxes;
     }
 
     protected OPERATION[] getTileOperations() {
-        return this.tileOperations;
+        return tileOperations;
     }
 
     protected void setBaseType(ElementType<Buffer> baseType) {

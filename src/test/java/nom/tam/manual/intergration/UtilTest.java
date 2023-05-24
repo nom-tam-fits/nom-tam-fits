@@ -53,11 +53,11 @@ public class UtilTest {
             Random random = new Random(System.currentTimeMillis());
             for (int i = 0; i < 1000000; i++) {
                 long longValue = (long) random.nextInt() << 32 | random.nextInt();
-                this.bf.format(longValue, array);
+                bf.format(longValue, array);
                 double value = Double.longBitsToDouble(longValue);
-                this.bf.format(value, array);
+                bf.format(value, array);
                 float value2 = Float.intBitsToFloat(random.nextInt());
-                this.bf.format(value2, array);
+                bf.format(value2, array);
             }
         }
     }

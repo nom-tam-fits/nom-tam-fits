@@ -97,7 +97,7 @@ class BufferedFileIO implements InputReader, OutputWriter, Flushable, Closeable 
      * @param bufferSize    the size of the buffer in bytes
      */
     BufferedFileIO(RandomAccessFileIO f, int bufferSize) {
-        this.file = f;
+        file = f;
         buf = new byte[bufferSize];
         startOfBuf = 0;
         offset = 0;

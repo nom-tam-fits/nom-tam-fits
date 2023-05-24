@@ -125,7 +125,7 @@ public abstract class StandardImageTiler implements ImageTiler {
      */
     @SuppressFBWarnings(value = "EI_EXPOSE_REP", justification = "intended exposure of mutable data")
     public StandardImageTiler(RandomAccess f, long fileOffset, int[] dims, Class<?> base) {
-        this.randomAccessFile = f;
+        randomAccessFile = f;
         this.fileOffset = fileOffset;
         this.dims = dims;
         this.base = base;
@@ -168,20 +168,20 @@ public abstract class StandardImageTiler implements ImageTiler {
         if (output instanceof ArrayDataOutput) {
             this.fillFileData((ArrayDataOutput) output, delta, segment, step);
         } else {
-            this.randomAccessFile.seek(this.fileOffset + delta);
+            randomAccessFile.seek(fileOffset + delta);
 
-            if (this.base == float.class) {
-                this.randomAccessFile.read((float[]) output, outputOffset, segment);
-            } else if (this.base == int.class) {
-                this.randomAccessFile.read((int[]) output, outputOffset, segment);
-            } else if (this.base == short.class) {
-                this.randomAccessFile.read((short[]) output, outputOffset, segment);
-            } else if (this.base == double.class) {
-                this.randomAccessFile.read((double[]) output, outputOffset, segment);
-            } else if (this.base == byte.class) {
-                this.randomAccessFile.read((byte[]) output, outputOffset, segment);
-            } else if (this.base == long.class) {
-                this.randomAccessFile.read((long[]) output, outputOffset, segment);
+            if (base == float.class) {
+                randomAccessFile.read((float[]) output, outputOffset, segment);
+            } else if (base == int.class) {
+                randomAccessFile.read((int[]) output, outputOffset, segment);
+            } else if (base == short.class) {
+                randomAccessFile.read((short[]) output, outputOffset, segment);
+            } else if (base == double.class) {
+                randomAccessFile.read((double[]) output, outputOffset, segment);
+            } else if (base == byte.class) {
+                randomAccessFile.read((byte[]) output, outputOffset, segment);
+            } else if (base == long.class) {
+                randomAccessFile.read((long[]) output, outputOffset, segment);
             } else {
                 throw new IOException("Invalid type for tile array");
             }
@@ -222,32 +222,32 @@ public abstract class StandardImageTiler implements ImageTiler {
      */
     @SuppressFBWarnings(value = "RR_NOT_CHECKED", justification = "this read will never return less than the requested length")
     protected void fillFileData(ArrayDataOutput output, long delta, int segment, int step) throws IOException {
-        final int byteSize = ElementType.forClass(this.base).size();
+        final int byteSize = ElementType.forClass(base).size();
 
         // Subtract one from the step since when we read from a stream, an actual
         // "step" only exists if it's greater
         // than 1.
         final int stepSize = (step - 1) * byteSize;
-        this.randomAccessFile.seek(this.fileOffset + delta);
+        randomAccessFile.seek(fileOffset + delta);
 
         // One value at a time
         final byte[] buffer = new byte[byteSize];
-        long seekOffset = this.randomAccessFile.position();
+        long seekOffset = randomAccessFile.position();
         int bytesRead = 0;
 
         // This is the byte count that will be read.
         final int expectedBytes = segment * byteSize;
         while (bytesRead < expectedBytes) {
             // Prepare for the next read by seeking to the next step
-            this.randomAccessFile.seek(seekOffset);
-            final int currReadByteCount = this.randomAccessFile.read(buffer, 0, buffer.length);
+            randomAccessFile.seek(seekOffset);
+            final int currReadByteCount = randomAccessFile.read(buffer, 0, buffer.length);
 
             // Stop if there is no more to read.
             if (currReadByteCount < 0) {
                 break;
             }
             output.write(buffer, 0, currReadByteCount);
-            seekOffset = this.randomAccessFile.position() + stepSize;
+            seekOffset = randomAccessFile.position() + stepSize;
             bytesRead += currReadByteCount + stepSize;
         }
 
@@ -314,8 +314,8 @@ public abstract class StandardImageTiler implements ImageTiler {
                 startTo -= posits[dim];
                 copyLength += posits[dim];
             }
-            if (posits[dim] + length > this.dims[dim]) {
-                copyLength -= posits[dim] + length - this.dims[dim];
+            if (posits[dim] + length > dims[dim]) {
+                copyLength -= posits[dim] + length - dims[dim];
             }
 
             if (output instanceof ArrayDataOutput) {
@@ -323,17 +323,17 @@ public abstract class StandardImageTiler implements ImageTiler {
                 // valid BITPIX values.
                 final ArrayDataOutput arrayDataOutput = ((ArrayDataOutput) output);
                 for (int i = startFrom; i < startFrom + copyLength; i += step) {
-                    if (this.base == float.class) {
+                    if (base == float.class) {
                         arrayDataOutput.writeFloat(Array.getFloat(data, i));
-                    } else if (this.base == int.class) {
+                    } else if (base == int.class) {
                         arrayDataOutput.writeInt(Array.getInt(data, i));
-                    } else if (this.base == double.class) {
+                    } else if (base == double.class) {
                         arrayDataOutput.writeDouble(Array.getDouble(data, i));
-                    } else if (this.base == long.class) {
+                    } else if (base == long.class) {
                         arrayDataOutput.writeLong(Array.getLong(data, i));
-                    } else if (this.base == short.class) {
+                    } else if (base == short.class) {
                         arrayDataOutput.writeShort(Array.getShort(data, i));
-                    } else if (this.base == byte.class) {
+                    } else if (base == byte.class) {
                         arrayDataOutput.writeByte(Array.getByte(data, i));
                     }
                 }
@@ -392,7 +392,7 @@ public abstract class StandardImageTiler implements ImageTiler {
         // TODO: If that is not sufficient, then maybe it needs to be passed in?
         // TODO: jenkinsd 2022.12.21
         //
-        final int baseLength = isStreaming ? ElementType.forClass(this.base).size() : ArrayFuncs.getBaseLength(o);
+        final int baseLength = isStreaming ? ElementType.forClass(base).size() : ArrayFuncs.getBaseLength(o);
 
         int segment = lengths[n - 1];
         int segmentStep = steps[n - 1];
@@ -400,7 +400,7 @@ public abstract class StandardImageTiler implements ImageTiler {
         System.arraycopy(corners, 0, posits, 0, n);
         long currentOffset = 0;
         if (data == null) {
-            currentOffset = this.randomAccessFile.getFilePointer();
+            currentOffset = randomAccessFile.getFilePointer();
         }
 
         int outputOffset = 0;
@@ -460,7 +460,7 @@ public abstract class StandardImageTiler implements ImageTiler {
 
         } while (incrementPosition(corners, posits, lengths, steps));
         if (data == null) {
-            this.randomAccessFile.seek(currentOffset);
+            randomAccessFile.seek(currentOffset);
         }
 
         if (isStreaming && hasNoOverlap) {
@@ -476,14 +476,14 @@ public abstract class StandardImageTiler implements ImageTiler {
     @Override
     public Object getCompleteImage() throws IOException {
 
-        if (this.randomAccessFile == null) {
+        if (randomAccessFile == null) {
             throw new IOException("Attempt to read from null file");
         }
-        long currentOffset = this.randomAccessFile.getFilePointer();
-        Object o = ArrayFuncs.newInstance(this.base, this.dims);
-        this.randomAccessFile.seek(this.fileOffset);
-        this.randomAccessFile.readImage(o);
-        this.randomAccessFile.seek(currentOffset);
+        long currentOffset = randomAccessFile.getFilePointer();
+        Object o = ArrayFuncs.newInstance(base, dims);
+        randomAccessFile.seek(fileOffset);
+        randomAccessFile.readImage(o);
+        randomAccessFile.seek(currentOffset);
         return o;
     }
 
@@ -525,14 +525,14 @@ public abstract class StandardImageTiler implements ImageTiler {
     @Override
     public Object getTile(int[] corners, int[] lengths, int[] steps) throws IOException {
 
-        if (corners.length != this.dims.length || lengths.length != this.dims.length) {
+        if (corners.length != dims.length || lengths.length != dims.length) {
             throw new IOException("Inconsistent sub-image request");
         }
 
         int arraySize = 1;
-        for (int i = 0; i < this.dims.length; i += 1) {
+        for (int i = 0; i < dims.length; i += 1) {
 
-            if (corners[i] < 0 || lengths[i] < 0 || corners[i] + lengths[i] > this.dims[i]) {
+            if (corners[i] < 0 || lengths[i] < 0 || corners[i] + lengths[i] > dims[i]) {
                 throw new IOException("Sub-image not within image");
             }
             if (steps[i] < 1) {
@@ -542,7 +542,7 @@ public abstract class StandardImageTiler implements ImageTiler {
             arraySize *= lengths[i];
         }
 
-        Object outArray = ArrayFuncs.newInstance(this.base, arraySize);
+        Object outArray = ArrayFuncs.newInstance(base, arraySize);
 
         getTile(outArray, corners, lengths, steps);
         return outArray;
@@ -593,10 +593,10 @@ public abstract class StandardImageTiler implements ImageTiler {
     public void getTile(Object output, int[] corners, int[] lengths, int[] steps) throws IOException {
         Object data = getMemoryImage();
 
-        if (data == null && this.randomAccessFile == null) {
+        if (data == null && randomAccessFile == null) {
             throw new IOException("No data source for tile subset");
         }
 
-        fillTile(data, output, this.dims, corners, lengths, steps);
+        fillTile(data, output, dims, corners, lengths, steps);
     }
 }

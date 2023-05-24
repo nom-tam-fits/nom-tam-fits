@@ -65,21 +65,21 @@ final class TileDecompressorInitialisation implements ITileOperationInitialisati
 
     @Override
     public TileCompressionOperation createTileOperation(int tileIndex, TileArea area) {
-        return new TileDecompressor(this.imageTilesOperation, tileIndex, area);
+        return new TileDecompressor(imageTilesOperation, tileIndex, area);
     }
 
     @Override
     public void init(TileCompressionOperation tileOperation) {
-        tileOperation.setCompressedOffset(this.compressedOffset)//
-        .setCompressed(this.compressed != null ? this.compressed[tileOperation.getTileIndex()] : null, COMPRESSED)//
-        .setCompressed(this.uncompressed != null ? this.uncompressed[tileOperation.getTileIndex()] : null, UNCOMPRESSED)//
-        .setCompressed(this.gzipCompressed != null ? this.gzipCompressed[tileOperation.getTileIndex()] : null, GZIP_COMPRESSED);
-        tileOperation.createImageNullPixelMask(this.imageTilesOperation.getImageNullPixelMask());
-        this.compressedOffset += tileOperation.getPixelSize();
+        tileOperation.setCompressedOffset(compressedOffset)//
+        .setCompressed(compressed != null ? compressed[tileOperation.getTileIndex()] : null, COMPRESSED)//
+        .setCompressed(uncompressed != null ? uncompressed[tileOperation.getTileIndex()] : null, UNCOMPRESSED)//
+        .setCompressed(gzipCompressed != null ? gzipCompressed[tileOperation.getTileIndex()] : null, GZIP_COMPRESSED);
+        tileOperation.createImageNullPixelMask(imageTilesOperation.getImageNullPixelMask());
+        compressedOffset += tileOperation.getPixelSize();
     }
 
     @Override
     public void tileCount(int tileCount) throws FitsException {
-        this.imageTilesOperation.compressOptions().getCompressionParameters().initializeColumns(this.header, this.imageTilesOperation.getBinaryTable(), tileCount);
+        imageTilesOperation.compressOptions().getCompressionParameters().initializeColumns(header, imageTilesOperation.getBinaryTable(), tileCount);
     }
 }
