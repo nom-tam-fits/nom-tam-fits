@@ -1154,17 +1154,13 @@ public class BinaryTable extends AbstractTableData {
 
             if (colDesc.isComplex) {
                 row = ArrayFuncs.newInstance(colDesc.base, new int[] {dim, 2});
-            } else if (colDesc.isString) {
+            } else if (colDesc.isString || colDesc.isBoolean) {
                 // ---> Added clause by Attila Kovacs (13 July 2007)
                 // Again, String entries read data into a byte array at
                 // first
                 // then do the string conversion later.
                 // For string data, we need to read bytes and convert
                 // to strings
-                row = ArrayFuncs.newInstance(byte.class, dim);
-            } else if (colDesc.isBoolean) {
-                // For boolean data, we need to read bytes and convert
-                // to booleans.
                 row = ArrayFuncs.newInstance(byte.class, dim);
             } else {
                 row = ArrayFuncs.newInstance(colDesc.base, dim);

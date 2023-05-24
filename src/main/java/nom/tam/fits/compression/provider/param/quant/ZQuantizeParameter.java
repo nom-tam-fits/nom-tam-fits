@@ -57,11 +57,12 @@ final class ZQuantizeParameter extends CompressHeaderParameter<QuantizeOption> {
         if (Compression.ZQUANTIZ_SUBTRACTIVE_DITHER_2.equals(value)) {
             getOption().setDither(true);
             getOption().setDither2(true);
-        } else if (Compression.ZQUANTIZ_SUBTRACTIVE_DITHER_1.equals(value)) {
-            getOption().setDither(true);
-            getOption().setDither2(false);
         } else {
-            getOption().setDither(false);
+            if (Compression.ZQUANTIZ_SUBTRACTIVE_DITHER_1.equals(value)) {
+                getOption().setDither(true);
+            } else {
+                getOption().setDither(false);
+            }
             getOption().setDither2(false);
         }
     }

@@ -257,10 +257,10 @@ public class UserProvidedTest {
                 printArray(Array.get(array, index), indent, builder);
             }
             builder.append("]\n");
-        } else if (array instanceof String) {
-            builder.append("S");
-            builder.append(indent);
         } else {
+            if (array instanceof String) {
+                builder.append("S");
+            }
             builder.append(indent);
         }
     }

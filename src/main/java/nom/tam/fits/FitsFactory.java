@@ -213,7 +213,8 @@ public final class FitsFactory {
         }
         if (CompressedImageHDU.isHeader(hdr)) {
             return CompressedImageHDU.manufactureData(hdr);
-        } else if (CompressedTableHDU.isHeader(hdr)) {
+        }
+        if (CompressedTableHDU.isHeader(hdr)) {
             return CompressedTableHDU.manufactureData(hdr);
         } else if (BinaryTableHDU.isHeader(hdr)) {
             return BinaryTableHDU.manufactureData(hdr);
@@ -338,7 +339,8 @@ public final class FitsFactory {
         }
         if (current().isUseAsciiTables() && d instanceof AsciiTable) {
             return (BasicHDU<DataClass>) new AsciiTableHDU(hdr, (AsciiTable) d);
-        } else if (d instanceof CompressedTableData) {
+        }
+        if (d instanceof CompressedTableData) {
             return (BasicHDU<DataClass>) new CompressedTableHDU(hdr, (CompressedTableData) d);
         } else if (d instanceof BinaryTable) {
             return (BasicHDU<DataClass>) new BinaryTableHDU(hdr, (BinaryTable) d);

@@ -1361,9 +1361,7 @@ public class Header implements FitsElement {
 
         // Empty comments must have at least one space char to write at least one
         // comment card...
-        if (comment == null) {
-            comment = " ";
-        } else if (comment.isEmpty()) {
+        if ((comment == null) || comment.isEmpty()) {
             comment = " ";
         }
 

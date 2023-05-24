@@ -101,15 +101,15 @@ public class TestArrayFuncs {
         if (xClass.equals(double[].class)) {
             if (told == 0) {
                 return Arrays.equals((double[]) x, (double[]) y);
-            } else {
-                return doubleArrayEquals((double[]) x, (double[]) y, told);
             }
+            return doubleArrayEquals((double[]) x, (double[]) y, told);
 
         }
         if (xClass.equals(long[].class)) {
             return Arrays.equals((long[]) x, (long[]) y);
 
-        } else if (xClass.equals(float[].class)) {
+        }
+        if (xClass.equals(float[].class)) {
             if (tolf == 0) {
                 return Arrays.equals((float[]) x, (float[]) y);
             } else {

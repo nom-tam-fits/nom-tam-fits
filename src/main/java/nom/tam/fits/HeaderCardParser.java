@@ -542,7 +542,8 @@ class HeaderCardParser {
         }
         if (HEX_REGEX.matcher(trimmedValue).matches()) {
             return getIntegerType(trimmedValue);
-        } else if (COMPLEX_REGEX.matcher(trimmedValue).matches()) {
+        }
+        if (COMPLEX_REGEX.matcher(trimmedValue).matches()) {
             return ComplexValue.class;
         }
 
