@@ -86,7 +86,7 @@ public class FitsDecoder extends InputDecoder {
      *
      * @see      #booleanObjectFor(int)
      */
-    protected static final boolean booleanFor(int c) {
+    public static final boolean booleanFor(int c) {
         return c == FITS_TRUE || c == 1;
     }
 
@@ -105,7 +105,7 @@ public class FitsDecoder extends InputDecoder {
      * @see      #booleanFor(int)
      */
     @SuppressFBWarnings(value = "NP_BOOLEAN_RETURN_NULL", justification = "null values are explicitly allowed by FITS, so we want to support them.")
-    protected static final Boolean booleanObjectFor(int c) {
+    public static final Boolean booleanObjectFor(int c) {
         if (c == 0) {
             return null;
         }

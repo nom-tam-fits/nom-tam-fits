@@ -36,6 +36,9 @@ import java.nio.LongBuffer;
 
 import nom.tam.fits.header.Bitpix;
 
+/**
+ * A FITS 64-bit integer element (signed).
+ */
 class LongType extends ElementType<LongBuffer> {
 
     private static final int SIZE = 8;

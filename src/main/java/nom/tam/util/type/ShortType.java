@@ -36,6 +36,9 @@ import java.nio.ShortBuffer;
 
 import nom.tam.fits.header.Bitpix;
 
+/**
+ * A FITS 16-bit integer element (signed).
+ */
 class ShortType extends ElementType<ShortBuffer> {
 
     protected ShortType() {

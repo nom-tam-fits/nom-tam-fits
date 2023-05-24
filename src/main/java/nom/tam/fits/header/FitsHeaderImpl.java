@@ -34,6 +34,12 @@ import java.util.HashSet;
  * #L%
  */
 
+/**
+ * A generic implementation of standardized FITS header keywords, which may be extended to provide arbitrary further
+ * conventional keywords, beyond what is provided by this library. For example, users may extend this class to define
+ * commonly used keywords for their applications, and benefit for the extra checks they afford, and to avoid typos when
+ * using these.
+ */
 public class FitsHeaderImpl implements IFitsHeader, Serializable {
     /**
      *

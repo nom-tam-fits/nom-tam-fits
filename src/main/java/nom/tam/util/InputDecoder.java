@@ -491,9 +491,9 @@ public abstract class InputDecoder {
         }
 
         /**
-         * Retrieves a single byte from the buffer. Before data can be retrieved with this method the should be 'loaded'
-         * into the buffer via {@link #loadOne(int)} or {@link #loadBytes(long, int)}. This method is appropriate for
-         * retrieving one or a fwew bytes at a time. For bulk input of bytes, you should use
+         * Retrieves a single byte from the buffer. Before data can be retrieved with this method they should be
+         * 'loaded' into the buffer via {@link #loadOne(int)} or {@link #loadBytes(long, int)}. This method is
+         * appropriate for retrieving one or a fwew bytes at a time. For bulk input of bytes, you should use
          * {@link InputDecoder#read(byte[], int, int)} instead for superior performance.
          *
          * @return             the byte value, or -1 if no more data is available from the buffer or the underlying
@@ -596,7 +596,7 @@ public abstract class InputDecoder {
 
         /**
          * Retrieves a 8-byte double-precision floating point value from the buffer. Before data can be retrieved with
-         * this method the should be 'loaded' into the buffer via {@link #loadOne(int)} or
+         * this method they should be 'loaded' into the buffer via {@link #loadOne(int)} or
          * {@link #loadBytes(long, int)}.
          *
          * @return              the 64-bit double-precision floating-point value.
@@ -659,7 +659,7 @@ public abstract class InputDecoder {
 
         /**
          * Retrieves a sequence of big-endian 16-bit signed integers from the buffer. Before data can be retrieved with
-         * this method the should be 'loaded' into the buffer via {@link #loadBytes(long, int)}.
+         * this method they should be 'loaded' into the buffer via {@link #loadBytes(long, int)}.
          *
          * @param  dst          Java array in which to store the retrieved sequence of elements
          * @param  from         the array index for storing the first element retrieved
@@ -688,7 +688,7 @@ public abstract class InputDecoder {
 
         /**
          * Retrieves a sequence of big-endian 32-bit signed integers from the buffer. Before data can be retrieved with
-         * this method the should be 'loaded' into the buffer via {@link #loadBytes(long, int)}.
+         * this method they should be 'loaded' into the buffer via {@link #loadBytes(long, int)}.
          *
          * @param  dst          Java array in which to store the retrieved sequence of elements
          * @param  from         the array index for storing the first element retrieved
@@ -713,7 +713,7 @@ public abstract class InputDecoder {
 
         /**
          * Retrieves a sequence of big-endian 64-bit signed integers from the buffer. Before data can be retrieved with
-         * this method the should be 'loaded' into the buffer via {@link #loadBytes(long, int)}.
+         * this method they should be 'loaded' into the buffer via {@link #loadBytes(long, int)}.
          *
          * @param  dst          Java array in which to store the retrieved sequence of elements
          * @param  from         the array index for storing the first element retrieved
@@ -738,7 +738,7 @@ public abstract class InputDecoder {
 
         /**
          * Retrieves a sequence of big-endian 32-bit floating-point values from the buffer. Before data can be retrieved
-         * with this method the should be 'loaded' into the buffer via {@link #loadBytes(long, int)}.
+         * with this method they should be 'loaded' into the buffer via {@link #loadBytes(long, int)}.
          *
          * @param  dst          Java array in which to store the retrieved sequence of elements
          * @param  from         the array index for storing the first element retrieved
@@ -763,7 +763,7 @@ public abstract class InputDecoder {
 
         /**
          * Retrieves a sequence of big-endian 64-bit floating-point values from the buffer. Before data can be retrieved
-         * with this method the should be 'loaded' into the buffer via {@link #loadBytes(long, int)}.
+         * with this method they should be 'loaded' into the buffer via {@link #loadBytes(long, int)}.
          *
          * @param  dst          Java array in which to store the retrieved sequence of elements
          * @param  from         the array index for storing the first element retrieved

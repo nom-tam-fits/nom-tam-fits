@@ -33,6 +33,9 @@ package nom.tam.util.type;
 
 import java.nio.Buffer;
 
+/**
+ * A catch-all element type for non-standard FITS type definitions.
+ */
 class UnknownType extends ElementType<Buffer> {
 
     protected UnknownType() {

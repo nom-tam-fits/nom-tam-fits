@@ -54,7 +54,7 @@ import nom.tam.fits.header.Bitpix;
 public abstract class ElementType<B extends Buffer> {
 
     /**
-     * Tha size value to use to indicate that instance have their own size each
+     * The size value to use to indicate that instances have their own size each
      */
     private static final int VARIABLE_SIZE = -1;
 
@@ -133,6 +133,13 @@ public abstract class ElementType<B extends Buffer> {
         }
     }
 
+    /**
+     * Returns a typed view of a byte buffer, suitable for transacting elements of this type directly.
+     * 
+     * @param  buffer a byte buffer
+     * 
+     * @return        the typed view of the byte buffer
+     */
     public B asTypedBuffer(ByteBuffer buffer) {
         throw new UnsupportedOperationException("no primitive buffer available");
     }
@@ -147,7 +154,7 @@ public abstract class ElementType<B extends Buffer> {
     }
 
     /**
-     * Return the class of buffer that can be used to serialize or deserialize elements of this type.
+     * Returns the class of buffer that can be used to serialize or deserialize elements of this type.
      *
      * @return The class of buffer that can transact elements of this type.
      *
@@ -188,7 +195,7 @@ public abstract class ElementType<B extends Buffer> {
     }
 
     /**
-     * Gets elements of an array from a buffer, starting from the beginning of the array.
+     * Gets elements of an array from a buffer, starting at the beginning of the array.
      *
      * @param buffer the typed buffer from which to retrieve elements
      * @param array  the 1D array of matching type
@@ -203,7 +210,7 @@ public abstract class ElementType<B extends Buffer> {
     }
 
     /**
-     * Gets elements of an array from a buffer, starting from the specified array index.
+     * Gets elements of an array from a buffer, starting at the specified array index.
      *
      * @param buffer the typed buffer from which to retrieve elements
      * @param array  the 1D array of matching type
@@ -301,7 +308,7 @@ public abstract class ElementType<B extends Buffer> {
     }
 
     /**
-     * Returns the Java primitive type corresponsing to this element, if any
+     * Returns the Java primitive type corresponding to this element, if any
      *
      * @return the Java primitive type that corresponds to this element, or <code>null</code> if there is no primitive
      *             type equivalent to this FITS element type.
@@ -330,7 +337,7 @@ public abstract class ElementType<B extends Buffer> {
     }
 
     /**
-     * Puts elements from an array into the given buffer, starting from the beginning of the array
+     * Puts elements from an array into the given buffer, starting at the beginning of the array
      *
      * @param buffer the typed buffer in which to put elements
      * @param array  the 1D array of matching type
@@ -347,7 +354,7 @@ public abstract class ElementType<B extends Buffer> {
     }
 
     /**
-     * Puts elements from an array into the given buffer, starting from the specified array index.
+     * Puts elements from an array into the given buffer, starting at the specified array index.
      *
      * @param buffer the typed buffer in which to put elements
      * @param array  the 1D array of matching type
@@ -375,13 +382,16 @@ public abstract class ElementType<B extends Buffer> {
     }
 
     /**
-     * currently the only individual size primitive so, keep it simple
+     * Returns the size of an element, provided it matches our element type.
      *
      * @param  instance                 the object to calculate the size
      *
-     * @return                          the size in bytes of the object instance
+     * @return                          {@link #size()} if the object is a primitive or boxed java type that matches
+     *                                      this element type, or 0 if the object is <code>null</code>.
      *
      * @throws IllegalArgumentException if the object is not of the type expected by this class.
+     * 
+     * @see                             #size()
      */
     public int size(Object instance) {
         if (instance == null) {
@@ -398,8 +408,8 @@ public abstract class ElementType<B extends Buffer> {
     }
 
     /**
-     * Returns a new typed buffer that starts the the current position of the supplied typed buffer for this element.
-     * See {@link Buffer#slice()} for the contract on slices.
+     * Returns a new typed buffer that starts at the the current position of the supplied typed buffer. See
+     * {@link Buffer#slice()} for the contract on slices.
      *
      * @param  buffer the buffer from which to create the new slice
      *
@@ -564,8 +574,8 @@ public abstract class ElementType<B extends Buffer> {
     }
 
     /**
-     * Returns the FITS element type that is nearest to the specified BITPIX value exactly. This method can be used to
-     * guess what the element type may be when the BITPIX value is not strictly to specification in the FITS header.
+     * Returns the FITS element type that is nearest to the specified BITPIX value. This method can be used to guess
+     * what the element type may be when the BITPIX value is not strictly to specification in the FITS header.
      *
      * @param  bitPix the BITPIX value that FITS uses to specify the element type for images.
      *

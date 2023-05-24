@@ -31,12 +31,19 @@ package nom.tam.fits.header;
  * #L%
  */
 
+/**
+ * Interface for standardized header keyword implementations. Standardized header keys help with proper usage, with
+ * restricted use and value types as appropriate. Using keywords that implement this interface make it less likely for
+ * one to end up with inproperly constructed FITS files. Therefore, their usage is highly encouranged when possible.
+ */
 public interface IFitsHeader {
 
+    /** An enumeration of HDU types in which a header keyword may be used. */
     enum HDU {
         ANY, ASCII_TABLE, BINTABLE, EXTENSION, GROUPS, IMAGE, PRIMARY, PRIMARY_EXTENSION, TABLE
     }
 
+    /** Documentation sources for the various known conventions. */
     enum SOURCE {
         /**
          * Checksum keywords. See
@@ -115,6 +122,7 @@ public interface IFitsHeader {
         }
     }
 
+    /** Values types to which implementing keywords can be restricted to. */
     enum VALUE {
         INTEGER, LOGICAL, NONE, REAL, COMPLEX, STRING, ANY
     }

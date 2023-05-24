@@ -36,6 +36,10 @@ import java.nio.DoubleBuffer;
 
 import nom.tam.fits.header.Bitpix;
 
+/**
+ * A FITS double-precision floating point element. It is the same as the standard IEEE 64-bit double-precision
+ * floating-point value,
+ */
 class DoubleType extends ElementType<DoubleBuffer> {
 
     private static final int SIZE = 8;

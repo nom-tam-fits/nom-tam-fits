@@ -36,6 +36,9 @@ import java.io.InputStream;
 
 import nom.tam.fits.FitsException;
 
+/**
+ * Input stream decompression interface.
+ */
 public interface ICompressProvider {
 
     InputStream decompress(InputStream in) throws IOException, FitsException;

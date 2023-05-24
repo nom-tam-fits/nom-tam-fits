@@ -43,6 +43,17 @@ import java.util.logging.Logger;
 
 import static nom.tam.util.LoggerHelper.getLogger;
 
+/**
+ * Ensures that input streams aren't left open when decompressing with an external system tool, such as the UNIX
+ * <b>compress</b> or <b>bzip2</b> commands. It is discouraged to use system tools for decompressing such files,
+ * especially since we have native Java implementations through Apache's <b>commons-compress</b> classes. The system
+ * tools are not portable, whereas the <b>commons-compress</b> implementation is. Therefore, you should neer really need
+ * to use this class, which is provided only for compatibility with earlier versions of this library.
+ * 
+ * @deprecated Needed only by deprecated compression classes. And it should not have visibility outside of this package
+ *                 anyway.
+ */
+@Deprecated
 public class CloseIS extends FilterInputStream {
 
     private static final Logger LOG = getLogger(CloseIS.class);

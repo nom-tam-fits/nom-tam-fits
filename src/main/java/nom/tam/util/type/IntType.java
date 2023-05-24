@@ -36,6 +36,9 @@ import java.nio.IntBuffer;
 
 import nom.tam.fits.header.Bitpix;
 
+/**
+ * A FITS 32-bit integer element (signed).
+ */
 class IntType extends ElementType<IntBuffer> {
 
     private static final int SIZE = 4;

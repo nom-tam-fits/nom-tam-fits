@@ -1,18 +1,16 @@
-package nom.tam.util.type;
-
-/*
+/*-
  * #%L
  * nom.tam FITS library
  * %%
- * Copyright (C) 2004 - 2021 nom-tam-fits
+ * Copyright (C) 1996 - 2023 nom-tam-fits
  * %%
  * This is free and unencumbered software released into the public domain.
- *
+ * 
  * Anyone is free to copy, modify, publish, use, compile, sell, or
  * distribute this software, either in source code form or as a compiled
  * binary, for any purpose, commercial or non-commercial, and by any
  * means.
- *
+ * 
  * In jurisdictions that recognize copyright laws, the author or authors
  * of this software dedicate any and all copyright interest in the
  * software to the public domain. We make this dedication for the benefit
@@ -20,7 +18,7 @@ package nom.tam.util.type;
  * successors. We intend this dedication to be an overt act of
  * relinquishment in perpetuity of all present and future rights to this
  * software under copyright law.
- *
+ * 
  * THE SOFTWARE IS PROVIDED "AS IS", WITHOUT WARRANTY OF ANY KIND,
  * EXPRESS OR IMPLIED, INCLUDING BUT NOT LIMITED TO THE WARRANTIES OF
  * MERCHANTABILITY, FITNESS FOR A PARTICULAR PURPOSE AND NONINFRINGEMENT.
@@ -31,26 +29,12 @@ package nom.tam.util.type;
  * #L%
  */
 
-import java.nio.Buffer;
-
 /**
- * A FITS string element element, essentially an ASCII byte sequence.
+ * A few classes for copying and iterating over multi-dimensional arrays of all/any types, mainly for internal use. It's
+ * weird that these classes were given their own separate package, especially given that the {@link nom.tam.util}
+ * package is already a collection of all sorts of things -- and which really could have hosted these classes too. Oh
+ * well...
  */
-class StringType extends ElementType<Buffer> {
 
-    protected StringType() {
-        super(0, true, CharSequence.class, String.class, null, 'L', 0);
-    }
+package nom.tam.util.array;
 
-    @Override
-    public int size(Object instance) {
-        if (instance == null) {
-            return 0;
-        }
-        if (instance instanceof CharSequence) {
-            return ((CharSequence) instance).length();
-        }
-        throw new IllegalArgumentException(
-                "Class " + instance.getClass().getName() + " is not an instance of CharSequence");
-    }
-}

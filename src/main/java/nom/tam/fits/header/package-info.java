@@ -1,5 +1,8 @@
 /**
  * <p>
+ * Standardized FITS header keywords, as per FITS specification.
+ * </p>
+ * <p>
  * There many many sources of FITS keywords. In addition to the standards documents many organisations (or groups of
  * organisations) have defined their own sets of keywords. This results in many different dictionaries with partly
  * overlapping definitions. To help the "normal" user of FITS files with these we started to collect the standards and

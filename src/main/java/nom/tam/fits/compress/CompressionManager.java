@@ -44,6 +44,17 @@ import nom.tam.fits.FitsException;
 
 import static nom.tam.util.LoggerHelper.getLogger;
 
+/**
+ * Decompression of compressed FITS files of all supported types (<code>.gz</code>, <code>.Z</code>, <code>.bz2</code>).
+ * It autodetects the type of compression used based on the first 2-bytes of the compressed input stream. When possible,
+ * preference will be given to performa the decompression using the system tool
+ * (<code>uncompress</cocde> or <code>bzip2</code>, which are likely faster for large files). If such a tool is not
+ * available, then the Apache <b>common-compress</b> classes will be used to the same effect.
+ * 
+ * @see GZipCompressionProvider
+ * @see BZip2CompressionProvider
+ * @see ZCompressionProvider
+ */
 public final class CompressionManager {
 
     private static final String BZIP2_EXTENTION = ".bz2";
@@ -153,6 +164,7 @@ public final class CompressionManager {
         }
         ServiceLoader<ICompressProvider> compressionProviders = ServiceLoader.load(ICompressProvider.class,
                 Thread.currentThread().getContextClassLoader());
+
         for (ICompressProvider provider : compressionProviders) {
             if (provider.priority() > Math.max(0, priority) && provider.priority() < maxPriority && provider != old && //
                     provider.provides(mag1, mag2)) {
