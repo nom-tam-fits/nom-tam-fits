@@ -1,5 +1,10 @@
 package nom.tam.image.compression.tile;
 
+import nom.tam.fits.FitsException;
+import nom.tam.fits.compression.provider.param.api.IHeaderAccess;
+import nom.tam.image.tile.operation.ITileOperationInitialisation;
+import nom.tam.image.tile.operation.TileArea;
+
 /*
  * #%L
  * nom.tam FITS library
@@ -7,12 +12,12 @@ package nom.tam.image.compression.tile;
  * Copyright (C) 1996 - 2021 nom-tam-fits
  * %%
  * This is free and unencumbered software released into the public domain.
- * 
+ *
  * Anyone is free to copy, modify, publish, use, compile, sell, or
  * distribute this software, either in source code form or as a compiled
  * binary, for any purpose, commercial or non-commercial, and by any
  * means.
- * 
+ *
  * In jurisdictions that recognize copyright laws, the author or authors
  * of this software dedicate any and all copyright interest in the
  * software to the public domain. We make this dedication for the benefit
@@ -20,7 +25,7 @@ package nom.tam.image.compression.tile;
  * successors. We intend this dedication to be an overt act of
  * relinquishment in perpetuity of all present and future rights to this
  * software under copyright law.
- * 
+ *
  * THE SOFTWARE IS PROVIDED "AS IS", WITHOUT WARRANTY OF ANY KIND,
  * EXPRESS OR IMPLIED, INCLUDING BUT NOT LIMITED TO THE WARRANTIES OF
  * MERCHANTABILITY, FITNESS FOR A PARTICULAR PURPOSE AND NONINFRINGEMENT.
@@ -34,11 +39,6 @@ package nom.tam.image.compression.tile;
 import static nom.tam.image.compression.tile.TileCompressionType.COMPRESSED;
 import static nom.tam.image.compression.tile.TileCompressionType.GZIP_COMPRESSED;
 import static nom.tam.image.compression.tile.TileCompressionType.UNCOMPRESSED;
-
-import nom.tam.fits.FitsException;
-import nom.tam.fits.compression.provider.param.api.IHeaderAccess;
-import nom.tam.image.tile.operation.ITileOperationInitialisation;
-import nom.tam.image.tile.operation.TileArea;
 
 final class TileDecompressorInitialisation implements ITileOperationInitialisation<TileCompressionOperation> {
 
@@ -71,9 +71,9 @@ final class TileDecompressorInitialisation implements ITileOperationInitialisati
     @Override
     public void init(TileCompressionOperation tileOperation) {
         tileOperation.setCompressedOffset(this.compressedOffset)//
-                .setCompressed(this.compressed != null ? this.compressed[tileOperation.getTileIndex()] : null, COMPRESSED)//
-                .setCompressed(this.uncompressed != null ? this.uncompressed[tileOperation.getTileIndex()] : null, UNCOMPRESSED)//
-                .setCompressed(this.gzipCompressed != null ? this.gzipCompressed[tileOperation.getTileIndex()] : null, GZIP_COMPRESSED);
+        .setCompressed(this.compressed != null ? this.compressed[tileOperation.getTileIndex()] : null, COMPRESSED)//
+        .setCompressed(this.uncompressed != null ? this.uncompressed[tileOperation.getTileIndex()] : null, UNCOMPRESSED)//
+        .setCompressed(this.gzipCompressed != null ? this.gzipCompressed[tileOperation.getTileIndex()] : null, GZIP_COMPRESSED);
         tileOperation.createImageNullPixelMask(this.imageTilesOperation.getImageNullPixelMask());
         this.compressedOffset += tileOperation.getPixelSize();
     }

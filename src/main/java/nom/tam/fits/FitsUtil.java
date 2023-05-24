@@ -7,12 +7,12 @@ package nom.tam.fits;
  * Copyright (C) 2004 - 2021 nom-tam-fits
  * %%
  * This is free and unencumbered software released into the public domain.
- * 
+ *
  * Anyone is free to copy, modify, publish, use, compile, sell, or
  * distribute this software, either in source code form or as a compiled
  * binary, for any purpose, commercial or non-commercial, and by any
  * means.
- * 
+ *
  * In jurisdictions that recognize copyright laws, the author or authors
  * of this software dedicate any and all copyright interest in the
  * software to the public domain. We make this dedication for the benefit
@@ -20,7 +20,7 @@ package nom.tam.fits;
  * successors. We intend this dedication to be an overt act of
  * relinquishment in perpetuity of all present and future rights to this
  * software under copyright law.
- * 
+ *
  * THE SOFTWARE IS PROVIDED "AS IS", WITHOUT WARRANTY OF ANY KIND,
  * EXPRESS OR IMPLIED, INCLUDING BUT NOT LIMITED TO THE WARRANTIES OF
  * MERCHANTABILITY, FITNESS FOR A PARTICULAR PURPOSE AND NONINFRINGEMENT.
@@ -71,7 +71,7 @@ public final class FitsUtil {
 
     /**
      * @return Total size of blocked FITS element, using e.v. padding to fits block size.
-     * 
+     *
      * @param size the current size.
      */
     public static int addPadding(int size) {
@@ -80,7 +80,7 @@ public final class FitsUtil {
 
     /**
      * @return Total size of blocked FITS element, using e.v. padding to fits block size.
-     * 
+     *
      * @param size the current size.
      */
     public static long addPadding(long size) {
@@ -89,7 +89,7 @@ public final class FitsUtil {
 
     /**
      * @return Convert an array of booleans to bytes.
-     * 
+     *
      * @param bool array of booleans
      */
     static byte[] booleanToByte(boolean[] bool) {
@@ -103,7 +103,7 @@ public final class FitsUtil {
 
     /**
      * @return Convert bytes to Strings.
-     * 
+     *
      * @param bytes byte array to convert
      * @param maxLen the max string length
      */
@@ -182,7 +182,7 @@ public final class FitsUtil {
 
     /**
      * @return Convert an array of bytes to booleans.
-     * 
+     *
      * @param bytes the array of bytes to get the booleans from.
      */
     static boolean[] byteToBoolean(byte[] bytes) {
@@ -196,7 +196,7 @@ public final class FitsUtil {
 
     /**
      * @return Find out where we are in a random access file .
-     * 
+     *
      * @param o the stream to get the position
      */
     public static long findOffset(Closeable o) {
@@ -209,10 +209,10 @@ public final class FitsUtil {
     /**
      * @return Get a stream to a URL accommodating possible redirections. Note that if a redirection request points to a
      *             different protocol than the original request, then the redirection is not handled automatically.
-     * 
+     *
      * @param url the url to get the stream from
      * @param level max levels of redirection
-     * 
+     *
      * @throws IOException if the operation failed
      */
     public static InputStream getURLStream(URL url, int level) throws IOException {
@@ -232,9 +232,9 @@ public final class FitsUtil {
 
     /**
      * @return Get the maximum length of a String in a String array.
-     * 
+     *
      * @param strings array of strings to check
-     * 
+     *
      * @throws FitsException if the operation failed
      */
     public static int maxLength(String[] strings) throws FitsException {
@@ -250,10 +250,10 @@ public final class FitsUtil {
 
     /**
      * Add padding to an output stream.
-     * 
+     *
      * @param stream stream to pad
      * @param size the current size
-     * 
+     *
      * @throws FitsException if the operation failed
      */
     public static void pad(ArrayDataOutput stream, long size) throws FitsException {
@@ -262,11 +262,11 @@ public final class FitsUtil {
 
     /**
      * Add padding to an output stream.
-     * 
+     *
      * @param stream stream to pad
      * @param size the current size
      * @param fill the fill byte to use
-     * 
+     *
      * @throws FitsException if the operation failed
      */
     public static void pad(ArrayDataOutput stream, long size, byte fill) throws FitsException {
@@ -285,7 +285,7 @@ public final class FitsUtil {
 
     /**
      * @return How many bytes are needed to fill a 2880 block?
-     * 
+     *
      * @param size the size without padding
      */
     public static int padding(int size) {
@@ -304,14 +304,14 @@ public final class FitsUtil {
     /**
      * Attempts to reposition a FITS input ot output. The call will succeed only if the underlying input or output is
      * random accessible. Othewise, an exception will be thrown.
-     * 
+     *
      * @deprecated This method wraps an {@link IOException} into a {@link FitsException} for no good reason really. A
      *                 revision of the API could reduce the visibility of this method, and/or procees the underlying
      *                 exception instead.
-     * 
+     *
      * @param o the FITS input or output
      * @param offset the offset to position it to.
-     * 
+     *
      * @throws FitsException if the underlying input/output is not random accessible or if the requested position is
      *             invalid.
      */
@@ -339,9 +339,9 @@ public final class FitsUtil {
 
     /**
      * Convert an array of Strings to bytes.
-     * 
+     *
      * @return the resulting bytes
-     * 
+     *
      * @param stringArray the array with Strings
      * @param maxLen the max length (in bytes) of every String
      */

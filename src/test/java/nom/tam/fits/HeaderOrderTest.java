@@ -1,5 +1,15 @@
 package nom.tam.fits;
 
+import static org.junit.Assert.assertEquals;
+
+import java.io.ByteArrayOutputStream;
+
+import org.junit.Assert;
+import org.junit.Test;
+
+import nom.tam.util.ArrayDataOutput;
+import nom.tam.util.FitsOutputStream;
+
 /*
  * #%L
  * nom.tam FITS library
@@ -7,12 +17,12 @@ package nom.tam.fits;
  * Copyright (C) 1996 - 2021 nom-tam-fits
  * %%
  * This is free and unencumbered software released into the public domain.
- * 
+ *
  * Anyone is free to copy, modify, publish, use, compile, sell, or
  * distribute this software, either in source code form or as a compiled
  * binary, for any purpose, commercial or non-commercial, and by any
  * means.
- * 
+ *
  * In jurisdictions that recognize copyright laws, the author or authors
  * of this software dedicate any and all copyright interest in the
  * software to the public domain. We make this dedication for the benefit
@@ -20,7 +30,7 @@ package nom.tam.fits;
  * successors. We intend this dedication to be an overt act of
  * relinquishment in perpetuity of all present and future rights to this
  * software under copyright law.
- * 
+ *
  * THE SOFTWARE IS PROVIDED "AS IS", WITHOUT WARRANTY OF ANY KIND,
  * EXPRESS OR IMPLIED, INCLUDING BUT NOT LIMITED TO THE WARRANTIES OF
  * MERCHANTABILITY, FITNESS FOR A PARTICULAR PURPOSE AND NONINFRINGEMENT.
@@ -36,15 +46,6 @@ import static nom.tam.fits.header.Standard.END;
 import static nom.tam.fits.header.Standard.NAXIS;
 import static nom.tam.fits.header.Standard.SIMPLE;
 import static nom.tam.fits.header.Standard.THEAP;
-import static org.junit.Assert.assertEquals;
-
-import java.io.ByteArrayOutputStream;
-
-import nom.tam.util.ArrayDataOutput;
-import nom.tam.util.FitsOutputStream;
-
-import org.junit.Assert;
-import org.junit.Test;
 
 public class HeaderOrderTest {
 
@@ -75,23 +76,23 @@ public class HeaderOrderTest {
     public void headerOrder() throws Exception {
         ArrayDataOutput dos = new FitsOutputStream(new ByteArrayOutputStream(), 80);
         Header header = new Header();
-        
+
         header.addValue(BLOCKED, true);
         header.addValue(SIMPLE, true);
         header.addValue(BITPIX, 8);
-        header.addValue(THEAP, 1);  
+        header.addValue(THEAP, 1);
         header.addValue(NAXIS, 0);
         header.insertCommentStyle(END.key(), null);
-       
-        
+
+
         // Check that the order is what we expect...
         Assert.assertEquals(SIMPLE.key(), header.iterator(1).next().getKey());
         Assert.assertEquals(BITPIX.key(), header.iterator(2).next().getKey());
         Assert.assertEquals(THEAP.key(), header.iterator(3).next().getKey());
         Assert.assertEquals(NAXIS.key(), header.iterator(4).next().getKey());
         Assert.assertEquals(END.key(), header.iterator(5).next().getKey());
-        
-        
+
+
         header.write(dos);
         Assert.assertEquals(BLOCKED.key(), header.iterator(3).next().getKey());
         Assert.assertEquals(THEAP.key(), header.iterator(4).next().getKey());
@@ -113,22 +114,22 @@ public class HeaderOrderTest {
     public void testSaveNewCard() {
         HeaderCard.saveNewHeaderCard("XXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXX", "", false);
     }
-    
+
     @Test
     public void testBadNaxis1() {
         assertEquals(1, new HeaderOrder().compare("NAXIS-1", "THEAP"));
     }
-    
+
     @Test
     public void testBadNaxis2() {
         assertEquals(1, new HeaderOrder().compare("NAXIS1000", "THEAP"));
     }
-    
+
     @Test
     public void testBadNaxis3() {
         assertEquals(1, new HeaderOrder().compare("NAXISA", "THEAP"));
     }
-    
+
     @Test
     public void testNullOrder() {
         assertEquals(1, new HeaderOrder().compare(null, "THEAP"));

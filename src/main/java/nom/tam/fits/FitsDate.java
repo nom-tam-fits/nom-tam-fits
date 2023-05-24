@@ -7,12 +7,12 @@ package nom.tam.fits;
  * Copyright (C) 1996 - 2021 nom-tam-fits
  * %%
  * This is free and unencumbered software released into the public domain.
- * 
+ *
  * Anyone is free to copy, modify, publish, use, compile, sell, or
  * distribute this software, either in source code form or as a compiled
  * binary, for any purpose, commercial or non-commercial, and by any
  * means.
- * 
+ *
  * In jurisdictions that recognize copyright laws, the author or authors
  * of this software dedicate any and all copyright interest in the
  * software to the public domain. We make this dedication for the benefit
@@ -20,7 +20,7 @@ package nom.tam.fits;
  * successors. We intend this dedication to be an overt act of
  * relinquishment in perpetuity of all present and future rights to this
  * software under copyright law.
- * 
+ *
  * THE SOFTWARE IS PROVIDED "AS IS", WITHOUT WARRANTY OF ANY KIND,
  * EXPRESS OR IMPLIED, INCLUDING BUT NOT LIMITED TO THE WARRANTIES OF
  * MERCHANTABILITY, FITNESS FOR A PARTICULAR PURPOSE AND NONINFRINGEMENT.
@@ -97,7 +97,7 @@ public class FitsDate implements Comparable<FitsDate> {
 
     /**
      * @return a created FITS format date string Java Date object.
-     * 
+     *
      * @param epoch The epoch to be converted to FITS format.
      */
     public static String getFitsDateString(Date epoch) {
@@ -106,7 +106,7 @@ public class FitsDate implements Comparable<FitsDate> {
 
     /**
      * @return a created FITS format date string. Note that the date is not rounded.
-     * 
+     *
      * @param epoch The epoch to be converted to FITS format.
      * @param timeOfDay Should time of day information be included?
      */
@@ -155,9 +155,9 @@ public class FitsDate implements Comparable<FitsDate> {
 
     /**
      * Convert a FITS date string to a Java <CODE>Date</CODE> object.
-     * 
+     *
      * @param dStr the FITS date
-     * 
+     *
      * @throws FitsException if <CODE>dStr</CODE> does not contain a valid FITS date.
      */
     public FitsDate(String dStr) throws FitsException {
@@ -176,16 +176,15 @@ public class FitsDate implements Comparable<FitsDate> {
             this.millisecond = getMilliseconds(match, FitsDate.NEW_FORMAT_MILLISECOND_GROUP);
         } else {
             match = FitsDate.OLD_REGEX.matcher(dStr);
-            if (match.matches()) {
-                this.year = getInt(match, FitsDate.OLD_FORMAT_YEAR_GROUP) + FitsDate.YEAR_OFFSET;
-                this.month = getInt(match, FitsDate.OLD_FORMAT_MONTH_GROUP);
-                this.mday = getInt(match, FitsDate.OLD_FORMAT_DAY_OF_MONTH_GROUP);
-            } else {
+            if (!match.matches()) {
                 if (dStr.trim().isEmpty()) {
                     return;
                 }
                 throw new FitsException("Bad FITS date string \"" + dStr + '"');
             }
+            this.year = getInt(match, FitsDate.OLD_FORMAT_YEAR_GROUP) + FitsDate.YEAR_OFFSET;
+            this.month = getInt(match, FitsDate.OLD_FORMAT_MONTH_GROUP);
+            this.mday = getInt(match, FitsDate.OLD_FORMAT_DAY_OF_MONTH_GROUP);
         }
     }
 
@@ -212,7 +211,7 @@ public class FitsDate implements Comparable<FitsDate> {
 
     /**
      * Get a Java Date object corresponding to this FITS date.
-     * 
+     *
      * @return The Java Date object.
      */
     @SuppressFBWarnings(value = "EI_EXPOSE_REP", justification = "intended exposure of mutable data")

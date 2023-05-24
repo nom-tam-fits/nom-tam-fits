@@ -7,12 +7,12 @@ package nom.tam.util;
  * Copyright (C) 2004 - 2021 nom-tam-fits
  * %%
  * This is free and unencumbered software released into the public domain.
- * 
+ *
  * Anyone is free to copy, modify, publish, use, compile, sell, or
  * distribute this software, either in source code form or as a compiled
  * binary, for any purpose, commercial or non-commercial, and by any
  * means.
- * 
+ *
  * In jurisdictions that recognize copyright laws, the author or authors
  * of this software dedicate any and all copyright interest in the
  * software to the public domain. We make this dedication for the benefit
@@ -20,7 +20,7 @@ package nom.tam.util;
  * successors. We intend this dedication to be an overt act of
  * relinquishment in perpetuity of all present and future rights to this
  * software under copyright law.
- * 
+ *
  * THE SOFTWARE IS PROVIDED "AS IS", WITHOUT WARRANTY OF ANY KIND,
  * EXPRESS OR IMPLIED, INCLUDING BUT NOT LIMITED TO THE WARRANTIES OF
  * MERCHANTABILITY, FITNESS FOR A PARTICULAR PURPOSE AND NONINFRINGEMENT.
@@ -38,8 +38,9 @@ import java.util.Collections;
 import java.util.HashMap;
 import java.util.Map;
 
-import edu.umd.cs.findbugs.annotations.SuppressFBWarnings;
 import nom.tam.util.type.ElementType;
+
+import edu.umd.cs.findbugs.annotations.SuppressFBWarnings;
 
 /**
  * A data table is conventionally considered to consist of rows and columns,
@@ -56,9 +57,9 @@ import nom.tam.util.type.ElementType;
  * array. Each column is required to have the same number of rows. Information
  * regarding the dimensionality of columns and possible data pointers is
  * retained for use by clients which can understand them.
- * 
+ *
  * @param <T>   the generic type of extra state information associated with this table.
- * 
+ *
  */
 public class ColumnTable<T> implements DataTable {
 
@@ -315,7 +316,7 @@ public class ColumnTable<T> implements DataTable {
 
     /**
      * Create the object after checking consistency.
-     * 
+     *
      * @param arrays
      *            An array of one-d primitive arrays.
      * @param sizes
@@ -330,7 +331,7 @@ public class ColumnTable<T> implements DataTable {
 
     /**
      * Add a column .
-     * 
+     *
      * @param newColumn
      *            the column to add.
      * @param size
@@ -370,7 +371,7 @@ public class ColumnTable<T> implements DataTable {
 
     /**
      * Add a pointer in the pointer lists.
-     * 
+     *
      * @param data
      *            data pointer to add
      * @throws TableException
@@ -402,7 +403,7 @@ public class ColumnTable<T> implements DataTable {
     /**
      * Add a row to the table. This method is very inefficient for adding
      * multiple rows and should be avoided if possible.
-     * 
+     *
      * @param row
      *            the row to add
      * @throws TableException
@@ -440,7 +441,7 @@ public class ColumnTable<T> implements DataTable {
      * <li>the size of an array is not divisible by the sizes entry.
      * <li>the number of rows differs for the columns.
      * </ul>
-     * 
+     *
      * @param newArrays
      *            The arrays defining the columns.
      * @param newSizes
@@ -518,7 +519,7 @@ public class ColumnTable<T> implements DataTable {
 
     /**
      * Delete a contiguous set of columns from the table.
-     * 
+     *
      * @param start
      *            The first column (0-indexed) to be deleted.
      * @param len
@@ -565,7 +566,7 @@ public class ColumnTable<T> implements DataTable {
 
     /**
      * Delete a row from the table.
-     * 
+     *
      * @param row
      *            The row (0-indexed) to be deleted.
      * @throws TableException
@@ -578,7 +579,7 @@ public class ColumnTable<T> implements DataTable {
 
     /**
      * Delete a contiguous set of rows from the table.
-     * 
+     *
      * @param row
      *            The row (0-indexed) to be deleted.
      * @param length
@@ -616,7 +617,7 @@ public class ColumnTable<T> implements DataTable {
 
     /**
      * Get the base classes of the columns.
-     * 
+     *
      * @return An array of Class objects, one for each column.
      */
     @SuppressFBWarnings(value = "EI_EXPOSE_REP", justification = "intended exposure of mutable data")
@@ -632,16 +633,16 @@ public class ColumnTable<T> implements DataTable {
      * <ul>
      * <li>Character arrays in FITS are stored as <code>byte[]</code> or <code>short[]</code>, depending
      * on the {@link nom.tam.fits.FitsFactory#setUseUnicodeChars(boolean)} setting, not unicode Java <code>char[]</code>.
-     * Therefore, this call will return <code>byte[]</code> or <code>short[]</code>, the same as for a byte or 16-bit 
-     * integer array. As a result if a new table is created with the returned data, the new table column will change 
+     * Therefore, this call will return <code>byte[]</code> or <code>short[]</code>, the same as for a byte or 16-bit
+     * integer array. As a result if a new table is created with the returned data, the new table column will change
      * its FITS column type from <code>A</code> to <code>B</code> or <code>I</code>.</li>
-     * <li>Complex values in FITS are stored as <code>float[2]</code> or <code>double[2]</code>, not as a 
-     * {@link ComplexValue} type. Therefore, this call will return <code>float[]</code> or <code>double[]</code>, the 
-     * same as for a float array. As a result if a new table is created with the returned data, the new table column 
-     * will change it's FITS column type from <code>C</code> to <code>F</code>, or from <code>M</code> to 
+     * <li>Complex values in FITS are stored as <code>float[2]</code> or <code>double[2]</code>, not as a
+     * {@link ComplexValue} type. Therefore, this call will return <code>float[]</code> or <code>double[]</code>, the
+     * same as for a float array. As a result if a new table is created with the returned data, the new table column
+     * will change it's FITS column type from <code>C</code> to <code>F</code>, or from <code>M</code> to
      * <code>D</code>,.</li>
      * </ul>
-     * 
+     *
      * @param col
      *            The column desired.
      * @return an object containing the column data desired. This will be an
@@ -651,7 +652,7 @@ public class ColumnTable<T> implements DataTable {
     public Object getColumn(int col) {
         return this.arrays[col];
     }
-    
+
     /**
      * @return the actual data arrays
      */
@@ -662,7 +663,7 @@ public class ColumnTable<T> implements DataTable {
 
     /**
      * Get a element of the table.
-     * 
+     *
      * @param row
      *            The row desired.
      * @param col
@@ -703,7 +704,7 @@ public class ColumnTable<T> implements DataTable {
 
     /**
      * Get a row of data.
-     * 
+     *
      * @param row
      *            The row desired.
      * @return An array of objects each containing a primitive array.
@@ -725,7 +726,7 @@ public class ColumnTable<T> implements DataTable {
 
     /**
      * Get the characters describing the base classes of the columns.
-     * 
+     *
      * @return An array of char's, one for each column.
      */
     @SuppressFBWarnings(value = "EI_EXPOSE_REP", justification = "intended exposure of mutable data")
@@ -764,7 +765,7 @@ public class ColumnTable<T> implements DataTable {
 
     /**
      * Read a table.
-     * 
+     *
      * @param is
      *            The input stream to read from.
      * @throws IOException
@@ -790,7 +791,7 @@ public class ColumnTable<T> implements DataTable {
     /**
      * Set the values in a particular column. The new values must match the old
      * in length but not necessarily in type.
-     * 
+     *
      * @param col
      *            The column to modify.
      * @param newColumn
@@ -817,7 +818,7 @@ public class ColumnTable<T> implements DataTable {
 
     /**
      * Modify an element of the table.
-     * 
+     *
      * @param row
      *            The row containing the element.
      * @param col
@@ -847,7 +848,7 @@ public class ColumnTable<T> implements DataTable {
     /**
      * Store additional information that may be needed by the client to
      * regenerate initial arrays.
-     * 
+     *
      * @param opaque
      *            the extra state to set.
      */
@@ -857,7 +858,7 @@ public class ColumnTable<T> implements DataTable {
 
     /**
      * Modify a row of data.
-     * 
+     *
      * @param row
      *            The row to be modified.
      * @param x
@@ -880,7 +881,7 @@ public class ColumnTable<T> implements DataTable {
 
     /**
      * Actually perform the initialization.
-     * 
+     *
      * @param newArrays
      *            An array of one-d primitive arrays.
      * @param newSizes
@@ -896,7 +897,7 @@ public class ColumnTable<T> implements DataTable {
 
     /**
      * Write a table.
-     * 
+     *
      * @param os
      *            the output stream to write to.
      * @throws IOException
@@ -921,7 +922,7 @@ public class ColumnTable<T> implements DataTable {
 
     /**
      * Write a column of a table.
-     * 
+     *
      * @param os
      *            the output stream to write to.
      * @param rowStart
@@ -956,7 +957,7 @@ public class ColumnTable<T> implements DataTable {
 
     /**
      * Read a column of a table.
-     * 
+     *
      * @param is
      *            The input stream to read from.
      * @param rowStart

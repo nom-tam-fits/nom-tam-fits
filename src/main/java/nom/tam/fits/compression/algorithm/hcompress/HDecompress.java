@@ -1,5 +1,7 @@
 package nom.tam.fits.compression.algorithm.hcompress;
 
+import java.nio.ByteBuffer;
+
 /*
  * #%L
  * nom.tam FITS library
@@ -7,12 +9,12 @@ package nom.tam.fits.compression.algorithm.hcompress;
  * Copyright (C) 1996 - 2021 nom-tam-fits
  * %%
  * This is free and unencumbered software released into the public domain.
- * 
+ *
  * Anyone is free to copy, modify, publish, use, compile, sell, or
  * distribute this software, either in source code form or as a compiled
  * binary, for any purpose, commercial or non-commercial, and by any
  * means.
- * 
+ *
  * In jurisdictions that recognize copyright laws, the author or authors
  * of this software dedicate any and all copyright interest in the
  * software to the public domain. We make this dedication for the benefit
@@ -20,7 +22,7 @@ package nom.tam.fits.compression.algorithm.hcompress;
  * successors. We intend this dedication to be an overt act of
  * relinquishment in perpetuity of all present and future rights to this
  * software under copyright law.
- * 
+ *
  * THE SOFTWARE IS PROVIDED "AS IS", WITHOUT WARRANTY OF ANY KIND,
  * EXPRESS OR IMPLIED, INCLUDING BUT NOT LIMITED TO THE WARRANTIES OF
  * MERCHANTABILITY, FITNESS FOR A PARTICULAR PURPOSE AND NONINFRINGEMENT.
@@ -36,8 +38,6 @@ import static nom.tam.fits.compression.algorithm.hcompress.HCompress.BITS_OF_1_N
 import static nom.tam.fits.compression.algorithm.hcompress.HCompress.BYTE_MASK;
 import static nom.tam.fits.compression.algorithm.hcompress.HCompress.NYBBLE_MASK;
 import static nom.tam.fits.compression.algorithm.hcompress.HCompress.ROUNDING_HALF;
-
-import java.nio.ByteBuffer;
 
 /**
  * <p>
@@ -336,107 +336,107 @@ public class HDecompress {
             // this somewhat cryptic code generates the sequence ntop[k-1] =
             // (ntop[k]+1)/2, where ntop[log2n] = n
             c = c >> 1;
-            nxtop = nxtop << 1;
-            nytop = nytop << 1;
-            if (nxf <= c) {
-                nxtop -= 1;
-            } else {
-                nxf -= c;
+        nxtop = nxtop << 1;
+        nytop = nytop << 1;
+        if (nxf <= c) {
+            nxtop -= 1;
+        } else {
+            nxf -= c;
+        }
+        if (nyf <= c) {
+            nytop -= 1;
+        } else {
+            nyf -= c;
+        }
+        // double shift and fix nrnd0 (because prnd0=0) on last pass
+        if (k == 0) {
+            nrnd0 = 0;
+            shift = 2;
+        }
+        // unshuffle in each dimension to interleave coefficients
+        for (i = 0; i < nxtop; i++) {
+            unshuffle64(a.copy(this.ny * i), nytop, 1, tmp);
+        }
+        for (int j = 0; j < nytop; j++) {
+            unshuffle64(a.copy(j), nxtop, this.ny, tmp);
+        }
+        // smooth by interpolating coefficients if SMOOTH != 0
+        if (smooth) {
+            hsmooth64(a, nxtop, nytop);
+        }
+        int oddx = nxtop % 2;
+        int oddy = nytop % 2;
+        for (i = 0; i < nxtop - oddx; i += 2) {
+            int s00 = this.ny * i; /* s00 is index of a[i,j] */
+            int s10 = s00 + this.ny; /* s10 is index of a[i+1,j] */
+            for (int j = 0; j < nytop - oddy; j += 2) {
+                long h0 = a.get(s00);
+                long hx = a.get(s10);
+                long hy = a.get(s00 + 1);
+                long hc = a.get(s10 + 1);
+                // round hx and hy to multiple of bit1, hc to multiple of
+                // bit0 h0 is already a multiple of bit2
+                hx = hx + (hx >= 0 ? prnd1 : nrnd1) & mask1;
+                hy = hy + (hy >= 0 ? prnd1 : nrnd1) & mask1;
+                hc = hc + (hc >= 0 ? prnd0 : nrnd0) & mask0;
+                // propagate bit0 of hc to hx,hy
+                long lowbit0 = hc & bit0;
+                hx = hx >= 0 ? hx - lowbit0 : hx + lowbit0;
+                hy = hy >= 0 ? hy - lowbit0 : hy + lowbit0;
+                // Propagate bits 0 and 1 of hc,hx,hy to h0. This could be
+                // simplified if we assume h0>0, but then the inversion
+                // would not be lossless for images with negative pixels.
+                long lowbit1 = (hc ^ hx ^ hy) & bit1;
+                h0 = h0 >= 0 ? h0 + lowbit0 - lowbit1 : h0 + (lowbit0 == 0 ? lowbit1 : lowbit0 - lowbit1);
+                // Divide sums by 2 (4 last time)
+                a.set(s10 + 1, h0 + hx + hy + hc >> shift);
+                a.set(s10, h0 + hx - hy - hc >> shift);
+                a.set(s00 + 1, h0 - hx + hy - hc >> shift);
+                a.set(s00, h0 - hx - hy + hc >> shift);
+                s00 += 2;
+                s10 += 2;
             }
-            if (nyf <= c) {
-                nytop -= 1;
-            } else {
-                nyf -= c;
+            if (oddy != 0) {
+                // do last element in row if row length is odd s00+1, s10+1
+                // are off edge
+                long h0 = a.get(s00);
+                long hx = a.get(s10);
+                hx = (hx >= 0 ? hx + prnd1 : hx + nrnd1) & mask1;
+                long lowbit1 = hx & bit1;
+                h0 = h0 >= 0 ? h0 - lowbit1 : h0 + lowbit1;
+                a.set(s10, h0 + hx >> shift);
+                a.set(s00, h0 - hx >> shift);
             }
-            // double shift and fix nrnd0 (because prnd0=0) on last pass
-            if (k == 0) {
-                nrnd0 = 0;
-                shift = 2;
+        }
+        if (oddx != 0) {
+            // do last row if column length is odd s10, s10+1 are off edge
+            int s00 = this.ny * i;
+            for (int j = 0; j < nytop - oddy; j += 2) {
+                long h0 = a.get(s00);
+                long hy = a.get(s00 + 1);
+                hy = (hy >= 0 ? hy + prnd1 : hy + nrnd1) & mask1;
+                long lowbit1 = hy & bit1;
+                h0 = h0 >= 0 ? h0 - lowbit1 : h0 + lowbit1;
+                a.set(s00 + 1, h0 + hy >> shift);
+                a.set(s00, h0 - hy >> shift);
+                s00 += 2;
             }
-            // unshuffle in each dimension to interleave coefficients
-            for (i = 0; i < nxtop; i++) {
-                unshuffle64(a.copy(this.ny * i), nytop, 1, tmp);
+            if (oddy != 0) {
+                // do corner element if both row and column lengths are odd
+                // s00+1, s10, s10+1 are off edge
+                long h0 = a.get(s00);
+                a.set(s00, h0 >> shift);
             }
-            for (int j = 0; j < nytop; j++) {
-                unshuffle64(a.copy(j), nxtop, this.ny, tmp);
-            }
-            // smooth by interpolating coefficients if SMOOTH != 0
-            if (smooth) {
-                hsmooth64(a, nxtop, nytop);
-            }
-            int oddx = nxtop % 2;
-            int oddy = nytop % 2;
-            for (i = 0; i < nxtop - oddx; i += 2) {
-                int s00 = this.ny * i; /* s00 is index of a[i,j] */
-                int s10 = s00 + this.ny; /* s10 is index of a[i+1,j] */
-                for (int j = 0; j < nytop - oddy; j += 2) {
-                    long h0 = a.get(s00);
-                    long hx = a.get(s10);
-                    long hy = a.get(s00 + 1);
-                    long hc = a.get(s10 + 1);
-                    // round hx and hy to multiple of bit1, hc to multiple of
-                    // bit0 h0 is already a multiple of bit2
-                    hx = hx + (hx >= 0 ? prnd1 : nrnd1) & mask1;
-                    hy = hy + (hy >= 0 ? prnd1 : nrnd1) & mask1;
-                    hc = hc + (hc >= 0 ? prnd0 : nrnd0) & mask0;
-                    // propagate bit0 of hc to hx,hy
-                    long lowbit0 = hc & bit0;
-                    hx = hx >= 0 ? hx - lowbit0 : hx + lowbit0;
-                    hy = hy >= 0 ? hy - lowbit0 : hy + lowbit0;
-                    // Propagate bits 0 and 1 of hc,hx,hy to h0. This could be
-                    // simplified if we assume h0>0, but then the inversion
-                    // would not be lossless for images with negative pixels.
-                    long lowbit1 = (hc ^ hx ^ hy) & bit1;
-                    h0 = h0 >= 0 ? h0 + lowbit0 - lowbit1 : h0 + (lowbit0 == 0 ? lowbit1 : lowbit0 - lowbit1);
-                    // Divide sums by 2 (4 last time)
-                    a.set(s10 + 1, h0 + hx + hy + hc >> shift);
-                    a.set(s10, h0 + hx - hy - hc >> shift);
-                    a.set(s00 + 1, h0 - hx + hy - hc >> shift);
-                    a.set(s00, h0 - hx - hy + hc >> shift);
-                    s00 += 2;
-                    s10 += 2;
-                }
-                if (oddy != 0) {
-                    // do last element in row if row length is odd s00+1, s10+1
-                    // are off edge
-                    long h0 = a.get(s00);
-                    long hx = a.get(s10);
-                    hx = (hx >= 0 ? hx + prnd1 : hx + nrnd1) & mask1;
-                    long lowbit1 = hx & bit1;
-                    h0 = h0 >= 0 ? h0 - lowbit1 : h0 + lowbit1;
-                    a.set(s10, h0 + hx >> shift);
-                    a.set(s00, h0 - hx >> shift);
-                }
-            }
-            if (oddx != 0) {
-                // do last row if column length is odd s10, s10+1 are off edge
-                int s00 = this.ny * i;
-                for (int j = 0; j < nytop - oddy; j += 2) {
-                    long h0 = a.get(s00);
-                    long hy = a.get(s00 + 1);
-                    hy = (hy >= 0 ? hy + prnd1 : hy + nrnd1) & mask1;
-                    long lowbit1 = hy & bit1;
-                    h0 = h0 >= 0 ? h0 - lowbit1 : h0 + lowbit1;
-                    a.set(s00 + 1, h0 + hy >> shift);
-                    a.set(s00, h0 - hy >> shift);
-                    s00 += 2;
-                }
-                if (oddy != 0) {
-                    // do corner element if both row and column lengths are odd
-                    // s00+1, s10, s10+1 are off edge
-                    long h0 = a.get(s00);
-                    a.set(s00, h0 >> shift);
-                }
-            }
-            // divide all the masks and rounding values by 2
-            bit1 = bit0;
-            bit0 = bit0 >> 1;
-            mask1 = mask0;
-            mask0 = mask0 >> 1;
-            prnd1 = prnd0;
-            prnd0 = prnd0 >> 1;
-            nrnd1 = nrnd0;
-            nrnd0 = prnd0 - 1;
+        }
+        // divide all the masks and rounding values by 2
+        bit1 = bit0;
+        bit0 = bit0 >> 1;
+        mask1 = mask0;
+        mask0 = mask0 >> 1;
+        prnd1 = prnd0;
+        prnd0 = prnd0 >> 1;
+        nrnd1 = nrnd0;
+        nrnd0 = prnd0 - 1;
         }
         return 0;
     }
@@ -497,8 +497,8 @@ public class HDecompress {
                      */
                     s = diff - (a.get(s10) << N03);
                     s = s >= 0 ? s >> N03 : s + N07 >> N03;
-                    s = Math.max(Math.min(s, smax), -smax);
-                    a.set(s10, a.get(s10) + s);
+                s = Math.max(Math.min(s, smax), -smax);
+                a.set(s10, a.get(s10) + s);
                 }
                 s00 += 2;
                 s10 += 2;
@@ -521,8 +521,8 @@ public class HDecompress {
                     diff = Math.max(Math.min(diff, dmax), dmin);
                     s = diff - (a.get(s00 + 1) << N03);
                     s = s >= 0 ? s >> N03 : s + N07 >> N03;
-                    s = Math.max(Math.min(s, smax), -smax);
-                    a.set(s00 + 1, a.get(s00 + 1) + s);
+                s = Math.max(Math.min(s, smax), -smax);
+                a.set(s00 + 1, a.get(s00 + 1) + s);
                 }
                 s00 += 2;
                 s10 += 2;
@@ -573,8 +573,8 @@ public class HDecompress {
                      */
                     s = diff - (a.get(s10 + 1) << N06);
                     s = s >= 0 ? s >> N06 : s + N63 >> N06;
-                    s = Math.max(Math.min(s, smax), -smax);
-                    a.set(s10 + 1, a.get(s10 + 1) + s);
+                s = Math.max(Math.min(s, smax), -smax);
+                a.set(s10 + 1, a.get(s10 + 1) + s);
                 }
                 s00 += 2;
                 s10 += 2;
@@ -717,8 +717,8 @@ public class HDecompress {
         /* another byte, bits_to_go effectively will be in range 8 - 15 */
 
         shift1 = this.bitsToGo + BITS_OF_1_NYBBLE; /*
-                                                    * shift1 will be in range 4 - 11
-                                                    */
+         * shift1 will be in range 4 - 11
+         */
         shift2 = this.bitsToGo; /* shift2 will be in range 0 - 7 */
         kk = 0;
 
@@ -731,8 +731,8 @@ public class HDecompress {
                 this.buffer2 = this.buffer2 << BITS_OF_1_BYTE | infile.get() & BYTE_MASK;
                 array[kk] = (byte) (this.buffer2 >> BITS_OF_1_NYBBLE & NYBBLE_MASK);
                 array[kk + 1] = (byte) (this.buffer2 & NYBBLE_MASK); /*
-                                                                      * no shift required
-                                                                      */
+                 * no shift required
+                 */
                 kk += 2;
             }
         } else {
@@ -833,7 +833,7 @@ public class HDecompress {
                 if ((value & BIT_FOUR) != ZERO) {
                     b.bitOr(s00, planeVal);
                 } // b.bitOr(s00+1, ((((LONGLONG)a[k])>>2) & 1) << bit;
-                  // b.bitOr(s00 , ((((LONGLONG)a[k])>>3) & 1) << bit;
+                // b.bitOr(s00 , ((((LONGLONG)a[k])>>3) & 1) << bit;
                 s00 += 2;
             }
             if (j < lny) {
@@ -962,19 +962,19 @@ public class HDecompress {
                      * this somewhat cryptic code generates the sequence n[k-1] = (n[k]+1)/2 where n[log2n]=nqx or nqy
                      */
                     c = c >> 1;
-                    nx2 = nx2 << 1;
-                    ny2 = ny2 << 1;
-                    if (nfx <= c) {
-                        nx2 -= 1;
-                    } else {
-                        nfx -= c;
-                    }
-                    if (nfy <= c) {
-                        ny2 -= 1;
-                    } else {
-                        nfy -= c;
-                    }
-                    qtreeExpand(infile, scratch, nx2, ny2, scratch);
+                nx2 = nx2 << 1;
+                ny2 = ny2 << 1;
+                if (nfx <= c) {
+                    nx2 -= 1;
+                } else {
+                    nfx -= c;
+                }
+                if (nfy <= c) {
+                    ny2 -= 1;
+                } else {
+                    nfy -= c;
+                }
+                qtreeExpand(infile, scratch, nx2, ny2, scratch);
                 }
                 /*
                  * now copy last set of 4-bit codes to bitplane bit of tiledImageOperation a
@@ -1042,8 +1042,8 @@ public class HDecompress {
             return;
         }
         scale64 = this.scale; /*
-                               * use a 64-bit int for efficiency in the big loop
-                               */
+         * use a 64-bit int for efficiency in the big loop
+         */
 
         for (int index = 0; index < a.a.length; index++) {
             a.a[index] = a.a[index] * scale64;

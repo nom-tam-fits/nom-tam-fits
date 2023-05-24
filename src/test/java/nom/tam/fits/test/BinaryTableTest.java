@@ -51,12 +51,12 @@ import nom.tam.util.test.ThrowAnyException;
  * Copyright (C) 2004 - 2021 nom-tam-fits
  * %%
  * This is free and unencumbered software released into the public domain.
- * 
+ *
  * Anyone is free to copy, modify, publish, use, compile, sell, or
  * distribute this software, either in source code form or as a compiled
  * binary, for any purpose, commercial or non-commercial, and by any
  * means.
- * 
+ *
  * In jurisdictions that recognize copyright laws, the author or authors
  * of this software dedicate any and all copyright interest in the
  * software to the public domain. We make this dedication for the benefit
@@ -64,7 +64,7 @@ import nom.tam.util.test.ThrowAnyException;
  * successors. We intend this dedication to be an overt act of
  * relinquishment in perpetuity of all present and future rights to this
  * software under copyright law.
- * 
+ *
  * THE SOFTWARE IS PROVIDED "AS IS", WITHOUT WARRANTY OF ANY KIND,
  * EXPRESS OR IMPLIED, INCLUDING BUT NOT LIMITED TO THE WARRANTIES OF
  * MERCHANTABILITY, FITNESS FOR A PARTICULAR PURPOSE AND NONINFRINGEMENT.
@@ -81,7 +81,7 @@ import static nom.tam.fits.header.Standard.XTENSION_BINTABLE;
 /**
  * This class tests the binary table classes for the Java FITS library, notably BinaryTableHDU, BinaryTable, FitsHeap
  * and the utility class ColumnTable. Tests include:
- * 
+ *
  * <pre>
  *     Reading and writing data of all valid types.
  *     Reading and writing variable length da
@@ -251,8 +251,9 @@ public class BinaryTableTest {
             assertEquals("bfe4", false, TestArrayFuncs.arrayEquals(results, multiString));
             int max = 0;
             for (int i = 0; i < 3; i += 1) {
-                if (multiString[0][i].length() > max)
+                if (multiString[0][i].length() > max) {
                     max = multiString[0][i].length();
+                }
             }
             // Now check that within the truncation limit the strings are
             // identical.
@@ -1110,7 +1111,7 @@ public class BinaryTableTest {
         setFieldNull(btab, "table");
         setFieldNull(btab, "currInput");
         Exception actual = null;
-        final List<LogRecord> logs = new ArrayList<LogRecord>();
+        final List<LogRecord> logs = new ArrayList<>();
         Logger.getLogger(BinaryTable.class.getName()).addHandler(new Handler() {
 
             @Override
@@ -1365,8 +1366,8 @@ public class BinaryTableTest {
     public void testBinaryTableMemoryFalure() throws Exception {
         Header fitsHeader = new Header();
         fitsHeader//
-                .card(Standard.PCOUNT).value(Integer.MAX_VALUE)//
-                .card(Standard.THEAP).value(-10);
+        .card(Standard.PCOUNT).value(Integer.MAX_VALUE)//
+        .card(Standard.THEAP).value(-10);
         new BinaryTable(fitsHeader);
     }
 
@@ -1402,7 +1403,7 @@ public class BinaryTableTest {
         value = (long[]) table.getElement(1, columnSize - 1);
         Assert.assertArrayEquals(new long[] {longs[2], longs[3]}, value);
         Assert.assertArrayEquals(new Class<?>[] {float.class, int.class, byte.class, int.class, int.class, int.class,
-                float.class, byte.class, long.class}, table.getBases());
+            float.class, byte.class, long.class}, table.getBases());
     }
 
     @Test(expected = FitsException.class)
@@ -1483,9 +1484,9 @@ public class BinaryTableTest {
         Object[] testRow = new Object[] {new boolean[] {true, false, true}};
         btab.addRow(testRow);
 
-        assertEquals((int) 'T', ((byte[]) btab.getData().getColumn(0))[0]);
-        assertEquals((int) 'F', ((byte[]) btab.getData().getColumn(0))[1]);
-        assertEquals((int) 'T', ((byte[]) btab.getData().getColumn(0))[2]);
+        assertEquals('T', ((byte[]) btab.getData().getColumn(0))[0]);
+        assertEquals('F', ((byte[]) btab.getData().getColumn(0))[1]);
+        assertEquals('T', ((byte[]) btab.getData().getColumn(0))[2]);
         assertEquals(1, btab.getData().getNCols());
 
         BinaryTableHDU tableHdu = new BinaryTableHDU(BinaryTableHDU.manufactureHeader(btab), btab);
@@ -1503,9 +1504,9 @@ public class BinaryTableTest {
         f.read(new FitsInputStream(new ByteArrayInputStream(out.toByteArray())));
         btab = (BinaryTable) f.getHDU(1).getData();
 
-        assertEquals((int) 'T', ((byte[]) btab.getData().getColumn(0))[0]);
-        assertEquals((int) 'F', ((byte[]) btab.getData().getColumn(0))[1]);
-        assertEquals((int) 'T', ((byte[]) btab.getData().getColumn(0))[2]);
+        assertEquals('T', ((byte[]) btab.getData().getColumn(0))[0]);
+        assertEquals('F', ((byte[]) btab.getData().getColumn(0))[1]);
+        assertEquals('T', ((byte[]) btab.getData().getColumn(0))[2]);
 
         assertEquals(1, btab.getData().getNCols());
 
@@ -1669,7 +1670,8 @@ public class BinaryTableTest {
     @Test(expected = FitsException.class)
     public void testCouldNotEncapsulate() throws Exception {
         BinaryTable btab = new BinaryTable();
-        new BinaryTableHDU(BinaryTableHDU.manufactureHeader(btab), btab).encapsulate(Integer.valueOf(1));
+        new BinaryTableHDU(BinaryTableHDU.manufactureHeader(btab), btab);
+        BinaryTableHDU.encapsulate(Integer.valueOf(1));
     }
 
     @Test(expected = FitsException.class)

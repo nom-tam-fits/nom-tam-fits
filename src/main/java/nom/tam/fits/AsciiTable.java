@@ -1,5 +1,21 @@
 package nom.tam.fits;
 
+import java.io.IOException;
+import java.lang.reflect.Array;
+import java.util.logging.Level;
+import java.util.logging.Logger;
+
+import nom.tam.fits.header.Bitpix;
+import nom.tam.fits.header.IFitsHeader;
+import nom.tam.fits.header.Standard;
+import nom.tam.util.ArrayDataInput;
+import nom.tam.util.ArrayDataOutput;
+import nom.tam.util.ArrayFuncs;
+import nom.tam.util.ByteFormatter;
+import nom.tam.util.ByteParser;
+import nom.tam.util.Cursor;
+import nom.tam.util.FormatException;
+
 import static nom.tam.fits.header.DataDescription.TDMAXn;
 import static nom.tam.fits.header.DataDescription.TDMINn;
 import static nom.tam.fits.header.DataDescription.TLMAXn;
@@ -12,12 +28,12 @@ import static nom.tam.fits.header.DataDescription.TLMINn;
  * Copyright (C) 2004 - 2021 nom-tam-fits
  * %%
  * This is free and unencumbered software released into the public domain.
- * 
+ *
  * Anyone is free to copy, modify, publish, use, compile, sell, or
  * distribute this software, either in source code form or as a compiled
  * binary, for any purpose, commercial or non-commercial, and by any
  * means.
- * 
+ *
  * In jurisdictions that recognize copyright laws, the author or authors
  * of this software dedicate any and all copyright interest in the
  * software to the public domain. We make this dedication for the benefit
@@ -25,7 +41,7 @@ import static nom.tam.fits.header.DataDescription.TLMINn;
  * successors. We intend this dedication to be an overt act of
  * relinquishment in perpetuity of all present and future rights to this
  * software under copyright law.
- * 
+ *
  * THE SOFTWARE IS PROVIDED "AS IS", WITHOUT WARRANTY OF ANY KIND,
  * EXPRESS OR IMPLIED, INCLUDING BUT NOT LIMITED TO THE WARRANTIES OF
  * MERCHANTABILITY, FITNESS FOR A PARTICULAR PURPOSE AND NONINFRINGEMENT.
@@ -45,22 +61,7 @@ import static nom.tam.fits.header.Standard.TFIELDS;
 import static nom.tam.fits.header.Standard.TFORMn;
 import static nom.tam.fits.header.Standard.TNULLn;
 
-import java.io.IOException;
-import java.lang.reflect.Array;
-import java.util.logging.Level;
-import java.util.logging.Logger;
-
 import edu.umd.cs.findbugs.annotations.SuppressFBWarnings;
-import nom.tam.fits.header.Bitpix;
-import nom.tam.fits.header.IFitsHeader;
-import nom.tam.fits.header.Standard;
-import nom.tam.util.ArrayDataInput;
-import nom.tam.util.ArrayDataOutput;
-import nom.tam.util.ArrayFuncs;
-import nom.tam.util.ByteFormatter;
-import nom.tam.util.ByteParser;
-import nom.tam.util.Cursor;
-import nom.tam.util.FormatException;
 
 /**
  * This class represents the data in an ASCII table
@@ -136,8 +137,8 @@ public class AsciiTable extends AbstractTableData {
     /**
      * Create an ASCII table given a header
      *
-     * @param hdr The header describing the table
-     * 
+     * @param  hdr           The header describing the table
+     *
      * @throws FitsException if the operation failed
      */
     public AsciiTable(Header hdr) throws FitsException {
@@ -154,12 +155,13 @@ public class AsciiTable extends AbstractTableData {
      * integers. Setting it <code>true</code> may make it more likely to avoid unexpected type changes during
      * round-tripping, but it also means that some (large number) data in I10 columns may be impossible to read.
      * </p>
-     * 
-     * @param hdr The header describing the table
-     * @param preferInt if <code>true</code>, format "I10" columns will be assumed <code>int.class</code>, provided
-     *            TLMINn/TLMAXn or TDMINn/TDMAXn limits (if defined) allow it. if <code>false</code>, I10 columns that
-     *            have no clear indication of data range will be assumed <code>long.class</code>.
-     * 
+     *
+     * @param  hdr           The header describing the table
+     * @param  preferInt     if <code>true</code>, format "I10" columns will be assumed <code>int.class</code>, provided
+     *                           TLMINn/TLMAXn or TDMINn/TDMAXn limits (if defined) allow it. if <code>false</code>, I10
+     *                           columns that have no clear indication of data range will be assumed
+     *                           <code>long.class</code>.
+     *
      * @throws FitsException if the operation failed
      */
     public AsciiTable(Header hdr, boolean preferInt) throws FitsException {
@@ -218,14 +220,14 @@ public class AsciiTable extends AbstractTableData {
 
     /**
      * Checks if the integer value of a specific key requires <code>long</code> value type to store.
-     * 
-     * @param h the header
-     * @param key the keyword to check
-     * 
-     * @return <code>true</code> if the keyword exists and has an integer value that is outside the range of
-     *             <code>int</code>. Otherwise <code>false</code>
-     * 
-     * @see #guessI10Type(int, Header, boolean)
+     *
+     * @param  h   the header
+     * @param  key the keyword to check
+     *
+     * @return     <code>true</code> if the keyword exists and has an integer value that is outside the range of
+     *                 <code>int</code>. Otherwise <code>false</code>
+     *
+     * @see        #guessI10Type(int, Header, boolean)
      */
     private boolean requiresLong(Header h, IFitsHeader key, Long dft) {
         long l = h.getLongValue(key, dft);
@@ -243,29 +245,22 @@ public class AsciiTable extends AbstractTableData {
      * are outside of the range of an <code>int</code> then the call will return <code>long.class</code>. If the header
      * does not define the data limits (fully), it will return the class the caller prefers. Otherwise (data limits were
      * defined and fit into the <code>int</code> range) <code>int.class</code> will be returned.
-     * 
-     * @param col the 0-based table column index
-     * @param h the header
-     * @param preferInt whether we prefer <code>int.class</code> over <code>long.class</code> in case the header does
-     *            not provide us with a clue.
-     * 
-     * @return <code>long.class</code> if the data requires long or we prefer it. Othwerwise <code>int.class</code>
-     * 
-     * @see #AsciiTable(Header, boolean)
+     *
+     * @param  col       the 0-based table column index
+     * @param  h         the header
+     * @param  preferInt whether we prefer <code>int.class</code> over <code>long.class</code> in case the header does
+     *                       not provide us with a clue.
+     *
+     * @return           <code>long.class</code> if the data requires long or we prefer it. Othwerwise
+     *                       <code>int.class</code>
+     *
+     * @see              #AsciiTable(Header, boolean)
      */
     private Class<?> guessI10Type(int col, Header h, boolean preferInt) {
         col++;
 
-        if (requiresLong(h, TLMINn.n(col), Long.MAX_VALUE)) {
-            return long.class;
-        }
-        if (requiresLong(h, TLMAXn.n(col), Long.MIN_VALUE)) {
-            return long.class;
-        }
-        if (requiresLong(h, TDMINn.n(col), Long.MAX_VALUE)) {
-            return long.class;
-        }
-        if (requiresLong(h, TDMAXn.n(col), Long.MIN_VALUE)) {
+        if (requiresLong(h, TLMINn.n(col), Long.MAX_VALUE) || requiresLong(h, TLMAXn.n(col), Long.MIN_VALUE)
+                || requiresLong(h, TDMINn.n(col), Long.MAX_VALUE) || requiresLong(h, TDMAXn.n(col), Long.MIN_VALUE)) {
             return long.class;
         }
 
@@ -280,12 +275,12 @@ public class AsciiTable extends AbstractTableData {
 
     /**
      * Return the data type in the specified column, such as <code>int.class</code> or <code>String.class</code>.
-     * 
-     * @param col The 0-based column index
-     * 
-     * @return the class of data in the specified column.
-     * 
-     * @since 1.16
+     *
+     * @param  col The 0-based column index
+     *
+     * @return     the class of data in the specified column.
+     *
+     * @since      1.16
      */
     public final Class<?> getColumnType(int col) {
         return types[col];
@@ -345,11 +340,11 @@ public class AsciiTable extends AbstractTableData {
     /**
      * This version of addColumn allows the user to override the default length associated with each column type.
      *
-     * @param newCol The new column data
-     * @param length the requested length for the column
-     * 
-     * @return the number of columns after this one is added.
-     * 
+     * @param  newCol        The new column data
+     * @param  length        the requested length for the column
+     *
+     * @return               the number of columns after this one is added.
+     *
      * @throws FitsException if the operation failed
      */
     public int addColumn(Object newCol, int length) throws FitsException {
@@ -438,9 +433,9 @@ public class AsciiTable extends AbstractTableData {
     /**
      * Delete columns from the table.
      *
-     * @param start The first, 0-indexed, column to be deleted.
-     * @param len The number of columns to be deleted.
-     * 
+     * @param  start         The first, 0-indexed, column to be deleted.
+     * @param  len           The number of columns to be deleted.
+     *
      * @throws FitsException if the operation failed
      */
 
@@ -510,9 +505,9 @@ public class AsciiTable extends AbstractTableData {
     /**
      * Delete rows from a FITS table
      *
-     * @param start The first (0-indexed) row to be deleted.
-     * @param len The number of rows to be deleted.
-     * 
+     * @param  start         The first (0-indexed) row to be deleted.
+     * @param  len           The number of rows to be deleted.
+     *
      * @throws FitsException if the operation failed
      */
 
@@ -588,13 +583,13 @@ public class AsciiTable extends AbstractTableData {
     /**
      * Move an element from the buffer into a data array.
      *
-     * @param offset The offset within buffer at which the element starts.
-     * @param length The number of bytes in the buffer for the element.
-     * @param array An array of objects, each of which is a simple array.
-     * @param col Which element of array is to be modified?
-     * @param row Which index into that element is to be modified?
-     * @param nullFld What string signifies a null element?
-     * 
+     * @param  offset        The offset within buffer at which the element starts.
+     * @param  length        The number of bytes in the buffer for the element.
+     * @param  array         An array of objects, each of which is a simple array.
+     * @param  col           Which element of array is to be modified?
+     * @param  row           Which index into that element is to be modified?
+     * @param  nullFld       What string signifies a null element?
+     *
      * @throws FitsException if the operation failed
      */
     private boolean extractElement(int offset, int length, Object[] array, int col, int row, String nullFld)
@@ -686,10 +681,10 @@ public class AsciiTable extends AbstractTableData {
     /**
      * Get a column of data
      *
-     * @param col The 0-indexed column to be returned.
-     * 
-     * @return The column object -- typically as a 1-d array.
-     * 
+     * @param  col           The 0-indexed column to be returned.
+     *
+     * @return               The column object -- typically as a 1-d array.
+     *
      * @throws FitsException if the operation failed
      */
 
@@ -719,11 +714,11 @@ public class AsciiTable extends AbstractTableData {
      * Get a single element as a one-d array. We return String's as arrays for consistency though they could be returned
      * as a scalar.
      *
-     * @param row The 0-based row
-     * @param col The 0-based column
-     * 
-     * @return The requested cell data.
-     * 
+     * @param  row           The 0-based row
+     * @param  col           The 0-based column
+     *
+     * @return               The requested cell data.
+     *
      * @throws FitsException when unable to get the data.
      */
 
@@ -760,10 +755,10 @@ public class AsciiTable extends AbstractTableData {
     /**
      * Get a row. If the data has not yet been read just read this row.
      *
-     * @param row The 0-indexed row to be returned.
-     * 
-     * @return A row of data.
-     * 
+     * @param  row           The 0-indexed row to be returned.
+     *
+     * @return               A row of data.
+     *
      * @throws FitsException if the operation failed
      */
 
@@ -799,10 +794,10 @@ public class AsciiTable extends AbstractTableData {
     /**
      * See if an element is null.
      *
-     * @param row The 0-based row
-     * @param col The 0-based column
-     * 
-     * @return if the given element has been nulled.
+     * @param  row The 0-based row
+     * @param  col The 0-based column
+     *
+     * @return     if the given element has been nulled.
      */
     public boolean isNull(int row, int col) {
         if (this.isNull != null) {
@@ -863,9 +858,9 @@ public class AsciiTable extends AbstractTableData {
     /**
      * Replace a column with new data.
      *
-     * @param col The 0-based index to the column
-     * @param newData The column data. This is typically a 1-d array.
-     * 
+     * @param  col           The 0-based index to the column
+     * @param  newData       The column data. This is typically a 1-d array.
+     *
      * @throws FitsException if the operation failed
      */
     @Override
@@ -885,10 +880,10 @@ public class AsciiTable extends AbstractTableData {
     /**
      * Modify an element in the table
      *
-     * @param row the 0-based row
-     * @param col the 0-based column
-     * @param newData The new value for the column. Typically a primitive[1] array.
-     * 
+     * @param  row           the 0-based row
+     * @param  col           the 0-based column
+     * @param  newData       The new value for the column. Typically a primitive[1] array.
+     *
      * @throws FitsException if the operation failed
      */
 
@@ -911,8 +906,8 @@ public class AsciiTable extends AbstractTableData {
      * Mark (or unmark) an element as null. Note that if this FITS file is latter written out, a TNULL keyword needs to
      * be defined in the corresponding header. This routine does not add an element for String columns.
      *
-     * @param row The 0-based row.
-     * @param col The 0-based column.
+     * @param row  The 0-based row.
+     * @param col  The 0-based column.
      * @param flag True if the element is to be set to null.
      */
     public void setNull(int row, int col, boolean flag) {
@@ -942,9 +937,9 @@ public class AsciiTable extends AbstractTableData {
     /**
      * Modify a row in the table
      *
-     * @param row The 0-based index of the row
-     * @param newData The new data. Each element of this array is typically a primitive[1] array.
-     * 
+     * @param  row           The 0-based index of the row
+     * @param  newData       The new data. Each element of this array is typically a primitive[1] array.
+     *
      * @throws FitsException if the operation failed
      */
 
@@ -1000,7 +995,7 @@ public class AsciiTable extends AbstractTableData {
      * This is called after we delete columns. The HDU doesn't know how to update the TBCOL entries.
      *
      * @param oldNCol The number of columns we had before deletion.
-     * @param hdr The associated header. @throws FitsException if the operation failed
+     * @param hdr     The associated header. @throws FitsException if the operation failed
      */
 
     @Override
@@ -1022,8 +1017,8 @@ public class AsciiTable extends AbstractTableData {
     /**
      * Write the data to an output stream.
      *
-     * @param str The output stream to be written to
-     * 
+     * @param  str           The output stream to be written to
+     *
      * @throws FitsException if any IO exception is found or some inconsistency the FITS file arises.
      */
 
@@ -1061,23 +1056,21 @@ public class AsciiTable extends AbstractTableData {
                         throw new FitsException("No null value set when needed");
                     }
                     bf.format(nulls[j], buffer, offset, len);
-                } else {
-                    if (types[j] == String.class) {
-                        String[] s = (String[]) data[j];
-                        bf.format(s[i], buffer, offset, len);
-                    } else if (types[j] == int.class) {
-                        int[] ia = (int[]) data[j];
-                        bf.format(ia[i], buffer, offset, len);
-                    } else if (types[j] == float.class) {
-                        float[] fa = (float[]) data[j];
-                        bf.format(fa[i], buffer, offset, len);
-                    } else if (types[j] == double.class) {
-                        double[] da = (double[]) data[j];
-                        bf.format(da[i], this.buffer, offset, len);
-                    } else if (types[j] == long.class) {
-                        long[] la = (long[]) data[j];
-                        bf.format(la[i], buffer, offset, len);
-                    }
+                } else if (types[j] == String.class) {
+                    String[] s = (String[]) data[j];
+                    bf.format(s[i], buffer, offset, len);
+                } else if (types[j] == int.class) {
+                    int[] ia = (int[]) data[j];
+                    bf.format(ia[i], buffer, offset, len);
+                } else if (types[j] == float.class) {
+                    float[] fa = (float[]) data[j];
+                    bf.format(fa[i], buffer, offset, len);
+                } else if (types[j] == double.class) {
+                    double[] da = (double[]) data[j];
+                    bf.format(da[i], this.buffer, offset, len);
+                } else if (types[j] == long.class) {
+                    long[] la = (long[]) data[j];
+                    bf.format(la[i], buffer, offset, len);
                 }
             }
         }

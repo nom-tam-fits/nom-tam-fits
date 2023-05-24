@@ -7,12 +7,12 @@ package nom.tam.fits.compression.algorithm.gzip2;
  * Copyright (C) 1996 - 2021 nom-tam-fits
  * %%
  * This is free and unencumbered software released into the public domain.
- * 
+ *
  * Anyone is free to copy, modify, publish, use, compile, sell, or
  * distribute this software, either in source code form or as a compiled
  * binary, for any purpose, commercial or non-commercial, and by any
  * means.
- * 
+ *
  * In jurisdictions that recognize copyright laws, the author or authors
  * of this software dedicate any and all copyright interest in the
  * software to the public domain. We make this dedication for the benefit
@@ -20,7 +20,7 @@ package nom.tam.fits.compression.algorithm.gzip2;
  * successors. We intend this dedication to be an overt act of
  * relinquishment in perpetuity of all present and future rights to this
  * software under copyright law.
- * 
+ *
  * THE SOFTWARE IS PROVIDED "AS IS", WITHOUT WARRANTY OF ANY KIND,
  * EXPRESS OR IMPLIED, INCLUDING BUT NOT LIMITED TO THE WARRANTIES OF
  * MERCHANTABILITY, FITNESS FOR A PARTICULAR PURPOSE AND NONINFRINGEMENT.
@@ -69,6 +69,7 @@ public class GZip2CompressTest {
             protected GZIPOutputStream createGZipOutputStream(int length, ByteBuffer compressed) throws IOException {
                 return new GZIPOutputStream(new ByteBufferOutputStream(compressed), 100) {
 
+                    @Override
                     public synchronized void write(byte[] buf, int off, int len) throws IOException {
                         throw new IOException("something wrong");
                     }
@@ -85,6 +86,7 @@ public class GZip2CompressTest {
             protected GZIPOutputStream createGZipOutputStream(int length, ByteBuffer compressed) throws IOException {
                 return new GZIPOutputStream(new ByteBufferOutputStream(compressed), 100) {
 
+                    @Override
                     public synchronized void write(byte[] buf, int off, int len) throws IOException {
                         throw new IOException("something wrong");
                     }
@@ -97,9 +99,10 @@ public class GZip2CompressTest {
     public void testByteNullVariantCompress() throws Exception {
         new ByteGZip2Compressor() {
 
+            @Override
             protected java.util.zip.GZIPInputStream createGZipInputStream(ByteBuffer buffer) throws java.io.IOException {
                 return null;
-            };
+            }
 
             @Override
             protected GZIPOutputStream createGZipOutputStream(int length, ByteBuffer compressed) throws IOException {
@@ -112,9 +115,10 @@ public class GZip2CompressTest {
     public void testByteNullVariantDecompress() throws Exception {
         new ByteGZip2Compressor() {
 
+            @Override
             protected java.util.zip.GZIPInputStream createGZipInputStream(ByteBuffer buffer) throws java.io.IOException {
                 return null;
-            };
+            }
 
             @Override
             protected GZIPOutputStream createGZipOutputStream(int length, ByteBuffer compressed) throws IOException {
@@ -139,9 +143,10 @@ public class GZip2CompressTest {
     public void testShortNullVariantCompress() throws Exception {
         new ShortGZip2Compressor() {
 
+            @Override
             protected java.util.zip.GZIPInputStream createGZipInputStream(ByteBuffer buffer) throws java.io.IOException {
                 return null;
-            };
+            }
 
             @Override
             protected GZIPOutputStream createGZipOutputStream(int length, ByteBuffer compressed) throws IOException {
@@ -154,9 +159,10 @@ public class GZip2CompressTest {
     public void testShortNullVariantDecompress() throws Exception {
         new ShortGZip2Compressor() {
 
+            @Override
             protected java.util.zip.GZIPInputStream createGZipInputStream(ByteBuffer buffer) throws java.io.IOException {
                 return null;
-            };
+            }
 
             @Override
             protected GZIPOutputStream createGZipOutputStream(int length, ByteBuffer compressed) throws IOException {
@@ -180,16 +186,16 @@ public class GZip2CompressTest {
     @Test
     public void testByteBuffers() throws Exception {
         byte[] expected = {
-            1,
-            2,
-            3,
-            4,
-            5,
-            6,
-            7,
-            8,
-            9,
-            10
+                1,
+                2,
+                3,
+                4,
+                5,
+                6,
+                7,
+                8,
+                9,
+                10
         };
         byte[] array = new byte[10];
         OutputStream out = null;

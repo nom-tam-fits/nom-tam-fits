@@ -7,12 +7,12 @@ package nom.tam.util.type;
  * Copyright (C) 2004 - 2021 nom-tam-fits
  * %%
  * This is free and unencumbered software released into the public domain.
- * 
+ *
  * Anyone is free to copy, modify, publish, use, compile, sell, or
  * distribute this software, either in source code form or as a compiled
  * binary, for any purpose, commercial or non-commercial, and by any
  * means.
- * 
+ *
  * In jurisdictions that recognize copyright laws, the author or authors
  * of this software dedicate any and all copyright interest in the
  * software to the public domain. We make this dedication for the benefit
@@ -20,7 +20,7 @@ package nom.tam.util.type;
  * successors. We intend this dedication to be an overt act of
  * relinquishment in perpetuity of all present and future rights to this
  * software under copyright law.
- * 
+ *
  * THE SOFTWARE IS PROVIDED "AS IS", WITHOUT WARRANTY OF ANY KIND,
  * EXPRESS OR IMPLIED, INCLUDING BUT NOT LIMITED TO THE WARRANTIES OF
  * MERCHANTABILITY, FITNESS FOR A PARTICULAR PURPOSE AND NONINFRINGEMENT.
@@ -85,7 +85,7 @@ public abstract class ElementType<B extends Buffer> {
 
     /**
      * Instantiates a new FITS data element type.
-     * 
+     *
      * @param size the number of bytes in the FITS representation of that type.
      * @param varSize <code>true</code> if the element has a size that varies
      *            from object to object.
@@ -113,7 +113,7 @@ public abstract class ElementType<B extends Buffer> {
 
     /**
      * Appends data from one buffer to another.
-     * 
+     *
      * @param buffer the destination buffer
      * @param dataToAppend the buffer containing the data segment to append.
      */
@@ -123,7 +123,7 @@ public abstract class ElementType<B extends Buffer> {
 
     /**
      * Appends data from one buffer to a byte buffer.
-     * 
+     *
      * @param byteBuffer the destination buffer
      * @param dataToAppend the buffer containing the data segment to append.
      */
@@ -146,7 +146,7 @@ public abstract class ElementType<B extends Buffer> {
     /**
      * Returns the integer BITPIX value to set in FITS headers for image HDUs of
      * this element type.
-     * 
+     *
      * @return The BITPIX value that FITS uses to specify images of this element
      *             type.
      */
@@ -157,9 +157,9 @@ public abstract class ElementType<B extends Buffer> {
     /**
      * Return the class of buffer that can be used to serialize or deserialize
      * elements of this type.
-     * 
+     *
      * @return The class of buffer that can transact elements of this type.
-     * 
+     *
      * @see #getArray(Buffer, Object, int, int)
      * @see #putArray(Buffer, Object, int, int)
      */
@@ -170,9 +170,9 @@ public abstract class ElementType<B extends Buffer> {
     /**
      * Serializes a 1D Java array containing Java native elements into a buffer
      * using the appropriate FITS representation
-     * 
+     *
      * @param array the 1D Java array of elements for this type
-     * 
+     *
      * @return The FITS serialized representation as a buffer of bytes.
      */
     public ByteBuffer convertToByteBuffer(Object array) {
@@ -184,10 +184,10 @@ public abstract class ElementType<B extends Buffer> {
 
     /**
      * Gets all elements of an array from a buffer
-     * 
+     *
      * @param buffer the typed buffer from which to retrieve elements
      * @param array the 1D array of matching type
-     * 
+     *
      * @see #getArray(Buffer, Object, int)
      * @see #getArray(Buffer, Object, int, int)
      * @see #putArray(Buffer, Object)
@@ -199,11 +199,11 @@ public abstract class ElementType<B extends Buffer> {
     /**
      * Gets elements of an array from a buffer, starting from the beginning of
      * the array.
-     * 
+     *
      * @param buffer the typed buffer from which to retrieve elements
      * @param array the 1D array of matching type
      * @param length the number of elements to fretrieve
-     * 
+     *
      * @see #getArray(Buffer, Object)
      * @see #getArray(Buffer, Object, int, int)
      * @see #putArray(Buffer, Object, int)
@@ -215,12 +215,12 @@ public abstract class ElementType<B extends Buffer> {
     /**
      * Gets elements of an array from a buffer, starting from the specified array
      * index.
-     * 
+     *
      * @param buffer the typed buffer from which to retrieve elements
      * @param array the 1D array of matching type
      * @param offset the array index of the first element to retrieve
      * @param length the number of elements to fretrieve
-     * 
+     *
      * @see #getArray(Buffer, Object)
      * @see #putArray(Buffer, Object, int, int)
      */
@@ -231,11 +231,11 @@ public abstract class ElementType<B extends Buffer> {
     /**
      * Checks if this type of element has a variable size, rather than a fixed
      * size
-     * 
+     *
      * @return <code>true</code> if this element may appear with different sizes
      *             in the FITS binary stream. Otherwise <code>false</code> if it
      *             is always the same fixed size.
-     * 
+     *
      * @see #size()
      */
     public boolean isVariableSize() {
@@ -244,7 +244,7 @@ public abstract class ElementType<B extends Buffer> {
 
     /**
      * @deprecated Use {@link #isVariableSize()} instead.
-     * 
+     *
      * @return <code>true</code> if this type of element comes in all sizes, and
      *             the particular size of an obejct of this element type is
      *             specific to its instance. Or, <code>false</code> for
@@ -257,9 +257,9 @@ public abstract class ElementType<B extends Buffer> {
 
     /**
      * Checks if this element type is the same as another.
-     * 
+     *
      * @param other Another element type
-     * 
+     *
      * @return <code>true</code> if both element types are the same, otherwise
      *             <code>false</code>.
      */
@@ -269,13 +269,13 @@ public abstract class ElementType<B extends Buffer> {
 
     /**
      * Creates a new 1D Java array for storing elements of this type.
-     * 
+     *
      * @param length the number of elements to store in the array
-     * 
+     *
      * @return the Java array suitable for storing the elements, or
      *             <code>null</code> if the operation is not supported or
      *             possible.
-     * 
+     *
      * @see #newBuffer(int)
      */
     public Object newArray(int length) {
@@ -284,11 +284,11 @@ public abstract class ElementType<B extends Buffer> {
 
     /**
      * Creates a new new buffer of the specified size for this type of elements
-     * 
+     *
      * @param length the number of elements in the buffer
-     * 
+     *
      * @return a new buffer of the specified size for this type of elements
-     * 
+     *
      * @see #newArray(int)
      * @see #newBuffer(long)
      */
@@ -299,16 +299,16 @@ public abstract class ElementType<B extends Buffer> {
     /**
      * Currently the same as {@link #newBuffer(int)}, but in the future it may be
      * used to implement large memory mapped buffers....
-     * 
+     *
      * @param length the number of elements in the buffer
-     * 
+     *
      * @return a new buffer of the specified size for this type of elements, or
      *             <code>null</code> if the argument is beyond the supported
      *             range
-     * 
+     *
      * @throws IllegalArgumentException if the length is larger than what can be
      *             supported.
-     * 
+     *
      * @see #newBuffer(int)
      */
     public final B newBuffer(long length) throws IllegalArgumentException {
@@ -321,11 +321,11 @@ public abstract class ElementType<B extends Buffer> {
 
     /**
      * Returns the Java primitive type corresponsing to this element, if any
-     * 
+     *
      * @return the Java primitive type that corresponds to this element, or
      *             <code>null</code> if there is no primitive type equivalent to
      *             this FITS element type.
-     * 
+     *
      * @see #wrapperClass()
      * @see #type()
      */
@@ -335,14 +335,14 @@ public abstract class ElementType<B extends Buffer> {
 
     /**
      * Puts all elements from an array into the given buffer
-     * 
+     *
      * @param buffer the typed buffer in which to put elements
      * @param array the 1D array of matching type
-     * 
+     *
      * @see #putArray(Buffer, Object, int)
      * @see #putArray(Buffer, Object, int, int)
      * @see #getArray(Buffer, Object)
-     * 
+     *
      * @since 1.18
      */
     public final void putArray(B buffer, Object array) {
@@ -352,15 +352,15 @@ public abstract class ElementType<B extends Buffer> {
     /**
      * Puts elements from an array into the given buffer, starting from the
      * beginning of the array
-     * 
+     *
      * @param buffer the typed buffer in which to put elements
      * @param array the 1D array of matching type
      * @param length the number of elements to put into the buffer
-     * 
+     *
      * @see #putArray(Buffer, Object)
      * @see #putArray(Buffer, Object, int, int)
      * @see #getArray(Buffer, Object, int)
-     * 
+     *
      * @since 1.18
      */
     public final void putArray(B buffer, Object array, int length) {
@@ -370,15 +370,15 @@ public abstract class ElementType<B extends Buffer> {
     /**
      * Puts elements from an array into the given buffer, starting from the
      * specified array index.
-     * 
+     *
      * @param buffer the typed buffer in which to put elements
      * @param array the 1D array of matching type
      * @param offset the array index of the first element to put into the buffer
      * @param length the number of elements to put into the buffer
-     * 
+     *
      * @see #putArray(Buffer, Object)
      * @see #getArray(Buffer, Object, int, int)
-     * 
+     *
      * @since 1.18
      */
     public void putArray(B buffer, Object array, int offset, int length) {
@@ -387,10 +387,10 @@ public abstract class ElementType<B extends Buffer> {
 
     /**
      * Returns the number of bytes per elements
-     * 
+     *
      * @return the number of bytes each element of this type occupies in FITS
      *             binary representation
-     * 
+     *
      * @see #isVariableSize()
      */
     public int size() {
@@ -401,9 +401,9 @@ public abstract class ElementType<B extends Buffer> {
      * currently the only individual size primitive so, keep it simple
      *
      * @param instance the object to calculate the size
-     * 
+     *
      * @return the size in bytes of the object instance
-     * 
+     *
      * @throws IllegalArgumentException if the object is not of the type expected
      *             by this class.
      */
@@ -425,13 +425,13 @@ public abstract class ElementType<B extends Buffer> {
      * Returns a new typed buffer that starts the the current position of the
      * supplied typed buffer for this element. See {@link Buffer#slice()} for the
      * contract on slices.
-     * 
+     *
      * @param buffer the buffer from which to create the new slice
-     * 
+     *
      * @return A new buffer of the same type as the argument, that begins at the
      *             current position of the original buffer, or <code>null</code>
      *             if the slicing is not possuble or not implemented.
-     * 
+     *
      * @see Buffer#slice()
      */
     public B sliceBuffer(B buffer) {
@@ -442,9 +442,9 @@ public abstract class ElementType<B extends Buffer> {
      * Returns the Java letter-code for this FITS element type. For example Java
      * <code>long</code> would be type 'J' since 1D <code>long[]</code> arrays
      * report as <code>[J</code> by Java.
-     * 
+     *
      * @return the boxed Java type for this FITS element type.
-     * 
+     *
      * @see #primitiveClass()
      * @see #wrapperClass()
      * @see #forDataID(char)
@@ -456,11 +456,11 @@ public abstract class ElementType<B extends Buffer> {
     /**
      * Returns a buffer for this element type by wrapping a suitable 1D array as
      * its backing store.
-     * 
+     *
      * @param array the matching 1D array for this type to serve as the backing
      *            store of the buffer. Changes to the array will be visible
      *            through the buffer and vice versa.
-     * 
+     *
      * @return A new buffer for this type of element that uses the specified
      *             array as its backing store.
      */
@@ -470,9 +470,9 @@ public abstract class ElementType<B extends Buffer> {
 
     /**
      * Returns the boxed Java type for this type of element.
-     * 
+     *
      * @return the boxed Java type that corresponds to this type of element.
-     * 
+     *
      * @see #primitiveClass()
      * @see #type()
      */
@@ -523,12 +523,12 @@ public abstract class ElementType<B extends Buffer> {
      * Returns the Fits element type for a given Java array type letter. For
      * example {@link #LONG} is returned for 'J' since Java denotes
      * <code>long[]</code> arrays as <code>[J</code> in shorthand.
-     * 
+     *
      * @param type the letter code used for denoting java arrays of a given type
      *            in shorthand
-     * 
+     *
      * @return the matching FITS element type.
-     * 
+     *
      * @see #type()
      */
     public static ElementType<Buffer> forDataID(char type) {
@@ -537,13 +537,13 @@ public abstract class ElementType<B extends Buffer> {
 
     /**
      * Returns the FITS element type for a given Java type
-     * 
+     *
      * @param <B> The generic type of buffer for the FITS element type
      * @param clazz The Java primitive or boxed type for the corresponding
      *            element, or else the buffer class that it uses.
-     * 
+     *
      * @return The matching FITS element type.
-     * 
+     *
      * @see #primitiveClass()
      * @see #wrapperClass()
      * @see #bufferClass()
@@ -566,12 +566,12 @@ public abstract class ElementType<B extends Buffer> {
     /**
      * Returns the FITS element type that can transact with the specified buffer
      * type directly.
-     * 
+     *
      * @param <B> the generic type of buffer
      * @param b a typed buffer instance
-     * 
+     *
      * @return the FITS element type that goes with the specified typed buffer
-     * 
+     *
      * @see #forClass(Class)
      */
     public static <B extends Buffer> ElementType<B> forBuffer(B b) {
@@ -581,13 +581,13 @@ public abstract class ElementType<B extends Buffer> {
     /**
      * Returns the FITS element type that matches the specified BITPIX value
      * exactly.
-     * 
+     *
      * @param bitPix the BITPIX value that FITS uses to specify the element type
      *            for images.
-     * 
+     *
      * @return The matching FITS element type, or <code>null</code> if there is
      *             no matching FITS element type.
-     * 
+     *
      * @see #forNearestBitpix(int)
      * @see #bitPix()
      */
@@ -604,14 +604,14 @@ public abstract class ElementType<B extends Buffer> {
      * value exactly. This method can be used to guess what the element type may
      * be when the BITPIX value is not strictly to specification in the FITS
      * header.
-     * 
+     *
      * @param bitPix the BITPIX value that FITS uses to specify the element type
      *            for images.
-     * 
+     *
      * @return The FITS element type that is closest to the specified value, or
      *             <code>UNKNOWN</code> if the specified values is not near any
      *             known BITPIX type.
-     * 
+     *
      * @see #forBitpix(int)
      * @see #bitPix()
      */
@@ -625,10 +625,10 @@ public abstract class ElementType<B extends Buffer> {
 
     /**
      * Casts a FITS element type to its own type.
-     * 
+     *
      * @param <B> the genetic type of buffer used to the element
      * @param e some FITS element
-     * 
+     *
      * @return the element cast to its proper type.
      */
     @SuppressWarnings("unchecked")

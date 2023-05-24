@@ -19,12 +19,12 @@ import nom.tam.image.compression.hdu.CompressedTableHDU;
  * Copyright (C) 2004 - 2021 nom-tam-fits
  * %%
  * This is free and unencumbered software released into the public domain.
- * 
+ *
  * Anyone is free to copy, modify, publish, use, compile, sell, or
  * distribute this software, either in source code form or as a compiled
  * binary, for any purpose, commercial or non-commercial, and by any
  * means.
- * 
+ *
  * In jurisdictions that recognize copyright laws, the author or authors
  * of this software dedicate any and all copyright interest in the
  * software to the public domain. We make this dedication for the benefit
@@ -32,7 +32,7 @@ import nom.tam.image.compression.hdu.CompressedTableHDU;
  * successors. We intend this dedication to be an overt act of
  * relinquishment in perpetuity of all present and future rights to this
  * software under copyright law.
- * 
+ *
  * THE SOFTWARE IS PROVIDED "AS IS", WITHOUT WARRANTY OF ANY KIND,
  * EXPRESS OR IMPLIED, INCLUDING BUT NOT LIMITED TO THE WARRANTIES OF
  * MERCHANTABILITY, FITNESS FOR A PARTICULAR PURPOSE AND NONINFRINGEMENT.
@@ -154,10 +154,11 @@ public final class FitsFactory {
          *                 "= ". If we allow skipping the space, it will result
          *                 in a non-standard FITS, that is likely to break
          *                 compatibility with other tools.
-         * 
+         *
          * @return whether to use only "=", instead of the standard "= " between
          *             the keyword and the value.
          */
+        @Deprecated
         protected boolean isSkipBlankAfterAssign() {
             return this.skipBlankAfterAssign;
         }
@@ -191,11 +192,11 @@ public final class FitsFactory {
     /**
      * @deprecated This should be for internal use only. Will reduce visibility
      *                 in the future
-     * 
+     *
      * @return Given a Header construct an appropriate data.
-     * 
+     *
      * @param hdr header to create the data from
-     * 
+     *
      * @throws FitsException if the header did not contain enough information to
      *             detect the type of the data
      */
@@ -209,7 +210,8 @@ public final class FitsFactory {
                 hdr.nextCard();
             }
             return d;
-        } else if (RandomGroupsHDU.isHeader(hdr)) {
+        }
+        if (RandomGroupsHDU.isHeader(hdr)) {
             return RandomGroupsHDU.manufactureData(hdr);
         } else if (current().isUseAsciiTables() && AsciiTableHDU.isHeader(hdr)) {
             return AsciiTableHDU.manufactureData(hdr);
@@ -229,7 +231,7 @@ public final class FitsFactory {
 
     /**
      * @return Do we allow automatic header repairs, like missing end quotes?
-     * 
+     *
      * @since 1.16
      */
     public static boolean isUseExponentD() {
@@ -241,12 +243,12 @@ public final class FitsFactory {
      * (<code>short[]</code>) int binary tables as opposed as FITS character
      * arrays (<code>byte[]</code> with column type 'A'). See more explanation in
      * {@link #setUseUnicodeChars(boolean)}.
-     * 
+     *
      * @return <code>true</code> if <code>char[]</code> get written as 16-bit
      *             integers in binary table columns (column type 'I'), or as FITS
      *             1-byte ASCII character arrays (as is always the case for
      *             <code>String</code>) with column type 'A'.
-     * 
+     *
      * @since 1.16
      */
     public static boolean isUseUnicodeChars() {
@@ -284,9 +286,9 @@ public final class FitsFactory {
 
     /**
      * whether ASCII tables should be used where feasible.
-     * 
+     *
      * @return <code>true</code> if we ASCII tables are allowed.
-     * 
+     *
      * @see #setUseAsciiTables(boolean)
      */
     public static boolean getUseAsciiTables() {
@@ -310,7 +312,7 @@ public final class FitsFactory {
     /**
      * @return whether to use only "=", instead of the standard "= " between the
      *             keyword and the value.
-     * 
+     *
      * @deprecated The FITS standard is very explicit that assignment must be "=
      *                 ". If we allow skipping the space, it will result in a
      *                 non-standard FITS, that is likely to break compatibility
@@ -324,13 +326,13 @@ public final class FitsFactory {
     /**
      * @deprecated This should be for internal use only. Will reduce visibility
      *                 in the future
-     * 
+     *
      * @return Given Header and data objects return the appropriate type of HDU.
-     * 
+     *
      * @param hdr the header of the date
      * @param d the data
      * @param <DataClass> the class of the data
-     * 
+     *
      * @throws FitsException if the operation failed
      */
     @Deprecated
@@ -338,7 +340,8 @@ public final class FitsFactory {
     public static <DataClass extends Data> BasicHDU<DataClass> hduFactory(Header hdr, DataClass d) throws FitsException {
         if (d instanceof ImageData) {
             return (BasicHDU<DataClass>) new ImageHDU(hdr, (ImageData) d);
-        } else if (d instanceof CompressedImageData) {
+        }
+        if (d instanceof CompressedImageData) {
             return (BasicHDU<DataClass>) new CompressedImageHDU(hdr, (CompressedImageData) d);
         } else if (d instanceof RandomGroupsData) {
             return (BasicHDU<DataClass>) new RandomGroupsHDU(hdr, (RandomGroupsData) d);
@@ -357,9 +360,9 @@ public final class FitsFactory {
     /**
      * @return Given an object, create the appropriate FITS header to describe
      *             it.
-     * 
+     *
      * @param o The object to be described.
-     * 
+     *
      * @throws FitsException if the parameter could not be converted to a hdu.
      */
     public static BasicHDU<?> hduFactory(Object o) throws FitsException {
@@ -395,13 +398,13 @@ public final class FitsFactory {
     /**
      * @deprecated This should be for internal use only. Will redice visibility
      *                 in the future. SAme as {@link #hduFactory(Header, Data)}.
-     * 
+     *
      * @return Given Header and data objects return the appropriate type of HDU.
-     * 
+     *
      * @param hdr the header of the date
      * @param d the data
      * @param <DataClass> the class of the data
-     * 
+     *
      * @throws FitsException if the operation failed
      */
     @Deprecated
@@ -415,11 +418,11 @@ public final class FitsFactory {
     /**
      * @return Given an object, create the appropriate FITS header to describe
      *             it.
-     * 
+     *
      * @param o The object to be described.
-     * 
+     *
      * @throws FitsException if the parameter could not be converted to a hdu.
-     * 
+     *
      * @deprecated use {@link #hduFactory(Object)} instead
      */
     @Deprecated
@@ -431,7 +434,7 @@ public final class FitsFactory {
 
     /**
      * Restores all settings to their default values.
-     * 
+     *
      * @since 1.16
      */
     public static void setDefaults() {
@@ -456,7 +459,7 @@ public final class FitsFactory {
      * @param allowExponentD if <code>true</code> D will be used instead of E to
      *            indicate the exponent of a decimal with more precision than a
      *            32-bit float.
-     * 
+     *
      * @since 1.16
      */
     public static void setUseExponentD(boolean allowExponentD) {
@@ -519,7 +522,7 @@ public final class FitsFactory {
      * important that it can be ommitted.
      *
      * @param skipBlankAfterAssign value to set
-     * 
+     *
      * @deprecated The FITS standard is very explicit that assignment must be "=
      *                 ". It is also very specific that string values must have
      *                 their opening quote in byte 11 (counted from 1). If we
@@ -562,15 +565,15 @@ public final class FitsFactory {
      * identical <code>String</code> columns, which have already been restricted
      * to ASCII before.
      * </p>
-     * 
+     *
      * @param value <code>true</code> to write <code>char[]</code> arrays as if
      *            <code>short[]</code> with column type 'I' to binary tables (old
      *            behaviour, and hence default), or else <code>false</code> to
      *            write them as <code>byte[]</code> with column type 'A', the
      *            same as for <code>String</code> (preferred behaviour)
-     * 
+     *
      * @since 1.16
-     * 
+     *
      * @see #isUseUnicodeChars()
      */
     public static void setUseUnicodeChars(boolean value) {
@@ -606,15 +609,15 @@ public final class FitsFactory {
                 threadPool = Executors.newFixedThreadPool(Runtime.getRuntime().availableProcessors() * 2, //
                         new ThreadFactory() {
 
-                            private int counter = 1;
+                    private int counter = 1;
 
-                            @Override
-                            public Thread newThread(Runnable r) {
-                                Thread thread = new Thread(r, "nom-tam-fits worker " + this.counter++);
-                                thread.setDaemon(true);
-                                return thread;
-                            }
-                        });
+                    @Override
+                    public Thread newThread(Runnable r) {
+                        Thread thread = new Thread(r, "nom-tam-fits worker " + this.counter++);
+                        thread.setDaemon(true);
+                        return thread;
+                    }
+                });
             }
         }
     }

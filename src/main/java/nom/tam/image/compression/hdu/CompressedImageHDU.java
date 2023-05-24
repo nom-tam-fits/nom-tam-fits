@@ -1,39 +1,5 @@
 package nom.tam.image.compression.hdu;
 
-/*
- * #%L
- * nom.tam FITS library
- * %%
- * Copyright (C) 1996 - 2021 nom-tam-fits
- * %%
- * This is free and unencumbered software released into the public domain.
- * 
- * Anyone is free to copy, modify, publish, use, compile, sell, or
- * distribute this software, either in source code form or as a compiled
- * binary, for any purpose, commercial or non-commercial, and by any
- * means.
- * 
- * In jurisdictions that recognize copyright laws, the author or authors
- * of this software dedicate any and all copyright interest in the
- * software to the public domain. We make this dedication for the benefit
- * of the public at large and to the detriment of our heirs and
- * successors. We intend this dedication to be an overt act of
- * relinquishment in perpetuity of all present and future rights to this
- * software under copyright law.
- * 
- * THE SOFTWARE IS PROVIDED "AS IS", WITHOUT WARRANTY OF ANY KIND,
- * EXPRESS OR IMPLIED, INCLUDING BUT NOT LIMITED TO THE WARRANTIES OF
- * MERCHANTABILITY, FITNESS FOR A PARTICULAR PURPOSE AND NONINFRINGEMENT.
- * IN NO EVENT SHALL THE AUTHORS BE LIABLE FOR ANY CLAIM, DAMAGES OR
- * OTHER LIABILITY, WHETHER IN AN ACTION OF CONTRACT, TORT OR OTHERWISE,
- * ARISING FROM, OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR
- * OTHER DEALINGS IN THE SOFTWARE.
- * #L%
- */
-
-import static nom.tam.fits.header.Compression.ZIMAGE;
-import static nom.tam.fits.header.Standard.BLANK;
-
 import java.nio.Buffer;
 import java.util.Arrays;
 import java.util.Collections;
@@ -53,6 +19,40 @@ import nom.tam.fits.header.Compression;
 import nom.tam.fits.header.GenericKey;
 import nom.tam.fits.header.IFitsHeader;
 import nom.tam.util.Cursor;
+
+/*
+ * #%L
+ * nom.tam FITS library
+ * %%
+ * Copyright (C) 1996 - 2021 nom-tam-fits
+ * %%
+ * This is free and unencumbered software released into the public domain.
+ *
+ * Anyone is free to copy, modify, publish, use, compile, sell, or
+ * distribute this software, either in source code form or as a compiled
+ * binary, for any purpose, commercial or non-commercial, and by any
+ * means.
+ *
+ * In jurisdictions that recognize copyright laws, the author or authors
+ * of this software dedicate any and all copyright interest in the
+ * software to the public domain. We make this dedication for the benefit
+ * of the public at large and to the detriment of our heirs and
+ * successors. We intend this dedication to be an overt act of
+ * relinquishment in perpetuity of all present and future rights to this
+ * software under copyright law.
+ *
+ * THE SOFTWARE IS PROVIDED "AS IS", WITHOUT WARRANTY OF ANY KIND,
+ * EXPRESS OR IMPLIED, INCLUDING BUT NOT LIMITED TO THE WARRANTIES OF
+ * MERCHANTABILITY, FITNESS FOR A PARTICULAR PURPOSE AND NONINFRINGEMENT.
+ * IN NO EVENT SHALL THE AUTHORS BE LIABLE FOR ANY CLAIM, DAMAGES OR
+ * OTHER LIABILITY, WHETHER IN AN ACTION OF CONTRACT, TORT OR OTHERWISE,
+ * ARISING FROM, OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR
+ * OTHER DEALINGS IN THE SOFTWARE.
+ * #L%
+ */
+
+import static nom.tam.fits.header.Compression.ZIMAGE;
+import static nom.tam.fits.header.Standard.BLANK;
 
 /**
  * A compressed image is a normal binary table with a defined structure. The
@@ -94,24 +94,24 @@ public class CompressedImageHDU extends BinaryTableHDU {
         CompressedImageData compressedData = new CompressedImageData();
         int[] size = imageHDU.getAxes();
         int[] tileSize = new int[size.length];
-    
+
         compressedData.setAxis(size);
-        
+
         // Start with the default tile size.
         int nm1 = size.length - 1;
         Arrays.fill(tileSize, 1);
         tileSize[nm1] = size[nm1];
-        
+
         // Check and apply the requested tile sizes.
         int n = Math.min(size.length, tileAxis.length);
         for (int i = 0; i < n; i++) {
-            if (tileAxis[i] > 0) { 
+            if (tileAxis[i] > 0) {
                 tileSize[nm1 - i] = Math.min(tileAxis[i], size[nm1 - i]);
             }
         }
 
         compressedData.setTileSize(tileSize);
-        
+
         compressedData.fillHeader(header);
         Cursor<String, HeaderCard> iterator = header.iterator();
         Cursor<String, HeaderCard> imageIterator = imageHDU.getHeader().iterator();
@@ -151,7 +151,7 @@ public class CompressedImageHDU extends BinaryTableHDU {
         return imageHDU;
     }
 
-     /**
+    /**
      * Given this compressed HDU, get the original (decompressed) axes.
      *
      * @return the dimensions of the axis.
@@ -200,7 +200,7 @@ public class CompressedImageHDU extends BinaryTableHDU {
         return header;
     }
 
-     public void compress() throws FitsException {
+    public void compress() throws FitsException {
         getData().compress(this);
     }
 

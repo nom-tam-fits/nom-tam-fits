@@ -7,12 +7,12 @@ package nom.tam.util;
  * Copyright (C) 1996 - 2021 nom-tam-fits
  * %%
  * This is free and unencumbered software released into the public domain.
- * 
+ *
  * Anyone is free to copy, modify, publish, use, compile, sell, or
  * distribute this software, either in source code form or as a compiled
  * binary, for any purpose, commercial or non-commercial, and by any
  * means.
- * 
+ *
  * In jurisdictions that recognize copyright laws, the author or authors
  * of this software dedicate any and all copyright interest in the
  * software to the public domain. We make this dedication for the benefit
@@ -20,7 +20,7 @@ package nom.tam.util;
  * successors. We intend this dedication to be an overt act of
  * relinquishment in perpetuity of all present and future rights to this
  * software under copyright law.
- * 
+ *
  * THE SOFTWARE IS PROVIDED "AS IS", WITHOUT WARRANTY OF ANY KIND,
  * EXPRESS OR IMPLIED, INCLUDING BUT NOT LIMITED TO THE WARRANTIES OF
  * MERCHANTABILITY, FITNESS FOR A PARTICULAR PURPOSE AND NONINFRINGEMENT.
@@ -45,12 +45,12 @@ import java.nio.IntBuffer;
 import java.nio.LongBuffer;
 import java.nio.ShortBuffer;
 
+import org.junit.Assert;
+import org.junit.Test;
+
 import nom.tam.util.type.ElementType;
 import nom.tam.util.type.PrimitiveTypeHandler;
 import nom.tam.util.type.PrimitiveTypes;
-
-import org.junit.Assert;
-import org.junit.Test;
 
 public class PrimitiveTypeTest {
 
@@ -69,7 +69,7 @@ public class PrimitiveTypeTest {
 
         byte expectedValue = 1;
         ByteBuffer buffer = PrimitiveTypes.BYTE.convertToByteBuffer(new byte[]{
-            1
+                1
         });
         assertEquals(expectedValue, buffer.get());
 
@@ -100,7 +100,7 @@ public class PrimitiveTypeTest {
         long value = Double.doubleToLongBits(testValue) >> 7 * 8;
 
         ByteBuffer buffer = PrimitiveTypes.DOUBLE.convertToByteBuffer(new double[]{
-            testValue
+                testValue
         });
         assertEquals((byte) value, buffer.get());
 
@@ -120,7 +120,7 @@ public class PrimitiveTypeTest {
         int value = Float.floatToIntBits(testValue) >> 3 * 8;
 
         ByteBuffer buffer = PrimitiveTypes.FLOAT.convertToByteBuffer(new float[]{
-            testValue
+                testValue
         });
         assertEquals((byte) value, buffer.get());
         testGetPutArray(PrimitiveTypes.FLOAT, Float.valueOf(1), Float.valueOf(2));
@@ -137,7 +137,7 @@ public class PrimitiveTypeTest {
 
         int expectedValue = 256 * 256 * 256;
         ByteBuffer buffer = PrimitiveTypes.INT.convertToByteBuffer(new int[]{
-            expectedValue
+                expectedValue
         });
         assertEquals((byte) 1, buffer.get());
         testGetPutArray(PrimitiveTypes.INT, Integer.valueOf(1), Integer.valueOf(2));
@@ -154,7 +154,7 @@ public class PrimitiveTypeTest {
 
         long expectedValue = 256L * 256L * 256L * 256L * 256L * 256L * 256L;
         assertEquals((byte) 1, PrimitiveTypes.LONG.convertToByteBuffer(new long[]{
-            expectedValue
+                expectedValue
         }).get());
         testGetPutArray(PrimitiveTypes.LONG, Long.valueOf(1), Long.valueOf(2));
 
@@ -178,7 +178,7 @@ public class PrimitiveTypeTest {
 
         short expectedValue = 256;
         ByteBuffer buffer = PrimitiveTypes.SHORT.convertToByteBuffer(new short[]{
-            expectedValue
+                expectedValue
         });
         assertEquals((byte) 1, buffer.get());
         testGetPutArray(PrimitiveTypes.SHORT, Short.valueOf((short) 1), Short.valueOf((short) 2));
@@ -260,6 +260,6 @@ public class PrimitiveTypeTest {
         assertSame(PrimitiveTypes.LONG, PrimitiveTypeHandler.nearestValueOf(40));
         assertSame(PrimitiveTypes.LONG, PrimitiveTypeHandler.nearestValueOf(80));
     }
-    
+
 
 }

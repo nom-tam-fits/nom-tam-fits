@@ -5,12 +5,12 @@
  * Copyright (C) 2004 - 2021 nom-tam-fits
  * %%
  * This is free and unencumbered software released into the public domain.
- * 
+ *
  * Anyone is free to copy, modify, publish, use, compile, sell, or
  * distribute this software, either in source code form or as a compiled
  * binary, for any purpose, commercial or non-commercial, and by any
  * means.
- * 
+ *
  * In jurisdictions that recognize copyright laws, the author or authors
  * of this software dedicate any and all copyright interest in the
  * software to the public domain. We make this dedication for the benefit
@@ -18,7 +18,7 @@
  * successors. We intend this dedication to be an overt act of
  * relinquishment in perpetuity of all present and future rights to this
  * software under copyright law.
- * 
+ *
  * THE SOFTWARE IS PROVIDED "AS IS", WITHOUT WARRANTY OF ANY KIND,
  * EXPRESS OR IMPLIED, INCLUDING BUT NOT LIMITED TO THE WARRANTIES OF
  * MERCHANTABILITY, FITNESS FOR A PARTICULAR PURPOSE AND NONINFRINGEMENT.
@@ -64,29 +64,29 @@ import java.util.logging.Logger;
  * partial array will be returned when an EOF is detected. Excess bytes that
  * cannot be used to construct array elements will be discarded (e.g., if there
  * are 2 bytes left and the user is reading an int array).</li>
- * 
+ *
  * <li>
  * Version 1.2 -- December 8, 2002: Added getChannel method.</li>
- * 
+ *
  * <li>
  * Version 1.3 -- March 2, 2007: Added File based constructors.</li>
- * 
+ *
  * <li>
  * Version 1.4 -- July 20, 2009: Added support for &gt;2G Object reads.
  * This is still a bit problematic in that we do not support primitive arrays
  * larger than 2 GB/atomsize. However except in the case of bytes this is not
  * currently a major issue.</li>
- * 
+ *
  * </ul>
- * 
+ *
  * <p>
  * Version 2.0 -- Oct 30, 2021: New hierarchy for more digestible code. Improved
- * buffering, and renamed from <code>BufferedFile</code> to the more appropriate 
+ * buffering, and renamed from <code>BufferedFile</code> to the more appropriate
  * name of <code>FitsFile</code>. Performance is 2-4 times better than before.
- * 
+ *
  * @see FitsInputStream
  * @see FitsOutputStream
- * 
+ *
  * @since 1.16
  */
 @SuppressWarnings("deprecation")
@@ -101,7 +101,7 @@ public class FitsFile extends ArrayDataFile implements FitsOutput, RandomAccess 
 
     /**
      * Create a buffered file from a File descriptor
-     * 
+     *
      * @param file
      *            the file to open.
      * @throws IOException
@@ -113,7 +113,7 @@ public class FitsFile extends ArrayDataFile implements FitsOutput, RandomAccess 
 
     /**
      * Create a buffered file from a File descriptor
-     * 
+     *
      * @param file
      *            the file to open.
      * @param mode
@@ -127,7 +127,7 @@ public class FitsFile extends ArrayDataFile implements FitsOutput, RandomAccess 
 
     /**
      * Create a buffered file from a file descriptor
-     * 
+     *
      * @param file
      *            the file to open.
      * @param mode
@@ -161,19 +161,19 @@ public class FitsFile extends ArrayDataFile implements FitsOutput, RandomAccess 
 
     /**
      * Create a read-only buffered file
-     * 
+     *
      * @param filename
      *            the name of the file to open
      * @throws IOException
      *             if the file could not be opened
      */
     public FitsFile(String filename) throws IOException {
-        this(filename, "r", FitsFile.DEFAULT_BUFFER_SIZE);
+        this(filename, "r", FitsIO.DEFAULT_BUFFER_SIZE);
     }
 
     /**
      * Create a buffered file with the given mode.
-     * 
+     *
      * @param filename
      *            The file to be accessed.
      * @param mode
@@ -182,13 +182,13 @@ public class FitsFile extends ArrayDataFile implements FitsOutput, RandomAccess 
      *             if the file could not be opened
      */
     public FitsFile(String filename, String mode) throws IOException {
-        this(filename, mode, FitsFile.DEFAULT_BUFFER_SIZE);
+        this(filename, mode, FitsIO.DEFAULT_BUFFER_SIZE);
     }
 
     /**
      * Create a buffered file with the given mode and a specified
      * dataBuffer.buffer size.
-     * 
+     *
      * @param filename
      *            The file to be accessed.
      * @param mode
@@ -205,22 +205,22 @@ public class FitsFile extends ArrayDataFile implements FitsOutput, RandomAccess 
         this(new File(filename), mode, bufferSize);
     }
 
-    
+
     @Override
     public FitsEncoder getEncoder() {
         return (FitsEncoder) super.getEncoder();
     }
-    
+
     @Override
     public FitsDecoder getDecoder() {
         return (FitsDecoder) super.getDecoder();
     }
-  
+
     @Override
     public boolean isAtStart() {
         return getFilePointer() == 0;
     }
-    
+
     @Override
     public final synchronized int readUnsignedByte() throws IOException {
         return getDecoder().readUnsignedByte();
@@ -235,7 +235,7 @@ public class FitsFile extends ArrayDataFile implements FitsOutput, RandomAccess 
     public synchronized boolean readBoolean() throws IOException {
         return getDecoder().readBoolean();
     }
-    
+
     @Override
     public synchronized char readChar() throws IOException {
         return getDecoder().readChar();
@@ -250,12 +250,12 @@ public class FitsFile extends ArrayDataFile implements FitsOutput, RandomAccess 
     public final synchronized short readShort() throws IOException {
         return getDecoder().readShort();
     }
-    
+
     @Override
     public final synchronized int readInt() throws IOException {
-        return getDecoder().readInt(); 
+        return getDecoder().readInt();
     }
-    
+
     @Override
     public final synchronized long readLong() throws IOException {
         return getDecoder().readLong();
@@ -265,12 +265,12 @@ public class FitsFile extends ArrayDataFile implements FitsOutput, RandomAccess 
     public final synchronized float readFloat() throws IOException {
         return getDecoder().readFloat();
     }
-    
+
     @Override
     public final synchronized double readDouble() throws IOException {
         return getDecoder().readDouble();
     }
-    
+
     @Override
     public synchronized String readLine() throws IOException {
         return getDecoder().readAsciiLine();
@@ -321,7 +321,7 @@ public class FitsFile extends ArrayDataFile implements FitsOutput, RandomAccess 
     public final synchronized int readArray(Object o) throws IOException {
         return (int) readLArray(o);
     }
- 
+
     @Override
     public boolean markSupported() {
         return true;
@@ -340,21 +340,21 @@ public class FitsFile extends ArrayDataFile implements FitsOutput, RandomAccess 
         seek(marker);
     }
 
-    @Override   
+    @Override
     public synchronized int skipBytes(int toSkip) throws IOException {
         return (int) skip(toSkip);
     }
 
     @Override
-    public synchronized void skipAllBytes(long toSkip) throws EOFException, IOException {        
+    public synchronized void skipAllBytes(long toSkip) throws EOFException, IOException {
         long n = skip(toSkip);
-        
+
         // Note that we allow negative skips...
         if (n != toSkip) {
             throw new EOFException("Skip reached file boundary at " + n + " of " + toSkip);
         }
     }
-   
+
     @Override
     public final synchronized void writeByte(int v) throws IOException {
         getEncoder().writeByte(v);
@@ -364,7 +364,7 @@ public class FitsFile extends ArrayDataFile implements FitsOutput, RandomAccess 
     public synchronized void writeBoolean(boolean v) throws IOException {
         getEncoder().writeBoolean(v);
     }
-    
+
     @Override
     public synchronized void writeChar(int v) throws IOException {
         getEncoder().writeChar(v);
@@ -414,7 +414,7 @@ public class FitsFile extends ArrayDataFile implements FitsOutput, RandomAccess 
     public synchronized void write(Boolean[] buf, int offset, int size) throws IOException {
         getEncoder().write(buf, offset, size);
     }
-    
+
     @Override
     public synchronized void write(char[] c, int start, int length) throws IOException {
         getEncoder().write(c, start, length);
@@ -424,7 +424,7 @@ public class FitsFile extends ArrayDataFile implements FitsOutput, RandomAccess 
     public synchronized void write(short[] s, int start, int length) throws IOException {
         getEncoder().write(s, start, length);
     }
-    
+
     @Override
     public synchronized void write(int[] i, int start, int length) throws IOException {
         getEncoder().write(i, start, length);

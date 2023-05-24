@@ -7,12 +7,12 @@ package nom.tam.fits;
  * Copyright (C) 1996 - 2022 nom-tam-fits
  * %%
  * This is free and unencumbered software released into the public domain.
- * 
+ *
  * Anyone is free to copy, modify, publish, use, compile, sell, or
  * distribute this software, either in source code form or as a compiled
  * binary, for any purpose, commercial or non-commercial, and by any
  * means.
- * 
+ *
  * In jurisdictions that recognize copyright laws, the author or authors
  * of this software dedicate any and all copyright interest in the
  * software to the public domain. We make this dedication for the benefit
@@ -20,7 +20,7 @@ package nom.tam.fits;
  * successors. We intend this dedication to be an overt act of
  * relinquishment in perpetuity of all present and future rights to this
  * software under copyright law.
- * 
+ *
  * THE SOFTWARE IS PROVIDED "AS IS", WITHOUT WARRANTY OF ANY KIND,
  * EXPRESS OR IMPLIED, INCLUDING BUT NOT LIMITED TO THE WARRANTIES OF
  * MERCHANTABILITY, FITNESS FOR A PARTICULAR PURPOSE AND NONINFRINGEMENT.
@@ -47,14 +47,14 @@ import nom.tam.fits.header.Standard;
 import nom.tam.util.ComplexValue;
 
 public class KeyTypeTest {
-    
+
     private class ComplexKey implements IFitsHeader {
         String name;
-        
+
         ComplexKey(String name) {
             this.name = name;
         }
-        
+
         @Override
         public String comment() {
             return "some complex valued keyword";
@@ -83,13 +83,13 @@ public class KeyTypeTest {
         @Override
         public VALUE valueType() {
             return VALUE.COMPLEX;
-        }   
+        }
     }
-    
-    
+
+
     class LogCounter extends Handler {
         private int count = 0;
-        
+
         @Override
         public void close() throws SecurityException {}
 
@@ -97,20 +97,20 @@ public class KeyTypeTest {
         public void flush() {}
 
         @Override
-        public synchronized void publish(LogRecord arg0) { 
-            count++; 
+        public synchronized void publish(LogRecord arg0) {
+            count++;
             System.err.println("### MESSAGE: " + arg0.getMessage());
         }
-        
-        public synchronized int getCount() { 
-            return count; 
+
+        public synchronized int getCount() {
+            return count;
         }
-    };
+    }
 
     class ComplexDerived extends ComplexValue {
         public ComplexDerived(double re, double im) { super(re, im); }
     }
-    
+
     private LogCounter initLogCounter(Class<?> c) {
         Logger l = Logger.getLogger(c.getName());
         l.setLevel(Level.WARNING);                      // Make sure we log warnings to Header
@@ -118,8 +118,8 @@ public class KeyTypeTest {
         l.addHandler(counter);
         return counter;
     }
-    
-    
+
+
     @Test
     public void replaceCommentStyleKeyWarning() throws Exception {
         Header h = new Header();
@@ -129,7 +129,7 @@ public class KeyTypeTest {
         h.replaceKey(Standard.SIMPLE, Standard.COMMENT);
         assertNotEquals(i, counter.getCount());
     }
-    
+
     @Test
     public void replaceBooleanKey() throws Exception {
         Header h = new Header();
@@ -137,7 +137,7 @@ public class KeyTypeTest {
         h.replaceKey(Standard.SIMPLE, Standard.EXTEND);
         assertEquals(Standard.EXTEND.key(), c.getKey());
     }
-    
+
     @Test
     public void replaceBooleanKeyWarning() throws Exception {
         Header h = new Header();
@@ -147,7 +147,7 @@ public class KeyTypeTest {
         h.replaceKey(Standard.SIMPLE, Standard.BUNIT);
         assertNotEquals(i, counter.getCount());
     }
-    
+
     @Test
     public void replaceRealKey() throws Exception {
         Header h = new Header();
@@ -155,7 +155,7 @@ public class KeyTypeTest {
         h.replaceKey(Standard.BSCALE, Standard.BZERO);
         assertEquals(Standard.BZERO.key(), c.getKey());
     }
-    
+
     @Test
     public void replaceRealKeyWarning() throws Exception {
         Header h = new Header();
@@ -165,7 +165,7 @@ public class KeyTypeTest {
         h.replaceKey(Standard.BSCALE, Standard.NAXIS);
         assertNotEquals(i, counter.getCount());
     }
-    
+
     @Test
     public void replaceIntKey() throws Exception {
         Header h = new Header();
@@ -173,7 +173,7 @@ public class KeyTypeTest {
         h.replaceKey(Standard.NAXIS, Standard.BITPIX);
         assertEquals(Standard.BITPIX.key(), c.getKey());
     }
-    
+
     @Test
     public void replaceIntKeyReal() throws Exception {
         Header h = new Header();
@@ -181,7 +181,7 @@ public class KeyTypeTest {
         h.replaceKey(Standard.NAXIS, Standard.BZERO);
         assertEquals(Standard.BZERO.key(), c.getKey());
     }
-    
+
     @Test
     public void replaceIntKeyComplex() throws Exception {
         Header h = new Header();
@@ -190,7 +190,7 @@ public class KeyTypeTest {
         h.replaceKey(Standard.NAXIS, k);
         assertEquals(k.key(), c.getKey());
     }
-    
+
     @Test
     public void replaceIntKeyWarning() throws Exception {
         Header h = new Header();
@@ -200,7 +200,7 @@ public class KeyTypeTest {
         h.replaceKey(Standard.NAXIS, Standard.BUNIT);
         assertNotEquals(i, counter.getCount());
     }
-    
+
     @Test
     public void replaceComplexKey() throws Exception {
         Header h = new Header();
@@ -210,7 +210,7 @@ public class KeyTypeTest {
         h.replaceKey(k1, k2);
         assertEquals(k2.key(), c.getKey());
     }
-    
+
     @Test
     public void replaceComplexKeyWarning() throws Exception {
         Header h = new Header();
@@ -221,7 +221,7 @@ public class KeyTypeTest {
         h.replaceKey(k, Standard.BZERO);
         assertNotEquals(i, counter.getCount());
     }
-    
+
     @Test
     public void replaceStringKey() throws Exception {
         Header h = new Header();
@@ -229,7 +229,7 @@ public class KeyTypeTest {
         h.replaceKey(Standard.TELESCOP, Standard.INSTRUME);
         assertEquals(Standard.INSTRUME.key(), c.getKey());
     }
-    
+
     @Test
     public void replaceStringKeyWarning() throws Exception {
         Header h = new Header();
@@ -239,14 +239,14 @@ public class KeyTypeTest {
         h.replaceKey(Standard.TELESCOP, Standard.BZERO);
         assertNotEquals(i, counter.getCount());
     }
-    
+
     @Test
     public void createBooleanKey() throws Exception {
         HeaderCard c = HeaderCard.create(Standard.SIMPLE, true);
         assertEquals(Standard.SIMPLE.key(), c.getKey());
         assertTrue(c.getValue(Boolean.class, false));
     }
-    
+
     @Test
     public void createBooleanKeyWarning() throws Exception {
         LogCounter counter = initLogCounter(HeaderCard.class);
@@ -254,14 +254,14 @@ public class KeyTypeTest {
         HeaderCard.create(Standard.SIMPLE, 1.0);
         assertNotEquals(i, counter.getCount());
     }
-    
+
     @Test
     public void createIntKey() throws Exception {
         HeaderCard c = HeaderCard.create(Standard.NAXIS, 1);
         assertEquals(Standard.NAXIS.key(), c.getKey());
         assertEquals(1, c.getValue(Integer.class, -1).intValue());
     }
-    
+
     @Test
     public void createIntKeyWarning() throws Exception {
         LogCounter counter = initLogCounter(HeaderCard.class);
@@ -269,21 +269,21 @@ public class KeyTypeTest {
         HeaderCard.create(Standard.NAXIS, 1.0);
         assertNotEquals(i, counter.getCount());
     }
-    
+
     @Test
     public void createRealKey() throws Exception {
         HeaderCard c = HeaderCard.create(Standard.BZERO, 1.0);
         assertEquals(Standard.BZERO.key(), c.getKey());
         assertEquals(1.0, c.getValue(Double.class, Double.NaN).intValue(), 1e-12);
     }
-    
+
     @Test
     public void createRealKeyInt() throws Exception {
         HeaderCard c = HeaderCard.create(Standard.BZERO, new Integer(1));
         assertEquals(Standard.BZERO.key(), c.getKey());
         assertEquals(1.0, c.getValue(Double.class, Double.NaN).intValue(), 1e-12);
     }
-    
+
     @Test
     public void createRealKeyWarning() throws Exception {
         LogCounter counter = initLogCounter(HeaderCard.class);
@@ -291,7 +291,7 @@ public class KeyTypeTest {
         HeaderCard.create(Standard.BZERO, "string");
         assertNotEquals(i, counter.getCount());
     }
-    
+
     @Test
     public void createComplexKey() throws Exception {
         ComplexKey k = new ComplexKey("CVAL");
@@ -300,7 +300,7 @@ public class KeyTypeTest {
         assertEquals(k.key(), c.getKey());
         assertEquals(z, c.getValue(ComplexValue.class, null));
     }
-    
+
     @Test
     public void createComplexKeyReal() throws Exception {
         ComplexKey k = new ComplexKey("CVAL");
@@ -309,7 +309,7 @@ public class KeyTypeTest {
         assertEquals(k.key(), c.getKey());
         assertEquals(z, c.getValue(ComplexValue.class, null));
     }
-    
+
     @Test
     public void createComplexKeyInt() throws Exception {
         ComplexKey k = new ComplexKey("CVAL");
@@ -318,7 +318,7 @@ public class KeyTypeTest {
         assertEquals(k.key(), c.getKey());
         assertEquals(z, c.getValue(ComplexValue.class, null));
     }
-    
+
     @Test
     public void createComplexKeyWarning() throws Exception {
         LogCounter counter = initLogCounter(HeaderCard.class);
@@ -326,5 +326,5 @@ public class KeyTypeTest {
         HeaderCard.create(new ComplexKey("CVAL"), "string");
         assertNotEquals(i, counter.getCount());
     }
-    
+
 }

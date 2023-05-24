@@ -15,12 +15,12 @@ import nom.tam.fits.UndefinedData;
  * Copyright (C) 1996 - 2021 nom-tam-fits
  * %%
  * This is free and unencumbered software released into the public domain.
- * 
+ *
  * Anyone is free to copy, modify, publish, use, compile, sell, or
  * distribute this software, either in source code form or as a compiled
  * binary, for any purpose, commercial or non-commercial, and by any
  * means.
- * 
+ *
  * In jurisdictions that recognize copyright laws, the author or authors
  * of this software dedicate any and all copyright interest in the
  * software to the public domain. We make this dedication for the benefit
@@ -28,7 +28,7 @@ import nom.tam.fits.UndefinedData;
  * successors. We intend this dedication to be an overt act of
  * relinquishment in perpetuity of all present and future rights to this
  * software under copyright law.
- * 
+ *
  * THE SOFTWARE IS PROVIDED "AS IS", WITHOUT WARRANTY OF ANY KIND,
  * EXPRESS OR IMPLIED, INCLUDING BUT NOT LIMITED TO THE WARRANTIES OF
  * MERCHANTABILITY, FITNESS FOR A PARTICULAR PURPOSE AND NONINFRINGEMENT.
@@ -47,7 +47,7 @@ import nom.tam.fits.UndefinedData;
  * See <a href=
  * "http://heasarc.gsfc.nasa.gov/docs/fcg/standard_dict.html">http://heasarc.gsfc.nasa.gov/docs/fcg/standard_dict.html</a>
  * </p>
- * 
+ *
  * @author Richard van Nieuwenhoven
  */
 public enum Standard implements IFitsHeader {
@@ -63,7 +63,7 @@ public enum Standard implements IFitsHeader {
      */
     BITPIX(SOURCE.MANDATORY, HDU.ANY, VALUE.INTEGER, "bits per data value", //
             replaceable("header:bitpix", Object.class) //
-    ),
+            ),
     /**
      * This keyword shall be used only in primary array headers or IMAGE extension headers with positive values of
      * BITPIX (i.e., in arrays with integer data). Columns 1-8 contain the string, `BLANK ' (ASCII blanks in columns
@@ -86,7 +86,7 @@ public enum Standard implements IFitsHeader {
      * necessarily equal to it. Physical block size and logical record length may be equal even if this keyword is
      * present or unequal if it is absent. It is reserved primarily to prevent its use with other meanings. Since the
      * issuance of version 1 of the standard, the BLOCKED keyword has been deprecated.
-     * 
+     *
      * @deprecated no blocksize other that 2880 may be used.
      */
     @Deprecated
@@ -208,7 +208,7 @@ public enum Standard implements IFitsHeader {
      * system in which positions are expressed. Starting with Version 1, the Standard has deprecated the use of the
      * EPOCH keyword and thus it shall not be used in FITS files created after the adoption of the standard; rather, the
      * EQUINOX keyword shall be used.
-     * 
+     *
      * @deprecated use {@link #EQUINOX} in stead
      */
     @Deprecated
@@ -231,7 +231,7 @@ public enum Standard implements IFitsHeader {
             replaceable("imagedata:extend", ImageData.class, "Extension permitted"), //
             replaceable("undefineddata:extend", UndefinedData.class, "Extensions are permitted")
 
-    ),
+            ),
 
     /**
      * The value field shall contain an integer, specifying the level in a hierarchy of extension levels of the
@@ -271,7 +271,7 @@ public enum Standard implements IFitsHeader {
             replaceable("imagedata:gcount", ImageData.class, "No extra parameters"), //
             replaceable("undefineddata:gcount", UndefinedData.class)
 
-    ),
+            ),
 
     /**
      * The value field shall contain the logical constant T. The value T associated with this keyword implies that
@@ -279,7 +279,7 @@ public enum Standard implements IFitsHeader {
      */
     GROUPS(SOURCE.MANDATORY, HDU.GROUPS, VALUE.LOGICAL, "indicates random groups structure", //
             replaceable("randomgroupsdata:groups", RandomGroupsData.class) //
-    ),
+            ),
 
     /**
      * This keyword shall have no associated value; columns 9-80 may contain any ASCII text. The text should contain a
@@ -301,7 +301,7 @@ public enum Standard implements IFitsHeader {
      */
     NAXIS(SOURCE.MANDATORY, HDU.ANY, VALUE.INTEGER, "number of axes", //
             replaceable("header:naxis", Object.class) //
-    ),
+            ),
 
     /**
      * The value field of this indexed keyword shall contain a non-negative integer, representing the number of elements
@@ -317,7 +317,7 @@ public enum Standard implements IFitsHeader {
             replaceable("tablehdu:naxis2", TableData.class), //
             replaceable("header:naxisN", Object.class), //
             replaceable("undefineddata:naxis1", UndefinedData.class, "Number of Bytes") //
-    ),
+            ),
 
     /**
      * The value field shall contain a character string giving a name for the object observed.
@@ -350,7 +350,7 @@ public enum Standard implements IFitsHeader {
             replaceable("randomgroupsdata:pcount", RandomGroupsData.class), //
             replaceable("undefineddata:pcount", UndefinedData.class) //
 
-    ),
+            ),
 
     /**
      * This keyword is reserved for use within the FITS Random Groups structure. This keyword shall be used, along with
@@ -388,7 +388,7 @@ public enum Standard implements IFitsHeader {
 
     /**
      * Coordinate reference frame of major/minor axes. use RADESYS instead.
-     * 
+     *
      * @deprecated use {@link #RADESYS} instead.
      */
     @Deprecated
@@ -408,7 +408,7 @@ public enum Standard implements IFitsHeader {
      */
     SIMPLE(SOURCE.MANDATORY, HDU.PRIMARY, VALUE.LOGICAL, "does file conform to the Standard?", //
             replaceable("header:simple", Object.class, "Java FITS: " + new java.util.Date()) //
-    ),
+            ),
 
     /**
      * The value field of this indexed keyword shall contain an integer specifying the column in which field n starts in
@@ -416,7 +416,7 @@ public enum Standard implements IFitsHeader {
      */
     TBCOLn(SOURCE.MANDATORY, HDU.ASCII_TABLE, VALUE.INTEGER, "begining column number", //
             replaceable("asciitable:tbcolN", AsciiTable.class, "Column offset") //
-    ),
+            ),
 
     /**
      * The value field of this indexed keyword shall contain a character string describing how to interpret the contents
@@ -428,7 +428,7 @@ public enum Standard implements IFitsHeader {
     TDIMn(SOURCE.RESERVED, HDU.BINTABLE, VALUE.STRING, "dimensionality of the array ", //
             replaceable("binarytablehdu:tdimN", BinaryTable.class), //
             replaceable("headercard:tdimN", Object.class) //
-    ),
+            ),
 
     /**
      * The value field of this indexed keyword shall contain a character string describing the format recommended for
@@ -458,7 +458,7 @@ public enum Standard implements IFitsHeader {
             replaceable("binarytable:tfields", BinaryTable.class), //
             replaceable("tablehdu:tfields", TableData.class, "Number of table fields"), //
             replaceable("asciitable:tfields", AsciiTable.class, "Number of fields in table") //
-    ),
+            ),
     /**
      * The value field of this indexed keyword shall contain a character string describing the format in which field n
      * is encoded in a 'TABLE' or 'BINTABLE' extension.
@@ -467,7 +467,7 @@ public enum Standard implements IFitsHeader {
             replaceable("asciitable:tformN", AsciiTable.class), //
             replaceable("binarytable:tformN", BinaryTable.class) //
 
-    ),
+            ),
 
     /**
      * The value field of this keyword shall contain an integer providing the separation, in bytes, between the start of
@@ -477,7 +477,7 @@ public enum Standard implements IFitsHeader {
      */
     THEAP(SOURCE.RESERVED, HDU.BINTABLE, VALUE.INTEGER, "offset to starting data heap address", //
             replaceable("binarytablehdu:theap", BinaryTable.class) //
-    ),
+            ),
 
     /**
      * In ASCII 'TABLE' extensions, the value field for this indexed keyword shall contain the character string that
@@ -541,7 +541,7 @@ public enum Standard implements IFitsHeader {
      * The value of the XTENSION keword in case of a binary table.
      */
     public static final String XTENSION_ASCIITABLE = "TABLE";
-    
+
     /**
      * The value of the XTENSION keword in case of a binary table.
      */
@@ -616,9 +616,9 @@ public enum Standard implements IFitsHeader {
 
     /**
      * scan for a comment with the specified reference key.
-     * 
+     *
      * @param commentKey the reference key
-     * 
+     *
      * @return the comment for the reference key
      */
     public String getCommentByKey(String commentKey) {
@@ -636,7 +636,7 @@ public enum Standard implements IFitsHeader {
 
     /**
      * set the comment for the specified reference key.
-     * 
+     *
      * @param commentKey the reference key
      * @param value the comment to set when the fits key is used.
      */

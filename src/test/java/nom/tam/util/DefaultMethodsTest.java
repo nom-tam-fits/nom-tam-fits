@@ -7,12 +7,12 @@ package nom.tam.util;
  * Copyright (C) 1996 - 2021 nom-tam-fits
  * %%
  * This is free and unencumbered software released into the public domain.
- * 
+ *
  * Anyone is free to copy, modify, publish, use, compile, sell, or
  * distribute this software, either in source code form or as a compiled
  * binary, for any purpose, commercial or non-commercial, and by any
  * means.
- * 
+ *
  * In jurisdictions that recognize copyright laws, the author or authors
  * of this software dedicate any and all copyright interest in the
  * software to the public domain. We make this dedication for the benefit
@@ -20,7 +20,7 @@ package nom.tam.util;
  * successors. We intend this dedication to be an overt act of
  * relinquishment in perpetuity of all present and future rights to this
  * software under copyright law.
- * 
+ *
  * THE SOFTWARE IS PROVIDED "AS IS", WITHOUT WARRANTY OF ANY KIND,
  * EXPRESS OR IMPLIED, INCLUDING BUT NOT LIMITED TO THE WARRANTIES OF
  * MERCHANTABILITY, FITNESS FOR A PARTICULAR PURPOSE AND NONINFRINGEMENT.
@@ -52,7 +52,7 @@ public class DefaultMethodsTest {
         new DefaultInput().readArrayFully(array);
         // throws EOFException since the test read() returns 0 always...
     }
-    
+
     @Test
     public void testReadArrayFullySuccess() throws Exception {
         int[] array = new int[2];
@@ -63,7 +63,7 @@ public class DefaultMethodsTest {
             }
         }.readArrayFully(array);
     }
-    
+
     @Test
     public void testReadBooleanArray() throws Exception {
         Boolean[] b = new Boolean[1];
@@ -77,14 +77,14 @@ public class DefaultMethodsTest {
         new DefaultOutput().write(b);
         // No exception thrown...
     }
-    
+
     @Test(expected = NullPointerException.class)
     public void testWriteBooleanNull() throws Exception {
         Boolean[] b = new Boolean[] { Boolean.TRUE, Boolean.FALSE, null };
         new DefaultOutput().write(b);
         // A NullPointerException is thrown, because the deffault implementation does not handle null...
     }
-    
+
     class DefaultInput implements ArrayDataInput {
 
         @Override

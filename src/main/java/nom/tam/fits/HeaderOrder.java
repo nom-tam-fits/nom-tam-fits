@@ -1,5 +1,8 @@
 package nom.tam.fits;
 
+import java.io.Serializable;
+import java.util.Hashtable;
+
 import static nom.tam.fits.header.Standard.BITPIX;
 import static nom.tam.fits.header.Standard.BLOCKED;
 import static nom.tam.fits.header.Standard.END;
@@ -12,9 +15,6 @@ import static nom.tam.fits.header.Standard.TFIELDS;
 import static nom.tam.fits.header.Standard.THEAP;
 import static nom.tam.fits.header.Standard.XTENSION;
 
-import java.io.Serializable;
-import java.util.Hashtable;
-
 /*
  * #%L
  * nom.tam FITS library
@@ -22,12 +22,12 @@ import java.util.Hashtable;
  * Copyright (C) 2004 - 2021 nom-tam-fits
  * %%
  * This is free and unencumbered software released into the public domain.
- * 
+ *
  * Anyone is free to copy, modify, publish, use, compile, sell, or
  * distribute this software, either in source code form or as a compiled
  * binary, for any purpose, commercial or non-commercial, and by any
  * means.
- * 
+ *
  * In jurisdictions that recognize copyright laws, the author or authors
  * of this software dedicate any and all copyright interest in the
  * software to the public domain. We make this dedication for the benefit
@@ -35,7 +35,7 @@ import java.util.Hashtable;
  * successors. We intend this dedication to be an overt act of
  * relinquishment in perpetuity of all present and future rights to this
  * software under copyright law.
- * 
+ *
  * THE SOFTWARE IS PROVIDED "AS IS", WITHOUT WARRANTY OF ANY KIND,
  * EXPRESS OR IMPLIED, INCLUDING BUT NOT LIMITED TO THE WARRANTIES OF
  * MERCHANTABILITY, FITNESS FOR A PARTICULAR PURPOSE AND NONINFRINGEMENT.
@@ -53,42 +53,42 @@ import java.util.Hashtable;
 public class HeaderOrder implements java.util.Comparator<String>, Serializable {
 
     /**
-     * 
+     *
      */
     private static final long serialVersionUID = -5900038332559417655L;
 
     /**
      * This array defines the order of ordered keywords, except END (which we handle separately)
-     * 
+     *
      */
     @SuppressWarnings("deprecation")
-    private static final String[] ORDER = {SIMPLE.key(), XTENSION.key(), BITPIX.key(), NAXIS.key(), EXTEND.key(), 
+    private static final String[] ORDER = {SIMPLE.key(), XTENSION.key(), BITPIX.key(), NAXIS.key(), EXTEND.key(),
             PCOUNT.key(), GCOUNT.key(), TFIELDS.key(), BLOCKED.key(), THEAP.key()};
-   
+
     /**
      * Every keyword is assigned an index. Because NAXIS can have 999 NAXISn variants, we'll space
      * the indices of the ordered keys by 1000, to allow adding in 999 ordered variants between
      * the major slots.
-     * 
+     *
      */
     private static final int SPACING = 1000;
-    
+
     /**
      * Keys that do not need ordering get an index that comes after the last ordered key, but before END.
      */
     private static final int UNORDERED = SPACING * ORDER.length;
-    
+
     /**
      * The END keyword comes last, so assign it an index after unordered.
      */
     private static final int LAST = UNORDERED + SPACING;
-   
+
     /**
      * Hash table for looking up the index of ordered keys.
-     * 
+     *
      */
     private static final Hashtable<String, Integer> LOOKUP = new Hashtable<>();
-    
+
     // Initialize the hash lookup from the order array
     static {
         for (int i = 0; i < ORDER.length; i++) {
@@ -99,7 +99,7 @@ public class HeaderOrder implements java.util.Comparator<String>, Serializable {
     /**
      * Returns a virtual ordering index of a given keyword. Keywords with lower indices should
      * precede keywords that have higher indices. Order does not matter if the indices are the same.
-     * 
+     *
      * @param key   FITS keyword
      * @return      The ordering index of that key
      */
@@ -127,8 +127,8 @@ public class HeaderOrder implements java.util.Comparator<String>, Serializable {
         Integer i = LOOKUP.get(key);
         return i == null ? UNORDERED : i;
     }
-   
-    
+
+
     /**
      * Which order should the cards indexed by these keys be written out? This
      * method assumes that the arguments are either the FITS Header keywords as
@@ -148,5 +148,5 @@ public class HeaderOrder implements java.util.Comparator<String>, Serializable {
         return i1 < i2 ? -1 : 1;
     }
 
-    
+
 }

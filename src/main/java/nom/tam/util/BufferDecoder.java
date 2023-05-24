@@ -7,12 +7,12 @@ package nom.tam.util;
  * Copyright (C) 1996 - 2021 nom-tam-fits
  * %%
  * This is free and unencumbered software released into the public domain.
- * 
+ *
  * Anyone is free to copy, modify, publish, use, compile, sell, or
  * distribute this software, either in source code form or as a compiled
  * binary, for any purpose, commercial or non-commercial, and by any
  * means.
- * 
+ *
  * In jurisdictions that recognize copyright laws, the author or authors
  * of this software dedicate any and all copyright interest in the
  * software to the public domain. We make this dedication for the benefit
@@ -20,7 +20,7 @@ package nom.tam.util;
  * successors. We intend this dedication to be an overt act of
  * relinquishment in perpetuity of all present and future rights to this
  * software under copyright law.
- * 
+ *
  * THE SOFTWARE IS PROVIDED "AS IS", WITHOUT WARRANTY OF ANY KIND,
  * EXPRESS OR IMPLIED, INCLUDING BUT NOT LIMITED TO THE WARRANTIES OF
  * MERCHANTABILITY, FITNESS FOR A PARTICULAR PURPOSE AND NONINFRINGEMENT.
@@ -38,7 +38,7 @@ import java.io.IOException;
  * @deprecated This is a rusty rail implementation only, unsafe for general use. Use {@link FitsDecoder} instead, which
  *                 provides a similar function but in a more consistent way and with a less misleading name, or else use
  *                 {@link InputDecoder} as a base for implementing efficient custom decoding of binary inputs.
- * 
+ *
  * @see FitsDecoder
  */
 @Deprecated
@@ -100,11 +100,12 @@ public abstract class BufferDecoder extends FitsDecoder {
     /**
      * @deprecated No longer used internally, kept only for back-compatibility since it used to be a needed abstract
      *                 method. It's safest if you never override or call this method from your code!
-     * 
+     *
      * @param needBytes the number of byte we need available to decode the next element
-     * 
+     *
      * @throws IOException if the data could not be made available due to an IO error of the underlying input.
      */
+    @Deprecated
     protected void checkBuffer(int needBytes) throws IOException {
     }
 
@@ -117,27 +118,28 @@ public abstract class BufferDecoder extends FitsDecoder {
     /**
      * @deprecated No longer used internally, kept only for back-compatibility since it used to be a needed abstract
      *                 method.
-     * 
+     *
      * @param e the <code>EOFException</code> thrown by one of the read calls.
      * @param start the index of the first array element we wanted to fill
      * @param index the array index of the element during which the exception was thrown
      * @param elementSize the number of bytes per element we were processing
-     * 
+     *
      * @return the numer of bytes successfully processed from the input before the exception occurred.
-     * 
+     *
      * @throws EOFException if the input had no more data to process
      */
+    @Deprecated
     protected int eofCheck(EOFException e, int start, int index, int elementSize) throws EOFException {
         return (int) super.eofCheck(e, (index - start), -1) * elementSize;
     }
 
     /**
      * See the contract of {@link ArrayDataInput#readLArray(Object)}.
-     * 
+     *
      * @param o an array, to be populated
-     * 
+     *
      * @return the actual number of bytes read from the input, or -1 if already at the end-of-file.
-     * 
+     *
      * @throws IllegalArgumentException if the argument is not an array or if it contains an element that is not
      *             supported for decoding.
      * @throws IOException if there was an IO error reading from the input

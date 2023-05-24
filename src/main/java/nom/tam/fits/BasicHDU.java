@@ -1,5 +1,19 @@
 package nom.tam.fits;
 
+import java.io.IOException;
+import java.io.PrintStream;
+import java.util.Date;
+import java.util.logging.Level;
+import java.util.logging.Logger;
+
+import nom.tam.fits.header.Bitpix;
+import nom.tam.fits.header.IFitsHeader;
+import nom.tam.fits.header.Standard;
+import nom.tam.fits.utilities.FitsCheckSum;
+import nom.tam.util.ArrayDataInput;
+import nom.tam.util.ArrayDataOutput;
+import nom.tam.util.FitsOutput;
+
 /*
  * #%L
  * nom.tam FITS library
@@ -7,12 +21,12 @@ package nom.tam.fits;
  * Copyright (C) 2004 - 2021 nom-tam-fits
  * %%
  * This is free and unencumbered software released into the public domain.
- * 
+ *
  * Anyone is free to copy, modify, publish, use, compile, sell, or
  * distribute this software, either in source code form or as a compiled
  * binary, for any purpose, commercial or non-commercial, and by any
  * means.
- * 
+ *
  * In jurisdictions that recognize copyright laws, the author or authors
  * of this software dedicate any and all copyright interest in the
  * software to the public domain. We make this dedication for the benefit
@@ -20,7 +34,7 @@ package nom.tam.fits;
  * successors. We intend this dedication to be an overt act of
  * relinquishment in perpetuity of all present and future rights to this
  * software under copyright law.
- * 
+ *
  * THE SOFTWARE IS PROVIDED "AS IS", WITHOUT WARRANTY OF ANY KIND,
  * EXPRESS OR IMPLIED, INCLUDING BUT NOT LIMITED TO THE WARRANTIES OF
  * MERCHANTABILITY, FITNESS FOR A PARTICULAR PURPOSE AND NONINFRINGEMENT.
@@ -54,23 +68,9 @@ import static nom.tam.fits.header.Standard.REFERENC;
 import static nom.tam.fits.header.Standard.TELESCOP;
 import static nom.tam.util.LoggerHelper.getLogger;
 
-import java.io.IOException;
-import java.io.PrintStream;
-import java.util.Date;
-import java.util.logging.Level;
-import java.util.logging.Logger;
-
-import nom.tam.fits.header.Bitpix;
-import nom.tam.fits.header.IFitsHeader;
-import nom.tam.fits.header.Standard;
-import nom.tam.fits.utilities.FitsCheckSum;
-import nom.tam.util.ArrayDataInput;
-import nom.tam.util.ArrayDataOutput;
-import nom.tam.util.FitsOutput;
-
 /**
  * This abstract class is the parent of all HDU types. It provides basic functionality for an HDU.
- * 
+ *
  * @param <DataClass> the generic type of data contained in this HDU instance.
  */
 public abstract class BasicHDU<DataClass extends Data> implements FitsElement {
@@ -128,7 +128,7 @@ public abstract class BasicHDU<DataClass extends Data> implements FitsElement {
 
     /**
      * @deprecated Use {@link NullDataHDU} instead. Gets a HDU with no data, only header.
-     * 
+     *
      * @return an HDU without content
      */
     @Deprecated
@@ -139,9 +139,9 @@ public abstract class BasicHDU<DataClass extends Data> implements FitsElement {
     /**
      * Check that this is a valid header for the HDU. This method is static but should be implemented by all subclasses.
      * TODO: refactor this to be in a meta object so it can inherit normally also see {@link #isData(Object)}
-     * 
+     *
      * @param header to validate.
-     * 
+     *
      * @return <CODE>true</CODE> if this is a valid header.
      */
     public static boolean isHeader(Header header) {
@@ -152,7 +152,7 @@ public abstract class BasicHDU<DataClass extends Data> implements FitsElement {
      * @return if this object can be described as a FITS image. This method is static but should be implemented by all
      *             subclasses. TODO: refactor this to be in a meta object so it can inherit normally also see
      *             {@link #isHeader(Header)}
-     * 
+     *
      * @param o The Object being tested.
      */
     public static boolean isData(Object o) {
@@ -177,11 +177,11 @@ public abstract class BasicHDU<DataClass extends Data> implements FitsElement {
 
     /**
      * Add information to the header.
-     * 
+     *
      * @param key key to add to the header
      * @param val value for the key to add
      * @param comment comment for the key/value pair
-     * 
+     *
      * @throws HeaderCardException if the card does not follow the specification
      */
     public void addValue(String key, boolean val, String comment) throws HeaderCardException {
@@ -210,7 +210,7 @@ public abstract class BasicHDU<DataClass extends Data> implements FitsElement {
 
     /**
      * Return the name of the person who compiled the information in the data associated with this header.
-     * 
+     *
      * @return either <CODE>null</CODE> or a String object
      */
     public String getAuthor() {
@@ -222,19 +222,19 @@ public abstract class BasicHDU<DataClass extends Data> implements FitsElement {
      * of Fortran where there are true multidimensional arrays. In Java in a multidimensional array is an array of
      * arrays and the first index is the index that changes slowest. So at some point a client of the library is going
      * to have to invert the order. E.g., if I have a FITS file will
-     * 
+     *
      * <pre>
      * BITPIX=16
      * NAXIS1=10
      * NAXIS2=20
      * NAXIS3=30
      * </pre>
-     * 
+     *
      * this will be read into a Java array short[30][20][10] so it makes sense to me at least that the returned
      * dimensions are 30,20,10
-     * 
+     *
      * @return the dimensions of the axis.
-     * 
+     *
      * @throws FitsException if the axis are configured wrong.
      */
     public int[] getAxes() throws FitsException {
@@ -260,13 +260,13 @@ public abstract class BasicHDU<DataClass extends Data> implements FitsElement {
 
     /**
      * Return the Bitpix enum type for this HDU.
-     * 
+     *
      * @return The Bitpix enum object for this HDU.
-     * 
+     *
      * @throws FitsException if the BITPIX value in the header is absent or invalid.
-     * 
+     *
      * @since 1.16
-     * 
+     *
      * @see #getBitPix()
      * @see Header#setBitpix(Bitpix)
      */
@@ -299,7 +299,7 @@ public abstract class BasicHDU<DataClass extends Data> implements FitsElement {
 
     /**
      * Get the FITS file creation date as a <CODE>Date</CODE> object.
-     * 
+     *
      * @return either <CODE>null</CODE> or a Date object
      */
     public Date getCreationDate() {
@@ -313,7 +313,7 @@ public abstract class BasicHDU<DataClass extends Data> implements FitsElement {
 
     /**
      * Returns the data component of this HDU.
-     * 
+     *
      * @return the associated Data object
      */
     public DataClass getData() {
@@ -323,9 +323,9 @@ public abstract class BasicHDU<DataClass extends Data> implements FitsElement {
     /**
      * Get the equinox in years for the celestial coordinate system in which positions given in either the header or
      * data are expressed.
-     * 
+     *
      * @return either <CODE>null</CODE> or a String object
-     * 
+     *
      * @deprecated use {@link #getEquinox()} instead
      */
     @Deprecated
@@ -336,7 +336,7 @@ public abstract class BasicHDU<DataClass extends Data> implements FitsElement {
     /**
      * Get the equinox in years for the celestial coordinate system in which positions given in either the header or
      * data are expressed.
-     * 
+     *
      * @return either <CODE>null</CODE> or a String object
      */
     public double getEquinox() {
@@ -355,16 +355,16 @@ public abstract class BasicHDU<DataClass extends Data> implements FitsElement {
 
     /**
      * Returns the decoded checksum that is stored in the header of this HDU under the <code>CHECKSUM</code> keyword.
-     * 
+     *
      * @return the decoded FITS checksum value recorded in the HDU
-     * 
+     *
      * @throws FitsException if the HDU's header does not contain a <code>CHECKSUM</code> keyword.
-     * 
+     *
      * @see #calcChecksum()
      * @see Fits#calcChecksum(int)
      * @see #getStoredDatasum()
      * @see FitsCheckSum#getStoredDatasum(Header)
-     * 
+     *
      * @since 1.17
      */
     public long getStoredChecksum() throws FitsException {
@@ -374,16 +374,16 @@ public abstract class BasicHDU<DataClass extends Data> implements FitsElement {
     /**
      * Returns the FITS checksum for the HDU's data that is stored in the header of this HDU under the
      * <code>DATASUM</code> keyword.
-     * 
+     *
      * @return the FITS <code>DATASUM</code> value recorded in the HDU
-     * 
+     *
      * @throws FitsException if the HDU's header does not contain a <code>DATASUM</code> keyword.
-     * 
+     *
      * @see Data#calcChecksum()
      * @see Fits#calcDatasum(int)
      * @see #getStoredChecksum()
      * @see FitsCheckSum#getStoredChecksum(Header)
-     * 
+     *
      * @since 1.17
      */
     public long getStoredDatasum() throws FitsException {
@@ -399,14 +399,14 @@ public abstract class BasicHDU<DataClass extends Data> implements FitsElement {
      * Note, that this method will always calculate the checksum in memory. As a result it will load data in deferred
      * read mode into RAM for performaing the calculation. If you prefer to keep deferred read mode data unloaded, you
      * should use {@link Fits#setChecksum(int)} instead.
-     * 
+     *
      * @throws FitsException if there was an error serializing the HDU for the checksum computation.
-     * 
+     *
      * @see Fits#setChecksum(int)
      * @see FitsCheckSum#setChecksum(BasicHDU)
      * @see #getStoredChecksum()
      * @see #getStoredDatasum()
-     * 
+     *
      * @since 1.17
      */
     public void setChecksum() throws FitsException {
@@ -418,15 +418,15 @@ public abstract class BasicHDU<DataClass extends Data> implements FitsElement {
      * the FITS header. This method always computes the checksum from data fully loaded in memory. As such it will load
      * deferred read mode data into RAM to perform the calculation. If you prefer to leave the data in deferred read
      * mode, you can use {@link Fits#calcChecksum(int)} instead.
-     * 
+     *
      * @return the computed HDU checksum (in memory).
-     * 
+     *
      * @throws FitsException if there was an error while calculating the checksum
-     * 
+     *
      * @see Data#calcChecksum()
      * @see Fits#calcChecksum(int)
      * @see FitsCheckSum#checksum(BasicHDU)
-     * 
+     *
      * @since 1.17
      */
     public long calcChecksum() throws FitsException {
@@ -442,9 +442,9 @@ public abstract class BasicHDU<DataClass extends Data> implements FitsElement {
 
     /**
      * get a builder for filling the header cards using the builder pattern.
-     * 
+     *
      * @param key the key for the first card.
-     * 
+     *
      * @return the builder for header cards.
      */
     public HeaderCardBuilder card(IFitsHeader key) {
@@ -453,7 +453,7 @@ public abstract class BasicHDU<DataClass extends Data> implements FitsElement {
 
     /**
      * Get the name of the instrument which was used to acquire the data in this FITS file.
-     * 
+     *
      * @return either <CODE>null</CODE> or a String object
      */
     public String getInstrument() {
@@ -474,7 +474,7 @@ public abstract class BasicHDU<DataClass extends Data> implements FitsElement {
 
     /**
      * Return the minimum valid value in the array.
-     * 
+     *
      * @return minimum value.
      */
     public double getMaximumValue() {
@@ -483,7 +483,7 @@ public abstract class BasicHDU<DataClass extends Data> implements FitsElement {
 
     /**
      * Return the minimum valid value in the array.
-     * 
+     *
      * @return minimum value.
      */
     public double getMinimumValue() {
@@ -492,7 +492,7 @@ public abstract class BasicHDU<DataClass extends Data> implements FitsElement {
 
     /**
      * Get the name of the observed object in this FITS file.
-     * 
+     *
      * @return either <CODE>null</CODE> or a String object
      */
     public String getObject() {
@@ -501,7 +501,7 @@ public abstract class BasicHDU<DataClass extends Data> implements FitsElement {
 
     /**
      * Get the FITS file observation date as a <CODE>Date</CODE> object.
-     * 
+     *
      * @return either <CODE>null</CODE> or a Date object
      */
     public Date getObservationDate() {
@@ -515,7 +515,7 @@ public abstract class BasicHDU<DataClass extends Data> implements FitsElement {
 
     /**
      * Get the name of the person who acquired the data in this FITS file.
-     * 
+     *
      * @return either <CODE>null</CODE> or a String object
      */
     public String getObserver() {
@@ -524,7 +524,7 @@ public abstract class BasicHDU<DataClass extends Data> implements FitsElement {
 
     /**
      * Get the name of the organization which created this FITS file.
-     * 
+     *
      * @return either <CODE>null</CODE> or a String object
      */
     public String getOrigin() {
@@ -537,7 +537,7 @@ public abstract class BasicHDU<DataClass extends Data> implements FitsElement {
 
     /**
      * Return the citation of a reference where the data associated with this header are published.
-     * 
+     *
      * @return either <CODE>null</CODE> or a String object
      */
     public String getReference() {
@@ -559,7 +559,7 @@ public abstract class BasicHDU<DataClass extends Data> implements FitsElement {
 
     /**
      * Get the name of the telescope which was used to acquire the data in this FITS file.
-     * 
+     *
      * @return either <CODE>null</CODE> or a String object
      */
     public String getTelescope() {
@@ -568,9 +568,9 @@ public abstract class BasicHDU<DataClass extends Data> implements FitsElement {
 
     /**
      * Get the String value associated with <CODE>keyword</CODE>.
-     * 
+     *
      * @param keyword the FITS keyword
-     * 
+     *
      * @return either <CODE>null</CODE> or a String with leading/trailing blanks stripped.
      */
     public String getTrimmedString(String keyword) {
@@ -583,9 +583,9 @@ public abstract class BasicHDU<DataClass extends Data> implements FitsElement {
 
     /**
      * Get the String value associated with <CODE>keyword</CODE>.
-     * 
+     *
      * @param keyword the FITS keyword
-     * 
+     *
      * @return either <CODE>null</CODE> or a String with leading/trailing blanks stripped.
      */
     public String getTrimmedString(IFitsHeader keyword) {
@@ -594,7 +594,7 @@ public abstract class BasicHDU<DataClass extends Data> implements FitsElement {
 
     /**
      * Print out some information about this HDU.
-     * 
+     *
      * @param stream the printstream to write the info on
      */
     public abstract void info(PrintStream stream);
@@ -614,13 +614,12 @@ public abstract class BasicHDU<DataClass extends Data> implements FitsElement {
 
     @Override
     public void rewrite() throws FitsException, IOException {
-        if (rewriteable()) {
-            myHeader.rewrite();
-            if (!myData.isDeferred()) {
-                myData.rewrite();
-            }
-        } else {
+        if (!rewriteable()) {
             throw new FitsException("Invalid attempt to rewrite HDU");
+        }
+        myHeader.rewrite();
+        if (!myData.isDeferred()) {
+            myData.rewrite();
         }
     }
 
@@ -631,9 +630,9 @@ public abstract class BasicHDU<DataClass extends Data> implements FitsElement {
 
     /**
      * Indicate that an HDU is the first element of a FITS file.
-     * 
+     *
      * @param value value to set
-     * 
+     *
      * @throws FitsException if the operation failed
      */
     void setPrimaryHDU(boolean value) throws FitsException {
@@ -648,9 +647,9 @@ public abstract class BasicHDU<DataClass extends Data> implements FitsElement {
      * Returns the canonical (expected) value for the XTENSION keywords for this type of HDU. Concrete HDU
      * implementations should override this method as appropriate. As of FITS version 4, only the following XTENSION
      * values are recognised: 'IMAGE', 'TABLE', and 'BINTABLE'.
-     * 
+     *
      * @return The value to use for the XTENSION keyword.
-     * 
+     *
      * @since 1.18
      */
     protected String getCanonicalXtension() {

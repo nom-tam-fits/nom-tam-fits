@@ -5,12 +5,12 @@
  * Copyright (C) 2004 - 2021 nom-tam-fits
  * %%
  * This is free and unencumbered software released into the public domain.
- * 
+ *
  * Anyone is free to copy, modify, publish, use, compile, sell, or
  * distribute this software, either in source code form or as a compiled
  * binary, for any purpose, commercial or non-commercial, and by any
  * means.
- * 
+ *
  * In jurisdictions that recognize copyright laws, the author or authors
  * of this software dedicate any and all copyright interest in the
  * software to the public domain. We make this dedication for the benefit
@@ -18,7 +18,7 @@
  * successors. We intend this dedication to be an overt act of
  * relinquishment in perpetuity of all present and future rights to this
  * software under copyright law.
- * 
+ *
  * THE SOFTWARE IS PROVIDED "AS IS", WITHOUT WARRANTY OF ANY KIND,
  * EXPRESS OR IMPLIED, INCLUDING BUT NOT LIMITED TO THE WARRANTIES OF
  * MERCHANTABILITY, FITNESS FOR A PARTICULAR PURPOSE AND NONINFRINGEMENT.
@@ -42,7 +42,7 @@ import java.io.OutputStream;
  * <p>
  * Version 2.0 -- October 30, 2021: Completely overhauled, with new name and hierarchy. Performance is 2-4 times better
  * than before. (Attila Kovacs)
- * 
+ *
  * @see FitsInputStream
  * @see FitsFile
  */
@@ -57,7 +57,7 @@ public class FitsOutputStream extends ArrayOutputStream implements FitsOutput {
 
     /**
      * Use the BufferedOutputStream constructor
-     * 
+     *
      * @param o An open output stream.
      */
     public FitsOutputStream(OutputStream o) {
@@ -66,7 +66,7 @@ public class FitsOutputStream extends ArrayOutputStream implements FitsOutput {
 
     /**
      * Use the BufferedOutputStream constructor
-     * 
+     *
      * @param o An open output stream.
      * @param bufLength The buffer size.
      */
@@ -199,11 +199,11 @@ public class FitsOutputStream extends ArrayOutputStream implements FitsOutput {
 
     /**
      * Deprecated use {@link #writeArray(Object)}.
-     * 
+     *
      * @param o The object to be written.
-     * 
+     *
      * @throws IOException if one of the underlying write operations failed
-     * 
+     *
      * @deprecated use {@link #writeArray(Object)} instead
      */
     @Deprecated

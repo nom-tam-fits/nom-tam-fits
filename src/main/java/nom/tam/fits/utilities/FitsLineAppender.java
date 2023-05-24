@@ -9,12 +9,12 @@ import nom.tam.fits.HeaderCard;
  * Copyright (C) 1996 - 2021 nom-tam-fits
  * %%
  * This is free and unencumbered software released into the public domain.
- * 
+ *
  * Anyone is free to copy, modify, publish, use, compile, sell, or
  * distribute this software, either in source code form or as a compiled
  * binary, for any purpose, commercial or non-commercial, and by any
  * means.
- * 
+ *
  * In jurisdictions that recognize copyright laws, the author or authors
  * of this software dedicate any and all copyright interest in the
  * software to the public domain. We make this dedication for the benefit
@@ -22,7 +22,7 @@ import nom.tam.fits.HeaderCard;
  * successors. We intend this dedication to be an overt act of
  * relinquishment in perpetuity of all present and future rights to this
  * software under copyright law.
- * 
+ *
  * THE SOFTWARE IS PROVIDED "AS IS", WITHOUT WARRANTY OF ANY KIND,
  * EXPRESS OR IMPLIED, INCLUDING BUT NOT LIMITED TO THE WARRANTIES OF
  * MERCHANTABILITY, FITNESS FOR A PARTICULAR PURPOSE AND NONINFRINGEMENT.
@@ -38,9 +38,9 @@ import nom.tam.fits.HeaderCard;
  * in the line and will limit it to 80 characters. A write will never cross the
  * line border but a write when the line is at position 80 will start a new
  * line.
- * 
+ *
  * @author Richard van Nieuwenhoven
- * 
+ *
  * @deprecated Was needed by {@link FitsLineAppender} only, which itself is deprecated in
  *              favor of the package-level <code>nom.tam.fits.HeaderCardFormatter</code>.
  */
@@ -72,7 +72,7 @@ public class FitsLineAppender {
 
     /**
      * append a character to the fits line.
-     * 
+     *
      * @param character
      *            the character to append to the line.
      */
@@ -83,7 +83,7 @@ public class FitsLineAppender {
 
     /**
      * Append a sub-string to this line.
-     * 
+     *
      * @param stringValue
      *            the sub string to append.
      */
@@ -95,7 +95,7 @@ public class FitsLineAppender {
     /**
      * append a string to the fits line, but limit the append to the line
      * length. rest of the string will be silently truncated.
-     * 
+     *
      * @param string
      *            the string to append
      */
@@ -114,7 +114,7 @@ public class FitsLineAppender {
     /**
      * append a string to the buffer, replacing all occurrences of a character
      * with an other.
-     * 
+     *
      * @param key
      *            the string to write
      * @param toReplace
@@ -139,7 +139,7 @@ public class FitsLineAppender {
      * append a number of spaces to the line, limited to the line length! This
      * will only be done if the line is already started, so attention when a
      * line is still empty this method will have no effect on empty lines.
-     * 
+     *
      * @param count
      *            the number of spaces to write.
      */

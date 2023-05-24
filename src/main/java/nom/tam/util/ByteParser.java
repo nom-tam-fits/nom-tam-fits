@@ -9,12 +9,12 @@ import edu.umd.cs.findbugs.annotations.SuppressFBWarnings;
  * Copyright (C) 2004 - 2021 nom-tam-fits
  * %%
  * This is free and unencumbered software released into the public domain.
- * 
+ *
  * Anyone is free to copy, modify, publish, use, compile, sell, or
  * distribute this software, either in source code form or as a compiled
  * binary, for any purpose, commercial or non-commercial, and by any
  * means.
- * 
+ *
  * In jurisdictions that recognize copyright laws, the author or authors
  * of this software dedicate any and all copyright interest in the
  * software to the public domain. We make this dedication for the benefit
@@ -22,7 +22,7 @@ import edu.umd.cs.findbugs.annotations.SuppressFBWarnings;
  * successors. We intend this dedication to be an overt act of
  * relinquishment in perpetuity of all present and future rights to this
  * software under copyright law.
- * 
+ *
  * THE SOFTWARE IS PROVIDED "AS IS", WITHOUT WARRANTY OF ANY KIND,
  * EXPRESS OR IMPLIED, INCLUDING BUT NOT LIMITED TO THE WARRANTIES OF
  * MERCHANTABILITY, FITNESS FOR A PARTICULAR PURPOSE AND NONINFRINGEMENT.
@@ -35,10 +35,10 @@ import edu.umd.cs.findbugs.annotations.SuppressFBWarnings;
 
 /**
  * @deprecated This class should not be exposed in the public API and should
- *  be for internal use only in ASCII tables. Also, it may have overlapping 
+ *  be for internal use only in ASCII tables. Also, it may have overlapping
  *  functionality with other classes, which should probably be eliminated for
- *  simplicity's sake (and thus less chance of nasty bugs). 
- * 
+ *  simplicity's sake (and thus less chance of nasty bugs).
+ *
  * This class provides routines for efficient parsing of data stored in a byte
  * array. This routine is optimized (in theory at least!) for efficiency rather
  * than accuracy. The values read in for doubles or floats may differ in the
@@ -114,7 +114,7 @@ public class ByteParser {
 
     /**
      * Construct a parser.
-     * 
+     *
      * @param input
      *            The byte array to be parsed. Note that the array can be
      *            re-used by refilling its contents and resetting the offset.
@@ -138,7 +138,8 @@ public class ByteParser {
             this.foundSign = true;
             this.offset++;
             return 1;
-        } else if (this.input[this.offset] == '-') {
+        }
+        if (this.input[this.offset] == '-') {
             this.foundSign = true;
             this.offset++;
             return -1;
@@ -153,7 +154,7 @@ public class ByteParser {
      * integers (with reduced precision) such as
      * 111111111111111111111111111111111111111111. Note that this routine does
      * set numberLength.
-     * 
+     *
      * @param length
      *            The maximum number of characters to use.
      */
@@ -221,7 +222,7 @@ public class ByteParser {
     /**
      * Read in the buffer until a double is read. This will read the entire
      * buffer if fillFields is set.
-     * 
+     *
      * @return The value found.
      * @throws FormatException
      *             if the double was in an unknown format
@@ -311,7 +312,7 @@ public class ByteParser {
                     } else {
                         number =
                                 ByteParser.EXPONENT_DENORMALISATION_FACTOR
-                                        * (number * Math.pow(ByteParser.NUMBER_BASE_DOUBLE, exponent * sign + ByteParser.EXPONENT_DENORMALISATION_CORR_LIMIT * -1));
+                                * (number * Math.pow(ByteParser.NUMBER_BASE_DOUBLE, exponent * sign + ByteParser.EXPONENT_DENORMALISATION_CORR_LIMIT * -1));
                     }
                 }
             }
@@ -442,7 +443,7 @@ public class ByteParser {
 
     /**
      * Get the current offset.
-     * 
+     *
      * @return The current offset within the buffer.
      */
     public int getOffset() {
@@ -476,7 +477,7 @@ public class ByteParser {
 
     /**
      * Set the buffer for the parser.
-     * 
+     *
      * @param buf
      *            buffer to set
      */
@@ -488,7 +489,7 @@ public class ByteParser {
 
     /**
      * Set the offset into the array.
-     * 
+     *
      * @param offset
      *            The desired offset from the beginning of the array.
      */
@@ -498,7 +499,7 @@ public class ByteParser {
 
     /**
      * Skip bytes in the buffer.
-     * 
+     *
      * @param nBytes
      *            number of bytes to skip
      */
@@ -508,7 +509,7 @@ public class ByteParser {
 
     /**
      * Skip white space. This routine skips with space in the input .
-     * 
+     *
      * @return the number of character skipped. White space is defined as ' ',
      *         '\t', '\n' or '\r'
      * @param length

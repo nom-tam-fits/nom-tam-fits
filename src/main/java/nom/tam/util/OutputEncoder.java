@@ -5,12 +5,12 @@
  * Copyright (C) 1996 - 2021 nom-tam-fits
  * %%
  * This is free and unencumbered software released into the public domain.
- * 
+ *
  * Anyone is free to copy, modify, publish, use, compile, sell, or
  * distribute this software, either in source code form or as a compiled
  * binary, for any purpose, commercial or non-commercial, and by any
  * means.
- * 
+ *
  * In jurisdictions that recognize copyright laws, the author or authors
  * of this software dedicate any and all copyright interest in the
  * software to the public domain. We make this dedication for the benefit
@@ -18,7 +18,7 @@
  * successors. We intend this dedication to be an overt act of
  * relinquishment in perpetuity of all present and future rights to this
  * software under copyright law.
- * 
+ *
  * THE SOFTWARE IS PROVIDED "AS IS", WITHOUT WARRANTY OF ANY KIND,
  * EXPRESS OR IMPLIED, INCLUDING BUT NOT LIMITED TO THE WARRANTIES OF
  * MERCHANTABILITY, FITNESS FOR A PARTICULAR PURPOSE AND NONINFRINGEMENT.
@@ -42,11 +42,11 @@ import nom.tam.util.type.ElementType;
 
 /**
  * Efficient base class for encoding Java arrays into binary output.
- * 
+ *
  * @author Attila Kovacs
- * 
+ *
  * @since 1.16
- * 
+ *
  * @see InputDecoder
  * @see ArrayDataFile
  * @see ArrayInputStream
@@ -78,7 +78,7 @@ public abstract class OutputEncoder {
     /**
      * Instantiates a new Java-to-binary encoder for arrays. To be used by
      * subclass implementations only
-     * 
+     *
      * @see #setOutput(OutputWriter)
      */
     protected OutputEncoder() {
@@ -88,7 +88,7 @@ public abstract class OutputEncoder {
     /**
      * Instantiates a new Java-to-binary encoder for arrays, writing encoded data
      * to the specified output.
-     * 
+     *
      * @param o the output to which encoded data is to be written.
      */
     public OutputEncoder(OutputWriter o) {
@@ -99,7 +99,7 @@ public abstract class OutputEncoder {
     /**
      * Sets the output to which encoded data should be written (directly or from
      * the conversion buffer).
-     * 
+     *
      * @param o the new output to which encoded data is to be written.
      */
     protected synchronized void setOutput(OutputWriter o) {
@@ -111,9 +111,9 @@ public abstract class OutputEncoder {
      * output. It does not include bytes written directly (unencoded) to the
      * output, such as via {@link #write(int)} or
      * {@link #write(byte[], int, int)}.
-     * 
+     *
      * @return the number of encoded bytes written to the output.
-     * 
+     *
      * @see RandomAccess#getFilePointer()
      */
     public synchronized long getCount() {
@@ -124,7 +124,7 @@ public abstract class OutputEncoder {
      * Returns the buffer that is used for conversion, which can be used to
      * collate more elements for writing before bulk flushing data to the output
      * (see {@link OutputBuffer#flush()}).
-     * 
+     *
      * @return the conversion buffer used by this encoder.
      */
     protected OutputBuffer getOutputBuffer() {
@@ -136,10 +136,10 @@ public abstract class OutputEncoder {
      * element conversion, and flushes the buffer as necessary to make room.
      * Subclass implementations should call this method before attempting a
      * conversion operation.
-     * 
+     *
      * @param bytes the size of an element we will want to convert. It cannot
      *            exceed the size of the conversion buffer.
-     * 
+     *
      * @throws IOException if the conversion buffer could not be flushed to the
      *             output to make room for the new conversion.
      */
@@ -155,7 +155,7 @@ public abstract class OutputEncoder {
 
     /**
      * Flushes the contents of the conversion buffer to the underlying output.
-     * 
+     *
      * @throws IOException if there was an IO error writing the contents of this
      *             buffer to the output.
      */
@@ -171,11 +171,11 @@ public abstract class OutputEncoder {
      * {@link java.io.DataOutputStream#write(int)}. Unencoded bytes written by
      * this method are not reflected in the value returned by
      * {@link #getCount()}.
-     * 
+     *
      * @param b the (unsigned) byte value to write.
-     * 
+     *
      * @throws IOException if there was an underlying IO error
-     * 
+     *
      * @see java.io.DataOutputStream#write(int)
      */
     protected synchronized void write(int b) throws IOException {
@@ -189,13 +189,13 @@ public abstract class OutputEncoder {
      * {@link java.io.DataOutputStream#write(byte[], int, int)}. The number of
      * unencoded bytes written by this method are not reflected in the value
      * returned by {@link #getCount()}.
-     * 
+     *
      * @param b the buffer
      * @param start the starting buffer index
      * @param length the number of bytes to write.
-     * 
+     *
      * @throws IOException if there was an underlying IO error
-     * 
+     *
      * @see java.io.DataOutputStream#write(byte[], int, int)
      */
     protected synchronized void write(byte[] b, int start, int length) throws IOException {
@@ -207,15 +207,15 @@ public abstract class OutputEncoder {
      * Writes the contents of a Java array to the output translating the data to
      * the required binary representation. The argument may be any generic Java
      * array, including heterogeneous arrays of arrays.
-     * 
+     *
      * @param o the Java array, including heterogeneous arrays of arrays. If
      *            <code>null</code> nothing will be written to the output.
-     * 
+     *
      * @throws IOException if there was an IO error writing to the output
      * @throws IllegalArgumentException if the supplied object is not a Java
      *             array or if it contains Java types that are not supported by
      *             the decoder.
-     * 
+     *
      * @see ArrayDataOutput#writeArray(Object)
      */
     public abstract void writeArray(Object o) throws IOException, IllegalArgumentException;
@@ -234,28 +234,28 @@ public abstract class OutputEncoder {
      * needs to call the final {@link #flush()}, to ensure that all elements
      * bufferes so far are written to the output.
      * </p>
-     * 
+     *
      * <pre>
      * short[] shortArray = new short[100];
      * float[] floaTarray = new float[48];
-     * 
+     *
      * // populate the arrays with data...
-     * 
+     *
      * // Convert to binary representation using the local
      * // conversion buffer.
      * ConversionBuffer buf = getBuffer();
-     * 
+     *
      * // Convert as much data as we want to the output format...
      * buf.putDouble(1.0);
      * buf.putInt(-1);
      * buf.put(shortArray, 0, shortArray.length);
      * buf.put(floatArray, 0, floatArray.length);
-     * 
+     *
      * // Once we are done with a chunk of data, we need to
      * // make sure all it written to the output
      * buf.flush();
      * </pre>
-     * 
+     *
      * @author Attila Kovacs
      */
     protected final class OutputBuffer {
@@ -279,9 +279,9 @@ public abstract class OutputEncoder {
         /**
          * Sets the byte order of the binary representation to which data is
          * encoded.
-         * 
+         *
          * @param order the new byte order
-         * 
+         *
          * @see #byteOrder()
          * @see ByteBuffer#order(ByteOrder)
          */
@@ -292,9 +292,9 @@ public abstract class OutputEncoder {
         /**
          * Returns the current byte order of the binary representation to which
          * data is encoded.
-         * 
+         *
          * @return the byte order
-         * 
+         *
          * @see #setByteOrder(ByteOrder)
          * @see ByteBuffer#order()
          */
@@ -324,12 +324,12 @@ public abstract class OutputEncoder {
          * Puts a single byte into the conversion buffer, making space for it as
          * needed by flushing the current buffer contents to the output as
          * necessary.
-         * 
+         *
          * @param b the byte value
-         * 
+         *
          * @throws IOException if the conversion buffer could not be flushed to
          *             the output to make room for the new conversion.
-         * 
+         *
          * @see #flush()
          */
         protected void putByte(byte b) throws IOException {
@@ -342,12 +342,12 @@ public abstract class OutputEncoder {
          * Puts a 2-byte integer into the conversion buffer, making space for it
          * as needed by flushing the current buffer contents to the output as
          * necessary.
-         * 
+         *
          * @param s the 16-bit integer value
-         * 
+         *
          * @throws IOException if the conversion buffer could not be flushed to
          *             the output to make room for the new conversion.
-         * 
+         *
          * @see #flush()
          */
         protected void putShort(short s) throws IOException {
@@ -360,12 +360,12 @@ public abstract class OutputEncoder {
          * Puts a 4-byte integer into the conversion buffer, making space for it
          * as needed by flushing the current buffer contents to the output as
          * necessary.
-         * 
+         *
          * @param i the 32-bit integer value
-         * 
+         *
          * @throws IOException if the conversion buffer could not be flushed to
          *             the output to make room for the new conversion.
-         * 
+         *
          * @see #flush()
          */
         protected void putInt(int i) throws IOException {
@@ -378,12 +378,12 @@ public abstract class OutputEncoder {
          * Puts an 8-byte integer into the conversion buffer, making space for it
          * as needed by flushing the current buffer contents to the output as
          * necessary.
-         * 
+         *
          * @param l the 64-bit integer value
-         * 
+         *
          * @throws IOException if the conversion buffer could not be flushed to
          *             the output to make room for the new conversion.
-         * 
+         *
          * @see #flush()
          */
         protected void putLong(long l) throws IOException {
@@ -396,12 +396,12 @@ public abstract class OutputEncoder {
          * Puts an 4-byte single-precision floating point value into the
          * conversion buffer, making space for it as needed by flushing the
          * current buffer contents to the output as necessary.
-         * 
+         *
          * @param f the 32-bit single-precision floating point value
-         * 
+         *
          * @throws IOException if the conversion buffer could not be flushed to
          *             the output to make room for the new conversion.
-         * 
+         *
          * @see #flush()
          */
         protected void putFloat(float f) throws IOException {
@@ -414,12 +414,12 @@ public abstract class OutputEncoder {
          * Puts an 8-byte double-precision floating point value into the
          * conversion buffer, making space for it as needed by flushing the
          * current buffer contents to the output as necessary.
-         * 
+         *
          * @param d the 64-bit double-precision floating point value
-         * 
+         *
          * @throws IOException if the conversion buffer could not be flushed to
          *             the output to make room for the new conversion.
-         * 
+         *
          * @see #flush()
          */
         protected void putDouble(double d) throws IOException {
@@ -431,11 +431,11 @@ public abstract class OutputEncoder {
         /**
          * Puts an array of bytes into the conversion buffer, flushing the buffer
          * intermittently as necessary to make room as it goes.
-         * 
+         *
          * @param src an array of byte values
          * @param start the index of the first element to convert
          * @param length the number of elements to convert
-         * 
+         *
          * @throws IOException if the conversion buffer could not be flushed to
          *             the output to make room for the new conversion.
          */
@@ -461,11 +461,11 @@ public abstract class OutputEncoder {
         /**
          * Puts an array of 16-bit integers into the conversion buffer, flushing
          * the buffer intermittently as necessary to make room as it goes.
-         * 
+         *
          * @param src an array of 16-bit integer values
          * @param start the index of the first element to convert
          * @param length the number of elements to convert
-         * 
+         *
          * @throws IOException if the conversion buffer could not be flushed to
          *             the output to make room for the new conversion.
          */
@@ -480,11 +480,11 @@ public abstract class OutputEncoder {
         /**
          * Puts an array of 32-bit integers into the conversion buffer, flushing
          * the buffer intermittently as necessary to make room as it goes.
-         * 
+         *
          * @param src an array of 32-bit integer values
          * @param start the index of the first element to convert
          * @param length the number of elements to convert
-         * 
+         *
          * @throws IOException if the conversion buffer could not be flushed to
          *             the output to make room for the new conversion.
          */
@@ -499,11 +499,11 @@ public abstract class OutputEncoder {
         /**
          * Puts an array of 64-bit integers into the conversion buffer, flushing
          * the buffer intermittently as necessary to make room as it goes.
-         * 
+         *
          * @param src an array of 64-bit integer values
          * @param start the index of the first element to convert
          * @param length the number of elements to convert
-         * 
+         *
          * @throws IOException if the conversion buffer could not be flushed to
          *             the output to make room for the new conversion.
          */
@@ -519,11 +519,11 @@ public abstract class OutputEncoder {
          * Puts an array of 32-bit single-precision floating point values into
          * the conversion buffer, flushing the buffer intermittently as necessary
          * to make room as it goes.
-         * 
+         *
          * @param src an array of 32-bit single-precision floating point values
          * @param start the index of the first element to convert
          * @param length the number of elements to convert
-         * 
+         *
          * @throws IOException if the conversion buffer could not be flushed to
          *             the output to make room for the new conversion.
          */
@@ -539,11 +539,11 @@ public abstract class OutputEncoder {
          * Puts an array of 64-bit double-precision floating point values into
          * the conversion buffer, flushing the buffer intermittently as necessary
          * to make room as it goes.
-         * 
+         *
          * @param src an array of 64-bit double-precision floating point values
          * @param start the index of the first element to convert
          * @param length the number of elements to convert
-         * 
+         *
          * @throws IOException if the conversion buffer could not be flushed to
          *             the output to make room for the new conversion.
          */
@@ -558,12 +558,12 @@ public abstract class OutputEncoder {
         /**
          * Puts an array of 64-bit values into the conversion buffer, flushing
          * the buffer intermittently as necessary to make room as it goes.
-         * 
+         *
          * @param the FITS element type of the the 1D array
          * @param src a 1D array of values of the specified element type
          * @param start the index of the first element to convert
          * @param length the number of elements to convert
-         * 
+         *
          * @throws IOException if the conversion buffer could not be flushed to
          *             the output to make room for the new conversion.
          */

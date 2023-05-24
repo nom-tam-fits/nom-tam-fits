@@ -5,12 +5,12 @@
  * Copyright (C) 1996 - 2021 nom-tam-fits
  * %%
  * This is free and unencumbered software released into the public domain.
- * 
+ *
  * Anyone is free to copy, modify, publish, use, compile, sell, or
  * distribute this software, either in source code form or as a compiled
  * binary, for any purpose, commercial or non-commercial, and by any
  * means.
- * 
+ *
  * In jurisdictions that recognize copyright laws, the author or authors
  * of this software dedicate any and all copyright interest in the
  * software to the public domain. We make this dedication for the benefit
@@ -18,7 +18,7 @@
  * successors. We intend this dedication to be an overt act of
  * relinquishment in perpetuity of all present and future rights to this
  * software under copyright law.
- * 
+ *
  * THE SOFTWARE IS PROVIDED "AS IS", WITHOUT WARRANTY OF ANY KIND,
  * EXPRESS OR IMPLIED, INCLUDING BUT NOT LIMITED TO THE WARRANTIES OF
  * MERCHANTABILITY, FITNESS FOR A PARTICULAR PURPOSE AND NONINFRINGEMENT.
@@ -41,9 +41,9 @@ import nom.tam.util.type.ElementType;
 
 /**
  * Class for encoding select Java arrays into FITS binary format.
- * 
+ *
  * @since 1.16
- * 
+ *
  * @see FitsDecoder
  * @see FitsFile
  * @see FitsInputStream
@@ -75,7 +75,7 @@ public class FitsEncoder extends OutputEncoder {
     /**
      * Instantiates a new FITS binary data encoder for converting Java arrays
      * into FITS data representations
-     * 
+     *
      * @param o the FITS output.
      */
     public FitsEncoder(OutputWriter o) {
@@ -101,9 +101,9 @@ public class FitsEncoder extends OutputEncoder {
     /**
      * @deprecated Low-level reading/writing should be handled internally as
      *                 arrays by this library only.
-     * 
+     *
      * @param b a boolean value or <code>null</code>.
-     * 
+     *
      * @throws IOException if there was an IO error writing to the output.
      */
     @Deprecated
@@ -114,9 +114,9 @@ public class FitsEncoder extends OutputEncoder {
     /**
      * @deprecated Low-level reading/writing should be handled internally as
      *                 arrays by this library only.
-     * 
+     *
      * @param c An ASCII character.
-     * 
+     *
      * @throws IOException if there was an IO error writing to the output.
      */
     @Deprecated
@@ -136,16 +136,16 @@ public class FitsEncoder extends OutputEncoder {
      * to the output. Note, the this call may flush the contents of the
      * conversion buffer to the output if it needs more conversion space than
      * what is avaiable.
-     * 
+     *
      * @param b the Java array containing the values
      * @param start the offset in the array from where to start converting
      *            values.
      * @param length the number of values to convert to FITS representation
-     * 
+     *
      * @throws IOException if there was an IO error while trying to flush the
      *             conversion buffer to the stream before all elements were
      *             converted.
-     * 
+     *
      * @see #byteForBoolean(Boolean)
      * @see #put(Boolean[], int, int)
      * @see #write(boolean[], int, int)
@@ -171,16 +171,16 @@ public class FitsEncoder extends OutputEncoder {
      * to the output. Note, the this call may flush the contents of the
      * conversion buffer to the output if it needs more conversion space than
      * what is avaiable.
-     * 
+     *
      * @param b the Java array containing the values
      * @param start the offset in the array from where to start converting
      *            values.
      * @param length the number of values to convert to FITS representation
-     * 
+     *
      * @throws IOException if there was an IO error while trying to flush the
      *             conversion buffer to the stream before all elements were
      *             converted.
-     * 
+     *
      * @see #byteForBoolean(Boolean)
      * @see #put(boolean[], int, int)
      * @see #write(Boolean[], int, int)
@@ -206,16 +206,16 @@ public class FitsEncoder extends OutputEncoder {
      * to the output. Note, the this call may flush the contents of the
      * conversion buffer to the output if it needs more conversion space than
      * what is avaiable.
-     * 
+     *
      * @param b the Java array containing the values
      * @param start the offset in the array from where to start converting
      *            values.
      * @param length the number of values to convert to FITS representation
-     * 
+     *
      * @throws IOException if there was an IO error while trying to flush the
      *             conversion buffer to the stream before all elements were
      *             converted.
-     * 
+     *
      * @see #write(char[], int, int)
      * @see #put(String)
      */
@@ -252,16 +252,16 @@ public class FitsEncoder extends OutputEncoder {
      * to the output. Note, the this call may flush the contents of the
      * conversion buffer to the output if it needs more conversion space than
      * what is avaiable.
-     * 
+     *
      * @param b the Java array containing the values
      * @param start the offset in the array from where to start converting
      *            values.
      * @param length the number of values to convert to FITS representation
-     * 
+     *
      * @throws IOException if there was an IO error while trying to flush the
      *             conversion buffer to the stream before all elements were
      *             converted.
-     * 
+     *
      * @see #put(String)
      */
     private void put(String[] str, int start, int length) throws IOException {
@@ -279,13 +279,13 @@ public class FitsEncoder extends OutputEncoder {
      * to ensure that everything is written to the output. Note, the this call
      * may flush the contents of the conversion buffer to the output if it needs
      * more conversion space than what is avaiable.
-     * 
+     *
      * @param str the Java string
-     * 
+     *
      * @throws IOException if there was an IO error while trying to flush the
      *             conversion buffer to the stream before all elements were
      *             converted.
-     * 
+     *
      * @see #writeBytes(String)
      */
     void put(String str) throws IOException {
@@ -300,11 +300,11 @@ public class FitsEncoder extends OutputEncoder {
      * contract of this method. In FITS, <code>true</code> values are represented
      * by the ASCII byte for 'T', whereas <code>false</code> is represented by
      * the ASCII byte for 'F'.
-     * 
+     *
      * @param b array of booleans.
      * @param start the index of the first element in the array to write
      * @param length number of array elements to write
-     * 
+     *
      * @throws IOException if there was an IO error writing to the output
      */
     protected synchronized void write(boolean[] b, int start, int length) throws IOException {
@@ -318,11 +318,11 @@ public class FitsEncoder extends OutputEncoder {
      * by the ASCII byte for 'T', <code>false</code> is represented by the ASCII
      * byte for 'F', while <code>null</code> values are represented by the value
      * 0.
-     * 
+     *
      * @param b array of booleans.
      * @param start the index of the first element in the array to write
      * @param length number of array elements to write
-     * 
+     *
      * @throws IOException if there was an IO error writing to the output
      */
     protected synchronized void write(Boolean[] b, int start, int length) throws IOException {
@@ -333,9 +333,9 @@ public class FitsEncoder extends OutputEncoder {
     /**
      * @deprecated Low-level reading/writing should be handled internally as
      *                 arrays by this library only.
-     * 
+     *
      * @param b a single byte.
-     * 
+     *
      * @throws IOException if there was an IO error writing to the output.
      */
     @Deprecated
@@ -346,9 +346,9 @@ public class FitsEncoder extends OutputEncoder {
     /**
      * @deprecated Low-level reading/writing should be handled internally as
      *                 arrays by this library only.
-     * 
+     *
      * @param s a 16-bit integer value.
-     * 
+     *
      * @throws IOException if there was an IO error writing to the output.
      */
     @Deprecated
@@ -360,9 +360,9 @@ public class FitsEncoder extends OutputEncoder {
     /**
      * @deprecated Low-level reading/writing should be handled internally as
      *                 arrays by this library only.
-     * 
+     *
      * @param i a 32-bit integer value.
-     * 
+     *
      * @throws IOException if there was an IO error writing to the output.
      */
     @Deprecated
@@ -374,9 +374,9 @@ public class FitsEncoder extends OutputEncoder {
     /**
      * @deprecated Low-level reading/writing should be handled internally as
      *                 arrays by this library only.
-     * 
+     *
      * @param l a 64-bit integer value.
-     * 
+     *
      * @throws IOException if there was an IO error writing to the output.
      */
     @Deprecated
@@ -388,9 +388,9 @@ public class FitsEncoder extends OutputEncoder {
     /**
      * @deprecated Low-level reading/writing should be handled internally by this
      *                 library only.
-     * 
+     *
      * @param f a single-precision (32-bit) floating point value.
-     * 
+     *
      * @throws IOException if there was an IO error writing to the output.
      */
     @Deprecated
@@ -402,9 +402,9 @@ public class FitsEncoder extends OutputEncoder {
     /**
      * @deprecated Low-level reading/writing should be handled internally as
      *                 arrays by this library only.
-     * 
+     *
      * @param d a double-precision (64-bit) floating point value.
-     * 
+     *
      * @throws IOException if there was an IO error writing to the output.
      */
     @Deprecated
@@ -418,11 +418,11 @@ public class FitsEncoder extends OutputEncoder {
      * not support unicode characters in its version of strings (character
      * arrays), but instead it is restricted to the ASCII set of 1-byte
      * characters.
-     * 
+     *
      * @param s the Java string
-     * 
+     *
      * @throws IOException if the string could not be fully written to the output
-     * 
+     *
      * @see #writeChars(String)
      */
     protected synchronized void writeBytes(String s) throws IOException {
@@ -437,12 +437,12 @@ public class FitsEncoder extends OutputEncoder {
      * both the FITS standard of 1-byte ASCII and the old 2-byte behaviour are
      * supported, and can be selected via
      * {@link FitsFactory#setUseUnicodeChars(boolean)}.
-     * 
+     *
      * @param s a string containing ASCII-only characters
-     * 
+     *
      * @throws IOException if there was an IO error writing all the characters to
      *             the output.
-     * 
+     *
      * @see #writeBytes(String)
      * @see FitsFactory#setUseUnicodeChars(boolean)
      */
@@ -467,13 +467,13 @@ public class FitsEncoder extends OutputEncoder {
      * into the FITS. For compatibility both the FITS standard of 1-byte ASCII
      * and the old 2-byte behaviour are supported, and can be selected via
      * {@link FitsFactory#setUseUnicodeChars(boolean)}.
-     * 
+     *
      * @param c array of character (ASCII only is supported).
      * @param start the index of the first element in the array to write
      * @param length number of array elements to write
-     * 
+     *
      * @throws IOException if there was an IO error writing to the output
-     * 
+     *
      * @see FitsFactory#setUseUnicodeChars(boolean)
      */
     protected synchronized void write(char[] c, int start, int length) throws IOException {
@@ -484,11 +484,11 @@ public class FitsEncoder extends OutputEncoder {
     /**
      * See {@link ArrayDataOutput#write(short[], int, int)} for a contract of
      * this method.
-     * 
+     *
      * @param s array of 16-bit integers.
      * @param start the index of the first element in the array to write
      * @param length number of array elements to write
-     * 
+     *
      * @throws IOException if there was an IO error writing to the output
      */
     protected synchronized void write(short[] s, int start, int length) throws IOException {
@@ -499,11 +499,11 @@ public class FitsEncoder extends OutputEncoder {
     /**
      * See {@link ArrayDataOutput#write(int[], int, int)} for a contract of this
      * method.
-     * 
+     *
      * @param i array of 32-bit integers.
      * @param start the index of the first element in the array to write
      * @param length number of array elements to write
-     * 
+     *
      * @throws IOException if there was an IO error writing to the output
      */
     protected synchronized void write(int[] i, int start, int length) throws IOException {
@@ -514,11 +514,11 @@ public class FitsEncoder extends OutputEncoder {
     /**
      * See {@link ArrayDataOutput#write(long[], int, int)} for a contract of this
      * method.
-     * 
+     *
      * @param l array of 64-bit integers.
      * @param start the index of the first element in the array to write
      * @param length number of array elements to write
-     * 
+     *
      * @throws IOException if there was an IO error writing to the output
      */
     protected synchronized void write(long[] l, int start, int length) throws IOException {
@@ -529,11 +529,11 @@ public class FitsEncoder extends OutputEncoder {
     /**
      * See {@link ArrayDataOutput#write(float[], int, int)} for a contract of
      * this method.
-     * 
+     *
      * @param f array of single precision (32-bit) floating point values.
      * @param start the index of the first element in the array to write
      * @param length number of array elements to write
-     * 
+     *
      * @throws IOException if there was an IO error writing to the output
      */
     protected synchronized void write(float[] f, int start, int length) throws IOException {
@@ -544,11 +544,11 @@ public class FitsEncoder extends OutputEncoder {
     /**
      * See {@link ArrayDataOutput#write(double[], int, int)} for a contract of
      * this method.
-     * 
+     *
      * @param d array of double-precision (64-bit) floating point values.
      * @param start the index of the first element in the array to write
      * @param length number of array elements to write
-     * 
+     *
      * @throws IOException if there was an IO error writing to the output
      */
     protected synchronized void write(double[] d, int start, int length) throws IOException {
@@ -559,11 +559,11 @@ public class FitsEncoder extends OutputEncoder {
     /**
      * See {@link ArrayDataOutput#write(String[], int, int)} for a contract of
      * this method.
-     * 
+     *
      * @param str array of strings (containing ASCII characters only).
      * @param start the index of the first element in the array to write
      * @param length number of array elements to write
-     * 
+     *
      * @throws IOException if there was an IO error writing to the output
      */
     protected synchronized void write(String[] str, int start, int length) throws IOException {
@@ -593,17 +593,17 @@ public class FitsEncoder extends OutputEncoder {
      * may flush the contents of the conversion buffer to the output if it needs
      * more conversion space than what is avaiable.
      * </p>
-     * 
+     *
      * @param o A Java array, including multi-dimensional arrays and
      *            heterogeneous arrays of arrays.
-     * 
+     *
      * @throws IOException if there was an IO error while trying to flush the
      *             conversion buffer to the stream before all elements were
      *             converted.
      * @throws IllegalArgumentException if the argument is not an array, or if it
      *             is or contains an element that does not have a known FITS
      *             representation.
-     * 
+     *
      * @see #writeArray(Object)
      */
     protected void putArray(Object o) throws IOException, IllegalArgumentException {
@@ -652,9 +652,9 @@ public class FitsEncoder extends OutputEncoder {
     /**
      * Returns the size of this object as the number of bytes in a FITS binary
      * representation.
-     * 
+     *
      * @param o the object
-     * 
+     *
      * @return the number of bytes in the FITS binary representation of the
      *             object or 0 if the object has no FITS representation. (Also
      *             elements not known to FITS will count as 0 sized).

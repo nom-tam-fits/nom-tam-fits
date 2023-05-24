@@ -1,53 +1,5 @@
 package nom.tam.fits;
 
-/*
- * #%L
- * nom.tam FITS library
- * %%
- * Copyright (C) 2004 - 2021 nom-tam-fits
- * %%
- * This is free and unencumbered software released into the public domain.
- * 
- * Anyone is free to copy, modify, publish, use, compile, sell, or
- * distribute this software, either in source code form or as a compiled
- * binary, for any purpose, commercial or non-commercial, and by any
- * means.
- * 
- * In jurisdictions that recognize copyright laws, the author or authors
- * of this software dedicate any and all copyright interest in the
- * software to the public domain. We make this dedication for the benefit
- * of the public at large and to the detriment of our heirs and
- * successors. We intend this dedication to be an overt act of
- * relinquishment in perpetuity of all present and future rights to this
- * software under copyright law.
- * 
- * THE SOFTWARE IS PROVIDED "AS IS", WITHOUT WARRANTY OF ANY KIND,
- * EXPRESS OR IMPLIED, INCLUDING BUT NOT LIMITED TO THE WARRANTIES OF
- * MERCHANTABILITY, FITNESS FOR A PARTICULAR PURPOSE AND NONINFRINGEMENT.
- * IN NO EVENT SHALL THE AUTHORS BE LIABLE FOR ANY CLAIM, DAMAGES OR
- * OTHER LIABILITY, WHETHER IN AN ACTION OF CONTRACT, TORT OR OTHERWISE,
- * ARISING FROM, OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR
- * OTHER DEALINGS IN THE SOFTWARE.
- * #L%
- */
-
-import static nom.tam.fits.header.Standard.BITPIX;
-import static nom.tam.fits.header.Standard.BLANKS;
-import static nom.tam.fits.header.Standard.COMMENT;
-import static nom.tam.fits.header.Standard.END;
-import static nom.tam.fits.header.Standard.EXTEND;
-import static nom.tam.fits.header.Standard.GCOUNT;
-import static nom.tam.fits.header.Standard.GROUPS;
-import static nom.tam.fits.header.Standard.HISTORY;
-import static nom.tam.fits.header.Standard.NAXIS;
-import static nom.tam.fits.header.Standard.NAXISn;
-import static nom.tam.fits.header.Standard.PCOUNT;
-import static nom.tam.fits.header.Standard.SIMPLE;
-import static nom.tam.fits.header.Standard.TFIELDS;
-import static nom.tam.fits.header.Standard.XTENSION;
-import static nom.tam.fits.header.Standard.XTENSION_BINTABLE;
-import static nom.tam.fits.header.extra.CXCExt.LONGSTRN;
-
 import java.io.EOFException;
 import java.io.IOException;
 import java.io.PrintStream;
@@ -75,6 +27,54 @@ import nom.tam.util.FitsIO;
 import nom.tam.util.FitsOutput;
 import nom.tam.util.HashedList;
 import nom.tam.util.RandomAccess;
+
+/*
+ * #%L
+ * nom.tam FITS library
+ * %%
+ * Copyright (C) 2004 - 2021 nom-tam-fits
+ * %%
+ * This is free and unencumbered software released into the public domain.
+ *
+ * Anyone is free to copy, modify, publish, use, compile, sell, or
+ * distribute this software, either in source code form or as a compiled
+ * binary, for any purpose, commercial or non-commercial, and by any
+ * means.
+ *
+ * In jurisdictions that recognize copyright laws, the author or authors
+ * of this software dedicate any and all copyright interest in the
+ * software to the public domain. We make this dedication for the benefit
+ * of the public at large and to the detriment of our heirs and
+ * successors. We intend this dedication to be an overt act of
+ * relinquishment in perpetuity of all present and future rights to this
+ * software under copyright law.
+ *
+ * THE SOFTWARE IS PROVIDED "AS IS", WITHOUT WARRANTY OF ANY KIND,
+ * EXPRESS OR IMPLIED, INCLUDING BUT NOT LIMITED TO THE WARRANTIES OF
+ * MERCHANTABILITY, FITNESS FOR A PARTICULAR PURPOSE AND NONINFRINGEMENT.
+ * IN NO EVENT SHALL THE AUTHORS BE LIABLE FOR ANY CLAIM, DAMAGES OR
+ * OTHER LIABILITY, WHETHER IN AN ACTION OF CONTRACT, TORT OR OTHERWISE,
+ * ARISING FROM, OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR
+ * OTHER DEALINGS IN THE SOFTWARE.
+ * #L%
+ */
+
+import static nom.tam.fits.header.Standard.BITPIX;
+import static nom.tam.fits.header.Standard.BLANKS;
+import static nom.tam.fits.header.Standard.COMMENT;
+import static nom.tam.fits.header.Standard.END;
+import static nom.tam.fits.header.Standard.EXTEND;
+import static nom.tam.fits.header.Standard.GCOUNT;
+import static nom.tam.fits.header.Standard.GROUPS;
+import static nom.tam.fits.header.Standard.HISTORY;
+import static nom.tam.fits.header.Standard.NAXIS;
+import static nom.tam.fits.header.Standard.NAXISn;
+import static nom.tam.fits.header.Standard.PCOUNT;
+import static nom.tam.fits.header.Standard.SIMPLE;
+import static nom.tam.fits.header.Standard.TFIELDS;
+import static nom.tam.fits.header.Standard.XTENSION;
+import static nom.tam.fits.header.Standard.XTENSION_BINTABLE;
+import static nom.tam.fits.header.extra.CXCExt.LONGSTRN;
 
 /**
  * This class describes methods to access and manipulate the header for a FITS HDU. This class does not include code
@@ -157,10 +157,10 @@ public class Header implements FitsElement {
      * Create a header by reading the information from the input stream.
      *
      * @param dis The input stream to read the data from.
-     * 
+     *
      * @return <CODE>null</CODE> if there was a problem with the header; otherwise return the header read from the input
      *             stream.
-     * 
+     *
      * @throws TruncatedFileException if the stream ended prematurely
      * @throws IOException if the header could not be read.
      */
@@ -199,7 +199,7 @@ public class Header implements FitsElement {
      * Create a header and populate it from the input stream
      *
      * @param is The input stream where header information is expected.
-     * 
+     *
      * @throws IOException if the header could not be read.
      * @throws TruncatedFileException if the stream ended prematurely
      */
@@ -212,7 +212,7 @@ public class Header implements FitsElement {
      * Create a header which points to the given data object.
      *
      * @param o The data object to be described.
-     * 
+     *
      * @throws FitsException if the data was not valid for this header.
      */
     public Header(Data o) throws FitsException {
@@ -248,12 +248,12 @@ public class Header implements FitsElement {
      * A new setting always overrides prior ones. For example, calling this method with an argument that is %lt;=1 will
      * eliminate (reset) any prior preallocated header space.
      * </p>
-     * 
+     *
      * @param nCards the mimimum number of 80-character header records that is header must be able to support when
      *            written to a stream, including preallocated blank header space.
-     * 
+     *
      * @since 1.16
-     * 
+     *
      * @see #getMinimumSize()
      * @see #write(ArrayDataOutput)
      * @see #read(ArrayDataInput)
@@ -284,12 +284,12 @@ public class Header implements FitsElement {
      *
      * @param key The header key.
      * @param val The boolean value.
-     * 
+     *
      * @return the new card that was added.
-     * 
+     *
      * @throws HeaderCardException If the parameters cannot build a valid FITS card.
      * @throws IllegalArgumentException If the keyword is invalid
-     * 
+     *
      * @see #addValue(String, Boolean, String)
      */
     public HeaderCard addValue(IFitsHeader key, Boolean val) throws HeaderCardException, IllegalArgumentException {
@@ -304,12 +304,12 @@ public class Header implements FitsElement {
      *
      * @param key The header key.
      * @param val The double value.
-     * 
+     *
      * @return the new card that was added.
-     * 
+     *
      * @throws HeaderCardException If the parameters cannot build a valid FITS card.
      * @throws IllegalArgumentException If the keyword is invalid
-     * 
+     *
      * @see #addValue(String, Number, String)
      */
     public HeaderCard addValue(IFitsHeader key, Number val) throws HeaderCardException, IllegalArgumentException {
@@ -324,12 +324,12 @@ public class Header implements FitsElement {
      *
      * @param key The header key.
      * @param val The string value.
-     * 
+     *
      * @return the new card that was added.
-     * 
+     *
      * @throws HeaderCardException If the parameters cannot build a valid FITS card.
      * @throws IllegalArgumentException If the keyword is invalid
-     * 
+     *
      * @see #addValue(String, String, String)
      */
     public HeaderCard addValue(IFitsHeader key, String val) throws HeaderCardException, IllegalArgumentException {
@@ -344,14 +344,14 @@ public class Header implements FitsElement {
      *
      * @param key The header key.
      * @param val The complex value.
-     * 
+     *
      * @return the new card that was added.
-     * 
+     *
      * @throws HeaderCardException If the parameters cannot build a valid FITS card.
      * @throws IllegalArgumentException If the keyword is invalid
-     * 
+     *
      * @see #addValue(String, ComplexValue, String)
-     * 
+     *
      * @since 1.17
      */
     public HeaderCard addValue(IFitsHeader key, ComplexValue val) throws HeaderCardException, IllegalArgumentException {
@@ -366,11 +366,11 @@ public class Header implements FitsElement {
      * @param key The header key.
      * @param val The boolean value.
      * @param comment A comment to append to the card.
-     * 
+     *
      * @return the new card that was added.
-     * 
+     *
      * @throws HeaderCardException If the parameters cannot build a valid FITS card.
-     * 
+     *
      * @see #addValue(IFitsHeader, Boolean)
      * @see HeaderCard#HeaderCard(String, Boolean, String)
      */
@@ -388,9 +388,9 @@ public class Header implements FitsElement {
      * @param key The header key.
      * @param val The number value.
      * @param comment A comment to append to the card.
-     * 
+     *
      * @return the new card that was added.
-     * 
+     *
      * @throws HeaderCardException If the parameters cannot build a valid FITS card.
      *
      * @see #addValue(String, Number, int, String)
@@ -413,11 +413,11 @@ public class Header implements FitsElement {
      *            {@link nom.tam.util.FlexFormat#AUTO_PRECISION} to use the native precision of the value or at least
      *            {@link nom.tam.util.FlexFormat#DOUBLE_DECIMALS}, whichever fits in the available card space.
      * @param comment A comment to append to the card.
-     * 
+     *
      * @return the new card that was added.
-     * 
+     *
      * @throws HeaderCardException If the parameters cannot build a valid FITS card.
-     * 
+     *
      * @see #addValue(String, Number, String)
      * @see HeaderCard#HeaderCard(String, Number, int, String)
      */
@@ -433,11 +433,11 @@ public class Header implements FitsElement {
      * @param key The header keyword.
      * @param val The complex number value.
      * @param comment A comment to append to the card.
-     * 
+     *
      * @return the new card that was added.
-     * 
+     *
      * @throws HeaderCardException If the parameters cannot build a valid FITS card.
-     * 
+     *
      * @since 1.16
      *
      * @see #addValue(String, ComplexValue, int, String)
@@ -459,13 +459,13 @@ public class Header implements FitsElement {
      *            {@link nom.tam.util.FlexFormat#AUTO_PRECISION} to use the native precision of the value, or at least
      *            {@link nom.tam.util.FlexFormat#DOUBLE_DECIMALS}, whichever fits in the available card space.
      * @param comment A comment to append to the card.
-     * 
+     *
      * @return the new card that was added.
-     * 
+     *
      * @throws HeaderCardException If the parameters cannot build a valid FITS card.
-     * 
+     *
      * @since 1.16
-     * 
+     *
      * @see #addValue(String, ComplexValue, String)
      * @see HeaderCard#HeaderCard(String, ComplexValue, int, String)
      */
@@ -481,13 +481,13 @@ public class Header implements FitsElement {
      * @param key The header key.
      * @param val The integer value.
      * @param comment A comment to append to the card.
-     * 
+     *
      * @return the new card that was added.
-     * 
+     *
      * @throws HeaderCardException If the parameters cannot build a valid FITS card.
-     * 
+     *
      * @since 1.16
-     * 
+     *
      * @see #addValue(String, Number, String)
      * @see HeaderCard#createHexValueCard(String, long)
      * @see #getHexValue(String)
@@ -504,11 +504,11 @@ public class Header implements FitsElement {
      * @param key The header key.
      * @param val The string value.
      * @param comment A comment to append to the card.
-     * 
+     *
      * @return the new card that was added.
-     * 
+     *
      * @throws HeaderCardException If the parameters cannot build a valid FITS card.
-     * 
+     *
      * @see #addValue(IFitsHeader, String)
      * @see HeaderCard#HeaderCard(String, String, String)
      */
@@ -522,7 +522,7 @@ public class Header implements FitsElement {
      * get a builder for filling the header cards using the builder pattern.
      *
      * @param key the key for the first card.
-     * 
+     *
      * @return the builder for header cards.
      */
     public HeaderCardBuilder card(IFitsHeader key) {
@@ -533,7 +533,7 @@ public class Header implements FitsElement {
      * Tests if the specified keyword is present in this table.
      *
      * @param key the keyword to be found.
-     * 
+     *
      * @return <code>true</code> if the specified keyword is present in this table; <code>false</code> otherwise.
      */
     public final boolean containsKey(IFitsHeader key) {
@@ -544,7 +544,7 @@ public class Header implements FitsElement {
      * Tests if the specified keyword is present in this table.
      *
      * @param key the keyword to be found.
-     * 
+     *
      * @return <code>true</code> if the specified keyword is present in this table; <code>false</code> otherwise.
      */
     public final boolean containsKey(String key) {
@@ -589,7 +589,7 @@ public class Header implements FitsElement {
      * Find the card associated with a given key. If found this sets the mark to the card, otherwise it unsets the mark.
      *
      * @param key The header key.
-     * 
+     *
      * @return <CODE>null</CODE> if the keyword could not be found; return the HeaderCard object otherwise.
      */
     public HeaderCard findCard(IFitsHeader key) {
@@ -600,7 +600,7 @@ public class Header implements FitsElement {
      * Find the card associated with a given key. If found this sets the mark to the card, otherwise it unsets the mark.
      *
      * @param key The header key.
-     * 
+     *
      * @return <CODE>null</CODE> if the keyword could not be found; return the HeaderCard object otherwise.
      */
     public HeaderCard findCard(String key) {
@@ -615,7 +615,7 @@ public class Header implements FitsElement {
      * @deprecated Use {@link #findCard(String)} instead. Find the card associated with a given key.
      *
      * @param key The header key.
-     * 
+     *
      * @return <CODE>null</CODE> if the keyword could not be found; return the card image otherwise.
      */
     @Deprecated
@@ -631,7 +631,7 @@ public class Header implements FitsElement {
      * Get the bid decimal value associated with the given key.
      *
      * @param key The header key.
-     * 
+     *
      * @return The associated value or 0.0 if not found.
      */
     public final BigDecimal getBigDecimalValue(IFitsHeader key) {
@@ -643,7 +643,7 @@ public class Header implements FitsElement {
      *
      * @param key The header key.
      * @param dft The default value to return if the key cannot be found.
-     * 
+     *
      * @return the associated value.
      */
     public final BigDecimal getBigDecimalValue(IFitsHeader key, BigDecimal dft) {
@@ -654,7 +654,7 @@ public class Header implements FitsElement {
      * Get the big decimal value associated with the given key.
      *
      * @param key The header key.
-     * 
+     *
      * @return The associated value or 0.0 if not found.
      */
     public final BigDecimal getBigDecimalValue(String key) {
@@ -666,7 +666,7 @@ public class Header implements FitsElement {
      *
      * @param key The header key.
      * @param dft The default value to return if the key cannot be found.
-     * 
+     *
      * @return the associated value.
      */
     public BigDecimal getBigDecimalValue(String key, BigDecimal dft) {
@@ -693,7 +693,7 @@ public class Header implements FitsElement {
      *
      * @param key The header key.
      * @param dft The default value to be returned if the key cannot be found.
-     * 
+     *
      * @return the associated value.
      */
     public final BigInteger getBigIntegerValue(IFitsHeader key, BigInteger dft) {
@@ -704,7 +704,7 @@ public class Header implements FitsElement {
      * Get the big integer value associated with the given key.
      *
      * @param key The header key.
-     * 
+     *
      * @return The associated value or 0 if not found.
      */
     public final BigInteger getBigIntegerValue(String key) {
@@ -716,7 +716,7 @@ public class Header implements FitsElement {
      *
      * @param key The header key.
      * @param dft The default value to be returned if the key cannot be found.
-     * 
+     *
      * @return the associated value.
      */
     public BigInteger getBigIntegerValue(String key, BigInteger dft) {
@@ -731,11 +731,11 @@ public class Header implements FitsElement {
      * Get the complex number value associated with the given key.
      *
      * @param key The header key.
-     * 
+     *
      * @return The associated value or {@link ComplexValue#ZERO} if not found.
-     * 
+     *
      * @since 1.16
-     * 
+     *
      * @see #getComplexValue(String, ComplexValue)
      * @see HeaderCard#getValue(Class, Object)
      * @see #addValue(String, ComplexValue, String)
@@ -749,11 +749,11 @@ public class Header implements FitsElement {
      *
      * @param key The header key.
      * @param dft The default value to return if the key cannot be found.
-     * 
+     *
      * @return the associated value.
-     * 
+     *
      * @since 1.16
-     * 
+     *
      * @see #getComplexValue(String)
      * @see HeaderCard#getValue(Class, Object)
      * @see #addValue(String, ComplexValue, String)
@@ -770,7 +770,7 @@ public class Header implements FitsElement {
      * Get the <CODE>boolean</CODE> value associated with the given key.
      *
      * @param key The header key.
-     * 
+     *
      * @return The value found, or false if not found or if the keyword is not a logical keyword.
      */
     public final boolean getBooleanValue(IFitsHeader key) {
@@ -782,7 +782,7 @@ public class Header implements FitsElement {
      *
      * @param key The header key.
      * @param dft The value to be returned if the key cannot be found or if the parameter does not seem to be a boolean.
-     * 
+     *
      * @return the associated value.
      */
     public final boolean getBooleanValue(IFitsHeader key, boolean dft) {
@@ -793,7 +793,7 @@ public class Header implements FitsElement {
      * Get the <CODE>boolean</CODE> value associated with the given key.
      *
      * @param key The header key.
-     * 
+     *
      * @return The value found, or false if not found or if the keyword is not a logical keyword.
      */
     public final boolean getBooleanValue(String key) {
@@ -805,7 +805,7 @@ public class Header implements FitsElement {
      *
      * @param key The header key.
      * @param dft The value to be returned if the key cannot be found or if the parameter does not seem to be a boolean.
-     * 
+     *
      * @return the associated value.
      */
     public boolean getBooleanValue(String key, boolean dft) {
@@ -820,9 +820,9 @@ public class Header implements FitsElement {
      * Get the n'th card image in the header
      *
      * @param n the card index to get
-     * 
+     *
      * @return the card image; return <CODE>null</CODE> if the n'th card does not exist.
-     * 
+     *
      * @deprecated An iterator from {@link #iterator(int)} or {@link #iterator()} should be used for sequential access
      *                 to the header.
      */
@@ -847,7 +847,7 @@ public class Header implements FitsElement {
      * Get the <CODE>double</CODE> value associated with the given key.
      *
      * @param key The header key.
-     * 
+     *
      * @return The associated value or 0.0 if not found.
      */
     public final double getDoubleValue(IFitsHeader key) {
@@ -859,7 +859,7 @@ public class Header implements FitsElement {
      *
      * @param key The header key.
      * @param dft The default value to return if the key cannot be found.
-     * 
+     *
      * @return the associated value.
      */
     public final double getDoubleValue(IFitsHeader key, double dft) {
@@ -870,7 +870,7 @@ public class Header implements FitsElement {
      * Get the <CODE>double</CODE> value associated with the given key.
      *
      * @param key The header key.
-     * 
+     *
      * @return The associated value or 0.0 if not found.
      */
     public final double getDoubleValue(String key) {
@@ -882,7 +882,7 @@ public class Header implements FitsElement {
      *
      * @param key The header key.
      * @param dft The default value to return if the key cannot be found.
-     * 
+     *
      * @return the associated value.
      */
     public double getDoubleValue(String key, double dft) {
@@ -908,12 +908,12 @@ public class Header implements FitsElement {
      * On the other hand FITS does not limit how many times you can add comment-style keywords to a header. If you must
      * used the same keyword multiple times in your header, you should consider using comment-style entries instead.
      * </p>
-     * 
+     *
      * @return the list of duplicate cards. Note that when the header is read in, only the last entry for a given
      *             keyword is retained in the active header. This method returns earlier cards that have been discarded
      *             in the order in which they were encountered in the header. It is possible for there to be many cards
      *             with the same keyword in this list.
-     * 
+     *
      * @see #hadDuplicates()
      * @see #getDuplicateKeySet()
      */
@@ -923,13 +923,13 @@ public class Header implements FitsElement {
 
     /**
      * Returns the set of keywords that had more than one value assignment in the parsed header.
-     * 
+     *
      * @return the set of header keywords that were assigned more than once in the same header, or <code>null</code> if
      *             there were no duplicate assignments.
-     * 
+     *
      * @see #hadDuplicates()
      * @see #getDuplicates()
-     * 
+     *
      * @since 1.17
      */
     public Set<String> getDuplicateKeySet() {
@@ -939,7 +939,7 @@ public class Header implements FitsElement {
     /**
      * Returns the file position at which this header is stored. If the header is not stored in an input file 0 is
      * returned as per default.
-     * 
+     *
      * @return the position at which this header is stored in the input, or 0 if there if this header isn't read from an
      *             input
      */
@@ -952,7 +952,7 @@ public class Header implements FitsElement {
      * Get the <CODE>float</CODE> value associated with the given key.
      *
      * @param key The header key.
-     * 
+     *
      * @return The associated value or 0.0 if not found.
      */
     public final float getFloatValue(IFitsHeader key) {
@@ -962,7 +962,7 @@ public class Header implements FitsElement {
 
     /**
      * @return the <CODE>float</CODE> value associated with the given key.
-     * 
+     *
      * @param key The header key.
      * @param dft The value to be returned if the key is not found.
      */
@@ -974,7 +974,7 @@ public class Header implements FitsElement {
      * Get the <CODE>float</CODE> value associated with the given key.
      *
      * @param key The header key.
-     * 
+     *
      * @return The associated value or 0.0 if not found.
      */
     public final float getFloatValue(String key) {
@@ -983,7 +983,7 @@ public class Header implements FitsElement {
 
     /**
      * @return the <CODE>float</CODE> value associated with the given key.
-     * 
+     *
      * @param key The header key.
      * @param dft The value to be returned if the key is not found.
      */
@@ -999,7 +999,7 @@ public class Header implements FitsElement {
      * Get the <CODE>int</CODE> value associated with the given key.
      *
      * @param key The header key.
-     * 
+     *
      * @return The associated value or 0 if not found.
      */
     public final int getIntValue(IFitsHeader key) {
@@ -1008,7 +1008,7 @@ public class Header implements FitsElement {
 
     /**
      * @return the value associated with the key as an int.
-     * 
+     *
      * @param key The header key.
      * @param dft The value to be returned if the key is not found.
      */
@@ -1020,7 +1020,7 @@ public class Header implements FitsElement {
      * Get the <CODE>int</CODE> value associated with the given key.
      *
      * @param key The header key.
-     * 
+     *
      * @return The associated value or 0 if not found.
      */
     public final int getIntValue(String key) {
@@ -1029,7 +1029,7 @@ public class Header implements FitsElement {
 
     /**
      * @return the value associated with the key as an int.
-     * 
+     *
      * @param key The header key.
      * @param dft The value to be returned if the key is not found.
      */
@@ -1041,9 +1041,9 @@ public class Header implements FitsElement {
      * Get the n'th key in the header.
      *
      * @param n the index of the key
-     * 
+     *
      * @return the card image; return <CODE>null</CODE> if the n'th key does not exist.
-     * 
+     *
      * @deprecated An iterator from {@link #iterator(int)} or {@link #iterator()} should be used for sequential access
      *                 to the header.
      */
@@ -1060,7 +1060,7 @@ public class Header implements FitsElement {
      * Get the <CODE>long</CODE> value associated with the given key.
      *
      * @param key The header key.
-     * 
+     *
      * @return The associated value or 0 if not found.
      */
     public final long getLongValue(IFitsHeader key) {
@@ -1072,7 +1072,7 @@ public class Header implements FitsElement {
      *
      * @param key The header key.
      * @param dft The default value to be returned if the key cannot be found.
-     * 
+     *
      * @return the associated value.
      */
     public final long getLongValue(IFitsHeader key, long dft) {
@@ -1083,7 +1083,7 @@ public class Header implements FitsElement {
      * Get the <CODE>long</CODE> value associated with the given key.
      *
      * @param key The header key.
-     * 
+     *
      * @return The associated value or 0 if not found.
      */
     public final long getLongValue(String key) {
@@ -1095,7 +1095,7 @@ public class Header implements FitsElement {
      *
      * @param key The header key.
      * @param dft The default value to be returned if the key cannot be found.
-     * 
+     *
      * @return the associated value.
      */
     public long getLongValue(String key, long dft) {
@@ -1110,11 +1110,11 @@ public class Header implements FitsElement {
      * Get the <CODE>long</CODE> value associated with the given key.
      *
      * @param key The header key.
-     * 
+     *
      * @return The associated value or 0 if not found.
-     * 
+     *
      * @since 1.16
-     * 
+     *
      * @see #getHexValue(String, long)
      * @see HeaderCard#getHexValue()
      * @see #addHexValue(String, long, String)
@@ -1128,11 +1128,11 @@ public class Header implements FitsElement {
      *
      * @param key The header key.
      * @param dft The default value to be returned if the key cannot be found.
-     * 
+     *
      * @return the associated value.
-     * 
+     *
      * @since 1.16
-     * 
+     *
      * @see #getHexValue(String)
      * @see HeaderCard#getHexValue()
      * @see #addHexValue(String, long, String)
@@ -1152,9 +1152,9 @@ public class Header implements FitsElement {
     /**
      * Returns the nominal number of currently defined cards in this header. Each card can consist of one or more
      * 80-character wide header records.
-     * 
+     *
      * @return the number of nominal cards in the header
-     * 
+     *
      * @see #getNumberOfPhysicalCards()
      */
     public int getNumberOfCards() {
@@ -1164,9 +1164,9 @@ public class Header implements FitsElement {
     /**
      * Returns the number of 80-character header records in this header, including an END marker (whether or not it is
      * currently contained).
-     * 
+     *
      * @return the number of physical cards in the header, including the END marker.
-     * 
+     *
      * @see #getNumberOfCards()
      * @see #getSize()
      */
@@ -1187,12 +1187,12 @@ public class Header implements FitsElement {
     /**
      * Returns the minimum number of bytes that will be written by this header, either as the original byte size of a
      * header that was read, or else the minimum preallocated capacity after setting {@link #ensureCardSpace(int)}.
-     * 
+     *
      * @return the minimum byte size for this header. The actual header may take up more space than that (but never
      *             less!), depending on the number of cards contained.
-     * 
+     *
      * @since 1.16
-     * 
+     *
      * @see #ensureCardSpace(int)
      * @see #read(ArrayDataInput)
      */
@@ -1203,9 +1203,9 @@ public class Header implements FitsElement {
     /**
      * @deprecated Will be removed from the public API in 2.0 Returns the original size of the header in the stream from
      *                 which it was read.
-     * 
+     *
      * @return the size of the original header in bytes, or 0 if the header was not read from a stream.
-     * 
+     *
      * @see #read(ArrayDataInput)
      * @see #getMinimumSize()
      */
@@ -1216,9 +1216,9 @@ public class Header implements FitsElement {
 
     /**
      * Returns the current byte size of this header.
-     * 
+     *
      * @return the size of the header in bytes, or 0 if the header is invalid.
-     * 
+     *
      * @see #getMinimumSize()
      * @see #ensureCardSpace(int)
      */
@@ -1235,9 +1235,9 @@ public class Header implements FitsElement {
      * Get the <CODE>String</CODE> value associated with the given standard key.
      *
      * @param key The standard header key.
-     * 
+     *
      * @return The associated value or null if not found or if the value is not a string.
-     * 
+     *
      * @see #getStringValue(String)
      * @see #getStringValue(IFitsHeader, String)
      */
@@ -1250,9 +1250,9 @@ public class Header implements FitsElement {
      *
      * @param key The standard header key.
      * @param dft The default value.
-     * 
+     *
      * @return The associated value or the default value if not found or if the value is not a string.
-     * 
+     *
      * @see #getStringValue(String, String)
      * @see #getStringValue(IFitsHeader)
      */
@@ -1264,9 +1264,9 @@ public class Header implements FitsElement {
      * Get the <CODE>String</CODE> value associated with the given key.
      *
      * @param key The header key.
-     * 
+     *
      * @return The associated value or null if not found or if the value is not a string.
-     * 
+     *
      * @see #getStringValue(IFitsHeader)
      * @see #getStringValue(String, String)
      */
@@ -1279,9 +1279,9 @@ public class Header implements FitsElement {
      *
      * @param key The header key.
      * @param dft The default value.
-     * 
+     *
      * @return The associated value or the default value if not found or if the value is not a string.
-     * 
+     *
      * @see #getStringValue(IFitsHeader, String)
      * @see #getStringValue(String)
      */
@@ -1310,10 +1310,10 @@ public class Header implements FitsElement {
      * @param key The comment style header keyword, or <code>null</code> for an empty comment line.
      * @param comment A string comment to follow. Illegal characters will be replaced by '?' and the comment may be
      *            truncated to fit into the card-space (71 characters).
-     * 
+     *
      * @return The new card that was inserted, or <code>null</code> if the keyword itself was invalid or the comment was
      *             <code>null</code>.
-     * 
+     *
      * @see #insertCommentStyleMultiline(String, String)
      * @see HeaderCard#createCommentStyleCard(String, String)
      */
@@ -1343,11 +1343,11 @@ public class Header implements FitsElement {
      * @param key The comment style header keyword, or <code>null</code> for an empty comment line.
      * @param comment A string comment to follow. Illegal characters will be replaced by '?' and the comment may be
      *            split among multiple records as necessary to be fully preserved.
-     * 
+     *
      * @return The number of cards inserted.
-     * 
+     *
      * @since 1.16
-     * 
+     *
      * @see #insertCommentStyle(String, String)
      * @see #insertComment(String)
      * @see #insertUnkeyedComment(String)
@@ -1388,9 +1388,9 @@ public class Header implements FitsElement {
      * Adds one or more consecutive COMMENT records, wrapping the comment text as necessary.
      *
      * @param value The comment.
-     * 
+     *
      * @return The number of consecutive COMMENT cards that were inserted
-     * 
+     *
      * @see #insertCommentStyleMultiline(String, String)
      * @see #insertUnkeyedComment(String)
      * @see #insertHistory(String)
@@ -1405,11 +1405,11 @@ public class Header implements FitsElement {
      * necessary.
      *
      * @param value The comment.
-     * 
+     *
      * @return The number of consecutive comment-style cards with no keyword (blank keyword) that were inserted.
-     * 
+     *
      * @since 1.16
-     * 
+     *
      * @see #insertCommentStyleMultiline(String, String)
      * @see #insertComment(String)
      * @see #insertHistory(String)
@@ -1422,9 +1422,9 @@ public class Header implements FitsElement {
 
     /**
      * Adds a blank card into the header.
-     * 
+     *
      * @since 1.16
-     * 
+     *
      * @see #insertUnkeyedComment(String)
      */
     public void insertBlankCard() {
@@ -1435,9 +1435,9 @@ public class Header implements FitsElement {
      * Adds one or more consecutive a HISTORY records, wrapping the comment text as necessary.
      *
      * @param value The history record.
-     * 
+     *
      * @return The number of consecutive HISTORY cards that were inserted
-     * 
+     *
      * @see #insertCommentStyleMultiline(String, String)
      * @see #insertComment(String)
      * @see #insertUnkeyedComment(String)
@@ -1454,9 +1454,9 @@ public class Header implements FitsElement {
 
     /**
      * @deprecated We should never use indexed access to the header. This function will be removed in 2.0.
-     * 
+     *
      * @return an iterator over the header cards starting at an index
-     * 
+     *
      * @param index the card index to start the iterator
      */
     @Deprecated
@@ -1469,7 +1469,7 @@ public class Header implements FitsElement {
      * editing headers through Header add/append/update methods, and via Cursors, which can be used side-by-side while
      * maintaining desired card ordering. For the reverse direction ( translating iterator position to current position
      * in the header), we can just use findCard().
-     * 
+     *
      * @return the iterator representing the current position in the header.
      */
     private Cursor<String, HeaderCard> cursor() {
@@ -1480,9 +1480,9 @@ public class Header implements FitsElement {
      * @deprecated Normally we either want to write a Java object to FITS (in which case we have the dataand want to
      *                 make a header for it), or we read some data from a FITS input. In either case, there is no
      *                 benefit of exposing such a function as this to the user.
-     * 
+     *
      * @return Create the data element corresponding to the current header
-     * 
+     *
      * @throws FitsException if the header did not contain enough information to detect the type of the data
      */
     @Deprecated
@@ -1504,9 +1504,9 @@ public class Header implements FitsElement {
      * Create a header which points to the given data object.
      *
      * @param o The data object to be described.
-     * 
+     *
      * @throws FitsException if the data was not valid for this header.
-     * 
+     *
      * @deprecated Use the appropriate Header constructor.
      */
     @Deprecated
@@ -1528,9 +1528,9 @@ public class Header implements FitsElement {
 
     /**
      * Checks if the header is empty, that is if it contains no cards at all.
-     * 
+     *
      * @return <code>true</code> if the header contains no cards, otherwise <code>false</code>.
-     * 
+     *
      * @since 1.16
      */
     public boolean isEmpty() {
@@ -1547,10 +1547,10 @@ public class Header implements FitsElement {
      * </p>
      *
      * @param dis The input stream to read the data from.
-     * 
+     *
      * @throws TruncatedFileException the the stream ended prematurely
      * @throws IOException if the operation failed
-     * 
+     *
      * @see #ensureCardSpace(int)
      */
     @SuppressWarnings("deprecation")
@@ -1652,10 +1652,10 @@ public class Header implements FitsElement {
     /**
      * Forces an EOFException to be thrown when some other exception happened, essentially treating the exception to
      * force a normal end the reading of the header.
-     * 
+     *
      * @param message the message to log.
      * @param cause the exception encountered while reading the header
-     * 
+     *
      * @throws EOFException the EOFException we'll throw instead.
      */
     private void forceEOF(String message, Exception cause) throws EOFException {
@@ -1667,9 +1667,9 @@ public class Header implements FitsElement {
      * Delete a key.
      *
      * @param key The header key.
-     * 
+     *
      * @throws HeaderCardException if the operation failed
-     * 
+     *
      * @deprecated see {@link #deleteKey(String)}
      */
     @Deprecated
@@ -1700,7 +1700,7 @@ public class Header implements FitsElement {
      *                 For headers read from a stream, this will affect {@link #rewriteable()}, so users should not call
      *                 this method unless they do not intend to {@link #rewrite()} this header into the original FITS.
      *                 </p>
-     * 
+     *
      * @see #ensureCardSpace(int)
      * @see #read(ArrayDataInput)
      * @see #getMinimumSize()
@@ -1746,9 +1746,9 @@ public class Header implements FitsElement {
      *                 </ul>
      *
      * @param val The value set by the user.
-     * 
+     *
      * @throws IllegalArgumentException if the value is not a valid BITPIX value.
-     * 
+     *
      * @see #setBitpix(Bitpix)
      */
     @Deprecated
@@ -1762,11 +1762,11 @@ public class Header implements FitsElement {
 
     /**
      * @deprecated Will be removed from the public API in 2.0 Sets a standard BITPIX value for the header.
-     * 
+     *
      * @param bitpix The predefined enum value, e.g. {@link Bitpix#INTEGER}.
-     * 
+     *
      * @since 1.16
-     * 
+     *
      * @see #setBitpix(int)
      */
     @Deprecated
@@ -1856,7 +1856,7 @@ public class Header implements FitsElement {
      * @deprecated Will be removed from the public API in 2.0 Set the XTENSION keyword to the given value.
      *
      * @param val The name of the extension.
-     * 
+     *
      * @throws IllegalArgumentException if the string value contains characters that are not allowed in FITS headers,
      *             that is characters outside of the 0x20 thru 0x7E range.
      */
@@ -1870,7 +1870,7 @@ public class Header implements FitsElement {
 
     /**
      * @return the number of cards in the header
-     * 
+     *
      * @deprecated use {@link #getNumberOfCards()}. The units of the size of the header may be unclear.
      */
     @Deprecated
@@ -1885,7 +1885,7 @@ public class Header implements FitsElement {
      *
      * @param key The key of the card to be replaced (or added).
      * @param card A new card
-     * 
+     *
      * @throws HeaderCardException if the operation failed
      */
     public void updateLine(IFitsHeader key, HeaderCard card) throws HeaderCardException {
@@ -1901,7 +1901,7 @@ public class Header implements FitsElement {
      *
      * @param key The key of the card to be replaced.
      * @param card A new card
-     * 
+     *
      * @throws HeaderCardException if the operation failed
      */
     public final void updateLine(String key, HeaderCard card) throws HeaderCardException {
@@ -1916,7 +1916,7 @@ public class Header implements FitsElement {
      * value and comment overwrite the current contents. By Richard J Mathar.
      *
      * @param newHdr the list of new header data lines to replace the current ones.
-     * 
+     *
      * @throws HeaderCardException if the operation failed
      */
     public void updateLines(final Header newHdr) throws HeaderCardException {
@@ -1935,14 +1935,14 @@ public class Header implements FitsElement {
     /**
      * Writes a number of blank header records, for example to create preallocated blank header space as described by
      * the FITS 4.0 standard.
-     * 
+     *
      * @param dos the output stream to which the data is to be written.
      * @param n the number of blank records to add.
-     * 
+     *
      * @throws IOException if there was an error writing to the stream
-     * 
+     *
      * @since 1.16
-     * 
+     *
      * @see #ensureCardSpace(int)
      */
     private void writeBlankCards(ArrayDataOutput dos, int n) throws IOException {
@@ -1957,13 +1957,13 @@ public class Header implements FitsElement {
     /**
      * Add required keywords, and removes conflicting ones depending on whether it is designated as a primary header or
      * not.
-     * 
+     *
      * @param xType The value for the XTENSION keyword, or <code>null</code> if primary HDU.
-     * 
+     *
      * @throws FitsException if there was an error trying to edit the header.
-     * 
+     *
      * @since 1.17
-     * 
+     *
      * @see #validate(FitsOutput)
      */
     void setRequiredKeys(String xType) throws FitsException {
@@ -2014,11 +2014,11 @@ public class Header implements FitsElement {
      * Validates this header by making it a proper primary or extension header. In both cases it means adding required
      * keywords if missing, and removing conflicting cards. Then ordering is checked and corrected as necessary and
      * ensures that the <code>END</code> card is at the tail.
-     * 
+     *
      * @param asPrimary <code>true</code> if this header is to be a primary FITS header
-     * 
+     *
      * @throws FitsException If there was an issue getting the header into proper form.
-     * 
+     *
      * @since 1.17
      */
     public void validate(boolean asPrimary) throws FitsException {
@@ -2029,7 +2029,7 @@ public class Header implements FitsElement {
     /**
      * Validates the header making sure it has the required keywords and that the essential keywords appeat in the in
      * the required order
-     * 
+     *
      * @throws FitsException If there was an issue getting the header into proper form.
      */
     private void validate() throws FitsException {
@@ -2045,7 +2045,7 @@ public class Header implements FitsElement {
      * Write the current header (including any needed padding) to the output stream.
      *
      * @param dos The output stream to which the data is to be written.
-     * 
+     *
      * @throws FitsException if the header could not be written.
      */
     @Override
@@ -2277,9 +2277,9 @@ public class Header implements FitsElement {
      *
      * @param oldKey The old header keyword.
      * @param newKey the new header keyword.
-     * 
+     *
      * @return <CODE>true</CODE> if the card was replaced.
-     * 
+     *
      * @throws HeaderCardException If <CODE>newKey</CODE> is not a valid FITS keyword.
      */
     boolean replaceKey(IFitsHeader oldKey, IFitsHeader newKey) throws HeaderCardException {
@@ -2326,9 +2326,9 @@ public class Header implements FitsElement {
      *
      * @param oldKey The old header keyword.
      * @param newKey the new header keyword.
-     * 
+     *
      * @return <CODE>true</CODE> if the card was replaced.
-     * 
+     *
      * @exception HeaderCardException If <CODE>newKey</CODE> is not a valid FITS keyword. TODO should be private
      */
     boolean replaceKey(String oldKey, String newKey) throws HeaderCardException {
@@ -2358,11 +2358,7 @@ public class Header implements FitsElement {
         // header isn't 100% to spec,
         // as long as the necessary keys are present. So, just check for the
         // required keys, and no more...
-        if (!containsKey(BITPIX.key())) {
-            return 0L;
-        }
-
-        if (!containsKey(NAXIS.key())) {
+        if (!containsKey(BITPIX.key()) || !containsKey(NAXIS.key())) {
             return 0L;
         }
 
@@ -2418,13 +2414,13 @@ public class Header implements FitsElement {
      * violations, where some guessing may be required about the intent of some malformed header record, will throw
      * appropriate exceptions. If, however, {@link FitsFactory#setAllowHeaderRepairs(boolean)} is set <code>true</code>,
      * the parsing will throw fewer exceptions, and the additional issues may get logged as additional warning instead.
-     * 
+     *
      * @param value <code>true</code> if parser warnings about FITS standard violations when reading in existing FITS
      *            headers are to be logged, otherwise <code>false</code>
-     * 
+     *
      * @see #isParserWarningsEnabled()
      * @see FitsFactory#setAllowHeaderRepairs(boolean)
-     * 
+     *
      * @since 1.16
      */
     public static void setParserWarningsEnabled(boolean value) {
@@ -2435,12 +2431,12 @@ public class Header implements FitsElement {
 
     /**
      * Checks whether warnings about FITS standard violations are logged when a header is being read (parsed).
-     * 
+     *
      * @return <code>true</code> if parser warnings about FITS standard violations when reading in existing FITS headers
      *             are enabled and logged, otherwise <code>false</code>
-     * 
+     *
      * @see #setParserWarningsEnabled(boolean)
-     * 
+     *
      * @since 1.16
      */
     public static boolean isParserWarningsEnabled() {
@@ -2450,9 +2446,9 @@ public class Header implements FitsElement {
     /**
      * Returns the current preferred alignment character position of inline header comments. This is the position at
      * which the '/' is placed for the inline comment.
-     * 
+     *
      * @return The current alignment position for inline comments.
-     * 
+     *
      * @see #setCommentAlignPosition(int)
      */
     public static int getCommentAlignPosition() {
@@ -2461,11 +2457,11 @@ public class Header implements FitsElement {
 
     /**
      * Sets a new alignment position for inline header comments.
-     * 
+     *
      * @param pos [20:70] The character position to which inline comments should be aligned if possible.
-     * 
+     *
      * @throws IllegalArgumentException if the position is outside of the allowed range.
-     * 
+     *
      * @see #getCommentAlignPosition()
      */
     public static void setCommentAlignPosition(int pos) throws IllegalArgumentException {

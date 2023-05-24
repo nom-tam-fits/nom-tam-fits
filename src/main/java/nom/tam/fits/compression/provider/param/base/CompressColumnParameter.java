@@ -7,12 +7,12 @@ package nom.tam.fits.compression.provider.param.base;
  * Copyright (C) 1996 - 2021 nom-tam-fits
  * %%
  * This is free and unencumbered software released into the public domain.
- * 
+ *
  * Anyone is free to copy, modify, publish, use, compile, sell, or
  * distribute this software, either in source code form or as a compiled
  * binary, for any purpose, commercial or non-commercial, and by any
  * means.
- * 
+ *
  * In jurisdictions that recognize copyright laws, the author or authors
  * of this software dedicate any and all copyright interest in the
  * software to the public domain. We make this dedication for the benefit
@@ -20,7 +20,7 @@ package nom.tam.fits.compression.provider.param.base;
  * successors. We intend this dedication to be an overt act of
  * relinquishment in perpetuity of all present and future rights to this
  * software under copyright law.
- * 
+ *
  * THE SOFTWARE IS PROVIDED "AS IS", WITHOUT WARRANTY OF ANY KIND,
  * EXPRESS OR IMPLIED, INCLUDING BUT NOT LIMITED TO THE WARRANTIES OF
  * MERCHANTABILITY, FITNESS FOR A PARTICULAR PURPOSE AND NONINFRINGEMENT.
@@ -46,14 +46,14 @@ import nom.tam.fits.compression.provider.param.api.ICompressColumnParameter;
  * all copies share their underlying column data with the original, so changing the sotrage array of column data in
  * either the original or any of its decendants will affect the original and all decendans equally.
  * </p>
- * 
+ *
  * @author Attila Kovacs
  *
  * @param <T> The generic array type that contains the individual parameters for each tile as a table column.
  * @param <OPTION> The generic type of compression option that is associated with these parameters
  */
 public abstract class CompressColumnParameter<T, OPTION> extends CompressParameter<OPTION>
-        implements ICompressColumnParameter {
+implements ICompressColumnParameter {
 
     private Data column;
 
@@ -77,7 +77,7 @@ public abstract class CompressColumnParameter<T, OPTION> extends CompressParamet
 
     /**
      * The shared column data across all copies and the original column parameter.
-     * 
+     *
      * @author Attila Kovacs
      *
      * @since 1.18
@@ -86,7 +86,7 @@ public abstract class CompressColumnParameter<T, OPTION> extends CompressParamet
         private T values;
 
         private synchronized T getValues() {
-          return values;
+            return values;
         }
 
         private synchronized void create(Object columnValue, int sizeValue) {
