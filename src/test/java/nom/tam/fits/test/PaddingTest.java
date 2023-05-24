@@ -71,8 +71,8 @@ public class PaddingTest {
             bf = new FitsFile("target/padding1.fits", "rw");
 
             byte[][] bimg = new byte[20][20];
-            for (int i = 0; i < 20; i += 1) {
-                for (int j = 0; j < 20; j += 1) {
+            for (int i = 0; i < 20; i++) {
+                for (int j = 0; j < 20; j++) {
                     bimg[i][j] = (byte) (i + j);
                 }
             }
@@ -99,12 +99,12 @@ public class PaddingTest {
             byte[][] aa = (byte[][]) hdu0.getKernel();
             int miss = 0;
             int match = 0;
-            for (int i = 0; i < 20; i += 1) {
-                for (int j = 0; j < 20; j += 1) {
+            for (int i = 0; i < 20; i++) {
+                for (int j = 0; j < 20; j++) {
                     if (aa[i][j] != (byte) (i + j)) {
-                        miss += 1;
+                        miss++;
                     } else {
-                        match += 1;
+                        match++;
                     }
                 }
             }
@@ -137,8 +137,8 @@ public class PaddingTest {
         try {
             f = new Fits();
             byte[][] bimg = new byte[20][20];
-            for (int i = 0; i < 20; i += 1) {
-                for (int j = 0; j < 20; j += 1) {
+            for (int i = 0; i < 20; i++) {
+                for (int j = 0; j < 20; j++) {
                     bimg[i][j] = (byte) (i + j);
                 }
             }
@@ -156,18 +156,18 @@ public class PaddingTest {
             // Write the header
             while (curs.hasNext()) {
                 bf.write(curs.next().toString().getBytes());
-                cnt += 1;
+                cnt++;
             }
 
             // The padding between header and data
             byte[] b = new byte[(36 - cnt) * 80]; // Assuming fewer than 36
             // cards.
-            for (int i = 0; i < b.length; i += 1) {
+            for (int i = 0; i < b.length; i++) {
                 b[i] = 32; // i.e., a blank
             }
             bf.write(b);
-            for (int i = 0; i < 20; i += 1) {
-                for (int j = 0; j < 20; j += 1) {
+            for (int i = 0; i < 20; i++) {
+                for (int j = 0; j < 20; j++) {
                     bimg[i][j] = (byte) (2 * (i + j));
                 }
             }
@@ -191,12 +191,12 @@ public class PaddingTest {
             byte[][] bb = (byte[][]) hdu1.getKernel();
             int miss = 0;
             int match = 0;
-            for (int i = 0; i < 20; i += 1) {
-                for (int j = 0; j < 20; j += 1) {
+            for (int i = 0; i < 20; i++) {
+                for (int j = 0; j < 20; j++) {
                     if (bb[i][j] != (byte) (2 * aa[i][j])) {
-                        miss += 1;
+                        miss++;
                     } else {
-                        match += 1;
+                        match++;
                     }
                 }
             }

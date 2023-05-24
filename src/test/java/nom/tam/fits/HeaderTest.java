@@ -235,7 +235,7 @@ public class HeaderTest {
         String lng = "";
         String sixty = seq + seq + seq + seq + seq + seq;
 
-        for (int i = 0; i < 20; i += 1) {
+        for (int i = 0; i < 20; i++) {
             lng += seq;
         }
         Fits f = null;

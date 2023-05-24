@@ -95,7 +95,7 @@ public final class FitsUtil {
     static byte[] booleanToByte(boolean[] bool) {
 
         byte[] byt = new byte[bool.length];
-        for (int i = 0; i < bool.length; i += 1) {
+        for (int i = 0; i < bool.length; i++) {
             byt[i] = bool[i] ? (byte) 'T' : (byte) 'F';
         }
         return byt;
@@ -117,7 +117,7 @@ public final class FitsUtil {
         // No warning of this truncation is given.
 
         String[] res = new String[bytes.length / maxLen];
-        for (int i = 0; i < res.length; i += 1) {
+        for (int i = 0; i < res.length; i++) {
 
             int start = i * maxLen;
 
@@ -138,7 +138,7 @@ public final class FitsUtil {
             // Note that the FITS standard does not mandate
             // that we should be trimming the string at all, but
             // this seems to best meet the desires of the community.
-            for (; start < end; start += 1) {
+            for (; start < end; start++) {
                 if (bytes[start] != BYTE_REPRESENTING_BLANK) {
                     break; // Skip only spaces.
                 }
@@ -159,7 +159,7 @@ public final class FitsUtil {
 
             // The lack of handling of null bytes was noted by Laurent Bourges.
             boolean errFound = false;
-            for (int j = start; j < end; j += 1) {
+            for (int j = start; j < end; j++) {
 
                 if (bytes[j] == 0) {
                     end = j;
@@ -188,7 +188,7 @@ public final class FitsUtil {
     static boolean[] byteToBoolean(byte[] bytes) {
         boolean[] bool = new boolean[bytes.length];
 
-        for (int i = 0; i < bytes.length; i += 1) {
+        for (int i = 0; i < bytes.length; i++) {
             bool[i] = (bytes[i] == 'T');
         }
         return bool;
@@ -347,7 +347,7 @@ public final class FitsUtil {
      */
     public static byte[] stringsToByteArray(String[] stringArray, int maxLen) {
         byte[] res = new byte[stringArray.length * maxLen];
-        for (int i = 0; i < stringArray.length; i += 1) {
+        for (int i = 0; i < stringArray.length; i++) {
             byte[] bstr;
             if (stringArray[i] == null) {
                 bstr = new byte[0];
@@ -359,7 +359,7 @@ public final class FitsUtil {
                 cnt = maxLen;
             }
             System.arraycopy(bstr, 0, res, i * maxLen, cnt);
-            for (int j = cnt; j < maxLen; j += 1) {
+            for (int j = cnt; j < maxLen; j++) {
                 res[i * maxLen + j] = (byte) ' ';
             }
         }

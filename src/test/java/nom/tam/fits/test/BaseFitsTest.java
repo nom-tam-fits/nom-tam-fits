@@ -239,7 +239,7 @@ public class BaseFitsTest {
 
         float[] realCol = new float[50];
 
-        for (int i = 0; i < realCol.length; i += 1) {
+        for (int i = 0; i < realCol.length; i++) {
             realCol[i] = base * i * i * i + 1;
         }
 
@@ -249,7 +249,7 @@ public class BaseFitsTest {
 
         String[] strCol = new String[realCol.length];
 
-        for (int i = 0; i < realCol.length; i += 1) {
+        for (int i = 0; i < realCol.length; i++) {
             strCol[i] = "ABC" + String.valueOf(realCol[i]) + "CDE";
         }
         return new Object[] {realCol, intCol, longCol, doubleCol, strCol};

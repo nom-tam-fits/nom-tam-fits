@@ -533,8 +533,8 @@ public class ReadWriteProvidedCompressedImageTest {
         float sum0 = 0;
         float sum1 = 0;
         int length = Array.getLength(tile);
-        for (int i = 0; i < nx; i += 1) {
-            for (int j = 0; j < ny; j += 1) {
+        for (int i = 0; i < nx; i++) {
+            for (int j = 0; j < ny; j++) {
                 int tileOffset = i + j * nx;
                 if (tileOffset >= length) {
                     Assert.fail("tile offset wrong");

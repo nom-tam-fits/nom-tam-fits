@@ -159,7 +159,7 @@ public class HCompress {
                 bitsToGo3 += NCODE[a[i]];
                 if (bitsToGo3 >= BITS_OF_1_BYTE) {
                     buffer[b] = (byte) (bitbuffer & BYTE_MASK);
-                    b += 1;
+                    b++;
                     /*
                      * return warning code if we fill buffer
                      */
@@ -322,7 +322,7 @@ public class HCompress {
                  * filled up this byte, go to the next one
                  */
                 bitsToGo = BITS_OF_1_BYTE;
-                nsign += 1;
+                nsign++;
                 signbits[nsign] = 0;
             }
         }
@@ -332,7 +332,7 @@ public class HCompress {
              * increment nsign
              */
             signbits[nsign] <<= bitsToGo;
-            nsign += 1;
+            nsign++;
         }
         /*
          * calculate number of bit planes for 3 quadrants quadrant 0=bottom
@@ -355,7 +355,7 @@ public class HCompress {
             }
             if (++j >= ny) {
                 j = 0;
-                k += 1;
+                k++;
             }
         }
         /*
@@ -399,7 +399,7 @@ public class HCompress {
         int nmax = nx > ny ? nx : ny;
         int log2n = log2n(nmax);
         if (nmax > 1 << log2n) {
-            log2n += 1;
+            log2n++;
         }
         /*
          * get temporary storage for shuffling elements
@@ -459,8 +459,8 @@ public class HCompress {
                     long hx = a[s10] - a[s00] << 1 - shift;
                     a[s10] = (hx >= 0 ? hx + prnd : hx) & mask;
                     a[s00] = (h0 >= 0 ? h0 + prnd2 : h0 + nrnd2) & mask2;
-                    s00 += 1;
-                    s10 += 1;
+                    s00++;
+                    s10++;
                 }
             }
             if (oddx != 0) {
@@ -642,7 +642,7 @@ public class HCompress {
         nqmax = nqx > nqy ? nqx : nqy;
         log2n = log2n(nqmax);
         if (nqmax > 1 << log2n) {
-            log2n += 1;
+            log2n++;
         }
         /*
          * initialize buffer point, max buffer size
@@ -760,7 +760,7 @@ public class HCompress {
                         | a.get(s00 + 1) << 2 & b2 //
                 | a.get(s00) << N3 & b3) >> bit);
 
-                k += 1;
+                k++;
                 s00 += 2;
                 s10 += 2;
             }
@@ -770,7 +770,7 @@ public class HCompress {
                  * edge
                  */
                 b[k] = (byte) ((a.get(s10) << 1 & b1 | a.get(s00) << N3 & b3) >> bit);
-                k += 1;
+                k++;
             }
         }
         if (i < nx) {
@@ -780,7 +780,7 @@ public class HCompress {
             s00 = n * i;
             for (j = 0; j < ny - 1; j += 2) {
                 b[k] = (byte) ((a.get(s00 + 1) << 2 & b2 | a.get(s00) << N3 & b3) >> bit);
-                k += 1;
+                k++;
                 s00 += 2;
             }
             if (j < ny) {
@@ -789,7 +789,7 @@ public class HCompress {
                  * s10, s10+1 are off edge
                  */
                 b[k] = (byte) ((a.get(s00) << N3 & b3) >> bit);
-                k += 1;
+                k++;
             }
         }
     }
@@ -804,7 +804,7 @@ public class HCompress {
             s10 = s00 + n; /* s10 is index of a[i+1,j] */
             for (j = 0; j < ny - 1; j += 2) {
                 b[k] = (byte) (b2i(a[s10 + 1] != 0) | b2i(a[s10] != 0) << 1 | b2i(a[s00 + 1] != 0) << 2 | b2i(a[s00] != 0) << N3);
-                k += 1;
+                k++;
                 s00 += 2;
                 s10 += 2;
             }
@@ -814,7 +814,7 @@ public class HCompress {
                  * edge
                  */
                 b[k] = (byte) (b2i(a[s10] != 0) << 1 | b2i(a[s00] != 0) << N3);
-                k += 1;
+                k++;
             }
         }
         if (i < nx) {
@@ -824,7 +824,7 @@ public class HCompress {
             s00 = n * i;
             for (j = 0; j < ny - 1; j += 2) {
                 b[k] = (byte) (b2i(a[s00 + 1] != 0) << 2 | b2i(a[s00] != 0) << N3);
-                k += 1;
+                k++;
                 s00 += 2;
             }
             if (j < ny) {
@@ -833,7 +833,7 @@ public class HCompress {
                  * s10, s10+1 are off edge
                  */
                 b[k] = (byte) (b2i(a[s00] != 0) << N3);
-                k += 1;
+                k++;
             }
         }
     }
@@ -859,7 +859,7 @@ public class HCompress {
         p1Offset = aOffset + n2;
         for (i = 1; i < n; i += 2) {
             pt[ptOffset] = p1[p1Offset];
-            ptOffset += 1;
+            ptOffset++;
             p1Offset += n2 + n2;
         }
         /*
@@ -882,7 +882,7 @@ public class HCompress {
         for (i = 1; i < n; i += 2) {
             p1[p1Offset] = pt[ptOffset];
             p1Offset += n2;
-            ptOffset += 1;
+            ptOffset++;
         }
     }
 

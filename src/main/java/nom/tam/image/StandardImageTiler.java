@@ -56,7 +56,7 @@ public abstract class StandardImageTiler implements ImageTiler {
     public static long getOffset(int[] dims, int[] pos) {
 
         long offset = 0;
-        for (int i = 0; i < dims.length; i += 1) {
+        for (int i = 0; i < dims.length; i++) {
             if (i > 0) {
                 offset *= dims[i];
             }
@@ -423,7 +423,7 @@ public abstract class StandardImageTiler implements ImageTiler {
             // last index is out of range.
 
             if (validSegment) {
-                for (int i = 0; i < mx; i += 1) {
+                for (int i = 0; i < mx; i++) {
                     if (posits[i] < 0 || posits[i] >= newDims[i]) {
                         validSegment = false;
                         break;
@@ -530,7 +530,7 @@ public abstract class StandardImageTiler implements ImageTiler {
         }
 
         int arraySize = 1;
-        for (int i = 0; i < dims.length; i += 1) {
+        for (int i = 0; i < dims.length; i++) {
 
             if (corners[i] < 0 || lengths[i] < 0 || corners[i] + lengths[i] > dims[i]) {
                 throw new IOException("Sub-image not within image");

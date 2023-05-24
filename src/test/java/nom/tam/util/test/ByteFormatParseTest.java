@@ -62,7 +62,7 @@ public class ByteFormatParseTest {
     public void testBoolean() throws Exception {
 
         boolean[] btst = new boolean[100];
-        for (int i = 0; i < btst.length; i += 1) {
+        for (int i = 0; i < btst.length; i++) {
             btst[i] = Math.random() > 0.5;
         }
         offset = 0;
@@ -76,7 +76,7 @@ public class ByteFormatParseTest {
         }
 
         bp.setOffset(0);
-        for (int i = 0; i < btst.length; i += 1) {
+        for (int i = 0; i < btst.length; i++) {
             assertEquals("Boolean:" + i, btst[i], bp.getBoolean());
         }
     }
@@ -100,14 +100,14 @@ public class ByteFormatParseTest {
     @Test
     public void testDouble() throws Exception {
 
-        for (int i = 0; i < 10; i += 1) {
+        for (int i = 0; i < 10; i++) {
             buffer[i] = (byte) ' ';
         }
         bp.setOffset(0);
         assertEquals("DoubBlank", 0., bp.getDouble(10), 0.);
 
         double[] dbl = new double[100];
-        for (int i = 6; i < dbl.length; i += 1) {
+        for (int i = 6; i < dbl.length; i++) {
             dbl[i] = 2 * (Math.random() - 0.5) * Math.pow(10, 60 * (Math.random() - 0.5));
         }
 
@@ -122,7 +122,7 @@ public class ByteFormatParseTest {
         cnt = 0;
         while (cnt < dbl.length) {
             offset = bf.format(dbl[cnt], buffer, offset, 25);
-            cnt += 1;
+            cnt++;
             if (cnt % 4 == 0) {
                 offset = bf.format("\n", buffer, offset, 1);
             } else {
@@ -132,7 +132,7 @@ public class ByteFormatParseTest {
         bf.format(99.9, bp.getBuffer(), offset, 25);
 
         bp.setOffset(0);
-        for (int i = 0; i < dbl.length; i += 1) {
+        for (int i = 0; i < dbl.length; i++) {
 
             double chk = bp.getDouble(25);
 
@@ -158,14 +158,14 @@ public class ByteFormatParseTest {
     @Test
     public void testFloat() throws Exception {
 
-        for (int i = 0; i < 10; i += 1) {
+        for (int i = 0; i < 10; i++) {
             buffer[i] = (byte) ' ';
         }
         bp.setOffset(0);
         assertEquals("FloatBlank", 0.f, bp.getFloat(10), 0.);
 
         float[] flt = new float[100];
-        for (int i = 6; i < flt.length; i += 1) {
+        for (int i = 6; i < flt.length; i++) {
             flt[i] = (float) (2 * (Math.random() - 0.5) * Math.pow(10, 60 * (Math.random() - 0.5)));
         }
 
@@ -181,7 +181,7 @@ public class ByteFormatParseTest {
 
         while (cnt < flt.length) {
             offset = bf.format(flt[cnt], buffer, offset, 24);
-            cnt += 1;
+            cnt++;
             if (cnt % 4 == 0) {
                 offset = bf.format("\n", buffer, offset, 1);
             } else {
@@ -192,7 +192,7 @@ public class ByteFormatParseTest {
         bf.format(99.9f, bp.getBuffer(), offset, 24);
         bp.setOffset(0);
 
-        for (int i = 0; i < flt.length; i += 1) {
+        for (int i = 0; i < flt.length; i++) {
 
             float chk = bp.getFloat(24);
 
@@ -221,7 +221,7 @@ public class ByteFormatParseTest {
     @Test
     public void testInt() throws Exception {
 
-        for (int i = 0; i < 10; i += 1) {
+        for (int i = 0; i < 10; i++) {
             buffer[i] = (byte) ' ';
         }
         // this should change nothing
@@ -235,7 +235,7 @@ public class ByteFormatParseTest {
         tint[1] = Integer.MAX_VALUE;
         tint[2] = 0;
 
-        for (int i = 0; i < tint.length; i += 1) {
+        for (int i = 0; i < tint.length; i++) {
             tint[i] = (int) (Integer.MAX_VALUE * (2 * (Math.random() - .5)));
         }
 
@@ -243,7 +243,7 @@ public class ByteFormatParseTest {
         int colSize = 12;
         while (cnt < tint.length) {
             offset = bf.format(tint[cnt], buffer, offset, colSize);
-            cnt += 1;
+            cnt++;
             if (cnt % 8 == 0) {
                 offset = bf.format("\n", buffer, offset, 1);
             } else {
@@ -254,7 +254,7 @@ public class ByteFormatParseTest {
         bf.format(Integer.MIN_VALUE, bp.getBuffer(), offset, 12);
         // Now see if we can get them back
         bp.setOffset(0);
-        for (int i = 0; i < tint.length; i += 1) {
+        for (int i = 0; i < tint.length; i++) {
 
             int chk = bp.getInt(colSize);
 
@@ -273,21 +273,21 @@ public class ByteFormatParseTest {
         while (cnt < tint.length) {
             offset = bf.format(tint[cnt], buffer, offset, colSize);
             offset = bf.format(" ", buffer, offset, 1);
-            cnt += 1;
+            cnt++;
         }
         String myStr = new String(buffer, 0, offset);
         String[] array = myStr.split(" ");
 
         assertEquals("Split size", 100, array.length);
 
-        for (int i = 0; i < array.length; i += 1) {
+        for (int i = 0; i < array.length; i++) {
             assertEquals("Parse token", tint[i], Integer.parseInt(array[i]));
         }
 
         int val = 1;
         Arrays.fill(buffer, (byte) ' ');
 
-        for (int i = 0; i < 10; i += 1) {
+        for (int i = 0; i < 10; i++) {
             offset = bf.format(val, buffer, 0, 6);
             String test = (val + "      ").substring(0, 6);
             if (i < 6) {
@@ -303,14 +303,14 @@ public class ByteFormatParseTest {
     @Test
     public void testLong() throws Exception {
 
-        for (int i = 0; i < 10; i += 1) {
+        for (int i = 0; i < 10; i++) {
             buffer[i] = (byte) ' ';
         }
         bp.setOffset(0);
         assertEquals("LongBlank", 0L, bp.getLong(10));
 
         long[] lng = new long[100];
-        for (int i = 0; i < lng.length; i += 1) {
+        for (int i = 0; i < lng.length; i++) {
             lng[i] = (long) (Long.MAX_VALUE * (2 * (Math.random() - 0.5)));
         }
 
@@ -319,7 +319,7 @@ public class ByteFormatParseTest {
         lng[2] = 0;
 
         offset = 0;
-        for (int i = 0; i < lng.length; i += 1) {
+        for (int i = 0; i < lng.length; i++) {
             offset = bf.format(lng[i], buffer, offset, 20);
 
             if ((i + 1) % 4 == 0) {
@@ -331,7 +331,7 @@ public class ByteFormatParseTest {
 
         bp.setOffset(0);
 
-        for (int i = 0; i < lng.length; i += 1) {
+        for (int i = 0; i < lng.length; i++) {
             assertEquals("Long check " + i, lng[i], bp.getLong(20));
             bp.skip(1);
         }
@@ -350,13 +350,13 @@ public class ByteFormatParseTest {
         offset = 0;
         String bigStr = "abcdefghijklmnopqrstuvwxyz";
 
-        for (int i = 0; i < 100; i += 1) {
+        for (int i = 0; i < 100; i++) {
             offset = bf.format(bigStr.substring(i % 27), buffer, offset, 13);
             offset = bf.format(" ", buffer, offset, 1);
         }
 
         bp.setOffset(0);
-        for (int i = 0; i < 100; i += 1) {
+        for (int i = 0; i < 100; i++) {
             String want = bigStr.substring(i % 27);
             if (want.length() > 13) {
                 want = want.substring(0, 13);

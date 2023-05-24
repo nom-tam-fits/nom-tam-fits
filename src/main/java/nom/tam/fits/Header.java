@@ -2131,7 +2131,7 @@ public class Header implements FitsElement {
         cardCheck(iter, NAXIS);
         int nax = getIntValue(NAXIS);
 
-        for (int i = 1; i <= nax; i += 1) {
+        for (int i = 1; i <= nax; i++) {
             cardCheck(iter, NAXISn.n(i));
         }
         if (isExtension) {
@@ -2371,7 +2371,7 @@ public class Header implements FitsElement {
 
         int[] axes = new int[naxis];
 
-        for (int axis = 1; axis <= naxis; axis += 1) {
+        for (int axis = 1; axis <= naxis; axis++) {
             axes[axis - 1] = getIntValue(NAXISn.n(axis), 0);
         }
 
@@ -2387,7 +2387,7 @@ public class Header implements FitsElement {
         }
 
         long size = 1;
-        for (int i = startAxis; i < naxis; i += 1) {
+        for (int i = startAxis; i < naxis; i++) {
             size *= axes[i];
         }
 

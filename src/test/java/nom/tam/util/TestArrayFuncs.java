@@ -40,7 +40,7 @@ public class TestArrayFuncs {
     /** Compare two double arrays using a given tolerance */
     public static boolean doubleArrayEquals(double[] x, double[] y, double tol) {
 
-        for (int i = 0; i < x.length; i += 1) {
+        for (int i = 0; i < x.length; i++) {
             if (x[i] == 0) {
                 return y[i] == 0;
             }
@@ -138,7 +138,7 @@ public class TestArrayFuncs {
             if (xo.length != yo.length) {
                 return false;
             }
-            for (int i = 0; i < xo.length; i += 1) {
+            for (int i = 0; i < xo.length; i++) {
                 if (!arrayEquals(xo[i], yo[i], tolf, told)) {
                     return false;
                 }
@@ -152,7 +152,7 @@ public class TestArrayFuncs {
     /** Compare two float arrays using a given tolerance */
     public static boolean floatArrayEquals(float[] x, float[] y, float tol) {
 
-        for (int i = 0; i < x.length; i += 1) {
+        for (int i = 0; i < x.length; i++) {
             if (x[i] == 0) {
                 return y[i] == 0;
             }
@@ -176,14 +176,14 @@ public class TestArrayFuncs {
 
         int[] dims = ArrayFuncs.getDimensions(o);
         if (dims.length > 1) {
-            for (int i = 0; i < ((Object[]) o).length; i += 1) {
+            for (int i = 0; i < ((Object[]) o).length; i++) {
                 start = testPattern(((Object[]) o)[i], start);
             }
 
         } else if (dims.length == 1) {
-            for (int i = 0; i < dims[0]; i += 1) {
+            for (int i = 0; i < dims[0]; i++) {
                 java.lang.reflect.Array.setByte(o, i, start);
-                start += 1;
+                start++;
             }
         }
         return start;

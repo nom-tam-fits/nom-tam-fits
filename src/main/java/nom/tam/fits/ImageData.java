@@ -244,7 +244,7 @@ public class ImageData extends Data {
         head.setBitpix(Bitpix.forArrayID(classname.charAt(dimens.length)));
         head.setNaxes(dimens.length);
 
-        for (int i = 1; i <= dimens.length; i += 1) {
+        for (int i = 1; i <= dimens.length; i++) {
             if (dimens[i - 1] == -1) {
                 throw new FitsException("Unfilled array for dimension: " + i);
             }
@@ -281,7 +281,7 @@ public class ImageData extends Data {
         // are generating.
 
         byteSize = 1;
-        for (int i = 0; i < ndim; i += 1) {
+        for (int i = 0; i < ndim; i++) {
             int cdim = h.getIntValue(NAXISn.n(i + 1), 0);
             if (cdim < 0) {
                 throw new FitsException("Invalid array dimension:" + cdim);

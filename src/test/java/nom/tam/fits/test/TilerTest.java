@@ -76,8 +76,8 @@ public class TilerTest {
         float sum0 = 0;
         float sum1 = 0;
         int length = Array.getLength(tile);
-        for (int i = 0; i < nx; i += 1) {
-            for (int j = 0; j < ny; j += 1) {
+        for (int i = 0; i < nx; i++) {
+            for (int j = 0; j < ny; j++) {
                 int tileOffset = i + j * nx;
                 if (tileOffset >= length) {
                     return false;
@@ -110,8 +110,8 @@ public class TilerTest {
         float sum1 = 0;
 
         int length = Array.getLength(tile);
-        for (int i = 0; i < nx; i += 1) {
-            for (int j = 0; j < ny; j += 1) {
+        for (int i = 0; i < nx; i++) {
+            for (int j = 0; j < ny; j++) {
                 int tileOffset = i + j * nx;
                 if (tileOffset < length) {
                     sum0 += ((Number) Array.get(tile, tileOffset)).doubleValue();
@@ -147,8 +147,8 @@ public class TilerTest {
         input.readLArray(testOutput);
 
         int length = Array.getLength(testOutput);
-        for (int i = 0; i < nx; i += 1) {
-            for (int j = 0; j < ny; j += 1) {
+        for (int i = 0; i < nx; i++) {
+            for (int j = 0; j < ny; j++) {
                 int tileOffset = i + j * nx;
                 if (tileOffset < length) {
                     resultSum += ((Number) Array.get(testOutput, tileOffset)).doubleValue();
@@ -164,8 +164,8 @@ public class TilerTest {
     public void testFloat() throws Exception {
 
         float[][] data = new float[300][300];
-        for (int i = 0; i < 300; i += 1) {
-            for (int j = 0; j < 300; j += 1) {
+        for (int i = 0; i < 300; i++) {
+            for (int j = 0; j < 300; j++) {
                 data[i][j] = 1000 * i + j;
             }
         }
@@ -176,8 +176,8 @@ public class TilerTest {
     public void testDouble() throws Exception {
 
         double[][] data = new double[300][300];
-        for (int i = 0; i < 300; i += 1) {
-            for (int j = 0; j < 300; j += 1) {
+        for (int i = 0; i < 300; i++) {
+            for (int j = 0; j < 300; j++) {
                 data[i][j] = 1000 * i + j;
             }
         }
@@ -188,8 +188,8 @@ public class TilerTest {
     public void testInt() throws Exception {
 
         int[][] data = new int[300][300];
-        for (int i = 0; i < 300; i += 1) {
-            for (int j = 0; j < 300; j += 1) {
+        for (int i = 0; i < 300; i++) {
+            for (int j = 0; j < 300; j++) {
                 data[i][j] = 1000 * i + j;
             }
         }
@@ -200,8 +200,8 @@ public class TilerTest {
     public void testShort() throws Exception {
 
         short[][] data = new short[300][300];
-        for (int i = 0; i < 300; i += 1) {
-            for (int j = 0; j < 300; j += 1) {
+        for (int i = 0; i < 300; i++) {
+            for (int j = 0; j < 300; j++) {
                 data[i][j] = (short) (1000 * i + j);
             }
         }
@@ -212,8 +212,8 @@ public class TilerTest {
     public void testByte() throws Exception {
 
         byte[][] data = new byte[300][300];
-        for (int i = 0; i < 300; i += 1) {
-            for (int j = 0; j < 300; j += 1) {
+        for (int i = 0; i < 300; i++) {
+            for (int j = 0; j < 300; j++) {
                 data[i][j] = (byte) (1000 * i + j);
             }
         }
@@ -224,8 +224,8 @@ public class TilerTest {
     public void testLong() throws Exception {
 
         long[][] data = new long[300][300];
-        for (int i = 0; i < 300; i += 1) {
-            for (int j = 0; j < 300; j += 1) {
+        for (int i = 0; i < 300; i++) {
+            for (int j = 0; j < 300; j++) {
                 data[i][j] = 1000 * i + j;
             }
         }

@@ -141,11 +141,11 @@ public class AsciiTableTest {
         Object[] inputs = getSampleCols();
         Object[] outputs = (Object[]) hdu.getKernel();
 
-        for (int i = 0; i < 50; i += 1) {
+        for (int i = 0; i < 50; i++) {
             ((String[]) outputs[4])[i] = ((String[]) outputs[4])[i].trim();
         }
 
-        for (int j = 0; j < 5; j += 1) {
+        for (int j = 0; j < 5; j++) {
             assertTrue("ByCol:" + j, TestArrayFuncs.arrayEquals(inputs[j], outputs[j], 1.e-6, 1.e-14));
         }
     }
@@ -157,7 +157,7 @@ public class AsciiTableTest {
         AsciiTable data = new AsciiTable();
         Object[] row = new Object[4];
 
-        for (int i = 0; i < 50; i += 1) {
+        for (int i = 0; i < 50; i++) {
             data.addRow(getRow(i));
         }
 
@@ -185,7 +185,7 @@ public class AsciiTableTest {
         Object[] output = (Object[]) f.getHDU(1).getKernel();
         Object[] input = getRowBlock(50);
 
-        for (int i = 0; i < 50; i += 1) {
+        for (int i = 0; i < 50; i++) {
             String[] str = (String[]) output[2];
             String[] istr = (String[]) input[2];
             int len1 = str[1].length();
@@ -197,7 +197,7 @@ public class AsciiTableTest {
             }
         }
 
-        for (int j = 0; j < 3; j += 1) {
+        for (int j = 0; j < 3; j++) {
             assertEquals("ByRow:" + j, true, TestArrayFuncs.arrayEquals(input[j], output[j], 1.e-6, 1.e-14));
         }
     }
@@ -240,7 +240,7 @@ public class AsciiTableTest {
 
     Object[] getRowBlock(int max) {
         Object[] o = new Object[] {new int[max], new float[max], new String[max]};
-        for (int i = 0; i < max; i += 1) {
+        for (int i = 0; i < max; i++) {
             ((int[]) o[0])[i] = i;
             ((float[]) o[1])[i] = i;
             ((String[]) o[2])[i] = "Str" + i;
@@ -252,7 +252,7 @@ public class AsciiTableTest {
 
         float[] realCol = new float[50];
 
-        for (int i = 0; i < realCol.length; i += 1) {
+        for (int i = 0; i < realCol.length; i++) {
             realCol[i] = 10000.F * i * i * i + 1;
         }
 
@@ -262,7 +262,7 @@ public class AsciiTableTest {
 
         String[] strCol = new String[realCol.length];
 
-        for (int i = 0; i < realCol.length; i += 1) {
+        for (int i = 0; i < realCol.length; i++) {
             strCol[i] = "ABC" + String.valueOf(realCol[i]) + "CDE";
         }
         return new Object[] {realCol, intCol, longCol, doubleCol, strCol};
@@ -285,7 +285,7 @@ public class AsciiTableTest {
         AsciiTable data = hdu.getData();
         float[] f1 = (float[]) data.getColumn(0);
         float[] f2 = f1.clone();
-        for (int i = 0; i < f2.length; i += 1) {
+        for (int i = 0; i < f2.length; i++) {
             f2[i] = 2 * f2[i];
         }
 
@@ -332,7 +332,7 @@ public class AsciiTableTest {
         assertEquals("Null", true, hdu.isNull(6, 0));
         assertEquals("Null2", false, hdu.isNull(5, 0));
 
-        for (int i = 0; i < data.getNRows(); i += 1) {
+        for (int i = 0; i < data.getNRows(); i++) {
             if (i != 5) {
                 if (i != 6) { // Null
                     assertEquals("f" + i, 1., f2[i] / fx[i], 1.e-6);
@@ -416,11 +416,11 @@ public class AsciiTableTest {
             assertEquals("Number of rows", data.getNRows(), 50);
             assertEquals("Number of columns", data.getNCols(), 5);
 
-            for (int j = 0; j < data.getNCols(); j += 1) {
+            for (int j = 0; j < data.getNCols(); j++) {
                 Object col = data.getColumn(j);
                 if (j == 4) {
                     String[] st = (String[]) col;
-                    for (int i = 0; i < st.length; i += 1) {
+                    for (int i = 0; i < st.length; i++) {
                         st[i] = st[i].trim();
                     }
                 }
@@ -437,9 +437,9 @@ public class AsciiTableTest {
         AsciiTableHDU hdu = (AsciiTableHDU) f.getHDU(1);
         AsciiTable data = hdu.getData();
 
-        for (int i = 0; i < data.getNRows(); i += 1) {
+        for (int i = 0; i < data.getNRows(); i++) {
             Object[] row = data.getRow(i);
-            for (int j = 0; j < data.getNCols(); j += 1) {
+            for (int j = 0; j < data.getNCols(); j++) {
                 Object val = data.getElement(i, j);
                 assertEquals("Ascii readElement", true, TestArrayFuncs.arrayEquals(val, row[j]));
             }
@@ -454,7 +454,7 @@ public class AsciiTableTest {
         AsciiTableHDU hdu = (AsciiTableHDU) f.getHDU(1);
         AsciiTable data = hdu.getData();
 
-        for (int i = 0; i < data.getNRows(); i += 1) {
+        for (int i = 0; i < data.getNRows(); i++) {
             assertEquals("Rows:" + i, 50, data.getNRows());
             Object[] row = data.getRow(i);
             assertEquals("Ascii Rows: float" + i, 1.F, ((float[]) cols[0])[i] / ((float[]) row[0])[0], 1.e-6);
@@ -508,7 +508,7 @@ public class AsciiTableTest {
     public void testDeleteRowsSimpleSpecialCases() throws Exception {
         // Create a table with 50 rows to test with.
         AsciiTable data = new AsciiTable();
-        for (int i = 0; i < 50; i += 1) {
+        for (int i = 0; i < 50; i++) {
             data.addRow(getRow(i));
         }
 
@@ -530,7 +530,7 @@ public class AsciiTableTest {
         // Create a table row by row .
         Fits f = new Fits();
         AsciiTable data = new AsciiTable();
-        for (int i = 0; i < 50; i += 1) {
+        for (int i = 0; i < 50; i++) {
             data.addRow(getRow(i));
         }
 
@@ -623,7 +623,7 @@ public class AsciiTableTest {
         Fits f = new Fits();
         AsciiTable data = new AsciiTable();
 
-        for (int i = 0; i < 50; i += 1) {
+        for (int i = 0; i < 50; i++) {
             data.addRow(getRow(i));
         }
 
