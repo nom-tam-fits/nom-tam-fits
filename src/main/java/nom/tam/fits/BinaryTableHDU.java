@@ -1,5 +1,12 @@
 package nom.tam.fits;
 
+import java.io.PrintStream;
+
+import nom.tam.fits.header.IFitsHeader;
+import nom.tam.fits.header.Standard;
+import nom.tam.util.ArrayDataOutput;
+import nom.tam.util.ArrayFuncs;
+
 /*
  * #%L
  * nom.tam FITS library
@@ -7,12 +14,12 @@ package nom.tam.fits;
  * Copyright (C) 2004 - 2021 nom-tam-fits
  * %%
  * This is free and unencumbered software released into the public domain.
- * 
+ *
  * Anyone is free to copy, modify, publish, use, compile, sell, or
  * distribute this software, either in source code form or as a compiled
  * binary, for any purpose, commercial or non-commercial, and by any
  * means.
- * 
+ *
  * In jurisdictions that recognize copyright laws, the author or authors
  * of this software dedicate any and all copyright interest in the
  * software to the public domain. We make this dedication for the benefit
@@ -20,7 +27,7 @@ package nom.tam.fits;
  * successors. We intend this dedication to be an overt act of
  * relinquishment in perpetuity of all present and future rights to this
  * software under copyright law.
- * 
+ *
  * THE SOFTWARE IS PROVIDED "AS IS", WITHOUT WARRANTY OF ANY KIND,
  * EXPRESS OR IMPLIED, INCLUDING BUT NOT LIMITED TO THE WARRANTIES OF
  * MERCHANTABILITY, FITNESS FOR A PARTICULAR PURPOSE AND NONINFRINGEMENT.
@@ -46,13 +53,6 @@ import static nom.tam.fits.header.Standard.TUNITn;
 import static nom.tam.fits.header.Standard.TZEROn;
 import static nom.tam.fits.header.Standard.XTENSION;
 
-import java.io.PrintStream;
-
-import nom.tam.fits.header.IFitsHeader;
-import nom.tam.fits.header.Standard;
-import nom.tam.util.ArrayDataOutput;
-import nom.tam.util.ArrayFuncs;
-
 /** FITS binary table header/data unit */
 public class BinaryTableHDU extends TableHDU<BinaryTable> {
 
@@ -70,18 +70,19 @@ public class BinaryTableHDU extends TableHDU<BinaryTable> {
 
     /**
      * @deprecated This should be for internal use only. Will reduce visibility in the future
-     * 
+     *
      * @return Encapsulate data in a BinaryTable data type
-     * 
+     *
      * @param o data to encapsulate
-     * 
+     *
      * @throws FitsException if the type of the data is not usable as data
      */
     @Deprecated
     public static BinaryTable encapsulate(Object o) throws FitsException {
         if (o instanceof nom.tam.util.ColumnTable) {
             return new BinaryTable((nom.tam.util.ColumnTable<?>) o);
-        } else if (o instanceof Object[][]) {
+        }
+        if (o instanceof Object[][]) {
             return new BinaryTable((Object[][]) o);
         } else if (o instanceof Object[]) {
             return new BinaryTable((Object[]) o);
@@ -93,10 +94,10 @@ public class BinaryTableHDU extends TableHDU<BinaryTable> {
 
     /**
      * Check if this data object is consistent with a binary table.
-     * 
+     *
      * @param o a column table object, an Object[][], or an Object[]. This routine doesn't check that the dimensions of
      *            arrays are properly consistent.
-     * 
+     *
      * @deprecated This should be for internal use only. Will reduce visibility in the future
      */
     @Deprecated
@@ -106,11 +107,11 @@ public class BinaryTableHDU extends TableHDU<BinaryTable> {
 
     /**
      * Check that this is a valid binary table header.
-     * 
+     *
      * @deprecated This should be for internal use only. Will reduce visibility in the future
      *
      * @param header to validate.
-     * 
+     *
      * @return <CODE>true</CODE> if this is a binary table header.
      */
     @Deprecated
@@ -125,13 +126,13 @@ public class BinaryTableHDU extends TableHDU<BinaryTable> {
 
     /**
      * Prepares a data object into which the actual data can be read from an input subsequently or at a later time.
-     * 
+     *
      * @deprecated This should be for internal use only. Will reduce visibility in the future
-     * 
+     *
      * @param header The FITS header that describes the data
-     * 
+     *
      * @return A data object that support reading content from a stream.
-     * 
+     *
      * @throws FitsException if the data could not be prepared to prescriotion.
      */
     @Deprecated
@@ -141,11 +142,11 @@ public class BinaryTableHDU extends TableHDU<BinaryTable> {
 
     /**
      * @deprecated This should be for internal use only. Will reduce visibility in the future
-     * 
+     *
      * @return a newly created binary table HDU from the supplied data.
-     * 
+     *
      * @param data the data used to build the binary table. This is typically some kind of array of objects.
-     * 
+     *
      * @throws FitsException if there was a problem with the data.
      */
     @Deprecated
@@ -245,9 +246,9 @@ public class BinaryTableHDU extends TableHDU<BinaryTable> {
      * converted. It is legal to call this on a column that is already complex.
      *
      * @param index The 0-based index of the column to be converted.
-     * 
+     *
      * @return Whether the column can be converted
-     * 
+     *
      * @throws FitsException if the header could not be adapted
      */
     public boolean setComplexColumn(int index) throws FitsException {

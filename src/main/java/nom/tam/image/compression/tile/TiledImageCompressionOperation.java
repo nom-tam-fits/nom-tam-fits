@@ -1,5 +1,30 @@
 package nom.tam.image.compression.tile;
 
+import java.lang.reflect.Array;
+import java.nio.Buffer;
+import java.nio.ByteBuffer;
+import java.util.Locale;
+import java.util.concurrent.ExecutorService;
+import java.util.logging.Logger;
+
+import nom.tam.fits.BinaryTable;
+import nom.tam.fits.BinaryTableHDU;
+import nom.tam.fits.FitsException;
+import nom.tam.fits.FitsFactory;
+import nom.tam.fits.Header;
+import nom.tam.fits.HeaderCard;
+import nom.tam.fits.HeaderCardBuilder;
+import nom.tam.fits.compression.algorithm.api.ICompressOption;
+import nom.tam.fits.compression.algorithm.api.ICompressorControl;
+import nom.tam.fits.compression.provider.CompressorProvider;
+import nom.tam.fits.compression.provider.param.api.HeaderAccess;
+import nom.tam.fits.compression.provider.param.api.HeaderCardAccess;
+import nom.tam.fits.header.Compression;
+import nom.tam.image.compression.tile.mask.ImageNullPixelMask;
+import nom.tam.image.tile.operation.AbstractTiledImageOperation;
+import nom.tam.image.tile.operation.TileArea;
+import nom.tam.util.type.ElementType;
+
 /*
  * #%L
  * nom.tam FITS library
@@ -7,12 +32,12 @@ package nom.tam.image.compression.tile;
  * Copyright (C) 1996 - 2021 nom-tam-fits
  * %%
  * This is free and unencumbered software released into the public domain.
- * 
+ *
  * Anyone is free to copy, modify, publish, use, compile, sell, or
  * distribute this software, either in source code form or as a compiled
  * binary, for any purpose, commercial or non-commercial, and by any
  * means.
- * 
+ *
  * In jurisdictions that recognize copyright laws, the author or authors
  * of this software dedicate any and all copyright interest in the
  * software to the public domain. We make this dedication for the benefit
@@ -20,7 +45,7 @@ package nom.tam.image.compression.tile;
  * successors. We intend this dedication to be an overt act of
  * relinquishment in perpetuity of all present and future rights to this
  * software under copyright law.
- * 
+ *
  * THE SOFTWARE IS PROVIDED "AS IS", WITHOUT WARRANTY OF ANY KIND,
  * EXPRESS OR IMPLIED, INCLUDING BUT NOT LIMITED TO THE WARRANTIES OF
  * MERCHANTABILITY, FITNESS FOR A PARTICULAR PURPOSE AND NONINFRINGEMENT.
@@ -50,31 +75,6 @@ import static nom.tam.fits.header.Standard.TTYPEn;
 import static nom.tam.image.compression.tile.TileCompressionType.COMPRESSED;
 import static nom.tam.image.compression.tile.TileCompressionType.GZIP_COMPRESSED;
 import static nom.tam.image.compression.tile.TileCompressionType.UNCOMPRESSED;
-
-import java.lang.reflect.Array;
-import java.nio.Buffer;
-import java.nio.ByteBuffer;
-import java.util.Locale;
-import java.util.concurrent.ExecutorService;
-import java.util.logging.Logger;
-
-import nom.tam.fits.BinaryTable;
-import nom.tam.fits.BinaryTableHDU;
-import nom.tam.fits.FitsException;
-import nom.tam.fits.FitsFactory;
-import nom.tam.fits.Header;
-import nom.tam.fits.HeaderCard;
-import nom.tam.fits.HeaderCardBuilder;
-import nom.tam.fits.compression.algorithm.api.ICompressOption;
-import nom.tam.fits.compression.algorithm.api.ICompressorControl;
-import nom.tam.fits.compression.provider.CompressorProvider;
-import nom.tam.fits.compression.provider.param.api.HeaderAccess;
-import nom.tam.fits.compression.provider.param.api.HeaderCardAccess;
-import nom.tam.fits.header.Compression;
-import nom.tam.image.compression.tile.mask.ImageNullPixelMask;
-import nom.tam.image.tile.operation.AbstractTiledImageOperation;
-import nom.tam.image.tile.operation.TileArea;
-import nom.tam.util.type.ElementType;
 
 /**
  * This class represents a complete tiledImageOperation of tileOperations describing an image ordered from left to right
@@ -147,7 +147,7 @@ public class TiledImageCompressionOperation extends AbstractTiledImageOperation<
             compressOptions = this.compressorControl.option();
             if (this.quantAlgorithm != null) {
                 this.compressOptions.getCompressionParameters()
-                        .getValuesFromHeader(new HeaderCardAccess(ZQUANTIZ, this.quantAlgorithm));
+                .getValuesFromHeader(new HeaderCardAccess(ZQUANTIZ, this.quantAlgorithm));
             }
             compressOptions.getCompressionParameters().initializeColumns(getNumberOfTileOperations());
         }
@@ -186,8 +186,8 @@ public class TiledImageCompressionOperation extends AbstractTiledImageOperation<
             if (this.compressorControl == null) {
                 throw new IllegalStateException(
                         "Found no compressor control for compression algorithm:" + this.compressAlgorithm + //
-                                " (quantize algorithm = " + this.quantAlgorithm + ", base type = "
-                                + getBaseType().primitiveClass() + ")");
+                        " (quantize algorithm = " + this.quantAlgorithm + ", base type = "
+                        + getBaseType().primitiveClass() + ")");
             }
         }
         return this.compressorControl;
@@ -215,7 +215,7 @@ public class TiledImageCompressionOperation extends AbstractTiledImageOperation<
      *
      * @param nullValue the value representing null for byte/short and integer pixel values
      * @param compressionAlgorithm compression algorithm to use for the null pixel mask
-     * 
+     *
      * @return the created null pixel mask
      */
     public ImageNullPixelMask preserveNulls(long nullValue, String compressionAlgorithm) {
@@ -284,12 +284,12 @@ public class TiledImageCompressionOperation extends AbstractTiledImageOperation<
     /**
      * Sets the compression algorithm, via a <code>ZCMPTYPE</code> header card or equivalent. The card must contain one
      * of the values recognized by the FITS standard. If not, <code>null</code> will be set instead.
-     * 
+     *
      * @param compressAlgorithmCard The header card that specifies the compression algorithm, with one of the standard
      *            recognized values such as {@link Compression#ZCMPTYPE_GZIP_1}, or <code>null</code>.
-     * 
+     *
      * @return itself
-     * 
+     *
      * @see #getCompressAlgorithm()
      * @see #setQuantAlgorithm(HeaderCard)
      */
@@ -315,12 +315,12 @@ public class TiledImageCompressionOperation extends AbstractTiledImageOperation<
     /**
      * Sets the quantization algorithm, via a <code>ZQUANTIZ</code> header card or equivalent. The card must contain one
      * of the values recognized by the FITS standard. If not, <code>null</code> will be set instead.
-     * 
+     *
      * @param quantAlgorithmCard The header card that specifies the compression algorithm, with one of the standard
      *            recognized values such as {@link Compression#ZQUANTIZ_NO_DITHER}, or <code>null</code>.
-     * 
+     *
      * @return itself
-     * 
+     *
      * @see #getQuantAlgorithm()
      * @see #setCompressAlgorithm(HeaderCard)
      */
@@ -345,14 +345,14 @@ public class TiledImageCompressionOperation extends AbstractTiledImageOperation<
 
     /**
      * Returns the name of the currently configured quantization algorithm.
-     * 
+     *
      * @return The name of the standard quantization algorithm (i.e. a FITS standard value for the <code>ZQUANTIZ</code>
      *             keyword), or <code>null</code> if not quantization is currently defined, possibly because an invalid
      *             value was set before.
-     * 
+     *
      * @see #setQuantAlgorithm(HeaderCard)
      * @see #getCompressAlgorithm()
-     * 
+     *
      * @since 1.18
      */
     public synchronized String getQuantAlgorithm() {
@@ -361,14 +361,14 @@ public class TiledImageCompressionOperation extends AbstractTiledImageOperation<
 
     /**
      * Returns the name of the currently configured compression algorithm.
-     * 
+     *
      * @return The name of the standard compression algorithm (i.e. a FITS standard value for the <code>ZCMPTYPE</code>
      *             keyword), or <code>null</code> if not quantization is currently defined, possibly because an invalid
      *             value was set before.
-     * 
+     *
      * @see #setCompressAlgorithm(HeaderCard)
      * @see #getQuantAlgorithm()
-     * 
+     *
      * @since 1.18
      */
     public String getCompressAlgorithm() {

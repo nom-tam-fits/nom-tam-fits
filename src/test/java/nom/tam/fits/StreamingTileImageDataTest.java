@@ -1,5 +1,12 @@
 package nom.tam.fits;
 
+import java.io.File;
+import java.io.IOException;
+import java.util.Random;
+
+import org.junit.Assert;
+import org.junit.Test;
+
 /*-
  * #%L
  * nom.tam FITS library
@@ -7,12 +14,12 @@ package nom.tam.fits;
  * Copyright (C) 1996 - 2023 nom-tam-fits
  * %%
  * This is free and unencumbered software released into the public domain.
- * 
+ *
  * Anyone is free to copy, modify, publish, use, compile, sell, or
  * distribute this software, either in source code form or as a compiled
  * binary, for any purpose, commercial or non-commercial, and by any
  * means.
- * 
+ *
  * In jurisdictions that recognize copyright laws, the author or authors
  * of this software dedicate any and all copyright interest in the
  * software to the public domain. We make this dedication for the benefit
@@ -20,7 +27,7 @@ package nom.tam.fits;
  * successors. We intend this dedication to be an overt act of
  * relinquishment in perpetuity of all present and future rights to this
  * software under copyright law.
- * 
+ *
  * THE SOFTWARE IS PROVIDED "AS IS", WITHOUT WARRANTY OF ANY KIND,
  * EXPRESS OR IMPLIED, INCLUDING BUT NOT LIMITED TO THE WARRANTIES OF
  * MERCHANTABILITY, FITNESS FOR A PARTICULAR PURPOSE AND NONINFRINGEMENT.
@@ -34,12 +41,6 @@ package nom.tam.fits;
 import nom.tam.fits.header.Bitpix;
 import nom.tam.image.StandardImageTiler;
 import nom.tam.util.ArrayFuncs;
-import org.junit.Assert;
-import org.junit.Test;
-
-import java.io.File;
-import java.io.IOException;
-import java.util.Random;
 
 
 public class StreamingTileImageDataTest {
@@ -108,7 +109,7 @@ public class StreamingTileImageDataTest {
         }
 
         try (final Fits sourceFits = new Fits(fitsFile);
-             final Fits outputFits = new Fits()) {
+                final Fits outputFits = new Fits()) {
             final ImageHDU imageHDU = (ImageHDU) sourceFits.getHDU(0);
 
             final Header tileHeader = imageHDU.getHeader();
@@ -129,7 +130,7 @@ public class StreamingTileImageDataTest {
             final ImageHDU cutoutImageHDU = (ImageHDU) outputFits.readHDU();
             Assert.assertArrayEquals("Wrong dimensions.", new int[]{5, 10}, cutoutImageHDU.getAxes());
             Assert.assertArrayEquals("Wrong calculated dimensions.", new int[]{5, 10},
-                                     ArrayFuncs.getDimensions(cutoutImageHDU.getData().getData()));
+                    ArrayFuncs.getDimensions(cutoutImageHDU.getData().getData()));
         }
     }
 
@@ -159,7 +160,7 @@ public class StreamingTileImageDataTest {
         }
 
         try (final Fits sourceFits = new Fits(fitsFile);
-             final Fits outputFits = new Fits()) {
+                final Fits outputFits = new Fits()) {
             final ImageHDU imageHDU = (ImageHDU) sourceFits.getHDU(0);
 
             final Header tileHeader = imageHDU.getHeader();
@@ -173,7 +174,7 @@ public class StreamingTileImageDataTest {
         }
 
         try (final Fits sourceFits = new Fits(fitsFile);
-             final Fits outputFits = new Fits()) {
+                final Fits outputFits = new Fits()) {
             final ImageHDU imageHDU = (ImageHDU) sourceFits.getHDU(0);
 
             final Header tileHeader = imageHDU.getHeader();
@@ -187,7 +188,7 @@ public class StreamingTileImageDataTest {
         }
 
         try (final Fits sourceFits = new Fits(fitsFile);
-             final Fits outputFits = new Fits()) {
+                final Fits outputFits = new Fits()) {
             final ImageHDU imageHDU = (ImageHDU) sourceFits.getHDU(0);
 
             final Header tileHeader = imageHDU.getHeader();
@@ -196,17 +197,17 @@ public class StreamingTileImageDataTest {
             final int[] tileSteps = new int[]{1, 1};
             final StreamingTileImageData streamingTileImageData =
                     new StreamingTileImageData(tileHeader, imageHDU.getTiler(), tileStarts, tileLengths, tileSteps) {
-                        @Override
-                        protected long getTrueSize() {
-                            return 0;
-                        }
-                    };
+                @Override
+                protected long getTrueSize() {
+                    return 0;
+                }
+            };
             outputFits.addHDU(FitsFactory.hduFactory(tileHeader, streamingTileImageData));
             outputFits.write(outputFitsFile);
         }
 
         try (final Fits sourceFits = new Fits(fitsFile);
-             final Fits outputFits = new Fits()) {
+                final Fits outputFits = new Fits()) {
             final ImageHDU imageHDU = (ImageHDU) sourceFits.getHDU(0);
 
             final Header tileHeader = imageHDU.getHeader();

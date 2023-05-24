@@ -1,5 +1,16 @@
 package nom.tam.fits.compress;
 
+import java.io.BufferedInputStream;
+import java.io.File;
+import java.io.FileInputStream;
+import java.io.IOException;
+import java.io.InputStream;
+import java.util.ServiceLoader;
+import java.util.logging.Level;
+import java.util.logging.Logger;
+
+import nom.tam.fits.FitsException;
+
 /*
  * #%L
  * nom.tam FITS library
@@ -7,12 +18,12 @@ package nom.tam.fits.compress;
  * Copyright (C) 1996 - 2021 nom-tam-fits
  * %%
  * This is free and unencumbered software released into the public domain.
- * 
+ *
  * Anyone is free to copy, modify, publish, use, compile, sell, or
  * distribute this software, either in source code form or as a compiled
  * binary, for any purpose, commercial or non-commercial, and by any
  * means.
- * 
+ *
  * In jurisdictions that recognize copyright laws, the author or authors
  * of this software dedicate any and all copyright interest in the
  * software to the public domain. We make this dedication for the benefit
@@ -20,7 +31,7 @@ package nom.tam.fits.compress;
  * successors. We intend this dedication to be an overt act of
  * relinquishment in perpetuity of all present and future rights to this
  * software under copyright law.
- * 
+ *
  * THE SOFTWARE IS PROVIDED "AS IS", WITHOUT WARRANTY OF ANY KIND,
  * EXPRESS OR IMPLIED, INCLUDING BUT NOT LIMITED TO THE WARRANTIES OF
  * MERCHANTABILITY, FITNESS FOR A PARTICULAR PURPOSE AND NONINFRINGEMENT.
@@ -32,17 +43,6 @@ package nom.tam.fits.compress;
  */
 
 import static nom.tam.util.LoggerHelper.getLogger;
-
-import java.io.BufferedInputStream;
-import java.io.File;
-import java.io.FileInputStream;
-import java.io.IOException;
-import java.io.InputStream;
-import java.util.ServiceLoader;
-import java.util.logging.Level;
-import java.util.logging.Logger;
-
-import nom.tam.fits.FitsException;
 
 public final class CompressionManager {
 
@@ -65,7 +65,7 @@ public final class CompressionManager {
     /**
      * This method decompresses a compressed input stream. The decompression
      * method is selected automatically based upon the first two bytes read.
-     * 
+     *
      * @param compressed
      *            The compressed input stream
      * @return A stream which wraps the input stream and decompresses it. If the
@@ -99,7 +99,7 @@ public final class CompressionManager {
     /**
      * Is a file compressed? (the magic number in the first 2 bytes is used to
      * detect the compression.
-     * 
+     *
      * @param file
      *            file to test for compression algorithms
      * @return true if the file is compressed
@@ -108,7 +108,7 @@ public final class CompressionManager {
         if (!file.exists()) {
             return false;
         }
-        
+
         try (InputStream fis = new FileInputStream(file)) {
             int mag1 = fis.read();
             int mag2 = fis.read();
@@ -123,7 +123,7 @@ public final class CompressionManager {
     /**
      * Is a file compressed? (the magic number in the first 2 bytes is used to
      * detect the compression.
-     * 
+     *
      * @param filename
      *            of the file to test for compression algorithms
      * @return true if the file is compressed

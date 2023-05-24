@@ -13,12 +13,12 @@ import nom.tam.image.ITileOption;
  * Copyright (C) 1996 - 2021 nom-tam-fits
  * %%
  * This is free and unencumbered software released into the public domain.
- * 
+ *
  * Anyone is free to copy, modify, publish, use, compile, sell, or
  * distribute this software, either in source code form or as a compiled
  * binary, for any purpose, commercial or non-commercial, and by any
  * means.
- * 
+ *
  * In jurisdictions that recognize copyright laws, the author or authors
  * of this software dedicate any and all copyright interest in the
  * software to the public domain. We make this dedication for the benefit
@@ -26,7 +26,7 @@ import nom.tam.image.ITileOption;
  * successors. We intend this dedication to be an overt act of
  * relinquishment in perpetuity of all present and future rights to this
  * software under copyright law.
- * 
+ *
  * THE SOFTWARE IS PROVIDED "AS IS", WITHOUT WARRANTY OF ANY KIND,
  * EXPRESS OR IMPLIED, INCLUDING BUT NOT LIMITED TO THE WARRANTIES OF
  * MERCHANTABILITY, FITNESS FOR A PARTICULAR PURPOSE AND NONINFRINGEMENT.
@@ -93,9 +93,9 @@ public class QuantizeOption implements ICompressOption {
 
     /**
      * Creates a new set of quantization options, to be used together with the specified compression options.
-     * 
+     *
      * @param compressOption Compression-specific options to pair with these quantization options, or <code>null</code>.
-     * 
+     *
      * @since 1.18
      */
     public QuantizeOption(ICompressOption compressOption) {
@@ -306,11 +306,11 @@ public class QuantizeOption implements ICompressOption {
 
     /**
      * Sets the seed value for the dither random generator
-     * 
+     *
      * @param value The seed value, as in <code>ZDITHER0</code>, normally a number between 1 and 10000 (inclusive).
-     * 
+     *
      * @return itself
-     * 
+     *
      * @see #setTileIndex(int)
      */
     public QuantizeOption setSeed(long value) {
@@ -321,11 +321,11 @@ public class QuantizeOption implements ICompressOption {
     /**
      * Sets the tile index for which to initialize the random number generator with the given seed (i.e.
      * <code>ZDITHER0</code> value).
-     * 
+     *
      * @param index The 0-based tile index
-     * 
+     *
      * @return itself
-     * 
+     *
      * @see #setSeed(long)
      */
     public QuantizeOption setTileIndex(int index) {

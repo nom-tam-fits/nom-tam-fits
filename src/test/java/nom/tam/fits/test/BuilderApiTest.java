@@ -1,5 +1,18 @@
 package nom.tam.fits.test;
 
+import java.math.BigDecimal;
+import java.util.Date;
+
+import org.junit.Assert;
+import org.junit.Test;
+
+import nom.tam.fits.BasicHDU;
+import nom.tam.fits.Fits;
+import nom.tam.fits.FitsDate;
+import nom.tam.fits.FitsException;
+import nom.tam.fits.Header;
+import nom.tam.fits.header.Standard;
+
 /*
  * #%L
  * nom.tam FITS library
@@ -7,12 +20,12 @@ package nom.tam.fits.test;
  * Copyright (C) 1996 - 2021 nom-tam-fits
  * %%
  * This is free and unencumbered software released into the public domain.
- * 
+ *
  * Anyone is free to copy, modify, publish, use, compile, sell, or
  * distribute this software, either in source code form or as a compiled
  * binary, for any purpose, commercial or non-commercial, and by any
  * means.
- * 
+ *
  * In jurisdictions that recognize copyright laws, the author or authors
  * of this software dedicate any and all copyright interest in the
  * software to the public domain. We make this dedication for the benefit
@@ -20,7 +33,7 @@ package nom.tam.fits.test;
  * successors. We intend this dedication to be an overt act of
  * relinquishment in perpetuity of all present and future rights to this
  * software under copyright law.
- * 
+ *
  * THE SOFTWARE IS PROVIDED "AS IS", WITHOUT WARRANTY OF ANY KIND,
  * EXPRESS OR IMPLIED, INCLUDING BUT NOT LIMITED TO THE WARRANTIES OF
  * MERCHANTABILITY, FITNESS FOR A PARTICULAR PURPOSE AND NONINFRINGEMENT.
@@ -30,24 +43,15 @@ package nom.tam.fits.test;
  * OTHER DEALINGS IN THE SOFTWARE.
  * #L%
  */
-
-import static nom.tam.fits.header.Standard.*;
-import static org.junit.Assert.*;
-
-import java.math.BigDecimal;
-import java.math.MathContext;
-import java.util.Date;
-
-import nom.tam.fits.BasicHDU;
-import nom.tam.fits.Fits;
-import nom.tam.fits.FitsDate;
-import nom.tam.fits.Header;
-import nom.tam.fits.FitsException;
-import nom.tam.fits.header.Compression;
-import nom.tam.fits.header.Standard;
-
-import org.junit.Assert;
-import org.junit.Test;
+import static nom.tam.fits.header.Standard.AUTHOR;
+import static nom.tam.fits.header.Standard.COMMENT;
+import static nom.tam.fits.header.Standard.DATAMAX;
+import static nom.tam.fits.header.Standard.DATAMIN;
+import static nom.tam.fits.header.Standard.DATE_OBS;
+import static nom.tam.fits.header.Standard.INSTRUME;
+import static nom.tam.fits.header.Standard.ORIGIN;
+import static nom.tam.fits.header.Standard.THEAP;
+import static nom.tam.fits.header.Standard.TZEROn;
 
 public class BuilderApiTest {
 
@@ -64,21 +68,21 @@ public class BuilderApiTest {
         Date date = new FitsDate("2015-07-11T05:21:25.446").toDate();
 
         header.card(DATE_OBS).value(date).comment("observe date")//
-                .card(INSTRUME).value("The very best")//
-                .card(ORIGIN).value("private")//
-                .card(COMMENT).comment("something to comment")//
-                .card(THEAP).value(2L)//
-                .card(DATAMIN).value(1)//
-                .card(DATAMAX).value(2)//
-                .card(Standard.BSCALE).value(3.0)//
-                .scale(1)//
-                .card(TZEROn.n(5)).value(5.55)//
-                .card(Standard.BZERO).value(6.55)//
-                .card(Standard.EQUINOX).value(new BigDecimal("5.55"))//
-                .noScale()//
-                .card(TZEROn.n(1)).value(1.99999)//
-                .card(TZEROn.n(2)).value(new BigDecimal("1.99999"))//
-                .card(AUTHOR).value(true);
+        .card(INSTRUME).value("The very best")//
+        .card(ORIGIN).value("private")//
+        .card(COMMENT).comment("something to comment")//
+        .card(THEAP).value(2L)//
+        .card(DATAMIN).value(1)//
+        .card(DATAMAX).value(2)//
+        .card(Standard.BSCALE).value(3.0)//
+        .scale(1)//
+        .card(TZEROn.n(5)).value(5.55)//
+        .card(Standard.BZERO).value(6.55)//
+        .card(Standard.EQUINOX).value(new BigDecimal("5.55"))//
+        .noScale()//
+        .card(TZEROn.n(1)).value(1.99999)//
+        .card(TZEROn.n(2)).value(new BigDecimal("1.99999"))//
+        .card(AUTHOR).value(true);
 
         Assert.assertEquals("2015-07-11T05:21:25.446", header.getStringValue(DATE_OBS));
         Assert.assertEquals("observe date", header.findCard(DATE_OBS).getComment());
@@ -100,23 +104,23 @@ public class BuilderApiTest {
         date = new FitsDate("2015-07-12T05:21:25.446").toDate();
         BasicHDU<?> hdu = Fits.makeHDU(header);
         hdu.card(DATE_OBS).value(date).comment("observation date")//
-                .card(INSTRUME).value("The very very best")//
-                .card(ORIGIN).value("other")//
-                .card(COMMENT).comment("something else to comment")//
-                .card(THEAP).value(200L)//
-                .card(DATAMIN).value(100)//
-                .card(DATAMAX).value(200)//
-                .card(Standard.BSCALE).value(300.0)//
-                .precision(4)//
-                .card(TZEROn.n(5)).value(50.55)//
-                .card(Standard.BZERO).value(500.055f)//
-                .card(Standard.EQUINOX).value(new BigDecimal("500.055"))//
-                .card(TZEROn.n(3)).value(600.055f)//
-                .autoPrecision()//
-                .card(TZEROn.n(1)).value(100.99999d)//
-                .card(TZEROn.n(2)).value(new BigDecimal("100.99999"))//
-                .card(TZEROn.n(4)).value(101.999)//
-                .card(AUTHOR).value(false);
+        .card(INSTRUME).value("The very very best")//
+        .card(ORIGIN).value("other")//
+        .card(COMMENT).comment("something else to comment")//
+        .card(THEAP).value(200L)//
+        .card(DATAMIN).value(100)//
+        .card(DATAMAX).value(200)//
+        .card(Standard.BSCALE).value(300.0)//
+        .precision(4)//
+        .card(TZEROn.n(5)).value(50.55)//
+        .card(Standard.BZERO).value(500.055f)//
+        .card(Standard.EQUINOX).value(new BigDecimal("500.055"))//
+        .card(TZEROn.n(3)).value(600.055f)//
+        .autoPrecision()//
+        .card(TZEROn.n(1)).value(100.99999d)//
+        .card(TZEROn.n(2)).value(new BigDecimal("100.99999"))//
+        .card(TZEROn.n(4)).value(101.999)//
+        .card(AUTHOR).value(false);
 
         Assert.assertEquals("2015-07-12T05:21:25.446", header.getStringValue(DATE_OBS));
         Assert.assertEquals("observation date", header.findCard(DATE_OBS).getComment());

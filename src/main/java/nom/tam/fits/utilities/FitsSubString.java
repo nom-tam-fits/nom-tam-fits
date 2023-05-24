@@ -7,12 +7,12 @@ package nom.tam.fits.utilities;
  * Copyright (C) 1996 - 2021 nom-tam-fits
  * %%
  * This is free and unencumbered software released into the public domain.
- * 
+ *
  * Anyone is free to copy, modify, publish, use, compile, sell, or
  * distribute this software, either in source code form or as a compiled
  * binary, for any purpose, commercial or non-commercial, and by any
  * means.
- * 
+ *
  * In jurisdictions that recognize copyright laws, the author or authors
  * of this software dedicate any and all copyright interest in the
  * software to the public domain. We make this dedication for the benefit
@@ -20,7 +20,7 @@ package nom.tam.fits.utilities;
  * successors. We intend this dedication to be an overt act of
  * relinquishment in perpetuity of all present and future rights to this
  * software under copyright law.
- * 
+ *
  * THE SOFTWARE IS PROVIDED "AS IS", WITHOUT WARRANTY OF ANY KIND,
  * EXPRESS OR IMPLIED, INCLUDING BUT NOT LIMITED TO THE WARRANTIES OF
  * MERCHANTABILITY, FITNESS FOR A PARTICULAR PURPOSE AND NONINFRINGEMENT.
@@ -36,9 +36,9 @@ package nom.tam.fits.utilities;
  * by changing the position pointers into the "original" string. This class is
  * aware of the escape quote, two quotes in sequence the respresent a single
  * quote.
- * 
+ *
  * @author Richard van Nieuwenhoven
- * 
+ *
  * @deprecated Was needed by {@link FitsLineAppender} only, which itself is deprecated in
  *              favor of the package-level <code>nom.tam.fits.HeaderCardFormatter</code>.
  */
@@ -62,7 +62,7 @@ public class FitsSubString {
 
     /**
      * constructor for the substring, start by representing the whole string.
-     * 
+     *
      * @param originalString
      *            the string to represent.
      */
@@ -74,7 +74,7 @@ public class FitsSubString {
 
     /**
      * append the current string representation to the StringBuffer.
-     * 
+     *
      * @param buffer
      *            the buffer to append to.
      */
@@ -84,7 +84,7 @@ public class FitsSubString {
 
     /**
      * get the character at the specified position.
-     * 
+     *
      * @param pos
      *            the position the get the character from
      * @return the character at the specified position
@@ -104,7 +104,7 @@ public class FitsSubString {
      * check the string and set it to the maximum length specified. if a escaped
      * quote is on the boundary the length is reduced in a way that the string
      * does not separate an escape quote.
-     * 
+     *
      * @param max
      *            the maximum string legth to set.
      */
@@ -141,7 +141,7 @@ public class FitsSubString {
 
     /**
      * skip over the specified number of characters.
-     * 
+     *
      * @param count
      *            the number of chars to skip
      */

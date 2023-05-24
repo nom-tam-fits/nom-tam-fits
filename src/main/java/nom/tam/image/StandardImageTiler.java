@@ -7,12 +7,12 @@ package nom.tam.image;
  * Copyright (C) 2004 - 2021 nom-tam-fits
  * %%
  * This is free and unencumbered software released into the public domain.
- * 
+ *
  * Anyone is free to copy, modify, publish, use, compile, sell, or
  * distribute this software, either in source code form or as a compiled
  * binary, for any purpose, commercial or non-commercial, and by any
  * means.
- * 
+ *
  * In jurisdictions that recognize copyright laws, the author or authors
  * of this software dedicate any and all copyright interest in the
  * software to the public domain. We make this dedication for the benefit
@@ -20,7 +20,7 @@ package nom.tam.image;
  * successors. We intend this dedication to be an overt act of
  * relinquishment in perpetuity of all present and future rights to this
  * software under copyright law.
- * 
+ *
  * THE SOFTWARE IS PROVIDED "AS IS", WITHOUT WARRANTY OF ANY KIND,
  * EXPRESS OR IMPLIED, INCLUDING BUT NOT LIMITED TO THE WARRANTIES OF
  * MERCHANTABILITY, FITNESS FOR A PARTICULAR PURPOSE AND NONINFRINGEMENT.
@@ -35,11 +35,12 @@ import java.io.IOException;
 import java.lang.reflect.Array;
 import java.util.Arrays;
 
-import edu.umd.cs.findbugs.annotations.SuppressFBWarnings;
 import nom.tam.util.ArrayDataOutput;
 import nom.tam.util.ArrayFuncs;
 import nom.tam.util.RandomAccess;
 import nom.tam.util.type.ElementType;
+
+import edu.umd.cs.findbugs.annotations.SuppressFBWarnings;
 
 /**
  * This class provides a subset of an N-dimensional image. Modified May 2, 2000
@@ -49,7 +50,7 @@ public abstract class StandardImageTiler implements ImageTiler {
     /**
      * @param dims The dimensions of the array.
      * @param pos The index requested.
-     * 
+     *
      * @return the offset of a given position.
      */
     public static long getOffset(int[] dims, int[] pos) {
@@ -71,7 +72,7 @@ public abstract class StandardImageTiler implements ImageTiler {
      * @param start The starting corner values.
      * @param current The current offsets.
      * @param lengths The desired dimensions of the subset.
-     * 
+     *
      * @return <code>true</code> if the current array was changed
      */
     protected static boolean incrementPosition(int[] start, int[] current, int[] lengths) {
@@ -88,7 +89,7 @@ public abstract class StandardImageTiler implements ImageTiler {
      * @param current The current offsets.
      * @param lengths The desired dimensions of the subset.
      * @param steps The desired number of steps to take until the next position.
-     * 
+     *
      * @return <code>true</code> if the current array was changed
      */
     protected static boolean incrementPosition(int[] start, int[] current, int[] lengths, int[] steps) {
@@ -139,7 +140,7 @@ public abstract class StandardImageTiler implements ImageTiler {
      * @param delta The offset from the beginning of the image in bytes.
      * @param outputOffset The index into the output array.
      * @param segment The number of elements to be read for this segment.
-     * 
+     *
      * @throws IOException if the underlying stream failed
      */
     @SuppressFBWarnings(value = "RR_NOT_CHECKED", justification = "this read will never return less than the requested length")
@@ -159,7 +160,7 @@ public abstract class StandardImageTiler implements ImageTiler {
      * @param segment The number of elements to be read for this segment.
      * @param step The number of jumps until the next read. Only works for
      *            streaming out data.
-     * 
+     *
      * @throws IOException if the underlying stream failed
      */
     @SuppressFBWarnings(value = "RR_NOT_CHECKED", justification = "this read will never return less than the requested length")
@@ -196,7 +197,7 @@ public abstract class StandardImageTiler implements ImageTiler {
      * @param output The output stream.
      * @param delta The offset from the beginning of the image in bytes.
      * @param segment The number of elements to be read for this segment.
-     * 
+     *
      * @throws IOException if the underlying stream failed
      */
     @SuppressFBWarnings(value = "RR_NOT_CHECKED", justification = "this read will never return less than the requested length")
@@ -214,7 +215,7 @@ public abstract class StandardImageTiler implements ImageTiler {
      * @param delta The offset from the beginning of the image in bytes.
      * @param segment The number of elements to be read for this segment.
      * @param step The number of elements until the next read.
-     * 
+     *
      * @throws IOException if the underlying stream failed
      *
      * @since 1.18
@@ -244,11 +245,10 @@ public abstract class StandardImageTiler implements ImageTiler {
             // Stop if there is no more to read.
             if (currReadByteCount < 0) {
                 break;
-            } else {
-                output.write(buffer, 0, currReadByteCount);
-                seekOffset = this.randomAccessFile.position() + stepSize;
-                bytesRead += currReadByteCount + stepSize;
             }
+            output.write(buffer, 0, currReadByteCount);
+            seekOffset = this.randomAccessFile.position() + stepSize;
+            bytesRead += currReadByteCount + stepSize;
         }
 
         output.flush();
@@ -267,7 +267,7 @@ public abstract class StandardImageTiler implements ImageTiler {
      * @param output The output tile.
      * @param outputOffset The current offset into the output tile.
      * @param dim The current dimension being
-     * 
+     *
      * @throws IOException If the output is a stream and there is an I/O error.
      */
     protected void fillMemData(Object data, int[] posits, int length, Object output, int outputOffset, int dim)
@@ -289,9 +289,9 @@ public abstract class StandardImageTiler implements ImageTiler {
      * @param outputOffset The current offset into the output tile.
      * @param dim The current dimension being
      * @param step The number of jumps to the next value.
-     * 
+     *
      * @throws IOException If the output is a stream and there is an I/O error.
-     * 
+     *
      * @since 1.18
      */
     protected void fillMemData(Object data, int[] posits, int length, Object output, int outputOffset, int dim, int step)
@@ -501,7 +501,7 @@ public abstract class StandardImageTiler implements ImageTiler {
      *
      * @param corners The starting corner (using 0 as the start) for the image.
      * @param lengths The length requested in each dimension.
-     * 
+     *
      * @throws IOException if the underlying stream failed
      */
     @Override
@@ -519,7 +519,7 @@ public abstract class StandardImageTiler implements ImageTiler {
      * @param lengths The length requested in each dimension.
      * @param steps The number of steps to take until the next read in each axis.
      *            Default should be 1 (next value).
-     * 
+     *
      * @throws IOException if the underlying stream failed
      */
     @Override
@@ -534,7 +534,8 @@ public abstract class StandardImageTiler implements ImageTiler {
 
             if (corners[i] < 0 || lengths[i] < 0 || corners[i] + lengths[i] > this.dims[i]) {
                 throw new IOException("Sub-image not within image");
-            } else if (steps[i] < 1) {
+            }
+            if (steps[i] < 1) {
                 throw new IOException("Step value cannot be less than 1.");
             }
 
@@ -560,7 +561,7 @@ public abstract class StandardImageTiler implements ImageTiler {
      *            memory; useful for web applications.
      * @param corners The corners of the tile.
      * @param lengths The dimensions of the tile.
-     * 
+     *
      * @throws IOException if the underlying stream failed
      */
     @Override
@@ -585,7 +586,7 @@ public abstract class StandardImageTiler implements ImageTiler {
      * @param lengths The dimensions of the tile.
      * @param steps The number of steps to take until the next read in each axis.
      *            Default should be 1 (next value).
-     * 
+     *
      * @throws IOException if the underlying stream failed
      */
     @Override

@@ -1,5 +1,13 @@
 package nom.tam.image.compression;
 
+import java.io.IOException;
+import java.nio.Buffer;
+import java.nio.ByteBuffer;
+import java.util.ArrayList;
+import java.util.Arrays;
+import java.util.List;
+import java.util.logging.Logger;
+
 /*
  * #%L
  * nom.tam FITS library
@@ -7,12 +15,12 @@ package nom.tam.image.compression;
  * Copyright (C) 2004 - 2022 nom-tam-fits
  * %%
  * This is free and unencumbered software released into the public domain.
- * 
+ *
  * Anyone is free to copy, modify, publish, use, compile, sell, or
  * distribute this software, either in source code form or as a compiled
  * binary, for any purpose, commercial or non-commercial, and by any
  * means.
- * 
+ *
  * In jurisdictions that recognize copyright laws, the author or authors
  * of this software dedicate any and all copyright interest in the
  * software to the public domain. We make this dedication for the benefit
@@ -20,7 +28,7 @@ package nom.tam.image.compression;
  * successors. We intend this dedication to be an overt act of
  * relinquishment in perpetuity of all present and future rights to this
  * software under copyright law.
- * 
+ *
  * THE SOFTWARE IS PROVIDED "AS IS", WITHOUT WARRANTY OF ANY KIND,
  * EXPRESS OR IMPLIED, INCLUDING BUT NOT LIMITED TO THE WARRANTIES OF
  * MERCHANTABILITY, FITNESS FOR A PARTICULAR PURPOSE AND NONINFRINGEMENT.
@@ -46,14 +54,6 @@ import nom.tam.image.compression.hdu.CompressedImageHDU;
 import nom.tam.util.ArrayDataOutput;
 import nom.tam.util.ArrayFuncs;
 import nom.tam.util.type.ElementType;
-
-import java.io.IOException;
-import java.nio.Buffer;
-import java.nio.ByteBuffer;
-import java.util.ArrayList;
-import java.util.Arrays;
-import java.util.List;
-import java.util.logging.Logger;
 
 /**
  * Class to extract a sub-image from a compressed image binary table.  This class supports the FITS 3.0 standard and up,
@@ -142,8 +142,8 @@ public class CompressedImageTiler implements ImageTiler {
      * @throws FitsException if any header values cannot be retrieved, or the dimensions are incorrect.
      */
     void getTile(final ArrayDataOutput output, final int[] imageDimensions, final int[] corners, final int[] lengths,
-                 final int[] steps)
-            throws IOException, FitsException {
+            final int[] steps)
+                    throws IOException, FitsException {
 
         final int n = imageDimensions.length;
         final int[] posits = new int[n];
@@ -176,7 +176,7 @@ public class CompressedImageTiler implements ImageTiler {
                     // Multidimensional array
                     final Object tileData = getDecompressedTileData(tileRowPositions, tileDimensions);
                     final StandardImageTiler standardImageTiler = new StandardImageTiler(null, -1,
-                                                                                         tileDimensions, base) {
+                            tileDimensions, base) {
                         @Override
                         protected Object getMemoryImage() {
                             return tileData;
@@ -268,15 +268,14 @@ public class CompressedImageTiler implements ImageTiler {
             final Buffer tileBuffer = decompressIntoBuffer(row, compressed);
             if (hasData(tileBuffer)) {
                 return tileBuffer.array();
-            } else {
-                throw new FitsException("No tile available at column " + columnIndex + ": (" + Arrays.deepToString(row)
-                                        + ")");
             }
+            throw new FitsException("No tile available at column " + columnIndex + ": (" + Arrays.deepToString(row)
+            + ")");
         } catch (IllegalStateException illegalStateException) {
             // This can sometimes happen if the compressed data (or surrounding data) are of incorrect length.  The
             // input is invalid in that case.
             LOGGER.severe("Unable to decompress row data from column " + columnIndex + ": ("
-                          + Arrays.deepToString(row) + ")");
+                    + Arrays.deepToString(row) + ")");
             throw new FitsException(illegalStateException.getMessage(), illegalStateException);
         }
     }
@@ -303,8 +302,8 @@ public class CompressedImageTiler implements ImageTiler {
 
     ICompressorControl getCompressorControl(final ElementType<? extends Buffer> elementType) {
         return CompressorProvider.findCompressorControl(getQuantizAlgorithmName(),
-                                                        getCompressionAlgorithmName(),
-                                                        elementType.primitiveClass());
+                getCompressionAlgorithmName(),
+                elementType.primitiveClass());
     }
 
     ICompressOption initCompressionOption(final ICompressOption option, final int bytePix) {
@@ -325,9 +324,8 @@ public class CompressedImageTiler implements ImageTiler {
         final ElementType<Buffer> bufferElementType = ElementType.forBitpix(zBitPix);
         if (bufferElementType == null) {
             return ElementType.forNearestBitpix(zBitPix);
-        } else {
-            return bufferElementType;
         }
+        return bufferElementType;
     }
 
     /**
@@ -350,7 +348,7 @@ public class CompressedImageTiler implements ImageTiler {
      */
     Object[] getRow(final int[] positions, final int[] tileDimensions) throws FitsException {
         final int[] tileIndexes = getTileIndexes(ArrayFuncs.reverseIndices(positions),
-                                                 ArrayFuncs.reverseIndices(tileDimensions));
+                ArrayFuncs.reverseIndices(tileDimensions));
         final int rowNumber = getRowNumber(tileIndexes);
         return this.compressedImageHDU.getRow(rowNumber);
     }
@@ -438,9 +436,10 @@ public class CompressedImageTiler implements ImageTiler {
         final int[] imageDimensions = getImageDimensions();
 
         if (corners.length != imageDimensions.length || lengths.length != imageDimensions.length
-            || steps.length != imageDimensions.length) {
+                || steps.length != imageDimensions.length) {
             throw new IOException("Inconsistent sub-image request");
-        } else if (output == null) {
+        }
+        if (output == null) {
             throw new IOException("Attempt to write to null data output");
         } else {
             for (int i = 0; i < imageDimensions.length; i++) {
@@ -450,15 +449,14 @@ public class CompressedImageTiler implements ImageTiler {
             }
         }
 
-        if (output instanceof ArrayDataOutput) {
-            try {
-                getTile((ArrayDataOutput) output, imageDimensions, corners, lengths, steps);
-            } catch (FitsException fitsException) {
-                throw new IOException(fitsException.getMessage(), fitsException);
-            }
-        } else {
+        if (!(output instanceof ArrayDataOutput)) {
             throw new UnsupportedOperationException("Only streaming to ArrayDataOutput is supported.  "
-                                                    + "See getTile(ArrayDataOutput, int[], int[], int[].");
+                    + "See getTile(ArrayDataOutput, int[], int[], int[].");
+        }
+        try {
+            getTile((ArrayDataOutput) output, imageDimensions, corners, lengths, steps);
+        } catch (FitsException fitsException) {
+            throw new IOException(fitsException.getMessage(), fitsException);
         }
     }
 
@@ -473,7 +471,7 @@ public class CompressedImageTiler implements ImageTiler {
     @Override
     public Object getTile(int[] corners, int[] lengths) throws IOException {
         throw new UnsupportedOperationException("Only streaming to ArrayDataOutput is supported.  "
-                                                + "See getTile(ArrayDataOutput, int[], int[], int[].");
+                + "See getTile(ArrayDataOutput, int[], int[], int[].");
     }
 
     void initRowOption(final ICompressOption option, final Object[] row) {
@@ -534,7 +532,7 @@ public class CompressedImageTiler implements ImageTiler {
         final int[] tableDimensions = new int[n];
         for (int i = 0; i < n; i++) {
             tableDimensions[i] = Double.valueOf(Math.ceil(Integer.valueOf(getImageAxisLength(i + 1)).doubleValue()
-                                                          / getTileDimensionLength(i + 1))).intValue();
+                    / getTileDimensionLength(i + 1))).intValue();
         }
 
         return tableDimensions;
@@ -561,7 +559,7 @@ public class CompressedImageTiler implements ImageTiler {
 
     int getTileWidth() {
         return getHeader().getIntValue(Compression.ZTILEn.n(1),
-                                       getHeader().getIntValue(Compression.ZNAXISn.n(1)));
+                getHeader().getIntValue(Compression.ZNAXISn.n(1)));
     }
 
     int[] getTileDimensions() throws FitsException {
@@ -579,15 +577,16 @@ public class CompressedImageTiler implements ImageTiler {
 
         if (dimension < 1) {
             throw new FitsException("Dimensions are 1-based (got " + dimension + ").");
-        } else if (dimension > totalDimensions) {
+        }
+        if (dimension > totalDimensions) {
             throw new FitsException("Trying to get tile for dimension " + dimension + " where there are only "
-                                    + totalDimensions + " dimensions in total.");
+                    + totalDimensions + " dimensions in total.");
         }
 
         final int dimensionLength;
         if (dimension == 1) {
             dimensionLength = getHeader().getIntValue(Compression.ZTILEn.n(1),
-                                                      getHeader().getIntValue(Compression.ZNAXISn.n(1)));
+                    getHeader().getIntValue(Compression.ZNAXISn.n(1)));
         } else {
             dimensionLength = getHeader().getIntValue(Compression.ZTILEn.n(dimension), 1);
         }
@@ -598,7 +597,7 @@ public class CompressedImageTiler implements ImageTiler {
     int getTileSize() {
         final int n = getNumberOfDimensions();
         int tileSize = getHeader().getIntValue(Compression.ZTILEn.n(1),
-                                               getHeader().getIntValue(Compression.ZNAXISn.n(1)));
+                getHeader().getIntValue(Compression.ZNAXISn.n(1)));
         for (int i = 2; i <= n; i++) {
             tileSize *= getHeader().getIntValue(Compression.ZTILEn.n(i), 1);
         }

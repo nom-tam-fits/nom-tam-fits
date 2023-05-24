@@ -7,12 +7,12 @@ package nom.tam.fits;
  * Copyright (C) 1996 - 2021 nom-tam-fits
  * %%
  * This is free and unencumbered software released into the public domain.
- * 
+ *
  * Anyone is free to copy, modify, publish, use, compile, sell, or
  * distribute this software, either in source code form or as a compiled
  * binary, for any purpose, commercial or non-commercial, and by any
  * means.
- * 
+ *
  * In jurisdictions that recognize copyright laws, the author or authors
  * of this software dedicate any and all copyright interest in the
  * software to the public domain. We make this dedication for the benefit
@@ -20,7 +20,7 @@ package nom.tam.fits;
  * successors. We intend this dedication to be an overt act of
  * relinquishment in perpetuity of all present and future rights to this
  * software under copyright law.
- * 
+ *
  * THE SOFTWARE IS PROVIDED "AS IS", WITHOUT WARRANTY OF ANY KIND,
  * EXPRESS OR IMPLIED, INCLUDING BUT NOT LIMITED TO THE WARRANTIES OF
  * MERCHANTABILITY, FITNESS FOR A PARTICULAR PURPOSE AND NONINFRINGEMENT.
@@ -38,7 +38,7 @@ import nom.tam.fits.header.IFitsHeader;
 
 /**
  * builder pattern implementation for easy readable header card creation.
- * 
+ *
  * @author nir
  */
 public class HeaderCardBuilder {
@@ -65,7 +65,7 @@ public class HeaderCardBuilder {
 
     /**
      * constructor to the header card builder.
-     * 
+     *
      * @param header
      *            the header to fill.
      * @param key
@@ -78,7 +78,7 @@ public class HeaderCardBuilder {
 
     /**
      * get the current build card of the builder.
-     * 
+     *
      * @return the current card
      */
     public HeaderCard card() {
@@ -88,7 +88,7 @@ public class HeaderCardBuilder {
     /**
      * switch focus to the card with the specified key. If the card does not
      * exist the card will be created when the value or the comment is set.
-     * 
+     *
      * @param newKey
      *            the new card to set
      * @return this
@@ -103,7 +103,7 @@ public class HeaderCardBuilder {
      * set the comment of the current card. If the card does not exist yet the
      * card is created with a null value, if the card needs a value use the
      * value setter first!
-     * 
+     *
      * @param newComment
      *            the new comment to set.
      * @return this
@@ -122,7 +122,7 @@ public class HeaderCardBuilder {
     /**
      * set the value of the current card.If the card did not exist yet the card
      * will be created.
-     * 
+     *
      * @param newValue
      *            the new value to set.
      * @return this
@@ -142,7 +142,7 @@ public class HeaderCardBuilder {
     /**
      * set the value of the current card. If the card did not exist yet the card
      * will be created.
-     * 
+     *
      * @param newValue
      *            the new value to set.
      * @return this
@@ -156,13 +156,13 @@ public class HeaderCardBuilder {
     /**
      * Sets a new number value for the current card. If the card did not exist yet the card
      * will be created.
-     * 
+     *
      * @param value     the new number value to set.
      * @return this
      * @throws HeaderCardException if the card creation failed.
-     * @throws LongValueException 
+     * @throws LongValueException
      *                  if the number value cannot be represented in the space available
-     *                  for it in the 80-character wide FITS header record.    
+     *                  for it in the 80-character wide FITS header record.
      */
     public HeaderCardBuilder value(Number value) throws HeaderCardException, LongValueException {
         if (this.card == null) {
@@ -177,13 +177,13 @@ public class HeaderCardBuilder {
     /**
      * set the value of the current card.If the card did not exist yet the card
      * will be created.
-     * 
+     *
      * @param newValue
      *            the new value to set.
      * @return this
      * @throws HeaderCardException
      *             if the card creation failed.
-     * @throws LongValueException 
+     * @throws LongValueException
      *             if the number value cannot be represented in the space available
      *             for it in the 80-character wide FITS header record.
      */
@@ -200,10 +200,10 @@ public class HeaderCardBuilder {
     /**
      * Sets the number of decimals to show for the following decimal values. This method
      * is now deprecated. Use {@link #precision(int)} instead.
-     * 
+     *
      * @param decimals     the new number of decimal places to show.
      * @return this
-     * 
+     *
      * @deprecated Use {@link #precision(int)} instead.
      */
     @Deprecated
@@ -211,16 +211,16 @@ public class HeaderCardBuilder {
         this.precision = decimals;
         return this;
     }
-    
-    
+
+
     /**
-     * Sets the number of decimals to show for the following decimal values. 
+     * Sets the number of decimals to show for the following decimal values.
      * Trailing zeroes will be ommitted.
-     * 
-     * 
-     * @param decimals     the number of decimals to show for the following decimal values. 
+     *
+     *
+     * @param decimals     the number of decimals to show for the following decimal values.
      * @return              this
-     * 
+     *
      * @since 1.16
      */
     public HeaderCardBuilder precision(int decimals) {
@@ -230,9 +230,9 @@ public class HeaderCardBuilder {
 
     /**
      * This method has been deprecated. Please use {@link #autoPrecision()} instead.
-     * 
+     *
      * @return this
-     * 
+     *
      * @deprecated Use {@link #autoPrecision()} instead
      */
     @Deprecated
@@ -244,16 +244,16 @@ public class HeaderCardBuilder {
     /**
      * Use the native precision for the given number type. Trailing zeroes will be
      * ommitted.
-     * 
+     *
      * @return this
-     * 
+     *
      * @since 1.16
      */
     public HeaderCardBuilder autoPrecision() {
         this.precision = -1;
         return this;
     }
-    
+
     /**
      * @return the filled header.
      */

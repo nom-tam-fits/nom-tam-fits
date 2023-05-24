@@ -1,5 +1,14 @@
 package nom.tam.fits;
 
+import java.io.ByteArrayOutputStream;
+import java.io.PrintStream;
+import java.util.NoSuchElementException;
+
+import org.junit.Assert;
+import org.junit.Test;
+
+import nom.tam.fits.header.Standard;
+
 /*
  * #%L
  * nom.tam FITS library
@@ -7,12 +16,12 @@ package nom.tam.fits;
  * Copyright (C) 1996 - 2021 nom-tam-fits
  * %%
  * This is free and unencumbered software released into the public domain.
- * 
+ *
  * Anyone is free to copy, modify, publish, use, compile, sell, or
  * distribute this software, either in source code form or as a compiled
  * binary, for any purpose, commercial or non-commercial, and by any
  * means.
- * 
+ *
  * In jurisdictions that recognize copyright laws, the author or authors
  * of this software dedicate any and all copyright interest in the
  * software to the public domain. We make this dedication for the benefit
@@ -20,7 +29,7 @@ package nom.tam.fits;
  * successors. We intend this dedication to be an overt act of
  * relinquishment in perpetuity of all present and future rights to this
  * software under copyright law.
- * 
+ *
  * THE SOFTWARE IS PROVIDED "AS IS", WITHOUT WARRANTY OF ANY KIND,
  * EXPRESS OR IMPLIED, INCLUDING BUT NOT LIMITED TO THE WARRANTIES OF
  * MERCHANTABILITY, FITNESS FOR A PARTICULAR PURPOSE AND NONINFRINGEMENT.
@@ -33,15 +42,6 @@ package nom.tam.fits;
 
 import static nom.tam.fits.header.Standard.NAXISn;
 import static nom.tam.fits.header.Standard.XTENSION_IMAGE;
-
-import java.io.ByteArrayOutputStream;
-import java.io.PrintStream;
-import java.util.NoSuchElementException;
-
-import org.junit.Assert;
-import org.junit.Test;
-
-import nom.tam.fits.header.Standard;
 
 public class ProtectedFitsTest {
 
@@ -86,7 +86,7 @@ public class ProtectedFitsTest {
                 .card(Standard.NAXIS).value(2)//
                 .card(NAXISn.n(1)).value(0)//
                 .card(NAXISn.n(2)).value(2)//
-                .card(Standard.NAXIS.BITPIX).value(32)//
+                .card(Standard.BITPIX).value(32)//
                 .header();
 
         Assert.assertFalse(RandomGroupsHDU.isHeader(header));

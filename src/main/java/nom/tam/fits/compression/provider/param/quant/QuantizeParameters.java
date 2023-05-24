@@ -9,12 +9,12 @@ import nom.tam.fits.compression.algorithm.api.ICompressOption;
  * Copyright (C) 1996 - 2021 nom-tam-fits
  * %%
  * This is free and unencumbered software released into the public domain.
- * 
+ *
  * Anyone is free to copy, modify, publish, use, compile, sell, or
  * distribute this software, either in source code form or as a compiled
  * binary, for any purpose, commercial or non-commercial, and by any
  * means.
- * 
+ *
  * In jurisdictions that recognize copyright laws, the author or authors
  * of this software dedicate any and all copyright interest in the
  * software to the public domain. We make this dedication for the benefit
@@ -22,7 +22,7 @@ import nom.tam.fits.compression.algorithm.api.ICompressOption;
  * successors. We intend this dedication to be an overt act of
  * relinquishment in perpetuity of all present and future rights to this
  * software under copyright law.
- * 
+ *
  * THE SOFTWARE IS PROVIDED "AS IS", WITHOUT WARRANTY OF ANY KIND,
  * EXPRESS OR IMPLIED, INCLUDING BUT NOT LIMITED TO THE WARRANTIES OF
  * MERCHANTABILITY, FITNESS FOR A PARTICULAR PURPOSE AND NONINFRINGEMENT.
@@ -41,7 +41,7 @@ import nom.tam.fits.compression.provider.param.base.CompressParameters;
 /**
  * A set of compression parameters used for quantization of floating point data. Quantization is the process of
  * representing floating-point values by integers.
- * 
+ *
  * @author Attila Kovacs
  */
 public class QuantizeParameters extends CompressParameters {
@@ -61,7 +61,7 @@ public class QuantizeParameters extends CompressParameters {
     /**
      * Creates a set of compression parameters used for quantization of floating point data. Quantization is the process
      * of representing floating-point values by integers.
-     * 
+     *
      * @param option The compression option that is configured with the particular parameter values of this object.
      */
     public QuantizeParameters(QuantizeOption option) {

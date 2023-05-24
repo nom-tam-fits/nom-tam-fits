@@ -7,12 +7,12 @@ package nom.tam.fits.test;
  * Copyright (C) 1996 - 2021 nom-tam-fits
  * %%
  * This is free and unencumbered software released into the public domain.
- * 
+ *
  * Anyone is free to copy, modify, publish, use, compile, sell, or
  * distribute this software, either in source code form or as a compiled
  * binary, for any purpose, commercial or non-commercial, and by any
  * means.
- * 
+ *
  * In jurisdictions that recognize copyright laws, the author or authors
  * of this software dedicate any and all copyright interest in the
  * software to the public domain. We make this dedication for the benefit
@@ -20,7 +20,7 @@ package nom.tam.fits.test;
  * successors. We intend this dedication to be an overt act of
  * relinquishment in perpetuity of all present and future rights to this
  * software under copyright law.
- * 
+ *
  * THE SOFTWARE IS PROVIDED "AS IS", WITHOUT WARRANTY OF ANY KIND,
  * EXPRESS OR IMPLIED, INCLUDING BUT NOT LIMITED TO THE WARRANTIES OF
  * MERCHANTABILITY, FITNESS FOR A PARTICULAR PURPOSE AND NONINFRINGEMENT.
@@ -57,8 +57,8 @@ import nom.tam.fits.header.hierarch.BlanksDotHierarchKeyFormatter;
 import nom.tam.fits.header.hierarch.StandardIHierarchKeyFormatter;
 import nom.tam.fits.util.BlackBoxImages;
 import nom.tam.image.ImageTiler;
-import nom.tam.util.FitsFile;
 import nom.tam.util.Cursor;
+import nom.tam.util.FitsFile;
 import nom.tam.util.SafeClose;
 
 public class UserProvidedTest {
@@ -99,7 +99,7 @@ public class UserProvidedTest {
     }
 
     private static ArrayList<Header> getHeaders(String filename) throws IOException, FitsException {
-        ArrayList<Header> list = new ArrayList<Header>();
+        ArrayList<Header> list = new ArrayList<>();
         Fits f = null;
         try {
             f = new Fits(filename);
@@ -281,7 +281,7 @@ public class UserProvidedTest {
             bhduMain = fitsSrc.readHDU(); // Product
             Cursor<String, HeaderCard> iterator = bhduMain.getHeader().iterator();
             while (iterator.hasNext()) {
-                HeaderCard headerCard = (HeaderCard) iterator.next();
+                HeaderCard headerCard = iterator.next();
                 String start = headerCard.getKey();
                 if (start.isEmpty()) {
                     "".toString();
@@ -403,16 +403,16 @@ public class UserProvidedTest {
         //@formatter:off
         Object[][] expected = {
                 new double[][]{
-                      {  54237.5535530787   },
-                      {  54237.55355314815  },
-                      {  54237.553552777776 },
-                      {  54237.553552777776 },
-                      {  54237.553552777776 },
-                      {  54237.553552777776 },
-                      {  54237.553553287034 },
-                      {  54237.553552777776 },
-                      {  54237.55355329861  },
-                      {  54237.55355331019   },
+                    {  54237.5535530787   },
+                    {  54237.55355314815  },
+                    {  54237.553552777776 },
+                    {  54237.553552777776 },
+                    {  54237.553552777776 },
+                    {  54237.553552777776 },
+                    {  54237.553553287034 },
+                    {  54237.553552777776 },
+                    {  54237.55355329861  },
+                    {  54237.55355331019   },
                 },new String[]{
                         "FOCOBS_X_Y_Z"      ,
                         "PHIOBS_X_Y_Z"      ,
@@ -425,27 +425,27 @@ public class UserProvidedTest {
                         "DPHI_X_Y_Z"        ,
                         "DFOCUS_X_Y_Z"
                 }, new double[][]{
-                        {2.78, -4.4, 6.479},  
-                        {0.0040, 0.0060, 0.0},
-                        {23.31, 49.64, 1.3  },
-                        {-12.26, -51.35, 2.7},
-                        {0.04, 0.0060, 0.0  },
-                        {32.86, 52.75, 0.0  },
-                        {0.0065             },
-                        {32.0               },
-                        {0.0, 0.0, 0.0      },
-                        {0.0, 0.0, 0.0      }
-                },new byte[][]{                        
-                        {109, 109, 32, 47, 32, 109, 109, 32, 47, 32, 109, 109},
-                        {100, 101, 103, 32, 47, 32, 100, 101, 103, 32, 47, 32, 100, 101, 103},
-                        {97, 114, 99, 115, 101, 99, 32, 47, 32, 97, 114, 99, 115, 101, 99, 32, 47, 32, 100, 101, 103, 67},
-                        {97, 114, 99, 115, 101, 99, 32, 47, 32, 97, 114, 99, 115, 101, 99, 32, 47, 32, 100, 101, 103, 67},
-                        {100, 101, 103, 32, 47, 32, 100, 101, 103, 32, 47, 32, 100, 101, 103},
-                        {97, 114, 99, 115, 101, 99, 32, 47, 32, 97, 114, 99, 115, 101, 99, 32, 47, 32, 100, 101, 103, 67},
-                        {75, 47, 109},
-                        {45},
-                        {100, 101, 103, 32, 47, 32, 100, 101, 103, 32, 47, 32, 100, 101, 103},
-                        {109, 109, 32, 47, 32, 109, 109, 32, 47, 32, 109, 109},
+                    {2.78, -4.4, 6.479},
+                    {0.0040, 0.0060, 0.0},
+                    {23.31, 49.64, 1.3  },
+                    {-12.26, -51.35, 2.7},
+                    {0.04, 0.0060, 0.0  },
+                    {32.86, 52.75, 0.0  },
+                    {0.0065             },
+                    {32.0               },
+                    {0.0, 0.0, 0.0      },
+                    {0.0, 0.0, 0.0      }
+                },new byte[][]{
+                    {109, 109, 32, 47, 32, 109, 109, 32, 47, 32, 109, 109},
+                    {100, 101, 103, 32, 47, 32, 100, 101, 103, 32, 47, 32, 100, 101, 103},
+                    {97, 114, 99, 115, 101, 99, 32, 47, 32, 97, 114, 99, 115, 101, 99, 32, 47, 32, 100, 101, 103, 67},
+                    {97, 114, 99, 115, 101, 99, 32, 47, 32, 97, 114, 99, 115, 101, 99, 32, 47, 32, 100, 101, 103, 67},
+                    {100, 101, 103, 32, 47, 32, 100, 101, 103, 32, 47, 32, 100, 101, 103},
+                    {97, 114, 99, 115, 101, 99, 32, 47, 32, 97, 114, 99, 115, 101, 99, 32, 47, 32, 100, 101, 103, 67},
+                    {75, 47, 109},
+                    {45},
+                    {100, 101, 103, 32, 47, 32, 100, 101, 103, 32, 47, 32, 100, 101, 103},
+                    {109, 109, 32, 47, 32, 109, 109, 32, 47, 32, 109, 109},
                 }
         };
         //@formatter:on
@@ -457,7 +457,7 @@ public class UserProvidedTest {
                 if (column == 0 || column == 2) {
                     Assert.assertArrayEquals((double[]) expected[column][row], (double[]) element, 0.00001);
                 } else if (column == 1) {
-                    Assert.assertEquals((String) expected[column][row], (String) element);
+                    Assert.assertEquals(expected[column][row], element);
                 } else if (column == 3) {
                     Assert.assertArrayEquals((byte[]) expected[column][row], (byte[]) element);
                 }
@@ -493,11 +493,11 @@ public class UserProvidedTest {
             ImageHDU hdu = (ImageHDU) fits2.getHDU(0);
             ImageTiler tiler = hdu.getTiler();
             double[] values = (double[]) tiler.getTile(new int[]{
-                0,
-                231607
+                    0,
+                    231607
             }, new int[]{
-                1000,
-                1
+                    1000,
+                    1
             });
             Assert.assertEquals(((double[][]) hdu.getKernel())[800][231607], values[800], 0.00000000001d);
             Assert.assertEquals(((double[][]) hdu.getKernel())[850][231607], values[850], 0.00000000001d);

@@ -1,6 +1,6 @@
 package nom.tam.fits.compression;
 
-import static org.junit.Assert.*;
+import static org.junit.Assert.assertEquals;
 
 /*
  * #%L
@@ -9,12 +9,12 @@ import static org.junit.Assert.*;
  * Copyright (C) 1996 - 2021 nom-tam-fits
  * %%
  * This is free and unencumbered software released into the public domain.
- * 
+ *
  * Anyone is free to copy, modify, publish, use, compile, sell, or
  * distribute this software, either in source code form or as a compiled
  * binary, for any purpose, commercial or non-commercial, and by any
  * means.
- * 
+ *
  * In jurisdictions that recognize copyright laws, the author or authors
  * of this software dedicate any and all copyright interest in the
  * software to the public domain. We make this dedication for the benefit
@@ -22,7 +22,7 @@ import static org.junit.Assert.*;
  * successors. We intend this dedication to be an overt act of
  * relinquishment in perpetuity of all present and future rights to this
  * software under copyright law.
- * 
+ *
  * THE SOFTWARE IS PROVIDED "AS IS", WITHOUT WARRANTY OF ANY KIND,
  * EXPRESS OR IMPLIED, INCLUDING BUT NOT LIMITED TO THE WARRANTIES OF
  * MERCHANTABILITY, FITNESS FOR A PARTICULAR PURPOSE AND NONINFRINGEMENT.
@@ -54,6 +54,7 @@ import java.util.stream.IntStream;
 import javax.swing.ImageIcon;
 import javax.swing.JFrame;
 import javax.swing.JLabel;
+import javax.swing.WindowConstants;
 
 import org.junit.Assert;
 import org.junit.Before;
@@ -101,19 +102,19 @@ public class ReadWriteProvidedCompressedImageTest {
     private void assert_float_image(float[][] actual, float[][] expected, float delta) {
         Assert.assertEquals(expected.length, actual.length);
         IntStream.range(0, expected.length).parallel()
-                .forEach(axis0 -> Assert.assertArrayEquals(expected[axis0], actual[axis0], delta));
+        .forEach(axis0 -> Assert.assertArrayEquals(expected[axis0], actual[axis0], delta));
     }
 
     private void assert_int_image(int[][] actual, int[][] expected) {
         Assert.assertEquals(expected.length, actual.length);
         IntStream.range(0, expected.length).parallel()
-                .forEach(axis0 -> Assert.assertArrayEquals(expected[axis0], actual[axis0]));
+        .forEach(axis0 -> Assert.assertArrayEquals(expected[axis0], actual[axis0]));
     }
 
     private void assert_short_image(short[][] actual, short[][] expected) {
         Assert.assertEquals(expected.length, actual.length);
         IntStream.range(0, expected.length).parallel()
-                .forEach(axis0 -> Assert.assertArrayEquals(expected[axis0], actual[axis0]));
+        .forEach(axis0 -> Assert.assertArrayEquals(expected[axis0], actual[axis0]));
     }
 
     /**
@@ -377,7 +378,7 @@ public class ReadWriteProvidedCompressedImageTest {
 
     private void dispayImage(short[][] data) {
         JFrame frame = new JFrame("FrameDemo");
-        frame.setDefaultCloseOperation(JFrame.EXIT_ON_CLOSE);
+        frame.setDefaultCloseOperation(WindowConstants.EXIT_ON_CLOSE);
         frame.pack();
         frame.setVisible(true);
 
@@ -602,12 +603,12 @@ public class ReadWriteProvidedCompressedImageTest {
             ImageHDU hdu = new ImageHDU(ImageHDU.manufactureHeader(imageData), imageData);
             CompressedImageHDU compressedHdu = CompressedImageHDU.fromImageHDU(hdu, 100, 15);
             compressedHdu.setCompressAlgorithm(Compression.ZCMPTYPE_HCOMPRESS_1)//
-                    .setQuantAlgorithm(Compression.ZQUANTIZ_SUBTRACTIVE_DITHER_2)//
-                    .getCompressOption(HCompressorOption.class)//
-                    /**/.setScale(4);
+            .setQuantAlgorithm(Compression.ZQUANTIZ_SUBTRACTIVE_DITHER_2)//
+            .getCompressOption(HCompressorOption.class)//
+            /**/.setScale(4);
             compressedHdu//
-                    .getCompressOption(QuantizeOption.class)//
-                    /**/.setQlevel(1.0)/**/.setCheckNull(true);
+            .getCompressOption(QuantizeOption.class)//
+            /**/.setQlevel(1.0)/**/.setCheckNull(true);
             compressedHdu.compress();
             f.addHDU(compressedHdu);
             f.write(bdos);
@@ -630,36 +631,36 @@ public class ReadWriteProvidedCompressedImageTest {
     @Test
     public void testGzipFallbackCompressed() throws Exception {
         short[][] array = new short[][] {{1000, -2000, 3000, -3000, 4000}, {1000, -2000, 3000, -3000, 4000},
-                {1000, -2000, 3000, -3000, 4000}, {1000, -2000, 3000, -3000, 4000}, {1000, -2000, 3000, -3000, 4000}};
-        Fits f = null;
-        try {
-            f = new Fits();
-            ImageHDU image = (ImageHDU) Fits.makeHDU(array);
-            CompressedImageHDU compressedHdu = CompressedImageHDU.fromImageHDU(image, 5, 1);
-            compressedHdu.setCompressAlgorithm(Compression.ZCMPTYPE_RICE_1)//
-                    .getCompressOption(RiceCompressOption.class)//
-                    /**/.setBlockSize(32);
-            compressedHdu.compress();
-            f.addHDU(compressedHdu);
-            FitsOutputStream bdos = null;
+            {1000, -2000, 3000, -3000, 4000}, {1000, -2000, 3000, -3000, 4000}, {1000, -2000, 3000, -3000, 4000}};
+            Fits f = null;
             try {
-                bdos = new FitsOutputStream(new FileOutputStream("target/write_fallback.fits.fz"));
-                f.write(bdos);
+                f = new Fits();
+                ImageHDU image = (ImageHDU) Fits.makeHDU(array);
+                CompressedImageHDU compressedHdu = CompressedImageHDU.fromImageHDU(image, 5, 1);
+                compressedHdu.setCompressAlgorithm(Compression.ZCMPTYPE_RICE_1)//
+                .getCompressOption(RiceCompressOption.class)//
+                /**/.setBlockSize(32);
+                compressedHdu.compress();
+                f.addHDU(compressedHdu);
+                FitsOutputStream bdos = null;
+                try {
+                    bdos = new FitsOutputStream(new FileOutputStream("target/write_fallback.fits.fz"));
+                    f.write(bdos);
+                } finally {
+                    SafeClose.close(bdos);
+                }
             } finally {
-                SafeClose.close(bdos);
+                SafeClose.close(f);
             }
-        } finally {
-            SafeClose.close(f);
-        }
-        try {
-            f = new Fits("target/write_fallback.fits.fz");
-            f.readHDU(); // the primary
-            CompressedImageHDU hdu = (CompressedImageHDU) f.readHDU();
-            short[][] actualShortArray = (short[][]) hdu.asImageHDU().getData().getData();
-            Assert.assertArrayEquals(array, actualShortArray);
-        } finally {
-            SafeClose.close(f);
-        }
+            try {
+                f = new Fits("target/write_fallback.fits.fz");
+                f.readHDU(); // the primary
+                CompressedImageHDU hdu = (CompressedImageHDU) f.readHDU();
+                short[][] actualShortArray = (short[][]) hdu.asImageHDU().getData().getData();
+                Assert.assertArrayEquals(array, actualShortArray);
+            } finally {
+                SafeClose.close(f);
+            }
     }
 
     @Test
@@ -674,12 +675,12 @@ public class ReadWriteProvidedCompressedImageTest {
             ImageHDU hdu = new ImageHDU(ImageHDU.manufactureHeader(imageData), imageData);
             CompressedImageHDU compressedHdu = CompressedImageHDU.fromImageHDU(hdu, 100, 15);
             compressedHdu.setCompressAlgorithm(Compression.ZCMPTYPE_HCOMPRESS_1)//
-                    .setQuantAlgorithm(Compression.ZQUANTIZ_SUBTRACTIVE_DITHER_2)//
-                    .getCompressOption(HCompressorOption.class)//
-                    /**/.setScale(4);
+            .setQuantAlgorithm(Compression.ZQUANTIZ_SUBTRACTIVE_DITHER_2)//
+            .getCompressOption(HCompressorOption.class)//
+            /**/.setScale(4);
             compressedHdu//
-                    .getCompressOption(QuantizeOption.class)//
-                    /**/.setQlevel(1.0)/**/.setCheckNull(true);
+            .getCompressOption(QuantizeOption.class)//
+            /**/.setQlevel(1.0)/**/.setCheckNull(true);
             compressedHdu.compress();
             f.addHDU(compressedHdu);
             f.write(bdos);
@@ -720,9 +721,9 @@ public class ReadWriteProvidedCompressedImageTest {
             f = new Fits();
             CompressedImageHDU compressedHdu = CompressedImageHDU.fromImageHDU(this.m13, -1, 15);
             compressedHdu.setCompressAlgorithm(Compression.ZCMPTYPE_HCOMPRESS_1)//
-                    .setQuantAlgorithm((String) null)//
-                    .getCompressOption(HCompressorOption.class)//
-                    /**/.setScale(1);
+            .setQuantAlgorithm((String) null)//
+            .getCompressOption(HCompressorOption.class)//
+            /**/.setScale(1);
             compressedHdu.compress();
             f.addHDU(compressedHdu);
             Assert.assertTrue(compressedHdu.isHeader());
@@ -755,24 +756,24 @@ public class ReadWriteProvidedCompressedImageTest {
             f = new Fits();
             CompressedImageHDU compressedHdu = CompressedImageHDU.fromImageHDU(this.m13, 300, 15);
             compressedHdu.setCompressAlgorithm(Compression.ZCMPTYPE_HCOMPRESS_1)//
-                    .setQuantAlgorithm((String) null)//
-                    .getCompressOption(HCompressorOption.class)//
-                    /**/.setScale(1);
+            .setQuantAlgorithm((String) null)//
+            .getCompressOption(HCompressorOption.class)//
+            /**/.setScale(1);
             compressedHdu.compress();
             f.addHDU(compressedHdu);
             compressedHdu = CompressedImageHDU.fromImageHDU(this.m13, 300, 1);
             compressedHdu.setCompressAlgorithm(Compression.ZCMPTYPE_HCOMPRESS_1)//
-                    .setQuantAlgorithm((String) null)//
-                    .getCompressOption(HCompressorOption.class)//
-                    /**/.setScale(1);
+            .setQuantAlgorithm((String) null)//
+            .getCompressOption(HCompressorOption.class)//
+            /**/.setScale(1);
             compressedHdu.compress();
             f.addHDU(compressedHdu);
             compressedHdu = CompressedImageHDU.fromImageHDU(this.m13, 100, 300);
             compressedHdu.setCompressAlgorithm(Compression.ZCMPTYPE_HCOMPRESS_1)//
-                    .setQuantAlgorithm((String) null)//
-                    .getCompressOption(HCompressorOption.class)//
-                    /**/.setSmooth(true)//
-                    /**/.setScale(1);
+            .setQuantAlgorithm((String) null)//
+            .getCompressOption(HCompressorOption.class)//
+            /**/.setSmooth(true)//
+            /**/.setScale(1);
             compressedHdu.compress();
             f.addHDU(compressedHdu);
             FitsOutputStream bdos = null;
@@ -822,18 +823,18 @@ public class ReadWriteProvidedCompressedImageTest {
             f.addHDU(compressedHdu);
             compressedHdu = CompressedImageHDU.fromImageHDU(this.m13real, 300, 1);
             compressedHdu.setCompressAlgorithm(Compression.ZCMPTYPE_HCOMPRESS_1)//
-                    .setQuantAlgorithm(Compression.ZQUANTIZ_SUBTRACTIVE_DITHER_2)//
-                    .getCompressOption(HCompressorOption.class)//
-                    /**/.setScale(1);
+            .setQuantAlgorithm(Compression.ZQUANTIZ_SUBTRACTIVE_DITHER_2)//
+            .getCompressOption(HCompressorOption.class)//
+            /**/.setScale(1);
             compressedHdu.getCompressOption(QuantizeOption.class).setQlevel(1.0);
             compressedHdu.compress();
             f.addHDU(compressedHdu);
             compressedHdu = CompressedImageHDU.fromImageHDU(this.m13real, 100, 300);
             compressedHdu.setCompressAlgorithm(Compression.ZCMPTYPE_HCOMPRESS_1)//
-                    .setQuantAlgorithm(Compression.ZQUANTIZ_SUBTRACTIVE_DITHER_2)//
-                    .getCompressOption(HCompressorOption.class)//
-                    /**/.setSmooth(true)//
-                    /**/.setScale(1);
+            .setQuantAlgorithm(Compression.ZQUANTIZ_SUBTRACTIVE_DITHER_2)//
+            .getCompressOption(HCompressorOption.class)//
+            /**/.setSmooth(true)//
+            /**/.setScale(1);
             compressedHdu.getCompressOption(QuantizeOption.class).setQlevel(1.0);
             compressedHdu.compress();
             f.addHDU(compressedHdu);
@@ -871,26 +872,26 @@ public class ReadWriteProvidedCompressedImageTest {
             f = new Fits();
             CompressedImageHDU compressedHdu = CompressedImageHDU.fromImageHDU(this.m13, 300, 15);
             compressedHdu.setCompressAlgorithm(Compression.ZCMPTYPE_RICE_1)//
-                    .setQuantAlgorithm((String) null)//
-                    .getCompressOption(RiceCompressOption.class)//
-                    /**/.setBlockSize(32)//
-                    /**/.setBytePix(2);
+            .setQuantAlgorithm((String) null)//
+            .getCompressOption(RiceCompressOption.class)//
+            /**/.setBlockSize(32)//
+            /**/.setBytePix(2);
             compressedHdu.compress();
             f.addHDU(compressedHdu);
             compressedHdu = CompressedImageHDU.fromImageHDU(this.m13, 300, 1);
             compressedHdu.setCompressAlgorithm(Compression.ZCMPTYPE_RICE_1)//
-                    .setQuantAlgorithm((String) null)//
-                    .getCompressOption(RiceCompressOption.class)//
-                    /**/.setBlockSize(32)//
-                    /**/.setBytePix(2);
+            .setQuantAlgorithm((String) null)//
+            .getCompressOption(RiceCompressOption.class)//
+            /**/.setBlockSize(32)//
+            /**/.setBytePix(2);
             compressedHdu.compress();
             f.addHDU(compressedHdu);
             compressedHdu = CompressedImageHDU.fromImageHDU(this.m13, 100, 300);
             compressedHdu.setCompressAlgorithm(Compression.ZCMPTYPE_RICE_1)//
-                    .setQuantAlgorithm((String) null)//
-                    .getCompressOption(RiceCompressOption.class)//
-                    /**/.setBlockSize(32)//
-                    /**/.setBytePix(2);
+            .setQuantAlgorithm((String) null)//
+            .getCompressOption(RiceCompressOption.class)//
+            /**/.setBlockSize(32)//
+            /**/.setBytePix(2);
             compressedHdu.compress();
             f.addHDU(compressedHdu);
             FitsOutputStream bdos = null;
@@ -939,10 +940,10 @@ public class ReadWriteProvidedCompressedImageTest {
             f = new Fits();
             CompressedImageHDU compressedHdu = CompressedImageHDU.fromImageHDU(uncompressed, uncompressed.getAxes()[0], 4);
             compressedHdu.setCompressAlgorithm(Compression.ZCMPTYPE_RICE_1)//
-                    .setQuantAlgorithm((String) null)//
-                    .getCompressOption(RiceCompressOption.class)//
-                    /**/.setBlockSize(32)//
-                    /**/.setBytePix(4);
+            .setQuantAlgorithm((String) null)//
+            .getCompressOption(RiceCompressOption.class)//
+            /**/.setBlockSize(32)//
+            /**/.setBytePix(4);
             compressedHdu.compress();
             f.addHDU(compressedHdu);
             FitsOutputStream bdos = null;
@@ -979,26 +980,26 @@ public class ReadWriteProvidedCompressedImageTest {
             f = new Fits();
             CompressedImageHDU compressedHdu = CompressedImageHDU.fromImageHDU(this.m13real, 300, 15);
             compressedHdu.setCompressAlgorithm(Compression.ZCMPTYPE_RICE_1)//
-                    .setQuantAlgorithm(Compression.ZQUANTIZ_SUBTRACTIVE_DITHER_2)//
-                    .getCompressOption(QuantizeOption.class)//
-                    /**/.setQlevel(1.0)//
-                    /**/.getCompressOption(RiceCompressOption.class)//
-                    /*  */.setBlockSize(32);
+            .setQuantAlgorithm(Compression.ZQUANTIZ_SUBTRACTIVE_DITHER_2)//
+            .getCompressOption(QuantizeOption.class)//
+            /**/.setQlevel(1.0)//
+            /**/.getCompressOption(RiceCompressOption.class)//
+            /*  */.setBlockSize(32);
             compressedHdu.compress();
             f.addHDU(compressedHdu);
             compressedHdu = CompressedImageHDU.fromImageHDU(this.m13real, 300, 1);
             compressedHdu.setCompressAlgorithm(Compression.ZCMPTYPE_RICE_1)//
-                    .setQuantAlgorithm(Compression.ZQUANTIZ_SUBTRACTIVE_DITHER_2)//
-                    .getCompressOption(RiceCompressOption.class)//
-                    /**/.setBlockSize(32);
+            .setQuantAlgorithm(Compression.ZQUANTIZ_SUBTRACTIVE_DITHER_2)//
+            .getCompressOption(RiceCompressOption.class)//
+            /**/.setBlockSize(32);
             compressedHdu.getCompressOption(QuantizeOption.class).setQlevel(1.0);
             compressedHdu.compress();
             f.addHDU(compressedHdu);
             compressedHdu = CompressedImageHDU.fromImageHDU(this.m13real, 100, 300);
             compressedHdu.setCompressAlgorithm(Compression.ZCMPTYPE_RICE_1)//
-                    .setQuantAlgorithm(Compression.ZQUANTIZ_SUBTRACTIVE_DITHER_2)//
-                    .getCompressOption(RiceCompressOption.class)//
-                    /**/.setBlockSize(32);
+            .setQuantAlgorithm(Compression.ZQUANTIZ_SUBTRACTIVE_DITHER_2)//
+            .getCompressOption(RiceCompressOption.class)//
+            /**/.setBlockSize(32);
             compressedHdu.getCompressOption(QuantizeOption.class).setQlevel(1.0);
             compressedHdu.compress();
             f.addHDU(compressedHdu);
@@ -1036,12 +1037,12 @@ public class ReadWriteProvidedCompressedImageTest {
             f = new Fits();
             CompressedImageHDU compressedHdu = CompressedImageHDU.fromImageHDU(this.m13real, 300, 15);
             compressedHdu.setCompressAlgorithm(Compression.ZCMPTYPE_RICE_1)//
-                    .setQuantAlgorithm(Compression.ZQUANTIZ_SUBTRACTIVE_DITHER_2)//
-                    .forceNoLoss(140, 140, 20, 20)//
-                    .getCompressOption(QuantizeOption.class)//
-                    /**/.setQlevel(1.0)//
-                    .getCompressOption(RiceCompressOption.class)//
-                    /**/.setBlockSize(32);
+            .setQuantAlgorithm(Compression.ZQUANTIZ_SUBTRACTIVE_DITHER_2)//
+            .forceNoLoss(140, 140, 20, 20)//
+            .getCompressOption(QuantizeOption.class)//
+            /**/.setQlevel(1.0)//
+            .getCompressOption(RiceCompressOption.class)//
+            /**/.setBlockSize(32);
             compressedHdu.compress();
             f.addHDU(compressedHdu);
             FitsOutputStream bdos = null;
@@ -1081,11 +1082,11 @@ public class ReadWriteProvidedCompressedImageTest {
             f = new Fits();
             CompressedImageHDU compressedHdu = CompressedImageHDU.fromImageHDU(m13_double, 300, 15);
             compressedHdu.setCompressAlgorithm(Compression.ZCMPTYPE_RICE_1)//
-                    .setQuantAlgorithm(Compression.ZQUANTIZ_SUBTRACTIVE_DITHER_2)//
-                    .getCompressOption(QuantizeOption.class)//
-                    /**/.setQlevel(1.0)//
-                    .getCompressOption(RiceCompressOption.class)//
-                    /**/.setBlockSize(32);
+            .setQuantAlgorithm(Compression.ZQUANTIZ_SUBTRACTIVE_DITHER_2)//
+            .getCompressOption(QuantizeOption.class)//
+            /**/.setQlevel(1.0)//
+            .getCompressOption(RiceCompressOption.class)//
+            /**/.setBlockSize(32);
             compressedHdu.compress();
             f.addHDU(compressedHdu);
             FitsOutputStream bdos = null;
@@ -1123,12 +1124,12 @@ public class ReadWriteProvidedCompressedImageTest {
             ImageHDU hdu = new ImageHDU(ImageHDU.manufactureHeader(imageData), imageData);
             CompressedImageHDU compressedHdu = CompressedImageHDU.fromImageHDU(hdu, 100, 15);
             compressedHdu.setCompressAlgorithm(Compression.ZCMPTYPE_HCOMPRESS_1)//
-                    .setQuantAlgorithm(Compression.ZQUANTIZ_SUBTRACTIVE_DITHER_2)//
-                    .preserveNulls(Compression.ZCMPTYPE_RICE_1)//
-                    .getCompressOption(QuantizeOption.class)//
-                    /**/.setQlevel(1.0)/**/.setCheckNull(true)//
-                    .getCompressOption(HCompressorOption.class)//
-                    /**/.setScale(4);
+            .setQuantAlgorithm(Compression.ZQUANTIZ_SUBTRACTIVE_DITHER_2)//
+            .preserveNulls(Compression.ZCMPTYPE_RICE_1)//
+            .getCompressOption(QuantizeOption.class)//
+            /**/.setQlevel(1.0)/**/.setCheckNull(true)//
+            .getCompressOption(HCompressorOption.class)//
+            /**/.setScale(4);
             compressedHdu.compress();
             f.addHDU(compressedHdu);
             f.write(bdos);
@@ -1145,9 +1146,9 @@ public class ReadWriteProvidedCompressedImageTest {
             double[][] actual = (double[][]) hdu.asImageHDU().getData().getData();
             for (int index = 0; index < actual.length; index++) {
                 assertArrayEquals(data[index], actual[index], 1d, true); // TODO
-                                                                         // set
-                                                                         // to
-                                                                         // true
+                // set
+                // to
+                // true
             }
         } finally {
             SafeClose.close(f);
@@ -1215,10 +1216,10 @@ public class ReadWriteProvidedCompressedImageTest {
         InputStream fileStream = new BufferedInputStream(new FileInputStream(imageFile));
         Fits fitsFile = new Fits(fileStream);
         fitsFileHDU = fitsFile.read();
-        for (int i = 0; i < fitsFileHDU.length; i++) {
-            if (fitsFileHDU[i].getHeader().containsKey("ZIMAGE")) {
-                if (fitsFileHDU[i].getHeader().getBooleanValue("ZIMAGE")) {
-                    CompressedImageHDU hdu = (CompressedImageHDU) fitsFileHDU[i];
+        for (BasicHDU<?> element : fitsFileHDU) {
+            if (element.getHeader().containsKey("ZIMAGE")) {
+                if (element.getHeader().getBooleanValue("ZIMAGE")) {
+                    CompressedImageHDU hdu = (CompressedImageHDU) element;
                     ImageHDU uncompressedImage = null;
                     uncompressedImage = hdu.asImageHDU();
                 }

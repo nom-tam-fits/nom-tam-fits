@@ -9,12 +9,12 @@ import java.io.EOFException;
  * Copyright (C) 2004 - 2021 nom-tam-fits
  * %%
  * This is free and unencumbered software released into the public domain.
- * 
+ *
  * Anyone is free to copy, modify, publish, use, compile, sell, or
  * distribute this software, either in source code form or as a compiled
  * binary, for any purpose, commercial or non-commercial, and by any
  * means.
- * 
+ *
  * In jurisdictions that recognize copyright laws, the author or authors
  * of this software dedicate any and all copyright interest in the
  * software to the public domain. We make this dedication for the benefit
@@ -22,7 +22,7 @@ import java.io.EOFException;
  * successors. We intend this dedication to be an overt act of
  * relinquishment in perpetuity of all present and future rights to this
  * software under copyright law.
- * 
+ *
  * THE SOFTWARE IS PROVIDED "AS IS", WITHOUT WARRANTY OF ANY KIND,
  * EXPRESS OR IMPLIED, INCLUDING BUT NOT LIMITED TO THE WARRANTIES OF
  * MERCHANTABILITY, FITNESS FOR A PARTICULAR PURPOSE AND NONINFRINGEMENT.
@@ -89,19 +89,19 @@ public abstract class Data implements FitsElement {
     /**
      * Modify a header to point to this data, this differs per subclass, they all need oder provided different
      * informations to the header. Basically they describe the structure of this data object.
-     * 
+     *
      * @param  head          header to fill with the data from the current data object
-     * 
+     *
      * @throws FitsException if the operation fails
      */
     protected abstract void fillHeader(Header head) throws FitsException;
 
     /**
      * Checks if the data should be assumed to be in deferred read mode.
-     * 
+     *
      * @return <code>true</code> if it is set for deferred reading at a later time, or else <code>false</code> if this
      *             data is currently loaded into RAM.
-     * 
+     *
      * @since  1.17
      */
     @SuppressWarnings("resource")
@@ -111,12 +111,12 @@ public abstract class Data implements FitsElement {
 
     /**
      * Checks if the data content is currently empty, i.e. no actual data is currently stored in memory.
-     * 
+     *
      * @return <code>true</code> if there is no actual data in memory, otherwise <code>false</code>
-     * 
+     *
      * @see    #isDeferred()
      * @see    #getCurrentData()
-     * 
+     *
      * @since  1.18
      */
     public boolean isEmpty() {
@@ -130,15 +130,15 @@ public abstract class Data implements FitsElement {
      * mode, you can use {@link FitsCheckSum#checksum(RandomAccess, long, long)} instead directly on the input with this
      * data's {@link #getFileOffset()} and {@link #getSize()} arguments; or equivalently use
      * {@link Fits#calcDatasum(int)}.
-     * 
+     *
      * @return               the computed FITS checksum from the data (fully loaded in memory).
-     * 
+     *
      * @throws FitsException if there was an error while calculating the checksum
-     * 
+     *
      * @see                  Fits#calcDatasum(int)
      * @see                  FitsCheckSum#checksum(RandomAccess, long, long)
      * @see                  FitsCheckSum#checksum(Data)
-     * 
+     *
      * @since                1.17
      */
     public long calcChecksum() throws FitsException {
@@ -148,9 +148,9 @@ public abstract class Data implements FitsElement {
     /**
      * @return               the underlying Java representation of the data core object, such as a multi-dimensional
      *                           Java array.
-     * 
+     *
      * @throws FitsException if the data could not be gathered.
-     * 
+     *
      * @see                  #isDeferred()
      * @see                  #ensureData()
      */
@@ -163,14 +163,14 @@ public abstract class Data implements FitsElement {
      * Returns the data content that is currently in memory. In case of a data object in deferred read state (that is
      * its prescription has been parsed from the header, but no data content was loaded yet from a random accessible
      * input), this call may return <code>null</code> or an object representing empty data.
-     * 
+     *
      * @return The current data content in memory.
-     * 
+     *
      * @see    #getData()
      * @see    #ensureData()
      * @see    #isDeferred()
      * @see    #isEmpty()
-     * 
+     *
      * @since  1.18
      */
     protected abstract Object getCurrentData();
@@ -178,7 +178,7 @@ public abstract class Data implements FitsElement {
     /**
      * Gets the offset of the data segment in the FITS file, from the start of the file. It is used for accessing the
      * data from a radomly accessible input only.
-     * 
+     *
      * @return the file offset (in bytes), or -1 if reading was from an input that is not random accessible
      */
     @Override
@@ -188,9 +188,9 @@ public abstract class Data implements FitsElement {
 
     /**
      * Same as {@link #getData()}.
-     * 
+     *
      * @return               The data content as represented by a Java object..
-     * 
+     *
      * @throws FitsException if the data could not be gathered .
      */
     public final Object getKernel() throws FitsException {
@@ -207,7 +207,7 @@ public abstract class Data implements FitsElement {
 
     /**
      * Returns the calculated byte size of the data, regardless of whether the data is currently in memory or not.
-     * 
+     *
      * @return the calculated byte size for the data.
      */
     protected abstract long getTrueSize();
@@ -222,17 +222,17 @@ public abstract class Data implements FitsElement {
      * <p>
      * Implementations should create appropriate data structures and populate them from the specified input.
      * </p>
-     * 
+     *
      * @param  in            The input from which to load data
-     * 
+     *
      * @throws IOException   if the data could not be loaded from the input.
      * @throws FitsException if the data is garbled.
-     * 
+     *
      * @see                  #read(ArrayDataInput)
      * @see                  #ensureData()
      * @see                  #getData()
      * @see                  #isDeferred()
-     * 
+     *
      * @since                1.18
      */
     protected abstract void loadData(ArrayDataInput in) throws IOException, FitsException;
@@ -249,13 +249,13 @@ public abstract class Data implements FitsElement {
 
     /**
      * Makes sure that data that may have been deferred earlier from a random access input is now loaded into memory.
-     * 
+     *
      * @throws FitsException if the deferred data could not be loaded.
-     * 
+     *
      * @see                  #getData()
      * @see                  #read(ArrayDataInput)
      * @see                  #isDeferred()
-     * 
+     *
      * @since                1.18
      */
     protected void ensureData() throws FitsException {
@@ -285,10 +285,10 @@ public abstract class Data implements FitsElement {
      * amount of RAM, and can result in a significant performance boost when inspectring large FITS files, or using only
      * select content from large FITS files.
      * </p>
-     * 
+     *
      * @throws PaddingException if there is missing padding between the end of the data segment and the enf-of-file.
      * @throws FitsException    if the data appears to be corrupted.
-     * 
+     *
      * @see                     #getData()
      * @see                     #ensureData()
      */
@@ -368,9 +368,9 @@ public abstract class Data implements FitsElement {
 
     /**
      * Record the information necessary for eading the data content at a later time (deferred reading).
-     * 
+     *
      * @param o reread information.
-     * 
+     *
      * @see     #isDeferred()
      */
     protected void setFileOffset(ArrayDataInput o) {
@@ -385,7 +385,7 @@ public abstract class Data implements FitsElement {
 
     /**
      * Write the data -- including any buffering needed
-     * 
+     *
      * @param o The output stream on which to write the data.
      */
     @Override

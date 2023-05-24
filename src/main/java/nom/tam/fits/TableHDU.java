@@ -1,12 +1,12 @@
 package nom.tam.fits;
 
+import nom.tam.fits.header.GenericKey;
+import nom.tam.fits.header.IFitsHeader;
+
 import static nom.tam.fits.header.Standard.NAXISn;
 import static nom.tam.fits.header.Standard.TFIELDS;
 import static nom.tam.fits.header.Standard.TFORMn;
 import static nom.tam.fits.header.Standard.TTYPEn;
-
-import nom.tam.fits.header.GenericKey;
-import nom.tam.fits.header.IFitsHeader;
 
 /*
  * #%L
@@ -15,12 +15,12 @@ import nom.tam.fits.header.IFitsHeader;
  * Copyright (C) 2004 - 2021 nom-tam-fits
  * %%
  * This is free and unencumbered software released into the public domain.
- * 
+ *
  * Anyone is free to copy, modify, publish, use, compile, sell, or
  * distribute this software, either in source code form or as a compiled
  * binary, for any purpose, commercial or non-commercial, and by any
  * means.
- * 
+ *
  * In jurisdictions that recognize copyright laws, the author or authors
  * of this software dedicate any and all copyright interest in the
  * software to the public domain. We make this dedication for the benefit
@@ -28,7 +28,7 @@ import nom.tam.fits.header.IFitsHeader;
  * successors. We intend this dedication to be an overt act of
  * relinquishment in perpetuity of all present and future rights to this
  * software under copyright law.
- * 
+ *
  * THE SOFTWARE IS PROVIDED "AS IS", WITHOUT WARRANTY OF ANY KIND,
  * EXPRESS OR IMPLIED, INCLUDING BUT NOT LIMITED TO THE WARRANTIES OF
  * MERCHANTABILITY, FITNESS FOR A PARTICULAR PURPOSE AND NONINFRINGEMENT.
@@ -42,7 +42,7 @@ import nom.tam.fits.header.IFitsHeader;
 /**
  * This class allows FITS binary and ASCII tables to be accessed via a common
  * interface.
- * 
+ *
  * @param <T> the generic type of table data contained in this HDU instance.
  */
 public abstract class TableHDU<T extends AbstractTableData> extends BasicHDU<T> {
@@ -88,7 +88,7 @@ public abstract class TableHDU<T extends AbstractTableData> extends BasicHDU<T> 
         setDefaultColumnName(nCols);
         return nCols;
     }
-    
+
 
 
     /**
@@ -342,8 +342,8 @@ public abstract class TableHDU<T extends AbstractTableData> extends BasicHDU<T> 
         }
         return ttype;
     }
-    
-    
+
+
     /**
      * @return all of the columns of the table.
      * @throws FitsException
@@ -443,7 +443,7 @@ public abstract class TableHDU<T extends AbstractTableData> extends BasicHDU<T> 
      *            The comment for the header
      * @param after
      *            Should the header card be after the current column metadata
-     *            block (<code>true</code>), or immediately before the TFORM card 
+     *            block (<code>true</code>), or immediately before the TFORM card
      *            (<code>false</code>).
      * @throws HeaderCardException
      *             if the header could not be updated
@@ -467,18 +467,18 @@ public abstract class TableHDU<T extends AbstractTableData> extends BasicHDU<T> 
      *            The comment for the header
      * @param after
      *            Should the header card be after the current column metadata
-     *            block (<code>true</code>), or immediately before the TFORM card 
+     *            block (<code>true</code>), or immediately before the TFORM card
      *            (<code>false</code>).
      * @throws HeaderCardException
      *             if the header could not be updated
-     *             
+     *
      * @since 1.16
      */
     public void setColumnMeta(int index, IFitsHeader key, Number value, String comment, boolean after) throws HeaderCardException {
         setCurrentColumn(index, after);
         this.myHeader.addLine(new HeaderCard(key.n(index + 1).key(), value, comment));
     }
-    
+
     /**
      * Specify column metadata for a given column in a way that allows all of
      * the column metadata for a given column to be organized together.
@@ -493,7 +493,7 @@ public abstract class TableHDU<T extends AbstractTableData> extends BasicHDU<T> 
      *            The comment for the header
      * @param after
      *            Should the header card be after the current column metadata
-     *            block (<code>true</code>), or immediately before the TFORM card 
+     *            block (<code>true</code>), or immediately before the TFORM card
      *            (<code>false</code>).
      * @throws HeaderCardException
      *             if the header could not be updated
@@ -517,7 +517,7 @@ public abstract class TableHDU<T extends AbstractTableData> extends BasicHDU<T> 
      *            The comment for the header
      * @param after
      *            Should the header card be after the current column metadata
-     *            block (<code>true</code>), or immediately before the TFORM card 
+     *            block (<code>true</code>), or immediately before the TFORM card
      *            (<code>false</code>).
      * @throws HeaderCardException
      *             if the header could not be updated
@@ -543,7 +543,7 @@ public abstract class TableHDU<T extends AbstractTableData> extends BasicHDU<T> 
      *            The comment for the header
      * @param after
      *            Should the header card be after the current column metadata
-     *            block (<code>true</code>), or immediately before the TFORM card 
+     *            block (<code>true</code>), or immediately before the TFORM card
      *            (<code>false</code>).
      * @throws HeaderCardException
      *             if the header could not be updated
@@ -552,8 +552,8 @@ public abstract class TableHDU<T extends AbstractTableData> extends BasicHDU<T> 
         setCurrentColumn(index, after);
         this.myHeader.addLine(new HeaderCard(key + (index + 1), value, precision, comment));
     }
-    
- 
+
+
     /**
      * Specify column metadata for a given column in a way that allows all of
      * the column metadata for a given column to be organized together.
@@ -605,21 +605,21 @@ public abstract class TableHDU<T extends AbstractTableData> extends BasicHDU<T> 
     }
 
     private void setDefaultColumnName(int index) {
-        // TODO 
+        // TODO
         // AK: We currently allow undefined column names, but some other software, such as fv, have
         // problemss processing such files. By uncommenting the lines below, we can enable
         // setting default column names when columns are created or added to the table...
         // This should not break anything in principle, but can increase header size,
         // and therefore some of out unit tests may fail, unless adjusted...
-        
-//        try {
-//            setColumnName(index, "Column" + (index + 1), "default column name");
-//        } catch (Exception e) {
-//            // Should not happen.
-//            e.printStackTrace();
-//        }
+
+        //        try {
+        //            setColumnName(index, "Column" + (index + 1), "default column name");
+        //        } catch (Exception e) {
+        //            // Should not happen.
+        //            e.printStackTrace();
+        //        }
     }
-    
+
     /**
      * Set the cursor in the header to point after the metadata for the
      * specified column

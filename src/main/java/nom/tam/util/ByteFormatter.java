@@ -7,12 +7,12 @@ package nom.tam.util;
  * Copyright (C) 2004 - 2021 nom-tam-fits
  * %%
  * This is free and unencumbered software released into the public domain.
- * 
+ *
  * Anyone is free to copy, modify, publish, use, compile, sell, or
  * distribute this software, either in source code form or as a compiled
  * binary, for any purpose, commercial or non-commercial, and by any
  * means.
- * 
+ *
  * In jurisdictions that recognize copyright laws, the author or authors
  * of this software dedicate any and all copyright interest in the
  * software to the public domain. We make this dedication for the benefit
@@ -20,7 +20,7 @@ package nom.tam.util;
  * successors. We intend this dedication to be an overt act of
  * relinquishment in perpetuity of all present and future rights to this
  * software under copyright law.
- * 
+ *
  * THE SOFTWARE IS PROVIDED "AS IS", WITHOUT WARRANTY OF ANY KIND,
  * EXPRESS OR IMPLIED, INCLUDING BUT NOT LIMITED TO THE WARRANTIES OF
  * MERCHANTABILITY, FITNESS FOR A PARTICULAR PURPOSE AND NONINFRINGEMENT.
@@ -33,10 +33,10 @@ package nom.tam.util;
 
 /**
  * @deprecated  This class should not be exposed in the publi API and is meant
- *  for internal use only in ASCII tables. Also, it may have overlapping 
+ *  for internal use only in ASCII tables. Also, it may have overlapping
  *  functionality with other classes, which should probably be eliminated for
  *  simplicity's sake (and thus less chance of nasty bugs).
- * 
+ *
  * This class provides mechanisms for efficiently formatting numbers and
  * Strings. Data is appended to existing byte arrays. Note that the formatting
  * of real or double values may differ slightly (in the last bit) from the
@@ -83,16 +83,16 @@ public final class ByteFormatter {
      * and changing the division by 10 (and it's factors) at various locations.
      */
     private static final byte[] DIGITS = {
-        (byte) '0',
-        (byte) '1',
-        (byte) '2',
-        (byte) '3',
-        (byte) '4',
-        (byte) '5',
-        (byte) '6',
-        (byte) '7',
-        (byte) '8',
-        (byte) '9'
+            (byte) '0',
+            (byte) '1',
+            (byte) '2',
+            (byte) '3',
+            (byte) '4',
+            (byte) '5',
+            (byte) '6',
+            (byte) '7',
+            (byte) '8',
+            (byte) '9'
     };
 
     private static final long DOUBLE_EXPONENT_BIT_MASK = 0x7FF0000000000000L;
@@ -201,7 +201,7 @@ public final class ByteFormatter {
     /**
      * This method formats a double given a decimal mantissa and exponent
      * information.
-     * 
+     *
      * @param val
      *            The original number
      * @param buf
@@ -240,30 +240,28 @@ public final class ByteFormatter {
 
             minSize = lexp + 2; // e.g., 2e-12
             maxSize = lexp + lmant + 2; // add in "." and e
-        } else {
-            if (exp >= 0) {
-                minSize = exp + 1; // e.g. 32
+        } else if (exp >= 0) {
+            minSize = exp + 1; // e.g. 32
 
-                // Special case. E.g., 99.9 has
-                // minumum size of 3.
-                int i;
-                for (i = 0; i < lmant && i <= exp; i++) {
-                    if (mant[i] != (byte) '9') {
-                        break;
-                    }
+            // Special case. E.g., 99.9 has
+            // minumum size of 3.
+            int i;
+            for (i = 0; i < lmant && i <= exp; i++) {
+                if (mant[i] != (byte) '9') {
+                    break;
                 }
-                if (i > exp && i < lmant && mant[i] >= (byte) '5') {
-                    minSize++;
-                }
-
-                maxSize = lmant + 1; // Add in "."
-                if (maxSize <= minSize) { // Very large numbers.
-                    maxSize = minSize + 1;
-                }
-            } else {
-                minSize = 2;
-                maxSize = 1 + Math.abs(exp) + lmant;
             }
+            if (i > exp && i < lmant && mant[i] >= (byte) '5') {
+                minSize++;
+            }
+
+            maxSize = lmant + 1; // Add in "."
+            if (maxSize <= minSize) { // Very large numbers.
+                maxSize = minSize + 1;
+            }
+        } else {
+            minSize = 2;
+            maxSize = 1 + Math.abs(exp) + lmant;
         }
         if (val < 0) {
             minSize++;
@@ -310,7 +308,7 @@ public final class ByteFormatter {
 
     /**
      * Format a boolean into an existing array.
-     * 
+     *
      * @param val
      *            value to write
      * @param array
@@ -323,7 +321,7 @@ public final class ByteFormatter {
 
     /**
      * Format a boolean into an existing array
-     * 
+     *
      * @param val
      *            The boolean to be formatted
      * @param array
@@ -349,7 +347,7 @@ public final class ByteFormatter {
 
     /**
      * Format a double into an array.
-     * 
+     *
      * @param val
      *            The double to be formatted.
      * @param array
@@ -380,7 +378,7 @@ public final class ByteFormatter {
      * decimal point to where we want to see it. Errors can arise due to
      * roundoff in the scaling multiplication, but should be no more than a
      * single bit.
-     * 
+     *
      * @param val
      *            Double to be formatted
      * @param buf
@@ -389,7 +387,7 @@ public final class ByteFormatter {
      *            Offset within buffer
      * @param len
      *            Maximum length of integer
-     * @return offset of next unused character in input buffer. 
+     * @return offset of next unused character in input buffer.
      */
     public int format(double val, byte[] buf, int off, int len) {
 
@@ -398,7 +396,8 @@ public final class ByteFormatter {
         // Special cases -- It is OK if these get truncated.
         if (pos == 0.) {
             return format("0.0", buf, off, len);
-        } else if (Double.isNaN(val)) {
+        }
+        if (Double.isNaN(val)) {
             return format(NOT_A_NUMBER, buf, off, len);
         } else if (Double.isInfinite(val)) {
             if (val > 0) {
@@ -458,7 +457,7 @@ public final class ByteFormatter {
 
     /**
      * Format a float into an array.
-     * 
+     *
      * @param val
      *            The float to be formatted.
      * @param array
@@ -488,7 +487,7 @@ public final class ByteFormatter {
      * have an exponent ( <code>-m</code>). All we have to do is manipulate the
      * decimal point to where we want to see it. Errors can arise due to
      * roundoff in the scaling multiplication, but should be very small.
-     * 
+     *
      * @param val
      *            Float to be formatted
      * @param buf
@@ -507,7 +506,8 @@ public final class ByteFormatter {
         // Special cases
         if (pos == 0.) {
             return format("0.0", buf, off, len);
-        } else if (Float.isNaN(val)) {
+        }
+        if (Float.isNaN(val)) {
             return format(NOT_A_NUMBER, buf, off, len);
         } else if (Float.isInfinite(val)) {
             if (val > 0) {
@@ -567,7 +567,7 @@ public final class ByteFormatter {
 
     /**
      * Format an int into an array.
-     * 
+     *
      * @param val
      *            The int to be formatted.
      * @param array
@@ -580,7 +580,7 @@ public final class ByteFormatter {
 
     /**
      * Format an int into an existing array.
-     * 
+     *
      * @param val
      *            Integer to be formatted
      * @param buf
@@ -646,7 +646,7 @@ public final class ByteFormatter {
 
     /**
      * Format a long into an array.
-     * 
+     *
      * @param val
      *            The long to be formatted.
      * @param array
@@ -659,7 +659,7 @@ public final class ByteFormatter {
 
     /**
      * Format a long into an existing array.
-     * 
+     *
      * @param val
      *            Long to be formatted
      * @param buf
@@ -729,7 +729,7 @@ public final class ByteFormatter {
     /**
      * Insert a string at the beginning of an array. * @return Offset of next
      * available character in buffer.
-     * 
+     *
      * @param val
      *            The string to be inserted. A null string will insert len
      *            spaces.
@@ -744,7 +744,7 @@ public final class ByteFormatter {
     /**
      * Insert a String into an existing character array. If the String is longer
      * than len, then only the the initial len characters will be inserted.
-     * 
+     *
      * @param val
      *            The string to be inserted. A null string will insert len
      *            spaces.
@@ -849,12 +849,11 @@ public final class ByteFormatter {
                 if (buf[i] == (byte) '.' || buf[i] == (byte) '-') {
                     continue;
                 }
-                if (buf[i] == (byte) '9') {
-                    buf[i] = (byte) '0';
-                } else {
+                if (buf[i] != (byte) '9') {
                     buf[i]++;
                     break;
                 }
+                buf[i] = (byte) '0';
             }
 
             // Now we handle 99.99 case. This can cause problems

@@ -68,6 +68,26 @@
 
 package nom.tam.image.compression;
 
+import static org.junit.Assert.assertEquals;
+import static org.junit.Assert.fail;
+
+import java.io.ByteArrayInputStream;
+import java.io.ByteArrayOutputStream;
+import java.io.File;
+import java.io.IOException;
+import java.lang.reflect.Array;
+import java.nio.Buffer;
+import java.nio.ByteBuffer;
+import java.util.ArrayList;
+import java.util.Arrays;
+import java.util.List;
+import java.util.Random;
+import java.util.logging.Level;
+import java.util.logging.Logger;
+
+import org.junit.Assert;
+import org.junit.Test;
+
 /*
  * #%L
  * nom.tam FITS library
@@ -75,12 +95,12 @@ package nom.tam.image.compression;
  * Copyright (C) 1996 - 2022 nom-tam-fits
  * %%
  * This is free and unencumbered software released into the public domain.
- * 
+ *
  * Anyone is free to copy, modify, publish, use, compile, sell, or
  * distribute this software, either in source code form or as a compiled
  * binary, for any purpose, commercial or non-commercial, and by any
  * means.
- * 
+ *
  * In jurisdictions that recognize copyright laws, the author or authors
  * of this software dedicate any and all copyright interest in the
  * software to the public domain. We make this dedication for the benefit
@@ -88,7 +108,7 @@ package nom.tam.image.compression;
  * successors. We intend this dedication to be an overt act of
  * relinquishment in perpetuity of all present and future rights to this
  * software under copyright law.
- * 
+ *
  * THE SOFTWARE IS PROVIDED "AS IS", WITHOUT WARRANTY OF ANY KIND,
  * EXPRESS OR IMPLIED, INCLUDING BUT NOT LIMITED TO THE WARRANTIES OF
  * MERCHANTABILITY, FITNESS FOR A PARTICULAR PURPOSE AND NONINFRINGEMENT.
@@ -121,25 +141,6 @@ import nom.tam.util.DefaultMethodsTest;
 import nom.tam.util.FitsInputStream;
 import nom.tam.util.FitsOutputStream;
 import nom.tam.util.type.ElementType;
-import org.junit.Assert;
-import org.junit.Test;
-
-import java.io.ByteArrayInputStream;
-import java.io.ByteArrayOutputStream;
-import java.io.File;
-import java.io.IOException;
-import java.lang.reflect.Array;
-import java.nio.Buffer;
-import java.nio.ByteBuffer;
-import java.util.ArrayList;
-import java.util.Arrays;
-import java.util.List;
-import java.util.Random;
-import java.util.logging.Level;
-import java.util.logging.Logger;
-
-import static org.junit.Assert.assertEquals;
-import static org.junit.Assert.fail;
 
 public class CompressedImageTilerTest {
     private static final Logger LOGGER = Logger.getLogger(CompressedImageTilerTest.class.getName());
@@ -156,8 +157,8 @@ public class CompressedImageTilerTest {
         final int[] steps = new int[]{1, 2};
         final ByteArrayOutputStream byteArrayOutputStream = new ByteArrayOutputStream();
         try (final Fits sourceFits = new Fits(sourceFile, true);
-             final FitsOutputStream fitsOutputStream = new FitsOutputStream(byteArrayOutputStream);
-             final Fits outputFits = new Fits()) {
+                final FitsOutputStream fitsOutputStream = new FitsOutputStream(byteArrayOutputStream);
+                final Fits outputFits = new Fits()) {
             final CompressedImageHDU compressedImageHDU = (CompressedImageHDU) sourceFits.getHDU(1);
 
             // Adjust the Header.
@@ -183,8 +184,8 @@ public class CompressedImageTilerTest {
         }
 
         try (final FitsInputStream fitsInputStream =
-                     new FitsInputStream(new ByteArrayInputStream(byteArrayOutputStream.toByteArray()));
-             final Fits testFits = new Fits(fitsInputStream)) {
+                new FitsInputStream(new ByteArrayInputStream(byteArrayOutputStream.toByteArray()));
+                final Fits testFits = new Fits(fitsInputStream)) {
             final ImageHDU imageHDU = (ImageHDU) testFits.readHDU();
             Assert.assertArrayEquals("Wrong dimensions.", new int[] {10, 5}, imageHDU.getAxes());
         }
@@ -210,10 +211,10 @@ public class CompressedImageTilerTest {
 
         byte[] data = byteArrayOutputStream.toByteArray();
         assertEquals(String.format("Wrong data (%d)", data.length),
-                     (lengths[0] * lengths[1] * elementType.size()), data.length);
+                (lengths[0] * lengths[1] * elementType.size()), data.length);
 
         Assert.assertArrayEquals("Wrong data shape.", (float[][]) cfitsioTable.asImageHDU().getData().getData(),
-                                 (float[][]) testSubject.getCompleteImage());
+                (float[][]) testSubject.getCompleteImage());
         try {
             testSubject.getTile(cornerStarts, lengths);
             Assert.fail("Should throw UnsupportedOperationException.");
@@ -236,7 +237,7 @@ public class CompressedImageTilerTest {
 
         data = byteArrayOutputStream.toByteArray();
         assertEquals(String.format("Wrong data secondary call (%d)", data.length),
-                     (lengths[0] * lengths[1] * elementType.size()), data.length);
+                (lengths[0] * lengths[1] * elementType.size()), data.length);
     }
 
     @Test
@@ -247,12 +248,12 @@ public class CompressedImageTilerTest {
             final CompressedImageHDU compressedImageHDUFromFile = ((CompressedImageHDU) sourceFits.getHDU(1));
             final CompressedImageHDU compressedImageHDU =
                     new CompressedImageHDU(compressedImageHDUFromFile.getHeader(),
-                                           compressedImageHDUFromFile.getData()) {
-                        @Override
-                        public ImageHDU asImageHDU() throws FitsException {
-                            throw new FitsException("Simulated FitsException");
-                        }
-                    };
+                            compressedImageHDUFromFile.getData()) {
+                @Override
+                public ImageHDU asImageHDU() throws FitsException {
+                    throw new FitsException("Simulated FitsException");
+                }
+            };
 
 
             final CompressedImageTiler testSubject = new CompressedImageTiler(compressedImageHDU);
@@ -305,9 +306,9 @@ public class CompressedImageTilerTest {
             } catch (UnsupportedOperationException unsupportedOperationException) {
                 // Good.
                 Assert.assertEquals("Wrong message.",
-                                    "Only streaming to ArrayDataOutput is supported.  "
-                                    + "See getTile(ArrayDataOutput, int[], int[], int[].",
-                                    unsupportedOperationException.getMessage());
+                        "Only streaming to ArrayDataOutput is supported.  "
+                                + "See getTile(ArrayDataOutput, int[], int[], int[].",
+                                unsupportedOperationException.getMessage());
             }
         }
     }
@@ -383,7 +384,7 @@ public class CompressedImageTilerTest {
         final ArrayDataOutput arrayDataOutput = new FitsOutputStream(byteArrayOutputStream);
         testSubject.getTile(arrayDataOutput, cornerStarts, lengths, steps);
         Assert.assertEquals("Wrong length of output.", lengths[0] * lengths[1] * elementType.size(),
-                            byteArrayOutputStream.toByteArray().length);
+                byteArrayOutputStream.toByteArray().length);
         final long expected = (long) lengths[0] * lengths[1] * elementType.size();
         FitsUtil.pad(arrayDataOutput, expected);
         arrayDataOutput.flush();
@@ -451,15 +452,15 @@ public class CompressedImageTilerTest {
             Assert.fail("Should throw FitsException");
         } catch (FitsException fitsException) {
             Assert.assertEquals("Wrong message",
-                                "No tile available at column 0: (" + Arrays.deepToString(rowData) + ")",
-                                fitsException.getMessage());
+                    "No tile available at column 0: (" + Arrays.deepToString(rowData) + ")",
+                    fitsException.getMessage());
             // Good!
         }
     }
 
     @Test
     public void testDecompressRowIllegalStateException() {
-        final List<String> columnNames = new ArrayList<String>();
+        final List<String> columnNames = new ArrayList<>();
         columnNames.add(Compression.COMPRESSED_DATA_COLUMN);
         columnNames.add(Compression.GZIP_COMPRESSED_DATA_COLUMN);
 
@@ -498,7 +499,7 @@ public class CompressedImageTilerTest {
 
     @Test
     public void doGetNoTileData() {
-        final List<String> columnNames = new ArrayList<String>();
+        final List<String> columnNames = new ArrayList<>();
         columnNames.add(Compression.COMPRESSED_DATA_COLUMN);
         columnNames.add(Compression.ZZERO_COLUMN);
 
@@ -515,9 +516,8 @@ public class CompressedImageTilerTest {
             Object decompressRow(int columnIndex, Object[] row) {
                 if (columnIndex == 0) {
                     return rowData[0];
-                } else {
-                    throw new RuntimeException("Should not get here as index should always be zero (0).");
                 }
+                throw new RuntimeException("Should not get here as index should always be zero (0).");
             }
 
             @Override
@@ -535,14 +535,14 @@ public class CompressedImageTilerTest {
             testSubject.getDecompressedTileData(new int[] {0, 0}, new int[] {16, 4});
         } catch (FitsException fitsException) {
             Assert.assertEquals("Wrong message.", "Nothing in row to read: ([[]]).",
-                                fitsException.getMessage());
+                    fitsException.getMessage());
             // Good!
         }
     }
 
     @Test
     public void doGetGZIPTileData() throws Exception {
-        final List<String> columnNames = new ArrayList<String>();
+        final List<String> columnNames = new ArrayList<>();
         columnNames.add(Compression.COMPRESSED_DATA_COLUMN);
         columnNames.add(Compression.GZIP_COMPRESSED_DATA_COLUMN);
 
@@ -577,8 +577,8 @@ public class CompressedImageTilerTest {
 
         final Object multiDimensionalArray = testSubject.getDecompressedTileData(new int[]{0, 0}, new int[]{16, 4});
         Assert.assertArrayEquals("Wrong array.",
-                                 (float[][]) ArrayFuncs.curl(uncompressedArray, new int[]{16, 4}),
-                                 (float[][]) multiDimensionalArray);
+                (float[][]) ArrayFuncs.curl(uncompressedArray, new int[]{16, 4}),
+                (float[][]) multiDimensionalArray);
     }
 
     @Test
@@ -615,8 +615,8 @@ public class CompressedImageTilerTest {
 
         final Object multiDimensionalArray = testSubject.getDecompressedTileData(new int[]{0, 0}, new int[]{12, 4});
         Assert.assertArrayEquals("Wrong array.",
-                                 (float[][]) ArrayFuncs.curl(decompressedArray, new int[]{12, 4}),
-                                 (float[][]) multiDimensionalArray);
+                (float[][]) ArrayFuncs.curl(decompressedArray, new int[]{12, 4}),
+                (float[][]) multiDimensionalArray);
     }
 
     @Test
@@ -638,7 +638,7 @@ public class CompressedImageTilerTest {
             Assert.fail("Should throw IOException.");
         } catch (IOException ioException) {
             Assert.assertEquals("Wrong message.", "Inconsistent sub-image request",
-                                ioException.getMessage());
+                    ioException.getMessage());
         }
 
         try {
@@ -646,7 +646,7 @@ public class CompressedImageTilerTest {
             Assert.fail("Should throw IOException.");
         } catch (IOException ioException) {
             Assert.assertEquals("Wrong message.", "Inconsistent sub-image request",
-                                ioException.getMessage());
+                    ioException.getMessage());
         }
 
         try {
@@ -654,7 +654,7 @@ public class CompressedImageTilerTest {
             Assert.fail("Should throw IOException.");
         } catch (IOException ioException) {
             Assert.assertEquals("Wrong message.", "Inconsistent sub-image request",
-                                ioException.getMessage());
+                    ioException.getMessage());
         }
 
         try {
@@ -662,7 +662,7 @@ public class CompressedImageTilerTest {
             Assert.fail("Should throw IOException.");
         } catch (IOException ioException) {
             Assert.assertEquals("Wrong message.", "Attempt to write to null data output",
-                                ioException.getMessage());
+                    ioException.getMessage());
         }
 
         try {
@@ -671,7 +671,7 @@ public class CompressedImageTilerTest {
             Assert.fail("Should throw IOException.");
         } catch (IOException ioException) {
             Assert.assertEquals("Wrong message.", "Sub-image not within image",
-                                ioException.getMessage());
+                    ioException.getMessage());
         }
 
         try {
@@ -680,7 +680,7 @@ public class CompressedImageTilerTest {
             Assert.fail("Should throw IOException.");
         } catch (IOException ioException) {
             Assert.assertEquals("Wrong message.", "Sub-image not within image",
-                                ioException.getMessage());
+                    ioException.getMessage());
         }
     }
 
@@ -694,17 +694,17 @@ public class CompressedImageTilerTest {
 
             @Override
             int getNumberOfDimensions() {
-                 return 2;
+                return 2;
             }
         };
 
         // Start at 21, 21 and get offsets for tiles of size 5x5.
         Assert.assertArrayEquals("Wrong offset.", new int[]{1, 1},
-                                 testSubject.getTileOffsets(new int[] {21, 21}, new int[] {5, 5}));
+                testSubject.getTileOffsets(new int[] {21, 21}, new int[] {5, 5}));
 
         // Start at 21, 21 and get offsets for tiles of size 5x5.
         Assert.assertArrayEquals("Wrong offset.", new int[]{4, 4},
-                                 testSubject.getTileOffsets(new int[] {19, 4}, new int[] {5, 5}));
+                testSubject.getTileOffsets(new int[] {19, 4}, new int[] {5, 5}));
     }
 
     @Test
@@ -722,7 +722,7 @@ public class CompressedImageTilerTest {
         };
 
         Assert.assertEquals("Wrong block size.", CompressedImageTiler.DEFAULT_BLOCK_SIZE,
-                            testSubject.getBlockSize());
+                testSubject.getBlockSize());
 
         final Header header = new Header();
         header.addValue(Compression.ZNAMEn.n(2), Compression.BLOCKSIZE);
@@ -763,7 +763,7 @@ public class CompressedImageTilerTest {
         };
 
         Assert.assertEquals("Wrong base type.", "UnknownType",
-                            testSubject.getBaseType().getClass().getSimpleName());
+                testSubject.getBaseType().getClass().getSimpleName());
 
         testSubject = new CompressedImageTiler(null) {
             @Override
@@ -779,7 +779,7 @@ public class CompressedImageTilerTest {
         };
 
         Assert.assertEquals("Wrong base type.", ElementType.forBitpix(32).type(),
-                            testSubject.getBaseType().type());
+                testSubject.getBaseType().type());
     }
 
     @Test
@@ -815,12 +815,12 @@ public class CompressedImageTilerTest {
     public void doTestGetTileOutArray() throws Exception {
         final File sourceFile = new File("src/test/resources/nom/tam/image/provided/m13real_rice.fits");
         try (final Fits sourceFits = new Fits(sourceFile, true);
-             final ArrayDataOutput output = new FitsOutputStream(new ByteArrayOutputStream())) {
+                final ArrayDataOutput output = new FitsOutputStream(new ByteArrayOutputStream())) {
 
             final CompressedImageHDU compressedImageHDUFromFile = ((CompressedImageHDU) sourceFits.getHDU(1));
             final CompressedImageHDU compressedImageHDU =
                     new CompressedImageHDU(compressedImageHDUFromFile.getHeader(),
-                                           compressedImageHDUFromFile.getData());
+                            compressedImageHDUFromFile.getData());
             final CompressedImageTiler testSubject = new CompressedImageTiler(compressedImageHDU) {
                 @Override
                 void init() {
@@ -979,7 +979,7 @@ public class CompressedImageTilerTest {
         final long expected = ((long) (lengths[0] / steps[0]) * (lengths[1] / steps[1])) * bufferElementType.size();
         testSubject.getTile(arrayDataOutput, cornerStarts, lengths, steps);
         Assert.assertEquals("Wrong length of output.",
-                            expected, byteArrayOutputStream.toByteArray().length);
+                expected, byteArrayOutputStream.toByteArray().length);
         FitsUtil.pad(arrayDataOutput, expected);
         arrayDataOutput.flush();
         arrayDataOutput.close();
@@ -1018,7 +1018,7 @@ public class CompressedImageTilerTest {
             final CompressedImageHDU compressedImageHDU = (CompressedImageHDU) sourceFits.getHDU(1);
 
             Assert.assertArrayEquals("Wrong decompressed axes.", new int[]{300, 300},
-                                     compressedImageHDU.getImageAxes());
+                    compressedImageHDU.getImageAxes());
 
             compressedImageHDU.getHeader().findCard(Compression.ZNAXIS).setValue(0);
             Assert.assertNull("Should be null origin axes.", compressedImageHDU.getImageAxes());
@@ -1032,7 +1032,7 @@ public class CompressedImageTilerTest {
             }
 
             compressedImageHDU.getHeader().findCard(Compression.ZNAXIS)
-                              .setValue(CompressedImageHDU.MAX_NAXIS_ALLOWED + 1);
+            .setValue(CompressedImageHDU.MAX_NAXIS_ALLOWED + 1);
             try {
                 compressedImageHDU.getImageAxes();
                 fail("Should throw FitsException.");

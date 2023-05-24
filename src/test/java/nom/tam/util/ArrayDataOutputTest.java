@@ -4,7 +4,7 @@ package nom.tam.util;
  * #%L
  * nom.tam FITS library
  * %%
- * Copyright (C) 1996 - 2022 nom-tam-fits
+ * Copyright (C) 1996 - 2023 nom-tam-fits
  * %%
  * This is free and unencumbered software released into the public domain.
  * 
@@ -31,7 +31,6 @@ package nom.tam.util;
  * #L%
  */
 
-import java.io.ByteArrayOutputStream;
 import java.io.IOException;
 
 import org.junit.Test;
@@ -40,11 +39,11 @@ import nom.tam.fits.FitsFactory;
 
 public class ArrayDataOutputTest {
 
-    
+
     @Test
     public void testHDUWriteNonFitsStream() throws Exception {
         int[][] data = new int[2][2];
-        
+
         ArrayDataOutput o = new ArrayDataOutput() {
 
             @Override
@@ -121,12 +120,12 @@ public class ArrayDataOutputTest {
 
             @Override
             public void writeArray(Object o) throws IOException, IllegalArgumentException {}
-            
+
         };
-        
+
 
         FitsFactory.hduFactory(data).write(o);
-        
+
         // All is good if wse got this far without an exception.
     }
 }

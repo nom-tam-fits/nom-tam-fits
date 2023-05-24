@@ -1,5 +1,15 @@
 package nom.tam.fits;
 
+import java.io.IOException;
+import java.lang.reflect.Array;
+
+import nom.tam.fits.header.Bitpix;
+import nom.tam.fits.header.Standard;
+import nom.tam.util.ArrayDataInput;
+import nom.tam.util.ArrayDataOutput;
+import nom.tam.util.ArrayFuncs;
+import nom.tam.util.FitsEncoder;
+
 /*-
  * #%L
  * nom.tam FITS library
@@ -7,12 +17,12 @@ package nom.tam.fits;
  * Copyright (C) 1996 - 2023 nom-tam-fits
  * %%
  * This is free and unencumbered software released into the public domain.
- * 
+ *
  * Anyone is free to copy, modify, publish, use, compile, sell, or
  * distribute this software, either in source code form or as a compiled
  * binary, for any purpose, commercial or non-commercial, and by any
  * means.
- * 
+ *
  * In jurisdictions that recognize copyright laws, the author or authors
  * of this software dedicate any and all copyright interest in the
  * software to the public domain. We make this dedication for the benefit
@@ -20,7 +30,7 @@ package nom.tam.fits;
  * successors. We intend this dedication to be an overt act of
  * relinquishment in perpetuity of all present and future rights to this
  * software under copyright law.
- * 
+ *
  * THE SOFTWARE IS PROVIDED "AS IS", WITHOUT WARRANTY OF ANY KIND,
  * EXPRESS OR IMPLIED, INCLUDING BUT NOT LIMITED TO THE WARRANTIES OF
  * MERCHANTABILITY, FITNESS FOR A PARTICULAR PURPOSE AND NONINFRINGEMENT.
@@ -36,16 +46,7 @@ import static nom.tam.fits.header.Standard.GROUPS;
 import static nom.tam.fits.header.Standard.NAXISn;
 import static nom.tam.fits.header.Standard.PCOUNT;
 
-import java.io.IOException;
-import java.lang.reflect.Array;
-
 import edu.umd.cs.findbugs.annotations.SuppressFBWarnings;
-import nom.tam.fits.header.Bitpix;
-import nom.tam.fits.header.Standard;
-import nom.tam.util.ArrayDataInput;
-import nom.tam.util.ArrayDataOutput;
-import nom.tam.util.ArrayFuncs;
-import nom.tam.util.FitsEncoder;
 
 /**
  * This class instantiates FITS Random Groups data. Random groups are instantiated as a two-dimensional array of
@@ -67,10 +68,10 @@ public class RandomGroupsData extends Data {
 
     /**
      * Constructor used by RandomGroupsHDU only...
-     * 
+     *
      * @param gcount The number of parameter groups
      * @param sampleRow The 2-element array of a sample group.
-     * 
+     *
      * @since 1.18
      */
     RandomGroupsData(int gcount, Object[] sampleRow) {
@@ -81,9 +82,9 @@ public class RandomGroupsData extends Data {
 
     /**
      * Create a RandomGroupsData object using the specified object to initialize the data array.
-     * 
+     *
      * @param x The initial data array. This should a two-d array of objects as described above.
-     * 
+     *
      * @throws IllegalArgumentException if the second array dimension is specified and it is not 2, or if the parameter
      *             arrya is not 1-dimensional, or if the parameter and data types differ.
      */
@@ -107,7 +108,7 @@ public class RandomGroupsData extends Data {
 
                 if (pbase != dbase) {
                     throw new IllegalArgumentException("Mismatched parameters and data types (" + pbase.getName()
-                            + " vs " + dbase.getName() + ")");
+                    + " vs " + dbase.getName() + ")");
                 }
             }
 
@@ -119,9 +120,9 @@ public class RandomGroupsData extends Data {
 
     /**
      * Returns the Java class of the the parameter and data array elements.
-     * 
+     *
      * @return The java class of the parameter and data elements.
-     * 
+     *
      * @since 1,18
      */
     public Class<?> getElementType() {
@@ -130,11 +131,11 @@ public class RandomGroupsData extends Data {
 
     /**
      * Returns the dimensions of the grouped parameters
-     * 
+     *
      * @return The dimensions of the parameters or -1 if not defined.
-     * 
+     *
      * @see #getDataDims()
-     * 
+     *
      * @since 1.18
      */
     public int getParameterCount() {
@@ -143,11 +144,11 @@ public class RandomGroupsData extends Data {
 
     /**
      * Returns the dimensions of the grouped data
-     * 
+     *
      * @return The dimensions of the parameters, or <code>null</code> if not defined.
-     * 
+     *
      * @see #getParameterCount()
-     * 
+     *
      * @since 1.18
      */
     public int[] getDataDims() {
@@ -182,7 +183,7 @@ public class RandomGroupsData extends Data {
 
     /**
      * Get the size of the actual data element in the file, not counting padding.
-     * 
+     *
      * @return The size of the data content in the FITS file, excluding padding.
      */
     @Override

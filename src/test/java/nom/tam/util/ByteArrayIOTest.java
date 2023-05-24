@@ -7,12 +7,12 @@ package nom.tam.util;
  * Copyright (C) 1996 - 2021 nom-tam-fits
  * %%
  * This is free and unencumbered software released into the public domain.
- * 
+ *
  * Anyone is free to copy, modify, publish, use, compile, sell, or
  * distribute this software, either in source code form or as a compiled
  * binary, for any purpose, commercial or non-commercial, and by any
  * means.
- * 
+ *
  * In jurisdictions that recognize copyright laws, the author or authors
  * of this software dedicate any and all copyright interest in the
  * software to the public domain. We make this dedication for the benefit
@@ -20,7 +20,7 @@ package nom.tam.util;
  * successors. We intend this dedication to be an overt act of
  * relinquishment in perpetuity of all present and future rights to this
  * software under copyright law.
- * 
+ *
  * THE SOFTWARE IS PROVIDED "AS IS", WITHOUT WARRANTY OF ANY KIND,
  * EXPRESS OR IMPLIED, INCLUDING BUT NOT LIMITED TO THE WARRANTIES OF
  * MERCHANTABILITY, FITNESS FOR A PARTICULAR PURPOSE AND NONINFRINGEMENT.
@@ -37,28 +37,26 @@ import java.io.EOFException;
 
 import org.junit.Test;
 
-import nom.tam.util.ByteArrayIO;
-
 public class ByteArrayIOTest {
 
     @Test(expected = IllegalArgumentException.class)
     public void testInvalidConstructorArgument() throws Exception {
         new ByteArrayIO(0);
     }
-    
+
     @Test
     public void testPosition1() throws Exception {
         ByteArrayIO b = new ByteArrayIO(10);
         b.position(0);
         assertEquals("beginning", 0L, b.position());
-        
+
         b.position(5);
         assertEquals("inside", 5L, b.position());
-        
+
         b.position(10);
         assertEquals("end", 10L, b.position());
     }
-    
+
     @Test
     public void testReadWrite() throws Exception {
         ByteArrayIO b = new ByteArrayIO(10);
@@ -70,25 +68,25 @@ public class ByteArrayIOTest {
 
         b.write(1);
         b.write(data, 1, 9);
-        
+
         b.position(0);
         assertEquals("read()", 1, b.read());
-        
+
         byte[] read = new byte[10];
-        
+
         assertEquals("read array", 9, b.read(read, 1, 9));
 
         for(int i = 1; i < 10; i++) {
             assertEquals("read[" + i + "]", data[i], read[i]);
         }
     }
-   
+
     @Test(expected = EOFException.class)
     public void testNegativePosition() throws Exception {
         ByteArrayIO b = new ByteArrayIO(10);
         b.position(-1);
     }
-    
+
     @Test
     public void testPositionBeyondGrowable() throws Exception {
         ByteArrayIO b = new ByteArrayIO(10);
@@ -98,34 +96,34 @@ public class ByteArrayIOTest {
         b.write(new byte[40], 0, 40);
         assertEquals(60L, b.length());
     }
-    
+
     @Test
     public void testReadBeyond1() throws Exception {
         ByteArrayIO b = new ByteArrayIO(10);
         b.position(11);
         assertEquals(-1, b.read());
     }
-    
+
     @Test
     public void testReadBeyond2() throws Exception {
         ByteArrayIO b = new ByteArrayIO(10);
         b.position(11);
         assertEquals(-1, b.read(new byte[40], 0, 40));
     }
-    
-    
+
+
     @Test(expected = EOFException.class)
     public void testPositionBeyondFixed() throws Exception {
         ByteArrayIO b = new ByteArrayIO(new byte[10]);
         b.position(11);
     }
-    
+
     @Test(expected = EOFException.class)
     public void testWriteBeyondFixed() throws Exception {
         ByteArrayIO b = new ByteArrayIO(new byte[10]);
         b.write(new byte[11], 0, 11);
     }
-    
+
     @Test(expected = EOFException.class)
     public void testWriteBeyondFixed2() throws Exception {
         ByteArrayIO b = new ByteArrayIO(new byte[10]);
@@ -133,14 +131,14 @@ public class ByteArrayIOTest {
             b.write(i);
         }
     }
-    
+
     @Test
     public void testWriteBeyondGrowable() throws Exception {
         ByteArrayIO b = new ByteArrayIO(10);
         b.write(new byte[11], 0, 11);
         assertEquals(11L, b.length());
     }
-    
+
     @Test
     public void testWriteBeyondGrowable2() throws Exception {
         ByteArrayIO b = new ByteArrayIO(10);
@@ -149,39 +147,39 @@ public class ByteArrayIOTest {
         }
         assertEquals(11L, b.length());
     }
-    
+
     @Test
     public void testReadBeyondGrowable() throws Exception {
         ByteArrayIO b = new ByteArrayIO(10);
         b.setLength(10);
         assertEquals(10, b.read(new byte[11], 0, 11));
     }
-    
+
     @Test
     public void testReadBeyondFixed() throws Exception {
         ByteArrayIO b = new ByteArrayIO(new byte[10]);
         b.setLength(10);
         assertEquals(10, b.read(new byte[11], 0, 11));
     }
-    
+
     @Test(expected = IllegalArgumentException.class)
     public void testNegativeLength() throws Exception {
         ByteArrayIO b = new ByteArrayIO(new byte[10]);
         b.setLength(-1);
     }
-    
+
     @Test(expected = IllegalArgumentException.class)
     public void testSetLengthBeyondFixed() throws Exception {
         ByteArrayIO b = new ByteArrayIO(new byte[10]);
         b.setLength(11);
     }
-    
+
     @Test
     public void testSetLengthBeyondGrowable() throws Exception {
         ByteArrayIO b = new ByteArrayIO(10);
         b.setLength(11);
     }
-    
+
     @Test
     public void testTruncate() throws Exception {
         ByteArrayIO b = new ByteArrayIO(10);
@@ -189,44 +187,44 @@ public class ByteArrayIOTest {
         b.setLength(5);
         assertEquals(5, b.position());
     }
-    
+
     @Test
     public void testGrowPow2() throws Exception {
         ByteArrayIO b = new ByteArrayIO(16);
         b.setLength(32);
         assertEquals(32, b.capacity());
     }
-    
+
     @Test
     public void testReadNegativeLength() throws Exception {
         ByteArrayIO b = new ByteArrayIO(16);
         assertEquals(0, b.read(new byte[10], 0, -1));
     }
-    
+
     @Test
     public void testWriteAgain() throws Exception {
         ByteArrayIO b = new ByteArrayIO(10);
         byte[] b1 = new byte[] { 10, 11, 12 };
         byte[] b2 = new byte[] { 20, 21, 22 };
-        
+
         b.write(1);
         b.write(b1, 0, b1.length);
         b.position(0);
         assertEquals("len", 1 + b1.length, b.length());
-        
+
         b.write(b2, 0, b2.length);
         b.write(2);
         assertEquals("pos", 1 + b2.length, b.position());
-        
+
         b.position(0);
         byte[] bi = new byte[b2.length];
         b.read(bi, 0, bi.length);
-        
+
         assertEquals("single", 2, b.read());
         for (int i=0; i<bi.length; i++) {
             assertEquals("[" + i + "]", b2[i], bi[i]);
         }
     }
-    
-    
+
+
 }

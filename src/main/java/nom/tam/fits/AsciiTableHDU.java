@@ -1,5 +1,12 @@
 package nom.tam.fits;
 
+import java.io.PrintStream;
+
+import nom.tam.fits.header.IFitsHeader;
+import nom.tam.fits.header.Standard;
+import nom.tam.util.ArrayFuncs;
+import nom.tam.util.Cursor;
+
 /*
  * #%L
  * nom.tam FITS library
@@ -7,12 +14,12 @@ package nom.tam.fits;
  * Copyright (C) 2004 - 2021 nom-tam-fits
  * %%
  * This is free and unencumbered software released into the public domain.
- * 
+ *
  * Anyone is free to copy, modify, publish, use, compile, sell, or
  * distribute this software, either in source code form or as a compiled
  * binary, for any purpose, commercial or non-commercial, and by any
  * means.
- * 
+ *
  * In jurisdictions that recognize copyright laws, the author or authors
  * of this software dedicate any and all copyright interest in the
  * software to the public domain. We make this dedication for the benefit
@@ -20,7 +27,7 @@ package nom.tam.fits;
  * successors. We intend this dedication to be an overt act of
  * relinquishment in perpetuity of all present and future rights to this
  * software under copyright law.
- * 
+ *
  * THE SOFTWARE IS PROVIDED "AS IS", WITHOUT WARRANTY OF ANY KIND,
  * EXPRESS OR IMPLIED, INCLUDING BUT NOT LIMITED TO THE WARRANTIES OF
  * MERCHANTABILITY, FITNESS FOR A PARTICULAR PURPOSE AND NONINFRINGEMENT.
@@ -42,13 +49,6 @@ import static nom.tam.fits.header.Standard.TUNITn;
 import static nom.tam.fits.header.Standard.TZEROn;
 import static nom.tam.fits.header.Standard.XTENSION;
 import static nom.tam.fits.header.Standard.XTENSION_ASCIITABLE;
-
-import java.io.PrintStream;
-
-import nom.tam.fits.header.IFitsHeader;
-import nom.tam.fits.header.Standard;
-import nom.tam.util.ArrayFuncs;
-import nom.tam.util.Cursor;
 
 /**
  * FITS ASCII table header/data unit
@@ -78,11 +78,11 @@ public class AsciiTableHDU extends TableHDU<AsciiTable> {
 
     /**
      * @deprecated This should be for internal use only. Will reduce visibility in the future
-     * 
+     *
      * @return a ASCII table data structure from an array of objects representing the columns.
-     * 
+     *
      * @param o the array of object to create the ASCII table
-     * 
+     *
      * @throws FitsException if the table could not be created.
      */
     @Deprecated
@@ -98,9 +98,9 @@ public class AsciiTableHDU extends TableHDU<AsciiTable> {
 
     /**
      * @deprecated This should be for internal use only. Will reduce visibility in the future
-     * 
+     *
      * @return true if this data is usable as an ASCII table.
-     * 
+     *
      * @param o object representing the data
      */
     @Deprecated
@@ -127,9 +127,9 @@ public class AsciiTableHDU extends TableHDU<AsciiTable> {
      * Check that this is a valid ascii table header.
      *
      * @deprecated This should be for internal use only. Will reduce visibility in the future
-     * 
+     *
      * @param header to validate.
-     * 
+     *
      * @return <CODE>true</CODE> if this is an ascii table header.
      */
     @Deprecated
@@ -141,13 +141,13 @@ public class AsciiTableHDU extends TableHDU<AsciiTable> {
 
     /**
      * Prepares a data object into which the actual data can be read from an input subsequently or at a later time.
-     * 
+     *
      * @deprecated This should be for internal use only. Will reduce visibility in the future
-     * 
+     *
      * @param hdr The FITS header that describes the data
-     * 
+     *
      * @return A data object that support reading content from a stream.
-     * 
+     *
      * @throws FitsException if the data could not be prepared to prescriotion.
      */
     @Deprecated
@@ -157,11 +157,11 @@ public class AsciiTableHDU extends TableHDU<AsciiTable> {
 
     /**
      * @deprecated This should be for internal use only. Will reduce visibility in the future
-     * 
+     *
      * @return a created header to match the input data.
-     * 
+     *
      * @param d data to create a header for
-     * 
+     *
      * @throws FitsException if the header could not b e created
      */
     @Deprecated
@@ -212,7 +212,7 @@ public class AsciiTableHDU extends TableHDU<AsciiTable> {
     /**
      * @param row row index of the element
      * @param col column index of the element
-     * 
+     *
      * @return <code>true</code> if an element is null
      */
     public boolean isNull(int row, int col) {
@@ -242,7 +242,7 @@ public class AsciiTableHDU extends TableHDU<AsciiTable> {
      *
      * @param col the column index
      * @param newNull the String representing null
-     * 
+     *
      * @throws IllegalArgumentException if the string argument contains characters that are not allowed in FITS headers.
      *             That is if it contains characters outside the range of 0x20 thru 0x7E.
      */

@@ -72,12 +72,12 @@ import nom.tam.util.test.ThrowAnyException;
  * Copyright (C) 1996 - 2021 nom-tam-fits
  * %%
  * This is free and unencumbered software released into the public domain.
- * 
+ *
  * Anyone is free to copy, modify, publish, use, compile, sell, or
  * distribute this software, either in source code form or as a compiled
  * binary, for any purpose, commercial or non-commercial, and by any
  * means.
- * 
+ *
  * In jurisdictions that recognize copyright laws, the author or authors
  * of this software dedicate any and all copyright interest in the
  * software to the public domain. We make this dedication for the benefit
@@ -85,7 +85,7 @@ import nom.tam.util.test.ThrowAnyException;
  * successors. We intend this dedication to be an overt act of
  * relinquishment in perpetuity of all present and future rights to this
  * software under copyright law.
- * 
+ *
  * THE SOFTWARE IS PROVIDED "AS IS", WITHOUT WARRANTY OF ANY KIND,
  * EXPRESS OR IMPLIED, INCLUDING BUT NOT LIMITED TO THE WARRANTIES OF
  * MERCHANTABILITY, FITNESS FOR A PARTICULAR PURPOSE AND NONINFRINGEMENT.
@@ -289,7 +289,7 @@ public class BaseFitsTest {
         Fits fits2 = new Fits("target/UndefindedHDU.fits");
         BasicHDU<?>[] hdus = fits2.read();
 
-        byte[] rereadUndefinedData = (byte[]) ((UndefinedData) hdus[hdus.length - 1].getData()).getData();
+        byte[] rereadUndefinedData = ((UndefinedData) hdus[hdus.length - 1].getData()).getData();
         Assert.assertArrayEquals(undefinedData, rereadUndefinedData);
     }
 
@@ -312,7 +312,7 @@ public class BaseFitsTest {
         Fits fits2 = new Fits("target/UndefindedHDU2.fits");
         BasicHDU<?>[] hdus = fits2.read();
 
-        byte[] rereadUndefinedData = (byte[]) ((UndefinedData) hdus[hdus.length - 1].getData()).getData();
+        byte[] rereadUndefinedData = ((UndefinedData) hdus[hdus.length - 1].getData()).getData();
         Assert.assertArrayEquals(undefinedData, rereadUndefinedData);
     }
 
@@ -378,7 +378,7 @@ public class BaseFitsTest {
         Fits fits2 = new Fits("target/UndefindedHDU4.fits");
         BasicHDU<?>[] hdus = fits2.read();
 
-        byte[] rereadUndefinedData = (byte[]) ((UndefinedData) hdus[hdus.length - 1].getData()).getData();
+        byte[] rereadUndefinedData = ((UndefinedData) hdus[hdus.length - 1].getData()).getData();
         Assert.assertArrayEquals(undefinedData, rereadUndefinedData);
 
         ByteArrayOutputStream out = new ByteArrayOutputStream();
@@ -399,7 +399,7 @@ public class BaseFitsTest {
         head.addValue("PCOUNT", 0, null);
         head.addValue("GCOUNT", 2, null);
         UndefinedHDU hdu = (UndefinedHDU) FitsFactory.hduFactory(head);
-        byte[] data = (byte[]) hdu.getData().getData();
+        byte[] data = hdu.getData().getData();
         Assert.assertEquals(2000, data.length);
         Arrays.fill(data, (byte) 1);
         FitsFile buf = new FitsFile("target/testFitsUndefinedHdu5", "rw");
@@ -409,7 +409,7 @@ public class BaseFitsTest {
 
         buf = new FitsFile("target/testFitsUndefinedHdu5", "rw");
         hdu.read(buf);
-        data = (byte[]) hdu.getData().getData();
+        data = hdu.getData().getData();
         buf.close();
         Assert.assertEquals((byte) 1, data[0]);
 
@@ -430,9 +430,10 @@ public class BaseFitsTest {
         try {
             os = new FitsOutputStream(new ByteArrayOutputStream()) {
 
+                @Override
                 public void write(byte[] b) throws IOException {
                     ThrowAnyException.throwIOException("could not write");
-                };
+                }
             };
             hdu.getData().write(os);
         } catch (FitsException io) {
@@ -529,8 +530,8 @@ public class BaseFitsTest {
         Assert.assertTrue(actual.getMessage().toLowerCase().contains("invalid"));
         FitsFactory.setAllowHeaderRepairs(false);
         header.card(Standard.NAXIS).value(2)//
-                .card(NAXISn.n(2)).value(2)//
-                .card(Standard.NAXIS.BITPIX).value(22);
+        .card(NAXISn.n(2)).value(2)//
+        .card(Standard.BITPIX).value(22);
         actual = null;
         try {
             RandomGroupsHDU.manufactureData(header);
@@ -540,7 +541,7 @@ public class BaseFitsTest {
         Assert.assertNotNull(actual);
         Assert.assertTrue(actual.getMessage().contains("BITPIX"));
         header.card(NAXISn.n(2)).value(-2)//
-                .card(Standard.NAXIS.BITPIX).value(32);
+        .card(Standard.BITPIX).value(32);
         actual = null;
         try {
             RandomGroupsHDU.manufactureData(header);
@@ -561,7 +562,7 @@ public class BaseFitsTest {
                 .card(Standard.NAXIS).value(2)//
                 .card(NAXISn.n(1)).value(0)//
                 .card(NAXISn.n(2)).value(2)//
-                .card(Standard.NAXIS.BITPIX).value(32)//
+                .card(Standard.BITPIX).value(32)//
                 .header();
         RandomGroupsData data = RandomGroupsHDU.manufactureData(header);
         Assert.assertEquals(0, data.getData().length);
@@ -691,7 +692,7 @@ public class BaseFitsTest {
         hdu.read(stream);
         hdu.getHeader().getStringValue("TESTER");
 
-        byte[] rereadUndefinedData = (byte[]) hdu.getData().getData();
+        byte[] rereadUndefinedData = hdu.getData().getData();
         Assert.assertArrayEquals(undefinedData, rereadUndefinedData);
     }
 
@@ -967,11 +968,11 @@ public class BaseFitsTest {
         DataOutput out = (DataOutput) Proxy.newProxyInstance(getClass().getClassLoader(), new Class[] {DataOutput.class},
                 new InvocationHandler() {
 
-                    @Override
-                    public Object invoke(Object proxy, Method method, Object[] args) throws Throwable {
-                        return null;
-                    }
-                });
+            @Override
+            public Object invoke(Object proxy, Method method, Object[] args) throws Throwable {
+                return null;
+            }
+        });
 
         new Fits().write(out);
     }
@@ -1179,6 +1180,7 @@ public class BaseFitsTest {
     @Test(expected = FitsException.class)
     public void testWriteToFitsStreamAsDataOutputException() throws Exception {
         FitsOutputStream o = new FitsOutputStream(new FileOutputStream(new File(TMP_FITS_NAME))) {
+            @Override
             public void flush() throws IOException {
                 throw new IOException("flush disabled.");
             }

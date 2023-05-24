@@ -7,12 +7,12 @@ package nom.tam.util;
  * Copyright (C) 2004 - 2021 nom-tam-fits
  * %%
  * This is free and unencumbered software released into the public domain.
- * 
+ *
  * Anyone is free to copy, modify, publish, use, compile, sell, or
  * distribute this software, either in source code form or as a compiled
  * binary, for any purpose, commercial or non-commercial, and by any
  * means.
- * 
+ *
  * In jurisdictions that recognize copyright laws, the author or authors
  * of this software dedicate any and all copyright interest in the
  * software to the public domain. We make this dedication for the benefit
@@ -20,7 +20,7 @@ package nom.tam.util;
  * successors. We intend this dedication to be an overt act of
  * relinquishment in perpetuity of all present and future rights to this
  * software under copyright law.
- * 
+ *
  * THE SOFTWARE IS PROVIDED "AS IS", WITHOUT WARRANTY OF ANY KIND,
  * EXPRESS OR IMPLIED, INCLUDING BUT NOT LIMITED TO THE WARRANTIES OF
  * MERCHANTABILITY, FITNESS FOR A PARTICULAR PURPOSE AND NONINFRINGEMENT.
@@ -53,7 +53,7 @@ public final class ArrayFuncs {
 
     /**
      * Retuens a copy of the input array with the order of elements reversed.
-     * 
+     *
      * @param index     the input array
      * @return          a copy of the input array in reversed order
      */
@@ -111,7 +111,7 @@ public final class ArrayFuncs {
 
     /**
      * Use {@link FitsEncoder#computeSize(Object)} instead.
-     * 
+     *
      * @param o     the object
      * @return      the number of bytes in the FITS binary representation of the object or
      *              0 if the object has no FITS representation. (Also elements not known to
@@ -123,8 +123,8 @@ public final class ArrayFuncs {
     }
 
     /**
-     * Use {@link FitsEncoder#computeSize(Object)} instead. 
-     * 
+     * Use {@link FitsEncoder#computeSize(Object)} instead.
+     *
      * @param o     the object
      * @return      the number of bytes in the FITS binary representation of the object or
      *              0 if the object has no FITS representation. (Also elements not known to
@@ -177,11 +177,11 @@ public final class ArrayFuncs {
 
     /**
      * @deprecated No longer used within the library itself.
-     * 
+     *
      * Copy one array into another. This function copies the contents of one
      * array into a previously allocated array. The arrays must agree in type
      * and size.
-     * 
+     *
      * @param original
      *            The array to be copied.
      * @param copy
@@ -196,17 +196,17 @@ public final class ArrayFuncs {
         if (!cl.isArray()) {
             throw new IllegalArgumentException("original is not an array");
         }
-        
+
         if (!copy.getClass().equals(cl)) {
             throw new IllegalArgumentException("mismatch of types: " + cl.getName() + " vs " + copy.getClass().getName());
         }
-        
+
         int length = Array.getLength(original);
-        
+
         if (Array.getLength(copy) != length) {
             throw new IllegalArgumentException("mismatch of sizes: " + length + " vs " + Array.getLength(copy));
         }
-        
+
         if (original instanceof Object[]) {
             Object[] from = (Object[]) original;
             Object[] to = (Object[]) copy;
@@ -221,7 +221,7 @@ public final class ArrayFuncs {
     /**
      * Copy an array into an array of a different type. The dimensions and
      * dimensionalities of the two arrays should be the same.
-     * 
+     *
      * @param array
      *            The original array.
      * @param mimic
@@ -233,7 +233,7 @@ public final class ArrayFuncs {
 
     /**
      * Curl an input array up into a multi-dimensional array.
-     * 
+     *
      * @param input
      *            The one dimensional array to be curled.
      * @param dimens
@@ -302,7 +302,7 @@ public final class ArrayFuncs {
 
     /**
      * Given an array of arbitrary dimensionality .
-     * 
+     *
      * @return the array flattened into a single dimension.
      * @param input
      *            The input array.
@@ -331,7 +331,7 @@ public final class ArrayFuncs {
      * variety of ways which are trapped so that it returns null instead. This
      * method will generally create a shallow clone. If you wish a deep copy of
      * an array the method deepClone should be used.
-     * 
+     *
      * @param o
      *            The object to be cloned.
      * @return the clone
@@ -356,7 +356,7 @@ public final class ArrayFuncs {
      * This routine returns the base array of a multi-dimensional array. I.e., a
      * one-d array of whatever the array is composed of. Note that arrays are
      * not guaranteed to be rectangular, so this returns o[0][0]....
-     * 
+     *
      * @param o
      *            the multi-dimensional array
      * @return base array of a multi-dimensional array.
@@ -371,7 +371,7 @@ public final class ArrayFuncs {
     /**
      * This routine returns the base class of an object. This is just the class
      * of the object for non-arrays.
-     * 
+     *
      * @param o
      *            array to get the base class from
      * @return the base class of an array
@@ -389,7 +389,7 @@ public final class ArrayFuncs {
 
     /**
      * This routine returns the size of the base element of an array.
-     * 
+     *
      * @param o
      *            The array object whose base length is desired.
      * @return the size of the object in bytes, 0 if null, or -1 if not a
@@ -409,7 +409,7 @@ public final class ArrayFuncs {
      * returns an array of dimension 0 for scalar objects and it returns -1 for
      * dimension which have not been allocated, e.g., <code>int[][][] x = new
      * int[100][][];</code> should return [100,-1,-1].
-     * 
+     *
      * @param o
      *            The object to get the dimensions of.
      * @return the dimensions of an object
@@ -449,7 +449,7 @@ public final class ArrayFuncs {
     /**
      * Create an array of a type given by new type with the dimensionality given
      * in array.
-     * 
+     *
      * @return the new array with same dimensions
      * @param array
      *            A possibly multidimensional array to be converted.
@@ -468,7 +468,7 @@ public final class ArrayFuncs {
         if (dims <= 1) {
             return ArrayFuncs.newInstance(newType, Array.getLength(array));
         }
-        
+
         Object[] xarray = (Object[]) array;
         int[] dimens = new int[dims];
         dimens[0] = xarray.length; // Leave other dimensions at 0.
@@ -509,7 +509,7 @@ public final class ArrayFuncs {
      * Allocate an array dynamically. The Array.newInstance method does not
      * throw an error when there is insufficient memory and silently returns a
      * null.throws an OutOfMemoryError if insufficient space is available.
-     * 
+     *
      * @param cl
      *            The class of the array.
      * @param dim
@@ -524,7 +524,7 @@ public final class ArrayFuncs {
      * Allocate an array dynamically. The Array.newInstance method does not
      * throw an error and silently returns a null.throws an OutOfMemoryError if
      * insufficient space is available.
-     * 
+     *
      * @param cl
      *            The class of the array.
      * @param dims
@@ -535,7 +535,7 @@ public final class ArrayFuncs {
         if (dims.length == 0) {
             // Treat a scalar as a 1-d array of length 1
             dims = new int[]{
-                1
+                    1
             };
         }
         return Array.newInstance(cl, dims);
@@ -561,19 +561,19 @@ public final class ArrayFuncs {
             }
             return count;
 
-        } 
-        
+        }
+
         if (o.getClass().isArray()) {
             return Array.getLength(o);
-        } 
-        
+        }
+
         return 1;
     }
 
     /**
      * Reverse an integer array. This can be especially useful when dealing with
      * an array of indices in FITS order that you wish to have in Java order.
-     * 
+     *
      * @return the reversed array.
      * @param indices
      *            the array to reverse

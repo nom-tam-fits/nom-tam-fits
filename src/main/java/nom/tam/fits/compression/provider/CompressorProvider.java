@@ -7,12 +7,12 @@ package nom.tam.fits.compression.provider;
  * Copyright (C) 1996 - 2021 nom-tam-fits
  * %%
  * This is free and unencumbered software released into the public domain.
- * 
+ *
  * Anyone is free to copy, modify, publish, use, compile, sell, or
  * distribute this software, either in source code form or as a compiled
  * binary, for any purpose, commercial or non-commercial, and by any
  * means.
- * 
+ *
  * In jurisdictions that recognize copyright laws, the author or authors
  * of this software dedicate any and all copyright interest in the
  * software to the public domain. We make this dedication for the benefit
@@ -20,7 +20,7 @@ package nom.tam.fits.compression.provider;
  * successors. We intend this dedication to be an overt act of
  * relinquishment in perpetuity of all present and future rights to this
  * software under copyright law.
- * 
+ *
  * THE SOFTWARE IS PROVIDED "AS IS", WITHOUT WARRANTY OF ANY KIND,
  * EXPRESS OR IMPLIED, INCLUDING BUT NOT LIMITED TO THE WARRANTIES OF
  * MERCHANTABILITY, FITNESS FOR A PARTICULAR PURPOSE AND NONINFRINGEMENT.
@@ -104,18 +104,18 @@ public class CompressorProvider implements ICompressorProvider {
         protected TileCompressorControl(Class<?> compressorClass) {
             this.constructor = (Constructor<ICompressor<Buffer>>) compressorClass.getConstructors()[0];
             this.optionClass = (Class<? extends ICompressOption>) (this.constructor.getParameterTypes().length == 0 ?
-                                                                   null :
-                                                                   this.constructor.getParameterTypes()[0]);
+                    null :
+                        this.constructor.getParameterTypes()[0]);
         }
 
         /**
          * Sets the floating-point type to quantize to use for this tile compressor.
-         * 
+         *
          * @param floatingPointType Floating-point primitive type to quantize. Must be either <code>double.class</code>
          *            or else <code>float.class</code>.
-         * 
+         *
          * @return itself
-         * 
+         *
          * @since 1.18
          */
         protected TileCompressorControl setQuantType(Class<?> floatingPointType) {
@@ -180,7 +180,7 @@ public class CompressorProvider implements ICompressorProvider {
 
             ICompressor<Buffer> compressor = this.constructor.getParameterTypes().length == 0 ?
                     this.constructor.newInstance() :
-                    this.constructor.newInstance(option);
+                        this.constructor.newInstance(option);
 
             if (quantOption != null && quantType != null) {
                 if (quantType.equals(double.class)) {

@@ -19,12 +19,12 @@ import nom.tam.util.type.ElementType;
  * Copyright (C) 1996 - 2021 nom-tam-fits
  * %%
  * This is free and unencumbered software released into the public domain.
- * 
+ *
  * Anyone is free to copy, modify, publish, use, compile, sell, or
  * distribute this software, either in source code form or as a compiled
  * binary, for any purpose, commercial or non-commercial, and by any
  * means.
- * 
+ *
  * In jurisdictions that recognize copyright laws, the author or authors
  * of this software dedicate any and all copyright interest in the
  * software to the public domain. We make this dedication for the benefit
@@ -32,7 +32,7 @@ import nom.tam.util.type.ElementType;
  * successors. We intend this dedication to be an overt act of
  * relinquishment in perpetuity of all present and future rights to this
  * software under copyright law.
- * 
+ *
  * THE SOFTWARE IS PROVIDED "AS IS", WITHOUT WARRANTY OF ANY KIND,
  * EXPRESS OR IMPLIED, INCLUDING BUT NOT LIMITED TO THE WARRANTIES OF
  * MERCHANTABILITY, FITNESS FOR A PARTICULAR PURPOSE AND NONINFRINGEMENT.
@@ -52,7 +52,7 @@ import nom.tam.util.type.ElementType;
  * @author Richard White
  * @author William Pence
  * @author Richard van Nieuwenhoven
- * 
+ *
  * @param <T> the genetic type of NIO buffer on which this compressor operates.
  */
 public abstract class RiceCompressor<T extends Buffer> implements ICompressor<T> {
@@ -209,7 +209,7 @@ public abstract class RiceCompressor<T extends Buffer> implements ICompressor<T>
     /*
      * nonzero_count is lookup table giving number of bits in 8-bit values not including leading zeros used in
      * fits_rdecomp, fits_rdecomp_short and fits_rdecomp_byte.
-     * 
+     *
      * @formatter:off
      */
     private static final int[] NONZERO_COUNT = {0, 1, 2, 2, 3, 3, 3, 3, 4, 4, 4, 4, 4, 4, 4, 4, 5, 5, 5, 5, 5, 5, 5, 5,
@@ -267,7 +267,7 @@ public abstract class RiceCompressor<T extends Buffer> implements ICompressor<T>
      *
      * @param lastpix the current last pix value
      * @param diff the difference to "add"
-     * 
+     *
      * @return return the new lastpiy value
      */
     private long undoMappingAndDifferencing(long lastpix, long diff) {
@@ -365,36 +365,36 @@ public abstract class RiceCompressor<T extends Buffer> implements ICompressor<T>
                 for (int j = 0; j < thisblock; j++) {
                     int v = (int) diff[j];
                     int top = v >> fs;
-                    /*
-                     * top is coded by top zeros + 1
-                     */
-                    if (bitsToGo >= top + 1) {
-                        bitBuffer <<= top + 1;
-                        bitBuffer |= 1;
-                        bitsToGo -= top + 1;
-                    } else {
-                        bitBuffer <<= bitsToGo;
-                        buffer.putByte((byte) (bitBuffer & BYTE_MASK));
-                        for (top -= bitsToGo; top >= BITS_OF_1_BYTE; top -= BITS_OF_1_BYTE) {
-                            buffer.putByte((byte) 0);
-                        }
-                        bitBuffer = 1;
-                        bitsToGo = BITS_OF_1_BYTE - 1 - top;
+                /*
+                 * top is coded by top zeros + 1
+                 */
+                if (bitsToGo >= top + 1) {
+                    bitBuffer <<= top + 1;
+                    bitBuffer |= 1;
+                    bitsToGo -= top + 1;
+                } else {
+                    bitBuffer <<= bitsToGo;
+                    buffer.putByte((byte) (bitBuffer & BYTE_MASK));
+                    for (top -= bitsToGo; top >= BITS_OF_1_BYTE; top -= BITS_OF_1_BYTE) {
+                        buffer.putByte((byte) 0);
                     }
-                    /*
-                     * bottom FS bits are written without coding code is output_nbits, moved into this routine to reduce
-                     * overheads This code potentially breaks if FS>24, so I am limiting FS to 24 by choice of FSMAX
-                     * above.
-                     */
-                    if (fs > 0) {
-                        bitBuffer <<= fs;
-                        bitBuffer |= v & fsmask;
-                        bitsToGo -= fs;
-                        while (bitsToGo <= 0) {
-                            buffer.putByte((byte) (bitBuffer >> -bitsToGo & BYTE_MASK));
-                            bitsToGo += BITS_OF_1_BYTE;
-                        }
+                    bitBuffer = 1;
+                    bitsToGo = BITS_OF_1_BYTE - 1 - top;
+                }
+                /*
+                 * bottom FS bits are written without coding code is output_nbits, moved into this routine to reduce
+                 * overheads This code potentially breaks if FS>24, so I am limiting FS to 24 by choice of FSMAX
+                 * above.
+                 */
+                if (fs > 0) {
+                    bitBuffer <<= fs;
+                    bitBuffer |= v & fsmask;
+                    bitsToGo -= fs;
+                    while (bitsToGo <= 0) {
+                        buffer.putByte((byte) (bitBuffer >> -bitsToGo & BYTE_MASK));
+                        bitsToGo += BITS_OF_1_BYTE;
                     }
+                }
                 }
                 buffer.putByte((byte) (bitBuffer & BYTE_MASK), BITS_OF_1_BYTE - bitsToGo);
             }
@@ -454,7 +454,7 @@ public abstract class RiceCompressor<T extends Buffer> implements ICompressor<T>
                     if (nbits > 0) {
                         b = readBuffer.get() & BYTE_MASK;
                         diff |= b >>> -k;
-                        b &= (1 << nbits) - 1L;
+                    b &= (1 << nbits) - 1L;
                     } else {
                         b = 0;
                     }
