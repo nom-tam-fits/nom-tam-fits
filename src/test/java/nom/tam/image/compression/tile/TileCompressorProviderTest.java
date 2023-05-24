@@ -428,7 +428,6 @@ public class TileCompressorProviderTest {
                 tiles.add(Access.getTile(operationsOfImage, index));
             }
         } catch (ArrayIndexOutOfBoundsException e) {
-            return tiles;
         }
         return tiles;
     }

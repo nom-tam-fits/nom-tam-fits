@@ -502,7 +502,7 @@ public class BinaryTableTest {
             bytes[i] = (byte) (2 * i);
             bits[i][0] = bytes[i];
             bits[i][1] = (byte) ~bytes[i];
-            bools[i] = bytes[i] % 8 == 0 ? true : false;
+            bools[i] = (bytes[i] % 8 == 0) == true;
 
             shorts[i][0] = (short) (2 * i);
             shorts[i][1] = (short) (3 * i);

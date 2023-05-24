@@ -514,9 +514,7 @@ public class HeaderCard implements CursorValue<String>, Cloneable {
 
         // AK: Map null and blank keys to BLANKS.key()
         // This simplifies things as we won't have to check for null keys separately!
-        if (aKey == null) {
-            aKey = EMPTY_KEY;
-        } else if (aKey.trim().isEmpty()) {
+        if ((aKey == null) || aKey.trim().isEmpty()) {
             aKey = EMPTY_KEY;
         }
 
