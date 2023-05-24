@@ -1,7 +1,5 @@
 package nom.tam.fits;
 
-
-
 /*
  * #%L
  * nom.tam FITS library
@@ -44,10 +42,8 @@ import nom.tam.util.FitsEncoder;
 import edu.umd.cs.findbugs.annotations.SuppressFBWarnings;
 
 /**
- * This class supports the FITS heap. This is currently used for variable length
- * columns in binary tables. The newer implementation of the heap now provides
- * proper random access to the byte buffer as of version 1.16.
- *
+ * This class supports the FITS heap. This is currently used for variable length columns in binary tables. The newer
+ * implementation of the heap now provides proper random access to the byte buffer as of version 1.16.
  */
 public class FitsHeap implements FitsElement {
 
@@ -74,13 +70,11 @@ public class FitsHeap implements FitsElement {
     }
 
     /**
-     * Creates a heap of a given initial size. The new heap is initialized with 0's, and
-     * up to the specified number of bytes are immediately available for reading
-     * (as zeroes). The heap can grow as needed if more data is written into it.
+     * Creates a heap of a given initial size. The new heap is initialized with 0's, and up to the specified number of
+     * bytes are immediately available for reading (as zeroes). The heap can grow as needed if more data is written into
+     * it.
      *
-     * @throws IllegalArgumentException
-     *                  if the size argument is negative.
-     *
+     * @throws IllegalArgumentException if the size argument is negative.
      */
     FitsHeap(int size) {
         if (size < 0) {
@@ -95,19 +89,17 @@ public class FitsHeap implements FitsElement {
     }
 
     /**
-     * Sets the underlying data storage for this heap instance. Constructors should
-     * call this.
+     * Sets the underlying data storage for this heap instance. Constructors should call this.
      *
-     * @param data      the new underlying storage object for this heap instance.
+     * @param data the new underlying storage object for this heap instance.
      */
     protected void setData(ByteArrayIO data) {
         store = data;
     }
 
     /**
-     * Add a copy constructor to allow us to duplicate a heap. This would be
-     * necessary if we wanted to copy an HDU that included variable length
-     * columns.
+     * Add a copy constructor to allow us to duplicate a heap. This would be necessary if we wanted to copy an HDU that
+     * included variable length columns.
      */
     FitsHeap copy() {
         FitsHeap copy = new FitsHeap();
@@ -118,15 +110,13 @@ public class FitsHeap implements FitsElement {
     }
 
     /**
-     * Gets data for a Java array from the heap. The array may be a multi-dimensional or a
-     * heterogenetous array of arrays.
+     * Gets data for a Java array from the heap. The array may be a multi-dimensional or a heterogenetous array of
+     * arrays.
      *
-     * @param offset
-     *            the heap byte offset at which the data begins.
-     * @param array
-     *            The array to be extracted.
-     * @throws FitsException
-     *             if the operation failed
+     * @param  offset        the heap byte offset at which the data begins.
+     * @param  array         The array to be extracted.
+     *
+     * @throws FitsException if the operation failed
      */
     public void getData(int offset, Object array) throws FitsException {
         try {
@@ -206,7 +196,7 @@ public class FitsHeap implements FitsElement {
     /**
      * Returns the current heap size.
      *
-     * @return      the size of the heap in bytes
+     * @return the size of the heap in bytes
      */
     public int size() {
         return (int) store.length();
@@ -220,6 +210,5 @@ public class FitsHeap implements FitsElement {
             throw new FitsException("Error writing heap:" + e.getMessage(), e);
         }
     }
-
 
 }

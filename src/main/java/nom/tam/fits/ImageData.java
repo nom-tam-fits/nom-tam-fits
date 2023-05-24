@@ -55,16 +55,13 @@ import static nom.tam.fits.header.Standard.PCOUNT;
 import static nom.tam.util.LoggerHelper.getLogger;
 
 /**
- * This class instantiates FITS primary HDU and IMAGE extension data. Essentially
- * these data are a primitive multi-dimensional array.
+ * This class instantiates FITS primary HDU and IMAGE extension data. Essentially these data are a primitive
+ * multi-dimensional array.
  * <p>
- * Starting in version 0.9 of the FITS library, this routine allows users to
- * defer the reading of images if the FITS data is being read from a file. An
- * ImageTiler object is supplied which can return an arbitrary subset of the
- * image as a one dimensional array -- suitable for manipulation by standard Java
- * libraries. A call to the getData() method will still return a
- * multi-dimensional array, but the image data will not be read until the user
- * explicitly requests. it.
+ * Starting in version 0.9 of the FITS library, this routine allows users to defer the reading of images if the FITS
+ * data is being read from a file. An ImageTiler object is supplied which can return an arbitrary subset of the image as
+ * a one dimensional array -- suitable for manipulation by standard Java libraries. A call to the getData() method will
+ * still return a multi-dimensional array, but the image data will not be read until the user explicitly requests. it.
  */
 public class ImageData extends Data {
 
@@ -84,8 +81,7 @@ public class ImageData extends Data {
     }
 
     /**
-     * This inner class allows the ImageTiler to see if the user has read in the
-     * data.
+     * This inner class allows the ImageTiler to see if the user has read in the data.
      */
     protected class ImageDataTiler extends StandardImageTiler {
 
@@ -105,9 +101,9 @@ public class ImageData extends Data {
     private long byteSize;
 
     /**
-     * The actual array of data. This is normally a multi-dimensional primitive
-     * array. It may be null until the getData() routine is invoked, or it may be
-     * filled by during the read call when a non-random access device is used.
+     * The actual array of data. This is normally a multi-dimensional primitive array. It may be null until the
+     * getData() routine is invoked, or it may be filled by during the read call when a non-random access device is
+     * used.
      */
     private Object dataArray;
 
@@ -126,11 +122,10 @@ public class ImageData extends Data {
     }
 
     /**
-     * Create an array from a header description. This is typically how data will
-     * be created when reading FITS data from a file where the header is read
-     * first. This creates an empty array.
+     * Create an array from a header description. This is typically how data will be created when reading FITS data from
+     * a file where the header is read first. This creates an empty array.
      *
-     * @param h header to be used as a template.
+     * @param  h             header to be used as a template.
      *
      * @throws FitsException if there was a problem with the header description.
      */
@@ -139,11 +134,9 @@ public class ImageData extends Data {
     }
 
     /**
-     * Create an ImageData object using the specified object to initialize the
-     * data array.
+     * Create an ImageData object using the specified object to initialize the data array.
      *
-     * @param x The initial data array. This should be a primitive array but this
-     *            is not checked currently.
+     * @param x The initial data array. This should be a primitive array but this is not checked currently.
      */
     public ImageData(Object x) {
         dataArray = x;
@@ -164,14 +157,13 @@ public class ImageData extends Data {
     public void read(ArrayDataInput in) throws FitsException {
         tiler = (in instanceof RandomAccess) ?
                 new ImageDataTiler((RandomAccess) in, ((RandomAccess) in).getFilePointer(), dataDescription) :
-                    null;
+                null;
         super.read(in);
     }
 
     /**
-     * Return the actual data. Note that this may return a null when the data is
-     * not readable. It might be better to throw a FitsException, but this is a
-     * very commonly called method and we prefered not to change how users must
+     * Return the actual data. Note that this may return a null when the data is not readable. It might be better to
+     * throw a FitsException, but this is a very commonly called method and we prefered not to change how users must
      * invoke it.
      */
     @Override
@@ -217,7 +209,7 @@ public class ImageData extends Data {
     /**
      * Fill header with keywords that describe image data.
      *
-     * @param head The FITS header
+     * @param  head          The FITS header
      *
      * @throws FitsException if the object does not contain valid image data.
      */

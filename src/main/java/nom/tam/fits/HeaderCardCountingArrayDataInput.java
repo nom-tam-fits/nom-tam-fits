@@ -36,15 +36,12 @@ import java.io.IOException;
 import nom.tam.util.ArrayDataInput;
 
 /**
- *
  * <p>
- * A helper class to keep track of the number of physical cards for a logical
- * card.
+ * A helper class to keep track of the number of physical cards for a logical card.
  * </p>
- *
  * <p>
- * This class should not have public visibility. And really, the counting should be
- * completely internalized by HeaderCard. Perhaps remove in a future major release.
+ * This class should not have public visibility. And really, the counting should be completely internalized by
+ * HeaderCard. Perhaps remove in a future major release.
  * </p>
  *
  * @author Richard van Nieuwenhoven
@@ -101,8 +98,7 @@ public class HeaderCardCountingArrayDataInput {
     /**
      * mark the current position in the stream.
      *
-     * @throws IOException
-     *             if the underlaying stream does not allow the mark.
+     * @throws IOException if the underlaying stream does not allow the mark.
      */
     public void mark() throws IOException {
         input.mark(HeaderCard.FITS_HEADER_CARD_SIZE);
@@ -112,8 +108,7 @@ public class HeaderCardCountingArrayDataInput {
     /**
      * reset the stream th the last marked prosition.
      *
-     * @throws IOException
-     *             if the underlaying stream does not allow the mark.
+     * @throws IOException if the underlaying stream does not allow the mark.
      */
     public void reset() throws IOException {
         input.reset();

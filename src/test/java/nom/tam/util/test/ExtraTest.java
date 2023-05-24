@@ -36,7 +36,6 @@ import nom.tam.fits.HeaderCard;
  * #L%
  */
 
-
 import nom.tam.fits.utilities.FitsLineAppender;
 
 public class ExtraTest {

@@ -57,10 +57,9 @@ import static nom.tam.fits.header.Standard.COMMENT;
 import static nom.tam.fits.header.Standard.CONTINUE;
 import static nom.tam.fits.header.Standard.HISTORY;
 
-
 /**
- * An individual entry in the FITS Header, such as a key/value pair with an optional comment field, or a comment-style only
- * entry.
+ * An individual entry in the FITS Header, such as a key/value pair with an optional comment field, or a comment-style
+ * only entry.
  */
 public class HeaderCard implements CursorValue<String>, Cloneable {
 
@@ -129,20 +128,19 @@ public class HeaderCard implements CursorValue<String>, Cloneable {
     }
 
     /**
-     * Creates a new header card, but reading from the specified data input stream. The card is expected
-     * to be describes by one or more 80-character wide header 'lines'. If long string support is
-     * not enabled, then a new card is created from the next 80-characters. When long string
-     * support is enabled, cunsecutive lines starting with [<code>CONTINUE </code>] after the first line will
-     * be aggregated into a single new card.
+     * Creates a new header card, but reading from the specified data input stream. The card is expected to be describes
+     * by one or more 80-character wide header 'lines'. If long string support is not enabled, then a new card is
+     * created from the next 80-characters. When long string support is enabled, cunsecutive lines starting with
+     * [<code>CONTINUE </code>] after the first line will be aggregated into a single new card.
      *
-     * @param dis           the data input stream
+     * @param  dis                    the data input stream
      *
-     * @throws UnclosedQuoteException       if the line contained an unclosed single quote.
-     * @throws TruncatedFileException       if we reached the end of file unexpectedly before
-     *                                      fully parsing an 80-character line.
-     * @throws IOException                  if there was some IO issue.
+     * @throws UnclosedQuoteException if the line contained an unclosed single quote.
+     * @throws TruncatedFileException if we reached the end of file unexpectedly before fully parsing an 80-character
+     *                                    line.
+     * @throws IOException            if there was some IO issue.
      *
-     * @see FitsFactory#setLongStringsEnabled(boolean)
+     * @see                           FitsFactory#setLongStringsEnabled(boolean)
      */
     @SuppressWarnings("deprecation")
     public HeaderCard(ArrayDataInput dis) throws UnclosedQuoteException, TruncatedFileException, IOException {
@@ -151,31 +149,30 @@ public class HeaderCard implements CursorValue<String>, Cloneable {
 
     /**
      * <p>
-     * Deprecated, first because it should not be public since it should only be used only at the package level;
-     * and second, because card counting should be internal to HeaderCard, not external...
-     * We'll likely remove support in future releases. -- (AK)
+     * Deprecated, first because it should not be public since it should only be used only at the package level; and
+     * second, because card counting should be internal to HeaderCard, not external... We'll likely remove support in
+     * future releases. -- (AK)
      * </p>
      * <p>
-     * Creates a new header card, but reading from the specified data input. The card is expected
-     * to be describes by one or more 80-character wide header 'lines'. If long string support is
-     * not enabled, then a new card is created from the next 80-characters. When long string
-     * support is enabled, cunsecutive lines starting with [<code>CONTINUE </code>] after the first line will
-     * be aggregated into a single new card.
+     * Creates a new header card, but reading from the specified data input. The card is expected to be describes by one
+     * or more 80-character wide header 'lines'. If long string support is not enabled, then a new card is created from
+     * the next 80-characters. When long string support is enabled, cunsecutive lines starting with
+     * [<code>CONTINUE </code>] after the first line will be aggregated into a single new card.
      * </p>
      *
-     * @param dis           the data input
+     * @param  dis                    the data input
      *
-     * @throws UnclosedQuoteException       if the line contained an unclosed single quote.
-     * @throws TruncatedFileException       if we reached the end of file unexpectedly before
-     *                                      fully parsing an 80-character line.
-     * @throws IOException                  if there was some IO issue.
+     * @throws UnclosedQuoteException if the line contained an unclosed single quote.
+     * @throws TruncatedFileException if we reached the end of file unexpectedly before fully parsing an 80-character
+     *                                    line.
+     * @throws IOException            if there was some IO issue.
      *
-     * @see #HeaderCard(ArrayDataInput)
-     * @see FitsFactory#setLongStringsEnabled(boolean)
-     *
+     * @see                           #HeaderCard(ArrayDataInput)
+     * @see                           FitsFactory#setLongStringsEnabled(boolean)
      */
     @Deprecated
-    public HeaderCard(HeaderCardCountingArrayDataInput dis) throws UnclosedQuoteException, TruncatedFileException, IOException {
+    public HeaderCard(HeaderCardCountingArrayDataInput dis)
+            throws UnclosedQuoteException, TruncatedFileException, IOException {
         this();
         key = null;
         value = null;
@@ -202,21 +199,23 @@ public class HeaderCard implements CursorValue<String>, Cloneable {
     }
 
     /**
-     * Creates a new card with a number value. The card will be created either in the integer, fixed-decimal, or
-     * format, with the native precision. If the native precision cannot be fitted in the available card space,
-     * the value will be represented with reduced precision with at least {@link FlexFormat#DOUBLE_DECIMALS}.
-     * Trailing zeroes will be omitted.
+     * Creates a new card with a number value. The card will be created either in the integer, fixed-decimal, or format,
+     * with the native precision. If the native precision cannot be fitted in the available card space, the value will
+     * be represented with reduced precision with at least {@link FlexFormat#DOUBLE_DECIMALS}. Trailing zeroes will be
+     * omitted.
      *
-     * @param key       keyword
-     * @param value     value (can be <code>null</code>, in which case the card type defaults to <code>Integer.class</code>)
+     * @param  key                 keyword
+     * @param  value               value (can be <code>null</code>, in which case the card type defaults to
+     *                                 <code>Integer.class</code>)
      *
-     * @throws HeaderCardException      for any invalid keyword or value.
-     * @since 1.16
+     * @throws HeaderCardException for any invalid keyword or value.
      *
-     * @see #HeaderCard(String, Number, String)
-     * @see #HeaderCard(String, Number, int, String)
-     * @see #create(IFitsHeader, Number)
-     * @see FitsFactory#setUseExponentD(boolean)
+     * @since                      1.16
+     *
+     * @see                        #HeaderCard(String, Number, String)
+     * @see                        #HeaderCard(String, Number, int, String)
+     * @see                        #create(IFitsHeader, Number)
+     * @see                        FitsFactory#setUseExponentD(boolean)
      */
     public HeaderCard(String key, Number value) throws HeaderCardException {
         this(key, value, FlexFormat.AUTO_PRECISION, null);
@@ -224,20 +223,21 @@ public class HeaderCard implements CursorValue<String>, Cloneable {
 
     /**
      * Creates a new card with a number value and a comment. The card will be created either in the integer,
-     * fixed-decimal, or format. If the native precision cannot be fitted in the available card space,
-     * the value will be represented with reduced precision with at least {@link FlexFormat#DOUBLE_DECIMALS}.
-     * Trailing zeroes will be omitted.
+     * fixed-decimal, or format. If the native precision cannot be fitted in the available card space, the value will be
+     * represented with reduced precision with at least {@link FlexFormat#DOUBLE_DECIMALS}. Trailing zeroes will be
+     * omitted.
      *
-     * @param key       keyword
-     * @param value     value (can be <code>null</code>, in which case the card type defaults to <code>Integer.class</code>)
-     * @param comment   optional comment, or <code>null</code>
+     * @param  key                 keyword
+     * @param  value               value (can be <code>null</code>, in which case the card type defaults to
+     *                                 <code>Integer.class</code>)
+     * @param  comment             optional comment, or <code>null</code>
      *
-     * @throws HeaderCardException      for any invalid keyword or value
+     * @throws HeaderCardException for any invalid keyword or value
      *
-     * @see #HeaderCard(String, Number)
-     * @see #HeaderCard(String, Number, int, String)
-     * @see #create(IFitsHeader, Number)
-     * @see FitsFactory#setUseExponentD(boolean)
+     * @see                        #HeaderCard(String, Number)
+     * @see                        #HeaderCard(String, Number, int, String)
+     * @see                        #create(IFitsHeader, Number)
+     * @see                        FitsFactory#setUseExponentD(boolean)
      */
     public HeaderCard(String key, Number value, String comment) throws HeaderCardException {
         this(key, value, FlexFormat.AUTO_PRECISION, comment);
@@ -245,21 +245,22 @@ public class HeaderCard implements CursorValue<String>, Cloneable {
 
     /**
      * Creates a new card with a number value, using scientific notation, with up to the specified decimal places
-     * showing between the decimal place and the exponent. For example, if <code>decimals</code> is set to 2, then {@link Math#PI}
-     * gets formatted as <code>3.14E0</code> (or <code>3.14D0</code> if {@link FitsFactory#setUseExponentD(boolean)} is
-     * enabled).
+     * showing between the decimal place and the exponent. For example, if <code>decimals</code> is set to 2, then
+     * {@link Math#PI} gets formatted as <code>3.14E0</code> (or <code>3.14D0</code> if
+     * {@link FitsFactory#setUseExponentD(boolean)} is enabled).
      *
-     * @param key       keyword
-     * @param value     value (can be <code>null</code>, in which case the card type defaults to <code>Integer.class</code>)
-     * @param decimals  the number of decimal places to show in the scientific notation.
-     * @param comment   optional comment, or <code>null</code>
+     * @param  key                 keyword
+     * @param  value               value (can be <code>null</code>, in which case the card type defaults to
+     *                                 <code>Integer.class</code>)
+     * @param  decimals            the number of decimal places to show in the scientific notation.
+     * @param  comment             optional comment, or <code>null</code>
      *
-     * @throws HeaderCardException      for any invalid keyword or value
+     * @throws HeaderCardException for any invalid keyword or value
      *
-     * @see #HeaderCard(String, Number)
-     * @see #HeaderCard(String, Number, String)
-     * @see #create(IFitsHeader, Number)
-     * @see FitsFactory#setUseExponentD(boolean)
+     * @see                        #HeaderCard(String, Number)
+     * @see                        #HeaderCard(String, Number, String)
+     * @see                        #create(IFitsHeader, Number)
+     * @see                        FitsFactory#setUseExponentD(boolean)
      */
     public HeaderCard(String key, Number value, int decimals, String comment) throws HeaderCardException {
         if (value == null) {
@@ -272,19 +273,20 @@ public class HeaderCard implements CursorValue<String>, Cloneable {
         } catch (NumberFormatException e) {
             throw new HeaderCardException("FITS headers may not contain NaN or Infinite values", e);
         }
-        set(key, new FlexFormat().setWidth(spaceForValue(key)).setPrecision(decimals).format(value), comment, value.getClass());
+        set(key, new FlexFormat().setWidth(spaceForValue(key)).setPrecision(decimals).format(value), comment,
+                value.getClass());
     }
 
     /**
      * Creates a new card with a boolean value (and no comment).
      *
-     * @param key       keyword
-     * @param value     value (can be <code>null</code>)
+     * @param  key                 keyword
+     * @param  value               value (can be <code>null</code>)
      *
      * @throws HeaderCardException for any invalid keyword
      *
-     * @see #HeaderCard(String, Boolean, String)
-     * @see #create(IFitsHeader, Boolean)
+     * @see                        #HeaderCard(String, Boolean, String)
+     * @see                        #create(IFitsHeader, Boolean)
      */
     public HeaderCard(String key, Boolean value) throws HeaderCardException {
         this(key, value, null);
@@ -293,49 +295,49 @@ public class HeaderCard implements CursorValue<String>, Cloneable {
     /**
      * Creates a new card with a boolean value, and a comment.
      *
-     * @param key       keyword
-     * @param value     value (can be <code>null</code>)
-     * @param comment   optional comment, or <code>null</code>
+     * @param  key                 keyword
+     * @param  value               value (can be <code>null</code>)
+     * @param  comment             optional comment, or <code>null</code>
      *
      * @throws HeaderCardException for any invalid keyword or value
      *
-     * @see #HeaderCard(String, Boolean)
-     * @see #create(IFitsHeader, Boolean)
+     * @see                        #HeaderCard(String, Boolean)
+     * @see                        #create(IFitsHeader, Boolean)
      */
     public HeaderCard(String key, Boolean value, String comment) throws HeaderCardException {
         this(key, value == null ? null : (value ? "T" : "F"), comment, Boolean.class);
     }
 
     /**
-     * Creates a new card with a complex value. The real and imaginary parts will be shown either in the fixed
-     * decimal format or in the exponential notation, whichever preserves more digits, or else whichever is the
-     * more compact notation. Trailing zeroes will be omitted.
+     * Creates a new card with a complex value. The real and imaginary parts will be shown either in the fixed decimal
+     * format or in the exponential notation, whichever preserves more digits, or else whichever is the more compact
+     * notation. Trailing zeroes will be omitted.
      *
-     * @param key       keyword
-     * @param value     value (can be <code>null</code>)
+     * @param  key                 keyword
+     * @param  value               value (can be <code>null</code>)
      *
-     * @throws HeaderCardException      for any invalid keyword or value.
+     * @throws HeaderCardException for any invalid keyword or value.
      *
-     * @see #HeaderCard(String, ComplexValue, String)
-     * @see #HeaderCard(String, ComplexValue, int, String)
+     * @see                        #HeaderCard(String, ComplexValue, String)
+     * @see                        #HeaderCard(String, ComplexValue, int, String)
      */
     public HeaderCard(String key, ComplexValue value) throws HeaderCardException {
         this(key, value, null);
     }
 
     /**
-     * Creates a new card with a complex value and a comment. The real and imaginary parts will be shown either in the fixed
-     * decimal format or in the exponential notation, whichever preserves more digits, or else whichever is the
+     * Creates a new card with a complex value and a comment. The real and imaginary parts will be shown either in the
+     * fixed decimal format or in the exponential notation, whichever preserves more digits, or else whichever is the
      * more compact notation. Trailing zeroes will be omitted.
      *
-     * @param key       keyword
-     * @param value     value (can be <code>null</code>)
-     * @param comment   optional comment, or <code>null</code>
+     * @param  key                 keyword
+     * @param  value               value (can be <code>null</code>)
+     * @param  comment             optional comment, or <code>null</code>
      *
-     * @throws HeaderCardException      for any invalid keyword or value.
+     * @throws HeaderCardException for any invalid keyword or value.
      *
-     * @see #HeaderCard(String, ComplexValue)
-     * @see #HeaderCard(String, ComplexValue, int, String)
+     * @see                        #HeaderCard(String, ComplexValue)
+     * @see                        #HeaderCard(String, ComplexValue, int, String)
      */
     public HeaderCard(String key, ComplexValue value, String comment) throws HeaderCardException {
         this();
@@ -352,20 +354,19 @@ public class HeaderCard implements CursorValue<String>, Cloneable {
     }
 
     /**
-     * Creates a new card with a complex number value, using scientific (exponential) notation, with up to the
-     * specified number of decimal places showing between the decimal point and the exponent. Trailing zeroes
-     * will be omitted. For example, if <code>decimals</code> is set to 2, then (&pi;, 12) gets formatted as
-     * <code>(3.14E0,1.2E1)</code>.
+     * Creates a new card with a complex number value, using scientific (exponential) notation, with up to the specified
+     * number of decimal places showing between the decimal point and the exponent. Trailing zeroes will be omitted. For
+     * example, if <code>decimals</code> is set to 2, then (&pi;, 12) gets formatted as <code>(3.14E0,1.2E1)</code>.
      *
-     * @param key       keyword
-     * @param value     value (can be <code>null</code>)
-     * @param decimals  the number of decimal places to show.
-     * @param comment   optional comment, or <code>null</code>
+     * @param  key                 keyword
+     * @param  value               value (can be <code>null</code>)
+     * @param  decimals            the number of decimal places to show.
+     * @param  comment             optional comment, or <code>null</code>
      *
-     * @throws HeaderCardException  for any invalid keyword or value.
+     * @throws HeaderCardException for any invalid keyword or value.
      *
-     * @see #HeaderCard(String, ComplexValue)
-     * @see #HeaderCard(String, ComplexValue, String)
+     * @see                        #HeaderCard(String, ComplexValue)
+     * @see                        #HeaderCard(String, ComplexValue, String)
      */
     public HeaderCard(String key, ComplexValue value, int decimals, String comment) throws HeaderCardException {
         this();
@@ -384,28 +385,28 @@ public class HeaderCard implements CursorValue<String>, Cloneable {
     /**
      * <p>
      * This constructor is now <b>DEPRECATED</b>. You should use {@link #HeaderCard(String, String, String)} to create
-     * cards with <code>null</code> strings, or else {@link #createCommentStyleCard(String, String)} to
-     * create any comment-style card, or {@link #createCommentCard(String)} or {@link #createHistoryCard(String)}
-     * to create COMMENT or HISTORY cards.
+     * cards with <code>null</code> strings, or else {@link #createCommentStyleCard(String, String)} to create any
+     * comment-style card, or {@link #createCommentCard(String)} or {@link #createHistoryCard(String)} to create COMMENT
+     * or HISTORY cards.
      * </p>
-     *
      * <p>
      * Creates a card with a string value or comment.
      * </p>
      *
-     * @param key               The key for the comment or nullable field.
-     * @param comment           The comment
-     * @param withNullValue     If <code>true</code> the new card will be a value stle card with
-     *                          a null string value. Otherwise it's a comment-style card.
+     * @param      key                 The key for the comment or nullable field.
+     * @param      comment             The comment
+     * @param      withNullValue       If <code>true</code> the new card will be a value stle card with a null string
+     *                                     value. Otherwise it's a comment-style card.
      *
-     * @throws HeaderCardException for any invalid keyword or value
+     * @throws     HeaderCardException for any invalid keyword or value
      *
-     * @see #HeaderCard(String, String, String)
-     * @see #createCommentStyleCard(String, String)
-     * @see #createCommentCard(String)
-     * @see #createHistoryCard(String)
+     * @see                            #HeaderCard(String, String, String)
+     * @see                            #createCommentStyleCard(String, String)
+     * @see                            #createCommentCard(String)
+     * @see                            #createHistoryCard(String)
      *
-     * @deprecated Use {@link #HeaderCard(String, String, String)}, or {@link #createCommentStyleCard(String, String)} instead.
+     * @deprecated                     Use {@link #HeaderCard(String, String, String)}, or
+     *                                     {@link #createCommentStyleCard(String, String)} instead.
      */
     @Deprecated
     public HeaderCard(String key, String comment, boolean withNullValue) throws HeaderCardException {
@@ -414,31 +415,29 @@ public class HeaderCard implements CursorValue<String>, Cloneable {
 
     /**
      * <p>
-     * This constructor is now <b>DEPRECATED</b>. It has always been a poor construct.
-     * You should use {@link #HeaderCard(String, String, String)} to create
-     * cards with <code>null</code> strings, or else {@link #createCommentStyleCard(String, String)} to
-     * create any comment-style card, or {@link #createCommentCard(String)} or {@link #createHistoryCard(String)}
-     * to create COMMENT or HISTORY cards.
+     * This constructor is now <b>DEPRECATED</b>. It has always been a poor construct. You should use
+     * {@link #HeaderCard(String, String, String)} to create cards with <code>null</code> strings, or else
+     * {@link #createCommentStyleCard(String, String)} to create any comment-style card, or
+     * {@link #createCommentCard(String)} or {@link #createHistoryCard(String)} to create COMMENT or HISTORY cards.
      * </p>
+     * Creates a comment style card. This may be a comment style card in which case the nullable field should be false,
+     * or a value field which has a null value, in which case the nullable field should be true.
      *
-     * Creates a comment style card. This may be a comment
-     * style card in which case the nullable field should be false, or a value field which has a null value, in which
-     * case the nullable field should be true.
+     * @param      key                 The key for the comment or nullable field.
+     * @param      value               The value (can be <code>null</code>)
+     * @param      comment             The comment
+     * @param      nullable            If <code>true</code> a null value is a valid value. Otherwise, a
+     *                                     <code>null</code> value turns this into a comment-style card.
      *
-     * @param key       The key for the comment or nullable field.
-     * @param value     The value (can be <code>null</code>)
-     * @param comment   The comment
-     * @param nullable  If <code>true</code> a null value is a valid value. Otherwise, a <code>null</code> value
-     *                  turns this into a comment-style card.
+     * @throws     HeaderCardException for any invalid keyword or value
      *
-     * @throws HeaderCardException for any invalid keyword or value
+     * @see                            #HeaderCard(String, String, String)
+     * @see                            #createCommentStyleCard(String, String)
+     * @see                            #createCommentCard(String)
+     * @see                            #createHistoryCard(String)
      *
-     * @see #HeaderCard(String, String, String)
-     * @see #createCommentStyleCard(String, String)
-     * @see #createCommentCard(String)
-     * @see #createHistoryCard(String)
-     *
-     * @deprecated Use {@link #HeaderCard(String, String, String)}, or {@link #createCommentStyleCard(String, String)} instead.
+     * @deprecated                     Use {@link #HeaderCard(String, String, String)}, or
+     *                                     {@link #createCommentStyleCard(String, String)} instead.
      */
     @Deprecated
     public HeaderCard(String key, String value, String comment, boolean nullable) throws HeaderCardException {
@@ -448,13 +447,13 @@ public class HeaderCard implements CursorValue<String>, Cloneable {
     /**
      * Creates a new card with a string value (and no comment).
      *
-     * @param key       keyword
-     * @param value     value
+     * @param  key                 keyword
+     * @param  value               value
      *
      * @throws HeaderCardException for any invalid keyword or value
      *
-     * @see #HeaderCard(String, String, String)
-     * @see #create(IFitsHeader, String)
+     * @see                        #HeaderCard(String, String, String)
+     * @see                        #create(IFitsHeader, String)
      */
     public HeaderCard(String key, String value) throws HeaderCardException {
         this(key, value, null, String.class);
@@ -463,32 +462,31 @@ public class HeaderCard implements CursorValue<String>, Cloneable {
     /**
      * Creates a new card with a string value, and a comment
      *
-     * @param key       keyword
-     * @param value     value
-     * @param comment   optional comment, or <code>null</code>
+     * @param  key                 keyword
+     * @param  value               value
+     * @param  comment             optional comment, or <code>null</code>
      *
      * @throws HeaderCardException for any invalid keyword or value
      *
-     * @see #HeaderCard(String, String)
-     * @see #create(IFitsHeader, String)
+     * @see                        #HeaderCard(String, String)
+     * @see                        #create(IFitsHeader, String)
      */
     public HeaderCard(String key, String value, String comment) throws HeaderCardException {
         this(key, value, comment, String.class);
     }
 
-
     /**
      * Creates a new card from its component parts. Use locally only...
      *
-     * @param key       Case-sensitive keyword (can be null for COMMENT)
-     * @param value     the serialized value (tailing spaces will be removed)
-     * @param comment   an optional comment or null.
-     * @param type      The Java class from which the value field was derived, or
-     *                  null if it's a comment-style card with a null value.
+     * @param  key                 Case-sensitive keyword (can be null for COMMENT)
+     * @param  value               the serialized value (tailing spaces will be removed)
+     * @param  comment             an optional comment or null.
+     * @param  type                The Java class from which the value field was derived, or null if it's a
+     *                                 comment-style card with a null value.
      *
      * @throws HeaderCardException for any invalid keyword or value
      *
-     * @see #set(String, String, String, Class)
+     * @see                        #set(String, String, String, Class)
      */
     private HeaderCard(String key, String value, String comment, Class<?> type) throws HeaderCardException {
         set(key, value, comment, type);
@@ -498,19 +496,19 @@ public class HeaderCard implements CursorValue<String>, Cloneable {
     /**
      * Sets all components of the card to the specified values. For internal use only.
      *
-     * @param aKey       Case-sensitive keyword (can be <code>null</code> for an unkeyed comment)
-     * @param aValue     the serialized value (tailing spaces will be removed), or <code>null</code>
-     * @param aComment   an optional comment or <code>null</code>.
-     * @param aType      The Java class from which the value field was derived, or
-     *                   null if it's a comment-style card.
+     * @param  aKey                Case-sensitive keyword (can be <code>null</code> for an unkeyed comment)
+     * @param  aValue              the serialized value (tailing spaces will be removed), or <code>null</code>
+     * @param  aComment            an optional comment or <code>null</code>.
+     * @param  aType               The Java class from which the value field was derived, or null if it's a
+     *                                 comment-style card.
      *
      * @throws HeaderCardException for any invalid keyword or value
      */
     private synchronized void set(String aKey, String aValue, String aComment, Class<?> aType) throws HeaderCardException {
         // TODO we never call with null type and non-null value internally, so this is dead code here...
-        //        if (aType == null && aValue != null) {
-        //            throw new HeaderCardException("Null type for value: [" + sanitize(aValue) + "]");
-        //        }
+        // if (aType == null && aValue != null) {
+        // throw new HeaderCardException("Null type for value: [" + sanitize(aValue) + "]");
+        // }
 
         type = aType;
 
@@ -570,7 +568,8 @@ public class HeaderCard implements CursorValue<String>, Cloneable {
 
             // Check that the value fits in the space available for it.
             if (!FitsFactory.isLongStringsEnabled() && (printValue.length() + STRING_QUOTES_LENGTH) > spaceForValue()) {
-                throw new HeaderCardException("value too long: [" + sanitize(aValue) + "]", new LongStringsNotEnabledException(key));
+                throw new HeaderCardException("value too long: [" + sanitize(aValue) + "]",
+                        new LongStringsNotEnabledException(key));
             }
 
         } else {
@@ -578,7 +577,8 @@ public class HeaderCard implements CursorValue<String>, Cloneable {
 
             // Check that the value fits in the space available for it.
             if (aValue.length() > spaceForValue()) {
-                throw new HeaderCardException("Value too long: [" + sanitize(aValue) + "]", new LongValueException(key, spaceForValue()));
+                throw new HeaderCardException("Value too long: [" + sanitize(aValue) + "]",
+                        new LongValueException(key, spaceForValue()));
             }
         }
 
@@ -597,8 +597,8 @@ public class HeaderCard implements CursorValue<String>, Cloneable {
     /**
      * Returns the number of 80-character header lines needed to store the data from this card.
      *
-     * @return      the size of the card in blocks of 80 bytes. So normally every card will return 1. only long stings can
-     *              return more than one, provided support for long string is enabled.
+     * @return the size of the card in blocks of 80 bytes. So normally every card will return 1. only long stings can
+     *             return more than one, provided support for long string is enabled.
      */
     public synchronized int cardSize() {
         if (FitsFactory.isLongStringsEnabled() && isStringValue() && value != null) {
@@ -610,10 +610,10 @@ public class HeaderCard implements CursorValue<String>, Cloneable {
     }
 
     /**
-     * Returns an independent copy of this card. Both this card and the returned value will have identical
-     * content, but modifying one is guaranteed to not affect the other.
+     * Returns an independent copy of this card. Both this card and the returned value will have identical content, but
+     * modifying one is guaranteed to not affect the other.
      *
-     * @return  a copy of this carf.
+     * @return a copy of this carf.
      */
     public HeaderCard copy() {
         HeaderCard copy = clone();
@@ -621,13 +621,13 @@ public class HeaderCard implements CursorValue<String>, Cloneable {
     }
 
     /**
-     * Returns the keyword component of this card, which may be empty but never <code>null</code>,
-     * but it may be an empty string.
+     * Returns the keyword component of this card, which may be empty but never <code>null</code>, but it may be an
+     * empty string.
      *
      * @return the keyword from this card, guaranteed to be not <code>null</code>).
      *
-     * @see #getValue()
-     * @see #getComment()
+     * @see    #getValue()
+     * @see    #getComment()
      */
     @Override
     public final synchronized String getKey() {
@@ -639,10 +639,10 @@ public class HeaderCard implements CursorValue<String>, Cloneable {
      *
      * @return the value from this card
      *
-     * @see #getValue(Class, Object)
-     * @see #getHexValue()
-     * @see #getKey()
-     * @see #getComment()
+     * @see    #getValue(Class, Object)
+     * @see    #getHexValue()
+     * @see    #getKey()
+     * @see    #getComment()
      */
     public final synchronized String getValue() {
         return value;
@@ -653,22 +653,22 @@ public class HeaderCard implements CursorValue<String>, Cloneable {
      *
      * @return the comment from this card
      *
-     * @see #getKey()
-     * @see #getValue()
+     * @see    #getKey()
+     * @see    #getValue()
      */
     public final synchronized String getComment() {
         return comment;
     }
 
-
     /**
      * Returns the integer value from the hexadecimal representation of it in the Header. The FITS standard explicitly
      * allows hexadecimal values, such as 2B, not only decimal values such as 43 in the header.
      *
-     * @return the  value from this card
-     * @throws NumberFormatException    if the card's value is null or cannot be parsed as a hexadecimal value.
+     * @return                       the value from this card
      *
-     * @see #getValue()
+     * @throws NumberFormatException if the card's value is null or cannot be parsed as a hexadecimal value.
+     *
+     * @see                          #getValue()
      */
     public final synchronized long getHexValue() throws NumberFormatException {
         if (value == null) {
@@ -679,26 +679,24 @@ public class HeaderCard implements CursorValue<String>, Cloneable {
 
     /**
      * <p>
-     * Returns the value cast to the specified type, if possible, or the specified default value if the
-     * value is <code>null</code> or if the value is incompatible with the requested type.
+     * Returns the value cast to the specified type, if possible, or the specified default value if the value is
+     * <code>null</code> or if the value is incompatible with the requested type.
      * </p>
      * <p>
-     * For number types and values, if the requested type has lesser range or
-     * precision than the number stored in the FITS header, the value is automatically downcast (i.e.
-     * possible rounded and/or truncated) -- the same as if an explicit cast were used in Java. As long
-     * as the header value is a proper decimal value, it will be returned as any requested number type.
+     * For number types and values, if the requested type has lesser range or precision than the number stored in the
+     * FITS header, the value is automatically downcast (i.e. possible rounded and/or truncated) -- the same as if an
+     * explicit cast were used in Java. As long as the header value is a proper decimal value, it will be returned as
+     * any requested number type.
      * </p>
      *
-     * @param asType        the requested class of the value
-     * @param defaultValue  the value to use if the card has a null value, or a value that cannot
-     *                      be cast to the specified type.
-     * @param <T>           the generic type of the requested class
+     * @param  asType                   the requested class of the value
+     * @param  defaultValue             the value to use if the card has a null value, or a value that cannot be cast to
+     *                                      the specified type.
+     * @param  <T>                      the generic type of the requested class
      *
-     * @return the value from this card as a specific type, or the specified default value
+     * @return                          the value from this card as a specific type, or the specified default value
      *
-     * @throws IllegalArgumentException
-     *                      if the specified Java type of not one that is supported for use in
-     *                      FITS headers.
+     * @throws IllegalArgumentException if the specified Java type of not one that is supported for use in FITS headers.
      */
     public synchronized <T> T getValue(Class<T> asType, T defaultValue) throws IllegalArgumentException {
 
@@ -758,7 +756,7 @@ public class HeaderCard implements CursorValue<String>, Cloneable {
      *
      * @return Is this a key/value card?
      *
-     * @see #isCommentStyleCard()
+     * @see    #isCommentStyleCard()
      */
     public synchronized boolean isKeyValuePair() {
         return !isCommentStyleCard() && !(key.isEmpty() || value == null);
@@ -767,11 +765,11 @@ public class HeaderCard implements CursorValue<String>, Cloneable {
     /**
      * Checks if this card has a string value (which may be <code>null</code>).
      *
-     * @return  <code>true</code> if this card has a string value, otherwise <code>false</code>.
+     * @return <code>true</code> if this card has a string value, otherwise <code>false</code>.
      *
-     * @see #isDecimalType()
-     * @see #isIntegerType()
-     * @see #valueType()
+     * @see    #isDecimalType()
+     * @see    #isIntegerType()
+     * @see    #valueType()
      */
     public synchronized boolean isStringValue() {
         if (type == null) {
@@ -783,31 +781,33 @@ public class HeaderCard implements CursorValue<String>, Cloneable {
     /**
      * Checks if this card has a decimal (floating-point) type value (which may be <code>null</code>).
      *
-     * @return  <code>true</code> if this card has a decimal (not integer) type number value, otherwise <code>false</code>.
+     * @return <code>true</code> if this card has a decimal (not integer) type number value, otherwise
+     *             <code>false</code>.
      *
-     * @see #isIntegerType()
-     * @see #isStringValue()
-     * @see #valueType()
+     * @see    #isIntegerType()
+     * @see    #isStringValue()
+     * @see    #valueType()
      *
-     * @since 1.16
+     * @since  1.16
      */
     public synchronized boolean isDecimalType() {
         if (type == null) {
             return false;
         }
-        return Float.class.isAssignableFrom(type) || Double.class.isAssignableFrom(type) || BigDecimal.class.isAssignableFrom(type);
+        return Float.class.isAssignableFrom(type) || Double.class.isAssignableFrom(type)
+                || BigDecimal.class.isAssignableFrom(type);
     }
 
     /**
      * Checks if this card has an integer type value (which may be <code>null</code>).
      *
-     * @return  <code>true</code> if this card has an integer type value, otherwise <code>false</code>.
+     * @return <code>true</code> if this card has an integer type value, otherwise <code>false</code>.
      *
-     * @see #isDecimalType()
-     * @see #isStringValue()
-     * @see #valueType()
+     * @see    #isDecimalType()
+     * @see    #isStringValue()
+     * @see    #valueType()
      *
-     * @since 1.16
+     * @since  1.16
      */
     public synchronized boolean isIntegerType() {
         if (type == null) {
@@ -819,13 +819,13 @@ public class HeaderCard implements CursorValue<String>, Cloneable {
     /**
      * Checks if this card is a comment-style card with no associated value field.
      *
-     * @return  <code>true</code> if this card is a comment-style card, otherwise <code>false</code>.
+     * @return <code>true</code> if this card is a comment-style card, otherwise <code>false</code>.
      *
-     * @see #isKeyValuePair()
-     * @see #isStringValue()
-     * @see #valueType()
+     * @see    #isKeyValuePair()
+     * @see    #isStringValue()
+     * @see    #valueType()
      *
-     * @since 1.16
+     * @since  1.16
      */
     public final synchronized boolean isCommentStyleCard() {
         return (type == null);
@@ -834,40 +834,38 @@ public class HeaderCard implements CursorValue<String>, Cloneable {
     /**
      * Checks if this card cas a hierarch style long keyword.
      *
-     * @return  <code>true</code> if the card has a non-standard HIERARCH style long keyword, with
-     *          dot-separated components. Otherwise <code>false</code>.
+     * @return <code>true</code> if the card has a non-standard HIERARCH style long keyword, with dot-separated
+     *             components. Otherwise <code>false</code>.
      *
-     * @since 1.16
-     *
+     * @since  1.16
      */
     public final synchronized boolean hasHierarchKey() {
         return isHierarchKey(key);
     }
 
     /**
-     * Sets a new comment component for this card. The specified comment string will be sanitized to ensure
-     * it onlly contains characters suitable for FITS headers. Invalid characters will be replaced with '?'.
+     * Sets a new comment component for this card. The specified comment string will be sanitized to ensure it onlly
+     * contains characters suitable for FITS headers. Invalid characters will be replaced with '?'.
      *
-     * @param comment   the new comment text.
+     * @param comment the new comment text.
      */
     public synchronized void setComment(String comment) {
         this.comment = sanitize(comment);
     }
 
     /**
-     * Sets a new number value for this card. The new value will be shown in the integer, fixed-decimal, or
-     * format, whichever preserves more digits, or else whichever is the more compact notation.
-     * Trailing zeroes will be omitted.
+     * Sets a new number value for this card. The new value will be shown in the integer, fixed-decimal, or format,
+     * whichever preserves more digits, or else whichever is the more compact notation. Trailing zeroes will be omitted.
      *
-     * @param update    the new value to set (can be <code>null</code>, in which case the card type defaults to
-     *                  <code>Integer.class</code>)
+     * @param  update                the new value to set (can be <code>null</code>, in which case the card type
+     *                                   defaults to <code>Integer.class</code>)
      *
-     * @return the card itself
+     * @return                       the card itself
      *
-     * @throws NumberFormatException    if the input value is NaN or Infinity.
-     * @throws LongValueException       if the decimal value cannot be represented in the alotted space
+     * @throws NumberFormatException if the input value is NaN or Infinity.
+     * @throws LongValueException    if the decimal value cannot be represented in the alotted space
      *
-     * @see #setValue(Number, int)
+     * @see                          #setValue(Number, int)
      */
     public final HeaderCard setValue(Number update) throws NumberFormatException, LongValueException {
         return setValue(update, FlexFormat.AUTO_PRECISION);
@@ -878,16 +876,16 @@ public class HeaderCard implements CursorValue<String>, Cloneable {
      * places showing between the decimal point and the exponent. For example, if <code>decimals</code> is set to 2,
      * then &pi; gets formatted as <code>3.14E0</code>.
      *
-     * @param update    the new value to set (can be <code>null</code>, in which case the card type defaults to
-     *                  <code>Integer.class</code>)
-     * @param decimals  the number of decimal places to show in the scientific notation.
+     * @param  update                the new value to set (can be <code>null</code>, in which case the card type
+     *                                   defaults to <code>Integer.class</code>)
+     * @param  decimals              the number of decimal places to show in the scientific notation.
      *
-     * @return the card itself
+     * @return                       the card itself
      *
-     * @throws NumberFormatException    if the input value is NaN or Infinity.
-     * @throws LongValueException       if the decimal value cannot be represented in the alotted space
+     * @throws NumberFormatException if the input value is NaN or Infinity.
+     * @throws LongValueException    if the decimal value cannot be represented in the alotted space
      *
-     * @see #setValue(Number)
+     * @see                          #setValue(Number)
      */
     public synchronized HeaderCard setValue(Number update, int decimals) throws NumberFormatException, LongValueException {
         if (update == null) {
@@ -905,16 +903,16 @@ public class HeaderCard implements CursorValue<String>, Cloneable {
     /**
      * Sets a new boolean value for this card.
      *
-     * @param update                    the new value to se (can be <code>null</code>).
-     * @throws LongValueException       if the card has no room even for the single-character 'T' or 'F'.
-     *                                  This can never happen with cards created programmatically as they
-     *                                  will not allow setting HIERARCH-style keywords long enough to ever
-     *                                  trigger this condition. But, it is possible to read cards from
-     *                                  a non-standard header, which breaches this limit, by ommitting some
-     *                                  required spaces (esp. after the '='), and have a null value. When that
-     *                                  happens, we can be left without room for even a single character.
+     * @param  update             the new value to se (can be <code>null</code>).
      *
-     * @return the card itself
+     * @throws LongValueException if the card has no room even for the single-character 'T' or 'F'. This can never
+     *                                happen with cards created programmatically as they will not allow setting
+     *                                HIERARCH-style keywords long enough to ever trigger this condition. But, it is
+     *                                possible to read cards from a non-standard header, which breaches this limit, by
+     *                                ommitting some required spaces (esp. after the '='), and have a null value. When
+     *                                that happens, we can be left without room for even a single character.
+     *
+     * @return                    the card itself
      */
     public synchronized HeaderCard setValue(Boolean update) throws LongValueException {
         if (update == null) {
@@ -935,38 +933,37 @@ public class HeaderCard implements CursorValue<String>, Cloneable {
      * fixed-decimal, or format, whichever preserves more digits, or else whichever is the more compact notation.
      * Trailing zeroes will be omitted.
      *
-     * @param update                    the new value to set (can be <code>null</code>)
+     * @param  update                the new value to set (can be <code>null</code>)
      *
-     * @return the card itself
+     * @return                       the card itself
      *
-     * @throws NumberFormatException    if the input value is NaN or Infinity.
-     * @throws LongValueException       if the decimal value cannot be represented in the alotted space
+     * @throws NumberFormatException if the input value is NaN or Infinity.
+     * @throws LongValueException    if the decimal value cannot be represented in the alotted space
      *
-     * @see #setValue(ComplexValue, int)
+     * @see                          #setValue(ComplexValue, int)
      *
-     * @since 1.16
+     * @since                        1.16
      */
     public final HeaderCard setValue(ComplexValue update) throws NumberFormatException, LongValueException {
         return setValue(update, FlexFormat.AUTO_PRECISION);
     }
 
     /**
-     * Sets a new complex number value for this card, using scientific (exponential) notation, with up to the
-     * specified number of decimal places showing between the decimal point and the exponent. Trailing zeroes
-     * will be omitted. For example, if <code>decimals</code> is set to 2, then (&pi;, 12) gets formatted as
-     * <code>(3.14E0,1.2E1)</code>.
+     * Sets a new complex number value for this card, using scientific (exponential) notation, with up to the specified
+     * number of decimal places showing between the decimal point and the exponent. Trailing zeroes will be omitted. For
+     * example, if <code>decimals</code> is set to 2, then (&pi;, 12) gets formatted as <code>(3.14E0,1.2E1)</code>.
      *
-     * @param update        the new value to set (can be <code>null</code>)
-     * @param decimals      the number of decimal places to show in the scientific notation.
+     * @param  update                the new value to set (can be <code>null</code>)
+     * @param  decimals              the number of decimal places to show in the scientific notation.
      *
-     * @return the HeaderCard itself
+     * @return                       the HeaderCard itself
      *
-     * @throws NumberFormatException    if the input value is NaN or Infinity.
-     * @throws LongValueException       if the decimal value cannot be represented in the alotted space
+     * @throws NumberFormatException if the input value is NaN or Infinity.
+     * @throws LongValueException    if the decimal value cannot be represented in the alotted space
      *
-     * @see #setValue(ComplexValue)
+     * @see                          #setValue(ComplexValue)
      *
-     * @since 1.16
+     * @since                        1.16
      */
     public synchronized HeaderCard setValue(ComplexValue update, int decimals) throws LongValueException {
         if (update == null) {
@@ -983,11 +980,12 @@ public class HeaderCard implements CursorValue<String>, Cloneable {
     }
 
     /**
-     * Sets a new unquoted value for this card, checking to make sure it fits in the available header space.
-     * If the value is too long to fit, an IllegalArgumentException will be thrown.
+     * Sets a new unquoted value for this card, checking to make sure it fits in the available header space. If the
+     * value is too long to fit, an IllegalArgumentException will be thrown.
      *
-     * @param update                    the new unquoted header value for this card, as a string.
-     * @throws LongValueException       if the value is too long to fit in the available space.
+     * @param  update             the new unquoted header value for this card, as a string.
+     *
+     * @throws LongValueException if the value is too long to fit in the available space.
      */
     private synchronized void setUnquotedValue(String update) throws LongValueException {
         if (update.length() > spaceForValue()) {
@@ -999,12 +997,13 @@ public class HeaderCard implements CursorValue<String>, Cloneable {
     /**
      * Sets the value for this card, represented as a hexadecimal number.
      *
-     * @param update                 the new value to set
+     * @param  update             the new value to set
      *
-     * @return the HeaderCard itself
-     * @throws LongValueException    if the value is too long to fit in the available space.
+     * @return                    the HeaderCard itself
      *
-     * @since 1.16
+     * @throws LongValueException if the value is too long to fit in the available space.
+     *
+     * @since                     1.16
      */
     public synchronized HeaderCard setHexValue(long update) throws LongValueException {
         setUnquotedValue(Long.toHexString(update));
@@ -1015,17 +1014,17 @@ public class HeaderCard implements CursorValue<String>, Cloneable {
     /**
      * Sets a new string value for this card.
      *
-     * @param update the new value to set
+     * @param  update                         the new value to set
      *
-     * @return the HeaderCard itself
+     * @return                                the HeaderCard itself
      *
-     * @throws IllegalArgumentException         if the new value contains characters that cannot be added to the
-     *                                          the FITS header.
-     * @throws LongStringsNotEnabledException   if the card contains a long string but support for long strings
-     *                                          is currently disabled.
+     * @throws IllegalArgumentException       if the new value contains characters that cannot be added to the the FITS
+     *                                            header.
+     * @throws LongStringsNotEnabledException if the card contains a long string but support for long strings is
+     *                                            currently disabled.
      *
-     * @see FitsFactory#setLongStringsEnabled(boolean)
-     * @see #validateChars(String)
+     * @see                                   FitsFactory#setLongStringsEnabled(boolean)
+     * @see                                   #validateChars(String)
      */
     public synchronized HeaderCard setValue(String update) throws IllegalArgumentException, LongStringsNotEnabledException {
         if (update == null) {
@@ -1050,16 +1049,16 @@ public class HeaderCard implements CursorValue<String>, Cloneable {
      * value by reducing the alignment of the Strings if the comment is longer and if longString is enabled the string
      * can be split into one more card to have more space for the comment.
      *
-     * @return the FITS card as one or more 80-character string blocks.
+     * @return                                the FITS card as one or more 80-character string blocks.
      *
-     * @throws LongValueException                   if the card has a long string value that is too long to contain in
-     *                                              the space available after the keyword.
-     * @throws LongStringsNotEnabledException       if the card contains a long string but support for long strings
-     *                                              is currently disabled.
-     * @throws HierarchNotEnabledException          if the card contains a HIERARCH-style long keyword but support
-     *                                              for these is currently disabled.
+     * @throws LongValueException             if the card has a long string value that is too long to contain in the
+     *                                            space available after the keyword.
+     * @throws LongStringsNotEnabledException if the card contains a long string but support for long strings is
+     *                                            currently disabled.
+     * @throws HierarchNotEnabledException    if the card contains a HIERARCH-style long keyword but support for these
+     *                                            is currently disabled.
      *
-     * @see FitsFactory#setLongStringsEnabled(boolean)
+     * @see                                   FitsFactory#setLongStringsEnabled(boolean)
      */
     @Override
     public String toString() throws LongValueException, LongStringsNotEnabledException, HierarchNotEnabledException {
@@ -1069,18 +1068,18 @@ public class HeaderCard implements CursorValue<String>, Cloneable {
     /**
      * Same as {@link #toString()} just with a prefetched settings object
      *
-     * @param settings the settings to use for writing the header card
+     * @param  settings                       the settings to use for writing the header card
      *
-     * @return the string representing the card.
+     * @return                                the string representing the card.
      *
-     * @throws LongValueException                   if the card has a long string value that is too long to contain in
-     *                                              the space available after the keyword.
-     * @throws LongStringsNotEnabledException       if the card contains a long string but support for long strings
-     *                                              is disabled in the settings.
-     * @throws HierarchNotEnabledException          if the card contains a HIERARCH-style long keyword but support
-     *                                              for these is disabled in the settings.
+     * @throws LongValueException             if the card has a long string value that is too long to contain in the
+     *                                            space available after the keyword.
+     * @throws LongStringsNotEnabledException if the card contains a long string but support for long strings is
+     *                                            disabled in the settings.
+     * @throws HierarchNotEnabledException    if the card contains a HIERARCH-style long keyword but support for these
+     *                                            is disabled in the settings.
      *
-     * @see FitsFactory#setLongStringsEnabled(boolean)
+     * @see                                   FitsFactory#setLongStringsEnabled(boolean)
      */
     protected synchronized String toString(final FitsSettings settings)
             throws LongValueException, LongStringsNotEnabledException, HierarchNotEnabledException {
@@ -1092,21 +1091,21 @@ public class HeaderCard implements CursorValue<String>, Cloneable {
      *
      * @return the type of the value.
      *
-     * @see #isCommentStyleCard()
-     * @see #isKeyValuePair()
-     * @see #isIntegerType()
-     * @see #isDecimalType()
+     * @see    #isCommentStyleCard()
+     * @see    #isKeyValuePair()
+     * @see    #isIntegerType()
+     * @see    #isDecimalType()
      */
     public synchronized Class<?> valueType() {
         return type;
     }
 
     /**
-     * Returns the value as a boolean, or the default value if the card has no associated value or it
-     * is not a boolean.
+     * Returns the value as a boolean, or the default value if the card has no associated value or it is not a boolean.
      *
-     * @param defaultValue      the default value to return if the card has no associated value or is not a boolean.
-     * @return                  the boolean value of this card, or else the default value.
+     * @param  defaultValue the default value to return if the card has no associated value or is not a boolean.
+     *
+     * @return              the boolean value of this card, or else the default value.
      */
     private Boolean getBooleanValue(Boolean defaultValue) {
         if ("T".equals(value)) {
@@ -1119,15 +1118,14 @@ public class HeaderCard implements CursorValue<String>, Cloneable {
     }
 
     /**
-     * Parses a continued long string value and comment for this card, which may occupy one or more
-     * consecutive 80-character header records.
+     * Parses a continued long string value and comment for this card, which may occupy one or more consecutive
+     * 80-character header records.
      *
-     * @param dis               the input stream from which to parse the value and comment fields of
-     *                          this card.
-     * @param next            the parser to use for each 80-character record.
-     * @throws IOException      if there was an IO error reading the stream.
-     * @throws TruncatedFileException   if the stream endedc ubnexpectedly in the middle of
-     *                                  an 80-character record.
+     * @param  dis                    the input stream from which to parse the value and comment fields of this card.
+     * @param  next                   the parser to use for each 80-character record.
+     *
+     * @throws IOException            if there was an IO error reading the stream.
+     * @throws TruncatedFileException if the stream endedc ubnexpectedly in the middle of an 80-character record.
      */
     @SuppressWarnings("deprecation")
     private synchronized void parseLongStringCard(HeaderCardCountingArrayDataInput dis, HeaderCardParser next)
@@ -1135,7 +1133,6 @@ public class HeaderCard implements CursorValue<String>, Cloneable {
 
         StringBuilder longValue = new StringBuilder();
         StringBuilder longComment = null;
-
 
         while (next != null) {
             String valuePart = next.getValue();
@@ -1148,7 +1145,6 @@ public class HeaderCard implements CursorValue<String>, Cloneable {
 
             // The end point of the value
             int valueEnd = valuePart.length();
-
 
             // Check if there card continues into the next record. The value
             // must end with '&' and the next card must be a CONTINUE card.
@@ -1196,19 +1192,16 @@ public class HeaderCard implements CursorValue<String>, Cloneable {
         type = String.class;
     }
 
-
     /**
-     * Returns the minimum number of characters the value field will occupy in the
-     * header record, including quotes around string values, and quoted quotes
-     * inside. The actual header may add padding (e.g. to ensure the end quote
+     * Returns the minimum number of characters the value field will occupy in the header record, including quotes
+     * around string values, and quoted quotes inside. The actual header may add padding (e.g. to ensure the end quote
      * does not come before byte 20).
      *
-     * @return      the minimum number of bytes needed to represent this value
-     *              in a header record.
+     * @return the minimum number of bytes needed to represent this value in a header record.
      *
-     * @since 1.16.
+     * @since  1.16.
      *
-     * @see #spaceForValue()
+     * @see    #spaceForValue()
      */
     private synchronized int getHeaderValueSize() {
         if (isStringValue() && FitsFactory.isLongStringsEnabled()) {
@@ -1233,11 +1226,10 @@ public class HeaderCard implements CursorValue<String>, Cloneable {
     /**
      * Returns the space available for value and/or comment in a single record the keyword.
      *
-     * @return  the number of characters available in a single 80-character header record
-     *          for a standard (non long string) value and/or comment.
+     * @return the number of characters available in a single 80-character header record for a standard (non long
+     *             string) value and/or comment.
      *
-     * @since 1.16
-     *
+     * @since  1.16
      */
     public final synchronized int spaceForValue() {
         return spaceForValue(key);
@@ -1246,24 +1238,22 @@ public class HeaderCard implements CursorValue<String>, Cloneable {
     /**
      * Updates the keyword for this card.
      *
-     * @param newKey    the new FITS header keyword to use for this card.
+     * @param  newKey                         the new FITS header keyword to use for this card.
      *
-     * @throws HierarchNotEnabledException      if the new key is a HIERARCH-style long key
-     *                                          but support for these is not currently
-     *                                          enabled.
-     * @throws IllegalArgumentException         if the keyword contains invalid characters
-     * @throws LongValueException               if the new keyword does not leave sufficient
-     *                                          room for the current non-string value.
-     * @throws LongStringsNotEnabledException   if the new keyword does not leave sufficient
-     *                                          rooom for the current string value without
-     *                                          enabling long string support.
+     * @throws HierarchNotEnabledException    if the new key is a HIERARCH-style long key but support for these is not
+     *                                            currently enabled.
+     * @throws IllegalArgumentException       if the keyword contains invalid characters
+     * @throws LongValueException             if the new keyword does not leave sufficient room for the current
+     *                                            non-string value.
+     * @throws LongStringsNotEnabledException if the new keyword does not leave sufficient rooom for the current string
+     *                                            value without enabling long string support.
      *
-     * @see FitsFactory#setLongStringsEnabled(boolean)
-     * @see #spaceForValue()
-     * @see #getValue()
+     * @see                                   FitsFactory#setLongStringsEnabled(boolean)
+     * @see                                   #spaceForValue()
+     * @see                                   #getValue()
      */
-    public synchronized void changeKey(String newKey)
-            throws HierarchNotEnabledException, LongValueException, LongStringsNotEnabledException, IllegalArgumentException {
+    public synchronized void changeKey(String newKey) throws HierarchNotEnabledException, LongValueException,
+            LongStringsNotEnabledException, IllegalArgumentException {
 
         validateKey(newKey);
         if (getHeaderValueSize() > spaceForValue(newKey)) {
@@ -1280,7 +1270,7 @@ public class HeaderCard implements CursorValue<String>, Cloneable {
     /**
      * Checks if the card is blank, that is if it contains only empty spaces.
      *
-     * @return  <code>true</code> if the card contains nothing but blank spaces.
+     * @return <code>true</code> if the card contains nothing but blank spaces.
      */
     public synchronized boolean isBlank() {
         if (!isCommentStyleCard() || !key.isEmpty()) {
@@ -1291,7 +1281,6 @@ public class HeaderCard implements CursorValue<String>, Cloneable {
         }
         return comment.isEmpty();
     }
-
 
     /**
      * <p>
@@ -1358,14 +1347,14 @@ public class HeaderCard implements CursorValue<String>, Cloneable {
      * <li>Comments are trimmed, with both leading and trailing spaces removed.</li>
      * </ul>
      *
-     * @return a newly created HeaderCard from a FITS card string.
+     * @return                          a newly created HeaderCard from a FITS card string.
      *
-     * @param line the card image (typically 80 characters if in a FITS file).
+     * @param  line                     the card image (typically 80 characters if in a FITS file).
      *
-     * @throws IllegalArgumentException     if the card was malformed, truncated, or if there was an IO error.
+     * @throws IllegalArgumentException if the card was malformed, truncated, or if there was an IO error.
      *
-     * @see FitsFactory#setUseHierarch(boolean)
-     * @see nom.tam.fits.header.hierarch.IHierarchKeyFormatter#setCaseSensitive(boolean)
+     * @see                             FitsFactory#setUseHierarch(boolean)
+     * @see                             nom.tam.fits.header.hierarch.IHierarchKeyFormatter#setCaseSensitive(boolean)
      */
     public static HeaderCard create(String line) throws IllegalArgumentException {
         try (ArrayDataInput in = stringToArrayInputStream(line)) {
@@ -1377,23 +1366,22 @@ public class HeaderCard implements CursorValue<String>, Cloneable {
 
     /**
      * <p>
-     * Checks if the value type is compatible with what's expected for a standard FITS keyword
-     * and prints out debugging information if there is a mismatch.
+     * Checks if the value type is compatible with what's expected for a standard FITS keyword and prints out debugging
+     * information if there is a mismatch.
      * </p>
      * <p>
-     * A type mismatch is a programmer's error that we can let pass, but the programmer should probably
-     * fix, either because the IFitsHeader was defined with an incorrect (too restrictive?) type,
-     * or because someone is trying to set a value that does not belong to the keyword...
-     * So we just print the stack trace to provide the debugging information for the
-     * developer.
+     * A type mismatch is a programmer's error that we can let pass, but the programmer should probably fix, either
+     * because the IFitsHeader was defined with an incorrect (too restrictive?) type, or because someone is trying to
+     * set a value that does not belong to the keyword... So we just print the stack trace to provide the debugging
+     * information for the developer.
      * </p>
      *
-     * @param key       The standard or conventional FITS keyword
-     * @param type      The type we want to use with that key
+     * @param  key                      The standard or conventional FITS keyword
+     * @param  type                     The type we want to use with that key
      *
      * @throws IllegalArgumentException if the keyword does not support the given value type.
      *
-     * @since 1.16
+     * @since                           1.16
      */
     private static boolean checkType(IFitsHeader key, VALUE type) throws IllegalArgumentException {
         if (key.valueType() == type || key.valueType() == VALUE.ANY) {
@@ -1406,27 +1394,26 @@ public class HeaderCard implements CursorValue<String>, Cloneable {
             return true;
         }
 
-        LOG.log(Level.WARNING, "[" + key + "] with unexpected value type.", new IllegalArgumentException("Expected " + type + ", got " + key.valueType()));
+        LOG.log(Level.WARNING, "[" + key + "] with unexpected value type.",
+                new IllegalArgumentException("Expected " + type + ", got " + key.valueType()));
         return false;
     }
 
     /**
-     * Creates a new card with a standard or conventional keyword and a boolean value, with
-     * the default comment associated with the keyword. Unlike {@link #HeaderCard(String, Boolean)},
-     * this call does not throw an exception, since the keyword and comment should be valid
-     * by design.
+     * Creates a new card with a standard or conventional keyword and a boolean value, with the default comment
+     * associated with the keyword. Unlike {@link #HeaderCard(String, Boolean)}, this call does not throw an exception,
+     * since the keyword and comment should be valid by design.
      *
-     * @param key       The standard or conventional keyword with its associated default comment.
-     * @param value     the boolean value associated to the keyword
+     * @param  key                      The standard or conventional keyword with its associated default comment.
+     * @param  value                    the boolean value associated to the keyword
      *
-     * @return          A new header card with the speficied standard-style key and comment
-     *                  and the specified value, or <code>null</code> if the standard
-     *                  key itself is malformed or illegal.
+     * @return                          A new header card with the speficied standard-style key and comment and the
+     *                                      specified value, or <code>null</code> if the standard key itself is
+     *                                      malformed or illegal.
      *
-     * @throws IllegalArgumentException
-     *                  if the standard key was ill-defined.
+     * @throws IllegalArgumentException if the standard key was ill-defined.
      *
-     * @since 1.16
+     * @since                           1.16
      */
     public static HeaderCard create(IFitsHeader key, Boolean value) throws IllegalArgumentException {
         checkType(key, VALUE.LOGICAL);
@@ -1440,31 +1427,29 @@ public class HeaderCard implements CursorValue<String>, Cloneable {
 
     /**
      * <p>
-     * Creates a new card with a standard or conventional keyword and a number value, with
-     * the default comment associated with the keyword. Unlike {@link #HeaderCard(String, Number)},
-     * this call does not throw a hard {@link HeaderCardException} exception, since the keyword and
-     * comment should be valid by design. (A runtime {@link IllegalArgumentException} may still be
-     * thrown in the event that the supplied conventional keywords itself is ill-defined -- but
-     * this should not happen unless something was poorly coded in this library, on in an
+     * Creates a new card with a standard or conventional keyword and a number value, with the default comment
+     * associated with the keyword. Unlike {@link #HeaderCard(String, Number)}, this call does not throw a hard
+     * {@link HeaderCardException} exception, since the keyword and comment should be valid by design. (A runtime
+     * {@link IllegalArgumentException} may still be thrown in the event that the supplied conventional keywords itself
+     * is ill-defined -- but this should not happen unless something was poorly coded in this library, on in an
      * extension of it).
      * </p>
      * <p>
-     * If the value is not compatible with the convention of the keyword, a warning message is
-     * logged but no exception is thrown (at this point).
+     * If the value is not compatible with the convention of the keyword, a warning message is logged but no exception
+     * is thrown (at this point).
      * </p>
      *
-     * @param key       The standard or conventional keyword with its associated default comment.
-     * @param value     the integer value associated to the keyword.
+     * @param  key                      The standard or conventional keyword with its associated default comment.
+     * @param  value                    the integer value associated to the keyword.
      *
-     * @return          A new header card with the speficied standard-style key and comment
-     *                  and the specified value.
+     * @return                          A new header card with the speficied standard-style key and comment and the
+     *                                      specified value.
      *
-     * @throws IllegalArgumentException
-     *                  if the standard key itself was ill-defined.
+     * @throws IllegalArgumentException if the standard key itself was ill-defined.
      *
-     * @since 1.16
+     * @since                           1.16
      */
-    public static HeaderCard create(IFitsHeader key, Number value)  throws IllegalArgumentException  {
+    public static HeaderCard create(IFitsHeader key, Number value) throws IllegalArgumentException {
         if (value instanceof Float || value instanceof Double || value instanceof BigDecimal) {
             checkType(key, VALUE.REAL);
         } else {
@@ -1479,23 +1464,21 @@ public class HeaderCard implements CursorValue<String>, Cloneable {
     }
 
     /**
-     * Creates a new card with a standard or conventional keyword and a number value, with
-     * the default comment associated with the keyword. Unlike {@link #HeaderCard(String, Number)},
-     * this call does not throw an exception, since the keyword and comment should be valid
-     * by design.
+     * Creates a new card with a standard or conventional keyword and a number value, with the default comment
+     * associated with the keyword. Unlike {@link #HeaderCard(String, Number)}, this call does not throw an exception,
+     * since the keyword and comment should be valid by design.
      *
-     * @param key       The standard or conventional keyword with its associated default comment.
-     * @param value     the integer value associated to the keyword.
+     * @param  key                      The standard or conventional keyword with its associated default comment.
+     * @param  value                    the integer value associated to the keyword.
      *
-     * @return          A new header card with the speficied standard-style key and comment
-     *                  and the specified value.
+     * @return                          A new header card with the speficied standard-style key and comment and the
+     *                                      specified value.
      *
-     * @throws IllegalArgumentException
-     *                  if the standard key was ill-defined.
+     * @throws IllegalArgumentException if the standard key was ill-defined.
      *
-     * @since 1.16
+     * @since                           1.16
      */
-    public static HeaderCard create(IFitsHeader key, ComplexValue value)  throws IllegalArgumentException  {
+    public static HeaderCard create(IFitsHeader key, ComplexValue value) throws IllegalArgumentException {
         checkType(key, VALUE.COMPLEX);
 
         try {
@@ -1506,23 +1489,20 @@ public class HeaderCard implements CursorValue<String>, Cloneable {
     }
 
     /**
-     * Creates a new card with a standard or conventional keyword and an integer value, with
-     * the default comment associated with the keyword. Unlike {@link #HeaderCard(String, Number)},
-     * this call does not throw a hard exception, since the keyword and comment sohould be valid
-     * by design. The string value however will be checked, and an appropriate runtime
-     * exception is thrown if it cannot be included in a FITS header.
+     * Creates a new card with a standard or conventional keyword and an integer value, with the default comment
+     * associated with the keyword. Unlike {@link #HeaderCard(String, Number)}, this call does not throw a hard
+     * exception, since the keyword and comment sohould be valid by design. The string value however will be checked,
+     * and an appropriate runtime exception is thrown if it cannot be included in a FITS header.
      *
-     * @param key       The standard or conventional keyword with its associated default comment.
-     * @param value     the string associated to the keyword.
+     * @param  key                      The standard or conventional keyword with its associated default comment.
+     * @param  value                    the string associated to the keyword.
      *
-     * @return          A new header card with the speficied standard-style key and comment
-     *                  and the specified value.
+     * @return                          A new header card with the speficied standard-style key and comment and the
+     *                                      specified value.
      *
-     * @throws IllegalArgumentException
-     *                  if the string value contains characters that are not allowed in
-     *                  FITS headers, that is characters outside of the 0x20 thru 0x7E
-     *                  range, or if the standard key was ill-defined.
-     *
+     * @throws IllegalArgumentException if the string value contains characters that are not allowed in FITS headers,
+     *                                      that is characters outside of the 0x20 thru 0x7E range, or if the standard
+     *                                      key was ill-defined.
      */
     public static HeaderCard create(IFitsHeader key, String value) throws IllegalArgumentException {
         checkType(key, VALUE.STRING);
@@ -1538,20 +1518,23 @@ public class HeaderCard implements CursorValue<String>, Cloneable {
     /**
      * Creates a comment-style card with no associated value field.
      *
-     * @param key       The keyword, or <code>null</code> blank/empty string for an unkeyed comment.
-     * @param comment   The comment text.
-     * @return          a new comment-style header card with the specified key and comment text.
-     * @throws HeaderCardException      if the key or value were invalid.
-     * @throws LongValueException       if the comment text is longer than the space available
-     *                                  in comment-style cards (71 characters max)
+     * @param  key                 The keyword, or <code>null</code> blank/empty string for an unkeyed comment.
+     * @param  comment             The comment text.
      *
-     * @see #createUnkeyedCommentCard(String)
-     * @see #createCommentCard(String)
-     * @see #createHistoryCard(String)
-     * @see Header#insertCommentStyle(String, String)
-     * @see Header#insertCommentStyleMultiline(String, String)
+     * @return                     a new comment-style header card with the specified key and comment text.
+     *
+     * @throws HeaderCardException if the key or value were invalid.
+     * @throws LongValueException  if the comment text is longer than the space available in comment-style cards (71
+     *                                 characters max)
+     *
+     * @see                        #createUnkeyedCommentCard(String)
+     * @see                        #createCommentCard(String)
+     * @see                        #createHistoryCard(String)
+     * @see                        Header#insertCommentStyle(String, String)
+     * @see                        Header#insertCommentStyleMultiline(String, String)
      */
-    public static HeaderCard createCommentStyleCard(String key, String comment) throws HeaderCardException, LongValueException {
+    public static HeaderCard createCommentStyleCard(String key, String comment)
+            throws HeaderCardException, LongValueException {
         if (comment == null) {
             comment = "";
         } else if (comment.length() > MAX_COMMENT_CARD_COMMENT_LENGTH) {
@@ -1563,58 +1546,63 @@ public class HeaderCard implements CursorValue<String>, Cloneable {
     }
 
     /**
-     * Creates a new unkeyed comment card for th FITS header. These are comment-style cards with no associated
-     * value field, and with a blank keyword. They are commonly used to add explanatory notes in the
-     * FITS header. Keyed comments are another alternative...
+     * Creates a new unkeyed comment card for th FITS header. These are comment-style cards with no associated value
+     * field, and with a blank keyword. They are commonly used to add explanatory notes in the FITS header. Keyed
+     * comments are another alternative...
      *
-     * @param text      a concise descriptive entry (max 71 characters).
-     * @return          a new COMMENT card with the specified key and comment text.
-     * @throws HeaderCardException      if the text contains invalid charaters.
-     * @throws LongValueException       if the comment text is longer than the space available
-     *                                  in comment-style cards (71 characters max)
+     * @param  text                a concise descriptive entry (max 71 characters).
      *
-     * @see #createCommentCard(String)
-     * @see #createCommentStyleCard(String, String)
-     * @see Header#insertUnkeyedComment(String)
+     * @return                     a new COMMENT card with the specified key and comment text.
+     *
+     * @throws HeaderCardException if the text contains invalid charaters.
+     * @throws LongValueException  if the comment text is longer than the space available in comment-style cards (71
+     *                                 characters max)
+     *
+     * @see                        #createCommentCard(String)
+     * @see                        #createCommentStyleCard(String, String)
+     * @see                        Header#insertUnkeyedComment(String)
      */
     public static HeaderCard createUnkeyedCommentCard(String text) throws HeaderCardException, LongValueException {
         return createCommentStyleCard(BLANKS.key(), text);
     }
 
     /**
-     * Creates a new keyed comment card for th FITS header. These are comment-style cards with no associated
-     * value field, and with COMMENT as the keyword. They are commonly used to add explanatory notes in the
-     * FITS header. Unkeyed comments are another alternative...
+     * Creates a new keyed comment card for th FITS header. These are comment-style cards with no associated value
+     * field, and with COMMENT as the keyword. They are commonly used to add explanatory notes in the FITS header.
+     * Unkeyed comments are another alternative...
      *
-     * @param text      a concise descriptive entry (max 71 characters).
-     * @return          a new COMMENT card with the specified key and comment text.
-     * @throws HeaderCardException      if the text contains invalid charaters.
-     * @throws LongValueException       if the comment text is longer than the space available
-     *                                  in comment-style cards (71 characters max)
+     * @param  text                a concise descriptive entry (max 71 characters).
      *
-     * @see #createUnkeyedCommentCard(String)
-     * @see #createCommentStyleCard(String, String)
-     * @see Header#insertComment(String)
+     * @return                     a new COMMENT card with the specified key and comment text.
+     *
+     * @throws HeaderCardException if the text contains invalid charaters.
+     * @throws LongValueException  if the comment text is longer than the space available in comment-style cards (71
+     *                                 characters max)
+     *
+     * @see                        #createUnkeyedCommentCard(String)
+     * @see                        #createCommentStyleCard(String, String)
+     * @see                        Header#insertComment(String)
      */
     public static HeaderCard createCommentCard(String text) throws HeaderCardException, LongValueException {
         return createCommentStyleCard(COMMENT.key(), text);
     }
 
     /**
-     * Creates a new history record for the FITS header. These are comment-style cards with no associated
-     * value field, and with HISTORY as the keyword. They are commonly used to document the
-     * sequence operations that were performed on the data before it arrived to the state represented
-     * by the FITS file. The text field for history entries is limited to 70 characters max per
-     * card. However there is no limit to how many such entries are in a FITS header.
+     * Creates a new history record for the FITS header. These are comment-style cards with no associated value field,
+     * and with HISTORY as the keyword. They are commonly used to document the sequence operations that were performed
+     * on the data before it arrived to the state represented by the FITS file. The text field for history entries is
+     * limited to 70 characters max per card. However there is no limit to how many such entries are in a FITS header.
      *
-     * @param text      a concise descriptive entry (max 71 characters).
-     * @return          a new HISTORY card with the specified key and comment text.
-     * @throws HeaderCardException      if the text contains invalid charaters.
-     * @throws LongValueException       if the comment text is longer than the space available
-     *                                  in comment-style cards (71 characters max)
+     * @param  text                a concise descriptive entry (max 71 characters).
      *
-     * @see #createCommentStyleCard(String, String)
-     * @see Header#insertHistory(String)
+     * @return                     a new HISTORY card with the specified key and comment text.
+     *
+     * @throws HeaderCardException if the text contains invalid charaters.
+     * @throws LongValueException  if the comment text is longer than the space available in comment-style cards (71
+     *                                 characters max)
+     *
+     * @see                        #createCommentStyleCard(String, String)
+     * @see                        Header#insertHistory(String)
      */
     public static HeaderCard createHistoryCard(String text) throws HeaderCardException, LongValueException {
         return createCommentStyleCard(HISTORY.key(), text);
@@ -1623,16 +1611,16 @@ public class HeaderCard implements CursorValue<String>, Cloneable {
     /**
      * Creates a new header card with the hexadecimal representation of an integer value
      *
-     * @param key the keyword
-     * @param value the integer value
+     * @param  key                 the keyword
+     * @param  value               the integer value
      *
-     * @return A new header card, with the specified integer in hexadecomal representation.
+     * @return                     A new header card, with the specified integer in hexadecomal representation.
      *
      * @throws HeaderCardException if the card is invalid (for example the keyword is not valid).
      *
-     * @see #createHexValueCard(String, long, String)
-     * @see #getHexValue()
-     * @see Header#getHexValue(String)
+     * @see                        #createHexValueCard(String, long, String)
+     * @see                        #getHexValue()
+     * @see                        Header#getHexValue(String)
      */
     public static HeaderCard createHexValueCard(String key, long value) throws HeaderCardException {
         return createHexValueCard(key, value, null);
@@ -1641,31 +1629,31 @@ public class HeaderCard implements CursorValue<String>, Cloneable {
     /**
      * Creates a new header card with the hexadecimal representation of an integer value
      *
-     * @param key the keyword
-     * @param value the integer value
-     * @param comment optional comment, or <code>null</code>.
+     * @param  key                 the keyword
+     * @param  value               the integer value
+     * @param  comment             optional comment, or <code>null</code>.
      *
-     * @return A new header card, with the specified integer in hexadecomal representation.
+     * @return                     A new header card, with the specified integer in hexadecomal representation.
      *
      * @throws HeaderCardException if the card is invalid (for example the keyword is not valid).
      *
-     * @see #createHexValueCard(String, long)
-     * @see #getHexValue()
-     * @see Header#getHexValue(String)
+     * @see                        #createHexValueCard(String, long)
+     * @see                        #getHexValue()
+     * @see                        Header#getHexValue(String)
      */
     public static HeaderCard createHexValueCard(String key, long value, String comment) throws HeaderCardException {
         return new HeaderCard(key, Long.toHexString(value), comment, Long.class);
     }
 
-
     /**
      * Reads an 80-byte card record from an input.
      *
-     * @param in        The input to read from
-     * @return          The raw, undigested header record as a string.
+     * @param  in                     The input to read from
      *
-     * @throws IOException              if already at the end of file.
-     * @throws TruncatedFileException   if there was not a complete record available in the input.
+     * @return                        The raw, undigested header record as a string.
+     *
+     * @throws IOException            if already at the end of file.
+     * @throws TruncatedFileException if there was not a complete record available in the input.
      */
     private static String readRecord(InputReader in) throws IOException, TruncatedFileException {
         byte[] buffer = new byte[FITS_HEADER_CARD_SIZE];
@@ -1692,7 +1680,8 @@ public class HeaderCard implements CursorValue<String>, Cloneable {
 
         if (got < buffer.length) {
             // Got an incomplete header card...
-            throw new TruncatedFileException("Got only " + got + " of " + buffer.length + " bytes expected for a header card");
+            throw new TruncatedFileException(
+                    "Got only " + got + " of " + buffer.length + " bytes expected for a header card");
         }
 
         return AsciiFuncs.asciiString(buffer);
@@ -1701,28 +1690,31 @@ public class HeaderCard implements CursorValue<String>, Cloneable {
     /**
      * Read exactly one complete fits header line from the input.
      *
-     * @param dis the data input stream to read the line
+     * @param  dis                    the data input stream to read the line
      *
-     * @return a string of exactly 80 characters
+     * @return                        a string of exactly 80 characters
      *
-     * @throwa EOFException             if already at the end of file.
-     * @throws TruncatedFileException   if there was not a complete line available in the input.
-     * @throws IOException              if the input stream could not be read
+     * @throwa                        EOFException if already at the end of file.
+     *
+     * @throws TruncatedFileException if there was not a complete line available in the input.
+     * @throws IOException            if the input stream could not be read
      */
-    @SuppressWarnings({ "resource", "deprecation" })
-    private static String readOneHeaderLine(HeaderCardCountingArrayDataInput dis) throws IOException, TruncatedFileException {
+    @SuppressWarnings({"resource", "deprecation"})
+    private static String readOneHeaderLine(HeaderCardCountingArrayDataInput dis)
+            throws IOException, TruncatedFileException {
         String s = readRecord(dis.in());
         dis.cardRead();
         return s;
     }
 
     /**
-     * Returns the maximum number of characters that can be used for a value field in a single FITS header
-     * record (80 characters wide), after the specified keyword.
+     * Returns the maximum number of characters that can be used for a value field in a single FITS header record (80
+     * characters wide), after the specified keyword.
      *
-     * @param key   the header keyword, which may be a HIERARCH-style key...
-     * @return      the space available for the value field in a single record, after the keyword,
-     *              and the assigmnent sequence (or equivalent blank space).
+     * @param  key the header keyword, which may be a HIERARCH-style key...
+     *
+     * @return     the space available for the value field in a single record, after the keyword, and the assigmnent
+     *                 sequence (or equivalent blank space).
      */
     private static int spaceForValue(String key) {
         if (key.length() > MAX_KEYWORD_LENGTH) {
@@ -1744,21 +1736,21 @@ public class HeaderCard implements CursorValue<String>, Cloneable {
     }
 
     /**
-     * This method was designed for use internally. It is 'safe' (not save!) in the sense that the runtime exception it may
-     * throw does not need to be caught.
+     * This method was designed for use internally. It is 'safe' (not save!) in the sense that the runtime exception it
+     * may throw does not need to be caught.
      *
-     * @param key       keyword
-     * @param comment   optional comment, or <code>null</code>
-     * @param hasValue  does this card have a (<code>null</code>) value field? If <code>true</code> a null value of type
-     *                  <code>String.class</code> is assumed (for backward compatibility).
+     * @param      key                   keyword
+     * @param      comment               optional comment, or <code>null</code>
+     * @param      hasValue              does this card have a (<code>null</code>) value field? If <code>true</code> a
+     *                                       null value of type <code>String.class</code> is assumed (for backward
+     *                                       compatibility).
      *
-     * @return the new HeaderCard
-     * @throws IllegalStateException
-     *                  if the card could not be created for some reason (noted as the cause).
+     * @return                           the new HeaderCard
      *
-     * @deprecated      This was to be used internally only, without public visibility. It will become unexposed
-     *                  to users in a future release...
+     * @throws     IllegalStateException if the card could not be created for some reason (noted as the cause).
      *
+     * @deprecated                       This was to be used internally only, without public visibility. It will become
+     *                                       unexposed to users in a future release...
      */
     @Deprecated
     public static HeaderCard saveNewHeaderCard(String key, String comment, boolean hasValue) throws IllegalStateException {
@@ -1773,8 +1765,9 @@ public class HeaderCard implements CursorValue<String>, Cloneable {
     /**
      * Checks if the specified keyword is a HIERARCH-style long keyword.
      *
-     * @param key   The keyword to check.
-     * @return      <code>true</code> if the specified key may be a HIERARC-style key, otehrwise <code>false</code>.
+     * @param  key The keyword to check.
+     *
+     * @return     <code>true</code> if the specified key may be a HIERARC-style key, otehrwise <code>false</code>.
      */
     private static boolean isHierarchKey(String key) {
         return key.toUpperCase().startsWith(HIERARCH_WITH_DOT);
@@ -1784,11 +1777,12 @@ public class HeaderCard implements CursorValue<String>, Cloneable {
      * Replaces illegal characters in the string ith '?' to be suitable for FITS header records. According to the FITS
      * standard, headers may only contain ASCII characters in the range 0x20 and 0x7E (inclusive).
      *
-     * @param str       the input string.
-     * @return          the sanitized string for use in a FITS header, with illegal characters replaced by '?'.
+     * @param  str the input string.
      *
-     * @see #isValidChar(char)
-     * @see #validateChars(String)
+     * @return     the sanitized string for use in a FITS header, with illegal characters replaced by '?'.
+     *
+     * @see        #isValidChar(char)
+     * @see        #validateChars(String)
      */
     public static String sanitize(String str) {
         int nc = str.length();
@@ -1801,35 +1795,35 @@ public class HeaderCard implements CursorValue<String>, Cloneable {
     }
 
     /**
-     * Checks if a character is valid for inclusion in a FITS header record. The FITS standard specifies
-     * that only ASCII characters between 0x20 thru 0x7E may be used in FITS headers.
+     * Checks if a character is valid for inclusion in a FITS header record. The FITS standard specifies that only ASCII
+     * characters between 0x20 thru 0x7E may be used in FITS headers.
      *
-     * @param c     the character to check
-     * @return      <code>true</code> if the character is allowed in the FITS header, otherwise
-     *              <code>false</code>.
+     * @param  c the character to check
      *
-     * @see #validateChars(String)
-     * @see #sanitize(String)
+     * @return   <code>true</code> if the character is allowed in the FITS header, otherwise <code>false</code>.
+     *
+     * @see      #validateChars(String)
+     * @see      #sanitize(String)
      */
     public static boolean isValidChar(char c) {
         return (c >= MIN_VALID_CHAR && c <= MAX_VALID_CHAR);
     }
 
     /**
-     * Checks the specified string for characters that are not allowed in FITS headers, and throws an exception
-     * if any are found. According to the FITS
-     * standard, headers may only contain ASCII characters in the range 0x20 and 0x7E (inclusive).
+     * Checks the specified string for characters that are not allowed in FITS headers, and throws an exception if any
+     * are found. According to the FITS standard, headers may only contain ASCII characters in the range 0x20 and 0x7E
+     * (inclusive).
      *
-     * @param text      the input string
-     * @throws IllegalArgumentException     if the unput string contains any characters that cannot be
-     *                                      in a FITS header, that is characters outside of the 0x20 to 0x7E
-     *                                      range.
+     * @param  text                     the input string
      *
-     * @since 1.16
+     * @throws IllegalArgumentException if the unput string contains any characters that cannot be in a FITS header,
+     *                                      that is characters outside of the 0x20 to 0x7E range.
      *
-     * @see #isValidChar(char)
-     * @see #sanitize(String)
-     * @see #validateKey(String)
+     * @since                           1.16
+     *
+     * @see                             #isValidChar(char)
+     * @see                             #sanitize(String)
+     * @see                             #validateKey(String)
      */
     public static void validateChars(String text) throws IllegalArgumentException {
         if (text == null) {
@@ -1843,27 +1837,25 @@ public class HeaderCard implements CursorValue<String>, Cloneable {
                         "Non-printable character(s), e.g. 0x" + (int) c + ", in [" + sanitize(text) + "].");
             }
             if (c > MAX_VALID_CHAR) {
-                throw new IllegalArgumentException("Extendeed ASCII character(s) in [" + sanitize(text)
-                + "]. Only 0x20 through 0x7E are allowed.");
+                throw new IllegalArgumentException(
+                        "Extendeed ASCII character(s) in [" + sanitize(text) + "]. Only 0x20 through 0x7E are allowed.");
             }
         }
     }
 
     /**
-     * Checks if the specified string may be used as a FITS header keyword according to the FITS standard
-     * and currently settings for supporting extensions to the standard, such as HIERARCH-style keywords.
+     * Checks if the specified string may be used as a FITS header keyword according to the FITS standard and currently
+     * settings for supporting extensions to the standard, such as HIERARCH-style keywords.
      *
-     * @param key           the proposed keyword string
+     * @param  key                      the proposed keyword string
      *
-     * @throws IllegalArgumentException
-     *                      if the string cannot be used as a FITS keyword with the
-     *                      current settings. The exception will contain an informative
-     *                      message describing the issue.
+     * @throws IllegalArgumentException if the string cannot be used as a FITS keyword with the current settings. The
+     *                                      exception will contain an informative message describing the issue.
      *
-     * @since 1.16
+     * @since                           1.16
      *
-     * @see #validateChars(String)
-     * @see FitsFactory#setUseHierarch(boolean)
+     * @see                             #validateChars(String)
+     * @see                             FitsFactory#setUseHierarch(boolean)
      */
     public static void validateKey(String key) throws IllegalArgumentException {
         int maxLength = MAX_KEYWORD_LENGTH;
@@ -1889,7 +1881,7 @@ public class HeaderCard implements CursorValue<String>, Cloneable {
             }
             if (c > MAX_VALID_CHAR) {
                 throw new IllegalArgumentException("Keyword contains extendeed ASCII characters: [" + sanitize(key)
-                + "]. Only 0x20 through 0x7E are allowed.");
+                        + "]. Only 0x20 through 0x7E are allowed.");
             }
         }
 
@@ -1902,24 +1894,26 @@ public class HeaderCard implements CursorValue<String>, Cloneable {
             if ((c >= '0' && c <= '9') || (c == '-') || (c == '_')) {
                 continue;
             }
-            throw new IllegalArgumentException("Keyword [" + sanitize(key) + "] contains invalid characters. Only [A-Z][a-z][0-9][-][_] are allowed.");
+            throw new IllegalArgumentException(
+                    "Keyword [" + sanitize(key) + "] contains invalid characters. Only [A-Z][a-z][0-9][-][_] are allowed.");
         }
     }
 
     /**
-     * Additional checks the extended components of the HIEARCH key (in bytes 9-77), to make sure they conform to
-     * our own standards of storing hierarch keys as a dot-separated list of components. That is,
-     * the keyword must not have any spaces...
+     * Additional checks the extended components of the HIEARCH key (in bytes 9-77), to make sure they conform to our
+     * own standards of storing hierarch keys as a dot-separated list of components. That is, the keyword must not have
+     * any spaces...
      *
-     * @param key       the HIERARCH keyword to check.
+     * @param  key                      the HIERARCH keyword to check.
      *
-     * @throws IllegalArgumentException     if the keyword is not a proper dot-separated set of non-empty
-     *                                      hierarchical components
+     * @throws IllegalArgumentException if the keyword is not a proper dot-separated set of non-empty hierarchical
+     *                                      components
      */
     private static void validateHierarchComponents(String key) throws IllegalArgumentException {
         for (int i = key.length(); --i >= 0;) {
             if (Character.isSpaceChar(key.charAt(i))) {
-                throw new IllegalArgumentException("No spaces allowed in HIERARCH keywords used internally: [" + sanitize(key) + "].");
+                throw new IllegalArgumentException(
+                        "No spaces allowed in HIERARCH keywords used internally: [" + sanitize(key) + "].");
             }
         }
 
@@ -1929,12 +1923,12 @@ public class HeaderCard implements CursorValue<String>, Cloneable {
     }
 
     /**
-     * Checks that a number value is not NaN or Infinite, since FITS does not have a standard for describing
-     * those values in the header. If the value is not suitable for the FITS header, an exception is thrown.
+     * Checks that a number value is not NaN or Infinite, since FITS does not have a standard for describing those
+     * values in the header. If the value is not suitable for the FITS header, an exception is thrown.
      *
-     * @param value                     The number to check
-     * @throws NumberFormatException    if the input value is NaN or infinite.
+     * @param  value                 The number to check
      *
+     * @throws NumberFormatException if the input value is NaN or infinite.
      */
     private static void checkNumber(Number value) throws NumberFormatException {
         if (value instanceof Double) {

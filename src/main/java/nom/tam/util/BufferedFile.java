@@ -35,11 +35,11 @@ import java.io.File;
 import java.io.IOException;
 
 /**
- * @deprecated Use {@link FitsFile} instead, which replaces the old <code>BufferedFile</code> with a less
- * misleading name, or else {@link ArrayDataFile}, which provides a base for a more more generic implementation
- * for efficient reading/writing arrays using any (non-FITS) encoding.
+ * @deprecated Use {@link FitsFile} instead, which replaces the old <code>BufferedFile</code> with a less misleading
+ *                 name, or else {@link ArrayDataFile}, which provides a base for a more more generic implementation for
+ *                 efficient reading/writing arrays using any (non-FITS) encoding.
  *
- * @see FitsFile
+ * @see        FitsFile
  */
 @Deprecated
 public class BufferedFile extends FitsFile {

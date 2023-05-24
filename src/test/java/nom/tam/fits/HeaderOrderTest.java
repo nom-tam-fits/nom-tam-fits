@@ -69,8 +69,7 @@ public class HeaderOrderTest {
     }
 
     /**
-     * test if the header order is corrected during the write, the THEAP keyword
-     * must be the last before the end.
+     * test if the header order is corrected during the write, the THEAP keyword must be the last before the end.
      */
     @Test
     public void headerOrder() throws Exception {
@@ -84,14 +83,12 @@ public class HeaderOrderTest {
         header.addValue(NAXIS, 0);
         header.insertCommentStyle(END.key(), null);
 
-
         // Check that the order is what we expect...
         Assert.assertEquals(SIMPLE.key(), header.iterator(1).next().getKey());
         Assert.assertEquals(BITPIX.key(), header.iterator(2).next().getKey());
         Assert.assertEquals(THEAP.key(), header.iterator(3).next().getKey());
         Assert.assertEquals(NAXIS.key(), header.iterator(4).next().getKey());
         Assert.assertEquals(END.key(), header.iterator(5).next().getKey());
-
 
         header.write(dos);
         Assert.assertEquals(BLOCKED.key(), header.iterator(3).next().getKey());
@@ -109,10 +106,11 @@ public class HeaderOrderTest {
         Assert.assertEquals(BLOCKED.key(), header.iterator(3).next().getKey());
     }
 
-
-    @Test(expected=IllegalStateException.class)
+    @Test(expected = IllegalStateException.class)
     public void testSaveNewCard() {
-        HeaderCard.saveNewHeaderCard("XXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXX", "", false);
+        HeaderCard.saveNewHeaderCard(
+                "XXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXX",
+                "", false);
     }
 
     @Test
@@ -137,5 +135,3 @@ public class HeaderOrderTest {
         assertEquals(-1, new HeaderOrder().compare(null, "END"));
     }
 }
-
-

@@ -58,7 +58,6 @@ public class FitsLineAppenderTest {
         FitsFactory.setDefaults();
     }
 
-
     @Test
     public void testFitsLineAppender() throws Exception {
         FitsLineAppender l = new FitsLineAppender();
@@ -67,7 +66,7 @@ public class FitsLineAppenderTest {
 
         l.append('X');
         assertEquals(1, l.length());
-        assertEquals(HeaderCard.FITS_HEADER_CARD_SIZE-1, l.spaceLeftInLine());
+        assertEquals(HeaderCard.FITS_HEADER_CARD_SIZE - 1, l.spaceLeftInLine());
 
         l.append("FILES");
         assertEquals("XFILES", l.toString());
@@ -117,19 +116,19 @@ public class FitsLineAppenderTest {
         assertEquals(text, toString(s));
 
         s.skip(5);
-        assertEquals(text.length()-5, s.length());
-        assertEquals(text.length()-5, s.fullLength());
+        assertEquals(text.length() - 5, s.length());
+        assertEquals(text.length() - 5, s.fullLength());
         assertEquals(text.substring(5), toString(s));
 
         s.getAdjustedLength(6);
         assertEquals(6, s.length());
-        assertEquals(text.length()-5, s.fullLength());
+        assertEquals(text.length() - 5, s.fullLength());
         assertEquals(text.substring(5, 11), toString(s));
 
         assertTrue(s.startsWith(text.substring(5, 9)));
 
         s.rest();
-        assertEquals(text.length()-11, s.length());
+        assertEquals(text.length() - 11, s.length());
         assertEquals(text.substring(11), toString(s));
 
         s.getAdjustedLength(-1);

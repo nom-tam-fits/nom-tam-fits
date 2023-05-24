@@ -31,13 +31,12 @@ package nom.tam.util.type;
  * #L%
  */
 
-
 import java.nio.Buffer;
 
 /**
- * @deprecated Use {@link ElementType} instead.
+ * @deprecated     Use {@link ElementType} instead.
  *
- * @param <B>       the generic type of data buffer
+ * @param      <B> the generic type of data buffer
  */
 @Deprecated
 public abstract class PrimitiveType<B extends Buffer> extends ElementType<B> {

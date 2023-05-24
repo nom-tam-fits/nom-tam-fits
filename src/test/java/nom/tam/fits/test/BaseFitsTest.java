@@ -530,8 +530,8 @@ public class BaseFitsTest {
         Assert.assertTrue(actual.getMessage().toLowerCase().contains("invalid"));
         FitsFactory.setAllowHeaderRepairs(false);
         header.card(Standard.NAXIS).value(2)//
-        .card(NAXISn.n(2)).value(2)//
-        .card(Standard.BITPIX).value(22);
+                .card(NAXISn.n(2)).value(2)//
+                .card(Standard.BITPIX).value(22);
         actual = null;
         try {
             RandomGroupsHDU.manufactureData(header);
@@ -541,7 +541,7 @@ public class BaseFitsTest {
         Assert.assertNotNull(actual);
         Assert.assertTrue(actual.getMessage().contains("BITPIX"));
         header.card(NAXISn.n(2)).value(-2)//
-        .card(Standard.BITPIX).value(32);
+                .card(Standard.BITPIX).value(32);
         actual = null;
         try {
             RandomGroupsHDU.manufactureData(header);
@@ -968,11 +968,11 @@ public class BaseFitsTest {
         DataOutput out = (DataOutput) Proxy.newProxyInstance(getClass().getClassLoader(), new Class[] {DataOutput.class},
                 new InvocationHandler() {
 
-            @Override
-            public Object invoke(Object proxy, Method method, Object[] args) throws Throwable {
-                return null;
-            }
-        });
+                    @Override
+                    public Object invoke(Object proxy, Method method, Object[] args) throws Throwable {
+                        return null;
+                    }
+                });
 
         new Fits().write(out);
     }

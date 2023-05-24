@@ -76,12 +76,12 @@ public class StreamingTileImageData extends ImageData {
     /**
      * Constructor for a tile image data object.
      *
-     * @param header The header representing the desired cutout. It is the responsibility of the caller to adjust the
-     *            header appropriately.
-     * @param tiler The tiler to slice pixels out with.
-     * @param corners The corners to start tiling.
-     * @param lengths The count of values to extract.
-     * @param steps The number of jumps to make to the next read. Optional, defaults to 1 for each axis.
+     * @param  header        The header representing the desired cutout. It is the responsibility of the caller to
+     *                           adjust the header appropriately.
+     * @param  tiler         The tiler to slice pixels out with.
+     * @param  corners       The corners to start tiling.
+     * @param  lengths       The count of values to extract.
+     * @param  steps         The number of jumps to make to the next read. Optional, defaults to 1 for each axis.
      *
      * @throws FitsException If the provided Header is unreadable
      */

@@ -67,7 +67,6 @@ public class BlanksDotHierarchKeyFormatter implements IHierarchKeyFormatter {
         return blanks.length();
     }
 
-
     @Override
     public String toHeaderString(String key) {
         if (!allowMixedCase) {

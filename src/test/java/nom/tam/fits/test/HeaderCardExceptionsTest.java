@@ -50,7 +50,6 @@ import nom.tam.fits.UnclosedQuoteException;
 
 public class HeaderCardExceptionsTest {
 
-
     @Before
     public void before() {
         FitsFactory.setDefaults();
@@ -62,7 +61,7 @@ public class HeaderCardExceptionsTest {
     }
 
     @Test
-    public void testHyphenUnderScoresKey()  throws Exception {
+    public void testHyphenUnderScoresKey() throws Exception {
         String key = "_a1-Z9_";
         HeaderCard hc = new HeaderCard(key, "value", "comment");
         assertEquals(key, hc.getKey());
@@ -74,66 +73,62 @@ public class HeaderCardExceptionsTest {
     }
 
     @Test(expected = HeaderCardException.class)
-    public void testLFInBaseKey()  throws Exception {
+    public void testLFInBaseKey() throws Exception {
         new HeaderCard("abc\ndef", true);
     }
 
     @Test(expected = HeaderCardException.class)
-    public void testSymbolsInBaseKey()  throws Exception {
+    public void testSymbolsInBaseKey() throws Exception {
         new HeaderCard("abc*&#", true);
     }
 
     @Test(expected = HeaderCardException.class)
-    public void testLongBaseKey()  throws Exception {
+    public void testLongBaseKey() throws Exception {
         new HeaderCard("abcdef123", true);
     }
 
-
     @Test(expected = HeaderCardException.class)
-    public void testExtendedASCIIInBaseKey()  throws Exception {
+    public void testExtendedASCIIInBaseKey() throws Exception {
         new HeaderCard("abc\u0080DEF", 1);
     }
 
     @Test(expected = HeaderCardException.class)
-    public void testLFInValue()  throws Exception {
+    public void testLFInValue() throws Exception {
         new HeaderCard("TEST", "abc\ndef");
     }
 
     @Test(expected = HeaderCardException.class)
-    public void testExtendedASCIIInValue()  throws Exception {
+    public void testExtendedASCIIInValue() throws Exception {
         new HeaderCard("TEST", "abc\u0080DEF");
     }
 
     @Test(expected = HeaderCardException.class)
-    public void testLFInComment()  throws Exception {
+    public void testLFInComment() throws Exception {
         new HeaderCard("TEST", -101, "abc\ndef");
     }
 
     @Test(expected = HeaderCardException.class)
-    public void testExtendedASCIIInComment()  throws Exception {
+    public void testExtendedASCIIInComment() throws Exception {
         new HeaderCard("TEST", "value", "abc\u0080DEF");
     }
 
     @Test(expected = HeaderCardException.class)
-    public void testNaNCreate()  throws Exception {
+    public void testNaNCreate() throws Exception {
         new HeaderCard("TESTNAN", Double.NaN);
     }
 
     @Test(expected = HeaderCardException.class)
-    public void testInfCreate()  throws Exception {
+    public void testInfCreate() throws Exception {
         new HeaderCard("TESTINF", Float.POSITIVE_INFINITY, 10, "comment");
     }
 
     @Test(expected = HeaderCardException.class)
-    public void testInf2Create()  throws Exception {
+    public void testInf2Create() throws Exception {
         new HeaderCard("TESTINF2", Double.NEGATIVE_INFINITY);
     }
 
-
-
-
     @Test(expected = NumberFormatException.class)
-    public void testNaNSet()  throws Exception {
+    public void testNaNSet() throws Exception {
         HeaderCard hc = null;
         try {
             hc = new HeaderCard("TESTNAN", 0.0);
@@ -147,7 +142,7 @@ public class HeaderCardExceptionsTest {
     }
 
     @Test(expected = NumberFormatException.class)
-    public void testInfSet()  throws Exception {
+    public void testInfSet() throws Exception {
         HeaderCard hc = null;
         try {
             hc = new HeaderCard("TESTINF", 0.0);
@@ -161,7 +156,7 @@ public class HeaderCardExceptionsTest {
     }
 
     @Test(expected = NumberFormatException.class)
-    public void testInf2Set()  throws Exception {
+    public void testInf2Set() throws Exception {
         HeaderCard hc = null;
         try {
             hc = new HeaderCard("TESTINF", 0.0F);
@@ -174,12 +169,10 @@ public class HeaderCardExceptionsTest {
         hc.setValue(Double.POSITIVE_INFINITY);
     }
 
-
     @Test(expected = HeaderCardException.class)
-    public void testLongBaseKeyword()  throws Exception {
+    public void testLongBaseKeyword() throws Exception {
         new HeaderCard("abcDEF123", 0.0F);
     }
-
 
     @Test
     public void testLongValueExceptionConstructors() throws Exception {
@@ -216,7 +209,8 @@ public class HeaderCardExceptionsTest {
     @Test(expected = LongValueException.class)
     public void testLongHierarchReqwite() throws Exception {
         FitsFactory.setUseHierarch(true);
-        HeaderCard hc = HeaderCard.create("HIERARCH.AAA.BBB.CCC.DDD.EEE.FFF.GGG.HHH.III.JJJ.KKK.LLL.MMM.NNN.OOO.PPP.QQQ.RR=");
+        HeaderCard hc = HeaderCard
+                .create("HIERARCH.AAA.BBB.CCC.DDD.EEE.FFF.GGG.HHH.III.JJJ.KKK.LLL.MMM.NNN.OOO.PPP.QQQ.RR=");
         hc.toString();
     }
 
@@ -226,7 +220,8 @@ public class HeaderCardExceptionsTest {
         assertTrue(FitsFactory.isLongStringsEnabled());
         HeaderCard hc = null;
         try {
-            hc = new HeaderCard("LONG", "this is a long string example that cannot possibly fit into a single header record, and will require long string support enabled.");
+            hc = new HeaderCard("LONG",
+                    "this is a long string example that cannot possibly fit into a single header record, and will require long string support enabled.");
         } catch (HeaderCardException e) {
         }
         // The above should not throw an exception.
@@ -239,7 +234,8 @@ public class HeaderCardExceptionsTest {
 
         // But this one should.
         try {
-            new HeaderCard("LONG", "this is a long string example that cannot possibly fit into a single header record, and will require long string support enabled.");
+            new HeaderCard("LONG",
+                    "this is a long string example that cannot possibly fit into a single header record, and will require long string support enabled.");
         } catch (HeaderCardException e) {
             cause = e.getCause();
         }
@@ -247,7 +243,6 @@ public class HeaderCardExceptionsTest {
         assertNotNull(cause);
         assertEquals(LongStringsNotEnabledException.class, cause.getClass());
     }
-
 
     @Test
     public void testLongStringsNotEnabledException2() throws Exception {
@@ -260,7 +255,8 @@ public class HeaderCardExceptionsTest {
 
         // But this one should.
         try {
-            hc.setValue("this is a long string example that cannot possibly fit into a single header record, and will require long string support enabled.");
+            hc.setValue(
+                    "this is a long string example that cannot possibly fit into a single header record, and will require long string support enabled.");
         } catch (LongStringsNotEnabledException e) {
             thrown = true;
         }
@@ -274,7 +270,8 @@ public class HeaderCardExceptionsTest {
         assertTrue(FitsFactory.isLongStringsEnabled());
         HeaderCard hc = null;
         try {
-            hc = new HeaderCard("LONG", "this is a long string example that cannot possibly fit into a single header record, and will require long string support enabled.");
+            hc = new HeaderCard("LONG",
+                    "this is a long string example that cannot possibly fit into a single header record, and will require long string support enabled.");
         } catch (HeaderCardException e) {
         }
         // The above should not throw an exception.
@@ -303,12 +300,12 @@ public class HeaderCardExceptionsTest {
     }
 
     @Test(expected = IllegalArgumentException.class)
-    public void testParseNull()  throws Exception {
+    public void testParseNull() throws Exception {
         HeaderCard.create(null);
     }
 
     @Test(expected = HeaderCardException.class)
-    public void testMissingHieratchPart()  throws Exception {
+    public void testMissingHieratchPart() throws Exception {
         FitsFactory.setUseHierarch(true);
         new HeaderCard("HIERARCH.AAA..BBB", "value");
     }
@@ -345,7 +342,6 @@ public class HeaderCardExceptionsTest {
         assertTrue(hc.hasHierarchKey());
         assertTrue(hc.isIntegerType());
 
-
         HeaderCard hc2 = null;
         try {
             // Parse back...
@@ -376,8 +372,6 @@ public class HeaderCardExceptionsTest {
         assertEquals(HierarchNotEnabledException.class, cause.getClass());
     }
 
-
-
     @Test(expected = HierarchNotEnabledException.class)
     public void testHierarchNotEnabledException2() throws Exception {
         FitsFactory.setUseHierarch(true);
@@ -398,7 +392,6 @@ public class HeaderCardExceptionsTest {
         // But this one should.
         hc.toString();
     }
-
 
     @Test
     public void testUnclosedQuotes1() throws Throwable {
@@ -423,7 +416,7 @@ public class HeaderCardExceptionsTest {
 
         try {
             HeaderCard.create(card);
-        } catch(IllegalArgumentException e) {
+        } catch (IllegalArgumentException e) {
             cause = e.getCause();
         }
 
@@ -454,7 +447,7 @@ public class HeaderCardExceptionsTest {
 
         try {
             HeaderCard.create(card);
-        } catch(IllegalArgumentException e) {
+        } catch (IllegalArgumentException e) {
             cause = e.getCause();
         }
 

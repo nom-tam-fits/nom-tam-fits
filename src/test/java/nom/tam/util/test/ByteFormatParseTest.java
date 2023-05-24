@@ -88,10 +88,7 @@ public class ByteFormatParseTest {
 
     @Test
     public void testToShortDouble() throws Exception {
-        byte[] input = {
-                '5',
-                '0'
-        };
+        byte[] input = {'5', '0'};
         ByteParser parser = new ByteParser(input);
         double value = parser.getDouble(2);
         Assert.assertEquals(50.0, value, 0.00000000001d);
@@ -375,7 +372,8 @@ public class ByteFormatParseTest {
         assertArrayEquals(createArray(20, 84), data);
         Arrays.fill(data, (byte) 0);
         bf.format(99.99d, data);
-        assertArrayEquals(createArray(20, 57, 57, 46, 57, 57, 48, 48, 48, 48, 48, 48, 48, 48, 48, 48, 48, 48, 48, 48), data);
+        assertArrayEquals(createArray(20, 57, 57, 46, 57, 57, 48, 48, 48, 48, 48, 48, 48, 48, 48, 48, 48, 48, 48, 48),
+                data);
         Arrays.fill(data, (byte) 0);
         bf.format(99.99f, data);
         assertArrayEquals(createArray(20, 57, 57, 46, 57, 56, 57, 57, 57, 54, 56), data);
@@ -388,7 +386,8 @@ public class ByteFormatParseTest {
 
         Arrays.fill(data, (byte) 0);
         bf.format(9.9E+3, data);
-        assertArrayEquals(createArray(20, 57, 57, 48, 48, 46, 48, 48, 48, 48, 48, 48, 48, 48, 48, 48, 48, 48, 48, 48), data);
+        assertArrayEquals(createArray(20, 57, 57, 48, 48, 46, 48, 48, 48, 48, 48, 48, 48, 48, 48, 48, 48, 48, 48, 48),
+                data);
     }
 
     private byte[] createArray(int size, int... values) {
@@ -487,18 +486,7 @@ public class ByteFormatParseTest {
     public void testFormatString() {
         byte[] array = new byte[10];
         bf.format("blabla", array);
-        byte[] expected = {
-                98,
-                108,
-                97,
-                98,
-                108,
-                97,
-                0,
-                0,
-                0,
-                0
-        };
+        byte[] expected = {98, 108, 97, 98, 108, 97, 0, 0, 0, 0};
         assertArrayEquals(expected, array);
     }
 

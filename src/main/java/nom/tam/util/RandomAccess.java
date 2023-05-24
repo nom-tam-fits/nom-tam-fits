@@ -34,9 +34,8 @@ import java.io.IOException;
  */
 
 /**
- * These packages define the methods which indicate that an i/o stream may be
- * accessed in arbitrary order. The method signatures are taken from
- * RandomAccessFile though that class does not implement this interface.
+ * These packages define the methods which indicate that an i/o stream may be accessed in arbitrary order. The method
+ * signatures are taken from RandomAccessFile though that class does not implement this interface.
  */
 public interface RandomAccess extends ReadWriteAccess, ArrayDataInput {
 
@@ -48,10 +47,9 @@ public interface RandomAccess extends ReadWriteAccess, ArrayDataInput {
     /**
      * Move to a specified location in the stream.
      *
-     * @param offsetFromStart
-     *            set the offset messured from the start
-     * @throws IOException
-     *             if the operation fails
+     * @param  offsetFromStart set the offset messured from the start
+     *
+     * @throws IOException     if the operation fails
      */
     void seek(long offsetFromStart) throws IOException;
 

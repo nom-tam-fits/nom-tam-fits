@@ -55,9 +55,11 @@ public class BasicCompressProvider implements ICompressProvider {
             Process proc = new ProcessBuilder("uncompress", "-c").start();
             return new CloseIS(proc, compressed);
         } catch (Exception e) {
-            ICompressProvider next = CompressionManager.nextCompressionProvider(COMPRESS_MAGIC_BYTE1, COMPRESS_MAGIC_BYTE2, this);
+            ICompressProvider next = CompressionManager.nextCompressionProvider(COMPRESS_MAGIC_BYTE1, COMPRESS_MAGIC_BYTE2,
+                    this);
             if (next != null) {
-                LOG.log(Level.WARNING, "Error initiating .Z decompression: " + e.getMessage() + " trying alternative decompressor", e);
+                LOG.log(Level.WARNING,
+                        "Error initiating .Z decompression: " + e.getMessage() + " trying alternative decompressor", e);
                 return next.decompress(compressed);
             }
             throw new FitsException("Unable to read .Z compressed stream.\nIs 'uncompress' in the path?", e);

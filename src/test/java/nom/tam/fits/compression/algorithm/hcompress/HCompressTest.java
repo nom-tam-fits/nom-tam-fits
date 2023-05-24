@@ -64,8 +64,7 @@ public class HCompressTest {
         RandomAccessFile expected = null;
         try {
             file = new RandomAccessFile("src/test/resources/nom/tam/image/comp/bare/test100Data8.bin", "r");//
-            expected = new RandomAccessFile("src/test/resources/nom/tam/image/comp/hcompress/scale0/test100Data8.huf",
-                    "r");//
+            expected = new RandomAccessFile("src/test/resources/nom/tam/image/comp/hcompress/scale0/test100Data8.huf", "r");//
 
             byte[] bytes = new byte[(int) file.length()];
             file.read(bytes);
@@ -102,8 +101,7 @@ public class HCompressTest {
         RandomAccessFile expected = null;
         try {
             file = new RandomAccessFile("src/test/resources/nom/tam/image/comp/bare/test99Data8.bin", "r");//
-            expected = new RandomAccessFile("src/test/resources/nom/tam/image/comp/hcompress/scale0/test99Data8.huf",
-                    "r");//
+            expected = new RandomAccessFile("src/test/resources/nom/tam/image/comp/hcompress/scale0/test99Data8.huf", "r");//
 
             byte[] bytes = new byte[(int) file.length()];
             file.read(bytes);
@@ -291,8 +289,7 @@ public class HCompressTest {
         RandomAccessFile expected = null;
         try {
             file = new RandomAccessFile("src/test/resources/nom/tam/image/comp/bare/test99Data32.bin", "r");//
-            expected = new RandomAccessFile("src/test/resources/nom/tam/image/comp/hcompress/scale0/test99Data32.huf",
-                    "r");//
+            expected = new RandomAccessFile("src/test/resources/nom/tam/image/comp/hcompress/scale0/test99Data32.huf", "r");//
 
             byte[] bytes = new byte[(int) file.length()];
             file.read(bytes);
@@ -348,7 +345,7 @@ public class HCompressTest {
             ByteBuffer compressed = ByteBuffer.wrap(new byte[intArray.length * 4]);
 
             new IntHCompressor(new HCompressorOption().setTileWidth(100).setTileHeight(100).setScale(0x231a))
-            .compress(asIntBuffer, compressed);
+                    .compress(asIntBuffer, compressed);
 
             byte[] compressedArray = new byte[expectedBytes.length];
             compressed.position(0);
@@ -428,8 +425,7 @@ public class HCompressTest {
         RandomAccessFile expected = null;
         try {
             file = new RandomAccessFile("src/test/resources/nom/tam/image/comp/bare/test99Data16.bin", "r");//
-            expected = new RandomAccessFile("src/test/resources/nom/tam/image/comp/hcompress/scale0/test99Data16.huf",
-                    "r");//
+            expected = new RandomAccessFile("src/test/resources/nom/tam/image/comp/hcompress/scale0/test99Data16.huf", "r");//
 
             byte[] bytes = new byte[(int) file.length()];
             file.read(bytes);

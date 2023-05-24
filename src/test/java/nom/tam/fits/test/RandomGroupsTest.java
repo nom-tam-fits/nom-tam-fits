@@ -215,8 +215,7 @@ public class RandomGroupsTest {
         }
     }
 
-    private void testGroupCreationAndRecreationByType(Object fa, Object pa, int bipix, String typeName)
-            throws Exception {
+    private void testGroupCreationAndRecreationByType(Object fa, Object pa, int bipix, String typeName) throws Exception {
         Object[][] data = new Object[1][2];
         data[0][0] = pa;
         data[0][1] = fa;

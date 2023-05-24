@@ -47,7 +47,8 @@ public class TileCompressorAlternativProvider implements ICompressorProvider {
     }
 
     @Override
-    public ICompressorControl createCompressorControl(String quantAlgorithm, String compressionAlgorithm, Class<?> baseType) {
+    public ICompressorControl createCompressorControl(String quantAlgorithm, String compressionAlgorithm,
+            Class<?> baseType) {
         if ("X".equalsIgnoreCase(compressionAlgorithm) && quantAlgorithm == null && baseType.equals(long.class)) {
             return new ICompressorControl() {
 

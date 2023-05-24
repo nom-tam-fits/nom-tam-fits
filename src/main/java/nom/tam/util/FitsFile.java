@@ -37,55 +37,37 @@ import java.io.IOException;
 import java.util.logging.Level;
 import java.util.logging.Logger;
 
-
 /**
- * This class is intended for high performance reading and writing
- * FITS files or block of FITS-formatted data. It provides buffered
- * random access and efficient handling of arrays. Primitive arrays
- * may be written using a single method call. Large buffers
- * are used to minimize synchronization overheads since methods
- * of this class are not synchronized.
+ * This class is intended for high performance reading and writing FITS files or block of FITS-formatted data. It
+ * provides buffered random access and efficient handling of arrays. Primitive arrays may be written using a single
+ * method call. Large buffers are used to minimize synchronization overheads since methods of this class are not
+ * synchronized.
  * <p>
- * Note that although this class supports most of the contract of
- * RandomAccessFile it does not (and can not) extend that class since many of
- * the methods of RandomAccessFile are final. In practice this method works much
- * like the StreamFilter classes. All methods are implemented in this class but
- * some are simply delegated to an underlying RandomAccessFile member.
+ * Note that although this class supports most of the contract of RandomAccessFile it does not (and can not) extend that
+ * class since many of the methods of RandomAccessFile are final. In practice this method works much like the
+ * StreamFilter classes. All methods are implemented in this class but some are simply delegated to an underlying
+ * RandomAccessFile member.
  * <p>
- * Testing and timing routines are available in the
- * nom.tam.util.test.BufferedFileTester class.
- *
+ * Testing and timing routines are available in the nom.tam.util.test.BufferedFileTester class.
  * <p>
- * Prior versions of this class under the old <code>BufferedFile</code>
- * name:
+ * Prior versions of this class under the old <code>BufferedFile</code> name:
  * <ul>
- * <li>
- * Version 1.1 -- October 12, 2000: Fixed handling of EOF in array reads so that a
- * partial array will be returned when an EOF is detected. Excess bytes that
- * cannot be used to construct array elements will be discarded (e.g., if there
- * are 2 bytes left and the user is reading an int array).</li>
- *
- * <li>
- * Version 1.2 -- December 8, 2002: Added getChannel method.</li>
- *
- * <li>
- * Version 1.3 -- March 2, 2007: Added File based constructors.</li>
- *
- * <li>
- * Version 1.4 -- July 20, 2009: Added support for &gt;2G Object reads.
- * This is still a bit problematic in that we do not support primitive arrays
- * larger than 2 GB/atomsize. However except in the case of bytes this is not
- * currently a major issue.</li>
- *
+ * <li>Version 1.1 -- October 12, 2000: Fixed handling of EOF in array reads so that a partial array will be returned
+ * when an EOF is detected. Excess bytes that cannot be used to construct array elements will be discarded (e.g., if
+ * there are 2 bytes left and the user is reading an int array).</li>
+ * <li>Version 1.2 -- December 8, 2002: Added getChannel method.</li>
+ * <li>Version 1.3 -- March 2, 2007: Added File based constructors.</li>
+ * <li>Version 1.4 -- July 20, 2009: Added support for &gt;2G Object reads. This is still a bit problematic in that we
+ * do not support primitive arrays larger than 2 GB/atomsize. However except in the case of bytes this is not currently
+ * a major issue.</li>
  * </ul>
- *
  * <p>
- * Version 2.0 -- Oct 30, 2021: New hierarchy for more digestible code. Improved
- * buffering, and renamed from <code>BufferedFile</code> to the more appropriate
- * name of <code>FitsFile</code>. Performance is 2-4 times better than before.
+ * Version 2.0 -- Oct 30, 2021: New hierarchy for more digestible code. Improved buffering, and renamed from
+ * <code>BufferedFile</code> to the more appropriate name of <code>FitsFile</code>. Performance is 2-4 times better than
+ * before.
  *
- * @see FitsInputStream
- * @see FitsOutputStream
+ * @see   FitsInputStream
+ * @see   FitsOutputStream
  *
  * @since 1.16
  */
@@ -102,10 +84,9 @@ public class FitsFile extends ArrayDataFile implements FitsOutput, RandomAccess 
     /**
      * Create a buffered file from a File descriptor
      *
-     * @param file
-     *            the file to open.
-     * @throws IOException
-     *             if the file could not be opened
+     * @param  file        the file to open.
+     *
+     * @throws IOException if the file could not be opened
      */
     public FitsFile(File file) throws IOException {
         this(file, "r", FitsIO.DEFAULT_BUFFER_SIZE);
@@ -114,12 +95,10 @@ public class FitsFile extends ArrayDataFile implements FitsOutput, RandomAccess 
     /**
      * Create a buffered file from a File descriptor
      *
-     * @param file
-     *            the file to open.
-     * @param mode
-     *            the mode to open the file in
-     * @throws IOException
-     *             if the file could not be opened
+     * @param  file        the file to open.
+     * @param  mode        the mode to open the file in
+     *
+     * @throws IOException if the file could not be opened
      */
     public FitsFile(File file, String mode) throws IOException {
         this(file, mode, FitsIO.DEFAULT_BUFFER_SIZE);
@@ -128,14 +107,11 @@ public class FitsFile extends ArrayDataFile implements FitsOutput, RandomAccess 
     /**
      * Create a buffered file from a file descriptor
      *
-     * @param file
-     *            the file to open.
-     * @param mode
-     *            the mode to open the file in
-     * @param bufferSize
-     *            the dataBuffer.buffer size to use
-     * @throws IOException
-     *             if the file could not be opened
+     * @param  file        the file to open.
+     * @param  mode        the mode to open the file in
+     * @param  bufferSize  the dataBuffer.buffer size to use
+     *
+     * @throws IOException if the file could not be opened
      */
     public FitsFile(File file, String mode, int bufferSize) throws IOException {
         super(file, mode, bufferSize);
@@ -146,12 +122,10 @@ public class FitsFile extends ArrayDataFile implements FitsOutput, RandomAccess 
     /**
      * Create a buffered file from a random access data object.
      *
-     * @param src
-     *              random access data
-     * @param bufferSize
-     *              the dataBuffer's buffer size to use
-     * @throws IOException
-     *              if data could not be read
+     * @param  src         random access data
+     * @param  bufferSize  the dataBuffer's buffer size to use
+     *
+     * @throws IOException if data could not be read
      */
     public FitsFile(RandomAccessFileIO src, int bufferSize) throws IOException {
         super(src, bufferSize);
@@ -162,10 +136,9 @@ public class FitsFile extends ArrayDataFile implements FitsOutput, RandomAccess 
     /**
      * Create a read-only buffered file
      *
-     * @param filename
-     *            the name of the file to open
-     * @throws IOException
-     *             if the file could not be opened
+     * @param  filename    the name of the file to open
+     *
+     * @throws IOException if the file could not be opened
      */
     public FitsFile(String filename) throws IOException {
         this(filename, "r", FitsIO.DEFAULT_BUFFER_SIZE);
@@ -174,37 +147,28 @@ public class FitsFile extends ArrayDataFile implements FitsOutput, RandomAccess 
     /**
      * Create a buffered file with the given mode.
      *
-     * @param filename
-     *            The file to be accessed.
-     * @param mode
-     *            A string composed of "r" and "w" for read and write access.
-     * @throws IOException
-     *             if the file could not be opened
+     * @param  filename    The file to be accessed.
+     * @param  mode        A string composed of "r" and "w" for read and write access.
+     *
+     * @throws IOException if the file could not be opened
      */
     public FitsFile(String filename, String mode) throws IOException {
         this(filename, mode, FitsIO.DEFAULT_BUFFER_SIZE);
     }
 
     /**
-     * Create a buffered file with the given mode and a specified
-     * dataBuffer.buffer size.
+     * Create a buffered file with the given mode and a specified dataBuffer.buffer size.
      *
-     * @param filename
-     *            The file to be accessed.
-     * @param mode
-     *            A string composed of "r" and "w" indicating read or write
-     *            access.
-     * @param bufferSize
-     *            The dataBuffer.buffer size to be used. This should be
-     *            substantially larger than 100 bytes and defaults to 32768
-     *            bytes in the other constructors.
-     * @throws IOException
-     *             if the file could not be opened
+     * @param  filename    The file to be accessed.
+     * @param  mode        A string composed of "r" and "w" indicating read or write access.
+     * @param  bufferSize  The dataBuffer.buffer size to be used. This should be substantially larger than 100 bytes and
+     *                         defaults to 32768 bytes in the other constructors.
+     *
+     * @throws IOException if the file could not be opened
      */
     public FitsFile(String filename, String mode, int bufferSize) throws IOException {
         this(new File(filename), mode, bufferSize);
     }
-
 
     @Override
     public FitsEncoder getEncoder() {

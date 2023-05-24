@@ -36,24 +36,21 @@ import java.nio.Buffer;
 import nom.tam.util.type.ElementType;
 
 /**
- * This subclass of the row based view, will abstract the problems that occur
- * when the tile does not spread over a whole row. in that case the buffer
- * describing the image does not match the buffer describing the tile. That is
- * why a temporary buffer is needed to make the buffer continuous.
+ * This subclass of the row based view, will abstract the problems that occur when the tile does not spread over a whole
+ * row. in that case the buffer describing the image does not match the buffer describing the tile. That is why a
+ * temporary buffer is needed to make the buffer continuous.
  */
 class TileBufferColumnBased extends TileBuffer {
 
     /**
-     * the buffer representing the tile data gap less. this will exist only
-     * between the first getBuffer() and the finish(). This way the memory used
-     * for the data copy is allocates as early as needed and freed as soon as
+     * the buffer representing the tile data gap less. this will exist only between the first getBuffer() and the
+     * finish(). This way the memory used for the data copy is allocates as early as needed and freed as soon as
      * possible.
      */
     private Buffer packed;
 
     /**
-     * the width of the image in pixels, that differs from the width of the
-     * tile.
+     * the width of the image in pixels, that differs from the width of the tile.
      */
     private final int imageWidth;
 
@@ -100,8 +97,7 @@ class TileBufferColumnBased extends TileBuffer {
     }
 
     /**
-     * resolve the temporary buffer that contains no data gaps, and put the data
-     * back into the image buffer.
+     * resolve the temporary buffer that contains no data gaps, and put the data back into the image buffer.
      */
     private void desolveGapLessBuffer() {
         final int gap = imageWidth - getWidth();
@@ -121,9 +117,8 @@ class TileBufferColumnBased extends TileBuffer {
     }
 
     /**
-     * @return size of the tile data inside the image data. normally
-     *         tile-height*image-width but then the data block of the last tile
-     *         would go over the image data limit.
+     * @return size of the tile data inside the image data. normally tile-height*image-width but then the data block of
+     *             the last tile would go over the image data limit.
      */
     private int getPixelSizeInData() {
         return (getHeight() - 1) * imageWidth + getWidth();

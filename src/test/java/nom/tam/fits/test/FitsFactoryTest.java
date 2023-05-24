@@ -66,8 +66,6 @@ public class FitsFactoryTest {
         FitsFactory.setUseHierarch(true);
         assertEquals(true, FitsFactory.getUseHierarch());
 
-
-
         FitsFactory.setAllowHeaderRepairs(false);
         assertEquals(false, FitsFactory.isAllowHeaderRepairs());
 

@@ -98,19 +98,9 @@ public class MiscTest {
     public void testRegex() throws Exception {
         Pattern doubleQuotePattern = Pattern.compile("''");
         Pattern stringPattern = Pattern.compile("'(?:[^']|'{2})*'");
-        String[] testStrings = {
-                "xx''   ",
-                "xx'test'   / ",
-                "xx''''  ",
-                "xx'test''' /    ",
-                "xx'test''a''aaa' /",
-                "xx'' / yy",
-                "xx'test' / yy",
-                "xx'''' / yy    ",
-                "xx'test''' / yy    ",
-                "xx'test''a''aaa' / yy                    ",
-                "xx'test''a''aaa              ' / yy                    ",
-        };
+        String[] testStrings = {"xx''   ", "xx'test'   / ", "xx''''  ", "xx'test''' /    ", "xx'test''a''aaa' /",
+                "xx'' / yy", "xx'test' / yy", "xx'''' / yy    ", "xx'test''' / yy    ",
+                "xx'test''a''aaa' / yy                    ", "xx'test''a''aaa              ' / yy                    ",};
         for (String string : testStrings) {
             try {
                 System.out.println("---" + string + "---");

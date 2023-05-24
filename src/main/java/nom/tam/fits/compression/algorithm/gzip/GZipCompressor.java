@@ -53,8 +53,8 @@ import nom.tam.util.type.ElementType;
 public abstract class GZipCompressor<T extends Buffer> implements ICompressor<T> {
 
     /**
-     * Byte compress is a special case, the only one that does not extends
-     * GZipCompress because it can write the buffer directly.
+     * Byte compress is a special case, the only one that does not extends GZipCompress because it can write the buffer
+     * directly.
      */
     public static class ByteGZipCompressor extends GZipCompressor<ByteBuffer> {
 
@@ -113,7 +113,6 @@ public abstract class GZipCompressor<T extends Buffer> implements ICompressor<T>
             pixelData.put(nioBuffer);
         }
     }
-
 
     public static class IntGZipCompressor extends GZipCompressor<IntBuffer> {
 
@@ -294,11 +293,13 @@ public abstract class GZipCompressor<T extends Buffer> implements ICompressor<T>
     }
 
     protected GZIPInputStream createGZipInputStream(ByteBuffer compressed) throws IOException {
-        return new GZIPInputStream(new ByteBufferInputStream(compressed), Math.min(compressed.limit() * 2, DEFAULT_GZIP_BUFFER_SIZE));
+        return new GZIPInputStream(new ByteBufferInputStream(compressed),
+                Math.min(compressed.limit() * 2, DEFAULT_GZIP_BUFFER_SIZE));
     }
 
     protected GZIPOutputStream createGZipOutputStream(int length, ByteBuffer compressed) throws IOException {
-        return new GZIPOutputStream(new ByteBufferOutputStream(compressed), Math.min(Math.max(length * 2, MINIMAL_GZIP_BUFFER_SIZE), DEFAULT_GZIP_BUFFER_SIZE));
+        return new GZIPOutputStream(new ByteBufferOutputStream(compressed),
+                Math.min(Math.max(length * 2, MINIMAL_GZIP_BUFFER_SIZE), DEFAULT_GZIP_BUFFER_SIZE));
     }
 
     protected abstract void getPixel(T pixelData, byte[] pixelBytes);

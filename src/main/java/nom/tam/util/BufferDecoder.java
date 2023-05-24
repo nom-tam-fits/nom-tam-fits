@@ -39,7 +39,7 @@ import java.io.IOException;
  *                 provides a similar function but in a more consistent way and with a less misleading name, or else use
  *                 {@link InputDecoder} as a base for implementing efficient custom decoding of binary inputs.
  *
- * @see FitsDecoder
+ * @see        FitsDecoder
  */
 @Deprecated
 public abstract class BufferDecoder extends FitsDecoder {
@@ -48,11 +48,11 @@ public abstract class BufferDecoder extends FitsDecoder {
 
     /**
      * @param p Unused, but the position and length fields are set/reset as to pretend that half of the buffer is
-     *            perpetually available for reading. However, at no point will there be any data actually in the buffer
-     *            of this object, and you should by all means avoid directly loading data from the stream into this
-     *            dead-end buffer, other than the hopefully untiggered existing implementation of
-     *            <code>checkBuffer(int)</code> (and it's safest if you don't override or ever call
-     *            <code>checkBuffer(int)</code> from your code!).
+     *              perpetually available for reading. However, at no point will there be any data actually in the
+     *              buffer of this object, and you should by all means avoid directly loading data from the stream into
+     *              this dead-end buffer, other than the hopefully untiggered existing implementation of
+     *              <code>checkBuffer(int)</code> (and it's safest if you don't override or ever call
+     *              <code>checkBuffer(int)</code> from your code!).
      */
     public BufferDecoder(BufferPointer p) {
         super();
@@ -98,12 +98,13 @@ public abstract class BufferDecoder extends FitsDecoder {
     }
 
     /**
-     * @deprecated No longer used internally, kept only for back-compatibility since it used to be a needed abstract
-     *                 method. It's safest if you never override or call this method from your code!
+     * @deprecated             No longer used internally, kept only for back-compatibility since it used to be a needed
+     *                             abstract method. It's safest if you never override or call this method from your
+     *                             code!
      *
-     * @param needBytes the number of byte we need available to decode the next element
+     * @param      needBytes   the number of byte we need available to decode the next element
      *
-     * @throws IOException if the data could not be made available due to an IO error of the underlying input.
+     * @throws     IOException if the data could not be made available due to an IO error of the underlying input.
      */
     @Deprecated
     protected void checkBuffer(int needBytes) throws IOException {
@@ -116,17 +117,17 @@ public abstract class BufferDecoder extends FitsDecoder {
     }
 
     /**
-     * @deprecated No longer used internally, kept only for back-compatibility since it used to be a needed abstract
-     *                 method.
+     * @deprecated              No longer used internally, kept only for back-compatibility since it used to be a needed
+     *                              abstract method.
      *
-     * @param e the <code>EOFException</code> thrown by one of the read calls.
-     * @param start the index of the first array element we wanted to fill
-     * @param index the array index of the element during which the exception was thrown
-     * @param elementSize the number of bytes per element we were processing
+     * @param      e            the <code>EOFException</code> thrown by one of the read calls.
+     * @param      start        the index of the first array element we wanted to fill
+     * @param      index        the array index of the element during which the exception was thrown
+     * @param      elementSize  the number of bytes per element we were processing
      *
-     * @return the numer of bytes successfully processed from the input before the exception occurred.
+     * @return                  the numer of bytes successfully processed from the input before the exception occurred.
      *
-     * @throws EOFException if the input had no more data to process
+     * @throws     EOFException if the input had no more data to process
      */
     @Deprecated
     protected int eofCheck(EOFException e, int start, int index, int elementSize) throws EOFException {
@@ -136,13 +137,14 @@ public abstract class BufferDecoder extends FitsDecoder {
     /**
      * See the contract of {@link ArrayDataInput#readLArray(Object)}.
      *
-     * @param o an array, to be populated
+     * @param  o                        an array, to be populated
      *
-     * @return the actual number of bytes read from the input, or -1 if already at the end-of-file.
+     * @return                          the actual number of bytes read from the input, or -1 if already at the
+     *                                      end-of-file.
      *
      * @throws IllegalArgumentException if the argument is not an array or if it contains an element that is not
-     *             supported for decoding.
-     * @throws IOException if there was an IO error reading from the input
+     *                                      supported for decoding.
+     * @throws IOException              if there was an IO error reading from the input
      */
     protected long readLArray(Object o) throws IOException {
         try {

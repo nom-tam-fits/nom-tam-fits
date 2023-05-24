@@ -129,12 +129,13 @@ public class FitsHeapTest {
     public void testHeapWriteFailures() throws Exception {
         FitsException actual = null;
         try {
-            FitsOutputStream out = new FitsOutputStream(new ByteArrayOutputStream()){
+            FitsOutputStream out = new FitsOutputStream(new ByteArrayOutputStream()) {
                 @Override
                 public synchronized void write(byte[] b, int off, int len) throws IOException {
                     throw new IOException("testHeapWriteFailures");
-                }};
-                new FitsHeap(100).write(out);
+                }
+            };
+            new FitsHeap(100).write(out);
         } catch (FitsException e) {
             actual = e;
         }

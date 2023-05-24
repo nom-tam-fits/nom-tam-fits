@@ -96,7 +96,7 @@ public class QuantizeOption implements ICompressOption {
      *
      * @param compressOption Compression-specific options to pair with these quantization options, or <code>null</code>.
      *
-     * @since 1.18
+     * @since                1.18
      */
     public QuantizeOption(ICompressOption compressOption) {
         parameters = new QuantizeParameters(this);
@@ -307,11 +307,11 @@ public class QuantizeOption implements ICompressOption {
     /**
      * Sets the seed value for the dither random generator
      *
-     * @param value The seed value, as in <code>ZDITHER0</code>, normally a number between 1 and 10000 (inclusive).
+     * @param  value The seed value, as in <code>ZDITHER0</code>, normally a number between 1 and 10000 (inclusive).
      *
-     * @return itself
+     * @return       itself
      *
-     * @see #setTileIndex(int)
+     * @see          #setTileIndex(int)
      */
     public QuantizeOption setSeed(long value) {
         seed = value;
@@ -322,11 +322,11 @@ public class QuantizeOption implements ICompressOption {
      * Sets the tile index for which to initialize the random number generator with the given seed (i.e.
      * <code>ZDITHER0</code> value).
      *
-     * @param index The 0-based tile index
+     * @param  index The 0-based tile index
      *
-     * @return itself
+     * @return       itself
      *
-     * @see #setSeed(long)
+     * @see          #setSeed(long)
      */
     public QuantizeOption setTileIndex(int index) {
         tileIndex = index;

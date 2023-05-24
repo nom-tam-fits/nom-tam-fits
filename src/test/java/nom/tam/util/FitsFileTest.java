@@ -57,13 +57,13 @@ public class FitsFileTest {
     @Test
     public void testReadWriteBooleanObjectArray() throws Exception {
         try (FitsFile f = new FitsFile("fftest.bin", "rw", 100)) {
-            Boolean[] b = new Boolean[] { Boolean.TRUE, null, Boolean.FALSE };
+            Boolean[] b = new Boolean[] {Boolean.TRUE, null, Boolean.FALSE};
             f.write(b);
             f.seek(0);
             Boolean[] b2 = new Boolean[b.length];
             f.read(b2);
             f.close();
-            for (int i=0; i<b.length; i++) {
+            for (int i = 0; i < b.length; i++) {
                 assertEquals("[" + i + "]", b[i], b2[i]);
             }
         }
@@ -77,7 +77,6 @@ public class FitsFileTest {
         }
     }
 
-
     @Test
     public void testPosition() throws Exception {
         try (FitsFile f = new FitsFile("fftest.bin", "rw", 100)) {
@@ -88,8 +87,7 @@ public class FitsFileTest {
 
     @Test
     public void testAltRandomAccess() throws Exception {
-        try (final FitsFile f = new FitsFile(new BufferedFileIO.RandomFileIO(
-                new File("fftest.bin"), "rw"), 1024)) {
+        try (final FitsFile f = new FitsFile(new BufferedFileIO.RandomFileIO(new File("fftest.bin"), "rw"), 1024)) {
             f.seek(12L);
             assertEquals("Wrong position", 12L, f.position());
         }

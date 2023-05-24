@@ -35,7 +35,6 @@ import nom.tam.fits.utilities.FitsLineAppender;
  * #L%
  */
 
-
 @SuppressWarnings("deprecation")
 public class StandardIHierarchKeyFormatter implements IHierarchKeyFormatter {
     private boolean allowMixedCase;

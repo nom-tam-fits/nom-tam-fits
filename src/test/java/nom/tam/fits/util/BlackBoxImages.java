@@ -63,34 +63,32 @@ public class BlackBoxImages {
         if (new File("../blackbox-images/" + fileName + "00.part").exists()) {
             unsplitt(new File("../blackbox-images/" + fileName), new File("../blackbox-images/" + fileName));
             return "../blackbox-images/" + fileName;
-        } else {
-            new File("target/blackbox-images").mkdirs();
-            String url = "https://raw.githubusercontent.com/nom-tam-fits/blackbox-images/master/" + fileName;
-            String loadedFileName = "target/blackbox-images/" + fileName;
-            if (downloadImage(url, loadedFileName)) {
-                return loadedFileName;
-            }
-            url = "https://raw.githubusercontent.com/nom-tam-fits/blackbox-images/master/" + fileName + ".gz";
-            loadedFileName = "target/blackbox-images/" + fileName;
-            String gzFileName = loadedFileName + ".gz";
-            if (downloadImage(url, gzFileName)) {
-                gunzipIt(new File(gzFileName), new File(loadedFileName));
-                return loadedFileName;
-            }
-            int partNumber = 0;
+        }
+        new File("target/blackbox-images").mkdirs();
+        String url = "https://raw.githubusercontent.com/nom-tam-fits/blackbox-images/master/" + fileName;
+        String loadedFileName = "target/blackbox-images/" + fileName;
+        if (downloadImage(url, loadedFileName)) {
+            return loadedFileName;
+        }
+        url = "https://raw.githubusercontent.com/nom-tam-fits/blackbox-images/master/" + fileName + ".gz";
+        loadedFileName = "target/blackbox-images/" + fileName;
+        String gzFileName = loadedFileName + ".gz";
+        if (downloadImage(url, gzFileName)) {
+            gunzipIt(new File(gzFileName), new File(loadedFileName));
+            return loadedFileName;
+        }
+        int partNumber = 0;
+        url = "https://raw.githubusercontent.com/nom-tam-fits/blackbox-images/master/" + fileName + String.format("%02d", partNumber) + ".part";
+        loadedFileName = "target/blackbox-images/" + fileName;
+        String partFileName = loadedFileName + String.format("%02d", partNumber) + ".part";
+        while (new File(partFileName).exists() || downloadImage(url, partFileName)) {
+            partNumber++;
             url = "https://raw.githubusercontent.com/nom-tam-fits/blackbox-images/master/" + fileName + String.format("%02d", partNumber) + ".part";
-            loadedFileName = "target/blackbox-images/" + fileName;
-            String partFileName = loadedFileName + String.format("%02d", partNumber) + ".part";
-            while (new File(partFileName).exists() || downloadImage(url, partFileName)) {
-                partNumber++;
-                url = "https://raw.githubusercontent.com/nom-tam-fits/blackbox-images/master/" + fileName + String.format("%02d", partNumber) + ".part";
-                partFileName = loadedFileName + String.format("%02d", partNumber) + ".part";
-            }
-            if (new File(loadedFileName + "00.part").exists()) {
-                unsplitt(new File(loadedFileName), new File(loadedFileName));
-                return loadedFileName;
-            }
-
+            partFileName = loadedFileName + String.format("%02d", partNumber) + ".part";
+        }
+        if (new File(loadedFileName + "00.part").exists()) {
+            unsplitt(new File(loadedFileName), new File(loadedFileName));
+            return loadedFileName;
         }
         throw new UnsupportedOperationException("could not get blackbox image from anywhere");
     }

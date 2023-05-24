@@ -47,22 +47,20 @@ import static nom.tam.fits.header.Standard.CONTINUE;
 
 /**
  * <p>
- * Converts a single 80-character wide FITS header record into a header card. See
- * {@link HeaderCard#create(String)} for a description of the rules that guide parsing.
+ * Converts a single 80-character wide FITS header record into a header card. See {@link HeaderCard#create(String)} for
+ * a description of the rules that guide parsing.
  * </p>
  * <p>
- * When parsing header records that violate FITS standards, the violations can be logged
- * or will throw appropriate excpetions (depending on the severity of the standard
- * violation and whether {@link FitsFactory#setAllowHeaderRepairs(boolean)} is
- * enabled or not. The logging of violations is disabled by default, but may be
- * controlled via {@link Header#setParserWarningsEnabled(boolean)}.
+ * When parsing header records that violate FITS standards, the violations can be logged or will throw appropriate
+ * excpetions (depending on the severity of the standard violation and whether
+ * {@link FitsFactory#setAllowHeaderRepairs(boolean)} is enabled or not. The logging of violations is disabled by
+ * default, but may be controlled via {@link Header#setParserWarningsEnabled(boolean)}.
  * </p>
- *
  *
  * @author Attila Kovacs
  *
- * @see FitsFactory#setAllowHeaderRepairs(boolean)
- * @see Header#setParserWarningsEnabled(boolean)
+ * @see    FitsFactory#setAllowHeaderRepairs(boolean)
+ * @see    Header#setParserWarningsEnabled(boolean)
  */
 class HeaderCardParser {
 
@@ -77,7 +75,8 @@ class HeaderCardParser {
     private static final Pattern DECIMAL_REGEX = Pattern.compile("[+-]?\\d+(\\.\\d*)?([dDeE][+-]?\\d+)?");
 
     /** regexp for complex numbers */
-    private static final Pattern COMPLEX_REGEX = Pattern.compile("\\(\\s*" + DECIMAL_REGEX + "\\s*,\\s*" + DECIMAL_REGEX + "\\s*\\)");
+    private static final Pattern COMPLEX_REGEX = Pattern
+            .compile("\\(\\s*" + DECIMAL_REGEX + "\\s*,\\s*" + DECIMAL_REGEX + "\\s*\\)");
 
     /** regexp for decimal integers. */
     private static final Pattern INT_REGEX = Pattern.compile("[+-]?\\d+");
@@ -108,7 +107,6 @@ class HeaderCardParser {
      */
     private Class<?> type = null;
 
-
     /**
      * The position in the string that right after the last character processed by this parser
      */
@@ -117,39 +115,39 @@ class HeaderCardParser {
     /**
      * Instantiates a new parser for a FITS header line.
      *
-     * @param line a line in the FITS header, normally exactly 80-characters wide (but need not be).
+     * @param  line                     a line in the FITS header, normally exactly 80-characters wide (but need not
+     *                                      be).
      *
-     * @see #getKey()
-     * @see #getValue()
-     * @see #getComment()
-     * @see #isString()
+     * @see                             #getKey()
+     * @see                             #getValue()
+     * @see                             #getComment()
+     * @see                             #isString()
      *
-     * @throws UnclosedQuoteException       if there is a missing end-quote and header repairs aren't allowed.
-     * @throws IllegalArgumentException     if the record contained neither a key or a value.
+     * @throws UnclosedQuoteException   if there is a missing end-quote and header repairs aren't allowed.
+     * @throws IllegalArgumentException if the record contained neither a key or a value.
      *
-     * @see FitsFactory#setAllowHeaderRepairs(boolean)
+     * @see                             FitsFactory#setAllowHeaderRepairs(boolean)
      */
     HeaderCardParser(String line) throws UnclosedQuoteException, IllegalArgumentException {
         this.line = line;
         // TODO HeaderCard never calls this with a null argument, so the check below is dead code here...
-        //        if (line == null) {
-        //            throw new IllegalArgumentException("Cannot parse null string");
-        //        }
+        // if (line == null) {
+        // throw new IllegalArgumentException("Cannot parse null string");
+        // }
         parseKey();
         parseValue();
         parseComment();
     }
 
     /**
-     * Returns the keyword component of the parsed header line. If the processing of HIERARCH keywords is enabled,
-     * it may be a `HIERARCH` style long key with the components separated by dots (e.g.
-     * `HIERARCH.ORG.SYSTEM.SUBSYS.ELEMENT`). Otherwise, it will be a standard 0--8 character standard uppercase
-     * FITS keyword (including simply `HIERARCH` if {@link FitsFactory#setUseHierarch(boolean)} was set
-     * <code>false</code>).
+     * Returns the keyword component of the parsed header line. If the processing of HIERARCH keywords is enabled, it
+     * may be a `HIERARCH` style long key with the components separated by dots (e.g.
+     * `HIERARCH.ORG.SYSTEM.SUBSYS.ELEMENT`). Otherwise, it will be a standard 0--8 character standard uppercase FITS
+     * keyword (including simply `HIERARCH` if {@link FitsFactory#setUseHierarch(boolean)} was set <code>false</code>).
      *
      * @return the FITS header keyword for the line.
      *
-     * @see FitsFactory#setUseHierarch(boolean)
+     * @see    FitsFactory#setUseHierarch(boolean)
      */
     String getKey() {
         return key;
@@ -160,7 +158,7 @@ class HeaderCardParser {
      *
      * @return the value part of the line or <code>null</code> if the line contained no value.
      *
-     * @see FitsFactory#setUseHierarch(boolean)
+     * @see    FitsFactory#setUseHierarch(boolean)
      */
     String getValue() {
         return value;
@@ -171,7 +169,7 @@ class HeaderCardParser {
      *
      * @return the comment part of the line or <code>null</code> if the line contained no comment.
      *
-     * @see #getTrimmedComment()
+     * @see    #getTrimmedComment()
      */
     String getUntrimmedComment() {
         return comment;
@@ -182,7 +180,7 @@ class HeaderCardParser {
      *
      * @return the comment part of the line or <code>null</code> if the line contained no comment.
      *
-     * @see #getUntrimmedComment()
+     * @see    #getUntrimmedComment()
      */
     String getTrimmedComment() {
         return comment == null ? null : comment.trim();
@@ -190,13 +188,13 @@ class HeaderCardParser {
 
     /**
      * Returns whether the line contained a quoted string value. By default, strings with missing end quotes are no
-     * considered string values, but rather as comments. To allow processing lines with missing quotes as string
-     * values, you must set {@link FitsFactory#setAllowHeaderRepairs(boolean)} to <code>true</code> prior to parsing
-     * a header line with the missing end quote.
+     * considered string values, but rather as comments. To allow processing lines with missing quotes as string values,
+     * you must set {@link FitsFactory#setAllowHeaderRepairs(boolean)} to <code>true</code> prior to parsing a header
+     * line with the missing end quote.
      *
      * @return true if the value was quoted.
      *
-     * @see FitsFactory#setAllowHeaderRepairs(boolean)
+     * @see    FitsFactory#setAllowHeaderRepairs(boolean)
      */
     boolean isString() {
         if (type == null) {
@@ -207,25 +205,24 @@ class HeaderCardParser {
 
     /**
      * <p>
-     * Returns the inferred Java class for the value stored in the header record, such as a
-     * {@link String} class, a {@link Boolean} class, an integer type ({@link Integer}, {@link Long}, or {@link BigInteger})
-     * class, a decimal type ({@link Float}, {@link Double}, or {@link BigDecimal}) class,
-     * a {@link ComplexValue} class, or <code>null</code>. For number types, it returns the
-     * 'smallest' type that can be used to represent the string value.
+     * Returns the inferred Java class for the value stored in the header record, such as a {@link String} class, a
+     * {@link Boolean} class, an integer type ({@link Integer}, {@link Long}, or {@link BigInteger}) class, a decimal
+     * type ({@link Float}, {@link Double}, or {@link BigDecimal}) class, a {@link ComplexValue} class, or
+     * <code>null</code>. For number types, it returns the 'smallest' type that can be used to represent the string
+     * value.
      * </p>
      * <p>
-     * Its an inferred type as
-     * the true underlying type that was used to create the value is lost. For example, the
-     * value <code>42</code> may have been written from any integer type, including <code>byte</code>
-     * or <code>short<code>, but this routine will guess it to be an <code>int</code> ({@link Integer}
-     * type. As such, it may not be equal to {@link HeaderCard#valueType()} from which the
-     * record was created, and hence should not be used for round-trip testing of type equality.
+     * Its an inferred type as the true underlying type that was used to create the value is lost. For example, the
+     * value <code>42</code> may have been written from any integer type, including <code>byte</code> or
+     * <code>short<code>, but this routine will guess it to be an <code>int</code> ({@link Integer} type. As such, it
+     * may not be equal to {@link HeaderCard#valueType()} from which the record was created, and hence should not be
+     * used for round-trip testing of type equality.
      * </p>
      *
-     * @return  the inferred type of the stored serialized (string) value, or <code>null</code>
-     *          if the value does not seem to match any of the supported value types.
+     * @return the inferred type of the stored serialized (string) value, or <code>null</code> if the value does not
+     *             seem to match any of the supported value types.
      *
-     * @see HeaderCard#valueType()
+     * @see    HeaderCard#valueType()
      */
     Class<?> getInferredType() {
         return type;
@@ -236,14 +233,14 @@ class HeaderCardParser {
      */
     private void parseKey() {
         /*
-         * AK: The parsing of headers should never be stricter that the writing, such that any header written by
-         * this library can be parsed back without errors. (And, if anything, the parsing should be more permissive
-         * to allow reading FITS produced by other libraries, which may be less stringent in their rules). The
-         * original implementation strongly enforced the ESO HIERARCH convention when reading, but not at all for
-         * writing. Here is a tolerant hierarch parser that will read back any hierarch key that was written by this
-         * library. The input FITS can use any space or even '.' to separate the hierarchies, and the hierarchical
-         * elements may contain any ASCII characters other than those used for separating. It is more in line with
-         * what we do with standard keys too.
+         * AK: The parsing of headers should never be stricter that the writing, such that any header written by this
+         * library can be parsed back without errors. (And, if anything, the parsing should be more permissive to allow
+         * reading FITS produced by other libraries, which may be less stringent in their rules). The original
+         * implementation strongly enforced the ESO HIERARCH convention when reading, but not at all for writing. Here
+         * is a tolerant hierarch parser that will read back any hierarch key that was written by this library. The
+         * input FITS can use any space or even '.' to separate the hierarchies, and the hierarchical elements may
+         * contain any ASCII characters other than those used for separating. It is more in line with what we do with
+         * standard keys too.
          */
 
         // Find the '=' in the line, if any...
@@ -273,7 +270,6 @@ class HeaderCardParser {
         parsePos = endStem;
 
         // If not using HIERARCH, then be very resilient, and return whatever key the first 8 chars make...
-
 
         // If the line does not have an '=', can only be a simple key
         // If it's not a HIERARCH keyword, then return the simple key.
@@ -332,8 +328,8 @@ class HeaderCardParser {
     }
 
     /**
-     * Parses the comment components starting from the current parse position. After this call the parse position is
-     * set to the end of the string. The leading '/' (if found) is not included in the comment.
+     * Parses the comment components starting from the current parse position. After this call the parse position is set
+     * to the end of the string. The leading '/' (if found) is not included in the comment.
      */
     private void parseComment() {
         if (!skipSpaces()) {
@@ -363,14 +359,13 @@ class HeaderCardParser {
     }
 
     /**
-     * Parses the value component from the current parse position. The parse position is advanced to the first
-     * character after the value specification in the line. If the header line does not contain a value component,
-     * then the value field of this object is set to <code>null</code>.
+     * Parses the value component from the current parse position. The parse position is advanced to the first character
+     * after the value specification in the line. If the header line does not contain a value component, then the value
+     * field of this object is set to <code>null</code>.
      *
      * @throws UnclosedQuoteException if there is a missing end-quote and header repairs aren't allowed.
      *
-     * @see FitsFactory#setAllowHeaderRepairs(boolean)
-     *
+     * @see                           FitsFactory#setAllowHeaderRepairs(boolean)
      */
     private void parseValue() throws UnclosedQuoteException {
         if (key.isEmpty() || !skipSpaces()) {
@@ -383,7 +378,8 @@ class HeaderCardParser {
         } else if (line.charAt(parsePos) == '=') {
 
             if (parsePos < HeaderCard.MAX_KEYWORD_LENGTH) {
-                LOG.warning("[" + sanitize(key) + "] assigmment before byte " + (HeaderCard.MAX_KEYWORD_LENGTH + 1) + " for key '" + sanitize(key) + "'.");
+                LOG.warning("[" + sanitize(key) + "] assigmment before byte " + (HeaderCard.MAX_KEYWORD_LENGTH + 1)
+                        + " for key '" + sanitize(key) + "'.");
             }
             if (parsePos + 1 >= line.length()) {
                 LOG.warning("[" + sanitize(key) + "] Record ends with '='.");
@@ -413,13 +409,12 @@ class HeaderCardParser {
 
     /**
      * Parses the value body from the current parse position. The parse position is advanced to the first character
-     * after the value specification in the line. If the header line does not contain a value component, then the
-     * value field of this object is set to <code>null</code>.
+     * after the value specification in the line. If the header line does not contain a value component, then the value
+     * field of this object is set to <code>null</code>.
      *
      * @throws UnclosedQuoteException if there is a missing end-quote and header repairs aren't allowed.
      *
-     * @see FitsFactory#setAllowHeaderRepairs(boolean)
-     *
+     * @see                           FitsFactory#setAllowHeaderRepairs(boolean)
      */
     private void parseValueBody() throws UnclosedQuoteException {
         if (!skipSpaces()) {
@@ -460,9 +455,9 @@ class HeaderCardParser {
      * Returns the string fom a parsed string value component, with trailing spaces removed. It preserves leading
      * spaces.
      *
-     * @param buf the parsed string value.
+     * @param  buf the parsed string value.
      *
-     * @return the string value with trailing spaces removed.
+     * @return     the string value with trailing spaces removed.
      */
     private static String getNoTrailingSpaceString(StringBuilder buf) {
         int to = buf.length();
@@ -478,13 +473,13 @@ class HeaderCardParser {
     }
 
     /**
-     * Parses a quoted string value starting at the current parse position. If successful, the parse position is
-     * updated to after the string. Otherwise, the parse position is advanced only to skip leading spaces starting
-     * from the input position.
+     * Parses a quoted string value starting at the current parse position. If successful, the parse position is updated
+     * to after the string. Otherwise, the parse position is advanced only to skip leading spaces starting from the
+     * input position.
      *
      * @throws UnclosedQuoteException if there is a missing end-quote and header repairs aren't allowed.
      *
-     * @see FitsFactory#setAllowHeaderRepairs(boolean)
+     * @see                           FitsFactory#setAllowHeaderRepairs(boolean)
      */
     private void parseStringValue() throws UnclosedQuoteException {
         type = String.class;
@@ -515,19 +510,20 @@ class HeaderCardParser {
     }
 
     /**
-     * Returns the inferred Java class for the specified value. See {@link #getInferredType()}
-     * for a more detailed description.
+     * Returns the inferred Java class for the specified value. See {@link #getInferredType()} for a more detailed
+     * description.
      *
-     * @param value     the serialized (string) representation of a FITS header value.
-     * @return          the inferred type of the specified serialized (string) value, or <code>null</code>
-     *                  if the value does not seem to match any of the supported value types. <code>null</code>
-     *                  values default to <code>Boolean.class</code>.
+     * @param  value the serialized (string) representation of a FITS header value.
+     *
+     * @return       the inferred type of the specified serialized (string) value, or <code>null</code> if the value
+     *                   does not seem to match any of the supported value types. <code>null</code> values default to
+     *                   <code>Boolean.class</code>.
      */
     private static Class<?> getInferredValueType(String key, String value) {
         // TODO We never call this with null locally, so the following check is dead code here...
-        //        if (value == null) {
-        //            return Boolean.class;
-        //        }
+        // if (value == null) {
+        // return Boolean.class;
+        // }
         if (value.isEmpty()) {
             LOG.warning("[" + sanitize(key) + "] Null non-string value (defaulted to Boolean.class).");
             return Boolean.class;
@@ -543,7 +539,8 @@ class HeaderCardParser {
         }
         if (DECIMAL_REGEX.matcher(trimmedValue).matches()) {
             return getDecimalType(trimmedValue);
-        } else if (HEX_REGEX.matcher(trimmedValue).matches()) {
+        }
+        if (HEX_REGEX.matcher(trimmedValue).matches()) {
             return getIntegerType(trimmedValue);
         } else if (COMPLEX_REGEX.matcher(trimmedValue).matches()) {
             return ComplexValue.class;
@@ -557,13 +554,13 @@ class HeaderCardParser {
     /**
      * Returns the guessed decimal type of a string representation of a decimal value.
      *
-     * @param value     the string representation of a decimal value.
+     * @param  value the string representation of a decimal value.
      *
-     * @return the      The Java class ({@link Float}, {@link Double}, or {@link BigDecimal})
-     *                  that can be used to represent the value with the precision provided.
+     * @return       the The Java class ({@link Float}, {@link Double}, or {@link BigDecimal}) that can be used to
+     *                   represent the value with the precision provided.
      *
-     * @see #getInferredValueType()
-     * @see #getIntegerType(String)
+     * @see          #getInferredValueType()
+     * @see          #getIntegerType(String)
      */
     private static Class<? extends Number> getDecimalType(String value) {
         value = value.toUpperCase(Locale.US);
@@ -605,13 +602,13 @@ class HeaderCardParser {
     /**
      * Returns the guessed integer type of a string representation of a integer value.
      *
-     * @param value     the string representation of an integer value.
+     * @param  value the string representation of an integer value.
      *
-     * @return the      The Java class ({@link Integer}, {@link Long}, or {@link BigInteger})
-     *                  that can be used to represent the value with the number of digits provided.
+     * @return       the The Java class ({@link Integer}, {@link Long}, or {@link BigInteger}) that can be used to
+     *                   represent the value with the number of digits provided.
      *
-     * @see #getInferredValueType()
-     * @see #getDecimalType(String)
+     * @see          #getInferredValueType()
+     * @see          #getDecimalType(String)
      */
     private static Class<? extends Number> getIntegerType(String value) {
         try {
@@ -637,6 +634,5 @@ class HeaderCardParser {
     static Logger getLogger() {
         return LOG;
     }
-
 
 }

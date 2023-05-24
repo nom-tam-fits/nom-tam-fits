@@ -44,9 +44,8 @@ import nom.tam.util.FitsFile;
 import nom.tam.util.SafeClose;
 
 /**
- * Test adding a little junk after a valid image. We wish to test three
- * scenarios: Junk at the beginning (should continue to fail) Short (<80 byte)
- * junk after valid HDU Long (>80 byte) junk after valid HDU The last two should
+ * Test adding a little junk after a valid image. We wish to test three scenarios: Junk at the beginning (should
+ * continue to fail) Short (<80 byte) junk after valid HDU Long (>80 byte) junk after valid HDU The last two should
  * succeed after FitsFactory.setAllowTerminalJunk(true).
  */
 public class JunkTest {

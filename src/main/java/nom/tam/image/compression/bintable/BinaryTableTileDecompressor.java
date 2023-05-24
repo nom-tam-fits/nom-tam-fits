@@ -47,7 +47,8 @@ public class BinaryTableTileDecompressor extends BinaryTableTile {
 
     private ArrayDataInput is;
 
-    public BinaryTableTileDecompressor(CompressedTableData binData, ColumnTable<?> columnTable, BinaryTableTileDescription description) throws FitsException {
+    public BinaryTableTileDecompressor(CompressedTableData binData, ColumnTable<?> columnTable,
+            BinaryTableTileDescription description) throws FitsException {
         super(columnTable, description);
         compressedBytes = ByteBuffer.wrap((byte[]) binData.getElement(rowStart, column));
     }

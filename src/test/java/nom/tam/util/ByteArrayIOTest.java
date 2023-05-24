@@ -62,7 +62,7 @@ public class ByteArrayIOTest {
         ByteArrayIO b = new ByteArrayIO(10);
 
         byte[] data = new byte[20];
-        for(int i = 0; i < data.length; i++) {
+        for (int i = 0; i < data.length; i++) {
             data[i] = (byte) (i + 1);
         }
 
@@ -76,7 +76,7 @@ public class ByteArrayIOTest {
 
         assertEquals("read array", 9, b.read(read, 1, 9));
 
-        for(int i = 1; i < 10; i++) {
+        for (int i = 1; i < 10; i++) {
             assertEquals("read[" + i + "]", data[i], read[i]);
         }
     }
@@ -111,7 +111,6 @@ public class ByteArrayIOTest {
         assertEquals(-1, b.read(new byte[40], 0, 40));
     }
 
-
     @Test(expected = EOFException.class)
     public void testPositionBeyondFixed() throws Exception {
         ByteArrayIO b = new ByteArrayIO(new byte[10]);
@@ -127,7 +126,7 @@ public class ByteArrayIOTest {
     @Test(expected = EOFException.class)
     public void testWriteBeyondFixed2() throws Exception {
         ByteArrayIO b = new ByteArrayIO(new byte[10]);
-        for(int i=0; i<11; i++) {
+        for (int i = 0; i < 11; i++) {
             b.write(i);
         }
     }
@@ -142,7 +141,7 @@ public class ByteArrayIOTest {
     @Test
     public void testWriteBeyondGrowable2() throws Exception {
         ByteArrayIO b = new ByteArrayIO(10);
-        for(int i=0; i<11; i++) {
+        for (int i = 0; i < 11; i++) {
             b.write(i);
         }
         assertEquals(11L, b.length());
@@ -204,8 +203,8 @@ public class ByteArrayIOTest {
     @Test
     public void testWriteAgain() throws Exception {
         ByteArrayIO b = new ByteArrayIO(10);
-        byte[] b1 = new byte[] { 10, 11, 12 };
-        byte[] b2 = new byte[] { 20, 21, 22 };
+        byte[] b1 = new byte[] {10, 11, 12};
+        byte[] b2 = new byte[] {20, 21, 22};
 
         b.write(1);
         b.write(b1, 0, b1.length);
@@ -221,10 +220,9 @@ public class ByteArrayIOTest {
         b.read(bi, 0, bi.length);
 
         assertEquals("single", 2, b.read());
-        for (int i=0; i<bi.length; i++) {
+        for (int i = 0; i < bi.length; i++) {
             assertEquals("[" + i + "]", b2[i], bi[i]);
         }
     }
-
 
 }

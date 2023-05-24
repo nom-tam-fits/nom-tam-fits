@@ -56,7 +56,8 @@ public class GenerateReleaseNote {
         String version = release.getAttribute("version");
         String description = release.getAttribute("description");
 
-        String fileName = "NOTE.v" + version.substring(0, version.indexOf('.')) + version.substring(version.indexOf('.') + 1);
+        String fileName = "NOTE.v" + version.substring(0, version.indexOf('.'))
+                + version.substring(version.indexOf('.') + 1);
 
         PrintStream out = new PrintStream(new File("target/" + fileName));
 
@@ -106,7 +107,8 @@ public class GenerateReleaseNote {
     }
 
     static List<String> limitString(String string, int size) {
-        string = string.replace('\n', ' ').replace('\r', ' ').replace('\t', ' ').replace("  ", " ").replace("  ", " ").replace("  ", " ");
+        string = string.replace('\n', ' ').replace('\r', ' ').replace('\t', ' ').replace("  ", " ").replace("  ", " ")
+                .replace("  ", " ");
         List<String> result = new ArrayList<>();
         while (string.length() > 80) {
             int split = 80;

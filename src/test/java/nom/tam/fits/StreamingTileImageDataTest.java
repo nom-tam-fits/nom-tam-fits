@@ -42,7 +42,6 @@ import nom.tam.fits.header.Bitpix;
 import nom.tam.image.StandardImageTiler;
 import nom.tam.util.ArrayFuncs;
 
-
 public class StreamingTileImageDataTest {
     @Test
     public void testConstructor() throws Exception {
@@ -67,20 +66,20 @@ public class StreamingTileImageDataTest {
         }
 
         try {
-            new StreamingTileImageData(header, new TestTiler(), new int[2], new int[2], new int[]{-1, 1});
+            new StreamingTileImageData(header, new TestTiler(), new int[2], new int[2], new int[] {-1, 1});
             Assert.fail("Should throw IllegalArgumentException for negative steps");
         } catch (IllegalArgumentException _ignored) {
             // Good!
         }
 
-        final StreamingTileImageData testSubject =
-                new StreamingTileImageData(header, new TestTiler(), new int[2], new int[2], null);
-        Assert.assertArrayEquals("Wrong steps.", new int[]{1, 1}, testSubject.getSteps());
+        final StreamingTileImageData testSubject = new StreamingTileImageData(header, new TestTiler(), new int[2],
+                new int[2], null);
+        Assert.assertArrayEquals("Wrong steps.", new int[] {1, 1}, testSubject.getSteps());
 
         // Testing immutable steps.
         testSubject.getSteps()[1] = 0;
 
-        Assert.assertArrayEquals("Wrong steps.", new int[]{1, 1}, testSubject.getSteps());
+        Assert.assertArrayEquals("Wrong steps.", new int[] {1, 1}, testSubject.getSteps());
     }
 
     @Test
@@ -108,28 +107,27 @@ public class StreamingTileImageDataTest {
             sourceFits.write(fitsFile);
         }
 
-        try (final Fits sourceFits = new Fits(fitsFile);
-                final Fits outputFits = new Fits()) {
+        try (final Fits sourceFits = new Fits(fitsFile); final Fits outputFits = new Fits()) {
             final ImageHDU imageHDU = (ImageHDU) sourceFits.getHDU(0);
 
             final Header tileHeader = imageHDU.getHeader();
-            final int[] tileStarts = new int[]{4, 4};
-            final int[] tileLengths = new int[]{10, 10};
-            final int[] tileSteps = new int[]{1, 2};
+            final int[] tileStarts = new int[] {4, 4};
+            final int[] tileLengths = new int[] {10, 10};
+            final int[] tileSteps = new int[] {1, 2};
 
             tileHeader.setNaxis(1, tileLengths[0] / tileSteps[0]);
             tileHeader.setNaxis(2, tileLengths[1] / tileSteps[1]);
 
-            final StreamingTileImageData streamingTileImageData =
-                    new StreamingTileImageData(tileHeader, imageHDU.getTiler(), tileStarts, tileLengths, tileSteps);
+            final StreamingTileImageData streamingTileImageData = new StreamingTileImageData(tileHeader,
+                    imageHDU.getTiler(), tileStarts, tileLengths, tileSteps);
             outputFits.addHDU(FitsFactory.hduFactory(tileHeader, streamingTileImageData));
             outputFits.write(outputFitsFile);
         }
 
         try (final Fits outputFits = new Fits(outputFitsFile)) {
             final ImageHDU cutoutImageHDU = (ImageHDU) outputFits.readHDU();
-            Assert.assertArrayEquals("Wrong dimensions.", new int[]{5, 10}, cutoutImageHDU.getAxes());
-            Assert.assertArrayEquals("Wrong calculated dimensions.", new int[]{5, 10},
+            Assert.assertArrayEquals("Wrong dimensions.", new int[] {5, 10}, cutoutImageHDU.getAxes());
+            Assert.assertArrayEquals("Wrong calculated dimensions.", new int[] {5, 10},
                     ArrayFuncs.getDimensions(cutoutImageHDU.getData().getData()));
         }
     }
@@ -159,44 +157,41 @@ public class StreamingTileImageDataTest {
             sourceFits.write(fitsFile);
         }
 
-        try (final Fits sourceFits = new Fits(fitsFile);
-                final Fits outputFits = new Fits()) {
+        try (final Fits sourceFits = new Fits(fitsFile); final Fits outputFits = new Fits()) {
             final ImageHDU imageHDU = (ImageHDU) sourceFits.getHDU(0);
 
             final Header tileHeader = imageHDU.getHeader();
-            final int[] tileStarts = new int[]{100, 100};
-            final int[] tileLengths = new int[]{25, 45};
-            final int[] tileSteps = new int[]{1, 1};
-            final StreamingTileImageData streamingTileImageData =
-                    new StreamingTileImageData(tileHeader, imageHDU.getTiler(), tileStarts, tileLengths, tileSteps);
+            final int[] tileStarts = new int[] {100, 100};
+            final int[] tileLengths = new int[] {25, 45};
+            final int[] tileSteps = new int[] {1, 1};
+            final StreamingTileImageData streamingTileImageData = new StreamingTileImageData(tileHeader,
+                    imageHDU.getTiler(), tileStarts, tileLengths, tileSteps);
             outputFits.addHDU(FitsFactory.hduFactory(tileHeader, streamingTileImageData));
             outputFits.write(outputFitsFile);
         }
 
-        try (final Fits sourceFits = new Fits(fitsFile);
-                final Fits outputFits = new Fits()) {
+        try (final Fits sourceFits = new Fits(fitsFile); final Fits outputFits = new Fits()) {
             final ImageHDU imageHDU = (ImageHDU) sourceFits.getHDU(0);
 
             final Header tileHeader = imageHDU.getHeader();
-            final int[] tileStarts = new int[]{100, 100};
-            final int[] tileLengths = new int[]{25, 45};
-            final int[] tileSteps = new int[]{1, 1};
-            final StreamingTileImageData streamingTileImageData =
-                    new StreamingTileImageData(tileHeader, null, tileStarts, tileLengths, tileSteps);
+            final int[] tileStarts = new int[] {100, 100};
+            final int[] tileLengths = new int[] {25, 45};
+            final int[] tileSteps = new int[] {1, 1};
+            final StreamingTileImageData streamingTileImageData = new StreamingTileImageData(tileHeader, null, tileStarts,
+                    tileLengths, tileSteps);
             outputFits.addHDU(FitsFactory.hduFactory(tileHeader, streamingTileImageData));
             outputFits.write(outputFitsFile);
         }
 
-        try (final Fits sourceFits = new Fits(fitsFile);
-                final Fits outputFits = new Fits()) {
+        try (final Fits sourceFits = new Fits(fitsFile); final Fits outputFits = new Fits()) {
             final ImageHDU imageHDU = (ImageHDU) sourceFits.getHDU(0);
 
             final Header tileHeader = imageHDU.getHeader();
-            final int[] tileStarts = new int[]{100, 100};
-            final int[] tileLengths = new int[]{25, 45};
-            final int[] tileSteps = new int[]{1, 1};
-            final StreamingTileImageData streamingTileImageData =
-                    new StreamingTileImageData(tileHeader, imageHDU.getTiler(), tileStarts, tileLengths, tileSteps) {
+            final int[] tileStarts = new int[] {100, 100};
+            final int[] tileLengths = new int[] {25, 45};
+            final int[] tileSteps = new int[] {1, 1};
+            final StreamingTileImageData streamingTileImageData = new StreamingTileImageData(tileHeader,
+                    imageHDU.getTiler(), tileStarts, tileLengths, tileSteps) {
                 @Override
                 protected long getTrueSize() {
                     return 0;
@@ -206,16 +201,15 @@ public class StreamingTileImageDataTest {
             outputFits.write(outputFitsFile);
         }
 
-        try (final Fits sourceFits = new Fits(fitsFile);
-                final Fits outputFits = new Fits()) {
+        try (final Fits sourceFits = new Fits(fitsFile); final Fits outputFits = new Fits()) {
             final ImageHDU imageHDU = (ImageHDU) sourceFits.getHDU(0);
 
             final Header tileHeader = imageHDU.getHeader();
-            final int[] tileStarts = new int[]{100, 100};
-            final int[] tileLengths = new int[]{25, 45};
-            final int[] tileSteps = new int[]{1, 1};
-            final StreamingTileImageData streamingTileImageData =
-                    new StreamingTileImageData(tileHeader, new ErrorTestTiler(), tileStarts, tileLengths, tileSteps);
+            final int[] tileStarts = new int[] {100, 100};
+            final int[] tileLengths = new int[] {25, 45};
+            final int[] tileSteps = new int[] {1, 1};
+            final StreamingTileImageData streamingTileImageData = new StreamingTileImageData(tileHeader,
+                    new ErrorTestTiler(), tileStarts, tileLengths, tileSteps);
             outputFits.addHDU(FitsFactory.hduFactory(tileHeader, streamingTileImageData));
             outputFits.write(outputFitsFile);
             Assert.fail("Should throw FitsException.");
@@ -226,7 +220,7 @@ public class StreamingTileImageDataTest {
 
     private static class TestTiler extends StandardImageTiler {
         public TestTiler() {
-            super(null, 0L, new int[]{200, 200}, int.class);
+            super(null, 0L, new int[] {200, 200}, int.class);
         }
 
         @Override

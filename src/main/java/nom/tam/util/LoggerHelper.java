@@ -43,9 +43,9 @@ public final class LoggerHelper {
     }
 
     /**
-     * @param aClass
-     *            the class to get the logger for.
-     * @return a Java {@code Logger} for the specified class.
+     * @param  aClass the class to get the logger for.
+     *
+     * @return        a Java {@code Logger} for the specified class.
      */
     public static Logger getLogger(Class<?> aClass) {
         return Logger.getLogger(aClass.getName());

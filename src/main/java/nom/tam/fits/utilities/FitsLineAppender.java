@@ -34,15 +34,14 @@ import nom.tam.fits.HeaderCard;
  */
 
 /**
- * This class handles the writing of a card line. It keeps track of the position
- * in the line and will limit it to 80 characters. A write will never cross the
- * line border but a write when the line is at position 80 will start a new
+ * This class handles the writing of a card line. It keeps track of the position in the line and will limit it to 80
+ * characters. A write will never cross the line border but a write when the line is at position 80 will start a new
  * line.
  *
- * @author Richard van Nieuwenhoven
+ * @author     Richard van Nieuwenhoven
  *
- * @deprecated Was needed by {@link FitsLineAppender} only, which itself is deprecated in
- *              favor of the package-level <code>nom.tam.fits.HeaderCardFormatter</code>.
+ * @deprecated Was needed by {@link FitsLineAppender} only, which itself is deprecated in favor of the package-level
+ *                 <code>nom.tam.fits.HeaderCardFormatter</code>.
  */
 @Deprecated
 public class FitsLineAppender {
@@ -63,8 +62,7 @@ public class FitsLineAppender {
     private int charCount;
 
     /**
-     * create a new FitsLineAppender that will have space allocated for one
-     * line.
+     * create a new FitsLineAppender that will have space allocated for one line.
      */
     public FitsLineAppender() {
         buffer = new StringBuilder(HeaderCard.FITS_HEADER_CARD_SIZE);
@@ -73,8 +71,7 @@ public class FitsLineAppender {
     /**
      * append a character to the fits line.
      *
-     * @param character
-     *            the character to append to the line.
+     * @param character the character to append to the line.
      */
     public void append(char character) {
         buffer.append(character);
@@ -84,8 +81,7 @@ public class FitsLineAppender {
     /**
      * Append a sub-string to this line.
      *
-     * @param stringValue
-     *            the sub string to append.
+     * @param stringValue the sub string to append.
      */
     public void append(FitsSubString stringValue) {
         stringValue.appendTo(buffer);
@@ -93,11 +89,10 @@ public class FitsLineAppender {
     }
 
     /**
-     * append a string to the fits line, but limit the append to the line
-     * length. rest of the string will be silently truncated.
+     * append a string to the fits line, but limit the append to the line length. rest of the string will be silently
+     * truncated.
      *
-     * @param string
-     *            the string to append
+     * @param string the string to append
      */
     public void append(String string) {
         charCount = charCount % HeaderCard.FITS_HEADER_CARD_SIZE;
@@ -112,15 +107,11 @@ public class FitsLineAppender {
     }
 
     /**
-     * append a string to the buffer, replacing all occurrences of a character
-     * with an other.
+     * append a string to the buffer, replacing all occurrences of a character with an other.
      *
-     * @param key
-     *            the string to write
-     * @param toReplace
-     *            the character to replace
-     * @param with
-     *            the character to replace the toReplace character with.
+     * @param key       the string to write
+     * @param toReplace the character to replace
+     * @param with      the character to replace the toReplace character with.
      */
     public void appendReplacing(String key, char toReplace, char with) {
         int size = key.length();
@@ -136,12 +127,10 @@ public class FitsLineAppender {
     }
 
     /**
-     * append a number of spaces to the line, limited to the line length! This
-     * will only be done if the line is already started, so attention when a
-     * line is still empty this method will have no effect on empty lines.
+     * append a number of spaces to the line, limited to the line length! This will only be done if the line is already
+     * started, so attention when a line is still empty this method will have no effect on empty lines.
      *
-     * @param count
-     *            the number of spaces to write.
+     * @param count the number of spaces to write.
      */
     public void appendSpacesTo(int count) {
         charCount = charCount % HeaderCard.FITS_HEADER_CARD_SIZE;
@@ -175,8 +164,7 @@ public class FitsLineAppender {
     }
 
     /**
-     * @return the number of characters still available in the current fits
-     *         line.
+     * @return the number of characters still available in the current fits line.
      */
     public int spaceLeftInLine() {
         charCount = charCount % HeaderCard.FITS_HEADER_CARD_SIZE;

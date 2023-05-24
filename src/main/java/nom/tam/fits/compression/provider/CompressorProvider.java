@@ -103,20 +103,19 @@ public class CompressorProvider implements ICompressorProvider {
         @SuppressWarnings("unchecked")
         protected TileCompressorControl(Class<?> compressorClass) {
             constructor = (Constructor<ICompressor<Buffer>>) compressorClass.getConstructors()[0];
-            optionClass = (Class<? extends ICompressOption>) (constructor.getParameterTypes().length == 0 ?
-                    null :
-                        constructor.getParameterTypes()[0]);
+            optionClass = (Class<? extends ICompressOption>) (constructor.getParameterTypes().length == 0 ? null :
+                    constructor.getParameterTypes()[0]);
         }
 
         /**
          * Sets the floating-point type to quantize to use for this tile compressor.
          *
-         * @param floatingPointType Floating-point primitive type to quantize. Must be either <code>double.class</code>
-         *            or else <code>float.class</code>.
+         * @param  floatingPointType Floating-point primitive type to quantize. Must be either <code>double.class</code>
+         *                               or else <code>float.class</code>.
          *
-         * @return itself
+         * @return                   itself
          *
-         * @since 1.18
+         * @since                    1.18
          */
         protected TileCompressorControl setQuantType(Class<?> floatingPointType) {
             quantType = floatingPointType;
@@ -129,8 +128,7 @@ public class CompressorProvider implements ICompressorProvider {
                 return newCompressor(option).compress(in, out);
             } catch (Exception e) {
                 LOG.log(Level.FINE,
-                        "could not compress using " + constructor + " must fallback to other compression method",
-                        e);
+                        "could not compress using " + constructor + " must fallback to other compression method", e);
                 return false;
             }
         }
@@ -178,9 +176,8 @@ public class CompressorProvider implements ICompressorProvider {
                 option = quantOption.getCompressOption();
             }
 
-            ICompressor<Buffer> compressor = constructor.getParameterTypes().length == 0 ?
-                    constructor.newInstance() :
-                        constructor.newInstance(option);
+            ICompressor<Buffer> compressor = constructor.getParameterTypes().length == 0 ? constructor.newInstance() :
+                    constructor.newInstance(option);
 
             if (quantOption != null && quantType != null) {
                 if (quantType.equals(double.class)) {
@@ -250,11 +247,10 @@ public class CompressorProvider implements ICompressorProvider {
             {FloatRiceCompressor.class, RiceQuantizeCompressOption.class},
             {IntRiceCompressor.class, RiceCompressParameters.class}, {BytePLIOCompressor.class},
             {ShortPLIOCompressor.class}, {IntPLIOCompressor.class}, {ByteHCompressor.class, HCompressParameters.class},
-            {FloatHCompressor.class, HCompressorQuantizeOption.class},
-            {ShortHCompressor.class, HCompressParameters.class}, {IntHCompressor.class, HCompressParameters.class},
-            {ByteGZip2Compressor.class}, {ShortGZip2Compressor.class}, {IntGZip2Compressor.class},
-            {FloatGZip2Compressor.class}, {DoubleGZip2Compressor.class}, {LongGZip2Compressor.class},
-            {ByteGZipCompressor.class}, {ShortGZipCompressor.class}, {IntGZipCompressor.class},
+            {FloatHCompressor.class, HCompressorQuantizeOption.class}, {ShortHCompressor.class, HCompressParameters.class},
+            {IntHCompressor.class, HCompressParameters.class}, {ByteGZip2Compressor.class}, {ShortGZip2Compressor.class},
+            {IntGZip2Compressor.class}, {FloatGZip2Compressor.class}, {DoubleGZip2Compressor.class},
+            {LongGZip2Compressor.class}, {ByteGZipCompressor.class}, {ShortGZipCompressor.class}, {IntGZipCompressor.class},
             {LongGZipCompressor.class}, {FloatGZipCompressor.class}, {DoubleGZipCompressor.class},
             {ByteNoCompressCompressor.class}, {ShortNoCompressCompressor.class}, {IntNoCompressCompressor.class},
             {LongNoCompressCompressor.class}, {FloatNoCompressCompressor.class}, {DoubleNoCompressCompressor.class}};

@@ -244,8 +244,7 @@ public class HeaderTest {
             Header hdr = f.getHDU(0).getHeader();
 
             assertEquals("Set state:", true, FitsFactory.isLongStringsEnabled());
-            hdr.addValue("LONG1", lng,
-                    "Here is a comment that is also very long and will be truncated at least a little");
+            hdr.addValue("LONG1", lng, "Here is a comment that is also very long and will be truncated at least a little");
             hdr.addValue("LONG2", "xx'yy'zz" + lng, "Another comment");
             hdr.addValue("LONG3", "xx'yy'zz" + lng, null);
             hdr.addValue("SHORT", "A STRING ENDING IN A &", null);
@@ -392,8 +391,8 @@ public class HeaderTest {
     /**
      * split in own method, for debugging (drop to frame)
      *
-     * @param cardValue
-     * @param cardComment
+     * @param  cardValue
+     * @param  cardComment
      *
      * @throws Exception
      */
@@ -547,8 +546,7 @@ public class HeaderTest {
         keyword = HeaderCard.create("HIERARCH..ESO INS OPTI-3 ID = 'ESO#427 ' / Optical element identifier").getKey();
         assertEquals("HIERARCH.ESO.INS.OPTI-3.ID", keyword);
 
-        keyword = HeaderCard.create("HIERARCH    ESO INS   OPTI-3 ID= 'ESO#427 ' / Optical element identifier")
-                .getKey();
+        keyword = HeaderCard.create("HIERARCH    ESO INS   OPTI-3 ID= 'ESO#427 ' / Optical element identifier").getKey();
         assertEquals("HIERARCH.ESO.INS.OPTI-3.ID", keyword);
 
         // AK: The old test expected "" here, but that's inconsistent behavior for the same type of
@@ -600,8 +598,7 @@ public class HeaderTest {
         }
         // now one char less.
         card = new HeaderCard("TESTKEY", "random value just for testing purpose - random value just for testin", "");
-        assertEquals("TESTKEY = 'random value just for testing purpose - random value just for testin'",
-                card.toString());
+        assertEquals("TESTKEY = 'random value just for testing purpose - random value just for testin'", card.toString());
     }
 
     @Test

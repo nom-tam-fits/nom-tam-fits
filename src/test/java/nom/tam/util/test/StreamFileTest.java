@@ -382,14 +382,16 @@ public class StreamFileTest {
         Assert.assertEquals(expectedValues.length, values.length);
         for (int index = 0; index < expectedValues.length; index++) {
             for (int index2 = 0; index2 < expectedValues[index].length; index2++) {
-                Assert.assertEquals("int[" + index + "][" + index2 + "]", expectedValues[index][index2], values[index][index2]);
+                Assert.assertEquals("int[" + index + "][" + index2 + "]", expectedValues[index][index2],
+                        values[index][index2]);
                 values[index][index2] = 0;
             }
         }
         in.readArray(values);
         for (int index = 0; index < expectedValues.length; index++) {
             for (int index2 = 0; index2 < expectedValues[index].length; index2++) {
-                Assert.assertEquals("int[" + index + "][" + index2 + "]", expectedValues[index][index2], values[index][index2]);
+                Assert.assertEquals("int[" + index + "][" + index2 + "]", expectedValues[index][index2],
+                        values[index][index2]);
             }
         }
 

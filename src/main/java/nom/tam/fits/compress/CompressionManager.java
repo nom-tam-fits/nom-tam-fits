@@ -63,16 +63,15 @@ public final class CompressionManager {
     }
 
     /**
-     * This method decompresses a compressed input stream. The decompression
-     * method is selected automatically based upon the first two bytes read.
+     * This method decompresses a compressed input stream. The decompression method is selected automatically based upon
+     * the first two bytes read.
      *
-     * @param compressed
-     *            The compressed input stream
-     * @return A stream which wraps the input stream and decompresses it. If the
-     *         input stream is not compressed, a pushback input stream wrapping
-     *         the original stream is returned.
-     * @throws FitsException
-     *             when the stream could not be read or decompressed
+     * @param  compressed    The compressed input stream
+     *
+     * @return               A stream which wraps the input stream and decompresses it. If the input stream is not
+     *                           compressed, a pushback input stream wrapping the original stream is returned.
+     *
+     * @throws FitsException when the stream could not be read or decompressed
      */
     public static InputStream decompress(InputStream compressed) throws FitsException {
         BufferedInputStream pb = new BufferedInputStream(compressed, ONE_MEGABYTE);
@@ -97,12 +96,11 @@ public final class CompressionManager {
     }
 
     /**
-     * Is a file compressed? (the magic number in the first 2 bytes is used to
-     * detect the compression.
+     * Is a file compressed? (the magic number in the first 2 bytes is used to detect the compression.
      *
-     * @param file
-     *            file to test for compression algorithms
-     * @return true if the file is compressed
+     * @param  file file to test for compression algorithms
+     *
+     * @return      true if the file is compressed
      */
     public static boolean isCompressed(File file) {
         if (!file.exists()) {
@@ -121,12 +119,11 @@ public final class CompressionManager {
     }
 
     /**
-     * Is a file compressed? (the magic number in the first 2 bytes is used to
-     * detect the compression.
+     * Is a file compressed? (the magic number in the first 2 bytes is used to detect the compression.
      *
-     * @param filename
-     *            of the file to test for compression algorithms
-     * @return true if the file is compressed
+     * @param  filename of the file to test for compression algorithms
+     *
+     * @return          true if the file is compressed
      */
     public static boolean isCompressed(String filename) {
         if (filename == null) {
@@ -154,7 +151,8 @@ public final class CompressionManager {
         if (old != null) {
             maxPriority = old.priority();
         }
-        ServiceLoader<ICompressProvider> compressionProviders = ServiceLoader.load(ICompressProvider.class, Thread.currentThread().getContextClassLoader());
+        ServiceLoader<ICompressProvider> compressionProviders = ServiceLoader.load(ICompressProvider.class,
+                Thread.currentThread().getContextClassLoader());
         for (ICompressProvider provider : compressionProviders) {
             if (provider.priority() > Math.max(0, priority) && provider.priority() < maxPriority && provider != old && //
                     provider.provides(mag1, mag2)) {

@@ -99,8 +99,7 @@ public class CompressedTableData extends BinaryTable {
             int tileIndex = 1;
             for (int rowStart = 0; rowStart < nrows; rowStart += rowsPerTile) {
                 addRow(new byte[ncols][0]);
-                tiles.add(new BinaryTableTileCompressor(this, data,
-                        tile()//
+                tiles.add(new BinaryTableTileCompressor(this, data, tile()//
                         .rowStart(rowStart)//
                         .rowEnd(rowStart + rowsPerTile)//
                         .column(column)//
@@ -110,7 +109,8 @@ public class CompressedTableData extends BinaryTable {
         }
     }
 
-    protected BinaryTable asBinaryTable(BinaryTable dataToFill, Header compressedHeader, Header targetHeader) throws FitsException {
+    protected BinaryTable asBinaryTable(BinaryTable dataToFill, Header compressedHeader, Header targetHeader)
+            throws FitsException {
         int nrows = targetHeader.getIntValue(Standard.NAXIS2);
         int ncols = compressedHeader.getIntValue(TFIELDS);
         rowsPerTile = compressedHeader.getIntValue(Compression.ZTILELEN, nrows);
@@ -122,11 +122,11 @@ public class CompressedTableData extends BinaryTable {
             for (int rowStart = 0; rowStart < nrows; rowStart += rowsPerTile) {
                 BinaryTableTileDecompressor binaryTableTile = new BinaryTableTileDecompressor(this, dataToFill.getData(),
                         tile()//
-                        .rowStart(rowStart)//
-                        .rowEnd(rowStart + rowsPerTile)//
-                        .column(column)//
-                        .tileIndex(tileIndex++)//
-                        .compressionAlgorithm(compressionAlgorithm));
+                                .rowStart(rowStart)//
+                                .rowEnd(rowStart + rowsPerTile)//
+                                .column(column)//
+                                .tileIndex(tileIndex++)//
+                                .compressionAlgorithm(compressionAlgorithm));
                 tiles.add(binaryTableTile);
                 binaryTableTile.execute(FitsFactory.threadPool());
             }

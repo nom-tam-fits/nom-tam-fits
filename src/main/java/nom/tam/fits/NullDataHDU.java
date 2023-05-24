@@ -36,19 +36,17 @@ import java.io.PrintStream;
 import nom.tam.fits.header.Standard;
 
 /**
- * A class of HDU that contains a FITS header only with no associated data object.
- * Such HDUs are commonly used as the primary HDU in FITS files where the leading
- * data is not an image, since only images may constitute the primary HDU.
+ * A class of HDU that contains a FITS header only with no associated data object. Such HDUs are commonly used as the
+ * primary HDU in FITS files where the leading data is not an image, since only images may constitute the primary HDU.
  *
  * @author Attila Kovacs
  *
- * @since 1.18
+ * @since  1.18
  */
 public class NullDataHDU extends BasicHDU<NullData> {
 
     /**
-     * Instantiates a new HDU with a default header and no associated data, using the
-     * supplied header.
+     * Instantiates a new HDU with a default header and no associated data, using the supplied header.
      */
     public NullDataHDU() {
         this(new Header());
@@ -56,10 +54,9 @@ public class NullDataHDU extends BasicHDU<NullData> {
     }
 
     /**
-     * Instantiates a new HDU with only a header and no associated data, using the
-     * supplied header.
+     * Instantiates a new HDU with only a header and no associated data, using the supplied header.
      *
-     * @param myHeader      the FITS header for this HDU
+     * @param myHeader the FITS header for this HDU
      */
     public NullDataHDU(Header myHeader) {
         super(myHeader, new NullData());

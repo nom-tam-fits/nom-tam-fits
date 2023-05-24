@@ -87,9 +87,8 @@ public class BinaryTableHDU extends TableHDU<BinaryTable> {
         }
         if (o instanceof Object[]) {
             return new BinaryTable((Object[]) o);
-        } else {
-            throw new FitsException("Unable to encapsulate object of type:" + o.getClass().getName() + " as BinaryTable");
         }
+        throw new FitsException("Unable to encapsulate object of type:" + o.getClass().getName() + " as BinaryTable");
     }
 
     /**

@@ -111,7 +111,8 @@ public class LongCommentCardTest {
                 HeaderCard headerCard = iterator.next();
                 if (headerCard.isCommentStyleCard() && !Standard.END.key().equals(headerCard.getKey())) {
                     commentLike++;
-                    Assert.assertTrue(headerCard.getComment(), headerCard.getComment().length() <= HeaderCard.MAX_COMMENT_CARD_COMMENT_LENGTH);
+                    Assert.assertTrue(headerCard.getComment(),
+                            headerCard.getComment().length() <= HeaderCard.MAX_COMMENT_CARD_COMMENT_LENGTH);
                 }
             }
             Assert.assertEquals(n, commentLike);

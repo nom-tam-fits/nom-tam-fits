@@ -59,13 +59,12 @@ public class StreamTest {
 
     private static FitsInputStream in;
 
-
-    //    @Rule
-    //    public TestRule watcher = new TestWatcher() {
-    //        protected void starting(Description description) {
-    //            System.out.println("Starting test: " + description.getMethodName());
-    //        }
-    //    };
+    // @Rule
+    // public TestRule watcher = new TestWatcher() {
+    // protected void starting(Description description) {
+    // System.out.println("Starting test: " + description.getMethodName());
+    // }
+    // };
 
     @Before
     @After
@@ -326,7 +325,6 @@ public class StreamTest {
         }
     }
 
-
     @Test(expected = EOFException.class)
     public void testSkipBytesWithException1() throws Exception {
         int total = 256;
@@ -361,8 +359,6 @@ public class StreamTest {
             SafeClose.close(myIn);
         }
     }
-
-
 
     @Test
     public void testBoolean() throws Exception {
@@ -558,14 +554,16 @@ public class StreamTest {
         Assert.assertEquals(expectedValues.length, values.length);
         for (int index = 0; index < expectedValues.length; index++) {
             for (int index2 = 0; index2 < expectedValues[index].length; index2++) {
-                Assert.assertEquals("int[" + index + "][" + index2 + "]", expectedValues[index][index2], values[index][index2]);
+                Assert.assertEquals("int[" + index + "][" + index2 + "]", expectedValues[index][index2],
+                        values[index][index2]);
                 values[index][index2] = 0;
             }
         }
         in.readPrimitiveArray(values);
         for (int index = 0; index < expectedValues.length; index++) {
             for (int index2 = 0; index2 < expectedValues[index].length; index2++) {
-                Assert.assertEquals("int[" + index + "][" + index2 + "]", expectedValues[index][index2], values[index][index2]);
+                Assert.assertEquals("int[" + index + "][" + index2 + "]", expectedValues[index][index2],
+                        values[index][index2]);
             }
         }
         Assert.assertEquals(0, in.available());
@@ -740,6 +738,5 @@ public class StreamTest {
     public void testReadWithoutSource() throws FitsException, IOException {
         Assert.assertNull(new Fits().readHDU());
     }
-
 
 }

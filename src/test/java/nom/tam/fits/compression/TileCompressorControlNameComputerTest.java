@@ -95,29 +95,25 @@ public class TileCompressorControlNameComputerTest {
 
     @Test
     public void testGZip1() {
-        String name = nameComputer.createCompressorClassName(ZQUANTIZ_NO_DITHER, Compression.ZCMPTYPE_GZIP_1,
-                int.class);
+        String name = nameComputer.createCompressorClassName(ZQUANTIZ_NO_DITHER, Compression.ZCMPTYPE_GZIP_1, int.class);
         assertTrue(name.contains("GZip"));
     }
 
     @Test
     public void testRice() {
-        String name = nameComputer.createCompressorClassName(ZQUANTIZ_NO_DITHER, Compression.ZCMPTYPE_RICE_1,
-                int.class);
+        String name = nameComputer.createCompressorClassName(ZQUANTIZ_NO_DITHER, Compression.ZCMPTYPE_RICE_1, int.class);
         assertTrue(name.contains("Rice"));
     }
 
     @Test
     public void testRiceAlt() {
-        String name = nameComputer.createCompressorClassName(ZQUANTIZ_NO_DITHER, Compression.ZCMPTYPE_RICE_ONE,
-                int.class);
+        String name = nameComputer.createCompressorClassName(ZQUANTIZ_NO_DITHER, Compression.ZCMPTYPE_RICE_ONE, int.class);
         assertTrue(name.contains("Rice"));
     }
 
     @Test
     public void testPLIO() {
-        String name = nameComputer.createCompressorClassName(ZQUANTIZ_NO_DITHER, Compression.ZCMPTYPE_PLIO_1,
-                int.class);
+        String name = nameComputer.createCompressorClassName(ZQUANTIZ_NO_DITHER, Compression.ZCMPTYPE_PLIO_1, int.class);
         assertTrue(name.contains("PLIO"));
     }
 
@@ -130,8 +126,7 @@ public class TileCompressorControlNameComputerTest {
 
     @Test
     public void testGZip2() {
-        String name = nameComputer.createCompressorClassName(ZQUANTIZ_NO_DITHER, Compression.ZCMPTYPE_GZIP_2,
-                int.class);
+        String name = nameComputer.createCompressorClassName(ZQUANTIZ_NO_DITHER, Compression.ZCMPTYPE_GZIP_2, int.class);
         assertTrue(name.contains("GZip2"));
     }
 

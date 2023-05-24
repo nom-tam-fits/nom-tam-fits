@@ -43,15 +43,15 @@ import nom.tam.util.type.ElementType;
 import edu.umd.cs.findbugs.annotations.SuppressFBWarnings;
 
 /**
- * This class provides a subset of an N-dimensional image. Modified May 2, 2000
- * by T. McGlynn to permit tiles that go off the edge of the image.
+ * This class provides a subset of an N-dimensional image. Modified May 2, 2000 by T. McGlynn to permit tiles that go
+ * off the edge of the image.
  */
 public abstract class StandardImageTiler implements ImageTiler {
     /**
-     * @param dims The dimensions of the array.
-     * @param pos The index requested.
+     * @param  dims The dimensions of the array.
+     * @param  pos  The index requested.
      *
-     * @return the offset of a given position.
+     * @return      the offset of a given position.
      */
     public static long getOffset(int[] dims, int[] pos) {
 
@@ -66,14 +66,14 @@ public abstract class StandardImageTiler implements ImageTiler {
     }
 
     /**
-     * Increment the offset within the position array. Note that we never look at
-     * the last index since we copy data a block at a time and not byte by byte.
+     * Increment the offset within the position array. Note that we never look at the last index since we copy data a
+     * block at a time and not byte by byte.
      *
-     * @param start The starting corner values.
-     * @param current The current offsets.
-     * @param lengths The desired dimensions of the subset.
+     * @param  start   The starting corner values.
+     * @param  current The current offsets.
+     * @param  lengths The desired dimensions of the subset.
      *
-     * @return <code>true</code> if the current array was changed
+     * @return         <code>true</code> if the current array was changed
      */
     protected static boolean incrementPosition(int[] start, int[] current, int[] lengths) {
         final int[] steps = new int[start.length];
@@ -82,15 +82,15 @@ public abstract class StandardImageTiler implements ImageTiler {
     }
 
     /**
-     * Increment the offset within the position array. Note that we never look at
-     * the last index since we copy data a block at a time and not byte by byte.
+     * Increment the offset within the position array. Note that we never look at the last index since we copy data a
+     * block at a time and not byte by byte.
      *
-     * @param start The starting corner values.
-     * @param current The current offsets.
-     * @param lengths The desired dimensions of the subset.
-     * @param steps The desired number of steps to take until the next position.
+     * @param  start   The starting corner values.
+     * @param  current The current offsets.
+     * @param  lengths The desired dimensions of the subset.
+     * @param  steps   The desired number of steps to take until the next position.
      *
-     * @return <code>true</code> if the current array was changed
+     * @return         <code>true</code> if the current array was changed
      */
     protected static boolean incrementPosition(int[] start, int[] current, int[] lengths, int[] steps) {
         for (int i = start.length - 2; i >= 0; i--) {
@@ -116,12 +116,11 @@ public abstract class StandardImageTiler implements ImageTiler {
     /**
      * Create a tiler.
      *
-     * @param f The random access device from which image data may be read. This
-     *            may be null if the tile information is available from memory.
-     * @param fileOffset The file offset within the RandomAccess device at which
-     *            the data begins.
-     * @param dims The actual dimensions of the image.
-     * @param base The base class (should be a primitive type) of the image.
+     * @param f          The random access device from which image data may be read. This may be null if the tile
+     *                       information is available from memory.
+     * @param fileOffset The file offset within the RandomAccess device at which the data begins.
+     * @param dims       The actual dimensions of the image.
+     * @param base       The base class (should be a primitive type) of the image.
      */
     @SuppressFBWarnings(value = "EI_EXPOSE_REP", justification = "intended exposure of mutable data")
     public StandardImageTiler(RandomAccess f, long fileOffset, int[] dims, Class<?> base) {
@@ -134,14 +133,13 @@ public abstract class StandardImageTiler implements ImageTiler {
     /**
      * File a tile segment from a file using a default value for striding.
      *
-     * @param output The output to send data. This can be an ArrayDataOutput to
-     *            stream data to and prevent memory consumption of a tile being
-     *            in memory.
-     * @param delta The offset from the beginning of the image in bytes.
-     * @param outputOffset The index into the output array.
-     * @param segment The number of elements to be read for this segment.
+     * @param  output       The output to send data. This can be an ArrayDataOutput to stream data to and prevent memory
+     *                          consumption of a tile being in memory.
+     * @param  delta        The offset from the beginning of the image in bytes.
+     * @param  outputOffset The index into the output array.
+     * @param  segment      The number of elements to be read for this segment.
      *
-     * @throws IOException if the underlying stream failed
+     * @throws IOException  if the underlying stream failed
      */
     @SuppressFBWarnings(value = "RR_NOT_CHECKED", justification = "this read will never return less than the requested length")
     protected void fillFileData(Object output, long delta, int outputOffset, int segment) throws IOException {
@@ -149,19 +147,16 @@ public abstract class StandardImageTiler implements ImageTiler {
     }
 
     /**
-     * File a tile segment from a file, jumping each step number of values to the
-     * next read.
+     * File a tile segment from a file, jumping each step number of values to the next read.
      *
-     * @param output The output to send data. This can be an ArrayDataOutput to
-     *            stream data to and prevent memory consumption of a tile being
-     *            in memory.
-     * @param delta The offset from the beginning of the image in bytes.
-     * @param outputOffset The index into the output array.
-     * @param segment The number of elements to be read for this segment.
-     * @param step The number of jumps until the next read. Only works for
-     *            streaming out data.
+     * @param  output       The output to send data. This can be an ArrayDataOutput to stream data to and prevent memory
+     *                          consumption of a tile being in memory.
+     * @param  delta        The offset from the beginning of the image in bytes.
+     * @param  outputOffset The index into the output array.
+     * @param  segment      The number of elements to be read for this segment.
+     * @param  step         The number of jumps until the next read. Only works for streaming out data.
      *
-     * @throws IOException if the underlying stream failed
+     * @throws IOException  if the underlying stream failed
      */
     @SuppressFBWarnings(value = "RR_NOT_CHECKED", justification = "this read will never return less than the requested length")
     protected void fillFileData(Object output, long delta, int outputOffset, int segment, int step) throws IOException {
@@ -189,14 +184,13 @@ public abstract class StandardImageTiler implements ImageTiler {
     }
 
     /**
-     * File a tile segment from a file into the given stream. This will deal only
-     * with bytes to avoid having to check the base type and calling a specific
-     * method. Converting the base type to a byte is a simple multiplication
+     * File a tile segment from a file into the given stream. This will deal only with bytes to avoid having to check
+     * the base type and calling a specific method. Converting the base type to a byte is a simple multiplication
      * operation anyway. Uses a default value for striding (1).
      *
-     * @param output The output stream.
-     * @param delta The offset from the beginning of the image in bytes.
-     * @param segment The number of elements to be read for this segment.
+     * @param  output      The output stream.
+     * @param  delta       The offset from the beginning of the image in bytes.
+     * @param  segment     The number of elements to be read for this segment.
      *
      * @throws IOException if the underlying stream failed
      */
@@ -206,19 +200,18 @@ public abstract class StandardImageTiler implements ImageTiler {
     }
 
     /**
-     * File a tile segment from a file into the given stream. This will deal only
-     * with bytes to avoid having to check the base type and calling a specific
-     * method. Converting the base type to a byte is a simple multiplication
+     * File a tile segment from a file into the given stream. This will deal only with bytes to avoid having to check
+     * the base type and calling a specific method. Converting the base type to a byte is a simple multiplication
      * operation anyway.
      *
-     * @param output The output stream.
-     * @param delta The offset from the beginning of the image in bytes.
-     * @param segment The number of elements to be read for this segment.
-     * @param step The number of elements until the next read.
+     * @param  output      The output stream.
+     * @param  delta       The offset from the beginning of the image in bytes.
+     * @param  segment     The number of elements to be read for this segment.
+     * @param  step        The number of elements until the next read.
      *
      * @throws IOException if the underlying stream failed
      *
-     * @since 1.18
+     * @since              1.18
      */
     @SuppressFBWarnings(value = "RR_NOT_CHECKED", justification = "this read will never return less than the requested length")
     protected void fillFileData(ArrayDataOutput output, long delta, int segment, int step) throws IOException {
@@ -255,20 +248,18 @@ public abstract class StandardImageTiler implements ImageTiler {
     }
 
     /**
-     * Fill a single segment from memory. This routine is called recursively to
-     * handle multidimensional arrays. E.g., if data is three-dimensional, this
-     * will recurse two levels until we get a call with a single dimensional
-     * datum. At that point the appropriate data will be copied into the output.
-     * Uses a default value for striding (1).
+     * Fill a single segment from memory. This routine is called recursively to handle multidimensional arrays. E.g., if
+     * data is three-dimensional, this will recurse two levels until we get a call with a single dimensional datum. At
+     * that point the appropriate data will be copied into the output. Uses a default value for striding (1).
      *
-     * @param data The in-memory image data.
-     * @param posits The current position for which data is requested.
-     * @param length The size of the segments.
-     * @param output The output tile.
-     * @param outputOffset The current offset into the output tile.
-     * @param dim The current dimension being
+     * @param  data         The in-memory image data.
+     * @param  posits       The current position for which data is requested.
+     * @param  length       The size of the segments.
+     * @param  output       The output tile.
+     * @param  outputOffset The current offset into the output tile.
+     * @param  dim          The current dimension being
      *
-     * @throws IOException If the output is a stream and there is an I/O error.
+     * @throws IOException  If the output is a stream and there is an I/O error.
      */
     protected void fillMemData(Object data, int[] posits, int length, Object output, int outputOffset, int dim)
             throws IOException {
@@ -276,23 +267,21 @@ public abstract class StandardImageTiler implements ImageTiler {
     }
 
     /**
-     * Fill a single segment from memory. This routine is called recursively to
-     * handle multidimensional arrays. E.g., if data is three-dimensional, this
-     * will recurse two levels until we get a call with a single dimensional
-     * datum. At that point the appropriate data will be copied into the output,
-     * jumping the number of step values.
+     * Fill a single segment from memory. This routine is called recursively to handle multidimensional arrays. E.g., if
+     * data is three-dimensional, this will recurse two levels until we get a call with a single dimensional datum. At
+     * that point the appropriate data will be copied into the output, jumping the number of step values.
      *
-     * @param data The in-memory image data.
-     * @param posits The current position for which data is requested.
-     * @param length The size of the segments.
-     * @param output The output tile.
-     * @param outputOffset The current offset into the output tile.
-     * @param dim The current dimension being
-     * @param step The number of jumps to the next value.
+     * @param  data         The in-memory image data.
+     * @param  posits       The current position for which data is requested.
+     * @param  length       The size of the segments.
+     * @param  output       The output tile.
+     * @param  outputOffset The current offset into the output tile.
+     * @param  dim          The current dimension being
+     * @param  step         The number of jumps to the next value.
      *
-     * @throws IOException If the output is a stream and there is an I/O error.
+     * @throws IOException  If the output is a stream and there is an I/O error.
      *
-     * @since 1.18
+     * @since               1.18
      */
     protected void fillMemData(Object data, int[] posits, int length, Object output, int outputOffset, int dim, int step)
             throws IOException {
@@ -348,14 +337,12 @@ public abstract class StandardImageTiler implements ImageTiler {
     /**
      * Fill the subset using a default value for striding.
      *
-     * @param data The memory-resident data image. This may be null if the image
-     *            is to be read from a file. This should be a multidimensional
-     *            primitive array.
-     * @param o The tile to be filled. This is a simple primitive array, or an
-     *            ArrayDataOutput instance.
-     * @param newDims The dimensions of the full image.
-     * @param corners The indices of the corner of the image.
-     * @param lengths The dimensions of the subset.
+     * @param  data        The memory-resident data image. This may be null if the image is to be read from a file. This
+     *                         should be a multidimensional primitive array.
+     * @param  o           The tile to be filled. This is a simple primitive array, or an ArrayDataOutput instance.
+     * @param  newDims     The dimensions of the full image.
+     * @param  corners     The indices of the corner of the image.
+     * @param  lengths     The dimensions of the subset.
      *
      * @throws IOException if the underlying stream failed
      */
@@ -368,15 +355,13 @@ public abstract class StandardImageTiler implements ImageTiler {
     /**
      * Fill the subset, jumping each step value to the next read.
      *
-     * @param data The memory-resident data image. This may be null if the image
-     *            is to be read from a file. This should be a multidimensional
-     *            primitive array.
-     * @param o The tile to be filled. This is a simple primitive array, or an
-     *            ArrayDataOutput instance.
-     * @param newDims The dimensions of the full image.
-     * @param corners The indices of the corner of the image.
-     * @param lengths The dimensions of the subset.
-     * @param steps The number of steps to take until the next read in each axis.
+     * @param  data        The memory-resident data image. This may be null if the image is to be read from a file. This
+     *                         should be a multidimensional primitive array.
+     * @param  o           The tile to be filled. This is a simple primitive array, or an ArrayDataOutput instance.
+     * @param  newDims     The dimensions of the full image.
+     * @param  corners     The indices of the corner of the image.
+     * @param  lengths     The dimensions of the subset.
+     * @param  steps       The number of steps to take until the next read in each axis.
      *
      * @throws IOException if the underlying stream failed
      */
@@ -488,19 +473,19 @@ public abstract class StandardImageTiler implements ImageTiler {
     }
 
     /**
-     * See if we can get the image data from memory. This may be overridden by
-     * other classes, notably in nom.tam.fits.ImageData.
+     * See if we can get the image data from memory. This may be overridden by other classes, notably in
+     * nom.tam.fits.ImageData.
      *
      * @return the image data
      */
     protected abstract Object getMemoryImage();
 
     /**
-     * Get a subset of the image. An image tile is returned as a one-dimensional
-     * array although the image will normally be multidimensional.
+     * Get a subset of the image. An image tile is returned as a one-dimensional array although the image will normally
+     * be multidimensional.
      *
-     * @param corners The starting corner (using 0 as the start) for the image.
-     * @param lengths The length requested in each dimension.
+     * @param  corners     The starting corner (using 0 as the start) for the image.
+     * @param  lengths     The length requested in each dimension.
      *
      * @throws IOException if the underlying stream failed
      */
@@ -512,13 +497,13 @@ public abstract class StandardImageTiler implements ImageTiler {
     }
 
     /**
-     * Get a subset of the image. An image tile is returned as a one-dimensional
-     * array although the image will normally be multidimensional.
+     * Get a subset of the image. An image tile is returned as a one-dimensional array although the image will normally
+     * be multidimensional.
      *
-     * @param corners The starting corner (using 0 as the start) for the image.
-     * @param lengths The length requested in each dimension.
-     * @param steps The number of steps to take until the next read in each axis.
-     *            Default should be 1 (next value).
+     * @param  corners     The starting corner (using 0 as the start) for the image.
+     * @param  lengths     The length requested in each dimension.
+     * @param  steps       The number of steps to take until the next read in each axis. Default should be 1 (next
+     *                         value).
      *
      * @throws IOException if the underlying stream failed
      */
@@ -549,18 +534,16 @@ public abstract class StandardImageTiler implements ImageTiler {
     }
 
     /**
-     * Get a tile, filling in a pre-specified array or writing to a stream. This
-     * version does not check that the user hase entered a valid set of corner
-     * and length arrays. ensure that out matches the length implied by the
-     * lengths array.
+     * Get a tile, filling in a pre-specified array or writing to a stream. This version does not check that the user
+     * hase entered a valid set of corner and length arrays. ensure that out matches the length implied by the lengths
+     * array.
      *
-     * @param output A one-dimensional output array or stream. Data not within
-     *            the valid limits of the image will be left unchanged. For an
-     *            array, the length should be the product of lengths. Optionally
-     *            provide an ArrayDataOutput to stream out data and not fill
-     *            memory; useful for web applications.
-     * @param corners The corners of the tile.
-     * @param lengths The dimensions of the tile.
+     * @param  output      A one-dimensional output array or stream. Data not within the valid limits of the image will
+     *                         be left unchanged. For an array, the length should be the product of lengths. Optionally
+     *                         provide an ArrayDataOutput to stream out data and not fill memory; useful for web
+     *                         applications.
+     * @param  corners     The corners of the tile.
+     * @param  lengths     The dimensions of the tile.
      *
      * @throws IOException if the underlying stream failed
      */
@@ -572,20 +555,18 @@ public abstract class StandardImageTiler implements ImageTiler {
     }
 
     /**
-     * Get a tile, filling in a pre-specified array or writing to a stream. This
-     * version does not check that the user hase entered a valid set of corner
-     * and length arrays. ensure that out matches the length implied by the
-     * lengths array.
+     * Get a tile, filling in a pre-specified array or writing to a stream. This version does not check that the user
+     * hase entered a valid set of corner and length arrays. ensure that out matches the length implied by the lengths
+     * array.
      *
-     * @param output A one-dimensional output array or stream. Data not within
-     *            the valid limits of the image will be left unchanged. For an
-     *            array, the length should be the product of lengths. Optionally
-     *            provide an ArrayDataOutput to stream out data and not fill
-     *            memory; useful for web applications.
-     * @param corners The corners of the tile.
-     * @param lengths The dimensions of the tile.
-     * @param steps The number of steps to take until the next read in each axis.
-     *            Default should be 1 (next value).
+     * @param  output      A one-dimensional output array or stream. Data not within the valid limits of the image will
+     *                         be left unchanged. For an array, the length should be the product of lengths. Optionally
+     *                         provide an ArrayDataOutput to stream out data and not fill memory; useful for web
+     *                         applications.
+     * @param  corners     The corners of the tile.
+     * @param  lengths     The dimensions of the tile.
+     * @param  steps       The number of steps to take until the next read in each axis. Default should be 1 (next
+     *                         value).
      *
      * @throws IOException if the underlying stream failed
      */

@@ -47,13 +47,13 @@ import nom.tam.fits.compression.provider.param.api.ICompressColumnParameter;
  * either the original or any of its decendants will affect the original and all decendans equally.
  * </p>
  *
- * @author Attila Kovacs
+ * @author          Attila Kovacs
  *
- * @param <T> The generic array type that contains the individual parameters for each tile as a table column.
- * @param <OPTION> The generic type of compression option that is associated with these parameters
+ * @param  <T>      The generic array type that contains the individual parameters for each tile as a table column.
+ * @param  <OPTION> The generic type of compression option that is associated with these parameters
  */
 public abstract class CompressColumnParameter<T, OPTION> extends CompressParameter<OPTION>
-implements ICompressColumnParameter {
+        implements ICompressColumnParameter {
 
     private Data column;
 
@@ -80,7 +80,7 @@ implements ICompressColumnParameter {
      *
      * @author Attila Kovacs
      *
-     * @since 1.18
+     * @since  1.18
      */
     private class Data {
         private T values;

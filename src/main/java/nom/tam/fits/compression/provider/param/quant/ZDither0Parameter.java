@@ -101,10 +101,10 @@ final class ZDither0Parameter extends CompressHeaderParameter<QuantizeOption> {
     /**
      * Seeds the random generator for the specific tile
      *
-     * @param index the 0-based tile index.
+     * @param  index                the 0-based tile index.
      *
      * @throws NullPointerException if the parameter is no linked to a {@link QuantizeOption} instance (that is
-     *             <code>null</code> was specified in the constructor).
+     *                                  <code>null</code> was specified in the constructor).
      */
     void setTileIndex(int index) throws NullPointerException {
         getOption().setTileIndex(index);

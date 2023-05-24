@@ -40,8 +40,7 @@ import java.nio.LongBuffer;
 import java.nio.ShortBuffer;
 
 /**
- * @deprecated  Use identical static fields of {@link ElementType} instead.
- *
+ * @deprecated Use identical static fields of {@link ElementType} instead.
  */
 @Deprecated
 public final class PrimitiveTypes {

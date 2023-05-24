@@ -100,14 +100,10 @@ public class CompressedImageData extends BinaryTable {
     }
 
     /**
-     * preserve the null values in the image even if the compression algorithm
-     * is lossy.
+     * preserve the null values in the image even if the compression algorithm is lossy.
      *
-     * @param nullValue
-     *            the value representing null for byte/short and integer pixel
-     *            values
-     * @param compressionAlgorithm
-     *            compression algorithm to use for the null pixel mask
+     * @param nullValue            the value representing null for byte/short and integer pixel values
+     * @param compressionAlgorithm compression algorithm to use for the null pixel mask
      */
     protected void preserveNulls(long nullValue, String compressionAlgorithm) {
         tiledImageOperation().preserveNulls(nullValue, compressionAlgorithm);

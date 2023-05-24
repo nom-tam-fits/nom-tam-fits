@@ -44,7 +44,7 @@ import static nom.tam.fits.header.Standard.PCOUNT;
  *
  * @author Attila Kovacs
  *
- * @since 1.18
+ * @since  1.18
  */
 public final class NullData extends Data {
 

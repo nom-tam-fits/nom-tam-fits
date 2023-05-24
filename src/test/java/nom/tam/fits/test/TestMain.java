@@ -64,10 +64,8 @@ public class TestMain {
             PrintStream out2 = new PrintStream(sysout);
             System.setOut(out2);
 
-            Main.main(new String[]{
-                    "wrong"
-            });
-            Main.main(new String[]{});
+            Main.main(new String[] {"wrong"});
+            Main.main(new String[] {});
             out2.flush();
             String sysoutString = new String(sysout.toByteArray());
             int firstIndexOf = sysoutString.indexOf("do not know what to do");
@@ -87,10 +85,7 @@ public class TestMain {
             PrintStream out2 = new PrintStream(sysout);
             System.setOut(out2);
 
-            Main.main(new String[]{
-                    "read",
-                    "target/testMainRead.fits"
-            });
+            Main.main(new String[] {"read", "target/testMainRead.fits"});
             out2.flush();
             Assert.assertEquals("\n" + //
                     "\n" + //
@@ -139,11 +134,7 @@ public class TestMain {
             ByteArrayOutputStream sysout = new ByteArrayOutputStream();
             PrintStream out2 = new PrintStream(sysout);
             System.setOut(out2);
-            Main.main(new String[]{
-                    "copy",
-                    "target/testMainRead.fits",
-                    "target/test-copy.fits"
-            });
+            Main.main(new String[] {"copy", "target/testMainRead.fits", "target/test-copy.fits"});
             out2.flush();
             Assert.assertEquals("\n" + //
                     "\n" + //
@@ -169,7 +160,7 @@ public class TestMain {
                     "         NAXIS2=5" + LS + //
                     "      Data information:" + LS + //
                     "         short[5, 5]" + LS, new String(sysout.toByteArray()));
-            Assert.assertEquals(new File("target/testMainRead.fits").length(),//
+            Assert.assertEquals(new File("target/testMainRead.fits").length(), //
                     new File("target/test-copy.fits").length());
         } finally {
             System.setOut(out);

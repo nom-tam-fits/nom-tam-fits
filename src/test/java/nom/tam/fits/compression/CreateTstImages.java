@@ -56,8 +56,8 @@ public class CreateTstImages {
 
     private static final String FUNPACK = "/home/nir/ws/cfitsio/funpack";
 
-    private static void createCompressedData(int edge, String nr, List<String> types, File fitsFile, File compressedFile, String[] options, String type)
-            throws Exception, IOException {
+    private static void createCompressedData(int edge, String nr, List<String> types, File fitsFile, File compressedFile,
+            String[] options, String type) throws Exception, IOException {
         compressedFile.delete();
         String[] cmdarray = new String[options.length + 3];
         cmdarray[0] = FPACK;
@@ -69,11 +69,9 @@ public class CreateTstImages {
         File gzip2File = new File("target/compress/test" + edge + "Data" + type + nr + ".fits.fz");
         gzip2File.delete();
         compressedFile.renameTo(gzip2File);
-        wait(Runtime.getRuntime().exec(new String[]{
-                FUNPACK,
-                gzip2File.getAbsolutePath()
-        }));
-        new File("target/compress/test" + edge + "Data" + type + nr + ".fits").renameTo(new File("target/compress/test" + edge + "Data" + type + nr + ".fits.uncompressed"));
+        wait(Runtime.getRuntime().exec(new String[] {FUNPACK, gzip2File.getAbsolutePath()}));
+        new File("target/compress/test" + edge + "Data" + type + nr + ".fits")
+                .renameTo(new File("target/compress/test" + edge + "Data" + type + nr + ".fits.uncompressed"));
         types.add(type);
     }
 
@@ -83,34 +81,18 @@ public class CreateTstImages {
         File fitsFile = new File("target/compress/test" + edge + "Data" + nr + ".fits");
         File compressedFile = new File("target/compress/test" + edge + "Data" + nr + ".fits.fz");
 
-        createCompressedData(edge, nr, types, fitsFile, compressedFile, new String[]{
-                "-h",
-                "-s",
-                "0",
-        }, "huf");
+        createCompressedData(edge, nr, types, fitsFile, compressedFile, new String[] {"-h", "-s", "0",}, "huf");
 
-        createCompressedData(edge, nr, types, fitsFile, compressedFile, new String[]{
-                "-h",
-                "-s",
-                "4",
-        }, "4huf");
+        createCompressedData(edge, nr, types, fitsFile, compressedFile, new String[] {"-h", "-s", "4",}, "4huf");
 
-        createCompressedData(edge, nr, types, fitsFile, compressedFile, new String[]{
-                "-r"
-        }, "rise");
+        createCompressedData(edge, nr, types, fitsFile, compressedFile, new String[] {"-r"}, "rise");
 
-        createCompressedData(edge, nr, types, fitsFile, compressedFile, new String[]{
-                "-g2"
-        }, "gzip2");
+        createCompressedData(edge, nr, types, fitsFile, compressedFile, new String[] {"-g2"}, "gzip2");
 
-        createCompressedData(edge, nr, types, fitsFile, compressedFile, new String[]{
-                "-g1"
-        }, "gzip1");
+        createCompressedData(edge, nr, types, fitsFile, compressedFile, new String[] {"-g1"}, "gzip1");
 
         if (nr.equals("8") || nr.equals("16")) {
-            createCompressedData(edge, nr, types, fitsFile, compressedFile, new String[]{
-                    "-p",
-            }, "plio");
+            createCompressedData(edge, nr, types, fitsFile, compressedFile, new String[] {"-p",}, "plio");
         }
         for (String type : types) {
             fitsFile = new File("target/compress/test" + edge + "Data" + type + nr + ".fits.fz");
@@ -153,7 +135,8 @@ public class CreateTstImages {
                     Object data2Org = hdu1.getData().getData();
                     ByteBuffer data2Buffer = getByteData(data2Org);
                     if (notEqual(dataBuffer.array(), data2Buffer.array())) {
-                        file = new RandomAccessFile("target/compress/test" + edge + "Data" + type + nr + ".uncompressed", "rw");
+                        file = new RandomAccessFile("target/compress/test" + edge + "Data" + type + nr + ".uncompressed",
+                                "rw");
                         file.write(data2Buffer.array(), 0, dataBuffer.position());
                         file.close();
                     }
@@ -268,7 +251,8 @@ public class CreateTstImages {
             for (int y = 0; y < edge; y++) {
                 double distX = (x - edge / 2d) / 50d;
                 double distY = (y - edge / 2d) / 50d;
-                double dist = Math.min(Math.sqrt(Math.abs(distX) * Math.abs(distX) + Math.abs(distY) * Math.abs(distY)), 0.999999999999999999999999999999999999);
+                double dist = Math.min(Math.sqrt(Math.abs(distX) * Math.abs(distX) + Math.abs(distY) * Math.abs(distY)),
+                        0.999999999999999999999999999999999999);
                 image[y][x] = (byte) (maxValue - dist * maxValue);
             }
         }
@@ -288,7 +272,8 @@ public class CreateTstImages {
             for (int y = 0; y < edge; y++) {
                 double distX = (x - edge / 2d) / 50d;
                 double distY = (y - edge / 2d) / 50d;
-                double dist = Math.min(Math.sqrt(Math.abs(distX) * Math.abs(distX) + Math.abs(distY) * Math.abs(distY)), 0.999999999999999999999999999999999999);
+                double dist = Math.min(Math.sqrt(Math.abs(distX) * Math.abs(distX) + Math.abs(distY) * Math.abs(distY)),
+                        0.999999999999999999999999999999999999);
                 image[y][x] = maxValue - dist * maxValue + offset;
             }
         }
@@ -308,7 +293,8 @@ public class CreateTstImages {
             for (int y = 0; y < edge; y++) {
                 double distX = (x - edge / 2d) / 50d;
                 double distY = (y - edge / 2d) / 50d;
-                double dist = Math.min(Math.sqrt(Math.abs(distX) * Math.abs(distX) + Math.abs(distY) * Math.abs(distY)), 0.999999999999999999999999999999999999);
+                double dist = Math.min(Math.sqrt(Math.abs(distX) * Math.abs(distX) + Math.abs(distY) * Math.abs(distY)),
+                        0.999999999999999999999999999999999999);
                 image[y][x] = (float) (maxValue - dist * maxValue) + offset;
             }
         }
@@ -328,7 +314,8 @@ public class CreateTstImages {
             for (int y = 0; y < edge; y++) {
                 double distX = (x - edge / 2d) / 50d;
                 double distY = (y - edge / 2d) / 50d;
-                double dist = Math.min(Math.sqrt(Math.abs(distX) * Math.abs(distX) + Math.abs(distY) * Math.abs(distY)), 0.999999999999999999999999999999999999);
+                double dist = Math.min(Math.sqrt(Math.abs(distX) * Math.abs(distX) + Math.abs(distY) * Math.abs(distY)),
+                        0.999999999999999999999999999999999999);
                 image[y][x] = (int) (maxValue - dist * maxValue) + offset;
             }
         }
@@ -348,7 +335,8 @@ public class CreateTstImages {
             for (int y = 0; y < edge; y++) {
                 double distX = (x - edge / 2d) / 50d;
                 double distY = (y - edge / 2d) / 50d;
-                double dist = Math.min(Math.sqrt(Math.abs(distX) * Math.abs(distX) + Math.abs(distY) * Math.abs(distY)), 0.999999999999999999999999999999999999);
+                double dist = Math.min(Math.sqrt(Math.abs(distX) * Math.abs(distX) + Math.abs(distY) * Math.abs(distY)),
+                        0.999999999999999999999999999999999999);
                 image[y][x] = (long) (maxValue - dist * maxValue) + offset;
             }
         }
@@ -368,7 +356,8 @@ public class CreateTstImages {
             for (int y = 0; y < edge; y++) {
                 double distX = (x - edge / 2d) / 50d;
                 double distY = (y - edge / 2d) / 50d;
-                double dist = Math.min(Math.sqrt(Math.abs(distX) * Math.abs(distX) + Math.abs(distY) * Math.abs(distY)), 0.999999999999999999999999999999999999);
+                double dist = Math.min(Math.sqrt(Math.abs(distX) * Math.abs(distX) + Math.abs(distY) * Math.abs(distY)),
+                        0.999999999999999999999999999999999999);
                 image[y][x] = (short) (maxValue - dist * maxValue + offset);
             }
         }

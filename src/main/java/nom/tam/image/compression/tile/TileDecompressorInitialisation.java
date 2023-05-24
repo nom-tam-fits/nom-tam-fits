@@ -54,8 +54,8 @@ final class TileDecompressorInitialisation implements ITileOperationInitialisati
 
     private int compressedOffset = 0;
 
-    protected TileDecompressorInitialisation(TiledImageCompressionOperation imageTilesOperation, Object[] uncompressed, Object[] compressed, Object[] gzipCompressed,
-            IHeaderAccess header) {
+    protected TileDecompressorInitialisation(TiledImageCompressionOperation imageTilesOperation, Object[] uncompressed,
+            Object[] compressed, Object[] gzipCompressed, IHeaderAccess header) {
         this.imageTilesOperation = imageTilesOperation;
         this.uncompressed = uncompressed;
         this.compressed = compressed;
@@ -71,15 +71,17 @@ final class TileDecompressorInitialisation implements ITileOperationInitialisati
     @Override
     public void init(TileCompressionOperation tileOperation) {
         tileOperation.setCompressedOffset(compressedOffset)//
-        .setCompressed(compressed != null ? compressed[tileOperation.getTileIndex()] : null, COMPRESSED)//
-        .setCompressed(uncompressed != null ? uncompressed[tileOperation.getTileIndex()] : null, UNCOMPRESSED)//
-        .setCompressed(gzipCompressed != null ? gzipCompressed[tileOperation.getTileIndex()] : null, GZIP_COMPRESSED);
+                .setCompressed(compressed != null ? compressed[tileOperation.getTileIndex()] : null, COMPRESSED)//
+                .setCompressed(uncompressed != null ? uncompressed[tileOperation.getTileIndex()] : null, UNCOMPRESSED)//
+                .setCompressed(gzipCompressed != null ? gzipCompressed[tileOperation.getTileIndex()] : null,
+                        GZIP_COMPRESSED);
         tileOperation.createImageNullPixelMask(imageTilesOperation.getImageNullPixelMask());
         compressedOffset += tileOperation.getPixelSize();
     }
 
     @Override
     public void tileCount(int tileCount) throws FitsException {
-        imageTilesOperation.compressOptions().getCompressionParameters().initializeColumns(header, imageTilesOperation.getBinaryTable(), tileCount);
+        imageTilesOperation.compressOptions().getCompressionParameters().initializeColumns(header,
+                imageTilesOperation.getBinaryTable(), tileCount);
     }
 }

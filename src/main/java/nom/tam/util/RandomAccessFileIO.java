@@ -38,11 +38,9 @@ import java.io.RandomAccessFile;
 import java.nio.channels.FileChannel;
 
 /**
- * Minimal interface for underlying data object that supports random access. The
- * methods defined here are those used by FitsFile to access a RandomAccessFile.
- * The RandomAccessFileExt class adds this interface to RandomAccessFile, but
- * other systems could provide an alternate implementation of this interface to
- * access an arbitrary FITS data object.
+ * Minimal interface for underlying data object that supports random access. The methods defined here are those used by
+ * FitsFile to access a RandomAccessFile. The RandomAccessFileExt class adds this interface to RandomAccessFile, but
+ * other systems could provide an alternate implementation of this interface to access an arbitrary FITS data object.
  *
  * @author pdowler
  */
@@ -55,10 +53,10 @@ public interface RandomAccessFileIO extends ReadWriteAccess, Closeable {
     String readUTF() throws IOException;
 
     /**
-     * Obtain the current FileChannel instance. For instances that do not use
-     * File backed sources
+     * Obtain the current FileChannel instance. For instances that do not use File backed sources
      *
-     * @see RandomAccessFile#getChannel()
+     * @see    RandomAccessFile#getChannel()
+     *
      * @return FileChannel instance, possibly null.
      */
     FileChannel getChannel();
@@ -66,10 +64,11 @@ public interface RandomAccessFileIO extends ReadWriteAccess, Closeable {
     /**
      * Obtain the current FileDescriptor instance.
      *
-     * @see RandomAccessFile#getFD()
-     * @return FileDescriptor instance, or possibly null.
-     * @throws IOException
-     *             For any I/O errors.
+     * @see                RandomAccessFile#getFD()
+     *
+     * @return             FileDescriptor instance, or possibly null.
+     *
+     * @throws IOException For any I/O errors.
      */
     FileDescriptor getFD() throws IOException;
 

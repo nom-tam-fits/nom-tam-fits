@@ -67,10 +67,9 @@ import static nom.tam.fits.header.Standard.REFERENC;
 import static nom.tam.fits.header.Standard.TELESCOP;
 
 /**
- * Test the ImageHDU, ImageData and ImageTiler classes. - multiple HDUs in a
- * single file - deferred input of HDUs - creating and reading arrays of all
- * permitted types. - Tiles of 1, 2 and 3 dimensions - from a file - from
- * internal data - Multiple tiles extracted from an image.
+ * Test the ImageHDU, ImageData and ImageTiler classes. - multiple HDUs in a single file - deferred input of HDUs -
+ * creating and reading arrays of all permitted types. - Tiles of 1, 2 and 3 dimensions - from a file - from internal
+ * data - Multiple tiles extracted from an image.
  */
 public class ImageTest {
 

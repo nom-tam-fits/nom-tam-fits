@@ -49,11 +49,11 @@ import nom.tam.util.type.ElementType;
  * java by R. van Nieuwenhoven. Later it was massively refactored to harmonize the different compression algorithms and
  * reduce the duplicate code pieces without obscuring the algorithm itself as far as possible.
  *
- * @author Richard White
- * @author William Pence
- * @author Richard van Nieuwenhoven
+ * @author     Richard White
+ * @author     William Pence
+ * @author     Richard van Nieuwenhoven
  *
- * @param <T> the genetic type of NIO buffer on which this compressor operates.
+ * @param  <T> the genetic type of NIO buffer on which this compressor operates.
  */
 public abstract class RiceCompressor<T extends Buffer> implements ICompressor<T> {
 
@@ -68,8 +68,7 @@ public abstract class RiceCompressor<T extends Buffer> implements ICompressor<T>
         @Override
         public boolean compress(ByteBuffer buffer, ByteBuffer writeBuffer) {
             pixelBuffer = buffer;
-            super.compress(buffer.limit(), pixelBuffer.get(pixelBuffer.position()),
-                    new BitBuffer(writeBuffer));
+            super.compress(buffer.limit(), pixelBuffer.get(pixelBuffer.position()), new BitBuffer(writeBuffer));
             return true;
         }
 
@@ -113,8 +112,7 @@ public abstract class RiceCompressor<T extends Buffer> implements ICompressor<T>
         @Override
         public boolean compress(IntBuffer buffer, ByteBuffer writeBuffer) {
             pixelBuffer = buffer;
-            super.compress(buffer.limit(), pixelBuffer.get(pixelBuffer.position()),
-                    new BitBuffer(writeBuffer));
+            super.compress(buffer.limit(), pixelBuffer.get(pixelBuffer.position()), new BitBuffer(writeBuffer));
             return true;
         }
 
@@ -146,8 +144,7 @@ public abstract class RiceCompressor<T extends Buffer> implements ICompressor<T>
         @Override
         public boolean compress(ShortBuffer buffer, ByteBuffer writeBuffer) {
             pixelBuffer = buffer;
-            super.compress(buffer.limit(), pixelBuffer.get(pixelBuffer.position()),
-                    new BitBuffer(writeBuffer));
+            super.compress(buffer.limit(), pixelBuffer.get(pixelBuffer.position()), new BitBuffer(writeBuffer));
             return true;
         }
 
@@ -212,14 +209,14 @@ public abstract class RiceCompressor<T extends Buffer> implements ICompressor<T>
      *
      * @formatter:off
      */
-    private static final int[] NONZERO_COUNT = {0, 1, 2, 2, 3, 3, 3, 3, 4, 4, 4, 4, 4, 4, 4, 4, 5, 5, 5, 5, 5, 5, 5, 5,
-            5, 5, 5, 5, 5, 5, 5, 5, 6, 6, 6, 6, 6, 6, 6, 6, 6, 6, 6, 6, 6, 6, 6, 6, 6, 6, 6, 6, 6, 6, 6, 6, 6, 6, 6, 6,
-            6, 6, 6, 6, 7, 7, 7, 7, 7, 7, 7, 7, 7, 7, 7, 7, 7, 7, 7, 7, 7, 7, 7, 7, 7, 7, 7, 7, 7, 7, 7, 7, 7, 7, 7, 7,
-            7, 7, 7, 7, 7, 7, 7, 7, 7, 7, 7, 7, 7, 7, 7, 7, 7, 7, 7, 7, 7, 7, 7, 7, 7, 7, 7, 7, 7, 7, 7, 7, 8, 8, 8, 8,
-            8, 8, 8, 8, 8, 8, 8, 8, 8, 8, 8, 8, 8, 8, 8, 8, 8, 8, 8, 8, 8, 8, 8, 8, 8, 8, 8, 8, 8, 8, 8, 8, 8, 8, 8, 8,
-            8, 8, 8, 8, 8, 8, 8, 8, 8, 8, 8, 8, 8, 8, 8, 8, 8, 8, 8, 8, 8, 8, 8, 8, 8, 8, 8, 8, 8, 8, 8, 8, 8, 8, 8, 8,
-            8, 8, 8, 8, 8, 8, 8, 8, 8, 8, 8, 8, 8, 8, 8, 8, 8, 8, 8, 8, 8, 8, 8, 8, 8, 8, 8, 8, 8, 8, 8, 8, 8, 8, 8, 8,
-            8, 8, 8, 8, 8, 8, 8, 8, 8, 8, 8, 8, 8, 8, 8, 8};
+    private static final int[] NONZERO_COUNT = {0, 1, 2, 2, 3, 3, 3, 3, 4, 4, 4, 4, 4, 4, 4, 4, 5, 5, 5, 5, 5, 5, 5, 5, 5,
+            5, 5, 5, 5, 5, 5, 5, 6, 6, 6, 6, 6, 6, 6, 6, 6, 6, 6, 6, 6, 6, 6, 6, 6, 6, 6, 6, 6, 6, 6, 6, 6, 6, 6, 6, 6, 6,
+            6, 6, 7, 7, 7, 7, 7, 7, 7, 7, 7, 7, 7, 7, 7, 7, 7, 7, 7, 7, 7, 7, 7, 7, 7, 7, 7, 7, 7, 7, 7, 7, 7, 7, 7, 7, 7,
+            7, 7, 7, 7, 7, 7, 7, 7, 7, 7, 7, 7, 7, 7, 7, 7, 7, 7, 7, 7, 7, 7, 7, 7, 7, 7, 7, 7, 7, 8, 8, 8, 8, 8, 8, 8, 8,
+            8, 8, 8, 8, 8, 8, 8, 8, 8, 8, 8, 8, 8, 8, 8, 8, 8, 8, 8, 8, 8, 8, 8, 8, 8, 8, 8, 8, 8, 8, 8, 8, 8, 8, 8, 8, 8,
+            8, 8, 8, 8, 8, 8, 8, 8, 8, 8, 8, 8, 8, 8, 8, 8, 8, 8, 8, 8, 8, 8, 8, 8, 8, 8, 8, 8, 8, 8, 8, 8, 8, 8, 8, 8, 8,
+            8, 8, 8, 8, 8, 8, 8, 8, 8, 8, 8, 8, 8, 8, 8, 8, 8, 8, 8, 8, 8, 8, 8, 8, 8, 8, 8, 8, 8, 8, 8, 8, 8, 8, 8, 8, 8,
+            8, 8, 8, 8, 8, 8, 8, 8, 8};
     // @formatter:on
 
     private final int bBits;
@@ -265,10 +262,10 @@ public abstract class RiceCompressor<T extends Buffer> implements ICompressor<T>
      * In java this is more complicated because of the missing unsigned integers. trying to simulate the behavior
      * </p>
      *
-     * @param lastpix the current last pix value
-     * @param diff the difference to "add"
+     * @param  lastpix the current last pix value
+     * @param  diff    the difference to "add"
      *
-     * @return return the new lastpiy value
+     * @return         return the new lastpiy value
      */
     private long undoMappingAndDifferencing(long lastpix, long diff) {
         diff &= UNSIGNED_INTEGER_MASK;
@@ -287,7 +284,7 @@ public abstract class RiceCompressor<T extends Buffer> implements ICompressor<T>
      *
      * @param dataLength length of the data to compress
      * @param firstPixel the value of the first pixel
-     * @param buffer the buffer to write to
+     * @param buffer     the buffer to write to
      */
     protected void compress(final int dataLength, int firstPixel, BitBuffer buffer) {
         /* the first difference will always be zero */
@@ -365,36 +362,36 @@ public abstract class RiceCompressor<T extends Buffer> implements ICompressor<T>
                 for (int j = 0; j < thisblock; j++) {
                     int v = (int) diff[j];
                     int top = v >> fs;
-                /*
-                 * top is coded by top zeros + 1
-                 */
-                if (bitsToGo >= top + 1) {
-                    bitBuffer <<= top + 1;
-                    bitBuffer |= 1;
-                    bitsToGo -= top + 1;
-                } else {
-                    bitBuffer <<= bitsToGo;
-                    buffer.putByte((byte) (bitBuffer & BYTE_MASK));
-                    for (top -= bitsToGo; top >= BITS_OF_1_BYTE; top -= BITS_OF_1_BYTE) {
-                        buffer.putByte((byte) 0);
+                    /*
+                     * top is coded by top zeros + 1
+                     */
+                    if (bitsToGo >= top + 1) {
+                        bitBuffer <<= top + 1;
+                        bitBuffer |= 1;
+                        bitsToGo -= top + 1;
+                    } else {
+                        bitBuffer <<= bitsToGo;
+                        buffer.putByte((byte) (bitBuffer & BYTE_MASK));
+                        for (top -= bitsToGo; top >= BITS_OF_1_BYTE; top -= BITS_OF_1_BYTE) {
+                            buffer.putByte((byte) 0);
+                        }
+                        bitBuffer = 1;
+                        bitsToGo = BITS_OF_1_BYTE - 1 - top;
                     }
-                    bitBuffer = 1;
-                    bitsToGo = BITS_OF_1_BYTE - 1 - top;
-                }
-                /*
-                 * bottom FS bits are written without coding code is output_nbits, moved into this routine to reduce
-                 * overheads This code potentially breaks if FS>24, so I am limiting FS to 24 by choice of FSMAX
-                 * above.
-                 */
-                if (fs > 0) {
-                    bitBuffer <<= fs;
-                    bitBuffer |= v & fsmask;
-                    bitsToGo -= fs;
-                    while (bitsToGo <= 0) {
-                        buffer.putByte((byte) (bitBuffer >> -bitsToGo & BYTE_MASK));
-                        bitsToGo += BITS_OF_1_BYTE;
+                    /*
+                     * bottom FS bits are written without coding code is output_nbits, moved into this routine to reduce
+                     * overheads This code potentially breaks if FS>24, so I am limiting FS to 24 by choice of FSMAX
+                     * above.
+                     */
+                    if (fs > 0) {
+                        bitBuffer <<= fs;
+                        bitBuffer |= v & fsmask;
+                        bitsToGo -= fs;
+                        while (bitsToGo <= 0) {
+                            buffer.putByte((byte) (bitBuffer >> -bitsToGo & BYTE_MASK));
+                            bitsToGo += BITS_OF_1_BYTE;
+                        }
                     }
-                }
                 }
                 buffer.putByte((byte) (bitBuffer & BYTE_MASK), BITS_OF_1_BYTE - bitsToGo);
             }
@@ -406,7 +403,7 @@ public abstract class RiceCompressor<T extends Buffer> implements ICompressor<T>
      * decompress the readbuffer and fill the pixelarray.
      *
      * @param readBuffer input buffer
-     * @param nx the number of pixel to uncompress
+     * @param nx         the number of pixel to uncompress
      */
     protected void decompressBuffer(final ByteBuffer readBuffer, final int nx) {
         /* first x bytes of input buffer contain the value of the first */
@@ -454,7 +451,7 @@ public abstract class RiceCompressor<T extends Buffer> implements ICompressor<T>
                     if (nbits > 0) {
                         b = readBuffer.get() & BYTE_MASK;
                         diff |= b >>> -k;
-                    b &= (1 << nbits) - 1L;
+                        b &= (1 << nbits) - 1L;
                     } else {
                         b = 0;
                     }

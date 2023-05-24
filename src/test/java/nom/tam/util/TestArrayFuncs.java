@@ -35,7 +35,8 @@ import java.util.Arrays;
 
 public class TestArrayFuncs {
 
-    private TestArrayFuncs(){}
+    private TestArrayFuncs() {
+    }
 
     /** Compare two double arrays using a given tolerance */
     public static boolean doubleArrayEquals(double[] x, double[] y, double tol) {
@@ -52,26 +53,22 @@ public class TestArrayFuncs {
     }
 
     /**
-     * Are two objects equal? Arrays have the standard object equals method
-     * which only returns true if the two object are the same. This method
-     * returns true if every element of the arrays match. The inputs may be of
-     * any dimensionality. The dimensionality and dimensions of the arrays must
-     * match as well as any elements. If the elements are non-primitive.
-     * non-tiledImageOperation objects, then the equals method is called for each element. If
-     * both elements are multi-dimensional arrays, then the method recurses.
+     * Are two objects equal? Arrays have the standard object equals method which only returns true if the two object
+     * are the same. This method returns true if every element of the arrays match. The inputs may be of any
+     * dimensionality. The dimensionality and dimensions of the arrays must match as well as any elements. If the
+     * elements are non-primitive. non-tiledImageOperation objects, then the equals method is called for each element.
+     * If both elements are multi-dimensional arrays, then the method recurses.
      */
     public static boolean arrayEquals(Object x, Object y) {
         return arrayEquals(x, y, 0, 0);
     }
 
     /**
-     * Are two objects equal? Arrays have the standard object equals method
-     * which only returns true if the two object are the same. This method
-     * returns true if every element of the arrays match. The inputs may be of
-     * any dimensionality. The dimensionality and dimensions of the arrays must
-     * match as well as any elements. If the elements are non-primitive.
-     * non-tiledImageOperation objects, then the equals method is called for each element. If
-     * both elements are multi-dimensional arrays, then the method recurses.
+     * Are two objects equal? Arrays have the standard object equals method which only returns true if the two object
+     * are the same. This method returns true if every element of the arrays match. The inputs may be of any
+     * dimensionality. The dimensionality and dimensions of the arrays must match as well as any elements. If the
+     * elements are non-primitive. non-tiledImageOperation objects, then the equals method is called for each element.
+     * If both elements are multi-dimensional arrays, then the method recurses.
      */
     public static boolean arrayEquals(Object x, Object y, double tolf, double told) {
 
@@ -108,7 +105,8 @@ public class TestArrayFuncs {
                 return doubleArrayEquals((double[]) x, (double[]) y, told);
             }
 
-        } else if (xClass.equals(long[].class)) {
+        }
+        if (xClass.equals(long[].class)) {
             return Arrays.equals((long[]) x, (long[]) y);
 
         } else if (xClass.equals(float[].class)) {
@@ -164,13 +162,11 @@ public class TestArrayFuncs {
     }
 
     /**
-     * Just create a simple pattern cycling through valid byte values. We use
-     * bytes because they can be cast to any other numeric type.
+     * Just create a simple pattern cycling through valid byte values. We use bytes because they can be cast to any
+     * other numeric type.
      *
-     * @param o
-     *            The tiledImageOperation in which the test pattern is to be set.
-     * @param start
-     *            The value for the first element.
+     * @param o     The tiledImageOperation in which the test pattern is to be set.
+     * @param start The value for the first element.
      */
     public static byte testPattern(Object o, byte start) {
 
@@ -192,12 +188,11 @@ public class TestArrayFuncs {
     /**
      * Create an tiledImageOperation and populate it with a test pattern.
      *
-     * @param baseType
-     *            The base type of the tiledImageOperation. This is expected to be a numeric
-     *            type, but this is not checked.
-     * @param dims
-     *            The desired dimensions.
-     * @return An tiledImageOperation object populated with a simple test pattern.
+     * @param  baseType The base type of the tiledImageOperation. This is expected to be a numeric type, but this is not
+     *                      checked.
+     * @param  dims     The desired dimensions.
+     *
+     * @return          An tiledImageOperation object populated with a simple test pattern.
      */
     public static Object generateArray(Class<?> baseType, int[] dims) {
 

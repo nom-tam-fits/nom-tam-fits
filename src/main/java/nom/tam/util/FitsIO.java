@@ -37,8 +37,8 @@ import java.io.IOException;
 import nom.tam.fits.FitsFactory;
 
 /**
- * super closable interface for all fits reader/writers. It defines the
- * necessary constants common for all reader and writers.
+ * super closable interface for all fits reader/writers. It defines the necessary constants common for all reader and
+ * writers.
  *
  * @author ritchie
  */
@@ -126,8 +126,7 @@ public interface FitsIO extends Closeable {
     int BYTES_IN_DOUBLE = 8;
 
     /**
-     * bit mask to get the lowest byte from an integer. Or to get an unsigned
-     * integer from a byte.
+     * bit mask to get the lowest byte from an integer. Or to get an unsigned integer from a byte.
      */
     int BYTE_MASK = 0xFF;
 

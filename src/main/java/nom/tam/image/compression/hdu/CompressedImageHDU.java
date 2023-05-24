@@ -55,39 +55,36 @@ import static nom.tam.fits.header.Compression.ZIMAGE;
 import static nom.tam.fits.header.Standard.BLANK;
 
 /**
- * A compressed image is a normal binary table with a defined structure. The
- * image is split in tiles and each tile is compressed on its own. The
- * compressed data is then stored in the 3 data columns of this binary table
- * (compressed, gzipped and uncompressed) depending on the compression type used
- * in the tile.
+ * A compressed image is a normal binary table with a defined structure. The image is split in tiles and each tile is
+ * compressed on its own. The compressed data is then stored in the 3 data columns of this binary table (compressed,
+ * gzipped and uncompressed) depending on the compression type used in the tile.
  */
 public class CompressedImageHDU extends BinaryTableHDU {
     public static final int MAX_NAXIS_ALLOWED = 999;
 
     /**
-     * keys that are only valid in tables and should not go into the
-     * uncompressed image.
+     * keys that are only valid in tables and should not go into the uncompressed image.
      */
-    static final List<IFitsHeader> TABLE_COLUMN_KEYS = Collections.unmodifiableList(Arrays.asList(binaryTableColumnKeyStems()));
+    static final List<IFitsHeader> TABLE_COLUMN_KEYS = Collections
+            .unmodifiableList(Arrays.asList(binaryTableColumnKeyStems()));
 
     static final Map<IFitsHeader, BackupRestoreUnCompressedHeaderCard> COMPRESSED_HEADER_MAPPING = new HashMap<>();
 
     static final Map<IFitsHeader, BackupRestoreUnCompressedHeaderCard> UNCOMPRESSED_HEADER_MAPPING = new HashMap<>();
 
     /**
-     * Prepare a compressed image hdu for the specified image. the tile axis
-     * that are specified with -1 default to tiling by rows.
+     * Prepare a compressed image hdu for the specified image. the tile axis that are specified with -1 default to
+     * tiling by rows.
      *
-     * @param imageHDU
-     *            the image to compress
-     * @param tileAxis
-     *            the requested tile sizes in pixels in x, y, z... order (i.e. opposite of the Java array
-     *            indexing order!). The actual tile sizes that are set might be different, e.g. to fit
-     *            within the image bounds and/or to conform to tiling conventions (esp. in more than
-     *            2 dimensions).
-     * @return the prepared compressed image hdu.
-     * @throws FitsException
-     *             if the image could not be used to create a compressed image.
+     * @param  imageHDU      the image to compress
+     * @param  tileAxis      the requested tile sizes in pixels in x, y, z... order (i.e. opposite of the Java array
+     *                           indexing order!). The actual tile sizes that are set might be different, e.g. to fit
+     *                           within the image bounds and/or to conform to tiling conventions (esp. in more than 2
+     *                           dimensions).
+     *
+     * @return               the prepared compressed image hdu.
+     *
+     * @throws FitsException if the image could not be used to create a compressed image.
      */
     public static CompressedImageHDU fromImageHDU(ImageHDU imageHDU, int... tileAxis) throws FitsException {
         Header header = new Header();
@@ -127,9 +124,9 @@ public class CompressedImageHDU extends BinaryTableHDU {
     /**
      * Check that this HDU has a valid header for this type.
      *
-     * @param hdr
-     *            header to check
-     * @return <CODE>true</CODE> if this HDU has a valid header.
+     * @param  hdr header to check
+     *
+     * @return     <CODE>true</CODE> if this HDU has a valid header.
      */
     public static boolean isHeader(Header hdr) {
         return hdr.getBooleanValue(ZIMAGE, false);
@@ -154,10 +151,11 @@ public class CompressedImageHDU extends BinaryTableHDU {
     /**
      * Given this compressed HDU, get the original (decompressed) axes.
      *
-     * @return the dimensions of the axis.
-     * @throws FitsException
-     *             if the axis are configured wrong.
-     * @since 1.18
+     * @return               the dimensions of the axis.
+     *
+     * @throws FitsException if the axis are configured wrong.
+     *
+     * @since                1.18
      */
     public int[] getImageAxes() throws FitsException {
         int nAxis = myHeader.getIntValue(Compression.ZNAXIS);
@@ -182,10 +180,12 @@ public class CompressedImageHDU extends BinaryTableHDU {
 
     /**
      * Obtain a header representative of a decompressed ImageHDU.
-     * @return Header with decompressed cards.
-     * @throws HeaderCardException
-     *          if the card could not be copied
-     * @since 1.18
+     *
+     * @return                     Header with decompressed cards.
+     *
+     * @throws HeaderCardException if the card could not be copied
+     *
+     * @since                      1.18
      */
     public Header getImageHeader() throws HeaderCardException {
         Header header = new Header();
@@ -205,21 +205,16 @@ public class CompressedImageHDU extends BinaryTableHDU {
     }
 
     /**
-     * Specify an areaWithin the image that will not undergo a lossy
-     * compression. This will only have affect it the selected compression
-     * (including the options) is a lossy compression. All tiles touched by this
-     * region will be handled so that there is no loss of any data, the
-     * reconstruction will be exact.
+     * Specify an areaWithin the image that will not undergo a lossy compression. This will only have affect it the
+     * selected compression (including the options) is a lossy compression. All tiles touched by this region will be
+     * handled so that there is no loss of any data, the reconstruction will be exact.
      *
-     * @param x
-     *            the x position in the image
-     * @param y
-     *            the y position in the image
-     * @param width
-     *            the width of the area
-     * @param heigth
-     *            the height of the area
-     * @return this
+     * @param  x      the x position in the image
+     * @param  y      the y position in the image
+     * @param  width  the width of the area
+     * @param  heigth the height of the area
+     *
+     * @return        this
      */
     public CompressedImageHDU forceNoLoss(int x, int y, int width, int heigth) {
         getData().forceNoLoss(x, y, width, heigth);
@@ -250,13 +245,12 @@ public class CompressedImageHDU extends BinaryTableHDU {
     }
 
     /**
-     * preserve the null values in the image even if the compression algorithm
-     * is lossy. I the image that will be compressed a BLANK header should be
-     * available if the pixel value is one of the integer types.
+     * preserve the null values in the image even if the compression algorithm is lossy. I the image that will be
+     * compressed a BLANK header should be available if the pixel value is one of the integer types.
      *
-     * @param compressionAlgorithm
-     *            compression algorithm to use for the null pixel mask
-     * @return this
+     * @param  compressionAlgorithm compression algorithm to use for the null pixel mask
+     *
+     * @return                      this
      */
     public CompressedImageHDU preserveNulls(String compressionAlgorithm) {
         long nullValue = getHeader().getLongValue(BLANK, Long.MIN_VALUE);

@@ -77,14 +77,13 @@ public class GetHDUByNameTest {
         }
     }
 
-
     @After
     public void after() {
         try {
             new File(extensionFile).delete();
-        } catch (Exception e) {}
+        } catch (Exception e) {
+        }
     }
-
 
     private BasicHDU<?> makeExtension(String name, int version) throws Exception {
         int[][] im = new int[2][2];
@@ -97,7 +96,6 @@ public class GetHDUByNameTest {
         }
         return hdu;
     }
-
 
     @Test
     public void testGetHDUByName() throws Exception {
@@ -126,7 +124,7 @@ public class GetHDUByNameTest {
     public void testGetHDUByNameIgnoreVersion() throws Exception {
         try (Fits fits = new Fits(new File(extensionFile))) {
 
-            BasicHDU<?> hdu = fits.getHDU("EXTB");      // All
+            BasicHDU<?> hdu = fits.getHDU("EXTB"); // All
             assertNotNull(hdu);
             assertEquals("EXTB", hdu.getHeader().getStringValue(EXTNAME));
             assertEquals(1, hdu.getHeader().getIntValue(EXTVER));

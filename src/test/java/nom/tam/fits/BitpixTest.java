@@ -43,7 +43,6 @@ import nom.tam.fits.header.Bitpix;
 
 public class BitpixTest {
 
-
     @Test
     public void testByteID() throws Exception {
         assertEquals('B', Bitpix.BYTE.getArrayID());

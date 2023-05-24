@@ -54,10 +54,9 @@ import nom.tam.util.FitsOutputStream;
 import nom.tam.util.SafeClose;
 
 /**
- * This class tests the ImageTiler. It first creates a FITS file and then reads
- * it back and allows the user to select tiles. The values of the corner and
- * center pixels for the selected tile are displayed. Both file and memory tiles
- * are checked.
+ * This class tests the ImageTiler. It first creates a FITS file and then reads it back and allows the user to select
+ * tiles. The values of the corner and center pixels for the selected tile are displayed. Both file and memory tiles are
+ * checked.
  */
 public class TilerTest {
 
@@ -65,13 +64,7 @@ public class TilerTest {
 
         Class<?> baseClass = ArrayFuncs.getBaseClass(data);
         Object tile = Array.newInstance(baseClass, nx * ny);
-        t.getTile(tile, new int[]{
-                y,
-                x
-        }, new int[]{
-                ny,
-                nx
-        });
+        t.getTile(tile, new int[] {y, x}, new int[] {ny, nx});
 
         float sum0 = 0;
         float sum1 = 0;
@@ -98,13 +91,7 @@ public class TilerTest {
 
     private void doTile2(String test, Object data, StandardImageTiler t, int x, int y, int nx, int ny) throws Exception {
 
-        Object tile = t.getTile(new int[]{
-                y,
-                x
-        }, new int[]{
-                ny,
-                nx
-        });
+        Object tile = t.getTile(new int[] {y, x}, new int[] {ny, nx});
 
         float sum0 = 0;
         float sum1 = 0;
@@ -123,23 +110,16 @@ public class TilerTest {
         assertEquals("Tiler" + test, sum0, sum1, 0);
     }
 
-    private void doTile3(final String test, final Object data, final ImageTiler t, final int x, final int y,
-            final int nx, final int ny) throws Exception {
+    private void doTile3(final String test, final Object data, final ImageTiler t, final int x, final int y, final int nx,
+            final int ny) throws Exception {
         final ByteArrayOutputStream byteArrayOutputStream = new ByteArrayOutputStream();
         final ArrayDataOutput output = new FitsOutputStream(byteArrayOutputStream);
 
-        t.getTile(output, new int[]{
-                y,
-                x
-        }, new int[]{
-                ny,
-                nx
-        });
+        t.getTile(output, new int[] {y, x}, new int[] {ny, nx});
 
         float resultSum = 0;
         float expectedSum = 0;
-        final ByteArrayInputStream byteArrayInputStream =
-                new ByteArrayInputStream(byteArrayOutputStream.toByteArray());
+        final ByteArrayInputStream byteArrayInputStream = new ByteArrayInputStream(byteArrayOutputStream.toByteArray());
         final ArrayDataInput input = new FitsInputStream(byteArrayInputStream);
         final Class<?> type = ArrayFuncs.getBaseClass(data);
         final Object testOutput = ArrayFuncs.newInstance(type, ny * nx);
@@ -286,12 +266,7 @@ public class TilerTest {
 
             expected = null;
             try {
-                t.getTile(new int[]{
-                        10,
-                        10
-                }, new int[]{
-                        20
-                });
+                t.getTile(new int[] {10, 10}, new int[] {20});
             } catch (IOException e) {
                 expected = e;
             }

@@ -66,7 +66,7 @@ public class ComplexValueTest {
         FlexFormat f = new FlexFormat();
         ComplexValue z;
 
-        for(int i=0; i<100; i++) {
+        for (int i = 0; i < 100; i++) {
             double re = random.nextDouble();
             double im = random.nextDouble();
             int decimals = random.nextInt(FlexFormat.DOUBLE_DECIMALS);
@@ -101,7 +101,6 @@ public class ComplexValueTest {
 
             assertNotEquals(z, f);
         }
-
 
         z = new ComplexValue(Double.NaN, -1.0);
         assertFalse("NaN1", z.isFinite());
@@ -155,8 +154,8 @@ public class ComplexValueTest {
     public void testComplexFromString() throws Exception {
         // Missing brackets
         ComplexValue z = new ComplexValue("(5566.2,-1123.1)");
-        assertEquals(5566.2, z.re(), 1-10);
-        assertEquals(-1123.1, z.im(), 1-10);
+        assertEquals(5566.2, z.re(), 1 - 10);
+        assertEquals(-1123.1, z.im(), 1 - 10);
     }
 
     @Test(expected = IllegalArgumentException.class)
@@ -263,7 +262,6 @@ public class ComplexValueTest {
         assertEquals(0.0, z.im(), 1e-10);
     }
 
-
     @Test
     public void testComplexCard() throws Exception {
         HeaderCard hc = new HeaderCard("COMPLEX", new ComplexValue(1.0, -2.0));
@@ -275,7 +273,6 @@ public class ComplexValueTest {
 
         assertEquals(1.0, z.re(), 1e-12);
         assertEquals(-2.0, z.im(), 1e-12);
-
 
         hc = new HeaderCard("COMPLEX", new ComplexValue(1.0, -2.0), 12, "comment");
 
@@ -358,8 +355,8 @@ public class ComplexValueTest {
     @Test(expected = HeaderCardException.class)
     public void testNoSpaceComplexCard() throws Exception {
         FitsFactory.setUseHierarch(true);
-        new HeaderCard("HIERARCH.SOME.VERY.LONG.COMPLEX.KEYWORD.TAKING.UP.THE.SPACE",
-                new ComplexValue(Math.PI, -Math.PI), 16, "comment");
+        new HeaderCard("HIERARCH.SOME.VERY.LONG.COMPLEX.KEYWORD.TAKING.UP.THE.SPACE", new ComplexValue(Math.PI, -Math.PI),
+                16, "comment");
     }
 
     @Test
@@ -370,7 +367,7 @@ public class ComplexValueTest {
         try {
             hc = new HeaderCard("HIERARCH.SOME.VERY.LONG.COMPLEX.KEYWORD.TAKING.UP.ALL.THE.SPACE", true, "comment");
             hc.setValue(new ComplexValue(0.0, 0.0));
-        } catch(HeaderCardException e) {
+        } catch (HeaderCardException e) {
 
         }
 
@@ -381,11 +378,10 @@ public class ComplexValueTest {
         try {
             // This should throw an expcetion as there is no space for the value...
             hc.setValue(new ComplexValue(Math.PI, -Math.PI), 16);
-        } catch(LongValueException e) {
+        } catch (LongValueException e) {
             thrown = true;
         }
         assertTrue(thrown);
     }
-
 
 }

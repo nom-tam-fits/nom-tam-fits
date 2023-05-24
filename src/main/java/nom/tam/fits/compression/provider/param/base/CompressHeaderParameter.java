@@ -38,7 +38,8 @@ import nom.tam.fits.compression.provider.param.api.IHeaderAccess;
 import static nom.tam.fits.header.Compression.ZNAMEn;
 import static nom.tam.fits.header.Compression.ZVALn;
 
-public abstract class CompressHeaderParameter<OPTION> extends CompressParameter<OPTION> implements ICompressHeaderParameter {
+public abstract class CompressHeaderParameter<OPTION> extends CompressParameter<OPTION>
+        implements ICompressHeaderParameter {
 
     protected CompressHeaderParameter(String name, OPTION option) {
         super(name, option);

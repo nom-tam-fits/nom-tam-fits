@@ -38,12 +38,11 @@ import java.util.Arrays;
 import edu.umd.cs.findbugs.annotations.SuppressFBWarnings;
 
 /**
- * A class for reading and writing into byte arrays with a stream-like
- * interface.
+ * A class for reading and writing into byte arrays with a stream-like interface.
  *
  * @author Attila Kovacs
  *
- * @since 1.16
+ * @since  1.16
  */
 public class ByteArrayIO implements ReadWriteAccess {
 
@@ -63,10 +62,10 @@ public class ByteArrayIO implements ReadWriteAccess {
     private int end;
 
     /**
-     * Instantiates a new byte array with an IO interface, with a fixed-size buffer using the
-     * specified array as its backing storage.
+     * Instantiates a new byte array with an IO interface, with a fixed-size buffer using the specified array as its
+     * backing storage.
      *
-     * @param buffer        the fixed buffer.
+     * @param buffer the fixed buffer.
      */
     @SuppressFBWarnings(value = "EI_EXPOSE_REP2", justification = "by design this class provides an IO interface for an accessible array.")
     public ByteArrayIO(byte[] buffer) {
@@ -76,12 +75,11 @@ public class ByteArrayIO implements ReadWriteAccess {
     }
 
     /**
-     * Instantiates a new byte array with an IO interface, with a growable buffer initialized
-     * to the specific size.
+     * Instantiates a new byte array with an IO interface, with a growable buffer initialized to the specific size.
      *
-     * @param initialCapacity       the number of bytes to contain in the buffer.
-     * @throws IllegalArgumentException
-     *                              if the initial capacity is 0 or negative
+     * @param  initialCapacity          the number of bytes to contain in the buffer.
+     *
+     * @throws IllegalArgumentException if the initial capacity is 0 or negative
      */
     public ByteArrayIO(int initialCapacity) throws IllegalArgumentException {
         if (initialCapacity <= 0) {
@@ -94,10 +92,9 @@ public class ByteArrayIO implements ReadWriteAccess {
     }
 
     /**
-     * Returns a copy of this byte array with an IO interface, including a deep copy of
-     * the buffered data.
+     * Returns a copy of this byte array with an IO interface, including a deep copy of the buffered data.
      *
-     * @return      a deep copy of this byte array with an IO interface instance.
+     * @return a deep copy of this byte array with an IO interface instance.
      */
     public synchronized ByteArrayIO copy() {
         ByteArrayIO copy = new ByteArrayIO(Arrays.copyOf(buf, buf.length));
@@ -112,7 +109,7 @@ public class ByteArrayIO implements ReadWriteAccess {
     /**
      * Returns the underlying byte array, which is the backing array of this buffer.
      *
-     * @return  the backing array of this buffer.
+     * @return the backing array of this buffer.
      */
     @SuppressFBWarnings(value = "EI_EXPOSE_REP", justification = "by design this class provides an IO interface for an accessible array.")
     public synchronized byte[] getBuffer() {
@@ -120,10 +117,10 @@ public class ByteArrayIO implements ReadWriteAccess {
     }
 
     /**
-     * Returns the current capacity of this buffer, that is the total number of
-     * bytes that may be written into the current backing buffer.
+     * Returns the current capacity of this buffer, that is the total number of bytes that may be written into the
+     * current backing buffer.
      *
-     * @return  the current size of the backing array.
+     * @return the current size of the backing array.
      */
     public final synchronized int capacity() {
         return buf.length;
@@ -137,7 +134,7 @@ public class ByteArrayIO implements ReadWriteAccess {
     /**
      * Returns the number of bytes available for reading from the current position.
      *
-     * @return  the number of bytes that can be read from this buffer from the current position.
+     * @return the number of bytes that can be read from this buffer from the current position.
      */
     public final synchronized int getRemaining() {
         if (pos >= end) {
@@ -167,23 +164,20 @@ public class ByteArrayIO implements ReadWriteAccess {
     }
 
     /**
-     * Changes the length of this buffer. The total number of bytes available
-     * from reading from this buffer will be that of the new length. If the buffer
-     * is truncated and its pointer is positioned beyond the new size, then the pointer
-     * is changed to point to the new buffer end. If the buffer is enlarged beyond
-     * it current capacity, its capacity will grow as necessary provided the
-     * buffer is growable. Otherwise, an EOFException is thrown if the new length
-     * is beyond the fixed buffer capacity. If the new length is larger than the old
-     * one, the added buffer segment may have undefined contents.
+     * Changes the length of this buffer. The total number of bytes available from reading from this buffer will be that
+     * of the new length. If the buffer is truncated and its pointer is positioned beyond the new size, then the pointer
+     * is changed to point to the new buffer end. If the buffer is enlarged beyond it current capacity, its capacity
+     * will grow as necessary provided the buffer is growable. Otherwise, an EOFException is thrown if the new length is
+     * beyond the fixed buffer capacity. If the new length is larger than the old one, the added buffer segment may have
+     * undefined contents.
      *
-     * @param length        The buffer length, that is number of bytes available for
-     *                      reading.
-     * @throws IllegalArgumentException
-     *                      if the length is negative or if the new new length
-     *                      exceeds the capacity of a fixed-type buffer.
+     * @param  length                   The buffer length, that is number of bytes available for reading.
      *
-     * @see #length()
-     * @see #capacity()
+     * @throws IllegalArgumentException if the length is negative or if the new new length exceeds the capacity of a
+     *                                      fixed-type buffer.
+     *
+     * @see                             #length()
+     * @see                             #capacity()
      */
     public synchronized void setLength(int length) throws IllegalArgumentException {
         if (length < 0) {
@@ -192,7 +186,8 @@ public class ByteArrayIO implements ReadWriteAccess {
 
         if (length > capacity()) {
             if (!isGrowable) {
-                throw new IllegalArgumentException("the new length " + length + " is larger than the fixed capacity " + capacity());
+                throw new IllegalArgumentException(
+                        "the new length " + length + " is larger than the fixed capacity " + capacity());
             }
             grow(length - capacity());
         }
@@ -205,10 +200,10 @@ public class ByteArrayIO implements ReadWriteAccess {
     }
 
     /**
-     * Grows the buffer by at least the number of specified bytes. A new buffer is
-     * allocated, and the contents of the previous buffer are copied over.
+     * Grows the buffer by at least the number of specified bytes. A new buffer is allocated, and the contents of the
+     * previous buffer are copied over.
      *
-     * @param need      the minimum number of extra bytes needed beyond the current capacity.
+     * @param need the minimum number of extra bytes needed beyond the current capacity.
      */
     private synchronized void grow(int need) {
         int size = capacity() + need;

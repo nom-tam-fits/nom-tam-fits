@@ -163,13 +163,16 @@ public class TileCompressorProviderTest {
     @Test
     public void testAlternativeTileProcessor() throws Exception {
         ICompressorControl compressor = CompressorProvider.findCompressorControl(null, "X", long.class);
-        Assert.assertTrue(compressor.getClass().getName().indexOf(TileCompressorAlternativProvider.class.getSimpleName()) > 0);
+        Assert.assertTrue(
+                compressor.getClass().getName().indexOf(TileCompressorAlternativProvider.class.getSimpleName()) > 0);
 
         Assert.assertNotNull(CompressorProvider.findCompressorControl(null, "X", long.class));
 
         Assert.assertNull(CompressorProvider.findCompressorControl("AA", Compression.ZCMPTYPE_RICE_1, int.class));
-        Assert.assertNull(CompressorProvider.findCompressorControl(Compression.ZQUANTIZ_SUBTRACTIVE_DITHER_2, "BB", int.class));
-        Assert.assertNull(CompressorProvider.findCompressorControl(Compression.ZQUANTIZ_SUBTRACTIVE_DITHER_2, Compression.ZCMPTYPE_RICE_1, String.class));
+        Assert.assertNull(
+                CompressorProvider.findCompressorControl(Compression.ZQUANTIZ_SUBTRACTIVE_DITHER_2, "BB", int.class));
+        Assert.assertNull(CompressorProvider.findCompressorControl(Compression.ZQUANTIZ_SUBTRACTIVE_DITHER_2,
+                Compression.ZCMPTYPE_RICE_1, String.class));
 
         Assert.assertNotNull(CompressorProvider.findCompressorControl(null, Compression.ZCMPTYPE_GZIP_2, int.class));
     }
@@ -248,17 +251,12 @@ public class TileCompressorProviderTest {
 
     @Test
     public void testForceNoLossWithoutFunczion() throws Exception {
-        TileImageCompressionOperationWithPublicMethods operationsOfImage = new TileImageCompressionOperationWithPublicMethods(null);
+        TileImageCompressionOperationWithPublicMethods operationsOfImage = new TileImageCompressionOperationWithPublicMethods(
+                null);
         Header header = new Header();
         header.card(ZBITPIX).value(8);
-        operationsOfImage.setTileAxes(new int[]{
-                100,
-                100
-        });
-        operationsOfImage.setAxes(new int[]{
-                100,
-                100
-        });
+        operationsOfImage.setTileAxes(new int[] {100, 100});
+        operationsOfImage.setAxes(new int[] {100, 100});
         operationsOfImage.readPrimaryHeaders(header);
         operationsOfImage.setCompressAlgorithm(header.card(ZCMPTYPE).value("RICE_1").card());
         operationsOfImage.createTiles(new TileDecompressorInitialisation(operationsOfImage, //
@@ -273,15 +271,7 @@ public class TileCompressorProviderTest {
 
     @Test
     public void testTileSizes() throws Exception {
-        int[] sizes = {
-                1,
-                3,
-                15,
-                33,
-                50,
-                66,
-                100
-        };
+        int[] sizes = {1, 3, 15, 33, 50, 66, 100};
         for (int tileWidth : sizes) {
             for (int tileHeigth : sizes) {
                 testTileSizes(tileWidth, tileHeigth);
@@ -430,7 +420,8 @@ public class TileCompressorProviderTest {
         }
     }
 
-    private static List<TileCompressionOperation> getTileCompressionOperations(TiledImageCompressionOperation operationsOfImage) {
+    private static List<TileCompressionOperation> getTileCompressionOperations(
+            TiledImageCompressionOperation operationsOfImage) {
         List<TileCompressionOperation> tiles = new ArrayList<>();
         try {
             for (int index = 0; index < 10000; index++) {

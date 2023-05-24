@@ -61,13 +61,13 @@ public class ImageHDU extends BasicHDU<ImageData> {
     }
 
     /**
-     * @deprecated This should be for internal use only. Will reduce visibility in the future
+     * @deprecated               This should be for internal use only. Will reduce visibility in the future
      *
-     * @return Encapsulate an object as an ImageHDU.
+     * @return                   Encapsulate an object as an ImageHDU.
      *
-     * @param o object to encapsulate
+     * @param      o             object to encapsulate
      *
-     * @throws FitsException if the operation failed
+     * @throws     FitsException if the operation failed
      */
     @Deprecated
     public static ImageData encapsulate(Object o) throws FitsException {
@@ -75,11 +75,11 @@ public class ImageHDU extends BasicHDU<ImageData> {
     }
 
     /**
-     * @deprecated This should be for internal use only. Will reduce visibility in the future
+     * @deprecated   This should be for internal use only. Will reduce visibility in the future
      *
-     * @return is this object can be described as a FITS image.
+     * @return       is this object can be described as a FITS image.
      *
-     * @param o The Object being tested.
+     * @param      o The Object being tested.
      */
     @Deprecated
     public static boolean isData(Object o) {
@@ -96,11 +96,11 @@ public class ImageHDU extends BasicHDU<ImageData> {
     /**
      * Check that this HDU has a valid header for this type.
      *
-     * @deprecated This should be for internal use only. Will reduce visibility in the future
+     * @deprecated     This should be for internal use only. Will reduce visibility in the future
      *
-     * @param hdr header to check
+     * @param      hdr header to check
      *
-     * @return <CODE>true</CODE> if this HDU has a valid header.
+     * @return         <CODE>true</CODE> if this HDU has a valid header.
      */
     @Deprecated
     public static boolean isHeader(Header hdr) {
@@ -121,13 +121,13 @@ public class ImageHDU extends BasicHDU<ImageData> {
     /**
      * Prepares a data object into which the actual data can be read from an input subsequently or at a later time.
      *
-     * @deprecated This should be for internal use only. Will reduce visibility in the future
+     * @deprecated               This should be for internal use only. Will reduce visibility in the future
      *
-     * @param hdr The FITS header that describes the data
+     * @param      hdr           The FITS header that describes the data
      *
-     * @return A data object that support reading content from a stream.
+     * @return                   A data object that support reading content from a stream.
      *
-     * @throws FitsException if the data could not be prepared to prescriotion.
+     * @throws     FitsException if the data could not be prepared to prescriotion.
      */
     @Deprecated
     public static Data manufactureData(Header hdr) throws FitsException {
@@ -137,13 +137,13 @@ public class ImageHDU extends BasicHDU<ImageData> {
     /**
      * Prepares a data object into which the actual data can be read from an input subsequently or at a later time.
      *
-     * @deprecated This should be for internal use only. Will reduce visibility in the future
+     * @deprecated               This should be for internal use only. Will reduce visibility in the future
      *
-     * @param d The FITS data content of this HDU
+     * @param      d             The FITS data content of this HDU
      *
-     * @return A data object that support reading content from a stream.
+     * @return                   A data object that support reading content from a stream.
      *
-     * @throws FitsException if the data could not be prepared to prescriotion.
+     * @throws     FitsException if the data could not be prepared to prescriotion.
      */
     @Deprecated
     public static Header manufactureHeader(Data d) throws FitsException {
@@ -160,8 +160,8 @@ public class ImageHDU extends BasicHDU<ImageData> {
     /**
      * Build an image HDU using the supplied data.
      *
-     * @param h the header for the image.
-     * @param d the data used in the image.
+     * @param  h             the header for the image.
+     * @param  d             the data used in the image.
      *
      * @throws FitsException if there was a problem with the data.
      */

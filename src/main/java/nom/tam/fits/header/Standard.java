@@ -63,7 +63,7 @@ public enum Standard implements IFitsHeader {
      */
     BITPIX(SOURCE.MANDATORY, HDU.ANY, VALUE.INTEGER, "bits per data value", //
             replaceable("header:bitpix", Object.class) //
-            ),
+    ),
     /**
      * This keyword shall be used only in primary array headers or IMAGE extension headers with positive values of
      * BITPIX (i.e., in arrays with integer data). Columns 1-8 contain the string, `BLANK ' (ASCII blanks in columns
@@ -231,7 +231,7 @@ public enum Standard implements IFitsHeader {
             replaceable("imagedata:extend", ImageData.class, "Extension permitted"), //
             replaceable("undefineddata:extend", UndefinedData.class, "Extensions are permitted")
 
-            ),
+    ),
 
     /**
      * The value field shall contain an integer, specifying the level in a hierarchy of extension levels of the
@@ -271,7 +271,7 @@ public enum Standard implements IFitsHeader {
             replaceable("imagedata:gcount", ImageData.class, "No extra parameters"), //
             replaceable("undefineddata:gcount", UndefinedData.class)
 
-            ),
+    ),
 
     /**
      * The value field shall contain the logical constant T. The value T associated with this keyword implies that
@@ -279,7 +279,7 @@ public enum Standard implements IFitsHeader {
      */
     GROUPS(SOURCE.MANDATORY, HDU.GROUPS, VALUE.LOGICAL, "indicates random groups structure", //
             replaceable("randomgroupsdata:groups", RandomGroupsData.class) //
-            ),
+    ),
 
     /**
      * This keyword shall have no associated value; columns 9-80 may contain any ASCII text. The text should contain a
@@ -301,7 +301,7 @@ public enum Standard implements IFitsHeader {
      */
     NAXIS(SOURCE.MANDATORY, HDU.ANY, VALUE.INTEGER, "number of axes", //
             replaceable("header:naxis", Object.class) //
-            ),
+    ),
 
     /**
      * The value field of this indexed keyword shall contain a non-negative integer, representing the number of elements
@@ -317,7 +317,7 @@ public enum Standard implements IFitsHeader {
             replaceable("tablehdu:naxis2", TableData.class), //
             replaceable("header:naxisN", Object.class), //
             replaceable("undefineddata:naxis1", UndefinedData.class, "Number of Bytes") //
-            ),
+    ),
 
     /**
      * The value field shall contain a character string giving a name for the object observed.
@@ -350,7 +350,7 @@ public enum Standard implements IFitsHeader {
             replaceable("randomgroupsdata:pcount", RandomGroupsData.class), //
             replaceable("undefineddata:pcount", UndefinedData.class) //
 
-            ),
+    ),
 
     /**
      * This keyword is reserved for use within the FITS Random Groups structure. This keyword shall be used, along with
@@ -408,7 +408,7 @@ public enum Standard implements IFitsHeader {
      */
     SIMPLE(SOURCE.MANDATORY, HDU.PRIMARY, VALUE.LOGICAL, "does file conform to the Standard?", //
             replaceable("header:simple", Object.class, "Java FITS: " + new java.util.Date()) //
-            ),
+    ),
 
     /**
      * The value field of this indexed keyword shall contain an integer specifying the column in which field n starts in
@@ -416,7 +416,7 @@ public enum Standard implements IFitsHeader {
      */
     TBCOLn(SOURCE.MANDATORY, HDU.ASCII_TABLE, VALUE.INTEGER, "begining column number", //
             replaceable("asciitable:tbcolN", AsciiTable.class, "Column offset") //
-            ),
+    ),
 
     /**
      * The value field of this indexed keyword shall contain a character string describing how to interpret the contents
@@ -428,7 +428,7 @@ public enum Standard implements IFitsHeader {
     TDIMn(SOURCE.RESERVED, HDU.BINTABLE, VALUE.STRING, "dimensionality of the array ", //
             replaceable("binarytablehdu:tdimN", BinaryTable.class), //
             replaceable("headercard:tdimN", Object.class) //
-            ),
+    ),
 
     /**
      * The value field of this indexed keyword shall contain a character string describing the format recommended for
@@ -458,7 +458,7 @@ public enum Standard implements IFitsHeader {
             replaceable("binarytable:tfields", BinaryTable.class), //
             replaceable("tablehdu:tfields", TableData.class, "Number of table fields"), //
             replaceable("asciitable:tfields", AsciiTable.class, "Number of fields in table") //
-            ),
+    ),
     /**
      * The value field of this indexed keyword shall contain a character string describing the format in which field n
      * is encoded in a 'TABLE' or 'BINTABLE' extension.
@@ -467,7 +467,7 @@ public enum Standard implements IFitsHeader {
             replaceable("asciitable:tformN", AsciiTable.class), //
             replaceable("binarytable:tformN", BinaryTable.class) //
 
-            ),
+    ),
 
     /**
      * The value field of this keyword shall contain an integer providing the separation, in bytes, between the start of
@@ -477,7 +477,7 @@ public enum Standard implements IFitsHeader {
      */
     THEAP(SOURCE.RESERVED, HDU.BINTABLE, VALUE.INTEGER, "offset to starting data heap address", //
             replaceable("binarytablehdu:theap", BinaryTable.class) //
-            ),
+    ),
 
     /**
      * In ASCII 'TABLE' extensions, the value field for this indexed keyword shall contain the character string that
@@ -617,9 +617,9 @@ public enum Standard implements IFitsHeader {
     /**
      * scan for a comment with the specified reference key.
      *
-     * @param commentKey the reference key
+     * @param  commentKey the reference key
      *
-     * @return the comment for the reference key
+     * @return            the comment for the reference key
      */
     public String getCommentByKey(String commentKey) {
         for (StandardCommentReplacement commentReplacement : commentReplacements) {
@@ -638,7 +638,7 @@ public enum Standard implements IFitsHeader {
      * set the comment for the specified reference key.
      *
      * @param commentKey the reference key
-     * @param value the comment to set when the fits key is used.
+     * @param value      the comment to set when the fits key is used.
      */
     public void setCommentByKey(String commentKey, String value) {
         for (StandardCommentReplacement commentReplacement : commentReplacements) {

@@ -68,21 +68,21 @@ public class BuilderApiTest {
         Date date = new FitsDate("2015-07-11T05:21:25.446").toDate();
 
         header.card(DATE_OBS).value(date).comment("observe date")//
-        .card(INSTRUME).value("The very best")//
-        .card(ORIGIN).value("private")//
-        .card(COMMENT).comment("something to comment")//
-        .card(THEAP).value(2L)//
-        .card(DATAMIN).value(1)//
-        .card(DATAMAX).value(2)//
-        .card(Standard.BSCALE).value(3.0)//
-        .scale(1)//
-        .card(TZEROn.n(5)).value(5.55)//
-        .card(Standard.BZERO).value(6.55)//
-        .card(Standard.EQUINOX).value(new BigDecimal("5.55"))//
-        .noScale()//
-        .card(TZEROn.n(1)).value(1.99999)//
-        .card(TZEROn.n(2)).value(new BigDecimal("1.99999"))//
-        .card(AUTHOR).value(true);
+                .card(INSTRUME).value("The very best")//
+                .card(ORIGIN).value("private")//
+                .card(COMMENT).comment("something to comment")//
+                .card(THEAP).value(2L)//
+                .card(DATAMIN).value(1)//
+                .card(DATAMAX).value(2)//
+                .card(Standard.BSCALE).value(3.0)//
+                .scale(1)//
+                .card(TZEROn.n(5)).value(5.55)//
+                .card(Standard.BZERO).value(6.55)//
+                .card(Standard.EQUINOX).value(new BigDecimal("5.55"))//
+                .noScale()//
+                .card(TZEROn.n(1)).value(1.99999)//
+                .card(TZEROn.n(2)).value(new BigDecimal("1.99999"))//
+                .card(AUTHOR).value(true);
 
         Assert.assertEquals("2015-07-11T05:21:25.446", header.getStringValue(DATE_OBS));
         Assert.assertEquals("observe date", header.findCard(DATE_OBS).getComment());
@@ -104,23 +104,23 @@ public class BuilderApiTest {
         date = new FitsDate("2015-07-12T05:21:25.446").toDate();
         BasicHDU<?> hdu = Fits.makeHDU(header);
         hdu.card(DATE_OBS).value(date).comment("observation date")//
-        .card(INSTRUME).value("The very very best")//
-        .card(ORIGIN).value("other")//
-        .card(COMMENT).comment("something else to comment")//
-        .card(THEAP).value(200L)//
-        .card(DATAMIN).value(100)//
-        .card(DATAMAX).value(200)//
-        .card(Standard.BSCALE).value(300.0)//
-        .precision(4)//
-        .card(TZEROn.n(5)).value(50.55)//
-        .card(Standard.BZERO).value(500.055f)//
-        .card(Standard.EQUINOX).value(new BigDecimal("500.055"))//
-        .card(TZEROn.n(3)).value(600.055f)//
-        .autoPrecision()//
-        .card(TZEROn.n(1)).value(100.99999d)//
-        .card(TZEROn.n(2)).value(new BigDecimal("100.99999"))//
-        .card(TZEROn.n(4)).value(101.999)//
-        .card(AUTHOR).value(false);
+                .card(INSTRUME).value("The very very best")//
+                .card(ORIGIN).value("other")//
+                .card(COMMENT).comment("something else to comment")//
+                .card(THEAP).value(200L)//
+                .card(DATAMIN).value(100)//
+                .card(DATAMAX).value(200)//
+                .card(Standard.BSCALE).value(300.0)//
+                .precision(4)//
+                .card(TZEROn.n(5)).value(50.55)//
+                .card(Standard.BZERO).value(500.055f)//
+                .card(Standard.EQUINOX).value(new BigDecimal("500.055"))//
+                .card(TZEROn.n(3)).value(600.055f)//
+                .autoPrecision()//
+                .card(TZEROn.n(1)).value(100.99999d)//
+                .card(TZEROn.n(2)).value(new BigDecimal("100.99999"))//
+                .card(TZEROn.n(4)).value(101.999)//
+                .card(AUTHOR).value(false);
 
         Assert.assertEquals("2015-07-12T05:21:25.446", header.getStringValue(DATE_OBS));
         Assert.assertEquals("observation date", header.findCard(DATE_OBS).getComment());

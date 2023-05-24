@@ -99,15 +99,17 @@ public class FitsHeaderImpl implements IFitsHeader, Serializable {
     }
 
     /**
-     * Checks if a keywords is known to be a comment-style keyword. That is, it checks if the <code>key</code> argument matches
-     * any {@link IFitsHeader} constructed via this implementation with a <code>valueType</code> argument that was
-     * <code>null</code>, or if the key is empty.
+     * Checks if a keywords is known to be a comment-style keyword. That is, it checks if the <code>key</code> argument
+     * matches any {@link IFitsHeader} constructed via this implementation with a <code>valueType</code> argument that
+     * was <code>null</code>, or if the key is empty.
      *
-     * @param key       the keyword to check
-     * @return          <code>true</code> if the key is empty or if it matches any known {@link IFitsHeader} keywords
-     *                  implemented through this class that have valueType of <code>null</code>. Otherwise <code>false</code>.
+     * @param  key the keyword to check
      *
-     * @since 1.17
+     * @return     <code>true</code> if the key is empty or if it matches any known {@link IFitsHeader} keywords
+     *                 implemented through this class that have valueType of <code>null</code>. Otherwise
+     *                 <code>false</code>.
+     *
+     * @since      1.17
      */
     public static boolean isCommentStyleKey(String key) {
         return commentStyleKeys.contains(key) || key.trim().isEmpty();
