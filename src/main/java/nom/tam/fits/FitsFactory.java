@@ -216,14 +216,14 @@ public final class FitsFactory {
         }
         if (CompressedTableHDU.isHeader(hdr)) {
             return CompressedTableHDU.manufactureData(hdr);
-        } else if (BinaryTableHDU.isHeader(hdr)) {
-            return BinaryTableHDU.manufactureData(hdr);
-        } else if (UndefinedHDU.isHeader(hdr)) {
-            return UndefinedHDU.manufactureData(hdr);
-        } else {
-            throw new FitsException("Unrecognizable header in dataFactory");
         }
-
+        if (BinaryTableHDU.isHeader(hdr)) {
+            return BinaryTableHDU.manufactureData(hdr);
+        }
+        if (UndefinedHDU.isHeader(hdr)) {
+            return UndefinedHDU.manufactureData(hdr);
+        }
+        throw new FitsException("Unrecognizable header in dataFactory");
     }
 
     /**

@@ -54,16 +54,15 @@ final class ZQuantizeParameter extends CompressHeaderParameter<QuantizeOption> {
 
         HeaderCard card = header.findCard(getName());
         String value = card != null ? card.getValue() : null;
-        if (Compression.ZQUANTIZ_SUBTRACTIVE_DITHER_2.equals(value)) {
+
+        getOption().setDither(false);
+        getOption().setDither2(false);
+
+        if (Compression.ZQUANTIZ_SUBTRACTIVE_DITHER_1.equals(value)) {
+            getOption().setDither(true);
+        } else if (Compression.ZQUANTIZ_SUBTRACTIVE_DITHER_2.equals(value)) {
             getOption().setDither(true);
             getOption().setDither2(true);
-        } else {
-            if (Compression.ZQUANTIZ_SUBTRACTIVE_DITHER_1.equals(value)) {
-                getOption().setDither(true);
-            } else {
-                getOption().setDither(false);
-            }
-            getOption().setDither2(false);
         }
     }
 
