@@ -43,8 +43,13 @@ import nom.tam.util.type.ElementType;
 import edu.umd.cs.findbugs.annotations.SuppressFBWarnings;
 
 /**
- * This class provides a subset of an N-dimensional image. Modified May 2, 2000 by T. McGlynn to permit tiles that go
- * off the edge of the image.
+ * <p>
+ * Standard image tiling implementation. FITS tiles are always 2-dimentional, but really images of any dimensions may be
+ * covered with such tiles.
+ * </p>
+ * <p>
+ * Modified May 2, 2000 by T. McGlynn to permit tiles that go off the edge of the image.
+ * </p>
  */
 public abstract class StandardImageTiler implements ImageTiler {
     /**

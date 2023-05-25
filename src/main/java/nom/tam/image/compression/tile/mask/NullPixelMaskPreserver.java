@@ -43,15 +43,36 @@ import nom.tam.image.tile.operation.buffer.TileBuffer;
 import nom.tam.util.type.ElementType;
 
 /**
- * This class overwrites the pixels specified in the mask with null values.
- * Where the null value can be defined separately.
+ * Preserves blank (<code>null</code>) values in compressed images. This class
+ * overwrites the pixels specified in the mask with null values. Where the null
+ * value can be defined separately.
  */
 public class NullPixelMaskPreserver extends AbstractNullPixelMask {
 
+    /**
+     * Creates a new instance for preserving the null values in a specific image
+     * tile when compressing the tile.
+     * 
+     * @param tileBuffer
+     *            the buffer containing the serialized tile data (still
+     *            uncompressed)
+     * @param tileIndex
+     *            the sequential tile index
+     * @param nullValue
+     *            the blank value used in integer type images (this is ignored
+     *            for floating-point images where NaN is used always)
+     * @param compressorControl
+     *            the class that performs the compresion of tiles, and which
+     *            will be used to compress the null pixel mask also.
+     */
     public NullPixelMaskPreserver(TileBuffer tileBuffer, int tileIndex, long nullValue, ICompressorControl compressorControl) {
         super(tileBuffer, tileIndex, nullValue, compressorControl);
     }
 
+    /**
+     * Creates a compressed mask to store along with the compressed tile image
+     * to indicate where the blanking values appear in in the original image.
+     */
     public void preserveNull() {
         if (getTileBuffer().getBaseType().is(ElementType.DOUBLE)) {
             preserveNullDoubles();

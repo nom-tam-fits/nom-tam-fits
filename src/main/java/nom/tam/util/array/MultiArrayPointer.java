@@ -33,6 +33,11 @@ package nom.tam.util.array;
 
 import java.lang.reflect.Array;
 
+/**
+ * @deprecated Intended for internal use only by {@link MultiArrayCopier} and
+ *             {@link MultiArrayIterator}. In the future visibility may be
+ *             reduced to the package level A multi-dimensional array index.
+ */
 public class MultiArrayPointer {
 
     public static final Object END = new Object();

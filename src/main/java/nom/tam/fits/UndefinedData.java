@@ -52,7 +52,9 @@ import static nom.tam.util.LoggerHelper.getLogger;
 import edu.umd.cs.findbugs.annotations.SuppressFBWarnings;
 
 /**
- * This class provides a simple holder for data which is not handled by other classes.
+ * A HDU that holds a type of data we don't recognise. We can still retrieve the data as a binary array, we just don't
+ * know how to interpret it. This class makes sure we don't break when we encouter HDUs that we don't (yet) support,
+ * such as HDU types defined by future FITS standards.
  */
 public class UndefinedData extends Data {
 
@@ -61,6 +63,13 @@ public class UndefinedData extends Data {
     private int byteSize = 0;
     private byte[] data;
 
+    /**
+     * Creates a new empty container for data of unknown type based on the provided FITS header information.
+     *
+     * @param  h             The FITS header corresponding to the data segment in the HDU
+     * 
+     * @throws FitsException if there wan an error accessing or interpreting the provided header information.
+     */
     public UndefinedData(Header h) throws FitsException {
 
         /**
@@ -98,6 +107,7 @@ public class UndefinedData extends Data {
      *
      * @param head The FITS header
      */
+    @SuppressWarnings("deprecation")
     @Override
     protected void fillHeader(Header head) {
         try {

@@ -201,10 +201,12 @@ public class RandomGroupsHDU extends BasicHDU<RandomGroupsData> {
     }
 
     /**
-     * Create an HDU from the given header and data .
+     * Create an HDU from the given header and data.
+     * 
+     * @deprecated        intended for internal use. Its visibility should be reduced to package level in the future.
      *
-     * @param header header to use
-     * @param data   data to use
+     * @param      header header to use
+     * @param      data   data to use
      */
     public RandomGroupsHDU(Header header, RandomGroupsData data) {
         super(header, data);

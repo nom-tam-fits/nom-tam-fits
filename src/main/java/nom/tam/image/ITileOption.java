@@ -32,7 +32,8 @@ package nom.tam.image;
  */
 
 /**
- * Provides 2D tiling support for images.
+ * Options interface for 2D image tiling. FITS tiles are always 2-dimentional,
+ * but really images of any dimensions may be covered with such tiles.
  * 
  * @author Attila Kovacs #since 1.18
  */

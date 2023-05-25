@@ -159,16 +159,27 @@ public class ImageHDU extends BasicHDU<ImageData> {
 
     /**
      * Build an image HDU using the supplied data.
+     * 
+     * @deprecated               intended for internal use. Its visibility should be reduced to package level in the
+     *                               future.
      *
-     * @param  h             the header for the image.
-     * @param  d             the data used in the image.
+     * @param      h             the header for the image.
+     * @param      d             the data used in the image.
      *
-     * @throws FitsException if there was a problem with the data.
+     * @throws     FitsException if there was a problem with the data.
      */
     public ImageHDU(Header h, ImageData d) throws FitsException {
         super(h, d);
     }
 
+    /**
+     * Returns the class that can be used to divide this image into tiles that may be processed separately (and in
+     * parallel).
+     * 
+     * @return image tiler for this image instance.
+     * 
+     * @see    ImageData#getTiler()
+     */
     public StandardImageTiler getTiler() {
         return myData.getTiler();
     }

@@ -1,7 +1,8 @@
 /**
- * Managing parameters for quantization via {@link nom.tam.fits.compression.algorithm.quant.QuantizeProcessor} (<i>for
- * internal use</i>). You might wonder why it is packaged separately from the classes it supports. It's weird, I know.
- * But this is how it has been since inception, so this is how it will be...
+ * (<i>for internal use</i>) Managing parameters for quantization via
+ * {@link nom.tam.fits.compression.algorithm.quant.QuantizeProcessor}. You might wonder why it is packaged separately
+ * from the classes it supports. It's weird, I know. But this is how it has been since inception, so this is how it will
+ * be...
  */
 
 package nom.tam.fits.compression.provider.param.quant;

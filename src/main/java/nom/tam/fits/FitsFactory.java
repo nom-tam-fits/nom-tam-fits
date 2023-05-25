@@ -132,22 +132,66 @@ public final class FitsFactory {
             return clone();
         }
 
+        /**
+         * Returns the formatter instance for HIERARCH style keywords. Our own standard is to define such keywords
+         * internally as starting with the string <code>HIERARCH.</code> followed by a dot-separated hierarchy, or just
+         * an unusually long FITS keywords that cannot be represented by a standard 8-byte keyword. The HIERARCH
+         * formatted will take such string keywords and will format them according to its rules when writing them to
+         * FITS headers.
+         * 
+         * @return The formatter instance used for HIERARCH-style keywords.
+         */
         protected IHierarchKeyFormatter getHierarchKeyFormatter() {
             return hierarchKeyFormatter;
         }
 
+        /**
+         * Checks if we should use the letter 'D' to mark exponents of double-precision values (in FITS headers and
+         * ASCII tables). For ecample, in the typical Java number formatting the String <code>1.37E-13</code> may
+         * represent either a <code>float</code> or <code>double</code> value -- which are not exactly the same. For
+         * that reason FITS offers the possibility to replace 'E' in the string formatted number with 'D' when the value
+         * specifies a double-precision number, thus disambiguating the two.
+         * 
+         * @return <code>true</code> if we will use 'D' to denote the exponent of double-precision values in FITS
+         *             headers and ASCII tables.
+         */
         protected boolean isUseExponentD() {
             return useExponentD;
         }
 
+        /**
+         * Checks if we treat junk after the last properly formed HDU silently withotu generating an exception. When
+         * this setting is <code>true</code> we can read corrupted FITS files (at least partially) without raising an
+         * alarm.
+         * 
+         * @return <code>true</code> if we allow additional bytes after the last readable HDU to be present in FITS
+         *             files without throwing an exception. Otherwise <code>false</code>.
+         */
         protected boolean isAllowTerminalJunk() {
             return allowTerminalJunk;
         }
 
+        /**
+         * Whether we check if ASCII strings in FITS files conform to the restricted set of characters (0x20 trough
+         * 0x7E) allowed by the FITS standard. If the checking is enabled, we will log any such violations so they can
+         * be inspected and perhaps fixed.
+         * 
+         * @return <code>true</code> if we should check and report if string appearing in FITS files do not conform to
+         *             specification. Otherwise <code>false</code>
+         */
         protected boolean isCheckAsciiStrings() {
             return checkAsciiStrings;
         }
 
+        /**
+         * Checks if we allow storing long string values (using the OGIP 1.0 convention) in FITS headers. Such long
+         * string may span multiple 80-character header records. They are now standard as of FITS 4.0, but they were not
+         * in earlier specifications. When long strings are not enabled, we will throw a {@link LongValueException}
+         * whenever one tries to add a string value that cannot be contained in a single 80-character header record.
+         * 
+         * @return <code>true</code> (default) if we allow adding long string values to out FITS headers. Otherwise
+         *             <code>false</code>.
+         */
         protected boolean isLongStringsEnabled() {
             return longStringsEnabled;
         }
@@ -164,18 +208,51 @@ public final class FitsFactory {
             return skipBlankAfterAssign;
         }
 
+        /**
+         * Whether to write tables as ASCII tables automatically if possible. Binary tables are generally always a
+         * better option, as they are both more compact and flexible but sometimes we might want to make our table data
+         * to be human readable in a terminal without needing any FITS-specific tool -- even though the 1970s is long
+         * past...
+         * 
+         * @return <code>true</code> if we have a preference for writing table data in ASCII format (rather than
+         *             binary), whenever that is possible. Otherwise <code>false</code>
+         */
         protected boolean isUseAsciiTables() {
             return useAsciiTables;
         }
 
+        /**
+         * Whether we allow using HIERARCH-style keywords, which may be longer than the standard 8-character FITS
+         * keywords, and may specify a hierarchy, and may also allow upper and lower-case characters depending on what
+         * formatting rules we use. Our own standard is to define such keywords internally as starting with the string
+         * <code>HIERARCH.</code> followed by a dot-separated hierarchy, or just an unusually long FITS keywords that
+         * cannot be represented by a standard 8-byte keyword.
+         * 
+         * @return <code>true</code> if we allow HIERARCH keywords. Otherwise <code>false</code>
+         */
         protected boolean isUseHierarch() {
             return useHierarch;
         }
 
+        /**
+         * Checks if we allow storing Java <code>char[]</code> arrays in binary tables as 16-bit <code>short[]</code>.
+         * Otherwise we will store them as simple 8-bit ASCII.
+         * 
+         * @return <code>true</code> if <code>char[]</code> is stored as <code>short[]</code> in binary tables, or
+         *             <code>false</code> if we store than as 8-bit ASCII.
+         */
         protected boolean isUseUnicodeChars() {
             return useUnicodeChars;
         }
 
+        /**
+         * Checks if we are tolerant to FITS standard violations when reading 3rd party FITS files.
+         * 
+         * @return <code>true</code> if we tolerate minor violations of the FITS standard when interpreting headers,
+         *             which are unlikely to affect the integrity of the FITS otherwise. The violations will still be
+         *             logged, but no exception will be generated. Or, <code>false</code> if we want to generate
+         *             exceptions for such error.s
+         */
         protected boolean isAllowHeaderRepairs() {
             return allowHeaderRepairs;
         }
@@ -188,6 +265,9 @@ public final class FitsFactory {
 
     private static ExecutorService threadPool;
 
+    /**
+     * the size of a FITS block in bytes.
+     */
     public static final int FITS_BLOCK_SIZE = 2880;
 
     /**
@@ -270,6 +350,11 @@ public final class FitsFactory {
     }
 
     /**
+     * Returns the formatter instance for HIERARCH style keywords. Our own standard is to define such keywords
+     * internally as starting with the string <code>HIERARCH.</code> followed by a dot-separated hierarchy, or just an
+     * unusually long FITS keywords that cannot be represented by a standard 8-byte keyword. The HIERARCH formatted will
+     * take such string keywords and will format them according to its rules when writing them to FITS headers.
+     * 
      * @return the formatter to use for hierarch keys.
      */
     public static IHierarchKeyFormatter getHierarchFormater() {
@@ -362,6 +447,7 @@ public final class FitsFactory {
      *
      * @throws FitsException if the parameter could not be converted to a hdu.
      */
+    @SuppressWarnings("deprecation")
     public static BasicHDU<?> hduFactory(Object o) throws FitsException {
         Data d;
         Header h;
@@ -566,6 +652,11 @@ public final class FitsFactory {
         current().useUnicodeChars = value;
     }
 
+    /**
+     * Returns the common thread pool that we use for processing FITS files.
+     * 
+     * @return the thread pool for processing FITS files.
+     */
     public static ExecutorService threadPool() {
         if (threadPool == null) {
             initializeThreadPool();
@@ -607,6 +698,11 @@ public final class FitsFactory {
         }
     }
 
+    /**
+     * Returns the current settings that guide how we read or produce FITS files.
+     * 
+     * @return the current active settings for generating or interpreting FITS files.
+     */
     protected static FitsSettings current() {
         FitsSettings settings = LOCAL_SETTINGS.get();
         if (settings == null) {

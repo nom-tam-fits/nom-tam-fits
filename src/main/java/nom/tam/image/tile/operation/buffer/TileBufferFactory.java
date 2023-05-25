@@ -35,8 +35,14 @@ import java.nio.Buffer;
 
 import nom.tam.util.type.ElementType;
 
+/**
+ * Creates linear buffers for storing data of 2D image tiles.
+ *
+ * @see TileBuffer
+ */
 public final class TileBufferFactory {
 
+    @SuppressWarnings("deprecation")
     public static TileBuffer createTileBuffer(ElementType<Buffer> baseType, int dataOffset, int imageWidth, int width,
             int height) {
         if (imageWidth > width) {

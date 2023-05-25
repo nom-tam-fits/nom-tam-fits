@@ -1,9 +1,11 @@
 /**
- * PLIO compression algorithm. The original decompression code was written by Doug Tody, NRAO and included (ported to C
- * and adapted) in <b>cfitsio</b> by William Pence, NASA/GSFC. That code was then ported to Java by R. van Nieuwenhoven.
- * Later it was massively refactored to harmonize the different compression algorithms and reduce the duplicate code
- * pieces without obscuring the algorithm itself as good as possible. It's weird that it's a package by itself, but
- * that's life.
+ * <p>
+ * (<i>for internal use</i>) PLIO compression algorithm. The original decompression code was written by Doug Tody, NRAO
+ * and included (ported to C and adapted) in <b>cfitsio</b> by William Pence, NASA/GSFC. That code was then ported to
+ * Java by R. van Nieuwenhoven. Later it was massively refactored to harmonize the different compression algorithms and
+ * reduce the duplicate code pieces without obscuring the algorithm itself as good as possible. It's weird that it's a
+ * package by itself, but that's life.
+ * </p>
  */
 
 package nom.tam.fits.compression.algorithm.plio;

@@ -1,6 +1,6 @@
 /**
- * A collection of useful classes, mainly for internal use. While these are intended for internal use within the
- * nom-tam-fits library, you might find them useful for your own purposes too. If so, that's great.
+ * A collection of useful classes, mainly for internal use. While these are primarily intended for internal use within
+ * the nom-tam-fits library, you might find them useful for your own purposes too. If so, that's great.
  */
 
 package nom.tam.fits.utilities;

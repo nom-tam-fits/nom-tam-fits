@@ -65,6 +65,7 @@ import edu.umd.cs.findbugs.annotations.SuppressFBWarnings;
 /**
  * This class defines the methods for accessing FITS binary table data.
  */
+@SuppressWarnings("deprecation")
 public class BinaryTable extends AbstractTableData {
 
     /**
@@ -344,11 +345,11 @@ public class BinaryTable extends AbstractTableData {
     }
 
     /**
-     * TODO: this is only for internal access!
+     * @deprecated               intended for internal use. It may become a private method in the future.
      *
-     * @param  table         the table to create the column data.
+     * @param      table         the table to create the column data.
      *
-     * @throws FitsException if the data could not be created.
+     * @throws     FitsException if the data could not be created.
      */
     public static void createColumnDataFor(BinaryTable table) throws FitsException {
         table.createTable();

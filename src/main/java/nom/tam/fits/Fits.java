@@ -118,8 +118,9 @@ import edu.umd.cs.findbugs.annotations.SuppressFBWarnings;
  * <li>The utilities package includes simple tools to copy and list FITS files.
  * </ul>
  *
- * @version 1.16
+ * @version 1.18
  */
+@SuppressWarnings("deprecation")
 public class Fits implements Closeable {
 
     /**

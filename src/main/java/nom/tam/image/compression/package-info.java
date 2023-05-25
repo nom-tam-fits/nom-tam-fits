@@ -1,9 +1,6 @@
 /**
- * Base class for image compression support. Like all compression classes of nom-tam-fits, image compression is
- * fragmented into many separate packages, which is unfortunate but is here to stay. Beyond making it hard to get a real
- * overview on how these classes interrelate, the fragmentation also results in many of the internal methods being
- * exposed to users unnecessarily, which could have been hidden from view had a more prudent packaging been chosen. Oh
- * well, that ship has sailed...
+ * Access individual tiles in a compressed image HDU. It's weird it is a package by itself and not bundled with
+ * {@link nom.tam.image.compression.hdu.CompressedImageHDU}, which it serves, but that's life.
  */
 
 package nom.tam.image.compression;

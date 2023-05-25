@@ -49,6 +49,12 @@ import nom.tam.util.ColumnTable;
 import static nom.tam.fits.header.Standard.TFIELDS;
 import static nom.tam.image.compression.bintable.BinaryTableTileDescription.tile;
 
+/**
+ * FITS representation of a compressed binary table. It itself is a binary table, but one in which each row represents
+ * the compressed image of one or more rows of the original table.
+ * 
+ * @see CompressedTableHDU
+ */
 public class CompressedTableData extends BinaryTable {
 
     private int rowsPerTile;
@@ -57,13 +63,27 @@ public class CompressedTableData extends BinaryTable {
 
     private String[] columnCompressionAlgorithms;
 
+    /**
+     * Creates a new empty compressed table data to be initialized at a later point
+     */
     public CompressedTableData() {
     }
 
+    /**
+     * Creates a new compressed table data based on the prescription of the supplied header.
+     * 
+     * @param  header        The header that describes the compressed table
+     * 
+     * @throws FitsException If the header is invalid or could not be accessed.
+     */
     public CompressedTableData(Header header) throws FitsException {
         super(header);
     }
 
+    /**
+     * This should only be called by {@link CompressedTableHDU}.
+     */
+    @SuppressWarnings("javadoc")
     public void compress(Header header) throws FitsException {
         for (BinaryTableTile binaryTableTile : tiles) {
             binaryTableTile.execute(FitsFactory.threadPool());
@@ -75,6 +95,7 @@ public class CompressedTableData extends BinaryTable {
         fillHeader(header);
     }
 
+    @SuppressWarnings("deprecation")
     @Override
     public void fillHeader(Header h) throws FitsException {
         super.fillHeader(h);
@@ -84,6 +105,10 @@ public class CompressedTableData extends BinaryTable {
         h.addValue(Compression.ZTILELEN.key(), ztilelenValue, "number of rows in each tile");
     }
 
+    /**
+     * This should only be called by {@link CompressedTableHDU}.
+     */
+    @SuppressWarnings("javadoc")
     public void prepareUncompressedData(ColumnTable<SaveState> data) throws FitsException {
         int nrows = data.getNRows();
         int ncols = data.getNCols();
@@ -109,6 +134,10 @@ public class CompressedTableData extends BinaryTable {
         }
     }
 
+    /**
+     * This should only be called by {@link CompressedTableHDU}.
+     */
+    @SuppressWarnings("javadoc")
     protected BinaryTable asBinaryTable(BinaryTable dataToFill, Header compressedHeader, Header targetHeader)
             throws FitsException {
         int nrows = targetHeader.getIntValue(Standard.NAXIS2);
@@ -137,14 +166,28 @@ public class CompressedTableData extends BinaryTable {
         return dataToFill;
     }
 
+    /**
+     * Returns the number of original (uncompressed) table rows that are cmopressed as a block into a single compressed
+     * table row.
+     * 
+     * @return the number of table rows compressed together as a block.
+     */
     protected int getRowsPerTile() {
         return rowsPerTile;
     }
 
+    /**
+     * This should only be called by {@link CompressedTableHDU}.
+     */
+    @SuppressWarnings("javadoc")
     protected void setColumnCompressionAlgorithms(String[] columnCompressionAlgorithms) {
         this.columnCompressionAlgorithms = columnCompressionAlgorithms;
     }
 
+    /**
+     * This should only be called by {@link CompressedTableHDU}.
+     */
+    @SuppressWarnings("javadoc")
     protected CompressedTableData setRowsPerTile(int value) {
         rowsPerTile = value;
         return this;

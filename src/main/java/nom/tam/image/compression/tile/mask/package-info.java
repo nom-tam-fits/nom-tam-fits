@@ -1,7 +1,17 @@
 /**
- * Support for blank (<code>null</code>) values in compressed image tiles (<i>for internal use</i>). It's weird that it
+ * <p>
+ * (<i>for internal use</i>) Support for blank (<code>null</code>) values in compressed image tiles. It's weird that it
  * has its own package and that its classes aren't bundled together with the closely related tiling and/or compression
  * classes, but hey, that's life.
+ * </p>
+ * <p>
+ * The classes of these package are used internally, e.g. by {@link nom.tam.image.compression.hdu.CompressedImageHDU}
+ * and {@link nom.tam.image.compression.hdu.CompressedTableHDU}, which are typically the main compression classes the
+ * user will interact with.
+ * </p>
+ * 
+ * @see nom.tam.image.compression.hdu.CompressedImageHDU
+ * @see nom.tam.image.compression.hdu.CompressedTableHDU
  */
 
 package nom.tam.image.compression.tile.mask;

@@ -31,9 +31,29 @@ package nom.tam.image.tile.operation;
  * #L%
  */
 
+/**
+ * Interface for performing parallel operations on serialized 2D image tiles.
+ * 
+ * @see nom.tam.image.ImageTiler
+ * @see nom.tam.image.tile.operation.buffer.TileBuffer
+ */
 public interface ITileOperation {
 
+    /**
+     * Specifies the location of the tile in the serialized buffer.
+     * 
+     * @param dataOffset
+     *            the byte offset at which the tile data begins.
+     * @param width
+     *            the width of the tile in pixels.
+     * @param height
+     *            the tile height in pixels.
+     * @return itself.
+     */
     ITileOperation setDimensions(int dataOffset, int width, int height);
 
+    /**
+     * Waits until the parallelized operation is complete
+     */
     void waitForResult();
 }

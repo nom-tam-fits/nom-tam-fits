@@ -1,5 +1,5 @@
 /**
- * Common interface definitions for the various compression algorithms (<i>for internal use</i>). The compression
+ * (<i>for internal use</i>) Common interface definitions for the various compression algorithms. The compression
  * classes of nom-tam-fits come in a very fragmented packaging, which is unfortunate -- both because it's hard to get a
  * sense of the overall organization and because it results in way too many internals being exposed to users, which
  * could have been resticted to package-level visibility for internal use only. Alas, that's what it is, so it's going

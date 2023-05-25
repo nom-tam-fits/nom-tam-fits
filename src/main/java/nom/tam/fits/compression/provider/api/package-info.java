@@ -1,5 +1,5 @@
 /**
- * Defines an interface for looking up compression algorithms (<i>for internal use</i>). It's weird enough that it's in
+ * (<i>for internal use</i>) Defines an interface for looking up compression algorithms. It's weird enough that it's in
  * its own package, rather than being part of the core compression package, but that's life.
  */
 

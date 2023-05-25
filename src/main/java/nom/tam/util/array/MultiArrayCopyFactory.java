@@ -36,9 +36,12 @@ import java.util.HashMap;
 import java.util.Map;
 
 /**
- * @param <Source>      The generic type of array from which we want to copy elements
- * @param <Destination> The generic type of array to which we want to copy elements.
+ * @deprecated               use {@link MultiArrayCopier} instead. Make copies of multi-dimensional arrays.
+ * 
+ * @param      <Source>      The generic type of array from which we want to copy elements
+ * @param      <Destination> The generic type of array to which we want to copy elements.
  */
+@Deprecated
 public class MultiArrayCopyFactory<Source, Destination> {
 
     private static class ByteToChar extends MultiArrayCopyFactory<byte[], char[]> {

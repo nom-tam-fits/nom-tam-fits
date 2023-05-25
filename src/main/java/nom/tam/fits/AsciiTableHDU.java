@@ -63,9 +63,11 @@ public class AsciiTableHDU extends TableHDU<AsciiTable> {
 
     /**
      * Create an ASCII table header/data unit.
+     * 
+     * @deprecated   intended for internal use. Its visibility should be reduced to package level in the future.
      *
-     * @param h the template specifying the ASCII table.
-     * @param d the FITS data structure containing the table data.
+     * @param      h the template specifying the ASCII table.
+     * @param      d the FITS data structure containing the table data.
      */
     public AsciiTableHDU(Header h, AsciiTable d) {
         super(h, d);
@@ -172,6 +174,7 @@ public class AsciiTableHDU extends TableHDU<AsciiTable> {
         return hdr;
     }
 
+    @SuppressWarnings("deprecation")
     @Override
     public int addColumn(Object newCol) throws FitsException {
         Standard.context(AsciiTable.class);

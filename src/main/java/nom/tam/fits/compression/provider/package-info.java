@@ -1,5 +1,5 @@
 /**
- * Finding the right compression classes for every occasion (<i>for internal use</i>). It's weird that it is in its own
+ * (<i>for internal use</i>) Finding the right compression classes for every occasion. It's weird that it is in its own
  * package, rather than being part of hte base compression package, but that's life.
  */
 

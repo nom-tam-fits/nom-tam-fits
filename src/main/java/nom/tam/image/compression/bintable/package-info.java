@@ -1,7 +1,11 @@
 /**
- * Compression support for binary tables. It's a bit misleading that the package name implies images, when this is not
- * at all related to FITS images, but oh well. The principle of compression is however similar, with large binary tables
- * being broken into 'tiles' consisting of a few rows typically, which are then compressed with an algorihtm of choice.
+ * (<i>for internal use</i>) Compression support for binary tables. These are classes that are used internally by
+ * {@link nom.tam.image.compression.hdu.CompressedTableHDU}. They should not have been exposed to users, but oh well.
+ * It's a bit misleading that the package name implies images, when this is not at all related to FITS images, but oh
+ * well. The principle of compression is however similar, with large binary tables being broken into 'tiles' consisting
+ * of a few rows typically, which are then compressed with an algorihtm of choice.
+ * 
+ * @see nom.tam.image.compression.hdu.CompressedTableHDU
  */
 
 package nom.tam.image.compression.bintable;

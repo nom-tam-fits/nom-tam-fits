@@ -76,6 +76,11 @@ import static nom.tam.fits.header.Standard.TFORMn;
 import static nom.tam.fits.header.Standard.THEAP;
 import static nom.tam.fits.header.Standard.XTENSION;
 
+/**
+ * Mapping of header keywords between compressed and uncompressed representation. For example, the keyword NAXIS1 in the
+ * uncompressed HDU is remapped to ZNAXIS1 in the compressed HDU so it does not interfere with the different layout of
+ * the compressed HDU vs the layout of the original one.
+ */
 enum BackupRestoreUnCompressedHeaderCard {
     MAP_ANY(null) {
 

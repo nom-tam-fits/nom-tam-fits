@@ -134,11 +134,14 @@ public class UndefinedHDU extends BasicHDU<UndefinedData> {
 
     /**
      * Build an image HDU using the supplied data.
+     * 
+     * @deprecated               intended for internal use. Its visibility should be reduced to package level in the
+     *                               future.
      *
-     * @param  h             the header for this HDU
-     * @param  d             the data used to build the image.
+     * @param      h             the header for this HDU
+     * @param      d             the data used to build the image.
      *
-     * @throws FitsException if there was a problem with the data.
+     * @throws     FitsException if there was a problem with the data.
      */
     public UndefinedHDU(Header h, UndefinedData d) throws FitsException {
         super(h, d);

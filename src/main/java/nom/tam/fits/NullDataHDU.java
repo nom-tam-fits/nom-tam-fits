@@ -58,6 +58,7 @@ public class NullDataHDU extends BasicHDU<NullData> {
      *
      * @param myHeader the FITS header for this HDU
      */
+    @SuppressWarnings("deprecation")
     public NullDataHDU(Header myHeader) {
         super(myHeader, new NullData());
     }

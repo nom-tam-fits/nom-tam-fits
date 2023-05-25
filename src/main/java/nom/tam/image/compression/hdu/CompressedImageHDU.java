@@ -55,9 +55,59 @@ import static nom.tam.fits.header.Compression.ZIMAGE;
 import static nom.tam.fits.header.Standard.BLANK;
 
 /**
- * A compressed image is a normal binary table with a defined structure. The image is split in tiles and each tile is
- * compressed on its own. The compressed data is then stored in the 3 data columns of this binary table (compressed,
- * gzipped and uncompressed) depending on the compression type used in the tile.
+ * <p>
+ * A FITS HDU containing a compressed image. A compressed image is a normal binary table with a defined structure. The
+ * image is split in tiles and each tile is compressed on its own. The compressed data is then stored in the 3 data
+ * columns of this binary table (compressed, gzipped and uncompressed) depending on the compression type used in the
+ * tile.
+ * </p>
+ * <p>
+ * Compressing an image HDU is typically a multi-step process:
+ * </p>
+ * <ol>
+ * <li>Create a <code>CompressedImageHDU</code>, e.g. with {@link #fromImageHDU(ImageHDU, int...)}.</li>
+ * <li>Set up the compression algorithm, including quantization (if desired) via {@link #setCompressAlgorithm(String)}
+ * and {@link #setQuantAlgorithm(String)}, and optionally the compressiomn method used for preserving the blank values
+ * via {@link #preserveNulls(String)}.</li>
+ * <li>Set compression (and quantization) options, via calling on {@link #getCompressOption(Class)}</li>
+ * <li>Perform the compression via {@link #compress()}</li>
+ * </ol>
+ * <p>
+ * For example to compress an image HDU:
+ * </p>
+ * 
+ * <pre>
+ *   ImageHDU image = ...
+ *   
+ *   // 1. Create compressed HDU
+ *   CompressedImageHDU compressed = CompressedImageHDU.fromImageHDU(image, 60, 40);
+ *   
+ *   // 2. Set compression (and optional qunatizaiton) algorithm(s)
+ *   compressed.setCompressAlgorithm(Compression.ZCMPTYPE_RICE_1)
+ *             .setQuantAlgorithm(Compression.ZQUANTIZ_SUBTRACTIVE_DITHER_1)
+ *             .preserveNulls(Compression.ZCMPTYPE_HCOMPRESS_1);
+ *             
+ *   // 3. Set compression (and quantizaiton) options
+ *   compressed.getCompressOption(RiceCompressOption.class).setBlockSize(32);
+ *   compressed.getCompressOption(QuantizeOption.class).setBZero(3.0).setBScale(0.1).setBNull(-999);
+ *                    
+ *   // 4. Perform the compression.
+ *   compressed.compress();
+ * </pre>
+ * <p>
+ * After the compression the compressed HDSU can be handled just like any HDU, and written to a stream for example.
+ * </p>
+ * <p>
+ * The reverse process is imply calling the {@link #asImageHDU()}. E.g.:
+ * </p>
+ * 
+ * <pre>
+ *    CompressedImageHDU compressed = ...
+ *    ImageHDU image = compressed.asImageHDU();
+ * </pre>
+ * 
+ * @see CompressedImageData
+ * @see nom.tam.image.compression.CompressedImageTiler
  */
 public class CompressedImageHDU extends BinaryTableHDU {
     public static final int MAX_NAXIS_ALLOWED = 999;
@@ -74,7 +124,9 @@ public class CompressedImageHDU extends BinaryTableHDU {
 
     /**
      * Prepare a compressed image hdu for the specified image. the tile axis that are specified with -1 default to
-     * tiling by rows.
+     * tiling by rows. To actually perform the compression, you will next have to select the compression algorithm (and
+     * optinally a quantization algorithm), then configure options for these, and finally call {@link #compress()} to
+     * perform the compression. See the description of this class for more details.
      *
      * @param  imageHDU      the image to compress
      * @param  tileAxis      the requested tile sizes in pixels in x, y, z... order (i.e. opposite of the Java array
@@ -85,6 +137,12 @@ public class CompressedImageHDU extends BinaryTableHDU {
      * @return               the prepared compressed image hdu.
      *
      * @throws FitsException if the image could not be used to create a compressed image.
+     * 
+     * @see                  #asImageHDU()
+     * @see                  #setCompressAlgorithm(String)
+     * @see                  #setQuantAlgorithm(String)
+     * @see                  #getCompressOption(Class)
+     * @see                  #compress()
      */
     public static CompressedImageHDU fromImageHDU(ImageHDU imageHDU, int... tileAxis) throws FitsException {
         Header header = new Header();
@@ -122,24 +180,48 @@ public class CompressedImageHDU extends BinaryTableHDU {
     }
 
     /**
-     * Check that this HDU has a valid header for this type.
+     * @deprecated     for internal use only Check that this HDU has a valid header for this type.
      *
-     * @param  hdr header to check
+     * @param      hdr header to check
      *
-     * @return     <CODE>true</CODE> if this HDU has a valid header.
+     * @return         <CODE>true</CODE> if this HDU has a valid header.
      */
+    @Deprecated
     public static boolean isHeader(Header hdr) {
         return hdr.getBooleanValue(ZIMAGE, false);
     }
 
+    /**
+     * @deprecated for internal use only
+     */
+    @Deprecated
     public static CompressedImageData manufactureData(Header hdr) throws FitsException {
         return new CompressedImageData(hdr);
     }
 
+    /**
+     * Creates an new compressed image HDU with the specified header and compressed data.
+     * 
+     * @param hdr   the header
+     * @param datum the compressed image data. The data may not be actually compressed at this point, int which case you
+     *                  may need to call {@link #compress()} before writing the new compressed HDU to a stream.
+     * 
+     * @see         #compress()
+     */
     public CompressedImageHDU(Header hdr, CompressedImageData datum) {
         super(hdr, datum);
     }
 
+    /**
+     * Restores the original image HDU by decompressing the data contained in this compresed image HDU.
+     * 
+     * @return               The uncompressed Image HDU.
+     * 
+     * @throws FitsException If there was an issue with the decompression.
+     * 
+     * @see                  #fromImageHDU(ImageHDU, int...)
+     */
+    @SuppressWarnings("deprecation")
     public ImageHDU asImageHDU() throws FitsException {
         final Header header = getImageHeader();
         ImageData data = (ImageData) ImageHDU.manufactureData(header);
@@ -200,12 +282,25 @@ public class CompressedImageHDU extends BinaryTableHDU {
         return header;
     }
 
+    /**
+     * Performs the actual compression with the selected algorithm(s) and options. When creating a compressed image HDU,
+     * e.g using the {@link #fromImageHDU(ImageHDU, int...)} method, the HDU is merely prepared but without actually
+     * performing the compression to allow the user to configure the algorithm(S) to be used as well as any specific
+     * compression (or quantization) options. See details in the class description.
+     * 
+     * @throws FitsException if the compression could not be performed
+     * 
+     * @see                  #fromImageHDU(ImageHDU, int...)
+     * @see                  #setCompressAlgorithm(String)
+     * @see                  #setQuantAlgorithm(String)
+     * @see                  #getCompressOption(Class)
+     */
     public void compress() throws FitsException {
         getData().compress(this);
     }
 
     /**
-     * Specify an areaWithin the image that will not undergo a lossy compression. This will only have affect it the
+     * Specify an area within the image that will not undergo a lossy compression. This will only have affect it the
      * selected compression (including the options) is a lossy compression. All tiles touched by this region will be
      * handled so that there is no loss of any data, the reconstruction will be exact.
      *
@@ -221,6 +316,19 @@ public class CompressedImageHDU extends BinaryTableHDU {
         return this;
     }
 
+    /**
+     * Returns the compression (or quantization) options for a selected compression option class. It is presumed that
+     * the requested options are appropriate for the compression and/or quantization algorithm that was selected. E.g.,
+     * if you called <code>setCompressionAlgorithm({@link Compression#ZCMPTYPE_RICE_1})</code>, then you can retrieve
+     * options for it with this method as
+     * <code>getCompressOption({@link nom.tam.fits.compression.algorithm.rice.RiceCompressOption}.class)</code>.
+     * 
+     * @param  <T>   The generic type of the compression class
+     * @param  clazz the compression class
+     * 
+     * @return       The current set of options for the requested type, or <code>null</code> if there are no options or
+     *                   if the requested type does not match the algorithm(s) selected.
+     */
     public <T extends ICompressOption> T getCompressOption(Class<T> clazz) {
         return getData().getCompressOption(clazz);
     }
@@ -230,27 +338,49 @@ public class CompressedImageHDU extends BinaryTableHDU {
         return (CompressedImageData) super.getData();
     }
 
+    /**
+     * Returns the uncompressed image in serialized form, as it would appear in a stream.
+     * 
+     * @deprecated               There is no reason why this should be exposed to users. Use {@link #asImageHDU()}
+     *                               instead. Future release may restrict the visibility to private.
+     * 
+     * @return                   the buffer containing the serialized form of the uncompressed image.
+     * 
+     * @throws     FitsException if the decompression could not be performed.
+     * 
+     * @see                      #asImageHDU()
+     */
+    @Deprecated
     public Buffer getUncompressedData() throws FitsException {
         return getData().getUncompressedData(getHeader());
     }
 
     /**
-     * Check that this HDU has a valid header.
+     * @deprecated for internal use only Checks that this HDU has a valid header.
+     * @deprecated This method should not be exposed to users. Visibility should be reduced to protected.
      *
-     * @return <CODE>true</CODE> if this HDU has a valid header.
+     * @return     <CODE>true</CODE> if this HDU has a valid header.
      */
     @Override
+    @Deprecated
     public boolean isHeader() {
         return super.isHeader() && isHeader(myHeader);
     }
 
     /**
-     * preserve the null values in the image even if the compression algorithm is lossy. I the image that will be
-     * compressed a BLANK header should be available if the pixel value is one of the integer types.
+     * Sets the compression algorithm used for preserving the blank values in the original image even if the compression
+     * is lossy. When compression an integer image, a BLANK header should be defined in its header. You should typically
+     * use one of the enum values defined in {@link Compression}.
      *
-     * @param  compressionAlgorithm compression algorithm to use for the null pixel mask
+     * @param  compressionAlgorithm compression algorithm to use for the null pixel mask, see {@link Compression} for
+     *                                  recognized names.
      *
-     * @return                      this
+     * @return                      itself
+     * 
+     * @see                         Compression
+     * @see                         #setCompressAlgorithm(String)
+     * @see                         #setQuantAlgorithm(String)
+     * @see                         nom.tam.image.compression.tile.mask.NullPixelMaskPreserver
      */
     public CompressedImageHDU preserveNulls(String compressionAlgorithm) {
         long nullValue = getHeader().getLongValue(BLANK, Long.MIN_VALUE);
@@ -258,12 +388,40 @@ public class CompressedImageHDU extends BinaryTableHDU {
         return this;
     }
 
+    /**
+     * Sets the compression algorithm to use, by its standard FITS name. You should typically use one of the enum values
+     * defined in {@link Compression}.
+     * 
+     * @param  compressAlgorithm compression algorithm to use, see {@link Compression} for recognized names.
+     * 
+     * @return                   itself
+     * 
+     * @throws FitsException     if no algorithm is available by the specified name
+     * 
+     * @see                      Compression
+     * @see                      #setQuantAlgorithm(String)
+     * @see                      #preserveNulls(String)
+     */
     public CompressedImageHDU setCompressAlgorithm(String compressAlgorithm) throws FitsException {
         HeaderCard compressAlgorithmCard = HeaderCard.create(Compression.ZCMPTYPE, compressAlgorithm);
         getData().setCompressAlgorithm(compressAlgorithmCard);
         return this;
     }
 
+    /**
+     * Sets the quantization algorithm to use, by its standard FITS name. You should typically use one of the enum
+     * values defined in {@link Compression}.
+     * 
+     * @param  quantAlgorithm quantization algorithm to use, see {@link Compression} for recognized names.
+     * 
+     * @return                itself
+     * 
+     * @throws FitsException  if no algorithm is available by the specified name
+     * 
+     * @see                   Compression
+     * @see                   #setCompressAlgorithm(String)
+     * @see                   #preserveNulls(String)
+     */
     public CompressedImageHDU setQuantAlgorithm(String quantAlgorithm) throws FitsException {
         if (quantAlgorithm != null && !quantAlgorithm.isEmpty()) {
             HeaderCard quantAlgorithmCard = HeaderCard.create(Compression.ZQUANTIZ, quantAlgorithm);

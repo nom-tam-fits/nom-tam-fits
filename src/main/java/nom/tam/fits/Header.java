@@ -1683,6 +1683,7 @@ public class Header implements FitsElement {
     }
 
     /** Reset the file pointer to the beginning of the header */
+    @SuppressWarnings("deprecation")
     @Override
     public boolean reset() {
         try {
@@ -1718,6 +1719,7 @@ public class Header implements FitsElement {
     }
 
     /** Rewrite the header. */
+    @SuppressWarnings("deprecation")
     @Override
     public void rewrite() throws FitsException, IOException {
         ArrayDataOutput dos = (ArrayDataOutput) input;

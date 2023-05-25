@@ -1,8 +1,17 @@
 /**
- * The <a href="https://www.stsci.edu/software/hcompress.html">HCompress</a> algorithm, and its options. HCompress is a
- * lossless compression algorithms was developed by Richard L. White at the Space Telescope Science Institute, and is
- * used for the Hubble archive and the STScI Digital Sky Survey. It's weird that it's a package by itself, but that's
- * life.
+ * <p>
+ * The <a href="https://www.stsci.edu/software/hcompress.html">HCompress</a> algorithm, and its options (<i>primarily
+ * for internal use</i>). HCompress is a lossless compression algorithms was developed by Richard L. White at the Space
+ * Telescope Science Institute, and is used for the Hubble archive and the STScI Digital Sky Survey. It's weird that
+ * it's a package by itself, but that's life.
+ * </p>
+ * <p>
+ * The only classes in here that users would typically interact with are
+ * {@link nom.tam.fits.compression.algorithm.hcompress.HCompressorOption} and potentially
+ * {@link nom.tam.fits.compression.algorithm.hcompress.HCompressorQuantizeOption}, e.g. via
+ * {@link nom.tam.image.compression.hdu.CompressedImageHDU#getCompressOption(Class)} to set options after Rice
+ * compression was selected for compressing an image HDU.
+ * </p>
  */
 
 package nom.tam.fits.compression.algorithm.hcompress;

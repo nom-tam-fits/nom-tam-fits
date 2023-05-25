@@ -43,10 +43,28 @@ public class TruncatedFileException extends FitsException {
      */
     private static final long serialVersionUID = -4824457442211702123L;
 
+    /**
+     * Instantiates this exception with the designated message string.
+     * 
+     * @param msg
+     *            a human readable message that describes what in fact caused
+     *            the exception
+     */
     public TruncatedFileException(String msg) {
         super(msg);
     }
 
+    /**
+     * Instantiates this exception with the designated message string, when it
+     * was triggered by some other type of exception
+     * 
+     * @param msg
+     *            a human readable message that describes what in fact caused
+     *            the exception
+     * @param cause
+     *            the original exception (or other throwable) that triggered
+     *            this exception.
+     */
     public TruncatedFileException(String msg, Exception cause) {
         super(msg, cause);
     }

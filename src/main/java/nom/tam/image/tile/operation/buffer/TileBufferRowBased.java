@@ -35,6 +35,15 @@ import java.nio.Buffer;
 
 import nom.tam.util.type.ElementType;
 
+/**
+ * <p>
+ * Tiling implementation, for when the tile width matches the width of the image. For example, for covering a 300 by 250
+ * image with tiles of 300 by 5 pixels.
+ * </p>
+ * 
+ * @deprecated Use {@link TileBufferFactory} instead to construct and access via {@link TileBuffer} interface. Its
+ *                 visiv=bility should be reduced to the package level in the future.
+ */
 public class TileBufferRowBased extends TileBuffer {
 
     public TileBufferRowBased(ElementType<Buffer> baseType, int dataOffset, int width, int height) {

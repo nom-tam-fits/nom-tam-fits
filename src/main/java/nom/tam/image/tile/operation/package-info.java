@@ -1,6 +1,16 @@
 /**
- * Interfaces and base classes for handling image tiles (<i>for internal use</i>). It's weird that these classes aren't
+ * <p>
+ * (<i>for internal use</i>) Interfaces and base classes for handling image tiles. It's weird that these classes aren't
  * bundled with the rest of the tiling support, but that's life.
+ * </p>
+ * <p>
+ * The classes of these package are used internally, e.g. by {@link nom.tam.image.compression.hdu.CompressedImageHDU}
+ * and {@link nom.tam.image.compression.hdu.CompressedTableHDU}, which are typically the main compression classes the
+ * user will interact with.
+ * </p>
+ * 
+ * @see nom.tam.image.compression.hdu.CompressedImageHDU
+ * @see nom.tam.image.compression.hdu.CompressedTableHDU
  */
 
 package nom.tam.image.tile.operation;

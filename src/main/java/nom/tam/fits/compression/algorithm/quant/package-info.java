@@ -1,15 +1,21 @@
 /**
  * <p>
- * Quantization support for representing floating-point values with integers corresponding to discreet levels. While not
- * a compression alorithm in itself (hence you might also wonder why it's in a package on its own under compression
- * algorithms) quantization is nevertheless commonly used as a pre-sompression (or post-decompression step) with actual
- * algorithms, especially if the algorithms are designed for integer-only data.
+ * Quantization support for representing floating-point values with integers corresponding to discreet levels
+ * (<i>primarily for internal use</i>). While not a compression alorithm in itself (hence you might also wonder why it's
+ * in a package on its own under compression algorithms) quantization is nevertheless commonly used as a pre-sompression
+ * (or post-decompression step) with actual algorithms, especially if the algorithms are designed for integer-only data.
  * </p>
  * <p>
  * Quantization is an inherently lossy process, so it will result in a lossy compression even when paired with a
  * lossless compression algorithm. However, it can significantly improve compression ratios when images have limited
  * dynamic range. For example a 2-byte integer quantization of double-precision values will provide 64k discrete levels
  * at 1/4<sup>th</sup> of the required storage space -- even before compression is applied.
+ * </p>
+ * <p>
+ * The only class in here that users would typically interact with is
+ * {@link nom.tam.fits.compression.algorithm.quant.QuantizeOption} or
+ * {@link nom.tam.image.compression.hdu.CompressedImageHDU#getCompressOption(Class)} to set options after a quantization
+ * algorithm was selected for compressing an image HDU.
  * </p>
  */
 

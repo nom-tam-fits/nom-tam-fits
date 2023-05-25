@@ -224,8 +224,8 @@ public class FlexFormat {
      * 
      * @param value
      *            the number to check
-     * @return <code>true</code> if the specified number is a decimal type value,
-     *         or else <code>false</code> if it is an integer type.
+     * @return <code>true</code> if the specified number is a decimal type
+     *         value, or else <code>false</code> if it is an integer type.
      */
     private static boolean isDecimal(Number value) {
         return value instanceof Float || value instanceof Double || value instanceof BigDecimal;
@@ -241,8 +241,8 @@ public class FlexFormat {
      * 
      * @param value
      *            the decimal value to print
-     * @return the string representing the value, or an empty string if the value
-     *         was <code>null</code>.
+     * @return the string representing the value, or an empty string if the
+     *         value was <code>null</code>.
      * @throws LongValueException
      *             if the decimal value cannot be represented in the alotted
      *             space with any precision

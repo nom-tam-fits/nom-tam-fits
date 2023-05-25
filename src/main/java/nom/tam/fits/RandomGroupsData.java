@@ -155,6 +155,7 @@ public class RandomGroupsData extends Data {
         return sampleRow == null ? null : ArrayFuncs.getDimensions(sampleRow[1]);
     }
 
+    @SuppressWarnings("deprecation")
     @Override
     protected void fillHeader(Header h) throws FitsException {
         if (groups <= 0) {

@@ -32,8 +32,10 @@ package nom.tam.fits;
  */
 
 /**
- * This is a general exception class allow us to distinguish issues detected by
- * this library.
+ * A hard exception for when we cannot deal with some FITS data as expected. In
+ * retrospect it would have been better to make this a softer runtime exception,
+ * but this goes back to the beginning of this library so it is here to stay.
+ * You have no choice but to catch these an deal with them all the time.
  */
 public class FitsException extends Exception {
 
@@ -42,10 +44,28 @@ public class FitsException extends Exception {
      */
     private static final long serialVersionUID = 7713834647104490578L;
 
+    /**
+     * Instantiates this exception with the designated message string.
+     * 
+     * @param msg
+     *            a human readable message that describes what in fact caused
+     *            the exception
+     */
     public FitsException(String msg) {
         super(msg);
     }
 
+    /**
+     * Instantiates this exception with the designated message string, when it
+     * was triggered by some other type of exception
+     * 
+     * @param msg
+     *            a human readable message that describes what in fact caused
+     *            the exception
+     * @param reason
+     *            the original exception (or other throwable) that triggered
+     *            this exception.
+     */
     public FitsException(String msg, Throwable reason) {
         super(msg, reason);
     }

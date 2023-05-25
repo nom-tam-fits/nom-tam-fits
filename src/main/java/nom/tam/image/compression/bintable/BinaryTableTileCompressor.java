@@ -41,6 +41,9 @@ import nom.tam.util.ByteBufferOutputStream;
 import nom.tam.util.ColumnTable;
 import nom.tam.util.FitsOutputStream;
 
+/**
+ * Handles the compression of binary table 'tiles' (<i>for internal use</i>).
+ */
 public class BinaryTableTileCompressor extends BinaryTableTile {
 
     private static final int FACTOR_15 = 15;

@@ -1,7 +1,7 @@
 /**
- * Basse implementations of the interfaces that manage compression parameters for the various algorithms (<i>for
- * internal use</i>). It's weird enough that it's in its own package, rather than being part of the core compression
- * package, but that's life.
+ * (<i>for internal use</i>) Base implementations of the interfaces that manage compression parameters for the various
+ * algorithms. It's weird enough that it's in its own package, rather than being part of the core compression package,
+ * but that's life.
  */
 
 package nom.tam.fits.compression.provider.param.base;

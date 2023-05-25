@@ -59,6 +59,14 @@ public class BinaryTableHDU extends TableHDU<BinaryTable> {
     /** The standard column keywords for a binary table. */
     private static final IFitsHeader[] KEY_STEMS = {TTYPEn, TFORMn, TUNITn, TNULLn, TSCALn, TZEROn, TDISPn, TDIMn};
 
+    /**
+     * Creates a new binary table HDU from the specified FITS header and associated table data
+     * 
+     * @deprecated       intended for internal use. Its visibility should be reduced to package level in the future.
+     * 
+     * @param      hdr   the FITS header describing the data and any user-specific keywords
+     * @param      datum the corresponding data object
+     */
     public BinaryTableHDU(Header hdr, BinaryTable datum) {
         super(hdr, datum);
     }
@@ -163,6 +171,11 @@ public class BinaryTableHDU extends TableHDU<BinaryTable> {
         return super.addColumn(data);
     }
 
+    /**
+     * For internal use. Returns the FITS header key stems to use for describing binary tables.
+     * 
+     * @return an array of standatd header colum knetwords stems.
+     */
     protected static IFitsHeader[] binaryTableColumnKeyStems() {
         return KEY_STEMS;
     }

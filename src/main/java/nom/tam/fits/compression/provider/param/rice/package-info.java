@@ -1,5 +1,5 @@
 /**
- * Managing parameters for {@link nom.tam.fits.compression.algorithm.rice.RiceCompressor} (<i>for internal use</i>). You
+ * (<i>for internal use</i>) Managing parameters for {@link nom.tam.fits.compression.algorithm.rice.RiceCompressor}. You
  * might wonder why it is packaged separately from the compression algorithm it supports. It's weird, I know. But this
  * is how it has been since inception, so this is how it will be...
  */

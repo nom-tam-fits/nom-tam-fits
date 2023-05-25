@@ -41,9 +41,43 @@ import nom.tam.fits.FitsException;
  */
 public interface ICompressProvider {
 
+    /**
+     * Decompresses data from an input stream.
+     * 
+     * @param in
+     *            the input stream containing compressed data
+     * @return a new input stream containing the decompressed data
+     * @throws IOException
+     *             if there was an IO error while accessing the input stream
+     * @throws FitsException
+     *             if the decompression cannot be performed for some reason that
+     *             is not related to the input per se.
+     */
     InputStream decompress(InputStream in) throws IOException, FitsException;
 
+    /**
+     * A priority of this method. {@link CompressionManager} will use this to
+     * select the 'best' compression class when multiple compression classes can
+     * provide decompression support for a given input stream. Claases that have
+     * a higher priority will be preferred.
+     * 
+     * @return a priority of this decompression method vs similar other
+     *         compression methods that may be avaialble.
+     * @see CompressionManager
+     */
     int priority();
 
+    /**
+     * Checks if this compression method can support the magic integer number
+     * that is used to identify the type of compression at the beginning of
+     * compressed files, and is stored as the first 2 bytes of compressed data.
+     * 
+     * @param byte1
+     *            the first byte of the compressed file
+     * @param byte2
+     *            the second byte of the compressed file
+     * @return <code>true</code> if this class can be used to decompress the
+     *         given file, or else <code>false</code>.
+     */
     boolean provides(int byte1, int byte2);
 }

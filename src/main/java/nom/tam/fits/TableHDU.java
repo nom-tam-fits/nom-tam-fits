@@ -49,8 +49,10 @@ public abstract class TableHDU<T extends AbstractTableData> extends BasicHDU<T> 
     /**
      * Create the TableHDU. Note that this will normally only be invoked by subclasses in the FITS package.
      *
-     * @param hdr the header
-     * @param td  The data for the table.
+     * @deprecated     intended for internal use. Its visibility should be reduced to package level in the future.
+     * 
+     * @param      hdr the header
+     * @param      td  The data for the table.
      */
     protected TableHDU(Header hdr, T td) {
         super(hdr, td);
@@ -89,8 +91,6 @@ public abstract class TableHDU<T extends AbstractTableData> extends BasicHDU<T> 
      * @return               the number of rows in the adapted table
      *
      * @param  newRows       rows to add to the table
-     *
-     * @return               the number of rows in the table
      *
      * @throws FitsException if the operation failed
      */
@@ -213,6 +213,7 @@ public abstract class TableHDU<T extends AbstractTableData> extends BasicHDU<T> 
      *
      * @throws FitsException If an error occurs in the deletion.
      */
+    @SuppressWarnings("deprecation")
     public void deleteRows(final int firstRow, int nRow) throws FitsException {
 
         // Just ignore invalid requests.
@@ -531,6 +532,19 @@ public abstract class TableHDU<T extends AbstractTableData> extends BasicHDU<T> 
         myHeader.addLine(new HeaderCard(key + (index + 1), value, comment));
     }
 
+    /**
+     * Sets the name / ID of a specific column in this table. Naming columns is generally a good idea so that people can
+     * figure out what sort of data actually appears in specific table columns.
+     * 
+     * @param  index               the column index
+     * @param  name                the name or ID we want to assing to the column
+     * @param  comment             Any additional comment we would like to store alongside in the FITS header. (The
+     *                                 comment may be truncated or even ommitted, depending on space constraints in the
+     *                                 FITS header.
+     * 
+     * @throws HeaderCardException if there was a problem wil adding the associated descriptive FITS header keywords to
+     *                                 this table's header.
+     */
     public void setColumnName(int index, String name, String comment) throws HeaderCardException {
         setColumnMeta(index, TTYPEn, name, comment, true);
     }

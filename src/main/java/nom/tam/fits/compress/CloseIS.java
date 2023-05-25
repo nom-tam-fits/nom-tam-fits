@@ -74,6 +74,12 @@ public class CloseIS extends FilterInputStream {
 
     private final Process proc;
 
+    /**
+     * Instantiates a new thread that will watch and close the input stream whenever the process using it compeletes.
+     * 
+     * @param proc       The process that is using the input stream
+     * @param compressed the compressed input stream that is used by the process.
+     */
     @SuppressWarnings("resource")
     public CloseIS(Process proc, final InputStream compressed) {
         super(new BufferedInputStream(proc.getInputStream(), CompressionManager.ONE_MEGABYTE));
