@@ -638,7 +638,6 @@ public class HeaderCard implements CursorValue<String>, Cloneable {
      * @return the value from this card
      *
      * @see    #getValue(Class, Object)
-     * @see    #getHexValue()
      * @see    #getKey()
      * @see    #getComment()
      */
@@ -659,15 +658,16 @@ public class HeaderCard implements CursorValue<String>, Cloneable {
     }
 
     /**
-     * Returns the integer value from the hexadecimal representation of it in the Header. The FITS standard explicitly
-     * allows hexadecimal values, such as 2B, not only decimal values such as 43 in the header.
+     * @deprecated                       Not supported by the FITS standard, so do not use. It was included due to a
+     *                                       misreading of the standard itself.
      *
-     * @return                       the value from this card
+     * @return                           the value from this card
      *
-     * @throws NumberFormatException if the card's value is null or cannot be parsed as a hexadecimal value.
+     * @throws     NumberFormatException if the card's value is null or cannot be parsed as a hexadecimal value.
      *
-     * @see                          #getValue()
+     * @see                              #getValue()
      */
+    @Deprecated
     public final synchronized long getHexValue() throws NumberFormatException {
         if (value == null) {
             throw new NumberFormatException("Card has a null value");
@@ -993,16 +993,18 @@ public class HeaderCard implements CursorValue<String>, Cloneable {
     }
 
     /**
-     * Sets the value for this card, represented as a hexadecimal number.
+     * @deprecated                    Not supported by the FITS standard, so do not use. It was included due to a
+     *                                    misreading of the standard itself.
      *
-     * @param  update             the new value to set
+     * @param      update             the new value to set
      *
-     * @return                    the HeaderCard itself
+     * @return                        the HeaderCard itself
      *
-     * @throws LongValueException if the value is too long to fit in the available space.
+     * @throws     LongValueException if the value is too long to fit in the available space.
      *
-     * @since                     1.16
+     * @since                         1.16
      */
+    @Deprecated
     public synchronized HeaderCard setHexValue(long update) throws LongValueException {
         setUnquotedValue(Long.toHexString(update));
         type = (update == (int) update) ? Integer.class : Long.class;
@@ -1607,38 +1609,42 @@ public class HeaderCard implements CursorValue<String>, Cloneable {
     }
 
     /**
-     * Creates a new header card with the hexadecimal representation of an integer value
+     * @deprecated                     Not supported by the FITS standard, so do not use. It was included due to a
+     *                                     misreading of the standard itself.
      *
-     * @param  key                 the keyword
-     * @param  value               the integer value
+     * @param      key                 the keyword
+     * @param      value               the integer value
      *
-     * @return                     A new header card, with the specified integer in hexadecomal representation.
+     * @return                         A new header card, with the specified integer in hexadecomal representation.
      *
-     * @throws HeaderCardException if the card is invalid (for example the keyword is not valid).
+     * @throws     HeaderCardException if the card is invalid (for example the keyword is not valid).
      *
-     * @see                        #createHexValueCard(String, long, String)
-     * @see                        #getHexValue()
-     * @see                        Header#getHexValue(String)
+     * @see                            #createHexValueCard(String, long, String)
+     * @see                            #getHexValue()
+     * @see                            Header#getHexValue(String)
      */
+    @Deprecated
     public static HeaderCard createHexValueCard(String key, long value) throws HeaderCardException {
         return createHexValueCard(key, value, null);
     }
 
     /**
-     * Creates a new header card with the hexadecimal representation of an integer value
+     * @deprecated                     Not supported by the FITS standard, so do not use. It was included due to a
+     *                                     misreading of the standard itself.
      *
-     * @param  key                 the keyword
-     * @param  value               the integer value
-     * @param  comment             optional comment, or <code>null</code>.
+     * @param      key                 the keyword
+     * @param      value               the integer value
+     * @param      comment             optional comment, or <code>null</code>.
      *
-     * @return                     A new header card, with the specified integer in hexadecomal representation.
+     * @return                         A new header card, with the specified integer in hexadecomal representation.
      *
-     * @throws HeaderCardException if the card is invalid (for example the keyword is not valid).
+     * @throws     HeaderCardException if the card is invalid (for example the keyword is not valid).
      *
-     * @see                        #createHexValueCard(String, long)
-     * @see                        #getHexValue()
-     * @see                        Header#getHexValue(String)
+     * @see                            #createHexValueCard(String, long)
+     * @see                            #getHexValue()
+     * @see                            Header#getHexValue(String)
      */
+    @Deprecated
     public static HeaderCard createHexValueCard(String key, long value, String comment) throws HeaderCardException {
         return new HeaderCard(key, Long.toHexString(value), comment, Long.class);
     }

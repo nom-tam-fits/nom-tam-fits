@@ -1269,16 +1269,8 @@ public class HeaderCardTest {
         assertEquals(Integer.class, hc.valueType());
         assertEquals(i, hc.getHexValue());
 
-        hc = HeaderCard.create(hc.toString());
-        assertEquals(Integer.class, hc.valueType());
-        assertEquals(i, hc.getHexValue());
-
         long l = 202110062256L;
         hc.setHexValue(l);
-        assertEquals(Long.class, hc.valueType());
-        assertEquals(l, hc.getHexValue());
-
-        hc = HeaderCard.create(hc.toString());
         assertEquals(Long.class, hc.valueType());
         assertEquals(l, hc.getHexValue());
     }

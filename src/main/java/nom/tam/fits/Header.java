@@ -478,22 +478,24 @@ public class Header implements FitsElement {
     }
 
     /**
-     * Add or replace a key with the given integer value in hexadecimal representation, and comment.
+     * @deprecated                     Not supported by the FITS standard, so do not use. It was included due to a
+     *                                     misreading of the standard itself.
      *
-     * @param  key                 The header key.
-     * @param  val                 The integer value.
-     * @param  comment             A comment to append to the card.
+     * @param      key                 The header key.
+     * @param      val                 The integer value.
+     * @param      comment             A comment to append to the card.
      *
-     * @return                     the new card that was added.
+     * @return                         the new card that was added.
      *
-     * @throws HeaderCardException If the parameters cannot build a valid FITS card.
+     * @throws     HeaderCardException If the parameters cannot build a valid FITS card.
      *
-     * @since                      1.16
+     * @since                          1.16
      *
-     * @see                        #addValue(String, Number, String)
-     * @see                        HeaderCard#createHexValueCard(String, long)
-     * @see                        #getHexValue(String)
+     * @see                            #addValue(String, Number, String)
+     * @see                            HeaderCard#createHexValueCard(String, long)
+     * @see                            #getHexValue(String)
      */
+    @Deprecated
     public HeaderCard addHexValue(String key, long val, String comment) throws HeaderCardException {
         HeaderCard hc = HeaderCard.createHexValueCard(key, val, comment);
         addLine(hc);
@@ -1111,35 +1113,38 @@ public class Header implements FitsElement {
     }
 
     /**
-     * Get the <CODE>long</CODE> value associated with the given key.
+     * @deprecated     Not supported by the FITS standard, so do not use. It was included due to a misreading of the
+     *                     standard itself.
      *
-     * @param  key The header key.
+     * @param      key The header key.
      *
-     * @return     The associated value or 0 if not found.
+     * @return         The associated value or 0 if not found.
      *
-     * @since      1.16
+     * @since          1.16
      *
-     * @see        #getHexValue(String, long)
-     * @see        HeaderCard#getHexValue()
-     * @see        #addHexValue(String, long, String)
+     * @see            #getHexValue(String, long)
+     * @see            HeaderCard#getHexValue()
+     * @see            #addHexValue(String, long, String)
      */
+    @Deprecated
     public final long getHexValue(String key) {
         return getHexValue(key, 0L);
     }
 
     /**
-     * Get the <CODE>long</CODE> value stored in hexadecimal format under the specified key.
+     * @deprecated     Not supported by the FITS standard, so do not use. It was included due to a misreading of the
+     *                     standard itself.
      *
-     * @param  key The header key.
-     * @param  dft The default value to be returned if the key cannot be found.
+     * @param      key The header key.
+     * @param      dft The default value to be returned if the key cannot be found.
      *
-     * @return     the associated value.
+     * @return         the associated value.
      *
-     * @since      1.16
+     * @since          1.16
      *
-     * @see        #getHexValue(String)
-     * @see        HeaderCard#getHexValue()
-     * @see        #addHexValue(String, long, String)
+     * @see            #getHexValue(String)
+     * @see            HeaderCard#getHexValue()
+     * @see            #addHexValue(String, long, String)
      */
     public long getHexValue(String key, long dft) {
         HeaderCard fcard = findCard(key);
