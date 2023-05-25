@@ -33,8 +33,25 @@ package nom.tam.util.array;
 
 import java.lang.reflect.Array;
 
+/**
+ * Make deep copies of multi-dimensional arrays.
+ * 
+ * @param <Source>      The generic type of array from which we want to copy elements
+ * @param <Destination> The generic type of array to which we want to copy elements.
+ */
+@SuppressWarnings("deprecation")
 public final class MultiArrayCopier<Source, Destination> {
 
+    /**
+     * Copies the contents of one array into another. The two arrays should match in shape and size, but may be of
+     * different types. Casting will be used to convert between types if necessary (e.g. <code>double[][]</code> to
+     * <code>int[][]</code>). .
+     * 
+     * @param <Source>      The generic type of array from which we want to copy elements
+     * @param <Destination> The generic type of array to which we want to copy elements.
+     * @param fromArray     the source array, whose data is to be copied
+     * @param toArray       the destination array, into which data is copied
+     */
     public static <Source, Destination> void copyInto(Source fromArray, Destination toArray) {
         new MultiArrayCopier<>(fromArray, toArray).copyInto();
     }
@@ -51,6 +68,7 @@ public final class MultiArrayCopier<Source, Destination> {
 
     private final MultiArrayCopyFactory<Source, Destination> copyFactory;
 
+    @SuppressWarnings("unchecked")
     private MultiArrayCopier(Source fromArray, Destination toArray) {
         from = new MultiArrayIterator<>(fromArray);
         to = new MultiArrayIterator<>(toArray);

@@ -36,8 +36,11 @@ import java.nio.Buffer;
 import nom.tam.util.type.ElementType;
 
 /**
- * This view on the image data represents a tileOperation that is row based, so a tileOperation that fills the whole
- * width of the image.
+ * A linear buffer that contains data for a single 2D image tile, in row-major format. You can use
+ * {@link TileBufferFactory} to create appropriate implementations depending on tile and image sizes.
+ * 
+ * @see TileBufferFactory
+ * @see nom.tam.image.tile.operation.TileArea
  */
 public abstract class TileBuffer {
 
@@ -47,9 +50,6 @@ public abstract class TileBuffer {
 
     private final int offset;
 
-    /**
-     * the tileOperation this view is connected to
-     */
     private final ElementType<Buffer> baseType;
 
     private final int width;
@@ -78,7 +78,7 @@ public abstract class TileBuffer {
     }
 
     /**
-     * @return the number of pixels in the tileOperation this view represents.
+     * @return the number of pixels in the tile this view represents.
      */
     public int getPixelSize() {
         return width * height;

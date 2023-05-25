@@ -30,8 +30,8 @@
  */
 
 /**
- * A few classes for copying and iterating over multi-dimensional arrays of all/any types, mainly for internal use. It's
- * weird that these classes were given their own separate package, especially given that the {@link nom.tam.util}
+ * A few classes for copying and iterating over multi-dimensional arrays of all/any types, primarily for internal use.
+ * It's weird that these classes were given their own separate package, especially given that the {@link nom.tam.util}
  * package is already a collection of all sorts of things -- and which really could have hosted these classes too. Oh
  * well...
  */

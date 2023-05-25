@@ -56,8 +56,10 @@ import nom.tam.util.ArrayFuncs;
 import nom.tam.util.type.ElementType;
 
 /**
- * Class to extract a sub-image from a compressed image binary table. This class supports the FITS 3.0 standard and up,
- * and will stream the results to a provided ArrayDataOutput.
+ * Class to extract individually compressed tiles from a compressed image. This class supports the FITS 3.0 standard and
+ * up, and will stream the results to a provided {@link nom.tam.util.ArrayDataOutput}.
+ * 
+ * @see nom.tam.image.compression.hdu.CompressedImageHDU
  */
 public class CompressedImageTiler implements ImageTiler {
     private static final Logger LOGGER = Logger.getLogger(CompressedImageTiler.class.getName());

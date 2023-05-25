@@ -80,6 +80,14 @@ public class ExternalBZip2CompressionProvider implements ICompressProvider {
         }
     }
 
+    /**
+     * Returns the system command to use for decompressing <code>.bz2</code> compressed files. It requires the
+     * <code>BZIP_DECOMPRESSOR</code> environment variable to be set to inform us as to what executable (including path)
+     * should be used. If there is no such environment variable set, it will return <code>null</code>
+     * 
+     * @return The system command for decompressing <code>.bz2</code> files, or <code>null</code> if there is no
+     *             <code>BZIP_DECOMPRESSOR</code> environment variable that could inform us.
+     */
     public String getBzip2Cmd() {
         return System.getProperty("BZIP_DECOMPRESSOR", System.getenv("BZIP_DECOMPRESSOR"));
     }

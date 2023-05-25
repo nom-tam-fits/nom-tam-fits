@@ -33,6 +33,9 @@ package nom.tam.image.compression.bintable;
 
 import nom.tam.fits.header.Compression;
 
+/**
+ * The specifications of a binary table 'tile' (<i>for internal use</i>).
+ */
 public final class BinaryTableTileDescription {
 
     private int rowStart;

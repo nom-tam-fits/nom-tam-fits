@@ -43,14 +43,34 @@ import nom.tam.image.tile.operation.buffer.TileBuffer;
 import nom.tam.util.type.ElementType;
 
 /**
- * restore the null pixel values of an image.
+ * Restores blank (<code>null</code>) values in deccompressed images.
  */
 public class NullPixelMaskRestorer extends AbstractNullPixelMask {
 
+    /**
+     * Creates a new instance for restoring the null values to a specific image
+     * tile when decompressing the tile.
+     * 
+     * @param tileBuffer
+     *            the buffer containing the serialized tile data (still
+     *            uncompressed)
+     * @param tileIndex
+     *            the sequential tile index
+     * @param nullValue
+     *            the blank value used in integer type images (this is ignored
+     *            for floating-point images where NaN is used always)
+     * @param compressorControl
+     *            the class that performs the decompresion of tiles, and which
+     *            will be used to decompress the null pixel mask also.
+     */
     public NullPixelMaskRestorer(TileBuffer tileBuffer, int tileIndex, long nullValue, ICompressorControl compressorControl) {
         super(tileBuffer, tileIndex, nullValue, compressorControl);
     }
 
+    /**
+     * Restores the original blanking values in the decompressed image based on
+     * the null pixel mask that was stored along with the compressed data.
+     */
     public void restoreNulls() {
         // if the mask is not present the tile contains no null pixels.
         if (getMask() != null) {

@@ -41,6 +41,9 @@ import nom.tam.util.ArrayDataInput;
 import nom.tam.util.ColumnTable;
 import nom.tam.util.FitsInputStream;
 
+/**
+ * Handles the decompression of binary table 'tiles' (<i>for internal use</i>).
+ */
 public class BinaryTableTileDecompressor extends BinaryTableTile {
 
     private final ByteBuffer compressedBytes;

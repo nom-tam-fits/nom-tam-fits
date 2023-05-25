@@ -32,11 +32,14 @@ package nom.tam.fits.compression.algorithm.quant;
  */
 
 /**
- * This is a modified (improved) version of the random sequence implementation
- * in Appendix I of the <a
+ * A standard fixed random sequence to use for portable and reversible dither
+ * implementations. This is a modified (improved) version of the random sequence
+ * implementation in Appendix I of the <a
  * href="https://fits.gsfc.nasa.gov/standard40/fits_standard40aa-le.pdf">FITS
  * 4.0 standard</a>, using integer arithmetics for better performance -- but
  * still providing the same sequence as the original algorithm.
+ * 
+ * @see QuantizeProcessor
  */
 public final class RandomSequence {
 

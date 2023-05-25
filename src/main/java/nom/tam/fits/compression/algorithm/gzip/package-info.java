@@ -1,5 +1,7 @@
 /**
- * GZIP compression algorithms. It's weird that it's a package by itself, but that's life.
+ * <p>
+ * (<i>for internal use</i>) GZIP compression algorithms. It's weird that it's a package by itself, but that's life.
+ * </p>
  */
 
 package nom.tam.fits.compression.algorithm.gzip;

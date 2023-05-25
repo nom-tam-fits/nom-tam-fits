@@ -38,6 +38,9 @@ package nom.tam.image;
 import java.io.IOException;
 
 /**
+ * Image tiling interface. FITS tiles are always 2-dimentional, but really images of any dimensions may be covered with
+ * such tiles.
+ * 
  * @author tmcglynn
  */
 public interface ImageTiler {

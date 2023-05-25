@@ -33,6 +33,14 @@ package nom.tam.fits.header.hierarch;
 
 import nom.tam.fits.utilities.FitsLineAppender;
 
+/**
+ * Interface for formatting HIERARCH-style header keywords. Our own standard is to define such keywords internally as
+ * starting with the string <code>HIERARCH.</code> followed by a dot-separated hierarchy, or just an unusually long FITS
+ * keywords that cannot be represented by a standard 8-byte keyword. The HIERARCH formatted will take such string
+ * keywords and will format them according to its rules when writing them to FITS headers.
+ * 
+ * @see nom.tam.fits.FitsFactory#setHierarchFormater(IHierarchKeyFormatter)
+ */
 @SuppressWarnings("deprecation")
 public interface IHierarchKeyFormatter {
 

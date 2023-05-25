@@ -121,6 +121,14 @@ public abstract class BasicHDU<DataClass extends Data> implements FitsElement {
     /** The associated data unit. */
     protected DataClass myData = null;
 
+    /**
+     * Creates a new HDU from the specified FITS header and associated data object
+     * 
+     * @deprecated          intended for internal use. Its visibility should be reduced to package level in the future.
+     * 
+     * @param      myHeader the FITS header describing the data and any user-specific keywords
+     * @param      myData   the corresponding data object
+     */
     protected BasicHDU(Header myHeader, DataClass myData) {
         this.myHeader = myHeader;
         this.myData = myData;
@@ -137,40 +145,95 @@ public abstract class BasicHDU<DataClass extends Data> implements FitsElement {
     }
 
     /**
-     * Check that this is a valid header for the HDU. This method is static but should be implemented by all subclasses.
-     * TODO: refactor this to be in a meta object so it can inherit normally also see {@link #isData(Object)}
+     * Checks that this is a valid header for the HDU. This method is static but should be implemented by all
+     * subclasses.
+     * 
+     * @deprecated        for internal use only
      *
-     * @param  header to validate.
+     * @param      header to validate.
      *
-     * @return        <CODE>true</CODE> if this is a valid header.
+     * @return            <CODE>true</CODE> if this is a valid header.
      */
     public static boolean isHeader(Header header) {
         return false;
     }
 
     /**
-     * @return   if this object can be described as a FITS image. This method is static but should be implemented by all
-     *               subclasses. TODO: refactor this to be in a meta object so it can inherit normally also see
-     *               {@link #isHeader(Header)}
+     * @deprecated   for internal use only
+     * 
+     * @return       if this object can be described as a FITS image. This method is static but should be implemented by
+     *                   all subclasses.
      *
-     * @param  o The Object being tested.
+     * @param      o The Object being tested.
      */
     public static boolean isData(Object o) {
         return false;
     }
 
+    /**
+     * Add information to the header.
+     *
+     * @param  key                 key to add to the header
+     * @param  val                 value for the key to add
+     *
+     * @throws HeaderCardException if the card does not follow the specification
+     * 
+     * @see                        #addValue(String, boolean, String)
+     * @see                        #addValue(IFitsHeader, int)
+     * @see                        #addValue(IFitsHeader, double)
+     * @see                        #addValue(IFitsHeader, String)
+     */
     public void addValue(IFitsHeader key, boolean val) throws HeaderCardException {
         myHeader.addValue(key.key(), val, key.comment());
     }
 
+    /**
+     * Add information to the header.
+     *
+     * @param  key                 key to add to the header
+     * @param  val                 value for the key to add
+     *
+     * @throws HeaderCardException if the card does not follow the specification
+     * 
+     * @see                        #addValue(String, boolean, String)
+     * @see                        #addValue(IFitsHeader, boolean)
+     * @see                        #addValue(IFitsHeader, int)
+     * @see                        #addValue(IFitsHeader, String)
+     */
     public void addValue(IFitsHeader key, double val) throws HeaderCardException {
         myHeader.addValue(key.key(), val, key.comment());
     }
 
+    /**
+     * Add information to the header.
+     *
+     * @param  key                 key to add to the header
+     * @param  val                 value for the key to add
+     *
+     * @throws HeaderCardException if the card does not follow the specification
+     * 
+     * @see                        #addValue(String, boolean, String)
+     * @see                        #addValue(IFitsHeader, boolean)
+     * @see                        #addValue(IFitsHeader, double)
+     * @see                        #addValue(IFitsHeader, String)
+     */
     public void addValue(IFitsHeader key, int val) throws HeaderCardException {
         myHeader.addValue(key.key(), val, key.comment());
     }
 
+    /**
+     * Add information to the header.
+     *
+     * @param  key                 key to add to the header
+     * @param  val                 value for the key to add
+     *
+     * @throws HeaderCardException if the card does not follow the specification
+     * 
+     * @see                        #addValue(String, boolean, String)
+     * @see                        #addValue(IFitsHeader, boolean)
+     * @see                        #addValue(IFitsHeader, int)
+     * @see                        #addValue(IFitsHeader, double)
+     */
     public void addValue(IFitsHeader key, String val) throws HeaderCardException {
         myHeader.addValue(key.key(), val, key.comment());
     }
@@ -183,19 +246,66 @@ public abstract class BasicHDU<DataClass extends Data> implements FitsElement {
      * @param  comment             comment for the key/value pair
      *
      * @throws HeaderCardException if the card does not follow the specification
+     * 
+     * @see                        #addValue(IFitsHeader, boolean)
+     * @see                        #addValue(String, int, String)
+     * @see                        #addValue(String, double, String)
+     * @see                        #addValue(String, String, String)
      */
     public void addValue(String key, boolean val, String comment) throws HeaderCardException {
         myHeader.addValue(key, val, comment);
     }
 
+    /**
+     * Add information to the header.
+     *
+     * @param  key                 key to add to the header
+     * @param  val                 value for the key to add
+     * @param  comment             comment for the key/value pair
+     *
+     * @throws HeaderCardException if the card does not follow the specification
+     * 
+     * @see                        #addValue(IFitsHeader, double)
+     * @see                        #addValue(String, boolean, String)
+     * @see                        #addValue(String, int, String)
+     * @see                        #addValue(String, String, String)
+     */
     public void addValue(String key, double val, String comment) throws HeaderCardException {
         myHeader.addValue(key, val, comment);
     }
 
+    /**
+     * Add information to the header.
+     *
+     * @param  key                 key to add to the header
+     * @param  val                 value for the key to add
+     * @param  comment             comment for the key/value pair
+     *
+     * @throws HeaderCardException if the card does not follow the specification
+     * 
+     * @see                        #addValue(IFitsHeader, int)
+     * @see                        #addValue(String, boolean, String)
+     * @see                        #addValue(String, double, String)
+     * @see                        #addValue(String, String, String)
+     */
     public void addValue(String key, int val, String comment) throws HeaderCardException {
         myHeader.addValue(key, val, comment);
     }
 
+    /**
+     * Add information to the header.
+     *
+     * @param  key                 key to add to the header
+     * @param  val                 value for the key to add
+     * @param  comment             comment for the key/value pair
+     *
+     * @throws HeaderCardException if the card does not follow the specification
+     * 
+     * @see                        #addValue(IFitsHeader, String)
+     * @see                        #addValue(String, boolean, String)
+     * @see                        #addValue(String, double, String)
+     * @see                        #addValue(String, int, String)
+     */
     public void addValue(String key, String val, String comment) throws HeaderCardException {
         myHeader.addValue(key, val, comment);
     }
@@ -268,16 +378,34 @@ public abstract class BasicHDU<DataClass extends Data> implements FitsElement {
      * @since                1.16
      *
      * @see                  #getBitPix()
-     * @see                  Header#setBitpix(Bitpix)
      */
     public Bitpix getBitpix() throws FitsException {
         return Bitpix.fromHeader(myHeader);
     }
 
+    /**
+     * Return the BITPIX integer value as stored in the FIS header.
+     *
+     * @return               The BITPIX integer values for this HDU as it appears in the header.
+     *
+     * @throws FitsException if the BITPIX value in the header is absent or invalid.
+     *
+     * @see                  #getBitpix()
+     */
     public final int getBitPix() throws FitsException {
         return getBitpix().getHeaderValue();
     }
 
+    /**
+     * Returns the integer value that signifies blank (missing or <code>null</code>) data in an integer image.
+     * 
+     * @deprecated               This is only applicable to {@link ImageHDU} with integer type data and not for other
+     *                               HDU or data types.
+     * 
+     * @return                   the integer value used for identifying blank / missing data in integer images.
+     * 
+     * @throws     FitsException if the header does not specify a blanking value.
+     */
     public long getBlankValue() throws FitsException {
         if (!myHeader.containsKey(BLANK.key())) {
             throw new FitsException("BLANK undefined");
@@ -285,14 +413,44 @@ public abstract class BasicHDU<DataClass extends Data> implements FitsElement {
         return myHeader.getLongValue(BLANK);
     }
 
+    /**
+     * Returns the floating-point increment between adjacent integer values in the image.
+     * 
+     * @deprecated This is only applicable to {@link ImageHDU} or {@link RandomGroupsHDU} with integer type data and not
+     *                 for other HDU or data types.
+     * 
+     * @return     the floating-point quantum that corresponds to the increment of 1 in the integer data representation.
+     * 
+     * @see        #getBZero()
+     */
+    @Deprecated
     public double getBScale() {
         return myHeader.getDoubleValue(BSCALE, 1.0);
     }
 
+    /**
+     * Returns the name of the physical unit in which images are represented.
+     * 
+     * @deprecated This is only applicable to {@link ImageHDU} or {@link RandomGroupsHDU}
+     * 
+     * @return     the standard name of the physical unit in which the image is expressed, e.g.
+     *                 <code>"Jy beam^{-1}"</code>.
+     */
     public String getBUnit() {
         return getTrimmedString(BUNIT);
     }
 
+    /**
+     * Returns the floating-point value that corresponds to an 0 integer value in the image.
+     * 
+     * @deprecated This is only applicable to {@link ImageHDU} or {@link RandomGroupsHDU} with integer type data and not
+     *                 for other HDU or data types.
+     * 
+     * @return     the floating point value that correspond to the integer 0 in the image data.
+     * 
+     * @see        #getBScale()
+     */
+    @Deprecated
     public double getBZero() {
         return myHeader.getDoubleValue(BZERO, 0.0);
     }
@@ -349,6 +507,15 @@ public abstract class BasicHDU<DataClass extends Data> implements FitsElement {
         return myHeader.getFileOffset();
     }
 
+    /**
+     * Returns the number of data objects (of identical shape and size) that are group together in this HDUs data
+     * segment. For most data types this would be simply 1, except for {@link RandomGroupsData}, where other values are
+     * possible.
+     * 
+     * @return the number of data objects (of identical shape and size) that are grouped together in the data segment.
+     * 
+     * @see    #getParameterCount()
+     */
     public int getGroupCount() {
         return myHeader.getIntValue(GCOUNT, 1);
     }
@@ -531,6 +698,13 @@ public abstract class BasicHDU<DataClass extends Data> implements FitsElement {
         return getTrimmedString(ORIGIN);
     }
 
+    /**
+     * Returns the number of parameter bytes (per data group) accompanying each data object in the group.
+     * 
+     * @return the number of bytes used for arbitrary extra parameters accompanying each data object in the group.
+     * 
+     * @see    #getGroupCount()
+     */
     public int getParameterCount() {
         return myHeader.getIntValue(PCOUNT, 0);
     }
@@ -599,7 +773,7 @@ public abstract class BasicHDU<DataClass extends Data> implements FitsElement {
      */
     public abstract void info(PrintStream stream);
 
-    @SuppressWarnings("unchecked")
+    @SuppressWarnings({"unchecked", "deprecation"})
     @Override
     public void read(ArrayDataInput stream) throws FitsException, IOException {
         myHeader = Header.readHeader(stream);

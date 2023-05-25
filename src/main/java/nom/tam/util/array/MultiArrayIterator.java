@@ -39,6 +39,7 @@ import java.lang.reflect.Array;
  * @param <BaseArray> the generic type of array at the base of a multi-dimensional array object. For example for a
  *                        <code>float[][][]</code> array the base would be <code>float[]</code>.
  */
+@SuppressWarnings("deprecation")
 public class MultiArrayIterator<BaseArray> {
 
     private final BaseArray baseArray;
@@ -63,6 +64,7 @@ public class MultiArrayIterator<BaseArray> {
         return clazz;
     }
 
+    @SuppressWarnings("unchecked")
     public BaseArray next() {
         if (baseIsNoSubArray) {
             if (baseNextCalled) {

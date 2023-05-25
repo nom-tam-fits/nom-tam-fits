@@ -1,6 +1,6 @@
 /**
- * Compression algorithm, for non compressing at all. It's weird, I know, and it's weirder that it's a package by
- * itself, but that's life.
+ * (<i> for internal use</i>) Compression algorithm, for non compressing at all. It's weird, I know, and it's weirder
+ * that it's a package by itself, but that's life.
  */
 
 package nom.tam.fits.compression.algorithm.uncompressed;

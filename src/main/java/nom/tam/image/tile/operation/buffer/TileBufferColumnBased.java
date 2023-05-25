@@ -36,9 +36,17 @@ import java.nio.Buffer;
 import nom.tam.util.type.ElementType;
 
 /**
+ * <p>
+ * Tiling implementation, for when the tile width is less than the width of the image. For example, for covering a 300
+ * by 250 image with tiles of 40 by 40 pixels.
+ * </p>
+ * <p>
  * This subclass of the row based view, will abstract the problems that occur when the tile does not spread over a whole
  * row. in that case the buffer describing the image does not match the buffer describing the tile. That is why a
  * temporary buffer is needed to make the buffer continuous.
+ * </p>
+ * 
+ * @see TileBufferRowBased
  */
 class TileBufferColumnBased extends TileBuffer {
 

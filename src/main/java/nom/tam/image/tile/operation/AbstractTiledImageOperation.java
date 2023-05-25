@@ -40,6 +40,11 @@ import nom.tam.fits.FitsException;
 import nom.tam.util.ArrayFuncs;
 import nom.tam.util.type.ElementType;
 
+/**
+ * A base implementation of 2D image tile compression.
+ *
+ * @param <OPERATION> The generic type of tile operation that handles parallel processing
+ */
 public abstract class AbstractTiledImageOperation<OPERATION extends ITileOperation> implements ITiledImageOperation {
 
     /** Image axes in Java array index order (is is last!). */

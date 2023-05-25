@@ -34,7 +34,10 @@ package nom.tam.image.tile.operation;
 import java.util.Arrays;
 
 /**
- * Description of the erea the tile covers of an image, at the moment only 2 dimentional tiles are supported.
+ * The area represented by a 2D tile in an image, including its location inside the image and its size. FITS tiles are
+ * always 2-dimentional, but really images of any dimensions may be covered with such tiles.
+ * 
+ * @see nom.tam.image.ImageTiler
  */
 public class TileArea {
 

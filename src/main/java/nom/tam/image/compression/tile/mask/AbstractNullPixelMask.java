@@ -36,6 +36,15 @@ import java.nio.ByteBuffer;
 import nom.tam.fits.compression.algorithm.api.ICompressorControl;
 import nom.tam.image.tile.operation.buffer.TileBuffer;
 
+/**
+ * Base support for blank (<code>null</code>) in compressed images. In regular
+ * images specific values (such as {@link Double#NaN} or a specific integer
+ * value) may be used to indicate missing data. However, because of e.g.
+ * quantization or lossy compression, these specific values may not be recovered
+ * exactly when compressing / decompressing images. Hence, there is a need to
+ * demark <code>null</code> values differently in copmressed images. This class
+ * provides support for that purpose.
+ */
 public class AbstractNullPixelMask {
 
     private static final byte[] EMPTY_BYTE_ARRAY = new byte[0];

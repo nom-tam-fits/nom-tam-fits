@@ -58,6 +58,7 @@ import static nom.tam.util.LoggerHelper.getLogger;
  * of arbitrary (more or less) dimensionality.
  * </ul>
  */
+@SuppressWarnings("deprecation")
 public abstract class Data implements FitsElement {
 
     private static final Logger LOG = getLogger(Data.class);
@@ -82,6 +83,12 @@ public abstract class Data implements FitsElement {
     @Deprecated
     protected RandomAccess input;
 
+    /**
+     * Returns the random accessible input from which this data can be read, if any.
+     * 
+     * @return the random access input from which we can read the data when needed, or <code>null</code> if this data
+     *             object is not associated to an input, or it is not random accessible.
+     */
     protected final RandomAccess getRandomAccessInput() {
         return input;
     }
@@ -324,6 +331,7 @@ public abstract class Data implements FitsElement {
         skipPadding(in);
     }
 
+    @SuppressWarnings("resource")
     @Override
     public boolean reset() {
         try {
@@ -335,6 +343,7 @@ public abstract class Data implements FitsElement {
         }
     }
 
+    @SuppressWarnings("resource")
     @Override
     public void rewrite() throws FitsException {
         if (isDeferred()) {

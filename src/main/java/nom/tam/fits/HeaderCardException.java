@@ -31,7 +31,12 @@ package nom.tam.fits;
  * #L%
  */
 
-/* This class was contributed by David Glowacki */
+/**
+ * Exception that is generated when a header record is in violation of the
+ * standard, or encounters some other header card specific issue.
+ * 
+ * @author David Glowacki
+ */
 public class HeaderCardException extends FitsException {
 
     /**
@@ -39,10 +44,28 @@ public class HeaderCardException extends FitsException {
      */
     private static final long serialVersionUID = 8575246321991786202L;
 
+    /**
+     * Instantiates this exception with the designated message string.
+     * 
+     * @param s
+     *            a human readable message that describes what in fact caused
+     *            the exception
+     */
     public HeaderCardException(String s) {
         super(s);
     }
 
+    /**
+     * Instantiates this exception with the designated message string, when it
+     * was triggered by some other type of exception
+     * 
+     * @param s
+     *            a human readable message that describes what in fact caused
+     *            the exception
+     * @param reason
+     *            the original exception (or other throwable) that triggered
+     *            this exception.
+     */
     public HeaderCardException(String s, Throwable reason) {
         super(s, reason);
     }

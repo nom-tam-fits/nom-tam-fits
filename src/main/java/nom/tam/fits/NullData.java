@@ -48,6 +48,7 @@ import static nom.tam.fits.header.Standard.PCOUNT;
  */
 public final class NullData extends Data {
 
+    @SuppressWarnings("deprecation")
     @Override
     protected void fillHeader(Header head) {
         head.setSimple(true);

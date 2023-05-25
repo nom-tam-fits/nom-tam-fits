@@ -43,6 +43,10 @@ import nom.tam.fits.header.Compression;
 import nom.tam.util.ColumnTable;
 import nom.tam.util.type.ElementType;
 
+/**
+ * A table 'tile' representing a set of consecutive table rows that are compressed together as a block (<i>for internal
+ * use</i>).
+ */
 public abstract class BinaryTableTile implements Runnable {
 
     protected final ColumnTable<?> data;

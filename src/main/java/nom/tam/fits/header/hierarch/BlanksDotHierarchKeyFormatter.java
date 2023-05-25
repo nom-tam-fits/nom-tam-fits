@@ -37,6 +37,11 @@ import nom.tam.fits.utilities.FitsLineAppender;
 
 import static nom.tam.fits.header.NonStandard.HIERARCH;
 
+/**
+ * Non-standard HIERARCH keyword formatter that separates hierarchical keyword component by multiple while spaces.
+ * Otherwise, it is similar to {@link StandardIHierarchKeyFormatter}. Its used over the more standard formatter is
+ * discouraged.
+ */
 @SuppressWarnings("deprecation")
 public class BlanksDotHierarchKeyFormatter implements IHierarchKeyFormatter {
 
@@ -44,7 +49,15 @@ public class BlanksDotHierarchKeyFormatter implements IHierarchKeyFormatter {
 
     private boolean allowMixedCase;
 
-    public BlanksDotHierarchKeyFormatter(int count) {
+    /**
+     * Creates a HIERARCH keyword formatter instance with the desired number of blank spaces spearating components.
+     * 
+     * @param  count                    The number of blank spaces to separate hierarchical components (at least 1 is
+     *                                      required).
+     * 
+     * @throws IllegalArgumentException if count is less than 1
+     */
+    public BlanksDotHierarchKeyFormatter(int count) throws IllegalArgumentException {
         if (count < 1) {
             throw new IllegalArgumentException("HIERARCH needs at least one blank space after it.");
         }

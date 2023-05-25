@@ -47,9 +47,9 @@ import static nom.tam.util.LoggerHelper.getLogger;
 /**
  * Decompression of compressed FITS files of all supported types (<code>.gz</code>, <code>.Z</code>, <code>.bz2</code>).
  * It autodetects the type of compression used based on the first 2-bytes of the compressed input stream. When possible,
- * preference will be given to performa the decompression using the system tool
- * (<code>uncompress</cocde> or <code>bzip2</code>, which are likely faster for large files). If such a tool is not
- * available, then the Apache <b>common-compress</b> classes will be used to the same effect.
+ * preference will be given to perform the decompression using a system command (<code>uncompress</code> or
+ * <code>bzip2</code>, which are likely faster for large files). If such a tool is not available, then the Apache
+ * <b>common-compress</b> classes will be used to the same effect.
  * 
  * @see GZipCompressionProvider
  * @see BZip2CompressionProvider
@@ -63,6 +63,7 @@ public final class CompressionManager {
 
     private static final String GZIP_EXTENTION = ".gz";
 
+    /** bytes in a megabyte (MB) */
     public static final int ONE_MEGABYTE = 1024 * 1024;
 
     /**
@@ -130,8 +131,16 @@ public final class CompressionManager {
     }
 
     /**
-     * Is a file compressed? (the magic number in the first 2 bytes is used to detect the compression.
-     *
+     * <p>
+     * Checks if a file is compressed. If the file by the name exists, it will check the magic number in the first
+     * 2-bytes to see if they matched those of the supported compression algorithms. Otherwise it checks if the file
+     * extension atches one of the standard extensions for supported compressed files (<code>.gz</code>,
+     * <code>.Z</code>, or <code>.bz2</code>).
+     * </p>
+     * <p>
+     * As of 1.18, all file extension are checked in a case insensitive manner
+     * </p>
+     * 
      * @param  filename of the file to test for compression algorithms
      *
      * @return          true if the file is compressed
@@ -145,16 +154,30 @@ public final class CompressionManager {
             return isCompressed(test);
         }
 
-        int len = filename.length();
-        return len > 2 && (filename.substring(len - GZIP_EXTENTION.length()).equalsIgnoreCase(GZIP_EXTENTION) || //
-                filename.substring(len - COMPRESS_EXTENTION.length()).equals(COMPRESS_EXTENTION) || //
-                filename.substring(len - BZIP2_EXTENTION.length()).equals(BZIP2_EXTENTION));
+        int iExt = filename.lastIndexOf('.');
+        if (iExt < 0) {
+            return false;
+        }
+
+        String ext = filename.substring(iExt);
+        return ext.equalsIgnoreCase(GZIP_EXTENTION) || ext.equalsIgnoreCase(COMPRESS_EXTENTION)
+                || ext.equalsIgnoreCase(BZIP2_EXTENTION);
     }
 
     private static ICompressProvider selectCompressionProvider(int mag1, int mag2) {
         return nextCompressionProvider(mag1, mag2, null);
     }
 
+    /**
+     * Returned the next highest priority decompression class, after the one we don't want, for the given type of
+     * compressed file.
+     * 
+     * @param  mag1 the first magic byte at the head of the compressed file
+     * @param  mag2 the second magic byte at the head of the compressed file
+     * @param  old  the last decompression class we tried for this type of file
+     * 
+     * @return      the next lower priority decompression class we might use.
+     */
     protected static ICompressProvider nextCompressionProvider(int mag1, int mag2, ICompressProvider old) {
         ICompressProvider selectedProvider = null;
         int priority = 0;

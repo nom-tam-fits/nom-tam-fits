@@ -1,5 +1,5 @@
 /**
- * FITS 'primitive' element types (<i>for internal use</i>).
+ * (<i>for internal use</i>) FITS 'primitive' element types.
  */
 
 package nom.tam.util.type;

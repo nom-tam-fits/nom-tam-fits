@@ -1,5 +1,5 @@
 /**
- * Interfaces and helper classes managing compression parameters for the various algorithms (<i>for internal use</i>).
+ * (<i>for internal use</i>) Interfaces and helper classes managing compression parameters for the various algorithms.
  * It's weird enough that compression parameters are being handled in separate packages from the algorithms they
  * control, but that's life.
  */

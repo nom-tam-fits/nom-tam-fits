@@ -33,11 +33,38 @@ import nom.tam.fits.FitsException;
  * #L%
  */
 
+/**
+ * Interface for initializing parallel operations on 2D image tiles.
+ *
+ * @param <OPERATION> the generic type of the operation to be performed
+ */
 public interface ITileOperationInitialisation<OPERATION extends ITileOperation> {
 
+    /**
+     * Creates a new instance of the supported parallel tile operation for a specifictile
+     * 
+     * @param  tileIndex the sequential index of the tile
+     * @param  area      the location and size of the tile in the full image
+     * 
+     * @return           a new parallel operation for processing the particular 2D image tile.
+     */
     OPERATION createTileOperation(int tileIndex, TileArea area);
 
+    /**
+     * Initializes the parallel tile operation before it can be executed. For example to set particular options /
+     * parameters for the processing.
+     * 
+     * @param tileOperation the parallel operation that processes a specific 2D image tile.
+     */
     void init(OPERATION tileOperation);
 
+    /**
+     * Sets the total number of 2D image tiles to be processed.
+     * 
+     * @param  tileCount     the total number of image tiles to be
+     * 
+     * @throws FitsException if the operation cannot support the desired number of tiles, for example because data
+     *                           stored in a FITS file is for fewer tiles.
+     */
     void tileCount(int tileCount) throws FitsException;
 }
