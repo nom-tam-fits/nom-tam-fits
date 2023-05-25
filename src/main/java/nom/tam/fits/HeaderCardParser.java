@@ -81,9 +81,6 @@ class HeaderCardParser {
     /** regexp for decimal integers. */
     private static final Pattern INT_REGEX = Pattern.compile("[+-]?\\d+");
 
-    /** regexp for hexadecimal integers. */
-    private static final Pattern HEX_REGEX = Pattern.compile("[+-]?[\\dA-Fa-f]+");
-
     /** The header line (usually 80-character width), which to parse. */
     private String line;
 
@@ -539,9 +536,6 @@ class HeaderCardParser {
         }
         if (DECIMAL_REGEX.matcher(trimmedValue).matches()) {
             return getDecimalType(trimmedValue);
-        }
-        if (HEX_REGEX.matcher(trimmedValue).matches()) {
-            return getIntegerType(trimmedValue);
         }
         if (COMPLEX_REGEX.matcher(trimmedValue).matches()) {
             return ComplexValue.class;
