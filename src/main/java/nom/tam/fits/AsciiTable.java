@@ -510,29 +510,29 @@ public class AsciiTable extends AbstractTableData {
      *
      * @throws FitsException if the operation failed
      */
-
     @Override
     public void deleteRows(int start, int len) throws FitsException {
-        try {
-            if (nRows == 0 || start < 0 || start >= nRows || len <= 0) {
-                return;
-            }
-            if (start + len > nRows) {
-                len = nRows - start;
-            }
-            ensureData();
-            for (int i = 0; i < nFields; i++) {
+        if (nRows == 0 || start < 0 || start >= nRows || len <= 0) {
+            return;
+        }
+        if (start + len > nRows) {
+            len = nRows - start;
+        }
+
+        ensureData();
+
+        for (int i = 0; i < nFields; i++) {
+            try {
                 Object o = ArrayFuncs.newInstance(types[i], nRows - len);
                 System.arraycopy(data[i], 0, o, 0, start);
                 System.arraycopy(data[i], start + len, o, start, nRows - len - start);
                 data[i] = o;
+            } catch (Exception e) {
+                throw new FitsException("Error deleting row: " + e.getMessage(), e);
             }
-            nRows -= len;
-        } catch (FitsException e) {
-            throw e;
-        } catch (Exception e) {
-            throw new FitsException("Error deleting row:" + e.getMessage(), e);
+
         }
+        nRows -= len;
     }
 
     /**

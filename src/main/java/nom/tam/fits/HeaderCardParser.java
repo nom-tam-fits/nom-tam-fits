@@ -606,20 +606,14 @@ class HeaderCardParser {
      * @see          #getDecimalType(String)
      */
     private static Class<? extends Number> getIntegerType(String value) {
-        try {
-            int bits = new BigInteger(value).bitLength();
-            if (bits < Integer.SIZE) {
-                return Integer.class;
-            }
-            if (bits < Long.SIZE) {
-                return Long.class;
-            }
-            return BigInteger.class;
-        } catch (NumberFormatException e) {
-            // Try hexadecimal...
-            long l = Long.decode("0x" + value);
-            return (l == (int) l) ? Integer.class : Long.class;
+        int bits = new BigInteger(value).bitLength();
+        if (bits < Integer.SIZE) {
+            return Integer.class;
         }
+        if (bits < Long.SIZE) {
+            return Long.class;
+        }
+        return BigInteger.class;
     }
 
     private static String sanitize(String text) {
