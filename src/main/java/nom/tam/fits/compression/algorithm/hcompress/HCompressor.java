@@ -41,6 +41,12 @@ import nom.tam.fits.compression.algorithm.quant.QuantizeProcessor.DoubleQuantCom
 import nom.tam.fits.compression.algorithm.quant.QuantizeProcessor.FloatQuantCompressor;
 import nom.tam.util.ArrayFuncs;
 
+/**
+ * (<i>for internal use</i>) Data compressor using the HCompress algorithm.
+ * 
+ * @param <T> The generic type of buffer that accessed the type of elements needed for the compression
+ */
+@SuppressWarnings("javadoc")
 public abstract class HCompressor<T extends Buffer> implements ICompressor<T> {
 
     public static class ByteHCompressor extends HCompressor<ByteBuffer> {

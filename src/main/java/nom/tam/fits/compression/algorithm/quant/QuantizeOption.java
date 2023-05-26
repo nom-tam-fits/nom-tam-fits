@@ -37,6 +37,15 @@ import nom.tam.image.ITileOption;
  * #L%
  */
 
+/**
+ * Quantization options when they are part of the compression scheme. When compressing tables and images includes
+ * quantization (integer representation of floating point data), users can control how exactly the quantization should
+ * be performed. When reading compressed FITS files, these options will be set automatically based on the header values
+ * recorded in the compressed HDU.
+ * 
+ * @see nom.tam.image.compression.hdu.CompressedImageHDU#setQuantAlgorithm(String)
+ * @see nom.tam.image.compression.hdu.CompressedImageHDU#getCompressOption(Class)
+ */
 public class QuantizeOption implements ICompressOption {
 
     /**

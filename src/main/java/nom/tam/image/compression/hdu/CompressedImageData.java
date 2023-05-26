@@ -123,6 +123,10 @@ public class CompressedImageData extends BinaryTable {
      * 
      * @return       The current set of options for the requested type, or <code>null</code> if there are no options or
      *                   if the requested type does not match the algorithm(s) selected.
+     * 
+     * @see          nom.tam.fits.compression.algorithm.hcompress.HCompressorOption
+     * @see          nom.tam.fits.compression.algorithm.rice.RiceCompressOption
+     * @see          nom.tam.fits.compression.algorithm.quant.QuantizeOption
      */
     protected <T extends ICompressOption> T getCompressOption(Class<T> clazz) {
         return tiledImageOperation().compressOptions().unwrap(clazz);

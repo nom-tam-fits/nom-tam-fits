@@ -43,9 +43,11 @@ import nom.tam.image.tile.operation.buffer.TileBuffer;
 import nom.tam.util.type.ElementType;
 
 /**
- * Preserves blank (<code>null</code>) values in compressed images. This class
- * overwrites the pixels specified in the mask with null values. Where the null
- * value can be defined separately.
+ * (<i>for internal use</i>) Preserves blank (<code>null</code>) values in
+ * compressed images. This class overwrites the pixels specified in the mask
+ * with null values. Where the null value can be defined separately.
+ * 
+ * @see nom.tam.image.compression.hdu.CompressedImageHDU
  */
 public class NullPixelMaskPreserver extends AbstractNullPixelMask {
 

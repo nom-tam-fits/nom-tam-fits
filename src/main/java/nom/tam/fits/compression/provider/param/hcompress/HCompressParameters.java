@@ -36,6 +36,10 @@ import nom.tam.fits.compression.algorithm.hcompress.HCompressorOption;
 import nom.tam.fits.compression.provider.param.api.ICompressHeaderParameter;
 import nom.tam.fits.compression.provider.param.base.CompressParameters;
 
+/**
+ * (<i>for internal use</i>) HCompress parameters recorded in a FITS compressed HDU.
+ */
+@SuppressWarnings("javadoc")
 public class HCompressParameters extends CompressParameters {
 
     private final HCompressScaleParameter scale;

@@ -38,13 +38,14 @@ import nom.tam.fits.compression.provider.param.base.CompressHeaderParameter;
 import nom.tam.fits.header.Compression;
 
 /**
+ * (<i>for internal use</i>) The The random seed initialization parameter as recorded in the FITS header.
  * <p>
- * The random seed initialization parameter for consistent dither implementations. Dithering adds a small amount of
- * noise (at the level of the quantization level increments) to remove possible systematics biases of the quantization.
- * Since the quantization (integer representation of floating-point values) is inherently lossy (noisy) the added
- * dithering noise is generally inconsequential in terms of preseving information in the original image. As such, the
- * image can be recovered close enough to the original, within the level of the quantization noise, without knowing the
- * exact random sequence that was used to generate the dither.
+ * The storing of the random seed provides consistent dither implementations. Dithering adds a small amount of noise (at
+ * the level of the quantization level increments) to remove possible systematics biases of the quantization. Since the
+ * quantization (integer representation of floating-point values) is inherently lossy (noisy) the added dithering noise
+ * is generally inconsequential in terms of preseving information in the original image. As such, the image can be
+ * recovered close enough to the original, within the level of the quantization noise, without knowing the exact random
+ * sequence that was used to generate the dither.
  * </p>
  * <p>
  * However, The FITS standard requires that when dithering is used in the compression the same tool (or library) should

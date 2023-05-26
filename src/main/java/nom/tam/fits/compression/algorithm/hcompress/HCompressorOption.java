@@ -36,6 +36,15 @@ import nom.tam.fits.compression.provider.param.api.ICompressParameters;
 import nom.tam.fits.compression.provider.param.hcompress.HCompressParameters;
 import nom.tam.image.ITileOption;
 
+/**
+ * Options to the HCompress compression algorithm. When compressing tables and images using the HCompress algorithm,
+ * users can control how exactly the compression is perfomed. When reading compressed FITS files, these options will be
+ * set automatically based on the header values recorded in the compressed HDU.
+ * 
+ * @see nom.tam.image.compression.hdu.CompressedImageHDU#setCompressAlgorithm(String)
+ * @see nom.tam.image.compression.hdu.CompressedImageHDU#getCompressOption(Class)
+ * @see HCompressorQuantizeOption
+ */
 public class HCompressorOption implements ICompressOption, ITileOption {
 
     /**
@@ -51,6 +60,9 @@ public class HCompressorOption implements ICompressOption, ITileOption {
 
     private int tileWidth;
 
+    /**
+     * Creates a new set of options for HCompress.
+     */
     public HCompressorOption() {
         setParameters(new HCompressParameters(this));
     }
@@ -71,6 +83,13 @@ public class HCompressorOption implements ICompressOption, ITileOption {
         return parameters;
     }
 
+    /**
+     * Returns the scale parameter value
+     * 
+     * @return the value of the scale parameter.
+     * 
+     * @see    #setScale(int)
+     */
     public int getScale() {
         return scale;
     }
@@ -90,6 +109,13 @@ public class HCompressorOption implements ICompressOption, ITileOption {
         return scale > 1 || smooth;
     }
 
+    /**
+     * Checks if smoothing is enabled
+     * 
+     * @return <code>true</code> if smoothing is enabled, otherwise <code>false</code>.
+     * 
+     * @see    #setSmooth(boolean)
+     */
     public boolean isSmooth() {
         return smooth;
     }
@@ -102,11 +128,27 @@ public class HCompressorOption implements ICompressOption, ITileOption {
         this.parameters = (HCompressParameters) parameters;
     }
 
+    /**
+     * Sets the scale parameter
+     * 
+     * @param  value the new scale parameter
+     * 
+     * @return       itself
+     * 
+     * @see          #getScale()
+     */
     public HCompressorOption setScale(int value) {
         scale = value;
         return this;
     }
 
+    /**
+     * Enabled or disables smoothing.
+     * 
+     * @param  value <code>true</code> to enable smoothing, or <code>false</code> to disable.
+     * 
+     * @return       itself
+     */
     public HCompressorOption setSmooth(boolean value) {
         smooth = value;
         return this;

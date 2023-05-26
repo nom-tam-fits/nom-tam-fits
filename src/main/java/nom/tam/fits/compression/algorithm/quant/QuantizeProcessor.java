@@ -38,6 +38,10 @@ import java.nio.IntBuffer;
 
 import nom.tam.fits.compression.algorithm.api.ICompressor;
 
+/**
+ * (<i>for internal use</i>) Qunatization step processor as part of compression.
+ */
+@SuppressWarnings({"javadoc", "deprecation"})
 public class QuantizeProcessor {
 
     public static class DoubleQuantCompressor extends QuantizeProcessor implements ICompressor<DoubleBuffer> {

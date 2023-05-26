@@ -37,11 +37,11 @@ import nom.tam.fits.compression.provider.param.api.IHeaderAccess;
 import nom.tam.fits.compression.provider.param.base.CompressHeaderParameter;
 import nom.tam.fits.header.Compression;
 
+/**
+ * (<i>for internal use</i>) The blanking value in quantized data as recorded in the FITS header.
+ */
 final class ZBlankParameter extends CompressHeaderParameter<QuantizeOption> {
 
-    /**
-     * @param quantizeOption
-     */
     ZBlankParameter(QuantizeOption quantizeOption) {
         super(Compression.ZBLANK.name(), quantizeOption);
     }

@@ -34,7 +34,7 @@ import nom.tam.fits.FitsException;
  */
 
 /**
- * Interface for initializing parallel operations on 2D image tiles.
+ * (<i>for internal use</i>) Interface for initializing parallel operations on 2D image tiles.
  *
  * @param <OPERATION> the generic type of the operation to be performed
  */

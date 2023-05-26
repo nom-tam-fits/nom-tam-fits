@@ -39,8 +39,8 @@ import nom.tam.fits.compression.provider.param.api.ICompressHeaderParameter;
 import nom.tam.fits.compression.provider.param.base.CompressParameters;
 
 /**
- * A set of compression parameters used for quantization of floating point data. Quantization is the process of
- * representing floating-point values by integers.
+ * (<i>for internal use</i>) A set of compression parameters recorded in the FITS that describe the quantization of
+ * floating point data. Quantization is the process of representing floating-point values by integers.
  *
  * @author Attila Kovacs
  */

@@ -34,7 +34,7 @@ import nom.tam.fits.compression.algorithm.api.ICompressorControl;
  */
 
 /**
- * Service loader Interface to provide compression algorithms to fits.
+ * (<i>for internal use</i>) Service loader Interface to provide compression algorithms to fits.
  */
 public interface ICompressorProvider {
 

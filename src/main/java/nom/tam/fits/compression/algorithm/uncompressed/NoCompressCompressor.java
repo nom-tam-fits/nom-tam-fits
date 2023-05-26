@@ -43,10 +43,11 @@ import nom.tam.util.type.ElementType;
  */
 
 /**
- * This compression algorithm will just copy the input to the output and do nothing at all.
+ * (<i>for internal use</i>) This compression algorithm will just copy the input to the output and do nothing at all.
  *
  * @param <T> the buffer type of the pixel data
  */
+@SuppressWarnings("javadoc")
 public abstract class NoCompressCompressor<T extends Buffer> implements ICompressor<T> {
 
     public static class ByteNoCompressCompressor extends NoCompressCompressor<ByteBuffer> {

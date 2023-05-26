@@ -35,8 +35,16 @@ import nom.tam.fits.compression.algorithm.quant.QuantizeOption;
 import nom.tam.fits.compression.provider.param.base.CompressColumnParameter;
 import nom.tam.fits.header.Compression;
 
+/**
+ * (<i>for internal use</i>) The blanking value in quantized data as recorded in a FITS compressed table column.
+ */
 public final class ZBlankColumnParameter extends CompressColumnParameter<int[], QuantizeOption> {
 
+    /**
+     * @deprecated (<i>for internal use</i>) the visibility of this constructor may be reduced to the package level in
+     *                 future releases.
+     */
+    @SuppressWarnings("javadoc")
     public ZBlankColumnParameter(QuantizeOption quantizeOption) {
         super(Compression.ZBLANK_COLUMN, quantizeOption, int[].class);
     }

@@ -35,6 +35,9 @@ import nom.tam.fits.compression.algorithm.quant.QuantizeOption;
 import nom.tam.fits.compression.provider.param.base.CompressColumnParameter;
 import nom.tam.fits.header.Compression;
 
+/**
+ * (<i>for internal use</i>) The quantization scale value as recorded in a FITS compressed table column.
+ */
 final class ZScaleColumnParameter extends CompressColumnParameter<double[], QuantizeOption> {
 
     ZScaleColumnParameter(QuantizeOption quantizeOption) {

@@ -42,7 +42,7 @@ import nom.tam.util.ColumnTable;
 import nom.tam.util.FitsOutputStream;
 
 /**
- * Handles the compression of binary table 'tiles' (<i>for internal use</i>).
+ * (<i>for internal use</i>) Handles the compression of binary table 'tiles'.
  */
 public class BinaryTableTileCompressor extends BinaryTableTile {
 
@@ -59,6 +59,7 @@ public class BinaryTableTileCompressor extends BinaryTableTile {
     /**
      * @deprecated for internal use
      */
+    @SuppressWarnings("javadoc")
     public BinaryTableTileCompressor(CompressedTableData binData, ColumnTable<?> columnTable,
             BinaryTableTileDescription description) {
         super(columnTable, description);

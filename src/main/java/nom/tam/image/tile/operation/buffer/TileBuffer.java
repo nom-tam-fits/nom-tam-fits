@@ -42,6 +42,7 @@ import nom.tam.util.type.ElementType;
  * @see TileBufferFactory
  * @see nom.tam.image.tile.operation.TileArea
  */
+@SuppressWarnings("javadoc")
 public abstract class TileBuffer {
 
     private Buffer imageBuffer;

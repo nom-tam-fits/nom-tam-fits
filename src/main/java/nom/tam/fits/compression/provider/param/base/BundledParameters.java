@@ -39,11 +39,11 @@ import nom.tam.fits.compression.provider.param.api.ICompressHeaderParameter;
 import nom.tam.fits.compression.provider.param.api.ICompressParameters;
 
 /**
- * Compression parameters that are bundled together from distinct sets of component parameters. For example, some tiled
- * image compression methods will take parameters that consist of those specifically for the compression algorithm (e.g.
- * Rice vs HCompress) and a set of common parameters for the quantization (floating-point to integer conversion). This
- * class helps manage such composite parameter sets. The bundle behaves as it it were a single set of all parameters
- * across all its components.
+ * (<i>for internal use</i>) Compression parameters that are bundled together from distinct sets of component
+ * parameters. For example, some tiled image compression methods will take parameters that consist of those specifically
+ * for the compression algorithm (e.g. Rice vs HCompress) and a set of common parameters for the quantization
+ * (floating-point to integer conversion). This class helps manage such composite parameter sets. The bundle behaves as
+ * it it were a single set of all parameters across all its components.
  *
  * @author Attila Kovacs
  *

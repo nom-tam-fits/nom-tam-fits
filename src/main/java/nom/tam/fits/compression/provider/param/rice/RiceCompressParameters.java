@@ -36,6 +36,10 @@ import nom.tam.fits.compression.algorithm.rice.RiceCompressOption;
 import nom.tam.fits.compression.provider.param.api.ICompressHeaderParameter;
 import nom.tam.fits.compression.provider.param.base.CompressParameters;
 
+/**
+ * (<i>for internal use</i>) Rice compression parameters that are recorded in a FITS compressed HDU.
+ */
+@SuppressWarnings({"javadoc", "deprecation"})
 public class RiceCompressParameters extends CompressParameters {
 
     private RiceBlockSizeParameter blockSize;

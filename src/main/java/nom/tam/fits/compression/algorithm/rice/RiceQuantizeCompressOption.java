@@ -33,16 +33,47 @@ package nom.tam.fits.compression.algorithm.rice;
 
 import nom.tam.fits.compression.algorithm.quant.QuantizeOption;
 
+/**
+ * Options to the Rice compression algorithm when the compression includes
+ * quantization. When compressing tables and images using the Rice algorithm,
+ * including quantization, users can control how exactly the compression and
+ * quantization are perfomed. When reading compressed FITS files, these options
+ * will be set automatically based on the header values recorded in the
+ * compressed HDU.
+ * 
+ * @see nom.tam.image.compression.hdu.CompressedImageHDU#setCompressAlgorithm(String)
+ * @see nom.tam.image.compression.hdu.CompressedImageHDU#getCompressOption(Class)
+ * @see RiceCompressOption
+ */
 public class RiceQuantizeCompressOption extends QuantizeOption {
 
+    /**
+     * Creates a new set of options for Rice compression with quantization,
+     * initialized to default values.
+     */
     public RiceQuantizeCompressOption() {
         super(new RiceCompressOption());
     }
 
+    /**
+     * Creates a new set of options for Rice compression with quantization,
+     * using the specified option to the Rice (de)compression, and initializing
+     * the qunatization options with default values.
+     * 
+     * @param compressOption
+     *            The Rice compression options to use
+     */
     public RiceQuantizeCompressOption(RiceCompressOption compressOption) {
         super(compressOption);
     }
 
+    /**
+     * Returns the options that are specific to the Rice compression algorithm
+     * (without quantization).
+     * 
+     * @return the included options to the Rice compression algorithm
+     * @see #getCompressOption(Class)
+     */
     public RiceCompressOption getRiceCompressOption() {
         return (RiceCompressOption) super.getCompressOption();
     }

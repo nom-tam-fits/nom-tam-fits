@@ -44,8 +44,7 @@ import nom.tam.image.tile.operation.TileArea;
 import nom.tam.util.type.ElementType;
 
 /**
- * abstract information holder about the a tile that represents a rectangular part of the image. Will be sub classed for
- * compression and decompression variants.
+ * (<i>for internal use</i>) An abstract compression operation on an image tile.
  */
 abstract class TileCompressionOperation extends AbstractTileOperation implements ITileOperation {
 

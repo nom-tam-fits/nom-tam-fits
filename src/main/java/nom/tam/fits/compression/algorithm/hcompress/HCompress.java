@@ -36,23 +36,27 @@ import java.nio.LongBuffer;
 
 /**
  * <p>
- * The original compression code was written by Richard White at the STScI and
- * included (ported to c and adapted) in cfitsio by William Pence, NASA/GSFC.
- * That code was then ported to java by R. van Nieuwenhoven. Later it was
- * massively refactored to harmonize the different compression algorithms and
- * reduce the duplicate code pieces without obscuring the algorithm itself as
- * far as possible. The original site for the algorithm is
+ * (<i>for internal use</i>) A hierarchical data compression algoritm, used by the Hubble Data Archive and the STScI
+ * Digital Sky Survey.
  * </p>
  * <p>
- * See <a
- * href="http://www.stsci.edu/software/hcompress.html">http://www.stsci.edu
- * /software/hcompress.html</a>
+ * The original compression code was written by Richard White at the STScI and included (ported to c and adapted) in
+ * cfitsio by William Pence, NASA/GSFC. That code was then ported to java by R. van Nieuwenhoven. Later it was massively
+ * refactored to harmonize the different compression algorithms and reduce the duplicate code pieces without obscuring
+ * the algorithm itself as far as possible. The original site for the algorithm is
+ * </p>
+ * <p>
+ * See <a href="http://www.stsci.edu/software/hcompress.html">http://www.stsci.edu /software/hcompress.html</a>
  * </p>
  * 
  * @author Richard White
  * @author William Pence
  * @author Richard van Nieuwenhoven
+ * 
+ * @see    HDecompress
+ * @see    HCompressorOption
  */
+@SuppressWarnings("javadoc")
 public class HCompress {
 
     private static final int HTRANS_START_MASK = -2;
@@ -72,63 +76,17 @@ public class HCompress {
      */
     private static final int N3 = 3;
 
-    private static final int[] BITS_MASK = {
-        0,
-        1,
-        3,
-        7,
-        15,
-        31,
-        63,
-        127,
-        255
-    };
+    private static final int[] BITS_MASK = {0, 1, 3, 7, 15, 31, 63, 127, 255};
 
     /*
      * Huffman code values and number of bits in each code
      */
-    private static final int[] CODE = {
-        0x3e,
-        0x00,
-        0x01,
-        0x08,
-        0x02,
-        0x09,
-        0x1a,
-        0x1b,
-        0x03,
-        0x1c,
-        0x0a,
-        0x1d,
-        0x0b,
-        0x1e,
-        0x3f,
-        0x0c
-    };
+    private static final int[] CODE = {0x3e, 0x00, 0x01, 0x08, 0x02, 0x09, 0x1a, 0x1b, 0x03, 0x1c, 0x0a, 0x1d, 0x0b, 0x1e,
+            0x3f, 0x0c};
 
-    private static final byte[] CODE_MAGIC = {
-        (byte) 0xDD,
-        (byte) 0x99
-    };
+    private static final byte[] CODE_MAGIC = {(byte) 0xDD, (byte) 0x99};
 
-    private static final int[] NCODE = {
-        6,
-        3,
-        3,
-        4,
-        3,
-        4,
-        5,
-        5,
-        3,
-        5,
-        4,
-        5,
-        4,
-        5,
-        6,
-        4
-    };
+    private static final int[] NCODE = {6, 3, 3, 4, 3, 4, 5, 5, 3, 5, 4, 5, 4, 5, 6, 4};
 
     /**
      * variables for bit output to buffer when Huffman coding
@@ -176,17 +134,13 @@ public class HCompress {
 
     protected void compress(long[] aa, int ny, int nx, int scale, ByteBuffer output) {
         /*
-         * compress the input image using the H-compress algorithm a - input
-         * image tiledImageOperation nx - size of X axis of image ny - size of Y
-         * axis of image scale - quantization scale factor. Larger values
-         * results in more (lossy) compression scale = 0 does lossless
-         * compression output - pre-allocated tiledImageOperation to hold the
-         * output compressed stream of bytes nbyts - input value = size of the
-         * output buffer; returned value = size of the compressed byte stream,
-         * in bytes NOTE: the nx and ny dimensions as defined within this code
-         * are reversed from the usual FITS notation. ny is the fastest varying
-         * dimension, which is usually considered the X axis in the FITS image
-         * display
+         * compress the input image using the H-compress algorithm a - input image tiledImageOperation nx - size of X
+         * axis of image ny - size of Y axis of image scale - quantization scale factor. Larger values results in more
+         * (lossy) compression scale = 0 does lossless compression output - pre-allocated tiledImageOperation to hold
+         * the output compressed stream of bytes nbyts - input value = size of the output buffer; returned value = size
+         * of the compressed byte stream, in bytes NOTE: the nx and ny dimensions as defined within this code are
+         * reversed from the usual FITS notation. ny is the fastest varying dimension, which is usually considered the X
+         * axis in the FITS image display
          */
 
         /* H-transform */
@@ -224,16 +178,11 @@ public class HCompress {
     /**
      * encode pixels.
      * 
-     * @param compressedBytes
-     *            compressed data
-     * @param pixels
-     *            pixels to compress
-     * @param nx
-     *            image width dimension
-     * @param ny
-     *            image height dimension
-     * @param nbitplanes
-     *            Number of bit planes in quadrants
+     * @param compressedBytes compressed data
+     * @param pixels          pixels to compress
+     * @param nx              image width dimension
+     * @param ny              image height dimension
+     * @param nbitplanes      Number of bit planes in quadrants
      */
     private void doEncode(ByteBuffer compressedBytes, LongBuffer pixels, int nx, int ny, byte[] nbitplanes) {
 
@@ -283,15 +232,13 @@ public class HCompress {
         compressedBytes.putInt(ny);
         compressedBytes.putInt(scale); /* scale factor for digitization */
         /*
-         * write first value of A (sum of all pixels -- the only value which
-         * does not compress well)
+         * write first value of A (sum of all pixels -- the only value which does not compress well)
          */
         compressedBytes.putLong(a.get(0));
 
         a.put(0, 0);
         /*
-         * allocate tiledImageOperation for sign bits and save values, 8 per
-         * byte
+         * allocate tiledImageOperation for sign bits and save values, 8 per byte
          */
         byte[] signbits = new byte[(nel + BITS_OF_1_BYTE - 1) / BITS_OF_1_BYTE];
 
@@ -328,15 +275,14 @@ public class HCompress {
         }
         if (bitsToGo != BITS_OF_1_BYTE) {
             /*
-             * some bits in last element move bits in last byte to bottom and
-             * increment nsign
+             * some bits in last element move bits in last byte to bottom and increment nsign
              */
             signbits[nsign] <<= bitsToGo;
             nsign++;
         }
         /*
-         * calculate number of bit planes for 3 quadrants quadrant 0=bottom
-         * left, 1=bottom right or top left, 2=top right,
+         * calculate number of bit planes for 3 quadrants quadrant 0=bottom left, 1=bottom right or top left, 2=top
+         * right,
          */
         for (int q = 0; q < N3; q++) {
             vmax[q] = 0;
@@ -416,8 +362,7 @@ public class HCompress {
         long prnd2 = prnd << 1;
         long nrnd2 = prnd2 - 1;
         /*
-         * do log2n reductions We're indexing a as a 2-D tiledImageOperation
-         * with dimensions (nx,ny).
+         * do log2n reductions We're indexing a as a 2-D tiledImageOperation with dimensions (nx,ny).
          */
         int nxtop = nx;
         int nytop = ny;
@@ -439,9 +384,8 @@ public class HCompress {
                     long hc = a[s10 + 1] - a[s10] - a[s00 + 1] + a[s00] >> shift;
 
                     /*
-                     * Throw away the 2 bottom bits of h0, bottom bit of hx,hy.
-                     * To get rounding to be same for positive and negative
-                     * numbers, nrnd2 = prnd2 - 1.
+                     * Throw away the 2 bottom bits of h0, bottom bit of hx,hy. To get rounding to be same for positive
+                     * and negative numbers, nrnd2 = prnd2 - 1.
                      */
                     a[s10 + 1] = hc;
                     a[s10] = (hx >= 0 ? hx + prnd : hx) & mask;
@@ -452,8 +396,7 @@ public class HCompress {
                 }
                 if (oddy != 0) {
                     /*
-                     * do last element in row if row length is odd s00+1, s10+1
-                     * are off edge
+                     * do last element in row if row length is odd s00+1, s10+1 are off edge
                      */
                     long h0 = a[s10] + a[s00] << 1 - shift;
                     long hx = a[s10] - a[s00] << 1 - shift;
@@ -477,8 +420,7 @@ public class HCompress {
                 }
                 if (oddy != 0) {
                     /*
-                     * do corner element if both row and column lengths are odd
-                     * s00+1, s10, s10+1 are off edge
+                     * do corner element if both row and column lengths are odd s00+1, s10, s10+1 are off edge
                      */
                     long h0 = a[s00] << 2 - shift;
                     a[s00] = (h0 >= 0 ? h0 + prnd2 : h0 + nrnd2) & mask2;
@@ -542,8 +484,7 @@ public class HCompress {
 
     private void outputNnybble(ByteBuffer outfile, int n, byte[] array) {
         /*
-         * pack the 4 lower bits in each element of the tiledImageOperation into
-         * the outfile tiledImageOperation
+         * pack the 4 lower bits in each element of the tiledImageOperation into the outfile tiledImageOperation
          */
 
         int ii, jj, kk = 0, shift;
@@ -553,8 +494,8 @@ public class HCompress {
             return;
         }
         /*
-         * forcing byte alignment doesn;t help, and even makes it go slightly
-         * slower if (bits_to_go2 != 8) output_nbits(outfile, kk, bits_to_go2);
+         * forcing byte alignment doesn;t help, and even makes it go slightly slower if (bits_to_go2 != 8)
+         * output_nbits(outfile, kk, bits_to_go2);
          */
         if (bitsToGo2 <= BITS_OF_1_NYBBLE) {
             /* just room for 1 nybble; write it out separately */
@@ -572,8 +513,7 @@ public class HCompress {
         shift = BITS_OF_1_BYTE - bitsToGo2;
 
         /*
-         * now write out pairs of nybbles; this does not affect value of
-         * bits_to_go2
+         * now write out pairs of nybbles; this does not affect value of bits_to_go2
          */
         jj = (n - kk) / 2;
 
@@ -587,7 +527,8 @@ public class HCompress {
             }
         } else {
             for (ii = 0; ii < jj; ii++) {
-                buffer2 = buffer2 << BITS_OF_1_BYTE | (array[kk] & NYBBLE_MASK) << BITS_OF_1_NYBBLE | array[kk + 1] & NYBBLE_MASK;
+                buffer2 = buffer2 << BITS_OF_1_BYTE | (array[kk] & NYBBLE_MASK) << BITS_OF_1_NYBBLE
+                        | array[kk + 1] & NYBBLE_MASK;
                 kk += 2;
 
                 /*
@@ -627,9 +568,8 @@ public class HCompress {
     private int qtreeEncode(ByteBuffer outfile, LongBuffer a, int n, int nqx, int nqy, int nbitplanes) {
 
         /*
-         * int a[]; int n; physical dimension of row in a int nqx; length of row
-         * int nqy; length of column (<=n) int nbitplanes; number of bit planes
-         * to output
+         * int a[]; int n; physical dimension of row in a int nqx; length of row int nqy; length of column (<=n) int
+         * nbitplanes; number of bit planes to output
          */
 
         int log2n, i, k, bit, b, nqmax, nqx2, nqy2, nx, ny;
@@ -651,9 +591,8 @@ public class HCompress {
         nqy2 = (nqy + 1) / 2;
         bmax = (nqx2 * nqy2 + 1) / 2;
         /*
-         * We're indexing A as a 2-D tiledImageOperation with dimensions
-         * (nqx,nqy). Scratch is 2-D with dimensions (nqx/2,nqy/2) rounded up.
-         * Buffer is used to store string of codes for output.
+         * We're indexing A as a 2-D tiledImageOperation with dimensions (nqx,nqy). Scratch is 2-D with dimensions
+         * (nqx/2,nqy/2) rounded up. Buffer is used to store string of codes for output.
          */
         scratch = new byte[(int) (2 * bmax)];
         buffer = new byte[(int) bmax];
@@ -675,14 +614,12 @@ public class HCompress {
             nx = nqx + 1 >> 1;
             ny = nqy + 1 >> 1;
             /*
-             * copy non-zero values to output buffer, which will be written in
-             * reverse order
+             * copy non-zero values to output buffer, which will be written in reverse order
              */
             b = bufcopy(scratch, nx * ny, buffer, b, bmax);
             if (b >= bmax) {
                 /*
-                 * quadtree is expanding data, change warning code and just fill
-                 * buffer with bit-map
+                 * quadtree is expanding data, change warning code and just fill buffer with bit-map
                  */
                 writeBdirect(outfile, a, n, nqx, nqy, scratch, bit);
                 continue bitplane_done;
@@ -701,8 +638,7 @@ public class HCompress {
                 }
             }
             /*
-             * OK, we've got the code in buffer Write quadtree warning code,
-             * then write buffer in reverse order
+             * OK, we've got the code in buffer Write quadtree warning code, then write buffer in reverse order
              */
             outputNybble(outfile, NYBBLE_MASK);
             if (b == 0) {
@@ -713,8 +649,7 @@ public class HCompress {
                     outputNbits(outfile, bitbuffer & (1 << bitsToGo3) - 1, bitsToGo3);
                 } else {
                     /*
-                     * have to write a zero nybble if there are no 1's in
-                     * tiledImageOperation
+                     * have to write a zero nybble if there are no 1's in tiledImageOperation
                      */
                     outputNbits(outfile, CODE[0], NCODE[0]);
                 }
@@ -749,8 +684,7 @@ public class HCompress {
         for (i = 0; i < nx - 1; i += 2) {
             s00 = n * i; /* s00 is index of a[i,j] */
             /*
-             * tried using s00+n directly in the statements, but this had no
-             * effect on performance
+             * tried using s00+n directly in the statements, but this had no effect on performance
              */
             s10 = s00 + n; /* s10 is index of a[i+1,j] */
             for (j = 0; j < ny - 1; j += 2) {
@@ -758,7 +692,7 @@ public class HCompress {
                 b[k] = (byte) ((a.get(s10 + 1) & b0 //
                         | a.get(s10) << 1 & b1 //
                         | a.get(s00 + 1) << 2 & b2 //
-                | a.get(s00) << N3 & b3) >> bit);
+                        | a.get(s00) << N3 & b3) >> bit);
 
                 k++;
                 s00 += 2;
@@ -766,8 +700,7 @@ public class HCompress {
             }
             if (j < ny) {
                 /*
-                 * row size is odd, do last element in row s00+1,s10+1 are off
-                 * edge
+                 * row size is odd, do last element in row s00+1,s10+1 are off edge
                  */
                 b[k] = (byte) ((a.get(s10) << 1 & b1 | a.get(s00) << N3 & b3) >> bit);
                 k++;
@@ -785,8 +718,7 @@ public class HCompress {
             }
             if (j < ny) {
                 /*
-                 * both row and column size are odd, do corner element s00+1,
-                 * s10, s10+1 are off edge
+                 * both row and column size are odd, do corner element s00+1, s10, s10+1 are off edge
                  */
                 b[k] = (byte) ((a.get(s00) << N3 & b3) >> bit);
                 k++;
@@ -803,15 +735,15 @@ public class HCompress {
             s00 = n * i; /* s00 is index of a[i,j] */
             s10 = s00 + n; /* s10 is index of a[i+1,j] */
             for (j = 0; j < ny - 1; j += 2) {
-                b[k] = (byte) (b2i(a[s10 + 1] != 0) | b2i(a[s10] != 0) << 1 | b2i(a[s00 + 1] != 0) << 2 | b2i(a[s00] != 0) << N3);
+                b[k] = (byte) (b2i(a[s10 + 1] != 0) | b2i(a[s10] != 0) << 1 | b2i(a[s00 + 1] != 0) << 2
+                        | b2i(a[s00] != 0) << N3);
                 k++;
                 s00 += 2;
                 s10 += 2;
             }
             if (j < ny) {
                 /*
-                 * row size is odd, do last element in row s00+1,s10+1 are off
-                 * edge
+                 * row size is odd, do last element in row s00+1,s10+1 are off edge
                  */
                 b[k] = (byte) (b2i(a[s10] != 0) << 1 | b2i(a[s00] != 0) << N3);
                 k++;
@@ -829,8 +761,7 @@ public class HCompress {
             }
             if (j < ny) {
                 /*
-                 * both row and column size are odd, do corner element s00+1,
-                 * s10, s10+1 are off edge
+                 * both row and column size are odd, do corner element s00+1, s10, s10+1 are off edge
                  */
                 b[k] = (byte) (b2i(a[s00] != 0) << N3);
                 k++;
@@ -841,8 +772,8 @@ public class HCompress {
     private void shuffle(long[] a, int aOffset, int n, int n2, long[] tmp) {
 
         /*
-         * int a[]; tiledImageOperation to shuffle int n; number of elements to
-         * shuffle int n2; second dimension int tmp[]; scratch storage
+         * int a[]; tiledImageOperation to shuffle int n; number of elements to shuffle int n2; second dimension int
+         * tmp[]; scratch storage
          */
 
         int i;
@@ -905,8 +836,7 @@ public class HCompress {
          * write to outfile
          */
         /*
-         * int i; for (i = 0; i < ((nqx+1)/2) * ((nqy+1)/2); i++) {
-         * output_nybble(outfile,scratch[i]); }
+         * int i; for (i = 0; i < ((nqx+1)/2) * ((nqy+1)/2); i++) { output_nybble(outfile,scratch[i]); }
          */
         outputNnybble(outfile, (nqx + 1) / 2 * ((nqy + 1) / 2), scratch);
 

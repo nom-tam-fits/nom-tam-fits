@@ -37,11 +37,11 @@ import nom.tam.fits.compression.provider.param.api.IHeaderAccess;
 import nom.tam.fits.compression.provider.param.base.CompressHeaderParameter;
 import nom.tam.fits.header.Compression;
 
+/**
+ * (<i>for internal use</i>) The quantization method name as recorded in the FITS header.
+ */
 final class ZQuantizeParameter extends CompressHeaderParameter<QuantizeOption> {
 
-    /**
-     * @param quantizeOption
-     */
     ZQuantizeParameter(QuantizeOption quantizeOption) {
         super(Compression.ZQUANTIZ.name(), quantizeOption);
     }

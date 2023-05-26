@@ -38,6 +38,11 @@ import nom.tam.fits.compression.provider.param.api.IHeaderAccess;
 import static nom.tam.fits.header.Compression.ZNAMEn;
 import static nom.tam.fits.header.Compression.ZVALn;
 
+/**
+ * (<i>for internal use</i>)
+ * 
+ * @param <OPTION> The generic type of the compression option for which this parameter is used.
+ */
 public abstract class CompressHeaderParameter<OPTION> extends CompressParameter<OPTION>
         implements ICompressHeaderParameter {
 

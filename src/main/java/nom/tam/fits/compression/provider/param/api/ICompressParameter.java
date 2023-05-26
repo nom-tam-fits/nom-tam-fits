@@ -32,7 +32,8 @@ package nom.tam.fits.compression.provider.param.api;
  */
 
 /**
- * Compression parameter that must be stored along the meta data.
+ * (<i>for internal use</i>) Compression parameter that must be stored along the
+ * meta data.
  */
 public interface ICompressParameter {
 

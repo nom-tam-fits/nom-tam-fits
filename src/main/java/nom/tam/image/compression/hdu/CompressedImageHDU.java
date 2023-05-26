@@ -329,6 +329,10 @@ public class CompressedImageHDU extends BinaryTableHDU {
      * 
      * @return       The current set of options for the requested type, or <code>null</code> if there are no options or
      *                   if the requested type does not match the algorithm(s) selected.
+     * 
+     * @see          nom.tam.fits.compression.algorithm.hcompress.HCompressorOption
+     * @see          nom.tam.fits.compression.algorithm.rice.RiceCompressOption
+     * @see          nom.tam.fits.compression.algorithm.quant.QuantizeOption
      */
     public <T extends ICompressOption> T getCompressOption(Class<T> clazz) {
         return getData().getCompressOption(clazz);
@@ -381,7 +385,6 @@ public class CompressedImageHDU extends BinaryTableHDU {
      * @see                         Compression
      * @see                         #setCompressAlgorithm(String)
      * @see                         #setQuantAlgorithm(String)
-     * @see                         nom.tam.image.compression.tile.mask.NullPixelMaskPreserver
      */
     public CompressedImageHDU preserveNulls(String compressionAlgorithm) {
         long nullValue = getHeader().getLongValue(BLANK, Long.MIN_VALUE);
