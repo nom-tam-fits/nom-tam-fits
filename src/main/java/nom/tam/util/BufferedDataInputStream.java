@@ -39,6 +39,7 @@ import java.io.InputStream;
  *                 encoding.
  */
 @Deprecated
+@SuppressWarnings("javadoc")
 public class BufferedDataInputStream extends FitsInputStream {
 
     public BufferedDataInputStream(InputStream i, int bufLength) {

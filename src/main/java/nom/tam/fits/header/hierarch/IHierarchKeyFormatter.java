@@ -55,6 +55,14 @@ public interface IHierarchKeyFormatter {
      */
     String toHeaderString(String key);
 
+    /**
+     * Appends the formatted HIERARCH keyword to the Fits line buffer. For example as a step towards builing up the
+     * header card for this keyword.
+     * 
+     * @param key    The HIERARCH keyword in out own internal representation (<code>HIERARCH.</code> followed by the
+     *                   dot-sepatated hierarchical components).
+     * @param buffer The FITS line buffer to which we want the formatted HIERARCH-style keyword to be appended.
+     */
     void append(String key, FitsLineAppender buffer);
 
     /**

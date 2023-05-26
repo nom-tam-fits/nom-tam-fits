@@ -36,6 +36,9 @@ import java.io.IOException;
 import java.util.logging.Level;
 import java.util.logging.Logger;
 
+/**
+ * @deprecated Use try-with-resources constructs of Java 8+ instead.
+ */
 public final class SafeClose {
 
     private static final Logger LOG = LoggerHelper.getLogger(SafeClose.class);
@@ -44,12 +47,20 @@ public final class SafeClose {
         // Not needed
     }
 
+    /**
+     * Attmpts to an IO resources catching any {@link IOException} that might
+     * result. If the resource cannot be closed, the class will log the
+     * exception, but return normally.
+     * 
+     * @param io
+     *            The IO resource to close.
+     */
     public static void close(Closeable io) {
         if (io != null) {
             try {
                 io.close();
             } catch (IOException e) {
-                LOG.log(Level.WARNING, "could not close stream", e);
+                LOG.log(Level.WARNING, "could not close stream: " + e.getMessage(), e);
             }
         }
     }

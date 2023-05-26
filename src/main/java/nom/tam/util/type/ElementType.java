@@ -460,24 +460,34 @@ public abstract class ElementType<B extends Buffer> {
         return wrapperClass;
     }
 
+    /** The FITS representation of a boolean value in binary tables */
     public static final ElementType<Buffer> BOOLEAN = new BooleanType();
 
+    /** The FITS representation of a single (signed) byte value in images and binary tables */
     public static final ElementType<ByteBuffer> BYTE = new ByteType();
 
+    /** The FITS representation of a Java <code>char</code> value in binary tables */
     public static final ElementType<ByteBuffer> CHAR = new CharType();
 
+    /** The FITS representation of a 64-bit double precison floating-point value in images and binary tables */
     public static final ElementType<DoubleBuffer> DOUBLE = new DoubleType();
 
+    /** The FITS representation of a 32-bit single precison floating-point value in images and binary tables */
     public static final ElementType<FloatBuffer> FLOAT = new FloatType();
 
+    /** The FITS representation of a 32-bit sined integer value in images and binary tables */
     public static final ElementType<IntBuffer> INT = new IntType();
 
+    /** The FITS representation of a 64-bit sined integer value in images and binary tables */
     public static final ElementType<LongBuffer> LONG = new LongType();
 
+    /** The FITS representation of a 16-bit sined integer value in images and binary tables */
     public static final ElementType<ShortBuffer> SHORT = new ShortType();
 
+    /** The FITS representation of an ASCII string in binary tables */
     public static final ElementType<Buffer> STRING = new StringType();
 
+    /** Anything else for which we do not have a supported FITS representation */
     public static final ElementType<Buffer> UNKNOWN = new UnknownType();
 
     private static Map<Class<?>, ElementType<?>> byClass;

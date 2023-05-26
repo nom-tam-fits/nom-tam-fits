@@ -38,7 +38,7 @@ import java.util.Arrays;
 import edu.umd.cs.findbugs.annotations.SuppressFBWarnings;
 
 /**
- * A class for reading and writing into byte arrays with a stream-like interface.
+ * Reading from and writing to byte arrays with a stream-like interface (<i>primarily for internal use</i>) .
  *
  * @author Attila Kovacs
  *

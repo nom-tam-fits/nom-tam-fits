@@ -34,7 +34,16 @@ package nom.tam.util;
 import java.util.logging.Logger;
 
 /**
- * Utility class offering simplifying methods related to {@code Logger}.
+ * Access to {@link Logger} instances by class. Many of the FITS classes log minor issues they encounter during
+ * processing (such as small FITS standard violations in 3rd pary FITS files). This tool provides access to these class
+ * logs simply by the class itself. E.g. to get the log of {@link nom.tam.fits.Header}, you'd simply call:
+ * 
+ * <pre>
+ * Logger headerLog = LoggerHelper(Header.class);
+ * </pre>
+ * 
+ * without needing to know what name the log is being stored under. You can then use this to access the log, or to mute
+ * unwanted messages on a per-class basis.
  */
 public final class LoggerHelper {
 

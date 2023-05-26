@@ -39,7 +39,7 @@ import java.lang.reflect.Array;
  * @param <BaseArray> the generic type of array at the base of a multi-dimensional array object. For example for a
  *                        <code>float[][][]</code> array the base would be <code>float[]</code>.
  */
-@SuppressWarnings("deprecation")
+@SuppressWarnings({"deprecation", "javadoc"})
 public class MultiArrayIterator<BaseArray> {
 
     private final BaseArray baseArray;
@@ -50,12 +50,24 @@ public class MultiArrayIterator<BaseArray> {
 
     private final MultiArrayPointer pointer;
 
+    /**
+     * Creates a new iterator for a multidimensional array. The array is assumed to be monolithic containing only one
+     * type of (non-array) elements.
+     * 
+     * @param baseArray the multidimensional array, whose elements we want to iterate over.
+     */
     public MultiArrayIterator(BaseArray baseArray) {
         this.baseArray = baseArray;
         baseIsNoSubArray = !MultiArrayPointer.isSubArray(this.baseArray);
         pointer = new MultiArrayPointer(this.baseArray);
     }
 
+    /**
+     * Returns the element class of the multidimensional array. It is assumed that the array is monolithinc containing
+     * only elements f that type.
+     * 
+     * @return the class of (non-array) elements contained in the array.
+     */
     public Class<?> deepComponentType() {
         Class<?> clazz = baseArray.getClass();
         while (clazz.isArray()) {

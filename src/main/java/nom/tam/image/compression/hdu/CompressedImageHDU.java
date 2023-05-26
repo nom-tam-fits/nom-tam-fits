@@ -109,7 +109,9 @@ import static nom.tam.fits.header.Standard.BLANK;
  * @see CompressedImageData
  * @see nom.tam.image.compression.CompressedImageTiler
  */
+@SuppressWarnings("deprecation")
 public class CompressedImageHDU extends BinaryTableHDU {
+    /** The maximum number of table columns FITS supports */
     public static final int MAX_NAXIS_ALLOWED = 999;
 
     /**
@@ -221,7 +223,6 @@ public class CompressedImageHDU extends BinaryTableHDU {
      * 
      * @see                  #fromImageHDU(ImageHDU, int...)
      */
-    @SuppressWarnings("deprecation")
     public ImageHDU asImageHDU() throws FitsException {
         final Header header = getImageHeader();
         ImageData data = (ImageData) ImageHDU.manufactureData(header);

@@ -45,6 +45,18 @@ public class TileArea {
 
     private int[] endPoint;
 
+    /**
+     * Sets the pixel boundaries where this tile ends. Alternatively you can specify the tile size with
+     * {@link #size(int...)}
+     * 
+     * @param  newEndPoint the pixel indices along all image dimensions that specify where this tile ends. The tile will
+     *                         end before reaching these indices and will not include them.
+     * 
+     * @return             itself
+     * 
+     * @see                #start(int...)
+     * @see                #size(int...)
+     */
     public TileArea end(int... newEndPoint) {
         endPoint = Arrays.copyOf(newEndPoint, newEndPoint.length);
         return this;
@@ -83,6 +95,18 @@ public class TileArea {
         return true;
     }
 
+    /**
+     * Sets the size of this tile area. Alternatively you can specify where the tiles ends in the image via
+     * {@link #end(int...)}.
+     * 
+     * @param  sizes the tile size in pixels. If the sizes are specified in the leading dimensions only, the tile sizes
+     *                   in the remaining dimensions will default to 1.
+     * 
+     * @return       itself
+     * 
+     * @see          #start(int...)
+     * @see          #end(int...)
+     */
     public TileArea size(int... sizes) {
         endPoint = new int[startPoint.length];
         for (int index = 0; index < startPoint.length; index++) {
@@ -91,6 +115,17 @@ public class TileArea {
         return this;
     }
 
+    /**
+     * Sets the pixel boundaries where this tile begins. {@link #size(int...)}
+     * 
+     * @param  newStartPoint the pixel indices along all image dimensions that specify where this tile begins. The tile
+     *                           will include the pixels at the specified indices.
+     * 
+     * @return               itself
+     * 
+     * @see                  #start(int...)
+     * @see                  #size(int...)
+     */
     public TileArea start(int... newStartPoint) {
         startPoint = Arrays.copyOf(newStartPoint, newStartPoint.length);
         return this;

@@ -50,6 +50,10 @@ public class BinaryTableTileDecompressor extends BinaryTableTile {
 
     private ArrayDataInput is;
 
+    /**
+     * @deprecated for internal use
+     */
+    @SuppressWarnings("javadoc")
     public BinaryTableTileDecompressor(CompressedTableData binData, ColumnTable<?> columnTable,
             BinaryTableTileDescription description) throws FitsException {
         super(columnTable, description);

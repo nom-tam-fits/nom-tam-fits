@@ -35,12 +35,26 @@ import java.io.IOException;
 import java.io.InputStream;
 import java.nio.ByteBuffer;
 
+/**
+ * Stream interface for reading from a {@link ByteBuffer} (<i>primarily for internal use</i>)
+ * 
+ * @see ByteBufferOutputStream
+ * @see ByteArrayIO
+ */
 public class ByteBufferInputStream extends InputStream {
 
     private static final int BYTE_MASK = 0xFF;
 
     private final ByteBuffer buf;
 
+    /**
+     * Creates an new <code>InpuStream</code>, which reads from a <code>ByteBuffer</code> starting at the current buffer
+     * position. Its <code>read()</code> methods can be intermixed with the <code>get()</code> methods of the buffer,
+     * and also with {@link ByteBuffer#position(int)}, maintaining overall sequentiality of the calls. In other words,
+     * the stream's input is not decopuled from direct access to the buffer.
+     * 
+     * @param buffer the buffer to read from
+     */
     public ByteBufferInputStream(ByteBuffer buffer) {
         super();
         buf = buffer;

@@ -32,8 +32,20 @@ package nom.tam.fits;
  */
 
 /**
- * This class allows FITS binary and ASCII tables to be accessed via a common
- * interface.
+ * <p>
+ * Interface for accessing FITS binary and ASCII tables. .
+ * </p>
+ * <p>
+ * Note, that this interface is the big sister {@link nom.tam.util.DataTable},
+ * with nearly identical method signstures. But there are differences too, such
+ * as the type of argument of setting row data, and when and what excpetions are
+ * thrown. This one also has includes additional methods for table manipulation.
+ * Overall it would have been a more prudent design to consolidate the two
+ * interfaces but this is what we have so we stick to it. However, mabe this is
+ * something an upcoming major release may address...
+ * </p>
+ * 
+ * @see nom.tam.util.DataTable
  */
 
 public interface TableData {
@@ -73,29 +85,171 @@ public interface TableData {
      * @throws FitsException
      *             if the operation failed
      * @return the number of rows in the adapted table
+     * @see #deleteRows(int, int)
      */
     int addRow(Object[] newRow) throws FitsException;
 
-    void deleteColumns(int row, int len) throws FitsException;
+    /**
+     * Removes a set of consecutive columns from this table
+     * 
+     * @param col
+     *            the index of the first column to remove
+     * @param len
+     *            the number of subsequent columns to remove
+     * @throws FitsException
+     *             if the table could not be modified
+     * @see #addColumn(Object)
+     * @see #deleteRows(int, int)
+     */
+    void deleteColumns(int col, int len) throws FitsException;
 
+    /**
+     * Removes a set of consecutive rows from this table
+     * 
+     * @param row
+     *            the index of the first row to remove
+     * @param len
+     *            the number of subsequent rows to remove
+     * @throws FitsException
+     *             if the table could not be modified
+     * @see #addRow(Object[])
+     * @see #deleteColumns(int, int)
+     */
     void deleteRows(int row, int len) throws FitsException;
 
+    /**
+     * Indexed access to data by column
+     * 
+     * @param col
+     *            the column index
+     * @return an object containing the column data (for all rows) of the
+     *         specified column, or possubly <code>null</code>.
+     * @throws FitsException
+     *             if the table could not be accessed
+     * @see #getNCols()
+     * @see #setColumn(int, Object)
+     * @see #getRow(int)
+     * @see #getElement(int, int)
+     */
     Object getColumn(int col) throws FitsException;
 
+    /**
+     * Returns the data element in this table
+     * 
+     * @param row
+     *            the row index of the element
+     * @param col
+     *            the column index of the element
+     * @return the object to store at the specified row, col in the table.
+     * @throws FitsException
+     *             if the table could not be accessed
+     * @see #setElement(int, int, Object)
+     * @see #getNRows()
+     * @see #getNCols()
+     */
     Object getElement(int row, int col) throws FitsException;
 
+    /**
+     * Returns the number of columns contained in this table.
+     * 
+     * @return the current number of columns in the table.
+     * @see #getNRows()
+     * @see #getColumn(int)
+     * @see #setColumn(int, Object)
+     */
     int getNCols();
 
+    /**
+     * Returns the number of columns contained in this table.
+     * 
+     * @return the current number of columns in the table.
+     * @see #getNRows()
+     * @see #getColumn(int)
+     * @see #setColumn(int, Object)
+     */
     int getNRows();
 
+    /**
+     * Indexed access to data by row
+     * 
+     * @param row
+     *            the row index
+     * @return an object containing the row data (for all column) of the
+     *         specified row, or possubly <code>null</code>.
+     * @throws FitsException
+     *             if the table could not be accessed
+     * @see #getNRows()
+     * @see #setRow(int, Object[])
+     * @see #getColumn(int)
+     * @see #getElement(int, int)
+     */
     Object[] getRow(int row) throws FitsException;
 
+    /**
+     * Sets new data for a table column
+     * 
+     * @param col
+     *            the column index
+     * @param newCol
+     *            an object containing the new column data (for all rows) of the
+     *            specified column.
+     * @throws FitsException
+     *             if the table could not be modified
+     * @see #getNCols()
+     * @see #getColumn(int)
+     * @see #setRow(int, Object[])
+     * @see #setElement(int, int, Object)
+     */
     void setColumn(int col, Object newCol) throws FitsException;
 
+    /**
+     * Sets new data element in this table
+     * 
+     * @param row
+     *            the row index of the element
+     * @param col
+     *            the column index of the element
+     * @param element
+     *            the object to store at the specified row, col in the table.
+     * @throws FitsException
+     *             if the table could not be modified
+     * @see #getElement(int, int)
+     * @see #getNRows()
+     * @see #getNCols()
+     */
     void setElement(int row, int col, Object element) throws FitsException;
 
+    /**
+     * Sets new data for a table row
+     * 
+     * @param row
+     *            the column index
+     * @param newRow
+     *            an object containing the new row data (for all columns) of the
+     *            specified row.
+     * @throws FitsException
+     *             if the table could not be modified
+     * @see #getNRows()
+     * @see #getRow(int)
+     * @see #setColumn(int, Object)
+     * @see #setElement(int, int, Object)
+     */
     void setRow(int row, Object[] newRow) throws FitsException;
 
+    /**
+     * Updates the table dimensions in the header following deletion. Whoever
+     * calls {@link #deleteColumns(int, int)} on this table should call this
+     * method after the deletion(s), at least once after all desired column
+     * deletions have been processed).
+     * 
+     * @param oldNcol
+     *            The number of columns in the table before the first call to
+     *            {@link #deleteColumns(int, int)}.
+     * @param hdr
+     *            The table header
+     * @throws FitsException
+     *             if the header could not be updated
+     */
     void updateAfterDelete(int oldNcol, Header hdr) throws FitsException;
 
 }

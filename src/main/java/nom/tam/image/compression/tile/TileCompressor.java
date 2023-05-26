@@ -38,12 +38,25 @@ import nom.tam.image.compression.tile.mask.NullPixelMaskPreserver;
 import nom.tam.image.tile.operation.TileArea;
 import nom.tam.util.type.ElementType;
 
+/**
+ * A parallel operation for compressing a specific image or binary table tile. Each instance will be processed in a
+ * single thread, but operations on separate tiles can be (and will be) processed in parallel.
+ * 
+ * @see TileDecompressor
+ */
 public class TileCompressor extends TileCompressionOperation {
 
     private boolean forceNoLoss = false;
 
     private NullPixelMaskPreserver nullPixelMaskPerserver;
 
+    /**
+     * Creates a new tile compressor for a specific tile in the image.
+     * 
+     * @param array     the class that handles the compression of the entire image via parallel processing tiles.
+     * @param tileIndex the sequential index of the specific tile
+     * @param area      the location and size of the time in the complete image
+     */
     protected TileCompressor(TiledImageCompressionOperation array, int tileIndex, TileArea area) {
         super(array, tileIndex, area);
     }

@@ -41,6 +41,7 @@ import java.nio.Buffer;
 @Deprecated
 public abstract class PrimitiveType<B extends Buffer> extends ElementType<B> {
 
+    @SuppressWarnings("javadoc")
     @Deprecated
     protected PrimitiveType(int size, boolean individualSize, Class<?> primitiveClass, Class<?> wrapperClass,
             Class<B> bufferClass, char type, int bitPix) {

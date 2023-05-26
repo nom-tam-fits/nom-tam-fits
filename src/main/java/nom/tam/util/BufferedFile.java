@@ -42,6 +42,7 @@ import java.io.IOException;
  * @see        FitsFile
  */
 @Deprecated
+@SuppressWarnings("javadoc")
 public class BufferedFile extends FitsFile {
 
     public BufferedFile(File file, String mode, int bufferSize) throws IOException {

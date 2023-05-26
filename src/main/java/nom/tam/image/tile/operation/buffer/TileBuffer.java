@@ -36,8 +36,8 @@ import java.nio.Buffer;
 import nom.tam.util.type.ElementType;
 
 /**
- * A linear buffer that contains data for a single 2D image tile, in row-major format. You can use
- * {@link TileBufferFactory} to create appropriate implementations depending on tile and image sizes.
+ * (<i>for internal use</i>) A linear buffer that contains data for a single 2D image tile, in row-major format. You can
+ * use {@link TileBufferFactory} to create appropriate implementations depending on tile and image sizes.
  * 
  * @see TileBufferFactory
  * @see nom.tam.image.tile.operation.TileArea

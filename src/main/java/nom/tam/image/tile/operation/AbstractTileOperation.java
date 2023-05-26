@@ -169,6 +169,7 @@ public abstract class AbstractTileOperation implements Runnable, ITileOperation 
         return tiledImageOperation;
     }
 
+    @SuppressWarnings("deprecation")
     @Override
     public ITileOperation setDimensions(int dataOffset, int width, int height) {
         setTileBuffer(TileBufferFactory.createTileBuffer(getBaseType(), //

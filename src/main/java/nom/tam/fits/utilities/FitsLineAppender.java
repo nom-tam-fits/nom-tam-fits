@@ -34,9 +34,15 @@ import nom.tam.fits.HeaderCard;
  */
 
 /**
+ * <p>
  * This class handles the writing of a card line. It keeps track of the position in the line and will limit it to 80
  * characters. A write will never cross the line border but a write when the line is at position 80 will start a new
  * line.
+ * </p>
+ * <p>
+ * This class probably should have been in the {@link nom.tam.util} package but somehow ended up here, so we'll have to
+ * stick with it.
+ * </p>
  *
  * @author     Richard van Nieuwenhoven
  *
@@ -176,6 +182,13 @@ public class FitsLineAppender {
         return buffer.toString();
     }
 
+    /**
+     * Appends a substring of a FITS keyword to the buffer
+     * 
+     * @param key   The fits keyword
+     * @param start the starting index of the substring to append
+     * @param end   the index where the substring ends (exclusive).
+     */
     public void append(String key, int start, int end) {
         buffer.append(key, start, end);
         charCount += end - start;

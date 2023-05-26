@@ -56,6 +56,9 @@ public class BinaryTableTileCompressor extends BinaryTableTile {
 
     private final CompressedTableData binData;
 
+    /**
+     * @deprecated for internal use
+     */
     public BinaryTableTileCompressor(CompressedTableData binData, ColumnTable<?> columnTable,
             BinaryTableTileDescription description) {
         super(columnTable, description);

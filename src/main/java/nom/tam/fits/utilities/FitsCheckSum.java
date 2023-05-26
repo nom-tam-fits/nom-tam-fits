@@ -74,6 +74,10 @@ import static nom.tam.fits.header.Checksum.DATASUM;
  * <p>
  * See <a href="http://arxiv.org/abs/1201.1345" target="@top">FITS Checksum Proposal</a>
  * </p>
+ * <p>
+ * Note this class probably should be in the <code>nom.tam.util</code> package, but somehow it ended up here and now we
+ * are stuck with it.
+ * </p>
  *
  * @author R J Mather, Tony Johnson, Attila Kovacs
  *
