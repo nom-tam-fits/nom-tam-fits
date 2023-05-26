@@ -40,8 +40,9 @@ import nom.tam.image.tile.operation.buffer.TileBufferFactory;
 import nom.tam.util.type.ElementType;
 
 /**
- * A base implementation of parallel processing of tiles. Each instance handles the processing of a single 2D image
- * tile, which is submitted to a thread pool for parallel processing of multiple tiles simultaneously.
+ * (<i>for internal use</i>) A base implementation of parallel processing of tiles. Each instance handles the processing
+ * of a single 2D image tile, which is submitted to a thread pool for parallel processing of multiple tiles
+ * simultaneously.
  */
 public abstract class AbstractTileOperation implements Runnable, ITileOperation {
 

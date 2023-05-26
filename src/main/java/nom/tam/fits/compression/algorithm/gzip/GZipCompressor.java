@@ -50,6 +50,12 @@ import nom.tam.util.type.ElementType;
  * #L%
  */
 
+/**
+ * (<i>for internal use</i>) The GZIP compression algorithm.
+ *
+ * @param <T> The genetic type of element buffer to compress
+ */
+@SuppressWarnings("javadoc")
 public abstract class GZipCompressor<T extends Buffer> implements ICompressor<T> {
 
     /**

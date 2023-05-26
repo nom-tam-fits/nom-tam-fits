@@ -195,6 +195,12 @@ public class BinaryTable extends AbstractTableData {
 
         private final FitsHeap heap;
 
+        /**
+         * Create a new saved state
+         * 
+         * @param columns the column descriptions to save
+         * @param heap    the heap to save
+         */
         public SaveState(List<ColumnDesc> columns, FitsHeap heap) {
             this.columns = columns;
             this.heap = heap;
@@ -645,6 +651,13 @@ public class BinaryTable extends AbstractTableData {
         return (ColumnTable<SaveState>) super.getData();
     }
 
+    /**
+     * Returns the dimensions of elements in each column.
+     * 
+     * @return an array of arrays with the dimensions of each column's data.
+     * 
+     * @see    ColumnDesc#getDimens()
+     */
     public int[][] getDimens() {
         int[][] dimens = new int[columnList.size()][];
         for (int i = 0; i < dimens.length; i++) {
@@ -803,6 +816,12 @@ public class BinaryTable extends AbstractTableData {
         return getFileRow(row);
     }
 
+    /**
+     * Returns the flattened (1D) size of elements in each column of this table. As of 1.18, this method returns a copy
+     * ot the array used internally, which is safe to modify.
+     * 
+     * @return an array with the byte sizes of each column
+     */
     public int[] getSizes() {
         int[] sizes = new int[columnList.size()];
         for (int i = 0; i < sizes.length; i++) {
@@ -823,6 +842,12 @@ public class BinaryTable extends AbstractTableData {
         return len;
     }
 
+    /**
+     * Get the characters describing the base classes of the columns. As of 1.18, this method returns a copy ot the
+     * array used internally, which is safe to modify.
+     *
+     * @return An array of type characters (Java array types), one for each column.
+     */
     public char[] getTypes() {
         ensureDataSilent();
         return table.getTypes();
@@ -1545,6 +1570,11 @@ public class BinaryTable extends AbstractTableData {
         table.setExtraState(new SaveState(columnList, heap));
     }
 
+    /**
+     * (<i>for internal use</i>)
+     * 
+     * @throws TableException if the column could not be added.
+     */
     protected void addByteVaryingColumn() throws TableException {
         ColumnDesc added = new ColumnDesc();
         columnList.add(added);
@@ -1561,6 +1591,12 @@ public class BinaryTable extends AbstractTableData {
         table.addColumn(added.column, added.size);
     }
 
+    /**
+     * (<i>for internal use</i>)
+     * 
+     * @deprecated this method should have visibility reduced to private
+     */
+    @SuppressWarnings("javadoc")
     protected ColumnTable<SaveState> createColumnTable(Object[] arrCol, int[] sizes) throws TableException {
         return new ColumnTable<>(arrCol, sizes);
     }

@@ -33,6 +33,13 @@ package nom.tam.fits.compression.algorithm.quant;
 
 import java.util.Arrays;
 
+/**
+ * (<i>for internal use</i>) Determines the optimal quantization to use for floating-point data. It estimates the noise
+ * level in the data to determine qhat quantization should be use to lose no information above the noise level.
+ * 
+ * @deprecated (<i>for internal use</i>) This class sohuld have visibility reduced to the package level
+ */
+@SuppressWarnings("javadoc")
 public class Quantize {
 
     class DoubleArrayPointer {
@@ -122,25 +129,18 @@ public class Quantize {
     }
 
     /**
-     * Estimate the median and background noise in the input image using 2nd,
-     * 3rd and 5th order Median Absolute Differences. The noise in the
-     * background of the image is calculated using the MAD algorithms developed
-     * for deriving the signal to noise ratio in spectra (see issue #42 of the
-     * ST-ECF newsletter, http://www.stecf.org/documents/newsletter/) 3rd order:
-     * noise = 1.482602 / sqrt(6) * median (abs(2*flux(i) - flux(i-2) -
-     * flux(i+2))) The returned estimates are the median of the values that are
-     * computed for each row of the image.
+     * Estimate the median and background noise in the input image using 2nd, 3rd and 5th order Median Absolute
+     * Differences. The noise in the background of the image is calculated using the MAD algorithms developed for
+     * deriving the signal to noise ratio in spectra (see issue #42 of the ST-ECF newsletter,
+     * http://www.stecf.org/documents/newsletter/) 3rd order: noise = 1.482602 / sqrt(6) * median (abs(2*flux(i) -
+     * flux(i-2) - flux(i+2))) The returned estimates are the median of the values that are computed for each row of the
+     * image.
      * 
-     * @param arrayIn
-     *            2 dimensional tiledImageOperation of image pixels
-     * @param nx
-     *            number of pixels in each row of the image
-     * @param ny
-     *            number of rows in the image
-     * @param nullcheck
-     *            check for null values, if true
-     * @param nullvalue
-     *            value of null pixels, if nullcheck is true
+     * @param arrayIn   2 dimensional tiledImageOperation of image pixels
+     * @param nx        number of pixels in each row of the image
+     * @param ny        number of rows in the image
+     * @param nullcheck check for null values, if true
+     * @param nullvalue value of null pixels, if nullcheck is true
      */
     private void calculateNoise(double[] arrayIn, int nx, int ny) {
         DoubleArrayPointer array = new DoubleArrayPointer(arrayIn);
@@ -362,43 +362,32 @@ public class Quantize {
     }
 
     /**
-     * arguments: long row i: tile number = row number in the binary table
-     * double fdata[] i: tiledImageOperation of image pixels to be compressed
-     * long nxpix i: number of pixels in each row of fdata long nypix i: number
-     * of rows in fdata nullcheck i: check for nullvalues in fdata? double
-     * in_null_value i: value used to represent undefined pixels in fdata float
-     * qlevel i: quantization level int dither_method i; which dithering method
-     * to use int idata[] o: values of fdata after applying bzero and bscale
-     * double bscale o: scale factor double bzero o: zero offset int iminval o:
-     * minimum quantized value that is returned int imaxval o: maximum quantized
-     * value that is returned The function value will be one if the input fdata
-     * were copied to idata; in this case the parameters bscale and bzero can be
-     * used to convert back to nearly the original floating point values: fdata
-     * ~= idata * bscale + bzero. If the function value is zero, the data were
-     * not copied to idata.
+     * arguments: long row i: tile number = row number in the binary table double fdata[] i: tiledImageOperation of
+     * image pixels to be compressed long nxpix i: number of pixels in each row of fdata long nypix i: number of rows in
+     * fdata nullcheck i: check for nullvalues in fdata? double in_null_value i: value used to represent undefined
+     * pixels in fdata float qlevel i: quantization level int dither_method i; which dithering method to use int idata[]
+     * o: values of fdata after applying bzero and bscale double bscale o: scale factor double bzero o: zero offset int
+     * iminval o: minimum quantized value that is returned int imaxval o: maximum quantized value that is returned The
+     * function value will be one if the input fdata were copied to idata; in this case the parameters bscale and bzero
+     * can be used to convert back to nearly the original floating point values: fdata ~= idata * bscale + bzero. If the
+     * function value is zero, the data were not copied to idata.
      * <p>
-     * In earlier implementations of the compression code, we only used the
-     * noise3 value as the most reliable estimate of the background noise in an
-     * image. If it is not possible to compute a noise3 value, then this serves
-     * as a red flag to indicate that quantizing the image could cause a loss of
-     * significant information in the image.
+     * In earlier implementations of the compression code, we only used the noise3 value as the most reliable estimate
+     * of the background noise in an image. If it is not possible to compute a noise3 value, then this serves as a red
+     * flag to indicate that quantizing the image could cause a loss of significant information in the image.
      * </p>
      * <p>
-     * At some later date, we decided to take the more conservative approach of
-     * using the minimum of all three of the noise values (while still requiring
-     * that noise3 has a defined value) as the best estimate of the noise. Note
-     * that if an image contains pure Gaussian distributed noise, then noise2,
-     * noise3, and noise5 will have exactly the same value (within statistical
-     * measurement errors).
+     * At some later date, we decided to take the more conservative approach of using the minimum of all three of the
+     * noise values (while still requiring that noise3 has a defined value) as the best estimate of the noise. Note that
+     * if an image contains pure Gaussian distributed noise, then noise2, noise3, and noise5 will have exactly the same
+     * value (within statistical measurement errors).
      * </p>
      * 
-     * @param fdata
-     *            the data to quantinize
-     * @param nxpix
-     *            the image width
-     * @param nypix
-     *            the image hight
-     * @return true if the quantification was possible
+     * @param  fdata the data to quantinize
+     * @param  nxpix the image width
+     * @param  nypix the image hight
+     * 
+     * @return       true if the quantification was possible
      */
     public boolean quantize(double[] fdata, int nxpix, int nypix) {
         // MAD 2nd, 3rd, and 5th order noise values

@@ -34,10 +34,13 @@ package nom.tam.fits.compression.algorithm.rice;
 import java.nio.ByteBuffer;
 
 /**
- * A bit wise reader writer around a bytebuffer.
+ * (<i>for internal use</i>) A bit wise reader writer around a {@link ByteBuffer}.
  * 
- * @author Ritchie
+ * @deprected (<i>for internal use</i>) Its visibility may be reduced to the package level in the future.
+ * 
+ * @author    Ritchie
  */
+@SuppressWarnings("javadoc")
 public class BitBuffer {
 
     private static final int BITS_OF_4_BYTES = 32;
@@ -115,8 +118,7 @@ public class BitBuffer {
     /**
      * write out int value to the next 4 bytes of the buffer
      * 
-     * @param i
-     *            integer to write
+     * @param i integer to write
      */
     public void putInt(int i) {
         putByte((byte) ((i & BYTE_4_OF_INT) >>> BITS_OF_3_BYTES));

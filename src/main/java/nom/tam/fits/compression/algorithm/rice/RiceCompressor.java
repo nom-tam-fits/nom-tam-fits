@@ -44,10 +44,11 @@ import nom.tam.util.type.ElementType;
  */
 
 /**
- * The original compression was designed by Rice, Yeh, and Miller the code was written by Richard White at STSc at the
- * STScI and included (ported to c and adapted) in cfitsio by William Pence, NASA/GSFC. That code was then ported to
- * java by R. van Nieuwenhoven. Later it was massively refactored to harmonize the different compression algorithms and
- * reduce the duplicate code pieces without obscuring the algorithm itself as far as possible.
+ * (<i>for internal use</i>) The Rice compression algorithm. The original compression was designed by Rice, Yeh, and
+ * Miller the code was written by Richard White at STScI at the STScI and included (ported to c and adapted) in cfitsio
+ * by William Pence, NASA/GSFC. That code was then ported to java by R. van Nieuwenhoven. Later it was massively
+ * refactored to harmonize the different compression algorithms and reduce the duplicate code pieces without obscuring
+ * the algorithm itself as far as possible.
  *
  * @author     Richard White
  * @author     William Pence
@@ -55,6 +56,7 @@ import nom.tam.util.type.ElementType;
  *
  * @param  <T> the genetic type of NIO buffer on which this compressor operates.
  */
+@SuppressWarnings("javadoc")
 public abstract class RiceCompressor<T extends Buffer> implements ICompressor<T> {
 
     public static class ByteRiceCompressor extends RiceCompressor<ByteBuffer> {

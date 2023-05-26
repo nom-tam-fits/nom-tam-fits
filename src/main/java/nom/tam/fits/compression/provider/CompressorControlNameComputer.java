@@ -35,8 +35,8 @@ import nom.tam.fits.header.Compression;
 
 /**
  * <p>
- * Computes the name of the tile compressor class name given the algorithm used to quantize and compress the tile and
- * the type of data the tile contains.
+ * (<i>for internal use</i>) Finds the name of the appropriate tile compressor class name given the algorithm used to
+ * quantize and compress the tile and the type of data the tile contains.
  * </p>
  * The name of the class is built of four parts:
  * <ul>
@@ -56,6 +56,7 @@ import nom.tam.fits.header.Compression;
  * </ul>
  * See the associated unit tests for concrete examples.
  */
+@SuppressWarnings("javadoc")
 public class CompressorControlNameComputer {
 
     private static final String COMPRESSOR_CLASS_SUFFIX = "Compressor";

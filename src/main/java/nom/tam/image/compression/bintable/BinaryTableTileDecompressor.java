@@ -42,7 +42,7 @@ import nom.tam.util.ColumnTable;
 import nom.tam.util.FitsInputStream;
 
 /**
- * Handles the decompression of binary table 'tiles' (<i>for internal use</i>).
+ * (<i>for internal use</i>) Handles the decompression of binary table 'tiles'.
  */
 public class BinaryTableTileDecompressor extends BinaryTableTile {
 

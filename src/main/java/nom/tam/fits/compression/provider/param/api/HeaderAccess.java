@@ -37,12 +37,29 @@ import nom.tam.fits.HeaderCardBuilder;
 import nom.tam.fits.HeaderCardException;
 import nom.tam.fits.header.IFitsHeader;
 
+/**
+ * (<i>for internal use</i>) Access to FITS header values with runtime exceptions only. Regular header access throws
+ * {@link HeaderCardException}s, which are hard exceptions. They really should have been softer runtime exceptions from
+ * the start, but unfortunately that was choice this library made a very long time ago, and we therefore stick to it, at
+ * least until the next major code revision (major version 2 at the earliest). So this class provides an alternative
+ * access to headers converting any <code>HeaderCardException</code>s to {@link IllegalArgumentException}.
+ * 
+ * @see Header
+ */
 public class HeaderAccess implements IHeaderAccess {
 
     private final Header header;
 
     private HeaderCardBuilder builder;
 
+    /**
+     * <p>
+     * Creates a new access to modifying a {@link HeaderCard} without the hard exceptions that <code>HeaderCard</code>
+     * may throw.
+     * </p>
+     * 
+     * @param header the FITS header we wish to access and modify
+     */
     public HeaderAccess(Header header) {
         this.header = header;
     }
@@ -52,7 +69,7 @@ public class HeaderAccess implements IHeaderAccess {
         try {
             card(key).value(value);
         } catch (HeaderCardException e) {
-            throw new IllegalArgumentException("header card could not be created");
+            throw new IllegalArgumentException("header card could not be created: " + e.getMessage(), e);
         }
     }
 
@@ -61,7 +78,7 @@ public class HeaderAccess implements IHeaderAccess {
         try {
             card(key).value(value);
         } catch (HeaderCardException e) {
-            throw new IllegalArgumentException("header card could not be created");
+            throw new IllegalArgumentException("header card could not be created " + e.getMessage(), e);
         }
     }
 

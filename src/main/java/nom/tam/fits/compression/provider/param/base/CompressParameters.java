@@ -43,6 +43,12 @@ import nom.tam.fits.compression.provider.param.api.IHeaderAccess;
 
 import static nom.tam.fits.header.Standard.TTYPEn;
 
+/**
+ * (<i>for internal use</i>) A set of {@link CompressParameter}s that are bundled together, typically because they are
+ * parameters that all link to the same {@link nom.tam.fits.compression.algorithm.api.ICompressOption}
+ * 
+ * @see CompressParameter
+ */
 public abstract class CompressParameters implements ICompressParameters, Cloneable {
 
     @Override
@@ -123,9 +129,24 @@ public abstract class CompressParameters implements ICompressParameters, Cloneab
         return null;
     }
 
+    /**
+     * Retuens the subset of parameters from within, which are recorded in compressed table columns along with the
+     * compressed data.
+     * 
+     * @return the subset of parameters that are recorded in compressed table columns.
+     * 
+     * @see    #headerParameters()
+     */
     protected ICompressColumnParameter[] columnParameters() {
         return new ICompressColumnParameter[0];
     }
 
+    /**
+     * Returns the subset of parameters from within, which are recorded in the header of the compressed HDU.
+     * 
+     * @return the subset of parameters that are recorded in the compressed HDU's header.
+     * 
+     * @see    #columnParameters()
+     */
     protected abstract ICompressHeaderParameter[] headerParameters();
 }

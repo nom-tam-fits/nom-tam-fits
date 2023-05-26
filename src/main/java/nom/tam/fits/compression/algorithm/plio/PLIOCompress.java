@@ -38,15 +38,16 @@ import nom.tam.fits.compression.algorithm.api.ICompressor;
  */
 
 /**
- * The original decompression code was written by Doug Tody, NRAO and included (ported to c and adapted) in cfitsio by
- * William Pence, NASA/GSFC. That code was then ported to Java by R. van Nieuwenhoven. Later it was massively refactored
- * to harmonize the different compression algorithms and reduce the duplicate code pieces without obscuring the
- * algorithm itself as good as possible.
+ * (<i>for internal use</i>) The PLIO compression algorithm. The original decompression code was written by Doug Tody,
+ * NRAO and included (ported to c and adapted) in cfitsio by William Pence, NASA/GSFC. That code was then ported to Java
+ * by R. van Nieuwenhoven. Later it was massively refactored to harmonize the different compression algorithms and
+ * reduce the duplicate code pieces without obscuring the algorithm itself as good as possible.
  *
  * @author Doug Tody
  * @author William Pence
  * @author Richard van Nieuwenhoven
  */
+@SuppressWarnings("javadoc")
 public abstract class PLIOCompress {
 
     public static class BytePLIOCompressor extends PLIOCompress implements ICompressor<ByteBuffer> {

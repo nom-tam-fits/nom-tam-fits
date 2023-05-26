@@ -36,10 +36,21 @@ import nom.tam.fits.compression.provider.param.api.ICompressParameters;
 import nom.tam.fits.compression.provider.param.rice.RiceCompressParameters;
 import nom.tam.util.type.ElementType;
 
+/**
+ * Options to the Rice compression algorithm. When compressing tables and images using the Rice algorithm, users can
+ * control how exactly the compression is perfomed. When reading compressed FITS files, these options will be set
+ * automatically based on the header values recorded in the compressed HDU.
+ * 
+ * @see nom.tam.image.compression.hdu.CompressedImageHDU#setCompressAlgorithm(String)
+ * @see nom.tam.image.compression.hdu.CompressedImageHDU#getCompressOption(Class)
+ * @see RiceQuantizeCompressOption
+ */
 public class RiceCompressOption implements ICompressOption {
 
+    /** the default block size to use in bytes */
     public static final int DEFAULT_RICE_BLOCKSIZE = 32;
 
+    /** the default BYTEPIX value */
     public static final int DEFAULT_RICE_BYTEPIX = ElementType.INT.size();
 
     /**
@@ -51,6 +62,9 @@ public class RiceCompressOption implements ICompressOption {
 
     private Integer bytePix = null;
 
+    /**
+     * Creates a new set of options for Rice compression.
+     */
     public RiceCompressOption() {
         parameters = new RiceCompressParameters(this);
     }
@@ -66,10 +80,24 @@ public class RiceCompressOption implements ICompressOption {
         }
     }
 
+    /**
+     * Returns the currently set block size.
+     * 
+     * @return the block size in bytes.
+     * 
+     * @see    #setBlockSize(int)
+     */
     public final int getBlockSize() {
         return blockSize;
     }
 
+    /**
+     * REturns the currently set BYTEPIX value
+     * 
+     * @return the BYTEPIX value.
+     * 
+     * @see    #setBytePix(int)
+     */
     public final int getBytePix() {
         return bytePix == null ? DEFAULT_RICE_BYTEPIX : bytePix;
     }
@@ -84,16 +112,47 @@ public class RiceCompressOption implements ICompressOption {
         return false;
     }
 
+    /**
+     * Sets a new block size to use
+     * 
+     * @param  value the new block size in bytes
+     * 
+     * @return       itself
+     * 
+     * @see          #getBlockSize()
+     */
     public RiceCompressOption setBlockSize(int value) {
         blockSize = value;
         return this;
     }
 
+    /**
+     * Sets a new BYTEPIX value to use.
+     * 
+     * @param  value the new BYTEPIX value. It is currently not checked for validity, so use carefully.
+     * 
+     * @return       itself
+     * 
+     * @see          #setDefaultBytePix(int)
+     * @see          #getBytePix()
+     */
     public RiceCompressOption setBytePix(int value) {
         bytePix = value;
         return this;
     }
 
+    /**
+     * Sets a BYTEPIX value to use, but only when a BYTEPIX value is not already defined. If a value was already defined
+     * it is left unchanged.
+     * 
+     * @param  value the new BYTEPIX value to use as default when no value was set. It is currently not checked for
+     *                   validity, so use carefully.
+     * 
+     * @return       itself
+     *
+     * @see          #setBytePix(int)
+     * @see          #getBytePix()
+     */
     protected RiceCompressOption setDefaultBytePix(int value) {
         if (bytePix == null) {
             bytePix = value;

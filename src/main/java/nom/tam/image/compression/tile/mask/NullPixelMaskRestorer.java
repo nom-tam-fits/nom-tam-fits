@@ -43,7 +43,10 @@ import nom.tam.image.tile.operation.buffer.TileBuffer;
 import nom.tam.util.type.ElementType;
 
 /**
- * Restores blank (<code>null</code>) values in deccompressed images.
+ * (<i>for internal use</i>) Restores blank (<code>null</code>) values in
+ * deccompressed images.
+ * 
+ * @see nom.tam.image.compression.hdu.CompressedImageHDU
  */
 public class NullPixelMaskRestorer extends AbstractNullPixelMask {
 

@@ -32,8 +32,8 @@ package nom.tam.fits.compression.provider.param.api;
  */
 
 /**
- * Compression parameter that must be stored along the header meta data of the
- * hdu.
+ * (<i>for internal use</i>) Compression parameter that must be stored along the
+ * header meta data of the hdu.
  */
 public interface ICompressHeaderParameter extends ICompressParameter {
 

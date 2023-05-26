@@ -32,7 +32,8 @@ package nom.tam.image.tile.operation;
  */
 
 /**
- * Interface for performing parallel operations on serialized 2D image tiles.
+ * (<i>for internal use</i>) Interface for performing parallel operations on
+ * serialized 2D image tiles.
  * 
  * @see nom.tam.image.ImageTiler
  * @see nom.tam.image.tile.operation.buffer.TileBuffer

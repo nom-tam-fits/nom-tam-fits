@@ -47,6 +47,12 @@ import nom.tam.util.type.ElementType;
 
 import edu.umd.cs.findbugs.annotations.SuppressFBWarnings;
 
+/**
+ * (<i>for internal use</i>) The GZIP2 compression algorithm.
+ *
+ * @param <T> The genetic type of element buffer to compress
+ */
+@SuppressWarnings("javadoc")
 public abstract class GZip2Compressor<T extends Buffer> extends GZipCompressor<T> {
 
     public static class ByteGZip2Compressor extends ByteGZipCompressor {

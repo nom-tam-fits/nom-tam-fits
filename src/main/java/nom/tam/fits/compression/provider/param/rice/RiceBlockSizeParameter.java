@@ -37,8 +37,16 @@ import nom.tam.fits.compression.provider.param.api.IHeaderAccess;
 import nom.tam.fits.compression.provider.param.base.CompressHeaderParameter;
 import nom.tam.fits.header.Compression;
 
+/**
+ * (<i>for internal use</i>) The block size value for the Rice compression as recorded in the FITS header.
+ */
 public final class RiceBlockSizeParameter extends CompressHeaderParameter<RiceCompressOption> {
 
+    /**
+     * @deprecated (<i>for internal use</i>) the visibility of this constructor may be reduced to the package level in
+     *                 future releases.
+     */
+    @SuppressWarnings("javadoc")
     public RiceBlockSizeParameter(RiceCompressOption riceCompressOption) {
         super(Compression.BLOCKSIZE, riceCompressOption);
     }

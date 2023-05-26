@@ -40,7 +40,8 @@ import nom.tam.fits.compression.provider.param.base.CompressParameters;
 
 /**
  * <p>
- * Group of parameters that must be synchronized with the hdu meta data for a specific compression algorithm.
+ * (<i>for internal use</i>) Group of parameters that must be synchronized with the hdu meta data for a specific
+ * compression algorithm.
  * </p>
  * <p>
  * NOTE, this interface is meant for internal use only. Implementing it externally to this library might not result in

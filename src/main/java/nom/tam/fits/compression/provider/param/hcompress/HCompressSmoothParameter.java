@@ -37,6 +37,9 @@ import nom.tam.fits.compression.provider.param.api.IHeaderAccess;
 import nom.tam.fits.compression.provider.param.base.CompressHeaderParameter;
 import nom.tam.fits.header.Compression;
 
+/**
+ * (<i>for internal use</i>) The HCompress smooth setting as recorded in the FITS header.
+ */
 public final class HCompressSmoothParameter extends CompressHeaderParameter<HCompressorOption> {
 
     /**

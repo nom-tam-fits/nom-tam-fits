@@ -33,9 +33,9 @@ package nom.tam.fits.compression.provider.param.api;
 
 /**
  * <p>
- * Compression parameters that are stored in the table along with the compressed data. Each parameter is associated to a
- * comlumn in the table, and the parameter takes the value that is stored in the same row as the compressed data
- * themselves.
+ * (<i>for internal use</i>) Compression parameters that are stored in the table along with the compressed data. Each
+ * parameter is associated to a comlumn in the table, and the parameter takes the value that is stored in the same row
+ * as the compressed data themselves.
  * </p>
  * <p>
  * It is possible to make independent copies of a set of such parameters, e.g. for parallel processing. In such cases
