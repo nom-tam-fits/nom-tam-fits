@@ -31,7 +31,17 @@ package nom.tam.util;
  * #L%
  */
 
+/**
+ * Interface for curse-based access to keys
+ *
+ * @param <T> The generic type of key that this cursor uses
+ */
 public interface CursorValue<T> {
 
+    /**
+     * Returns the key at the current cursor position
+     * 
+     * @return the key at the current cursor position
+     */
     T getKey();
 }

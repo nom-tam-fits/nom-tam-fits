@@ -552,6 +552,10 @@ public class MultiArrayCopyFactory<Source, Destination> {
         FACTORIES = Collections.unmodifiableMap(factories);
     }
 
+    /**
+     * @deprecated for internal use only. This ought to be private.
+     */
+    @SuppressWarnings("javadoc")
     public static MultiArrayCopyFactory<?, ?> select(Class<?> primitiveType, Class<?> primitiveType2) {
         Map<Class<?>, MultiArrayCopyFactory<?, ?>> from = MultiArrayCopyFactory.FACTORIES.get(primitiveType);
         if (from != null) {
@@ -563,6 +567,10 @@ public class MultiArrayCopyFactory<Source, Destination> {
         return MultiArrayCopyFactory.GENERIC;
     }
 
+    /**
+     * See {@link System#arraycopy(Object, int, Object, int, int)}.
+     */
+    @SuppressWarnings("javadoc")
     public void arraycopy(Source src, int srcPos, Destination dest, int destPos, int length) {
         System.arraycopy(src, srcPos, dest, destPos, length);
     }

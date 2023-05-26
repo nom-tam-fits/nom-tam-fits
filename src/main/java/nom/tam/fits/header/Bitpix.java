@@ -49,10 +49,23 @@ import nom.tam.util.type.ElementType;
  * @since  1.16
  */
 public enum Bitpix {
-    BYTE(Byte.TYPE, ElementType.BYTE, "bytes"), SHORT(Short.TYPE, ElementType.SHORT, "16-bit integers"), INTEGER(
-            Integer.TYPE, ElementType.INT,
-            "32-bit integers"), LONG(Long.TYPE, ElementType.LONG, "64-bit integers"), FLOAT(Float.TYPE, ElementType.FLOAT,
-                    "32-bit floating point"), DOUBLE(Double.TYPE, ElementType.DOUBLE, "64-bit floating point");
+    /** For FITS data stored as bytes */
+    BYTE(Byte.TYPE, ElementType.BYTE, "bytes"),
+
+    /** For FITS data stored as 16-bit integers */
+    SHORT(Short.TYPE, ElementType.SHORT, "16-bit integers"),
+
+    /** For FITS data stored as 32-bit integers */
+    INTEGER(Integer.TYPE, ElementType.INT, "32-bit integers"),
+
+    /** For FITS data stored as 64-bit integers */
+    LONG(Long.TYPE, ElementType.LONG, "64-bit integers"),
+
+    /** For FITS data stored as 32-bit single-precision floating point values */
+    FLOAT(Float.TYPE, ElementType.FLOAT, "32-bit floating point"),
+
+    /** For FITS data stored as 64-bit double-precision floating point values */
+    DOUBLE(Double.TYPE, ElementType.DOUBLE, "64-bit floating point");
 
     private static final Logger LOG = Logger.getLogger("nom.tam.fits.HeaderCardParser");
 
@@ -98,6 +111,11 @@ public enum Bitpix {
         description = desc;
     }
 
+    /**
+     * Returns the FITS element type corresponding to this bitpix value
+     * 
+     * @return the FITS element type that corresponds to this bitpix value.
+     */
     public final ElementType<?> getElementType() {
         return elementType;
     }

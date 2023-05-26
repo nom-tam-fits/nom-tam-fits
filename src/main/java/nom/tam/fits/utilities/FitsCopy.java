@@ -35,11 +35,25 @@ import nom.tam.fits.BasicHDU;
 import nom.tam.fits.Fits;
 import nom.tam.util.FitsFile;
 
+/**
+ * A simple program for copying FITS files, albeit not byte for byte. Rather, it
+ * reads HDUs from the input file (first argument), interpreting it, and then
+ * writing them out to the output (second argument).
+ */
 public final class FitsCopy {
 
     private FitsCopy() {
     }
 
+    /**
+     * The main class for this program
+     * 
+     * @param args
+     *            The command-line parameters: (1) the input file name/path, and
+     *            (2) the output file name/path.
+     * @throws Exception
+     *             Whatever exception this program might throw.
+     */
     public static void main(String[] args) throws Exception {
         String file = args[0];
         try (Fits f = new Fits(file)) {

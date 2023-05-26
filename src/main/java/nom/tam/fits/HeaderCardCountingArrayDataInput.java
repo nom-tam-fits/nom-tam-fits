@@ -61,6 +61,11 @@ public class HeaderCardCountingArrayDataInput {
 
     private int markedPhysicalCardsRead;
 
+    /**
+     * Creates a new instance of this class for counting the number of 80-character header records.
+     * 
+     * @param input The input from which we read the header cards.
+     */
     protected HeaderCardCountingArrayDataInput(ArrayDataInput input) {
         this.input = input;
     }

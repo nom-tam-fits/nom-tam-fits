@@ -34,6 +34,7 @@ package nom.tam.fits;
 import java.io.IOException;
 import java.lang.reflect.Array;
 import java.util.ArrayList;
+import java.util.Arrays;
 import java.util.List;
 import java.util.logging.Level;
 import java.util.logging.Logger;
@@ -59,8 +60,6 @@ import static nom.tam.fits.header.Standard.TFIELDS;
 import static nom.tam.fits.header.Standard.TFORMn;
 import static nom.tam.fits.header.Standard.THEAP;
 import static nom.tam.fits.header.Standard.XTENSION_BINTABLE;
-
-import edu.umd.cs.findbugs.annotations.SuppressFBWarnings;
 
 /**
  * This class defines the methods for accessing FITS binary table data.
@@ -130,13 +129,24 @@ public class BinaryTable extends AbstractTableData {
             }
         }
 
+        /**
+         * Returns the Java primitive class the array elements stored in this column. For example, if the column's data
+         * is <code>float[][]</code>, this will return <code>float.class</code>
+         * 
+         * @return the primitive type of array elements of the column entries.
+         */
         public Class<?> getBase() {
             return base;
         }
 
-        @SuppressFBWarnings(value = "EI_EXPOSE_REP", justification = "intended exposure of mutable data")
+        /**
+         * Returns the domensions of elements in this column. As of 1.18, this method returns a copy ot the array used
+         * internally, which is safe to modify.
+         * 
+         * @return an array with the element dimensions.
+         */
         public int[] getDimens() {
-            return dimens;
+            return dimens == null ? null : Arrays.copyOf(dimens, dimens.length);
         }
 
         /**
@@ -148,19 +158,30 @@ public class BinaryTable extends AbstractTableData {
             return ArrayFuncs.newInstance(ArrayFuncs.getBaseClass(model), size * nRow);
         }
 
+        /**
+         * @deprecated (<i>for internal use</i>). It may be reduced to private visibility in the future. Returns the
+         *                 number of bytes that each element occupies in its FITS serialized form in the stored row
+         *                 data.
+         * 
+         * @return     the number of bytes an element occupies in the FITS binary table data representation
+         */
         public int rowLen() {
             return size * ElementType.forClass(base).size();
         }
 
         /**
-         * @return Is this a variable length column using longs? [Must have isVarying true too]
+         * @deprecated (<i>for internal use</i>). It may be reduced to private visibility in the future.
+         * 
+         * @return     Is this a variable length column using longs? [Must have isVarying true too]
          */
         boolean isLongVary() {
             return isLongVary;
         }
 
         /**
-         * @returnIs this a variable length column ?
+         * @deprecated (<i>for internal use</i>). It may be reduced to package level visibility in the future.
+         * 
+         * @return     whether this is a variable length column.
          */
         boolean isVarying() {
             return isVarying;
@@ -356,13 +377,14 @@ public class BinaryTable extends AbstractTableData {
     }
 
     /**
-     * Parse the TDIMS value. If the TDIMS value cannot be deciphered a one-d array with the size given in arrsiz is
-     * returned.
+     * @deprecated       (<i>for internal use</i>). It may be reduced to private visibility in the future. Parse the
+     *                       TDIMS value. If the TDIMS value cannot be deciphered a one-d array with the size given in
+     *                       arrsiz is returned.
      *
-     * @param  tdims The value of the TDIMSn card.
+     * @param      tdims The value of the TDIMSn card.
      *
-     * @return       An int array of the desired dimensions. Note that the order of the tdims is the inverse of the
-     *                   order in the TDIMS key.
+     * @return           An int array of the desired dimensions. Note that the order of the tdims is the inverse of the
+     *                       order in the TDIMS key.
      */
     public static int[] getTDims(String tdims) {
 
@@ -387,9 +409,10 @@ public class BinaryTable extends AbstractTableData {
     }
 
     /**
-     * Convert a two-d table to a table of columns. Handle String specially. Every other element of data should be a
-     * primitive array of some dimensionality. Basically the translates a table expressed as objects in row order to a
-     * table with objects in column order.
+     * @deprecated (<i>for internal use</i>). It may be reduced to private visibility in the future. Convert a two-d
+     *                 table to a table of columns. Handle String specially. Every other element of data should be a
+     *                 primitive array of some dimensionality. Basically the translates a table expressed as objects in
+     *                 row order to a table with objects in column order.
      */
     private static Object[] convertToColumns(Object[][] data) {
         Object[] row = data[0];
@@ -625,7 +648,7 @@ public class BinaryTable extends AbstractTableData {
     public int[][] getDimens() {
         int[][] dimens = new int[columnList.size()][];
         for (int i = 0; i < dimens.length; i++) {
-            dimens[i] = columnList.get(i).dimens;
+            dimens[i] = columnList.get(i).getDimens();
         }
         return dimens;
     }
@@ -668,19 +691,26 @@ public class BinaryTable extends AbstractTableData {
         return ele;
     }
 
+    /**
+     * @deprecated (<i>for internal use</i>). It may be reduced to private visibility in the future.
+     * 
+     * @return     An array with flattened data, in which each column's data is represented by a 1D array
+     */
     public Object[] getFlatColumns() {
         ensureDataSilent();
         return table.getColumns();
     }
 
     /**
-     * @return               column in flattened format. For large tables getting a column in standard format can be
-     *                           inefficient because a separate object is needed for each row. Leaving the data in
-     *                           flattened format means that only a single object is created.
+     * @deprecated               (<i>for internal use</i>). It may be reduced to privae visibility in the future.
+     * 
+     * @return                   column in flattened format. For large tables getting a column in standard format can be
+     *                               inefficient because a separate object is needed for each row. Leaving the data in
+     *                               flattened format means that only a single object is created.
      *
-     * @param  col           the column to flatten
+     * @param      col           the column to flatten
      *
-     * @throws FitsException if the column could not be flattened
+     * @throws     FitsException if the column could not be flattened
      */
     public Object getFlattenedColumn(int col) throws FitsException {
         ensureData();
@@ -693,14 +723,18 @@ public class BinaryTable extends AbstractTableData {
     }
 
     /**
-     * @return the offset to the heap
+     * @deprecated (<i>for internal use</i>). It may be reduced to package level visibility in the future.
+     * 
+     * @return     the offset to the heap
      */
     public int getHeapOffset() {
         return heapOffset;
     }
 
     /**
-     * @return the size of the heap -- including the offset from the end of the table data.
+     * @deprecated (<i>for internal use</i>). It may be reduced to package level visibility in the future.
+     * 
+     * @return     the size of the heap -- including the offset from the end of the table data.
      */
     public int getHeapSize() {
         return heapOffset + heap.size();
@@ -841,12 +875,13 @@ public class BinaryTable extends AbstractTableData {
     }
 
     /**
-     * Set a column with the data already flattened.
+     * @deprecated               (<i>for internal use</i>). It may be reduced to private visibility in the future. Set a
+     *                               column with the data already flattened.
      *
-     * @param  col           The index of the column to be replaced.
-     * @param  data          The new data array. This should be a one-d primitive array.
+     * @param      col           The index of the column to be replaced.
+     * @param      data          The new data array. This should be a one-d primitive array.
      *
-     * @throws FitsException Thrown if the type of length of the replacement data differs from the original.
+     * @throws     FitsException Thrown if the type of length of the replacement data differs from the original.
      */
     public void setFlattenedColumn(int col, Object data) throws FitsException {
         ensureData();
@@ -1600,7 +1635,7 @@ public class BinaryTable extends AbstractTableData {
      *
      * @throws FitsException
      */
-    int addFlattenedColumn(Object o, int[] dims, boolean allocated) throws FitsException {
+    private int addFlattenedColumn(Object o, int[] dims, boolean allocated) throws FitsException {
 
         ColumnDesc added;
         if (!allocated) {
@@ -1663,7 +1698,7 @@ public class BinaryTable extends AbstractTableData {
      *
      * @throws FitsException if the operation failed
      */
-    void fillForColumn(Header h, int col, Cursor<String, HeaderCard> iter) throws FitsException {
+    private void fillForColumn(Header h, int col, Cursor<String, HeaderCard> iter) throws FitsException {
         ColumnDesc colDesc = columnList.get(col);
 
         StringBuffer tform = new StringBuffer();
@@ -1738,7 +1773,7 @@ public class BinaryTable extends AbstractTableData {
     /**
      * Get the explicit or implied length of the TFORM field
      */
-    int getTFORMLength(String tform) {
+    private int getTFORMLength(String tform) {
 
         tform = tform.trim();
 
@@ -1751,7 +1786,7 @@ public class BinaryTable extends AbstractTableData {
     /**
      * Get the type in the TFORM field
      */
-    char getTFORMType(String tform) {
+    private char getTFORMType(String tform) {
 
         for (int i = 0; i < tform.length(); i++) {
             if (!Character.isDigit(tform.charAt(i))) {
@@ -1764,7 +1799,7 @@ public class BinaryTable extends AbstractTableData {
     /**
      * Get the type in a varying length column TFORM
      */
-    char getTFORMVarType(String tform) {
+    private char getTFORMVarType(String tform) {
 
         int ind = tform.indexOf("P");
         if (ind < 0) {

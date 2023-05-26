@@ -43,15 +43,18 @@ import nom.tam.util.type.ElementType;
 import edu.umd.cs.findbugs.annotations.SuppressFBWarnings;
 
 /**
- * A data table is conventionally considered to consist of rows and columns, where the structure within each column is
- * constant, but different columns may have different structures. I.e., structurally columns may differ but rows are
- * identical. Typically tabular data is usually stored in row order which can make it extremely difficult to access
- * efficiently using Java. This class provides efficient access to data which is stored in row order and allows users to
- * get and set the elements of the table. The table can consist only of arrays of primitive types. Data stored in column
- * order can be efficiently read and written using the BufferedDataXputStream classes. The table is represented entirely
- * as a set of one-dimensional primitive arrays. For a given column, a row consists of some number of contiguous
- * elements of the array. Each column is required to have the same number of rows. Information regarding the
- * dimensionality of columns and possible data pointers is retained for use by clients which can understand them.
+ * <p>
+ * (<i>for internal use</i>) Table data that is stored (internally) in column major format. A data table is
+ * conventionally considered to consist of rows and columns, where the structure within each column is constant, but
+ * different columns may have different structures. I.e., structurally columns may differ but rows are identical.
+ * Typically tabular data is usually stored in row order which can make it extremely difficult to access efficiently
+ * using Java. This class provides efficient access to data which is stored in row order and allows users to get and set
+ * the elements of the table. The table can consist only of arrays of primitive types. Data stored in column order can
+ * be efficiently read and written using the BufferedDataXputStream classes. The table is represented entirely as a set
+ * of one-dimensional primitive arrays. For a given column, a row consists of some number of contiguous elements of the
+ * array. Each column is required to have the same number of rows. Information regarding the dimensionality of columns
+ * and possible data pointers is retained for use by clients which can understand them.
+ * </p>
  *
  * @param <T> the generic type of extra state information associated with this table.
  */
@@ -510,6 +513,14 @@ public class ColumnTable<T> implements DataTable {
 
     }
 
+    /**
+     * Returns a deep copy of this column table, such that modification to either the original or the copy will not
+     * affect the other.
+     * 
+     * @return                A deep (independent) copy of this column table
+     * 
+     * @throws TableException if a copy could not be created
+     */
     public ColumnTable<T> copy() throws TableException {
         return new ColumnTable<>((Object[]) ArrayFuncs.deepClone(arrays), sizes.clone());
     }
@@ -607,13 +618,13 @@ public class ColumnTable<T> implements DataTable {
     }
 
     /**
-     * Get the base classes of the columns.
+     * Get the base classes of the columns. As of 1.18, this method returns a copy ot the array used internally, which
+     * is safe to modify.
      *
      * @return An array of Class objects, one for each column.
      */
-    @SuppressFBWarnings(value = "EI_EXPOSE_REP", justification = "intended exposure of mutable data")
     public Class<?>[] getBases() {
-        return bases;
+        return bases == null ? null : Arrays.copyOf(bases, bases.length);
     }
 
     /**
@@ -708,19 +719,24 @@ public class ColumnTable<T> implements DataTable {
         return x;
     }
 
-    @SuppressFBWarnings(value = "EI_EXPOSE_REP", justification = "intended exposure of mutable data")
+    /**
+     * Returns the flattened (1D) size of elements in each column of this table. As of 1.18, this method returns a copy
+     * ot the array used internally, which is safe to modify.
+     * 
+     * @return an array with the byte sizes of each column
+     */
     public int[] getSizes() {
-        return sizes;
+        return sizes == null ? null : Arrays.copyOf(sizes, sizes.length);
     }
 
     /**
-     * Get the characters describing the base classes of the columns.
+     * Get the characters describing the base classes of the columns. As of 1.18, this method returns a copy ot the
+     * array used internally, which is safe to modify.
      *
-     * @return An array of char's, one for each column.
+     * @return An array of type characters (Java array types), one for each column.
      */
-    @SuppressFBWarnings(value = "EI_EXPOSE_REP", justification = "intended exposure of mutable data")
     public char[] getTypes() {
-        return types;
+        return types == null ? null : Arrays.copyOf(types, types.length);
     }
 
     /**

@@ -38,6 +38,8 @@ import java.nio.charset.Charset;
  */
 
 /**
+ * (<i>for internal use</i>) Various static functios to handle ASCII sequences
+ * 
  * @author tmcglynn
  */
 public final class AsciiFuncs {

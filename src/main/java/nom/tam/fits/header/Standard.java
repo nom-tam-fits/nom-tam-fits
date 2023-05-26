@@ -531,8 +531,16 @@ public enum Standard implements IFitsHeader {
      */
     XTENSION(SOURCE.MANDATORY, HDU.EXTENSION, VALUE.STRING, "marks beginning of new HDU");
 
+    /**
+     * A shorthand for {@link #NAXISn}<code>.n(1)</code>, that is the regular dimension along the first, fastest FITS
+     * array index (this is the same as the last dimension of Java arrays).
+     */
     public static final IFitsHeader NAXIS1 = NAXISn.n(1);
 
+    /**
+     * A shorthand for {@link #NAXISn}<code>.n(2)</code>, that is the regular dimension along the second fastest FITS
+     * array index (this is the same as the one before the last dimension of Java arrays).
+     */
     public static final IFitsHeader NAXIS2 = NAXISn.n(2);
 
     private static final ThreadLocal<Class<?>> COMMENT_CONTEXT = new ThreadLocal<>();
@@ -610,6 +618,11 @@ public enum Standard implements IFitsHeader {
         return key.valueType();
     }
 
+    /**
+     * Set the Data class in whose context the keyword is being used.
+     * 
+     * @param clazz Usually a subclass of <code>nom.tam.fits.Data</code>.
+     */
     public static void context(Class<?> clazz) {
         COMMENT_CONTEXT.set(clazz);
     }

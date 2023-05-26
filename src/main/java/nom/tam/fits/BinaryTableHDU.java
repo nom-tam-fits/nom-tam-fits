@@ -54,6 +54,7 @@ import static nom.tam.fits.header.Standard.TZEROn;
 import static nom.tam.fits.header.Standard.XTENSION;
 
 /** FITS binary table header/data unit */
+@SuppressWarnings("deprecation")
 public class BinaryTableHDU extends TableHDU<BinaryTable> {
 
     /** The standard column keywords for a binary table. */

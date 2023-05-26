@@ -1,8 +1,8 @@
 /**
- * Various commonly used classes for nom-tam-fits. It's a bit of catch-all package with all sort of classes thrown in
- * here. Some of these would have had a more natural home in the other packages. A large part of this package provides
- * the IO support for nom-tam-fits, which probably should have deserved its own package. But this is what we have, and
- * we are going to stick with it.
+ * Various commonly used classes for nom-tam-fits. Many of its classes are intended promarily for internal use within
+ * the library. It's a bit of catch-all package with all sort of classes thrown in here. Some of these would have had a
+ * more natural home in the other packages. A large part of this package provides the IO support for nom-tam-fits, which
+ * probably should have deserved its own package. But this is what we have, and we are going to stick with it.
  */
 
 package nom.tam.util;

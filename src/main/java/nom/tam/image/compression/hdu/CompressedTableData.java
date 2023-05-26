@@ -55,6 +55,7 @@ import static nom.tam.image.compression.bintable.BinaryTableTileDescription.tile
  * 
  * @see CompressedTableHDU
  */
+@SuppressWarnings("deprecation")
 public class CompressedTableData extends BinaryTable {
 
     private int rowsPerTile;
@@ -95,7 +96,6 @@ public class CompressedTableData extends BinaryTable {
         fillHeader(header);
     }
 
-    @SuppressWarnings("deprecation")
     @Override
     public void fillHeader(Header h) throws FitsException {
         super.fillHeader(h);

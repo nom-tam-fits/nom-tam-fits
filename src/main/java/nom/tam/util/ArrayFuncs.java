@@ -40,8 +40,8 @@ import nom.tam.util.array.MultiArrayCopier;
 import nom.tam.util.type.ElementType;
 
 /**
- * This is a package of static functions which perform computations on arrays. Generally these routines attempt to
- * complete without throwing errors by ignoring data they cannot understand.
+ * (<i>for internal use</i>) Varioys static functions for handling arrays. Generally these routines attempt to complete
+ * without throwing errors by ignoring data they cannot understand.
  */
 public final class ArrayFuncs {
 

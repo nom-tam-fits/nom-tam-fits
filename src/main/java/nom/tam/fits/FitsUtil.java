@@ -293,6 +293,13 @@ public final class FitsUtil {
         return padding((long) size);
     }
 
+    /**
+     * Calculated the amount of padding we need to add given the current size of a FITS file (under construction)
+     * 
+     * @param  size the current size of our FITS file before the padding
+     * 
+     * @return      the number of bytes of padding we need to add at the end to complete the FITS block.
+     */
     public static int padding(long size) {
 
         int mod = (int) (size % FitsFactory.FITS_BLOCK_SIZE);

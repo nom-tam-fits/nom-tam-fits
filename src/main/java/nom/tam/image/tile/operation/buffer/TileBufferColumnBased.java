@@ -37,8 +37,8 @@ import nom.tam.util.type.ElementType;
 
 /**
  * <p>
- * Tiling implementation, for when the tile width is less than the width of the image. For example, for covering a 300
- * by 250 image with tiles of 40 by 40 pixels.
+ * (<i>for internal use</i>) Tiling implementation, for when the tile width is less than the width of the image. For
+ * example, for covering a 300 by 250 image with tiles of 40 by 40 pixels.
  * </p>
  * <p>
  * This subclass of the row based view, will abstract the problems that occur when the tile does not spread over a whole

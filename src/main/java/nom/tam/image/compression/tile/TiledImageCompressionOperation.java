@@ -77,9 +77,9 @@ import static nom.tam.image.compression.tile.TileCompressionType.GZIP_COMPRESSED
 import static nom.tam.image.compression.tile.TileCompressionType.UNCOMPRESSED;
 
 /**
- * This class represents a complete tiledImageOperation of tileOperations describing an image ordered from left to right
- * and top down. the tileOperations all have the same geometry only the tileOperations at the right side and the bottom
- * side can have different sizes.
+ * Compresseses an entire image, by parallel processing image tiles. This class represents a complete compression of a
+ * tiled describing an image ordered from left to right and top down. the tiles all have the same geometry only the
+ * tiles at the right and bottom sides can have different (truncated) sizes.
  */
 public class TiledImageCompressionOperation extends AbstractTiledImageOperation<TileCompressionOperation> {
 

@@ -31,6 +31,12 @@ package nom.tam.util;
  * #L%
  */
 
+/**
+ * Exception that is thrown if values do not appear in the format they are
+ * expected. We could have just used the more mainstream
+ * <code>java.text.ParseException</code>, but now it's too late to ponder if
+ * that would have been a better choice.
+ */
 public class FormatException extends java.lang.Exception {
 
     /**
@@ -38,6 +44,13 @@ public class FormatException extends java.lang.Exception {
      */
     private static final long serialVersionUID = -9171883302575945803L;
 
+    /**
+     * Instantiates this exception with the designated message string.
+     * 
+     * @param msg
+     *            a human readable message that describes what in fact caused
+     *            the exception
+     */
     protected FormatException(String msg) {
         super(msg);
     }

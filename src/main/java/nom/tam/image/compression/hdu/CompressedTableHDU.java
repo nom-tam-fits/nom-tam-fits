@@ -89,6 +89,7 @@ import static nom.tam.fits.header.Compression.ZTABLE;
  *
  * @see CompressedTableData
  */
+@SuppressWarnings("deprecation")
 public class CompressedTableHDU extends BinaryTableHDU {
 
     /**
@@ -181,7 +182,6 @@ public class CompressedTableHDU extends BinaryTableHDU {
             HeaderCard card = iterator.next();
             BackupRestoreUnCompressedHeaderCard.backup(card, headerIterator);
         }
-        @SuppressWarnings("deprecation")
         BinaryTable data = BinaryTableHDU.manufactureData(header);
         BinaryTableHDU tableHDU = new BinaryTableHDU(header, data);
         getData().asBinaryTable(data, getHeader(), header);

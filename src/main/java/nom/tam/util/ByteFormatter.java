@@ -32,33 +32,38 @@ package nom.tam.util;
  */
 
 /**
+ * This class provides mechanisms for efficiently formatting numbers and Strings. Data is appended to existing byte
+ * arrays. Note that the formatting of real or double values may differ slightly (in the last bit) from the standard
+ * Java packages since this routines are optimized for speed rather than accuracy.
+ * <p>
+ * The methods in this class create no objects.
+ * <p>
+ * If a number cannot fit into the requested space the truncateOnOverlow flag controls whether the formatter will
+ * attempt to append it using the available length in the output (a la C or Perl style formats). If this flag is set, or
+ * if the number cannot fit into space left in the buffer it is 'truncated' and the requested space is filled with a
+ * truncation fill character. A TruncationException may be thrown if the truncationThrow flag is set.
+ * <p>
+ * This class does not explicitly support separate methods for formatting reals in exponential notation. Real numbers
+ * near one are by default formatted in decimal notation while numbers with large (or very negative) exponents are
+ * formatted in exponential notation. By setting the limits at which these transitions take place the user can force
+ * either exponential or decimal notation.
+ * 
  * @deprecated This class should not be exposed in the publi API and is meant for internal use only in ASCII tables.
  *                 Also, it may have overlapping functionality with other classes, which should probably be eliminated
- *                 for simplicity's sake (and thus less chance of nasty bugs). This class provides mechanisms for
- *                 efficiently formatting numbers and Strings. Data is appended to existing byte arrays. Note that the
- *                 formatting of real or double values may differ slightly (in the last bit) from the standard Java
- *                 packages since this routines are optimized for speed rather than accuracy.
- *                 <p>
- *                 The methods in this class create no objects.
- *                 <p>
- *                 If a number cannot fit into the requested space the truncateOnOverlow flag controls whether the
- *                 formatter will attempt to append it using the available length in the output (a la C or Perl style
- *                 formats). If this flag is set, or if the number cannot fit into space left in the buffer it is
- *                 'truncated' and the requested space is filled with a truncation fill character. A TruncationException
- *                 may be thrown if the truncationThrow flag is set.
- *                 <p>
- *                 This class does not explicitly support separate methods for formatting reals in exponential notation.
- *                 Real numbers near one are by default formatted in decimal notation while numbers with large (or very
- *                 negative) exponents are formatted in exponential notation. By setting the limits at which these
- *                 transitions take place the user can force either exponential or decimal notation.
+ *                 for simplicity's sake (and thus less chance of nasty bugs).
+ * 
+ * @see        ByteParser
  */
 @Deprecated
 public final class ByteFormatter {
 
+    /** String representation of NaN values */
     public static final String NOT_A_NUMBER = "NaN";
 
+    /** String representation of (positive) infinity values */
     public static final String INFINITY = "Infinity";
 
+    /** String representation of (negative) infinity values */
     public static final String NEGATIVE_INFINITY = "-Infinity";
 
     /**

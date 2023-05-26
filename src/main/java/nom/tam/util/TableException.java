@@ -33,6 +33,9 @@ import nom.tam.fits.FitsException;
  * #L%
  */
 
+/**
+ * For when attempting to do something illegal or invalid with FITS tables.
+ */
 public class TableException extends FitsException {
 
     /**
@@ -40,6 +43,13 @@ public class TableException extends FitsException {
      */
     private static final long serialVersionUID = -560077128369138846L;
 
+    /**
+     * Instantiates this exception with the designated message string.
+     * 
+     * @param msg
+     *            a human readable message that describes what in fact caused
+     *            the exception
+     */
     public TableException(String msg) {
         super(msg);
     }

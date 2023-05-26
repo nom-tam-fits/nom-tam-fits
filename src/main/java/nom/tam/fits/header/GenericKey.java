@@ -109,12 +109,21 @@ public final class GenericKey {
         return result;
     }
 
-    public static int getN(String card) {
-        int index = card.length() - 1;
+    /**
+     * Returns the number value that appear at the trailing end of a FITS keyword. For example for <code>NAXIS2</code>
+     * it will return 2, while for <code>TFORM17</code> it will return 17. If there keyword does not end with a number,
+     * 0 is returned (FITS keywords are always numbered from 1 and up).
+     * 
+     * @param  key The FITS keyword from which to extract the trailing number.
+     * 
+     * @return     the number contained at the end of the keyword or else 0 if the keyword does not end with a number.
+     */
+    public static int getN(String key) {
+        int index = key.length() - 1;
         int n = 0;
         int numberBase = 1;
-        while (index >= 0 && Character.isDigit(card.charAt(index))) {
-            n = n + (card.charAt(index) - '0') * numberBase;
+        while (index >= 0 && Character.isDigit(key.charAt(index))) {
+            n = n + (key.charAt(index) - '0') * numberBase;
             numberBase *= NUMBER_BASE;
             index--;
         }

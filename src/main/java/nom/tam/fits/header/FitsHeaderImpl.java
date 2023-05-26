@@ -58,6 +58,17 @@ public class FitsHeaderImpl implements IFitsHeader, Serializable {
 
     private static HashSet<String> commentStyleKeys = new HashSet<>();
 
+    /**
+     * Creates a new conventional FITS keyword with the specific usage constraints
+     * 
+     * @param headerName The keyword as it will appear in the FITS headers, usually a string with up to 8 characters,
+     *                       containing uppper case letters (A-Z), digits (0-9), and/or underscore (<code>_</code>) or
+     *                       hyphen (<code>-</code>) characters for standard FITS keywords.
+     * @param status     The convention that defines this keyword
+     * @param hdu        the type of HDU this keyword may appear in
+     * @param valueType  the type of value that may be associated with this keyword
+     * @param comment    the standard comment to include with this keyword
+     */
     public FitsHeaderImpl(String headerName, SOURCE status, HDU hdu, VALUE valueType, String comment) {
         key = headerName;
         this.status = status;

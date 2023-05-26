@@ -34,25 +34,26 @@ import edu.umd.cs.findbugs.annotations.SuppressFBWarnings;
  */
 
 /**
+ * This class provides routines for efficient parsing of data stored in a byte array. This routine is optimized (in
+ * theory at least!) for efficiency rather than accuracy. The values read in for doubles or floats may differ in the
+ * last bit or so from the standard input utilities, especially in the case where a float is specified as a very long
+ * string of digits (substantially longer than the precision of the type).
+ * <p>
+ * The get methods generally are available with or without a length parameter specified. When a length parameter is
+ * specified only the bytes with the specified range from the current offset will be search for the number. If no length
+ * is specified, the entire buffer from the current offset will be searched.
+ * <p>
+ * The getString method returns a string with leading and trailing white space left intact. For all other get calls,
+ * leading white space is ignored. If fillFields is set, then the get methods check that only white space follows valid
+ * data and a FormatException is thrown if that is not the case. If fillFields is not set and valid data is found, then
+ * the methods return having read as much as possible. E.g., for the sequence "T123.258E13", a getBoolean, getInteger
+ * and getFloat call would return true, 123, and 2.58e12 when called in succession.
+ * 
  * @deprecated This class should not be exposed in the public API and should be for internal use only in ASCII tables.
  *                 Also, it may have overlapping functionality with other classes, which should probably be eliminated
- *                 for simplicity's sake (and thus less chance of nasty bugs). This class provides routines for
- *                 efficient parsing of data stored in a byte array. This routine is optimized (in theory at least!) for
- *                 efficiency rather than accuracy. The values read in for doubles or floats may differ in the last bit
- *                 or so from the standard input utilities, especially in the case where a float is specified as a very
- *                 long string of digits (substantially longer than the precision of the type).
- *                 <p>
- *                 The get methods generally are available with or without a length parameter specified. When a length
- *                 parameter is specified only the bytes with the specified range from the current offset will be search
- *                 for the number. If no length is specified, the entire buffer from the current offset will be
- *                 searched.
- *                 <p>
- *                 The getString method returns a string with leading and trailing white space left intact. For all
- *                 other get calls, leading white space is ignored. If fillFields is set, then the get methods check
- *                 that only white space follows valid data and a FormatException is thrown if that is not the case. If
- *                 fillFields is not set and valid data is found, then the methods return having read as much as
- *                 possible. E.g., for the sequence "T123.258E13", a getBoolean, getInteger and getFloat call would
- *                 return true, 123, and 2.58e12 when called in succession.
+ *                 for simplicity's sake (and thus less chance of nasty bugs).
+ * 
+ * @see        ByteFormatter
  */
 @Deprecated
 public class ByteParser {

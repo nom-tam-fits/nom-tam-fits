@@ -35,10 +35,24 @@ import java.io.IOException;
 import java.io.OutputStream;
 import java.nio.ByteBuffer;
 
+/**
+ * Stream interface for writing to a {@link ByteBuffer} (<i>primarily for internal use</i>)
+ * 
+ * @see ByteBufferOutputStream
+ * @see ByteArrayIO
+ */
 public class ByteBufferOutputStream extends OutputStream {
 
     private final ByteBuffer buffer;
 
+    /**
+     * Creates an new <code>OutpuStream</code>, which writes a <code>ByteBuffer</code> starting at the current buffer
+     * position. Its <code>write()</code> methods can be intermixed with the <code>put()</code> methods of the buffer,
+     * and also with {@link ByteBuffer#position(int)}, maintaining overall sequentiality of the calls. In other words,
+     * the stream's output is not decopuled from direct access to the buffer.
+     * 
+     * @param buffer the buffer to write to
+     */
     public ByteBufferOutputStream(ByteBuffer buffer) {
         this.buffer = buffer;
     }

@@ -425,6 +425,12 @@ public enum Compression implements IFitsHeader {
         return key.comment();
     }
 
+    /**
+     * Returns the equivalent of this comression keyword in the uncompressed HDU. For example, the compression keyword
+     * <code>ZBITPIX</code> that stores the data type of the compressed image will return <code>BITPIX</code>.
+     * 
+     * @return the equivalent keyword in the uncompressed HDU
+     */
     public IFitsHeader getUncompressedKey() {
         return uncompressedKey;
     }

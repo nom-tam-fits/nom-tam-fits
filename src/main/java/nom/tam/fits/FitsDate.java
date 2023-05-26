@@ -38,8 +38,6 @@ import java.util.TimeZone;
 import java.util.regex.Matcher;
 import java.util.regex.Pattern;
 
-import edu.umd.cs.findbugs.annotations.SuppressFBWarnings;
-
 /**
  * Fits date object parsed from the different type of date combinations
  */
@@ -137,8 +135,6 @@ public class FitsDate implements Comparable<FitsDate> {
         return fitsDate.toString();
     }
 
-    private Date date = null;
-
     private int hour = -1;
 
     private int mday = -1;
@@ -214,7 +210,6 @@ public class FitsDate implements Comparable<FitsDate> {
      *
      * @return The Java Date object.
      */
-    @SuppressFBWarnings(value = "EI_EXPOSE_REP", justification = "intended exposure of mutable data")
     public Date toDate() {
         if (year == -1) {
             return null;
@@ -241,8 +236,7 @@ public class FitsDate implements Comparable<FitsDate> {
                 cal.set(Calendar.MILLISECOND, millisecond);
             }
         }
-        date = cal.getTime();
-        return date;
+        return cal.getTime();
     }
 
     @Override

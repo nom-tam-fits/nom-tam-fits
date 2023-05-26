@@ -43,6 +43,7 @@ import edu.umd.cs.findbugs.annotations.SuppressFBWarnings;
  * @see        BufferDecoder
  */
 @Deprecated
+@SuppressWarnings("javadoc")
 public class BufferPointer {
 
     /**

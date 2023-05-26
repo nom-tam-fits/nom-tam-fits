@@ -107,11 +107,13 @@ public class StreamingTileImageData extends ImageData {
         this.lengths = lengths;
     }
 
+    /**
+     * Returns the striding step sizes along the various image dimensions.
+     * 
+     * @return an array containing the steps sizes along the dimensions
+     */
     public int[] getSteps() {
-        final int[] stepsCopy = new int[steps.length];
-        System.arraycopy(steps, 0, stepsCopy, 0, stepsCopy.length);
-
-        return stepsCopy;
+        return steps == null ? null : Arrays.copyOf(steps, steps.length);
     }
 
     @Override
