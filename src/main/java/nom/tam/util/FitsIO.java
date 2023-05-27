@@ -37,8 +37,7 @@ import java.io.IOException;
 import nom.tam.fits.FitsFactory;
 
 /**
- * super closable interface for all fits reader/writers. It defines the necessary constants common for all reader and
- * writers.
+ * Base interface for reading and writing FITS. It defines the necessary constants common for all reader and writers.
  *
  * @author ritchie
  */

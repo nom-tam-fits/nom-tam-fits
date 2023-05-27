@@ -37,7 +37,7 @@ import java.util.logging.Level;
 import java.util.logging.Logger;
 
 /**
- * @deprecated Use try-with-resources constructs of Java 8+ instead.
+ * @deprecated Use <b>try-with-resources</b> constructs of Java 8+ instead.
  */
 public final class SafeClose {
 

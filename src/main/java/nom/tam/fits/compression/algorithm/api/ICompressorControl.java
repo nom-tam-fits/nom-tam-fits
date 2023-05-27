@@ -35,7 +35,7 @@ import java.nio.Buffer;
 import java.nio.ByteBuffer;
 
 /**
- * The interface to a provided compression algorithm.
+ * (<i>for internal use</i>) The interface to a provided compression algorithm.
  */
 public interface ICompressorControl {
 

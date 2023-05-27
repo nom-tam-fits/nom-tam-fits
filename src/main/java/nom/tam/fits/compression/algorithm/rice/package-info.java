@@ -1,11 +1,10 @@
 /**
  * <p>
- * The Rice comppression algorithm and its options (<i>primarily for internal use</i>). This lossless compression
- * algorithm was designed by Rice, Yeh, and Miller the code was written by Richard White at STSc at the STScI and
- * included (ported to c and adapted) in cfitsio by William Pence, NASA/GSFC. That code was then ported to java by R.
- * van Nieuwenhoven. Later it was massively refactored to harmonize the different compression algorithms and reduce the
- * duplicate code pieces without obscuring the algorithm itself as far as possible. It's weird that it's a package by
- * itself, but that's life.
+ * The Rice comppression algorithm and its options. This lossless compression algorithm was designed by Rice, Yeh, and
+ * Miller the code was written by Richard White at STSc at the STScI and included (ported to c and adapted) in cfitsio
+ * by William Pence, NASA/GSFC. That code was then ported to java by R. van Nieuwenhoven. Later it was massively
+ * refactored to harmonize the different compression algorithms and reduce the duplicate code pieces without obscuring
+ * the algorithm itself as far as possible. It's weird that it's a package by itself, but that's life.
  * </p>
  * <p>
  * The only classes in here that users would typically interact with are

@@ -38,10 +38,9 @@ import java.util.logging.Level;
 import java.util.logging.Logger;
 
 /**
- * This class is intended for high performance reading and writing FITS files or block of FITS-formatted data. It
- * provides buffered random access and efficient handling of arrays. Primitive arrays may be written using a single
- * method call. Large buffers are used to minimize synchronization overheads since methods of this class are not
- * synchronized.
+ * For reading and writing FITS files. It provides buffered random access and efficient handling of arrays. Primitive
+ * arrays may be written using a single method call. Large buffers are used to minimize synchronization overheads since
+ * methods of this class are not synchronized.
  * <p>
  * Note that although this class supports most of the contract of RandomAccessFile it does not (and can not) extend that
  * class since many of the methods of RandomAccessFile are final. In practice this method works much like the

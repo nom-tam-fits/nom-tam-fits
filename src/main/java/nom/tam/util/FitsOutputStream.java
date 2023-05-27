@@ -36,7 +36,7 @@ import java.io.IOException;
 import java.io.OutputStream;
 
 /**
- * This class is intended for high performance writing FITS files or FITS data blocks.
+ * For writing FITS files through an {@link OutputStream}.
  * <p>
  * Testing and timing for this class is performed in the nom.tam.util.test.BufferedFileTester class.
  * <p>

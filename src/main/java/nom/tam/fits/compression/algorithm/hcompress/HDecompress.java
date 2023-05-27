@@ -40,6 +40,8 @@ import static nom.tam.fits.compression.algorithm.hcompress.HCompress.NYBBLE_MASK
 import static nom.tam.fits.compression.algorithm.hcompress.HCompress.ROUNDING_HALF;
 
 /**
+ * (<i>for internal use</i>) A hierarchical data decompression algoritm, e.g. for the Hubble Data Archive and the STScI
+ * Digital Sky Survey.
  * <p>
  * The original decompression code was written by R. White at the STScI and included (ported to c and adapted) in
  * cfitsio by William Pence, NASA/GSFC. That code was then ported to java by R. van Nieuwenhoven. Later it was massively

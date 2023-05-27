@@ -39,53 +39,66 @@ import nom.tam.fits.compression.provider.param.api.ICompressParameters;
 public interface ICompressOption extends Cloneable {
 
     /**
+     * Returns an independent copy of this option. Modifications to the original or the copy will not affect the other.
+     * 
      * @return copy the option (normally the option from with the copy happened is saved as original).
      */
     ICompressOption copy();
 
     /**
+     * (<i>for internal use</i>) Returns the parameters that represent the settings for this option in a FITS header or
+     * compressed data column.
+     * 
      * @return the parameters that must be synchronized with the hdu meta data.
+     * 
+     * @see    #setParameters(ICompressParameters)
      */
     ICompressParameters getCompressionParameters();
 
     /**
-     * @return true if the compression done with this specified options uses approximations. That means if the
-     *             reconstruction of the data is excact the return should be false.
+     * Checks if this type of compression is lossy
+     * 
+     * @return <code>true</code> if the compression done with this specified options uses approximations. That means if
+     *             the reconstruction of the data is excact the return should be <code>false</code>.
      */
     boolean isLossyCompression();
 
     /**
-     * set the parameters that must be synchronized with the hdu meta data.
+     * (<i>for internal use</i>) Sets the parameters that link the options to how they are recorded in the FITS headers
+     * or compressed table columns.
      *
      * @param parameters the parameters to synchronized
+     * 
+     * @see              #getCompressionParameters()
      */
     void setParameters(ICompressParameters parameters);
 
     /**
-     * set the tile height in pixel.
+     * Set the tile height.
      *
-     * @param  value the number of pixel.
+     * @param  value the new tile height in pixels
      *
-     * @return       this (builder pattern)
+     * @return       itself
      */
     ICompressOption setTileHeight(int value);
 
     /**
-     * set the tile width.
+     * Wet the tile width.
      *
-     * @param  value the number of pixel.
+     * @param  value the new tile with in pixels
      *
-     * @return       this (builder pattern)
+     * @return       itself
      */
     ICompressOption setTileWidth(int value);
 
     /**
-     * un wrap a specific implementation detail.
+     * (<i>for internal use</i>) Recasts these options for the specific implementation class
      *
-     * @param  clazz the type to unwrap
-     * @param  <T>   the class to unrwap
+     * @param  clazz the implementation class
+     * @param  <T>   these options recast to the designated implementation type.
      *
-     * @return       the implementation detail or null if no such detail is avalable.
+     * @return       the recast version of us or <code>null</code> if the recasting is not available for the specified
+     *                   class type.
      */
     <T> T unwrap(Class<T> clazz);
 }

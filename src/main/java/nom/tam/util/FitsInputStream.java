@@ -43,7 +43,7 @@ import java.util.logging.Logger;
 import static nom.tam.util.LoggerHelper.getLogger;
 
 /**
- * This class is intended for high performance reading FITS files or blocks of FITS data.
+ * For reading FITS files through an {@link InputStream}.
  * <p>
  * Testing and timing routines are provided in the nom.tam.util.test.BufferedFileTester class.
  * <p>

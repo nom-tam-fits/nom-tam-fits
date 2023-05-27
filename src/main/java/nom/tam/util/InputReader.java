@@ -35,7 +35,7 @@ import java.io.IOException;
 import java.io.InputStream;
 
 /**
- * Basic binary input reading functionality.
+ * Interface for asic binary input reading functionality.
  * 
  * @author Attila Kovacs
  * @since 1.16

@@ -36,9 +36,9 @@ import java.nio.ByteBuffer;
 /**
  * (<i>for internal use</i>) A bit wise reader writer around a {@link ByteBuffer}.
  * 
- * @deprected (<i>for internal use</i>) Its visibility may be reduced to the package level in the future.
+ * @deprecated (<i>for internal use</i>) Its visibility may be reduced to the package level in the future.
  * 
- * @author    Ritchie
+ * @author     Ritchie
  */
 @SuppressWarnings("javadoc")
 public class BitBuffer {
