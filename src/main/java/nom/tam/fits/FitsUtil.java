@@ -44,6 +44,8 @@ import java.util.logging.Logger;
 
 import nom.tam.util.ArrayDataOutput;
 import nom.tam.util.AsciiFuncs;
+import nom.tam.util.FitsDecoder;
+import nom.tam.util.FitsEncoder;
 import nom.tam.util.FitsIO;
 import nom.tam.util.RandomAccess;
 
@@ -70,24 +72,34 @@ public final class FitsUtil {
     }
 
     /**
-     * @return      Total size of blocked FITS element, using e.v. padding to fits block size.
+     * @deprecated      use {@link #addPadding(long)} instead. Calculates the amount of padding needed to complete the
+     *                      last FITS block at the specified current size.
+     * 
+     * @return          Total size of blocked FITS element, using e.v. padding to fits block size.
      *
-     * @param  size the current size.
+     * @param      size the current size.
      */
     public static int addPadding(int size) {
         return size + padding(size);
     }
 
     /**
+     * Calculates the amount of padding needed to complete the last FITS block at the specified current size.
+     * 
      * @return      Total size of blocked FITS element, using e.v. padding to fits block size.
      *
      * @param  size the current size.
+     * 
+     * @see         #padding(long)
+     * @see         #pad(ArrayDataOutput, long)
      */
     public static long addPadding(long size) {
         return size + padding(size);
     }
 
     /**
+     * Converts a boolean array to its FITS representation as an array of bytes.
+     * 
      * @return      Convert an array of booleans to bytes.
      *
      * @param  bool array of booleans
@@ -96,12 +108,14 @@ public final class FitsUtil {
 
         byte[] byt = new byte[bool.length];
         for (int i = 0; i < bool.length; i++) {
-            byt[i] = bool[i] ? (byte) 'T' : (byte) 'F';
+            byt[i] = FitsEncoder.byteForBoolean(bool[i]);
         }
         return byt;
     }
 
     /**
+     * Converts a FITS byte sequence to a Java string array
+     * 
      * @return        Convert bytes to Strings.
      *
      * @param  bytes  byte array to convert
@@ -181,21 +195,28 @@ public final class FitsUtil {
     }
 
     /**
+     * Converts a FITS representation of boolean values as bytes to a java boolean array. This implementation does not
+     * handle FITS <code>null</code> values.
+     * 
      * @return       Convert an array of bytes to booleans.
      *
      * @param  bytes the array of bytes to get the booleans from.
+     * 
+     * @see          FitsDecoder#booleanFor(int)
      */
     static boolean[] byteToBoolean(byte[] bytes) {
         boolean[] bool = new boolean[bytes.length];
 
         for (int i = 0; i < bytes.length; i++) {
-            bool[i] = (bytes[i] == 'T');
+            bool[i] = FitsDecoder.booleanFor(bytes[i]);
         }
         return bool;
     }
 
     /**
-     * @return   Find out where we are in a random access file .
+     * Gets the file offset for the given IO resource.
+     * 
+     * @return   The offset from the beginning of file (if random accessible), or -1 otherwise.
      *
      * @param  o the stream to get the position
      */
@@ -207,6 +228,8 @@ public final class FitsUtil {
     }
 
     /**
+     * Gets and input stream for a given URL resource.
+     * 
      * @return             Get a stream to a URL accommodating possible redirections. Note that if a redirection request
      *                         points to a different protocol than the original request, then the redirection is not
      *                         handled automatically.
@@ -232,6 +255,8 @@ public final class FitsUtil {
     }
 
     /**
+     * Returns the maximum String length in an array of Strings.
+     * 
      * @return               Get the maximum length of a String in a String array.
      *
      * @param  strings       array of strings to check
@@ -250,25 +275,32 @@ public final class FitsUtil {
     }
 
     /**
-     * Add padding to an output stream.
+     * Adds the necessary amount of padding needed to complete the last FITS block.
      *
      * @param  stream        stream to pad
-     * @param  size          the current size
+     * @param  size          the current size of the stream (total number of bytes written to it since the beginning of
+     *                           the FITS).
      *
      * @throws FitsException if the operation failed
+     * 
+     * @see                  #pad(ArrayDataOutput, long, byte)
      */
     public static void pad(ArrayDataOutput stream, long size) throws FitsException {
         pad(stream, size, (byte) 0);
     }
 
     /**
-     * Add padding to an output stream.
+     * Adds the necessary amount of padding needed to complete the last FITS block., usign the designated padding byte
+     * value.
      *
      * @param  stream        stream to pad
-     * @param  size          the current size
-     * @param  fill          the fill byte to use
+     * @param  size          the current size of the stream (total number of bytes written to it since the beginning of
+     *                           the FITS).
+     * @param  fill          the byte value to use for the padding
      *
      * @throws FitsException if the operation failed
+     * 
+     * @see                  #pad(ArrayDataOutput, long)
      */
     public static void pad(ArrayDataOutput stream, long size, byte fill) throws FitsException {
         int len = padding(size);
@@ -285,9 +317,11 @@ public final class FitsUtil {
     }
 
     /**
-     * @return      How many bytes are needed to fill a 2880 block?
+     * @deprecated      see Use {@link #padding(long)} instead.
+     * 
+     * @return          How many bytes are needed to fill a 2880 block?
      *
-     * @param  size the size without padding
+     * @param      size the size without padding
      */
     public static int padding(int size) {
         return padding((long) size);
@@ -299,6 +333,9 @@ public final class FitsUtil {
      * @param  size the current size of our FITS file before the padding
      * 
      * @return      the number of bytes of padding we need to add at the end to complete the FITS block.
+     * 
+     * @see         #addPadding(long)
+     * @see         #pad(ArrayDataOutput, long)
      */
     public static int padding(long size) {
 

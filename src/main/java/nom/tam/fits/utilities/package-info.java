@@ -1,5 +1,8 @@
 /**
- * A collection of useful little executables that you might run yourself.
+ * A collection of useful classes. They probably would have benn fitted into the {@link nom.tam.util} package, but here
+ * they are so here they will remain...
+ * 
+ * @see nom.tam.util
  */
 
 package nom.tam.fits.utilities;

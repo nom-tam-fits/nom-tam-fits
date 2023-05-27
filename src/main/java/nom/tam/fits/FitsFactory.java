@@ -312,9 +312,15 @@ public final class FitsFactory {
     }
 
     /**
+     * Whether the letter 'D' may replace 'E' in the exponential notation of doubl-precision values. FITS allows (even
+     * encourages) the use of 'D' to indicate double-recision values. For example to disambiguate between 1.37E-3
+     * (single-precision) and 1.37D-3 (double-precision), which are not exatly the same value in binary representation.
+     * 
      * @return Do we allow automatic header repairs, like missing end quotes?
      *
      * @since  1.16
+     * 
+     * @see    #setUseExponentD(boolean)
      */
     public static boolean isUseExponentD() {
         return current().isUseExponentD();
@@ -330,20 +336,34 @@ public final class FitsFactory {
      *             with column type 'A'.
      *
      * @since  1.16
+     * 
+     * @see    #setUseUnicodeChars(boolean)
      */
     public static boolean isUseUnicodeChars() {
         return current().isUseUnicodeChars();
     }
 
     /**
+     * Whether extra bytes are tolerated after the end of an HDU. Normally if there is additional bytes present after an
+     * HDU, it would be the beginning of another HDU -- which must start with a very specific sequence of bytes. So,
+     * when there is data beyond the end of an HDU that does not appear to be another HDU, it's junk. We can either
+     * ignore it, or throw an exception.
+     * 
      * @return Is terminal junk (i.e., non-FITS data following a valid HDU) allowed.
+     * 
+     * @see    #setAllowTerminalJunk(boolean)
      */
     public static boolean getAllowTerminalJunk() {
         return current().isAllowTerminalJunk();
     }
 
     /**
+     * Whether we allow 3rd party FITS headers to be in violation of the standard, attempting to make sense of corrupted
+     * header data as much as possible.
+     * 
      * @return Do we allow automatic header repairs, like missing end quotes?
+     * 
+     * @see    #setAllowHeaderRepairs(boolean)
      */
     public static boolean isAllowHeaderRepairs() {
         return current().isAllowHeaderRepairs();
@@ -356,13 +376,22 @@ public final class FitsFactory {
      * take such string keywords and will format them according to its rules when writing them to FITS headers.
      * 
      * @return the formatter to use for hierarch keys.
+     * 
+     * @see    #setHierarchFormater(IHierarchKeyFormatter)
      */
     public static IHierarchKeyFormatter getHierarchFormater() {
         return current().getHierarchKeyFormatter();
     }
 
     /**
+     * Whether we can use HIERARCH style keywords. Such keywords are not part of the current FITS standard, although
+     * they constitute a recognised convention. Even if other programs may not process HIRARCH keywords themselves,
+     * there is generally no harm to putting them into FITS headers, since the convention is such that these keywords
+     * will be simply treated as comments by programs that do not recognise them.
+     * 
      * @return <code>true</code> if we are processing HIERARCH style keywords
+     * 
+     * @see    #setUseHierarch(boolean)
      */
     public static boolean getUseHierarch() {
         return current().isUseHierarch();
@@ -380,14 +409,25 @@ public final class FitsFactory {
     }
 
     /**
+     * Checks whether we should check and validated ASCII strings that goe into FITS. FITS only allows ASCII characters
+     * between 0x20 and 0x7E in ASCII tables.
+     * 
      * @return Get the current status for string checking.
+     * 
+     * @see    #setCheckAsciiStrings(boolean)
      */
     public static boolean getCheckAsciiStrings() {
         return current().isCheckAsciiStrings();
     }
 
     /**
+     * Whether we allow storing long string in the header, which do not fit into a single 80-byte header record. Such
+     * strings are then wrapped into multiple consecutive header records, OGIP 1.0 standard -- which is nart of FITS
+     * 4.0, and was a recognised convention before.
+     * 
      * @return <code>true</code> If long string support is enabled.
+     * 
+     * @see    #setLongStringsEnabled(boolean)
      */
     public static boolean isLongStringsEnabled() {
         return current().isLongStringsEnabled();
@@ -398,6 +438,8 @@ public final class FitsFactory {
      *
      * @deprecated The FITS standard is very explicit that assignment must be "= ". If we allow skipping the space, it
      *                 will result in a non-standard FITS, that is likely to break compatibility with other tools.
+     * 
+     * @see        #setSkipBlankAfterAssign(boolean)
      */
     @Deprecated
     public static boolean isSkipBlankAfterAssign() {
@@ -405,12 +447,14 @@ public final class FitsFactory {
     }
 
     /**
+     * .
+     * 
      * @deprecated               This should be for internal use only. Will reduce visibility in the future
      *
      * @return                   Given Header and data objects return the appropriate type of HDU.
      *
-     * @param      hdr           the header of the date
-     * @param      d             the data
+     * @param      hdr           the header, including a description of the data layout.
+     * @param      d             the type of data object
      * @param      <DataClass>   the class of the data
      *
      * @throws     FitsException if the operation failed
@@ -441,6 +485,9 @@ public final class FitsFactory {
     }
 
     /**
+     * Creates an HDU that wraps around the specified data object. The HDUs header will be created and populated with
+     * the essential description of the data.
+     * 
      * @return               Given an object, create the appropriate FITS header to describe it.
      *
      * @param  o             The object to be described.
@@ -535,13 +582,15 @@ public final class FitsFactory {
     }
 
     /**
-     * Do we allow 'D' instead of E to mark the exponent for a floating point value with precision beyond that of a
-     * 32-bit float?
+     * Sets whether 'D' may be used instead of 'E' to mark the exponent for a floating point value with precision beyond
+     * that of a 32-bit float.
      *
      * @param allowExponentD if <code>true</code> D will be used instead of E to indicate the exponent of a decimal with
      *                           more precision than a 32-bit float.
      *
      * @since                1.16
+     * 
+     * @see                  #isUseExponentD()
      */
     public static void setUseExponentD(boolean allowExponentD) {
         current().useExponentD = allowExponentD;
@@ -551,6 +600,8 @@ public final class FitsFactory {
      * Do we allow junk after a valid FITS file?
      *
      * @param allowTerminalJunk value to set
+     * 
+     * @see                     #getAllowTerminalJunk()
      */
     public static void setAllowTerminalJunk(boolean allowTerminalJunk) {
         current().allowTerminalJunk = allowTerminalJunk;
@@ -560,6 +611,8 @@ public final class FitsFactory {
      * Do we allow automatic header repairs, like missing end quotes?
      *
      * @param allowHeaderRepairs value to set
+     * 
+     * @see                      #isAllowHeaderRepairs()
      */
     public static void setAllowHeaderRepairs(boolean allowHeaderRepairs) {
         current().allowHeaderRepairs = allowHeaderRepairs;
@@ -571,6 +624,8 @@ public final class FitsFactory {
      * context. Disabled by default.
      *
      * @param checkAsciiStrings value to set
+     * 
+     * @see                     #getCheckAsciiStrings()
      */
     public static void setCheckAsciiStrings(boolean checkAsciiStrings) {
         current().checkAsciiStrings = checkAsciiStrings;
@@ -590,6 +645,8 @@ public final class FitsFactory {
      * Enable/Disable longstring support.
      *
      * @param longStringsEnabled value to set
+     * 
+     * @see                      #isLongStringsEnabled()
      */
     public static void setLongStringsEnabled(boolean longStringsEnabled) {
         current().longStringsEnabled = longStringsEnabled;
@@ -605,6 +662,8 @@ public final class FitsFactory {
      *                                      specific that string values must have their opening quote in byte 11
      *                                      (counted from 1). If we allow skipping the space, we will violate both
      *                                      standards in a way that is likely to break compatibility with other tools.
+     * 
+     * @see                             #isSkipBlankAfterAssign()
      */
     @Deprecated
     public static void setSkipBlankAfterAssign(boolean skipBlankAfterAssign) {

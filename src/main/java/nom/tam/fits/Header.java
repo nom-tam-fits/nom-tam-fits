@@ -1013,6 +1013,8 @@ public class Header implements FitsElement {
     }
 
     /**
+     * Get the <CODE>int</CODE> value associated with the given key.
+     * 
      * @return     the value associated with the key as an int.
      *
      * @param  key The header key.
@@ -1034,6 +1036,8 @@ public class Header implements FitsElement {
     }
 
     /**
+     * Get the <CODE>int</CODE> value associated with the given key.
+     * 
      * @return     the value associated with the key as an int.
      *
      * @param  key The header key.
@@ -1237,7 +1241,8 @@ public class Header implements FitsElement {
             return 0;
         }
 
-        return FitsUtil.addPadding(Math.max(minCards, getNumberOfPhysicalCards()) * HeaderCard.FITS_HEADER_CARD_SIZE);
+        return FitsUtil
+                .addPadding((long) Math.max(minCards, getNumberOfPhysicalCards()) * HeaderCard.FITS_HEADER_CARD_SIZE);
     }
 
     /**
@@ -1305,6 +1310,8 @@ public class Header implements FitsElement {
     }
 
     /**
+     * Checks if the header had duplicate assignments in the FITS.
+     * 
      * @return Were duplicate header keys found when this record was read in?
      */
     public boolean hadDuplicates() {
@@ -1460,6 +1467,8 @@ public class Header implements FitsElement {
     }
 
     /**
+     * Returns a cursor-based iterator for this header's entries.
+     * 
      * @deprecated       We should never use indexed access to the header. This function will be removed in 2.0.
      *
      * @return           an iterator over the header cards starting at an index
@@ -1634,7 +1643,7 @@ public class Header implements FitsElement {
         }
 
         ensureCardSpace(cardCountingArray.getPhysicalCardsRead());
-        readSize = FitsUtil.addPadding(minCards * HeaderCard.FITS_HEADER_CARD_SIZE);
+        readSize = FitsUtil.addPadding((long) minCards * HeaderCard.FITS_HEADER_CARD_SIZE);
 
         // Read to the end of the current FITS block.
         //
@@ -1735,8 +1744,8 @@ public class Header implements FitsElement {
 
     @Override
     public boolean rewriteable() {
-        int writeSize = FitsUtil
-                .addPadding(Math.max(minCards, getNumberOfPhysicalCards()) * HeaderCard.FITS_HEADER_CARD_SIZE);
+        long writeSize = FitsUtil
+                .addPadding((long) Math.max(minCards, getNumberOfPhysicalCards()) * HeaderCard.FITS_HEADER_CARD_SIZE);
         return fileOffset >= 0 && input instanceof ArrayDataOutput && writeSize == getOriginalSize();
     }
 

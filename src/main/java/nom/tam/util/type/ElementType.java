@@ -58,7 +58,11 @@ public abstract class ElementType<B extends Buffer> {
      */
     private static final int VARIABLE_SIZE = -1;
 
-    /** Number of bytes to copy as a block */
+    /**
+     * Number of bytes to copy as a block
+     * 
+     * @deprecated (<i>for internal use</i>) It's visibility may be reduced to the package level in the future.
+     */
     public static final int COPY_BLOCK_SIZE = 1024;
 
     /** The BITPIX integer value associated with this type of element */

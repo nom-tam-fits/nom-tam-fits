@@ -150,9 +150,11 @@ public class BinaryTable extends AbstractTableData {
         }
 
         /**
-         * @return      new instance of the array with space for the specified number of rows.
+         * @deprecated      (<i>for internal use</i>) This method should be private in the future.
+         * 
+         * @return          new instance of the array with space for the specified number of rows.
          *
-         * @param  nRow the number of rows to allocate the array for
+         * @param      nRow the number of rows to allocate the array for
          */
         public Object newInstance(int nRow) {
             return ArrayFuncs.newInstance(ArrayFuncs.getBaseClass(model), size * nRow);
@@ -621,6 +623,10 @@ public class BinaryTable extends AbstractTableData {
     }
 
     /**
+     * Returns the primitive array element types for each column in an array. Binary table columns are always stored as
+     * arrays even if the contain a single element. This method returns not the array class, but of the primitive
+     * elements the arrays contain.
+     * 
      * @return the types in the table, not the underlying types (e.g., for varying length arrays or booleans).
      */
     public Class<?>[] getBases() {
@@ -754,6 +760,10 @@ public class BinaryTable extends AbstractTableData {
     }
 
     /**
+     * Returns an empty row for the table. Such model rows are useful when low-level reading binary tables from an input
+     * row-by-row. You can simply all {@link nom.tam.util.ArrayDataInput#readArrayFully(Object)} to populate it with
+     * data from a stream. You may also use model rows to add additional rows to an existing table.
+     * 
      * @return a row that may be used for direct i/o to the table.
      */
     public Object[] getModelRow() {
@@ -764,8 +774,8 @@ public class BinaryTable extends AbstractTableData {
         return modelRow;
     }
 
-    /**
-     * Get the number of columns in the table.
+    /*
+     * ( Get the number of columns in the table.
      */
     @Override
     public int getNCols() {
@@ -781,6 +791,10 @@ public class BinaryTable extends AbstractTableData {
     }
 
     /**
+     * Returns an unprocessed element from the table as a 1D array of the elements that are stored in the regular table
+     * data, whithout reslving heap references. That is this call will return flattened versions of multidimensional
+     * arrays, and will return only the heap locator (offset and size) for variable-sized columns.
+     * 
      * @return               a particular element from the table but do no processing of this element (e.g., dimension
      *                           conversion or extraction of variable length array elements/)
      *

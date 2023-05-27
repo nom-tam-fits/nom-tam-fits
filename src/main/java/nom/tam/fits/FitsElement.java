@@ -42,12 +42,16 @@ import nom.tam.util.ArrayDataOutput;
 public interface FitsElement {
 
     /**
+     * Returns the byte offset at which this element starts ina file.
+     * 
      * @return the byte at which this element begins. This is only available if the data is originally read from a
      *             random access medium.
      */
     long getFileOffset();
 
     /**
+     * Returns the size of this elements in the FITS representation
+     * 
      * @return The size of this element in bytes
      */
     long getSize();
@@ -87,6 +91,9 @@ public interface FitsElement {
     void rewrite() throws FitsException, IOException;
 
     /**
+     * Checks if we can write this element back to its source. An element can only be written back if it is associated
+     * to a random accessible input and the current size FITS within the old block size.
+     * 
      * @return <code>true</code> if this element can be rewritten?
      */
     boolean rewriteable();

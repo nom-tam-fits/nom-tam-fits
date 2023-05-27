@@ -84,8 +84,12 @@ public class FitsEncoder extends OutputEncoder {
      * library have used the value 1 for true, and 0 for false. Therefore, this implementation will recognise both 'T'
      * and 1 as <code>true</code>, but 0 will map to <code>null</code> and everything else will return
      * <code>false</code>.
+     * 
+     * @param  b A java boolean value or <code>null</code>
+     * 
+     * @return   the FITS byte representation of a boolean value.
      */
-    private static byte byteForBoolean(Boolean b) {
+    public static byte byteForBoolean(Boolean b) {
         if (b == null) {
             return (byte) 0;
         }
