@@ -35,7 +35,7 @@ import java.io.IOException;
 import java.io.OutputStream;
 
 /**
- * Basic binary output writing functionality.
+ * Interface for basic binary output writing functionality.
  * 
  * @author Attila Kovacs
  * @since 1.16

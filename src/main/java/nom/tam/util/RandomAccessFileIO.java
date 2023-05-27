@@ -38,9 +38,9 @@ import java.io.RandomAccessFile;
 import java.nio.channels.FileChannel;
 
 /**
- * Minimal interface for underlying data object that supports random access. The methods defined here are those used by
- * FitsFile to access a RandomAccessFile. The RandomAccessFileExt class adds this interface to RandomAccessFile, but
- * other systems could provide an alternate implementation of this interface to access an arbitrary FITS data object.
+ * Interface for IO objects that support file-like random access. The methods defined here are those used by FitsFile to
+ * access a RandomAccessFile. The RandomAccessFileExt class adds this interface to RandomAccessFile, but other systems
+ * could provide an alternate implementation of this interface to access an arbitrary FITS data object.
  *
  * @author pdowler
  */

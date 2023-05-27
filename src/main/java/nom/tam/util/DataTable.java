@@ -35,8 +35,7 @@ package nom.tam.util;
  * <p>
  * A non FITS-specific Interface for generic table data access. For a
  * FITS-specific interface see {@link nom.tam.fits.TableData}.
- * <p>
- * <p>
+ * </p>
  * <p>
  * Note, that this interface is the little brother to
  * {@link nom.tam.fits.TableData}, with nearly identical method signatures. But,

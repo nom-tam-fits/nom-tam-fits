@@ -1,6 +1,5 @@
 /**
- * Access individual tiles in a compressed image HDU. It's weird it is a package by itself and not bundled with
- * {@link nom.tam.image.compression.hdu.CompressedImageHDU}, which it serves, but that's life.
+ * Access compressed image tiles individually. It's weird it is a package by itself, but that's life.
  */
 
 package nom.tam.image.compression;

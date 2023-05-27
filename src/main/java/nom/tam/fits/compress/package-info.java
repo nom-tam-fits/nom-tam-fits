@@ -1,6 +1,8 @@
 /**
- * Handling of compressed FITS files. This is for file-level compression support only. HDU-level compression, including
- * tile compression are handled by classes in other packages.
+ * Handling of compressed FITS files (file-level compression only). This is for file-level compression support only.
+ * HDU-level compression, including tile compression is handled by the {@link nom.tam.image.compression.hdu} package.
+ * 
+ * @see nom.tam.image.compression.hdu
  */
 
 package nom.tam.fits.compress;

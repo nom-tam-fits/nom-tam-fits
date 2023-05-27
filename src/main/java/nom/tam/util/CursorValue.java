@@ -32,7 +32,7 @@ package nom.tam.util;
  */
 
 /**
- * Interface for curse-based access to keys
+ * Interface for cursor-based access to keys
  *
  * @param <T> The generic type of key that this cursor uses
  */

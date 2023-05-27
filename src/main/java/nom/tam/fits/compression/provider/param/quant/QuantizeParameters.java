@@ -64,6 +64,7 @@ public class QuantizeParameters extends CompressParameters {
      *
      * @param option The compression option that is configured with the particular parameter values of this object.
      */
+    @SuppressWarnings("deprecation")
     public QuantizeParameters(QuantizeOption option) {
         quantz = new ZQuantizeParameter(option);
         blank = new ZBlankParameter(option);

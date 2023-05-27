@@ -39,8 +39,8 @@ import nom.tam.image.tile.operation.TileArea;
 import nom.tam.util.type.ElementType;
 
 /**
- * A parallel operation for compressing a specific image or binary table tile. Each instance will be processed in a
- * single thread, but operations on separate tiles can be (and will be) processed in parallel.
+ * (<i>for internal use</i>) A parallel operation for compressing a specific image or binary table tile. Each instance
+ * will be processed in a single thread, but operations on separate tiles can be (and will be) processed in parallel.
  * 
  * @see TileDecompressor
  */

@@ -1,5 +1,8 @@
 /**
- * Go from compressed to uncompressed versions of entire HDUs and vice versa, for both images and binary tables.
+ * Compressing and decompressing HDUs, for both images and binary tables. This package supports HDU-level compression
+ * only. For compressing / decompressing entire FITS files, see the {@link nom.tam.fits.compress} package.
+ * 
+ * @see nom.tam.fits.compress
  */
 
 package nom.tam.image.compression.hdu;

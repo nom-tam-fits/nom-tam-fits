@@ -113,7 +113,8 @@ public class StreamingTileImageData extends ImageData {
      * @return an array containing the steps sizes along the dimensions
      */
     public int[] getSteps() {
-        return steps == null ? null : Arrays.copyOf(steps, steps.length);
+        // Steps is always initialized so no need to check for null here...
+        return Arrays.copyOf(steps, steps.length);
     }
 
     @Override

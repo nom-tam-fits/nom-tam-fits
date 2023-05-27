@@ -624,7 +624,8 @@ public class ColumnTable<T> implements DataTable {
      * @return An array of Class objects, one for each column.
      */
     public Class<?>[] getBases() {
-        return bases == null ? null : Arrays.copyOf(bases, bases.length);
+        // bases is initialized at construction so no need to check for null here
+        return Arrays.copyOf(bases, bases.length);
     }
 
     /**
@@ -726,7 +727,8 @@ public class ColumnTable<T> implements DataTable {
      * @return an array with the byte sizes of each column
      */
     public int[] getSizes() {
-        return sizes == null ? null : Arrays.copyOf(sizes, sizes.length);
+        // sizes is initialized at construction so no need to check for null here
+        return Arrays.copyOf(sizes, sizes.length);
     }
 
     /**
@@ -736,7 +738,8 @@ public class ColumnTable<T> implements DataTable {
      * @return An array of type characters (Java array types), one for each column.
      */
     public char[] getTypes() {
-        return types == null ? null : Arrays.copyOf(types, types.length);
+        // types is initialized at construction so no need to check for null here
+        return Arrays.copyOf(types, types.length);
     }
 
     /**

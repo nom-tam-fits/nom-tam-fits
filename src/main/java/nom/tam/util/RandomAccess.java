@@ -34,8 +34,7 @@ import java.io.IOException;
  */
 
 /**
- * These packages define the methods which indicate that an i/o stream may be accessed in arbitrary order. The method
- * signatures are taken from RandomAccessFile though that class does not implement this interface.
+ * Interface that combines file-based random acesss with high-throughput array IO
  */
 public interface RandomAccess extends ReadWriteAccess, ArrayDataInput {
 

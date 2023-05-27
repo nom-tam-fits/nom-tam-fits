@@ -182,7 +182,9 @@ public class CompressedImageHDU extends BinaryTableHDU {
     }
 
     /**
-     * @deprecated     for internal use only Check that this HDU has a valid header for this type.
+     * Check that this HDU has a valid header for this type.
+     * 
+     * @deprecated     (<i>for internal use</i>)
      *
      * @param      hdr header to check
      *
@@ -194,7 +196,7 @@ public class CompressedImageHDU extends BinaryTableHDU {
     }
 
     /**
-     * @deprecated for internal use only
+     * @deprecated (<i>for internal use</i>)
      */
     @Deprecated
     public static CompressedImageData manufactureData(Header hdr) throws FitsException {
@@ -346,8 +348,9 @@ public class CompressedImageHDU extends BinaryTableHDU {
     /**
      * Returns the uncompressed image in serialized form, as it would appear in a stream.
      * 
-     * @deprecated               There is no reason why this should be exposed to users. Use {@link #asImageHDU()}
-     *                               instead. Future release may restrict the visibility to private.
+     * @deprecated               (<i>for internal use</i>) There is no reason why this should be exposed to users. Use
+     *                               {@link #asImageHDU()} instead. Future release may restrict the visibility to
+     *                               private.
      * 
      * @return                   the buffer containing the serialized form of the uncompressed image.
      * 
@@ -361,8 +364,8 @@ public class CompressedImageHDU extends BinaryTableHDU {
     }
 
     /**
-     * @deprecated for internal use only Checks that this HDU has a valid header.
-     * @deprecated This method should not be exposed to users. Visibility should be reduced to protected.
+     * @deprecated (<i>for internal use</i>) This method should not be exposed to users. Visibility should be reduced to
+     *                 protected.
      *
      * @return     <CODE>true</CODE> if this HDU has a valid header.
      */

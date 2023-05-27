@@ -39,8 +39,8 @@ import nom.tam.image.compression.tile.mask.NullPixelMaskRestorer;
 import nom.tam.image.tile.operation.TileArea;
 
 /**
- * A parallel operation for decompressing a specific image or binary table tile. Each instance will be processed in a
- * single thread, but operations on separate tiles can be (and will be) processed in parallel.
+ * (<i>for internal use</i>) A parallel operation for decompressing a specific image or binary table tile. Each instance
+ * will be processed in a single thread, but operations on separate tiles can be (and will be) processed in parallel.
  * 
  * @see TileCompressor
  */
