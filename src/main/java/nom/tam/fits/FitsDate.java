@@ -87,26 +87,40 @@ public class FitsDate implements Comparable<FitsDate> {
     private static final int POW_TEN = 10;
 
     /**
+     * Returns the FITS date string for the current date and time.
+     * 
      * @return the current date in FITS date format
+     * 
+     * @see    #getFitsDateString(Date)
      */
     public static String getFitsDateString() {
         return getFitsDateString(new Date(), true);
     }
 
     /**
+     * Returns the FITS date string for a specific date and time
+     * 
      * @return       a created FITS format date string Java Date object.
      *
      * @param  epoch The epoch to be converted to FITS format.
+     * 
+     * @see          #getFitsDateString(Date, boolean)
+     * @see          #getFitsDateString()
      */
     public static String getFitsDateString(Date epoch) {
         return getFitsDateString(epoch, true);
     }
 
     /**
+     * Returns the FITS date string, with or without the time component, for a specific date and time.
+     * 
      * @return           a created FITS format date string. Note that the date is not rounded.
      *
      * @param  epoch     The epoch to be converted to FITS format.
-     * @param  timeOfDay Should time of day information be included?
+     * @param  timeOfDay Whether the time of day information shouldd be included
+     * 
+     * @see              #getFitsDateString(Date)
+     * @see              #getFitsDateString()
      */
     public static String getFitsDateString(Date epoch, boolean timeOfDay) {
         Calendar cal = Calendar.getInstance(UTC);

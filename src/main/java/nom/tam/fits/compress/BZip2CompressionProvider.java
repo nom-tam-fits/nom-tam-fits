@@ -45,6 +45,7 @@ public class BZip2CompressionProvider implements ICompressProvider {
 
     private static final int PRIORITY = 5;
 
+    @SuppressWarnings("deprecation")
     @Override
     public InputStream decompress(InputStream in) throws IOException {
         try {

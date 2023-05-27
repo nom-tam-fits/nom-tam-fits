@@ -166,6 +166,7 @@ public class FitsHeap implements FitsElement {
 
     @SuppressFBWarnings(value = "RR_NOT_CHECKED", justification = "this read will never return less than the requested length")
     @Override
+    @Deprecated
     public void read(ArrayDataInput str) throws FitsException {
         if (store.length() == 0) {
             return;

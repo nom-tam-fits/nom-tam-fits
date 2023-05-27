@@ -213,10 +213,15 @@ public class AsciiTableHDU extends TableHDU<AsciiTable> {
     }
 
     /**
+     * Checks if a table entry is <code>null</code>
+     * 
      * @param  row row index of the element
      * @param  col column index of the element
      *
-     * @return     <code>true</code> if an element is null
+     * @return     <code>true</code> if the specified element is <code>null</code>
+     * 
+     * @see        #setNull(int, int, boolean)
+     * @see        AsciiTable#isNull(int, int)
      */
     public boolean isNull(int row, int col) {
         return myData.isNull(row, col);
@@ -228,6 +233,9 @@ public class AsciiTableHDU extends TableHDU<AsciiTable> {
      * @param row  row index of the element
      * @param col  column index of the element
      * @param flag set to null or not
+     * 
+     * @see        #isNull(int, int)
+     * @see        AsciiTable#setNull(int, int, boolean)
      */
     public void setNull(int row, int col, boolean flag) {
 

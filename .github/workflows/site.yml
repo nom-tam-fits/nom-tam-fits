@@ -45,7 +45,7 @@ jobs:
         server-username: 'git'
         
     - name: Build site with Maven
-      run: mvn clean site -Ppublic-api
+      run: mvn clean site
       working-directory: ./nom-tam-fits
     
     - name: About this workflow...

@@ -311,6 +311,11 @@ public abstract class BasicHDU<DataClass extends Data> implements FitsElement {
     }
 
     /**
+     * Checks if this HDU can be used as a primary HDU. For historical reasons FITS only allows certain HDU types to
+     * appear at the head of FITS files. Further HDU types can only be added as extensions after the first HDU. If this
+     * call returns <code>false</code> you may need to add e.g. a dummy {@link NullDataHDU} as the primary HDU at the
+     * beginning of the FITS before you can add this one.
+     * 
      * @return Indicate whether HDU can be primary HDU. This method must be overriden in HDU types which can appear at
      *             the beginning of a FITS file.
      */
@@ -501,7 +506,6 @@ public abstract class BasicHDU<DataClass extends Data> implements FitsElement {
         return myHeader.getDoubleValue(EQUINOX, -1.0);
     }
 
-    /** Get the starting offset of the HDU */
     @Override
     public long getFileOffset() {
         return myHeader.getFileOffset();
@@ -601,6 +605,8 @@ public abstract class BasicHDU<DataClass extends Data> implements FitsElement {
     }
 
     /**
+     * Returns the FITS header component of this HDU
+     * 
      * @return the associated header
      */
     public Header getHeader() {
@@ -608,7 +614,7 @@ public abstract class BasicHDU<DataClass extends Data> implements FitsElement {
     }
 
     /**
-     * get a builder for filling the header cards using the builder pattern.
+     * Returns a header card builder for filling the header cards using the builder pattern.
      *
      * @param  key the key for the first card.
      *
@@ -628,6 +634,8 @@ public abstract class BasicHDU<DataClass extends Data> implements FitsElement {
     }
 
     /**
+     * Returns the underlying Java object (usually an array of some type) that stores the data internally.
+     * 
      * @return the non-FITS data object. Same as {@link #getData()}.<code>getKernel()</code>.
      */
     public final Object getKernel() {

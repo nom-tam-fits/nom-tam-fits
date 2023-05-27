@@ -38,6 +38,8 @@ import java.io.InputStream;
  * Shorthand access to Apache <b>commons-compress</b> stream decompressors.
  * Forgive the awkward name.
  * 
+ * @deprecated (<i>for internal use</i>) The visibility of this class may be
+ *             reduced to package level in the future.
  * @author Richard van Nieuwenhoven
  */
 public final class CompressionLibLoaderProtection {

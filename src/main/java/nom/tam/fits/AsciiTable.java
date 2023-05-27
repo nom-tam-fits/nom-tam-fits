@@ -536,7 +536,8 @@ public class AsciiTable extends AbstractTableData {
     }
 
     /**
-     * be sure that the data is filled. because the getData already tests null the getData is called without check.
+     * Actually loads the data from the input. When reading from a random accessible stream, the data will be skiupped
+     * over and loaded only when neecessary (deferred read).
      *
      * @throws FitsException if the operation failed
      */
@@ -687,7 +688,6 @@ public class AsciiTable extends AbstractTableData {
      *
      * @throws FitsException if the operation failed
      */
-
     @Override
     public Object getColumn(int col) throws FitsException {
         ensureData();
@@ -735,7 +735,6 @@ public class AsciiTable extends AbstractTableData {
      *
      * @return The number of columns
      */
-
     @Override
     public int getNCols() {
         return nFields;
@@ -746,7 +745,6 @@ public class AsciiTable extends AbstractTableData {
      *
      * @return The number of rows.
      */
-
     @Override
     public int getNRows() {
         return nRows;
@@ -761,7 +759,6 @@ public class AsciiTable extends AbstractTableData {
      *
      * @throws FitsException if the operation failed
      */
-
     @Override
     public Object[] getRow(int row) throws FitsException {
 
@@ -792,7 +789,7 @@ public class AsciiTable extends AbstractTableData {
     }
 
     /**
-     * See if an element is null.
+     * Checks if an element is <code>null</code>.
      *
      * @param  row The 0-based row
      * @param  col The 0-based column
@@ -997,7 +994,6 @@ public class AsciiTable extends AbstractTableData {
      * @param oldNCol The number of columns we had before deletion.
      * @param hdr     The associated header. @throws FitsException if the operation failed
      */
-
     @Override
     public void updateAfterDelete(int oldNCol, Header hdr) throws FitsException {
 
@@ -1021,7 +1017,6 @@ public class AsciiTable extends AbstractTableData {
      *
      * @throws FitsException if any IO exception is found or some inconsistency the FITS file arises.
      */
-
     @Override
     public void write(ArrayDataOutput str) throws FitsException {
         // Make sure we have the data in hand.

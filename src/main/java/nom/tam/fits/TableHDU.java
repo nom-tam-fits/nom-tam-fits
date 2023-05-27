@@ -101,6 +101,8 @@ public abstract class TableHDU<T extends AbstractTableData> extends BasicHDU<T> 
     }
 
     /**
+     * Returns the list of column description keyword stems that descrive this column in the FITS header.
+     * 
      * @return the stems of the keywords that are associated with table columns. Users can supplement this with their
      *             own and call the appropriate deleteColumns fields.
      */
@@ -248,23 +250,34 @@ public abstract class TableHDU<T extends AbstractTableData> extends BasicHDU<T> 
     }
 
     /**
+     * Returns the column of the specified index
+     * 
      * @return               a specific column from the table using 0-based column indexing.
      *
      * @param  col           column index to get
      *
      * @throws FitsException if the operation failed
+     * 
+     * @see                  #getColumn(String)
+     * @see                  #setColumn(int, Object)
+     * @see                  #getRow(int)
      */
     public Object getColumn(int col) throws FitsException {
         return myData.getColumn(col);
     }
 
     /**
+     * Returns the column of the specified name
+     * 
      * @return               a specific column of the table where the column name is specified using the TTYPEn keywords
      *                           in the header.
      *
      * @param  colName       The name of the column to be extracted.
      *
      * @throws FitsException if the operation failed
+     * 
+     * @see                  #getColumn(int)
+     * @see                  #setColumn(String, Object)
      */
     public Object getColumn(String colName) throws FitsException {
         return getColumn(findColumn(colName));
@@ -318,6 +331,8 @@ public abstract class TableHDU<T extends AbstractTableData> extends BasicHDU<T> 
     }
 
     /**
+     * Returns all columns in this table as an array.
+     * 
      * @return               all of the columns of the table.
      *
      * @throws FitsException if the operation failed
@@ -331,12 +346,16 @@ public abstract class TableHDU<T extends AbstractTableData> extends BasicHDU<T> 
     }
 
     /**
+     * Returns a specific element from this table
+     * 
      * @return               a specific element of the table using 0-based indices.
      *
      * @param  row           the row index of the element
      * @param  col           the column index of the element
      *
      * @throws FitsException if the operation failed
+     * 
+     * @see                  #getElement(int, int)
      */
     public Object getElement(int row, int col) throws FitsException {
         return myData.getElement(row, col);
@@ -361,11 +380,15 @@ public abstract class TableHDU<T extends AbstractTableData> extends BasicHDU<T> 
     }
 
     /**
+     * Returns a specific row from this table
+     * 
      * @return               a specific row of the table.
      *
      * @param  row           the index of the row to retreive
      *
      * @throws FitsException if the operation failed
+     * 
+     * @see                  #setRow(int, Object[])
      */
     public Object[] getRow(int row) throws FitsException {
         return myData.getRow(row);
@@ -378,6 +401,9 @@ public abstract class TableHDU<T extends AbstractTableData> extends BasicHDU<T> 
      * @param  newCol        the replacement column
      *
      * @throws FitsException if the operation failed
+     * 
+     * @see                  #getColumn(int)
+     * @see                  #setColumn(String, Object)
      */
     public void setColumn(int col, Object newCol) throws FitsException {
         myData.setColumn(col, newCol);
@@ -390,6 +416,9 @@ public abstract class TableHDU<T extends AbstractTableData> extends BasicHDU<T> 
      * @param  newCol        the replacement column
      *
      * @throws FitsException if the operation failed
+     * 
+     * @see                  #getColumn(String)
+     * @see                  #setColumn(int, Object)
      */
     public void setColumn(String colName, Object newCol) throws FitsException {
         setColumn(findColumn(colName), newCol);
@@ -598,6 +627,8 @@ public abstract class TableHDU<T extends AbstractTableData> extends BasicHDU<T> 
      * @param  element       the replacement element
      *
      * @throws FitsException if the operation failed
+     * 
+     * @see                  #getElement(int, int)
      */
     public void setElement(int row, int col, Object element) throws FitsException {
         myData.setElement(row, col, element);
@@ -610,6 +641,8 @@ public abstract class TableHDU<T extends AbstractTableData> extends BasicHDU<T> 
      * @param  newRow        the replacement row
      *
      * @throws FitsException if the operation failed
+     * 
+     * @see                  #getRow(int)
      */
     public void setRow(int row, Object[] newRow) throws FitsException {
         myData.setRow(row, newRow);

@@ -153,6 +153,9 @@ public abstract class Data implements FitsElement {
     }
 
     /**
+     * Returns the underlying Java representation of the data contained in this HDU's data segment. Typically it will
+     * return a Java array of some kind.
+     * 
      * @return               the underlying Java representation of the data core object, such as a multi-dimensional
      *                           Java array.
      *
@@ -205,6 +208,9 @@ public abstract class Data implements FitsElement {
     }
 
     /**
+     * Returns the size of this data object in the FITS including padding to ensure it is amultiple of the FITS block
+     * size of 2880 bytes.
+     * 
      * @return the size of the data element in bytes.
      */
     @Override

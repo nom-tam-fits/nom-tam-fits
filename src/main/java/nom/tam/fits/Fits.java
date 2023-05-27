@@ -500,6 +500,8 @@ public class Fits implements Closeable {
     }
 
     /**
+     * Creates a new empty HDU for the given data type.
+     * 
      * @return               a newly created HDU from the given Data.
      *
      * @param  data          The data to be described in this HDU.
@@ -514,7 +516,9 @@ public class Fits implements Closeable {
     }
 
     /**
-     * @return               a newly created HDU from the given header.
+     * Creates a new empty HDU based on the header description of the data
+     * 
+     * @return               a newly created HDU from the given header (and including the header).
      *
      * @param  h             The header which describes the FITS extension
      *
@@ -526,6 +530,8 @@ public class Fits implements Closeable {
     }
 
     /**
+     * Creates a new HDU from the given data object
+     * 
      * @return               a newly created HDU from the given data kernel.
      *
      * @param  o             The data to be described in this HDU.
@@ -537,6 +543,8 @@ public class Fits implements Closeable {
     }
 
     /**
+     * Returns the version sting of this FITS library
+     * 
      * @return the version of the library.
      */
     public static String version() {
