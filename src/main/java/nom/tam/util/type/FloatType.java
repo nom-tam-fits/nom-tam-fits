@@ -49,6 +49,7 @@ class FloatType extends ElementType<FloatBuffer> {
 
     @Override
     public void appendBuffer(FloatBuffer buffer, FloatBuffer dataToAppend) {
+        @SuppressWarnings("deprecation")
         float[] temp = new float[Math.min(COPY_BLOCK_SIZE, dataToAppend.remaining())];
         while (dataToAppend.hasRemaining()) {
             int nrObBytes = Math.min(temp.length, dataToAppend.remaining());

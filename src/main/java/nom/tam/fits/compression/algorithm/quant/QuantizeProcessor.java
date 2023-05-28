@@ -313,8 +313,7 @@ public class QuantizeProcessor {
             filter = new ZeroFilter(filter);
         }
         if (quantizeOption.isCheckNull()) {
-            final NullFilter nullFilter = new NullFilter(quantizeOption.getNullValue(),
-                    quantizeOption.getNullValueIndicator(), filter);
+            final NullFilter nullFilter = new NullFilter(quantizeOption.getNullValue(), quantizeOption.getBNull(), filter);
             filter = nullFilter;
             quantize = new Quantize(quantizeOption) {
 

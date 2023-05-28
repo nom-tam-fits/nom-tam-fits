@@ -56,7 +56,7 @@ public interface ICompressOption extends Cloneable {
     ICompressParameters getCompressionParameters();
 
     /**
-     * Checks if this type of compression is lossy
+     * Checks if this type of compression is inherently lossy
      * 
      * @return <code>true</code> if the compression done with this specified options uses approximations. That means if
      *             the reconstruction of the data is excact the return should be <code>false</code>.
@@ -83,7 +83,7 @@ public interface ICompressOption extends Cloneable {
     ICompressOption setTileHeight(int value);
 
     /**
-     * Wet the tile width.
+     * Set the tile width.
      *
      * @param  value the new tile with in pixels
      *

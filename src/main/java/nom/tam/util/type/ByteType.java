@@ -46,6 +46,7 @@ class ByteType extends ElementType<ByteBuffer> {
 
     @Override
     public void appendBuffer(ByteBuffer buffer, ByteBuffer dataToAppend) {
+        @SuppressWarnings("deprecation")
         byte[] temp = new byte[Math.min(COPY_BLOCK_SIZE, dataToAppend.remaining())];
         while (dataToAppend.hasRemaining()) {
             int nrObBytes = Math.min(temp.length, dataToAppend.remaining());

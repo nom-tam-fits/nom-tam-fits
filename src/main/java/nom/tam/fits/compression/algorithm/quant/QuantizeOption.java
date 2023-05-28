@@ -56,6 +56,7 @@ public class QuantizeOption implements ICompressOption {
      */
     private static final int NULL_VALUE = Integer.MIN_VALUE + 1;
 
+    /** The prarameters that represent settings for thsi option in the FITS headers and/or compressed data columns */
     protected QuantizeParameters parameters;
 
     private ICompressOption compressOption;
@@ -126,14 +127,37 @@ public class QuantizeOption implements ICompressOption {
         }
     }
 
+    /**
+     * Returns the integer value that represents missing (<code>null</code>) data in the quantized representation.
+     * 
+     * @return the integer blanking value (<code>null</code> value).
+     * 
+     * @see    #setBNull(Integer)
+     */
     public Integer getBNull() {
         return nullValueIndicator;
     }
 
+    /**
+     * Returns the quantization level.
+     * 
+     * @return the floating-point difference between integer levels in the quantized data.
+     * 
+     * @see    #setBScale(double)
+     * @see    #getBZero()
+     */
     public double getBScale() {
         return bScale;
     }
 
+    /**
+     * Returns the quantization offset.
+     * 
+     * @return the floating-point value corresponding to the integer level 0.
+     * 
+     * @see    #setBZero(double)
+     * @see    #getBScale()
+     */
     public double getBZero() {
         return bZero;
     }
@@ -146,74 +170,233 @@ public class QuantizeOption implements ICompressOption {
         return new BundledParameters(parameters, compressOption.getCompressionParameters());
     }
 
+    /**
+     * Returns the compression or quantization options, recast for the selected option class.
+     * 
+     * @param  <T>   the generic type of the compression option
+     * @param  clazz the option class for the compression algorithm used with the quantization, or
+     *                   <code>QunatizeOption.class</code> for our own options.
+     * 
+     * @return       the recast options for the requested class or <code>null</code> id we do not have access to options
+     *                   of the requested class.
+     * 
+     * @see          #getCompressOption()
+     */
     public <T> T getCompressOption(Class<T> clazz) {
         return unwrap(clazz);
     }
 
+    /**
+     * Returns the options for the compression algorithm that accompanies quantization.
+     * 
+     * @return the options for the compression algorithm, or <code>null</code>
+     * 
+     * @see    #getCompressOption(Class)
+     */
     public final ICompressOption getCompressOption() {
         return compressOption;
     }
 
+    /**
+     * Returns the maximum integer level in the quantized representation.
+     * 
+     * @return the maximum integer level in the quantized data.
+     * 
+     * @see    #getMaxValue()
+     * @see    #getIntMinValue()
+     */
     public int getIntMaxValue() {
         return intMaxValue;
     }
 
+    /**
+     * Returns the maximum integer level in the quantized representation.
+     * 
+     * @return the maximum integer level in the quantized data.
+     * 
+     * @see    #getMinValue()
+     * @see    #getIntMinValue()
+     */
     public int getIntMinValue() {
         return intMinValue;
     }
 
+    /**
+     * Returns the maximum floating-point value in the data
+     * 
+     * @return the maximum floating-point value in the data before quantization.
+     * 
+     * @see    #getIntMaxValue()
+     * @see    #getMinValue()
+     */
     public double getMaxValue() {
         return maxValue;
     }
 
+    /**
+     * Returns the minimum floating-point value in the data
+     * 
+     * @return the minimum floating-point value in the data before quantization.
+     * 
+     * @see    #getIntMinValue()
+     * @see    #getMaxValue()
+     */
     public double getMinValue() {
         return minValue;
     }
 
+    /**
+     * Returns the floating-point value that indicates a <code>null</code> datum in the image before quantization is
+     * applied. Normally, the FITS standard is that NaN values indicate <code>null</code> values in floating-point
+     * images. While this class allows using other values also, they are not recommended since they are not supported by
+     * FITS in a standard way.
+     * 
+     * @return the floating-point value that represents a <code>null</code> value (missing data) in the image before
+     *             quantization.
+     * 
+     * @see    #setNullValue(double)
+     * @see    #getNullValueIndicator()
+     * @see    #isCheckNull()
+     */
     public double getNullValue() {
         return nullValue;
     }
 
-    public Integer getNullValueIndicator() {
-        return nullValueIndicator;
+    /**
+     * @deprecated use {@link #getBNull()} instead (duplicate method). Returns the integer value that represents missing
+     *                 data (<code>null</code>) in the quantized representation.
+     * 
+     * @return     the integer blanking value (<code>null</code> value).
+     * 
+     * @see        #setBNull(Integer)
+     */
+    public final Integer getNullValueIndicator() {
+        return getBNull();
     }
 
+    /**
+     * Returns the quantization resolution level used for automatic qunatization. For Gaussian noise the quantization
+     * level is the standard deviation divided by this Q value. Thus Q values of a few swill ensuse that quantization
+     * retains just about all of the information.
+     * 
+     * @return The current Q value, defined as the number of quantized levels per standard deviation (for Gaussian
+     *             noise).
+     * 
+     * @see    #setQlevel(double)
+     * @see    #getBScale()
+     */
     public double getQLevel() {
         return qlevel;
     }
 
+    /**
+     * Gets the random seed value used for dithering
+     * 
+     * @return the random seed value used for dithering
+     * 
+     * @see    #setSeed(long)
+     * @see    RandomSequence
+     */
     public long getSeed() {
         return seed;
     }
 
+    /**
+     * Returns the sequential tile index that this option is currently configured for.
+     * 
+     * @return the sequential tile index that the quantization is configured for
+     * 
+     * @see    #setTileIndex(int)
+     */
     public long getTileIndex() {
         return tileIndex;
     }
 
+    /**
+     * Returns the tile height
+     * 
+     * @return the tile height in pixels
+     * 
+     * @see    #setTileHeight(int)
+     * @see    #getTileWidth()
+     */
     public int getTileHeight() {
         return tileHeight;
     }
 
+    /**
+     * Returns the tile width
+     * 
+     * @return the tile width in pixels
+     * 
+     * @see    #setTileWidth(int)
+     * @see    #getTileHeight()
+     */
     public int getTileWidth() {
         return tileWidth;
     }
 
+    /**
+     * Checks whether we force the integer quantized level 0 to correspond to a floating-point level 0.0, when using
+     * automatic quantization.
+     * 
+     * @return <code>true</code> if we want to keep `BZERO` at 0 when quantizing automatically.
+     * 
+     * @see    #setCenterOnZero(boolean)
+     */
     public boolean isCenterOnZero() {
         return centerOnZero;
     }
 
+    /**
+     * Whether the floating-point data may contain <code>null</code> values (normally NaNs).
+     * 
+     * @return <code>true</code> if we should expect <code>null</code> in the floating-point data. This is automatically
+     *             <code>true</code> if {@link #setBNull(Integer)} was called with a non-null value.
+     * 
+     * @see    #setBNull(Integer)
+     */
     public boolean isCheckNull() {
         return checkNull;
     }
 
+    /**
+     * Whether automatic quantization treats 0.0 as a special value. Normally values within the `BSCALE` quantization
+     * level around 0.0 will be assigned the same integer quanta, and will become indistinguishable in the quantized
+     * data. Some software may, in their misguided ways, assign exact zero values a special meaning (such as no data) in
+     * which case we may want to distinguish these as we apply quantization. However, it is generally not a good idea to
+     * use 0 as a special value.
+     * 
+     * @return <code>true</code> to treat 0.0 (exact) as a special value, or <code>false</code> to treat is as any other
+     *             measured value (recommended).
+     * 
+     * @see    #setCheckZero(boolean)
+     * @see    #getBScale()
+     */
     public boolean isCheckZero() {
         return checkZero;
     }
 
+    /**
+     * Whether dithering is enabled
+     * 
+     * @return <code>true</code> if dithering is enabled, or else <code>false</code>
+     * 
+     * @see    #setDither(boolean)
+     * @see    #isDither2()
+     */
     public boolean isDither() {
         return dither;
     }
 
+    /**
+     * Whether dither method 2 is used.
+     * 
+     * @return <code>true</code> if dither method 2 is used, or else <code>false</code>
+     * 
+     * @see    #setDither2(boolean)
+     * @see    #isDither()
+     */
     public boolean isDither2() {
         return dither2;
     }
@@ -223,29 +406,84 @@ public class QuantizeOption implements ICompressOption {
         return true;
     }
 
+    /**
+     * Sets the integer value that represents missing data (<code>null</code>) in the quantized representation.
+     * 
+     * @param  blank the new integer blanking value (that is one that denotes a <code>null</code> value).
+     * 
+     * @return       itself
+     * 
+     * @see          #getBNull()
+     * @see          #setCheckNull(boolean)
+     */
     public ICompressOption setBNull(Integer blank) {
         if (blank != null) {
-            checkNull = true;
             nullValueIndicator = blank;
+            checkNull = true;
+        } else {
+            checkNull = false;
         }
         return this;
     }
 
+    /**
+     * Sets the quantization level.
+     * 
+     * @param  value the new floating-point difference between integer levels in the quantized data.
+     * 
+     * @return       itself
+     * 
+     * @see          #setBScale(double)
+     * @see          #getBZero()
+     */
     public QuantizeOption setBScale(double value) {
         bScale = value;
         return this;
     }
 
+    /**
+     * Sets the quantization offset.
+     * 
+     * @param  value the new floating-point value corresponding to the integer level 0.
+     * 
+     * @return       itself
+     * 
+     * @see          #setBScale(double)
+     * @see          #getBZero()
+     */
     public QuantizeOption setBZero(double value) {
         bZero = value;
         return this;
     }
 
+    /**
+     * Enabled or disables keeping `BZERO` at 0 when using automatic quantization.
+     * 
+     * @param  value <code>true</code> to keep `BZERO` at 0 when quantizing automatically, that is keep the integer
+     *                   quantized level 0 correspond to floating-point level 0.0. Or, <code>false</code> to let the
+     *                   automatic quantization algorithm determine the optimal quantization offset.
+     * 
+     * @return       iftself
+     * 
+     * @see          #isCenterOnZero()
+     */
     public QuantizeOption setCenterOnZero(boolean value) {
         centerOnZero = value;
         return this;
     }
 
+    /**
+     * @deprecated       {@link #setBNull(Integer)} automatically enables this feature as needed. Sets whether we should
+     *                       expect the floating-point data to contain <code>null</code> values (normally NaNs).
+     * 
+     * @param      value <code>true</code> if the floating-point data may contain <code>null</code> values.
+     * 
+     * @return           itself
+     * 
+     * @see              #setCheckNull(boolean)
+     * @see              #setBNull(Integer)
+     * @see              #getNullValue()
+     */
     public QuantizeOption setCheckNull(boolean value) {
         checkNull = value;
         if (nullValueIndicator == null) {
@@ -254,41 +492,135 @@ public class QuantizeOption implements ICompressOption {
         return this;
     }
 
+    /**
+     * Sets whether automatic quantization is to treat 0.0 as a special value. Normally values within the `BSCALE`
+     * quantization level around 0.0 will be assigned the same integer quanta, and will become indistinguishable in the
+     * quantized data. However some software may assign exact zero values a special meaning (such as no data) in which
+     * case we may want to distinguish these as we apply qunatization. However, it is generally not a good idea to use 0
+     * as a special value. To mark missing data, the FITS standard recognises only NaN as a special value -- while all
+     * other values should constitute valid measurements.
+     * 
+     * @deprecated       It is strongly discouraged to treat 0.0 values as special. FITS only recognises NaN as a
+     *                       special floating-point value marking missing data. All other floating point values are
+     *                       considered valid measurements.
+     * 
+     * @param      value
+     * 
+     * @return           itself
+     * 
+     * @see              #isCheckZero()
+     */
     public QuantizeOption setCheckZero(boolean value) {
         checkZero = value;
         return this;
     }
 
+    /**
+     * Enables or disables dithering.
+     * 
+     * @param  value <code>true</code> to enable dithering, or else <code>false</code> to disable
+     * 
+     * @return       itself
+     * 
+     * @see          #isDither()
+     * @see          #setDither2(boolean)
+     */
     public QuantizeOption setDither(boolean value) {
         dither = value;
         return this;
     }
 
+    /**
+     * Sets whether dithering is to use method 2.
+     * 
+     * @param  value <code>true</code> to use dither method 2, or else <code>false</code> for method 1.
+     * 
+     * @return       itself
+     * 
+     * @see          #isDither2()
+     * @see          #setDither(boolean)
+     */
     public QuantizeOption setDither2(boolean value) {
         dither2 = value;
         return this;
     }
 
+    /**
+     * Sets the maximum integer level in the quantized representation.
+     * 
+     * @param  value the new maximum integer level in the quantized data.
+     * 
+     * @return       itself
+     * 
+     * @see          #getIntMaxValue()
+     * @see          #setIntMinValue(int)
+     */
     public QuantizeOption setIntMaxValue(int value) {
         intMaxValue = value;
         return this;
     }
 
+    /**
+     * Sets the minimum integer level in the quantized representation.
+     * 
+     * @param  value the new minimum integer level in the quantized data.
+     * 
+     * @return       itself
+     * 
+     * @see          #getIntMinValue()
+     * @see          #setIntMaxValue(int)
+     */
     public QuantizeOption setIntMinValue(int value) {
         intMinValue = value;
         return this;
     }
 
+    /**
+     * Sets the maximum floating-point value in the data
+     * 
+     * @param  value the maximum floating-point value in the data before quantization.
+     * 
+     * @return       itself
+     * 
+     * @see          #getMaxValue()
+     * @see          #setMinValue(double)
+     */
     public QuantizeOption setMaxValue(double value) {
         maxValue = value;
         return this;
     }
 
+    /**
+     * Sets the minimum floating-point value in the data
+     * 
+     * @param  value the mininum floating-point value in the data before quantization.
+     * 
+     * @return       itself
+     * 
+     * @see          #getMinValue()
+     * @see          #setMaxValue(double)
+     */
     public QuantizeOption setMinValue(double value) {
         minValue = value;
         return this;
     }
 
+    /**
+     * @deprecated       The use of null values other than <code>NaN</code> for floating-point data types is not
+     *                       standard in FITS. You should therefore avoid using this method to change it. Returns the
+     *                       floating-point value that indicates a <code>null</code> datum in the image before
+     *                       quantization is applied. Normally, the FITS standard is that NaN values indicate
+     *                       <code>null</code> values in floating-point images. While this class allows using other
+     *                       values also, they are not recommended since they are not supported by FITS in a standard
+     *                       way.
+     * 
+     * @param      value the new floating-point value that represents a <code>null</code> value (missing data) in the
+     *                       image before quantization.
+     * 
+     * @return           itself
+     * 
+     * @see              #setNullValue(double)
+     */
     public QuantizeOption setNullValue(double value) {
         nullValue = value;
         return this;
@@ -308,6 +640,19 @@ public class QuantizeOption implements ICompressOption {
         }
     }
 
+    /**
+     * Sets the quantization resolution level to use for automatic quantization. For Gaussian noise the quantization
+     * level is the standard deviation divided by this Q value. Thus Q values of a few swill ensuse that quantization
+     * retains just about all of the information.
+     * 
+     * @param  value The new Q value, defined as the number of quantized levels per standard deviation (for Gaussian
+     *                   noise).
+     * 
+     * @return       itself
+     * 
+     * @see          #getQLevel()
+     * @see          #setBScale(double)
+     */
     public QuantizeOption setQlevel(double value) {
         qlevel = value;
         return this;

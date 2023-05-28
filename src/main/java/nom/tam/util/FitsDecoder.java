@@ -41,7 +41,7 @@ import nom.tam.util.type.ElementType;
 import edu.umd.cs.findbugs.annotations.SuppressFBWarnings;
 
 /**
- * (<i>for internal use</i>) Decodes FITS-formatted binary data into Java arrays.
+ * Decodes FITS-formatted binary data into Java arrays (<i>primarily for internal use</i>).
  *
  * @since 1.16
  *
