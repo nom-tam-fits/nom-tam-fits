@@ -49,6 +49,7 @@ class IntType extends ElementType<IntBuffer> {
 
     @Override
     public void appendBuffer(IntBuffer buffer, IntBuffer dataToAppend) {
+        @SuppressWarnings("deprecation")
         int[] temp = new int[Math.min(COPY_BLOCK_SIZE, dataToAppend.remaining())];
         while (dataToAppend.hasRemaining()) {
             int nrObBytes = Math.min(temp.length, dataToAppend.remaining());

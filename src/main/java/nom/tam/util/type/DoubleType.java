@@ -50,6 +50,7 @@ class DoubleType extends ElementType<DoubleBuffer> {
 
     @Override
     public void appendBuffer(DoubleBuffer buffer, DoubleBuffer dataToAppend) {
+        @SuppressWarnings("deprecation")
         double[] temp = new double[Math.min(COPY_BLOCK_SIZE, dataToAppend.remaining())];
         while (dataToAppend.hasRemaining()) {
             int nrObBytes = Math.min(temp.length, dataToAppend.remaining());

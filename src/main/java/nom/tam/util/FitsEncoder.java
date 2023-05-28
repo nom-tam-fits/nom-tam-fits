@@ -40,7 +40,7 @@ import nom.tam.fits.FitsFactory;
 import nom.tam.util.type.ElementType;
 
 /**
- * (<i>for internal use</i>) Encodes select Java arrays into FITS binary format.
+ * Encodes select Java arrays into FITS binary format (<i>primarily for internal use</i>).
  *
  * @since 1.16
  *

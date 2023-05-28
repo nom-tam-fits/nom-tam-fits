@@ -1507,7 +1507,12 @@ public class Header implements FitsElement {
     }
 
     /**
+     * Returns the header card after the one that was last accessed through us, and not via a separate iterator
+     * instance.
+     * 
      * @return the next card in the Header using the current iterator
+     * 
+     * @see    #iterator()
      */
     public HeaderCard nextCard() {
         if (cursor().hasNext()) {

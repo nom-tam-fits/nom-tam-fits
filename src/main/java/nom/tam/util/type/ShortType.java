@@ -47,6 +47,7 @@ class ShortType extends ElementType<ShortBuffer> {
 
     @Override
     public void appendBuffer(ShortBuffer buffer, ShortBuffer dataToAppend) {
+        @SuppressWarnings("deprecation")
         short[] temp = new short[Math.min(COPY_BLOCK_SIZE, dataToAppend.remaining())];
         while (dataToAppend.hasRemaining()) {
             int nrObBytes = Math.min(temp.length, dataToAppend.remaining());

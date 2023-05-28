@@ -32,6 +32,7 @@ package nom.tam.fits.doc;
  */
 
 import java.io.File;
+import java.io.IOException;
 import java.io.PrintStream;
 import java.util.ArrayList;
 import java.util.List;
@@ -59,35 +60,37 @@ public class GenerateReleaseNote {
         String fileName = "NOTE.v" + version.substring(0, version.indexOf('.'))
                 + version.substring(version.indexOf('.') + 1);
 
-        PrintStream out = new PrintStream(new File("target/" + fileName));
-
-        out.print("Release ");
-        out.println(version);
-        out.println();
-        println(out, limitString(description, 80));
-        out.println();
-        NodeList nodes = release.getElementsByTagName("action");
-        for (int index = 0; index < nodes.getLength(); index++) {
-            Element child = (Element) nodes.item(index);
-            String dev = child.getAttribute("dev");
-            String issue = child.getAttribute("issue");
-            if (isEmptyOrNull(dev) && isEmptyOrNull(issue)) {
-                println(out, limitString(child.getTextContent().trim(), 80));
-                out.println();
+        try (PrintStream out = new PrintStream(new File("target/" + fileName))) {
+            out.print("Release ");
+            out.println(version);
+            out.println();
+            println(out, limitString(description, 80));
+            out.println();
+            NodeList nodes = release.getElementsByTagName("action");
+            for (int index = 0; index < nodes.getLength(); index++) {
+                Element child = (Element) nodes.item(index);
+                String dev = child.getAttribute("dev");
+                String issue = child.getAttribute("issue");
+                if (isEmptyOrNull(dev) && isEmptyOrNull(issue)) {
+                    println(out, limitString(child.getTextContent().trim(), 80));
+                    out.println();
+                }
             }
-        }
-        out.println("Other changes in this edition include:");
-        out.println();
+            out.println("Other changes in this edition include:");
+            out.println();
 
-        for (int index = 0; index < nodes.getLength(); index++) {
-            Element child = (Element) nodes.item(index);
-            String dev = child.getAttribute("dev");
-            String issue = child.getAttribute("issue");
-            if (!isEmptyOrNull(dev) || !isEmptyOrNull(issue)) {
-                println(out, "     - ", limitString(child.getTextContent().trim(), 72));
+            for (int index = 0; index < nodes.getLength(); index++) {
+                Element child = (Element) nodes.item(index);
+                String dev = child.getAttribute("dev");
+                String issue = child.getAttribute("issue");
+                if (!isEmptyOrNull(dev) || !isEmptyOrNull(issue)) {
+                    println(out, "     - ", limitString(child.getTextContent().trim(), 72));
+                }
             }
+            out.close();
+        } catch (IOException e) {
+            e.printStackTrace();
         }
-        out.close();
     }
 
     private static void println(PrintStream out, List<String> limitString) {

@@ -49,6 +49,7 @@ class LongType extends ElementType<LongBuffer> {
 
     @Override
     public void appendBuffer(LongBuffer buffer, LongBuffer dataToAppend) {
+        @SuppressWarnings("deprecation")
         long[] temp = new long[Math.min(COPY_BLOCK_SIZE, dataToAppend.remaining())];
         while (dataToAppend.hasRemaining()) {
             int nrObBytes = Math.min(temp.length, dataToAppend.remaining());
