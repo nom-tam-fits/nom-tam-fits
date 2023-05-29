@@ -43,7 +43,6 @@ import nom.tam.util.type.ElementType;
  * 
  * @see nom.tam.image.compression.hdu.CompressedImageHDU#setCompressAlgorithm(String)
  * @see nom.tam.image.compression.hdu.CompressedImageHDU#getCompressOption(Class)
- * @see RiceQuantizeCompressOption
  */
 public class RiceCompressOption implements ICompressOption {
 
