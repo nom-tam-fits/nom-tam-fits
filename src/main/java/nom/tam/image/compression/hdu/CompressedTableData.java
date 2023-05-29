@@ -82,7 +82,8 @@ public class CompressedTableData extends BinaryTable {
     }
 
     /**
-     * This should only be called by {@link CompressedTableHDU}.
+     * (<i>for internal use</i>) This should only be called by {@link CompressedTableHDU}, and should have reduced
+     * visibility accordingly.
      */
     @SuppressWarnings("javadoc")
     public void compress(Header header) throws FitsException {
@@ -106,7 +107,8 @@ public class CompressedTableData extends BinaryTable {
     }
 
     /**
-     * This should only be called by {@link CompressedTableHDU}.
+     * (<i>for internal use</i>) This should only be called by {@link CompressedTableHDU}, and should have reduced
+     * visibility accordingly.
      */
     @SuppressWarnings("javadoc")
     public void prepareUncompressedData(ColumnTable<SaveState> data) throws FitsException {

@@ -43,7 +43,6 @@ import nom.tam.image.ITileOption;
  * 
  * @see nom.tam.image.compression.hdu.CompressedImageHDU#setCompressAlgorithm(String)
  * @see nom.tam.image.compression.hdu.CompressedImageHDU#getCompressOption(Class)
- * @see HCompressorQuantizeOption
  */
 public class HCompressorOption implements ICompressOption, ITileOption {
 

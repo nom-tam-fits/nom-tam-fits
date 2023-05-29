@@ -276,8 +276,8 @@ public class QuantizeOption implements ICompressOption {
 
     /**
      * Returns the quantization resolution level used for automatic qunatization. For Gaussian noise the quantization
-     * level is the standard deviation divided by this Q value. Thus Q values of a few swill ensuse that quantization
-     * retains just about all of the information.
+     * level is the standard deviation of the noise divided by this Q value. Thus Q values of a few will ensure that
+     * quantization retains just about all of the information in the noisy data.
      * 
      * @return The current Q value, defined as the number of quantized levels per standard deviation (for Gaussian
      *             noise).
@@ -409,12 +409,14 @@ public class QuantizeOption implements ICompressOption {
     /**
      * Sets the integer value that represents missing data (<code>null</code>) in the quantized representation.
      * 
-     * @param  blank the new integer blanking value (that is one that denotes a <code>null</code> value).
+     * @param  blank the new integer blanking value (that is one that denotes a missing or <code>null</code> datum).
+     *                   Setting this option to <code>null</code> disables the treatment of issing or <code>null</code>
+     *                   data.
      * 
      * @return       itself
      * 
      * @see          #getBNull()
-     * @see          #setCheckNull(boolean)
+     * @see          #isCheckNull()
      */
     public ICompressOption setBNull(Integer blank) {
         if (blank != null) {
@@ -433,8 +435,9 @@ public class QuantizeOption implements ICompressOption {
      * 
      * @return       itself
      * 
-     * @see          #setBScale(double)
-     * @see          #getBZero()
+     * @see          #setQlevel(double)
+     * @see          #setBZero(double)
+     * @see          #getBScale()
      */
     public QuantizeOption setBScale(double value) {
         bScale = value;
@@ -642,8 +645,8 @@ public class QuantizeOption implements ICompressOption {
 
     /**
      * Sets the quantization resolution level to use for automatic quantization. For Gaussian noise the quantization
-     * level is the standard deviation divided by this Q value. Thus Q values of a few swill ensuse that quantization
-     * retains just about all of the information.
+     * level is the standard deviation of the noise divided by this Q value. Thus Q values of a few will ensusre that
+     * quantization retains just about all of the information contained in the noisy data.
      * 
      * @param  value The new Q value, defined as the number of quantized levels per standard deviation (for Gaussian
      *                   noise).

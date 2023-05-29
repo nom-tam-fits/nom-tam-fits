@@ -46,8 +46,8 @@ public interface ICompressOption extends Cloneable {
     ICompressOption copy();
 
     /**
-     * (<i>for internal use</i>) Returns the parameters that represent the settings for this option in a FITS header or
-     * compressed data column.
+     * (<i>for internal use</i>) Returns the parameters that represent the settings for this option in the FITS header
+     * or compressed data column.
      * 
      * @return the parameters that must be synchronized with the hdu meta data.
      * 

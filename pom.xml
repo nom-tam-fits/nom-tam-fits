@@ -738,24 +738,27 @@
 						<artifactId>maven-javadoc-plugin</artifactId>
 						<configuration>
 							<doctitle>
-								${project.name} ${project.version} User API
+								${project.name} ${project.version} Public User API
 							</doctitle>
 							<windowtitle>
-								${project.name} ${project.version} User API
+								${project.name} ${project.version} Public User API
 							</windowtitle>
+							<show>public</show>
 							<excludePackageNames>
 								nom.tam.fits.compression.algorithm.gzip:
 								nom.tam.fits.compression.algorithm.gzip2:
 								nom.tam.fits.compression.algorithm.plio:
 								nom.tam.fits.compression.algorithm.uncompressed:
 								nom.tam.fits.compression.provider:
-								nom.tam.fits.compression.provider.*:
+								nom.tam.fits.compression.provider.param.*:
 								nom.tam.image.compression.bintable:
 								nom.tam.image.compression.tile:
 								nom.tam.image.compression.tile.mask:
 								nom.tam.image.tile.*
 							</excludePackageNames>
 							<sourceFileExcludes>
+								<exclude>**/CompressionLibLoaderProtection.java</exclude>
+								<exclude>**/CloseIS.java</exclude>
 								<exclude>**/ICompressor*.java</exclude>
 								<exclude>**/HCompress.java</exclude>
 								<exclude>**/HDecompress.java</exclude>

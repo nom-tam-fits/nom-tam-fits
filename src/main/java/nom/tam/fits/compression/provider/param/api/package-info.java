@@ -1,7 +1,7 @@
 /**
- * (<i>for internal use</i>) Interfaces and helper classes managing compression parameters for the various algorithms.
- * It's weird enough that compression parameters are being handled in separate packages from the algorithms they
- * control, but that's life.
+ * (<i>for internal use</i>) The basics of storing compression options in FITS headers and compressed table columns.
+ * It's weird enough that compression parameters are being handled in separate packages from the algorithms they serve,
+ * but that's life.
  */
 
 package nom.tam.fits.compression.provider.param.api;
