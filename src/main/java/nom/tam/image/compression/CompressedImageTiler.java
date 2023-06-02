@@ -410,11 +410,6 @@ public class CompressedImageTiler implements ImageTiler {
         return tileOffsets;
     }
 
-    /**
-     * Read the entire image into a multidimensional array.
-     *
-     * @throws IOException if the underlying stream failed
-     */
     @Override
     public Object getCompleteImage() throws IOException {
         try {
@@ -431,16 +426,6 @@ public class CompressedImageTiler implements ImageTiler {
         getTile(output, corners, lengths, steps);
     }
 
-    /**
-     * Cutout a tile from the memory image or RandomAccess object.
-     *
-     * @param  output      The output to write to. Only ArrayDataOutput is supported.
-     * @param  corners     The corners to start reading from.
-     * @param  lengths     How many values of each dimension to write.
-     * @param  steps       How many values to skip.
-     *
-     * @throws IOException For any stream or data access errors, or if the provided values don't conform.
-     */
     @Override
     public void getTile(Object output, int[] corners, int[] lengths, int[] steps) throws IOException {
         final int[] imageDimensions = getImageDimensions();
@@ -469,15 +454,6 @@ public class CompressedImageTiler implements ImageTiler {
         }
     }
 
-    /**
-     * Get a subset of the image. An image tile is returned as a one-dimensional array although the image will normally
-     * be multidimensional.
-     *
-     * @param  corners     The starting corner (using 0 as the start) for the image.
-     * @param  lengths     The length requested in each dimension.
-     *
-     * @throws IOException if the underlying stream failed
-     */
     @Override
     public Object getTile(int[] corners, int[] lengths) throws IOException {
         throw new UnsupportedOperationException(

@@ -56,12 +56,12 @@ public interface ICompressProvider {
     InputStream decompress(InputStream in) throws IOException, FitsException;
 
     /**
-     * A priority of this method. {@link CompressionManager} will use this to
-     * select the 'best' compression class when multiple compression classes can
-     * provide decompression support for a given input stream. Claases that have
-     * a higher priority will be preferred.
+     * Returns the priority of this method. {@link CompressionManager} will use
+     * this to select the 'best' compression class when multiple compression
+     * classes can provide decompression support for a given input stream.
+     * Claases that have a higher priority will be preferred.
      * 
-     * @return a priority of this decompression method vs similar other
+     * @return the priority of this decompression method vs similar other
      *         compression methods that may be avaialble.
      * @see CompressionManager
      */

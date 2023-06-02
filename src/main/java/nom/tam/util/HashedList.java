@@ -60,7 +60,7 @@ import java.util.NoSuchElementException;
 import nom.tam.fits.header.FitsHeaderImpl;
 
 /**
- * a ordered hash map implementation.
+ * An ordered hash map implementation.
  *
  * @param <VALUE> value of the map
  */
@@ -278,7 +278,9 @@ public class HashedList<VALUE extends CursorValue<String>> implements Collection
     }
 
     /**
-     * @return     <code>true</code> if the key is included in the list.
+     * Checks if the list contains an entry for the given keyword.
+     * 
+     * @return     <code>true</code> if the key is included in the list, otherwise <code>false</code>.
      *
      * @param  key the key to search
      */
@@ -287,6 +289,8 @@ public class HashedList<VALUE extends CursorValue<String>> implements Collection
     }
 
     /**
+     * Returns the element for a given index from the odered list.
+     * 
      * @return   the n'th entry from the beginning.
      *
      * @param  n the index to get
@@ -296,19 +300,23 @@ public class HashedList<VALUE extends CursorValue<String>> implements Collection
     }
 
     /**
+     * Returns the element for the given hash key.
+     * 
      * @return     the value of a keyed entry. Non-keyed entries may be returned by requesting an iterator.
      *
      * @param  key the key to search for
+     * 
+     * @see        #iterator()
      */
     public VALUE get(Object key) {
         return keyed.get(key);
     }
 
-    // Note that, if the entry is not found, a NoSuchElementException is
-    // thrown instead of returning -1 (as is usual in indexOf methods) because
-    // the method is used internally in situations where the entry must be
-    // there.
     int indexOf(VALUE entry) {
+        // Note that, if the entry is not found, a NoSuchElementException is
+        // thrown instead of returning -1 (as is usual in indexOf methods) because
+        // the method is used internally in situations where the entry must be
+        // there.
         for (int index = 0; index < ordered.size(); index++) {
             String searchKey = entry.getKey();
             if (searchKey.equals(ordered.get(index).getKey())) {
@@ -324,7 +332,11 @@ public class HashedList<VALUE extends CursorValue<String>> implements Collection
     }
 
     /**
-     * @return a HashedListIterator over the entire list.
+     * Returns an iterator that will go over all elements of the list in the defined order.
+     * 
+     * @return an interator over the entire list.
+     * 
+     * @see    #cursor()
      */
     @Override
     public HashedListIterator iterator() {
@@ -332,9 +344,14 @@ public class HashedList<VALUE extends CursorValue<String>> implements Collection
     }
 
     /**
+     * Returns an iterator, which starts from the specified entry index, and goes over the remaining elements in the
+     * list.
+     * 
      * @return   an iterator starting with the n'th entry.
      *
      * @param  n the index to start the iterator
+     * 
+     * @see      #iterator(String)
      */
     public Cursor<String, VALUE> iterator(int n) {
         if (n >= 0 && n <= ordered.size()) {
@@ -350,15 +367,22 @@ public class HashedList<VALUE extends CursorValue<String>> implements Collection
      * in the header), we can just use findCard().
      *
      * @return the iterator representing the current position in the header.
+     * 
+     * @see    #iterator()
      */
     public Cursor<String, VALUE> cursor() {
         return cursor;
     }
 
     /**
+     * Returns an iterator, which starts from the specified keyed entry, and goes over the remaining elements in the
+     * list.
+     * 
      * @return     an iterator over the list starting with the entry with a given key.
      *
      * @param  key the key to use as a start point
+     * 
+     * @see        #iterator(int)
      */
     public HashedListIterator iterator(String key) {
         VALUE entry = keyed.get(key);

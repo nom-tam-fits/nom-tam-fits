@@ -476,8 +476,8 @@ public class QuantizeOption implements ICompressOption {
     }
 
     /**
-     * @deprecated       {@link #setBNull(Integer)} automatically enables this feature as needed. Sets whether we should
-     *                       expect the floating-point data to contain <code>null</code> values (normally NaNs).
+     * @deprecated       {@link #setBNull(Integer)} controls this feature automatically as needed. Sets whether we
+     *                       should expect the floating-point data to contain <code>null</code> values (normally NaNs).
      * 
      * @param      value <code>true</code> if the floating-point data may contain <code>null</code> values.
      * 

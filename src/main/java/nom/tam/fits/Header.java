@@ -96,6 +96,7 @@ import static nom.tam.fits.header.extra.CXCExt.LONGSTRN;
  * writing long strings, a the keyword LONGSTRN = 'OGIP 1.0' should be added to the FITS header, but this is not done
  * automatically for the user.
  */
+@SuppressWarnings("deprecation")
 public class Header implements FitsElement {
 
     /**
@@ -633,10 +634,13 @@ public class Header implements FitsElement {
 
     /**
      * Get the bid decimal value associated with the given key.
+     * 
+     * @deprecated     The FITS header does not support decimal types beyond those that can be represented by a 64-bit
+     *                     IEEE double-precision floating point value.
      *
-     * @param  key The header key.
+     * @param      key The header key.
      *
-     * @return     The associated value or 0.0 if not found.
+     * @return         The associated value or 0.0 if not found.
      */
     public final BigDecimal getBigDecimalValue(IFitsHeader key) {
         return getBigDecimalValue(key.key());
@@ -644,11 +648,14 @@ public class Header implements FitsElement {
 
     /**
      * Get the big decimal value associated with the given key.
+     * 
+     * @deprecated     The FITS header does not support decimal types beyond those that can be represented by a 64-bit
+     *                     IEEE double-precision floating point value.
      *
-     * @param  key The header key.
-     * @param  dft The default value to return if the key cannot be found.
+     * @param      key The header key.
+     * @param      dft The default value to return if the key cannot be found.
      *
-     * @return     the associated value.
+     * @return         the associated value.
      */
     public final BigDecimal getBigDecimalValue(IFitsHeader key, BigDecimal dft) {
         return getBigDecimalValue(key.key(), dft);
@@ -656,10 +663,13 @@ public class Header implements FitsElement {
 
     /**
      * Get the big decimal value associated with the given key.
+     * 
+     * @deprecated     The FITS header does not support decimal types beyond those that can be represented by a 64-bit
+     *                     IEEE double-precision floating point value.
      *
-     * @param  key The header key.
+     * @param      key The header key.
      *
-     * @return     The associated value or 0.0 if not found.
+     * @return         The associated value or 0.0 if not found.
      */
     public final BigDecimal getBigDecimalValue(String key) {
         return getBigDecimalValue(key, BigDecimal.ZERO);
@@ -668,10 +678,13 @@ public class Header implements FitsElement {
     /**
      * Get the big decimal value associated with the given key.
      *
-     * @param  key The header key.
-     * @param  dft The default value to return if the key cannot be found.
+     * @deprecated     The FITS header does not support decimal types beyond those that can be represented by a 64-bit
+     *                     IEEE double-precision floating point value.
      *
-     * @return     the associated value.
+     * @param      key The header key.
+     * @param      dft The default value to return if the key cannot be found.
+     *
+     * @return         the associated value.
      */
     public BigDecimal getBigDecimalValue(String key, BigDecimal dft) {
         HeaderCard fcard = findCard(key);
@@ -683,22 +696,28 @@ public class Header implements FitsElement {
 
     /**
      * Get the big integer value associated with the given key.
+     * 
+     * @deprecated     The FITS header does not support integer types beyond those that can be represented by a 64-bit
+     *                     integer.
      *
-     * @param  key The header key.
+     * @param      key The header key.
      *
-     * @return     the associated value or 0 if not found.
+     * @return         the associated value or 0 if not found.
      */
     public final BigInteger getBigIntegerValue(IFitsHeader key) {
         return getBigIntegerValue(key.key());
     }
 
     /**
-     * Get the big integer value associated with the given key.
+     * Get the big integer value associated with the given key, or return a default value.
      *
-     * @param  key The header key.
-     * @param  dft The default value to be returned if the key cannot be found.
+     * @deprecated     The FITS header does not support integer types beyond those that can be represented by a 64-bit
+     *                     integer.
      *
-     * @return     the associated value.
+     * @param      key The header key.
+     * @param      dft The default value to be returned if the key cannot be found.
+     *
+     * @return         the associated value.
      */
     public final BigInteger getBigIntegerValue(IFitsHeader key, BigInteger dft) {
         return getBigIntegerValue(key.key(), dft);
@@ -706,10 +725,13 @@ public class Header implements FitsElement {
 
     /**
      * Get the big integer value associated with the given key.
+     * 
+     * @deprecated     The FITS header does not support integer types beyond those that can be represented by a 64-bit
+     *                     integer.
      *
-     * @param  key The header key.
+     * @param      key The header key.
      *
-     * @return     The associated value or 0 if not found.
+     * @return         The associated value or 0 if not found.
      */
     public final BigInteger getBigIntegerValue(String key) {
         return getBigIntegerValue(key, BigInteger.ZERO);
@@ -717,11 +739,14 @@ public class Header implements FitsElement {
 
     /**
      * Get the big integer value associated with the given key.
+     * 
+     * @deprecated     The FITS header does not support integer types beyond those that can be represented by a 64-bit
+     *                     integer.
      *
-     * @param  key The header key.
-     * @param  dft The default value to be returned if the key cannot be found.
+     * @param      key The header key.
+     * @param      dft The default value to be returned if the key cannot be found.
      *
-     * @return     the associated value.
+     * @return         the associated value.
      */
     public BigInteger getBigIntegerValue(String key, BigInteger dft) {
         HeaderCard fcard = findCard(key);
@@ -749,7 +774,7 @@ public class Header implements FitsElement {
     }
 
     /**
-     * Get the complex number value associated with the given key.
+     * Get the complex number value associated with the given key, or return a default value.
      *
      * @param  key The header key.
      * @param  dft The default value to return if the key cannot be found.
@@ -861,7 +886,7 @@ public class Header implements FitsElement {
     }
 
     /**
-     * Get the <CODE>double</CODE> value associated with the given key.
+     * Get the <CODE>double</CODE> value associated with the given key, or return a default value.
      *
      * @param  key The header key.
      * @param  dft The default value to return if the key cannot be found.
@@ -884,7 +909,7 @@ public class Header implements FitsElement {
     }
 
     /**
-     * Get the <CODE>double</CODE> value associated with the given key.
+     * Get the <CODE>double</CODE> value associated with the given key, or return a default value.
      *
      * @param  key The header key.
      * @param  dft The default value to return if the key cannot be found.
@@ -967,6 +992,8 @@ public class Header implements FitsElement {
     }
 
     /**
+     * Get the <CODE>float</CODE> value associated with the given key, or return a default value.
+     * 
      * @return     the <CODE>float</CODE> value associated with the given key.
      *
      * @param  key The header key.
@@ -988,6 +1015,8 @@ public class Header implements FitsElement {
     }
 
     /**
+     * Get the <CODE>float</CODE> value associated with the given key, or return a default value.
+     * 
      * @return     the <CODE>float</CODE> value associated with the given key.
      *
      * @param  key The header key.
@@ -1013,7 +1042,7 @@ public class Header implements FitsElement {
     }
 
     /**
-     * Get the <CODE>int</CODE> value associated with the given key.
+     * Get the <CODE>int</CODE> value associated with the given key, or return a default value.
      * 
      * @return     the value associated with the key as an int.
      *
@@ -1036,7 +1065,7 @@ public class Header implements FitsElement {
     }
 
     /**
-     * Get the <CODE>int</CODE> value associated with the given key.
+     * Get the <CODE>int</CODE> value associated with the given key, or return a default value.
      * 
      * @return     the value associated with the key as an int.
      *
@@ -1078,7 +1107,7 @@ public class Header implements FitsElement {
     }
 
     /**
-     * Get the <CODE>long</CODE> value associated with the given key.
+     * Get the <CODE>long</CODE> value associated with the given key, or return a default value.
      *
      * @param  key The header key.
      * @param  dft The default value to be returned if the key cannot be found.
@@ -1101,7 +1130,7 @@ public class Header implements FitsElement {
     }
 
     /**
-     * Get the <CODE>long</CODE> value associated with the given key.
+     * Get the <CODE>long</CODE> value associated with the given key, or return a default value.
      *
      * @param  key The header key.
      * @param  dft The default value to be returned if the key cannot be found.
@@ -1260,7 +1289,7 @@ public class Header implements FitsElement {
     }
 
     /**
-     * Get the <CODE>String</CODE> value associated with the given standard key.
+     * Get the <CODE>String</CODE> value associated with the given standard key, or return a default value.
      *
      * @param  key The standard header key.
      * @param  dft The default value.
@@ -1289,7 +1318,7 @@ public class Header implements FitsElement {
     }
 
     /**
-     * Get the <CODE>String</CODE> value associated with the given key.
+     * Get the <CODE>String</CODE> value associated with the given key, or return a default value.
      *
      * @param  key The header key.
      * @param  dft The default value.
@@ -1461,7 +1490,11 @@ public class Header implements FitsElement {
         return insertCommentStyleMultiline(HISTORY.key(), value);
     }
 
-    /** @return an iterator over the header cards */
+    /**
+     * Returns a cursor-based iterator for this header's entries starting at the first entry.
+     *
+     * @return an iterator over the header cards
+     */
     public Cursor<String, HeaderCard> iterator() {
         return cards.iterator(0);
     }
@@ -1487,6 +1520,8 @@ public class Header implements FitsElement {
      * in the header), we can just use findCard().
      *
      * @return the iterator representing the current position in the header.
+     * 
+     * @see    #iterator()
      */
     private Cursor<String, HeaderCard> cursor() {
         return cards.cursor();
@@ -1574,7 +1609,6 @@ public class Header implements FitsElement {
      *
      * @see                           #ensureCardSpace(int)
      */
-    @SuppressWarnings("deprecation")
     @Override
     public void read(ArrayDataInput dis) throws TruncatedFileException, IOException {
         // AK: Start afresh, in case the header had prior contents from before.
@@ -1697,7 +1731,6 @@ public class Header implements FitsElement {
     }
 
     /** Reset the file pointer to the beginning of the header */
-    @SuppressWarnings("deprecation")
     @Override
     public boolean reset() {
         try {
@@ -1733,7 +1766,6 @@ public class Header implements FitsElement {
     }
 
     /** Rewrite the header. */
-    @SuppressWarnings("deprecation")
     @Override
     public void rewrite() throws FitsException, IOException {
         ArrayDataOutput dos = (ArrayDataOutput) input;

@@ -781,8 +781,8 @@ public abstract class BasicHDU<DataClass extends Data> implements FitsElement {
      */
     public abstract void info(PrintStream stream);
 
-    @SuppressWarnings({"unchecked", "deprecation"})
-    @Override
+    @SuppressWarnings({"unchecked"})
+    @Deprecated
     public void read(ArrayDataInput stream) throws FitsException, IOException {
         myHeader = Header.readHeader(stream);
         myData = (DataClass) FitsFactory.dataFactory(myHeader);

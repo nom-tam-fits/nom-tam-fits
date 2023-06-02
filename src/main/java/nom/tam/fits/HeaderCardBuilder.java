@@ -245,6 +245,8 @@ public class HeaderCardBuilder {
     }
 
     /**
+     * Returns the FITS header object that this builder is used with
+     * 
      * @return the filled header.
      */
     public Header header() {

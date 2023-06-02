@@ -48,6 +48,8 @@ import static nom.tam.fits.header.Standard.XTENSION;
 
 /**
  * This class implements a comparator which ensures that FITS keywords are written out in a proper order.
+ * 
+ * @deprecated (<i>for internal use</i>) Visibility should be reduced to package level in the future
  */
 public class HeaderOrder implements java.util.Comparator<String>, Serializable {
 
@@ -59,7 +61,6 @@ public class HeaderOrder implements java.util.Comparator<String>, Serializable {
     /**
      * This array defines the order of ordered keywords, except END (which we handle separately)
      */
-    @SuppressWarnings("deprecation")
     private static final String[] ORDER = {SIMPLE.key(), XTENSION.key(), BITPIX.key(), NAXIS.key(), EXTEND.key(),
             PCOUNT.key(), GCOUNT.key(), TFIELDS.key(), BLOCKED.key(), THEAP.key()};
 

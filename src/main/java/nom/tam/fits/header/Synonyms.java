@@ -1,10 +1,10 @@
 package nom.tam.fits.header;
 
+import java.util.Arrays;
+
 import nom.tam.fits.header.extra.NOAOExt;
 import nom.tam.fits.header.extra.SBFitsExt;
 import nom.tam.fits.header.extra.STScIExt;
-
-import edu.umd.cs.findbugs.annotations.SuppressFBWarnings;
 
 /*
  * #%L
@@ -44,9 +44,20 @@ import edu.umd.cs.findbugs.annotations.SuppressFBWarnings;
  * @author Richard van Nieuwenhoven
  */
 public enum Synonyms {
+
+    /** EQUINOX is now preferred over the old EPOCH */
     @SuppressWarnings("deprecation")
-    EQUINOX(Standard.EQUINOX, Standard.EPOCH), TIMESYS(NOAOExt.TIMESYS, STScIExt.TIMESYS), @SuppressWarnings("deprecation")
-    RADESYS(Standard.RADESYS, Standard.RADECSYS), DARKTIME(NOAOExt.DARKTIME, SBFitsExt.DARKTIME);
+    EQUINOX(Standard.EQUINOX, Standard.EPOCH),
+
+    /** TIMESYS appears in multiple conventions */
+    TIMESYS(NOAOExt.TIMESYS, STScIExt.TIMESYS),
+
+    /** RADESYS is no preferred over the old RADECSYS */
+    @SuppressWarnings("deprecation")
+    RADESYS(Standard.RADESYS, Standard.RADECSYS),
+
+    /** DARKTIME appears in multiple conventions */
+    DARKTIME(NOAOExt.DARKTIME, SBFitsExt.DARKTIME);
 
     private final IFitsHeader primaryKeyword;
 
@@ -57,15 +68,35 @@ public enum Synonyms {
         this.synonyms = synonyms;
     }
 
-    @SuppressFBWarnings(value = "EI_EXPOSE_REP", justification = "by convention the array may not be changed.")
+    /**
+     * Returns the list of equivalent FITS header keywords as an array
+     * 
+     * @return an array containing the list of equivalent (interchangeable) FITS header keywords
+     */
     public IFitsHeader[] getSynonyms() {
-        return synonyms;
+        return Arrays.copyOf(synonyms, synonyms.length);
     }
 
+    /**
+     * Returns the primary or preferred FITS header keyword to use to provide this information in a FITS header.
+     * 
+     * @return the primary (or preferred) FITS header keyword form to use
+     */
     public IFitsHeader primaryKeyword() {
         return primaryKeyword;
     }
 
+    /**
+     * Returns the primary or preferred FITS header keyword to prefer for the given header entry to provide this
+     * information in a FITS header.
+     * 
+     * @param  header the standard or conventional header keyword.
+     * 
+     * @return        the primary (or preferred) FITS header keyword form to use
+     * 
+     * @see           #primaryKeyword(String)
+     * @see           #primaryKeyword()
+     */
     public static IFitsHeader primaryKeyword(IFitsHeader header) {
         for (Synonyms synonym : values()) {
             for (IFitsHeader synHeader : synonym.synonyms) {
@@ -77,6 +108,16 @@ public enum Synonyms {
         return header;
     }
 
+    /**
+     * Returns the primary or preferred FITS header keyword to prefer for the given header entry to provide this
+     * information in a FITS header.
+     * 
+     * @param  header the string FITS header keyword
+     * 
+     * @return        the primary (or preferred) FITS header keyword form to use
+     * 
+     * @see           #primaryKeyword(IFitsHeader)
+     */
     public static String primaryKeyword(String header) {
         for (Synonyms synonym : values()) {
             for (IFitsHeader synHeader : synonym.synonyms) {
