@@ -7,12 +7,12 @@ package nom.tam.fits.compression.provider;
  * Copyright (C) 1996 - 2021 nom-tam-fits
  * %%
  * This is free and unencumbered software released into the public domain.
- * 
+ *
  * Anyone is free to copy, modify, publish, use, compile, sell, or
  * distribute this software, either in source code form or as a compiled
  * binary, for any purpose, commercial or non-commercial, and by any
  * means.
- * 
+ *
  * In jurisdictions that recognize copyright laws, the author or authors
  * of this software dedicate any and all copyright interest in the
  * software to the public domain. We make this dedication for the benefit
@@ -20,7 +20,7 @@ package nom.tam.fits.compression.provider;
  * successors. We intend this dedication to be an overt act of
  * relinquishment in perpetuity of all present and future rights to this
  * software under copyright law.
- * 
+ *
  * THE SOFTWARE IS PROVIDED "AS IS", WITHOUT WARRANTY OF ANY KIND,
  * EXPRESS OR IMPLIED, INCLUDING BUT NOT LIMITED TO THE WARRANTIES OF
  * MERCHANTABILITY, FITNESS FOR A PARTICULAR PURPOSE AND NONINFRINGEMENT.
@@ -35,29 +35,28 @@ import nom.tam.fits.header.Compression;
 
 /**
  * <p>
- * Computes the name of the tile compressor class name given the algorithm used
- * to quantize and compress the tile and the type of data the tile contains.
+ * (<i>for internal use</i>) Finds the name of the appropriate tile compressor class name given the algorithm used to
+ * quantize and compress the tile and the type of data the tile contains.
  * </p>
  * The name of the class is built of four parts:
  * <ul>
- * <li>the capitalized simple name of the base type of the elements in the tile
- * (like Int, Long etc.);</li>
- * <li>if a known quantize algorithm is used, the word "Quant", the word
- * "Unknown" if the quantize algorithm is not recognized, nothing (i.e. the
- * empty string) if it is null;</li>
- * <li>the short name of the compression algorithm to use (Rice, PLIO, Gzip
- * etc.) or the word "Unknown" if the algorithm is not supported;</li>
+ * <li>the capitalized simple name of the base type of the elements in the tile (like Int, Long etc.);</li>
+ * <li>if a known quantize algorithm is used, the word "Quant", the word "Unknown" if the quantize algorithm is not
+ * recognized, nothing (i.e. the empty string) if it is null;</li>
+ * <li>the short name of the compression algorithm to use (Rice, PLIO, Gzip etc.) or the word "Unknown" if the algorithm
+ * is not supported;</li>
  * <li>the suffix "Compressor"</li>
  * </ul>
  * <p>
  * Following exception to above rules exist:
  * </p>
  * <ul>
- * <li>If the primitive type is double or float, the quantize algorithm is
- * ignored (as if it were specified as null)</li>
+ * <li>If the primitive type is double or float, the quantize algorithm is ignored (as if it were specified as
+ * null)</li>
  * </ul>
  * See the associated unit tests for concrete examples.
  */
+@SuppressWarnings("javadoc")
 public class CompressorControlNameComputer {
 
     private static final String COMPRESSOR_CLASS_SUFFIX = "Compressor";
@@ -70,15 +69,20 @@ public class CompressorControlNameComputer {
         if (Compression.ZCMPTYPE_RICE_1.equalsIgnoreCase(compressionAlgorithm) || //
                 Compression.ZCMPTYPE_RICE_ONE.equalsIgnoreCase(compressionAlgorithm)) {
             return "Rice";
-        } else if (Compression.ZCMPTYPE_PLIO_1.equalsIgnoreCase(compressionAlgorithm)) {
+        }
+        if (Compression.ZCMPTYPE_PLIO_1.equalsIgnoreCase(compressionAlgorithm)) {
             return "PLIO";
-        } else if (Compression.ZCMPTYPE_HCOMPRESS_1.equalsIgnoreCase(compressionAlgorithm)) {
+        }
+        if (Compression.ZCMPTYPE_HCOMPRESS_1.equalsIgnoreCase(compressionAlgorithm)) {
             return "H";
-        } else if (Compression.ZCMPTYPE_GZIP_2.equalsIgnoreCase(compressionAlgorithm)) {
+        }
+        if (Compression.ZCMPTYPE_GZIP_2.equalsIgnoreCase(compressionAlgorithm)) {
             return "GZip2";
-        } else if (Compression.ZCMPTYPE_GZIP_1.equalsIgnoreCase(compressionAlgorithm)) {
+        }
+        if (Compression.ZCMPTYPE_GZIP_1.equalsIgnoreCase(compressionAlgorithm)) {
             return "GZip";
-        } else if (Compression.ZCMPTYPE_NOCOMPRESS.equalsIgnoreCase(compressionAlgorithm)) {
+        }
+        if (Compression.ZCMPTYPE_NOCOMPRESS.equalsIgnoreCase(compressionAlgorithm)) {
             return "NoCompress";
         }
         return "Unknown";

@@ -1,5 +1,15 @@
 package nom.tam.fits.compression.provider.param.base;
 
+import nom.tam.fits.BinaryTable;
+import nom.tam.fits.BinaryTableHDU;
+import nom.tam.fits.FitsException;
+import nom.tam.fits.HeaderCard;
+import nom.tam.fits.HeaderCardException;
+import nom.tam.fits.compression.provider.param.api.ICompressColumnParameter;
+import nom.tam.fits.compression.provider.param.api.ICompressHeaderParameter;
+import nom.tam.fits.compression.provider.param.api.ICompressParameters;
+import nom.tam.fits.compression.provider.param.api.IHeaderAccess;
+
 /*
  * #%L
  * nom.tam FITS library
@@ -7,12 +17,12 @@ package nom.tam.fits.compression.provider.param.base;
  * Copyright (C) 1996 - 2021 nom-tam-fits
  * %%
  * This is free and unencumbered software released into the public domain.
- * 
+ *
  * Anyone is free to copy, modify, publish, use, compile, sell, or
  * distribute this software, either in source code form or as a compiled
  * binary, for any purpose, commercial or non-commercial, and by any
  * means.
- * 
+ *
  * In jurisdictions that recognize copyright laws, the author or authors
  * of this software dedicate any and all copyright interest in the
  * software to the public domain. We make this dedication for the benefit
@@ -20,7 +30,7 @@ package nom.tam.fits.compression.provider.param.base;
  * successors. We intend this dedication to be an overt act of
  * relinquishment in perpetuity of all present and future rights to this
  * software under copyright law.
- * 
+ *
  * THE SOFTWARE IS PROVIDED "AS IS", WITHOUT WARRANTY OF ANY KIND,
  * EXPRESS OR IMPLIED, INCLUDING BUT NOT LIMITED TO THE WARRANTIES OF
  * MERCHANTABILITY, FITNESS FOR A PARTICULAR PURPOSE AND NONINFRINGEMENT.
@@ -33,16 +43,12 @@ package nom.tam.fits.compression.provider.param.base;
 
 import static nom.tam.fits.header.Standard.TTYPEn;
 
-import nom.tam.fits.BinaryTable;
-import nom.tam.fits.BinaryTableHDU;
-import nom.tam.fits.FitsException;
-import nom.tam.fits.HeaderCard;
-import nom.tam.fits.HeaderCardException;
-import nom.tam.fits.compression.provider.param.api.ICompressColumnParameter;
-import nom.tam.fits.compression.provider.param.api.ICompressHeaderParameter;
-import nom.tam.fits.compression.provider.param.api.ICompressParameters;
-import nom.tam.fits.compression.provider.param.api.IHeaderAccess;
-
+/**
+ * (<i>for internal use</i>) A set of {@link CompressParameter}s that are bundled together, typically because they are
+ * parameters that all link to the same {@link nom.tam.fits.compression.algorithm.api.ICompressOption}
+ * 
+ * @see CompressParameter
+ */
 public abstract class CompressParameters implements ICompressParameters, Cloneable {
 
     @Override
@@ -123,9 +129,24 @@ public abstract class CompressParameters implements ICompressParameters, Cloneab
         return null;
     }
 
+    /**
+     * Retuens the subset of parameters from within, which are recorded in compressed table columns along with the
+     * compressed data.
+     * 
+     * @return the subset of parameters that are recorded in compressed table columns.
+     * 
+     * @see    #headerParameters()
+     */
     protected ICompressColumnParameter[] columnParameters() {
         return new ICompressColumnParameter[0];
     }
 
+    /**
+     * Returns the subset of parameters from within, which are recorded in the header of the compressed HDU.
+     * 
+     * @return the subset of parameters that are recorded in the compressed HDU's header.
+     * 
+     * @see    #columnParameters()
+     */
     protected abstract ICompressHeaderParameter[] headerParameters();
 }

@@ -5,12 +5,12 @@
  * Copyright (C) 1996 - 2021 nom-tam-fits
  * %%
  * This is free and unencumbered software released into the public domain.
- * 
+ *
  * Anyone is free to copy, modify, publish, use, compile, sell, or
  * distribute this software, either in source code form or as a compiled
  * binary, for any purpose, commercial or non-commercial, and by any
  * means.
- * 
+ *
  * In jurisdictions that recognize copyright laws, the author or authors
  * of this software dedicate any and all copyright interest in the
  * software to the public domain. We make this dedication for the benefit
@@ -18,7 +18,7 @@
  * successors. We intend this dedication to be an overt act of
  * relinquishment in perpetuity of all present and future rights to this
  * software under copyright law.
- * 
+ *
  * THE SOFTWARE IS PROVIDED "AS IS", WITHOUT WARRANTY OF ANY KIND,
  * EXPRESS OR IMPLIED, INCLUDING BUT NOT LIMITED TO THE WARRANTIES OF
  * MERCHANTABILITY, FITNESS FOR A PARTICULAR PURPOSE AND NONINFRINGEMENT.
@@ -31,17 +31,17 @@
 
 package nom.tam.util.array;
 
-
 import java.util.Collections;
 import java.util.HashMap;
 import java.util.Map;
 
 /**
+ * @deprecated               use {@link MultiArrayCopier} instead. Make copies of multi-dimensional arrays.
  * 
- *
- * @param <Source>      The generic type of array from which we want to copy elements
- * @param <Destination> The generic type of array to which we want to copy elements.
+ * @param      <Source>      The generic type of array from which we want to copy elements
+ * @param      <Destination> The generic type of array to which we want to copy elements.
  */
+@Deprecated
 public class MultiArrayCopyFactory<Source, Destination> {
 
     private static class ByteToChar extends MultiArrayCopyFactory<byte[], char[]> {
@@ -552,6 +552,10 @@ public class MultiArrayCopyFactory<Source, Destination> {
         FACTORIES = Collections.unmodifiableMap(factories);
     }
 
+    /**
+     * @deprecated for internal use only. This ought to be private.
+     */
+    @SuppressWarnings("javadoc")
     public static MultiArrayCopyFactory<?, ?> select(Class<?> primitiveType, Class<?> primitiveType2) {
         Map<Class<?>, MultiArrayCopyFactory<?, ?>> from = MultiArrayCopyFactory.FACTORIES.get(primitiveType);
         if (from != null) {
@@ -563,6 +567,10 @@ public class MultiArrayCopyFactory<Source, Destination> {
         return MultiArrayCopyFactory.GENERIC;
     }
 
+    /**
+     * See {@link System#arraycopy(Object, int, Object, int, int)}.
+     */
+    @SuppressWarnings("javadoc")
     public void arraycopy(Source src, int srcPos, Destination dest, int destPos, int length) {
         System.arraycopy(src, srcPos, dest, destPos, length);
     }

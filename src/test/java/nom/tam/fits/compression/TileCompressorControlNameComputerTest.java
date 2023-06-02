@@ -1,5 +1,14 @@
 package nom.tam.fits.compression;
 
+import static org.junit.Assert.assertEquals;
+import static org.junit.Assert.assertTrue;
+
+import org.junit.Before;
+import org.junit.Test;
+
+import nom.tam.fits.compression.provider.CompressorControlNameComputer;
+import nom.tam.fits.header.Compression;
+
 /*
  * #%L
  * nom.tam FITS library
@@ -7,12 +16,12 @@ package nom.tam.fits.compression;
  * Copyright (C) 1996 - 2021 nom-tam-fits
  * %%
  * This is free and unencumbered software released into the public domain.
- * 
+ *
  * Anyone is free to copy, modify, publish, use, compile, sell, or
  * distribute this software, either in source code form or as a compiled
  * binary, for any purpose, commercial or non-commercial, and by any
  * means.
- * 
+ *
  * In jurisdictions that recognize copyright laws, the author or authors
  * of this software dedicate any and all copyright interest in the
  * software to the public domain. We make this dedication for the benefit
@@ -20,7 +29,7 @@ package nom.tam.fits.compression;
  * successors. We intend this dedication to be an overt act of
  * relinquishment in perpetuity of all present and future rights to this
  * software under copyright law.
- * 
+ *
  * THE SOFTWARE IS PROVIDED "AS IS", WITHOUT WARRANTY OF ANY KIND,
  * EXPRESS OR IMPLIED, INCLUDING BUT NOT LIMITED TO THE WARRANTIES OF
  * MERCHANTABILITY, FITNESS FOR A PARTICULAR PURPOSE AND NONINFRINGEMENT.
@@ -35,14 +44,6 @@ import static nom.tam.fits.header.Compression.ZCMPTYPE_HCOMPRESS_1;
 import static nom.tam.fits.header.Compression.ZCMPTYPE_PLIO_1;
 import static nom.tam.fits.header.Compression.ZCMPTYPE_RICE_1;
 import static nom.tam.fits.header.Compression.ZQUANTIZ_NO_DITHER;
-import static org.junit.Assert.assertEquals;
-import static org.junit.Assert.assertTrue;
-
-import org.junit.Before;
-import org.junit.Test;
-
-import nom.tam.fits.compression.provider.CompressorControlNameComputer;
-import nom.tam.fits.header.Compression;
 
 /**
  * Note that the purpose of these tests is to demonstrate how the class names are computed, not to achieve high code
@@ -94,29 +95,25 @@ public class TileCompressorControlNameComputerTest {
 
     @Test
     public void testGZip1() {
-        String name = nameComputer.createCompressorClassName(ZQUANTIZ_NO_DITHER, Compression.ZCMPTYPE_GZIP_1,
-                int.class);
+        String name = nameComputer.createCompressorClassName(ZQUANTIZ_NO_DITHER, Compression.ZCMPTYPE_GZIP_1, int.class);
         assertTrue(name.contains("GZip"));
     }
 
     @Test
     public void testRice() {
-        String name = nameComputer.createCompressorClassName(ZQUANTIZ_NO_DITHER, Compression.ZCMPTYPE_RICE_1,
-                int.class);
+        String name = nameComputer.createCompressorClassName(ZQUANTIZ_NO_DITHER, Compression.ZCMPTYPE_RICE_1, int.class);
         assertTrue(name.contains("Rice"));
     }
 
     @Test
     public void testRiceAlt() {
-        String name = nameComputer.createCompressorClassName(ZQUANTIZ_NO_DITHER, Compression.ZCMPTYPE_RICE_ONE,
-                int.class);
+        String name = nameComputer.createCompressorClassName(ZQUANTIZ_NO_DITHER, Compression.ZCMPTYPE_RICE_ONE, int.class);
         assertTrue(name.contains("Rice"));
     }
 
     @Test
     public void testPLIO() {
-        String name = nameComputer.createCompressorClassName(ZQUANTIZ_NO_DITHER, Compression.ZCMPTYPE_PLIO_1,
-                int.class);
+        String name = nameComputer.createCompressorClassName(ZQUANTIZ_NO_DITHER, Compression.ZCMPTYPE_PLIO_1, int.class);
         assertTrue(name.contains("PLIO"));
     }
 
@@ -129,8 +126,7 @@ public class TileCompressorControlNameComputerTest {
 
     @Test
     public void testGZip2() {
-        String name = nameComputer.createCompressorClassName(ZQUANTIZ_NO_DITHER, Compression.ZCMPTYPE_GZIP_2,
-                int.class);
+        String name = nameComputer.createCompressorClassName(ZQUANTIZ_NO_DITHER, Compression.ZCMPTYPE_GZIP_2, int.class);
         assertTrue(name.contains("GZip2"));
     }
 

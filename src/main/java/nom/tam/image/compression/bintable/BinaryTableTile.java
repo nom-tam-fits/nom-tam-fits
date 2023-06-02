@@ -7,12 +7,12 @@ package nom.tam.image.compression.bintable;
  * Copyright (C) 1996 - 2021 nom-tam-fits
  * %%
  * This is free and unencumbered software released into the public domain.
- * 
+ *
  * Anyone is free to copy, modify, publish, use, compile, sell, or
  * distribute this software, either in source code form or as a compiled
  * binary, for any purpose, commercial or non-commercial, and by any
  * means.
- * 
+ *
  * In jurisdictions that recognize copyright laws, the author or authors
  * of this software dedicate any and all copyright interest in the
  * software to the public domain. We make this dedication for the benefit
@@ -20,7 +20,7 @@ package nom.tam.image.compression.bintable;
  * successors. We intend this dedication to be an overt act of
  * relinquishment in perpetuity of all present and future rights to this
  * software under copyright law.
- * 
+ *
  * THE SOFTWARE IS PROVIDED "AS IS", WITHOUT WARRANTY OF ANY KIND,
  * EXPRESS OR IMPLIED, INCLUDING BUT NOT LIMITED TO THE WARRANTIES OF
  * MERCHANTABILITY, FITNESS FOR A PARTICULAR PURPOSE AND NONINFRINGEMENT.
@@ -43,6 +43,10 @@ import nom.tam.fits.header.Compression;
 import nom.tam.util.ColumnTable;
 import nom.tam.util.type.ElementType;
 
+/**
+ * (<i>for internal use</i>) A table 'tile' representing a set of consecutive table rows that are compressed together as
+ * a block.
+ */
 public abstract class BinaryTableTile implements Runnable {
 
     protected final ColumnTable<?> data;
@@ -71,41 +75,41 @@ public abstract class BinaryTableTile implements Runnable {
 
     public BinaryTableTile(ColumnTable<?> data, BinaryTableTileDescription description) {
         this.data = data;
-        this.rowStart = description.getRowStart();
-        this.rowEnd = description.getRowEnd();
-        this.column = description.getColumn();
-        this.tileIndex = description.getTileIndex();
-        this.compressionAlgorithm = description.getCompressionAlgorithm();
-        this.type = ElementType.forDataID(data.getTypes()[this.column]);
-        this.length = (this.rowEnd - this.rowStart) * data.getSizes()[this.column];
+        rowStart = description.getRowStart();
+        rowEnd = description.getRowEnd();
+        column = description.getColumn();
+        tileIndex = description.getTileIndex();
+        compressionAlgorithm = description.getCompressionAlgorithm();
+        type = ElementType.forDataID(data.getTypes()[column]);
+        length = (rowEnd - rowStart) * data.getSizes()[column];
     }
 
     public void execute(ExecutorService threadPool) {
-        this.future = threadPool.submit(this);
+        future = threadPool.submit(this);
     }
 
     public void fillHeader(Header header) throws HeaderCardException {
-        header.card(Compression.ZCTYPn.n(this.column)).value(this.compressionAlgorithm);
+        header.card(Compression.ZCTYPn.n(column)).value(compressionAlgorithm);
     }
 
     public int getTileIndex() {
-        return this.tileIndex;
+        return tileIndex;
     }
 
     public void waitForResult() {
         try {
-            this.future.get();
+            future.get();
         } catch (Exception e) {
             throw new IllegalStateException("could not process tile", e);
         }
     }
 
     protected ICompressorControl getCompressorControl() {
-        return CompressorProvider.findCompressorControl(null, this.compressionAlgorithm, type.primitiveClass());
+        return CompressorProvider.findCompressorControl(null, compressionAlgorithm, type.primitiveClass());
     }
 
     protected int getUncompressedSizeInBytes() {
-        return this.length * this.type.size();
+        return length * type.size();
     }
 
 }

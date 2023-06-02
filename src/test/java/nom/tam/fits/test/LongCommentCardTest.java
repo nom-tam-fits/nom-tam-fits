@@ -7,12 +7,12 @@ package nom.tam.fits.test;
  * Copyright (C) 1996 - 2021 nom-tam-fits
  * %%
  * This is free and unencumbered software released into the public domain.
- * 
+ *
  * Anyone is free to copy, modify, publish, use, compile, sell, or
  * distribute this software, either in source code form or as a compiled
  * binary, for any purpose, commercial or non-commercial, and by any
  * means.
- * 
+ *
  * In jurisdictions that recognize copyright laws, the author or authors
  * of this software dedicate any and all copyright interest in the
  * software to the public domain. We make this dedication for the benefit
@@ -20,7 +20,7 @@ package nom.tam.fits.test;
  * successors. We intend this dedication to be an overt act of
  * relinquishment in perpetuity of all present and future rights to this
  * software under copyright law.
- * 
+ *
  * THE SOFTWARE IS PROVIDED "AS IS", WITHOUT WARRANTY OF ANY KIND,
  * EXPRESS OR IMPLIED, INCLUDING BUT NOT LIMITED TO THE WARRANTIES OF
  * MERCHANTABILITY, FITNESS FOR A PARTICULAR PURPOSE AND NONINFRINGEMENT.
@@ -34,8 +34,6 @@ package nom.tam.fits.test;
 import java.io.File;
 import java.io.FileOutputStream;
 
-import javax.xml.stream.events.EndDocument;
-
 import org.junit.Assert;
 import org.junit.Test;
 
@@ -46,18 +44,18 @@ import nom.tam.fits.Header;
 import nom.tam.fits.HeaderCard;
 import nom.tam.fits.LongValueException;
 import nom.tam.fits.header.Standard;
-import nom.tam.util.FitsOutputStream;
 import nom.tam.util.Cursor;
+import nom.tam.util.FitsOutputStream;
 
 public class LongCommentCardTest {
 
     private static int length = 200;
     private static boolean enableLongKeywords = true;
-    
+
     @Test
     public void test() throws Exception {
         length = 200;
-        
+
         boolean longEnabled = FitsFactory.isLongStringsEnabled();
         try {
             // Enable/disable tthe OGIP 1.0 convention for long entries as
@@ -86,9 +84,9 @@ public class LongCommentCardTest {
                 thrown = true;
             }
             Assert.assertTrue(thrown);
-              
+
             int n = 2;
-            
+
             n += header.insertHistory(counts(length));
             n += header.insertComment(counts(length));
 
@@ -113,7 +111,8 @@ public class LongCommentCardTest {
                 HeaderCard headerCard = iterator.next();
                 if (headerCard.isCommentStyleCard() && !Standard.END.key().equals(headerCard.getKey())) {
                     commentLike++;
-                    Assert.assertTrue(headerCard.getComment(), headerCard.getComment().length() <= HeaderCard.MAX_COMMENT_CARD_COMMENT_LENGTH);
+                    Assert.assertTrue(headerCard.getComment(),
+                            headerCard.getComment().length() <= HeaderCard.MAX_COMMENT_CARD_COMMENT_LENGTH);
                 }
             }
             Assert.assertEquals(n, commentLike);
@@ -126,8 +125,9 @@ public class LongCommentCardTest {
 
     public String counts(int n) {
         StringBuffer buf = new StringBuffer();
-        for (int i = 1; i <= n; i++)
+        for (int i = 1; i <= n; i++) {
             buf.append(i % 10);
+        }
         return new String(buf);
     }
 

@@ -6,10 +6,7 @@ pom.xml.releaseBackup
 pom.xml.versionsBackup
 pom.xml.next
 release.properties
-/.classpath
-/.project
 /LICENSE.txt
-/.settings/
 /jtest.fil
 /target/
 /.metadata/

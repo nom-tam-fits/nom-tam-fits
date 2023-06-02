@@ -7,12 +7,12 @@ package nom.tam.util.type;
  * Copyright (C) 1996 - 2021 nom-tam-fits
  * %%
  * This is free and unencumbered software released into the public domain.
- * 
+ *
  * Anyone is free to copy, modify, publish, use, compile, sell, or
  * distribute this software, either in source code form or as a compiled
  * binary, for any purpose, commercial or non-commercial, and by any
  * means.
- * 
+ *
  * In jurisdictions that recognize copyright laws, the author or authors
  * of this software dedicate any and all copyright interest in the
  * software to the public domain. We make this dedication for the benefit
@@ -20,7 +20,7 @@ package nom.tam.util.type;
  * successors. We intend this dedication to be an overt act of
  * relinquishment in perpetuity of all present and future rights to this
  * software under copyright law.
- * 
+ *
  * THE SOFTWARE IS PROVIDED "AS IS", WITHOUT WARRANTY OF ANY KIND,
  * EXPRESS OR IMPLIED, INCLUDING BUT NOT LIMITED TO THE WARRANTIES OF
  * MERCHANTABILITY, FITNESS FOR A PARTICULAR PURPOSE AND NONINFRINGEMENT.
@@ -40,42 +40,51 @@ import java.nio.LongBuffer;
 import java.nio.ShortBuffer;
 
 /**
- * @deprecated  Use identical static fields of {@link ElementType} instead.
- * 
+ * @deprecated Use identical static fields of {@link ElementType} instead.
  */
 @Deprecated
 public final class PrimitiveTypes {
 
     /** @deprecated Use {@link ElementType#BOOLEAN} instead */
+    @Deprecated
     public static final ElementType<Buffer> BOOLEAN = ElementType.BOOLEAN;
 
     /** @deprecated Use {@link ElementType#BYTE} instead */
+    @Deprecated
     public static final ElementType<ByteBuffer> BYTE = ElementType.BYTE;
 
     /** @deprecated Use {@link ElementType#CHAR} instead */
+    @Deprecated
     public static final ElementType<ByteBuffer> CHAR = ElementType.CHAR;
 
     /** @deprecated Use {@link ElementType#DOUBLE} instead */
+    @Deprecated
     public static final ElementType<DoubleBuffer> DOUBLE = ElementType.DOUBLE;
 
     /** @deprecated Use {@link ElementType#FLOAT} instead */
+    @Deprecated
     public static final ElementType<FloatBuffer> FLOAT = ElementType.FLOAT;
 
     /** @deprecated Use {@link ElementType#INT} instead */
+    @Deprecated
     public static final ElementType<IntBuffer> INT = ElementType.INT;
 
     /** @deprecated Use {@link ElementType#LONG} instead */
+    @Deprecated
     public static final ElementType<LongBuffer> LONG = ElementType.LONG;
 
     /** @deprecated Use {@link ElementType#SHORT} instead */
+    @Deprecated
     public static final ElementType<ShortBuffer> SHORT = ElementType.SHORT;
 
     /** @deprecated Use {@link ElementType#STRING} instead */
+    @Deprecated
     public static final ElementType<Buffer> STRING = ElementType.STRING;
 
     /** @deprecated Use {@link ElementType#UNKNOWN} instead */
+    @Deprecated
     public static final ElementType<Buffer> UNKNOWN = ElementType.UNKNOWN;
-    
+
     private PrimitiveTypes() {
         // TODO Auto-generated constructor stub
     }

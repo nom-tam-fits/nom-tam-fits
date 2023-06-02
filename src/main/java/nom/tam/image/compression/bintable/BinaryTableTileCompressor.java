@@ -7,12 +7,12 @@ package nom.tam.image.compression.bintable;
  * Copyright (C) 1996 - 2021 nom-tam-fits
  * %%
  * This is free and unencumbered software released into the public domain.
- * 
+ *
  * Anyone is free to copy, modify, publish, use, compile, sell, or
  * distribute this software, either in source code form or as a compiled
  * binary, for any purpose, commercial or non-commercial, and by any
  * means.
- * 
+ *
  * In jurisdictions that recognize copyright laws, the author or authors
  * of this software dedicate any and all copyright interest in the
  * software to the public domain. We make this dedication for the benefit
@@ -20,7 +20,7 @@ package nom.tam.image.compression.bintable;
  * successors. We intend this dedication to be an overt act of
  * relinquishment in perpetuity of all present and future rights to this
  * software under copyright law.
- * 
+ *
  * THE SOFTWARE IS PROVIDED "AS IS", WITHOUT WARRANTY OF ANY KIND,
  * EXPRESS OR IMPLIED, INCLUDING BUT NOT LIMITED TO THE WARRANTIES OF
  * MERCHANTABILITY, FITNESS FOR A PARTICULAR PURPOSE AND NONINFRINGEMENT.
@@ -37,10 +37,13 @@ import java.nio.ByteBuffer;
 import nom.tam.fits.FitsException;
 import nom.tam.image.compression.hdu.CompressedTableData;
 import nom.tam.util.ArrayDataOutput;
-import nom.tam.util.FitsOutputStream;
 import nom.tam.util.ByteBufferOutputStream;
 import nom.tam.util.ColumnTable;
+import nom.tam.util.FitsOutputStream;
 
+/**
+ * (<i>for internal use</i>) Handles the compression of binary table 'tiles'.
+ */
 public class BinaryTableTileCompressor extends BinaryTableTile {
 
     private static final int FACTOR_15 = 15;
@@ -53,7 +56,12 @@ public class BinaryTableTileCompressor extends BinaryTableTile {
 
     private final CompressedTableData binData;
 
-    public BinaryTableTileCompressor(CompressedTableData binData, ColumnTable<?> columnTable, BinaryTableTileDescription description) {
+    /**
+     * @deprecated for internal use
+     */
+    @SuppressWarnings("javadoc")
+    public BinaryTableTileCompressor(CompressedTableData binData, ColumnTable<?> columnTable,
+            BinaryTableTileDescription description) {
         super(columnTable, description);
         this.binData = binData;
     }
@@ -62,14 +70,15 @@ public class BinaryTableTileCompressor extends BinaryTableTile {
     public void run() {
         ByteBuffer buffer = ByteBuffer.wrap(new byte[getUncompressedSizeInBytes()]);
         try (ArrayDataOutput os = new FitsOutputStream(new ByteBufferOutputStream(buffer))) {
-            this.data.write(os, this.rowStart, this.rowEnd, this.column);
+            data.write(os, rowStart, rowEnd, column);
         } catch (IOException e) {
             throw new IllegalStateException("could not write compressed data", e);
         }
         buffer.rewind();
         int spaceForCompression = getUncompressedSizeInBytes();
         // give the compression 10% more space and a minimum of 1024 bytes
-        spaceForCompression = Math.max(spaceForCompression * FACTOR_11 / FACTOR_10, spaceForCompression + MINIMUM_EXTRA_SPACE);
+        spaceForCompression = Math.max(spaceForCompression * FACTOR_11 / FACTOR_10,
+                spaceForCompression + MINIMUM_EXTRA_SPACE);
         ByteBuffer compressedBuffer = ByteBuffer.wrap(new byte[spaceForCompression]);
         if (!getCompressorControl().compress(type.asTypedBuffer(buffer), compressedBuffer, null)) {
             // very bad case lets try again with 50% more space
@@ -83,8 +92,8 @@ public class BinaryTableTileCompressor extends BinaryTableTile {
         compressedBuffer.rewind();
         compressedBuffer.get(compressedBytes);
         try {
-            synchronized (this.binData) {
-                this.binData.setElement(getTileIndex() - 1, this.column, compressedBytes);
+            synchronized (binData) {
+                binData.setElement(getTileIndex() - 1, column, compressedBytes);
             }
         } catch (FitsException e) {
             throw new IllegalStateException("could not include compressed data into the table", e);

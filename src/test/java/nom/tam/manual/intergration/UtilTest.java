@@ -7,12 +7,12 @@ package nom.tam.manual.intergration;
  * Copyright (C) 1996 - 2021 nom-tam-fits
  * %%
  * This is free and unencumbered software released into the public domain.
- * 
+ *
  * Anyone is free to copy, modify, publish, use, compile, sell, or
  * distribute this software, either in source code form or as a compiled
  * binary, for any purpose, commercial or non-commercial, and by any
  * means.
- * 
+ *
  * In jurisdictions that recognize copyright laws, the author or authors
  * of this software dedicate any and all copyright interest in the
  * software to the public domain. We make this dedication for the benefit
@@ -20,7 +20,7 @@ package nom.tam.manual.intergration;
  * successors. We intend this dedication to be an overt act of
  * relinquishment in perpetuity of all present and future rights to this
  * software under copyright law.
- * 
+ *
  * THE SOFTWARE IS PROVIDED "AS IS", WITHOUT WARRANTY OF ANY KIND,
  * EXPRESS OR IMPLIED, INCLUDING BUT NOT LIMITED TO THE WARRANTIES OF
  * MERCHANTABILITY, FITNESS FOR A PARTICULAR PURPOSE AND NONINFRINGEMENT.
@@ -33,13 +33,13 @@ package nom.tam.manual.intergration;
 
 import java.util.Random;
 
-import nom.tam.util.ArrayFuncs;
-import nom.tam.util.ByteFormatter;
-import nom.tam.util.array.MultiArrayCopier;
-
 import org.junit.Assert;
 import org.junit.Ignore;
 import org.junit.Test;
+
+import nom.tam.util.ArrayFuncs;
+import nom.tam.util.ByteFormatter;
+import nom.tam.util.array.MultiArrayCopier;
 
 public class UtilTest {
 
@@ -53,11 +53,11 @@ public class UtilTest {
             Random random = new Random(System.currentTimeMillis());
             for (int i = 0; i < 1000000; i++) {
                 long longValue = (long) random.nextInt() << 32 | random.nextInt();
-                this.bf.format(longValue, array);
+                bf.format(longValue, array);
                 double value = Double.longBitsToDouble(longValue);
-                this.bf.format(value, array);
+                bf.format(value, array);
                 float value2 = Float.intBitsToFloat(random.nextInt());
-                this.bf.format(value2, array);
+                bf.format(value2, array);
             }
         }
     }

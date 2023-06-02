@@ -7,12 +7,12 @@ package nom.tam.image.tile.operation.buffer;
  * Copyright (C) 1996 - 2021 nom-tam-fits
  * %%
  * This is free and unencumbered software released into the public domain.
- * 
+ *
  * Anyone is free to copy, modify, publish, use, compile, sell, or
  * distribute this software, either in source code form or as a compiled
  * binary, for any purpose, commercial or non-commercial, and by any
  * means.
- * 
+ *
  * In jurisdictions that recognize copyright laws, the author or authors
  * of this software dedicate any and all copyright interest in the
  * software to the public domain. We make this dedication for the benefit
@@ -20,7 +20,7 @@ package nom.tam.image.tile.operation.buffer;
  * successors. We intend this dedication to be an overt act of
  * relinquishment in perpetuity of all present and future rights to this
  * software under copyright law.
- * 
+ *
  * THE SOFTWARE IS PROVIDED "AS IS", WITHOUT WARRANTY OF ANY KIND,
  * EXPRESS OR IMPLIED, INCLUDING BUT NOT LIMITED TO THE WARRANTIES OF
  * MERCHANTABILITY, FITNESS FOR A PARTICULAR PURPOSE AND NONINFRINGEMENT.
@@ -36,9 +36,13 @@ import java.nio.Buffer;
 import nom.tam.util.type.ElementType;
 
 /**
- * This view on the image data represents a tileOperation that is row based, so
- * a tileOperation that fills the whole width of the image.
+ * (<i>for internal use</i>) A linear buffer that contains data for a single 2D image tile, in row-major format. You can
+ * use {@link TileBufferFactory} to create appropriate implementations depending on tile and image sizes.
+ * 
+ * @see TileBufferFactory
+ * @see nom.tam.image.tile.operation.TileArea
  */
+@SuppressWarnings("javadoc")
 public abstract class TileBuffer {
 
     private Buffer imageBuffer;
@@ -47,56 +51,52 @@ public abstract class TileBuffer {
 
     private final int offset;
 
-    /**
-     * the tileOperation this view is connected to
-     */
     private final ElementType<Buffer> baseType;
 
     private final int width;
 
     protected TileBuffer(ElementType<Buffer> baseType, int dataOffset, int width, int height) {
         this.baseType = baseType;
-        this.offset = dataOffset;
+        offset = dataOffset;
         this.width = width;
         this.height = height;
     }
 
     /**
-     * nothing to do in the normal case, overwrite this method if post
-     * processing is necessary.
+     * nothing to do in the normal case, overwrite this method if post processing is necessary.
      */
     public void finish() {
     }
 
     public ElementType<Buffer> getBaseType() {
-        return this.baseType;
+        return baseType;
     }
 
     public abstract Buffer getBuffer();
 
     public int getHeight() {
-        return this.height;
+        return height;
     }
 
     /**
-     * @return the number of pixels in the tileOperation this view represents.
+     * @return the number of pixels in the tile this view represents.
      */
     public int getPixelSize() {
-        return this.width * this.height;
+        return width * height;
     }
 
     public int getWidth() {
-        return this.width;
+        return width;
     }
 
     public TileBuffer setData(Buffer value) {
-        value.position(this.offset);
-        this.imageBuffer = this.baseType.sliceBuffer(value);
+        value.position(offset);
+        imageBuffer = baseType.sliceBuffer(value);
         return this;
     }
 
     protected Buffer getImageBuffer() {
-        return this.imageBuffer;
+        return imageBuffer;
     }
 
 }

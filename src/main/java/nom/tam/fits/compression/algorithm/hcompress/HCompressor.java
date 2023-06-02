@@ -7,12 +7,12 @@ package nom.tam.fits.compression.algorithm.hcompress;
  * Copyright (C) 1996 - 2021 nom-tam-fits
  * %%
  * This is free and unencumbered software released into the public domain.
- * 
+ *
  * Anyone is free to copy, modify, publish, use, compile, sell, or
  * distribute this software, either in source code form or as a compiled
  * binary, for any purpose, commercial or non-commercial, and by any
  * means.
- * 
+ *
  * In jurisdictions that recognize copyright laws, the author or authors
  * of this software dedicate any and all copyright interest in the
  * software to the public domain. We make this dedication for the benefit
@@ -20,7 +20,7 @@ package nom.tam.fits.compression.algorithm.hcompress;
  * successors. We intend this dedication to be an overt act of
  * relinquishment in perpetuity of all present and future rights to this
  * software under copyright law.
- * 
+ *
  * THE SOFTWARE IS PROVIDED "AS IS", WITHOUT WARRANTY OF ANY KIND,
  * EXPRESS OR IMPLIED, INCLUDING BUT NOT LIMITED TO THE WARRANTIES OF
  * MERCHANTABILITY, FITNESS FOR A PARTICULAR PURPOSE AND NONINFRINGEMENT.
@@ -41,6 +41,12 @@ import nom.tam.fits.compression.algorithm.quant.QuantizeProcessor.DoubleQuantCom
 import nom.tam.fits.compression.algorithm.quant.QuantizeProcessor.FloatQuantCompressor;
 import nom.tam.util.ArrayFuncs;
 
+/**
+ * (<i>for internal use</i>) Data compressor using the HCompress algorithm.
+ * 
+ * @param <T> The generic type of buffer that accessed the type of elements needed for the compression
+ */
+@SuppressWarnings("javadoc")
 public abstract class HCompressor<T extends Buffer> implements ICompressor<T> {
 
     public static class ByteHCompressor extends HCompressor<ByteBuffer> {
@@ -147,24 +153,23 @@ public abstract class HCompressor<T extends Buffer> implements ICompressor<T> {
 
     public HCompressor(HCompressorOption options) {
         this.options = options;
-        this.compress = new HCompress();
-        this.decompress = new HDecompress();
+        compress = new HCompress();
+        decompress = new HDecompress();
     }
 
     private HCompress compress() {
-        return this.compress;
+        return compress;
     }
 
     protected void compress(long[] longArray, ByteBuffer compressed) {
-        compress().compress(longArray, this.options.getTileHeight(), this.options.getTileWidth(),
-                this.options.getScale(), compressed);
+        compress().compress(longArray, options.getTileHeight(), options.getTileWidth(), options.getScale(), compressed);
     }
 
     private HDecompress decompress() {
-        return this.decompress;
+        return decompress;
     }
 
     protected void decompress(ByteBuffer compressed, long[] aa) {
-        decompress().decompress(compressed, this.options.isSmooth(), aa);
+        decompress().decompress(compressed, options.isSmooth(), aa);
     }
 }

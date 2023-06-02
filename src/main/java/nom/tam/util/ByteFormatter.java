@@ -7,12 +7,12 @@ package nom.tam.util;
  * Copyright (C) 2004 - 2021 nom-tam-fits
  * %%
  * This is free and unencumbered software released into the public domain.
- * 
+ *
  * Anyone is free to copy, modify, publish, use, compile, sell, or
  * distribute this software, either in source code form or as a compiled
  * binary, for any purpose, commercial or non-commercial, and by any
  * means.
- * 
+ *
  * In jurisdictions that recognize copyright laws, the author or authors
  * of this software dedicate any and all copyright interest in the
  * software to the public domain. We make this dedication for the benefit
@@ -20,7 +20,7 @@ package nom.tam.util;
  * successors. We intend this dedication to be an overt act of
  * relinquishment in perpetuity of all present and future rights to this
  * software under copyright law.
- * 
+ *
  * THE SOFTWARE IS PROVIDED "AS IS", WITHOUT WARRANTY OF ANY KIND,
  * EXPRESS OR IMPLIED, INCLUDING BUT NOT LIMITED TO THE WARRANTIES OF
  * MERCHANTABILITY, FITNESS FOR A PARTICULAR PURPOSE AND NONINFRINGEMENT.
@@ -32,40 +32,38 @@ package nom.tam.util;
  */
 
 /**
- * @deprecated  This class should not be exposed in the publi API and is meant
- *  for internal use only in ASCII tables. Also, it may have overlapping 
- *  functionality with other classes, which should probably be eliminated for
- *  simplicity's sake (and thus less chance of nasty bugs).
- * 
- * This class provides mechanisms for efficiently formatting numbers and
- * Strings. Data is appended to existing byte arrays. Note that the formatting
- * of real or double values may differ slightly (in the last bit) from the
- * standard Java packages since this routines are optimized for speed rather
- * than accuracy.
+ * This class provides mechanisms for efficiently formatting numbers and Strings. Data is appended to existing byte
+ * arrays. Note that the formatting of real or double values may differ slightly (in the last bit) from the standard
+ * Java packages since this routines are optimized for speed rather than accuracy.
  * <p>
  * The methods in this class create no objects.
  * <p>
- * If a number cannot fit into the requested space the truncateOnOverlow flag
- * controls whether the formatter will attempt to append it using the available
- * length in the output (a la C or Perl style formats). If this flag is set, or
- * if the number cannot fit into space left in the buffer it is 'truncated' and
- * the requested space is filled with a truncation fill character. A
- * TruncationException may be thrown if the truncationThrow flag is set.
+ * If a number cannot fit into the requested space the truncateOnOverlow flag controls whether the formatter will
+ * attempt to append it using the available length in the output (a la C or Perl style formats). If this flag is set, or
+ * if the number cannot fit into space left in the buffer it is 'truncated' and the requested space is filled with a
+ * truncation fill character. A TruncationException may be thrown if the truncationThrow flag is set.
  * <p>
- * This class does not explicitly support separate methods for formatting reals
- * in exponential notation. Real numbers near one are by default formatted in
- * decimal notation while numbers with large (or very negative) exponents are
- * formatted in exponential notation. By setting the limits at which these
- * transitions take place the user can force either exponential or decimal
- * notation.
+ * This class does not explicitly support separate methods for formatting reals in exponential notation. Real numbers
+ * near one are by default formatted in decimal notation while numbers with large (or very negative) exponents are
+ * formatted in exponential notation. By setting the limits at which these transitions take place the user can force
+ * either exponential or decimal notation.
+ * 
+ * @deprecated This class should not be exposed in the publi API and is meant for internal use only in ASCII tables.
+ *                 Also, it may have overlapping functionality with other classes, which should probably be eliminated
+ *                 for simplicity's sake (and thus less chance of nasty bugs).
+ * 
+ * @see        ByteParser
  */
 @Deprecated
 public final class ByteFormatter {
 
+    /** String representation of NaN values */
     public static final String NOT_A_NUMBER = "NaN";
 
+    /** String representation of (positive) infinity values */
     public static final String INFINITY = "Infinity";
 
+    /** String representation of (negative) infinity values */
     public static final String NEGATIVE_INFINITY = "-Infinity";
 
     /**
@@ -79,21 +77,11 @@ public final class ByteFormatter {
     private static final double DEFAULT_SIMPLE_MIN = 1.e-3;
 
     /**
-     * Digits. We could handle other bases by extending or truncating this list
-     * and changing the division by 10 (and it's factors) at various locations.
+     * Digits. We could handle other bases by extending or truncating this list and changing the division by 10 (and
+     * it's factors) at various locations.
      */
-    private static final byte[] DIGITS = {
-        (byte) '0',
-        (byte) '1',
-        (byte) '2',
-        (byte) '3',
-        (byte) '4',
-        (byte) '5',
-        (byte) '6',
-        (byte) '7',
-        (byte) '8',
-        (byte) '9'
-    };
+    private static final byte[] DIGITS = {(byte) '0', (byte) '1', (byte) '2', (byte) '3', (byte) '4', (byte) '5',
+            (byte) '6', (byte) '7', (byte) '8', (byte) '9'};
 
     private static final long DOUBLE_EXPONENT_BIT_MASK = 0x7FF0000000000000L;
 
@@ -142,16 +130,14 @@ public final class ByteFormatter {
     private static final int MAX_LONG_LENGTH = 19;
 
     /**
-     * The maximum single digit integer. Special case handling when rounding up
-     * and when incrementing the exponent.
+     * The maximum single digit integer. Special case handling when rounding up and when incrementing the exponent.
      */
 
     private static final int MAXIMUM_SINGLE_DIGIT_INTEGER = 9;
 
     /**
-     * The maximum two digit integer. When we increment an exponent of this
-     * value, the exponent gets longer. Don't need to worry about 999 since
-     * exponents can't be that big.
+     * The maximum two digit integer. When we increment an exponent of this value, the exponent gets longer. Don't need
+     * to worry about 999 since exponents can't be that big.
      */
     private static final int MAXIMUM_TWO_DIGIT_INTEGER = 99;
 
@@ -163,15 +149,13 @@ public final class ByteFormatter {
     private static final int NUMBER_BASE = 10;
 
     /**
-     * Powers of 10. We over extend on both sides. These should perhaps be
-     * tabulated rather than computed though it may be faster to calculate them
-     * than to read in the extra bytes in the class file.
+     * Powers of 10. We over extend on both sides. These should perhaps be tabulated rather than computed though it may
+     * be faster to calculate them than to read in the extra bytes in the class file.
      */
     private static final double[] NUMBER_BASE_POWERS;
 
     /**
-     * What do we use to fill when we cannot print the number?Default is often
-     * used in Fortran.
+     * What do we use to fill when we cannot print the number?Default is often used in Fortran.
      */
     private static final byte TRUNCATION_FILL = (byte) '*';
 
@@ -199,25 +183,17 @@ public final class ByteFormatter {
     private final byte[] tbuf2 = new byte[ByteFormatter.TEMP_BUFFER_SIZE];
 
     /**
-     * This method formats a double given a decimal mantissa and exponent
-     * information.
-     * 
-     * @param val
-     *            The original number
-     * @param buf
-     *            Output buffer
-     * @param off
-     *            Offset into buffer
-     * @param len
-     *            Maximum number of characters to use in buffer.
-     * @param mant
-     *            A decimal mantissa for the number.
-     * @param lmant
-     *            The number of characters in the mantissa
-     * @param shift
-     *            The exponent of the power of 10 that we shifted val to get the
-     *            given mantissa.
-     * @return Offset of next available character in buffer.
+     * This method formats a double given a decimal mantissa and exponent information.
+     *
+     * @param  val   The original number
+     * @param  buf   Output buffer
+     * @param  off   Offset into buffer
+     * @param  len   Maximum number of characters to use in buffer.
+     * @param  mant  A decimal mantissa for the number.
+     * @param  lmant The number of characters in the mantissa
+     * @param  shift The exponent of the power of 10 that we shifted val to get the given mantissa.
+     *
+     * @return       Offset of next available character in buffer.
      */
     private int combineReal(double val, byte[] buf, int off, int len, byte[] mant, int lmant, int shift) {
 
@@ -236,34 +212,32 @@ public final class ByteFormatter {
         int lexp = 0;
 
         if (!simple) {
-            lexp = format(exp, this.tbuf2, 0, ByteFormatter.TEMP_BUFFER_SIZE);
+            lexp = format(exp, tbuf2, 0, ByteFormatter.TEMP_BUFFER_SIZE);
 
             minSize = lexp + 2; // e.g., 2e-12
             maxSize = lexp + lmant + 2; // add in "." and e
-        } else {
-            if (exp >= 0) {
-                minSize = exp + 1; // e.g. 32
+        } else if (exp >= 0) {
+            minSize = exp + 1; // e.g. 32
 
-                // Special case. E.g., 99.9 has
-                // minumum size of 3.
-                int i;
-                for (i = 0; i < lmant && i <= exp; i++) {
-                    if (mant[i] != (byte) '9') {
-                        break;
-                    }
+            // Special case. E.g., 99.9 has
+            // minumum size of 3.
+            int i;
+            for (i = 0; i < lmant && i <= exp; i++) {
+                if (mant[i] != (byte) '9') {
+                    break;
                 }
-                if (i > exp && i < lmant && mant[i] >= (byte) '5') {
-                    minSize++;
-                }
-
-                maxSize = lmant + 1; // Add in "."
-                if (maxSize <= minSize) { // Very large numbers.
-                    maxSize = minSize + 1;
-                }
-            } else {
-                minSize = 2;
-                maxSize = 1 + Math.abs(exp) + lmant;
             }
+            if (i > exp && i < lmant && mant[i] >= (byte) '5') {
+                minSize++;
+            }
+
+            maxSize = lmant + 1; // Add in "."
+            if (maxSize <= minSize) { // Very large numbers.
+                maxSize = minSize + 1;
+            }
+        } else {
+            minSize = 2;
+            maxSize = 1 + Math.abs(exp) + lmant;
         }
         if (val < 0) {
             minSize++;
@@ -300,22 +274,21 @@ public final class ByteFormatter {
                 off--;
             }
             exp++;
-            lexp = format(exp, this.tbuf2, 0, ByteFormatter.TEMP_BUFFER_SIZE);
+            lexp = format(exp, tbuf2, 0, ByteFormatter.TEMP_BUFFER_SIZE);
         }
         buf[off] = (byte) 'E';
         off++;
-        System.arraycopy(this.tbuf2, 0, buf, off, lexp);
+        System.arraycopy(tbuf2, 0, buf, off, lexp);
         return off + lexp;
     }
 
     /**
      * Format a boolean into an existing array.
-     * 
-     * @param val
-     *            value to write
-     * @param array
-     *            the array to fill
-     * @return Offset of next available character in buffer.
+     *
+     * @param  val   value to write
+     * @param  array the array to fill
+     *
+     * @return       Offset of next available character in buffer.
      */
     public int format(boolean val, byte[] array) {
         return format(val, array, 0, array.length);
@@ -323,17 +296,13 @@ public final class ByteFormatter {
 
     /**
      * Format a boolean into an existing array
-     * 
-     * @param val
-     *            The boolean to be formatted
-     * @param array
-     *            The buffer in which to format the data.
-     * @param off
-     *            The starting offset within the buffer.
-     * @param len
-     *            The maximum number of characters to use use in formatting the
-     *            number.
-     * @return Offset of next available character in buffer.
+     *
+     * @param  val   The boolean to be formatted
+     * @param  array The buffer in which to format the data.
+     * @param  off   The starting offset within the buffer.
+     * @param  len   The maximum number of characters to use use in formatting the number.
+     *
+     * @return       Offset of next available character in buffer.
      */
     public int format(boolean val, byte[] array, int off, int len) {
         if (len > 0) {
@@ -349,12 +318,11 @@ public final class ByteFormatter {
 
     /**
      * Format a double into an array.
-     * 
-     * @param val
-     *            The double to be formatted.
-     * @param array
-     *            The array in which to place the result.
-     * @return The number of characters used. @ * if the value was truncated
+     *
+     * @param  val   The double to be formatted.
+     * @param  array The array in which to place the result.
+     *
+     * @return       The number of characters used. @ * if the value was truncated
      */
     public int format(double val, byte[] array) {
         return format(val, array, 0, array.length);
@@ -363,33 +331,24 @@ public final class ByteFormatter {
     /**
      * Format a double into an existing character array.
      * <p>
-     * This is hard to do exactly right... The JDK code does stuff with rational
-     * arithmetic and so forth. We use a much simpler algorithm which may give
-     * an answer off in the lowest order bit. Since this is pure Java, it should
-     * still be consistent from machine to machine.
+     * This is hard to do exactly right... The JDK code does stuff with rational arithmetic and so forth. We use a much
+     * simpler algorithm which may give an answer off in the lowest order bit. Since this is pure Java, it should still
+     * be consistent from machine to machine.
      * <p>
-     * Recall that the binary representation of the double is of the form
-     * <code>d = 0.bbbbbbbb x 2<sup>n</sup></code> where there are up to 53
-     * binary digits in the binary fraction (including the assumed leading 1 bit
-     * for normalized numbers). We find a value m such that
-     * <code>10<sup>m</sup> d</code> is between <code>2<sup>53</sup></code> and
-     * <code>2<sup>63</sup></code>. This product will be exactly convertible to
-     * a long with no loss of precision. Getting the decimal representation for
-     * that is trivial (see formatLong). This is a decimal mantissa and we have
-     * an exponent (<code>-m</code>). All we have to do is manipulate the
-     * decimal point to where we want to see it. Errors can arise due to
-     * roundoff in the scaling multiplication, but should be no more than a
-     * single bit.
-     * 
-     * @param val
-     *            Double to be formatted
-     * @param buf
-     *            Buffer in which result is to be stored
-     * @param off
-     *            Offset within buffer
-     * @param len
-     *            Maximum length of integer
-     * @return offset of next unused character in input buffer. 
+     * Recall that the binary representation of the double is of the form <code>d = 0.bbbbbbbb x 2<sup>n</sup></code>
+     * where there are up to 53 binary digits in the binary fraction (including the assumed leading 1 bit for normalized
+     * numbers). We find a value m such that <code>10<sup>m</sup> d</code> is between <code>2<sup>53</sup></code> and
+     * <code>2<sup>63</sup></code>. This product will be exactly convertible to a long with no loss of precision.
+     * Getting the decimal representation for that is trivial (see formatLong). This is a decimal mantissa and we have
+     * an exponent (<code>-m</code>). All we have to do is manipulate the decimal point to where we want to see it.
+     * Errors can arise due to roundoff in the scaling multiplication, but should be no more than a single bit.
+     *
+     * @param  val Double to be formatted
+     * @param  buf Buffer in which result is to be stored
+     * @param  off Offset within buffer
+     * @param  len Maximum length of integer
+     *
+     * @return     offset of next unused character in input buffer.
      */
     public int format(double val, byte[] buf, int off, int len) {
 
@@ -398,9 +357,11 @@ public final class ByteFormatter {
         // Special cases -- It is OK if these get truncated.
         if (pos == 0.) {
             return format("0.0", buf, off, len);
-        } else if (Double.isNaN(val)) {
+        }
+        if (Double.isNaN(val)) {
             return format(NOT_A_NUMBER, buf, off, len);
-        } else if (Double.isInfinite(val)) {
+        }
+        if (Double.isInfinite(val)) {
             if (val > 0) {
                 return format(INFINITY, buf, off, len);
             }
@@ -449,21 +410,20 @@ public final class ByteFormatter {
         numb = numb << exp - DOUBLE_EXPONENT_EXCESS;
 
         // Get a decimal mantissa.
-        int ndig = format(numb, this.tbuf1, 0, ByteFormatter.TEMP_BUFFER_SIZE);
+        int ndig = format(numb, tbuf1, 0, ByteFormatter.TEMP_BUFFER_SIZE);
 
         // Now format the double.
 
-        return combineReal(val, buf, off, len, this.tbuf1, ndig, shift);
+        return combineReal(val, buf, off, len, tbuf1, ndig, shift);
     }
 
     /**
      * Format a float into an array.
-     * 
-     * @param val
-     *            The float to be formatted.
-     * @param array
-     *            The array in which to place the result.
-     * @return The number of characters used. @ * if the value was truncated
+     *
+     * @param  val   The float to be formatted.
+     * @param  array The array in which to place the result.
+     *
+     * @return       The number of characters used. @ * if the value was truncated
      */
     public int format(float val, byte[] array) {
         return format(val, array, 0, array.length);
@@ -472,33 +432,24 @@ public final class ByteFormatter {
     /**
      * Format a float into an existing byteacter array.
      * <p>
-     * This is hard to do exactly right... The JDK code does stuff with rational
-     * arithmetic and so forth. We use a much simpler algorithm which may give
-     * an answer off in the lowest order bit. Since this is pure Java, it should
-     * still be consistent from machine to machine.
+     * This is hard to do exactly right... The JDK code does stuff with rational arithmetic and so forth. We use a much
+     * simpler algorithm which may give an answer off in the lowest order bit. Since this is pure Java, it should still
+     * be consistent from machine to machine.
      * <p>
-     * Recall that the binary representation of the float is of the form
-     * <code>d = 0.bbbbbbbb x 2<sup>n</sup></code> where there are up to 24
-     * binary digits in the binary fraction (including the assumed leading 1 bit
-     * for normalized numbers). We find a value m such that
-     * <code>10<sup>m</sup> d</code> is between <code>2<sup>24</sup></code> and
-     * <code>2<sup>32</sup></code>. This product will be exactly convertible to
-     * an int with no loss of precision. Getting the decimal representation for
-     * that is trivial (see formatInteger). This is a decimal mantissa and we
-     * have an exponent ( <code>-m</code>). All we have to do is manipulate the
-     * decimal point to where we want to see it. Errors can arise due to
-     * roundoff in the scaling multiplication, but should be very small.
-     * 
-     * @param val
-     *            Float to be formatted
-     * @param buf
-     *            Buffer in which result is to be stored
-     * @param off
-     *            Offset within buffer
-     * @param len
-     *            Maximum length of field
-     * @return Offset of next character in buffer. @ * if the value was
-     *         truncated
+     * Recall that the binary representation of the float is of the form <code>d = 0.bbbbbbbb x 2<sup>n</sup></code>
+     * where there are up to 24 binary digits in the binary fraction (including the assumed leading 1 bit for normalized
+     * numbers). We find a value m such that <code>10<sup>m</sup> d</code> is between <code>2<sup>24</sup></code> and
+     * <code>2<sup>32</sup></code>. This product will be exactly convertible to an int with no loss of precision.
+     * Getting the decimal representation for that is trivial (see formatInteger). This is a decimal mantissa and we
+     * have an exponent ( <code>-m</code>). All we have to do is manipulate the decimal point to where we want to see
+     * it. Errors can arise due to roundoff in the scaling multiplication, but should be very small.
+     *
+     * @param  val Float to be formatted
+     * @param  buf Buffer in which result is to be stored
+     * @param  off Offset within buffer
+     * @param  len Maximum length of field
+     *
+     * @return     Offset of next character in buffer. @ * if the value was truncated
      */
     public int format(float val, byte[] buf, int off, int len) {
 
@@ -507,9 +458,11 @@ public final class ByteFormatter {
         // Special cases
         if (pos == 0.) {
             return format("0.0", buf, off, len);
-        } else if (Float.isNaN(val)) {
+        }
+        if (Float.isNaN(val)) {
             return format(NOT_A_NUMBER, buf, off, len);
-        } else if (Float.isInfinite(val)) {
+        }
+        if (Float.isInfinite(val)) {
             if (val > 0) {
                 return format("Infinity", buf, off, len);
             }
@@ -558,21 +511,20 @@ public final class ByteFormatter {
         numb = numb << exp - FLOAT_EXPONENT_EXCESS;
 
         // Get a decimal mantissa.
-        int ndig = format(numb, this.tbuf1, 0, ByteFormatter.TEMP_BUFFER_SIZE);
+        int ndig = format(numb, tbuf1, 0, ByteFormatter.TEMP_BUFFER_SIZE);
 
         // Now format the float.
 
-        return combineReal(val, buf, off, len, this.tbuf1, ndig, shift);
+        return combineReal(val, buf, off, len, tbuf1, ndig, shift);
     }
 
     /**
      * Format an int into an array.
-     * 
-     * @param val
-     *            The int to be formatted.
-     * @param array
-     *            The array in which to place the result.
-     * @return The number of characters used. @ * if the value was truncated
+     *
+     * @param  val   The int to be formatted.
+     * @param  array The array in which to place the result.
+     *
+     * @return       The number of characters used. @ * if the value was truncated
      */
     public int format(int val, byte[] array) {
         return format(val, array, 0, array.length);
@@ -580,16 +532,13 @@ public final class ByteFormatter {
 
     /**
      * Format an int into an existing array.
-     * 
-     * @param val
-     *            Integer to be formatted
-     * @param buf
-     *            Buffer in which result is to be stored
-     * @param off
-     *            Offset within buffer
-     * @param len
-     *            Maximum length of integer
-     * @return offset of next unused character in input buffer.
+     *
+     * @param  val Integer to be formatted
+     * @param  buf Buffer in which result is to be stored
+     * @param  off Offset within buffer
+     * @param  len Maximum length of integer
+     *
+     * @return     offset of next unused character in input buffer.
      */
     public int format(int val, byte[] buf, int off, int len) {
 
@@ -646,12 +595,11 @@ public final class ByteFormatter {
 
     /**
      * Format a long into an array.
-     * 
-     * @param val
-     *            The long to be formatted.
-     * @param array
-     *            The array in which to place the result.
-     * @return The number of characters used. @ * if the value was truncated
+     *
+     * @param  val   The long to be formatted.
+     * @param  array The array in which to place the result.
+     *
+     * @return       The number of characters used. @ * if the value was truncated
      */
     public int format(long val, byte[] array) {
         return format(val, array, 0, array.length);
@@ -659,17 +607,13 @@ public final class ByteFormatter {
 
     /**
      * Format a long into an existing array.
-     * 
-     * @param val
-     *            Long to be formatted
-     * @param buf
-     *            Buffer in which result is to be stored
-     * @param off
-     *            Offset within buffer
-     * @param len
-     *            Maximum length of integer
-     * @return offset of next unused character in input buffer. @ * if the value
-     *         was truncated
+     *
+     * @param  val Long to be formatted
+     * @param  buf Buffer in which result is to be stored
+     * @param  off Offset within buffer
+     * @param  len Maximum length of integer
+     *
+     * @return     offset of next unused character in input buffer. @ * if the value was truncated
      */
     public int format(long val, byte[] buf, int off, int len) {
         // Special case
@@ -727,34 +671,27 @@ public final class ByteFormatter {
     }
 
     /**
-     * Insert a string at the beginning of an array. * @return Offset of next
-     * available character in buffer.
-     * 
-     * @param val
-     *            The string to be inserted. A null string will insert len
-     *            spaces.
-     * @param array
-     *            The buffer in which to insert the string.
-     * @return Offset of next available character in buffer.
+     * Insert a string at the beginning of an array. * @return Offset of next available character in buffer.
+     *
+     * @param  val   The string to be inserted. A null string will insert len spaces.
+     * @param  array The buffer in which to insert the string.
+     *
+     * @return       Offset of next available character in buffer.
      */
     public int format(String val, byte[] array) {
         return format(val, array, 0, array.length);
     }
 
     /**
-     * Insert a String into an existing character array. If the String is longer
-     * than len, then only the the initial len characters will be inserted.
-     * 
-     * @param val
-     *            The string to be inserted. A null string will insert len
-     *            spaces.
-     * @param array
-     *            The buffer in which to insert the string.
-     * @param off
-     *            The starting offset to insert the string.
-     * @param len
-     *            The maximum number of characters to insert.
-     * @return Offset of next available character in buffer.
+     * Insert a String into an existing character array. If the String is longer than len, then only the the initial len
+     * characters will be inserted.
+     *
+     * @param  val   The string to be inserted. A null string will insert len spaces.
+     * @param  array The buffer in which to insert the string.
+     * @param  off   The starting offset to insert the string.
+     * @param  len   The maximum number of characters to insert.
+     *
+     * @return       Offset of next available character in buffer.
      */
     public int format(String val, byte[] array, int off, int len) {
 
@@ -777,8 +714,7 @@ public final class ByteFormatter {
     }
 
     /**
-     * Write the mantissa of the number. This method addresses the subtleties
-     * involved in rounding numbers.
+     * Write the mantissa of the number. This method addresses the subtleties involved in rounding numbers.
      */
     private int mantissa(byte[] mant, int lmant, int exp, boolean simple, byte[] buf, int off, int len) {
 
@@ -849,12 +785,11 @@ public final class ByteFormatter {
                 if (buf[i] == (byte) '.' || buf[i] == (byte) '-') {
                     continue;
                 }
-                if (buf[i] == (byte) '9') {
-                    buf[i] = (byte) '0';
-                } else {
+                if (buf[i] != (byte) '9') {
                     buf[i]++;
                     break;
                 }
+                buf[i] = (byte) '0';
             }
 
             // Now we handle 99.99 case. This can cause problems
@@ -906,8 +841,8 @@ public final class ByteFormatter {
     }
 
     /**
-     * Fill the buffer with truncation characters. After filling the buffer, a
-     * TruncationException will be thrown if the appropriate flag is set.
+     * Fill the buffer with truncation characters. After filling the buffer, a TruncationException will be thrown if the
+     * appropriate flag is set.
      */
     private void truncationFiller(byte[] buffer, int offset, int length) {
         for (int i = offset; i < offset + length; i++) {

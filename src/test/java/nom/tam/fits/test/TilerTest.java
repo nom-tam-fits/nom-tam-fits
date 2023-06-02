@@ -7,12 +7,12 @@ package nom.tam.fits.test;
  * Copyright (C) 2004 - 2021 nom-tam-fits
  * %%
  * This is free and unencumbered software released into the public domain.
- * 
+ *
  * Anyone is free to copy, modify, publish, use, compile, sell, or
  * distribute this software, either in source code form or as a compiled
  * binary, for any purpose, commercial or non-commercial, and by any
  * means.
- * 
+ *
  * In jurisdictions that recognize copyright laws, the author or authors
  * of this software dedicate any and all copyright interest in the
  * software to the public domain. We make this dedication for the benefit
@@ -20,7 +20,7 @@ package nom.tam.fits.test;
  * successors. We intend this dedication to be an overt act of
  * relinquishment in perpetuity of all present and future rights to this
  * software under copyright law.
- * 
+ *
  * THE SOFTWARE IS PROVIDED "AS IS", WITHOUT WARRANTY OF ANY KIND,
  * EXPRESS OR IMPLIED, INCLUDING BUT NOT LIMITED TO THE WARRANTIES OF
  * MERCHANTABILITY, FITNESS FOR A PARTICULAR PURPOSE AND NONINFRINGEMENT.
@@ -38,6 +38,9 @@ import java.io.ByteArrayOutputStream;
 import java.io.IOException;
 import java.lang.reflect.Array;
 
+import org.junit.Assert;
+import org.junit.Test;
+
 import nom.tam.fits.Fits;
 import nom.tam.fits.ImageHDU;
 import nom.tam.image.ImageTiler;
@@ -50,14 +53,10 @@ import nom.tam.util.FitsInputStream;
 import nom.tam.util.FitsOutputStream;
 import nom.tam.util.SafeClose;
 
-import org.junit.Assert;
-import org.junit.Test;
-
 /**
- * This class tests the ImageTiler. It first creates a FITS file and then reads
- * it back and allows the user to select tiles. The values of the corner and
- * center pixels for the selected tile are displayed. Both file and memory tiles
- * are checked.
+ * This class tests the ImageTiler. It first creates a FITS file and then reads it back and allows the user to select
+ * tiles. The values of the corner and center pixels for the selected tile are displayed. Both file and memory tiles are
+ * checked.
  */
 public class TilerTest {
 
@@ -65,19 +64,13 @@ public class TilerTest {
 
         Class<?> baseClass = ArrayFuncs.getBaseClass(data);
         Object tile = Array.newInstance(baseClass, nx * ny);
-        t.getTile(tile, new int[]{
-            y,
-            x
-        }, new int[]{
-            ny,
-            nx
-        });
+        t.getTile(tile, new int[] {y, x}, new int[] {ny, nx});
 
         float sum0 = 0;
         float sum1 = 0;
         int length = Array.getLength(tile);
-        for (int i = 0; i < nx; i += 1) {
-            for (int j = 0; j < ny; j += 1) {
+        for (int i = 0; i < nx; i++) {
+            for (int j = 0; j < ny; j++) {
                 int tileOffset = i + j * nx;
                 if (tileOffset >= length) {
                     return false;
@@ -98,20 +91,14 @@ public class TilerTest {
 
     private void doTile2(String test, Object data, StandardImageTiler t, int x, int y, int nx, int ny) throws Exception {
 
-        Object tile = t.getTile(new int[]{
-            y,
-            x
-        }, new int[]{
-            ny,
-            nx
-        });
+        Object tile = t.getTile(new int[] {y, x}, new int[] {ny, nx});
 
         float sum0 = 0;
         float sum1 = 0;
 
         int length = Array.getLength(tile);
-        for (int i = 0; i < nx; i += 1) {
-            for (int j = 0; j < ny; j += 1) {
+        for (int i = 0; i < nx; i++) {
+            for (int j = 0; j < ny; j++) {
                 int tileOffset = i + j * nx;
                 if (tileOffset < length) {
                     sum0 += ((Number) Array.get(tile, tileOffset)).doubleValue();
@@ -123,23 +110,16 @@ public class TilerTest {
         assertEquals("Tiler" + test, sum0, sum1, 0);
     }
 
-    private void doTile3(final String test, final Object data, final ImageTiler t, final int x, final int y,
-                         final int nx, final int ny) throws Exception {
+    private void doTile3(final String test, final Object data, final ImageTiler t, final int x, final int y, final int nx,
+            final int ny) throws Exception {
         final ByteArrayOutputStream byteArrayOutputStream = new ByteArrayOutputStream();
         final ArrayDataOutput output = new FitsOutputStream(byteArrayOutputStream);
 
-        t.getTile(output, new int[]{
-                y,
-                x
-        }, new int[]{
-                ny,
-                nx
-        });
+        t.getTile(output, new int[] {y, x}, new int[] {ny, nx});
 
         float resultSum = 0;
         float expectedSum = 0;
-        final ByteArrayInputStream byteArrayInputStream =
-                new ByteArrayInputStream(byteArrayOutputStream.toByteArray());
+        final ByteArrayInputStream byteArrayInputStream = new ByteArrayInputStream(byteArrayOutputStream.toByteArray());
         final ArrayDataInput input = new FitsInputStream(byteArrayInputStream);
         final Class<?> type = ArrayFuncs.getBaseClass(data);
         final Object testOutput = ArrayFuncs.newInstance(type, ny * nx);
@@ -147,8 +127,8 @@ public class TilerTest {
         input.readLArray(testOutput);
 
         int length = Array.getLength(testOutput);
-        for (int i = 0; i < nx; i += 1) {
-            for (int j = 0; j < ny; j += 1) {
+        for (int i = 0; i < nx; i++) {
+            for (int j = 0; j < ny; j++) {
                 int tileOffset = i + j * nx;
                 if (tileOffset < length) {
                     resultSum += ((Number) Array.get(testOutput, tileOffset)).doubleValue();
@@ -164,8 +144,8 @@ public class TilerTest {
     public void testFloat() throws Exception {
 
         float[][] data = new float[300][300];
-        for (int i = 0; i < 300; i += 1) {
-            for (int j = 0; j < 300; j += 1) {
+        for (int i = 0; i < 300; i++) {
+            for (int j = 0; j < 300; j++) {
                 data[i][j] = 1000 * i + j;
             }
         }
@@ -176,8 +156,8 @@ public class TilerTest {
     public void testDouble() throws Exception {
 
         double[][] data = new double[300][300];
-        for (int i = 0; i < 300; i += 1) {
-            for (int j = 0; j < 300; j += 1) {
+        for (int i = 0; i < 300; i++) {
+            for (int j = 0; j < 300; j++) {
                 data[i][j] = 1000 * i + j;
             }
         }
@@ -188,8 +168,8 @@ public class TilerTest {
     public void testInt() throws Exception {
 
         int[][] data = new int[300][300];
-        for (int i = 0; i < 300; i += 1) {
-            for (int j = 0; j < 300; j += 1) {
+        for (int i = 0; i < 300; i++) {
+            for (int j = 0; j < 300; j++) {
                 data[i][j] = 1000 * i + j;
             }
         }
@@ -200,8 +180,8 @@ public class TilerTest {
     public void testShort() throws Exception {
 
         short[][] data = new short[300][300];
-        for (int i = 0; i < 300; i += 1) {
-            for (int j = 0; j < 300; j += 1) {
+        for (int i = 0; i < 300; i++) {
+            for (int j = 0; j < 300; j++) {
                 data[i][j] = (short) (1000 * i + j);
             }
         }
@@ -212,8 +192,8 @@ public class TilerTest {
     public void testByte() throws Exception {
 
         byte[][] data = new byte[300][300];
-        for (int i = 0; i < 300; i += 1) {
-            for (int j = 0; j < 300; j += 1) {
+        for (int i = 0; i < 300; i++) {
+            for (int j = 0; j < 300; j++) {
                 data[i][j] = (byte) (1000 * i + j);
             }
         }
@@ -224,8 +204,8 @@ public class TilerTest {
     public void testLong() throws Exception {
 
         long[][] data = new long[300][300];
-        for (int i = 0; i < 300; i += 1) {
-            for (int j = 0; j < 300; j += 1) {
+        for (int i = 0; i < 300; i++) {
+            for (int j = 0; j < 300; j++) {
                 data[i][j] = 1000 * i + j;
             }
         }
@@ -286,12 +266,7 @@ public class TilerTest {
 
             expected = null;
             try {
-                t.getTile(new int[]{
-                    10,
-                    10
-                }, new int[]{
-                    20
-                });
+                t.getTile(new int[] {10, 10}, new int[] {20});
             } catch (IOException e) {
                 expected = e;
             }

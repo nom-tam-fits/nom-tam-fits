@@ -7,12 +7,12 @@ package nom.tam.image.tile.operation;
  * Copyright (C) 1996 - 2021 nom-tam-fits
  * %%
  * This is free and unencumbered software released into the public domain.
- * 
+ *
  * Anyone is free to copy, modify, publish, use, compile, sell, or
  * distribute this software, either in source code form or as a compiled
  * binary, for any purpose, commercial or non-commercial, and by any
  * means.
- * 
+ *
  * In jurisdictions that recognize copyright laws, the author or authors
  * of this software dedicate any and all copyright interest in the
  * software to the public domain. We make this dedication for the benefit
@@ -20,7 +20,7 @@ package nom.tam.image.tile.operation;
  * successors. We intend this dedication to be an overt act of
  * relinquishment in perpetuity of all present and future rights to this
  * software under copyright law.
- * 
+ *
  * THE SOFTWARE IS PROVIDED "AS IS", WITHOUT WARRANTY OF ANY KIND,
  * EXPRESS OR IMPLIED, INCLUDING BUT NOT LIMITED TO THE WARRANTIES OF
  * MERCHANTABILITY, FITNESS FOR A PARTICULAR PURPOSE AND NONINFRINGEMENT.
@@ -40,8 +40,12 @@ import nom.tam.fits.FitsException;
 import nom.tam.util.ArrayFuncs;
 import nom.tam.util.type.ElementType;
 
+/**
+ * A base implementation of 2D image tile compression.
+ *
+ * @param <OPERATION> The generic type of tile operation that handles parallel processing
+ */
 public abstract class AbstractTiledImageOperation<OPERATION extends ITileOperation> implements ITiledImageOperation {
-
 
     /** Image axes in Java array index order (is is last!). */
     private int[] axes;
@@ -57,7 +61,7 @@ public abstract class AbstractTiledImageOperation<OPERATION extends ITileOperati
     private OPERATION[] tileOperations;
 
     private final Class<OPERATION> operationClass;
-    
+
     public AbstractTiledImageOperation(Class<OPERATION> operationClass) {
         this.operationClass = operationClass;
     }
@@ -87,8 +91,8 @@ public abstract class AbstractTiledImageOperation<OPERATION extends ITileOperati
 
     /**
      * Sets the image dimensions, in Java array index order.
-     * 
-     * @param axes  Image dimensions in Java array index order (x is last!).
+     *
+     * @param axes Image dimensions in Java array index order (x is last!).
      */
     public void setAxes(int[] axes) {
         this.axes = Arrays.copyOf(axes, axes.length);
@@ -96,30 +100,30 @@ public abstract class AbstractTiledImageOperation<OPERATION extends ITileOperati
 
     /**
      * <p>
-     * Sets the tile dimension. Here the dimensions are in Java array index order, that is the
-     * x-dimension (width of tile) is last!
+     * Sets the tile dimension. Here the dimensions are in Java array index order, that is the x-dimension (width of
+     * tile) is last!
      * </p>
      * <p>
-     * Note, that because tile compression is essentially 2D, the tile sizes in higher
-     * dimensions will be forced to 1, even if specified otherwise by the argument (see 
+     * Note, that because tile compression is essentially 2D, the tile sizes in higher dimensions will be forced to 1,
+     * even if specified otherwise by the argument (see
      * <a href="https://heasarc.gsfc.nasa.gov/docs/software/fitsio/compression.html">FITSIO convention</a>).
      * </p>
-     * 
-     * @param value     The tile dimensions in Java array index order (x is last!). Only up to
-     *                  the last 2 components are considered. The rest will be assumed to have
-     *                  values equals to 1.
-     * @throws FitsException    If the leading dimensions (before the last 2) have sizes not equal to 1
+     *
+     * @param  value         The tile dimensions in Java array index order (x is last!). Only up to the last 2
+     *                           components are considered. The rest will be assumed to have values equals to 1.
+     *
+     * @throws FitsException If the leading dimensions (before the last 2) have sizes not equal to 1
      */
     public void setTileAxes(int[] value) throws FitsException {
         for (int i = value.length - 2; --i >= 0;) {
             if (value[i] != 1) {
-                throw new FitsException("Tile sizes in higher dimensions (>2) must be 1 as per the FITSIO convention (" 
-                        + i + ":" + value[i] + ")");
+                throw new FitsException("Tile sizes in higher dimensions (>2) must be 1 as per the FITSIO convention (" + i
+                        + ":" + value[i] + ")");
             }
         }
         tileAxes = Arrays.copyOf(value, value.length);
     }
-    
+
     protected boolean hasAxes() {
         return axes != null;
     }
@@ -127,8 +131,7 @@ public abstract class AbstractTiledImageOperation<OPERATION extends ITileOperati
     protected boolean hasTileAxes() {
         return tileAxes != null;
     }
-    
-    
+
     private int getBufferOffset(int[] index) {
         int l = 0;
         int blockSize = 1;
@@ -141,17 +144,17 @@ public abstract class AbstractTiledImageOperation<OPERATION extends ITileOperati
 
     @SuppressWarnings("unchecked")
     protected void createTiles(ITileOperationInitialisation<OPERATION> init) throws FitsException {
-        int[] offset = new int[axes.length];        // Tile start in image (Java index order)
-        int[] tileSize = new int[2];                // {w, h}
+        int[] offset = new int[axes.length]; // Tile start in image (Java index order)
+        int[] tileSize = new int[2]; // {w, h}
         int pos = 0;
-        
+
         int imLength = 1;
         for (int i = axes.length; --i >= 0;) {
             imLength *= axes[i];
         }
-        
+
         tileSize[1] = 1;
-        
+
         // If tile is not defined along all axes, pad with 1.
         if (tileAxes.length < axes.length) {
             int[] tile = new int[axes.length];
@@ -159,9 +162,9 @@ public abstract class AbstractTiledImageOperation<OPERATION extends ITileOperati
             Arrays.fill(tile, 0, tile.length - tileAxes.length, 1);
             tileAxes = tile;
         }
-        
+
         ArrayList<OPERATION> opList = new ArrayList<>();
-        
+
         // Create 2D tiles to cover image (in N dimensions, where N need not be 2)
         for (int tileIndex = 0; pos < imLength; tileIndex++) {
             // Calculate the actual size of the current tile
@@ -169,29 +172,30 @@ public abstract class AbstractTiledImageOperation<OPERATION extends ITileOperati
                 int k = axes.length - 1 - i;
                 tileSize[i] = (offset[k] + tileAxes[k] > axes[k]) ? axes[k] - offset[k] : tileAxes[k];
             }
-                
+
             // Create the tile at the current buffer offset and tile size
             OPERATION op = init.createTileOperation(tileIndex, new TileArea().start(ArrayFuncs.getReversed(offset)));
             op.setDimensions(pos, tileSize[0], tileSize[1]);
             opList.add(op);
-    
+
             // Calculate the image indices where the next tile starts.
             for (int k = axes.length; --k >= 0;) {
-                offset[k] += tileAxes[k];   // Try next tile along the current dimension...
+                offset[k] += tileAxes[k]; // Try next tile along the current dimension...
                 if (offset[k] < axes[k]) {
-                    break;              // OK, tile is within image bounds
-                } else if (k > 0) {
-                    offset[k] = 0;      // Otherwise reset the tile pos in the subarray dimensions
+                    break; // OK, tile is within image bounds
+                }
+                if (k > 0) {
+                    offset[k] = 0; // Otherwise reset the tile pos in the subarray dimensions
                 }
             }
 
             // Calculate the buffer position where the next tile starts.
             pos = getBufferOffset(offset);
         }
-        
+
         tileOperations = (OPERATION[]) Array.newInstance(operationClass, opList.size());
         opList.toArray(tileOperations);
-        
+
         init.tileCount(tileOperations.length);
 
         for (OPERATION op : tileOperations) {
@@ -200,25 +204,25 @@ public abstract class AbstractTiledImageOperation<OPERATION extends ITileOperati
     }
 
     protected int getNAxes() {
-        return this.axes.length;
+        return axes.length;
     }
 
     protected int getNumberOfTileOperations() {
-        return this.tileOperations.length;
+        return tileOperations.length;
     }
 
     /**
-     * Returns the reference to the tile dimensions array. The dimensions are stored in Java array
-     * index order, i.e., the x-dimension (width) is last. 
-     * 
-     * @return      The tile dimensions in Java array index order (x is last!).
+     * Returns the reference to the tile dimensions array. The dimensions are stored in Java array index order, i.e.,
+     * the x-dimension (width) is last.
+     *
+     * @return The tile dimensions in Java array index order (x is last!).
      */
     protected int[] getTileAxes() {
-        return this.tileAxes;
+        return tileAxes;
     }
 
     protected OPERATION[] getTileOperations() {
-        return this.tileOperations;
+        return tileOperations;
     }
 
     protected void setBaseType(ElementType<Buffer> baseType) {

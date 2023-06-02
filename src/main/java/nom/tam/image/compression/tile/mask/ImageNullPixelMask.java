@@ -13,12 +13,12 @@ import nom.tam.image.tile.operation.buffer.TileBuffer;
  * Copyright (C) 1996 - 2021 nom-tam-fits
  * %%
  * This is free and unencumbered software released into the public domain.
- * 
+ *
  * Anyone is free to copy, modify, publish, use, compile, sell, or
  * distribute this software, either in source code form or as a compiled
  * binary, for any purpose, commercial or non-commercial, and by any
  * means.
- * 
+ *
  * In jurisdictions that recognize copyright laws, the author or authors
  * of this software dedicate any and all copyright interest in the
  * software to the public domain. We make this dedication for the benefit
@@ -26,7 +26,7 @@ import nom.tam.image.tile.operation.buffer.TileBuffer;
  * successors. We intend this dedication to be an overt act of
  * relinquishment in perpetuity of all present and future rights to this
  * software under copyright law.
- * 
+ *
  * THE SOFTWARE IS PROVIDED "AS IS", WITHOUT WARRANTY OF ANY KIND,
  * EXPRESS OR IMPLIED, INCLUDING BUT NOT LIMITED TO THE WARRANTIES OF
  * MERCHANTABILITY, FITNESS FOR A PARTICULAR PURPOSE AND NONINFRINGEMENT.
@@ -37,6 +37,9 @@ import nom.tam.image.tile.operation.buffer.TileBuffer;
  * #L%
  */
 
+/**
+ * Support for blank (<code>null</code>) values in compressed images.
+ */
 public class ImageNullPixelMask {
 
     private final AbstractNullPixelMask[] nullPixelMasks;
@@ -48,34 +51,34 @@ public class ImageNullPixelMask {
     private final String compressAlgorithm;
 
     public ImageNullPixelMask(int tileCount, long nullValue, String compressAlgorithm) {
-        this.nullPixelMasks = new AbstractNullPixelMask[tileCount];
+        nullPixelMasks = new AbstractNullPixelMask[tileCount];
         this.nullValue = nullValue;
         this.compressAlgorithm = compressAlgorithm;
-        this.compressorControl = CompressorProvider.findCompressorControl(null, this.compressAlgorithm, byte.class);
+        compressorControl = CompressorProvider.findCompressorControl(null, this.compressAlgorithm, byte.class);
     }
 
     public NullPixelMaskPreserver createTilePreserver(TileBuffer tileBuffer, int tileIndex) {
-        return add(new NullPixelMaskPreserver(tileBuffer, tileIndex, this.nullValue, this.compressorControl));
+        return add(new NullPixelMaskPreserver(tileBuffer, tileIndex, nullValue, compressorControl));
     }
 
     public NullPixelMaskRestorer createTileRestorer(TileBuffer tileBuffer, int tileIndex) {
-        return add(new NullPixelMaskRestorer(tileBuffer, tileIndex, this.nullValue, this.compressorControl));
+        return add(new NullPixelMaskRestorer(tileBuffer, tileIndex, nullValue, compressorControl));
     }
 
     public byte[][] getColumn() {
-        byte[][] column = new byte[this.nullPixelMasks.length][];
-        for (AbstractNullPixelMask tileMask : this.nullPixelMasks) {
+        byte[][] column = new byte[nullPixelMasks.length][];
+        for (AbstractNullPixelMask tileMask : nullPixelMasks) {
             column[tileMask.getTileIndex()] = tileMask.getMaskBytes();
         }
         return column;
     }
 
     public String getCompressAlgorithm() {
-        return this.compressAlgorithm;
+        return compressAlgorithm;
     }
 
     public void setColumn(byte[][] nullPixels) {
-        for (AbstractNullPixelMask tileMask : this.nullPixelMasks) {
+        for (AbstractNullPixelMask tileMask : nullPixelMasks) {
             byte[] tileMaskBytes = nullPixels[tileMask.getTileIndex()];
             if (tileMaskBytes != null && tileMaskBytes.length > 0) {
                 tileMask.setMask(ByteBuffer.wrap(tileMaskBytes));
@@ -84,7 +87,7 @@ public class ImageNullPixelMask {
     }
 
     private <T extends AbstractNullPixelMask> T add(T nullPixelMask) {
-        this.nullPixelMasks[nullPixelMask.getTileIndex()] = nullPixelMask;
+        nullPixelMasks[nullPixelMask.getTileIndex()] = nullPixelMask;
         return nullPixelMask;
     }
 

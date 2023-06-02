@@ -7,12 +7,12 @@ package nom.tam.fits.compression.algorithm.rice;
  * Copyright (C) 1996 - 2021 nom-tam-fits
  * %%
  * This is free and unencumbered software released into the public domain.
- * 
+ *
  * Anyone is free to copy, modify, publish, use, compile, sell, or
  * distribute this software, either in source code form or as a compiled
  * binary, for any purpose, commercial or non-commercial, and by any
  * means.
- * 
+ *
  * In jurisdictions that recognize copyright laws, the author or authors
  * of this software dedicate any and all copyright interest in the
  * software to the public domain. We make this dedication for the benefit
@@ -20,7 +20,7 @@ package nom.tam.fits.compression.algorithm.rice;
  * successors. We intend this dedication to be an overt act of
  * relinquishment in perpetuity of all present and future rights to this
  * software under copyright law.
- * 
+ *
  * THE SOFTWARE IS PROVIDED "AS IS", WITHOUT WARRANTY OF ANY KIND,
  * EXPRESS OR IMPLIED, INCLUDING BUT NOT LIMITED TO THE WARRANTIES OF
  * MERCHANTABILITY, FITNESS FOR A PARTICULAR PURPOSE AND NONINFRINGEMENT.
@@ -34,10 +34,13 @@ package nom.tam.fits.compression.algorithm.rice;
 import java.nio.ByteBuffer;
 
 /**
- * A bit wise reader writer around a bytebuffer.
+ * (<i>for internal use</i>) A bit wise reader writer around a {@link ByteBuffer}.
  * 
- * @author Ritchie
+ * @deprecated (<i>for internal use</i>) Its visibility may be reduced to the package level in the future.
+ * 
+ * @author     Ritchie
  */
+@SuppressWarnings("javadoc")
 public class BitBuffer {
 
     private static final int BITS_OF_4_BYTES = 32;
@@ -65,58 +68,57 @@ public class BitBuffer {
     private long position;
 
     public BitBuffer(ByteBuffer writeBuffer) {
-        this.buffer = writeBuffer;
+        buffer = writeBuffer;
     }
 
     public int bitbuffer() {
-        return this.buffer.get((int) (this.position / BITS_OF_1_BYTE));
+        return buffer.get((int) (position / BITS_OF_1_BYTE));
     }
 
     void close() {
-        if (this.position % BITS_OF_1_BYTE != 0) {
-            putByte((byte) 0, (int) (BITS_OF_1_BYTE - this.position % BITS_OF_1_BYTE));
+        if (position % BITS_OF_1_BYTE != 0) {
+            putByte((byte) 0, (int) (BITS_OF_1_BYTE - position % BITS_OF_1_BYTE));
         }
-        this.buffer.position((int) (this.position / BITS_OF_1_BYTE));
+        buffer.position((int) (position / BITS_OF_1_BYTE));
     }
 
     public int missingBitsInCurrentByte() {
-        return (int) (BITS_OF_1_BYTE - this.position % BITS_OF_1_BYTE);
+        return (int) (BITS_OF_1_BYTE - position % BITS_OF_1_BYTE);
     }
 
     public void movePosition(int i) {
-        this.position += i;
+        position += i;
     }
 
     public void putByte(byte byteToAdd) {
-        final int bytePosition = (int) (this.position / BITS_OF_1_BYTE);
-        final int positionInByte = (int) (this.position % BITS_OF_1_BYTE);
-        final byte old = (byte) (this.buffer.get(bytePosition) & (byte) ~(BYTE_MASK >>> positionInByte));
+        final int bytePosition = (int) (position / BITS_OF_1_BYTE);
+        final int positionInByte = (int) (position % BITS_OF_1_BYTE);
+        final byte old = (byte) (buffer.get(bytePosition) & (byte) ~(BYTE_MASK >>> positionInByte));
         final int byteAsInt = byteToAdd & BYTE_MASK;
-        this.buffer.put(bytePosition, (byte) (old | (byte) (byteAsInt >>> positionInByte)));
+        buffer.put(bytePosition, (byte) (old | (byte) (byteAsInt >>> positionInByte)));
         if (positionInByte > 0) {
-            this.buffer.put(bytePosition + 1, (byte) (byteAsInt << BITS_OF_1_BYTE - positionInByte));
+            buffer.put(bytePosition + 1, (byte) (byteAsInt << BITS_OF_1_BYTE - positionInByte));
         }
-        this.position += BITS_OF_1_BYTE;
+        position += BITS_OF_1_BYTE;
     }
 
     public void putByte(byte byteToAdd, int bits) {
-        final int bytePosition = (int) (this.position / BITS_OF_1_BYTE);
-        final int positionInByte = (int) (this.position % BITS_OF_1_BYTE);
-        final byte old = this.buffer.get(bytePosition);
+        final int bytePosition = (int) (position / BITS_OF_1_BYTE);
+        final int positionInByte = (int) (position % BITS_OF_1_BYTE);
+        final byte old = buffer.get(bytePosition);
         final int byteAsInt = BYTE_MASK & (byteToAdd & BYTE_MASK >>> BITS_OF_1_BYTE - bits) << BITS_OF_1_BYTE - bits;
-        this.buffer.put(bytePosition, (byte) (BYTE_MASK & //
+        buffer.put(bytePosition, (byte) (BYTE_MASK & //
                 (old & BYTE_MASK << BITS_OF_1_BYTE - positionInByte | byteAsInt >>> positionInByte)));
         if (BITS_OF_1_BYTE - positionInByte < bits) {
-            this.buffer.put(bytePosition + 1, (byte) (BYTE_MASK & byteAsInt << BITS_OF_1_BYTE - positionInByte));
+            buffer.put(bytePosition + 1, (byte) (BYTE_MASK & byteAsInt << BITS_OF_1_BYTE - positionInByte));
         }
-        this.position += bits;
+        position += bits;
     }
 
     /**
      * write out int value to the next 4 bytes of the buffer
      * 
-     * @param i
-     *            integer to write
+     * @param i integer to write
      */
     public void putInt(int i) {
         putByte((byte) ((i & BYTE_4_OF_INT) >>> BITS_OF_3_BYTES));

@@ -1,5 +1,15 @@
 package nom.tam.image.compression.hdu;
 
+import java.util.Map;
+
+import nom.tam.fits.HeaderCard;
+import nom.tam.fits.HeaderCardException;
+import nom.tam.fits.header.Compression;
+import nom.tam.fits.header.GenericKey;
+import nom.tam.fits.header.IFitsHeader;
+import nom.tam.fits.header.IFitsHeader.VALUE;
+import nom.tam.util.Cursor;
+
 /*
  * #%L
  * nom.tam FITS library
@@ -7,12 +17,12 @@ package nom.tam.image.compression.hdu;
  * Copyright (C) 1996 - 2021 nom-tam-fits
  * %%
  * This is free and unencumbered software released into the public domain.
- * 
+ *
  * Anyone is free to copy, modify, publish, use, compile, sell, or
  * distribute this software, either in source code form or as a compiled
  * binary, for any purpose, commercial or non-commercial, and by any
  * means.
- * 
+ *
  * In jurisdictions that recognize copyright laws, the author or authors
  * of this software dedicate any and all copyright interest in the
  * software to the public domain. We make this dedication for the benefit
@@ -20,7 +30,7 @@ package nom.tam.image.compression.hdu;
  * successors. We intend this dedication to be an overt act of
  * relinquishment in perpetuity of all present and future rights to this
  * software under copyright law.
- * 
+ *
  * THE SOFTWARE IS PROVIDED "AS IS", WITHOUT WARRANTY OF ANY KIND,
  * EXPRESS OR IMPLIED, INCLUDING BUT NOT LIMITED TO THE WARRANTIES OF
  * MERCHANTABILITY, FITNESS FOR A PARTICULAR PURPOSE AND NONINFRINGEMENT.
@@ -66,16 +76,11 @@ import static nom.tam.fits.header.Standard.TFORMn;
 import static nom.tam.fits.header.Standard.THEAP;
 import static nom.tam.fits.header.Standard.XTENSION;
 
-import java.util.Map;
-
-import nom.tam.fits.HeaderCard;
-import nom.tam.fits.HeaderCardException;
-import nom.tam.fits.header.Compression;
-import nom.tam.fits.header.GenericKey;
-import nom.tam.fits.header.IFitsHeader;
-import nom.tam.fits.header.IFitsHeader.VALUE;
-import nom.tam.util.Cursor;
-
+/**
+ * Mapping of header keywords between compressed and uncompressed representation. For example, the keyword NAXIS1 in the
+ * uncompressed HDU is remapped to ZNAXIS1 in the compressed HDU so it does not interfere with the different layout of
+ * the compressed HDU vs the layout of the original one.
+ */
 enum BackupRestoreUnCompressedHeaderCard {
     MAP_ANY(null) {
 
@@ -91,10 +96,7 @@ enum BackupRestoreUnCompressedHeaderCard {
             headerIterator.add(card.copy());
         }
     },
-    MAP_BITPIX(BITPIX),
-    MAP_CHECKSUM(CHECKSUM),
-    MAP_DATASUM(DATASUM),
-    MAP_EXTNAME(EXTNAME) {
+    MAP_BITPIX(BITPIX), MAP_CHECKSUM(CHECKSUM), MAP_DATASUM(DATASUM), MAP_EXTNAME(EXTNAME) {
 
         @Override
         protected void backupCard(HeaderCard card, Cursor<String, HeaderCard> headerIterator) throws HeaderCardException {
@@ -103,10 +105,7 @@ enum BackupRestoreUnCompressedHeaderCard {
             }
         }
     },
-    MAP_GCOUNT(GCOUNT),
-    MAP_NAXIS(NAXIS),
-    MAP_NAXISn(NAXISn),
-    MAP_PCOUNT(PCOUNT),
+    MAP_GCOUNT(GCOUNT), MAP_NAXIS(NAXIS), MAP_NAXISn(NAXISn), MAP_PCOUNT(PCOUNT),
     // MAP_TFIELDS(TFIELDS),
     MAP_ZFORMn(ZFORMn) {
 
@@ -123,34 +122,22 @@ enum BackupRestoreUnCompressedHeaderCard {
         }
 
     },
-    MAP_TFORMn(TFORMn),
-    MAP_XTENSION(XTENSION),
-    MAP_ZBITPIX(ZBITPIX),
-    MAP_ZBLANK(ZBLANK),
-    MAP_ZTILELEN(ZTILELEN),
-    MAP_ZCTYPn(ZCTYPn),
-    @SuppressWarnings("deprecation")
-    MAP_ZBLOCKED(ZBLOCKED),
-    MAP_ZCMPTYPE(ZCMPTYPE),
-    MAP_ZDATASUM(ZDATASUM),
-    MAP_ZDITHER0(ZDITHER0),
-    MAP_ZEXTEND(ZEXTEND),
-    MAP_ZGCOUNT(ZGCOUNT),
-    MAP_ZHECKSUM(ZHECKSUM),
-    MAP_ZIMAGE(ZIMAGE),
-    MAP_ZTABLE(ZTABLE),
-    MAP_ZNAMEn(ZNAMEn),
-    MAP_ZNAXIS(ZNAXIS),
-    MAP_THEAP(THEAP) {
+    MAP_TFORMn(TFORMn), MAP_XTENSION(XTENSION), MAP_ZBITPIX(ZBITPIX), MAP_ZBLANK(ZBLANK), MAP_ZTILELEN(
+            ZTILELEN), MAP_ZCTYPn(ZCTYPn), @SuppressWarnings("deprecation")
+    MAP_ZBLOCKED(ZBLOCKED), MAP_ZCMPTYPE(ZCMPTYPE), MAP_ZDATASUM(ZDATASUM), MAP_ZDITHER0(ZDITHER0), MAP_ZEXTEND(
+            ZEXTEND), MAP_ZGCOUNT(ZGCOUNT), MAP_ZHECKSUM(ZHECKSUM), MAP_ZIMAGE(
+                    ZIMAGE), MAP_ZTABLE(ZTABLE), MAP_ZNAMEn(ZNAMEn), MAP_ZNAXIS(ZNAXIS), MAP_THEAP(THEAP) {
 
-        @Override
-        protected void backupCard(HeaderCard card, Cursor<String, HeaderCard> headerIterator) throws HeaderCardException {
-        }
+                        @Override
+                        protected void backupCard(HeaderCard card, Cursor<String, HeaderCard> headerIterator)
+                                throws HeaderCardException {
+                        }
 
-        @Override
-        protected void restoreCard(HeaderCard card, Cursor<String, HeaderCard> headerIterator) throws HeaderCardException {
-        }
-    },
+                        @Override
+                        protected void restoreCard(HeaderCard card, Cursor<String, HeaderCard> headerIterator)
+                                throws HeaderCardException {
+                        }
+                    },
     MAP_ZNAXISn(ZNAXISn) {
 
         @Override
@@ -166,12 +153,8 @@ enum BackupRestoreUnCompressedHeaderCard {
         }
 
     },
-    MAP_ZPCOUNT(ZPCOUNT),
-    MAP_ZQUANTIZ(ZQUANTIZ),
-    MAP_ZSIMPLE(ZSIMPLE),
-    MAP_ZTENSION(ZTENSION),
-    MAP_ZTILEn(ZTILEn),
-    MAP_ZVALn(ZVALn);
+    MAP_ZPCOUNT(ZPCOUNT), MAP_ZQUANTIZ(ZQUANTIZ), MAP_ZSIMPLE(ZSIMPLE), MAP_ZTENSION(ZTENSION), MAP_ZTILEn(
+            ZTILEn), MAP_ZVALn(ZVALn);
 
     private final IFitsHeader compressedHeaderKey;
 
@@ -187,7 +170,8 @@ enum BackupRestoreUnCompressedHeaderCard {
         mapping.restoreCard(card, headerIterator);
     }
 
-    protected static BackupRestoreUnCompressedHeaderCard selectMapping(Map<IFitsHeader, BackupRestoreUnCompressedHeaderCard> mappings, HeaderCard card) {
+    protected static BackupRestoreUnCompressedHeaderCard selectMapping(
+            Map<IFitsHeader, BackupRestoreUnCompressedHeaderCard> mappings, HeaderCard card) {
         IFitsHeader key = GenericKey.lookup(card.getKey());
         if (key != null) {
             BackupRestoreUnCompressedHeaderCard mapping = mappings.get(key);
@@ -199,20 +183,21 @@ enum BackupRestoreUnCompressedHeaderCard {
     }
 
     BackupRestoreUnCompressedHeaderCard(IFitsHeader header) {
-        this.compressedHeaderKey = header;
+        compressedHeaderKey = header;
         if (header instanceof Compression) {
-            this.uncompressedHeaderKey = ((Compression) this.compressedHeaderKey).getUncompressedKey();
+            uncompressedHeaderKey = ((Compression) compressedHeaderKey).getUncompressedKey();
 
         } else {
-            this.uncompressedHeaderKey = null;
+            uncompressedHeaderKey = null;
         }
         CompressedImageHDU.UNCOMPRESSED_HEADER_MAPPING.put(header, this);
-        if (this.uncompressedHeaderKey != null) {
-            CompressedImageHDU.COMPRESSED_HEADER_MAPPING.put(this.uncompressedHeaderKey, this);
+        if (uncompressedHeaderKey != null) {
+            CompressedImageHDU.COMPRESSED_HEADER_MAPPING.put(uncompressedHeaderKey, this);
         }
     }
 
-    private void addHeaderCard(HeaderCard card, Cursor<String, HeaderCard> headerIterator, IFitsHeader targetKey) throws HeaderCardException {
+    private void addHeaderCard(HeaderCard card, Cursor<String, HeaderCard> headerIterator, IFitsHeader targetKey)
+            throws HeaderCardException {
         if (targetKey != null) {
             if (targetKey.valueType() == VALUE.INTEGER) {
                 headerIterator.add(new HeaderCard(targetKey.key(), card.getValue(Integer.class, 0), card.getComment()));
@@ -225,30 +210,28 @@ enum BackupRestoreUnCompressedHeaderCard {
     }
 
     /**
-     * default behaviour is to ignore the card and by that to exclude it from
-     * the uncompressed header if it does not have a uncompressed equivalent..
+     * default behaviour is to ignore the card and by that to exclude it from the uncompressed header if it does not
+     * have a uncompressed equivalent..
      *
-     * @param card
-     *            the card from the compressed header
-     * @param headerIterator
-     *            the iterator for the uncompressed header.
-     * @throws HeaderCardException
-     *             if the card could not be copied
+     * @param  card                the card from the compressed header
+     * @param  headerIterator      the iterator for the uncompressed header.
+     *
+     * @throws HeaderCardException if the card could not be copied
      */
     protected void backupCard(HeaderCard card, Cursor<String, HeaderCard> headerIterator) throws HeaderCardException {
-        IFitsHeader uncompressedKey = this.uncompressedHeaderKey;
+        IFitsHeader uncompressedKey = uncompressedHeaderKey;
         addHeaderCard(card, headerIterator, uncompressedKey);
     }
 
     protected IFitsHeader compressedHeaderKey() {
-        return this.compressedHeaderKey;
+        return compressedHeaderKey;
     }
 
     protected void restoreCard(HeaderCard card, Cursor<String, HeaderCard> headerIterator) throws HeaderCardException {
-        addHeaderCard(card, headerIterator, this.compressedHeaderKey);
+        addHeaderCard(card, headerIterator, compressedHeaderKey);
     }
 
     protected IFitsHeader uncompressedHeaderKey() {
-        return this.uncompressedHeaderKey;
+        return uncompressedHeaderKey;
     }
 }

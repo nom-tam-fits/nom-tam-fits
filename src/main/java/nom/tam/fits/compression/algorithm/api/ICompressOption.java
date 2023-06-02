@@ -9,12 +9,12 @@ import nom.tam.fits.compression.provider.param.api.ICompressParameters;
  * Copyright (C) 1996 - 2021 nom-tam-fits
  * %%
  * This is free and unencumbered software released into the public domain.
- * 
+ *
  * Anyone is free to copy, modify, publish, use, compile, sell, or
  * distribute this software, either in source code form or as a compiled
  * binary, for any purpose, commercial or non-commercial, and by any
  * means.
- * 
+ *
  * In jurisdictions that recognize copyright laws, the author or authors
  * of this software dedicate any and all copyright interest in the
  * software to the public domain. We make this dedication for the benefit
@@ -22,7 +22,7 @@ import nom.tam.fits.compression.provider.param.api.ICompressParameters;
  * successors. We intend this dedication to be an overt act of
  * relinquishment in perpetuity of all present and future rights to this
  * software under copyright law.
- * 
+ *
  * THE SOFTWARE IS PROVIDED "AS IS", WITHOUT WARRANTY OF ANY KIND,
  * EXPRESS OR IMPLIED, INCLUDING BUT NOT LIMITED TO THE WARRANTIES OF
  * MERCHANTABILITY, FITNESS FOR A PARTICULAR PURPOSE AND NONINFRINGEMENT.
@@ -34,63 +34,71 @@ import nom.tam.fits.compression.provider.param.api.ICompressParameters;
  */
 
 /**
- * Option for the compression algorithm, implementors are used to control the
- * compression algorithm.
+ * Option for the compression algorithm, implementors are used to control the compression algorithm.
  */
 public interface ICompressOption extends Cloneable {
 
     /**
-     * @return copy the option (normally the option from with the copy happened
-     *         is saved as original).
+     * Returns an independent copy of this option. Modifications to the original or the copy will not affect the other.
+     * 
+     * @return copy the option (normally the option from with the copy happened is saved as original).
      */
     ICompressOption copy();
 
     /**
+     * (<i>for internal use</i>) Returns the parameters that represent the settings for this option in the FITS header
+     * or compressed data column.
+     * 
      * @return the parameters that must be synchronized with the hdu meta data.
+     * 
+     * @see    #setParameters(ICompressParameters)
      */
     ICompressParameters getCompressionParameters();
 
     /**
-     * @return true if the compression done with this specified options uses
-     *         approximations. That means if the reconstruction of the data is
-     *         excact the return should be false.
+     * Checks if this type of compression is inherently lossy
+     * 
+     * @return <code>true</code> if the compression done with this specified options uses approximations. That means if
+     *             the reconstruction of the data is excact the return should be <code>false</code>.
      */
     boolean isLossyCompression();
 
     /**
-     * set the parameters that must be synchronized with the hdu meta data.
+     * (<i>for internal use</i>) Sets the parameters that link the options to how they are recorded in the FITS headers
+     * or compressed table columns.
      *
-     * @param parameters
-     *            the parameters to synchronized
+     * @param parameters the parameters to synchronized
+     * 
+     * @see              #getCompressionParameters()
      */
     void setParameters(ICompressParameters parameters);
 
     /**
-     * set the tile height in pixel.
+     * Set the tile height.
      *
-     * @param value
-     *            the number of pixel.
-     * @return this (builder pattern)
+     * @param  value the new tile height in pixels
+     *
+     * @return       itself
      */
     ICompressOption setTileHeight(int value);
 
     /**
-     * set the tile width.
+     * Set the tile width.
      *
-     * @param value
-     *            the number of pixel.
-     * @return this (builder pattern)
+     * @param  value the new tile with in pixels
+     *
+     * @return       itself
      */
     ICompressOption setTileWidth(int value);
 
     /**
-     * un wrap a specific implementation detail.
+     * (<i>for internal use</i>) Recasts these options for the specific implementation class
      *
-     * @param clazz
-     *            the type to unwrap
-     * @param <T>
-     *            the class to unrwap
-     * @return the implementation detail or null if no such detail is avalable.
+     * @param  clazz the implementation class
+     * @param  <T>   these options recast to the designated implementation type.
+     *
+     * @return       the recast version of us or <code>null</code> if the recasting is not available for the specified
+     *                   class type.
      */
     <T> T unwrap(Class<T> clazz);
 }

@@ -7,12 +7,12 @@ package nom.tam.image.compression.tile.mask;
  * Copyright (C) 1996 - 2021 nom-tam-fits
  * %%
  * This is free and unencumbered software released into the public domain.
- * 
+ *
  * Anyone is free to copy, modify, publish, use, compile, sell, or
  * distribute this software, either in source code form or as a compiled
  * binary, for any purpose, commercial or non-commercial, and by any
  * means.
- * 
+ *
  * In jurisdictions that recognize copyright laws, the author or authors
  * of this software dedicate any and all copyright interest in the
  * software to the public domain. We make this dedication for the benefit
@@ -20,7 +20,7 @@ package nom.tam.image.compression.tile.mask;
  * successors. We intend this dedication to be an overt act of
  * relinquishment in perpetuity of all present and future rights to this
  * software under copyright law.
- * 
+ *
  * THE SOFTWARE IS PROVIDED "AS IS", WITHOUT WARRANTY OF ANY KIND,
  * EXPRESS OR IMPLIED, INCLUDING BUT NOT LIMITED TO THE WARRANTIES OF
  * MERCHANTABILITY, FITNESS FOR A PARTICULAR PURPOSE AND NONINFRINGEMENT.
@@ -36,6 +36,16 @@ import java.nio.ByteBuffer;
 import nom.tam.fits.compression.algorithm.api.ICompressorControl;
 import nom.tam.image.tile.operation.buffer.TileBuffer;
 
+/**
+ * (<i>for internal use</i>) Base support for blank (<code>null</code>) in
+ * compressed images. In regular images specific values (such as
+ * {@link Double#NaN} or a specific integer value) may be used to indicate
+ * missing data. However, because of e.g. quantization or lossy compression,
+ * these specific values may not be recovered exactly when compressing /
+ * decompressing images. Hence, there is a need to demark <code>null</code>
+ * values differently in copmressed images. This class provides support for that
+ * purpose.
+ */
 public class AbstractNullPixelMask {
 
     private static final byte[] EMPTY_BYTE_ARRAY = new byte[0];
@@ -63,13 +73,13 @@ public class AbstractNullPixelMask {
     }
 
     public byte[] getMaskBytes() {
-        if (this.mask == null) {
+        if (mask == null) {
             return EMPTY_BYTE_ARRAY;
         }
-        int size = this.mask.position();
+        int size = mask.position();
         byte[] result = new byte[size];
-        this.mask.rewind();
-        this.mask.get(result);
+        mask.rewind();
+        mask.get(result);
         return result;
     }
 
@@ -78,29 +88,29 @@ public class AbstractNullPixelMask {
     }
 
     protected ICompressorControl getCompressorControl() {
-        return this.compressorControl;
+        return compressorControl;
     }
 
     protected ByteBuffer getMask() {
-        return this.mask;
+        return mask;
     }
 
     protected long getNullValue() {
-        return this.nullValue;
+        return nullValue;
     }
 
     protected TileBuffer getTileBuffer() {
-        return this.tileBuffer;
+        return tileBuffer;
     }
 
     protected int getTileIndex() {
-        return this.tileIndex;
+        return tileIndex;
     }
 
     protected ByteBuffer initializedMask(int remaining) {
-        if (this.mask == null) {
-            this.mask = ByteBuffer.allocate(remaining);
+        if (mask == null) {
+            mask = ByteBuffer.allocate(remaining);
         }
-        return this.mask;
+        return mask;
     }
 }

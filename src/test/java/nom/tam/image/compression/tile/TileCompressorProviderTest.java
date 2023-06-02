@@ -1,47 +1,14 @@
 package nom.tam.image.compression.tile;
 
-/*
- * #%L
- * nom.tam FITS library
- * %%
- * Copyright (C) 1996 - 2021 nom-tam-fits
- * %%
- * This is free and unencumbered software released into the public domain.
- * 
- * Anyone is free to copy, modify, publish, use, compile, sell, or
- * distribute this software, either in source code form or as a compiled
- * binary, for any purpose, commercial or non-commercial, and by any
- * means.
- * 
- * In jurisdictions that recognize copyright laws, the author or authors
- * of this software dedicate any and all copyright interest in the
- * software to the public domain. We make this dedication for the benefit
- * of the public at large and to the detriment of our heirs and
- * successors. We intend this dedication to be an overt act of
- * relinquishment in perpetuity of all present and future rights to this
- * software under copyright law.
- * 
- * THE SOFTWARE IS PROVIDED "AS IS", WITHOUT WARRANTY OF ANY KIND,
- * EXPRESS OR IMPLIED, INCLUDING BUT NOT LIMITED TO THE WARRANTIES OF
- * MERCHANTABILITY, FITNESS FOR A PARTICULAR PURPOSE AND NONINFRINGEMENT.
- * IN NO EVENT SHALL THE AUTHORS BE LIABLE FOR ANY CLAIM, DAMAGES OR
- * OTHER LIABILITY, WHETHER IN AN ACTION OF CONTRACT, TORT OR OTHERWISE,
- * ARISING FROM, OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR
- * OTHER DEALINGS IN THE SOFTWARE.
- * #L%
- */
-
-import static nom.tam.fits.header.Compression.ZBITPIX;
-import static nom.tam.fits.header.Compression.ZCMPTYPE;
-import static nom.tam.fits.header.Compression.ZNAXIS;
-import static nom.tam.fits.header.Compression.ZNAXISn;
-import static nom.tam.fits.header.Compression.ZTILEn;
-
 import java.nio.Buffer;
 import java.nio.ByteBuffer;
 import java.nio.IntBuffer;
 import java.util.ArrayList;
 import java.util.List;
+
+import org.junit.Assert;
+import org.junit.Before;
+import org.junit.Test;
 
 import nom.tam.fits.BinaryTable;
 import nom.tam.fits.FitsException;
@@ -70,9 +37,42 @@ import nom.tam.util.test.ThrowAnyException;
 import nom.tam.util.type.ElementType;
 import nom.tam.util.type.PrimitiveTypes;
 
-import org.junit.Assert;
-import org.junit.Before;
-import org.junit.Test;
+/*
+ * #%L
+ * nom.tam FITS library
+ * %%
+ * Copyright (C) 1996 - 2021 nom-tam-fits
+ * %%
+ * This is free and unencumbered software released into the public domain.
+ *
+ * Anyone is free to copy, modify, publish, use, compile, sell, or
+ * distribute this software, either in source code form or as a compiled
+ * binary, for any purpose, commercial or non-commercial, and by any
+ * means.
+ *
+ * In jurisdictions that recognize copyright laws, the author or authors
+ * of this software dedicate any and all copyright interest in the
+ * software to the public domain. We make this dedication for the benefit
+ * of the public at large and to the detriment of our heirs and
+ * successors. We intend this dedication to be an overt act of
+ * relinquishment in perpetuity of all present and future rights to this
+ * software under copyright law.
+ *
+ * THE SOFTWARE IS PROVIDED "AS IS", WITHOUT WARRANTY OF ANY KIND,
+ * EXPRESS OR IMPLIED, INCLUDING BUT NOT LIMITED TO THE WARRANTIES OF
+ * MERCHANTABILITY, FITNESS FOR A PARTICULAR PURPOSE AND NONINFRINGEMENT.
+ * IN NO EVENT SHALL THE AUTHORS BE LIABLE FOR ANY CLAIM, DAMAGES OR
+ * OTHER LIABILITY, WHETHER IN AN ACTION OF CONTRACT, TORT OR OTHERWISE,
+ * ARISING FROM, OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR
+ * OTHER DEALINGS IN THE SOFTWARE.
+ * #L%
+ */
+
+import static nom.tam.fits.header.Compression.ZBITPIX;
+import static nom.tam.fits.header.Compression.ZCMPTYPE;
+import static nom.tam.fits.header.Compression.ZNAXIS;
+import static nom.tam.fits.header.Compression.ZNAXISn;
+import static nom.tam.fits.header.Compression.ZTILEn;
 
 public class TileCompressorProviderTest {
 
@@ -163,13 +163,16 @@ public class TileCompressorProviderTest {
     @Test
     public void testAlternativeTileProcessor() throws Exception {
         ICompressorControl compressor = CompressorProvider.findCompressorControl(null, "X", long.class);
-        Assert.assertTrue(compressor.getClass().getName().indexOf(TileCompressorAlternativProvider.class.getSimpleName()) > 0);
+        Assert.assertTrue(
+                compressor.getClass().getName().indexOf(TileCompressorAlternativProvider.class.getSimpleName()) > 0);
 
         Assert.assertNotNull(CompressorProvider.findCompressorControl(null, "X", long.class));
 
         Assert.assertNull(CompressorProvider.findCompressorControl("AA", Compression.ZCMPTYPE_RICE_1, int.class));
-        Assert.assertNull(CompressorProvider.findCompressorControl(Compression.ZQUANTIZ_SUBTRACTIVE_DITHER_2, "BB", int.class));
-        Assert.assertNull(CompressorProvider.findCompressorControl(Compression.ZQUANTIZ_SUBTRACTIVE_DITHER_2, Compression.ZCMPTYPE_RICE_1, String.class));
+        Assert.assertNull(
+                CompressorProvider.findCompressorControl(Compression.ZQUANTIZ_SUBTRACTIVE_DITHER_2, "BB", int.class));
+        Assert.assertNull(CompressorProvider.findCompressorControl(Compression.ZQUANTIZ_SUBTRACTIVE_DITHER_2,
+                Compression.ZCMPTYPE_RICE_1, String.class));
 
         Assert.assertNotNull(CompressorProvider.findCompressorControl(null, Compression.ZCMPTYPE_GZIP_2, int.class));
     }
@@ -248,17 +251,12 @@ public class TileCompressorProviderTest {
 
     @Test
     public void testForceNoLossWithoutFunczion() throws Exception {
-        TileImageCompressionOperationWithPublicMethods operationsOfImage = new TileImageCompressionOperationWithPublicMethods(null);
+        TileImageCompressionOperationWithPublicMethods operationsOfImage = new TileImageCompressionOperationWithPublicMethods(
+                null);
         Header header = new Header();
         header.card(ZBITPIX).value(8);
-        operationsOfImage.setTileAxes(new int[]{
-            100,
-            100
-        });
-        operationsOfImage.setAxes(new int[]{
-            100,
-            100
-        });
+        operationsOfImage.setTileAxes(new int[] {100, 100});
+        operationsOfImage.setAxes(new int[] {100, 100});
         operationsOfImage.readPrimaryHeaders(header);
         operationsOfImage.setCompressAlgorithm(header.card(ZCMPTYPE).value("RICE_1").card());
         operationsOfImage.createTiles(new TileDecompressorInitialisation(operationsOfImage, //
@@ -273,15 +271,7 @@ public class TileCompressorProviderTest {
 
     @Test
     public void testTileSizes() throws Exception {
-        int[] sizes = {
-            1,
-            3,
-            15,
-            33,
-            50,
-            66,
-            100
-        };
+        int[] sizes = {1, 3, 15, 33, 50, 66, 100};
         for (int tileWidth : sizes) {
             for (int tileHeigth : sizes) {
                 testTileSizes(tileWidth, tileHeigth);
@@ -430,14 +420,14 @@ public class TileCompressorProviderTest {
         }
     }
 
-    private static List<TileCompressionOperation> getTileCompressionOperations(TiledImageCompressionOperation operationsOfImage) {
-        List<TileCompressionOperation> tiles = new ArrayList<TileCompressionOperation>();
+    private static List<TileCompressionOperation> getTileCompressionOperations(
+            TiledImageCompressionOperation operationsOfImage) {
+        List<TileCompressionOperation> tiles = new ArrayList<>();
         try {
             for (int index = 0; index < 10000; index++) {
-                tiles.add((TileCompressionOperation) Access.getTile(operationsOfImage, index));
+                tiles.add(Access.getTile(operationsOfImage, index));
             }
         } catch (ArrayIndexOutOfBoundsException e) {
-            return tiles;
         }
         return tiles;
     }

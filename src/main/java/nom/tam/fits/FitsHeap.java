@@ -1,7 +1,5 @@
 package nom.tam.fits;
 
-
-
 /*
  * #%L
  * nom.tam FITS library
@@ -9,12 +7,12 @@ package nom.tam.fits;
  * Copyright (C) 2004 - 2021 nom-tam-fits
  * %%
  * This is free and unencumbered software released into the public domain.
- * 
+ *
  * Anyone is free to copy, modify, publish, use, compile, sell, or
  * distribute this software, either in source code form or as a compiled
  * binary, for any purpose, commercial or non-commercial, and by any
  * means.
- * 
+ *
  * In jurisdictions that recognize copyright laws, the author or authors
  * of this software dedicate any and all copyright interest in the
  * software to the public domain. We make this dedication for the benefit
@@ -22,7 +20,7 @@ package nom.tam.fits;
  * successors. We intend this dedication to be an overt act of
  * relinquishment in perpetuity of all present and future rights to this
  * software under copyright law.
- * 
+ *
  * THE SOFTWARE IS PROVIDED "AS IS", WITHOUT WARRANTY OF ANY KIND,
  * EXPRESS OR IMPLIED, INCLUDING BUT NOT LIMITED TO THE WARRANTIES OF
  * MERCHANTABILITY, FITNESS FOR A PARTICULAR PURPOSE AND NONINFRINGEMENT.
@@ -35,78 +33,73 @@ package nom.tam.fits;
 
 import java.io.IOException;
 
-import edu.umd.cs.findbugs.annotations.SuppressFBWarnings;
 import nom.tam.util.ArrayDataInput;
 import nom.tam.util.ArrayDataOutput;
+import nom.tam.util.ByteArrayIO;
 import nom.tam.util.FitsDecoder;
 import nom.tam.util.FitsEncoder;
-import nom.tam.util.ByteArrayIO;
+
+import edu.umd.cs.findbugs.annotations.SuppressFBWarnings;
 
 /**
- * This class supports the FITS heap. This is currently used for variable length
- * columns in binary tables. The newer implementation of the heap now provides
- * proper random access to the byte buffer as of version 1.16.
- * 
+ * This class supports the FITS heap. This is currently used for variable length columns in binary tables. The newer
+ * implementation of the heap now provides proper random access to the byte buffer as of version 1.16.
  */
 public class FitsHeap implements FitsElement {
 
     /** The minimum stoprage size to allocate for the heap, from which it can grow as necessary */
     private static final int MIN_HEAP_CAPACITY = 16384;
-    
+
     // TODO
     // AK: In principle we could use ReadWriteAccess interface as the storage, which can be either an in-memory
     // array or a buffered file region. The latter could support heaps over 2G, and could reduce memory overhead
     // for heap access in some future release...
     /** The underlying storage space of the heap */
-    private ByteArrayIO store; 
-    
+    private ByteArrayIO store;
+
     /** conversion from Java arrays to FITS binary representation */
     private FitsEncoder encoder;
-    
+
     /** conversion from FITS binary representation to Java arrays */
     private FitsDecoder decoder;
-    
-    /** 
-     * Construct a new uninitialized FITS heap object. 
-     */
-    private FitsHeap() {   
-    }
-    
+
     /**
-     * Creates a heap of a given initial size. The new heap is initialized with 0's, and
-     * up to the specified number of bytes are immediately available for reading
-     * (as zeroes). The heap can grow as needed if more data is written into it.
-     * 
-     * @throws IllegalArgumentException 
-     *                  if the size argument is negative.
-     * 
+     * Construct a new uninitialized FITS heap object.
      */
-    FitsHeap(int size) { 
+    private FitsHeap() {
+    }
+
+    /**
+     * Creates a heap of a given initial size. The new heap is initialized with 0's, and up to the specified number of
+     * bytes are immediately available for reading (as zeroes). The heap can grow as needed if more data is written into
+     * it.
+     *
+     * @throws IllegalArgumentException if the size argument is negative.
+     */
+    FitsHeap(int size) {
         if (size < 0) {
             throw new IllegalArgumentException("Illegal size for FITS heap: " + size);
         }
-        
+
         ByteArrayIO data = new ByteArrayIO(Math.max(size, MIN_HEAP_CAPACITY));
         data.setLength(Math.max(0, size));
         setData(data);
         encoder = new FitsEncoder(store);
         decoder = new FitsDecoder(store);
     }
-    
+
     /**
-     * Sets the underlying data storage for this heap instance. Constructors should
-     * call this.
-     * 
-     * @param data      the new underlying storage object for this heap instance. 
+     * Sets the underlying data storage for this heap instance. Constructors should call this.
+     *
+     * @param data the new underlying storage object for this heap instance.
      */
     protected void setData(ByteArrayIO data) {
-        this.store = data;
+        store = data;
     }
-    
+
     /**
-     * Add a copy constructor to allow us to duplicate a heap. This would be
-     * necessary if we wanted to copy an HDU that included variable length
-     * columns.
+     * Add a copy constructor to allow us to duplicate a heap. This would be necessary if we wanted to copy an HDU that
+     * included variable length columns.
      */
     FitsHeap copy() {
         FitsHeap copy = new FitsHeap();
@@ -117,15 +110,13 @@ public class FitsHeap implements FitsElement {
     }
 
     /**
-     * Gets data for a Java array from the heap. The array may be a multi-dimensional or a 
-     * heterogenetous array of arrays.
-     * 
-     * @param offset
-     *            the heap byte offset at which the data begins.
-     * @param array
-     *            The array to be extracted.
-     * @throws FitsException
-     *             if the operation failed
+     * Gets data for a Java array from the heap. The array may be a multi-dimensional or a heterogenetous array of
+     * arrays.
+     *
+     * @param  offset        the heap byte offset at which the data begins.
+     * @param  array         The array to be extracted.
+     *
+     * @throws FitsException if the operation failed
      */
     public void getData(int offset, Object array) throws FitsException {
         try {
@@ -160,26 +151,27 @@ public class FitsHeap implements FitsElement {
         if (lsize > Integer.MAX_VALUE) {
             throw new FitsException("FITS Heap > 2 G");
         }
-        
+
         int oldSize = (int) store.length();
-        
+
         try {
             store.position(oldSize);
             encoder.writeArray(data);
         } catch (Exception e) {
             throw new FitsException("Unable to write variable column length data", e);
         }
-       
+
         return oldSize;
     }
-    
+
     @SuppressFBWarnings(value = "RR_NOT_CHECKED", justification = "this read will never return less than the requested length")
     @Override
+    @Deprecated
     public void read(ArrayDataInput str) throws FitsException {
         if (store.length() == 0) {
             return;
         }
-       
+
         try {
             str.readFully(store.getBuffer(), 0, (int) store.length());
         } catch (IOException e) {
@@ -204,8 +196,8 @@ public class FitsHeap implements FitsElement {
 
     /**
      * Returns the current heap size.
-     * 
-     * @return      the size of the heap in bytes
+     *
+     * @return the size of the heap in bytes
      */
     public int size() {
         return (int) store.length();
@@ -219,6 +211,5 @@ public class FitsHeap implements FitsElement {
             throw new FitsException("Error writing heap:" + e.getMessage(), e);
         }
     }
-    
-    
+
 }

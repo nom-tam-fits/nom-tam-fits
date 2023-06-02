@@ -7,12 +7,12 @@ package nom.tam.fits.header;
  * Copyright (C) 2012 - 2015 indiforjava
  * %%
  * This is free and unencumbered software released into the public domain.
- * 
+ *
  * Anyone is free to copy, modify, publish, use, compile, sell, or
  * distribute this software, either in source code form or as a compiled
  * binary, for any purpose, commercial or non-commercial, and by any
  * means.
- * 
+ *
  * In jurisdictions that recognize copyright laws, the author or authors
  * of this software dedicate any and all copyright interest in the
  * software to the public domain. We make this dedication for the benefit
@@ -20,7 +20,7 @@ package nom.tam.fits.header;
  * successors. We intend this dedication to be an overt act of
  * relinquishment in perpetuity of all present and future rights to this
  * software under copyright law.
- * 
+ *
  * THE SOFTWARE IS PROVIDED "AS IS", WITHOUT WARRANTY OF ANY KIND,
  * EXPRESS OR IMPLIED, INCLUDING BUT NOT LIMITED TO THE WARRANTIES OF
  * MERCHANTABILITY, FITNESS FOR A PARTICULAR PURPOSE AND NONINFRINGEMENT.
@@ -31,12 +31,19 @@ package nom.tam.fits.header;
  * #L%
  */
 
+/**
+ * Interface for standardized header keyword implementations. Standardized header keys help with proper usage, with
+ * restricted use and value types as appropriate. Using keywords that implement this interface make it less likely for
+ * one to end up with inproperly constructed FITS files. Therefore, their usage is highly encouranged when possible.
+ */
 public interface IFitsHeader {
 
+    /** An enumeration of HDU types in which a header keyword may be used. */
     enum HDU {
         ANY, ASCII_TABLE, BINTABLE, EXTENSION, GROUPS, IMAGE, PRIMARY, PRIMARY_EXTENSION, TABLE
     }
 
+    /** Documentation sources for the various known conventions. */
     enum SOURCE {
         /**
          * Checksum keywords. See
@@ -111,23 +118,60 @@ public interface IFitsHeader {
         }
 
         public String url() {
-            return this.url;
+            return url;
         }
     }
 
+    /** Values types to which implementing keywords can be restricted to. */
     enum VALUE {
         INTEGER, LOGICAL, NONE, REAL, COMPLEX, STRING, ANY
     }
 
+    /**
+     * Returns the comment associated to this FITS header entry. The comment is entirely optional, and it may not be
+     * appear in full (or at all) in the FITS header. Comments should thus never contain essential information. Their
+     * purpose is only to provide non-essential extra information for human use.
+     * 
+     * @return the associated standard comment.
+     */
     String comment();
 
+    /**
+     * Returns the type of HDU(s) in which this header entry may be used.
+     * 
+     * @return the HDU type(s) that this keyword may support.
+     */
     HDU hdu();
 
+    /**
+     * Returns the FITS header keyword for this header entry. Standard FITS keywords are limited to 8 characters, and
+     * contain only epper-case letters, numbers, hyphen, and underscore characters.
+     * 
+     * @return the FITS header keyword for this entry
+     */
     String key();
 
+    /**
+     * Constructs a numbered FITS header keyword entry from this stem, attachinh the specified number after the stem.
+     * Numbering for FITS header keywords always starts from 1.
+     * 
+     * @param  number the 1-based index to add to the stem
+     * 
+     * @return        an indexed instance of this FITS header entry
+     */
     IFitsHeader n(int... number);
 
+    /**
+     * Returns the standard convention, which defines this FITS header entry
+     * 
+     * @return the standard or convention that specifies this FITS heacer keyword
+     */
     SOURCE status();
 
+    /**
+     * The type(s) of value(s) this FITS header entry might take.
+     * 
+     * @return the value type(s) for this FITS header entry
+     */
     VALUE valueType();
 }

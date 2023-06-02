@@ -7,12 +7,12 @@ package nom.tam.fits.header.extra;
  * Copyright (C) 1996 - 2021 nom-tam-fits
  * %%
  * This is free and unencumbered software released into the public domain.
- * 
+ *
  * Anyone is free to copy, modify, publish, use, compile, sell, or
  * distribute this software, either in source code form or as a compiled
  * binary, for any purpose, commercial or non-commercial, and by any
  * means.
- * 
+ *
  * In jurisdictions that recognize copyright laws, the author or authors
  * of this software dedicate any and all copyright interest in the
  * software to the public domain. We make this dedication for the benefit
@@ -20,7 +20,7 @@ package nom.tam.fits.header.extra;
  * successors. We intend this dedication to be an overt act of
  * relinquishment in perpetuity of all present and future rights to this
  * software under copyright law.
- * 
+ *
  * THE SOFTWARE IS PROVIDED "AS IS", WITHOUT WARRANTY OF ANY KIND,
  * EXPRESS OR IMPLIED, INCLUDING BUT NOT LIMITED TO THE WARRANTIES OF
  * MERCHANTABILITY, FITNESS FOR A PARTICULAR PURPOSE AND NONINFRINGEMENT.
@@ -42,7 +42,7 @@ import nom.tam.fits.header.IFitsHeader;
  * See <a href=
  * "http://tucana.noao.edu/ADASS/adass_proc/adass_95/zaraten/zaraten.html">http://tucana.noao.edu/ADASS/adass_proc/adass_95/zaraten/zaraten.html</a>
  * </p>
- * 
+ *
  * @author Richard van Nieuwenhoven.
  */
 public enum STScIExt implements IFitsHeader {
@@ -218,7 +218,7 @@ public enum STScIExt implements IFitsHeader {
     private final IFitsHeader key;
 
     STScIExt(String comment) {
-        this.key = new FitsHeaderImpl(name(), IFitsHeader.SOURCE.CXC, HDU.ANY, VALUE.STRING, comment);
+        key = new FitsHeaderImpl(name(), IFitsHeader.SOURCE.CXC, HDU.ANY, VALUE.STRING, comment);
     }
 
     STScIExt(String key, String comment) {
@@ -227,32 +227,32 @@ public enum STScIExt implements IFitsHeader {
 
     @Override
     public String comment() {
-        return this.key.comment();
+        return key.comment();
     }
 
     @Override
     public HDU hdu() {
-        return this.key.hdu();
+        return key.hdu();
     }
 
     @Override
     public String key() {
-        return this.key.key();
+        return key.key();
     }
 
     @Override
     public IFitsHeader n(int... number) {
-        return this.key.n(number);
+        return key.n(number);
     }
 
     @Override
     public SOURCE status() {
-        return this.key.status();
+        return key.status();
     }
 
     @Override
     @SuppressWarnings("CPD-END")
     public VALUE valueType() {
-        return this.key.valueType();
+        return key.valueType();
     }
 }

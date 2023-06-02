@@ -1,5 +1,15 @@
 package nom.tam.fits.compress;
 
+import java.io.BufferedInputStream;
+import java.io.ByteArrayOutputStream;
+import java.io.FilterInputStream;
+import java.io.IOException;
+import java.io.InputStream;
+import java.io.OutputStream;
+import java.nio.charset.Charset;
+import java.util.logging.Level;
+import java.util.logging.Logger;
+
 /*
  * #%L
  * nom.tam FITS library
@@ -7,12 +17,12 @@ package nom.tam.fits.compress;
  * Copyright (C) 1996 - 2021 nom-tam-fits
  * %%
  * This is free and unencumbered software released into the public domain.
- * 
+ *
  * Anyone is free to copy, modify, publish, use, compile, sell, or
  * distribute this software, either in source code form or as a compiled
  * binary, for any purpose, commercial or non-commercial, and by any
  * means.
- * 
+ *
  * In jurisdictions that recognize copyright laws, the author or authors
  * of this software dedicate any and all copyright interest in the
  * software to the public domain. We make this dedication for the benefit
@@ -20,7 +30,7 @@ package nom.tam.fits.compress;
  * successors. We intend this dedication to be an overt act of
  * relinquishment in perpetuity of all present and future rights to this
  * software under copyright law.
- * 
+ *
  * THE SOFTWARE IS PROVIDED "AS IS", WITHOUT WARRANTY OF ANY KIND,
  * EXPRESS OR IMPLIED, INCLUDING BUT NOT LIMITED TO THE WARRANTIES OF
  * MERCHANTABILITY, FITNESS FOR A PARTICULAR PURPOSE AND NONINFRINGEMENT.
@@ -33,16 +43,17 @@ package nom.tam.fits.compress;
 
 import static nom.tam.util.LoggerHelper.getLogger;
 
-import java.io.BufferedInputStream;
-import java.io.ByteArrayOutputStream;
-import java.io.FilterInputStream;
-import java.io.IOException;
-import java.io.InputStream;
-import java.io.OutputStream;
-import java.nio.charset.Charset;
-import java.util.logging.Level;
-import java.util.logging.Logger;
-
+/**
+ * Ensures that input streams aren't left open when decompressing with an external system tool, such as the UNIX
+ * <b>compress</b> or <b>bzip2</b> commands. It is discouraged to use system tools for decompressing such files,
+ * especially since we have native Java implementations through Apache's <b>commons-compress</b> classes. The system
+ * tools are not portable, whereas the <b>commons-compress</b> implementation is. Therefore, you should neer really need
+ * to use this class, which is provided only for compatibility with earlier versions of this library.
+ * 
+ * @deprecated Needed only by deprecated compression classes. And it should not have visibility outside of this package
+ *                 anyway.
+ */
+@Deprecated
 public class CloseIS extends FilterInputStream {
 
     private static final Logger LOG = getLogger(CloseIS.class);
@@ -63,6 +74,12 @@ public class CloseIS extends FilterInputStream {
 
     private final Process proc;
 
+    /**
+     * Instantiates a new thread that will watch and close the input stream whenever the process using it compeletes.
+     * 
+     * @param proc       The process that is using the input stream
+     * @param compressed the compressed input stream that is used by the process.
+     */
     @SuppressWarnings("resource")
     public CloseIS(Process proc, final InputStream compressed) {
         super(new BufferedInputStream(proc.getInputStream(), CompressionManager.ONE_MEGABYTE));
@@ -71,8 +88,8 @@ public class CloseIS extends FilterInputStream {
         }
         this.proc = proc;
         final InputStream error = proc.getErrorStream();
-        this.output = proc.getInputStream();
-        this.input = proc.getOutputStream();
+        output = proc.getInputStream();
+        input = proc.getOutputStream();
         stdError = new Thread(new Runnable() {
 
             @Override
@@ -178,8 +195,8 @@ public class CloseIS extends FilterInputStream {
     @Override
     public void close() throws IOException {
         super.close();
-        this.input.close();
-        this.output.close();
+        input.close();
+        output.close();
     }
 
 }

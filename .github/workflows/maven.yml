@@ -76,8 +76,8 @@ jobs:
         fi
       working-directory: ./nom-tam-fits
         
-    - name: Check Project Site
-      run: mvn -B site:stage
+    - name: Check ppackage
+      run: mvn package -Ppublic-api
       working-directory: ./nom-tam-fits
         
   release:

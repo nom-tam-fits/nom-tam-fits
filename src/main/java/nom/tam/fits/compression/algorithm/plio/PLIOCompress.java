@@ -13,12 +13,12 @@ import nom.tam.fits.compression.algorithm.api.ICompressor;
  * Copyright (C) 1996 - 2021 nom-tam-fits
  * %%
  * This is free and unencumbered software released into the public domain.
- * 
+ *
  * Anyone is free to copy, modify, publish, use, compile, sell, or
  * distribute this software, either in source code form or as a compiled
  * binary, for any purpose, commercial or non-commercial, and by any
  * means.
- * 
+ *
  * In jurisdictions that recognize copyright laws, the author or authors
  * of this software dedicate any and all copyright interest in the
  * software to the public domain. We make this dedication for the benefit
@@ -26,7 +26,7 @@ import nom.tam.fits.compression.algorithm.api.ICompressor;
  * successors. We intend this dedication to be an overt act of
  * relinquishment in perpetuity of all present and future rights to this
  * software under copyright law.
- * 
+ *
  * THE SOFTWARE IS PROVIDED "AS IS", WITHOUT WARRANTY OF ANY KIND,
  * EXPRESS OR IMPLIED, INCLUDING BUT NOT LIMITED TO THE WARRANTIES OF
  * MERCHANTABILITY, FITNESS FOR A PARTICULAR PURPOSE AND NONINFRINGEMENT.
@@ -38,17 +38,16 @@ import nom.tam.fits.compression.algorithm.api.ICompressor;
  */
 
 /**
- * The original decompression code was written by Doug Tody, NRAO and included
- * (ported to c and adapted) in cfitsio by William Pence, NASA/GSFC. That code
- * was then ported to Java by R. van Nieuwenhoven. Later it was massively
- * refactored to harmonize the different compression algorithms and reduce the
- * duplicate code pieces without obscuring the algorithm itself as good as
- * possible.
+ * (<i>for internal use</i>) The PLIO compression algorithm. The original decompression code was written by Doug Tody,
+ * NRAO and included (ported to c and adapted) in cfitsio by William Pence, NASA/GSFC. That code was then ported to Java
+ * by R. van Nieuwenhoven. Later it was massively refactored to harmonize the different compression algorithms and
+ * reduce the duplicate code pieces without obscuring the algorithm itself as good as possible.
  *
  * @author Doug Tody
  * @author William Pence
  * @author Richard van Nieuwenhoven
  */
+@SuppressWarnings("javadoc")
 public abstract class PLIOCompress {
 
     public static class BytePLIOCompressor extends PLIOCompress implements ICompressor<ByteBuffer> {
@@ -57,25 +56,25 @@ public abstract class PLIOCompress {
 
         @Override
         public boolean compress(ByteBuffer buffer, ByteBuffer compressed) {
-            this.pixelData = buffer;
-            compress(compressed.asShortBuffer(), this.pixelData.limit());
+            pixelData = buffer;
+            compress(compressed.asShortBuffer(), pixelData.limit());
             return true;
         }
 
         @Override
         public void decompress(ByteBuffer compressed, ByteBuffer buffer) {
-            this.pixelData = buffer;
-            decompress(compressed.asShortBuffer(), this.pixelData.limit());
+            pixelData = buffer;
+            decompress(compressed.asShortBuffer(), pixelData.limit());
         }
 
         @Override
         protected int nextPixel() {
-            return this.pixelData.get();
+            return pixelData.get();
         }
 
         @Override
         protected void put(int index, int pixel) {
-            this.pixelData.put(index, (byte) pixel);
+            pixelData.put(index, (byte) pixel);
         }
     }
 
@@ -85,25 +84,25 @@ public abstract class PLIOCompress {
 
         @Override
         public boolean compress(ShortBuffer buffer, ByteBuffer compressed) {
-            this.pixelData = buffer;
-            super.compress(compressed.asShortBuffer(), this.pixelData.limit());
+            pixelData = buffer;
+            super.compress(compressed.asShortBuffer(), pixelData.limit());
             return true;
         }
 
         @Override
         public void decompress(ByteBuffer compressed, ShortBuffer buffer) {
-            this.pixelData = buffer;
-            decompress(compressed.asShortBuffer(), this.pixelData.limit());
+            pixelData = buffer;
+            decompress(compressed.asShortBuffer(), pixelData.limit());
         }
 
         @Override
         protected int nextPixel() {
-            return this.pixelData.get();
+            return pixelData.get();
         }
 
         @Override
         protected void put(int index, int pixel) {
-            this.pixelData.put(index, (short) pixel);
+            pixelData.put(index, (short) pixel);
         }
     }
 
@@ -116,25 +115,25 @@ public abstract class PLIOCompress {
 
         @Override
         public boolean compress(IntBuffer buffer, ByteBuffer compressed) {
-            this.pixelData = buffer;
-            super.compress(compressed.asShortBuffer(), this.pixelData.limit());
+            pixelData = buffer;
+            super.compress(compressed.asShortBuffer(), pixelData.limit());
             return true;
         }
 
         @Override
         public void decompress(ByteBuffer compressed, IntBuffer buffer) {
-            this.pixelData = buffer;
-            decompress(compressed.asShortBuffer(), this.pixelData.limit());
+            pixelData = buffer;
+            decompress(compressed.asShortBuffer(), pixelData.limit());
         }
 
         @Override
         protected int nextPixel() {
-            return this.pixelData.get();
+            return pixelData.get();
         }
 
         @Override
         protected void put(int index, int pixel) {
-            this.pixelData.put(index, (short) pixel);
+            pixelData.put(index, (short) pixel);
         }
     }
 
@@ -157,8 +156,7 @@ public abstract class PLIOCompress {
     private static final int MINI_HEADER_SIZE_FIELD = 2;
 
     /**
-     * The exact meaning of this var is not clear at the moment of porting the
-     * algorithm to Java.
+     * The exact meaning of this var is not clear at the moment of porting the algorithm to Java.
      */
     private static final int N20481 = 20481;
 
@@ -178,15 +176,8 @@ public abstract class PLIOCompress {
 
     private static final int OPCODE_8 = 8;
 
-    private static final short[] PLIO_HEADER = {
-        (short) 0,
-        (short) 7,
-        (short) -100,
-        (short) 0,
-        (short) 0,
-        (short) 0,
-        (short) 0
-    };
+    private static final short[] PLIO_HEADER = {(short) 0, (short) 7, (short) -100, (short) 0, (short) 0, (short) 0,
+            (short) 0};
 
     private static final int SHIFT_12_BITS = 12;
 
@@ -195,13 +186,11 @@ public abstract class PLIOCompress {
     private static final int VALUE_OF_BIT_13_AND14_ON = 12288;
 
     /**
-     * PL_P2L -- Convert a pixel tiledImageOperation to a line list. The length
-     * of the list is returned as the function value.
+     * PL_P2L -- Convert a pixel tiledImageOperation to a line list. The length of the list is returned as the function
+     * value.
      *
-     * @param compressedData
-     *            encoded line list
-     * @param npix
-     *            number of pixels to convert
+     * @param compressedData encoded line list
+     * @param npix           number of pixels to convert
      */
     protected void compress(ShortBuffer compressedData, int npix) {
         compressedData.put(PLIO_HEADER);
@@ -225,10 +214,8 @@ public abstract class PLIOCompress {
                     x1 = ip + 1;
                     continue;
                 }
-            } else {
-                if (pv == 0) {
-                    x1 = xe + 1;
-                }
+            } else if (pv == 0) {
+                x1 = xe + 1;
             }
 
             int np = ip - x1 + 1;
@@ -288,15 +275,13 @@ public abstract class PLIOCompress {
     }
 
     /**
-     * PL_L2PI -- Translate a PLIO line list into an integer pixel
-     * tiledImageOperation. The number of pixels output (always npix) is
-     * returned as the function value.
+     * PL_L2PI -- Translate a PLIO line list into an integer pixel tiledImageOperation. The number of pixels output
+     * (always npix) is returned as the function value.
      *
-     * @param compressedData
-     *            encoded line list
-     * @param npix
-     *            number of pixels to convert
-     * @return number of pixels converted
+     * @param  compressedData encoded line list
+     * @param  npix           number of pixels to convert
+     *
+     * @return                number of pixels converted
      */
     protected int decompress(ShortBuffer compressedData, int npix) {
         int llfirt;

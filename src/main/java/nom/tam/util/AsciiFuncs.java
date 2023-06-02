@@ -13,12 +13,12 @@ import java.nio.charset.Charset;
  * Copyright (C) 2004 - 2021 nom-tam-fits
  * %%
  * This is free and unencumbered software released into the public domain.
- * 
+ *
  * Anyone is free to copy, modify, publish, use, compile, sell, or
  * distribute this software, either in source code form or as a compiled
  * binary, for any purpose, commercial or non-commercial, and by any
  * means.
- * 
+ *
  * In jurisdictions that recognize copyright laws, the author or authors
  * of this software dedicate any and all copyright interest in the
  * software to the public domain. We make this dedication for the benefit
@@ -26,7 +26,7 @@ import java.nio.charset.Charset;
  * successors. We intend this dedication to be an overt act of
  * relinquishment in perpetuity of all present and future rights to this
  * software under copyright law.
- * 
+ *
  * THE SOFTWARE IS PROVIDED "AS IS", WITHOUT WARRANTY OF ANY KIND,
  * EXPRESS OR IMPLIED, INCLUDING BUT NOT LIMITED TO THE WARRANTIES OF
  * MERCHANTABILITY, FITNESS FOR A PARTICULAR PURPOSE AND NONINFRINGEMENT.
@@ -38,6 +38,8 @@ import java.nio.charset.Charset;
  */
 
 /**
+ * (<i>for internal use</i>) Various static functios to handle ASCII sequences
+ * 
  * @author tmcglynn
  */
 public final class AsciiFuncs {
@@ -52,10 +54,10 @@ public final class AsciiFuncs {
 
     /**
      * Convert to ASCII or return null if not compatible.
-     * 
-     * @return the String represented by the bytes
-     * @param buf
-     *            the bytes representing a string
+     *
+     * @return     the String represented by the bytes
+     *
+     * @param  buf the bytes representing a string
      */
     public static String asciiString(byte[] buf) {
         return asciiString(buf, 0, buf.length);
@@ -63,14 +65,12 @@ public final class AsciiFuncs {
 
     /**
      * Convert to ASCII or return null if not compatible.
-     * 
-     * @param buf
-     *            buffer to get the string bytes from
-     * @param start
-     *            the position where the string starts
-     * @param len
-     *            the length of the string
-     * @return the extracted string
+     *
+     * @param  buf   buffer to get the string bytes from
+     * @param  start the position where the string starts
+     * @param  len   the length of the string
+     *
+     * @return       the extracted string
      */
     public static String asciiString(byte[] buf, int start, int len) {
         return new String(buf, start, len, US_ASCII);
@@ -78,20 +78,21 @@ public final class AsciiFuncs {
 
     /**
      * Convert an ASCII string to bytes.
-     * 
-     * @return the string converted to bytes
-     * @param in
-     *            the string to convert
+     *
+     * @return    the string converted to bytes
+     *
+     * @param  in the string to convert
      */
     public static byte[] getBytes(String in) {
         return in.getBytes(US_ASCII);
     }
 
     /**
-     * @deprecated Use {@link Character#isWhitespace(char)} instead.
-     * 
-     * @param c     the character to check
-     * @return      <code>true</code> if it is a white-space character, otherwise <code>false</code>.
+     * @deprecated   Use {@link Character#isWhitespace(char)} instead.
+     *
+     * @param      c the character to check
+     *
+     * @return       <code>true</code> if it is a white-space character, otherwise <code>false</code>.
      */
     @Deprecated
     public static boolean isWhitespace(char c) {

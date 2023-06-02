@@ -1,10 +1,5 @@
 package nom.tam.fits.test;
 
-import static nom.tam.fits.header.DataDescription.TDMAXn;
-import static nom.tam.fits.header.DataDescription.TDMINn;
-import static nom.tam.fits.header.DataDescription.TLMAXn;
-import static nom.tam.fits.header.DataDescription.TLMINn;
-
 /*
  * #%L
  * nom.tam FITS library
@@ -12,12 +7,12 @@ import static nom.tam.fits.header.DataDescription.TLMINn;
  * Copyright (C) 2004 - 2021 nom-tam-fits
  * %%
  * This is free and unencumbered software released into the public domain.
- * 
+ *
  * Anyone is free to copy, modify, publish, use, compile, sell, or
  * distribute this software, either in source code form or as a compiled
  * binary, for any purpose, commercial or non-commercial, and by any
  * means.
- * 
+ *
  * In jurisdictions that recognize copyright laws, the author or authors
  * of this software dedicate any and all copyright interest in the
  * software to the public domain. We make this dedication for the benefit
@@ -25,7 +20,7 @@ import static nom.tam.fits.header.DataDescription.TLMINn;
  * successors. We intend this dedication to be an overt act of
  * relinquishment in perpetuity of all present and future rights to this
  * software under copyright law.
- * 
+ *
  * THE SOFTWARE IS PROVIDED "AS IS", WITHOUT WARRANTY OF ANY KIND,
  * EXPRESS OR IMPLIED, INCLUDING BUT NOT LIMITED TO THE WARRANTIES OF
  * MERCHANTABILITY, FITNESS FOR A PARTICULAR PURPOSE AND NONINFRINGEMENT.
@@ -78,6 +73,11 @@ import nom.tam.util.FitsOutputStream;
 import nom.tam.util.SafeClose;
 import nom.tam.util.TestArrayFuncs;
 import nom.tam.util.test.ThrowAnyException;
+
+import static nom.tam.fits.header.DataDescription.TDMAXn;
+import static nom.tam.fits.header.DataDescription.TDMINn;
+import static nom.tam.fits.header.DataDescription.TLMAXn;
+import static nom.tam.fits.header.DataDescription.TLMINn;
 
 /**
  * This class tests the AsciiTableHDU and AsciiTable FITS classes and implicitly the ByteFormatter and ByteParser
@@ -141,11 +141,11 @@ public class AsciiTableTest {
         Object[] inputs = getSampleCols();
         Object[] outputs = (Object[]) hdu.getKernel();
 
-        for (int i = 0; i < 50; i += 1) {
+        for (int i = 0; i < 50; i++) {
             ((String[]) outputs[4])[i] = ((String[]) outputs[4])[i].trim();
         }
 
-        for (int j = 0; j < 5; j += 1) {
+        for (int j = 0; j < 5; j++) {
             assertTrue("ByCol:" + j, TestArrayFuncs.arrayEquals(inputs[j], outputs[j], 1.e-6, 1.e-14));
         }
     }
@@ -157,7 +157,7 @@ public class AsciiTableTest {
         AsciiTable data = new AsciiTable();
         Object[] row = new Object[4];
 
-        for (int i = 0; i < 50; i += 1) {
+        for (int i = 0; i < 50; i++) {
             data.addRow(getRow(i));
         }
 
@@ -185,7 +185,7 @@ public class AsciiTableTest {
         Object[] output = (Object[]) f.getHDU(1).getKernel();
         Object[] input = getRowBlock(50);
 
-        for (int i = 0; i < 50; i += 1) {
+        for (int i = 0; i < 50; i++) {
             String[] str = (String[]) output[2];
             String[] istr = (String[]) input[2];
             int len1 = str[1].length();
@@ -197,7 +197,7 @@ public class AsciiTableTest {
             }
         }
 
-        for (int j = 0; j < 3; j += 1) {
+        for (int j = 0; j < 3; j++) {
             assertEquals("ByRow:" + j, true, TestArrayFuncs.arrayEquals(input[j], output[j], 1.e-6, 1.e-14));
         }
     }
@@ -240,7 +240,7 @@ public class AsciiTableTest {
 
     Object[] getRowBlock(int max) {
         Object[] o = new Object[] {new int[max], new float[max], new String[max]};
-        for (int i = 0; i < max; i += 1) {
+        for (int i = 0; i < max; i++) {
             ((int[]) o[0])[i] = i;
             ((float[]) o[1])[i] = i;
             ((String[]) o[2])[i] = "Str" + i;
@@ -252,7 +252,7 @@ public class AsciiTableTest {
 
         float[] realCol = new float[50];
 
-        for (int i = 0; i < realCol.length; i += 1) {
+        for (int i = 0; i < realCol.length; i++) {
             realCol[i] = 10000.F * i * i * i + 1;
         }
 
@@ -262,7 +262,7 @@ public class AsciiTableTest {
 
         String[] strCol = new String[realCol.length];
 
-        for (int i = 0; i < realCol.length; i += 1) {
+        for (int i = 0; i < realCol.length; i++) {
             strCol[i] = "ABC" + String.valueOf(realCol[i]) + "CDE";
         }
         return new Object[] {realCol, intCol, longCol, doubleCol, strCol};
@@ -285,7 +285,7 @@ public class AsciiTableTest {
         AsciiTable data = hdu.getData();
         float[] f1 = (float[]) data.getColumn(0);
         float[] f2 = f1.clone();
-        for (int i = 0; i < f2.length; i += 1) {
+        for (int i = 0; i < f2.length; i++) {
             f2[i] = 2 * f2[i];
         }
 
@@ -332,7 +332,7 @@ public class AsciiTableTest {
         assertEquals("Null", true, hdu.isNull(6, 0));
         assertEquals("Null2", false, hdu.isNull(5, 0));
 
-        for (int i = 0; i < data.getNRows(); i += 1) {
+        for (int i = 0; i < data.getNRows(); i++) {
             if (i != 5) {
                 if (i != 6) { // Null
                     assertEquals("f" + i, 1., f2[i] / fx[i], 1.e-6);
@@ -416,11 +416,11 @@ public class AsciiTableTest {
             assertEquals("Number of rows", data.getNRows(), 50);
             assertEquals("Number of columns", data.getNCols(), 5);
 
-            for (int j = 0; j < data.getNCols(); j += 1) {
+            for (int j = 0; j < data.getNCols(); j++) {
                 Object col = data.getColumn(j);
                 if (j == 4) {
                     String[] st = (String[]) col;
-                    for (int i = 0; i < st.length; i += 1) {
+                    for (int i = 0; i < st.length; i++) {
                         st[i] = st[i].trim();
                     }
                 }
@@ -437,9 +437,9 @@ public class AsciiTableTest {
         AsciiTableHDU hdu = (AsciiTableHDU) f.getHDU(1);
         AsciiTable data = hdu.getData();
 
-        for (int i = 0; i < data.getNRows(); i += 1) {
+        for (int i = 0; i < data.getNRows(); i++) {
             Object[] row = data.getRow(i);
-            for (int j = 0; j < data.getNCols(); j += 1) {
+            for (int j = 0; j < data.getNCols(); j++) {
                 Object val = data.getElement(i, j);
                 assertEquals("Ascii readElement", true, TestArrayFuncs.arrayEquals(val, row[j]));
             }
@@ -454,7 +454,7 @@ public class AsciiTableTest {
         AsciiTableHDU hdu = (AsciiTableHDU) f.getHDU(1);
         AsciiTable data = hdu.getData();
 
-        for (int i = 0; i < data.getNRows(); i += 1) {
+        for (int i = 0; i < data.getNRows(); i++) {
             assertEquals("Rows:" + i, 50, data.getNRows());
             Object[] row = data.getRow(i);
             assertEquals("Ascii Rows: float" + i, 1.F, ((float[]) cols[0])[i] / ((float[]) row[0])[0], 1.e-6);
@@ -508,7 +508,7 @@ public class AsciiTableTest {
     public void testDeleteRowsSimpleSpecialCases() throws Exception {
         // Create a table with 50 rows to test with.
         AsciiTable data = new AsciiTable();
-        for (int i = 0; i < 50; i += 1) {
+        for (int i = 0; i < 50; i++) {
             data.addRow(getRow(i));
         }
 
@@ -530,7 +530,7 @@ public class AsciiTableTest {
         // Create a table row by row .
         Fits f = new Fits();
         AsciiTable data = new AsciiTable();
-        for (int i = 0; i < 50; i += 1) {
+        for (int i = 0; i < 50; i++) {
             data.addRow(getRow(i));
         }
 
@@ -584,7 +584,7 @@ public class AsciiTableTest {
         Assert.assertTrue(actual instanceof FitsException);
         Assert.assertTrue(actual.getCause() instanceof NullPointerException);
 
-        final List<LogRecord> logs = new ArrayList<LogRecord>();
+        final List<LogRecord> logs = new ArrayList<>();
         Logger.getLogger(AsciiTable.class.getName()).addHandler(new Handler() {
 
             @Override
@@ -623,7 +623,7 @@ public class AsciiTableTest {
         Fits f = new Fits();
         AsciiTable data = new AsciiTable();
 
-        for (int i = 0; i < 50; i += 1) {
+        for (int i = 0; i < 50; i++) {
             data.addRow(getRow(i));
         }
 
@@ -747,7 +747,7 @@ public class AsciiTableTest {
         assertNotNull(actual);
         assertTrue(actual.getMessage().startsWith("Invalid Specification"));
         hdr.deleteKey(Standard.TFORMn.n(1));// because the isString can not be
-                                            // changed.
+        // changed.
         hdr.card(Standard.TFORMn.n(1)).value("Z1");
         actual = null;
         try {
@@ -800,7 +800,7 @@ public class AsciiTableTest {
                         throw new RuntimeException(e);
                     }
                     super.write(str);
-                };
+                }
             }.write(str);
         } catch (FitsException e) {
             actual = e;
@@ -823,9 +823,10 @@ public class AsciiTableTest {
             new AsciiTable(hdr) {
 
                 // to get over ensure data
+                @Override
                 public Object[] getData() throws FitsException {
                     return null;
-                };
+                }
             }.write(str);
         } catch (FitsException e) {
             actual = e;

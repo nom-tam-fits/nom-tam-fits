@@ -7,12 +7,12 @@ package nom.tam.fits.compression.algorithm.quant;
  * Copyright (C) 1996 - 2023 nom-tam-fits
  * %%
  * This is free and unencumbered software released into the public domain.
- * 
+ *
  * Anyone is free to copy, modify, publish, use, compile, sell, or
  * distribute this software, either in source code form or as a compiled
  * binary, for any purpose, commercial or non-commercial, and by any
  * means.
- * 
+ *
  * In jurisdictions that recognize copyright laws, the author or authors
  * of this software dedicate any and all copyright interest in the
  * software to the public domain. We make this dedication for the benefit
@@ -20,7 +20,7 @@ package nom.tam.fits.compression.algorithm.quant;
  * successors. We intend this dedication to be an overt act of
  * relinquishment in perpetuity of all present and future rights to this
  * software under copyright law.
- * 
+ *
  * THE SOFTWARE IS PROVIDED "AS IS", WITHOUT WARRANTY OF ANY KIND,
  * EXPRESS OR IMPLIED, INCLUDING BUT NOT LIMITED TO THE WARRANTIES OF
  * MERCHANTABILITY, FITNESS FOR A PARTICULAR PURPOSE AND NONINFRINGEMENT.
@@ -32,11 +32,14 @@ package nom.tam.fits.compression.algorithm.quant;
  */
 
 /**
- * This is a modified (improved) version of the random sequence implementation
- * in Appendix I of the <a
+ * A standard fixed random sequence to use for portable and reversible dither
+ * implementations. This is a modified (improved) version of the random sequence
+ * implementation in Appendix I of the <a
  * href="https://fits.gsfc.nasa.gov/standard40/fits_standard40aa-le.pdf">FITS
  * 4.0 standard</a>, using integer arithmetics for better performance -- but
  * still providing the same sequence as the original algorithm.
+ * 
+ * @see QuantizeProcessor
  */
 public final class RandomSequence {
 

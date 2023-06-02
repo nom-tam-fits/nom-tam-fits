@@ -7,12 +7,12 @@ package nom.tam.util.array;
  * Copyright (C) 1996 - 2021 nom-tam-fits
  * %%
  * This is free and unencumbered software released into the public domain.
- * 
+ *
  * Anyone is free to copy, modify, publish, use, compile, sell, or
  * distribute this software, either in source code form or as a compiled
  * binary, for any purpose, commercial or non-commercial, and by any
  * means.
- * 
+ *
  * In jurisdictions that recognize copyright laws, the author or authors
  * of this software dedicate any and all copyright interest in the
  * software to the public domain. We make this dedication for the benefit
@@ -20,7 +20,7 @@ package nom.tam.util.array;
  * successors. We intend this dedication to be an overt act of
  * relinquishment in perpetuity of all present and future rights to this
  * software under copyright law.
- * 
+ *
  * THE SOFTWARE IS PROVIDED "AS IS", WITHOUT WARRANTY OF ANY KIND,
  * EXPRESS OR IMPLIED, INCLUDING BUT NOT LIMITED TO THE WARRANTIES OF
  * MERCHANTABILITY, FITNESS FOR A PARTICULAR PURPOSE AND NONINFRINGEMENT.
@@ -33,6 +33,11 @@ package nom.tam.util.array;
 
 import java.lang.reflect.Array;
 
+/**
+ * @deprecated Intended for internal use only by {@link MultiArrayCopier} and {@link MultiArrayIterator}. In the future
+ *                 visibility may be reduced to the package level A multi-dimensional array index.
+ */
+@SuppressWarnings("javadoc")
 public class MultiArrayPointer {
 
     public static final Object END = new Object();
@@ -49,7 +54,7 @@ public class MultiArrayPointer {
                 }
             }
         }
-        
+
         return false;
     }
 
@@ -71,48 +76,47 @@ public class MultiArrayPointer {
     }
 
     private void activateSub(Object element) {
-        if (this.backup == null) {
-            this.backup = new MultiArrayPointer();
+        if (backup == null) {
+            backup = new MultiArrayPointer();
         }
-        this.sub = this.backup;
-        this.sub.set(element);
+        sub = backup;
+        sub.set(element);
     }
 
     private void deactivateSub() {
-        this.sub = null;
+        sub = null;
     }
 
     public Object next() {
         while (true) {
-            if (this.sub != null) {
-                Object subNext = this.sub.next();
+            if (sub != null) {
+                Object subNext = sub.next();
                 if (subNext != MultiArrayPointer.END) {
                     return subNext;
                 }
                 deactivateSub();
             }
-            if (this.index >= this.length) {
+            if (index >= length) {
                 return MultiArrayPointer.END;
             }
-            Object element = Array.get(this.array, this.index++);
-            if (element != null && isSubArray(element)) {
-                activateSub(element);
-            } else {
+            Object element = Array.get(array, index++);
+            if ((element == null) || !isSubArray(element)) {
                 return element;
             }
+            activateSub(element);
         }
     }
 
     public void reset() {
-        this.index = 0;
+        index = 0;
         deactivateSub();
     }
 
     private void set(Object newArray) {
-        this.array = newArray;
-        this.length = Array.getLength(this.array);
-        this.sub = null;
-        this.index = 0;
+        array = newArray;
+        length = Array.getLength(array);
+        sub = null;
+        index = 0;
     }
 
 }

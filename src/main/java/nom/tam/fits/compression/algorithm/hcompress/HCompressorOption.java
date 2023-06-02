@@ -7,12 +7,12 @@ package nom.tam.fits.compression.algorithm.hcompress;
  * Copyright (C) 1996 - 2021 nom-tam-fits
  * %%
  * This is free and unencumbered software released into the public domain.
- * 
+ *
  * Anyone is free to copy, modify, publish, use, compile, sell, or
  * distribute this software, either in source code form or as a compiled
  * binary, for any purpose, commercial or non-commercial, and by any
  * means.
- * 
+ *
  * In jurisdictions that recognize copyright laws, the author or authors
  * of this software dedicate any and all copyright interest in the
  * software to the public domain. We make this dedication for the benefit
@@ -20,7 +20,7 @@ package nom.tam.fits.compression.algorithm.hcompress;
  * successors. We intend this dedication to be an overt act of
  * relinquishment in perpetuity of all present and future rights to this
  * software under copyright law.
- * 
+ *
  * THE SOFTWARE IS PROVIDED "AS IS", WITHOUT WARRANTY OF ANY KIND,
  * EXPRESS OR IMPLIED, INCLUDING BUT NOT LIMITED TO THE WARRANTIES OF
  * MERCHANTABILITY, FITNESS FOR A PARTICULAR PURPOSE AND NONINFRINGEMENT.
@@ -36,6 +36,14 @@ import nom.tam.fits.compression.provider.param.api.ICompressParameters;
 import nom.tam.fits.compression.provider.param.hcompress.HCompressParameters;
 import nom.tam.image.ITileOption;
 
+/**
+ * Options to the HCompress compression algorithm. When compressing tables and images using the HCompress algorithm,
+ * users can control how exactly the compression is perfomed. When reading compressed FITS files, these options will be
+ * set automatically based on the header values recorded in the compressed HDU.
+ * 
+ * @see nom.tam.image.compression.hdu.CompressedImageHDU#setCompressAlgorithm(String)
+ * @see nom.tam.image.compression.hdu.CompressedImageHDU#getCompressOption(Class)
+ */
 public class HCompressorOption implements ICompressOption, ITileOption {
 
     /**
@@ -50,11 +58,14 @@ public class HCompressorOption implements ICompressOption, ITileOption {
     private int tileHeight;
 
     private int tileWidth;
-    
+
+    /**
+     * Creates a new set of options for HCompress.
+     */
     public HCompressorOption() {
         setParameters(new HCompressParameters(this));
     }
-    
+
     @Override
     public HCompressorOption copy() {
         try {
@@ -68,52 +79,79 @@ public class HCompressorOption implements ICompressOption, ITileOption {
 
     @Override
     public HCompressParameters getCompressionParameters() {
-        return this.parameters;
+        return parameters;
     }
 
+    /**
+     * Returns the scale parameter value
+     * 
+     * @return the value of the scale parameter.
+     * 
+     * @see    #setScale(int)
+     */
     public int getScale() {
-        return this.scale;
+        return scale;
     }
 
     @Override
     public int getTileHeight() {
-        return this.tileHeight;
+        return tileHeight;
     }
 
     @Override
     public int getTileWidth() {
-        return this.tileWidth;
+        return tileWidth;
     }
 
     @Override
     public boolean isLossyCompression() {
-        return this.scale > 1 || this.smooth;
+        return scale > 1 || smooth;
     }
 
+    /**
+     * Checks if smoothing is enabled
+     * 
+     * @return <code>true</code> if smoothing is enabled, otherwise <code>false</code>.
+     * 
+     * @see    #setSmooth(boolean)
+     */
     public boolean isSmooth() {
-        return this.smooth;
+        return smooth;
     }
 
     @Override
     public void setParameters(ICompressParameters parameters) {
-        if (parameters instanceof HCompressParameters) {
-            this.parameters = (HCompressParameters) parameters;
-        } else {
+        if (!(parameters instanceof HCompressParameters)) {
             throw new IllegalArgumentException("Wrong type of parameters: " + parameters.getClass().getName());
         }
+        this.parameters = (HCompressParameters) parameters;
     }
 
+    /**
+     * Sets the scale parameter
+     * 
+     * @param  value the new scale parameter
+     * 
+     * @return       itself
+     * 
+     * @see          #getScale()
+     */
     public HCompressorOption setScale(int value) {
-        this.scale = value;
+        scale = value;
         return this;
     }
 
+    /**
+     * Enabled or disables smoothing.
+     * 
+     * @param  value <code>true</code> to enable smoothing, or <code>false</code> to disable.
+     * 
+     * @return       itself
+     */
     public HCompressorOption setSmooth(boolean value) {
-        this.smooth = value;
+        smooth = value;
         return this;
     }
-
-
 
     @Override
     public <T> T unwrap(Class<T> clazz) {
@@ -125,13 +163,13 @@ public class HCompressorOption implements ICompressOption, ITileOption {
 
     @Override
     public HCompressorOption setTileHeight(int value) {
-        this.tileHeight = value;
+        tileHeight = value;
         return this;
     }
 
     @Override
     public HCompressorOption setTileWidth(int value) {
-        this.tileWidth = value;
+        tileWidth = value;
         return this;
     }
 }

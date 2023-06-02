@@ -7,12 +7,12 @@ package nom.tam.fits.compression.algorithm.quant;
  * Copyright (C) 1996 - 2021 nom-tam-fits
  * %%
  * This is free and unencumbered software released into the public domain.
- * 
+ *
  * Anyone is free to copy, modify, publish, use, compile, sell, or
  * distribute this software, either in source code form or as a compiled
  * binary, for any purpose, commercial or non-commercial, and by any
  * means.
- * 
+ *
  * In jurisdictions that recognize copyright laws, the author or authors
  * of this software dedicate any and all copyright interest in the
  * software to the public domain. We make this dedication for the benefit
@@ -20,7 +20,7 @@ package nom.tam.fits.compression.algorithm.quant;
  * successors. We intend this dedication to be an overt act of
  * relinquishment in perpetuity of all present and future rights to this
  * software under copyright law.
- * 
+ *
  * THE SOFTWARE IS PROVIDED "AS IS", WITHOUT WARRANTY OF ANY KIND,
  * EXPRESS OR IMPLIED, INCLUDING BUT NOT LIMITED TO THE WARRANTIES OF
  * MERCHANTABILITY, FITNESS FOR A PARTICULAR PURPOSE AND NONINFRINGEMENT.
@@ -38,6 +38,10 @@ import java.nio.IntBuffer;
 
 import nom.tam.fits.compression.algorithm.api.ICompressor;
 
+/**
+ * (<i>for internal use</i>) Qunatization step processor as part of compression.
+ */
+@SuppressWarnings({"javadoc", "deprecation"})
 public class QuantizeProcessor {
 
     public static class DoubleQuantCompressor extends QuantizeProcessor implements ICompressor<DoubleBuffer> {
@@ -46,28 +50,26 @@ public class QuantizeProcessor {
 
         public DoubleQuantCompressor(QuantizeOption quantizeOption, ICompressor<IntBuffer> compressor) {
             super(quantizeOption);
-            this.postCompressor = compressor;
+            postCompressor = compressor;
         }
 
         @Override
         public boolean compress(DoubleBuffer buffer, ByteBuffer compressed) {
-            IntBuffer intData = IntBuffer
-                    .wrap(new int[this.quantizeOption.getTileHeight() * this.quantizeOption.getTileWidth()]);
-            double[] doubles = new double[this.quantizeOption.getTileHeight() * this.quantizeOption.getTileWidth()];
+            IntBuffer intData = IntBuffer.wrap(new int[quantizeOption.getTileHeight() * quantizeOption.getTileWidth()]);
+            double[] doubles = new double[quantizeOption.getTileHeight() * quantizeOption.getTileWidth()];
             buffer.get(doubles);
             if (!this.quantize(doubles, intData)) {
                 return false;
             }
             intData.rewind();
-            this.postCompressor.compress(intData, compressed);
+            postCompressor.compress(intData, compressed);
             return true;
         }
 
         @Override
         public void decompress(ByteBuffer compressed, DoubleBuffer buffer) {
-            IntBuffer intData = IntBuffer
-                    .wrap(new int[this.quantizeOption.getTileHeight() * this.quantizeOption.getTileWidth()]);
-            this.postCompressor.decompress(compressed, intData);
+            IntBuffer intData = IntBuffer.wrap(new int[quantizeOption.getTileHeight() * quantizeOption.getTileWidth()]);
+            postCompressor.decompress(compressed, intData);
             intData.rewind();
             unquantize(intData, buffer);
         }
@@ -87,29 +89,27 @@ public class QuantizeProcessor {
 
         @Override
         public boolean compress(FloatBuffer buffer, ByteBuffer compressed) {
-            float[] floats = new float[this.quantizeOption.getTileHeight() * this.quantizeOption.getTileWidth()];
-            double[] doubles = new double[this.quantizeOption.getTileHeight() * this.quantizeOption.getTileWidth()];
+            float[] floats = new float[quantizeOption.getTileHeight() * quantizeOption.getTileWidth()];
+            double[] doubles = new double[quantizeOption.getTileHeight() * quantizeOption.getTileWidth()];
             buffer.get(floats);
             for (int index = 0; index < doubles.length; index++) {
                 doubles[index] = floats[index];
             }
-            IntBuffer intData = IntBuffer
-                    .wrap(new int[this.quantizeOption.getTileHeight() * this.quantizeOption.getTileWidth()]);
+            IntBuffer intData = IntBuffer.wrap(new int[quantizeOption.getTileHeight() * quantizeOption.getTileWidth()]);
             if (!this.quantize(doubles, intData)) {
                 return false;
             }
             intData.rewind();
-            this.postCompressor.compress(intData, compressed);
+            postCompressor.compress(intData, compressed);
             return true;
         }
 
         @Override
         public void decompress(ByteBuffer compressed, FloatBuffer buffer) {
-            IntBuffer intData = IntBuffer
-                    .wrap(new int[this.quantizeOption.getTileHeight() * this.quantizeOption.getTileWidth()]);
-            this.postCompressor.decompress(compressed, intData);
+            IntBuffer intData = IntBuffer.wrap(new int[quantizeOption.getTileHeight() * quantizeOption.getTileWidth()]);
+            postCompressor.decompress(compressed, intData);
             intData.rewind();
-            double[] doubles = new double[this.quantizeOption.getTileHeight() * this.quantizeOption.getTileWidth()];
+            double[] doubles = new double[quantizeOption.getTileHeight() * quantizeOption.getTileWidth()];
             DoubleBuffer doubleBuffer = DoubleBuffer.wrap(doubles);
             unquantize(intData, doubleBuffer);
             for (double d : doubles) {
@@ -130,12 +130,12 @@ public class QuantizeProcessor {
 
         @Override
         protected double toDouble(int pixel) {
-            return (pixel + ROUNDING_HALF) * QuantizeProcessor.this.bScale + QuantizeProcessor.this.bZero;
+            return (pixel + ROUNDING_HALF) * bScale + bZero;
         }
 
         @Override
         protected int toInt(double pixel) {
-            return nint((pixel - QuantizeProcessor.this.bZero) / QuantizeProcessor.this.bScale + ROUNDING_HALF);
+            return nint((pixel - bZero) / bScale + ROUNDING_HALF);
         }
     }
 
@@ -153,25 +153,25 @@ public class QuantizeProcessor {
         }
 
         public void initialize(long ditherSeed) {
-            this.iseed = (int) ((ditherSeed - 1) % RandomSequence.length());
+            iseed = (int) ((ditherSeed - 1) % RandomSequence.length());
             initI1();
         }
 
         private void initI1() {
-            this.nextRandom = (int) (RandomSequence.get(this.iseed) * RANDOM_MULTIPLICATOR);
+            nextRandom = (int) (RandomSequence.get(iseed) * RANDOM_MULTIPLICATOR);
         }
 
         public double nextRandom() {
-            return RandomSequence.get(this.nextRandom);
+            return RandomSequence.get(nextRandom);
         }
 
         @Override
         protected void nextPixel() {
-            this.nextRandom++;
-            if (this.nextRandom >= RandomSequence.length()) {
-                this.iseed++;
-                if (this.iseed >= RandomSequence.length()) {
-                    this.iseed = 0;
+            nextRandom++;
+            if (nextRandom >= RandomSequence.length()) {
+                iseed++;
+                if (iseed >= RandomSequence.length()) {
+                    iseed = 0;
                 }
                 initI1();
             }
@@ -179,14 +179,12 @@ public class QuantizeProcessor {
 
         @Override
         protected double toDouble(int pixel) {
-            return (pixel - nextRandom() + ROUNDING_HALF) * QuantizeProcessor.this.bScale
-                    + QuantizeProcessor.this.bZero;
+            return (pixel - nextRandom() + ROUNDING_HALF) * bScale + bZero;
         }
 
         @Override
         protected int toInt(double pixel) {
-            return nint((pixel - QuantizeProcessor.this.bZero) / QuantizeProcessor.this.bScale + nextRandom()
-                    - ROUNDING_HALF);
+            return nint((pixel - bZero) / bScale + nextRandom() - ROUNDING_HALF);
         }
     }
 
@@ -201,18 +199,18 @@ public class QuantizeProcessor {
         NullFilter(double nullValue, int nullValueIndicator, PixelFilter next) {
             super(next);
             this.nullValue = nullValue;
-            this.isNaN = Double.isNaN(this.nullValue);
+            isNaN = Double.isNaN(this.nullValue);
             this.nullValueIndicator = nullValueIndicator;
         }
 
         public final boolean isNull(double pixel) {
-            return this.isNaN ? Double.isNaN(pixel) : this.nullValue == pixel;
+            return isNaN ? Double.isNaN(pixel) : nullValue == pixel;
         }
 
         @Override
         protected double toDouble(int pixel) {
-            if (pixel == this.nullValueIndicator) {
-                return this.nullValue;
+            if (pixel == nullValueIndicator) {
+                return nullValue;
             }
             return super.toDouble(pixel);
         }
@@ -220,7 +218,7 @@ public class QuantizeProcessor {
         @Override
         protected int toInt(double pixel) {
             if (isNull(pixel)) {
-                return this.nullValueIndicator;
+                return nullValueIndicator;
             }
             return super.toInt(pixel);
         }
@@ -235,15 +233,15 @@ public class QuantizeProcessor {
         }
 
         protected void nextPixel() {
-            this.next.nextPixel();
+            next.nextPixel();
         }
 
         protected double toDouble(int pixel) {
-            return this.next.toDouble(pixel);
+            return next.toDouble(pixel);
         }
 
         protected int toInt(double pixel) {
-            return this.next.toInt(pixel);
+            return next.toInt(pixel);
         }
     }
 
@@ -298,8 +296,8 @@ public class QuantizeProcessor {
 
     public QuantizeProcessor(QuantizeOption quantizeOption) {
         this.quantizeOption = quantizeOption;
-        this.bScale = quantizeOption.getBScale();
-        this.bZero = quantizeOption.getBZero();
+        bScale = quantizeOption.getBScale();
+        bZero = quantizeOption.getBZero();
         PixelFilter filter = null;
         boolean localCenterOnZero = quantizeOption.isCenterOnZero();
         if (quantizeOption.isDither2()) {
@@ -315,10 +313,9 @@ public class QuantizeProcessor {
             filter = new ZeroFilter(filter);
         }
         if (quantizeOption.isCheckNull()) {
-            final NullFilter nullFilter = new NullFilter(quantizeOption.getNullValue(),
-                    quantizeOption.getNullValueIndicator(), filter);
+            final NullFilter nullFilter = new NullFilter(quantizeOption.getNullValue(), quantizeOption.getBNull(), filter);
             filter = nullFilter;
-            this.quantize = new Quantize(quantizeOption) {
+            quantize = new Quantize(quantizeOption) {
 
                 @Override
                 protected int findNextValidPixelWithNullCheck(int nx, DoubleArrayPointer rowpix, int ii) {
@@ -334,47 +331,45 @@ public class QuantizeProcessor {
                 }
             };
         } else {
-            this.quantize = new Quantize(quantizeOption);
+            quantize = new Quantize(quantizeOption);
         }
-        this.pixelFilter = filter;
-        this.centerOnZero = localCenterOnZero;
+        pixelFilter = filter;
+        centerOnZero = localCenterOnZero;
     }
 
     public Quantize getQuantize() {
-        return this.quantize;
+        return quantize;
     }
 
     public boolean quantize(double[] doubles, IntBuffer quants) {
-        boolean success = this.quantize.quantize(doubles, this.quantizeOption.getTileWidth(),
-                this.quantizeOption.getTileHeight());
+        boolean success = quantize.quantize(doubles, quantizeOption.getTileWidth(), quantizeOption.getTileHeight());
         if (success) {
             calculateBZeroAndBscale();
-            quantize(DoubleBuffer.wrap(doubles, 0,
-                    this.quantizeOption.getTileWidth() * this.quantizeOption.getTileHeight()), quants);
+            quantize(DoubleBuffer.wrap(doubles, 0, quantizeOption.getTileWidth() * quantizeOption.getTileHeight()), quants);
         }
         return success;
     }
 
     public void quantize(final DoubleBuffer fdata, final IntBuffer intData) {
         while (fdata.hasRemaining()) {
-            intData.put(this.pixelFilter.toInt(fdata.get()));
-            this.pixelFilter.nextPixel();
+            intData.put(pixelFilter.toInt(fdata.get()));
+            pixelFilter.nextPixel();
         }
     }
 
     public void unquantize(final IntBuffer intData, final DoubleBuffer fdata) {
         while (fdata.hasRemaining()) {
-            fdata.put(this.pixelFilter.toDouble(intData.get()));
-            this.pixelFilter.nextPixel();
+            fdata.put(pixelFilter.toDouble(intData.get()));
+            pixelFilter.nextPixel();
         }
     }
 
     private void calculateBZeroAndBscale() {
-        this.bScale = this.quantizeOption.getBScale();
-        this.bZero = zeroCenter();
-        this.quantizeOption.setIntMinValue(nint((this.quantizeOption.getMinValue() - this.bZero) / this.bScale));
-        this.quantizeOption.setIntMaxValue(nint((this.quantizeOption.getMaxValue() - this.bZero) / this.bScale));
-        this.quantizeOption.setBZero(this.bZero);
+        bScale = quantizeOption.getBScale();
+        bZero = zeroCenter();
+        quantizeOption.setIntMinValue(nint((quantizeOption.getMinValue() - bZero) / bScale));
+        quantizeOption.setIntMaxValue(nint((quantizeOption.getMaxValue() - bZero) / bScale));
+        quantizeOption.setBZero(bZero);
     }
 
     private int nint(double x) {
@@ -382,21 +377,21 @@ public class QuantizeProcessor {
     }
 
     private double zeroCenter() {
-        final double minValue = this.quantizeOption.getMinValue();
-        final double maxValue = this.quantizeOption.getMaxValue();
+        final double minValue = quantizeOption.getMinValue();
+        final double maxValue = quantizeOption.getMaxValue();
         double evaluatedBZero;
-        if (!this.quantizeOption.isCheckNull() && !this.centerOnZero) {
+        if (!quantizeOption.isCheckNull() && !centerOnZero) {
             // don't have to check for nulls
             // return all positive values, if possible since some compression
             // algorithms either only work for positive integers, or are more
             // efficient.
-            if ((maxValue - minValue) / this.bScale < MAX_INT_AS_DOUBLE - N_RESERVED_VALUES) {
+            if ((maxValue - minValue) / bScale < MAX_INT_AS_DOUBLE - N_RESERVED_VALUES) {
                 evaluatedBZero = minValue;
                 // fudge the zero point so it is an integer multiple of bScale
                 // This helps to ensure the same scaling will be performed if
                 // the file undergoes multiple fpack/funpack cycles
-                long iqfactor = (long) (evaluatedBZero / this.bScale + ROUNDING_HALF);
-                evaluatedBZero = iqfactor * this.bScale;
+                long iqfactor = (long) (evaluatedBZero / bScale + ROUNDING_HALF);
+                evaluatedBZero = iqfactor * bScale;
             } else {
                 /* center the quantized levels around zero */
                 evaluatedBZero = (minValue + maxValue) / 2.;
@@ -405,7 +400,7 @@ public class QuantizeProcessor {
             // data contains null values or has be forced to center on zero
             // shift the range to be close to the value used to represent null
             // values
-            evaluatedBZero = minValue - this.bScale * (Integer.MIN_VALUE + N_RESERVED_VALUES + 1);
+            evaluatedBZero = minValue - bScale * (Integer.MIN_VALUE + N_RESERVED_VALUES + 1);
         }
         return evaluatedBZero;
     }

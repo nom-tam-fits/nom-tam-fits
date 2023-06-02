@@ -1,5 +1,10 @@
 package nom.tam.util.test;
 
+import org.junit.After;
+import org.junit.Assert;
+import org.junit.Before;
+import org.junit.Test;
+
 /*
  * #%L
  * nom.tam FITS library
@@ -7,12 +12,12 @@ package nom.tam.util.test;
  * Copyright (C) 1996 - 2021 nom-tam-fits
  * %%
  * This is free and unencumbered software released into the public domain.
- * 
+ *
  * Anyone is free to copy, modify, publish, use, compile, sell, or
  * distribute this software, either in source code form or as a compiled
  * binary, for any purpose, commercial or non-commercial, and by any
  * means.
- * 
+ *
  * In jurisdictions that recognize copyright laws, the author or authors
  * of this software dedicate any and all copyright interest in the
  * software to the public domain. We make this dedication for the benefit
@@ -20,7 +25,7 @@ package nom.tam.util.test;
  * successors. We intend this dedication to be an overt act of
  * relinquishment in perpetuity of all present and future rights to this
  * software under copyright law.
- * 
+ *
  * THE SOFTWARE IS PROVIDED "AS IS", WITHOUT WARRANTY OF ANY KIND,
  * EXPRESS OR IMPLIED, INCLUDING BUT NOT LIMITED TO THE WARRANTIES OF
  * MERCHANTABILITY, FITNESS FOR A PARTICULAR PURPOSE AND NONINFRINGEMENT.
@@ -32,11 +37,6 @@ package nom.tam.util.test;
  */
 
 import nom.tam.util.FitsFile;
-
-import org.junit.After;
-import org.junit.Assert;
-import org.junit.Before;
-import org.junit.Test;
 
 public class StreamFileTest {
 
@@ -119,7 +119,7 @@ public class StreamFileTest {
         double[] doubles = new double[10];
         double[] expectedDoubles = new double[10];
         for (int index = 0; index < expectedDoubles.length; index++) {
-            expectedDoubles[index] = (double) index * 3.1415d;
+            expectedDoubles[index] = index * 3.1415d;
         }
         out.writeArray(expectedDoubles);
         out.write(expectedDoubles);
@@ -142,7 +142,7 @@ public class StreamFileTest {
         float[] values = new float[10];
         float[] expectedValues = new float[10];
         for (int index = 0; index < expectedValues.length; index++) {
-            expectedValues[index] = (float) index * 3.1415f;
+            expectedValues[index] = index * 3.1415f;
         }
         out.writeArray(expectedValues);
         out.write(expectedValues);
@@ -165,7 +165,7 @@ public class StreamFileTest {
         int[] values = new int[10];
         int[] expectedValues = new int[10];
         for (int index = 0; index < expectedValues.length; index++) {
-            expectedValues[index] = (int) index * 3;
+            expectedValues[index] = index * 3;
         }
         out.writeArray(expectedValues);
         out.write(expectedValues);
@@ -276,7 +276,7 @@ public class StreamFileTest {
         double[] doubles = new double[10];
         double[] expectedDoubles = new double[10];
         for (int index = 0; index < expectedDoubles.length; index++) {
-            expectedDoubles[index] = (double) index * 3.1415d;
+            expectedDoubles[index] = index * 3.1415d;
             out.writeDouble(expectedDoubles[index]);
         }
         out.close();
@@ -295,7 +295,7 @@ public class StreamFileTest {
         float[] values = new float[10];
         float[] expectedValues = new float[10];
         for (int index = 0; index < expectedValues.length; index++) {
-            expectedValues[index] = (float) index * 3.1415f;
+            expectedValues[index] = index * 3.1415f;
             out.writeFloat(expectedValues[index]);
         }
         out.close();
@@ -314,7 +314,7 @@ public class StreamFileTest {
         int[] values = new int[10];
         int[] expectedValues = new int[10];
         for (int index = 0; index < expectedValues.length; index++) {
-            expectedValues[index] = (int) index * 3;
+            expectedValues[index] = index * 3;
             out.writeInt(expectedValues[index]);
         }
         out.close();
@@ -372,7 +372,7 @@ public class StreamFileTest {
         int[][] expectedValues = new int[10][10];
         for (int index = 0; index < expectedValues.length; index++) {
             for (int index2 = 0; index2 < expectedValues[index].length; index2++) {
-                expectedValues[index][index2] = (int) index * 3;
+                expectedValues[index][index2] = index * 3;
             }
         }
         out.writeArray(expectedValues);
@@ -382,14 +382,16 @@ public class StreamFileTest {
         Assert.assertEquals(expectedValues.length, values.length);
         for (int index = 0; index < expectedValues.length; index++) {
             for (int index2 = 0; index2 < expectedValues[index].length; index2++) {
-                Assert.assertEquals("int[" + index + "][" + index2 + "]", expectedValues[index][index2], values[index][index2]);
+                Assert.assertEquals("int[" + index + "][" + index2 + "]", expectedValues[index][index2],
+                        values[index][index2]);
                 values[index][index2] = 0;
             }
         }
         in.readArray(values);
         for (int index = 0; index < expectedValues.length; index++) {
             for (int index2 = 0; index2 < expectedValues[index].length; index2++) {
-                Assert.assertEquals("int[" + index + "][" + index2 + "]", expectedValues[index][index2], values[index][index2]);
+                Assert.assertEquals("int[" + index + "][" + index2 + "]", expectedValues[index][index2],
+                        values[index][index2]);
             }
         }
 

@@ -1,18 +1,22 @@
 package nom.tam.fits.test;
 
-/*
+import static org.junit.Assert.assertEquals;
+import static org.junit.Assert.assertFalse;
+import static org.junit.Assert.assertTrue;
+
+/*-
  * #%L
  * nom.tam FITS library
  * %%
- * Copyright (C) 2004 - 2021 nom-tam-fits
+ * Copyright (C) 1996 - 2023 nom-tam-fits
  * %%
  * This is free and unencumbered software released into the public domain.
- * 
+ *
  * Anyone is free to copy, modify, publish, use, compile, sell, or
  * distribute this software, either in source code form or as a compiled
  * binary, for any purpose, commercial or non-commercial, and by any
  * means.
- * 
+ *
  * In jurisdictions that recognize copyright laws, the author or authors
  * of this software dedicate any and all copyright interest in the
  * software to the public domain. We make this dedication for the benefit
@@ -20,7 +24,7 @@ package nom.tam.fits.test;
  * successors. We intend this dedication to be an overt act of
  * relinquishment in perpetuity of all present and future rights to this
  * software under copyright law.
- * 
+ *
  * THE SOFTWARE IS PROVIDED "AS IS", WITHOUT WARRANTY OF ANY KIND,
  * EXPRESS OR IMPLIED, INCLUDING BUT NOT LIMITED TO THE WARRANTIES OF
  * MERCHANTABILITY, FITNESS FOR A PARTICULAR PURPOSE AND NONINFRINGEMENT.
@@ -31,10 +35,6 @@ package nom.tam.fits.test;
  * #L%
  */
 
-import static org.junit.Assert.assertEquals;
-import static org.junit.Assert.assertFalse;
-import static org.junit.Assert.assertTrue;
-
 import java.io.ByteArrayInputStream;
 import java.io.ByteArrayOutputStream;
 import java.io.File;
@@ -44,6 +44,11 @@ import java.io.InputStream;
 import java.io.OutputStream;
 import java.lang.reflect.Constructor;
 import java.net.URL;
+
+import org.junit.AfterClass;
+import org.junit.Assert;
+import org.junit.BeforeClass;
+import org.junit.Test;
 
 import nom.tam.fits.BasicHDU;
 import nom.tam.fits.Fits;
@@ -57,11 +62,6 @@ import nom.tam.fits.compress.ExternalBZip2CompressionProvider;
 import nom.tam.fits.compress.ZCompressionProvider;
 import nom.tam.util.SafeClose;
 import nom.tam.util.test.ThrowAnyException;
-
-import org.junit.AfterClass;
-import org.junit.Assert;
-import org.junit.BeforeClass;
-import org.junit.Test;
 
 import fi.iki.elonen.SimpleWebServer;
 
@@ -223,8 +223,8 @@ public class CompressTest {
         int[][] data = (int[][]) h.getKernel();
         double sum = 0;
         for (int[] element : data) {
-            for (int j = 0; j < element.length; j += 1) {
-                sum += element[j];
+            for (int element2 : element) {
+                sum += element2;
             }
         }
         assertEquals("ZCompress", sum, 296915., 0);
@@ -319,8 +319,8 @@ public class CompressTest {
         short[][] data = (short[][]) h.getKernel();
         double sum = 0;
         for (short[] element : data) {
-            for (int j = 0; j < element.length; j += 1) {
-                sum += element[j];
+            for (short element2 : element) {
+                sum += element2;
             }
         }
         assertEquals("ZCompress", sum, 91806., 0);
@@ -335,8 +335,8 @@ public class CompressTest {
         short[][] data = (short[][]) h.getKernel();
         double sum = 0;
         for (short[] element : data) {
-            for (int j = 0; j < element.length; j += 1) {
-                sum += element[j];
+            for (short element2 : element) {
+                sum += element2;
             }
         }
         assertEquals("ZCompress", sum, 91806., 0);
@@ -351,8 +351,8 @@ public class CompressTest {
     private int total(short[][] data) {
         int total = 0;
         for (short[] element : data) {
-            for (int j = 0; j < element.length; j += 1) {
-                total += element[j];
+            for (short element2 : element) {
+                total += element2;
             }
         }
         return total;
@@ -451,7 +451,8 @@ public class CompressTest {
 
     @Test
     public void testZCompressionProvider() throws Exception {
-        InputStream in = Thread.currentThread().getContextClassLoader().getResourceAsStream("nom/tam/fits/test/test.fits.Z");
+        InputStream in = Thread.currentThread().getContextClassLoader()
+                .getResourceAsStream("nom/tam/fits/test/test.fits.Z");
         Fits f = null;
         try {
             f = new Fits(new ZCompressionProvider().decompress(in));

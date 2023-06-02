@@ -1,38 +1,5 @@
 package nom.tam.image.compression.hdu;
 
-/*
- * #%L
- * nom.tam FITS library
- * %%
- * Copyright (C) 1996 - 2021 nom-tam-fits
- * %%
- * This is free and unencumbered software released into the public domain.
- * 
- * Anyone is free to copy, modify, publish, use, compile, sell, or
- * distribute this software, either in source code form or as a compiled
- * binary, for any purpose, commercial or non-commercial, and by any
- * means.
- * 
- * In jurisdictions that recognize copyright laws, the author or authors
- * of this software dedicate any and all copyright interest in the
- * software to the public domain. We make this dedication for the benefit
- * of the public at large and to the detriment of our heirs and
- * successors. We intend this dedication to be an overt act of
- * relinquishment in perpetuity of all present and future rights to this
- * software under copyright law.
- * 
- * THE SOFTWARE IS PROVIDED "AS IS", WITHOUT WARRANTY OF ANY KIND,
- * EXPRESS OR IMPLIED, INCLUDING BUT NOT LIMITED TO THE WARRANTIES OF
- * MERCHANTABILITY, FITNESS FOR A PARTICULAR PURPOSE AND NONINFRINGEMENT.
- * IN NO EVENT SHALL THE AUTHORS BE LIABLE FOR ANY CLAIM, DAMAGES OR
- * OTHER LIABILITY, WHETHER IN AN ACTION OF CONTRACT, TORT OR OTHERWISE,
- * ARISING FROM, OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR
- * OTHER DEALINGS IN THE SOFTWARE.
- * #L%
- */
-
-import static nom.tam.fits.header.Standard.XTENSION_BINTABLE;
-
 import java.io.ByteArrayInputStream;
 import java.io.ByteArrayOutputStream;
 import java.io.File;
@@ -40,9 +7,7 @@ import java.io.IOException;
 import java.util.Random;
 import java.util.zip.GZIPInputStream;
 
-import org.junit.After;
 import org.junit.Assert;
-import org.junit.Before;
 import org.junit.Test;
 
 import nom.tam.fits.BinaryTableHDU;
@@ -55,6 +20,39 @@ import nom.tam.fits.util.BlackBoxImages;
 import nom.tam.util.Cursor;
 import nom.tam.util.SafeClose;
 
+/*
+ * #%L
+ * nom.tam FITS library
+ * %%
+ * Copyright (C) 1996 - 2021 nom-tam-fits
+ * %%
+ * This is free and unencumbered software released into the public domain.
+ *
+ * Anyone is free to copy, modify, publish, use, compile, sell, or
+ * distribute this software, either in source code form or as a compiled
+ * binary, for any purpose, commercial or non-commercial, and by any
+ * means.
+ *
+ * In jurisdictions that recognize copyright laws, the author or authors
+ * of this software dedicate any and all copyright interest in the
+ * software to the public domain. We make this dedication for the benefit
+ * of the public at large and to the detriment of our heirs and
+ * successors. We intend this dedication to be an overt act of
+ * relinquishment in perpetuity of all present and future rights to this
+ * software under copyright law.
+ *
+ * THE SOFTWARE IS PROVIDED "AS IS", WITHOUT WARRANTY OF ANY KIND,
+ * EXPRESS OR IMPLIED, INCLUDING BUT NOT LIMITED TO THE WARRANTIES OF
+ * MERCHANTABILITY, FITNESS FOR A PARTICULAR PURPOSE AND NONINFRINGEMENT.
+ * IN NO EVENT SHALL THE AUTHORS BE LIABLE FOR ANY CLAIM, DAMAGES OR
+ * OTHER LIABILITY, WHETHER IN AN ACTION OF CONTRACT, TORT OR OTHERWISE,
+ * ARISING FROM, OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR
+ * OTHER DEALINGS IN THE SOFTWARE.
+ * #L%
+ */
+
+import static nom.tam.fits.header.Standard.XTENSION_BINTABLE;
+
 public class CompressedTableTest {
 
     private final double[][][] doubles = new double[50][5][5];
@@ -62,10 +60,10 @@ public class CompressedTableTest {
     public CompressedTableTest() {
         super();
         Random random = new Random();
-        for (int i1 = 0; i1 < this.doubles.length; i1++) {
-            for (int i2 = 0; i2 < this.doubles[i1].length; i2++) {
-                for (int i3 = 0; i3 < this.doubles[i1][i2].length; i3++) {
-                    this.doubles[i1][i2][i3] = random.nextDouble();
+        for (int i1 = 0; i1 < doubles.length; i1++) {
+            for (int i2 = 0; i2 < doubles[i1].length; i2++) {
+                for (int i3 = 0; i3 < doubles[i1][i2].length; i3++) {
+                    doubles[i1][i2][i3] = random.nextDouble();
                 }
             }
         }
@@ -156,7 +154,7 @@ public class CompressedTableTest {
         Assert.assertEquals(orgHeader.getSize(), table.getHeader().getSize());
         Cursor<String, HeaderCard> iterator = orgHeader.iterator();
         while (iterator.hasNext()) {
-            HeaderCard headerCard = (HeaderCard) iterator.next();
+            HeaderCard headerCard = iterator.next();
             String uncompressed = table.getHeader().getStringValue(headerCard.getKey());
             String original = orgHeader.getStringValue(headerCard.getKey());
             if (uncompressed != null || original != null) {
@@ -190,7 +188,7 @@ public class CompressedTableTest {
             for (int row = 0; row < 50; row++) {
                 Object decompressedElement = decompressedTable.getElement(row, 0);
                 Object orgElement = orgTable.getElement(row, 0);
-                Assert.assertEquals((String) orgElement, (String) decompressedElement);
+                Assert.assertEquals(orgElement, decompressedElement);
                 decompressedElement = decompressedTable.getElement(row, 1);
                 orgElement = orgTable.getElement(row, 1);
                 Assert.assertArrayEquals((short[]) orgElement, (short[]) decompressedElement);
@@ -218,7 +216,8 @@ public class CompressedTableTest {
         try {
             fitsUncompressed = new Fits("src/test/resources/nom/tam/table/comp/bt12.fits");
 
-            CompressedTableHDU compressedTable = CompressedTableHDU.fromBinaryTableHDU((BinaryTableHDU) fitsUncompressed.getHDU(1), 0).compress();
+            CompressedTableHDU compressedTable = CompressedTableHDU
+                    .fromBinaryTableHDU((BinaryTableHDU) fitsUncompressed.getHDU(1), 0).compress();
             compressedTable.compress();
 
             fitsOrg = new Fits("src/test/resources/nom/tam/table/comp/bt12.fits.fz");

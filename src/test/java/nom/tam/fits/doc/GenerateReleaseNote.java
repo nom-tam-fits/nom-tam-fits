@@ -7,12 +7,12 @@ package nom.tam.fits.doc;
  * Copyright (C) 1996 - 2021 nom-tam-fits
  * %%
  * This is free and unencumbered software released into the public domain.
- * 
+ *
  * Anyone is free to copy, modify, publish, use, compile, sell, or
  * distribute this software, either in source code form or as a compiled
  * binary, for any purpose, commercial or non-commercial, and by any
  * means.
- * 
+ *
  * In jurisdictions that recognize copyright laws, the author or authors
  * of this software dedicate any and all copyright interest in the
  * software to the public domain. We make this dedication for the benefit
@@ -20,7 +20,7 @@ package nom.tam.fits.doc;
  * successors. We intend this dedication to be an overt act of
  * relinquishment in perpetuity of all present and future rights to this
  * software under copyright law.
- * 
+ *
  * THE SOFTWARE IS PROVIDED "AS IS", WITHOUT WARRANTY OF ANY KIND,
  * EXPRESS OR IMPLIED, INCLUDING BUT NOT LIMITED TO THE WARRANTIES OF
  * MERCHANTABILITY, FITNESS FOR A PARTICULAR PURPOSE AND NONINFRINGEMENT.
@@ -32,6 +32,7 @@ package nom.tam.fits.doc;
  */
 
 import java.io.File;
+import java.io.IOException;
 import java.io.PrintStream;
 import java.util.ArrayList;
 import java.util.List;
@@ -56,37 +57,40 @@ public class GenerateReleaseNote {
         String version = release.getAttribute("version");
         String description = release.getAttribute("description");
 
-        String fileName = "NOTE.v" + version.substring(0, version.indexOf('.')) + version.substring(version.indexOf('.') + 1);
+        String fileName = "NOTE.v" + version.substring(0, version.indexOf('.'))
+                + version.substring(version.indexOf('.') + 1);
 
-        PrintStream out = new PrintStream(new File("target/" + fileName));
-
-        out.print("Release ");
-        out.println(version);
-        out.println();
-        println(out, limitString(description, 80));
-        out.println();
-        NodeList nodes = release.getElementsByTagName("action");
-        for (int index = 0; index < nodes.getLength(); index++) {
-            Element child = (Element) nodes.item(index);
-            String dev = child.getAttribute("dev");
-            String issue = child.getAttribute("issue");
-            if (isEmptyOrNull(dev) && isEmptyOrNull(issue)) {
-                println(out, limitString(child.getTextContent().trim(), 80));
-                out.println();
+        try (PrintStream out = new PrintStream(new File("target/" + fileName))) {
+            out.print("Release ");
+            out.println(version);
+            out.println();
+            println(out, limitString(description, 80));
+            out.println();
+            NodeList nodes = release.getElementsByTagName("action");
+            for (int index = 0; index < nodes.getLength(); index++) {
+                Element child = (Element) nodes.item(index);
+                String dev = child.getAttribute("dev");
+                String issue = child.getAttribute("issue");
+                if (isEmptyOrNull(dev) && isEmptyOrNull(issue)) {
+                    println(out, limitString(child.getTextContent().trim(), 80));
+                    out.println();
+                }
             }
-        }
-        out.println("Other changes in this edition include:");
-        out.println();
+            out.println("Other changes in this edition include:");
+            out.println();
 
-        for (int index = 0; index < nodes.getLength(); index++) {
-            Element child = (Element) nodes.item(index);
-            String dev = child.getAttribute("dev");
-            String issue = child.getAttribute("issue");
-            if (!isEmptyOrNull(dev) || !isEmptyOrNull(issue)) {
-                println(out, "     - ", limitString(child.getTextContent().trim(), 72));
+            for (int index = 0; index < nodes.getLength(); index++) {
+                Element child = (Element) nodes.item(index);
+                String dev = child.getAttribute("dev");
+                String issue = child.getAttribute("issue");
+                if (!isEmptyOrNull(dev) || !isEmptyOrNull(issue)) {
+                    println(out, "     - ", limitString(child.getTextContent().trim(), 72));
+                }
             }
+            out.close();
+        } catch (IOException e) {
+            e.printStackTrace();
         }
-        out.close();
     }
 
     private static void println(PrintStream out, List<String> limitString) {
@@ -106,8 +110,9 @@ public class GenerateReleaseNote {
     }
 
     static List<String> limitString(String string, int size) {
-        string = string.replace('\n', ' ').replace('\r', ' ').replace('\t', ' ').replace("  ", " ").replace("  ", " ").replace("  ", " ");
-        List<String> result = new ArrayList<String>();
+        string = string.replace('\n', ' ').replace('\r', ' ').replace('\t', ' ').replace("  ", " ").replace("  ", " ")
+                .replace("  ", " ");
+        List<String> result = new ArrayList<>();
         while (string.length() > 80) {
             int split = 80;
             while (!Character.isWhitespace(string.charAt(split))) {

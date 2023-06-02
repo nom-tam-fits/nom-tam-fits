@@ -7,12 +7,12 @@ package nom.tam.fits.test;
  * Copyright (C) 1996 - 2021 nom-tam-fits
  * %%
  * This is free and unencumbered software released into the public domain.
- * 
+ *
  * Anyone is free to copy, modify, publish, use, compile, sell, or
  * distribute this software, either in source code form or as a compiled
  * binary, for any purpose, commercial or non-commercial, and by any
  * means.
- * 
+ *
  * In jurisdictions that recognize copyright laws, the author or authors
  * of this software dedicate any and all copyright interest in the
  * software to the public domain. We make this dedication for the benefit
@@ -20,7 +20,7 @@ package nom.tam.fits.test;
  * successors. We intend this dedication to be an overt act of
  * relinquishment in perpetuity of all present and future rights to this
  * software under copyright law.
- * 
+ *
  * THE SOFTWARE IS PROVIDED "AS IS", WITHOUT WARRANTY OF ANY KIND,
  * EXPRESS OR IMPLIED, INCLUDING BUT NOT LIMITED TO THE WARRANTIES OF
  * MERCHANTABILITY, FITNESS FOR A PARTICULAR PURPOSE AND NONINFRINGEMENT.
@@ -40,17 +40,17 @@ import java.io.IOException;
 import java.io.PrintStream;
 import java.lang.reflect.Constructor;
 
+import org.junit.Assert;
+import org.junit.BeforeClass;
+import org.junit.Test;
+
 import nom.tam.fits.Fits;
-import nom.tam.fits.FitsFactory;
 import nom.tam.fits.FitsException;
+import nom.tam.fits.FitsFactory;
 import nom.tam.fits.utilities.FitsCopy;
 import nom.tam.fits.utilities.FitsReader;
 import nom.tam.fits.utilities.Main;
 import nom.tam.util.FitsFile;
-
-import org.junit.Assert;
-import org.junit.BeforeClass;
-import org.junit.Test;
 
 public class TestMain {
 
@@ -64,10 +64,8 @@ public class TestMain {
             PrintStream out2 = new PrintStream(sysout);
             System.setOut(out2);
 
-            Main.main(new String[]{
-                "wrong"
-            });
-            Main.main(new String[]{});
+            Main.main(new String[] {"wrong"});
+            Main.main(new String[] {});
             out2.flush();
             String sysoutString = new String(sysout.toByteArray());
             int firstIndexOf = sysoutString.indexOf("do not know what to do");
@@ -87,10 +85,7 @@ public class TestMain {
             PrintStream out2 = new PrintStream(sysout);
             System.setOut(out2);
 
-            Main.main(new String[]{
-                "read",
-                "target/testMainRead.fits"
-            });
+            Main.main(new String[] {"read", "target/testMainRead.fits"});
             out2.flush();
             Assert.assertEquals("\n" + //
                     "\n" + //
@@ -139,11 +134,7 @@ public class TestMain {
             ByteArrayOutputStream sysout = new ByteArrayOutputStream();
             PrintStream out2 = new PrintStream(sysout);
             System.setOut(out2);
-            Main.main(new String[]{
-                "copy",
-                "target/testMainRead.fits",
-                "target/test-copy.fits"
-            });
+            Main.main(new String[] {"copy", "target/testMainRead.fits", "target/test-copy.fits"});
             out2.flush();
             Assert.assertEquals("\n" + //
                     "\n" + //
@@ -169,7 +160,7 @@ public class TestMain {
                     "         NAXIS2=5" + LS + //
                     "      Data information:" + LS + //
                     "         short[5, 5]" + LS, new String(sysout.toByteArray()));
-            Assert.assertEquals(new File("target/testMainRead.fits").length(),//
+            Assert.assertEquals(new File("target/testMainRead.fits").length(), //
                     new File("target/test-copy.fits").length());
         } finally {
             System.setOut(out);

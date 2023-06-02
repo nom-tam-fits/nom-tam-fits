@@ -7,12 +7,12 @@ package nom.tam.fits;
  * Copyright (C) 1996 - 2021 nom-tam-fits
  * %%
  * This is free and unencumbered software released into the public domain.
- * 
+ *
  * Anyone is free to copy, modify, publish, use, compile, sell, or
  * distribute this software, either in source code form or as a compiled
  * binary, for any purpose, commercial or non-commercial, and by any
  * means.
- * 
+ *
  * In jurisdictions that recognize copyright laws, the author or authors
  * of this software dedicate any and all copyright interest in the
  * software to the public domain. We make this dedication for the benefit
@@ -20,7 +20,7 @@ package nom.tam.fits;
  * successors. We intend this dedication to be an overt act of
  * relinquishment in perpetuity of all present and future rights to this
  * software under copyright law.
- * 
+ *
  * THE SOFTWARE IS PROVIDED "AS IS", WITHOUT WARRANTY OF ANY KIND,
  * EXPRESS OR IMPLIED, INCLUDING BUT NOT LIMITED TO THE WARRANTIES OF
  * MERCHANTABILITY, FITNESS FOR A PARTICULAR PURPOSE AND NONINFRINGEMENT.
@@ -31,14 +31,13 @@ package nom.tam.fits;
  * #L%
  */
 
-
 import java.util.Date;
 
 import nom.tam.fits.header.IFitsHeader;
 
 /**
  * builder pattern implementation for easy readable header card creation.
- * 
+ *
  * @author nir
  */
 public class HeaderCardBuilder {
@@ -65,11 +64,9 @@ public class HeaderCardBuilder {
 
     /**
      * constructor to the header card builder.
-     * 
-     * @param header
-     *            the header to fill.
-     * @param key
-     *            the first header card to set.
+     *
+     * @param header the header to fill.
+     * @param key    the first header card to set.
      */
     protected HeaderCardBuilder(Header header, IFitsHeader key) {
         this.header = header;
@@ -78,187 +75,181 @@ public class HeaderCardBuilder {
 
     /**
      * get the current build card of the builder.
-     * 
+     *
      * @return the current card
      */
     public HeaderCard card() {
-        return this.card;
+        return card;
     }
 
     /**
-     * switch focus to the card with the specified key. If the card does not
-     * exist the card will be created when the value or the comment is set.
-     * 
-     * @param newKey
-     *            the new card to set
-     * @return this
+     * switch focus to the card with the specified key. If the card does not exist the card will be created when the
+     * value or the comment is set.
+     *
+     * @param  newKey the new card to set
+     *
+     * @return        this
      */
     public HeaderCardBuilder card(IFitsHeader newKey) {
-        this.key = newKey;
-        this.card = this.header.findCard(this.key);
+        key = newKey;
+        card = header.findCard(key);
         return this;
     }
 
     /**
-     * set the comment of the current card. If the card does not exist yet the
-     * card is created with a null value, if the card needs a value use the
-     * value setter first!
-     * 
-     * @param newComment
-     *            the new comment to set.
-     * @return this
-     * @throws HeaderCardException
-     *             if the card creation failed.
+     * set the comment of the current card. If the card does not exist yet the card is created with a null value, if the
+     * card needs a value use the value setter first!
+     *
+     * @param  newComment          the new comment to set.
+     *
+     * @return                     this
+     *
+     * @throws HeaderCardException if the card creation failed.
      */
     public HeaderCardBuilder comment(String newComment) throws HeaderCardException {
-        if (this.card == null) {
-            this.card = new HeaderCard(this.key.key(), (String) null, null);
-            this.header.addLine(this.card);
+        if (card == null) {
+            card = new HeaderCard(key.key(), (String) null, null);
+            header.addLine(card);
         }
-        this.card.setComment(newComment);
+        card.setComment(newComment);
         return this;
     }
 
     /**
-     * set the value of the current card.If the card did not exist yet the card
-     * will be created.
-     * 
-     * @param newValue
-     *            the new value to set.
-     * @return this
-     * @throws HeaderCardException
-     *             if the card creation failed.
+     * set the value of the current card.If the card did not exist yet the card will be created.
+     *
+     * @param  newValue            the new value to set.
+     *
+     * @return                     this
+     *
+     * @throws HeaderCardException if the card creation failed.
      */
     public HeaderCardBuilder value(boolean newValue) throws HeaderCardException {
-        if (this.card == null) {
-            this.card = new HeaderCard(this.key.key(), newValue, null);
-            this.header.addLine(this.card);
+        if (card == null) {
+            card = new HeaderCard(key.key(), newValue, null);
+            header.addLine(card);
         } else {
-            this.card.setValue(newValue);
+            card.setValue(newValue);
         }
         return this;
     }
 
     /**
-     * set the value of the current card. If the card did not exist yet the card
-     * will be created.
-     * 
-     * @param newValue
-     *            the new value to set.
-     * @return this
-     * @throws HeaderCardException
-     *             if the card creation failed.
+     * set the value of the current card. If the card did not exist yet the card will be created.
+     *
+     * @param  newValue            the new value to set.
+     *
+     * @return                     this
+     *
+     * @throws HeaderCardException if the card creation failed.
      */
     public HeaderCardBuilder value(Date newValue) throws HeaderCardException {
         return value(FitsDate.getFitsDateString(newValue));
     }
 
     /**
-     * Sets a new number value for the current card. If the card did not exist yet the card
-     * will be created.
-     * 
-     * @param value     the new number value to set.
-     * @return this
+     * Sets a new number value for the current card. If the card did not exist yet the card will be created.
+     *
+     * @param  value               the new number value to set.
+     *
+     * @return                     this
+     *
      * @throws HeaderCardException if the card creation failed.
-     * @throws LongValueException 
-     *                  if the number value cannot be represented in the space available
-     *                  for it in the 80-character wide FITS header record.    
+     * @throws LongValueException  if the number value cannot be represented in the space available for it in the
+     *                                 80-character wide FITS header record.
      */
     public HeaderCardBuilder value(Number value) throws HeaderCardException, LongValueException {
-        if (this.card == null) {
-            this.card = new HeaderCard(this.key.key(), value, precision, null);
-            this.header.addLine(this.card);
+        if (card == null) {
+            card = new HeaderCard(key.key(), value, precision, null);
+            header.addLine(card);
         } else {
-            this.card.setValue(value, precision);
+            card.setValue(value, precision);
         }
         return this;
     }
 
     /**
-     * set the value of the current card.If the card did not exist yet the card
-     * will be created.
-     * 
-     * @param newValue
-     *            the new value to set.
-     * @return this
-     * @throws HeaderCardException
-     *             if the card creation failed.
-     * @throws LongValueException 
-     *             if the number value cannot be represented in the space available
-     *             for it in the 80-character wide FITS header record.
+     * set the value of the current card.If the card did not exist yet the card will be created.
+     *
+     * @param  newValue            the new value to set.
+     *
+     * @return                     this
+     *
+     * @throws HeaderCardException if the card creation failed.
+     * @throws LongValueException  if the number value cannot be represented in the space available for it in the
+     *                                 80-character wide FITS header record.
      */
     public HeaderCardBuilder value(String newValue) throws HeaderCardException, LongValueException {
-        if (this.card == null) {
-            this.card = new HeaderCard(this.key.key(), newValue, null);
-            this.header.addLine(this.card);
+        if (card == null) {
+            card = new HeaderCard(key.key(), newValue, null);
+            header.addLine(card);
         } else {
-            this.card.setValue(newValue);
+            card.setValue(newValue);
         }
         return this;
     }
 
     /**
-     * Sets the number of decimals to show for the following decimal values. This method
-     * is now deprecated. Use {@link #precision(int)} instead.
-     * 
-     * @param decimals     the new number of decimal places to show.
-     * @return this
-     * 
-     * @deprecated Use {@link #precision(int)} instead.
+     * Sets the number of decimals to show for the following decimal values. This method is now deprecated. Use
+     * {@link #precision(int)} instead.
+     *
+     * @param      decimals the new number of decimal places to show.
+     *
+     * @return              this
+     *
+     * @deprecated          Use {@link #precision(int)} instead.
      */
     @Deprecated
     public HeaderCardBuilder scale(int decimals) {
-        this.precision = decimals;
+        precision = decimals;
         return this;
     }
-    
-    
+
     /**
-     * Sets the number of decimals to show for the following decimal values. 
-     * Trailing zeroes will be ommitted.
-     * 
-     * 
-     * @param decimals     the number of decimals to show for the following decimal values. 
-     * @return              this
-     * 
-     * @since 1.16
+     * Sets the number of decimals to show for the following decimal values. Trailing zeroes will be ommitted.
+     *
+     * @param  decimals the number of decimals to show for the following decimal values.
+     *
+     * @return          this
+     *
+     * @since           1.16
      */
     public HeaderCardBuilder precision(int decimals) {
-        this.precision = decimals;
+        precision = decimals;
         return this;
     }
 
     /**
      * This method has been deprecated. Please use {@link #autoPrecision()} instead.
-     * 
-     * @return this
-     * 
+     *
+     * @return     this
+     *
      * @deprecated Use {@link #autoPrecision()} instead
      */
     @Deprecated
     public HeaderCardBuilder noScale() {
-        this.precision = -1;
+        precision = -1;
         return this;
     }
 
     /**
-     * Use the native precision for the given number type. Trailing zeroes will be
-     * ommitted.
-     * 
+     * Use the native precision for the given number type. Trailing zeroes will be ommitted.
+     *
      * @return this
-     * 
-     * @since 1.16
+     *
+     * @since  1.16
      */
     public HeaderCardBuilder autoPrecision() {
-        this.precision = -1;
+        precision = -1;
         return this;
     }
-    
+
     /**
+     * Returns the FITS header object that this builder is used with
+     * 
      * @return the filled header.
      */
     public Header header() {
         return header;
     }
 }
-

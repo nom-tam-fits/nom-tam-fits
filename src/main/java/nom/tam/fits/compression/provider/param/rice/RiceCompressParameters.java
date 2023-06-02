@@ -7,12 +7,12 @@ package nom.tam.fits.compression.provider.param.rice;
  * Copyright (C) 1996 - 2021 nom-tam-fits
  * %%
  * This is free and unencumbered software released into the public domain.
- * 
+ *
  * Anyone is free to copy, modify, publish, use, compile, sell, or
  * distribute this software, either in source code form or as a compiled
  * binary, for any purpose, commercial or non-commercial, and by any
  * means.
- * 
+ *
  * In jurisdictions that recognize copyright laws, the author or authors
  * of this software dedicate any and all copyright interest in the
  * software to the public domain. We make this dedication for the benefit
@@ -20,7 +20,7 @@ package nom.tam.fits.compression.provider.param.rice;
  * successors. We intend this dedication to be an overt act of
  * relinquishment in perpetuity of all present and future rights to this
  * software under copyright law.
- * 
+ *
  * THE SOFTWARE IS PROVIDED "AS IS", WITHOUT WARRANTY OF ANY KIND,
  * EXPRESS OR IMPLIED, INCLUDING BUT NOT LIMITED TO THE WARRANTIES OF
  * MERCHANTABILITY, FITNESS FOR A PARTICULAR PURPOSE AND NONINFRINGEMENT.
@@ -36,6 +36,10 @@ import nom.tam.fits.compression.algorithm.rice.RiceCompressOption;
 import nom.tam.fits.compression.provider.param.api.ICompressHeaderParameter;
 import nom.tam.fits.compression.provider.param.base.CompressParameters;
 
+/**
+ * (<i>for internal use</i>) Rice compression parameters that are recorded in a FITS compressed HDU.
+ */
+@SuppressWarnings({"javadoc", "deprecation"})
 public class RiceCompressParameters extends CompressParameters {
 
     private RiceBlockSizeParameter blockSize;
@@ -43,8 +47,8 @@ public class RiceCompressParameters extends CompressParameters {
     private RiceBytePixParameter bytePix;
 
     public RiceCompressParameters(RiceCompressOption option) {
-        this.blockSize = new RiceBlockSizeParameter(option);
-        this.bytePix = new RiceBytePixParameter(option);
+        blockSize = new RiceBlockSizeParameter(option);
+        bytePix = new RiceBytePixParameter(option);
     }
 
     @Override
@@ -63,6 +67,6 @@ public class RiceCompressParameters extends CompressParameters {
 
     @Override
     protected ICompressHeaderParameter[] headerParameters() {
-        return new ICompressHeaderParameter[] {this.blockSize, this.bytePix};
+        return new ICompressHeaderParameter[] {blockSize, bytePix};
     }
 }

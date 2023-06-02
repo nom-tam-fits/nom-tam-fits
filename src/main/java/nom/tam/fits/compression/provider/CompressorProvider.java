@@ -7,12 +7,12 @@ package nom.tam.fits.compression.provider;
  * Copyright (C) 1996 - 2021 nom-tam-fits
  * %%
  * This is free and unencumbered software released into the public domain.
- * 
+ *
  * Anyone is free to copy, modify, publish, use, compile, sell, or
  * distribute this software, either in source code form or as a compiled
  * binary, for any purpose, commercial or non-commercial, and by any
  * means.
- * 
+ *
  * In jurisdictions that recognize copyright laws, the author or authors
  * of this software dedicate any and all copyright interest in the
  * software to the public domain. We make this dedication for the benefit
@@ -20,7 +20,7 @@ package nom.tam.fits.compression.provider;
  * successors. We intend this dedication to be an overt act of
  * relinquishment in perpetuity of all present and future rights to this
  * software under copyright law.
- * 
+ *
  * THE SOFTWARE IS PROVIDED "AS IS", WITHOUT WARRANTY OF ANY KIND,
  * EXPRESS OR IMPLIED, INCLUDING BUT NOT LIMITED TO THE WARRANTIES OF
  * MERCHANTABILITY, FITNESS FOR A PARTICULAR PURPOSE AND NONINFRINGEMENT.
@@ -84,8 +84,9 @@ import nom.tam.fits.compression.provider.param.hcompress.HCompressParameters;
 import nom.tam.fits.compression.provider.param.rice.RiceCompressParameters;
 
 /**
- * Standard implementation of the {@code ICompressorProvider} interface.
+ * (<i>for internal use</i>) Standard implementation of the {@code ICompressorProvider} interface.
  */
+@SuppressWarnings("javadoc")
 public class CompressorProvider implements ICompressorProvider {
 
     /**
@@ -102,24 +103,23 @@ public class CompressorProvider implements ICompressorProvider {
 
         @SuppressWarnings("unchecked")
         protected TileCompressorControl(Class<?> compressorClass) {
-            this.constructor = (Constructor<ICompressor<Buffer>>) compressorClass.getConstructors()[0];
-            this.optionClass = (Class<? extends ICompressOption>) (this.constructor.getParameterTypes().length == 0 ?
-                                                                   null :
-                                                                   this.constructor.getParameterTypes()[0]);
+            constructor = (Constructor<ICompressor<Buffer>>) compressorClass.getConstructors()[0];
+            optionClass = (Class<? extends ICompressOption>) (constructor.getParameterTypes().length == 0 ? null :
+                    constructor.getParameterTypes()[0]);
         }
 
         /**
          * Sets the floating-point type to quantize to use for this tile compressor.
-         * 
-         * @param floatingPointType Floating-point primitive type to quantize. Must be either <code>double.class</code>
-         *            or else <code>float.class</code>.
-         * 
-         * @return itself
-         * 
-         * @since 1.18
+         *
+         * @param  floatingPointType Floating-point primitive type to quantize. Must be either <code>double.class</code>
+         *                               or else <code>float.class</code>.
+         *
+         * @return                   itself
+         *
+         * @since                    1.18
          */
         protected TileCompressorControl setQuantType(Class<?> floatingPointType) {
-            this.quantType = floatingPointType;
+            quantType = floatingPointType;
             return this;
         }
 
@@ -129,8 +129,7 @@ public class CompressorProvider implements ICompressorProvider {
                 return newCompressor(option).compress(in, out);
             } catch (Exception e) {
                 LOG.log(Level.FINE,
-                        "could not compress using " + this.constructor + " must fallback to other compression method",
-                        e);
+                        "could not compress using " + constructor + " must fallback to other compression method", e);
                 return false;
             }
         }
@@ -140,18 +139,18 @@ public class CompressorProvider implements ICompressorProvider {
             try {
                 newCompressor(option).decompress(in, out);
             } catch (Exception e) {
-                throw new IllegalStateException("could not decompress " + this.constructor, e);
+                throw new IllegalStateException("could not decompress " + constructor, e);
             }
         }
 
         @Override
         public ICompressOption option() {
             ICompressOption option = null;
-            if (this.optionClass != null) {
+            if (optionClass != null) {
                 try {
-                    option = this.optionClass.getDeclaredConstructor().newInstance();
+                    option = optionClass.getDeclaredConstructor().newInstance();
                 } catch (Exception e) {
-                    throw new IllegalStateException("could not instantiate option class for " + this.constructor, e);
+                    throw new IllegalStateException("could not instantiate option class for " + constructor, e);
                 }
             }
 
@@ -178,9 +177,8 @@ public class CompressorProvider implements ICompressorProvider {
                 option = quantOption.getCompressOption();
             }
 
-            ICompressor<Buffer> compressor = this.constructor.getParameterTypes().length == 0 ?
-                    this.constructor.newInstance() :
-                    this.constructor.newInstance(option);
+            ICompressor<Buffer> compressor = constructor.getParameterTypes().length == 0 ? constructor.newInstance() :
+                    constructor.newInstance(option);
 
             if (quantOption != null && quantType != null) {
                 if (quantType.equals(double.class)) {
@@ -250,11 +248,10 @@ public class CompressorProvider implements ICompressorProvider {
             {FloatRiceCompressor.class, RiceQuantizeCompressOption.class},
             {IntRiceCompressor.class, RiceCompressParameters.class}, {BytePLIOCompressor.class},
             {ShortPLIOCompressor.class}, {IntPLIOCompressor.class}, {ByteHCompressor.class, HCompressParameters.class},
-            {FloatHCompressor.class, HCompressorQuantizeOption.class},
-            {ShortHCompressor.class, HCompressParameters.class}, {IntHCompressor.class, HCompressParameters.class},
-            {ByteGZip2Compressor.class}, {ShortGZip2Compressor.class}, {IntGZip2Compressor.class},
-            {FloatGZip2Compressor.class}, {DoubleGZip2Compressor.class}, {LongGZip2Compressor.class},
-            {ByteGZipCompressor.class}, {ShortGZipCompressor.class}, {IntGZipCompressor.class},
+            {FloatHCompressor.class, HCompressorQuantizeOption.class}, {ShortHCompressor.class, HCompressParameters.class},
+            {IntHCompressor.class, HCompressParameters.class}, {ByteGZip2Compressor.class}, {ShortGZip2Compressor.class},
+            {IntGZip2Compressor.class}, {FloatGZip2Compressor.class}, {DoubleGZip2Compressor.class},
+            {LongGZip2Compressor.class}, {ByteGZipCompressor.class}, {ShortGZipCompressor.class}, {IntGZipCompressor.class},
             {LongGZipCompressor.class}, {FloatGZipCompressor.class}, {DoubleGZipCompressor.class},
             {ByteNoCompressCompressor.class}, {ShortNoCompressCompressor.class}, {IntNoCompressCompressor.class},
             {LongNoCompressCompressor.class}, {FloatNoCompressCompressor.class}, {DoubleNoCompressCompressor.class}};

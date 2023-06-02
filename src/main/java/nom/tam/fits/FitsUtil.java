@@ -7,12 +7,12 @@ package nom.tam.fits;
  * Copyright (C) 2004 - 2021 nom-tam-fits
  * %%
  * This is free and unencumbered software released into the public domain.
- * 
+ *
  * Anyone is free to copy, modify, publish, use, compile, sell, or
  * distribute this software, either in source code form or as a compiled
  * binary, for any purpose, commercial or non-commercial, and by any
  * means.
- * 
+ *
  * In jurisdictions that recognize copyright laws, the author or authors
  * of this software dedicate any and all copyright interest in the
  * software to the public domain. We make this dedication for the benefit
@@ -20,7 +20,7 @@ package nom.tam.fits;
  * successors. We intend this dedication to be an overt act of
  * relinquishment in perpetuity of all present and future rights to this
  * software under copyright law.
- * 
+ *
  * THE SOFTWARE IS PROVIDED "AS IS", WITHOUT WARRANTY OF ANY KIND,
  * EXPRESS OR IMPLIED, INCLUDING BUT NOT LIMITED TO THE WARRANTIES OF
  * MERCHANTABILITY, FITNESS FOR A PARTICULAR PURPOSE AND NONINFRINGEMENT.
@@ -44,6 +44,8 @@ import java.util.logging.Logger;
 
 import nom.tam.util.ArrayDataOutput;
 import nom.tam.util.AsciiFuncs;
+import nom.tam.util.FitsDecoder;
+import nom.tam.util.FitsEncoder;
 import nom.tam.util.FitsIO;
 import nom.tam.util.RandomAccess;
 
@@ -70,42 +72,54 @@ public final class FitsUtil {
     }
 
     /**
-     * @return Total size of blocked FITS element, using e.v. padding to fits block size.
+     * @deprecated      use {@link #addPadding(long)} instead. Calculates the amount of padding needed to complete the
+     *                      last FITS block at the specified current size.
      * 
-     * @param size the current size.
+     * @return          Total size of blocked FITS element, using e.v. padding to fits block size.
+     *
+     * @param      size the current size.
      */
     public static int addPadding(int size) {
         return size + padding(size);
     }
 
     /**
-     * @return Total size of blocked FITS element, using e.v. padding to fits block size.
+     * Calculates the amount of padding needed to complete the last FITS block at the specified current size.
      * 
-     * @param size the current size.
+     * @return      Total size of blocked FITS element, using e.v. padding to fits block size.
+     *
+     * @param  size the current size.
+     * 
+     * @see         #padding(long)
+     * @see         #pad(ArrayDataOutput, long)
      */
     public static long addPadding(long size) {
         return size + padding(size);
     }
 
     /**
-     * @return Convert an array of booleans to bytes.
+     * Converts a boolean array to its FITS representation as an array of bytes.
      * 
-     * @param bool array of booleans
+     * @return      Convert an array of booleans to bytes.
+     *
+     * @param  bool array of booleans
      */
     static byte[] booleanToByte(boolean[] bool) {
 
         byte[] byt = new byte[bool.length];
-        for (int i = 0; i < bool.length; i += 1) {
-            byt[i] = bool[i] ? (byte) 'T' : (byte) 'F';
+        for (int i = 0; i < bool.length; i++) {
+            byt[i] = FitsEncoder.byteForBoolean(bool[i]);
         }
         return byt;
     }
 
     /**
-     * @return Convert bytes to Strings.
+     * Converts a FITS byte sequence to a Java string array
      * 
-     * @param bytes byte array to convert
-     * @param maxLen the max string length
+     * @return        Convert bytes to Strings.
+     *
+     * @param  bytes  byte array to convert
+     * @param  maxLen the max string length
      */
     public static String[] byteArrayToStrings(byte[] bytes, int maxLen) {
         boolean checking = FitsFactory.getCheckAsciiStrings();
@@ -117,7 +131,7 @@ public final class FitsUtil {
         // No warning of this truncation is given.
 
         String[] res = new String[bytes.length / maxLen];
-        for (int i = 0; i < res.length; i += 1) {
+        for (int i = 0; i < res.length; i++) {
 
             int start = i * maxLen;
 
@@ -138,13 +152,13 @@ public final class FitsUtil {
             // Note that the FITS standard does not mandate
             // that we should be trimming the string at all, but
             // this seems to best meet the desires of the community.
-            for (; start < end; start += 1) {
+            for (; start < end; start++) {
                 if (bytes[start] != BYTE_REPRESENTING_BLANK) {
                     break; // Skip only spaces.
                 }
             }
 
-            for (; end > start; end -= 1) {
+            for (; end > start; end--) {
                 if (bytes[end - 1] != BYTE_REPRESENTING_BLANK) {
                     break;
                 }
@@ -159,7 +173,7 @@ public final class FitsUtil {
 
             // The lack of handling of null bytes was noted by Laurent Bourges.
             boolean errFound = false;
-            for (int j = start; j < end; j += 1) {
+            for (int j = start; j < end; j++) {
 
                 if (bytes[j] == 0) {
                     end = j;
@@ -181,23 +195,30 @@ public final class FitsUtil {
     }
 
     /**
-     * @return Convert an array of bytes to booleans.
+     * Converts a FITS representation of boolean values as bytes to a java boolean array. This implementation does not
+     * handle FITS <code>null</code> values.
      * 
-     * @param bytes the array of bytes to get the booleans from.
+     * @return       Convert an array of bytes to booleans.
+     *
+     * @param  bytes the array of bytes to get the booleans from.
+     * 
+     * @see          FitsDecoder#booleanFor(int)
      */
     static boolean[] byteToBoolean(byte[] bytes) {
         boolean[] bool = new boolean[bytes.length];
 
-        for (int i = 0; i < bytes.length; i += 1) {
-            bool[i] = (bytes[i] == 'T');
+        for (int i = 0; i < bytes.length; i++) {
+            bool[i] = FitsDecoder.booleanFor(bytes[i]);
         }
         return bool;
     }
 
     /**
-     * @return Find out where we are in a random access file .
+     * Gets the file offset for the given IO resource.
      * 
-     * @param o the stream to get the position
+     * @return   The offset from the beginning of file (if random accessible), or -1 otherwise.
+     *
+     * @param  o the stream to get the position
      */
     public static long findOffset(Closeable o) {
         if (o instanceof RandomAccess) {
@@ -207,12 +228,15 @@ public final class FitsUtil {
     }
 
     /**
-     * @return Get a stream to a URL accommodating possible redirections. Note that if a redirection request points to a
-     *             different protocol than the original request, then the redirection is not handled automatically.
+     * Gets and input stream for a given URL resource.
      * 
-     * @param url the url to get the stream from
-     * @param level max levels of redirection
-     * 
+     * @return             Get a stream to a URL accommodating possible redirections. Note that if a redirection request
+     *                         points to a different protocol than the original request, then the redirection is not
+     *                         handled automatically.
+     *
+     * @param  url         the url to get the stream from
+     * @param  level       max levels of redirection
+     *
      * @throws IOException if the operation failed
      */
     public static InputStream getURLStream(URL url, int level) throws IOException {
@@ -231,10 +255,12 @@ public final class FitsUtil {
     }
 
     /**
-     * @return Get the maximum length of a String in a String array.
+     * Returns the maximum String length in an array of Strings.
      * 
-     * @param strings array of strings to check
-     * 
+     * @return               Get the maximum length of a String in a String array.
+     *
+     * @param  strings       array of strings to check
+     *
      * @throws FitsException if the operation failed
      */
     public static int maxLength(String[] strings) throws FitsException {
@@ -249,25 +275,32 @@ public final class FitsUtil {
     }
 
     /**
-     * Add padding to an output stream.
-     * 
-     * @param stream stream to pad
-     * @param size the current size
-     * 
+     * Adds the necessary amount of padding needed to complete the last FITS block.
+     *
+     * @param  stream        stream to pad
+     * @param  size          the current size of the stream (total number of bytes written to it since the beginning of
+     *                           the FITS).
+     *
      * @throws FitsException if the operation failed
+     * 
+     * @see                  #pad(ArrayDataOutput, long, byte)
      */
     public static void pad(ArrayDataOutput stream, long size) throws FitsException {
         pad(stream, size, (byte) 0);
     }
 
     /**
-     * Add padding to an output stream.
-     * 
-     * @param stream stream to pad
-     * @param size the current size
-     * @param fill the fill byte to use
-     * 
+     * Adds the necessary amount of padding needed to complete the last FITS block., usign the designated padding byte
+     * value.
+     *
+     * @param  stream        stream to pad
+     * @param  size          the current size of the stream (total number of bytes written to it since the beginning of
+     *                           the FITS).
+     * @param  fill          the byte value to use for the padding
+     *
      * @throws FitsException if the operation failed
+     * 
+     * @see                  #pad(ArrayDataOutput, long)
      */
     public static void pad(ArrayDataOutput stream, long size, byte fill) throws FitsException {
         int len = padding(size);
@@ -284,14 +317,26 @@ public final class FitsUtil {
     }
 
     /**
-     * @return How many bytes are needed to fill a 2880 block?
+     * @deprecated      see Use {@link #padding(long)} instead.
      * 
-     * @param size the size without padding
+     * @return          How many bytes are needed to fill a 2880 block?
+     *
+     * @param      size the size without padding
      */
     public static int padding(int size) {
         return padding((long) size);
     }
 
+    /**
+     * Calculated the amount of padding we need to add given the current size of a FITS file (under construction)
+     * 
+     * @param  size the current size of our FITS file before the padding
+     * 
+     * @return      the number of bytes of padding we need to add at the end to complete the FITS block.
+     * 
+     * @see         #addPadding(long)
+     * @see         #pad(ArrayDataOutput, long)
+     */
     public static int padding(long size) {
 
         int mod = (int) (size % FitsFactory.FITS_BLOCK_SIZE);
@@ -304,16 +349,16 @@ public final class FitsUtil {
     /**
      * Attempts to reposition a FITS input ot output. The call will succeed only if the underlying input or output is
      * random accessible. Othewise, an exception will be thrown.
-     * 
-     * @deprecated This method wraps an {@link IOException} into a {@link FitsException} for no good reason really. A
-     *                 revision of the API could reduce the visibility of this method, and/or procees the underlying
-     *                 exception instead.
-     * 
-     * @param o the FITS input or output
-     * @param offset the offset to position it to.
-     * 
-     * @throws FitsException if the underlying input/output is not random accessible or if the requested position is
-     *             invalid.
+     *
+     * @deprecated               This method wraps an {@link IOException} into a {@link FitsException} for no good
+     *                               reason really. A revision of the API could reduce the visibility of this method,
+     *                               and/or procees the underlying exception instead.
+     *
+     * @param      o             the FITS input or output
+     * @param      offset        the offset to position it to.
+     *
+     * @throws     FitsException if the underlying input/output is not random accessible or if the requested position is
+     *                               invalid.
      */
     @Deprecated
     public static void reposition(FitsIO o, long offset) throws FitsException {
@@ -325,8 +370,8 @@ public final class FitsUtil {
         }
 
         if (!(o instanceof RandomAccess) || offset < 0) {
-            throw new FitsException("Invalid attempt to reposition stream " + o + " of type " + o.getClass().getName()
-                    + " to " + offset);
+            throw new FitsException(
+                    "Invalid attempt to reposition stream " + o + " of type " + o.getClass().getName() + " to " + offset);
         }
 
         try {
@@ -339,15 +384,15 @@ public final class FitsUtil {
 
     /**
      * Convert an array of Strings to bytes.
-     * 
-     * @return the resulting bytes
-     * 
-     * @param stringArray the array with Strings
-     * @param maxLen the max length (in bytes) of every String
+     *
+     * @return             the resulting bytes
+     *
+     * @param  stringArray the array with Strings
+     * @param  maxLen      the max length (in bytes) of every String
      */
     public static byte[] stringsToByteArray(String[] stringArray, int maxLen) {
         byte[] res = new byte[stringArray.length * maxLen];
-        for (int i = 0; i < stringArray.length; i += 1) {
+        for (int i = 0; i < stringArray.length; i++) {
             byte[] bstr;
             if (stringArray[i] == null) {
                 bstr = new byte[0];
@@ -359,7 +404,7 @@ public final class FitsUtil {
                 cnt = maxLen;
             }
             System.arraycopy(bstr, 0, res, i * maxLen, cnt);
-            for (int j = cnt; j < maxLen; j += 1) {
+            for (int j = cnt; j < maxLen; j++) {
                 res[i * maxLen + j] = (byte) ' ';
             }
         }

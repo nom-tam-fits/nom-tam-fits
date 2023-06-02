@@ -7,12 +7,12 @@ package nom.tam.fits.test;
  * Copyright (C) 2004 - 2021 nom-tam-fits
  * %%
  * This is free and unencumbered software released into the public domain.
- * 
+ *
  * Anyone is free to copy, modify, publish, use, compile, sell, or
  * distribute this software, either in source code form or as a compiled
  * binary, for any purpose, commercial or non-commercial, and by any
  * means.
- * 
+ *
  * In jurisdictions that recognize copyright laws, the author or authors
  * of this software dedicate any and all copyright interest in the
  * software to the public domain. We make this dedication for the benefit
@@ -20,7 +20,7 @@ package nom.tam.fits.test;
  * successors. We intend this dedication to be an overt act of
  * relinquishment in perpetuity of all present and future rights to this
  * software under copyright law.
- * 
+ *
  * THE SOFTWARE IS PROVIDED "AS IS", WITHOUT WARRANTY OF ANY KIND,
  * EXPRESS OR IMPLIED, INCLUDING BUT NOT LIMITED TO THE WARRANTIES OF
  * MERCHANTABILITY, FITNESS FOR A PARTICULAR PURPOSE AND NONINFRINGEMENT.
@@ -77,12 +77,12 @@ public class RandomGroupsTest {
             hdr.addValue("GCOUNT", 20, "Number of groups");
             hdr.write(bf);
 
-            for (int i = 0; i < 20; i += 1) {
+            for (int i = 0; i < 20; i++) {
 
-                for (int j = 0; j < pa.length; j += 1) {
+                for (int j = 0; j < pa.length; j++) {
                     pa[j] = i + j;
                 }
-                for (int j = 0; j < fa.length; j += 1) {
+                for (int j = 0; j < fa.length; j++) {
                     fa[j][j] = i * j;
                 }
                 // Write a group
@@ -106,14 +106,14 @@ public class RandomGroupsTest {
             data = (Object[][]) hdus[0].getKernel();
             System.err.println("### [1] " + data.length);
 
-            for (int i = 0; i < data.length; i += 1) {
+            for (int i = 0; i < data.length; i++) {
 
                 pa = (float[]) data[i][0];
                 fa = (float[][]) data[i][1];
-                for (int j = 0; j < pa.length; j += 1) {
+                for (int j = 0; j < pa.length; j++) {
                     assertEquals("paramTest:" + i + " " + j, i + j, pa[j], 0);
                 }
-                for (int j = 0; j < fa.length; j += 1) {
+                for (int j = 0; j < fa.length; j++) {
                     assertEquals("dataTest:" + i + " " + j, i * j, fa[j][j], 0);
                 }
             }
@@ -141,14 +141,14 @@ public class RandomGroupsTest {
             f = new Fits("target/rg2.fits");
             BasicHDU<?> groupHDU = f.read()[0];
             data = (Object[][]) groupHDU.getKernel();
-            for (int i = 0; i < data.length; i += 1) {
+            for (int i = 0; i < data.length; i++) {
 
                 pa = (float[]) data[i][0];
                 fa = (float[][]) data[i][1];
-                for (int j = 0; j < pa.length; j += 1) {
+                for (int j = 0; j < pa.length; j++) {
                     assertEquals("paramTest:" + i + " " + j, i + j, pa[j], 0);
                 }
-                for (int j = 0; j < fa.length; j += 1) {
+                for (int j = 0; j < fa.length; j++) {
                     assertEquals("dataTest:" + i + " " + j, i * j, fa[j][j], 0);
                 }
             }
@@ -215,8 +215,7 @@ public class RandomGroupsTest {
         }
     }
 
-    private void testGroupCreationAndRecreationByType(Object fa, Object pa, int bipix, String typeName)
-            throws Exception {
+    private void testGroupCreationAndRecreationByType(Object fa, Object pa, int bipix, String typeName) throws Exception {
         Object[][] data = new Object[1][2];
         data[0][0] = pa;
         data[0][1] = fa;

@@ -7,12 +7,12 @@ package nom.tam.fits.header;
  * Copyright (C) 1996 - 2021 nom-tam-fits
  * %%
  * This is free and unencumbered software released into the public domain.
- * 
+ *
  * Anyone is free to copy, modify, publish, use, compile, sell, or
  * distribute this software, either in source code form or as a compiled
  * binary, for any purpose, commercial or non-commercial, and by any
  * means.
- * 
+ *
  * In jurisdictions that recognize copyright laws, the author or authors
  * of this software dedicate any and all copyright interest in the
  * software to the public domain. We make this dedication for the benefit
@@ -20,7 +20,7 @@ package nom.tam.fits.header;
  * successors. We intend this dedication to be an overt act of
  * relinquishment in perpetuity of all present and future rights to this
  * software under copyright law.
- * 
+ *
  * THE SOFTWARE IS PROVIDED "AS IS", WITHOUT WARRANTY OF ANY KIND,
  * EXPRESS OR IMPLIED, INCLUDING BUT NOT LIMITED TO THE WARRANTIES OF
  * MERCHANTABILITY, FITNESS FOR A PARTICULAR PURPOSE AND NONINFRINGEMENT.
@@ -82,9 +82,9 @@ public final class GenericKey {
     /**
      * create a fits header key from a free string
      *
-     * @param key
-     *            the string to create the key for
-     * @return the IFitsHeader implementation for the key.
+     * @param  key the string to create the key for
+     *
+     * @return     the IFitsHeader implementation for the key.
      */
     public static IFitsHeader create(String key) {
         IFitsHeader result = STANDARD_KEYS.get(key);
@@ -97,9 +97,9 @@ public final class GenericKey {
     /**
      * create a array of generic fits header keys from a array of string keys.
      *
-     * @param keys
-     *            the array of string keys
-     * @return the array of IFitsHeaderKeys.
+     * @param  keys the array of string keys
+     *
+     * @return      the array of IFitsHeaderKeys.
      */
     public static IFitsHeader[] create(String[] keys) {
         IFitsHeader[] result = new IFitsHeader[keys.length];
@@ -109,12 +109,21 @@ public final class GenericKey {
         return result;
     }
 
-    public static int getN(String card) {
-        int index = card.length() - 1;
+    /**
+     * Returns the number value that appear at the trailing end of a FITS keyword. For example for <code>NAXIS2</code>
+     * it will return 2, while for <code>TFORM17</code> it will return 17. If there keyword does not end with a number,
+     * 0 is returned (FITS keywords are always numbered from 1 and up).
+     * 
+     * @param  key The FITS keyword from which to extract the trailing number.
+     * 
+     * @return     the number contained at the end of the keyword or else 0 if the keyword does not end with a number.
+     */
+    public static int getN(String key) {
+        int index = key.length() - 1;
         int n = 0;
         int numberBase = 1;
-        while (index >= 0 && Character.isDigit(card.charAt(index))) {
-            n = n + (card.charAt(index) - '0') * numberBase;
+        while (index >= 0 && Character.isDigit(key.charAt(index))) {
+            n = n + (key.charAt(index) - '0') * numberBase;
             numberBase *= NUMBER_BASE;
             index--;
         }
@@ -124,9 +133,9 @@ public final class GenericKey {
     /**
      * lookup a string key in the standard key sets.
      *
-     * @param key
-     *            the fits key to search.
-     * @return the found fits key or null
+     * @param  key the fits key to search.
+     *
+     * @return     the found fits key or null
      */
     public static IFitsHeader lookup(String key) {
         int keyLength = key.length();

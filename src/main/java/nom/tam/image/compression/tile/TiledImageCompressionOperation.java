@@ -1,5 +1,30 @@
 package nom.tam.image.compression.tile;
 
+import java.lang.reflect.Array;
+import java.nio.Buffer;
+import java.nio.ByteBuffer;
+import java.util.Locale;
+import java.util.concurrent.ExecutorService;
+import java.util.logging.Logger;
+
+import nom.tam.fits.BinaryTable;
+import nom.tam.fits.BinaryTableHDU;
+import nom.tam.fits.FitsException;
+import nom.tam.fits.FitsFactory;
+import nom.tam.fits.Header;
+import nom.tam.fits.HeaderCard;
+import nom.tam.fits.HeaderCardBuilder;
+import nom.tam.fits.compression.algorithm.api.ICompressOption;
+import nom.tam.fits.compression.algorithm.api.ICompressorControl;
+import nom.tam.fits.compression.provider.CompressorProvider;
+import nom.tam.fits.compression.provider.param.api.HeaderAccess;
+import nom.tam.fits.compression.provider.param.api.HeaderCardAccess;
+import nom.tam.fits.header.Compression;
+import nom.tam.image.compression.tile.mask.ImageNullPixelMask;
+import nom.tam.image.tile.operation.AbstractTiledImageOperation;
+import nom.tam.image.tile.operation.TileArea;
+import nom.tam.util.type.ElementType;
+
 /*
  * #%L
  * nom.tam FITS library
@@ -7,12 +32,12 @@ package nom.tam.image.compression.tile;
  * Copyright (C) 1996 - 2021 nom-tam-fits
  * %%
  * This is free and unencumbered software released into the public domain.
- * 
+ *
  * Anyone is free to copy, modify, publish, use, compile, sell, or
  * distribute this software, either in source code form or as a compiled
  * binary, for any purpose, commercial or non-commercial, and by any
  * means.
- * 
+ *
  * In jurisdictions that recognize copyright laws, the author or authors
  * of this software dedicate any and all copyright interest in the
  * software to the public domain. We make this dedication for the benefit
@@ -20,7 +45,7 @@ package nom.tam.image.compression.tile;
  * successors. We intend this dedication to be an overt act of
  * relinquishment in perpetuity of all present and future rights to this
  * software under copyright law.
- * 
+ *
  * THE SOFTWARE IS PROVIDED "AS IS", WITHOUT WARRANTY OF ANY KIND,
  * EXPRESS OR IMPLIED, INCLUDING BUT NOT LIMITED TO THE WARRANTIES OF
  * MERCHANTABILITY, FITNESS FOR A PARTICULAR PURPOSE AND NONINFRINGEMENT.
@@ -51,35 +76,10 @@ import static nom.tam.image.compression.tile.TileCompressionType.COMPRESSED;
 import static nom.tam.image.compression.tile.TileCompressionType.GZIP_COMPRESSED;
 import static nom.tam.image.compression.tile.TileCompressionType.UNCOMPRESSED;
 
-import java.lang.reflect.Array;
-import java.nio.Buffer;
-import java.nio.ByteBuffer;
-import java.util.Locale;
-import java.util.concurrent.ExecutorService;
-import java.util.logging.Logger;
-
-import nom.tam.fits.BinaryTable;
-import nom.tam.fits.BinaryTableHDU;
-import nom.tam.fits.FitsException;
-import nom.tam.fits.FitsFactory;
-import nom.tam.fits.Header;
-import nom.tam.fits.HeaderCard;
-import nom.tam.fits.HeaderCardBuilder;
-import nom.tam.fits.compression.algorithm.api.ICompressOption;
-import nom.tam.fits.compression.algorithm.api.ICompressorControl;
-import nom.tam.fits.compression.provider.CompressorProvider;
-import nom.tam.fits.compression.provider.param.api.HeaderAccess;
-import nom.tam.fits.compression.provider.param.api.HeaderCardAccess;
-import nom.tam.fits.header.Compression;
-import nom.tam.image.compression.tile.mask.ImageNullPixelMask;
-import nom.tam.image.tile.operation.AbstractTiledImageOperation;
-import nom.tam.image.tile.operation.TileArea;
-import nom.tam.util.type.ElementType;
-
 /**
- * This class represents a complete tiledImageOperation of tileOperations describing an image ordered from left to right
- * and top down. the tileOperations all have the same geometry only the tileOperations at the right side and the bottom
- * side can have different sizes.
+ * (<i>for internal use</i>) Compresseses an entire image, by parallel processing image tiles. This class represents a
+ * complete compression of a tiled describing an image ordered from left to right and top down. the tiles all have the
+ * same geometry only the tiles at the right and bottom sides can have different (truncated) sizes.
  */
 public class TiledImageCompressionOperation extends AbstractTiledImageOperation<TileCompressionOperation> {
 
@@ -144,14 +144,14 @@ public class TiledImageCompressionOperation extends AbstractTiledImageOperation<
     public synchronized ICompressOption compressOptions() {
         if (compressorControl == null) {
             getCompressorControl();
-            compressOptions = this.compressorControl.option();
-            if (this.quantAlgorithm != null) {
-                this.compressOptions.getCompressionParameters()
-                        .getValuesFromHeader(new HeaderCardAccess(ZQUANTIZ, this.quantAlgorithm));
+            compressOptions = compressorControl.option();
+            if (quantAlgorithm != null) {
+                compressOptions.getCompressionParameters()
+                        .getValuesFromHeader(new HeaderCardAccess(ZQUANTIZ, quantAlgorithm));
             }
             compressOptions.getCompressionParameters().initializeColumns(getNumberOfTileOperations());
         }
-        return this.compressOptions;
+        return compressOptions;
     }
 
     public Buffer decompress() {
@@ -175,37 +175,37 @@ public class TiledImageCompressionOperation extends AbstractTiledImageOperation<
 
     @Override
     public ByteBuffer getCompressedWholeArea() {
-        return this.compressedWholeArea;
+        return compressedWholeArea;
     }
 
     @Override
     public synchronized ICompressorControl getCompressorControl() {
-        if (this.compressorControl == null) {
-            this.compressorControl = CompressorProvider.findCompressorControl(this.quantAlgorithm, compressAlgorithm,
+        if (compressorControl == null) {
+            compressorControl = CompressorProvider.findCompressorControl(quantAlgorithm, compressAlgorithm,
                     getBaseType().primitiveClass());
-            if (this.compressorControl == null) {
+            if (compressorControl == null) {
                 throw new IllegalStateException(
-                        "Found no compressor control for compression algorithm:" + this.compressAlgorithm + //
-                                " (quantize algorithm = " + this.quantAlgorithm + ", base type = "
+                        "Found no compressor control for compression algorithm:" + compressAlgorithm + //
+                                " (quantize algorithm = " + quantAlgorithm + ", base type = "
                                 + getBaseType().primitiveClass() + ")");
             }
         }
-        return this.compressorControl;
+        return compressorControl;
     }
 
     @Override
     public synchronized ICompressorControl getGzipCompressorControl() {
-        if (this.gzipCompressorControl == null) {
-            this.gzipCompressorControl = CompressorProvider.findCompressorControl(null, ZCMPTYPE_GZIP_1,
+        if (gzipCompressorControl == null) {
+            gzipCompressorControl = CompressorProvider.findCompressorControl(null, ZCMPTYPE_GZIP_1,
                     getBaseType().primitiveClass());
         }
-        return this.gzipCompressorControl;
+        return gzipCompressorControl;
     }
 
     public TiledImageCompressionOperation prepareUncompressedData(final Buffer buffer) throws FitsException {
-        this.compressedWholeArea = ByteBuffer.wrap(new byte[getBaseType().size() * getBufferSize()]);
+        compressedWholeArea = ByteBuffer.wrap(new byte[getBaseType().size() * getBufferSize()]);
         createTiles(new TileCompressorInitialisation(this, buffer));
-        this.compressedWholeArea.rewind();
+        compressedWholeArea.rewind();
         return this;
     }
 
@@ -213,17 +213,17 @@ public class TiledImageCompressionOperation extends AbstractTiledImageOperation<
      * preserve null values, where the value representing null is specified as a parameter. This parameter is ignored
      * for floating point values where NaN is used as null value.
      *
-     * @param nullValue the value representing null for byte/short and integer pixel values
-     * @param compressionAlgorithm compression algorithm to use for the null pixel mask
-     * 
-     * @return the created null pixel mask
+     * @param  nullValue            the value representing null for byte/short and integer pixel values
+     * @param  compressionAlgorithm compression algorithm to use for the null pixel mask
+     *
+     * @return                      the created null pixel mask
      */
     public ImageNullPixelMask preserveNulls(long nullValue, String compressionAlgorithm) {
-        this.imageNullPixelMask = new ImageNullPixelMask(getTileOperations().length, nullValue, compressionAlgorithm);
+        imageNullPixelMask = new ImageNullPixelMask(getTileOperations().length, nullValue, compressionAlgorithm);
         for (TileCompressionOperation tileOperation : getTileOperations()) {
             tileOperation.createImageNullPixelMask(getImageNullPixelMask());
         }
-        return this.imageNullPixelMask;
+        return imageNullPixelMask;
     }
 
     private synchronized void setQuantAlgorithm(final Header header) {
@@ -284,17 +284,18 @@ public class TiledImageCompressionOperation extends AbstractTiledImageOperation<
     /**
      * Sets the compression algorithm, via a <code>ZCMPTYPE</code> header card or equivalent. The card must contain one
      * of the values recognized by the FITS standard. If not, <code>null</code> will be set instead.
-     * 
-     * @param compressAlgorithmCard The header card that specifies the compression algorithm, with one of the standard
-     *            recognized values such as {@link Compression#ZCMPTYPE_GZIP_1}, or <code>null</code>.
-     * 
-     * @return itself
-     * 
-     * @see #getCompressAlgorithm()
-     * @see #setQuantAlgorithm(HeaderCard)
+     *
+     * @param  compressAlgorithmCard The header card that specifies the compression algorithm, with one of the standard
+     *                                   recognized values such as {@link Compression#ZCMPTYPE_GZIP_1}, or
+     *                                   <code>null</code>.
+     *
+     * @return                       itself
+     *
+     * @see                          #getCompressAlgorithm()
+     * @see                          #setQuantAlgorithm(HeaderCard)
      */
     public TiledImageCompressionOperation setCompressAlgorithm(HeaderCard compressAlgorithmCard) {
-        this.compressAlgorithm = null;
+        compressAlgorithm = null;
 
         if (compressAlgorithmCard == null) {
             return this;
@@ -304,7 +305,7 @@ public class TiledImageCompressionOperation extends AbstractTiledImageOperation<
         if (algo.equals(Compression.ZCMPTYPE_GZIP_1) || algo.equals(Compression.ZCMPTYPE_GZIP_2)
                 || algo.equals(Compression.ZCMPTYPE_RICE_1) || algo.equals(Compression.ZCMPTYPE_PLIO_1)
                 || algo.equals(Compression.ZCMPTYPE_HCOMPRESS_1) || algo.equals(Compression.ZCMPTYPE_NOCOMPRESS)) {
-            this.compressAlgorithm = algo;
+            compressAlgorithm = algo;
         } else {
             Logger.getLogger(HeaderCard.class.getName()).warning("Ignored invalid ZCMPTYPE value: " + algo);
         }
@@ -315,17 +316,18 @@ public class TiledImageCompressionOperation extends AbstractTiledImageOperation<
     /**
      * Sets the quantization algorithm, via a <code>ZQUANTIZ</code> header card or equivalent. The card must contain one
      * of the values recognized by the FITS standard. If not, <code>null</code> will be set instead.
-     * 
-     * @param quantAlgorithmCard The header card that specifies the compression algorithm, with one of the standard
-     *            recognized values such as {@link Compression#ZQUANTIZ_NO_DITHER}, or <code>null</code>.
-     * 
-     * @return itself
-     * 
-     * @see #getQuantAlgorithm()
-     * @see #setCompressAlgorithm(HeaderCard)
+     *
+     * @param  quantAlgorithmCard The header card that specifies the compression algorithm, with one of the standard
+     *                                recognized values such as {@link Compression#ZQUANTIZ_NO_DITHER}, or
+     *                                <code>null</code>.
+     *
+     * @return                    itself
+     *
+     * @see                       #getQuantAlgorithm()
+     * @see                       #setCompressAlgorithm(HeaderCard)
      */
     public synchronized TiledImageCompressionOperation setQuantAlgorithm(HeaderCard quantAlgorithmCard) {
-        this.quantAlgorithm = null;
+        quantAlgorithm = null;
 
         if (quantAlgorithmCard == null) {
             return this;
@@ -335,7 +337,7 @@ public class TiledImageCompressionOperation extends AbstractTiledImageOperation<
 
         if (algo.equals(Compression.ZQUANTIZ_NO_DITHER) || algo.equals(Compression.ZQUANTIZ_SUBTRACTIVE_DITHER_1)
                 || algo.equals(Compression.ZQUANTIZ_SUBTRACTIVE_DITHER_2)) {
-            this.quantAlgorithm = algo;
+            quantAlgorithm = algo;
         } else {
             Logger.getLogger(HeaderCard.class.getName()).warning("Ignored invalid ZQUANTIZ value: " + algo);
         }
@@ -345,41 +347,41 @@ public class TiledImageCompressionOperation extends AbstractTiledImageOperation<
 
     /**
      * Returns the name of the currently configured quantization algorithm.
-     * 
+     *
      * @return The name of the standard quantization algorithm (i.e. a FITS standard value for the <code>ZQUANTIZ</code>
      *             keyword), or <code>null</code> if not quantization is currently defined, possibly because an invalid
      *             value was set before.
-     * 
-     * @see #setQuantAlgorithm(HeaderCard)
-     * @see #getCompressAlgorithm()
-     * 
-     * @since 1.18
+     *
+     * @see    #setQuantAlgorithm(HeaderCard)
+     * @see    #getCompressAlgorithm()
+     *
+     * @since  1.18
      */
     public synchronized String getQuantAlgorithm() {
-        return this.quantAlgorithm;
+        return quantAlgorithm;
     }
 
     /**
      * Returns the name of the currently configured compression algorithm.
-     * 
+     *
      * @return The name of the standard compression algorithm (i.e. a FITS standard value for the <code>ZCMPTYPE</code>
      *             keyword), or <code>null</code> if not quantization is currently defined, possibly because an invalid
      *             value was set before.
-     * 
-     * @see #setCompressAlgorithm(HeaderCard)
-     * @see #getQuantAlgorithm()
-     * 
-     * @since 1.18
+     *
+     * @see    #setCompressAlgorithm(HeaderCard)
+     * @see    #getQuantAlgorithm()
+     *
+     * @since  1.18
      */
     public String getCompressAlgorithm() {
-        return this.compressAlgorithm;
+        return compressAlgorithm;
     }
 
     private <T> T getNullableColumn(Header header, Class<T> class1, String columnName) throws FitsException {
-        for (int i = 1; i <= this.binaryTable.getNCols(); i++) {
+        for (int i = 1; i <= binaryTable.getNCols(); i++) {
             String val = header.getStringValue(TTYPEn.n(i));
             if (val != null && val.trim().equals(columnName)) {
-                return class1.cast(this.binaryTable.getColumn(i - 1));
+                return class1.cast(binaryTable.getColumn(i - 1));
             }
         }
         return null;
@@ -444,8 +446,8 @@ public class TiledImageCompressionOperation extends AbstractTiledImageOperation<
         setTileAxes(tileAxes);
     }
 
-    private <T> Object setInColumn(Object column, boolean predicate, TileCompressionOperation tileOperation,
-            Class<T> clazz, T value) {
+    private <T> Object setInColumn(Object column, boolean predicate, TileCompressionOperation tileOperation, Class<T> clazz,
+            T value) {
         if (predicate) {
             if (column == null) {
                 column = Array.newInstance(clazz, getNumberOfTileOperations());
@@ -467,8 +469,8 @@ public class TiledImageCompressionOperation extends AbstractTiledImageOperation<
                     compressedData);
             gzipColumn = setInColumn(gzipColumn, compression == GZIP_COMPRESSED, tileOperation, byte[].class,
                     compressedData);
-            uncompressedColumn = setInColumn(uncompressedColumn, compression == UNCOMPRESSED, tileOperation,
-                    byte[].class, compressedData);
+            uncompressedColumn = setInColumn(uncompressedColumn, compression == UNCOMPRESSED, tileOperation, byte[].class,
+                    compressedData);
         }
         setNullEntries(compressedColumn, new byte[0]);
         setNullEntries(gzipColumn, new byte[0]);
@@ -476,34 +478,34 @@ public class TiledImageCompressionOperation extends AbstractTiledImageOperation<
         addColumnToTable(hdu, compressedColumn, COMPRESSED_DATA_COLUMN);
         addColumnToTable(hdu, gzipColumn, GZIP_COMPRESSED_DATA_COLUMN);
         addColumnToTable(hdu, uncompressedColumn, UNCOMPRESSED_DATA_COLUMN);
-        if (this.imageNullPixelMask != null) {
-            addColumnToTable(hdu, this.imageNullPixelMask.getColumn(), NULL_PIXEL_MASK_COLUMN);
+        if (imageNullPixelMask != null) {
+            addColumnToTable(hdu, imageNullPixelMask.getColumn(), NULL_PIXEL_MASK_COLUMN);
         }
-        this.compressOptions.getCompressionParameters().addColumnsToTable(hdu);
+        compressOptions.getCompressionParameters().addColumnsToTable(hdu);
         hdu.getData().fillHeader(hdu.getHeader());
     }
 
     private void writeHeader(Header header) throws FitsException {
         HeaderCardBuilder cardBuilder = header//
                 .card(ZBITPIX).value(getBaseType().bitPix())//
-                .card(ZCMPTYPE).value(this.compressAlgorithm);
+                .card(ZCMPTYPE).value(compressAlgorithm);
         int[] tileAxes = getTileAxes();
         int naxes = tileAxes.length;
         for (int i = 1; i <= naxes; i++) {
             cardBuilder.card(ZTILEn.n(i)).value(tileAxes[naxes - i]);
         }
         compressOptions().getCompressionParameters().setValuesInHeader(new HeaderAccess(header));
-        if (this.imageNullPixelMask != null) {
-            cardBuilder.card(ZMASKCMP).value(this.imageNullPixelMask.getCompressAlgorithm());
+        if (imageNullPixelMask != null) {
+            cardBuilder.card(ZMASKCMP).value(imageNullPixelMask.getCompressAlgorithm());
         }
     }
 
     protected BinaryTable getBinaryTable() {
-        return this.binaryTable;
+        return binaryTable;
     }
 
     protected ImageNullPixelMask getImageNullPixelMask() {
-        return this.imageNullPixelMask;
+        return imageNullPixelMask;
     }
 
 }

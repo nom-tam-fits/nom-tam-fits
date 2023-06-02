@@ -7,12 +7,12 @@ package nom.tam.image.compression.bintable;
  * Copyright (C) 1996 - 2021 nom-tam-fits
  * %%
  * This is free and unencumbered software released into the public domain.
- * 
+ *
  * Anyone is free to copy, modify, publish, use, compile, sell, or
  * distribute this software, either in source code form or as a compiled
  * binary, for any purpose, commercial or non-commercial, and by any
  * means.
- * 
+ *
  * In jurisdictions that recognize copyright laws, the author or authors
  * of this software dedicate any and all copyright interest in the
  * software to the public domain. We make this dedication for the benefit
@@ -20,7 +20,7 @@ package nom.tam.image.compression.bintable;
  * successors. We intend this dedication to be an overt act of
  * relinquishment in perpetuity of all present and future rights to this
  * software under copyright law.
- * 
+ *
  * THE SOFTWARE IS PROVIDED "AS IS", WITHOUT WARRANTY OF ANY KIND,
  * EXPRESS OR IMPLIED, INCLUDING BUT NOT LIMITED TO THE WARRANTIES OF
  * MERCHANTABILITY, FITNESS FOR A PARTICULAR PURPOSE AND NONINFRINGEMENT.
@@ -38,29 +38,37 @@ import java.nio.ByteBuffer;
 import nom.tam.fits.FitsException;
 import nom.tam.image.compression.hdu.CompressedTableData;
 import nom.tam.util.ArrayDataInput;
-import nom.tam.util.FitsInputStream;
 import nom.tam.util.ColumnTable;
+import nom.tam.util.FitsInputStream;
 
+/**
+ * (<i>for internal use</i>) Handles the decompression of binary table 'tiles'.
+ */
 public class BinaryTableTileDecompressor extends BinaryTableTile {
 
     private final ByteBuffer compressedBytes;
 
     private ArrayDataInput is;
 
-    public BinaryTableTileDecompressor(CompressedTableData binData, ColumnTable<?> columnTable, BinaryTableTileDescription description) throws FitsException {
+    /**
+     * @deprecated for internal use
+     */
+    @SuppressWarnings("javadoc")
+    public BinaryTableTileDecompressor(CompressedTableData binData, ColumnTable<?> columnTable,
+            BinaryTableTileDescription description) throws FitsException {
         super(columnTable, description);
-        this.compressedBytes = ByteBuffer.wrap((byte[]) binData.getElement(this.rowStart, this.column));
+        compressedBytes = ByteBuffer.wrap((byte[]) binData.getElement(rowStart, column));
     }
 
     @Override
     public void run() {
-        if (this.is == null) {
+        if (is == null) {
             ByteBuffer unCompressedBytes = ByteBuffer.wrap(new byte[getUncompressedSizeInBytes()]);
-            getCompressorControl().decompress(this.compressedBytes, type.asTypedBuffer(unCompressedBytes), null);
-            this.is = new FitsInputStream(new ByteArrayInputStream(unCompressedBytes.array()));
+            getCompressorControl().decompress(compressedBytes, type.asTypedBuffer(unCompressedBytes), null);
+            is = new FitsInputStream(new ByteArrayInputStream(unCompressedBytes.array()));
         }
         try {
-            this.data.read(this.is, this.rowStart, this.rowEnd, this.column);
+            data.read(is, rowStart, rowEnd, column);
         } catch (IOException e) {
             throw new IllegalStateException("could not read compressed data", e);
         }

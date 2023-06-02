@@ -7,12 +7,12 @@ package nom.tam.fits.test;
  * Copyright (C) 1996 - 2021 nom-tam-fits
  * %%
  * This is free and unencumbered software released into the public domain.
- * 
+ *
  * Anyone is free to copy, modify, publish, use, compile, sell, or
  * distribute this software, either in source code form or as a compiled
  * binary, for any purpose, commercial or non-commercial, and by any
  * means.
- * 
+ *
  * In jurisdictions that recognize copyright laws, the author or authors
  * of this software dedicate any and all copyright interest in the
  * software to the public domain. We make this dedication for the benefit
@@ -20,7 +20,7 @@ package nom.tam.fits.test;
  * successors. We intend this dedication to be an overt act of
  * relinquishment in perpetuity of all present and future rights to this
  * software under copyright law.
- * 
+ *
  * THE SOFTWARE IS PROVIDED "AS IS", WITHOUT WARRANTY OF ANY KIND,
  * EXPRESS OR IMPLIED, INCLUDING BUT NOT LIMITED TO THE WARRANTIES OF
  * MERCHANTABILITY, FITNESS FOR A PARTICULAR PURPOSE AND NONINFRINGEMENT.
@@ -40,9 +40,9 @@ import java.util.Properties;
 import java.util.regex.Matcher;
 import java.util.regex.Pattern;
 
-import nom.tam.fits.Fits;
-
 import org.junit.Test;
+
+import nom.tam.fits.Fits;
 
 public class MiscTest {
 
@@ -98,19 +98,9 @@ public class MiscTest {
     public void testRegex() throws Exception {
         Pattern doubleQuotePattern = Pattern.compile("''");
         Pattern stringPattern = Pattern.compile("'(?:[^']|'{2})*'");
-        String[] testStrings = {
-            "xx''   ",
-            "xx'test'   / ",
-            "xx''''  ",
-            "xx'test''' /    ",
-            "xx'test''a''aaa' /",
-            "xx'' / yy",
-            "xx'test' / yy",
-            "xx'''' / yy    ",
-            "xx'test''' / yy    ",
-            "xx'test''a''aaa' / yy                    ",
-            "xx'test''a''aaa              ' / yy                    ",
-        };
+        String[] testStrings = {"xx''   ", "xx'test'   / ", "xx''''  ", "xx'test''' /    ", "xx'test''a''aaa' /",
+                "xx'' / yy", "xx'test' / yy", "xx'''' / yy    ", "xx'test''' / yy    ",
+                "xx'test''a''aaa' / yy                    ", "xx'test''a''aaa              ' / yy                    ",};
         for (String string : testStrings) {
             try {
                 System.out.println("---" + string + "---");

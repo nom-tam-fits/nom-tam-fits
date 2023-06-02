@@ -7,12 +7,12 @@ package nom.tam.util;
  * Copyright (C) 1996 - 2021 nom-tam-fits
  * %%
  * This is free and unencumbered software released into the public domain.
- * 
+ *
  * Anyone is free to copy, modify, publish, use, compile, sell, or
  * distribute this software, either in source code form or as a compiled
  * binary, for any purpose, commercial or non-commercial, and by any
  * means.
- * 
+ *
  * In jurisdictions that recognize copyright laws, the author or authors
  * of this software dedicate any and all copyright interest in the
  * software to the public domain. We make this dedication for the benefit
@@ -20,7 +20,7 @@ package nom.tam.util;
  * successors. We intend this dedication to be an overt act of
  * relinquishment in perpetuity of all present and future rights to this
  * software under copyright law.
- * 
+ *
  * THE SOFTWARE IS PROVIDED "AS IS", WITHOUT WARRANTY OF ANY KIND,
  * EXPRESS OR IMPLIED, INCLUDING BUT NOT LIMITED TO THE WARRANTIES OF
  * MERCHANTABILITY, FITNESS FOR A PARTICULAR PURPOSE AND NONINFRINGEMENT.
@@ -137,7 +137,7 @@ public class FlexFormat {
      * @see #format(Number)
      */
     public synchronized FlexFormat setPrecision(int nDecimals) {
-        this.decimals = nDecimals < 0 ? AUTO_PRECISION : nDecimals;
+        decimals = nDecimals < 0 ? AUTO_PRECISION : nDecimals;
         return this;
     }
 
@@ -191,7 +191,7 @@ public class FlexFormat {
      * @see #format(Number)
      */
     public synchronized FlexFormat setWidth(int nChars) {
-        this.width = nChars > 0 ? nChars : 0;
+        width = nChars > 0 ? nChars : 0;
         return this;
     }
 
@@ -264,12 +264,12 @@ public class FlexFormat {
             fixed = value.toString();
             if (fixed.length() <= width) {
                 return fixed;
-            } else if (value instanceof BigInteger) {
-                // We'll try exponential with reduced precision...
-                fixed = null;
-            } else {
+            }
+            if (!(value instanceof BigInteger)) {
                 throw new LongValueException(width, fixed);
             }
+            // We'll try exponential with reduced precision...
+            fixed = null;
         } else if (decimals < 0) {
             // Don"t do fixed format if precision is set explicitly
             // (It's not really trivial to control the number of significant

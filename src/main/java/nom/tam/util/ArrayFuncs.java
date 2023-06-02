@@ -7,12 +7,12 @@ package nom.tam.util;
  * Copyright (C) 2004 - 2021 nom-tam-fits
  * %%
  * This is free and unencumbered software released into the public domain.
- * 
+ *
  * Anyone is free to copy, modify, publish, use, compile, sell, or
  * distribute this software, either in source code form or as a compiled
  * binary, for any purpose, commercial or non-commercial, and by any
  * means.
- * 
+ *
  * In jurisdictions that recognize copyright laws, the author or authors
  * of this software dedicate any and all copyright interest in the
  * software to the public domain. We make this dedication for the benefit
@@ -20,7 +20,7 @@ package nom.tam.util;
  * successors. We intend this dedication to be an overt act of
  * relinquishment in perpetuity of all present and future rights to this
  * software under copyright law.
- * 
+ *
  * THE SOFTWARE IS PROVIDED "AS IS", WITHOUT WARRANTY OF ANY KIND,
  * EXPRESS OR IMPLIED, INCLUDING BUT NOT LIMITED TO THE WARRANTIES OF
  * MERCHANTABILITY, FITNESS FOR A PARTICULAR PURPOSE AND NONINFRINGEMENT.
@@ -40,9 +40,8 @@ import nom.tam.util.array.MultiArrayCopier;
 import nom.tam.util.type.ElementType;
 
 /**
- * This is a package of static functions which perform computations on arrays.
- * Generally these routines attempt to complete without throwing errors by
- * ignoring data they cannot understand.
+ * (<i>for internal use</i>) Varioys static functions for handling arrays. Generally these routines attempt to complete
+ * without throwing errors by ignoring data they cannot understand.
  */
 public final class ArrayFuncs {
 
@@ -53,9 +52,10 @@ public final class ArrayFuncs {
 
     /**
      * Retuens a copy of the input array with the order of elements reversed.
-     * 
-     * @param index     the input array
-     * @return          a copy of the input array in reversed order
+     *
+     * @param  index the input array
+     *
+     * @return       a copy of the input array in reversed order
      */
     public static int[] getReversed(int... index) {
         int[] rev = new int[index.length];
@@ -69,13 +69,15 @@ public final class ArrayFuncs {
     /**
      * Perform an array copy with an API similar to System.arraycopy(), specifying the number of values to jump to the
      * next read.
-     * @param src       The source array.
-     * @param srcPos    Starting position in the source array.
-     * @param dest      The destination array.
-     * @param destPos   Starting position in the destination data.
-     * @param length    The number of array elements to be read.
-     * @param step      The number of jumps to the next read.
-     * @since 1.18
+     *
+     * @param src     The source array.
+     * @param srcPos  Starting position in the source array.
+     * @param dest    The destination array.
+     * @param destPos Starting position in the destination data.
+     * @param length  The number of array elements to be read.
+     * @param step    The number of jumps to the next read.
+     *
+     * @since         1.18
      */
     public static void copy(Object src, int srcPos, Object dest, int destPos, int length, int step) {
         if (src instanceof Object[] && dest instanceof Object[]) {
@@ -97,9 +99,9 @@ public final class ArrayFuncs {
     }
 
     /**
-     * @return a description of an array (presumed rectangular).
-     * @param o
-     *            The array to be described.
+     * @return   a description of an array (presumed rectangular).
+     *
+     * @param  o The array to be described.
      */
     public static String arrayDescription(Object o) {
         Class<?> base = getBaseClass(o);
@@ -111,11 +113,11 @@ public final class ArrayFuncs {
 
     /**
      * Use {@link FitsEncoder#computeSize(Object)} instead.
-     * 
-     * @param o     the object
-     * @return      the number of bytes in the FITS binary representation of the object or
-     *              0 if the object has no FITS representation. (Also elements not known to
-     *              FITS will count as 0 sized).
+     *
+     * @param  o the object
+     *
+     * @return   the number of bytes in the FITS binary representation of the object or 0 if the object has no FITS
+     *               representation. (Also elements not known to FITS will count as 0 sized).
      */
     @Deprecated
     public static long computeLSize(Object o) {
@@ -123,12 +125,12 @@ public final class ArrayFuncs {
     }
 
     /**
-     * Use {@link FitsEncoder#computeSize(Object)} instead. 
-     * 
-     * @param o     the object
-     * @return      the number of bytes in the FITS binary representation of the object or
-     *              0 if the object has no FITS representation. (Also elements not known to
-     *              FITS will count as 0 sized).
+     * Use {@link FitsEncoder#computeSize(Object)} instead.
+     *
+     * @param  o the object
+     *
+     * @return   the number of bytes in the FITS binary representation of the object or 0 if the object has no FITS
+     *               representation. (Also elements not known to FITS will count as 0 sized).
      */
     @Deprecated
     public static int computeSize(Object o) {
@@ -136,18 +138,21 @@ public final class ArrayFuncs {
     }
 
     /**
-     * @return Convert an array to a specified type. This method supports
-     *         conversions only among the primitive numeric types.
-     * @param array
-     *            A possibly multidimensional array to be converted.
-     * @param newType
-     *            The desired output type. This should be one of the class
-     *            descriptors for primitive numeric data, e.g., double.type.
+     * Converts a numerical array to a specified element type. This method supports conversions only among the primitive
+     * numeric types.
+     *
+     * @return         a new array with the requested element type.
+     * 
+     * @param  array   a numerical array or one or more dimensions
+     * @param  newType the desired output type. This should be one of the class descriptors for primitive numeric data,
+     *                     e.g., <code>double.class</code>.
+     * 
+     * @see            #convertArray(Object, Class, boolean)
      */
     public static Object convertArray(Object array, Class<?> newType) {
         /*
-         * We break this up into two steps so that users can reuse an array many
-         * times and only allocate a new array when needed.
+         * We break this up into two steps so that users can reuse an array many times and only allocate a new array
+         * when needed.
          */
         /* First create the full new array. */
         Object mimic = mimicArray(array, newType);
@@ -157,16 +162,18 @@ public final class ArrayFuncs {
     }
 
     /**
-     * @return Convert an array to a specified type. This method supports
-     *         conversions only among the primitive numeric types.
-     * @param array
-     *            A possibly multidimensional array to be converted.
-     * @param newType
-     *            The desired output type. This should be one of the class
-     *            descriptors for primitive numeric data, e.g., double.type.
-     * @param reuse
-     *            If set, and the requested type is the same as the original,
-     *            then the original is returned.
+     * Converts a numerical array to a specified element type, returning the original if type conversion is not needed.
+     * This method supports conversions only among the primitive numeric types.
+     *
+     * @return         a new array with the requested element type, or possibly the original array if it readily matches
+     *                     the type and <code>reuse</code> is enabled.
+     *
+     * @param  array   a numerical array or one or more dimensions
+     * @param  newType the desired output type. This should be one of the class descriptors for primitive numeric data,
+     *                     e.g., <code>double.class</code>.
+     * @param  reuse   If set, and the requested type is the same as the original, then the original is returned.
+     * 
+     * @see            #convertArray(Object, Class)
      */
     public static Object convertArray(Object array, Class<?> newType, boolean reuse) {
         if (getBaseClass(array) == newType && reuse) {
@@ -176,19 +183,15 @@ public final class ArrayFuncs {
     }
 
     /**
-     * @deprecated No longer used within the library itself.
+     * Copy one array into another. This function copies the contents of one array into a previously allocated array.
+     * The arrays must agree in type and size.
      * 
-     * Copy one array into another. This function copies the contents of one
-     * array into a previously allocated array. The arrays must agree in type
-     * and size.
-     * 
-     * @param original
-     *            The array to be copied.
-     * @param copy
-     *            The array to be copied into. This array must already be fully
-     *            allocated.
-     * @throws IllegalArgumentException
-     *            if the two arrays do not match in type or size.
+     * @deprecated                          No longer used within the library itself.
+     *
+     * @param      original                 The array to be copied.
+     * @param      copy                     The array to be copied into. This array must already be fully allocated.
+     *
+     * @throws     IllegalArgumentException if the two arrays do not match in type or size.
      */
     @Deprecated
     public static void copyArray(Object original, Object copy) throws IllegalArgumentException {
@@ -196,17 +199,17 @@ public final class ArrayFuncs {
         if (!cl.isArray()) {
             throw new IllegalArgumentException("original is not an array");
         }
-        
+
         if (!copy.getClass().equals(cl)) {
             throw new IllegalArgumentException("mismatch of types: " + cl.getName() + " vs " + copy.getClass().getName());
         }
-        
+
         int length = Array.getLength(original);
-        
+
         if (Array.getLength(copy) != length) {
             throw new IllegalArgumentException("mismatch of sizes: " + length + " vs " + Array.getLength(copy));
         }
-        
+
         if (original instanceof Object[]) {
             Object[] from = (Object[]) original;
             Object[] to = (Object[]) copy;
@@ -219,13 +222,11 @@ public final class ArrayFuncs {
     }
 
     /**
-     * Copy an array into an array of a different type. The dimensions and
-     * dimensionalities of the two arrays should be the same.
-     * 
-     * @param array
-     *            The original array.
-     * @param mimic
-     *            The array mimicking the original.
+     * Copy an array into an array of a different type. The dimensions and dimensionalities of the two arrays should be
+     * the same.
+     *
+     * @param array The original array.
+     * @param mimic The array mimicking the original.
      */
     public static void copyInto(Object array, Object mimic) {
         MultiArrayCopier.copyInto(array, mimic);
@@ -233,12 +234,11 @@ public final class ArrayFuncs {
 
     /**
      * Curl an input array up into a multi-dimensional array.
-     * 
-     * @param input
-     *            The one dimensional array to be curled.
-     * @param dimens
-     *            The desired dimensions
-     * @return The curled array.
+     *
+     * @param  input  The one dimensional array to be curled.
+     * @param  dimens The desired dimensions
+     *
+     * @return        The curled array.
      */
     public static Object curl(Object input, int[] dimens) {
         if (input == null) {
@@ -265,13 +265,14 @@ public final class ArrayFuncs {
     }
 
     /**
-     * @return a deep clone of an Array or a standard clone of a scalar. The
-     *         object may comprise arrays of any primitive type or any Object
-     *         type which implements Cloneable. However, if the Object is some
-     *         kind of collection, e.g., a Vector then only a shallow copy of
-     *         that object is made. I.e., deep refers only to arrays.
-     * @param o
-     *            The object to be copied.
+     * Returns a deep clone of an array (in one or more dimensions) or a standard clone of a scalar. The object may
+     * comprise arrays of any primitive type or any Object type which implements Cloneable. However, if the Object is
+     * some kind of collection, such as a {@link java.util.List}, then only a shallow copy of that object is made. I.e.,
+     * deep refers only to arrays.
+     *
+     * @return   a new object, with a copy of the original.
+     * 
+     * @param  o The object (usually an array) to be copied.
      */
     public static Object deepClone(Object o) {
         if (o == null) {
@@ -302,10 +303,10 @@ public final class ArrayFuncs {
 
     /**
      * Given an array of arbitrary dimensionality .
-     * 
-     * @return the array flattened into a single dimension.
-     * @param input
-     *            The input array.
+     *
+     * @return       the array flattened into a single dimension.
+     *
+     * @param  input The input array.
      */
     public static Object flatten(Object input) {
         int[] dimens = getDimensions(input);
@@ -322,19 +323,16 @@ public final class ArrayFuncs {
     }
 
     /**
-     * Clone an Object if possible. This method returns an Object which is a
-     * clone of the input object. It checks if the method implements the
-     * Cloneable interface and then uses reflection to invoke the clone method.
-     * This can't be done directly since as far as the compiler is concerned the
-     * clone method for Object is protected and someone could implement
-     * Cloneable but leave the clone method protected. The cloning can fail in a
-     * variety of ways which are trapped so that it returns null instead. This
-     * method will generally create a shallow clone. If you wish a deep copy of
-     * an array the method deepClone should be used.
-     * 
-     * @param o
-     *            The object to be cloned.
-     * @return the clone
+     * Clone an Object if possible. This method returns an Object which is a clone of the input object. It checks if the
+     * method implements the Cloneable interface and then uses reflection to invoke the clone method. This can't be done
+     * directly since as far as the compiler is concerned the clone method for Object is protected and someone could
+     * implement Cloneable but leave the clone method protected. The cloning can fail in a variety of ways which are
+     * trapped so that it returns null instead. This method will generally create a shallow clone. If you wish a deep
+     * copy of an array the method deepClone should be used.
+     *
+     * @param  o The object to be cloned.
+     *
+     * @return   the clone
      */
     public static Object genericClone(Object o) {
         if (o.getClass().isArray()) {
@@ -353,13 +351,12 @@ public final class ArrayFuncs {
     }
 
     /**
-     * This routine returns the base array of a multi-dimensional array. I.e., a
-     * one-d array of whatever the array is composed of. Note that arrays are
-     * not guaranteed to be rectangular, so this returns o[0][0]....
-     * 
-     * @param o
-     *            the multi-dimensional array
-     * @return base array of a multi-dimensional array.
+     * This routine returns the base array of a multi-dimensional array. I.e., a one-d array of whatever the array is
+     * composed of. Note that arrays are not guaranteed to be rectangular, so this returns o[0][0]....
+     *
+     * @param  o the multi-dimensional array
+     *
+     * @return   base array of a multi-dimensional array.
      */
     public static Object getBaseArray(Object o) {
         if (o instanceof Object[]) {
@@ -369,12 +366,11 @@ public final class ArrayFuncs {
     }
 
     /**
-     * This routine returns the base class of an object. This is just the class
-     * of the object for non-arrays.
-     * 
-     * @param o
-     *            array to get the base class from
-     * @return the base class of an array
+     * This routine returns the base class of an object. This is just the class of the object for non-arrays.
+     *
+     * @param  o array to get the base class from
+     *
+     * @return   the base class of an array
      */
     public static Class<?> getBaseClass(Object o) {
         if (o == null) {
@@ -389,11 +385,10 @@ public final class ArrayFuncs {
 
     /**
      * This routine returns the size of the base element of an array.
-     * 
-     * @param o
-     *            The array object whose base length is desired.
-     * @return the size of the object in bytes, 0 if null, or -1 if not a
-     *         primitive array.
+     *
+     * @param  o The array object whose base length is desired.
+     *
+     * @return   the size of the object in bytes, 0 if null, or -1 if not a primitive array.
      */
     public static int getBaseLength(Object o) {
         if (o == null) {
@@ -404,15 +399,14 @@ public final class ArrayFuncs {
     }
 
     /**
-     * Find the dimensions of an object. This method returns an integer array
-     * with the dimensions of the object o which should usually be an array. It
-     * returns an array of dimension 0 for scalar objects and it returns -1 for
-     * dimension which have not been allocated, e.g., <code>int[][][] x = new
+     * Find the dimensions of an object. This method returns an integer array with the dimensions of the object o which
+     * should usually be an array. It returns an array of dimension 0 for scalar objects and it returns -1 for dimension
+     * which have not been allocated, e.g., <code>int[][][] x = new
      * int[100][][];</code> should return [100,-1,-1].
-     * 
-     * @param o
-     *            The object to get the dimensions of.
-     * @return the dimensions of an object
+     *
+     * @param  o The object to get the dimensions of.
+     *
+     * @return   the dimensions of an object
      */
     public static int[] getDimensions(Object o) {
         if (o == null) {
@@ -447,35 +441,33 @@ public final class ArrayFuncs {
     }
 
     /**
-     * Create an array of a type given by new type with the dimensionality given
-     * in array.
-     * 
-     * @return the new array with same dimensions
-     * @param array
-     *            A possibly multidimensional array to be converted.
-     * @param newType
-     *            The desired output type. This should be one of the class
-     *            descriptors for primitive numeric data, e.g., double.type.
+     * Create an array of a type given by new type with the dimensionality given in array.
+     *
+     * @return         the new array with same dimensions
+     *
+     * @param  array   A possibly multidimensional array to be converted.
+     * @param  newType The desired output type. This should be one of the class descriptors for primitive numeric data,
+     *                     e.g., double.type.
      */
     public static Object mimicArray(Object array, Class<?> newType) {
         int dims = 0;
         Class<?> arrayClass = array.getClass();
         while (arrayClass.isArray()) {
             arrayClass = arrayClass.getComponentType();
-            dims += 1;
+            dims++;
         }
 
         if (dims <= 1) {
             return ArrayFuncs.newInstance(newType, Array.getLength(array));
         }
-        
+
         Object[] xarray = (Object[]) array;
         int[] dimens = new int[dims];
         dimens[0] = xarray.length; // Leave other dimensions at 0.
 
         Object mimic = ArrayFuncs.newInstance(newType, dimens);
 
-        for (int i = 0; i < xarray.length; i += 1) {
+        for (int i = 0; i < xarray.length; i++) {
             Object temp = mimicArray(xarray[i], newType);
             ((Object[]) mimic)[i] = temp;
         }
@@ -485,20 +477,23 @@ public final class ArrayFuncs {
 
     /**
      * Convenience method to check a generic Array object.
-     * @param o     The Array to check.
-     * @return      True if it's empty, False otherwise.
      *
-     * @since 1.18
+     * @param  o The Array to check.
+     *
+     * @return   True if it's empty, False otherwise.
+     *
+     * @since    1.18
      */
     public static boolean isEmpty(final Object o) {
         return (o == null || Array.getLength(o) == 0);
     }
 
     /**
-     * @return Count the number of elements in an array.
-     * @param o
-     *            the array to count the elements
-     * @deprecated May silently underestimate size if number is &gt; 2 G.
+     * @return       Count the number of elements in an array.
+     *
+     * @param      o the array to count the elements
+     *
+     * @deprecated   May silently underestimate size if number is &gt; 2 G.
      */
     @Deprecated
     public static int nElements(Object o) {
@@ -506,46 +501,41 @@ public final class ArrayFuncs {
     }
 
     /**
-     * Allocate an array dynamically. The Array.newInstance method does not
-     * throw an error when there is insufficient memory and silently returns a
-     * null.throws an OutOfMemoryError if insufficient space is available.
-     * 
-     * @param cl
-     *            The class of the array.
-     * @param dim
-     *            The dimension of the array.
-     * @return The allocated array.
+     * Allocate an array dynamically. The Array.newInstance method does not throw an error when there is insufficient
+     * memory and silently returns a null.throws an OutOfMemoryError if insufficient space is available.
+     *
+     * @param  cl  The class of the array.
+     * @param  dim The dimension of the array.
+     *
+     * @return     The allocated array.
      */
     public static Object newInstance(Class<?> cl, int dim) {
         return Array.newInstance(cl, dim);
     }
 
     /**
-     * Allocate an array dynamically. The Array.newInstance method does not
-     * throw an error and silently returns a null.throws an OutOfMemoryError if
-     * insufficient space is available.
-     * 
-     * @param cl
-     *            The class of the array.
-     * @param dims
-     *            The dimensions of the array.
-     * @return The allocated array.
+     * Allocate an array dynamically. The Array.newInstance method does not throw an error and silently returns a
+     * null.throws an OutOfMemoryError if insufficient space is available.
+     *
+     * @param  cl   The class of the array.
+     * @param  dims The dimensions of the array.
+     *
+     * @return      The allocated array.
      */
     public static Object newInstance(Class<?> cl, int[] dims) {
         if (dims.length == 0) {
             // Treat a scalar as a 1-d array of length 1
-            dims = new int[]{
-                1
-            };
+            dims = new int[] {1};
         }
         return Array.newInstance(cl, dims);
     }
 
     /**
-     * @return Count the number of elements in an array.
-     * @param o
-     *            the array to count elements in
-     * @deprecated May silently underestimate size if number is &gt; 2 G.
+     * @return       Count the number of elements in an array.
+     *
+     * @param      o the array to count elements in
+     *
+     * @deprecated   May silently underestimate size if number is &gt; 2 G.
      */
     @Deprecated
     public static long nLElements(Object o) {
@@ -561,27 +551,27 @@ public final class ArrayFuncs {
             }
             return count;
 
-        } 
-        
+        }
+
         if (o.getClass().isArray()) {
             return Array.getLength(o);
-        } 
-        
+        }
+
         return 1;
     }
 
     /**
-     * Reverse an integer array. This can be especially useful when dealing with
-     * an array of indices in FITS order that you wish to have in Java order.
-     * 
-     * @return the reversed array.
-     * @param indices
-     *            the array to reverse
+     * Reverse an integer array. This can be especially useful when dealing with an array of indices in FITS order that
+     * you wish to have in Java order.
+     *
+     * @return         the reversed array.
+     *
+     * @param  indices the array to reverse
      */
     public static int[] reverseIndices(int[] indices) {
         int[] result = new int[indices.length];
         int len = indices.length;
-        for (int i = 0; i < indices.length; i += 1) {
+        for (int i = 0; i < indices.length; i++) {
             result[len - i - 1] = indices[i];
         }
         return result;

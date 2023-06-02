@@ -7,12 +7,12 @@ package nom.tam.image.tile.operation.buffer;
  * Copyright (C) 1996 - 2021 nom-tam-fits
  * %%
  * This is free and unencumbered software released into the public domain.
- * 
+ *
  * Anyone is free to copy, modify, publish, use, compile, sell, or
  * distribute this software, either in source code form or as a compiled
  * binary, for any purpose, commercial or non-commercial, and by any
  * means.
- * 
+ *
  * In jurisdictions that recognize copyright laws, the author or authors
  * of this software dedicate any and all copyright interest in the
  * software to the public domain. We make this dedication for the benefit
@@ -20,7 +20,7 @@ package nom.tam.image.tile.operation.buffer;
  * successors. We intend this dedication to be an overt act of
  * relinquishment in perpetuity of all present and future rights to this
  * software under copyright law.
- * 
+ *
  * THE SOFTWARE IS PROVIDED "AS IS", WITHOUT WARRANTY OF ANY KIND,
  * EXPRESS OR IMPLIED, INCLUDING BUT NOT LIMITED TO THE WARRANTIES OF
  * MERCHANTABILITY, FITNESS FOR A PARTICULAR PURPOSE AND NONINFRINGEMENT.
@@ -35,6 +35,16 @@ import java.nio.Buffer;
 
 import nom.tam.util.type.ElementType;
 
+/**
+ * <p>
+ * (<i>for internal use</i>) Tiling implementation, for when the tile width matches the width of the image. For example,
+ * for covering a 300 by 250 image with tiles of 300 by 7 pixels.
+ * </p>
+ * 
+ * @deprecated Use {@link TileBufferFactory} instead to construct and access via {@link TileBuffer} interface. Its
+ *                 visiv=bility should be reduced to the package level in the future.
+ */
+@SuppressWarnings("javadoc")
 public class TileBufferRowBased extends TileBuffer {
 
     public TileBufferRowBased(ElementType<Buffer> baseType, int dataOffset, int width, int height) {

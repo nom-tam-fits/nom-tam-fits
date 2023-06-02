@@ -7,12 +7,12 @@ package nom.tam.fits.compression.algorithm.quant;
  * Copyright (C) 1996 - 2021 nom-tam-fits
  * %%
  * This is free and unencumbered software released into the public domain.
- * 
+ *
  * Anyone is free to copy, modify, publish, use, compile, sell, or
  * distribute this software, either in source code form or as a compiled
  * binary, for any purpose, commercial or non-commercial, and by any
  * means.
- * 
+ *
  * In jurisdictions that recognize copyright laws, the author or authors
  * of this software dedicate any and all copyright interest in the
  * software to the public domain. We make this dedication for the benefit
@@ -20,7 +20,7 @@ package nom.tam.fits.compression.algorithm.quant;
  * successors. We intend this dedication to be an overt act of
  * relinquishment in perpetuity of all present and future rights to this
  * software under copyright law.
- * 
+ *
  * THE SOFTWARE IS PROVIDED "AS IS", WITHOUT WARRANTY OF ANY KIND,
  * EXPRESS OR IMPLIED, INCLUDING BUT NOT LIMITED TO THE WARRANTIES OF
  * MERCHANTABILITY, FITNESS FOR A PARTICULAR PURPOSE AND NONINFRINGEMENT.
@@ -89,8 +89,8 @@ public class QuantizeTest {
 
     private static final double NULL_VALUE = -9.1191291391491004e-36;
 
-    private void checkRequantedValues(QuantizeProcessor quantize, IntBuffer buffer, double[] doubles,
-            QuantizeOption option, boolean check) {
+    private void checkRequantedValues(QuantizeProcessor quantize, IntBuffer buffer, double[] doubles, QuantizeOption option,
+            boolean check) {
         double[] output = new double[option.getTileWidth() * option.getTileHeight()];
         quantize.unquantize(buffer, DoubleBuffer.wrap(output));
         if (check) {
@@ -262,10 +262,10 @@ public class QuantizeTest {
 
         checkRequantedValues(quantProcessor, quants, matrix, option, false);
 
-        Assert.assertArrayEquals(new int[] {-2147483646, -2147483634, -2147483632, -2147483629, -2147483627,
-                -2147483625, -2147483622, -2147483619, -2147483617, -2147483615, -2147483612, -2147483609, -2147483607,
-                -2147483604, -2147483602, -2147483599, -2147483597, -2147483595, -2147483593, -2147483590, -2147483587,
-                -2147483585, -2147483582, -2147483580
+        Assert.assertArrayEquals(new int[] {-2147483646, -2147483634, -2147483632, -2147483629, -2147483627, -2147483625,
+                -2147483622, -2147483619, -2147483617, -2147483615, -2147483612, -2147483609, -2147483607, -2147483604,
+                -2147483602, -2147483599, -2147483597, -2147483595, -2147483593, -2147483590, -2147483587, -2147483585,
+                -2147483582, -2147483580
 
         }, quants.array());
         Assert.assertEquals(4.000000e+00, option.getBScale(), 1e-20);
@@ -386,10 +386,10 @@ public class QuantizeTest {
 
         checkRequantedValues(quantProcessor, quants, matrix, option, true);
 
-        Assert.assertArrayEquals(new int[] {-2147483647, -2147483647, -2147483647, -2147483647, -2147483647,
+        Assert.assertArrayEquals(new int[] {-2147483647, -2147483647, -2147483647, -2147483647, -2147483647, -2147483647,
                 -2147483647, -2147483647, -2147483647, -2147483647, -2147483647, -2147483647, -2147483647, -2147483647,
                 -2147483647, -2147483647, -2147483647, -2147483647, -2147483647, -2147483647, -2147483647, -2147483647,
-                -2147483647, -2147483647, -2147483647
+                -2147483647, -2147483647
 
         }, quants.array());
         Assert.assertEquals(2.50000000000000000000e-01, option.getBScale(), 1e-20);
@@ -524,8 +524,7 @@ public class QuantizeTest {
     public void testQuant1FloatFail() throws Exception {
         QuantizeOption quantizeOption = new QuantizeOption();
         FloatQuantCompressor floatQuantCompressor = new FloatQuantCompressor(quantizeOption, null);
-        Assert.assertFalse(
-                floatQuantCompressor.compress(FloatBuffer.wrap(new float[4]), ByteBuffer.wrap(new byte[100])));
+        Assert.assertFalse(floatQuantCompressor.compress(FloatBuffer.wrap(new float[4]), ByteBuffer.wrap(new byte[100])));
     }
 
     @Test

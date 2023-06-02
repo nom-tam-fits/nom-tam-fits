@@ -7,12 +7,12 @@ package nom.tam.image.compression.tile;
  * Copyright (C) 1996 - 2021 nom-tam-fits
  * %%
  * This is free and unencumbered software released into the public domain.
- * 
+ *
  * Anyone is free to copy, modify, publish, use, compile, sell, or
  * distribute this software, either in source code form or as a compiled
  * binary, for any purpose, commercial or non-commercial, and by any
  * means.
- * 
+ *
  * In jurisdictions that recognize copyright laws, the author or authors
  * of this software dedicate any and all copyright interest in the
  * software to the public domain. We make this dedication for the benefit
@@ -20,7 +20,7 @@ package nom.tam.image.compression.tile;
  * successors. We intend this dedication to be an overt act of
  * relinquishment in perpetuity of all present and future rights to this
  * software under copyright law.
- * 
+ *
  * THE SOFTWARE IS PROVIDED "AS IS", WITHOUT WARRANTY OF ANY KIND,
  * EXPRESS OR IMPLIED, INCLUDING BUT NOT LIMITED TO THE WARRANTIES OF
  * MERCHANTABILITY, FITNESS FOR A PARTICULAR PURPOSE AND NONINFRINGEMENT.
@@ -38,6 +38,12 @@ import nom.tam.image.compression.tile.mask.ImageNullPixelMask;
 import nom.tam.image.compression.tile.mask.NullPixelMaskRestorer;
 import nom.tam.image.tile.operation.TileArea;
 
+/**
+ * (<i>for internal use</i>) A parallel operation for decompressing a specific image or binary table tile. Each instance
+ * will be processed in a single thread, but operations on separate tiles can be (and will be) processed in parallel.
+ * 
+ * @see TileCompressor
+ */
 public class TileDecompressor extends TileCompressionOperation {
 
     /**
@@ -47,6 +53,13 @@ public class TileDecompressor extends TileCompressionOperation {
 
     private NullPixelMaskRestorer nullPixelMaskRestorer;
 
+    /**
+     * Creates a new tile decompressor for a specific tile in the image.
+     * 
+     * @param array     the class that handles the compression of the entire image via parallel processing tiles.
+     * @param tileIndex the sequential index of the specific tile
+     * @param area      the location and size of the time in the complete image
+     */
     protected TileDecompressor(TiledImageCompressionOperation array, int tileIndex, TileArea area) {
         super(array, tileIndex, area);
     }
@@ -60,19 +73,19 @@ public class TileDecompressor extends TileCompressionOperation {
     private void decompress() {
         initTileOptions();
 
-        this.tileOptions.getCompressionParameters().setTileIndex(getTileIndex());
+        tileOptions.getCompressionParameters().setTileIndex(getTileIndex());
 
-        if (this.compressionType == TileCompressionType.COMPRESSED) {
-            this.tileOptions.getCompressionParameters().getValuesFromColumn(getTileIndex());
-            getCompressorControl().decompress(this.compressedData, getTileBuffer().getBuffer(), this.tileOptions);
-            if (this.nullPixelMaskRestorer != null) {
-                this.nullPixelMaskRestorer.restoreNulls();
+        if (compressionType == TileCompressionType.COMPRESSED) {
+            tileOptions.getCompressionParameters().getValuesFromColumn(getTileIndex());
+            getCompressorControl().decompress(compressedData, getTileBuffer().getBuffer(), tileOptions);
+            if (nullPixelMaskRestorer != null) {
+                nullPixelMaskRestorer.restoreNulls();
             }
-        } else if (this.compressionType == TileCompressionType.GZIP_COMPRESSED) {
-            this.tileOptions.getCompressionParameters().getValuesFromColumn(getTileIndex());
-            getGzipCompressorControl().decompress(this.compressedData, getTileBuffer().getBuffer(), null);
-        } else if (this.compressionType == TileCompressionType.UNCOMPRESSED) {
-            Buffer typedBuffer = getBaseType().asTypedBuffer(this.compressedData);
+        } else if (compressionType == TileCompressionType.GZIP_COMPRESSED) {
+            tileOptions.getCompressionParameters().getValuesFromColumn(getTileIndex());
+            getGzipCompressorControl().decompress(compressedData, getTileBuffer().getBuffer(), null);
+        } else if (compressionType == TileCompressionType.UNCOMPRESSED) {
+            Buffer typedBuffer = getBaseType().asTypedBuffer(compressedData);
             getBaseType().appendBuffer(getTileBuffer().getBuffer(), typedBuffer);
         } else {
             LOG.severe("Unknown compression column");
@@ -83,8 +96,8 @@ public class TileDecompressor extends TileCompressionOperation {
     @Override
     protected NullPixelMaskRestorer createImageNullPixelMask(ImageNullPixelMask imageNullPixelMask) {
         if (imageNullPixelMask != null) {
-            this.nullPixelMaskRestorer = imageNullPixelMask.createTileRestorer(getTileBuffer(), getTileIndex());
+            nullPixelMaskRestorer = imageNullPixelMask.createTileRestorer(getTileBuffer(), getTileIndex());
         }
-        return this.nullPixelMaskRestorer;
+        return nullPixelMaskRestorer;
     }
 }

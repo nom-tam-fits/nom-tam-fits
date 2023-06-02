@@ -7,12 +7,12 @@ package nom.tam.fits;
  * Copyright (C) 1996 - 2021 nom-tam-fits
  * %%
  * This is free and unencumbered software released into the public domain.
- * 
+ *
  * Anyone is free to copy, modify, publish, use, compile, sell, or
  * distribute this software, either in source code form or as a compiled
  * binary, for any purpose, commercial or non-commercial, and by any
  * means.
- * 
+ *
  * In jurisdictions that recognize copyright laws, the author or authors
  * of this software dedicate any and all copyright interest in the
  * software to the public domain. We make this dedication for the benefit
@@ -20,7 +20,7 @@ package nom.tam.fits;
  * successors. We intend this dedication to be an overt act of
  * relinquishment in perpetuity of all present and future rights to this
  * software under copyright law.
- * 
+ *
  * THE SOFTWARE IS PROVIDED "AS IS", WITHOUT WARRANTY OF ANY KIND,
  * EXPRESS OR IMPLIED, INCLUDING BUT NOT LIMITED TO THE WARRANTIES OF
  * MERCHANTABILITY, FITNESS FOR A PARTICULAR PURPOSE AND NONINFRINGEMENT.
@@ -37,8 +37,6 @@ import java.util.Date;
 import java.util.TimeZone;
 import java.util.regex.Matcher;
 import java.util.regex.Pattern;
-
-import edu.umd.cs.findbugs.annotations.SuppressFBWarnings;
 
 /**
  * Fits date object parsed from the different type of date combinations
@@ -89,26 +87,40 @@ public class FitsDate implements Comparable<FitsDate> {
     private static final int POW_TEN = 10;
 
     /**
+     * Returns the FITS date string for the current date and time.
+     * 
      * @return the current date in FITS date format
+     * 
+     * @see    #getFitsDateString(Date)
      */
     public static String getFitsDateString() {
         return getFitsDateString(new Date(), true);
     }
 
     /**
-     * @return a created FITS format date string Java Date object.
+     * Returns the FITS date string for a specific date and time
      * 
-     * @param epoch The epoch to be converted to FITS format.
+     * @return       a created FITS format date string Java Date object.
+     *
+     * @param  epoch The epoch to be converted to FITS format.
+     * 
+     * @see          #getFitsDateString(Date, boolean)
+     * @see          #getFitsDateString()
      */
     public static String getFitsDateString(Date epoch) {
         return getFitsDateString(epoch, true);
     }
 
     /**
-     * @return a created FITS format date string. Note that the date is not rounded.
+     * Returns the FITS date string, with or without the time component, for a specific date and time.
      * 
-     * @param epoch The epoch to be converted to FITS format.
-     * @param timeOfDay Should time of day information be included?
+     * @return           a created FITS format date string. Note that the date is not rounded.
+     *
+     * @param  epoch     The epoch to be converted to FITS format.
+     * @param  timeOfDay Whether the time of day information shouldd be included
+     * 
+     * @see              #getFitsDateString(Date)
+     * @see              #getFitsDateString()
      */
     public static String getFitsDateString(Date epoch, boolean timeOfDay) {
         Calendar cal = Calendar.getInstance(UTC);
@@ -137,8 +149,6 @@ public class FitsDate implements Comparable<FitsDate> {
         return fitsDate.toString();
     }
 
-    private Date date = null;
-
     private int hour = -1;
 
     private int mday = -1;
@@ -155,9 +165,9 @@ public class FitsDate implements Comparable<FitsDate> {
 
     /**
      * Convert a FITS date string to a Java <CODE>Date</CODE> object.
-     * 
-     * @param dStr the FITS date
-     * 
+     *
+     * @param  dStr          the FITS date
+     *
      * @throws FitsException if <CODE>dStr</CODE> does not contain a valid FITS date.
      */
     public FitsDate(String dStr) throws FitsException {
@@ -167,25 +177,24 @@ public class FitsDate implements Comparable<FitsDate> {
         }
         Matcher match = FitsDate.NORMAL_REGEX.matcher(dStr);
         if (match.matches()) {
-            this.year = getInt(match, FitsDate.NEW_FORMAT_YEAR_GROUP);
-            this.month = getInt(match, FitsDate.NEW_FORMAT_MONTH_GROUP);
-            this.mday = getInt(match, FitsDate.NEW_FORMAT_DAY_OF_MONTH_GROUP);
-            this.hour = getInt(match, FitsDate.NEW_FORMAT_HOUR_GROUP);
-            this.minute = getInt(match, FitsDate.NEW_FORMAT_MINUTE_GROUP);
-            this.second = getInt(match, FitsDate.NEW_FORMAT_SECOND_GROUP);
-            this.millisecond = getMilliseconds(match, FitsDate.NEW_FORMAT_MILLISECOND_GROUP);
+            year = getInt(match, FitsDate.NEW_FORMAT_YEAR_GROUP);
+            month = getInt(match, FitsDate.NEW_FORMAT_MONTH_GROUP);
+            mday = getInt(match, FitsDate.NEW_FORMAT_DAY_OF_MONTH_GROUP);
+            hour = getInt(match, FitsDate.NEW_FORMAT_HOUR_GROUP);
+            minute = getInt(match, FitsDate.NEW_FORMAT_MINUTE_GROUP);
+            second = getInt(match, FitsDate.NEW_FORMAT_SECOND_GROUP);
+            millisecond = getMilliseconds(match, FitsDate.NEW_FORMAT_MILLISECOND_GROUP);
         } else {
             match = FitsDate.OLD_REGEX.matcher(dStr);
-            if (match.matches()) {
-                this.year = getInt(match, FitsDate.OLD_FORMAT_YEAR_GROUP) + FitsDate.YEAR_OFFSET;
-                this.month = getInt(match, FitsDate.OLD_FORMAT_MONTH_GROUP);
-                this.mday = getInt(match, FitsDate.OLD_FORMAT_DAY_OF_MONTH_GROUP);
-            } else {
+            if (!match.matches()) {
                 if (dStr.trim().isEmpty()) {
                     return;
                 }
                 throw new FitsException("Bad FITS date string \"" + dStr + '"');
             }
+            year = getInt(match, FitsDate.OLD_FORMAT_YEAR_GROUP) + FitsDate.YEAR_OFFSET;
+            month = getInt(match, FitsDate.OLD_FORMAT_MONTH_GROUP);
+            mday = getInt(match, FitsDate.OLD_FORMAT_DAY_OF_MONTH_GROUP);
         }
     }
 
@@ -212,61 +221,59 @@ public class FitsDate implements Comparable<FitsDate> {
 
     /**
      * Get a Java Date object corresponding to this FITS date.
-     * 
+     *
      * @return The Java Date object.
      */
-    @SuppressFBWarnings(value = "EI_EXPOSE_REP", justification = "intended exposure of mutable data")
     public Date toDate() {
-        if (this.year == -1) {
+        if (year == -1) {
             return null;
         }
 
         Calendar cal = Calendar.getInstance(UTC);
 
-        cal.set(Calendar.YEAR, this.year);
-        cal.set(Calendar.MONTH, this.month - 1);
-        cal.set(Calendar.DAY_OF_MONTH, this.mday);
+        cal.set(Calendar.YEAR, year);
+        cal.set(Calendar.MONTH, month - 1);
+        cal.set(Calendar.DAY_OF_MONTH, mday);
 
-        if (this.hour == -1) {
+        if (hour == -1) {
             cal.set(Calendar.HOUR_OF_DAY, 0);
             cal.set(Calendar.MINUTE, 0);
             cal.set(Calendar.SECOND, 0);
             cal.set(Calendar.MILLISECOND, 0);
         } else {
-            cal.set(Calendar.HOUR_OF_DAY, this.hour);
-            cal.set(Calendar.MINUTE, this.minute);
-            cal.set(Calendar.SECOND, this.second);
-            if (this.millisecond == -1) {
+            cal.set(Calendar.HOUR_OF_DAY, hour);
+            cal.set(Calendar.MINUTE, minute);
+            cal.set(Calendar.SECOND, second);
+            if (millisecond == -1) {
                 cal.set(Calendar.MILLISECOND, 0);
             } else {
-                cal.set(Calendar.MILLISECOND, this.millisecond);
+                cal.set(Calendar.MILLISECOND, millisecond);
             }
         }
-        this.date = cal.getTime();
-        return this.date;
+        return cal.getTime();
     }
 
     @Override
     public String toString() {
-        if (this.year == -1) {
+        if (year == -1) {
             return "";
         }
         StringBuilder buf = new StringBuilder(FitsDate.FITS_DATE_STRING_SIZE);
-        buf.append(this.year);
+        buf.append(year);
         buf.append('-');
-        appendTwoDigitValue(buf, this.month);
+        appendTwoDigitValue(buf, month);
         buf.append('-');
         appendTwoDigitValue(buf, mday);
-        if (this.hour != -1) {
+        if (hour != -1) {
             buf.append('T');
-            appendTwoDigitValue(buf, this.hour);
+            appendTwoDigitValue(buf, hour);
             buf.append(':');
-            appendTwoDigitValue(buf, this.minute);
+            appendTwoDigitValue(buf, minute);
             buf.append(':');
-            appendTwoDigitValue(buf, this.second);
-            if (this.millisecond != -1) {
+            appendTwoDigitValue(buf, second);
+            if (millisecond != -1) {
                 buf.append('.');
-                appendThreeDigitValue(buf, this.millisecond);
+                appendThreeDigitValue(buf, millisecond);
             }
         }
         return buf.toString();

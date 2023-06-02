@@ -15,12 +15,12 @@ import nom.tam.fits.UndefinedData;
  * Copyright (C) 1996 - 2021 nom-tam-fits
  * %%
  * This is free and unencumbered software released into the public domain.
- * 
+ *
  * Anyone is free to copy, modify, publish, use, compile, sell, or
  * distribute this software, either in source code form or as a compiled
  * binary, for any purpose, commercial or non-commercial, and by any
  * means.
- * 
+ *
  * In jurisdictions that recognize copyright laws, the author or authors
  * of this software dedicate any and all copyright interest in the
  * software to the public domain. We make this dedication for the benefit
@@ -28,7 +28,7 @@ import nom.tam.fits.UndefinedData;
  * successors. We intend this dedication to be an overt act of
  * relinquishment in perpetuity of all present and future rights to this
  * software under copyright law.
- * 
+ *
  * THE SOFTWARE IS PROVIDED "AS IS", WITHOUT WARRANTY OF ANY KIND,
  * EXPRESS OR IMPLIED, INCLUDING BUT NOT LIMITED TO THE WARRANTIES OF
  * MERCHANTABILITY, FITNESS FOR A PARTICULAR PURPOSE AND NONINFRINGEMENT.
@@ -47,7 +47,7 @@ import nom.tam.fits.UndefinedData;
  * See <a href=
  * "http://heasarc.gsfc.nasa.gov/docs/fcg/standard_dict.html">http://heasarc.gsfc.nasa.gov/docs/fcg/standard_dict.html</a>
  * </p>
- * 
+ *
  * @author Richard van Nieuwenhoven
  */
 public enum Standard implements IFitsHeader {
@@ -86,7 +86,7 @@ public enum Standard implements IFitsHeader {
      * necessarily equal to it. Physical block size and logical record length may be equal even if this keyword is
      * present or unequal if it is absent. It is reserved primarily to prevent its use with other meanings. Since the
      * issuance of version 1 of the standard, the BLOCKED keyword has been deprecated.
-     * 
+     *
      * @deprecated no blocksize other that 2880 may be used.
      */
     @Deprecated
@@ -208,7 +208,7 @@ public enum Standard implements IFitsHeader {
      * system in which positions are expressed. Starting with Version 1, the Standard has deprecated the use of the
      * EPOCH keyword and thus it shall not be used in FITS files created after the adoption of the standard; rather, the
      * EQUINOX keyword shall be used.
-     * 
+     *
      * @deprecated use {@link #EQUINOX} in stead
      */
     @Deprecated
@@ -388,7 +388,7 @@ public enum Standard implements IFitsHeader {
 
     /**
      * Coordinate reference frame of major/minor axes. use RADESYS instead.
-     * 
+     *
      * @deprecated use {@link #RADESYS} instead.
      */
     @Deprecated
@@ -531,8 +531,16 @@ public enum Standard implements IFitsHeader {
      */
     XTENSION(SOURCE.MANDATORY, HDU.EXTENSION, VALUE.STRING, "marks beginning of new HDU");
 
+    /**
+     * A shorthand for {@link #NAXISn}<code>.n(1)</code>, that is the regular dimension along the first, fastest FITS
+     * array index (this is the same as the last dimension of Java arrays).
+     */
     public static final IFitsHeader NAXIS1 = NAXISn.n(1);
 
+    /**
+     * A shorthand for {@link #NAXISn}<code>.n(2)</code>, that is the regular dimension along the second fastest FITS
+     * array index (this is the same as the one before the last dimension of Java arrays).
+     */
     public static final IFitsHeader NAXIS2 = NAXISn.n(2);
 
     private static final ThreadLocal<Class<?>> COMMENT_CONTEXT = new ThreadLocal<>();
@@ -541,7 +549,7 @@ public enum Standard implements IFitsHeader {
      * The value of the XTENSION keword in case of a binary table.
      */
     public static final String XTENSION_ASCIITABLE = "TABLE";
-    
+
     /**
      * The value of the XTENSION keword in case of a binary table.
      */
@@ -558,14 +566,14 @@ public enum Standard implements IFitsHeader {
     private final IFitsHeader key;
 
     Standard(SOURCE status, HDU hdu, VALUE valueType, String comment, StandardCommentReplacement... replacements) {
-        this.key = new FitsHeaderImpl(name(), status, hdu, valueType, comment);
-        this.commentReplacements = replacements;
+        key = new FitsHeaderImpl(name(), status, hdu, valueType, comment);
+        commentReplacements = replacements;
     }
 
     Standard(String headerName, SOURCE status, HDU hdu, VALUE valueType, String comment,
             StandardCommentReplacement... replacements) {
-        this.key = new FitsHeaderImpl(headerName == null ? name() : headerName, status, hdu, valueType, comment);
-        this.commentReplacements = replacements;
+        key = new FitsHeaderImpl(headerName == null ? name() : headerName, status, hdu, valueType, comment);
+        commentReplacements = replacements;
     }
 
     @Override
@@ -581,45 +589,50 @@ public enum Standard implements IFitsHeader {
                 }
             }
         }
-        return this.key.comment();
+        return key.comment();
     }
 
     @Override
     public HDU hdu() {
-        return this.key.hdu();
+        return key.hdu();
     }
 
     @Override
     public String key() {
-        return this.key.key();
+        return key.key();
     }
 
     @Override
     public IFitsHeader n(int... number) {
-        return this.key.n(number);
+        return key.n(number);
     }
 
     @Override
     public SOURCE status() {
-        return this.key.status();
+        return key.status();
     }
 
     @Override
     @SuppressWarnings("CPD-END")
     public VALUE valueType() {
-        return this.key.valueType();
+        return key.valueType();
     }
 
+    /**
+     * Set the Data class in whose context the keyword is being used.
+     * 
+     * @param clazz Usually a subclass of <code>nom.tam.fits.Data</code>.
+     */
     public static void context(Class<?> clazz) {
         COMMENT_CONTEXT.set(clazz);
     }
 
     /**
      * scan for a comment with the specified reference key.
-     * 
-     * @param commentKey the reference key
-     * 
-     * @return the comment for the reference key
+     *
+     * @param  commentKey the reference key
+     *
+     * @return            the comment for the reference key
      */
     public String getCommentByKey(String commentKey) {
         for (StandardCommentReplacement commentReplacement : commentReplacements) {
@@ -636,9 +649,9 @@ public enum Standard implements IFitsHeader {
 
     /**
      * set the comment for the specified reference key.
-     * 
+     *
      * @param commentKey the reference key
-     * @param value the comment to set when the fits key is used.
+     * @param value      the comment to set when the fits key is used.
      */
     public void setCommentByKey(String commentKey, String value) {
         for (StandardCommentReplacement commentReplacement : commentReplacements) {
