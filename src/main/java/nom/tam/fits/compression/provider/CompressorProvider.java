@@ -86,7 +86,7 @@ import nom.tam.fits.compression.provider.param.rice.RiceCompressParameters;
 /**
  * (<i>for internal use</i>) Standard implementation of the {@code ICompressorProvider} interface.
  */
-@SuppressWarnings("javadoc")
+@SuppressWarnings({"javadoc", "deprecation"})
 public class CompressorProvider implements ICompressorProvider {
 
     /**
