@@ -33,9 +33,9 @@
           <ul class="breadcrumb">
         <li id="publishDate">Last Published: 2023-06-02<span class="divider">|</span>
 </li>
-      <li class=""><a href="index.html" title="nom.tam.fits">nom.tam.fits</a><span class="divider">/</span></li>
+      <li class=""><a href="index.html" title="nom.tam FITS library">nom.tam FITS library</a><span class="divider">/</span></li>
     <li class="active ">CPD Results</li>
-      <li id="projectVersion" class="pull-right">Version: 1.18.0-rc5</li>
+      <li id="projectVersion" class="pull-right">Version: 1.18.0-rc4</li>
           </ul>
         </div>
       </header>
@@ -86,7 +86,7 @@
 <th>Line</th></tr>
 <tr class="b">
 <td align="left">nom/tam/util/FitsFile.java</td>
-<td><a href="./xref/nom/tam/util/FitsFile.html#L369">369</a></td></tr>
+<td><a href="./xref/nom/tam/util/FitsFile.html#L406">406</a></td></tr>
 <tr class="a">
 <td align="left">nom/tam/util/FitsOutputStream.java</td>
 <td><a href="./xref/nom/tam/util/FitsOutputStream.html#L98">98</a></td></tr>
@@ -95,89 +95,89 @@
 <div class="source"><pre class="prettyprint">}
 
     @Override
-    public void write(boolean[] b, int start, int length) throws IOException {
+    public synchronized void write(boolean[] b, int start, int length) throws IOException {
         getEncoder().write(b, start, length);
     }
 
     @Override
-    public void write(Boolean[] buf, int offset, int size) throws IOException {
+    public synchronized void write(Boolean[] buf, int offset, int size) throws IOException {
         getEncoder().write(buf, offset, size);
     }
-
+    
     @Override
-    public void write(char[] c, int start, int length) throws IOException {
+    public synchronized void write(char[] c, int start, int length) throws IOException {
         getEncoder().write(c, start, length);
     }
 
     @Override
-    public void write(short[] s, int start, int length) throws IOException {
+    public synchronized void write(short[] s, int start, int length) throws IOException {
         getEncoder().write(s, start, length);
     }
-
+    
     @Override
-    public void write(int[] i, int start, int length) throws IOException {
+    public synchronized void write(int[] i, int start, int length) throws IOException {
         getEncoder().write(i, start, length);
     }
 
     @Override
-    public void write(long[] l, int start, int length) throws IOException {
+    public synchronized void write(long[] l, int start, int length) throws IOException {
         getEncoder().write(l, start, length);
     }
 
     @Override
-    public void write(float[] f, int start, int length) throws IOException {
+    public synchronized void write(float[] f, int start, int length) throws IOException {
         getEncoder().write(f, start, length);
     }
 
     @Override
-    public void write(double[] d, int start, int length) throws IOException {
+    public synchronized void write(double[] d, int start, int length) throws IOException {
         getEncoder().write(d, start, length);
     }
 
     @Override
-    public void write(String[] s, int start, int length) throws IOException {</pre></div></td></tr></table>
+    public synchronized void write(String[] s, int start, int length) throws IOException {</pre></div></td></tr></table>
 <table border="0" class="table table-striped">
 <tr class="a">
 <th>File</th>
 <th>Line</th></tr>
 <tr class="b">
 <td align="left">nom/tam/util/FitsFile.java</td>
-<td><a href="./xref/nom/tam/util/FitsFile.html#L249">249</a></td></tr>
+<td><a href="./xref/nom/tam/util/FitsFile.html#L286">286</a></td></tr>
 <tr class="a">
 <td align="left">nom/tam/util/FitsInputStream.java</td>
-<td><a href="./xref/nom/tam/util/FitsInputStream.html#L114">114</a></td></tr>
+<td><a href="./xref/nom/tam/util/FitsInputStream.html#L127">127</a></td></tr>
 <tr class="b">
 <td colspan="2" align="left">
 <div class="source"><pre class="prettyprint">return getDecoder().read(buf, offset, size);
     }
 
     @Override
-    public int read(char[] c, int start, int length) throws IOException {
+    public synchronized int read(char[] c, int start, int length) throws IOException {
         return getDecoder().read(c, start, length);
     }
 
     @Override
-    public int read(short[] s, int start, int length) throws IOException {
+    public synchronized int read(short[] s, int start, int length) throws IOException {
         return getDecoder().read(s, start, length);
     }
 
     @Override
-    public int read(int[] i, int start, int length) throws IOException {
+    public synchronized int read(int[] i, int start, int length) throws IOException {
         return getDecoder().read(i, start, length);
     }
 
     @Override
-    public int read(long[] l, int start, int length) throws IOException {
+    public synchronized int read(long[] l, int start, int length) throws IOException {
         return getDecoder().read(l, start, length);
     }
 
     @Override
-    public int read(float[] f, int start, int length) throws IOException {
+    public synchronized int read(float[] f, int start, int length) throws IOException {
         return getDecoder().read(f, start, length);
     }
 
     @Override
-    public int read(double[] d, int start, int length) throws IOException {
+    public synchronized int read(double[] d, int start, int length) throws IOException {
         return getDecoder().read(d, start, length);
     }
 
@@ -188,36 +188,38 @@
 <th>Line</th></tr>
 <tr class="b">
 <td align="left">nom/tam/util/InputDecoder.java</td>
-<td><a href="./xref/nom/tam/util/InputDecoder.html#L387">387</a></td></tr>
+<td><a href="./xref/nom/tam/util/InputDecoder.html#L414">414</a></td></tr>
 <tr class="a">
 <td align="left">nom/tam/util/OutputEncoder.java</td>
-<td><a href="./xref/nom/tam/util/OutputEncoder.html#L256">256</a></td></tr>
+<td><a href="./xref/nom/tam/util/OutputEncoder.html#L274">274</a></td></tr>
 <tr class="b">
 <td colspan="2" align="left">
 <div class="source"><pre class="prettyprint">private InputBuffer(int size) {
-            data = new byte[size];
+            this.data = new byte[size];
             buffer = ByteBuffer.wrap(data);
         }
 
         /**
-         * Sets the byte order of the binary data representation from which we are decoding data.
-         *
+         * Sets the byte order of the binary data representation from which we
+         * are decoding data.
+         * 
          * @param order the new byte order
-         *
-         * @see         #byteOrder()
-         * @see         ByteBuffer#order(ByteOrder)
+         * 
+         * @see #byteOrder()
+         * @see ByteBuffer#order(ByteOrder)
          */
         protected void setByteOrder(ByteOrder order) {
             buffer.order(order);
         }
 
         /**
-         * Returns the current byte order of the binary data representation from which we are decoding.
-         *
+         * Returns the current byte order of the binary data representation from
+         * which we are decoding.
+         * 
          * @return the byte order
-         *
-         * @see    #setByteOrder(ByteOrder)
-         * @see    ByteBuffer#order()
+         * 
+         * @see #setByteOrder(ByteOrder)
+         * @see ByteBuffer#order()
          */
         protected ByteOrder byteOrder() {
             return buffer.order();
@@ -242,10 +244,11 @@
         }
 
         /**
-         * Set the number of bytes we can buffer from the input for subsequent rettrieval from this buffer. The get
-         * methods of this class will be ensured not to fetch data from the input beyond the requested size.
-         *
-         * @param n    the number of elements we can read and buffer from the input
+         * Set the number of bytes we can buffer from the input for subsequent
+         * rettrieval from this buffer. The get methods of this class will be
+         * ensured not to fetch data from the input beyond the requested size.
+         * 
+         * @param n the number of elements we can read and buffer from the input
          * @param size the number of bytes in each elements.
          */
         protected void loadBytes(long n, int size) {</pre></div></td></tr></table>
@@ -255,29 +258,29 @@
 <th>Line</th></tr>
 <tr class="b">
 <td align="left">nom/tam/fits/compression/algorithm/rice/RiceCompressor.java</td>
-<td><a href="./xref/nom/tam/fits/compression/algorithm/rice/RiceCompressor.html#L217">217</a></td></tr>
+<td><a href="./xref/nom/tam/fits/compression/algorithm/rice/RiceCompressor.html#L218">218</a></td></tr>
 <tr class="a">
 <td align="left">nom/tam/fits/compression/algorithm/rice/RiceCompressor.java</td>
-<td><a href="./xref/nom/tam/fits/compression/algorithm/rice/RiceCompressor.html#L219">219</a></td></tr>
+<td><a href="./xref/nom/tam/fits/compression/algorithm/rice/RiceCompressor.html#L220">220</a></td></tr>
 <tr class="b">
 <td colspan="2" align="left">
-<div class="source"><pre class="prettyprint">7, 7, 7, 7, 7, 7, 7, 7, 7, 7, 7, 7, 7, 7, 7, 7, 7, 7, 7, 7, 7, 7, 7, 7, 7, 7, 7, 7, 7, 8, 8, 8, 8, 8, 8, 8, 8,
-            8, 8, 8, 8, 8, 8, 8, 8, 8, 8, 8, 8, 8, 8, 8, 8, 8, 8, 8, 8, 8, 8, 8, 8, 8, 8, 8, 8, 8, 8, 8, 8, 8, 8, 8, 8, 8,
-            8, 8, 8, 8, 8, 8, 8, 8, 8, 8, 8, 8, 8, 8, 8, 8, 8, 8, 8, 8, 8, 8, 8, 8, 8, 8, 8, 8, 8, 8, 8, 8, 8, 8, 8, 8, 8,</pre></div></td></tr></table>
+<div class="source"><pre class="prettyprint">7, 7, 7, 7, 7, 7, 7, 7, 7, 7, 7, 7, 7, 7, 7, 7, 7, 7, 7, 7, 7, 7, 7, 7, 7, 7, 7, 7, 7, 7, 7, 7, 8, 8, 8, 8,
+            8, 8, 8, 8, 8, 8, 8, 8, 8, 8, 8, 8, 8, 8, 8, 8, 8, 8, 8, 8, 8, 8, 8, 8, 8, 8, 8, 8, 8, 8, 8, 8, 8, 8, 8, 8,
+            8, 8, 8, 8, 8, 8, 8, 8, 8, 8, 8, 8, 8, 8, 8, 8, 8, 8, 8, 8, 8, 8, 8, 8, 8, 8, 8, 8, 8, 8, 8, 8, 8, 8, 8, 8,</pre></div></td></tr></table>
 <table border="0" class="table table-striped">
 <tr class="a">
 <th>File</th>
 <th>Line</th></tr>
 <tr class="b">
 <td align="left">nom/tam/image/StandardImageTiler.java</td>
-<td><a href="./xref/nom/tam/image/StandardImageTiler.html#L100">100</a></td></tr>
+<td><a href="./xref/nom/tam/image/StandardImageTiler.html#L94">94</a></td></tr>
 <tr class="a">
 <td align="left">nom/tam/image/compression/CompressedImageTiler.java</td>
-<td><a href="./xref/nom/tam/image/compression/CompressedImageTiler.html#L80">80</a></td></tr>
+<td><a href="./xref/nom/tam/image/compression/CompressedImageTiler.html#L79">79</a></td></tr>
 <tr class="b">
 <td colspan="2" align="left">
 <div class="source"><pre class="prettyprint">protected static boolean incrementPosition(int[] start, int[] current, int[] lengths, int[] steps) {
-        for (int i = start.length - 2; i &gt;= 0; i--) {
+        for (int i = start.length - 2; i &gt;= 0; i -= 1) {
             if (current[i] - start[i] &lt; lengths[i] - steps[i]) {
                 current[i] += steps[i];
                 if (start.length - 1 - (i + 1) &gt;= 0) {
@@ -294,97 +297,97 @@
 <th>Line</th></tr>
 <tr class="b">
 <td align="left">nom/tam/fits/compression/algorithm/rice/RiceCompressor.java</td>
-<td><a href="./xref/nom/tam/fits/compression/algorithm/rice/RiceCompressor.html#L217">217</a></td></tr>
+<td><a href="./xref/nom/tam/fits/compression/algorithm/rice/RiceCompressor.html#L218">218</a></td></tr>
 <tr class="a">
 <td align="left">nom/tam/fits/compression/algorithm/rice/RiceCompressor.java</td>
-<td><a href="./xref/nom/tam/fits/compression/algorithm/rice/RiceCompressor.html#L219">219</a></td></tr>
+<td><a href="./xref/nom/tam/fits/compression/algorithm/rice/RiceCompressor.html#L220">220</a></td></tr>
 <tr class="b">
 <td colspan="2" align="left">
-<div class="source"><pre class="prettyprint">7, 7, 7, 7, 7, 7, 7, 7, 7, 7, 7, 7, 7, 7, 7, 7, 7, 7, 7, 7, 7, 7, 7, 7, 7, 7, 7, 7, 7, 8, 8, 8, 8, 8, 8, 8, 8,
-            8, 8, 8, 8, 8, 8, 8, 8, 8, 8, 8, 8, 8, 8, 8, 8, 8, 8, 8, 8, 8, 8, 8, 8, 8, 8, 8, 8, 8, 8, 8, 8, 8, 8, 8, 8, 8,
-            8, 8, 8, 8, 8, 8, 8, 8, 8, 8, 8, 8, 8, 8, 8, 8, 8, 8, 8, 8, 8, 8, 8, 8, 8, 8, 8, 8, 8, 8, 8, 8, 8, 8, 8, 8, 8,</pre></div></td></tr></table>
+<div class="source"><pre class="prettyprint">7, 7, 7, 7, 7, 7, 7, 7, 7, 7, 7, 7, 7, 7, 7, 7, 7, 7, 7, 7, 7, 7, 7, 7, 7, 7, 7, 7, 7, 7, 7, 7, 8, 8, 8, 8,
+            8, 8, 8, 8, 8, 8, 8, 8, 8, 8, 8, 8, 8, 8, 8, 8, 8, 8, 8, 8, 8, 8, 8, 8, 8, 8, 8, 8, 8, 8, 8, 8, 8, 8, 8, 8,
+            8, 8, 8, 8, 8, 8, 8, 8, 8, 8, 8, 8, 8, 8, 8, 8, 8, 8, 8, 8, 8, 8, 8, 8, 8, 8, 8, 8, 8, 8, 8, 8, 8, 8, 8, 8,</pre></div></td></tr></table>
 <table border="0" class="table table-striped">
 <tr class="a">
 <th>File</th>
 <th>Line</th></tr>
 <tr class="b">
 <td align="left">nom/tam/fits/compression/algorithm/rice/RiceCompressor.java</td>
-<td><a href="./xref/nom/tam/fits/compression/algorithm/rice/RiceCompressor.html#L217">217</a></td></tr>
+<td><a href="./xref/nom/tam/fits/compression/algorithm/rice/RiceCompressor.html#L218">218</a></td></tr>
 <tr class="a">
 <td align="left">nom/tam/fits/compression/algorithm/rice/RiceCompressor.java</td>
-<td><a href="./xref/nom/tam/fits/compression/algorithm/rice/RiceCompressor.html#L219">219</a></td></tr>
+<td><a href="./xref/nom/tam/fits/compression/algorithm/rice/RiceCompressor.html#L220">220</a></td></tr>
 <tr class="b">
 <td colspan="2" align="left">
-<div class="source"><pre class="prettyprint">7, 7, 7, 7, 7, 7, 7, 7, 7, 7, 7, 7, 7, 7, 7, 7, 7, 7, 7, 7, 7, 7, 7, 7, 7, 7, 7, 7, 7, 8, 8, 8, 8, 8, 8, 8, 8,
-            8, 8, 8, 8, 8, 8, 8, 8, 8, 8, 8, 8, 8, 8, 8, 8, 8, 8, 8, 8, 8, 8, 8, 8, 8, 8, 8, 8, 8, 8, 8, 8, 8, 8, 8, 8, 8,
-            8, 8, 8, 8, 8, 8, 8, 8, 8, 8, 8, 8, 8, 8, 8, 8, 8, 8, 8, 8, 8, 8, 8, 8, 8, 8, 8, 8, 8, 8, 8, 8, 8, 8, 8, 8, 8,</pre></div></td></tr></table>
+<div class="source"><pre class="prettyprint">7, 7, 7, 7, 7, 7, 7, 7, 7, 7, 7, 7, 7, 7, 7, 7, 7, 7, 7, 7, 7, 7, 7, 7, 7, 7, 7, 7, 7, 7, 7, 7, 8, 8, 8, 8,
+            8, 8, 8, 8, 8, 8, 8, 8, 8, 8, 8, 8, 8, 8, 8, 8, 8, 8, 8, 8, 8, 8, 8, 8, 8, 8, 8, 8, 8, 8, 8, 8, 8, 8, 8, 8,
+            8, 8, 8, 8, 8, 8, 8, 8, 8, 8, 8, 8, 8, 8, 8, 8, 8, 8, 8, 8, 8, 8, 8, 8, 8, 8, 8, 8, 8, 8, 8, 8, 8, 8, 8, 8,</pre></div></td></tr></table>
 <table border="0" class="table table-striped">
 <tr class="a">
 <th>File</th>
 <th>Line</th></tr>
 <tr class="b">
 <td align="left">nom/tam/fits/compression/algorithm/rice/RiceCompressor.java</td>
-<td><a href="./xref/nom/tam/fits/compression/algorithm/rice/RiceCompressor.html#L217">217</a></td></tr>
+<td><a href="./xref/nom/tam/fits/compression/algorithm/rice/RiceCompressor.html#L218">218</a></td></tr>
 <tr class="a">
 <td align="left">nom/tam/fits/compression/algorithm/rice/RiceCompressor.java</td>
-<td><a href="./xref/nom/tam/fits/compression/algorithm/rice/RiceCompressor.html#L219">219</a></td></tr>
+<td><a href="./xref/nom/tam/fits/compression/algorithm/rice/RiceCompressor.html#L220">220</a></td></tr>
 <tr class="b">
 <td colspan="2" align="left">
-<div class="source"><pre class="prettyprint">7, 7, 7, 7, 7, 7, 7, 7, 7, 7, 7, 7, 7, 7, 7, 7, 7, 7, 7, 7, 7, 7, 7, 7, 7, 7, 7, 7, 7, 8, 8, 8, 8, 8, 8, 8, 8,
-            8, 8, 8, 8, 8, 8, 8, 8, 8, 8, 8, 8, 8, 8, 8, 8, 8, 8, 8, 8, 8, 8, 8, 8, 8, 8, 8, 8, 8, 8, 8, 8, 8, 8, 8, 8, 8,
-            8, 8, 8, 8, 8, 8, 8, 8, 8, 8, 8, 8, 8, 8, 8, 8, 8, 8, 8, 8, 8, 8, 8, 8, 8, 8, 8, 8, 8, 8, 8, 8, 8, 8, 8, 8, 8,</pre></div></td></tr></table>
+<div class="source"><pre class="prettyprint">7, 7, 7, 7, 7, 7, 7, 7, 7, 7, 7, 7, 7, 7, 7, 7, 7, 7, 7, 7, 7, 7, 7, 7, 7, 7, 7, 7, 7, 7, 7, 7, 8, 8, 8, 8,
+            8, 8, 8, 8, 8, 8, 8, 8, 8, 8, 8, 8, 8, 8, 8, 8, 8, 8, 8, 8, 8, 8, 8, 8, 8, 8, 8, 8, 8, 8, 8, 8, 8, 8, 8, 8,
+            8, 8, 8, 8, 8, 8, 8, 8, 8, 8, 8, 8, 8, 8, 8, 8, 8, 8, 8, 8, 8, 8, 8, 8, 8, 8, 8, 8, 8, 8, 8, 8, 8, 8, 8, 8,</pre></div></td></tr></table>
 <table border="0" class="table table-striped">
 <tr class="a">
 <th>File</th>
 <th>Line</th></tr>
 <tr class="b">
 <td align="left">nom/tam/fits/compression/algorithm/rice/RiceCompressor.java</td>
-<td><a href="./xref/nom/tam/fits/compression/algorithm/rice/RiceCompressor.html#L217">217</a></td></tr>
+<td><a href="./xref/nom/tam/fits/compression/algorithm/rice/RiceCompressor.html#L218">218</a></td></tr>
 <tr class="a">
 <td align="left">nom/tam/fits/compression/algorithm/rice/RiceCompressor.java</td>
-<td><a href="./xref/nom/tam/fits/compression/algorithm/rice/RiceCompressor.html#L219">219</a></td></tr>
+<td><a href="./xref/nom/tam/fits/compression/algorithm/rice/RiceCompressor.html#L220">220</a></td></tr>
 <tr class="b">
 <td colspan="2" align="left">
-<div class="source"><pre class="prettyprint">7, 7, 7, 7, 7, 7, 7, 7, 7, 7, 7, 7, 7, 7, 7, 7, 7, 7, 7, 7, 7, 7, 7, 7, 7, 7, 7, 7, 7, 8, 8, 8, 8, 8, 8, 8, 8,
-            8, 8, 8, 8, 8, 8, 8, 8, 8, 8, 8, 8, 8, 8, 8, 8, 8, 8, 8, 8, 8, 8, 8, 8, 8, 8, 8, 8, 8, 8, 8, 8, 8, 8, 8, 8, 8,
-            8, 8, 8, 8, 8, 8, 8, 8, 8, 8, 8, 8, 8, 8, 8, 8, 8, 8, 8, 8, 8, 8, 8, 8, 8, 8, 8, 8, 8, 8, 8, 8, 8, 8, 8, 8, 8,</pre></div></td></tr></table>
+<div class="source"><pre class="prettyprint">7, 7, 7, 7, 7, 7, 7, 7, 7, 7, 7, 7, 7, 7, 7, 7, 7, 7, 7, 7, 7, 7, 7, 7, 7, 7, 7, 7, 7, 7, 7, 7, 8, 8, 8, 8,
+            8, 8, 8, 8, 8, 8, 8, 8, 8, 8, 8, 8, 8, 8, 8, 8, 8, 8, 8, 8, 8, 8, 8, 8, 8, 8, 8, 8, 8, 8, 8, 8, 8, 8, 8, 8,
+            8, 8, 8, 8, 8, 8, 8, 8, 8, 8, 8, 8, 8, 8, 8, 8, 8, 8, 8, 8, 8, 8, 8, 8, 8, 8, 8, 8, 8, 8, 8, 8, 8, 8, 8, 8,</pre></div></td></tr></table>
 <table border="0" class="table table-striped">
 <tr class="a">
 <th>File</th>
 <th>Line</th></tr>
 <tr class="b">
 <td align="left">nom/tam/fits/compression/algorithm/rice/RiceCompressor.java</td>
-<td><a href="./xref/nom/tam/fits/compression/algorithm/rice/RiceCompressor.html#L217">217</a></td></tr>
+<td><a href="./xref/nom/tam/fits/compression/algorithm/rice/RiceCompressor.html#L218">218</a></td></tr>
 <tr class="a">
 <td align="left">nom/tam/fits/compression/algorithm/rice/RiceCompressor.java</td>
-<td><a href="./xref/nom/tam/fits/compression/algorithm/rice/RiceCompressor.html#L219">219</a></td></tr>
+<td><a href="./xref/nom/tam/fits/compression/algorithm/rice/RiceCompressor.html#L220">220</a></td></tr>
 <tr class="b">
 <td colspan="2" align="left">
-<div class="source"><pre class="prettyprint">7, 7, 7, 7, 7, 7, 7, 7, 7, 7, 7, 7, 7, 7, 7, 7, 7, 7, 7, 7, 7, 7, 7, 7, 7, 7, 7, 7, 7, 8, 8, 8, 8, 8, 8, 8, 8,
-            8, 8, 8, 8, 8, 8, 8, 8, 8, 8, 8, 8, 8, 8, 8, 8, 8, 8, 8, 8, 8, 8, 8, 8, 8, 8, 8, 8, 8, 8, 8, 8, 8, 8, 8, 8, 8,
-            8, 8, 8, 8, 8, 8, 8, 8, 8, 8, 8, 8, 8, 8, 8, 8, 8, 8, 8, 8, 8, 8, 8, 8, 8, 8, 8, 8, 8, 8, 8, 8, 8, 8, 8, 8, 8,</pre></div></td></tr></table>
+<div class="source"><pre class="prettyprint">7, 7, 7, 7, 7, 7, 7, 7, 7, 7, 7, 7, 7, 7, 7, 7, 7, 7, 7, 7, 7, 7, 7, 7, 7, 7, 7, 7, 7, 7, 7, 7, 8, 8, 8, 8,
+            8, 8, 8, 8, 8, 8, 8, 8, 8, 8, 8, 8, 8, 8, 8, 8, 8, 8, 8, 8, 8, 8, 8, 8, 8, 8, 8, 8, 8, 8, 8, 8, 8, 8, 8, 8,
+            8, 8, 8, 8, 8, 8, 8, 8, 8, 8, 8, 8, 8, 8, 8, 8, 8, 8, 8, 8, 8, 8, 8, 8, 8, 8, 8, 8, 8, 8, 8, 8, 8, 8, 8, 8,</pre></div></td></tr></table>
 <table border="0" class="table table-striped">
 <tr class="a">
 <th>File</th>
 <th>Line</th></tr>
 <tr class="b">
 <td align="left">nom/tam/fits/compression/algorithm/rice/RiceCompressor.java</td>
-<td><a href="./xref/nom/tam/fits/compression/algorithm/rice/RiceCompressor.html#L217">217</a></td></tr>
+<td><a href="./xref/nom/tam/fits/compression/algorithm/rice/RiceCompressor.html#L218">218</a></td></tr>
 <tr class="a">
 <td align="left">nom/tam/fits/compression/algorithm/rice/RiceCompressor.java</td>
-<td><a href="./xref/nom/tam/fits/compression/algorithm/rice/RiceCompressor.html#L219">219</a></td></tr>
+<td><a href="./xref/nom/tam/fits/compression/algorithm/rice/RiceCompressor.html#L220">220</a></td></tr>
 <tr class="b">
 <td colspan="2" align="left">
-<div class="source"><pre class="prettyprint">7, 7, 7, 7, 7, 7, 7, 7, 7, 7, 7, 7, 7, 7, 7, 7, 7, 7, 7, 7, 7, 7, 7, 7, 7, 7, 7, 7, 7, 8, 8, 8, 8, 8, 8, 8, 8,
-            8, 8, 8, 8, 8, 8, 8, 8, 8, 8, 8, 8, 8, 8, 8, 8, 8, 8, 8, 8, 8, 8, 8, 8, 8, 8, 8, 8, 8, 8, 8, 8, 8, 8, 8, 8, 8,
-            8, 8, 8, 8, 8, 8, 8, 8, 8, 8, 8, 8, 8, 8, 8, 8, 8, 8, 8, 8, 8, 8, 8, 8, 8, 8, 8, 8, 8, 8, 8, 8, 8, 8, 8, 8, 8,</pre></div></td></tr></table>
+<div class="source"><pre class="prettyprint">7, 7, 7, 7, 7, 7, 7, 7, 7, 7, 7, 7, 7, 7, 7, 7, 7, 7, 7, 7, 7, 7, 7, 7, 7, 7, 7, 7, 7, 7, 7, 7, 8, 8, 8, 8,
+            8, 8, 8, 8, 8, 8, 8, 8, 8, 8, 8, 8, 8, 8, 8, 8, 8, 8, 8, 8, 8, 8, 8, 8, 8, 8, 8, 8, 8, 8, 8, 8, 8, 8, 8, 8,
+            8, 8, 8, 8, 8, 8, 8, 8, 8, 8, 8, 8, 8, 8, 8, 8, 8, 8, 8, 8, 8, 8, 8, 8, 8, 8, 8, 8, 8, 8, 8, 8, 8, 8, 8, 8,</pre></div></td></tr></table>
 <table border="0" class="table table-striped">
 <tr class="a">
 <th>File</th>
 <th>Line</th></tr>
 <tr class="b">
 <td align="left">nom/tam/fits/utilities/FitsCopy.java</td>
-<td><a href="./xref/nom/tam/fits/utilities/FitsCopy.html#L45">45</a></td></tr>
+<td><a href="./xref/nom/tam/fits/utilities/FitsCopy.html#L40">40</a></td></tr>
 <tr class="a">
 <td align="left">nom/tam/fits/utilities/FitsReader.java</td>
 <td><a href="./xref/nom/tam/fits/utilities/FitsReader.html#L39">39</a></td></tr>
@@ -393,15 +396,6 @@
 <div class="source"><pre class="prettyprint">private FitsCopy() {
     }
 
-    /**
-     * The main class for this program
-     * 
-     * @param args
-     *            The command-line parameters: (1) the input file name/path, and
-     *            (2) the output file name/path.
-     * @throws Exception
-     *             Whatever exception this program might throw.
-     */
     public static void main(String[] args) throws Exception {
         String file = args[0];
         try (Fits f = new Fits(file)) {
@@ -416,7 +410,7 @@
                     } else {
                         System.out.println(&quot;\n\nExtension &quot; + i + &quot;:\n&quot;);
                     }
-                    i++;
+                    i += 1;
                     h.info(System.out);
                 }
             } while (h != null);
@@ -427,174 +421,84 @@
 <th>Line</th></tr>
 <tr class="b">
 <td align="left">nom/tam/fits/compression/algorithm/rice/RiceCompressor.java</td>
-<td><a href="./xref/nom/tam/fits/compression/algorithm/rice/RiceCompressor.html#L217">217</a></td></tr>
+<td><a href="./xref/nom/tam/fits/compression/algorithm/rice/RiceCompressor.html#L218">218</a></td></tr>
 <tr class="a">
 <td align="left">nom/tam/fits/compression/algorithm/rice/RiceCompressor.java</td>
-<td><a href="./xref/nom/tam/fits/compression/algorithm/rice/RiceCompressor.html#L219">219</a></td></tr>
+<td><a href="./xref/nom/tam/fits/compression/algorithm/rice/RiceCompressor.html#L220">220</a></td></tr>
 <tr class="b">
 <td colspan="2" align="left">
-<div class="source"><pre class="prettyprint">7, 7, 7, 7, 7, 7, 7, 7, 7, 7, 7, 7, 7, 7, 7, 7, 7, 7, 7, 7, 7, 7, 7, 7, 7, 7, 7, 7, 7, 8, 8, 8, 8, 8, 8, 8, 8,
-            8, 8, 8, 8, 8, 8, 8, 8, 8, 8, 8, 8, 8, 8, 8, 8, 8, 8, 8, 8, 8, 8, 8, 8, 8, 8, 8, 8, 8, 8, 8, 8, 8, 8, 8, 8, 8,
-            8, 8, 8, 8, 8, 8, 8, 8, 8, 8, 8, 8, 8, 8, 8, 8, 8, 8, 8, 8, 8, 8, 8, 8, 8, 8, 8, 8, 8, 8, 8, 8, 8, 8, 8, 8, 8,</pre></div></td></tr></table>
+<div class="source"><pre class="prettyprint">7, 7, 7, 7, 7, 7, 7, 7, 7, 7, 7, 7, 7, 7, 7, 7, 7, 7, 7, 7, 7, 7, 7, 7, 7, 7, 7, 7, 7, 7, 7, 7, 8, 8, 8, 8,
+            8, 8, 8, 8, 8, 8, 8, 8, 8, 8, 8, 8, 8, 8, 8, 8, 8, 8, 8, 8, 8, 8, 8, 8, 8, 8, 8, 8, 8, 8, 8, 8, 8, 8, 8, 8,
+            8, 8, 8, 8, 8, 8, 8, 8, 8, 8, 8, 8, 8, 8, 8, 8, 8, 8, 8, 8, 8, 8, 8, 8, 8, 8, 8, 8, 8, 8, 8, 8, 8, 8, 8, 8,</pre></div></td></tr></table>
 <table border="0" class="table table-striped">
 <tr class="a">
 <th>File</th>
 <th>Line</th></tr>
 <tr class="b">
 <td align="left">nom/tam/fits/compression/algorithm/rice/RiceCompressor.java</td>
-<td><a href="./xref/nom/tam/fits/compression/algorithm/rice/RiceCompressor.html#L217">217</a></td></tr>
+<td><a href="./xref/nom/tam/fits/compression/algorithm/rice/RiceCompressor.html#L218">218</a></td></tr>
 <tr class="a">
 <td align="left">nom/tam/fits/compression/algorithm/rice/RiceCompressor.java</td>
-<td><a href="./xref/nom/tam/fits/compression/algorithm/rice/RiceCompressor.html#L219">219</a></td></tr>
+<td><a href="./xref/nom/tam/fits/compression/algorithm/rice/RiceCompressor.html#L220">220</a></td></tr>
 <tr class="b">
 <td colspan="2" align="left">
-<div class="source"><pre class="prettyprint">7, 7, 7, 7, 7, 7, 7, 7, 7, 7, 7, 7, 7, 7, 7, 7, 7, 7, 7, 7, 7, 7, 7, 7, 7, 7, 7, 7, 7, 8, 8, 8, 8, 8, 8, 8, 8,
-            8, 8, 8, 8, 8, 8, 8, 8, 8, 8, 8, 8, 8, 8, 8, 8, 8, 8, 8, 8, 8, 8, 8, 8, 8, 8, 8, 8, 8, 8, 8, 8, 8, 8, 8, 8, 8,
-            8, 8, 8, 8, 8, 8, 8, 8, 8, 8, 8, 8, 8, 8, 8, 8, 8, 8, 8, 8, 8, 8, 8, 8, 8, 8, 8, 8, 8, 8, 8, 8, 8, 8, 8, 8, 8,</pre></div></td></tr></table>
+<div class="source"><pre class="prettyprint">7, 7, 7, 7, 7, 7, 7, 7, 7, 7, 7, 7, 7, 7, 7, 7, 7, 7, 7, 7, 7, 7, 7, 7, 7, 7, 7, 7, 7, 7, 7, 7, 8, 8, 8, 8,
+            8, 8, 8, 8, 8, 8, 8, 8, 8, 8, 8, 8, 8, 8, 8, 8, 8, 8, 8, 8, 8, 8, 8, 8, 8, 8, 8, 8, 8, 8, 8, 8, 8, 8, 8, 8,
+            8, 8, 8, 8, 8, 8, 8, 8, 8, 8, 8, 8, 8, 8, 8, 8, 8, 8, 8, 8, 8, 8, 8, 8, 8, 8, 8, 8, 8, 8, 8, 8, 8, 8, 8, 8,</pre></div></td></tr></table>
 <table border="0" class="table table-striped">
 <tr class="a">
 <th>File</th>
 <th>Line</th></tr>
 <tr class="b">
 <td align="left">nom/tam/fits/compression/algorithm/rice/RiceCompressor.java</td>
-<td><a href="./xref/nom/tam/fits/compression/algorithm/rice/RiceCompressor.html#L217">217</a></td></tr>
+<td><a href="./xref/nom/tam/fits/compression/algorithm/rice/RiceCompressor.html#L218">218</a></td></tr>
 <tr class="a">
 <td align="left">nom/tam/fits/compression/algorithm/rice/RiceCompressor.java</td>
-<td><a href="./xref/nom/tam/fits/compression/algorithm/rice/RiceCompressor.html#L219">219</a></td></tr>
+<td><a href="./xref/nom/tam/fits/compression/algorithm/rice/RiceCompressor.html#L220">220</a></td></tr>
 <tr class="b">
 <td colspan="2" align="left">
-<div class="source"><pre class="prettyprint">7, 7, 7, 7, 7, 7, 7, 7, 7, 7, 7, 7, 7, 7, 7, 7, 7, 7, 7, 7, 7, 7, 7, 7, 7, 7, 7, 7, 7, 8, 8, 8, 8, 8, 8, 8, 8,
-            8, 8, 8, 8, 8, 8, 8, 8, 8, 8, 8, 8, 8, 8, 8, 8, 8, 8, 8, 8, 8, 8, 8, 8, 8, 8, 8, 8, 8, 8, 8, 8, 8, 8, 8, 8, 8,
-            8, 8, 8, 8, 8, 8, 8, 8, 8, 8, 8, 8, 8, 8, 8, 8, 8, 8, 8, 8, 8, 8, 8, 8, 8, 8, 8, 8, 8, 8, 8, 8, 8, 8, 8, 8, 8,</pre></div></td></tr></table>
+<div class="source"><pre class="prettyprint">7, 7, 7, 7, 7, 7, 7, 7, 7, 7, 7, 7, 7, 7, 7, 7, 7, 7, 7, 7, 7, 7, 7, 7, 7, 7, 7, 7, 7, 7, 7, 7, 8, 8, 8, 8,
+            8, 8, 8, 8, 8, 8, 8, 8, 8, 8, 8, 8, 8, 8, 8, 8, 8, 8, 8, 8, 8, 8, 8, 8, 8, 8, 8, 8, 8, 8, 8, 8, 8, 8, 8, 8,
+            8, 8, 8, 8, 8, 8, 8, 8, 8, 8, 8, 8, 8, 8, 8, 8, 8, 8, 8, 8, 8, 8, 8, 8, 8, 8, 8, 8, 8, 8, 8, 8, 8, 8, 8, 8,</pre></div></td></tr></table>
 <table border="0" class="table table-striped">
 <tr class="a">
 <th>File</th>
 <th>Line</th></tr>
 <tr class="b">
 <td align="left">nom/tam/fits/compression/algorithm/rice/RiceCompressor.java</td>
-<td><a href="./xref/nom/tam/fits/compression/algorithm/rice/RiceCompressor.html#L217">217</a></td></tr>
+<td><a href="./xref/nom/tam/fits/compression/algorithm/rice/RiceCompressor.html#L218">218</a></td></tr>
 <tr class="a">
 <td align="left">nom/tam/fits/compression/algorithm/rice/RiceCompressor.java</td>
-<td><a href="./xref/nom/tam/fits/compression/algorithm/rice/RiceCompressor.html#L219">219</a></td></tr>
+<td><a href="./xref/nom/tam/fits/compression/algorithm/rice/RiceCompressor.html#L220">220</a></td></tr>
 <tr class="b">
 <td colspan="2" align="left">
-<div class="source"><pre class="prettyprint">7, 7, 7, 7, 7, 7, 7, 7, 7, 7, 7, 7, 7, 7, 7, 7, 7, 7, 7, 7, 7, 7, 7, 7, 7, 7, 7, 7, 7, 8, 8, 8, 8, 8, 8, 8, 8,
-            8, 8, 8, 8, 8, 8, 8, 8, 8, 8, 8, 8, 8, 8, 8, 8, 8, 8, 8, 8, 8, 8, 8, 8, 8, 8, 8, 8, 8, 8, 8, 8, 8, 8, 8, 8, 8,
-            8, 8, 8, 8, 8, 8, 8, 8, 8, 8, 8, 8, 8, 8, 8, 8, 8, 8, 8, 8, 8, 8, 8, 8, 8, 8, 8, 8, 8, 8, 8, 8, 8, 8, 8, 8, 8,</pre></div></td></tr></table>
-<table border="0" class="table table-striped">
-<tr class="a">
-<th>File</th>
-<th>Line</th></tr>
-<tr class="b">
-<td align="left">nom/tam/fits/compression/algorithm/rice/RiceCompressor.java</td>
-<td><a href="./xref/nom/tam/fits/compression/algorithm/rice/RiceCompressor.html#L217">217</a></td></tr>
-<tr class="a">
-<td align="left">nom/tam/fits/compression/algorithm/rice/RiceCompressor.java</td>
-<td><a href="./xref/nom/tam/fits/compression/algorithm/rice/RiceCompressor.html#L219">219</a></td></tr>
-<tr class="b">
-<td colspan="2" align="left">
-<div class="source"><pre class="prettyprint">7, 7, 7, 7, 7, 7, 7, 7, 7, 7, 7, 7, 7, 7, 7, 7, 7, 7, 7, 7, 7, 7, 7, 7, 7, 7, 7, 7, 7, 8, 8, 8, 8, 8, 8, 8, 8,
-            8, 8, 8, 8, 8, 8, 8, 8, 8, 8, 8, 8, 8, 8, 8, 8, 8, 8, 8, 8, 8, 8, 8, 8, 8, 8, 8, 8, 8, 8, 8, 8, 8, 8, 8, 8, 8,
-            8, 8, 8, 8, 8, 8, 8, 8, 8, 8, 8, 8, 8, 8, 8, 8, 8, 8, 8, 8, 8, 8, 8, 8, 8, 8, 8, 8, 8, 8, 8, 8, 8, 8, 8, 8, 8,</pre></div></td></tr></table>
-<table border="0" class="table table-striped">
-<tr class="a">
-<th>File</th>
-<th>Line</th></tr>
-<tr class="b">
-<td align="left">nom/tam/fits/compression/algorithm/rice/RiceCompressor.java</td>
-<td><a href="./xref/nom/tam/fits/compression/algorithm/rice/RiceCompressor.html#L217">217</a></td></tr>
-<tr class="a">
-<td align="left">nom/tam/fits/compression/algorithm/rice/RiceCompressor.java</td>
-<td><a href="./xref/nom/tam/fits/compression/algorithm/rice/RiceCompressor.html#L219">219</a></td></tr>
-<tr class="b">
-<td colspan="2" align="left">
-<div class="source"><pre class="prettyprint">7, 7, 7, 7, 7, 7, 7, 7, 7, 7, 7, 7, 7, 7, 7, 7, 7, 7, 7, 7, 7, 7, 7, 7, 7, 7, 7, 7, 7, 8, 8, 8, 8, 8, 8, 8, 8,
-            8, 8, 8, 8, 8, 8, 8, 8, 8, 8, 8, 8, 8, 8, 8, 8, 8, 8, 8, 8, 8, 8, 8, 8, 8, 8, 8, 8, 8, 8, 8, 8, 8, 8, 8, 8, 8,
-            8, 8, 8, 8, 8, 8, 8, 8, 8, 8, 8, 8, 8, 8, 8, 8, 8, 8, 8, 8, 8, 8, 8, 8, 8, 8, 8, 8, 8, 8, 8, 8, 8, 8, 8, 8, 8,</pre></div></td></tr></table>
-<table border="0" class="table table-striped">
-<tr class="a">
-<th>File</th>
-<th>Line</th></tr>
-<tr class="b">
-<td align="left">nom/tam/fits/compression/algorithm/rice/RiceCompressor.java</td>
-<td><a href="./xref/nom/tam/fits/compression/algorithm/rice/RiceCompressor.html#L217">217</a></td></tr>
-<tr class="a">
-<td align="left">nom/tam/fits/compression/algorithm/rice/RiceCompressor.java</td>
-<td><a href="./xref/nom/tam/fits/compression/algorithm/rice/RiceCompressor.html#L219">219</a></td></tr>
-<tr class="b">
-<td colspan="2" align="left">
-<div class="source"><pre class="prettyprint">7, 7, 7, 7, 7, 7, 7, 7, 7, 7, 7, 7, 7, 7, 7, 7, 7, 7, 7, 7, 7, 7, 7, 7, 7, 7, 7, 7, 7, 8, 8, 8, 8, 8, 8, 8, 8,
-            8, 8, 8, 8, 8, 8, 8, 8, 8, 8, 8, 8, 8, 8, 8, 8, 8, 8, 8, 8, 8, 8, 8, 8, 8, 8, 8, 8, 8, 8, 8, 8, 8, 8, 8, 8, 8,
-            8, 8, 8, 8, 8, 8, 8, 8, 8, 8, 8, 8, 8, 8, 8, 8, 8, 8, 8, 8, 8, 8, 8, 8, 8, 8, 8, 8, 8, 8, 8, 8, 8, 8, 8, 8, 8,</pre></div></td></tr></table>
-<table border="0" class="table table-striped">
-<tr class="a">
-<th>File</th>
-<th>Line</th></tr>
-<tr class="b">
-<td align="left">nom/tam/fits/compression/algorithm/rice/RiceCompressor.java</td>
-<td><a href="./xref/nom/tam/fits/compression/algorithm/rice/RiceCompressor.html#L217">217</a></td></tr>
-<tr class="a">
-<td align="left">nom/tam/fits/compression/algorithm/rice/RiceCompressor.java</td>
-<td><a href="./xref/nom/tam/fits/compression/algorithm/rice/RiceCompressor.html#L219">219</a></td></tr>
-<tr class="b">
-<td colspan="2" align="left">
-<div class="source"><pre class="prettyprint">7, 7, 7, 7, 7, 7, 7, 7, 7, 7, 7, 7, 7, 7, 7, 7, 7, 7, 7, 7, 7, 7, 7, 7, 7, 7, 7, 7, 7, 8, 8, 8, 8, 8, 8, 8, 8,
-            8, 8, 8, 8, 8, 8, 8, 8, 8, 8, 8, 8, 8, 8, 8, 8, 8, 8, 8, 8, 8, 8, 8, 8, 8, 8, 8, 8, 8, 8, 8, 8, 8, 8, 8, 8, 8,
-            8, 8, 8, 8, 8, 8, 8, 8, 8, 8, 8, 8, 8, 8, 8, 8, 8, 8, 8, 8, 8, 8, 8, 8, 8, 8, 8, 8, 8, 8, 8, 8, 8, 8, 8, 8, 8,</pre></div></td></tr></table>
-<table border="0" class="table table-striped">
-<tr class="a">
-<th>File</th>
-<th>Line</th></tr>
-<tr class="b">
-<td align="left">nom/tam/fits/compression/algorithm/rice/RiceCompressor.java</td>
-<td><a href="./xref/nom/tam/fits/compression/algorithm/rice/RiceCompressor.html#L217">217</a></td></tr>
-<tr class="a">
-<td align="left">nom/tam/fits/compression/algorithm/rice/RiceCompressor.java</td>
-<td><a href="./xref/nom/tam/fits/compression/algorithm/rice/RiceCompressor.html#L219">219</a></td></tr>
-<tr class="b">
-<td colspan="2" align="left">
-<div class="source"><pre class="prettyprint">7, 7, 7, 7, 7, 7, 7, 7, 7, 7, 7, 7, 7, 7, 7, 7, 7, 7, 7, 7, 7, 7, 7, 7, 7, 7, 7, 7, 7, 8, 8, 8, 8, 8, 8, 8, 8,
-            8, 8, 8, 8, 8, 8, 8, 8, 8, 8, 8, 8, 8, 8, 8, 8, 8, 8, 8, 8, 8, 8, 8, 8, 8, 8, 8, 8, 8, 8, 8, 8, 8, 8, 8, 8, 8,
-            8, 8, 8, 8, 8, 8, 8, 8, 8, 8, 8, 8, 8, 8, 8, 8, 8, 8, 8, 8, 8, 8, 8, 8, 8, 8, 8, 8, 8, 8, 8, 8, 8, 8, 8, 8, 8,</pre></div></td></tr></table>
-<table border="0" class="table table-striped">
-<tr class="a">
-<th>File</th>
-<th>Line</th></tr>
-<tr class="b">
-<td align="left">nom/tam/fits/compression/algorithm/rice/RiceCompressor.java</td>
-<td><a href="./xref/nom/tam/fits/compression/algorithm/rice/RiceCompressor.html#L217">217</a></td></tr>
-<tr class="a">
-<td align="left">nom/tam/fits/compression/algorithm/rice/RiceCompressor.java</td>
-<td><a href="./xref/nom/tam/fits/compression/algorithm/rice/RiceCompressor.html#L219">219</a></td></tr>
-<tr class="b">
-<td colspan="2" align="left">
-<div class="source"><pre class="prettyprint">7, 7, 7, 7, 7, 7, 7, 7, 7, 7, 7, 7, 7, 7, 7, 7, 7, 7, 7, 7, 7, 7, 7, 7, 7, 7, 7, 7, 7, 8, 8, 8, 8, 8, 8, 8, 8,
-            8, 8, 8, 8, 8, 8, 8, 8, 8, 8, 8, 8, 8, 8, 8, 8, 8, 8, 8, 8, 8, 8, 8, 8, 8, 8, 8, 8, 8, 8, 8, 8, 8, 8, 8, 8, 8,
-            8, 8, 8, 8, 8, 8, 8, 8, 8, 8, 8, 8, 8, 8, 8, 8, 8, 8, 8, 8, 8, 8, 8, 8, 8, 8, 8, 8, 8, 8, 8, 8, 8, 8, 8, 8, 8,</pre></div></td></tr></table>
+<div class="source"><pre class="prettyprint">7, 7, 7, 7, 7, 7, 7, 7, 7, 7, 7, 7, 7, 7, 7, 7, 7, 7, 7, 7, 7, 7, 7, 7, 7, 7, 7, 7, 7, 7, 7, 7, 8, 8, 8, 8,
+            8, 8, 8, 8, 8, 8, 8, 8, 8, 8, 8, 8, 8, 8, 8, 8, 8, 8, 8, 8, 8, 8, 8, 8, 8, 8, 8, 8, 8, 8, 8, 8, 8, 8, 8, 8,
+            8, 8, 8, 8, 8, 8, 8, 8, 8, 8, 8, 8, 8, 8, 8, 8, 8, 8, 8, 8, 8, 8, 8, 8, 8, 8, 8, 8, 8, 8, 8, 8, 8, 8, 8, 8,</pre></div></td></tr></table>
 <table border="0" class="table table-striped">
 <tr class="a">
 <th>File</th>
 <th>Line</th></tr>
 <tr class="b">
 <td align="left">nom/tam/util/ColumnTable.java</td>
-<td><a href="./xref/nom/tam/util/ColumnTable.html#L928">928</a></td></tr>
+<td><a href="./xref/nom/tam/util/ColumnTable.html#L936">936</a></td></tr>
 <tr class="a">
 <td align="left">nom/tam/util/ColumnTable.java</td>
-<td><a href="./xref/nom/tam/util/ColumnTable.html#L959">959</a></td></tr>
+<td><a href="./xref/nom/tam/util/ColumnTable.html#L971">971</a></td></tr>
 <tr class="b">
 <td colspan="2" align="left">
 <div class="source"><pre class="prettyprint">public void write(ArrayDataOutput os, int rowStart, int rowEnd, int columnNr) throws IOException {
         int[] columnIndex = new int[MAX_COLUMN_INDEXES];
-        for (int row = 0; row &lt; nrow; row++) {
+        for (int row = 0; row &lt; this.nrow; row += 1) {
             if (row &gt;= rowStart &amp;&amp; row &lt; rowEnd) {
                 Arrays.fill(columnIndex, 0);
                 // Loop over the columns within the row.
-                for (int col = 0; col &lt; arrays.length; col++) {
+                for (int col = 0; col &lt; this.arrays.length; col += 1) {
 
-                    int arrOffset = sizes[col] * row;
-                    int size = sizes[col];
+                    int arrOffset = this.sizes[col] * row;
+                    int size = this.sizes[col];
 
-                    char colType = types[col];
+                    char colType = this.types[col];
                     if (columnNr == col) {</pre></div></td></tr></table>
 <table border="0" class="table table-striped">
 <tr class="a">
@@ -602,82 +506,175 @@
 <th>Line</th></tr>
 <tr class="b">
 <td align="left">nom/tam/fits/compression/algorithm/rice/RiceCompressor.java</td>
-<td><a href="./xref/nom/tam/fits/compression/algorithm/rice/RiceCompressor.html#L217">217</a></td></tr>
-<tr class="a">
-<td align="left">nom/tam/fits/compression/algorithm/rice/RiceCompressor.java</td>
-<td><a href="./xref/nom/tam/fits/compression/algorithm/rice/RiceCompressor.html#L219">219</a></td></tr>
-<tr class="b">
-<td colspan="2" align="left">
-<div class="source"><pre class="prettyprint">7, 7, 7, 7, 7, 7, 7, 7, 7, 7, 7, 7, 7, 7, 7, 7, 7, 7, 7, 7, 7, 7, 7, 7, 7, 7, 7, 7, 7, 8, 8, 8, 8, 8, 8, 8, 8,
-            8, 8, 8, 8, 8, 8, 8, 8, 8, 8, 8, 8, 8, 8, 8, 8, 8, 8, 8, 8, 8, 8, 8, 8, 8, 8, 8, 8, 8, 8, 8, 8, 8, 8, 8, 8, 8,
-            8, 8, 8, 8, 8, 8, 8, 8, 8, 8, 8, 8, 8, 8, 8, 8, 8, 8, 8, 8, 8, 8, 8, 8, 8, 8, 8, 8, 8, 8, 8, 8, 8, 8, 8, 8, 8,</pre></div></td></tr></table>
-<table border="0" class="table table-striped">
-<tr class="a">
-<th>File</th>
-<th>Line</th></tr>
-<tr class="b">
-<td align="left">nom/tam/fits/compression/algorithm/rice/RiceCompressor.java</td>
-<td><a href="./xref/nom/tam/fits/compression/algorithm/rice/RiceCompressor.html#L217">217</a></td></tr>
-<tr class="a">
-<td align="left">nom/tam/fits/compression/algorithm/rice/RiceCompressor.java</td>
-<td><a href="./xref/nom/tam/fits/compression/algorithm/rice/RiceCompressor.html#L219">219</a></td></tr>
-<tr class="b">
-<td colspan="2" align="left">
-<div class="source"><pre class="prettyprint">7, 7, 7, 7, 7, 7, 7, 7, 7, 7, 7, 7, 7, 7, 7, 7, 7, 7, 7, 7, 7, 7, 7, 7, 7, 7, 7, 7, 7, 8, 8, 8, 8, 8, 8, 8, 8,
-            8, 8, 8, 8, 8, 8, 8, 8, 8, 8, 8, 8, 8, 8, 8, 8, 8, 8, 8, 8, 8, 8, 8, 8, 8, 8, 8, 8, 8, 8, 8, 8, 8, 8, 8, 8, 8,
-            8, 8, 8, 8, 8, 8, 8, 8, 8, 8, 8, 8, 8, 8, 8, 8, 8, 8, 8, 8, 8, 8, 8, 8, 8, 8, 8, 8, 8, 8, 8, 8, 8, 8, 8, 8, 8,</pre></div></td></tr></table>
-<table border="0" class="table table-striped">
-<tr class="a">
-<th>File</th>
-<th>Line</th></tr>
-<tr class="b">
-<td align="left">nom/tam/fits/compression/algorithm/rice/RiceCompressor.java</td>
-<td><a href="./xref/nom/tam/fits/compression/algorithm/rice/RiceCompressor.html#L217">217</a></td></tr>
+<td><a href="./xref/nom/tam/fits/compression/algorithm/rice/RiceCompressor.html#L218">218</a></td></tr>
 <tr class="a">
 <td align="left">nom/tam/fits/compression/algorithm/rice/RiceCompressor.java</td>
 <td><a href="./xref/nom/tam/fits/compression/algorithm/rice/RiceCompressor.html#L220">220</a></td></tr>
 <tr class="b">
 <td colspan="2" align="left">
-<div class="source"><pre class="prettyprint">7, 7, 7, 7, 7, 7, 7, 7, 7, 7, 7, 7, 7, 7, 7, 7, 7, 7, 7, 7, 7, 7, 7, 7, 7, 7, 7, 7, 7, 8, 8, 8, 8, 8, 8, 8, 8,
-            8, 8, 8, 8, 8, 8, 8, 8, 8, 8, 8, 8, 8, 8, 8, 8, 8, 8, 8, 8, 8, 8, 8, 8, 8, 8, 8, 8, 8, 8, 8, 8, 8, 8, 8, 8, 8,</pre></div></td></tr></table>
+<div class="source"><pre class="prettyprint">7, 7, 7, 7, 7, 7, 7, 7, 7, 7, 7, 7, 7, 7, 7, 7, 7, 7, 7, 7, 7, 7, 7, 7, 7, 7, 7, 7, 7, 7, 7, 7, 8, 8, 8, 8,
+            8, 8, 8, 8, 8, 8, 8, 8, 8, 8, 8, 8, 8, 8, 8, 8, 8, 8, 8, 8, 8, 8, 8, 8, 8, 8, 8, 8, 8, 8, 8, 8, 8, 8, 8, 8,
+            8, 8, 8, 8, 8, 8, 8, 8, 8, 8, 8, 8, 8, 8, 8, 8, 8, 8, 8, 8, 8, 8, 8, 8, 8, 8, 8, 8, 8, 8, 8, 8, 8, 8, 8, 8,</pre></div></td></tr></table>
 <table border="0" class="table table-striped">
 <tr class="a">
 <th>File</th>
 <th>Line</th></tr>
 <tr class="b">
 <td align="left">nom/tam/fits/compression/algorithm/rice/RiceCompressor.java</td>
-<td><a href="./xref/nom/tam/fits/compression/algorithm/rice/RiceCompressor.html#L217">217</a></td></tr>
+<td><a href="./xref/nom/tam/fits/compression/algorithm/rice/RiceCompressor.html#L218">218</a></td></tr>
 <tr class="a">
 <td align="left">nom/tam/fits/compression/algorithm/rice/RiceCompressor.java</td>
 <td><a href="./xref/nom/tam/fits/compression/algorithm/rice/RiceCompressor.html#L220">220</a></td></tr>
 <tr class="b">
 <td colspan="2" align="left">
-<div class="source"><pre class="prettyprint">7, 7, 7, 7, 7, 7, 7, 7, 7, 7, 7, 7, 7, 7, 7, 7, 7, 7, 7, 7, 7, 7, 7, 7, 7, 7, 7, 7, 7, 8, 8, 8, 8, 8, 8, 8, 8,
-            8, 8, 8, 8, 8, 8, 8, 8, 8, 8, 8, 8, 8, 8, 8, 8, 8, 8, 8, 8, 8, 8, 8, 8, 8, 8, 8, 8, 8, 8, 8, 8, 8, 8, 8, 8, 8,</pre></div></td></tr></table>
+<div class="source"><pre class="prettyprint">7, 7, 7, 7, 7, 7, 7, 7, 7, 7, 7, 7, 7, 7, 7, 7, 7, 7, 7, 7, 7, 7, 7, 7, 7, 7, 7, 7, 7, 7, 7, 7, 8, 8, 8, 8,
+            8, 8, 8, 8, 8, 8, 8, 8, 8, 8, 8, 8, 8, 8, 8, 8, 8, 8, 8, 8, 8, 8, 8, 8, 8, 8, 8, 8, 8, 8, 8, 8, 8, 8, 8, 8,
+            8, 8, 8, 8, 8, 8, 8, 8, 8, 8, 8, 8, 8, 8, 8, 8, 8, 8, 8, 8, 8, 8, 8, 8, 8, 8, 8, 8, 8, 8, 8, 8, 8, 8, 8, 8,</pre></div></td></tr></table>
 <table border="0" class="table table-striped">
 <tr class="a">
 <th>File</th>
 <th>Line</th></tr>
 <tr class="b">
 <td align="left">nom/tam/fits/compression/algorithm/rice/RiceCompressor.java</td>
-<td><a href="./xref/nom/tam/fits/compression/algorithm/rice/RiceCompressor.html#L217">217</a></td></tr>
+<td><a href="./xref/nom/tam/fits/compression/algorithm/rice/RiceCompressor.html#L218">218</a></td></tr>
 <tr class="a">
 <td align="left">nom/tam/fits/compression/algorithm/rice/RiceCompressor.java</td>
-<td><a href="./xref/nom/tam/fits/compression/algorithm/rice/RiceCompressor.html#L220">220</a></td></tr>
+<td><a href="./xref/nom/tam/fits/compression/algorithm/rice/RiceCompressor.html#L221">221</a></td></tr>
 <tr class="b">
 <td colspan="2" align="left">
-<div class="source"><pre class="prettyprint">7, 7, 7, 7, 7, 7, 7, 7, 7, 7, 7, 7, 7, 7, 7, 7, 7, 7, 7, 7, 7, 7, 7, 7, 7, 7, 7, 7, 7, 8, 8, 8, 8, 8, 8, 8, 8,
-            8, 8, 8, 8, 8, 8, 8, 8, 8, 8, 8, 8, 8, 8, 8, 8, 8, 8, 8, 8, 8, 8, 8, 8, 8, 8, 8, 8, 8, 8, 8, 8, 8, 8, 8, 8, 8,</pre></div></td></tr></table>
+<div class="source"><pre class="prettyprint">7, 7, 7, 7, 7, 7, 7, 7, 7, 7, 7, 7, 7, 7, 7, 7, 7, 7, 7, 7, 7, 7, 7, 7, 7, 7, 7, 7, 7, 7, 7, 7, 8, 8, 8, 8,
+            8, 8, 8, 8, 8, 8, 8, 8, 8, 8, 8, 8, 8, 8, 8, 8, 8, 8, 8, 8, 8, 8, 8, 8, 8, 8, 8, 8, 8, 8, 8, 8, 8, 8, 8, 8,
+            8, 8, 8, 8, 8, 8, 8, 8, 8, 8, 8, 8, 8, 8, 8, 8, 8, 8, 8, 8, 8, 8, 8, 8, 8, 8, 8, 8, 8, 8, 8, 8, 8, 8, 8, 8,</pre></div></td></tr></table>
+<table border="0" class="table table-striped">
+<tr class="a">
+<th>File</th>
+<th>Line</th></tr>
+<tr class="b">
+<td align="left">nom/tam/fits/compression/algorithm/rice/RiceCompressor.java</td>
+<td><a href="./xref/nom/tam/fits/compression/algorithm/rice/RiceCompressor.html#L218">218</a></td></tr>
+<tr class="a">
+<td align="left">nom/tam/fits/compression/algorithm/rice/RiceCompressor.java</td>
+<td><a href="./xref/nom/tam/fits/compression/algorithm/rice/RiceCompressor.html#L221">221</a></td></tr>
+<tr class="b">
+<td colspan="2" align="left">
+<div class="source"><pre class="prettyprint">7, 7, 7, 7, 7, 7, 7, 7, 7, 7, 7, 7, 7, 7, 7, 7, 7, 7, 7, 7, 7, 7, 7, 7, 7, 7, 7, 7, 7, 7, 7, 7, 8, 8, 8, 8,
+            8, 8, 8, 8, 8, 8, 8, 8, 8, 8, 8, 8, 8, 8, 8, 8, 8, 8, 8, 8, 8, 8, 8, 8, 8, 8, 8, 8, 8, 8, 8, 8, 8, 8, 8, 8,
+            8, 8, 8, 8, 8, 8, 8, 8, 8, 8, 8, 8, 8, 8, 8, 8, 8, 8, 8, 8, 8, 8, 8, 8, 8, 8, 8, 8, 8, 8, 8, 8, 8, 8, 8, 8,</pre></div></td></tr></table>
+<table border="0" class="table table-striped">
+<tr class="a">
+<th>File</th>
+<th>Line</th></tr>
+<tr class="b">
+<td align="left">nom/tam/fits/compression/algorithm/rice/RiceCompressor.java</td>
+<td><a href="./xref/nom/tam/fits/compression/algorithm/rice/RiceCompressor.html#L218">218</a></td></tr>
+<tr class="a">
+<td align="left">nom/tam/fits/compression/algorithm/rice/RiceCompressor.java</td>
+<td><a href="./xref/nom/tam/fits/compression/algorithm/rice/RiceCompressor.html#L221">221</a></td></tr>
+<tr class="b">
+<td colspan="2" align="left">
+<div class="source"><pre class="prettyprint">7, 7, 7, 7, 7, 7, 7, 7, 7, 7, 7, 7, 7, 7, 7, 7, 7, 7, 7, 7, 7, 7, 7, 7, 7, 7, 7, 7, 7, 7, 7, 7, 8, 8, 8, 8,
+            8, 8, 8, 8, 8, 8, 8, 8, 8, 8, 8, 8, 8, 8, 8, 8, 8, 8, 8, 8, 8, 8, 8, 8, 8, 8, 8, 8, 8, 8, 8, 8, 8, 8, 8, 8,
+            8, 8, 8, 8, 8, 8, 8, 8, 8, 8, 8, 8, 8, 8, 8, 8, 8, 8, 8, 8, 8, 8, 8, 8, 8, 8, 8, 8, 8, 8, 8, 8, 8, 8, 8, 8,</pre></div></td></tr></table>
+<table border="0" class="table table-striped">
+<tr class="a">
+<th>File</th>
+<th>Line</th></tr>
+<tr class="b">
+<td align="left">nom/tam/fits/compression/algorithm/rice/RiceCompressor.java</td>
+<td><a href="./xref/nom/tam/fits/compression/algorithm/rice/RiceCompressor.html#L218">218</a></td></tr>
+<tr class="a">
+<td align="left">nom/tam/fits/compression/algorithm/rice/RiceCompressor.java</td>
+<td><a href="./xref/nom/tam/fits/compression/algorithm/rice/RiceCompressor.html#L221">221</a></td></tr>
+<tr class="b">
+<td colspan="2" align="left">
+<div class="source"><pre class="prettyprint">7, 7, 7, 7, 7, 7, 7, 7, 7, 7, 7, 7, 7, 7, 7, 7, 7, 7, 7, 7, 7, 7, 7, 7, 7, 7, 7, 7, 7, 7, 7, 7, 8, 8, 8, 8,
+            8, 8, 8, 8, 8, 8, 8, 8, 8, 8, 8, 8, 8, 8, 8, 8, 8, 8, 8, 8, 8, 8, 8, 8, 8, 8, 8, 8, 8, 8, 8, 8, 8, 8, 8, 8,
+            8, 8, 8, 8, 8, 8, 8, 8, 8, 8, 8, 8, 8, 8, 8, 8, 8, 8, 8, 8, 8, 8, 8, 8, 8, 8, 8, 8, 8, 8, 8, 8, 8, 8, 8, 8,</pre></div></td></tr></table>
+<table border="0" class="table table-striped">
+<tr class="a">
+<th>File</th>
+<th>Line</th></tr>
+<tr class="b">
+<td align="left">nom/tam/fits/compression/algorithm/rice/RiceCompressor.java</td>
+<td><a href="./xref/nom/tam/fits/compression/algorithm/rice/RiceCompressor.html#L218">218</a></td></tr>
+<tr class="a">
+<td align="left">nom/tam/fits/compression/algorithm/rice/RiceCompressor.java</td>
+<td><a href="./xref/nom/tam/fits/compression/algorithm/rice/RiceCompressor.html#L221">221</a></td></tr>
+<tr class="b">
+<td colspan="2" align="left">
+<div class="source"><pre class="prettyprint">7, 7, 7, 7, 7, 7, 7, 7, 7, 7, 7, 7, 7, 7, 7, 7, 7, 7, 7, 7, 7, 7, 7, 7, 7, 7, 7, 7, 7, 7, 7, 7, 8, 8, 8, 8,
+            8, 8, 8, 8, 8, 8, 8, 8, 8, 8, 8, 8, 8, 8, 8, 8, 8, 8, 8, 8, 8, 8, 8, 8, 8, 8, 8, 8, 8, 8, 8, 8, 8, 8, 8, 8,
+            8, 8, 8, 8, 8, 8, 8, 8, 8, 8, 8, 8, 8, 8, 8, 8, 8, 8, 8, 8, 8, 8, 8, 8, 8, 8, 8, 8, 8, 8, 8, 8, 8, 8, 8, 8,</pre></div></td></tr></table>
+<table border="0" class="table table-striped">
+<tr class="a">
+<th>File</th>
+<th>Line</th></tr>
+<tr class="b">
+<td align="left">nom/tam/fits/compression/algorithm/rice/RiceCompressor.java</td>
+<td><a href="./xref/nom/tam/fits/compression/algorithm/rice/RiceCompressor.html#L218">218</a></td></tr>
+<tr class="a">
+<td align="left">nom/tam/fits/compression/algorithm/rice/RiceCompressor.java</td>
+<td><a href="./xref/nom/tam/fits/compression/algorithm/rice/RiceCompressor.html#L221">221</a></td></tr>
+<tr class="b">
+<td colspan="2" align="left">
+<div class="source"><pre class="prettyprint">7, 7, 7, 7, 7, 7, 7, 7, 7, 7, 7, 7, 7, 7, 7, 7, 7, 7, 7, 7, 7, 7, 7, 7, 7, 7, 7, 7, 7, 7, 7, 7, 8, 8, 8, 8,
+            8, 8, 8, 8, 8, 8, 8, 8, 8, 8, 8, 8, 8, 8, 8, 8, 8, 8, 8, 8, 8, 8, 8, 8, 8, 8, 8, 8, 8, 8, 8, 8, 8, 8, 8, 8,
+            8, 8, 8, 8, 8, 8, 8, 8, 8, 8, 8, 8, 8, 8, 8, 8, 8, 8, 8, 8, 8, 8, 8, 8, 8, 8, 8, 8, 8, 8, 8, 8, 8, 8, 8, 8,</pre></div></td></tr></table>
+<table border="0" class="table table-striped">
+<tr class="a">
+<th>File</th>
+<th>Line</th></tr>
+<tr class="b">
+<td align="left">nom/tam/fits/compression/algorithm/rice/RiceCompressor.java</td>
+<td><a href="./xref/nom/tam/fits/compression/algorithm/rice/RiceCompressor.html#L218">218</a></td></tr>
+<tr class="a">
+<td align="left">nom/tam/fits/compression/algorithm/rice/RiceCompressor.java</td>
+<td><a href="./xref/nom/tam/fits/compression/algorithm/rice/RiceCompressor.html#L221">221</a></td></tr>
+<tr class="b">
+<td colspan="2" align="left">
+<div class="source"><pre class="prettyprint">7, 7, 7, 7, 7, 7, 7, 7, 7, 7, 7, 7, 7, 7, 7, 7, 7, 7, 7, 7, 7, 7, 7, 7, 7, 7, 7, 7, 7, 7, 7, 7, 8, 8, 8, 8,
+            8, 8, 8, 8, 8, 8, 8, 8, 8, 8, 8, 8, 8, 8, 8, 8, 8, 8, 8, 8, 8, 8, 8, 8, 8, 8, 8, 8, 8, 8, 8, 8, 8, 8, 8, 8,
+            8, 8, 8, 8, 8, 8, 8, 8, 8, 8, 8, 8, 8, 8, 8, 8, 8, 8, 8, 8, 8, 8, 8, 8, 8, 8, 8, 8, 8, 8, 8, 8, 8, 8, 8, 8,</pre></div></td></tr></table>
+<table border="0" class="table table-striped">
+<tr class="a">
+<th>File</th>
+<th>Line</th></tr>
+<tr class="b">
+<td align="left">nom/tam/fits/compression/algorithm/rice/RiceCompressor.java</td>
+<td><a href="./xref/nom/tam/fits/compression/algorithm/rice/RiceCompressor.html#L218">218</a></td></tr>
+<tr class="a">
+<td align="left">nom/tam/fits/compression/algorithm/rice/RiceCompressor.java</td>
+<td><a href="./xref/nom/tam/fits/compression/algorithm/rice/RiceCompressor.html#L221">221</a></td></tr>
+<tr class="b">
+<td colspan="2" align="left">
+<div class="source"><pre class="prettyprint">7, 7, 7, 7, 7, 7, 7, 7, 7, 7, 7, 7, 7, 7, 7, 7, 7, 7, 7, 7, 7, 7, 7, 7, 7, 7, 7, 7, 7, 7, 7, 7, 8, 8, 8, 8,
+            8, 8, 8, 8, 8, 8, 8, 8, 8, 8, 8, 8, 8, 8, 8, 8, 8, 8, 8, 8, 8, 8, 8, 8, 8, 8, 8, 8, 8, 8, 8, 8, 8, 8, 8, 8,
+            8, 8, 8, 8, 8, 8, 8, 8, 8, 8, 8, 8, 8, 8, 8, 8, 8, 8, 8, 8, 8, 8, 8, 8, 8, 8, 8, 8, 8, 8, 8, 8, 8, 8, 8, 8,</pre></div></td></tr></table>
+<table border="0" class="table table-striped">
+<tr class="a">
+<th>File</th>
+<th>Line</th></tr>
+<tr class="b">
+<td align="left">nom/tam/fits/compression/algorithm/rice/RiceCompressor.java</td>
+<td><a href="./xref/nom/tam/fits/compression/algorithm/rice/RiceCompressor.html#L218">218</a></td></tr>
+<tr class="a">
+<td align="left">nom/tam/fits/compression/algorithm/rice/RiceCompressor.java</td>
+<td><a href="./xref/nom/tam/fits/compression/algorithm/rice/RiceCompressor.html#L221">221</a></td></tr>
+<tr class="b">
+<td colspan="2" align="left">
+<div class="source"><pre class="prettyprint">7, 7, 7, 7, 7, 7, 7, 7, 7, 7, 7, 7, 7, 7, 7, 7, 7, 7, 7, 7, 7, 7, 7, 7, 7, 7, 7, 7, 7, 7, 7, 7, 8, 8, 8, 8,
+            8, 8, 8, 8, 8, 8, 8, 8, 8, 8, 8, 8, 8, 8, 8, 8, 8, 8, 8, 8, 8, 8, 8, 8, 8, 8, 8, 8, 8, 8, 8, 8, 8, 8, 8, 8,
+            8, 8, 8, 8, 8, 8, 8, 8, 8, 8, 8, 8, 8, 8, 8, 8, 8, 8, 8, 8, 8, 8, 8, 8, 8, 8, 8, 8, 8, 8, 8, 8, 8, 8, 8, 8,</pre></div></td></tr></table>
 <table border="0" class="table table-striped">
 <tr class="a">
 <th>File</th>
 <th>Line</th></tr>
 <tr class="b">
 <td align="left">nom/tam/fits/compression/algorithm/hcompress/HDecompress.java</td>
-<td><a href="./xref/nom/tam/fits/compression/algorithm/hcompress/HDecompress.html#L481">481</a></td></tr>
+<td><a href="./xref/nom/tam/fits/compression/algorithm/hcompress/HDecompress.html#L479">479</a></td></tr>
 <tr class="a">
 <td align="left">nom/tam/fits/compression/algorithm/hcompress/HDecompress.java</td>
-<td><a href="./xref/nom/tam/fits/compression/algorithm/hcompress/HDecompress.html#L518">518</a></td></tr>
+<td><a href="./xref/nom/tam/fits/compression/algorithm/hcompress/HDecompress.html#L516">516</a></td></tr>
 <tr class="b">
 <td colspan="2" align="left">
 <div class="source"><pre class="prettyprint">hp = a.get(s00 + ny2);
@@ -705,25 +702,48 @@
 <th>File</th>
 <th>Line</th></tr>
 <tr class="b">
-<td align="left">nom/tam/fits/compression/algorithm/rice/RiceCompressor.java</td>
-<td><a href="./xref/nom/tam/fits/compression/algorithm/rice/RiceCompressor.html#L217">217</a></td></tr>
+<td align="left">nom/tam/util/ColumnTable.java</td>
+<td><a href="./xref/nom/tam/util/ColumnTable.html#L773">773</a></td></tr>
 <tr class="a">
-<td align="left">nom/tam/fits/compression/algorithm/rice/RiceCompressor.java</td>
-<td><a href="./xref/nom/tam/fits/compression/algorithm/rice/RiceCompressor.html#L220">220</a></td></tr>
+<td align="left">nom/tam/util/ColumnTable.java</td>
+<td><a href="./xref/nom/tam/util/ColumnTable.html#L905">905</a></td></tr>
 <tr class="b">
 <td colspan="2" align="left">
-<div class="source"><pre class="prettyprint">7, 7, 7, 7, 7, 7, 7, 7, 7, 7, 7, 7, 7, 7, 7, 7, 7, 7, 7, 7, 7, 7, 7, 7, 7, 7, 7, 7, 7, 8, 8, 8, 8, 8, 8, 8, 8,
-            8, 8, 8, 8, 8, 8, 8, 8, 8, 8, 8, 8, 8, 8, 8, 8, 8, 8, 8, 8, 8, 8, 8, 8, 8, 8, 8, 8, 8, 8, 8, 8, 8, 8, 8, 8, 8,</pre></div></td></tr></table>
+<div class="source"><pre class="prettyprint">public void read(ArrayDataInput is) throws IOException {
+        int[] columnIndex = new int[MAX_COLUMN_INDEXES];
+        // While we have not finished reading the table..
+        for (int row = 0; row &lt; this.nrow; row += 1) {
+            Arrays.fill(columnIndex, 0);
+            // Loop over the columns within the row.
+            for (int col = 0; col &lt; this.arrays.length; col += 1) {
+                int arrOffset = this.sizes[col] * row;
+                int size = this.sizes[col];
+                char colType = this.types[col];</pre></div></td></tr></table>
+<table border="0" class="table table-striped">
+<tr class="a">
+<th>File</th>
+<th>Line</th></tr>
+<tr class="b">
+<td align="left">nom/tam/fits/compression/algorithm/rice/RiceCompressor.java</td>
+<td><a href="./xref/nom/tam/fits/compression/algorithm/rice/RiceCompressor.html#L218">218</a></td></tr>
+<tr class="a">
+<td align="left">nom/tam/fits/compression/algorithm/rice/RiceCompressor.java</td>
+<td><a href="./xref/nom/tam/fits/compression/algorithm/rice/RiceCompressor.html#L221">221</a></td></tr>
+<tr class="b">
+<td colspan="2" align="left">
+<div class="source"><pre class="prettyprint">7, 7, 7, 7, 7, 7, 7, 7, 7, 7, 7, 7, 7, 7, 7, 7, 7, 7, 7, 7, 7, 7, 7, 7, 7, 7, 7, 7, 7, 7, 7, 7, 8, 8, 8, 8,
+            8, 8, 8, 8, 8, 8, 8, 8, 8, 8, 8, 8, 8, 8, 8, 8, 8, 8, 8, 8, 8, 8, 8, 8, 8, 8, 8, 8, 8, 8, 8, 8, 8, 8, 8, 8,
+            8, 8, 8, 8, 8, 8, 8, 8, 8, 8, 8, 8, 8, 8, 8, 8, 8, 8, 8, 8, 8, 8, 8, 8, 8, 8, 8, 8, 8, 8, 8, 8, 8, 8, 8, 8,</pre></div></td></tr></table>
 <table border="0" class="table table-striped">
 <tr class="a">
 <th>File</th>
 <th>Line</th></tr>
 <tr class="b">
 <td align="left">nom/tam/util/FitsEncoder.java</td>
-<td><a href="./xref/nom/tam/util/FitsEncoder.html#L144">144</a></td></tr>
+<td><a href="./xref/nom/tam/util/FitsEncoder.html#L153">153</a></td></tr>
 <tr class="a">
 <td align="left">nom/tam/util/FitsEncoder.java</td>
-<td><a href="./xref/nom/tam/util/FitsEncoder.html#L174">174</a></td></tr>
+<td><a href="./xref/nom/tam/util/FitsEncoder.html#L188">188</a></td></tr>
 <tr class="b">
 <td colspan="2" align="left">
 <div class="source"><pre class="prettyprint">private void put(boolean[] b, int start, int length) throws IOException {
@@ -740,21 +760,26 @@
     }
 
     /**
-     * Puts a boolean array into the conversion buffer, but with no guarantee of flushing the conversion buffer to the
-     * underlying output. The caller may put multiple data object into the conversion buffer before eventually calling
-     * {@link OutputBuffer#flush()} to ensure that everything is written to the output. Note, the this call may flush
-     * the contents of the conversion buffer to the output if it needs more conversion space than what is avaiable.
-     *
-     * @param  b           the Java array containing the values
-     * @param  start       the offset in the array from where to start converting values.
-     * @param  length      the number of values to convert to FITS representation
-     *
-     * @throws IOException if there was an IO error while trying to flush the conversion buffer to the stream before all
-     *                         elements were converted.
-     *
-     * @see                #byteForBoolean(Boolean)
-     * @see                #put(boolean[], int, int)
-     * @see                #write(Boolean[], int, int)
+     * Puts a boolean array into the conversion buffer, but with no guarantee of
+     * flushing the conversion buffer to the underlying output. The caller may
+     * put multiple data object into the conversion buffer before eventually
+     * calling {@link OutputBuffer#flush()} to ensure that everything is written
+     * to the output. Note, the this call may flush the contents of the
+     * conversion buffer to the output if it needs more conversion space than
+     * what is avaiable.
+     * 
+     * @param b the Java array containing the values
+     * @param start the offset in the array from where to start converting
+     *            values.
+     * @param length the number of values to convert to FITS representation
+     * 
+     * @throws IOException if there was an IO error while trying to flush the
+     *             conversion buffer to the stream before all elements were
+     *             converted.
+     * 
+     * @see #byteForBoolean(Boolean)
+     * @see #put(boolean[], int, int)
+     * @see #write(Boolean[], int, int)
      */
     private void put(Boolean[] b, int start, int length) throws IOException {</pre></div></td></tr></table>
 <table border="0" class="table table-striped">
@@ -763,52 +788,53 @@
 <th>Line</th></tr>
 <tr class="b">
 <td align="left">nom/tam/fits/compression/algorithm/rice/RiceCompressor.java</td>
-<td><a href="./xref/nom/tam/fits/compression/algorithm/rice/RiceCompressor.html#L217">217</a></td></tr>
+<td><a href="./xref/nom/tam/fits/compression/algorithm/rice/RiceCompressor.html#L218">218</a></td></tr>
 <tr class="a">
 <td align="left">nom/tam/fits/compression/algorithm/rice/RiceCompressor.java</td>
-<td><a href="./xref/nom/tam/fits/compression/algorithm/rice/RiceCompressor.html#L220">220</a></td></tr>
+<td><a href="./xref/nom/tam/fits/compression/algorithm/rice/RiceCompressor.html#L221">221</a></td></tr>
 <tr class="b">
 <td colspan="2" align="left">
-<div class="source"><pre class="prettyprint">7, 7, 7, 7, 7, 7, 7, 7, 7, 7, 7, 7, 7, 7, 7, 7, 7, 7, 7, 7, 7, 7, 7, 7, 7, 7, 7, 7, 7, 8, 8, 8, 8, 8, 8, 8, 8,
-            8, 8, 8, 8, 8, 8, 8, 8, 8, 8, 8, 8, 8, 8, 8, 8, 8, 8, 8, 8, 8, 8, 8, 8, 8, 8, 8, 8, 8, 8, 8, 8, 8, 8, 8, 8, 8,</pre></div></td></tr></table>
+<div class="source"><pre class="prettyprint">7, 7, 7, 7, 7, 7, 7, 7, 7, 7, 7, 7, 7, 7, 7, 7, 7, 7, 7, 7, 7, 7, 7, 7, 7, 7, 7, 7, 7, 7, 7, 7, 8, 8, 8, 8,
+            8, 8, 8, 8, 8, 8, 8, 8, 8, 8, 8, 8, 8, 8, 8, 8, 8, 8, 8, 8, 8, 8, 8, 8, 8, 8, 8, 8, 8, 8, 8, 8, 8, 8, 8, 8,
+            8, 8, 8, 8, 8, 8, 8, 8, 8, 8, 8, 8, 8, 8, 8, 8, 8, 8, 8, 8, 8, 8, 8, 8, 8, 8, 8, 8, 8, 8, 8, 8, 8, 8, 8, 8,</pre></div></td></tr></table>
 <table border="0" class="table table-striped">
 <tr class="a">
 <th>File</th>
 <th>Line</th></tr>
 <tr class="b">
 <td align="left">nom/tam/fits/compression/algorithm/rice/RiceCompressor.java</td>
-<td><a href="./xref/nom/tam/fits/compression/algorithm/rice/RiceCompressor.html#L217">217</a></td></tr>
+<td><a href="./xref/nom/tam/fits/compression/algorithm/rice/RiceCompressor.html#L218">218</a></td></tr>
 <tr class="a">
 <td align="left">nom/tam/fits/compression/algorithm/rice/RiceCompressor.java</td>
-<td><a href="./xref/nom/tam/fits/compression/algorithm/rice/RiceCompressor.html#L220">220</a></td></tr>
+<td><a href="./xref/nom/tam/fits/compression/algorithm/rice/RiceCompressor.html#L221">221</a></td></tr>
 <tr class="b">
 <td colspan="2" align="left">
-<div class="source"><pre class="prettyprint">7, 7, 7, 7, 7, 7, 7, 7, 7, 7, 7, 7, 7, 7, 7, 7, 7, 7, 7, 7, 7, 7, 7, 7, 7, 7, 7, 7, 7, 8, 8, 8, 8, 8, 8, 8, 8,
-            8, 8, 8, 8, 8, 8, 8, 8, 8, 8, 8, 8, 8, 8, 8, 8, 8, 8, 8, 8, 8, 8, 8, 8, 8, 8, 8, 8, 8, 8, 8, 8, 8, 8, 8, 8, 8,</pre></div></td></tr></table>
+<div class="source"><pre class="prettyprint">7, 7, 7, 7, 7, 7, 7, 7, 7, 7, 7, 7, 7, 7, 7, 7, 7, 7, 7, 7, 7, 7, 7, 7, 7, 7, 7, 7, 7, 7, 7, 7, 8, 8, 8, 8,
+            8, 8, 8, 8, 8, 8, 8, 8, 8, 8, 8, 8, 8, 8, 8, 8, 8, 8, 8, 8, 8, 8, 8, 8, 8, 8, 8, 8, 8, 8, 8, 8, 8, 8, 8, 8,</pre></div></td></tr></table>
 <table border="0" class="table table-striped">
 <tr class="a">
 <th>File</th>
 <th>Line</th></tr>
 <tr class="b">
 <td align="left">nom/tam/fits/compression/algorithm/rice/RiceCompressor.java</td>
-<td><a href="./xref/nom/tam/fits/compression/algorithm/rice/RiceCompressor.html#L217">217</a></td></tr>
+<td><a href="./xref/nom/tam/fits/compression/algorithm/rice/RiceCompressor.html#L218">218</a></td></tr>
 <tr class="a">
 <td align="left">nom/tam/fits/compression/algorithm/rice/RiceCompressor.java</td>
-<td><a href="./xref/nom/tam/fits/compression/algorithm/rice/RiceCompressor.html#L220">220</a></td></tr>
+<td><a href="./xref/nom/tam/fits/compression/algorithm/rice/RiceCompressor.html#L221">221</a></td></tr>
 <tr class="b">
 <td colspan="2" align="left">
-<div class="source"><pre class="prettyprint">7, 7, 7, 7, 7, 7, 7, 7, 7, 7, 7, 7, 7, 7, 7, 7, 7, 7, 7, 7, 7, 7, 7, 7, 7, 7, 7, 7, 7, 8, 8, 8, 8, 8, 8, 8, 8,
-            8, 8, 8, 8, 8, 8, 8, 8, 8, 8, 8, 8, 8, 8, 8, 8, 8, 8, 8, 8, 8, 8, 8, 8, 8, 8, 8, 8, 8, 8, 8, 8, 8, 8, 8, 8, 8,</pre></div></td></tr></table>
+<div class="source"><pre class="prettyprint">7, 7, 7, 7, 7, 7, 7, 7, 7, 7, 7, 7, 7, 7, 7, 7, 7, 7, 7, 7, 7, 7, 7, 7, 7, 7, 7, 7, 7, 7, 7, 7, 8, 8, 8, 8,
+            8, 8, 8, 8, 8, 8, 8, 8, 8, 8, 8, 8, 8, 8, 8, 8, 8, 8, 8, 8, 8, 8, 8, 8, 8, 8, 8, 8, 8, 8, 8, 8, 8, 8, 8, 8,</pre></div></td></tr></table>
 <table border="0" class="table table-striped">
 <tr class="a">
 <th>File</th>
 <th>Line</th></tr>
 <tr class="b">
 <td align="left">nom/tam/util/FitsDecoder.java</td>
-<td><a href="./xref/nom/tam/util/FitsDecoder.html#L300">300</a></td></tr>
+<td><a href="./xref/nom/tam/util/FitsDecoder.html#L327">327</a></td></tr>
 <tr class="a">
 <td align="left">nom/tam/util/FitsDecoder.java</td>
-<td><a href="./xref/nom/tam/util/FitsDecoder.html#L333">333</a></td></tr>
+<td><a href="./xref/nom/tam/util/FitsDecoder.html#L363">363</a></td></tr>
 <tr class="b">
 <td colspan="2" align="left">
 <div class="source"><pre class="prettyprint">protected synchronized int read(boolean[] b, int start, int length) throws EOFException, IOException {
@@ -831,102 +857,126 @@
 <th>Line</th></tr>
 <tr class="b">
 <td align="left">nom/tam/fits/compression/algorithm/rice/RiceCompressor.java</td>
-<td><a href="./xref/nom/tam/fits/compression/algorithm/rice/RiceCompressor.html#L217">217</a></td></tr>
+<td><a href="./xref/nom/tam/fits/compression/algorithm/rice/RiceCompressor.html#L218">218</a></td></tr>
 <tr class="a">
 <td align="left">nom/tam/fits/compression/algorithm/rice/RiceCompressor.java</td>
-<td><a href="./xref/nom/tam/fits/compression/algorithm/rice/RiceCompressor.html#L220">220</a></td></tr>
+<td><a href="./xref/nom/tam/fits/compression/algorithm/rice/RiceCompressor.html#L221">221</a></td></tr>
 <tr class="b">
 <td colspan="2" align="left">
-<div class="source"><pre class="prettyprint">7, 7, 7, 7, 7, 7, 7, 7, 7, 7, 7, 7, 7, 7, 7, 7, 7, 7, 7, 7, 7, 7, 7, 7, 7, 7, 7, 7, 7, 8, 8, 8, 8, 8, 8, 8, 8,
-            8, 8, 8, 8, 8, 8, 8, 8, 8, 8, 8, 8, 8, 8, 8, 8, 8, 8, 8, 8, 8, 8, 8, 8, 8, 8, 8, 8, 8, 8, 8, 8, 8, 8, 8, 8, 8,</pre></div></td></tr></table>
+<div class="source"><pre class="prettyprint">7, 7, 7, 7, 7, 7, 7, 7, 7, 7, 7, 7, 7, 7, 7, 7, 7, 7, 7, 7, 7, 7, 7, 7, 7, 7, 7, 7, 7, 7, 7, 7, 8, 8, 8, 8,
+            8, 8, 8, 8, 8, 8, 8, 8, 8, 8, 8, 8, 8, 8, 8, 8, 8, 8, 8, 8, 8, 8, 8, 8, 8, 8, 8, 8, 8, 8, 8, 8, 8, 8, 8, 8,</pre></div></td></tr></table>
 <table border="0" class="table table-striped">
 <tr class="a">
 <th>File</th>
 <th>Line</th></tr>
 <tr class="b">
 <td align="left">nom/tam/fits/compression/algorithm/rice/RiceCompressor.java</td>
-<td><a href="./xref/nom/tam/fits/compression/algorithm/rice/RiceCompressor.html#L217">217</a></td></tr>
+<td><a href="./xref/nom/tam/fits/compression/algorithm/rice/RiceCompressor.html#L218">218</a></td></tr>
 <tr class="a">
 <td align="left">nom/tam/fits/compression/algorithm/rice/RiceCompressor.java</td>
-<td><a href="./xref/nom/tam/fits/compression/algorithm/rice/RiceCompressor.html#L220">220</a></td></tr>
+<td><a href="./xref/nom/tam/fits/compression/algorithm/rice/RiceCompressor.html#L221">221</a></td></tr>
 <tr class="b">
 <td colspan="2" align="left">
-<div class="source"><pre class="prettyprint">7, 7, 7, 7, 7, 7, 7, 7, 7, 7, 7, 7, 7, 7, 7, 7, 7, 7, 7, 7, 7, 7, 7, 7, 7, 7, 7, 7, 7, 8, 8, 8, 8, 8, 8, 8, 8,
-            8, 8, 8, 8, 8, 8, 8, 8, 8, 8, 8, 8, 8, 8, 8, 8, 8, 8, 8, 8, 8, 8, 8, 8, 8, 8, 8, 8, 8, 8, 8, 8, 8, 8, 8, 8, 8,</pre></div></td></tr></table>
-<table border="0" class="table table-striped">
-<tr class="a">
-<th>File</th>
-<th>Line</th></tr>
-<tr class="b">
-<td align="left">nom/tam/util/ColumnTable.java</td>
-<td><a href="./xref/nom/tam/util/ColumnTable.html#L785">785</a></td></tr>
-<tr class="a">
-<td align="left">nom/tam/util/ColumnTable.java</td>
-<td><a href="./xref/nom/tam/util/ColumnTable.html#L901">901</a></td></tr>
-<tr class="b">
-<td colspan="2" align="left">
-<div class="source"><pre class="prettyprint">public void read(ArrayDataInput is) throws IOException {
-        int[] columnIndex = new int[MAX_COLUMN_INDEXES];
-        // While we have not finished reading the table..
-        for (int row = 0; row &lt; nrow; row++) {
-            Arrays.fill(columnIndex, 0);
-            // Loop over the columns within the row.
-            for (int col = 0; col &lt; arrays.length; col++) {
-                int arrOffset = sizes[col] * row;
-                int size = sizes[col];
-                char colType = types[col];</pre></div></td></tr></table>
+<div class="source"><pre class="prettyprint">7, 7, 7, 7, 7, 7, 7, 7, 7, 7, 7, 7, 7, 7, 7, 7, 7, 7, 7, 7, 7, 7, 7, 7, 7, 7, 7, 7, 7, 7, 7, 7, 8, 8, 8, 8,
+            8, 8, 8, 8, 8, 8, 8, 8, 8, 8, 8, 8, 8, 8, 8, 8, 8, 8, 8, 8, 8, 8, 8, 8, 8, 8, 8, 8, 8, 8, 8, 8, 8, 8, 8, 8,</pre></div></td></tr></table>
 <table border="0" class="table table-striped">
 <tr class="a">
 <th>File</th>
 <th>Line</th></tr>
 <tr class="b">
 <td align="left">nom/tam/fits/compression/algorithm/rice/RiceCompressor.java</td>
-<td><a href="./xref/nom/tam/fits/compression/algorithm/rice/RiceCompressor.html#L217">217</a></td></tr>
+<td><a href="./xref/nom/tam/fits/compression/algorithm/rice/RiceCompressor.html#L218">218</a></td></tr>
 <tr class="a">
 <td align="left">nom/tam/fits/compression/algorithm/rice/RiceCompressor.java</td>
-<td><a href="./xref/nom/tam/fits/compression/algorithm/rice/RiceCompressor.html#L220">220</a></td></tr>
+<td><a href="./xref/nom/tam/fits/compression/algorithm/rice/RiceCompressor.html#L221">221</a></td></tr>
 <tr class="b">
 <td colspan="2" align="left">
-<div class="source"><pre class="prettyprint">7, 7, 7, 7, 7, 7, 7, 7, 7, 7, 7, 7, 7, 7, 7, 7, 7, 7, 7, 7, 7, 7, 7, 7, 7, 7, 7, 7, 7, 8, 8, 8, 8, 8, 8, 8, 8,
-            8, 8, 8, 8, 8, 8, 8, 8, 8, 8, 8, 8, 8, 8, 8, 8, 8, 8, 8, 8, 8, 8, 8, 8, 8, 8, 8, 8, 8, 8, 8, 8, 8, 8, 8, 8, 8,</pre></div></td></tr></table>
+<div class="source"><pre class="prettyprint">7, 7, 7, 7, 7, 7, 7, 7, 7, 7, 7, 7, 7, 7, 7, 7, 7, 7, 7, 7, 7, 7, 7, 7, 7, 7, 7, 7, 7, 7, 7, 7, 8, 8, 8, 8,
+            8, 8, 8, 8, 8, 8, 8, 8, 8, 8, 8, 8, 8, 8, 8, 8, 8, 8, 8, 8, 8, 8, 8, 8, 8, 8, 8, 8, 8, 8, 8, 8, 8, 8, 8, 8,</pre></div></td></tr></table>
+<table border="0" class="table table-striped">
+<tr class="a">
+<th>File</th>
+<th>Line</th></tr>
+<tr class="b">
+<td align="left">nom/tam/fits/compression/algorithm/plio/PLIOCompress.java</td>
+<td><a href="./xref/nom/tam/fits/compression/algorithm/plio/PLIOCompress.html#L94">94</a></td></tr>
+<tr class="a">
+<td align="left">nom/tam/fits/compression/algorithm/plio/PLIOCompress.java</td>
+<td><a href="./xref/nom/tam/fits/compression/algorithm/plio/PLIOCompress.html#L125">125</a></td></tr>
+<tr class="b">
+<td colspan="2" align="left">
+<div class="source"><pre class="prettyprint">public void decompress(ByteBuffer compressed, ShortBuffer buffer) {
+            this.pixelData = buffer;
+            decompress(compressed.asShortBuffer(), this.pixelData.limit());
+        }
+
+        @Override
+        protected int nextPixel() {
+            return this.pixelData.get();
+        }
+
+        @Override
+        protected void put(int index, int pixel) {
+            this.pixelData.put(index, (short) pixel);
+        }
+    }</pre></div></td></tr></table>
 <table border="0" class="table table-striped">
 <tr class="a">
 <th>File</th>
 <th>Line</th></tr>
 <tr class="b">
 <td align="left">nom/tam/fits/compression/algorithm/rice/RiceCompressor.java</td>
-<td><a href="./xref/nom/tam/fits/compression/algorithm/rice/RiceCompressor.html#L217">217</a></td></tr>
+<td><a href="./xref/nom/tam/fits/compression/algorithm/rice/RiceCompressor.html#L218">218</a></td></tr>
 <tr class="a">
 <td align="left">nom/tam/fits/compression/algorithm/rice/RiceCompressor.java</td>
-<td><a href="./xref/nom/tam/fits/compression/algorithm/rice/RiceCompressor.html#L220">220</a></td></tr>
+<td><a href="./xref/nom/tam/fits/compression/algorithm/rice/RiceCompressor.html#L221">221</a></td></tr>
 <tr class="b">
 <td colspan="2" align="left">
-<div class="source"><pre class="prettyprint">7, 7, 7, 7, 7, 7, 7, 7, 7, 7, 7, 7, 7, 7, 7, 7, 7, 7, 7, 7, 7, 7, 7, 7, 7, 7, 7, 7, 7, 8, 8, 8, 8, 8, 8, 8, 8,
-            8, 8, 8, 8, 8, 8, 8, 8, 8, 8, 8, 8, 8, 8, 8, 8, 8, 8, 8, 8, 8, 8, 8, 8, 8, 8, 8, 8, 8, 8, 8, 8, 8, 8, 8, 8, 8,</pre></div></td></tr></table>
+<div class="source"><pre class="prettyprint">7, 7, 7, 7, 7, 7, 7, 7, 7, 7, 7, 7, 7, 7, 7, 7, 7, 7, 7, 7, 7, 7, 7, 7, 7, 7, 7, 7, 7, 7, 7, 7, 8, 8, 8, 8,
+            8, 8, 8, 8, 8, 8, 8, 8, 8, 8, 8, 8, 8, 8, 8, 8, 8, 8, 8, 8, 8, 8, 8, 8, 8, 8, 8, 8, 8, 8, 8, 8, 8, 8, 8, 8,</pre></div></td></tr></table>
 <table border="0" class="table table-striped">
 <tr class="a">
 <th>File</th>
 <th>Line</th></tr>
 <tr class="b">
 <td align="left">nom/tam/fits/compression/algorithm/rice/RiceCompressor.java</td>
-<td><a href="./xref/nom/tam/fits/compression/algorithm/rice/RiceCompressor.html#L217">217</a></td></tr>
+<td><a href="./xref/nom/tam/fits/compression/algorithm/rice/RiceCompressor.html#L218">218</a></td></tr>
 <tr class="a">
 <td align="left">nom/tam/fits/compression/algorithm/rice/RiceCompressor.java</td>
-<td><a href="./xref/nom/tam/fits/compression/algorithm/rice/RiceCompressor.html#L220">220</a></td></tr>
+<td><a href="./xref/nom/tam/fits/compression/algorithm/rice/RiceCompressor.html#L221">221</a></td></tr>
 <tr class="b">
 <td colspan="2" align="left">
-<div class="source"><pre class="prettyprint">7, 7, 7, 7, 7, 7, 7, 7, 7, 7, 7, 7, 7, 7, 7, 7, 7, 7, 7, 7, 7, 7, 7, 7, 7, 7, 7, 7, 7, 8, 8, 8, 8, 8, 8, 8, 8,
-            8, 8, 8, 8, 8, 8, 8, 8, 8, 8, 8, 8, 8, 8, 8, 8, 8, 8, 8, 8, 8, 8, 8, 8, 8, 8, 8, 8, 8, 8, 8, 8, 8, 8, 8, 8, 8,</pre></div></td></tr></table>
+<div class="source"><pre class="prettyprint">7, 7, 7, 7, 7, 7, 7, 7, 7, 7, 7, 7, 7, 7, 7, 7, 7, 7, 7, 7, 7, 7, 7, 7, 7, 7, 7, 7, 7, 7, 7, 7, 8, 8, 8, 8,
+            8, 8, 8, 8, 8, 8, 8, 8, 8, 8, 8, 8, 8, 8, 8, 8, 8, 8, 8, 8, 8, 8, 8, 8, 8, 8, 8, 8, 8, 8, 8, 8, 8, 8, 8, 8,</pre></div></td></tr></table>
+<table border="0" class="table table-striped">
+<tr class="a">
+<th>File</th>
+<th>Line</th></tr>
+<tr class="b">
+<td align="left">nom/tam/fits/compression/algorithm/gzip2/GZip2Compressor.java</td>
+<td><a href="./xref/nom/tam/fits/compression/algorithm/gzip2/GZip2Compressor.html#L193">193</a></td></tr>
+<tr class="a">
+<td align="left">nom/tam/fits/compression/algorithm/gzip2/GZip2Compressor.java</td>
+<td><a href="./xref/nom/tam/fits/compression/algorithm/gzip2/GZip2Compressor.html#L206">206</a></td></tr>
+<tr class="b">
+<td colspan="2" align="left">
+<div class="source"><pre class="prettyprint">public byte[] shuffle(byte[] byteArray) {
+        byte[] result = new byte[byteArray.length];
+        int resultIndex = 0;
+        int[] offset = calculateOffsets(byteArray);
+        for (int index = 0; index &lt; byteArray.length; index += this.primitiveSize) {
+            for (int primitiveIndex = 0; primitiveIndex &lt; this.primitiveSize; primitiveIndex++) {
+                result[resultIndex + offset[primitiveIndex]] = byteArray[index + primitiveIndex];</pre></div></td></tr></table>
 <table border="0" class="table table-striped">
 <tr class="a">
 <th>File</th>
 <th>Line</th></tr>
 <tr class="b">
 <td align="left">nom/tam/image/compression/hdu/BackupRestoreUnCompressedHeaderCard.java</td>
-<td><a href="./xref/nom/tam/image/compression/hdu/BackupRestoreUnCompressedHeaderCard.html#L115">115</a></td></tr>
+<td><a href="./xref/nom/tam/image/compression/hdu/BackupRestoreUnCompressedHeaderCard.html#L116">116</a></td></tr>
 <tr class="a">
 <td align="left">nom/tam/image/compression/hdu/BackupRestoreUnCompressedHeaderCard.java</td>
-<td><a href="./xref/nom/tam/image/compression/hdu/BackupRestoreUnCompressedHeaderCard.html#L146">146</a></td></tr>
+<td><a href="./xref/nom/tam/image/compression/hdu/BackupRestoreUnCompressedHeaderCard.html#L159">159</a></td></tr>
 <tr class="b">
 <td colspan="2" align="left">
 <div class="source"><pre class="prettyprint">headerIterator.add(new HeaderCard(newKey, card.getValue(String.class, &quot;&quot;), card.getComment()));
@@ -942,36 +992,36 @@
 <th>Line</th></tr>
 <tr class="b">
 <td align="left">nom/tam/fits/compression/algorithm/rice/RiceCompressor.java</td>
-<td><a href="./xref/nom/tam/fits/compression/algorithm/rice/RiceCompressor.html#L217">217</a></td></tr>
+<td><a href="./xref/nom/tam/fits/compression/algorithm/rice/RiceCompressor.html#L218">218</a></td></tr>
 <tr class="a">
 <td align="left">nom/tam/fits/compression/algorithm/rice/RiceCompressor.java</td>
-<td><a href="./xref/nom/tam/fits/compression/algorithm/rice/RiceCompressor.html#L220">220</a></td></tr>
+<td><a href="./xref/nom/tam/fits/compression/algorithm/rice/RiceCompressor.html#L221">221</a></td></tr>
 <tr class="b">
 <td colspan="2" align="left">
-<div class="source"><pre class="prettyprint">7, 7, 7, 7, 7, 7, 7, 7, 7, 7, 7, 7, 7, 7, 7, 7, 7, 7, 7, 7, 7, 7, 7, 7, 7, 7, 7, 7, 7, 8, 8, 8, 8, 8, 8, 8, 8,
-            8, 8, 8, 8, 8, 8, 8, 8, 8, 8, 8, 8, 8, 8, 8, 8, 8, 8, 8, 8, 8, 8, 8, 8, 8, 8, 8, 8, 8, 8, 8, 8, 8, 8, 8, 8, 8,</pre></div></td></tr></table>
+<div class="source"><pre class="prettyprint">7, 7, 7, 7, 7, 7, 7, 7, 7, 7, 7, 7, 7, 7, 7, 7, 7, 7, 7, 7, 7, 7, 7, 7, 7, 7, 7, 7, 7, 7, 7, 7, 8, 8, 8, 8,
+            8, 8, 8, 8, 8, 8, 8, 8, 8, 8, 8, 8, 8, 8, 8, 8, 8, 8, 8, 8, 8, 8, 8, 8, 8, 8, 8, 8, 8, 8, 8, 8, 8, 8, 8, 8,</pre></div></td></tr></table>
 <table border="0" class="table table-striped">
 <tr class="a">
 <th>File</th>
 <th>Line</th></tr>
 <tr class="b">
 <td align="left">nom/tam/util/type/ByteType.java</td>
-<td><a href="./xref/nom/tam/util/type/ByteType.html#L50">50</a></td></tr>
+<td><a href="./xref/nom/tam/util/type/ByteType.html#L46">46</a></td></tr>
 <tr class="a">
 <td align="left">nom/tam/util/type/DoubleType.java</td>
-<td><a href="./xref/nom/tam/util/type/DoubleType.html#L54">54</a></td></tr>
+<td><a href="./xref/nom/tam/util/type/DoubleType.html#L49">49</a></td></tr>
 <tr class="b">
 <td align="left">nom/tam/util/type/FloatType.java</td>
-<td><a href="./xref/nom/tam/util/type/FloatType.html#L53">53</a></td></tr>
+<td><a href="./xref/nom/tam/util/type/FloatType.html#L49">49</a></td></tr>
 <tr class="a">
 <td align="left">nom/tam/util/type/IntType.java</td>
-<td><a href="./xref/nom/tam/util/type/IntType.html#L53">53</a></td></tr>
+<td><a href="./xref/nom/tam/util/type/IntType.html#L49">49</a></td></tr>
 <tr class="b">
 <td align="left">nom/tam/util/type/LongType.java</td>
-<td><a href="./xref/nom/tam/util/type/LongType.html#L53">53</a></td></tr>
+<td><a href="./xref/nom/tam/util/type/LongType.html#L49">49</a></td></tr>
 <tr class="a">
 <td align="left">nom/tam/util/type/ShortType.java</td>
-<td><a href="./xref/nom/tam/util/type/ShortType.html#L51">51</a></td></tr>
+<td><a href="./xref/nom/tam/util/type/ShortType.html#L47">47</a></td></tr>
 <tr class="b">
 <td colspan="2" align="left">
 <div class="source"><pre class="prettyprint">byte[] temp = new byte[Math.min(COPY_BLOCK_SIZE, dataToAppend.remaining())];
@@ -989,74 +1039,43 @@
 <th>File</th>
 <th>Line</th></tr>
 <tr class="b">
-<td align="left">nom/tam/fits/compression/algorithm/rice/RiceCompressor.java</td>
-<td><a href="./xref/nom/tam/fits/compression/algorithm/rice/RiceCompressor.html#L217">217</a></td></tr>
-<tr class="a">
-<td align="left">nom/tam/fits/compression/algorithm/rice/RiceCompressor.java</td>
-<td><a href="./xref/nom/tam/fits/compression/algorithm/rice/RiceCompressor.html#L220">220</a></td></tr>
-<tr class="b">
-<td colspan="2" align="left">
-<div class="source"><pre class="prettyprint">7, 7, 7, 7, 7, 7, 7, 7, 7, 7, 7, 7, 7, 7, 7, 7, 7, 7, 7, 7, 7, 7, 7, 7, 7, 7, 7, 7, 7, 8, 8, 8, 8, 8, 8, 8, 8,
-            8, 8, 8, 8, 8, 8, 8, 8, 8, 8, 8, 8, 8, 8, 8, 8, 8, 8, 8, 8, 8, 8, 8, 8, 8, 8, 8, 8, 8, 8, 8, 8, 8, 8, 8, 8, 8,</pre></div></td></tr></table>
-<table border="0" class="table table-striped">
-<tr class="a">
-<th>File</th>
-<th>Line</th></tr>
-<tr class="b">
-<td align="left">nom/tam/fits/compression/algorithm/gzip2/GZip2Compressor.java</td>
-<td><a href="./xref/nom/tam/fits/compression/algorithm/gzip2/GZip2Compressor.html#L200">200</a></td></tr>
-<tr class="a">
-<td align="left">nom/tam/fits/compression/algorithm/gzip2/GZip2Compressor.java</td>
-<td><a href="./xref/nom/tam/fits/compression/algorithm/gzip2/GZip2Compressor.html#L213">213</a></td></tr>
-<tr class="b">
-<td colspan="2" align="left">
-<div class="source"><pre class="prettyprint">public byte[] shuffle(byte[] byteArray) {
-        byte[] result = new byte[byteArray.length];
-        int resultIndex = 0;
-        int[] offset = calculateOffsets(byteArray);
-        for (int index = 0; index &lt; byteArray.length; index += primitiveSize) {
-            for (int primitiveIndex = 0; primitiveIndex &lt; primitiveSize; primitiveIndex++) {
-                result[resultIndex + offset[primitiveIndex]] = byteArray[index + primitiveIndex];</pre></div></td></tr></table>
-<table border="0" class="table table-striped">
-<tr class="a">
-<th>File</th>
-<th>Line</th></tr>
-<tr class="b">
-<td align="left">nom/tam/fits/compression/algorithm/rice/RiceCompressor.java</td>
-<td><a href="./xref/nom/tam/fits/compression/algorithm/rice/RiceCompressor.html#L216">216</a></td></tr>
-<tr class="a">
-<td align="left">nom/tam/fits/compression/algorithm/rice/RiceCompressor.java</td>
-<td><a href="./xref/nom/tam/fits/compression/algorithm/rice/RiceCompressor.html#L216">216</a></td></tr>
-<tr class="b">
-<td colspan="2" align="left">
-<div class="source"><pre class="prettyprint">6, 6, 7, 7, 7, 7, 7, 7, 7, 7, 7, 7, 7, 7, 7, 7, 7, 7, 7, 7, 7, 7, 7, 7, 7, 7, 7, 7, 7, 7, 7, 7, 7, 7, 7, 7, 7,</pre></div></td></tr></table>
-<table border="0" class="table table-striped">
-<tr class="a">
-<th>File</th>
-<th>Line</th></tr>
-<tr class="b">
 <td align="left">nom/tam/fits/compression/algorithm/plio/PLIOCompress.java</td>
-<td><a href="./xref/nom/tam/fits/compression/algorithm/plio/PLIOCompress.html#L93">93</a></td></tr>
+<td><a href="./xref/nom/tam/fits/compression/algorithm/plio/PLIOCompress.html#L66">66</a></td></tr>
 <tr class="a">
 <td align="left">nom/tam/fits/compression/algorithm/plio/PLIOCompress.java</td>
-<td><a href="./xref/nom/tam/fits/compression/algorithm/plio/PLIOCompress.html#L124">124</a></td></tr>
+<td><a href="./xref/nom/tam/fits/compression/algorithm/plio/PLIOCompress.html#L94">94</a></td></tr>
 <tr class="b">
+<td align="left">nom/tam/fits/compression/algorithm/plio/PLIOCompress.java</td>
+<td><a href="./xref/nom/tam/fits/compression/algorithm/plio/PLIOCompress.html#L125">125</a></td></tr>
+<tr class="a">
 <td colspan="2" align="left">
-<div class="source"><pre class="prettyprint">public void decompress(ByteBuffer compressed, ShortBuffer buffer) {
-            pixelData = buffer;
-            decompress(compressed.asShortBuffer(), pixelData.limit());
+<div class="source"><pre class="prettyprint">public void decompress(ByteBuffer compressed, ByteBuffer buffer) {
+            this.pixelData = buffer;
+            decompress(compressed.asShortBuffer(), this.pixelData.limit());
         }
 
         @Override
         protected int nextPixel() {
-            return pixelData.get();
+            return this.pixelData.get();
         }
 
         @Override
         protected void put(int index, int pixel) {
-            pixelData.put(index, (short) pixel);
-        }
-    }</pre></div></td></tr></table>
+            this.pixelData.put(index, (byte) pixel);</pre></div></td></tr></table>
+<table border="0" class="table table-striped">
+<tr class="a">
+<th>File</th>
+<th>Line</th></tr>
+<tr class="b">
+<td align="left">nom/tam/fits/compression/algorithm/rice/RiceCompressor.java</td>
+<td><a href="./xref/nom/tam/fits/compression/algorithm/rice/RiceCompressor.html#L218">218</a></td></tr>
+<tr class="a">
+<td align="left">nom/tam/fits/compression/algorithm/rice/RiceCompressor.java</td>
+<td><a href="./xref/nom/tam/fits/compression/algorithm/rice/RiceCompressor.html#L221">221</a></td></tr>
+<tr class="b">
+<td colspan="2" align="left">
+<div class="source"><pre class="prettyprint">7, 7, 7, 7, 7, 7, 7, 7, 7, 7, 7, 7, 7, 7, 7, 7, 7, 7, 7, 7, 7, 7, 7, 7, 7, 7, 7, 7, 7, 7, 7, 7, 8, 8, 8, 8,
+            8, 8, 8, 8, 8, 8, 8, 8, 8, 8, 8, 8, 8, 8, 8, 8, 8, 8, 8, 8, 8, 8, 8, 8, 8, 8, 8, 8, 8, 8, 8, 8, 8, 8, 8, 8,</pre></div></td></tr></table>
 <table border="0" class="table table-striped">
 <tr class="a">
 <th>File</th>
@@ -1066,34 +1085,66 @@
 <td><a href="./xref/nom/tam/fits/compression/algorithm/rice/RiceCompressor.html#L217">217</a></td></tr>
 <tr class="a">
 <td align="left">nom/tam/fits/compression/algorithm/rice/RiceCompressor.java</td>
-<td><a href="./xref/nom/tam/fits/compression/algorithm/rice/RiceCompressor.html#L220">220</a></td></tr>
+<td><a href="./xref/nom/tam/fits/compression/algorithm/rice/RiceCompressor.html#L218">218</a></td></tr>
 <tr class="b">
 <td colspan="2" align="left">
-<div class="source"><pre class="prettyprint">7, 7, 7, 7, 7, 7, 7, 7, 7, 7, 7, 7, 7, 7, 7, 7, 7, 7, 7, 7, 7, 7, 7, 7, 7, 7, 7, 7, 7, 8, 8, 8, 8, 8, 8, 8, 8,
-            8, 8, 8, 8, 8, 8, 8, 8, 8, 8, 8, 8, 8, 8, 8, 8, 8, 8, 8, 8, 8, 8, 8, 8, 8, 8, 8, 8, 8, 8, 8, 8, 8, 8, 8, 8, 8,</pre></div></td></tr></table>
+<div class="source"><pre class="prettyprint">6, 6, 6, 6, 7, 7, 7, 7, 7, 7, 7, 7, 7, 7, 7, 7, 7, 7, 7, 7, 7, 7, 7, 7, 7, 7, 7, 7, 7, 7, 7, 7, 7, 7, 7, 7,</pre></div></td></tr></table>
 <table border="0" class="table table-striped">
 <tr class="a">
 <th>File</th>
 <th>Line</th></tr>
 <tr class="b">
 <td align="left">nom/tam/fits/compression/algorithm/rice/RiceCompressor.java</td>
-<td><a href="./xref/nom/tam/fits/compression/algorithm/rice/RiceCompressor.html#L216">216</a></td></tr>
+<td><a href="./xref/nom/tam/fits/compression/algorithm/rice/RiceCompressor.html#L218">218</a></td></tr>
 <tr class="a">
 <td align="left">nom/tam/fits/compression/algorithm/rice/RiceCompressor.java</td>
-<td><a href="./xref/nom/tam/fits/compression/algorithm/rice/RiceCompressor.html#L216">216</a></td></tr>
+<td><a href="./xref/nom/tam/fits/compression/algorithm/rice/RiceCompressor.html#L221">221</a></td></tr>
 <tr class="b">
 <td colspan="2" align="left">
-<div class="source"><pre class="prettyprint">6, 6, 7, 7, 7, 7, 7, 7, 7, 7, 7, 7, 7, 7, 7, 7, 7, 7, 7, 7, 7, 7, 7, 7, 7, 7, 7, 7, 7, 7, 7, 7, 7, 7, 7, 7, 7,</pre></div></td></tr></table>
+<div class="source"><pre class="prettyprint">7, 7, 7, 7, 7, 7, 7, 7, 7, 7, 7, 7, 7, 7, 7, 7, 7, 7, 7, 7, 7, 7, 7, 7, 7, 7, 7, 7, 7, 7, 7, 7, 8, 8, 8, 8,
+            8, 8, 8, 8, 8, 8, 8, 8, 8, 8, 8, 8, 8, 8, 8, 8, 8, 8, 8, 8, 8, 8, 8, 8, 8, 8, 8, 8, 8, 8, 8, 8, 8, 8, 8, 8,</pre></div></td></tr></table>
+<table border="0" class="table table-striped">
+<tr class="a">
+<th>File</th>
+<th>Line</th></tr>
+<tr class="b">
+<td align="left">nom/tam/util/ByteParser.java</td>
+<td><a href="./xref/nom/tam/util/ByteParser.html#L372">372</a></td></tr>
+<tr class="a">
+<td align="left">nom/tam/util/ByteParser.java</td>
+<td><a href="./xref/nom/tam/util/ByteParser.html#L414">414</a></td></tr>
+<tr class="b">
+<td colspan="2" align="left">
+<div class="source"><pre class="prettyprint">int sign = checkSign();
+        if (this.foundSign) {
+            length--;
+        }
+
+        while (length &gt; 0 &amp;&amp; this.input[this.offset] &gt;= '0' &amp;&amp; this.input[this.offset] &lt;= '9') {
+            number = number * ByteParser.NUMBER_BASE + this.input[this.offset] - '0';</pre></div></td></tr></table>
+<table border="0" class="table table-striped">
+<tr class="a">
+<th>File</th>
+<th>Line</th></tr>
+<tr class="b">
+<td align="left">nom/tam/fits/compression/algorithm/rice/RiceCompressor.java</td>
+<td><a href="./xref/nom/tam/fits/compression/algorithm/rice/RiceCompressor.html#L217">217</a></td></tr>
+<tr class="a">
+<td align="left">nom/tam/fits/compression/algorithm/rice/RiceCompressor.java</td>
+<td><a href="./xref/nom/tam/fits/compression/algorithm/rice/RiceCompressor.html#L218">218</a></td></tr>
+<tr class="b">
+<td colspan="2" align="left">
+<div class="source"><pre class="prettyprint">6, 6, 6, 6, 7, 7, 7, 7, 7, 7, 7, 7, 7, 7, 7, 7, 7, 7, 7, 7, 7, 7, 7, 7, 7, 7, 7, 7, 7, 7, 7, 7, 7, 7, 7, 7,</pre></div></td></tr></table>
 <table border="0" class="table table-striped">
 <tr class="a">
 <th>File</th>
 <th>Line</th></tr>
 <tr class="b">
 <td align="left">nom/tam/util/ByteFormatter.java</td>
-<td><a href="./xref/nom/tam/util/ByteFormatter.html#L562">562</a></td></tr>
+<td><a href="./xref/nom/tam/util/ByteFormatter.html#L613">613</a></td></tr>
 <tr class="a">
 <td align="left">nom/tam/util/ByteFormatter.java</td>
-<td><a href="./xref/nom/tam/util/ByteFormatter.html#L633">633</a></td></tr>
+<td><a href="./xref/nom/tam/util/ByteFormatter.html#L689">689</a></td></tr>
 <tr class="b">
 <td colspan="2" align="left">
 <div class="source"><pre class="prettyprint">while (ndig &lt; ByteFormatter.NUMBER_BASE &amp;&amp; pos &gt;= dmax) {
@@ -1123,37 +1174,37 @@
 <th>Line</th></tr>
 <tr class="b">
 <td align="left">nom/tam/fits/compression/algorithm/rice/RiceCompressor.java</td>
+<td><a href="./xref/nom/tam/fits/compression/algorithm/rice/RiceCompressor.html#L218">218</a></td></tr>
+<tr class="a">
+<td align="left">nom/tam/fits/compression/algorithm/rice/RiceCompressor.java</td>
+<td><a href="./xref/nom/tam/fits/compression/algorithm/rice/RiceCompressor.html#L221">221</a></td></tr>
+<tr class="b">
+<td colspan="2" align="left">
+<div class="source"><pre class="prettyprint">7, 7, 7, 7, 7, 7, 7, 7, 7, 7, 7, 7, 7, 7, 7, 7, 7, 7, 7, 7, 7, 7, 7, 7, 7, 7, 7, 7, 7, 7, 7, 7, 8, 8, 8, 8,
+            8, 8, 8, 8, 8, 8, 8, 8, 8, 8, 8, 8, 8, 8, 8, 8, 8, 8, 8, 8, 8, 8, 8, 8, 8, 8, 8, 8, 8, 8, 8, 8, 8, 8, 8, 8,</pre></div></td></tr></table>
+<table border="0" class="table table-striped">
+<tr class="a">
+<th>File</th>
+<th>Line</th></tr>
+<tr class="b">
+<td align="left">nom/tam/fits/compression/algorithm/rice/RiceCompressor.java</td>
 <td><a href="./xref/nom/tam/fits/compression/algorithm/rice/RiceCompressor.html#L217">217</a></td></tr>
 <tr class="a">
 <td align="left">nom/tam/fits/compression/algorithm/rice/RiceCompressor.java</td>
-<td><a href="./xref/nom/tam/fits/compression/algorithm/rice/RiceCompressor.html#L220">220</a></td></tr>
+<td><a href="./xref/nom/tam/fits/compression/algorithm/rice/RiceCompressor.html#L218">218</a></td></tr>
 <tr class="b">
 <td colspan="2" align="left">
-<div class="source"><pre class="prettyprint">7, 7, 7, 7, 7, 7, 7, 7, 7, 7, 7, 7, 7, 7, 7, 7, 7, 7, 7, 7, 7, 7, 7, 7, 7, 7, 7, 7, 7, 8, 8, 8, 8, 8, 8, 8, 8,
-            8, 8, 8, 8, 8, 8, 8, 8, 8, 8, 8, 8, 8, 8, 8, 8, 8, 8, 8, 8, 8, 8, 8, 8, 8, 8, 8, 8, 8, 8, 8, 8, 8, 8, 8, 8, 8,</pre></div></td></tr></table>
-<table border="0" class="table table-striped">
-<tr class="a">
-<th>File</th>
-<th>Line</th></tr>
-<tr class="b">
-<td align="left">nom/tam/fits/compression/algorithm/rice/RiceCompressor.java</td>
-<td><a href="./xref/nom/tam/fits/compression/algorithm/rice/RiceCompressor.html#L216">216</a></td></tr>
-<tr class="a">
-<td align="left">nom/tam/fits/compression/algorithm/rice/RiceCompressor.java</td>
-<td><a href="./xref/nom/tam/fits/compression/algorithm/rice/RiceCompressor.html#L216">216</a></td></tr>
-<tr class="b">
-<td colspan="2" align="left">
-<div class="source"><pre class="prettyprint">6, 6, 7, 7, 7, 7, 7, 7, 7, 7, 7, 7, 7, 7, 7, 7, 7, 7, 7, 7, 7, 7, 7, 7, 7, 7, 7, 7, 7, 7, 7, 7, 7, 7, 7, 7, 7,</pre></div></td></tr></table>
+<div class="source"><pre class="prettyprint">6, 6, 6, 6, 7, 7, 7, 7, 7, 7, 7, 7, 7, 7, 7, 7, 7, 7, 7, 7, 7, 7, 7, 7, 7, 7, 7, 7, 7, 7, 7, 7, 7, 7, 7, 7,</pre></div></td></tr></table>
 <table border="0" class="table table-striped">
 <tr class="a">
 <th>File</th>
 <th>Line</th></tr>
 <tr class="b">
 <td align="left">nom/tam/image/compression/hdu/BackupRestoreUnCompressedHeaderCard.java</td>
-<td><a href="./xref/nom/tam/image/compression/hdu/BackupRestoreUnCompressedHeaderCard.html#L110">110</a></td></tr>
+<td><a href="./xref/nom/tam/image/compression/hdu/BackupRestoreUnCompressedHeaderCard.html#L111">111</a></td></tr>
 <tr class="a">
 <td align="left">nom/tam/image/compression/hdu/BackupRestoreUnCompressedHeaderCard.java</td>
-<td><a href="./xref/nom/tam/image/compression/hdu/BackupRestoreUnCompressedHeaderCard.html#L141">141</a></td></tr>
+<td><a href="./xref/nom/tam/image/compression/hdu/BackupRestoreUnCompressedHeaderCard.html#L154">154</a></td></tr>
 <tr class="b">
 <td colspan="2" align="left">
 <div class="source"><pre class="prettyprint">MAP_ZFORMn(ZFORMn) {
@@ -1168,10 +1219,10 @@
 <th>Line</th></tr>
 <tr class="b">
 <td align="left">nom/tam/fits/BinaryTable.java</td>
-<td><a href="./xref/nom/tam/fits/BinaryTable.html#L1047">1047</a></td></tr>
+<td><a href="./xref/nom/tam/fits/BinaryTable.html#L1001">1001</a></td></tr>
 <tr class="a">
 <td align="left">nom/tam/fits/BinaryTable.java</td>
-<td><a href="./xref/nom/tam/fits/BinaryTable.html#L1060">1060</a></td></tr>
+<td><a href="./xref/nom/tam/fits/BinaryTable.html#L1014">1014</a></td></tr>
 <tr class="b">
 <td colspan="2" align="left">
 <div class="source"><pre class="prettyprint">long[] descrip = new long[2 * nrow];
@@ -1192,20 +1243,20 @@
 <th>Line</th></tr>
 <tr class="b">
 <td align="left">nom/tam/fits/HeaderCard.java</td>
-<td><a href="./xref/nom/tam/fits/HeaderCard.html#L342">342</a></td></tr>
+<td><a href="./xref/nom/tam/fits/HeaderCard.html#L340">340</a></td></tr>
 <tr class="a">
 <td align="left">nom/tam/fits/HeaderCard.java</td>
-<td><a href="./xref/nom/tam/fits/HeaderCard.html#L371">371</a></td></tr>
+<td><a href="./xref/nom/tam/fits/HeaderCard.html#L370">370</a></td></tr>
 <tr class="b">
 <td colspan="2" align="left">
 <div class="source"><pre class="prettyprint">public HeaderCard(String key, ComplexValue value, String comment) throws HeaderCardException {
         this();
-
+        
         if (value == null) {
             set(key, null, comment, ComplexValue.class);
             return;
         }
-
+        
         if (!value.isFinite()) {
             throw new HeaderCardException(&quot;Cannot represent &quot; + value + &quot; in FITS headers.&quot;);
         }
@@ -1216,56 +1267,55 @@
 <th>Line</th></tr>
 <tr class="b">
 <td align="left">nom/tam/fits/compression/algorithm/rice/RiceCompressor.java</td>
-<td><a href="./xref/nom/tam/fits/compression/algorithm/rice/RiceCompressor.html#L217">217</a></td></tr>
+<td><a href="./xref/nom/tam/fits/compression/algorithm/rice/RiceCompressor.html#L218">218</a></td></tr>
 <tr class="a">
 <td align="left">nom/tam/fits/compression/algorithm/rice/RiceCompressor.java</td>
-<td><a href="./xref/nom/tam/fits/compression/algorithm/rice/RiceCompressor.html#L220">220</a></td></tr>
+<td><a href="./xref/nom/tam/fits/compression/algorithm/rice/RiceCompressor.html#L221">221</a></td></tr>
 <tr class="b">
 <td colspan="2" align="left">
-<div class="source"><pre class="prettyprint">7, 7, 7, 7, 7, 7, 7, 7, 7, 7, 7, 7, 7, 7, 7, 7, 7, 7, 7, 7, 7, 7, 7, 7, 7, 7, 7, 7, 7, 8, 8, 8, 8, 8, 8, 8, 8,
-            8, 8, 8, 8, 8, 8, 8, 8, 8, 8, 8, 8, 8, 8, 8, 8, 8, 8, 8, 8, 8, 8, 8, 8, 8, 8, 8, 8, 8, 8, 8, 8, 8, 8, 8, 8, 8,</pre></div></td></tr></table>
+<div class="source"><pre class="prettyprint">7, 7, 7, 7, 7, 7, 7, 7, 7, 7, 7, 7, 7, 7, 7, 7, 7, 7, 7, 7, 7, 7, 7, 7, 7, 7, 7, 7, 7, 7, 7, 7, 8, 8, 8, 8,
+            8, 8, 8, 8, 8, 8, 8, 8, 8, 8, 8, 8, 8, 8, 8, 8, 8, 8, 8, 8, 8, 8, 8, 8, 8, 8, 8, 8, 8, 8, 8, 8, 8, 8, 8, 8,</pre></div></td></tr></table>
 <table border="0" class="table table-striped">
 <tr class="a">
 <th>File</th>
 <th>Line</th></tr>
 <tr class="b">
 <td align="left">nom/tam/fits/compression/algorithm/rice/RiceCompressor.java</td>
-<td><a href="./xref/nom/tam/fits/compression/algorithm/rice/RiceCompressor.html#L216">216</a></td></tr>
+<td><a href="./xref/nom/tam/fits/compression/algorithm/rice/RiceCompressor.html#L217">217</a></td></tr>
 <tr class="a">
 <td align="left">nom/tam/fits/compression/algorithm/rice/RiceCompressor.java</td>
-<td><a href="./xref/nom/tam/fits/compression/algorithm/rice/RiceCompressor.html#L217">217</a></td></tr>
+<td><a href="./xref/nom/tam/fits/compression/algorithm/rice/RiceCompressor.html#L218">218</a></td></tr>
 <tr class="b">
 <td colspan="2" align="left">
-<div class="source"><pre class="prettyprint">6, 6, 7, 7, 7, 7, 7, 7, 7, 7, 7, 7, 7, 7, 7, 7, 7, 7, 7, 7, 7, 7, 7, 7, 7, 7, 7, 7, 7, 7, 7, 7, 7, 7, 7, 7, 7,</pre></div></td></tr></table>
+<div class="source"><pre class="prettyprint">6, 6, 6, 6, 7, 7, 7, 7, 7, 7, 7, 7, 7, 7, 7, 7, 7, 7, 7, 7, 7, 7, 7, 7, 7, 7, 7, 7, 7, 7, 7, 7, 7, 7, 7, 7,</pre></div></td></tr></table>
 <table border="0" class="table table-striped">
 <tr class="a">
 <th>File</th>
 <th>Line</th></tr>
 <tr class="b">
 <td align="left">nom/tam/util/BufferedFileIO.java</td>
-<td><a href="./xref/nom/tam/util/BufferedFileIO.html#L443">443</a></td></tr>
+<td><a href="./xref/nom/tam/util/BufferedFileIO.html#L450">450</a></td></tr>
 <tr class="a">
 <td align="left">nom/tam/util/InputDecoder.java</td>
-<td><a href="./xref/nom/tam/util/InputDecoder.html#L173">173</a></td></tr>
+<td><a href="./xref/nom/tam/util/InputDecoder.html#L187">187</a></td></tr>
 <tr class="b">
 <td colspan="2" align="left">
-<div class="source"><pre class="prettyprint">public synchronized void readFully(byte[] b, int off, int len) throws IOException {
+<div class="source"><pre class="prettyprint">public synchronized void readFully(byte[] b, int off, int len) throws IOException { 
         while (len &gt; 0) {
             int n = read(b, off, len);
             if (n &lt; 0) {
                 throw new EOFException();
-            }
+            }      
             off += n;
             len -= n;
         }
     }
-
+    
     /**
      * Same as {@link RandomAccessFile#readUTF()}.
-     *
-     * @return             a string
-     *
-     * @throws IOException if there was an IO error while reading from the file.
+     * 
+     * @return              a string
+     * @throws IOException  if there was an IO error while reading from the file.
      */
     public final synchronized String readUTF() throws IOException {</pre></div></td></tr></table>
 <table border="0" class="table table-striped">
@@ -1273,29 +1323,65 @@
 <th>File</th>
 <th>Line</th></tr>
 <tr class="b">
-<td align="left">nom/tam/fits/compression/algorithm/plio/PLIOCompress.java</td>
-<td><a href="./xref/nom/tam/fits/compression/algorithm/plio/PLIOCompress.html#L65">65</a></td></tr>
+<td align="left">nom/tam/util/ColumnTable.java</td>
+<td><a href="./xref/nom/tam/util/ColumnTable.html#L776">776</a></td></tr>
 <tr class="a">
-<td align="left">nom/tam/fits/compression/algorithm/plio/PLIOCompress.java</td>
-<td><a href="./xref/nom/tam/fits/compression/algorithm/plio/PLIOCompress.html#L93">93</a></td></tr>
+<td align="left">nom/tam/util/ColumnTable.java</td>
+<td><a href="./xref/nom/tam/util/ColumnTable.html#L907">907</a></td></tr>
 <tr class="b">
-<td align="left">nom/tam/fits/compression/algorithm/plio/PLIOCompress.java</td>
-<td><a href="./xref/nom/tam/fits/compression/algorithm/plio/PLIOCompress.html#L124">124</a></td></tr>
+<td align="left">nom/tam/util/ColumnTable.java</td>
+<td><a href="./xref/nom/tam/util/ColumnTable.html#L939">939</a></td></tr>
 <tr class="a">
+<td align="left">nom/tam/util/ColumnTable.java</td>
+<td><a href="./xref/nom/tam/util/ColumnTable.html#L975">975</a></td></tr>
+<tr class="b">
 <td colspan="2" align="left">
-<div class="source"><pre class="prettyprint">public void decompress(ByteBuffer compressed, ByteBuffer buffer) {
-            pixelData = buffer;
-            decompress(compressed.asShortBuffer(), pixelData.limit());
+<div class="source"><pre class="prettyprint">for (int row = 0; row &lt; this.nrow; row += 1) {
+            Arrays.fill(columnIndex, 0);
+            // Loop over the columns within the row.
+            for (int col = 0; col &lt; this.arrays.length; col += 1) {
+                int arrOffset = this.sizes[col] * row;
+                int size = this.sizes[col];
+                char colType = this.types[col];</pre></div></td></tr></table>
+<table border="0" class="table table-striped">
+<tr class="a">
+<th>File</th>
+<th>Line</th></tr>
+<tr class="b">
+<td align="left">nom/tam/fits/compression/algorithm/rice/RiceCompressor.java</td>
+<td><a href="./xref/nom/tam/fits/compression/algorithm/rice/RiceCompressor.html#L218">218</a></td></tr>
+<tr class="a">
+<td align="left">nom/tam/fits/compression/algorithm/rice/RiceCompressor.java</td>
+<td><a href="./xref/nom/tam/fits/compression/algorithm/rice/RiceCompressor.html#L221">221</a></td></tr>
+<tr class="b">
+<td colspan="2" align="left">
+<div class="source"><pre class="prettyprint">7, 7, 7, 7, 7, 7, 7, 7, 7, 7, 7, 7, 7, 7, 7, 7, 7, 7, 7, 7, 7, 7, 7, 7, 7, 7, 7, 7, 7, 7, 7, 7, 8, 8, 8, 8,
+            8, 8, 8, 8, 8, 8, 8, 8, 8, 8, 8, 8, 8, 8, 8, 8, 8, 8, 8, 8, 8, 8, 8, 8, 8, 8, 8, 8, 8, 8, 8, 8, 8, 8, 8, 8,</pre></div></td></tr></table>
+<table border="0" class="table table-striped">
+<tr class="a">
+<th>File</th>
+<th>Line</th></tr>
+<tr class="b">
+<td align="left">nom/tam/fits/compression/algorithm/rice/RiceCompressor.java</td>
+<td><a href="./xref/nom/tam/fits/compression/algorithm/rice/RiceCompressor.html#L77">77</a></td></tr>
+<tr class="a">
+<td align="left">nom/tam/fits/compression/algorithm/rice/RiceCompressor.java</td>
+<td><a href="./xref/nom/tam/fits/compression/algorithm/rice/RiceCompressor.html#L155">155</a></td></tr>
+<tr class="b">
+<td colspan="2" align="left">
+<div class="source"><pre class="prettyprint">public void decompress(ByteBuffer readBuffer, ByteBuffer buffer) {
+            this.pixelBuffer = buffer;
+            super.decompressBuffer(readBuffer, buffer.limit());
         }
 
         @Override
         protected int nextPixel() {
-            return pixelData.get();
+            return this.pixelBuffer.get();
         }
 
         @Override
-        protected void put(int index, int pixel) {
-            pixelData.put(index, (byte) pixel);</pre></div></td></tr></table>
+        protected void nextPixel(int pixel) {
+            this.pixelBuffer.put((byte) pixel);</pre></div></td></tr></table>
 <table border="0" class="table table-striped">
 <tr class="a">
 <th>File</th>
@@ -1305,34 +1391,41 @@
 <td><a href="./xref/nom/tam/fits/compression/algorithm/rice/RiceCompressor.html#L217">217</a></td></tr>
 <tr class="a">
 <td align="left">nom/tam/fits/compression/algorithm/rice/RiceCompressor.java</td>
-<td><a href="./xref/nom/tam/fits/compression/algorithm/rice/RiceCompressor.html#L220">220</a></td></tr>
+<td><a href="./xref/nom/tam/fits/compression/algorithm/rice/RiceCompressor.html#L218">218</a></td></tr>
 <tr class="b">
 <td colspan="2" align="left">
-<div class="source"><pre class="prettyprint">7, 7, 7, 7, 7, 7, 7, 7, 7, 7, 7, 7, 7, 7, 7, 7, 7, 7, 7, 7, 7, 7, 7, 7, 7, 7, 7, 7, 7, 8, 8, 8, 8, 8, 8, 8, 8,
-            8, 8, 8, 8, 8, 8, 8, 8, 8, 8, 8, 8, 8, 8, 8, 8, 8, 8, 8, 8, 8, 8, 8, 8, 8, 8, 8, 8, 8, 8, 8, 8, 8, 8, 8, 8, 8,</pre></div></td></tr></table>
+<div class="source"><pre class="prettyprint">6, 6, 6, 6, 7, 7, 7, 7, 7, 7, 7, 7, 7, 7, 7, 7, 7, 7, 7, 7, 7, 7, 7, 7, 7, 7, 7, 7, 7, 7, 7, 7, 7, 7, 7, 7,</pre></div></td></tr></table>
 <table border="0" class="table table-striped">
 <tr class="a">
 <th>File</th>
 <th>Line</th></tr>
 <tr class="b">
-<td align="left">nom/tam/fits/compression/algorithm/rice/RiceCompressor.java</td>
-<td><a href="./xref/nom/tam/fits/compression/algorithm/rice/RiceCompressor.html#L216">216</a></td></tr>
+<td align="left">nom/tam/fits/HeaderCardBuilder.java</td>
+<td><a href="./xref/nom/tam/fits/HeaderCardBuilder.html#L132">132</a></td></tr>
 <tr class="a">
-<td align="left">nom/tam/fits/compression/algorithm/rice/RiceCompressor.java</td>
-<td><a href="./xref/nom/tam/fits/compression/algorithm/rice/RiceCompressor.html#L217">217</a></td></tr>
+<td align="left">nom/tam/fits/HeaderCardBuilder.java</td>
+<td><a href="./xref/nom/tam/fits/HeaderCardBuilder.html#L190">190</a></td></tr>
 <tr class="b">
 <td colspan="2" align="left">
-<div class="source"><pre class="prettyprint">6, 6, 7, 7, 7, 7, 7, 7, 7, 7, 7, 7, 7, 7, 7, 7, 7, 7, 7, 7, 7, 7, 7, 7, 7, 7, 7, 7, 7, 7, 7, 7, 7, 7, 7, 7, 7,</pre></div></td></tr></table>
+<div class="source"><pre class="prettyprint">public HeaderCardBuilder value(boolean newValue) throws HeaderCardException {
+        if (this.card == null) {
+            this.card = new HeaderCard(this.key.key(), newValue, null);
+            this.header.addLine(this.card);
+        } else {
+            this.card.setValue(newValue);
+        }
+        return this;
+    }</pre></div></td></tr></table>
 <table border="0" class="table table-striped">
 <tr class="a">
 <th>File</th>
 <th>Line</th></tr>
 <tr class="b">
 <td align="left">nom/tam/fits/compress/BZip2CompressionProvider.java</td>
-<td><a href="./xref/nom/tam/fits/compress/BZip2CompressionProvider.html#L52">52</a></td></tr>
+<td><a href="./xref/nom/tam/fits/compress/BZip2CompressionProvider.html#L44">44</a></td></tr>
 <tr class="a">
 <td align="left">nom/tam/fits/compress/ZCompressionProvider.java</td>
-<td><a href="./xref/nom/tam/fits/compress/ZCompressionProvider.html#L57">57</a></td></tr>
+<td><a href="./xref/nom/tam/fits/compress/ZCompressionProvider.html#L48">48</a></td></tr>
 <tr class="b">
 <td colspan="2" align="left">
 <div class="source"><pre class="prettyprint">return CompressionLibLoaderProtection.createBZip2Stream(in);
@@ -1357,30 +1450,82 @@
 <th>Line</th></tr>
 <tr class="b">
 <td align="left">nom/tam/fits/compression/algorithm/rice/RiceCompressor.java</td>
-<td><a href="./xref/nom/tam/fits/compression/algorithm/rice/RiceCompressor.html#L217">217</a></td></tr>
+<td><a href="./xref/nom/tam/fits/compression/algorithm/rice/RiceCompressor.html#L69">69</a></td></tr>
 <tr class="a">
 <td align="left">nom/tam/fits/compression/algorithm/rice/RiceCompressor.java</td>
-<td><a href="./xref/nom/tam/fits/compression/algorithm/rice/RiceCompressor.html#L220">220</a></td></tr>
+<td><a href="./xref/nom/tam/fits/compression/algorithm/rice/RiceCompressor.html#L114">114</a></td></tr>
+<tr class="b">
+<td align="left">nom/tam/fits/compression/algorithm/rice/RiceCompressor.java</td>
+<td><a href="./xref/nom/tam/fits/compression/algorithm/rice/RiceCompressor.html#L147">147</a></td></tr>
+<tr class="a">
+<td colspan="2" align="left">
+<div class="source"><pre class="prettyprint">public boolean compress(ByteBuffer buffer, ByteBuffer writeBuffer) {
+            this.pixelBuffer = buffer;
+            super.compress(buffer.limit(), this.pixelBuffer.get(this.pixelBuffer.position()),
+                    new BitBuffer(writeBuffer));
+            return true;
+        }
+
+        @Override
+        public void decompress(ByteBuffer readBuffer, ByteBuffer buffer) {</pre></div></td></tr></table>
+<table border="0" class="table table-striped">
+<tr class="a">
+<th>File</th>
+<th>Line</th></tr>
+<tr class="b">
+<td align="left">nom/tam/fits/compression/algorithm/rice/RiceCompressor.java</td>
+<td><a href="./xref/nom/tam/fits/compression/algorithm/rice/RiceCompressor.html#L77">77</a></td></tr>
+<tr class="a">
+<td align="left">nom/tam/fits/compression/algorithm/rice/RiceCompressor.java</td>
+<td><a href="./xref/nom/tam/fits/compression/algorithm/rice/RiceCompressor.html#L122">122</a></td></tr>
+<tr class="b">
+<td align="left">nom/tam/fits/compression/algorithm/rice/RiceCompressor.java</td>
+<td><a href="./xref/nom/tam/fits/compression/algorithm/rice/RiceCompressor.html#L155">155</a></td></tr>
+<tr class="a">
+<td colspan="2" align="left">
+<div class="source"><pre class="prettyprint">public void decompress(ByteBuffer readBuffer, ByteBuffer buffer) {
+            this.pixelBuffer = buffer;
+            super.decompressBuffer(readBuffer, buffer.limit());
+        }
+
+        @Override
+        protected int nextPixel() {
+            return this.pixelBuffer.get();
+        }
+
+        @Override
+        protected void nextPixel(int pixel) {
+            this.pixelBuffer.put((byte) pixel);</pre></div></td></tr></table>
+<table border="0" class="table table-striped">
+<tr class="a">
+<th>File</th>
+<th>Line</th></tr>
+<tr class="b">
+<td align="left">nom/tam/fits/compression/algorithm/rice/RiceCompressor.java</td>
+<td><a href="./xref/nom/tam/fits/compression/algorithm/rice/RiceCompressor.html#L218">218</a></td></tr>
+<tr class="a">
+<td align="left">nom/tam/fits/compression/algorithm/rice/RiceCompressor.java</td>
+<td><a href="./xref/nom/tam/fits/compression/algorithm/rice/RiceCompressor.html#L221">221</a></td></tr>
 <tr class="b">
 <td colspan="2" align="left">
-<div class="source"><pre class="prettyprint">7, 7, 7, 7, 7, 7, 7, 7, 7, 7, 7, 7, 7, 7, 7, 7, 7, 7, 7, 7, 7, 7, 7, 7, 7, 7, 7, 7, 7, 8, 8, 8, 8, 8, 8, 8, 8,
-            8, 8, 8, 8, 8, 8, 8, 8, 8, 8, 8, 8, 8, 8, 8, 8, 8, 8, 8, 8, 8, 8, 8, 8, 8, 8, 8, 8, 8, 8, 8, 8, 8, 8, 8, 8, 8,</pre></div></td></tr></table>
+<div class="source"><pre class="prettyprint">7, 7, 7, 7, 7, 7, 7, 7, 7, 7, 7, 7, 7, 7, 7, 7, 7, 7, 7, 7, 7, 7, 7, 7, 7, 7, 7, 7, 7, 7, 7, 7, 8, 8, 8, 8,
+            8, 8, 8, 8, 8, 8, 8, 8, 8, 8, 8, 8, 8, 8, 8, 8, 8, 8, 8, 8, 8, 8, 8, 8, 8, 8, 8, 8, 8, 8, 8, 8, 8, 8, 8, 8,</pre></div></td></tr></table>
 <table border="0" class="table table-striped">
 <tr class="a">
 <th>File</th>
 <th>Line</th></tr>
 <tr class="b">
 <td align="left">nom/tam/fits/compression/provider/param/hcompress/HCompressScaleParameter.java</td>
-<td><a href="./xref/nom/tam/fits/compression/provider/param/hcompress/HCompressScaleParameter.html#L56">56</a></td></tr>
+<td><a href="./xref/nom/tam/fits/compression/provider/param/hcompress/HCompressScaleParameter.html#L53">53</a></td></tr>
 <tr class="a">
 <td align="left">nom/tam/fits/compression/provider/param/hcompress/HCompressSmoothParameter.java</td>
-<td><a href="./xref/nom/tam/fits/compression/provider/param/hcompress/HCompressSmoothParameter.html#L56">56</a></td></tr>
+<td><a href="./xref/nom/tam/fits/compression/provider/param/hcompress/HCompressSmoothParameter.html#L53">53</a></td></tr>
 <tr class="b">
 <td align="left">nom/tam/fits/compression/provider/param/rice/RiceBlockSizeParameter.java</td>
-<td><a href="./xref/nom/tam/fits/compression/provider/param/rice/RiceBlockSizeParameter.html#L60">60</a></td></tr>
+<td><a href="./xref/nom/tam/fits/compression/provider/param/rice/RiceBlockSizeParameter.html#L52">52</a></td></tr>
 <tr class="a">
 <td align="left">nom/tam/fits/compression/provider/param/rice/RiceBytePixParameter.java</td>
-<td><a href="./xref/nom/tam/fits/compression/provider/param/rice/RiceBytePixParameter.html#L60">60</a></td></tr>
+<td><a href="./xref/nom/tam/fits/compression/provider/param/rice/RiceBytePixParameter.html#L52">52</a></td></tr>
 <tr class="b">
 <td colspan="2" align="left">
 <div class="source"><pre class="prettyprint">getOption().setScale(value.getValue(Integer.class, -1));
@@ -1398,10 +1543,10 @@
 <th>Line</th></tr>
 <tr class="b">
 <td align="left">nom/tam/image/compression/tile/mask/NullPixelMaskPreserver.java</td>
-<td><a href="./xref/nom/tam/image/compression/tile/mask/NullPixelMaskPreserver.html#L134">134</a></td></tr>
+<td><a href="./xref/nom/tam/image/compression/tile/mask/NullPixelMaskPreserver.html#L111">111</a></td></tr>
 <tr class="a">
 <td align="left">nom/tam/image/compression/tile/mask/NullPixelMaskPreserver.java</td>
-<td><a href="./xref/nom/tam/image/compression/tile/mask/NullPixelMaskPreserver.html#L145">145</a></td></tr>
+<td><a href="./xref/nom/tam/image/compression/tile/mask/NullPixelMaskPreserver.html#L122">122</a></td></tr>
 <tr class="b">
 <td colspan="2" align="left">
 <div class="source"><pre class="prettyprint">int nullValue = (int) getNullValue();
@@ -1420,10 +1565,10 @@
 <th>Line</th></tr>
 <tr class="b">
 <td align="left">nom/tam/image/compression/tile/mask/NullPixelMaskRestorer.java</td>
-<td><a href="./xref/nom/tam/image/compression/tile/mask/NullPixelMaskRestorer.html#L111">111</a></td></tr>
+<td><a href="./xref/nom/tam/image/compression/tile/mask/NullPixelMaskRestorer.html#L88">88</a></td></tr>
 <tr class="a">
 <td align="left">nom/tam/image/compression/tile/mask/NullPixelMaskRestorer.java</td>
-<td><a href="./xref/nom/tam/image/compression/tile/mask/NullPixelMaskRestorer.html#L121">121</a></td></tr>
+<td><a href="./xref/nom/tam/image/compression/tile/mask/NullPixelMaskRestorer.html#L98">98</a></td></tr>
 <tr class="b">
 <td colspan="2" align="left">
 <div class="source"><pre class="prettyprint">DoubleBuffer buffer = (DoubleBuffer) getTileBuffer().getBuffer();
@@ -1573,10 +1718,10 @@
 <th>Line</th></tr>
 <tr class="b">
 <td align="left">nom/tam/fits/HeaderCard.java</td>
-<td><a href="./xref/nom/tam/fits/HeaderCard.html#L1459">1459</a></td></tr>
+<td><a href="./xref/nom/tam/fits/HeaderCard.html#L1472">1472</a></td></tr>
 <tr class="a">
 <td align="left">nom/tam/fits/HeaderCard.java</td>
-<td><a href="./xref/nom/tam/fits/HeaderCard.html#L1484">1484</a></td></tr>
+<td><a href="./xref/nom/tam/fits/HeaderCard.html#L1499">1499</a></td></tr>
 <tr class="b">
 <td colspan="2" align="left">
 <div class="source"><pre class="prettyprint">try {
@@ -1585,33 +1730,35 @@
             throw new IllegalArgumentException(&quot;Invalid conventional key [&quot; + key.key() + &quot;]&quot;, e);
         }
     }
-
+    
     /**
-     * Creates a new card with a standard or conventional keyword and a number value, with the default comment
-     * associated with the keyword. Unlike {@link #HeaderCard(String, Number)}, this call does not throw an exception,
-     * since the keyword and comment should be valid by design.
-     *
-     * @param  key                      The standard or conventional keyword with its associated default comment.
-     * @param  value                    the integer value associated to the keyword.
-     *
-     * @return                          A new header card with the speficied standard-style key and comment and the
-     *                                      specified value.
-     *
-     * @throws IllegalArgumentException if the standard key was ill-defined.
-     *
-     * @since                           1.16
+     * Creates a new card with a standard or conventional keyword and a number value, with
+     * the default comment associated with the keyword. Unlike {@link #HeaderCard(String, Number)},
+     * this call does not throw an exception, since the keyword and comment should be valid 
+     * by design.
+     * 
+     * @param key       The standard or conventional keyword with its associated default comment.
+     * @param value     the integer value associated to the keyword.
+     * 
+     * @return          A new header card with the speficied standard-style key and comment
+     *                  and the specified value.
+     *                  
+     * @throws IllegalArgumentException     
+     *                  if the standard key was ill-defined.
+     *                  
+     * @since 1.16
      */
-    public static HeaderCard create(IFitsHeader key, ComplexValue value) throws IllegalArgumentException {</pre></div></td></tr></table>
+    public static HeaderCard create(IFitsHeader key, ComplexValue value)  throws IllegalArgumentException  {</pre></div></td></tr></table>
 <table border="0" class="table table-striped">
 <tr class="a">
 <th>File</th>
 <th>Line</th></tr>
 <tr class="b">
 <td align="left">nom/tam/fits/compression/algorithm/hcompress/HDecompress.java</td>
-<td><a href="./xref/nom/tam/fits/compression/algorithm/hcompress/HDecompress.html#L800">800</a></td></tr>
+<td><a href="./xref/nom/tam/fits/compression/algorithm/hcompress/HDecompress.html#L798">798</a></td></tr>
 <tr class="a">
 <td align="left">nom/tam/fits/compression/algorithm/hcompress/HDecompress.java</td>
-<td><a href="./xref/nom/tam/fits/compression/algorithm/hcompress/HDecompress.html#L832">832</a></td></tr>
+<td><a href="./xref/nom/tam/fits/compression/algorithm/hcompress/HDecompress.html#L830">830</a></td></tr>
 <tr class="b">
 <td colspan="2" align="left">
 <div class="source"><pre class="prettyprint">if ((value &amp; BIT_THREE) != ZERO) {
@@ -1634,23 +1781,23 @@
 <th>Line</th></tr>
 <tr class="b">
 <td align="left">nom/tam/fits/compression/algorithm/rice/RiceCompressor.java</td>
-<td><a href="./xref/nom/tam/fits/compression/algorithm/rice/RiceCompressor.html#L216">216</a></td></tr>
+<td><a href="./xref/nom/tam/fits/compression/algorithm/rice/RiceCompressor.html#L217">217</a></td></tr>
 <tr class="a">
 <td align="left">nom/tam/fits/compression/algorithm/rice/RiceCompressor.java</td>
-<td><a href="./xref/nom/tam/fits/compression/algorithm/rice/RiceCompressor.html#L217">217</a></td></tr>
+<td><a href="./xref/nom/tam/fits/compression/algorithm/rice/RiceCompressor.html#L218">218</a></td></tr>
 <tr class="b">
 <td colspan="2" align="left">
-<div class="source"><pre class="prettyprint">6, 6, 7, 7, 7, 7, 7, 7, 7, 7, 7, 7, 7, 7, 7, 7, 7, 7, 7, 7, 7, 7, 7, 7, 7, 7, 7, 7, 7, 7, 7, 7, 7, 7, 7, 7, 7,</pre></div></td></tr></table>
+<div class="source"><pre class="prettyprint">6, 6, 6, 6, 7, 7, 7, 7, 7, 7, 7, 7, 7, 7, 7, 7, 7, 7, 7, 7, 7, 7, 7, 7, 7, 7, 7, 7, 7, 7, 7, 7, 7, 7, 7, 7,</pre></div></td></tr></table>
 <table border="0" class="table table-striped">
 <tr class="a">
 <th>File</th>
 <th>Line</th></tr>
 <tr class="b">
 <td align="left">nom/tam/image/compression/tile/mask/NullPixelMaskPreserver.java</td>
-<td><a href="./xref/nom/tam/image/compression/tile/mask/NullPixelMaskPreserver.html#L134">134</a></td></tr>
+<td><a href="./xref/nom/tam/image/compression/tile/mask/NullPixelMaskPreserver.html#L111">111</a></td></tr>
 <tr class="a">
 <td align="left">nom/tam/image/compression/tile/mask/NullPixelMaskPreserver.java</td>
-<td><a href="./xref/nom/tam/image/compression/tile/mask/NullPixelMaskPreserver.html#L156">156</a></td></tr>
+<td><a href="./xref/nom/tam/image/compression/tile/mask/NullPixelMaskPreserver.html#L133">133</a></td></tr>
 <tr class="b">
 <td colspan="2" align="left">
 <div class="source"><pre class="prettyprint">int nullValue = (int) getNullValue();
@@ -1667,10 +1814,10 @@
 <th>Line</th></tr>
 <tr class="b">
 <td align="left">nom/tam/util/ColumnTable.java</td>
-<td><a href="./xref/nom/tam/util/ColumnTable.html#L98">98</a></td></tr>
+<td><a href="./xref/nom/tam/util/ColumnTable.html#L99">99</a></td></tr>
 <tr class="a">
 <td align="left">nom/tam/util/ColumnTable.java</td>
-<td><a href="./xref/nom/tam/util/ColumnTable.html#L171">171</a></td></tr>
+<td><a href="./xref/nom/tam/util/ColumnTable.html#L166">166</a></td></tr>
 <tr class="b">
 <td colspan="2" align="left">
 <div class="source"><pre class="prettyprint">os.write(table.bytePointers[index], arrOffset, size);
@@ -1678,26 +1825,65 @@
 
             @Override
             @SuppressFBWarnings(value = &quot;RR_NOT_CHECKED&quot;, justification = &quot;this read will never return less than the requested length&quot;)
-            public void read(ColumnTable&lt;?&gt; table, ArrayDataInput is, int index, int arrOffset, int size)
-                    throws IOException {
+            public void read(ColumnTable&lt;?&gt; table, ArrayDataInput is, int index, int arrOffset, int size) throws IOException {
                 is.read(table.bytePointers[index], arrOffset, size);</pre></div></td></tr></table>
 <table border="0" class="table table-striped">
 <tr class="a">
 <th>File</th>
 <th>Line</th></tr>
 <tr class="b">
+<td align="left">nom/tam/fits/TableHDU.java</td>
+<td><a href="./xref/nom/tam/fits/TableHDU.html#L451">451</a></td></tr>
+<tr class="a">
+<td align="left">nom/tam/fits/TableHDU.java</td>
+<td><a href="./xref/nom/tam/fits/TableHDU.html#L477">477</a></td></tr>
+<tr class="b">
+<td colspan="2" align="left">
+<div class="source"><pre class="prettyprint">public void setColumnMeta(int index, IFitsHeader key, String value, String comment, boolean after) throws HeaderCardException {
+        setCurrentColumn(index, after);
+        this.myHeader.addLine(new HeaderCard(key.n(index + 1).key(), value, comment));
+    }
+
+    /**
+     * Specify column metadata for a given column in a way that allows all of
+     * the column metadata for a given column to be organized together.
+     *
+     * @param index
+     *            The 0-based index of the column
+     * @param key
+     *            The column key. I.e., the keyword will be key+(index+1)
+     * @param value
+     *            The value to be placed in the header.
+     * @param comment
+     *            The comment for the header
+     * @param after
+     *            Should the header card be after the current column metadata
+     *            block (&lt;code&gt;true&lt;/code&gt;), or immediately before the TFORM card 
+     *            (&lt;code&gt;false&lt;/code&gt;).
+     * @throws HeaderCardException
+     *             if the header could not be updated
+     *             
+     * @since 1.16
+     */
+    public void setColumnMeta(int index, IFitsHeader key, Number value, String comment, boolean after) throws HeaderCardException {</pre></div></td></tr></table>
+<table border="0" class="table table-striped">
+<tr class="a">
+<th>File</th>
+<th>Line</th></tr>
+<tr class="b">
 <td align="left">nom/tam/fits/compression/algorithm/hcompress/HCompress.java</td>
-<td><a href="./xref/nom/tam/fits/compression/algorithm/hcompress/HCompress.html#L683">683</a></td></tr>
+<td><a href="./xref/nom/tam/fits/compression/algorithm/hcompress/HCompress.html#L748">748</a></td></tr>
 <tr class="a">
 <td align="left">nom/tam/fits/compression/algorithm/hcompress/HCompress.java</td>
-<td><a href="./xref/nom/tam/fits/compression/algorithm/hcompress/HCompress.html#L733">733</a></td></tr>
+<td><a href="./xref/nom/tam/fits/compression/algorithm/hcompress/HCompress.html#L801">801</a></td></tr>
 <tr class="b">
 <td colspan="2" align="left">
 <div class="source"><pre class="prettyprint">k = 0; /* k is index of b[i/2,j/2] */
         for (i = 0; i &lt; nx - 1; i += 2) {
             s00 = n * i; /* s00 is index of a[i,j] */
             /*
-             * tried using s00+n directly in the statements, but this had no effect on performance
+             * tried using s00+n directly in the statements, but this had no
+             * effect on performance
              */
             s10 = s00 + n; /* s10 is index of a[i+1,j] */
             for (j = 0; j &lt; ny - 1; j += 2) {
@@ -1709,24 +1895,24 @@
 <th>Line</th></tr>
 <tr class="b">
 <td align="left">nom/tam/fits/compression/algorithm/rice/RiceCompressor.java</td>
-<td><a href="./xref/nom/tam/fits/compression/algorithm/rice/RiceCompressor.html#L217">217</a></td></tr>
+<td><a href="./xref/nom/tam/fits/compression/algorithm/rice/RiceCompressor.html#L218">218</a></td></tr>
 <tr class="a">
 <td align="left">nom/tam/fits/compression/algorithm/rice/RiceCompressor.java</td>
-<td><a href="./xref/nom/tam/fits/compression/algorithm/rice/RiceCompressor.html#L220">220</a></td></tr>
+<td><a href="./xref/nom/tam/fits/compression/algorithm/rice/RiceCompressor.html#L221">221</a></td></tr>
 <tr class="b">
 <td colspan="2" align="left">
-<div class="source"><pre class="prettyprint">7, 7, 7, 7, 7, 7, 7, 7, 7, 7, 7, 7, 7, 7, 7, 7, 7, 7, 7, 7, 7, 7, 7, 7, 7, 7, 7, 7, 7, 8, 8, 8, 8, 8, 8, 8, 8,
-            8, 8, 8, 8, 8, 8, 8, 8, 8, 8, 8, 8, 8, 8, 8, 8, 8, 8, 8, 8, 8, 8, 8, 8, 8, 8, 8, 8, 8, 8, 8, 8, 8, 8, 8, 8, 8,</pre></div></td></tr></table>
+<div class="source"><pre class="prettyprint">7, 7, 7, 7, 7, 7, 7, 7, 7, 7, 7, 7, 7, 7, 7, 7, 7, 7, 7, 7, 7, 7, 7, 7, 7, 7, 7, 7, 7, 7, 7, 7, 8, 8, 8, 8,
+            8, 8, 8, 8, 8, 8, 8, 8, 8, 8, 8, 8, 8, 8, 8, 8, 8, 8, 8, 8, 8, 8, 8, 8, 8, 8, 8, 8, 8, 8, 8, 8, 8, 8, 8, 8,</pre></div></td></tr></table>
 <table border="0" class="table table-striped">
 <tr class="a">
 <th>File</th>
 <th>Line</th></tr>
 <tr class="b">
 <td align="left">nom/tam/image/compression/tile/mask/NullPixelMaskPreserver.java</td>
-<td><a href="./xref/nom/tam/image/compression/tile/mask/NullPixelMaskPreserver.html#L145">145</a></td></tr>
+<td><a href="./xref/nom/tam/image/compression/tile/mask/NullPixelMaskPreserver.html#L122">122</a></td></tr>
 <tr class="a">
 <td align="left">nom/tam/image/compression/tile/mask/NullPixelMaskPreserver.java</td>
-<td><a href="./xref/nom/tam/image/compression/tile/mask/NullPixelMaskPreserver.html#L156">156</a></td></tr>
+<td><a href="./xref/nom/tam/image/compression/tile/mask/NullPixelMaskPreserver.html#L133">133</a></td></tr>
 <tr class="b">
 <td colspan="2" align="left">
 <div class="source"><pre class="prettyprint">long nullValue = getNullValue();
@@ -1743,13 +1929,13 @@
 <th>Line</th></tr>
 <tr class="b">
 <td align="left">nom/tam/fits/compression/algorithm/rice/RiceCompressor.java</td>
-<td><a href="./xref/nom/tam/fits/compression/algorithm/rice/RiceCompressor.html#L216">216</a></td></tr>
+<td><a href="./xref/nom/tam/fits/compression/algorithm/rice/RiceCompressor.html#L217">217</a></td></tr>
 <tr class="a">
 <td align="left">nom/tam/fits/compression/algorithm/rice/RiceCompressor.java</td>
-<td><a href="./xref/nom/tam/fits/compression/algorithm/rice/RiceCompressor.html#L217">217</a></td></tr>
+<td><a href="./xref/nom/tam/fits/compression/algorithm/rice/RiceCompressor.html#L218">218</a></td></tr>
 <tr class="b">
 <td colspan="2" align="left">
-<div class="source"><pre class="prettyprint">6, 6, 7, 7, 7, 7, 7, 7, 7, 7, 7, 7, 7, 7, 7, 7, 7, 7, 7, 7, 7, 7, 7, 7, 7, 7, 7, 7, 7, 7, 7, 7, 7, 7, 7, 7, 7,</pre></div></td></tr></table>
+<div class="source"><pre class="prettyprint">6, 6, 6, 6, 7, 7, 7, 7, 7, 7, 7, 7, 7, 7, 7, 7, 7, 7, 7, 7, 7, 7, 7, 7, 7, 7, 7, 7, 7, 7, 7, 7, 7, 7, 7, 7,</pre></div></td></tr></table>
 <table border="0" class="table table-striped">
 <tr class="a">
 <th>File</th>
@@ -1862,49 +2048,15 @@
 <th>File</th>
 <th>Line</th></tr>
 <tr class="b">
-<td align="left">nom/tam/fits/TableHDU.java</td>
-<td><a href="./xref/nom/tam/fits/TableHDU.html#L440">440</a></td></tr>
-<tr class="a">
-<td align="left">nom/tam/fits/TableHDU.java</td>
-<td><a href="./xref/nom/tam/fits/TableHDU.html#L461">461</a></td></tr>
-<tr class="b">
-<td colspan="2" align="left">
-<div class="source"><pre class="prettyprint">public void setColumnMeta(int index, IFitsHeader key, String value, String comment, boolean after)
-            throws HeaderCardException {
-        setCurrentColumn(index, after);
-        myHeader.addLine(new HeaderCard(key.n(index + 1).key(), value, comment));
-    }
-
-    /**
-     * Specify column metadata for a given column in a way that allows all of the column metadata for a given column to
-     * be organized together.
-     *
-     * @param  index               The 0-based index of the column
-     * @param  key                 The column key. I.e., the keyword will be key+(index+1)
-     * @param  value               The value to be placed in the header.
-     * @param  comment             The comment for the header
-     * @param  after               Should the header card be after the current column metadata block
-     *                                 (&lt;code&gt;true&lt;/code&gt;), or immediately before the TFORM card (&lt;code&gt;false&lt;/code&gt;).
-     *
-     * @throws HeaderCardException if the header could not be updated
-     *
-     * @since                      1.16
-     */
-    public void setColumnMeta(int index, IFitsHeader key, Number value, String comment, boolean after)</pre></div></td></tr></table>
-<table border="0" class="table table-striped">
-<tr class="a">
-<th>File</th>
-<th>Line</th></tr>
-<tr class="b">
 <td align="left">nom/tam/fits/compression/algorithm/rice/RiceCompressor.java</td>
-<td><a href="./xref/nom/tam/fits/compression/algorithm/rice/RiceCompressor.html#L217">217</a></td></tr>
+<td><a href="./xref/nom/tam/fits/compression/algorithm/rice/RiceCompressor.html#L218">218</a></td></tr>
 <tr class="a">
 <td align="left">nom/tam/fits/compression/algorithm/rice/RiceCompressor.java</td>
-<td><a href="./xref/nom/tam/fits/compression/algorithm/rice/RiceCompressor.html#L220">220</a></td></tr>
+<td><a href="./xref/nom/tam/fits/compression/algorithm/rice/RiceCompressor.html#L221">221</a></td></tr>
 <tr class="b">
 <td colspan="2" align="left">
-<div class="source"><pre class="prettyprint">7, 7, 7, 7, 7, 7, 7, 7, 7, 7, 7, 7, 7, 7, 7, 7, 7, 7, 7, 7, 7, 7, 7, 7, 7, 7, 7, 7, 7, 8, 8, 8, 8, 8, 8, 8, 8,
-            8, 8, 8, 8, 8, 8, 8, 8, 8, 8, 8, 8, 8, 8, 8, 8, 8, 8, 8, 8, 8, 8, 8, 8, 8, 8, 8, 8, 8, 8, 8, 8, 8, 8, 8, 8, 8,</pre></div></td></tr></table>
+<div class="source"><pre class="prettyprint">7, 7, 7, 7, 7, 7, 7, 7, 7, 7, 7, 7, 7, 7, 7, 7, 7, 7, 7, 7, 7, 7, 7, 7, 7, 7, 7, 7, 7, 7, 7, 7, 8, 8, 8, 8,
+            8, 8, 8, 8, 8, 8, 8, 8, 8, 8, 8, 8, 8, 8, 8, 8, 8, 8, 8, 8, 8, 8, 8, 8, 8, 8, 8, 8, 8, 8, 8, 8, 8, 8, 8, 8,</pre></div></td></tr></table>
 <table border="0" class="table table-striped">
 <tr class="a">
 <th>File</th>
@@ -1940,7 +2092,7 @@
 <td><a href="./xref/nom/tam/util/type/PrimitiveType.html#L46">46</a></td></tr>
 <tr class="a">
 <td align="left">nom/tam/util/type/PrimitiveTypeBase.java</td>
-<td><a href="./xref/nom/tam/util/type/PrimitiveTypeBase.html#L46">46</a></td></tr>
+<td><a href="./xref/nom/tam/util/type/PrimitiveTypeBase.html#L45">45</a></td></tr>
 <tr class="b">
 <td colspan="2" align="left">
 <div class="source"><pre class="prettyprint">protected PrimitiveType(int size, boolean individualSize, Class&lt;?&gt; primitiveClass, Class&lt;?&gt; wrapperClass,

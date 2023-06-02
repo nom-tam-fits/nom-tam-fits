@@ -15,12 +15,12 @@
 <a class="jxr_linenumber" name="L7" href="#L7">7</a>   <em class="jxr_comment"> * Copyright (C) 1996 - 2021 nom-tam-fits</em>
 <a class="jxr_linenumber" name="L8" href="#L8">8</a>   <em class="jxr_comment"> * %%</em>
 <a class="jxr_linenumber" name="L9" href="#L9">9</a>   <em class="jxr_comment"> * This is free and unencumbered software released into the public domain.</em>
-<a class="jxr_linenumber" name="L10" href="#L10">10</a>  <em class="jxr_comment"> *</em>
+<a class="jxr_linenumber" name="L10" href="#L10">10</a>  <em class="jxr_comment"> * </em>
 <a class="jxr_linenumber" name="L11" href="#L11">11</a>  <em class="jxr_comment"> * Anyone is free to copy, modify, publish, use, compile, sell, or</em>
 <a class="jxr_linenumber" name="L12" href="#L12">12</a>  <em class="jxr_comment"> * distribute this software, either in source code form or as a compiled</em>
 <a class="jxr_linenumber" name="L13" href="#L13">13</a>  <em class="jxr_comment"> * binary, for any purpose, commercial or non-commercial, and by any</em>
 <a class="jxr_linenumber" name="L14" href="#L14">14</a>  <em class="jxr_comment"> * means.</em>
-<a class="jxr_linenumber" name="L15" href="#L15">15</a>  <em class="jxr_comment"> *</em>
+<a class="jxr_linenumber" name="L15" href="#L15">15</a>  <em class="jxr_comment"> * </em>
 <a class="jxr_linenumber" name="L16" href="#L16">16</a>  <em class="jxr_comment"> * In jurisdictions that recognize copyright laws, the author or authors</em>
 <a class="jxr_linenumber" name="L17" href="#L17">17</a>  <em class="jxr_comment"> * of this software dedicate any and all copyright interest in the</em>
 <a class="jxr_linenumber" name="L18" href="#L18">18</a>  <em class="jxr_comment"> * software to the public domain. We make this dedication for the benefit</em>
@@ -28,7 +28,7 @@
 <a class="jxr_linenumber" name="L20" href="#L20">20</a>  <em class="jxr_comment"> * successors. We intend this dedication to be an overt act of</em>
 <a class="jxr_linenumber" name="L21" href="#L21">21</a>  <em class="jxr_comment"> * relinquishment in perpetuity of all present and future rights to this</em>
 <a class="jxr_linenumber" name="L22" href="#L22">22</a>  <em class="jxr_comment"> * software under copyright law.</em>
-<a class="jxr_linenumber" name="L23" href="#L23">23</a>  <em class="jxr_comment"> *</em>
+<a class="jxr_linenumber" name="L23" href="#L23">23</a>  <em class="jxr_comment"> * </em>
 <a class="jxr_linenumber" name="L24" href="#L24">24</a>  <em class="jxr_comment"> * THE SOFTWARE IS PROVIDED "AS IS", WITHOUT WARRANTY OF ANY KIND,</em>
 <a class="jxr_linenumber" name="L25" href="#L25">25</a>  <em class="jxr_comment"> * EXPRESS OR IMPLIED, INCLUDING BUT NOT LIMITED TO THE WARRANTIES OF</em>
 <a class="jxr_linenumber" name="L26" href="#L26">26</a>  <em class="jxr_comment"> * MERCHANTABILITY, FITNESS FOR A PARTICULAR PURPOSE AND NONINFRINGEMENT.</em>
@@ -145,7 +145,7 @@
 <a class="jxr_linenumber" name="L137" href="#L137">137</a> <em class="jxr_javadoccomment">     * @see #format(Number)</em>
 <a class="jxr_linenumber" name="L138" href="#L138">138</a> <em class="jxr_javadoccomment">     */</em>
 <a class="jxr_linenumber" name="L139" href="#L139">139</a>     <strong class="jxr_keyword">public</strong> <strong class="jxr_keyword">synchronized</strong> <a name="FlexFormat" href="../../../nom/tam/util/FlexFormat.html#FlexFormat">FlexFormat</a> setPrecision(<strong class="jxr_keyword">int</strong> nDecimals) {
-<a class="jxr_linenumber" name="L140" href="#L140">140</a>         decimals = nDecimals &lt; 0 ? AUTO_PRECISION : nDecimals;
+<a class="jxr_linenumber" name="L140" href="#L140">140</a>         <strong class="jxr_keyword">this</strong>.decimals = nDecimals &lt; 0 ? AUTO_PRECISION : nDecimals;
 <a class="jxr_linenumber" name="L141" href="#L141">141</a>         <strong class="jxr_keyword">return</strong> <strong class="jxr_keyword">this</strong>;
 <a class="jxr_linenumber" name="L142" href="#L142">142</a>     }
 <a class="jxr_linenumber" name="L143" href="#L143">143</a> 
@@ -199,7 +199,7 @@
 <a class="jxr_linenumber" name="L191" href="#L191">191</a> <em class="jxr_javadoccomment">     * @see #format(Number)</em>
 <a class="jxr_linenumber" name="L192" href="#L192">192</a> <em class="jxr_javadoccomment">     */</em>
 <a class="jxr_linenumber" name="L193" href="#L193">193</a>     <strong class="jxr_keyword">public</strong> <strong class="jxr_keyword">synchronized</strong> <a name="FlexFormat" href="../../../nom/tam/util/FlexFormat.html#FlexFormat">FlexFormat</a> setWidth(<strong class="jxr_keyword">int</strong> nChars) {
-<a class="jxr_linenumber" name="L194" href="#L194">194</a>         width = nChars &gt; 0 ? nChars : 0;
+<a class="jxr_linenumber" name="L194" href="#L194">194</a>         <strong class="jxr_keyword">this</strong>.width = nChars &gt; 0 ? nChars : 0;
 <a class="jxr_linenumber" name="L195" href="#L195">195</a>         <strong class="jxr_keyword">return</strong> <strong class="jxr_keyword">this</strong>;
 <a class="jxr_linenumber" name="L196" href="#L196">196</a>     }
 <a class="jxr_linenumber" name="L197" href="#L197">197</a> 
@@ -272,12 +272,12 @@
 <a class="jxr_linenumber" name="L264" href="#L264">264</a>             fixed = value.toString();
 <a class="jxr_linenumber" name="L265" href="#L265">265</a>             <strong class="jxr_keyword">if</strong> (fixed.length() &lt;= width) {
 <a class="jxr_linenumber" name="L266" href="#L266">266</a>                 <strong class="jxr_keyword">return</strong> fixed;
-<a class="jxr_linenumber" name="L267" href="#L267">267</a>             }
-<a class="jxr_linenumber" name="L268" href="#L268">268</a>             <strong class="jxr_keyword">if</strong> (!(value instanceof BigInteger)) {
-<a class="jxr_linenumber" name="L269" href="#L269">269</a>                 <strong class="jxr_keyword">throw</strong> <strong class="jxr_keyword">new</strong> <a name="LongValueException" href="../../../nom/tam/fits/LongValueException.html#LongValueException">LongValueException</a>(width, fixed);
-<a class="jxr_linenumber" name="L270" href="#L270">270</a>             }
-<a class="jxr_linenumber" name="L271" href="#L271">271</a>             <em class="jxr_comment">// We'll try exponential with reduced precision...</em>
-<a class="jxr_linenumber" name="L272" href="#L272">272</a>             fixed = <strong class="jxr_keyword">null</strong>;
+<a class="jxr_linenumber" name="L267" href="#L267">267</a>             } <strong class="jxr_keyword">else</strong> <strong class="jxr_keyword">if</strong> (value instanceof BigInteger) {
+<a class="jxr_linenumber" name="L268" href="#L268">268</a>                 <em class="jxr_comment">// We'll try exponential with reduced precision...</em>
+<a class="jxr_linenumber" name="L269" href="#L269">269</a>                 fixed = <strong class="jxr_keyword">null</strong>;
+<a class="jxr_linenumber" name="L270" href="#L270">270</a>             } <strong class="jxr_keyword">else</strong> {
+<a class="jxr_linenumber" name="L271" href="#L271">271</a>                 <strong class="jxr_keyword">throw</strong> <strong class="jxr_keyword">new</strong> <a name="LongValueException" href="../../../nom/tam/fits/LongValueException.html#LongValueException">LongValueException</a>(width, fixed);
+<a class="jxr_linenumber" name="L272" href="#L272">272</a>             }
 <a class="jxr_linenumber" name="L273" href="#L273">273</a>         } <strong class="jxr_keyword">else</strong> <strong class="jxr_keyword">if</strong> (decimals &lt; 0) {
 <a class="jxr_linenumber" name="L274" href="#L274">274</a>             <em class="jxr_comment">// Don"t do fixed format if precision is set explicitly</em>
 <a class="jxr_linenumber" name="L275" href="#L275">275</a>             <em class="jxr_comment">// (It's not really trivial to control the number of significant</em>

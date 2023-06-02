@@ -15,12 +15,12 @@
 <a class="jxr_linenumber" name="L7" href="#L7">7</a>   <em class="jxr_comment"> * Copyright (C) 1996 - 2021 nom-tam-fits</em>
 <a class="jxr_linenumber" name="L8" href="#L8">8</a>   <em class="jxr_comment"> * %%</em>
 <a class="jxr_linenumber" name="L9" href="#L9">9</a>   <em class="jxr_comment"> * This is free and unencumbered software released into the public domain.</em>
-<a class="jxr_linenumber" name="L10" href="#L10">10</a>  <em class="jxr_comment"> *</em>
+<a class="jxr_linenumber" name="L10" href="#L10">10</a>  <em class="jxr_comment"> * </em>
 <a class="jxr_linenumber" name="L11" href="#L11">11</a>  <em class="jxr_comment"> * Anyone is free to copy, modify, publish, use, compile, sell, or</em>
 <a class="jxr_linenumber" name="L12" href="#L12">12</a>  <em class="jxr_comment"> * distribute this software, either in source code form or as a compiled</em>
 <a class="jxr_linenumber" name="L13" href="#L13">13</a>  <em class="jxr_comment"> * binary, for any purpose, commercial or non-commercial, and by any</em>
 <a class="jxr_linenumber" name="L14" href="#L14">14</a>  <em class="jxr_comment"> * means.</em>
-<a class="jxr_linenumber" name="L15" href="#L15">15</a>  <em class="jxr_comment"> *</em>
+<a class="jxr_linenumber" name="L15" href="#L15">15</a>  <em class="jxr_comment"> * </em>
 <a class="jxr_linenumber" name="L16" href="#L16">16</a>  <em class="jxr_comment"> * In jurisdictions that recognize copyright laws, the author or authors</em>
 <a class="jxr_linenumber" name="L17" href="#L17">17</a>  <em class="jxr_comment"> * of this software dedicate any and all copyright interest in the</em>
 <a class="jxr_linenumber" name="L18" href="#L18">18</a>  <em class="jxr_comment"> * software to the public domain. We make this dedication for the benefit</em>
@@ -28,7 +28,7 @@
 <a class="jxr_linenumber" name="L20" href="#L20">20</a>  <em class="jxr_comment"> * successors. We intend this dedication to be an overt act of</em>
 <a class="jxr_linenumber" name="L21" href="#L21">21</a>  <em class="jxr_comment"> * relinquishment in perpetuity of all present and future rights to this</em>
 <a class="jxr_linenumber" name="L22" href="#L22">22</a>  <em class="jxr_comment"> * software under copyright law.</em>
-<a class="jxr_linenumber" name="L23" href="#L23">23</a>  <em class="jxr_comment"> *</em>
+<a class="jxr_linenumber" name="L23" href="#L23">23</a>  <em class="jxr_comment"> * </em>
 <a class="jxr_linenumber" name="L24" href="#L24">24</a>  <em class="jxr_comment"> * THE SOFTWARE IS PROVIDED "AS IS", WITHOUT WARRANTY OF ANY KIND,</em>
 <a class="jxr_linenumber" name="L25" href="#L25">25</a>  <em class="jxr_comment"> * EXPRESS OR IMPLIED, INCLUDING BUT NOT LIMITED TO THE WARRANTIES OF</em>
 <a class="jxr_linenumber" name="L26" href="#L26">26</a>  <em class="jxr_comment"> * MERCHANTABILITY, FITNESS FOR A PARTICULAR PURPOSE AND NONINFRINGEMENT.</em>
@@ -44,7 +44,7 @@
 <a class="jxr_linenumber" name="L36" href="#L36">36</a>  
 <a class="jxr_linenumber" name="L37" href="#L37">37</a>  <em class="jxr_javadoccomment">/**</em>
 <a class="jxr_linenumber" name="L38" href="#L38">38</a>  <em class="jxr_javadoccomment"> * This is the file represents the common keywords between CXC and STSclExt</em>
-<a class="jxr_linenumber" name="L39" href="#L39">39</a>  <em class="jxr_javadoccomment"> *</em>
+<a class="jxr_linenumber" name="L39" href="#L39">39</a>  <em class="jxr_javadoccomment"> * </em>
 <a class="jxr_linenumber" name="L40" href="#L40">40</a>  <em class="jxr_javadoccomment"> * @author Richard van Nieuwenhoven</em>
 <a class="jxr_linenumber" name="L41" href="#L41">41</a>  <em class="jxr_javadoccomment"> */</em>
 <a class="jxr_linenumber" name="L42" href="#L42">42</a>  <strong class="jxr_keyword">public</strong> enum <a name="CXCStclSharedExt" href="../../../../../nom/tam/fits/header/extra/CXCStclSharedExt.html#CXCStclSharedExt">CXCStclSharedExt</a> <strong class="jxr_keyword">implements</strong> <a name="IFitsHeader" href="../../../../../nom/tam/fits/header/IFitsHeader.html#IFitsHeader">IFitsHeader</a> {
@@ -96,38 +96,38 @@
 <a class="jxr_linenumber" name="L88" href="#L88">88</a>      <strong class="jxr_keyword">private</strong> <strong class="jxr_keyword">final</strong> <a name="IFitsHeader" href="../../../../../nom/tam/fits/header/IFitsHeader.html#IFitsHeader">IFitsHeader</a> key;
 <a class="jxr_linenumber" name="L89" href="#L89">89</a>  
 <a class="jxr_linenumber" name="L90" href="#L90">90</a>      <a name="CXCStclSharedExt" href="../../../../../nom/tam/fits/header/extra/CXCStclSharedExt.html#CXCStclSharedExt">CXCStclSharedExt</a>(String comment) {
-<a class="jxr_linenumber" name="L91" href="#L91">91</a>          key = <strong class="jxr_keyword">new</strong> <a name="FitsHeaderImpl" href="../../../../../nom/tam/fits/header/FitsHeaderImpl.html#FitsHeaderImpl">FitsHeaderImpl</a>(name(), IFitsHeader.SOURCE.CXC, HDU.ANY, VALUE.STRING, comment);
+<a class="jxr_linenumber" name="L91" href="#L91">91</a>          <strong class="jxr_keyword">this</strong>.key = <strong class="jxr_keyword">new</strong> <a name="FitsHeaderImpl" href="../../../../../nom/tam/fits/header/FitsHeaderImpl.html#FitsHeaderImpl">FitsHeaderImpl</a>(name(), IFitsHeader.SOURCE.CXC, HDU.ANY, VALUE.STRING, comment);
 <a class="jxr_linenumber" name="L92" href="#L92">92</a>      }
 <a class="jxr_linenumber" name="L93" href="#L93">93</a>  
 <a class="jxr_linenumber" name="L94" href="#L94">94</a>      @Override
 <a class="jxr_linenumber" name="L95" href="#L95">95</a>      <strong class="jxr_keyword">public</strong> String comment() {
-<a class="jxr_linenumber" name="L96" href="#L96">96</a>          <strong class="jxr_keyword">return</strong> key.comment();
+<a class="jxr_linenumber" name="L96" href="#L96">96</a>          <strong class="jxr_keyword">return</strong> <strong class="jxr_keyword">this</strong>.key.comment();
 <a class="jxr_linenumber" name="L97" href="#L97">97</a>      }
 <a class="jxr_linenumber" name="L98" href="#L98">98</a>  
 <a class="jxr_linenumber" name="L99" href="#L99">99</a>      @Override
 <a class="jxr_linenumber" name="L100" href="#L100">100</a>     <strong class="jxr_keyword">public</strong> HDU hdu() {
-<a class="jxr_linenumber" name="L101" href="#L101">101</a>         <strong class="jxr_keyword">return</strong> key.hdu();
+<a class="jxr_linenumber" name="L101" href="#L101">101</a>         <strong class="jxr_keyword">return</strong> <strong class="jxr_keyword">this</strong>.key.hdu();
 <a class="jxr_linenumber" name="L102" href="#L102">102</a>     }
 <a class="jxr_linenumber" name="L103" href="#L103">103</a> 
 <a class="jxr_linenumber" name="L104" href="#L104">104</a>     @Override
 <a class="jxr_linenumber" name="L105" href="#L105">105</a>     <strong class="jxr_keyword">public</strong> String key() {
-<a class="jxr_linenumber" name="L106" href="#L106">106</a>         <strong class="jxr_keyword">return</strong> key.key();
+<a class="jxr_linenumber" name="L106" href="#L106">106</a>         <strong class="jxr_keyword">return</strong> <strong class="jxr_keyword">this</strong>.key.key();
 <a class="jxr_linenumber" name="L107" href="#L107">107</a>     }
 <a class="jxr_linenumber" name="L108" href="#L108">108</a> 
 <a class="jxr_linenumber" name="L109" href="#L109">109</a>     @Override
 <a class="jxr_linenumber" name="L110" href="#L110">110</a>     <strong class="jxr_keyword">public</strong> <a name="IFitsHeader" href="../../../../../nom/tam/fits/header/IFitsHeader.html#IFitsHeader">IFitsHeader</a> n(<strong class="jxr_keyword">int</strong>... number) {
-<a class="jxr_linenumber" name="L111" href="#L111">111</a>         <strong class="jxr_keyword">return</strong> key.n(number);
+<a class="jxr_linenumber" name="L111" href="#L111">111</a>         <strong class="jxr_keyword">return</strong> <strong class="jxr_keyword">this</strong>.key.n(number);
 <a class="jxr_linenumber" name="L112" href="#L112">112</a>     }
 <a class="jxr_linenumber" name="L113" href="#L113">113</a> 
 <a class="jxr_linenumber" name="L114" href="#L114">114</a>     @Override
 <a class="jxr_linenumber" name="L115" href="#L115">115</a>     <strong class="jxr_keyword">public</strong> SOURCE status() {
-<a class="jxr_linenumber" name="L116" href="#L116">116</a>         <strong class="jxr_keyword">return</strong> key.status();
+<a class="jxr_linenumber" name="L116" href="#L116">116</a>         <strong class="jxr_keyword">return</strong> <strong class="jxr_keyword">this</strong>.key.status();
 <a class="jxr_linenumber" name="L117" href="#L117">117</a>     }
 <a class="jxr_linenumber" name="L118" href="#L118">118</a> 
 <a class="jxr_linenumber" name="L119" href="#L119">119</a>     @Override
 <a class="jxr_linenumber" name="L120" href="#L120">120</a>     @SuppressWarnings(<span class="jxr_string">"CPD-END"</span>)
 <a class="jxr_linenumber" name="L121" href="#L121">121</a>     <strong class="jxr_keyword">public</strong> VALUE valueType() {
-<a class="jxr_linenumber" name="L122" href="#L122">122</a>         <strong class="jxr_keyword">return</strong> key.valueType();
+<a class="jxr_linenumber" name="L122" href="#L122">122</a>         <strong class="jxr_keyword">return</strong> <strong class="jxr_keyword">this</strong>.key.valueType();
 <a class="jxr_linenumber" name="L123" href="#L123">123</a>     }
 <a class="jxr_linenumber" name="L124" href="#L124">124</a> }
 </pre>

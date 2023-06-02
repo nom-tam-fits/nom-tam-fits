@@ -13,12 +13,12 @@
 <a class="jxr_linenumber" name="L5" href="#L5">5</a>   <em class="jxr_comment"> * Copyright (C) 1996 - 2021 nom-tam-fits</em>
 <a class="jxr_linenumber" name="L6" href="#L6">6</a>   <em class="jxr_comment"> * %%</em>
 <a class="jxr_linenumber" name="L7" href="#L7">7</a>   <em class="jxr_comment"> * This is free and unencumbered software released into the public domain.</em>
-<a class="jxr_linenumber" name="L8" href="#L8">8</a>   <em class="jxr_comment"> *</em>
+<a class="jxr_linenumber" name="L8" href="#L8">8</a>   <em class="jxr_comment"> * </em>
 <a class="jxr_linenumber" name="L9" href="#L9">9</a>   <em class="jxr_comment"> * Anyone is free to copy, modify, publish, use, compile, sell, or</em>
 <a class="jxr_linenumber" name="L10" href="#L10">10</a>  <em class="jxr_comment"> * distribute this software, either in source code form or as a compiled</em>
 <a class="jxr_linenumber" name="L11" href="#L11">11</a>  <em class="jxr_comment"> * binary, for any purpose, commercial or non-commercial, and by any</em>
 <a class="jxr_linenumber" name="L12" href="#L12">12</a>  <em class="jxr_comment"> * means.</em>
-<a class="jxr_linenumber" name="L13" href="#L13">13</a>  <em class="jxr_comment"> *</em>
+<a class="jxr_linenumber" name="L13" href="#L13">13</a>  <em class="jxr_comment"> * </em>
 <a class="jxr_linenumber" name="L14" href="#L14">14</a>  <em class="jxr_comment"> * In jurisdictions that recognize copyright laws, the author or authors</em>
 <a class="jxr_linenumber" name="L15" href="#L15">15</a>  <em class="jxr_comment"> * of this software dedicate any and all copyright interest in the</em>
 <a class="jxr_linenumber" name="L16" href="#L16">16</a>  <em class="jxr_comment"> * software to the public domain. We make this dedication for the benefit</em>
@@ -26,7 +26,7 @@
 <a class="jxr_linenumber" name="L18" href="#L18">18</a>  <em class="jxr_comment"> * successors. We intend this dedication to be an overt act of</em>
 <a class="jxr_linenumber" name="L19" href="#L19">19</a>  <em class="jxr_comment"> * relinquishment in perpetuity of all present and future rights to this</em>
 <a class="jxr_linenumber" name="L20" href="#L20">20</a>  <em class="jxr_comment"> * software under copyright law.</em>
-<a class="jxr_linenumber" name="L21" href="#L21">21</a>  <em class="jxr_comment"> *</em>
+<a class="jxr_linenumber" name="L21" href="#L21">21</a>  <em class="jxr_comment"> * </em>
 <a class="jxr_linenumber" name="L22" href="#L22">22</a>  <em class="jxr_comment"> * THE SOFTWARE IS PROVIDED "AS IS", WITHOUT WARRANTY OF ANY KIND,</em>
 <a class="jxr_linenumber" name="L23" href="#L23">23</a>  <em class="jxr_comment"> * EXPRESS OR IMPLIED, INCLUDING BUT NOT LIMITED TO THE WARRANTIES OF</em>
 <a class="jxr_linenumber" name="L24" href="#L24">24</a>  <em class="jxr_comment"> * MERCHANTABILITY, FITNESS FOR A PARTICULAR PURPOSE AND NONINFRINGEMENT.</em>
@@ -39,17 +39,17 @@
 <a class="jxr_linenumber" name="L31" href="#L31">31</a>  
 <a class="jxr_linenumber" name="L32" href="#L32">32</a>  <strong class="jxr_keyword">package</strong> nom.tam.util.array;
 <a class="jxr_linenumber" name="L33" href="#L33">33</a>  
-<a class="jxr_linenumber" name="L34" href="#L34">34</a>  <strong class="jxr_keyword">import</strong> java.util.Collections;
-<a class="jxr_linenumber" name="L35" href="#L35">35</a>  <strong class="jxr_keyword">import</strong> java.util.HashMap;
-<a class="jxr_linenumber" name="L36" href="#L36">36</a>  <strong class="jxr_keyword">import</strong> java.util.Map;
-<a class="jxr_linenumber" name="L37" href="#L37">37</a>  
-<a class="jxr_linenumber" name="L38" href="#L38">38</a>  <em class="jxr_javadoccomment">/**</em>
-<a class="jxr_linenumber" name="L39" href="#L39">39</a>  <em class="jxr_javadoccomment"> * @deprecated               use {@link MultiArrayCopier} instead. Make copies of multi-dimensional arrays.</em>
+<a class="jxr_linenumber" name="L34" href="#L34">34</a>  
+<a class="jxr_linenumber" name="L35" href="#L35">35</a>  <strong class="jxr_keyword">import</strong> java.util.Collections;
+<a class="jxr_linenumber" name="L36" href="#L36">36</a>  <strong class="jxr_keyword">import</strong> java.util.HashMap;
+<a class="jxr_linenumber" name="L37" href="#L37">37</a>  <strong class="jxr_keyword">import</strong> java.util.Map;
+<a class="jxr_linenumber" name="L38" href="#L38">38</a>  
+<a class="jxr_linenumber" name="L39" href="#L39">39</a>  <em class="jxr_javadoccomment">/**</em>
 <a class="jxr_linenumber" name="L40" href="#L40">40</a>  <em class="jxr_javadoccomment"> * </em>
-<a class="jxr_linenumber" name="L41" href="#L41">41</a>  <em class="jxr_javadoccomment"> * @param      &lt;Source&gt;      The generic type of array from which we want to copy elements</em>
-<a class="jxr_linenumber" name="L42" href="#L42">42</a>  <em class="jxr_javadoccomment"> * @param      &lt;Destination&gt; The generic type of array to which we want to copy elements.</em>
-<a class="jxr_linenumber" name="L43" href="#L43">43</a>  <em class="jxr_javadoccomment"> */</em>
-<a class="jxr_linenumber" name="L44" href="#L44">44</a>  @Deprecated
+<a class="jxr_linenumber" name="L41" href="#L41">41</a>  <em class="jxr_javadoccomment"> *</em>
+<a class="jxr_linenumber" name="L42" href="#L42">42</a>  <em class="jxr_javadoccomment"> * @param &lt;Source&gt;      The generic type of array from which we want to copy elements</em>
+<a class="jxr_linenumber" name="L43" href="#L43">43</a>  <em class="jxr_javadoccomment"> * @param &lt;Destination&gt; The generic type of array to which we want to copy elements.</em>
+<a class="jxr_linenumber" name="L44" href="#L44">44</a>  <em class="jxr_javadoccomment"> */</em>
 <a class="jxr_linenumber" name="L45" href="#L45">45</a>  <strong class="jxr_keyword">public</strong> <strong class="jxr_keyword">class</strong> MultiArrayCopyFactory&lt;Source, Destination&gt; {
 <a class="jxr_linenumber" name="L46" href="#L46">46</a>  
 <a class="jxr_linenumber" name="L47" href="#L47">47</a>      <strong class="jxr_keyword">private</strong> <strong class="jxr_keyword">static</strong> <strong class="jxr_keyword">class</strong> ByteToChar <strong class="jxr_keyword">extends</strong> MultiArrayCopyFactory&lt;byte[], <strong class="jxr_keyword">char</strong>[]&gt; {
@@ -560,30 +560,22 @@
 <a class="jxr_linenumber" name="L552" href="#L552">552</a>         FACTORIES = Collections.unmodifiableMap(factories);
 <a class="jxr_linenumber" name="L553" href="#L553">553</a>     }
 <a class="jxr_linenumber" name="L554" href="#L554">554</a> 
-<a class="jxr_linenumber" name="L555" href="#L555">555</a>     <em class="jxr_javadoccomment">/**</em>
-<a class="jxr_linenumber" name="L556" href="#L556">556</a> <em class="jxr_javadoccomment">     * @deprecated for internal use only. This ought to be private.</em>
-<a class="jxr_linenumber" name="L557" href="#L557">557</a> <em class="jxr_javadoccomment">     */</em>
-<a class="jxr_linenumber" name="L558" href="#L558">558</a>     @SuppressWarnings(<span class="jxr_string">"javadoc"</span>)
-<a class="jxr_linenumber" name="L559" href="#L559">559</a>     <strong class="jxr_keyword">public</strong> <strong class="jxr_keyword">static</strong> MultiArrayCopyFactory&lt;?, ?&gt; select(Class&lt;?&gt; primitiveType, Class&lt;?&gt; primitiveType2) {
-<a class="jxr_linenumber" name="L560" href="#L560">560</a>         Map&lt;Class&lt;?&gt;, MultiArrayCopyFactory&lt;?, ?&gt;&gt; from = MultiArrayCopyFactory.FACTORIES.get(primitiveType);
-<a class="jxr_linenumber" name="L561" href="#L561">561</a>         <strong class="jxr_keyword">if</strong> (from != <strong class="jxr_keyword">null</strong>) {
-<a class="jxr_linenumber" name="L562" href="#L562">562</a>             MultiArrayCopyFactory&lt;?, ?&gt; to = from.get(primitiveType2);
-<a class="jxr_linenumber" name="L563" href="#L563">563</a>             <strong class="jxr_keyword">if</strong> (to != <strong class="jxr_keyword">null</strong>) {
-<a class="jxr_linenumber" name="L564" href="#L564">564</a>                 <strong class="jxr_keyword">return</strong> to;
-<a class="jxr_linenumber" name="L565" href="#L565">565</a>             }
-<a class="jxr_linenumber" name="L566" href="#L566">566</a>         }
-<a class="jxr_linenumber" name="L567" href="#L567">567</a>         <strong class="jxr_keyword">return</strong> MultiArrayCopyFactory.GENERIC;
+<a class="jxr_linenumber" name="L555" href="#L555">555</a>     <strong class="jxr_keyword">public</strong> <strong class="jxr_keyword">static</strong> MultiArrayCopyFactory&lt;?, ?&gt; select(Class&lt;?&gt; primitiveType, Class&lt;?&gt; primitiveType2) {
+<a class="jxr_linenumber" name="L556" href="#L556">556</a>         Map&lt;Class&lt;?&gt;, MultiArrayCopyFactory&lt;?, ?&gt;&gt; from = MultiArrayCopyFactory.FACTORIES.get(primitiveType);
+<a class="jxr_linenumber" name="L557" href="#L557">557</a>         <strong class="jxr_keyword">if</strong> (from != <strong class="jxr_keyword">null</strong>) {
+<a class="jxr_linenumber" name="L558" href="#L558">558</a>             MultiArrayCopyFactory&lt;?, ?&gt; to = from.get(primitiveType2);
+<a class="jxr_linenumber" name="L559" href="#L559">559</a>             <strong class="jxr_keyword">if</strong> (to != <strong class="jxr_keyword">null</strong>) {
+<a class="jxr_linenumber" name="L560" href="#L560">560</a>                 <strong class="jxr_keyword">return</strong> to;
+<a class="jxr_linenumber" name="L561" href="#L561">561</a>             }
+<a class="jxr_linenumber" name="L562" href="#L562">562</a>         }
+<a class="jxr_linenumber" name="L563" href="#L563">563</a>         <strong class="jxr_keyword">return</strong> MultiArrayCopyFactory.GENERIC;
+<a class="jxr_linenumber" name="L564" href="#L564">564</a>     }
+<a class="jxr_linenumber" name="L565" href="#L565">565</a> 
+<a class="jxr_linenumber" name="L566" href="#L566">566</a>     <strong class="jxr_keyword">public</strong> <strong class="jxr_keyword">void</strong> arraycopy(Source src, <strong class="jxr_keyword">int</strong> srcPos, Destination dest, <strong class="jxr_keyword">int</strong> destPos, <strong class="jxr_keyword">int</strong> length) {
+<a class="jxr_linenumber" name="L567" href="#L567">567</a>         System.arraycopy(src, srcPos, dest, destPos, length);
 <a class="jxr_linenumber" name="L568" href="#L568">568</a>     }
 <a class="jxr_linenumber" name="L569" href="#L569">569</a> 
-<a class="jxr_linenumber" name="L570" href="#L570">570</a>     <em class="jxr_javadoccomment">/**</em>
-<a class="jxr_linenumber" name="L571" href="#L571">571</a> <em class="jxr_javadoccomment">     * See {@link System#arraycopy(Object, int, Object, int, int)}.</em>
-<a class="jxr_linenumber" name="L572" href="#L572">572</a> <em class="jxr_javadoccomment">     */</em>
-<a class="jxr_linenumber" name="L573" href="#L573">573</a>     @SuppressWarnings(<span class="jxr_string">"javadoc"</span>)
-<a class="jxr_linenumber" name="L574" href="#L574">574</a>     <strong class="jxr_keyword">public</strong> <strong class="jxr_keyword">void</strong> arraycopy(Source src, <strong class="jxr_keyword">int</strong> srcPos, Destination dest, <strong class="jxr_keyword">int</strong> destPos, <strong class="jxr_keyword">int</strong> length) {
-<a class="jxr_linenumber" name="L575" href="#L575">575</a>         System.arraycopy(src, srcPos, dest, destPos, length);
-<a class="jxr_linenumber" name="L576" href="#L576">576</a>     }
-<a class="jxr_linenumber" name="L577" href="#L577">577</a> 
-<a class="jxr_linenumber" name="L578" href="#L578">578</a> }
+<a class="jxr_linenumber" name="L570" href="#L570">570</a> }
 </pre>
 <hr/>
 <div id="footer">Copyright &#169; 1996&#x2013;2023 nom-tam-fits. All rights reserved.</div>

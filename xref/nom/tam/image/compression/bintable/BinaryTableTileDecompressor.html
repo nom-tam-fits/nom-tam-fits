@@ -15,12 +15,12 @@
 <a class="jxr_linenumber" name="L7" href="#L7">7</a>   <em class="jxr_comment"> * Copyright (C) 1996 - 2021 nom-tam-fits</em>
 <a class="jxr_linenumber" name="L8" href="#L8">8</a>   <em class="jxr_comment"> * %%</em>
 <a class="jxr_linenumber" name="L9" href="#L9">9</a>   <em class="jxr_comment"> * This is free and unencumbered software released into the public domain.</em>
-<a class="jxr_linenumber" name="L10" href="#L10">10</a>  <em class="jxr_comment"> *</em>
+<a class="jxr_linenumber" name="L10" href="#L10">10</a>  <em class="jxr_comment"> * </em>
 <a class="jxr_linenumber" name="L11" href="#L11">11</a>  <em class="jxr_comment"> * Anyone is free to copy, modify, publish, use, compile, sell, or</em>
 <a class="jxr_linenumber" name="L12" href="#L12">12</a>  <em class="jxr_comment"> * distribute this software, either in source code form or as a compiled</em>
 <a class="jxr_linenumber" name="L13" href="#L13">13</a>  <em class="jxr_comment"> * binary, for any purpose, commercial or non-commercial, and by any</em>
 <a class="jxr_linenumber" name="L14" href="#L14">14</a>  <em class="jxr_comment"> * means.</em>
-<a class="jxr_linenumber" name="L15" href="#L15">15</a>  <em class="jxr_comment"> *</em>
+<a class="jxr_linenumber" name="L15" href="#L15">15</a>  <em class="jxr_comment"> * </em>
 <a class="jxr_linenumber" name="L16" href="#L16">16</a>  <em class="jxr_comment"> * In jurisdictions that recognize copyright laws, the author or authors</em>
 <a class="jxr_linenumber" name="L17" href="#L17">17</a>  <em class="jxr_comment"> * of this software dedicate any and all copyright interest in the</em>
 <a class="jxr_linenumber" name="L18" href="#L18">18</a>  <em class="jxr_comment"> * software to the public domain. We make this dedication for the benefit</em>
@@ -28,7 +28,7 @@
 <a class="jxr_linenumber" name="L20" href="#L20">20</a>  <em class="jxr_comment"> * successors. We intend this dedication to be an overt act of</em>
 <a class="jxr_linenumber" name="L21" href="#L21">21</a>  <em class="jxr_comment"> * relinquishment in perpetuity of all present and future rights to this</em>
 <a class="jxr_linenumber" name="L22" href="#L22">22</a>  <em class="jxr_comment"> * software under copyright law.</em>
-<a class="jxr_linenumber" name="L23" href="#L23">23</a>  <em class="jxr_comment"> *</em>
+<a class="jxr_linenumber" name="L23" href="#L23">23</a>  <em class="jxr_comment"> * </em>
 <a class="jxr_linenumber" name="L24" href="#L24">24</a>  <em class="jxr_comment"> * THE SOFTWARE IS PROVIDED "AS IS", WITHOUT WARRANTY OF ANY KIND,</em>
 <a class="jxr_linenumber" name="L25" href="#L25">25</a>  <em class="jxr_comment"> * EXPRESS OR IMPLIED, INCLUDING BUT NOT LIMITED TO THE WARRANTIES OF</em>
 <a class="jxr_linenumber" name="L26" href="#L26">26</a>  <em class="jxr_comment"> * MERCHANTABILITY, FITNESS FOR A PARTICULAR PURPOSE AND NONINFRINGEMENT.</em>
@@ -46,43 +46,35 @@
 <a class="jxr_linenumber" name="L38" href="#L38">38</a>  <strong class="jxr_keyword">import</strong> nom.tam.fits.FitsException;
 <a class="jxr_linenumber" name="L39" href="#L39">39</a>  <strong class="jxr_keyword">import</strong> nom.tam.image.compression.hdu.CompressedTableData;
 <a class="jxr_linenumber" name="L40" href="#L40">40</a>  <strong class="jxr_keyword">import</strong> nom.tam.util.ArrayDataInput;
-<a class="jxr_linenumber" name="L41" href="#L41">41</a>  <strong class="jxr_keyword">import</strong> nom.tam.util.ColumnTable;
-<a class="jxr_linenumber" name="L42" href="#L42">42</a>  <strong class="jxr_keyword">import</strong> nom.tam.util.FitsInputStream;
+<a class="jxr_linenumber" name="L41" href="#L41">41</a>  <strong class="jxr_keyword">import</strong> nom.tam.util.FitsInputStream;
+<a class="jxr_linenumber" name="L42" href="#L42">42</a>  <strong class="jxr_keyword">import</strong> nom.tam.util.ColumnTable;
 <a class="jxr_linenumber" name="L43" href="#L43">43</a>  
-<a class="jxr_linenumber" name="L44" href="#L44">44</a>  <em class="jxr_javadoccomment">/**</em>
-<a class="jxr_linenumber" name="L45" href="#L45">45</a>  <em class="jxr_javadoccomment"> * (&lt;i&gt;for internal use&lt;/i&gt;) Handles the decompression of binary table 'tiles'.</em>
-<a class="jxr_linenumber" name="L46" href="#L46">46</a>  <em class="jxr_javadoccomment"> */</em>
-<a class="jxr_linenumber" name="L47" href="#L47">47</a>  <strong class="jxr_keyword">public</strong> <strong class="jxr_keyword">class</strong> <a name="BinaryTableTileDecompressor" href="../../../../../nom/tam/image/compression/bintable/BinaryTableTileDecompressor.html#BinaryTableTileDecompressor">BinaryTableTileDecompressor</a> <strong class="jxr_keyword">extends</strong> <a name="BinaryTableTile" href="../../../../../nom/tam/image/compression/bintable/BinaryTableTile.html#BinaryTableTile">BinaryTableTile</a> {
-<a class="jxr_linenumber" name="L48" href="#L48">48</a>  
-<a class="jxr_linenumber" name="L49" href="#L49">49</a>      <strong class="jxr_keyword">private</strong> <strong class="jxr_keyword">final</strong> ByteBuffer compressedBytes;
-<a class="jxr_linenumber" name="L50" href="#L50">50</a>  
-<a class="jxr_linenumber" name="L51" href="#L51">51</a>      <strong class="jxr_keyword">private</strong> <a name="ArrayDataInput" href="../../../../../nom/tam/util/ArrayDataInput.html#ArrayDataInput">ArrayDataInput</a> is;
-<a class="jxr_linenumber" name="L52" href="#L52">52</a>  
-<a class="jxr_linenumber" name="L53" href="#L53">53</a>      <em class="jxr_javadoccomment">/**</em>
-<a class="jxr_linenumber" name="L54" href="#L54">54</a>  <em class="jxr_javadoccomment">     * @deprecated for internal use</em>
-<a class="jxr_linenumber" name="L55" href="#L55">55</a>  <em class="jxr_javadoccomment">     */</em>
-<a class="jxr_linenumber" name="L56" href="#L56">56</a>      @SuppressWarnings(<span class="jxr_string">"javadoc"</span>)
-<a class="jxr_linenumber" name="L57" href="#L57">57</a>      <strong class="jxr_keyword">public</strong> <a name="BinaryTableTileDecompressor" href="../../../../../nom/tam/image/compression/bintable/BinaryTableTileDecompressor.html#BinaryTableTileDecompressor">BinaryTableTileDecompressor</a>(<a name="CompressedTableData" href="../../../../../nom/tam/image/compression/hdu/CompressedTableData.html#CompressedTableData">CompressedTableData</a> binData, ColumnTable&lt;?&gt; columnTable,
-<a class="jxr_linenumber" name="L58" href="#L58">58</a>              <a name="BinaryTableTileDescription" href="../../../../../nom/tam/image/compression/bintable/BinaryTableTileDescription.html#BinaryTableTileDescription">BinaryTableTileDescription</a> description) <strong class="jxr_keyword">throws</strong> <a name="FitsException" href="../../../../../nom/tam/fits/FitsException.html#FitsException">FitsException</a> {
-<a class="jxr_linenumber" name="L59" href="#L59">59</a>          <strong class="jxr_keyword">super</strong>(columnTable, description);
-<a class="jxr_linenumber" name="L60" href="#L60">60</a>          compressedBytes = ByteBuffer.wrap((byte[]) binData.getElement(rowStart, column));
-<a class="jxr_linenumber" name="L61" href="#L61">61</a>      }
-<a class="jxr_linenumber" name="L62" href="#L62">62</a>  
-<a class="jxr_linenumber" name="L63" href="#L63">63</a>      @Override
-<a class="jxr_linenumber" name="L64" href="#L64">64</a>      <strong class="jxr_keyword">public</strong> <strong class="jxr_keyword">void</strong> run() {
-<a class="jxr_linenumber" name="L65" href="#L65">65</a>          <strong class="jxr_keyword">if</strong> (is == <strong class="jxr_keyword">null</strong>) {
-<a class="jxr_linenumber" name="L66" href="#L66">66</a>              ByteBuffer unCompressedBytes = ByteBuffer.wrap(<strong class="jxr_keyword">new</strong> byte[getUncompressedSizeInBytes()]);
-<a class="jxr_linenumber" name="L67" href="#L67">67</a>              getCompressorControl().decompress(compressedBytes, type.asTypedBuffer(unCompressedBytes), <strong class="jxr_keyword">null</strong>);
-<a class="jxr_linenumber" name="L68" href="#L68">68</a>              is = <strong class="jxr_keyword">new</strong> <a name="FitsInputStream" href="../../../../../nom/tam/util/FitsInputStream.html#FitsInputStream">FitsInputStream</a>(<strong class="jxr_keyword">new</strong> ByteArrayInputStream(unCompressedBytes.array()));
-<a class="jxr_linenumber" name="L69" href="#L69">69</a>          }
-<a class="jxr_linenumber" name="L70" href="#L70">70</a>          <strong class="jxr_keyword">try</strong> {
-<a class="jxr_linenumber" name="L71" href="#L71">71</a>              data.read(is, rowStart, rowEnd, column);
-<a class="jxr_linenumber" name="L72" href="#L72">72</a>          } <strong class="jxr_keyword">catch</strong> (IOException e) {
-<a class="jxr_linenumber" name="L73" href="#L73">73</a>              <strong class="jxr_keyword">throw</strong> <strong class="jxr_keyword">new</strong> IllegalStateException(<span class="jxr_string">"could not read compressed data"</span>, e);
-<a class="jxr_linenumber" name="L74" href="#L74">74</a>          }
-<a class="jxr_linenumber" name="L75" href="#L75">75</a>      }
-<a class="jxr_linenumber" name="L76" href="#L76">76</a>  
-<a class="jxr_linenumber" name="L77" href="#L77">77</a>  }
+<a class="jxr_linenumber" name="L44" href="#L44">44</a>  <strong class="jxr_keyword">public</strong> <strong class="jxr_keyword">class</strong> <a name="BinaryTableTileDecompressor" href="../../../../../nom/tam/image/compression/bintable/BinaryTableTileDecompressor.html#BinaryTableTileDecompressor">BinaryTableTileDecompressor</a> <strong class="jxr_keyword">extends</strong> <a name="BinaryTableTile" href="../../../../../nom/tam/image/compression/bintable/BinaryTableTile.html#BinaryTableTile">BinaryTableTile</a> {
+<a class="jxr_linenumber" name="L45" href="#L45">45</a>  
+<a class="jxr_linenumber" name="L46" href="#L46">46</a>      <strong class="jxr_keyword">private</strong> <strong class="jxr_keyword">final</strong> ByteBuffer compressedBytes;
+<a class="jxr_linenumber" name="L47" href="#L47">47</a>  
+<a class="jxr_linenumber" name="L48" href="#L48">48</a>      <strong class="jxr_keyword">private</strong> <a name="ArrayDataInput" href="../../../../../nom/tam/util/ArrayDataInput.html#ArrayDataInput">ArrayDataInput</a> is;
+<a class="jxr_linenumber" name="L49" href="#L49">49</a>  
+<a class="jxr_linenumber" name="L50" href="#L50">50</a>      <strong class="jxr_keyword">public</strong> <a name="BinaryTableTileDecompressor" href="../../../../../nom/tam/image/compression/bintable/BinaryTableTileDecompressor.html#BinaryTableTileDecompressor">BinaryTableTileDecompressor</a>(<a name="CompressedTableData" href="../../../../../nom/tam/image/compression/hdu/CompressedTableData.html#CompressedTableData">CompressedTableData</a> binData, ColumnTable&lt;?&gt; columnTable, <a name="BinaryTableTileDescription" href="../../../../../nom/tam/image/compression/bintable/BinaryTableTileDescription.html#BinaryTableTileDescription">BinaryTableTileDescription</a> description) <strong class="jxr_keyword">throws</strong> <a name="FitsException" href="../../../../../nom/tam/fits/FitsException.html#FitsException">FitsException</a> {
+<a class="jxr_linenumber" name="L51" href="#L51">51</a>          <strong class="jxr_keyword">super</strong>(columnTable, description);
+<a class="jxr_linenumber" name="L52" href="#L52">52</a>          <strong class="jxr_keyword">this</strong>.compressedBytes = ByteBuffer.wrap((byte[]) binData.getElement(<strong class="jxr_keyword">this</strong>.rowStart, <strong class="jxr_keyword">this</strong>.column));
+<a class="jxr_linenumber" name="L53" href="#L53">53</a>      }
+<a class="jxr_linenumber" name="L54" href="#L54">54</a>  
+<a class="jxr_linenumber" name="L55" href="#L55">55</a>      @Override
+<a class="jxr_linenumber" name="L56" href="#L56">56</a>      <strong class="jxr_keyword">public</strong> <strong class="jxr_keyword">void</strong> run() {
+<a class="jxr_linenumber" name="L57" href="#L57">57</a>          <strong class="jxr_keyword">if</strong> (<strong class="jxr_keyword">this</strong>.is == <strong class="jxr_keyword">null</strong>) {
+<a class="jxr_linenumber" name="L58" href="#L58">58</a>              ByteBuffer unCompressedBytes = ByteBuffer.wrap(<strong class="jxr_keyword">new</strong> byte[getUncompressedSizeInBytes()]);
+<a class="jxr_linenumber" name="L59" href="#L59">59</a>              getCompressorControl().decompress(<strong class="jxr_keyword">this</strong>.compressedBytes, type.asTypedBuffer(unCompressedBytes), <strong class="jxr_keyword">null</strong>);
+<a class="jxr_linenumber" name="L60" href="#L60">60</a>              <strong class="jxr_keyword">this</strong>.is = <strong class="jxr_keyword">new</strong> <a name="FitsInputStream" href="../../../../../nom/tam/util/FitsInputStream.html#FitsInputStream">FitsInputStream</a>(<strong class="jxr_keyword">new</strong> ByteArrayInputStream(unCompressedBytes.array()));
+<a class="jxr_linenumber" name="L61" href="#L61">61</a>          }
+<a class="jxr_linenumber" name="L62" href="#L62">62</a>          <strong class="jxr_keyword">try</strong> {
+<a class="jxr_linenumber" name="L63" href="#L63">63</a>              <strong class="jxr_keyword">this</strong>.data.read(<strong class="jxr_keyword">this</strong>.is, <strong class="jxr_keyword">this</strong>.rowStart, <strong class="jxr_keyword">this</strong>.rowEnd, <strong class="jxr_keyword">this</strong>.column);
+<a class="jxr_linenumber" name="L64" href="#L64">64</a>          } <strong class="jxr_keyword">catch</strong> (IOException e) {
+<a class="jxr_linenumber" name="L65" href="#L65">65</a>              <strong class="jxr_keyword">throw</strong> <strong class="jxr_keyword">new</strong> IllegalStateException(<span class="jxr_string">"could not read compressed data"</span>, e);
+<a class="jxr_linenumber" name="L66" href="#L66">66</a>          }
+<a class="jxr_linenumber" name="L67" href="#L67">67</a>      }
+<a class="jxr_linenumber" name="L68" href="#L68">68</a>  
+<a class="jxr_linenumber" name="L69" href="#L69">69</a>  }
 </pre>
 <hr/>
 <div id="footer">Copyright &#169; 1996&#x2013;2023 nom-tam-fits. All rights reserved.</div>
