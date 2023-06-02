@@ -111,7 +111,7 @@ public class ArrayDataFile extends BufferedFileIO {
      * @see #setEncoder(OutputEncoder)
      * @see #getDecoder()
      */
-    protected OutputEncoder getEncoder() {
+    public OutputEncoder getEncoder() {
         return encoder;
     }
 
@@ -139,7 +139,7 @@ public class ArrayDataFile extends BufferedFileIO {
      * @see #setDecoder(InputDecoder)
      * @see #getEncoder()
      */
-    protected InputDecoder getDecoder() {
+    public InputDecoder getDecoder() {
         return decoder;
     }
 

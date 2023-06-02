@@ -1,6 +1,6 @@
 /**
  * <p>
- * Quantization support for representing floating-point values with integers corresponding to discreet levels. While not
+ * Quantization support for representing floating-point values with integers corresponding to discrete levels. While not
  * a compression alorithm in itself (hence you might also wonder why it's in a package on its own under compression
  * algorithms) quantization is nevertheless commonly used as a pre-sompression (or post-decompression step) with actual
  * algorithms, especially if the algorithms are designed for integer-only data.

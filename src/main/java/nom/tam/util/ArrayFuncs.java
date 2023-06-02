@@ -138,12 +138,16 @@ public final class ArrayFuncs {
     }
 
     /**
-     * @return         Convert an array to a specified type. This method supports conversions only among the primitive
-     *                     numeric types.
+     * Converts a numerical array to a specified element type. This method supports conversions only among the primitive
+     * numeric types.
      *
-     * @param  array   A possibly multidimensional array to be converted.
-     * @param  newType The desired output type. This should be one of the class descriptors for primitive numeric data,
-     *                     e.g., double.type.
+     * @return         a new array with the requested element type.
+     * 
+     * @param  array   a numerical array or one or more dimensions
+     * @param  newType the desired output type. This should be one of the class descriptors for primitive numeric data,
+     *                     e.g., <code>double.class</code>.
+     * 
+     * @see            #convertArray(Object, Class, boolean)
      */
     public static Object convertArray(Object array, Class<?> newType) {
         /*
@@ -158,13 +162,18 @@ public final class ArrayFuncs {
     }
 
     /**
-     * @return         Convert an array to a specified type. This method supports conversions only among the primitive
-     *                     numeric types.
+     * Converts a numerical array to a specified element type, returning the original if type conversion is not needed.
+     * This method supports conversions only among the primitive numeric types.
      *
-     * @param  array   A possibly multidimensional array to be converted.
-     * @param  newType The desired output type. This should be one of the class descriptors for primitive numeric data,
-     *                     e.g., double.type.
+     * @return         a new array with the requested element type, or possibly the original array if it readily matches
+     *                     the type and <code>reuse</code> is enabled.
+     *
+     * @param  array   a numerical array or one or more dimensions
+     * @param  newType the desired output type. This should be one of the class descriptors for primitive numeric data,
+     *                     e.g., <code>double.class</code>.
      * @param  reuse   If set, and the requested type is the same as the original, then the original is returned.
+     * 
+     * @see            #convertArray(Object, Class)
      */
     public static Object convertArray(Object array, Class<?> newType, boolean reuse) {
         if (getBaseClass(array) == newType && reuse) {
@@ -174,9 +183,10 @@ public final class ArrayFuncs {
     }
 
     /**
-     * @deprecated                          No longer used within the library itself. Copy one array into another. This
-     *                                          function copies the contents of one array into a previously allocated
-     *                                          array. The arrays must agree in type and size.
+     * Copy one array into another. This function copies the contents of one array into a previously allocated array.
+     * The arrays must agree in type and size.
+     * 
+     * @deprecated                          No longer used within the library itself.
      *
      * @param      original                 The array to be copied.
      * @param      copy                     The array to be copied into. This array must already be fully allocated.
@@ -255,12 +265,14 @@ public final class ArrayFuncs {
     }
 
     /**
-     * @return   a deep clone of an Array or a standard clone of a scalar. The object may comprise arrays of any
-     *               primitive type or any Object type which implements Cloneable. However, if the Object is some kind
-     *               of collection, e.g., a Vector then only a shallow copy of that object is made. I.e., deep refers
-     *               only to arrays.
+     * Returns a deep clone of an array (in one or more dimensions) or a standard clone of a scalar. The object may
+     * comprise arrays of any primitive type or any Object type which implements Cloneable. However, if the Object is
+     * some kind of collection, such as a {@link java.util.List}, then only a shallow copy of that object is made. I.e.,
+     * deep refers only to arrays.
      *
-     * @param  o The object to be copied.
+     * @return   a new object, with a copy of the original.
+     * 
+     * @param  o The object (usually an array) to be copied.
      */
     public static Object deepClone(Object o) {
         if (o == null) {

@@ -656,7 +656,9 @@ public class ColumnTable<T> implements DataTable {
     }
 
     /**
-     * @return the actual data arrays
+     * Returns the data for all columns as an array of arrays.
+     * 
+     * @return the actual data arrays, for each column.
      */
     @SuppressFBWarnings(value = "EI_EXPOSE_REP", justification = "intended exposure of mutable data")
     public Object[] getColumns() {
@@ -681,7 +683,10 @@ public class ColumnTable<T> implements DataTable {
     }
 
     /**
-     * @return the pointer state
+     * Returns the extra state information of the table. The type and nature of this information is implementation
+     * dependent.
+     * 
+     * @return the object capturing the implementation-specific table state
      */
     public T getExtraState() {
         return extraState;

@@ -48,7 +48,7 @@ public interface Cursor<KEY, VALUE> extends java.util.Iterator<VALUE> {
      * @param      key       the key of the value to add
      * @param      reference the value to add
      *
-     * @deprecated           use key parameter can be omitted, so use {@link #add(Object)} instead
+     * @deprecated           Use {@link #add(Object)} instead
      */
     @Deprecated
     void add(KEY key, VALUE reference);
@@ -62,14 +62,16 @@ public interface Cursor<KEY, VALUE> extends java.util.Iterator<VALUE> {
     void add(VALUE reference);
 
     /**
-     * move to the last element and return that.
+     * Moves to the last element and returns it.
      *
      * @return the last element.
      */
     VALUE end();
 
     /**
-     * @return Is there a previous element in the collection?
+     * Checks if there is an element prior to the current one.
+     * 
+     * @return Whether there is a previous element in the collection
      */
     boolean hasPrev();
 
@@ -85,6 +87,8 @@ public interface Cursor<KEY, VALUE> extends java.util.Iterator<VALUE> {
     VALUE next(int count);
 
     /**
+     * Returns the previous element in the ordered collection.
+     * 
      * @return the previous element.
      */
     VALUE prev();

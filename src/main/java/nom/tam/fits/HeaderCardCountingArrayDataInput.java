@@ -43,8 +43,10 @@ import nom.tam.util.ArrayDataInput;
  * This class should not have public visibility. And really, the counting should be completely internalized by
  * HeaderCard. Perhaps remove in a future major release.
  * </p>
+ * 
+ * @deprecated (<i>for internal use</i>)
  *
- * @author Richard van Nieuwenhoven
+ * @author     Richard van Nieuwenhoven
  */
 @Deprecated
 public class HeaderCardCountingArrayDataInput {
@@ -64,21 +66,27 @@ public class HeaderCardCountingArrayDataInput {
     /**
      * Creates a new instance of this class for counting the number of 80-character header records.
      * 
-     * @param input The input from which we read the header cards.
+     * @deprecated       (<i>for internal use</i>)
+     * 
+     * @param      input The input from which we read the header cards.
      */
     protected HeaderCardCountingArrayDataInput(ArrayDataInput input) {
         this.input = input;
     }
 
     /**
-     * @return the number of cards realy read form the stream
+     * @deprecated (<i>for internal use</i>)
+     * 
+     * @return     the number of cards realy read form the stream
      */
     protected int getPhysicalCardsRead() {
         return physicalCardsRead;
     }
 
     /**
-     * @return the stream to read the cards from
+     * @deprecated (<i>for internal use</i>)
+     * 
+     * @return     the stream to read the cards from
      */
     protected ArrayDataInput in() {
         return input;
@@ -86,6 +94,8 @@ public class HeaderCardCountingArrayDataInput {
 
     /**
      * report a readed card.
+     * 
+     * @deprecated (<i>for internal use</i>)
      */
     public void cardRead() {
         physicalCardsRead++;
@@ -94,7 +104,9 @@ public class HeaderCardCountingArrayDataInput {
     /**
      * indicate whether mark/reset functionality is supported
      *
-     * @return true iff mark/reset will work
+     * @deprecated (<i>for internal use</i>)
+     * 
+     * @return     true iff mark/reset will work
      */
     public boolean markSupported() {
         return input.markSupported();
@@ -102,8 +114,10 @@ public class HeaderCardCountingArrayDataInput {
 
     /**
      * mark the current position in the stream.
+     * 
+     * @deprecated             (<i>for internal use</i>)
      *
-     * @throws IOException if the underlaying stream does not allow the mark.
+     * @throws     IOException if the underlaying stream does not allow the mark.
      */
     public void mark() throws IOException {
         input.mark(HeaderCard.FITS_HEADER_CARD_SIZE);
@@ -112,8 +126,10 @@ public class HeaderCardCountingArrayDataInput {
 
     /**
      * reset the stream th the last marked prosition.
-     *
-     * @throws IOException if the underlaying stream does not allow the mark.
+     * 
+     * @deprecated             (<i>for internal use</i>)
+     * 
+     * @throws     IOException if the underlaying stream does not allow the mark.
      */
     public void reset() throws IOException {
         input.reset();

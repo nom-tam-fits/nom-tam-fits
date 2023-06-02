@@ -34,13 +34,14 @@ package nom.tam.fits;
 import nom.tam.fits.header.Standard;
 
 /**
- * @deprecated No longer used, and was intended for internal use anyway. This class provides a modifiable map in which
- *                 the comment fields for FITS header keywords produced by this library are set. The map is a simple
- *                 String -&gt; String map where the key Strings are normally class:keyword:id where class is the class
- *                 name where the keyword is set, keyword is the keyword set and id is an integer used to distinguish
- *                 multiple instances. Most users need not worry about this class, but users who wish to customize the
- *                 appearance of FITS files may update the map. The code itself is likely to be needed to understand
- *                 which values in the map must be modified.
+ * This class provides a modifiable map in which the comment fields for FITS header keywords produced by this library
+ * are set. The map is a simple String -&gt; String map where the key Strings are normally class:keyword:id where class
+ * is the class name where the keyword is set, keyword is the keyword set and id is an integer used to distinguish
+ * multiple instances. Most users need not worry about this class, but users who wish to customize the appearance of
+ * FITS files may update the map. The code itself is likely to be needed to understand which values in the map must be
+ * modified.
+ * 
+ * @deprecated (<i>for internal use</i>) No longer needed
  */
 @Deprecated
 public final class HeaderCommentsMap {

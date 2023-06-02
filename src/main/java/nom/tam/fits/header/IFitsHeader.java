@@ -127,15 +127,51 @@ public interface IFitsHeader {
         INTEGER, LOGICAL, NONE, REAL, COMPLEX, STRING, ANY
     }
 
+    /**
+     * Returns the comment associated to this FITS header entry. The comment is entirely optional, and it may not be
+     * appear in full (or at all) in the FITS header. Comments should thus never contain essential information. Their
+     * purpose is only to provide non-essential extra information for human use.
+     * 
+     * @return the associated standard comment.
+     */
     String comment();
 
+    /**
+     * Returns the type of HDU(s) in which this header entry may be used.
+     * 
+     * @return the HDU type(s) that this keyword may support.
+     */
     HDU hdu();
 
+    /**
+     * Returns the FITS header keyword for this header entry. Standard FITS keywords are limited to 8 characters, and
+     * contain only epper-case letters, numbers, hyphen, and underscore characters.
+     * 
+     * @return the FITS header keyword for this entry
+     */
     String key();
 
+    /**
+     * Constructs a numbered FITS header keyword entry from this stem, attachinh the specified number after the stem.
+     * Numbering for FITS header keywords always starts from 1.
+     * 
+     * @param  number the 1-based index to add to the stem
+     * 
+     * @return        an indexed instance of this FITS header entry
+     */
     IFitsHeader n(int... number);
 
+    /**
+     * Returns the standard convention, which defines this FITS header entry
+     * 
+     * @return the standard or convention that specifies this FITS heacer keyword
+     */
     SOURCE status();
 
+    /**
+     * The type(s) of value(s) this FITS header entry might take.
+     * 
+     * @return the value type(s) for this FITS header entry
+     */
     VALUE valueType();
 }

@@ -458,11 +458,6 @@ public abstract class StandardImageTiler implements ImageTiler {
         }
     }
 
-    /**
-     * Read the entire image into a multidimensional array.
-     *
-     * @throws IOException if the underlying stream failed
-     */
     @Override
     public Object getCompleteImage() throws IOException {
 
@@ -485,15 +480,6 @@ public abstract class StandardImageTiler implements ImageTiler {
      */
     protected abstract Object getMemoryImage();
 
-    /**
-     * Get a subset of the image. An image tile is returned as a one-dimensional array although the image will normally
-     * be multidimensional.
-     *
-     * @param  corners     The starting corner (using 0 as the start) for the image.
-     * @param  lengths     The length requested in each dimension.
-     *
-     * @throws IOException if the underlying stream failed
-     */
     @Override
     public Object getTile(int[] corners, int[] lengths) throws IOException {
         final int[] steps = new int[corners.length];
@@ -501,17 +487,6 @@ public abstract class StandardImageTiler implements ImageTiler {
         return getTile(corners, lengths, steps);
     }
 
-    /**
-     * Get a subset of the image. An image tile is returned as a one-dimensional array although the image will normally
-     * be multidimensional.
-     *
-     * @param  corners     The starting corner (using 0 as the start) for the image.
-     * @param  lengths     The length requested in each dimension.
-     * @param  steps       The number of steps to take until the next read in each axis. Default should be 1 (next
-     *                         value).
-     *
-     * @throws IOException if the underlying stream failed
-     */
     @Override
     public Object getTile(int[] corners, int[] lengths, int[] steps) throws IOException {
 
@@ -538,20 +513,6 @@ public abstract class StandardImageTiler implements ImageTiler {
         return outArray;
     }
 
-    /**
-     * Get a tile, filling in a pre-specified array or writing to a stream. This version does not check that the user
-     * hase entered a valid set of corner and length arrays. ensure that out matches the length implied by the lengths
-     * array.
-     *
-     * @param  output      A one-dimensional output array or stream. Data not within the valid limits of the image will
-     *                         be left unchanged. For an array, the length should be the product of lengths. Optionally
-     *                         provide an ArrayDataOutput to stream out data and not fill memory; useful for web
-     *                         applications.
-     * @param  corners     The corners of the tile.
-     * @param  lengths     The dimensions of the tile.
-     *
-     * @throws IOException if the underlying stream failed
-     */
     @Override
     public void getTile(Object output, int[] corners, int[] lengths) throws IOException {
         final int[] steps = new int[corners.length];
@@ -559,22 +520,6 @@ public abstract class StandardImageTiler implements ImageTiler {
         this.getTile(output, corners, lengths, steps);
     }
 
-    /**
-     * Get a tile, filling in a pre-specified array or writing to a stream. This version does not check that the user
-     * hase entered a valid set of corner and length arrays. ensure that out matches the length implied by the lengths
-     * array.
-     *
-     * @param  output      A one-dimensional output array or stream. Data not within the valid limits of the image will
-     *                         be left unchanged. For an array, the length should be the product of lengths. Optionally
-     *                         provide an ArrayDataOutput to stream out data and not fill memory; useful for web
-     *                         applications.
-     * @param  corners     The corners of the tile.
-     * @param  lengths     The dimensions of the tile.
-     * @param  steps       The number of steps to take until the next read in each axis. Default should be 1 (next
-     *                         value).
-     *
-     * @throws IOException if the underlying stream failed
-     */
     @Override
     public void getTile(Object output, int[] corners, int[] lengths, int[] steps) throws IOException {
         Object data = getMemoryImage();
