@@ -61,7 +61,7 @@
 	      No longer exposing mutable internal arrays to users, giving them copies instead.
       </action>
       <action type="update" dev="attipaci" issue="424">
-	      Code cleanup -- Consisten source code formating etc.
+	      Code cleanup -- Consistent source code formating etc.
       </action>
       <action type="update" dev="attipaci" issue="427">
 	      Online API documentation is restricted to public classes and methods only, which are meant to be exposed to users. Contributors can still generate the full documentation locally if desired.
