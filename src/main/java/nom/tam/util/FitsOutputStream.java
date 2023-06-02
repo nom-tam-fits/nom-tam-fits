@@ -86,114 +86,114 @@ public class FitsOutputStream extends ArrayOutputStream implements FitsOutput {
     }
 
     @Override
-    public synchronized void write(int b) throws IOException {
+    public void write(int b) throws IOException {
         super.write(b);
         unencodedCount++;
     }
 
     @Override
-    public synchronized void write(byte[] b, int start, int length) throws IOException {
+    public void write(byte[] b, int start, int length) throws IOException {
         super.write(b, start, length);
         unencodedCount += length;
     }
 
     @Override
-    public synchronized void write(boolean[] b, int start, int length) throws IOException {
+    public void write(boolean[] b, int start, int length) throws IOException {
         getEncoder().write(b, start, length);
     }
 
     @Override
-    public synchronized void write(Boolean[] buf, int offset, int size) throws IOException {
+    public void write(Boolean[] buf, int offset, int size) throws IOException {
         getEncoder().write(buf, offset, size);
     }
 
     @Override
-    public synchronized void write(char[] c, int start, int length) throws IOException {
+    public void write(char[] c, int start, int length) throws IOException {
         getEncoder().write(c, start, length);
     }
 
     @Override
-    public synchronized void write(short[] s, int start, int length) throws IOException {
+    public void write(short[] s, int start, int length) throws IOException {
         getEncoder().write(s, start, length);
     }
 
     @Override
-    public synchronized void write(int[] i, int start, int length) throws IOException {
+    public void write(int[] i, int start, int length) throws IOException {
         getEncoder().write(i, start, length);
     }
 
     @Override
-    public synchronized void write(long[] l, int start, int length) throws IOException {
+    public void write(long[] l, int start, int length) throws IOException {
         getEncoder().write(l, start, length);
     }
 
     @Override
-    public synchronized void write(float[] f, int start, int length) throws IOException {
+    public void write(float[] f, int start, int length) throws IOException {
         getEncoder().write(f, start, length);
     }
 
     @Override
-    public synchronized void write(double[] d, int start, int length) throws IOException {
+    public void write(double[] d, int start, int length) throws IOException {
         getEncoder().write(d, start, length);
     }
 
     @Override
-    public synchronized void writeBytes(String s) throws IOException {
+    public void writeBytes(String s) throws IOException {
         getEncoder().writeBytes(s);
     }
 
     @Override
-    public synchronized void writeChars(String s) throws IOException {
+    public void writeChars(String s) throws IOException {
         getEncoder().writeChars(s);
     }
 
     @Override
-    public synchronized void writeUTF(String s) throws IOException {
+    public void writeUTF(String s) throws IOException {
         data.writeUTF(s);
     }
 
     @Override
-    public synchronized void write(String[] s, int start, int len) throws IOException {
+    public void write(String[] s, int start, int len) throws IOException {
         getEncoder().write(s, start, len);
     }
 
     @Override
-    public synchronized void writeByte(int b) throws IOException {
+    public void writeByte(int b) throws IOException {
         getEncoder().writeByte(b);
     }
 
     @Override
-    public synchronized void writeBoolean(boolean b) throws IOException {
+    public void writeBoolean(boolean b) throws IOException {
         getEncoder().writeBoolean(b);
     }
 
     @Override
-    public synchronized void writeChar(int c) throws IOException {
+    public void writeChar(int c) throws IOException {
         getEncoder().writeChar(c);
     }
 
     @Override
-    public synchronized void writeShort(int s) throws IOException {
+    public void writeShort(int s) throws IOException {
         getEncoder().writeShort(s);
     }
 
     @Override
-    public synchronized void writeInt(int i) throws IOException {
+    public void writeInt(int i) throws IOException {
         getEncoder().writeInt(i);
     }
 
     @Override
-    public synchronized void writeLong(long l) throws IOException {
+    public void writeLong(long l) throws IOException {
         getEncoder().writeLong(l);
     }
 
     @Override
-    public synchronized void writeFloat(float f) throws IOException {
+    public void writeFloat(float f) throws IOException {
         getEncoder().writeFloat(f);
     }
 
     @Override
-    public synchronized void writeDouble(double d) throws IOException {
+    public void writeDouble(double d) throws IOException {
         getEncoder().writeDouble(d);
     }
 
@@ -207,7 +207,7 @@ public class FitsOutputStream extends ArrayOutputStream implements FitsOutput {
      * @deprecated             use {@link #writeArray(Object)} instead
      */
     @Deprecated
-    public final synchronized void writePrimitiveArray(Object o) throws IOException {
+    public final void writePrimitiveArray(Object o) throws IOException {
         writeArray(o);
     }
 
