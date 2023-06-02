@@ -146,7 +146,6 @@ public final class FitsCheckSum {
             out = new PipedOutputStream(in);
         }
 
-        @SuppressWarnings("deprecation")
         @Override
         public void run() {
             exception = null;

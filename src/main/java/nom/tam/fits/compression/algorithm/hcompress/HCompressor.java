@@ -81,12 +81,14 @@ public abstract class HCompressor<T extends Buffer> implements ICompressor<T> {
     }
 
     public static class DoubleHCompressor extends DoubleQuantCompressor {
+        @SuppressWarnings("deprecation")
         public DoubleHCompressor(HCompressorQuantizeOption options) {
             super(options, new IntHCompressor(options.getHCompressorOption()));
         }
     }
 
     public static class FloatHCompressor extends FloatQuantCompressor {
+        @SuppressWarnings("deprecation")
         public FloatHCompressor(HCompressorQuantizeOption options) {
             super(options, new IntHCompressor(options.getHCompressorOption()));
         }
