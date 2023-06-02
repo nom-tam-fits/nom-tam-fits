@@ -15,12 +15,12 @@
 <a class="jxr_linenumber" name="L7" href="#L7">7</a>   <em class="jxr_comment"> * Copyright (C) 1996 - 2021 nom-tam-fits</em>
 <a class="jxr_linenumber" name="L8" href="#L8">8</a>   <em class="jxr_comment"> * %%</em>
 <a class="jxr_linenumber" name="L9" href="#L9">9</a>   <em class="jxr_comment"> * This is free and unencumbered software released into the public domain.</em>
-<a class="jxr_linenumber" name="L10" href="#L10">10</a>  <em class="jxr_comment"> * </em>
+<a class="jxr_linenumber" name="L10" href="#L10">10</a>  <em class="jxr_comment"> *</em>
 <a class="jxr_linenumber" name="L11" href="#L11">11</a>  <em class="jxr_comment"> * Anyone is free to copy, modify, publish, use, compile, sell, or</em>
 <a class="jxr_linenumber" name="L12" href="#L12">12</a>  <em class="jxr_comment"> * distribute this software, either in source code form or as a compiled</em>
 <a class="jxr_linenumber" name="L13" href="#L13">13</a>  <em class="jxr_comment"> * binary, for any purpose, commercial or non-commercial, and by any</em>
 <a class="jxr_linenumber" name="L14" href="#L14">14</a>  <em class="jxr_comment"> * means.</em>
-<a class="jxr_linenumber" name="L15" href="#L15">15</a>  <em class="jxr_comment"> * </em>
+<a class="jxr_linenumber" name="L15" href="#L15">15</a>  <em class="jxr_comment"> *</em>
 <a class="jxr_linenumber" name="L16" href="#L16">16</a>  <em class="jxr_comment"> * In jurisdictions that recognize copyright laws, the author or authors</em>
 <a class="jxr_linenumber" name="L17" href="#L17">17</a>  <em class="jxr_comment"> * of this software dedicate any and all copyright interest in the</em>
 <a class="jxr_linenumber" name="L18" href="#L18">18</a>  <em class="jxr_comment"> * software to the public domain. We make this dedication for the benefit</em>
@@ -28,7 +28,7 @@
 <a class="jxr_linenumber" name="L20" href="#L20">20</a>  <em class="jxr_comment"> * successors. We intend this dedication to be an overt act of</em>
 <a class="jxr_linenumber" name="L21" href="#L21">21</a>  <em class="jxr_comment"> * relinquishment in perpetuity of all present and future rights to this</em>
 <a class="jxr_linenumber" name="L22" href="#L22">22</a>  <em class="jxr_comment"> * software under copyright law.</em>
-<a class="jxr_linenumber" name="L23" href="#L23">23</a>  <em class="jxr_comment"> * </em>
+<a class="jxr_linenumber" name="L23" href="#L23">23</a>  <em class="jxr_comment"> *</em>
 <a class="jxr_linenumber" name="L24" href="#L24">24</a>  <em class="jxr_comment"> * THE SOFTWARE IS PROVIDED "AS IS", WITHOUT WARRANTY OF ANY KIND,</em>
 <a class="jxr_linenumber" name="L25" href="#L25">25</a>  <em class="jxr_comment"> * EXPRESS OR IMPLIED, INCLUDING BUT NOT LIMITED TO THE WARRANTIES OF</em>
 <a class="jxr_linenumber" name="L26" href="#L26">26</a>  <em class="jxr_comment"> * MERCHANTABILITY, FITNESS FOR A PARTICULAR PURPOSE AND NONINFRINGEMENT.</em>
@@ -41,21 +41,52 @@
 <a class="jxr_linenumber" name="L33" href="#L33">33</a>  
 <a class="jxr_linenumber" name="L34" href="#L34">34</a>  <strong class="jxr_keyword">import</strong> nom.tam.fits.compression.algorithm.quant.QuantizeOption;
 <a class="jxr_linenumber" name="L35" href="#L35">35</a>  
-<a class="jxr_linenumber" name="L36" href="#L36">36</a>  <strong class="jxr_keyword">public</strong> <strong class="jxr_keyword">class</strong> <a name="HCompressorQuantizeOption" href="../../../../../../nom/tam/fits/compression/algorithm/hcompress/HCompressorQuantizeOption.html#HCompressorQuantizeOption">HCompressorQuantizeOption</a> <strong class="jxr_keyword">extends</strong> <a name="QuantizeOption" href="../../../../../../nom/tam/fits/compression/algorithm/quant/QuantizeOption.html#QuantizeOption">QuantizeOption</a> {
-<a class="jxr_linenumber" name="L37" href="#L37">37</a>  
-<a class="jxr_linenumber" name="L38" href="#L38">38</a>      <strong class="jxr_keyword">public</strong> <a name="HCompressorQuantizeOption" href="../../../../../../nom/tam/fits/compression/algorithm/hcompress/HCompressorQuantizeOption.html#HCompressorQuantizeOption">HCompressorQuantizeOption</a>() {
-<a class="jxr_linenumber" name="L39" href="#L39">39</a>          <strong class="jxr_keyword">super</strong>(<strong class="jxr_keyword">new</strong> <a name="HCompressorOption" href="../../../../../../nom/tam/fits/compression/algorithm/hcompress/HCompressorOption.html#HCompressorOption">HCompressorOption</a>());
-<a class="jxr_linenumber" name="L40" href="#L40">40</a>      }
-<a class="jxr_linenumber" name="L41" href="#L41">41</a>  
-<a class="jxr_linenumber" name="L42" href="#L42">42</a>      <strong class="jxr_keyword">public</strong> <a name="HCompressorQuantizeOption" href="../../../../../../nom/tam/fits/compression/algorithm/hcompress/HCompressorQuantizeOption.html#HCompressorQuantizeOption">HCompressorQuantizeOption</a>(<a name="HCompressorOption" href="../../../../../../nom/tam/fits/compression/algorithm/hcompress/HCompressorOption.html#HCompressorOption">HCompressorOption</a> compressOption) {
-<a class="jxr_linenumber" name="L43" href="#L43">43</a>          <strong class="jxr_keyword">super</strong>(compressOption);
-<a class="jxr_linenumber" name="L44" href="#L44">44</a>      }
-<a class="jxr_linenumber" name="L45" href="#L45">45</a>  
-<a class="jxr_linenumber" name="L46" href="#L46">46</a>      <strong class="jxr_keyword">public</strong> <a name="HCompressorOption" href="../../../../../../nom/tam/fits/compression/algorithm/hcompress/HCompressorOption.html#HCompressorOption">HCompressorOption</a> getHCompressorOption() {
-<a class="jxr_linenumber" name="L47" href="#L47">47</a>          <strong class="jxr_keyword">return</strong> (<a name="HCompressorOption" href="../../../../../../nom/tam/fits/compression/algorithm/hcompress/HCompressorOption.html#HCompressorOption">HCompressorOption</a>) getCompressOption();
-<a class="jxr_linenumber" name="L48" href="#L48">48</a>      }
-<a class="jxr_linenumber" name="L49" href="#L49">49</a>  
-<a class="jxr_linenumber" name="L50" href="#L50">50</a>  }
+<a class="jxr_linenumber" name="L36" href="#L36">36</a>  <em class="jxr_javadoccomment">/**</em>
+<a class="jxr_linenumber" name="L37" href="#L37">37</a>  <em class="jxr_javadoccomment"> * @deprecated Use {@link QuantizeOption} with a {@link HCompressorOption} instance instead.</em>
+<a class="jxr_linenumber" name="L38" href="#L38">38</a>  <em class="jxr_javadoccomment"> *                 &lt;p&gt;</em>
+<a class="jxr_linenumber" name="L39" href="#L39">39</a>  <em class="jxr_javadoccomment"> *                 Options to the HCompress compression algorithm when the compression includes quantization. When</em>
+<a class="jxr_linenumber" name="L40" href="#L40">40</a>  <em class="jxr_javadoccomment"> *                 compressing tables and images using the HCompress algorithm, including quantization, users can</em>
+<a class="jxr_linenumber" name="L41" href="#L41">41</a>  <em class="jxr_javadoccomment"> *                 control how exactly the compression and quantization are perfomed. When reading compressed FITS</em>
+<a class="jxr_linenumber" name="L42" href="#L42">42</a>  <em class="jxr_javadoccomment"> *                 files, these options will be set automatically based on the header values recorded in the compressed</em>
+<a class="jxr_linenumber" name="L43" href="#L43">43</a>  <em class="jxr_javadoccomment"> *                 HDU.</em>
+<a class="jxr_linenumber" name="L44" href="#L44">44</a>  <em class="jxr_javadoccomment"> *                 &lt;/p&gt;</em>
+<a class="jxr_linenumber" name="L45" href="#L45">45</a>  <em class="jxr_javadoccomment"> * </em>
+<a class="jxr_linenumber" name="L46" href="#L46">46</a>  <em class="jxr_javadoccomment"> * @see        nom.tam.image.compression.hdu.CompressedImageHDU#setCompressAlgorithm(String)</em>
+<a class="jxr_linenumber" name="L47" href="#L47">47</a>  <em class="jxr_javadoccomment"> * @see        nom.tam.image.compression.hdu.CompressedImageHDU#getCompressOption(Class)</em>
+<a class="jxr_linenumber" name="L48" href="#L48">48</a>  <em class="jxr_javadoccomment"> * @see        HCompressorOption</em>
+<a class="jxr_linenumber" name="L49" href="#L49">49</a>  <em class="jxr_javadoccomment"> */</em>
+<a class="jxr_linenumber" name="L50" href="#L50">50</a>  @Deprecated
+<a class="jxr_linenumber" name="L51" href="#L51">51</a>  <strong class="jxr_keyword">public</strong> <strong class="jxr_keyword">class</strong> <a name="HCompressorQuantizeOption" href="../../../../../../nom/tam/fits/compression/algorithm/hcompress/HCompressorQuantizeOption.html#HCompressorQuantizeOption">HCompressorQuantizeOption</a> <strong class="jxr_keyword">extends</strong> <a name="QuantizeOption" href="../../../../../../nom/tam/fits/compression/algorithm/quant/QuantizeOption.html#QuantizeOption">QuantizeOption</a> {
+<a class="jxr_linenumber" name="L52" href="#L52">52</a>  
+<a class="jxr_linenumber" name="L53" href="#L53">53</a>      <em class="jxr_javadoccomment">/**</em>
+<a class="jxr_linenumber" name="L54" href="#L54">54</a>  <em class="jxr_javadoccomment">     * Creates a new set of options for HCompress with quantization, initialized to default values.</em>
+<a class="jxr_linenumber" name="L55" href="#L55">55</a>  <em class="jxr_javadoccomment">     */</em>
+<a class="jxr_linenumber" name="L56" href="#L56">56</a>      <strong class="jxr_keyword">public</strong> <a name="HCompressorQuantizeOption" href="../../../../../../nom/tam/fits/compression/algorithm/hcompress/HCompressorQuantizeOption.html#HCompressorQuantizeOption">HCompressorQuantizeOption</a>() {
+<a class="jxr_linenumber" name="L57" href="#L57">57</a>          <strong class="jxr_keyword">super</strong>(<strong class="jxr_keyword">new</strong> <a name="HCompressorOption" href="../../../../../../nom/tam/fits/compression/algorithm/hcompress/HCompressorOption.html#HCompressorOption">HCompressorOption</a>());
+<a class="jxr_linenumber" name="L58" href="#L58">58</a>      }
+<a class="jxr_linenumber" name="L59" href="#L59">59</a>  
+<a class="jxr_linenumber" name="L60" href="#L60">60</a>      <em class="jxr_javadoccomment">/**</em>
+<a class="jxr_linenumber" name="L61" href="#L61">61</a>  <em class="jxr_javadoccomment">     * Creates a new set of options for HCompress with quantization, using the specified option to HCompress, and</em>
+<a class="jxr_linenumber" name="L62" href="#L62">62</a>  <em class="jxr_javadoccomment">     * initializing the qunatization options with default values.</em>
+<a class="jxr_linenumber" name="L63" href="#L63">63</a>  <em class="jxr_javadoccomment">     * </em>
+<a class="jxr_linenumber" name="L64" href="#L64">64</a>  <em class="jxr_javadoccomment">     * @param compressOption The HCompress options to use</em>
+<a class="jxr_linenumber" name="L65" href="#L65">65</a>  <em class="jxr_javadoccomment">     */</em>
+<a class="jxr_linenumber" name="L66" href="#L66">66</a>      <strong class="jxr_keyword">public</strong> <a name="HCompressorQuantizeOption" href="../../../../../../nom/tam/fits/compression/algorithm/hcompress/HCompressorQuantizeOption.html#HCompressorQuantizeOption">HCompressorQuantizeOption</a>(<a name="HCompressorOption" href="../../../../../../nom/tam/fits/compression/algorithm/hcompress/HCompressorOption.html#HCompressorOption">HCompressorOption</a> compressOption) {
+<a class="jxr_linenumber" name="L67" href="#L67">67</a>          <strong class="jxr_keyword">super</strong>(compressOption);
+<a class="jxr_linenumber" name="L68" href="#L68">68</a>      }
+<a class="jxr_linenumber" name="L69" href="#L69">69</a>  
+<a class="jxr_linenumber" name="L70" href="#L70">70</a>      <em class="jxr_javadoccomment">/**</em>
+<a class="jxr_linenumber" name="L71" href="#L71">71</a>  <em class="jxr_javadoccomment">     * Returns the options that are specific to the HCompress algorithm (without quantization).</em>
+<a class="jxr_linenumber" name="L72" href="#L72">72</a>  <em class="jxr_javadoccomment">     * </em>
+<a class="jxr_linenumber" name="L73" href="#L73">73</a>  <em class="jxr_javadoccomment">     * @return the included options to the HCompress algorithm</em>
+<a class="jxr_linenumber" name="L74" href="#L74">74</a>  <em class="jxr_javadoccomment">     * </em>
+<a class="jxr_linenumber" name="L75" href="#L75">75</a>  <em class="jxr_javadoccomment">     * @see    #getCompressOption(Class)</em>
+<a class="jxr_linenumber" name="L76" href="#L76">76</a>  <em class="jxr_javadoccomment">     */</em>
+<a class="jxr_linenumber" name="L77" href="#L77">77</a>      <strong class="jxr_keyword">public</strong> <a name="HCompressorOption" href="../../../../../../nom/tam/fits/compression/algorithm/hcompress/HCompressorOption.html#HCompressorOption">HCompressorOption</a> getHCompressorOption() {
+<a class="jxr_linenumber" name="L78" href="#L78">78</a>          <strong class="jxr_keyword">return</strong> (<a name="HCompressorOption" href="../../../../../../nom/tam/fits/compression/algorithm/hcompress/HCompressorOption.html#HCompressorOption">HCompressorOption</a>) getCompressOption();
+<a class="jxr_linenumber" name="L79" href="#L79">79</a>      }
+<a class="jxr_linenumber" name="L80" href="#L80">80</a>  
+<a class="jxr_linenumber" name="L81" href="#L81">81</a>  }
 </pre>
 <hr/>
 <div id="footer">Copyright &#169; 1996&#x2013;2023 nom-tam-fits. All rights reserved.</div>
