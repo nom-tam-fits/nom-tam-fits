@@ -1,7 +1,7 @@
 <document xmlns="http://maven.apache.org/changes/1.0.0" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:schemaLocation="http://maven.apache.org/changes/1.0.0 http://maven.apache.org/xsd/changes-1.0.0.xsd">
 <body>
 	
-  <release version="1.18.0-rc4" date="2023-05-23" description="Feature release with compression fixes and many improvements.">
+  <release version="1.18.0-rc5" date="2023-06-02" description="Feature release with compression fixes and many improvements.">
       <action type="fix" dev="attipaci" issue="377">
 	      Fixed use of ZDITHER0 keyword to restore or record random generator seed when dithering is used in (de)compression.
       </action>
@@ -47,6 +47,27 @@
       </action>
       <action type="update" dev="attipaci" issue="420">
 	      Revised PaddingException API and seamless internal handling.
+      </action>
+      <action type="update" dev="attipaci" issue="429">
+	      Remove unnecessary IO synchronization from FitsFile, FitsInputStream, and FitsOutputStream classes.
+      </action>
+      <action type="update" dev="attipaci" issue="425">
+	      Deprecate hexadecimal values in headers. FITS does not support these, and you should not use them.
+      </action>
+      <action type="update" dev="attipaci" issue="430">
+	      Deprecate BigInteger and BigDecimal values in headers. FITS does not support these, and you should not use them.
+      </action>
+      <action type="update" dev="attipaci" issue="426">
+	      No longer exposing mutable internal arrays to users, giving them copies instead.
+      </action>
+      <action type="update" dev="attipaci" issue="424">
+	      Code cleanup -- Consisten source code formating etc.
+      </action>
+      <action type="update" dev="attipaci" issue="427">
+	      Online API documentation is restricted to public classes and methods only, which are meant to be exposed to users. Contributors can still generate the full documentation locally if desired.
+      </action>
+      <action type="update" dev="attipaci" issue="160">
+	      User public API Javadoc now complete. It could be improved, but at least all packages, classes, and methods intentionally exposed to users are now documented.
       </action>
     </release>
 
