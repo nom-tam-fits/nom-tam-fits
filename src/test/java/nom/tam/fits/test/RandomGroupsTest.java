@@ -297,4 +297,20 @@ public class RandomGroupsTest {
         new RandomGroupsData(null).write(null);
         // No exception should be throwm.
     }
+
+    @Test
+    public void testCreateFromData() throws Exception {
+        RandomGroupsHDU.createFrom(new Object[][] {{new float[5], new float[10][10]}});
+        // No exception
+    }
+
+    @Test(expected = FitsException.class)
+    public void testCreateWrongDataType1() throws Exception {
+        RandomGroupsHDU.createFrom(new Object[][] {{new float[5], new float[10][10], new float[3]}});
+    }
+
+    @Test(expected = FitsException.class)
+    public void testCreateWrongDataType2() throws Exception {
+        RandomGroupsHDU.createFrom(new Object[][] {{new float[5], new int[10][10]}});
+    }
 }
