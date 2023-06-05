@@ -1334,8 +1334,10 @@ public class BaseFitsTest {
 
     @Test
     public void testIsUndefinedData() throws Exception {
+        assertTrue(UndefinedHDU.isData(new byte[10]));
         assertFalse(UndefinedHDU.isData(null));
         assertFalse(UndefinedHDU.isData(new int[10]));
+        assertFalse(UndefinedHDU.isData(new byte[10][10]));
         assertFalse(UndefinedHDU.isData(new File("blah")));
     }
 
