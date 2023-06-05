@@ -53,11 +53,18 @@ import static nom.tam.fits.header.Standard.XTENSION_IMAGE;
  * should not create random groups anew. {@link BinaryTableHDU} offers a much more flexible and capable way for storing
  * an ensemble of parameters, arrays, and more.
  * <p>
- * Note that the internal storage of random groups is a <code>Object[ngroup][2]</code> array. The first element of each
- * group is the parameter data from that group. The second element is the data. The parameters should be a one
- * dimensional array of the primitive types byte, short, int, long, float or double. The second element is a
- * n-dimensional array of the same type. When analyzing group data structure only the first group is examined, but for a
- * valid FITS file all groups must have the same structure.
+ * Note that the internal storage of random groups is a <code>Object[ngroups][2]</code> array. The first element of each
+ * group (row) is a 1D array of parameter data of a numerical primitive type (e.g. <code>short[]</code>,
+ * <code>double[]</code>). The second element in each group (row) is an image of the same element type as the
+ * parameters. When analyzing group data structure only the first group is examined, but for a valid FITS file all
+ * groups must have the same structure.
+ * <p>
+ * Note also, that we do not provide support for accessing parameters by names or for building up higher-precision
+ * values by combining multiple related parameters through scalings and offsets, as described in the FITS standard (e.g.
+ * combining 3 or 4 related <code>byte</code> parameter values to obtain a full-precision 32-bit <code>float</code>
+ * parameter value when <code>BITPIX</code> is 8). Users of random groups must make these translations themselves. We
+ * may add more support in the future...
+ * </p>
  * 
  * @see BinaryTableHDU
  */
@@ -113,9 +120,9 @@ public class RandomGroupsHDU extends BasicHDU<RandomGroupsData> {
     }
 
     /**
-     * Check if this data is compatible with Random Groups structure. Must be an Object[ngr][2] structure with both
-     * elements of each group having the same base type and the first element being a simple primitive array. We do not
-     * check anything but the first row.
+     * Check if this data is compatible with Random Groups structure. Must be an <code>Object[nGroups][2]<code>
+     * structure with both elements of each group having the same base type and the first element being a simple
+     * primitive array. We do not check anything but the first row.
      *
      * @deprecated               (<i>for internal use</i>) Will reduce visibility in the future
      *
@@ -208,14 +215,19 @@ public class RandomGroupsHDU extends BasicHDU<RandomGroupsData> {
     }
 
     /**
-     * Creates a random groups HDU from an <code>Object[][2]</code> array. Prior to 1.18, we used
-     * {@link Fits#makeHDU(Object)} to create random groups HDUs. However, FITS recommends using binary tables instead
-     * of random groups in general, and this type of HDU is supported only for reading some older radio data. Hence, as
-     * of 1.18 {@link Fits#makeHDU(Object)} will not return random groups HDUs any longer, and will instead create
-     * binary (or ASCII) table HDUs instead. If the need arises to create new random group HDUs programatically, beyond
-     * reading of older files, then this method can take its place.
+     * Creates a random groups HDU from an <code>Object[nGroups][2]</code> array. Prior to 1.18, we used
+     * {@link Fits#makeHDU(Object)} to create random groups HDUs automatically from matching data. However, FITS
+     * recommends using binary tables instead of random groups in general, and this type of HDU is included in the
+     * standard only to support reading some older radio data. Hence, as of 1.18 {@link Fits#makeHDU(Object)} will never
+     * return random groups HDUs any longer, and will instead create binary (or ASCII) table HDUs instead. If the need
+     * arises to create new random group HDUs programatically, beyond reading of older files, then this method can take
+     * its place.
      * 
-     * @param  data          The random groups table. The second dimension must be 2.
+     * @param  data          The random groups table. The second dimension must be 2. The first element in each group
+     *                           (row) must be a 1D numerical primitive array, while the second element may be a
+     *                           multi-dimensional image of the same element type. All rows must consists of arrays of
+     *                           the same primitive numerical types and sized, e.g.
+     *                           <code>{ float[5], float[7][2] }</code> or <code>{ short[3], short[2][2][4] }</code>.
      * 
      * @return               a new random groups HDU, which encapsulated the supploed data table.
      * 

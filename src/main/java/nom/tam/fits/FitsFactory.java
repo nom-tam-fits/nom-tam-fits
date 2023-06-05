@@ -517,7 +517,7 @@ public final class FitsFactory {
      *                               the object is not known..
      * 
      * @deprecated               Use {@link Fits#makeHDU(Object)} instead (this method may either be migrated to
-     *                               {@link Fits} or else have visibility reduced to the package level).
+     *                               {@link Fits} entirely or else have visibility reduced to the package level).
      */
     public static BasicHDU<?> hduFactory(Object o) throws FitsException {
         Data d;
