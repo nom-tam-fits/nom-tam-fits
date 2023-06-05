@@ -49,7 +49,10 @@ import static nom.tam.fits.header.Standard.XTENSION;
 import static nom.tam.util.LoggerHelper.getLogger;
 
 /**
- * FITS image header/data unit
+ * Header/data unit for images. Image HDUs are suitable for storing monolithic regular numerical arrays in 1 to 8
+ * dimensions, such as a <code>double[]</code>, <code>float[][]</code>, or <code>short[][][]</code>.
+ * 
+ * @see ImageData
  */
 public class ImageHDU extends BasicHDU<ImageData> {
 
@@ -61,7 +64,7 @@ public class ImageHDU extends BasicHDU<ImageData> {
     }
 
     /**
-     * @deprecated               This should be for internal use only. Will reduce visibility in the future
+     * @deprecated               (<i>for internal use</i>) Will reduce visibility in the future
      *
      * @return                   Encapsulate an object as an ImageHDU.
      *
@@ -75,7 +78,7 @@ public class ImageHDU extends BasicHDU<ImageData> {
     }
 
     /**
-     * @deprecated   This should be for internal use only. Will reduce visibility in the future
+     * @deprecated   (<i>for internal use</i>) Will reduce visibility in the future
      *
      * @return       is this object can be described as a FITS image.
      *
@@ -96,7 +99,7 @@ public class ImageHDU extends BasicHDU<ImageData> {
     /**
      * Check that this HDU has a valid header for this type.
      *
-     * @deprecated     This should be for internal use only. Will reduce visibility in the future
+     * @deprecated     (<i>for internal use</i>) Will reduce visibility in the future
      *
      * @param      hdr header to check
      *
@@ -121,7 +124,7 @@ public class ImageHDU extends BasicHDU<ImageData> {
     /**
      * Prepares a data object into which the actual data can be read from an input subsequently or at a later time.
      *
-     * @deprecated               This should be for internal use only. Will reduce visibility in the future
+     * @deprecated               (<i>for internal use</i>) Will reduce visibility in the future
      *
      * @param      hdr           The FITS header that describes the data
      *
@@ -137,7 +140,7 @@ public class ImageHDU extends BasicHDU<ImageData> {
     /**
      * Prepares a data object into which the actual data can be read from an input subsequently or at a later time.
      *
-     * @deprecated               This should be for internal use only. Will reduce visibility in the future
+     * @deprecated               (<i>for internal use</i>) Will reduce visibility in the future
      *
      * @param      d             The FITS data content of this HDU
      *
@@ -160,15 +163,12 @@ public class ImageHDU extends BasicHDU<ImageData> {
     /**
      * Build an image HDU using the supplied data.
      * 
-     * @deprecated               intended for internal use. Its visibility should be reduced to package level in the
-     *                               future.
+     * @deprecated   (<i>for internal use</i>) Its visibility should be reduced to package level in the future.
      *
-     * @param      h             the header for the image.
-     * @param      d             the data used in the image.
-     *
-     * @throws     FitsException if there was a problem with the data.
+     * @param      h the header for the image.
+     * @param      d the data used in the image.
      */
-    public ImageHDU(Header h, ImageData d) throws FitsException {
+    public ImageHDU(Header h, ImageData d) {
         super(h, d);
     }
 

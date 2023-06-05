@@ -1,5 +1,7 @@
 package nom.tam.fits;
 
+import java.nio.Buffer;
+
 /*-
  * #%L
  * nom.tam FITS library
@@ -40,13 +42,15 @@ import static nom.tam.fits.header.Standard.GCOUNT;
 import static nom.tam.fits.header.Standard.PCOUNT;
 
 /**
- * A subclass of <code>Data</code> containing no actual Data. It wraps an underlying data of <code>null</code>.
+ * A subclass of <code>Data</code> containing no actual data. It wraps an underlying data of <code>null</code>.
  *
  * @author Attila Kovacs
  *
  * @since  1.18
+ * 
+ * @see    NullDataHDU
  */
-public final class NullData extends Data {
+public final class NullData extends ImageData {
 
     @SuppressWarnings("deprecation")
     @Override
@@ -86,6 +90,11 @@ public final class NullData extends Data {
 
     @Override
     public void write(ArrayDataOutput o) {
+    }
+
+    @Override
+    public void setBuffer(Buffer data) {
+        // Nothing to do.
     }
 
 }
