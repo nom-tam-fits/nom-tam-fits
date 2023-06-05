@@ -1,22 +1,18 @@
 package nom.tam.fits;
 
-import java.io.PrintStream;
-
-import nom.tam.util.FitsEncoder;
-
-/*
+/*-
  * #%L
- * nom.tam FITS library
+ * nom.tam.fits
  * %%
- * Copyright (C) 2004 - 2021 nom-tam-fits
+ * Copyright (C) 1996 - 2023 nom-tam-fits
  * %%
  * This is free and unencumbered software released into the public domain.
- *
+ * 
  * Anyone is free to copy, modify, publish, use, compile, sell, or
  * distribute this software, either in source code form or as a compiled
  * binary, for any purpose, commercial or non-commercial, and by any
  * means.
- *
+ * 
  * In jurisdictions that recognize copyright laws, the author or authors
  * of this software dedicate any and all copyright interest in the
  * software to the public domain. We make this dedication for the benefit
@@ -24,7 +20,7 @@ import nom.tam.util.FitsEncoder;
  * successors. We intend this dedication to be an overt act of
  * relinquishment in perpetuity of all present and future rights to this
  * software under copyright law.
- *
+ * 
  * THE SOFTWARE IS PROVIDED "AS IS", WITHOUT WARRANTY OF ANY KIND,
  * EXPRESS OR IMPLIED, INCLUDING BUT NOT LIMITED TO THE WARRANTIES OF
  * MERCHANTABILITY, FITNESS FOR A PARTICULAR PURPOSE AND NONINFRINGEMENT.
@@ -35,7 +31,10 @@ import nom.tam.util.FitsEncoder;
  * #L%
  */
 
-import static nom.tam.fits.header.Standard.NAXIS;
+import java.io.PrintStream;
+
+import nom.tam.fits.header.Standard;
+
 import static nom.tam.fits.header.Standard.XTENSION;
 
 /**
@@ -65,26 +64,25 @@ public class UndefinedHDU extends BasicHDU<UndefinedData> {
     }
 
     /**
-     * Check if we can use the following object as in an Undefined FITS block. We allow this so long as computeLSize can
-     * get a size. Note that computeLSize may be wrong!
+     * Checks if we can use the following object as in an Undefined FITS block. Only <code>byte[]</code> arrays can be
+     * represented in undefined HDUs.
      *
      * @deprecated   (<i>for internal use</i>) Will reduce visibility in the future
      *
      * @param      o The Object being tested.
      *
-     * @return       true if o can be an Undefined FITS block.
+     * @return       <code>true</code> if the object is a raw <code>byte[]</code> array, otherwise <code>false</code>.
+     *                   We cannot wrap arbitrary data objects since we do not have a generic recipe for converting
+     *                   these into binary form.
      */
     @Deprecated
     public static boolean isData(Object o) {
-        try {
-            return FitsEncoder.computeSize(o) > 0;
-        } catch (IllegalArgumentException e) {
-            return false;
-        }
+        return o instanceof byte[];
     }
 
     /**
-     * Check if we can find the length of the data for this header.
+     * Checks if the header is for a HDU we don't really know how to handle. We can still retrieve and store the binary
+     * tata of the HDU as a raw <code>byte[]</code> image.
      *
      * @deprecated     (<i>for internal use</i>) Will reduce visibility in the future
      *
@@ -94,10 +92,16 @@ public class UndefinedHDU extends BasicHDU<UndefinedData> {
      */
     @Deprecated
     public static boolean isHeader(Header hdr) {
-        if (hdr.getStringValue(XTENSION) != null && hdr.getIntValue(NAXIS, -1) >= 0) {
-            return true;
+        if (ImageHDU.isHeader(hdr)) {
+            return false;
         }
-        return false;
+        if (BinaryTableHDU.isHeader(hdr)) {
+            return false;
+        }
+        if (AsciiTableHDU.isHeader(hdr)) {
+            return false;
+        }
+        return hdr.containsKey(Standard.XTENSION);
     }
 
     /**
