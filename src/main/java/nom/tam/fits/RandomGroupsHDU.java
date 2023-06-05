@@ -208,6 +208,29 @@ public class RandomGroupsHDU extends BasicHDU<RandomGroupsData> {
     }
 
     /**
+     * Creates a random groups HDU from an <code>Object[][2]</code> array. Prior to 1.18, we used
+     * {@link Fits#makeHDU(Object)} to create random groups HDUs. However, FITS recommends using binary tables instead
+     * of random groups in general, and this type of HDU is supported only for reading some older radio data. Hence, as
+     * of 1.18 {@link Fits#makeHDU(Object)} will not return random groups HDUs any longer, and will instead create
+     * binary (or ASCII) table HDUs instead. If the need arises to create new random group HDUs programatically, beyond
+     * reading of older files, then this method can take its place.
+     * 
+     * @param  data          The random groups table. The second dimension must be 2.
+     * 
+     * @return               a new random groups HDU, which encapsulated the supploed data table.
+     * 
+     * @throws FitsException if the seconds dimension of the array is not 2.
+     * 
+     * @see                  Fits#makeHDU(Object)
+     * 
+     * @since                1.18
+     */
+    public static RandomGroupsHDU createFrom(Object[][] data) throws FitsException {
+        RandomGroupsData d = encapsulate(data);
+        return new RandomGroupsHDU(manufactureHeader(d), d);
+    }
+
+    /**
      * Create an HDU from the given header and data.
      * 
      * @deprecated        (<i>for internal use</i>) Its visibility should be reduced to package level in the future.

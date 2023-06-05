@@ -54,9 +54,9 @@ import static nom.tam.fits.header.Standard.XTENSION_ASCIITABLE;
  * ASCII table header/data unit. ASCII table HDUs were desgined for human readability, e.g. on a console, without any
  * special tools. However, they are far less flexible or compact than {@link BinaryTableHDU}. As such, users are
  * generally discouraged from using this type of HDU to encapsulate FITS table data.
- * {@link FitsFactory#setUseAsciiTables(boolean)} can be toggled to adjust whether
- * {@link FitsFactory#hduFactory(Object)} or similar methods should construct ASCII tables when possible. (The default
- * setting is to produce binary tables always.)
+ * {@link FitsFactory#setUseAsciiTables(boolean)} can be toggled to adjust whether {@link Fits#makeHDU(Object)} or
+ * similar methods should construct ASCII tables when possible. (The default setting is to produce binary tables
+ * always.)
  * 
  * @see AsciiTable
  * @see BinaryTableHDU
