@@ -42,7 +42,7 @@ import nom.tam.util.FitsEncoder;
 import edu.umd.cs.findbugs.annotations.SuppressFBWarnings;
 
 /**
- * Heap for sotring variable-length entries in binary tables. FITS binary tables store variable length arrays on a heap,
+ * Heap for storing variable-length entries in binary tables. FITS binary tables store variable length arrays on a heap,
  * following the regular array data. The newer implementation of the heap now provides proper random access to the byte
  * buffer as of version 1.16.
  */

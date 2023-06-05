@@ -44,7 +44,7 @@ import nom.tam.util.type.ElementType;
 import static nom.tam.fits.header.Compression.ZTABLE;
 
 /**
- * A FITS HDU containing a compressed binary table.
+ * A header-data unit (HDU) containing a compressed binary table.
  * <p>
  * Compressing an image HDU is typically a two-step process:
  * </p>
@@ -67,7 +67,7 @@ import static nom.tam.fits.header.Compression.ZTABLE;
  *   compressed.compress();
  * </pre>
  * <p>
- * which of course you can compart into a single line as:
+ * which of course you can compact into a single line as:
  * </p>
  * 
  * <pre>
@@ -75,11 +75,11 @@ import static nom.tam.fits.header.Compression.ZTABLE;
  * </pre>
  * <p>
  * The two step process (as opposed to a single-step one) was probbly chosen because it mimics that of
- * {@link CompressedImageHDU}, where further configuration steps may be inserted in-between. After the compression the
- * compressed HDSU can be handled just like any HDU, and written to a stream for example.
+ * {@link CompressedImageHDU}, where further configuration steps may be inserted in-between. After the compression, the
+ * compressed table HDU can be handled just like any HDU, and written to a ile or stream, for example.
  * </p>
  * <p>
- * The reverse process is imply calling the {@link #asBinaryTableHDU()}. E.g.:
+ * The reverse process is simply via the {@link #asBinaryTableHDU()} method. E.g.:
  * </p>
  * 
  * <pre>

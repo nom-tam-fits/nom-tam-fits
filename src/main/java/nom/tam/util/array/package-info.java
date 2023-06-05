@@ -34,6 +34,8 @@
  * It's weird that these classes were given their own separate package, especially given that the {@link nom.tam.util}
  * package is already a collection of all sorts of things -- and which really could have hosted these classes too. Oh
  * well...
+ * 
+ * @see nom.tam.util
  */
 
 package nom.tam.util.array;

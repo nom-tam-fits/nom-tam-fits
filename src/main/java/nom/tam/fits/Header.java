@@ -103,21 +103,22 @@ import static nom.tam.fits.header.extra.CXCExt.LONGSTRN;
  * checksums). Users of the library are responsible for completing the data description using whatever standard or
  * conventional keywords are available and appropriate. FITS offers many standardized keywords that can be (and should
  * be) used to provide a more complete and accurate description of the data than the bare mimimum that this library will
- * provide automatically.
+ * provide automatically. Please refer to the <a href="https://fits.gsfc.nasa.gov/fits_standard.html">FITS Standard</a>
+ * documentation to see what typical descriptions of data you might want to use.
  * </p>
  * <p>
  * Last but not least, the header is also a place where users can store (nearly) arbitrary key/value pairs. In earlier
  * versions of the FITS standard, header keywords were restricted to max 8 upper case letters and numbers (plus hyphen
- * and underscore), and no more than 70 character value fields. However, as of FITS 4.0 (and as a registered convention
- * even before), string values of arbitrary length may be stored using the OGIP 1.0 long string convention, while the
- * ESO HIERARCH convention allows keywords with more than 8 characters and hierarchical organization. Support,
- * conformance, and compliance to these conventions can be toggled by static settings in {@link FitsFactory} to user
- * preference.
+ * and underscore), and no more than 70 character value fields. However, as of FITS 4.0 (and even before as a registered
+ * convention), string values of arbitrary length may be stored using the OGIP 1.0 long string convention, while the ESO
+ * <a href="https://fits.gsfc.nasa.gov/registry/hierarch_keyword.html">HIERARCH convention</a> allows keywords with more
+ * than 8 characters and hierarchical organization. Support, conformance, and compliance to these conventions can be
+ * toggled by static settings in {@link FitsFactory} to user preference.
  * </p>
  * <p>
  * As of version 1.16, we also support reserving space in headers for future additions using the
  * {@link #ensureCardSpace(int)} method, also part of the FITS 4.0 standard. It allows users to finish populating
- * headers <i>after</i> data that follows the header is already written -- a usefuly feature for recording data from
+ * headers <i>after</i> data that follows the header is already written -- a useful feature for recording data from
  * streaming sources.
  * </p>
  */
@@ -125,17 +126,28 @@ import static nom.tam.fits.header.extra.CXCExt.LONGSTRN;
 public class Header implements FitsElement {
 
     /**
-     * The default character position to which comments should be aligned if possible (0-based).
+     * The default character position to which comments should be aligned if possible (0-based). The fITS standard
+     * requires that 'fizxed-format' values are right-justified to byte 30 (index 29 in Java), and recommends a space
+     * after that before the comment. As such, comments should normally start at byte 30 (counted from 0). (We will add
+     * a space at that position before the '/' indicating the comment start)
      */
     public static final int DEFAULT_COMMENT_ALIGN = 30;
 
     /**
      * The earliest position (0-based) at which a comment may start for a regular key/value entry.
+     * 
+     * @deprecated We will disable changing alignment in the future because it may violate the standard for
+     *                 'fixed-format' header entries, and result in files that are unreadable by some other software.
+     *                 This constant will be obsoleted and removed.
      */
     public static final int MIN_COMMENT_ALIGN = 20;
 
     /**
      * The largest (0-based) comment alignment allowed that can still contain some meaningful comment (word)
+     * 
+     * @deprecated We will disable changing alignment in the future because it may violate the standard for
+     *                 'fixed-format' header entries, and result in files that are unreadable by some other software.
+     *                 This constant will be obsoleted and removed.
      */
     public static final int MAX_COMMENT_ALIGN = 70;
 
@@ -2524,11 +2536,13 @@ public class Header implements FitsElement {
 
     /**
      * Returns the current preferred alignment character position of inline header comments. This is the position at
-     * which the '/' is placed for the inline comment.
+     * which the '/' is placed for the inline comment. #deprecated
      *
      * @return The current alignment position for inline comments.
      *
      * @see    #setCommentAlignPosition(int)
+     * 
+     * @since  1.17
      */
     public static int getCommentAlignPosition() {
         return commentAlign;
@@ -2537,12 +2551,19 @@ public class Header implements FitsElement {
     /**
      * Sets a new alignment position for inline header comments.
      *
-     * @param  pos                      [20:70] The character position to which inline comments should be aligned if
-     *                                      possible.
+     * @param      pos                      [20:70] The character position to which inline comments should be aligned if
+     *                                          possible.
      *
-     * @throws IllegalArgumentException if the position is outside of the allowed range.
+     * @throws     IllegalArgumentException if the position is outside of the allowed range.
      *
-     * @see                             #getCommentAlignPosition()
+     * @see                                 #getCommentAlignPosition()
+     * 
+     * @deprecated                          Not recommended as it may violate the FITS standart for 'fixed-format'
+     *                                          header entries, and make our FITS files unreadable by software that
+     *                                          expects strict adherence to the standard. We will remove this feature in
+     *                                          the future.
+     * 
+     * @since                               1.17
      */
     public static void setCommentAlignPosition(int pos) throws IllegalArgumentException {
         if (pos < Header.MIN_COMMENT_ALIGN || pos > Header.MAX_COMMENT_ALIGN) {

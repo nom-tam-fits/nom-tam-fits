@@ -69,13 +69,12 @@ import static nom.tam.fits.header.Standard.TELESCOP;
 import static nom.tam.util.LoggerHelper.getLogger;
 
 /**
- * This abstract class is the parent of all HDU types. HDU, which is the acronym for 'header-data unit' is a segment of
- * the FITS file which encapsulates information on a particular data object such as an image or table. As the name
- * implies, HDUs constitute of a header and data entities, which can be accessed separately (via the
- * {@link #getHeader()} and {@link #getData()} methods respectively). The {@link Header} class provides many functions
- * to add, delete and read header keywords in HDUs in a variety of formats. The {@link Data} class, and its concrete
- * subclassses provide access to the specific data object that the HDU encapsulates. It provides basic functionality for
- * an HDU.
+ * Abstract base class for all header-data unit (HDU) types. A HDU is a self-contained building block of the FITS files,
+ * which encapsulates information on a particular data object such as an image or table. As the name implies, HDUs
+ * constitute of a header and data entities, which can be accessed separately (via the {@link #getHeader()} and
+ * {@link #getData()} methods respectively). The {@link Header} class provides many functions to add, delete and read
+ * header keywords in HDUs in a variety of formats. The {@link Data} class, and its concrete subclassses provide access
+ * to the specific data object that the HDU encapsulates. It provides basic functionality for an HDU.
  *
  * @param <DataClass> the generic type of data contained in this HDU instance.
  */
