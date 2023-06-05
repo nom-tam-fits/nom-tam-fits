@@ -33,43 +33,44 @@ package nom.tam.fits;
 
 import java.io.PrintStream;
 
-import nom.tam.fits.header.Standard;
-
 /**
- * A class of HDU that contains a FITS header only with no associated data object. Such HDUs are commonly used as the
- * primary HDU in FITS files where the leading data is not an image, since only images may constitute the primary HDU.
+ * A class of HDU that contains only a header only with no associated data. Such HDUs are commonly used as the primary
+ * HDU in FITS files where the leading data is not an image, since only images may constitute the primary HDU.
  *
  * @author Attila Kovacs
  *
  * @since  1.18
+ * 
+ * @see    NullData
  */
-public class NullDataHDU extends BasicHDU<NullData> {
+@SuppressWarnings("deprecation")
+public class NullDataHDU extends ImageHDU {
 
     /**
-     * Instantiates a new HDU with a default header and no associated data, using the supplied header.
+     * Instantiates a new HDU with a default header and no associated data.
      */
     public NullDataHDU() {
-        this(new Header());
+        super(new Header(), new NullData());
         getData().fillHeader(getHeader());
     }
 
+    @Override
+    public NullData getData() {
+        return (NullData) super.getData();
+    }
+
     /**
-     * Instantiates a new HDU with only a header and no associated data, using the supplied header.
+     * Instantiates a new HDU with only the supplied header and no associated data.
      *
      * @param myHeader the FITS header for this HDU
      */
-    @SuppressWarnings("deprecation")
     public NullDataHDU(Header myHeader) {
         super(myHeader, new NullData());
+        getData().fillHeader(getHeader());
     }
 
     @Override
     public void info(PrintStream stream) {
         stream.println("  Header Only");
-    }
-
-    @Override
-    protected String getCanonicalXtension() {
-        return Standard.XTENSION_IMAGE;
     }
 }
