@@ -4,6 +4,9 @@
  * guide <a href="http://nom-tam-fits.github.io/nom-tam-fits/index.html">project site</a>, and/or jump to the
  * {@link nom.tam.fits.Fits} class to give you a jump start from right here.
  * </p>
+ * 
+ * @see nom.tam.fits.compress
+ * @see nom.tam.image.compression.hdu
  */
 
 package nom.tam.fits;

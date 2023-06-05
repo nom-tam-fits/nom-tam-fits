@@ -1805,4 +1805,14 @@ public class HeaderCardTest {
         HeaderCard hc = new HeaderCard("TEST", "blah", null);
         assertEquals(Math.PI, hc.getValue(Double.class, Math.PI), 1e-12);
     }
+
+    @Test
+    public void testFixedFormatBoolean() throws Exception {
+        // FITS requires that boolean values are stored in byte 30 (counted from 1).
+        HeaderCard hc = new HeaderCard("TEST", true, null);
+        assertTrue(hc.toString(), hc.toString().charAt(29) == 'T');
+
+        hc = new HeaderCard("TEST", false, "comment");
+        assertTrue(hc.toString(), hc.toString().charAt(29) == 'F');
+    }
 }

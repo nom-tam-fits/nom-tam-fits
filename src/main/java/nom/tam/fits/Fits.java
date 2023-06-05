@@ -66,9 +66,16 @@ import edu.umd.cs.findbugs.annotations.SuppressFBWarnings;
 
 /**
  * <p>
- * Reading and writing complete FITS files. This class is a container of HDUs (header-data units), which together
- * constitute a complete FITS file. <code>Fits</code> objects can be built-up HDU-by-HDU, and then written to a file (or
- * stream), e.g.:
+ * Handling of FITS files and streams. This class is a container of HDUs (header-data units), which together constitute
+ * a complete FITS file. Users of this library are strongly encouraged to study the
+ * <a href="https://fits.gsfc.nasa.gov/fits_standard.html">FITS Standard</a> documentation before using this library, as
+ * the library typically requires a level of familiarity with FITS and its capabilities. When constructing FITS files,
+ * users will typically want to populate their headers with as much of the standard information as possible to provide a
+ * full and accurate description of the data they wish to represent way beyond the bare essentials that are handled
+ * automatically by this library.
+ * </p>
+ * <p>
+ * <code>Fits</code> objects can be built-up HDU-by-HDU, and then written to a file (or stream), e.g.:
  * </p>
  * 
  * <pre>
@@ -200,7 +207,7 @@ public class Fits implements Closeable {
      *
      * @throws FitsException if the operation failed
      *
-     * @see                  #Fits(File, boolean)
+     * @see                  #Fits(FitsFile)
      * @see                  #Fits(RandomAccessFileIO)
      * @see                  #Fits(String)
      * @see                  #read()
@@ -224,7 +231,8 @@ public class Fits implements Closeable {
      * the container.
      * </p>
      * 
-     * @deprecated               use {@link #Fits(File)}. Compression is auto detected.
+     * @deprecated               Use {@link #Fits(File)} instead (compression is auto detected). Will remove in the
+     *                               future.
      *
      * @param      myFile        The File object. The content of this file will not be read into the Fits object until
      *                               the user makes some explicit request.
@@ -233,12 +241,6 @@ public class Fits implements Closeable {
      * @throws     FitsException if the operation failed
      *
      * @see                      #Fits(File)
-     * @see                      #Fits(String, boolean)
-     * @see                      #read()
-     * @see                      #getHDU(int)
-     * @see                      #readHDU()
-     * @see                      #skipHDU()
-     * @see                      #addHDU(BasicHDU)
      */
     public Fits(File myFile, boolean compressed) throws FitsException {
         fileInit(myFile, compressed);
@@ -260,7 +262,8 @@ public class Fits implements Closeable {
      *
      * @throws FitsException if the operation failed
      *
-     * @see                  #Fits(File, boolean)
+     * @see                  #Fits(File)
+     * @see                  #Fits(FitsFile)
      * @see                  #read()
      * @see                  #getHDU(int)
      * @see                  #readHDU()
@@ -287,7 +290,7 @@ public class Fits implements Closeable {
      *
      * @throws FitsException if the input could not bew repositions to its beginning
      *
-     * @see                  #Fits(File, boolean)
+     * @see                  #Fits(File)
      * @see                  #Fits(RandomAccessFileIO)
      * @see                  #read()
      * @see                  #getHDU(int)
@@ -323,7 +326,8 @@ public class Fits implements Closeable {
      *
      * @throws FitsException if the operation failed
      *
-     * @see                  #Fits(InputStream, boolean)
+     * @see                  #Fits(File)
+     * @see                  #Fits(FitsFile)
      * @see                  #read()
      * @see                  #getHDU(int)
      * @see                  #readHDU()
@@ -352,14 +356,10 @@ public class Fits implements Closeable {
      *
      * @throws     FitsException if the operation failed
      *
-     * @deprecated               use {@link #Fits(InputStream)}. Compression is auto detected.
+     * @deprecated               Use {@link #Fits(InputStream)} instead (compression is auto detected). Will remove in
+     *                               the future.
      *
      * @see                      #Fits(InputStream)
-     * @see                      #read()
-     * @see                      #getHDU(int)
-     * @see                      #readHDU()
-     * @see                      #skipHDU()
-     * @see                      #addHDU(BasicHDU)
      */
     @Deprecated
     public Fits(InputStream str, boolean compressed) throws FitsException {
@@ -385,9 +385,9 @@ public class Fits implements Closeable {
      *
      * @throws FitsException Thrown if unable to find or open a file or URL from the string given.
      *
-     * @see                  #Fits(String, boolean)
-     * @see                  #Fits(File)
      * @see                  #Fits(URL)
+     * @see                  #Fits(FitsFile)
+     * @see                  #Fits(File)
      * @see                  #read()
      * @see                  #getHDU(int)
      * @see                  #readHDU()
@@ -411,20 +411,16 @@ public class Fits implements Closeable {
      * the container.
      * </p>
      *
-     * @param  filename      The name of the file or URL to be processed. The content of this file will not be read into
-     *                           the Fits object until the user makes some explicit request.
-     * @param  compressed    is the file compressed?
+     * @param      filename      The name of the file or URL to be processed. The content of this file will not be read
+     *                               into the Fits object until the user makes some explicit request.
+     * @param      compressed    is the file compressed?
      *
-     * @throws FitsException Thrown if unable to find or open a file or URL from the string given.
+     * @throws     FitsException Thrown if unable to find or open a file or URL from the string given.
      *
-     * @see                  #Fits(String)
-     * @see                  #Fits(File, boolean)
-     * @see                  #Fits(URL, boolean)
-     * @see                  #read()
-     * @see                  #getHDU(int)
-     * @see                  #readHDU()
-     * @see                  #skipHDU()
-     * @see                  #addHDU(BasicHDU)
+     * @deprecated               Use {@link #Fits(String)} instead (compression is auto detected). Will be a private
+     *                               method in the future.
+     *
+     * @see                      #Fits(String)
      **/
     @SuppressWarnings("resource")
     public Fits(String filename, boolean compressed) throws FitsException {
@@ -478,9 +474,8 @@ public class Fits implements Closeable {
      *
      * @throws FitsException Thrown if unable to find or open a file or URL from the string given.
      *
-     * @see                  #Fits(URL, boolean)
      * @see                  #Fits(String)
-     * @see                  #Fits(File)
+     * @see                  #Fits(RandomAccessFileIO)
      * @see                  #read()
      * @see                  #getHDU(int)
      * @see                  #readHDU()
@@ -513,16 +508,10 @@ public class Fits implements Closeable {
      *
      * @throws     FitsException Thrown if unable to use the specified URL.
      *
-     * @deprecated               use {@link #Fits(InputStream)}. Compression is auto detected.
+     * @deprecated               Use {@link #Fits(URL)} instead (compression is auto detected). Will remove in the
+     *                               future.
      *
      * @see                      #Fits(URL)
-     * @see                      #Fits(String, boolean)
-     * @see                      #Fits(File, boolean)
-     * @see                      #read()
-     * @see                      #getHDU(int)
-     * @see                      #readHDU()
-     * @see                      #skipHDU()
-     * @see                      #addHDU(BasicHDU)
      */
     @Deprecated
     public Fits(URL myURL, boolean compressed) throws FitsException {
@@ -592,8 +581,10 @@ public class Fits implements Closeable {
 
     /**
      * close the input stream, and ignore eventual errors.
+     * 
+     * @deprecated    Use <b>try-with-resources</b> constructs in Java 8+ instead.
      *
-     * @param in the input stream to close.
+     * @param      in the input stream to close.
      */
     public static void saveClose(InputStream in) {
         SafeClose.close(in);
@@ -740,11 +731,11 @@ public class Fits implements Closeable {
     }
 
     /**
-     * Returns the HDU by the given extension name (defined by EXTNAME). This method checks only for EXTNAME but will
-     * ignore the version (defined by EXTVER). If multiple HDUs have the same matching EXTNAME, this method will return
-     * the first match only.
+     * Returns the HDU by the given extension name (defined by <code>EXTNAME</code> header keyword). This method checks
+     * only for EXTNAME but will ignore the version (defined by <code>EXTVER</code>). If multiple HDUs have the same
+     * matching <code>EXTNAME</code>, this method will return the first match only.
      *
-     * @param  name          The name of the HDU as defined by EXTNAME (case sensitive)
+     * @param  name          The name of the HDU as defined by <code>EXTNAME</code> (case sensitive)
      *
      * @return               The first HDU that matches the specified extension name and version, or <code>null</code>
      *                           if the FITS does not contain a matching HDU.
@@ -777,11 +768,12 @@ public class Fits implements Closeable {
     }
 
     /**
-     * Returns the HDU by the given extension name and version (defined by EXTNAME and EXTVER keywords). If multiple
-     * HDUs have the same matching name and version, this method will return the first match only.
+     * Returns the HDU by the given extension name and version (defined by <code>EXTNAME</code> and <code>EXTVER</code>
+     * keywords). If multiple HDUs have the same matching name and version, this method will return the first match
+     * only.
      *
-     * @param  name          The name of the HDU as defined by EXTNAME (case sensitive)
-     * @param  version       The extension version as defined by EXTVER in the matching HDU.
+     * @param  name          The name of the HDU as defined by <code>EXTNAME</code> (case sensitive)
+     * @param  version       The extension version as defined by <code>EXTVER</code> in the matching HDU.
      *
      * @return               The first HDU that matches the specified extension name and version, or <code>null</code>
      *                           if the FITS does not contain a matching HDU.
@@ -823,10 +815,11 @@ public class Fits implements Closeable {
     }
 
     /**
-     * Get the data stream used for the Fits Data.
+     * Returns the input from which this <code>Fits</code> is associated to (if any)..
      *
-     * @return The associated data stream. Users may wish to call this function after opening a Fits object when they
-     *             wish detailed control for writing some part of the FITS file.
+     * @return The associated data input, or <code>null</code> if this <code>Fits</code> container was not read from an
+     *             input. Users may wish to call this function after opening a Fits object when they want low-level
+     *             rea/wrte access to the FITS resource directly.
      */
     public ArrayDataInput getStream() {
         return dataStr;
