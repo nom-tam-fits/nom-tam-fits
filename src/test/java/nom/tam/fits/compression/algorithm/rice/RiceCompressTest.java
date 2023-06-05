@@ -321,4 +321,16 @@ public class RiceCompressTest {
         }
     }
 
+    @Test
+    public void testDefaultTileOption() throws Exception {
+        RiceCompressOption o = new RiceCompressOption();
+
+        o.setTileHeight(10);
+        o.setTileWidth(20);
+
+        // Rice does not have tile settings, so we should get back zeroes.
+        Assert.assertEquals(0, o.getTileHeight());
+        Assert.assertEquals(0, o.getTileWidth());
+    }
+
 }
