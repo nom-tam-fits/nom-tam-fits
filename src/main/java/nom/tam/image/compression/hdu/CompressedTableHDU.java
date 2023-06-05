@@ -44,9 +44,15 @@ import nom.tam.util.type.ElementType;
 import static nom.tam.fits.header.Compression.ZTABLE;
 
 /**
- * A header-data unit (HDU) containing a compressed binary table.
+ * A header-data unit (HDU) containing a compressed binary table. A compressed table is still a binary table but with
+ * some additional constraints. The original table is divided into groups of rows (tiles) and each tile is compressed on
+ * its own. The compressed data is then stored in the 3 data columns of this binary table (compressed, gzipped and
+ * uncompressed) depending on the compression type used in the tile. Additional data columns may contain specific
+ * compression options for each tile (i.e. compressed table row) individually. Table keywords, which conflict with those
+ * in the original table are 'saved' under standard alternative names, so they may be restored with the original table
+ * as appropriate.
  * <p>
- * Compressing an image HDU is typically a two-step process:
+ * Compressing a table HDU is typically a two-step process:
  * </p>
  * <ol>
  * <li>Create a <code>CompressedTableHDU</code>, e.g. with {@link #fromBinaryTableHDU(BinaryTableHDU, int, String...)},
@@ -74,9 +80,9 @@ import static nom.tam.fits.header.Compression.ZTABLE;
  * CompressedTableHDU compressed = CompressedTableHDU.fromBinaryTableHDU(table, 4, Compression.ZCMPTYPE_RICE_1).compress();
  * </pre>
  * <p>
- * The two step process (as opposed to a single-step one) was probbly chosen because it mimics that of
+ * The two step process (as opposed to a single-step one) was probably chosen because it mimics that of
  * {@link CompressedImageHDU}, where further configuration steps may be inserted in-between. After the compression, the
- * compressed table HDU can be handled just like any HDU, and written to a ile or stream, for example.
+ * compressed table HDU can be handled just like any other HDU, and written to a file or stream, for example.
  * </p>
  * <p>
  * The reverse process is simply via the {@link #asBinaryTableHDU()} method. E.g.:

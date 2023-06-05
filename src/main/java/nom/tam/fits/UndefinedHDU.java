@@ -38,7 +38,7 @@ import nom.tam.fits.header.Standard;
 import static nom.tam.fits.header.Standard.XTENSION;
 
 /**
- * Holder for unknown data types.
+ * A HDU that holds a type of data we don't recognise.
  * 
  * @see UndefinedData
  */
