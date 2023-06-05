@@ -40,10 +40,11 @@ import static nom.tam.fits.header.Standard.TTYPEn;
  */
 
 /**
- * This class allows FITS binary and ASCII tables to be accessed via a common interface.
+ * Base class for binary and ASCII table implementations.
  *
  * @param <T> the generic type of table data contained in this HDU instance.
  */
+@SuppressWarnings("deprecation")
 public abstract class TableHDU<T extends AbstractTableData> extends BasicHDU<T> {
 
     /**
@@ -215,7 +216,6 @@ public abstract class TableHDU<T extends AbstractTableData> extends BasicHDU<T> 
      *
      * @throws FitsException If an error occurs in the deletion.
      */
-    @SuppressWarnings("deprecation")
     public void deleteRows(final int firstRow, int nRow) throws FitsException {
 
         // Just ignore invalid requests.

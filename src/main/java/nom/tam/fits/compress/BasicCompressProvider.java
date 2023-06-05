@@ -51,8 +51,8 @@ import static nom.tam.util.LoggerHelper.getLogger;
  * 
  * @see        CompressionManager
  * 
- * @deprecated Use {@link ZCompressionProvider}. or the more generic {@link CompressionManager} with a preference
- *                 towards using the system command if possible. instead.
+ * @deprecated Use {@link ZCompressionProvider}. or the more generic {@link CompressionManager} with a preference toward
+ *                 using the system command if possible. instead.
  */
 @Deprecated
 public class BasicCompressProvider implements ICompressProvider {

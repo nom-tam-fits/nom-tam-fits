@@ -34,10 +34,11 @@ import edu.umd.cs.findbugs.annotations.SuppressFBWarnings;
  */
 
 /**
- * @deprecated It is a rusty-rail compatibility implementation only, unsafe for general use. No longer used within the
- *                 FITS package itself. If you do attempt to use it with the deprecated APIs, beware that no data will
- *                 be filled into the buffer of this object ever by the library, although its length and position fields
- *                 may be updated to pretend as if the buffer were always hall full / half available...
+ * @deprecated (<i>for internal use</i>) It is a rusty-rail compatibility implementation only, unsafe for general use.
+ *                 No longer used within the FITS package itself. If you do attempt to use it with the deprecated APIs,
+ *                 beware that no data will be filled into the buffer of this object ever by the library, although its
+ *                 length and position fields may be updated to pretend as if the buffer were always hall full / half
+ *                 available...
  *
  * @see        BufferEncoder
  * @see        BufferDecoder

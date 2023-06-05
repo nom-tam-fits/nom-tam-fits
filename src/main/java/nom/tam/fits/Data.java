@@ -45,7 +45,7 @@ import nom.tam.util.RandomAccess;
 import static nom.tam.util.LoggerHelper.getLogger;
 
 /**
- * This class provides methods to access the data segment of an HDU.
+ * The data segment of an HDU.
  * <p>
  * This is the object which contains the actual data for the HDU.
  * </p>

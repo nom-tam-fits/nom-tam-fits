@@ -77,24 +77,49 @@ import static nom.tam.fits.header.Standard.XTENSION_BINTABLE;
 import static nom.tam.fits.header.extra.CXCExt.LONGSTRN;
 
 /**
- * This class describes methods to access and manipulate the header for a FITS HDU. This class does not include code
- * specific to particular types of HDU. As of version 1.1 this class supports the long keyword convention which allows
- * long string keyword values to be split among multiple keywords
- *
- * <pre>
- *    KEY        = 'ABC&amp;'   /A comment
- *    CONTINUE      'DEF&amp;'  / Another comment
- *    CONTINUE      'GHIJKL '
- * </pre>
- *
- * The methods getStringValue(key), addValue(key,value,comment) and deleteCard(key) will get, create/update and delete
- * long string values if the longStringsEnabled flag is set. This flag is set automatically when a FITS header with a
- * LONGSTRN card is found. The value is not checked. It may also be set/unset using the static method
- * setLongStringsEnabled(boolean). [So if a user wishes to ensure that it is not set, it should be unset after any
- * header is read] When long strings are found in the FITS header users should be careful not to interpose new header
- * cards within a long value sequence. When writing long strings, the comment is included in the last card. If a user is
- * writing long strings, a the keyword LONGSTRN = 'OGIP 1.0' should be added to the FITS header, but this is not done
- * automatically for the user.
+ * <p>
+ * Access and manipulate the header of a HDU. FITS headers serve more than a single purpose:
+ * </p>
+ * <ol>
+ * <li>provide an essential description of the type, size, and layout of the HDUs data segment</li>
+ * <li>describe the data as completely as possible via standardized (or conventional) keywords</li>
+ * <li>provide storage for additional user-specific key.value pairs</li>
+ * <li>allow for comments to aid human readability</li>
+ * </ol>
+ * <p>
+ * First and foremost headers provide a description of the data object that follows the header in the HDU. Some of that
+ * description is essential and critical to the integrity of the FITS file, such as the header keywords that describe
+ * the type, size, and layout of the data segment. This library will automatically populate the header with appropriate
+ * information using the mandatory keywords (such as <code>SIMPLE</code> or <code>XTENSION</code>, <code>BITPIX</code>
+ * <code>NAXIS</code>, <code>NAXIS</code><i>n</i>, <code>PCOUNT</code>, <code>GCOUNT</code> keywords, as well as
+ * essential table column format descriptions). Users of the library should avoid overwriting such keywords manually,
+ * since they may corrupt the FITS file, making it unreadable or corrupted.
+ * </p>
+ * <p>
+ * Beyond the keywords that describe the type, shape, and size of data, the library will not add additional information
+ * to the header. The users of the library are responsible to complete the header description as necessary. This
+ * includes non-enssential data descriptions (such as <code>EXTNAME</code>, <code>BUNIT</code>, <code>OBSERVER</code>,
+ * or optional table column descriptors <code>TTYPE</code><i>n</i>, <code>TDIM</code><i>n</i>, or WCS keywords, or
+ * checksums). Users of the library are responsible for completing the data description using whatever standard or
+ * conventional keywords are available and appropriate. FITS offers many standardized keywords that can be (and should
+ * be) used to provide a more complete and accurate description of the data than the bare mimimum that this library will
+ * provide automatically.
+ * </p>
+ * <p>
+ * Last but not least, the header is also a place where users can store (nearly) arbitrary key/value pairs. In earlier
+ * versions of the FITS standard, header keywords were restricted to max 8 upper case letters and numbers (plus hyphen
+ * and underscore), and no more than 70 character value fields. However, as of FITS 4.0 (and as a registered convention
+ * even before), string values of arbitrary length may be stored using the OGIP 1.0 long string convention, while the
+ * ESO HIERARCH convention allows keywords with more than 8 characters and hierarchical organization. Support,
+ * conformance, and compliance to these conventions can be toggled by static settings in {@link FitsFactory} to user
+ * preference.
+ * </p>
+ * <p>
+ * As of version 1.16, we also support reserving space in headers for future additions using the
+ * {@link #ensureCardSpace(int)} method, also part of the FITS 4.0 standard. It allows users to finish populating
+ * headers <i>after</i> data that follows the header is already written -- a usefuly feature for recording data from
+ * streaming sources.
+ * </p>
  */
 @SuppressWarnings("deprecation")
 public class Header implements FitsElement {
@@ -1243,8 +1268,8 @@ public class Header implements FitsElement {
     }
 
     /**
-     * @deprecated Will be removed from the public API in 2.0 Returns the original size of the header in the stream from
-     *                 which it was read.
+     * @deprecated <i>for internal use</i>) It should be a private method in the future. Returns the original size of
+     *                 the header in the stream from which it was read.
      *
      * @return     the size of the original header in bytes, or 0 if the header was not read from a stream.
      *
@@ -1528,9 +1553,10 @@ public class Header implements FitsElement {
     }
 
     /**
-     * @deprecated               Normally we either want to write a Java object to FITS (in which case we have the
-     *                               dataand want to make a header for it), or we read some data from a FITS input. In
-     *                               either case, there is no benefit of exposing such a function as this to the user.
+     * @deprecated               (<i>for internal use</i>) Normally we either want to write a Java object to FITS (in
+     *                               which case we have the dataand want to make a header for it), or we read some data
+     *                               from a FITS input. In either case, there is no benefit of exposing such a function
+     *                               as this to the user.
      *
      * @return                   Create the data element corresponding to the current header
      *
@@ -1563,7 +1589,7 @@ public class Header implements FitsElement {
      *
      * @throws     FitsException if the data was not valid for this header.
      *
-     * @deprecated               Use the appropriate Header constructor.
+     * @deprecated               Use the appropriate Header constructor instead. Will remove in a future releae.
      */
     @Deprecated
     public void pointToData(Data o) throws FitsException {
@@ -1723,7 +1749,7 @@ public class Header implements FitsElement {
      *
      * @throws     HeaderCardException if the operation failed
      *
-     * @deprecated                     see {@link #deleteKey(String)}
+     * @deprecated                     (<i>duplicate method</i>) Use {@link #deleteKey(String)} instead.
      */
     @Deprecated
     public void removeCard(String key) throws HeaderCardException {
@@ -1743,7 +1769,7 @@ public class Header implements FitsElement {
     }
 
     /**
-     * @deprecated Use {@link #ensureCardSpace(int)} with a 1 argument instead.
+     * @deprecated Use {@link #ensureCardSpace(int)} with 1 as the argument instead.
      *                 <p>
      *                 Resets any prior preallocated header space, such as was explicitly set by
      *                 {@link #ensureCardSpace(int)}, or when the header was read from a stream to ensure it remains

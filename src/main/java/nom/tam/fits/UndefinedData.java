@@ -55,6 +55,8 @@ import edu.umd.cs.findbugs.annotations.SuppressFBWarnings;
  * A HDU that holds a type of data we don't recognise. We can still retrieve the data as a binary array, we just don't
  * know how to interpret it. This class makes sure we don't break when we encouter HDUs that we don't (yet) support,
  * such as HDU types defined by future FITS standards.
+ * 
+ * @see UndefinedHDU
  */
 public class UndefinedData extends Data {
 

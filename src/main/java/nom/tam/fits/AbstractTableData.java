@@ -35,6 +35,9 @@ package nom.tam.fits;
  * Just an abstract class to reuse the myData in all subclasses of the HDU's.
  * 
  * @author Richard van Nieuwenhoven
+ * @deprecated Serves no purpose really. It can be removed in the future, letting
+ *             {@link AsciiTable} extend {@link Data} and implement
+ *             {@link TableData} instead.
  */
 public abstract class AbstractTableData extends Data implements TableData {
 

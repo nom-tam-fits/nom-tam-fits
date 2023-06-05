@@ -45,7 +45,7 @@ import nom.tam.fits.header.IFitsHeader;
  * and we therefore stick to it, at least until the next major code revision (major version 2 at the earliest). So this
  * class provides an alternative access to a header card converting any <code>HeaderCardException</code>s to
  * {@link IllegalArgumentException}.
- * <p>
+ * </p>
  * <p>
  * Unlike {@link HeaderAccess} this class operates on single cards. Methods that specify a keywords are applied to the
  * selected card if and only if the keyword matches that of the card's keyword.

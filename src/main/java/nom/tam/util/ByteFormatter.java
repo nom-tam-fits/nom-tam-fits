@@ -48,7 +48,7 @@ package nom.tam.util;
  * formatted in exponential notation. By setting the limits at which these transitions take place the user can force
  * either exponential or decimal notation.
  * 
- * @deprecated This class should not be exposed in the publi API and is meant for internal use only in ASCII tables.
+ * @deprecated This class should not be exposed in the public API and is intended for internal use only in ASCII tables.
  *                 Also, it may have overlapping functionality with other classes, which should probably be eliminated
  *                 for simplicity's sake (and thus less chance of nasty bugs).
  * 

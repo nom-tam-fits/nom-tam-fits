@@ -49,7 +49,7 @@ import nom.tam.fits.FitsException;
  * 
  * @see        CompressionManager
  * 
- * @deprecated Use {@link ZCompressionProvider}, or the more generic {@link CompressionManager} with s preference toward
+ * @deprecated Use {@link ZCompressionProvider}, or the more generic {@link CompressionManager} with a preference toward
  *                 using the system command if possible, instead.
  */
 @Deprecated

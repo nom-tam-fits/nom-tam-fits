@@ -40,6 +40,8 @@ import static nom.tam.fits.header.Standard.XTENSION;
 
 /**
  * Holder for unknown data types.
+ * 
+ * @see UndefinedData
  */
 public class UndefinedHDU extends BasicHDU<UndefinedData> {
 
@@ -49,7 +51,7 @@ public class UndefinedHDU extends BasicHDU<UndefinedData> {
     }
 
     /**
-     * @deprecated               This should be for internal use only. Will reduce visibility in the future
+     * @deprecated               (<i>for internal use</i>) Will reduce visibility in the future
      *
      * @return                   Encapsulate an object as an UndefinedHDU.
      *
@@ -66,7 +68,7 @@ public class UndefinedHDU extends BasicHDU<UndefinedData> {
      * Check if we can use the following object as in an Undefined FITS block. We allow this so long as computeLSize can
      * get a size. Note that computeLSize may be wrong!
      *
-     * @deprecated   This should be for internal use only. Will reduce visibility in the future
+     * @deprecated   (<i>for internal use</i>) Will reduce visibility in the future
      *
      * @param      o The Object being tested.
      *
@@ -84,7 +86,7 @@ public class UndefinedHDU extends BasicHDU<UndefinedData> {
     /**
      * Check if we can find the length of the data for this header.
      *
-     * @deprecated     This should be for internal use only. Will reduce visibility in the future
+     * @deprecated     (<i>for internal use</i>) Will reduce visibility in the future
      *
      * @param      hdr header to check.
      *
@@ -101,7 +103,7 @@ public class UndefinedHDU extends BasicHDU<UndefinedData> {
     /**
      * Prepares a data object into which the actual data can be read from an input subsequently or at a later time.
      *
-     * @deprecated               This should be for internal use only. Will reduce visibility in the future
+     * @deprecated               (<i>for internal use</i>) Will reduce visibility in the future
      *
      * @param      hdr           The FITS header that describes the data
      *
@@ -115,7 +117,7 @@ public class UndefinedHDU extends BasicHDU<UndefinedData> {
     }
 
     /**
-     * @deprecated               This should be for internal use only. Will reduce visibility in the future
+     * @deprecated               (<i>for internal use</i>) Will reduce visibility in the future
      *
      * @return                   Create a header that describes the given image data.
      *
@@ -135,7 +137,7 @@ public class UndefinedHDU extends BasicHDU<UndefinedData> {
     /**
      * Build an image HDU using the supplied data.
      * 
-     * @deprecated               intended for internal use. Its visibility should be reduced to package level in the
+     * @deprecated               (<i>for internal use</i>) Its visibility should be reduced to package level in the
      *                               future.
      *
      * @param      h             the header for this HDU
