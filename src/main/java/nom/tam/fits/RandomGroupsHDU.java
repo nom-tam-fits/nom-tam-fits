@@ -48,11 +48,18 @@ import static nom.tam.fits.header.Standard.XTENSION;
 import static nom.tam.fits.header.Standard.XTENSION_IMAGE;
 
 /**
- * Random groups HDUs. Note that the internal storage of random groups is a Object[ngroup][2] array. The first element
- * of each group is the parameter data from that group. The second element is the data. The parameters should be a one
+ * Random groups header/data unit. The use of random group HDUs is discouraged, even by the FITS standard. Some old
+ * radio data may be packaged in this format. Thus apart from provided limited support for reading such data, users
+ * should not create random groups anew. {@link BinaryTableHDU} offers a much more flexible and capable way for storing
+ * an ensemble of parameters, arrays, and more.
+ * <p>
+ * Note that the internal storage of random groups is a <code>Object[ngroup][2]</code> array. The first element of each
+ * group is the parameter data from that group. The second element is the data. The parameters should be a one
  * dimensional array of the primitive types byte, short, int, long, float or double. The second element is a
  * n-dimensional array of the same type. When analyzing group data structure only the first group is examined, but for a
  * valid FITS file all groups must have the same structure.
+ * 
+ * @see BinaryTableHDU
  */
 public class RandomGroupsHDU extends BasicHDU<RandomGroupsData> {
 
@@ -62,7 +69,7 @@ public class RandomGroupsHDU extends BasicHDU<RandomGroupsData> {
     }
 
     /**
-     * @deprecated               This should be for internal use only. Will reduce visibility in the future
+     * @deprecated               (<i>for internal use</i>) Will reduce visibility in the future
      *
      * @return                   a random groups data structure from an array of objects representing the data.
      *
@@ -110,7 +117,7 @@ public class RandomGroupsHDU extends BasicHDU<RandomGroupsData> {
      * elements of each group having the same base type and the first element being a simple primitive array. We do not
      * check anything but the first row.
      *
-     * @deprecated               This should be for internal use only. Will reduce visibility in the future
+     * @deprecated               (<i>for internal use</i>) Will reduce visibility in the future
      *
      * @param      potentialData data to check
      *
@@ -132,7 +139,7 @@ public class RandomGroupsHDU extends BasicHDU<RandomGroupsData> {
     }
 
     /**
-     * @deprecated     This should be for internal use only. Will reduce visibility in the future
+     * @deprecated     (<i>for internal use</i>) Will reduce visibility in the future
      *
      * @return         Is this a random groups header?
      *
@@ -157,7 +164,7 @@ public class RandomGroupsHDU extends BasicHDU<RandomGroupsData> {
     /**
      * Prepares a data object into which the actual data can be read from an input subsequently or at a later time.
      *
-     * @deprecated               This should be for internal use only. Will reduce visibility in the future
+     * @deprecated               (<i>for internal use</i>) Will reduce visibility in the future
      *
      * @param      header        The FITS header that describes the data
      *
@@ -180,7 +187,7 @@ public class RandomGroupsHDU extends BasicHDU<RandomGroupsData> {
     }
 
     /**
-     * @deprecated               This should be for internal use only. Will reduce visibility in the future
+     * @deprecated               (<i>for internal use</i>) Will reduce visibility in the future
      *
      * @return                   Make a header point to the given object.
      *
@@ -203,7 +210,7 @@ public class RandomGroupsHDU extends BasicHDU<RandomGroupsData> {
     /**
      * Create an HDU from the given header and data.
      * 
-     * @deprecated        intended for internal use. Its visibility should be reduced to package level in the future.
+     * @deprecated        (<i>for internal use</i>) Its visibility should be reduced to package level in the future.
      *
      * @param      header header to use
      * @param      data   data to use

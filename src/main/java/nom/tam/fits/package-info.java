@@ -1,5 +1,9 @@
 /**
- * The core classes of nom-tam-fits
+ * <p>
+ * The core classes of nom-tam-fits. If you are new to this library you may want to check out the <i>Getting Started</i>
+ * guide <a href="http://nom-tam-fits.github.io/nom-tam-fits/index.html">project site</a>, and/or jump to the
+ * {@link nom.tam.fits.Fits} class to give you a jump start from right here.
+ * </p>
  */
 
 package nom.tam.fits;

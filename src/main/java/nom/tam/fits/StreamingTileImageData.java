@@ -39,9 +39,9 @@ import nom.tam.util.ArrayDataOutput;
 import nom.tam.util.ArrayFuncs;
 
 /**
- * Simple implementation that will cut a tile out to the given stream. Useful for web applications that provide a cutout
- * service. The idea is that the ImageData object will be extracted from an overlapping HDU (without first reading so as
- * not to fill up the memory), and one of these objects are created for the output. <code>
+ * Simple streaming image tile implementation. Useful for web applications that provide a cutout service. The idea is
+ * that the ImageData object will be extracted from an overlapping HDU (without first reading so as not to fill up the
+ * memory), and one of these objects are created for the output. <code>
  *     Fits source = new Fits(myFile);
  *     ImageHDU imageHDU = source.getHDU(1);
  *

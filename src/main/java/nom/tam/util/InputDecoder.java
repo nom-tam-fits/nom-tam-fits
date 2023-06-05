@@ -43,7 +43,7 @@ import nom.tam.fits.FitsFactory;
 import nom.tam.util.type.ElementType;
 
 /**
- * Efficient base class for decoding of binary input into Java arrays (<i>primarily for internal use</i>).
+ * Efficient base class for decoding of binary input into Java arrays (<i>primarily for internal use</i>)
  *
  * @author Attila Kovacs
  *

@@ -69,7 +69,13 @@ import static nom.tam.fits.header.Standard.TELESCOP;
 import static nom.tam.util.LoggerHelper.getLogger;
 
 /**
- * This abstract class is the parent of all HDU types. It provides basic functionality for an HDU.
+ * This abstract class is the parent of all HDU types. HDU, which is the acronym for 'header-data unit' is a segment of
+ * the FITS file which encapsulates information on a particular data object such as an image or table. As the name
+ * implies, HDUs constitute of a header and data entities, which can be accessed separately (via the
+ * {@link #getHeader()} and {@link #getData()} methods respectively). The {@link Header} class provides many functions
+ * to add, delete and read header keywords in HDUs in a variety of formats. The {@link Data} class, and its concrete
+ * subclassses provide access to the specific data object that the HDU encapsulates. It provides basic functionality for
+ * an HDU.
  *
  * @param <DataClass> the generic type of data contained in this HDU instance.
  */
@@ -148,7 +154,7 @@ public abstract class BasicHDU<DataClass extends Data> implements FitsElement {
      * Checks that this is a valid header for the HDU. This method is static but should be implemented by all
      * subclasses.
      * 
-     * @deprecated        for internal use only
+     * @deprecated        (<i>for internal use</i>) Will be removed as it serves no purpose.
      *
      * @param      header to validate.
      *
@@ -159,7 +165,7 @@ public abstract class BasicHDU<DataClass extends Data> implements FitsElement {
     }
 
     /**
-     * @deprecated   for internal use only
+     * @deprecated   (<i>for internal use</i>) Will be removed as it serves no purpose.
      * 
      * @return       if this object can be described as a FITS image. This method is static but should be implemented by
      *                   all subclasses.
@@ -404,8 +410,8 @@ public abstract class BasicHDU<DataClass extends Data> implements FitsElement {
     /**
      * Returns the integer value that signifies blank (missing or <code>null</code>) data in an integer image.
      * 
-     * @deprecated               This is only applicable to {@link ImageHDU} with integer type data and not for other
-     *                               HDU or data types.
+     * @deprecated               This is only applicable to {@link ImageHDU} or {@link RandomGroupsHDU} with integer
+     *                               type data and not for other HDU or data types.
      * 
      * @return                   the integer value used for identifying blank / missing data in integer images.
      * 

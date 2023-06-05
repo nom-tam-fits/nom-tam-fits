@@ -62,7 +62,10 @@ import static nom.tam.fits.header.Standard.THEAP;
 import static nom.tam.fits.header.Standard.XTENSION_BINTABLE;
 
 /**
- * This class defines the methods for accessing FITS binary table data.
+ * Table data for binary table HDUs.
+ * 
+ * @see BinaryTableHDU
+ * @see AsciiTable
  */
 @SuppressWarnings("deprecation")
 public class BinaryTable extends AbstractTableData {
@@ -161,7 +164,7 @@ public class BinaryTable extends AbstractTableData {
         }
 
         /**
-         * @deprecated (<i>for internal use</i>). It may be reduced to private visibility in the future. Returns the
+         * @deprecated (<i>for internal use</i>) It may be reduced to private visibility in the future. Returns the
          *                 number of bytes that each element occupies in its FITS serialized form in the stored row
          *                 data.
          * 
@@ -172,7 +175,7 @@ public class BinaryTable extends AbstractTableData {
         }
 
         /**
-         * @deprecated (<i>for internal use</i>). It may be reduced to private visibility in the future.
+         * @deprecated (<i>for internal use</i>) It may be reduced to private visibility in the future.
          * 
          * @return     Is this a variable length column using longs? [Must have isVarying true too]
          */
@@ -181,7 +184,7 @@ public class BinaryTable extends AbstractTableData {
         }
 
         /**
-         * @deprecated (<i>for internal use</i>). It may be reduced to package level visibility in the future.
+         * @deprecated (<i>for internal use</i>) It may be reduced to package level visibility in the future.
          * 
          * @return     whether this is a variable length column.
          */
@@ -385,7 +388,7 @@ public class BinaryTable extends AbstractTableData {
     }
 
     /**
-     * @deprecated       (<i>for internal use</i>). It may be reduced to private visibility in the future. Parse the
+     * @deprecated       (<i>for internal use</i>) It may be reduced to private visibility in the future. Parse the
      *                       TDIMS value. If the TDIMS value cannot be deciphered a one-d array with the size given in
      *                       arrsiz is returned.
      *
@@ -417,7 +420,7 @@ public class BinaryTable extends AbstractTableData {
     }
 
     /**
-     * @deprecated (<i>for internal use</i>). It may be reduced to private visibility in the future. Convert a two-d
+     * @deprecated (<i>for internal use</i>) It may be reduced to private visibility in the future. Convert a two-d
      *                 table to a table of columns. Handle String specially. Every other element of data should be a
      *                 primitive array of some dimensionality. Basically the translates a table expressed as objects in
      *                 row order to a table with objects in column order.
@@ -711,7 +714,7 @@ public class BinaryTable extends AbstractTableData {
     }
 
     /**
-     * @deprecated (<i>for internal use</i>). It may be reduced to private visibility in the future.
+     * @deprecated (<i>for internal use</i>) It may be reduced to private visibility in the future.
      * 
      * @return     An array with flattened data, in which each column's data is represented by a 1D array
      */
@@ -721,7 +724,7 @@ public class BinaryTable extends AbstractTableData {
     }
 
     /**
-     * @deprecated               (<i>for internal use</i>). It may be reduced to privae visibility in the future.
+     * @deprecated               (<i>for internal use</i>) It may be reduced to privae visibility in the future.
      * 
      * @return                   column in flattened format. For large tables getting a column in standard format can be
      *                               inefficient because a separate object is needed for each row. Leaving the data in
@@ -742,7 +745,7 @@ public class BinaryTable extends AbstractTableData {
     }
 
     /**
-     * @deprecated (<i>for internal use</i>). It may be reduced to package level visibility in the future.
+     * @deprecated (<i>for internal use</i>) It may be reduced to package level visibility in the future.
      * 
      * @return     the offset to the heap
      */
@@ -751,7 +754,7 @@ public class BinaryTable extends AbstractTableData {
     }
 
     /**
-     * @deprecated (<i>for internal use</i>). It may be reduced to package level visibility in the future.
+     * @deprecated (<i>for internal use</i>) It may be reduced to package level visibility in the future.
      * 
      * @return     the size of the heap -- including the offset from the end of the table data.
      */
@@ -914,7 +917,7 @@ public class BinaryTable extends AbstractTableData {
     }
 
     /**
-     * @deprecated               (<i>for internal use</i>). It may be reduced to private visibility in the future. Set a
+     * @deprecated               (<i>for internal use</i>) It may be reduced to private visibility in the future. Set a
      *                               column with the data already flattened.
      *
      * @param      col           The index of the column to be replaced.
@@ -1606,9 +1609,7 @@ public class BinaryTable extends AbstractTableData {
     }
 
     /**
-     * (<i>for internal use</i>)
-     * 
-     * @deprecated this method should have visibility reduced to private
+     * @deprecated (<i>for internal use</i>) This method should have visibility reduced to private
      */
     @SuppressWarnings("javadoc")
     protected ColumnTable<SaveState> createColumnTable(Object[] arrCol, int[] sizes) throws TableException {

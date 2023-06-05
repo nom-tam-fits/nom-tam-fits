@@ -49,9 +49,16 @@ import static nom.tam.fits.header.Standard.PCOUNT;
 import edu.umd.cs.findbugs.annotations.SuppressFBWarnings;
 
 /**
- * This class instantiates FITS Random Groups data. Random groups are instantiated as a two-dimensional array of
- * objects. The first dimension of the array is the number of groups. The second dimension is 2. The first object in
- * every row is a one dimensional parameter array. The second element is the n-dimensional data array.
+ * Random Groups data. The use of random groups is discouraged, even by the FITS standard. Some old radio data may be
+ * packaged in this format. Thus apart from provided limited support for reading such data, users should not create
+ * random groups anew. {@link BinaryTable} offers a much more flexible and capable way for storing an ensemble of
+ * parameters, arrays, and more.
+ * <p>
+ * Random groups are instantiated as a two-dimensional array of objects. The first dimension of the array is the number
+ * of groups. The second dimension is 2. The first object in every row is a one dimensional parameter array. The second
+ * element is the n-dimensional data array.
+ * 
+ * @see BinaryTable
  */
 public class RandomGroupsData extends Data {
 

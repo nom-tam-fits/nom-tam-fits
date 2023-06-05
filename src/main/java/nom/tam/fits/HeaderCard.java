@@ -148,27 +148,24 @@ public class HeaderCard implements CursorValue<String>, Cloneable {
     }
 
     /**
-     * <p>
-     * Deprecated, first because it should not be public since it should only be used only at the package level; and
-     * second, because card counting should be internal to HeaderCard, not external... We'll likely remove support in
-     * future releases. -- (AK)
-     * </p>
-     * <p>
      * Creates a new header card, but reading from the specified data input. The card is expected to be describes by one
      * or more 80-character wide header 'lines'. If long string support is not enabled, then a new card is created from
      * the next 80-characters. When long string support is enabled, cunsecutive lines starting with
      * [<code>CONTINUE </code>] after the first line will be aggregated into a single new card.
-     * </p>
+     * 
+     * @deprecated                        (<i>for internal use</i>) Its visibility may be reduced or may be removed
+     *                                        entirely in the future. Card counting should be internal to
+     *                                        {@link HeaderCard}.
      *
-     * @param  dis                    the data input
+     * @param      dis                    the data input
      *
-     * @throws UnclosedQuoteException if the line contained an unclosed single quote.
-     * @throws TruncatedFileException if we reached the end of file unexpectedly before fully parsing an 80-character
-     *                                    line.
-     * @throws IOException            if there was some IO issue.
+     * @throws     UnclosedQuoteException if the line contained an unclosed single quote.
+     * @throws     TruncatedFileException if we reached the end of file unexpectedly before fully parsing an
+     *                                        80-character line.
+     * @throws     IOException            if there was some IO issue.
      *
-     * @see                           #HeaderCard(ArrayDataInput)
-     * @see                           FitsFactory#setLongStringsEnabled(boolean)
+     * @see                               #HeaderCard(ArrayDataInput)
+     * @see                               FitsFactory#setLongStringsEnabled(boolean)
      */
     @Deprecated
     public HeaderCard(HeaderCardCountingArrayDataInput dis)

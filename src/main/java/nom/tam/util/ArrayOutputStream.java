@@ -36,7 +36,7 @@ import java.io.IOException;
 import java.io.OutputStream;
 
 /**
- * Efficient reading of binary arrays from streams with custom binary encoding.
+ * Efficient writing of binary arrays to streams with custom binary encoding.
  * 
  * @author Attila Kovacs
  * @since 1.16

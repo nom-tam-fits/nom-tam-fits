@@ -35,9 +35,10 @@ import java.io.EOFException;
 import java.io.IOException;
 
 /**
- * @deprecated This is a rusty rail implementation only, unsafe for general use. Use {@link FitsDecoder} instead, which
- *                 provides a similar function but in a more consistent way and with a less misleading name, or else use
- *                 {@link InputDecoder} as a base for implementing efficient custom decoding of binary inputs.
+ * @deprecated Use {@link FitsDecoder} instead which provides a similar function but in a more consistent way and with a
+ *                 less misleading name. This is a rusty rail implementation for of an older abandoned class only,
+ *                 unsafe for general use. For reading non-FITS encoding you may also use {@link InputDecoder} as a base
+ *                 for implementing efficient custom decoding of binary inputs in general.
  *
  * @see        FitsDecoder
  */

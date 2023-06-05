@@ -37,8 +37,7 @@ import nom.tam.util.ArrayDataInput;
 import nom.tam.util.ArrayDataOutput;
 
 /**
- * This interface allows to easily perform basic I/O operations on a FITS
- * element.
+ * I/O interface for various FITS file elements.
  */
 public interface FitsElement {
 

@@ -33,7 +33,7 @@ package nom.tam.fits;
 
 /**
  * <p>
- * Interface for accessing FITS binary and ASCII tables. .
+ * Interface for accessing binary and ASCII table data.
  * </p>
  * <p>
  * Note, that this interface is the big sister {@link nom.tam.util.DataTable},

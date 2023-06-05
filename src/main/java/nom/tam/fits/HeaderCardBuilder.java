@@ -36,7 +36,7 @@ import java.util.Date;
 import nom.tam.fits.header.IFitsHeader;
 
 /**
- * builder pattern implementation for easy readable header card creation.
+ * Builder pattern implementation for easy readable header card creation.
  *
  * @author nir
  */

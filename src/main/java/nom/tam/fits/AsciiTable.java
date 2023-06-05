@@ -64,7 +64,12 @@ import static nom.tam.fits.header.Standard.TNULLn;
 import edu.umd.cs.findbugs.annotations.SuppressFBWarnings;
 
 /**
- * This class represents the data in an ASCII table
+ * ASCII table data. ASCII tables are meant for human readability without any special tools. However, they are far less
+ * flexible or compact than {@link BinaryTable}. As such, users are generally discouraged from using this type of table
+ * to represent FITS table data.
+ * 
+ * @see AsciiTableHDU
+ * @see BinaryTable
  */
 @SuppressWarnings("deprecation")
 public class AsciiTable extends AbstractTableData {

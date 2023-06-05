@@ -112,12 +112,12 @@ public final class ArrayFuncs {
     }
 
     /**
-     * Use {@link FitsEncoder#computeSize(Object)} instead.
+     * @deprecated   Use {@link FitsEncoder#computeSize(Object)} instead.
      *
-     * @param  o the object
+     * @param      o the object
      *
-     * @return   the number of bytes in the FITS binary representation of the object or 0 if the object has no FITS
-     *               representation. (Also elements not known to FITS will count as 0 sized).
+     * @return       the number of bytes in the FITS binary representation of the object or 0 if the object has no FITS
+     *                   representation. (Also elements not known to FITS will count as 0 sized).
      */
     @Deprecated
     public static long computeLSize(Object o) {
@@ -125,12 +125,12 @@ public final class ArrayFuncs {
     }
 
     /**
-     * Use {@link FitsEncoder#computeSize(Object)} instead.
+     * @deprecated   Use {@link FitsEncoder#computeSize(Object)} instead.
      *
-     * @param  o the object
+     * @param      o the object
      *
-     * @return   the number of bytes in the FITS binary representation of the object or 0 if the object has no FITS
-     *               representation. (Also elements not known to FITS will count as 0 sized).
+     * @return       the number of bytes in the FITS binary representation of the object or 0 if the object has no FITS
+     *                   representation. (Also elements not known to FITS will count as 0 sized).
      */
     @Deprecated
     public static int computeSize(Object o) {

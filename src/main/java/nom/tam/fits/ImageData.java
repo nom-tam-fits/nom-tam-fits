@@ -36,6 +36,7 @@ import java.nio.Buffer;
 
 import nom.tam.fits.header.Bitpix;
 import nom.tam.fits.header.Standard;
+import nom.tam.image.ImageTiler;
 import nom.tam.image.StandardImageTiler;
 import nom.tam.util.ArrayDataInput;
 import nom.tam.util.ArrayDataOutput;
@@ -52,13 +53,19 @@ import static nom.tam.fits.header.Standard.NAXISn;
 import static nom.tam.fits.header.Standard.PCOUNT;
 
 /**
- * This class instantiates FITS primary HDU and IMAGE extension data. Essentially these data are a primitive
- * multi-dimensional array.
  * <p>
- * Starting in version 0.9 of the FITS library, this routine allows users to defer the reading of images if the FITS
- * data is being read from a file. An ImageTiler object is supplied which can return an arbitrary subset of the image as
- * a one dimensional array -- suitable for manipulation by standard Java libraries. A call to the getData() method will
- * still return a multi-dimensional array, but the image data will not be read until the user explicitly requests. it.
+ * Image data. Essentially these data are a primitive multi-dimensional array, such as a <code>double[]</code>,
+ * <code>float[][]</code>, or <code>short[][][]</code>
+ * </p>
+ * <p>
+ * Starting in version 0.9 of the FITS library, this class allows users to defer the reading of images if the FITS data
+ * is being read from a file. An {@link ImageTiler} object is supplied which can return an arbitrary subset of the image
+ * as a one dimensional array -- suitable for manipulation by standard Java libraries. A call to the {@link #getData()}
+ * method will still return a multi-dimensional array, but the image data will not be read until the user explicitly
+ * requests.
+ * </p>
+ * 
+ * @see ImageHDU
  */
 public class ImageData extends Data {
 

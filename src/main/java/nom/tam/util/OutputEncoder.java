@@ -41,7 +41,7 @@ import nom.tam.fits.FitsFactory;
 import nom.tam.util.type.ElementType;
 
 /**
- * Efficient base class for encoding Java arrays into binary output (<i>primarily for internal use</i>).
+ * Efficient base class for encoding Java arrays into binary output (<i>primarily for internal use</i>)
  *
  * @author Attila Kovacs
  *
