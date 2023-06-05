@@ -32,7 +32,7 @@ package nom.tam.util;
  */
 
 /**
- * An {@link Iterator}-based interface allowing insertions and reverse movement.
+ * An <code>Iterator</code>-based interface for key / value pairs allowing insertions and reverse movement also.
  *
  * @param <KEY>   the generic type of the keyword element
  * @param <VALUE> the generic type of the associated value
