@@ -36,6 +36,7 @@ import java.io.ByteArrayInputStream;
 import java.io.ByteArrayOutputStream;
 import java.io.InputStreamReader;
 import java.io.PrintStream;
+import java.nio.ByteBuffer;
 
 import org.junit.Assert;
 import org.junit.Test;
@@ -86,5 +87,21 @@ public class NullDataTest {
 
         Assert.assertFalse(line.contains("image"));
         Assert.assertFalse(line.contains("table"));
+    }
+
+    @Test
+    public void testNullDataHDUFactory1() throws Exception {
+        Assert.assertEquals(NullDataHDU.class, FitsFactory.hduFactory(null).getClass());
+    }
+
+    @Test
+    public void testNullDataHDUFactory2() throws Exception {
+        Assert.assertEquals(NullDataHDU.class, FitsFactory.hduFactory(new Header(), null).getClass());
+    }
+
+    @Test
+    public void testSetBuffer() throws Exception {
+        new NullData().setBuffer(ByteBuffer.wrap(new byte[100]));
+        // No exception...
     }
 }

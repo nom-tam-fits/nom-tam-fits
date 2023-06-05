@@ -147,7 +147,6 @@ public class UndefinedHDU extends BasicHDU<UndefinedData> {
      */
     public UndefinedHDU(Header h, UndefinedData d) throws FitsException {
         super(h, d);
-
     }
 
     @Override

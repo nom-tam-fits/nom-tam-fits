@@ -297,7 +297,7 @@ public class ImageData extends Data {
         // for the FITS file to get the order in the array we
         // are generating.
 
-        byteSize = 1;
+        byteSize = ndim > 0 ? 1 : 0;
         for (int i = 0; i < ndim; i++) {
             int cdim = h.getIntValue(NAXISn.n(i + 1), 0);
             if (cdim < 0) {
@@ -307,9 +307,6 @@ public class ImageData extends Data {
             dims[ndim - i - 1] = cdim;
         }
         byteSize *= bitpix.byteSize();
-        if (ndim == 0) {
-            byteSize = 0;
-        }
         return new ArrayDesc(dims, baseClass);
     }
 

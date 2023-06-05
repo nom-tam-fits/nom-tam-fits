@@ -505,14 +505,14 @@ public final class FitsFactory {
      * {@link FitsFactory#getUseAsciiTables()} is <code>false</code></li>
      * <li>{@link AsciiTableHDU} -- Like above, but only when the data can be represented by an ASCII table <b>AND</b>
      * {@link FitsFactory#getUseAsciiTables()} is <code>true</code></li>
-     * <li>{@link UndefinedHDU} -- if the argument is not an object that may be represented by one of the above.</li>
      * </ul>
      * 
      * @return               An appropriate HDU to encapsulate the given Java data object
      *
      * @param  o             The object to be described.
      *
-     * @throws FitsException if the parameter could not be converted to a hdu.
+     * @throws FitsException if the parameter could not be converted to a HDU because the binary representation of the
+     *                           object is not known..
      */
     @SuppressWarnings("deprecation")
     public static BasicHDU<?> hduFactory(Object o) throws FitsException {
@@ -536,9 +536,6 @@ public final class FitsFactory {
         } else if (BinaryTableHDU.isData(o)) {
             d = BinaryTableHDU.encapsulate(o);
             h = BinaryTableHDU.manufactureHeader(d);
-        } else if (UndefinedHDU.isData(o)) {
-            d = UndefinedHDU.encapsulate(o);
-            h = UndefinedHDU.manufactureHeader(d);
         } else {
             throw new FitsException("Invalid data presented to HDUFactory");
         }
