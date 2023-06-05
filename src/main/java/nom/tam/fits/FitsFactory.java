@@ -45,7 +45,7 @@ import nom.tam.image.compression.hdu.CompressedTableHDU;
 
 /**
  * This class contains the code which associates particular FITS types with header and data configurations. It comprises
- * a set of Factory methods which call appropriate methods in the HDU classes. If -- God forbid -- a new FITS HDU type
+ * a set of factory methods which call appropriate methods in the HDU classes. If -- God forbid -- a new FITS HDU type
  * were created, then the XXHDU, XXData classes would need to be added and this file modified but no other changes
  * should be needed in the FITS libraries.
  */
@@ -271,7 +271,7 @@ public final class FitsFactory {
     public static final int FITS_BLOCK_SIZE = 2880;
 
     /**
-     * @deprecated               This should be for internal use only. Will reduce visibility in the future
+     * @deprecated               (<i>for internal use</i>) Will reduce visibility in the future
      *
      * @return                   Given a Header construct an appropriate data.
      *
@@ -283,6 +283,10 @@ public final class FitsFactory {
     public static Data dataFactory(Header hdr) throws FitsException {
 
         if (ImageHDU.isHeader(hdr)) {
+            if (hdr.getIntValue(Standard.NAXIS, 0) == 0) {
+                return new NullData();
+            }
+
             Data d = ImageHDU.manufactureData(hdr);
             // Fix for positioning error noted by V. Forchi
             if (hdr.findCard(Standard.EXTEND) != null) {
@@ -436,8 +440,9 @@ public final class FitsFactory {
     /**
      * @return     whether to use only "=", instead of the standard "= " between the keyword and the value.
      *
-     * @deprecated The FITS standard is very explicit that assignment must be "= ". If we allow skipping the space, it
-     *                 will result in a non-standard FITS, that is likely to break compatibility with other tools.
+     * @deprecated The FITS standard is very explicit that assignment must be "= " (equals followed by a blank space).
+     *                 If we allow skipping the space, it will result in a non-standard FITS, that is likely to break
+     *                 compatibility with other tools.
      * 
      * @see        #setSkipBlankAfterAssign(boolean)
      */
@@ -449,7 +454,7 @@ public final class FitsFactory {
     /**
      * .
      * 
-     * @deprecated               This should be for internal use only. Will reduce visibility in the future
+     * @deprecated               (<i>for internal use</i>)/ Will reduce visibility in the future
      *
      * @return                   Given Header and data objects return the appropriate type of HDU.
      *
@@ -462,6 +467,9 @@ public final class FitsFactory {
     @Deprecated
     @SuppressWarnings("unchecked")
     public static <DataClass extends Data> BasicHDU<DataClass> hduFactory(Header hdr, DataClass d) throws FitsException {
+        if (d == null) {
+            return (BasicHDU<DataClass>) new NullDataHDU(hdr);
+        }
         if (d instanceof ImageData) {
             return (BasicHDU<DataClass>) new ImageHDU(hdr, (ImageData) d);
         }
@@ -486,9 +494,21 @@ public final class FitsFactory {
 
     /**
      * Creates an HDU that wraps around the specified data object. The HDUs header will be created and populated with
-     * the essential description of the data.
+     * the essential description of the data. The following HDU types may be returned depending on the nature of the
+     * argument:
+     * <ul>
+     * <li>{@link NullDataHDU} -- if the argument is <code>null</code></li>
+     * <li>{@link ImageHDU} -- if the argument is a regular numerical arrays, such as a <code>double[]</code>,
+     * <code>float[][]</code>, or <code>short[][][]</code></li>
+     * <li>{@link BinaryTableHDU} -- the the argument is an <code>Object[rows][cols]</code> type array with a regular
+     * structure and supported column data types, provided that it cannot be represented by an ASCII table <b>OR</b> if
+     * {@link FitsFactory#getUseAsciiTables()} is <code>false</code></li>
+     * <li>{@link AsciiTableHDU} -- Like above, but only when the data can be represented by an ASCII table <b>AND</b>
+     * {@link FitsFactory#getUseAsciiTables()} is <code>true</code></li>
+     * <li>{@link UndefinedHDU} -- if the argument is not an object that may be represented by one of the above.</li>
+     * </ul>
      * 
-     * @return               Given an object, create the appropriate FITS header to describe it.
+     * @return               An appropriate HDU to encapsulate the given Java data object
      *
      * @param  o             The object to be described.
      *
@@ -499,7 +519,9 @@ public final class FitsFactory {
         Data d;
         Header h;
 
-        if (o instanceof Header) {
+        if (o == null) {
+            return new NullDataHDU();
+        } else if (o instanceof Header) {
             h = (Header) o;
             d = dataFactory(h);
         } else if (ImageHDU.isData(o)) {
@@ -526,8 +548,8 @@ public final class FitsFactory {
 
     // CHECKSTYLE:OFF
     /**
-     * @deprecated               This should be for internal use only. Will redice visibility in the future. SAme as
-     *                               {@link #hduFactory(Header, Data)}.
+     * @deprecated               (<i>duplicate method for internal use</i>) Same as {@link #hduFactory(Header, Data)}.
+     *                               Will remove in the future.
      *
      * @return                   Given Header and data objects return the appropriate type of HDU.
      *
@@ -552,7 +574,7 @@ public final class FitsFactory {
      *
      * @throws     FitsException if the parameter could not be converted to a hdu.
      *
-     * @deprecated               use {@link #hduFactory(Object)} instead
+     * @deprecated               use {@link #hduFactory(Object)} instead. Will remove duplicate method in the future.
      */
     @Deprecated
     public static BasicHDU<?> HDUFactory(Object o) throws FitsException {
@@ -658,10 +680,11 @@ public final class FitsFactory {
      *
      * @param      skipBlankAfterAssign value to set
      *
-     * @deprecated                      The FITS standard is very explicit that assignment must be "= ". It is also very
-     *                                      specific that string values must have their opening quote in byte 11
-     *                                      (counted from 1). If we allow skipping the space, we will violate both
-     *                                      standards in a way that is likely to break compatibility with other tools.
+     * @deprecated                      The FITS standard is very explicit that assignment must be "= " (equals followed
+     *                                      by a blank space). It is also very specific that string values must have
+     *                                      their opening quote in byte 11 (counted from 1). If we allow skipping the
+     *                                      space, we will violate both standards in a way that is likely to break
+     *                                      compatibility with other tools.
      * 
      * @see                             #isSkipBlankAfterAssign()
      */
