@@ -226,6 +226,9 @@ public class RandomGroupsHDU extends BasicHDU<RandomGroupsData> {
      * @since                1.18
      */
     public static RandomGroupsHDU createFrom(Object[][] data) throws FitsException {
+        if (!isData(data)) {
+            throw new FitsException("Type or layout of data is not random groups compatible.");
+        }
         RandomGroupsData d = encapsulate(data);
         return new RandomGroupsHDU(manufactureHeader(d), d);
     }

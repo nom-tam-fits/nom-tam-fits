@@ -479,14 +479,16 @@ public final class FitsFactory {
         if (d instanceof RandomGroupsData) {
             return (BasicHDU<DataClass>) new RandomGroupsHDU(hdr, (RandomGroupsData) d);
         }
-        if (current().isUseAsciiTables() && d instanceof AsciiTable) {
+        if (d instanceof AsciiTable) {
             return (BasicHDU<DataClass>) new AsciiTableHDU(hdr, (AsciiTable) d);
         }
         if (d instanceof CompressedTableData) {
             return (BasicHDU<DataClass>) new CompressedTableHDU(hdr, (CompressedTableData) d);
-        } else if (d instanceof BinaryTable) {
+        }
+        if (d instanceof BinaryTable) {
             return (BasicHDU<DataClass>) new BinaryTableHDU(hdr, (BinaryTable) d);
-        } else if (d instanceof UndefinedData) {
+        }
+        if (d instanceof UndefinedData) {
             return (BasicHDU<DataClass>) new UndefinedHDU(hdr, (UndefinedData) d);
         }
         return null;
@@ -536,7 +538,7 @@ public final class FitsFactory {
             d = BinaryTableHDU.encapsulate(o);
             h = BinaryTableHDU.manufactureHeader(d);
         } else {
-            throw new FitsException("Invalid data presented to HDUFactory");
+            throw new FitsException("This type of data is not supported for FITS representation");
         }
 
         return hduFactory(h, d);
