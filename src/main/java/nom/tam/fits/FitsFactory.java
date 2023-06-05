@@ -498,7 +498,7 @@ public final class FitsFactory {
      * argument:
      * <ul>
      * <li>{@link NullDataHDU} -- if the argument is <code>null</code></li>
-     * <li>{@link ImageHDU} -- if the argument is a regular numerical arrays, such as a <code>double[]</code>,
+     * <li>{@link ImageHDU} -- if the argument is a regular numerical array, such as a <code>double[]</code>,
      * <code>float[][]</code>, or <code>short[][][]</code></li>
      * <li>{@link BinaryTableHDU} -- the the argument is an <code>Object[rows][cols]</code> type array with a regular
      * structure and supported column data types, provided that it cannot be represented by an ASCII table <b>OR</b> if
@@ -507,14 +507,16 @@ public final class FitsFactory {
      * {@link FitsFactory#getUseAsciiTables()} is <code>true</code></li>
      * </ul>
      * 
-     * @return               An appropriate HDU to encapsulate the given Java data object
+     * @return                   An appropriate HDU to encapsulate the given Java data object
      *
-     * @param  o             The object to be described.
+     * @param      o             The object to be described.
      *
-     * @throws FitsException if the parameter could not be converted to a HDU because the binary representation of the
-     *                           object is not known..
+     * @throws     FitsException if the parameter could not be converted to a HDU because the binary representation of
+     *                               the object is not known..
+     * 
+     * @deprecated               Use {@link Fits#makeHDU(Object)} instead (this method may either be migrated to
+     *                               {@link Fits} or else have visibility reduced to the package level).
      */
-    @SuppressWarnings("deprecation")
     public static BasicHDU<?> hduFactory(Object o) throws FitsException {
         Data d;
         Header h;
@@ -527,9 +529,6 @@ public final class FitsFactory {
         } else if (ImageHDU.isData(o)) {
             d = ImageHDU.encapsulate(o);
             h = ImageHDU.manufactureHeader(d);
-        } else if (RandomGroupsHDU.isData(o)) {
-            d = RandomGroupsHDU.encapsulate(o);
-            h = RandomGroupsHDU.manufactureHeader(d);
         } else if (current().isUseAsciiTables() && AsciiTableHDU.isData(o)) {
             d = AsciiTableHDU.encapsulate(o);
             h = AsciiTableHDU.manufactureHeader(d);
@@ -545,8 +544,8 @@ public final class FitsFactory {
 
     // CHECKSTYLE:OFF
     /**
-     * @deprecated               (<i>duplicate method for internal use</i>) Same as {@link #hduFactory(Header, Data)}.
-     *                               Will remove in the future.
+     * @deprecated               (<i>duplicate method for internal use</i>) Same as {@link #hduFactory(Header, Data)},
+     *                               and will be removed in the future.
      *
      * @return                   Given Header and data objects return the appropriate type of HDU.
      *
@@ -571,7 +570,8 @@ public final class FitsFactory {
      *
      * @throws     FitsException if the parameter could not be converted to a hdu.
      *
-     * @deprecated               use {@link #hduFactory(Object)} instead. Will remove duplicate method in the future.
+     * @deprecated               Use {@link Fits#makeHDU(Object)} instead (will removed in the future. Duplicate of
+     *                               {@link #hduFactory(Object)}
      */
     @Deprecated
     public static BasicHDU<?> HDUFactory(Object o) throws FitsException {

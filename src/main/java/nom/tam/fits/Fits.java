@@ -84,7 +84,7 @@ import edu.umd.cs.findbugs.annotations.SuppressFBWarnings;
  *   
  *   // Create an image HDU, e.g. from a 2D array we have prepared earlier
  *   float[][] image = ...
- *   BasicHDU&lt;?&gt; imageHDU = FitsFactory.hduFactory(image);
+ *   BasicHDU&lt;?&gt; imageHDU = Fits.makeHDU(image);
  *   
  *   // ... we can of course add data to the HDU's header as we like...
  *   
@@ -131,10 +131,10 @@ import edu.umd.cs.findbugs.annotations.SuppressFBWarnings;
  *   BasucHDU&lt;?&gt; hdu = f.getHDU(2);
  * </pre>
  * <p>
- * When building <code>Fits</code> from local Java data objects, it's best to use {@link FitsFactory#hduFactory(Object)}
- * to create HDUs, which will chose the most appropriate type of HDU for the given data object (taking into some of the
- * static preferences set in <code>FitsFactory</code> prior). {@link FitsFactory#hduFactory(Object)} will return one of
- * the following HDU objects:
+ * When building <code>Fits</code> from local Java data objects, it's best to use {@link #makeHDU(Object)} to create
+ * HDUs, which will chose the most appropriate type of HDU for the given data object (taking into some of the static
+ * preferences set in <code>FitsFactory</code> prior). {@link #makeHDU(Object)} will return one of the following HDU
+ * objects:
  * <ul>
  * <li>{@link NullDataHDU}</li>
  * <li>{@link ImageHDU}</li>
@@ -550,13 +550,36 @@ public class Fits implements Closeable {
     }
 
     /**
-     * Creates a new HDU from the given data object
+     * <p>
+     * Creates an HDU that wraps around the specified data object. The HDUs header will be created and populated with
+     * the essential description of the data. The following HDU types may be returned depending on the nature of the
+     * argument:
+     * </p>
+     * <ul>
+     * <li>{@link NullDataHDU} -- if the argument is <code>null</code></li>
+     * <li>{@link ImageHDU} -- if the argument is a regular numerical array, such as a <code>double[]</code>,
+     * <code>float[][]</code>, or <code>short[][][]</code></li>
+     * <li>{@link BinaryTableHDU} -- the the argument is an <code>Object[rows][cols]</code> type array with a regular
+     * structure and supported column data types, provided that it cannot be represented by an ASCII table <b>OR</b> if
+     * {@link FitsFactory#getUseAsciiTables()} is <code>false</code></li>
+     * <li>{@link AsciiTableHDU} -- Like above, but only when the data can be represented by an ASCII table <b>AND</b>
+     * {@link FitsFactory#getUseAsciiTables()} is <code>true</code></li>
+     * </ul>
+     * <p>
+     * As of 1.18, this metohd will not create and return random group HDUs for <code>Object[][2]</code> style data.
+     * Instead, it will return an appropriate binary or ASCII table, since the FITS standard recommends against using
+     * random groups going forward, except for reading some old data from certain radio telescopes. If the need ever
+     * arises to create new random groups HDUs with this library, you may use
+     * {@link RandomGroupsHDU#createFrom(Object[][])} instead.
+     * </p>
      * 
      * @return               a newly created HDU from the given data kernel.
      *
      * @param  o             The data to be described in this HDU.
      *
      * @throws FitsException if the parameter could not be converted to a HDU.
+     * 
+     * @see                  RandomGroupsHDU#createFrom(Object[][])
      */
     public static BasicHDU<?> makeHDU(Object o) throws FitsException {
         return FitsFactory.hduFactory(o);

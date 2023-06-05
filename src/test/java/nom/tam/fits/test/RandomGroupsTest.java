@@ -71,7 +71,7 @@ public class RandomGroupsTest {
             data[0][1] = fa;
 
             // First lets write out the file painfully group by group.
-            BasicHDU<?> hdu = Fits.makeHDU(data);
+            BasicHDU<?> hdu = RandomGroupsHDU.createFrom(data);
             Header hdr = hdu.getHeader();
             // Change the number of groups
             hdr.addValue("GCOUNT", 20, "Number of groups");
@@ -128,7 +128,7 @@ public class RandomGroupsTest {
             bf = new FitsFile("target/rg2.fits", "rw");
             // Generate a FITS HDU from the kernel.
             System.err.println("### [2] " + data.length);
-            f.addHDU(Fits.makeHDU(data));
+            f.addHDU(RandomGroupsHDU.createFrom(data));
             f.write(bf);
 
             bf.flush();
@@ -192,7 +192,7 @@ public class RandomGroupsTest {
             Object[][] data = new Object[1][2];
             data[0][0] = pa;
             data[0][1] = fa;
-            groups = (RandomGroupsData) Fits.makeHDU(data).getData();
+            groups = RandomGroupsHDU.createFrom(data).getData();
             bf.writeLong(1);
             groups.write(bf);
         } finally {
@@ -220,7 +220,7 @@ public class RandomGroupsTest {
         data[0][0] = pa;
         data[0][1] = fa;
 
-        BasicHDU<?> hdu = Fits.makeHDU(data);
+        BasicHDU<?> hdu = RandomGroupsHDU.createFrom(data);
         Header hdr = hdu.getHeader();
         Assert.assertEquals(0, hdr.getIntValue("NAXIS1"));
         Assert.assertEquals(20, hdr.getIntValue("NAXIS2"));
