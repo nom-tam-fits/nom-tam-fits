@@ -58,8 +58,8 @@ import static nom.tam.fits.header.Standard.CONTINUE;
 import static nom.tam.fits.header.Standard.HISTORY;
 
 /**
- * An individual entry in the FITS Header, such as a key/value pair with an optional comment field, or a comment-style
- * only entry.
+ * An individual entry in the FITS header, such as a key/value pair with an optional comment field, or a comment-style
+ * entry without a value field.
  */
 public class HeaderCard implements CursorValue<String>, Cloneable {
 

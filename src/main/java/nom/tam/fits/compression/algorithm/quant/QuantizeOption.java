@@ -4,7 +4,6 @@ import nom.tam.fits.compression.algorithm.api.ICompressOption;
 import nom.tam.fits.compression.provider.param.api.ICompressParameters;
 import nom.tam.fits.compression.provider.param.base.BundledParameters;
 import nom.tam.fits.compression.provider.param.quant.QuantizeParameters;
-import nom.tam.image.ITileOption;
 
 /*
  * #%L
@@ -693,8 +692,8 @@ public class QuantizeOption implements ICompressOption {
     @Override
     public QuantizeOption setTileHeight(int value) {
         tileHeight = value;
-        if (compressOption instanceof ITileOption) {
-            ((ITileOption) compressOption).setTileHeight(value);
+        if (compressOption != null) {
+            compressOption.setTileHeight(value);
         }
         return this;
     }
@@ -702,8 +701,8 @@ public class QuantizeOption implements ICompressOption {
     @Override
     public QuantizeOption setTileWidth(int value) {
         tileWidth = value;
-        if (compressOption instanceof ITileOption) {
-            ((ITileOption) compressOption).setTileWidth(value);
+        if (compressOption != null) {
+            compressOption.setTileWidth(value);
         }
         return this;
     }

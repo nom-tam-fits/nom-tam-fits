@@ -32,7 +32,7 @@ package nom.tam.fits;
  */
 
 /**
- * This exception is thrown when an EOF is detected in the middle of an HDU.
+ * When an EOF is encountered in the middle of an HDU.
  * 
  * @see FitsFactory#setAllowTerminalJunk(boolean)
  */

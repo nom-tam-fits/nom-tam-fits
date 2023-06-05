@@ -56,10 +56,13 @@ import static nom.tam.fits.header.Standard.BLANK;
 
 /**
  * <p>
- * A heacer-data unit (HDU) containing a compressed image. A compressed image is a normal binary table with a defined
- * structure. The image is split in tiles and each tile is compressed on its own. The compressed data is then stored in
- * the 3 data columns of this binary table (compressed, gzipped and uncompressed) depending on the compression type used
- * in the tile.
+ * A header-data unit (HDU) containing a compressed image. A compressed image is a normal binary table with some
+ * additional constraints. The original image is divided into tiles and each tile is compressed on its own. The
+ * compressed data is then stored in the 3 data columns of this binary table (compressed, gzipped and uncompressed)
+ * depending on the compression type used in the tile. Additional data columns may contain specific compression or
+ * quantization options for each tile (i.e. compressed table row) individually. Table keywords, which conflict with
+ * those in the original image are 'saved' under standard alternative names, so they may be restored with the image as
+ * appropriate.
  * </p>
  * <p>
  * Compressing an image HDU is typically a multi-step process:
@@ -95,8 +98,8 @@ import static nom.tam.fits.header.Standard.BLANK;
  *   compressed.compress();
  * </pre>
  * <p>
- * After the compression, the compressed image HDU can be handled just like any HDU, and written to a file or stream,
- * for example.
+ * After the compression, the compressed image HDU can be handled just like any other HDU, and written to a file or
+ * stream, for example.
  * </p>
  * <p>
  * The reverse process is simply via the {@link #asImageHDU()} method. E.g.:

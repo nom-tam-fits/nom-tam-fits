@@ -34,7 +34,6 @@ package nom.tam.fits.compression.algorithm.hcompress;
 import nom.tam.fits.compression.algorithm.api.ICompressOption;
 import nom.tam.fits.compression.provider.param.api.ICompressParameters;
 import nom.tam.fits.compression.provider.param.hcompress.HCompressParameters;
-import nom.tam.image.ITileOption;
 
 /**
  * Options to the HCompress compression algorithm. When compressing tables and images using the HCompress algorithm,
@@ -44,7 +43,7 @@ import nom.tam.image.ITileOption;
  * @see nom.tam.image.compression.hdu.CompressedImageHDU#setCompressAlgorithm(String)
  * @see nom.tam.image.compression.hdu.CompressedImageHDU#getCompressOption(Class)
  */
-public class HCompressorOption implements ICompressOption, ITileOption {
+public class HCompressorOption implements ICompressOption {
 
     /**
      * circular dependency, has to be cut.

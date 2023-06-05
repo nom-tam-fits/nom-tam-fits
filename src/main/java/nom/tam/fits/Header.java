@@ -83,37 +83,36 @@ import static nom.tam.fits.header.extra.CXCExt.LONGSTRN;
  * <ol>
  * <li>provide an essential description of the type, size, and layout of the HDUs data segment</li>
  * <li>describe the data as completely as possible via standardized (or conventional) keywords</li>
- * <li>provide storage for additional user-specific key.value pairs</li>
+ * <li>provide storage for additional user-specific key / value pairs</li>
  * <li>allow for comments to aid human readability</li>
  * </ol>
  * <p>
  * First and foremost headers provide a description of the data object that follows the header in the HDU. Some of that
  * description is essential and critical to the integrity of the FITS file, such as the header keywords that describe
  * the type, size, and layout of the data segment. This library will automatically populate the header with appropriate
- * information using the mandatory keywords (such as <code>SIMPLE</code> or <code>XTENSION</code>, <code>BITPIX</code>
+ * information using the mandatory keywords (such as <code>SIMPLE</code> or <code>XTENSION</code>, <code>BITPIX</code>,
  * <code>NAXIS</code>, <code>NAXIS</code><i>n</i>, <code>PCOUNT</code>, <code>GCOUNT</code> keywords, as well as
- * essential table column format descriptions). Users of the library should avoid overwriting such keywords manually,
- * since they may corrupt the FITS file, making it unreadable or corrupted.
+ * essential table column format descriptions). Users of the library should avoid overwriting these mandatory keywords
+ * manually, since they may corrupt the FITS file, rendering it unreadable.
  * </p>
  * <p>
- * Beyond the keywords that describe the type, shape, and size of data, the library will not add additional information
- * to the header. The users of the library are responsible to complete the header description as necessary. This
- * includes non-enssential data descriptions (such as <code>EXTNAME</code>, <code>BUNIT</code>, <code>OBSERVER</code>,
- * or optional table column descriptors <code>TTYPE</code><i>n</i>, <code>TDIM</code><i>n</i>, or WCS keywords, or
- * checksums). Users of the library are responsible for completing the data description using whatever standard or
- * conventional keywords are available and appropriate. FITS offers many standardized keywords that can be (and should
- * be) used to provide a more complete and accurate description of the data than the bare mimimum that this library will
- * provide automatically. Please refer to the <a href="https://fits.gsfc.nasa.gov/fits_standard.html">FITS Standard</a>
- * documentation to see what typical descriptions of data you might want to use.
+ * Beyond the keywords that describe the type, shape, and size of data, the library will not add further information to
+ * the header. The users of the library are responsible to complete the header description as necessary. This includes
+ * non-enssential data descriptions (such as <code>EXTNAME</code>, <code>BUNIT</code>, <code>OBSERVER</code>, or
+ * optional table column descriptors <code>TTYPE</code><i>n</i>, <code>TDIM</code><i>n</i>, <code>TUNIT</code><i>n</i>,
+ * coordinate systems via the appropriate WCS keywords, or checksums). Users of the library are responsible for
+ * completing the data description using whatever standard or conventional keywords are available and appropriate.
+ * Please refer to the <a href="https://fits.gsfc.nasa.gov/fits_standard.html">FITS Standard</a> documentation to see
+ * what typical descriptions of data you might want to use.
  * </p>
  * <p>
- * Last but not least, the header is also a place where users can store (nearly) arbitrary key/value pairs. In earlier
- * versions of the FITS standard, header keywords were restricted to max 8 upper case letters and numbers (plus hyphen
- * and underscore), and no more than 70 character value fields. However, as of FITS 4.0 (and even before as a registered
- * convention), string values of arbitrary length may be stored using the OGIP 1.0 long string convention, while the ESO
- * <a href="https://fits.gsfc.nasa.gov/registry/hierarch_keyword.html">HIERARCH convention</a> allows keywords with more
- * than 8 characters and hierarchical organization. Support, conformance, and compliance to these conventions can be
- * toggled by static settings in {@link FitsFactory} to user preference.
+ * Last but not least, the header is also a place where FITS creators can store (nearly) arbitrary key/value pairs. In
+ * earlier versions of the FITS standard, header keywords were restricted to max. 8 upper case letters and numbers (plus
+ * hyphen and underscore), and no more than 70 character value fields. However, as of FITS 4.0 (and even before as a
+ * registered convention), string values of arbitrary length may be stored using the OGIP 1.0 long string convention,
+ * while the ESO <a href="https://fits.gsfc.nasa.gov/registry/hierarch_keyword.html">HIERARCH convention</a> allows
+ * keywords with more than 8 characters and hierarchical keywords. Support, conformance, and compliance to these
+ * conventions can be toggled by static settings in {@link FitsFactory} to user preference.
  * </p>
  * <p>
  * As of version 1.16, we also support reserving space in headers for future additions using the
@@ -127,7 +126,7 @@ public class Header implements FitsElement {
 
     /**
      * The default character position to which comments should be aligned if possible (0-based). The fITS standard
-     * requires that 'fizxed-format' values are right-justified to byte 30 (index 29 in Java), and recommends a space
+     * requires that 'fixed-format' values are right-justified to byte 30 (index 29 in Java), and recommends a space
      * after that before the comment. As such, comments should normally start at byte 30 (counted from 0). (We will add
      * a space at that position before the '/' indicating the comment start)
      */
@@ -517,7 +516,7 @@ public class Header implements FitsElement {
 
     /**
      * @deprecated                     Not supported by the FITS standard, so do not use. It was included due to a
-     *                                     misreading of the standard itself.
+     *                                     misreading of the standard itself. We will remove this method in the future.
      *
      * @param      key                 The header key.
      * @param      val                 The integer value.
@@ -1601,7 +1600,8 @@ public class Header implements FitsElement {
      *
      * @throws     FitsException if the data was not valid for this header.
      *
-     * @deprecated               Use the appropriate Header constructor instead. Will remove in a future releae.
+     * @deprecated               Use the appropriate <code>Header</code> constructor instead. Will remove in a future
+     *                               releae.
      */
     @Deprecated
     public void pointToData(Data o) throws FitsException {
@@ -1825,16 +1825,17 @@ public class Header implements FitsElement {
     }
 
     /**
-     * @deprecated                          Use the safer {@link #setBitpix(Bitpix)} instead. Set the BITPIX value for
-     *                                          the header. The following values are permitted by FITS conventions:
-     *                                          <ul>
-     *                                          <li>8 -- signed byte data. Also used for tables.</li>
-     *                                          <li>16 -- signed short data.</li>
-     *                                          <li>32 -- signed int data.</li>
-     *                                          <li>64 -- signed long data.</li>
-     *                                          <li>-32 -- IEEE 32 bit floating point numbers.</li>
-     *                                          <li>-64 -- IEEE 64 bit floating point numbers.</li>
-     *                                          </ul>
+     * Set the BITPIX value for the header. The following values are permitted by FITS conventions:
+     * <ul>
+     * <li>8 -- signed byte data. Also used for tables.</li>
+     * <li>16 -- signed short data.</li>
+     * <li>32 -- signed int data.</li>
+     * <li>64 -- signed long data.</li>
+     * <li>-32 -- IEEE 32 bit floating point numbers.</li>
+     * <li>-64 -- IEEE 64 bit floating point numbers.</li>
+     * </ul>
+     * 
+     * @deprecated                          Use the safer {@link #setBitpix(Bitpix)} instead.
      *
      * @param      val                      The value set by the user.
      *
@@ -1852,8 +1853,10 @@ public class Header implements FitsElement {
     }
 
     /**
-     * @deprecated        Will be removed from the public API in 2.0 Sets a standard BITPIX value for the header.
-     *
+     * Sets a standard BITPIX value for the header.
+     * 
+     * @deprecated        (<i>for internall use</i>) Visibility will be reduced to the package level in the future.
+     * 
      * @param      bitpix The predefined enum value, e.g. {@link Bitpix#INTEGER}.
      *
      * @since             1.16
@@ -1877,7 +1880,9 @@ public class Header implements FitsElement {
     }
 
     /**
-     * @deprecated     Will be removed from the public API in 2.0 Set the value of the NAXIS keyword
+     * Set the value of the NAXIS keyword
+     * 
+     * @deprecated     (<i>for internal use</i>) Visibility will be reduced to the package level in the future.
      *
      * @param      val The dimensionality of the data.
      */
@@ -1892,8 +1897,10 @@ public class Header implements FitsElement {
     }
 
     /**
-     * @deprecated      Will be removed from the public API in 2.0 Set the dimension for a given axis.
+     * Set the dimension for a given axis.
      *
+     * @deprecated      (<i>for internal use</i>) Visibility will be reduced to the package level in the future.
+     * 
      * @param      axis The axis being set.
      * @param      dim  The dimension
      */
@@ -1916,7 +1923,9 @@ public class Header implements FitsElement {
     }
 
     /**
-     * @deprecated     Will be removed from the public API in 2.0 Set the SIMPLE keyword to the given value.
+     * Set the SIMPLE keyword to the given value.
+     * 
+     * @deprecated     (<i>for internall use</i>) Visibility will be reduced to the package level in the future.
      *
      * @param      val <code>true</code> for the primary header, otherwise <code>false</code>
      */
@@ -1944,9 +1953,11 @@ public class Header implements FitsElement {
     }
 
     /**
-     * @deprecated                          Will be removed from the public API in 2.0 Set the XTENSION keyword to the
-     *                                          given value.
-     *
+     * Set the XTENSION keyword to the given value.
+     * 
+     * @deprecated                          (<i>for internall use</i>) Visibility will be reduced to the package level
+     *                                          in the future.
+     * 
      * @param      val                      The name of the extension.
      *
      * @throws     IllegalArgumentException if the string value contains characters that are not allowed in FITS

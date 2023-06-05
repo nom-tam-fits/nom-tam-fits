@@ -44,10 +44,10 @@ import nom.tam.image.compression.hdu.CompressedTableHDU;
  */
 
 /**
- * This class contains the code which associates particular FITS types with header and data configurations. It comprises
- * a set of factory methods which call appropriate methods in the HDU classes. If -- God forbid -- a new FITS HDU type
- * were created, then the XXHDU, XXData classes would need to be added and this file modified but no other changes
- * should be needed in the FITS libraries.
+ * Controls the creation of HDUs to encapsulate a variery of data, based on a few configuration switches. The switches
+ * allow for toggling support for different conventions to set the desired compatibility level. The default settings
+ * produce FITS that are compatibel with version 4.0 of the standard (the latest at the time of writing this). The
+ * switches may also be used to make this library more backward compatible with its previous version also.
  */
 public final class FitsFactory {
 
@@ -197,9 +197,9 @@ public final class FitsFactory {
         }
 
         /**
-         * @deprecated The FITS standard is very explicit that assignment must be "= ". If we allow skipping the space,
-         *                 it will result in a non-standard FITS, that is likely to break compatibility with other
-         *                 tools.
+         * @deprecated The FITS standard is very explicit that assignment must be "= " (equals followed by a space). If
+         *                 we allow skipping the space, it will result in a non-standard FITS, and may render it
+         *                 unreadable for other tools.
          *
          * @return     whether to use only "=", instead of the standard "= " between the keyword and the value.
          */
