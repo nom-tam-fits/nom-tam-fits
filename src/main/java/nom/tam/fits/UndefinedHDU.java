@@ -69,7 +69,7 @@ public class UndefinedHDU extends BasicHDU<UndefinedData> {
      *
      * @deprecated   (<i>for internal use</i>) Will reduce visibility in the future
      *
-     * @param      o The Object being tested.
+     * @param      o a data object
      *
      * @return       <code>true</code> if the object is a raw <code>byte[]</code> array, otherwise <code>false</code>.
      *                   We cannot wrap arbitrary data objects since we do not have a generic recipe for converting
