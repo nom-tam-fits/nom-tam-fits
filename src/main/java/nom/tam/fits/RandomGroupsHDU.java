@@ -48,10 +48,12 @@ import static nom.tam.fits.header.Standard.XTENSION;
 import static nom.tam.fits.header.Standard.XTENSION_IMAGE;
 
 /**
- * Random groups header/data unit. The use of random group HDUs is discouraged, even by the FITS standard. Some old
- * radio data may be packaged in this format. Thus apart from provided limited support for reading such data, users
- * should not create random groups anew. {@link BinaryTableHDU} offers a much more flexible and capable way for storing
- * an ensemble of parameters, arrays, and more.
+ * Random groups header/data unit. Random groups were an early attempt at extending FITS support beyond images, and was
+ * eventually superseded by binary tables, which offer the same functionality and more in a more generic way. The use of
+ * random group HDUs is discouraged, even by the FITS standard. Some old radio data may be packaged in this format. Thus
+ * apart from provided limited support for reading such data, users should not create random groups anew.
+ * {@link BinaryTableHDU} offers a much more flexible and capable way for storing an ensemble of parameters, arrays, and
+ * more.
  * <p>
  * Note that the internal storage of random groups is a <code>Object[ngroups][2]</code> array. The first element of each
  * group (row) is a 1D array of parameter data of a numerical primitive type (e.g. <code>short[]</code>,
@@ -120,7 +122,7 @@ public class RandomGroupsHDU extends BasicHDU<RandomGroupsData> {
     }
 
     /**
-     * Check if this data is compatible with Random Groups structure. Must be an <code>Object[nGroups][2]<code>
+     * Check if this data is compatible with Random Groups structure. Must be an <code>Object[nGroups][2]</code>
      * structure with both elements of each group having the same base type and the first element being a simple
      * primitive array. We do not check anything but the first row.
      *
