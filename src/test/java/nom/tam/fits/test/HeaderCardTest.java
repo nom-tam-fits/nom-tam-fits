@@ -634,13 +634,15 @@ public class HeaderCardTest {
         FitsFactory.setLongStringsEnabled(true);
 
         // Continue not with a string value...
-        HeaderCard hc = HeaderCard.create("TEST   = '                                                                    &'"
+        HeaderCard hc = HeaderCard.create("TEST    = 'zzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzz&'"
                 + "CONTINUE  not a string / whatever                                               ");
+
         assertEquals(1, hc.cardSize());
 
         // Continue, but no ending &
         hc = HeaderCard.create("TEST   = '                                                                     '"
                 + "CONTINUE  'a string' / whatever                                               ");
+
         assertEquals(1, hc.cardSize());
 
         // Continue, null value

@@ -1215,6 +1215,22 @@ public class BaseFitsTest {
     }
 
     @Test
+    public void trimmedStringTest() throws Exception {
+        Header h = new Header();
+        h.addValue(Standard.OBJECT, " blah ");
+        BasicHDU<?> hdu = new ImageHDU(h, null);
+        assertEquals(" blah", h.getStringValue(Standard.OBJECT));
+        assertEquals("blah", hdu.getTrimmedString(Standard.OBJECT));
+    }
+
+    @Test
+    public void trimmedStringTestNull() throws Exception {
+        Header h = new Header();
+        BasicHDU<?> hdu = new ImageHDU(h, null);
+        assertNull(hdu.getTrimmedString(Standard.OBJECT));
+    }
+
+    @Test
     public void trimmedCommentStringTest() throws Exception {
         Header h = new Header();
         h.insertComment("comment");

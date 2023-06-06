@@ -36,7 +36,8 @@ import java.util.HashMap;
 import java.util.Map;
 
 /**
- * @deprecated               use {@link MultiArrayCopier} instead. Make copies of multi-dimensional arrays.
+ * @deprecated               (<i>for internal use</i>) use {@link MultiArrayCopier} instead. Make copies of
+ *                               multi-dimensional arrays.
  * 
  * @param      <Source>      The generic type of array from which we want to copy elements
  * @param      <Destination> The generic type of array to which we want to copy elements.

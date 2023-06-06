@@ -1706,7 +1706,9 @@ public class Header implements FitsElement {
             if (isEmpty() && FitsFactory.getAllowTerminalJunk()) {
                 // If this happened where we expect a new header to start, then
                 // treat is as if end-of-file if terminal junk is allowed
-                forceEOF("Junk detected at " + fileOffset + ".", e);
+                forceEOF(
+                        "Junk detected where header was expected to start" + ((fileOffset > 0) ? ": at " + fileOffset : ""),
+                        e);
             }
             if (e instanceof TruncatedFileException) {
                 throw (TruncatedFileException) e;
