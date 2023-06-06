@@ -405,10 +405,12 @@ public class BinaryTable extends AbstractTableData {
     }
 
     /**
-     * Enables or disables the use of <code>long</code> heap pointers rather than <code>int</code> pointers, when
-     * creating variable length columns in this table.
+     * Enables or disables a preference for <code>long</code> heap pointers rather than <code>int</code> pointers, when
+     * creating variable length columns in this table. Even if the preference is for 32-bit pointers, the type actually
+     * used may be bumped automatically to 64-bit if need be to store and access the new column data on the heap.
      * 
-     * @param value <code>true</code> to use 64-bit heap pointers, or <code>false</code> for 32-bit pointers.
+     * @param value <code>true</code> to use 64-bit heap pointers, or <code>false</code> to prefer 32-bit pointers when
+     *                  possible.
      * 
      * @since       1.18
      * 
@@ -420,9 +422,11 @@ public class BinaryTable extends AbstractTableData {
 
     /**
      * Checks if <code>long</code> heap pointers are used rather than <code>int</code> pointers, when creating variable
-     * length columns in this table.
+     * length columns in this table. Even if the preference is for 32-bit pointers, the type actually used may be bumped
+     * automatically to 64-bit if need be to store and access the new column data on the heap.
      * 
-     * @return <code>true</code> if 64-bit heap pointers are to be used, or <code>false</code> if 32-bit pointers.
+     * @return <code>true</code> if 64-bit heap pointers are to be used, or <code>false</code> if we prefer 32-bit
+     *             pointers when possible.
      * 
      * @since  1.18
      * 
