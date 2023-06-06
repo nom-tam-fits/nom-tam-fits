@@ -678,7 +678,7 @@ public class BinaryTable extends AbstractTableData {
         if (table == null) {
             try {
                 RandomAccess r = (RandomAccess) currInput;
-                r.position(getFileOffset() + i * rowLen + colDesc.offset);
+                r.position(getFileOffset() + i * (long) rowLen + colDesc.offset);
 
                 ele = colDesc.newInstance(1);
                 if (!colDesc.isBoolean && colDesc.base != char.class) {
