@@ -117,8 +117,7 @@ public class AsciiTableHDU extends TableHDU<AsciiTable> {
     public static boolean isData(Object o) {
 
         if (o instanceof Object[]) {
-            Object[] oo = (Object[]) o;
-            for (Object element : oo) {
+            for (Object element : (Object[]) o) {
                 if (!(element instanceof String[]) && //
                         !(element instanceof int[]) && //
                         !(element instanceof long[]) && //
