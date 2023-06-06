@@ -654,6 +654,10 @@ public class AsciiTable extends AbstractTableData {
         bp = new ByteParser(buffer);
     }
 
+    /**
+     * @deprecated Strongly discouraged, since it returns data in am unnatural flattened format (use
+     *                 {@link #getElement(int, int)} instead)
+     */
     @Override
     public Object getColumn(int col) throws FitsException {
         ensureData();
@@ -776,6 +780,10 @@ public class AsciiTable extends AbstractTableData {
         return res;
     }
 
+    /**
+     * @deprecated Strongly discouraged, since it requires data to be supplied in an unnatural flattened format (use
+     *                 {@link #setElement(int, int, Object)} instead) .
+     */
     @Override
     public void setColumn(int col, Object newData) throws FitsException {
         ensureData();
@@ -787,7 +795,6 @@ public class AsciiTable extends AbstractTableData {
 
         // Invalidate the buffer.
         buffer = null;
-
     }
 
     @Override

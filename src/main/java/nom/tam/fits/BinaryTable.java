@@ -620,6 +620,10 @@ public class BinaryTable extends AbstractTableData {
         return table.getBases();
     }
 
+    /**
+     * @deprecated Strongly discouraged, since it returns data in am unnatural flattened format (use
+     *                 {@link #getElement(int, int)} instead)
+     */
     @Override
     public Object getColumn(int col) throws FitsException {
         ensureData();
@@ -825,6 +829,10 @@ public class BinaryTable extends AbstractTableData {
         return table.getTypes();
     }
 
+    /**
+     * @deprecated Strongly discouraged, since it requires data to be supplied in an unnatural flattened format (use
+     *                 {@link #setElement(int, int, Object)} instead) .
+     */
     @Override
     public void setColumn(int col, Object xcol) throws FitsException {
 
