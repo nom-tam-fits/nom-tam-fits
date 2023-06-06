@@ -628,11 +628,24 @@ public class ColumnTable<T> implements DataTable {
         return Arrays.copyOf(bases, bases.length);
     }
 
+    /**
+     * @deprecated Strongly discouraged, since it returns data in am unnatural flattened format (use
+     *                 {@link #getElement(int, int)} instead)
+     */
     @Override
     public Object getColumn(int col) {
         return arrays[col];
     }
 
+    /**
+     * @deprecated Strongly discouraged, since it returns columns in am unnatural flattened format (use
+     *                 {@link #getElement(int, int)} or {@link #getRow(int)} instead)
+     * 
+     * @return     An array containing the flattened data for each column. Each columns's data is represented by a
+     *                 single 1D array holding all elements for that column. Because this is not an easily digestible
+     *                 format, you are probably better off using {@link #getElement(int, int)} or {@link #getRow(int)}
+     *                 instead.
+     */
     @SuppressFBWarnings(value = "EI_EXPOSE_REP", justification = "intended exposure of mutable data")
     public Object[] getColumns() {
         return arrays;
@@ -750,6 +763,10 @@ public class ColumnTable<T> implements DataTable {
         }
     }
 
+    /**
+     * @deprecated Strongly discouraged, since it requires data to be supplied in an unnatural flattened format (use
+     *                 {@link #setElement(int, int, Object)} instead) .
+     */
     @Override
     public void setColumn(int col, Object newColumn) throws TableException {
 

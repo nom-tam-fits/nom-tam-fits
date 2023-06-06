@@ -136,7 +136,7 @@ public interface TableData {
      * @throws FitsException
      *             if the table could not be accessed
      * @deprecated Strongly discouraged, since it returns data in am unnatural
-     *             flattened format.(use {@link #getElement(int, int)} instead)
+     *             flattened format (use {@link #getElement(int, int)} instead)
      * @see #setColumn(int, Object)
      * @see #getElement(int, int)
      * @see #getNCols()

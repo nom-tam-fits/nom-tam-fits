@@ -1370,6 +1370,12 @@ public class BaseFitsTest {
         assertTrue(UndefinedHDU.isHeader(h));
     }
 
+    @Test(expected = FitsException.class)
+    public void testImageBlankException() throws Exception {
+        ImageHDU hdu = (ImageHDU) Fits.makeHDU(new float[10][10]);
+        hdu.getBlankValue(); // throws FitsException
+    }
+
     private static class TestRandomAccessFileIO extends java.io.RandomAccessFile implements RandomAccessFileIO {
         final String name;
 

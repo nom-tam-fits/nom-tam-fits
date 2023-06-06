@@ -47,6 +47,7 @@ import nom.tam.fits.Header;
 import nom.tam.fits.RandomGroupsData;
 import nom.tam.fits.RandomGroupsHDU;
 import nom.tam.fits.header.Bitpix;
+import nom.tam.fits.header.Standard;
 import nom.tam.util.ArrayFuncs;
 import nom.tam.util.FitsFile;
 import nom.tam.util.SafeClose;
@@ -312,5 +313,47 @@ public class RandomGroupsTest {
     @Test(expected = FitsException.class)
     public void testCreateWrongDataType2() throws Exception {
         RandomGroupsHDU.createFrom(new Object[][] {{new float[5], new int[10][10]}});
+    }
+
+    @Test
+    public void testQuantHeaderExists() throws Exception {
+        RandomGroupsHDU hdu = RandomGroupsHDU.createFrom(new Object[][] {{new int[5], new int[10][10]}});
+        Header h = hdu.getHeader();
+
+        h.addValue(Standard.BZERO, 1.0);
+        Assert.assertEquals(1.0, hdu.getBZero(), 1e-6);
+
+        h.addValue(Standard.BSCALE, -10.0);
+        Assert.assertEquals(-10.0, hdu.getBScale(), 1e-6);
+
+        h.addValue(Standard.BLANK, -999);
+        Assert.assertEquals(-999L, hdu.getBlankValue());
+    }
+
+    @Test
+    public void testQuantHeaderDefault() throws Exception {
+        RandomGroupsHDU hdu = RandomGroupsHDU.createFrom(new Object[][] {{new int[5], new int[10][10]}});
+        Assert.assertEquals(0.0, hdu.getBZero(), 1e-6);
+        Assert.assertEquals(1.0, hdu.getBScale(), 1e-6);
+    }
+
+    @Test(expected = FitsException.class)
+    public void testNoHeaderBlank() throws Exception {
+        RandomGroupsHDU hdu = RandomGroupsHDU.createFrom(new Object[][] {{new int[5], new int[10][10]}});
+        hdu.getBlankValue(); // throws FitsException
+    }
+
+    @Test(expected = FitsException.class)
+    public void testBlankException() throws Exception {
+        RandomGroupsHDU hdu = RandomGroupsHDU.createFrom(new Object[][] {{new float[5], new float[10][10]}});
+        hdu.getBlankValue(); // throws FitsException
+    }
+
+    @Test
+    public void testBUnit() throws Exception {
+        RandomGroupsHDU hdu = RandomGroupsHDU.createFrom(new Object[][] {{new int[5], new int[10][10]}});
+        Header h = hdu.getHeader();
+        h.addValue(Standard.BUNIT, "m/s");
+        Assert.assertEquals("m/s", hdu.getBUnit());
     }
 }
