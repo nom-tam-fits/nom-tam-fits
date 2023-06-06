@@ -438,15 +438,6 @@ public interface ArrayDataInput extends InputReader, DataInput, FitsIO {
         skipAllBytes((long) toSkip);
     }
 
-    /**
-     * Read a buffer and signal an EOF if the requested elements cannot be read. This differs from read(b,off,len) since
-     * that call will not signal and end of file unless no bytes can be read. However both of these routines will
-     * attempt to fill their buffers completely.
-     *
-     * @param b   The input buffer.
-     * @param off The requested offset into the buffer.
-     * @param len The number of bytes requested.
-     */
     @Override
     void readFully(byte[] b, int off, int len) throws IOException;
 

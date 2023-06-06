@@ -412,6 +412,19 @@ public abstract class BasicHDU<DataClass extends Data> implements FitsElement {
     }
 
     /**
+     * Returns the name of the physical unit in which images are represented.
+     * 
+     * @deprecated This is only applicable to {@link ImageHDU} or {@link RandomGroupsHDU} and not for other HDU or data
+     *                 types.
+     * 
+     * @return     the standard name of the physical unit in which the image is expressed, e.g.
+     *                 <code>"Jy beam^{-1}"</code>.
+     */
+    public String getBUnit() {
+        return myHeader.getStringValue(BUNIT);
+    }
+
+    /**
      * Returns the integer value that signifies blank (missing or <code>null</code>) data in an integer image.
      * 
      * @deprecated               This is only applicable to {@link ImageHDU} or {@link RandomGroupsHDU} with integer
@@ -441,19 +454,6 @@ public abstract class BasicHDU<DataClass extends Data> implements FitsElement {
     @Deprecated
     public double getBScale() {
         return myHeader.getDoubleValue(BSCALE, 1.0);
-    }
-
-    /**
-     * Returns the name of the physical unit in which images are represented.
-     * 
-     * @deprecated This is only applicable to {@link ImageHDU} or {@link RandomGroupsHDU} and not for other HDU or data
-     *                 types.
-     * 
-     * @return     the standard name of the physical unit in which the image is expressed, e.g.
-     *                 <code>"Jy beam^{-1}"</code>.
-     */
-    public String getBUnit() {
-        return myHeader.getStringValue(BUNIT);
     }
 
     /**

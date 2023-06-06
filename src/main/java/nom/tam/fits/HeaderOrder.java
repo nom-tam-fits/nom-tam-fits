@@ -126,7 +126,7 @@ public class HeaderOrder implements java.util.Comparator<String>, Serializable {
     }
 
     /**
-     * Which order should the cards indexed by these keys be written out? This method assumes that the arguments are
+     * Determines the order in which the cards should be added to the header. This method assumes that the arguments are
      * either the FITS Header keywords as strings, and some other type (or null) for comment style keywords.
      *
      * @return -1 if the first argument should be written first <br>

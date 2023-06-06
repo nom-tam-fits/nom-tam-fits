@@ -104,11 +104,6 @@ public class UndefinedData extends Data {
         ArrayFuncs.copyInto(x, data);
     }
 
-    /**
-     * Fill header with keywords that describe data.
-     *
-     * @param head The FITS header
-     */
     @SuppressWarnings("deprecation")
     @Override
     protected void fillHeader(Header head) {
@@ -135,7 +130,6 @@ public class UndefinedData extends Data {
         return data;
     }
 
-    /** Get the size in bytes of the data */
     @Override
     protected long getTrueSize() {
         return byteSize;

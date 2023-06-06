@@ -128,17 +128,11 @@ public class FitsHeap implements FitsElement {
         }
     }
 
-    /**
-     * Get the file offset of the heap
-     */
     @Override
     public long getFileOffset() {
         throw new IllegalStateException("FitsHeap should only be reset from inside its parent, never alone");
     }
 
-    /**
-     * Return the size of the heap using the more bean compatible format
-     */
     @Override
     public long getSize() {
         return size();

@@ -1,5 +1,7 @@
 package nom.tam.fits;
 
+import nom.tam.util.ComplexValue;
+
 /*
  * #%L
  * nom.tam FITS library
@@ -90,16 +92,21 @@ public interface TableData {
     int addRow(Object[] newRow) throws FitsException;
 
     /**
-     * Removes a set of consecutive columns from this table
+     * Removes a set of consecutive columns from this table. Note, this call
+     * does not update the header information about the columns that were
+     * removed. Therefore if you call this method, you are responsible to call
+     * {@link #updateAfterDelete(int, Header)} at least once after having
+     * removed colums via calls to this method.
      * 
      * @param col
-     *            the index of the first column to remove
+     *            the 0-based index of the first column to remove
      * @param len
      *            the number of subsequent columns to remove
      * @throws FitsException
      *             if the table could not be modified
      * @see #addColumn(Object)
      * @see #deleteRows(int, int)
+     * @see #updateAfterDelete(int, Header)
      */
     void deleteColumns(int col, int len) throws FitsException;
 
@@ -107,7 +114,7 @@ public interface TableData {
      * Removes a set of consecutive rows from this table
      * 
      * @param row
-     *            the index of the first row to remove
+     *            the 0-based index of the first row to remove
      * @param len
      *            the number of subsequent rows to remove
      * @throws FitsException
@@ -118,29 +125,56 @@ public interface TableData {
     void deleteRows(int row, int len) throws FitsException;
 
     /**
-     * Indexed access to data by column
+     * <p>
+     * Returns the data for a particular column in as a flattened 1D array of
+     * elements. See {@link #getElement(int, int)} for more information about
+     * the format of data elements in general.
      * 
      * @param col
-     *            the column index
-     * @return an object containing the column data (for all rows) of the
-     *         specified column, or possubly <code>null</code>.
+     *            The 0-based column index.
+     * @return a 1D array containing the column data in a flattened form.
      * @throws FitsException
      *             if the table could not be accessed
-     * @see #getNCols()
+     * @deprecated Strongly discouraged, since it returns data in am unnatural
+     *             flattened format.(use {@link #getElement(int, int)} instead)
      * @see #setColumn(int, Object)
-     * @see #getRow(int)
      * @see #getElement(int, int)
+     * @see #getNCols()
      */
     Object getColumn(int col) throws FitsException;
 
     /**
-     * Returns the data element in this table
+     * <p>
+     * Returns the data element in this table. Elements are always stored as
+     * arrays even when scalar types. Thus a single <code>double</code> value
+     * will be returned as a <code>double[1]</code>. For most column types the
+     * storage type of the array matches that of their native Java type, but
+     * there are exceptions:
+     * </p>
+     * <ul>
+     * <li>Character arrays in FITS are stored as <code>byte[]</code> or
+     * <code>short[]</code>, depending on the
+     * {@link nom.tam.fits.FitsFactory#setUseUnicodeChars(boolean)} setting, not
+     * unicode Java <code>char[]</code>. Therefore, this call will return
+     * <code>byte[]</code> or <code>short[]</code>, the same as for a byte or
+     * 16-bit integer array. As a result if a new table is created with the
+     * returned data, the new table column will change its FITS column type from
+     * <code>A</code> to <code>B</code> or <code>I</code>.</li>
+     * <li>Complex values in FITS are stored as <code>float[2]</code> or
+     * <code>double[2]</code>, not as a {@link ComplexValue} type. Therefore,
+     * this call will return <code>float[]</code> or <code>double[]</code>, the
+     * same as for a float array. As a result if a new table is created with the
+     * returned data, the new table column will change it's FITS column type
+     * from <code>C</code> to <code>F</code>, or from <code>M</code> to
+     * <code>D</code>,.</li>
+     * </ul>
      * 
      * @param row
-     *            the row index of the element
+     *            the 0-based row index of the element
      * @param col
-     *            the column index of the element
-     * @return the object to store at the specified row, col in the table.
+     *            the 0-based column index of the element
+     * @return A primitive array containing the data for the the specified (row,
+     *         col) entry in the table.
      * @throws FitsException
      *             if the table could not be accessed
      * @see #setElement(int, int, Object)
@@ -170,12 +204,16 @@ public interface TableData {
     int getNRows();
 
     /**
-     * Indexed access to data by row
+     * Returns an array of elements in a particualr table row. See
+     * {@link #getElement(int, int)} for more information about the format of
+     * each element in the row.
      * 
      * @param row
-     *            the row index
+     *            the 0-based row index
      * @return an object containing the row data (for all column) of the
-     *         specified row, or possubly <code>null</code>.
+     *         specified row, or possubly <code>null</code>. See
+     *         {@link #getElement(int, int)} for more information about the
+     *         format of each element in the row.
      * @throws FitsException
      *             if the table could not be accessed
      * @see #getNRows()
@@ -186,15 +224,22 @@ public interface TableData {
     Object[] getRow(int row) throws FitsException;
 
     /**
-     * Sets new data for a table column
+     * Sets new data for a table column. Unlike {@link #addColumn(Object)}, the
+     * data must be supplied in flattened form as a single 1D array. See
+     * {@link #addColumn(Object)} for more information on the column data
+     * format.
      * 
      * @param col
-     *            the column index
+     *            the 0-based column index
      * @param newCol
      *            an object containing the new column data (for all rows) of the
-     *            specified column.
+     *            specified column. See {@link #getColumn(int)} for more
+     *            information on the column data format.
      * @throws FitsException
      *             if the table could not be modified
+     * @deprecated Strongly discouraged, since it requires data to be supplied in
+     *             an unnatural flattened format (use
+     *             {@link #setElement(int, int, Object)} instead) .
      * @see #getNCols()
      * @see #getColumn(int)
      * @see #setRow(int, Object[])
@@ -203,14 +248,16 @@ public interface TableData {
     void setColumn(int col, Object newCol) throws FitsException;
 
     /**
-     * Sets new data element in this table
+     * Sets new data element in this table. See {@link #getElement(int, int)}
+     * for more information about the format of elements.
      * 
      * @param row
-     *            the row index of the element
+     *            the 0-based row index of the element
      * @param col
-     *            the column index of the element
+     *            the 0-based column index of the element
      * @param element
-     *            the object to store at the specified row, col in the table.
+     *            the new element at the specified table location as a primitive
+     *            array.
      * @throws FitsException
      *             if the table could not be modified
      * @see #getElement(int, int)
@@ -220,13 +267,15 @@ public interface TableData {
     void setElement(int row, int col, Object element) throws FitsException;
 
     /**
-     * Sets new data for a table row
+     * Sets new data for a table row. See {@link #getElement(int, int)} for more
+     * information about the format of elements.
      * 
      * @param row
-     *            the column index
+     *            the 0-based row index
      * @param newRow
-     *            an object containing the new row data (for all columns) of the
-     *            specified row.
+     *            an object containing the row data (for all column) of the
+     *            specified row. See {@link #getElement(int, int)} for more
+     *            information about the format of each element in the row.
      * @throws FitsException
      *             if the table could not be modified
      * @see #getNRows()
