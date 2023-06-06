@@ -799,10 +799,12 @@ public class BinaryTable extends AbstractTableData {
             throw new FitsException("Invalid row");
         }
 
-        if (table != null) {
-            return getMemoryRow(row);
+        Object[] data = new Object[columnList.size()];
+
+        for (int col = 0; col < data.length; col++) {
+            data[col] = getElement(row, col);
         }
-        return getFileRow(row);
+        return data;
     }
 
     /**
@@ -1287,65 +1289,6 @@ public class BinaryTable extends AbstractTableData {
         } catch (Exception e) {
             BinaryTable.LOG.log(Level.SEVERE, "reading data of binary table failed!", e);
         }
-    }
-
-    /**
-     * @return               row from the file.
-     *
-     * @throws FitsException if the operation failed
-     */
-    private Object[] getFileRow(int row) throws FitsException {
-        /**
-         * Read the row from memory
-         */
-        Object[] data = new Object[columnList.size()];
-
-        FitsUtil.reposition(currInput, getFileOffset() + (long) row * (long) rowLen);
-
-        for (int col = 0; col < data.length; col++) {
-            ColumnDesc colDesc = columnList.get(col);
-            data[col] = colDesc.newInstance(1);
-
-            try {
-                if (!colDesc.isBoolean && colDesc.base != char.class) {
-                    currInput.readImage(data[col]);
-                } else {
-                    currInput.readArrayFully(data[col]);
-                }
-            } catch (IOException e) {
-                throw new FitsException("Error in file row read", e);
-            }
-
-            data[col] = columnToArray(colDesc, data[col], 1);
-            data[col] = encurl(data[col], col, 1);
-            if (data[col] instanceof Object[]) {
-                data[col] = ((Object[]) data[col])[0];
-            }
-        }
-        return data;
-    }
-
-    /**
-     * Get a row from memory.
-     *
-     * @throws FitsException if the operation failed
-     */
-    private Object[] getMemoryRow(int row) throws FitsException {
-
-        Object[] modelRow = getModelRow();
-        Object[] data = new Object[modelRow.length];
-        for (int col = 0; col < modelRow.length; col++) {
-            ColumnDesc colDesc = columnList.get(col);
-            Object o = table.getElement(row, col);
-            o = columnToArray(colDesc, o, 1);
-            data[col] = encurl(o, col, 1);
-            if (data[col] instanceof Object[]) {
-                data[col] = ((Object[]) data[col])[0];
-            }
-        }
-
-        return data;
-
     }
 
     /**
