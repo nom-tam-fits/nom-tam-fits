@@ -629,7 +629,7 @@ public class ColumnTable<T> implements DataTable {
     }
 
     /**
-     * @deprecated Strongly discouraged, since it returns data in am unnatural flattened format (use
+     * @deprecated Strongly discouraged, since it returns data in an unnatural flattened format (use
      *                 {@link #getElement(int, int)} instead)
      */
     @Override
@@ -638,7 +638,7 @@ public class ColumnTable<T> implements DataTable {
     }
 
     /**
-     * @deprecated Strongly discouraged, since it returns columns in am unnatural flattened format (use
+     * @deprecated Strongly discouraged, since it returns columns in an unnatural flattened format (use
      *                 {@link #getElement(int, int)} or {@link #getRow(int)} instead)
      * 
      * @return     An array containing the flattened data for each column. Each columns's data is represented by a

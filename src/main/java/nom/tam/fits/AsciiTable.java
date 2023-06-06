@@ -655,7 +655,7 @@ public class AsciiTable extends AbstractTableData {
     }
 
     /**
-     * @deprecated Strongly discouraged, since it returns data in am unnatural flattened format (use
+     * @deprecated Strongly discouraged, since it returns data in an unnatural flattened format (use
      *                 {@link #getElement(int, int)} instead)
      */
     @Override
