@@ -346,7 +346,7 @@ in the fifth column (i.e. 4 in Java indexing):
   for(int row = 0; row < tab.getNRows(); row++) {
   
       // Retrieve scalar entries by casting the element to the correct array 
-      // type,  and returning the first (and only) element from that array...
+      // type, and returning the first (and only) element from that array...
       double utc  = ((double[]) tab.getElement(row, colUTC))[0];
       
       // We can also access by fixed column index...
@@ -362,11 +362,11 @@ Note that table data is always stored as arrays, even for scalar types, so a sin
 or `String` are not viable options for us. Complex values are stored as `float[2]` or `double[2]` depending on 
 the precision (FITS type `C` or `M`). So, a double-precision FITS complex array of size `[5][7]` will be returned a 
 `double[5][7][2]`. Logicals return `boolean[]`, which means that while FITS supports `null` logical values, we don't
-and these will default to 'false'. It's an oversight that we are stuck with, at least for now...
+and these will default to `false`. It's an oversight that we are stuck with, at least for now...
 
 Note that for best performance you should access elements in monotonically increasing order -- at least for the rows, 
-but it does not hurt to follow the same principle for columns inside the loops also. This will help about excess 
-buffering that way be required at times when jumping backward.
+but it does not hurt to follow the same principle for columns inside the loops also. This will help avoid excess 
+buffering that way be required at times for backward jumps.
 
 Row-based access via `getRow(int)` works very similarly to element-based access. In the loop above you'd 
 simply write something like:
