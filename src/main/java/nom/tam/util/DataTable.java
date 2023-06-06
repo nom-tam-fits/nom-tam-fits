@@ -57,6 +57,9 @@ public interface DataTable {
      *            the column index
      * @return an object containing the column data (for all rows) of the
      *         specified column, or possubly <code>null</code>.
+     * @deprecated Strongly discouraged, since it returns data in an unnatural
+     *             flattened format or heap pointers only for variable-sized
+     *             data (use {@link #getElement(int, int)} instead)
      * @see #getNCols()
      * @see #setColumn(int, Object)
      * @see #getRow(int)
@@ -122,6 +125,10 @@ public interface DataTable {
      *            specified column.
      * @throws TableException
      *             if the table could not be modified
+     * @deprecated Strongly discouraged, since it requires data to be supplied in
+     *             an unnatural flattened format or heap pointers only for
+     *             variable-sized data (use
+     *             {@link #setElement(int, int, Object)} instead).
      * @see #getNCols()
      * @see #getColumn(int)
      * @see #setRow(int, Object)

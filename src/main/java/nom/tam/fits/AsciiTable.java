@@ -655,8 +655,8 @@ public class AsciiTable extends AbstractTableData {
     }
 
     /**
-     * @deprecated Strongly discouraged, since it returns data in an unnatural flattened format (use
-     *                 {@link #getElement(int, int)} instead)
+     * @deprecated Strongly discouraged, since it returns data in an unnatural flattened format or heap pointers only
+     *                 for variable-sized data (use {@link #getElement(int, int)} instead)
      */
     @Override
     public Object getColumn(int col) throws FitsException {
@@ -781,8 +781,8 @@ public class AsciiTable extends AbstractTableData {
     }
 
     /**
-     * @deprecated Strongly discouraged, since it requires data to be supplied in an unnatural flattened format (use
-     *                 {@link #setElement(int, int, Object)} instead) .
+     * @deprecated Strongly discouraged, since it requires data to be supplied in an unnatural flattened format or heap
+     *                 pointers only for variable-sized data (use {@link #setElement(int, int, Object)} instead).
      */
     @Override
     public void setColumn(int col, Object newData) throws FitsException {

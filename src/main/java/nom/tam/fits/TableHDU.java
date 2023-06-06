@@ -252,15 +252,18 @@ public abstract class TableHDU<T extends AbstractTableData> extends BasicHDU<T> 
     /**
      * Returns the column of the specified index
      * 
-     * @return               a specific column from the table using 0-based column indexing.
+     * @return                   a specific column from the table using 0-based column indexing.
      *
-     * @param  col           column index to get
+     * @param      col           column index to get
      *
-     * @throws FitsException if the operation failed
+     * @throws     FitsException if the operation failed
      * 
-     * @see                  #getColumn(String)
-     * @see                  #setColumn(int, Object)
-     * @see                  #getRow(int)
+     * @deprecated               Strongly discouraged, since it returns data in an unnatural flattened format or heap
+     *                               pointers only for variable-sized data (use {@link #getElement(int, int)} instead)
+     * 
+     * @see                      #getColumn(String)
+     * @see                      #setColumn(int, Object)
+     * @see                      #getRow(int)
      */
     public Object getColumn(int col) throws FitsException {
         return myData.getColumn(col);
@@ -269,15 +272,19 @@ public abstract class TableHDU<T extends AbstractTableData> extends BasicHDU<T> 
     /**
      * Returns the column of the specified name
      * 
-     * @return               a specific column of the table where the column name is specified using the TTYPEn keywords
-     *                           in the header.
+     * @return                   a specific column of the table where the column name is specified using the TTYPEn
+     *                               keywords in the header.
      *
-     * @param  colName       The name of the column to be extracted.
+     * @param      colName       The name of the column to be extracted.
      *
-     * @throws FitsException if the operation failed
+     * @throws     FitsException if the operation failed
      * 
-     * @see                  #getColumn(int)
-     * @see                  #setColumn(String, Object)
+     * @deprecated               Strongly discouraged, since it returns data in an unnatural flattened format or heap
+     *                               pointers only for variable-sized data (use {@link #findColumn(String)} in
+     *                               combination with with {@link #getElement(int, int)} instead)
+     * 
+     * @see                      #getColumn(int)
+     * @see                      #setColumn(String, Object)
      */
     public Object getColumn(String colName) throws FitsException {
         return getColumn(findColumn(colName));
@@ -333,9 +340,13 @@ public abstract class TableHDU<T extends AbstractTableData> extends BasicHDU<T> 
     /**
      * Returns all columns in this table as an array.
      * 
-     * @return               all of the columns of the table.
+     * @return                   all of the columns of the table.
      *
-     * @throws FitsException if the operation failed
+     * @throws     FitsException if the operation failed
+     * 
+     * @deprecated               Strongly discouraged, since it returns columns in an unnatural flattened format or heap
+     *                               pointers only for variable-sized data (use {@link #getElement(int, int)} or
+     *                               {@link #getRow(int)} instead)
      */
     public Object[] getColumns() throws FitsException {
         Object[] result = new Object[getNCols()];
@@ -397,13 +408,17 @@ public abstract class TableHDU<T extends AbstractTableData> extends BasicHDU<T> 
     /**
      * Update a column within a table. The new column should have the same format ast the column being replaced.
      *
-     * @param  col           index of the column to replace
-     * @param  newCol        the replacement column
+     * @param      col           index of the column to replace
+     * @param      newCol        the replacement column
      *
-     * @throws FitsException if the operation failed
+     * @throws     FitsException if the operation failed
      * 
-     * @see                  #getColumn(int)
-     * @see                  #setColumn(String, Object)
+     * @deprecated               Strongly discouraged, since it requires data to be supplied in an unnatural flattened
+     *                               format or heap pointers only for variable-sized data (use
+     *                               {@link #setElement(int, int, Object)} instead).
+     * 
+     * @see                      #getColumn(int)
+     * @see                      #setColumn(String, Object)
      */
     public void setColumn(int col, Object newCol) throws FitsException {
         myData.setColumn(col, newCol);
@@ -412,13 +427,18 @@ public abstract class TableHDU<T extends AbstractTableData> extends BasicHDU<T> 
     /**
      * Update a column within a table. The new column should have the same format as the column being replaced.
      *
-     * @param  colName       name of the column to replace
-     * @param  newCol        the replacement column
+     * @param      colName       name of the column to replace
+     * @param      newCol        the replacement column
      *
-     * @throws FitsException if the operation failed
+     * @throws     FitsException if the operation failed
      * 
-     * @see                  #getColumn(String)
-     * @see                  #setColumn(int, Object)
+     * @deprecated               Strongly discouraged, since it requires data to be supplied in an unnatural flattened
+     *                               format or heap pointers only for variable-sized data (use
+     *                               {@link #findColumn(String)} in combination with
+     *                               {@link #setElement(int, int, Object)} instead).
+     * 
+     * @see                      #getColumn(String)
+     * @see                      #setColumn(int, Object)
      */
     public void setColumn(String colName, Object newCol) throws FitsException {
         setColumn(findColumn(colName), newCol);
@@ -597,7 +617,9 @@ public abstract class TableHDU<T extends AbstractTableData> extends BasicHDU<T> 
     /**
      * Set the cursor in the header to point after the metadata for the specified column
      *
-     * @param col The 0-based index of the column
+     * @param      col The 0-based index of the column
+     * 
+     * @deprecated     (<i>for internal use</i>) Will be removed int the future (no longer used).
      */
     public void setCurrentColumn(int col) {
         setCurrentColumn(col, true);
@@ -606,10 +628,12 @@ public abstract class TableHDU<T extends AbstractTableData> extends BasicHDU<T> 
     /**
      * Set the cursor in the header to point either before the TFORM value or after the column metadat
      *
-     * @param col   The 0-based index of the column
-     * @param after True if the cursor should be placed after the existing column metadata or false if the cursor is to
-     *                  be placed before the TFORM value. If no corresponding TFORM is found, the cursoe will be placed
-     *                  at the end of current header.
+     * @param      col   The 0-based index of the column
+     * @param      after True if the cursor should be placed after the existing column metadata or false if the cursor
+     *                       is to be placed before the TFORM value. If no corresponding TFORM is found, the cursoe will
+     *                       be placed at the end of current header.
+     * 
+     * @deprecated       (<i>for internal use</i>) Will have private access in the future.
      */
     public void setCurrentColumn(int col, boolean after) {
         if (after) {

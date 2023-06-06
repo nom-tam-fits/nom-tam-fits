@@ -136,7 +136,8 @@ public interface TableData {
      * @throws FitsException
      *             if the table could not be accessed
      * @deprecated Strongly discouraged, since it returns data in an unnatural
-     *             flattened format (use {@link #getElement(int, int)} instead)
+     *             flattened format or heap pointers only for variable-sized
+     *             data (use {@link #getElement(int, int)} instead)
      * @see #setColumn(int, Object)
      * @see #getElement(int, int)
      * @see #getNCols()
@@ -238,8 +239,9 @@ public interface TableData {
      * @throws FitsException
      *             if the table could not be modified
      * @deprecated Strongly discouraged, since it requires data to be supplied in
-     *             an unnatural flattened format (use
-     *             {@link #setElement(int, int, Object)} instead) .
+     *             an unnatural flattened format or heap pointers only for
+     *             variable-sized data (use
+     *             {@link #setElement(int, int, Object)} instead).
      * @see #getNCols()
      * @see #getColumn(int)
      * @see #setRow(int, Object[])
