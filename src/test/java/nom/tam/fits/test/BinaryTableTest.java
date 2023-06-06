@@ -1597,7 +1597,7 @@ public class BinaryTableTest {
         ByteArrayOutputStream out = new ByteArrayOutputStream();
         PrintStream stream = new PrintStream(out);
         tableHdu.info(stream);
-        Assert.assertFalse(out.toString().contains("Number of rows="));
+        Assert.assertTrue(out.toString().contains("Number of rows=0"));
     }
 
     @Test(expected = TableException.class)
@@ -1716,6 +1716,7 @@ public class BinaryTableTest {
 
         BinaryTable t = new BinaryTable();
         t.setCreateLongVary(false);
+        Assert.assertFalse(t.isCreateLongVary());
         t.addColumn(f);
         Assert.assertTrue(t.isVarLengthColumn(0));
 
@@ -1737,6 +1738,8 @@ public class BinaryTableTest {
 
         BinaryTable t = new BinaryTable();
         t.setCreateLongVary(true);
+        Assert.assertTrue(t.isCreateLongVary());
+
         t.addColumn(f);
         Assert.assertTrue(t.isVarLengthColumn(0));
 
@@ -1746,6 +1749,23 @@ public class BinaryTableTest {
         Assert.assertFalse(h.isComplexColumn(0));
         h.setComplexColumn(0);
         Assert.assertTrue(h.isComplexColumn(0));
+    }
+
+    @Test
+    public void testEncapsulateColumnTable() throws Exception {
+        ColumnTable ct = createTestTable().getData();
+
+        BinaryTableHDU hdu = (BinaryTableHDU) Fits.makeHDU(ct);
+        assertEquals(ct.getNRows(), hdu.getData().getNRows());
+        assertEquals(ct.getNCols(), hdu.getData().getNCols());
+    }
+
+    @Test
+    public void testCheckCompatibleData() throws Exception {
+        Assert.assertTrue(BinaryTableHDU.isData(createTestTable().getData()));
+        Assert.assertTrue(BinaryTableHDU.isData(new Object[3]));
+        Assert.assertTrue(BinaryTableHDU.isData(new Object[3][2]));
+        Assert.assertFalse(BinaryTableHDU.isData(new Object()));
     }
 
     private BinaryTable createTestTable() throws FitsException {
