@@ -34,7 +34,7 @@ package nom.tam.util.array;
 import java.lang.reflect.Array;
 
 /**
- * Multi-dimensional array iterator (<i>primarily for internal use</i>).
+ * Multi-dimensional array iterator (<i>primarily for internal use</i>)
  *
  * @param <BaseArray> the generic type of array at the base of a multi-dimensional array object. For example for a
  *                        <code>float[][][]</code> array the base would be <code>float[]</code>.

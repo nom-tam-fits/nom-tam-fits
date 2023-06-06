@@ -36,6 +36,7 @@ import java.nio.Buffer;
 
 import nom.tam.fits.header.Bitpix;
 import nom.tam.fits.header.Standard;
+import nom.tam.image.ImageTiler;
 import nom.tam.image.StandardImageTiler;
 import nom.tam.util.ArrayDataInput;
 import nom.tam.util.ArrayDataOutput;
@@ -52,13 +53,19 @@ import static nom.tam.fits.header.Standard.NAXISn;
 import static nom.tam.fits.header.Standard.PCOUNT;
 
 /**
- * This class instantiates FITS primary HDU and IMAGE extension data. Essentially these data are a primitive
- * multi-dimensional array.
  * <p>
- * Starting in version 0.9 of the FITS library, this routine allows users to defer the reading of images if the FITS
- * data is being read from a file. An ImageTiler object is supplied which can return an arbitrary subset of the image as
- * a one dimensional array -- suitable for manipulation by standard Java libraries. A call to the getData() method will
- * still return a multi-dimensional array, but the image data will not be read until the user explicitly requests. it.
+ * Image data. Essentially these data are a primitive multi-dimensional array, such as a <code>double[]</code>,
+ * <code>float[][]</code>, or <code>short[][][]</code>
+ * </p>
+ * <p>
+ * Starting in version 0.9 of the FITS library, this class allows users to defer the reading of images if the FITS data
+ * is being read from a file. An {@link ImageTiler} object is supplied which can return an arbitrary subset of the image
+ * as a one dimensional array -- suitable for manipulation by standard Java libraries. A call to the {@link #getData()}
+ * method will still return a multi-dimensional array, but the image data will not be read until the user explicitly
+ * requests.
+ * </p>
+ * 
+ * @see ImageHDU
  */
 public class ImageData extends Data {
 
@@ -158,11 +165,6 @@ public class ImageData extends Data {
         super.read(in);
     }
 
-    /**
-     * Return the actual data. Note that this may return a null when the data is not readable. It might be better to
-     * throw a FitsException, but this is a very commonly called method and we prefered not to change how users must
-     * invoke it.
-     */
     @Override
     protected Object getCurrentData() {
         return dataArray;
@@ -214,13 +216,6 @@ public class ImageData extends Data {
         FitsUtil.pad(o, getTrueSize());
     }
 
-    /**
-     * Fill header with keywords that describe image data.
-     *
-     * @param  head          The FITS header
-     *
-     * @throws FitsException if the object does not contain valid image data.
-     */
     @SuppressWarnings("deprecation")
     @Override
     protected void fillHeader(Header head) throws FitsException {
@@ -260,7 +255,6 @@ public class ImageData extends Data {
         Standard.context(null);
     }
 
-    /** Get the size in bytes of the data */
     @Override
     protected long getTrueSize() {
         return byteSize;
@@ -290,7 +284,7 @@ public class ImageData extends Data {
         // for the FITS file to get the order in the array we
         // are generating.
 
-        byteSize = 1;
+        byteSize = ndim > 0 ? 1 : 0;
         for (int i = 0; i < ndim; i++) {
             int cdim = h.getIntValue(NAXISn.n(i + 1), 0);
             if (cdim < 0) {
@@ -300,9 +294,6 @@ public class ImageData extends Data {
             dims[ndim - i - 1] = cdim;
         }
         byteSize *= bitpix.byteSize();
-        if (ndim == 0) {
-            byteSize = 0;
-        }
         return new ArrayDesc(dims, baseClass);
     }
 

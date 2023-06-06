@@ -39,12 +39,9 @@ import nom.tam.util.ArrayDataInput;
  * <p>
  * A helper class to keep track of the number of physical cards for a logical card.
  * </p>
- * <p>
- * This class should not have public visibility. And really, the counting should be completely internalized by
- * HeaderCard. Perhaps remove in a future major release.
- * </p>
  * 
- * @deprecated (<i>for internal use</i>)
+ * @deprecated (<i>for internal use</i>) This class should not have public visibility. And really, the counting should
+ *                 be completely internalized by {@link HeaderCard}. Perhaps remove in a future major release.
  *
  * @author     Richard van Nieuwenhoven
  */
@@ -66,7 +63,8 @@ public class HeaderCardCountingArrayDataInput {
     /**
      * Creates a new instance of this class for counting the number of 80-character header records.
      * 
-     * @deprecated       (<i>for internal use</i>)
+     * @deprecated       (<i>for internal use</i>) Visibility will be reduced to the package level, or will be removed
+     *                       entirely.
      * 
      * @param      input The input from which we read the header cards.
      */
@@ -75,7 +73,8 @@ public class HeaderCardCountingArrayDataInput {
     }
 
     /**
-     * @deprecated (<i>for internal use</i>)
+     * @deprecated (<i>for internal use</i>) Visibility will be reduced to the package level, or will be removed
+     *                 entirely.
      * 
      * @return     the number of cards realy read form the stream
      */
@@ -84,7 +83,8 @@ public class HeaderCardCountingArrayDataInput {
     }
 
     /**
-     * @deprecated (<i>for internal use</i>)
+     * @deprecated (<i>for internal use</i>) Visibility will be reduced to the package level, or will be removed
+     *                 entirely.
      * 
      * @return     the stream to read the cards from
      */
@@ -95,7 +95,8 @@ public class HeaderCardCountingArrayDataInput {
     /**
      * report a readed card.
      * 
-     * @deprecated (<i>for internal use</i>)
+     * @deprecated (<i>for internal use</i>) Visibility will be reduced to the package level, or will be removed
+     *                 entirely.
      */
     public void cardRead() {
         physicalCardsRead++;
@@ -104,7 +105,8 @@ public class HeaderCardCountingArrayDataInput {
     /**
      * indicate whether mark/reset functionality is supported
      *
-     * @deprecated (<i>for internal use</i>)
+     * @deprecated (<i>for internal use</i>) Visibility will be reduced to the package level, or will be removed
+     *                 entirely.
      * 
      * @return     true iff mark/reset will work
      */
@@ -115,7 +117,8 @@ public class HeaderCardCountingArrayDataInput {
     /**
      * mark the current position in the stream.
      * 
-     * @deprecated             (<i>for internal use</i>)
+     * @deprecated             (<i>for internal use</i>) Visibility will be reduced to the package level, or will be
+     *                             removed entirely.
      *
      * @throws     IOException if the underlaying stream does not allow the mark.
      */
@@ -127,7 +130,8 @@ public class HeaderCardCountingArrayDataInput {
     /**
      * reset the stream th the last marked prosition.
      * 
-     * @deprecated             (<i>for internal use</i>)
+     * @deprecated             (<i>for internal use</i>) Visibility will be reduced to the package level, or will be
+     *                             removed entirely.
      * 
      * @throws     IOException if the underlaying stream does not allow the mark.
      */

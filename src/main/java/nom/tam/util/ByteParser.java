@@ -49,7 +49,7 @@ import edu.umd.cs.findbugs.annotations.SuppressFBWarnings;
  * the methods return having read as much as possible. E.g., for the sequence "T123.258E13", a getBoolean, getInteger
  * and getFloat call would return true, 123, and 2.58e12 when called in succession.
  * 
- * @deprecated This class should not be exposed in the public API and should be for internal use only in ASCII tables.
+ * @deprecated This class should not be exposed in the public API and is intended for internal use only in ASCII tables.
  *                 Also, it may have overlapping functionality with other classes, which should probably be eliminated
  *                 for simplicity's sake (and thus less chance of nasty bugs).
  * 

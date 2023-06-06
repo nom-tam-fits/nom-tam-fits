@@ -42,8 +42,9 @@ import nom.tam.util.FitsEncoder;
 import edu.umd.cs.findbugs.annotations.SuppressFBWarnings;
 
 /**
- * This class supports the FITS heap. This is currently used for variable length columns in binary tables. The newer
- * implementation of the heap now provides proper random access to the byte buffer as of version 1.16.
+ * Heap for storing variable-length entries in binary tables. FITS binary tables store variable length arrays on a heap,
+ * following the regular array data. The newer implementation of the heap now provides proper random access to the byte
+ * buffer as of version 1.16.
  */
 public class FitsHeap implements FitsElement {
 
@@ -127,17 +128,11 @@ public class FitsHeap implements FitsElement {
         }
     }
 
-    /**
-     * Get the file offset of the heap
-     */
     @Override
     public long getFileOffset() {
         throw new IllegalStateException("FitsHeap should only be reset from inside its parent, never alone");
     }
 
-    /**
-     * Return the size of the heap using the more bean compatible format
-     */
     @Override
     public long getSize() {
         return size();
@@ -166,7 +161,6 @@ public class FitsHeap implements FitsElement {
 
     @SuppressFBWarnings(value = "RR_NOT_CHECKED", justification = "this read will never return less than the requested length")
     @Override
-    @Deprecated
     public void read(ArrayDataInput str) throws FitsException {
         if (store.length() == 0) {
             return;

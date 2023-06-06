@@ -39,7 +39,8 @@ import java.util.regex.Matcher;
 import java.util.regex.Pattern;
 
 /**
- * Fits date object parsed from the different type of date combinations
+ * ISO timestamp support for FITS headers. Such timestamps are used with <code>DATE</code> style header keywords, such
+ * as <code>DATE-OBS</code> or <code>DATE-END</code>.
  */
 public class FitsDate implements Comparable<FitsDate> {
 

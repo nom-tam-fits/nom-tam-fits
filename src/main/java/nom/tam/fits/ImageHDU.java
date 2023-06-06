@@ -49,8 +49,12 @@ import static nom.tam.fits.header.Standard.XTENSION;
 import static nom.tam.util.LoggerHelper.getLogger;
 
 /**
- * FITS image header/data unit
+ * Header/data unit for images. Image HDUs are suitable for storing monolithic regular numerical arrays in 1 to 8
+ * dimensions, such as a <code>double[]</code>, <code>float[][]</code>, or <code>short[][][]</code>.
+ * 
+ * @see ImageData
  */
+@SuppressWarnings("deprecation")
 public class ImageHDU extends BasicHDU<ImageData> {
 
     private static final Logger LOG = getLogger(ImageHDU.class);
@@ -61,7 +65,7 @@ public class ImageHDU extends BasicHDU<ImageData> {
     }
 
     /**
-     * @deprecated               This should be for internal use only. Will reduce visibility in the future
+     * @deprecated               (<i>for internal use</i>) Will reduce visibility in the future
      *
      * @return                   Encapsulate an object as an ImageHDU.
      *
@@ -75,7 +79,7 @@ public class ImageHDU extends BasicHDU<ImageData> {
     }
 
     /**
-     * @deprecated   This should be for internal use only. Will reduce visibility in the future
+     * @deprecated   (<i>for internal use</i>) Will reduce visibility in the future
      *
      * @return       is this object can be described as a FITS image.
      *
@@ -96,7 +100,7 @@ public class ImageHDU extends BasicHDU<ImageData> {
     /**
      * Check that this HDU has a valid header for this type.
      *
-     * @deprecated     This should be for internal use only. Will reduce visibility in the future
+     * @deprecated     (<i>for internal use</i>) Will reduce visibility in the future
      *
      * @param      hdr header to check
      *
@@ -121,7 +125,7 @@ public class ImageHDU extends BasicHDU<ImageData> {
     /**
      * Prepares a data object into which the actual data can be read from an input subsequently or at a later time.
      *
-     * @deprecated               This should be for internal use only. Will reduce visibility in the future
+     * @deprecated               (<i>for internal use</i>) Will reduce visibility in the future
      *
      * @param      hdr           The FITS header that describes the data
      *
@@ -137,7 +141,7 @@ public class ImageHDU extends BasicHDU<ImageData> {
     /**
      * Prepares a data object into which the actual data can be read from an input subsequently or at a later time.
      *
-     * @deprecated               This should be for internal use only. Will reduce visibility in the future
+     * @deprecated               (<i>for internal use</i>) Will reduce visibility in the future
      *
      * @param      d             The FITS data content of this HDU
      *
@@ -160,15 +164,12 @@ public class ImageHDU extends BasicHDU<ImageData> {
     /**
      * Build an image HDU using the supplied data.
      * 
-     * @deprecated               intended for internal use. Its visibility should be reduced to package level in the
-     *                               future.
+     * @deprecated   (<i>for internal use</i>) Its visibility should be reduced to package level in the future.
      *
-     * @param      h             the header for the image.
-     * @param      d             the data used in the image.
-     *
-     * @throws     FitsException if there was a problem with the data.
+     * @param      h the header for the image.
+     * @param      d the data used in the image.
      */
-    public ImageHDU(Header h, ImageData d) throws FitsException {
+    public ImageHDU(Header h, ImageData d) {
         super(h, d);
     }
 
@@ -184,9 +185,6 @@ public class ImageHDU extends BasicHDU<ImageData> {
         return myData.getTiler();
     }
 
-    /**
-     * Print out some information about this HDU.
-     */
     @Override
     public void info(PrintStream stream) {
         if (isHeader(myHeader)) {
@@ -215,4 +213,59 @@ public class ImageHDU extends BasicHDU<ImageData> {
             stream.println("      Unable to get data");
         }
     }
+
+    /**
+     * Returns the name of the physical unit in which images are represented.
+     * 
+     * @return the standard name of the physical unit in which the image is expressed, e.g. <code>"Jy beam^{-1}"</code>.
+     */
+    @Override
+    public String getBUnit() {
+        return super.getBUnit();
+    }
+
+    /**
+     * Returns the integer value that signifies blank (missing or <code>null</code>) data in an integer image.
+     *
+     * @return               the integer value used for identifying blank / missing data in integer images.
+     * 
+     * @throws FitsException if the header does not specify a blanking value or if it is not appropriate for the type of
+     *                           imge (that is not an integer type image)
+     */
+    @Override
+    public long getBlankValue() throws FitsException {
+        if (getBitpix().getHeaderValue() < 0) {
+            throw new FitsException("No integer blanking value in floating-point images.");
+        }
+        return super.getBlankValue();
+    }
+
+    /**
+     * Returns the floating-point increment between adjacent integer values in the image. Strictly speaking, only
+     * integer-type images should define a quantization scaling, but there is no harm in having this value in
+     * floating-point images also -- which may be interpreted as a hint for quantization, perhaps.
+     * 
+     * @return the floating-point quantum that corresponds to the increment of 1 in the integer data representation.
+     * 
+     * @see    #getBZero()
+     */
+    @Override
+    public double getBScale() {
+        return super.getBScale();
+    }
+
+    /**
+     * Returns the floating-point value that corresponds to an 0 integer value in the image. Strictly speaking, only
+     * integer-type images should define a quantization offset, but there is no harm in having this value in
+     * floating-point images also -- which may be interpreted as a hint for quantization, perhaps.
+     * 
+     * @return the floating point value that correspond to the integer 0 in the image data.
+     * 
+     * @see    #getBScale()
+     */
+    @Override
+    public double getBZero() {
+        return super.getBZero();
+    }
+
 }

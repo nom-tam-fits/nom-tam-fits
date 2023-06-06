@@ -241,4 +241,14 @@ public class ImageProtectedTest {
         FitsOutputStream out = new FitsOutputStream(outputStream);
         data.write(out);
     }
+
+    @Test
+    public void testParseNullDataHeader() throws Exception {
+        Header header = new Header();
+        header.nullImage();
+        header.setNaxes(0);
+        ImageData data = new ImageData(header);
+        Assert.assertEquals(0, data.getTrueSize());
+    }
+
 }

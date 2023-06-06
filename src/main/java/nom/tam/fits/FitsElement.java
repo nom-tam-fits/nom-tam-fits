@@ -37,23 +37,27 @@ import nom.tam.util.ArrayDataInput;
 import nom.tam.util.ArrayDataOutput;
 
 /**
- * This interface allows to easily perform basic I/O operations on a FITS
- * element.
+ * I/O interface for various FITS file elements.
  */
 public interface FitsElement {
 
     /**
-     * Returns the byte offset at which this element starts ina file.
+     * Returns the byte offset at which this element starts ina file. If the
+     * element was not obtained from an input, then 0 is returned.
      * 
      * @return the byte at which this element begins. This is only available if
      *         the data is originally read from a random access medium.
+     *         Otherwise 0 is returned.
      */
     long getFileOffset();
 
     /**
-     * Returns the size of this elements in the FITS representation
+     * Returns the size of this elements in the FITS representation. This may
+     * include padding if the element (such as a header or data segment) is
+     * expected to complete a FITS block of 2880 bytes.
      * 
-     * @return The size of this element in bytes
+     * @return The size of this element in bytes, or 0 if the element is empty
+     *         or invalid.
      */
     long getSize();
 
@@ -100,7 +104,9 @@ public interface FitsElement {
     boolean rewriteable();
 
     /**
-     * Writes the contents of the element to a data sink.
+     * Writes the contents of the element to a data sink, adding padding as
+     * necessary if the element (such as a header or data segment) is expected
+     * to complete the FITS block of 2880 bytes.
      * 
      * @param out
      *            The data sink.

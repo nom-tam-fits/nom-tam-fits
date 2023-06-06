@@ -34,8 +34,8 @@ package nom.tam.util.array;
 import java.lang.reflect.Array;
 
 /**
- * @deprecated Intended for internal use only by {@link MultiArrayCopier} and {@link MultiArrayIterator}. In the future
- *                 visibility may be reduced to the package level A multi-dimensional array index.
+ * @deprecated (<i>)for internal use</i>) Visibility may be reduced to the package level in the future. A
+ *                 multi-dimensional array index. Used only by {@link MultiArrayCopier} and {@link MultiArrayIterator}.
  */
 @SuppressWarnings("javadoc")
 public class MultiArrayPointer {

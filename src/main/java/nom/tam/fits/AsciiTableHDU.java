@@ -51,7 +51,15 @@ import static nom.tam.fits.header.Standard.XTENSION;
 import static nom.tam.fits.header.Standard.XTENSION_ASCIITABLE;
 
 /**
- * FITS ASCII table header/data unit
+ * ASCII table header/data unit. ASCII table HDUs were desgined for human readability, e.g. on a console, without any
+ * special tools. However, they are far less flexible or compact than {@link BinaryTableHDU}. As such, users are
+ * generally discouraged from using this type of HDU to encapsulate FITS table data.
+ * {@link FitsFactory#setUseAsciiTables(boolean)} can be toggled to adjust whether {@link Fits#makeHDU(Object)} or
+ * similar methods should construct ASCII tables when possible. (The default setting is to produce binary tables
+ * always.)
+ * 
+ * @see AsciiTable
+ * @see BinaryTableHDU
  */
 public class AsciiTableHDU extends TableHDU<AsciiTable> {
 
@@ -64,7 +72,7 @@ public class AsciiTableHDU extends TableHDU<AsciiTable> {
     /**
      * Create an ASCII table header/data unit.
      * 
-     * @deprecated   intended for internal use. Its visibility should be reduced to package level in the future.
+     * @deprecated   (<i>for internal use</i>) Its visibility should be reduced to package level in the future.
      *
      * @param      h the template specifying the ASCII table.
      * @param      d the FITS data structure containing the table data.
@@ -79,7 +87,7 @@ public class AsciiTableHDU extends TableHDU<AsciiTable> {
     }
 
     /**
-     * @deprecated               This should be for internal use only. Will reduce visibility in the future
+     * @deprecated               (<i>for internal use</i>) Will reduce visibility in the future
      *
      * @return                   a ASCII table data structure from an array of objects representing the columns.
      *
@@ -99,7 +107,7 @@ public class AsciiTableHDU extends TableHDU<AsciiTable> {
     }
 
     /**
-     * @deprecated   This should be for internal use only. Will reduce visibility in the future
+     * @deprecated   (<i>for internal use</i>) Will reduce visibility in the future
      *
      * @return       true if this data is usable as an ASCII table.
      *
@@ -128,7 +136,7 @@ public class AsciiTableHDU extends TableHDU<AsciiTable> {
     /**
      * Check that this is a valid ascii table header.
      *
-     * @deprecated        This should be for internal use only. Will reduce visibility in the future
+     * @deprecated        (<i>for internal use</i>) Will reduce visibility in the future
      *
      * @param      header to validate.
      *
@@ -144,7 +152,7 @@ public class AsciiTableHDU extends TableHDU<AsciiTable> {
     /**
      * Prepares a data object into which the actual data can be read from an input subsequently or at a later time.
      *
-     * @deprecated               This should be for internal use only. Will reduce visibility in the future
+     * @deprecated               (<i>for internal use</i>) Will reduce visibility in the future
      *
      * @param      hdr           The FITS header that describes the data
      *
@@ -158,7 +166,7 @@ public class AsciiTableHDU extends TableHDU<AsciiTable> {
     }
 
     /**
-     * @deprecated               This should be for internal use only. Will reduce visibility in the future
+     * @deprecated               (<i>for internal use</i>) Will reduce visibility in the future
      *
      * @return                   a created header to match the input data.
      *

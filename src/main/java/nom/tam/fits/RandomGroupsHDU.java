@@ -48,12 +48,29 @@ import static nom.tam.fits.header.Standard.XTENSION;
 import static nom.tam.fits.header.Standard.XTENSION_IMAGE;
 
 /**
- * Random groups HDUs. Note that the internal storage of random groups is a Object[ngroup][2] array. The first element
- * of each group is the parameter data from that group. The second element is the data. The parameters should be a one
- * dimensional array of the primitive types byte, short, int, long, float or double. The second element is a
- * n-dimensional array of the same type. When analyzing group data structure only the first group is examined, but for a
- * valid FITS file all groups must have the same structure.
+ * Random groups header/data unit. Random groups were an early attempt at extending FITS support beyond images, and was
+ * eventually superseded by binary tables, which offer the same functionality and more in a more generic way. The use of
+ * random group HDUs is discouraged, even by the FITS standard. Some old radio data may be packaged in this format. Thus
+ * apart from provided limited support for reading such data, users should not create random groups anew.
+ * {@link BinaryTableHDU} offers a much more flexible and capable way for storing an ensemble of parameters, arrays, and
+ * more.
+ * <p>
+ * Note that the internal storage of random groups is a <code>Object[ngroups][2]</code> array. The first element of each
+ * group (row) is a 1D array of parameter data of a numerical primitive type (e.g. <code>short[]</code>,
+ * <code>double[]</code>). The second element in each group (row) is an image of the same element type as the
+ * parameters. When analyzing group data structure only the first group is examined, but for a valid FITS file all
+ * groups must have the same structure.
+ * <p>
+ * Note also, that we do not provide support for accessing parameters by names or for building up higher-precision
+ * values by combining multiple related parameters through scalings and offsets, as described in the FITS standard (e.g.
+ * combining 3 or 4 related <code>byte</code> parameter values to obtain a full-precision 32-bit <code>float</code>
+ * parameter value when <code>BITPIX</code> is 8). Users of random groups must make these translations themselves. We
+ * may add more support in the future...
+ * </p>
+ * 
+ * @see BinaryTableHDU
  */
+@SuppressWarnings("deprecation")
 public class RandomGroupsHDU extends BasicHDU<RandomGroupsData> {
 
     @Override
@@ -62,7 +79,7 @@ public class RandomGroupsHDU extends BasicHDU<RandomGroupsData> {
     }
 
     /**
-     * @deprecated               This should be for internal use only. Will reduce visibility in the future
+     * @deprecated               (<i>for internal use</i>) Will reduce visibility in the future
      *
      * @return                   a random groups data structure from an array of objects representing the data.
      *
@@ -106,11 +123,11 @@ public class RandomGroupsHDU extends BasicHDU<RandomGroupsData> {
     }
 
     /**
-     * Check if this data is compatible with Random Groups structure. Must be an Object[ngr][2] structure with both
-     * elements of each group having the same base type and the first element being a simple primitive array. We do not
-     * check anything but the first row.
+     * Check if this data is compatible with Random Groups structure. Must be an <code>Object[nGroups][2]</code>
+     * structure with both elements of each group having the same base type and the first element being a simple
+     * primitive array. We do not check anything but the first row.
      *
-     * @deprecated               This should be for internal use only. Will reduce visibility in the future
+     * @deprecated               (<i>for internal use</i>) Will reduce visibility in the future
      *
      * @param      potentialData data to check
      *
@@ -132,7 +149,7 @@ public class RandomGroupsHDU extends BasicHDU<RandomGroupsData> {
     }
 
     /**
-     * @deprecated     This should be for internal use only. Will reduce visibility in the future
+     * @deprecated     (<i>for internal use</i>) Will reduce visibility in the future
      *
      * @return         Is this a random groups header?
      *
@@ -157,7 +174,7 @@ public class RandomGroupsHDU extends BasicHDU<RandomGroupsData> {
     /**
      * Prepares a data object into which the actual data can be read from an input subsequently or at a later time.
      *
-     * @deprecated               This should be for internal use only. Will reduce visibility in the future
+     * @deprecated               (<i>for internal use</i>) Will reduce visibility in the future
      *
      * @param      header        The FITS header that describes the data
      *
@@ -180,7 +197,7 @@ public class RandomGroupsHDU extends BasicHDU<RandomGroupsData> {
     }
 
     /**
-     * @deprecated               This should be for internal use only. Will reduce visibility in the future
+     * @deprecated               (<i>for internal use</i>) Will reduce visibility in the future
      *
      * @return                   Make a header point to the given object.
      *
@@ -201,9 +218,40 @@ public class RandomGroupsHDU extends BasicHDU<RandomGroupsData> {
     }
 
     /**
+     * Creates a random groups HDU from an <code>Object[nGroups][2]</code> array. Prior to 1.18, we used
+     * {@link Fits#makeHDU(Object)} to create random groups HDUs automatically from matching data. However, FITS
+     * recommends using binary tables instead of random groups in general, and this type of HDU is included in the
+     * standard only to support reading some older radio data. Hence, as of 1.18 {@link Fits#makeHDU(Object)} will never
+     * return random groups HDUs any longer, and will instead create binary (or ASCII) table HDUs instead. If the need
+     * arises to create new random group HDUs programatically, beyond reading of older files, then this method can take
+     * its place.
+     * 
+     * @param  data          The random groups table. The second dimension must be 2. The first element in each group
+     *                           (row) must be a 1D numerical primitive array, while the second element may be a
+     *                           multi-dimensional image of the same element type. All rows must consists of arrays of
+     *                           the same primitive numerical types and sized, e.g.
+     *                           <code>{ float[5], float[7][2] }</code> or <code>{ short[3], short[2][2][4] }</code>.
+     * 
+     * @return               a new random groups HDU, which encapsulated the supploed data table.
+     * 
+     * @throws FitsException if the seconds dimension of the array is not 2.
+     * 
+     * @see                  Fits#makeHDU(Object)
+     * 
+     * @since                1.18
+     */
+    public static RandomGroupsHDU createFrom(Object[][] data) throws FitsException {
+        if (!isData(data)) {
+            throw new FitsException("Type or layout of data is not random groups compatible.");
+        }
+        RandomGroupsData d = encapsulate(data);
+        return new RandomGroupsHDU(manufactureHeader(d), d);
+    }
+
+    /**
      * Create an HDU from the given header and data.
      * 
-     * @deprecated        intended for internal use. Its visibility should be reduced to package level in the future.
+     * @deprecated        (<i>for internal use</i>) Its visibility should be reduced to package level in the future.
      *
      * @param      header header to use
      * @param      data   data to use
@@ -248,12 +296,83 @@ public class RandomGroupsHDU extends BasicHDU<RandomGroupsData> {
     }
 
     /**
+     * Returns the number of parameter bytes (per data group) accompanying each data object in the group.
+     */
+    @Override
+    public int getParameterCount() {
+        return super.getParameterCount();
+    }
+
+    /**
+     * Returns the number of data objects (of identical shape and size) that are group together in this HDUs data
+     * segment.
+     */
+    @Override
+    public int getGroupCount() {
+        return super.getGroupCount();
+    }
+
+    /**
      * Check that this HDU has a valid header.
      *
      * @return <CODE>true</CODE> if this HDU has a valid header.
      */
     public boolean isHeader() {
         return isHeader(myHeader);
+    }
+
+    /**
+     * Returns the name of the physical unit in which image data are represented.
+     * 
+     * @return the standard name of the physical unit in which the image is expressed, e.g. <code>"Jy beam^{-1}"</code>.
+     */
+    @Override
+    public String getBUnit() {
+        return super.getBUnit();
+    }
+
+    /**
+     * Returns the integer value that signifies blank (missing or <code>null</code>) data in an integer image.
+     *
+     * @return               the integer value used for identifying blank / missing data in integer images.
+     * 
+     * @throws FitsException if the header does not specify a blanking value or if it is not appropriate for the type of
+     *                           imge (that is not an integer type image)
+     */
+    @Override
+    public long getBlankValue() throws FitsException {
+        if (getBitpix().getHeaderValue() < 0) {
+            throw new FitsException("No integer blanking value in floating-point images.");
+        }
+        return super.getBlankValue();
+    }
+
+    /**
+     * Returns the floating-point increment between adjacent integer values in the image. Strictly speaking, only
+     * integer-type images should define a quantization scaling, but there is no harm in having this value in
+     * floating-point images also -- which may be interpreted as a hint for quantization, perhaps.
+     * 
+     * @return the floating-point quantum that corresponds to the increment of 1 in the integer data representation.
+     * 
+     * @see    #getBZero()
+     */
+    @Override
+    public double getBScale() {
+        return super.getBScale();
+    }
+
+    /**
+     * Returns the floating-point value that corresponds to an 0 integer value in the image. Strictly speaking, only
+     * integer-type images should define a quantization scaling, but there is no harm in having this value in
+     * floating-point images also -- which may be interpreted as a hint for quantization, perhaps.
+     * 
+     * @return the floating point value that correspond to the integer 0 in the image data.
+     * 
+     * @see    #getBScale()
+     */
+    @Override
+    public double getBZero() {
+        return super.getBZero();
     }
 
 }

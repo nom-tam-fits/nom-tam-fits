@@ -62,7 +62,10 @@ import static nom.tam.fits.header.Standard.THEAP;
 import static nom.tam.fits.header.Standard.XTENSION_BINTABLE;
 
 /**
- * This class defines the methods for accessing FITS binary table data.
+ * Table data for binary table HDUs.
+ * 
+ * @see BinaryTableHDU
+ * @see AsciiTable
  */
 @SuppressWarnings("deprecation")
 public class BinaryTable extends AbstractTableData {
@@ -161,7 +164,7 @@ public class BinaryTable extends AbstractTableData {
         }
 
         /**
-         * @deprecated (<i>for internal use</i>). It may be reduced to private visibility in the future. Returns the
+         * @deprecated (<i>for internal use</i>) It may be reduced to private visibility in the future. Returns the
          *                 number of bytes that each element occupies in its FITS serialized form in the stored row
          *                 data.
          * 
@@ -172,7 +175,7 @@ public class BinaryTable extends AbstractTableData {
         }
 
         /**
-         * @deprecated (<i>for internal use</i>). It may be reduced to private visibility in the future.
+         * @deprecated (<i>for internal use</i>) It may be reduced to private visibility in the future.
          * 
          * @return     Is this a variable length column using longs? [Must have isVarying true too]
          */
@@ -181,7 +184,7 @@ public class BinaryTable extends AbstractTableData {
         }
 
         /**
-         * @deprecated (<i>for internal use</i>). It may be reduced to package level visibility in the future.
+         * @deprecated (<i>for internal use</i>) It may be reduced to package level visibility in the future.
          * 
          * @return     whether this is a variable length column.
          */
@@ -385,7 +388,7 @@ public class BinaryTable extends AbstractTableData {
     }
 
     /**
-     * @deprecated       (<i>for internal use</i>). It may be reduced to private visibility in the future. Parse the
+     * @deprecated       (<i>for internal use</i>) It may be reduced to private visibility in the future. Parse the
      *                       TDIMS value. If the TDIMS value cannot be deciphered a one-d array with the size given in
      *                       arrsiz is returned.
      *
@@ -417,7 +420,7 @@ public class BinaryTable extends AbstractTableData {
     }
 
     /**
-     * @deprecated (<i>for internal use</i>). It may be reduced to private visibility in the future. Convert a two-d
+     * @deprecated (<i>for internal use</i>) It may be reduced to private visibility in the future. Convert a two-d
      *                 table to a table of columns. Handle String specially. Every other element of data should be a
      *                 primitive array of some dimensionality. Basically the translates a table expressed as objects in
      *                 row order to a table with objects in column order.
@@ -555,10 +558,6 @@ public class BinaryTable extends AbstractTableData {
         return nRow;
     }
 
-    /**
-     * Delete a set of columns. Note that this does not fix the header, so users should normally call the routine in
-     * TableHDU. * @throws FitsException if the operation failed
-     */
     @Override
     public void deleteColumns(int start, int len) throws FitsException {
         ensureData();
@@ -577,12 +576,6 @@ public class BinaryTable extends AbstractTableData {
         }
     }
 
-    /**
-     * Delete rows from a table.
-     *
-     * @param row The 0-indexed start of the rows to be deleted.
-     * @param len The number of rows to be deleted. * @throws FitsException if the operation failed
-     */
     @Override
     public void deleteRows(int row, int len) throws FitsException {
         ensureData();
@@ -590,12 +583,6 @@ public class BinaryTable extends AbstractTableData {
         nRow -= len;
     }
 
-    /**
-     * Update a FITS header to reflect the current state of the data. Its really for internal use only, but it's public
-     * to allow access by the compression clases.
-     *
-     * @throws FitsException if the operation failed
-     */
     @Override
     public void fillHeader(Header h) throws FitsException {
         try {
@@ -634,9 +621,8 @@ public class BinaryTable extends AbstractTableData {
     }
 
     /**
-     * Get a given column
-     *
-     * @param col The index of the column. * @throws FitsException if the operation failed
+     * @deprecated Strongly discouraged, since it returns data in an unnatural flattened format (use
+     *                 {@link #getElement(int, int)} instead)
      */
     @Override
     public Object getColumn(int col) throws FitsException {
@@ -672,12 +658,6 @@ public class BinaryTable extends AbstractTableData {
         return dimens;
     }
 
-    /**
-     * Get a particular element from the table.
-     *
-     * @param i The row of the element.
-     * @param j The column of the element. * @throws FitsException if the operation failed
-     */
     @Override
     public Object getElement(int i, int j) throws FitsException {
 
@@ -711,7 +691,7 @@ public class BinaryTable extends AbstractTableData {
     }
 
     /**
-     * @deprecated (<i>for internal use</i>). It may be reduced to private visibility in the future.
+     * @deprecated (<i>for internal use</i>) It may be reduced to private visibility in the future.
      * 
      * @return     An array with flattened data, in which each column's data is represented by a 1D array
      */
@@ -721,7 +701,7 @@ public class BinaryTable extends AbstractTableData {
     }
 
     /**
-     * @deprecated               (<i>for internal use</i>). It may be reduced to privae visibility in the future.
+     * @deprecated               (<i>for internal use</i>) It may be reduced to privae visibility in the future.
      * 
      * @return                   column in flattened format. For large tables getting a column in standard format can be
      *                               inefficient because a separate object is needed for each row. Leaving the data in
@@ -742,7 +722,7 @@ public class BinaryTable extends AbstractTableData {
     }
 
     /**
-     * @deprecated (<i>for internal use</i>). It may be reduced to package level visibility in the future.
+     * @deprecated (<i>for internal use</i>) It may be reduced to package level visibility in the future.
      * 
      * @return     the offset to the heap
      */
@@ -751,7 +731,7 @@ public class BinaryTable extends AbstractTableData {
     }
 
     /**
-     * @deprecated (<i>for internal use</i>). It may be reduced to package level visibility in the future.
+     * @deprecated (<i>for internal use</i>) It may be reduced to package level visibility in the future.
      * 
      * @return     the size of the heap -- including the offset from the end of the table data.
      */
@@ -774,17 +754,11 @@ public class BinaryTable extends AbstractTableData {
         return modelRow;
     }
 
-    /*
-     * ( Get the number of columns in the table.
-     */
     @Override
     public int getNCols() {
         return columnList.size();
     }
 
-    /**
-     * Get the number of rows in the table
-     */
     @Override
     public int getNRows() {
         return nRow;
@@ -808,15 +782,6 @@ public class BinaryTable extends AbstractTableData {
         return table.getElement(i, j);
     }
 
-    /**
-     * Get a given row
-     *
-     * @param  row           The index of the row to be returned.
-     *
-     * @return               A row of data. *
-     *
-     * @throws FitsException if the operation failed
-     */
     @Override
     public Object[] getRow(int row) throws FitsException {
 
@@ -844,9 +809,6 @@ public class BinaryTable extends AbstractTableData {
         return sizes;
     }
 
-    /**
-     * Get the size of the data in the HDU sans padding.
-     */
     @Override
     protected long getTrueSize() {
         long len = (long) nRow * rowLen;
@@ -868,12 +830,8 @@ public class BinaryTable extends AbstractTableData {
     }
 
     /**
-     * Replace a column in the table.
-     *
-     * @param  col           The index of the column to be replaced.
-     * @param  xcol          The new data for the column
-     *
-     * @throws FitsException Thrown if the data does not match the current column description.
+     * @deprecated Strongly discouraged, since it requires data to be supplied in an unnatural flattened format (use
+     *                 {@link #setElement(int, int, Object)} instead) .
      */
     @Override
     public void setColumn(int col, Object xcol) throws FitsException {
@@ -884,13 +842,6 @@ public class BinaryTable extends AbstractTableData {
         setFlattenedColumn(col, xcol);
     }
 
-    /**
-     * Replace a single element within the table.
-     *
-     * @param i The row of the data.
-     * @param j The column of the data.
-     * @param o The replacement data. * @throws FitsException if the operation failed
-     */
     @Override
     public void setElement(int i, int j, Object o) throws FitsException {
         ensureData();
@@ -914,7 +865,7 @@ public class BinaryTable extends AbstractTableData {
     }
 
     /**
-     * @deprecated               (<i>for internal use</i>). It may be reduced to private visibility in the future. Set a
+     * @deprecated               (<i>for internal use</i>) It may be reduced to private visibility in the future. Set a
      *                               column with the data already flattened.
      *
      * @param      col           The index of the column to be replaced.
@@ -932,14 +883,6 @@ public class BinaryTable extends AbstractTableData {
         table.setColumn(col, data);
     }
 
-    /**
-     * Replace a row in the table.
-     *
-     * @param  row           The index of the row to be replaced.
-     * @param  data          The new values for the row.
-     *
-     * @throws FitsException Thrown if the new row cannot match the existing data.
-     */
     @Override
     public void setRow(int row, Object[] data) throws FitsException {
         ensureData();
@@ -957,19 +900,11 @@ public class BinaryTable extends AbstractTableData {
         table.setRow(row, ydata);
     }
 
-    /**
-     * Update the header after a deletion.
-     *
-     * @throws FitsException if the operation failed
-     */
     @Override
     public void updateAfterDelete(int oldNcol, Header hdr) throws FitsException {
         hdr.addValue(NAXIS1, rowLen);
     }
 
-    /**
-     * Write the table, heap and padding. * @throws FitsException if the operation failed
-     */
     @Override
     public void write(ArrayDataOutput os) throws FitsException {
         ensureData();
@@ -1606,9 +1541,7 @@ public class BinaryTable extends AbstractTableData {
     }
 
     /**
-     * (<i>for internal use</i>)
-     * 
-     * @deprecated this method should have visibility reduced to private
+     * @deprecated (<i>for internal use</i>) This method should have visibility reduced to private
      */
     @SuppressWarnings("javadoc")
     protected ColumnTable<SaveState> createColumnTable(Object[] arrCol, int[] sizes) throws TableException {

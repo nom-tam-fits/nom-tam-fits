@@ -634,13 +634,15 @@ public class HeaderCardTest {
         FitsFactory.setLongStringsEnabled(true);
 
         // Continue not with a string value...
-        HeaderCard hc = HeaderCard.create("TEST   = '                                                                    &'"
+        HeaderCard hc = HeaderCard.create("TEST    = 'zzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzz&'"
                 + "CONTINUE  not a string / whatever                                               ");
+
         assertEquals(1, hc.cardSize());
 
         // Continue, but no ending &
         hc = HeaderCard.create("TEST   = '                                                                     '"
                 + "CONTINUE  'a string' / whatever                                               ");
+
         assertEquals(1, hc.cardSize());
 
         // Continue, null value
@@ -1804,5 +1806,15 @@ public class HeaderCardTest {
     public void testNonNumberDefault() throws Exception {
         HeaderCard hc = new HeaderCard("TEST", "blah", null);
         assertEquals(Math.PI, hc.getValue(Double.class, Math.PI), 1e-12);
+    }
+
+    @Test
+    public void testFixedFormatBoolean() throws Exception {
+        // FITS requires that boolean values are stored in byte 30 (counted from 1).
+        HeaderCard hc = new HeaderCard("TEST", true, null);
+        assertTrue(hc.toString(), hc.toString().charAt(29) == 'T');
+
+        hc = new HeaderCard("TEST", false, "comment");
+        assertTrue(hc.toString(), hc.toString().charAt(29) == 'F');
     }
 }

@@ -44,9 +44,15 @@ import nom.tam.util.type.ElementType;
 import static nom.tam.fits.header.Compression.ZTABLE;
 
 /**
- * A FITS HDU containing a compressed binary table.
+ * A header-data unit (HDU) containing a compressed binary table. A compressed table is still a binary table but with
+ * some additional constraints. The original table is divided into groups of rows (tiles) and each tile is compressed on
+ * its own. The compressed data is then stored in the 3 data columns of this binary table (compressed, gzipped and
+ * uncompressed) depending on the compression type used in the tile. Additional data columns may contain specific
+ * compression options for each tile (i.e. compressed table row) individually. Table keywords, which conflict with those
+ * in the original table are 'saved' under standard alternative names, so they may be restored with the original table
+ * as appropriate.
  * <p>
- * Compressing an image HDU is typically a two-step process:
+ * Compressing a table HDU is typically a two-step process:
  * </p>
  * <ol>
  * <li>Create a <code>CompressedTableHDU</code>, e.g. with {@link #fromBinaryTableHDU(BinaryTableHDU, int, String...)},
@@ -67,19 +73,19 @@ import static nom.tam.fits.header.Compression.ZTABLE;
  *   compressed.compress();
  * </pre>
  * <p>
- * which of course you can compart into a single line as:
+ * which of course you can compact into a single line as:
  * </p>
  * 
  * <pre>
  * CompressedTableHDU compressed = CompressedTableHDU.fromBinaryTableHDU(table, 4, Compression.ZCMPTYPE_RICE_1).compress();
  * </pre>
  * <p>
- * The two step process (as opposed to a single-step one) was probbly chosen because it mimics that of
- * {@link CompressedImageHDU}, where further configuration steps may be inserted in-between. After the compression the
- * compressed HDSU can be handled just like any HDU, and written to a stream for example.
+ * The two step process (as opposed to a single-step one) was probably chosen because it mimics that of
+ * {@link CompressedImageHDU}, where further configuration steps may be inserted in-between. After the compression, the
+ * compressed table HDU can be handled just like any other HDU, and written to a file or stream, for example.
  * </p>
  * <p>
- * The reverse process is imply calling the {@link #asBinaryTableHDU()}. E.g.:
+ * The reverse process is simply via the {@link #asBinaryTableHDU()} method. E.g.:
  * </p>
  * 
  * <pre>
@@ -132,7 +138,7 @@ public class CompressedTableHDU extends BinaryTableHDU {
     /**
      * Check that this HDU has a valid header for this type.
      * 
-     * @deprecated     (<i>for internal use</i>)
+     * @deprecated     (<i>for internal use</i>) Will reduce visibility in the future
      *
      * @param      hdr header to check
      *
@@ -144,7 +150,7 @@ public class CompressedTableHDU extends BinaryTableHDU {
     }
 
     /**
-     * @deprecated (<i>for internal use</i>)
+     * @deprecated (<i>for internal use</i>) Will reduce visibility in the future
      */
     @Deprecated
     public static CompressedTableData manufactureData(Header hdr) throws FitsException {

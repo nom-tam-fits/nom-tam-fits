@@ -663,7 +663,7 @@ public class BaseFitsTest {
     }
 
     @Test
-    public void testreadWriteHdu() throws Exception {
+    public void testReadWriteHdu() throws Exception {
         byte[] undefinedData = new byte[1000];
         for (int index = 0; index < undefinedData.length; index++) {
             undefinedData[index] = (byte) index;
@@ -1215,6 +1215,22 @@ public class BaseFitsTest {
     }
 
     @Test
+    public void trimmedStringTest() throws Exception {
+        Header h = new Header();
+        h.addValue(Standard.OBJECT, " blah ");
+        BasicHDU<?> hdu = new ImageHDU(h, null);
+        assertEquals(" blah", h.getStringValue(Standard.OBJECT));
+        assertEquals("blah", hdu.getTrimmedString(Standard.OBJECT));
+    }
+
+    @Test
+    public void trimmedStringTestNull() throws Exception {
+        Header h = new Header();
+        BasicHDU<?> hdu = new ImageHDU(h, null);
+        assertNull(hdu.getTrimmedString(Standard.OBJECT));
+    }
+
+    @Test
     public void trimmedCommentStringTest() throws Exception {
         Header h = new Header();
         h.insertComment("comment");
@@ -1330,6 +1346,34 @@ public class BaseFitsTest {
     @Test(expected = FitsException.class)
     public void createFitsFileExceptionTest() throws Exception {
         new Fits((FitsFile) null);
+    }
+
+    @Test
+    public void testIsUndefinedData() throws Exception {
+        assertTrue(UndefinedHDU.isData(new byte[10]));
+        assertFalse(UndefinedHDU.isData(null));
+        assertFalse(UndefinedHDU.isData(new int[10]));
+        assertFalse(UndefinedHDU.isData(new byte[10][10]));
+        assertFalse(UndefinedHDU.isData(new File("blah")));
+    }
+
+    @Test
+    public void testIsUndefinedHeader() throws Exception {
+        Header h = new Header();
+        h.addValue(Standard.XTENSION, Standard.XTENSION_IMAGE);
+        assertFalse(UndefinedHDU.isHeader(h));
+        h.addValue(Standard.XTENSION, Standard.XTENSION_BINTABLE);
+        assertFalse(UndefinedHDU.isHeader(h));
+        h.addValue(Standard.XTENSION, Standard.XTENSION_ASCIITABLE);
+        assertFalse(UndefinedHDU.isHeader(h));
+        h.addValue(Standard.XTENSION, "BLAH");
+        assertTrue(UndefinedHDU.isHeader(h));
+    }
+
+    @Test(expected = FitsException.class)
+    public void testImageBlankException() throws Exception {
+        ImageHDU hdu = (ImageHDU) Fits.makeHDU(new float[10][10]);
+        hdu.getBlankValue(); // throws FitsException
     }
 
     private static class TestRandomAccessFileIO extends java.io.RandomAccessFile implements RandomAccessFileIO {

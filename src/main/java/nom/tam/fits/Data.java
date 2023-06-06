@@ -45,7 +45,7 @@ import nom.tam.util.RandomAccess;
 import static nom.tam.util.LoggerHelper.getLogger;
 
 /**
- * This class provides methods to access the data segment of an HDU.
+ * The data segment of an HDU.
  * <p>
  * This is the object which contains the actual data for the HDU.
  * </p>
@@ -94,8 +94,7 @@ public abstract class Data implements FitsElement {
     }
 
     /**
-     * Modify a header to point to this data, this differs per subclass, they all need oder provided different
-     * informations to the header. Basically they describe the structure of this data object.
+     * Describe the structure of this data object in the supplied header.
      *
      * @param  head          header to fill with the data from the current data object
      *
@@ -185,12 +184,6 @@ public abstract class Data implements FitsElement {
      */
     protected abstract Object getCurrentData();
 
-    /**
-     * Gets the offset of the data segment in the FITS file, from the start of the file. It is used for accessing the
-     * data from a radomly accessible input only.
-     *
-     * @return the file offset (in bytes), or -1 if reading was from an input that is not random accessible
-     */
     @Override
     public long getFileOffset() {
         return fileOffset;
@@ -207,12 +200,6 @@ public abstract class Data implements FitsElement {
         return getData();
     }
 
-    /**
-     * Returns the size of this data object in the FITS including padding to ensure it is amultiple of the FITS block
-     * size of 2880 bytes.
-     * 
-     * @return the size of the data element in bytes.
-     */
     @Override
     public long getSize() {
         return FitsUtil.addPadding(getTrueSize());
@@ -288,7 +275,7 @@ public abstract class Data implements FitsElement {
 
     /**
      * <p>
-     * Reads the data or skips over it for reading latet, depending on whether reading from a stream or a random
+     * Reads the data or skips over it for reading later, depending on whether reading from a stream or a random
      * acessible input, respectively.
      * </p>
      * <p>
@@ -398,11 +385,6 @@ public abstract class Data implements FitsElement {
         }
     }
 
-    /**
-     * Write the data -- including any buffering needed
-     *
-     * @param o The output stream on which to write the data.
-     */
     @Override
     public abstract void write(ArrayDataOutput o) throws FitsException;
 }

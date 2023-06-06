@@ -77,40 +77,76 @@ import static nom.tam.fits.header.Standard.XTENSION_BINTABLE;
 import static nom.tam.fits.header.extra.CXCExt.LONGSTRN;
 
 /**
- * This class describes methods to access and manipulate the header for a FITS HDU. This class does not include code
- * specific to particular types of HDU. As of version 1.1 this class supports the long keyword convention which allows
- * long string keyword values to be split among multiple keywords
- *
- * <pre>
- *    KEY        = 'ABC&amp;'   /A comment
- *    CONTINUE      'DEF&amp;'  / Another comment
- *    CONTINUE      'GHIJKL '
- * </pre>
- *
- * The methods getStringValue(key), addValue(key,value,comment) and deleteCard(key) will get, create/update and delete
- * long string values if the longStringsEnabled flag is set. This flag is set automatically when a FITS header with a
- * LONGSTRN card is found. The value is not checked. It may also be set/unset using the static method
- * setLongStringsEnabled(boolean). [So if a user wishes to ensure that it is not set, it should be unset after any
- * header is read] When long strings are found in the FITS header users should be careful not to interpose new header
- * cards within a long value sequence. When writing long strings, the comment is included in the last card. If a user is
- * writing long strings, a the keyword LONGSTRN = 'OGIP 1.0' should be added to the FITS header, but this is not done
- * automatically for the user.
+ * <p>
+ * Access and manipulate the header of a HDU. FITS headers serve more than a single purpose:
+ * </p>
+ * <ol>
+ * <li>provide an essential description of the type, size, and layout of the HDUs data segment</li>
+ * <li>describe the data as completely as possible via standardized (or conventional) keywords</li>
+ * <li>provide storage for additional user-specific key / value pairs</li>
+ * <li>allow for comments to aid human readability</li>
+ * </ol>
+ * <p>
+ * First and foremost headers provide a description of the data object that follows the header in the HDU. Some of that
+ * description is essential and critical to the integrity of the FITS file, such as the header keywords that describe
+ * the type, size, and layout of the data segment. This library will automatically populate the header with appropriate
+ * information using the mandatory keywords (such as <code>SIMPLE</code> or <code>XTENSION</code>, <code>BITPIX</code>,
+ * <code>NAXIS</code>, <code>NAXIS</code><i>n</i>, <code>PCOUNT</code>, <code>GCOUNT</code> keywords, as well as
+ * essential table column format descriptions). Users of the library should avoid overwriting these mandatory keywords
+ * manually, since they may corrupt the FITS file, rendering it unreadable.
+ * </p>
+ * <p>
+ * Beyond the keywords that describe the type, shape, and size of data, the library will not add further information to
+ * the header. The users of the library are responsible to complete the header description as necessary. This includes
+ * non-enssential data descriptions (such as <code>EXTNAME</code>, <code>BUNIT</code>, <code>OBSERVER</code>, or
+ * optional table column descriptors <code>TTYPE</code><i>n</i>, <code>TDIM</code><i>n</i>, <code>TUNIT</code><i>n</i>,
+ * coordinate systems via the appropriate WCS keywords, or checksums). Users of the library are responsible for
+ * completing the data description using whatever standard or conventional keywords are available and appropriate.
+ * Please refer to the <a href="https://fits.gsfc.nasa.gov/fits_standard.html">FITS Standard</a> documentation to see
+ * what typical descriptions of data you might want to use.
+ * </p>
+ * <p>
+ * Last but not least, the header is also a place where FITS creators can store (nearly) arbitrary key/value pairs. In
+ * earlier versions of the FITS standard, header keywords were restricted to max. 8 upper case letters and numbers (plus
+ * hyphen and underscore), and no more than 70 character value fields. However, as of FITS 4.0 (and even before as a
+ * registered convention), string values of arbitrary length may be stored using the OGIP 1.0 long string convention,
+ * while the ESO <a href="https://fits.gsfc.nasa.gov/registry/hierarch_keyword.html">HIERARCH convention</a> allows
+ * keywords with more than 8 characters and hierarchical keywords. Support, conformance, and compliance to these
+ * conventions can be toggled by static settings in {@link FitsFactory} to user preference.
+ * </p>
+ * <p>
+ * As of version 1.16, we also support reserving space in headers for future additions using the
+ * {@link #ensureCardSpace(int)} method, also part of the FITS 4.0 standard. It allows users to finish populating
+ * headers <i>after</i> data that follows the header is already written -- a useful feature for recording data from
+ * streaming sources.
+ * </p>
  */
 @SuppressWarnings("deprecation")
 public class Header implements FitsElement {
 
     /**
-     * The default character position to which comments should be aligned if possible (0-based).
+     * The default character position to which comments should be aligned if possible (0-based). The fITS standard
+     * requires that 'fixed-format' values are right-justified to byte 30 (index 29 in Java), and recommends a space
+     * after that before the comment. As such, comments should normally start at byte 30 (counted from 0). (We will add
+     * a space at that position before the '/' indicating the comment start)
      */
     public static final int DEFAULT_COMMENT_ALIGN = 30;
 
     /**
      * The earliest position (0-based) at which a comment may start for a regular key/value entry.
+     * 
+     * @deprecated We will disable changing alignment in the future because it may violate the standard for
+     *                 'fixed-format' header entries, and result in files that are unreadable by some other software.
+     *                 This constant will be obsoleted and removed.
      */
     public static final int MIN_COMMENT_ALIGN = 20;
 
     /**
      * The largest (0-based) comment alignment allowed that can still contain some meaningful comment (word)
+     * 
+     * @deprecated We will disable changing alignment in the future because it may violate the standard for
+     *                 'fixed-format' header entries, and result in files that are unreadable by some other software.
+     *                 This constant will be obsoleted and removed.
      */
     public static final int MAX_COMMENT_ALIGN = 70;
 
@@ -480,7 +516,7 @@ public class Header implements FitsElement {
 
     /**
      * @deprecated                     Not supported by the FITS standard, so do not use. It was included due to a
-     *                                     misreading of the standard itself.
+     *                                     misreading of the standard itself. We will remove this method in the future.
      *
      * @param      key                 The header key.
      * @param      val                 The integer value.
@@ -967,13 +1003,6 @@ public class Header implements FitsElement {
         return dupKeys;
     }
 
-    /**
-     * Returns the file position at which this header is stored. If the header is not stored in an input file 0 is
-     * returned as per default.
-     *
-     * @return the position at which this header is stored in the input, or 0 if there if this header isn't read from an
-     *             input
-     */
     @Override
     public long getFileOffset() {
         return fileOffset;
@@ -1243,8 +1272,8 @@ public class Header implements FitsElement {
     }
 
     /**
-     * @deprecated Will be removed from the public API in 2.0 Returns the original size of the header in the stream from
-     *                 which it was read.
+     * @deprecated <i>for internal use</i>) It should be a private method in the future. Returns the original size of
+     *                 the header in the stream from which it was read.
      *
      * @return     the size of the original header in bytes, or 0 if the header was not read from a stream.
      *
@@ -1256,14 +1285,6 @@ public class Header implements FitsElement {
         return readSize;
     }
 
-    /**
-     * Returns the current byte size of this header.
-     *
-     * @return the size of the header in bytes, or 0 if the header is invalid.
-     *
-     * @see    #getMinimumSize()
-     * @see    #ensureCardSpace(int)
-     */
     @Override
     public final long getSize() {
         if (!isValidHeader()) {
@@ -1528,9 +1549,10 @@ public class Header implements FitsElement {
     }
 
     /**
-     * @deprecated               Normally we either want to write a Java object to FITS (in which case we have the
-     *                               dataand want to make a header for it), or we read some data from a FITS input. In
-     *                               either case, there is no benefit of exposing such a function as this to the user.
+     * @deprecated               (<i>for internal use</i>) Normally we either want to write a Java object to FITS (in
+     *                               which case we have the dataand want to make a header for it), or we read some data
+     *                               from a FITS input. In either case, there is no benefit of exposing such a function
+     *                               as this to the user.
      *
      * @return                   Create the data element corresponding to the current header
      *
@@ -1563,7 +1585,8 @@ public class Header implements FitsElement {
      *
      * @throws     FitsException if the data was not valid for this header.
      *
-     * @deprecated               Use the appropriate Header constructor.
+     * @deprecated               Use the appropriate <code>Header</code> constructor instead. Will remove in a future
+     *                               releae.
      */
     @Deprecated
     public void pointToData(Data o) throws FitsException {
@@ -1668,7 +1691,9 @@ public class Header implements FitsElement {
             if (isEmpty() && FitsFactory.getAllowTerminalJunk()) {
                 // If this happened where we expect a new header to start, then
                 // treat is as if end-of-file if terminal junk is allowed
-                forceEOF("Junk detected at " + fileOffset + ".", e);
+                forceEOF(
+                        "Junk detected where header was expected to start" + ((fileOffset > 0) ? ": at " + fileOffset : ""),
+                        e);
             }
             if (e instanceof TruncatedFileException) {
                 throw (TruncatedFileException) e;
@@ -1723,14 +1748,13 @@ public class Header implements FitsElement {
      *
      * @throws     HeaderCardException if the operation failed
      *
-     * @deprecated                     see {@link #deleteKey(String)}
+     * @deprecated                     (<i>duplicate method</i>) Use {@link #deleteKey(String)} instead.
      */
     @Deprecated
     public void removeCard(String key) throws HeaderCardException {
         deleteKey(key);
     }
 
-    /** Reset the file pointer to the beginning of the header */
     @Override
     public boolean reset() {
         try {
@@ -1743,7 +1767,7 @@ public class Header implements FitsElement {
     }
 
     /**
-     * @deprecated Use {@link #ensureCardSpace(int)} with a 1 argument instead.
+     * @deprecated Use {@link #ensureCardSpace(int)} with 1 as the argument instead.
      *                 <p>
      *                 Resets any prior preallocated header space, such as was explicitly set by
      *                 {@link #ensureCardSpace(int)}, or when the header was read from a stream to ensure it remains
@@ -1765,7 +1789,6 @@ public class Header implements FitsElement {
         ensureCardSpace(1);
     }
 
-    /** Rewrite the header. */
     @Override
     public void rewrite() throws FitsException, IOException {
         ArrayDataOutput dos = (ArrayDataOutput) input;
@@ -1787,16 +1810,17 @@ public class Header implements FitsElement {
     }
 
     /**
-     * @deprecated                          Use the safer {@link #setBitpix(Bitpix)} instead. Set the BITPIX value for
-     *                                          the header. The following values are permitted by FITS conventions:
-     *                                          <ul>
-     *                                          <li>8 -- signed byte data. Also used for tables.</li>
-     *                                          <li>16 -- signed short data.</li>
-     *                                          <li>32 -- signed int data.</li>
-     *                                          <li>64 -- signed long data.</li>
-     *                                          <li>-32 -- IEEE 32 bit floating point numbers.</li>
-     *                                          <li>-64 -- IEEE 64 bit floating point numbers.</li>
-     *                                          </ul>
+     * Set the BITPIX value for the header. The following values are permitted by FITS conventions:
+     * <ul>
+     * <li>8 -- signed byte data. Also used for tables.</li>
+     * <li>16 -- signed short data.</li>
+     * <li>32 -- signed int data.</li>
+     * <li>64 -- signed long data.</li>
+     * <li>-32 -- IEEE 32 bit floating point numbers.</li>
+     * <li>-64 -- IEEE 64 bit floating point numbers.</li>
+     * </ul>
+     * 
+     * @deprecated                          Use the safer {@link #setBitpix(Bitpix)} instead.
      *
      * @param      val                      The value set by the user.
      *
@@ -1814,8 +1838,10 @@ public class Header implements FitsElement {
     }
 
     /**
-     * @deprecated        Will be removed from the public API in 2.0 Sets a standard BITPIX value for the header.
-     *
+     * Sets a standard BITPIX value for the header.
+     * 
+     * @deprecated        (<i>for internall use</i>) Visibility will be reduced to the package level in the future.
+     * 
      * @param      bitpix The predefined enum value, e.g. {@link Bitpix#INTEGER}.
      *
      * @since             1.16
@@ -1839,7 +1865,9 @@ public class Header implements FitsElement {
     }
 
     /**
-     * @deprecated     Will be removed from the public API in 2.0 Set the value of the NAXIS keyword
+     * Set the value of the NAXIS keyword
+     * 
+     * @deprecated     (<i>for internal use</i>) Visibility will be reduced to the package level in the future.
      *
      * @param      val The dimensionality of the data.
      */
@@ -1854,8 +1882,10 @@ public class Header implements FitsElement {
     }
 
     /**
-     * @deprecated      Will be removed from the public API in 2.0 Set the dimension for a given axis.
+     * Set the dimension for a given axis.
      *
+     * @deprecated      (<i>for internal use</i>) Visibility will be reduced to the package level in the future.
+     * 
      * @param      axis The axis being set.
      * @param      dim  The dimension
      */
@@ -1878,7 +1908,9 @@ public class Header implements FitsElement {
     }
 
     /**
-     * @deprecated     Will be removed from the public API in 2.0 Set the SIMPLE keyword to the given value.
+     * Set the SIMPLE keyword to the given value.
+     * 
+     * @deprecated     (<i>for internall use</i>) Visibility will be reduced to the package level in the future.
      *
      * @param      val <code>true</code> for the primary header, otherwise <code>false</code>
      */
@@ -1906,9 +1938,11 @@ public class Header implements FitsElement {
     }
 
     /**
-     * @deprecated                          Will be removed from the public API in 2.0 Set the XTENSION keyword to the
-     *                                          given value.
-     *
+     * Set the XTENSION keyword to the given value.
+     * 
+     * @deprecated                          (<i>for internall use</i>) Visibility will be reduced to the package level
+     *                                          in the future.
+     * 
      * @param      val                      The name of the extension.
      *
      * @throws     IllegalArgumentException if the string value contains characters that are not allowed in FITS
@@ -2095,13 +2129,6 @@ public class Header implements FitsElement {
         checkEnd();
     }
 
-    /**
-     * Write the current header (including any needed padding) to the output stream.
-     *
-     * @param  dos           The output stream to which the data is to be written.
-     *
-     * @throws FitsException if the header could not be written.
-     */
     @Override
     public void write(ArrayDataOutput dos) throws FitsException {
         validate();
@@ -2498,11 +2525,13 @@ public class Header implements FitsElement {
 
     /**
      * Returns the current preferred alignment character position of inline header comments. This is the position at
-     * which the '/' is placed for the inline comment.
+     * which the '/' is placed for the inline comment. #deprecated
      *
      * @return The current alignment position for inline comments.
      *
      * @see    #setCommentAlignPosition(int)
+     * 
+     * @since  1.17
      */
     public static int getCommentAlignPosition() {
         return commentAlign;
@@ -2511,12 +2540,19 @@ public class Header implements FitsElement {
     /**
      * Sets a new alignment position for inline header comments.
      *
-     * @param  pos                      [20:70] The character position to which inline comments should be aligned if
-     *                                      possible.
+     * @param      pos                      [20:70] The character position to which inline comments should be aligned if
+     *                                          possible.
      *
-     * @throws IllegalArgumentException if the position is outside of the allowed range.
+     * @throws     IllegalArgumentException if the position is outside of the allowed range.
      *
-     * @see                             #getCommentAlignPosition()
+     * @see                                 #getCommentAlignPosition()
+     * 
+     * @deprecated                          Not recommended as it may violate the FITS standart for 'fixed-format'
+     *                                          header entries, and make our FITS files unreadable by software that
+     *                                          expects strict adherence to the standard. We will remove this feature in
+     *                                          the future.
+     * 
+     * @since                               1.17
      */
     public static void setCommentAlignPosition(int pos) throws IllegalArgumentException {
         if (pos < Header.MIN_COMMENT_ALIGN || pos > Header.MAX_COMMENT_ALIGN) {

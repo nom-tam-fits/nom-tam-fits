@@ -32,8 +32,7 @@ package nom.tam.util;
  */
 
 /**
- * This interface extends the Iterator interface to allow insertion of data and move to previous entries in a
- * collection.
+ * An <code>Iterator</code>-based interface for key / value pairs allowing insertions and reverse movement also.
  *
  * @param <KEY>   the generic type of the keyword element
  * @param <VALUE> the generic type of the associated value

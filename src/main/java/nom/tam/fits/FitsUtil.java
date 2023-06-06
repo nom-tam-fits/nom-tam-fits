@@ -50,7 +50,7 @@ import nom.tam.util.FitsIO;
 import nom.tam.util.RandomAccess;
 
 /**
- * This class comprises static utility functions used throughout the FITS classes.
+ * Static utility functions used throughout the FITS classes.
  */
 public final class FitsUtil {
 

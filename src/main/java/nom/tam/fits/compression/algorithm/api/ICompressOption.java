@@ -74,22 +74,58 @@ public interface ICompressOption extends Cloneable {
     void setParameters(ICompressParameters parameters);
 
     /**
-     * Set the tile height.
+     * Set the tile height (if the option supports it). If the implementing option class does not have a setting for
+     * tile size, it should simply ignore the setting and return normally.
      *
      * @param  value the new tile height in pixels
      *
      * @return       itself
+     * 
+     * @see          #getTileHeight()
+     * @see          #setTileWidth(int)
      */
     ICompressOption setTileHeight(int value);
 
     /**
-     * Set the tile width.
+     * Set the tile width (if the option supports it). If the implementing option class does not have a setting for tile
+     * size, it should simply ignore the setting and return normally.
      *
      * @param  value the new tile with in pixels
      *
      * @return       itself
+     * 
+     * @see          #getTileWidth()
+     * @see          #setTileHeight(int)
      */
     ICompressOption setTileWidth(int value);
+
+    /**
+     * Returns the tile height (if supported), or else 0 (also the default implementation).
+     *
+     * @return the tile height in pixels, or 0 if the options do not have a tile size setting.
+     * 
+     * @see    #setTileHeight(int)
+     * @see    #getTileWidth()
+     * 
+     * @since  1.18
+     */
+    default int getTileHeight() {
+        return 0;
+    }
+
+    /**
+     * Returns the tile width (if supported), or else 0 (also the default implementation).
+     *
+     * @return the tile width in pixels, or 0 if the options do not have a tile size setting.
+     * 
+     * @see    #setTileHeight(int)
+     * @see    #getTileWidth()
+     *
+     * @since  1.18
+     */
+    default int getTileWidth() {
+        return 0;
+    }
 
     /**
      * (<i>for internal use</i>) Recasts these options for the specific implementation class

@@ -58,8 +58,8 @@ import static nom.tam.fits.header.Standard.CONTINUE;
 import static nom.tam.fits.header.Standard.HISTORY;
 
 /**
- * An individual entry in the FITS Header, such as a key/value pair with an optional comment field, or a comment-style
- * only entry.
+ * An individual entry in the FITS header, such as a key/value pair with an optional comment field, or a comment-style
+ * entry without a value field.
  */
 public class HeaderCard implements CursorValue<String>, Cloneable {
 
@@ -148,27 +148,24 @@ public class HeaderCard implements CursorValue<String>, Cloneable {
     }
 
     /**
-     * <p>
-     * Deprecated, first because it should not be public since it should only be used only at the package level; and
-     * second, because card counting should be internal to HeaderCard, not external... We'll likely remove support in
-     * future releases. -- (AK)
-     * </p>
-     * <p>
      * Creates a new header card, but reading from the specified data input. The card is expected to be describes by one
      * or more 80-character wide header 'lines'. If long string support is not enabled, then a new card is created from
      * the next 80-characters. When long string support is enabled, cunsecutive lines starting with
      * [<code>CONTINUE </code>] after the first line will be aggregated into a single new card.
-     * </p>
+     * 
+     * @deprecated                        (<i>for internal use</i>) Its visibility may be reduced or may be removed
+     *                                        entirely in the future. Card counting should be internal to
+     *                                        {@link HeaderCard}.
      *
-     * @param  dis                    the data input
+     * @param      dis                    the data input
      *
-     * @throws UnclosedQuoteException if the line contained an unclosed single quote.
-     * @throws TruncatedFileException if we reached the end of file unexpectedly before fully parsing an 80-character
-     *                                    line.
-     * @throws IOException            if there was some IO issue.
+     * @throws     UnclosedQuoteException if the line contained an unclosed single quote.
+     * @throws     TruncatedFileException if we reached the end of file unexpectedly before fully parsing an
+     *                                        80-character line.
+     * @throws     IOException            if there was some IO issue.
      *
-     * @see                           #HeaderCard(ArrayDataInput)
-     * @see                           FitsFactory#setLongStringsEnabled(boolean)
+     * @see                               #HeaderCard(ArrayDataInput)
+     * @see                               FitsFactory#setLongStringsEnabled(boolean)
      */
     @Deprecated
     public HeaderCard(HeaderCardCountingArrayDataInput dis)
@@ -550,16 +547,7 @@ public class HeaderCard implements CursorValue<String>, Cloneable {
         }
         if (isStringValue()) {
             // Discard trailing spaces
-            int to = aValue.length();
-            while (--to >= 0) {
-                if (!Character.isSpaceChar(aValue.charAt(to))) {
-                    break;
-                }
-            }
-            to++;
-            if (to < aValue.length()) {
-                aValue = aValue.substring(0, to);
-            }
+            aValue = trimEnd(aValue);
 
             // Remember that quotes get doubled in the value...
             String printValue = aValue.replace("'", "''");
@@ -1135,6 +1123,9 @@ public class HeaderCard implements CursorValue<String>, Cloneable {
         StringBuilder longComment = null;
 
         while (next != null) {
+            if (!next.isString()) {
+                break;
+            }
             String valuePart = next.getValue();
             String untrimmedComment = next.getUntrimmedComment();
 
@@ -1188,8 +1179,27 @@ public class HeaderCard implements CursorValue<String>, Cloneable {
         }
 
         comment = longComment == null ? null : longComment.toString().trim();
-        value = longValue.toString().trim();
+        value = trimEnd(longValue.toString());
         type = String.class;
+    }
+
+    /**
+     * Removes the trailing spaces (if any) from a string. According to the FITS standard, trailing spaces in string are
+     * not significant (but leading spaces are). As such we should remove trailing spaces when parsing header string
+     * values.
+     * 
+     * @param  s the string as it appears in the FITS header
+     * 
+     * @return   the input string if it has no trailing spaces, or else a new string with the trailing spaces removed.
+     */
+    private String trimEnd(String s) {
+        int end = s.length();
+        for (; end > 0; end--) {
+            if (!Character.isSpaceChar(s.charAt(end - 1))) {
+                break;
+            }
+        }
+        return end == s.length() ? s : s.substring(0, end);
     }
 
     /**

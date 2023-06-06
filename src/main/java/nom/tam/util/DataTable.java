@@ -33,7 +33,7 @@ package nom.tam.util;
 
 /**
  * <p>
- * A non FITS-specific Interface for generic table data access. For a
+ * A non FITS-specific interface for generic table data access. For a
  * FITS-specific interface see {@link nom.tam.fits.TableData}.
  * </p>
  * <p>

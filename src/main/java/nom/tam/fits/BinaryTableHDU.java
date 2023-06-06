@@ -53,7 +53,12 @@ import static nom.tam.fits.header.Standard.TUNITn;
 import static nom.tam.fits.header.Standard.TZEROn;
 import static nom.tam.fits.header.Standard.XTENSION;
 
-/** FITS binary table header/data unit */
+/**
+ * Binary table header/data unit.
+ * 
+ * @see BinaryTable
+ * @see AsciiTableHDU
+ */
 @SuppressWarnings("deprecation")
 public class BinaryTableHDU extends TableHDU<BinaryTable> {
 
@@ -63,7 +68,7 @@ public class BinaryTableHDU extends TableHDU<BinaryTable> {
     /**
      * Creates a new binary table HDU from the specified FITS header and associated table data
      * 
-     * @deprecated       intended for internal use. Its visibility should be reduced to package level in the future.
+     * @deprecated       (<i>for internal use</i>) Its visibility should be reduced to package level in the future.
      * 
      * @param      hdr   the FITS header describing the data and any user-specific keywords
      * @param      datum the corresponding data object
@@ -78,7 +83,7 @@ public class BinaryTableHDU extends TableHDU<BinaryTable> {
     }
 
     /**
-     * @deprecated               This should be for internal use only. Will reduce visibility in the future
+     * @deprecated               (<i>for internal use</i>) Will reduce visibility in the future
      *
      * @return                   Encapsulate data in a BinaryTable data type
      *
@@ -106,7 +111,7 @@ public class BinaryTableHDU extends TableHDU<BinaryTable> {
      * @param      o a column table object, an Object[][], or an Object[]. This routine doesn't check that the
      *                   dimensions of arrays are properly consistent.
      *
-     * @deprecated   This should be for internal use only. Will reduce visibility in the future
+     * @deprecated   (<i>for internal use</i>) Will reduce visibility in the future
      */
     @Deprecated
     public static boolean isData(Object o) {
@@ -116,7 +121,7 @@ public class BinaryTableHDU extends TableHDU<BinaryTable> {
     /**
      * Check that this is a valid binary table header.
      *
-     * @deprecated        This should be for internal use only. Will reduce visibility in the future
+     * @deprecated        (<i>for internal use</i>) Will reduce visibility in the future
      *
      * @param      header to validate.
      *
@@ -135,7 +140,7 @@ public class BinaryTableHDU extends TableHDU<BinaryTable> {
     /**
      * Prepares a data object into which the actual data can be read from an input subsequently or at a later time.
      *
-     * @deprecated               This should be for internal use only. Will reduce visibility in the future
+     * @deprecated               (<i>for internal use</i>) Will reduce visibility in the future
      *
      * @param      header        The FITS header that describes the data
      *
@@ -149,7 +154,7 @@ public class BinaryTableHDU extends TableHDU<BinaryTable> {
     }
 
     /**
-     * @deprecated               This should be for internal use only. Will reduce visibility in the future
+     * @deprecated               (<i>for internal use</i>) Will reduce visibility in the future
      *
      * @return                   a newly created binary table HDU from the supplied data.
      *
@@ -181,17 +186,11 @@ public class BinaryTableHDU extends TableHDU<BinaryTable> {
         return KEY_STEMS;
     }
 
-    /**
-     * What are the standard column stems for a binary table?
-     */
     @Override
     protected IFitsHeader[] columnKeyStems() {
         return BinaryTableHDU.KEY_STEMS;
     }
 
-    /**
-     * Print out some information about this HDU.
-     */
     @Override
     public void info(PrintStream stream) {
 
@@ -239,7 +238,7 @@ public class BinaryTableHDU extends TableHDU<BinaryTable> {
     /**
      * Check that this HDU has a valid header.
      *
-     * @deprecated This should be for internal use only. Will reduce visibility in the future
+     * @deprecated (<i>for internal use</i>) Will reduce visibility in the future
      *
      * @return     <CODE>true</CODE> if this HDU has a valid header.
      */
