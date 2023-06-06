@@ -289,7 +289,6 @@ public class BinaryTableTest {
         }
         // Tom -> here the table is replaced by a copy that is not the same but
         // should be?
-        FitsFactory.setUseAsciiTables(true);
         btab = new BinaryTable(btab.getData());
 
         f = new Fits();

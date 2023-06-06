@@ -238,8 +238,8 @@ public interface TableData {
      *            information on the column data format.
      * @throws FitsException
      *             if the table could not be modified
-     * @deprecated Strongly discouraged, since it requires data to be supplied in
-     *             an unnatural flattened format or heap pointers only for
+     * @deprecated Strongly discouraged, since it requires data to be supplied
+     *             in an unnatural flattened format or heap pointers only for
      *             variable-sized data (use
      *             {@link #setElement(int, int, Object)} instead).
      * @see #getNCols()
