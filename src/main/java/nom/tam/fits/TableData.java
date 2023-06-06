@@ -135,7 +135,7 @@ public interface TableData {
      * @return a 1D array containing the column data in a flattened form.
      * @throws FitsException
      *             if the table could not be accessed
-     * @deprecated Strongly discouraged, since it returns data in am unnatural
+     * @deprecated Strongly discouraged, since it returns data in an unnatural
      *             flattened format (use {@link #getElement(int, int)} instead)
      * @see #setColumn(int, Object)
      * @see #getElement(int, int)
