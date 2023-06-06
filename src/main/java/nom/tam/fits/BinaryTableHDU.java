@@ -193,9 +193,6 @@ public class BinaryTableHDU extends TableHDU<BinaryTable> {
 
     @Override
     public void info(PrintStream stream) {
-
-        BinaryTable myData = this.myData;
-
         stream.println("  Binary Table");
         stream.println("      Header Information:");
 
@@ -215,11 +212,11 @@ public class BinaryTableHDU extends TableHDU<BinaryTable> {
         }
 
         stream.println("      Data Information:");
-        stream.println("          Number of rows=" + this.myData.getNRows());
-        stream.println("          Number of columns=" + this.myData.getNCols());
-        stream.println("          Heap size is: " + this.myData.getHeapSize() + " bytes");
+        stream.println("          Number of rows=" + myData.getNRows());
+        stream.println("          Number of columns=" + myData.getNCols());
+        stream.println("          Heap size is: " + myData.getHeapSize() + " bytes");
 
-        Object[] cols = this.myData.getFlatColumns();
+        Object[] cols = myData.getFlatColumns();
         for (int i = 0; i < cols.length; i++) {
             stream.println("           " + i + ":" + ArrayFuncs.arrayDescription(cols[i]));
         }
