@@ -367,12 +367,6 @@ public class CompressedImageHDU extends BinaryTableHDU {
         return getData().getUncompressedData(getHeader());
     }
 
-    /**
-     * @deprecated (<i>for internal use</i>) This method should not be exposed to users. Visibility should be reduced to
-     *                 protected.
-     *
-     * @return     <CODE>true</CODE> if this HDU has a valid header.
-     */
     @Override
     @Deprecated
     public boolean isHeader() {

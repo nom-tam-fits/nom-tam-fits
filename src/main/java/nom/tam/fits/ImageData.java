@@ -165,11 +165,6 @@ public class ImageData extends Data {
         super.read(in);
     }
 
-    /**
-     * Return the actual data. Note that this may return a null when the data is not readable. It might be better to
-     * throw a FitsException, but this is a very commonly called method and we prefered not to change how users must
-     * invoke it.
-     */
     @Override
     protected Object getCurrentData() {
         return dataArray;
@@ -221,13 +216,6 @@ public class ImageData extends Data {
         FitsUtil.pad(o, getTrueSize());
     }
 
-    /**
-     * Fill header with keywords that describe image data.
-     *
-     * @param  head          The FITS header
-     *
-     * @throws FitsException if the object does not contain valid image data.
-     */
     @SuppressWarnings("deprecation")
     @Override
     protected void fillHeader(Header head) throws FitsException {
@@ -267,7 +255,6 @@ public class ImageData extends Data {
         Standard.context(null);
     }
 
-    /** Get the size in bytes of the data */
     @Override
     protected long getTrueSize() {
         return byteSize;

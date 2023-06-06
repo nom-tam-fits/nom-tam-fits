@@ -1003,13 +1003,6 @@ public class Header implements FitsElement {
         return dupKeys;
     }
 
-    /**
-     * Returns the file position at which this header is stored. If the header is not stored in an input file 0 is
-     * returned as per default.
-     *
-     * @return the position at which this header is stored in the input, or 0 if there if this header isn't read from an
-     *             input
-     */
     @Override
     public long getFileOffset() {
         return fileOffset;
@@ -1292,14 +1285,6 @@ public class Header implements FitsElement {
         return readSize;
     }
 
-    /**
-     * Returns the current byte size of this header.
-     *
-     * @return the size of the header in bytes, or 0 if the header is invalid.
-     *
-     * @see    #getMinimumSize()
-     * @see    #ensureCardSpace(int)
-     */
     @Override
     public final long getSize() {
         if (!isValidHeader()) {
@@ -1770,7 +1755,6 @@ public class Header implements FitsElement {
         deleteKey(key);
     }
 
-    /** Reset the file pointer to the beginning of the header */
     @Override
     public boolean reset() {
         try {
@@ -1805,7 +1789,6 @@ public class Header implements FitsElement {
         ensureCardSpace(1);
     }
 
-    /** Rewrite the header. */
     @Override
     public void rewrite() throws FitsException, IOException {
         ArrayDataOutput dos = (ArrayDataOutput) input;
@@ -2146,13 +2129,6 @@ public class Header implements FitsElement {
         checkEnd();
     }
 
-    /**
-     * Write the current header (including any needed padding) to the output stream.
-     *
-     * @param  dos           The output stream to which the data is to be written.
-     *
-     * @throws FitsException if the header could not be written.
-     */
     @Override
     public void write(ArrayDataOutput dos) throws FitsException {
         validate();

@@ -628,52 +628,16 @@ public class ColumnTable<T> implements DataTable {
         return Arrays.copyOf(bases, bases.length);
     }
 
-    /**
-     * <p>
-     * Gets a particular column in the format that it is stored in the FITS. For most column types the storage format
-     * matches the Java type, but there are exceptions:
-     * </p>
-     * <ul>
-     * <li>Character arrays in FITS are stored as <code>byte[]</code> or <code>short[]</code>, depending on the
-     * {@link nom.tam.fits.FitsFactory#setUseUnicodeChars(boolean)} setting, not unicode Java <code>char[]</code>.
-     * Therefore, this call will return <code>byte[]</code> or <code>short[]</code>, the same as for a byte or 16-bit
-     * integer array. As a result if a new table is created with the returned data, the new table column will change its
-     * FITS column type from <code>A</code> to <code>B</code> or <code>I</code>.</li>
-     * <li>Complex values in FITS are stored as <code>float[2]</code> or <code>double[2]</code>, not as a
-     * {@link ComplexValue} type. Therefore, this call will return <code>float[]</code> or <code>double[]</code>, the
-     * same as for a float array. As a result if a new table is created with the returned data, the new table column
-     * will change it's FITS column type from <code>C</code> to <code>F</code>, or from <code>M</code> to
-     * <code>D</code>,.</li>
-     * </ul>
-     *
-     * @param  col The column desired.
-     *
-     * @return     an object containing the column data desired. This will be an instance of a 1-d primitive array.
-     */
     @Override
     public Object getColumn(int col) {
         return arrays[col];
     }
 
-    /**
-     * Returns the data for all columns as an array of arrays.
-     * 
-     * @return the actual data arrays, for each column.
-     */
     @SuppressFBWarnings(value = "EI_EXPOSE_REP", justification = "intended exposure of mutable data")
     public Object[] getColumns() {
         return arrays;
     }
 
-    /**
-     * Get a element of the table.
-     *
-     * @param  row The row desired.
-     * @param  col The column desired.
-     *
-     * @return     A primitive array containing the information. Note that an array will be returned even if the element
-     *                 is a scalar.
-     */
     @Override
     public Object getElement(int row, int col) {
 
@@ -692,29 +656,16 @@ public class ColumnTable<T> implements DataTable {
         return extraState;
     }
 
-    /**
-     * Get the number of columns in the table.
-     */
     @Override
     public int getNCols() {
         return arrays.length;
     }
 
-    /**
-     * Get the number of rows in the table.
-     */
     @Override
     public int getNRows() {
         return nrow;
     }
 
-    /**
-     * Get a row of data.
-     *
-     * @param  row The row desired.
-     *
-     * @return     An array of objects each containing a primitive array.
-     */
     @Override
     public Object getRow(int row) {
 
@@ -799,14 +750,6 @@ public class ColumnTable<T> implements DataTable {
         }
     }
 
-    /**
-     * Set the values in a particular column. The new values must match the old in length but not necessarily in type.
-     *
-     * @param     col            The column to modify.
-     * @param     newColumn      The new column data. This should be a primitive array.
-     *
-     * @exception TableException Thrown when the new data is not commenserable with information in the table.
-     */
     @Override
     public void setColumn(int col, Object newColumn) throws TableException {
 
@@ -824,15 +767,6 @@ public class ColumnTable<T> implements DataTable {
         }
     }
 
-    /**
-     * Modify an element of the table.
-     *
-     * @param     row            The row containing the element.
-     * @param     col            The column containing the element.
-     * @param     x              The new datum. This should be 1-d primitive array.
-     *
-     * @exception TableException Thrown when the new data is not of the same type as the data it replaces.
-     */
     @Override
     public void setElement(int row, int col, Object x) throws TableException {
 
@@ -858,14 +792,6 @@ public class ColumnTable<T> implements DataTable {
         extraState = opaque;
     }
 
-    /**
-     * Modify a row of data.
-     *
-     * @param row The row to be modified.
-     * @param x   The data to be modified. This should be an array of objects. It is described as an Object here since
-     *                other table implementations may use other methods to store the data (e.g., @see
-     *                nom.tam.util.ColumnTable)
-     */
     @Override
     public void setRow(int row, Object x) throws TableException {
 

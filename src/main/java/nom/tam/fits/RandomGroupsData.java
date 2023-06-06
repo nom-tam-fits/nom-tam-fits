@@ -189,11 +189,6 @@ public class RandomGroupsData extends Data {
         Standard.context(null);
     }
 
-    /**
-     * Get the size of the actual data element in the file, not counting padding.
-     *
-     * @return The size of the data content in the FITS file, excluding padding.
-     */
     @Override
     protected long getTrueSize() {
         if (sampleRow == null) {

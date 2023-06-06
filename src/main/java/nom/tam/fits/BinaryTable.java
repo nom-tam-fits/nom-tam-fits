@@ -558,10 +558,6 @@ public class BinaryTable extends AbstractTableData {
         return nRow;
     }
 
-    /**
-     * Delete a set of columns. Note that this does not fix the header, so users should normally call the routine in
-     * TableHDU. * @throws FitsException if the operation failed
-     */
     @Override
     public void deleteColumns(int start, int len) throws FitsException {
         ensureData();
@@ -580,12 +576,6 @@ public class BinaryTable extends AbstractTableData {
         }
     }
 
-    /**
-     * Delete rows from a table.
-     *
-     * @param row The 0-indexed start of the rows to be deleted.
-     * @param len The number of rows to be deleted. * @throws FitsException if the operation failed
-     */
     @Override
     public void deleteRows(int row, int len) throws FitsException {
         ensureData();
@@ -593,12 +583,6 @@ public class BinaryTable extends AbstractTableData {
         nRow -= len;
     }
 
-    /**
-     * Update a FITS header to reflect the current state of the data. Its really for internal use only, but it's public
-     * to allow access by the compression clases.
-     *
-     * @throws FitsException if the operation failed
-     */
     @Override
     public void fillHeader(Header h) throws FitsException {
         try {
@@ -636,11 +620,6 @@ public class BinaryTable extends AbstractTableData {
         return table.getBases();
     }
 
-    /**
-     * Get a given column
-     *
-     * @param col The index of the column. * @throws FitsException if the operation failed
-     */
     @Override
     public Object getColumn(int col) throws FitsException {
         ensureData();
@@ -675,12 +654,6 @@ public class BinaryTable extends AbstractTableData {
         return dimens;
     }
 
-    /**
-     * Get a particular element from the table.
-     *
-     * @param i The row of the element.
-     * @param j The column of the element. * @throws FitsException if the operation failed
-     */
     @Override
     public Object getElement(int i, int j) throws FitsException {
 
@@ -777,17 +750,11 @@ public class BinaryTable extends AbstractTableData {
         return modelRow;
     }
 
-    /*
-     * ( Get the number of columns in the table.
-     */
     @Override
     public int getNCols() {
         return columnList.size();
     }
 
-    /**
-     * Get the number of rows in the table
-     */
     @Override
     public int getNRows() {
         return nRow;
@@ -811,15 +778,6 @@ public class BinaryTable extends AbstractTableData {
         return table.getElement(i, j);
     }
 
-    /**
-     * Get a given row
-     *
-     * @param  row           The index of the row to be returned.
-     *
-     * @return               A row of data. *
-     *
-     * @throws FitsException if the operation failed
-     */
     @Override
     public Object[] getRow(int row) throws FitsException {
 
@@ -847,9 +805,6 @@ public class BinaryTable extends AbstractTableData {
         return sizes;
     }
 
-    /**
-     * Get the size of the data in the HDU sans padding.
-     */
     @Override
     protected long getTrueSize() {
         long len = (long) nRow * rowLen;
@@ -870,14 +825,6 @@ public class BinaryTable extends AbstractTableData {
         return table.getTypes();
     }
 
-    /**
-     * Replace a column in the table.
-     *
-     * @param  col           The index of the column to be replaced.
-     * @param  xcol          The new data for the column
-     *
-     * @throws FitsException Thrown if the data does not match the current column description.
-     */
     @Override
     public void setColumn(int col, Object xcol) throws FitsException {
 
@@ -887,13 +834,6 @@ public class BinaryTable extends AbstractTableData {
         setFlattenedColumn(col, xcol);
     }
 
-    /**
-     * Replace a single element within the table.
-     *
-     * @param i The row of the data.
-     * @param j The column of the data.
-     * @param o The replacement data. * @throws FitsException if the operation failed
-     */
     @Override
     public void setElement(int i, int j, Object o) throws FitsException {
         ensureData();
@@ -935,14 +875,6 @@ public class BinaryTable extends AbstractTableData {
         table.setColumn(col, data);
     }
 
-    /**
-     * Replace a row in the table.
-     *
-     * @param  row           The index of the row to be replaced.
-     * @param  data          The new values for the row.
-     *
-     * @throws FitsException Thrown if the new row cannot match the existing data.
-     */
     @Override
     public void setRow(int row, Object[] data) throws FitsException {
         ensureData();
@@ -960,19 +892,11 @@ public class BinaryTable extends AbstractTableData {
         table.setRow(row, ydata);
     }
 
-    /**
-     * Update the header after a deletion.
-     *
-     * @throws FitsException if the operation failed
-     */
     @Override
     public void updateAfterDelete(int oldNcol, Header hdr) throws FitsException {
         hdr.addValue(NAXIS1, rowLen);
     }
 
-    /**
-     * Write the table, heap and padding. * @throws FitsException if the operation failed
-     */
     @Override
     public void write(ArrayDataOutput os) throws FitsException {
         ensureData();

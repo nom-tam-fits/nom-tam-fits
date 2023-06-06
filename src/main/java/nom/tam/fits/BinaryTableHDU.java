@@ -186,17 +186,11 @@ public class BinaryTableHDU extends TableHDU<BinaryTable> {
         return KEY_STEMS;
     }
 
-    /**
-     * What are the standard column stems for a binary table?
-     */
     @Override
     protected IFitsHeader[] columnKeyStems() {
         return BinaryTableHDU.KEY_STEMS;
     }
 
-    /**
-     * Print out some information about this HDU.
-     */
     @Override
     public void info(PrintStream stream) {
 

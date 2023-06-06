@@ -54,6 +54,7 @@ import static nom.tam.util.LoggerHelper.getLogger;
  * 
  * @see ImageData
  */
+@SuppressWarnings("deprecation")
 public class ImageHDU extends BasicHDU<ImageData> {
 
     private static final Logger LOG = getLogger(ImageHDU.class);
@@ -184,9 +185,6 @@ public class ImageHDU extends BasicHDU<ImageData> {
         return myData.getTiler();
     }
 
-    /**
-     * Print out some information about this HDU.
-     */
     @Override
     public void info(PrintStream stream) {
         if (isHeader(myHeader)) {
@@ -215,4 +213,59 @@ public class ImageHDU extends BasicHDU<ImageData> {
             stream.println("      Unable to get data");
         }
     }
+
+    /**
+     * Returns the name of the physical unit in which images are represented.
+     * 
+     * @return the standard name of the physical unit in which the image is expressed, e.g. <code>"Jy beam^{-1}"</code>.
+     */
+    @Override
+    public String getBUnit() {
+        return super.getBUnit();
+    }
+
+    /**
+     * Returns the integer value that signifies blank (missing or <code>null</code>) data in an integer image.
+     *
+     * @return               the integer value used for identifying blank / missing data in integer images.
+     * 
+     * @throws FitsException if the header does not specify a blanking value or if it is not appropriate for the type of
+     *                           imge (that is not an integer type image)
+     */
+    @Override
+    public long getBlankValue() throws FitsException {
+        if (getBitpix().getHeaderValue() < 0) {
+            throw new FitsException("No integer blanking value in floating-point images.");
+        }
+        return super.getBlankValue();
+    }
+
+    /**
+     * Returns the floating-point increment between adjacent integer values in the image. Strictly speaking, only
+     * integer-type images should define a quantization scaling, but there is no harm in having this value in
+     * floating-point images also -- which may be interpreted as a hint for quantization, perhaps.
+     * 
+     * @return the floating-point quantum that corresponds to the increment of 1 in the integer data representation.
+     * 
+     * @see    #getBZero()
+     */
+    @Override
+    public double getBScale() {
+        return super.getBScale();
+    }
+
+    /**
+     * Returns the floating-point value that corresponds to an 0 integer value in the image. Strictly speaking, only
+     * integer-type images should define a quantization offset, but there is no harm in having this value in
+     * floating-point images also -- which may be interpreted as a hint for quantization, perhaps.
+     * 
+     * @return the floating point value that correspond to the integer 0 in the image data.
+     * 
+     * @see    #getBScale()
+     */
+    @Override
+    public double getBZero() {
+        return super.getBZero();
+    }
+
 }
