@@ -215,11 +215,6 @@ public class BinaryTableHDU extends TableHDU<BinaryTable> {
         }
 
         stream.println("      Data Information:");
-        if (myData == null) {
-            stream.println("         No data present");
-            return;
-        }
-
         stream.println("          Number of rows=" + this.myData.getNRows());
         stream.println("          Number of columns=" + this.myData.getNCols());
         stream.println("          Heap size is: " + this.myData.getHeapSize() + " bytes");
@@ -316,13 +311,7 @@ public class BinaryTableHDU extends TableHDU<BinaryTable> {
             }
         }
         // Now update the header.
-        myHeader.findCard(TFORMn.n(index + 1));
-        HeaderCard hc = myHeader.nextCard();
-        String oldComment = hc.getComment();
-        if (oldComment == null) {
-            oldComment = "Column converted to complex";
-        }
-        myHeader.card(TFORMn.n(index + 1)).value(dim + prefix + suffix).comment(oldComment);
+        myHeader.card(TFORMn.n(index + 1)).value(dim + prefix + suffix).comment("converted to complex");
         if (tdim.length() > 0) {
             myHeader.addValue(TDIMn.n(index + 1), "(" + tdim + ")");
         } else {
