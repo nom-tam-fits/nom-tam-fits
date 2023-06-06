@@ -319,6 +319,7 @@ public class QuantizeOption implements ICompressOption {
      * @see    #setTileHeight(int)
      * @see    #getTileWidth()
      */
+    @Override
     public int getTileHeight() {
         return tileHeight;
     }
@@ -331,6 +332,7 @@ public class QuantizeOption implements ICompressOption {
      * @see    #setTileWidth(int)
      * @see    #getTileHeight()
      */
+    @Override
     public int getTileWidth() {
         return tileWidth;
     }

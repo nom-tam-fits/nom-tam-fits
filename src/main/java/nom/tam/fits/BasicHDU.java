@@ -334,7 +334,7 @@ public abstract class BasicHDU<DataClass extends Data> implements FitsElement {
      * @return either <CODE>null</CODE> or a String object
      */
     public String getAuthor() {
-        return getTrimmedString(AUTHOR);
+        return myHeader.getStringValue(AUTHOR);
     }
 
     /**
@@ -381,13 +381,16 @@ public abstract class BasicHDU<DataClass extends Data> implements FitsElement {
     /**
      * Return the Bitpix enum type for this HDU.
      *
-     * @return               The Bitpix enum object for this HDU.
+     * @return                   The Bitpix enum object for this HDU.
      *
-     * @throws FitsException if the BITPIX value in the header is absent or invalid.
+     * @throws     FitsException if the BITPIX value in the header is absent or invalid.
      *
-     * @since                1.16
+     * @since                    1.16
+     * 
+     * @deprecated               <code>BITPIX</code> is meaningful internally only, the user should never care. Will
+     *                               reduce visibility or remove in the future.
      *
-     * @see                  #getBitPix()
+     * @see                      #getBitPix()
      */
     public Bitpix getBitpix() throws FitsException {
         return Bitpix.fromHeader(myHeader);
@@ -396,11 +399,13 @@ public abstract class BasicHDU<DataClass extends Data> implements FitsElement {
     /**
      * Return the BITPIX integer value as stored in the FIS header.
      *
-     * @return               The BITPIX integer values for this HDU as it appears in the header.
+     * @return                   The BITPIX integer values for this HDU as it appears in the header.
      *
-     * @throws FitsException if the BITPIX value in the header is absent or invalid.
+     * @throws     FitsException if the BITPIX value in the header is absent or invalid.
      *
-     * @see                  #getBitpix()
+     * @deprecated               (<i>for internal use</i>) Will reduce visibility or remove entirely in the future.
+     * 
+     * @see                      #getBitpix()
      */
     public final int getBitPix() throws FitsException {
         return getBitpix().getHeaderValue();
@@ -441,13 +446,14 @@ public abstract class BasicHDU<DataClass extends Data> implements FitsElement {
     /**
      * Returns the name of the physical unit in which images are represented.
      * 
-     * @deprecated This is only applicable to {@link ImageHDU} or {@link RandomGroupsHDU}
+     * @deprecated This is only applicable to {@link ImageHDU} or {@link RandomGroupsHDU} and not for other HDU or data
+     *                 types.
      * 
      * @return     the standard name of the physical unit in which the image is expressed, e.g.
      *                 <code>"Jy beam^{-1}"</code>.
      */
     public String getBUnit() {
-        return getTrimmedString(BUNIT);
+        return myHeader.getStringValue(BUNIT);
     }
 
     /**
@@ -521,9 +527,12 @@ public abstract class BasicHDU<DataClass extends Data> implements FitsElement {
      * segment. For most data types this would be simply 1, except for {@link RandomGroupsData}, where other values are
      * possible.
      * 
-     * @return the number of data objects (of identical shape and size) that are grouped together in the data segment.
+     * @return     the number of data objects (of identical shape and size) that are grouped together in the data
+     *                 segment.
      * 
-     * @see    #getParameterCount()
+     * @deprecated Should not be exposed outside of {@link RandomGroupsHDU} -- will reduce visibility in the future/
+     * 
+     * @see        #getParameterCount()
      */
     public int getGroupCount() {
         return myHeader.getIntValue(GCOUNT, 1);
@@ -635,7 +644,7 @@ public abstract class BasicHDU<DataClass extends Data> implements FitsElement {
      * @return either <CODE>null</CODE> or a String object
      */
     public String getInstrument() {
-        return getTrimmedString(INSTRUME);
+        return myHeader.getStringValue(INSTRUME);
     }
 
     /**
@@ -676,7 +685,7 @@ public abstract class BasicHDU<DataClass extends Data> implements FitsElement {
      * @return either <CODE>null</CODE> or a String object
      */
     public String getObject() {
-        return getTrimmedString(OBJECT);
+        return myHeader.getStringValue(OBJECT);
     }
 
     /**
@@ -699,7 +708,7 @@ public abstract class BasicHDU<DataClass extends Data> implements FitsElement {
      * @return either <CODE>null</CODE> or a String object
      */
     public String getObserver() {
-        return getTrimmedString(OBSERVER);
+        return myHeader.getStringValue(OBSERVER);
     }
 
     /**
@@ -708,15 +717,17 @@ public abstract class BasicHDU<DataClass extends Data> implements FitsElement {
      * @return either <CODE>null</CODE> or a String object
      */
     public String getOrigin() {
-        return getTrimmedString(ORIGIN);
+        return myHeader.getStringValue(ORIGIN);
     }
 
     /**
      * Returns the number of parameter bytes (per data group) accompanying each data object in the group.
      * 
-     * @return the number of bytes used for arbitrary extra parameters accompanying each data object in the group.
+     * @return     the number of bytes used for arbitrary extra parameters accompanying each data object in the group.
      * 
-     * @see    #getGroupCount()
+     * @deprecated Should not be exposed outside of {@link RandomGroupsHDU} -- will reduce visibility in the future.
+     * 
+     * @see        #getGroupCount()
      */
     public int getParameterCount() {
         return myHeader.getIntValue(PCOUNT, 0);
@@ -728,7 +739,7 @@ public abstract class BasicHDU<DataClass extends Data> implements FitsElement {
      * @return either <CODE>null</CODE> or a String object
      */
     public String getReference() {
-        return getTrimmedString(REFERENC);
+        return myHeader.getStringValue(REFERENC);
     }
 
     @Override
@@ -750,15 +761,21 @@ public abstract class BasicHDU<DataClass extends Data> implements FitsElement {
      * @return either <CODE>null</CODE> or a String object
      */
     public String getTelescope() {
-        return getTrimmedString(TELESCOP);
+        return myHeader.getStringValue(TELESCOP);
     }
 
     /**
-     * Get the String value associated with <CODE>keyword</CODE>.
+     * Get the String value associated with the header <CODE>keyword</CODE>. Trailing spaces are not significant in FITS
+     * headers and are automatically omitted during parsing. Leading spaces are however considered significant, and are
+     * retained otherwise.
      *
-     * @param  keyword the FITS keyword
+     * @param      keyword the FITS keyword
+     * 
+     * @deprecated         (<i>for internal use</i>) Will reduced visibility in the future. Use
+     *                         {@link Header#getStringValue(IFitsHeader)} or similar instead followed by
+     *                         {@link String#trim()} if necessary.
      *
-     * @return         either <CODE>null</CODE> or a String with leading/trailing blanks stripped.
+     * @return             either <CODE>null</CODE> or a String with leading/trailing blanks stripped.
      */
     public String getTrimmedString(String keyword) {
         String s = myHeader.getStringValue(keyword);
@@ -769,11 +786,17 @@ public abstract class BasicHDU<DataClass extends Data> implements FitsElement {
     }
 
     /**
-     * Get the String value associated with <CODE>keyword</CODE>.
+     * Get the String value associated with the header <CODE>keyword</CODE>.with leading spaces removed. Trailing spaces
+     * are not significant in FITS headers and are automatically omitted during parsing. Leading spaces are however
+     * considered significant, and are retained otherwise.
      *
-     * @param  keyword the FITS keyword
+     * @param      keyword the FITS keyword
+     * 
+     * @deprecated         (<i>for internal use</i>) Will reduced visibility in the future. Use
+     *                         {@link Header#getStringValue(String)} or similar instead followed by
+     *                         {@link String#trim()} if necessary.
      *
-     * @return         either <CODE>null</CODE> or a String with leading/trailing blanks stripped.
+     * @return             either <CODE>null</CODE> or a String with leading/trailing blanks stripped.
      */
     public String getTrimmedString(IFitsHeader keyword) {
         return getTrimmedString(keyword.key());

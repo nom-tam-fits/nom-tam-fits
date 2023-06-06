@@ -547,16 +547,7 @@ public class HeaderCard implements CursorValue<String>, Cloneable {
         }
         if (isStringValue()) {
             // Discard trailing spaces
-            int to = aValue.length();
-            while (--to >= 0) {
-                if (!Character.isSpaceChar(aValue.charAt(to))) {
-                    break;
-                }
-            }
-            to++;
-            if (to < aValue.length()) {
-                aValue = aValue.substring(0, to);
-            }
+            aValue = trimEnd(aValue);
 
             // Remember that quotes get doubled in the value...
             String printValue = aValue.replace("'", "''");
@@ -1132,6 +1123,9 @@ public class HeaderCard implements CursorValue<String>, Cloneable {
         StringBuilder longComment = null;
 
         while (next != null) {
+            if (!next.isString()) {
+                break;
+            }
             String valuePart = next.getValue();
             String untrimmedComment = next.getUntrimmedComment();
 
@@ -1185,8 +1179,27 @@ public class HeaderCard implements CursorValue<String>, Cloneable {
         }
 
         comment = longComment == null ? null : longComment.toString().trim();
-        value = longValue.toString().trim();
+        value = trimEnd(longValue.toString());
         type = String.class;
+    }
+
+    /**
+     * Removes the trailing spaces (if any) from a string. According to the FITS standard, trailing spaces in string are
+     * not significant (but leading spaces are). As such we should remove trailing spaces when parsing header string
+     * values.
+     * 
+     * @param  s the string as it appears in the FITS header
+     * 
+     * @return   the input string if it has no trailing spaces, or else a new string with the trailing spaces removed.
+     */
+    private String trimEnd(String s) {
+        int end = s.length();
+        for (; end > 0; end--) {
+            if (!Character.isSpaceChar(s.charAt(end - 1))) {
+                break;
+            }
+        }
+        return end == s.length() ? s : s.substring(0, end);
     }
 
     /**

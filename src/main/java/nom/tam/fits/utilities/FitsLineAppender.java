@@ -46,8 +46,7 @@ import nom.tam.fits.HeaderCard;
  *
  * @author     Richard van Nieuwenhoven
  *
- * @deprecated Was needed by {@link FitsLineAppender} only, which itself is deprecated in favor of the package-level
- *                 <code>nom.tam.fits.HeaderCardFormatter</code>.
+ * @deprecated (<i>for internal use</i>) Replaced by the package-level <code>nom.tam.fits.HeaderCardFormatter</code>.
  */
 @Deprecated
 public class FitsLineAppender {

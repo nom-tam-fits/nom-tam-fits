@@ -70,6 +70,7 @@ import static nom.tam.fits.header.Standard.XTENSION_IMAGE;
  * 
  * @see BinaryTableHDU
  */
+@SuppressWarnings("deprecation")
 public class RandomGroupsHDU extends BasicHDU<RandomGroupsData> {
 
     @Override
@@ -292,6 +293,23 @@ public class RandomGroupsHDU extends BasicHDU<RandomGroupsData> {
             stream.println("    Parameters: " + ArrayFuncs.arrayDescription(data[0][0]));
             stream.println("    Data:" + ArrayFuncs.arrayDescription(data[0][1]));
         }
+    }
+
+    /**
+     * Returns the number of parameter bytes (per data group) accompanying each data object in the group.
+     */
+    @Override
+    public int getParameterCount() {
+        return super.getParameterCount();
+    }
+
+    /**
+     * Returns the number of data objects (of identical shape and size) that are group together in this HDUs data
+     * segment.
+     */
+    @Override
+    public int getGroupCount() {
+        return super.getGroupCount();
     }
 
     /**
