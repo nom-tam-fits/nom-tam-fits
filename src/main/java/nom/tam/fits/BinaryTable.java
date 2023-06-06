@@ -125,6 +125,23 @@ public class BinaryTable extends AbstractTableData {
          */
         private Object column;
 
+        /**
+         * Creates a new column descriptor with default settings and 32-bit integer heap pointers.
+         */
+        protected ColumnDesc() {
+            this(false);
+        }
+
+        /**
+         * Creates a new column descriptor with default settings, and the specified type of heap pointers
+         * 
+         * @param isLongVary <code>true</code> to use 64-bit heap pointers for variable-length arrays or else
+         *                       <code>false</code> to use 32-bit pointers.
+         */
+        protected ColumnDesc(boolean isLongVary) {
+            this.isLongVary = isLongVary;
+        }
+
         @Override
         public Object clone() {
             try {
@@ -268,6 +285,8 @@ public class BinaryTable extends AbstractTableData {
      */
     private ArrayDataInput currInput;
 
+    private boolean createLongVary = false;
+
     /**
      * Create a null binary table data segment.
      */
@@ -385,6 +404,35 @@ public class BinaryTable extends AbstractTableData {
     }
 
     /**
+     * Enables or disables the use of <code>long</code> heap pointers rather than
+     * <code>int<code> pointers, when creating
+     * variable length columns in this table.
+     * 
+     * @param value     <code>true</code> to use 64-bit heap pointers, or <code>false</code> for 32-bit pointers.
+     * 
+     * @since       1.18
+     * 
+     * @see         #isCreateLongVary()
+     */
+    public void setCreateLongVary(boolean value) {
+        createLongVary = value;
+    }
+
+    /**
+     * Checks if <code>long</code> heap pointers are used rather than <code>int<code> pointers, when creating
+     * variable length columns in this table.
+     * 
+     * @return   <code>true</code> if 64-bit heap pointers are to be used, or <code>false</code> if 32-bit pointers.
+     * 
+     * @since  1.18
+     * 
+     * @see    #setCreateLongVary(boolean)
+     */
+    public boolean isCreateLongVary() {
+        return createLongVary;
+    }
+
+    /**
      * @deprecated               intended for internal use. It may become a private method in the future.
      *
      * @param      table         the table to create the column data.
@@ -473,7 +521,7 @@ public class BinaryTable extends AbstractTableData {
     @Override
     public int addColumn(Object o) throws FitsException {
         int primeDim = Array.getLength(o);
-        ColumnDesc added = new ColumnDesc();
+        ColumnDesc added = new ColumnDesc(createLongVary);
         columnList.add(added);
 
         // A varying length column is a two-d primitive
@@ -846,13 +894,8 @@ public class BinaryTable extends AbstractTableData {
         return table.getTypes();
     }
 
-    /**
-     * @deprecated Strongly discouraged, since it requires data to be supplied in an unnatural flattened format or heap
-     *                 pointers only for variable-sized data (use {@link #setElement(int, int, Object)} instead).
-     */
     @Override
     public void setColumn(int col, Object xcol) throws FitsException {
-
         ColumnDesc colDesc = columnList.get(col);
         xcol = arrayToColumn(colDesc, xcol);
         xcol = ArrayFuncs.flatten(xcol);
@@ -929,10 +972,6 @@ public class BinaryTable extends AbstractTableData {
     @Override
     public void write(ArrayDataOutput os) throws FitsException {
         ensureData();
-
-        if (table == null) {
-            return;
-        }
 
         try {
             table.write(os);
@@ -1322,10 +1361,6 @@ public class BinaryTable extends AbstractTableData {
         }
 
         int oLength = Array.getLength(o);
-        if (oLength < 2) {
-            return false;
-        }
-
         int flen = Array.getLength(Array.get(o, 0));
         for (int i = 1; i < oLength; i++) {
             if (Array.getLength(Array.get(o, i)) != flen) {
@@ -1484,10 +1519,9 @@ public class BinaryTable extends AbstractTableData {
      * @throws TableException if the column could not be added.
      */
     protected void addByteVaryingColumn() throws TableException {
-        ColumnDesc added = new ColumnDesc();
+        ColumnDesc added = new ColumnDesc(createLongVary);
         columnList.add(added);
         added.isVarying = true;
-        added.isLongVary = true;
         added.dimens = new int[] {2};
         added.size = 2;
         added.base = byte.class;
@@ -1601,7 +1635,7 @@ public class BinaryTable extends AbstractTableData {
 
         ColumnDesc added;
         if (!allocated) {
-            added = new ColumnDesc();
+            added = new ColumnDesc(createLongVary);
             added.dimens = dims;
         } else {
             added = columnList.get(columnList.size() - 1);
@@ -1792,6 +1826,35 @@ public class BinaryTable extends AbstractTableData {
     }
 
     /**
+     * Checks if a column contains variable-length data.
+     * 
+     * @param  index the column index
+     * 
+     * @return       <code>true</code> if the column contains variable-length data, otherwise <code>false</code>
+     * 
+     * @since        1.18
+     */
+    public final boolean isVarLengthColumn(int index) {
+        return columnList.get(index).isVarying;
+    }
+
+    /**
+     * Checks if a column contains complex-valued data (rather than just regular float or double arrays)
+     * 
+     * @param  index the column index
+     * 
+     * @return       <code>true</code> if the column contains complex valued data (as floats or doubles), otherwise
+     *                   <code>false</code>
+     * 
+     * @since        1.18
+     * 
+     * @see          #setComplexColumn(int)
+     */
+    public final boolean isComplexColumn(int index) {
+        return columnList.get(index).isComplex;
+    }
+
+    /**
      * Convert a column from float/double to float complex/double complex. This is only possible for certain columns.
      * The return status indicates if the conversion is possible.
      *
@@ -1800,8 +1863,12 @@ public class BinaryTable extends AbstractTableData {
      * @return               Whether the conversion is possible. *
      *
      * @throws FitsException if the operation failed
+     * 
+     * @since                1.18
+     * 
+     * @see                  #isComplexColumn(int)
      */
-    boolean setComplexColumn(int index) throws FitsException {
+    public boolean setComplexColumn(int index) throws FitsException {
         // Currently there is almost no change required to the BinaryTable
         // object itself when we convert an eligible column to complex, since
         // the internal
@@ -1834,7 +1901,9 @@ public class BinaryTable extends AbstractTableData {
         // We need to make sure that for every row, there are
         // an even number of elements so that we can
         // convert to an integral number of complex numbers.
-        Object col = getFlattenedColumn(index);
+        ensureData();
+        Object col = table.getColumn(index);
+
         if (col instanceof int[]) {
             int[] ptrs = (int[]) col;
             for (int i = 1; i < ptrs.length; i += 2) {

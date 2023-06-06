@@ -629,8 +629,8 @@ public class ColumnTable<T> implements DataTable {
     }
 
     /**
-     * @deprecated Strongly discouraged, since it returns data in an unnatural flattened format or  heap pointers only for
-     *                 variable-sized data (use {@link #getElement(int, int)} instead)
+     * @deprecated Strongly discouraged, since it returns data in an unnatural flattened format or heap pointers only
+     *                 for variable-sized data (use {@link #getElement(int, int)} instead)
      */
     @Override
     public Object getColumn(int col) {
@@ -638,7 +638,7 @@ public class ColumnTable<T> implements DataTable {
     }
 
     /**
-     * @deprecated Strongly discouraged, since it returns columns in an unnatural flattened format or  heap pointers only
+     * @deprecated Strongly discouraged, since it returns columns in an unnatural flattened format or heap pointers only
      *                 for variable-sized data (use {@link #getElement(int, int)} or {@link #getRow(int)} instead)
      * 
      * @return     An array containing the flattened data for each column. Each columns's data is represented by a
@@ -763,10 +763,6 @@ public class ColumnTable<T> implements DataTable {
         }
     }
 
-    /**
-     * @deprecated Strongly discouraged, since it requires data to be supplied in an unnatural flattened format or heap
-     *                 pointer only for variable-sized data (use {@link #setElement(int, int, Object)} instead).
-     */
     @Override
     public void setColumn(int col, Object newColumn) throws TableException {
 

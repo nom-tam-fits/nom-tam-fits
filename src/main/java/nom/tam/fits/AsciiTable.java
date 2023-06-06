@@ -780,10 +780,6 @@ public class AsciiTable extends AbstractTableData {
         return res;
     }
 
-    /**
-     * @deprecated Strongly discouraged, since it requires data to be supplied in an unnatural flattened format or heap
-     *                 pointers only for variable-sized data (use {@link #setElement(int, int, Object)} instead).
-     */
     @Override
     public void setColumn(int col, Object newData) throws FitsException {
         ensureData();

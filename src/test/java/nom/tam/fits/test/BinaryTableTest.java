@@ -1688,6 +1688,66 @@ public class BinaryTableTest {
         hdu.getData().getRow(0);
     }
 
+    @Test
+    public void testModelRow() throws Exception {
+        BinaryTable bt = createTestTable();
+
+        Object[] m = bt.getModelRow();
+
+        assertEquals(8, m.length);
+
+        assertEquals(floats[0].getClass(), m[0].getClass());
+        assertEquals(int[].class, m[1].getClass()); // var-array
+        assertEquals(byte[].class, m[2].getClass()); // string
+        assertEquals(int[].class, m[3].getClass()); // var-array
+        assertEquals(int[].class, m[4].getClass()); // int
+        assertEquals(int[].class, m[5].getClass()); // var-array
+        assertEquals(float[].class, m[6].getClass()); // complex
+        assertEquals(byte[][].class, m[7].getClass()); // string[]
+    }
+
+    @Test
+    public void testConvertVarComplexColumn() throws Exception {
+        float[][] f = new float[3][];
+
+        f[0] = new float[10];
+        f[1] = new float[2];
+        f[2] = new float[14];
+
+        BinaryTable t = new BinaryTable();
+        t.setCreateLongVary(false);
+        t.addColumn(f);
+        Assert.assertTrue(t.isVarLengthColumn(0));
+
+        BinaryTableHDU h = new BinaryTableHDU(new Header(), t);
+        t.fillHeader(h.getHeader());
+
+        Assert.assertFalse(h.isComplexColumn(0));
+        h.setComplexColumn(0);
+        Assert.assertTrue(h.isComplexColumn(0));
+    }
+
+    @Test
+    public void testConvertLongVarComplexColumn() throws Exception {
+        float[][] f = new float[3][];
+
+        f[0] = new float[10];
+        f[1] = new float[2];
+        f[2] = new float[14];
+
+        BinaryTable t = new BinaryTable();
+        t.setCreateLongVary(true);
+        t.addColumn(f);
+        Assert.assertTrue(t.isVarLengthColumn(0));
+
+        BinaryTableHDU h = new BinaryTableHDU(new Header(), t);
+        t.fillHeader(h.getHeader());
+
+        Assert.assertFalse(h.isComplexColumn(0));
+        h.setComplexColumn(0);
+        Assert.assertTrue(h.isComplexColumn(0));
+    }
+
     private BinaryTable createTestTable() throws FitsException {
         BinaryTable btab = new BinaryTable();
 
