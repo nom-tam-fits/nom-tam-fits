@@ -157,4 +157,12 @@ public class FitsHeapTest {
         heap.putData(new Header());
     }
 
+    @Test
+    public void testHeapSize() throws Exception {
+        int size = 1033;
+        FitsHeap heap = new FitsHeap(size);
+        Assert.assertEquals(size, heap.getSize());
+
+    }
+
 }
