@@ -122,6 +122,7 @@ public class CompressedTableData extends BinaryTable {
         }
         tiles = new ArrayList<>();
         for (int column = 0; column < ncols; column++) {
+            setCreateLongVary(true);
             addByteVaryingColumn();
             int tileIndex = 1;
             for (int rowStart = 0; rowStart < nrows; rowStart += rowsPerTile) {

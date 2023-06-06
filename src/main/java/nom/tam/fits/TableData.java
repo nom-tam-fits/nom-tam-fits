@@ -225,10 +225,8 @@ public interface TableData {
     Object[] getRow(int row) throws FitsException;
 
     /**
-     * Sets new data for a table column. Unlike {@link #addColumn(Object)}, the
-     * data must be supplied in flattened form as a single 1D array. See
-     * {@link #addColumn(Object)} for more information on the column data
-     * format.
+     * Sets new data for a table column. See {@link #addColumn(Object)} for more
+     * information on the column data format.
      * 
      * @param col
      *            the 0-based column index
@@ -238,10 +236,6 @@ public interface TableData {
      *            information on the column data format.
      * @throws FitsException
      *             if the table could not be modified
-     * @deprecated Strongly discouraged, since it requires data to be supplied in
-     *             an unnatural flattened format or heap pointers only for
-     *             variable-sized data (use
-     *             {@link #setElement(int, int, Object)} instead).
      * @see #getNCols()
      * @see #getColumn(int)
      * @see #setRow(int, Object[])

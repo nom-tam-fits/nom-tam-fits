@@ -127,7 +127,7 @@ public abstract class BasicHDU<DataClass extends Data> implements FitsElement {
     protected DataClass myData = null;
 
     /**
-     * Creates a new HDU from the specified FITS header and associated data object
+     * Creates a new HDU from the specified FITS header and associated data object.
      * 
      * @deprecated          intended for internal use. Its visibility should be reduced to package level in the future.
      * 

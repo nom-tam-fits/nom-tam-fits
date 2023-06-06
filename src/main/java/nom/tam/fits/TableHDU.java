@@ -406,39 +406,34 @@ public abstract class TableHDU<T extends AbstractTableData> extends BasicHDU<T> 
     }
 
     /**
-     * Update a column within a table. The new column should have the same format ast the column being replaced.
+     * Update a column within a table. The new column should have the same format ast the column being replaced. See
+     * {@link TableData#addColumn(Object)} for more information about the column data format.
      *
-     * @param      col           index of the column to replace
-     * @param      newCol        the replacement column
+     * @param  col           index of the column to replace
+     * @param  newCol        the replacement column
      *
-     * @throws     FitsException if the operation failed
+     * @throws FitsException if the operation failed
      * 
-     * @deprecated               Strongly discouraged, since it requires data to be supplied in an unnatural flattened
-     *                               format or heap pointers only for variable-sized data (use
-     *                               {@link #setElement(int, int, Object)} instead).
-     * 
-     * @see                      #getColumn(int)
-     * @see                      #setColumn(String, Object)
+     * @see                  #getColumn(int)
+     * @see                  #setColumn(String, Object)
+     * @see                  TableData#addColumn(Object)
      */
     public void setColumn(int col, Object newCol) throws FitsException {
         myData.setColumn(col, newCol);
     }
 
     /**
-     * Update a column within a table. The new column should have the same format as the column being replaced.
+     * Update a column within a table. The new column should have the same format as the column being replaced. See
+     * {@link TableData#addColumn(Object)} for more information about the column data format.
      *
-     * @param      colName       name of the column to replace
-     * @param      newCol        the replacement column
+     * @param  colName       name of the column to replace
+     * @param  newCol        the replacement column
      *
-     * @throws     FitsException if the operation failed
+     * @throws FitsException if the operation failed
      * 
-     * @deprecated               Strongly discouraged, since it requires data to be supplied in an unnatural flattened
-     *                               format or heap pointers only for variable-sized data (use
-     *                               {@link #findColumn(String)} in combination with
-     *                               {@link #setElement(int, int, Object)} instead).
-     * 
-     * @see                      #getColumn(String)
-     * @see                      #setColumn(int, Object)
+     * @see                  #getColumn(String)
+     * @see                  #setColumn(int, Object)
+     * @see                  TableData#addColumn(Object)
      */
     public void setColumn(String colName, Object newCol) throws FitsException {
         setColumn(findColumn(colName), newCol);

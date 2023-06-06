@@ -441,6 +441,14 @@ public class FitsDecoderTest {
         e.readImage(new boolean[10]);
     }
 
+    @Test
+    public void testReadZeroLengthImage() throws Exception {
+        byte[] data = new byte[100];
+        FitsDecoder e = new FitsDecoder(InputReader.from(new ByteArrayInputStream(data)));
+        e.readImage(new byte[0]);
+        // No exception
+    }
+
     private static class EOFExceptionInputReader implements InputReader {
         @Override
         public int read(byte[] b, int off, int len) throws IOException {

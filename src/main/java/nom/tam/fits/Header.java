@@ -99,11 +99,11 @@ import static nom.tam.fits.header.extra.CXCExt.LONGSTRN;
  * Beyond the keywords that describe the type, shape, and size of data, the library will not add further information to
  * the header. The users of the library are responsible to complete the header description as necessary. This includes
  * non-enssential data descriptions (such as <code>EXTNAME</code>, <code>BUNIT</code>, <code>OBSERVER</code>, or
- * optional table column descriptors <code>TTYPE</code><i>n</i>, <code>TDIM</code><i>n</i>, <code>TUNIT</code><i>n</i>,
- * coordinate systems via the appropriate WCS keywords, or checksums). Users of the library are responsible for
- * completing the data description using whatever standard or conventional keywords are available and appropriate.
- * Please refer to the <a href="https://fits.gsfc.nasa.gov/fits_standard.html">FITS Standard</a> documentation to see
- * what typical descriptions of data you might want to use.
+ * optional table column descriptors <code>TTYPE</code><i>n</i>, <code>TUNIT</code><i>n</i>, coordinate systems via the
+ * appropriate WCS keywords, or checksums). Users of the library are responsible for completing the data description
+ * using whatever standard or conventional keywords are available and appropriate. Please refer to the
+ * <a href="https://fits.gsfc.nasa.gov/fits_standard.html">FITS Standard</a> documentation to see what typical
+ * descriptions of data you might want to use.
  * </p>
  * <p>
  * Last but not least, the header is also a place where FITS creators can store (nearly) arbitrary key/value pairs. In

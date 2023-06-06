@@ -193,9 +193,6 @@ public class BinaryTableHDU extends TableHDU<BinaryTable> {
 
     @Override
     public void info(PrintStream stream) {
-
-        BinaryTable myData = this.myData;
-
         stream.println("  Binary Table");
         stream.println("      Header Information:");
 
@@ -215,23 +212,13 @@ public class BinaryTableHDU extends TableHDU<BinaryTable> {
         }
 
         stream.println("      Data Information:");
-        if (myData == null) {
-            stream.println("         No data present");
-        } else if (this.myData.getNRows() == 0 || this.myData.getNCols() == 0) {
-            stream.println("         Empty data content");
-            if (this.myData.getHeapSize() > 0) {
-                stream.println("         Heap size is: " + this.myData.getHeapSize() + " bytes");
-            }
-        } else {
-            stream.println("          Number of rows=" + this.myData.getNRows());
-            stream.println("          Number of columns=" + this.myData.getNCols());
-            if (this.myData.getHeapSize() > 0) {
-                stream.println("         Heap size is: " + this.myData.getHeapSize() + " bytes");
-            }
-            Object[] cols = this.myData.getFlatColumns();
-            for (int i = 0; i < cols.length; i++) {
-                stream.println("           " + i + ":" + ArrayFuncs.arrayDescription(cols[i]));
-            }
+        stream.println("          Number of rows=" + myData.getNRows());
+        stream.println("          Number of columns=" + myData.getNCols());
+        stream.println("          Heap size is: " + myData.getHeapSize() + " bytes");
+
+        Object[] cols = myData.getFlatColumns();
+        for (int i = 0; i < cols.length; i++) {
+            stream.println("           " + i + ":" + ArrayFuncs.arrayDescription(cols[i]));
         }
     }
 
@@ -255,6 +242,23 @@ public class BinaryTableHDU extends TableHDU<BinaryTable> {
     }
 
     /**
+     * Checks if a column contains complex-valued data (rather than just regular float or double arrays)
+     * 
+     * @param  index the column index
+     * 
+     * @return       <code>true</code> if the column contains complex valued data (as floats or doubles), otherwise
+     *                   <code>false</code>
+     * 
+     * @since        1.18
+     * 
+     * @see          BinaryTable#isComplexColumn(int)
+     * @see          #setComplexColumn(int)
+     */
+    public final boolean isComplexColumn(int index) {
+        return myData.isComplexColumn(index);
+    }
+
+    /**
      * Convert a column in the table to complex. Only tables with appropriate types and dimensionalities can be
      * converted. It is legal to call this on a column that is already complex.
      *
@@ -263,59 +267,58 @@ public class BinaryTableHDU extends TableHDU<BinaryTable> {
      * @return               Whether the column can be converted
      *
      * @throws FitsException if the header could not be adapted
+     * 
+     * @see                  BinaryTableHDU#setComplexColumn(int)
      */
     public boolean setComplexColumn(int index) throws FitsException {
-        Standard.context(BinaryTable.class);
-        boolean status = false;
-        if (myData.setComplexColumn(index)) {
-            // No problem with the data. Make sure the header
-            // is right.
-            BinaryTable.ColumnDesc colDesc = myData.getDescriptor(index);
-            int dim = 1;
-            String tdim = "";
-            String sep = "";
-            // Don't loop over all values.
-            // The last is the [2] for the complex data.
-            int[] dimens = colDesc.getDimens();
-            for (int i = 0; i < dimens.length - 1; i++) {
-                dim *= dimens[i];
-                tdim = dimens[i] + sep + tdim;
-                sep = ",";
-            }
-            String suffix = "C"; // For complex
-            // Update the TFORMn keyword.
 
-            if (colDesc.getBase() == double.class) {
-                suffix = "M";
-            }
-            // Worry about variable length columns.
-            String prefix = "";
-            if (myData.getDescriptor(index).isVarying()) {
-                prefix = "P";
-                dim = 1;
-                if (myData.getDescriptor(index).isLongVary()) {
-                    prefix = "Q";
-                }
-            }
-            // Now update the header.
-            myHeader.findCard(TFORMn.n(index + 1));
-            HeaderCard hc = myHeader.nextCard();
-            String oldComment = hc.getComment();
-            if (oldComment == null) {
-                oldComment = "Column converted to complex";
-            }
-            myHeader.card(TFORMn.n(index + 1)).value(dim + prefix + suffix).comment(oldComment);
-            if (tdim.length() > 0) {
-                myHeader.addValue(TDIMn.n(index + 1), "(" + tdim + ")");
-            } else {
-                // Just in case there used to be a TDIM card that's no longer
-                // needed.
-                myHeader.deleteKey(TDIMn.n(index + 1));
-            }
-            status = true;
+        if (!myData.setComplexColumn(index)) {
+            return false;
         }
+
+        Standard.context(BinaryTable.class);
+
+        // No problem with the data. Make sure the header
+        // is right.
+        BinaryTable.ColumnDesc colDesc = myData.getDescriptor(index);
+        int dim = 1;
+        String tdim = "";
+        String sep = "";
+        // Don't loop over all values.
+        // The last is the [2] for the complex data.
+        int[] dimens = colDesc.getDimens();
+        for (int i = 0; i < dimens.length - 1; i++) {
+            dim *= dimens[i];
+            tdim = dimens[i] + sep + tdim;
+            sep = ",";
+        }
+        String suffix = "C"; // For complex
+        // Update the TFORMn keyword.
+
+        if (colDesc.getBase() == double.class) {
+            suffix = "M";
+        }
+        // Worry about variable length columns.
+        String prefix = "";
+        if (myData.getDescriptor(index).isVarying()) {
+            prefix = "P";
+            dim = 1;
+            if (myData.getDescriptor(index).isLongVary()) {
+                prefix = "Q";
+            }
+        }
+        // Now update the header.
+        myHeader.card(TFORMn.n(index + 1)).value(dim + prefix + suffix).comment("converted to complex");
+        if (tdim.length() > 0) {
+            myHeader.addValue(TDIMn.n(index + 1), "(" + tdim + ")");
+        } else {
+            // Just in case there used to be a TDIM card that's no longer
+            // needed.
+            myHeader.deleteKey(TDIMn.n(index + 1));
+        }
+
         Standard.context(null);
-        return status;
+        return true;
     }
 
     // Need to tell header about the Heap before writing.
