@@ -47,6 +47,7 @@ import nom.tam.util.ArrayDataOutput;
 import nom.tam.util.ArrayFuncs;
 import nom.tam.util.ColumnTable;
 import nom.tam.util.Cursor;
+import nom.tam.util.FitsEncoder;
 import nom.tam.util.FitsIO;
 import nom.tam.util.RandomAccess;
 import nom.tam.util.TableException;
@@ -1004,6 +1005,13 @@ public class BinaryTable extends AbstractTableData {
     }
 
     private Object arrayToVariableColumn(ColumnDesc added, Object o) throws FitsException {
+        if (!added.isLongVary()) {
+            if (getHeapSize() + FitsEncoder.computeSize(o) > Integer.MAX_VALUE) {
+                // Automatically bump heap pointer size if we need it
+                added.isLongVary = true;
+            }
+        }
+
         if (added.isBoolean) {
             // Handle addRow/addElement
             if (o instanceof boolean[]) {
@@ -1513,7 +1521,8 @@ public class BinaryTable extends AbstractTableData {
     }
 
     /**
-     * (<i>for internal use</i>)
+     * (<i>for internal use</i>) Used Only by {@link nom.tam.image.compression.hdu.CompressedTableData} so it would make
+     * a better private method in there.
      * 
      * @throws TableException if the column could not be added.
      */
