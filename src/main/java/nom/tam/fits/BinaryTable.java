@@ -337,7 +337,7 @@ public class BinaryTable extends AbstractTableData {
             throw new FitsException("Inconsistent THEAP and PCOUNT");
         }
 
-        heap = new FitsHeap(heapSize - heapOffset);
+        heap = new FitsHeap(heapSize);
         int nCol = myHeader.getIntValue(TFIELDS);
         rowLen = 0;
         for (int col = 0; col < nCol; col++) {
@@ -621,8 +621,8 @@ public class BinaryTable extends AbstractTableData {
     }
 
     /**
-     * @deprecated Strongly discouraged, since it returns data in an unnatural flattened format (use
-     *                 {@link #getElement(int, int)} instead)
+     * @deprecated Strongly discouraged, since it returns data in an unnatural flattened format or heap pointers only
+     *                 for variable-sized data (use {@link #getElement(int, int)} instead)
      */
     @Override
     public Object getColumn(int col) throws FitsException {
@@ -830,8 +830,8 @@ public class BinaryTable extends AbstractTableData {
     }
 
     /**
-     * @deprecated Strongly discouraged, since it requires data to be supplied in an unnatural flattened format (use
-     *                 {@link #setElement(int, int, Object)} instead) .
+     * @deprecated Strongly discouraged, since it requires data to be supplied in an unnatural flattened format or heap
+     *                 pointers only for variable-sized data (use {@link #setElement(int, int, Object)} instead).
      */
     @Override
     public void setColumn(int col, Object xcol) throws FitsException {
@@ -1391,7 +1391,9 @@ public class BinaryTable extends AbstractTableData {
     }
 
     /**
-     * Process one column from a FITS Header. * @throws FitsException if the operation failed
+     * Process one column from a FITS Header.
+     * 
+     * @throws FitsException if the operation failed
      */
     private int processCol(Header header, int col) throws FitsException {
         String tform = header.getStringValue(TFORMn.n(col + 1));

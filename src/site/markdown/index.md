@@ -147,8 +147,8 @@ If you want to try the bleeding edge version of nom-tam-fits, you can get it fro
  - [Deferred reading](#deferred-reading)
  - [Reading images](#reading-images)
  - [Reading tables](#reading-tables)
- - [Low-level reads](#low-level-reads)
  - [Tolerance to standard violations in 3rd party FITS files](#read-tolerance)
+ 
 
 To read a FITS file the user typically might open a `Fits` object, get the appropriate HDU using the `getHDU` method and then get the data using `getKernel()`.
 
@@ -165,6 +165,7 @@ As of version 1.18, all data classes of the library support deferred reading.
 - [Reading whole images](#reading-whole-images)
 - [Reading selected parts of images only (cutouts)](#reading-cutouts)
 - [Streaming image cutouts](#streaming-cutouts)
+- [Low-level reading of image data](#low-level-image-read)
 
 <a name="reading-whole-images"></a>
 #### Reading whole images
@@ -267,104 +268,8 @@ This can be achieved much the same way as in the above example, replacing `image
 ```
 
 
-<a name="reading-tables"></a>
-### Reading Tables
-
- - [Reading complete tables](#reading-complete-tables)
- - [Reading specific columns](#reading-columns)
- - [Reading by row](#reading-rows)
- 
-
-When reading tabular data the user has a variety of ways to read the data.
-The entire table can be read at once, or the data can be read in pieces, by row, by column or just an individual element.
-
-<a name="reading-complete-tables"></a>
-#### Reading a complete table at once
-
-When an entire table is read at once, the user gets back an `Object[]` array.
-Each element of this array points to a column from the FITS file.
-Scalar values are represented as one dimensional arrays with the length of the array being the number of columns in the array. 
-Strings are typically also returned as `String[]` where the elements are trimmed of trailing blanks.
-If a binary table has non-scalar columns of some dimensionality n,
-then the dimensionality of the corresponding array in the `Object[]` array is increased to n+1 to accommodate.
-The first dimension is the row index.
-If variable length elements are used, 
-then the entry is normally a 2-D array which is not rectangular,
-i.e., the number of elements in each row will vary as requested by the user.
-Since Java allows 0-length arrays, missing data is represented by such an array, not a null, for the corresponding row.
-
-Suppose we have a FITS table of sources with the name, RA and Dec of a set of sources and two additional columns with a time series and spectrum for the source.
-
-```java
-  Fits f = new Fits("sourcetable.fits");
-
-  Object[] cols = (Object[]) f.getHDU(1).getColumns();
-
-  String[] names = (String[]) cols[0];
-  double[] ra  = (double[]) cols[1];
-  double[] dec = (double[]) cols[2];
-  double[][] timeseries = (double[][]) cols[3];
-  double[][] spectra    = (double[][]) cols[4];
-```
-
-Now we have a set of arrays where the leading dimensions will all be the same, the number of rows in the table.
-Note that we skipped the first HDU (indexed with 0).
-Tables can never be the first HDU in a FITS file.
-If there is no image data to be written, then typically a null image is written as the first HDU.
-The header for this image may include metadata of interest but we just skip it here. 
-
-<a name="reading-columns"></a>
-#### Reading specific columns
-Often a table will have a large number of columns and we are only interested in a few.
-After opening the Fits object we might try:
-
-```java
-  TableHDU tab = (TableHDU) f.getHDU(1);
-  double[] ra = (double[]) tab.getColumn(1);
-  double[] dec = (double[]) tab.getColumn(2);
-  double[][] spectra = (double[][]) tab.getColumn(4);
-```
-
-**FITS stores tables in row order.**
-The library will still need to read in the entire FITS file even if we only use a few columns.
-We can read data by row if we want to get results without reading the entire file.
-
-
-<a name="reading-rows"></a>
-#### Reading by row
-
-After getting the TableHDU, instead of getting columns we can get the first row.
-
-```java
-  TableHDU tab = (TableHDU) f.getHDU(1);
-  Object[] row = (Object[]) table.getRow(0);
-```
-
-The content of row is similar to that for the cols array we got when we extracted the entire table.
-However if a column has a scalar value, then an array of length 1 will be returned for the row (since a primitive scalar cannot be returned as an Object).
-If the column has a vector value, then the appropriate dimension vector for a single row’s entry will be returned, the dimensionality is one less than when we retrieve an entire column.
-
-```java
-  double[] ra = (double[]) row[1];
-  double[] dec = (double[]) row[2];
-  double[] spectrum = (double[]) row[3];
-```
-
-Here `ra` and `dec` will have length `1`: they are scalars, but the library uses one element arrays to provide a mutable Object wrapper.
-The spectrum may have any length, perhaps `0` if there was no spectrum for this source.
-A user can read rows in any order.
-
-<a name="low-level-reads"></a>
-### Low-level reads
-
- - [Images](#low-level-image-read)
- - [Tables](#low-level-table-read)
-
-A user can get access to the special stream that is used to read the FITS information and then process the data at a lower level using the nom.tam libraries special I/O objects.
-This can be a bit more efficient for large datasets.
-
 <a name="low-level-image-read"></a>
-#### Images
+#### Low-level reading of image data
 Suppose we want to get the average value of a 100,000x20,000 pixel image.
 If the pixels are ints, that’s  an 8 GB file.  We can do
 
@@ -391,42 +296,113 @@ If the pixels are ints, that’s  an 8 GB file.  We can do
 The `reset()` method causes the internal stream to seek to the beginning of the data area.
 If that’s not possible it returns false.
 
-<a name="low-level-table-read"></a>
-#### Tables
-We can process binary tables in a similar way, if they have a fixed structure.
-Since tables are stored row-by-row internally in FITS we first need to get a model row and then we can read in each row in turn.
 
-However this returns data essentially in the representation used by FITS without conversion to internal Java types for String and boolean values.
-Strings are stored as an array of bytes.
-Booleans are bytes with restricted values.
-
-The easy way to get the model for a row is simply to use the `getModelRow()` method.
-Then we use the `nom.tam.utils.FitsEncoder.computeSize` method to get the size in bytes
-of each row.
-
-```java
-  Fits f = new Fits("bigtable.fits");
-     
-  BinaryTableHDU bhdu = (BinaryTableHDU) f.getHDU(1);
-  Object[] row = bhdu.getData().getModelRow();
-  long rowSize = FitsEncoder.computeSize(row);
-     
-  if (bhdu.getData().reset()) {
-      ArrayDataInput in = f.getStream();
-      while (in.readLArray(row) == rowSize) {
-          // process this row
-      }
-  }
-```
      
 Of course the user can build up a template array directly if they know the structure of the table.
 This is not possible for ASCII tables, since the FITS and Java representations of the data are very different.
 It is also harder to do if there are variable length records although something is are possible if the user is willing to deal directly with the FITS heap using the `FitsHeap` class.
 
+
+<a name="reading-tables"></a>
+### Reading Tables
+
+The easiest and safest way to access data in tables, is by individual entries. Typically, we start by identifying our 
+table HDU in the FITS:
+
+```java
+  Fits f = new Fits("mytable.fits");
+
+  // Say, our table is the first extension HDU...
+  TableHDU hdu = (TableHDU) f.getHDU(1);
+```
+
+If we are using a random-accessible input (like the file above), we have the option (for binary tables) to load the entire 
+table into memory first. This may be a good idea for small tables, and/or if we plan to access all the data contained in the 
+table -- or not such a good idea if we deal with huge tables from which we need only a selection of the entries. To load the 
+entire HDU into memory:
+
+```java
+  // This will load the main table and the heap area into memory (if we want to...)
+  hdu.getKernel();
+```
+
+Next, we might want to find which columns store the data we need, using column names if appropriate. (We can of course
+rely on hard-coded column indices too when we know we are dealing with tables of known fixed format).
+
+```java
+  // Find column indices by name and check that they exist...
+  int colUTC = hdu.findColumn("UTC");
+  if (colUTC < 0) {
+      // uh-oh, there is no such column...
+  }
+```
+
+Now we can loop through the rows of interest and pick out the entries we are interested in. For example, to
+loop through all table rows to get only the scalar values from the column named `UTC`, and a spectrum stored
+in the fifth column (i.e. 4 in Java indexing):
+
+```java   
+  // Loop through rows, accessing the relevant column data
+  for(int row = 0; row < tab.getNRows(); row++) {
+  
+      // Retrieve scalar entries by casting the element to the correct array 
+      // type,  and returning the first (and only) element from that array...
+      double utc  = ((double[]) tab.getElement(row, colUTC))[0];
+      
+      // We can also access by fixed column index...
+      float[] spectrum = (float[]) tab.getElement(row, 4);
+      
+      // process the data...
+      ...
+  }
+```
+
+Note that table data is always stored as arrays, even for scalar types, so a single integer entry will be returned as 
+`int[1]`, a single string as `String[1]`. This is because we want to return mutable data types, so Java's `Integer` 
+or `String` are not viable options for us. Complex values are stored as `float[2]` or `double[2]` depending on 
+the precision (FITS type `C` or `M`). So, a double-precision FITS complex array of size `[5][7]` will be returned a 
+`double[5][7][2]`. Logicals return `boolean[]`, which means that while FITS supports `null` logical values, we don't
+and these will default to 'false'. It's an oversight that we are stuck with, at least for now...
+
+Note that for best performance you should access elements in monotonically increasing order -- at least for the rows, 
+but it does not hurt to follow the same principle for columns inside the loops also. This will help about excess 
+buffering that way be required at times when jumping backward.
+
+Row-based access via `getRow(int)` works very similarly to element-based access. In the loop above you'd 
+simply write something like:
+
+```java
+       // Get the entire row...
+       Object[] rowData = tab.getRow(row);
+       
+       // Then pick out entries from that row...
+       double utc = ((double[]) rowData)[0];
+       ...
+```
+
+However, despite the slightly cleaner code, row-based access may be generally slower than element-based access if 
+we do not plan to process all columns, since all columns of the `Object[]` array for the row must be populated 
+regardless of whether we need them or not.
+
+(And, while the library provides methods for accessing entire columns also, these are not trivial to handle, since 
+they return all data for a column as a single 1D array, regardless of the dimensionality of individual elements; 
+and for variable-sized data they returns heap pointers only -- therefore we strongly recommend against column-based 
+header access at present.)
+
+
+
 <a name="read-tolerance"></a>
 ### Tolerance to standard violations in 3rd party FITS files.
 
-By default the library will be tolerant to FITS standard violations when parsing 3rd-party FITS files. We believe that if you use this library to read a FITS produced by other software, you are mainly interested to find out what's inside it, rather than know if it was written properly. However, problems such as missing padding at the end of the file, or an unexpected end-of-file before content was fully parsed, will be logged so they can be inspected. Soft violations of header standards (those that can be overcome with educated guesses) are also tolerared when reading, but logging for these is not enabled by default (since they may be many, and likely you don't care). You can enable logging standard violations in 3rd-party headers by `Header.setParserWarningsEnabled(true)`. You can also enforce stricter compliance to standard when reading FITS files via `FitsFactory.setAllowHeaderRepairs(false)` and `FitsFactory.setAllowTerminalJunk(false)`. When violations are not tolerated, appropriate exceptions will be thrown during reading.
+By default the library will be tolerant to FITS standard violations when parsing 3rd-party FITS files. We believe that 
+if you use this library to read a FITS produced by other software, you are mainly interested to find out what's inside it, 
+rather than know if it was written properly. However, problems such as missing padding at the end of the file, or an 
+unexpected end-of-file before content was fully parsed, will be logged so they can be inspected. Soft violations of header 
+standards (those that can be overcome with educated guesses) are also tolerared when reading, but logging for these is not 
+enabled by default (since they may be many, and likely you don't care). You can enable logging standard violations in 
+3rd-party headers by `Header.setParserWarningsEnabled(true)`. You can also enforce stricter compliance to standard when 
+reading FITS files via `FitsFactory.setAllowHeaderRepairs(false)` and `FitsFactory.setAllowTerminalJunk(false)`. When 
+violations are not tolerated, appropriate exceptions will be thrown during reading.
 
 
 
@@ -451,7 +427,7 @@ For exaple,
   float[][] data = new float[512][512];
      
   Fits f = new Fits();
-  f.addHDU(FitsFactory.hduFactory(data));
+  f.addHDU(Fits.makeHDU(data));
 
   FitsOutputStream out = new FitsOutputStream(new FileOutputStream(new File("img.fits")));     
   f.write(out);
@@ -465,7 +441,7 @@ Or, equivalently, using `Fits.write(String)`:
   float[][] data = new float[512][512];
      
   Fits f = new Fits();
-  f.addHDU(FitsFactory.hduFactory(data));
+  f.addHDU(Fits.makeHDU(data));
      
   f.write("img.fits");
 ```
@@ -642,7 +618,7 @@ We’ll process one channel at a time.
   long rowSize = FitsEncoder.computeSize(row);
   int numRows = 1000;
      
-  BasicHDU hdu = FitsFactory.hduFactory(row);
+  BasicHDU hdu = Fits.makeHDU(row);
   hdu.getHeader().setNaxis(3, numRows);  // set the actual number of rows, we are going to write
      
   FitsFile out = new FitsFile("bigimg.fits", "rw");
@@ -1235,7 +1211,7 @@ The _nom-tam-fits_ library is a community-maintained project. We absolutely rely
 
 3. __Develop__. Feel free to experiment on your fork/branch. If you run into a dead-end, you can always abandon it (which is why branches are great) and start anew. You can run your own test builds locally using `mvn clean test` before committing your changes. If the tests pass, you should also try running `mvn clean package` to ensure that the javadoc etc. are also in order. Remember to synchronize your `master` branch by fetching changes from upstream every once in a while, and merging them into your development branch. Don't forget to:
 
-   - Add __Javadoc__ your new code. You can keep it sweet and simple, but make sure it properly explains your methods, their arguments and return values, and why an what exceptions may be thrown. You should also cross-reference other methods that are similar, related, or relevant to what you just added.
+   - Add __Javadoc__ your new code. You can keep it sweet and simple, but make sure it properly explains your methods, their arguments and return values, and why and what exceptions may be thrown. You should also cross-reference other methods that are similar, related, or relevant to what you just added.
 
    - Add __Unit Tests__. Make sure your new code has as close to full unit test coverage as possible. You should aim for 100% diff coverage. When pushing changes to your fork, you can get a coverage report by checking the Github Actions result of your commit (click the Codecov link), and you can analyze what line(s) of code need to have tests added. Try to create tests that are simple but meaningful (i.e. check for valid results, rather than just confirm existing behavior), and try to cover as many realistic scenarios as appropriate. Write lots of tests if you need to. It's OK to write 100 lines of test code for 5 lines of change. Go for it! And, you will get extra kudos for filling unit testing holes outside of your area of development!
 
