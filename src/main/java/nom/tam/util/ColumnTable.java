@@ -113,6 +113,23 @@ public class ColumnTable<T> implements DataTable, Cloneable {
     }
 
     /**
+     * Makes sure that the table is expanded to hold up to the specified number of rows without having to grow
+     * dynamically. Typically it not necessary when adding new rows to the table, as the automatic dynamic allocation is
+     * quite efficient, but if you know in advance how many rows you want to add to the table, it does not hurt to just
+     * grow the table once, raher than a few times potentially. Note, that if deleting rows may annul the effect of this
+     * call, and shrink the table to a reasonable size after the deletions.
+     * 
+     * @param rows the number of rows we will want the table to hold in the future...
+     * 
+     * @see        #addRow(Object[])
+     */
+    public void ensureSize(int rows) {
+        for (Column<?> c : columns) {
+            c.ensureSize(rows);
+        }
+    }
+
+    /**
      * Adds a column as an array of scalars or regular 1D primitve array elements.
      *
      * @param  newColumn      the column to add, either as a 1D array of scalar primitives, or a regular 2D array of
@@ -272,6 +289,8 @@ public class ColumnTable<T> implements DataTable, Cloneable {
      *
      * @throws TableException if the row contains other than 1D primitive array elements or if the elements do not match
      *                            the types and sizes of existing table columns.
+     * 
+     * @see                   #deleteRow(int)
      */
     public synchronized void addRow(Object[] row) throws TableException {
         if (nrow == Integer.MAX_VALUE) {
@@ -563,161 +582,6 @@ public class ColumnTable<T> implements DataTable, Cloneable {
             throw new ArrayIndexOutOfBoundsException(row);
         }
         return columns.get(col).getArrayElement(row);
-    }
-
-    /**
-     * Returns a table element, using the usual Java boxing for primitive scalar entries.
-     * 
-     * @param  row the zero-based row index
-     * @param  col the zero-based column index
-     * 
-     * @return     the element, either as a Java boxed type (for scalar entries), or as a primitive array
-     * 
-     * @see        #getNumber(int, int)
-     * @see        #getBoolean(int, int)
-     * @see        #getString(int, int)
-     * 
-     * @since      1.18
-     */
-    public Object getBoxedElement(int row, int col) {
-        if (row > nrow) {
-            throw new ArrayIndexOutOfBoundsException(row);
-        }
-        return columns.get(col).get(row);
-    }
-
-    /**
-     * Returns the numerical value, if possible, for scalar elements
-     * 
-     * @param  row                the zero-based row index
-     * @param  col                the zero-based column index
-     * 
-     * @return                    the number value of the specified scalar entry
-     * 
-     * @throws ClassCastException if the specified column in not a numerical scalar type.
-     * 
-     * @see                       #setNumber(int, int, Number)
-     * @see                       #getBoxedElement(int, int)
-     * 
-     * @since                     1.18
-     */
-    public final Number getNumber(int row, int col) throws ClassCastException {
-        return (Number) getBoxedElement(row, col);
-    }
-
-    /**
-     * Returns the boolean value, if possible, for scalar elements
-     * 
-     * @param  row                the zero-based row index
-     * @param  col                the zero-based column index
-     * 
-     * @return                    the boolean value of the specified scalar entry
-     * 
-     * @throws ClassCastException if the specified column in not a scalar boolean type.
-     * 
-     * @see                       #setBoolean(int, int, Number)
-     * @see                       #getBoxedElement(int, int)
-     * 
-     * @since                     1.18
-     */
-    public final Boolean getBoolean(int row, int col) throws ClassCastException {
-        return (Boolean) getBoxedElement(row, col);
-    }
-
-    /**
-     * Returns the string value, if possible, for scalar elements. All scalar column will return the string
-     * representation of their values, while <code>byte[]</code> and <coce>char[]</code> are converted to appropriate
-     * stringa.
-     * 
-     * @param  row                the zero-based row index
-     * @param  col                the zero-based column index
-     * 
-     * @return                    the string representatiof the specified table entry
-     * 
-     * @throws ClassCastException if the specified column contains array elements other than <code>byte[]</code> or
-     *                                <coce>char[]</code>
-     * 
-     * @see                       #setString(int, int, String)
-     * @see                       #getBoxedElement(int, int)
-     * 
-     * @since                     1.18
-     */
-    public final String getString(int row, int col) throws ClassCastException {
-        Object value = getBoxedElement(row, col);
-        if (value instanceof char[]) {
-            return String.valueOf((char[]) value);
-        }
-        if (value instanceof byte[]) {
-            return new String((byte[]) value);
-        }
-        if (value.getClass().isArray()) {
-            throw new ClassCastException("Cannot cast " + value.getClass().getName() + " to String.");
-        }
-        return value.toString();
-    }
-
-    /**
-     * Sets a numerical scalar table entry to the specified value.
-     * 
-     * @param  row                      the zero-based row index
-     * @param  col                      the zero-based column index
-     * @param  value                    the new number value
-     * 
-     * @throws IllegalArgumentException if the specified column in not a numerical scalar type.
-     * 
-     * @see                             #getNumber(int, int)
-     * 
-     * @since                           1.18
-     */
-    public void setNumber(int row, int col, Number value) throws IllegalArgumentException {
-        Column<?> c = columns.get(col);
-        try {
-            c.setNumber(row, value);
-        } catch (UnsupportedOperationException e) {
-            throw new IllegalArgumentException("Column " + c + ": " + e.getMessage(), e);
-        }
-    }
-
-    /**
-     * Sets a boolean scalar table entry to the specified value.
-     * 
-     * @param  row                      the zero-based row index
-     * @param  col                      the zero-based column index
-     * @param  value                    the new boolean value
-     * 
-     * @throws IllegalArgumentException if the specified column in not a boolean scalar type.
-     * 
-     * @see                             #getBoolean(int, int)
-     * 
-     * @since                           1.18
-     */
-    public void setBoolean(int row, int col, Number value) throws IllegalArgumentException {
-        Column<?> c = columns.get(col);
-        if (c.elementSize() != 1 || !boolean.class.equals(c.baseType())) {
-            throw new IllegalArgumentException("Column of " + c.baseType().getName() + " is not a number type");
-        }
-    }
-
-    /**
-     * Sets a table entry to the specified string value. Scalar column will attempt to parse the value, while
-     * <code>byte[]</code> and <coce>char[]</code> type columns will convert the string provided the string's length
-     * matches the entry size for these columns. Note, that scalar <code>byte</code> columns will parse the string as a
-     * number (not as a single ASCII character).
-     * 
-     * @param  row                      the zero-based row index
-     * @param  col                      the zero-based column index
-     * @param  value                    the new boolean value
-     * 
-     * @throws IllegalArgumentException if the specified column is not a scalar type, and neither it is
-     *                                      <code>byte[]</code> and <coce>char[]</code> of the expected size.
-     * @throws NumberFormatException    if the numerical value could not be parsed.
-     * 
-     * @see                             #getString(int, int)
-     * 
-     * @since                           1.18
-     */
-    public void setString(int row, int col, String value) throws IllegalArgumentException, NumberFormatException {
-        columns.get(col).setString(row, value);
     }
 
     /**
@@ -1042,12 +906,6 @@ public class ColumnTable<T> implements DataTable, Cloneable {
 
         abstract void write(int from, int n, ArrayDataOutput out) throws IOException;
 
-        void setNumber(int index, Number x) throws UnsupportedOperationException {
-            throw new IllegalArgumentException("Column of " + baseType().getName() + " is not a number type");
-        }
-
-        abstract void setString(int index, String value) throws NumberFormatException;
-
         void checkElement(Object x) throws TableException {
 
             if (x == null) {
@@ -1164,16 +1022,6 @@ public class ColumnTable<T> implements DataTable, Cloneable {
         }
 
         @Override
-        void setNumber(int i, Number x) {
-            data[i] = x.byteValue();
-        }
-
-        @Override
-        void setString(int i, String value) throws NumberFormatException {
-            data[i] = Byte.parseByte(value);
-        }
-
-        @Override
         Byte get(int i) {
             return data[i];
         }
@@ -1227,11 +1075,6 @@ public class ColumnTable<T> implements DataTable, Cloneable {
         @Override
         void setArrayElement(int i, Object o) {
             data[i] = ((boolean[]) o)[0];
-        }
-
-        @Override
-        void setString(int i, String value) {
-            data[i] = Boolean.parseBoolean(value);
         }
 
         @Override
@@ -1295,11 +1138,6 @@ public class ColumnTable<T> implements DataTable, Cloneable {
         }
 
         @Override
-        void setString(int i, String value) {
-            data[i] = value.charAt(0);
-        }
-
-        @Override
         Character get(int i) {
             return data[i];
         }
@@ -1357,16 +1195,6 @@ public class ColumnTable<T> implements DataTable, Cloneable {
         @Override
         void setArrayElement(int i, Object o) {
             data[i] = ((short[]) o)[0];
-        }
-
-        @Override
-        void setNumber(int i, Number x) {
-            data[i] = x.shortValue();
-        }
-
-        @Override
-        void setString(int i, String value) throws NumberFormatException {
-            data[i] = Short.parseShort(value);
         }
 
         @Override
@@ -1431,16 +1259,6 @@ public class ColumnTable<T> implements DataTable, Cloneable {
         }
 
         @Override
-        void setNumber(int i, Number x) {
-            data[i] = x.intValue();
-        }
-
-        @Override
-        void setString(int i, String value) throws NumberFormatException {
-            data[i] = Integer.parseInt(value);
-        }
-
-        @Override
         void set(int i, Object o) {
             data[i] = (Integer) o;
         }
@@ -1489,16 +1307,6 @@ public class ColumnTable<T> implements DataTable, Cloneable {
         @Override
         void setArrayElement(int i, Object o) {
             data[i] = ((long[]) o)[0];
-        }
-
-        @Override
-        void setNumber(int i, Number x) {
-            data[i] = x.longValue();
-        }
-
-        @Override
-        void setString(int i, String value) throws NumberFormatException {
-            data[i] = Long.parseLong(value);
         }
 
         @Override
@@ -1558,16 +1366,6 @@ public class ColumnTable<T> implements DataTable, Cloneable {
         }
 
         @Override
-        void setNumber(int i, Number x) {
-            data[i] = x.floatValue();
-        }
-
-        @Override
-        void setString(int i, String value) throws NumberFormatException {
-            data[i] = Float.parseFloat(value);
-        }
-
-        @Override
         Float get(int i) {
             return data[i];
         }
@@ -1621,16 +1419,6 @@ public class ColumnTable<T> implements DataTable, Cloneable {
         @Override
         void setArrayElement(int i, Object o) {
             data[i] = ((double[]) o)[0];
-        }
-
-        @Override
-        void setNumber(int i, Number x) {
-            data[i] = x.doubleValue();
-        }
-
-        @Override
-        void setString(int i, String value) throws NumberFormatException {
-            Double.parseDouble(value);
         }
 
         @Override
@@ -1703,21 +1491,6 @@ public class ColumnTable<T> implements DataTable, Cloneable {
         @Override
         void setArrayElement(int i, Object o) {
             data[i] = o;
-        }
-
-        @Override
-        void setString(int i, String value) throws NumberFormatException {
-            if (elementSize() != value.length()) {
-                throw new IllegalArgumentException(
-                        "Incompatible string size " + value.length() + ", expected " + elementSize());
-            }
-
-            if (boolean.class.equals(type)) {
-                setArrayElement(i, value.getBytes());
-            } else if (char.class.equals(type)) {
-                setArrayElement(i, value.chars());
-            }
-            throw new IllegalArgumentException("Cannot cast String to " + baseType().getName());
         }
 
         @Override
