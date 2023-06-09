@@ -277,8 +277,8 @@ public abstract class TableHDU<T extends AbstractTableData> extends BasicHDU<T> 
      * more information about the format of data elements in general.
      * </p>
      * 
-     * @param  colName       The name or ID of the column as stored by the
-     *                           <code>TTYPE<code><i>n</i> FITS header keyword.
+     * @param  colName       The name or ID of the column as stored by the <code>TTYPE</code><i>n</i> FITS header
+     *                           keyword.
      * 
      * @return               an array of primitives (for scalar columns), or else an <code>Object[]</code> array, or
      *                           possibly <code>null</code>
