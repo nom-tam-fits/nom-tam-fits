@@ -35,9 +35,10 @@ import java.io.IOException;
 import java.io.InputStream;
 
 /**
- * BZIP2 (<code>.bz2</code>) input stream decompression. You can use this class to decompress files that have been
- * compressed with <code>bzip2</code>, or use {@link CompressionManager} to automatically detect the type of compression
- * used. This class uses the Apache <b>commons-compress</b> package to perform the decompression.
+ * (<i>for internal use</i>) BZIP2 (<code>.bz2</code>) input stream decompression. You can use this class to decompress
+ * files that have been compressed with <code>bzip2</code>, or use {@link CompressionManager} to automatically detect
+ * the type of compression used. This class uses the Apache <b>commons-compress</b> package to perform the
+ * decompression.
  * 
  * @see CompressionManager
  */

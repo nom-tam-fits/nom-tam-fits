@@ -35,10 +35,10 @@ import java.io.IOException;
 import java.io.InputStream;
 
 /**
- * UNIX compressed (<code>.Z</code>) input stream decompression. You can use this class to decompress files that have
- * been compressed with the UNIX <b>compress</b> tool (or via <b>gzip</b>) and have the characteristic <code>.Z</code>
- * file name extension. Or, use {@link CompressionManager} to automatically detect the type of compression used. This
- * class uses the Apache <b>commons-compress</b> package to perform the decompression.
+ * (<i>for internal use</i>) UNIX compressed (<code>.Z</code>) input stream decompression. You can use this class to
+ * decompress files that have been compressed with the UNIX <b>compress</b> tool (or via <b>gzip</b>) and have the
+ * characteristic <code>.Z</code> file name extension. Or, use {@link CompressionManager} to automatically detect the
+ * type of compression used. This class uses the Apache <b>commons-compress</b> package to perform the decompression.
  * 
  * @see CompressionManager
  */

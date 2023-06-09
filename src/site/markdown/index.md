@@ -182,7 +182,7 @@ before all required data has been loaded. For example, the following will cause 
 ```
 
 In the above, the `getKernel()` method will try to load the deferred data from the input that we closed just before
-it. Of course, that's not going to work. The correct order is of course:
+it. That's not going to work. The correct order is of course:
 
 ```java
    // Scans the FITS, but defers loading data until we need it
@@ -446,10 +446,9 @@ violations are not tolerated, appropriate exceptions will be thrown during readi
 
  - [Writing images](#writing-images)
  - [Writing tables](#writing-tables)
- - [Incremental writing](#incremental-writing)
+ - [Writing one HDU at a time](#incremental-writing)
  - [Modifying existing files](#modifying-existing-files)
  - [Low-level writes](#low-level-writes)
- - [Writing GZIP-ed outputs](#writing-gzipped-outputs)
 
 <a name="writing-images"></a>
 ### Writing images
@@ -497,15 +496,14 @@ we must precede it with a dummy primary HDU first, e.g.:
    fits.addHDU(new NullDataHDU());
 ```
 
-After that we can add our tables, such as binary tables (preferred) or ASCII tables (if you must):
+After that we can add our table(s), such as binary tables (preferred) or ASCII tables (if you must):
 
 ```java
-   // Some tables we have at hand...
+   // A table we have at hand...
    BinaryTableHDU binTable = ...
    fits.addHDU(binTable);
-  
-   AsciiTableHDU asciiTable = ...
-   fits.addHDU(asciiTable);
+   
+   ...
 ```
 
 Once all HDUs have been added, we write the FITS as usual:
@@ -517,7 +515,7 @@ Once all HDUs have been added, we write the FITS as usual:
 
 
 <a name="incremental-writing"></a>
-### Incremental writing
+### Writing one HDU at a time
 
 Sometimes you do not want to add all your HDUs to a `Fits` object before writing it out to a file or stream. Maybe because they use up too much RAM, or you are recording from a live stream and want to add HDUs to the file as they come in. As of version __1.17__ of the library, you can write FITS files one HDU at a time without having to place them in a `Fits` object first, or having to worry about the mandatory keywords having been set for primary or extension HDUs. Or, you can write a `Fits` object with some number of HDUs, but then keep appending further HDUs after, worry-free. The `FitsFile` or `FitsOutputStream` object will keep track of where it is in the file or stream, and set the required header keywords for the appended HDUs as appropriate for a primary or extension HDU automatically.
 
@@ -674,8 +672,7 @@ Next, assume we have a binary table that we either read from an input, or else a
 (see further below on how to build binary tables):
 
 ```java 
-  BinaryTable table = new BinaryTable();
-  ...
+  BinaryTable table = ...
 ```
 
 Next, we will need to create an appropriate FITS header for the table:
@@ -736,20 +733,6 @@ that were not available earlier:
    header.rewrite();
 ```
 
-
-<a name="writing-gzipped-outputs"></a>
-### Writing GZIP-ed outputs
-
-It is common practice to compress FITS files using __gzip__ so they can be exchanged in a more compact form. The library supports the creation of
-gzipped fits out of the box, by wrapping the file's output stream into a `GZIPOutputStream`, such as:
-
-```java
-  Fits f = new Fits();
-  
-  FitsOutputStream out = new FitsOutputStream(new GZIPOutputStream(
-  	new FileOutputStream(new File("mydata.fits.gz"))));
-  f.write(out);
-```
 
 
 <a name="building-tables-from-data"></a>
@@ -1194,14 +1177,47 @@ Additionally, we provide `HeaderCard.sanitize(String)` method that the user can 
 <a name="compression-support"></a>
 ## Compression support
 
- - [Image compression](#image-compression)
- - [Table compression](#table-compression)
+ - [File level compression](#file-compression)
+ - [Image HDU compression](#image-compression)
+ - [Table HDU compression](#table-compression)
 
 Starting with version 1.15.0 compression of both images and tables is fully supported.  A 100% Java implementation of the compression libraries available in cfitsio was implemented and can be used through the Java API.
 
 
+<a name="file-compression"></a>
+### File level compression
+
+It is common practice to compress FITS files using __gzip__ (`.gz` extension) so they can be exchanged in a more 
+compact form. The library supports the creation of gzipped fits out of the box, by wrapping the file's output 
+stream into a `GZIPOutputStream` or , such as:
+
+```java
+  Fits f = new Fits();
+  
+  FitsOutputStream out = new FitsOutputStream(new GZIPOutputStream(
+  	new FileOutputStream(new File("mydata.fits.gz"))));
+  f.write(out);
+```
+
+While we only support GZIP compression for writing compressed files (thanks to Java's support out of the box), we can read
+more compressed formats using Apaches commons-compress library. We support reading compressed files produced via __gzip__
+(`.gz`), the Linux __compress__ tools (`.Z`), and via __bzip2__ (`.bz2`). The decompression happens automatically when
+we construct a `Fits` object with an input stream:
+
+
+```java
+   new FileInputStream compressedStream = new FileInputStream(new File("image.fits.bz2"));
+ 
+   // The input stream will be filtered through a decompression algorithm
+   // All read access to the fits will pass through that decompression...
+   Fits fits = new Fits(compressedStream);
+
+   ...
+```
+
+
 <a name="image-compression"></a>
-### Image compression
+### Image HDU compression
 
 Image compression and tiling are fully supported by nom-tam-fits as of 1.18.0, including images of 
 any dimensionality and rectangular morphologies. (Releases between 1.15.0 and 1.17.0 had partial image
@@ -1287,7 +1303,7 @@ class to decompress only the selected image area. As of 1.18.0, this is really e
 
 
 <a name="table-compression"></a>
-### Table compression
+### Table HDU compression
 
 Table compression is also fully supported in nom-tam-fits from version 1.15.0. When a table is compressed 
 the effect is that within each column we compress 'tiles' that are sets of contiguous rows. The compression 
@@ -1354,33 +1370,6 @@ And, if you want to surgically access a range of data from select columns only:
    Object[] colData = compressed.getColumnData(colIndex, fromTile, toTile);
 ```
 
-
-<a name="table-compression"></a>
-### Table compression
-
-Table compression is also fully supported in nom-tam-fits from version 1.15.0. When a table is compressed the effect is that within each column we compress 'tiles' that are sets of contiguous rows.  E.g., if we use a 'tile' size of 10, then for the first column we concatenate the data from the first 10 rows and compress the resulting sequence of bytes.  The result of this compression will be stored in the heap area of the FITS file since its length will likely vary from tile to tile.  We then do the same for the first 10 rows of the second column and every other column in the table. After we finish we are ready to write the first row of the compressed table.  We then repeat for sets of 10 rows until we reach the end of the input table.  The result is a new binary table with the same number of columns but with the number of rows decreased by ~10 (in our example). Thus, just as with images, we can get the ability to efficiently compress the data without losing the ability to retrieve only the rows we are interested in when we are reading from a large table.
-
-The compression alögorithms are the same as the ones provided for image compression. Default compression is GZIP_2 but every column can use a different algorithm. The tile size is the same for every column.  To compress
-an existing binary table using a tile size of 10 rows:
-
-```java
-  CompressedTableHDU compressed = CompressedTableHDU.fromBinaryTableHDU(binaryTable, 10).compress();
-  compressed.compress();
-```
-        
-Using varargs the compression algorithm can be specified on a per column basis.
-
-To decompress the table just do:
-
-```java
-  BinaryTableHDU binaryTable = compressed.asBinaryTableHDU();
-```
-         
-All available CPU's will be used to [de]compress the table.
-
-Because there is no place to store the compression options in the header, only compression algorithms which do not need options can be used.
-
- 
 
 <a name="contribute"></a>
 ## How to contribute

@@ -356,17 +356,13 @@ public class BinaryTable extends AbstractTableData implements Cloneable {
             table = tab.copy();
             nRow = tab.getNRows();
 
-            // Create column descriptions
-            Class<?>[] bases = tab.getBases();
-            int[] sizes = tab.getSizes();
-
             columnList = new ArrayList<>();
 
             for (int i = 0; i < tab.getNCols(); i++) {
                 ColumnDesc c = new ColumnDesc();
-                c.base = bases[i];
-                c.size = sizes[i];
-                c.dimens = new int[] {sizes[i]};
+                c.base = tab.getElementClass(i);
+                c.size = tab.getElementSize(i);
+                c.dimens = new int[] {c.size};
                 c.model = Array.newInstance(c.base, c.size);
                 c.fileSize = (int) FitsEncoder.computeSize(c.model);
                 c.offset = rowLen;

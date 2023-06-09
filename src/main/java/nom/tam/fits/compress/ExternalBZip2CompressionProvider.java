@@ -38,14 +38,15 @@ import java.util.logging.Logger;
 import nom.tam.fits.FitsException;
 
 /**
- * BZIP2 (<code>.bz2</code>) input stream decompression with a preference for using an external system command. You can
- * use this class to decompress files that have been compressed with the UNIX <b>bzip2</b> tool and have the
- * characteristic <code>.bz2</code> file name extension. It effectively provides the same functionality as
- * {@link BZip2CompressionProvider}, but has a preference for calling on the system <b>bzip2</b> command first to do the
- * lifting. If that fails it will call on {@link CompressionManager} to provide a suitable decompressor (which will give
- * it {@link BZip2CompressionProvider}). Since the <b>bzip2</b> tool is UNIX-specific, it is not entirely portable. It
- * also requires the environment variable <code>BZIP_DECOMPRESSOR</code> to be set to provide the system executable to
- * use. As a result, you are probably better off relying on the mentioned other classes directly for this functionality.
+ * (<i>for internal use</i>) BZIP2 (<code>.bz2</code>) input stream decompression with a preference for using an
+ * external system command. You can use this class to decompress files that have been compressed with the UNIX
+ * <b>bzip2</b> tool and have the characteristic <code>.bz2</code> file name extension. It effectively provides the same
+ * functionality as {@link BZip2CompressionProvider}, but has a preference for calling on the system <b>bzip2</b>
+ * command first to do the lifting. If that fails it will call on {@link CompressionManager} to provide a suitable
+ * decompressor (which will give it {@link BZip2CompressionProvider}). Since the <b>bzip2</b> tool is UNIX-specific, it
+ * is not entirely portable. It also requires the environment variable <code>BZIP_DECOMPRESSOR</code> to be set to
+ * provide the system executable to use. As a result, you are probably better off relying on the mentioned other classes
+ * directly for this functionality.
  * 
  * @see        CompressionManager
  * 

@@ -505,9 +505,11 @@ public class ColumnTable<T> implements DataTable, Cloneable {
      * Get the base classes of the columns. As of 1.18, this method returns a copy ot the array used internally, which
      * is safe to modify.
      *
-     * @return An array of Class objects, one for each column.
+     * @return     An array of Class objects, one for each column.
      * 
-     * @see    #getElementClass(int)
+     * @deprecated Use {@link #getElementClass(int)} instead. This method may be removed in the future.
+     * 
+     * @see        #getElementClass(int)
      */
     public Class<?>[] getBases() {
         Class<?>[] bases = new Class<?>[columns.size()];
@@ -649,11 +651,13 @@ public class ColumnTable<T> implements DataTable, Cloneable {
      * Returns the flattened (1D) size of elements in each column of this table. As of 1.18, this method returns a copy
      * ot the array used internally, which is safe to modify.
      * 
-     * @return an array with the byte sizes of each column
+     * @return     an array with the byte sizes of each column
      * 
-     * @see    #getElementSize(int)
+     * @see        #getElementSize(int)
      * 
-     * @since  1.18
+     * @deprecated Use {@link #getElementSize(int)} instead. This method may be removed in the future.
+     * 
+     * @since      1.18
      */
     public int[] getSizes() {
         int[] sizes = new int[columns.size()];
@@ -679,9 +683,11 @@ public class ColumnTable<T> implements DataTable, Cloneable {
      * Get the characters describing the base classes of the columns. As of 1.18, this method returns a copy ot the
      * array used internally, which is safe to modify.
      *
-     * @return An array of type characters (Java array types), one for each column.
+     * @return     An array of type characters (Java array types), one for each column.
      * 
-     * @see    #getTypeChar(int)
+     * @deprecated Use {@link #getTypeChar(int)} instead. This method may be removed in the future.
+     * 
+     * @see        #getTypeChar(int)
      */
     public char[] getTypes() {
         char[] types = new char[columns.size()];
