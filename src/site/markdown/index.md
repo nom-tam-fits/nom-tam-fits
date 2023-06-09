@@ -444,73 +444,84 @@ violations are not tolerated, appropriate exceptions will be thrown during readi
 <a name="writing-data"></a>
 ## Writing data
 
- - [Writing images](#writing-images)
- - [Writing tables](#writing-tables)
+ - [Writing complete FITS files](#writing-files)
  - [Writing one HDU at a time](#incremental-writing)
  - [Modifying existing files](#modifying-existing-files)
  - [Low-level writes](#low-level-writes)
 
-<a name="writing-images"></a>
-### Writing images
+<a name="writing-files"></a>
+### Writing complete FITS files
 
-When we write FITS files we start with known data, so there are typically no casts required.
-We use a factory method to convert our primitive data to a FITS HDU and then write the Fits object to a desired location.
-The two primary classes to which we can write Fits data are are `FitsFile` (random acccess) and `FitsOutputStream`. 
-For exaple,
+When creating FITS files from data we have at hand, the easiest is to start with a `Fits` object. We can add to it 
+image and/or table HDUs we create. When everything is assembled, we write the FITS to a file or stream:
 
-```java
-  float[][] data = ...;
-     
-  Fits f = new Fits();
-  f.addHDU(Fits.makeHDU(data));
+```java  
+  Fits fits = new Fits();
 
-  FitsOutputStream out = new FitsOutputStream(new FileOutputStream(new File("img.fits")));     
-  f.write(out);
-  out.close();
+
+  fits.addHDU(...);
+  ...
+ 
+
+  FitsOutputStream out = new FitsOutputStream(new FileOutputStream(new File("myfits.fits")));     
+  fits.write(out);
 ```
 
 Or, equivalently, using `Fits.write(String)`:
 
 ```java
-  float[][] data = ...;
-     
-  Fits f = new Fits();
-  f.addHDU(Fits.makeHDU(data));
-     
-  f.write("img.fits");
+  ...
+   
+  fits.write("myfits.fits");
 ```
 
-
-
-<a name="writing-tables"></a>
-### Writing tables
-
-Writing tables is just about the same. The important thing to remember is that while images can be at the head of FITS files, tables
-are extensions, and so, they may not be the first HDU in a file. Thus, if a table is the first real data we want to add to a FITS,
-we must precede it with a dummy primary HDU first, e.g.:
+Images can be added to the FITS at any point. For example, consider a 2D `float[][]` image we want to 
+add to a FITS:
 
 ```java
-   Fits fits = new Fits();
+  float[][] image ...;
+  
+  ImageHDU imageHDU = fits.makeHDU(image);
+  fits.addHDU(imageHDU);
+```
+
+The `makeHDU()` method only populates the essential descriptions of the image in the HDU's header.
+We may want to complete that description (e.g. add WCS information, various other data descriptions).
+to the new HDU's header, e.g.:
+
+```java
+  Header header = imageHDU.getHeader();
+  
+  header.addValue(Standard.BUNIT, "Jy/beam");
+  ...
+```
+
+An important thing to remember is that while images can be anywhere in the FITS files, tables
+are extensions, and so, they cannot be the first HDU in a file. Thus, if a table is the first real data 
+we want to add to a FITS, we must precede it with a dummy primary HDU first, e.g.:
+
+```java
+  Fits fits = new Fits();
    
-   // Add a dummy HDU as out primary HDU
-   fits.addHDU(new NullDataHDU());
+  // Add a dummy HDU as out primary HDU
+  fits.addHDU(new NullDataHDU());
 ```
 
 After that we can add our table(s), such as binary tables (preferred) or ASCII tables (if you must):
 
 ```java
-   // A table we have at hand...
-   BinaryTableHDU binTable = ...
-   fits.addHDU(binTable);
+  // A table we have at hand...
+  BinaryTableHDU binTable = ...
+  fits.addHDU(binTable);
    
-   ...
+  ...
 ```
 
 Once all HDUs have been added, we write the FITS as usual:
 
 ```java
-   fits.write("myfits.fits");
-   fits.close();
+  fits.write("myfits.fits");
+  fits.close();
 ```
 
 
@@ -522,8 +533,8 @@ Sometimes you do not want to add all your HDUs to a `Fits` object before writing
 Here is an example of how building a FITS file HDU-by-HDU without the need to create a `Fits` object as a holding container:
 
 ```java
-  // Create the stream to which to write the HDUs as they come
-  FitsOutputStream out = new FitsOutputStream(new FileOutputStream("my-incremental.fits"));
+  // Create the file to which to write the HDUs as they come
+  FitsFile out = new FitsFile("my-incremental.fits", "rw");
   ...
 
   // you can append 'hdu' objects to the FITS file (stream) as:
@@ -535,10 +546,10 @@ Here is an example of how building a FITS file HDU-by-HDU without the need to cr
   out.close(); 
 ```
 
-Of course, you can use a `FitsFile` as opposed to a stream as the output also, e.g.:
+Of course, you can use a `FitsOutputStream` as opposed to a file as the output also, e.g.:
 
 ```java
-  FitsFile out = new FitsFile("my-incremental.fits", "rw");
+  FitsOutputStream out = new FitsOutputStream(new FileOutputStream("my-incremental.fits"));
   ...
 ```
 
@@ -548,48 +559,67 @@ In this case you can use random access, which means you can go back and re-write
 
 <a name="modifying-existing-files"></a>
 ### Modifying existing files
-An existing FITS file can be modified in place in some circumstances. The file must be an uncompressed file.
-The user can then modify elements either by directly modifying the kernel object gotten for image data, or by using the `setElement` or similar methods for tables.
+
+An existing FITS file can be modified in place in some circumstances. The file must be an uncompressed (random-accessible) file, with
+permissions to read and write. The user can then modify elements either by directly modifying the kernel data object for image data, 
+or by using the `setElement` or similar methods for tables.
 
 Suppose we have just a couple of specific elements we know we need to change in a given file:
 
 ```java
   Fits f = new Fits("mod.fits");
      
-  ImageHDU ihdu = (ImageHDU) f.getHDU(0);
-  int[][] img = (int[][]) ihdu.getKernel();
+  ImageHDU hdu = (ImageHDU) f.getHDU(0);
+  int[][] img = (int[][]) hdu.getKernel();
      
-  for (int i=0; i<img.length; i += 1) {
-      for (int j=0; j<img[i].length; j += 1) {
-          if (img[i][j] < 0){
-              img[i][j] = 0;
-          }
-      }
-  }
-     
-  ihdu.rewrite();
-     
-  TableHDU thdu = (TableHDU) f.getHDU(1);
-  thdu.setElement(3, 0, "NewName");
-  thdu.rewrite();
+  // modify the image as needed...
+  img[i][j] = ...
+  ...
+  
+  // No write the new data back in the place of the old
+  hdu.rewrite();
 ```
 
-This rewrites the FITS file in place. Generally rewrites can be made as long as the only change is to the content of 
-the data (and the FITS file meets the criteria mentioned above). An exception will be thrown if the data has been added 
+Same goes for a table HDU:
+
+```java 
+  TableHDU hdu = (TableHDU) f.getHDU(1);
+  hdu.setElement(3, 0, 3.14159265);
+  ...
+  hdu.rewrite();
+```
+
+And, headers can also be updated in place -- you don't even need to access the data, and can leave it in deferred state:
+
+```java 
+  BasicHDU<?> hdu = f.getHDU(1);
+  Header header = hdu.getHeader();
+  
+  header.addValue(Standard.TELESCOP, "SMA").comment("The Submillimeter Array");
+  header.addValue(Standard.DATE-OBS, FitsDate.now());
+  ...
+  
+  header.rewrite();
+```
+
+Generally rewrites can be made as long as the only change is to the data content, but not to the data size 
+(and the FITS file meets the criteria mentioned above). An exception will be thrown if the data has been added 
 or deleted or too many changes have been made to the header. Some modifications may be made to the header but the number 
-of header cards modulo 36 must remain unchanged.
+of header cards modulo 36 must remain unchanged. (Hint, you can reserve space in headers for later additions using `Header.ensureCardSpace(int)` prior to writing the header or HDU originally.)
 
 
 <a name="low-level-writes"></a>
 ### Low-level writes
 
-When a large table or image is to be written, the user may wish to stream the write.
-This is possible but rather more difficult than in the case of reads.
+When a large table or image is to be written, the user may wish to stream the write. This is possible but rather 
+more difficult than in the case of reads.
 
 There are two main issues:
-1. The header for the HDU must written to show the size of the entire file when we are done.
-Thus the user may need to modify the header data appropriately.
-2. After writing the data, a valid FITS file may need to be padded to an appropriate length.
+
+ 1. The header for the HDU must written to show the size of the entire file when we are done.
+    Thus the user may need to modify the header data appropriately.
+
+ 2. After writing the data, a valid FITS file may need to be padded to an appropriate length.
 
 It's not hard to address these, but the user needs some familiarity with the internals of the FITS representation.
 
@@ -717,9 +747,6 @@ Once we finish writing the table data, we must add the requisite padding to comp
 after the table data ends. 
 
 ```java
-  // Close the row stream, we don't need it any longer
-  out.close();
-
   // Add padding to the file to complete the FITS block
   FitsUtil.pad(out, nRowsWritten * table.getRegularRowSize());
 ```
@@ -1194,6 +1221,8 @@ stream into a `GZIPOutputStream` or , such as:
 ```java
   Fits f = new Fits();
   
+  ...
+  
   FitsOutputStream out = new FitsOutputStream(new GZIPOutputStream(
   	new FileOutputStream(new File("mydata.fits.gz"))));
   f.write(out);
@@ -1206,13 +1235,13 @@ we construct a `Fits` object with an input stream:
 
 
 ```java
-   new FileInputStream compressedStream = new FileInputStream(new File("image.fits.bz2"));
+  new FileInputStream compressedStream = new FileInputStream(new File("image.fits.bz2"));
  
-   // The input stream will be filtered through a decompression algorithm
-   // All read access to the fits will pass through that decompression...
-   Fits fits = new Fits(compressedStream);
+  // The input stream will be filtered through a decompression algorithm
+  // All read access to the fits will pass through that decompression...
+  Fits fits = new Fits(compressedStream);
 
-   ...
+  ...
 ```
 
 
@@ -1227,6 +1256,10 @@ acking prior to 1.18.0).
 The tiling of non-2D images follows the 
 [CFITSIO convention](https://heasarc.gsfc.nasa.gov/docs/software/fitsio/compression.html) with 2D tiles, 
 where the tile size is set to 1 in the extra dimensions.
+
+Mote, that just like regular tables, compressed HDUs cannot be the primary HDU in a FITS, Thus, remember
+to add a `NullDataHDU` at the top of your `Fits` object, or at the head of a new FITS output file/stream
+before you add/write compressed HDUs. 
 
 Compressing an image HDU is typically a multi-step process:
 
@@ -1333,7 +1366,8 @@ The two step process (as opposed to a single-step one) was probably chosen becau
    CompressedTableHDU compressed = CompressedTableHDU.fromBinaryTableHDU(table, 4, Compression.GZIP_2).compress();
 ```
 
-After the compression, the compressed table HDU can be handled just like any other HDU, and written to a file or stream, for example.
+After the compression, the compressed table HDU can be handled just like any other table HDU, and written to a 
+file or stream, for example (as long as you remember that they cannot be the primary HDU in the FITS!).
 
 The reverse process is simply via the `asBinaryTableHDU()` method. E.g.:
 
