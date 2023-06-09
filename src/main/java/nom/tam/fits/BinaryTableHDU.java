@@ -6,6 +6,7 @@ import nom.tam.fits.header.IFitsHeader;
 import nom.tam.fits.header.Standard;
 import nom.tam.util.ArrayDataOutput;
 import nom.tam.util.ArrayFuncs;
+import nom.tam.util.ColumnTable;
 
 /*
  * #%L
@@ -83,7 +84,7 @@ public class BinaryTableHDU extends TableHDU<BinaryTable> {
     }
 
     /**
-     * @deprecated               (<i>for internal use</i>) Will reduce visibility in the future
+     * @deprecated               (<i>for internal use</i>) Will reduce visibility in the future.
      *
      * @return                   Encapsulate data in a BinaryTable data type
      *
@@ -93,14 +94,14 @@ public class BinaryTableHDU extends TableHDU<BinaryTable> {
      */
     @Deprecated
     public static BinaryTable encapsulate(Object o) throws FitsException {
-        if (o instanceof nom.tam.util.ColumnTable) {
-            return new BinaryTable((nom.tam.util.ColumnTable<?>) o);
+        if (o instanceof ColumnTable) {
+            return new BinaryTable((ColumnTable<?>) o);
         }
         if (o instanceof Object[][]) {
-            return new BinaryTable((Object[][]) o);
+            return BinaryTable.fromRowMajor((Object[][]) o);
         }
         if (o instanceof Object[]) {
-            return new BinaryTable((Object[]) o);
+            return BinaryTable.fromColumnMajor((Object[]) o);
         }
         throw new FitsException("Unable to encapsulate object of type:" + o.getClass().getName() + " as BinaryTable");
     }

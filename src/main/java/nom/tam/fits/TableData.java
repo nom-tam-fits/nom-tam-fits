@@ -59,15 +59,14 @@ public interface TableData {
      * of the FITS header modifications required.
      * 
      * @param newCol
-     *            the new column information. the newCol should be an Object[]
-     *            where type of all of the constituents is identical. The length
-     *            of data should match the other columns. <b> Note:</b> It is
-     *            valid for data to be a 2 or higher dimensionality primitive
-     *            array. In this case the column index is the first (in Java
-     *            speak) index of the array. E.g., if called with
-     *            int[30][20][10], the number of rows in the table should be 30
-     *            and this column will have elements which are 2-d integer
-     *            arrays with TDIM = (10,20).
+     *            the new column information. it should be either a primitive
+     *            array, in which each element stores a scalar value for every
+     *            row, or else an <code>Object[]</code> where type of all of the
+     *            constituents is identical. Multidimensional data should have
+     *            the same layout in each row, but varied length one-dimensional
+     *            arrays are OK. The arrat's length must match the number of
+     *            rows already contained in the table, unless the table is still
+     *            empty.
      * @return the number of columns in the adapted table
      * @throws FitsException
      *             if the operation failed
@@ -126,18 +125,17 @@ public interface TableData {
 
     /**
      * <p>
-     * Returns the data for a particular column in as a flattened 1D array of
-     * elements. See {@link #getElement(int, int)} for more information about
-     * the format of data elements in general.
+     * Returns the data for a particular column in as an array of elements. See
+     * {@link #addColumn(Object)} for more information about the format of data
+     * elements in general.
+     * </p>
      * 
      * @param col
      *            The 0-based column index.
-     * @return a 1D array containing the column data in a flattened form.
+     * @return an array of primitives (for scalar columns), or else an
+     *         <code>Object[]</code> array, or possibly <code>null</code>
      * @throws FitsException
      *             if the table could not be accessed
-     * @deprecated Strongly discouraged, since it returns data in an unnatural
-     *             flattened format or heap pointers only for variable-sized
-     *             data (use {@link #getElement(int, int)} instead)
      * @see #setColumn(int, Object)
      * @see #getElement(int, int)
      * @see #getNCols()

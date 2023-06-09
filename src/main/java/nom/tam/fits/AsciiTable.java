@@ -655,8 +655,20 @@ public class AsciiTable extends AbstractTableData {
     }
 
     /**
-     * @deprecated Strongly discouraged, since it returns data in an unnatural flattened format or heap pointers only
-     *                 for variable-sized data (use {@link #getElement(int, int)} instead)
+     * <p>
+     * Returns the data for a particular column in as a flattened 1D array of elements. See {@link #addColumn(Object)}
+     * for more information about the format of data elements in general.
+     * </p>
+     * 
+     * @param  col           The 0-based column index.
+     * 
+     * @return               an array of primitives (for scalar columns), or else an <code>Object[]</code> array.
+     * 
+     * @throws FitsException if the table could not be accessed
+     *
+     * @see                  #setColumn(int, Object)
+     * @see                  #getElement(int, int)
+     * @see                  #getNCols()
      */
     @Override
     public Object getColumn(int col) throws FitsException {

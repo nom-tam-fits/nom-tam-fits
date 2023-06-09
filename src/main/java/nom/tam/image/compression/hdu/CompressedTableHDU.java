@@ -5,6 +5,7 @@ import nom.tam.fits.BinaryTableHDU;
 import nom.tam.fits.FitsException;
 import nom.tam.fits.Header;
 import nom.tam.fits.HeaderCard;
+import nom.tam.fits.HeaderCardException;
 import nom.tam.fits.header.Compression;
 import nom.tam.fits.header.Standard;
 import nom.tam.util.Cursor;
@@ -127,7 +128,7 @@ public class CompressedTableHDU extends BinaryTableHDU {
         Cursor<String, HeaderCard> imageIterator = binaryTableHDU.getHeader().iterator();
         while (imageIterator.hasNext()) {
             HeaderCard card = imageIterator.next();
-            BackupRestoreUnCompressedHeaderCard.restore(card, headerIterator);
+            CompressedCard.restore(card, headerIterator);
         }
         CompressedTableHDU compressedImageHDU = new CompressedTableHDU(header, compressedData);
         compressedData.setColumnCompressionAlgorithms(columnCompressionAlgorithms);
@@ -177,23 +178,96 @@ public class CompressedTableHDU extends BinaryTableHDU {
      * 
      * @throws FitsException If there was an issue with the decompression.
      * 
+     * @see                  #asBinaryTableHDU(int, int)
      * @see                  #fromBinaryTableHDU(BinaryTableHDU, int, String...)
      */
     public BinaryTableHDU asBinaryTableHDU() throws FitsException {
-        Header header = new Header();
-        header.addValue(Standard.XTENSION, Standard.XTENSION_BINTABLE);
-        header.addValue(Standard.BITPIX, ElementType.BYTE.bitPix());
-        header.addValue(Standard.NAXIS, 2);
-        Cursor<String, HeaderCard> headerIterator = header.iterator();
-        Cursor<String, HeaderCard> iterator = getHeader().iterator();
-        while (iterator.hasNext()) {
-            HeaderCard card = iterator.next();
-            BackupRestoreUnCompressedHeaderCard.backup(card, headerIterator);
-        }
+        Header header = getTableHeader();
         BinaryTable data = BinaryTableHDU.manufactureData(header);
         BinaryTableHDU tableHDU = new BinaryTableHDU(header, data);
         getData().asBinaryTable(data, getHeader(), header);
         return tableHDU;
+    }
+
+    /**
+     * Restores a section of the original binary table HDU by decompressing a selected range of compressed table tiles.
+     * 
+     * @param  fromTile                 Java index of first tile to decompress
+     * @param  toTile                   Java index of last tile to decompress
+     * 
+     * @return                          The uncompressed binary table HDU from the selected compressed tiles.
+     * 
+     * @throws IllegalArgumentException If the tile range is out of bounds
+     * @throws FitsException            If there was an issue with the decompression.
+     * 
+     * @see                             #asBinaryTableHDU()
+     * @see                             #fromBinaryTableHDU(BinaryTableHDU, int, String...)
+     */
+    public BinaryTableHDU asBinaryTableHDU(int fromTile, int toTile) throws FitsException, IllegalArgumentException {
+        if (fromTile < 0 || toTile > getNRows()) {
+            throw new IllegalArgumentException("Out of bounds for " + getNRows() + " tiles: " + fromTile + ":" + toTile);
+        }
+
+        if (toTile <= fromTile) {
+            return null;
+        }
+
+        Header header = getTableHeader();
+        int tileSize = getHeader().getIntValue(Compression.ZTILELEN, getNRows());
+
+        int toRow = toTile * tileSize;
+        int nRows = header.getIntValue(Standard.NAXIS2);
+
+        if (toRow > nRows) {
+            toRow = nRows;
+        }
+
+        // Set the correct number of rows
+        header.addValue(Standard.NAXIS2, toRow - fromTile * tileSize);
+
+        BinaryTable data = BinaryTableHDU.manufactureData(header);
+        BinaryTableHDU tableHDU = new BinaryTableHDU(header, data);
+        getData().asBinaryTable(data, getHeader(), header, fromTile);
+
+        return tableHDU;
+    }
+
+    /**
+     * Returns a particular section of a decompressed data column.
+     * 
+     * @param  col                      the Java column index
+     * 
+     * @return                          The uncompressed column data as an array.
+     * 
+     * @throws IllegalArgumentException If the tile range is out of bounds
+     * @throws FitsException            If there was an issue with the decompression.
+     * 
+     * @see                             #getColumnData(int, int, int)
+     * @see                             #asBinaryTableHDU()
+     * @see                             #fromBinaryTableHDU(BinaryTableHDU, int, String...)
+     */
+    public Object[] getColumnData(int col) throws FitsException, IllegalArgumentException {
+        return getColumnData(col, 0, getNRows());
+    }
+
+    /**
+     * Returns a particular section of a decompressed data column.
+     * 
+     * @param  col                      the Java column index
+     * @param  fromTile                 the Java index of first tile to decompress
+     * @param  toTile                   the Java index of last tile to decompress
+     * 
+     * @return                          The uncompressed column data segment as an array.
+     * 
+     * @throws IllegalArgumentException If the tile range is out of bounds
+     * @throws FitsException            If there was an issue with the decompression.
+     * 
+     * @see                             #getColumnData(int)
+     * @see                             #asBinaryTableHDU()
+     * @see                             #fromBinaryTableHDU(BinaryTableHDU, int, String...)
+     */
+    public Object[] getColumnData(int col, int fromTile, int toTile) throws FitsException, IllegalArgumentException {
+        return getData().getColumnData(col, fromTile, toTile, getHeader(), getTableHeader());
     }
 
     /**
@@ -212,6 +286,32 @@ public class CompressedTableHDU extends BinaryTableHDU {
     public CompressedTableHDU compress() throws FitsException {
         getData().compress(getHeader());
         return this;
+    }
+
+    /**
+     * Obtain a header representative of a decompressed TableHDU.
+     *
+     * @return                     Header with decompressed cards.
+     *
+     * @throws HeaderCardException if the card could not be copied
+     *
+     * @since                      1.18
+     */
+    public Header getTableHeader() throws HeaderCardException {
+        Header header = new Header();
+
+        header.addValue(Standard.XTENSION, Standard.XTENSION_BINTABLE);
+        header.addValue(Standard.BITPIX, ElementType.BYTE.bitPix());
+        header.addValue(Standard.NAXIS, 2);
+
+        Cursor<String, HeaderCard> tableIterator = header.iterator();
+        Cursor<String, HeaderCard> iterator = getHeader().iterator();
+
+        while (iterator.hasNext()) {
+            CompressedCard.backup(iterator.next(), tableIterator);
+        }
+
+        return header;
     }
 
     @Override

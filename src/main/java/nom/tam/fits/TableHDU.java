@@ -250,41 +250,45 @@ public abstract class TableHDU<T extends AbstractTableData> extends BasicHDU<T> 
     }
 
     /**
-     * Returns the column of the specified index
+     * <p>
+     * Returns the data for a particular column in as an array of elements. See {@link TableData#addColumn(Object)} for
+     * more information about the format of data elements in general.
+     * </p>
      * 
-     * @return                   a specific column from the table using 0-based column indexing.
+     * @param  col           The 0-based column index.
+     * 
+     * @return               an array of primitives (for scalar columns), or else an <code>Object[]</code> array, or
+     *                           possibly <code>null</code>
+     * 
+     * @throws FitsException if the table could not be accessed
      *
-     * @param      col           column index to get
-     *
-     * @throws     FitsException if the operation failed
-     * 
-     * @deprecated               Strongly discouraged, since it returns data in an unnatural flattened format or heap
-     *                               pointers only for variable-sized data (use {@link #getElement(int, int)} instead)
-     * 
-     * @see                      #getColumn(String)
-     * @see                      #setColumn(int, Object)
-     * @see                      #getRow(int)
+     * @see                  TableData#getColumn(int)
+     * @see                  #setColumn(int, Object)
+     * @see                  #getElement(int, int)
+     * @see                  #getNCols()
      */
     public Object getColumn(int col) throws FitsException {
         return myData.getColumn(col);
     }
 
     /**
-     * Returns the column of the specified name
+     * <p>
+     * Returns the data for a particular column in as an array of elements. See {@link TableData#addColumn(Object)} for
+     * more information about the format of data elements in general.
+     * </p>
      * 
-     * @return                   a specific column of the table where the column name is specified using the TTYPEn
-     *                               keywords in the header.
+     * @param  colName       The name or ID of the column as stored by the
+     *                           <code>TTYPE<code><i>n</i> FITS header keyword.
+     * 
+     * @return               an array of primitives (for scalar columns), or else an <code>Object[]</code> array, or
+     *                           possibly <code>null</code>
+     * 
+     * @throws FitsException if the table could not be accessed
      *
-     * @param      colName       The name of the column to be extracted.
-     *
-     * @throws     FitsException if the operation failed
-     * 
-     * @deprecated               Strongly discouraged, since it returns data in an unnatural flattened format or heap
-     *                               pointers only for variable-sized data (use {@link #findColumn(String)} in
-     *                               combination with with {@link #getElement(int, int)} instead)
-     * 
-     * @see                      #getColumn(int)
-     * @see                      #setColumn(String, Object)
+     * @see                  TableData#getColumn(int)
+     * @see                  #setColumn(int, Object)
+     * @see                  #getElement(int, int)
+     * @see                  #getNCols()
      */
     public Object getColumn(String colName) throws FitsException {
         return getColumn(findColumn(colName));
@@ -338,15 +342,21 @@ public abstract class TableHDU<T extends AbstractTableData> extends BasicHDU<T> 
     }
 
     /**
-     * Returns all columns in this table as an array.
+     * <p>
+     * Returns the data for all columns in as an array. See {@link TableData#addColumn(Object)} for more information
+     * about the column format of each element in the returned array.
+     * </p>
      * 
-     * @return                   all of the columns of the table.
+     * @return               An array containing the column data for all columns. Each entry in the returned array is
+     *                           itself an array of primitives (for scalar columns), or else an <code>Object[]</code>
+     *                           array, or possibly <code>null</code>.
+     * 
+     * @throws FitsException if the table could not be accessed
      *
-     * @throws     FitsException if the operation failed
-     * 
-     * @deprecated               Strongly discouraged, since it returns columns in an unnatural flattened format or heap
-     *                               pointers only for variable-sized data (use {@link #getElement(int, int)} or
-     *                               {@link #getRow(int)} instead)
+     * @see                  TableData#getColumn(int)
+     * @see                  #setColumn(int, Object)
+     * @see                  #getElement(int, int)
+     * @see                  #getNCols()
      */
     public Object[] getColumns() throws FitsException {
         Object[] result = new Object[getNCols()];

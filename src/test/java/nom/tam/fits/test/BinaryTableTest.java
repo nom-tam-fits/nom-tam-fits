@@ -289,7 +289,7 @@ public class BinaryTableTest {
         }
         // Tom -> here the table is replaced by a copy that is not the same but
         // should be?
-        btab = new BinaryTable(btab.getData());
+        btab = btab.copy();
 
         f = new Fits();
         f.addHDU(Fits.makeHDU(btab));
@@ -360,8 +360,8 @@ public class BinaryTableTest {
             p[0][0] = (float) (i * Math.sin(i));
             btab.addRow(row);
         }
-        // TODO: should this not result in the same thing?
-        BinaryTable xx = new BinaryTable(btab.getData());
+
+        BinaryTable xx = btab.copy();
 
         f = new Fits();
         f.addHDU(Fits.makeHDU(btab));
@@ -1321,39 +1321,11 @@ public class BinaryTableTest {
         btab.toString();
     }
 
-    @Test(expected = IllegalStateException.class)
-    public void testBinaryTableFailure() throws Exception {
-        new BinaryTable() {
-
-            @Override
-            protected ColumnTable<SaveState> createColumnTable(Object[] arrCol, int[] sizes) throws TableException {
-                throw new TableException("failure");
-            }
-        };
-    }
-
     static class AccessBinaryTable extends BinaryTable {
 
         private static Object newState() {
             return new SaveState(new ArrayList<ColumnDesc>(), null);
         }
-    }
-
-    @Test(expected = IllegalStateException.class)
-    public void testBinaryTableFailure2() throws Exception {
-        new BinaryTable(new ColumnTable<Object>(new Object[0], new int[0]) {
-
-            @Override
-            public ColumnTable<Object> copy() throws TableException {
-                throw new TableException("failure");
-            }
-
-            @Override
-            public Object getExtraState() {
-                return AccessBinaryTable.newState();
-            }
-
-        });
     }
 
     @Test(expected = FitsException.class)
@@ -1715,8 +1687,8 @@ public class BinaryTableTest {
         f[2] = new float[14];
 
         BinaryTable t = new BinaryTable();
-        t.setCreateLongVary(false);
-        Assert.assertFalse(t.isCreateLongVary());
+        t.setPreferLongVary(false);
+        Assert.assertFalse(t.isPreferLongVary());
         t.addColumn(f);
         Assert.assertTrue(t.isVarLengthColumn(0));
 
@@ -1737,8 +1709,8 @@ public class BinaryTableTest {
         f[2] = new float[14];
 
         BinaryTable t = new BinaryTable();
-        t.setCreateLongVary(true);
-        Assert.assertTrue(t.isCreateLongVary());
+        t.setPreferLongVary(true);
+        Assert.assertTrue(t.isPreferLongVary());
 
         t.addColumn(f);
         Assert.assertTrue(t.isVarLengthColumn(0));

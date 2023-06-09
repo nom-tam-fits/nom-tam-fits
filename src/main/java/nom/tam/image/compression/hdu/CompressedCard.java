@@ -81,7 +81,7 @@ import static nom.tam.fits.header.Standard.XTENSION;
  * uncompressed HDU is remapped to ZNAXIS1 in the compressed HDU so it does not interfere with the different layout of
  * the compressed HDU vs the layout of the original one.
  */
-enum BackupRestoreUnCompressedHeaderCard {
+enum CompressedCard {
     MAP_ANY(null) {
 
         @Override
@@ -161,20 +161,20 @@ enum BackupRestoreUnCompressedHeaderCard {
     private final IFitsHeader uncompressedHeaderKey;
 
     public static void backup(HeaderCard card, Cursor<String, HeaderCard> headerIterator) throws HeaderCardException {
-        BackupRestoreUnCompressedHeaderCard mapping = selectMapping(CompressedImageHDU.UNCOMPRESSED_HEADER_MAPPING, card);
+        CompressedCard mapping = selectMapping(CompressedImageHDU.UNCOMPRESSED_HEADER_MAPPING, card);
         mapping.backupCard(card, headerIterator);
     }
 
     public static void restore(HeaderCard card, Cursor<String, HeaderCard> headerIterator) throws HeaderCardException {
-        BackupRestoreUnCompressedHeaderCard mapping = selectMapping(CompressedImageHDU.COMPRESSED_HEADER_MAPPING, card);
+        CompressedCard mapping = selectMapping(CompressedImageHDU.COMPRESSED_HEADER_MAPPING, card);
         mapping.restoreCard(card, headerIterator);
     }
 
-    protected static BackupRestoreUnCompressedHeaderCard selectMapping(
-            Map<IFitsHeader, BackupRestoreUnCompressedHeaderCard> mappings, HeaderCard card) {
+    protected static CompressedCard selectMapping(
+            Map<IFitsHeader, CompressedCard> mappings, HeaderCard card) {
         IFitsHeader key = GenericKey.lookup(card.getKey());
         if (key != null) {
-            BackupRestoreUnCompressedHeaderCard mapping = mappings.get(key);
+            CompressedCard mapping = mappings.get(key);
             if (mapping != null) {
                 return mapping;
             }
@@ -182,7 +182,7 @@ enum BackupRestoreUnCompressedHeaderCard {
         return MAP_ANY;
     }
 
-    BackupRestoreUnCompressedHeaderCard(IFitsHeader header) {
+    CompressedCard(IFitsHeader header) {
         compressedHeaderKey = header;
         if (header instanceof Compression) {
             uncompressedHeaderKey = ((Compression) compressedHeaderKey).getUncompressedKey();

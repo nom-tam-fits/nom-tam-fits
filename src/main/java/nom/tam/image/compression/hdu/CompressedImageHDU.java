@@ -1,6 +1,8 @@
 package nom.tam.image.compression.hdu;
 
+import java.io.IOException;
 import java.nio.Buffer;
+import java.nio.ByteBuffer;
 import java.util.Arrays;
 import java.util.Collections;
 import java.util.HashMap;
@@ -18,7 +20,13 @@ import nom.tam.fits.compression.algorithm.api.ICompressOption;
 import nom.tam.fits.header.Compression;
 import nom.tam.fits.header.GenericKey;
 import nom.tam.fits.header.IFitsHeader;
+import nom.tam.fits.header.Standard;
+import nom.tam.image.compression.CompressedImageTiler;
+import nom.tam.util.ByteBufferInputStream;
+import nom.tam.util.ByteBufferOutputStream;
 import nom.tam.util.Cursor;
+import nom.tam.util.FitsInputStream;
+import nom.tam.util.FitsOutputStream;
 
 /*
  * #%L
@@ -124,9 +132,9 @@ public class CompressedImageHDU extends BinaryTableHDU {
     static final List<IFitsHeader> TABLE_COLUMN_KEYS = Collections
             .unmodifiableList(Arrays.asList(binaryTableColumnKeyStems()));
 
-    static final Map<IFitsHeader, BackupRestoreUnCompressedHeaderCard> COMPRESSED_HEADER_MAPPING = new HashMap<>();
+    static final Map<IFitsHeader, CompressedCard> COMPRESSED_HEADER_MAPPING = new HashMap<>();
 
-    static final Map<IFitsHeader, BackupRestoreUnCompressedHeaderCard> UNCOMPRESSED_HEADER_MAPPING = new HashMap<>();
+    static final Map<IFitsHeader, CompressedCard> UNCOMPRESSED_HEADER_MAPPING = new HashMap<>();
 
     /**
      * Prepare a compressed image hdu for the specified image. the tile axis that are specified with -1 default to
@@ -178,7 +186,7 @@ public class CompressedImageHDU extends BinaryTableHDU {
         Cursor<String, HeaderCard> imageIterator = imageHDU.getHeader().iterator();
         while (imageIterator.hasNext()) {
             HeaderCard card = imageIterator.next();
-            BackupRestoreUnCompressedHeaderCard.restore(card, iterator);
+            CompressedCard.restore(card, iterator);
         }
         CompressedImageHDU compressedImageHDU = new CompressedImageHDU(header, compressedData);
         compressedData.prepareUncompressedData(imageHDU.getData().getData(), header);
@@ -227,14 +235,82 @@ public class CompressedImageHDU extends BinaryTableHDU {
      * 
      * @throws FitsException If there was an issue with the decompression.
      * 
+     * @see                  #getTileHDU(int[], int[])
      * @see                  #fromImageHDU(ImageHDU, int...)
      */
     public ImageHDU asImageHDU() throws FitsException {
         final Header header = getImageHeader();
-        ImageData data = (ImageData) ImageHDU.manufactureData(header);
+        ImageData data = ImageHDU.manufactureData(header);
         ImageHDU imageHDU = new ImageHDU(header, data);
         data.setBuffer(getUncompressedData());
         return imageHDU;
+    }
+
+    /**
+     * Returns an <code>ImageHDU</code>, with the specified decompressed image area. The HDU's header will be adjusted
+     * as necessary to reflect the correct size and coordinate system of the image cutout.
+     * 
+     * @param  corners                  the location in pixels where the tile begins in the full (uncompressed) image.
+     *                                      The number of elements in the array must match the image dimnesion.
+     * @param  lengths                  the size of the tile in pixels. The number of elements in the array must match
+     *                                      the image dimnesion.
+     * 
+     * @return                          a new image HDU containing the selected area of the uncompresed image, including
+     *                                      the adjusted header for the selected area,
+     * 
+     * @throws IOException              If the tiling operation itself could not be performed
+     * @throws FitsException            If the compressed image itself if invalid or imcomplete
+     * @throws IllegalArgumentException if the tile area is not fully contained inside the uncompressed image or if the
+     *                                      lengths are not positive definite.
+     * 
+     * @see                             #asImageHDU()
+     * @see                             CompressedImageTiler#getTile(int[], int[])
+     * 
+     * @since                           1.18
+     */
+    public ImageHDU getTileHDU(int[] corners, int[] lengths) throws IOException, FitsException, IllegalArgumentException {
+        Header h = getImageHeader();
+
+        int dim = h.getIntValue(Standard.NAXIS);
+
+        if (corners.length != lengths.length || corners.length != dim) {
+            throw new IllegalArgumentException("arguments for mismatched dimensions");
+        }
+
+        // Edit the image bound for the tile
+        for (int i = 0; i < corners.length; i++) {
+            int naxis = h.getIntValue(Standard.NAXISn.n(dim - i));
+
+            if (lengths[0] <= 0) {
+                return null;
+            }
+
+            if (corners[i] < 0 || corners[i] + lengths[i] > naxis) {
+                throw new IllegalArgumentException("tile out of bounds in dim " + i + ": [" + corners[i] + ":"
+                        + (corners[i] + lengths[i]) + "] in " + naxis);
+            }
+
+            h.addValue(Standard.NAXISn.n(dim - i), naxis - corners[i]);
+
+            if (h.containsKey(Standard.CRPIXn.n(dim - i))) {
+                h.addValue(Standard.NAXISn.n(dim - i), h.getIntValue(Standard.CRPIXn.n(dim - i)) - corners[i]);
+            }
+        }
+
+        ImageData im = ImageHDU.manufactureData(h);
+        ByteBuffer buf = ByteBuffer.wrap(new byte[(int) im.getSize()]);
+
+        try (FitsOutputStream out = new FitsOutputStream(new ByteBufferOutputStream(buf))) {
+            new CompressedImageTiler(this).getTile(out, corners, lengths);
+            out.close();
+        }
+
+        try (FitsInputStream in = new FitsInputStream(new ByteBufferInputStream(buf))) {
+            im.read(in);
+            in.close();
+        }
+
+        return new ImageHDU(h, im);
     }
 
     /**
@@ -278,12 +354,15 @@ public class CompressedImageHDU extends BinaryTableHDU {
      */
     public Header getImageHeader() throws HeaderCardException {
         Header header = new Header();
+
         Cursor<String, HeaderCard> imageIterator = header.iterator();
         Cursor<String, HeaderCard> iterator = getHeader().iterator();
+
         while (iterator.hasNext()) {
             HeaderCard card = iterator.next();
+
             if (!TABLE_COLUMN_KEYS.contains(GenericKey.lookup(card.getKey()))) {
-                BackupRestoreUnCompressedHeaderCard.backup(card, imageIterator);
+                CompressedCard.backup(card, imageIterator);
             }
         }
         return header;

@@ -326,6 +326,15 @@ public class ColumnTable<T> implements DataTable {
      */
     private T extraState;
 
+    public ColumnTable() {
+        arrays = new Object[0];
+        sizes = new int[0];
+        types = new char[0];
+        bases = new Class<?>[0];
+        nrow = 0;
+        initializePointers();
+    }
+
     /**
      * Create the object after checking consistency.
      *
