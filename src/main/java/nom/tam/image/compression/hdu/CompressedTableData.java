@@ -65,6 +65,9 @@ public class CompressedTableData extends BinaryTable {
     /** Indicates if we have already compressed using the last tiling */
     private boolean isCompressed;
 
+    /** Only add new var-length column in the preparation step once */
+    private boolean isPrepped;
+
     private String[] columnCompressionAlgorithms;
 
     /**
@@ -133,12 +136,19 @@ public class CompressedTableData extends BinaryTable {
             columnCompressionAlgorithms = Arrays.copyOfRange(columnCompressionAlgorithms, 0, ncols);
         }
 
-        for (int column = 0; column < ncols; column++) {
+        if (!isPrepped) {
             setPreferLongVary(true);
-            addByteVaryingColumn();
+            for (int column = 0; column < ncols; column++) {
+                addByteVaryingColumn();
+            }
+        }
+
+        for (int column = 0; column < ncols; column++) {
             int tileIndex = 1;
             for (int rowStart = 0; rowStart < nrows; rowStart += rowsPerTile) {
-                addRow(new byte[ncols][0]);
+                if (!isPrepped) {
+                    addRow(new byte[ncols][0]);
+                }
                 tiles.add(new BinaryTableTileCompressor(this, data, tile()//
                         .rowStart(rowStart)//
                         .rowEnd(rowStart + rowsPerTile)//
@@ -147,6 +157,8 @@ public class CompressedTableData extends BinaryTable {
                         .compressionAlgorithm(columnCompressionAlgorithms[column])));
             }
         }
+
+        isPrepped = true;
     }
 
     /**

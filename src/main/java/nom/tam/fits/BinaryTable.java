@@ -751,7 +751,7 @@ public class BinaryTable extends AbstractTableData implements Cloneable {
 
         } else {
             Object[] flatRow = new Object[getNCols()];
-            for (int i = 0; i < getNCols(); i++) {
+            for (int i = 0; i < flatRow.length; i++) {
                 Object x = ArrayFuncs.flatten(o[i]);
                 ColumnDesc colDesc = columnList.get(i);
                 flatRow[i] = arrayToColumn(colDesc, x);
