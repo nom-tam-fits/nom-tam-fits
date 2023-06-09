@@ -291,6 +291,7 @@ public class ColumnTable<T> implements DataTable, Cloneable {
      *                            the types and sizes of existing table columns.
      * 
      * @see                   #deleteRow(int)
+     * @see                   #ensureSize(int)
      */
     public synchronized void addRow(Object[] row) throws TableException {
         if (nrow == Integer.MAX_VALUE) {

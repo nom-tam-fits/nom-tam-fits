@@ -10,7 +10,7 @@
  - [Where to get it](#where-to-get-it)
  - [Reading FITS files](#reading-fits-files)
  - [Writing data](#writing-data)
- - [Buliding binary tables from local data](#building-tables-from-data")
+ - [Buliding binary tables from local data](#building-tables-from-data)
  - [FITS headers](#fits-headers)
  - [Compression support](#compression-support)
  - [How to contribute](#contribute)
@@ -151,14 +151,53 @@ If you want to try the bleeding edge version of nom-tam-fits, you can get it fro
  - [Tolerance to standard violations in 3rd party FITS files](#read-tolerance)
  
 
-To read a FITS file the user typically might open a `Fits` object, get the appropriate HDU using the `getHDU` method and then get the data using `getKernel()`.
+To read a FITS file the user typically might open a `Fits` object, get the appropriate HDU using the `getHDU` method and then 
+get the data using `getKernel()`.
 
 <a name="deferred-reading"></a>
 ### Deferred reading
 
-When FITS data are being read from a non-compressed file (`FitsFile`), the `read()` call will parse all HDU headers but will typically skip over the data segments (noting their position in the file however). Only when the user tries to access data from a HDU, will the library load that data from the previously noted file position. The behavior allows to inspect the contents of a FITS file very quickly even when the file is large, and reduces the need for IO when only parts of the whole are of interest to the user. Deferred input, however, is not possible when the input is compressed or if it is uses an stream rather than a random-access `FitsFile`.
+When FITS data are being read from a non-compressed file (`FitsFile`), the `read()` call will parse all HDU headers but will 
+typically skip over the data segments (noting their position in the file however). Only when the user tries to access data 
+from a HDU, will the library load that data from the previously noted file position. The behavior allows to inspect the 
+contents of a FITS file very quickly even when the file is large, and reduces the need for IO when only parts of the whole 
+are of interest to the user. Deferred input, however, is not possible when the input is compressed or if it is uses an 
+stream rather than a random-access `FitsFile`.
+
+One thing to keep in mind with deferred reading is that you should not close your `Fits` or its random-accessible input file 
+before all required data has been loaded. For example, the following will cause an error:
+
+```java
+   Fits fits = new Fits("somedata.fits);
+   
+   // Scans the FITS, but defers loading data until we need it...
+   fits.read();
+   
+   // We close the FITS prematurely.
+   fits.close();
+   
+   // !!!BAD!!! now if  we try to access data
+   //           we'll get and exception...
+   float[][] image = (float[][]) fits.getHDU(0).getKernel(); 
+```
+
+In the above, the `getKernel()` method will try to load the deferred data from the input that we closed just before
+it. Of course, that's not going to work. The correct order is of course:
+
+```java
+   // Scans the FITS, but defers loading data until we need it...
+   fits.read();
+ 
+   // Good, the FITS is still open so we can get the deferred data...
+   float[][] image = (float[][]) fits.getHDU(0).getKernel(); 
+
+   // We close only after we grabbed all the data we needed.
+   fits.close();
+
+```
 
 As of version 1.18, all data classes of the library support deferred reading.
+
 
 <a name="reading-images"></a>
 ### Reading Images
@@ -358,9 +397,8 @@ in the fifth column (i.e. 4 in Java indexing):
   }
 ```
 
-Note that table data is always stored as arrays, even for scalar types, so a single integer entry will be returned as 
-`int[1]`, a single string as `String[1]`. This is because we want to return mutable data types, so Java's `Integer` 
-or `String` are not viable options for us. Complex values are stored as `float[2]` or `double[2]` depending on 
+Note that table data is always returned as arrays, even for scalar types, so a single integer entry will be returned as 
+`int[1]`, a single string as `String[1]`. Complex values are stored as `float[2]` or `double[2]` depending on 
 the precision (FITS type `C` or `M`). So, a double-precision FITS complex array of size `[5][7]` will be returned a 
 `double[5][7][2]`. Logicals return `boolean[]`, which means that while FITS supports `null` logical values, we don't
 and these will default to `false`. It's an oversight that we are stuck with, at least for now...
@@ -416,13 +454,14 @@ violations are not tolerated, appropriate exceptions will be thrown during readi
 
 <a name="writing-images"></a>
 ### Writing images
+
 When we write FITS files we start with known data, so there are typically no casts required.
 We use a factory method to convert our primitive data to a FITS HDU and then write the Fits object to a desired location.
 The two primary classes to which we can write Fits data are are `FitsFile` (random acccess) and `FitsOutputStream`. 
 For exaple,
 
 ```java
-  float[][] data = new float[512][512];
+  float[][] data = ...;
      
   Fits f = new Fits();
   f.addHDU(Fits.makeHDU(data));
@@ -434,9 +473,8 @@ For exaple,
 
 Or, equivalently, using `Fits.write(String)`:
 
-
 ```java
-  float[][] data = new float[512][512];
+  float[][] data = ...;
      
   Fits f = new Fits();
   f.addHDU(Fits.makeHDU(data));
@@ -444,18 +482,39 @@ Or, equivalently, using `Fits.write(String)`:
   f.write("img.fits");
 ```
 
-#### Binary versus ASCII tables
-
-When writing simple tables it may be possible to write the tables in either binary or ASCII format, provided all columns are scalar types. By default, the library will create and write binary tables for such data. To create ASCII tables instead the user should call `FitsFactory.setUseAsciiTables(true)` first. 
-
 
 
 <a name="writing-tables"></a>
 ### Writing tables
-Just as with reading, there are a variety of options for writing tables.
 
+Writing tables is just about the same. The important thing to remember is that while images can be at the head of FITS files, tables
+are extensions, and so, they may not be the first HDU in a file. Thus, if a table is the first real data we want to add to a FITS,
+we must precede it with a dummy primary HDU first, e.g.:
 
+```java
+   Fits fits = new Fits();
+   
+   // Add a dummy HDU as out primary HDU
+   fits.addHDU(new NullDataHDU());
+```
 
+After that we can add our tables, such as binary tables (preferred) or ASCII tables (if you must):
+
+```java
+   // Some tables we have at hand...
+   BinaryTableHDU binTable = ...
+   fits.addHDU(binTable);
+  
+   AsciiTableHDU asciiTable = ...
+   fits.addHDU(asciiTable);
+```
+
+Once all HDUs have been added, we write the FITS as usual:
+
+```java
+   fits.write("myfits.fits");
+   fits.close();
+```
 
 
 <a name="incremental-writing"></a>
@@ -518,10 +577,11 @@ Suppose we have just a couple of specific elements we know we need to change in 
   thdu.rewrite();
 ```
 
-This rewrites the FITS file in place.
-Generally rewrites can be made as long as the only change is to the content of the data (and the FITS file meets the criteria mentioned above).
-An exception will be thrown if the data has been added or deleted or too many changes have been made to the header.
-Some modifications may be made to the header but the number of header cards modulo 36 must remain unchanged.
+This rewrites the FITS file in place. Generally rewrites can be made as long as the only change is to the content of 
+the data (and the FITS file meets the criteria mentioned above). An exception will be thrown if the data has been added 
+or deleted or too many changes have been made to the header. Some modifications may be made to the header but the number 
+of header cards modulo 36 must remain unchanged.
+
 
 <a name="low-level-writes"></a>
 ### Low-level writes
@@ -539,122 +599,147 @@ It's not hard to address these, but the user needs some familiarity with the int
 
 
 #### Images
-Suppose we have a 16 GB image that we want to write.
-It could be foolish to require all of that data to be held in-memory.
-We’ll build up a header that’s almost what we want, fix it, write it and then write the data.
-The data is an array  of 2000 x 2000 pixel images in 1000 energy channels.
-Each channel has a 4 byte integer.
-The entire image might be specified as 
+
+We can write images one subarray at a time, if we want to. Here is an example of
+how you could go abot it. First create storage for the contiguous chunk we want
+to write at a time. For example, same we want to write a 32-bit floating-point image 
+with `[nRows][nCols]` pixels, and we want to write these one row at a time:
+
+First let's create storage for the chunk and figure out how chunks will we written:
 
 ```java
-  int[][][] image = new int[1000][2000][2000];
+  // An array to hold data for a chunk of the image...
+  float[] chunk = new float[nCols];
 ```
 
-but we don’t want to keep all 16GB in memory simultaneously.
-We’ll process one channel at a time.
+Next create a header. It's easiest to create it from the chunk, and then just
+modify the dimensions for the full image, e.g. as:
 
 ```java
-  int[][][] row = new int[1][2000][2000];
-  long rowSize = FitsEncoder.computeSize(row);
-  int numRows = 1000;
-     
+  // Create an image HDU with the row 
   BasicHDU hdu = Fits.makeHDU(row);
-  hdu.getHeader().setNaxis(3, numRows);  // set the actual number of rows, we are going to write
+  Header header = hdu.getHeader();
+ 
+  // Update the image dimensionality for the full image
+  header.setNaxis(2);
+  
+  // Update each dimension, in reverse order of the Java 
+  // indexing convention, with the last Java index being 1
+  header.setNaxis(1, nCols);  
+  header.setNaxis(2, nRow);  
+```
+
+Next, we can complete the header description adding whatever information we desire.
+Once complete, we'll write the image header to the output:
+
+```java
+  // Create a FITS and write to the image to it
+  FitsFile out = new FitsFile("image.fits", "rw");
+  header.write(out);
+```
+
+Now, we can iterate over the rows, populating out chunk data, and writing
+it out as we go.
+
+```java
+  // Iterate over the selection of rows
+  for (int i = 0; i < nRows; i++) {
+     // fill up the chunk with one row's worth of data
+     ...
      
-  FitsFile out = new FitsFile("bigimg.fits", "rw");
-  hdu.getHeader().write(out);
-     
-  for (int i=0; i<numRows; i += 1) {
-     // fill up row with one channels worth of data
-     out.writeArray(row);
+     // Write the row to the output
+     out.writeArray(chunk);
   }
-     
-  FitsUtil.pad(out, numRows * rowSize) ;
+```
+
+Finally, add the requisite padding to complete the FITS block of 2880 bytes
+after the end of the image data:
+
+```java
+  FitsUtil.pad(out, out.position());
   out.close();
 }
 ```
 
-The first two statements create a FITS HDU appropriate for a 1x2000x2000 array.
-We update the header for this HDU to reflect the FITS file we want to create.
-Then we write it out to our new file.  Next we fill up each channel and write it directly.
-Then we add in a little padding and close our connection to the file, which should flush and pending output.
-
-Note that the order of axes in FITS is the inverse of how they are written in Java.
-The first FITS axis varies most rapidly.
-
-
 #### Tables
-We can do something pretty similar for tables so long as we don’t have variable length columns, but it requires a little more work.
-We will use a `ByteBuffer` to store the bytes we are going to write out for each row.
+We can do something pretty similar for tables so long as we don’t have variable length columns, but 
+it requires a little more work.
+
+First we have to make sure we are not trying to write tables into the primary HDU of a FITS. Tables
+can only be in extensions, and so we might need to create and write a dummy primary HDU to the
+FITS before we can write the table itself:
 
 ```java
   FitsFile out = new FitsFile("table.fits", "rw");
      
-  BasicHDU.getDummyHDU().write(out);  // Write an initial null HDU
-     
-  double[] ra = {0.};
-  double[] dec = {0.};
-  String[] name = {"          "}; // maximum length will be 10 characters
-     
-  Object[] row = {ra, dec, name};
-  long rowSize = FitsEncoder.computeSize(row);
-     
+  // Binary tables cannot be in the primary HDU of a FITS file
+  // So we must add a dummy primary HDU to the FITS first
+  new NullDataHDU().write(out);
+```
+   
+Next, assume we have a binary table that we either read from an input, or else assembled ourselves
+(see further below on how to build binary tables):
+
+```java 
   BinaryTable table = new BinaryTable();
-     
-  table.addRow(row);
-     
-  Header header = new Header();
-  table.fillHeader(header);
-     
-  BinaryTableHDU bhdu = new BinaryTableHDU(header, table);
-     
-  bhdu.setColumnName(0, "ra", null);
-  bhdu.setColumnName(1, "dec", null);
-  bhdu.setColumnName(2, "name", null);
-     
-  header.setNaxis(2, 1000);  // set the header to the actual number of rows we write
-  header.write(out);
-     
-  ByteBuffer buffer = ByteBuffer.allocate((int) rowSize);
-     
-  for (int event = 0; event < 1000; event ++){
-      buffer.clear();
-     
-      // update ra, dec and name here
-     
-      buffer.putDouble(ra[0]);
-      buffer.putDouble(dec[0]);
-      buffer.put(name[0].getBytes());
-     
-      buffer.flip();
-      out.write(buffer.array());
-  }
-     
-  FitsUtil.pad(out, rowSize * 1000);
-  out.close();
 ```
 
+Next, we will need to create an appropriate FITS header for the table:
+    
+```java
+  Header header = new Header();
+  table.fillHeader(header);
+```
 
-First we create a new `FitsFile` and write the initial empty HDU.
-Than we initialize our first row and calculate its size.
-Note how we used 10 spaces to initialize the `String`, this will be the maximum size for
-each item in this column.
+We can now complete the header descriprtion as we see fir with whatever optional entries. We can also
+save space for future additions, e.g. for values we will have only after we start writing the table
+itself:
 
-We create a new `BinaryTable` and add our first row. 
-This row only initializes the table structure. It will not be written out!
+```java
+   // Make space for at least 200 more header lines to be added later
+   header.ensureCardSpace(200);
+```
 
-Next is the creation of a `Header` and a `BinaryTableHDU`. 
-We need to fill the `Header` with the information of the `BinaryTable` before we can 
-create the `BinaryTableHDU`.
+Now, we can write out the header:
 
-We can now update the header information. E.g. setting row names and 
-the correct number of rows and write out the header.
+```java
+   header.write(out);
+```
 
-Now we are ready to start writing data.
-We use a `ByteBuffer` to store the data of each row.
-After we updated the `ByteBuffer`, we write it to the `FitsFile`.
+We will use a `ByteBuffer` to store the bytes we are going to write out for each row. The buffer must 
+be sized appropriately to accomodate the data.
 
-Last, we pad the fits file and close the open `FitsFile`.
+```java
+  ByteBuffer buffer = ByteBuffer.allocate(table.getRegularRowSize());
+```
+
+And finally we can write regular table rows (without variable-length entries) in a loop
+
+```java
+  for (...) {
+     buffer.clear();
+     
+     // Write data one element at the time into the buffer
+     // These must match the column structure of the table, both in
+     // terms of data types and element counts. 
+     buffer.putDouble(ra);
+     buffer.put(nameBytes);
+     buffer.putArray(spectrum);
+     
+     // Once the row data was constructed, we can write it to the
+     // table
+     buffer.flip();
+     out.write(buffer.array());
+  }
+```
+
+Last but not least, we must add the requisite padding to complete the FITS block of 2880 bytes
+after the table data ends. 
+
+```java
+  FitsUtil.pad(out, nRowsWritten * table.getRegularRowSize());
+  out.close();
+```
 
 
 <a name="writing-gzipped-outputs"></a>
@@ -706,7 +791,10 @@ simply better, because they:
  - Take up less space on disk
  - Can be compressed to an even smaller size
  
-
+To create ASCII tables (when possible) instead using `Fits.makeHDU()` or one of the factory methods to encapsulate 
+a table data object, you should call `FitsFactory.setUseAsciiTables(true)` beforehand.
+ 
+ 
 #### Buiding tables one column at a time
 
 Sometimes we might want to assemble a table from a selection of data which will readily consitute columns in the table. 
