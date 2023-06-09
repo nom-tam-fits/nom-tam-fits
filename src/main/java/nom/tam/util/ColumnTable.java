@@ -39,11 +39,12 @@ import java.util.Arrays;
 
 import nom.tam.util.type.ElementType;
 
+import edu.umd.cs.findbugs.annotations.SuppressFBWarnings;
+
 /**
  * <p>
- * (<i>for internal use</i>) Table data that is stored (internally) in column major format. This class has been
- * completely re-written by A. Kovacs for 1.18. We kkep the old API for compatibility, but make some practical additions
- * to it.
+ * Table data that is stored (internally) in column major format. This class has been completely re-written by A. Kovacs
+ * for 1.18. We kkep the old API for compatibility, but make some practical additions to it.
  * </p>
  *
  * @param <T> dummy generic type parameter that is no longer used. We'll stick to it a a memento of the bad design
@@ -87,9 +88,9 @@ public class ColumnTable<T> implements DataTable, Cloneable {
     }
 
     /**
-     * Checks if the table is empty (contains no data)
+     * Checks if the table is empty (contains no data and no column definitions)
      * 
-     * @return <code>true</code> if the table contains no data at present, otherwise <code>false</code>
+     * @return <code>true</code> if the table has no columns defined, otherwise <code>false</code>
      * 
      * @since  1.18
      * 
@@ -101,7 +102,7 @@ public class ColumnTable<T> implements DataTable, Cloneable {
     }
 
     /**
-     * Clears the table, discarding all columns;
+     * Clears the table, discarding all columns.
      * 
      * @see   #deleteAllRows()
      * 
@@ -119,7 +120,7 @@ public class ColumnTable<T> implements DataTable, Cloneable {
      * grow the table once, raher than a few times potentially. Note, that if deleting rows may annul the effect of this
      * call, and shrink the table to a reasonable size after the deletions.
      * 
-     * @param rows the number of rows we will want the table to hold in the future...
+     * @param rows the number of rows we will want the table to hold at some point in the future...
      * 
      * @see        #addRow(Object[])
      */
@@ -129,24 +130,7 @@ public class ColumnTable<T> implements DataTable, Cloneable {
         }
     }
 
-    /**
-     * Adds a column as an array of scalars or regular 1D primitve array elements.
-     *
-     * @param  newColumn      the column to add, either as a 1D array of scalar primitives, or a regular 2D array of
-     *                            primitives, in which each row contains the same type of 1D primitive array of the same
-     *                            sizes.
-     *
-     * @throws TableException if the new column is not a 1D or 2D array of primitives, or it it does not match the
-     *                            number of existing table rows or if the column contains an irregular 2D array.
-     * 
-     * @since                 1.18
-     */
-    @SuppressWarnings("unchecked")
-    public synchronized void addUndigestedColumn(Object newColumn) throws TableException {
-        if (newColumn == null) {
-            throw new TableException("Cannot add a null column.");
-        }
-
+    private int checkWrappedColumn(Object newColumn) throws TableException {
         Class<?> eType = newColumn.getClass().getComponentType();
         int eCount = 1; // default scalar element count
 
@@ -181,6 +165,32 @@ public class ColumnTable<T> implements DataTable, Cloneable {
             checkFlatColumn(newColumn, 1);
         }
 
+        return eCount;
+    }
+
+    /**
+     * Adds a column as an array of scalars or regular 1D primitve array elements.
+     *
+     * @param  newColumn      the column to add, either as a 1D array of scalar primitives, or a regular 2D array of
+     *                            primitives, in which each row contains the same type of 1D primitive array of the same
+     *                            sizes.
+     *
+     * @throws TableException if the new column is not a 1D or 2D array of primitives, or it it does not match the
+     *                            number of existing table rows or if the column contains an irregular 2D array.
+     * 
+     * @since                 1.18
+     * 
+     * @see                   #getWrappedColumn(int)
+     * @see                   #setWrappedColumn(int, Object)
+     */
+    @SuppressWarnings("unchecked")
+    public void addWrappedColumn(Object newColumn) throws TableException {
+        if (newColumn == null) {
+            throw new TableException("Cannot add a null column.");
+        }
+
+        int eCount = checkWrappedColumn(newColumn);
+
         @SuppressWarnings("rawtypes")
         Column c = createColumn(newColumn.getClass().getComponentType(), eCount);
         c.data = newColumn;
@@ -200,7 +210,7 @@ public class ColumnTable<T> implements DataTable, Cloneable {
      * 
      * @since                 1.18
      */
-    public synchronized void addColumn(Class<?> type, int size) throws TableException {
+    public void addColumn(Class<?> type, int size) throws TableException {
         columns.add(createColumn(type, size));
     }
 
@@ -238,7 +248,7 @@ public class ColumnTable<T> implements DataTable, Cloneable {
      * @see                   #setColumn(int, Object)
      */
     @SuppressWarnings("unchecked")
-    public synchronized void addColumn(Object newColumn, int size) throws TableException {
+    public void addColumn(Object newColumn, int size) throws TableException {
         if (newColumn == null) {
             throw new TableException("Cannot add a null column: we don't know its type.");
         }
@@ -249,7 +259,7 @@ public class ColumnTable<T> implements DataTable, Cloneable {
 
         if (size == 1 && newColumn.getClass().getComponentType().isPrimitive()) {
             // Add scalar columns as is...
-            addUndigestedColumn(newColumn);
+            addWrappedColumn(newColumn);
             return;
         }
 
@@ -293,7 +303,7 @@ public class ColumnTable<T> implements DataTable, Cloneable {
      * @see                   #deleteRow(int)
      * @see                   #ensureSize(int)
      */
-    public synchronized void addRow(Object[] row) throws TableException {
+    public void addRow(Object[] row) throws TableException {
         if (nrow == Integer.MAX_VALUE) {
             throw new TableException("Table has reached its capacity limit");
         }
@@ -364,7 +374,7 @@ public class ColumnTable<T> implements DataTable, Cloneable {
      * @throws TableException (<i>for back compatibility</i>) never thrown.
      */
     @SuppressWarnings("cast")
-    public synchronized ColumnTable<T> copy() throws TableException {
+    public ColumnTable<T> copy() throws TableException {
         ColumnTable<T> copy = (ColumnTable<T>) clone();
         copy.columns = new ArrayList<>(columns.size());
         for (Column<?> c : columns) {
@@ -384,7 +394,7 @@ public class ColumnTable<T> implements DataTable, Cloneable {
      * 
      * @since                            1.18
      */
-    public synchronized void deleteColumn(int col) throws IndexOutOfBoundsException {
+    public void deleteColumn(int col) throws IndexOutOfBoundsException {
         if (col < 0 || col > columns.size()) {
             throw new IndexOutOfBoundsException("Column delete out of bounds: col=" + col + ", size=" + columns.size());
         }
@@ -401,7 +411,7 @@ public class ColumnTable<T> implements DataTable, Cloneable {
      * 
      * @see                   #deleteColumn(int)
      */
-    public synchronized void deleteColumns(int start, int len) throws TableException {
+    public void deleteColumns(int start, int len) throws TableException {
         if (len == 0) {
             return;
         }
@@ -435,7 +445,7 @@ public class ColumnTable<T> implements DataTable, Cloneable {
      * @see                   #deleteRows(int, int)
      * @see                   #clear()
      */
-    public final synchronized void deleteAllRows() throws TableException {
+    public final void deleteAllRows() throws TableException {
         nrow = 0;
         for (Column<?> c : columns) {
             c.trim(MIN_CAPACITY);
@@ -451,7 +461,7 @@ public class ColumnTable<T> implements DataTable, Cloneable {
      * 
      * @see                   #deleteRows(int, int)
      */
-    public final synchronized void deleteRow(int row) throws TableException {
+    public final void deleteRow(int row) throws TableException {
         deleteRows(row, 1);
     }
 
@@ -465,7 +475,7 @@ public class ColumnTable<T> implements DataTable, Cloneable {
      * 
      * @see                   #deleteRow(int)
      */
-    public synchronized void deleteRows(int from, int length) throws TableException {
+    public void deleteRows(int from, int length) throws TableException {
         if (from < 0 || length < 0 || from + length > nrow) {
             throw new TableException("Row delete out of bounds: start=" + from + ", len=" + length + ", size=" + nrow);
         }
@@ -499,7 +509,7 @@ public class ColumnTable<T> implements DataTable, Cloneable {
      * 
      * @see    #getElementClass(int)
      */
-    public synchronized Class<?>[] getBases() {
+    public Class<?>[] getBases() {
         Class<?>[] bases = new Class<?>[columns.size()];
         for (int i = 0; i < bases.length; i++) {
             bases[i] = getElementClass(i);
@@ -508,9 +518,9 @@ public class ColumnTable<T> implements DataTable, Cloneable {
     }
 
     /**
-     * Returns the undigested colun data as stored internally, in which each entry correspond to data for a given row.
-     * If the column contains non-scalar elements, then each entry in the returned array will be a primitive array of
-     * the column's element size.
+     * Returns the wrapped column data, in which each entry correspond to data for a given row. If the column contains
+     * non-scalar elements, then each entry in the returned array will be a primitive array of the column's element
+     * size.
      * 
      * @param  col the 0-based column index
      * 
@@ -519,10 +529,12 @@ public class ColumnTable<T> implements DataTable, Cloneable {
      *                 array elements for each row.
      * 
      * @see        #getColumn(int)
+     * @see        #addWrappedColumn(Object)
+     * @see        #setWrappedColumn(int, Object)
      * 
      * @since      1.18
      */
-    public Object getUndigestedColumn(int col) {
+    public Object getWrappedColumn(int col) {
         Column<?> c = columns.get(col);
         c.trim(nrow);
         return c.getData();
@@ -540,13 +552,13 @@ public class ColumnTable<T> implements DataTable, Cloneable {
      * @return     an array of primitives (for scalar columns), or else an <code>Object[]</code> array, or possibly
      *                 <code>null</code>
      *
-     * @see        #getUndigestedColumn(int)
+     * @see        #getWrappedColumn(int)
      * @see        #setColumn(int, Object)
      * @see        #getElement(int, int)
      * @see        #getNCols()
      */
     @Override
-    public synchronized Object getColumn(int col) {
+    public Object getColumn(int col) {
         Column<?> c = columns.get(col);
         if (c.elementSize() != 1) {
             int n = nrow * c.elementSize();
@@ -557,7 +569,7 @@ public class ColumnTable<T> implements DataTable, Cloneable {
             }
             return array;
         }
-        return getUndigestedColumn(col);
+        return getWrappedColumn(col);
     }
 
     /**
@@ -569,7 +581,7 @@ public class ColumnTable<T> implements DataTable, Cloneable {
      * 
      * @see    #getColumn(int)
      */
-    public synchronized Object[] getColumns() {
+    public Object[] getColumns() {
         Object[] table = new Object[columns.size()];
         for (int i = 0; i < table.length; i++) {
             table[i] = getColumn(i);
@@ -608,7 +620,7 @@ public class ColumnTable<T> implements DataTable, Cloneable {
     }
 
     @Override
-    public synchronized Object getRow(int row) {
+    public Object getRow(int row) {
         if (row > nrow) {
             throw new ArrayIndexOutOfBoundsException(row);
         }
@@ -643,7 +655,7 @@ public class ColumnTable<T> implements DataTable, Cloneable {
      * 
      * @since  1.18
      */
-    public synchronized int[] getSizes() {
+    public int[] getSizes() {
         int[] sizes = new int[columns.size()];
         for (int i = 0; i < sizes.length; i++) {
             sizes[i] = getElementSize(i);
@@ -671,7 +683,7 @@ public class ColumnTable<T> implements DataTable, Cloneable {
      * 
      * @see    #getTypeChar(int)
      */
-    public synchronized char[] getTypes() {
+    public char[] getTypes() {
         char[] types = new char[columns.size()];
         for (int i = 0; i < types.length; i++) {
             types[i] = getTypeChar(i);
@@ -688,7 +700,7 @@ public class ColumnTable<T> implements DataTable, Cloneable {
      * 
      * @see                #write(ArrayDataOutput)
      */
-    public synchronized void read(ArrayDataInput in) throws IOException {
+    public void read(ArrayDataInput in) throws IOException {
         for (int row = 0; row < nrow; row++) {
             for (Column<?> c : columns) {
                 c.read(row, in);
@@ -698,7 +710,7 @@ public class ColumnTable<T> implements DataTable, Cloneable {
 
     @SuppressWarnings("unchecked")
     @Override
-    public synchronized void setColumn(int col, Object newColumn) throws TableException {
+    public void setColumn(int col, Object newColumn) throws TableException {
 
         if (!newColumn.getClass().isArray()) {
             throw new TableException("Not an array: " + newColumn.getClass().getName());
@@ -718,6 +730,55 @@ public class ColumnTable<T> implements DataTable, Cloneable {
         }
 
         c.data = wrapColumn(newColumn, c.elementSize());
+    }
+
+    /**
+     * Sets new data for a column, in wrapped format. The argument is an 1D or 2D array of primitives, in which the
+     * eading dimension must match the number of rows already in the table (if any).
+     *
+     * @param  col            the zero-based column index
+     * @param  newColumn      the new column data, either as a 1D array of scalar primitives, or a regular 2D array of
+     *                            primitives, in which each row contains the same type of 1D primitive array of the same
+     *                            sizes.
+     *
+     * @throws TableException if the new column data is not a 1D or 2D array of primitives, or it it does not match the
+     *                            number of existing table rows or if the column contains an irregular 2D array.
+     * 
+     * @since                 1.18
+     * 
+     * @see                   #getWrappedColumn(int)
+     * @see                   #addWrappedColumn(Object)
+     */
+    @SuppressWarnings("unchecked")
+    public void setWrappedColumn(int col, Object newColumn) throws TableException {
+
+        if (!newColumn.getClass().isArray()) {
+            throw new TableException("Not an array: " + newColumn.getClass().getName());
+        }
+
+        if (Array.getLength(newColumn) != nrow) {
+            throw new TableException("Mismatched row count " + Array.getLength(newColumn) + ", expected " + nrow);
+        }
+
+        @SuppressWarnings("rawtypes")
+        Column c = columns.get(col);
+
+        int eSize = checkWrappedColumn(newColumn);
+        if (eSize != c.elementSize()) {
+            throw new TableException("Mismatched element size " + eSize + ", expected " + c.elementSize());
+        }
+
+        Class<?> eType = newColumn.getClass().getComponentType();
+        if (newColumn instanceof Object[]) {
+            eType = eType.getComponentType();
+        }
+
+        if (!c.baseType().equals(eType)) {
+            throw new TableException(
+                    "Mismatched type " + newColumn.getClass().getName() + ", expected " + c.baseType().getName());
+        }
+
+        c.data = newColumn;
     }
 
     @Override
@@ -743,7 +804,7 @@ public class ColumnTable<T> implements DataTable, Cloneable {
     }
 
     @Override
-    public synchronized void setRow(int row, Object data) throws TableException {
+    public void setRow(int row, Object data) throws TableException {
         if (row > nrow) {
             throw new ArrayIndexOutOfBoundsException(row);
         }
@@ -781,7 +842,7 @@ public class ColumnTable<T> implements DataTable, Cloneable {
      * 
      * @see                #read(ArrayDataInput)
      */
-    public synchronized void write(ArrayDataOutput out) throws IOException {
+    public void write(ArrayDataOutput out) throws IOException {
         for (int row = 0; row < nrow; row++) {
             for (Column<?> c : columns) {
                 c.write(row, out);
@@ -799,7 +860,7 @@ public class ColumnTable<T> implements DataTable, Cloneable {
      *
      * @throws IOException if the write operation failed
      */
-    public synchronized void write(ArrayDataOutput out, int rowStart, int rowEnd, int col) throws IOException {
+    public void write(ArrayDataOutput out, int rowStart, int rowEnd, int col) throws IOException {
         for (int row = rowStart; row < rowEnd; row++) {
             columns.get(col).write(row, out);
         }
@@ -815,7 +876,7 @@ public class ColumnTable<T> implements DataTable, Cloneable {
      *
      * @throws IOException if the reading failed
      */
-    public synchronized void read(ArrayDataInput in, int rowStart, int rowEnd, int col) throws IOException {
+    public void read(ArrayDataInput in, int rowStart, int rowEnd, int col) throws IOException {
         columns.get(col).read(rowStart, rowEnd - rowStart, in);
     }
 
@@ -1002,6 +1063,7 @@ public class ColumnTable<T> implements DataTable, Cloneable {
             out.write(data[index]);
         }
 
+        @SuppressFBWarnings(value = "RR_NOT_CHECKED", justification = "not exposed and never needed locally")
         @Override
         void read(int from, int n, ArrayDataInput in) throws IOException {
             in.read(data, from, n);
@@ -1050,7 +1112,7 @@ public class ColumnTable<T> implements DataTable, Cloneable {
 
         @Override
         void read(int index, ArrayDataInput in) throws IOException {
-            in.read(data, index, elementSize());
+            data[index] = in.readBoolean();
         }
 
         @Override
@@ -1058,6 +1120,7 @@ public class ColumnTable<T> implements DataTable, Cloneable {
             out.writeBoolean(data[index]);
         }
 
+        @SuppressFBWarnings(value = "RR_NOT_CHECKED", justification = "not exposed and never needed locally")
         @Override
         void read(int from, int n, ArrayDataInput in) throws IOException {
             in.read(data, from, n);
@@ -1118,6 +1181,7 @@ public class ColumnTable<T> implements DataTable, Cloneable {
             out.writeShort(data[index]);
         }
 
+        @SuppressFBWarnings(value = "RR_NOT_CHECKED", justification = "not exposed and never needed locally")
         @Override
         void read(int from, int n, ArrayDataInput in) throws IOException {
             in.read(data, from, n);
@@ -1178,6 +1242,7 @@ public class ColumnTable<T> implements DataTable, Cloneable {
             out.writeShort(data[index]);
         }
 
+        @SuppressFBWarnings(value = "RR_NOT_CHECKED", justification = "not exposed and never needed locally")
         @Override
         void read(int from, int n, ArrayDataInput in) throws IOException {
             in.read(data, from, n);
@@ -1234,6 +1299,7 @@ public class ColumnTable<T> implements DataTable, Cloneable {
             out.writeInt(data[index]);
         }
 
+        @SuppressFBWarnings(value = "RR_NOT_CHECKED", justification = "not exposed and never needed locally")
         @Override
         void read(int from, int n, ArrayDataInput in) throws IOException {
             in.read(data, from, n);
@@ -1290,6 +1356,7 @@ public class ColumnTable<T> implements DataTable, Cloneable {
             out.writeLong(data[index]);
         }
 
+        @SuppressFBWarnings(value = "RR_NOT_CHECKED", justification = "not exposed and never needed locally")
         @Override
         void read(int from, int n, ArrayDataInput in) throws IOException {
             in.read(data, from, n);
@@ -1336,6 +1403,7 @@ public class ColumnTable<T> implements DataTable, Cloneable {
             }
         }
 
+        @SuppressFBWarnings(value = "RR_NOT_CHECKED", justification = "not exposed and never needed locally")
         @Override
         void read(int from, int n, ArrayDataInput in) throws IOException {
             in.read(data, from, n);
@@ -1392,6 +1460,7 @@ public class ColumnTable<T> implements DataTable, Cloneable {
             }
         }
 
+        @SuppressFBWarnings(value = "RR_NOT_CHECKED", justification = "not exposed and never needed locally")
         @Override
         void read(int index, ArrayDataInput in) throws IOException {
             data[index] = in.readDouble();
@@ -1458,6 +1527,7 @@ public class ColumnTable<T> implements DataTable, Cloneable {
             }
         }
 
+        @SuppressFBWarnings(value = "RR_NOT_CHECKED", justification = "not exposed and never needed locally")
         @Override
         void read(int index, ArrayDataInput in) throws IOException {
             in.readArrayFully(data[index]);

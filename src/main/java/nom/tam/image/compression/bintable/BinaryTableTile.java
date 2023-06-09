@@ -80,8 +80,8 @@ public abstract class BinaryTableTile implements Runnable {
         column = description.getColumn();
         tileIndex = description.getTileIndex();
         compressionAlgorithm = description.getCompressionAlgorithm();
-        type = ElementType.forDataID(data.getTypes()[column]);
-        length = (rowEnd - rowStart) * data.getSizes()[column];
+        type = ElementType.forClass(data.getElementClass(column));
+        length = (rowEnd - rowStart) * data.getElementSize(column);
     }
 
     public void execute(ExecutorService threadPool) {

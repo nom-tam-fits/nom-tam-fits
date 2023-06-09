@@ -1031,6 +1031,25 @@ public class BinaryTable extends AbstractTableData implements Cloneable {
     }
 
     /**
+     * Returns the byte size of a regular table row in the main table. This row does not contain the variable length
+     * columns themselves, but rather <code>int[2]</code> or <code>long[2]</code> heap pointers in their stead.
+     * 
+     * @return the byte size of a table row in the main table, which contains heap references only for variable-length
+     *             columns.
+     * 
+     * @see    #isPreferLongVary()
+     * 
+     * @since  1.18
+     */
+    public int getRegularRowSize() {
+        int n = 0;
+        for (int i = 0; i < getNCols(); i++) {
+            n += table.getElementSize(i);
+        }
+        return n;
+    }
+
+    /**
      * Returns the size of the regular table data, before the heap area.
      * 
      * @return the size of the regular table in bytes

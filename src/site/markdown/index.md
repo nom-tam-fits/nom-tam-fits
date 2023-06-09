@@ -170,7 +170,7 @@ before all required data has been loaded. For example, the following will cause 
 ```java
    Fits fits = new Fits("somedata.fits);
    
-   // Scans the FITS, but defers loading data until we need it...
+   // Scans the FITS, but defers loading data until we need it
    fits.read();
    
    // We close the FITS prematurely.
@@ -185,15 +185,14 @@ In the above, the `getKernel()` method will try to load the deferred data from t
 it. Of course, that's not going to work. The correct order is of course:
 
 ```java
-   // Scans the FITS, but defers loading data until we need it...
+   // Scans the FITS, but defers loading data until we need it
    fits.read();
  
-   // Good, the FITS is still open so we can get the deferred data...
+   // Good, the FITS is still open so we can get the deferred data
    float[][] image = (float[][]) fits.getHDU(0).getKernel(); 
 
    // We close only after we grabbed all the data we needed.
    fits.close();
-
 ```
 
 As of version 1.18, all data classes of the library support deferred reading.
@@ -605,7 +604,7 @@ how you could go abot it. First create storage for the contiguous chunk we want
 to write at a time. For example, same we want to write a 32-bit floating-point image 
 with `[nRows][nCols]` pixels, and we want to write these one row at a time:
 
-First let's create storage for the chunk and figure out how chunks will we written:
+First let's create storage for the chunk:
 
 ```java
   // An array to hold data for a chunk of the image...
@@ -620,13 +619,8 @@ modify the dimensions for the full image, e.g. as:
   BasicHDU hdu = Fits.makeHDU(row);
   Header header = hdu.getHeader();
  
-  // Update the image dimensionality for the full image
-  header.setNaxis(2);
-  
-  // Update each dimension, in reverse order of the Java 
-  // indexing convention, with the last Java index being 1
-  header.setNaxis(1, nCols);  
-  header.setNaxis(2, nRow);  
+  // Override the image dimensions in the header to describe the full image
+  ImageData.overrideHeaderAxes(header, nRow, nCol); 
 ```
 
 Next, we can complete the header description adding whatever information we desire.
@@ -638,11 +632,11 @@ Once complete, we'll write the image header to the output:
   header.write(out);
 ```
 
-Now, we can iterate over the rows, populating out chunk data, and writing
-it out as we go.
+Now, we can start writing the image sata, iterating over the rows, populating our 
+chunk data in turn, and writing it out as we go.
 
 ```java
-  // Iterate over the selection of rows
+  // Iterate over the image rows
   for (int i = 0; i < nRows; i++) {
      // fill up the chunk with one row's worth of data
      ...
@@ -658,15 +652,14 @@ after the end of the image data:
 ```java
   FitsUtil.pad(out, out.position());
   out.close();
-}
 ```
 
 #### Tables
-We can do something pretty similar for tables so long as we don’t have variable length columns, but 
+We can do something pretty similar for tables __so long as we don't have variable length columns__, but 
 it requires a little more work.
 
 First we have to make sure we are not trying to write tables into the primary HDU of a FITS. Tables
-can only be in extensions, and so we might need to create and write a dummy primary HDU to the
+can only reside in extensions, and so we might need to create and write a dummy primary HDU to the
 FITS before we can write the table itself:
 
 ```java
@@ -682,6 +675,7 @@ Next, assume we have a binary table that we either read from an input, or else a
 
 ```java 
   BinaryTable table = new BinaryTable();
+  ...
 ```
 
 Next, we will need to create an appropriate FITS header for the table:
@@ -691,9 +685,9 @@ Next, we will need to create an appropriate FITS header for the table:
   table.fillHeader(header);
 ```
 
-We can now complete the header descriprtion as we see fir with whatever optional entries. We can also
+We can now complete the header descriprtion as we see fit, with whatever optional entries. We can also
 save space for future additions, e.g. for values we will have only after we start writing the table
-itself:
+data itself:
 
 ```java
    // Make space for at least 200 more header lines to be added later
@@ -706,39 +700,40 @@ Now, we can write out the header:
    header.write(out);
 ```
 
-We will use a `ByteBuffer` to store the bytes we are going to write out for each row. The buffer must 
-be sized appropriately to accomodate the data.
-
-```java
-  ByteBuffer buffer = ByteBuffer.allocate(table.getRegularRowSize());
-```
-
-And finally we can write regular table rows (without variable-length entries) in a loop
+Now, we can finally write regular table rows (without variable-length entries) in a loop. Assuming
+that out row is something like `{ { double[1] }, { byte[10] }, { float[256] }, ... }`: 
 
 ```java
   for (...) {
-     buffer.clear();
+     // Write data one element at the time into the buffer via the 
+     // rowStream. These must match the column structure of the table, 
+     // in terms of order, data types, and element counts. 
      
-     // Write data one element at the time into the buffer
-     // These must match the column structure of the table, both in
-     // terms of data types and element counts. 
-     buffer.putDouble(ra);
-     buffer.put(nameBytes);
-     buffer.putArray(spectrum);
-     
-     // Once the row data was constructed, we can write it to the
-     // table
-     buffer.flip();
-     out.write(buffer.array());
+     out.writeDouble(ra);
+     out.write(fixedLengthNameBytes);
+     out.witeArray(spectrum);
+     ...
   }
 ```
 
-Last but not least, we must add the requisite padding to complete the FITS block of 2880 bytes
+Once we finish writing the table data, we must add the requisite padding to complete the FITS block of 2880 bytes
 after the table data ends. 
 
 ```java
-  FitsUtil.pad(out, nRowsWritten * table.getRegularRowSize());
+  // Close the row stream, we don't need it any longer
   out.close();
+
+  // Add padding to the file to complete the FITS block
+  FitsUtil.pad(out, nRowsWritten * table.getRegularRowSize());
+```
+
+After the table has been written, we can revisit the header if we need to update it with entries
+that were not available earlier:
+
+```java
+   // Re-write the header with the new information we added since we began writing 
+   // the table data
+   header.rewrite();
 ```
 
 
@@ -751,7 +746,8 @@ gzipped fits out of the box, by wrapping the file's output stream into a `GZIPOu
 ```java
   Fits f = new Fits();
   
-  FitsOutputStream out = new FitsOutputStream(new GZIPOutputStream(new FileOutputStream(new File("mydata.fits.gz"))));
+  FitsOutputStream out = new FitsOutputStream(new GZIPOutputStream(
+  	new FileOutputStream(new File("mydata.fits.gz"))));
   f.write(out);
 ```
 

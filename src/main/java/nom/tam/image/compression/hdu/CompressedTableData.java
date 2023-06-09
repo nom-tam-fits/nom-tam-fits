@@ -232,7 +232,7 @@ public class CompressedTableData extends BinaryTable {
         BinaryTable ct = new BinaryTable(toRow - fromRow, BinaryTable.getDescriptor(targetHeader, col)) {
             @Override
             protected void readHeap(long offset, Object o) throws FitsException {
-                this.readHeap(offset, o);
+                CompressedTableData.this.readHeap(offset, o);
             }
         };
 
