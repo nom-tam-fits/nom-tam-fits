@@ -42,7 +42,6 @@ import nom.tam.util.FitsOutputStream;
 import nom.tam.util.SafeClose;
 import nom.tam.util.TableException;
 import nom.tam.util.TestArrayFuncs;
-import nom.tam.util.test.ThrowAnyException;
 
 /*
  * #%L
@@ -1296,29 +1295,6 @@ public class BinaryTableTest {
         assertEquals(FitsException.class, actual.getClass());
         assertEquals("all went wrong ;-)", actual.getCause().getMessage());
 
-    }
-
-    @Test(expected = IllegalStateException.class)
-    public void testColumnCloneFailure() throws Exception {
-        BinaryTable btab = new BinaryTable() {
-
-            class ColumnExtra extends ColumnDesc {
-
-                @Override
-                public int[] getDimens() {
-
-                    ThrowAnyException.throwAnyAsRuntime(new CloneNotSupportedException());
-                    return null;
-                }
-            }
-
-            @Override
-            public String toString() {
-                new ColumnExtra().clone();
-                return super.toString();
-            }
-        };
-        btab.toString();
     }
 
     static class AccessBinaryTable extends BinaryTable {
