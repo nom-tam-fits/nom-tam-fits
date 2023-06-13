@@ -745,7 +745,7 @@
 							</windowtitle>
 							<show>public</show>
 							<excludePackageNames>
-								nom.tam.fits.compress
+								nom.tam.fits.compress:
 								nom.tam.fits.compression.algorithm.gzip:
 								nom.tam.fits.compression.algorithm.gzip2:
 								nom.tam.fits.compression.algorithm.plio:

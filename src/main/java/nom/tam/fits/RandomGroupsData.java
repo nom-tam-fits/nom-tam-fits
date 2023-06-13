@@ -224,13 +224,16 @@ public class RandomGroupsData extends Data {
         return (Object[][]) super.getData();
     }
 
+    @SuppressWarnings("resource")
     @Override
     public void write(ArrayDataOutput str) throws FitsException {
         if (getTrueSize() <= 0) {
             return;
         }
 
-        ensureData();
+        if (str != getRandomAccessInput()) {
+            ensureData();
+        }
 
         try {
             str.writeArray(dataArray);

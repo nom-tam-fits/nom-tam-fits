@@ -168,31 +168,31 @@ One thing to keep in mind with deferred reading is that you should not close you
 before all required data has been loaded. For example, the following will cause an error:
 
 ```java
-   Fits fits = new Fits("somedata.fits);
+  Fits fits = new Fits("somedata.fits);
    
-   // Scans the FITS, but defers loading data until we need it
-   fits.read();
+  // Scans the FITS, but defers loading data until we need it
+  fits.read();
    
-   // We close the FITS prematurely.
-   fits.close();
+  // We close the FITS prematurely.
+  fits.close();
    
-   // !!!BAD!!! now if  we try to access data
-   //           we'll get and exception...
-   float[][] image = (float[][]) fits.getHDU(0).getKernel(); 
+  // !!!BAD!!! now if  we try to access data
+  //           we'll get and exception...
+  float[][] image = (float[][]) fits.getHDU(0).getKernel(); 
 ```
 
 In the above, the `getKernel()` method will try to load the deferred data from the input that we closed just before
 it. That's not going to work. The correct order is of course:
 
 ```java
-   // Scans the FITS, but defers loading data until we need it
-   fits.read();
+  // Scans the FITS, but defers loading data until we need it
+  fits.read();
  
-   // Good, the FITS is still open so we can get the deferred data
-   float[][] image = (float[][]) fits.getHDU(0).getKernel(); 
+  // Good, the FITS is still open so we can get the deferred data
+  float[][] image = (float[][]) fits.getHDU(0).getKernel(); 
 
-   // We close only after we grabbed all the data we needed.
-   fits.close();
+  // We close only after we grabbed all the data we needed.
+  fits.close();
 ```
 
 As of version 1.18, all data classes of the library support deferred reading.
@@ -1238,7 +1238,7 @@ we construct a `Fits` object with an input stream:
   new FileInputStream compressedStream = new FileInputStream(new File("image.fits.bz2"));
  
   // The input stream will be filtered through a decompression algorithm
-  // All read access to the fits will pass through that decompression...
+  // All read access to the FITS will pass through that decompression...
   Fits fits = new Fits(compressedStream);
 
   ...
@@ -1276,19 +1276,19 @@ Compressing an image HDU is typically a multi-step process:
     `preserveNulls(String)`:
    
 ```java
-   compressed.setCompressAlgorithm(Compression.ZCMPTYPE_RICE_1)
-             .setQuantAlgorithm(Compression.ZQUANTIZ_SUBTRACTIVE_DITHER_1)
-             .preserveNulls(Compression.ZCMPTYPE_HCOMPRESS_1);
+  compressed.setCompressAlgorithm(Compression.ZCMPTYPE_RICE_1)
+            .setQuantAlgorithm(Compression.ZQUANTIZ_SUBTRACTIVE_DITHER_1)
+            .preserveNulls(Compression.ZCMPTYPE_HCOMPRESS_1);
 ```
     
- 3. Set compression (and quantization) options, via calling on g`etCompressOption(Class)`:
+ 3. Set compression (and quantization) options, via calling on `getCompressOption(Class)`:
  
  ```java
    compressed.getCompressOption(RiceCompressOption.class).setBlockSize(32);
    compressed.getCompressOption(QuantizeOption.class).setBZero(3.0).setBScale(0.1).setBNull(-999);
  ```
  
- 4. Perform the compression via `compress()`:
+ 4. Finally, perform the actual compression via `compress()`:
  
  ```java
    compressed.compress(); 
@@ -1296,16 +1296,17 @@ Compressing an image HDU is typically a multi-step process:
 
  
 After the compression, the compressed image HDU can be handled just like any other HDU, and written to a file 
-or stream, for example.
+or stream, for example (just not as the first HDU in a FITS...).
 
 The reverse process is simply via the `asImageHDU()` method. E.g.:
 
 ```java
-    CompressedImageHDU compressed = ...
-    ImageHDU image = compressed.asImageHDU();
+   CompressedImageHDU compressed = ...
+   ImageHDU image = compressed.asImageHDU();
 ```
 
 When compressing or decompression images, all available CPU's are automatically utilized.
+
 
 #### Accesing image header values without decompressing:
 
@@ -1314,8 +1315,8 @@ You can simply call `CompressedImageHDU.getImageHeader()` to peek into the recon
 the image before it was compressed:
 
 ```java
-   CompressedImageHDU compressed = ...
-   Header imageHeader = compressed.getImageHeader();
+  CompressedImageHDU compressed = ...
+  Header imageHeader = compressed.getImageHeader();
 ```
 
 #### Accessing specific parts of a compressed image
@@ -1326,12 +1327,12 @@ method of `CompressedImageHDU`
 class to decompress only the selected image area. As of 1.18.0, this is really easy also:
 
 ```java
-   CompressedImageHDU compressed = ...
+  CompressedImageHDU compressed = ...
    
-   int[] fromPixels = ...
-   int[] cutuoutSize = ...
+  int[] fromPixels = ...
+  int[] cutuoutSize = ...
    
-   ImageHDU cutout = compressed.getTileHDU(fromPixels, cutoutSize);
+  ImageHDU cutout = compressed.getTileHDU(fromPixels, cutoutSize);
 ```
 
 
@@ -1349,9 +1350,9 @@ Tile compression mimics image compression, and is typically a 2-step process:
     specified number of table rows per compressed block, and compression algorithm(s):
  
 ```java
-   BinaryTableHDU table = ...
+  BinaryTableHDU table = ...
 
-   CompressedTableHDU compressed = CompressedTableHDU.fromBinaryTableHDU(table, 4, Compression.GZIP_2);
+  CompressedTableHDU compressed = CompressedTableHDU.fromBinaryTableHDU(table, 4, Compression.GZIP_2);
 ```
  
  2. Perform the compression via `compress()`:
@@ -1360,10 +1361,12 @@ Tile compression mimics image compression, and is typically a 2-step process:
    compressed.compress();
 ```
 
-The two step process (as opposed to a single-step one) was probably chosen because it mimics that of `CompressedImageHDU`, where further configuration steps may be inserted in-between. But, of course we can combine the steps into a single line:
+The two step process (as opposed to a single-step one) was probably chosen because it mimics that of 
+`CompressedImageHDU`, where further configuration steps may be inserted in-between. But, of course we can combine 
+the steps into a single line:
 
 ```java
-   CompressedTableHDU compressed = CompressedTableHDU.fromBinaryTableHDU(table, 4, Compression.GZIP_2).compress();
+  CompressedTableHDU compressed = CompressedTableHDU.fromBinaryTableHDU(table, 4, Compression.GZIP_2).compress();
 ```
 
 After the compression, the compressed table HDU can be handled just like any other table HDU, and written to a 
@@ -1372,9 +1375,11 @@ file or stream, for example (as long as you remember that they cannot be the pri
 The reverse process is simply via the `asBinaryTableHDU()` method. E.g.:
 
 ```java
-    CompressedTableHDU compressed = ...
-    BinaryTableHDU table = compressed.asBinaryTableHDU();
+  CompressedTableHDU compressed = ...
+  BinaryTableHDU table = compressed.asBinaryTableHDU();
 ```
+
+Just like with images, compressing or decompression tables will utilize all available CPU's are automatically.
 
 #### Accesing image header values without decompressing
 
@@ -1383,8 +1388,8 @@ simply call `CompressedTableHDU.getTableHeader()` to peek into the reconstructed
 before it was compressed:
 
 ```java
-   CompressedTableHDU compressed = ...
-   Header origHeader = compressed.getTableHeader();
+  CompressedTableHDU compressed = ...
+  Header origHeader = compressed.getTableHeader();
 ```
 
 #### Decompressing select parts of a compressed binary table
@@ -1393,15 +1398,15 @@ Sometimes we are interested in a section of the compressed table only. As of 1.1
 If you just want to uncompress a range of the compressed tiles, you can
 
 ```java
-   CompressedImageHDU compressed = ...
-   TableHDU section = compressed.asTableHDU(fromTile, toTile);
+  CompressedImageHDU compressed = ...
+  TableHDU section = compressed.asTableHDU(fromTile, toTile);
 ```
 
 And, if you want to surgically access a range of data from select columns only:
 
 ```java
-   CompressedImageHDU compressed = ...
-   Object[] colData = compressed.getColumnData(colIndex, fromTile, toTile);
+  CompressedImageHDU compressed = ...
+  Object[] colData = compressed.getColumnData(colIndex, fromTile, toTile);
 ```
 
 

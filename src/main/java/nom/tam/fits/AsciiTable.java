@@ -919,7 +919,9 @@ public class AsciiTable extends AbstractTableData {
     @Override
     public void write(ArrayDataOutput str) throws FitsException {
         // Make sure we have the data in hand.
-        ensureData();
+        if (str != currInput) {
+            ensureData();
+        }
 
         // If buffer is still around we can just reuse it,
         // since nothing we've done has invalidated it.

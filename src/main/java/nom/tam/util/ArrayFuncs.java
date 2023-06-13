@@ -245,10 +245,10 @@ public final class ArrayFuncs {
             return null;
         }
         if (!input.getClass().isArray()) {
-            throw new RuntimeException("Attempt to curl a non-array");
+            throw new IllegalArgumentException("Attempt to curl a non-array");
         }
         if (input.getClass().getComponentType().isArray()) {
-            throw new RuntimeException("Attempt to curl non-1D array");
+            throw new IllegalArgumentException("Attempt to curl non-1D array");
         }
         int size = Array.getLength(input);
         int test = 1;
@@ -256,7 +256,8 @@ public final class ArrayFuncs {
             test *= dimen;
         }
         if (test != size) {
-            throw new RuntimeException("Curled array does not fit desired dimensions");
+            throw new IllegalStateException("Curled array does not fit desired dimensions: " + size + ", expected " + test
+                    + " (" + getBaseClass(input) + ")");
         }
         Object newArray = ArrayFuncs.newInstance(getBaseClass(input), dimens);
         MultiArrayCopier.copyInto(input, newArray);

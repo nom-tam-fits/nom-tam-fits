@@ -152,9 +152,12 @@ public class UndefinedData extends Data {
         in.readFully(data);
     }
 
+    @SuppressWarnings("resource")
     @Override
     public void write(ArrayDataOutput o) throws FitsException {
-        ensureData();
+        if (o != getRandomAccessInput()) {
+            ensureData();
+        }
         try {
             o.write(data);
         } catch (IOException e) {

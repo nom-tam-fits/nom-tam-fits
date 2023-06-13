@@ -44,8 +44,18 @@ import edu.umd.cs.findbugs.annotations.SuppressFBWarnings;
 /**
  * <p>
  * Table data that is stored (internally) in column major format. This class has been completely re-written by A. Kovacs
- * for 1.18. We kkep the old API for compatibility, but make some practical additions to it.
+ * for 1.18. We keep the old API for compatibility, but make some practical additions to it.
  * </p>
+ * Note that while column tables are fine to use for accessing data from FITS ASCII tables, they are generally not
+ * suitable for user-access of binary table data, because the column tables contain data in the format that is used for
+ * storing values in the regular FITS table in the file. That is:
+ * <ul>
+ * <li>logical values are represented by <code>byte</code> entries of 'T', 'F' or '0'.</li>
+ * <li>String values are represented as ASCII arrays bytes.</li>
+ * <li>Complex values are represented by <code>float[2]</code> or <code>double[2]</code>.</li>
+ * <li>Variable length columns of all types are represented by heap pointers of <code>int[2]</code> or
+ * <code>long[2]</code>.</li>
+ * </ul>
  *
  * @param <T> dummy generic type parameter that is no longer used. We'll stick to it a a memento of the bad design
  *                decisions of the past...
@@ -597,6 +607,23 @@ public class ColumnTable<T> implements DataTable, Cloneable {
             throw new ArrayIndexOutOfBoundsException(row);
         }
         return columns.get(col).getArrayElement(row);
+    }
+
+    /**
+     * Returns a table element, using the usual Java boxing for primitive scalar entries.
+     * 
+     * @param  row the zero-based row index
+     * @param  col the zero-based column index
+     * 
+     * @return     the element, either as a Java boxed type (for scalar entries), or as a primitive array
+     * 
+     * @since      1.18
+     */
+    public Object getBoxedElement(int row, int col) {
+        if (row > nrow) {
+            throw new ArrayIndexOutOfBoundsException(row);
+        }
+        return columns.get(col).get(row);
     }
 
     /**

@@ -124,7 +124,7 @@ public class FitsHeap implements FitsElement {
             store.position(offset);
             decoder.readArrayFully(array);
         } catch (Exception e) {
-            throw new FitsException("Error decoding heap area at offset=" + offset + ".", e);
+            throw new FitsException("Error decoding heap area at offset=" + offset + ": " + e.getMessage(), e);
         }
     }
 
@@ -153,7 +153,7 @@ public class FitsHeap implements FitsElement {
             store.position(oldSize);
             encoder.writeArray(data);
         } catch (Exception e) {
-            throw new FitsException("Unable to write variable column length data", e);
+            throw new FitsException("Unable to write variable column length data: " + e.getMessage(), e);
         }
 
         return oldSize;

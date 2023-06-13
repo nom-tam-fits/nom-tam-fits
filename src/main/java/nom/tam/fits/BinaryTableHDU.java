@@ -301,12 +301,9 @@ public class BinaryTableHDU extends TableHDU<BinaryTable> {
         }
         // Worry about variable length columns.
         String prefix = "";
-        if (myData.getDescriptor(index).isVarying()) {
-            prefix = "P";
+        if (colDesc.isVarying()) {
+            prefix += colDesc.pointerType();
             dim = 1;
-            if (myData.getDescriptor(index).isLongVary()) {
-                prefix = "Q";
-            }
         }
         // Now update the header.
         myHeader.card(TFORMn.n(index + 1)).value(dim + prefix + suffix).comment("converted to complex");

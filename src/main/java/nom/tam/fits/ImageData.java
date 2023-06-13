@@ -197,6 +197,7 @@ public class ImageData extends Data {
         tiler = new ImageDataTiler(null, 0, dataDescription);
     }
 
+    @SuppressWarnings("resource")
     @Override
     public void write(ArrayDataOutput o) throws FitsException {
 
@@ -205,7 +206,9 @@ public class ImageData extends Data {
             return;
         }
 
-        ensureData();
+        if (o != getRandomAccessInput()) {
+            ensureData();
+        }
 
         try {
             o.writeArray(dataArray);
