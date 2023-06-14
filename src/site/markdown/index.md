@@ -377,8 +377,8 @@ rely on hard-coded column indices too when we know we are dealing with tables of
 ```
 
 Now we can loop through the rows of interest and pick out the entries we are interested in. For example, to
-loop through all table rows to get only the scalar values from the column named `UTC`, and a spectrum stored
-in the fifth column (i.e. 4 in Java indexing):
+loop through all table rows to get only the scalar values from the column named `UTC`, a phase in the 4th column 
+(Java index 3), and a spectrum stored in the fifth column (i.e. 4 in Java indexing):
 
 ```java   
   // Loop through rows, accessing the relevant column data
@@ -397,8 +397,8 @@ in the fifth column (i.e. 4 in Java indexing):
   }
 ```
 
-Prior to 1.18, the old `getElement()` / `setElement()` methods supported access as arrays only. This
-is still a valid way (though a little less elegant), and the equivalent to the above in this approach would be:
+The old `getElement()` / `setElement()` methods supported access as arrays. This is still a viable alternative 
+(though slightly less elegant), and the equivalent to the above in this approach would be:
 
 ```java   
   // Loop through rows, accessing the relevant column data
@@ -606,11 +606,33 @@ Suppose we have just a couple of specific elements we know we need to change in 
 Same goes for a table HDU:
 
 ```java 
-  TableHDU hdu = (TableHDU) f.getHDU(1);
-  hdu.setElement(3, 0, 3.14159265);
+  BinaryTableHDU hdu = (BinaryTableHDU) f.getHDU(1);
+  hdu.set(3, 0, 3.14159265);
+  
   ...
   hdu.rewrite();
 ```
+
+Defragmenting allows to reclaim heap space that is no longer used. When deleting variable-length columns, or when replacing 
+entries inside variable-length columns, some or all of the space occupied by old entries on the heap may become dead storage, 
+needlessly bloaing the heap storage. Also, repaced entries may be placed on the heap out of order, which can slow down
+caching effectiveness for sequential table acces. Thus when modifying tables with variable-length columns, it may be a good
+idea to defragment the heap before writing in to the output. For the above example, this would be adding an extra step before
+`rewrite)`. 
+
+```java
+  ...
+  
+  // If the we changed variable length data, it may be a good
+  // idea to defragment the heap before writing...
+  hdu.defragment();
+
+  hdu.rewrite();
+```
+
+Defragmenting might also be a good idea when building tables with variable-length data column by column (as opposed to
+row-by-row).
+
 
 And, headers can also be updated in place -- you don't even need to access the data, and can leave it in deferred state:
 
@@ -805,10 +827,7 @@ There are some requirements on the array though:
    or else `String[]` arrays. Scalar values are stored as arrays of 1 (e.g. `short[1]`)
  - If entries are multi-dimensional arrays, all rows in a column must have the same dimensionality and shape.
  - If entries are one-dimensional, they can vary in size from row to row
- - For `getElement()` / `setElement()`, `getRow() / setRow()` complex-valued data must be converted to arrays 
-   of `float[2]` or `double[2]`. (Single complex values can be simply `float[2]` or `double[2]`. After creating 
-   the binary table, you will want to call `setComplexColumn(int)` for every complex column you added this way 
-   to make sure they are stored as such in FITS (rather than arrays of `float` or `double`).
+
    
 Note, that while the library supports ASCII tables, it is generally better to just use binary tables for storing data 
 in general. ASCII tables are more limited, and were meant to be readable from a console without needing any tools. 
@@ -823,6 +842,13 @@ simply better, because they:
 To create ASCII tables (when possible) instead using `Fits.makeHDU()` or one of the factory methods to encapsulate 
 a table data object, you should call `FitsFactory.setUseAsciiTables(true)` beforehand.
  
+Defragmenting might also be a good idea before writing out tables created with variable-length column data.
+
+```java
+  table.defragment();
+```
+ 
+before calling `write()`.
  
 #### Buiding tables one column at a time
 
@@ -854,7 +880,21 @@ There are just a few thing to keep in mind when constructing tables in this way:
     the scalar value for a row. (I.e. unlike in the row-major table format required to create entire tables at once, 
     we do not have to wrap scalar values in self-contained arrays of 1)
   - Other than the above, the same rules apply as for creating HDUs from complete table data above.
+  - If setting complex columns with arrays of `float[2]` or `double[2]` (the old way), you will want to call 
+    `setComplexColumn(int)` afterwards for that column to make sure they are labelled properly in the FITS (rather 
+    than as real-valued arrays of `float` or `double`).
+  - Similarly, if adding arrays of `boolean` values, you might consider calling `convertToBits(int)` on that
+    column for a more compact storage of the `true`/`false` values.
+    
 
+Defragmenting might also be a good idea before writing tables with variable-length data column by column (as opposed to
+row-by-row):
+
+```java
+  table.defragment();
+```
+ 
+before calling `write()`.
 
 
 #### Buiding tables one row at a time
@@ -878,7 +918,19 @@ to tables, e.g.:
 ```
 
 The rules for row layout are the same as when creating a binary table from a row-major table data 
-(further above). Thus, scalar elements must be wrapped into arrays of 1 in the row format.
+(further above), but also:
+
+ - For `getElement()` / `setElement()`, `getRow() / setRow()` complex-valued data must be converted 
+   to arrays of `float[2]` or `double[2]`. (Single complex values can be simply `float[2]` or 
+   `double[2]`).
+
+
+Thus, scalar elements must be wrapped into arrays of 1 in the row format, and `ComplexValue`s
+must be converted (e.g. via `ArrayFuncs.complexToDecimals()` to `float[2]` / `double[2]` or arrays
+thereof.
+
+Tables built entirely row-by-row should never need to be de-fragmented, unless they are modified
+later on.
 
 
 

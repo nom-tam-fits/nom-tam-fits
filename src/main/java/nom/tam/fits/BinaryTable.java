@@ -750,7 +750,7 @@ public class BinaryTable extends AbstractTableData implements Cloneable {
 
     /**
      * Create a binary table from existing table data int row-major format. That is the first array index is the row
-     * index while the second array index is the column index;
+     * index while the second array index is the column index.
      *
      * @param      rowColTable   Row / column array. Scalars elements are wrapped in arrays of 1, s.t. a single
      *                               <code>int</code> elements is stored as <code>int[1]</code> at its
@@ -763,7 +763,10 @@ public class BinaryTable extends AbstractTableData implements Cloneable {
      *                               <code>Object[][]</code> and could be passed.
      */
     public BinaryTable(Object[][] rowColTable) throws FitsException {
-        this(toColumnMajor(rowColTable));
+        this();
+        for (int i = 0; i < rowColTable.length; i++) {
+            addRow(rowColTable[i]);
+        }
     }
 
     /**
@@ -786,7 +789,11 @@ public class BinaryTable extends AbstractTableData implements Cloneable {
      * @since                1.18
      */
     public static BinaryTable fromRowMajor(Object[][] table) throws FitsException {
-        return fromColumnMajor(toColumnMajor(table));
+        BinaryTable tab = new BinaryTable();
+        for (int i = 0; i < table.length; i++) {
+            tab.addRow(table[i]);
+        }
+        return tab;
     }
 
     /**
@@ -799,6 +806,8 @@ public class BinaryTable extends AbstractTableData implements Cloneable {
      * 
      * @deprecated               The constructor is ambiguous, use {@link #fromColumnMajor(Object[])} instead. One could
      *                               call this method with any row-major <code>Object[][]</code> table by mistake.
+     * 
+     * @see                      #defragment()
      */
     public BinaryTable(Object[] columns) throws FitsException {
         this();
@@ -3075,5 +3084,65 @@ public class BinaryTable extends AbstractTableData implements Cloneable {
         c.isComplex = true;
 
         return true;
+    }
+
+    /**
+     * <p>
+     * Defragments the heap area of this table, compacting the heap area, and returning the number of bytes by which the
+     * heap size has been reduced. When tables with variable-sized columns are modified, the heap may retain old data as
+     * columns are removed or elements get replaced with new data of different size. The data order in the heap may also
+     * get jumbled, causing what would appear to be sequential reads to jump all over the heap space with the caching.
+     * </p>
+     * <p>
+     * This method rebuilds the heap by taking elements in table read order (by rows, and columns) and puts them on a
+     * new heap.
+     * </p>
+     * <p>
+     * For best squential read performance, you should defragment all tables that have been built column-by-column
+     * before writing them to a FITS file. The only time defragmentation is really not needed is is a table was built
+     * row-by-row, with no modifications to variable-length content after the fact.
+     * </p>
+     * 
+     * @return               the number of bytes by which the heap has shrunk as a result of defragmentation.
+     * 
+     * @throws FitsException if there was an error accessing the heap or the main data table comntaining the heap
+     *                           locators. In case of an error the table content may be left in a damaged state.
+     * 
+     * @see                  #setElement(int, int, Object)
+     * @see                  #addColumn(Object)
+     * @see                  #deleteColumns(int, int)
+     * @see                  #setColumn(int, Object)
+     * 
+     * @since                1.18
+     */
+    public long defragment() throws FitsException {
+        int nvars = 0;
+
+        for (ColumnDesc c : columns) {
+            if (c.isVariableLength()) {
+                nvars++;
+            }
+        }
+
+        if (nvars == 0) {
+            return 0L;
+        }
+
+        FitsHeap compact = new FitsHeap(0);
+        long oldSize = heap.size();
+
+        for (int i = 0; i < nRow; i++) {
+            for (int j = 0; j < columns.size(); j++) {
+                ColumnDesc c = columns.get(i);
+                if (c.isVariableLength()) {
+                    Object e = getFromHeap(c, getRawElement(i, j));
+                    Object p = putOnHeap(compact, c, e, null);
+                    setFitsElement(i, j, p);
+                }
+            }
+        }
+
+        heap = compact;
+        return heap.size() - oldSize;
     }
 }
