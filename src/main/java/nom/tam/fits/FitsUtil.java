@@ -34,6 +34,7 @@ package nom.tam.fits;
 import java.io.Closeable;
 import java.io.IOException;
 import java.io.InputStream;
+import java.lang.reflect.Array;
 import java.net.HttpURLConnection;
 import java.net.ProtocolException;
 import java.net.URL;
@@ -54,9 +55,9 @@ import nom.tam.util.RandomAccess;
  */
 public final class FitsUtil {
 
-    private static final int BYTE_REPRESENTING_BLANK = 32;
+    private static final int BLANK_SPACE = 0x20;
 
-    private static final int BYTE_REPRESENTING_MAX_ASCII_VALUE = 126;
+    private static final int MAX_ASCII_VALUE = 0x7e;
 
     /**
      * the logger to log to.
@@ -97,33 +98,137 @@ public final class FitsUtil {
         return size + padding(size);
     }
 
-    /**
-     * Converts a boolean array to its FITS representation as an array of bytes.
-     * 
-     * @return      Convert an array of booleans to bytes.
-     *
-     * @param  bool array of booleans
-     */
-    static byte[] booleanToByte(boolean[] bool) {
-
-        byte[] byt = new byte[bool.length];
-        for (int i = 0; i < bool.length; i++) {
-            byt[i] = FitsEncoder.byteForBoolean(bool[i]);
+    static Object booleansToBytes(Object o) {
+        if (o instanceof Boolean) {
+            return FitsEncoder.byteForBoolean((Boolean) o);
         }
-        return byt;
+
+        if (o instanceof boolean[]) {
+            boolean[] bool = (boolean[]) o;
+            byte[] b = new byte[bool.length];
+            for (int i = 0; i < bool.length; i++) {
+                b[i] = FitsEncoder.byteForBoolean(bool[i]);
+            }
+            return b;
+        }
+
+        if (o instanceof Boolean[]) {
+            Boolean[] bool = (Boolean[]) o;
+            byte[] b = new byte[bool.length];
+            for (int i = 0; i < bool.length; i++) {
+                b[i] = FitsEncoder.byteForBoolean(bool[i]);
+            }
+            return b;
+        }
+
+        if (o instanceof Object[]) {
+            Object[] array = (Object[]) o;
+            Object[] b = null;
+
+            for (int i = 0; i < array.length; i++) {
+                Object e = booleansToBytes(array[i]);
+                if (b == null) {
+                    b = (Object[]) Array.newInstance(e.getClass(), array.length);
+                }
+                b[i] = e;
+            }
+
+            return b;
+        }
+
+        throw new IllegalArgumentException("Not boolean values: " + o.getClass().getName());
+    }
+
+    static Object bytesToBooleanObjects(Object o) {
+        if (o instanceof Number) {
+            return FitsDecoder.booleanObjectFor(((Number) o).intValue());
+        }
+        if (o instanceof byte[]) {
+            byte[] b = (byte[]) o;
+            Boolean[] bool = new Boolean[b.length];
+            for (int i = 0; i < b.length; i++) {
+                bool[i] = FitsDecoder.booleanObjectFor(b[i]);
+            }
+            return bool;
+        }
+
+        if (o instanceof Object[]) {
+            Object[] array = (Object[]) o;
+            Object[] bool = null;
+
+            for (int i = 0; i < array.length; i++) {
+                Object e = bytesToBooleanObjects(array[i]);
+                if (bool == null) {
+                    bool = (Object[]) Array.newInstance(e.getClass(), array.length);
+                }
+                bool[i] = e;
+            }
+
+            return bool;
+        }
+
+        throw new IllegalArgumentException("Cannot convert to boolean values: " + o.getClass().getName());
+    }
+
+    public static String extractString(byte[] bytes, int offset, int maxLen, char terminator) {
+        if (offset >= bytes.length) {
+            return "";
+        }
+
+        if (offset + maxLen > bytes.length) {
+            maxLen = bytes.length - offset;
+        }
+
+        int end = -1;
+
+        // Check up to the specified length or termination
+        for (int i = 0; i < maxLen; i++) {
+            byte b = bytes[offset + i];
+
+            if (b == terminator) {
+                break;
+            }
+
+            if (b != BLANK_SPACE) {
+                end = i;
+            }
+        }
+
+        byte[] sanitized = new byte[end + 1];
+        boolean checking = FitsFactory.getCheckAsciiStrings();
+
+        // Up to the specified length or terminator
+        for (int i = 0; i <= end; i++) {
+            byte b = bytes[offset + i];
+
+            if (checking && (b < BLANK_SPACE || b > MAX_ASCII_VALUE)) {
+                if (!wroteCheckingError) {
+                    LOG.warning("WARNING! Converting invalid table string character[s] to spaces.");
+                    wroteCheckingError = true;
+                }
+                b = (byte) BLANK_SPACE;
+            }
+
+            sanitized[i] = b;
+        }
+
+        return AsciiFuncs.asciiString(sanitized);
     }
 
     /**
-     * Converts a FITS byte sequence to a Java string array
+     * Converts a FITS byte sequence to a Java string array, triming spaces at the heads and tails of each element.
+     * While FITS typically considers leading spaces significant, this library has been removing them from regularly
+     * shaped string arrays for a very long time, apparently based on request by users then... Even though it seems like
+     * a bad choice, since users could always call {@link String#trim()} if they needed to, we cannot easily go in the
+     * reverse direction. At this point we have no real choice but to continue the tradition, lest we want to break
+     * exising applications, which count on this behavior.
      * 
-     * @return        Convert bytes to Strings.
+     * @return        Convert bytes to Strings, removing leading and trailing spaces from each entry.
      *
      * @param  bytes  byte array to convert
      * @param  maxLen the max string length
      */
     public static String[] byteArrayToStrings(byte[] bytes, int maxLen) {
-        boolean checking = FitsFactory.getCheckAsciiStrings();
-
         // Note that if a String in a binary table contains an internal 0,
         // the FITS standard says that it is to be considered as terminating
         // the string at that point, so that software reading the
@@ -132,64 +237,7 @@ public final class FitsUtil {
 
         String[] res = new String[bytes.length / maxLen];
         for (int i = 0; i < res.length; i++) {
-
-            int start = i * maxLen;
-
-            // AK: The FITS standard states that a 0 byte terminates the
-            // string before the fixed length, and characters beyond it
-            // are undefined. So, we first check where the string ends.
-            int l = 0;
-            for (; l < maxLen; l++) {
-                if (bytes[l] == 0) {
-                    break;
-                }
-            }
-            int end = start + l;
-
-            // Pre-trim the string to avoid keeping memory
-            // hanging around. (Suggested by J.C. Segovia, ESA).
-
-            // Note that the FITS standard does not mandate
-            // that we should be trimming the string at all, but
-            // this seems to best meet the desires of the community.
-            for (; start < end; start++) {
-                if (bytes[start] != BYTE_REPRESENTING_BLANK) {
-                    break; // Skip only spaces.
-                }
-            }
-
-            for (; end > start; end--) {
-                if (bytes[end - 1] != BYTE_REPRESENTING_BLANK) {
-                    break;
-                }
-            }
-
-            // For FITS binary tables, 0 values are supposed
-            // to terminate strings, a la C. [They shouldn't appear in
-            // any other context.]
-            // Other non-printing ASCII characters
-            // should always be an error which we can check for
-            // if the user requests.
-
-            // The lack of handling of null bytes was noted by Laurent Bourges.
-            boolean errFound = false;
-            for (int j = start; j < end; j++) {
-
-                if (bytes[j] == 0) {
-                    end = j;
-                    break;
-                }
-                if (checking && (bytes[j] < BYTE_REPRESENTING_BLANK || bytes[j] > BYTE_REPRESENTING_MAX_ASCII_VALUE)) {
-                    errFound = true;
-                    bytes[j] = BYTE_REPRESENTING_BLANK;
-                }
-            }
-            res[i] = AsciiFuncs.asciiString(bytes, start, end - start);
-            if (errFound && !FitsUtil.wroteCheckingError) {
-                LOG.log(Level.SEVERE, "Warning: Invalid ASCII character[s] detected in string: " + res[i]
-                        + " Converted to space[s].  Any subsequent invalid characters will be converted silently");
-                FitsUtil.wroteCheckingError = true;
-            }
+            res[i] = extractString(bytes, i * maxLen, maxLen, '\0').trim();
         }
         return res;
     }
@@ -382,31 +430,37 @@ public final class FitsUtil {
         }
     }
 
+    private static void stringToBytes(String s, byte[] res, int offset, int len) {
+        int l = 0;
+        if (s != null) {
+            byte[] b = AsciiFuncs.getBytes(s);
+            l = Math.min(b.length, len);
+            if (l > 0) {
+                System.arraycopy(b, 0, res, offset, l);
+            }
+        }
+        Arrays.fill(res, offset + l, offset + len, (byte) ' ');
+    }
+
+    public static byte[] stringToByteArray(String s, int len) {
+        byte[] res = new byte[len];
+        stringToBytes(s, res, 0, len);
+        return res;
+    }
+
     /**
      * Convert an array of Strings to bytes.
      *
      * @return             the resulting bytes
      *
      * @param  stringArray the array with Strings
-     * @param  maxLen      the max length (in bytes) of every String
+     * @param  len         the number of bytes used for each string element. The string will be truncated ot padded as
+     *                         necessary to fit into that size.
      */
-    public static byte[] stringsToByteArray(String[] stringArray, int maxLen) {
-        byte[] res = new byte[stringArray.length * maxLen];
+    public static byte[] stringsToByteArray(String[] stringArray, int len) {
+        byte[] res = new byte[stringArray.length * len];
         for (int i = 0; i < stringArray.length; i++) {
-            byte[] bstr;
-            if (stringArray[i] == null) {
-                bstr = new byte[0];
-            } else {
-                bstr = AsciiFuncs.getBytes(stringArray[i]);
-            }
-            int cnt = bstr.length;
-            if (cnt > maxLen) {
-                cnt = maxLen;
-            }
-            System.arraycopy(bstr, 0, res, i * maxLen, cnt);
-            for (int j = cnt; j < maxLen; j++) {
-                res[i * maxLen + j] = (byte) ' ';
-            }
+            stringToBytes(stringArray[i], res, i * len, len);
         }
         return res;
     }

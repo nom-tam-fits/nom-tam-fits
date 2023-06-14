@@ -137,7 +137,7 @@ public class CompressedTableData extends BinaryTable {
         }
 
         if (!isPrepped) {
-            setPreferLongPointers(true);
+            // setPreferLongPointers(true);
             for (int column = 0; column < ncols; column++) {
                 addByteVaryingColumn();
             }

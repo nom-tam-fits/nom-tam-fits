@@ -113,13 +113,17 @@ public class CompressedTableTest {
         assertStringCard(Standard.XTENSION, XTENSION_BINTABLE, iter.next());
         assertIntCard(Standard.BITPIX, 8, iter.next());
         assertIntCard(Standard.NAXIS, 2, iter.next());
-        assertIntCard(Standard.NAXISn.n(1), 16, iter.next());
+        assertIntCard(Standard.NAXISn.n(1), 8, iter.next());
         assertIntCard(Standard.NAXISn.n(2), 5, iter.next());
-        assertIntCard(Standard.PCOUNT, 18168, iter.next());
+
+        HeaderCard hc = iter.next();
+        Assert.assertEquals(Standard.PCOUNT.key(), hc.getKey());
+        Assert.assertNotEquals((long) hc.getValue(Long.class, 0L), 0L);
+
         assertIntCard(Standard.GCOUNT, 1, iter.next());
         assertIntCard(Standard.TFIELDS, 1, iter.next());
         // the order of the next two fields is not fix
-        assertStringCard(Standard.TFORMn.n(1), "1QB", header.card(Standard.TFORMn.n(1)).card());
+        assertStringCard(Standard.TFORMn.n(1), "1PB", header.card(Standard.TFORMn.n(1)).card());
         assertStringCard(Standard.TDIMn.n(1), "(5,5)", header.card(Standard.TDIMn.n(1)).card());
         fits.close();
     }

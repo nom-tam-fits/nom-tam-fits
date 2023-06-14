@@ -429,7 +429,7 @@ public class UserProvidedTest {
                 } else if (column == 1) {
                     Assert.assertEquals(expected[column][row], element);
                 } else if (column == 3) {
-                    Assert.assertArrayEquals((byte[]) expected[column][row], (byte[]) element);
+                    Assert.assertArrayEquals((byte[]) expected[column][row], ((String) element).getBytes());
                 }
             }
         }

@@ -245,10 +245,10 @@ public final class ArrayFuncs {
             return null;
         }
         if (!input.getClass().isArray()) {
-            throw new IllegalArgumentException("Attempt to curl a non-array");
+            throw new IllegalArgumentException("Attempt to curl a non-array: " + input.getClass());
         }
         if (input.getClass().getComponentType().isArray()) {
-            throw new IllegalArgumentException("Attempt to curl non-1D array");
+            throw new IllegalArgumentException("Attempt to curl non-1D array: " + input.getClass());
         }
         int size = Array.getLength(input);
         int test = 1;
@@ -310,6 +310,10 @@ public final class ArrayFuncs {
      * @param  input The input array.
      */
     public static Object flatten(Object input) {
+        if (!input.getClass().isArray()) {
+            return input;
+        }
+
         int[] dimens = getDimensions(input);
         if (dimens.length <= 1) {
             return input;
@@ -536,11 +540,20 @@ public final class ArrayFuncs {
      *
      * @param      o the array to count elements in
      *
-     * @deprecated   May silently underestimate size if number is &gt; 2 G.
+     * @deprecated   Use {@link #countElements(Object)} instead.
      */
-    @Deprecated
     public static long nLElements(Object o) {
+        return countElements(o);
+    }
 
+    /**
+     * @return   Count the number of elements in an array.
+     *
+     * @param  o the array to count elements in
+     * 
+     * @since    1.18
+     */
+    public static long countElements(Object o) {
         if (o == null) {
             return 0;
         }
@@ -551,7 +564,6 @@ public final class ArrayFuncs {
                 count += nLElements(e);
             }
             return count;
-
         }
 
         if (o.getClass().isArray()) {
@@ -576,6 +588,165 @@ public final class ArrayFuncs {
             result[len - i - 1] = indices[i];
         }
         return result;
+    }
+
+    public static int[] assertRegularArray(Object o, boolean allowSomeNulls)
+            throws IllegalArgumentException, ClassCastException {
+        if (o == null) {
+            return new int[] {0};
+        }
+
+        if (!o.getClass().isArray()) {
+            throw new IllegalArgumentException("Not an array: " + o.getClass());
+        }
+
+        if (o.getClass().isPrimitive()) {
+            return new int[] {Array.getLength(o)};
+        }
+
+        int[] dim = getDimensions(o);
+        if (dim.length == 0) {
+            return dim;
+        }
+
+        if (dim[0] == 0) {
+            return dim;
+        }
+
+        Object first = Array.get(o, 0);
+        Class<?> type = first == null ? null : first.getClass();
+
+        for (int i = 0; i < dim[0]; i++) {
+            Object e = Array.get(o, i);
+
+            if (e == null) {
+                if (first != null && !allowSomeNulls) {
+                    throw new IllegalArgumentException("Some (but not all) entries are null");
+                }
+                continue;
+            }
+
+            if (first == null && !allowSomeNulls) {
+                throw new IllegalArgumentException("Some (but not all) entries are null");
+            }
+
+            if (!e.getClass().equals(type)) {
+                throw new ClassCastException("Mismatched component types");
+            }
+
+            if (e.getClass().isArray()) {
+                int[] sub = assertRegularArray(e, allowSomeNulls);
+
+                if (sub.length + 1 != dim.length) {
+                    throw new IllegalArgumentException("Mismatched component dimensions");
+                }
+
+                if (sub[0] != dim[1]) {
+                    throw new IllegalArgumentException("Mismatched component size");
+                }
+            }
+        }
+
+        return dim;
+    }
+
+    public static Object complexToDecimals(Object o, Class<?> decimalType) {
+
+        if (o instanceof ComplexValue) {
+            ComplexValue z = (ComplexValue) o;
+            if (float.class.equals(decimalType)) {
+                return new float[] {(float) z.re(), (float) z.im()};
+            }
+            return new double[] {z.re(), z.im()};
+        }
+
+        if (o instanceof ComplexValue[]) {
+            ComplexValue[] z = (ComplexValue[]) o;
+
+            if (float.class.equals(decimalType)) {
+                float[] f = new float[z.length << 1];
+                for (int i = 0; i < f.length; i += 2) {
+                    ComplexValue zi = z[i >>> 1];
+                    f[i] = (float) zi.re();
+                    f[i + 1] = (float) zi.im();
+                }
+                return f;
+            }
+
+            double[] d = new double[z.length << 1];
+            for (int i = 0; i < d.length; i += 2) {
+                ComplexValue zi = z[i >>> 1];
+                d[i] = zi.re();
+                d[i + 1] = zi.im();
+            }
+            return d;
+        }
+
+        if (o instanceof Object[]) {
+            Object[] array = (Object[]) o;
+            Object[] z = null;
+
+            for (int i = 0; i < array.length; i++) {
+                Object e = complexToDecimals(array[i], decimalType);
+                if (z == null) {
+                    z = (Object[]) Array.newInstance(e.getClass(), array.length);
+                }
+                z[i] = e;
+            }
+
+            return z;
+        }
+
+        throw new IllegalArgumentException("Cannot convert to complex values: " + o.getClass().getName());
+    }
+
+    public static Object decimalsToComplex(Object array) {
+        if (array instanceof float[]) {
+            float[] f = (float[]) array;
+            if (f.length % 2 == 1) {
+                throw new IllegalArgumentException("Odd number floats for complex conversion: " + f.length);
+            }
+            if (f.length == 2) {
+                return new ComplexValue(f[0], f[1]);
+            }
+            ComplexValue[] z = new ComplexValue[f.length >>> 1];
+            for (int i = 0; i < f.length; i += 2) {
+                z[i >> 1] = new ComplexValue(f[i], f[i + 1]);
+            }
+            return z;
+        }
+
+        if (array instanceof double[]) {
+            double[] d = (double[]) array;
+            if (d.length % 2 == 1) {
+                throw new IllegalArgumentException("Odd number floats for complex conversion: " + d.length);
+            }
+            if (d.length == 2) {
+                return new ComplexValue(d[0], d[1]);
+            }
+            ComplexValue[] z = new ComplexValue[d.length >>> 1];
+            for (int i = 0; i < d.length; i += 2) {
+                z[i >> 1] = new ComplexValue(d[i], d[i + 1]);
+            }
+            return z;
+        }
+
+        if (array instanceof Object[]) {
+            Object[] o = (Object[]) array;
+            Object[] z = null;
+
+            for (int i = 0; i < o.length; i++) {
+                Object e = decimalsToComplex(o[i]);
+                if (z == null) {
+                    z = (Object[]) Array.newInstance(e.getClass(), o.length);
+                }
+                z[i] = e;
+            }
+
+            return z;
+        }
+
+        throw new IllegalArgumentException("Cannot convert to complex values: " + array.getClass().getName());
     }
 
 }

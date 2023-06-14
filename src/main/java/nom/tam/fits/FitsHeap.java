@@ -124,7 +124,8 @@ public class FitsHeap implements FitsElement {
             store.position(offset);
             decoder.readArrayFully(array);
         } catch (Exception e) {
-            throw new FitsException("Error decoding heap area at offset=" + offset + ": " + e.getMessage(), e);
+            throw new FitsException("Error decoding heap area at offset=" + offset + ", size="
+                    + FitsEncoder.computeSize(array) + " (size " + size() + "): " + e.getMessage(), e);
         }
     }
 
@@ -141,22 +142,24 @@ public class FitsHeap implements FitsElement {
     /**
      * Add some data to the heap.
      */
-    int putData(Object data) throws FitsException {
-        long lsize = store.length() + FitsEncoder.computeSize(data);
+    long putData(Object data) throws FitsException {
+        return putData(data, store.length());
+    }
+
+    long putData(Object data, long pos) throws FitsException {
+        long lsize = pos + FitsEncoder.computeSize(data);
         if (lsize > Integer.MAX_VALUE) {
             throw new FitsException("FITS Heap > 2 G");
         }
 
-        int oldSize = (int) store.length();
-
         try {
-            store.position(oldSize);
+            store.position(pos);
             encoder.writeArray(data);
         } catch (Exception e) {
             throw new FitsException("Unable to write variable column length data: " + e.getMessage(), e);
         }
 
-        return oldSize;
+        return store.position() - pos;
     }
 
     @SuppressFBWarnings(value = "RR_NOT_CHECKED", justification = "this read will never return less than the requested length")
