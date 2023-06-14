@@ -1682,8 +1682,8 @@ public class BinaryTableTest {
         f[2] = new float[14];
 
         BinaryTable t = new BinaryTable();
-        t.setPreferLongPointers(false);
-        Assert.assertFalse(t.isPreferLongPointers());
+        t.setUseLongPointers(false);
+        Assert.assertFalse(t.isUseLongPointers());
         t.addColumn(f);
         Assert.assertTrue(t.isVariableLengthColumn(0));
 
@@ -1704,8 +1704,8 @@ public class BinaryTableTest {
         f[2] = new float[14];
 
         BinaryTable t = new BinaryTable();
-        t.setPreferLongPointers(true);
-        Assert.assertTrue(t.isPreferLongPointers());
+        t.setUseLongPointers(true);
+        Assert.assertTrue(t.isUseLongPointers());
 
         t.addColumn(f);
         Assert.assertTrue(t.isVariableLengthColumn(0));

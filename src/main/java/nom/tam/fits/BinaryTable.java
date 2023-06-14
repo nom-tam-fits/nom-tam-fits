@@ -48,6 +48,8 @@ import nom.tam.util.ArrayFuncs;
 import nom.tam.util.ColumnTable;
 import nom.tam.util.ComplexValue;
 import nom.tam.util.Cursor;
+import nom.tam.util.FitsEncoder;
+import nom.tam.util.FitsIO;
 import nom.tam.util.RandomAccess;
 import nom.tam.util.TableException;
 import nom.tam.util.type.ElementType;
@@ -73,10 +75,13 @@ import edu.umd.cs.findbugs.annotations.SuppressFBWarnings;
 @SuppressWarnings("deprecation")
 public class BinaryTable extends AbstractTableData implements Cloneable {
 
+    /** For fixed-length columns */
     private static final char POINTER_NONE = 0;
 
+    /** FITS 32-bit pointer type for variable-sized columns */
     private static final char POINTER_INT = 'P';
 
+    /** FITS 64-bit pointer type for variable-sized columns */
     private static final char POINTER_LONG = 'Q';
 
     /**
@@ -90,7 +95,7 @@ public class BinaryTable extends AbstractTableData implements Cloneable {
         private int offset;
 
         /** The number of primitive elements in the column */
-        private int size;
+        private int fitsCount;
 
         /** byte size of entries in FITS */
         private int fileSize;
@@ -100,9 +105,10 @@ public class BinaryTable extends AbstractTableData implements Cloneable {
 
         private int[] leadingShape;
 
-        /** The class of entries in the regular table. */
+        /** The class array entries on the Java side. */
         private Class<?> base;
 
+        /** The FITS element class associated with the column. */
         private Class<?> fitsBase;
 
         private char preferPointerType;
@@ -126,6 +132,16 @@ public class BinaryTable extends AbstractTableData implements Cloneable {
          */
         protected ColumnDesc() {
             this(false);
+        }
+
+        /**
+         * Creates a new column descriptor with default settings, and the specified type of heap pointers
+         * 
+         * @param useLongPointers <code>true</code> to use 64-bit heap pointers for variable-length arrays or else
+         *                            <code>false</code> to use 32-bit pointers.
+         */
+        protected ColumnDesc(boolean useLongPointers) {
+            preferPointerType = useLongPointers ? POINTER_LONG : POINTER_INT;
         }
 
         private int[] getLeadingShape() {
@@ -152,20 +168,10 @@ public class BinaryTable extends AbstractTableData implements Cloneable {
 
             shape[shape.length - 1] = n;
 
-            size = 1;
+            fitsCount = 1;
             for (int dim : shape) {
-                size *= dim;
+                fitsCount *= dim;
             }
-        }
-
-        /**
-         * Creates a new column descriptor with default settings, and the specified type of heap pointers
-         * 
-         * @param useLongPointers <code>true</code> to use 64-bit heap pointers for variable-length arrays or else
-         *                            <code>false</code> to use 32-bit pointers.
-         */
-        protected ColumnDesc(boolean useLongPointers) {
-            preferPointerType = useLongPointers ? POINTER_LONG : POINTER_INT;
         }
 
         @Override
@@ -193,7 +199,13 @@ public class BinaryTable extends AbstractTableData implements Cloneable {
          * {@link BinaryTable#getRow(int)}, and {@link BinaryTable#getElement(int, int)} will return arrays of this
          * type, and the equivalent methods for setting data will expect arrays of this type as their argument.
          * 
-         * @return the Java class, arrays of which, packaged data for this column on the Java side.
+         * @return     the Java class, arrays of which, packaged data for this column on the Java side.
+         * 
+         * @deprecated Ambiguous, use {@link #getJavaArrayBase()} instead. It can be confusing since it is not clear if
+         *                 it refers to array element types used in FITS sotrage or on the java side when using the
+         *                 older array access. It is also distinct from {@link BinaryTable#getElementClass(int)}, which
+         *                 returns the boxed type used by {@link BinaryTable#get(int, int)} or
+         *                 {@link BinaryTable#set(int, int, Object)}.
          */
         public Class<?> getBase() {
             return getJavaArrayBase();
@@ -216,16 +228,22 @@ public class BinaryTable extends AbstractTableData implements Cloneable {
         }
 
         /**
+         * <p>
          * Returns the Java array element type that is used in Java to represent data in this column. When accessing
          * columns or their elements in the old way, through arrays, this is the type that arrays from the Java side
          * will expect or provide. For example, when storing {@link String} values (regular or variable-sized), this
          * will return <code>String.class</code>. Arrays returned by {@link BinaryTable#getColumn(int)},
          * {@link BinaryTable#getRow(int)}, and {@link BinaryTable#getElement(int, int)} will return arrays of this
          * type, and the equivalent methods for setting data will expect arrays of this type as their argument.
+         * </p>
+         * <p>
+         * This is different from {@link BinaryTable#getElementClass(int)}, which in turn returns the boxed type of
+         * objects returned by {@link BinaryTable#get(int, int)} or {@link BinaryTable#set(int, int, Object)}.
          * 
          * @return the Java class, arrays of which, packaged data for this column on the Java side.
          * 
          * @see    #getFitsArrayBase()
+         * @see    BinaryTable#getElementClass(int)
          * 
          * @since  1.18
          */
@@ -241,10 +259,26 @@ public class BinaryTable extends AbstractTableData implements Cloneable {
          * Returns the domensions of elements in this column. As of 1.18, this method returns a copy ot the array used
          * internally, which is safe to modify.
          * 
-         * @return an array with the element dimensions.
+         * @return     an array with the element dimensions.
+         * 
+         * @deprecated (<i>for internal use</i>) Uset {@link #getBoxedShape()} instead. Not useful to users since it
+         *                 returns the dimensions of the primitive storage types, which is not always the dimension of
+         *                 elements on the Java side (notably for string entries).
          */
         public int[] getDimens() {
-            return shape == null ? null : Arrays.copyOf(shape, shape.length);
+            return shape == null ? null : shape.clone();
+        }
+
+        public int[] getBoxedShape() {
+            return (isComplex || isString()) ? getLeadingShape().clone() : shape.clone();
+        }
+
+        public int getBoxedCount() {
+            return (isComplex || isString()) ? fitsCount / getLastDim() : fitsCount;
+        }
+
+        public int getFitsComponentCount() {
+            return fitsCount;
         }
 
         int dimension() {
@@ -263,7 +297,7 @@ public class BinaryTable extends AbstractTableData implements Cloneable {
          * @param      nRow the number of rows to allocate the array for
          */
         public Object newInstance(int nRow) {
-            return ArrayFuncs.newInstance(getTableBase(), size * nRow);
+            return ArrayFuncs.newInstance(getTableBase(), fitsCount * nRow);
         }
 
         /**
@@ -274,7 +308,7 @@ public class BinaryTable extends AbstractTableData implements Cloneable {
          * @return     the number of bytes an element occupies in the FITS binary table data representation
          */
         public int rowLen() {
-            return size * ElementType.forClass(getTableBase()).size();
+            return fitsCount * ElementType.forClass(getTableBase()).size();
         }
 
         boolean isBoolean() {
@@ -309,8 +343,8 @@ public class BinaryTable extends AbstractTableData implements Cloneable {
 
         void setVariableSize() {
             pointerType = preferPointerType;
-            size = 2;
-            shape = new int[] {size};
+            fitsCount = 2;
+            shape = new int[] {fitsCount};
             leadingShape = null;
         }
 
@@ -382,7 +416,7 @@ public class BinaryTable extends AbstractTableData implements Cloneable {
      */
     private ArrayDataInput currInput;
 
-    private boolean isPreferLongPointers = false;
+    private boolean isUseLongPointers = false;
 
     /**
      * Create a null binary table data segment.
@@ -459,8 +493,8 @@ public class BinaryTable extends AbstractTableData implements Cloneable {
                 ColumnDesc c = new ColumnDesc();
                 c.fitsBase = tab.getElementClass(i);
                 c.base = c.fitsBase;
-                c.size = tab.getElementSize(i);
-                c.shape = c.size > 1 ? new int[] {c.size} : new int[0];
+                c.fitsCount = tab.getElementSize(i);
+                c.shape = c.fitsCount > 1 ? new int[] {c.fitsCount} : new int[0];
                 c.fileSize = c.rowLen();
                 c.offset = rowLen;
                 rowLen += c.fileSize;
@@ -642,35 +676,31 @@ public class BinaryTable extends AbstractTableData implements Cloneable {
     }
 
     /**
-     * Sets the preference for 64-bit <code>long</code> heap pointers rather than 32-bit <code>int</code> pointers, when
-     * creating variable length columns in this table. Even if the preference is for 32-bit pointers, the type actually
-     * used may be bumped automatically to 64-bit if need be to store and access the new column data on the heap.
+     * Sets whether 64-bit <code>long</code> heap pointers rather than 32-bit <code>int</code> should be used, when
+     * creating variable length columns in this table.
      * 
-     * @param value <code>true</code> to use 64-bit heap pointers, or <code>false</code> to prefer 32-bit pointers when
-     *                  possible.
+     * @param value <code>true</code> to use 64-bit heap pointers, or <code>false</code> to prefer 32-bit pointers.
      * 
      * @since       1.18
      * 
-     * @see         #isPreferLongPointers()
+     * @see         #isUseLongPointers()
      */
-    public void setPreferLongPointers(boolean value) {
-        isPreferLongPointers = value;
+    public void setUseLongPointers(boolean value) {
+        isUseLongPointers = value;
     }
 
     /**
      * Checks if <code>long</code> heap pointers are to be used rather than <code>int</code> pointers, when creating
-     * variable length columns in this table. Even if the preference is for 32-bit pointers, the type actually used may
-     * be bumped automatically to 64-bit if need be to store and access the new column data on the heap.
+     * variable length columns in this table.
      * 
-     * @return <code>true</code> if 64-bit heap pointers are to be used, or <code>false</code> if we prefer 32-bit
-     *             pointers when possible.
+     * @return <code>true</code> if 64-bit heap pointers are to be used, or else <code>false</code> if 32-bit pointers.
      * 
      * @since  1.18
      * 
-     * @see    #setPreferLongPointers(boolean)
+     * @see    #setUseLongPointers(boolean)
      */
-    public boolean isPreferLongPointers() {
-        return isPreferLongPointers;
+    public boolean isUseLongPointers() {
+        return isUseLongPointers;
     }
 
     /**
@@ -800,7 +830,7 @@ public class BinaryTable extends AbstractTableData implements Cloneable {
             throw new FitsException("Mismatched number of rows: " + rows + ", expected " + nRow);
         }
 
-        ColumnDesc c = new ColumnDesc(isPreferLongPointers);
+        ColumnDesc c = new ColumnDesc(isUseLongPointers);
         Class<?> base = ArrayFuncs.getBaseClass(o);
 
         if (base == ComplexValue.class) {
@@ -846,7 +876,7 @@ public class BinaryTable extends AbstractTableData implements Cloneable {
      * @deprecated               (<i>for internal use</i>) No longer used, will be removed in the future
      */
     public int addFlattenedColumn(Object o, int[] dims) throws FitsException {
-        ColumnDesc c = new ColumnDesc(isPreferLongPointers);
+        ColumnDesc c = new ColumnDesc(isUseLongPointers);
 
         try {
             c.base = ArrayFuncs.getBaseClass(o);
@@ -907,16 +937,16 @@ public class BinaryTable extends AbstractTableData implements Cloneable {
             o = javaToFits1D(c, o);
         }
 
-        c.size = 1;
+        c.fitsCount = 1;
         for (int dim : c.shape) {
-            c.size *= dim;
+            c.fitsCount *= dim;
         }
 
         // Check that the number of rows is consistent.
-        if (c.size != 0 && columns.size() > 0) {
+        if (c.fitsCount != 0 && columns.size() > 0) {
             int l = Array.getLength(o);
-            if (nRow > 0 && l != nRow * c.size) {
-                throw new FitsException("Mismatched element count " + l + ", expected " + (nRow * c.size));
+            if (nRow > 0 && l != nRow * c.fitsCount) {
+                throw new FitsException("Mismatched element count " + l + ", expected " + (nRow * c.fitsCount));
             }
         }
 
@@ -926,7 +956,7 @@ public class BinaryTable extends AbstractTableData implements Cloneable {
 
         // Load any deferred data (we cannot do that once we alter the column structure
         ensureData();
-        table.addColumn(o, c.size);
+        table.addColumn(o, c.fitsCount);
         columns.add(c);
 
         return columns.size();
@@ -992,14 +1022,48 @@ public class BinaryTable extends AbstractTableData implements Cloneable {
     }
 
     /**
-     * Returns the primitive array element types for each column in an array. Binary table columns are always stored as
-     * arrays even if the contain a single element. This method returns not the array class, but of the primitive
-     * elements the arrays contain.
+     * Returns the Java type of elements returned or expected by the older srray-based access methods. It can be
+     * confusing, because:
+     * <ul>
+     * <li>Columns with variable sized entries report <code>int.class</code> or <code>long.class</code> regardless of
+     * data type.</li>
+     * <li>Regular logical and bit columns bith report <code>boolean.class</code>.</li>
+     * <li>Regular complex valued columns report <code>float.class</code> or <code>double.class</code>.</li>
+     * </ul>
      * 
-     * @return the types in the table, not the underlying types (e.g., for varying length arrays or booleans).
+     * @return     the types in the table, not the underlying types (e.g., for varying length arrays or booleans).
+     * 
+     * @deprecated (<i>for internal use</i>) Ambiguous, use {@link #getElementClass(int)} instead. Will remove in the
+     *                 future.
      */
     public Class<?>[] getBases() {
         return table.getBases();
+    }
+
+    /**
+     * Returns the Java type of elements stored in a column.
+     * 
+     * @param  col
+     * 
+     * @return     The java type of elements in the columns. For columns containing strings, booleans, or complex values
+     *                 it will be <code>String.class</code>, <code>Boolean.class</code> or
+     *                 <code>ComplexValue.class</code> respectively. For all other column types the primitive class of
+     *                 the elements contained (e.g. <code>char.class</code>, <code>float.class</code>) is returned.
+     * 
+     * @since      1.18
+     * 
+     * @see        #getElementCount(int)
+     * @see        #getElementShape(int)
+     */
+    public final Class<?> getElementClass(int col) {
+        ColumnDesc c = columns.get(col);
+        if (c.base == boolean.class) {
+            return Boolean.class;
+        }
+        if (c.isComplex) {
+            return ComplexValue.class;
+        }
+        return c.base;
     }
 
     /**
@@ -1057,8 +1121,10 @@ public class BinaryTable extends AbstractTableData implements Cloneable {
      * 
      * @see        ColumnDesc#getDimens()
      * 
-     * @deprecated Not useful to users since it returns the dimensions of the primitive storage types, which is not
-     *                 always the dimension of elements on the Java side (notably for string entries).
+     * @deprecated (<i>for internal use</i>) Use {@link #getElementShape(int)} to access the shape of elements
+     *                 individually for columns instead. Not useful to users since it returns the dimensions of the
+     *                 primitive storage types, which is not always the dimension of elements on the Java side (notably
+     *                 for string entries).
      */
     public int[][] getDimens() {
         int[][] dimens = new int[columns.size()][];
@@ -1066,6 +1132,24 @@ public class BinaryTable extends AbstractTableData implements Cloneable {
             dimens[i] = columns.get(i).getDimens();
         }
         return dimens;
+    }
+
+    /**
+     * Returns the shape of elements stored in each entry of a column.
+     * 
+     * @param  col
+     * 
+     * @return     An array containing the sizes along each dimension of array entries. For example a column containting
+     *                 <code>float[2][5][7]</code> arrays will return <code>{ 2, 5, 7 }</code>. Scalar columns will
+     *                 return an array of length 0, that is <code>{}</code>.
+     * 
+     * @since      1.18
+     *
+     * @see        #getElementCount(int)
+     * @see        #getElementClass(int)
+     */
+    public final int[] getElementShape(int col) {
+        return columns.get(col).getBoxedShape();
     }
 
     /**
@@ -1132,14 +1216,19 @@ public class BinaryTable extends AbstractTableData implements Cloneable {
      * row-by-row. You can simply all {@link nom.tam.util.ArrayDataInput#readArrayFully(Object)} to populate it with
      * data from a stream. You may also use model rows to add additional rows to an existing table.
      * 
-     * @return a row that may be used for direct i/o to the table.
+     * @return     a row that may be used for direct i/o to the table.
+     * 
+     * @deprecated (<i>for internal use</i>) Use {@link #getElement(int, int)} instead for low-level reading of tables
+     *                 in deferred mode. Not recommended for uses because it requires a deep understanding of how data
+     *                 (especially varialbe length columns) are represented in the FITS. Will reduce visibility to
+     *                 private in the future.
      */
     public Object[] getModelRow() {
         Object[] modelRow = new Object[columns.size()];
         for (int i = 0; i < modelRow.length; i++) {
             ColumnDesc c = columns.get(i);
             if (c.dimension() < 2) {
-                modelRow[i] = Array.newInstance(c.getTableBase(), c.size);
+                modelRow[i] = Array.newInstance(c.getTableBase(), c.fitsCount);
             } else {
                 modelRow[i] = Array.newInstance(c.getTableBase(), c.shape);
             }
@@ -1178,13 +1267,17 @@ public class BinaryTable extends AbstractTableData implements Cloneable {
      * data, whithout reslving heap references. That is this call will return flattened versions of multidimensional
      * arrays, and will return only the heap locator (offset and size) for variable-sized columns.
      * 
-     * @return               a particular element from the table but do no processing of this element (e.g., dimension
-     *                           conversion or extraction of variable length array elements/)
+     * @return                   a particular element from the table but do no processing of this element (e.g.,
+     *                               dimension conversion or extraction of variable length array elements/)
      *
-     * @param  row           The row of the element.
-     * @param  col           The column of the element.
+     * @param      row           The row of the element.
+     * @param      col           The column of the element.
+     * 
+     * @deprecated               (<i>for internal use</i>) Will reduced visibility to protected in the future.
      *
-     * @throws FitsException if the operation failed
+     * @see                      #setFitsElement(int, int, Object)
+     *
+     * @throws     FitsException if the operation failed
      */
     public Object getRawElement(int row, int col) throws FitsException {
         if (!validRow(row) || !validColumn(col)) {
@@ -1231,6 +1324,219 @@ public class BinaryTable extends AbstractTableData implements Cloneable {
         return o;
     }
 
+    /**
+     * <p>
+     * Returns a table element using the usual Java boxing for primitive scalar entries, or packaging complex values as
+     * {@link ComplexValue}, or as appropriate primitive or object arrays. FITS string columns return {@link String}
+     * values. Logical (<code>boolean</code> columns will return a {@link Boolean}, which may be <code>null</code> if
+     * undefined (as per the FITS standard). Complex valued columns will return {@link ComplexValue}, or arrays thereof.
+     * Thus, columns containing single <code>short</code> entries will return the selected element as a {@link Short},
+     * or columns containing single <code>double</code> values will return the element as a {@link Double} and so on.
+     * </p>
+     * As opposed to {@link #getElement(int, int)} scalar values are not wrapped into primitive arrays, but return
+     * either a singular object, such as a ({@link String}, or a {@link ComplexValue}, or a boxed Java primitive.
+     * <p>
+     * Array columns will return the expected arrays of primitive values, or arrays of one of the mentioned types. Note
+     * however, that logical arrays are returned as arrays of {@link Boolean}, e.g. <code>Boolean[][]</code>, <b>not</b>
+     * <code>boolean[][]</code>. This is because FITS allows <code>null</code> values for logicals beyond <code>
+     * true</code> and <code>false</code>, which is reproduced by the boxed type, but not by the primitive type.
+     * </p>
+     * <p>
+     * Columns containing multidimensional arrays, will return the expected multidimensional array of the above
+     * mentioned types.
+     * </p>
+     * 
+     * @param  row           the zero-based row index
+     * @param  col           the zero-based column index
+     * 
+     * @return               the element, either as a Java boxed type (for scalar entries), a singular Java Object, or
+     *                           as a (possibly multi-dimensional) array of {@link String}, {@link Boolean},
+     *                           {@link ComplexValue}, or primitives.
+     * 
+     * @throws FitsException if the element could not be obtained
+     * 
+     * @see                  #getNumberValue(int, int)
+     * @see                  #getBoolean(int, int)
+     * @see                  #getString(int, int)
+     * @see                  #set(int, int, Object)
+     * 
+     * @since                1.18
+     */
+    public Object get(int row, int col) throws FitsException {
+        ColumnDesc c = columns.get(col);
+
+        if (c.isComplex) {
+            return ArrayFuncs.decimalsToComplex(getElement(row, col));
+        }
+        if (c.isBoolean()) {
+            Object o = getRawElement(row, col);
+            if (c.dimension() > 1) {
+                if (c.isString()) {
+                    return ArrayFuncs.curl(o, c.getLeadingShape());
+                }
+                return ArrayFuncs.curl(o, c.shape);
+            }
+            return FitsUtil.bytesToBooleanObjects(o);
+        }
+
+        if (c.isScalar() || (c.isString() && c.isVarying())) {
+            return Array.get(getElement(row, col), 0);
+        }
+        return getElement(row, col);
+    }
+
+    /**
+     * Returns the numerical value, if possible, for scalar elements. Scalar numerical columns return the boxed type of
+     * their primitive type. Thus, a column of <code>long</code> values will return {@link Long}, whereas a column of
+     * <code>float</code> values will return a {@link Float}. Logical columns will return 1 if <code>true</code> or 0 if
+     * <code>false</code>, or <code>null</code> if undefined. Array columns and other column types will throw an
+     * exception.
+     * 
+     * @param  row                the zero-based row index
+     * @param  col                the zero-based column index
+     * 
+     * @return                    the number value of the specified scalar entry
+     * 
+     * @throws FitsException      if the element could not be obtained
+     * @throws ClassCastException if the specified column in not a numerical scalar type.
+     * 
+     * @see                       #getDouble(int, int)
+     * @see                       #getLong(int, int)
+     * @see                       #set(int, int, Object)
+     * @see                       #get(int, int)
+     * 
+     * @since                     1.18
+     */
+    public final Number getNumberValue(int row, int col) throws FitsException, ClassCastException {
+        return (Number) get(row, col);
+    }
+
+    /**
+     * Returns the decimal value, if possible, of a scalar table entry. See {@link #getNumberValue(int, int)} for more
+     * information on the conversion process.
+     * 
+     * @param  row                the zero-based row index
+     * @param  col                the zero-based column index
+     * 
+     * @return                    the number value of the specified scalar entry
+     * 
+     * @throws FitsException      if the element could not be obtained
+     * @throws ClassCastException if the specified column in not a numerical scalar type.
+     * 
+     * @see                       #getNumberValue(int, int)
+     * @see                       #getLong(int, int)
+     * @see                       #set(int, int, Object)
+     * @see                       #get(int, int)
+     * 
+     * @since                     1.18
+     */
+    public final double getDouble(int row, int col) throws FitsException, ClassCastException {
+        Number n = getNumberValue(row, col);
+        return n == null ? Double.NaN : n.doubleValue();
+    }
+
+    /**
+     * Returns a 64-bit integer value, if possible, of a scalar table entry. Boolean columns will return 1 if
+     * <code>true</code> or 0 if <code>false</code>, or throw a {@link NullPointerException} if undefined. See
+     * {@link #getNumberValue(int, int)} for more information on the conversion process.
+     * 
+     * @param  row                  the zero-based row index
+     * @param  col                  the zero-based column index
+     * 
+     * @return                      the 64-bit integer number value of the specified scalar table entry.
+     * 
+     * @throws FitsException        if the element could not be obtained
+     * @throws ClassCastException   if the specified column in not a numerical scalar type.
+     * @throws NullPointerException if the column contains a undefined (blanking value), such as a {@link Double#NaN} or
+     *                                  a {@link Boolean} <code>null</code> value.
+     * 
+     * @see                         #getNumberValue(int, int)
+     * @see                         #getDouble(int, int)
+     * @see                         #set(int, int, Object)
+     * @see                         #get(int, int)
+     * 
+     * @since                       1.18
+     */
+    public final long getLong(int row, int col) throws FitsException, ClassCastException, NullPointerException {
+        Number n = getNumberValue(row, col).longValue();
+        if (Double.isNaN(n.doubleValue())) {
+            throw new NullPointerException("Cannot convert NaN to long");
+        }
+        return n.longValue();
+    }
+
+    /**
+     * Returns the boolean value, if possible, for scalar elements. It will will return<code>true</code>, or
+     * <code>false</code>, or <code>null</code> if undefined. Numerical columns will return <code>null</code> if the
+     * corresponding decimal value is NaN, or <code>false</code> if the value is 0, or else <code>true</code> for all
+     * non-zero values (just like in C).
+     * 
+     * @param  row                the zero-based row index
+     * @param  col                the zero-based column index
+     * 
+     * @return                    the boolean value of the specified scalar entry
+     * 
+     * @throws ClassCastException if the specified column in not a scalar boolean type.
+     * @throws FitsException      if the element could not be obtained
+     * 
+     * @see                       #set(int, int, Object)
+     * @see                       #get(int, int)
+     * 
+     * @since                     1.18
+     */
+    public final Boolean getBoolean(int row, int col) throws FitsException, ClassCastException {
+        Object o = getRawElement(row, col);
+        if (o == null) {
+            return null;
+        }
+        Number n = (Number) o;
+        if (Double.isNaN(n.doubleValue())) {
+            return null;
+        }
+        return n.longValue() != 0;
+    }
+
+    /**
+     * Returns the string value, if possible, for scalar elements. All scalar columns will return the string
+     * representation of their values, while <code>byte[]</code> and <code>char[]</code> are converted to appropriate
+     * strings.
+     * 
+     * @param  row                the zero-based row index
+     * @param  col                the zero-based column index
+     * 
+     * @return                    the string representatiof the specified table entry
+     * 
+     * @throws ClassCastException if the specified column contains array elements other than <code>byte[]</code> or
+     *                                <code>char[]</code>
+     * @throws FitsException      if the element could not be obtained
+     * 
+     * @see                       #set(int, int, Object)
+     * @see                       #get(int, int)
+     * 
+     * @since                     1.18
+     */
+    public final String getString(int row, int col) throws FitsException, ClassCastException {
+        ColumnDesc c = columns.get(col);
+        Object value = get(row, col);
+
+        if (!value.getClass().isArray()) {
+            return value.toString();
+        }
+
+        if (c.getDimens().length > 1) {
+            throw new ClassCastException("Cannot convert multi-dimensional array element to String");
+        }
+
+        if (value instanceof char[]) {
+            return String.valueOf((char[]) value);
+        }
+        if (value instanceof byte[]) {
+            return new String((byte[]) value);
+        }
+
+        throw new ClassCastException("Cannot convert " + value.getClass().getName() + " to String.");
+    }
+
     @Override
     public Object[] getRow(int row) throws FitsException {
         if (!validRow(row)) {
@@ -1248,14 +1554,37 @@ public class BinaryTable extends AbstractTableData implements Cloneable {
      * Returns the flattened (1D) size of elements in each column of this table. As of 1.18, this method returns a copy
      * ot the array used internally, which is safe to modify.
      * 
-     * @return an array with the byte sizes of each column
+     * @return     an array with the byte sizes of each column
+     * 
+     * @deprecated (<i>for internal use</i>) Use {@link #getElementCount(int)} instead. This one returns the number of
+     *                 elements in the FITS representation, not in the java representation. For example, for
+     *                 {@link String} entries, this returns the number of bytes stored, not the number of strings.
+     *                 Similarly, for complex values it returns the number of components not the number of values.
      */
     public int[] getSizes() {
         int[] sizes = new int[columns.size()];
         for (int i = 0; i < sizes.length; i++) {
-            sizes[i] = columns.get(i).size;
+            sizes[i] = columns.get(i).fitsCount;
         }
         return sizes;
+    }
+
+    /**
+     * Returns the number of Java hihg-level elements (e.g. {@link String} or {@link ComplexValue}) stored in each entry
+     * of a column.
+     * 
+     * @param  col
+     * 
+     * @return     The number of elements per column entry, that is 1 for scalar columns or else the number of array
+     *                 elements in array type columns.
+     * 
+     * @since      1.18
+     * 
+     * @see        #getElementShape(int)
+     * @see        #getElementClass(int)
+     */
+    public final int getElementCount(int col) {
+        return columns.get(col).getBoxedCount();
     }
 
     /**
@@ -1265,7 +1594,7 @@ public class BinaryTable extends AbstractTableData implements Cloneable {
      * @return the byte size of a table row in the main table, which contains heap references only for variable-length
      *             columns.
      * 
-     * @see    #isPreferLongPointers()
+     * @see    #isUseLongPointers()
      * 
      * @since  1.18
      */
@@ -1295,11 +1624,17 @@ public class BinaryTable extends AbstractTableData implements Cloneable {
      * Get the characters describing the base classes of the columns. As of 1.18, this method returns a copy ot the
      * array used internally, which is safe to modify.
      *
-     * @return An array of type characters (Java array types), one for each column.
+     * @return     An array of type characters (Java array types), one for each column.
+     * 
+     * @deprecated (<i>for internal use</i>) Use {@link #getElementClass(int)} instead. Not very useful to users since
+     *                 this returns the FITS primitive storage type for the data column.
      */
     public char[] getTypes() {
-        ensureDataSilent();
-        return table.getTypes();
+        char[] types = new char[columns.size()];
+        for (int i = 0; i < columns.size(); i++) {
+            types[i] = ElementType.forClass(columns.get(i).getTableBase()).type();
+        }
+        return types;
     }
 
     @Override
@@ -1368,6 +1703,7 @@ public class BinaryTable extends AbstractTableData implements Cloneable {
      *                           the file / input.
      * 
      * @see                  #setFitsElement(int, int, Object)
+     * @see                  #getRawElement(int, int)
      */
     protected void setFitsElement(int row, int col, Object o) throws FitsException {
         if (table == null) {
@@ -1390,6 +1726,247 @@ public class BinaryTable extends AbstractTableData implements Cloneable {
             e = putOnHeap(c, e, getRawElement(i, j));
         }
         setFitsElement(i, j, e);
+    }
+
+    /**
+     * <p>
+     * The Swiss-army knife of setting table entries, including Java boxing, and with some support for automatic type
+     * conversions. The argument may be one of the following type:
+     * </p>
+     * <ul>
+     * <li>Scalar values -- any Java primitive with its boxed type, such as a {@link Double}, or a
+     * {@link Character}.</li>
+     * <li>A single {@link String} or {@link ComplexValue} object.
+     * <li>An array (including multidimensional) of primitive types, or that of {@link Boolean}, {@link ComplexValue},
+     * or {@link String}.</li>
+     * </ul>
+     * <p>
+     * For array-type columns the argument needs to match the column type exactly. For scalar (single element) columns,
+     * automatic type conversions may apply, to make setting scalar columns more flexible:
+     * </p>
+     * <ul>
+     * <li>Any numerical column can take any {@link Number} value. The conversion is as if an explicit Java cast were
+     * applied. For example, if setting a <code>double</code> value for a column of single <code>short</code> values it
+     * as if a <code>(short)</code> cast were applied.</li>
+     * <li>Numerical colums can also take {@link Boolean} values which set the column to 1, or 0, or
+     * {@link Double#isNaN()} (or the equivalent integer minimum value) if the argument is <code>null</code>. Numerical
+     * columns can also set {@link String} values, by parsing the string according to the numerical type of the
+     * column.</li>
+     * <li>Logical (boolean) columns can set {@link Boolean}, including <code>null</code>values, but also any
+     * {@link Number} type. Zero values map to <code>false</code> while definite non-zero values map to
+     * <code>true</code>. {@link Double#isNaN()} maps to a <code>null</code> (or undefined) entry. Loginal columns can
+     * be also set to the String values of 'true' or 'false'.</li>
+     * <li>String columns can be set to any scalar type owing to Java's {@link #toString()} method performing the
+     * conversion, as long as the string representation fits into the size constraints (if any) for the string
+     * column.</li>
+     * </ul>
+     * 
+     * @param  row                      the zero-based row index
+     * @param  col                      the zero-based column index
+     * @param  o                        the new value to set. For array columns this must match the Java array type
+     *                                      exactly, but for scalar columns additional flexibility is provided for fuzzy
+     *                                      type matching (see description above).
+     * 
+     * @throws FitsException            if the column could not be set
+     * @throws IllegalArgumentException if the argument cannot be converted to a value for the specified column type.
+     * 
+     * @since                           1.18
+     * 
+     * @see                             #get(int, int)
+     */
+    public void set(int row, int col, Object o) throws FitsException, IllegalArgumentException {
+        ColumnDesc c = columns.get(col);
+
+        if (c.isComplex) {
+            if (c.fitsCount == 1 && o instanceof Number) {
+                // Number value set for complex scalar (set real part)
+                if (c.fitsBase != float.class) {
+                    setFitsElement(row, col, new float[] {((Number) o).floatValue(), 0.0F});
+                }
+                setFitsElement(row, col, new double[] {((Number) o).doubleValue(), 0.0});
+            } else {
+                setFitsElement(row, col, ArrayFuncs.complexToDecimals(o, c.fitsBase));
+            }
+        } else if (c.isBoolean()) {
+            setFitsElement(row, col, FitsUtil.booleansToBytes(o));
+        } else if (!o.getClass().isArray()) {
+            if (o instanceof Number) {
+                setNumber(row, col, (Number) o);
+            } else if (o instanceof Boolean) {
+                setBoolean(row, col, (Boolean) o);
+            } else if (o instanceof Character) {
+                setCharacter(row, col, (Character) o);
+            } else if (o instanceof String) {
+                setString(row, col, (String) o);
+            } else {
+                throw new IllegalArgumentException(
+                        "Cannot convert " + o.getClass().getName() + " to " + c.fitsBase.getName());
+            }
+        } else {
+            setFitsElement(row, col, o);
+        }
+    }
+
+    /**
+     * Sets a numerical scalar table entry to the specified value.
+     * 
+     * @param  row                      the zero-based row index
+     * @param  col                      the zero-based column index
+     * @param  value                    the new number value
+     * 
+     * @throws IllegalArgumentException if the specified column in not a numerical scalar type.
+     * @throws FitsException            if the table element could not be altered
+     * 
+     * @see                             #getNumberValue(int, int)
+     * 
+     * @since                           1.18
+     */
+    private void setNumber(int row, int col, Number value) throws FitsException, IllegalArgumentException {
+        ColumnDesc c = columns.get(col);
+        if (c.fitsCount != 1) {
+            throw new IllegalArgumentException("Cannot set scalar value for array column " + col);
+        }
+
+        if (c.isBoolean()) {
+            Boolean b = (value == null) ? null : (value.longValue() != 0);
+            setFitsElement(row, col, new byte[] {FitsEncoder.byteForBoolean(b)});
+            return;
+        }
+        if (c.isString()) {
+            setString(row, col, value.toString());
+            return;
+        }
+
+        Class<?> base = c.getBase();
+
+        if (value == null) {
+            throw new IllegalArgumentException("Cannot set null for col " + col + " of type " + base.getName());
+        }
+
+        Object wrapped = null;
+
+        if (byte.class.equals(base)) {
+            wrapped = new byte[] {value.byteValue()};
+        } else if (short.class.equals(base)) {
+            wrapped = new short[] {value.shortValue()};
+        } else if (int.class.equals(base)) {
+            wrapped = new int[] {value.intValue()};
+        } else if (long.class.equals(base)) {
+            wrapped = new long[] {value.longValue()};
+        } else if (float.class.equals(base)) {
+            wrapped = new float[] {value.floatValue()};
+        } else if (double.class.equals(base)) {
+            wrapped = new double[] {value.doubleValue()};
+        } else {
+            throw new IllegalArgumentException("Not a number column: col " + col + ", type " + base.getName());
+        }
+
+        setFitsElement(row, col, wrapped);
+    }
+
+    /**
+     * Sets a boolean scalar table entry to the specified value.
+     * 
+     * @param  row                      the zero-based row index
+     * @param  col                      the zero-based column index
+     * @param  value                    the new boolean value
+     * 
+     * @throws IllegalArgumentException if the specified column in not a boolean scalar type.
+     * @throws FitsException            if the table element could not be altered
+     * 
+     * @see                             #getBoolean(int, int)
+     * 
+     * @since                           1.18
+     */
+    private void setBoolean(int row, int col, Boolean value) throws FitsException, IllegalArgumentException {
+        if (columns.get(col).isBoolean()) {
+            setFitsElement(row, col, new byte[] {FitsEncoder.byteForBoolean(value)});
+        }
+        set(row, col, value == null ? Double.NaN : (value ? 1 : 0));
+    }
+
+    /**
+     * Sets a Unicode character scalar table entry to the specified value.
+     * 
+     * @param  row                      the zero-based row index
+     * @param  col                      the zero-based column index
+     * @param  value                    the new Unicode character value
+     * 
+     * @throws IllegalArgumentException if the specified column in not a boolean scalar type.
+     * @throws FitsException            if the table element could not be altered
+     * 
+     * @see                             #getString(int, int)
+     * 
+     * @since                           1.18
+     */
+    private void setCharacter(int row, int col, Character value) throws FitsException, IllegalArgumentException {
+        ColumnDesc c = columns.get(col);
+        if (c.fitsCount > 1) {
+            setString(row, col, value.toString());
+        }
+
+        if (c.isBoolean()) {
+            setBoolean(row, col, (value == null) ? null : value != 0);
+        } else if (c.fitsBase == char.class) {
+            setFitsElement(row, col, new char[] {value});
+        } else if (c.fitsBase == byte.class) {
+            setFitsElement(row, col, new byte[] {(byte) (value & FitsIO.BYTE_MASK)});
+        } else {
+            throw new IllegalArgumentException("Cannot convert char value to " + c.fitsBase.getName());
+        }
+    }
+
+    /**
+     * Sets a table entry to the specified string value. Scalar column will attempt to parse the value, while
+     * <code>byte[]</code> and <coce>char[]</code> type columns will convert the string provided the string's length
+     * does not exceed the entry size for these columns (the array elements will be padded with zeroes). Note, that
+     * scalar <code>byte</code> columns will parse the string as a number (not as a single ASCII character).
+     * 
+     * @param  row                      the zero-based row index
+     * @param  col                      the zero-based column index
+     * @param  value                    the new boolean value
+     * 
+     * @throws IllegalArgumentException if the specified column is not a scalar type, and neither it is
+     *                                      <code>byte[]</code> or <coce>char[]</code> with size lesser or equal to the
+     *                                      expected column element size.
+     * @throws NumberFormatException    if the numerical value could not be parsed.
+     * @throws FitsException            if the table element could not be altered
+     * 
+     * @see                             #getString(int, int)
+     * 
+     * @since                           1.18
+     */
+    private void setString(int row, int col, String value)
+            throws FitsException, IllegalArgumentException, NumberFormatException {
+        ColumnDesc c = columns.get(col);
+
+        if (c.fitsCount != 1) {
+            if (c.getDimens().length > 1) {
+                throw new IllegalArgumentException("Cannot convert String to multi-dimensional array");
+            }
+            if (value.length() > c.fitsCount) {
+                throw new IllegalArgumentException(
+                        "String size " + value.length() + " exceeds element size of " + c.fitsCount);
+            }
+
+            if (c.fitsBase == char.class) {
+                setElement(row, col, Arrays.copyOf(value.toCharArray(), c.fitsCount));
+            } else if (c.fitsBase == byte.class) {
+                setElement(row, col, Arrays.copyOf(value.getBytes(), c.fitsCount));
+            } else {
+                throw new IllegalArgumentException("Cannot cast String to " + c.fitsBase.getName());
+            }
+        } else if (c.isBoolean()) {
+            setBoolean(row, col, (value == null) ? null : Boolean.parseBoolean(value));
+        } else if (value.length() == 1) {
+            setCharacter(row, col, value.charAt(0));
+        } else {
+            try {
+                set(row, col, Long.parseLong(value));
+            } catch (NumberFormatException e) {
+                set(row, col, Double.parseDouble(value));
+            }
+        }
     }
 
     /**
@@ -1558,7 +2135,7 @@ public class BinaryTable extends AbstractTableData implements Cloneable {
 
             int stringSize = c.getLastDim();
 
-            String[] s = new String[c.size / stringSize];
+            String[] s = new String[c.fitsCount / stringSize];
 
             for (int i = 0; i < s.length; i++) {
                 s[i] = FitsUtil.extractString(bytes, i * stringSize, stringSize, c.terminator);
@@ -1582,7 +2159,7 @@ public class BinaryTable extends AbstractTableData implements Cloneable {
         int[] sizes = new int[nfields];
         for (int i = 0; i < nfields; i++) {
             ColumnDesc c = columns.get(i);
-            sizes[i] = c.size;
+            sizes[i] = c.fitsCount;
             if (c.column != null) {
                 data[i] = c.column;
                 c.column = null;
@@ -1754,7 +2331,7 @@ public class BinaryTable extends AbstractTableData implements Cloneable {
 
         c.shape = dims;
         c.leadingShape = null;
-        c.size = size;
+        c.fitsCount = size;
         c.fileSize = c.rowLen();
 
         return c;
@@ -1781,7 +2358,7 @@ public class BinaryTable extends AbstractTableData implements Cloneable {
      * @throws     TableException if the column could not be added. `
      */
     protected void addByteVaryingColumn() throws TableException {
-        ColumnDesc c = new ColumnDesc(isPreferLongPointers);
+        ColumnDesc c = new ColumnDesc(isUseLongPointers);
 
         c.base = byte.class;
         c.fitsBase = byte.class;
@@ -1792,7 +2369,7 @@ public class BinaryTable extends AbstractTableData implements Cloneable {
         rowLen += c.fileSize;
 
         columns.add(c);
-        table.addColumn(c.newInstance(nRow), c.size);
+        table.addColumn(c.newInstance(nRow), c.fitsCount);
     }
 
     /**
@@ -1930,7 +2507,7 @@ public class BinaryTable extends AbstractTableData implements Cloneable {
 
         StringBuffer tform = new StringBuffer();
 
-        int count = c.size;
+        int count = c.fitsCount;
         if (c.isComplex) {
             count /= 2;
         }
