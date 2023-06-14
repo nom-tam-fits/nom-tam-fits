@@ -260,10 +260,24 @@ public class BinaryTableHDU extends TableHDU<BinaryTable> {
     }
 
     /**
+     * Converts a column from FITS logical values to bits. Null values (allowed in logical columns) will map to
+     * <code>false</code>.
+     *
+     * @param  col The zero-based index of the column to be reset.
+     *
+     * @return     Whether the conversion was possible. *
+     * 
+     * @since      1.18
+     */
+    public boolean convertToBits(int col) {
+        return myData.convertToBits(col);
+    }
+
+    /**
      * Convert a column in the table to complex. Only tables with appropriate types and dimensionalities can be
      * converted. It is legal to call this on a column that is already complex.
      *
-     * @param  index         The 0-based index of the column to be converted.
+     * @param  index         The zero-based index of the column to be converted.
      *
      * @return               Whether the column can be converted
      *
@@ -301,7 +315,7 @@ public class BinaryTableHDU extends TableHDU<BinaryTable> {
         }
         // Worry about variable length columns.
         String prefix = "";
-        if (colDesc.isVarying()) {
+        if (colDesc.isVariableLength()) {
             prefix += colDesc.pointerType();
             dim = 1;
         }

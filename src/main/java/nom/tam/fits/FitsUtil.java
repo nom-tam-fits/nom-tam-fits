@@ -44,6 +44,7 @@ import java.util.logging.Level;
 import java.util.logging.Logger;
 
 import nom.tam.util.ArrayDataOutput;
+import nom.tam.util.ArrayFuncs;
 import nom.tam.util.AsciiFuncs;
 import nom.tam.util.FitsDecoder;
 import nom.tam.util.FitsEncoder;
@@ -168,6 +169,39 @@ public final class FitsUtil {
         }
 
         throw new IllegalArgumentException("Cannot convert to boolean values: " + o.getClass().getName());
+    }
+
+    static byte[] bitsToBytes(Object o) throws IllegalArgumentException {
+        if (!o.getClass().isArray()) {
+            throw new IllegalArgumentException("Cannot convert to bits: " + o.getClass().getName());
+        }
+
+        if (ArrayFuncs.getBaseClass(o) != boolean.class) {
+            throw new IllegalArgumentException("Cannot convert to bits: " + o.getClass().getName());
+        }
+
+        boolean[] bits = (boolean[]) ArrayFuncs.flatten(o);
+
+        byte[] bytes = new byte[(bits.length + Byte.SIZE - 1) / Byte.SIZE];
+        for (int i = 0; i < bits.length; i++) {
+            if (bits[i]) {
+                int pos = Byte.SIZE - i % Byte.SIZE;
+                bytes[i / Byte.SIZE] |= 1 << pos;
+            }
+        }
+
+        return bytes;
+    }
+
+    static boolean[] bytesToBits(byte[] bytes, int count) {
+        boolean[] bits = new boolean[count];
+
+        for (int i = 0; i < bits.length; i++) {
+            int pos = Byte.SIZE - i % Byte.SIZE;
+            bits[i] = (bytes[i / Byte.SIZE] >>> pos) == 1;
+        }
+
+        return bits;
     }
 
     public static String extractString(byte[] bytes, int offset, int maxLen, char terminator) {
