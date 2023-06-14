@@ -540,7 +540,7 @@ public final class ArrayFuncs {
      *
      * @param      o the array to count elements in
      *
-     * @deprecated   Use {@link #countElements(Object)} instead.
+     * @deprecated   Use the more aptly named {@link #countElements(Object)} instead.
      */
     public static long nLElements(Object o) {
         return countElements(o);
@@ -590,6 +590,23 @@ public final class ArrayFuncs {
         return result;
     }
 
+    /**
+     * Checks that an array has a regular structure, with a consistent shape and element types, and returns the regular
+     * array size or else throws an exeption. Optionally, it will also throw an exception if some (but not) all elements
+     * are <code>null</code>.
+     * 
+     * @param  o                        An object
+     * @param  allowSomeNulls           If we should throw an exception if some (but not all) element are
+     *                                      <code>null</code>.
+     * 
+     * @return                          the regular shape of the array with sizes along each array dimension.
+     * 
+     * @throws IllegalArgumentException if the array contains mismatched elements in size, or some (but not all)
+     *                                      <code>null</code> values.
+     * @throws ClassCastException       if the array contain a heterogeneous collection of different element types.
+     * 
+     * @since                           1.18
+     */
     public static int[] assertRegularArray(Object o, boolean allowSomeNulls)
             throws IllegalArgumentException, ClassCastException {
         if (o == null) {
@@ -650,6 +667,22 @@ public final class ArrayFuncs {
         return dim;
     }
 
+    /**
+     * Converts complex value(s) count to <code>float[2]</code> or <code>double[2]</code> or arrays thereof, which
+     * maintain the shape of the original input array (if applicable).
+     * 
+     * @param  o                        one of more complex values
+     * @param  decimalType              <code>float.class</code> or <code>double.class</code> (all other values default
+     *                                      to as if <code>double.class</code> was used.
+     * 
+     * @return                          an array of <code>float[2]</code> or <code>double[2]</code>, or arrays thereof.
+     * 
+     * @throws IllegalArgumentException if the argument is not suitable for conversion to complex values.
+     * 
+     * @see                             #decimalsToComplex(Object)
+     * 
+     * @since                           1.18
+     */
     public static Object complexToDecimals(Object o, Class<?> decimalType) {
 
         if (o instanceof ComplexValue) {
@@ -700,7 +733,22 @@ public final class ArrayFuncs {
         throw new IllegalArgumentException("Cannot convert to complex values: " + o.getClass().getName());
     }
 
-    public static Object decimalsToComplex(Object array) {
+    /**
+     * Converts real-valued arrays of even element count to a {@link ComplexValue} or arrays thereof. The size and shape
+     * is otherwise maintained, apart from coalescing pairs of real values into <code>ComplexValue</code> objects.
+     * 
+     * @param  array                    an array of <code>float</code> or <code>double</code> elements containing an
+     *                                      even number of elements at the last dimension
+     * 
+     * @return                          one of more complex values
+     * 
+     * @throws IllegalArgumentException if the argument is not suitable for conversion to complex values.
+     * 
+     * @see                             #complexToDecimals(Object, Class)
+     * 
+     * @since                           1.18
+     */
+    public static Object decimalsToComplex(Object array) throws IllegalArgumentException {
         if (array instanceof float[]) {
             float[] f = (float[]) array;
             if (f.length % 2 == 1) {

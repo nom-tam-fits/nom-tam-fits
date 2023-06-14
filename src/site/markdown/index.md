@@ -384,23 +384,46 @@ in the fifth column (i.e. 4 in Java indexing):
   // Loop through rows, accessing the relevant column data
   for(int row = 0; row < tab.getNRows(); row++) {
   
-      // Retrieve scalar entries by casting the element to the correct array 
+      // Retrieve scalar entries with convenient getters... 
       // type, and returning the first (and only) element from that array...
-      double utc  = ((double[]) tab.getElement(row, colUTC))[0];
-      
+      double utc  = tab.getDouble(row, colUTC));
+           
       // We can also access by fixed column index...
-      float[] spectrum = (float[]) tab.getElement(row, 4);
+      ComplexValue phase = (ComplexValue) tab.get(row, 3);
+      ComplexValue[] spectrum = (ComplexValue[]) tab.get(row, 4);
       
       // process the data...
       ...
   }
 ```
 
-Note that table data is always returned as arrays, even for scalar types, so a single integer entry will be returned as 
-`int[1]`, a single string as `String[1]`. Complex values are stored as `float[2]` or `double[2]` depending on 
-the precision (FITS type `C` or `M`). So, a double-precision FITS complex array of size `[5][7]` will be returned a 
-`double[5][7][2]`. Logicals return `boolean[]`, which means that while FITS supports `null` logical values, we don't
-and these will default to `false`. It's an oversight that we are stuck with, at least for now...
+Prior to 1.18, the old `getElement()` / `setElement()` methods supported access as arrays only. This
+is still a valid way (though a little less elegant), and the equivalent to the above in this approach would be:
+
+```java   
+  // Loop through rows, accessing the relevant column data
+  for(int row = 0; row < tab.getNRows(); row++) {
+  
+      // Retrieve scalar entries by casting the element to the correct array 
+      // type, and returning the first (and only) element from that array...
+      double utc  = ((double[]) tab.getElement(row, colUTC))[0];
+      
+      // We can also access by fixed column index...
+      float phae = ((float[]) tab.getElement(row, 3))[0];
+      float[][] spectrum = (float[][]) tab.getElement(row, 4);
+      
+      // process the data...
+      ...
+  }
+```
+
+These older methods (`getElement()`, `getRow()` and `getColumn()`) always return table data as arrays, even 
+for scalar types, so a single integer entry will be returned as `int[1]`, a single string as `String[1]`. Complex 
+values are stored as `float[2]` or `double[2]` depending on  the precision (FITS type `C` or `M`). So, a 
+double-precision FITS complex array of size `[5][7]` will be returned a `double[5][7][2]`. Logicals return `boolean[]`, 
+which means that while FITS supports `null` logical values, we don't and these will default to `false`. (However,
+the `get()` method introduced in 1.18 will return these as `Boolean` arrays instead, retaining `null` values 
+appropriately!).
 
 Note that for best performance you should access elements in monotonically increasing order when accessing elements 
 in deferred mode -- at least for the rows, but it does not hurt to follow the same principle for columns inside the 
@@ -419,7 +442,7 @@ simply write something like:
 ```
 
 However, despite the slightly cleaner code, row-based access may be generally slower than element-based access if 
-we do not plan to process all columns, since all columns of the `Object[]` array for the row must be populated 
+you do not plan to process all columns, since all columns of the `Object[]` array for the row must be populated 
 regardless of whether we need them or not.
 
 The library provides methods for accessing entire columns also via the `TableData.getColumn(int)` or 
@@ -782,10 +805,10 @@ There are some requirements on the array though:
    or else `String[]` arrays. Scalar values are stored as arrays of 1 (e.g. `short[1]`)
  - If entries are multi-dimensional arrays, all rows in a column must have the same dimensionality and shape.
  - If entries are one-dimensional, they can vary in size from row to row
- - Complex-valued arrays must be converted to arrays of `float[2]` or `double[2]`. (Single complex
-   values can be simply `float[2]` or `double[2]`. After creating the binary table, you will
-   want to call `setComplexColumn(int)` for every complex column you added this way to make sure they
-   are stored as such in FITS (rather than arrays of `float` or `double`).
+ - For `getElement()` / `setElement()`, `getRow() / setRow()` complex-valued data must be converted to arrays 
+   of `float[2]` or `double[2]`. (Single complex values can be simply `float[2]` or `double[2]`. After creating 
+   the binary table, you will want to call `setComplexColumn(int)` for every complex column you added this way 
+   to make sure they are stored as such in FITS (rather than arrays of `float` or `double`).
    
 Note, that while the library supports ASCII tables, it is generally better to just use binary tables for storing data 
 in general. ASCII tables are more limited, and were meant to be readable from a console without needing any tools. 
@@ -817,7 +840,7 @@ can create a table with these (or add them to an existing table with a matching 
  
    ...
  
-   float[][] spectra = new float[nRows][];
+   ComplexValue[][] spectra = new ComplexValue[nRows][];
    ...
    table.addColumn(spectra);
    

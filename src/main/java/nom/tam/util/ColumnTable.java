@@ -62,6 +62,7 @@ import edu.umd.cs.findbugs.annotations.SuppressFBWarnings;
  */
 public class ColumnTable<T> implements DataTable, Cloneable {
 
+    /** A list of columns contained in this table */
     private ArrayList<Column<?>> columns = new ArrayList<>();
 
     /** The number of rows */
@@ -140,6 +141,16 @@ public class ColumnTable<T> implements DataTable, Cloneable {
         }
     }
 
+    /**
+     * Checks a column data, in which elements have been already wrapped, such as the leading dimension of the array
+     * corresponds to rows. Each top-level element is holds data for a given row.
+     * 
+     * @param  newColumn      An array holding the column data with each entry corresponding to hte data for a row.
+     * 
+     * @return                the element count
+     * 
+     * @throws TableException if the column data is inconsistent with the table structure.
+     */
     private int checkWrappedColumn(Object newColumn) throws TableException {
         Class<?> eType = newColumn.getClass().getComponentType();
         int eCount = 1; // default scalar element count
@@ -224,6 +235,17 @@ public class ColumnTable<T> implements DataTable, Cloneable {
         columns.add(createColumn(type, size));
     }
 
+    /**
+     * Converts a one-dimensional flat array of elements to a wrapped column, in which each top-level entry contains the
+     * specified number of row elements
+     * 
+     * @param  data           a one-domensional primitive array
+     * @param  size           the number of column data elements per row
+     * 
+     * @return                the wrapped column data, in which each tp-level entry contains data for a specific row.
+     * 
+     * @throws TableException If the data could not be converted
+     */
     private Object wrapColumn(Object data, int size) throws TableException {
 
         checkFlatColumn(data, size);
@@ -281,6 +303,11 @@ public class ColumnTable<T> implements DataTable, Cloneable {
         nrow = Array.getLength(c.data);
     }
 
+    /**
+     * Returns the next standard table capacity step that will allow adding at least one more row to the table.
+     * 
+     * @return the standard capacity (number of rows) to which we'd want to grow to contain another table row.
+     */
     private int nextLargerCapacity() {
         if (nrow + 1 < MIN_CAPACITY) {
             return MIN_CAPACITY;
@@ -289,6 +316,14 @@ public class ColumnTable<T> implements DataTable, Cloneable {
         return (int) Math.min(Long.highestOneBit(nrow) << 1, Integer.MAX_VALUE);
     }
 
+    /**
+     * Checks the integrity of an array containing element for a new row, with each element corresponding to an entry to
+     * the respective table column.
+     * 
+     * @param  row            An array containing data for a new table row.
+     * 
+     * @throws TableException If the row structure is inconsistent with that of the table.
+     */
     private void checkRow(Object[] row) throws TableException {
         // Check that the row matches existing columns
         if (row.length != columns.size()) {
@@ -297,7 +332,7 @@ public class ColumnTable<T> implements DataTable, Cloneable {
 
         for (int col = 0; col < row.length; col++) {
             Column<?> c = columns.get(col);
-            c.checkElement(row[col]);
+            c.checkEntry(row[col]);
         }
     }
 
@@ -345,6 +380,14 @@ public class ColumnTable<T> implements DataTable, Cloneable {
         nrow++;
     }
 
+    /**
+     * Checks if a data in column format is consistent with this table, for example before adding it.
+     * 
+     * @param  data           A one-dimensional representation of the column data
+     * @param  size           the number of primitive elements per table row
+     * 
+     * @throws TableException if the column is not consistent with the current table structure.
+     */
     private void checkFlatColumn(Object data, int size) throws TableException {
         int len = Array.getLength(data);
 
@@ -572,12 +615,12 @@ public class ColumnTable<T> implements DataTable, Cloneable {
     @Override
     public Object getColumn(int col) {
         Column<?> c = columns.get(col);
-        if (c.elementSize() != 1) {
-            int n = nrow * c.elementSize();
+        if (c.elementCount() != 1) {
+            int n = nrow * c.elementCount();
             Object array = Array.newInstance(c.baseType(), n);
             int offset = 0;
-            for (int i = 0; offset < n; i++, offset += c.elementSize()) {
-                System.arraycopy(c.getArrayElement(i), 0, array, offset, c.elementSize());
+            for (int i = 0; offset < n; i++, offset += c.elementCount()) {
+                System.arraycopy(c.getArrayElement(i), 0, array, offset, c.elementCount());
             }
             return array;
         }
@@ -607,23 +650,6 @@ public class ColumnTable<T> implements DataTable, Cloneable {
             throw new ArrayIndexOutOfBoundsException(row);
         }
         return columns.get(col).getArrayElement(row);
-    }
-
-    /**
-     * Returns a table element, using the usual Java boxing for primitive scalar entries.
-     * 
-     * @param  row the zero-based row index
-     * @param  col the zero-based column index
-     * 
-     * @return     the element, either as a Java boxed type (for scalar entries), or as a primitive array
-     * 
-     * @since      1.18
-     */
-    public Object getBoxedElement(int row, int col) {
-        if (row > nrow) {
-            throw new ArrayIndexOutOfBoundsException(row);
-        }
-        return columns.get(col).get(row);
     }
 
     /**
@@ -671,7 +697,7 @@ public class ColumnTable<T> implements DataTable, Cloneable {
      * @since      1.18
      */
     public final int getElementSize(int col) {
-        return columns.get(col).elementSize();
+        return columns.get(col).elementCount();
     }
 
     /**
@@ -757,12 +783,12 @@ public class ColumnTable<T> implements DataTable, Cloneable {
                     "Mismatched type " + newColumn.getClass().getName() + ", expected " + c.baseType().getName());
         }
 
-        if (Array.getLength(newColumn) != nrow * c.elementSize()) {
+        if (Array.getLength(newColumn) != nrow * c.elementCount()) {
             throw new TableException(
-                    "Mismatched size " + Array.getLength(newColumn) + ", expected " + (nrow * c.elementSize()));
+                    "Mismatched size " + Array.getLength(newColumn) + ", expected " + (nrow * c.elementCount()));
         }
 
-        c.data = wrapColumn(newColumn, c.elementSize());
+        c.data = wrapColumn(newColumn, c.elementCount());
     }
 
     /**
@@ -797,8 +823,8 @@ public class ColumnTable<T> implements DataTable, Cloneable {
         Column c = columns.get(col);
 
         int eSize = checkWrappedColumn(newColumn);
-        if (eSize != c.elementSize()) {
-            throw new TableException("Mismatched element size " + eSize + ", expected " + c.elementSize());
+        if (eSize != c.elementCount()) {
+            throw new TableException("Mismatched element size " + eSize + ", expected " + c.elementCount());
         }
 
         Class<?> eType = newColumn.getClass().getComponentType();
@@ -817,7 +843,7 @@ public class ColumnTable<T> implements DataTable, Cloneable {
     @Override
     public void setElement(int row, int col, Object x) throws TableException {
         Column<?> c = columns.get(col);
-        c.checkElement(x);
+        c.checkEntry(x);
         c.setArrayElement(row, x);
     }
 
@@ -947,34 +973,78 @@ public class ColumnTable<T> implements DataTable, Cloneable {
         return new Generic(type, size);
     }
 
+    /**
+     * Container for one column in the table.
+     * 
+     * @author        Attila Kovacs
+     *
+     * @param  <Data> The generic type of the data elements held in the table
+     */
     private abstract static class Column<Data> implements Cloneable {
         protected Data data;
         private ElementType<?> fitsType;
 
+        /**
+         * Instantiates a new column data container
+         * 
+         * @param fitsType The primitive element type that is used to store data for this column in the FITS
+         */
         Column(ElementType<?> fitsType) {
             this.fitsType = fitsType;
         }
 
+        /**
+         * Returns the data array that holds all elements (one entry per row) for this column. It may be a primitive
+         * array or an object array.
+         * 
+         * @return the array that holds data for this column.
+         */
         Data getData() {
             return data;
         }
 
+        /**
+         * Returns the FITS element type contained in this column.
+         * 
+         * @return the FITS type of data elements as they are stored in FITS
+         */
         ElementType<?> getElementType() {
             return fitsType;
         }
 
+        /**
+         * Returns the primitive element type which reprensents data for this column in FITS.
+         * 
+         * @return the primitive type that is used when writing this column's data into FITS
+         */
         Class<?> baseType() {
             return fitsType.primitiveClass();
         }
 
+        /**
+         * Returns the array data class that stores elements in this column.
+         * 
+         * @return the class of array that holds elements in this column
+         */
         Class<?> arrayType() {
             return data.getClass();
         }
 
-        int elementSize() {
+        /**
+         * Returns the number of basic elements stored per row in this column.
+         * 
+         * @return the number of basic elements per row
+         */
+        int elementCount() {
             return 1;
         }
 
+        /**
+         * Returns the number of rows currently allocated in this column, which may exceed the number of entries
+         * currently populated.
+         * 
+         * @return the number of rows allocated at present
+         */
         int capacity() {
             return data == null ? 0 : Array.getLength(data);
         }
@@ -993,15 +1063,56 @@ public class ColumnTable<T> implements DataTable, Cloneable {
             }
         }
 
+        /**
+         * Reads a single table entry from an input
+         * 
+         * @param  index       the zero-based row index of the column entry
+         * @param  in          the input to read from
+         * 
+         * @throws IOException if the entry could not be read
+         */
         abstract void read(int index, ArrayDataInput in) throws IOException;
 
+        /**
+         * Writes a since table entry to an output
+         * 
+         * @param  index       the zero-based row index of the column entry
+         * @param  out         the output to write to
+         * 
+         * @throws IOException if the entry could not be written
+         */
         abstract void write(int index, ArrayDataOutput out) throws IOException;
 
+        /**
+         * Reads a sequence of consecutive table entries from an input
+         * 
+         * @param  from        the zero-based row index of the first column entry to read
+         * @param  n           the number of consecutive rows to read
+         * @param  in          the input to read from
+         * 
+         * @throws IOException if the entry could not be read
+         */
         abstract void read(int from, int n, ArrayDataInput in) throws IOException;
 
+        /**
+         * Writes a sequence of consecutive table entries to an output
+         * 
+         * @param  from        the zero-based row index of the first column entry to write
+         * @param  n           the number of consecutive rows to write
+         * @param  in          the output to write to
+         * 
+         * @throws IOException if the entry could not be written
+         */
         abstract void write(int from, int n, ArrayDataOutput out) throws IOException;
 
-        void checkElement(Object x) throws TableException {
+        /**
+         * Checks if an object is consistent with becoming an entry in this column.
+         * 
+         * @param  x              an object that is expected to be a compatible column entry
+         * 
+         * @throws TableException if the object is not consistent with the data expected for this column.
+         */
+        void checkEntry(Object x) throws TableException {
 
             if (x == null) {
                 throw new TableException("Unexpected null element");
@@ -1012,29 +1123,56 @@ public class ColumnTable<T> implements DataTable, Cloneable {
                         "Incompatible element type: " + x.getClass().getName() + ", expected " + arrayType());
             }
 
-            if (Array.getLength(x) != elementSize()) {
+            if (Array.getLength(x) != elementCount()) {
                 throw new TableException(
-                        "Incompatible element size: " + Array.getLength(x) + ", expected " + elementSize());
+                        "Incompatible element size: " + Array.getLength(x) + ", expected " + elementCount());
             }
 
         }
 
+        /**
+         * Returns the entry at the specified index as an array. Primitive elements will be wrapped into an array of one
+         * 
+         * @param  i the zero-based row index of the entry.
+         * 
+         * @return   the entry as an array. Primitive values will be returned as a new array of one.
+         */
         abstract Object getArrayElement(int i);
 
+        /**
+         * Sets a new array entry at the specified index. Primitive values must be be wrapped into an array of one.
+         * 
+         * @param i the zero-based row index of the entry.
+         * @param o the new entry as an array. Primitive values must be wrapped into an array of one.
+         */
         abstract void setArrayElement(int i, Object o);
 
-        abstract Object get(int i);
-
-        abstract void set(int i, Object o);
-
+        /**
+         * Resized this columns storage to an allocation of the specified size. The size should be greater or equals to
+         * the number of elements already contained to avoid loss of data.
+         * 
+         * @param size the new allocation (number of rows that can be contained)
+         */
         abstract void resize(int size);
 
+        /**
+         * Ensures that the column has storage allocated to contain the speciifed number of entries, and grows the
+         * column's allocation as necessaty to contain the specified number of rows in the future.
+         * 
+         * @param size the number of rows that the table should be able to contain
+         */
         void ensureSize(int size) {
             if (size > capacity()) {
                 resize(size);
             }
         }
 
+        /**
+         * Trims the table to the specified size, as needed. The size should be greater or equals to the number of
+         * elements already contained to avoid loss of data.
+         * 
+         * @param size the new allocation (number of rows that can be contained)
+         */
         void trim(int size) {
             if (capacity() > size) {
                 resize(size);
@@ -1058,6 +1196,14 @@ public class ColumnTable<T> implements DataTable, Cloneable {
             return copy;
         }
 
+        /**
+         * Makes a copy of this column of the specified allocation for the number of rows in the copy. If the size is
+         * less than the number of entries this column contains, the excess entries will be discared from the copy.
+         * 
+         * @param  size the number of rows the copy might contain.
+         * 
+         * @return      A copy of this column with storage for the specified number of rows.
+         */
         Column<Data> copy(int size) {
             Column<Data> c = clone();
             if (data != null) {
@@ -1067,8 +1213,14 @@ public class ColumnTable<T> implements DataTable, Cloneable {
         }
     }
 
+    /**
+     * A column for data consisting of 8-bit bytes.
+     * 
+     * @author Attila Kovacs
+     */
     private static class Bytes extends Column<byte[]> {
 
+        /** Construct as new container for a byte-based data column */
         Bytes() {
             super(ElementType.BYTE);
         }
@@ -1117,19 +1269,16 @@ public class ColumnTable<T> implements DataTable, Cloneable {
             data[i] = ((byte[]) o)[0];
         }
 
-        @Override
-        Byte get(int i) {
-            return data[i];
-        }
-
-        @Override
-        void set(int i, Object o) {
-            data[i] = (Byte) o;
-        }
     }
 
+    /**
+     * A column for data consisting of boolean values.
+     * 
+     * @author Attila Kovacs
+     */
     private static class Booleans extends Column<boolean[]> {
 
+        /** Construct as new container for a boolean-based data column */
         Booleans() {
             super(ElementType.BOOLEAN);
         }
@@ -1173,20 +1322,16 @@ public class ColumnTable<T> implements DataTable, Cloneable {
         void setArrayElement(int i, Object o) {
             data[i] = ((boolean[]) o)[0];
         }
-
-        @Override
-        Boolean get(int i) {
-            return data[i];
-        }
-
-        @Override
-        void set(int i, Object o) {
-            data[i] = (Boolean) o;
-        }
     }
 
+    /**
+     * A column for data consisting of 16-bit unicode character values.
+     * 
+     * @author Attila Kovacs
+     */
     private static class Chars extends Column<char[]> {
 
+        /** Construct as new container for a unicode-based data column */
         Chars() {
             super(ElementType.CHAR);
         }
@@ -1234,20 +1379,16 @@ public class ColumnTable<T> implements DataTable, Cloneable {
         void setArrayElement(int i, Object o) {
             data[i] = ((char[]) o)[0];
         }
-
-        @Override
-        Character get(int i) {
-            return data[i];
-        }
-
-        @Override
-        void set(int i, Object o) {
-            data[i] = (Character) o;
-        }
     }
 
+    /**
+     * A column for data consisting of 16-bit integer values.
+     * 
+     * @author Attila Kovacs
+     */
     private static class Shorts extends Column<short[]> {
 
+        /** Construct as new container for a 16-bit integer based data column */
         Shorts() {
             super(ElementType.SHORT);
         }
@@ -1295,20 +1436,16 @@ public class ColumnTable<T> implements DataTable, Cloneable {
         void setArrayElement(int i, Object o) {
             data[i] = ((short[]) o)[0];
         }
-
-        @Override
-        Short get(int i) {
-            return data[i];
-        }
-
-        @Override
-        void set(int i, Object o) {
-            data[i] = (Short) o;
-        }
     }
 
+    /**
+     * A column for data consisting of 32-bit integer values.
+     * 
+     * @author Attila Kovacs
+     */
     private static class Integers extends Column<int[]> {
 
+        /** Construct as new container for a 32-bit integer based data column */
         Integers() {
             super(ElementType.INT);
         }
@@ -1352,20 +1489,16 @@ public class ColumnTable<T> implements DataTable, Cloneable {
         void setArrayElement(int i, Object o) {
             data[i] = ((int[]) o)[0];
         }
-
-        @Override
-        Integer get(int i) {
-            return data[i];
-        }
-
-        @Override
-        void set(int i, Object o) {
-            data[i] = (Integer) o;
-        }
     }
 
+    /**
+     * A column for data consisting of 64-bit integer values.
+     * 
+     * @author Attila Kovacs
+     */
     private static class Longs extends Column<long[]> {
 
+        /** Construct as new container for a 64-bit integer based data column */
         Longs() {
             super(ElementType.LONG);
         }
@@ -1409,20 +1542,16 @@ public class ColumnTable<T> implements DataTable, Cloneable {
         void setArrayElement(int i, Object o) {
             data[i] = ((long[]) o)[0];
         }
-
-        @Override
-        Long get(int i) {
-            return data[i];
-        }
-
-        @Override
-        void set(int i, Object o) {
-            data[i] = (Long) o;
-        }
     }
 
+    /**
+     * A column for data consisting of 32-bit floating point values.
+     * 
+     * @author Attila Kovacs
+     */
     private static class Floats extends Column<float[]> {
 
+        /** Construct as new container for a 32-bit floating-point based data column */
         Floats() {
             super(ElementType.FLOAT);
         }
@@ -1466,20 +1595,16 @@ public class ColumnTable<T> implements DataTable, Cloneable {
         void setArrayElement(int i, Object o) {
             data[i] = ((float[]) o)[0];
         }
-
-        @Override
-        Float get(int i) {
-            return data[i];
-        }
-
-        @Override
-        void set(int i, Object o) {
-            data[i] = (Float) o;
-        }
     }
 
+    /**
+     * A column for data consisting of 64-bit floating point values.
+     * 
+     * @author Attila Kovacs
+     */
     private static class Doubles extends Column<double[]> {
 
+        /** Construct as new container for a 32-bit floating-point based data column */
         Doubles() {
             super(ElementType.DOUBLE);
         }
@@ -1523,22 +1648,18 @@ public class ColumnTable<T> implements DataTable, Cloneable {
         void setArrayElement(int i, Object o) {
             data[i] = ((double[]) o)[0];
         }
-
-        @Override
-        Double get(int i) {
-            return data[i];
-        }
-
-        @Override
-        void set(int i, Object o) {
-            data[i] = (Double) o;
-        }
     }
 
+    /**
+     * A column for data consisting of Objects (primitive arrays).
+     * 
+     * @author Attila Kovacs
+     */
     private static class Generic extends Column<Object[]> {
         private Class<?> type;
         private int size;
 
+        /** Construct as new container for an object (primitive array) based data column */
         Generic(Class<?> type, int size) {
             super(ElementType.forClass(type));
             this.type = type;
@@ -1546,7 +1667,7 @@ public class ColumnTable<T> implements DataTable, Cloneable {
         }
 
         @Override
-        int elementSize() {
+        int elementCount() {
             return size;
         }
 
@@ -1594,16 +1715,6 @@ public class ColumnTable<T> implements DataTable, Cloneable {
 
         @Override
         void setArrayElement(int i, Object o) {
-            data[i] = o;
-        }
-
-        @Override
-        Object get(int i) {
-            return data[i];
-        }
-
-        @Override
-        void set(int i, Object o) {
             data[i] = o;
         }
 

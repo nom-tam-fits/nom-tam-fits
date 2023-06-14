@@ -56,8 +56,10 @@ import nom.tam.util.RandomAccess;
  */
 public final class FitsUtil {
 
+    /** Lowest ASCII value that can be in FITS strings */
     private static final int BLANK_SPACE = 0x20;
 
+    /** Highest ASCII value that can be in FITS strings */
     private static final int MAX_ASCII_VALUE = 0x7e;
 
     /**
@@ -99,6 +101,20 @@ public final class FitsUtil {
         return size + padding(size);
     }
 
+    /**
+     * Converts an array of <code>boolean</code> or {@link Boolean} values to FITS logicals (bytes containint 'T', 'F'
+     * or '\0'). The shapes and size of the resulting array matches that of the input. Values of '\0' are converted to
+     * <code>null</code> values.
+     * 
+     * @param  o a new array of <code>Boolean</code>
+     * 
+     * @return   and array of FITS logical values with the same size and shape as the input
+     * 
+     * @see      #bytesToBooleanObjects(Object)
+     * @see      #byteToBoolean(byte[])
+     * 
+     * @since    1.18
+     */
     static Object booleansToBytes(Object o) {
         if (o instanceof Boolean) {
             return FitsEncoder.byteForBoolean((Boolean) o);
@@ -140,12 +156,25 @@ public final class FitsUtil {
         throw new IllegalArgumentException("Not boolean values: " + o.getClass().getName());
     }
 
-    static Object bytesToBooleanObjects(Object o) {
-        if (o instanceof Number) {
-            return FitsDecoder.booleanObjectFor(((Number) o).intValue());
+    /**
+     * Converts an array of FITS logicals (bytes containint 'T', 'F' or '\0') to an array of {@link Boolean}. The shapes
+     * and size of the resulting array matches that of the input. Values of '\0' are converted to <code>null</code>
+     * values.
+     * 
+     * @param  bytes and array of FITS logical values
+     * 
+     * @return       a new array of <code>Boolean</code> with the same size and shape as the input
+     * 
+     * @see          #booleansToBytes(Object)
+     * 
+     * @since        1.18
+     */
+    static Object bytesToBooleanObjects(Object bytes) {
+        if (bytes instanceof Number) {
+            return FitsDecoder.booleanObjectFor(((Number) bytes).intValue());
         }
-        if (o instanceof byte[]) {
-            byte[] b = (byte[]) o;
+        if (bytes instanceof byte[]) {
+            byte[] b = (byte[]) bytes;
             Boolean[] bool = new Boolean[b.length];
             for (int i = 0; i < b.length; i++) {
                 bool[i] = FitsDecoder.booleanObjectFor(b[i]);
@@ -153,8 +182,8 @@ public final class FitsUtil {
             return bool;
         }
 
-        if (o instanceof Object[]) {
-            Object[] array = (Object[]) o;
+        if (bytes instanceof Object[]) {
+            Object[] array = (Object[]) bytes;
             Object[] bool = null;
 
             for (int i = 0; i < array.length; i++) {
@@ -168,23 +197,34 @@ public final class FitsUtil {
             return bool;
         }
 
-        throw new IllegalArgumentException("Cannot convert to boolean values: " + o.getClass().getName());
+        throw new IllegalArgumentException("Cannot convert to boolean values: " + bytes.getClass().getName());
     }
 
-    static byte[] bitsToBytes(Object o) throws IllegalArgumentException {
-        if (!o.getClass().isArray()) {
-            throw new IllegalArgumentException("Cannot convert to bits: " + o.getClass().getName());
+    /**
+     * Converts an array of booleans into the bits packed into a block of bytes.
+     * 
+     * @param  bits an array of boolean with the separated bit values.
+     * 
+     * @return      a new byte array containing the packed bits (in big-endian order)
+     * 
+     * @see         #bytesToBits(Object)
+     * 
+     * @since       1.18
+     */
+    static byte[] bitsToBytes(Object bits) throws IllegalArgumentException {
+        if (!bits.getClass().isArray()) {
+            throw new IllegalArgumentException("Cannot convert to bits: " + bits.getClass().getName());
         }
 
-        if (ArrayFuncs.getBaseClass(o) != boolean.class) {
-            throw new IllegalArgumentException("Cannot convert to bits: " + o.getClass().getName());
+        if (ArrayFuncs.getBaseClass(bits) != boolean.class) {
+            throw new IllegalArgumentException("Cannot convert to bits: " + bits.getClass().getName());
         }
 
-        boolean[] bits = (boolean[]) ArrayFuncs.flatten(o);
+        boolean[] fbits = (boolean[]) ArrayFuncs.flatten(bits);
 
-        byte[] bytes = new byte[(bits.length + Byte.SIZE - 1) / Byte.SIZE];
-        for (int i = 0; i < bits.length; i++) {
-            if (bits[i]) {
+        byte[] bytes = new byte[(fbits.length + Byte.SIZE - 1) / Byte.SIZE];
+        for (int i = 0; i < fbits.length; i++) {
+            if (fbits[i]) {
                 int pos = Byte.SIZE - i % Byte.SIZE;
                 bytes[i / Byte.SIZE] |= 1 << pos;
             }
@@ -193,6 +233,18 @@ public final class FitsUtil {
         return bytes;
     }
 
+    /**
+     * Converts the bits packed into a block of bytes into a boolean array.
+     * 
+     * @param  bytes the byte array containing the packed bits (in big-endian order)
+     * @param  count the number of bits to extract
+     * 
+     * @return       an array of boolean with the separated bit values.
+     * 
+     * @see          #bitsToBytes(Object)
+     * 
+     * @since        1.18
+     */
     static boolean[] bytesToBits(byte[] bytes, int count) {
         boolean[] bits = new boolean[count];
 
@@ -204,7 +256,20 @@ public final class FitsUtil {
         return bits;
     }
 
-    public static String extractString(byte[] bytes, int offset, int maxLen, char terminator) {
+    /**
+     * Extracts a string from a byte array at the specified offset, maximal length and termination byte. This method
+     * will not trim leading or trailing spaces.
+     * 
+     * @param  bytes      an array of ASCII bytes
+     * @param  offset     the array index at which the string begins
+     * @param  maxLen     the maximum number of bytes to extract from the position
+     * @param  terminator the byte value that terminates the string, such as 0x00.
+     * 
+     * @return            a new String with the relevant bytes, with length not exceeding the specified limit.
+     * 
+     * @since             1.18
+     */
+    static String extractString(byte[] bytes, int offset, int maxLen, char terminator) {
         if (offset >= bytes.length) {
             return "";
         }
@@ -464,6 +529,15 @@ public final class FitsUtil {
         }
     }
 
+    /**
+     * Converts a string to ASCII bytes in the specified array, padding (with 0x00) or truncating as necessary to
+     * provide the expected length at the specified arrya offset.
+     * 
+     * @param s      a string
+     * @param res    the byte array into which to extract the ASCII btes
+     * @param offset array index in the byte array at which the extracted bytes should begin
+     * @param len    the maximum number of bytes to extract, truncating or padding (with 0x00) as needed.
+     */
     private static void stringToBytes(String s, byte[] res, int offset, int len) {
         int l = 0;
         if (s != null) {
@@ -473,9 +547,23 @@ public final class FitsUtil {
                 System.arraycopy(b, 0, res, offset, l);
             }
         }
-        Arrays.fill(res, offset + l, offset + len, (byte) ' ');
+        Arrays.fill(res, offset + l, offset + len, (byte) 0);
     }
 
+    /**
+     * Converts a string to an array of ASCII bytes, padding (with 0x00) or truncating as necessary to provide the
+     * expected length.
+     * 
+     * @param  s   a string
+     * @param  len the number of bytes for the return value, also the maximum number of bytes that are extracted from
+     *                 the string
+     * 
+     * @return     a byte array of the specified length containing the truncated or padded string value.
+     * 
+     * @see        #stringToByteArray(String, int)
+     * 
+     * @since      1.18
+     */
     public static byte[] stringToByteArray(String s, int len) {
         byte[] res = new byte[len];
         stringToBytes(s, res, 0, len);
@@ -490,6 +578,8 @@ public final class FitsUtil {
      * @param  stringArray the array with Strings
      * @param  len         the number of bytes used for each string element. The string will be truncated ot padded as
      *                         necessary to fit into that size.
+     * 
+     * @see                #stringToByteArray(String, int)
      */
     public static byte[] stringsToByteArray(String[] stringArray, int len) {
         byte[] res = new byte[stringArray.length * len];

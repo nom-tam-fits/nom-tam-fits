@@ -29,6 +29,7 @@ import nom.tam.fits.Fits;
 import nom.tam.fits.FitsException;
 import nom.tam.fits.FitsFactory;
 import nom.tam.fits.FitsHeap;
+import nom.tam.fits.FitsUtil;
 import nom.tam.fits.Header;
 import nom.tam.fits.HeaderCard;
 import nom.tam.fits.PaddingException;
@@ -169,7 +170,7 @@ public class BinaryTableTest {
         Fits f = new Fits();
         f.addHDU(Fits.makeHDU(btab));
 
-        assertEquals(32, ((byte[]) ((Object[]) btab.getData().getRow(1))[2])[4]);
+        assertEquals(0, ((byte[]) ((Object[]) btab.getData().getRow(1))[2])[4]);
         assertArrayEquals(new int[] {16, 2, 19, 2, 1, 2, 2, 33}, btab.getData().getSizes());
 
         FitsOutputStream bdos = new FitsOutputStream(new FileOutputStream("target/bt3.fits"));
@@ -627,10 +628,10 @@ public class BinaryTableTest {
         String[] sarr = {"abc", " de", "f"};
         byte[] barr = {'a', 'b', 'c', ' ', 'b', 'c', 'a', 'b', ' '};
 
-        byte[] obytes = nom.tam.fits.FitsUtil.stringsToByteArray(sarr, 3);
-        assertEquals("b1", "abc def  ", new String(obytes));
+        byte[] obytes = FitsUtil.stringsToByteArray(sarr, 3);
+        assertEquals("b1", "abc def\0\0", new String(obytes));
 
-        String[] ostrings = nom.tam.fits.FitsUtil.byteArrayToStrings(barr, 3);
+        String[] ostrings = FitsUtil.byteArrayToStrings(barr, 3);
         assertEquals("slen", ostrings.length, 3);
         assertEquals("s1", "abc", ostrings[0]);
         assertEquals("s2", "bc", ostrings[1]);
