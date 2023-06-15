@@ -2053,17 +2053,17 @@ public class BinaryTable extends AbstractTableData implements Cloneable {
 
         Object wrapped = null;
 
-        if (byte.class.equals(base)) {
+        if (base == byte.class) {
             wrapped = new byte[] {value.byteValue()};
-        } else if (short.class.equals(base)) {
+        } else if (base == short.class) {
             wrapped = new short[] {value.shortValue()};
-        } else if (int.class.equals(base)) {
+        } else if (base == int.class) {
             wrapped = new int[] {value.intValue()};
-        } else if (long.class.equals(base)) {
+        } else if (base == long.class) {
             wrapped = new long[] {value.longValue()};
-        } else if (float.class.equals(base)) {
+        } else if (base == float.class) {
             wrapped = new float[] {value.floatValue()};
-        } else if (double.class.equals(base)) {
+        } else if (base == double.class) {
             wrapped = new double[] {value.doubleValue()};
         } else {
             throw new IllegalArgumentException("Not a number column: col " + col + ", type " + base.getName());

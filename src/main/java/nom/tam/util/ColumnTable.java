@@ -69,7 +69,7 @@ public class ColumnTable<T> implements DataTable, Cloneable {
     private int nrow = 0;
 
     /** The smallest dynamic allocation when addig / deleting rows */
-    private static final int MIN_CAPACITY = 64;
+    private static final int MIN_CAPACITY = 16;
 
     /**
      * Allow the client to provide opaque data.
