@@ -128,7 +128,7 @@ public class CompressedImageHDU extends BinaryTableHDU {
     /**
      * keys that are only valid in tables and should not go into the uncompressed image.
      */
-    static final List<IFitsHeader> TABLE_COLUMN_KEYS = Arrays.asList(binaryTableColumnKeyStems());
+    private static final List<IFitsHeader> TABLE_COLUMN_KEYS = Arrays.asList(binaryTableColumnKeyStems());
 
     static final Map<IFitsHeader, CompressedCard> COMPRESSED_HEADER_MAPPING = new HashMap<>();
 
