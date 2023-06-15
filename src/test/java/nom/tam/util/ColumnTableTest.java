@@ -196,7 +196,7 @@ public class ColumnTableTest {
         out.flush();
         buf.flip();
 
-        // tab.setColumn(0, Array.newInstance(elements.getClass().getComponentType(), Array.getLength(elements)));
+        tab.setColumn(0, Array.newInstance(elements.getClass().getComponentType(), Array.getLength(elements)));
         tab.read(in, 0, tab.getNRows(), 0);
         buf.clear();
 
