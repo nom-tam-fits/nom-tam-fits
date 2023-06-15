@@ -299,6 +299,8 @@ public class ColumnTable<T> implements DataTable, Cloneable {
             return;
         }
 
+        checkFlatColumn(newColumn, size);
+
         @SuppressWarnings("rawtypes")
         Column c = createColumn(newColumn.getClass().getComponentType(), size);
         c.data = wrapColumn(newColumn, size);
@@ -408,7 +410,8 @@ public class ColumnTable<T> implements DataTable, Cloneable {
         }
 
         if (len / size != nrow) {
-            throw new TableException("Size mismatch in column: " + len + ", expected " + (nrow * size));
+            throw new TableException(
+                    "Mismatches element count: " + len + ", expected " + (nrow * size) + " for " + nrow + "rows");
         }
     }
 
@@ -985,6 +988,12 @@ public class ColumnTable<T> implements DataTable, Cloneable {
          */
         Column(ElementType<?> fitsType) {
             this.fitsType = fitsType;
+            init(fitsType.primitiveClass());
+        }
+
+        @SuppressWarnings("unchecked")
+        void init(Class<?> storeType) {
+            data = (Data) Array.newInstance(storeType, 0);
         }
 
         /**
@@ -1210,9 +1219,7 @@ public class ColumnTable<T> implements DataTable, Cloneable {
          */
         Column<Data> copy(int size) {
             Column<Data> c = clone();
-            if (data != null) {
-                c.data = copyData(size);
-            }
+            c.data = copyData(size);
             return c;
         }
     }
@@ -1231,11 +1238,7 @@ public class ColumnTable<T> implements DataTable, Cloneable {
 
         @Override
         void resize(int size) {
-            if (data == null) {
-                data = new byte[size];
-            } else {
-                data = Arrays.copyOf(data, size);
-            }
+            data = Arrays.copyOf(data, size);
         }
 
         @Override
@@ -1289,11 +1292,7 @@ public class ColumnTable<T> implements DataTable, Cloneable {
 
         @Override
         void resize(int size) {
-            if (data == null) {
-                data = new boolean[size];
-            } else {
-                data = Arrays.copyOf(data, size);
-            }
+            data = Arrays.copyOf(data, size);
         }
 
         @Override
@@ -1342,11 +1341,7 @@ public class ColumnTable<T> implements DataTable, Cloneable {
 
         @Override
         void resize(int size) {
-            if (data == null) {
-                data = new char[size];
-            } else {
-                data = Arrays.copyOf(data, size);
-            }
+            data = Arrays.copyOf(data, size);
         }
 
         @Override
@@ -1399,11 +1394,7 @@ public class ColumnTable<T> implements DataTable, Cloneable {
 
         @Override
         void resize(int size) {
-            if (data == null) {
-                data = new short[size];
-            } else {
-                data = Arrays.copyOf(data, size);
-            }
+            data = Arrays.copyOf(data, size);
         }
 
         @Override
@@ -1456,11 +1447,7 @@ public class ColumnTable<T> implements DataTable, Cloneable {
 
         @Override
         void resize(int size) {
-            if (data == null) {
-                data = new int[size];
-            } else {
-                data = Arrays.copyOf(data, size);
-            }
+            data = Arrays.copyOf(data, size);
         }
 
         @Override
@@ -1509,11 +1496,7 @@ public class ColumnTable<T> implements DataTable, Cloneable {
 
         @Override
         void resize(int size) {
-            if (data == null) {
-                data = new long[size];
-            } else {
-                data = Arrays.copyOf(data, size);
-            }
+            data = Arrays.copyOf(data, size);
         }
 
         @Override
@@ -1562,11 +1545,7 @@ public class ColumnTable<T> implements DataTable, Cloneable {
 
         @Override
         void resize(int size) {
-            if (data == null) {
-                data = new float[size];
-            } else {
-                data = Arrays.copyOf(data, size);
-            }
+            data = Arrays.copyOf(data, size);
         }
 
         @SuppressFBWarnings(value = "RR_NOT_CHECKED", justification = "not exposed and never needed locally")
@@ -1615,11 +1594,7 @@ public class ColumnTable<T> implements DataTable, Cloneable {
 
         @Override
         void resize(int size) {
-            if (data == null) {
-                data = new double[size];
-            } else {
-                data = Arrays.copyOf(data, size);
-            }
+            data = Arrays.copyOf(data, size);
         }
 
         @SuppressFBWarnings(value = "RR_NOT_CHECKED", justification = "not exposed and never needed locally")
@@ -1663,11 +1638,21 @@ public class ColumnTable<T> implements DataTable, Cloneable {
         private Class<?> type;
         private int size;
 
-        /** Construct as new container for an object (primitive array) based data column */
+        /**
+         * Construct as new container for an object (primitive array) based data column
+         * 
+         * @param type the primitive type of elements this columns contains
+         * @param size the primitive array size per column entry
+         */
         Generic(Class<?> type, int size) {
             super(ElementType.forClass(type));
             this.type = type;
             this.size = size;
+        }
+
+        @Override
+        void init(Class<?> storeType) {
+            data = (Object[]) Array.newInstance(storeType, 0, 0);
         }
 
         @Override
@@ -1677,12 +1662,7 @@ public class ColumnTable<T> implements DataTable, Cloneable {
 
         @Override
         void resize(int newSize) {
-            if (data == null) {
-                Object e = Array.newInstance(type, 0);
-                data = (Object[]) Array.newInstance(e.getClass(), newSize);
-            } else {
-                data = Arrays.copyOf(data, newSize);
-            }
+            data = Arrays.copyOf(data, newSize);
         }
 
         @SuppressFBWarnings(value = "RR_NOT_CHECKED", justification = "not exposed and never needed locally")

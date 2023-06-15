@@ -150,6 +150,13 @@ public class ColumnTableTest {
         for (int i = 0; i < eSize; i++) {
             Assert.assertEquals(" 0[" + i + "]", Array.get(zeroes, i), Array.get(e, i));
         }
+
+        tab.setRow(0, new Object[] {element});
+        e = tab.getElement(0, 0);
+        for (int i = 0; i < eSize; i++) {
+            Assert.assertEquals(" [" + i + "]", Array.get(element, i), Array.get(e, i));
+        }
+
     }
 
     private void checkReadWrite(Object data) throws Exception {
@@ -267,13 +274,17 @@ public class ColumnTableTest {
         Assert.assertEquals(101, tab.getNRows());
 
         // Delete rows (but keep column)
+        tab.deleteRows(1, 100);
+        Assert.assertEquals(1, tab.getNCols());
+        Assert.assertEquals(1, tab.getNRows());
+        Assert.assertFalse(tab.isEmpty());
+
         tab.deleteAllRows();
         Assert.assertEquals(1, tab.getNCols());
         Assert.assertEquals(0, tab.getNRows());
-        Assert.assertEquals(type, tab.getElementClass(0));
         Assert.assertFalse(tab.isEmpty());
 
-        // Dele everything.
+        // Delete everything.
         tab.clear();
         Assert.assertEquals(0, tab.getNCols());
         Assert.assertEquals(0, tab.getNRows());
@@ -303,6 +314,21 @@ public class ColumnTableTest {
         Assert.assertEquals(0, tab.getNCols());
         Assert.assertEquals(0, tab.getNRows());
         Assert.assertTrue(tab.isEmpty());
+
+        tab.addColumn(type, size);
+        Assert.assertNotNull(tab.getColumn(0));
+        Assert.assertEquals(0, Array.getLength(tab.getColumn(0)));
+        ColumnTable<?> t1 = tab.copy();
+        Assert.assertNotNull(t1.getColumn(0));
+        Assert.assertEquals(0, Array.getLength(t1.getColumn(0)));
+
+        tab.clear();
+        t1.ensureSize(10);
+        tab.addColumn(Array.newInstance(type, 10 * size), size);
+        tab.addColumn(Array.newInstance(type, 10), 1);
+        Assert.assertEquals(10, tab.getNRows());
+        Assert.assertEquals(2, tab.getNCols());
+
     }
 
 }
