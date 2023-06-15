@@ -152,52 +152,59 @@ public class ColumnTableTest {
         }
     }
 
-    private void checkReadWrite(Object element) throws Exception {
+    private void checkReadWrite(Object data) throws Exception {
+        checkReadWrite(data, Array.getLength(data));
+        checkReadWrite(data, 1);
+    }
+
+    private void checkReadWrite(Object elements, int eSize) throws Exception {
         // Create a table with just the element
         ColumnTable<?> tab = new ColumnTable<>();
-        int eSize = Array.getLength(element);
-        Class<?> eType = element.getClass().getComponentType();
-        tab.addColumn(element, eSize);
+        Class<?> eType = elements.getClass().getComponentType();
 
-        ByteBuffer buf = ByteBuffer.wrap(new byte[eSize * ElementType.forClass(eType).size()]);
+        tab.addColumn(elements, eSize);
+        tab.addColumn(Array.newInstance(elements.getClass().getComponentType(), Array.getLength(elements)), eSize);
+
+        int ne = tab.getNRows() * tab.getNCols() * eSize;
+
+        int bytes = ne * ElementType.forClass(eType).size();
+
+        ByteBuffer buf = ByteBuffer.wrap(new byte[bytes]);
         FitsOutputStream out = new FitsOutputStream(new ByteBufferOutputStream(buf));
         FitsInputStream in = new FitsInputStream(new ByteBufferInputStream(buf));
 
+        // --------------------------------------------------------------------------
         // Write table
         tab.write(out);
         out.flush();
         buf.flip();
 
-        Object e = Array.newInstance(element.getClass().getComponentType(), eSize);
-        tab.setElement(0, 0, e);
+        tab.setColumn(0, Array.newInstance(elements.getClass().getComponentType(), Array.getLength(elements)));
         tab.read(in);
         buf.clear();
 
-        Assert.assertEquals(element.getClass(), e.getClass());
-        Assert.assertEquals(eSize, Array.getLength(e));
-
-        for (int i = 0; i < eSize; i++) {
-            Assert.assertEquals(" [" + i + "]", Array.get(element, i), Array.get(e, i));
+        for (int k = 0, j = 0; k < tab.getNRows(); k++) {
+            Object e = tab.getElement(k, 0);
+            for (int i = 0; i < eSize; i++, j++) {
+                Assert.assertEquals(" [" + j + "]", Array.get(elements, j), Array.get(e, i));
+            }
         }
 
+        // -------------------------------------------------------------------------
         // Write column section
-        tab.write(out, 0, 1, 0);
+        tab.write(out, 0, tab.getNRows(), 0);
         out.flush();
-
-        System.err.println(buf.position());
         buf.flip();
-        System.err.println(buf.position() + " : " + buf.limit());
 
-        e = Array.newInstance(element.getClass().getComponentType(), eSize);
-        tab.setElement(0, 0, e);
-        tab.read(in, 0, 1, 0);
+        // tab.setColumn(0, Array.newInstance(elements.getClass().getComponentType(), Array.getLength(elements)));
+        tab.read(in, 0, tab.getNRows(), 0);
         buf.clear();
 
-        Assert.assertEquals(element.getClass(), e.getClass());
-        Assert.assertEquals(eSize, Array.getLength(e));
-
-        for (int i = 0; i < eSize; i++) {
-            Assert.assertEquals(" [" + i + "]", Array.get(element, i), Array.get(e, i));
+        for (int k = 0, j = 0; k < tab.getNRows(); k++) {
+            Object e = tab.getElement(k, 0);
+            for (int i = 0; i < eSize; i++, j++) {
+                Assert.assertEquals(" [" + j + "]", Array.get(elements, j), Array.get(e, i));
+            }
         }
 
     }

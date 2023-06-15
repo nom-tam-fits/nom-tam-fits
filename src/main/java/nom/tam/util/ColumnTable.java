@@ -784,7 +784,7 @@ public class ColumnTable<T> implements DataTable, Cloneable {
                     "Mismatched size " + Array.getLength(newColumn) + ", expected " + (nrow * c.elementCount()));
         }
 
-        c.data = wrapColumn(newColumn, c.elementCount());
+        c.data = c.elementCount() > 1 ? wrapColumn(newColumn, c.elementCount()) : newColumn;
     }
 
     /**
@@ -916,9 +916,7 @@ public class ColumnTable<T> implements DataTable, Cloneable {
      * @throws IOException if the write operation failed
      */
     public void write(ArrayDataOutput out, int rowStart, int rowEnd, int col) throws IOException {
-        for (int row = rowStart; row < rowEnd; row++) {
-            columns.get(col).write(row, out);
-        }
+        columns.get(col).write(rowStart, rowEnd - rowStart, out);
     }
 
     /**
