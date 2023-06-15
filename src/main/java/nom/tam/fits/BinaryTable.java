@@ -86,6 +86,8 @@ public class BinaryTable extends AbstractTableData implements Cloneable {
     /** FITS 64-bit pointer type for variable-sized columns */
     private static final char POINTER_LONG = 'Q';
 
+    private static final int[] SCALAR_SHAPE = new int[0];
+
     /**
      * Collect all of the information we are using to describe a column into a single object.
      */
@@ -103,7 +105,7 @@ public class BinaryTable extends AbstractTableData implements Cloneable {
         private int fileSize;
 
         /** The dimensions of the column */
-        private int[] shape = new int[0];
+        private int[] shape = SCALAR_SHAPE;
 
         private int[] leadingShape;
 
@@ -169,7 +171,7 @@ public class BinaryTable extends AbstractTableData implements Cloneable {
          */
         private int[] getLeadingShape() {
             if (leadingShape == null) {
-                leadingShape = shape.length > 0 ? Arrays.copyOf(shape, shape.length - 1) : new int[0];
+                return (shape.length > 0) ? Arrays.copyOf(shape, shape.length - 1) : SCALAR_SHAPE;
             }
             return leadingShape;
         }
@@ -225,6 +227,10 @@ public class BinaryTable extends AbstractTableData implements Cloneable {
             } catch (CloneNotSupportedException e) {
                 return null;
             }
+        }
+
+        private void setScalar() {
+            shape = SCALAR_SHAPE;
         }
 
         /**
@@ -545,7 +551,7 @@ public class BinaryTable extends AbstractTableData implements Cloneable {
          * @return <code>true</code> if <code>null</code> entries are considered valid for this column.
          */
         private boolean isNullAllowed() {
-            return isString() || isLogical();
+            return isLogical();
         }
     }
 
@@ -689,7 +695,7 @@ public class BinaryTable extends AbstractTableData implements Cloneable {
                 c.fitsBase = tab.getElementClass(i);
                 c.base = c.fitsBase;
                 c.fitsCount = tab.getElementSize(i);
-                c.shape = c.fitsCount > 1 ? new int[] {c.fitsCount} : new int[0];
+                c.shape = c.fitsCount > 1 ? new int[] {c.fitsCount} : SCALAR_SHAPE;
                 c.fileSize = c.rowLen();
                 c.offset = rowLen;
                 rowLen += c.fileSize;
@@ -764,8 +770,8 @@ public class BinaryTable extends AbstractTableData implements Cloneable {
      */
     public BinaryTable(Object[][] rowColTable) throws FitsException {
         this();
-        for (int i = 0; i < rowColTable.length; i++) {
-            addRow(rowColTable[i]);
+        for (Object[] row : rowColTable) {
+            addRow(row);
         }
     }
 
@@ -790,8 +796,8 @@ public class BinaryTable extends AbstractTableData implements Cloneable {
      */
     public static BinaryTable fromRowMajor(Object[][] table) throws FitsException {
         BinaryTable tab = new BinaryTable();
-        for (int i = 0; i < table.length; i++) {
-            tab.addRow(table[i]);
+        for (Object[] row : table) {
+            tab.addRow(row);
         }
         return tab;
     }
@@ -951,55 +957,6 @@ public class BinaryTable extends AbstractTableData implements Cloneable {
     }
 
     /**
-     * Convers a row-major table array to a column-major table array, by transposing the elements
-     * 
-     * @param  data a table of row-major elements (row, col indexed)
-     * 
-     * @return      the transposed table of column major elements (col, row indexed)
-     */
-    private static Object[] toColumnMajor(Object[][] data) {
-        int rows = data.length;
-        int cols = data[0].length;
-
-        Object[] t = new Object[cols];
-
-        for (int j = 0; j < cols; j++) {
-            Object element = data[0][j];
-            Class<?> componentType = element.getClass().getComponentType();
-
-            for (int i = 1; i < rows; i++) {
-                // If elements in rows differ, then the argument must not be in row-major form.
-                if (!element.getClass().equals(data[i][j].getClass())) {
-                    return data;
-                }
-            }
-
-            if (componentType != null && componentType.isPrimitive() && Array.getLength(element) == 1) {
-                for (int i = 1; i < rows; i++) {
-                    // If scalars of different type, then the argument must not be in row-major form.
-                    if (!componentType.equals(data[i][j].getClass().getComponentType())) {
-                        return data;
-                    }
-                }
-
-                // scalar primitive
-                t[j] = Array.newInstance(componentType, rows);
-                for (int i = 0; i < rows; i++) {
-                    Array.set(t[j], i, Array.get(data[i][j], 0));
-                }
-            } else {
-                t[j] = Array.newInstance(element.getClass(), rows);
-                Object[] colData = (Object[]) t[j];
-                for (int i = 0; i < rows; i++) {
-                    colData[i] = data[i][j];
-                }
-            }
-        }
-
-        return t;
-    }
-
-    /**
      * Adds a column of complex values stored as the specified decimal type of components in the FITS. While you can
      * also use {@link #addColumn(Object)} to add complex values, that method will always add them as 64-bit
      * double-precision values. So, this method is provided to allow users more control over how they want their complex
@@ -1078,7 +1035,7 @@ public class BinaryTable extends AbstractTableData implements Cloneable {
 
             // Element dimension without the leading row dimension...
             if (dim.length <= 1) {
-                c.shape = new int[0];
+                c.setScalar();
             } else {
                 c.shape = new int[dim.length - 1];
                 System.arraycopy(dim, 1, c.shape, 0, c.shape.length);
@@ -1160,8 +1117,9 @@ public class BinaryTable extends AbstractTableData implements Cloneable {
             o = Array.newInstance(c.pointerClass(), array.length * 2);
             for (int i = 0; i < array.length; i++) {
                 if (array[i] instanceof Object[] && !c.warnedFlatten) {
-                    LOG.warning("Entries will be stored as 1D arrays in variable-sized columns (got " + array[i].getClass()
-                            + "Entry shape(s) and null entries (if any) will be lost.");
+                    LOG.warning("Table entries of " + array[i].getClass()
+                            + " will be stored as 1D arrays in variable-length columns. "
+                            + "Array shape(s) and intermittent null entries (if any) will be lost.");
                     c.warnedFlatten = true;
                 }
                 Object e = javaToFits1D(c, array[i]);
@@ -2598,7 +2556,7 @@ public class BinaryTable extends AbstractTableData implements Cloneable {
         }
         if (dims == null) {
             if (size == 1) {
-                dims = new int[0]; // Marks this as a scalar column
+                dims = SCALAR_SHAPE; // Marks this as a scalar column
             } else {
                 dims = new int[] {size};
             }

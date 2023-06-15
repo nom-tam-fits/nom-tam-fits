@@ -159,6 +159,10 @@ public class ColumnTable<T> implements DataTable, Cloneable {
         if (eType.isArray()) {
             int len = Array.getLength(newColumn);
 
+            if (len == 0) {
+                return 0;
+            }
+
             // Check that we match existing table rows
             if (!isEmpty() && len != nrow) {
                 throw new TableException("Mismatched number of rows: " + len + ", expected " + nrow);
@@ -615,16 +619,8 @@ public class ColumnTable<T> implements DataTable, Cloneable {
     @Override
     public Object getColumn(int col) {
         Column<?> c = columns.get(col);
-        if (c.elementCount() != 1) {
-            int n = nrow * c.elementCount();
-            Object array = Array.newInstance(c.baseType(), n);
-            int offset = 0;
-            for (int i = 0; offset < n; i++, offset += c.elementCount()) {
-                System.arraycopy(c.getArrayElement(i), 0, array, offset, c.elementCount());
-            }
-            return array;
-        }
-        return getWrappedColumn(col);
+        c.trim(nrow);
+        return c.getFlatData();
     }
 
     /**
@@ -1000,6 +996,16 @@ public class ColumnTable<T> implements DataTable, Cloneable {
          * @return the array that holds data for this column.
          */
         Data getData() {
+            return data;
+        }
+
+        /**
+         * Returns the data a a 1D array containing all elements for this column. It may be a primitive array or an
+         * object array.
+         * 
+         * @return the array that holds data for this column.
+         */
+        Object getFlatData() {
             return data;
         }
 
@@ -1726,6 +1732,16 @@ public class ColumnTable<T> implements DataTable, Cloneable {
                 if (data[i] != null) {
                     System.arraycopy(data[i], 0, array[i], 0, size);
                 }
+            }
+            return array;
+        }
+
+        @Override
+        Object getFlatData() {
+            Object array = Array.newInstance(type, data.length * size);
+            int offset = 0;
+            for (int i = 0; i < data.length; i++, offset += size) {
+                System.arraycopy(data[i], 0, array, offset, size);
             }
             return array;
         }

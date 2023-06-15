@@ -592,22 +592,22 @@ public final class ArrayFuncs {
 
     /**
      * Checks that an array has a regular structure, with a consistent shape and element types, and returns the regular
-     * array size or else throws an exeption. Optionally, it will also throw an exception if some (but not) all elements
-     * are <code>null</code>.
+     * array size or else throws an exeption. Optionally, it will also throw an exception if any or all all elements are
+     * <code>null</code>.
      * 
      * @param  o                        An object
-     * @param  allowSomeNulls           If we should throw an exception if some (but not all) element are
+     * @param  allowNulls               If we should throw an exception if some (but not all) element are
      *                                      <code>null</code>.
      * 
      * @return                          the regular shape of the array with sizes along each array dimension.
      * 
-     * @throws IllegalArgumentException if the array contains mismatched elements in size, or some (but not all)
-     *                                      <code>null</code> values.
+     * @throws IllegalArgumentException if the array contains mismatched elements in size, or contains <code>null</code>
+     *                                      values.
      * @throws ClassCastException       if the array contain a heterogeneous collection of different element types.
      * 
      * @since                           1.18
      */
-    public static int[] assertRegularArray(Object o, boolean allowSomeNulls)
+    public static int[] assertRegularArray(Object o, boolean allowNulls)
             throws IllegalArgumentException, ClassCastException {
         if (o == null) {
             return new int[] {0};
@@ -637,13 +637,13 @@ public final class ArrayFuncs {
             Object e = Array.get(o, i);
 
             if (e == null) {
-                if (first != null && !allowSomeNulls) {
+                if (first != null && !allowNulls) {
                     throw new IllegalArgumentException("Some (but not all) entries are null");
                 }
                 continue;
             }
 
-            if (first == null && !allowSomeNulls) {
+            if (first == null && !allowNulls) {
                 throw new IllegalArgumentException("Some (but not all) entries are null");
             }
 
@@ -652,7 +652,7 @@ public final class ArrayFuncs {
             }
 
             if (e.getClass().isArray()) {
-                int[] sub = assertRegularArray(e, allowSomeNulls);
+                int[] sub = assertRegularArray(e, allowNulls);
 
                 if (sub.length + 1 != dim.length) {
                     throw new IllegalArgumentException("Mismatched component dimensions");
@@ -662,6 +662,10 @@ public final class ArrayFuncs {
                     throw new IllegalArgumentException("Mismatched component size");
                 }
             }
+        }
+
+        if (first == null && !allowNulls) {
+            throw new IllegalArgumentException("All entries are null");
         }
 
         return dim;
