@@ -474,6 +474,10 @@ public class ColumnTable<T> implements DataTable, Cloneable {
             throw new TableException("Column out of bounds: col=" + col + ", size=" + columns.size());
         }
         columns.remove(col);
+
+        if (isEmpty()) {
+            nrow = 0;
+        }
     }
 
     /**
@@ -507,7 +511,7 @@ public class ColumnTable<T> implements DataTable, Cloneable {
         }
         columns = c;
 
-        if (c.isEmpty()) {
+        if (isEmpty()) {
             nrow = 0;
         }
     }
@@ -551,6 +555,10 @@ public class ColumnTable<T> implements DataTable, Cloneable {
      * @see                   #deleteRow(int)
      */
     public void deleteRows(int from, int length) throws TableException {
+        if (length == 0) {
+            return;
+        }
+
         if (from < 0 || length < 0 || from + length > nrow) {
             throw new TableException("Row range out of bounds: start=" + from + ", len=" + length + ", size=" + nrow);
         }
@@ -660,7 +668,7 @@ public class ColumnTable<T> implements DataTable, Cloneable {
 
     @Override
     public Object getElement(int row, int col) {
-        if (row > nrow) {
+        if (row < 0 || row >= nrow) {
             throw new ArrayIndexOutOfBoundsException(row);
         }
         return columns.get(col).getArrayElement(row);
@@ -690,7 +698,7 @@ public class ColumnTable<T> implements DataTable, Cloneable {
 
     @Override
     public Object getRow(int row) {
-        if (row > nrow) {
+        if (row < 0 || row >= nrow) {
             throw new ArrayIndexOutOfBoundsException(row);
         }
 
@@ -784,6 +792,9 @@ public class ColumnTable<T> implements DataTable, Cloneable {
     @SuppressWarnings("unchecked")
     @Override
     public void setColumn(int col, Object newColumn) throws TableException {
+        if (newColumn == null) {
+            throw new TableException("Cannot set column data to null");
+        }
 
         if (!newColumn.getClass().isArray()) {
             throw new TableException("Not an array: " + newColumn.getClass().getName());
@@ -856,6 +867,9 @@ public class ColumnTable<T> implements DataTable, Cloneable {
 
     @Override
     public void setElement(int row, int col, Object x) throws TableException {
+        if (row < 0 || row >= nrow) {
+            throw new ArrayIndexOutOfBoundsException(row);
+        }
         Column<?> c = columns.get(col);
         c.checkEntry(x);
         c.setArrayElement(row, x);
@@ -878,7 +892,7 @@ public class ColumnTable<T> implements DataTable, Cloneable {
 
     @Override
     public void setRow(int row, Object data) throws TableException {
-        if (row > nrow) {
+        if (row < 0 || row >= nrow) {
             throw new ArrayIndexOutOfBoundsException(row);
         }
 
@@ -1078,7 +1092,7 @@ public class ColumnTable<T> implements DataTable, Cloneable {
          * @return the number of rows allocated at present
          */
         int capacity() {
-            return data == null ? 0 : Array.getLength(data);
+            return Array.getLength(data);
         }
 
         void deleteRows(int from, int len, int size, int maxCapacity) {
