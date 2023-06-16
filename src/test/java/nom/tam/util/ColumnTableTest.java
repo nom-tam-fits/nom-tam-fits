@@ -189,16 +189,24 @@ public class ColumnTableTest {
     }
 
     @Test(expected = TableException.class)
-    public void checkAddMismatchedTypeWrappedColumn() throws Exception {
+    public void checkAddMismatchedTypesInWrappedColumn() throws Exception {
         ColumnTable<?> tab = new ColumnTable<>();
         tab.addWrappedColumn(new Object[] {new int[] {1}, new float[] {2}});
         // exception
     }
 
     @Test(expected = TableException.class)
-    public void checkAddMismatchedSizeWrappedColumn() throws Exception {
+    public void checkAddMismatchedSizesInWrappedColumn() throws Exception {
         ColumnTable<?> tab = new ColumnTable<>();
         tab.addWrappedColumn(new Object[] {new int[] {1}, new int[] {3, 4}});
+        // exception
+    }
+
+    @Test(expected = TableException.class)
+    public void checkAddMismatchedRowsWrappedColumn() throws Exception {
+        ColumnTable<?> tab = new ColumnTable<>();
+        tab.addWrappedColumn(new Object[] {new int[] {1}});
+        tab.addWrappedColumn(new Object[] {new int[] {1}, new int[] {2}});
         // exception
     }
 
@@ -207,6 +215,20 @@ public class ColumnTableTest {
         ColumnTable<?> tab = new ColumnTable<>();
         tab.addWrappedColumn(new Object[] {new int[] {1}, null});
         // exception
+    }
+
+    @Test(expected = TableException.class)
+    public void checkAddFirstNullInWrappedColumn() throws Exception {
+        ColumnTable<?> tab = new ColumnTable<>();
+        tab.addWrappedColumn(new Object[] {null, new int[] {1}});
+        // exception
+    }
+
+    public void checkAddEmptyWrappedColumn() throws Exception {
+        ColumnTable<?> tab = new ColumnTable<>();
+        tab.addWrappedColumn(new Object[] {new int[0]});
+        Assert.assertEquals(1, tab.getNRows());
+        Assert.assertEquals(0, tab.getElementSize(0));
     }
 
     @Test(expected = TableException.class)
@@ -360,7 +382,7 @@ public class ColumnTableTest {
     }
 
     @Test(expected = TableException.class)
-    public void checkSetColumnMismatchedSize() throws Exception {
+    public void checkSetColumnMismatchedRows() throws Exception {
         ColumnTable<?> tab = new ColumnTable<>();
         tab.addColumn(new int[] {1, 2}, 1);
         tab.setColumn(0, new int[] {1});
@@ -384,14 +406,14 @@ public class ColumnTableTest {
     public void checkSetWrappedColumnMismatchedRows() throws Exception {
         ColumnTable<?> tab = new ColumnTable<>();
         tab.addColumn(new int[] {1, 2}, 1);
-        tab.setColumn(0, new int[][] {{1}});
+        tab.setWrappedColumn(0, new int[][] {{1}});
     }
 
     @Test(expected = TableException.class)
     public void checkSetWrappedColumnMismatchedElementSize() throws Exception {
         ColumnTable<?> tab = new ColumnTable<>();
         tab.addColumn(new int[] {1, 2}, 1);
-        tab.setColumn(0, new int[][] {{1, 2}, {3}});
+        tab.setWrappedColumn(0, new int[][] {{1, 2}, {3}});
     }
 
     @Test(expected = IndexOutOfBoundsException.class)
@@ -589,6 +611,8 @@ public class ColumnTableTest {
         }
         Assert.assertTrue(success);
 
+        in.close();
+        out.close();
     }
 
     private void check(Class<?> type) throws Exception {
@@ -596,6 +620,7 @@ public class ColumnTableTest {
         checkAccess(type, 2, 10);
     }
 
+    @SuppressWarnings("deprecation")
     private void checkAccess(Class<?> type, int size, int rows) throws Exception {
         Object data = Array.newInstance(type, size * rows);
         ColumnTable<?> tab = new ColumnTable<>();

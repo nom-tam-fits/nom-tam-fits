@@ -142,8 +142,8 @@ public class ColumnTable<T> implements DataTable, Cloneable {
     }
 
     /**
-     * Checks a column data, in which elements have been already wrapped, such as the leading dimension of the array
-     * corresponds to rows. Each top-level element is holds data for a given row.
+     * Checks a column data, in which elements have been already wrapped to ensure that the column is self consistent,
+     * containing
      * 
      * @param  newColumn      An array holding the column data with each entry corresponding to hte data for a row.
      * 
@@ -163,15 +163,19 @@ public class ColumnTable<T> implements DataTable, Cloneable {
                 return 0;
             }
 
-            // Check that we match existing table rows
-            if (!isEmpty() && len != nrow) {
-                throw new TableException("Mismatched number of rows: " + len + ", expected " + nrow);
+            // Check that all rows are the same type and same size
+            Object first = Array.get(newColumn, 0);
+            if (first == null) {
+                throw new TableException("Unexpected null entry at index 0");
             }
 
-            // Check that all rows are the same type and same size
             eCount = Array.getLength(Array.get(newColumn, 0));
             for (int i = 1; i < len; i++) {
                 Object e = Array.get(newColumn, i);
+
+                if (e == null) {
+                    throw new TableException("Unexpected null entry at index " + i);
+                }
 
                 if (!eType.equals(e.getClass())) {
                     throw new TableException("Mismatched data type in row " + i + ": " + e.getClass().getName()
@@ -780,12 +784,10 @@ public class ColumnTable<T> implements DataTable, Cloneable {
      * 
      * @see                 #write(ArrayDataOutput)
      */
-    public void read(ArrayDataInput in) throws IOException {
+    public void read(ArrayDataInput in) throws EOFException, IOException {
         for (int row = 0; row < nrow; row++) {
             for (Column<?> c : columns) {
-                if (c.read(row, in) < 0) {
-                    throw new EOFException();
-                }
+                c.read(row, in);
             }
         }
     }
@@ -1101,14 +1103,15 @@ public class ColumnTable<T> implements DataTable, Cloneable {
         /**
          * Reads a single table entry from an input
          * 
-         * @param  index       the zero-based row index of the column entry
-         * @param  in          the input to read from
+         * @param  index        the zero-based row index of the column entry
+         * @param  in           the input to read from
          * 
-         * @return             the number of bytes read from the input.
+         * @return              the number of bytes read from the input.
          * 
-         * @throws IOException if the entry could not be read
+         * @throws EOFException if already at the end of file.
+         * @throws IOException  if the entry could not be read
          */
-        abstract int read(int index, ArrayDataInput in) throws IOException;
+        abstract int read(int index, ArrayDataInput in) throws EOFException, IOException;
 
         /**
          * Writes a since table entry to an output
@@ -1123,15 +1126,16 @@ public class ColumnTable<T> implements DataTable, Cloneable {
         /**
          * Reads a sequence of consecutive table entries from an input
          * 
-         * @param  from        the zero-based row index of the first column entry to read
-         * @param  n           the number of consecutive rows to read
-         * @param  in          the input to read from
+         * @param  from         the zero-based row index of the first column entry to read
+         * @param  n            the number of consecutive rows to read
+         * @param  in           the input to read from
          * 
-         * @return             the number of bytes read from the input.
+         * @return              the number of bytes read from the input.
          * 
-         * @throws IOException if the entry could not be read
+         * @throws EOFException if already at the end of file.
+         * @throws IOException  if the entry could not be read
          */
-        abstract int read(int from, int n, ArrayDataInput in) throws IOException;
+        abstract int read(int from, int n, ArrayDataInput in) throws EOFException, IOException;
 
         /**
          * Writes a sequence of consecutive table entries to an output
