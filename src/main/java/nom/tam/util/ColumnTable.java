@@ -773,16 +773,19 @@ public class ColumnTable<T> implements DataTable, Cloneable {
     /**
      * Reads the table's data from the input, in row-major format
      *
-     * @param  in          The input to read from.
+     * @param  in           The input to read from.
      *
-     * @throws IOException if the reading failed
+     * @throws EOFException is already at the end of file.
+     * @throws IOException  if the reading failed
      * 
-     * @see                #write(ArrayDataOutput)
+     * @see                 #write(ArrayDataOutput)
      */
     public void read(ArrayDataInput in) throws IOException {
         for (int row = 0; row < nrow; row++) {
             for (Column<?> c : columns) {
-                c.read(row, in);
+                if (c.read(row, in) < 0) {
+                    throw new EOFException();
+                }
             }
         }
     }
@@ -947,14 +950,15 @@ public class ColumnTable<T> implements DataTable, Cloneable {
     /**
      * Reads a column of a table from a
      *
-     * @param  in          The input stream to read from.
-     * @param  rowStart    first row to read
-     * @param  rowEnd      the exclusive ending row index (not read)
-     * @param  col         the zero-based column index to read.
+     * @param  in           The input stream to read from.
+     * @param  rowStart     first row to read
+     * @param  rowEnd       the exclusive ending row index (not read)
+     * @param  col          the zero-based column index to read.
      *
-     * @throws IOException if the reading failed
+     * @throws EOFException is already at the end of file.
+     * @throws IOException  if the reading failed
      */
-    public void read(ArrayDataInput in, int rowStart, int rowEnd, int col) throws IOException {
+    public void read(ArrayDataInput in, int rowStart, int rowEnd, int col) throws EOFException, IOException {
         columns.get(col).read(rowStart, rowEnd - rowStart, in);
     }
 
@@ -1100,9 +1104,11 @@ public class ColumnTable<T> implements DataTable, Cloneable {
          * @param  index       the zero-based row index of the column entry
          * @param  in          the input to read from
          * 
+         * @return             the number of bytes read from the input.
+         * 
          * @throws IOException if the entry could not be read
          */
-        abstract void read(int index, ArrayDataInput in) throws IOException;
+        abstract int read(int index, ArrayDataInput in) throws IOException;
 
         /**
          * Writes a since table entry to an output
@@ -1121,9 +1127,11 @@ public class ColumnTable<T> implements DataTable, Cloneable {
          * @param  n           the number of consecutive rows to read
          * @param  in          the input to read from
          * 
+         * @return             the number of bytes read from the input.
+         * 
          * @throws IOException if the entry could not be read
          */
-        abstract void read(int from, int n, ArrayDataInput in) throws IOException;
+        abstract int read(int from, int n, ArrayDataInput in) throws IOException;
 
         /**
          * Writes a sequence of consecutive table entries to an output
@@ -1260,12 +1268,13 @@ public class ColumnTable<T> implements DataTable, Cloneable {
         }
 
         @Override
-        void read(int index, ArrayDataInput in) throws IOException {
+        int read(int index, ArrayDataInput in) throws IOException {
             int i = in.read();
             if (i < 0) {
                 throw new EOFException();
             }
             data[index] = (byte) i;
+            return 1;
         }
 
         @Override
@@ -1274,10 +1283,12 @@ public class ColumnTable<T> implements DataTable, Cloneable {
         }
 
         @Override
-        void read(int from, int n, ArrayDataInput in) throws IOException {
-            if (in.read(data, from, n) < 0) {
+        int read(int from, int n, ArrayDataInput in) throws IOException {
+            int got = in.read(data, from, n);
+            if (got < 0) {
                 throw new EOFException();
             }
+            return -1;
         }
 
         @Override
@@ -1315,8 +1326,9 @@ public class ColumnTable<T> implements DataTable, Cloneable {
         }
 
         @Override
-        void read(int index, ArrayDataInput in) throws IOException {
+        int read(int index, ArrayDataInput in) throws IOException {
             data[index] = in.readBoolean();
+            return 1;
         }
 
         @Override
@@ -1325,10 +1337,8 @@ public class ColumnTable<T> implements DataTable, Cloneable {
         }
 
         @Override
-        void read(int from, int n, ArrayDataInput in) throws IOException {
-            if (in.read(data, from, n) < 0) {
-                throw new EOFException();
-            }
+        int read(int from, int n, ArrayDataInput in) throws IOException {
+            return in.read(data, from, n);
         }
 
         @Override
@@ -1365,12 +1375,13 @@ public class ColumnTable<T> implements DataTable, Cloneable {
         }
 
         @Override
-        void read(int index, ArrayDataInput in) throws IOException {
+        int read(int index, ArrayDataInput in) throws IOException {
             int i = in.readUnsignedShort();
             if (i < 0) {
                 throw new EOFException();
             }
             data[index] = (char) i;
+            return Short.BYTES;
         }
 
         @Override
@@ -1380,8 +1391,8 @@ public class ColumnTable<T> implements DataTable, Cloneable {
 
         @SuppressFBWarnings(value = "RR_NOT_CHECKED", justification = "not exposed and never needed locally")
         @Override
-        void read(int from, int n, ArrayDataInput in) throws IOException {
-            in.read(data, from, n);
+        int read(int from, int n, ArrayDataInput in) throws IOException {
+            return in.read(data, from, n);
         }
 
         @Override
@@ -1418,12 +1429,13 @@ public class ColumnTable<T> implements DataTable, Cloneable {
         }
 
         @Override
-        void read(int index, ArrayDataInput in) throws IOException {
+        int read(int index, ArrayDataInput in) throws IOException {
             int i = in.readUnsignedShort();
             if (i < 0) {
                 throw new EOFException();
             }
             data[index] = (short) i;
+            return Short.BYTES;
         }
 
         @Override
@@ -1433,8 +1445,8 @@ public class ColumnTable<T> implements DataTable, Cloneable {
 
         @SuppressFBWarnings(value = "RR_NOT_CHECKED", justification = "not exposed and never needed locally")
         @Override
-        void read(int from, int n, ArrayDataInput in) throws IOException {
-            in.read(data, from, n);
+        int read(int from, int n, ArrayDataInput in) throws IOException {
+            return in.read(data, from, n);
         }
 
         @Override
@@ -1471,8 +1483,9 @@ public class ColumnTable<T> implements DataTable, Cloneable {
         }
 
         @Override
-        void read(int index, ArrayDataInput in) throws IOException {
+        int read(int index, ArrayDataInput in) throws IOException {
             data[index] = in.readInt();
+            return Integer.BYTES;
         }
 
         @Override
@@ -1481,10 +1494,8 @@ public class ColumnTable<T> implements DataTable, Cloneable {
         }
 
         @Override
-        void read(int from, int n, ArrayDataInput in) throws IOException {
-            if (in.read(data, from, n) < 0) {
-                throw new EOFException();
-            }
+        int read(int from, int n, ArrayDataInput in) throws IOException {
+            return in.read(data, from, n);
         }
 
         @Override
@@ -1521,8 +1532,9 @@ public class ColumnTable<T> implements DataTable, Cloneable {
         }
 
         @Override
-        void read(int index, ArrayDataInput in) throws IOException {
+        int read(int index, ArrayDataInput in) throws IOException {
             data[index] = in.readLong();
+            return Long.BYTES;
         }
 
         @Override
@@ -1531,10 +1543,8 @@ public class ColumnTable<T> implements DataTable, Cloneable {
         }
 
         @Override
-        void read(int from, int n, ArrayDataInput in) throws IOException {
-            if (in.read(data, from, n) < 0) {
-                throw new EOFException();
-            }
+        int read(int from, int n, ArrayDataInput in) throws IOException {
+            return in.read(data, from, n);
         }
 
         @Override
@@ -1571,8 +1581,9 @@ public class ColumnTable<T> implements DataTable, Cloneable {
         }
 
         @Override
-        void read(int index, ArrayDataInput in) throws IOException {
+        int read(int index, ArrayDataInput in) throws IOException {
             data[index] = in.readFloat();
+            return Float.BYTES;
         }
 
         @Override
@@ -1581,10 +1592,8 @@ public class ColumnTable<T> implements DataTable, Cloneable {
         }
 
         @Override
-        void read(int from, int n, ArrayDataInput in) throws IOException {
-            if (in.read(data, from, n) < 0) {
-                throw new EOFException();
-            }
+        int read(int from, int n, ArrayDataInput in) throws IOException {
+            return in.read(data, from, n);
         }
 
         @Override
@@ -1621,8 +1630,9 @@ public class ColumnTable<T> implements DataTable, Cloneable {
         }
 
         @Override
-        void read(int index, ArrayDataInput in) throws IOException {
+        int read(int index, ArrayDataInput in) throws IOException {
             data[index] = in.readDouble();
+            return Double.BYTES;
         }
 
         @Override
@@ -1631,10 +1641,8 @@ public class ColumnTable<T> implements DataTable, Cloneable {
         }
 
         @Override
-        void read(int from, int n, ArrayDataInput in) throws IOException {
-            if (in.read(data, from, n) < 0) {
-                throw new EOFException();
-            }
+        int read(int from, int n, ArrayDataInput in) throws IOException {
+            return in.read(data, from, n);
         }
 
         @Override
@@ -1690,8 +1698,9 @@ public class ColumnTable<T> implements DataTable, Cloneable {
         }
 
         @Override
-        void read(int index, ArrayDataInput in) throws IOException {
+        int read(int index, ArrayDataInput in) throws IOException {
             in.readArrayFully(data[index]);
+            return size * getElementType().size();
         }
 
         @Override
@@ -1700,11 +1709,12 @@ public class ColumnTable<T> implements DataTable, Cloneable {
         }
 
         @Override
-        void read(int from, int n, ArrayDataInput in) throws IOException {
+        int read(int from, int n, ArrayDataInput in) throws IOException {
             int to = from + n;
             for (int i = from; i < to; i++) {
                 in.readArrayFully(data[i]);
             }
+            return n * size * getElementType().size();
         }
 
         @Override

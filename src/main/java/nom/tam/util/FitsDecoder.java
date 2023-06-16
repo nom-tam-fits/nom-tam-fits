@@ -305,7 +305,7 @@ public class FitsDecoder extends InputDecoder {
         byte[] ascii = new byte[length];
         length = read(ascii, 0, length);
 
-        if (length <= 0) {
+        if (length < 0) {
             throw new EOFException();
         }
 
@@ -338,7 +338,7 @@ public class FitsDecoder extends InputDecoder {
         byte[] ascii = new byte[length];
         length = read(ascii, 0, length);
 
-        if (length <= 0) {
+        if (length < 0) {
             throw new EOFException();
         }
 

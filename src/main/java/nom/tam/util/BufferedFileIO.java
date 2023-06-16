@@ -421,11 +421,12 @@ class BufferedFileIO implements InputReader, OutputWriter, Flushable, Closeable 
      * Reads bytes to completely fill the supplied buffer. If not enough bytes are avaialable in the file to fully fill
      * the buffer, an {@link EOFException} will be thrown.
      *
-     * @param  b           the buffer
+     * @param  b            the buffer
      *
-     * @throws IOException if there was an IO error before the buffer could be fully populated.
+     * @throws EOFException if already at the end of file.
+     * @throws IOException  if there was an IO error before the buffer could be fully populated.
      */
-    public final synchronized void readFully(byte[] b) throws IOException {
+    public final synchronized void readFully(byte[] b) throws EOFException, IOException {
         readFully(b, 0, b.length);
     }
 
@@ -434,13 +435,14 @@ class BufferedFileIO implements InputReader, OutputWriter, Flushable, Closeable 
      * If not enough bytes are avaialable in the file to deliver the reqauested number of bytes the buffer, an
      * {@link EOFException} will be thrown.
      *
-     * @param  b           the buffer
-     * @param  off         the buffer index at which to start reading data
-     * @param  len         the total number of bytes to read.
+     * @param  b            the buffer
+     * @param  off          the buffer index at which to start reading data
+     * @param  len          the total number of bytes to read.
      *
-     * @throws IOException if there was an IO error before the requested number of bytes could all be read.
+     * @throws EOFException if already at the end of file.
+     * @throws IOException  if there was an IO error before the requested number of bytes could all be read.
      */
-    public synchronized void readFully(byte[] b, int off, int len) throws IOException {
+    public synchronized void readFully(byte[] b, int off, int len) throws EOFException, IOException {
         while (len > 0) {
             int n = read(b, off, len);
             if (n < 0) {

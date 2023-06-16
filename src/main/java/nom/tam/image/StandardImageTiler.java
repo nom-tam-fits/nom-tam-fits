@@ -1,5 +1,7 @@
 package nom.tam.image;
 
+import java.io.EOFException;
+
 /*
  * #%L
  * nom.tam FITS library
@@ -161,29 +163,34 @@ public abstract class StandardImageTiler implements ImageTiler {
      * @param  segment      The number of elements to be read for this segment.
      * @param  step         The number of jumps until the next read. Only works for streaming out data.
      *
+     * @throws EOFException if already at the end of file / stream
      * @throws IOException  if the underlying stream failed
      */
-    @SuppressFBWarnings(value = "RR_NOT_CHECKED", justification = "this read will never return less than the requested length")
     protected void fillFileData(Object output, long delta, int outputOffset, int segment, int step) throws IOException {
         if (output instanceof ArrayDataOutput) {
             this.fillFileData((ArrayDataOutput) output, delta, segment, step);
         } else {
             randomAccessFile.seek(fileOffset + delta);
+            int got = 0;
 
             if (base == float.class) {
-                randomAccessFile.read((float[]) output, outputOffset, segment);
+                got = randomAccessFile.read((float[]) output, outputOffset, segment);
             } else if (base == int.class) {
-                randomAccessFile.read((int[]) output, outputOffset, segment);
+                got = randomAccessFile.read((int[]) output, outputOffset, segment);
             } else if (base == short.class) {
-                randomAccessFile.read((short[]) output, outputOffset, segment);
+                got = randomAccessFile.read((short[]) output, outputOffset, segment);
             } else if (base == double.class) {
-                randomAccessFile.read((double[]) output, outputOffset, segment);
+                got = randomAccessFile.read((double[]) output, outputOffset, segment);
             } else if (base == byte.class) {
-                randomAccessFile.read((byte[]) output, outputOffset, segment);
+                got = randomAccessFile.read((byte[]) output, outputOffset, segment);
             } else if (base == long.class) {
-                randomAccessFile.read((long[]) output, outputOffset, segment);
+                got = randomAccessFile.read((long[]) output, outputOffset, segment);
             } else {
                 throw new IOException("Invalid type for tile array");
+            }
+
+            if (got < 0) {
+                throw new EOFException();
             }
         }
     }
