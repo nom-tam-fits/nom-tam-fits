@@ -315,7 +315,18 @@ public class ColumnTable<T> implements DataTable, Cloneable {
      * @return the standard capacity (number of rows) to which we'd want to grow to contain another table row.
      */
     private int nextLargerCapacity() {
-        if (nrow + 1 < MIN_CAPACITY) {
+        return nextLargerCapacity(nrow);
+    }
+
+    /**
+     * Returns the next standard table capacity step that will allow adding at least one more row to the table.
+     * 
+     * @param  rows The number of rows we should be able to store.
+     * 
+     * @return      the standard capacity (number of rows) to which we'd want to grow to contain another table row.
+     */
+    private int nextLargerCapacity(int rows) {
+        if (rows < MIN_CAPACITY) {
             return MIN_CAPACITY;
         }
         // Predictable doubling beyond the minimum size...
@@ -355,6 +366,10 @@ public class ColumnTable<T> implements DataTable, Cloneable {
      * @see                   #ensureSize(int)
      */
     public void addRow(Object[] row) throws TableException {
+        if (row == null) {
+            throw new TableException("Cannot add null row");
+        }
+
         if (nrow == Integer.MAX_VALUE) {
             throw new TableException("Table has reached its capacity limit");
         }
@@ -446,17 +461,17 @@ public class ColumnTable<T> implements DataTable, Cloneable {
     /**
      * Deletes a column from this table.
      * 
-     * @param  col                       the 0-based column index.
+     * @param  col            the 0-based column index.
      * 
-     * @throws IndexOutOfBoundsException if the column index is out of bounds
+     * @throws TableException if the column index is out of bounds
      * 
-     * @see                              #deleteColumns(int, int)
+     * @see                   #deleteColumns(int, int)
      * 
-     * @since                            1.18
+     * @since                 1.18
      */
-    public void deleteColumn(int col) throws IndexOutOfBoundsException {
-        if (col < 0 || col > columns.size()) {
-            throw new IndexOutOfBoundsException("Column delete out of bounds: col=" + col + ", size=" + columns.size());
+    public void deleteColumn(int col) throws TableException {
+        if (col < 0 || col >= columns.size()) {
+            throw new TableException("Column out of bounds: col=" + col + ", size=" + columns.size());
         }
         columns.remove(col);
     }
@@ -478,7 +493,7 @@ public class ColumnTable<T> implements DataTable, Cloneable {
 
         if (start < 0 || len < 0 || start + len > columns.size()) {
             throw new TableException(
-                    "Column delete out of bounds: start=" + start + ", len=" + len + ", size=" + columns.size());
+                    "Column eange out of bounds: start=" + start + ", len=" + len + ", size=" + columns.size());
         }
 
         ArrayList<Column<?>> c = new ArrayList<>();
@@ -537,10 +552,10 @@ public class ColumnTable<T> implements DataTable, Cloneable {
      */
     public void deleteRows(int from, int length) throws TableException {
         if (from < 0 || length < 0 || from + length > nrow) {
-            throw new TableException("Row delete out of bounds: start=" + from + ", len=" + length + ", size=" + nrow);
+            throw new TableException("Row range out of bounds: start=" + from + ", len=" + length + ", size=" + nrow);
         }
 
-        int maxSize = nextLargerCapacity();
+        int maxSize = nextLargerCapacity(nrow - length);
         for (Column<?> c : columns) {
             c.deleteRows(from, length, nrow, maxSize);
         }
@@ -937,6 +952,10 @@ public class ColumnTable<T> implements DataTable, Cloneable {
     }
 
     private Column<?> createColumn(Class<?> type, int size) throws TableException {
+        if (type == null) {
+            throw new TableException("Column type cannot be null.");
+        }
+
         if (!type.isPrimitive()) {
             throw new TableException("Not a primitive base type: " + type.getName());
         }
@@ -1062,18 +1081,10 @@ public class ColumnTable<T> implements DataTable, Cloneable {
             return data == null ? 0 : Array.getLength(data);
         }
 
-        @SuppressWarnings("unchecked")
         void deleteRows(int from, int len, int size, int maxCapacity) {
             int end = from + len;
-
-            if (capacity() > maxCapacity) {
-                Object trim = Array.newInstance(data.getClass(), maxCapacity);
-                System.arraycopy(data, 0, trim, 0, from);
-                System.arraycopy(data, end, trim, from, size - end);
-                data = (Data) trim;
-            } else {
-                System.arraycopy(data, end, data, from, size - end);
-            }
+            System.arraycopy(data, end, data, from, size - end);
+            trim(maxCapacity);
         }
 
         /**
@@ -1255,10 +1266,11 @@ public class ColumnTable<T> implements DataTable, Cloneable {
             out.write(data[index]);
         }
 
-        @SuppressFBWarnings(value = "RR_NOT_CHECKED", justification = "not exposed and never needed locally")
         @Override
         void read(int from, int n, ArrayDataInput in) throws IOException {
-            in.read(data, from, n);
+            if (in.read(data, from, n) < 0) {
+                throw new EOFException();
+            }
         }
 
         @Override
@@ -1305,10 +1317,11 @@ public class ColumnTable<T> implements DataTable, Cloneable {
             out.writeBoolean(data[index]);
         }
 
-        @SuppressFBWarnings(value = "RR_NOT_CHECKED", justification = "not exposed and never needed locally")
         @Override
         void read(int from, int n, ArrayDataInput in) throws IOException {
-            in.read(data, from, n);
+            if (in.read(data, from, n) < 0) {
+                throw new EOFException();
+            }
         }
 
         @Override
@@ -1460,10 +1473,11 @@ public class ColumnTable<T> implements DataTable, Cloneable {
             out.writeInt(data[index]);
         }
 
-        @SuppressFBWarnings(value = "RR_NOT_CHECKED", justification = "not exposed and never needed locally")
         @Override
         void read(int from, int n, ArrayDataInput in) throws IOException {
-            in.read(data, from, n);
+            if (in.read(data, from, n) < 0) {
+                throw new EOFException();
+            }
         }
 
         @Override
@@ -1509,10 +1523,11 @@ public class ColumnTable<T> implements DataTable, Cloneable {
             out.writeLong(data[index]);
         }
 
-        @SuppressFBWarnings(value = "RR_NOT_CHECKED", justification = "not exposed and never needed locally")
         @Override
         void read(int from, int n, ArrayDataInput in) throws IOException {
-            in.read(data, from, n);
+            if (in.read(data, from, n) < 0) {
+                throw new EOFException();
+            }
         }
 
         @Override
@@ -1548,10 +1563,9 @@ public class ColumnTable<T> implements DataTable, Cloneable {
             data = Arrays.copyOf(data, size);
         }
 
-        @SuppressFBWarnings(value = "RR_NOT_CHECKED", justification = "not exposed and never needed locally")
         @Override
-        void read(int from, int n, ArrayDataInput in) throws IOException {
-            in.read(data, from, n);
+        void read(int index, ArrayDataInput in) throws IOException {
+            data[index] = in.readFloat();
         }
 
         @Override
@@ -1560,8 +1574,10 @@ public class ColumnTable<T> implements DataTable, Cloneable {
         }
 
         @Override
-        void read(int index, ArrayDataInput in) throws IOException {
-            data[index] = in.readFloat();
+        void read(int from, int n, ArrayDataInput in) throws IOException {
+            if (in.read(data, from, n) < 0) {
+                throw new EOFException();
+            }
         }
 
         @Override
@@ -1597,7 +1613,6 @@ public class ColumnTable<T> implements DataTable, Cloneable {
             data = Arrays.copyOf(data, size);
         }
 
-        @SuppressFBWarnings(value = "RR_NOT_CHECKED", justification = "not exposed and never needed locally")
         @Override
         void read(int index, ArrayDataInput in) throws IOException {
             data[index] = in.readDouble();
@@ -1610,7 +1625,9 @@ public class ColumnTable<T> implements DataTable, Cloneable {
 
         @Override
         void read(int from, int n, ArrayDataInput in) throws IOException {
-            in.read(data, from, n);
+            if (in.read(data, from, n) < 0) {
+                throw new EOFException();
+            }
         }
 
         @Override
@@ -1665,7 +1682,6 @@ public class ColumnTable<T> implements DataTable, Cloneable {
             data = Arrays.copyOf(data, newSize);
         }
 
-        @SuppressFBWarnings(value = "RR_NOT_CHECKED", justification = "not exposed and never needed locally")
         @Override
         void read(int index, ArrayDataInput in) throws IOException {
             in.readArrayFully(data[index]);
@@ -1707,9 +1723,7 @@ public class ColumnTable<T> implements DataTable, Cloneable {
             Object[] array = Arrays.copyOf(data, length);
             for (int i = 0; i < length; i++) {
                 array[i] = Array.newInstance(type, size);
-                if (data[i] != null) {
-                    System.arraycopy(data[i], 0, array[i], 0, size);
-                }
+                System.arraycopy(data[i], 0, array[i], 0, size);
             }
             return array;
         }
