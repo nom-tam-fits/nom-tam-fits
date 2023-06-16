@@ -172,9 +172,6 @@ public class ColumnTable<T> implements DataTable, Cloneable {
             eCount = Array.getLength(Array.get(newColumn, 0));
             for (int i = 1; i < len; i++) {
                 Object e = Array.get(newColumn, i);
-                if (e == null) {
-                    throw new TableException("Unexpected null entry in row " + i);
-                }
 
                 if (!eType.equals(e.getClass())) {
                     throw new TableException("Mismatched data type in row " + i + ": " + e.getClass().getName()
@@ -906,11 +903,6 @@ public class ColumnTable<T> implements DataTable, Cloneable {
         }
 
         Object[] r = (Object[]) data;
-
-        if (isEmpty()) {
-            addRow(r);
-            return;
-        }
 
         checkRow(r);
 

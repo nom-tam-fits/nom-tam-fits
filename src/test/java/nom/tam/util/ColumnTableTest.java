@@ -317,14 +317,11 @@ public class ColumnTableTest {
         Assert.assertEquals(0, tab.getNRows());
     }
 
-    @Test
+    @Test(expected = TableException.class)
     public void checkAddEmptyWrapped() throws Exception {
         ColumnTable<?> tab = new ColumnTable<>();
         tab.addColumn(new Object[] {}, 1);
         Assert.assertEquals(0, tab.getNRows());
-
-        tab.addColumn(new Object[] {}, 1);
-        Assert.assertEquals(2, tab.getNCols());
     }
 
     @Test(expected = TableException.class)
@@ -332,6 +329,13 @@ public class ColumnTableTest {
         ColumnTable<?> tab = new ColumnTable<>();
         tab.addColumn(new int[] {1, 2}, 1);
         tab.setColumn(0, null);
+    }
+
+    @Test(expected = TableException.class)
+    public void checkSetNullRow() throws Exception {
+        ColumnTable<?> tab = new ColumnTable<>();
+        tab.addColumn(new int[] {1, 2}, 1);
+        tab.setRow(0, null);
     }
 
     @Test(expected = TableException.class)
@@ -433,6 +437,20 @@ public class ColumnTableTest {
     }
 
     @Test(expected = IndexOutOfBoundsException.class)
+    public void checkSetElementNegativeRow() throws Exception {
+        ColumnTable<?> tab = new ColumnTable<>();
+        tab.addColumn(new int[] {1, 2}, 1);
+        tab.setElement(-1, 0, new int[] {3});
+    }
+
+    @Test(expected = IndexOutOfBoundsException.class)
+    public void checkSetElementHighRow() throws Exception {
+        ColumnTable<?> tab = new ColumnTable<>();
+        tab.addColumn(new int[] {1, 2}, 1);
+        tab.setElement(tab.getNRows(), 0, new int[] {3});
+    }
+
+    @Test(expected = IndexOutOfBoundsException.class)
     public void checkSetElementNegativeColumn() throws Exception {
         ColumnTable<?> tab = new ColumnTable<>();
         tab.addColumn(new int[] {1, 2}, 1);
@@ -458,6 +476,14 @@ public class ColumnTableTest {
         ColumnTable<?> tab = new ColumnTable<>();
         tab.addColumn(new int[] {1, 2}, 1);
         tab.setRow(tab.getNRows(), new int[] {3});
+    }
+
+    @SuppressWarnings("deprecation")
+    @Test
+    public void testExtraState() throws Exception {
+        ColumnTable<String> tab = new ColumnTable<>();
+        tab.setExtraState("blah");
+        Assert.assertEquals("blah", tab.getExtraState());
     }
 
     private void checkElementAccess(Object element) throws Exception {
