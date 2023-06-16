@@ -100,11 +100,6 @@ public class ColumnTableTest {
         checkReadWrite(new double[] {1, 2, 3});
     }
 
-    private void check(Class<?> type) throws Exception {
-        checkAccess(type, 1, 10);
-        checkAccess(type, 2, 10);
-    }
-
     @Test(expected = TableException.class)
     public void checkAddWrongSizeColumn() throws Exception {
         ColumnTable<?> tab = new ColumnTable<>();
@@ -248,6 +243,7 @@ public class ColumnTableTest {
         tab.deleteColumns(0, -1);
     }
 
+    @Test
     public void checkDeleteColumnsZeroLength() throws Exception {
         ColumnTable<?> tab = new ColumnTable<>();
         tab.addColumn(new int[] {1, 2}, 1);
@@ -290,6 +286,7 @@ public class ColumnTableTest {
         tab.deleteRows(0, -1);
     }
 
+    @Test
     public void checkDeleteRowsZeroLength() throws Exception {
         ColumnTable<?> tab = new ColumnTable<>();
         tab.addColumn(new int[] {1, 2}, 1);
@@ -320,6 +317,7 @@ public class ColumnTableTest {
         Assert.assertEquals(0, tab.getNRows());
     }
 
+    @Test
     public void checkAddEmptyWrapped() throws Exception {
         ColumnTable<?> tab = new ColumnTable<>();
         tab.addColumn(new Object[] {}, 1);
@@ -565,6 +563,11 @@ public class ColumnTableTest {
         }
         Assert.assertTrue(success);
 
+    }
+
+    private void check(Class<?> type) throws Exception {
+        checkAccess(type, 1, 10);
+        checkAccess(type, 2, 10);
     }
 
     private void checkAccess(Class<?> type, int size, int rows) throws Exception {

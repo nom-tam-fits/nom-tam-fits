@@ -412,9 +412,10 @@ public class ColumnTable<T> implements DataTable, Cloneable {
     private void checkFlatColumn(Object data, int size) throws TableException {
         int len = Array.getLength(data);
 
-        if (data == null) {
-            throw new TableException("Unexpected null column");
-        }
+        // Data cannot be null here (we check upstream)
+        // if (data == null) {
+        // throw new TableException("Unexpected null column");
+        // }
 
         if (size > 0 && len % size != 0) {
             throw new TableException("The column size " + len + " is not a multiple of the element size " + size);
