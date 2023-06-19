@@ -152,53 +152,33 @@ public class ColumnTable<T> implements DataTable, Cloneable {
      * @throws TableException if the data is inconsistent, or contains null, or non-arrays
      */
     private int checkWrappedColumn(Object newColumn) throws TableException, NullPointerException {
-        Class<?> eType = newColumn.getClass().getComponentType();
-        if (eType == null) {
-            throw new TableException("Data is not an array: " + newColumn.getClass());
-        }
-
         // For array elements, check consistency...
-        if (!eType.isArray()) {
-            // Check scalar columns
+        if (!(newColumn instanceof Object[])) {
+            // Check as scalar column...
             checkFlatColumn(newColumn, 1);
             return 1;
         }
-        int len = Array.getLength(newColumn);
-        if (len == 0) {
+
+        try {
+            int[] dims = ArrayFuncs.assertRegularArray(newColumn, false);
+            if (dims.length != 2) {
+                throw new TableException("Not a 2D array: " + newColumn.getClass());
+            }
+        } catch (Exception e) {
+            throw new TableException(e);
+        }
+
+        Object[] entries = (Object[]) newColumn;
+        if (entries.length == 0) {
             return 0;
         }
 
-        Object first = Array.get(newColumn, 0);
-        if (first == null) {
-            throw new TableException("Entry at index 0 is null");
+        Object first = entries[0];
+        if (!first.getClass().getComponentType().isPrimitive()) {
+            throw new TableException("Entries are not a primitive arrays: " + first.getClass());
         }
 
-        if (!first.getClass().isArray()) {
-            throw new TableException("Entry at index 0 is not an array: " + first.getClass());
-        }
-
-        // Check that all rows are the same type and same size
-        int eCount = Array.getLength(first);
-
-        for (int i = 1; i < len; i++) {
-            Object e = Array.get(newColumn, i);
-
-            if (e == null) {
-                throw new TableException("Entry at index " + i + " is null");
-            }
-
-            if (!eType.equals(e.getClass())) {
-                throw new IllegalArgumentException("Mismatched data type in row " + i + ": " + e.getClass().getName()
-                        + ", expected " + eType.getName());
-            }
-
-            if (Array.getLength(e) != eCount) {
-                throw new IllegalArgumentException(
-                        "Mismatched array size in row " + i + ": " + Array.getLength(e) + ", expected " + eCount);
-            }
-        }
-
-        return eCount;
+        return Array.getLength(first);
     }
 
     /**
@@ -423,6 +403,10 @@ public class ColumnTable<T> implements DataTable, Cloneable {
      * @throws TableException if the column is not consistent with the current table structure.
      */
     private void checkFlatColumn(Object data, int size) throws TableException {
+        if (!data.getClass().isArray()) {
+            throw new TableException("Argument is not an array: " + data.getClass());
+        }
+
         int len = Array.getLength(data);
 
         // Data cannot be null here (we check upstream)

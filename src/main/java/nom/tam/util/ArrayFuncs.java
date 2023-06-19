@@ -80,7 +80,11 @@ public final class ArrayFuncs {
      * @since         1.18
      */
     public static void copy(Object src, int srcPos, Object dest, int destPos, int length, int step) {
-        if (src instanceof Object[] && dest instanceof Object[]) {
+        if (!dest.getClass().equals(src.getClass())) {
+            throw new IllegalArgumentException("Mismatched types: src " + src.getClass() + ", dst " + dest.getClass());
+        }
+
+        if (src instanceof Object[]) {
             final Object[] from = (Object[]) src;
             final Object[] to = (Object[]) dest;
             int toIndex = 0;
@@ -595,12 +599,12 @@ public final class ArrayFuncs {
      * array size or else throws an exeption. Optionally, it will also throw an exception if any or all all elements are
      * <code>null</code>.
      * 
-     * @param  o                        An object
-     * @param  allowNulls               If we should throw an exception if some (but not all) element are
-     *                                      <code>null</code>.
+     * @param  o                        An array object
+     * @param  allowNulls               If we should tolerate <code>null</code> entries.
      * 
      * @return                          the regular shape of the array with sizes along each array dimension.
      * 
+     * @throws NullPointerException     if the argument is <code>null</code>.
      * @throws IllegalArgumentException if the array contains mismatched elements in size, or contains <code>null</code>
      *                                      values.
      * @throws ClassCastException       if the array contain a heterogeneous collection of different element types.
@@ -608,64 +612,52 @@ public final class ArrayFuncs {
      * @since                           1.18
      */
     public static int[] assertRegularArray(Object o, boolean allowNulls)
-            throws IllegalArgumentException, ClassCastException {
-        if (o == null) {
-            return new int[] {0};
-        }
-
+            throws NullPointerException, IllegalArgumentException, ClassCastException {
         if (!o.getClass().isArray()) {
             throw new IllegalArgumentException("Not an array: " + o.getClass());
         }
 
-        if (o.getClass().isPrimitive()) {
+        if (o.getClass().getComponentType().isPrimitive()) {
             return new int[] {Array.getLength(o)};
         }
 
         int[] dim = getDimensions(o);
-        if (dim.length == 0) {
-            return dim;
-        }
-
         if (dim[0] == 0) {
             return dim;
         }
 
-        Object first = Array.get(o, 0);
-        Class<?> type = first == null ? null : first.getClass();
+        Class<?> type = null;
 
         for (int i = 0; i < dim[0]; i++) {
             Object e = Array.get(o, i);
 
             if (e == null) {
-                if (first != null && !allowNulls) {
-                    throw new IllegalArgumentException("Some (but not all) entries are null");
+                if (allowNulls) {
+                    continue;
                 }
-                continue;
+                throw new IllegalArgumentException("Entry at index " + i + " is null");
             }
 
-            if (first == null && !allowNulls) {
-                throw new IllegalArgumentException("Some (but not all) entries are null");
-            }
-
-            if (!e.getClass().equals(type)) {
-                throw new ClassCastException("Mismatched component types");
+            if (type == null) {
+                type = e.getClass();
+            } else if (!e.getClass().equals(type)) {
+                throw new ClassCastException(
+                        "Mismatched component type at index " + i + ": " + e.getClass() + ", expected " + type);
             }
 
             if (e.getClass().isArray()) {
                 int[] sub = assertRegularArray(e, allowNulls);
 
                 if (sub.length + 1 != dim.length) {
-                    throw new IllegalArgumentException("Mismatched component dimensions");
+                    throw new IllegalArgumentException("Mismatched component dimension at index " + i + ": " + sub.length
+                            + ", expected " + (dim.length - 1));
                 }
 
                 if (sub[0] != dim[1]) {
-                    throw new IllegalArgumentException("Mismatched component size");
+                    throw new IllegalArgumentException(
+                            "Mismatched component size at index " + i + ": " + sub[0] + ", expected " + dim[0]);
                 }
             }
-        }
-
-        if (first == null && !allowNulls) {
-            throw new IllegalArgumentException("All entries are null");
         }
 
         return dim;
@@ -701,20 +693,16 @@ public final class ArrayFuncs {
             ComplexValue[] z = (ComplexValue[]) o;
 
             if (float.class.equals(decimalType)) {
-                float[] f = new float[z.length << 1];
-                for (int i = 0; i < f.length; i += 2) {
-                    ComplexValue zi = z[i >>> 1];
-                    f[i] = (float) zi.re();
-                    f[i + 1] = (float) zi.im();
+                float[][] f = new float[z.length][];
+                for (int i = 0; i < z.length; i++) {
+                    f[i] = (float[]) complexToDecimals(z[i], decimalType);
                 }
                 return f;
             }
 
-            double[] d = new double[z.length << 1];
-            for (int i = 0; i < d.length; i += 2) {
-                ComplexValue zi = z[i >>> 1];
-                d[i] = zi.re();
-                d[i + 1] = zi.im();
+            double[][] d = new double[z.length][];
+            for (int i = 0; i < z.length; i++) {
+                d[i] = (double[]) complexToDecimals(z[i], decimalType);
             }
             return d;
         }

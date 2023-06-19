@@ -239,9 +239,23 @@ public class ColumnTableTest {
     }
 
     @Test(expected = TableException.class)
-    public void checkAddFirstNonoArrayInWrappedColumn() throws Exception {
+    public void checkAddFirstNonArrayInWrappedColumn() throws Exception {
         ColumnTable<?> tab = new ColumnTable<>();
         tab.addWrappedColumn(new Object[] {"abc", new int[] {1}});
+        // exception
+    }
+
+    @Test(expected = TableException.class)
+    public void checkAddNon2DArrayInWrappedColumn() throws Exception {
+        ColumnTable<?> tab = new ColumnTable<>();
+        tab.addWrappedColumn(new Object[] {new int[1][1]});
+        // exception
+    }
+
+    @Test(expected = TableException.class)
+    public void checkAddNonPrimitiveArrayInWrappedColumn() throws Exception {
+        ColumnTable<?> tab = new ColumnTable<>();
+        tab.addWrappedColumn(new String[][] {{"abc"}, {"def"}});
         // exception
     }
 
@@ -249,6 +263,7 @@ public class ColumnTableTest {
     public void checkAddNullWrappedColumn() throws Exception {
         ColumnTable<?> tab = new ColumnTable<>();
         tab.addWrappedColumn(null);
+        // exception
     }
 
     @Test(expected = TableException.class)
@@ -256,6 +271,7 @@ public class ColumnTableTest {
         ColumnTable<?> tab = new ColumnTable<>();
         tab.addColumn(new int[] {1, 2}, 1);
         tab.deleteColumn(-1);
+        // exception
     }
 
     @Test(expected = TableException.class)
@@ -426,8 +442,8 @@ public class ColumnTableTest {
     @Test(expected = TableException.class)
     public void checkSetWrappedColumnMismatchedElementSize() throws Exception {
         ColumnTable<?> tab = new ColumnTable<>();
-        tab.addColumn(new int[] {1, 2}, 1);
-        tab.setWrappedColumn(0, new int[][] {{1, 2}, {3}});
+        tab.addColumn(new int[] {1, 2, 3, 4}, 2);
+        tab.setWrappedColumn(0, new int[][] {{1, 2, 3}, {4, 5, 6}});
     }
 
     @Test(expected = IndexOutOfBoundsException.class)
