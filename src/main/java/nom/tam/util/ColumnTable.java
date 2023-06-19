@@ -149,46 +149,53 @@ public class ColumnTable<T> implements DataTable, Cloneable {
      * 
      * @return                the element count
      * 
-     * @throws TableException if the column data is inconsistent with the table structure.
+     * @throws TableException if the data is inconsistent, or contains null, or non-arrays
      */
-    private int checkWrappedColumn(Object newColumn) throws TableException {
+    private int checkWrappedColumn(Object newColumn) throws TableException, NullPointerException {
         Class<?> eType = newColumn.getClass().getComponentType();
-        int eCount = 1; // default scalar element count
+        if (eType == null) {
+            throw new TableException("Data is not an array: " + newColumn.getClass());
+        }
 
         // For array elements, check consistency...
-        if (eType.isArray()) {
-            int len = Array.getLength(newColumn);
-
-            if (len == 0) {
-                return 0;
-            }
-
-            // Check that all rows are the same type and same size
-            Object first = Array.get(newColumn, 0);
-            if (first == null) {
-                throw new TableException("Unexpected null entry at index 0");
-            }
-
-            eCount = Array.getLength(Array.get(newColumn, 0));
-            for (int i = 1; i < len; i++) {
-                Object e = Array.get(newColumn, i);
-
-                if (e == null) {
-                    throw new TableException("Unexpected null entry at index " + i);
-                }
-
-                if (!eType.equals(e.getClass())) {
-                    throw new TableException("Mismatched data type in row " + i + ": " + e.getClass().getName()
-                            + ", expected " + eType.getName());
-                }
-                if (Array.getLength(e) != eCount) {
-                    throw new TableException(
-                            "Mismatched array size in row " + i + ": " + Array.getLength(e) + ", expected " + eCount);
-                }
-            }
-        } else {
+        if (!eType.isArray()) {
             // Check scalar columns
             checkFlatColumn(newColumn, 1);
+            return 1;
+        }
+        int len = Array.getLength(newColumn);
+        if (len == 0) {
+            return 0;
+        }
+
+        Object first = Array.get(newColumn, 0);
+        if (first == null) {
+            throw new TableException("Entry at index 0 is null");
+        }
+
+        if (!first.getClass().isArray()) {
+            throw new TableException("Entry at index 0 is not an array: " + first.getClass());
+        }
+
+        // Check that all rows are the same type and same size
+        int eCount = Array.getLength(first);
+
+        for (int i = 1; i < len; i++) {
+            Object e = Array.get(newColumn, i);
+
+            if (e == null) {
+                throw new TableException("Entry at index " + i + " is null");
+            }
+
+            if (!eType.equals(e.getClass())) {
+                throw new IllegalArgumentException("Mismatched data type in row " + i + ": " + e.getClass().getName()
+                        + ", expected " + eType.getName());
+            }
+
+            if (Array.getLength(e) != eCount) {
+                throw new IllegalArgumentException(
+                        "Mismatched array size in row " + i + ": " + Array.getLength(e) + ", expected " + eCount);
+            }
         }
 
         return eCount;
@@ -217,8 +224,13 @@ public class ColumnTable<T> implements DataTable, Cloneable {
 
         int eCount = checkWrappedColumn(newColumn);
 
+        Class<?> eType = newColumn.getClass().getComponentType();
+        if (eType.isArray()) {
+            eType = eType.getComponentType();
+        }
+
         @SuppressWarnings("rawtypes")
-        Column c = createColumn(newColumn.getClass().getComponentType(), eCount);
+        Column c = createColumn(eType, eCount);
         c.data = newColumn;
         nrow = Array.getLength(newColumn);
         columns.add(c);
@@ -850,7 +862,14 @@ public class ColumnTable<T> implements DataTable, Cloneable {
         @SuppressWarnings("rawtypes")
         Column c = columns.get(col);
 
-        int eSize = checkWrappedColumn(newColumn);
+        int eSize = 0;
+
+        try {
+            eSize = checkWrappedColumn(newColumn);
+        } catch (Exception e) {
+            throw new TableException(e);
+        }
+
         if (eSize != c.elementCount()) {
             throw new TableException("Mismatched element size " + eSize + ", expected " + c.elementCount());
         }

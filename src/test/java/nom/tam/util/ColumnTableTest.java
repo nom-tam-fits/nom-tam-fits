@@ -189,6 +189,20 @@ public class ColumnTableTest {
     }
 
     @Test(expected = TableException.class)
+    public void checkAddNonArrayWrappedColumn() throws Exception {
+        ColumnTable<?> tab = new ColumnTable<>();
+        tab.addWrappedColumn("abc");
+        // exception
+    }
+
+    @Test
+    public void checkAddEmptyWrappedColumn() throws Exception {
+        ColumnTable<?> tab = new ColumnTable<>();
+        tab.addWrappedColumn(new int[0][3]);
+        Assert.assertEquals(0, tab.getElementSize(0));
+    }
+
+    @Test(expected = TableException.class)
     public void checkAddMismatchedTypesInWrappedColumn() throws Exception {
         ColumnTable<?> tab = new ColumnTable<>();
         tab.addWrappedColumn(new Object[] {new int[] {1}, new float[] {2}});
@@ -198,7 +212,7 @@ public class ColumnTableTest {
     @Test(expected = TableException.class)
     public void checkAddMismatchedSizesInWrappedColumn() throws Exception {
         ColumnTable<?> tab = new ColumnTable<>();
-        tab.addWrappedColumn(new Object[] {new int[] {1}, new int[] {3, 4}});
+        tab.addWrappedColumn(new Object[] {new int[] {1}, new int[] {2, 3}});
         // exception
     }
 
@@ -224,11 +238,11 @@ public class ColumnTableTest {
         // exception
     }
 
-    public void checkAddEmptyWrappedColumn() throws Exception {
+    @Test(expected = TableException.class)
+    public void checkAddFirstNonoArrayInWrappedColumn() throws Exception {
         ColumnTable<?> tab = new ColumnTable<>();
-        tab.addWrappedColumn(new Object[] {new int[0]});
-        Assert.assertEquals(1, tab.getNRows());
-        Assert.assertEquals(0, tab.getElementSize(0));
+        tab.addWrappedColumn(new Object[] {"abc", new int[] {1}});
+        // exception
     }
 
     @Test(expected = TableException.class)
