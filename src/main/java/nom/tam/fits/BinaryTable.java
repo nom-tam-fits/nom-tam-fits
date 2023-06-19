@@ -125,7 +125,7 @@ public class BinaryTable extends AbstractTableData implements Cloneable {
          * String terminator for substring arrays -- not yet populated from TFORM TODO parse TFORM for substring array
          * convention...
          */
-        private char terminator;
+        private byte terminator;
 
         /**
          * Is this a complex column. Each entry will be associated with a float[2]/double[2]
@@ -2369,7 +2369,7 @@ public class BinaryTable extends AbstractTableData implements Cloneable {
         }
 
         if (c.isBits()) {
-            return FitsUtil.bitsToBytes(o);
+            return FitsUtil.bitsToBytes((boolean[]) o);
         }
 
         if (c.isString() && !(o instanceof byte[])) {

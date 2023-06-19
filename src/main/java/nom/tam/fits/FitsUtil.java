@@ -44,7 +44,6 @@ import java.util.logging.Level;
 import java.util.logging.Logger;
 
 import nom.tam.util.ArrayDataOutput;
-import nom.tam.util.ArrayFuncs;
 import nom.tam.util.AsciiFuncs;
 import nom.tam.util.FitsDecoder;
 import nom.tam.util.FitsEncoder;
@@ -116,6 +115,10 @@ public final class FitsUtil {
      * @since    1.18
      */
     static Object booleansToBytes(Object o) {
+        if (o == null) {
+            return FitsEncoder.byteForBoolean(null);
+        }
+
         if (o instanceof Boolean) {
             return FitsEncoder.byteForBoolean((Boolean) o);
         }
@@ -170,9 +173,10 @@ public final class FitsUtil {
      * @since        1.18
      */
     static Object bytesToBooleanObjects(Object bytes) {
-        if (bytes instanceof Number) {
+        if (bytes instanceof Byte) {
             return FitsDecoder.booleanObjectFor(((Number) bytes).intValue());
         }
+
         if (bytes instanceof byte[]) {
             byte[] b = (byte[]) bytes;
             Boolean[] bool = new Boolean[b.length];
@@ -211,21 +215,11 @@ public final class FitsUtil {
      * 
      * @since       1.18
      */
-    static byte[] bitsToBytes(Object bits) throws IllegalArgumentException {
-        if (!bits.getClass().isArray()) {
-            throw new IllegalArgumentException("Cannot convert to bits: " + bits.getClass().getName());
-        }
-
-        if (ArrayFuncs.getBaseClass(bits) != boolean.class) {
-            throw new IllegalArgumentException("Cannot convert to bits: " + bits.getClass().getName());
-        }
-
-        boolean[] fbits = (boolean[]) ArrayFuncs.flatten(bits);
-
-        byte[] bytes = new byte[(fbits.length + Byte.SIZE - 1) / Byte.SIZE];
-        for (int i = 0; i < fbits.length; i++) {
-            if (fbits[i]) {
-                int pos = Byte.SIZE - i % Byte.SIZE;
+    static byte[] bitsToBytes(boolean[] bits) throws IllegalArgumentException {
+        byte[] bytes = new byte[(bits.length + Byte.SIZE - 1) / Byte.SIZE];
+        for (int i = 0; i < bits.length; i++) {
+            if (bits[i]) {
+                int pos = Byte.SIZE - 1 - i % Byte.SIZE;
                 bytes[i / Byte.SIZE] |= 1 << pos;
             }
         }
@@ -249,8 +243,8 @@ public final class FitsUtil {
         boolean[] bits = new boolean[count];
 
         for (int i = 0; i < bits.length; i++) {
-            int pos = Byte.SIZE - i % Byte.SIZE;
-            bits[i] = (bytes[i / Byte.SIZE] >>> pos) == 1;
+            int pos = Byte.SIZE - 1 - i % Byte.SIZE;
+            bits[i] = ((bytes[i / Byte.SIZE] >>> pos) & 1) == 1;
         }
 
         return bits;
@@ -269,7 +263,7 @@ public final class FitsUtil {
      * 
      * @since             1.18
      */
-    static String extractString(byte[] bytes, int offset, int maxLen, char terminator) {
+    static String extractString(byte[] bytes, int offset, int maxLen, byte terminator) {
         if (offset >= bytes.length) {
             return "";
         }
@@ -336,7 +330,7 @@ public final class FitsUtil {
 
         String[] res = new String[bytes.length / maxLen];
         for (int i = 0; i < res.length; i++) {
-            res[i] = extractString(bytes, i * maxLen, maxLen, '\0').trim();
+            res[i] = extractString(bytes, i * maxLen, maxLen, (byte) '\0').trim();
         }
         return res;
     }
