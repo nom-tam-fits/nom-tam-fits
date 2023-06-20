@@ -36,13 +36,20 @@ import java.io.EOFException;
 import java.lang.reflect.Array;
 import java.nio.ByteBuffer;
 
+import org.junit.After;
 import org.junit.Assert;
 import org.junit.Test;
 
+import nom.tam.fits.FitsFactory;
 import nom.tam.util.type.ElementType;
 
 @SuppressWarnings("javadoc")
 public class ColumnTableTest {
+
+    @After
+    public void setDefaults() {
+        FitsFactory.setDefaults();
+    }
 
     @Test
     public void testByteColumn() throws Exception {
@@ -62,7 +69,14 @@ public class ColumnTableTest {
     public void testCharColumn() throws Exception {
         check(char.class);
         checkElementAccess(new char[] {'1', '2', '3'});
+
+        FitsFactory.setUseUnicodeChars(true);
         checkReadWrite(new char[] {'1', '2', '3'});
+
+        FitsFactory.setUseUnicodeChars(false);
+        checkReadWrite(new char[] {'1', '2', '3'});
+
+        FitsFactory.setDefaults();
     }
 
     @Test
@@ -581,7 +595,6 @@ public class ColumnTableTest {
         tab.addColumn(Array.newInstance(elements.getClass().getComponentType(), Array.getLength(elements)), eSize);
 
         int ne = tab.getNRows() * tab.getNCols() * eSize;
-
         int bytes = ne * ElementType.forClass(eType).size();
 
         ByteBuffer buf = ByteBuffer.wrap(new byte[bytes]);

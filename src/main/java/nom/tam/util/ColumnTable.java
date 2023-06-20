@@ -1383,17 +1383,13 @@ public class ColumnTable<T> implements DataTable, Cloneable {
 
         @Override
         int read(int index, ArrayDataInput in) throws IOException {
-            int i = in.readUnsignedShort();
-            if (i < 0) {
-                throw new EOFException();
-            }
-            data[index] = (char) i;
-            return Short.BYTES;
+            data[index] = in.readChar();
+            return ElementType.CHAR.size();
         }
 
         @Override
         void write(int index, ArrayDataOutput out) throws IOException {
-            out.writeShort(data[index]);
+            out.writeChar(data[index]);
         }
 
         @SuppressFBWarnings(value = "RR_NOT_CHECKED", justification = "not exposed and never needed locally")
