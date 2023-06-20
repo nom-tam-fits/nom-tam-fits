@@ -50,6 +50,8 @@ import nom.tam.util.FitsEncoder;
 import nom.tam.util.FitsIO;
 import nom.tam.util.RandomAccess;
 
+import edu.umd.cs.findbugs.annotations.SuppressFBWarnings;
+
 /**
  * Static utility functions used throughout the FITS classes.
  */
@@ -352,6 +354,52 @@ public final class FitsUtil {
             bool[i] = FitsDecoder.booleanFor(bytes[i]);
         }
         return bool;
+    }
+
+    /**
+     * Parses a logical value from a string, using loose conversion. The string may contain either 'true'/'false' or
+     * 'T'/'F' (case insensitive), or else a zero (<code>false</code>) or non-zero number value (<code>true</code>). All
+     * other strings will return <code>null</code> corresponding to an undefined logical value.
+     * 
+     * @param  s A string
+     * 
+     * @return   <code>true</code>, <code>false</code>, or <code>null</code> (if undefined).
+     */
+    @SuppressFBWarnings(value = "NP_BOOLEAN_RETURN_NULL", justification = "null has specific meaning here")
+    static Boolean parseLogical(String s) {
+        if (s == null) {
+            return null;
+        }
+
+        s = s.trim();
+
+        if (s.isEmpty()) {
+            return null;
+        }
+        if (s.equalsIgnoreCase("true") || s.equalsIgnoreCase("t")) {
+            return true;
+        }
+        if (s.equalsIgnoreCase("false") || s.equalsIgnoreCase("f")) {
+            return false;
+        }
+
+        try {
+            long l = Long.parseLong(s);
+            return l != 0;
+        } catch (NumberFormatException e) {
+            // Nothing to do....
+        }
+
+        try {
+            double d = Double.parseDouble(s);
+            if (!Double.isNaN(d)) {
+                return d != 0;
+            }
+        } catch (NumberFormatException e) {
+            // Nothing to do....
+        }
+
+        return null;
     }
 
     /**
