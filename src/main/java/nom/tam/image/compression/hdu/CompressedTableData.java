@@ -227,14 +227,13 @@ public class CompressedTableData extends BinaryTable {
             toRow = nr;
         }
 
-        targetHeader.addValue(Standard.NAXIS2, toRow - fromRow);
+        int nRows = toRow - fromRow;
 
-        BinaryTable ct = new BinaryTable(toRow - fromRow, BinaryTable.getDescriptor(targetHeader, col)) {
-            @Override
-            protected void readHeap(long offset, Object o) throws FitsException {
-                CompressedTableData.this.readHeap(offset, o);
-            }
-        };
+        targetHeader.addValue(Standard.NAXIS2, nRows);
+
+        ColumnDesc c = getDescriptor(targetHeader, col);
+        ColumnTable<?> data = new ColumnTable<>();
+        data.addColumn(c.newInstance(nRows), c.getTableCount());
 
         List<BinaryTableTile> tileList = new ArrayList<>();
 
@@ -243,7 +242,7 @@ public class CompressedTableData extends BinaryTable {
         for (int i = fromTile, rowStart = 0; rowStart < nrows; rowStart += tileSize) {
             int tileIndex = i * nc + col;
 
-            BinaryTableTileDecompressor tile = new BinaryTableTileDecompressor(this, ct.getData(), tile()//
+            BinaryTableTileDecompressor tile = new BinaryTableTileDecompressor(this, data, tile()//
                     .rowStart(rowStart)//
                     .rowEnd(rowStart + tileSize)//
                     .column(0)//
@@ -257,9 +256,9 @@ public class CompressedTableData extends BinaryTable {
             tile.waitForResult();
         }
 
-        Object[] colData = new Object[ct.getNRows()];
+        Object[] colData = new Object[toRow - fromRow];
         for (int i = 0; i < colData.length; i++) {
-            colData[i] = ct.getElement(0, i);
+            colData[i] = getFromHeap(c, data.getElement(0, i));
         }
 
         return colData;

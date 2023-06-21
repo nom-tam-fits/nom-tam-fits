@@ -315,7 +315,7 @@ public class BinaryTableHDU extends TableHDU<BinaryTable> {
         }
         // Worry about variable length columns.
         String prefix = "";
-        if (colDesc.isVariableLength()) {
+        if (colDesc.isVariableSize()) {
             prefix += colDesc.pointerType();
             dim = 1;
         }

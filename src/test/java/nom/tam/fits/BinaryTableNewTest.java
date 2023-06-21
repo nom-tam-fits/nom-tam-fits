@@ -34,6 +34,8 @@ package nom.tam.fits;
 import org.junit.Assert;
 import org.junit.Test;
 
+import nom.tam.util.ComplexValue;
+
 @SuppressWarnings("javadoc")
 public class BinaryTableNewTest {
 
@@ -376,4 +378,180 @@ public class BinaryTableNewTest {
         Assert.assertEquals("A", tab.getString(2, 0));
     }
 
+    @Test
+    public void testConvertToBits() throws Exception {
+        BinaryTable tab = new BinaryTable();
+        tab.addColumn(new boolean[] {false, true, false, true, false, true, true});
+        tab.addColumn(new byte[tab.getNRows()]);
+
+        // Convert first time
+        Assert.assertTrue(tab.convertToBits(0));
+
+        // Call convert on already converted
+        Assert.assertTrue(tab.convertToBits(0));
+
+        // A column that cannot be converted
+        Assert.assertFalse(tab.convertToBits(1));
+    }
+
+    @Test
+    public void testCreateWithColumnDescriptor() throws Exception {
+        BinaryTable tab = new BinaryTable();
+        tab.addColumn(new int[] {1, 2, 3});
+        tab.addColumn(new String[] {"abc", "def", "ghi"});
+
+        BinaryTable tab2 = new BinaryTable();
+        tab2.addColumn(tab.getDescriptor(0));
+        tab2.addColumn(tab.getDescriptor(1));
+
+        Assert.assertEquals(2, tab2.getNCols());
+        Assert.assertEquals(0, tab2.getNRows());
+
+        Assert.assertEquals(int.class, tab2.getElementClass(0));
+        Assert.assertEquals(1, tab2.getElementCount(0));
+        Assert.assertEquals(1, tab2.getElementWidth(0));
+        Assert.assertArrayEquals(new int[0], tab2.getElementShape(0));
+
+        Assert.assertEquals(String.class, tab2.getElementClass(1));
+        Assert.assertEquals(1, tab2.getElementCount(1));
+        Assert.assertEquals(3, tab2.getElementWidth(1));
+        Assert.assertArrayEquals(new int[0], tab2.getElementShape(1));
+    }
+
+    @Test
+    public void testAddIntColumns() throws Exception {
+        BinaryTable tab = new BinaryTable();
+        tab.addColumn(new int[] {1, 2, 3});
+        tab.addColumn(new int[3][2]);
+        tab.addColumn(new int[][] {{1}, {1, 2}, {1, 2, 3}});
+
+        Assert.assertEquals(3, tab.getNCols());
+        Assert.assertEquals(3, tab.getNRows());
+
+        // Scalar
+        Assert.assertEquals(int.class, tab.getElementClass(0));
+        Assert.assertEquals(1, tab.getElementCount(0));
+        Assert.assertEquals(1, tab.getElementWidth(0));
+        Assert.assertArrayEquals(new int[0], tab.getElementShape(0));
+
+        // Arrays of 2
+        Assert.assertEquals(int.class, tab.getElementClass(1));
+        Assert.assertEquals(2, tab.getElementCount(1));
+        Assert.assertEquals(1, tab.getElementWidth(1));
+        Assert.assertArrayEquals(new int[] {2}, tab.getElementShape(1));
+
+        // Variable length
+        Assert.assertEquals(int.class, tab.getElementClass(2));
+        Assert.assertEquals(-1, tab.getElementCount(2));
+        Assert.assertEquals(1, tab.getElementWidth(2));
+        Assert.assertNull(tab.getElementShape(2));
+    }
+
+    @Test
+    public void testAddStringColumns() throws Exception {
+        BinaryTable tab = new BinaryTable();
+        tab.addColumn(new String[] {"abc", "def", "ghi"});
+        tab.addColumn(new String[][] {{"a", "b"}, {"c", "d"}, {"e", "f"}});
+        tab.addStringColumn(new String[] {"a", "bc", "def"});
+        tab.addStringColumn(new String[] {"a", "bc", "0123456789012345678901234567890123456789"});
+
+        Assert.assertEquals(4, tab.getNCols());
+        Assert.assertEquals(3, tab.getNRows());
+
+        // Scalar
+        Assert.assertEquals(String.class, tab.getElementClass(0));
+        Assert.assertEquals(1, tab.getElementCount(0));
+        Assert.assertEquals(3, tab.getElementWidth(0));
+        Assert.assertArrayEquals(new int[0], tab.getElementShape(0));
+
+        // Arrays of 2
+        Assert.assertEquals(String.class, tab.getElementClass(1));
+        Assert.assertEquals(2, tab.getElementCount(1));
+        Assert.assertEquals(1, tab.getElementWidth(1));
+        Assert.assertArrayEquals(new int[] {2}, tab.getElementShape(1));
+
+        // Variable length stored as fixed
+        Assert.assertEquals(String.class, tab.getElementClass(2));
+        Assert.assertEquals(1, tab.getElementCount(2));
+        Assert.assertEquals(3, tab.getElementWidth(2));
+        Assert.assertArrayEquals(new int[0], tab.getElementShape(2));
+
+        // Variable length stored on heap
+        Assert.assertEquals(String.class, tab.getElementClass(3));
+        Assert.assertEquals(1, tab.getElementCount(3));
+        Assert.assertEquals(-1, tab.getElementWidth(3));
+        Assert.assertNull(tab.getElementShape(3));
+    }
+
+    @Test
+    public void testAddComplexColumns() throws Exception {
+        BinaryTable tab = new BinaryTable();
+
+        ComplexValue[] c1 = new ComplexValue[3];
+        ComplexValue[][] c2 = new ComplexValue[3][2];
+        ComplexValue[][] c3 = new ComplexValue[3][];
+
+        for (int i = 0; i < c1.length; i++) {
+            c1[i] = new ComplexValue(i, -i);
+            c2[i][0] = new ComplexValue(i, 0);
+            c2[i][1] = new ComplexValue(i, 1);
+            c3[i] = new ComplexValue[i + 1];
+            for (int j = 0; j <= i; j++)
+                c3[i][j] = new ComplexValue(i, j);
+        }
+
+        tab.addComplexColumn(c1, double.class);
+        tab.addComplexColumn(c2, float.class);
+        tab.addColumn(c3);
+
+        Assert.assertEquals(3, tab.getNCols());
+        Assert.assertEquals(3, tab.getNRows());
+
+        // Scalar
+        Assert.assertEquals(ComplexValue.class, tab.getElementClass(0));
+        Assert.assertEquals(1, tab.getElementCount(0));
+        Assert.assertEquals(2, tab.getElementWidth(0));
+        Assert.assertArrayEquals(new int[0], tab.getElementShape(0));
+
+        // Arrays of 2
+        Assert.assertEquals(ComplexValue.class, tab.getElementClass(1));
+        Assert.assertEquals(2, tab.getElementCount(1));
+        Assert.assertEquals(2, tab.getElementWidth(1));
+        Assert.assertArrayEquals(new int[] {2}, tab.getElementShape(1));
+
+        // Variable length
+        Assert.assertEquals(ComplexValue.class, tab.getElementClass(2));
+        Assert.assertEquals(-1, tab.getElementCount(2));
+        Assert.assertEquals(2, tab.getElementWidth(2));
+        Assert.assertNull(tab.getElementShape(2));
+    }
+
+    @Test
+    public void testAddLogicalColumns() throws Exception {
+        BinaryTable tab = new BinaryTable();
+        tab.addColumn(new Boolean[] {true, false, null});
+        tab.addLogicalColumn(new Boolean[][] {{true}, {false}, {null}});
+        tab.addLogicalColumn(new Boolean[][] {{true}, {true, false}, {true, false, null}});
+
+        Assert.assertEquals(3, tab.getNCols());
+        Assert.assertEquals(3, tab.getNRows());
+
+        // Scalar
+        Assert.assertEquals(Boolean.class, tab.getElementClass(0));
+        Assert.assertEquals(1, tab.getElementCount(0));
+        Assert.assertEquals(1, tab.getElementWidth(0));
+        Assert.assertArrayEquals(new int[0], tab.getElementShape(0));
+
+        // Arrays of 1 (not scalar!)
+        Assert.assertEquals(Boolean.class, tab.getElementClass(1));
+        Assert.assertEquals(1, tab.getElementCount(1));
+        Assert.assertEquals(1, tab.getElementWidth(1));
+        Assert.assertArrayEquals(new int[] {1}, tab.getElementShape(1));
+
+        // Variable length
+        Assert.assertEquals(Boolean.class, tab.getElementClass(2));
+        Assert.assertEquals(-1, tab.getElementCount(2));
+        Assert.assertEquals(1, tab.getElementWidth(2));
+        Assert.assertNull(tab.getElementShape(2));
+    }
 }

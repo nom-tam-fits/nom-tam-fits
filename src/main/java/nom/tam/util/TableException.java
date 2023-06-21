@@ -64,4 +64,17 @@ public class TableException extends FitsException {
     public TableException(Throwable cause) {
         super(cause.getMessage(), cause);
     }
+
+    /**
+     * Instantiates this exception with the designated message string.
+     * 
+     * @param brief
+     *            a brief prefix bpreceding the message from the cause.
+     * @param cause
+     *            an exception that triggered a this exception.
+     * @since 1.18
+     */
+    public TableException(String brief, Throwable cause) {
+        super(brief + ": " + cause.getMessage(), cause);
+    }
 }

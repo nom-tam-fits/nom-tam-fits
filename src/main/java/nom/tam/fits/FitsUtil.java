@@ -444,16 +444,15 @@ public final class FitsUtil {
     }
 
     /**
-     * Returns the maximum String length in an array of Strings.
+     * Returns the maximum string length in an array.
      * 
-     * @return               Get the maximum length of a String in a String array.
+     * @return             the maximum length of string in an array.
      *
-     * @param  strings       array of strings to check
-     *
-     * @throws FitsException if the operation failed
+     * @param      strings array of strings to check
+     * 
+     * @deprecated         (<i>for internal use</i>) No longer used internally, may be removed in the future.
      */
-    public static int maxLength(String[] strings) throws FitsException {
-
+    public static int maxLength(String[] strings) {
         int max = 0;
         for (String element : strings) {
             if (element != null && element.length() > max) {
@@ -461,6 +460,66 @@ public final class FitsUtil {
             }
         }
         return max;
+    }
+
+    /**
+     * Returns the maximum string length in an array of strings. Non-string elements nd null values are ignored.
+     * 
+     * @return   the maximum length of strings in an array.
+     *
+     * @param  o array of strings to check
+     */
+    static int maxStringLength(Object o) {
+        if (o instanceof String) {
+            return ((String) o).length();
+        }
+
+        int max = 0;
+
+        if (o instanceof Object[]) {
+            for (Object e : (Object[]) o) {
+                if (e == null) {
+                    continue;
+                }
+
+                int l = maxStringLength(e);
+                if (l > max) {
+                    max = l;
+                }
+            }
+        }
+
+        return max;
+    }
+
+    /**
+     * Returns the minimum string length in an array of strings. Non-string elements nd null values are ignored.
+     * 
+     * @return   the minimum length of strings in an array.
+     *
+     * @param  o strings array of strings to check
+     */
+    static int minStringLength(Object o) {
+        if (o instanceof String) {
+            return ((String) o).length();
+        }
+
+        int min = 0;
+
+        if (o instanceof Object[]) {
+            for (Object e : (Object[]) o) {
+                if (e == null) {
+                    continue;
+                }
+
+                int l = maxStringLength(e);
+                if (l < min) {
+                    min = l;
+                }
+            }
+        }
+
+        return min;
     }
 
     /**
@@ -575,13 +634,15 @@ public final class FitsUtil {
      * Converts a string to ASCII bytes in the specified array, padding (with 0x00) or truncating as necessary to
      * provide the expected length at the specified arrya offset.
      * 
-     * @param s      a string
-     * @param res    the byte array into which to extract the ASCII btes
-     * @param offset array index in the byte array at which the extracted bytes should begin
-     * @param len    the maximum number of bytes to extract, truncating or padding (with 0x00) as needed.
+     * @param s          a string
+     * @param res        the byte array into which to extract the ASCII btes
+     * @param offset     array index in the byte array at which the extracted bytes should begin
+     * @param len        the maximum number of bytes to extract, truncating or padding (with 0x00) as needed.
+     * @param terminator the byte value that terminates strings
      */
-    private static void stringToBytes(String s, byte[] res, int offset, int len) {
+    private static void stringToBytes(String s, byte[] res, int offset, int len, byte terminator) {
         int l = 0;
+
         if (s != null) {
             byte[] b = AsciiFuncs.getBytes(s);
             l = Math.min(b.length, len);
@@ -589,26 +650,35 @@ public final class FitsUtil {
                 System.arraycopy(b, 0, res, offset, l);
             }
         }
-        Arrays.fill(res, offset + l, offset + len, (byte) 0);
+
+        // Terminate and pad as necesary
+        if (l < len) {
+            res[offset + (l++)] = terminator;
+        }
+
+        if (l < len) {
+            Arrays.fill(res, offset + l, offset + len, (byte) 0);
+        }
     }
 
     /**
      * Converts a string to an array of ASCII bytes, padding (with 0x00) or truncating as necessary to provide the
      * expected length.
      * 
-     * @param  s   a string
-     * @param  len the number of bytes for the return value, also the maximum number of bytes that are extracted from
-     *                 the string
+     * @param  s          a string
+     * @param  len        the number of bytes for the return value, also the maximum number of bytes that are extracted
+     *                        from the string
+     * @param  terminator the byte value that terminates strings
      * 
-     * @return     a byte array of the specified length containing the truncated or padded string value.
+     * @return            a byte array of the specified length containing the truncated or padded string value.
      * 
-     * @see        #stringToByteArray(String, int)
-     * 
-     * @since      1.18
+     * @see               #stringsToByteArray(String[], int, byte)
+     *
+     * @since             1.18
      */
-    public static byte[] stringToByteArray(String s, int len) {
+    static byte[] stringToByteArray(String s, int len, byte terminator) {
         byte[] res = new byte[len];
-        stringToBytes(s, res, 0, len);
+        stringToBytes(s, res, 0, len, terminator);
         return res;
     }
 
@@ -620,14 +690,79 @@ public final class FitsUtil {
      * @param  stringArray the array with Strings
      * @param  len         the number of bytes used for each string element. The string will be truncated ot padded as
      *                         necessary to fit into that size.
+     * @param  terminator  the byte value that terminates strings
      * 
-     * @see                #stringToByteArray(String, int)
+     * @see                #stringToByteArray(String, int, byte)
+     * 
+     * @since              1.18
      */
-    public static byte[] stringsToByteArray(String[] stringArray, int len) {
+    static byte[] stringsToByteArray(String[] stringArray, int len, byte terminator) {
         byte[] res = new byte[stringArray.length * len];
         for (int i = 0; i < stringArray.length; i++) {
-            stringToBytes(stringArray[i], res, i * len, len);
+            stringToBytes(stringArray[i], res, i * len, len, terminator);
         }
         return res;
+    }
+
+    /**
+     * Convert an array of Strings to bytes.
+     *
+     * @return                 the resulting bytes
+     *
+     * @param      stringArray the array with Strings
+     * @param      len         the number of bytes used for each string element. The string will be truncated ot padded
+     *                             as necessary to fit into that size.
+     * 
+     * @deprecated             (<i>for internal use</i>) Visibility may be reduced to package level in the future.
+     */
+    public static byte[] stringsToByteArray(String[] stringArray, int len) {
+        return stringsToByteArray(stringArray, len, (byte) 0);
+    }
+
+    /**
+     * Convert an array of Strings to a zero-separated sequence of bytes, e.g. for sequentialized variable-sized storage
+     * of multiple string elements.
+     *
+     * @return            the resulting bytes
+     *
+     * @param  array      the array with Strings
+     * @param  terminator the byte value that terminates strings
+     * 
+     * @see               #stringToByteArray(String, int)
+     */
+    static byte[] stringsToSeparatedBytes(String[] array, byte terminator) {
+        int l = array.length - 1;
+        for (String s : array) {
+            if (s != null) {
+                l += s.length();
+            }
+        }
+        byte[] b = new byte[l];
+        l = 0;
+        for (String s : array) {
+            if (s != null) {
+                stringToBytes(s, b, l++, s.length(), terminator);
+            }
+        }
+        return b;
+    }
+
+    /**
+     * Terminates all byte arrays with the desgnated terminator byte at position zero
+     * 
+     * @param o          A byte array or arrays thereof.
+     * @param terminator The designator terminator byte value.
+     */
+    static void terminateNullBytes(Object o, byte terminator) {
+        if (o instanceof byte[]) {
+            byte[] b = (byte[]) o;
+            if (b.length > 0) {
+                b[0] = terminator;
+            }
+        } else if (o instanceof Object[]) {
+            for (Object e : (Object[]) o) {
+                terminateNullBytes(e, terminator);
+            }
+        }
     }
 }

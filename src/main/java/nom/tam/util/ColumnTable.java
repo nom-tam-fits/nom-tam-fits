@@ -422,9 +422,9 @@ public class ColumnTable<T> implements DataTable, Cloneable {
             return;
         }
 
-        if (len / size != nrow) {
-            throw new TableException(
-                    "Mismatches element count: " + len + ", expected " + (nrow * size) + " for " + nrow + "rows");
+        if (len != nrow * size) {
+            throw new TableException("Mismatched element count: " + len + ", expected " + (nrow * size) + " for " + nrow
+                    + " rows of size " + size);
         }
     }
 
