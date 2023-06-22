@@ -409,7 +409,7 @@ public class AsciiTable extends AbstractTableData {
     }
 
     @Override
-    public int addRow(Object[] newRow) throws FitsException {
+    public int addRow(Object... newRow) throws FitsException {
         try {
             // If there are no fields, then this is the
             // first row. We need to add in each of the columns
@@ -853,7 +853,7 @@ public class AsciiTable extends AbstractTableData {
     }
 
     @Override
-    public void setRow(int row, Object[] newData) throws FitsException {
+    public void setRow(int row, Object... newData) throws FitsException {
         if (row < 0 || row > nRows) {
             throw new FitsException("Invalid row in setRow");
         }

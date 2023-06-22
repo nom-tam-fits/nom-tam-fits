@@ -386,7 +386,7 @@ loop through all table rows to get only the scalar values from the column named 
   
       // Retrieve scalar entries with convenient getters... 
       // type, and returning the first (and only) element from that array...
-      double utc  = tab.getDouble(row, colUTC));
+      double utc  = tab.getDouble(row, colUTC);
            
       // We can also access by fixed column index...
       ComplexValue phase = (ComplexValue) tab.get(row, 3);
@@ -397,8 +397,9 @@ loop through all table rows to get only the scalar values from the column named 
   }
 ```
 
-The old `getElement()` / `setElement()` methods supported access as arrays. This is still a viable alternative 
-(though slightly less elegant), and the equivalent to the above in this approach would be:
+The old `getElement()` / `setElement()` methods supported access as arrays only. While this is still a viable alternative 
+(though slightly less elegant), we recommend against it going forward. Nevetheless, the equivalent to the above using this 
+approach would be:
 
 ```java   
   // Loop through rows, accessing the relevant column data
@@ -425,28 +426,13 @@ which means that while FITS supports `null` logical values, we don't and these w
 the `get()` method introduced in 1.18 will return these as `Boolean` arrays instead, retaining `null` values 
 appropriately!).
 
-Note that for best performance you should access elements in monotonically increasing order when accessing elements 
-in deferred mode -- at least for the rows, but it does not hurt to follow the same principle for columns inside the 
+Note that for best performance you should access elements in monotonically increasing order in deferred mode -- at 
+least for the rows, but it does not hurt to follow the same principle for columns inside the 
 loops also. This will help avoid excess buffering that way be required at times for backward jumps.
 
-Row-based access via `getRow(int)` works very similarly to element-based access. In the loop above you'd 
-simply write something like:
-
-```java
-       // Get the entire row...
-       Object[] rowData = tab.getRow(row);
-       
-       // Then pick out entries from that row...
-       double utc = ((double[]) rowData)[0];
-       ...
-```
-
-However, despite the slightly cleaner code, row-based access may be generally slower than element-based access if 
-you do not plan to process all columns, since all columns of the `Object[]` array for the row must be populated 
-regardless of whether we need them or not.
-
-The library provides methods for accessing entire columns also via the `TableData.getColumn(int)` or 
-`BinaryTable.getColumn(String)` methods, which works just like row-based access.
+The library provides methods for accessing entire rows and columns also via the `TableData.getRow(int)` and 
+`TableData.getColumn(int)` or `BinaryTable.getColumn(String)` methods. However, we recommend against using these going
+forward because these methods can be confounding to use, with overlapping data types and/or dimensions.
 
 
 
@@ -613,12 +599,12 @@ Same goes for a table HDU:
   hdu.rewrite();
 ```
 
-Defragmenting allows to reclaim heap space that is no longer used. When deleting variable-length columns, or when replacing 
-entries inside variable-length columns, some or all of the space occupied by old entries on the heap may become dead storage, 
-needlessly bloaing the heap storage. Also, repaced entries may be placed on the heap out of order, which can slow down
-caching effectiveness for sequential table acces. Thus when modifying tables with variable-length columns, it may be a good
-idea to defragment the heap before writing in to the output. For the above example, this would be adding an extra step before
-`rewrite)`. 
+Defragmenting binary tables allows to reclaim heap space that is no longer used in the heap area. When deleting variable-length 
+columns, or when replacing entries inside variable-length columns, some or all of the space occupied by old entries on the heap 
+may become dead storage, needlessly bloaing the heap storage. Also, repaced entries may be placed on the heap out of order, 
+which can slow down caching effectiveness for sequential table acces. Thus when modifying tables with variable-length columns, 
+it may be a good idea to defragment the heap before writing in to the output. For the above example, this would be adding an 
+extra step before `rewrite)`. 
 
 ```java
   ...
@@ -673,7 +659,7 @@ It's not hard to address these, but the user needs some familiarity with the int
 #### Images
 
 We can write images one subarray at a time, if we want to. Here is an example of
-how you could go abot it. First create storage for the contiguous chunk we want
+how you could go about it. First, create storage for the contiguous chunk we want
 to write at a time. For example, same we want to write a 32-bit floating-point image 
 with `[nRows][nCols]` pixels, and we want to write these one row at a time:
 
@@ -811,7 +797,7 @@ that were not available earlier:
 ### Building binary tables from local data
 
 If you already have an `Object[rows][cols]` data table, in which each entry represents data for a row and column, 
-you can create a an appropriate binary table HDU from it as:
+you can create an appropriate binary table HDU from it as:
 
 ```java
    Object[][] rowMajorData = ...
@@ -823,16 +809,21 @@ There are some requirements on the array though:
 
  - All rows must contain the same number of columns
  - The entries for the same column in each row must match in their type
- - All entries in the table must be arrays themselves, such as primitive arrays (e.g. `int[]`, `float[][]`)
-   or else `String[]` arrays. Scalar values are stored as arrays of 1 (e.g. `short[1]`)
- - If entries are multi-dimensional arrays, all rows in a column must have the same dimensionality and shape.
- - If entries are one-dimensional, they can vary in size from row to row
+ - All table entries must be any of:
+     * One of the supported Java types `String`, `ComplexValue`), or
+     * primitive arrays (e.g. `int[]`, `float[][]`), or
+     * Arrays of `Boolean` (logicals), `String` or `ComplexValue`, such as `Boolean[][]` or `String[]`, or
+     * Scalar primitives stored as arrays of 1 (e.g. `short[1]`).
+ - If entries are multi-dimensional arrays, all rows in a column must have the same dimensionality and shape. (If not, they
+   will be stored as variable-length arrays in flattened 1D format, where the shape may be lost). 
+ - If entries are one-dimensional, they can freely vary in size from row to row
+ - Java `null` entries are allowed for `String` and `Boolean` (logical) types, but not for the other data types.
 
    
-Note, that while the library supports ASCII tables, it is generally better to just use binary tables for storing data 
-in general. ASCII tables are more limited, and were meant to be readable from a console without needing any tools. 
-However, much has happened since the 1970s, and there is no reason for using ASCII tables any more. Binary tables are 
-simply better, because they:
+Note, that while the library supports ASCII tables, it is generally better to just use binary tables for storing table data
+regardless. ASCII tables are more limited, and were meant to be readable from a console without needing any tools to display. 
+However, much has happened since the 1970s, and there is no truly compelling reason for using ASCII tables today. Binary 
+tables are simply better, because they:
 
  - Offer more flexibility, and more data types (such as complex values, variable sized arrays, and 
    multidimensional arrays).
@@ -842,14 +833,80 @@ simply better, because they:
 To create ASCII tables (when possible) instead using `Fits.makeHDU()` or one of the factory methods to encapsulate 
 a table data object, you should call `FitsFactory.setUseAsciiTables(true)` beforehand.
  
-Defragmenting might also be a good idea before writing out tables created with variable-length column data.
+When creating or modifying binary tables containing variable-length columns, defragmenting might also be a good idea 
+before writing out binary tables to a file or stream:
 
 ```java
-  table.defragment();
+  tableHDU.getData().defragment();
 ```
  
-before calling `write()`.
+just before calling `write()`.
  
+
+#### Buiding tables one row at a time
+
+As of 1.18 building tables one row at a time is both easy and efficient -- and may be the least confusing way to get
+tables done right. (In prior releases, adding rows to existing tables was painfully slow, and much more constrained). You may 
+want to start by defining the types and dimensions (or whether variable-length) of the data that will be contained in each 
+table column:
+
+```java
+   BinaryTable table = new BinaryTable();
+   
+   // A column containing 64-bit floating point scalar values, 1 per row...
+   table.addColumn(ColumnDesc.createForScalars(double.class));
+   
+   // A column containing 5x4 arrays of single-precision complex values...
+   table.addColumn(ColumnDesc.createForArrays(ComplexValue.Float.class, 5, 4)
+   
+   // A column containing Strings of variable length using 32-bit heap pointers...
+   table.addColumn(ColumnDesc.creatForVariableStrings(false);
+   
+   ...
+```
+
+Defining columns this way is not always necessary before adding rows to the table. However, it is necessary if you will 
+have data that needs variable-length storage row-after-row; or if you plan to add rows using boxed scalar values that were 
+introduced in 1.18; or you want more control over specifics of the column format. As such, it is 
+best practice to define the columns explictly even if not strictly required for your particular application. 
+
+Now you can populate the table with your data, one row at a time, using the `addRow()` method as many times over as
+necessary:
+
+```java   
+   for (...) {
+   	Object[] row = new Object[table.getNCols()][];
+   	
+   	// populate the row, making sure each row is compatible with prior rows...
+   	...
+   	
+   	// Add the row to the table (the first row will determine the column structure)
+   	table.addRow(row);
+   }
+```
+
+As of 1.18, adding rows allows for vararg syntax and for using Java boxed types (as an alternative to arrays of 1) to 
+specify scalar table elements, including auto-boxing of literals and variables. Thus, since 1.18, you may simply write:
+
+```java
+   short s...
+
+   table.addRow(1, 3.14159265, s);
+```
+
+to add a row consisting of an 32-bit integer, a double-precision floating point value and a 16-bit short value. Prior to
+1.18, the same would always have to have been written as:
+
+```java
+  short s...
+  
+  table.addRow(new Object[] { new int[] {1}, new double[] {3.14159265}, new short[] {s} }; 
+```
+
+
+Tables built entirely row-by-row are naturally defragmented, notwithstanding subsequent modifications.
+
+
 #### Buiding tables one column at a time
 
 Sometimes we might want to assemble a table from a selection of data which will readily consitute columns in the table. 
@@ -876,61 +933,26 @@ can create a table with these (or add them to an existing table with a matching 
 There are just a few thing to keep in mind when constructing tables in this way:
   
   - All columns added this way must contain the same number of rows
-  - In column data, scalars can be simply elements in an primitive array, where each entry contains
-    the scalar value for a row. (I.e. unlike in the row-major table format required to create entire tables at once, 
+  - In column data, scalars are simply elements in a 1D primitive array, in which each entry contains
+    the scalar value for a given row. (I.e. unlike in the row-major table format required to create entire tables at once, 
     we do not have to wrap scalar values in self-contained arrays of 1)
   - Other than the above, the same rules apply as for creating HDUs from complete table data above.
   - If setting complex columns with arrays of `float[2]` or `double[2]` (the old way), you will want to call 
-    `setComplexColumn(int)` afterwards for that column to make sure they are labelled properly in the FITS (rather 
-    than as real-valued arrays of `float` or `double`).
+    `setComplexColumn(int)` afterwards for that column to make sure they are labeled properly in the FITS header 
+    (rather than as real-valued arrays of `float` or `double`).
   - Similarly, if adding arrays of `boolean` values, you might consider calling `convertToBits(int)` on that
-    column for a more compact storage of the `true`/`false` values.
+    column for a more compact storage option of the `true`/`false` values, rather than as 1-byte FITS logicals 
+    (default).
     
 
-Defragmenting might also be a good idea before writing tables with variable-length data column by column (as opposed to
-row-by-row):
+Defragmenting might also be a good idea before writing binary tables with variable-length data built column by column (as 
+opposed to row-by-row):
 
 ```java
   table.defragment();
 ```
  
 before calling `write()`.
-
-
-#### Buiding tables one row at a time
-
-As of 1.18 building tables one row at a time is also easy and efficient. (In prior releases, adding rows
-to existing tables was painfully slow). Simply use the `BinaryTable.addRow()` method to add new rows
-to tables, e.g.:
-
-```java
-   BinaryTable table = new BinaryTable();
-   
-   for (...) {
-   	Object[] row = new Object[table.getNCols()][];
-   	
-   	// populate the row, making sure each row is compatible with prior rows...
-   	...
-   	
-   	// Add the row to the table (the first row will determine the column structure)
-   	table.addRow(row);
-   }
-```
-
-The rules for row layout are the same as when creating a binary table from a row-major table data 
-(further above), but also:
-
- - For `getElement()` / `setElement()`, `getRow() / setRow()` complex-valued data must be converted 
-   to arrays of `float[2]` or `double[2]`. (Single complex values can be simply `float[2]` or 
-   `double[2]`).
-
-
-Thus, scalar elements must be wrapped into arrays of 1 in the row format, and `ComplexValue`s
-must be converted (e.g. via `ArrayFuncs.complexToDecimals()` to `float[2]` / `double[2]` or arrays
-thereof.
-
-Tables built entirely row-by-row should never need to be de-fragmented, unless they are modified
-later on.
 
 
 
