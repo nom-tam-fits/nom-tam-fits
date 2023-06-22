@@ -170,7 +170,7 @@ public class BinaryTableTest {
         Fits f = new Fits();
         f.addHDU(Fits.makeHDU(btab));
 
-        assertEquals(0, ((byte[]) ((Object[]) btab.getData().getRow(1))[2])[4]);
+        assertEquals((byte) ' ', ((byte[]) ((Object[]) btab.getData().getRow(1))[2])[4]);
         assertArrayEquals(new int[] {16, 2, 19, 2, 1, 2, 2, 33}, btab.getData().getSizes());
 
         FitsOutputStream bdos = new FitsOutputStream(new FileOutputStream("target/bt3.fits"));
@@ -629,7 +629,7 @@ public class BinaryTableTest {
         byte[] barr = {'a', 'b', 'c', ' ', 'b', 'c', 'a', 'b', ' '};
 
         byte[] obytes = FitsUtil.stringsToByteArray(sarr, 3);
-        assertEquals("b1", "abc def\0\0", new String(obytes));
+        assertEquals("b1", "abc def  ", new String(obytes));
 
         String[] ostrings = FitsUtil.byteArrayToStrings(barr, 3);
         assertEquals("slen", ostrings.length, 3);

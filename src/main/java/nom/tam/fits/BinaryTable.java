@@ -33,6 +33,7 @@ package nom.tam.fits;
 
 import java.io.IOException;
 import java.lang.reflect.Array;
+import java.text.DecimalFormat;
 import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.List;
@@ -88,6 +89,8 @@ public class BinaryTable extends AbstractTableData implements Cloneable {
 
     private static final int[] SCALAR_SHAPE = new int[0];
 
+    private static final String SUBSTRING_MARKER = ":SSTR";
+
     /**
      * Describes the data type and shape stored in a binary table column.
      */
@@ -125,10 +128,10 @@ public class BinaryTable extends AbstractTableData implements Cloneable {
         private char pointerType;
 
         /**
-         * String terminator for substring arrays -- not yet populated from TFORM TODO parse TFORM for substring array
-         * convention...
+         * String component delimiter for substring arrays, for example as defined by the TFORM keyword that uses the
+         * substring array convention...
          */
-        private byte terminator;
+        private byte delimiter;
 
         /**
          * Is this a complex column. Each entry will be associated with a float[2]/double[2]
@@ -278,7 +281,7 @@ public class BinaryTable extends AbstractTableData implements Cloneable {
                 throw new IllegalStateException("Not a string column: type " + getBoxedClass());
             }
 
-            if (stringLength < 0) {
+            if (stringLength < 0 && !isVariableSize()) {
                 stringLength = len;
                 setShape(shape);
             } else {
@@ -346,6 +349,7 @@ public class BinaryTable extends AbstractTableData implements Cloneable {
          * 
          * @throws FitsException if the base type is not one that can be used in binary table columns.
          * 
+         * @see                  #createForVariableStrings(boolean)
          * @see                  #createForStrings(int)
          * @see                  #createForVariableLength(Class, boolean)
          * @see                  #ColumnDesc(Class, int[])
@@ -356,6 +360,83 @@ public class BinaryTable extends AbstractTableData implements Cloneable {
             ColumnDesc c = new ColumnDesc(String.class, false);
             c.setStringLength(len);
             c.setShape(outerDims);
+            return c;
+        }
+
+        /**
+         * Creates a new column descriptor for columns containing vatiable-length arrays of string entries of fixed
+         * length.
+         * 
+         * @param  useLongPointers <code>true</code> to use 64-bit heap pointers for variable-length arrays or else
+         *                             <code>false</code> to use 32-bit pointers.
+         * 
+         * @return                 the new column descriptor
+         * 
+         * @throws FitsException   if the column could not be created.
+         * 
+         * @see                    #createForStrings(int)
+         * @see                    #createForStrings(int[], int)
+         * @see                    #createForVariableStringArrays(int, boolean)
+         * @see                    #ColumnDesc(Class, int[])
+         * 
+         * @since                  1.18
+         */
+        public static ColumnDesc createForVariableStrings(boolean useLongPointers) throws FitsException {
+            ColumnDesc c = createForVariableLength(String.class, useLongPointers);
+            c.setVariableSize();
+            return c;
+        }
+
+        /**
+         * Creates a new column descriptor for columns containing variable-length arrays of fixed-length string entries.
+         * Each string component will occupy exactly <code>len</code> bytes.
+         * 
+         * @param  len             The fixed string storage length in bytes.
+         * @param  useLongPointers <code>true</code> to use 64-bit heap pointers for variable-length arrays or else
+         *                             <code>false</code> to use 32-bit pointers.
+         * 
+         * @return                 the new column descriptor
+         * 
+         * @throws FitsException   if the column could not be created.
+         *
+         * @see                    #createForVariableStrings(boolean)
+         * @see                    #createForDelimitedVariableStringArrays(int, byte, boolean)
+         * @see                    #createForStrings(int[], int)
+         * @see                    #ColumnDesc(Class, int[])
+         * 
+         * @since                  1.18
+         */
+        public static ColumnDesc createForVariableStringArrays(int len, boolean useLongPointers) throws FitsException {
+            ColumnDesc c = createForVariableStrings(useLongPointers);
+            c.setStringLength(len);
+            c.setVariableSize();
+            return c;
+        }
+
+        /**
+         * Creates a new column descriptor for columns containing variable-length arrays of string entries of fixed
+         * maximum length and a delimiter byte for shorter strings.
+         * 
+         * @param  len             The fixed string storage length in bytes.
+         * @param  elim            the byte value that delimits strings that are shorter than the storage length. It
+         *                             should be in the ASCII range of 0x20 through 0x7e.
+         * @param  useLongPointers <code>true</code> to use 64-bit heap pointers for variable-length arrays or else
+         *                             <code>false</code> to use 32-bit pointers.
+         * 
+         * @return                 the new column descriptor
+         * 
+         * @throws FitsException   if the column could not be created.
+         * 
+         * @see                    #createForVariableStringArrays(int, boolean)
+         * @see                    #createForStrings(int[], int)
+         * @see                    #ColumnDesc(Class, int[])
+         * 
+         * @since                  1.18
+         */
+        public static ColumnDesc createForDelimitedVariableStringArrays(int len, byte elim, boolean useLongPointers)
+                throws FitsException {
+            ColumnDesc c = createForVariableStringArrays(len, useLongPointers);
+            c.setSubstringDelimiter(elim);
             return c;
         }
 
@@ -816,6 +897,25 @@ public class BinaryTable extends AbstractTableData implements Cloneable {
         }
 
         /**
+         * Sets a custom substring delimiter byte for variable length string arrays, between ASCII 0x20 and 0x7e. We
+         * will however tolerate values outside of that range, but log an appropriate warning to alert users of the
+         * violation of the standard. User's can either 'fix' it, or suppress the warning if they want to stick to their
+         * guns.
+         * 
+         * @param delim the delimiter byte value, between ASCII 0x20 and 0x7e (inclusive).
+         * 
+         * @since       1.18
+         */
+        private void setSubstringDelimiter(byte delim) {
+            if (delim < FitsUtil.MIN_ASCII_VALUE || delim > FitsUtil.MAX_ASCII_VALUE) {
+                LOG.warning("WARNING! Substring terminator byte " + (delim & FitsIO.BYTE_MASK)
+                        + " outside of the conventional range of " + FitsUtil.MIN_ASCII_VALUE + " through "
+                        + FitsUtil.MAX_ASCII_VALUE + " (inclusive)");
+            }
+            delimiter = delim;
+        }
+
+        /**
          * Checks if <code>null</code> array elements are permissible for this column. It is for strings (which map to
          * empty strings), and for logical columns, where they signify undefined values.
          * 
@@ -823,6 +923,78 @@ public class BinaryTable extends AbstractTableData implements Cloneable {
          */
         private boolean isNullAllowed() {
             return isLogical() || isString();
+        }
+
+        /**
+         * Parses the substring array convention from a TFORM value, to set string length (if desired) and a delimiter
+         * in variable-length string arrays.
+         * 
+         * @param tform     the TFORM keyword entry for the column.
+         * @param setLength Whether to use the substring definition to specify the max string component length, for
+         *                      example because it is not defined otherwise by TDIM.
+         */
+        private void parseSubstringConvention(String tform, boolean setLength) {
+            // Parse substring array convention...
+            String rem = tform.substring(tform.indexOf('A') + 1);
+
+            if (rem.isEmpty()) {
+                return;
+            }
+
+            // Try nAw format...
+            try {
+                setStringLength(Integer.parseInt(rem));
+                return;
+            } catch (NumberFormatException e) {
+                // Keep going...
+            }
+
+            // Find if and where is the ":SSTR" marker in the format
+            int iSub = rem.indexOf(SUBSTRING_MARKER);
+            if (iSub < 0) {
+                // No substring definition...
+                return;
+            }
+
+            rem = rem.substring(iSub + SUBSTRING_MARKER.length());
+
+            // Split to width/delimiter parts
+            String[] parts = rem.split("/", 2);
+
+            // Set the substring width....
+            try {
+                int n = Integer.parseInt(parts[0]);
+                if (setLength) {
+                    setStringLength(n);
+                }
+            } catch (NumberFormatException e) {
+                LOG.warning("WARNING! Could not parse conventional substring length from [" + parts[0] + "] in TFORM");
+            }
+
+            // If a delimiter was also defined, set delimiter...
+            if (parts.length > 1) {
+                try {
+                    setSubstringDelimiter((byte) Integer.parseInt(parts[1]));
+                } catch (NumberFormatException e) {
+                    // Warn if the delimiter is outside of the range supported by the convention.
+                    LOG.warning(
+                            "WARNING! Could not parse conventional substring terminator from [" + parts[1] + "] in TFORM");
+                }
+
+            }
+        }
+
+        private void appendSubstringConvention(StringBuffer tform) {
+            if (getStringLength() > 0) {
+                tform.append(SUBSTRING_MARKER);
+                if (getStringLength() > 0) {
+                    tform.append(getStringLength());
+                }
+                if (delimiter != 0) {
+                    tform.append('/');
+                    tform.append(new DecimalFormat("000").format(delimiter & FitsIO.BYTE_MASK));
+                }
+            }
         }
     }
 
@@ -1678,7 +1850,7 @@ public class BinaryTable extends AbstractTableData implements Cloneable {
      * 
      * @see        ColumnDesc#getDimens()
      * 
-     * @deprecated (<i>for internal use</i>) Use {@link #getElementShape(int)} to access the shape of elements
+     * @deprecated (<i>for internal use</i>) Use {@link #getElementShape(int)} to access the shape of Java elements
      *                 individually for columns instead. Not useful to users since it returns the dimensions of the
      *                 primitive storage types, which is not always the dimension of elements on the Java side (notably
      *                 for string entries).
@@ -2646,7 +2818,7 @@ public class BinaryTable extends AbstractTableData implements Cloneable {
             if (c.fitsBase == char.class) {
                 setFitsElement(row, col, Arrays.copyOf(value.toCharArray(), maxLength));
             } else if (c.fitsBase == byte.class) {
-                setFitsElement(row, col, FitsUtil.stringToByteArray(value, maxLength, c.terminator));
+                setFitsElement(row, col, FitsUtil.stringToByteArray(value, maxLength));
             } else {
                 throw new IllegalArgumentException("Cannot cast String to " + c.fitsBase.getName());
             }
@@ -2867,24 +3039,27 @@ public class BinaryTable extends AbstractTableData implements Cloneable {
                     return new byte[0];
                 }
 
-                byte[] b = (byte[]) Array.newInstance(byte.class, c.shape);
-                FitsUtil.terminateNullBytes(b, c.terminator);
-                return b;
+                return Array.newInstance(byte.class, c.shape);
             }
 
             if (o instanceof String) {
                 int l = c.getStringLength();
                 if (l < 0) {
+                    // Not fixed width, write the whole string.
                     l = ((String) o).length();
                 }
-                return FitsUtil.stringToByteArray((String) o, l, c.terminator);
+                return FitsUtil.stringToByteArray((String) o, l);
             }
 
-            if (c.isVariableSize() && c.getStringLength() < 0) {
-                return FitsUtil.stringsToSeparatedBytes((String[]) o, c.terminator);
+            if (c.isVariableSize() && c.delimiter != 0) {
+                // Write variable-length string arrays in delimited form
+                return FitsUtil.stringsToDelimitedBytes((String[]) o, c.getStringLength(), c.delimiter);
             }
 
-            return FitsUtil.stringsToByteArray((String[]) o, c.getStringLength(), c.terminator);
+            // Fixed length substring array (not delimited).
+            // For compatibility with tools that do not process array dimension, ASCII NULL should not
+            // be used between components (permissible only at the end of all strings)
+            return FitsUtil.stringsToByteArray((String[]) o, c.getStringLength(), FitsUtil.BLANK_SPACE);
         }
 
         return o;
@@ -2921,16 +3096,32 @@ public class BinaryTable extends AbstractTableData implements Cloneable {
         if (c.isString()) {
             byte[] bytes = (byte[]) o;
 
-            if (c.dimension() < 2) {
-                return FitsUtil.extractString(bytes, 0, bytes.length, c.terminator);
+            if (c.isVariableSize()) {
+                if (c.delimiter != 0) {
+                    // See if there is a fixed substring width that was specified
+                    int len = c.getStringLength();
+                    if (len < 0) {
+                        len = bytes.length;
+                    }
+
+                    // delimited array of strings
+                    return FitsUtil.delimitedBytesToStrings(bytes, len, c.delimiter);
+                }
+                // not delimited -- single variable-length string
+                return FitsUtil.extractString(bytes, 0, bytes.length, FitsUtil.ASCII_NULL);
             }
 
-            int stringSize = c.getLastDim();
+            if (c.dimension() < 2) {
+                // Single fixed string -- we'll trim...
+                return FitsUtil.extractString(bytes, 0, bytes.length, FitsUtil.ASCII_NULL);
+            }
 
-            String[] s = new String[c.fitsCount / stringSize];
+            int maxlen = c.getLastDim();
 
+            // Array of fixed-length strings -- we trim each component
+            String[] s = new String[c.fitsCount / maxlen];
             for (int i = 0; i < s.length; i++) {
-                s[i] = FitsUtil.extractString(bytes, i * stringSize, stringSize, c.terminator);
+                s[i] = FitsUtil.extractString(bytes, i * maxlen, maxlen, FitsUtil.ASCII_NULL);
             }
 
             return s;
@@ -3023,7 +3214,6 @@ public class BinaryTable extends AbstractTableData implements Cloneable {
      * 
      * @throws FitsException if the header deswcription is invalid or incomplete
      */
-    @SuppressFBWarnings(value = "SF_SWITCH_FALLTHROUGH", justification = "intentional fall through (marked)")
     public static ColumnDesc getDescriptor(Header header, int col) throws FitsException {
         String tform = header.getStringValue(TFORMn.n(col + 1));
         if (tform == null) {
@@ -3038,8 +3228,6 @@ public class BinaryTable extends AbstractTableData implements Cloneable {
             type = getTFORMVarType(tform);
         }
         int size = getTFORMLength(tform);
-
-        // TODO get substring length and/or terminator char
 
         String tdims = header.getStringValue(TDIMn.n(col + 1));
         if (tdims != null) {
@@ -3082,11 +3270,15 @@ public class BinaryTable extends AbstractTableData implements Cloneable {
         case 'A':
             c.fitsBase = byte.class;
             c.base = String.class;
+            c.parseSubstringConvention(tform, tdims == null);
             break;
 
         case 'X':
             c.isBits = true;
-            /* NO BREAK */
+            c.fitsBase = byte.class;
+            c.base = boolean.class;
+            break;
+
         case 'L':
             c.fitsBase = byte.class;
             c.base = boolean.class;
@@ -3334,6 +3526,9 @@ public class BinaryTable extends AbstractTableData implements Cloneable {
             tform.append('X');
         } else if (c.isString()) {
             tform.append('A');
+            if (c.isVariableSize() || c.getBoxedDimension() == 1) {
+                c.appendSubstringConvention(tform);
+            }
         } else {
             throw new FitsException("Invalid column data class:" + c.base);
         }

@@ -58,10 +58,16 @@ import edu.umd.cs.findbugs.annotations.SuppressFBWarnings;
 public final class FitsUtil {
 
     /** Lowest ASCII value that can be in FITS strings */
-    private static final int BLANK_SPACE = 0x20;
+    static final byte BLANK_SPACE = 0x20;
 
     /** Highest ASCII value that can be in FITS strings */
-    private static final int MAX_ASCII_VALUE = 0x7e;
+    static final byte MIN_ASCII_VALUE = 0x20;
+
+    /** Highest ASCII value that can be in FITS strings */
+    static final byte MAX_ASCII_VALUE = 0x7e;
+
+    /** Highest ASCII value that can be in FITS strings */
+    static final byte ASCII_NULL = 0x00;
 
     /**
      * the logger to log to.
@@ -254,7 +260,7 @@ public final class FitsUtil {
 
     /**
      * Extracts a string from a byte array at the specified offset, maximal length and termination byte. This method
-     * will not trim leading or trailing spaces.
+     * trims trailing spaces but not leading ones.
      * 
      * @param  bytes      an array of ASCII bytes
      * @param  offset     the array index at which the string begins
@@ -280,7 +286,7 @@ public final class FitsUtil {
         for (int i = 0; i < maxLen; i++) {
             byte b = bytes[offset + i];
 
-            if (b == terminator) {
+            if (b == terminator || b == 0) {
                 break;
             }
 
@@ -301,7 +307,7 @@ public final class FitsUtil {
                     LOG.warning("WARNING! Converting invalid table string character[s] to spaces.");
                     wroteCheckingError = true;
                 }
-                b = (byte) BLANK_SPACE;
+                b = BLANK_SPACE;
             }
 
             sanitized[i] = b;
@@ -314,14 +320,16 @@ public final class FitsUtil {
      * Converts a FITS byte sequence to a Java string array, triming spaces at the heads and tails of each element.
      * While FITS typically considers leading spaces significant, this library has been removing them from regularly
      * shaped string arrays for a very long time, apparently based on request by users then... Even though it seems like
-     * a bad choice, since users could always call {@link String#trim()} if they needed to, we cannot easily go in the
-     * reverse direction. At this point we have no real choice but to continue the tradition, lest we want to break
-     * exising applications, which count on this behavior.
+     * a bad choice, since users could always call {@link String#trim()} if they needed to, we cannot recover the
+     * leading spaces once the string was trimmed. At this point we have no real choice but to continue the tradition,
+     * lest we want to break exising applications, which may rely on this behavior.
      * 
-     * @return        Convert bytes to Strings, removing leading and trailing spaces from each entry.
+     * @return            Convert bytes to Strings, removing leading and trailing spaces from each entry.
      *
-     * @param  bytes  byte array to convert
-     * @param  maxLen the max string length
+     * @param      bytes  byte array to convert
+     * @param      maxLen the max string length
+     * 
+     * @deprecated        (<i>for internal use</i>) No longer used internally, will be removed in the future.
      */
     public static String[] byteArrayToStrings(byte[] bytes, int maxLen) {
         // Note that if a String in a binary table contains an internal 0,
@@ -405,9 +413,11 @@ public final class FitsUtil {
     /**
      * Gets the file offset for the given IO resource.
      * 
-     * @return   The offset from the beginning of file (if random accessible), or -1 otherwise.
+     * @return       The offset from the beginning of file (if random accessible), or -1 otherwise.
      *
-     * @param  o the stream to get the position
+     * @param      o the stream to get the position
+     * 
+     * @deprecated   (<i>for internal use</i>) Visibility may be reduced to the package level in the future.
      */
     public static long findOffset(Closeable o) {
         if (o instanceof RandomAccess) {
@@ -525,13 +535,15 @@ public final class FitsUtil {
     /**
      * Adds the necessary amount of padding needed to complete the last FITS block.
      *
-     * @param  stream        stream to pad
-     * @param  size          the current size of the stream (total number of bytes written to it since the beginning of
-     *                           the FITS).
+     * @param      stream        stream to pad
+     * @param      size          the current size of the stream (total number of bytes written to it since the beginning
+     *                               of the FITS).
      *
-     * @throws FitsException if the operation failed
+     * @throws     FitsException if the operation failed
      * 
-     * @see                  #pad(ArrayDataOutput, long, byte)
+     * @see                      #pad(ArrayDataOutput, long, byte)
+     * 
+     * @deprecated               (<i>for internal use</i>) Visibility may be reduced to package level in the future
      */
     public static void pad(ArrayDataOutput stream, long size) throws FitsException {
         pad(stream, size, (byte) 0);
@@ -541,14 +553,16 @@ public final class FitsUtil {
      * Adds the necessary amount of padding needed to complete the last FITS block., usign the designated padding byte
      * value.
      *
-     * @param  stream        stream to pad
-     * @param  size          the current size of the stream (total number of bytes written to it since the beginning of
-     *                           the FITS).
-     * @param  fill          the byte value to use for the padding
+     * @param      stream        stream to pad
+     * @param      size          the current size of the stream (total number of bytes written to it since the beginning
+     *                               of the FITS).
+     * @param      fill          the byte value to use for the padding
      *
-     * @throws FitsException if the operation failed
+     * @throws     FitsException if the operation failed
      * 
-     * @see                  #pad(ArrayDataOutput, long)
+     * @see                      #pad(ArrayDataOutput, long)
+     * 
+     * @deprecated               (<i>for internal use</i>) Visibility may be reduced to private in the future
      */
     public static void pad(ArrayDataOutput stream, long size, byte fill) throws FitsException {
         int len = padding(size);
@@ -634,13 +648,13 @@ public final class FitsUtil {
      * Converts a string to ASCII bytes in the specified array, padding (with 0x00) or truncating as necessary to
      * provide the expected length at the specified arrya offset.
      * 
-     * @param s          a string
-     * @param res        the byte array into which to extract the ASCII btes
-     * @param offset     array index in the byte array at which the extracted bytes should begin
-     * @param len        the maximum number of bytes to extract, truncating or padding (with 0x00) as needed.
-     * @param terminator the byte value that terminates strings
+     * @param s      a string
+     * @param res    the byte array into which to extract the ASCII bytes
+     * @param offset array index in the byte array at which the extracted bytes should begin
+     * @param len    the maximum number of bytes to extract, truncating or padding (with 0x00) as needed.
+     * @param pad    the byte value to use to pad the remainder of the string
      */
-    private static void stringToBytes(String s, byte[] res, int offset, int len, byte terminator) {
+    private static void stringToBytes(String s, byte[] res, int offset, int len, byte pad) {
         int l = 0;
 
         if (s != null) {
@@ -651,13 +665,9 @@ public final class FitsUtil {
             }
         }
 
-        // Terminate and pad as necesary
+        // Terminate and pad as necessary
         if (l < len) {
-            res[offset + (l++)] = terminator;
-        }
-
-        if (l < len) {
-            Arrays.fill(res, offset + l, offset + len, (byte) 0);
+            Arrays.fill(res, offset + l, offset + len, BLANK_SPACE);
         }
     }
 
@@ -665,47 +675,25 @@ public final class FitsUtil {
      * Converts a string to an array of ASCII bytes, padding (with 0x00) or truncating as necessary to provide the
      * expected length.
      * 
-     * @param  s          a string
-     * @param  len        the number of bytes for the return value, also the maximum number of bytes that are extracted
-     *                        from the string
-     * @param  terminator the byte value that terminates strings
+     * @param  s   a string
+     * @param  len the number of bytes for the return value, also the maximum number of bytes that are extracted from
+     *                 the string
      * 
-     * @return            a byte array of the specified length containing the truncated or padded string value.
+     * @return     a byte array of the specified length containing the truncated or padded string value.
      * 
-     * @see               #stringsToByteArray(String[], int, byte)
-     *
-     * @since             1.18
+     * @see        #stringsToByteArray(String[], int, byte) q
+     * 
+     * @since      1.18
      */
-    static byte[] stringToByteArray(String s, int len, byte terminator) {
+    static byte[] stringToByteArray(String s, int len) {
         byte[] res = new byte[len];
-        stringToBytes(s, res, 0, len, terminator);
+        stringToBytes(s, res, 0, len, (byte) 0);
         return res;
     }
 
     /**
-     * Convert an array of Strings to bytes.
-     *
-     * @return             the resulting bytes
-     *
-     * @param  stringArray the array with Strings
-     * @param  len         the number of bytes used for each string element. The string will be truncated ot padded as
-     *                         necessary to fit into that size.
-     * @param  terminator  the byte value that terminates strings
-     * 
-     * @see                #stringToByteArray(String, int, byte)
-     * 
-     * @since              1.18
-     */
-    static byte[] stringsToByteArray(String[] stringArray, int len, byte terminator) {
-        byte[] res = new byte[stringArray.length * len];
-        for (int i = 0; i < stringArray.length; i++) {
-            stringToBytes(stringArray[i], res, i * len, len, terminator);
-        }
-        return res;
-    }
-
-    /**
-     * Convert an array of Strings to bytes.
+     * Convert an array of Strings to bytes. padding (with 0x00) or truncating as necessary to provide the expected
+     * length.
      *
      * @return                 the resulting bytes
      *
@@ -720,49 +708,80 @@ public final class FitsUtil {
     }
 
     /**
-     * Convert an array of Strings to a zero-separated sequence of bytes, e.g. for sequentialized variable-sized storage
-     * of multiple string elements.
+     * Convert an array of Strings to bytes. padding (with 0x00) or truncating as necessary to provide the expected
+     * length.
      *
-     * @return            the resulting bytes
+     * @return             the resulting bytes
      *
-     * @param  array      the array with Strings
-     * @param  terminator the byte value that terminates strings
-     * 
-     * @see               #stringToByteArray(String, int)
+     * @param  stringArray the array with Strings
+     * @param  len         the number of bytes used for each string element. The string will be truncated ot padded as
+     *                         necessary to fit into that size.
+     * @param  pad         the byte value to use for padding strings as necessary to the requisite length.
      */
-    static byte[] stringsToSeparatedBytes(String[] array, byte terminator) {
+    static byte[] stringsToByteArray(String[] stringArray, int len, byte pad) {
+        byte[] res = new byte[stringArray.length * len];
+        for (int i = 0; i < stringArray.length; i++) {
+            stringToBytes(stringArray[i], res, i * len, len, pad);
+        }
+        return res;
+    }
+
+    /**
+     * Convert an array of strings to a delimited sequence of bytes, e.g. for sequentialized variable-sized storage of
+     * multiple string elements. The last string component is terminated by an ASCII NUL (0x00).
+     *
+     * @return        the resulting bytes
+     *
+     * @param  array  the array with Strings
+     * @param  maxlen the maximum string length or -1 of unlimited.
+     * @param  delim  the byte value that delimits string components
+     * 
+     * @see           #stringToByteArray(String, int)
+     * 
+     * @since         1.18
+     */
+    static byte[] stringsToDelimitedBytes(String[] array, int maxlen, byte delim) {
         int l = array.length - 1;
         for (String s : array) {
-            if (s != null) {
-                l += s.length();
-            }
+            l += (s == null) ? 1 : Math.max(s.length() + 1, maxlen);
         }
         byte[] b = new byte[l];
         l = 0;
         for (String s : array) {
             if (s != null) {
-                stringToBytes(s, b, l++, s.length(), terminator);
+                int n = Math.max(s.length() + 1, maxlen);
+                stringToBytes(s, b, l, n, delim);
+                l += n;
+            } else {
+                b[l++] = delim;
             }
         }
+        b[l - 1] = (byte) 0;
         return b;
     }
 
     /**
-     * Terminates all byte arrays with the desgnated terminator byte at position zero
+     * Extracts strings from a packed delimited byte sequence. Strings start either immediately after the prior string
+     * reached its maximum length, or else immediately after the specified delimiter byte value.
      * 
-     * @param o          A byte array or arrays thereof.
-     * @param terminator The designator terminator byte value.
+     * @param  bytes  bytes containing the packed strings
+     * @param  maxLen the maximum length of individual string components
+     * @param  delim  the byte value that delimits strings shorter than the maximum length
+     * 
+     * @return        An array of the extracted strings
+     *
+     * @see           #stringsToDelimitedBytes(String[], int, byte)
+     * 
+     * @since         1.18
      */
-    static void terminateNullBytes(Object o, byte terminator) {
-        if (o instanceof byte[]) {
-            byte[] b = (byte[]) o;
-            if (b.length > 0) {
-                b[0] = terminator;
-            }
-        } else if (o instanceof Object[]) {
-            for (Object e : (Object[]) o) {
-                terminateNullBytes(e, terminator);
-            }
+    static String[] delimitedBytesToStrings(byte[] bytes, int maxLen, byte delim) {
+        String[] res = new String[bytes.length / maxLen];
+        int next = 0;
+        for (int i = 0; i < res.length; i++) {
+            res[i] = extractString(bytes, next, maxLen, delim);
+            next += Math.min(maxLen, res[i].length());
         }
+        return res;
     }
+
 }
