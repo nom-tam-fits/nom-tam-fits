@@ -39,6 +39,8 @@ import java.net.HttpURLConnection;
 import java.net.ProtocolException;
 import java.net.URL;
 import java.net.URLConnection;
+import java.text.ParsePosition;
+import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.logging.Level;
 import java.util.logging.Logger;
@@ -271,7 +273,9 @@ public final class FitsUtil {
      * 
      * @since             1.18
      */
-    static String extractString(byte[] bytes, int offset, int maxLen, byte terminator) {
+    static String extractString(byte[] bytes, ParsePosition pos, int maxLen, byte terminator) {
+        int offset = pos.getIndex();
+
         if (offset >= bytes.length) {
             return "";
         }
@@ -294,6 +298,8 @@ public final class FitsUtil {
                 end = i;
             }
         }
+
+        pos.setIndex(offset + end + 1);
 
         byte[] sanitized = new byte[end + 1];
         boolean checking = FitsFactory.getCheckAsciiStrings();
@@ -340,7 +346,7 @@ public final class FitsUtil {
 
         String[] res = new String[bytes.length / maxLen];
         for (int i = 0; i < res.length; i++) {
-            res[i] = extractString(bytes, i * maxLen, maxLen, (byte) '\0').trim();
+            res[i] = extractString(bytes, new ParsePosition(i * maxLen), maxLen, (byte) '\0').trim();
         }
         return res;
     }
@@ -667,7 +673,7 @@ public final class FitsUtil {
 
         // Terminate and pad as necessary
         if (l < len) {
-            Arrays.fill(res, offset + l, offset + len, BLANK_SPACE);
+            Arrays.fill(res, offset + l, offset + len, pad);
         }
     }
 
@@ -687,7 +693,7 @@ public final class FitsUtil {
      */
     static byte[] stringToByteArray(String s, int len) {
         byte[] res = new byte[len];
-        stringToBytes(s, res, 0, len, (byte) 0);
+        stringToBytes(s, res, 0, len, BLANK_SPACE);
         return res;
     }
 
@@ -704,7 +710,7 @@ public final class FitsUtil {
      * @deprecated             (<i>for internal use</i>) Visibility may be reduced to package level in the future.
      */
     public static byte[] stringsToByteArray(String[] stringArray, int len) {
-        return stringsToByteArray(stringArray, len, (byte) 0);
+        return stringsToByteArray(stringArray, len, BLANK_SPACE);
     }
 
     /**
@@ -749,12 +755,10 @@ public final class FitsUtil {
         l = 0;
         for (String s : array) {
             if (s != null) {
-                int n = Math.max(s.length() + 1, maxlen);
-                stringToBytes(s, b, l, n, delim);
-                l += n;
-            } else {
-                b[l++] = delim;
+                stringToBytes(s, b, l, s.length(), BLANK_SPACE);
+                l += s.length();
             }
+            b[l++] = delim;
         }
         b[l - 1] = (byte) 0;
         return b;
@@ -765,7 +769,7 @@ public final class FitsUtil {
      * reached its maximum length, or else immediately after the specified delimiter byte value.
      * 
      * @param  bytes  bytes containing the packed strings
-     * @param  maxLen the maximum length of individual string components
+     * @param  maxlen the maximum length of individual string components
      * @param  delim  the byte value that delimits strings shorter than the maximum length
      * 
      * @return        An array of the extracted strings
@@ -774,12 +778,40 @@ public final class FitsUtil {
      * 
      * @since         1.18
      */
-    static String[] delimitedBytesToStrings(byte[] bytes, int maxLen, byte delim) {
-        String[] res = new String[bytes.length / maxLen];
-        int next = 0;
+    private static String[] delimitedBytesToStrings(byte[] bytes, byte delim) {
+        ArrayList<String> s = new ArrayList<>();
+        ParsePosition pos = new ParsePosition(0);
+        while (pos.getIndex() < bytes.length) {
+            s.add(extractString(bytes, pos, bytes.length, delim));
+        }
+        String[] a = new String[s.size()];
+        s.toArray(a);
+        return a;
+    }
+
+    /**
+     * Extracts strings from a packed delimited byte sequence. Strings start either immediately after the prior string
+     * reached its maximum length, or else immediately after the specified delimiter byte value.
+     * 
+     * @param  bytes  bytes containing the packed strings
+     * @param  maxlen the maximum length of individual string components
+     * @param  delim  the byte value that delimits strings shorter than the maximum length
+     * 
+     * @return        An array of the extracted strings
+     *
+     * @see           #stringsToDelimitedBytes(String[], int, byte)
+     * 
+     * @since         1.18
+     */
+    static String[] delimitedBytesToStrings(byte[] bytes, int maxlen, byte delim) {
+        if (maxlen <= 0) {
+            return delimitedBytesToStrings(bytes, delim);
+        }
+
+        String[] res = new String[(bytes.length + maxlen - 1) / maxlen];
+        ParsePosition pos = new ParsePosition(0);
         for (int i = 0; i < res.length; i++) {
-            res[i] = extractString(bytes, next, maxLen, delim);
-            next += Math.min(maxLen, res[i].length());
+            res[i] = extractString(bytes, pos, maxlen, delim);
         }
         return res;
     }

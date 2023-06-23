@@ -80,9 +80,28 @@ public interface TableData {
      * 
      * @return               the number of rows in the adapted table
      * 
+     * @see                  #setRowEntries(int, Object...)
      * @see                  #deleteRows(int, int)
      */
-    int addRow(Object... newRow) throws FitsException;
+    int addRow(Object[] newRow) throws FitsException;
+
+    /**
+     * Like {@link #addRow(Object[])}, but with a vararg list of row entries.
+     * 
+     * @param  entries       A vararg list of elements to be added. Each element of o should be an array of primitives
+     *                           or a String.
+     * 
+     * @throws FitsException if the operation failed
+     * 
+     * @return               the number of rows in the adapted table
+     * 
+     * @see                  #setRow(int, Object[])
+     * @see                  #addRowEntries(Object...)
+     * @see                  #deleteRows(int, int)
+     */
+    default int addRowEntries(Object... entries) throws FitsException {
+        return addRow(entries);
+    }
 
     /**
      * Removes a set of consecutive columns from this table. Note, this call does not update the header information
@@ -248,12 +267,31 @@ public interface TableData {
      * 
      * @throws FitsException if the table could not be modified
      * 
+     * @see                  #setRowEntries(int, Object...)
      * @see                  #getNRows()
      * @see                  #getRow(int)
      * @see                  #setColumn(int, Object)
      * @see                  #setElement(int, int, Object)
      */
-    void setRow(int row, Object... newRow) throws FitsException;
+    void setRow(int row, Object[] newRow) throws FitsException;
+
+    /**
+     * Like {@link #setRow(int, Object[])} but with vararg list of entries.
+     * 
+     * @param  row           the 0-based row index
+     * @param  entries       an object containing the row data (for all column) of the specified row. See
+     *                           {@link #getElement(int, int)} for more information about the format of each element in
+     *                           the row.
+     * 
+     * @throws FitsException if the table could not be modified
+     * 
+     * @see                  #setRow(int, Object[])
+     * @see                  #addRowEntries(Object...)
+     * @see                  #setElement(int, int, Object)
+     */
+    default void setRowEntries(int row, Object... entries) throws FitsException {
+        setRow(row, entries);
+    }
 
     /**
      * Updates the table dimensions in the header following deletion. Whoever calls {@link #deleteColumns(int, int)} on

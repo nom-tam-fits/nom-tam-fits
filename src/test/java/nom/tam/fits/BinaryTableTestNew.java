@@ -1,5 +1,8 @@
 package nom.tam.fits;
 
+import java.io.File;
+import java.math.BigInteger;
+
 /*-
  * #%L
  * nom.tam.fits
@@ -34,10 +37,11 @@ package nom.tam.fits;
 import org.junit.Assert;
 import org.junit.Test;
 
+import nom.tam.fits.BinaryTable.ColumnDesc;
 import nom.tam.util.ComplexValue;
 
 @SuppressWarnings("javadoc")
-public class BinaryTableNewTest {
+public class BinaryTableTestNew {
 
     @Test
     public void testSetNumberByteColumn() throws Exception {
@@ -554,4 +558,358 @@ public class BinaryTableNewTest {
         Assert.assertEquals(1, tab.getElementWidth(2));
         Assert.assertNull(tab.getElementShape(2));
     }
+
+    @Test
+    public void testCreateBooleanScalarDescriptor() throws Exception {
+        BinaryTable tab = new BinaryTable();
+        tab.addColumn(ColumnDesc.createForScalars(boolean.class));
+        Assert.assertTrue(tab.getDescriptor(0).isScalar());
+        Assert.assertTrue(tab.getDescriptor(0).isBits());
+        Assert.assertFalse(tab.getDescriptor(0).isLogical());
+        Assert.assertEquals(boolean.class, tab.getElementClass(0));
+    }
+
+    @Test
+    public void testCreateCharScalarDescriptor() throws Exception {
+        BinaryTable tab = new BinaryTable();
+        tab.addColumn(ColumnDesc.createForScalars(char.class));
+        Assert.assertTrue(tab.getDescriptor(0).isScalar());
+        Assert.assertEquals(char.class, tab.getElementClass(0));
+    }
+
+    @Test
+    public void testCreateShortScalarDescriptor() throws Exception {
+        BinaryTable tab = new BinaryTable();
+        tab.addColumn(ColumnDesc.createForScalars(short.class));
+        Assert.assertTrue(tab.getDescriptor(0).isScalar());
+        Assert.assertEquals(short.class, tab.getElementClass(0));
+    }
+
+    @Test
+    public void testCreateIntScalarDescriptor() throws Exception {
+        BinaryTable tab = new BinaryTable();
+        tab.addColumn(ColumnDesc.createForScalars(int.class));
+        Assert.assertTrue(tab.getDescriptor(0).isScalar());
+        Assert.assertEquals(int.class, tab.getElementClass(0));
+    }
+
+    @Test
+    public void testCreateLongScalarDescriptor() throws Exception {
+        BinaryTable tab = new BinaryTable();
+        tab.addColumn(ColumnDesc.createForScalars(long.class));
+        Assert.assertTrue(tab.getDescriptor(0).isScalar());
+        Assert.assertEquals(long.class, tab.getElementClass(0));
+    }
+
+    @Test
+    public void testCreateFloatScalarDescriptor() throws Exception {
+        BinaryTable tab = new BinaryTable();
+        tab.addColumn(ColumnDesc.createForScalars(float.class));
+        Assert.assertTrue(tab.getDescriptor(0).isScalar());
+        Assert.assertEquals(float.class, tab.getElementClass(0));
+    }
+
+    @Test
+    public void testCreateDoubleScalarDescriptor() throws Exception {
+        BinaryTable tab = new BinaryTable();
+        tab.addColumn(ColumnDesc.createForScalars(double.class));
+        Assert.assertTrue(tab.getDescriptor(0).isScalar());
+        Assert.assertEquals(double.class, tab.getElementClass(0));
+    }
+
+    @Test
+    public void testCreateComplexScalarDescriptor() throws Exception {
+        BinaryTable tab = new BinaryTable();
+        tab.addColumn(ColumnDesc.createForScalars(ComplexValue.class));
+        Assert.assertTrue(tab.getDescriptor(0).isScalar());
+        Assert.assertEquals(ComplexValue.class, tab.getElementClass(0));
+        Assert.assertTrue(tab.isComplexColumn(0));
+    }
+
+    @Test
+    public void testCreateComplexFloatScalarDescriptor() throws Exception {
+        BinaryTable tab = new BinaryTable();
+        tab.addColumn(ColumnDesc.createForScalars(ComplexValue.Float.class));
+        Assert.assertTrue(tab.getDescriptor(0).isScalar());
+        Assert.assertEquals(ComplexValue.class, tab.getElementClass(0));
+        Assert.assertTrue(tab.isComplexColumn(0));
+    }
+
+    @Test
+    public void testCreateLogicalScalarDescriptor() throws Exception {
+        BinaryTable tab = new BinaryTable();
+        tab.addColumn(ColumnDesc.createForScalars(Boolean.class));
+        Assert.assertTrue(tab.getDescriptor(0).isScalar());
+        Assert.assertTrue(tab.getDescriptor(0).isLogical());
+        Assert.assertFalse(tab.getDescriptor(0).isBits());
+        Assert.assertEquals(Boolean.class, tab.getElementClass(0));
+    }
+
+    @Test(expected = FitsException.class)
+    public void testCreateUnsupportedScalarDescriptor() throws Exception {
+        BinaryTable tab = new BinaryTable();
+        tab.addColumn(ColumnDesc.createForScalars(File.class));
+    }
+
+    @Test(expected = IllegalArgumentException.class)
+    public void testCreateSrtingScalarDescriptorWrong() throws Exception {
+        BinaryTable tab = new BinaryTable();
+        tab.addColumn(ColumnDesc.createForScalars(String.class));
+    }
+
+    @Test
+    public void testCreateSrtingScalarDescriptorRight() throws Exception {
+        BinaryTable tab = new BinaryTable();
+        tab.addColumn(ColumnDesc.createForStrings(10));
+        Assert.assertTrue(tab.getDescriptor(0).isScalar());
+        Assert.assertEquals(String.class, tab.getElementClass(0));
+        Assert.assertEquals(10, tab.getDescriptor(0).getStringLength());
+    }
+
+    @Test
+    public void testCreateVarByteDescriptor() throws Exception {
+        BinaryTable tab = new BinaryTable();
+        tab.addColumn(ColumnDesc.createForVariableLength(byte.class));
+        Assert.assertTrue(tab.isVariableLengthColumn(0));
+        Assert.assertFalse(tab.getDescriptor(0).isScalar());
+        Assert.assertEquals(byte.class, tab.getElementClass(0));
+        Assert.assertNull(tab.getElementShape(0));
+        Assert.assertFalse(tab.getDescriptor(0).hasLongPointers());
+    }
+
+    @Test
+    public void testCreateVarLogicalDescriptor() throws Exception {
+        BinaryTable tab = new BinaryTable();
+        tab.addColumn(ColumnDesc.createForVariableLength(Boolean.class));
+        Assert.assertTrue(tab.isVariableLengthColumn(0));
+        Assert.assertTrue(tab.getDescriptor(0).isLogical());
+        Assert.assertFalse(tab.getDescriptor(0).isBits());
+        Assert.assertEquals(Boolean.class, tab.getElementClass(0));
+        Assert.assertNull(tab.getElementShape(0));
+        Assert.assertFalse(tab.getDescriptor(0).hasLongPointers());
+    }
+
+    @Test
+    public void testCreateVarBitsDescriptor() throws Exception {
+        BinaryTable tab = new BinaryTable();
+        tab.addColumn(ColumnDesc.createForVariableLength(boolean.class));
+        Assert.assertTrue(tab.isVariableLengthColumn(0));
+        Assert.assertTrue(tab.getDescriptor(0).isBits());
+        Assert.assertFalse(tab.getDescriptor(0).isLogical());
+        Assert.assertEquals(boolean.class, tab.getElementClass(0));
+        Assert.assertNull(tab.getElementShape(0));
+        Assert.assertFalse(tab.getDescriptor(0).hasLongPointers());
+    }
+
+    @Test
+    public void testCreateVarComplexFloatDescriptor() throws Exception {
+        BinaryTable tab = new BinaryTable();
+        tab.addColumn(ColumnDesc.createForVariableLength(ComplexValue.Float.class, true));
+        Assert.assertTrue(tab.isVariableLengthColumn(0));
+        Assert.assertTrue(tab.isComplexColumn(0));
+        Assert.assertEquals(ComplexValue.class, tab.getElementClass(0));
+        Assert.assertNull(tab.getElementShape(0));
+        Assert.assertTrue(tab.getDescriptor(0).hasLongPointers());
+    }
+
+    @Test
+    public void testCreateVarStringDescriptorUnlimited() throws Exception {
+        BinaryTable tab = new BinaryTable();
+        tab.addColumn(ColumnDesc.createForVariableLength(String.class));
+        Assert.assertTrue(tab.isVariableLengthColumn(0));
+        Assert.assertEquals(String.class, tab.getElementClass(0));
+        Assert.assertNull(tab.getElementShape(0));
+        Assert.assertEquals(-1, tab.getDescriptor(0).getStringLength());
+        Assert.assertFalse(tab.getDescriptor(0).hasLongPointers());
+    }
+
+    @Test
+    public void testCreateVarStringArrayDescriptorMaxLength() throws Exception {
+        BinaryTable tab = new BinaryTable();
+        tab.addColumn(ColumnDesc.createForVariableStringArrays(10));
+        Assert.assertTrue(tab.isVariableLengthColumn(0));
+        Assert.assertEquals(String.class, tab.getElementClass(0));
+        Assert.assertNull(tab.getElementShape(0));
+        Assert.assertEquals(10, tab.getDescriptor(0).getStringLength());
+        Assert.assertFalse(tab.getDescriptor(0).hasLongPointers());
+    }
+
+    @Test
+    public void testVarStringArraysFixed() throws Exception {
+        BinaryTable tab = new BinaryTable();
+        tab.addColumn(ColumnDesc.createForVariableStringArrays(10));
+        Assert.assertTrue(tab.isVariableLengthColumn(0));
+        Assert.assertEquals(String.class, tab.getElementClass(0));
+        Assert.assertNull(tab.getElementShape(0));
+        Assert.assertEquals(10, tab.getDescriptor(0).getStringLength());
+        Assert.assertFalse(tab.getDescriptor(0).hasLongPointers());
+
+        String[] s = new String[] {"abc", null, "0123456789A"};
+
+        tab.addRow(new Object[] {s});
+
+        String[] s1 = (String[]) tab.get(0, 0);
+
+        Assert.assertEquals(s[0], s1[0]);
+        Assert.assertEquals("", s1[1]);
+        Assert.assertEquals(s[2].substring(0, 10), s1[2]);
+    }
+
+    @Test
+    public void testVarStringArraysDelimited() throws Exception {
+        BinaryTable tab = new BinaryTable();
+        tab.addColumn(ColumnDesc.createForDelimitedVariableStringArrays((byte) '|'));
+        Assert.assertTrue(tab.isVariableLengthColumn(0));
+        Assert.assertEquals(String.class, tab.getElementClass(0));
+        Assert.assertNull(tab.getElementShape(0));
+        Assert.assertEquals(-1, tab.getDescriptor(0).getStringLength());
+        Assert.assertFalse(tab.getDescriptor(0).hasLongPointers());
+
+        String[] s = new String[] {"abc", null, "0123456789A"};
+
+        tab.addRow(new Object[] {s});
+        Assert.assertNotEquals(-1, tab.getDescriptor(0).getStringLength());
+
+        String[] s1 = (String[]) tab.get(0, 0);
+
+        Assert.assertEquals(s[0], s1[0]);
+        Assert.assertEquals("", s1[1]);
+        Assert.assertEquals(s[2], s1[2]);
+    }
+
+    @Test(expected = FitsException.class)
+    public void testNullRowEmptyTable() throws Exception {
+        BinaryTable tab = new BinaryTable();
+        tab.addRowEntries(1, null);
+    }
+
+    @Test
+    public void testByteRowEmptyTable() throws Exception {
+        BinaryTable tab = new BinaryTable();
+        tab.addRowEntries((byte) 1);
+        Assert.assertEquals(byte.class, tab.getElementClass(0));
+        Assert.assertTrue(tab.isScalarColumn(0));
+        Assert.assertEquals((byte) 1, tab.get(0, 0));
+    }
+
+    @Test
+    public void testShortRowEmptyTable() throws Exception {
+        BinaryTable tab = new BinaryTable();
+        tab.addRowEntries((short) 1);
+        Assert.assertEquals(short.class, tab.getElementClass(0));
+        Assert.assertTrue(tab.isScalarColumn(0));
+        Assert.assertEquals((short) 1, tab.get(0, 0));
+    }
+
+    @Test
+    public void testIntRowEmptyTable() throws Exception {
+        BinaryTable tab = new BinaryTable();
+        tab.addRowEntries(1);
+        Assert.assertEquals(int.class, tab.getElementClass(0));
+        Assert.assertTrue(tab.isScalarColumn(0));
+        Assert.assertEquals(1, tab.get(0, 0));
+    }
+
+    @Test
+    public void testLongRowEmptyTable() throws Exception {
+        BinaryTable tab = new BinaryTable();
+        tab.addRowEntries(1L);
+        Assert.assertEquals(long.class, tab.getElementClass(0));
+        Assert.assertTrue(tab.isScalarColumn(0));
+        Assert.assertEquals(1L, tab.get(0, 0));
+    }
+
+    @Test
+    public void testFloatRowEmptyTable() throws Exception {
+        BinaryTable tab = new BinaryTable();
+        tab.addRowEntries(1.0F);
+        Assert.assertEquals(float.class, tab.getElementClass(0));
+        Assert.assertTrue(tab.isScalarColumn(0));
+        Assert.assertEquals(1.0F, tab.get(0, 0));
+    }
+
+    @Test
+    public void testDoubleRowEmptyTable() throws Exception {
+        BinaryTable tab = new BinaryTable();
+        tab.addRowEntries(1.0);
+        Assert.assertEquals(double.class, tab.getElementClass(0));
+        Assert.assertTrue(tab.isScalarColumn(0));
+        Assert.assertEquals(1.0, tab.get(0, 0));
+    }
+
+    @Test(expected = FitsException.class)
+    public void testUnsupportedNumberRowEmptyTable() throws Exception {
+        BinaryTable tab = new BinaryTable();
+        tab.addRowEntries(new BigInteger("1234567890"));
+    }
+
+    @Test
+    public void testCharRowEmptyTable() throws Exception {
+        BinaryTable tab = new BinaryTable();
+        tab.addRowEntries('A');
+        Assert.assertEquals(char.class, tab.getElementClass(0));
+        Assert.assertTrue(tab.isScalarColumn(0));
+        Assert.assertEquals('A', tab.get(0, 0));
+    }
+
+    @Test
+    public void testLogicalRowEmptyTable() throws Exception {
+        BinaryTable tab = new BinaryTable();
+        tab.addRowEntries(true);
+        Assert.assertEquals(Boolean.class, tab.getElementClass(0));
+        Assert.assertTrue(tab.isScalarColumn(0));
+        Assert.assertTrue(tab.getDescriptor(0).isLogical());
+        Assert.assertEquals(true, tab.get(0, 0));
+    }
+
+    @Test
+    public void testDefragment() throws Exception {
+        BinaryTable tab = new BinaryTable();
+        int[][] i = new int[][] {new int[] {1}, new int[] {1, 2}};
+        long[][] l = new long[][] {new long[] {-1}, new long[] {-1, -2}};
+
+        tab.addColumn(i);
+        tab.addColumn(l);
+
+        for (int row = 0; row < tab.getNRows(); row++) {
+            Assert.assertArrayEquals(i[row], (int[]) tab.get(row, 0));
+            Assert.assertArrayEquals(l[row], (long[]) tab.get(row, 1));
+        }
+    }
+
+    @Test
+    public void testDefragmentFixed() throws Exception {
+        BinaryTable tab = new BinaryTable();
+        int[][] i = new int[][] {new int[] {1}, new int[] {2}};
+        long[][] l = new long[][] {new long[] {-1}, new long[] {-2}};
+
+        tab.addColumn(i);
+        tab.addColumn(l);
+
+        Assert.assertEquals(0, tab.defragment());
+
+        for (int row = 0; row < tab.getNRows(); row++) {
+            Assert.assertArrayEquals(i[row], (int[]) tab.get(row, 0));
+            Assert.assertArrayEquals(l[row], (long[]) tab.get(row, 1));
+        }
+    }
+
+    @Test
+    public void testBuildBareRows() throws Exception {
+        BinaryTable tab = new BinaryTable();
+
+        tab.addRowEntries(true, 'A', (byte) 1, (short) 1, 1, 1L, 1.0F, 1.0);
+
+        Assert.assertEquals(1, tab.getNRows());
+
+        Assert.assertEquals(Boolean.class, tab.getElementClass(0));
+        Assert.assertEquals(char.class, tab.getElementClass(1));
+        Assert.assertEquals(byte.class, tab.getElementClass(2));
+        Assert.assertEquals(short.class, tab.getElementClass(3));
+        Assert.assertEquals(int.class, tab.getElementClass(4));
+        Assert.assertEquals(long.class, tab.getElementClass(5));
+        Assert.assertEquals(float.class, tab.getElementClass(6));
+        Assert.assertEquals(double.class, tab.getElementClass(7));
+    }
+
 }

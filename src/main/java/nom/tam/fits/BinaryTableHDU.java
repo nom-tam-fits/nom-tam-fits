@@ -193,6 +193,15 @@ public class BinaryTableHDU extends TableHDU<BinaryTable> {
     }
 
     @Override
+    public int findColumn(String colName) {
+        int i = getData().findColumn(colName);
+        if (i >= 0) {
+            return i;
+        }
+        return super.findColumn(colName);
+    }
+
+    @Override
     public void info(PrintStream stream) {
         stream.println("  Binary Table");
         stream.println("      Header Information:");

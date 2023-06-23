@@ -857,52 +857,45 @@ table column:
    table.addColumn(ColumnDesc.createForScalars(double.class));
    
    // A column containing 5x4 arrays of single-precision complex values...
-   table.addColumn(ColumnDesc.createForArrays(ComplexValue.Float.class, 5, 4)
+   table.addColumn(ColumnDesc.createForArrays(ComplexValue.Float.class, 5, 4));
    
    // A column containing Strings of variable length using 32-bit heap pointers...
-   table.addColumn(ColumnDesc.creatForVariableStrings(false);
+   table.addColumn(ColumnDesc.creatForVariableLength(String.class));
    
    ...
 ```
 
 Defining columns this way is not always necessary before adding rows to the table. However, it is necessary if you will 
-have data that needs variable-length storage row-after-row; or if you plan to add rows using boxed scalar values that were 
-introduced in 1.18; or you want more control over specifics of the column format. As such, it is 
-best practice to define the columns explictly even if not strictly required for your particular application. 
+have data that needs variable-length storage row-after-row; or you want more control over specifics of the column format. 
+As such, it is best practice to define the columns explictly even if not strictly required for your particular application. 
 
 Now you can populate the table with your data, one row at a time, using the `addRow()` method as many times over as
 necessary:
 
 ```java   
    for (...) {
-   	Object[] row = new Object[table.getNCols()][];
-   	
-   	// populate the row, making sure each row is compatible with prior rows...
+   	// prepare the row data, making sure each row is compatible with prior rows...
    	...
    	
-   	// Add the row to the table (the first row will determine the column structure)
-   	table.addRow(row);
+   	// Add the row to the table
+   	table.addRow(...);
    }
 ```
 
-As of 1.18, adding rows allows for vararg syntax and for using Java boxed types (as an alternative to arrays of 1) to 
-specify scalar table elements, including auto-boxing of literals and variables. Thus, since 1.18, you may simply write:
+As of 1.18, adding rows allows for vararg syntax and for using Java boxed types (as an alternative to primitive arrays of 1) 
+to specify primitive scalar table elements, including auto-boxing of literals and variables. Thus, since 1.18, you may simply 
+write:
 
 ```java
-   short s...
-
-   table.addRow(1, 3.14159265, s);
+   table.addRowEntries(1, 3.14159265);
 ```
 
-to add a row consisting of an 32-bit integer, a double-precision floating point value and a 16-bit short value. Prior to
-1.18, the same would always have to have been written as:
+to add a row consisting of an 32-bit integer, a double-precision floating point value. Prior to 1.18, the same would 
+have to have been written as:
 
-```java
-  short s...
-  
-  table.addRow(new Object[] { new int[] {1}, new double[] {3.14159265}, new short[] {s} }; 
+```java  
+  table.addRow(new Object[] { new int[] {1}, new double[] {3.14159265} }; 
 ```
-
 
 Tables built entirely row-by-row are naturally defragmented, notwithstanding subsequent modifications.
 

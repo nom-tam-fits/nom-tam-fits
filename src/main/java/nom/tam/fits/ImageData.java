@@ -197,7 +197,7 @@ public class ImageData extends Data {
         tiler = new ImageDataTiler(null, 0, dataDescription);
     }
 
-    @SuppressWarnings("resource")
+    @SuppressWarnings({"resource", "deprecation"})
     @Override
     public void write(ArrayDataOutput o) throws FitsException {
 

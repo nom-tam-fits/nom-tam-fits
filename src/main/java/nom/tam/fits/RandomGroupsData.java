@@ -224,7 +224,7 @@ public class RandomGroupsData extends Data {
         return (Object[][]) super.getData();
     }
 
-    @SuppressWarnings("resource")
+    @SuppressWarnings({"resource", "deprecation"})
     @Override
     public void write(ArrayDataOutput str) throws FitsException {
         if (getTrueSize() <= 0) {

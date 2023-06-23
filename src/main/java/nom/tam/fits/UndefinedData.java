@@ -152,7 +152,7 @@ public class UndefinedData extends Data {
         in.readFully(data);
     }
 
-    @SuppressWarnings("resource")
+    @SuppressWarnings({"resource", "deprecation"})
     @Override
     public void write(ArrayDataOutput o) throws FitsException {
         if (o != getRandomAccessInput()) {

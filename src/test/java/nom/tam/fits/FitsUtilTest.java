@@ -1,5 +1,7 @@
 package nom.tam.fits;
 
+import java.text.ParsePosition;
+
 /*-
  * #%L
  * nom.tam.fits
@@ -139,13 +141,13 @@ public class FitsUtilTest {
     @Test
     public void extractTruncatedString() throws Exception {
         byte[] bytes = new byte[] {'a', 'b', 'c'};
-        Assert.assertEquals("abc", FitsUtil.extractString(bytes, 0, 10, (byte) 0x00));
+        Assert.assertEquals("abc", FitsUtil.extractString(bytes, new ParsePosition(0), 10, (byte) 0x00));
     }
 
     @Test
     public void extractTabTerminatedString() throws Exception {
         byte[] bytes = new byte[] {'a', 'b', '\t', 'c'};
-        Assert.assertEquals("ab", FitsUtil.extractString(bytes, 0, 10, (byte) '\t'));
+        Assert.assertEquals("ab", FitsUtil.extractString(bytes, new ParsePosition(0), 10, (byte) '\t'));
     }
 
     @SuppressWarnings("deprecation")
