@@ -289,6 +289,7 @@ public final class FitsUtil {
         // Check up to the specified length or termination
         for (int i = 0; i < maxLen; i++) {
             byte b = bytes[offset + i];
+            pos.setIndex(offset + i);
 
             if (b == terminator || b == 0) {
                 break;
@@ -299,7 +300,7 @@ public final class FitsUtil {
             }
         }
 
-        pos.setIndex(offset + end + 1);
+        pos.setIndex(pos.getIndex() + 1);
 
         byte[] sanitized = new byte[end + 1];
         boolean checking = FitsFactory.getCheckAsciiStrings();

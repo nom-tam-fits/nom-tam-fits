@@ -167,7 +167,7 @@ public class BinaryTable extends AbstractTableData implements Cloneable {
         private ColumnDesc(Class<?> type) throws FitsException {
             this();
 
-            this.base = type;
+            base = type;
 
             if (base == boolean.class) {
                 fitsBase = byte.class;
@@ -223,6 +223,8 @@ public class BinaryTable extends AbstractTableData implements Cloneable {
          * 
          * @param  value                    the new label for the column
          * 
+         * @return                          itself
+         * 
          * @throws IllegalArgumentException if the name contains characters outside of the FITS legal range of ASCII
          *                                      0x20 through 0x7e.
          * 
@@ -231,9 +233,10 @@ public class BinaryTable extends AbstractTableData implements Cloneable {
          * 
          * @since                           1.18
          */
-        public void setLabel(String value) throws IllegalArgumentException {
+        public ColumnDesc setLabel(String value) throws IllegalArgumentException {
             HeaderCard.validateChars(value);
             this.label = value;
+            return this;
         }
 
         /**
@@ -256,6 +259,8 @@ public class BinaryTable extends AbstractTableData implements Cloneable {
          * @param  value                    the standard physical unit name (see FITS standard document on physical
          *                                      units).
          * 
+         * @return                          itself
+         * 
          * @throws IllegalArgumentException if the name contains characters outside of the FITS legal range of ASCII
          *                                      0x20 through 0x7e.
          * 
@@ -263,9 +268,10 @@ public class BinaryTable extends AbstractTableData implements Cloneable {
          * 
          * @since                           1.18
          */
-        public void setUnit(String value) throws IllegalArgumentException {
+        public ColumnDesc setUnit(String value) throws IllegalArgumentException {
             HeaderCard.validateChars(value);
             this.unit = value;
+            return this;
         }
 
         /**
@@ -332,12 +338,22 @@ public class BinaryTable extends AbstractTableData implements Cloneable {
                 throw new IllegalStateException("Not a string column: type " + getBoxedClass());
             }
 
-            if (stringLength < 0 && !isVariableSize()) {
-                stringLength = len;
+            stringLength = len;
+
+            if (!isVariableSize()) {
                 setShape(shape);
-            } else {
-                stringLength = len;
             }
+        }
+
+        /**
+         * Returns the string delimiter that separates packed substrings in variable-length string arrays.
+         * 
+         * @return the delimiter byte value (usually between 0x20 and 0x7e) or 0 if no delimiter was set.
+         * 
+         * @see    #getStringLength()
+         */
+        public final byte getStringDelimiter() {
+            return delimiter;
         }
 
         /**
@@ -655,7 +671,15 @@ public class BinaryTable extends AbstractTableData implements Cloneable {
          * @since  1.18
          */
         public boolean isScalar() {
-            return !isVariableSize() && (isSinglePrimitive() || ((isString() || isComplex()) && dimension() <= 1));
+            if (isVariableSize()) {
+                return isString() ? (stringLength < 0 && delimiter == 0) : false;
+            }
+
+            if (isComplex()) {
+                return dimension() == 1;
+            }
+
+            return isSinglePrimitive() || ((isString() || isComplex()) && dimension() <= 1);
         }
 
         /**
@@ -902,7 +926,7 @@ public class BinaryTable extends AbstractTableData implements Cloneable {
                 return 2;
             }
             if (isString()) {
-                return isVariableSize() ? -1 : getLastDim();
+                return getStringLength();
             }
             return 1;
         }
@@ -932,7 +956,11 @@ public class BinaryTable extends AbstractTableData implements Cloneable {
                 }
                 return size;
             }
-            return (isComplex || isString()) ? fitsCount / getLastDim() : fitsCount;
+            if (isString()) {
+                return fitsCount / getStringLength();
+            }
+
+            return isComplex ? fitsCount >> 1 : fitsCount;
         }
 
         /**
@@ -1063,6 +1091,12 @@ public class BinaryTable extends AbstractTableData implements Cloneable {
          *                      example because it is not defined otherwise by TDIM.
          */
         private void parseSubstringConvention(String tform, boolean setLength) {
+
+            if (setLength) {
+                // Set the default string length to the full field
+                setStringLength(isVariableSize() ? -1 : getTFORMLength(tform));
+            }
+
             // Parse substring array convention...
             String rem = tform.substring(tform.indexOf('A') + 1);
 
@@ -1070,7 +1104,7 @@ public class BinaryTable extends AbstractTableData implements Cloneable {
                 return;
             }
 
-            // Try nAw format...
+            // Try 'rAw' format...
             try {
                 setStringLength(Integer.parseInt(rem));
                 return;
@@ -1116,9 +1150,8 @@ public class BinaryTable extends AbstractTableData implements Cloneable {
         private void appendSubstringConvention(StringBuffer tform) {
             if (getStringLength() > 0) {
                 tform.append(SUBSTRING_MARKER);
-                if (getStringLength() > 0) {
-                    tform.append(getStringLength());
-                }
+                tform.append(getStringLength());
+
                 if (delimiter != 0) {
                     tform.append('/');
                     tform.append(new DecimalFormat("000").format(delimiter & FitsIO.BYTE_MASK));
@@ -1700,7 +1733,7 @@ public class BinaryTable extends AbstractTableData implements Cloneable {
 
         ColumnDesc c = new ColumnDesc(ArrayFuncs.getBaseClass(o));
 
-        if (c.base == ComplexValue.class) {
+        if (ArrayFuncs.getBaseClass(o) == ComplexValue.class) {
             o = ArrayFuncs.complexToDecimals(o, double.class);
             c.isComplex = true;
         }
@@ -1712,7 +1745,12 @@ public class BinaryTable extends AbstractTableData implements Cloneable {
                 c.setStringLength(FitsUtil.maxStringLength(o));
             }
 
-            // Element dimension without the leading row dimension...
+            if (c.isComplex) {
+                // Drop the railing 2 dimension, keep only outer dims...
+                dim = Arrays.copyOf(dim, dim.length - 1);
+                o = ArrayFuncs.flatten(o);
+            }
+
             if (dim.length <= 1) {
                 c.setScalar();
             } else {
@@ -1722,9 +1760,6 @@ public class BinaryTable extends AbstractTableData implements Cloneable {
                 o = ArrayFuncs.flatten(o);
             }
         } catch (IllegalArgumentException e) {
-            if (!(o instanceof Object[])) {
-                throw new TableException("Not an Object[] array for variable column: " + o.getClass());
-            }
             c.setVariableSize(isUseLongPointers);
         } catch (ClassCastException e) {
             throw new TableException("Inconsistent array", e);
@@ -2277,7 +2312,10 @@ public class BinaryTable extends AbstractTableData implements Cloneable {
         o = fitsToJava1D(c, o, isEnhanced);
 
         if (c.dimension() > 1) {
-            if (c.isString() || (isEnhanced && c.isComplex())) {
+            if (c.isString()) {
+                return c.dimension() > 2 ? ArrayFuncs.curl(o, c.getLeadingShape()) : o;
+            }
+            if (c.isComplex() && isEnhanced) {
                 return ArrayFuncs.curl(o, c.getLeadingShape());
             }
             return ArrayFuncs.curl(o, c.shape);
@@ -3240,7 +3278,7 @@ public class BinaryTable extends AbstractTableData implements Cloneable {
                 // Write variable-length string arrays in delimited form
 
                 for (String s : (String[]) o) {
-                    // We set the string length to that of the longest element
+                    // We set the string length to that of the longest element + 1
                     c.setStringLength(Math.max(c.stringLength, s == null ? 1 : s.length() + 1));
                 }
 
@@ -3287,6 +3325,8 @@ public class BinaryTable extends AbstractTableData implements Cloneable {
         if (c.isString()) {
             byte[] bytes = (byte[]) o;
 
+            int len = c.getStringLength();
+
             if (c.isVariableSize()) {
                 if (c.delimiter != 0) {
                     // delimited array of strings
@@ -3294,26 +3334,18 @@ public class BinaryTable extends AbstractTableData implements Cloneable {
                 }
             }
 
-            int len = c.getStringLength();
-            if (len < 0) {
-                // FIXME why does stringLength faile here in some circumstances?...
-                len = c.getLastDim();
+            // If fixed or variable length arrays of strings...
+            if (c.isScalar()) {
+                // Single fixed string -- get it all but trim trailing spaces
+                return FitsUtil.extractString(bytes, new ParsePosition(0), bytes.length, FitsUtil.ASCII_NULL);
             }
 
-            // Fixed sized strings -- let's see how many...
-            int n = len > 0 ? bytes.length / len : 1;
-
-            if (c.dimension() > 1) {
-                // Array of fixed-length strings -- we trim trailing spaces in each component
-                String[] s = new String[n];
-                for (int i = 0; i < s.length; i++) {
-                    s[i] = FitsUtil.extractString(bytes, new ParsePosition(i * len), len, FitsUtil.ASCII_NULL);
-                }
-                return s;
+            // Array of fixed-length strings -- we trim trailing spaces in each component
+            String[] s = new String[bytes.length / len];
+            for (int i = 0; i < s.length; i++) {
+                s[i] = FitsUtil.extractString(bytes, new ParsePosition(i * len), len, FitsUtil.ASCII_NULL);
             }
-
-            // Single fixed string -- we trim trailing spaces
-            return FitsUtil.extractString(bytes, new ParsePosition(0), bytes.length, FitsUtil.ASCII_NULL);
+            return s;
         }
 
         return o;
@@ -3381,9 +3413,7 @@ public class BinaryTable extends AbstractTableData implements Cloneable {
             return new char[] {(char) o};
         }
 
-        Object[] array = (Object[]) Array.newInstance(o.getClass(), 1);
-        array[0] = o;
-        return array;
+        return o;
     }
 
     @Override
@@ -3493,6 +3523,10 @@ public class BinaryTable extends AbstractTableData implements Cloneable {
         case 'A':
             c.fitsBase = byte.class;
             c.base = String.class;
+            if (!c.isVariableSize()) {
+                // Default string length for fixed length columns.
+                c.setStringLength(dims[dims.length - 1]);
+            }
             c.parseSubstringConvention(tform, tdims == null);
             break;
 
@@ -3749,7 +3783,7 @@ public class BinaryTable extends AbstractTableData implements Cloneable {
             tform.append('X');
         } else if (c.isString()) {
             tform.append('A');
-            if (c.isVariableSize() || c.getBoxedDimension() == 1) {
+            if (c.isVariableSize()) {
                 c.appendSubstringConvention(tform);
             }
         } else {
@@ -4054,10 +4088,12 @@ public class BinaryTable extends AbstractTableData implements Cloneable {
 
         for (int i = 0; i < nRow; i++) {
             for (int j = 0; j < columns.size(); j++) {
-                ColumnDesc c = columns.get(i);
+                ColumnDesc c = columns.get(j);
                 if (c.isVariableSize()) {
-                    Object e = getFromHeap(c, getRawElement(i, j));
-                    Object p = putOnHeap(compact, c, e, null);
+                    Object p = getRawElement(i, j);
+                    Object data = Array.newInstance(c.fitsBase, (int) getPointerCount(p));
+                    heap.getData((int) getPointerOffset(p), data);
+                    p = putOnHeap(compact, c, data, null);
                     setFitsElement(i, j, p);
                 }
             }

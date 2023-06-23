@@ -38,10 +38,11 @@ import org.junit.Assert;
 import org.junit.Test;
 
 import nom.tam.fits.BinaryTable.ColumnDesc;
+import nom.tam.fits.header.Standard;
 import nom.tam.util.ComplexValue;
 
 @SuppressWarnings("javadoc")
-public class BinaryTableTestNew {
+public class BinaryTableNewTest {
 
     @Test
     public void testSetNumberByteColumn() throws Exception {
@@ -871,6 +872,12 @@ public class BinaryTableTestNew {
         tab.addColumn(i);
         tab.addColumn(l);
 
+        Assert.assertTrue(tab.isVariableLengthColumn(0));
+        Assert.assertTrue(tab.isVariableLengthColumn(1));
+
+        // Heap size should not change, only organization.
+        tab.defragment();
+
         for (int row = 0; row < tab.getNRows(); row++) {
             Assert.assertArrayEquals(i[row], (int[]) tab.get(row, 0));
             Assert.assertArrayEquals(l[row], (long[]) tab.get(row, 1));
@@ -885,6 +892,9 @@ public class BinaryTableTestNew {
 
         tab.addColumn(i);
         tab.addColumn(l);
+
+        Assert.assertFalse(tab.isVariableLengthColumn(0));
+        Assert.assertFalse(tab.isVariableLengthColumn(1));
 
         Assert.assertEquals(0, tab.defragment());
 
@@ -912,4 +922,137 @@ public class BinaryTableTestNew {
         Assert.assertEquals(double.class, tab.getElementClass(7));
     }
 
+    @Test
+    public void testColumnLabel() throws Exception {
+        BinaryTable tab = new BinaryTable();
+        tab.addColumn(ColumnDesc.createForScalars(double.class).setLabel("UTC Time"));
+
+        int i = tab.findColumn("blah");
+        Assert.assertEquals(-1, i);
+
+        i = tab.findColumn("UTC Time");
+        Assert.assertEquals(0, i);
+
+        Assert.assertEquals("UTC Time", tab.getDescriptor(i).getLabel());
+    }
+
+    @Test(expected = IllegalArgumentException.class)
+    public void testColumnLabelInvalid() throws Exception {
+        BinaryTable tab = new BinaryTable();
+        tab.addColumn(ColumnDesc.createForScalars(double.class).setLabel("\t"));
+    }
+
+    @Test
+    public void testColumnUnit() throws Exception {
+        BinaryTable tab = new BinaryTable();
+        tab.addColumn(ColumnDesc.createForScalars(double.class).setUnit("Jy/beam"));
+
+        Assert.assertEquals("Jy/beam", tab.getDescriptor(0).getUnit());
+    }
+
+    @Test(expected = IllegalArgumentException.class)
+    public void testColumnUnitInvalid() throws Exception {
+        BinaryTable tab = new BinaryTable();
+        tab.addColumn(ColumnDesc.createForScalars(double.class).setUnit("\t"));
+    }
+
+    @Test(expected = FitsException.class)
+    public void testAddColumnNotArray() throws Exception {
+        BinaryTable tab = new BinaryTable();
+        tab.addColumn("abc");
+    }
+
+    @Test(expected = FitsException.class)
+    public void testAddColumnMismatchedRows() throws Exception {
+        BinaryTable tab = new BinaryTable();
+        tab.addColumn(new int[] {1, 2, 3});
+        tab.addColumn(new int[] {1, 2});
+    }
+
+    @Test(expected = FitsException.class)
+    public void testAddColumnInconsistentSubarrayArrayType() throws Exception {
+        BinaryTable tab = new BinaryTable();
+        tab.addColumn(new Object[] {new int[] {1, 2, 3}, new long[] {1, 2, 3}});
+    }
+
+    @Test
+    public void testAddComplexColumn() throws Exception {
+        BinaryTable tab = new BinaryTable();
+        ComplexValue[] c = new ComplexValue[] {new ComplexValue(1.0, 2.9), new ComplexValue(3.0, 4.0)};
+        tab.addColumn(c);
+
+        Assert.assertEquals(2, tab.getNRows());
+        Assert.assertTrue(tab.isComplexColumn(0));
+        Assert.assertTrue(tab.isScalarColumn(0));
+    }
+
+    @Test
+    public void testBitColumnHeader() throws Exception {
+        BinaryTable tab = new BinaryTable();
+        tab.addColumn(ColumnDesc.createForFixedArrays(boolean.class, 10, 10));
+        Header h = new Header();
+        tab.fillHeader(h);
+        Assert.assertEquals("100X", h.getStringValue(Standard.TFORMn.n(1)));
+    }
+
+    @Test
+    public void testParseSimpleSubstring() throws Exception {
+        Header h = new Header();
+        h.addValue(Standard.TFORMn.n(1), "10A2");
+        ColumnDesc c = BinaryTable.getDescriptor(h, 0);
+        Assert.assertEquals(2, c.getBoxedWidth());
+        Assert.assertEquals(5, c.getBoxedCount());
+    }
+
+    @Test
+    public void testParseSubstringInvalidLength() throws Exception {
+        Header h = new Header();
+        h.addValue(Standard.TFORMn.n(1), "10A:SSTRz");
+        ColumnDesc c = BinaryTable.getDescriptor(h, 0);
+        Assert.assertEquals(10, c.getBoxedWidth());
+        Assert.assertEquals(1, c.getBoxedCount());
+    }
+
+    @Test
+    public void testParseSubstringDelimited() throws Exception {
+        Header h = new Header();
+        h.addValue(Standard.TFORMn.n(1), "10A:SSTR2/032");
+        ColumnDesc c = BinaryTable.getDescriptor(h, 0);
+        Assert.assertEquals(2, c.getBoxedWidth());
+        Assert.assertEquals(5, c.getBoxedCount());
+        Assert.assertEquals((byte) 32, c.getStringDelimiter());
+    }
+
+    @Test
+    public void testParseSubstringBadDelimiter() throws Exception {
+        Header h = new Header();
+        h.addValue(Standard.TFORMn.n(1), "10A:SSTR2/z");
+        ColumnDesc c = BinaryTable.getDescriptor(h, 0);
+        Assert.assertEquals(2, c.getBoxedWidth());
+        Assert.assertEquals(5, c.getBoxedCount());
+        Assert.assertEquals((byte) 0, c.getStringDelimiter());
+    }
+
+    @Test
+    public void testParseSubstringSetTFORM() throws Exception {
+        BinaryTable tab = new BinaryTable();
+        tab.addColumn(ColumnDesc.createForDelimitedVariableStringArrays((byte) 32));
+        tab.addRow(new Object[] {new String[] {"abc", "def"}});
+        tab.addRow(new Object[] {new String[] {"1234567890"}});
+
+        ColumnDesc c = tab.getDescriptor(0);
+        Assert.assertEquals((byte) 32, c.getStringDelimiter());
+        Assert.assertEquals(11, c.getStringLength());
+
+        Header h = new Header();
+        tab.fillHeader(h);
+
+        Assert.assertEquals("1PA:SSTR11/032", h.getStringValue(Standard.TFORMn.n(1)));
+    }
+
+    @Test
+    public void testOutOfRangeDelimiter() throws Exception {
+        ColumnDesc c = ColumnDesc.createForDelimitedVariableStringArrays((byte) 1);
+        Assert.assertEquals((byte) 1, c.getStringDelimiter());
+    }
 }
