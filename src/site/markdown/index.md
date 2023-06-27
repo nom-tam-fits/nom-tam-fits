@@ -886,6 +886,17 @@ have to have been written as:
 
 Tables built entirely row-by-row are naturally defragmented, notwithstanding subsequent modifications.
 
+Once the table is complete, you can then wrap in in a HDU:
+
+```java
+  TableHDU hdu = (TableHDU) Fits.makeHDU(table);
+```
+
+which will populate the header with the requisite entries that describe the table. You can then edit the new header
+to add any extra information (while being careful to not modify the essential table description). Note, that once the
+table is encompassed in a HDU, it is generally not safe to edit it beyond additions, since the library has no foolproof 
+way to keep the header perfectly in sync. Thus it is recommended that you create table HDUs only after the table data has been fully populated.
+
 
 #### Buiding tables one column at a time
 

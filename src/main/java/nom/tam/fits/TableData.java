@@ -51,9 +51,10 @@ import nom.tam.util.ComplexValue;
 public interface TableData {
 
     /**
-     * Add a column to the table, without updating the header of an encompassing HDU. If the table is already wrapped in
-     * an HDU, you should use {@link TableHDU#addColumn(Object)} instead to ensure that the header is properly updated
-     * for the newly added row.
+     * Add a column to the table, without updating the header of an encompassing HDU. You should not use this method on
+     * tables already in an HDU, since it will not update the HDUs headers. Instead you can either use
+     * {@link TableHDU#addColumn(Object)} or else create a new HDU for the table once the editing is copmleted -- adding
+     * or migrating any custom header entries as necessary after.
      * 
      * @param  newCol        the new column information. it should be either a primitive array, in which each element
      *                           stores a scalar value for every row, or else an <code>Object[]</code> where type of all
@@ -65,15 +66,18 @@ public interface TableData {
      * @return               the number of columns in the adapted table
      * 
      * @see                  TableHDU#addColumn(Object)
+     * @see                  #deleteColumns(int, int)
+     * @see                  #addRow(Object[])
      * 
      * @throws FitsException if the operation failed
      */
     int addColumn(Object newCol) throws FitsException;
 
     /**
-     * Add a row at the end of the table without updating the header of an encompassing HDU. If the table is already
-     * wrapped in an HDU, you should use {@link TableHDU#addRow(Object[])} instead to ensure that the header is properly
-     * updated for the newly added row.
+     * Add a row at the end of the table without updating the header of an encompassing HDU. You should not use this
+     * method on tables already in an HDU, since it will not update the HDUs headers. Instead you can use
+     * {@link TableHDU#addRow(Object[])} or else create a new HDU for the table once the editing is completed -- adding
+     * or migrating any custom header entries as necessary after.
      * 
      * @param  newRow        An array of elements to be added. Each element of o should be an array of primitives or a
      *                           String.
@@ -82,9 +86,10 @@ public interface TableData {
      * 
      * @return               the number of rows in the adapted table
      * 
-     * @see                  TableHDU#addRow(Object[])
+     * @see                  TableHDU#addColumn(Object)
      * @see                  #setRowEntries(int, Object...)
      * @see                  #deleteRows(int, int)
+     * @see                  #addColumn(Object)
      */
     int addRow(Object[] newRow) throws FitsException;
 
@@ -107,9 +112,10 @@ public interface TableData {
     }
 
     /**
-     * Removes a set of consecutive columns from this table. Note, this call does not update the header information
-     * about the columns that were removed. Therefore if you call this method, you are responsible to call
-     * {@link #updateAfterDelete(int, Header)} at least once after having removed colums via calls to this method.
+     * Removes a set of consecutive columns from this table, without updating assocu=iated the header information for
+     * the columns that were removed. You should not use this method on tables already in an HDU, since it will not
+     * update the HDUs headers. Instead you should always create a new HDU for the table after editing, adding or
+     * migrating any custom header entries as necessary after.
      * 
      * @param  col           the 0-based index of the first column to remove
      * @param  len           the number of subsequent columns to remove
@@ -123,7 +129,10 @@ public interface TableData {
     void deleteColumns(int col, int len) throws FitsException;
 
     /**
-     * Removes a set of consecutive rows from this table
+     * Removes a set of consecutive rows from this table without updating any associated header information for an
+     * encompassing HDU. You should not use this method on tables already in an HDU, since it will not update the HDUs
+     * headers. Instead you should always create a new HDU for the table after editing, adding or migrating any custom
+     * header entries as necessary after.
      * 
      * @param  row           the 0-based index of the first row to remove
      * @param  len           the number of subsequent rows to remove
@@ -301,11 +310,15 @@ public interface TableData {
      * this table should call this method after the deletion(s), at least once after all desired column deletions have
      * been processed).
      * 
-     * @param  oldNcol       The number of columns in the table before the first call to
-     *                           {@link #deleteColumns(int, int)}.
-     * @param  hdr           The table header
+     * @param      oldNcol       The number of columns in the table before the first call to
+     *                               {@link #deleteColumns(int, int)}.
+     * @param      hdr           The table header
      * 
-     * @throws FitsException if the header could not be updated
+     * @throws     FitsException if the header could not be updated
+     * 
+     * @deprecated               It is not entirely foolproof for keeping the header in sync -- it is better to (re)wrap
+     *                               tables in a new HDU after column deletions, and then edit the new header as
+     *                               necessary to incorporate custom entries. May be removed from the API in the future.
      */
     void updateAfterDelete(int oldNcol, Header hdr) throws FitsException;
 

@@ -260,7 +260,7 @@ public class BinaryTableHDU extends TableHDU<BinaryTable> {
 
     /**
      * Converts a column from FITS logical values to bits. Null values (allowed in logical columns) will map to
-     * <code>false</code>.
+     * <code>false</code>. It is legal to call this on a column that is already containing bits.
      *
      * @param  col           The zero-based index of the column to be reset.
      *

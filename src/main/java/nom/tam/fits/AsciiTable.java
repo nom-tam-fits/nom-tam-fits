@@ -900,6 +900,11 @@ public class AsciiTable extends AbstractTableData {
         return res;
     }
 
+    /**
+     * @deprecated It is not entirely foolproof for keeping the header in sync -- it is better to (re)wrap tables in a
+     *                 new HDU and editing the header as necessary to incorporate custom entries. May be removed from
+     *                 the API in the future.
+     */
     @Override
     public void updateAfterDelete(int oldNCol, Header hdr) throws FitsException {
 

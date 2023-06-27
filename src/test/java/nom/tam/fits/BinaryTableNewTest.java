@@ -751,13 +751,13 @@ public class BinaryTableNewTest {
     @Test
     public void testCreateVarComplexFloatDescriptor() throws Exception {
         BinaryTable tab = new BinaryTable();
-        tab.addColumn(ColumnDesc.createForVariableLength(ComplexValue.Float.class, true));
+        tab.addColumn(ColumnDesc.createForVariableLength(ComplexValue.Float.class));
         ColumnDesc c = tab.getDescriptor(0);
         Assert.assertTrue(c.isVariableSize());
         Assert.assertTrue(c.isComplex());
         Assert.assertEquals(ComplexValue.class, c.getElementClass());
         Assert.assertNull(c.getEntryShape());
-        Assert.assertTrue(c.hasLongPointers());
+        Assert.assertFalse(c.hasLongPointers());
     }
 
     @Test
@@ -809,7 +809,7 @@ public class BinaryTableNewTest {
     @Test
     public void testVarStringArraysDelimited() throws Exception {
         BinaryTable tab = new BinaryTable();
-        tab.addColumn(ColumnDesc.createForDelimitedVariableStringArrays((byte) '|'));
+        tab.addColumn(ColumnDesc.createForDelimitedStringArrays((byte) '|'));
         ColumnDesc c = tab.getDescriptor(0);
         Assert.assertTrue(c.isVariableSize());
         Assert.assertEquals(String.class, c.getElementClass());

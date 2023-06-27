@@ -82,7 +82,7 @@ public class SubstringTest {
     @Test
     public void testParseSubstringSetTFORM() throws Exception {
         BinaryTable tab = new BinaryTable();
-        tab.addColumn(ColumnDesc.createForDelimitedVariableStringArrays((byte) 32));
+        tab.addColumn(ColumnDesc.createForDelimitedStringArrays((byte) 32));
         tab.addRow(new Object[] {new String[] {"abc", "def"}});
         tab.addRow(new Object[] {new String[] {"1234567890"}});
 
@@ -98,7 +98,7 @@ public class SubstringTest {
 
     @Test
     public void testOutOfRangeDelimiter() throws Exception {
-        ColumnDesc c = ColumnDesc.createForDelimitedVariableStringArrays((byte) 1);
+        ColumnDesc c = ColumnDesc.createForDelimitedStringArrays((byte) 1);
         Assert.assertEquals((byte) 1, c.getStringDelimiter());
     }
 }

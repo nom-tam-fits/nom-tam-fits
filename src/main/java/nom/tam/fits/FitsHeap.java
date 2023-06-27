@@ -162,6 +162,22 @@ public class FitsHeap implements FitsElement {
         return store.position() - pos;
     }
 
+    /**
+     * Copies a segment of data from another heap to the end of this heap
+     * 
+     * @param  src    the heap to source data from
+     * @param  offset the byte offset of the data in the source heap
+     * @param  len    the number of bytes to copy
+     * 
+     * @return        the position of the copied data in this heap.
+     */
+    int copyFrom(FitsHeap src, int offset, int len) {
+        int pos = (int) store.length();
+        System.arraycopy(src.store.getBuffer(), offset, store.getBuffer(), pos, len);
+        store.setLength(pos + len);
+        return pos;
+    }
+
     @SuppressFBWarnings(value = "RR_NOT_CHECKED", justification = "this read will never return less than the requested length")
     @Override
     public void read(ArrayDataInput str) throws FitsException {

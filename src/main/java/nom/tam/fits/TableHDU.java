@@ -117,7 +117,9 @@ public abstract class TableHDU<T extends AbstractTableData> extends BasicHDU<T> 
      *
      * @throws     FitsException if the operation failed
      * 
-     * @deprecated               Use {@link #deleteColumns(int, int)} with <code>column - 1</code> instead. May be
+     * @deprecated               It is not entirely foolproof for keeping the header in sync -- it is better to use
+     *                               {@link TableData#deleteColumns(int, int)} to edit tables before wrapping them in an
+     *                               HDU and editing the header as necessary to incorporate custom entries. May be
      *                               removed from the API in the future.
      */
     public void deleteColumnsIndexOne(int column, int len) throws FitsException {
@@ -133,7 +135,9 @@ public abstract class TableHDU<T extends AbstractTableData> extends BasicHDU<T> 
      *
      * @throws     FitsException if the operation failed
      * 
-     * @deprecated               Use {@link #deleteColumns(int, int)} with <code>column - 1</code> instead. May be
+     * @deprecated               It is not entirely foolproof for keeping the header in sync -- it is better to use
+     *                               {@link TableData#deleteColumns(int, int)} to edit tables before wrapping them in an
+     *                               HDU and editing the header as necessary to incorporate custom entries. May be
      *                               removed from the API in the future.
      */
     public void deleteColumnsIndexOne(int column, int len, String[] fields) throws FitsException {
@@ -148,8 +152,10 @@ public abstract class TableHDU<T extends AbstractTableData> extends BasicHDU<T> 
      *
      * @throws     FitsException if the operation failed
      * 
-     * @deprecated               Use {@link #deleteColumns(int, int)} instead. May be removed from the API in the
-     *                               future.
+     * @deprecated               It is not entirely foolproof for keeping the header in sync -- it is better to use
+     *                               {@link TableData#deleteColumns(int, int)} to edit tables before wrapping them in an
+     *                               HDU and editing the header as necessary to incorporate custom entries. May be
+     *                               removed from the API in the future.
      */
     public void deleteColumnsIndexZero(int column, int len) throws FitsException {
         deleteColumnsIndexZero(column, len, columnKeyStems());
@@ -164,8 +170,10 @@ public abstract class TableHDU<T extends AbstractTableData> extends BasicHDU<T> 
      *
      * @throws     FitsException if the operation failed
      * 
-     * @deprecated               Use {@link #deleteColumns(int, int)} instead. May be removed from the API in the
-     *                               future.
+     * @deprecated               It is not entirely foolproof for keeping the header in sync -- it is better to use
+     *                               {@link TableData#deleteColumns(int, int)} to edit tables before wrapping them in an
+     *                               HDU and editing the header as necessary to incorporate custom entries. May be
+     *                               removed from the API in the future.
      */
     public void deleteColumnsIndexZero(int column, int len, IFitsHeader[] fields) throws FitsException {
 
@@ -206,27 +214,18 @@ public abstract class TableHDU<T extends AbstractTableData> extends BasicHDU<T> 
     }
 
     /**
-     * Delete a set of columns from a table.
-     *
-     * @param  column        The zero-indexed start column.
-     * @param  len           The number of columns to delete.
-     *
-     * @throws FitsException if the operation failed
-     * 
-     * @since                1.18
-     */
-    public void deleteColumns(int column, int len) throws FitsException {
-        deleteColumnsIndexZero(column, len, columnKeyStems());
-    }
-
-    /**
      * Remove all rows from the table starting at some specific index from the table. Inspired by a routine by R. Mathar
      * but re-implemented using the DataTable and changes to AsciiTable so that it can be done easily for both Binary
      * and ASCII tables.
      *
-     * @param  row           the (0-based) index of the first row to be deleted.
+     * @param      row           the (0-based) index of the first row to be deleted.
      *
-     * @throws FitsException if an error occurs.
+     * @throws     FitsException if an error occurs.
+     * 
+     * @deprecated               It is not entirely foolproof for keeping the header in sync -- it is better to use
+     *                               {@link TableData#deleteRows(int, int)} to edit tables before wrapping them in an
+     *                               HDU and editing the header as necessary to incorporate custom entries. May be
+     *                               removed from the API in the future.
      */
     public void deleteRows(final int row) throws FitsException {
         deleteRows(row, getNRows() - row);
@@ -236,11 +235,16 @@ public abstract class TableHDU<T extends AbstractTableData> extends BasicHDU<T> 
      * Remove a number of adjacent rows from the table. This routine was inspired by code by R.Mathar but re-implemented
      * using changes in the ColumnTable class abd AsciiTable so that we can do it for all FITS tables.
      *
-     * @param  firstRow      the (0-based) index of the first row to be deleted. This is zero-based indexing:
-     *                           0&lt;=firstrow&lt; number of rows.
-     * @param  nRow          the total number of rows to be deleted.
+     * @param      firstRow      the (0-based) index of the first row to be deleted. This is zero-based indexing:
+     *                               0&lt;=firstrow&lt; number of rows.
+     * @param      nRow          the total number of rows to be deleted.
      *
-     * @throws FitsException If an error occurs in the deletion.
+     * @throws     FitsException If an error occurs in the deletion.
+     * 
+     * @deprecated               It is not entirely foolproof for keeping the header in sync -- it is better to use
+     *                               {@link TableData#deleteRows(int, int)} to edit tables before wrapping them in an
+     *                               HDU and editing the header as necessary to incorporate custom entries. May be
+     *                               removed from the API in the future.
      */
     public void deleteRows(final int firstRow, int nRow) throws FitsException {
 
