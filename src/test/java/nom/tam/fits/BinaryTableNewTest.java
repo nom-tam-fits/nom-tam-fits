@@ -395,6 +395,9 @@ public class BinaryTableNewTest {
         // Call convert on already converted
         Assert.assertTrue(tab.convertToBits(0));
 
+        // Repeat conversion to check that it does not barf on columns that are already bits.
+        Assert.assertTrue(tab.convertToBits(0));
+
         // A column that cannot be converted
         Assert.assertFalse(tab.convertToBits(1));
     }
@@ -572,6 +575,7 @@ public class BinaryTableNewTest {
         Assert.assertEquals(1, c.getElementCount());
         Assert.assertEquals(1, c.getElementWidth());
         Assert.assertArrayEquals(new int[0], c.getEntryShape());
+        Assert.assertFalse(c.isBits());
 
         c = tab.getDescriptor(1);
 
@@ -580,6 +584,7 @@ public class BinaryTableNewTest {
         Assert.assertEquals(1, c.getElementCount());
         Assert.assertEquals(1, c.getElementWidth());
         Assert.assertArrayEquals(new int[] {1}, c.getEntryShape());
+        Assert.assertFalse(c.isBits());
 
         c = tab.getDescriptor(2);
 
@@ -588,6 +593,45 @@ public class BinaryTableNewTest {
         Assert.assertEquals(-1, c.getElementCount());
         Assert.assertEquals(1, c.getElementWidth());
         Assert.assertNull(c.getEntryShape());
+        Assert.assertFalse(c.isBits());
+    }
+
+    @Test
+    public void testAddBitsColumns() throws Exception {
+        BinaryTable tab = new BinaryTable();
+        tab.addBitsColumn(new boolean[] {true, false, false});
+        tab.addBitsColumn(new boolean[][] {{true}, {false}, {false}});
+        tab.addBitsColumn(new boolean[][] {{true}, {true, false}, {true, false, false}});
+
+        Assert.assertEquals(3, tab.getNCols());
+        Assert.assertEquals(3, tab.getNRows());
+
+        ColumnDesc c = tab.getDescriptor(0);
+
+        // Scalar
+        Assert.assertEquals(boolean.class, c.getElementClass());
+        Assert.assertEquals(1, c.getElementCount());
+        Assert.assertEquals(1, c.getElementWidth());
+        Assert.assertArrayEquals(new int[0], c.getEntryShape());
+        Assert.assertTrue(c.isBits());
+
+        c = tab.getDescriptor(1);
+
+        // Arrays of 1 (not scalar!)
+        Assert.assertEquals(boolean.class, c.getElementClass());
+        Assert.assertEquals(1, c.getElementCount());
+        Assert.assertEquals(1, c.getElementWidth());
+        Assert.assertArrayEquals(new int[] {1}, c.getEntryShape());
+        Assert.assertTrue(c.isBits());
+
+        c = tab.getDescriptor(2);
+
+        // Variable length
+        Assert.assertEquals(boolean.class, c.getElementClass());
+        Assert.assertEquals(-1, c.getElementCount());
+        Assert.assertEquals(1, c.getElementWidth());
+        Assert.assertNull(c.getEntryShape());
+        Assert.assertTrue(c.isBits());
     }
 
     @Test
@@ -1021,6 +1065,45 @@ public class BinaryTableNewTest {
         Header h = new Header();
         tab.fillHeader(h);
         Assert.assertEquals("100X", h.getStringValue(Standard.TFORMn.n(1)));
+    }
+
+    @Test(expected = FitsException.class)
+    public void testNullTForm() throws Exception {
+        BinaryTable.getDescriptor(new Header(), 0);
+    }
+
+    @Test(expected = FitsException.class)
+    public void testTFormNoDataType() throws Exception {
+        Header h = new Header();
+        h.addValue(Standard.TFORMn.n(1), "123");
+        BinaryTable.getDescriptor(h, 0);
+    }
+
+    @Test(expected = FitsException.class)
+    public void testTFormNoVarDataType() throws Exception {
+        Header h = new Header();
+        h.addValue(Standard.TFORMn.n(1), "123P");
+        BinaryTable.getDescriptor(h, 0);
+    }
+
+    @SuppressWarnings("deprecation")
+    @Test(expected = FitsException.class)
+    public void testVarFlattenedColumn() throws Exception {
+        float[][] f = new float[][] {new float[15], new float[11], new float[3]};
+        BinaryTable tab = new BinaryTable();
+        tab.addColumn(f);
+        tab.getFlattenedColumn(0); // Not for var-length...
+    }
+
+    public void testAddVarComplexFloatsColumn() throws Exception {
+        float[][][] f = new float[][][] {{new float[10], new float[2]}};
+        BinaryTable tab = new BinaryTable();
+        tab.addColumn(f);
+        Assert.assertEquals(1, tab.getNRows());
+        tab.setComplexColumn(0);
+        ColumnDesc c = tab.getDescriptor(0);
+        Assert.assertTrue(c.isComplex());
+        Assert.assertTrue(c.isVariableSize());
     }
 
 }

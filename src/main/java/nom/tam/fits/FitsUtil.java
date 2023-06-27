@@ -217,7 +217,7 @@ public final class FitsUtil {
     /**
      * Converts an array of booleans into the bits packed into a block of bytes.
      * 
-     * @param  bits an array of boolean with the separated bit values.
+     * @param  bits an array of bits
      * 
      * @return      a new byte array containing the packed bits (in big-endian order)
      * 
@@ -231,6 +231,38 @@ public final class FitsUtil {
             if (bits[i]) {
                 int pos = Byte.SIZE - 1 - i % Byte.SIZE;
                 bytes[i / Byte.SIZE] |= 1 << pos;
+            }
+        }
+
+        return bytes;
+    }
+
+    /**
+     * Converts an array of bit segments into the bits packed into a blocks of bytes.
+     * 
+     * @param  bits an array of bits
+     * @param  l    the number of bits in a segment that are to be kept together
+     * 
+     * @return      a new byte array containing the packed bits (in big-endian order)
+     * 
+     * @see         #bytesToBits(Object)
+     * 
+     * @since       1.18
+     */
+    static byte[] bitsToBytes(boolean[] bits, int l) throws IllegalArgumentException {
+        int n = bits.length / l; // Number of bit segments
+        int bl = (l + Byte.SIZE - 1) / Byte.SIZE; // Number of bytes per segment
+        byte[] bytes = new byte[n * bl]; // The converted byte array
+
+        for (int i = 0; i < n; i++) {
+            int off = i * l; // bit offset
+            int boff = i * bl; // byte offset
+
+            for (int j = 0; j < l; j++) {
+                if (bits[off + j]) {
+                    int pos = Byte.SIZE - 1 - j % Byte.SIZE;
+                    bytes[boff + (j / Byte.SIZE)] |= 1 << pos;
+                }
             }
         }
 

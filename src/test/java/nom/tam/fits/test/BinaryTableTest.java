@@ -1696,18 +1696,21 @@ public class BinaryTableTest {
 
         h.setComplexColumn(0);
         Assert.assertTrue(c.isComplex());
+
+        // Repeat conversion to check that it does not barf on columns that are already complex.
+        h.setComplexColumn(0);
+        Assert.assertTrue(c.isComplex());
     }
 
     @Test
-    public void testConvertLongVarComplexColumn() throws Exception {
+    public void testConvertVarComplexColumnOdd() throws Exception {
         float[][] f = new float[3][];
 
-        f[0] = new float[10];
-        f[1] = new float[2];
-        f[2] = new float[14];
+        f[0] = new float[11];
+        f[1] = new float[3];
+        f[2] = new float[15];
 
         BinaryTable t = new BinaryTable();
-
         t.addColumn(f);
 
         ColumnDesc c = t.getDescriptor(0);
@@ -1718,8 +1721,8 @@ public class BinaryTableTest {
         BinaryTableHDU h = new BinaryTableHDU(new Header(), t);
         t.fillHeader(h.getHeader());
 
-        h.setComplexColumn(0);
-        Assert.assertTrue(c.isComplex());
+        Assert.assertFalse(h.setComplexColumn(0));
+        Assert.assertFalse(c.isComplex());
     }
 
     @Test
