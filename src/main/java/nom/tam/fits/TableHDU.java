@@ -80,7 +80,7 @@ public abstract class TableHDU<T extends AbstractTableData> extends BasicHDU<T> 
      */
     public int addColumn(Object newCol) throws FitsException {
         int nCols = getNCols();
-        myHeader.addValue(TFIELDS, nCols);
+        myHeader.findCard(TFIELDS).setValue(nCols);
         setDefaultColumnName(nCols);
         return nCols;
     }
@@ -97,7 +97,7 @@ public abstract class TableHDU<T extends AbstractTableData> extends BasicHDU<T> 
      */
     public int addRow(Object[] newRows) throws FitsException {
         int row = myData.addRow(newRows);
-        myHeader.addValue(NAXISn.n(2), getNRows());
+        myHeader.findCard(NAXISn.n(2)).setValue(getNRows());
         return row;
     }
 
@@ -112,10 +112,13 @@ public abstract class TableHDU<T extends AbstractTableData> extends BasicHDU<T> 
     /**
      * Delete a set of columns from a table.
      *
-     * @param  column        The one-indexed start column.
-     * @param  len           The number of columns to delete.
+     * @param      column        The one-indexed start column.
+     * @param      len           The number of columns to delete.
      *
-     * @throws FitsException if the operation failed
+     * @throws     FitsException if the operation failed
+     * 
+     * @deprecated               Use {@link #deleteColumns(int, int)} with <code>column - 1</code> instead. May be
+     *                               removed from the API in the future.
      */
     public void deleteColumnsIndexOne(int column, int len) throws FitsException {
         deleteColumnsIndexZero(column - 1, len);
@@ -124,11 +127,14 @@ public abstract class TableHDU<T extends AbstractTableData> extends BasicHDU<T> 
     /**
      * Delete a set of columns from a table.
      *
-     * @param  column        The one-indexed start column.
-     * @param  len           The number of columns to delete.
-     * @param  fields        Stems for the header fields to be removed for the table.
+     * @param      column        The one-indexed start column.
+     * @param      len           The number of columns to delete.
+     * @param      fields        Stems for the header fields to be removed for the table.
      *
-     * @throws FitsException if the operation failed
+     * @throws     FitsException if the operation failed
+     * 
+     * @deprecated               Use {@link #deleteColumns(int, int)} with <code>column - 1</code> instead. May be
+     *                               removed from the API in the future.
      */
     public void deleteColumnsIndexOne(int column, int len, String[] fields) throws FitsException {
         deleteColumnsIndexZero(column - 1, len, GenericKey.create(fields));
@@ -137,10 +143,13 @@ public abstract class TableHDU<T extends AbstractTableData> extends BasicHDU<T> 
     /**
      * Delete a set of columns from a table.
      *
-     * @param  column        The one-indexed start column.
-     * @param  len           The number of columns to delete.
+     * @param      column        The one-indexed start column.
+     * @param      len           The number of columns to delete.
      *
-     * @throws FitsException if the operation failed
+     * @throws     FitsException if the operation failed
+     * 
+     * @deprecated               Use {@link #deleteColumns(int, int)} instead. May be removed from the API in the
+     *                               future.
      */
     public void deleteColumnsIndexZero(int column, int len) throws FitsException {
         deleteColumnsIndexZero(column, len, columnKeyStems());
@@ -149,11 +158,14 @@ public abstract class TableHDU<T extends AbstractTableData> extends BasicHDU<T> 
     /**
      * Delete a set of columns from a table.
      *
-     * @param  column        The zero-indexed start column.
-     * @param  len           The number of columns to delete.
-     * @param  fields        Stems for the header fields to be removed for the table.
+     * @param      column        The zero-indexed start column.
+     * @param      len           The number of columns to delete.
+     * @param      fields        Stems for the header fields to be removed for the table.
      *
-     * @throws FitsException if the operation failed
+     * @throws     FitsException if the operation failed
+     * 
+     * @deprecated               Use {@link #deleteColumns(int, int)} instead. May be removed from the API in the
+     *                               future.
      */
     public void deleteColumnsIndexZero(int column, int len, IFitsHeader[] fields) throws FitsException {
 
@@ -187,10 +199,24 @@ public abstract class TableHDU<T extends AbstractTableData> extends BasicHDU<T> 
             }
         }
         // Update the number of fields.
-        myHeader.addValue(TFIELDS, getNCols());
+        myHeader.findCard(TFIELDS).setValue(getNCols());
 
         // Give the data sections a chance to update the header too.
         myData.updateAfterDelete(ncol, myHeader);
+    }
+
+    /**
+     * Delete a set of columns from a table.
+     *
+     * @param  column        The zero-indexed start column.
+     * @param  len           The number of columns to delete.
+     *
+     * @throws FitsException if the operation failed
+     * 
+     * @since                1.18
+     */
+    public void deleteColumns(int column, int len) throws FitsException {
+        deleteColumnsIndexZero(column, len, columnKeyStems());
     }
 
     /**

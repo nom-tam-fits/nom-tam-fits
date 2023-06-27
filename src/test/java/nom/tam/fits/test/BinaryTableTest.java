@@ -24,6 +24,7 @@ import org.junit.Test;
 
 import nom.tam.fits.BasicHDU;
 import nom.tam.fits.BinaryTable;
+import nom.tam.fits.BinaryTable.ColumnDesc;
 import nom.tam.fits.BinaryTableHDU;
 import nom.tam.fits.Fits;
 import nom.tam.fits.FitsException;
@@ -746,13 +747,13 @@ public class BinaryTableTest {
     }
 
     private void tryDeleteNonExistingColumn(BinaryTableHDU firstHdu) {
-        TableException tableException = null;
+        Exception exception = null;
         try {
             firstHdu.getData().deleteColumns(1000000000, 1);
         } catch (FitsException ex) {
-            tableException = (TableException) ex.getCause();
+            exception = ex;
         }
-        Assert.assertNotNull(tableException);
+        Assert.assertNotNull(exception);
     }
 
     @Test
@@ -1039,7 +1040,7 @@ public class BinaryTableTest {
             assertEquals("ncols", 9, data.length);
 
             for (int i = 0; i < data.length; i++) {
-                assertEquals("vardata" + i, true, TestArrayFuncs.arrayEquals(data[i], bhdu.getColumn(i)));
+                assertEquals("vardata" + i + " ", true, TestArrayFuncs.arrayEquals(data[i], bhdu.getColumn(i)));
             }
 
             ByteArrayOutputStream out = new ByteArrayOutputStream();
@@ -1683,17 +1684,18 @@ public class BinaryTableTest {
         f[2] = new float[14];
 
         BinaryTable t = new BinaryTable();
-        t.setUseLongPointers(false);
-        Assert.assertFalse(t.isUseLongPointers());
         t.addColumn(f);
-        Assert.assertTrue(t.isVariableLengthColumn(0));
+
+        ColumnDesc c = t.getDescriptor(0);
+        Assert.assertTrue(c.isVariableSize());
+        Assert.assertEquals(float.class, c.getElementClass());
+        Assert.assertFalse(c.isComplex());
 
         BinaryTableHDU h = new BinaryTableHDU(new Header(), t);
         t.fillHeader(h.getHeader());
 
-        Assert.assertFalse(h.isComplexColumn(0));
         h.setComplexColumn(0);
-        Assert.assertTrue(h.isComplexColumn(0));
+        Assert.assertTrue(c.isComplex());
     }
 
     @Test
@@ -1705,18 +1707,19 @@ public class BinaryTableTest {
         f[2] = new float[14];
 
         BinaryTable t = new BinaryTable();
-        t.setUseLongPointers(true);
-        Assert.assertTrue(t.isUseLongPointers());
 
         t.addColumn(f);
-        Assert.assertTrue(t.isVariableLengthColumn(0));
+
+        ColumnDesc c = t.getDescriptor(0);
+        Assert.assertTrue(c.isVariableSize());
+        Assert.assertEquals(float.class, c.getElementClass());
+        Assert.assertFalse(c.isComplex());
 
         BinaryTableHDU h = new BinaryTableHDU(new Header(), t);
         t.fillHeader(h.getHeader());
 
-        Assert.assertFalse(h.isComplexColumn(0));
         h.setComplexColumn(0);
-        Assert.assertTrue(h.isComplexColumn(0));
+        Assert.assertTrue(c.isComplex());
     }
 
     @Test

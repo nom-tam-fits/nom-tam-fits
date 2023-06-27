@@ -505,26 +505,7 @@ to the new HDU's header, e.g.:
   ...
 ```
 
-An important thing to remember is that while images can be anywhere in the FITS files, tables
-are extensions, and so, they cannot be the first HDU in a file. Thus, if a table is the first real data 
-we want to add to a FITS, we must precede it with a dummy primary HDU first, e.g.:
-
-```java
-  Fits fits = new Fits();
-   
-  // Add a dummy HDU as out primary HDU
-  fits.addHDU(new NullDataHDU());
-```
-
 After that we can add our table(s), such as binary tables (preferred) or ASCII tables (if you must):
-
-```java
-  // A table we have at hand...
-  BinaryTableHDU binTable = ...
-  fits.addHDU(binTable);
-   
-  ...
-```
 
 Once all HDUs have been added, we write the FITS as usual:
 
@@ -532,6 +513,12 @@ Once all HDUs have been added, we write the FITS as usual:
   fits.write("myfits.fits");
   fits.close();
 ```
+
+An important thing to remember is that while images can be anywhere in the FITS files, tables
+are extensions, and so, they cannot be the first HDU in a file. Thus, if a table is the first HDU we add to a FITS
+container, it will be preceded by a dummy primary HDU, and our data will actually be written as the
+second HDU (Java index 1).
+
 
 
 <a name="incremental-writing"></a>

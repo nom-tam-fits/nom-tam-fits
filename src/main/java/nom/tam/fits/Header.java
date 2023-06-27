@@ -125,7 +125,7 @@ import static nom.tam.fits.header.extra.CXCExt.LONGSTRN;
 public class Header implements FitsElement {
 
     /**
-     * The default character position to which comments should be aligned if possible (0-based). The fITS standard
+     * The default character position to which comments should be aligned if possible (zero-based). The fITS standard
      * requires that 'fixed-format' values are right-justified to byte 30 (index 29 in Java), and recommends a space
      * after that before the comment. As such, comments should normally start at byte 30 (counted from 0). (We will add
      * a space at that position before the '/' indicating the comment start)
@@ -133,7 +133,7 @@ public class Header implements FitsElement {
     public static final int DEFAULT_COMMENT_ALIGN = 30;
 
     /**
-     * The earliest position (0-based) at which a comment may start for a regular key/value entry.
+     * The earliest position (zero-based) at which a comment may start for a regular key/value entry.
      * 
      * @deprecated We will disable changing alignment in the future because it may violate the standard for
      *                 'fixed-format' header entries, and result in files that are unreadable by some other software.
@@ -142,7 +142,7 @@ public class Header implements FitsElement {
     public static final int MIN_COMMENT_ALIGN = 20;
 
     /**
-     * The largest (0-based) comment alignment allowed that can still contain some meaningful comment (word)
+     * The largest (zero-based) comment alignment allowed that can still contain some meaningful comment (word)
      * 
      * @deprecated We will disable changing alignment in the future because it may violate the standard for
      *                 'fixed-format' header entries, and result in files that are unreadable by some other software.
@@ -1977,10 +1977,7 @@ public class Header implements FitsElement {
      * @throws HeaderCardException if the operation failed
      */
     public void updateLine(IFitsHeader key, HeaderCard card) throws HeaderCardException {
-        if (key.valueType() != VALUE.NONE) {
-            deleteKey(key);
-        }
-        cursor().add(card);
+        updateLine(key.key(), card);
     }
 
     /**

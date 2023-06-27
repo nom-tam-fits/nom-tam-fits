@@ -233,7 +233,7 @@ public class CompressedTableData extends BinaryTable {
 
         ColumnDesc c = getDescriptor(targetHeader, col);
         ColumnTable<?> data = new ColumnTable<>();
-        data.addColumn(c.newInstance(nRows), c.getTableCount());
+        data.addColumn(c.newInstance(nRows), c.getTableBaseCount());
 
         List<BinaryTableTile> tileList = new ArrayList<>();
 
@@ -258,7 +258,7 @@ public class CompressedTableData extends BinaryTable {
 
         Object[] colData = new Object[toRow - fromRow];
         for (int i = 0; i < colData.length; i++) {
-            colData[i] = getFromHeap(c, data.getElement(0, i));
+            colData[i] = getFromHeap(c, data.getElement(0, i), false);
         }
 
         return colData;

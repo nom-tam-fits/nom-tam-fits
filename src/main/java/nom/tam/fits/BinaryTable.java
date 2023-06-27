@@ -38,7 +38,7 @@ import java.text.ParsePosition;
 import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.List;
-import java.util.logging.Level;
+import java.util.StringTokenizer;
 import java.util.logging.Logger;
 
 import nom.tam.fits.header.Bitpix;
@@ -49,7 +49,6 @@ import nom.tam.util.ArrayFuncs;
 import nom.tam.util.AsciiFuncs;
 import nom.tam.util.ColumnTable;
 import nom.tam.util.ComplexValue;
-import nom.tam.util.Cursor;
 import nom.tam.util.FitsEncoder;
 import nom.tam.util.FitsIO;
 import nom.tam.util.RandomAccess;
@@ -87,9 +86,11 @@ public class BinaryTable extends AbstractTableData implements Cloneable {
     /** FITS 64-bit pointer type for variable-sized columns */
     private static final char POINTER_LONG = 'Q';
 
-    private static final int[] SCALAR_SHAPE = new int[0];
+    private static final int[] SINGLETON_SHAPE = new int[0];
 
     private static final String SUBSTRING_MARKER = ":SSTR";
+
+    private static boolean readVarComplexRealCount = false;
 
     /**
      * Describes the data type and shape stored in a binary table column.
@@ -97,10 +98,6 @@ public class BinaryTable extends AbstractTableData implements Cloneable {
     public static class ColumnDesc implements Cloneable {
 
         private boolean warnedFlatten;
-
-        private String label;
-
-        private String unit;
 
         /** byte offset of element from row start */
         private int offset;
@@ -112,12 +109,13 @@ public class BinaryTable extends AbstractTableData implements Cloneable {
         private int fileSize;
 
         /** The dimensions of the column */
-        private int[] shape = SCALAR_SHAPE;
+        private int[] fitsShape = SINGLETON_SHAPE;
+
+        /** Shape on the Java side. Differs from the FITS TDIM shape for String and complex values. */
+        private int[] legacyShape = SINGLETON_SHAPE;
 
         /** Length of string elements */
         private int stringLength = -1;
-
-        private int[] leadingShape;
 
         /** The class array entries on the Java side. */
         private Class<?> base;
@@ -215,99 +213,55 @@ public class BinaryTable extends AbstractTableData implements Cloneable {
          */
         public ColumnDesc(Class<?> base, int... dim) throws FitsException {
             this(base);
-            setShape(dim);
+            setBoxedShape(dim);
         }
 
-        /**
-         * Sets a label for this column.
-         * 
-         * @param  value                    the new label for the column
-         * 
-         * @return                          itself
-         * 
-         * @throws IllegalArgumentException if the name contains characters outside of the FITS legal range of ASCII
-         *                                      0x20 through 0x7e.
-         * 
-         * @see                             #getLabel()
-         * @see                             BinaryTable#findColumn(String)
-         * 
-         * @since                           1.18
-         */
-        public ColumnDesc setLabel(String value) throws IllegalArgumentException {
-            HeaderCard.validateChars(value);
-            this.label = value;
-            return this;
-        }
-
-        /**
-         * Returns the label for this column.
-         * 
-         * @return value the label for the column, or <code>null</code>.
-         *
-         * @see    #setLabel(String)
-         * @see    BinaryTable#findColumn(String)
-         * 
-         * @since  1.18
-         */
-        public final String getLabel() {
-            return label;
-        }
-
-        /**
-         * Sets the standard physical unit name in which this column is expressed.
-         * 
-         * @param  value                    the standard physical unit name (see FITS standard document on physical
-         *                                      units).
-         * 
-         * @return                          itself
-         * 
-         * @throws IllegalArgumentException if the name contains characters outside of the FITS legal range of ASCII
-         *                                      0x20 through 0x7e.
-         * 
-         * @see                             #getUnit()
-         * 
-         * @since                           1.18
-         */
-        public ColumnDesc setUnit(String value) throws IllegalArgumentException {
-            HeaderCard.validateChars(value);
-            this.unit = value;
-            return this;
-        }
-
-        /**
-         * Returns the physical unit name in which this column is expressed.
-         * 
-         * @return value the physical unit name for the column, or <code>null</code>.
-         *
-         * @see    #setUnit(String)
-         * 
-         * @since  1.18
-         */
-        public final String getUnit() {
-            return unit;
-        }
-
-        private void setShape(int... dim) {
-            if (isString()) {
-                if (stringLength >= 0) {
-                    dim = Arrays.copyOf(dim, dim.length + 1);
-                    dim[dim.length - 1] = stringLength;
-                }
-            }
-
-            this.shape = dim;
-
-            if (isComplex()) {
-                leadingShape = shape;
-                shape = Arrays.copyOf(shape, shape.length + 1);
-                shape[shape.length - 1] = 2;
-            } else if (isString()) {
-                leadingShape = Arrays.copyOf(shape, shape.length - 1);
-            }
-
+        private void calcFitsCount() {
             fitsCount = 1;
-            for (int size : shape) {
+            for (int size : fitsShape) {
                 fitsCount *= size;
+            }
+        }
+
+        /**
+         * Sets the shape of entries in the older Java array format of this library (used exclusively prior to 1.18).
+         * For complex columns, there is an extra <code>[2]</code> dimension, such that single complex values are stored
+         * as an array of <code>[2]</code>, and an array of <i>n</i> complex values are stored as arrays of
+         * <code>[n][2]</code>. Otherwise it's the same as {@link #setBoxedShape(int...)}.
+         * 
+         * @param dim The Java dimensions for legacy arrays, such as returned by
+         *                {@link BinaryTable#getElement(int, int)}
+         */
+        private void setLegacyShape(int... dim) {
+            legacyShape = dim;
+            calcFitsShape();
+            calcFitsCount();
+        }
+
+        /**
+         * Sets the shape of entries as stored in the FITS header by hte TDIM keyword.
+         * 
+         * @param dim The dimensions for the TDIM keyword in Java order (outer dimensions first), which is the reverse
+         *                of FITS order (inner-dimensions first).
+         */
+        private void setFitsShape(int... dim) {
+            fitsShape = dim;
+            calcLegacyShape();
+            calcFitsCount();
+        }
+
+        /**
+         * Sets the shape of boxed Java array entries. For complex columns, all single entries, including strings and
+         * complex values, have scalar shape <code>[]</code>, whereas an array of <i>n</i> have shape <code>[n]</code>.
+         * 
+         * @param dim The Java dimensions for legacy arrays, such as returned by
+         *                {@link BinaryTable#getElement(int, int)}
+         */
+        private void setBoxedShape(int... dim) {
+            if (isComplex()) {
+                setFitsShape(dim);
+            } else {
+                setLegacyShape(dim);
             }
         }
 
@@ -318,7 +272,7 @@ public class BinaryTable extends AbstractTableData implements Cloneable {
          * @return the maximum length of string values stored in this column, or -1 if it is not as string column, or if
          *             its a string column containing strings of unconstrained variable length.
          * 
-         * @see    #getBoxedShape()
+         * @see    #getEntryShape()
          * 
          * @since  1.18
          */
@@ -335,13 +289,14 @@ public class BinaryTable extends AbstractTableData implements Cloneable {
          */
         private void setStringLength(int len) {
             if (!isString()) {
-                throw new IllegalStateException("Not a string column: type " + getBoxedClass());
+                throw new IllegalStateException("Not a string column: type " + getElementClass());
             }
 
             stringLength = len;
 
             if (!isVariableSize()) {
-                setShape(shape);
+                calcFitsShape();
+                calcFitsCount();
             }
         }
 
@@ -384,7 +339,7 @@ public class BinaryTable extends AbstractTableData implements Cloneable {
             if (String.class.isAssignableFrom(type)) {
                 throw new IllegalArgumentException("Use the createStrings(int) method for scalar strings.");
             }
-            return new ColumnDesc(type, SCALAR_SHAPE);
+            return new ColumnDesc(type, SINGLETON_SHAPE);
         }
 
         /**
@@ -438,7 +393,7 @@ public class BinaryTable extends AbstractTableData implements Cloneable {
          * @since                1.18
          */
         public static ColumnDesc createForStrings(int len) throws FitsException {
-            return createForStrings(len, SCALAR_SHAPE);
+            return createForStrings(len, SINGLETON_SHAPE);
         }
 
         /**
@@ -459,8 +414,8 @@ public class BinaryTable extends AbstractTableData implements Cloneable {
          */
         public static ColumnDesc createForStrings(int len, int... outerDims) throws FitsException {
             ColumnDesc c = new ColumnDesc(String.class);
+            c.setLegacyShape(outerDims);
             c.setStringLength(len);
-            c.setShape(outerDims);
             return c;
         }
 
@@ -547,7 +502,7 @@ public class BinaryTable extends AbstractTableData implements Cloneable {
         public static ColumnDesc createForDelimitedVariableStringArrays(byte delim, boolean useLongPointers)
                 throws FitsException {
             ColumnDesc c = createForVariableStringArrays(-1, useLongPointers);
-            c.setSubstringDelimiter(delim);
+            c.setStringDelimiter(delim);
             return c;
         }
 
@@ -606,20 +561,39 @@ public class BinaryTable extends AbstractTableData implements Cloneable {
             return c;
         }
 
+        private void calcLegacyShape() {
+            if (isString()) {
+                legacyShape = fitsShape.length > 0 ? Arrays.copyOf(fitsShape, fitsShape.length - 1) : SINGLETON_SHAPE;
+            } else if (isComplex()) {
+                legacyShape = Arrays.copyOf(fitsShape, fitsShape.length + 1);
+                legacyShape[fitsShape.length] = 2;
+            } else {
+                legacyShape = fitsShape;
+            }
+        }
+
+        private void calcFitsShape() {
+            if (isString()) {
+                fitsShape = Arrays.copyOf(legacyShape, legacyShape.length + 1);
+                fitsShape[legacyShape.length] = stringLength;
+            } else if (isComplex()) {
+                fitsShape = Arrays.copyOf(legacyShape, legacyShape.length - 1);
+            } else {
+                fitsShape = legacyShape;
+            }
+        }
+
         /**
-         * Returns the leading part of the shape array, drippong the trailing dimension from it. It is useful for
-         * example to determine the shape of strings or complex values where the last dimension only specifies the count
-         * of their internal components.
+         * Returns the the shape of legacy Java arrays, such as for {@link String} or for the <code>float</code> or
+         * <code>double</code> array that stores complex values. For other data types, it is the same as the FITS shape
+         * stored by the TDIM header keyword.
          * 
          * @return the shape of elements without the trailing dimension.
          * 
          * @see    #getLastDim()
          */
-        private int[] getLeadingShape() {
-            if (leadingShape == null) {
-                return (shape.length > 0) ? Arrays.copyOf(shape, shape.length - 1) : SCALAR_SHAPE;
-            }
-            return leadingShape;
+        private int[] getLegacyShape() {
+            return legacyShape;
         }
 
         /**
@@ -629,21 +603,35 @@ public class BinaryTable extends AbstractTableData implements Cloneable {
          * 
          * @see    #getLeadingShape()
          */
-        private int getLastDim() {
-            if (shape.length == 0) {
+        private int getLastFitsDim() {
+            if (fitsShape.length == 0) {
                 return 1;
             }
-            return shape[shape.length - 1];
+            return fitsShape[fitsShape.length - 1];
+        }
+
+        /**
+         * Returns the size of table entries in their trailing dimension.
+         * 
+         * @return the number of elemental components in the trailing dimension of table entries.
+         * 
+         * @see    #getLeadingShape()
+         */
+        private int getLastLegacyDim() {
+            if (legacyShape.length == 0) {
+                return 1;
+            }
+            return legacyShape[legacyShape.length - 1];
         }
 
         @Override
         public ColumnDesc clone() {
             try {
                 ColumnDesc copy = (ColumnDesc) super.clone();
-                shape = shape.clone();
+                fitsShape = fitsShape.clone();
 
-                if (leadingShape != null) {
-                    leadingShape = leadingShape.clone();
+                if (legacyShape != null) {
+                    legacyShape = legacyShape.clone();
                 }
 
                 // Model should not be changed...
@@ -653,33 +641,33 @@ public class BinaryTable extends AbstractTableData implements Cloneable {
             }
         }
 
-        private void setScalar() {
-            setShape(SCALAR_SHAPE);
+        private void setSingleton() {
+            setBoxedShape(SINGLETON_SHAPE);
         }
 
-        private boolean isSinglePrimitive() {
-            return dimension() == 0;
+        private boolean isFitsScalar() {
+            return fitsShape.length == 0;
         }
 
         /**
-         * Checks if this column contains single (scalar) elements only, including single strings or single complex
-         * values.
+         * Checks if this column contains single (scalar / non-array) elements only, including single strings or single
+         * complex values.
          * 
          * @return <code>true</code> if the column contains individual elements of its type, or else <code>false</code>
          *             if it contains arrays.
          * 
          * @since  1.18
          */
-        public boolean isScalar() {
+        public final boolean isSingleton() {
             if (isVariableSize()) {
                 return isString() ? (stringLength < 0 && delimiter == 0) : false;
             }
 
             if (isComplex()) {
-                return dimension() == 1;
+                return fitsShape.length == 0;
             }
 
-            return isSinglePrimitive() || ((isString() || isComplex()) && dimension() <= 1);
+            return legacyShape.length == 0;
         }
 
         /**
@@ -697,7 +685,7 @@ public class BinaryTable extends AbstractTableData implements Cloneable {
          * 
          * @since  1.18
          */
-        public boolean isLogical() {
+        public final boolean isLogical() {
             return base == Boolean.class || (base == boolean.class && !isBits);
         }
 
@@ -714,7 +702,7 @@ public class BinaryTable extends AbstractTableData implements Cloneable {
          * 
          * @since  1.18
          */
-        public boolean isBits() {
+        public final boolean isBits() {
             return base == boolean.class && isBits;
         }
 
@@ -725,7 +713,7 @@ public class BinaryTable extends AbstractTableData implements Cloneable {
          * 
          * @see    #isVariableSize()
          */
-        public boolean isString() {
+        public final boolean isString() {
             return base == String.class;
         }
 
@@ -736,7 +724,7 @@ public class BinaryTable extends AbstractTableData implements Cloneable {
          * 
          * @return <code>true</code> if this column contains complex values.
          */
-        public boolean isComplex() {
+        public final boolean isComplex() {
             return isComplex;
         }
 
@@ -750,14 +738,14 @@ public class BinaryTable extends AbstractTableData implements Cloneable {
          * 
          * @return     the Java class, arrays of which, packaged data for this column on the Java side.
          * 
-         * @deprecated Ambiguous, use {@link #getJavaArrayBase()} instead. It can be confusing since it is not clear if
-         *                 it refers to array element types used in FITS storage or on the java side when using the
-         *                 older array access. It is also distinct from {@link #getBoxedClass()}, which returns the
-         *                 boxed type used by {@link BinaryTable#get(int, int)} or
-         *                 {@link BinaryTable#set(int, int, Object)}.
+         * @deprecated Ambiguous, use {@link #getLegacyBase()} instead. It can be confusing since it is not clear if it
+         *                 refers to array element types used in FITS storage or on the java side when using the older
+         *                 array access, or if it refers to the class of entries in the main table, which may be heap
+         *                 pointers. It is also distinct from {@link #getElementClass()}, which returns the boxed type
+         *                 used by {@link BinaryTable#get(int, int)} or {@link BinaryTable#set(int, int, Object)}.
          */
         public Class<?> getBase() {
-            return getJavaArrayBase();
+            return getLegacyBase();
         }
 
         /**
@@ -768,7 +756,7 @@ public class BinaryTable extends AbstractTableData implements Cloneable {
          * 
          * @return the primitive class, in used for storing data in the FITS representation.
          * 
-         * @see    #getJavaArrayBase()
+         * @see    #getLegacyBase()
          * 
          * @since  1.18
          */
@@ -778,26 +766,25 @@ public class BinaryTable extends AbstractTableData implements Cloneable {
 
         /**
          * <p>
-         * Returns the Java array element type that is used in Java to represent data in this column. When accessing
-         * columns or their elements in the old way, through arrays, this is the type that arrays from the Java side
-         * will expect or provide. For example, when storing {@link String} values (regular or variable-sized), this
-         * will return <code>String.class</code>. Arrays returned by {@link BinaryTable#getColumn(int)},
-         * {@link BinaryTable#getRow(int)}, and {@link BinaryTable#getElement(int, int)} will return arrays of this
-         * type, and the equivalent methods for setting data will expect arrays of this type as their argument.
+         * Returns the Java array element type that is used in Java to represent data in this column for the legacy
+         * table access methods. When accessing columns or their elements in the old way, through arrays, this is the
+         * type that arrays from the Java side will expect or provide. For example, when storing complex values (regular
+         * or variable-sized), this will return <code>float.class</code> ot <code>double.class</code>. Arrays returned
+         * by {@link BinaryTable#getColumn(int)}, {@link BinaryTable#getRow(int)}, and
+         * {@link BinaryTable#getElement(int, int)} will return arrays of this type.
          * </p>
          * <p>
-         * This is different from {@link BinaryTable#getElementClass(int)}, which in turn returns the boxed type of
-         * objects returned by {@link BinaryTable#get(int, int)} or {@link BinaryTable#set(int, int, Object)}.
+         * This is different from {@link #getElementClass()}, which in turn returns the boxed type of objects returned
+         * by {@link BinaryTable#get(int, int)}.
          * 
          * @return the Java class, arrays of which, packaged data for this column on the Java side.
          * 
-         * @see    #getBoxedClass()
+         * @see    #getElementClass()
          * @see    #getFitsArrayBase()
-         * @see    BinaryTable#getElementClass(int)
          * 
          * @since  1.18
          */
-        public Class<?> getJavaArrayBase() {
+        public Class<?> getLegacyBase() {
             return base;
         }
 
@@ -809,22 +796,22 @@ public class BinaryTable extends AbstractTableData implements Cloneable {
          * 
          * @see    #isVariableSize()
          */
-        Class<?> getTableBase() {
+        private Class<?> getTableBase() {
             return isVariableSize() ? pointerClass() : getFitsArrayBase();
         }
 
         /**
-         * Returns the domensions of elements in this column. As of 1.18, this method returns a copy ot the array used
+         * Returns the dimensions of elements in this column. As of 1.18, this method returns a copy ot the array used
          * internally, which is safe to modify.
          * 
          * @return     an array with the element dimensions.
          * 
-         * @deprecated (<i>for internal use</i>) Use {@link #getBoxedShape()} instead. Not useful to users since it
+         * @deprecated (<i>for internal use</i>) Use {@link #getEntryShape()} instead. Not useful to users since it
          *                 returns the dimensions of the primitive storage types, which is not always the dimension of
-         *                 elements on the Java side (notably for string entries).
+         *                 table entries on the Java side.
          */
         public int[] getDimens() {
-            return shape == null ? null : shape.clone();
+            return fitsShape.clone();
         }
 
         /**
@@ -833,10 +820,10 @@ public class BinaryTable extends AbstractTableData implements Cloneable {
          * @return the dimension of elements in the FITS representation. For example an array of string will be 2
          *             (number of string, number of bytes per string).
          * 
-         * @see    #getBoxedDimension()
+         * @see    #getEntryDimension()
          */
-        final int dimension() {
-            return shape.length;
+        private int fitsDimension() {
+            return fitsShape.length;
         }
 
         /**
@@ -849,11 +836,11 @@ public class BinaryTable extends AbstractTableData implements Cloneable {
          * 
          * @since  1.18
          * 
-         * @see    #getElementCount(int)
-         * @see    #getElementShape(int)
-         * @see    ColumnDesc#getJavaArrayBase()
+         * @see    ColumnDesc#getElementCount()
+         * @see    ColumnDesc#getEntryShape()
+         * @see    ColumnDesc#getLegacyBase()
          */
-        public final Class<?> getBoxedClass() {
+        public final Class<?> getElementClass() {
             if (isLogical()) {
                 return Boolean.class;
             }
@@ -872,16 +859,16 @@ public class BinaryTable extends AbstractTableData implements Cloneable {
          * @return the number of array dimensions in the 'boxed' Java type for this column. Variable-sized columns will
          *             always return 1.
          * 
-         * @see    #getBoxedShape()
-         * @see    #getBoxedCount()
+         * @see    #getEntryShape()
+         * @see    #getElementCount()
          * 
          * @since  1.18
          */
-        public final int getBoxedDimension() {
+        public final int getEntryDimension() {
             if (isVariableSize()) {
                 return 1;
             }
-            return (isComplex || isString()) ? shape.length - 1 : shape.length;
+            return isString() ? legacyShape.length : fitsShape.length;
         }
 
         /**
@@ -895,22 +882,27 @@ public class BinaryTable extends AbstractTableData implements Cloneable {
          *             element type. (Note, that accordingly variable-length string columns containing single strings
          *             will thus return <code>{1}</code>, not <code>null</code>).
          * 
-         * @see    #getBoxedShape()
-         * @see    #getBoxedCount()
+         * @see    #getEntryShape()
+         * @see    #getElementCount()
          * @see    #isVariableSize()
          * 
          * @since  1.18
          */
-        public final int[] getBoxedShape() {
+        public final int[] getEntryShape() {
             if (isVariableSize()) {
                 return null;
             }
-            return (isComplex || isString()) ? getLeadingShape().clone() : shape.clone();
+
+            if (isComplex) {
+                return fitsShape.clone();
+            }
+
+            return legacyShape.clone();
         }
 
         /**
-         * Returns the number of primitive elements (sych as bytes) that constitute a boxed Java element (such as a
-         * String) in this table.
+         * Returns the number of primitive elements (sych as bytes) that constitute a Java element (such as a String) in
+         * this table.
          * 
          * @return The number of primitives per Java element in the column, that is 1 for columns of primitive types, 2
          *             for complex-valued columns, or the number of bytes (characters) in a String element.
@@ -918,10 +910,10 @@ public class BinaryTable extends AbstractTableData implements Cloneable {
          * 
          * @since  1.18
          * 
-         * @see    #getBoxedCount()
-         * @see    #getJavaArrayBase()
+         * @see    #getElementCount()
+         * @see    #getLegacyBase()
          */
-        public final int getBoxedWidth() {
+        public final int getElementWidth() {
             if (isComplex()) {
                 return 2;
             }
@@ -939,28 +931,22 @@ public class BinaryTable extends AbstractTableData implements Cloneable {
          * @return the number of array elements in the 'boxed' Java type for this column, or -1 if the column contains
          *             elements of varying size.
          * 
-         * @see    #getBoxedShape()
-         * @see    #getBoxedDimension()
+         * @see    #getEntryShape()
+         * @see    #getEntryDimension()
          * @see    #isVariableSize()
          * 
          * @since  1.18
          */
-        public final int getBoxedCount() {
+        public final int getElementCount() {
             if (isVariableSize()) {
                 return isString() ? 1 : -1;
             }
-            if (isBits) {
-                int size = 1;
-                for (int dim : shape) {
-                    size *= dim;
-                }
-                return size;
-            }
+
             if (isString()) {
                 return fitsCount / getStringLength();
             }
 
-            return isComplex ? fitsCount >> 1 : fitsCount;
+            return fitsCount;
         }
 
         /**
@@ -968,8 +954,19 @@ public class BinaryTable extends AbstractTableData implements Cloneable {
          * will always return 2.
          * 
          * @return the number of primitive table elements
+         * 
+         * @since  1.18
          */
-        public final int getTableCount() {
+        public final int getTableBaseCount() {
+            if (isVariableSize()) {
+                return 2;
+            }
+            if (isBits) {
+                return (fitsCount + Byte.SIZE - 1) / Byte.SIZE;
+            }
+            if (isComplex) {
+                return fitsCount << 1;
+            }
             return fitsCount;
         }
 
@@ -993,7 +990,7 @@ public class BinaryTable extends AbstractTableData implements Cloneable {
          * @param      nRow the number of rows to allocate the array for
          */
         public Object newInstance(int nRow) {
-            return ArrayFuncs.newInstance(getTableBase(), fitsCount * nRow);
+            return ArrayFuncs.newInstance(getTableBase(), getTableBaseCount() * nRow);
         }
 
         /**
@@ -1004,7 +1001,7 @@ public class BinaryTable extends AbstractTableData implements Cloneable {
          * @return     the number of bytes an element occupies in the FITS binary table data representation
          */
         public int rowLen() {
-            return fitsCount * ElementType.forClass(getTableBase()).size();
+            return getTableBaseCount() * ElementType.forClass(getTableBase()).size();
         }
 
         /**
@@ -1013,7 +1010,6 @@ public class BinaryTable extends AbstractTableData implements Cloneable {
          * @return <code>true</code> if the column uses 64-bit heap pointers, otherwise <code>false</code>
          * 
          * @see    #createForVariableLength(Class, boolean)
-         * @see    BinaryTable#setUseLongPointers(boolean)
          * 
          * @since  1.18
          */
@@ -1027,7 +1023,7 @@ public class BinaryTable extends AbstractTableData implements Cloneable {
          * 
          * @return <code>int.class</code> or <code>long.class</code>
          */
-        final char pointerType() {
+        private char pointerType() {
             return pointerType;
         }
 
@@ -1046,11 +1042,12 @@ public class BinaryTable extends AbstractTableData implements Cloneable {
          * @param useLongPointers <code>true</code> to use 64-bit heap pointers for variable-length arrays or else
          *                            <code>false</code> to use 32-bit pointers.
          */
-        void setVariableSize(boolean useLongPointers) {
+        private void setVariableSize(boolean useLongPointers) {
             pointerType = useLongPointers ? POINTER_LONG : POINTER_INT;
             fitsCount = 2;
-            shape = new int[] {fitsCount};
-            leadingShape = null;
+            fitsShape = new int[] {2};
+            legacyShape = fitsShape;
+            stringLength = -1;
         }
 
         /**
@@ -1063,7 +1060,7 @@ public class BinaryTable extends AbstractTableData implements Cloneable {
          * 
          * @since       1.18
          */
-        private void setSubstringDelimiter(byte delim) {
+        private void setStringDelimiter(byte delim) {
             if (delim < FitsUtil.MIN_ASCII_VALUE || delim > FitsUtil.MAX_ASCII_VALUE) {
                 LOG.warning("WARNING! Substring terminator byte " + (delim & FitsIO.BYTE_MASK)
                         + " outside of the conventional range of " + FitsUtil.MIN_ASCII_VALUE + " through "
@@ -1086,64 +1083,67 @@ public class BinaryTable extends AbstractTableData implements Cloneable {
          * Parses the substring array convention from a TFORM value, to set string length (if desired) and a delimiter
          * in variable-length string arrays.
          * 
-         * @param tform     the TFORM keyword entry for the column.
+         * @param tform     the TFORM header value for this column
+         * @param pos       the parse position immediately after the 'A'
          * @param setLength Whether to use the substring definition to specify the max string component length, for
          *                      example because it is not defined otherwise by TDIM.
          */
-        private void parseSubstringConvention(String tform, boolean setLength) {
+        private void parseSubstringConvention(String tform, ParsePosition pos, boolean setLength) {
 
             if (setLength) {
-                // Set the default string length to the full field
-                setStringLength(isVariableSize() ? -1 : getTFORMLength(tform));
+                // Default string length...
+                stringLength = isVariableSize() ? -1 : fitsCount;
             }
 
             // Parse substring array convention...
-            String rem = tform.substring(tform.indexOf('A') + 1);
-
-            if (rem.isEmpty()) {
+            if (pos.getIndex() >= tform.length()) {
                 return;
             }
 
             // Try 'rAw' format...
             try {
-                setStringLength(Integer.parseInt(rem));
+                int len = AsciiFuncs.parseInteger(tform, pos);
+                if (setLength) {
+                    stringLength = len;
+                }
                 return;
-            } catch (NumberFormatException e) {
+            } catch (Exception e) {
                 // Keep going...
             }
 
             // Find if and where is the ":SSTR" marker in the format
-            int iSub = rem.indexOf(SUBSTRING_MARKER);
+            int iSub = tform.indexOf(SUBSTRING_MARKER, pos.getIndex());
             if (iSub < 0) {
                 // No substring definition...
                 return;
             }
 
-            rem = rem.substring(iSub + SUBSTRING_MARKER.length());
-
-            // Split to width/delimiter parts
-            String[] parts = rem.split("/", 2);
+            pos.setIndex(iSub + SUBSTRING_MARKER.length());
 
             // Set the substring width....
             try {
-                int n = Integer.parseInt(parts[0]);
+                int len = AsciiFuncs.parseInteger(tform, pos);
                 if (setLength) {
-                    setStringLength(n);
+                    stringLength = len;
                 }
-            } catch (NumberFormatException e) {
-                LOG.warning("WARNING! Could not parse conventional substring length from [" + parts[0] + "] in TFORM");
+            } catch (Exception e) {
+                LOG.warning("WARNING! Could not parse substring length from TFORM: [" + tform + "]");
             }
 
-            // If a delimiter was also defined, set delimiter...
-            if (parts.length > 1) {
-                try {
-                    setSubstringDelimiter((byte) Integer.parseInt(parts[1]));
-                } catch (NumberFormatException e) {
-                    // Warn if the delimiter is outside of the range supported by the convention.
-                    LOG.warning(
-                            "WARNING! Could not parse conventional substring terminator from [" + parts[1] + "] in TFORM");
-                }
+            // Parse substring array convention...
+            if (pos.getIndex() >= tform.length()) {
+                return;
+            }
 
+            if (AsciiFuncs.extractChar(tform, pos) != '/') {
+                return;
+            }
+
+            try {
+                setStringDelimiter((byte) AsciiFuncs.parseInteger(tform, pos));
+            } catch (NumberFormatException e) {
+                // Warn if the delimiter is outside of the range supported by the convention.
+                LOG.warning("WARNING! Could not parse substring terminator from TFORM: [" + tform + "]");
             }
         }
 
@@ -1158,6 +1158,73 @@ public class BinaryTable extends AbstractTableData implements Cloneable {
                 }
             }
         }
+
+        String getTFORM() throws FitsException {
+
+            StringBuffer tform = new StringBuffer();
+
+            tform.append(isVariableSize() ? "1" + pointerType() : fitsCount);
+
+            if (base == int.class) {
+                tform.append('J');
+            } else if (base == short.class) {
+                tform.append('I');
+            } else if (base == byte.class) {
+                tform.append('B');
+            } else if (base == char.class) {
+                if (FitsFactory.isUseUnicodeChars()) {
+                    tform.append('I');
+                    LOG.warning(
+                            "char[] will be written as 16-bit integers (type 'I'), not as a FITS character array (type 'A')"
+                                    + " in the binary table. If that is not what you want, you should set FitsFactory.setUseUnicodeChars(false).");
+                    LOG.warning("Future releases will disable Unicode support by default as it is not FITS standard."
+                            + " If you do want it still, use FitsFactory.setUseUnicodeChars(true) explicitly to keep the non-standard "
+                            + " behavior as is.");
+                } else {
+                    tform.append('A');
+                }
+            } else if (base == float.class) {
+                tform.append(isComplex() ? 'C' : 'E');
+            } else if (base == double.class) {
+                tform.append(isComplex() ? 'M' : 'D');
+            } else if (base == long.class) {
+                tform.append('K');
+            } else if (isLogical()) {
+                tform.append('L');
+            } else if (isBits()) {
+                tform.append('X');
+            } else if (isString()) {
+                tform.append('A');
+                if (isVariableSize()) {
+                    appendSubstringConvention(tform);
+                }
+            } else {
+                throw new FitsException("Invalid column data class:" + base);
+            }
+
+            return tform.toString();
+        }
+
+        String getTDIM() {
+            if (isVariableSize()) {
+                return null;
+            }
+
+            if (fitsShape.length < 2) {
+                return null;
+            }
+
+            StringBuffer tdim = new StringBuffer();
+            char prefix = '(';
+            for (int i = fitsShape.length - 1; i >= 0; i--) {
+                tdim.append(prefix);
+                tdim.append(fitsShape[i]);
+                prefix = ',';
+            }
+            tdim.append(')');
+            return tdim.toString();
+        }
+
     }
 
     /**
@@ -1221,9 +1288,6 @@ public class BinaryTable extends AbstractTableData implements Cloneable {
      */
     private ArrayDataInput currInput;
 
-    /** Whether 64-bit pointers should be used by default in this table */
-    private boolean isUseLongPointers = false;
-
     /**
      * Create a null binary table data segment.
      */
@@ -1271,7 +1335,7 @@ public class BinaryTable extends AbstractTableData implements Cloneable {
 
             for (int i = 0; i < tab.getNCols(); i++) {
                 int n = tab.getElementSize(i);
-                ColumnDesc c = new ColumnDesc(tab.getElementClass(i), n > 1 ? new int[] {n} : SCALAR_SHAPE);
+                ColumnDesc c = new ColumnDesc(tab.getElementClass(i), n > 1 ? new int[] {n} : SINGLETON_SHAPE);
                 addFlattenedColumn(tab.getColumn(i), c, true);
             }
         } catch (FitsException e) {
@@ -1324,7 +1388,6 @@ public class BinaryTable extends AbstractTableData implements Cloneable {
 
         HeaderCard card = myHeader.findCard(NAXIS1);
         card.setValue(String.valueOf(rowLen));
-        myHeader.updateLine(NAXIS1, card);
     }
 
     /**
@@ -1458,32 +1521,8 @@ public class BinaryTable extends AbstractTableData implements Cloneable {
         return copy;
     }
 
-    /**
-     * Sets whether 64-bit <code>long</code> heap pointers rather than 32-bit <code>int</code> should be used, when
-     * creating variable length columns in this table.
-     * 
-     * @param value <code>true</code> to use 64-bit heap pointers, or <code>false</code> to prefer 32-bit pointers.
-     * 
-     * @since       1.18
-     * 
-     * @see         #isUseLongPointers()
-     */
-    public void setUseLongPointers(boolean value) {
-        isUseLongPointers = value;
-    }
-
-    /**
-     * Checks if <code>long</code> heap pointers are to be used rather than <code>int</code> pointers, when creating
-     * variable length columns in this table.
-     * 
-     * @return <code>true</code> if 64-bit heap pointers are to be used, or else <code>false</code> if 32-bit pointers.
-     * 
-     * @since  1.18
-     * 
-     * @see    #setUseLongPointers(boolean)
-     */
-    public boolean isUseLongPointers() {
-        return isUseLongPointers;
+    final int getRowBytes() {
+        return rowLen;
     }
 
     /**
@@ -1507,26 +1546,35 @@ public class BinaryTable extends AbstractTableData implements Cloneable {
      * @return           An int array of the desired dimensions. Note that the order of the tdims is the inverse of the
      *                       order in the TDIMS key.
      */
-    public static int[] getTDims(String tdims) {
-
-        // The TDIMs value should be of the form: "(iiii,jjjj,kkk,...)"
-        int[] dims = null;
-        int first = tdims.indexOf('(');
-        int last = tdims.lastIndexOf(')');
-        if (first >= 0 && last > first) {
-
-            tdims = tdims.substring(first + 1, last - first);
-
-            java.util.StringTokenizer st = new java.util.StringTokenizer(tdims, ",");
-            int dim = st.countTokens();
-            if (dim > 0) {
-                dims = new int[dim];
-                for (int i = dim - 1; i >= 0; i--) {
-                    dims[i] = Integer.parseInt(st.nextToken().trim());
-                }
-            }
+    public static int[] parseTDims(String tdims) {
+        if (tdims == null) {
+            return null;
         }
-        return dims;
+
+        // The TDIMs value should be of the form: "(i,j...)"
+        int start = tdims.indexOf('(');
+
+        if (start < 0) {
+            return null;
+        }
+
+        int end = tdims.indexOf(')', start);
+        if (end < 0) {
+            end = tdims.length();
+        }
+
+        StringTokenizer st = new StringTokenizer(tdims.substring(start + 1, end), ",");
+        int dim = st.countTokens();
+
+        if (dim > 0) {
+            int[] dims = new int[dim];
+            for (int i = dim; --i >= 0;) {
+                dims[i] = Integer.parseInt(st.nextToken().trim());
+            }
+            return dims;
+        }
+
+        return null;
     }
 
     /**
@@ -1552,7 +1600,9 @@ public class BinaryTable extends AbstractTableData implements Cloneable {
     public int addComplexColumn(Object o, Class<?> decimalType) throws FitsException {
         int col = columns.size();
         int eSize = addColumn(ArrayFuncs.complexToDecimals(o, decimalType));
-        columns.get(col).isComplex = true;
+        ColumnDesc c = columns.get(col);
+        c.isComplex = true;
+        c.setLegacyShape(c.fitsShape);
         return eSize;
     }
 
@@ -1578,7 +1628,6 @@ public class BinaryTable extends AbstractTableData implements Cloneable {
      */
     public int addStringColumn(String[] o) throws FitsException {
         ColumnDesc c = new ColumnDesc(String.class);
-        c.setVariableSize(isUseLongPointers);
 
         // Check if we should be using variable-length strings
         // (provided its a scalar string column with sufficiently varied strings sizes to make it worth..
@@ -1586,7 +1635,7 @@ public class BinaryTable extends AbstractTableData implements Cloneable {
         int max = FitsUtil.maxStringLength(o);
 
         if (max - min > 2 * ElementType.forClass(c.pointerClass()).size()) {
-            c = ColumnDesc.createForVariableLength(String.class, isUseLongPointers);
+            c = ColumnDesc.createForVariableLength(String.class);
         } else {
             c = ColumnDesc.createForStrings(max);
         }
@@ -1605,7 +1654,6 @@ public class BinaryTable extends AbstractTableData implements Cloneable {
      * 
      * @since                1.18
      * 
-     * @see                  #addLogicalColumn(Object)
      * @see                  #addColumn(Object)
      */
     public int addBitsColumn(Object o) throws FitsException {
@@ -1613,30 +1661,6 @@ public class BinaryTable extends AbstractTableData implements Cloneable {
             throw new TableException("Not an array of booleans: " + o.getClass());
         }
         return addColumn(o, false);
-    }
-
-    /**
-     * Adds a column of logical values as a one or more dimensional array of {@link Boolean} values.
-     * 
-     * @param  o             An any-dimensional array of {@link Boolean} values.
-     * 
-     * @return               the number of column in the table including the new column.
-     * 
-     * @throws FitsException if the object is not an array of {@link Boolean} objects.
-     * 
-     * @since                1.18
-     * 
-     * @see                  #addBitsColumn(Object)
-     * @see                  #addColumn(Object)
-     */
-    public int addLogicalColumn(Object o) throws FitsException {
-        if (ArrayFuncs.getBaseClass(o) != Boolean.class) {
-            throw new TableException("Not an array of Boolean objects: " + o.getClass());
-        }
-        int col = columns.size();
-        int res = addColumn(o);
-        columns.get(col).isBits = false;
-        return res;
     }
 
     /**
@@ -1752,15 +1776,15 @@ public class BinaryTable extends AbstractTableData implements Cloneable {
             }
 
             if (dim.length <= 1) {
-                c.setScalar();
+                c.setSingleton();
             } else {
                 int[] shape = new int[dim.length - 1];
                 System.arraycopy(dim, 1, shape, 0, shape.length);
-                c.setShape(shape);
+                c.setLegacyShape(shape);
                 o = ArrayFuncs.flatten(o);
             }
         } catch (IllegalArgumentException e) {
-            c.setVariableSize(isUseLongPointers);
+            c.setVariableSize(false);
         } catch (ClassCastException e) {
             throw new TableException("Inconsistent array", e);
         }
@@ -1786,12 +1810,13 @@ public class BinaryTable extends AbstractTableData implements Cloneable {
      * @see                  #addColumn(Object)
      * @see                  #addColumn(ColumnDesc)
      * @see                  ColumnDesc#createForVariableLength(Class, boolean)
-     * @see                  #isVariableLengthColumn(int)
+     * @see                  ColumnDesc#isVariableSize()
      * 
      * @since                1.18
      */
     public int addVariableLengthColumn(Object o) throws FitsException {
-        ColumnDesc c = ColumnDesc.createForVariableLength(ArrayFuncs.getBaseClass(o), isUseLongPointers);
+        Class<?> base = ArrayFuncs.getBaseClass(o);
+        ColumnDesc c = ColumnDesc.createForVariableLength(base);
         return addFlattenedColumn(o, c, false);
     }
 
@@ -1820,7 +1845,7 @@ public class BinaryTable extends AbstractTableData implements Cloneable {
             c.setStringLength(FitsUtil.maxStringLength(o));
         }
 
-        c.setShape(dims);
+        c.setLegacyShape(dims);
 
         return addFlattenedColumn(o, c, true);
     }
@@ -1845,28 +1870,31 @@ public class BinaryTable extends AbstractTableData implements Cloneable {
         if (c.isVariableSize()) {
             Object[] array = (Object[]) o;
             o = Array.newInstance(c.pointerClass(), array.length * 2);
+
             for (int i = 0; i < array.length; i++) {
-                if (array[i] instanceof Object[] && !c.warnedFlatten) {
+                boolean multi = c.isComplex() ? array[i] instanceof Object[][] : array[i] instanceof Object[];
+
+                if (multi && !c.warnedFlatten) {
                     LOG.warning("Table entries of " + array[i].getClass()
                             + " will be stored as 1D arrays in variable-length columns. "
                             + "Array shape(s) and intermittent null entries (if any) will be lost.");
                     c.warnedFlatten = true;
                 }
-                Object e = javaToFits1D(c, array[i]);
-                e = putOnHeap(c, e, null);
-                System.arraycopy(e, 0, o, 2 * i, 2);
+
+                Object p = putOnHeap(c, array[i], null);
+                System.arraycopy(p, 0, o, 2 * i, 2);
             }
         } else {
             o = javaToFits1D(c, o);
         }
 
-        if (c.fitsCount == 0) {
+        if (c.getTableBaseCount() == 0) {
             LOG.warning("Elements of column + " + columns.size() + " have zero storage size.");
         } else if (columns.size() > 0) {
             // Check that the number of rows is consistent.
             int l = Array.getLength(o);
-            if (nRow > 0 && l != nRow * c.fitsCount) {
-                throw new TableException("Mismatched element count " + l + ", expected " + (nRow * c.fitsCount));
+            if (nRow > 0 && l != nRow * c.getTableBaseCount()) {
+                throw new TableException("Mismatched element count " + l + ", expected " + (nRow * c.getTableBaseCount()));
             }
         }
 
@@ -1876,7 +1904,7 @@ public class BinaryTable extends AbstractTableData implements Cloneable {
 
         // Load any deferred data (we will not be able to do that once we alter the column structure)
         ensureData();
-        table.addColumn(o, c.fitsCount);
+        table.addColumn(o, c.getTableBaseCount());
         columns.add(c);
 
         return columns.size();
@@ -1939,11 +1967,7 @@ public class BinaryTable extends AbstractTableData implements Cloneable {
 
             for (int i = 0; i < flatRow.length; i++) {
                 ColumnDesc c = columns.get(i);
-                Object e = javaToFits1D(c, ArrayFuncs.flatten(o[i]));
-                if (c.isVariableSize()) {
-                    e = putOnHeap(c, e, null);
-                }
-                flatRow[i] = e;
+                flatRow[i] = c.isVariableSize() ? putOnHeap(c, o[i], null) : javaToFits1D(c, ArrayFuncs.flatten(o[i]));
             }
             table.addRow(flatRow);
             nRow++;
@@ -1952,22 +1976,29 @@ public class BinaryTable extends AbstractTableData implements Cloneable {
         return nRow;
     }
 
+    /**
+     * @deprecated Unsafe because it may leave stale column descriptions in HDU headers, use
+     *                 {@link TableHDU#deleteColumns(int, int)} to remove columns from table HDUs instead. (When tables
+     *                 are not associated to HDUs yet, such as when constructing a new table it is unlikely that colu,ns
+     *                 should be deleted. If you don't need columns in a new table do not add them in the first place.)
+     */
     @Override
     public void deleteColumns(int start, int len) throws FitsException {
         ensureData();
-        try {
-            table.deleteColumns(start, len);
 
-            ArrayList<ColumnDesc> remain = new ArrayList<>(columns.size() - len);
-            for (int i = 0; i < columns.size(); i++) {
-                if (i < start || i >= start + len) {
-                    remain.add(columns.get(i));
-                }
+        table.deleteColumns(start, len);
+
+        ArrayList<ColumnDesc> remain = new ArrayList<>(columns.size() - len);
+        rowLen = 0;
+        for (int i = 0; i < columns.size(); i++) {
+            if (i < start || i >= start + len) {
+                ColumnDesc c = columns.get(i);
+                c.offset = rowLen;
+                rowLen += c.rowLen();
+                remain.add(c);
             }
-            columns = remain;
-        } catch (Exception e) {
-            throw new FitsException("Error deleting columns from BinaryTable", e);
         }
+        columns = remain;
     }
 
     @Override
@@ -1989,31 +2020,11 @@ public class BinaryTable extends AbstractTableData implements Cloneable {
      * 
      * @return     the types in the table, not the underlying types (e.g., for varying length arrays or booleans).
      * 
-     * @deprecated (<i>for internal use</i>) Ambiguous, use {@link #getElementClass(int)} instead. Will remove in the
-     *                 future.
+     * @deprecated (<i>for internal use</i>) Ambiguous, use {@link ColumnDesc#getElementClass()} instead. Will remove in
+     *                 the future.
      */
     public Class<?>[] getBases() {
         return table.getBases();
-    }
-
-    /**
-     * Returns the Java type of elements stored in a column.
-     * 
-     * @param  col the zero-based column index
-     * 
-     * @return     The java type of elements in the columns. For columns containing strings, FITS logicals, or complex
-     *                 values it will be <code>String.class</code>, <code>Boolean.class</code> or
-     *                 <code>ComplexValue.class</code> respectively. For all other column types the primitive class of
-     *                 the elements contained (e.g. <code>char.class</code>, <code>float.class</code>) is returned.
-     * 
-     * @since      1.18
-     * 
-     * @see        #getElementCount(int)
-     * @see        #getElementShape(int)
-     * @see        ColumnDesc#getBoxedClass()
-     */
-    public final Class<?> getElementClass(int col) {
-        return columns.get(col).getBoxedClass();
     }
 
     /**
@@ -2022,7 +2033,7 @@ public class BinaryTable extends AbstractTableData implements Cloneable {
      * information about the format of data elements in general.
      * </p>
      * 
-     * @param  col           The 0-based column index.
+     * @param  col           The zero-based column index.
      * 
      * @return               an array of primitives (for scalar columns), or else an <code>Object[]</code> array, or
      *                           possibly <code>null</code>
@@ -2035,7 +2046,9 @@ public class BinaryTable extends AbstractTableData implements Cloneable {
      */
     @Override
     public Object getColumn(int col) throws FitsException {
-        if (columns.get(col).isSinglePrimitive()) {
+        ColumnDesc c = columns.get(col);
+
+        if (c.isFitsScalar() && !c.isComplex()) {
             return getFlattenedColumn(col);
         }
 
@@ -2071,7 +2084,7 @@ public class BinaryTable extends AbstractTableData implements Cloneable {
      * 
      * @see        ColumnDesc#getDimens()
      * 
-     * @deprecated (<i>for internal use</i>) Use {@link #getElementShape(int)} to access the shape of Java elements
+     * @deprecated (<i>for internal use</i>) Use {@link ColumnDesc#getEntryShape()} to access the shape of Java elements
      *                 individually for columns instead. Not useful to users since it returns the dimensions of the
      *                 primitive storage types, which is not always the dimension of elements on the Java side (notably
      *                 for string entries).
@@ -2085,37 +2098,23 @@ public class BinaryTable extends AbstractTableData implements Cloneable {
     }
 
     /**
-     * Returns the shape of elements stored in each entry of a column. This is the shape of the java array. Thus, for
-     * string and complex-valued columns it is the shape of the {@link String} or {@link ComplexValue} arrays that are
-     * returned by {@link #get(int, int)} (or the encompassing shape of the <code>float[2]</code> or
-     * <code>double[2]</code> arrays returned by {@link #getElement(int, int)}).
+     * @deprecated                       (<i>for internal use</i>) It may be private in the future.
      * 
-     * @param  col the zero-based column index
+     * @return                           An array with flattened data, in which each column's data is represented by a
+     *                                       1D array
      * 
-     * @return     An array containing the sizes along each dimension of array entries of the boxed type. For example a
-     *                 column containting <code>float[2][5][7]</code> arrays will return <code>{ 2, 5, 7 }</code>.
-     *                 Scalar columns will return an array of length 0, that is <code>{}</code>. Columns containing
-     *                 variable sized arrays of boxed elements will return <code>null</code>. (Note, that accordingly
-     *                 variable-length string columns containing single strings (not arrays) will thus return
-     *                 <code>{1}</code>, not <code>null</code>).
-     * 
-     * @since      1.18
-     *
-     * @see        #getElementCount(int)
-     * @see        #getElementClass(int)
-     * @see        ColumnDesc#getBoxedShape()
+     * @throws     IllegalStateException if the reading of the data failed.
      */
-    public final int[] getElementShape(int col) {
-        return columns.get(col).getBoxedShape();
-    }
-
-    /**
-     * @deprecated (<i>for internal use</i>) It may be private in the future.
-     * 
-     * @return     An array with flattened data, in which each column's data is represented by a 1D array
-     */
-    public Object[] getFlatColumns() {
-        ensureDataSilent();
+    public Object[] getFlatColumns() throws IllegalStateException {
+        try {
+            ensureData();
+        } catch (FitsException e) {
+            Throwable t = e;
+            if (e.getCause() != null) {
+                t = e.getCause();
+            }
+            throw new IllegalStateException("Reading of data failed: " + t.getMessage(), t);
+        }
         return table.getColumns();
     }
 
@@ -2149,7 +2148,7 @@ public class BinaryTable extends AbstractTableData implements Cloneable {
         }
 
         ensureData();
-        return fitsToJava1D(c, table.getColumn(col), false);
+        return fitsToJava1D(c, table.getColumn(col), c.isBits() ? c.fitsCount : 0, false);
     }
 
     /**
@@ -2184,10 +2183,10 @@ public class BinaryTable extends AbstractTableData implements Cloneable {
         Object[] modelRow = new Object[columns.size()];
         for (int i = 0; i < modelRow.length; i++) {
             ColumnDesc c = columns.get(i);
-            if (c.dimension() < 2) {
-                modelRow[i] = Array.newInstance(c.getTableBase(), c.fitsCount);
+            if (c.fitsDimension() < 2) {
+                modelRow[i] = Array.newInstance(c.getTableBase(), c.getTableBaseCount());
             } else {
-                modelRow[i] = Array.newInstance(c.getTableBase(), c.shape);
+                modelRow[i] = Array.newInstance(c.getTableBase(), c.fitsShape);
             }
         }
         return modelRow;
@@ -2222,7 +2221,7 @@ public class BinaryTable extends AbstractTableData implements Cloneable {
         }
 
         ((RandomAccess) currInput).position(getFileOffset() + row * (long) rowLen + c.offset);
-        if (!c.isLogical() && c.getJavaArrayBase() != char.class) {
+        if (!c.isLogical() && c.getLegacyBase() != char.class) {
             currInput.readImage(o);
         } else {
             currInput.readArrayFully(o);
@@ -2306,19 +2305,13 @@ public class BinaryTable extends AbstractTableData implements Cloneable {
         Object o = getRawElement(row, col);
 
         if (c.isVariableSize()) {
-            o = getFromHeap(c, o);
+            return getFromHeap(c, o, isEnhanced);
         }
 
-        o = fitsToJava1D(c, o, isEnhanced);
+        o = fitsToJava1D(c, o, c.isBits() ? c.fitsCount : 0, isEnhanced);
 
-        if (c.dimension() > 1) {
-            if (c.isString()) {
-                return c.dimension() > 2 ? ArrayFuncs.curl(o, c.getLeadingShape()) : o;
-            }
-            if (c.isComplex() && isEnhanced) {
-                return ArrayFuncs.curl(o, c.getLeadingShape());
-            }
-            return ArrayFuncs.curl(o, c.shape);
+        if (c.legacyShape.length > 1) {
+            return ArrayFuncs.curl(o, c.legacyShape);
         }
 
         return o;
@@ -2370,7 +2363,7 @@ public class BinaryTable extends AbstractTableData implements Cloneable {
     public Object get(int row, int col) throws FitsException {
         ColumnDesc c = columns.get(col);
         Object e = getElement(row, col, true);
-        return (c.isScalar() && e.getClass().isArray()) ? Array.get(e, 0) : e;
+        return (c.isSingleton() && e.getClass().isArray()) ? Array.get(e, 0) : e;
     }
 
     /**
@@ -2543,7 +2536,7 @@ public class BinaryTable extends AbstractTableData implements Cloneable {
             return value.toString();
         }
 
-        if (c.dimension() > 1) {
+        if (c.fitsDimension() > 1) {
             throw new ClassCastException("Cannot convert multi-dimensional array element to String");
         }
 
@@ -2576,57 +2569,17 @@ public class BinaryTable extends AbstractTableData implements Cloneable {
      * 
      * @return     an array with the byte sizes of each column
      * 
-     * @deprecated (<i>for internal use</i>) Use {@link #getElementCount(int)} instead. This one returns the number of
-     *                 elements in the FITS representation, not in the java representation. For example, for
+     * @deprecated (<i>for internal use</i>) Use {@link ColumnDesc#getElementCount()} instead. This one returns the
+     *                 number of elements in the FITS representation, not in the java representation. For example, for
      *                 {@link String} entries, this returns the number of bytes stored, not the number of strings.
      *                 Similarly, for complex values it returns the number of components not the number of values.
      */
     public int[] getSizes() {
         int[] sizes = new int[columns.size()];
         for (int i = 0; i < sizes.length; i++) {
-            sizes[i] = columns.get(i).fitsCount;
+            sizes[i] = columns.get(i).getTableBaseCount();
         }
         return sizes;
-    }
-
-    /**
-     * Returns the number of Java high-level elements (such as {@link String} or {@link ComplexValue}) stored in each
-     * entry of a column.
-     * 
-     * @param  col the zero-based column index
-     * 
-     * @return     The number of elements per column entry, that is 1 for scalar columns or else the number of array
-     *                 elements in array type columns.
-     * 
-     * @since      1.18
-     * 
-     * @see        #getElementWidth(int)
-     * @see        #getElementShape(int)
-     * @see        #getElementClass(int)
-     * @see        ColumnDesc#getBoxedCount()
-     */
-    public final int getElementCount(int col) {
-        return columns.get(col).getBoxedCount();
-    }
-
-    /**
-     * Returns the number of primitive elements (sych as bytes) that constitute a Java element (such as a String) in
-     * this table.
-     * 
-     * @param  col the zero-based column index
-     * 
-     * @return     The number of primitives per Java element in the column, that is 1 for columns of primitive types, 2
-     *                 for complex-valued columns, or the number of bytes (characters) in a String element.
-     *                 Variable-length string will return -1.
-     * 
-     * @since      1.18
-     * 
-     * @see        #getElementCount(int)
-     * @see        #getElementClass(int)
-     * @see        ColumnDesc#getBoxedWidth()
-     */
-    public final int getElementWidth(int col) {
-        return columns.get(col).getBoxedWidth();
     }
 
     /**
@@ -2635,8 +2588,6 @@ public class BinaryTable extends AbstractTableData implements Cloneable {
      * 
      * @return the byte size of a table row in the main table, which contains heap references only for variable-length
      *             columns.
-     * 
-     * @see    #isUseLongPointers()
      * 
      * @since  1.18
      */
@@ -2668,8 +2619,8 @@ public class BinaryTable extends AbstractTableData implements Cloneable {
      *
      * @return     An array of type characters (Java array types), one for each column.
      * 
-     * @deprecated (<i>for internal use</i>) Use {@link #getElementClass(int)} instead. Not very useful to users since
-     *                 this returns the FITS primitive storage type for the data column.
+     * @deprecated (<i>for internal use</i>) Use {@link ColumnDesc#getElementClass()} instead. Not very useful to users
+     *                 since this returns the FITS primitive storage type for the data column.
      */
     public char[] getTypes() {
         char[] types = new char[columns.size()];
@@ -2686,9 +2637,8 @@ public class BinaryTable extends AbstractTableData implements Cloneable {
         if (c.isVariableSize()) {
             Object[] array = (Object[]) o;
             for (int i = 0; i < nRow; i++) {
-                Object e = array[i];
-                e = c.isVariableSize() ? putOnHeap(c, e, getRawElement(i, col)) : javaToFits1D(c, ArrayFuncs.flatten(e));
-                setFitsElement(i, col, e);
+                Object p = putOnHeap(c, ArrayFuncs.flatten(array[i]), getRawElement(i, col));
+                setFitsElement(i, col, p);
             }
         } else {
             setFlattenedColumn(col, o);
@@ -2768,11 +2718,8 @@ public class BinaryTable extends AbstractTableData implements Cloneable {
     @Override
     public void setElement(int row, int col, Object o) throws FitsException {
         ColumnDesc c = columns.get(col);
-        Object e = javaToFits1D(c, ArrayFuncs.flatten(o));
-        if (c.isVariableSize()) {
-            e = putOnHeap(c, e, getRawElement(row, col));
-        }
-        setFitsElement(row, col, e);
+        o = c.isVariableSize() ? putOnHeap(c, o, getRawElement(row, col)) : javaToFits1D(c, ArrayFuncs.flatten(o));
+        setFitsElement(row, col, o);
     }
 
     /**
@@ -2831,8 +2778,8 @@ public class BinaryTable extends AbstractTableData implements Cloneable {
 
         if (o == null) {
             // Only logicals and strings support 'null' values
-            if (!c.isScalar()) {
-                throw new TableException("No null values allowed for column of " + c.getJavaArrayBase() + " arrays.");
+            if (!c.isSingleton()) {
+                throw new TableException("No null values allowed for column of " + c.getLegacyBase() + " arrays.");
             } else if (c.isString()) {
                 setElement(row, col, "");
             } else {
@@ -2842,7 +2789,7 @@ public class BinaryTable extends AbstractTableData implements Cloneable {
             setElement(row, col, o);
         } else if (o instanceof String) {
             setString(row, col, (String) o);
-        } else if (!c.isScalar()) {
+        } else if (!c.isSingleton()) {
             throw new TableException("Cannot set scalar values in non-scalar columns");
         } else if (c.isString()) {
             setElement(row, col, o.toString());
@@ -2897,7 +2844,7 @@ public class BinaryTable extends AbstractTableData implements Cloneable {
             return;
         }
 
-        Class<?> base = c.getJavaArrayBase();
+        Class<?> base = c.getLegacyBase();
 
         if (value == null) {
             value = Double.NaN;
@@ -2949,7 +2896,7 @@ public class BinaryTable extends AbstractTableData implements Cloneable {
 
         if (c.isLogical()) {
             setFitsElement(row, col, new byte[] {FitsEncoder.byteForBoolean(value)});
-        } else if (c.getJavaArrayBase() == char.class) {
+        } else if (c.getLegacyBase() == char.class) {
             setFitsElement(row, col, new char[] {value == null ? '\0' : (value ? 'T' : 'F')});
         } else if (c.isString()) {
             setFitsElement(row, col, value.toString());
@@ -3030,10 +2977,10 @@ public class BinaryTable extends AbstractTableData implements Cloneable {
             setLogical(row, col, (value == null) ? (Boolean) null : FitsUtil.parseLogical(value));
         } else if (value.length() == 1) {
             setCharacter(row, col, value.charAt(0));
-        } else if (c.dimension() > 1) {
+        } else if (c.fitsDimension() > 1) {
             throw new IllegalArgumentException("Cannot convert String to multi-dimensional array");
-        } else if (c.dimension() == 1) {
-            int maxLength = c.isVariableSize() ? value.length() : c.fitsCount;
+        } else if (c.fitsDimension() == 1) {
+            int maxLength = c.isVariableSize() ? value.length() : c.getTableBaseCount();
             if (value.length() > maxLength) {
                 throw new IllegalArgumentException(
                         "String size " + value.length() + " exceeds element size of " + maxLength);
@@ -3172,7 +3119,7 @@ public class BinaryTable extends AbstractTableData implements Cloneable {
      * 
      * @param  h             The heap object to use.
      * @param  c             The column descriptor, specifying the data type
-     * @param  o             The variable-length data
+     * @param  o             The variable-length data in Java form.
      * @param  p             The heap pointer, where this element was stored on the heap before, or <code>null</code> if
      *                           we aren't replacing an earlier entry.
      * 
@@ -3182,20 +3129,41 @@ public class BinaryTable extends AbstractTableData implements Cloneable {
      */
     @SuppressFBWarnings(value = "RR_NOT_CHECKED", justification = "not propagated or used locally")
     private Object putOnHeap(FitsHeap h, ColumnDesc c, Object o, Object oldPointer) throws FitsException {
+        // Flatten data for heap
+        o = ArrayFuncs.flatten(o);
+
         // By default put data at the end of the heap;
-        long off = h.size();
-        long len = ArrayFuncs.countElements(o);
+        int off = h.size();
+
+        // The number of Java elements is the same as the number of FITS elements, except for strings and complex
+        // numbers
+        int len = (c.isComplex() || c.isString()) ? -1 : Array.getLength(o);
+
+        // Convert to FITS storage array
+        o = javaToFits1D(c, o);
+
+        // For complex values and strings, determine length from converted object....
+        if (len < 0) {
+            len = Array.getLength(o);
+
+            // If complex in primitive 1D form, then length is half the number of elements.
+            if (c.isComplex() && o.getClass().getComponentType().isPrimitive()) {
+                len >>>= 1;
+            }
+        }
 
         if (oldPointer != null) {
             if (len <= getPointerCount(oldPointer)) {
                 // Write data back at the old heap location
-                off = getPointerOffset(oldPointer);
+                off = (int) getPointerOffset(oldPointer);
             }
         }
 
+        // System.out.println("### put len " + len);
+
         h.putData(o, off);
 
-        return c.hasLongPointers() ? new long[] {len, off} : new int[] {(int) len, (int) off};
+        return c.hasLongPointers() ? new long[] {len, off} : new int[] {len, off};
     }
 
     /**
@@ -3203,28 +3171,38 @@ public class BinaryTable extends AbstractTableData implements Cloneable {
      * 
      * @param  c             The column descriptor, specifying the data type
      * @param  p             The heap pointer, either <code>int[2]</code> or else a <code>long[2]</code>
+     * @param  isEnhanced    Whether logicals should be returned as {@link Boolean} (rather than <code>boolean</code>)
+     *                           and complex values as {@link ComplexValue} (rather than <code>float[2]</code> or
+     *                           <code>double[2]</code>), or arrays thereof. Methods prior to 1.18 should set this to
+     *                           <code>false</code> for back compatible behavior.
      * 
      * @return               the FITS array object retrieved from the heap
      * 
      * @throws FitsException if the data could not be accessed in full from the heap.
      */
-    protected Object getFromHeap(ColumnDesc c, Object p) throws FitsException {
+    protected Object getFromHeap(ColumnDesc c, Object p, boolean isEnhanced) throws FitsException {
         long len = getPointerCount(p);
         long off = getPointerOffset(p);
 
+        // System.err.println("### get len " + len);
+
         if (off > Integer.MAX_VALUE || len > Integer.MAX_VALUE) {
-            throw new FitsException("Data located beyond accessible heap limit");
+            throw new FitsException("Data located beyond 32-bit accessible heap limit");
         }
 
         Object e = null;
-        if (c.isComplex()) {
-            e = Array.newInstance(c.getFitsArrayBase(), (int) len >>> 1, 2);
+
+        if (c.isBits()) {
+            e = Array.newInstance(byte.class, (int) ((len + Byte.SIZE - 1) / Byte.SIZE));
+        } else if (c.isComplex()) {
+            e = Array.newInstance(c.getFitsArrayBase(), (int) len, 2);
         } else {
             e = Array.newInstance(c.getFitsArrayBase(), (int) len);
         }
 
         readHeap(off, e);
-        return e;
+
+        return fitsToJava1D(c, e, (int) len, isEnhanced);
     }
 
     /**
@@ -3262,7 +3240,7 @@ public class BinaryTable extends AbstractTableData implements Cloneable {
                     return new byte[0];
                 }
 
-                return Array.newInstance(byte.class, c.shape);
+                return Array.newInstance(byte.class, c.fitsShape);
             }
 
             if (o instanceof String) {
@@ -3299,6 +3277,7 @@ public class BinaryTable extends AbstractTableData implements Cloneable {
      *
      * @param  c             The column descritor
      * @param  o             A one-dimensional array of values as stored in FITS
+     * @param  bits          A bit count for bit arrays (otherwise unused).
      * @param  isEnhanced    Whether logicals should be returned as {@link Boolean} (rather than <code>boolean</code>)
      *                           and complex values as {@link ComplexValue} (rather than <code>float[2]</code> or
      *                           <code>double[2]</code>), or arrays thereof. Methods prior to 1.18 should set this to
@@ -3308,10 +3287,10 @@ public class BinaryTable extends AbstractTableData implements Cloneable {
      * 
      * @throws FitsException if the operation failed
      */
-    private Object fitsToJava1D(ColumnDesc c, Object o, boolean isEnhanced) {
+    private Object fitsToJava1D(ColumnDesc c, Object o, int bits, boolean isEnhanced) {
 
         if (c.isBits()) {
-            return FitsUtil.bytesToBits((byte[]) o, c.getBoxedCount());
+            return FitsUtil.bytesToBits((byte[]) o, bits);
         }
 
         if (c.isLogical() && o instanceof byte[]) {
@@ -3335,7 +3314,7 @@ public class BinaryTable extends AbstractTableData implements Cloneable {
             }
 
             // If fixed or variable length arrays of strings...
-            if (c.isScalar()) {
+            if (c.isSingleton()) {
                 // Single fixed string -- get it all but trim trailing spaces
                 return FitsUtil.extractString(bytes, new ParsePosition(0), bytes.length, FitsUtil.ASCII_NULL);
             }
@@ -3365,7 +3344,7 @@ public class BinaryTable extends AbstractTableData implements Cloneable {
         int[] sizes = new int[nfields];
         for (int i = 0; i < nfields; i++) {
             ColumnDesc c = columns.get(i);
-            sizes[i] = c.fitsCount;
+            sizes[i] = c.getTableBaseCount();
             if (c.column != null) {
                 data[i] = c.column;
                 c.column = null;
@@ -3429,36 +3408,11 @@ public class BinaryTable extends AbstractTableData implements Cloneable {
         readTrueData(in);
     }
 
-    private void ensureDataSilent() {
-        try {
-            ensureData();
-        } catch (Exception e) {
-            BinaryTable.LOG.log(Level.SEVERE, "reading data of binary table failed!", e);
-        }
-    }
-
-    /**
-     * Get an unsigned number at the beginning of a string
-     */
-    private static int initialNumber(String tform) {
-
-        int i;
-        for (i = 0; i < tform.length(); i++) {
-
-            if (!Character.isDigit(tform.charAt(i))) {
-                break;
-            }
-
-        }
-
-        return Integer.parseInt(tform.substring(0, i));
-    }
-
     /**
      * Extracts a column descriptor from the FITS header for a given column index
      * 
      * @param  header        the FITS header containing the column description(s)
-     * @param  col           0-based column index
+     * @param  col           zero-based column index
      * 
      * @return               the Descriptor for that column.
      * 
@@ -3466,72 +3420,56 @@ public class BinaryTable extends AbstractTableData implements Cloneable {
      */
     public static ColumnDesc getDescriptor(Header header, int col) throws FitsException {
         String tform = header.getStringValue(TFORMn.n(col + 1));
+
         if (tform == null) {
-            throw new FitsException("Attempt to process column " + (col + 1) + " but no TFORMn found.");
+            throw new FitsException("Missing TFORM" + (col + 1));
         }
-        tform = tform.trim();
+
+        int count = 1;
+        char type = 0;
+
+        ParsePosition pos = new ParsePosition(0);
+
+        try {
+            count = AsciiFuncs.parseInteger(tform, pos);
+        } catch (Exception e) {
+            // Keep going...
+        }
+
+        try {
+            type = Character.toUpperCase(AsciiFuncs.extractChar(tform, pos));
+        } catch (Exception e) {
+            throw new FitsException("No data type in TFORM: [" + tform + "]");
+        }
+
         ColumnDesc c = new ColumnDesc();
 
-        c.setLabel(header.getStringValue(Standard.TTYPEn.n(col + 1)));
-        c.setUnit(header.getStringValue(Standard.TUNITn.n(col + 1)));
-
-        char type = getTFORMType(tform);
         if (type == POINTER_INT || type == POINTER_LONG) {
-            c.pointerType = type;
-            type = getTFORMVarType(tform);
-        }
-        int size = getTFORMLength(tform);
+            // Variable length column...
+            c.setVariableSize(type == POINTER_LONG);
 
-        String tdims = header.getStringValue(TDIMn.n(col + 1));
-        if (tdims != null) {
-            tdims = tdims.trim();
-        }
-
-        // Handle the special size cases.
-        //
-        // Bit arrays (8 bits fit in a byte)
-        if (type == 'X') {
-            size = (size + Byte.SIZE - 1) / Byte.SIZE;
-            // Variable length arrays always have a two-element pointer (offset
-            // and size)
-        }
-
-        int[] dims = null;
-        // Cannot really handle arbitrary arrays of bits.
-        if (tdims != null && type != 'X' && !c.isVariableSize()) {
-            dims = getTDims(tdims);
-        }
-        if (dims == null) {
-            if (size == 1) {
-                dims = SCALAR_SHAPE; // Marks this as a scalar column
-            } else {
-                dims = new int[] {size};
+            // Get the data type...
+            try {
+                type = Character.toUpperCase(AsciiFuncs.extractChar(tform, pos));
+            } catch (Exception e) {
+                throw new FitsException("No variable-length data type in TFORM: [" + tform + "]");
             }
         }
 
-        c.isComplex = type == 'C' || type == 'M';
-        if (c.isVariableSize()) {
-            size = 2;
-            dims = new int[] {size};
-        } else if (c.isComplex()) {
-            dims = Arrays.copyOf(dims, dims.length + 1);
-            dims[dims.length - 1] = 2;
-            size *= 2;
+        // The special types...
+        if (type == 'C' || type == 'M') {
+            c.isComplex = true;
+        } else if (type == 'X') {
+            c.isBits = true;
         }
 
         switch (type) {
         case 'A':
             c.fitsBase = byte.class;
             c.base = String.class;
-            if (!c.isVariableSize()) {
-                // Default string length for fixed length columns.
-                c.setStringLength(dims[dims.length - 1]);
-            }
-            c.parseSubstringConvention(tform, tdims == null);
             break;
 
         case 'X':
-            c.isBits = true;
             c.fitsBase = byte.class;
             c.base = boolean.class;
             break;
@@ -3577,9 +3515,28 @@ public class BinaryTable extends AbstractTableData implements Cloneable {
             throw new FitsException("Invalid type '" + type + "' in column:" + col);
         }
 
-        c.shape = dims;
-        c.leadingShape = null;
-        c.fitsCount = size;
+        if (!c.isVariableSize()) {
+            // Fixed sized column...
+            int[] dims = parseTDims(header.getStringValue(TDIMn.n(col + 1)));
+
+            if (dims == null) {
+                c.setFitsShape((count == 1 && type != 'A') ? SINGLETON_SHAPE : new int[] {count});
+            } else {
+                c.setFitsShape(dims);
+
+                // For string columns set default substring length based on last dimension
+                if (type == 'A') {
+                    c.stringLength = c.getLastFitsDim();
+                }
+            }
+
+            c.fitsCount = count;
+        }
+
+        if (c.isString()) {
+            c.parseSubstringConvention(tform, pos, c.getStringLength() < 0);
+        }
+
         c.fileSize = c.rowLen();
 
         return c;
@@ -3604,9 +3561,9 @@ public class BinaryTable extends AbstractTableData implements Cloneable {
      */
     protected void addByteVaryingColumn() {
         try {
-            ColumnDesc c = ColumnDesc.createForVariableLength(byte.class, isUseLongPointers);
+            ColumnDesc c = ColumnDesc.createForVariableLength(byte.class);
             columns.add(c);
-            table.addColumn(c.newInstance(nRow), c.fitsCount);
+            table.addColumn(c.newInstance(nRow), c.getTableBaseCount());
         } catch (FitsException e) {
             // Should not happen
         }
@@ -3711,29 +3668,23 @@ public class BinaryTable extends AbstractTableData implements Cloneable {
         return getNRows() > 0 && i >= 0 && i < getNRows();
     }
 
+    /**
+     * @deprecated (<i>for internal use</i>) Visibility should be reduced to protected.
+     */
     @Override
     public void fillHeader(Header h) throws FitsException {
-        try {
-            Standard.context(BinaryTable.class);
-            h.setXtension(XTENSION_BINTABLE);
-            h.setBitpix(Bitpix.BYTE);
-            h.setNaxes(2);
-            h.setNaxis(1, rowLen);
-            h.setNaxis(2, nRow);
-            h.addValue(PCOUNT, getHeapSize());
-            h.addValue(GCOUNT, 1);
-            Cursor<String, HeaderCard> iter = h.iterator();
-            iter.setKey(GCOUNT.key());
-            iter.next();
-            iter.add(new HeaderCard(TFIELDS.key(), columns.size(), TFIELDS.comment()));
-            for (int i = 0; i < columns.size(); i++) {
-                if (i > 0) {
-                    h.positionAfterIndex(TFORMn, i);
-                }
-                fillForColumn(h, i, iter);
-            }
-        } finally {
-            Standard.context(null);
+
+        h.setXtension(XTENSION_BINTABLE);
+        h.setBitpix(Bitpix.BYTE);
+        h.setNaxes(2);
+        h.setNaxis(1, rowLen);
+        h.setNaxis(2, nRow);
+        h.addValue(PCOUNT, getHeapSize());
+        h.addValue(GCOUNT, 1);
+        h.addValue(TFIELDS, columns.size());
+
+        for (int i = 0; i < columns.size(); i++) {
+            fillForColumn(h, i);
         }
     }
 
@@ -3742,194 +3693,31 @@ public class BinaryTable extends AbstractTableData implements Cloneable {
      *
      * @throws FitsException if the operation failed
      */
-    private void fillForColumn(Header h, int col, Cursor<String, HeaderCard> iter) throws FitsException {
+    void fillForColumn(Header h, int col) throws FitsException {
         ColumnDesc c = columns.get(col);
 
-        StringBuffer tform = new StringBuffer();
+        try {
+            Standard.context(BinaryTable.class);
+            h.addValue(TFORMn.n(col + 1), c.getTFORM());
 
-        int count = c.fitsCount;
-        if (c.isComplex()) {
-            count /= 2;
-        }
-
-        tform.append(c.isVariableSize() ? "1" + c.pointerType() : count);
-
-        if (c.base == int.class) {
-            tform.append('J');
-        } else if (c.base == short.class) {
-            tform.append('I');
-        } else if (c.base == byte.class) {
-            tform.append('B');
-        } else if (c.base == char.class) {
-            if (FitsFactory.isUseUnicodeChars()) {
-                tform.append('I');
-                LOG.warning("char[] will be written as 16-bit integers (type 'I'), not as a FITS character array (type 'A')"
-                        + " in the binary table. If that is not what you want, you should set FitsFactory.setUseUnicodeChars(false).");
-                LOG.warning("Future releases will disable Unicode support by default as it is not FITS standard."
-                        + " If you do want it still, use FitsFactory.setUseUnicodeChars(true) explicitly to keep the non-standard "
-                        + " behavior as is.");
-            } else {
-                tform.append('A');
+            String tdim = c.getTDIM();
+            if (tdim != null) {
+                h.addValue(TDIMn.n(col + 1), tdim);
             }
-        } else if (c.base == float.class) {
-            tform.append(c.isComplex() ? 'C' : 'E');
-        } else if (c.base == double.class) {
-            tform.append(c.isComplex() ? 'M' : 'D');
-        } else if (c.base == long.class) {
-            tform.append('K');
-        } else if (c.isLogical()) {
-            tform.append('L');
-        } else if (c.isBits()) {
-            tform.append('X');
-        } else if (c.isString()) {
-            tform.append('A');
-            if (c.isVariableSize()) {
-                c.appendSubstringConvention(tform);
-            }
-        } else {
-            throw new FitsException("Invalid column data class:" + c.base);
+        } finally {
+            Standard.context(null);
         }
-
-        iter.add(HeaderCard.create(TFORMn.n(col + 1), tform.toString()));
-
-        int[] dim = c.shape;
-        if (c.isComplex()) {
-            dim = c.getLeadingShape();
-        }
-
-        if (dim.length > 0 && !c.isVariableSize()) {
-            StringBuffer tdim = new StringBuffer();
-            char comma = '(';
-            for (int i = dim.length - 1; i >= 0; i--) {
-                tdim.append(comma);
-                tdim.append(dim[i]);
-                comma = ',';
-            }
-            tdim.append(')');
-            iter.add(HeaderCard.create(TDIMn.n(col + 1), tdim.toString()));
-        }
-
-        if (c.getLabel() != null) {
-            iter.add(HeaderCard.create(Standard.TTYPEn.n(col + 1), c.getLabel()));
-        }
-
-        if (c.getLabel() != null) {
-            iter.add(HeaderCard.create(Standard.TUNITn.n(col + 1), c.getLabel()));
-        }
-
     }
 
     /**
-     * Returns a copy of the column descriptor of a given column in this table
+     * Returns the column descriptor of a given column in this table
      * 
-     * @param  column the 0-based column index
+     * @param  column the zero-based column index
      * 
-     * @return        a copy of the column's descriptor
+     * @return        the column's descriptor
      */
     public ColumnDesc getDescriptor(int column) {
-        return columns.get(column).clone();
-    }
-
-    /**
-     * Get the explicit or implied length of the TFORM field
-     */
-    private static int getTFORMLength(String tform) {
-
-        tform = tform.trim();
-
-        if (Character.isDigit(tform.charAt(0))) {
-            return initialNumber(tform);
-        }
-        return 1;
-    }
-
-    /**
-     * Get the type in the TFORM field
-     */
-    private static char getTFORMType(String tform) {
-
-        for (int i = 0; i < tform.length(); i++) {
-            if (!Character.isDigit(tform.charAt(i))) {
-                return tform.charAt(i);
-            }
-        }
-        return 0;
-    }
-
-    /**
-     * Get the type in a varying length column TFORM
-     */
-    private static char getTFORMVarType(String tform) {
-
-        int ind = tform.indexOf("P");
-        if (ind < 0) {
-            ind = tform.indexOf("Q");
-        }
-
-        if (tform.length() > ind + 1) {
-            return tform.charAt(ind + 1);
-        }
-        return 0;
-    }
-
-    /**
-     * Update the header to reflect information about a given column. This routine tries to ensure that the Header is
-     * organized by column. *
-     *
-     * @throws FitsException if the operation failed
-     */
-    void pointToColumn(int col, Header hdr) throws FitsException {
-        Cursor<String, HeaderCard> iter = hdr.iterator();
-        if (col > 0) {
-            hdr.positionAfterIndex(TFORMn, col);
-        }
-        fillForColumn(hdr, col, iter);
-    }
-
-    /**
-     * Checks if a column contains scalar (non-array) elements
-     * 
-     * @param  index the zero-based column index
-     * 
-     * @return       <code>true</code> if the column contains variable-length data, otherwise <code>false</code>
-     * 
-     * @see          ColumnDesc#isScalar()
-     * 
-     * @since        1.18
-     */
-    public final boolean isScalarColumn(int index) {
-        return columns.get(index).isScalar();
-    }
-
-    /**
-     * Checks if a column contains variable-length data.
-     * 
-     * @param  index the zero-based column index
-     * 
-     * @return       <code>true</code> if the column contains variable-length data, otherwise <code>false</code>
-     * 
-     * @see          #addVariableLengthColumn(Object)
-     * 
-     * @since        1.18
-     */
-    public final boolean isVariableLengthColumn(int index) {
-        return columns.get(index).isVariableSize();
-    }
-
-    /**
-     * Checks if a column contains complex-valued data (rather than just regular float or double arrays)
-     * 
-     * @param  index the column index
-     * 
-     * @return       <code>true</code> if the column contains complex valued data (as floats or doubles), otherwise
-     *                   <code>false</code>
-     * 
-     * @since        1.18
-     * 
-     * @see          #setComplexColumn(int)
-     */
-    public final boolean isComplexColumn(int index) {
-        return columns.get(index).isComplex();
+        return columns.get(column);
     }
 
     /**
@@ -3958,28 +3746,6 @@ public class BinaryTable extends AbstractTableData implements Cloneable {
     }
 
     /**
-     * Return the index of the table column with a matching label. If multiple columns are carry the same label, then
-     * only the first such column's index is returned.
-     * 
-     * @param  label the column label we try to locate in the table
-     * 
-     * @return       the index of the matching column, or -1 if no column in the table is labelled such.
-     * 
-     * @see          ColumnDesc#setLabel(String)
-     * @see          ColumnDesc#getLabel()
-     * 
-     * @since        1.18
-     */
-    public final int findColumn(String label) {
-        for (int i = 0; i < columns.size(); i++) {
-            if (label.equals(columns.get(i).getLabel())) {
-                return i;
-            }
-        }
-        return -1;
-    }
-
-    /**
      * Convert a column from float/double to float complex/double complex. This is only possible for certain columns.
      * The return status indicates if the conversion is possible.
      *
@@ -3991,7 +3757,7 @@ public class BinaryTable extends AbstractTableData implements Cloneable {
      * 
      * @since                1.18
      * 
-     * @see                  #isComplexColumn(int)
+     * @see                  ColumnDesc#isComplex()
      * @see                  #addComplexColumn(Object, Class)
      */
     public boolean setComplexColumn(int index) throws FitsException {
@@ -4005,13 +3771,19 @@ public class BinaryTable extends AbstractTableData implements Cloneable {
             return true;
         }
 
-        if ((c.base != float.class && c.base != double.class) || (c.getLastDim() != 2)) {
+        if ((c.base != float.class && c.base != double.class) || (c.getLastFitsDim() % 2 != 0)) {
             return false;
         }
 
         if (!c.isVariableSize()) {
+            if (c.getLastFitsDim() != 2) {
+                return false;
+            }
             // Set the column to complex
             c.isComplex = true;
+
+            // Update the legacy (wrapped array) shape
+            c.setLegacyShape(c.fitsShape);
             return true;
         }
 
@@ -4031,6 +3803,21 @@ public class BinaryTable extends AbstractTableData implements Cloneable {
                 if (p[0] % 2 != 0) {
                     return false;
                 }
+            }
+        }
+
+        // Halve the length component of array descriptors (2 reals = 1 complex)
+        if (c.hasLongPointers()) {
+            for (int i = 1; i < nRow; i++) {
+                long[] p = (long[]) getRawElement(i, index);
+                p[0] >>>= 1;
+                setFitsElement(i, index, p);
+            }
+        } else {
+            for (int i = 1; i < nRow; i++) {
+                int[] p = (int[]) getRawElement(i, index);
+                p[0] >>>= 1;
+                setFitsElement(i, index, p);
             }
         }
 
@@ -4091,9 +3878,30 @@ public class BinaryTable extends AbstractTableData implements Cloneable {
                 ColumnDesc c = columns.get(j);
                 if (c.isVariableSize()) {
                     Object p = getRawElement(i, j);
-                    Object data = Array.newInstance(c.fitsBase, (int) getPointerCount(p));
+
+                    int len = (int) getPointerCount(p);
+
+                    // Special cases, where number of elements is not the number of table primitives
+                    int n = len;
+                    if (c.isBits()) {
+                        n = (n + Byte.SIZE - 1) / Byte.SIZE;
+                    } else if (c.isComplex()) {
+                        n <<= 1;
+                    }
+
+                    // Copy to new heap...
+                    Object data = Array.newInstance(c.fitsBase, n);
                     heap.getData((int) getPointerOffset(p), data);
                     p = putOnHeap(compact, c, data, null);
+
+                    // Same length as before...
+                    if (p instanceof long[]) {
+                        ((long[]) p)[0] = len;
+                    } else {
+                        ((int[]) p)[0] = len;
+                    }
+
+                    // Update pointers in table
                     setFitsElement(i, j, p);
                 }
             }
@@ -4101,5 +3909,34 @@ public class BinaryTable extends AbstractTableData implements Cloneable {
 
         heap = compact;
         return oldSize - compact.size();
+    }
+
+    /**
+     * <p>
+     * Changes how we interpret variable-length complex array descriptors. According to the FITS standard, array
+     * descritors specify the number of FITS elements stored, but prior to 1.18 we have used (and stored) the number of
+     * real-valued components instead, which is a factor of 2 higher than what FITS expects. As such, our older files
+     * containing variable-length complex data are not correctly described, and are expected to be unreadable by tools
+     * not based on this library.
+     * </p>
+     * <p>
+     * We have fixed the deviation from the standard in 1.18, so we rea/write variable-length complex columns with the
+     * correct FITS array descriptors. However, as a result, we cannot any longer read our older files now either by
+     * default. Which is the reason for the introduction of this static method. When set to <code>true</code> we will
+     * read variable-length complex columns with the incorrect element counts of the past.
+     * </p>
+     * 
+     * @param value <code>true</code> to read out older files in which we incorrectly stored the number of real
+     *                  components (instead of the number of complex values) for variable-length complex columns.
+     * 
+     * @since       1.18
+     * 
+     * @see         #get(int, int)
+     * @see         #getElement(int, int)
+     * @see         #getRow(int)
+     * @see         #getColumn(int)
+     */
+    public static void setReadVarComplexRealCount(boolean value) {
+        readVarComplexRealCount = value;
     }
 }

@@ -51,9 +51,9 @@ import nom.tam.util.ComplexValue;
 public interface TableData {
 
     /**
-     * Add a column to the table without any associated header information. Users should be cautious of calling this
-     * routine directly rather than the corresponding routine in AsciiTableHDU since this routine knows nothing of the
-     * FITS header modifications required.
+     * Add a column to the table, without updating the header of an encompassing HDU. If the table is already wrapped in
+     * an HDU, you should use {@link TableHDU#addColumn(Object)} instead to ensure that the header is properly updated
+     * for the newly added row.
      * 
      * @param  newCol        the new column information. it should be either a primitive array, in which each element
      *                           stores a scalar value for every row, or else an <code>Object[]</code> where type of all
@@ -64,14 +64,16 @@ public interface TableData {
      * 
      * @return               the number of columns in the adapted table
      * 
+     * @see                  TableHDU#addColumn(Object)
+     * 
      * @throws FitsException if the operation failed
      */
     int addColumn(Object newCol) throws FitsException;
 
     /**
-     * Add a row at the end of the table. Given the way the table is structured this will normally not be very
-     * efficient.Users should be cautious of calling this routine directly rather than the corresponding routine in
-     * AsciiTableHDU since this routine knows nothing of the FITS header modifications required.
+     * Add a row at the end of the table without updating the header of an encompassing HDU. If the table is already
+     * wrapped in an HDU, you should use {@link TableHDU#addRow(Object[])} instead to ensure that the header is properly
+     * updated for the newly added row.
      * 
      * @param  newRow        An array of elements to be added. Each element of o should be an array of primitives or a
      *                           String.
@@ -80,6 +82,7 @@ public interface TableData {
      * 
      * @return               the number of rows in the adapted table
      * 
+     * @see                  TableHDU#addRow(Object[])
      * @see                  #setRowEntries(int, Object...)
      * @see                  #deleteRows(int, int)
      */
