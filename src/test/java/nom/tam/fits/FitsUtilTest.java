@@ -161,8 +161,78 @@ public class FitsUtilTest {
     }
 
     @Test
-    public void testMaxStringLengthNull() throws Exception {
+    public void testMaxStringLengthContainsNull() throws Exception {
         Assert.assertEquals(3, FitsUtil.maxLength(new String[] {null, "abc", "ab"}));
     }
 
+    @Test
+    public void testParseLogicalNull() throws Exception {
+        Assert.assertNull(FitsUtil.parseLogical(null));
+    }
+
+    @Test
+    public void testParseLogicalNaN() throws Exception {
+        Assert.assertNull(FitsUtil.parseLogical("NaN"));
+    }
+
+    @Test
+    public void testParseLogicalDouble() throws Exception {
+        Assert.assertTrue(FitsUtil.parseLogical("-1.0e3"));
+    }
+
+    @Test
+    public void testParseLogicalLong() throws Exception {
+        Assert.assertTrue(FitsUtil.parseLogical("-1234567890"));
+    }
+
+    @Test
+    public void testDelimitedBytesToStrings() throws Exception {
+        String[] s = FitsUtil.delimitedBytesToStrings("abc_d__ef".getBytes(), -1, (byte) '_');
+        Assert.assertEquals(4, s.length);
+        Assert.assertEquals("abc", s[0]);
+        Assert.assertEquals("d", s[1]);
+        Assert.assertEquals("", s[2]);
+        Assert.assertEquals("ef", s[3]);
+    }
+
+    @Test
+    public void testMinStringLength() throws Exception {
+        String[] s = {"abc", "zzzz", "a"};
+        Assert.assertEquals(1, FitsUtil.minStringLength(s));
+
+        s = new String[] {"abc", "", "a"};
+        Assert.assertEquals(0, FitsUtil.minStringLength(s));
+
+        s = new String[] {"abc", null, "a"};
+        Assert.assertEquals(0, FitsUtil.minStringLength(s));
+
+        String[][] s2 = {{"abc"}, null, {"a", "bc"}};
+        Assert.assertEquals(0, FitsUtil.minStringLength(s2));
+    }
+
+    @Test
+    public void testMinStringLengthSingle() throws Exception {
+        String s = "abc";
+        Assert.assertEquals(s.length(), FitsUtil.minStringLength(s));
+    }
+
+    @Test
+    public void testMinStringLengthNull() throws Exception {
+        Assert.assertEquals(0, FitsUtil.minStringLength(null));
+    }
+
+    @Test
+    public void testMinStringLengthNonString() throws Exception {
+        Assert.assertEquals(0, FitsUtil.minStringLength(1.0));
+    }
+
+    @Test
+    public void testMaxStringLengthNull() throws Exception {
+        Assert.assertEquals(0, FitsUtil.maxStringLength(null));
+    }
+
+    @Test
+    public void testMaxStringLengthNonString() throws Exception {
+        Assert.assertEquals(0, FitsUtil.maxStringLength(1.0));
+    }
 }

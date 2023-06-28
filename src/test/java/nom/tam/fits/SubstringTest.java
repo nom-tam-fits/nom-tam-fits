@@ -50,6 +50,15 @@ public class SubstringTest {
     }
 
     @Test
+    public void testParseEmptySubstring() throws Exception {
+        Header h = new Header();
+        h.addValue(Standard.TFORMn.n(1), "10A:SSTR");
+        ColumnDesc c = BinaryTable.getDescriptor(h, 0);
+        Assert.assertEquals(10, c.getElementWidth());
+        Assert.assertEquals(1, c.getElementCount());
+    }
+
+    @Test
     public void testParseSubstringInvalidLength() throws Exception {
         Header h = new Header();
         h.addValue(Standard.TFORMn.n(1), "10A:SSTRz");
@@ -97,8 +106,31 @@ public class SubstringTest {
     }
 
     @Test
+    public void testParseSubstringAndTDIM() throws Exception {
+        Header h = new Header();
+        h.addValue(Standard.TFORMn.n(1), "30A:SSTR5");
+        h.addValue(Standard.TDIMn.n(1), "(10,3)");
+        ColumnDesc c = BinaryTable.getDescriptor(h, 0);
+        Assert.assertEquals(10, c.getElementWidth());
+        Assert.assertEquals(3, c.getElementCount());
+        Assert.assertEquals((byte) 0, c.getStringDelimiter());
+    }
+
+    @Test
+    public void testSringDelimiter() throws Exception {
+        ColumnDesc c = ColumnDesc.createForDelimitedStringArrays((byte) 32);
+        Assert.assertEquals((byte) 32, c.getStringDelimiter());
+    }
+
+    @Test
     public void testOutOfRangeDelimiter() throws Exception {
-        ColumnDesc c = ColumnDesc.createForDelimitedStringArrays((byte) 1);
-        Assert.assertEquals((byte) 1, c.getStringDelimiter());
+        ColumnDesc c = ColumnDesc.createForDelimitedStringArrays((byte) 31);
+        Assert.assertEquals((byte) 31, c.getStringDelimiter());
+    }
+
+    @Test
+    public void testOutOfRangeDelimiter2() throws Exception {
+        ColumnDesc c = ColumnDesc.createForDelimitedStringArrays((byte) 128);
+        Assert.assertEquals((byte) 128, c.getStringDelimiter());
     }
 }

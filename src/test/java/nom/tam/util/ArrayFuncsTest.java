@@ -39,32 +39,32 @@ public class ArrayFuncsTest {
 
     @Test(expected = NullPointerException.class)
     public void assertRegularArrayNull() throws Exception {
-        ArrayFuncs.assertRegularArray(null, true);
+        ArrayFuncs.checkRegularArray(null, true);
     }
 
     @Test(expected = IllegalArgumentException.class)
     public void assertRegularArrayNonArray() throws Exception {
-        ArrayFuncs.assertRegularArray("abc", true);
+        ArrayFuncs.checkRegularArray("abc", true);
     }
 
     @Test
     public void assertRegularPrimitiveArray() throws Exception {
-        Assert.assertArrayEquals(new int[] {3}, ArrayFuncs.assertRegularArray(new int[] {1, 2, 3}, true));
+        Assert.assertArrayEquals(new int[] {3}, ArrayFuncs.checkRegularArray(new int[] {1, 2, 3}, true));
     }
 
     @Test
     public void assertRegularEmptyArray() throws Exception {
-        Assert.assertArrayEquals(new int[] {0}, ArrayFuncs.assertRegularArray(new String[0], true));
+        Assert.assertArrayEquals(new int[] {0}, ArrayFuncs.checkRegularArray(new String[0], true));
     }
 
     @Test
     public void assertRegularArrayAllowFirstNull() throws Exception {
-        Assert.assertEquals(2, ArrayFuncs.assertRegularArray(new String[] {null, "abc"}, true)[0]);
+        Assert.assertEquals(2, ArrayFuncs.checkRegularArray(new String[] {null, "abc"}, true)[0]);
     }
 
     @Test
     public void assertRegularArrayAllowNull() throws Exception {
-        Assert.assertEquals(2, ArrayFuncs.assertRegularArray(new String[] {"abc", null}, true)[0]);
+        Assert.assertEquals(2, ArrayFuncs.checkRegularArray(new String[] {"abc", null}, true)[0]);
     }
 
     @Test

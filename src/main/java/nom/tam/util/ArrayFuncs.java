@@ -611,7 +611,7 @@ public final class ArrayFuncs {
      * 
      * @since                           1.18
      */
-    public static int[] assertRegularArray(Object o, boolean allowNulls)
+    public static int[] checkRegularArray(Object o, boolean allowNulls)
             throws NullPointerException, IllegalArgumentException, ClassCastException {
         if (!o.getClass().isArray()) {
             throw new IllegalArgumentException("Not an array: " + o.getClass());
@@ -646,7 +646,7 @@ public final class ArrayFuncs {
             }
 
             if (e.getClass().isArray()) {
-                int[] sub = assertRegularArray(e, allowNulls);
+                int[] sub = checkRegularArray(e, allowNulls);
 
                 if (sub.length + 1 != dim.length) {
                     throw new IllegalArgumentException("Mismatched component dimension at index " + i + ": " + sub.length

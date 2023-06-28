@@ -553,22 +553,26 @@ public final class FitsUtil {
             return ((String) o).length();
         }
 
-        int min = 0;
+        int min = -1;
 
         if (o instanceof Object[]) {
             for (Object e : (Object[]) o) {
                 if (e == null) {
-                    continue;
+                    return 0;
                 }
 
-                int l = maxStringLength(e);
-                if (l < min) {
+                int l = minStringLength(e);
+                if (l == 0) {
+                    return 0;
+                }
+
+                if (min < 0 || l < min) {
                     min = l;
                 }
             }
         }
 
-        return min;
+        return min < 0 ? 0 : min;
     }
 
     /**

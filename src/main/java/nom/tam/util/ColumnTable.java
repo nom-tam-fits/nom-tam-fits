@@ -160,7 +160,7 @@ public class ColumnTable<T> implements DataTable, Cloneable {
         }
 
         try {
-            int[] dims = ArrayFuncs.assertRegularArray(newColumn, false);
+            int[] dims = ArrayFuncs.checkRegularArray(newColumn, false);
             if (dims.length != 2) {
                 throw new TableException("Not a 2D array: " + newColumn.getClass());
             }
