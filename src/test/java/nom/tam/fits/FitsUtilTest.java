@@ -178,11 +178,13 @@ public class FitsUtilTest {
     @Test
     public void testParseLogicalDouble() throws Exception {
         Assert.assertTrue(FitsUtil.parseLogical("-1.0e3"));
+        Assert.assertFalse(FitsUtil.parseLogical("0.0"));
     }
 
     @Test
     public void testParseLogicalLong() throws Exception {
         Assert.assertTrue(FitsUtil.parseLogical("-1234567890"));
+        Assert.assertFalse(FitsUtil.parseLogical("0"));
     }
 
     @Test

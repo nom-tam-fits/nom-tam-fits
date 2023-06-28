@@ -1423,15 +1423,36 @@ public class BinaryTableTest {
         BinaryTable btab = new BinaryTable();
         btab.addColumn(new float[][] {{1f, 1f}, {2f, 2f}, {3f, 3f}});
         btab.addColumn(new float[][] {{1f}, {2f}, {3f}});
+        btab.addColumn(new float[3][5][2]);
+        btab.addColumn(new float[3][5][7][2]);
 
         Header header = new Header();
         btab.fillHeader(header);
+
         Assert.assertTrue(new BinaryTableHDU(header, btab).setComplexColumn(0));
         Assert.assertFalse(new BinaryTableHDU(header, btab).setComplexColumn(1));
+        Assert.assertTrue(new BinaryTableHDU(header, btab).setComplexColumn(2));
+        Assert.assertTrue(new BinaryTableHDU(header, btab).setComplexColumn(3));
 
         btab.setElement(0, 1, new float[] {2f});
         btab.setElement(2, 1, new float[] {2f});
         Assert.assertArrayEquals(new float[][] {{2f}, {2f}, {2f}}, (float[][]) btab.getColumn(1));
+
+        Assert.assertArrayEquals(new int[] {5}, btab.getDescriptor(2).getEntryShape());
+        Assert.assertArrayEquals(new int[] {5, 7}, btab.getDescriptor(3).getEntryShape());
+    }
+
+    @Test
+    public void testConvertColumnToBits() throws Exception {
+        BinaryTable tab = new BinaryTable();
+        tab.addColumn(new boolean[] {true, false, true});
+        tab.addColumn(new int[] {1, 2, 3});
+
+        Header header = new Header();
+        tab.fillHeader(header);
+
+        Assert.assertTrue(new BinaryTableHDU(header, tab).convertToBits(0));
+        Assert.assertFalse(new BinaryTableHDU(header, tab).convertToBits(1));
     }
 
     @Test

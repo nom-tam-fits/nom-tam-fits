@@ -1792,11 +1792,11 @@ public class BinaryTable extends AbstractTableData implements Cloneable {
                 c.setLegacyShape(shape);
                 o = ArrayFuncs.flatten(o);
             }
+        } catch (ClassCastException e) {
+            throw new TableException("Inconsistent array: " + e.getMessage(), e);
         } catch (IllegalArgumentException e) {
             c.setVariableSize(false);
             return addVariableSizeColumn(o, c);
-        } catch (ClassCastException e) {
-            throw new TableException("Inconsistent array: " + e.getMessage(), e);
         }
 
         return addFlattenedColumn(o, rows, c, compat);
@@ -2190,7 +2190,17 @@ public class BinaryTable extends AbstractTableData implements Cloneable {
         }
 
         ensureData();
-        return fitsToJava1D(c, table.getColumn(col), c.isBits() ? c.fitsCount : 0, false);
+
+        if (c.isBits()) {
+            boolean[] bits = new boolean[nRow * c.fitsCount];
+            for (int i = 0; i < nRow; i++) {
+                boolean[] seg = (boolean[]) fitsToJava1D(c, table.getElement(i, col), c.fitsCount, false);
+                System.arraycopy(seg, 0, bits, i * c.fitsCount, c.fitsCount);
+            }
+            return bits;
+        }
+
+        return fitsToJava1D(c, table.getColumn(col), 0, false);
     }
 
     /**
@@ -2296,8 +2306,8 @@ public class BinaryTable extends AbstractTableData implements Cloneable {
                 Object e = c.newInstance(1);
                 readTableElement(e, c, row);
                 return e;
-            } catch (Exception e) {
-                throw (e instanceof FitsException) ? (FitsException) e : new FitsException(e.getMessage(), e);
+            } catch (IOException e) {
+                throw new FitsException("Error reading from input: " + e.getMessage(), e);
             }
         }
 
@@ -2471,26 +2481,26 @@ public class BinaryTable extends AbstractTableData implements Cloneable {
      * <code>true</code> or 0 if <code>false</code>, or throw a {@link NullPointerException} if undefined. See
      * {@link #getNumber(int, int)} for more information on the conversion process.
      * 
-     * @param  row                  the zero-based row index
-     * @param  col                  the zero-based column index
+     * @param  row                   the zero-based row index
+     * @param  col                   the zero-based column index
      * 
-     * @return                      the 64-bit integer number value of the specified scalar table entry.
+     * @return                       the 64-bit integer number value of the specified scalar table entry.
      * 
-     * @throws FitsException        if the element could not be obtained
-     * @throws ClassCastException   if the specified column in not a numerical scalar type.
-     * @throws NullPointerException if the column contains a undefined (blanking value), such as a {@link Double#NaN} or
-     *                                  a {@link Boolean} <code>null</code> value.
+     * @throws FitsException         if the element could not be obtained
+     * @throws ClassCastException    if the specified column in not a numerical scalar type.
+     * @throws IllegalStateException if the column contains a undefined (blanking value), such as a {@link Double#NaN}
+     *                                   or a {@link Boolean} <code>null</code> value.
      * 
-     * @see                         #getNumber(int, int)
-     * @see                         #getDouble(int, int)
-     * @see                         #get(int, int)
+     * @see                          #getNumber(int, int)
+     * @see                          #getDouble(int, int)
+     * @see                          #get(int, int)
      * 
-     * @since                       1.18
+     * @since                        1.18
      */
-    public final long getLong(int row, int col) throws FitsException, ClassCastException, NullPointerException {
-        Number n = getNumber(row, col).longValue();
+    public final long getLong(int row, int col) throws FitsException, ClassCastException, IllegalStateException {
+        Number n = getNumber(row, col);
         if (Double.isNaN(n.doubleValue())) {
-            throw new NullPointerException("Cannot convert NaN to long");
+            throw new IllegalStateException("Cannot convert NaN to long");
         }
         return n.longValue();
     }
@@ -2844,7 +2854,7 @@ public class BinaryTable extends AbstractTableData implements Cloneable {
         ColumnDesc c = columns.get(col);
 
         // Already checked before calling...
-        // if (!c.isScalar()) {
+        // if (!c.isSingleton()) {
         // throw new ClassCastException("Cannot set scalar value for array column " + col);
         // }
 
@@ -2901,7 +2911,7 @@ public class BinaryTable extends AbstractTableData implements Cloneable {
         ColumnDesc c = columns.get(col);
 
         // Already checked before calling...
-        // if (!c.isScalar()) {
+        // if (!c.isSingleton()) {
         // throw new ClassCastException("Cannot set scalar value for array column " + col);
         // }
 
@@ -2932,7 +2942,7 @@ public class BinaryTable extends AbstractTableData implements Cloneable {
         ColumnDesc c = columns.get(col);
 
         // Already checked before calling...
-        // if (!c.isScalar()) {
+        // if (!c.isSingleton()) {
         // throw new IllegalArgumentException("Cannot set scalar value for array column " + col);
         // }
 
@@ -2977,9 +2987,10 @@ public class BinaryTable extends AbstractTableData implements Cloneable {
         ColumnDesc c = columns.get(col);
 
         // Already checked before calling...
-        // if (!c.isScalar()) {
+        // if (!c.isSingleton()) {
         // throw new IllegalArgumentException("Cannot set scalar value for array column " + col);
         // }
+
         if (c.isLogical()) {
             setLogical(row, col, (value == null) ? (Boolean) null : FitsUtil.parseLogical(value));
         } else if (value.length() == 1) {
@@ -3308,7 +3319,7 @@ public class BinaryTable extends AbstractTableData implements Cloneable {
             return FitsUtil.bytesToBits((byte[]) o, bits);
         }
 
-        if (c.isLogical() && o instanceof byte[]) {
+        if (c.isLogical()) {
             return isEnhanced ? FitsUtil.bytesToBooleanObjects(o) : FitsUtil.byteToBoolean((byte[]) o);
         }
 
@@ -3730,7 +3741,7 @@ public class BinaryTable extends AbstractTableData implements Cloneable {
             return true;
         }
 
-        if ((c.base != float.class && c.base != double.class) || (c.getLastFitsDim() % 2 != 0)) {
+        if (c.base != float.class && c.base != double.class) {
             return false;
         }
 

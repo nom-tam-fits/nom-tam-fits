@@ -314,6 +314,10 @@ public final class ArrayFuncs {
      * @param  input The input array.
      */
     public static Object flatten(Object input) {
+        if (input == null) {
+            return null;
+        }
+
         if (!input.getClass().isArray()) {
             return input;
         }

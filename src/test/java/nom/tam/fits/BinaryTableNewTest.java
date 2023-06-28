@@ -1,6 +1,7 @@
 package nom.tam.fits;
 
 import java.io.File;
+import java.lang.reflect.Array;
 import java.math.BigInteger;
 
 /*-
@@ -112,12 +113,13 @@ public class BinaryTableNewTest {
         tab.set(1, 0, 0);
         tab.set(2, 0, Double.NaN);
         tab.set(3, 0, null);
+
         Assert.assertEquals(1, tab.getNumber(0, 0));
         Assert.assertEquals(0, tab.getNumber(1, 0));
         Assert.assertNull(tab.getNumber(2, 0));
         Assert.assertTrue(Double.isNaN(tab.getDouble(2, 0)));
         Assert.assertNull(tab.getNumber(3, 0));
-        Assert.assertTrue(Double.isNaN(tab.getDouble(2, 0)));
+        Assert.assertTrue(Double.isNaN(tab.getDouble(3, 0)));
     }
 
     @Test
@@ -341,6 +343,22 @@ public class BinaryTableNewTest {
         tab.set(1, 0, null);
         Assert.assertEquals("-1", tab.getString(0, 0));
         Assert.assertEquals("", tab.getString(1, 0));
+    }
+
+    @Test
+    public void testSetStringElementNull() throws Exception {
+        BinaryTable tab = new BinaryTable();
+        tab.addColumn(new String[] {"abc", "def", "ghi"});
+        tab.setElement(0, 0, null);
+        Assert.assertEquals("", tab.getString(0, 0));
+    }
+
+    @Test
+    public void testSetVarStringElementNull() throws Exception {
+        BinaryTable tab = new BinaryTable();
+        tab.addVariableSizeColumn(new String[] {"abc", "def", "ghi"});
+        tab.setElement(0, 0, null);
+        Assert.assertEquals("", tab.getString(0, 0));
     }
 
     @Test
@@ -725,6 +743,7 @@ public class BinaryTableNewTest {
         Assert.assertEquals(1, c.getElementWidth());
         Assert.assertArrayEquals(new int[0], c.getEntryShape());
         Assert.assertTrue(c.isBits());
+        Assert.assertEquals(3, Array.getLength(tab.getFlattenedColumn(0)));
 
         c = tab.getDescriptor(1);
 
@@ -734,6 +753,7 @@ public class BinaryTableNewTest {
         Assert.assertEquals(1, c.getElementWidth());
         Assert.assertArrayEquals(new int[] {1}, c.getEntryShape());
         Assert.assertTrue(c.isBits());
+        Assert.assertEquals(3, Array.getLength(tab.getFlattenedColumn(1)));
 
         c = tab.getDescriptor(2);
 
@@ -1456,4 +1476,20 @@ public class BinaryTableNewTest {
         tab.addRow(new Object[] {new int[1]});
     }
 
+    @Test
+    public void testSetIntColumn() throws Exception {
+        BinaryTable tab = new BinaryTable();
+        tab.addColumn(new int[3]);
+        int[] e = new int[] {1, 2, 3};
+        tab.setColumn(0, e);
+        Assert.assertArrayEquals(e, (int[]) tab.getColumn(0));
+    }
+
+    @Test(expected = IllegalStateException.class)
+    public void testGetLongNaN() throws Exception {
+        BinaryTable tab = new BinaryTable();
+        tab.addColumn(new double[] {Double.NaN, 1.0, 2.0});
+        Assert.assertTrue(Double.isNaN(tab.getDouble(0, 0)));
+        tab.getLong(0, 0);
+    }
 }
