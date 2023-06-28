@@ -41,7 +41,7 @@ import nom.tam.fits.BinaryTable.ColumnDesc;
 import nom.tam.fits.header.Standard;
 import nom.tam.util.ComplexValue;
 
-@SuppressWarnings("javadoc")
+@SuppressWarnings({"javadoc", "deprecation"})
 public class BinaryTableNewTest {
 
     @Test
@@ -105,15 +105,17 @@ public class BinaryTableNewTest {
     }
 
     @Test
-    public void testSetNumberBooleanColumn() throws Exception {
+    public void testSetNumberLogicalColumn() throws Exception {
         BinaryTable tab = new BinaryTable();
-        tab.addColumn(new Boolean[] {false, true, false});
+        tab.addColumn(new Boolean[] {false, true, false, true});
         tab.set(0, 0, -1);
         tab.set(1, 0, 0);
         tab.set(2, 0, Double.NaN);
+        tab.set(3, 0, null);
         Assert.assertTrue(tab.getLogical(0, 0));
         Assert.assertFalse(tab.getLogical(1, 0));
         Assert.assertNull(tab.getLogical(2, 0));
+        Assert.assertNull(tab.getLogical(3, 0));
     }
 
     @Test
@@ -225,6 +227,24 @@ public class BinaryTableNewTest {
     }
 
     @Test
+    public void testSetLogicalCharTrue() throws Exception {
+        BinaryTable tab = new BinaryTable();
+        tab.addColumn(new char[] {'T', 't', '1'});
+        Assert.assertEquals(true, tab.getLogical(0, 0));
+        Assert.assertEquals(true, tab.getLogical(1, 0));
+        Assert.assertEquals(true, tab.getLogical(2, 0));
+    }
+
+    @Test
+    public void testSetLogicalCharFalse() throws Exception {
+        BinaryTable tab = new BinaryTable();
+        tab.addColumn(new char[] {'F', 'f', '0'});
+        Assert.assertEquals(false, tab.getLogical(0, 0));
+        Assert.assertEquals(false, tab.getLogical(1, 0));
+        Assert.assertEquals(false, tab.getLogical(2, 0));
+    }
+
+    @Test
     public void testSetLogicalStringColumn() throws Exception {
         BinaryTable tab = new BinaryTable();
         tab.addColumn(new String[] {"abcdef", "abcdef", "abcdef"});
@@ -248,13 +268,15 @@ public class BinaryTableNewTest {
     @Test
     public void testSetStringLogicalColumn() throws Exception {
         BinaryTable tab = new BinaryTable();
-        tab.addColumn(new boolean[] {true, false, true});
+        tab.addColumn(new boolean[] {true, false, true, false});
         tab.set(0, 0, "true");
         tab.set(1, 0, "false");
         tab.set(2, 0, "null");
+        tab.set(3, 0, null);
         Assert.assertEquals("true", tab.getString(0, 0));
         Assert.assertEquals("false", tab.getString(1, 0));
         Assert.assertEquals("null", tab.getString(2, 0));
+        Assert.assertEquals("null", tab.getString(3, 0));
     }
 
     @Test
@@ -341,6 +363,57 @@ public class BinaryTableNewTest {
         Assert.assertEquals("1", tab.getString(0, 0));
         Assert.assertEquals("a", tab.getString(1, 0));
         Assert.assertEquals("A", tab.getString(2, 0));
+    }
+
+    @Test(expected = ClassCastException.class)
+    public void testSetStringMulti() throws Exception {
+        BinaryTable tab = new BinaryTable();
+        tab.addColumn(new int[3][3][5]);
+        tab.set(0, 0, "-1");
+    }
+
+    @Test(expected = ClassCastException.class)
+    public void testSetStringNonChars() throws Exception {
+        BinaryTable tab = new BinaryTable();
+        tab.addColumn(new int[3][5]);
+        tab.set(0, 0, "-1");
+    }
+
+    @Test(expected = IllegalArgumentException.class)
+    public void testSetStringTooLong() throws Exception {
+        BinaryTable tab = new BinaryTable();
+        tab.addColumn(new byte[3][2]);
+        tab.set(0, 0, "abc");
+    }
+
+    @Test(expected = NumberFormatException.class)
+    public void testSetStringNotANumber() throws Exception {
+        BinaryTable tab = new BinaryTable();
+        tab.addColumn(new int[3]);
+        tab.set(0, 0, "abc");
+    }
+
+    @Test
+    public void testSetComplex() throws Exception {
+        BinaryTable tab = new BinaryTable();
+        tab.addColumn(new ComplexValue[] {new ComplexValue(1.0, 0.0), new ComplexValue(2.0, 3.0)});
+        ComplexValue z = new ComplexValue(-1.0, -2.0);
+        tab.set(0, 0, z);
+        Assert.assertEquals(z, tab.get(0, 0));
+    }
+
+    @Test(expected = FitsException.class)
+    public void testSetScalarForArray() throws Exception {
+        BinaryTable tab = new BinaryTable();
+        tab.addColumn(new int[2][3][5]);
+        tab.set(0, 0, -1);
+    }
+
+    @Test(expected = IllegalArgumentException.class)
+    public void testSetUnsupportedScalar() throws Exception {
+        BinaryTable tab = new BinaryTable();
+        tab.addColumn(new ComplexValue[] {new ComplexValue(1.0, 0.0), new ComplexValue(2.0, 3.0)});
+        tab.set(0, 0, new File("blah"));
     }
 
     @Test
@@ -757,7 +830,7 @@ public class BinaryTableNewTest {
     @Test
     public void testCreateVarByteDescriptor() throws Exception {
         BinaryTable tab = new BinaryTable();
-        tab.addColumn(ColumnDesc.createForVariableLength(byte.class));
+        tab.addColumn(ColumnDesc.createForVariableSize(byte.class));
         ColumnDesc c = tab.getDescriptor(0);
         Assert.assertTrue(c.isVariableSize());
         Assert.assertFalse(c.isSingleton());
@@ -769,7 +842,7 @@ public class BinaryTableNewTest {
     @Test
     public void testCreateVarLogicalDescriptor() throws Exception {
         BinaryTable tab = new BinaryTable();
-        tab.addColumn(ColumnDesc.createForVariableLength(Boolean.class));
+        tab.addColumn(ColumnDesc.createForVariableSize(Boolean.class));
         ColumnDesc c = tab.getDescriptor(0);
         Assert.assertTrue(c.isVariableSize());
         Assert.assertTrue(c.isLogical());
@@ -782,7 +855,7 @@ public class BinaryTableNewTest {
     @Test
     public void testCreateVarBitsDescriptor() throws Exception {
         BinaryTable tab = new BinaryTable();
-        tab.addColumn(ColumnDesc.createForVariableLength(boolean.class));
+        tab.addColumn(ColumnDesc.createForVariableSize(boolean.class));
         ColumnDesc c = tab.getDescriptor(0);
         Assert.assertTrue(c.isVariableSize());
         Assert.assertTrue(c.isBits());
@@ -795,7 +868,7 @@ public class BinaryTableNewTest {
     @Test
     public void testCreateVarComplexFloatDescriptor() throws Exception {
         BinaryTable tab = new BinaryTable();
-        tab.addColumn(ColumnDesc.createForVariableLength(ComplexValue.Float.class));
+        tab.addColumn(ColumnDesc.createForVariableSize(ComplexValue.Float.class));
         ColumnDesc c = tab.getDescriptor(0);
         Assert.assertTrue(c.isVariableSize());
         Assert.assertTrue(c.isComplex());
@@ -807,7 +880,7 @@ public class BinaryTableNewTest {
     @Test
     public void testCreateVarStringDescriptorUnlimited() throws Exception {
         BinaryTable tab = new BinaryTable();
-        tab.addColumn(ColumnDesc.createForVariableLength(String.class));
+        tab.addColumn(ColumnDesc.createForVariableSize(String.class));
         ColumnDesc c = tab.getDescriptor(0);
         Assert.assertTrue(c.isVariableSize());
         Assert.assertEquals(String.class, c.getElementClass());
@@ -1086,7 +1159,6 @@ public class BinaryTableNewTest {
         BinaryTable.getDescriptor(h, 0);
     }
 
-    @SuppressWarnings("deprecation")
     @Test(expected = FitsException.class)
     public void testVarFlattenedColumn() throws Exception {
         float[][] f = new float[][] {new float[15], new float[11], new float[3]};
@@ -1095,15 +1167,129 @@ public class BinaryTableNewTest {
         tab.getFlattenedColumn(0); // Not for var-length...
     }
 
+    @Test
     public void testAddVarComplexFloatsColumn() throws Exception {
-        float[][][] f = new float[][][] {{new float[10], new float[2]}};
+        float[][][] f = new float[][][] {new float[10][2], new float[5][2]};
         BinaryTable tab = new BinaryTable();
-        tab.addColumn(f);
-        Assert.assertEquals(1, tab.getNRows());
+        tab.addVariableSizeColumn(f);
+        Assert.assertEquals(2, tab.getNRows());
         tab.setComplexColumn(0);
         ColumnDesc c = tab.getDescriptor(0);
         Assert.assertTrue(c.isComplex());
         Assert.assertTrue(c.isVariableSize());
     }
 
+    @Test
+    public void testAddVarComplexDoublesColumn() throws Exception {
+        double[][][] f = new double[][][] {new double[10][2], new double[5][2]};
+        BinaryTable tab = new BinaryTable();
+        tab.addVariableSizeColumn(f);
+        Assert.assertEquals(2, tab.getNRows());
+        tab.setComplexColumn(0);
+        ColumnDesc c = tab.getDescriptor(0);
+        Assert.assertTrue(c.isComplex());
+        Assert.assertTrue(c.isVariableSize());
+    }
+
+    @Test(expected = FitsException.class)
+    public void testAddFlatColumnSizeMismatch() throws Exception {
+        BinaryTable tab = new BinaryTable();
+        tab.addColumn(new int[3]);
+        tab.addFlattenedColumn(new int[5], 1);
+    }
+
+    @Test
+    public void testParseTDimsBad() throws Exception {
+        Assert.assertNull(BinaryTable.parseTDims("1,2,3)"));
+        Assert.assertArrayEquals(new int[] {3, 2, 1}, BinaryTable.parseTDims("(1,2,3"));
+    }
+
+    @Test
+    public void testParseTDimsEmpty() throws Exception {
+        Assert.assertNull(BinaryTable.parseTDims("()"));
+    }
+
+    @Test
+    public void testValidColumn() throws Exception {
+        BinaryTable tab = new BinaryTable();
+        tab.addColumn(ColumnDesc.createForScalars(int.class));
+        Assert.assertTrue(tab.validColumn(0));
+        Assert.assertFalse(tab.validColumn(-1));
+        Assert.assertFalse(tab.validColumn(1));
+    }
+
+    @Test
+    public void testValidRow() throws Exception {
+        BinaryTable tab = new BinaryTable();
+        tab.addColumn(new int[] {1});
+        Assert.assertTrue(tab.validRow(0));
+        Assert.assertFalse(tab.validRow(-1));
+        Assert.assertFalse(tab.validRow(1));
+    }
+
+    @Test
+    public void testEmptyCopy() throws Exception {
+        BinaryTable tab = new BinaryTable();
+        tab.addColumn(new double[1][10]);
+        Header h = new Header();
+        tab.fillHeader(h);
+
+        // Creating table from header will leave the table data and heap
+        // uninitialized as long as deferred...
+        BinaryTable tab2 = new BinaryTable(h).copy();
+
+        Assert.assertEquals(1, tab2.getNCols());
+        Assert.assertEquals(1, tab2.getNRows());
+
+        ColumnDesc c = tab.getDescriptor(0);
+        Assert.assertEquals(double.class, c.getElementClass());
+        Assert.assertEquals(10, c.getElementCount());
+    }
+
+    @Test
+    public void testRowMajorConstructor() throws Exception {
+        Object[][] rowCol = new Object[][] {{new int[1], new float[2]}};
+        BinaryTable tab = new BinaryTable(rowCol);
+        Assert.assertEquals(1, tab.getNRows());
+        Assert.assertEquals(2, tab.getNCols());
+
+        Assert.assertEquals(int.class, tab.getDescriptor(0).getElementClass());
+        Assert.assertEquals(1, tab.getDescriptor(0).getElementCount());
+        Assert.assertTrue(tab.getDescriptor(0).isSingleton());
+
+        Assert.assertEquals(float.class, tab.getDescriptor(1).getElementClass());
+        Assert.assertEquals(2, tab.getDescriptor(1).getElementCount());
+        Assert.assertFalse(tab.getDescriptor(1).isSingleton());
+    }
+
+    @Test
+    public void testColumnMajorConstructor() throws Exception {
+        Object[] cols = new Object[] {new int[1], new float[1][2]};
+        BinaryTable tab = new BinaryTable(cols);
+        Assert.assertEquals(1, tab.getNRows());
+        Assert.assertEquals(2, tab.getNCols());
+
+        Assert.assertEquals(int.class, tab.getDescriptor(0).getElementClass());
+        Assert.assertEquals(1, tab.getDescriptor(0).getElementCount());
+        Assert.assertTrue(tab.getDescriptor(0).isSingleton());
+
+        Assert.assertEquals(float.class, tab.getDescriptor(1).getElementClass());
+        Assert.assertEquals(2, tab.getDescriptor(1).getElementCount());
+        Assert.assertFalse(tab.getDescriptor(1).isSingleton());
+    }
+
+    @Test
+    public void testSetFlattenedColumn() throws Exception {
+        BinaryTable tab = new BinaryTable();
+        tab.addColumn(new int[3][2][5]);
+        tab.setFlattenedColumn(0, new int[30]);
+        // No exception...
+    }
+
+    @Test(expected = FitsException.class)
+    public void testSetInvalidTFormType() throws Exception {
+        Header h = new Header();
+        h.addValue(Standard.TFORMn.n(1), "10U");
+        BinaryTable.getDescriptor(h, 0);
+    }
 }
