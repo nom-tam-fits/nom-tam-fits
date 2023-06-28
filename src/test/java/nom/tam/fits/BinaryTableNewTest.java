@@ -112,10 +112,12 @@ public class BinaryTableNewTest {
         tab.set(1, 0, 0);
         tab.set(2, 0, Double.NaN);
         tab.set(3, 0, null);
-        Assert.assertTrue(tab.getLogical(0, 0));
-        Assert.assertFalse(tab.getLogical(1, 0));
-        Assert.assertNull(tab.getLogical(2, 0));
-        Assert.assertNull(tab.getLogical(3, 0));
+        Assert.assertEquals(1, tab.getNumber(0, 0));
+        Assert.assertEquals(0, tab.getNumber(1, 0));
+        Assert.assertNull(tab.getNumber(2, 0));
+        Assert.assertTrue(Double.isNaN(tab.getDouble(2, 0)));
+        Assert.assertNull(tab.getNumber(3, 0));
+        Assert.assertTrue(Double.isNaN(tab.getDouble(2, 0)));
     }
 
     @Test
@@ -406,6 +408,22 @@ public class BinaryTableNewTest {
         Assert.assertEquals(z, tab.get(0, 0));
     }
 
+    @Test
+    public void testSetArray() throws Exception {
+        BinaryTable tab = new BinaryTable();
+        tab.addColumn(new int[2][3]);
+        int[] e = new int[] {1, 2, 3};
+        tab.set(0, 0, e);
+        Assert.assertArrayEquals(e, (int[]) tab.get(0, 0));
+    }
+
+    @Test(expected = FitsException.class)
+    public void testSetArrayNull() throws Exception {
+        BinaryTable tab = new BinaryTable();
+        tab.addColumn(new int[2][3][5]);
+        tab.set(0, 0, null);
+    }
+
     @Test(expected = FitsException.class)
     public void testSetScalarForArray() throws Exception {
         BinaryTable tab = new BinaryTable();
@@ -431,7 +449,7 @@ public class BinaryTableNewTest {
     @Test
     public void testSetCharLogicalColumn() throws Exception {
         BinaryTable tab = new BinaryTable();
-        tab.addColumn(new boolean[] {false, true, false, true, false, true, true});
+        tab.addColumn(new boolean[] {false, true, false, true, false, true, true, false});
         tab.set(0, 0, 'T');
         tab.set(1, 0, 'F');
         tab.set(2, 0, 't');
@@ -439,6 +457,7 @@ public class BinaryTableNewTest {
         tab.set(4, 0, '1');
         tab.set(5, 0, '0');
         tab.set(6, 0, '\0');
+        tab.set(7, 0, null);
         Assert.assertEquals(true, tab.get(0, 0));
         Assert.assertEquals(false, tab.get(1, 0));
         Assert.assertEquals(true, tab.get(2, 0));
@@ -446,6 +465,7 @@ public class BinaryTableNewTest {
         Assert.assertEquals(true, tab.get(4, 0));
         Assert.assertEquals(false, tab.get(5, 0));
         Assert.assertNull(tab.get(6, 0));
+        Assert.assertNull(tab.get(7, 0));
     }
 
     @Test
@@ -723,6 +743,12 @@ public class BinaryTableNewTest {
         Assert.assertEquals(1, c.getElementWidth());
         Assert.assertNull(c.getEntryShape());
         Assert.assertTrue(c.isBits());
+    }
+
+    @Test(expected = IllegalArgumentException.class)
+    public void testAddBitsColumnsWrongObject() throws Exception {
+        BinaryTable tab = new BinaryTable();
+        tab.addBitsColumn(new int[3]);
     }
 
     @Test
@@ -1163,6 +1189,13 @@ public class BinaryTableNewTest {
         tab.addColumn(new int[] {1, 2});
     }
 
+    @Test(expected = IllegalStateException.class)
+    public void testAddColumnDescriptorNotEmpty() throws Exception {
+        BinaryTable tab = new BinaryTable();
+        tab.addColumn(new int[3]);
+        tab.addColumn(ColumnDesc.createForScalars(int.class));
+    }
+
     @Test(expected = FitsException.class)
     public void testAddColumnInconsistentSubarrayArrayType() throws Exception {
         BinaryTable tab = new BinaryTable();
@@ -1364,6 +1397,20 @@ public class BinaryTableNewTest {
         Header h = new Header();
         h.addValue(Standard.TFORMn.n(1), "10U");
         BinaryTable.getDescriptor(h, 0);
+    }
+
+    @Test(expected = FitsException.class)
+    public void testGetElementBadRow() throws Exception {
+        BinaryTable tab = new BinaryTable();
+        tab.addColumn(new int[3]);
+        tab.getElement(3, 0);
+    }
+
+    @Test(expected = FitsException.class)
+    public void testGetElementBadCol() throws Exception {
+        BinaryTable tab = new BinaryTable();
+        tab.addColumn(new int[3]);
+        tab.getElement(0, 1);
     }
 
     @Test(expected = FitsException.class)

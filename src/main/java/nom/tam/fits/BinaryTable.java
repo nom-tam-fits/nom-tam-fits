@@ -1642,19 +1642,20 @@ public class BinaryTable extends AbstractTableData implements Cloneable {
      * Adds a column of bits. This uses much less space than if adding boolean values as logicals (the default behaviot
      * of {@link #addColumn(Object)}, since logicals take up 1 byte per element, whereas bits are really single bits.
      * 
-     * @param  o             An any-dimensional array of <code>boolean</code> values.
+     * @param  o                        An any-dimensional array of <code>boolean</code> values.
      * 
-     * @return               the number of column in the table including the new column.
+     * @return                          the number of column in the table including the new column.
      * 
-     * @throws FitsException if the object is not an array of <code>boolean</code> values.
+     * @throws IllegalArgumentException if the argument is not an array of <code>boolean</code> values.
+     * @throws FitsException            if the object is not an array of <code>boolean</code> values.
      * 
-     * @since                1.18
+     * @since                           1.18
      * 
-     * @see                  #addColumn(Object)
+     * @see                             #addColumn(Object)
      */
     public int addBitsColumn(Object o) throws FitsException {
         if (ArrayFuncs.getBaseClass(o) != boolean.class) {
-            throw new TableException("Not an array of booleans: " + o.getClass());
+            throw new IllegalArgumentException("Not an array of booleans: " + o.getClass());
         }
         return addColumn(o, false);
     }
@@ -1822,16 +1823,9 @@ public class BinaryTable extends AbstractTableData implements Cloneable {
      * @since                1.18
      */
     public int addVariableSizeColumn(Object o) throws FitsException {
-        int rows = checkRowCount(o);
         Class<?> base = ArrayFuncs.getBaseClass(o);
         ColumnDesc c = ColumnDesc.createForVariableSize(base);
-        int cols = addVariableSizeColumn(o, c);
-
-        if (nRow == 0) {
-            // Set the table row count to match colum
-            nRow = rows;
-        }
-        return cols;
+        return addVariableSizeColumn(o, c);
     }
 
     private int addDirectColumn(Object o, int rows, ColumnDesc c) throws FitsException {
@@ -1853,6 +1847,8 @@ public class BinaryTable extends AbstractTableData implements Cloneable {
     }
 
     private int addVariableSizeColumn(Object o, ColumnDesc c) throws FitsException {
+        checkRowCount(o);
+
         Object[] array = (Object[]) o;
 
         o = Array.newInstance(c.pointerClass(), array.length * 2);
@@ -1913,15 +1909,9 @@ public class BinaryTable extends AbstractTableData implements Cloneable {
 
         int n = 1;
 
-        if (dims != null) {
-            c.setLegacyShape(dims);
-            for (int dim : dims) {
-                n *= dim;
-            }
-        }
-
-        if (n == 1) {
-            c.setSingleton();
+        c.setLegacyShape(dims);
+        for (int dim : dims) {
+            n *= dim;
         }
 
         int rows = Array.getLength(o) / n;
@@ -2264,7 +2254,7 @@ public class BinaryTable extends AbstractTableData implements Cloneable {
      * @throws IOException   If there was an I/O error accessing the input
      * @throws FitsException If there was some other error
      */
-    private void readFitsElement(Object o, ColumnDesc c, int row) throws IOException, FitsException {
+    private void readTableElement(Object o, ColumnDesc c, int row) throws IOException, FitsException {
         if (currInput == null) {
             throw new FitsException("table has not been assigned an input");
         }
@@ -2304,7 +2294,7 @@ public class BinaryTable extends AbstractTableData implements Cloneable {
             try {
                 ColumnDesc c = columns.get(col);
                 Object e = c.newInstance(1);
-                readFitsElement(e, c, row);
+                readTableElement(e, c, row);
                 return e;
             } catch (Exception e) {
                 throw (e instanceof FitsException) ? (FitsException) e : new FitsException(e.getMessage(), e);
@@ -2692,7 +2682,7 @@ public class BinaryTable extends AbstractTableData implements Cloneable {
      * 
      * @see                  #setTableElement(int, int, Object)
      */
-    private void writeFitsElement(int row, int col, Object array) throws IOException, FitsException {
+    private void writeTableElement(int row, int col, Object array) throws IOException, FitsException {
         if (currInput == null) {
             throw new FitsException("table has not been assigned an input");
         }
@@ -2729,7 +2719,7 @@ public class BinaryTable extends AbstractTableData implements Cloneable {
     private void setTableElement(int row, int col, Object o) throws FitsException {
         if (table == null) {
             try {
-                writeFitsElement(row, col, o);
+                writeTableElement(row, col, o);
             } catch (Exception e) {
                 throw (e instanceof FitsException) ? (FitsException) e : new FitsException(e.getMessage(), e);
             }
@@ -2919,8 +2909,6 @@ public class BinaryTable extends AbstractTableData implements Cloneable {
             setTableElement(row, col, new byte[] {FitsEncoder.byteForBoolean(value)});
         } else if (c.getLegacyBase() == char.class) {
             setTableElement(row, col, new char[] {value == null ? '\0' : (value ? 'T' : 'F')});
-        } else if (c.isString()) {
-            setTableElement(row, col, value.toString());
         } else {
             setNumber(row, col, value == null ? Double.NaN : (value ? 1 : 0));
         }

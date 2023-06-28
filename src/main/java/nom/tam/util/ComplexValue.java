@@ -282,10 +282,5 @@ public class ComplexValue {
      */
     public static final class Float extends ComplexValue {
 
-        /**
-         * Private constructor so we cannot instantiate.
-         */
-        private Float() {
-        }
     }
 }
