@@ -111,11 +111,10 @@ public class FitsHeap implements FitsElement {
     }
 
     /**
-     * Gets data for a Java array from the heap. The array may be a multi-dimensional or a heterogenetous array of
-     * arrays.
+     * Gets data for a Java array from the heap. The array may be a multi-dimensional array of arrays.
      *
      * @param  offset        the heap byte offset at which the data begins.
-     * @param  array         The array to be extracted.
+     * @param  array         The array of primitives to be extracted.
      *
      * @throws FitsException if the operation failed
      */
@@ -140,12 +139,30 @@ public class FitsHeap implements FitsElement {
     }
 
     /**
-     * Add some data to the heap.
+     * Puts data to the end of the heap.
+     * 
+     * @param  data a primitive array object, which may be multidimensional
+     * 
+     * @return      the number of bytes used by the data.
+     * 
+     * @see         #putData(Object, long)
+     * @see         #getData(int, Object)
      */
     long putData(Object data) throws FitsException {
         return putData(data, store.length());
     }
 
+    /**
+     * Puts data onto the heap at a specific heap position.
+     * 
+     * @param  data a primitive array object, which may be multidimensional
+     * @param  pos  the byte offset at which the data should begin.
+     * 
+     * @return      the number of bytes used by the data.
+     * 
+     * @see         #putData(Object, long)
+     * @see         #getData(int, Object)
+     */
     long putData(Object data, long pos) throws FitsException {
         long lsize = pos + FitsEncoder.computeSize(data);
         if (lsize > Integer.MAX_VALUE) {

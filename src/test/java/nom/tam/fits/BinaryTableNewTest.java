@@ -1492,4 +1492,18 @@ public class BinaryTableNewTest {
         Assert.assertTrue(Double.isNaN(tab.getDouble(0, 0)));
         tab.getLong(0, 0);
     }
+
+    @Test
+    public void testSetRowEntries() throws Exception {
+        BinaryTable tab = new BinaryTable();
+        tab.addColumn(new int[1]);
+        tab.addColumn(new double[1]);
+        tab.addColumn(new boolean[1]);
+
+        tab.setRowEntries(0, 1, 2.0, true);
+
+        Assert.assertEquals(1, tab.getLong(0, 0));
+        Assert.assertEquals(2.0, tab.getDouble(0, 1), 1e-12);
+        Assert.assertTrue(tab.getLogical(0, 2));
+    }
 }

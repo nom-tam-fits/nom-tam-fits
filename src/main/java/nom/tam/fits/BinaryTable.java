@@ -1792,12 +1792,11 @@ public class BinaryTable extends AbstractTableData implements Cloneable {
                 c.setLegacyShape(shape);
                 o = ArrayFuncs.flatten(o);
             }
-        } catch (ClassCastException e) {
-            throw new TableException("Inconsistent array: " + e.getMessage(), e);
         } catch (IllegalArgumentException e) {
             c.setVariableSize(false);
             return addVariableSizeColumn(o, c);
         }
+        // getBaseClass() prevents heterogeneous columns, so no need to catch ClassCastException here.
 
         return addFlattenedColumn(o, rows, c, compat);
     }
@@ -3047,7 +3046,7 @@ public class BinaryTable extends AbstractTableData implements Cloneable {
         }
 
         for (int col = 0; col < data.length; col++) {
-            setElement(row, col, data[col]);
+            set(row, col, data[col]);
         }
     }
 
