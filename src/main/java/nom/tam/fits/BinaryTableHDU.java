@@ -78,6 +78,12 @@ public class BinaryTableHDU extends TableHDU<BinaryTable> {
         super(hdr, datum);
     }
 
+    public static BinaryTableHDU from(BinaryTable tab) throws FitsException {
+        BinaryTableHDU hdu = new BinaryTableHDU(new Header(), tab);
+        tab.fillHeader(hdu.myHeader);
+        return hdu;
+    }
+
     @Override
     protected final String getCanonicalXtension() {
         return Standard.XTENSION_BINTABLE;

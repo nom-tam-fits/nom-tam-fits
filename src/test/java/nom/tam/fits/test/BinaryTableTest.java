@@ -1124,7 +1124,7 @@ public class BinaryTableTest {
         btab.addColumn(floats);
 
         setFieldNull(btab, "table");
-        setFieldNull(btab, "currInput");
+        btab.detach();
         Exception actual = null;
         final List<LogRecord> logs = new ArrayList<>();
         Logger.getLogger(BinaryTable.class.getName()).addHandler(new Handler() {

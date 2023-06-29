@@ -52,6 +52,7 @@ import nom.tam.util.ComplexValue;
 import nom.tam.util.FitsEncoder;
 import nom.tam.util.FitsIO;
 import nom.tam.util.RandomAccess;
+import nom.tam.util.ReadWriteAccess;
 import nom.tam.util.TableException;
 import nom.tam.util.type.ElementType;
 
@@ -1270,11 +1271,7 @@ public class BinaryTable extends AbstractTableData implements Cloneable {
      */
     private ColumnTable<?> table;
 
-    /**
-     * The stream used to input the data. This is saved so that we possibly skip reading the data if the user doesn't
-     * wish to read all or parts of this table.
-     */
-    private ArrayDataInput currInput;
+    private FitsEncoder encoder;
 
     /**
      * Create a null binary table data segment.
@@ -1827,6 +1824,18 @@ public class BinaryTable extends AbstractTableData implements Cloneable {
         return addVariableSizeColumn(o, c);
     }
 
+    /**
+     * Adds a new column with data directly, without performing any checks on the data. This should only be use
+     * internally, after ansuring the data integrity and suitability for this table.
+     * 
+     * @param  o             the column data, whose integrity was verified previously
+     * @param  rows          the number of rows the data contains (in flattened form)
+     * @param  c             the new column's descriptor
+     * 
+     * @return               the number of table columns after the addition
+     * 
+     * @throws FitsException if the data is not the right type or format for internal storage.
+     */
     private int addDirectColumn(Object o, int rows, ColumnDesc c) throws FitsException {
         c.offset = rowLen;
         c.fileSize = c.rowLen();
@@ -1948,7 +1957,7 @@ public class BinaryTable extends AbstractTableData implements Cloneable {
      *
      * @return               the new column size
      *
-     * @throws FitsException
+     * @throws FitsException if the data type, format, or element count is inconsistent with this table.
      */
     private int addFlattenedColumn(Object o, int rows, ColumnDesc c, boolean compat) throws FitsException {
         // For back compatibility this method will add boolean values as logicals always...
@@ -2010,7 +2019,7 @@ public class BinaryTable extends AbstractTableData implements Cloneable {
     public int addRow(Object[] o) throws FitsException {
         ensureData();
 
-        if (columns.size() == 0 && nRow == 0) {
+        if (columns.isEmpty()) {
             for (Object element : o) {
 
                 if (element == null) {
@@ -2254,7 +2263,8 @@ public class BinaryTable extends AbstractTableData implements Cloneable {
     }
 
     /**
-     * Reads a regular table element in the main table from the input.
+     * Reads a regular table element in the main table from the input. This method should never be called unless we have
+     * a random-accessible input associated, which is a requirement for deferred read mode.
      * 
      * @param  o             The array element
      * @param  c             the column descriptor
@@ -2264,18 +2274,15 @@ public class BinaryTable extends AbstractTableData implements Cloneable {
      * @throws FitsException If there was some other error
      */
     private void readTableElement(Object o, ColumnDesc c, int row) throws IOException, FitsException {
-        if (currInput == null) {
-            throw new FitsException("table has not been assigned an input");
-        }
-        if (!(currInput instanceof RandomAccess)) {
-            throw new FitsException("table input is not random accessibe");
-        }
+        @SuppressWarnings("resource")
+        RandomAccess in = getRandomAccessInput();
 
-        ((RandomAccess) currInput).position(getFileOffset() + row * (long) rowLen + c.offset);
-        if (!c.isLogical() && c.getLegacyBase() != char.class) {
-            currInput.readImage(o);
+        in.position(getFileOffset() + row * (long) rowLen + c.offset);
+
+        if (!c.isLogical()) {
+            in.readImage(o);
         } else {
-            currInput.readArrayFully(o);
+            in.readArrayFully(o);
         }
     }
 
@@ -2679,33 +2686,23 @@ public class BinaryTable extends AbstractTableData implements Cloneable {
 
     /**
      * Writes an element directly into the random accessible FITS file. Note, this call will not modify the table in
-     * memory (if loaded).
+     * memory (if loaded). This method should never be called unless we have a valid encoder object that can handle the
+     * writing, which is a requirement for deferred read mode.
      * 
-     * @param  row           the zero-based row index
-     * @param  col           the zero-based column index
-     * @param  array         an array object containing primitive types, in FITS storage format. It may be
-     *                           multi-dimensional.
+     * @param  row         the zero-based row index
+     * @param  col         the zero-based column index
+     * @param  array       an array object containing primitive types, in FITS storage format. It may be
+     *                         multi-dimensional.
      * 
-     * @throws IOException   the there was an error writing to hte FITS file
-     * @throws FitsException if the array is invalid for the given column.
+     * @throws IOException the there was an error writing to the FITS output
      * 
-     * @see                  #setTableElement(int, int, Object)
+     * @see                #setTableElement(int, int, Object)
      */
-    private void writeTableElement(int row, int col, Object array) throws IOException, FitsException {
-        if (currInput == null) {
-            throw new FitsException("table has not been assigned an input");
-        }
-        if (!(currInput instanceof RandomAccess)) {
-            throw new FitsException("table input is not random accessibe");
-        }
-        if (!(currInput instanceof ArrayDataOutput)) {
-            throw new FitsException("table input has no output capability");
-        }
-
+    @SuppressWarnings("resource")
+    private void writeTableElement(int row, int col, Object array) throws IOException {
         ColumnDesc c = columns.get(col);
-
-        ((RandomAccess) currInput).position(getFileOffset() + row * (long) rowLen + c.offset);
-        ((ArrayDataOutput) currInput).writeArray(array);
+        getRandomAccessInput().position(getFileOffset() + row * (long) rowLen + c.offset);
+        encoder.writeArray(array);
     }
 
     /**
@@ -2719,8 +2716,8 @@ public class BinaryTable extends AbstractTableData implements Cloneable {
      * @param  o             an array object containing primitive types, in FITS storage format. It may be
      *                           multi-dimensional.
      *
-     * @throws FitsException if the array is invalid for the given column, or if the table could not be accessed from
-     *                           the file / input.
+     * @throws FitsException if the array is invalid for the given column, or if the table could not be accessed in the
+     *                           file / input.
      * 
      * @see                  #setTableElement(int, int, Object)
      * @see                  #getRawElement(int, int)
@@ -2729,8 +2726,8 @@ public class BinaryTable extends AbstractTableData implements Cloneable {
         if (table == null) {
             try {
                 writeTableElement(row, col, o);
-            } catch (Exception e) {
-                throw (e instanceof FitsException) ? (FitsException) e : new FitsException(e.getMessage(), e);
+            } catch (IOException e) {
+                throw new FitsException(e.getMessage(), e);
             }
         } else {
             ensureData();
@@ -2859,10 +2856,8 @@ public class BinaryTable extends AbstractTableData implements Cloneable {
 
         if (c.isLogical()) {
             Boolean b = null;
-            if (value != null) {
-                if (!Double.isNaN(value.doubleValue())) {
-                    b = value.longValue() != 0;
-                }
+            if (!Double.isNaN(value.doubleValue())) {
+                b = value.longValue() != 0;
             }
             setTableElement(row, col, new byte[] {FitsEncoder.byteForBoolean(b)});
             return;
@@ -2885,7 +2880,8 @@ public class BinaryTable extends AbstractTableData implements Cloneable {
         } else if (base == double.class) {
             wrapped = new double[] {value.doubleValue()};
         } else {
-            throw new ClassCastException("Cannot set number: col " + col + ", type " + base.getName());
+            // This could be a char based column...
+            throw new ClassCastException("Cannot set number value for column of type " + base);
         }
 
         setTableElement(row, col, wrapped);
@@ -2946,11 +2942,7 @@ public class BinaryTable extends AbstractTableData implements Cloneable {
         // }
 
         if (c.isLogical()) {
-            if (value == null) {
-                setLogical(row, col, null);
-            } else {
-                setLogical(row, col, FitsUtil.parseLogical(value.toString()));
-            }
+            setLogical(row, col, FitsUtil.parseLogical(value.toString()));
         } else if (c.fitsBase == char.class) {
             setTableElement(row, col, new char[] {value});
         } else if (c.fitsBase == byte.class) {
@@ -2991,7 +2983,7 @@ public class BinaryTable extends AbstractTableData implements Cloneable {
         // }
 
         if (c.isLogical()) {
-            setLogical(row, col, (value == null) ? (Boolean) null : FitsUtil.parseLogical(value));
+            setLogical(row, col, FitsUtil.parseLogical(value));
         } else if (value.length() == 1) {
             setCharacter(row, col, value.charAt(0));
         } else if (c.fitsDimension() > 1) {
@@ -3000,7 +2992,7 @@ public class BinaryTable extends AbstractTableData implements Cloneable {
             if (c.fitsBase != char.class && c.fitsBase != byte.class) {
                 throw new ClassCastException("Cannot cast String to " + c.fitsBase.getName());
             }
-            int len = c.isVariableSize() ? value.length() : c.getTableBaseCount();
+            int len = c.isVariableSize() ? value.length() : c.fitsCount;
             if (value.length() > len) {
                 throw new IllegalArgumentException("String size " + value.length() + " exceeds entry size of " + len);
             }
@@ -3065,9 +3057,10 @@ public class BinaryTable extends AbstractTableData implements Cloneable {
         }
     }
 
+    @SuppressWarnings("resource")
     @Override
     public void write(ArrayDataOutput os) throws FitsException {
-        if (os != currInput) {
+        if (os != getRandomAccessInput()) {
             ensureData();
         }
 
@@ -3415,15 +3408,26 @@ public class BinaryTable extends AbstractTableData implements Cloneable {
         return o;
     }
 
+    /**
+     * Sets the input to use for reading (and possibly writing) this table. If the input implements
+     * {@link ReadWriteAccess}, then it can be used for both reading and (re)writing the data, including editing in
+     * deferred mode.
+     * 
+     * @param in The input from which we can read the table data.
+     */
+    private void setInput(ArrayDataInput in) {
+        encoder = (in instanceof ReadWriteAccess) ? new FitsEncoder((ReadWriteAccess) in) : null;
+    }
+
     @Override
     public void read(ArrayDataInput in) throws FitsException {
-        currInput = in;
+        setInput(in);
         super.read(in);
     }
 
     @Override
     protected void loadData(ArrayDataInput in) throws IOException, FitsException {
-        currInput = in;
+        setInput(in);
         createTable(nRow);
         readTrueData(in);
     }
@@ -3553,9 +3557,10 @@ public class BinaryTable extends AbstractTableData implements Cloneable {
      * 
      * @throws FitsException if we had trouble initializing it from the input.
      */
+    @SuppressWarnings("resource")
     private FitsHeap getHeap() throws FitsException {
         if (heap == null) {
-            readHeap(currInput);
+            readHeap(getRandomAccessInput());
         }
         return heap;
     }

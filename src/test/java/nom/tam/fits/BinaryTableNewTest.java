@@ -1,6 +1,7 @@
 package nom.tam.fits;
 
 import java.io.File;
+import java.io.FileInputStream;
 import java.lang.reflect.Array;
 import java.math.BigInteger;
 
@@ -41,6 +42,7 @@ import org.junit.Test;
 import nom.tam.fits.BinaryTable.ColumnDesc;
 import nom.tam.fits.header.Standard;
 import nom.tam.util.ComplexValue;
+import nom.tam.util.FitsInputStream;
 
 @SuppressWarnings({"javadoc", "deprecation"})
 public class BinaryTableNewTest {
@@ -1413,6 +1415,20 @@ public class BinaryTableNewTest {
     }
 
     @Test(expected = FitsException.class)
+    public void testSetFlattenedColumnWrongType() throws Exception {
+        BinaryTable tab = new BinaryTable();
+        tab.addColumn(new int[3][2][5]);
+        tab.setFlattenedColumn(0, new long[30]);
+    }
+
+    @Test(expected = FitsException.class)
+    public void testSetFlattenedColumnWrongSize() throws Exception {
+        BinaryTable tab = new BinaryTable();
+        tab.addColumn(new int[3][2][5]);
+        tab.setFlattenedColumn(0, new int[9]);
+    }
+
+    @Test(expected = FitsException.class)
     public void testSetInvalidTFormType() throws Exception {
         Header h = new Header();
         h.addValue(Standard.TFORMn.n(1), "10U");
@@ -1506,4 +1522,119 @@ public class BinaryTableNewTest {
         Assert.assertEquals(2.0, tab.getDouble(0, 1), 1e-12);
         Assert.assertTrue(tab.getLogical(0, 2));
     }
+
+    @Test
+    public void testEditDeferred() throws Exception {
+        BinaryTable tab = new BinaryTable();
+        tab.addColumn(new int[10]);
+        String fileName = "target/bt-edit-file.fits";
+
+        Fits fits = new Fits();
+        fits.addHDU(BinaryTableHDU.from(tab));
+        fits.write(fileName);
+        fits.close();
+
+        fits = new Fits(new File(fileName));
+        BinaryTableHDU bhdu = (BinaryTableHDU) fits.getHDU(1);
+
+        tab = bhdu.getData();
+
+        Assert.assertTrue(tab.isDeferred());
+
+        // Editing in deferred mode -- write to file...
+        tab.set(0, 0, 1);
+
+        // Read back....
+        Assert.assertEquals(1L, tab.getLong(0, 0));
+
+        Assert.assertTrue(tab.isDeferred());
+
+        fits.close();
+
+        // Read again to check that edits made it into the file
+
+        fits = new Fits(new File(fileName));
+        bhdu = (BinaryTableHDU) fits.getHDU(1);
+        tab = bhdu.getData();
+        Assert.assertEquals(1L, tab.getLong(0, 0));
+
+    }
+
+    @Test(expected = FitsException.class)
+    public void testEditDeferredClosed() throws Exception {
+        BinaryTable tab = new BinaryTable();
+        tab.addColumn(new int[10]);
+        String fileName = "target/bt-edit-file.fits";
+
+        Fits fits = new Fits();
+        fits.addHDU(BinaryTableHDU.from(tab));
+        fits.write(fileName);
+        fits.close();
+
+        fits = new Fits(new File(fileName));
+        BinaryTableHDU bhdu = (BinaryTableHDU) fits.getHDU(1);
+
+        tab = bhdu.getData();
+
+        Assert.assertTrue(tab.isDeferred());
+
+        fits.close();
+
+        // Editing in deferred mode
+        tab.set(0, 0, 1);
+    }
+
+    @Test
+    public void testEditStream() throws Exception {
+        BinaryTable tab = new BinaryTable();
+        tab.addColumn(new int[10]);
+        String fileName = "target/bt-edit-stream.fits";
+
+        Fits fits = new Fits();
+        fits.addHDU(BinaryTableHDU.from(tab));
+        fits.write(fileName);
+        fits.close();
+
+        fits = new Fits(new FitsInputStream(new FileInputStream(new File(fileName))));
+        BinaryTableHDU bhdu = (BinaryTableHDU) fits.getHDU(1);
+
+        tab = bhdu.getData();
+
+        Assert.assertFalse(tab.isDeferred());
+
+        // Editing in memory
+        tab.set(0, 0, 1);
+
+        // Read back....
+        Assert.assertEquals(1L, tab.getLong(0, 0));
+
+        Assert.assertFalse(tab.isDeferred());
+
+        fits.close();
+    }
+
+    @Test(expected = IllegalStateException.class)
+    public void testGetFlatColumnsDeferredClosed() throws Exception {
+        BinaryTable tab = new BinaryTable();
+        tab.addColumn(new int[10]);
+        String fileName = "target/bt-edit-file.fits";
+
+        Fits fits = new Fits();
+        fits.addHDU(BinaryTableHDU.from(tab));
+        fits.write(fileName);
+        fits.close();
+
+        fits = new Fits(new File(fileName));
+        BinaryTableHDU bhdu = (BinaryTableHDU) fits.getHDU(1);
+
+        tab = bhdu.getData();
+
+        Assert.assertTrue(tab.isDeferred());
+
+        fits.close();
+
+        // Editing in deferred mode
+        tab.getFlatColumns();
+    }
+
 }

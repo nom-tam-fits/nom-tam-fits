@@ -125,6 +125,11 @@ public final class AsciiFuncs {
         }
 
         int to = from;
+
+        if (s.charAt(from) == '-') {
+            to++;
+        }
+
         for (; to < s.length(); to++) {
             if (!Character.isDigit(s.charAt(to))) {
                 break;
