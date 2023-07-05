@@ -507,6 +507,192 @@ second HDU (Java index 1).
 When writing simple tables it may be possible to write the tables in either binary or ASCII format, provided all columns are scalar types. By default, the library will create and write binary tables for such data. To create ASCII tables instead the user should call `FitsFactory.setUseAsciiTables(true)` first. 
 
 
+<a name="incremental-writing"></a>
+### Writing one HDU at a time
+
+Sometimes you do not want to add all your HDUs to a `Fits` object before writing it out to a file or stream. Maybe because they use up too much RAM, or you are recording from a live stream and want to add HDUs to the file as they come in. As of version __1.17__ of the library, you can write FITS files one HDU at a time without having to place them in a `Fits` object first, or having to worry about the mandatory keywords having been set for primary or extension HDUs. Or, you can write a `Fits` object with some number of HDUs, but then keep appending further HDUs after, worry-free. The `FitsFile` or `FitsOutputStream` object will keep track of where it is in the file or stream, and set the required header keywords for the appended HDUs as appropriate for a primary or extension HDU automatically.
+
+Here is an example of how building a FITS file HDU-by-HDU without the need to create a `Fits` object as a holding container:
+
+```java
+  // Create the file to which to write the HDUs as they come
+  FitsFile out = new FitsFile("my-incremental.fits", "rw");
+  ...
+
+  // you can append 'hdu' objects to the FITS file (stream) as:
+  // The first HDU will be set primary (if possible), and following HDUs will be extensions. 
+  hdu.write(out);
+  ...
+
+  // When you are all done you can close the FITS file/stream
+  out.close(); 
+```
+
+Of course, you can use a `FitsOutputStream` as opposed to a file as the output also, e.g.:
+
+```java
+  FitsOutputStream out = new FitsOutputStream(new FileOutputStream("my-incremental.fits"));
+  ...
+```
+
+In this case you can use random access, which means you can go back and re-write HDUs in place. If you do go all the way back to the head of the file, and re-write the first HDU, you can be assured that it will contain the necessary header entries for a primary HDU, even if you did not set them yourself. Easy as pie.
+
+
+
+
+<a name="low-level-writes"></a>
+### Low-level writes
+
+When a large table or image is to be written, the user may wish to stream the write. This is possible but rather 
+more difficult than in the case of reads.
+
+There are two main issues:
+
+ 1. The header for the HDU must written to show the size of the entire file when we are done.
+    Thus the user may need to modify the header data appropriately.
+
+ 2. After writing the data, a valid FITS file may need to be padded to an appropriate length.
+
+It's not hard to address these, but the user needs some familiarity with the internals of the FITS representation.
+
+
+
+#### Images
+
+We can write images one subarray at a time, if we want to. Here is an example of
+how you could go about it. First, create storage for the contiguous chunk we want
+to write at a time. For example, same we want to write a 32-bit floating-point image 
+with `[nRows][nCols]` pixels, and we want to write these one row at a time:
+
+First let's create storage for the chunk:
+
+```java
+  // An array to hold data for a chunk of the image...
+  float[] chunk = new float[nCols];
+```
+
+Next create a header. It's easiest to create it from the chunk, and then just
+modify the dimensions for the full image, e.g. as:
+
+```java
+  // Create an image HDU with the row 
+  BasicHDU hdu = Fits.makeHDU(row);
+  Header header = hdu.getHeader();
+
+  // Override the image dimensions in the header to describe the full image
+  ImageData.overrideHeaderAxes(header, nRow, nCol); 
+```
+
+Next, we can complete the header description adding whatever information we desire.
+Once complete, we'll write the image header to the output:
+
+```java
+  // Create a FITS and write to the image to it
+  FitsFile out = new FitsFile("image.fits", "rw");
+  header.write(out);
+```
+
+Now, we can start writing the image sata, iterating over the rows, populating our 
+chunk data in turn, and writing it out as we go.
+
+```java
+  // Iterate over the image rows
+  for (int i = 0; i < nRows; i++) {
+     // fill up the chunk with one row's worth of data
+     ...
+
+     // Write the row to the output
+     out.writeArray(chunk);
+  }
+```
+
+Finally, add the requisite padding to complete the FITS block of 2880 bytes
+after the end of the image data:
+
+```java
+  FitsUtil.pad(out, out.position());
+  out.close();
+```
+
+#### Tables
+We can do something pretty similar for tables __so long as we don't have variable length columns__, but 
+it requires a little more work.
+
+First we have to make sure we are not trying to write tables into the primary HDU of a FITS. Tables
+can only reside in extensions, and so we might need to create and write a dummy primary HDU to the
+FITS before we can write the table itself:
+
+```java
+  FitsFile out = new FitsFile("table.fits", "rw");
+
+  // Binary tables cannot be in the primary HDU of a FITS file
+  // So we must add a dummy primary HDU to the FITS first
+  new NullDataHDU().write(out);
+```
+
+Next, assume we have a binary table that we either read from an input, or else assembled ourselves
+(see further below on how to build binary tables):
+
+```java 
+  BinaryTable table = ...
+```
+
+Next, we will need to create an appropriate FITS header for the table:
+
+```java
+  Header header = new Header();
+  table.fillHeader(header);
+```
+
+We can now complete the header descriprtion as we see fit, with whatever optional entries. We can also
+save space for future additions, e.g. for values we will have only after we start writing the table
+data itself:
+
+```java
+   // Make space for at least 200 more header lines to be added later
+   header.ensureCardSpace(200);
+```
+
+Now, we can write out the header:
+
+```java
+   header.write(out);
+```
+
+Now, we can finally write regular table rows (without variable-length entries) in a loop. Assuming
+that out row is something like `{ { double[1] }, { byte[10] }, { float[256] }, ... }`: 
+
+```java
+  for (...) {
+     // Write data one element at the time into the buffer via the 
+     // rowStream. These must match the column structure of the table, 
+     // in terms of order, data types, and element counts. 
+
+     out.writeDouble(ra);
+     out.write(fixedLengthNameBytes);
+     out.witeArray(spectrum);
+     ...
+  }
+```
+
+Once we finish writing the table data, we must add the requisite padding to complete the FITS block of 2880 bytes
+after the table data ends. 
+
+```java
+  // Add padding to the file to complete the FITS block
+  FitsUtil.pad(out, nRowsWritten * table.getRegularRowSize());
+```
+
+After the table has been written, we can revisit the header if we need to update it with entries
+that were not available earlier:
+
+```java
+   // Re-write the header with the new information we added since we began writing 
+   // the table data
+   header.rewrite();
+```
+
+
 
 <a name="modifying-existing-files"></a>
 ## Modifying existing files
