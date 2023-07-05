@@ -249,7 +249,17 @@
 <a class="jxr_linenumber" name="L241" href="#L241">241</a>         FitsOutputStream out = <strong class="jxr_keyword">new</strong> FitsOutputStream(outputStream);
 <a class="jxr_linenumber" name="L242" href="#L242">242</a>         data.write(out);
 <a class="jxr_linenumber" name="L243" href="#L243">243</a>     }
-<a class="jxr_linenumber" name="L244" href="#L244">244</a> }
+<a class="jxr_linenumber" name="L244" href="#L244">244</a> 
+<a class="jxr_linenumber" name="L245" href="#L245">245</a>     @Test
+<a class="jxr_linenumber" name="L246" href="#L246">246</a>     <strong class="jxr_keyword">public</strong> <strong class="jxr_keyword">void</strong> testParseNullDataHeader() <strong class="jxr_keyword">throws</strong> Exception {
+<a class="jxr_linenumber" name="L247" href="#L247">247</a>         Header header = <strong class="jxr_keyword">new</strong> Header();
+<a class="jxr_linenumber" name="L248" href="#L248">248</a>         header.nullImage();
+<a class="jxr_linenumber" name="L249" href="#L249">249</a>         header.setNaxes(0);
+<a class="jxr_linenumber" name="L250" href="#L250">250</a>         ImageData data = <strong class="jxr_keyword">new</strong> ImageData(header);
+<a class="jxr_linenumber" name="L251" href="#L251">251</a>         Assert.assertEquals(0, data.getTrueSize());
+<a class="jxr_linenumber" name="L252" href="#L252">252</a>     }
+<a class="jxr_linenumber" name="L253" href="#L253">253</a> 
+<a class="jxr_linenumber" name="L254" href="#L254">254</a> }
 </pre>
 <hr/>
 <div id="footer">Copyright &#169; 1996&#x2013;2023 nom-tam-fits. All rights reserved.</div>

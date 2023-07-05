@@ -449,18 +449,26 @@
 <a class="jxr_linenumber" name="L441" href="#L441">441</a>         e.readImage(<strong class="jxr_keyword">new</strong> <strong class="jxr_keyword">boolean</strong>[10]);
 <a class="jxr_linenumber" name="L442" href="#L442">442</a>     }
 <a class="jxr_linenumber" name="L443" href="#L443">443</a> 
-<a class="jxr_linenumber" name="L444" href="#L444">444</a>     <strong class="jxr_keyword">private</strong> <strong class="jxr_keyword">static</strong> <strong class="jxr_keyword">class</strong> EOFExceptionInputReader <strong class="jxr_keyword">implements</strong> InputReader {
-<a class="jxr_linenumber" name="L445" href="#L445">445</a>         @Override
-<a class="jxr_linenumber" name="L446" href="#L446">446</a>         <strong class="jxr_keyword">public</strong> <strong class="jxr_keyword">int</strong> read(byte[] b, <strong class="jxr_keyword">int</strong> off, <strong class="jxr_keyword">int</strong> len) <strong class="jxr_keyword">throws</strong> IOException {
-<a class="jxr_linenumber" name="L447" href="#L447">447</a>             <strong class="jxr_keyword">return</strong> -1;
-<a class="jxr_linenumber" name="L448" href="#L448">448</a>         }
-<a class="jxr_linenumber" name="L449" href="#L449">449</a> 
-<a class="jxr_linenumber" name="L450" href="#L450">450</a>         @Override
-<a class="jxr_linenumber" name="L451" href="#L451">451</a>         <strong class="jxr_keyword">public</strong> <strong class="jxr_keyword">int</strong> read() <strong class="jxr_keyword">throws</strong> IOException {
-<a class="jxr_linenumber" name="L452" href="#L452">452</a>             <strong class="jxr_keyword">return</strong> -1;
-<a class="jxr_linenumber" name="L453" href="#L453">453</a>         }
-<a class="jxr_linenumber" name="L454" href="#L454">454</a>     }
-<a class="jxr_linenumber" name="L455" href="#L455">455</a> }
+<a class="jxr_linenumber" name="L444" href="#L444">444</a>     @Test
+<a class="jxr_linenumber" name="L445" href="#L445">445</a>     <strong class="jxr_keyword">public</strong> <strong class="jxr_keyword">void</strong> testReadZeroLengthImage() <strong class="jxr_keyword">throws</strong> Exception {
+<a class="jxr_linenumber" name="L446" href="#L446">446</a>         byte[] data = <strong class="jxr_keyword">new</strong> byte[100];
+<a class="jxr_linenumber" name="L447" href="#L447">447</a>         FitsDecoder e = <strong class="jxr_keyword">new</strong> FitsDecoder(InputReader.from(<strong class="jxr_keyword">new</strong> ByteArrayInputStream(data)));
+<a class="jxr_linenumber" name="L448" href="#L448">448</a>         e.readImage(<strong class="jxr_keyword">new</strong> byte[0]);
+<a class="jxr_linenumber" name="L449" href="#L449">449</a>         <em class="jxr_comment">// No exception</em>
+<a class="jxr_linenumber" name="L450" href="#L450">450</a>     }
+<a class="jxr_linenumber" name="L451" href="#L451">451</a> 
+<a class="jxr_linenumber" name="L452" href="#L452">452</a>     <strong class="jxr_keyword">private</strong> <strong class="jxr_keyword">static</strong> <strong class="jxr_keyword">class</strong> EOFExceptionInputReader <strong class="jxr_keyword">implements</strong> InputReader {
+<a class="jxr_linenumber" name="L453" href="#L453">453</a>         @Override
+<a class="jxr_linenumber" name="L454" href="#L454">454</a>         <strong class="jxr_keyword">public</strong> <strong class="jxr_keyword">int</strong> read(byte[] b, <strong class="jxr_keyword">int</strong> off, <strong class="jxr_keyword">int</strong> len) <strong class="jxr_keyword">throws</strong> IOException {
+<a class="jxr_linenumber" name="L455" href="#L455">455</a>             <strong class="jxr_keyword">return</strong> -1;
+<a class="jxr_linenumber" name="L456" href="#L456">456</a>         }
+<a class="jxr_linenumber" name="L457" href="#L457">457</a> 
+<a class="jxr_linenumber" name="L458" href="#L458">458</a>         @Override
+<a class="jxr_linenumber" name="L459" href="#L459">459</a>         <strong class="jxr_keyword">public</strong> <strong class="jxr_keyword">int</strong> read() <strong class="jxr_keyword">throws</strong> IOException {
+<a class="jxr_linenumber" name="L460" href="#L460">460</a>             <strong class="jxr_keyword">return</strong> -1;
+<a class="jxr_linenumber" name="L461" href="#L461">461</a>         }
+<a class="jxr_linenumber" name="L462" href="#L462">462</a>     }
+<a class="jxr_linenumber" name="L463" href="#L463">463</a> }
 </pre>
 <hr/>
 <div id="footer">Copyright &#169; 1996&#x2013;2023 nom-tam-fits. All rights reserved.</div>

@@ -94,8 +94,8 @@
 <a class="jxr_linenumber" name="L86" href="#L86">86</a>  <em class="jxr_javadoccomment">/**</em>
 <a class="jxr_linenumber" name="L87" href="#L87">87</a>  <em class="jxr_javadoccomment"> * (&lt;i&gt;for internal use&lt;/i&gt;) Standard implementation of the {@code ICompressorProvider} interface.</em>
 <a class="jxr_linenumber" name="L88" href="#L88">88</a>  <em class="jxr_javadoccomment"> */</em>
-<a class="jxr_linenumber" name="L89" href="#L89">89</a>  @SuppressWarnings(<span class="jxr_string">"javadoc"</span>)
-<a class="jxr_linenumber" name="L90" href="#L90">90</a>  <strong class="jxr_keyword">public</strong> <strong class="jxr_keyword">class</strong> <a name="CompressorProvider" href="../../../../../nom/tam/fits/compression/provider/CompressorProvider.html#CompressorProvider">CompressorProvider</a> <strong class="jxr_keyword">implements</strong> <a name="ICompressorProvider" href="../../../../../nom/tam/fits/compression/provider/api/ICompressorProvider.html#ICompressorProvider">ICompressorProvider</a> {
+<a class="jxr_linenumber" name="L89" href="#L89">89</a>  @SuppressWarnings({<span class="jxr_string">"javadoc"</span>, <span class="jxr_string">"deprecation"</span>})
+<a class="jxr_linenumber" name="L90" href="#L90">90</a>  <strong class="jxr_keyword">public</strong> <strong class="jxr_keyword">class</strong> CompressorProvider <strong class="jxr_keyword">implements</strong> <a name="ICompressorProvider" href="../../../../../nom/tam/fits/compression/provider/api/ICompressorProvider.html#ICompressorProvider">ICompressorProvider</a> {
 <a class="jxr_linenumber" name="L91" href="#L91">91</a>  
 <a class="jxr_linenumber" name="L92" href="#L92">92</a>      <em class="jxr_javadoccomment">/**</em>
 <a class="jxr_linenumber" name="L93" href="#L93">93</a>  <em class="jxr_javadoccomment">     * private implementation of the tile compression provider, all is based on the option based constructor of the</em>
@@ -282,7 +282,7 @@
 <a class="jxr_linenumber" name="L274" href="#L274">274</a>                 <strong class="jxr_keyword">return</strong> result;
 <a class="jxr_linenumber" name="L275" href="#L275">275</a>             }
 <a class="jxr_linenumber" name="L276" href="#L276">276</a>         }
-<a class="jxr_linenumber" name="L277" href="#L277">277</a>         <strong class="jxr_keyword">return</strong> <strong class="jxr_keyword">new</strong> <a name="CompressorProvider" href="../../../../../nom/tam/fits/compression/provider/CompressorProvider.html#CompressorProvider">CompressorProvider</a>().createCompressorControl(quantAlgorithm, compressionAlgorithm, baseType);
+<a class="jxr_linenumber" name="L277" href="#L277">277</a>         <strong class="jxr_keyword">return</strong> <strong class="jxr_keyword">new</strong> CompressorProvider().createCompressorControl(quantAlgorithm, compressionAlgorithm, baseType);
 <a class="jxr_linenumber" name="L278" href="#L278">278</a>     }
 <a class="jxr_linenumber" name="L279" href="#L279">279</a> 
 <a class="jxr_linenumber" name="L280" href="#L280">280</a>     @Override

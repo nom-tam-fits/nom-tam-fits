@@ -53,11 +53,11 @@
 <a class="jxr_linenumber" name="L45" href="#L45">45</a>  <strong class="jxr_keyword">import</strong> <strong class="jxr_keyword">static</strong> nom.tam.util.LoggerHelper.getLogger;
 <a class="jxr_linenumber" name="L46" href="#L46">46</a>  
 <a class="jxr_linenumber" name="L47" href="#L47">47</a>  <em class="jxr_javadoccomment">/**</em>
-<a class="jxr_linenumber" name="L48" href="#L48">48</a>  <em class="jxr_javadoccomment"> * Decompression of compressed FITS files of all supported types (&lt;code&gt;.gz&lt;/code&gt;, &lt;code&gt;.Z&lt;/code&gt;, &lt;code&gt;.bz2&lt;/code&gt;).</em>
-<a class="jxr_linenumber" name="L49" href="#L49">49</a>  <em class="jxr_javadoccomment"> * It autodetects the type of compression used based on the first 2-bytes of the compressed input stream. When possible,</em>
-<a class="jxr_linenumber" name="L50" href="#L50">50</a>  <em class="jxr_javadoccomment"> * preference will be given to perform the decompression using a system command (&lt;code&gt;uncompress&lt;/code&gt; or</em>
-<a class="jxr_linenumber" name="L51" href="#L51">51</a>  <em class="jxr_javadoccomment"> * &lt;code&gt;bzip2&lt;/code&gt;, which are likely faster for large files). If such a tool is not available, then the Apache</em>
-<a class="jxr_linenumber" name="L52" href="#L52">52</a>  <em class="jxr_javadoccomment"> * &lt;b&gt;common-compress&lt;/b&gt; classes will be used to the same effect.</em>
+<a class="jxr_linenumber" name="L48" href="#L48">48</a>  <em class="jxr_javadoccomment"> * (&lt;i&gt;for internal use&lt;/i&gt;) Decompression of compressed FITS files of all supported types (&lt;code&gt;.gz&lt;/code&gt;,</em>
+<a class="jxr_linenumber" name="L49" href="#L49">49</a>  <em class="jxr_javadoccomment"> * &lt;code&gt;.Z&lt;/code&gt;, &lt;code&gt;.bz2&lt;/code&gt;). It autodetects the type of compression used based on the first 2-bytes of the</em>
+<a class="jxr_linenumber" name="L50" href="#L50">50</a>  <em class="jxr_javadoccomment"> * compressed input stream. When possible, preference will be given to perform the decompression using a system command</em>
+<a class="jxr_linenumber" name="L51" href="#L51">51</a>  <em class="jxr_javadoccomment"> * (&lt;code&gt;uncompress&lt;/code&gt; or &lt;code&gt;bzip2&lt;/code&gt;, which are likely faster for large files). If such a tool is not</em>
+<a class="jxr_linenumber" name="L52" href="#L52">52</a>  <em class="jxr_javadoccomment"> * available, then the Apache &lt;b&gt;common-compress&lt;/b&gt; classes will be used to the same effect.</em>
 <a class="jxr_linenumber" name="L53" href="#L53">53</a>  <em class="jxr_javadoccomment"> * </em>
 <a class="jxr_linenumber" name="L54" href="#L54">54</a>  <em class="jxr_javadoccomment"> * @see GZipCompressionProvider</em>
 <a class="jxr_linenumber" name="L55" href="#L55">55</a>  <em class="jxr_javadoccomment"> * @see BZip2CompressionProvider</em>

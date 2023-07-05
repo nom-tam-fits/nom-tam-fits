@@ -558,7 +558,7 @@
 <a class="jxr_linenumber" name="L550" href="#L550">550</a> 
 <a class="jxr_linenumber" name="L551" href="#L551">551</a>         FitsFactory.setUseAsciiTables(false);
 <a class="jxr_linenumber" name="L552" href="#L552">552</a> 
-<a class="jxr_linenumber" name="L553" href="#L553">553</a>         BinaryTableHDU hdu = (BinaryTableHDU) FitsFactory.hduFactory(<strong class="jxr_keyword">new</strong> String[2][3][3]);
+<a class="jxr_linenumber" name="L553" href="#L553">553</a>         BinaryTableHDU hdu = (BinaryTableHDU) FitsFactory.hduFactory(<strong class="jxr_keyword">new</strong> Object[] {<strong class="jxr_keyword">new</strong> <strong class="jxr_keyword">int</strong>[2], <strong class="jxr_keyword">new</strong> <strong class="jxr_keyword">int</strong>[2][2]});
 <a class="jxr_linenumber" name="L554" href="#L554">554</a>         base.addColumnsToTable(hdu);
 <a class="jxr_linenumber" name="L555" href="#L555">555</a>         <strong class="jxr_keyword">int</strong>[] column = (<strong class="jxr_keyword">int</strong>[]) hdu.getColumn(Compression.ZBLANK_COLUMN);
 <a class="jxr_linenumber" name="L556" href="#L556">556</a>         Assert.assertArrayEquals(<strong class="jxr_keyword">new</strong> <strong class="jxr_keyword">int</strong>[] {99, 0}, column);
