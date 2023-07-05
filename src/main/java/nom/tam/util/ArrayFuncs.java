@@ -283,26 +283,26 @@ public final class ArrayFuncs {
         if (o == null) {
             return null;
         }
+
         if (!o.getClass().isArray()) {
             return genericClone(o);
         }
+
+        if (o instanceof Object[]) {
+            Object[] array = (Object[]) o;
+            Object[] copy = (Object[]) ArrayFuncs.newInstance(array.getClass().getComponentType(), array.length);
+            // Now fill in the next level down by recursion.
+            for (int i = 0; i < array.length; i++) {
+                copy[i] = deepClone(array[i]);
+            }
+            return copy;
+        }
+
+        // Must be primitive array...
         // Check if this is a 1D primitive array.
-        if (o.getClass().getComponentType().isPrimitive()) {
-            int length = Array.getLength(o);
-            Object result = Array.newInstance(o.getClass().getComponentType(), length);
-            System.arraycopy(o, 0, result, 0, length);
-            return result;
-        }
-        // Get the base type.
-        Class<?> baseClass = getBaseClass(o);
-        // Allocate the array but make all but the first dimension 0.
-        int[] dims = getDimensions(o);
-        Arrays.fill(dims, 1, dims.length, 0);
-        Object copy = ArrayFuncs.newInstance(baseClass, dims);
-        // Now fill in the next level down by recursion.
-        for (int i = 0; i < dims[0]; i++) {
-            Array.set(copy, i, deepClone(Array.get(o, i)));
-        }
+        int length = Array.getLength(o);
+        Object copy = Array.newInstance(o.getClass().getComponentType(), length);
+        System.arraycopy(o, 0, copy, 0, length);
         return copy;
     }
 
@@ -373,7 +373,7 @@ public final class ArrayFuncs {
      */
     public static Object getBaseArray(Object o) {
         if (o instanceof Object[]) {
-            return getBaseArray(Array.get(o, 0));
+            return getBaseArray(((Object[]) o)[0]);
         }
         return o;
     }
@@ -631,9 +631,10 @@ public final class ArrayFuncs {
         }
 
         Class<?> type = null;
+        Object[] array = (Object[]) o;
 
         for (int i = 0; i < dim[0]; i++) {
-            Object e = Array.get(o, i);
+            Object e = array[i];
 
             if (e == null) {
                 if (allowNulls) {

@@ -184,6 +184,14 @@ public class BinaryTable extends AbstractTableData implements Cloneable {
                 isComplex = true;
             } else if (base.isPrimitive()) {
                 fitsBase = type;
+                if (base == char.class && FitsFactory.isUseUnicodeChars()) {
+                    LOG.warning("char[] will be written as 16-bit integers (type 'I'), not as a ASCII bytes (type 'A')"
+                            + " in the binary table. If that is not what you want, you should set FitsFactory.setUseUnicodeChars(false).");
+                    LOG.warning(
+                            "Future releases will disable Unicode support by default as it is not supported by the FITS standard."
+                                    + " If you do want it still, use FitsFactory.setUseUnicodeChars(true) explicitly to keep the non-standard "
+                                    + " behavior as is.");
+                }
             } else {
                 throw new TableException("Columns of type " + base + " are not supported.");
             }
@@ -1099,12 +1107,6 @@ public class BinaryTable extends AbstractTableData implements Cloneable {
             } else if (base == char.class) {
                 if (FitsFactory.isUseUnicodeChars()) {
                     tform.append('I');
-                    LOG.warning(
-                            "char[] will be written as 16-bit integers (type 'I'), not as a FITS character array (type 'A')"
-                                    + " in the binary table. If that is not what you want, you should set FitsFactory.setUseUnicodeChars(false).");
-                    LOG.warning("Future releases will disable Unicode support by default as it is not FITS standard."
-                            + " If you do want it still, use FitsFactory.setUseUnicodeChars(true) explicitly to keep the non-standard "
-                            + " behavior as is.");
                 } else {
                     tform.append('A');
                 }
