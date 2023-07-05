@@ -77,7 +77,7 @@ jobs:
       working-directory: ./nom-tam-fits
         
     - name: Check ppackage
-      run: mvn package -Ppublic-api
+      run: mvn package
       working-directory: ./nom-tam-fits
         
   release:

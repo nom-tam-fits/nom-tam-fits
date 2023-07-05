@@ -22,11 +22,6 @@
       <action type="fix" dev="attipaci" issue="445">
 	      Consistent String return for both fixed and variable-length string columns in binary tables.
       </action>
-      <action type="fix" dev="attipaci" issue="445">
-	      Disable automatic (and inconsistent) detection of complex data, when adding real-valued data 
-	      columns to a binary table. Users should call BinaryTable.setComplexColumn() to explicitly
-	      select if pairwise real values should be converted to complex. 
-      </action>
       <action type="fix" dev="attipaci" issue="456">
 	      Fixed compressed table tiling with tile sizes that do not divide the table rows.
       </action>
@@ -48,10 +43,10 @@
       <action type="add" dev="attipaci" issue="183">
 	      Added support for ComplexValue-based column in BinaryTable 
       </action>
-      <action type="add" dev="attipaci" issue="185">
+      <action type="add" dev="attipaci" issue="450">
 	      Added support for bit-based columns (FITS type 'X') in binary tables. 
       </action>
-      <action type="add" dev="attipaci" issue="185">
+      <action type="add" dev="attipaci" issue="451">
 	      Added support for null (undefined) logical values for FITS logical columns in binary tables. 
       </action>
       <action type="add" dev="attipaci" issue="448">
@@ -59,12 +54,12 @@
               and automatic type conversion (both narrowing and widening) for singleton values when possible.
               Many new BinaryTable methods to make it easier to build and use binary tables.
       </action>
-      <action type="add" dev="attipaci" issue="448">
-              Binary table access and editing directly in file, when getting or setting table elements in
-              deferred-read mode.
+      <action type="add" dev="attipaci" issue="437">
+	      Allow accessing binary table elements / rows directly from file in deferred read mode.
+	      The README for reading binary tables has been updated accordingly.
       </action>
       <action type="add" dev="attipaci" issue="453">
-      	      Heap defragmenting to expunge stale heap data, and optimizing heap area for best sequential
+      	      Allow defragmenting heaps to expunge stale data, and to optimize heap area for best sequential
       	      read performance.
       </action>
       <action type="add" dev="attipaci" issue="452">
@@ -83,7 +78,7 @@
 	      Improved dithering performance by calculating random sequence only once, and more efficiently.
       </action>
       <action type="update" dev="attipaci" issue="441">
-              Significantly faster table access and row additions.
+              Significantly faster table data access and row additions.
       </action>
       <action type="update" dev="attipaci" issue="207">
 	      Unified deferred read implementation for all Data classes.
@@ -98,22 +93,23 @@
 	      some older existing data files in that format. If there is ever a need to create new random group 
 	      HDUs, you can do it explicitly via RandomGroupsHDU.createFrom(Object[][]). 
       </action>
+      <action type="update" dev="attipaci" issue="446">
+	      Disable automatic (and inconsistent) detection of complex binary table data, when adding 
+	      real-valued data columns to a binary table. Users should call BinaryTable.setComplexColumn() 
+	      explicitly if pairwise real values should be converted to complex. 
+      </action>
       <action type="update" dev="attipaci" issue="209">
 	      FitsUtil.reposition() deprecated and changed to take FitsIO argument to match usage.
-      </action>
-      <action type="update" dev="attipaci" issue="437">
-	      Allow accessing binary table elements / rows directly from file in deferred read mode.
-	      The README for reading binary tables has been updated accordingly.
       </action>
       <action type="update" dev="attipaci" issue="447">
               Check data consistency when adding or setting data in binary tables.
       </action>
       <action type="update" dev="attipaci" issue="454">
-              Do not use ASCII NUL (0x00) for padding between string array elements, since it violates the
-              FITS standard, in which an ASCII NUL terminates the entire string array entry.
+              Do not use ASCII NUL (0x00) for padding between string array elements in binary tables, since it 
+              violates the FITS standard, in which an ASCII NUL terminates the entire string array entry.
       </action>
       <action type="update" dev="attipaci" issue="131">
-	      Tables now support up to ~2-billion rows regardless of entry size,
+	      Tables now support up to ~2-billion rows regardless of entry size.
       </action>
       <action type="update" dev="attipaci" issue="394">
 	      Various tweaks to FitsDate that should not affect user behavior.
