@@ -828,7 +828,7 @@ before writing out binary tables to a file or stream:
 just before calling `write()`.
  
 
-<a name="building-by-row"></a>
+<a name="building-by-column"></a>
 ### Buiding tables row-by-row
 
 As of 1.18 building tables one row at a time is both easy and efficient -- and may be the least confusing way to get
