@@ -164,13 +164,14 @@ public abstract class InputDecoder {
      * If not enough bytes are avaialable in the file to deliver the reqauested number of bytes the buffer, an
      * {@link EOFException} will be thrown.
      *
-     * @param  b           the buffer
-     * @param  off         the buffer index at which to start reading data
-     * @param  len         the total number of bytes to read.
+     * @param  b            the buffer
+     * @param  off          the buffer index at which to start reading data
+     * @param  len          the total number of bytes to read.
      *
-     * @throws IOException if there was an IO error before the requested number of bytes could all be read.
+     * @throws EOFException if already at the end of file.
+     * @throws IOException  if there was an IO error before the requested number of bytes could all be read.
      */
-    protected void readFully(byte[] b, int off, int len) throws IOException {
+    protected void readFully(byte[] b, int off, int len) throws EOFException, IOException {
         while (len > 0) {
             int n = read(b, off, len);
             if (n < 0) {
@@ -187,8 +188,8 @@ public abstract class InputDecoder {
      *
      * @param  o                        the array, including multi-dimensional, and heterogeneous arrays of arrays.
      *
-     * @throws IOException              if there was an IO error, uncluding end-of-file ( {@link EOFException}, before
-     *                                      all components of the supplied array were populated from the input.
+     * @throws EOFException             if already at the end of file.
+     * @throws IOException              if there was an IO error
      * @throws IllegalArgumentException if the argument is not a Java array, or is or contains elements that do not have
      *                                      supported conversions from binary representation.
      *
@@ -224,8 +225,8 @@ public abstract class InputDecoder {
      *
      * @throws IllegalArgumentException if the argument is not an array or if it contains an element that is not
      *                                      supported.
-     * @throws IOException              if there was an IO error, uncluding end-of-file ( {@link EOFException}, before
-     *                                      all components of the supplied array were populated from the input.
+     * @throws EOFException             if already at the end of file.
+     * @throws IOException              if there was an IO error
      *
      * @see                             #readArrayFully(Object)
      *
@@ -432,7 +433,7 @@ public abstract class InputDecoder {
         }
 
         /**
-         * Set the number of bytes we can buffer from the input for subsequent rettrieval from this buffer. The get
+         * Set the number of bytes we can buffer from the input for subsequent retrieval from this buffer. The get
          * methods of this class will be ensured not to fetch data from the input beyond the requested size.
          *
          * @param n    the number of elements we can read and buffer from the input

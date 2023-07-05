@@ -113,7 +113,8 @@ public class FitsDecoder extends InputDecoder {
     }
 
     /**
-     * @deprecated              Low-level reading/writing should be handled internally as arrays by this library only.
+     * @deprecated              (<i>for internal use</i>) Low-level reading/writing should be handled internally as
+     *                              arrays by this library only.
      *
      * @return                  the next boolean value from the input.
      *
@@ -126,7 +127,8 @@ public class FitsDecoder extends InputDecoder {
     }
 
     /**
-     * @deprecated              Low-level reading/writing should be handled internally as arrays by this library only.
+     * @deprecated              (<i>for internal use</i>) Low-level reading/writing should be handled internally as
+     *                              arrays by this library only.
      *
      * @return                  the next character value from the input.
      *
@@ -143,7 +145,8 @@ public class FitsDecoder extends InputDecoder {
     }
 
     /**
-     * @deprecated             Low-level reading/writing should be handled internally as arrays by this library only.
+     * @deprecated             (<i>for internal use</i>) Low-level reading/writing should be handled internally as
+     *                             arrays by this library only.
      *
      * @return                 the next byte the input.
      *
@@ -159,7 +162,8 @@ public class FitsDecoder extends InputDecoder {
     }
 
     /**
-     * @deprecated             Low-level reading/writing should be handled internally as arrays by this library only.
+     * @deprecated             (<i>for internal use</i>) Low-level reading/writing should be handled internally as
+     *                             arrays by this library only.
      *
      * @return                 the next unsigned byte from the input, or -1 if there is no more bytes available.
      *
@@ -171,7 +175,8 @@ public class FitsDecoder extends InputDecoder {
     }
 
     /**
-     * @deprecated              Low-level reading/writing should be handled internally as arrays by this library only.
+     * @deprecated              (<i>for internal use</i>) Low-level reading/writing should be handled internally as
+     *                              arrays by this library only.
      *
      * @return                  the next 16-bit integer value from the input.
      *
@@ -188,7 +193,8 @@ public class FitsDecoder extends InputDecoder {
     }
 
     /**
-     * @deprecated             Low-level reading/writing should be handled internally as arrays by this library only.
+     * @deprecated             (<i>for internal use</i>) Low-level reading/writing should be handled internally as
+     *                             arrays by this library only.
      *
      * @return                 the next unsigned 16-bit integer value from the input, or -1 if reached the end of stream
      *
@@ -201,7 +207,8 @@ public class FitsDecoder extends InputDecoder {
     }
 
     /**
-     * @deprecated              Low-level reading/writing should be handled internally as arrays by this library only.
+     * @deprecated              (<i>for internal use</i>) Low-level reading/writing should be handled internally as
+     *                              arrays by this library only.
      *
      * @return                  the next 32-bit integer value from the input.
      *
@@ -215,7 +222,8 @@ public class FitsDecoder extends InputDecoder {
     }
 
     /**
-     * @deprecated              Low-level reading/writing should be handled internally as arrays by this library only.
+     * @deprecated              (<i>for internal use</i>) Low-level reading/writing should be handled internally as
+     *                              arrays by this library only.
      *
      * @return                  the next 64-bit integer value from the input.
      *
@@ -229,7 +237,8 @@ public class FitsDecoder extends InputDecoder {
     }
 
     /**
-     * @deprecated              Low-level reading/writing should be handled internally as arrays by this library only.
+     * @deprecated              (<i>for internal use</i>) Low-level reading/writing should be handled internally as
+     *                              arrays by this library only.
      *
      * @return                  the next single-precision (32-bit) floating point value from the input.
      *
@@ -243,7 +252,8 @@ public class FitsDecoder extends InputDecoder {
     }
 
     /**
-     * @deprecated              Low-level reading/writing should be handled internally as arrays by this library only.
+     * @deprecated              (<i>for internal use</i>) Low-level reading/writing should be handled internally as
+     *                              arrays by this library only.
      *
      * @return                  the next double-precision (64-bit) floating point value from the input.
      *
@@ -257,7 +267,8 @@ public class FitsDecoder extends InputDecoder {
     }
 
     /**
-     * @deprecated              Low-level reading/writing should be handled internally as arrays by this library only.
+     * @deprecated              (<i>for internal use</i>) Low-level reading/writing should be handled internally as
+     *                              arrays by this library only.
      *
      * @return                  the next line of 1-byte ASCII characters, terminated by a LF or EOF.
      *
@@ -305,7 +316,7 @@ public class FitsDecoder extends InputDecoder {
         byte[] ascii = new byte[length];
         length = read(ascii, 0, length);
 
-        if (length <= 0) {
+        if (length < 0) {
             throw new EOFException();
         }
 
@@ -338,7 +349,7 @@ public class FitsDecoder extends InputDecoder {
         byte[] ascii = new byte[length];
         length = read(ascii, 0, length);
 
-        if (length <= 0) {
+        if (length < 0) {
             throw new EOFException();
         }
 

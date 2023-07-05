@@ -117,6 +117,7 @@ public class StreamingTileImageData extends ImageData {
         return Arrays.copyOf(steps, steps.length);
     }
 
+    @SuppressWarnings("deprecation")
     @Override
     public void write(ArrayDataOutput o) throws FitsException {
         try {

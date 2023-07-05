@@ -80,7 +80,11 @@ public final class ArrayFuncs {
      * @since         1.18
      */
     public static void copy(Object src, int srcPos, Object dest, int destPos, int length, int step) {
-        if (src instanceof Object[] && dest instanceof Object[]) {
+        if (!dest.getClass().equals(src.getClass())) {
+            throw new IllegalArgumentException("Mismatched types: src " + src.getClass() + ", dst " + dest.getClass());
+        }
+
+        if (src instanceof Object[]) {
             final Object[] from = (Object[]) src;
             final Object[] to = (Object[]) dest;
             int toIndex = 0;
@@ -245,10 +249,10 @@ public final class ArrayFuncs {
             return null;
         }
         if (!input.getClass().isArray()) {
-            throw new RuntimeException("Attempt to curl a non-array");
+            throw new IllegalArgumentException("Attempt to curl a non-array: " + input.getClass());
         }
         if (input.getClass().getComponentType().isArray()) {
-            throw new RuntimeException("Attempt to curl non-1D array");
+            throw new IllegalArgumentException("Attempt to curl non-1D array: " + input.getClass());
         }
         int size = Array.getLength(input);
         int test = 1;
@@ -256,7 +260,8 @@ public final class ArrayFuncs {
             test *= dimen;
         }
         if (test != size) {
-            throw new RuntimeException("Curled array does not fit desired dimensions");
+            throw new IllegalStateException("Curled array does not fit desired dimensions: " + size + ", expected " + test
+                    + " (" + getBaseClass(input) + ")");
         }
         Object newArray = ArrayFuncs.newInstance(getBaseClass(input), dimens);
         MultiArrayCopier.copyInto(input, newArray);
@@ -278,26 +283,26 @@ public final class ArrayFuncs {
         if (o == null) {
             return null;
         }
+
         if (!o.getClass().isArray()) {
             return genericClone(o);
         }
+
+        if (o instanceof Object[]) {
+            Object[] array = (Object[]) o;
+            Object[] copy = (Object[]) ArrayFuncs.newInstance(array.getClass().getComponentType(), array.length);
+            // Now fill in the next level down by recursion.
+            for (int i = 0; i < array.length; i++) {
+                copy[i] = deepClone(array[i]);
+            }
+            return copy;
+        }
+
+        // Must be primitive array...
         // Check if this is a 1D primitive array.
-        if (o.getClass().getComponentType().isPrimitive()) {
-            int length = Array.getLength(o);
-            Object result = Array.newInstance(o.getClass().getComponentType(), length);
-            System.arraycopy(o, 0, result, 0, length);
-            return result;
-        }
-        // Get the base type.
-        Class<?> baseClass = getBaseClass(o);
-        // Allocate the array but make all but the first dimension 0.
-        int[] dims = getDimensions(o);
-        Arrays.fill(dims, 1, dims.length, 0);
-        Object copy = ArrayFuncs.newInstance(baseClass, dims);
-        // Now fill in the next level down by recursion.
-        for (int i = 0; i < dims[0]; i++) {
-            Array.set(copy, i, deepClone(Array.get(o, i)));
-        }
+        int length = Array.getLength(o);
+        Object copy = Array.newInstance(o.getClass().getComponentType(), length);
+        System.arraycopy(o, 0, copy, 0, length);
         return copy;
     }
 
@@ -309,6 +314,14 @@ public final class ArrayFuncs {
      * @param  input The input array.
      */
     public static Object flatten(Object input) {
+        if (input == null) {
+            return null;
+        }
+
+        if (!input.getClass().isArray()) {
+            return input;
+        }
+
         int[] dimens = getDimensions(input);
         if (dimens.length <= 1) {
             return input;
@@ -360,7 +373,7 @@ public final class ArrayFuncs {
      */
     public static Object getBaseArray(Object o) {
         if (o instanceof Object[]) {
-            return getBaseArray(Array.get(o, 0));
+            return getBaseArray(((Object[]) o)[0]);
         }
         return o;
     }
@@ -535,11 +548,20 @@ public final class ArrayFuncs {
      *
      * @param      o the array to count elements in
      *
-     * @deprecated   May silently underestimate size if number is &gt; 2 G.
+     * @deprecated   Use the more aptly named {@link #countElements(Object)} instead.
      */
-    @Deprecated
     public static long nLElements(Object o) {
+        return countElements(o);
+    }
 
+    /**
+     * @return   Count the number of elements in an array.
+     *
+     * @param  o the array to count elements in
+     * 
+     * @since    1.18
+     */
+    public static long countElements(Object o) {
         if (o == null) {
             return 0;
         }
@@ -550,7 +572,6 @@ public final class ArrayFuncs {
                 count += nLElements(e);
             }
             return count;
-
         }
 
         if (o.getClass().isArray()) {
@@ -575,6 +596,202 @@ public final class ArrayFuncs {
             result[len - i - 1] = indices[i];
         }
         return result;
+    }
+
+    /**
+     * Checks that an array has a regular structure, with a consistent shape and element types, and returns the regular
+     * array size or else throws an exeption. Optionally, it will also throw an exception if any or all all elements are
+     * <code>null</code>.
+     * 
+     * @param  o                        An array object
+     * @param  allowNulls               If we should tolerate <code>null</code> entries.
+     * 
+     * @return                          the regular shape of the array with sizes along each array dimension.
+     * 
+     * @throws NullPointerException     if the argument is <code>null</code>.
+     * @throws IllegalArgumentException if the array contains mismatched elements in size, or contains <code>null</code>
+     *                                      values.
+     * @throws ClassCastException       if the array contain a heterogeneous collection of different element types.
+     * 
+     * @since                           1.18
+     */
+    public static int[] checkRegularArray(Object o, boolean allowNulls)
+            throws NullPointerException, IllegalArgumentException, ClassCastException {
+        if (!o.getClass().isArray()) {
+            throw new IllegalArgumentException("Not an array: " + o.getClass());
+        }
+
+        if (o.getClass().getComponentType().isPrimitive()) {
+            return new int[] {Array.getLength(o)};
+        }
+
+        int[] dim = getDimensions(o);
+        if (dim[0] == 0) {
+            return dim;
+        }
+
+        Class<?> type = null;
+        Object[] array = (Object[]) o;
+
+        for (int i = 0; i < dim[0]; i++) {
+            Object e = array[i];
+
+            if (e == null) {
+                if (allowNulls) {
+                    continue;
+                }
+                throw new IllegalArgumentException("Entry at index " + i + " is null");
+            }
+
+            if (type == null) {
+                type = e.getClass();
+            } else if (!e.getClass().equals(type)) {
+                throw new ClassCastException(
+                        "Mismatched component type at index " + i + ": " + e.getClass() + ", expected " + type);
+            }
+
+            if (e.getClass().isArray()) {
+                int[] sub = checkRegularArray(e, allowNulls);
+
+                if (sub.length + 1 != dim.length) {
+                    throw new IllegalArgumentException("Mismatched component dimension at index " + i + ": " + sub.length
+                            + ", expected " + (dim.length - 1));
+                }
+
+                if (sub[0] != dim[1]) {
+                    throw new IllegalArgumentException(
+                            "Mismatched component size at index " + i + ": " + sub[0] + ", expected " + dim[0]);
+                }
+            }
+        }
+
+        return dim;
+    }
+
+    /**
+     * Converts complex value(s) count to <code>float[2]</code> or <code>double[2]</code> or arrays thereof, which
+     * maintain the shape of the original input array (if applicable).
+     * 
+     * @param  o                        one of more complex values
+     * @param  decimalType              <code>float.class</code> or <code>double.class</code> (all other values default
+     *                                      to as if <code>double.class</code> was used.
+     * 
+     * @return                          an array of <code>float[2]</code> or <code>double[2]</code>, or arrays thereof.
+     * 
+     * @throws IllegalArgumentException if the argument is not suitable for conversion to complex values.
+     * 
+     * @see                             #decimalsToComplex(Object)
+     * 
+     * @since                           1.18
+     */
+    public static Object complexToDecimals(Object o, Class<?> decimalType) {
+
+        if (o instanceof ComplexValue) {
+            ComplexValue z = (ComplexValue) o;
+            if (float.class.equals(decimalType)) {
+                return new float[] {(float) z.re(), (float) z.im()};
+            }
+            return new double[] {z.re(), z.im()};
+        }
+
+        if (o instanceof ComplexValue[]) {
+            ComplexValue[] z = (ComplexValue[]) o;
+
+            if (float.class.equals(decimalType)) {
+                float[][] f = new float[z.length][];
+                for (int i = 0; i < z.length; i++) {
+                    f[i] = (float[]) complexToDecimals(z[i], decimalType);
+                }
+                return f;
+            }
+
+            double[][] d = new double[z.length][];
+            for (int i = 0; i < z.length; i++) {
+                d[i] = (double[]) complexToDecimals(z[i], decimalType);
+            }
+            return d;
+        }
+
+        if (o instanceof Object[]) {
+            Object[] array = (Object[]) o;
+            Object[] z = null;
+
+            for (int i = 0; i < array.length; i++) {
+                Object e = complexToDecimals(array[i], decimalType);
+                if (z == null) {
+                    z = (Object[]) Array.newInstance(e.getClass(), array.length);
+                }
+                z[i] = e;
+            }
+
+            return z;
+        }
+
+        throw new IllegalArgumentException("Cannot convert to complex values: " + o.getClass().getName());
+    }
+
+    /**
+     * Converts real-valued arrays of even element count to a {@link ComplexValue} or arrays thereof. The size and shape
+     * is otherwise maintained, apart from coalescing pairs of real values into <code>ComplexValue</code> objects.
+     * 
+     * @param  array                    an array of <code>float</code> or <code>double</code> elements containing an
+     *                                      even number of elements at the last dimension
+     * 
+     * @return                          one of more complex values
+     * 
+     * @throws IllegalArgumentException if the argument is not suitable for conversion to complex values.
+     * 
+     * @see                             #complexToDecimals(Object, Class)
+     * 
+     * @since                           1.18
+     */
+    public static Object decimalsToComplex(Object array) throws IllegalArgumentException {
+        if (array instanceof float[]) {
+            float[] f = (float[]) array;
+            if (f.length % 2 == 1) {
+                throw new IllegalArgumentException("Odd number floats for complex conversion: " + f.length);
+            }
+            if (f.length == 2) {
+                return new ComplexValue(f[0], f[1]);
+            }
+            ComplexValue[] z = new ComplexValue[f.length >>> 1];
+            for (int i = 0; i < f.length; i += 2) {
+                z[i >> 1] = new ComplexValue(f[i], f[i + 1]);
+            }
+            return z;
+        }
+
+        if (array instanceof double[]) {
+            double[] d = (double[]) array;
+            if (d.length % 2 == 1) {
+                throw new IllegalArgumentException("Odd number floats for complex conversion: " + d.length);
+            }
+            if (d.length == 2) {
+                return new ComplexValue(d[0], d[1]);
+            }
+            ComplexValue[] z = new ComplexValue[d.length >>> 1];
+            for (int i = 0; i < d.length; i += 2) {
+                z[i >> 1] = new ComplexValue(d[i], d[i + 1]);
+            }
+            return z;
+        }
+
+        if (array instanceof Object[]) {
+            Object[] o = (Object[]) array;
+            Object[] z = null;
+
+            for (int i = 0; i < o.length; i++) {
+                Object e = decimalsToComplex(o[i]);
+                if (z == null) {
+                    z = (Object[]) Array.newInstance(e.getClass(), o.length);
+                }
+                z[i] = e;
+            }
+
+            return z;
+        }
+
+        throw new IllegalArgumentException("Cannot convert to complex values: " + array.getClass().getName());
     }
 
 }

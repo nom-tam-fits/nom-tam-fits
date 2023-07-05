@@ -111,11 +111,10 @@ public class FitsHeap implements FitsElement {
     }
 
     /**
-     * Gets data for a Java array from the heap. The array may be a multi-dimensional or a heterogenetous array of
-     * arrays.
+     * Gets data for a Java array from the heap. The array may be a multi-dimensional array of arrays.
      *
      * @param  offset        the heap byte offset at which the data begins.
-     * @param  array         The array to be extracted.
+     * @param  array         The array of primitives to be extracted.
      *
      * @throws FitsException if the operation failed
      */
@@ -124,7 +123,8 @@ public class FitsHeap implements FitsElement {
             store.position(offset);
             decoder.readArrayFully(array);
         } catch (Exception e) {
-            throw new FitsException("Error decoding heap area at offset=" + offset + ".", e);
+            throw new FitsException("Error decoding heap area at offset=" + offset + ", size="
+                    + FitsEncoder.computeSize(array) + " (size " + size() + "): " + e.getMessage(), e);
         }
     }
 
@@ -139,24 +139,60 @@ public class FitsHeap implements FitsElement {
     }
 
     /**
-     * Add some data to the heap.
+     * Puts data to the end of the heap.
+     * 
+     * @param  data a primitive array object, which may be multidimensional
+     * 
+     * @return      the number of bytes used by the data.
+     * 
+     * @see         #putData(Object, long)
+     * @see         #getData(int, Object)
      */
-    int putData(Object data) throws FitsException {
-        long lsize = store.length() + FitsEncoder.computeSize(data);
+    long putData(Object data) throws FitsException {
+        return putData(data, store.length());
+    }
+
+    /**
+     * Puts data onto the heap at a specific heap position.
+     * 
+     * @param  data a primitive array object, which may be multidimensional
+     * @param  pos  the byte offset at which the data should begin.
+     * 
+     * @return      the number of bytes used by the data.
+     * 
+     * @see         #putData(Object, long)
+     * @see         #getData(int, Object)
+     */
+    long putData(Object data, long pos) throws FitsException {
+        long lsize = pos + FitsEncoder.computeSize(data);
         if (lsize > Integer.MAX_VALUE) {
             throw new FitsException("FITS Heap > 2 G");
         }
 
-        int oldSize = (int) store.length();
-
         try {
-            store.position(oldSize);
+            store.position(pos);
             encoder.writeArray(data);
         } catch (Exception e) {
-            throw new FitsException("Unable to write variable column length data", e);
+            throw new FitsException("Unable to write variable column length data: " + e.getMessage(), e);
         }
 
-        return oldSize;
+        return store.position() - pos;
+    }
+
+    /**
+     * Copies a segment of data from another heap to the end of this heap
+     * 
+     * @param  src    the heap to source data from
+     * @param  offset the byte offset of the data in the source heap
+     * @param  len    the number of bytes to copy
+     * 
+     * @return        the position of the copied data in this heap.
+     */
+    int copyFrom(FitsHeap src, int offset, int len) {
+        int pos = (int) store.length();
+        System.arraycopy(src.store.getBuffer(), offset, store.getBuffer(), pos, len);
+        store.setLength(pos + len);
+        return pos;
     }
 
     @SuppressFBWarnings(value = "RR_NOT_CHECKED", justification = "this read will never return less than the requested length")

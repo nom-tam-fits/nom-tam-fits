@@ -1,6 +1,6 @@
 /**
  * <p>
- * Support for the registed <a href="https://fits.gsfc.nasa.gov/registry/hierarch_keyword.html">hierarchical keyword
+ * Support for the registered <a href="https://fits.gsfc.nasa.gov/registry/hierarch_keyword.html">hierarchical keyword
  * convention</a>. It's weird that it has its own package, when really it should have been with hte other conventions
  * (registered or not), but that's life.
  * </p>

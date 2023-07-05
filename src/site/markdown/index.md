@@ -10,6 +10,7 @@
  - [Where to get it](#where-to-get-it)
  - [Reading FITS files](#reading-fits-files)
  - [Writing data](#writing-data)
+ - [Buliding binary tables from local data](#building-tables-from-data)
  - [FITS headers](#fits-headers)
  - [Compression support](#compression-support)
  - [How to contribute](#contribute)
@@ -150,14 +151,52 @@ If you want to try the bleeding edge version of nom-tam-fits, you can get it fro
  - [Tolerance to standard violations in 3rd party FITS files](#read-tolerance)
  
 
-To read a FITS file the user typically might open a `Fits` object, get the appropriate HDU using the `getHDU` method and then get the data using `getKernel()`.
+To read a FITS file the user typically might open a `Fits` object, get the appropriate HDU using the `getHDU` method and then 
+get the data using `getKernel()`.
 
 <a name="deferred-reading"></a>
 ### Deferred reading
 
-When FITS data are being read from a non-compressed file (`FitsFile`), the `read()` call will parse all HDU headers but will typically skip over the data segments (noting their position in the file however). Only when the user tries to access data from a HDU, will the library load that data from the previously noted file position. The behavior allows to inspect the contents of a FITS file very quickly even when the file is large, and reduces the need for IO when only parts of the whole are of interest to the user. Deferred input, however, is not possible when the input is compressed or if it is uses an stream rather than a random-access `FitsFile`.
+When FITS data are being read from a non-compressed file (`FitsFile`), the `read()` call will parse all HDU headers but will 
+typically skip over the data segments (noting their position in the file however). Only when the user tries to access data 
+from a HDU, will the library load that data from the previously noted file position. The behavior allows to inspect the 
+contents of a FITS file very quickly even when the file is large, and reduces the need for IO when only parts of the whole 
+are of interest to the user. Deferred input, however, is not possible when the input is compressed or if it is uses an 
+stream rather than a random-access `FitsFile`.
+
+One thing to keep in mind with deferred reading is that you should not close your `Fits` or its random-accessible input file 
+before all required data has been loaded. For example, the following will cause an error:
+
+```java
+  Fits fits = new Fits("somedata.fits);
+   
+  // Scans the FITS, but defers loading data until we need it
+  fits.read();
+   
+  // We close the FITS prematurely.
+  fits.close();
+   
+  // !!!BAD!!! now if  we try to access data
+  //           we'll get and exception...
+  float[][] image = (float[][]) fits.getHDU(0).getKernel(); 
+```
+
+In the above, the `getKernel()` method will try to load the deferred data from the input that we closed just before
+it. That's not going to work. The correct order is of course:
+
+```java
+  // Scans the FITS, but defers loading data until we need it
+  fits.read();
+ 
+  // Good, the FITS is still open so we can get the deferred data
+  float[][] image = (float[][]) fits.getHDU(0).getKernel(); 
+
+  // We close only after we grabbed all the data we needed.
+  fits.close();
+```
 
 As of version 1.18, all data classes of the library support deferred reading.
+
 
 <a name="reading-images"></a>
 ### Reading Images
@@ -338,8 +377,29 @@ rely on hard-coded column indices too when we know we are dealing with tables of
 ```
 
 Now we can loop through the rows of interest and pick out the entries we are interested in. For example, to
-loop through all table rows to get only the scalar values from the column named `UTC`, and a spectrum stored
-in the fifth column (i.e. 4 in Java indexing):
+loop through all table rows to get only the scalar values from the column named `UTC`, a phase in the 4th column 
+(Java index 3), and a spectrum stored in the fifth column (i.e. 4 in Java indexing):
+
+```java   
+  // Loop through rows, accessing the relevant column data
+  for(int row = 0; row < tab.getNRows(); row++) {
+  
+      // Retrieve scalar entries with convenient getters... 
+      // type, and returning the first (and only) element from that array...
+      double utc  = tab.getDouble(row, colUTC);
+           
+      // We can also access by fixed column index...
+      ComplexValue phase = (ComplexValue) tab.get(row, 3);
+      ComplexValue[] spectrum = (ComplexValue[]) tab.get(row, 4);
+      
+      // process the data...
+      ...
+  }
+```
+
+The old `getElement()` / `setElement()` methods supported access as arrays only. While this is still a viable alternative 
+(though slightly less elegant), we recommend against it going forward. Nevetheless, the equivalent to the above using this 
+approach would be:
 
 ```java   
   // Loop through rows, accessing the relevant column data
@@ -350,44 +410,29 @@ in the fifth column (i.e. 4 in Java indexing):
       double utc  = ((double[]) tab.getElement(row, colUTC))[0];
       
       // We can also access by fixed column index...
-      float[] spectrum = (float[]) tab.getElement(row, 4);
+      float phae = ((float[]) tab.getElement(row, 3))[0];
+      float[][] spectrum = (float[][]) tab.getElement(row, 4);
       
       // process the data...
       ...
   }
 ```
 
-Note that table data is always stored as arrays, even for scalar types, so a single integer entry will be returned as 
-`int[1]`, a single string as `String[1]`. This is because we want to return mutable data types, so Java's `Integer` 
-or `String` are not viable options for us. Complex values are stored as `float[2]` or `double[2]` depending on 
-the precision (FITS type `C` or `M`). So, a double-precision FITS complex array of size `[5][7]` will be returned a 
-`double[5][7][2]`. Logicals return `boolean[]`, which means that while FITS supports `null` logical values, we don't
-and these will default to `false`. It's an oversight that we are stuck with, at least for now...
+These older methods (`getElement()`, `getRow()` and `getColumn()`) always return table data as arrays, even 
+for scalar types, so a single integer entry will be returned as `int[1]`, a single string as `String[1]`. Complex 
+values are stored as `float[2]` or `double[2]` depending on  the precision (FITS type `C` or `M`). So, a 
+double-precision FITS complex array of size `[5][7]` will be returned a `double[5][7][2]`. Logicals return `boolean[]`, 
+which means that while FITS supports `null` logical values, we don't and these will default to `false`. (However,
+the `get()` method introduced in 1.18 will return these as `Boolean` arrays instead, retaining `null` values 
+appropriately!).
 
-Note that for best performance you should access elements in monotonically increasing order -- at least for the rows, 
-but it does not hurt to follow the same principle for columns inside the loops also. This will help avoid excess 
-buffering that way be required at times for backward jumps.
+Note that for best performance you should access elements in monotonically increasing order in deferred mode -- at 
+least for the rows, but it does not hurt to follow the same principle for columns inside the 
+loops also. This will help avoid excess buffering that way be required at times for backward jumps.
 
-Row-based access via `getRow(int)` works very similarly to element-based access. In the loop above you'd 
-simply write something like:
-
-```java
-       // Get the entire row...
-       Object[] rowData = tab.getRow(row);
-       
-       // Then pick out entries from that row...
-       double utc = ((double[]) rowData)[0];
-       ...
-```
-
-However, despite the slightly cleaner code, row-based access may be generally slower than element-based access if 
-we do not plan to process all columns, since all columns of the `Object[]` array for the row must be populated 
-regardless of whether we need them or not.
-
-(And, while the library provides methods for accessing entire columns also, these are not trivial to handle, since 
-they return all data for a column as a single 1D array, regardless of the dimensionality of individual elements; 
-and for variable-sized data they returns heap pointers only -- therefore we strongly recommend against column-based 
-header access at present.)
+The library provides methods for accessing entire rows and columns also via the `TableData.getRow(int)` and 
+`TableData.getColumn(int)` or `BinaryTable.getColumn(String)` methods. However, we recommend against using these going
+forward because these methods can be confounding to use, with overlapping data types and/or dimensions.
 
 
 
@@ -405,129 +450,87 @@ reading FITS files via `FitsFactory.setAllowHeaderRepairs(false)` and `FitsFacto
 violations are not tolerated, appropriate exceptions will be thrown during reading.
 
 
-
 <a name="writing-data"></a>
 ## Writing data
 
- - [Writing images](#writing-images)
- - [Writing tables](#writing-tables)
- - [Incremental writing](#incremental-writing)
+ - [Writing complete FITS files](#writing-files)
+ - [Writing one HDU at a time](#incremental-writing)
  - [Modifying existing files](#modifying-existing-files)
  - [Low-level writes](#low-level-writes)
- - [Writing GZIP-ed outputs](#writing-gzipped-outputs)
 
-<a name="writing-images"></a>
-### Writing images
-When we write FITS files we start with known data, so there are typically no casts required.
-We use a factory method to convert our primitive data to a FITS HDU and then write the Fits object to a desired location.
-The two primary classes to which we can write Fits data are are `FitsFile` (random acccess) and `FitsOutputStream`. 
-For exaple,
+<a name="writing-files"></a>
+### Writing complete FITS files
 
-```java
-  float[][] data = new float[512][512];
-     
-  Fits f = new Fits();
-  f.addHDU(Fits.makeHDU(data));
+When creating FITS files from data we have at hand, the easiest is to start with a `Fits` object. We can add to it 
+image and/or table HDUs we create. When everything is assembled, we write the FITS to a file or stream:
 
-  FitsOutputStream out = new FitsOutputStream(new FileOutputStream(new File("img.fits")));     
-  f.write(out);
-  out.close();
+```java  
+  Fits fits = new Fits();
+
+
+  fits.addHDU(...);
+  ...
+ 
+
+  FitsOutputStream out = new FitsOutputStream(new FileOutputStream(new File("myfits.fits")));     
+  fits.write(out);
 ```
 
 Or, equivalently, using `Fits.write(String)`:
 
-
 ```java
-  float[][] data = new float[512][512];
-     
-  Fits f = new Fits();
-  f.addHDU(Fits.makeHDU(data));
-     
-  f.write("img.fits");
+  ...
+   
+  fits.write("myfits.fits");
 ```
 
-
-<a name="writing-tables"></a>
-### Writing tables
-Just as with reading, there are a variety of options for writing tables.
-
-
-#### Binary versus ASCII tables
-
-When writing simple tables it may be possible to write the tables in either binary or ASCII format, provided all columns are scalar types. By default, the library will create and write binary tables for such data. To create ASCII tables instead the user should call `FitsFactory.setUseAsciiTables(true)` first. 
-
-
-#### Using columns
-If the data is available as a set of columns, then we can simply replace data above with something like:
+Images can be added to the FITS at any point. For example, consider a 2D `float[][]` image we want to 
+add to a FITS:
 
 ```java
-  int numRows = 10;
-  double[] x = new float[numRows];
-  double[] y = new float[numRows];
-     
-  Random random = new Random();
-     
-  for (int i=0; i<n; i += 1) {  
-      x[i] = random.nextGaussian();
-      y[i] = random.nextGaussian();
-  }
-  Object[] data = {x, y};
+  float[][] image ...;
+  
+  ImageHDU imageHDU = fits.makeHDU(image);
+  fits.addHDU(imageHDU);
 ```
 
-and then create the HDU and write the FITS file exactly as for the image above.
-The library will add in a null initial HDU automatically.
-
-If we prefer we can build the HDU up by row or column:
+The `makeHDU()` method only populates the essential descriptions of the image in the HDU's header.
+We may want to complete that description (e.g. add WCS information, various other data descriptions).
+to the new HDU's header, e.g.:
 
 ```java
-  BinaryTableHDU bhdu = new BinaryTableHDU();
-  bhdu.addColumn(x);
-  bhdu.addColumn(y);
+  Header header = imageHDU.getHeader();
+  
+  header.addValue(Standard.BUNIT, "Jy/beam");
+  ...
 ```
 
-After we’ve added all of the columns we add the HDU to the Fits object and write it out.
-Each time we add a column we change the structure of the HDU.
-However the number of rows in unchanged except when we add the first column to a table.
+After that we can add our table(s), such as binary tables (preferred) or ASCII tables (if you must):
 
-#### Using rows
-Finally, just as with reading, we can build up the HDU row by row.
-Each row needs to be an `Object[]` array and scalar values need to be wrapped into
-arrays of length `1`:
+Once all HDUs have been added, we write the FITS as usual:
 
 ```java
-  Random random = new Random();
-  BinaryTableHDU bhdu = new BinaryTableHDU();
-     
-  for (int i=0; i<n; i += 1) {  
-      double[] x = {random.nextGaussian()};
-      double[] y = {random.nextGaussian()};
-      Object[] row = {x, y}; 
-      bhdu.addRow(row);
-  }
+  fits.write("myfits.fits");
+  fits.close();
 ```
 
-Normally `addRow` does not affect the structure of the HDU, it just adds another row.
-However if the table is empty, the first `addRow` defines the structure of each of the columns.
-If a column represents a string, then the length of that column is defined by the length of the string in first row.
-Subsequent rows will be truncated if longer.
-A user can add blanks to pad out the first row’s entries to a desired length.
+An important thing to remember is that while images can be anywhere in the FITS files, tables
+are extensions, and so, they cannot be the first HDU in a file. Thus, if a table is the first HDU we add to a FITS
+container, it will be preceded by a dummy primary HDU, and our data will actually be written as the
+second HDU (Java index 1).
 
-Note that while we can add rows to a table created with variable length arrays, you cannot currently build up a table from scratch with variable length arrays using `addRow`.
-When the first row is read in, all of the column formats are defined, and at that point there is no indication that the column has variable length.
-The library can’t see row to row variations since there is only a single row.
 
-It is possible to mix these approaches: e.g., use addColumn to build up an initial set of rows and then add additional rows to the specified structure.
 
 <a name="incremental-writing"></a>
-### Incremental writing
+### Writing one HDU at a time
 
 Sometimes you do not want to add all your HDUs to a `Fits` object before writing it out to a file or stream. Maybe because they use up too much RAM, or you are recording from a live stream and want to add HDUs to the file as they come in. As of version __1.17__ of the library, you can write FITS files one HDU at a time without having to place them in a `Fits` object first, or having to worry about the mandatory keywords having been set for primary or extension HDUs. Or, you can write a `Fits` object with some number of HDUs, but then keep appending further HDUs after, worry-free. The `FitsFile` or `FitsOutputStream` object will keep track of where it is in the file or stream, and set the required header keywords for the appended HDUs as appropriate for a primary or extension HDU automatically.
 
 Here is an example of how building a FITS file HDU-by-HDU without the need to create a `Fits` object as a holding container:
 
 ```java
-  // Create the stream to which to write the HDUs as they come
-  FitsOutputStream out = new FitsOutputStream(new FileOutputStream("my-incremental.fits"));
+  // Create the file to which to write the HDUs as they come
+  FitsFile out = new FitsFile("my-incremental.fits", "rw");
   ...
 
   // you can append 'hdu' objects to the FITS file (stream) as:
@@ -539,10 +542,10 @@ Here is an example of how building a FITS file HDU-by-HDU without the need to cr
   out.close(); 
 ```
 
-Of course, you can use a `FitsFile` as opposed to a stream as the output also, e.g.:
+Of course, you can use a `FitsOutputStream` as opposed to a file as the output also, e.g.:
 
 ```java
-  FitsFile out = new FitsFile("my-incremental.fits", "rw");
+  FitsOutputStream out = new FitsOutputStream(new FileOutputStream("my-incremental.fits"));
   ...
 ```
 
@@ -552,183 +555,396 @@ In this case you can use random access, which means you can go back and re-write
 
 <a name="modifying-existing-files"></a>
 ### Modifying existing files
-An existing FITS file can be modified in place in some circumstances. The file must be an uncompressed file.
-The user can then modify elements either by directly modifying the kernel object gotten for image data, or by using the `setElement` or similar methods for tables.
+
+An existing FITS file can be modified in place in some circumstances. The file must be an uncompressed (random-accessible) file, with
+permissions to read and write. The user can then modify elements either by directly modifying the kernel data object for image data, 
+or by using the `setElement` or similar methods for tables.
 
 Suppose we have just a couple of specific elements we know we need to change in a given file:
 
 ```java
   Fits f = new Fits("mod.fits");
      
-  ImageHDU ihdu = (ImageHDU) f.getHDU(0);
-  int[][] img = (int[][]) ihdu.getKernel();
+  ImageHDU hdu = (ImageHDU) f.getHDU(0);
+  int[][] img = (int[][]) hdu.getKernel();
      
-  for (int i=0; i<img.length; i += 1) {
-      for (int j=0; j<img[i].length; j += 1) {
-          if (img[i][j] < 0){
-              img[i][j] = 0;
-          }
-      }
-  }
-     
-  ihdu.rewrite();
-     
-  TableHDU thdu = (TableHDU) f.getHDU(1);
-  thdu.setElement(3, 0, "NewName");
-  thdu.rewrite();
+  // modify the image as needed...
+  img[i][j] = ...
+  ...
+  
+  // No write the new data back in the place of the old
+  hdu.rewrite();
 ```
 
-This rewrites the FITS file in place.
-Generally rewrites can be made as long as the only change is to the content of the data (and the FITS file meets the criteria mentioned above).
-An exception will be thrown if the data has been added or deleted or too many changes have been made to the header.
-Some modifications may be made to the header but the number of header cards modulo 36 must remain unchanged.
+Same goes for a table HDU:
+
+```java 
+  BinaryTableHDU hdu = (BinaryTableHDU) f.getHDU(1);
+  hdu.set(3, 0, 3.14159265);
+  
+  ...
+  hdu.rewrite();
+```
+
+Defragmenting binary tables allows to reclaim heap space that is no longer used in the heap area. When deleting variable-length 
+columns, or when replacing entries inside variable-length columns, some or all of the space occupied by old entries on the heap 
+may become dead storage, needlessly bloaing the heap storage. Also, repaced entries may be placed on the heap out of order, 
+which can slow down caching effectiveness for sequential table acces. Thus when modifying tables with variable-length columns, 
+it may be a good idea to defragment the heap before writing in to the output. For the above example, this would be adding an 
+extra step before `rewrite)`. 
+
+```java
+  ...
+  
+  // If the we changed variable length data, it may be a good
+  // idea to defragment the heap before writing...
+  hdu.defragment();
+
+  hdu.rewrite();
+```
+
+Defragmenting might also be a good idea when building tables with variable-length data column by column (as opposed to
+row-by-row).
+
+
+And, headers can also be updated in place -- you don't even need to access the data, and can leave it in deferred state:
+
+```java 
+  BasicHDU<?> hdu = f.getHDU(1);
+  Header header = hdu.getHeader();
+  
+  header.addValue(Standard.TELESCOP, "SMA").comment("The Submillimeter Array");
+  header.addValue(Standard.DATE-OBS, FitsDate.now());
+  ...
+  
+  header.rewrite();
+```
+
+Generally rewrites can be made as long as the only change is to the data content, but not to the data size 
+(and the FITS file meets the criteria mentioned above). An exception will be thrown if the data has been added 
+or deleted or too many changes have been made to the header. Some modifications may be made to the header but the number 
+of header cards modulo 36 must remain unchanged. (Hint, you can reserve space in headers for later additions using `Header.ensureCardSpace(int)` prior to writing the header or HDU originally.)
+
 
 <a name="low-level-writes"></a>
 ### Low-level writes
 
-When a large table or image is to be written, the user may wish to stream the write.
-This is possible but rather more difficult than in the case of reads.
+When a large table or image is to be written, the user may wish to stream the write. This is possible but rather 
+more difficult than in the case of reads.
 
 There are two main issues:
-1. The header for the HDU must written to show the size of the entire file when we are done.
-Thus the user may need to modify the header data appropriately.
-2. After writing the data, a valid FITS file may need to be padded to an appropriate length.
+
+ 1. The header for the HDU must written to show the size of the entire file when we are done.
+    Thus the user may need to modify the header data appropriately.
+
+ 2. After writing the data, a valid FITS file may need to be padded to an appropriate length.
 
 It's not hard to address these, but the user needs some familiarity with the internals of the FITS representation.
 
 
 
 #### Images
-Suppose we have a 16 GB image that we want to write.
-It could be foolish to require all of that data to be held in-memory.
-We’ll build up a header that’s almost what we want, fix it, write it and then write the data.
-The data is an array  of 2000 x 2000 pixel images in 1000 energy channels.
-Each channel has a 4 byte integer.
-The entire image might be specified as 
+
+We can write images one subarray at a time, if we want to. Here is an example of
+how you could go about it. First, create storage for the contiguous chunk we want
+to write at a time. For example, same we want to write a 32-bit floating-point image 
+with `[nRows][nCols]` pixels, and we want to write these one row at a time:
+
+First let's create storage for the chunk:
 
 ```java
-  int[][][] image = new int[1000][2000][2000];
+  // An array to hold data for a chunk of the image...
+  float[] chunk = new float[nCols];
 ```
 
-but we don’t want to keep all 16GB in memory simultaneously.
-We’ll process one channel at a time.
+Next create a header. It's easiest to create it from the chunk, and then just
+modify the dimensions for the full image, e.g. as:
 
 ```java
-  int[][][] row = new int[1][2000][2000];
-  long rowSize = FitsEncoder.computeSize(row);
-  int numRows = 1000;
-     
+  // Create an image HDU with the row 
   BasicHDU hdu = Fits.makeHDU(row);
-  hdu.getHeader().setNaxis(3, numRows);  // set the actual number of rows, we are going to write
-     
-  FitsFile out = new FitsFile("bigimg.fits", "rw");
-  hdu.getHeader().write(out);
-     
-  for (int i=0; i<numRows; i += 1) {
-     // fill up row with one channels worth of data
-     out.writeArray(row);
-  }
-     
-  FitsUtil.pad(out, numRows * rowSize) ;
-  out.close();
-}
+  Header header = hdu.getHeader();
+ 
+  // Override the image dimensions in the header to describe the full image
+  ImageData.overrideHeaderAxes(header, nRow, nCol); 
 ```
 
-The first two statements create a FITS HDU appropriate for a 1x2000x2000 array.
-We update the header for this HDU to reflect the FITS file we want to create.
-Then we write it out to our new file.  Next we fill up each channel and write it directly.
-Then we add in a little padding and close our connection to the file, which should flush and pending output.
+Next, we can complete the header description adding whatever information we desire.
+Once complete, we'll write the image header to the output:
 
-Note that the order of axes in FITS is the inverse of how they are written in Java.
-The first FITS axis varies most rapidly.
+```java
+  // Create a FITS and write to the image to it
+  FitsFile out = new FitsFile("image.fits", "rw");
+  header.write(out);
+```
 
+Now, we can start writing the image sata, iterating over the rows, populating our 
+chunk data in turn, and writing it out as we go.
+
+```java
+  // Iterate over the image rows
+  for (int i = 0; i < nRows; i++) {
+     // fill up the chunk with one row's worth of data
+     ...
+     
+     // Write the row to the output
+     out.writeArray(chunk);
+  }
+```
+
+Finally, add the requisite padding to complete the FITS block of 2880 bytes
+after the end of the image data:
+
+```java
+  FitsUtil.pad(out, out.position());
+  out.close();
+```
 
 #### Tables
-We can do something pretty similar for tables so long as we don’t have variable length columns, but it requires a little more work.
-We will use a `ByteBuffer` to store the bytes we are going to write out for each row.
+We can do something pretty similar for tables __so long as we don't have variable length columns__, but 
+it requires a little more work.
+
+First we have to make sure we are not trying to write tables into the primary HDU of a FITS. Tables
+can only reside in extensions, and so we might need to create and write a dummy primary HDU to the
+FITS before we can write the table itself:
 
 ```java
   FitsFile out = new FitsFile("table.fits", "rw");
      
-  BasicHDU.getDummyHDU().write(out);  // Write an initial null HDU
-     
-  double[] ra = {0.};
-  double[] dec = {0.};
-  String[] name = {"          "}; // maximum length will be 10 characters
-     
-  Object[] row = {ra, dec, name};
-  long rowSize = FitsEncoder.computeSize(row);
-     
-  BinaryTable table = new BinaryTable();
-     
-  table.addRow(row);
-     
+  // Binary tables cannot be in the primary HDU of a FITS file
+  // So we must add a dummy primary HDU to the FITS first
+  new NullDataHDU().write(out);
+```
+   
+Next, assume we have a binary table that we either read from an input, or else assembled ourselves
+(see further below on how to build binary tables):
+
+```java 
+  BinaryTable table = ...
+```
+
+Next, we will need to create an appropriate FITS header for the table:
+    
+```java
   Header header = new Header();
   table.fillHeader(header);
-     
-  BinaryTableHDU bhdu = new BinaryTableHDU(header, table);
-     
-  bhdu.setColumnName(0, "ra", null);
-  bhdu.setColumnName(1, "dec", null);
-  bhdu.setColumnName(2, "name", null);
-     
-  header.setNaxis(2, 1000);  // set the header to the actual number of rows we write
-  header.write(out);
-     
-  ByteBuffer buffer = ByteBuffer.allocate((int) rowSize);
-     
-  for (int event = 0; event < 1000; event ++){
-      buffer.clear();
-     
-      // update ra, dec and name here
-     
-      buffer.putDouble(ra[0]);
-      buffer.putDouble(dec[0]);
-      buffer.put(name[0].getBytes());
-     
-      buffer.flip();
-      out.write(buffer.array());
-  }
-     
-  FitsUtil.pad(out, rowSize * 1000);
-  out.close();
 ```
 
-
-First we create a new `FitsFile` and write the initial empty HDU.
-Than we initialize our first row and calculate its size.
-Note how we used 10 spaces to initialize the `String`, this will be the maximum size for
-each item in this column.
-
-We create a new `BinaryTable` and add our first row. 
-This row only initializes the table structure. It will not be written out!
-
-Next is the creation of a `Header` and a `BinaryTableHDU`. 
-We need to fill the `Header` with the information of the `BinaryTable` before we can 
-create the `BinaryTableHDU`.
-
-We can now update the header information. E.g. setting row names and 
-the correct number of rows and write out the header.
-
-Now we are ready to start writing data.
-We use a `ByteBuffer` to store the data of each row.
-After we updated the `ByteBuffer`, we write it to the `FitsFile`.
-
-Last, we pad the fits file and close the open `FitsFile`.
-
-
-<a name="writing-gzipped-outputs"></a>
-### Writing GZIP-ed outputs
-
-It is common practice to compress FITS files using __gzip__ so they can be exchanged in a more compact form. The library supports the creation of
-gzipped fits out of the box, by wrapping the file's output stream into a `GZIPOutputStream`, such as:
+We can now complete the header descriprtion as we see fit, with whatever optional entries. We can also
+save space for future additions, e.g. for values we will have only after we start writing the table
+data itself:
 
 ```java
-  Fits f = new Fits();
-  
-  FitsOutputStream out = new FitsOutputStream(new GZIPOutputStream(new FileOutputStream(new File("mydata.fits.gz"))));
-  f.write(out);
+   // Make space for at least 200 more header lines to be added later
+   header.ensureCardSpace(200);
 ```
+
+Now, we can write out the header:
+
+```java
+   header.write(out);
+```
+
+Now, we can finally write regular table rows (without variable-length entries) in a loop. Assuming
+that out row is something like `{ { double[1] }, { byte[10] }, { float[256] }, ... }`: 
+
+```java
+  for (...) {
+     // Write data one element at the time into the buffer via the 
+     // rowStream. These must match the column structure of the table, 
+     // in terms of order, data types, and element counts. 
+     
+     out.writeDouble(ra);
+     out.write(fixedLengthNameBytes);
+     out.witeArray(spectrum);
+     ...
+  }
+```
+
+Once we finish writing the table data, we must add the requisite padding to complete the FITS block of 2880 bytes
+after the table data ends. 
+
+```java
+  // Add padding to the file to complete the FITS block
+  FitsUtil.pad(out, nRowsWritten * table.getRegularRowSize());
+```
+
+After the table has been written, we can revisit the header if we need to update it with entries
+that were not available earlier:
+
+```java
+   // Re-write the header with the new information we added since we began writing 
+   // the table data
+   header.rewrite();
+```
+
+
+
+<a name="building-tables-from-data"></a>
+### Building binary tables from local data
+
+If you already have an `Object[rows][cols]` data table, in which each entry represents data for a row and column, 
+you can create an appropriate binary table HDU from it as:
+
+```java
+   Object[][] rowMajorData = ...
+  
+   BinaryTableHDU tableHDU = BinaryTableHDU.encapsulate(rowMajorData);
+```
+
+There are some requirements on the array though:
+
+ - All rows must contain the same number of columns
+ - The entries for the same column in each row must match in their type
+ - All table entries must be any of:
+     * One of the supported Java types `String`, `ComplexValue`), or
+     * primitive arrays (e.g. `int[]`, `float[][]`), or
+     * Arrays of `Boolean` (logicals), `String` or `ComplexValue`, such as `Boolean[][]` or `String[]`, or
+     * Scalar primitives stored as arrays of 1 (e.g. `short[1]`).
+ - If entries are multi-dimensional arrays, all rows in a column must have the same dimensionality and shape. (If not, they
+   will be stored as variable-length arrays in flattened 1D format, where the shape may be lost). 
+ - If entries are one-dimensional, they can freely vary in size from row to row
+ - Java `null` entries are allowed for `String` and `Boolean` (logical) types, but not for the other data types.
+
+   
+Note, that while the library supports ASCII tables, it is generally better to just use binary tables for storing table data
+regardless. ASCII tables are more limited, and were meant to be readable from a console without needing any tools to display. 
+However, much has happened since the 1970s, and there is no truly compelling reason for using ASCII tables today. Binary 
+tables are simply better, because they:
+
+ - Offer more flexibility, and more data types (such as complex values, variable sized arrays, and 
+   multidimensional arrays).
+ - Take up less space on disk
+ - Can be compressed to an even smaller size
+ 
+To create ASCII tables (when possible) instead using `Fits.makeHDU()` or one of the factory methods to encapsulate 
+a table data object, you should call `FitsFactory.setUseAsciiTables(true)` beforehand.
+ 
+When creating or modifying binary tables containing variable-length columns, defragmenting might also be a good idea 
+before writing out binary tables to a file or stream:
+
+```java
+  tableHDU.getData().defragment();
+```
+ 
+just before calling `write()`.
+ 
+
+#### Buiding tables one row at a time
+
+As of 1.18 building tables one row at a time is both easy and efficient -- and may be the least confusing way to get
+tables done right. (In prior releases, adding rows to existing tables was painfully slow, and much more constrained). You may 
+want to start by defining the types and dimensions (or whether variable-length) of the data that will be contained in each 
+table column:
+
+```java
+   BinaryTable table = new BinaryTable();
+   
+   // A column containing 64-bit floating point scalar values, 1 per row...
+   table.addColumn(ColumnDesc.createForScalars(double.class));
+   
+   // A column containing 5x4 arrays of single-precision complex values...
+   table.addColumn(ColumnDesc.createForArrays(ComplexValue.Float.class, 5, 4));
+   
+   // A column containing Strings of variable length using 32-bit heap pointers...
+   table.addColumn(ColumnDesc.creatForVariableLength(String.class));
+   
+   ...
+```
+
+Defining columns this way is not always necessary before adding rows to the table. However, it is necessary if you will 
+have data that needs variable-length storage row-after-row; or you want more control over specifics of the column format. 
+As such, it is best practice to define the columns explictly even if not strictly required for your particular application. 
+
+Now you can populate the table with your data, one row at a time, using the `addRow()` method as many times over as
+necessary:
+
+```java   
+   for (...) {
+   	// prepare the row data, making sure each row is compatible with prior rows...
+   	...
+   	
+   	// Add the row to the table
+   	table.addRow(...);
+   }
+```
+
+As of 1.18, adding rows allows for vararg syntax and for using Java boxed types (as an alternative to primitive arrays of 1) 
+to specify primitive scalar table elements, including auto-boxing of literals and variables. Thus, since 1.18, you may simply 
+write:
+
+```java
+   table.addRowEntries(1, 3.14159265);
+```
+
+to add a row consisting of an 32-bit integer, a double-precision floating point value. Prior to 1.18, the same would 
+have to have been written as:
+
+```java  
+  table.addRow(new Object[] { new int[] {1}, new double[] {3.14159265} }; 
+```
+
+Tables built entirely row-by-row are naturally defragmented, notwithstanding subsequent modifications.
+
+Once the table is complete, you can then wrap in in a HDU:
+
+```java
+  TableHDU hdu = (TableHDU) Fits.makeHDU(table);
+```
+
+which will populate the header with the requisite entries that describe the table. You can then edit the new header
+to add any extra information (while being careful to not modify the essential table description). Note, that once the
+table is encompassed in a HDU, it is generally not safe to edit it beyond additions, since the library has no foolproof 
+way to keep the header perfectly in sync. Thus it is recommended that you create table HDUs only after the table data has been fully populated.
+
+
+#### Buiding tables one column at a time
+
+Sometimes we might want to assemble a table from a selection of data which will readily consitute columns in the table. 
+We can add these as columns to an existing table (empty or not) using the `BinaryTable.addColumn(Object)` method.
+For example, say we have two arrays, one a time-series of spectra, and a matching array of corresponding timestamps. We
+can create a table with these (or add them to an existing table with a matching number of rows) as:
+
+```java
+   BinaryTable tab = new BinaryTable();
+  
+   double[] timestamps = new double[nRows]; 
+   ...
+   table.addColumn(timeStamps);
+ 
+   ...
+ 
+   ComplexValue[][] spectra = new ComplexValue[nRows][];
+   ...
+   table.addColumn(spectra);
+   
+   ...
+```
+  
+There are just a few thing to keep in mind when constructing tables in this way:
+  
+  - All columns added this way must contain the same number of rows
+  - In column data, scalars are simply elements in a 1D primitive array, in which each entry contains
+    the scalar value for a given row. (I.e. unlike in the row-major table format required to create entire tables at once, 
+    we do not have to wrap scalar values in self-contained arrays of 1)
+  - Other than the above, the same rules apply as for creating HDUs from complete table data above.
+  - If setting complex columns with arrays of `float[2]` or `double[2]` (the old way), you will want to call 
+    `setComplexColumn(int)` afterwards for that column to make sure they are labeled properly in the FITS header 
+    (rather than as real-valued arrays of `float` or `double`).
+  - Similarly, if adding arrays of `boolean` values, you might consider calling `convertToBits(int)` on that
+    column for a more compact storage option of the `true`/`false` values, rather than as 1-byte FITS logicals 
+    (default).
+    
+
+Defragmenting might also be a good idea before writing binary tables with variable-length data built column by column (as 
+opposed to row-by-row):
+
+```java
+  table.defragment();
+```
+ 
+before calling `write()`.
+
 
 
 <a name="fits-headers"></a>
@@ -753,8 +969,8 @@ There are two basic ways to access these data:
 
 #### A. Direct access header values
 
-If you are not concerned with the internal organization of the header you can get values from the header using the `getXXXValue` methods.
-To set values use the `addValue` method.
+If you are not concerned with the internal organization of the header you can get values from the header using the 
+`get...Value()` methods. To set values use the `addValue` method.
 
 To find out the telescope used you might want to know the value of the `TELESCOP` key.
 
@@ -771,7 +987,8 @@ Or if we want to know the RA of the center of the image:
 ```
 
 [The FITS WCS convention is being used here.
-For typical images the central coordinates are in the pair of keys, CRVAL1 and CRVAL2 and our example assumes an Equatorial coordinate system.]
+For typical images the central coordinates are in the pair of keys, CRVAL1 and CRVAL2 and our example assumes an 
+equatorial coordinate system.]
 
 Perhaps we have a FITS file where the RA was not originally known, or for which we’ve just found a correction.
 
@@ -1072,133 +1289,214 @@ Additionally, we provide `HeaderCard.sanitize(String)` method that the user can 
 
 
 
-
 <a name="compression-support"></a>
 ## Compression support
 
- - [Image compression](#image-compression)
- - [Table compression](#table-compression)
+ - [File level compression](#file-compression)
+ - [Image HDU compression](#image-compression)
+ - [Table HDU compression](#table-compression)
 
 Starting with version 1.15.0 compression of both images and tables is fully supported.  A 100% Java implementation of the compression libraries available in cfitsio was implemented and can be used through the Java API.
 
 
-<a name="image-compression"></a>
-### Image compression
+<a name="file-compression"></a>
+### File level compression
 
-Image compression and tiling are fully supported by nom-tam-fits as of 1.17.0, including images of 
+It is common practice to compress FITS files using __gzip__ (`.gz` extension) so they can be exchanged in a more 
+compact form. The library supports the creation of gzipped fits out of the box, by wrapping the file's output 
+stream into a `GZIPOutputStream` or , such as:
+
+```java
+  Fits f = new Fits();
+  
+  ...
+  
+  FitsOutputStream out = new FitsOutputStream(new GZIPOutputStream(
+  	new FileOutputStream(new File("mydata.fits.gz"))));
+  f.write(out);
+```
+
+While we only support GZIP compression for writing compressed files (thanks to Java's support out of the box), we can read
+more compressed formats using Apaches commons-compress library. We support reading compressed files produced via __gzip__
+(`.gz`), the Linux __compress__ tools (`.Z`), and via __bzip2__ (`.bz2`). The decompression happens automatically when
+we construct a `Fits` object with an input stream:
+
+
+```java
+  new FileInputStream compressedStream = new FileInputStream(new File("image.fits.bz2"));
+ 
+  // The input stream will be filtered through a decompression algorithm
+  // All read access to the FITS will pass through that decompression...
+  Fits fits = new Fits(compressedStream);
+
+  ...
+```
+
+
+<a name="image-compression"></a>
+### Image HDU compression
+
+Image compression and tiling are fully supported by nom-tam-fits as of 1.18.0, including images of 
 any dimensionality and rectangular morphologies. (Releases between 1.15.0 and 1.17.0 had partial image
-compression support for 2D square images only.). 
+compression support for 2D square images only, while some quantization support for compression was
+acking prior to 1.18.0). 
 
 The tiling of non-2D images follows the 
 [CFITSIO convention](https://heasarc.gsfc.nasa.gov/docs/software/fitsio/compression.html) with 2D tiles, 
 where the tile size is set to 1 in the extra dimensions.
 
-When [de]compressing all available CPU's are automatically utilized.
+Mote, that just like regular tables, compressed HDUs cannot be the primary HDU in a FITS, Thus, remember
+to add a `NullDataHDU` at the top of your `Fits` object, or at the head of a new FITS output file/stream
+before you add/write compressed HDUs. 
 
-Internal compression allows FITS files to be created where the data are efficiently stored, but the
-metadata is still easily accessible. The tiling of images is particularly critical
-for supporting efficient access to subsets of very large images. A user can easily access
-only the tiles that overlap the region of interest and can skip data not of interest.
-While some skipping might be possible with uncompressed FITS files (i.e., read only the rows
-overlapping the desired subset), internal tiles can be much more efficient when the image is
-substantially larger than the subset. Most compression algorithms interfere with the ability to
-skip uninteresting data, but tiles are compressed independently, so users can benefit both from
-the compression and the selection of only a subset of the image.
+Compressing an image HDU is typically a multi-step process:
 
-To compress an existing image HDU, use code like:
-
+ 1. Create a `CompressedImageHDU`, e.g. with `fromImageHDU(ImageHDU, int...)`:
+ 
+ ```java
+   ImageHDU image = ...
+  
+   CompressedImageHDU compressed = CompressedImageHDU.fromImageHDU(image, 60, 40);
+ ```
+ 
+ 2. Set up the compression algorithm, including quantization (if desired) via `setCompressAlgorithm(String)` and 
+    `setQuantAlgorithm(String)`, and optionally the compressiomn method used for preserving the blank values via 
+    `preserveNulls(String)`:
+   
 ```java
-  try (Fits f = new Fits()) {
-     CompressedImageHDU compressedHdu = CompressedImageHDU.fromImageHDU(someImageHDU, 300, 15);
-     compressedHdu
-         .setCompressAlgorithm(Compression.ZCMPTYPE_HCOMPRESS_1)//
-         .setQuantAlgorithm(Compression.ZQUANTIZ_SUBTRACTIVE_DITHER_2)//
-         .getCompressOption(QuantizeOption.class)//
-         /**/.setQlevel(1.0)//
-         .getCompressOption(HCompressorOption.class)//
-         /**/.setScale(1);
-     compressedHdu.compress();
-     f.addHDU(compressedHdu);
-     f.write("something.fits.fz");
-  } 
+  compressed.setCompressAlgorithm(Compression.ZCMPTYPE_RICE_1)
+            .setQuantAlgorithm(Compression.ZQUANTIZ_SUBTRACTIVE_DITHER_1)
+            .preserveNulls(Compression.ZCMPTYPE_HCOMPRESS_1);
 ```
-
-Depending on the compression algorithm you select, different options can be set, and if you activate quantization (as in the example above) 
-another set of options is available.
-
+    
+ 3. Set compression (and quantization) options, via calling on `getCompressOption(Class)`:
+ 
+ ```java
+   compressed.getCompressOption(RiceCompressOption.class).setBlockSize(32);
+   compressed.getCompressOption(QuantizeOption.class).setBZero(3.0).setBScale(0.1).setBNull(-999);
+ ```
+ 
+ 4. Finally, perform the actual compression via `compress()`:
+ 
+ ```java
+   compressed.compress(); 
+ ```
 
  
-<table>
-	<tr>
-		<td><b>quant?</b></td>
-		<td><b>Compression</b></td>
-		<td><b>option java classes</b></td>
-	</tr>
-	<tr>
-		<td>no</td>
-		<td><code>ZCMPTYPE_GZIP_1</code></td>
-		<td><i>no options</i></td>
-	</tr>
-	<tr>
-		<td>no</td>
-		<td><code>ZCMPTYPE_GZIP_2</code></td>
-		<td><i>no options</i></td>
-	</tr>
-	<tr>
-		<td>yes</td>
-		<td><code>ZCMPTYPE_RICE_ONE</code> / <code>ZCMPTYPE_RICE_1</code></td>
-		<td><code>RiceCompressOption</code></td>
-	</tr>
-	<tr>
-		<td>no</td>
-		<td><code>ZCMPTYPE_PLIO_1</code></td>
-		<td><i>no options</i></td>
-	</tr>
-	<tr>
-		<td>yes</td>
-		<td><code>ZCMPTYPE_HCOMPRESS_1</code></td>
-		<td><code>HCompressorOption</code>, <code>QuantizeOption</code></td>
-	</tr>
-</table>
+After the compression, the compressed image HDU can be handled just like any other HDU, and written to a file 
+or stream, for example (just not as the first HDU in a FITS...).
 
-All information required for image decompression are stored in the header of the image file. Therefore no options need to be provided to decompress a file:
+The reverse process is simply via the `asImageHDU()` method. E.g.:
 
 ```java
-  try (Fits f = new Fits("something.fits.fz")) {
-      f.readHDU();
-      CompressedImageHDU hdu = (CompressedImageHDU) f.readHDU();
-      ImageHdu uncompressedImage = hdu.asImageHDU();
-  }
+   CompressedImageHDU compressed = ...
+   ImageHDU image = compressed.asImageHDU();
 ```
 
-Please read the original FITS documentation for further information on the different compression options and their possible values.
+When compressing or decompression images, all available CPU's are automatically utilized.
+
+
+#### Accesing image header values without decompressing:
+
+You don't need to decompress the image to see what the decompressed image header is.
+You can simply call `CompressedImageHDU.getImageHeader()` to peek into the reconstructed header of 
+the image before it was compressed:
+
+```java
+  CompressedImageHDU compressed = ...
+  Header imageHeader = compressed.getImageHeader();
+```
+
+#### Accessing specific parts of a compressed image
+
+Often compressed images can be very large, and we are interested in specific areas of it only.
+As such, we do not want to decompress the entire image. In these cases we can use the `getTileHDU()`
+method of `CompressedImageHDU`
+class to decompress only the selected image area. As of 1.18.0, this is really easy also:
+
+```java
+  CompressedImageHDU compressed = ...
+   
+  int[] fromPixels = ...
+  int[] cutuoutSize = ...
+   
+  ImageHDU cutout = compressed.getTileHDU(fromPixels, cutoutSize);
+```
+
 
 <a name="table-compression"></a>
-### Table compression
+### Table HDU compression
 
-Table compression is also fully supported in nom-tam-fits from version 1.15.0. When a table is compressed the effect is that within each column we compress 'tiles' that are sets of contiguous rows.  E.g., if we use a 'tile' size of 10, then for the first column we concatenate the data from the first 10 rows and compress the resulting sequence of bytes.  The result of this compression will be stored in the heap area of the FITS file since its length will likely vary from tile to tile.  We then do the same for the first 10 rows of the second column and every other column in the table. After we finish we are ready to write the first row of the compressed table.  We then repeat for sets of 10 rows until we reach the end of the input table.  The result is a new binary table with the same number of columns but with the number of rows decreased by ~10 (in our example). Thus, just as with images, we can get the ability to efficiently compress the data without losing the ability to retrieve only the rows we are interested in when we are reading from a large table.
+Table compression is also fully supported in nom-tam-fits from version 1.15.0. When a table is compressed 
+the effect is that within each column we compress 'tiles' that are sets of contiguous rows. The compression 
+algorithms are the same as the ones provided for image compression. Default compression is `GZIP_2`. 
+(In principle, every column could use a different algorithm.)
 
-The compression alögorithms are the same as the ones provided for image compression. Default compression is GZIP_2 but every column can use a different algorithm. The tile size is the same for every column.  To compress
-an existing binary table using a tile size of 10 rows:
+Tile compression mimics image compression, and is typically a 2-step process:
 
-```java
-  CompressedTableHDU compressed = CompressedTableHDU.fromBinaryTableHDU(binaryTable, 10).compress();
-  compressed.compress();
-```
-        
-Using varargs the compression algorithm can be specified on a per column basis.
-
-To decompress the table just do:
-
-```java
-  BinaryTableHDU binaryTable = compressed.asBinaryTableHDU();
-```
-         
-All available CPU's will be used to [de]compress the table.
-
-Because there is no place to store the compression options in the header, only compression algorithms which do not need options can be used.
-
+ 1. Create a `CompressedTableHDU`, e.g. with `fromBinaryTableHDU(BinaryTableHDU, int, String...)`, using the 
+    specified number of table rows per compressed block, and compression algorithm(s):
  
+```java
+  BinaryTableHDU table = ...
+
+  CompressedTableHDU compressed = CompressedTableHDU.fromBinaryTableHDU(table, 4, Compression.GZIP_2);
+```
+ 
+ 2. Perform the compression via `compress()`:
+
+```java
+   compressed.compress();
+```
+
+The two step process (as opposed to a single-step one) was probably chosen because it mimics that of 
+`CompressedImageHDU`, where further configuration steps may be inserted in-between. But, of course we can combine 
+the steps into a single line:
+
+```java
+  CompressedTableHDU compressed = CompressedTableHDU.fromBinaryTableHDU(table, 4, Compression.GZIP_2).compress();
+```
+
+After the compression, the compressed table HDU can be handled just like any other table HDU, and written to a 
+file or stream, for example (as long as you remember that they cannot be the primary HDU in the FITS!).
+
+The reverse process is simply via the `asBinaryTableHDU()` method. E.g.:
+
+```java
+  CompressedTableHDU compressed = ...
+  BinaryTableHDU table = compressed.asBinaryTableHDU();
+```
+
+Just like with images, compressing or decompression tables will utilize all available CPU's are automatically.
+
+#### Accesing image header values without decompressing
+
+You don't need to decompress the table to see what the decompressed table header is. You can 
+simply call `CompressedTableHDU.getTableHeader()` to peek into the reconstructed header of the original table 
+before it was compressed:
+
+```java
+  CompressedTableHDU compressed = ...
+  Header origHeader = compressed.getTableHeader();
+```
+
+#### Decompressing select parts of a compressed binary table
+
+Sometimes we are interested in a section of the compressed table only. As of 1.18.0, this is really easy also.
+If you just want to uncompress a range of the compressed tiles, you can
+
+```java
+  CompressedImageHDU compressed = ...
+  TableHDU section = compressed.asTableHDU(fromTile, toTile);
+```
+
+And, if you want to surgically access a range of data from select columns only:
+
+```java
+  CompressedImageHDU compressed = ...
+  Object[] colData = compressed.getColumnData(colIndex, fromTile, toTile);
+```
+
 
 <a name="contribute"></a>
 ## How to contribute

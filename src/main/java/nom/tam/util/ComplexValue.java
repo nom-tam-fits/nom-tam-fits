@@ -74,12 +74,20 @@ public class ComplexValue {
     private static final int MIN_STRING_LENGTH = 5; // "(#,#)"
 
     /**
+     * Private constructor
+     */
+    private ComplexValue() {
+
+    }
+
+    /**
      * Instantiates a new complex number value with the specified real and imaginary components.
      *
      * @param re the real part
      * @param im thei maginary part
      */
     public ComplexValue(double re, double im) {
+        this();
         this.re = re;
         this.im = im;
     }
@@ -187,6 +195,8 @@ public class ComplexValue {
      * @see                             FitsFactory#setAllowHeaderRepairs(boolean)
      */
     public ComplexValue(String text) throws IllegalArgumentException {
+        this();
+
         // Allow the use of 'D' or 'd' to mark the exponent, instead of the standard 'E' or 'e'...
         text = text.trim().toUpperCase().replace('D', 'E');
 
@@ -261,5 +271,16 @@ public class ComplexValue {
         }
 
         return s;
+    }
+
+    /**
+     * Just a class we can refer to when we want to specify that we want to use single-precision complex values.
+     * 
+     * @author Attila Kovacs
+     * 
+     * @since  1.18
+     */
+    public static final class Float extends ComplexValue {
+
     }
 }

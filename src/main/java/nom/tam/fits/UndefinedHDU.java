@@ -116,7 +116,7 @@ public class UndefinedHDU extends BasicHDU<UndefinedData> {
      * @throws     FitsException if the data could not be prepared to prescriotion.
      */
     @Deprecated
-    public static Data manufactureData(Header hdr) throws FitsException {
+    public static UndefinedData manufactureData(Header hdr) throws FitsException {
         return new UndefinedData(hdr);
     }
 

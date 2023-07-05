@@ -1,7 +1,7 @@
 <document xmlns="http://maven.apache.org/changes/1.0.0" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:schemaLocation="http://maven.apache.org/changes/1.0.0 http://maven.apache.org/xsd/changes-1.0.0.xsd">
 <body>
 	
-  <release version="1.18.0-rc6" date="2023-06-07" description="Feature release with compression fixes and many improvements.">
+  <release version="1.18.0-rc6" date="2023-07-05" description="Feature release with compression fixes and many improvements.">
       <action type="fix" dev="attipaci" issue="377">
 	      Fixed use of ZDITHER0 keyword to restore or record random generator seed when dithering is used 
 	      in (de)compression.
@@ -10,11 +10,25 @@
 	      Fixed tiled (de)compresssion of some quantized images via GZIP.
       </action>
       <action type="fix" dev="attipaci" issue="436">
-	      Incorrect handling of CONTINUE keywords with no quoted string value (a regression since 1.16).
+	      Fixed incorrect handling of CONTINUE keywords with no quoted string value (a regression since 1.16).
       </action>
       <action type="fix" dev="attipaci" issue="438">
-	      Conversion of variable length float[] or double[] arrays was broken since forever. Now they
-	      workd for the first time as expected.
+	      Conversion of variable length float[] or double[] arrays to complex was broken since forever. Now 
+	      it works for the first time as expected.
+      </action>
+      <action type="fix" dev="attipaci" issue="455">
+	      Fixed incorrect variable-length complex array descriptors in binary tables.
+      </action>
+      <action type="fix" dev="attipaci" issue="445">
+	      Consistent String return for both fixed and variable-length string columns in binary tables.
+      </action>
+      <action type="fix" dev="attipaci" issue="445">
+	      Disable automatic (and inconsistent) detection of complex data, when adding real-valued data 
+	      columns to a binary table. Users should call BinaryTable.setComplexColumn() to explicitly
+	      select if pairwise real values should be converted to complex. 
+      </action>
+      <action type="fix" dev="attipaci" issue="456">
+	      Fixed compressed table tiling with tile sizes that do not divide the table rows.
       </action>
       <action type="add" dev="at88mph" issue="387">
 	      Added ability to stride while tiling.
@@ -25,15 +39,41 @@
       <action type="add" dev="at88mph" issue="400">
 	      Added ability to stream compressed image cutouts.
       </action>
+            <action type="add" dev="attipaci" issue="335">
+	      Added NullDataHDU for more intuitive support for header only HDUs with no associated data.
+      </action>
       <action type="add" dev="at88mph" issue="352">
 	      Added support for alternative RandomAccess immplementations.
       </action>
-      <action type="add" dev="attipaci" issue="335">
-	      Added NullDataHDU for more intuitive support for header only HDUs with no associated data.
+      <action type="add" dev="attipaci" issue="183">
+	      Added support for ComplexValue-based column in BinaryTable 
       </action>
-      <action type="add" dev="attipaci" issue="439">
-	      Allow users to set preference for the type of heap pointer when creating new variable length
-	      binary table columns.
+      <action type="add" dev="attipaci" issue="185">
+	      Added support for bit-based columns (FITS type 'X') in binary tables. 
+      </action>
+      <action type="add" dev="attipaci" issue="185">
+	      Added support for null (undefined) logical values for FITS logical columns in binary tables. 
+      </action>
+      <action type="add" dev="attipaci" issue="448">
+              More user-friendly data access in BinaryTable, using Java boxing for scalar primitive elements,
+              and automatic type conversion (both narrowing and widening) for singleton values when possible.
+              Many new BinaryTable methods to make it easier to build and use binary tables.
+      </action>
+      <action type="add" dev="attipaci" issue="448">
+              Binary table access and editing directly in file, when getting or setting table elements in
+              deferred-read mode.
+      </action>
+      <action type="add" dev="attipaci" issue="453">
+      	      Heap defragmenting to expunge stale heap data, and optimizing heap area for best sequential
+      	      read performance.
+      </action>
+      <action type="add" dev="attipaci" issue="452">
+	     Simplified access to select tiles / regions of compressed data in both tile compressed
+	     tables and images.
+      </action>
+      <action type="add" dev="attipaci" issue="178">
+	     Support for the Substring Array Convention. (We will prefer the use of TDIM over the convention 
+	     for fixed-width string-based columns.)
       </action>
       <action type="update" dev="attipaci" issue="414">
 	      Significantly improved IO performance, now typically 2.5 to 4 times faster for images than prior 
@@ -41,6 +81,9 @@
       </action>
       <action type="update" dev="attipaci" issue="407">
 	      Improved dithering performance by calculating random sequence only once, and more efficiently.
+      </action>
+      <action type="update" dev="attipaci" issue="441">
+              Significantly faster table access and row additions.
       </action>
       <action type="update" dev="attipaci" issue="207">
 	      Unified deferred read implementation for all Data classes.
@@ -61,6 +104,16 @@
       <action type="update" dev="attipaci" issue="437">
 	      Allow accessing binary table elements / rows directly from file in deferred read mode.
 	      The README for reading binary tables has been updated accordingly.
+      </action>
+      <action type="update" dev="attipaci" issue="447">
+              Check data consistency when adding or setting data in binary tables.
+      </action>
+      <action type="update" dev="attipaci" issue="454">
+              Do not use ASCII NUL (0x00) for padding between string array elements, since it violates the
+              FITS standard, in which an ASCII NUL terminates the entire string array entry.
+      </action>
+      <action type="update" dev="attipaci" issue="131">
+	      Tables now support up to ~2-billion rows regardless of entry size,
       </action>
       <action type="update" dev="attipaci" issue="394">
 	      Various tweaks to FitsDate that should not affect user behavior.

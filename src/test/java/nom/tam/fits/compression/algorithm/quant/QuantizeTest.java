@@ -550,7 +550,7 @@ public class QuantizeTest {
 
         FitsFactory.setUseAsciiTables(false);
 
-        BinaryTableHDU hdu = (BinaryTableHDU) FitsFactory.hduFactory(new String[2][3][3]);
+        BinaryTableHDU hdu = (BinaryTableHDU) FitsFactory.hduFactory(new Object[] {new int[2], new int[2][2]});
         base.addColumnsToTable(hdu);
         int[] column = (int[]) hdu.getColumn(Compression.ZBLANK_COLUMN);
         Assert.assertArrayEquals(new int[] {99, 0}, column);

@@ -154,14 +154,14 @@ public class ArrayInputStream extends BufferedInputStream implements InputReader
      * @throws IllegalArgumentException
      *             if the argument is not an array or if it contains an element
      *             that is not supported.
+     * @throws EOFException
+     *             if already at the end of file.
      * @throws IOException
-     *             if there was an IO error, uncluding end-of-file (
-     *             {@link EOFException}, before all components of the supplied
-     *             array were populated from the input.
+     *             if there was an IO error
      * @see #readArrayFully(Object)
      * @since 1.18
      */
-    public void readImage(Object o) throws IOException, IllegalArgumentException {
+    public void readImage(Object o) throws EOFException, IOException, IllegalArgumentException {
         decoder.readImage(o);
     }
 

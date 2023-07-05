@@ -65,54 +65,58 @@ public interface ArrayDataInput extends InputReader, DataInput, FitsIO {
      * Read an array of byte's. The call generally follows the contract of {@link InputReader#read(byte[], int, int)},
      * for the full length of the array, starting from the first element (index 0).
      *
-     * @return             number of bytes read, or -1 if at the end of the file.
+     * @return              number of bytes read, or -1 if at the end of the file.
      *
-     * @see                #readFully(byte[])
+     * @see                 #readFully(byte[])
      *
-     * @param  buf         array of byte's.
+     * @param  buf          array of byte's.
      *
-     * @throws IOException if one of the underlying read operations failed
+     * @throws EOFException if already at the end of file.
+     * @throws IOException  if one of the underlying read operations failed
      */
-    int read(byte[] buf) throws IOException;
+    int read(byte[] buf) throws EOFException, IOException;
 
     /**
      * Read an array of boolean's.
      *
-     * @return             number of bytes read.
+     * @return              number of bytes read.
      *
-     * @param  buf         array of boolean's.
+     * @param  buf          array of boolean's.
      *
-     * @throws IOException if one of the underlying read operations failed
+     * @throws EOFException if already at the end of file.
+     * @throws IOException  if one of the underlying read operations failed
      */
-    default int read(boolean[] buf) throws IOException {
+    default int read(boolean[] buf) throws EOFException, IOException {
         return read(buf, 0, buf.length);
     }
 
     /**
      * Read a segment of an array of boolean's.
      *
-     * @return             number of bytes read.
+     * @return              number of bytes read.
      *
-     * @param  buf         array of boolean's.
-     * @param  offset      start index in the array
-     * @param  size        number of array elements to read
+     * @param  buf          array of boolean's.
+     * @param  offset       start index in the array
+     * @param  size         number of array elements to read
      *
-     * @throws IOException if one of the underlying read operations failed
+     * @throws EOFException if already at the end of file.
+     * @throws IOException  if one of the underlying read operations failed
      */
-    int read(boolean[] buf, int offset, int size) throws IOException;
+    int read(boolean[] buf, int offset, int size) throws EOFException, IOException;
 
     /**
      * Read an array of booleans, possibly including legal <code>null</code> values.
      *
-     * @return             number of bytes read.
+     * @return              number of bytes read.
      *
-     * @param  buf         array of boolean's.
+     * @param  buf          array of boolean's.
+     * 
+     * @throws EOFException if already at the end of file.
+     * @throws IOException  if one of the underlying read operations failed
      *
-     * @throws IOException if one of the underlying read operations failed
-     *
-     * @since              1.16
+     * @since               1.16
      */
-    default int read(Boolean[] buf) throws IOException {
+    default int read(Boolean[] buf) throws EOFException, IOException {
         return read(buf, 0, buf.length);
     }
 
@@ -122,17 +126,18 @@ public interface ArrayDataInput extends InputReader, DataInput, FitsIO {
      * to replace that with a more efficient block read implementation and/or to add the desired translation for
      * <code>null</code> values.
      *
-     * @return             number of bytes read.
+     * @return              number of bytes read.
      *
-     * @param  buf         array of boolean's.
-     * @param  offset      start index in the array
-     * @param  size        number of array elements to read
+     * @param  buf          array of boolean's.
+     * @param  offset       start index in the array
+     * @param  size         number of array elements to read
      *
-     * @throws IOException if one of the underlying read operations failed
+     * @throws EOFException if already at the end of file.
+     * @throws IOException  if one of the underlying read operations failed
      *
-     * @since              1.16
+     * @since               1.16
      */
-    default int read(Boolean[] buf, int offset, int size) throws IOException {
+    default int read(Boolean[] buf, int offset, int size) throws EOFException, IOException {
         int to = offset + size;
         for (int i = offset; i < to; i++) {
             buf[i] = readBoolean();
@@ -143,158 +148,170 @@ public interface ArrayDataInput extends InputReader, DataInput, FitsIO {
     /**
      * Read an array of char's.
      *
-     * @return             number of bytes read.
+     * @return              number of bytes read.
      *
-     * @param  buf         array of char's.
+     * @param  buf          array of char's.
      *
-     * @throws IOException if one of the underlying read operations failed
+     * @throws EOFException if already at the end of file.
+     * @throws IOException  if one of the underlying read operations failed
      */
-    default int read(char[] buf) throws IOException {
+    default int read(char[] buf) throws EOFException, IOException {
         return read(buf, 0, buf.length);
     }
 
     /**
      * Read a segment of an array of char's.
      *
-     * @return             number of bytes read.
+     * @return              number of bytes read.
      *
-     * @param  buf         array of char's.
-     * @param  offset      start index in the array
-     * @param  size        number of array elements to read
+     * @param  buf          array of char's.
+     * @param  offset       start index in the array
+     * @param  size         number of array elements to read
      *
-     * @throws IOException if one of the underlying read operations failed
+     * @throws EOFException if already at the end of file.
+     * @throws IOException  if one of the underlying read operations failed
      */
-    int read(char[] buf, int offset, int size) throws IOException;
+    int read(char[] buf, int offset, int size) throws EOFException, IOException;
 
     /**
      * Read an array of double's.
      *
-     * @return             number of bytes read.
+     * @return              number of bytes read.
      *
-     * @param  buf         array of double's.
+     * @param  buf          array of double's.
      *
-     * @throws IOException if one of the underlying read operations failed
+     * @throws EOFException if already at the end of file.
+     * @throws IOException  if one of the underlying read operations failed
      */
-    default int read(double[] buf) throws IOException {
+    default int read(double[] buf) throws EOFException, IOException {
         return read(buf, 0, buf.length);
     }
 
     /**
      * Read a segment of an array of double's.
      *
-     * @return             number of bytes read.
+     * @return              number of bytes read, or -1 if at the end of file/stream
      *
-     * @param  buf         array of double's.
-     * @param  offset      start index in the array
-     * @param  size        number of array elements to read
+     * @param  buf          array of double's.
+     * @param  offset       start index in the array
+     * @param  size         number of array elements to read
      *
-     * @throws IOException if one of the underlying read operations failed
+     * @throws EOFException if already at the end of file.
+     * @throws IOException  if one of the underlying read operations failed
      */
-    int read(double[] buf, int offset, int size) throws IOException;
+    int read(double[] buf, int offset, int size) throws EOFException, IOException;
 
     /**
      * Read an array of float's.
      *
-     * @return             number of bytes read.
+     * @return              number of bytes read.
      *
-     * @param  buf         array of float's.
+     * @param  buf          array of float's.
      *
-     * @throws IOException if one of the underlying read operations failed
+     * @throws EOFException if already at the end of file.
+     * @throws IOException  if one of the underlying read operations failed
      */
-    default int read(float[] buf) throws IOException {
+    default int read(float[] buf) throws EOFException, IOException {
         return read(buf, 0, buf.length);
     }
 
     /**
      * Read a segment of an array of float's.
      *
-     * @return             number of bytes read.
+     * @return              number of bytes read.
      *
-     * @param  buf         array of float's.
-     * @param  offset      start index in the array
-     * @param  size        number of array elements to read
+     * @param  buf          array of float's.
+     * @param  offset       start index in the array
+     * @param  size         number of array elements to read
      *
-     * @throws IOException if one of the underlying read operations failed
+     * @throws EOFException if already at the end of file.
+     * @throws IOException  if one of the underlying read operations failed
      */
-    int read(float[] buf, int offset, int size) throws IOException;
+    int read(float[] buf, int offset, int size) throws EOFException, IOException;
 
     /**
      * Read an array of int's.
      *
-     * @return             number of bytes read.
+     * @return              number of bytes read.
      *
-     * @param  buf         array of int's.
+     * @param  buf          array of int's.
      *
-     * @throws IOException if one of the underlying read operations failed
+     * @throws EOFException if already at the end of file.
+     * @throws IOException  if one of the underlying read operations failed
      */
-    default int read(int[] buf) throws IOException {
+    default int read(int[] buf) throws EOFException, IOException {
         return read(buf, 0, buf.length);
     }
 
     /**
      * Read a segment of an array of int's.
      *
-     * @return             number of bytes read.
+     * @return              number of bytes read.
      *
-     * @param  buf         array of int's.
-     * @param  offset      start index in the array
-     * @param  size        number of array elements to read
+     * @param  buf          array of int's.
+     * @param  offset       start index in the array
+     * @param  size         number of array elements to read
      *
-     * @throws IOException if one of the underlying read operations failed
+     * @throws EOFException if already at the end of file.
+     * @throws IOException  if one of the underlying read operations failed
      */
-    int read(int[] buf, int offset, int size) throws IOException;
+    int read(int[] buf, int offset, int size) throws EOFException, IOException;
 
     /**
      * Read a segment of an array of long's.
      *
-     * @return             number of bytes read.
+     * @return              number of bytes read.
      *
-     * @param  buf         array of long's.
+     * @param  buf          array of long's.
      *
-     * @throws IOException if one of the underlying read operations failed
+     * @throws EOFException if already at the end of file.
+     * @throws IOException  if one of the underlying read operations failed
      */
-    default int read(long[] buf) throws IOException {
+    default int read(long[] buf) throws EOFException, IOException {
         return read(buf, 0, buf.length);
     }
 
     /**
      * Read a segment of an array of long's.
      *
-     * @return             number of bytes read.
+     * @return              number of bytes read.
      *
-     * @param  buf         array of long's.
-     * @param  offset      start index in the array
-     * @param  size        number of array elements to read
+     * @param  buf          array of long's.
+     * @param  offset       start index in the array
+     * @param  size         number of array elements to read
      *
-     * @throws IOException if one of the underlying read operations failed
+     * @throws EOFException if already at the end of file.
+     * @throws IOException  if one of the underlying read operations failed
      */
-    int read(long[] buf, int offset, int size) throws IOException;
+    int read(long[] buf, int offset, int size) throws EOFException, IOException;
 
     /**
      * Read an array of short's.
      *
-     * @return             number of bytes read.
+     * @return              number of bytes read.
      *
-     * @param  buf         array of short's.
+     * @param  buf          array of short's.
      *
-     * @throws IOException if one of the underlying read operations failed
+     * @throws EOFException if already at the end of file.
+     * @throws IOException  if one of the underlying read operations failed
      */
-    default int read(short[] buf) throws IOException {
+    default int read(short[] buf) throws EOFException, IOException {
         return read(buf, 0, buf.length);
     }
 
     /**
      * Read a segment of an array of short's.
      *
-     * @return             number of bytes read.
+     * @return              number of bytes read.
      *
-     * @param  buf         array of short's.
-     * @param  offset      start index in the array
-     * @param  size        number of array elements to read
+     * @param  buf          array of short's.
+     * @param  offset       start index in the array
+     * @param  size         number of array elements to read
      *
-     * @throws IOException if one of the underlying read operations failed
+     * @throws EOFException if already at the end of file.
+     * @throws IOException  if one of the underlying read operations failed
      */
-    int read(short[] buf, int offset, int size) throws IOException;
+    int read(short[] buf, int offset, int size) throws EOFException, IOException;
 
     /**
      * @deprecated                          Use {@link #readLArray(Object)} instead.
@@ -304,13 +321,14 @@ public interface ArrayDataInput extends InputReader, DataInput, FitsIO {
      *
      * @return                              the number of bytes read from the input.
      *
+     * @throws     EOFException             if already at the end of file.
      * @throws     IOException              if there was an IO error, other than the end-of-file, while reading from the
      *                                          input
      * @throws     IllegalArgumentException if the supplied object is not a Java array or if it contains Java types that
      *                                          are not supported by the decoder.
      */
     @Deprecated
-    default int readArray(Object o) throws IOException, IllegalArgumentException {
+    default int readArray(Object o) throws EOFException, IOException, IllegalArgumentException {
         return (int) readLArray(o);
     }
 
@@ -325,6 +343,7 @@ public interface ArrayDataInput extends InputReader, DataInput, FitsIO {
      *
      * @return                          the number of bytes read from the input.
      *
+     * @throws EOFException             if already at the end of file.
      * @throws IOException              if there was an IO error, other than the end-of-file, while reading from the
      *                                      input
      * @throws IllegalArgumentException if the supplied object is not a Java array or if it contains Java types that are
@@ -332,7 +351,7 @@ public interface ArrayDataInput extends InputReader, DataInput, FitsIO {
      *
      * @see                             #readArrayFully(Object)
      */
-    long readLArray(Object o) throws IOException, IllegalArgumentException;
+    long readLArray(Object o) throws EOFException, IOException, IllegalArgumentException;
 
     /**
      * Reads a Java array from the input, populating all elements, or else throwing and {@link java.io.EOFException}.
@@ -340,8 +359,8 @@ public interface ArrayDataInput extends InputReader, DataInput, FitsIO {
      * @param  o                        a Java array object, including heterogeneous arrays of arrays. If
      *                                      <code>null</code>, nothing will be read from the output.
      *
-     * @throws IOException              if there was an IO error, including and {@link java.io.EOFException}, while
-     *                                      reading from the input
+     * @throws EOFException             if already at the end of file.
+     * @throws IOException              if there was an IO error.
      * @throws IllegalArgumentException if the supplied object is not a Java array or if it contains Java types that are
      *                                      not supported by the decoder.
      *
@@ -350,7 +369,7 @@ public interface ArrayDataInput extends InputReader, DataInput, FitsIO {
      *
      * @since                           1.16
      */
-    default void readArrayFully(Object o) throws IOException, IllegalArgumentException {
+    default void readArrayFully(Object o) throws EOFException, IOException, IllegalArgumentException {
         if (readLArray(o) != FitsEncoder.computeSize(o)) {
             throw new EOFException("Incomplete array read (assuming default FITS format).");
         }
@@ -361,6 +380,7 @@ public interface ArrayDataInput extends InputReader, DataInput, FitsIO {
      *
      * @param  o                        An any-dimensional array containing only numerical types
      *
+     * @throws EOFException             if already at the end of file.
      * @throws IllegalArgumentException if the argument is not an array or if it contains an element that is not
      *                                      supported.
      * @throws IOException              if there was an IO error, uncluding end-of-file ({@link EOFException}, before
@@ -392,17 +412,20 @@ public interface ArrayDataInput extends InputReader, DataInput, FitsIO {
      * be fully accomplished... (However that isn't supposed to happen with a random access file, so there is probably
      * no operational difference).
      *
-     * @param  distance    the number of bytes to skip. Negative arguments are generally allowed, and subclass
-     *                         implementations may support it or else return 0 when a negative distance is specified.
+     * @param  distance     the number of bytes to skip. Negative arguments are generally allowed, and subclass
+     *                          implementations may support it or else return 0 when a negative distance is specified.
      *
-     * @return             the number of bytes actually skipped
+     * @return              the number of bytes actually skipped
      *
-     * @throws IOException if the underlying stream failed
+     * @throws EOFException if the end (or beginning) of the stream was reached before skipping the required number of
+     *                          bytes. This does not happen typically with forward skips on random access files, where
+     *                          positioning beyond the EOF is generally allowed for writing.
+     * @throws IOException  if the underlying stream failed
      *
-     * @see                java.io.InputStream#skip(long)
-     * @see                #skipAllBytes(long)
+     * @see                 java.io.InputStream#skip(long)
+     * @see                 #skipAllBytes(long)
      */
-    long skip(long distance) throws IOException;
+    long skip(long distance) throws EOFException, IOException;
 
     /**
      * Skips a number of bytes from the input. This differs from the {@link #skip(long)} method in that it will throw an

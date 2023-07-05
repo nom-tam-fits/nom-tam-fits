@@ -51,19 +51,19 @@ package nom.tam.util;
 public interface DataTable {
 
     /**
-     * Indexed access to data by column
+     * <p>
+     * Returns the data for a particular column in as an array of elements. See
+     * {@link nom.tam.fits.TableData#addColumn(Object)} for more information
+     * about the format of data elements in general.
+     * </p>
      * 
      * @param column
-     *            the column index
-     * @return an object containing the column data (for all rows) of the
-     *         specified column, or possubly <code>null</code>.
-     * @deprecated Strongly discouraged, since it returns data in an unnatural
-     *             flattened format or heap pointers only for variable-sized
-     *             data (use {@link #getElement(int, int)} instead)
-     * @see #getNCols()
+     *            The 0-based column index.
+     * @return an array of primitives (for scalar columns), or else an
+     *         <code>Object[]</code> array, or possibly <code>null</code>
      * @see #setColumn(int, Object)
-     * @see #getRow(int)
      * @see #getElement(int, int)
+     * @see #getNCols()
      */
     Object getColumn(int column);
 

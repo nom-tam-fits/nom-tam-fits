@@ -106,8 +106,8 @@ public abstract class Data implements FitsElement {
      * Checks if the data should be assumed to be in deferred read mode.
      *
      * @return <code>true</code> if it is set for deferred reading at a later time, or else <code>false</code> if this
-     *             data is currently loaded into RAM.
-     *
+     *             data is currently loaded into RAM. #see {@link #detach()}
+     * 
      * @since  1.17
      */
     @SuppressWarnings("resource")
@@ -294,7 +294,7 @@ public abstract class Data implements FitsElement {
      */
     @Override
     public void read(ArrayDataInput in) throws PaddingException, FitsException {
-        clearFileOffset();
+        detach();
 
         if (in == null) {
             return;
@@ -362,9 +362,24 @@ public abstract class Data implements FitsElement {
                 / FitsFactory.FITS_BLOCK_SIZE == (getTrueSize() + FITS_BLOCK_SIZE_MINUS_ONE) / FitsFactory.FITS_BLOCK_SIZE;
     }
 
-    private void clearFileOffset() {
-        fileOffset = -1;
+    /**
+     * Detaches this data object from the input (if any), such as a file or stream, but not before loading data from the
+     * previously assigned input into memory.
+     * 
+     * @throws FitsException if there was an issue loading the data from the previous input (if any)
+     * 
+     * @see                  #isDeferred()
+     * 
+     * @since                1.18
+     */
+    public void detach() throws FitsException {
+        ensureData();
+        clearInput();
+    }
+
+    private void clearInput() {
         input = null;
+        fileOffset = -1;
         dataSize = 0L;
     }
 
@@ -381,7 +396,7 @@ public abstract class Data implements FitsElement {
             dataSize = getTrueSize();
             input = (RandomAccess) o;
         } else {
-            clearFileOffset();
+            clearInput();
         }
     }
 
