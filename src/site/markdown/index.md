@@ -828,7 +828,7 @@ before writing out binary tables to a file or stream:
 just before calling `write()`.
  
 
-<a name="building-by-column"></a>
+<a name="building-by-row"></a>
 ### Buiding tables row-by-row
 
 As of 1.18 building tables one row at a time is both easy and efficient -- and may be the least confusing way to get
@@ -897,6 +897,7 @@ table is encompassed in a HDU, it is generally not safe to edit it beyond additi
 way to keep the header perfectly in sync. Thus it is recommended that you create table HDUs only after the table data has been fully populated.
 
 
+<a name="building-by-column"></a>
 ### Buiding tables column-by-column
 
 Sometimes we might want to assemble a table from a selection of data which will readily consitute columns in the table. 
