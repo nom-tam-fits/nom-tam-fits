@@ -765,5 +765,57 @@
         <skip.backbox.images>true</skip.backbox.images>
       </properties>
     </profile>
+    <profile>
+      <id>public-api</id>
+      <build>
+        <plugins>
+          <plugin>
+            <groupId>org.apache.maven.plugins</groupId>
+            <artifactId>maven-javadoc-plugin</artifactId>
+            <configuration>
+              <source>8</source>
+              <failOnError>false</failOnError>
+              <aggregate>false</aggregate>
+              <doctitle>
+                ${project.name} ${project.version} Public User API
+              </doctitle>
+              <windowtitle>
+                ${project.name} ${project.version} Public User API
+              </windowtitle>
+              <show>public</show>
+              <excludePackageNames>
+                nom.tam.fits.compress:
+                nom.tam.fits.compression.algorithm.gzip:
+                nom.tam.fits.compression.algorithm.gzip2:
+                nom.tam.fits.compression.algorithm.plio:
+                nom.tam.fits.compression.algorithm.uncompressed:
+                nom.tam.fits.compression.provider:
+                nom.tam.fits.compression.provider.param.*:
+                nom.tam.image.compression.bintable:
+                nom.tam.image.compression.tile:
+                nom.tam.image.compression.tile.mask:
+                nom.tam.image.tile.*
+              </excludePackageNames>
+              <sourceFileExcludes>
+                <exclude>**/CompressionLibLoaderProtection.java</exclude>
+                <exclude>**/CloseIS.java</exclude>
+                <exclude>**/ICompressor*.java</exclude>
+                <exclude>**/HCompress.java</exclude>
+                <exclude>**/HDecompress.java</exclude>
+                <exclude>**/HCompressor.java</exclude>
+                <exclude>**/RiceCompressor.java</exclude>
+                <exclude>**/BitBuffer.java</exclude>
+                <exclude>**/BitBuffer.java</exclude>
+                <exclude>**/Quantize.java</exclude>
+                <exclude>**/QuantizeProcessor.java</exclude>
+                <exclude>**/FitsCopy.java</exclude>
+                <exclude>**/FitsReader.java</exclude>
+                <exclude>**/Main.java</exclude>
+              </sourceFileExcludes>
+            </configuration>
+          </plugin>
+        </plugins>
+      </build>
+    </profile>
   </profiles>
 </project>

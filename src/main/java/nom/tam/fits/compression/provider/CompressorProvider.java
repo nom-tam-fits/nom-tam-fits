@@ -282,9 +282,6 @@ public class CompressorProvider implements ICompressorProvider {
             Class<?> baseType) {
         Class<?> quantType = null;
 
-        // System.err.println(" ### quant = " + quantAlgorithm + ", algo = " + compressionAlgorithm + ", base = " +
-        // baseType.getSimpleName());
-
         if (quantAlgorithm != null) {
             // Standard compression via 32-bit integers...
             if (baseType.equals(double.class) || baseType.equals(float.class)) {
