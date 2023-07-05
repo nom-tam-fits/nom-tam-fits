@@ -430,11 +430,10 @@ Note that for best performance you should access elements in monotonically incre
 least for the rows, but it does not hurt to follow the same principle for columns inside the 
 loops also. This will help avoid excess buffering that way be required at times for backward jumps.
 
+
 The library provides methods for accessing entire rows and columns also via the `TableData.getRow(int)` and 
 `TableData.getColumn(int)` or `BinaryTable.getColumn(String)` methods. However, we recommend against using these going
 forward because these methods can be confounding to use, with overlapping data types and/or dimensions.
-
-
 
 <a name="read-tolerance"></a>
 ### Tolerance to standard violations in 3rd party FITS files.
@@ -519,6 +518,77 @@ are extensions, and so, they cannot be the first HDU in a file. Thus, if a table
 container, it will be preceded by a dummy primary HDU, and our data will actually be written as the
 second HDU (Java index 1).
 
+
+#### Binary versus ASCII tables
+
+When writing simple tables it may be possible to write the tables in either binary or ASCII format, provided all columns are scalar types. By default, the library will create and write binary tables for such data. To create ASCII tables instead the user should call `FitsFactory.setUseAsciiTables(true)` first. 
+
+
+<a name="building-tables-from-data"></a>
+### Building table HDUs from data
+
+If you already have an `Object[rows][cols]` data table, in which each entry represents data for a row and column, you can create
+a an appropriate table HDU from it as:
+
+```java
+   Object[][] rowArray = ...
+  
+   BinaryTableHDU tableHDU = BinaryTableHDU.encapsulate(rowArray);
+```
+
+There are some requirements on the array though:
+
+ - All rows must contain the same number of columns
+ - The entries for the same column in each row must match in their type
+ - All entries in the table must be arrays themselves, such as primitive arrays (e.g. `int[]`, `float[][]`)
+   or else `String[]` arrays. Scalar values are stored as arrays of 1 (e.g. `short[1]`)
+ - If entries are multi-dimensional arrays, all rows in a column must have the same dimensionality and shape.
+ - If entries are one-dimensional, they can vary in size from row to row
+ - Complex-valued arrays must be converted to arrays of `float[2]` or `double[2]`. (Single complex
+   values can be simply `float[2]` or `double[2]`. After creating the binary table, you will
+   want to call `setComplexColumn(int)` for every complex column you added this way to make sure they
+   are stored as such in FITS (rather than arrays of `float` or `double`).
+   
+
+#### Buiding tables one column at a time
+
+Sometimes we might want to assemble a table on-the-fly. This can be done efficiently if we have the different
+data columns readily at hand. 
+
+```java
+   BinaryTable tab = new BinaryTable();
+  
+   double[] timestamps = new double[nRows]; 
+   ...
+   table.addColumn(timeStamps);
+ 
+   ...
+ 
+   float[][] spectra = new float[nRows][];
+   ...
+   table.addColumn(spectra);
+   
+   ...
+```
+  
+  - All columns added this way must contain the same number of rows
+  - In column data, scalars can be simply elements in an primitive array, in which each entry contains
+    the scalar value for a row. (I.e. unlike above for entire tables, we do not have to wrap scalar
+    values in self-contained arrays of 1)
+  - Other than the above, the same rules apply as for creating HDUs from complete table data above.
+
+
+
+#### Buiding tables one row at a time
+
+Unfortunately, due to the design of our tables, adding rows to tables is extremely inefficient at present. 
+As such, we advise against it for now. It's really too bad, because it would be nice to build up tables in this way,
+for example from real-time data that comes in. Perhaps we will have better support for it in the future. Stay tuned...
+
+
+<a name="writing-tables"></a>
+### Writing tables
+Just as with reading, there are a variety of options for writing tables.
 
 
 <a name="incremental-writing"></a>
@@ -1302,6 +1372,7 @@ Starting with version 1.15.0 compression of both images and tables is fully supp
 <a name="file-compression"></a>
 ### File level compression
 
+
 It is common practice to compress FITS files using __gzip__ (`.gz` extension) so they can be exchanged in a more 
 compact form. The library supports the creation of gzipped fits out of the box, by wrapping the file's output 
 stream into a `GZIPOutputStream` or , such as:
@@ -1345,10 +1416,6 @@ The tiling of non-2D images follows the
 [CFITSIO convention](https://heasarc.gsfc.nasa.gov/docs/software/fitsio/compression.html) with 2D tiles, 
 where the tile size is set to 1 in the extra dimensions.
 
-Mote, that just like regular tables, compressed HDUs cannot be the primary HDU in a FITS, Thus, remember
-to add a `NullDataHDU` at the top of your `Fits` object, or at the head of a new FITS output file/stream
-before you add/write compressed HDUs. 
-
 Compressing an image HDU is typically a multi-step process:
 
  1. Create a `CompressedImageHDU`, e.g. with `fromImageHDU(ImageHDU, int...)`:
@@ -1368,8 +1435,8 @@ Compressing an image HDU is typically a multi-step process:
             .setQuantAlgorithm(Compression.ZQUANTIZ_SUBTRACTIVE_DITHER_1)
             .preserveNulls(Compression.ZCMPTYPE_HCOMPRESS_1);
 ```
-    
- 3. Set compression (and quantization) options, via calling on `getCompressOption(Class)`:
+
+ 3. Set compression (and quantization) options, via calling on g`etCompressOption(Class)`:
  
  ```java
    compressed.getCompressOption(RiceCompressOption.class).setBlockSize(32);
@@ -1389,8 +1456,8 @@ or stream, for example (just not as the first HDU in a FITS...).
 The reverse process is simply via the `asImageHDU()` method. E.g.:
 
 ```java
-   CompressedImageHDU compressed = ...
-   ImageHDU image = compressed.asImageHDU();
+  CompressedImageHDU compressed = ...
+  ImageHDU image = compressed.asImageHDU();
 ```
 
 When compressing or decompression images, all available CPU's are automatically utilized.
@@ -1421,6 +1488,73 @@ class to decompress only the selected image area. As of 1.18.0, this is really e
   int[] cutuoutSize = ...
    
   ImageHDU cutout = compressed.getTileHDU(fromPixels, cutoutSize);
+
+
+<a name="table-compression"></a>
+### Table compression
+
+Table compression is also fully supported in nom-tam-fits from version 1.15.0. When a table is compressed 
+the effect is that within each column we compress 'tiles' that are sets of contiguous rows. The compression 
+algorithms are the same as the ones provided for image compression. Default compression is `GZIP_2`. 
+(In principle, every column could use a different algorithm.)
+
+Tile compression mimics image compression, and is typically a 2-step process:
+
+ 1. Create a `CompressedTableHDU`, e.g. with `fromBinaryTableHDU(BinaryTableHDU, int, String...)`, using the 
+    specified number of table rows per compressed block, and compression algorithm(s):
+ 
+```java
+   BinaryTableHDU table = ...
+   CompressedTableHDU compressed = CompressedTableHDU.fromBinaryTableHDU(table, 4, Compression.GZIP_2);
+```
+ 
+ 2. Perform the compression via `compress()`:
+
+```java
+   compressed.compress();
+```
+
+The two step process (as opposed to a single-step one) was probably chosen because it mimics that of `CompressedImageHDU`, where further configuration steps may be inserted in-between. But, of course we can combine the steps into a single line:
+
+```java
+   CompressedTableHDU compressed = CompressedTableHDU.fromBinaryTableHDU(table, 4, Compression.GZIP_2).compress();
+```
+
+After the compression, the compressed table HDU can be handled just like any other HDU, and written to a file or stream, for example.
+
+The reverse process is simply via the `asBinaryTableHDU()` method. E.g.:
+
+```java
+    CompressedTableHDU compressed = ...
+    BinaryTableHDU table = compressed.asBinaryTableHDU();
+```
+
+#### Accesing image header values without decompressing
+
+You don't need to decompress the table to see what the decompressed table header is. You can 
+simply call `CompressedTableHDU.getTableHeader()` to peek into the reconstructed header of the original table 
+before it was compressed:
+
+```java
+   CompressedTableHDU compressed = ...
+   Header origHeader = compressed.getTableHeader();
+```
+
+#### Decompressing select parts of a compressed binary table
+
+Sometimes we are interested in a section of the compressed table only. As of 1.18.0, this is really easy also.
+If you just want to uncompress a range of the compressed tiles, you can
+
+```java
+   CompressedImageHDU compressed = ...
+   TableHDU section = compressed.asTableHDU(fromTile, toTile);
+```
+
+And, if you want to surgically access a range of data from select columns only:
+
+```java
+   CompressedImageHDU compressed = ...
+   Object[] colData = compressed.getColumnData(colIndex, fromTile, toTile);
 ```
 
 
@@ -1439,7 +1573,6 @@ Tile compression mimics image compression, and is typically a 2-step process:
  
 ```java
   BinaryTableHDU table = ...
-
   CompressedTableHDU compressed = CompressedTableHDU.fromBinaryTableHDU(table, 4, Compression.GZIP_2);
 ```
  
@@ -1469,7 +1602,7 @@ The reverse process is simply via the `asBinaryTableHDU()` method. E.g.:
 
 Just like with images, compressing or decompression tables will utilize all available CPU's are automatically.
 
-#### Accesing image header values without decompressing
+#### Accesing table header values without decompressing
 
 You don't need to decompress the table to see what the decompressed table header is. You can 
 simply call `CompressedTableHDU.getTableHeader()` to peek into the reconstructed header of the original table 
@@ -1487,14 +1620,14 @@ If you just want to uncompress a range of the compressed tiles, you can
 
 ```java
   CompressedImageHDU compressed = ...
-  TableHDU section = compressed.asTableHDU(fromTile, toTile);
+  TableHDU section = compressed.asBinaryTableHDU(fromTile, toTile);
 ```
 
 And, if you want to surgically access a range of data from select columns only:
 
 ```java
   CompressedImageHDU compressed = ...
-  Object[] colData = compressed.getColumnData(colIndex, fromTile, toTile);
+  Object colData = compressed.getColumnData(colIndex, fromTile, toTile);
 ```
 
 
