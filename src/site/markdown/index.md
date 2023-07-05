@@ -7,9 +7,9 @@
 [![Project Site](https://github.com/nom-tam-fits/nom-tam-fits/actions/workflows/site.yml/badge.svg)](https://github.com/nom-tam-fits/nom-tam-fits/actions/workflows/site.yml)
 
  - [Introduction](#introduction)
- - [Where to get it](#where-to-get-it)
  - [Reading FITS files](#reading-fits-files)
  - [Writing data](#writing-data)
+ - [Modifying existing files](#modifying-existing-files)
  - [Buliding binary tables from local data](#building-tables-from-data)
  - [FITS headers](#fits-headers)
  - [Compression support](#compression-support)
@@ -21,12 +21,15 @@
 
 
  - [What is FITS](#what-is-fits)
- - [General philosophy](#general-philosophy)
+ - [Where to get it](#where-to-get-it)
  - [FITS vs Java data types](#fits-vs-java-data-types)
 
 This document describes the nom.tam FITS library, a full-function Java library for reading and writing FITS files. More detailed documentation for the classes is given in their JavaDocs.
 
 As of version 1.16 of this library, we provide full support for the [FITS 4.0 standard](https://fits.gsfc.nasa.gov/fits_standard.html) for reading and writing, although some parts of the standard (such as WCS coordinate systems) may require further interpretation beyond what is offered by the library.
+
+The library is concerned only with the structural issues for transforming between the internal Java and external FITS representations. 
+It knows nothing about the semantics of FITS files, including conventions ratified as FITS standards such as the FITS world coordinate systems. The nom.tam library was originally written in Java 1.0 and its design and implementation were strongly influenced by the limited functionality and efficiencies of early versions of Java.
 
 This is an open-source, community maintained, project hosted on github as [nom-tam-fits](https://github.com/nom-tam-fits/nom-tam-fits). Further information and documentation, including API docs, can be found on the [project site](http://nom-tam-fits.github.io/nom-tam-fits/index.html).
 
@@ -62,57 +65,9 @@ Often a null-image is used: this is possible by requesting an image HDU with an 
 
  6. **Foreign File HDUs** can encapsulate various other files within the FITS. Foreign file HDUs are a recognised convention, but not (yet) officially part of the FITS standard. We do not support foreign file encapsulation yet, but it is something that we are considering for a future release.
 
-  
-<a name="general-philosophy"></a>
-### General philosophy
-
-This library is concerned only with the structural issues for transforming between the internal Java and external FITS representations. 
-It knows nothing about the semantics of FITS files, including conventions ratified as FITS standards such as the FITS world coordinate systems. 
-The nom.tam library was originally written in Java 1.0 and its design and implementation were strongly influenced by the limited functionality and efficiencies of early versions of Java.
-
-
-<a name="fits-vs-java-data-types"></a>
-### FITS vs Java data types
-
-#### Signed vs unsigned bytes
-
-Java bytes are signed, but FITS bytes are not.
-If any arithmetic processing is to be done on byte data values,
-users may need to be careful of Java’s automated conversion of bytes to integers which includes sign extension.
-
-E.g.
-
-```java
-  byte[] bimg = new byte[100]; // data
-  for (int i=0; i<bimg.length; i += 1) {
-       bimg[i] = (byte)(bimg[i]&0xFF - offset);
-  }
-```
-    
-This idiom of AND-ing the byte values with `0xFF` is generally the way to prevent undesired sign extension of bytes.
-
-#### Complex values and data
-
-Java has no native complex data types, but FITS binary tables support both single and double precision complex data in tables.
-These are represented as `float[2]` and `double[2]` arrays in the `nom.tam` library. 
-
-As of version 1.16, we added a `ComplexValue` object for use in headers. At this point, 
-the new type is not being used with tables to maintain backward compatibility to the original behavior described above.
-This may change in a future release to use `ComplexValue` more universally.
-
-#### Strings
-
-FITS generally represents character strings a byte arrays of ASCII characters. The library automatically converts between Java `String`s and their FITS representations, by the appropriate downcasting `char` to `byte`. Therefore, you should be careful to avoid using extended Unicode characters (beyond the ASCII set) in `String`s, which will be written to FITS.
-
-It is also possible to write `char[]` arrays to FITS, Unfortunately, historically the library wrote `char[]` arrays as 16-bit Unicode, 
-rather than the 8-bit ASCII standard of FITS, and consequently (because there is no other corresponding 16-bit FITS datatype) these would be read back as `short[]`. As of version 1.16, you can change that behavior by `FitsFactory.setUseUnicodeChars(false)` to treat `char[]` arrays the same way as `String`s (and to read them back as `String`s). 
-
-
-
-
 
 <a name="where-to-get-it"></a>
-## Where to get it
+### Where to get it
 
 Official releases of the library are published on [Github](https://github.com/nom-tam-fits/nom-tam-fits/releases) and also available on [Maven Central](http://search.maven.org/#search|ga|1|g%3A%22gov.nasa.gsfc.heasarc%22 "Maven Central"). Documentation can be found on the project site at [http://nom-tam-fits.github.io/nom-tam-fits](http://nom-tam-fits.github.io/nom-tam-fits/index.html).
 
@@ -137,6 +92,35 @@ If you want to try the bleeding edge version of nom-tam-fits, you can get it fro
   </repository>
 </repositories>    
 ```
+
+
+
+<a name="fits-vs-java-data-types"></a>
+### FITS vs Java data types
+
+#### Signed vs unsigned bytes
+
+Java bytes are signed, but FITS bytes are not.
+If any arithmetic processing is to be done on byte data values,
+users may need to be careful of Java’s automated conversion of bytes to integers which includes sign extension.
+
+E.g.
+
+```java
+  byte[] bimg = new byte[100]; // data
+  for (int i=0; i<bimg.length; i += 1) {
+       bimg[i] = (byte)(bimg[i]&0xFF - offset);
+  }
+```
+    
+This idiom of AND-ing the byte values with `0xFF` is generally the way to prevent undesired sign extension of bytes.
+
+#### Strings
+
+FITS generally represents character strings a byte arrays of ASCII characters. The library automatically converts between Java `String`s and their FITS representations, by the appropriate downcasting `char` to `byte`. Therefore, you should be careful to avoid using extended Unicode characters (beyond the ASCII set) in `String`s, which will be written to FITS.
+
+It is also possible to write `char[]` arrays to FITS, Unfortunately, historically the library wrote `char[]` arrays as 16-bit Unicode, 
+rather than the 8-bit ASCII standard of FITS, and consequently (because there is no other corresponding 16-bit FITS datatype) these would be read back as `short[]`. As of version 1.16, you can change that behavior by `FitsFactory.setUseUnicodeChars(false)` to treat `char[]` arrays the same way as `String`s (and to read them back as `String`s). 
 
 
 
@@ -454,7 +438,6 @@ violations are not tolerated, appropriate exceptions will be thrown during readi
 
  - [Writing complete FITS files](#writing-files)
  - [Writing one HDU at a time](#incremental-writing)
- - [Modifying existing files](#modifying-existing-files)
  - [Low-level writes](#low-level-writes)
 
 <a name="writing-files"></a>
@@ -623,78 +606,6 @@ In this case you can use random access, which means you can go back and re-write
 
 
 
-<a name="modifying-existing-files"></a>
-### Modifying existing files
-
-An existing FITS file can be modified in place in some circumstances. The file must be an uncompressed (random-accessible) file, with
-permissions to read and write. The user can then modify elements either by directly modifying the kernel data object for image data, 
-or by using the `setElement` or similar methods for tables.
-
-Suppose we have just a couple of specific elements we know we need to change in a given file:
-
-```java
-  Fits f = new Fits("mod.fits");
-     
-  ImageHDU hdu = (ImageHDU) f.getHDU(0);
-  int[][] img = (int[][]) hdu.getKernel();
-     
-  // modify the image as needed...
-  img[i][j] = ...
-  ...
-  
-  // No write the new data back in the place of the old
-  hdu.rewrite();
-```
-
-Same goes for a table HDU:
-
-```java 
-  BinaryTableHDU hdu = (BinaryTableHDU) f.getHDU(1);
-  hdu.set(3, 0, 3.14159265);
-  
-  ...
-  hdu.rewrite();
-```
-
-Defragmenting binary tables allows to reclaim heap space that is no longer used in the heap area. When deleting variable-length 
-columns, or when replacing entries inside variable-length columns, some or all of the space occupied by old entries on the heap 
-may become dead storage, needlessly bloaing the heap storage. Also, repaced entries may be placed on the heap out of order, 
-which can slow down caching effectiveness for sequential table acces. Thus when modifying tables with variable-length columns, 
-it may be a good idea to defragment the heap before writing in to the output. For the above example, this would be adding an 
-extra step before `rewrite)`. 
-
-```java
-  ...
-  
-  // If the we changed variable length data, it may be a good
-  // idea to defragment the heap before writing...
-  hdu.defragment();
-
-  hdu.rewrite();
-```
-
-Defragmenting might also be a good idea when building tables with variable-length data column by column (as opposed to
-row-by-row).
-
-
-And, headers can also be updated in place -- you don't even need to access the data, and can leave it in deferred state:
-
-```java 
-  BasicHDU<?> hdu = f.getHDU(1);
-  Header header = hdu.getHeader();
-  
-  header.addValue(Standard.TELESCOP, "SMA").comment("The Submillimeter Array");
-  header.addValue(Standard.DATE-OBS, FitsDate.now());
-  ...
-  
-  header.rewrite();
-```
-
-Generally rewrites can be made as long as the only change is to the data content, but not to the data size 
-(and the FITS file meets the criteria mentioned above). An exception will be thrown if the data has been added 
-or deleted or too many changes have been made to the header. Some modifications may be made to the header but the number 
-of header cards modulo 36 must remain unchanged. (Hint, you can reserve space in headers for later additions using `Header.ensureCardSpace(int)` prior to writing the header or HDU originally.)
-
 
 <a name="low-level-writes"></a>
 ### Low-level writes
@@ -847,6 +758,80 @@ that were not available earlier:
    // the table data
    header.rewrite();
 ```
+
+
+<a name="modifying-existing-files"></a>
+## Modifying existing files
+
+An existing FITS file can be modified in place in some circumstances. The file must be an uncompressed (random-accessible) file, with
+permissions to read and write. The user can then modify elements either by directly modifying the kernel data object for image data, 
+or by using the `setElement` or similar methods for tables.
+
+Suppose we have just a couple of specific elements we know we need to change in a given file:
+
+```java
+  Fits f = new Fits("mod.fits");
+     
+  ImageHDU hdu = (ImageHDU) f.getHDU(0);
+  int[][] img = (int[][]) hdu.getKernel();
+     
+  // modify the image as needed...
+  img[i][j] = ...
+  ...
+  
+  // No write the new data back in the place of the old
+  hdu.rewrite();
+```
+
+Same goes for a table HDU:
+
+```java 
+  BinaryTableHDU hdu = (BinaryTableHDU) f.getHDU(1);
+  hdu.set(3, 0, 3.14159265);
+  
+  ...
+  hdu.rewrite();
+```
+
+Defragmenting binary tables allows to reclaim heap space that is no longer used in the heap area. When deleting variable-length 
+columns, or when replacing entries inside variable-length columns, some or all of the space occupied by old entries on the heap 
+may become dead storage, needlessly bloaing the heap storage. Also, repaced entries may be placed on the heap out of order, 
+which can slow down caching effectiveness for sequential table acces. Thus when modifying tables with variable-length columns, 
+it may be a good idea to defragment the heap before writing in to the output. For the above example, this would be adding an 
+extra step before `rewrite)`. 
+
+```java
+  ...
+  
+  // If the we changed variable length data, it may be a good
+  // idea to defragment the heap before writing...
+  hdu.defragment();
+
+  hdu.rewrite();
+```
+
+Defragmenting might also be a good idea when building tables with variable-length data column by column (as opposed to
+row-by-row).
+
+
+And, headers can also be updated in place -- you don't even need to access the data, and can leave it in deferred state:
+
+```java 
+  BasicHDU<?> hdu = f.getHDU(1);
+  Header header = hdu.getHeader();
+  
+  header.addValue(Standard.TELESCOP, "SMA").comment("The Submillimeter Array");
+  header.addValue(Standard.DATE-OBS, FitsDate.now());
+  ...
+  
+  header.rewrite();
+```
+
+Generally rewrites can be made as long as the only change is to the data content, but not to the data size 
+(and the FITS file meets the criteria mentioned above). An exception will be thrown if the data has been added 
+or deleted or too many changes have been made to the header. Some modifications may be made to the header but the number 
+of header cards modulo 36 must remain unchanged. (Hint, you can reserve space in headers for later additions using `Header.ensureCardSpace(int)` prior to writing the header or HDU originally.)
+
 
 
 
