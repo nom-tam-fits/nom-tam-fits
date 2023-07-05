@@ -109,7 +109,7 @@ E.g.
 ```java
   byte[] bimg = new byte[100]; // data
   for (int i=0; i<bimg.length; i += 1) {
-       bimg[i] = (byte)(bimg[i]&0xFF - offset);
+       bimg[i] = (byte)((bimg[i] & 0xFF) - offset);
   }
 ```
     
@@ -130,9 +130,10 @@ rather than the 8-bit ASCII standard of FITS, and consequently (because there is
 
 
  - [Deferred reading](#deferred-reading)
+ - [Tolerance to standard violations in 3rd party FITS files](#read-tolerance)
  - [Reading images](#reading-images)
  - [Reading tables](#reading-tables)
- - [Tolerance to standard violations in 3rd party FITS files](#read-tolerance)
+
  
 
 To read a FITS file the user typically might open a `Fits` object, get the appropriate HDU using the `getHDU` method and then 
@@ -180,6 +181,20 @@ it. That's not going to work. The correct order is of course:
 ```
 
 As of version 1.18, all data classes of the library support deferred reading.
+
+
+<a name="read-tolerance"></a>
+### Tolerance to standard violations in 3rd party FITS files.
+
+By default the library will be tolerant to FITS standard violations when parsing 3rd-party FITS files. We believe that 
+if you use this library to read a FITS produced by other software, you are mainly interested to find out what's inside it, 
+rather than know if it was written properly. However, problems such as missing padding at the end of the file, or an 
+unexpected end-of-file before content was fully parsed, will be logged so they can be inspected. Soft violations of header 
+standards (those that can be overcome with educated guesses) are also tolerared when reading, but logging for these is not 
+enabled by default (since they may be many, and likely you don't care). You can enable logging standard violations in 
+3rd-party headers by `Header.setParserWarningsEnabled(true)`. You can also enforce stricter compliance to standard when 
+reading FITS files via `FitsFactory.setAllowHeaderRepairs(false)` and `FitsFactory.setAllowTerminalJunk(false)`. When 
+violations are not tolerated, appropriate exceptions will be thrown during reading.
 
 
 <a name="reading-images"></a>
@@ -419,18 +434,7 @@ The library provides methods for accessing entire rows and columns also via the 
 `TableData.getColumn(int)` or `BinaryTable.getColumn(String)` methods. However, we recommend against using these going
 forward because these methods can be confounding to use, with overlapping data types and/or dimensions.
 
-<a name="read-tolerance"></a>
-### Tolerance to standard violations in 3rd party FITS files.
 
-By default the library will be tolerant to FITS standard violations when parsing 3rd-party FITS files. We believe that 
-if you use this library to read a FITS produced by other software, you are mainly interested to find out what's inside it, 
-rather than know if it was written properly. However, problems such as missing padding at the end of the file, or an 
-unexpected end-of-file before content was fully parsed, will be logged so they can be inspected. Soft violations of header 
-standards (those that can be overcome with educated guesses) are also tolerared when reading, but logging for these is not 
-enabled by default (since they may be many, and likely you don't care). You can enable logging standard violations in 
-3rd-party headers by `Header.setParserWarningsEnabled(true)`. You can also enforce stricter compliance to standard when 
-reading FITS files via `FitsFactory.setAllowHeaderRepairs(false)` and `FitsFactory.setAllowTerminalJunk(false)`. When 
-violations are not tolerated, appropriate exceptions will be thrown during reading.
 
 
 <a name="writing-data"></a>
@@ -449,11 +453,9 @@ image and/or table HDUs we create. When everything is assembled, we write the FI
 ```java  
   Fits fits = new Fits();
 
-
   fits.addHDU(...);
   ...
  
-
   FitsOutputStream out = new FitsOutputStream(new FileOutputStream(new File("myfits.fits")));     
   fits.write(out);
 ```
