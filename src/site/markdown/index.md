@@ -772,7 +772,14 @@ of header cards modulo 36 must remain unchanged. (Hint, you can reserve space in
 
 
 <a name="building-tables-from-data"></a>
-### Building binary tables from local data
+## Building binary tables from local data
+
+ - [Making HDUs from existing row-column format data](#build-row-col-data)
+ - [Buiding tables row-by-row](#building-by-row)
+ - [Buiding tables column-by-column](#building-by-column)
+
+<a name="build-row-col-data"></a>
+### Making HDUs from existing row-column format  data
 
 If you already have an `Object[rows][cols]` data table, in which each entry represents data for a row and column, 
 you can create an appropriate binary table HDU from it as:
@@ -821,7 +828,8 @@ before writing out binary tables to a file or stream:
 just before calling `write()`.
  
 
-#### Buiding tables one row at a time
+<a name="building-by-row"></a>
+### Buiding tables row-by-row
 
 As of 1.18 building tables one row at a time is both easy and efficient -- and may be the least confusing way to get
 tables done right. (In prior releases, adding rows to existing tables was painfully slow, and much more constrained). You may 
@@ -889,7 +897,7 @@ table is encompassed in a HDU, it is generally not safe to edit it beyond additi
 way to keep the header perfectly in sync. Thus it is recommended that you create table HDUs only after the table data has been fully populated.
 
 
-#### Buiding tables one column at a time
+### Buiding tables column-by-column
 
 Sometimes we might want to assemble a table from a selection of data which will readily consitute columns in the table. 
 We can add these as columns to an existing table (empty or not) using the `BinaryTable.addColumn(Object)` method.
