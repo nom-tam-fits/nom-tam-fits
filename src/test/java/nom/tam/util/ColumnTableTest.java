@@ -224,6 +224,13 @@ public class ColumnTableTest {
     }
 
     @Test(expected = TableException.class)
+    public void checkAddNonPrimitiveArrayColymn() throws Exception {
+        ColumnTable<?> tab = new ColumnTable<>();
+        tab.addWrappedColumn(new String[] {"abc", "def"});
+        // exception
+    }
+
+    @Test(expected = TableException.class)
     public void checkAddMismatchedSizesInWrappedColumn() throws Exception {
         ColumnTable<?> tab = new ColumnTable<>();
         tab.addWrappedColumn(new Object[] {new int[] {1}, new int[] {2, 3}});
@@ -437,6 +444,13 @@ public class ColumnTableTest {
         ColumnTable<?> tab = new ColumnTable<>();
         tab.addColumn(new int[] {1, 2}, 1);
         tab.setWrappedColumn(0, "abc");
+    }
+
+    @Test(expected = TableException.class)
+    public void checkSetNonPrimitiveArrayWrappedColumn() throws Exception {
+        ColumnTable<?> tab = new ColumnTable<>();
+        tab.addColumn(new int[] {1, 2}, 1);
+        tab.setWrappedColumn(0, new String[] {"abc", "def"});
     }
 
     @Test(expected = TableException.class)

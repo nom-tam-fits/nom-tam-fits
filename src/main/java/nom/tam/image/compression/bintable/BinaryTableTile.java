@@ -100,7 +100,7 @@ public abstract class BinaryTableTile implements Runnable {
         try {
             future.get();
         } catch (Exception e) {
-            throw new IllegalStateException("could not process tile", e);
+            throw new IllegalStateException("could not process tile " + tileIndex + ": " + e.getMessage(), e);
         }
     }
 

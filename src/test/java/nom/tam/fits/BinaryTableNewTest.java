@@ -1,5 +1,6 @@
 package nom.tam.fits;
 
+import java.io.DataOutput;
 import java.io.File;
 import java.io.FileInputStream;
 import java.lang.reflect.Array;
@@ -1635,6 +1636,39 @@ public class BinaryTableNewTest {
 
         // Editing in deferred mode
         tab.getFlatColumns();
+    }
+
+    @Test
+    public void testWriteBack() throws Exception {
+        BinaryTable tab = new BinaryTable();
+        tab.addColumn(new int[10]);
+        String fileName = "target/bt-edit-file.fits";
+
+        Fits fits = new Fits();
+        fits.addHDU(BinaryTableHDU.from(tab));
+        fits.write(fileName);
+        fits.close();
+
+        fits = new Fits(new File(fileName));
+        fits.read();
+        fits.write((DataOutput) fits.getStream());
+    }
+
+    @Test(expected = FitsException.class)
+    public void testWriteBackClosed() throws Exception {
+        BinaryTable tab = new BinaryTable();
+        tab.addColumn(new int[10]);
+        String fileName = "target/bt-edit-file.fits";
+
+        Fits fits = new Fits();
+        fits.addHDU(BinaryTableHDU.from(tab));
+        fits.write(fileName);
+        fits.close();
+
+        fits = new Fits(new File(fileName));
+        fits.read();
+        fits.close();
+        fits.write((DataOutput) fits.getStream());
     }
 
 }

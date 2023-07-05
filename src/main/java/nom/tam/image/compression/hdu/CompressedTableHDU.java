@@ -204,26 +204,11 @@ public class CompressedTableHDU extends BinaryTableHDU {
      * @see                             #fromBinaryTableHDU(BinaryTableHDU, int, String...)
      */
     public BinaryTableHDU asBinaryTableHDU(int fromTile, int toTile) throws FitsException, IllegalArgumentException {
-        if (fromTile < 0 || toTile > getNRows()) {
-            throw new IllegalArgumentException("Out of bounds for " + getNRows() + " tiles: " + fromTile + ":" + toTile);
-        }
-
-        if (toTile <= fromTile) {
-            return null;
-        }
-
         Header header = getTableHeader();
         int tileSize = getHeader().getIntValue(Compression.ZTILELEN, getNRows());
 
-        int toRow = toTile * tileSize;
-        int nRows = header.getIntValue(Standard.NAXIS2);
-
-        if (toRow > nRows) {
-            toRow = nRows;
-        }
-
         // Set the correct number of rows
-        header.addValue(Standard.NAXIS2, toRow - fromTile * tileSize);
+        header.addValue(Standard.NAXIS2, toTile * tileSize - fromTile * tileSize);
 
         BinaryTable data = BinaryTableHDU.manufactureData(header);
         BinaryTableHDU tableHDU = new BinaryTableHDU(header, data);
@@ -246,7 +231,7 @@ public class CompressedTableHDU extends BinaryTableHDU {
      * @see                             #asBinaryTableHDU()
      * @see                             #fromBinaryTableHDU(BinaryTableHDU, int, String...)
      */
-    public Object[] getColumnData(int col) throws FitsException, IllegalArgumentException {
+    public Object getColumnData(int col) throws FitsException, IllegalArgumentException {
         return getColumnData(col, 0, getNRows());
     }
 
@@ -266,7 +251,7 @@ public class CompressedTableHDU extends BinaryTableHDU {
      * @see                             #asBinaryTableHDU()
      * @see                             #fromBinaryTableHDU(BinaryTableHDU, int, String...)
      */
-    public Object[] getColumnData(int col, int fromTile, int toTile) throws FitsException, IllegalArgumentException {
+    public Object getColumnData(int col, int fromTile, int toTile) throws FitsException, IllegalArgumentException {
         return getData().getColumnData(col, fromTile, toTile, getHeader(), getTableHeader());
     }
 

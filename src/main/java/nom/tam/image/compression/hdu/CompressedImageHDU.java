@@ -10,6 +10,7 @@ import java.util.Map;
 
 import nom.tam.fits.BinaryTableHDU;
 import nom.tam.fits.FitsException;
+import nom.tam.fits.FitsUtil;
 import nom.tam.fits.Header;
 import nom.tam.fits.HeaderCard;
 import nom.tam.fits.HeaderCardException;
@@ -280,7 +281,7 @@ public class CompressedImageHDU extends BinaryTableHDU {
             int naxis = h.getIntValue(Standard.NAXISn.n(dim - i));
 
             if (lengths[0] <= 0) {
-                return null;
+                throw new IllegalArgumentException("Illegal tile size in dim " + i + ": " + lengths[i]);
             }
 
             if (corners[i] < 0 || corners[i] + lengths[i] > naxis) {
@@ -288,20 +289,25 @@ public class CompressedImageHDU extends BinaryTableHDU {
                         + (corners[i] + lengths[i]) + "] in " + naxis);
             }
 
-            h.addValue(Standard.NAXISn.n(dim - i), naxis - corners[i]);
+            h.addValue(Standard.NAXISn.n(dim - i), lengths[i]);
 
-            if (h.containsKey(Standard.CRPIXn.n(dim - i))) {
-                h.addValue(Standard.NAXISn.n(dim - i), h.getIntValue(Standard.CRPIXn.n(dim - i)) - corners[i]);
+            HeaderCard crpix = h.findCard(Standard.CRPIXn.n(dim - i));
+            if (crpix != null) {
+                crpix.setValue(crpix.getValue(Double.class, Double.NaN) - corners[i]);
             }
         }
 
         ImageData im = ImageHDU.manufactureData(h);
-        ByteBuffer buf = ByteBuffer.wrap(new byte[(int) im.getSize()]);
+        ByteBuffer buf = ByteBuffer.wrap(new byte[(int) FitsUtil.addPadding(im.getSize())]);
 
         try (FitsOutputStream out = new FitsOutputStream(new ByteBufferOutputStream(buf))) {
             new CompressedImageTiler(this).getTile(out, corners, lengths);
             out.close();
         }
+
+        // Rewind buffer for reading, including padding.
+        buf.limit(buf.capacity());
+        buf.position(0);
 
         try (FitsInputStream in = new FitsInputStream(new ByteBufferInputStream(buf))) {
             im.read(in);

@@ -3777,9 +3777,9 @@ public class BinaryTable extends AbstractTableData implements Cloneable {
             Object p = getRawElement(i, index);
             long len = getPointerCount(p) >>> 1;
             if (c.hasLongPointers()) {
-                Array.setLong(p, 0, len);
+                ((long[]) p)[0] = len;
             } else {
-                Array.setInt(p, 0, (int) len);
+                ((int[]) p)[0] = (int) len;
             }
             setTableElement(i, index, p);
         }

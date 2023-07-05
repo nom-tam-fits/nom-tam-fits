@@ -50,14 +50,17 @@ public class BinaryTableTileDecompressor extends BinaryTableTile {
 
     private ArrayDataInput is;
 
+    private int targetColumn;
+
     /**
-     * @deprecated for internal use
+     * @deprecated (<i>for internal use</i>)
      */
     @SuppressWarnings("javadoc")
     public BinaryTableTileDecompressor(CompressedTableData binData, ColumnTable<?> columnTable,
             BinaryTableTileDescription description) throws FitsException {
         super(columnTable, description);
-        compressedBytes = ByteBuffer.wrap((byte[]) binData.getElement(rowStart, column));
+        compressedBytes = ByteBuffer.wrap((byte[]) binData.getElement(tileIndex - 1, column));
+        targetColumn = column;
     }
 
     @Override
@@ -68,10 +71,27 @@ public class BinaryTableTileDecompressor extends BinaryTableTile {
             is = new FitsInputStream(new ByteArrayInputStream(unCompressedBytes.array()));
         }
         try {
-            data.read(is, rowStart, rowEnd, column);
+            data.read(is, rowStart, rowEnd, targetColumn);
         } catch (IOException e) {
-            throw new IllegalStateException("could not read compressed data", e);
+            throw new IllegalStateException("could not read compressed data: " + e.getMessage(), e);
         }
+    }
+
+    /**
+     * Changes the comlumn index of into which the tile gets decompressed in the uncompressed table. By default the
+     * decompressed column index will match the compressed data column index, which is great if we decompress the all
+     * columns. However, we might decompress only selected table columns into a different table in which the column
+     * indices are different.
+     * 
+     * @param  col the decompressed column index for the tile
+     * 
+     * @return     itself.
+     * 
+     * @since      1.18
+     */
+    public BinaryTableTileDecompressor decompressToColumn(int col) {
+        targetColumn = col;
+        return this;
     }
 
 }
