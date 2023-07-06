@@ -234,7 +234,7 @@ Suppose the image we retrieve above has 2000x2000 pixels, but we only want to se
 
 ```java
   ImageTiler tiler = hdu.getTiler();
-  short[] center = (short[]) tiler.getTile({950, 950}, {100, 100});
+  short[] center = (short[]) tiler.getTile(new int[] {950, 950}, new int[] {100, 100});
 ```
 
 The tiler needs to know the corners and size of the tile we want. Note that we can tile an image of any dimensionality. `getTile()` returns a one-dimensional array with the flattend image. You can convert it to a 2D image afterwards using `ArrayFuncs.curl()`, e.g.:
@@ -300,31 +300,50 @@ This can be achieved much the same way as in the above example, replacing `image
 
 <a name="low-level-image-read"></a>
 #### Low-level reading of image data
-Suppose we want to get the average value of a 100,000x20,000 pixel image.
-If the pixels are ints, that’s  an 8 GB file.  We can do
+
+Suppose we want to get the average value of a 100,000 x 40,000 pixel image. If the pixels are 32-bit integers, that would be an 
+16 GB file. However, we do not need to load the entire image into memory at once. Instead we can analyse it via bite-sized chunks. 
+For example,
 
 ```java
-  Fits f = new Fits("bigimg.fits");
-  BasicHDU img = f.getHDU(0);
-  if (img.getData().reset()) {
-      int[] line = new int[100000];
-      long sum   = 0;
-      long count = 0;
-      ArrayDataInput in = f.getStream();
-      while (in.readLArray(line) == line.length * 4) {  // int is 4 bytes
-          for (int i=0; i<line.length; i += 1) {
-              sum += line[i];
-              count++;
-          }
-      }
-      double avg = ((double) sum)/count;
-  } else {
-      System.err.println("Unable to seek to data”);
+  Fits fits = new Fits("bigimg.fits");
+  ImageHDU img = fits.getHDU(0);
+  
+  // Reset the stream to the beginning of the data segment
+  if (!img.getData().reset()) {
+      // Uh-oh...
+      throw new IllegalStateException("Unable to seek to data start”);
   }
 ```
+
+The `reset()` method causes the internal stream to seek to the beginning of the data area. If that’s not possible it returns false.
+Next, we obtain the input file or stream for reading, query the image size, and set up our chunk-sized storage (e.g. by image row):
+
+```java  
+  // Get the input associated to the FITS
+  ArrayDataInput in = fits.getStream();
+  
+  int[] dims = img.getAxes();      // the image dimensions
+  int[] chunk = new int[dims[1]];  // a buffer for a row of data
+```
+
+Now we can cycle through the image rows (or chunks) and do the statistics, e.g. as:
+
+```java
+  long sum = 0;
+
+  for (int row = 0; row < dims[0]; row++) {
+      in.readLArrayFully(chunk); 
+      for (int i = 0; i < chunk.length; i++) {
+          sum += line[i];
+      }
+  }
+      
+  // Return the average value
+  return (double) sum / (dims[0] * dims[1]);
+```
     
-The `reset()` method causes the internal stream to seek to the beginning of the data area.
-If that’s not possible it returns false.
+
 
 
 
