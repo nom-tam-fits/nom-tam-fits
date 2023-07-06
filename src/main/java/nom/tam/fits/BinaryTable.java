@@ -1273,7 +1273,7 @@ public class BinaryTable extends AbstractTableData implements Cloneable {
     private FitsEncoder encoder;
 
     /**
-     * Create a null binary table data segment.
+     * Creates an empty binary table, which can be populated with columns / rows as desired.
      */
     public BinaryTable() {
         table = new ColumnTable<>();
@@ -1284,9 +1284,9 @@ public class BinaryTable extends AbstractTableData implements Cloneable {
     }
 
     /**
-     * Create a binary table from an existing column table. <b>WARNING!</b>, as of 1.18 we no longer use the column data
-     * extra state to carry information about an enclosing class, because it is horribly bad practice. You should not
-     * use this constructor to create imperfect copies of binary tables. Rather, use {@link #copy()} if you want to
+     * Creates a binary table from an existing column table. <b>WARNING!</b>, as of 1.18 we no longer use the column
+     * data extra state to carry information about an enclosing class, because it is horribly bad practice. You should
+     * not use this constructor to create imperfect copies of binary tables. Rather, use {@link #copy()} if you want to
      * create a new binary table, which properly inherits <b>ALL</b> of the properties of an original one. As for this
      * constructor, you should assume that it will not use anything beyond what's available in any generic vanilla
      * column table.
@@ -1328,11 +1328,24 @@ public class BinaryTable extends AbstractTableData implements Cloneable {
     }
 
     /**
-     * Create a binary table from given header information.
+     * Creates a binary table from a given FITS header description. The table columns are initialized but no data will
+     * be available, at least initially. Data may be loaded later (e.g. deferred read mode), provided the table is
+     * associated to an input (usually only if this constructor is called from a {@link Fits} object reading an input).
+     * When the table has an input configured via a {@link Fits} object, the table entries may be accessed in-situ in
+     * the file while in deferred read mode, but operations affecting significant portions of the table (e.g. retrieving
+     * all data via {@link #getData()} or accessing entire columns) may load the data in memory. You can also call
+     * {@link #detach()} any time to force loading the data into memory, so that alterations after that will not be
+     * reflected in the original file, at least not unitl {@link #rewrite()} is called explicitly.
+     * 
+     * @param      myHeader      A FITS header describing what the binary table should look like.
      *
-     * @param  myHeader      A header describing what the binary table should look like.
-     *
-     * @throws FitsException if the specified header is not usable for a binary table
+     * @throws     FitsException if the specified header is not usable for a binary table
+     * 
+     * @deprecated               (<i>for internal use</i>) This constructor should only be called from a {@link Fits}
+     *                               object reading an input; visibility may be reduced to the package level in the
+     *                               future.
+     * 
+     * @see                      #isDeferred()
      */
     public BinaryTable(Header myHeader) throws FitsException {
         long paramSizeL = myHeader.getLongValue(PCOUNT);
@@ -1375,7 +1388,7 @@ public class BinaryTable extends AbstractTableData implements Cloneable {
     }
 
     /**
-     * Create a binary table from existing table data int row-major format. That is the first array index is the row
+     * Creates a binary table from existing table data int row-major format. That is the first array index is the row
      * index while the second array index is the column index.
      *
      * @param      rowColTable   Row / column array. Scalars elements are wrapped in arrays of 1, s.t. a single
@@ -1386,7 +1399,7 @@ public class BinaryTable extends AbstractTableData implements Cloneable {
      * 
      * @deprecated               The constructor is ambiguous, use {@link #fromRowMajor(Object[][])} instead. You can
      *                               have a column-major array that has no scalar primitives which would also be an
-     *                               <code>Object[][]</code> and could be passed.
+     *                               <code>Object[][]</code> and could be passed erroneously.
      */
     public BinaryTable(Object[][] rowColTable) throws FitsException {
         this();

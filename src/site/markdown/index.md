@@ -901,16 +901,12 @@ can create a table with these (or add them to an existing table with a matching 
    BinaryTable tab = new BinaryTable();
   
    double[] timestamps = new double[nRows]; 
-   ...
-   table.addColumn(timeStamps);
- 
-   ...
- 
    ComplexValue[][] spectra = new ComplexValue[nRows][];
-   ...
-   table.addColumn(spectra);
    
    ...
+   
+   table.addColumn(timeStamps);
+   table.addColumn(spectra);
 ```
   
 There are just a few thing to keep in mind when constructing tables in this way:
@@ -935,7 +931,7 @@ opposed to row-by-row):
   table.defragment();
 ```
  
-before calling `write()`.
+before calling `write()` on the encompassing HDU.
 
 
 
