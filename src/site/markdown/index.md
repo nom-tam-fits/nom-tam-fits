@@ -240,7 +240,7 @@ Suppose the image we retrieve above has 2000x2000 pixels, but we only want to se
 The tiler needs to know the corners and size of the tile we want. Note that we can tile an image of any dimensionality. `getTile()` returns a one-dimensional array with the flattend image. You can convert it to a 2D image afterwards using `ArrayFuncs.curl()`, e.g.:
 
 ```java
-  short[][] center2D = ArrayFuncs.curl(center, 100, 100);
+  short[][] center2D = (short[][]) ArrayFuncs.curl(center, 100, 100);
 ```
 
 
