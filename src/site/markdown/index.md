@@ -1291,8 +1291,8 @@ Additionally, we provide `HeaderCard.sanitize(String)` method that the user can 
 ## Compression support
 
  - [File level compression](#file-compression)
- - [Image HDU compression](#image-compression)
- - [Table HDU compression](#table-compression)
+ - [Image compression](#image-compression)
+ - [Table compression](#table-compression)
 
 Starting with version 1.15.0 we include support for compressing images and tables. The compression algorithms have been ported to Java from __cfitsio__ to provide a pure 100% Java implementation. However, versions prior to 1.18.0 had a number of lingering compression related bugs of varying severity, that may have prevented realiable use.
 
@@ -1335,7 +1335,7 @@ we construct a `Fits` object with an input stream:
 
 
 <a name="image-compression"></a>
-### Image HDU compression
+### Image compression
 
 Image compression and tiling are fully supported by nom-tam-fits as of 1.18.0, including images of 
 any dimensionality and rectangular morphologies. (Releases between 1.15.0 and 1.17.0 had partial image
@@ -1423,7 +1423,7 @@ class to decompress only the selected image area. As of 1.18.0, this is really e
 
 
 <a name="table-compression"></a>
-### Table HDU compression
+### Table compression
 
 Table compression is also supported in nom-tam-fits from version 1.15.0, and more completely since
 1.18.0. When compressing a table 'tiles' that are sets of contiguous rows within a column. The compression 
