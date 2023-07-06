@@ -26,12 +26,12 @@
 
 
 FITS (Flexible Image Transport System) is a binary format devised and primarily used for the storage of astronomical datasets. A FITS
-file is composed of one or more *Header-Data Units* *(HDUs)*. Each *HDU* consists of a *header*, which describes the data and possibly contain extra metadata (as key-value pairs) or comments, and a *data* section.
+file is composed of one or more *Header-Data Units* (HDUs). Each HDU consists of a *header*, which describes the data and possibly contain extra metadata (as key-value pairs) or comments, and a *data* section.
 
 The library requires a level of familiarity with FITS and its common standards and conventions for effective use. For example, while
 the library will automatically interpret and populate the mandatory minimum data description in FITS headers, it will not automatically process optional standard or conventional header entries. It is up to the users to extract or complete the description of data, for example to include FITS world coordinate systems (WCS), physical units, etc. Users are encouraged to familiarize themselves with the [FITS standard](https://fits.gsfc.nasa.gov/fits_standard.html) and conventions described therein to be effective users of this library. 
 
-The nom.tam library was originally written in Java 1.0 and its design and implementation were strongly influenced by the limited functionality and efficiencies of early versions of Java.
+This library was originally written in Java 1.0 and therefore its design and implementation were strongly influenced by the limited functionality and efficiencies of early versions of Java.
 
 This is an open-source, community maintained, project hosted on github as [nom-tam-fits](https://github.com/nom-tam-fits/nom-tam-fits). Further information and documentation, including API docs, can be found on the [project site](http://nom-tam-fits.github.io/nom-tam-fits/index.html).
 
@@ -76,11 +76,11 @@ The current FITS standard (4.0) recognizes the following principal types of HDUs
 
  2. **Binary table HDU** can store rows and columns of assorted of elements. Each column entry may be either a single value, or a fixed-sized (multidimensional) array, or else a variable-length 1D arrays of a given type. All Java primitive integer and floating-point types are supported, as wells as `String`, `Boolean` (logical), `boolean` (bits), and `ComplexValue` types.
 
- 3. **Compressed HDU** is an extension of the binary table HDUs (above), and can store an image or a binary table in a compressed manner. We support all standard compression algorithms, and their options (if applicable).
+ 3. **Compressed HDU** is an extension of the binary table HDUs (above), and can store an image or a binary table in a compressed manner. We support all standard compression algorithms, and their options (as applicable).
 
  4. **Foreign File HDU** can encapsulate various other files within the FITS. Foreign file HDUs are a recognised convention, but not (yet) officially part of the FITS standard. We do not support foreign file encapsulation yet, but it is something that we are considering for a future release.
 
- 5. **ASCII Table HDU** (discouraged) is a simpler, less capable table with support for storing singular primitive numerical types, or Strings only -- in human-readable format. You should probably use the more capable (and more compact) binary tables instead for your application, and reserve use of ASCII tables for reading data that may still contain these.
+ 5. **ASCII Table HDU** (discouraged) is a simpler, less capable table format with support for storing singular primitive numerical types, and Strings only -- in human-readable format. You should probably use the more flexible (and more compact) binary tables instead for your application, and reserve use of ASCII tables for reading data that may still contain these.
 
  6. **Random-Groups HDU** (discouraged) can contain a set of images of the same type and dimensions along with a set of parameters of the same type (for example an `int[][]` image, along with a set of `int` parameters). They were never widely used and the FITS 4.0 standard discourages them going forward, given that binary tables provide far superior capabilities for storing the same type of data. Support for these type of HDUs is thus very basic, and aimed mainly at providing a way to access data that was already written in this format.
 
@@ -121,23 +121,19 @@ extended Unicode characters (and also ASCII beyond the `0x20` -- `0x7E` range) i
  - [Reading tables](#reading-tables)
 
 
-To read a FITS file the user typically might open a `Fits` object, get the appropriate HDU using the `getHDU(int)` or
-`getHDU(String)` method and then get the data using `getKernel()`.
-
-
 
 <a name="deferred-reading"></a>
 ### Deferred reading
 
 When FITS data are being read from a non-compressed random accessible input (such as a `FitsFile`), the `read()` call will 
 parse all HDU headers but will typically skip over the data segments (noting their position in the file however). Only when 
-the user tries to access data from a HDU, will the library load that data from the previously noted file position. The behavior 
+the user tries to access data from an HDU, will the library load that data from the previously noted file position. The behavior 
 allows to inspect the contents of a FITS file very quickly even when the file is large, and reduces the need for IO when only 
 parts of the whole are of interest to the user. Deferred input, however, is not possible when the input is compressed or if it 
 is uses an stream rather than a random-access `FitsFile`.
 
 One thing to keep in mind with deferred reading is that you should not close your `Fits` or its random-accessible input file 
-before all required data has been loaded. For example, the following will cause an error:
+before all the required data has been loaded. For example, the following will cause an error:
 
 ```java
   Fits fits = new Fits("somedata.fits");
@@ -229,7 +225,7 @@ Given that the FITS file may contain many different kinds of data and that Java 
 <a name="reading-cutouts"></a>
 #### Reading selected parts of an image only (cutouts)
 
-Since 1.18, it is possible to read select cutouts of large images, including sparse spampling of specific image regions. When reading image data users may not want to read an entire array especially if the data is very large. An `ImageTiler` can be used to read in only a portion of an array.
+Since 1.18, it is possible to read select cutouts of large images, including sparse sampling of specific image regions. When reading image data users may not want to read an entire array especially if the data is very large. An `ImageTiler` can be used to read in only a portion of an array.
 The user can specify a box (or a sequence of boxes) within the image and extract the desired subsets.
 `ImageTiler`s can be used for any image.
 The library will try to only read the subsets requested if the FITS data is being read from an uncompressed file but in many cases it will need to read in the entire image before subsetting.
@@ -241,8 +237,11 @@ Suppose the image we retrieve above has 2000x2000 pixels, but we only want to se
   short[] center = (short[]) tiler.getTile({950, 950}, {100, 100});
 ```
 
-The tiler needs to know the corners and size of the tile we want. Note that we can tile an image of any dimensionality. `getTile()` returns a one-dimensional array with the flattend image.
+The tiler needs to know the corners and size of the tile we want. Note that we can tile an image of any dimensionality. `getTile()` returns a one-dimensional array with the flattend image. You can convert it to a 2D image afterwards using `ArrayFuncs.curl()`, e.g.:
 
+```java
+  short[][] center2D = ArrayFuncs.curl(center, 50, 50);
+```
 
 
 <a name="reading-streaming-cutouts"></a>

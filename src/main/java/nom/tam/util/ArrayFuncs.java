@@ -244,7 +244,7 @@ public final class ArrayFuncs {
      *
      * @return        The curled array.
      */
-    public static Object curl(Object input, int[] dimens) {
+    public static Object curl(Object input, int... dimens) {
         if (input == null) {
             return null;
         }
@@ -514,19 +514,6 @@ public final class ArrayFuncs {
     }
 
     /**
-     * Allocate an array dynamically. The Array.newInstance method does not throw an error when there is insufficient
-     * memory and silently returns a null.throws an OutOfMemoryError if insufficient space is available.
-     *
-     * @param  cl  The class of the array.
-     * @param  dim The dimension of the array.
-     *
-     * @return     The allocated array.
-     */
-    public static Object newInstance(Class<?> cl, int dim) {
-        return Array.newInstance(cl, dim);
-    }
-
-    /**
      * Allocate an array dynamically. The Array.newInstance method does not throw an error and silently returns a
      * null.throws an OutOfMemoryError if insufficient space is available.
      *
@@ -535,7 +522,7 @@ public final class ArrayFuncs {
      *
      * @return      The allocated array.
      */
-    public static Object newInstance(Class<?> cl, int[] dims) {
+    public static Object newInstance(Class<?> cl, int... dims) {
         if (dims.length == 0) {
             // Treat a scalar as a 1-d array of length 1
             dims = new int[] {1};
@@ -589,7 +576,7 @@ public final class ArrayFuncs {
      *
      * @param  indices the array to reverse
      */
-    public static int[] reverseIndices(int[] indices) {
+    public static int[] reverseIndices(int... indices) {
         int[] result = new int[indices.length];
         int len = indices.length;
         for (int i = 0; i < indices.length; i++) {
