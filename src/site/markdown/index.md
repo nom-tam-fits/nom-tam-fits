@@ -20,12 +20,13 @@
 <a name="introduction"></a>
 ## Introduction
 
-
- - [What is FITS](#what-is-fits)
  - [Where to get it](#where-to-get-it)
+ - [FITS data (HDU) types](#fits-data-type)
  - [FITS vs Java data types](#fits-vs-java-data-types)
 
-This document describes the nom.tam FITS library, a full-function Java library for reading and writing FITS files. More detailed documentation for the classes is given in their JavaDocs.
+
+FITS (Flexible Image Transport System) is a binary format devised and primarily used for the storage of astronomical datasets. A FITS
+file is composed of one or more *Header-Data Units* *(HDUs)*. Each *HDU* consists of a *header*, which describes the data and possibly contain extra metadata (as key-value pairs) or comments, and a *data* section.
 
 The library requires a level of familiarity with FITS and its common standards and conventions for effective use. For example, while
 the library will automatically interpret and populate the mandatory minimum data description in FITS headers, it will not automatically process optional standard or conventional header entries. It is up to the users to extract or complete the description of data, for example to include FITS world coordinate systems (WCS), physical units, etc. Users are encouraged to familiarize themselves with the [FITS standard](https://fits.gsfc.nasa.gov/fits_standard.html) and conventions described therein to be effective users of this library. 
@@ -34,26 +35,6 @@ The nom.tam library was originally written in Java 1.0 and its design and implem
 
 This is an open-source, community maintained, project hosted on github as [nom-tam-fits](https://github.com/nom-tam-fits/nom-tam-fits). Further information and documentation, including API docs, can be found on the [project site](http://nom-tam-fits.github.io/nom-tam-fits/index.html).
 
-
-<a name="what-is-fits"></a>
-### What is FITS?
-
-FITS (Flexible Image Transport System) is a binary format devised and primarily used for the storage of astronomical datasets. A FITS
-file is composed of one or more *Header-Data Units* *(HDUs)*. Each *HDU* consists of a *header*, which describes the data and possibly contain extra metadata (as key-value pairs) or comments, and a *data* section.
-
-The current FITS standard (4.0) recognizes the following principal types of HDUs: 
-
- 1. **Image HDU** can store a regular array (image) of 1-8 dimensions with a type corresponding to Java numerical primitives, such as a one-dimensional time series of samples (e.g. `int[]`), or a three-dimensional cube of voxels (e.g. `float[][][]`).
-
- 2. **Binary table HDU** can store rows and columns of assorted of elements. Each column entry may be either a single value, or a fixed-sized (multidimensional) array, or else a variable-length 1D arrays of a given type. All Java primitive integer and floating-point types are supported, as wells as `String`, `Boolean` (logical), `boolean` (bits), and `ComplexValue` types.
-
- 3. **Compressed HDU** is an extension of the binary table HDUs (above), and can store an image or a binary table in a compressed manner. We support all standard compression algorithms, and their options (if applicable).
-
- 4. **Foreign File HDU** can encapsulate various other files within the FITS. Foreign file HDUs are a recognised convention, but not (yet) officially part of the FITS standard. We do not support foreign file encapsulation yet, but it is something that we are considering for a future release.
-
- 5. **ASCII Table HDU** (discouraged) is a simpler, less capable table with support for storing singular primitive numerical types, or Strings only -- in human-readable format. You should probably use the more capable (and more compact) binary tables instead for your application, and reserve use of ASCII tables for reading data that may still contain these.
-
- 6. **Random-Groups HDU** (discouraged) can contain a set of images of the same type and dimensions along with a set of parameters of the same type (for example an `int[][]` image, along with a set of `int` parameters). They were never widely used and the FITS 4.0 standard discourages them going forward, given that binary tables provide far superior capabilities for storing the same type of data. Support for these type of HDUs is thus very basic, and aimed mainly at providing a way to access data that was already written in this format.
 
 
 <a name="where-to-get-it"></a>
@@ -85,6 +66,26 @@ If you want to try the bleeding edge version of nom-tam-fits, you can get it fro
 
 
 
+<a name="Fits-data-types"></a>
+### FITS data (HDU) types
+
+
+The current FITS standard (4.0) recognizes the following principal types of HDUs: 
+
+ 1. **Image HDU** can store a regular array (image) of 1-8 dimensions with a type corresponding to Java numerical primitives, such as a one-dimensional time series of samples (e.g. `int[]`), or a three-dimensional cube of voxels (e.g. `float[][][]`).
+
+ 2. **Binary table HDU** can store rows and columns of assorted of elements. Each column entry may be either a single value, or a fixed-sized (multidimensional) array, or else a variable-length 1D arrays of a given type. All Java primitive integer and floating-point types are supported, as wells as `String`, `Boolean` (logical), `boolean` (bits), and `ComplexValue` types.
+
+ 3. **Compressed HDU** is an extension of the binary table HDUs (above), and can store an image or a binary table in a compressed manner. We support all standard compression algorithms, and their options (if applicable).
+
+ 4. **Foreign File HDU** can encapsulate various other files within the FITS. Foreign file HDUs are a recognised convention, but not (yet) officially part of the FITS standard. We do not support foreign file encapsulation yet, but it is something that we are considering for a future release.
+
+ 5. **ASCII Table HDU** (discouraged) is a simpler, less capable table with support for storing singular primitive numerical types, or Strings only -- in human-readable format. You should probably use the more capable (and more compact) binary tables instead for your application, and reserve use of ASCII tables for reading data that may still contain these.
+
+ 6. **Random-Groups HDU** (discouraged) can contain a set of images of the same type and dimensions along with a set of parameters of the same type (for example an `int[][]` image, along with a set of `int` parameters). They were never widely used and the FITS 4.0 standard discourages them going forward, given that binary tables provide far superior capabilities for storing the same type of data. Support for these type of HDUs is thus very basic, and aimed mainly at providing a way to access data that was already written in this format.
+
+
+
 <a name="fits-vs-java-data-types"></a>
 ### FITS vs Java data types
 
@@ -107,6 +108,7 @@ FITS generally represents character strings a byte arrays of ASCII characters, w
 `0x7E` (inclusive). The library automatically converts between Java `String`s and their FITS representations, by the 
 appropriate narrowing conversion of 16-bit Unicode `char` to `byte`. Therefore, you should be careful to avoid using 
 extended Unicode characters (and also ASCII beyond the `0x20` -- `0x7E` range) in `String`s, when including these in FITS.
+
 
 
 <a name="reading-fits-files"></a>
