@@ -138,7 +138,7 @@ One thing to keep in mind with deferred reading is that you should not close you
 before all required data has been loaded. For example, the following will cause an error:
 
 ```java
-  Fits fits = new Fits("somedata.fits);
+  Fits fits = new Fits("somedata.fits");
    
   // Scans the FITS, but defers loading data until we need it
   fits.read();
