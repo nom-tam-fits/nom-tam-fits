@@ -1294,7 +1294,7 @@ Additionally, we provide `HeaderCard.sanitize(String)` method that the user can 
  - [Image HDU compression](#image-compression)
  - [Table HDU compression](#table-compression)
 
-Starting with version 1.15.0 compression of both images and tables is fully supported.  A 100% Java implementation of the compression libraries available in cfitsio was implemented and can be used through the Java API.
+Starting with version 1.15.0 we include support for compressing images and tables. The compression algorithms have been ported to Java from __cfitsio__ to provide a pure 100% Java implementation. However, versions prior to 1.18.0 had a number of lingering compression related bugs of varying severity, that may have prevented realiable use.
 
 
 
@@ -1340,11 +1340,11 @@ we construct a `Fits` object with an input stream:
 Image compression and tiling are fully supported by nom-tam-fits as of 1.18.0, including images of 
 any dimensionality and rectangular morphologies. (Releases between 1.15.0 and 1.17.0 had partial image
 compression support for 2D square images only, while some quantization support for compression was
-acking prior to 1.18.0). 
+lacking prior to 1.18.0). 
 
 The tiling of non-2D images follows the 
 [CFITSIO convention](https://heasarc.gsfc.nasa.gov/docs/software/fitsio/compression.html) with 2D tiles, 
-where the tile size is set to 1 in the extra dimensions.
+where the tile size is set to 1 in the higher dimensions.
 
 Compressing an image HDU is typically a multi-step process:
 
@@ -1366,7 +1366,7 @@ Compressing an image HDU is typically a multi-step process:
             .preserveNulls(Compression.ZCMPTYPE_HCOMPRESS_1);
 ```
 
- 3. Set compression (and quantization) options, via calling on g`etCompressOption(Class)`:
+ 3. Set compression (and quantization) options, via calling on `getCompressOption(Class)`:
  
  ```java
    compressed.getCompressOption(RiceCompressOption.class).setBlockSize(32);
@@ -1418,13 +1418,15 @@ class to decompress only the selected image area. As of 1.18.0, this is really e
   int[] cutuoutSize = ...
    
   ImageHDU cutout = compressed.getTileHDU(fromPixels, cutoutSize);
+```
+
 
 
 <a name="table-compression"></a>
-### Table compression
+### Table HDU compression
 
-Table compression is also fully supported in nom-tam-fits from version 1.15.0. When a table is compressed 
-the effect is that within each column we compress 'tiles' that are sets of contiguous rows. The compression 
+Table compression is also supported in nom-tam-fits from version 1.15.0, and more completely since
+1.18.0. When compressing a table 'tiles' that are sets of contiguous rows within a column. The compression 
 algorithms are the same as the ones provided for image compression. Default compression is `GZIP_2`. 
 (In principle, every column could use a different algorithm.)
 
@@ -1480,85 +1482,15 @@ If you just want to uncompress a range of the compressed tiles, you can
    TableHDU section = compressed.asTableHDU(fromTile, toTile);
 ```
 
-And, if you want to surgically access a range of data from select columns only:
+The resulting HDU will contain all columns but on only the uncompressed rows for the selected tiles.
+
+And, if you want to surgically access a range of data from select columns (and tiles) only:
 
 ```java
    CompressedImageHDU compressed = ...
    Object[] colData = compressed.getColumnData(colIndex, fromTile, toTile);
 ```
 
-
-<a name="table-compression"></a>
-### Table HDU compression
-
-Table compression is also fully supported in nom-tam-fits from version 1.15.0. When a table is compressed 
-the effect is that within each column we compress 'tiles' that are sets of contiguous rows. The compression 
-algorithms are the same as the ones provided for image compression. Default compression is `GZIP_2`. 
-(In principle, every column could use a different algorithm.)
-
-Tile compression mimics image compression, and is typically a 2-step process:
-
- 1. Create a `CompressedTableHDU`, e.g. with `fromBinaryTableHDU(BinaryTableHDU, int, String...)`, using the 
-    specified number of table rows per compressed block, and compression algorithm(s):
- 
-```java
-  BinaryTableHDU table = ...
-  CompressedTableHDU compressed = CompressedTableHDU.fromBinaryTableHDU(table, 4, Compression.GZIP_2);
-```
- 
- 2. Perform the compression via `compress()`:
-
-```java
-   compressed.compress();
-```
-
-The two step process (as opposed to a single-step one) was probably chosen because it mimics that of 
-`CompressedImageHDU`, where further configuration steps may be inserted in-between. But, of course we can combine 
-the steps into a single line:
-
-```java
-  CompressedTableHDU compressed = CompressedTableHDU.fromBinaryTableHDU(table, 4, Compression.GZIP_2).compress();
-```
-
-After the compression, the compressed table HDU can be handled just like any other table HDU, and written to a 
-file or stream, for example (as long as you remember that they cannot be the primary HDU in the FITS!).
-
-The reverse process is simply via the `asBinaryTableHDU()` method. E.g.:
-
-```java
-  CompressedTableHDU compressed = ...
-  BinaryTableHDU table = compressed.asBinaryTableHDU();
-```
-
-Just like with images, compressing or decompression tables will utilize all available CPU's are automatically.
-
-#### Accesing table header values without decompressing
-
-You don't need to decompress the table to see what the decompressed table header is. You can 
-simply call `CompressedTableHDU.getTableHeader()` to peek into the reconstructed header of the original table 
-before it was compressed:
-
-```java
-  CompressedTableHDU compressed = ...
-  Header origHeader = compressed.getTableHeader();
-```
-
-#### Decompressing select parts of a compressed binary table
-
-Sometimes we are interested in a section of the compressed table only. As of 1.18.0, this is really easy also.
-If you just want to uncompress a range of the compressed tiles, you can
-
-```java
-  CompressedImageHDU compressed = ...
-  TableHDU section = compressed.asBinaryTableHDU(fromTile, toTile);
-```
-
-And, if you want to surgically access a range of data from select columns only:
-
-```java
-  CompressedImageHDU compressed = ...
-  Object colData = compressed.getColumnData(colIndex, fromTile, toTile);
-```
 
 
 <a name="contribute"></a>
