@@ -33,6 +33,9 @@ You may find the following links useful:
  - [Github repository](https://github.com/nom-tam-fits/nom-tam-fits)
  - [Maven Central repository](https://mvnrepository.com/artifact/gov.nasa.gsfc.heasarc/nom-tam-fits)
 
+
+-----------------------------------------------------------------------------
+
 <a name="introduction"></a>
 ## Introduction
 
@@ -125,6 +128,7 @@ appropriate narrowing conversion of 16-bit Unicode `char` to `byte`. Therefore, 
 extended Unicode characters (and also ASCII beyond the `0x20` -- `0x7E` range) in `String`s, when including these in FITS.
 
 
+-----------------------------------------------------------------------------
 
 <a name="reading-fits-files"></a>
 ## Reading FITS files
@@ -454,6 +458,7 @@ The library provides methods for accessing entire rows and columns also via the 
 forward because these methods can be confounding to use, with overlapping data types and/or dimensions.
 
 
+-----------------------------------------------------------------------------
 
 <a name="writing-data"></a>
 ## Writing data
@@ -725,6 +730,7 @@ location:
 ```
 
 
+-----------------------------------------------------------------------------
 
 <a name="modifying-existing-files"></a>
 ## Modifying existing files
@@ -808,7 +814,7 @@ header still fits in the same number of FITS blocks (of 2880 bytes) as before. (
 headers for later additions using `Header.ensureCardSpace(int)` prior to writing the header or HDU originally.)
 
 
-
+-----------------------------------------------------------------------------
 
 <a name="building-tables-from-data"></a>
 ## Building binary tables from local data
@@ -985,6 +991,7 @@ opposed to row-by-row):
 before calling `write()` on the encompassing HDU.
 
 
+-----------------------------------------------------------------------------
 
 <a name="fits-headers"></a>
 ## FITS headers
@@ -1331,6 +1338,8 @@ Additionally, we provide `HeaderCard.sanitize(String)` method that the user can 
 
 
 
+-----------------------------------------------------------------------------
+
 <a name="compression-support"></a>
 ## Compression support
 
@@ -1536,6 +1545,7 @@ And, if you want to surgically access a range of data from select columns (and t
 ```
 
 
+-----------------------------------------------------------------------------
 
 <a name="contribute"></a>
 ## How to contribute
