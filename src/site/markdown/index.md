@@ -33,14 +33,19 @@ the library will automatically interpret and populate the mandatory minimum data
 
 This library was originally written in Java 1.0 and therefore its design and implementation were strongly influenced by the limited functionality and efficiencies of early versions of Java.
 
-This is an open-source, community maintained, project hosted on github as [nom-tam-fits](https://github.com/nom-tam-fits/nom-tam-fits). Further information and documentation, including API docs, can be found on the [project site](http://nom-tam-fits.github.io/nom-tam-fits/index.html).
+This is an open-source, community maintained, project hosted on github as [nom-tam-fits](https://github.com/nom-tam-fits/nom-tam-fits). Further information and documentation, including API docs, can be found on the [project site](http://nom-tam-fits.github.io/nom-tam-fits/index.html). You may find the following links useful:
 
+ - [API Documentation](http://nom-tam-fits.github.io/nom-tam-fits/apidocs/index.html)
+ - [FITS Standard](https://fits.gsfc.nasa.gov/fits_standard.html) documentation
+ - [Project site](http://nom-tam-fits.github.io/nom-tam-fits](http://nom-tam-fits.github.io/nom-tam-fits/index.html)
+ - [Github repository](https://github.com/nom-tam-fits/nom-tam-fits)
+ - [Maven Central repository](https://mvnrepository.com/artifact/gov.nasa.gsfc.heasarc/nom-tam-fits)
 
 
 <a name="where-to-get-it"></a>
 ### Where to get it
 
-Official releases of the library are published on [Github](https://github.com/nom-tam-fits/nom-tam-fits/releases) and also available on [Maven Central](http://search.maven.org/#search|ga|1|g%3A%22gov.nasa.gsfc.heasarc%22 "Maven Central"). Documentation can be found on the project site at [http://nom-tam-fits.github.io/nom-tam-fits](http://nom-tam-fits.github.io/nom-tam-fits/index.html).
+Official releases of the library are published on [Github](https://github.com/nom-tam-fits/nom-tam-fits/releases) and also available on [Maven Central](http://search.maven.org/#search|ga|1|g%3A%22gov.nasa.gsfc.heasarc%22 "Maven Central").
 
 If you want to try the bleeding edge version of nom-tam-fits, you can get it from sonatype:
 
@@ -302,7 +307,7 @@ This can be achieved much the same way as in the above example, replacing `image
 #### Low-level reading of image data
 
 Suppose we want to get the average value of a 100,000 x 40,000 pixel image. If the pixels are 32-bit integers, that would be an 
-16 GB file. However, we do not need to load the entire image into memory at once. Instead we can analyse it via bite-sized chunks. 
+16 GB file. However, we do not need to load the entire image into memory at once. Instead we can analyze it via bite-sized chunks. 
 For example,
 
 ```java
@@ -316,7 +321,7 @@ For example,
   }
 ```
 
-The `reset()` method causes the internal stream to seek to the beginning of the data area. If that’s not possible it returns false.
+The `reset()` method causes the internal stream to seek to the beginning of the data area. If that’s not possible it returns `false`.
 Next, we obtain the input file or stream for reading, query the image size, and set up our chunk-sized storage (e.g. by image row):
 
 ```java  
@@ -624,6 +629,7 @@ after the end of the image data:
 ```
 
 #### Tables
+
 We can do something pretty similar for tables __so long as we don't have variable length columns__, but 
 it requires a little more work.
 
@@ -684,16 +690,24 @@ that out row is something like `{ { double[1] }, { byte[10] }, { float[256] }, .
   }
 ```
 
-Once we finish writing the table data, we must add the requisite padding to complete the FITS block of 2880 bytes
-after the table data ends. 
+We want to keep count of the rows we write (e.g. `nRowsWritten`). Once we finish writing the table data, 
+we must add the requisite padding to complete the FITS block of 2880 bytes after the table data ends. 
 
 ```java
   // Add padding to the file to complete the FITS block
   FitsUtil.pad(out, nRowsWritten * table.getRegularRowSize());
 ```
 
-After the table has been written, we can revisit the header if we need to update it with entries
-that were not available earlier:
+After the table has been thus written to the output, we should make sure that the header has the correct number 
+of table rows in in `NAXIS2` entry:
+
+```java
+  header.addValue(Standard.NAXISn.n(2), nRowsWritten);
+```
+
+We can also complete the header with any other information that became available since the start (using the space 
+we reserved for additions earlier). Once the header is all in ship-shape, we can re-write in the file at its original
+location:
 
 ```java
    // Re-write the header with the new information we added since we began writing 
@@ -730,11 +744,20 @@ Same goes for a table HDU:
 
 ```java 
   BinaryTableHDU hdu = (BinaryTableHDU) f.getHDU(1);
-  hdu.set(3, 0, 3.14159265);
   
+  // Modify the table as necessary
+  hdu.set(3, 0, 3.14159265);
   ...
+  
+  // Make sure the file contains the changes made above
   hdu.rewrite();
 ```
+
+Note, that in the above table example, the `rewrite()` call may be superfluous since `BinaryTable.set()` may be editing the file
+in situ if the data has been left in deferred-read mode (random accessible file, without data loaded to memory). Nevertheless,
+it is best practice to call `rewrite()` anyway to ensure that the updates are synched to the output under all circumstances. And, 
+you should also close the output (e.g. via `Fits.close()`) after done editing the FITS file to ensure that any pending file changes 
+are fully flushed to the output.
 
 Defragmenting binary tables allows to reclaim heap space that is no longer used in the heap area. When deleting variable-length 
 columns, or when replacing entries inside variable-length columns, some or all of the space occupied by old entries on the heap 
@@ -746,7 +769,7 @@ extra step before `rewrite)`.
 ```java
   ...
   
-  // If the we changed variable length data, it may be a good
+  // If we changed variable-length data, it may be a good
   // idea to defragment the heap before writing...
   hdu.defragment();
 
@@ -756,8 +779,7 @@ extra step before `rewrite)`.
 Defragmenting might also be a good idea when building tables with variable-length data column by column (as opposed to
 row-by-row).
 
-
-And, headers can also be updated in place -- you don't even need to access the data, and can leave it in deferred state:
+And, headers can also be updated in place also -- you don't even need to access the data, which can be left in deferred state:
 
 ```java 
   BasicHDU<?> hdu = f.getHDU(1);
@@ -772,8 +794,9 @@ And, headers can also be updated in place -- you don't even need to access the d
 
 Generally rewrites can be made as long as the only change is to the data content, but not to the data size 
 (and the FITS file meets the criteria mentioned above). An exception will be thrown if the data has been added 
-or deleted or too many changes have been made to the header. Some modifications may be made to the header but the number 
-of header cards modulo 36 must remain unchanged. (Hint, you can reserve space in headers for later additions using `Header.ensureCardSpace(int)` prior to writing the header or HDU originally.)
+or deleted or too many changes have been made to the header. Some additiona to the header may be allowed as long as the 
+header still fits in the same number of FITS blocks (of 2880 bytes) as before. (Hint, you can always reserve space in 
+headers for later additions using `Header.ensureCardSpace(int)` prior to writing the header or HDU originally.)
 
 
 
@@ -794,9 +817,10 @@ If you already have an `Object[rows][cols]` data table, in which each entry repr
 you can create an appropriate binary table HDU from it as:
 
 ```java
-   Object[][] rowMajorData = ...
+   Object[][] tableData = ...
   
-   BinaryTableHDU tableHDU = BinaryTableHDU.encapsulate(rowMajorData);
+   BinaryTable table = BinaryTable.fromRowMajor(tableData);
+   BinaryTableHDU hdu = BinaryTableHDU.from(table);
 ```
 
 There are some requirements on the array though:
@@ -812,6 +836,7 @@ There are some requirements on the array though:
    will be stored as variable-length arrays in flattened 1D format, where the shape may be lost). 
  - If entries are one-dimensional, they can freely vary in size from row to row
  - Java `null` entries are allowed for `String` and `Boolean` (logical) types, but not for the other data types.
+   (these will map to empty strings or _undefined_ logical values respectively)
 
    
 Note, that while the library supports ASCII tables, it is generally better to just use binary tables for storing table data
@@ -824,8 +849,8 @@ tables are simply better, because they:
  - Take up less space on disk
  - Can be compressed to an even smaller size
  
-To create ASCII tables (when possible) instead using `Fits.makeHDU()` or one of the factory methods to encapsulate 
-a table data object, you should call `FitsFactory.setUseAsciiTables(true)` beforehand.
+To create ASCII tables (provided the data allows for it) you will need to call `FitsFactory.setUseAsciiTables(true)` prior 
+to calling `Fits.makeHDU()` or one of the factory methods to encapsulate a table data object.
  
 When creating or modifying binary tables containing variable-length columns, defragmenting might also be a good idea 
 before writing out binary tables to a file or stream:
@@ -843,7 +868,7 @@ just before calling `write()`.
 
 As of 1.18 building tables one row at a time is both easy and efficient -- and may be the least confusing way to get
 tables done right. (In prior releases, adding rows to existing tables was painfully slow, and much more constrained). You may 
-want to start by defining the types and dimensions (or whether variable-length) of the data that will be contained in each 
+want to start by defining the types and dimensions of the data (or whether variable-length) that will be contained in each 
 table column:
 
 ```java
@@ -865,8 +890,7 @@ Defining columns this way is not always necessary before adding rows to the tabl
 have data that needs variable-length storage row-after-row; or you want more control over specifics of the column format. 
 As such, it is best practice to define the columns explictly even if not strictly required for your particular application. 
 
-Now you can populate the table with your data, one row at a time, using the `addRow()` method as many times over as
-necessary:
+Now you can populate the table with your data, one row at a time, using the `addRow()` method as many times over as necessary:
 
 ```java   
    for (...) {
@@ -878,27 +902,26 @@ necessary:
    }
 ```
 
-As of 1.18, adding rows allows for vararg syntax and for using Java boxed types (as an alternative to primitive arrays of 1) 
-to specify primitive scalar table elements, including auto-boxing of literals and variables. Thus, since 1.18, you may simply 
-write:
+As of 1.18, you may use Java boxed types (as an alternative to primitive arrays of 1) to specify primitive scalar table elements, including auto-boxing of literals or variables. You may also use vararg syntax for adding rows if that is more convenient in your 
+application. Thus, since 1.18, you may simply write:
 
 ```java
    table.addRowEntries(1, 3.14159265);
 ```
 
-to add a row consisting of an 32-bit integer, a double-precision floating point value. Prior to 1.18, the same would 
-have to have been written as:
+to add a row consisting of an 32-bit integer, a double-precision floating point value (presuming your table has those two types of
+columns). Prior to 1.18, the same would have to have been written as:
 
 ```java  
   table.addRow(new Object[] { new int[] {1}, new double[] {3.14159265} }; 
 ```
 
-Tables built entirely row-by-row are naturally defragmented, notwithstanding subsequent modifications.
+Tables built entirely row-by-row are naturally defragmented, as long as they are not modified subsequently.
 
-Once the table is complete, you can then wrap in in a HDU:
+Once the table is complete, you can wrap it in a HDU:
 
 ```java
-  TableHDU hdu = (TableHDU) Fits.makeHDU(table);
+  BinaryTableHDU hdu = BinaryTableHDU.from(table);
 ```
 
 which will populate the header with the requisite entries that describe the table. You can then edit the new header
@@ -977,8 +1000,8 @@ There are two basic ways to access these data:
 
 #### A. Direct access header values
 
-If you are not concerned with the internal organization of the header you can get values from the header using the 
-`get...Value()` methods. To set values use the `addValue` method.
+If you are not concerned with the internal ordering of the header you can get values from the header using the 
+`get...Value()` methods. To set values use the `addValue()` method.
 
 To find out the telescope used you might want to know the value of the `TELESCOP` key.
 
@@ -994,9 +1017,8 @@ Or if we want to know the RA of the center of the image:
   double ra = header.getDoubleValue("CRVAL1"); 
 ```
 
-[The FITS WCS convention is being used here.
-For typical images the central coordinates are in the pair of keys, CRVAL1 and CRVAL2 and our example assumes an 
-equatorial coordinate system.]
+[The FITS WCS convention is being used here. For typical images the central coordinates are in the pair of keys, CRVAL1 
+and CRVAL2 and our example assumes an equatorial coordinate system.]
 
 Perhaps we have a FITS file where the RA was not originally known, or for which we’ve just found a correction.
 
@@ -1006,8 +1028,8 @@ To add or change the RA we use:
   header.addValue("CRVAL1", updatedRA, "Corrected RA");
 ```
 
-The second argument is our new RA.
-The third is a comment field that will also be written to that header.
+The second argument is our new RA. The third is a comment field that will also be written to that header in the space
+remaining.
 
 
 #### B. Iterator-based access of header values
@@ -1019,30 +1041,27 @@ This is most easily accomplished using a header Cursor and using the HeaderCard.
   Cursor<String, HeaderCard> c = header.iterator();
 ```
 
-returns a cursor object that points to the first card of the header.
-We have `prev()` and `next()` methods that allow us to move through the header,
-and `add()` and `delete()` methods to add new records.
-The methods of `HeaderCard` allow us to manipulate the entire current card as a single string or broken down into keyword, value and comment components.
-Comment and history header cards can be created and added to the header.
+returns a cursor object that points to the first card of the header. We have `prev()` and `next()` methods that allow us to 
+move through the header, and `add()` and `delete()` methods to add new records. The methods of `HeaderCard` allow us to 
+manipulate the entire current card as a single string or broken down into keyword, value and comment components. Comment and 
+history header cards can be created and added to the header.
 
-For tables much of the metadata describes individual columns.
-There are a set of `setTableMeta()` methods that can be used to help organize these as the user wishes.
+For tables much of the metadata describes individual columns. There are a set of `setTableMeta()` methods that can be used 
+to help organize these as the user wishes.
 
 
 
 <a name="standard-and-conventional-fits-header-keywords"></a>
 ### Standard and conventional FITS header keywords
 
-There many, many fully standard, or conventional FITS keywords. Many organisations (or groups of organisations) have defined their own sets of keywords.
-This results in many different dictionaries with partly overlapping definitions. To help the "normal" user of FITS files
+There many standard, or conventional FITS keywords. Many organisations (or groups of organisations) have defined their own sets 
+of keywords. This results in many different dictionaries with partly overlapping definitions. To help the "normal" user of FITS files
 with these, we have started to collect the standards and will try to include them in this library to ease finding of the "right" 
 keyword.
 
-These dictionaries are organized in a hierarchical form.  Every dictionary other than the root 
-extends the list of keywords of another dictionary.
-The root of this tree is the dictionary used in 
-the FITS standard itself. Below that is a dictionary with entries from
-different libraries that use the same keywords. These are collected in a dictionary of commonly used keywords.
+These dictionaries are organized in a hierarchical form. Every dictionary other than the root extends the list of keywords of 
+another dictionary. The root of this tree is the dictionary used in the FITS standard itself. Below that is a dictionary with 
+entries from different libraries that use the same keywords. These are collected in a dictionary of commonly used keywords.
 
 These enumerations of keywords (dictionaries) can be found in and under the package [nom.tam.fits.header](./apidocs/nom/tam/fits/header/package-summary.html "nom.tam.fits.header").
 The standard and commonly used keywords can be found there. Commonly used keywords are sorted in separate enumerations by theme.
@@ -1098,21 +1117,18 @@ a pull request will work best.
 To use the header keywords, just make static imports of them and use them just as you would have used strings. Here a simple example:
 
 ```java
-  import static nom.tam.fits.header.InstrumentDescription.FILTER;
-  import static nom.tam.fits.header.Standard.INSTRUME;
-  ...
-  hdr.addValue(INSTRUME, "My very big telescope");
-  hdr.addValue(FILTER, "meade #25A Red");
+  hdr.addValue(Standard.INSTRUME, "My very big telescope");
+  hdr.addValue(InstrumentDescription.FILTER, "meade #25A Red");
   ...
 ```
 
-Some keywords have indexes that must be specified, just call the n() method on the keyword and specify the indexes you want. You must spececify one integer per 'n' in the keyword.
+Some keywords have indexes that must be specified, just call the `n()` method on the keyword and specify the (1-based) indexes 
+you want. You must spececify one integer for each 'n' appearing in the keyword name. For example, to set the value of the `WAT9_234` keyword to the string value of `"50"`:
 
 ```java
-  import static nom.tam.fits.header.extra.NOAOExt.WATn_nnn;
-  ...
-  hdr.addValue(WATn_nnn.n(9, 2, 3, 4), "50");
+  hdr.addValue(NOAOExt.WATn_nnn.n(9, 2, 3, 4), "50");
 ```
+
 
 You can use the compiler to check your keywords, and also use your IDE to easily find references to certain keywords.
 
@@ -1201,7 +1217,9 @@ Then later you can verify the integrity of FITS files using the stored checksums
   }
 ```
 
-(Note that `Fits.calcChecksum(int)` will compute the checksum from the file if the data has not been loaded into RAM already (in deferred read mode). Otherwise, it will compute the checksum from the data that was loaded into memory. You can also calculate the checksums from the file (equivalently to the above) via:
+(Note that `Fits.calcChecksum(int)` will compute the checksum from the file if the data has not been loaded into RAM already 
+(in deferred read mode). Otherwise, it will compute the checksum from the data that was loaded into memory. You can also 
+calculate the checksums from the file (equivalently to the above) via:
 
 ```java
   FitsFile in = new FitsFile("my-huge-fits-file.fits");
@@ -1216,7 +1234,8 @@ Then later you can verify the integrity of FITS files using the stored checksums
   }
 ```
 
-And, if you want to verify the integrity of the data segment separately (without the header) you might use `getStoredDatasum()` instead and changing the `checksum()` call range to correspond to the location of the data block in the file. 
+And, if you want to verify the integrity of the data segment separately (without the header) you might use `getStoredDatasum()` 
+instead and changing the `checksum()` call range to correspond to the location of the data block in the file. 
 
 Finally, you might want to update the checksums for a FITS you modify in place:
 
