@@ -1,11 +1,15 @@
 
 # Getting started with the _nom.tam.fits_ library.
 
+
 ![Build Status](https://github.com/nom-tam-fits/nom-tam-fits/actions/workflows/maven.yml/badge.svg)
 [![codecov](https://codecov.io/gh/nom-tam-fits/nom-tam-fits/branch/master/graph/badge.svg?token=8rFyA5YzE5)](https://codecov.io/gh/nom-tam-fits/nom-tam-fits)
 [![Maven Central](https://maven-badges.herokuapp.com/maven-central/gov.nasa.gsfc.heasarc/nom-tam-fits/badge.svg)](https://maven-badges.herokuapp.com/maven-central/gov.nasa.gsfc.heasarc/nom-tam-fits)
 [![Project Site](https://github.com/nom-tam-fits/nom-tam-fits/actions/workflows/site.yml/badge.svg)](https://github.com/nom-tam-fits/nom-tam-fits/actions/workflows/site.yml)
 
+## Table of Contents
+
+ - [Related Links](#related-links)
  - [Introduction](#introduction)
  - [Reading FITS files](#reading-fits-files)
  - [Writing data](#writing-data)
@@ -15,7 +19,16 @@
  - [Compression support](#compression-support)
  - [How to contribute](#contribute)
 
+<a name="related-links"></a>
+## Related links
 
+You may find the following links useful:
+
+ - [API Documentation](http://nom-tam-fits.github.io/nom-tam-fits/apidocs/index.html)
+ - [FITS Standard](https://fits.gsfc.nasa.gov/fits_standard.html) documentation
+ - [Project site](http://nom-tam-fits.github.io/nom-tam-fits/index.html)
+ - [Github repository](https://github.com/nom-tam-fits/nom-tam-fits)
+ - [Maven Central repository](https://mvnrepository.com/artifact/gov.nasa.gsfc.heasarc/nom-tam-fits)
 
 <a name="introduction"></a>
 ## Introduction
@@ -33,13 +46,7 @@ the library will automatically interpret and populate the mandatory minimum data
 
 This library was originally written in Java 1.0 and therefore its design and implementation were strongly influenced by the limited functionality and efficiencies of early versions of Java.
 
-This is an open-source, community maintained, project hosted on github as [nom-tam-fits](https://github.com/nom-tam-fits/nom-tam-fits). Further information and documentation, including API docs, can be found on the [project site](http://nom-tam-fits.github.io/nom-tam-fits/index.html). You may find the following links useful:
-
- - [API Documentation](http://nom-tam-fits.github.io/nom-tam-fits/apidocs/index.html)
- - [FITS Standard](https://fits.gsfc.nasa.gov/fits_standard.html) documentation
- - [Project site](http://nom-tam-fits.github.io/nom-tam-fits/index.html)
- - [Github repository](https://github.com/nom-tam-fits/nom-tam-fits)
- - [Maven Central repository](https://mvnrepository.com/artifact/gov.nasa.gsfc.heasarc/nom-tam-fits)
+This is an open-source, community maintained, project hosted on github as [nom-tam-fits](https://github.com/nom-tam-fits/nom-tam-fits). Further information and documentation, including API docs, can be found on the [project site](http://nom-tam-fits.github.io/nom-tam-fits/index.html).
 
 
 <a name="where-to-get-it"></a>
