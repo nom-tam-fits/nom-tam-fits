@@ -37,7 +37,7 @@ This is an open-source, community maintained, project hosted on github as [nom-t
 
  - [API Documentation](http://nom-tam-fits.github.io/nom-tam-fits/apidocs/index.html)
  - [FITS Standard](https://fits.gsfc.nasa.gov/fits_standard.html) documentation
- - [Project site](http://nom-tam-fits.github.io/nom-tam-fits](http://nom-tam-fits.github.io/nom-tam-fits/index.html)
+ - [Project site](http://nom-tam-fits.github.io/nom-tam-fits/index.html)
  - [Github repository](https://github.com/nom-tam-fits/nom-tam-fits)
  - [Maven Central repository](https://mvnrepository.com/artifact/gov.nasa.gsfc.heasarc/nom-tam-fits)
 
