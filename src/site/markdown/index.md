@@ -19,13 +19,16 @@
  - [Compression support](#compression-support)
  - [How to contribute](#contribute)
 
+
+-----------------------------------------------------------------------------
+
 <a name="related-links"></a>
 ## Related links
 
 You may find the following links useful:
 
  - [API Documentation](http://nom-tam-fits.github.io/nom-tam-fits/apidocs/index.html)
- - [FITS Standard](https://fits.gsfc.nasa.gov/fits_standard.html) documentation
+ - [FITS Standard page](https://fits.gsfc.nasa.gov/fits_standard.html)
  - [Project site](http://nom-tam-fits.github.io/nom-tam-fits/index.html)
  - [Github repository](https://github.com/nom-tam-fits/nom-tam-fits)
  - [Maven Central repository](https://mvnrepository.com/artifact/gov.nasa.gsfc.heasarc/nom-tam-fits)
@@ -402,7 +405,6 @@ loop through all table rows to get only the scalar values from the column named 
   for(int row = 0; row < tab.getNRows(); row++) {
   
       // Retrieve scalar entries with convenient getters... 
-      // type, and returning the first (and only) element from that array...
       double utc  = tab.getDouble(row, colUTC);
            
       // We can also access by fixed column index...
@@ -507,7 +509,7 @@ to the new HDU's header, e.g.:
   ...
 ```
 
-After that we can add our table(s), such as binary tables (preferred) or ASCII tables (if you must):
+After that we can add further images or table(s), such as binary tables (preferred) or ASCII tables (if you must):
 
 Once all HDUs have been added, we write the FITS as usual:
 
@@ -518,7 +520,7 @@ Once all HDUs have been added, we write the FITS as usual:
 
 An important thing to remember is that while images can be anywhere in the FITS files, tables
 are extensions, and so, they cannot be the first HDU in a file. Thus, if a table is the first HDU we add to a FITS
-container, it will be automatically preceded by a dummy primary HDU, and our data will actually be written as the
+container, it will be automatically prepended by a dummy primary HDU, and our data will actually be written as the
 second HDU (Java index 1).
 
 
