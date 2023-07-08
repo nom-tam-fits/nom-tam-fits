@@ -1030,17 +1030,16 @@ These enumerations of keywords (dictionaries) can be found in and under the pack
 
 Currently, we include:
 
-* `Standard` -- [keywords defined by the FITS standard](http://heasarc.gsfc.nasa.gov/docs/fcg/standard_dict.html) itself
-* `Common` -- Common keywors [conventions recognized by the FITS standard](http://heasarc.gsfc.nasa.gov/docs/fcg/common_dict.html)
+* `Standard` -- [keywords defined by the FITS standard](http://heasarc.gsfc.nasa.gov/docs/fcg/standard_dict.html)
+* `Common` -- [conventions recognized by the FITS standard](http://heasarc.gsfc.nasa.gov/docs/fcg/common_dict.html)
   * `NOAO` -- [Keywords used by the National Optical Astronomy Observatory](http://iraf.noao.edu/iraf/web/projects/ccdmosaic/imagedef/fitsdic.html)
-  * `SBFits` -- [Santa Barbara Instrument Group FITS Extension (SBFITSEXT)](https://diffractionlimited.com/wp-content/uploads/2016/11/sbfitsext_1r0.pdf))
+  * `SBFits` -- [Santa Barbara Instrument Group FITS Extension (SBFITSEXT)](https://diffractionlimited.com/wp-content/uploads/2016/11/sbfitsext_1r0.pdf)
     * `MaxImDL` -- [MaxIm DL Astronomy and Scientific Imaging Solutions](http://www.cyanogen.com/help/maximdl/FITS_File_Header_Definitions.htm)) 
   * `CXCStclShared` -- Common keywords for Chandra and STScI
-    * `CXC` -- [keywords defined for the Chandra X-ray Observatory](http://cxc.harvard.edu/contrib/arots/fits/content.txt)) 
+    * `CXC` -- [keywords defined for the Chandra X-ray Observatory](http://cxc.harvard.edu/contrib/arots/fits/content.txt)
     * `STScI` -- [keywords used by the Space Telescope Science Institute](http://tucana.noao.edu/ADASS/adass_proc/adass_95/zaraten/zaraten.html)
 
-The Synonyms collects less common alternatives for more common keywords. The advantage of using the standard keywords is to avoid typos
-when pupulating or checking header entries (no more pruney `String` references). For example,
+The advantage of using the standard keywords is that they avoid typos when populating or checking header entries (no more pruney `String` references). For example,
 
 ```java
   hdr.addValue(Standard.INSTRUME, "My very big telescope");
@@ -1048,8 +1047,8 @@ when pupulating or checking header entries (no more pruney `String` references).
   ...
 ```
 
-Some keywords have indexes that must be specified, just call the `n()` method on the keyword and specify the (1-based) indexes 
-you want. You must spececify one integer for each 'n' appearing in the keyword name. For example, to set the value of the `WAT9_234` keyword to the string value of `"50"`:
+Your compiler or IDE will automatically warn on incorrect references, forcing you to get them right. Some keywords have indexes that 
+must be specified, just call the `n()` method on the keyword and specify the (1-based) indexes you want. You must spececify one integer for each 'n' appearing in the keyword name. For example, to set the value of the `WAT9_234` keyword to the string value of `"50"`:
 
 ```java
   hdr.addValue(NOAOExt.WATn_nnn.n(9, 2, 3, 4), "50");
