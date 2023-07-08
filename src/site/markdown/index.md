@@ -1030,22 +1030,14 @@ These enumerations of keywords (dictionaries) can be found in and under the pack
 
 Currently, we include:
 
-* `Standard` -- keywords defined by the FITS standard itself<br>
-  (source: [http://heasarc.gsfc.nasa.gov/docs/fcg/standard_dict.html](http://heasarc.gsfc.nasa.gov/docs/fcg/standard_dict.html))
-* `Common` -- Common conventions recognized by the FITS standard<br>
-  (source: [http://heasarc.gsfc.nasa.gov/docs/fcg/common_dict.html](http://heasarc.gsfc.nasa.gov/docs/fcg/common_dict.html))
-  * `NOAO` -- Keywords used by the National Optical Astronomy Observatory<br>
-    (source: [http://iraf.noao.edu/iraf/web/projects/ccdmosaic/imagedef/fitsdic.html](http://iraf.noao.edu/iraf/web/projects/ccdmosaic/imagedef/fitsdic.html))
-  * `SBFits` -- Santa Barbara Instrument Group FITS Extension (SBFITSEXT)<bt>
-     (source: [https://diffractionlimited.com/wp-content/uploads/2016/11/sbfitsext_1r0.pdf](https://diffractionlimited.com/wp-content/uploads/2016/11/sbfitsext_1r0.pdf))
-    * `MaxImDL` -- MaxIm DL Astronomy and Scientific Imaging Solutions<br>
-      (source: [http://www.cyanogen.com/help/maximdl/FITS_File_Header_Definitions.htm](http://www.cyanogen.com/help/maximdl/FITS_File_Header_Definitions.htm)) 
-  * `CXCStclShared` -- Common keywords for Chandra and STScI<br>
-     (source: _we found these duplicated_) 
-    * `CXC` -- keywords defined for the Chandra X-ray Observatory<br>
-      (source: [http://cxc.harvard.edu/contrib/arots/fits/content.txt](http://cxc.harvard.edu/contrib/arots/fits/content.txt)) 
-    * `STScI` -- keywords used by the Space Telescope Science Institute<br>
-      (source: [http://tucana.noao.edu/ADASS/adass_proc/adass_95/zaraten/zaraten.html](http://tucana.noao.edu/ADASS/adass_proc/adass_95/zaraten/zaraten.html)) 
+* `Standard` -- [keywords defined by the FITS standard](http://heasarc.gsfc.nasa.gov/docs/fcg/standard_dict.html) itself
+* `Common` -- Common keywors [conventions recognized by the FITS standard](http://heasarc.gsfc.nasa.gov/docs/fcg/common_dict.html)
+  * `NOAO` -- [Keywords used by the National Optical Astronomy Observatory](http://iraf.noao.edu/iraf/web/projects/ccdmosaic/imagedef/fitsdic.html)
+  * `SBFits` -- [Santa Barbara Instrument Group FITS Extension (SBFITSEXT)](https://diffractionlimited.com/wp-content/uploads/2016/11/sbfitsext_1r0.pdf))
+    * `MaxImDL` -- [MaxIm DL Astronomy and Scientific Imaging Solutions](http://www.cyanogen.com/help/maximdl/FITS_File_Header_Definitions.htm)) 
+  * `CXCStclShared` -- Common keywords for Chandra and STScI
+    * `CXC` -- [keywords defined for the Chandra X-ray Observatory](http://cxc.harvard.edu/contrib/arots/fits/content.txt)) 
+    * `STScI` -- [keywords used by the Space Telescope Science Institute](http://tucana.noao.edu/ADASS/adass_proc/adass_95/zaraten/zaraten.html)
 
 The Synonyms collects less common alternatives for more common keywords. The advantage of using the standard keywords is to avoid typos
 when pupulating or checking header entries (no more pruney `String` references). For example,
