@@ -1035,9 +1035,8 @@ Currently, we include:
   * `NOAO` -- [Keywords used by the National Optical Astronomy Observatory](http://iraf.noao.edu/iraf/web/projects/ccdmosaic/imagedef/fitsdic.html)
   * `SBFits` -- [Santa Barbara Instrument Group FITS Extension (SBFITSEXT)](https://diffractionlimited.com/wp-content/uploads/2016/11/sbfitsext_1r0.pdf)
     * `MaxImDL` -- [MaxIm DL Astronomy and Scientific Imaging Solutions](http://www.cyanogen.com/help/maximdl/FITS_File_Header_Definitions.htm)
-  * `CXCStclShared` -- Common set of keywords for Chandra and STScI
-    * `CXC` -- [keywords defined for the Chandra X-ray Observatory](http://cxc.harvard.edu/contrib/arots/fits/content.txt)
-    * `STScI` -- [keywords used by the Space Telescope Science Institute](http://tucana.noao.edu/ADASS/adass_proc/adass_95/zaraten/zaraten.html)
+  * `CXC` -- [keywords defined for the Chandra X-ray Observatory](http://cxc.harvard.edu/contrib/arots/fits/content.txt)
+  * `STScI` -- [keywords used by the Space Telescope Science Institute](http://tucana.noao.edu/ADASS/adass_proc/adass_95/zaraten/zaraten.html)
 
 The advantage of using the standard keywords is that they avoid typos when populating or checking header entries (no more pruney `String` references). For example,
 
