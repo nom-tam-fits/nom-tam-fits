@@ -37,7 +37,9 @@ import nom.tam.fits.header.IFitsHeader;
 /**
  * This is the file represents the common keywords between CXC and STSclExt
  *
- * @author Richard van Nieuwenhoven
+ * @author     Richard van Nieuwenhoven
+ * 
+ * @deprecated (<i>for internal use</i>) Visibility will be reduced to the package leven in the future.
  */
 public enum CXCStclSharedExt implements IFitsHeader {
     /**
