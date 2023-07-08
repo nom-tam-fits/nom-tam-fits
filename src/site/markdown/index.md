@@ -29,6 +29,7 @@ You may find the following links useful:
 
  - [API Documentation](http://nom-tam-fits.github.io/nom-tam-fits/apidocs/index.html)
  - [FITS Standard page](https://fits.gsfc.nasa.gov/fits_standard.html)
+ - [Releases](https://github.com/nom-tam-fits/nom-tam-fits/releases)
  - [Project site](http://nom-tam-fits.github.io/nom-tam-fits/index.html)
  - [Github repository](https://github.com/nom-tam-fits/nom-tam-fits)
  - [Maven Central repository](https://mvnrepository.com/artifact/gov.nasa.gsfc.heasarc/nom-tam-fits)
@@ -39,7 +40,6 @@ You may find the following links useful:
 <a name="introduction"></a>
 ## Introduction
 
- - [Where to get it](#where-to-get-it)
  - [FITS data (HDU) types](#fits-data-type)
  - [FITS vs Java data types](#fits-vs-java-data-types)
 
@@ -53,35 +53,6 @@ the library will automatically interpret and populate the mandatory minimum data
 This library was originally written in Java 1.0 and therefore its design and implementation were strongly influenced by the limited functionality and efficiencies of early versions of Java.
 
 This is an open-source, community maintained, project hosted on github as [nom-tam-fits](https://github.com/nom-tam-fits/nom-tam-fits). Further information and documentation, including API docs, can be found on the [project site](http://nom-tam-fits.github.io/nom-tam-fits/index.html).
-
-
-<a name="where-to-get-it"></a>
-### Where to get it
-
-Official releases of the library are published on [Github](https://github.com/nom-tam-fits/nom-tam-fits/releases) and also available on [Maven Central](http://search.maven.org/#search|ga|1|g%3A%22gov.nasa.gsfc.heasarc%22 "Maven Central").
-
-If you want to try the bleeding edge version of nom-tam-fits, you can get it from sonatype:
-
-```xml
-<dependencies>
-  <dependency>
-    <groupId>gov.nasa.gsfc.heasarc</groupId>
-    <artifactId>nom-tam-fits</artifactId>
-    <version>xxxxx-SNAPSHOT</version>
-  </dependency>
-</dependencies>
-...
-<repositories>
-  <repository>
-    <id>sonatype-snapshots</id>
-    <url>https://oss.sonatype.org/content/repositories/snapshots</url>
-    <snapshots>
-      <enabled>true</enabled>
-    </snapshots>
-  </repository>
-</repositories>    
-```
-
 
 
 <a name="Fits-data-types"></a>
@@ -222,22 +193,11 @@ The simplest example of reading an image contained in the first HDU is given bel
   int[][] image = (int[][]) hdu.getKernel();
 ```
 
-First we create a new instance of `Fits` with the filename as first and only argument. Then we can get first HDU using 
+First we create a new instance of `Fits` with the filename. Then we can get first HDU using 
 the `getHDU()` method. Note the casting into an `ImageHDU`.
 
-Now we are ready to get the image data with the `getKernel()` method of the hdu,
-which is actually a short hand for getting the data unit and the data within:
-
-```java
-  ImageData imageData = (ImageData) hdu.getData();
-  int[][] image = (int[][]) imageData.getData();
-```
-
-However, the user will be responsible for casting this to an appropriate type if they want to use the data inside their program.
-It is possible to build tools that will handle arbitrary array types, but it is not trivial.
-
 When reading FITS data using the nom.tam library the user will often need to cast the results to the appropriate type.
-Given that the FITS file may contain many different kinds of data and that Java provides us with no class that can point to different kinds of primitive arrays other than Object, this downcasting is inevitable if you want to use the data from the FITS files.
+Given that the FITS file may contain many different kinds of data and that Java provides us with no class that can point to different kinds of primitive arrays other than `Object`, such explicit casting is inevitable if you want to use the data from the FITS files.
 
 
 
@@ -246,7 +206,7 @@ Given that the FITS file may contain many different kinds of data and that Java 
 
 Since 1.18, it is possible to read select cutouts of large images, including sparse sampling of specific image regions. When reading image data users may not want to read an entire array especially if the data is very large. An `ImageTiler` can be used to read in only a portion of an array.
 The user can specify a box (or a sequence of boxes) within the image and extract the desired subsets.
-`ImageTiler`s can be used for any image.
+`ImageTiler` can be used for any image.
 The library will try to only read the subsets requested if the FITS data is being read from an uncompressed file but in many cases it will need to read in the entire image before subsetting.
 
 Suppose the image we retrieve above has 2000x2000 pixels, but we only want to see the innermost 100x100 pixels. This can be achieved with
@@ -481,15 +441,6 @@ image and/or table HDUs we create. When everything is assembled, we write the FI
   fits.addHDU(...);
   ...
  
-  FitsOutputStream out = new FitsOutputStream(new FileOutputStream(new File("myfits.fits")));     
-  fits.write(out);
-```
-
-Or, equivalently, using `Fits.write(String)`:
-
-```java
-  ...
-   
   fits.write("myfits.fits");
 ```
 
@@ -1033,8 +984,8 @@ Or if we want to know the RA of the center of the image:
   double ra = header.getDoubleValue("CRVAL1"); 
 ```
 
-[The FITS WCS convention is being used here. For typical images the central coordinates are in the pair of keys, CRVAL1 
-and CRVAL2 and our example assumes an equatorial coordinate system.]
+[The FITS WCS convention is being used here. For typical images the central coordinates are in the pair of keys, `CRVAL1` 
+and `CRVAL2` and our example assumes an equatorial coordinate system.]
 
 Perhaps we have a FITS file where the RA was not originally known, or for which we’ve just found a correction.
 
@@ -1051,7 +1002,7 @@ remaining.
 #### B. Iterator-based access of header values
 
 If you are writing files, it’s often desirable to organize the header and include copious comments and history records.
-This is most easily accomplished using a header Cursor and using the HeaderCard.
+This is most easily accomplished using a header Cursor and using the `HeaderCard`.
 
 ```java
   Cursor<String, HeaderCard> c = header.iterator();
@@ -1070,67 +1021,34 @@ to help organize these as the user wishes.
 <a name="standard-and-conventional-fits-header-keywords"></a>
 ### Standard and conventional FITS header keywords
 
-There many standard, or conventional FITS keywords. Many organisations (or groups of organisations) have defined their own sets 
-of keywords. This results in many different dictionaries with partly overlapping definitions. To help the "normal" user of FITS files
+FITS defines a set of standard keywords. Additionally, many organisations (or groups of organisations) have defined their own sets 
+of keywords also, some with overlapping different definitions. To help the "normal" user of FITS files
 with these, we have started to collect the standards and will try to include them in this library to ease finding of the "right" 
 keyword.
 
-These dictionaries are organized in a hierarchical form. Every dictionary other than the root extends the list of keywords of 
-another dictionary. The root of this tree is the dictionary used in the FITS standard itself. Below that is a dictionary with 
-entries from different libraries that use the same keywords. These are collected in a dictionary of commonly used keywords.
+These enumerations of keywords (dictionaries) can be found in and under the package [nom.tam.fits.header](./apidocs/nom/tam/fits/header/package-summary.html "nom.tam.fits.header"). Keywords defined by various organisations can be found in the [nom.tam.fits.header.extra](./apidocs/nom/tam/fits/header/extra/package-summary.html "nom.tam.fits.header.extra") package.
 
-These enumerations of keywords (dictionaries) can be found in and under the package [nom.tam.fits.header](./apidocs/nom/tam/fits/header/package-summary.html "nom.tam.fits.header").
-The standard and commonly used keywords can be found there. Commonly used keywords are sorted in separate enumerations by theme.
-All included dictionaries of organisations can be found in the [nom.tam.fits.header.extra](./apidocs/nom/tam/fits/header/extra/package-summary.html "nom.tam.fits.header.extra") package.
+Currently, we include:
 
-Currently we include:
-
-* `Standard`
+* `Standard` -- keywords defined by the FITS standard itself<br>
   (source: [http://heasarc.gsfc.nasa.gov/docs/fcg/standard_dict.html](http://heasarc.gsfc.nasa.gov/docs/fcg/standard_dict.html))
-* `Common`
-  extends `Standard`
+* `Common` -- Common conventions recognized by the FITS standard<br>
   (source: [http://heasarc.gsfc.nasa.gov/docs/fcg/common_dict.html](http://heasarc.gsfc.nasa.gov/docs/fcg/common_dict.html))
-  * `NOAO`
-    extends `Common`
+  * `NOAO` -- Keywords used by the National Optical Astronomy Observatory<br>
     (source: [http://iraf.noao.edu/iraf/web/projects/ccdmosaic/imagedef/fitsdic.html](http://iraf.noao.edu/iraf/web/projects/ccdmosaic/imagedef/fitsdic.html))
-  * `SBFits`
-     extends `Common`
-     (source: [http://archive.sbig.com/pdffiles/SBFITSEXT_1r0.pdf](http://archive.sbig.com/pdffiles/SBFITSEXT_1r0.pdf))
-    * `MaxImDL`
-      extends `SBFits`
+  * `SBFits` -- Santa Barbara Instrument Group FITS Extension (SBFITSEXT)<bt>
+     (source: [https://diffractionlimited.com/wp-content/uploads/2016/11/sbfitsext_1r0.pdf](https://diffractionlimited.com/wp-content/uploads/2016/11/sbfitsext_1r0.pdf))
+    * `MaxImDL` -- MaxIm DL Astronomy and Scientific Imaging Solutions<br>
       (source: [http://www.cyanogen.com/help/maximdl/FITS_File_Header_Definitions.htm](http://www.cyanogen.com/help/maximdl/FITS_File_Header_Definitions.htm)) 
-  * `CXCStclShared`
-     extends `Common`
+  * `CXCStclShared` -- Common keywords for Chandra and STScI<br>
      (source: _we found these duplicated_) 
-    * `CXC`
-      extends `CXCStclShared`
+    * `CXC` -- keywords defined for the Chandra X-ray Observatory<br>
       (source: [http://cxc.harvard.edu/contrib/arots/fits/content.txt](http://cxc.harvard.edu/contrib/arots/fits/content.txt)) 
-    * `STScI`
-      extends `CXCStclShared`
+    * `STScI` -- keywords used by the Space Telescope Science Institute<br>
       (source: [http://tucana.noao.edu/ADASS/adass_proc/adass_95/zaraten/zaraten.html](http://tucana.noao.edu/ADASS/adass_proc/adass_95/zaraten/zaraten.html)) 
 
-
-All duplicates were eliminated from enumerations (including enumerations that are defined in one of the "parent" standards). 
-So always use a keyword of one of the higher level standards when possible.
-
-Furthermore we have identified synonym keywords inside and between dictionaries. 
-We have also started to collect these in the Synonyms class in the header package. So you can find the best keyword to
-use rather than a less widely defined synonym. 
-
-The enums may be used to set and extract keyword values.
-You can also make the compiler check references to keywords (No more pruney String references).
-Future versions of the library will try to validate using these dictionaries and 
-warn you when you use a keyword inappropriately (e.g., wrong data type,
-wrong HDU or deprecated keyword).
-
-We would appreciate any additional help in correcting errors in these definitions
-or adding new dictionaries.  While we are happy to receive information in any format,
-a pull request will work best.
-
-
-#### Using standardized FITS keywords
-
-To use the header keywords, just make static imports of them and use them just as you would have used strings. Here a simple example:
+The Synonyms collects less common alternatives for more common keywords. The advantage of using the standard keywords is to avoid typos
+when pupulating or checking header entries (no more pruney `String` references). For example,
 
 ```java
   hdr.addValue(Standard.INSTRUME, "My very big telescope");
@@ -1145,22 +1063,21 @@ you want. You must spececify one integer for each 'n' appearing in the keyword n
   hdr.addValue(NOAOExt.WATn_nnn.n(9, 2, 3, 4), "50");
 ```
 
-
-You can use the compiler to check your keywords, and also use your IDE to easily find references to certain keywords.
+For best practice, try use keywords from the higher level standards when possible. 
 
 
 
 <a name="long-string-values"></a>
 ### Long string values
 
-The standard maximum length for string values in the header is 68 characters. As of FITS 4.0, the OGIP 1.0 long string convention is part of the standard. And, as of version 1.16 of this library, it is supported by default. Support for long strings can be toggled via `FitsFactory.setLongStringEnabled(boolean)` if necessary. If the settings is disabled, any attempt to set a header value to a string longer than the space available for it in a single 80-character header record will throw a `LongStringsNotEnabledException` runtime exception.
+The standard maximum length for string values in the header is 68 characters. As of FITS 4.0, the OGIP 1.0 long string convention is part of the standard. And, as of version 1.16 of this library, it is supported by default. Support for long strings can be turned off (or on again) via `FitsFactory.setLongStringEnabled(boolean)` if necessary. If the settings is disabled, any attempt to set a header value to a string longer than the space available for it in a single 80-character header record will throw a `LongStringsNotEnabledException` runtime exception.
 
 
 
 <a name="hierarch-style-header-keywords"></a>
 ### HIERARCH style header keywords
 
-The standard FITS header keywords consists of maximum 8 upper case letters or number, plus dash `-` and underscore `_`. The HIERARCH keyword convention allows for longer and/or hierarchical sets of FITS keywords, and/or for supporting a more extended set of ASCII characters (in the range of `0x20` to `0x7E`).  Support for HIERARCH-style keywords is enabled by default as of version 1.16. HIERARCH support can be toggled if needed via `FitsFactory.setUseHierarch(boolean)`. By default, HIERARCH keywords are converted to upper-case only (__cfitsio__ convention), so
+The standard FITS header keywords consists of maximum 8 upper case letters or number, plus dash `-` and underscore `_`. The HIERARCH keyword convention allows for longer and/or hierarchical sets of FITS keywords, and/or for supporting a somewhat more extended set of ASCII characters (in the range of `0x20` to `0x7E`).  Support for HIERARCH-style keywords is enabled by default as of version 1.16. HIERARCH support can be toggled if needed via `FitsFactory.setUseHierarch(boolean)`. By default, HIERARCH keywords are converted to upper-case only (__cfitsio__ convention), so
 
 ```java
   HeaderCard hc = new HeaderCard("HIERARCH.my.lower.case.keyword[!]", "value", "comment");

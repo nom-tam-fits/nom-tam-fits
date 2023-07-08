@@ -43,8 +43,7 @@ import nom.tam.fits.header.IFitsHeader;
  * and Diffraction Limited with MaximDl all agreed to and implemented.
  * </p>
  * <p>
- * See
- * <a href="http://archive.sbig.com/pdffiles/SBFITSEXT_1r0.pdf">http://archive.sbig.com/pdffiles/SBFITSEXT_1r0.pdf</a>
+ * See <a href="https://diffractionlimited.com/wp-content/uploads/2016/11/sbfitsext_1r0.pdf"</a>
  * </p>
  *
  * @author Richard van Nieuwenhoven.
