@@ -1,11 +1,11 @@
 
-# Getting started with the _nom.tam.fits_ library.
-
-
 ![Build Status](https://github.com/nom-tam-fits/nom-tam-fits/actions/workflows/maven.yml/badge.svg)
+[![Project Site](https://github.com/nom-tam-fits/nom-tam-fits/actions/workflows/site.yml/badge.svg)](https://github.com/nom-tam-fits/nom-tam-fits/actions/workflows/site.yml)
 [![codecov](https://codecov.io/gh/nom-tam-fits/nom-tam-fits/branch/master/graph/badge.svg?token=8rFyA5YzE5)](https://codecov.io/gh/nom-tam-fits/nom-tam-fits)
 [![Maven Central](https://maven-badges.herokuapp.com/maven-central/gov.nasa.gsfc.heasarc/nom-tam-fits/badge.svg)](https://maven-badges.herokuapp.com/maven-central/gov.nasa.gsfc.heasarc/nom-tam-fits)
-[![Project Site](https://github.com/nom-tam-fits/nom-tam-fits/actions/workflows/site.yml/badge.svg)](https://github.com/nom-tam-fits/nom-tam-fits/actions/workflows/site.yml)
+
+# Getting started with the _nom.tam.fits_ library.
+
 
 ## Table of Contents
 
