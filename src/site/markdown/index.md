@@ -1024,23 +1024,18 @@ to help organize these as the user wishes.
 ### Standard and conventional FITS header keywords
 
 FITS defines a set of standard keywords. Additionally, many organisations (or groups of organisations) have defined their own sets 
-of keywords also, some with overlapping different definitions. To help the "normal" user of FITS files
-with these, we have started to collect the standards and will try to include them in this library to ease finding of the "right" 
-keyword.
+of keywords also, some with overlapping different definitions. The library includes a collections of standard keywords (under the
+`nom.tam.fits.header` package) and a collection of various conventions for keyword extensions (under the nom.tam.fits-header.extra` package), such as:
 
-These enumerations of keywords (dictionaries) can be found in and under the package [nom.tam.fits.header](./apidocs/nom/tam/fits/header/package-summary.html "nom.tam.fits.header"). Keywords defined by various organisations can be found in the [nom.tam.fits.header.extra](./apidocs/nom/tam/fits/header/extra/package-summary.html "nom.tam.fits.header.extra") package.
+ * `Standard` -- [keywords defined by the FITS standard](http://heasarc.gsfc.nasa.gov/docs/fcg/standard_dict.html)
+ * `NOAOExt` -- [Keywords used by the National Optical Astronomy Observatory](http://iraf.noao.edu/iraf/web/projects/ccdmosaic/imagedef/fitsdic.html)
+ * `SBFitsExt` -- [Santa Barbara Instrument Group FITS Extension (SBFITSEXT)](https://diffractionlimited.com/wp-content/uploads/2016/11/sbfitsext_1r0.pdf)
+   * `MaxImDLExt` -- [MaxIm DL Astronomy and Scientific Imaging Solutions](http://www.cyanogen.com/help/maximdl/FITS_File_Header_Definitions.htm)
+ * `CXCExt` -- [keywords defined for the Chandra X-ray Observatory](http://cxc.harvard.edu/contrib/arots/fits/content.txt)
+ * `STScIExt` -- [keywords used by the Space Telescope Science Institute](http://tucana.noao.edu/ADASS/adass_proc/adass_95/zaraten/zaraten.html)
 
-Currently, we include:
-
-* `Standard` -- [keywords defined by the FITS standard](http://heasarc.gsfc.nasa.gov/docs/fcg/standard_dict.html)
-* `Common` -- [conventions recognized by the FITS standard](http://heasarc.gsfc.nasa.gov/docs/fcg/common_dict.html)
-  * `NOAO` -- [Keywords used by the National Optical Astronomy Observatory](http://iraf.noao.edu/iraf/web/projects/ccdmosaic/imagedef/fitsdic.html)
-  * `SBFits` -- [Santa Barbara Instrument Group FITS Extension (SBFITSEXT)](https://diffractionlimited.com/wp-content/uploads/2016/11/sbfitsext_1r0.pdf)
-    * `MaxImDL` -- [MaxIm DL Astronomy and Scientific Imaging Solutions](http://www.cyanogen.com/help/maximdl/FITS_File_Header_Definitions.htm)
-  * `CXC` -- [keywords defined for the Chandra X-ray Observatory](http://cxc.harvard.edu/contrib/arots/fits/content.txt)
-  * `STScI` -- [keywords used by the Space Telescope Science Institute](http://tucana.noao.edu/ADASS/adass_proc/adass_95/zaraten/zaraten.html)
-
-The advantage of using the standard keywords is that they avoid typos when populating or checking header entries (no more pruney `String` references). For example,
+The advantage of using these standardized keywords is that they avoid typos in source code, since the compiler (or your IDE) will warn
+unless the keyword is known. For example,
 
 ```java
   hdr.addValue(Standard.INSTRUME, "My very big telescope");
@@ -1048,8 +1043,8 @@ The advantage of using the standard keywords is that they avoid typos when popul
   ...
 ```
 
-Your compiler or IDE will automatically warn on incorrect references, forcing you to get them right. Some keywords have indexes that 
-must be specified, just call the `n()` method on the keyword and specify the (1-based) indexes you want. You must spececify one integer for each 'n' appearing in the keyword name. For example, to set the value of the `WAT9_234` keyword to the string value of `"50"`:
+Some keywords contain indices that must be specified via the `n()` method. You must spececify one integer (one-based index) for each 
+'n' appearing in the keyword name. For example, to set the value of the `WAT9_234` keyword to the string value of `"50"`:
 
 ```java
   hdr.addValue(NOAOExt.WATn_nnn.n(9, 2, 3, 4), "50");
