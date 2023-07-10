@@ -533,7 +533,10 @@ public class HeaderTest {
         assertEquals(Hierarch.key("TEST.THIS"), keyword);
 
         keyword = HeaderCard.create("HIERARCH.test.this= 'bla bla' ").getKey();
-        assertEquals(Hierarch.key("TEST.THIS"), keyword);
+        assertEquals(Hierarch.key("TEST", "THIS"), keyword);
+
+        keyword = HeaderCard.create("HIERARCH ESO INS OPTI-3 ID = 'ESO#427 ' / Optical element identifier").getKey();
+        assertEquals(Hierarch.key("ESO", "INS", "OPTI-3", "ID"), keyword);
 
         keyword = HeaderCard.create("HIERARCH ESO INS OPTI-3 ID = 'ESO#427 ' / Optical element identifier").getKey();
         assertEquals(Hierarch.key("ESO.INS.OPTI-3.ID"), keyword);
