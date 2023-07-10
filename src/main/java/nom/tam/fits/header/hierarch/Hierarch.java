@@ -80,7 +80,8 @@ public final class Hierarch {
      * <code>"HIERARCH.group.property"</code>, which is how we refer to this keyword internally within this library.
      * 
      * @param  components A list of hierarchical keyword components. These will be concatenated into a dot-separated
-     *                        keyword, and prepended by <code>HIERARCH.</code>.
+     *                        keyword, and prepended by <code>HIERARCH.</code>. Case-sensitivity depends on the
+     *                        formatter used, see e.g. {@link IHierarchKeyFormatter#isCaseSensitive()}.
      * 
      * @return            The keyword, prepended by "HIERARCH." as per the internal convention for referring to such
      *                        keywords within this library.
