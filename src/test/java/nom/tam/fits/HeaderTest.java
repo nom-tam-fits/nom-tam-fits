@@ -28,6 +28,7 @@ import nom.tam.fits.header.GenericKey;
 import nom.tam.fits.header.IFitsHeader;
 import nom.tam.fits.header.Standard;
 import nom.tam.fits.header.hierarch.BlanksDotHierarchKeyFormatter;
+import nom.tam.fits.header.hierarch.Hierarch;
 import nom.tam.util.ArrayDataOutput;
 import nom.tam.util.AsciiFuncs;
 import nom.tam.util.ComplexValue;
@@ -526,28 +527,31 @@ public class HeaderTest {
         FitsFactory.setUseHierarch(true);
 
         String keyword = HeaderCard.create("HIERARCH test this = 'bla bla' ").getKey();
-        assertEquals("HIERARCH.TEST.THIS", keyword);
+        assertEquals(Hierarch.key("TEST.THIS"), keyword);
 
         keyword = HeaderCard.create("HIERARCH test this= 'bla bla' ").getKey();
-        assertEquals("HIERARCH.TEST.THIS", keyword);
+        assertEquals(Hierarch.key("TEST.THIS"), keyword);
 
         keyword = HeaderCard.create("HIERARCH.test.this= 'bla bla' ").getKey();
-        assertEquals("HIERARCH.TEST.THIS", keyword);
+        assertEquals(Hierarch.key("TEST", "THIS"), keyword);
 
         keyword = HeaderCard.create("HIERARCH ESO INS OPTI-3 ID = 'ESO#427 ' / Optical element identifier").getKey();
-        assertEquals("HIERARCH.ESO.INS.OPTI-3.ID", keyword);
+        assertEquals(Hierarch.key("ESO", "INS", "OPTI-3", "ID"), keyword);
+
+        keyword = HeaderCard.create("HIERARCH ESO INS OPTI-3 ID = 'ESO#427 ' / Optical element identifier").getKey();
+        assertEquals(Hierarch.key("ESO.INS.OPTI-3.ID"), keyword);
 
         keyword = HeaderCard.create("HIERARCH ESO INS. OPTI-3 ID = 'ESO#427 ' / Optical element identifier").getKey();
-        assertEquals("HIERARCH.ESO.INS.OPTI-3.ID", keyword);
+        assertEquals(Hierarch.key("ESO.INS.OPTI-3.ID"), keyword);
 
         keyword = HeaderCard.create("HIERARCH ESO.INS OPTI-3 ID = 'ESO#427 ' / Optical element identifier").getKey();
-        assertEquals("HIERARCH.ESO.INS.OPTI-3.ID", keyword);
+        assertEquals(Hierarch.key("ESO.INS.OPTI-3.ID"), keyword);
 
         keyword = HeaderCard.create("HIERARCH..ESO INS OPTI-3 ID = 'ESO#427 ' / Optical element identifier").getKey();
-        assertEquals("HIERARCH.ESO.INS.OPTI-3.ID", keyword);
+        assertEquals(Hierarch.key("ESO.INS.OPTI-3.ID"), keyword);
 
         keyword = HeaderCard.create("HIERARCH    ESO INS   OPTI-3 ID= 'ESO#427 ' / Optical element identifier").getKey();
-        assertEquals("HIERARCH.ESO.INS.OPTI-3.ID", keyword);
+        assertEquals(Hierarch.key("ESO.INS.OPTI-3.ID"), keyword);
 
         // AK: The old test expected "" here, but that's inconsistent behavior for the same type of
         // line if hierarch is enabled or not. When HIERARCH is not enabled, we require it to return the
@@ -961,7 +965,7 @@ public class HeaderTest {
                 f = new Fits();
                 BasicHDU<?> primaryHdu = FitsFactory.hduFactory(new float[0]);
 
-                primaryHdu.getHeader().addValue("HIERARCH.TEST.THIS.LONG.HEADER",
+                primaryHdu.getHeader().addValue(Hierarch.key("TEST.THIS.LONG.HEADER"),
                         "aaaaaaaabbbbbbbbbcccccccccccdddddddddddeeeeeeeeeee", null);
 
                 for (int index = 1; index < 60; index++) {
@@ -969,7 +973,7 @@ public class HeaderTest {
                     for (int charIndex = 0; charIndex < index; charIndex++) {
                         buildder.append((char) ('A' + (charIndex % 26)));
                     }
-                    primaryHdu.getHeader().addValue("HIERARCH.X" + buildder.toString(),
+                    primaryHdu.getHeader().addValue(Hierarch.key("X") + buildder.toString(),
                             "_!_!_!_!_!_!_!_!_!_!_!_!_!_!_!_!_!", buildder.toString());
                 }
 
@@ -994,13 +998,13 @@ public class HeaderTest {
                 Header headerRewriter = f.getHDU(0).getHeader();
 
                 assertEquals("aaaaaaaabbbbbbbbbcccccccccccdddddddddddeeeeeeeeeee",
-                        headerRewriter.findCard("HIERARCH.TEST.THIS.LONG.HEADER").getValue());
+                        headerRewriter.findCard(Hierarch.key("TEST.THIS.LONG.HEADER")).getValue());
                 for (int index = 1; index < 60; index++) {
                     StringBuilder buildder = new StringBuilder();
                     for (int charIndex = 0; charIndex < index; charIndex++) {
                         buildder.append((char) ('A' + (charIndex % 26)));
                     }
-                    HeaderCard card = headerRewriter.findCard("HIERARCH.X" + buildder.toString());
+                    HeaderCard card = headerRewriter.findCard(Hierarch.key("X") + buildder.toString());
                     assertEquals("_!_!_!_!_!_!_!_!_!_!_!_!_!_!_!_!_!", card.getValue());
                     if (card.getComment() != null) {
                         assertTrue(buildder.toString().startsWith(card.getComment()));
