@@ -31,6 +31,8 @@ package nom.tam.fits.header.hierarch;
  * #L%
  */
 
+import nom.tam.fits.FitsFactory;
+
 /**
  * Helper class for creating HIERARCH-style (or long) FITS keywords for use within this library.
  * 
@@ -67,7 +69,7 @@ public final class Hierarch {
      * @since          1.18
      * 
      * @see            #key(String...)
-     * @see            IHierarchKeyFormatter
+     * @see            FitsFactory#getHierarchFormater()
      * @see            IHierarchKeyFormatter#setCaseSensitive(boolean)
      */
     public static String key(String keyword) {
@@ -89,7 +91,7 @@ public final class Hierarch {
      * @since             1.18
      * 
      * @see               #key(String)
-     * @see               IHierarchKeyFormatter
+     * @see               FitsFactory#getHierarchFormater()
      * @see               IHierarchKeyFormatter#setCaseSensitive(boolean)
      */
     public static String key(String... components) {
