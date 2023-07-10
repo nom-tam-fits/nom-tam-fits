@@ -1023,25 +1023,38 @@ to help organize these as the user wishes.
 <a name="standard-and-conventional-fits-header-keywords"></a>
 ### Standard and conventional FITS header keywords
 
-FITS defines a set of standard keywords. Additionally, many organisations (or groups of organisations) have defined their own sets 
-of keywords also, some with overlapping different definitions. The library includes a collections of standard keywords (under the
-`nom.tam.fits.header` package) and a collection of various conventions for keyword extensions (under the nom.tam.fits-header.extra` package), such as:
+FITS defines a set of standard keywords, and recognizes a set of registered conventions. You can find a collection of these 
+under the `nom.tam.fits.header` package:
 
- * `Standard` -- [keywords defined by the FITS standard](http://heasarc.gsfc.nasa.gov/docs/fcg/standard_dict.html)
+ * `Standard` -- [keywords defined by the FITS standard](http://heasarc.gsfc.nasa.gov/docs/fcg/standard_dict.html). Some of
+   the standard keywords are broken out into separate enumerations by theme, as listed below:
+   * `DataDescription` -- FITS standard keywords for describing the data content
+   * `InstrumentDescription` -- Standard keywords for describing the instrumentation used for observing
+   * `ObservationDescription` -- Standard keywords that describe the observation
+   * `ObservationDurationDescription` -- Standard keywords for the timing of observations
+   * `Compression` -- Standard keywords used for describing compressed data
+   * `Checksum` -- Standard keywords used for data checksumming
+ * `HierarchicalGrouping` -- Keywords for the [Hierarchical Grouping Convention](https://fits.gsfc.nasa.gov/registry/grouping.html)
+ * `NonStandard` -- Commonly used and recognized keywords that are not strictly part of the FITS standard
+ 
+Additionally, many organisations (or groups of organisations) have defined their own sets of FITS keywords. Some of these can be 
+found under the `nom.tam.fits-header.extra` package, such as:
+ 
  * `NOAOExt` -- [Keywords used by the National Optical Astronomy Observatory](http://iraf.noao.edu/iraf/web/projects/ccdmosaic/imagedef/fitsdic.html)
  * `SBFitsExt` -- [Santa Barbara Instrument Group FITS Extension (SBFITSEXT)](https://diffractionlimited.com/wp-content/uploads/2016/11/sbfitsext_1r0.pdf)
    * `MaxImDLExt` -- [MaxIm DL Astronomy and Scientific Imaging Solutions](http://www.cyanogen.com/help/maximdl/FITS_File_Header_Definitions.htm)
  * `CXCExt` -- [keywords defined for the Chandra X-ray Observatory](http://cxc.harvard.edu/contrib/arots/fits/content.txt)
  * `STScIExt` -- [keywords used by the Space Telescope Science Institute](http://tucana.noao.edu/ADASS/adass_proc/adass_95/zaraten/zaraten.html)
 
-The advantage of using these standardized keywords is that they avoid typos in source code, since the compiler (or your IDE) will warn
-unless the keyword is known. For example,
+You can use the standardized keywords contained in these enums to populate headers or access header values. For example,
 
 ```java
   hdr.addValue(Standard.INSTRUME, "My very big telescope");
   hdr.addValue(InstrumentDescription.FILTER, "meade #25A Red");
   ...
 ```
+
+The advantage of using these standardized keywords, as opposed to strings, is that they avoid typos in the source code, since the compiler (or your IDE) will warn unless the keyword is known. 
 
 Some keywords contain indices that must be specified via the `n()` method. You must spececify one integer (one-based index) for each 
 'n' appearing in the keyword name. For example, to set the value of the `WAT9_234` keyword to the string value of `"50"`:
@@ -1050,7 +1063,7 @@ Some keywords contain indices that must be specified via the `n()` method. You m
   hdr.addValue(NOAOExt.WATn_nnn.n(9, 2, 3, 4), "50");
 ```
 
-For best practice, try use keywords from the higher level standards when possible. 
+For best practice, try rely on the standard keywords, or those in registered conventions, when possible. 
 
 
 
@@ -1067,7 +1080,7 @@ The standard maximum length for string values in the header is 68 characters. As
 The standard FITS header keywords consists of maximum 8 upper case letters or number, plus dash `-` and underscore `_`. The HIERARCH keyword convention allows for longer and/or hierarchical sets of FITS keywords, and/or for supporting a somewhat more extended set of ASCII characters (in the range of `0x20` to `0x7E`).  Support for HIERARCH-style keywords is enabled by default as of version 1.16. HIERARCH support can be toggled if needed via `FitsFactory.setUseHierarch(boolean)`. By default, HIERARCH keywords are converted to upper-case only (__cfitsio__ convention), so
 
 ```java
-  HeaderCard hc = new HeaderCard("HIERARCH.my.lower.case.keyword[!]", "value", "comment");
+  HeaderCard hc = new HeaderCard(Hiearch.key("my.lower.case.keyword[!]"), "value", "comment");
 ```
 
 will write the header entry to FITS as:
@@ -1084,7 +1097,7 @@ You can use `FitsFactory.getHierarchFormater().setCaseSensitive(true)` to allow 
 
 You may note a few other properties of HIERARCH keywords as implemented by this library:
 
- 1. The convention of the library is to refer to HIERARCH keywords internally as a dot-separated hierarchy, preceded by `HIERARCH.`, e.g. `HIERARCH.my.keyword`.
+ 1. The convention of the library is to refer to HIERARCH keywords internally as a dot-separated hierarchy, preceded by `HIERARCH.`, e.g. `HIERARCH.my.keyword`. (The static methods of the `Hierarch` class can make it easier to create such keywords).
  2. The HIERARCH keywords may contain all printable standard ASCII characters that are allowed in FITS headers (`0x20` thru `0x7E`). As such, we take a liberal reading of the ESO convention, which designated only upper-case letters, numbers, plus dash `-` and underscore `_`. If you want to conform to the ESO convention more closely, you should avoid using characters outside of the set of the original convention.
  3. The library adds a space between the keywords and the `=` sign, as prescribed by the __cfitsio__ convention. The original ESO convention does not require such a space (but certainly allows for it). We add the extra space to offer better compatibility with __cfitsio__.
  4. The HIERARCH parsing is tolerant, and does not care about extra space (or spaces) between the hierarchical components or before `=`. It also recognises `.` as a separator of hierarchy besides the conventional white space.
