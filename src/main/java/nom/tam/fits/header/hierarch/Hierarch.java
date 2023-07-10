@@ -54,7 +54,7 @@ public final class Hierarch {
     /**
      * Creates a hierarch-style (or long) keyword to use within this library, by prepending "HIERARCH." to the
      * user-specified long or hierarchical keyword. For example, for the argument <code>"group.property"</code>, this
-     * will return <code>"HIERARCH.group.property"</code>, which is how we refer to this keyword internally within tis
+     * will return <code>"HIERARCH.group.property"</code>, which is how we refer to this keyword internally within this
      * library.
      * 
      * @param  keyword The user-defined long or hierarchical keyword. Hierarchical keywords should have components
@@ -77,7 +77,7 @@ public final class Hierarch {
     /**
      * Creates a hierarch-style keyword from its hierarchical components to use within this library, For example, for
      * the arguments <code>"group"</code> and <code>"property"</code>, this will return
-     * <code>"HIERARCH.group.property"</code>, which is how we refer to this keyword internally within tis library.
+     * <code>"HIERARCH.group.property"</code>, which is how we refer to this keyword internally within this library.
      * 
      * @param  components A list of hierarchical keyword components. These will be concatenated into a dot-separated
      *                        keyword, and prepended by <code>HIERARCH.</code>.
