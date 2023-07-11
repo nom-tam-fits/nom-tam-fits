@@ -39,7 +39,8 @@ import nom.tam.fits.header.IFitsHeader;
  *
  * @author     Richard van Nieuwenhoven
  * 
- * @deprecated (<i>for internal use</i>) Visibility will be reduced to the package leven in the future.
+ * @deprecated Will be removed in the future. This enum is duplicated by both {@link CXCExt} and {@link STScIExt}, and
+ *                 users would (should) typically use one or the other.
  */
 public enum CXCStclSharedExt implements IFitsHeader {
     /**

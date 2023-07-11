@@ -38,11 +38,10 @@ import nom.tam.fits.utilities.FitsLineAppender;
 import static nom.tam.fits.header.NonStandard.HIERARCH;
 
 /**
- * Non-standard HIERARCH keyword formatter that separates hierarchical keyword component by multiple while spaces.
- * Otherwise, it is similar to {@link StandardIHierarchKeyFormatter}. Its used over the more standard formatter is
- * discouraged.
+ * @deprecated Non-standard HIERARCH keyword formatter that separates hierarchical keyword component by multiple while
+ *                 spaces. Otherwise, it is similar to {@link StandardIHierarchKeyFormatter}. Its use over the more
+ *                 standard formatter is discouraged.
  */
-@SuppressWarnings("deprecation")
 public class BlanksDotHierarchKeyFormatter implements IHierarchKeyFormatter {
 
     private final String blanks;

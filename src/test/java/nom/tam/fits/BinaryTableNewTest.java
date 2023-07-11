@@ -1531,7 +1531,7 @@ public class BinaryTableNewTest {
         String fileName = "target/bt-edit-file.fits";
 
         Fits fits = new Fits();
-        fits.addHDU(BinaryTableHDU.from(tab));
+        fits.addHDU(BinaryTableHDU.wrap(tab));
         fits.write(fileName);
         fits.close();
 
@@ -1568,7 +1568,7 @@ public class BinaryTableNewTest {
         String fileName = "target/bt-edit-file.fits";
 
         Fits fits = new Fits();
-        fits.addHDU(BinaryTableHDU.from(tab));
+        fits.addHDU(BinaryTableHDU.wrap(tab));
         fits.write(fileName);
         fits.close();
 
@@ -1592,7 +1592,7 @@ public class BinaryTableNewTest {
         String fileName = "target/bt-edit-stream.fits";
 
         Fits fits = new Fits();
-        fits.addHDU(BinaryTableHDU.from(tab));
+        fits.addHDU(BinaryTableHDU.wrap(tab));
         fits.write(fileName);
         fits.close();
 
@@ -1621,7 +1621,7 @@ public class BinaryTableNewTest {
         String fileName = "target/bt-edit-file.fits";
 
         Fits fits = new Fits();
-        fits.addHDU(BinaryTableHDU.from(tab));
+        fits.addHDU(BinaryTableHDU.wrap(tab));
         fits.write(fileName);
         fits.close();
 
@@ -1645,7 +1645,7 @@ public class BinaryTableNewTest {
         String fileName = "target/bt-edit-file.fits";
 
         Fits fits = new Fits();
-        fits.addHDU(BinaryTableHDU.from(tab));
+        fits.addHDU(BinaryTableHDU.wrap(tab));
         fits.write(fileName);
         fits.close();
 
@@ -1661,7 +1661,7 @@ public class BinaryTableNewTest {
         String fileName = "target/bt-edit-file.fits";
 
         Fits fits = new Fits();
-        fits.addHDU(BinaryTableHDU.from(tab));
+        fits.addHDU(BinaryTableHDU.wrap(tab));
         fits.write(fileName);
         fits.close();
 

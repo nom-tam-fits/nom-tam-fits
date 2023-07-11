@@ -78,7 +78,23 @@ public class BinaryTableHDU extends TableHDU<BinaryTable> {
         super(hdr, datum);
     }
 
-    public static BinaryTableHDU from(BinaryTable tab) throws FitsException {
+    /**
+     * Wraps the specified table in an HDU, creating a header for it with the essential table description. Users may
+     * want to complete the table description with optional FITS keywords such as <code>TTYPEn</code>,
+     * <code>TUNITn</code> etc. It is strongly recommended that the table structure (rows or columns) isn't altered
+     * after the table is encompassed in an HDU, since there is no guarantee that the header description will be kept in
+     * sync.
+     * 
+     * @param  tab           the binary table to wrap into a new HDU
+     * 
+     * @return               A new HDU encompassing and describing the supplied table.
+     * 
+     * @throws FitsException if the table structure is invalid, and cannot be described in a header (should never really
+     *                           happen, but we keep the possibility open to it).
+     * 
+     * @since                1.18
+     */
+    public static BinaryTableHDU wrap(BinaryTable tab) throws FitsException {
         BinaryTableHDU hdu = new BinaryTableHDU(new Header(), tab);
         tab.fillHeader(hdu.myHeader);
         return hdu;
@@ -322,7 +338,7 @@ public class BinaryTableHDU extends TableHDU<BinaryTable> {
 
     // Need to tell header about the Heap before writing.
     @Override
-    public void write(ArrayDataOutput ado) throws FitsException {
+    public void write(ArrayDataOutput out) throws FitsException {
 
         int oldSize = myHeader.getIntValue(PCOUNT);
         if (oldSize != myData.getHeapSize()) {
@@ -337,6 +353,6 @@ public class BinaryTableHDU extends TableHDU<BinaryTable> {
             myHeader.addValue(THEAP, offset);
         }
 
-        super.write(ado);
+        super.write(out);
     }
 }
