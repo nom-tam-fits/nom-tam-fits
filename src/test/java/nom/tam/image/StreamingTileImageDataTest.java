@@ -1,4 +1,4 @@
-package nom.tam.fits;
+package nom.tam.image;
 
 import java.io.File;
 import java.io.IOException;
@@ -6,6 +6,14 @@ import java.util.Random;
 
 import org.junit.Assert;
 import org.junit.Test;
+
+import nom.tam.fits.BasicHDU;
+import nom.tam.fits.Fits;
+import nom.tam.fits.FitsException;
+import nom.tam.fits.FitsFactory;
+import nom.tam.fits.Header;
+import nom.tam.fits.ImageData;
+import nom.tam.fits.ImageHDU;
 
 /*-
  * #%L
@@ -39,13 +47,13 @@ import org.junit.Test;
  */
 
 import nom.tam.fits.header.Bitpix;
-import nom.tam.image.StandardImageTiler;
 import nom.tam.util.ArrayFuncs;
 
 public class StreamingTileImageDataTest {
     @Test
     public void testConstructor() throws Exception {
         final Header header = new Header();
+
         header.setNaxes(2);
         header.setNaxis(1, 200);
         header.setNaxis(2, 200);

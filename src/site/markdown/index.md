@@ -362,9 +362,9 @@ rely on hard-coded column indices too when we know we are dealing with tables of
   }
 ```
 
-Now we can loop through the rows of interest and pick out the entries we are interested in. For example, to
-loop through all table rows to get only the scalar values from the column named `UTC`, a phase in the 4th column 
-(Java index 3), and a spectrum stored in the fifth column (i.e. 4 in Java indexing):
+Now we can loop through the rows of interest and pick out the entries we need. For example, to loop through all table 
+rows to get only the scalar values from the column named `UTC` (see above), a phase in the 4th column (Java index 3), 
+and a spectrum stored in the fifth column (i.e. 4 in Java indexing):
 
 ```java   
   // Loop through rows, accessing the relevant column data
@@ -395,7 +395,7 @@ approach would be:
       double utc  = ((double[]) tab.getElement(row, colUTC))[0];
       
       // We can also access by fixed column index...
-      float phae = ((float[]) tab.getElement(row, 3))[0];
+      float[] phase = ((float[]) tab.getElement(row, 3));
       float[][] spectrum = (float[][]) tab.getElement(row, 4);
       
       // process the data...
@@ -450,7 +450,7 @@ Images can be added to the FITS at any point. For example, consider a 2D `float[
 add to a FITS:
 
 ```java
-  float[][] image ...;
+  float[][] image ...
   
   ImageHDU imageHDU = fits.makeHDU(image);
   fits.addHDU(imageHDU);
@@ -492,7 +492,13 @@ ASCII tables, unless you have to for a compelling reason.
 <a name="incremental-writing"></a>
 ### Writing one HDU at a time
 
-Sometimes you do not want to add all your HDUs to a `Fits` object before writing it out to a file or stream. Maybe because they use up too much RAM, or you are recording from a live stream and want to add HDUs to the file as they come in. As of version __1.17__ of the library, you can write FITS files one HDU at a time without having to place them in a `Fits` object first, or having to worry about the mandatory keywords having been set for primary or extension HDUs. Or, you can write a `Fits` object with some number of HDUs, but then keep appending further HDUs after, worry-free. The `FitsFile` or `FitsOutputStream` object will keep track of where it is in the file or stream, and set the required header keywords for the appended HDUs as appropriate for a primary or extension HDU automatically.
+Sometimes you do not want to add all your HDUs to a `Fits` object before writing it out to a file or stream. Maybe because they 
+use up too much RAM, or you are recording from a live stream and want to add HDUs to the file as they come in. As of version 
+__1.17__ of the library, you can write FITS files one HDU at a time without having to place them in a `Fits` container first, or 
+having to worry about the mandatory keywords having been set for primary or extension HDUs. Or, you can write a `Fits` object 
+with some number of HDUs, but then keep appending further HDUs after, worry-free. The `FitsFile` or `FitsOutputStream` object 
+will keep track of where things go in the file or stream, and set the required header keywords for the appended HDUs as appropriate 
+for a primary or extension HDU automatically.
 
 Here is an example of how building a FITS file HDU-by-HDU without the need to create a `Fits` object as a holding container:
 
@@ -510,6 +516,10 @@ Here is an example of how building a FITS file HDU-by-HDU without the need to cr
   out.close(); 
 ```
 
+In this case you can use random access, which means you can go back and re-write HDUs (or their headers) in place later. If 
+you do go all the way back to the head of the file, and re-write the first HDU, you can be assured that it will contain the 
+necessary header entries for a primary HDU, even if you did not set them yourself. Easy as pie. 
+
 Of course, you can use a `FitsOutputStream` as opposed to a file as the output also, e.g.:
 
 ```java
@@ -517,7 +527,7 @@ Of course, you can use a `FitsOutputStream` as opposed to a file as the output a
   ...
 ```
 
-In this case you can use random access, which means you can go back and re-write HDUs in place. If you do go all the way back to the head of the file, and re-write the first HDU, you can be assured that it will contain the necessary header entries for a primary HDU, even if you did not set them yourself. Easy as pie.
+
 
 
 
@@ -597,7 +607,7 @@ after the end of the image data:
 
 #### Tables
 
-We can do something pretty similar for tables __so long as we don't have variable length columns__, but 
+We can do something pretty similar for tables _so long as we don't have variable length columns_, but 
 it requires a little more work.
 
 First we have to make sure we are not trying to write tables into the primary HDU of a FITS. Tables
@@ -787,8 +797,7 @@ you can create an appropriate binary table HDU from it as:
 ```java
    Object[][] tableData = ...
   
-   BinaryTable table = BinaryTable.fromRowMajor(tableData);
-   BinaryTableHDU hdu = BinaryTableHDU.from(table);
+   BinaryTableHDU hdu = BinaryTableHDU.wrap(BinaryTable.fromRowMajor(tableData));
 ```
 
 There are some requirements on the array though:
@@ -834,7 +843,7 @@ just before calling `write()`.
 <a name="building-by-row"></a>
 ### Buiding tables row-by-row
 
-As of 1.18 building tables one row at a time is both easy and efficient -- and may be the least confusing way to get
+As of __1.18__ building tables one row at a time is both easy and efficient -- and may be the least confusing way to get
 tables done right. (In prior releases, adding rows to existing tables was painfully slow, and much more constrained). You may 
 want to start by defining the types and dimensions of the data (or whether variable-length) that will be contained in each 
 table column:
@@ -870,15 +879,15 @@ Now you can populate the table with your data, one row at a time, using the `add
    }
 ```
 
-As of 1.18, you may use Java boxed types (as an alternative to primitive arrays of 1) to specify primitive scalar table elements, including auto-boxing of literals or variables. You may also use vararg syntax for adding rows if that is more convenient in your 
-application. Thus, since 1.18, you may simply write:
+As of __1.18__, you may use Java boxed types (as an alternative to primitive arrays-of-one) to specify primitive scalar table elements, including auto-boxing of literals or variables. You may also use vararg syntax for adding rows if that is more convenient in your 
+application. Thus, you may simply write:
 
 ```java
    table.addRowEntries(1, 3.14159265);
 ```
 
 to add a row consisting of an 32-bit integer, a double-precision floating point value (presuming your table has those two types of
-columns). Prior to 1.18, the same would have to have been written as:
+columns). Prior to __1.18__, the same would have to have been written as:
 
 ```java  
   table.addRow(new Object[] { new int[] {1}, new double[] {3.14159265} }; 
@@ -889,7 +898,7 @@ Tables built entirely row-by-row are naturally defragmented, as long as they are
 Once the table is complete, you can wrap it in a HDU:
 
 ```java
-  BinaryTableHDU hdu = BinaryTableHDU.from(table);
+  BinaryTableHDU hdu = BinaryTableHDU.wrap(table);
 ```
 
 which will populate the header with the requisite entries that describe the table. You can then edit the new header
@@ -1080,7 +1089,7 @@ The standard maximum length for string values in the header is 68 characters. As
 The standard FITS header keywords consists of maximum 8 upper case letters or number, plus dash `-` and underscore `_`. The HIERARCH keyword convention allows for longer and/or hierarchical sets of FITS keywords, and/or for supporting a somewhat more extended set of ASCII characters (in the range of `0x20` to `0x7E`).  Support for HIERARCH-style keywords is enabled by default as of version 1.16. HIERARCH support can be toggled if needed via `FitsFactory.setUseHierarch(boolean)`. By default, HIERARCH keywords are converted to upper-case only (__cfitsio__ convention), so
 
 ```java
-  HeaderCard hc = new HeaderCard(Hiearch.key("my.lower.case.keyword[!]"), "value", "comment");
+  HeaderCard hc = new HeaderCard(Hierarch.key("my.lower.case.keyword[!]"), "value", "comment");
 ```
 
 will write the header entry to FITS as:
