@@ -100,7 +100,7 @@ public class DeferredTest {
         }
 
         @Override
-        public void write(ArrayDataOutput o) throws FitsException {
+        public void writeUnpadded(ArrayDataOutput o) throws FitsException {
             throw new FitsException("not implemented");
         }
 

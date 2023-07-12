@@ -89,7 +89,7 @@ public final class NullData extends ImageData {
     }
 
     @Override
-    public void write(ArrayDataOutput o) {
+    public void writeUnpadded(ArrayDataOutput o) {
     }
 
     @Override

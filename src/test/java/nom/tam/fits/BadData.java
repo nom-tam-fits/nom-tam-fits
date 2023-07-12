@@ -57,7 +57,7 @@ public class BadData extends Data {
     }
 
     @Override
-    public void write(ArrayDataOutput o) throws FitsException {
+    public void writeUnpadded(ArrayDataOutput o) throws FitsException {
 
     }
 
