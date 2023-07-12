@@ -224,9 +224,9 @@ public class RandomGroupsData extends Data {
         return (Object[][]) super.getData();
     }
 
-    @SuppressWarnings({"resource", "deprecation"})
+    @SuppressWarnings("resource")
     @Override
-    public void write(ArrayDataOutput str) throws FitsException {
+    public void writeUnpadded(ArrayDataOutput str) throws FitsException {
         if (getTrueSize() <= 0) {
             return;
         }
@@ -237,7 +237,6 @@ public class RandomGroupsData extends Data {
 
         try {
             str.writeArray(dataArray);
-            FitsUtil.pad(str, getTrueSize());
         } catch (IOException e) {
             throw new FitsException("IO error writing random groups data ", e);
         }

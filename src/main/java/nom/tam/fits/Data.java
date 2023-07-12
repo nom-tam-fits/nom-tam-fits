@@ -400,6 +400,38 @@ public abstract class Data implements FitsElement {
         }
     }
 
+    /**
+     * Writes the data segment to the output, without padding. It should only be called by
+     * {@link #write(ArrayDataOutput)}. Subclasses should override as necessary to provide actual implementation. Not
+     * abstract, with NOP default implementation for closer backward compatibility.
+     * 
+     * @param  o             the output to which the data is to be written
+     * 
+     * @throws FitsException if there was an error adding the padding to the output
+     * 
+     * @since                1.18
+     */
+    protected void writeUnpadded(ArrayDataOutput o) throws FitsException {
+    }
+
+    /**
+     * Returns the byte value that should be used to pad after the data to complete the FITS block of 2880 bytes.
+     * 
+     * @return the padding value to use.
+     * 
+     * @since  1.18
+     */
+    protected byte getPaddingByte() {
+        return (byte) 0;
+    }
+
+    /**
+     * Writes data to the output, adding padding as necessary to complete the FITS block of 2880 bytes. Subclasses
+     * should typically override {@link #writeUnpadded(ArrayDataOutput)} to provide implementation.
+     */
     @Override
-    public abstract void write(ArrayDataOutput o) throws FitsException;
+    public void write(ArrayDataOutput o) throws FitsException {
+        writeUnpadded(o);
+        FitsUtil.pad(o, getTrueSize(), getPaddingByte());
+    }
 }

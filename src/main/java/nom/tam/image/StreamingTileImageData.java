@@ -35,7 +35,6 @@ import java.io.IOException;
 import java.util.Arrays;
 
 import nom.tam.fits.FitsException;
-import nom.tam.fits.FitsUtil;
 import nom.tam.fits.Header;
 import nom.tam.fits.ImageData;
 import nom.tam.util.ArrayDataOutput;
@@ -124,17 +123,15 @@ public class StreamingTileImageData extends ImageData {
         return Arrays.copyOf(steps, steps.length);
     }
 
-    @SuppressWarnings("deprecation")
     @Override
-    public void write(ArrayDataOutput o) throws FitsException {
+    public void writeUnpadded(ArrayDataOutput o) throws FitsException {
         try {
             final ImageTiler tiler = imageTiler;
             if (tiler == null || getTrueSize() == 0) {
                 // Defer writing of unknowns to the parent.
-                super.write(o);
+                super.writeUnpadded(o);
             } else {
                 tiler.getTile(o, corners, lengths, steps);
-                FitsUtil.pad(o, getTrueSize());
             }
         } catch (IOException ioException) {
             throw new FitsException(ioException.getMessage(), ioException);

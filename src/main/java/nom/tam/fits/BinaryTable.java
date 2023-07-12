@@ -3071,7 +3071,7 @@ public class BinaryTable extends AbstractTableData implements Cloneable {
 
     @SuppressWarnings("resource")
     @Override
-    public void write(ArrayDataOutput os) throws FitsException {
+    protected void writeUnpadded(ArrayDataOutput os) throws FitsException {
         if (os != getRandomAccessInput()) {
             ensureData();
         }
@@ -3090,8 +3090,6 @@ public class BinaryTable extends AbstractTableData implements Cloneable {
                 }
                 getHeap().write(os);
             }
-
-            FitsUtil.pad(os, getTrueSize());
 
         } catch (IOException e) {
             throw new FitsException("Unable to write table:" + e, e);

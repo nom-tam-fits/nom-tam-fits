@@ -197,9 +197,9 @@ public class ImageData extends Data {
         tiler = new ImageDataTiler(null, 0, dataDescription);
     }
 
-    @SuppressWarnings({"resource", "deprecation"})
+    @SuppressWarnings({"resource"})
     @Override
-    public void write(ArrayDataOutput o) throws FitsException {
+    public void writeUnpadded(ArrayDataOutput o) throws FitsException {
 
         // Don't need to write null data (noted by Jens Knudstrup)
         if (byteSize == 0) {
@@ -215,8 +215,6 @@ public class ImageData extends Data {
         } catch (IOException e) {
             throw new FitsException("IO Error on image write" + e);
         }
-
-        FitsUtil.pad(o, getTrueSize());
     }
 
     @SuppressWarnings("deprecation")

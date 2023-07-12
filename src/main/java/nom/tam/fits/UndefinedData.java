@@ -152,9 +152,9 @@ public class UndefinedData extends Data {
         in.readFully(data);
     }
 
-    @SuppressWarnings({"resource", "deprecation"})
+    @SuppressWarnings("resource")
     @Override
-    public void write(ArrayDataOutput o) throws FitsException {
+    public void writeUnpadded(ArrayDataOutput o) throws FitsException {
         if (o != getRandomAccessInput()) {
             ensureData();
         }
@@ -163,6 +163,5 @@ public class UndefinedData extends Data {
         } catch (IOException e) {
             throw new FitsException("IO Error on unknown data write", e);
         }
-        FitsUtil.pad(o, getTrueSize());
     }
 }

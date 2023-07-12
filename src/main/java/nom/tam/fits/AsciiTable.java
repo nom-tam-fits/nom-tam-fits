@@ -922,7 +922,7 @@ public class AsciiTable extends AbstractTableData {
     }
 
     @Override
-    public void write(ArrayDataOutput str) throws FitsException {
+    public void writeUnpadded(ArrayDataOutput str) throws FitsException {
         // Make sure we have the data in hand.
         if (str != currInput) {
             ensureData();
@@ -979,9 +979,14 @@ public class AsciiTable extends AbstractTableData {
         // Now write the buffer.
         try {
             str.write(buffer);
-            FitsUtil.pad(str, buffer.length, (byte) ' ');
         } catch (IOException e) {
             throw new FitsException("Error writing ASCII Table data", e);
         }
     }
+
+    @Override
+    protected byte getPaddingByte() {
+        return (byte) ' ';
+    }
+
 }
