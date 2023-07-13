@@ -59,7 +59,7 @@ public class RiceCompressOption implements ICompressOption {
 
     private int blockSize = DEFAULT_RICE_BLOCKSIZE;
 
-    private Integer bytePix = null;
+    private BytePix bytePix = new BytePix(DEFAULT_RICE_BYTEPIX);
 
     /**
      * Creates a new set of options for Rice compression.
@@ -98,7 +98,7 @@ public class RiceCompressOption implements ICompressOption {
      * @see    #setBytePix(int)
      */
     public final int getBytePix() {
-        return bytePix == null ? DEFAULT_RICE_BYTEPIX : bytePix;
+        return bytePix.value;
     }
 
     @Override
@@ -136,7 +136,7 @@ public class RiceCompressOption implements ICompressOption {
      * @see          #getBytePix()
      */
     public RiceCompressOption setBytePix(int value) {
-        bytePix = value;
+        bytePix.value = value;
         return this;
     }
 
@@ -144,19 +144,18 @@ public class RiceCompressOption implements ICompressOption {
      * Sets a BYTEPIX value to use, but only when a BYTEPIX value is not already defined. If a value was already defined
      * it is left unchanged.
      * 
-     * @param  value the new BYTEPIX value to use as default when no value was set. It is currently not checked for
-     *                   validity, so use carefully.
+     * @param      value the new BYTEPIX value to use as default when no value was set. It is currently not checked for
+     *                       validity, so use carefully.
      * 
-     * @return       itself
+     * @return           itself
      *
-     * @see          #setBytePix(int)
-     * @see          #getBytePix()
+     * @see              #setBytePix(int)
+     * @see              #getBytePix()
+     * 
+     * @deprecated       (<i>Duplicate method</i>) Use {@link #setBytePix(int)} instead. Will be removed in the future.
      */
     protected RiceCompressOption setDefaultBytePix(int value) {
-        if (bytePix == null) {
-            bytePix = value;
-        }
-        return this;
+        return setBytePix(value);
     }
 
     @Override
@@ -183,5 +182,13 @@ public class RiceCompressOption implements ICompressOption {
             return clazz.cast(this);
         }
         return null;
+    }
+
+    private static class BytePix {
+        int value;
+
+        private BytePix(int n) {
+            value = n;
+        }
     }
 }
