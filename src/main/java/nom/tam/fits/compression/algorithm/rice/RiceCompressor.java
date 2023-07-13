@@ -64,7 +64,7 @@ public abstract class RiceCompressor<T extends Buffer> implements ICompressor<T>
         private ByteBuffer pixelBuffer;
 
         public ByteRiceCompressor(RiceCompressOption option) {
-            super(option.setBytePix(ElementType.BYTE.size()));
+            super(option.setDefaultBytePix(ElementType.BYTE.size()));
         }
 
         @Override
@@ -108,7 +108,7 @@ public abstract class RiceCompressor<T extends Buffer> implements ICompressor<T>
         private IntBuffer pixelBuffer;
 
         public IntRiceCompressor(RiceCompressOption option) {
-            super(option.setBytePix(ElementType.INT.size()));
+            super(option.setDefaultBytePix(ElementType.INT.size()));
         }
 
         @Override
@@ -140,7 +140,7 @@ public abstract class RiceCompressor<T extends Buffer> implements ICompressor<T>
         private ShortBuffer pixelBuffer;
 
         public ShortRiceCompressor(RiceCompressOption option) {
-            super(option.setBytePix(ElementType.SHORT.size()));
+            super(option.setDefaultBytePix(ElementType.SHORT.size()));
         }
 
         @Override
@@ -231,7 +231,7 @@ public abstract class RiceCompressor<T extends Buffer> implements ICompressor<T>
 
     private final int fsMax;
 
-    private RiceCompressor(RiceCompressOption option) {
+    private RiceCompressor(RiceCompressOption option) throws IllegalArgumentException {
         blockSize = option.getBlockSize();
         if (option.getBytePix() == ElementType.BYTE.size()) {
             fsBits = FS_BITS_FOR_BYTE;
@@ -246,7 +246,7 @@ public abstract class RiceCompressor<T extends Buffer> implements ICompressor<T>
             fsMax = FS_MAX_FOR_INT;
             bitsPerPixel = FitsIO.BITS_OF_4_BYTES;
         } else {
-            throw new UnsupportedOperationException("Rice only supports 1/2/4 type per pixel");
+            throw new IllegalArgumentException("Rice only supports 1/2/4 type per pixel");
         }
         /*
          * From bsize derive: FSBITS = # bits required to store FS FSMAX = maximum value for FS BBITS = bits/pixel for

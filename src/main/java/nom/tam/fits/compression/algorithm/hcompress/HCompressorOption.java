@@ -50,9 +50,8 @@ public class HCompressorOption implements ICompressOption {
      */
     private HCompressParameters parameters;
 
-    private int scale;
-
-    private boolean smooth;
+    /** Shared configuration across copies. */
+    private final Config config;
 
     private int tileHeight;
 
@@ -62,6 +61,7 @@ public class HCompressorOption implements ICompressOption {
      * Creates a new set of options for HCompress.
      */
     public HCompressorOption() {
+        config = new Config();
         setParameters(new HCompressParameters(this));
     }
 
@@ -89,7 +89,7 @@ public class HCompressorOption implements ICompressOption {
      * @see    #setScale(int)
      */
     public int getScale() {
-        return scale;
+        return config.scale;
     }
 
     @Override
@@ -104,7 +104,7 @@ public class HCompressorOption implements ICompressOption {
 
     @Override
     public boolean isLossyCompression() {
-        return scale > 1 || smooth;
+        return config.scale > 1 || config.smooth;
     }
 
     /**
@@ -115,7 +115,7 @@ public class HCompressorOption implements ICompressOption {
      * @see    #setSmooth(boolean)
      */
     public boolean isSmooth() {
-        return smooth;
+        return config.smooth;
     }
 
     @Override
@@ -129,14 +129,19 @@ public class HCompressorOption implements ICompressOption {
     /**
      * Sets the scale parameter
      * 
-     * @param  value the new scale parameter
+     * @param  value                    the new scale parameter
      * 
-     * @return       itself
+     * @return                          itself
      * 
-     * @see          #getScale()
+     * @throws IllegalArgumentException if the scale value is negative
+     * 
+     * @see                             #getScale()
      */
-    public HCompressorOption setScale(int value) {
-        scale = value;
+    public HCompressorOption setScale(int value) throws IllegalArgumentException {
+        if (value < 0.0) {
+            throw new IllegalArgumentException("Scale value cannot be negative: " + value);
+        }
+        config.scale = value;
         return this;
     }
 
@@ -148,7 +153,7 @@ public class HCompressorOption implements ICompressOption {
      * @return       itself
      */
     public HCompressorOption setSmooth(boolean value) {
-        smooth = value;
+        config.smooth = value;
         return this;
     }
 
@@ -170,5 +175,20 @@ public class HCompressorOption implements ICompressOption {
     public HCompressorOption setTileWidth(int value) {
         tileWidth = value;
         return this;
+    }
+
+    /**
+     * Stores configuration in a way that can be shared and modified across enclosing option copies.
+     * 
+     * @author Attila Kovacs
+     *
+     * @since  1.18
+     */
+    private static final class Config {
+
+        private int scale;
+
+        private boolean smooth;
+
     }
 }

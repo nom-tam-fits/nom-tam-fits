@@ -81,11 +81,11 @@ public class RiceCompressTest {
         header.addValue(Compression.ZNAMEn.n(1).key(), Compression.BLOCKSIZE, null);
         header.addValue(Compression.ZVALn.n(1).key(), 32, null);
         header.addValue(Compression.ZNAMEn.n(2).key(), Compression.BYTEPIX, null);
-        header.addValue(Compression.ZVALn.n(2).key(), 16, null);
+        header.addValue(Compression.ZVALn.n(2).key(), 8, null);
         option.getCompressionParameters().getValuesFromHeader(new HeaderAccess(header));
 
         Assert.assertEquals(32, option.getBlockSize());
-        Assert.assertEquals(16, option.getBytePix());
+        Assert.assertEquals(8, option.getBytePix());
 
         Assert.assertNull(option.unwrap(String.class));
     }
@@ -227,14 +227,9 @@ public class RiceCompressTest {
 
     }
 
-    @Test(expected = UnsupportedOperationException.class)
+    @Test(expected = IllegalArgumentException.class)
     public void testWrongBytePix() throws Exception {
-        try {
-            new ByteRiceCompressor(option.setBytePix(99));
-        } catch (UnsupportedOperationException e) {
-            Assert.assertTrue(e.getMessage().contains("only"));
-            throw e;
-        }
+        option.setBytePix(99);
     }
 
     @Test(expected = IllegalArgumentException.class)
