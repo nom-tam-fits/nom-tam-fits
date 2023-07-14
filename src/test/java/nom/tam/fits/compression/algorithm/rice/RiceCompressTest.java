@@ -245,12 +245,12 @@ public class RiceCompressTest {
 
     @Test(expected = IllegalArgumentException.class)
     public void testWrongBlockSize() throws Exception {
-        option.setBytePix(31);
+        option.setBlockSize(31);
     }
 
     @Test(expected = IllegalArgumentException.class)
     public void testWrongBlockSize2() throws Exception {
-        option.setBytePix(64);
+        option.setBlockSize(64);
     }
 
     @Test(expected = IllegalArgumentException.class)
