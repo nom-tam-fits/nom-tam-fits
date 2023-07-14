@@ -554,4 +554,12 @@ public class HCompressTest {
     public void testWrongScale() throws Exception {
         new HCompressorOption().setScale(-1);
     }
+
+    @Test
+    public void testLossy() throws Exception {
+        Assert.assertFalse(new HCompressorOption().setScale(0).setSmooth(false).isLossyCompression());
+        Assert.assertTrue(new HCompressorOption().setScale(1).setSmooth(false).isLossyCompression());
+        Assert.assertTrue(new HCompressorOption().setScale(0).setSmooth(true).isLossyCompression());
+        Assert.assertTrue(new HCompressorOption().setScale(1).setSmooth(true).isLossyCompression());
+    }
 }

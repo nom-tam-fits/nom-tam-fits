@@ -86,7 +86,7 @@ public class HCompressorOption implements ICompressOption {
      * 
      * @return the value of the scale parameter.
      * 
-     * @see    #setScale(int)
+     * @see    #setScale(double)
      */
     public int getScale() {
         return config.scale;
@@ -104,7 +104,7 @@ public class HCompressorOption implements ICompressOption {
 
     @Override
     public boolean isLossyCompression() {
-        return config.scale > 1 || config.smooth;
+        return config.scale > 0 || config.smooth;
     }
 
     /**
@@ -129,7 +129,8 @@ public class HCompressorOption implements ICompressOption {
     /**
      * Sets the scale parameter
      * 
-     * @param  value                    the new scale parameter
+     * @param  value                    the new scale parameter, which will be rounded to the nearest integer value for
+     *                                      the actual implementation.
      * 
      * @return                          itself
      * 
@@ -137,11 +138,11 @@ public class HCompressorOption implements ICompressOption {
      * 
      * @see                             #getScale()
      */
-    public HCompressorOption setScale(int value) throws IllegalArgumentException {
+    public HCompressorOption setScale(double value) throws IllegalArgumentException {
         if (value < 0.0) {
             throw new IllegalArgumentException("Scale value cannot be negative: " + value);
         }
-        config.scale = value;
+        config.scale = (int) Math.round(value);
         return this;
     }
 
