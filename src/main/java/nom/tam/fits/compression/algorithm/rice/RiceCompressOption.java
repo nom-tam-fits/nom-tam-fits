@@ -148,7 +148,6 @@ public class RiceCompressOption implements ICompressOption {
      * 
      * @throws IllegalArgumentException if the value is not 1, 2, 4, or 8.
      * 
-     * @see                             #setDefaultBytePix(int)
      * @see                             #getBytePix()
      */
     public RiceCompressOption setBytePix(int value) throws IllegalArgumentException {
@@ -173,7 +172,7 @@ public class RiceCompressOption implements ICompressOption {
      * @see          #setBytePix(int)
      * @see          #getBytePix()
      */
-    protected RiceCompressOption setDefaultBytePix(int value) {
+    RiceCompressOption setDefaultBytePix(int value) {
         if (config.bytePix == 0) {
             return setBytePix(value);
         }

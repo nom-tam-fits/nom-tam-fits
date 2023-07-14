@@ -549,4 +549,9 @@ public class HCompressTest {
         o.setScale(2);
         Assert.assertTrue(o.isLossyCompression());
     }
+
+    @Test(expected = IllegalArgumentException.class)
+    public void testWrongScale() throws Exception {
+        new HCompressorOption().setScale(-1);
+    }
 }

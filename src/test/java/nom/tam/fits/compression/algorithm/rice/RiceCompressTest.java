@@ -229,7 +229,28 @@ public class RiceCompressTest {
 
     @Test(expected = IllegalArgumentException.class)
     public void testWrongBytePix() throws Exception {
-        option.setBytePix(99);
+        option.setBytePix(7);
+    }
+
+    @Test(expected = IllegalArgumentException.class)
+    public void testWrongBytePix2() throws Exception {
+        option.setBytePix(16);
+    }
+
+    @Test(expected = UnsupportedOperationException.class)
+    public void testUnsupportedBytePix2() throws Exception {
+        // BYTEPIX=8 is legal but is not implemented (in cfitsio either)
+        new RiceCompressor.IntRiceCompressor(option.setBytePix(8));
+    }
+
+    @Test(expected = IllegalArgumentException.class)
+    public void testWrongBlockSize() throws Exception {
+        option.setBytePix(31);
+    }
+
+    @Test(expected = IllegalArgumentException.class)
+    public void testWrongBlockSize2() throws Exception {
+        option.setBytePix(64);
     }
 
     @Test(expected = IllegalArgumentException.class)

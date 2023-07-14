@@ -231,7 +231,7 @@ public abstract class RiceCompressor<T extends Buffer> implements ICompressor<T>
 
     private final int fsMax;
 
-    private RiceCompressor(RiceCompressOption option) throws IllegalArgumentException {
+    private RiceCompressor(RiceCompressOption option) throws UnsupportedOperationException {
         blockSize = option.getBlockSize();
         if (option.getBytePix() == ElementType.BYTE.size()) {
             fsBits = FS_BITS_FOR_BYTE;
@@ -246,7 +246,7 @@ public abstract class RiceCompressor<T extends Buffer> implements ICompressor<T>
             fsMax = FS_MAX_FOR_INT;
             bitsPerPixel = FitsIO.BITS_OF_4_BYTES;
         } else {
-            throw new IllegalArgumentException("Rice only supports 1/2/4 type per pixel");
+            throw new UnsupportedOperationException("Implemented for 1/2/4 bytes only");
         }
         /*
          * From bsize derive: FSBITS = # bits required to store FS FSMAX = maximum value for FS BBITS = bits/pixel for
