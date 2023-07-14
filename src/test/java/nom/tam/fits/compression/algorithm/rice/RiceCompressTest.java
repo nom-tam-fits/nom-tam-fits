@@ -42,8 +42,10 @@ import java.nio.ShortBuffer;
 import org.junit.Assert;
 import org.junit.Test;
 
+import nom.tam.fits.Fits;
 import nom.tam.fits.Header;
 import nom.tam.fits.HeaderCardException;
+import nom.tam.fits.ImageHDU;
 import nom.tam.fits.compression.algorithm.hcompress.HCompressorOption;
 import nom.tam.fits.compression.algorithm.rice.RiceCompressor.ByteRiceCompressor;
 import nom.tam.fits.compression.algorithm.rice.RiceCompressor.IntRiceCompressor;
@@ -52,6 +54,8 @@ import nom.tam.fits.compression.provider.param.api.HeaderAccess;
 import nom.tam.fits.compression.provider.param.hcompress.HCompressParameters;
 import nom.tam.fits.compression.provider.param.rice.RiceCompressParameters;
 import nom.tam.fits.header.Compression;
+import nom.tam.image.compression.hdu.CompressedImageHDU;
+import nom.tam.util.ArrayFuncs;
 import nom.tam.util.SafeClose;
 import nom.tam.util.type.PrimitiveTypes;
 
@@ -347,6 +351,73 @@ public class RiceCompressTest {
         // Rice does not have tile settings, so we should get back zeroes.
         Assert.assertEquals(0, o.getTileHeight());
         Assert.assertEquals(0, o.getTileWidth());
+    }
+
+    private Object testRoundtrip(Object data) throws Exception {
+        ImageHDU im = (ImageHDU) Fits.makeHDU(data);
+        String fileName = "target/rice-" + ArrayFuncs.getBaseClass(data) + ".fits";
+
+        CompressedImageHDU c = CompressedImageHDU.fromImageHDU(im);
+
+        c.setCompressAlgorithm(Compression.ZCMPTYPE_RICE_1);
+        c.compress();
+
+        Fits cf = new Fits();
+        cf.addHDU(c);
+        cf.write(fileName);
+
+        cf = new Fits(fileName);
+        c = (CompressedImageHDU) cf.getHDU(1);
+
+        return c.asImageHDU().getKernel();
+    }
+
+    @Test
+    public void testByteRoundtrip() throws Exception {
+        byte[][] data = new byte[1024][1024];
+        for (int i = 150; i < 250; i++) {
+            for (int j = 230; j < 430; j++) {
+                data[i][j] = 1;
+            }
+        }
+
+        byte[][] back = (byte[][]) testRoundtrip(data);
+
+        for (int i = 0; i < data.length; i++) {
+            Assert.assertArrayEquals(data, back);
+        }
+    }
+
+    @Test
+    public void testShortRoundtrip() throws Exception {
+        short[][] data = new short[1024][1024];
+        for (int i = 150; i < 250; i++) {
+            for (int j = 230; j < 430; j++) {
+                data[i][j] = 1;
+            }
+        }
+
+        short[][] back = (short[][]) testRoundtrip(data);
+
+        for (int i = 0; i < data.length; i++) {
+            Assert.assertArrayEquals(data, back);
+        }
+    }
+
+    @Test
+    public void testIntRoundtrip() throws Exception {
+        int[][] data = new int[1024][1024];
+        for (int i = 150; i < 250; i++) {
+            for (int j = 230; j < 430; j++) {
+                data[i][j] = 1;
+            }
+        }
+
+        int[][] back = (int[][]) testRoundtrip(data);
+
+        for (int i = 0; i < data.length; i++) {
+            Assert.assertArrayEquals(data, back);
+        }
     }
 
 }
