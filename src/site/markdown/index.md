@@ -67,9 +67,9 @@ The current FITS standard (4.0) recognizes the following principal HDU / data ty
 
  2. **Binary table** can store rows and columns of assorted of elements. Each column entry may be either a single value, or a fixed-sized (multidimensional) array, or else a variable-length 1D arrays of a given type. All Java primitive integer and floating-point types are supported, as wells as `String`, `Boolean` (logical), `boolean` (bits), and `ComplexValue` types.
 
- 3. **ASCII Table** (discouraged) is a simpler, less capable table format with support for storing singular primitive numerical types, and Strings only -- in human-readable format. You should probably use the more flexible (and more compact) binary tables instead for your application, and reserve use of ASCII tables for reading data that may still contain these.
+ 3. **ASCII Table** (_discouraged_) is a simpler, less capable table format with support for storing singular primitive numerical types, and Strings only -- in human-readable format. You should probably use the more flexible (and more compact) binary tables instead for your application, and reserve use of ASCII tables for reading data that may still contain these.
 
- 4. **Random-Groups** (discouraged) can contain a set of images of the same type and dimensions along with a set of parameters of the same type (for example an `int[][]` image, along with a set of `int` parameters). They were never widely used and the FITS 4.0 standard discourages them going forward, given that binary tables provide far superior capabilities for storing the same type of data. Support for these type of HDUs is thus very basic, and aimed mainly at providing a way to access data that was already written in this format.
+ 4. **Random-Groups** (_discouraged_) can contain a set of images of the same type and dimensions along with a set of parameters of the same type (for example an `int[][]` image, along with a set of `int` parameters). They were never widely used and the FITS 4.0 standard discourages them going forward, given that binary tables provide far superior capabilities for storing the same type of data. Support for these type of HDUs is thus very basic, and aimed mainly at providing a way to access data that was already written in this format.
 
  5. **Foreign File** can encapsulate various other files within the FITS. Foreign file HDUs are a recognised convention, but not (yet) officially part of the FITS standard. We do not explicitly support foreign file encapsulation yet, but it is something that we are considering for a future release.
  
@@ -1405,7 +1405,7 @@ class to decompress only the selected image area. As of 1.18.0, this is really e
   CompressedImageHDU compressed = ...
    
   int[] fromPixels = ...
-  int[] cutuoutSize = ...
+  int[] cutoutSize = ...
    
   ImageHDU cutout = compressed.getTileHDU(fromPixels, cutoutSize);
 ```
