@@ -52,19 +52,25 @@ public class RiceCompressOption implements ICompressOption {
     /** the default BYTEPIX value */
     public static final int DEFAULT_RICE_BYTEPIX = ElementType.INT.size();
 
+    /** Set of valid BYTEPIX values */
+    private static final int[] VALID_BYTEPIX = {1, 2, 4, 8};
+
+    /** Set of valid BLOCKSIZE values */
+    private static final int[] VALID_BLOCKSIZE = {16, 32};
+
     /**
      * this is a circular dependency that still has to be cut.
      */
     private RiceCompressParameters parameters;
 
-    private int blockSize = DEFAULT_RICE_BLOCKSIZE;
-
-    private Integer bytePix = null;
+    /** Shared configuration across copies */
+    private final Config config;
 
     /**
      * Creates a new set of options for Rice compression.
      */
     public RiceCompressOption() {
+        config = new Config();
         parameters = new RiceCompressParameters(this);
     }
 
@@ -87,7 +93,7 @@ public class RiceCompressOption implements ICompressOption {
      * @see    #setBlockSize(int)
      */
     public final int getBlockSize() {
-        return blockSize;
+        return config.blockSize;
     }
 
     /**
@@ -98,7 +104,7 @@ public class RiceCompressOption implements ICompressOption {
      * @see    #setBytePix(int)
      */
     public final int getBytePix() {
-        return bytePix == null ? DEFAULT_RICE_BYTEPIX : bytePix;
+        return config.bytePix == 0 ? DEFAULT_RICE_BYTEPIX : config.bytePix;
     }
 
     @Override
@@ -114,30 +120,44 @@ public class RiceCompressOption implements ICompressOption {
     /**
      * Sets a new block size to use
      * 
-     * @param  value the new block size in bytes
+     * @param  value                    the new block size in bytes
      * 
-     * @return       itself
+     * @return                          itself
      * 
-     * @see          #getBlockSize()
+     * @throws IllegalArgumentException if the value is not 16 or 32.
+     * 
+     * @see                             #getBlockSize()
      */
-    public RiceCompressOption setBlockSize(int value) {
-        blockSize = value;
-        return this;
+    public RiceCompressOption setBlockSize(int value) throws IllegalArgumentException {
+        for (int i : VALID_BLOCKSIZE) {
+            if (value == i) {
+                config.blockSize = value;
+                return this;
+            }
+        }
+        throw new IllegalArgumentException("Invalid BYTEPIX value: " + value + " (must be 16 or 32)");
     }
 
     /**
      * Sets a new BYTEPIX value to use.
      * 
-     * @param  value the new BYTEPIX value. It is currently not checked for validity, so use carefully.
+     * @param  value                    the new BYTEPIX value. It is currently not checked for validity, so use
+     *                                      carefully.
      * 
-     * @return       itself
+     * @return                          itself
      * 
-     * @see          #setDefaultBytePix(int)
-     * @see          #getBytePix()
+     * @throws IllegalArgumentException if the value is not 1, 2, 4, or 8.
+     * 
+     * @see                             #getBytePix()
      */
-    public RiceCompressOption setBytePix(int value) {
-        bytePix = value;
-        return this;
+    public RiceCompressOption setBytePix(int value) throws IllegalArgumentException {
+        for (int i : VALID_BYTEPIX) {
+            if (value == i) {
+                config.bytePix = value;
+                return this;
+            }
+        }
+        throw new IllegalArgumentException("Invalid BYTEPIX value: " + value + " (must be 1, 2, 4, or 8)");
     }
 
     /**
@@ -152,9 +172,9 @@ public class RiceCompressOption implements ICompressOption {
      * @see          #setBytePix(int)
      * @see          #getBytePix()
      */
-    protected RiceCompressOption setDefaultBytePix(int value) {
-        if (bytePix == null) {
-            bytePix = value;
+    RiceCompressOption setDefaultBytePix(int value) {
+        if (config.bytePix == 0) {
+            return setBytePix(value);
         }
         return this;
     }
@@ -183,5 +203,18 @@ public class RiceCompressOption implements ICompressOption {
             return clazz.cast(this);
         }
         return null;
+    }
+
+    /**
+     * Stores configuration in a way that can be shared and modified across enclosing option copies.
+     * 
+     * @author Attila Kovacs
+     *
+     * @since  1.18
+     */
+    private static final class Config {
+        private int bytePix;
+
+        private int blockSize = DEFAULT_RICE_BLOCKSIZE;
     }
 }

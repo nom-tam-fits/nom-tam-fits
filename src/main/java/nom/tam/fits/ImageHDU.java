@@ -49,8 +49,10 @@ import static nom.tam.fits.header.Standard.XTENSION;
 import static nom.tam.util.LoggerHelper.getLogger;
 
 /**
- * Header/data unit for images. Image HDUs are suitable for storing monolithic regular numerical arrays in 1 to 8
- * dimensions, such as a <code>double[]</code>, <code>float[][]</code>, or <code>short[][][]</code>.
+ * Header/data unit for images. Image HDUs are suitable for storing monolithic regular numerical arrays in 1 to 255
+ * dimensions, such as a <code>double[]</code>, <code>float[][]</code>, or <code>short[][][]</code>. ((FITS supports up
+ * to 999 dimensions, but Java support maxes at at 255 -- however it's unlikely you'll find this to be a serious
+ * limitation.)
  * 
  * @see ImageData
  */

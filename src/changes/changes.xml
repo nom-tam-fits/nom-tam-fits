@@ -25,6 +25,9 @@
       <action type="fix" dev="attipaci" issue="456">
 	      Fixed compressed table tiling with tile sizes that do not divide the table rows.
       </action>
+      <action type="fix" dev="attipaci" issue="462">
+	      Fixed incorrect HCompress SCALE parameter handling.
+      </action>
       <action type="add" dev="at88mph" issue="387">
 	      Added ability to stride while tiling.
       </action>
@@ -114,6 +117,9 @@
       </action>
       <action type="update" dev="attipaci" issue="131">
 	      Tables now support up to Integer.MAX_VALUE (~2-billion) rows regardless of entry size.
+      </action>
+      <action type="update" dev="attipaci" issue="461">
+	      Improved handling of shared compression settings across option copies, and including validation
       </action>
       <action type="update" dev="attipaci" issue="394">
 	      Various tweaks to FitsDate that should not affect user behavior.

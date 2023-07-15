@@ -53,7 +53,7 @@ public final class HCompressScaleParameter extends CompressHeaderParameter<HComp
     public void getValueFromHeader(IHeaderAccess header) {
         HeaderCard value = findZVal(header);
         if (value != null) {
-            getOption().setScale(value.getValue(Integer.class, -1));
+            getOption().setScale(value.getValue(Double.class, 0.0));
         }
     }
 
