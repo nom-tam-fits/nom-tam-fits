@@ -61,19 +61,27 @@ This is an open-source, community maintained, project hosted on github as [nom-t
 ### FITS data (HDU) types
 
 
-The current FITS standard (4.0) recognizes the following principal types of HDUs: 
+The current FITS standard (4.0) recognizes the following principal HDU / data types: 
 
- 1. **Image HDU** can store a regular array (image) of 1-8 dimensions with a type corresponding to Java numerical primitives, such as a one-dimensional time series of samples (e.g. `int[]`), or a three-dimensional cube of voxels (e.g. `float[][][]`).
+ 1. **Image** can store a regular array of 1-999 dimensions with a type corresponding to Java numerical primitives, such as a one-dimensional time series of samples (e.g. `int[]`), or a three-dimensional cube of voxels (e.g. `float[][][]`). (Note, that Java supports images up to 255 dimensions only but it's unlikely you'll find that limiting for your application.)
 
- 2. **Binary table HDU** can store rows and columns of assorted of elements. Each column entry may be either a single value, or a fixed-sized (multidimensional) array, or else a variable-length 1D arrays of a given type. All Java primitive integer and floating-point types are supported, as wells as `String`, `Boolean` (logical), `boolean` (bits), and `ComplexValue` types.
+ 2. **Binary table** can store rows and columns of assorted of elements. Each column entry may be either a single value, or a fixed-sized (multidimensional) array, or else a variable-length 1D arrays of a given type. All Java primitive integer and floating-point types are supported, as wells as `String`, `Boolean` (logical), `boolean` (bits), and `ComplexValue` types.
 
- 3. **Compressed HDU** is an extension of the binary table HDUs (above), and can store an image or a binary table in a compressed manner. We support all standard compression algorithms, and their options (as applicable).
+ 3. **ASCII Table** (discouraged) is a simpler, less capable table format with support for storing singular primitive numerical types, and Strings only -- in human-readable format. You should probably use the more flexible (and more compact) binary tables instead for your application, and reserve use of ASCII tables for reading data that may still contain these.
 
- 4. **Foreign File HDU** can encapsulate various other files within the FITS. Foreign file HDUs are a recognised convention, but not (yet) officially part of the FITS standard. We do not support foreign file encapsulation yet, but it is something that we are considering for a future release.
+ 4. **Random-Groups** (discouraged) can contain a set of images of the same type and dimensions along with a set of parameters of the same type (for example an `int[][]` image, along with a set of `int` parameters). They were never widely used and the FITS 4.0 standard discourages them going forward, given that binary tables provide far superior capabilities for storing the same type of data. Support for these type of HDUs is thus very basic, and aimed mainly at providing a way to access data that was already written in this format.
 
- 5. **ASCII Table HDU** (discouraged) is a simpler, less capable table format with support for storing singular primitive numerical types, and Strings only -- in human-readable format. You should probably use the more flexible (and more compact) binary tables instead for your application, and reserve use of ASCII tables for reading data that may still contain these.
+ 5. **Foreign File** can encapsulate various other files within the FITS. Foreign file HDUs are a recognised convention, but not (yet) officially part of the FITS standard. We do not explicitly support foreign file encapsulation yet, but it is something that we are considering for a future release.
+ 
+ In addition to the basic HDU types, there are extension of table HDUs that serve specific purposes, such as:
 
- 6. **Random-Groups HDU** (discouraged) can contain a set of images of the same type and dimensions along with a set of parameters of the same type (for example an `int[][]` image, along with a set of `int` parameters). They were never widely used and the FITS 4.0 standard discourages them going forward, given that binary tables provide far superior capabilities for storing the same type of data. Support for these type of HDUs is thus very basic, and aimed mainly at providing a way to access data that was already written in this format.
+ - **Compressed images or tables** are an extension of the binary table HDUs for storing an image or a binary table in a compressed 
+ format, with tiling support to make parts easily accessible from the whole. We provide full support for compressing and decompressing
+ images and tables, and for accessing specific regions of compressed data stored in this format.
+
+ - The **Hierarchical grouping** convention is an extension of table HDUs (ASCII or binary) for storing information on the hierarchical relation of HDUs contained within (or external to) the FITS. The hierarchical grouping is a recognized convention, but not (yet) officially part of the FITS standard. We do not explicitly support this convention yet, but it is something that we are considering for a future release.
+
+
 
 
 
@@ -227,8 +235,9 @@ The tiler needs to know the corners and size of the tile we want. Note that we c
 
 <a name="reading-streaming-cutouts"></a>
 #### Streaming image cutouts
-Since version 1.18 it it is possible to stream cutouts, using the `StreamingTileImageData` class. The streaming can be used with any source that implements the `RandomAccessFileIO` interface, which provides
-file-like random access, for example for a resource on the Amazon S3 cloud:
+Since version 1.18 it it is possible to stream cutouts, using the `StreamingTileImageData` class. The streaming can be used with 
+any source that implements the `RandomAccessFileIO` interface, which provides file-like random access, for example for a resource 
+on the Amazon S3 cloud:
 
 ```java
   import nom.tam.util.RandomAccessFileIO;
@@ -264,9 +273,11 @@ Below is an example code sketch for streaming image cutouts from very large imag
   output.write(outputStream);
 ```
 
-As of version 1.18 it is also possible to stream cutouts from compressed images using the `CompressedImageTiler` class. Whereas the `asImageHDU()` method decompresses the entire image in memory, the `CompressedImageTiler` will decompress only the tiles necessary for obtaining the desired cutout. 
-For example, consider writing the cutout from a compressed image as a regular non-compressed `ImageHDU`. 
-This can be achieved much the same way as in the above example, replacing `imageHDU.getTiler()` with a `CompressedImageTiler` step, such as:
+As of version 1.18 it is also possible to stream cutouts from compressed images using the `CompressedImageTiler` class. 
+Whereas the `asImageHDU()` method decompresses the entire image in memory, the `CompressedImageTiler` will decompress only the 
+tiles necessary for obtaining the desired cutout. For example, consider writing the cutout from a compressed image as a regular 
+non-compressed `ImageHDU`. This can be achieved much the same way as in the above example, replacing `imageHDU.getTiler()` with 
+a `CompressedImageTiler` step, such as:
 
 ```java
   ...
@@ -290,7 +301,7 @@ For example,
   Fits fits = new Fits("bigimg.fits");
   ImageHDU img = fits.getHDU(0);
   
-  // Reset the stream to the beginning of the data segment
+  // Rewind the stream to the beginning of the data segment
   if (!img.getData().reset()) {
       // Uh-oh...
       throw new IllegalStateException("Unable to seek to data start”);
@@ -1120,7 +1131,7 @@ You may note a few other properties of HIERARCH keywords as implemented by this 
 
 Checksums can be added to (and updated in) the headers of HDUs to allow checking the integrity of the FITS data at a later time.
 
-As of version 1.17, it is also possible to apply incremental updates to existing checksums. See the various static methods of the `nom.tam.utilities.FitsChecksum` class on updating checksums for modified headers or data. There are also methods to simplify verification of checksums when reading FITS files, and for calculating checksums directly from a file without the need for reading and storing potentially huge amounts of data in RAM. Calculating data checksums directly from the file is now default (as of 1.17) for data that is in deferred read mode (i.e. not currently loaded into RAM), making it possible to checksum huge FITS files without having to load entire segments of data into RAM at any point.
+As of version __1.17__, it is also possible to apply incremental updates to existing checksums. See the various static methods of the `nom.tam.utilities.FitsChecksum` class on updating checksums for modified headers or data. There are also methods to simplify verification of checksums when reading FITS files, and for calculating checksums directly from a file without the need for reading and storing potentially huge amounts of data in RAM. Calculating data checksums directly from the file is now default (as of 1.17) for data that is in deferred read mode (i.e. not currently loaded into RAM), making it possible to checksum huge FITS files without having to load entire segments of data into RAM at any point.
 
 Setting the checksums (`CHECKSUM` and `DATASUM` keywords) should be the last modification to the FITS object or HDU before writing. Here is an example of settting a checksum for an HDU before you write it to disk:
 
