@@ -62,16 +62,16 @@
 	      The README for reading binary tables has been updated accordingly.
       </action>
       <action type="add" dev="attipaci" issue="453">
-      	      Allow defragmenting heaps to expunge stale data, and to optimize heap area for best sequential
-      	      read performance.
+      	      Allow defragmenting binary table heaps to expunge stale data, and to optimize heap area for 
+      	      best sequential read performance.
       </action>
       <action type="add" dev="attipaci" issue="452">
 	      Simplified access to select tiles / regions of compressed data in both tile compressed
 	      tables and images.
       </action>
       <action type="add" dev="attipaci" issue="178">
-	      Support for the Substring Array Convention. (We will prefer the use of TDIM over the convention 
-	      for fixed-width string-based columns.)
+	      Support for the Substring Array Convention. (However, we will prefer the use of the more generic 
+	      TDIM over the convention for fixed-width string-based columns.)
       </action>
       <action type="add" dev="attipaci" issue="458">
               Use HIERARCH-style keywords more easily within the library via the static methods of 
@@ -82,7 +82,7 @@
 	      releases and a whopping 25-50 times faster for reading streams than 1.15.2.
       </action>
       <action type="update" dev="attipaci" issue="407">
-	      Improved dithering performance by calculating random sequence only once, and more efficiently.
+	      Improved dithering performance by calculating the random sequence only once, and more efficiently.
       </action>
       <action type="update" dev="attipaci" issue="441">
               Significantly faster table data access and row additions.
@@ -105,9 +105,6 @@
 	      real-valued data columns to a binary table. Users should call BinaryTable.setComplexColumn() 
 	      explicitly if pairwise real values should be converted to complex. 
       </action>
-      <action type="update" dev="attipaci" issue="209">
-	      FitsUtil.reposition() deprecated and changed to take FitsIO argument to match usage.
-      </action>
       <action type="update" dev="attipaci" issue="447">
               Check data consistency when adding or setting data in binary tables.
       </action>
@@ -124,11 +121,20 @@
       <action type="update" dev="attipaci" issue="394">
 	      Various tweaks to FitsDate that should not affect user behavior.
       </action>
+      <action type="update" dev="attipaci" issue="420">
+	      Revised PaddingException API and seamless internal handling.
+      </action>
+      <action type="update" dev="attipaci" issue="435">
+              Header access methods in BasicHDU no longer remove significant leading spaces from strings.
+      </action>
+      <action type="update" dev="attipaci" issue="426">
+	      No longer exposing mutable internal arrays to users, giving them copies instead.
+      </action>
       <action type="update" dev="attipaci" issue="336">
 	      Deprecate unsafe methods that should only be used internally (if at all) and never by users.
       </action>
-      <action type="update" dev="attipaci" issue="420">
-	      Revised PaddingException API and seamless internal handling.
+      <action type="update" dev="attipaci" issue="209">
+	      FitsUtil.reposition() deprecated and changed to take FitsIO argument to match usage.
       </action>
       <action type="update" dev="attipaci" issue="429">
 	      Remove unnecessary IO synchronization in FitsFile, FitsInputStream, and FitsOutputStream classes.
@@ -140,14 +146,12 @@
 	      Deprecate BigInteger and BigDecimal values in headers. FITS does not support these, and you should 
 	      not use them.
       </action>
-      <action type="update" dev="attipaci" issue="435">
-              Header access methods in BasicHDU no longer remove significant leading spaces from strings.
-      </action>
-      <action type="update" dev="attipaci" issue="426">
-	      No longer exposing mutable internal arrays to users, giving them copies instead.
-      </action>
       <action type="update" dev="attipaci" issue="424">
 	      Code cleanup -- Consistent source code formating etc.
+      </action>
+      <action type="update" dev="attipaci" issue="160">
+	      Public user API javadoc now complete. It could be improved, but at least all packages, classes, 
+	      and methods intentionally exposed to users are documented.
       </action>
       <action type="update" dev="attipaci" issue="427">
 	      Online API documentation is restricted to public classes and methods only, as appropriate for 
@@ -155,12 +159,8 @@
 	      clearly indicated when these are exposed in the public. Contributors can still generate the 
 	      full documentation locally if desired using maven.
       </action>
-      <action type="update" dev="attipaci" issue="160">
-	      Public user API javadoc now complete. It could be improved, but at least all packages, classes, 
-	      and methods intentionally exposed to users are documented.
-      </action>
       <action type="update" dev="attipaci">
-              Fully revised README (Getting Started uide) with better and more up-to-date examples.
+              Fully revised README (Getting Started guide) with better and more up-to-date examples.
       </action>
       <action type="update" dev="attipaci" issue="402">
 	      Upgrade from JDK 11 to 17 for creating signed packages in the CI (but still in Java 8 
