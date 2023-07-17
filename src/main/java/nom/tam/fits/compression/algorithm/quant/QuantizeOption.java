@@ -713,7 +713,7 @@ public class QuantizeOption implements ICompressOption {
      *
      * @since  1.18
      */
-    private class Config {
+    private static class Config {
 
         private boolean centerOnZero;
 
