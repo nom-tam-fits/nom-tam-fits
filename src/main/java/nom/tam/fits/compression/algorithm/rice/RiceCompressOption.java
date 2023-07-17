@@ -58,9 +58,7 @@ public class RiceCompressOption implements ICompressOption {
     /** Set of valid BLOCKSIZE values */
     private static final int[] VALID_BLOCKSIZE = {16, 32};
 
-    /**
-     * this is a circular dependency that still has to be cut.
-     */
+    /** The parameters that represent settings for this option in the FITS headers and/or compressed data columns */
     private RiceCompressParameters parameters;
 
     /** Shared configuration across copies */

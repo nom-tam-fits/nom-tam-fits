@@ -55,7 +55,10 @@ public class QuantizeOption implements ICompressOption {
      */
     private static final int NULL_VALUE = Integer.MIN_VALUE + 1;
 
-    /** The prarameters that represent settings for thsi option in the FITS headers and/or compressed data columns */
+    /** Shared configuration across copies */
+    private Config config;
+
+    /** The parameters that represent settings for this option in the FITS headers and/or compressed data columns */
     protected QuantizeParameters parameters;
 
     private ICompressOption compressOption;
@@ -64,31 +67,11 @@ public class QuantizeOption implements ICompressOption {
 
     private double bZero = Double.NaN;
 
-    private boolean centerOnZero;
-
-    private boolean checkNull;
-
-    private boolean checkZero;
-
-    private boolean dither;
-
-    private boolean dither2;
-
-    private int intMaxValue;
-
-    private int intMinValue;
-
-    private double maxValue;
-
-    private double minValue;
-
     private double nullValue = Double.NaN;
 
     private Integer nullValueIndicator;
 
-    private double qlevel = Double.NaN;
-
-    private long seed = 1L;
+    private boolean checkNull;
 
     private int tileIndex = 0;
 
@@ -109,6 +92,7 @@ public class QuantizeOption implements ICompressOption {
      */
     public QuantizeOption(ICompressOption compressOption) {
         parameters = new QuantizeParameters(this);
+        config = new Config();
         this.compressOption = compressOption;
     }
 
@@ -205,7 +189,7 @@ public class QuantizeOption implements ICompressOption {
      * @see    #getIntMinValue()
      */
     public int getIntMaxValue() {
-        return intMaxValue;
+        return config.intMaxValue;
     }
 
     /**
@@ -217,7 +201,7 @@ public class QuantizeOption implements ICompressOption {
      * @see    #getIntMinValue()
      */
     public int getIntMinValue() {
-        return intMinValue;
+        return config.intMinValue;
     }
 
     /**
@@ -229,7 +213,7 @@ public class QuantizeOption implements ICompressOption {
      * @see    #getMinValue()
      */
     public double getMaxValue() {
-        return maxValue;
+        return config.maxValue;
     }
 
     /**
@@ -241,7 +225,7 @@ public class QuantizeOption implements ICompressOption {
      * @see    #getMaxValue()
      */
     public double getMinValue() {
-        return minValue;
+        return config.minValue;
     }
 
     /**
@@ -285,7 +269,7 @@ public class QuantizeOption implements ICompressOption {
      * @see    #getBScale()
      */
     public double getQLevel() {
-        return qlevel;
+        return config.qlevel;
     }
 
     /**
@@ -297,7 +281,7 @@ public class QuantizeOption implements ICompressOption {
      * @see    RandomSequence
      */
     public long getSeed() {
-        return seed;
+        return config.seed;
     }
 
     /**
@@ -346,7 +330,7 @@ public class QuantizeOption implements ICompressOption {
      * @see    #setCenterOnZero(boolean)
      */
     public boolean isCenterOnZero() {
-        return centerOnZero;
+        return config.centerOnZero;
     }
 
     /**
@@ -375,7 +359,7 @@ public class QuantizeOption implements ICompressOption {
      * @see    #getBScale()
      */
     public boolean isCheckZero() {
-        return checkZero;
+        return config.checkZero;
     }
 
     /**
@@ -387,7 +371,7 @@ public class QuantizeOption implements ICompressOption {
      * @see    #isDither2()
      */
     public boolean isDither() {
-        return dither;
+        return config.dither;
     }
 
     /**
@@ -399,7 +383,7 @@ public class QuantizeOption implements ICompressOption {
      * @see    #isDither()
      */
     public boolean isDither2() {
-        return dither2;
+        return config.dither2;
     }
 
     @Override
@@ -472,7 +456,7 @@ public class QuantizeOption implements ICompressOption {
      * @see          #isCenterOnZero()
      */
     public QuantizeOption setCenterOnZero(boolean value) {
-        centerOnZero = value;
+        config.centerOnZero = value;
         return this;
     }
 
@@ -515,7 +499,7 @@ public class QuantizeOption implements ICompressOption {
      * @see              #isCheckZero()
      */
     public QuantizeOption setCheckZero(boolean value) {
-        checkZero = value;
+        config.checkZero = value;
         return this;
     }
 
@@ -530,7 +514,7 @@ public class QuantizeOption implements ICompressOption {
      * @see          #setDither2(boolean)
      */
     public QuantizeOption setDither(boolean value) {
-        dither = value;
+        config.dither = value;
         return this;
     }
 
@@ -545,7 +529,7 @@ public class QuantizeOption implements ICompressOption {
      * @see          #setDither(boolean)
      */
     public QuantizeOption setDither2(boolean value) {
-        dither2 = value;
+        config.dither2 = value;
         return this;
     }
 
@@ -560,7 +544,7 @@ public class QuantizeOption implements ICompressOption {
      * @see          #setIntMinValue(int)
      */
     public QuantizeOption setIntMaxValue(int value) {
-        intMaxValue = value;
+        config.intMaxValue = value;
         return this;
     }
 
@@ -575,7 +559,7 @@ public class QuantizeOption implements ICompressOption {
      * @see          #setIntMaxValue(int)
      */
     public QuantizeOption setIntMinValue(int value) {
-        intMinValue = value;
+        config.intMinValue = value;
         return this;
     }
 
@@ -590,7 +574,7 @@ public class QuantizeOption implements ICompressOption {
      * @see          #setMinValue(double)
      */
     public QuantizeOption setMaxValue(double value) {
-        maxValue = value;
+        config.maxValue = value;
         return this;
     }
 
@@ -605,7 +589,7 @@ public class QuantizeOption implements ICompressOption {
      * @see          #setMaxValue(double)
      */
     public QuantizeOption setMinValue(double value) {
-        minValue = value;
+        config.minValue = value;
         return this;
     }
 
@@ -658,7 +642,7 @@ public class QuantizeOption implements ICompressOption {
      * @see          #setBScale(double)
      */
     public QuantizeOption setQlevel(double value) {
-        qlevel = value;
+        config.qlevel = value;
         return this;
     }
 
@@ -672,7 +656,7 @@ public class QuantizeOption implements ICompressOption {
      * @see          #setTileIndex(int)
      */
     public QuantizeOption setSeed(long value) {
-        seed = value;
+        config.seed = value;
         return this;
     }
 
@@ -720,5 +704,35 @@ public class QuantizeOption implements ICompressOption {
             }
         }
         return null;
+    }
+
+    /**
+     * Stores configuration in a way that can be shared and modified across enclosing option copies.
+     * 
+     * @author Attila Kovacs
+     *
+     * @since  1.18
+     */
+    private class Config {
+
+        private boolean centerOnZero;
+
+        private boolean checkZero;
+
+        private boolean dither;
+
+        private boolean dither2;
+
+        private int intMaxValue;
+
+        private int intMinValue;
+
+        private double maxValue;
+
+        private double minValue;
+
+        private double qlevel = Double.NaN;
+
+        private long seed = 1L;
     }
 }

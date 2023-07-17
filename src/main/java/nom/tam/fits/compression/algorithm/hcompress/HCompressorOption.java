@@ -45,13 +45,11 @@ import nom.tam.fits.compression.provider.param.hcompress.HCompressParameters;
  */
 public class HCompressorOption implements ICompressOption {
 
-    /**
-     * circular dependency, has to be cut.
-     */
-    private HCompressParameters parameters;
-
     /** Shared configuration across copies. */
     private final Config config;
+
+    /** The parameters that represent settings for this option in the FITS headers and/or compressed data columns */
+    private HCompressParameters parameters;
 
     private int tileHeight;
 
