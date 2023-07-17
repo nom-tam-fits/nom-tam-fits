@@ -73,6 +73,14 @@ public class QuantizeOption implements ICompressOption {
 
     private boolean checkNull;
 
+    private int intMaxValue;
+
+    private int intMinValue;
+
+    private double maxValue;
+
+    private double minValue;
+
     private int tileIndex = 0;
 
     private int tileHeight;
@@ -189,7 +197,7 @@ public class QuantizeOption implements ICompressOption {
      * @see    #getIntMinValue()
      */
     public int getIntMaxValue() {
-        return config.intMaxValue;
+        return intMaxValue;
     }
 
     /**
@@ -201,7 +209,7 @@ public class QuantizeOption implements ICompressOption {
      * @see    #getIntMinValue()
      */
     public int getIntMinValue() {
-        return config.intMinValue;
+        return intMinValue;
     }
 
     /**
@@ -213,7 +221,7 @@ public class QuantizeOption implements ICompressOption {
      * @see    #getMinValue()
      */
     public double getMaxValue() {
-        return config.maxValue;
+        return maxValue;
     }
 
     /**
@@ -225,7 +233,7 @@ public class QuantizeOption implements ICompressOption {
      * @see    #getMaxValue()
      */
     public double getMinValue() {
-        return config.minValue;
+        return minValue;
     }
 
     /**
@@ -544,7 +552,7 @@ public class QuantizeOption implements ICompressOption {
      * @see          #setIntMinValue(int)
      */
     public QuantizeOption setIntMaxValue(int value) {
-        config.intMaxValue = value;
+        intMaxValue = value;
         return this;
     }
 
@@ -559,7 +567,7 @@ public class QuantizeOption implements ICompressOption {
      * @see          #setIntMaxValue(int)
      */
     public QuantizeOption setIntMinValue(int value) {
-        config.intMinValue = value;
+        intMinValue = value;
         return this;
     }
 
@@ -574,7 +582,7 @@ public class QuantizeOption implements ICompressOption {
      * @see          #setMinValue(double)
      */
     public QuantizeOption setMaxValue(double value) {
-        config.maxValue = value;
+        maxValue = value;
         return this;
     }
 
@@ -589,7 +597,7 @@ public class QuantizeOption implements ICompressOption {
      * @see          #setMaxValue(double)
      */
     public QuantizeOption setMinValue(double value) {
-        config.minValue = value;
+        minValue = value;
         return this;
     }
 
@@ -722,14 +730,6 @@ public class QuantizeOption implements ICompressOption {
         private boolean dither;
 
         private boolean dither2;
-
-        private int intMaxValue;
-
-        private int intMinValue;
-
-        private double maxValue;
-
-        private double minValue;
 
         private double qlevel = Double.NaN;
 
