@@ -956,11 +956,16 @@ public class Fits implements Closeable {
     /**
      * Read a FITS file from an InputStream object.
      *
-     * @param  is            The InputStream stream whence the FITS information is found.
+     * @param      is            The InputStream stream whence the FITS information is found.
      *
-     * @throws FitsException if the data read could not be interpreted
+     * @throws     FitsException if the data read could not be interpreted
+     * 
+     * @deprecated               Use {@link #Fits(InputStream)} constructor instead. We will remove this method in the
+     *                               future.
      */
     public void read(InputStream is) throws FitsException {
+        is = CompressionManager.decompress(is);
+
         if (is instanceof ArrayDataInput) {
             dataStr = (ArrayDataInput) is;
         } else {

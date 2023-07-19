@@ -1,7 +1,7 @@
 <document xmlns="http://maven.apache.org/changes/1.0.0" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:schemaLocation="http://maven.apache.org/changes/1.0.0 http://maven.apache.org/xsd/changes-1.0.0.xsd">
 <body>
 	
-  <release version="1.18.0-rc6" date="2023-06-07" description="Feature release with compression fixes and many improvements.">
+   <release version="1.18.0" date="2023-07-24" description="Feature release with compression fixes and many improvements.">
       <action type="fix" dev="attipaci" issue="377">
 	      Fixed use of ZDITHER0 keyword to restore or record random generator seed when dithering is used 
 	      in (de)compression.
@@ -10,11 +10,23 @@
 	      Fixed tiled (de)compresssion of some quantized images via GZIP.
       </action>
       <action type="fix" dev="attipaci" issue="436">
-	      Incorrect handling of CONTINUE keywords with no quoted string value (a regression since 1.16).
+	      Fixed incorrect handling of CONTINUE keywords with no quoted string value (a regression since 1.16).
       </action>
       <action type="fix" dev="attipaci" issue="438">
-	      Conversion of variable length float[] or double[] arrays was broken since forever. Now they
-	      workd for the first time as expected.
+	      Conversion of variable length float[] or double[] arrays to complex was broken since forever. Now 
+	      it works for the first time as expected.
+      </action>
+      <action type="fix" dev="attipaci" issue="455">
+	      Fixed incorrect variable-length complex array descriptors in binary tables.
+      </action>
+      <action type="fix" dev="attipaci" issue="445">
+	      Consistent String return for both fixed and variable-length string columns in binary tables.
+      </action>
+      <action type="fix" dev="attipaci" issue="456">
+	      Fixed compressed table tiling with tile sizes that do not divide the table rows.
+      </action>
+      <action type="fix" dev="attipaci" issue="462">
+	      Fixed incorrect HCompress SCALE parameter handling.
       </action>
       <action type="add" dev="at88mph" issue="387">
 	      Added ability to stride while tiling.
@@ -25,22 +37,55 @@
       <action type="add" dev="at88mph" issue="400">
 	      Added ability to stream compressed image cutouts.
       </action>
-      <action type="add" dev="at88mph" issue="352">
-	      Added support for alternative RandomAccess immplementations.
-      </action>
       <action type="add" dev="attipaci" issue="335">
 	      Added NullDataHDU for more intuitive support for header only HDUs with no associated data.
       </action>
-      <action type="add" dev="attipaci" issue="439">
-	      Allow users to set preference for the type of heap pointer when creating new variable length
-	      binary table columns.
+      <action type="add" dev="at88mph" issue="352">
+	      Added support for alternative RandomAccess immplementations.
+      </action>
+      <action type="add" dev="attipaci" issue="183">
+	      Added support for ComplexValue-based column in BinaryTable 
+      </action>
+      <action type="add" dev="attipaci" issue="450">
+	      Added support for bit-based columns (FITS type 'X') in binary tables. 
+      </action>
+      <action type="add" dev="attipaci" issue="451">
+	      Added support for null (undefined) logical values for FITS logical columns in binary tables. 
+      </action>
+      <action type="add" dev="attipaci" issue="448">
+              More user-friendly data access in BinaryTable, using Java boxing for scalar primitive entries,
+              and automatic type conversion (both narrowing and widening) for singleton values when possible.
+              Many new BinaryTable methods to make it easier to build and use binary tables.
+      </action>
+      <action type="add" dev="attipaci" issue="437">
+	      Allow accessing binary table entries / rows directly from file in deferred read mode.
+	      The README for reading binary tables has been updated accordingly.
+      </action>
+      <action type="add" dev="attipaci" issue="453">
+      	      Allow defragmenting binary table heaps to expunge stale data, and to optimize heap area for 
+      	      best sequential read performance.
+      </action>
+      <action type="add" dev="attipaci" issue="452">
+	      Simplified access to select tiles / regions of compressed data in both tile compressed
+	      tables and images.
+      </action>
+      <action type="add" dev="attipaci" issue="178">
+	      Support for the Substring Array Convention. (However, we will prefer the use of the more generic 
+	      TDIM over the convention for fixed-width string-based columns.)
+      </action>
+      <action type="add" dev="attipaci" issue="458">
+              Use HIERARCH-style keywords more easily within the library via the static methods of 
+              the Hierarch class.
       </action>
       <action type="update" dev="attipaci" issue="414">
 	      Significantly improved IO performance, now typically 2.5 to 4 times faster for images than prior 
 	      releases and a whopping 25-50 times faster for reading streams than 1.15.2.
       </action>
       <action type="update" dev="attipaci" issue="407">
-	      Improved dithering performance by calculating random sequence only once, and more efficiently.
+	      Improved dithering performance by calculating the random sequence only once, and more efficiently.
+      </action>
+      <action type="update" dev="attipaci" issue="441">
+              Significantly faster table data access and row additions.
       </action>
       <action type="update" dev="attipaci" issue="207">
 	      Unified deferred read implementation for all Data classes.
@@ -55,21 +100,41 @@
 	      some older existing data files in that format. If there is ever a need to create new random group 
 	      HDUs, you can do it explicitly via RandomGroupsHDU.createFrom(Object[][]). 
       </action>
-      <action type="update" dev="attipaci" issue="209">
-	      FitsUtil.reposition() deprecated and changed to take FitsIO argument to match usage.
+      <action type="update" dev="attipaci" issue="446">
+	      Disable automatic (and inconsistent) detection of complex binary table data, when adding 
+	      real-valued data columns to a binary table. Users should call BinaryTable.setComplexColumn() 
+	      explicitly if pairwise real values should be converted to complex. 
       </action>
-      <action type="update" dev="attipaci" issue="437">
-	      Allow accessing binary table elements / rows directly from file in deferred read mode.
-	      The README for reading binary tables has been updated accordingly.
+      <action type="update" dev="attipaci" issue="447">
+              Check data consistency when adding or setting data in binary tables.
+      </action>
+      <action type="update" dev="attipaci" issue="454">
+              Do not use ASCII NUL (0x00) for padding between string array elements in binary tables, since it 
+              violates the FITS standard, in which an ASCII NUL terminates the entire string array entry.
+      </action>
+      <action type="update" dev="attipaci" issue="131">
+	      Tables now support up to Integer.MAX_VALUE (~2-billion) rows regardless of entry size.
+      </action>
+      <action type="update" dev="attipaci" issue="461">
+	      Improved handling of shared compression settings across option copies, and including validation
       </action>
       <action type="update" dev="attipaci" issue="394">
 	      Various tweaks to FitsDate that should not affect user behavior.
       </action>
+      <action type="update" dev="attipaci" issue="420">
+	      Revised PaddingException API and seamless internal handling.
+      </action>
+      <action type="update" dev="attipaci" issue="435">
+              Header access methods in BasicHDU no longer remove significant leading spaces from strings.
+      </action>
+      <action type="update" dev="attipaci" issue="426">
+	      No longer exposing mutable internal arrays to users, giving them copies instead.
+      </action>
       <action type="update" dev="attipaci" issue="336">
 	      Deprecate unsafe methods that should only be used internally (if at all) and never by users.
       </action>
-      <action type="update" dev="attipaci" issue="420">
-	      Revised PaddingException API and seamless internal handling.
+      <action type="update" dev="attipaci" issue="209">
+	      FitsUtil.reposition() deprecated and changed to take FitsIO argument to match usage.
       </action>
       <action type="update" dev="attipaci" issue="429">
 	      Remove unnecessary IO synchronization in FitsFile, FitsInputStream, and FitsOutputStream classes.
@@ -81,14 +146,12 @@
 	      Deprecate BigInteger and BigDecimal values in headers. FITS does not support these, and you should 
 	      not use them.
       </action>
-      <action type="update" dev="attipaci" issue="435">
-              Header access methods in BasicHDU no longer remove significant leading spaces from strings.
-      </action>
-      <action type="update" dev="attipaci" issue="426">
-	      No longer exposing mutable internal arrays to users, giving them copies instead.
-      </action>
       <action type="update" dev="attipaci" issue="424">
 	      Code cleanup -- Consistent source code formating etc.
+      </action>
+      <action type="update" dev="attipaci" issue="160">
+	      Public user API javadoc now complete. It could be improved, but at least all packages, classes, 
+	      and methods intentionally exposed to users are documented.
       </action>
       <action type="update" dev="attipaci" issue="427">
 	      Online API documentation is restricted to public classes and methods only, as appropriate for 
@@ -96,9 +159,8 @@
 	      clearly indicated when these are exposed in the public. Contributors can still generate the 
 	      full documentation locally if desired using maven.
       </action>
-      <action type="update" dev="attipaci" issue="160">
-	      Public user API javadoc now complete. It could be improved, but at least all packages, classes, 
-	      and methods intentionally exposed to users are documented.
+      <action type="update" dev="attipaci">
+              Fully revised README (Getting Started guide) with better and more up-to-date examples.
       </action>
       <action type="update" dev="attipaci" issue="402">
 	      Upgrade from JDK 11 to 17 for creating signed packages in the CI (but still in Java 8 
@@ -107,9 +169,10 @@
       <action type="update" dev="attipaci">
 	      Updated maven build and runtime dependencies to their latest releases.
       </action>
-    </release>
+   </release>
 
-    <release version="1.17.1" date="2023-03-15" description="Maintenance release with critical bug fixes.">
+
+   <release version="1.17.1" date="2023-03-15" description="Maintenance release with critical bug fixes.">
       <action type="fix" dev="attipaci" issue="368">
 	      Fixed first extension written as primary if primary HDU contained no data (affects 1.17.0).
       </action>
@@ -117,18 +180,20 @@
 	      Fixed incorrect checksum calculated directly from file in multi-HDU FITS, and other checksum fixes (affects 1.17.0).
       </action>
       <action type="fix" dev="keastrid" issue="341">
-	      Fixed occasional NullPointerException in tiled image compression resulting from incomplete initializiation of TiledImageCompressionOperation.
+              Fixed occasional NullPointerException in tiled image compression resulting from incomplete initializiation of
+              TiledImageCompressionOperation.
       </action>
-	  <action type="update" dev="attipaci" issue="373">
-	      Fixed GitHub Actions site build error, by removing unused broken dependency from POM.
+      <action type="update" dev="attipaci" issue="373">
+              Fixed GitHub Actions site build error, by removing unused broken dependency from POM.
       </action>
       <action type="add" dev="attipaci" issue="376">
-	      Upload coverage report to Coveralls.io also (forks need to set a repo token via the repo secret COVERALLS_REPO_TOKEN if want to
-	      enable reporting also).
+              Upload coverage report to Coveralls.io also (forks need to set a repo token via the repo secret 
+              COVERALLS_REPO_TOKEN if want to enable reporting also).
       </action>
-    </release>
+   </release>
 
-    <release version="1.17.0" date="2022-09-11" description="Improved image compression, checksum support, and incremental writing">
+
+   <release version="1.17.0" date="2022-09-11" description="Improved image compression, checksum support, and incremental writing">
       <action type="add" dev="attipaci" issue="319">
 	      Generalized tile compression for any-dimensional images based on the FITSIO convention. 
       </action>
@@ -136,208 +201,257 @@
 	      Fixed broken tile compression of non-square images. 
       </action>
       <action type="fix" dev="attipaci" issue="318">
-	      CompressedImageHDU.fromInageHDU() now defaults to tiling by row if tile size is not explicitly specified, as per FITS specification and also for consistent behavior in higher dimensions.
+	      CompressedImageHDU.fromInageHDU() now defaults to tiling by row if tile size is not explicitly specified, as per FITS 
+	      specification and also for consistent behavior in higher dimensions.
       </action>
       <action type="update" dev="attipaci" issue="266">
-				Safe incremental HDU writing via new FitsOutput interface, which is used to check whether HDUs should be set 
-				primary or not depending on where it is located in the output.
-			</action>
+              Safe incremental HDU writing via new FitsOutput interface, which is used to check whether HDUs should be set 
+	      primary or not depending on where it is located in the output.
+      </action>
       <action type="update" dev="attipaci" issue="323">
-	      Simpler, faster, and more versatile FitsChecksum class, with support for incremental checksum updates, checksum retrieval, and checksum computations directly from files.
+              Simpler, faster, and more versatile FitsChecksum class, with support for incremental checksum updates, 
+              checksum retrieval, and checksum computations directly from files.
       </action>
       <action type="add" dev="attipaci" issue="323">
-	      New checksumming methods: BasicHDU.calcChecksum(), .setChecksum(), .getStoredChecksum(), and .getStoredDataSum(); Data.calcChecksum(); Fits.calcChecksum(int) and .setChecksum(int) -- as well as an extended static API for `FitsCheckSum`.
+	      New checksumming methods: BasicHDU.calcChecksum(), .setChecksum(), .getStoredChecksum(), and .getStoredDataSum();
+	      Data.calcChecksum(); Fits.calcChecksum(int) and .setChecksum(int) -- as well as an extended static API for `FitsCheckSum`.
       </action>
       <action type="update" dev="attipaci" issue="328">
 	      Checksum in-memory headers/data with less overhead through piped streams.
       </action>
       <action type="update" dev="attipaci" issue="323">
-        Fits.setChecksum(), .setCheckSum(int), and .calcChecksum(int) compute checksum directly from the file, if possible, for 
-        deferred read data (i.e. data not currently loaded into RAM). This eliminates the need to keep 
-        potentially huge data volumes in RAM when computing or updating checksums in an existing FITS file.
+              Fits.setChecksum(), .setCheckSum(int), and .calcChecksum(int) compute checksum directly from the file, if possible, for 
+              deferred read data (i.e. data not currently loaded into RAM). This eliminates the need to keep 
+              potentially huge data volumes in RAM when computing or updating checksums in an existing FITS file.
       </action>
       <action type="update" dev="attipaci" issue="323">
-        Fits.setChecksum() will now checksum all HDUs, including those not already loaded from disk -- 
-        keeping data in deferred read mode if possible.
+              Fits.setChecksum() will now checksum all HDUs, including those not already loaded from disk -- 
+              keeping data in deferred read mode if possible.
       </action>
       <action type="add" dev="attipaci" issue="323">
-        Added Fits.rewrite() to simplify re-writing the entire Fits objects, e.g. after updating checksums. The 
-        implementation is efficient in that it skips data segments in deferred read mode. BasicHDU.rewrite()
-        is modified to make it efficient also.
+              Added Fits.rewrite() to simplify re-writing the entire Fits objects, e.g. after updating checksums. The 
+              implementation is efficient in that it skips data segments in deferred read mode. BasicHDU.rewrite()
+              is modified to make it efficient also.
       </action>
-    	<action type="add" dev="attipaci" issue="283">
-	      User adjustable header comment alignment position via Header.setCommentAlignPosition(int) and checking via .getCommentAlignPosition(). 
+      <action type="add" dev="attipaci" issue="283">
+	      User adjustable header comment alignment position via Header.setCommentAlignPosition(int) and checking 
+	      via .getCommentAlignPosition(). 
       </action>
-    	<action type="add" dev="attipaci" issue="145">
-				New Fits.getHDU() methods to select HDU from Fits by name (and version).
-			</action>
+      <action type="add" dev="attipaci" issue="145">
+              New Fits.getHDU() methods to select HDU from Fits by name (and version).
+      </action>
       <action type="update" dev="attipaci" issue="311">
-        Duplicate header keys, during parsing, are repoted though separate logger instance from Header's, with verbosity
-        controlled via Header.setParserWarningsEnabled(boolean). 
+              Duplicate header keys, during parsing, are repoted though separate logger instance from Header's, with verbosity
+              controlled via Header.setParserWarningsEnabled(boolean). 
       </action>
       <action type="update" dev="attipaci" issue="292">
-        Suppress repeated duplicate keyword warnings when parsing and improve checks for FITS standard violations. Added Header.getDuplicateKeySet() method to check which keywords have duplicates. 
+              Suppress repeated duplicate keyword warnings when parsing and improve checks for FITS standard violations. Added
+              Header.getDuplicateKeySet() method to check which keywords have duplicates. 
       </action>
       <action type="update" dev="attipaci" issue="292">
-        Replacing header keys logs a warning when existing value type is incompatible wth the newly associated 
-        standardized keyword.
+              Replacing header keys logs a warning when existing value type is incompatible wth the newly associated 
+              standardized keyword.
       </action>
       <action type="update" dev="attipaci" issue="292">
-        Creation of header entries with standardized keywords logs a warning if associated value type is incompatible 
-        with the keyword. 
+              Creation of header entries with standardized keywords logs a warning if associated value type is incompatible 
+              with the keyword. 
       </action>
       <action type="update" dev="attipaci" issue="292">
-        Improved header card ordering implementation.
+              Improved header card ordering implementation.
       </action>
-  		<action type="add" dev="attipaci" issue="323">
-	      Added Data.isDeferred() method (defaulting to false) that can be used to check if a FITS Data 
-	      object might be in deferred read mode, that is if it may not be fully loaded into RAM. Note, that while 
-	      the method is properly implemented for the built-in data types of the library, it may not properly reflect 
-	      the deferred status of external data implementations unless these override the method with something 
-	      meaningful also.
+      <action type="add" dev="attipaci" issue="323">
+              Added Data.isDeferred() method (defaulting to false) that can be used to check if a FITS Data 
+              object might be in deferred read mode, that is if it may not be fully loaded into RAM. Note, that while 
+              the method is properly implemented for the built-in data types of the library, it may not properly reflect 
+              the deferred status of external data implementations unless these override the method with something 
+              meaningful also.
       </action>
-			<action type="update" dev="attipaci" issue="74">
-        New logo.
-			</action>
-	  </release>
+      <action type="update" dev="attipaci" issue="74">
+              New logo.
+      </action>
+   </release>
 	  
-	  <release version="1.16.1" date="2022-03-21" description="Maintenance release with bug fixes.">
-	    <action type="fix" dev="attipaci" issue="252">
-				Fixed broken Java 8 compatibility of 1.16.0 due to Java compiler flags in POM. Note, after the change the build itself will require Java 9 or later!
-			</action>
-	    <action type="fix" dev="attipaci" issue="243">
-				Fixed potential unchecked null in BinaryTableHDU.
-			</action>
-			<action type="update" dev="attipaci" issue="257">
-				No Logger warnings about duplicate header cards if Header parser warnings are disabled.
-			</action>
+   <release version="1.16.1" date="2022-03-21" description="Maintenance release with bug fixes.">
+      <action type="fix" dev="attipaci" issue="252">
+              Fixed broken Java 8 compatibility of 1.16.0 due to Java compiler flags in POM. Note, after the change the build 
+              itself will require Java 9 or later!
+      </action>
+      <action type="fix" dev="attipaci" issue="243">
+              Fixed potential unchecked null in BinaryTableHDU.
+      </action>
+      <action type="update" dev="attipaci" issue="257">
+              No Logger warnings about duplicate header cards if Header parser warnings are disabled.
+      </action>
       <action type="update" dev="attipaci" issue="210">
-				Added default ArrayDataInput/Output implementations.
-			</action>
-			<action type="update" dev="attipaci" issue="229">
-				Removed runtime dependency on javax.annotation-api.
-			</action>
-			<action type="update" dev="dependabot">
-				Mostly automated updates of dependencies.
-			</action>
-	  </release>
+              Added default ArrayDataInput/Output implementations.
+      </action>
+      <action type="update" dev="attipaci" issue="229">
+              Removed runtime dependency on javax.annotation-api.
+      </action>
+      <action type="update" dev="dependabot">
+              Mostly automated updates of dependencies.
+      </action>
+   </release>
 	
-	  <release version="1.16.0" date="2021-12-13" description="Compliance to FITS 4.0 standard, plus many more fixes and improvements.">
-	    <action type="update" dev="attipaci" issue="197">
-	      This release contains numerous API changes and additions. While the source code is generally back-compatible with previous versions of this library for compiling, some method signatures have changed, and as a result the JAR should not be used as a drop-in replacement for applications that were compiled against earlier versions. To use version 1.16.0 of this library you should always compile your application against it.
-	    </action>
-	    <action type="update" dev="attipaci" issue="161">
-				Long strings enabled by default (FITS 4.0 standard).
-			</action>	
-			<action type="update" dev="attipaci" issue="195">
-				Permissive default 'FitsFactory' settings: error-free reading of some flawed 3rd party files by default (as long as they can be made sense of). However, issued encountered with 3rd party FITS files are logged so they can be inspected. Added new 'FitsFactory.setDefaults()' method to restore default settings more easily.
-			</action>	
-			<action type="update" dev="olebole" issue="125">
-				Set 'FitsFactory.useHierarch(true)' by default. HIERARCH style keys are written upper-case only by default, but case-sensitive support can also be enabled via a call to the 'setCaseSensitive(boolean)' method of the 'IHierarchKeyFormatter' instance used by 'FitsFactory'.
-			</action>
-			<action type="add" dev="attipaci" issue="177">
-				Added support for preallocated blank header space, as per FITS 4.0 standard. via 'Header.ensureCardSpace(int)' and 'Header.getMinimumSize()'. Headers remain rewritable in-place as long as they don't exceed their original size in the file.
-			</action>
-			<action type="add" dev="attipaci" issue="172">
-				Added support for complex values in FITS headers, as specified by the FITS standard, via new 'ComplexValue' class.
-			</action>
-			<action type="add" dev="attipaci" issue="167">
-				Added support for header integers in hexadecimal format, as specified by the FITS standard, e.g. via 'addHexValue(...)' and 'getHexValue(...)' methods in both 'Header' and 'HeaderCard' classes.
-			</action>
-			<action type="fix" dev="attipaci" issue="171">
-				Prevent the creation of invalid header entries from code, by throwing informative runtime exceptions. New runtime exception classes 'HierarchNotEnabledException', 'LongStringsNotEnabledException', 'LongValueException', 'UnclosedQuoteException' are used to report when illegal action was pre-empted relating to FITS headers.
-			</action>
-			<action type="fix" dev="attipaci" issue="165">
-				Prevent creating header cards with NaN and Infinite values. The FITS standard does not support these.
-			</action>
-			<action type="update" dev="attipaci" issue="169">
-				More predictable explicit precision control for header decimals. The same number of decimal places are shown after the leading figure regardless whether fixed-decimal or scientific (exponential) notation is used.
-			</action>
-			<action type="add" dev="wcleveland" issue="120">
-				Added optional support for using 'D' instead of 'E' as the exponent in decimal representations (via 'FitsFactory.setUseExponentD(boolean)' setting), as specified by the FITS standard.  
-			</action>
-			<action type="update" dev="attipaci" issue="173">
-				Fully preserve long comments for string values, including internal spaces in the comment, using the now standard long string convention.
-			</action>
-			<action type="update" dev="attipaci" issue="170">
-			  Simpler, better methods for adding creating comment and history entries in headers, such as via 'Header.insertComment(String)' or '.insertHistory(String)', or via 'HeaderCard.createCommentCard(String)' or '.createHistoryCard(String)'.
-			</action>
-			<action type="update" dev="attipaci" issue="170">
-			  'Header.addValue(...)' and 'Header.insert...(...)' methods now return the newly created 'HeaderCard' objects for convenience.
-			</action>
-			<action type="update" dev="attipaci" issue="121">
-				More predictable header card ordering when editing headers, both directly or indirectly via an iterator. 
-			</action>
-			<action type="update" dev="attipaci" issue="192">
-				New FITS IO class hierarchies for better layering and separation of functionality. Standard IO functions (for reading, writing, positioning, and skipping) now conform to their canonical contracts in the core Java API. The messy old IO API is also supported, though deprecated, to provide back compatibility until the next major release. The new IO classes are also 2 to 3 times faster than before. 
-			</action>
-			<action type="update" dev="attipaci" issue="188">
-				'FitsHeap' access made a lot more efficient with true random access.
-			</action>
-			<action type="fix" dev="attipaci" issue="187">
-				No 'EOFException' is thrown when skipping beyond the end of file, since it should be allowed in random access mode.
-			</action>
-			<action type="fix" dev="attipaci" issue="186">
-				Consistent handling of logical ('true'/'false') values in FITS binary tables, including newly added support for 'null' (or undefined) values also as per FITS standard.
-			</action>
-			<action type="fix" dev="attipaci" issue="184">
-				In prior versions 'char[]' arrays in binary tables were written as 16-bit Unicode and read back as 'short[]' integers. FITS recognises only ASCII character arrays with 1-byte per character. A new 'FitsFactory.setUseUnicodeChars(boolean)' option can toggle compliance to the FITS standard for 'char[]' arrays. However, the misconceived prior behavior remains the default to maintain back compatibility until the next major release. 
-			</action>
-			<action type="add" dev="attipaci" issue="182">
-				Replace fragmented 'PrimitiveType...' hierarchy with a more aptly named one-stop 'ElementType' class. The old hierarchy is also available, albeit in deprecated form.
-			</action>
-			<action type="add" dev="attipaci" issue="191">
-				Type safe BITPIX values via new 'Bitpix' enum providing a restricted set. The unsafe BITPIX methods have been deprecated for removal in a future release.
-			</action>
-			<action type="add" dev="attipaci" issue="175">
-				Added new 'Header.setParserWarningsEnabled(boolean)' option to log FITS standard violations when reading (3rd party) headers.
-			</action>
-			<action type="fix" dev="attipaci" issue="153">
-				no more 'Logger' warnings on multiple CONTINUE keywords, tolerant HIERARCH parsing, and other small fixes.
-			</action>
-			<action type="add" dev="FinitePhaseSpace" issue="138">
-				'FitsDate' equals() / hashCode() / compareTo() implementations.
-			</action>
-			<action type="fix" dev="Zlika" issue="135">
-				Fix management of sub-seconds in 'FitsDate'
-			</action>
-			<action type="fix" dev="olebole" issue="130">
-				Check for and reject non-ASCII or non-printable characters in headers. The FITS standard allows only ASCII characters in the range of 0x20 to 0x7E in the headers. The new static method 'HeaderCard.sanitize(String)' is available to users to replace characters outside of the supported range with '?'. 
-			</action>
-			<action type="fix" dev="wcleveland" issue="123">
-				Minor fixes prior to release
-			</action>
-			<action type="update" dev="attipaci" issue="164">
-				Source code updated for Java 8, with diamond operators and try-with-resources used throughout as appropriate.
-			</action>
-			<action type="fix" dev="attipaci" issue="162">
-  			Revised when exceptions are thrown, and they are made more informative by providing more essential details and traceable causes.
-			</action>
-			<action type="fix" dev="attipaci" issue="159">
-  			HIERARCH header cards are now written to conform to 'cfitsio' specification, which requires a space before '='. While the HIERARCH convention itself does not specify the extra space, it certainly allows for it, and with the change our FITS files shall be more conformant to, and readable, by yet another widely used library.
-			</action>
-			<action type="fix" dev="mbtaylor" issue="158">
-				Check for 'markSupported()' when attempting to use 'mark()' or 'reset()' methods in 'ArrayDataInput', and throw an appropriate runtime exception if the methods are not supported by the implementation.
-			</action>
-			<action type="fix" dev="attipaci" issue="156">
-				Fixed issues with handling of single quotes as part of user-supplied strings.
-			</action>
-			<action type="fix" dev="mbtaylor" issue="143">
-				"I10" format ASCII tables are parsed as 32-bit 'int[]' by default (for back compatibility), unless 'TLMIN/TLMAX' or 'TDMIN/TDMAX' header entries indicate a more extended range. Added new 'AsciiTable(Header, boolean)' constructor to optionally change the preference to read "I10" ASCII table data as 64-bit 'long[]' columns.
-			</action>
-			<action type="fix" dev="attipaci" issue="190">
-				Changed to generated serialVersionUIDs from 1L for classes that require it.
-			</action>
-			<action type="fix" dev="attipaci">
-				Various smaller fixes and improvements throughout, increased unit test coverage, and more comprehensive unit tests.
-			</action>
-			<action type="fix" dev="attipaci">
-	      Deprecated classes and methods that (a) were exposed in the public API even though they should not have been, (b) had names that poorly reflected their function, (c) were poorly conceived/designed in the first place, and/or (d) were prone to misuse with unpredictable results. The deprecated API remains supported nonetheless, and slated for removal in the next major release (2.0) only.
-			</action>
-	    <action type="fix" dev="attipaci">
-	      A lot of the Javadoc API documentation has been revised and improved.
-			</action>
-	  </release>
+   <release version="1.16.0" date="2021-12-13" description="Compliance to FITS 4.0 standard, plus many more fixes and improvements.">
+      <action type="update" dev="attipaci" issue="197">
+             This release contains numerous API changes and additions. While the source code is generally back-compatible with 
+             previous versions of this library for compiling, some method signatures have changed, and as a result the JAR should 
+             not be used as a drop-in replacement for applications that were compiled against earlier versions. To use version 
+             1.16.0 of this library you should always compile your application against it.
+      </action>
+      <action type="update" dev="attipaci" issue="161">
+             Long strings enabled by default (FITS 4.0 standard).
+      </action>	
+      <action type="update" dev="attipaci" issue="195">
+             Permissive default 'FitsFactory' settings: error-free reading of some flawed 3rd party files by default (as long 
+             as they can be made sense of). However, issued encountered with 3rd party FITS files are logged so they can be 
+             inspected. Added new 'FitsFactory.setDefaults()' method to restore default settings more easily.
+      </action>	
+      <action type="update" dev="olebole" issue="125">
+             Set 'FitsFactory.useHierarch(true)' by default. HIERARCH style keys are written upper-case only by default, but 
+             case-sensitive support can also be enabled via a call to the 'setCaseSensitive(boolean)' method of the 
+             'IHierarchKeyFormatter' instance used by 'FitsFactory'.
+      </action>
+      <action type="add" dev="attipaci" issue="177">
+             Added support for preallocated blank header space, as per FITS 4.0 standard. via 'Header.ensureCardSpace(int)' 
+             and 'Header.getMinimumSize()'. Headers remain rewritable in-place as long as they don't exceed their original size 
+             in the file.
+      </action>
+      <action type="add" dev="attipaci" issue="172">
+             Added support for complex values in FITS headers, as specified by the FITS standard, via new 'ComplexValue' class.
+      </action>
+      <action type="add" dev="attipaci" issue="167">
+             Added support for header integers in hexadecimal format, as specified by the FITS standard, e.g. via 'addHexValue(...)'
+             and 'getHexValue(...)' methods in both 'Header' and 'HeaderCard' classes.
+      </action>
+      <action type="fix" dev="attipaci" issue="171">
+             Prevent the creation of invalid header entries from code, by throwing informative runtime exceptions. New 
+             runtime exception classes 'HierarchNotEnabledException', 'LongStringsNotEnabledException', 'LongValueException', 
+             'UnclosedQuoteException' are used to report when illegal action was pre-empted relating to FITS headers.
+      </action>
+      <action type="fix" dev="attipaci" issue="165">
+             Prevent creating header cards with NaN and Infinite values. The FITS standard does not support these.
+      </action>
+      <action type="update" dev="attipaci" issue="169">
+             More predictable explicit precision control for header decimals. The same number of decimal places are shown 
+             after the leading figure regardless whether fixed-decimal or scientific (exponential) notation is used.
+      </action>
+      <action type="add" dev="wcleveland" issue="120">
+             Added optional support for using 'D' instead of 'E' as the exponent in decimal representations (via 
+             'FitsFactory.setUseExponentD(boolean)' setting), as specified by the FITS standard.  
+      </action>
+      <action type="update" dev="attipaci" issue="173">
+             Fully preserve long comments for string values, including internal spaces in the comment, using the now standard 
+             long string convention.
+      </action>
+      <action type="update" dev="attipaci" issue="170">
+             Simpler, better methods for adding creating comment and history entries in headers, such as via 
+             'Header.insertComment(String)' or '.insertHistory(String)', or via 'HeaderCard.createCommentCard(String)' or 
+             '.createHistoryCard(String)'.
+      </action>
+      <action type="update" dev="attipaci" issue="170">
+             'Header.addValue(...)' and 'Header.insert...(...)' methods now return the newly created 'HeaderCard' objects 
+             for convenience.
+      </action>
+      <action type="update" dev="attipaci" issue="121">
+             More predictable header card ordering when editing headers, both directly or indirectly via an iterator. 
+      </action>
+      <action type="update" dev="attipaci" issue="192">
+             New FITS IO class hierarchies for better layering and separation of functionality. Standard IO functions 
+             (for reading, writing, positioning, and skipping) now conform to their canonical contracts in the core Java 
+             API. The messy old IO API is also supported, though deprecated, to provide back compatibility until the next 
+             major release. The new IO classes are also 2 to 3 times faster than before. 
+      </action>
+      <action type="update" dev="attipaci" issue="188">
+             'FitsHeap' access made a lot more efficient with true random access.
+      </action>
+      <action type="fix" dev="attipaci" issue="187">
+             No 'EOFException' is thrown when skipping beyond the end of file, since it should be allowed in random access 
+             mode.
+      </action>
+      <action type="fix" dev="attipaci" issue="186">
+             Consistent handling of logical ('true'/'false') values in FITS binary tables, including newly added support for 
+             'null' (or undefined) values also as per FITS standard.
+      </action>
+      <action type="fix" dev="attipaci" issue="184">
+             In prior versions 'char[]' arrays in binary tables were written as 16-bit Unicode and read back as 'short[]' 
+             integers. FITS recognises only ASCII character arrays with 1-byte per character. A new 
+             'FitsFactory.setUseUnicodeChars(boolean)' option can toggle compliance to the FITS standard for 'char[]' arrays. 
+             However, the misconceived prior behavior remains the default to maintain back compatibility until the next 
+             major release. 
+      </action>
+      <action type="add" dev="attipaci" issue="182">
+             Replace fragmented 'PrimitiveType...' hierarchy with a more aptly named one-stop 'ElementType' class. The old 
+             hierarchy is also available, albeit in deprecated form.
+      </action>
+      <action type="add" dev="attipaci" issue="191">
+             Type safe BITPIX values via new 'Bitpix' enum providing a restricted set. The unsafe BITPIX methods have been 
+             deprecated for removal in a future release.
+      </action>
+      <action type="add" dev="attipaci" issue="175">
+             Added new 'Header.setParserWarningsEnabled(boolean)' option to log FITS standard violations when reading 
+             (3rd party) headers.
+      </action>
+      <action type="fix" dev="attipaci" issue="153">
+             No more 'Logger' warnings on multiple CONTINUE keywords, tolerant HIERARCH parsing, and other small fixes.
+      </action>
+      <action type="add" dev="FinitePhaseSpace" issue="138">
+             'FitsDate' equals() / hashCode() / compareTo() implementations.
+      </action>
+      <action type="fix" dev="Zlika" issue="135">
+             Fix management of sub-seconds in 'FitsDate'
+      </action>
+      <action type="fix" dev="olebole" issue="130">
+             Check for and reject non-ASCII or non-printable characters in headers. The FITS standard allows only ASCII 
+             characters in the range of 0x20 to 0x7E in the headers. The new static method 'HeaderCard.sanitize(String)' 
+             is available to users to replace characters outside of the supported range with '?'. 
+      </action>
+      <action type="fix" dev="wcleveland" issue="123">
+             Minor fixes prior to release
+      </action>
+      <action type="update" dev="attipaci" issue="164">
+             Source code updated for Java 8, with diamond operators and try-with-resources used throughout as appropriate.
+      </action>
+      <action type="fix" dev="attipaci" issue="162">
+             Revised when exceptions are thrown, and they are made more informative by providing more essential details 
+             and traceable causes.
+      </action>
+      <action type="fix" dev="attipaci" issue="159">
+             HIERARCH header cards are now written to conform to 'cfitsio' specification, which requires a space before 
+             '='. While the HIERARCH convention itself does not specify the extra space, it certainly allows for it, and 
+             with the change our FITS files shall be more conformant to, and readable, by yet another widely used library.
+      </action>
+      <action type="fix" dev="mbtaylor" issue="158">
+             Check for 'markSupported()' when attempting to use 'mark()' or 'reset()' methods in 'ArrayDataInput', and 
+             throw an appropriate runtime exception if the methods are not supported by the implementation.
+      </action>
+      <action type="fix" dev="attipaci" issue="156">
+             Fixed issues with handling of single quotes as part of user-supplied strings.
+      </action>
+      <action type="fix" dev="mbtaylor" issue="143">
+             "I10" format ASCII tables are parsed as 32-bit 'int[]' by default (for back compatibility), unless 
+             'TLMIN/TLMAX' or 'TDMIN/TDMAX' header entries indicate a more extended range. Added new 
+             'AsciiTable(Header, boolean)' constructor to optionally change the preference to read "I10" ASCII table 
+             data as 64-bit 'long[]' columns.
+      </action>
+      <action type="fix" dev="attipaci" issue="190">
+             Changed to generated serialVersionUIDs from 1L for classes that require it.
+      </action>
+      <action type="fix" dev="attipaci">
+             Various smaller fixes and improvements throughout, increased unit test coverage, and more comprehensive 
+             unit tests.
+      </action>
+      <action type="fix" dev="attipaci">
+             Deprecated classes and methods that (a) were exposed in the public API even though they should not have 
+             been, (b) had names that poorly reflected their function, (c) were poorly conceived/designed in the first 
+             place, and/or (d) were prone to misuse with unpredictable results. The deprecated API remains supported 
+             nonetheless, and slated for removal in the next major release (2.0) only.
+      </action>
+      <action type="fix" dev="attipaci">
+             A lot of the Javadoc API documentation has been revised and improved.
+      </action>
+   </release>
 	  
 		<release version="1.15.2" date="2017-04-28" description="Maintenance release with bug fixes.">
 			<action type="update">

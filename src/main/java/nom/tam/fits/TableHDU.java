@@ -80,7 +80,7 @@ public abstract class TableHDU<T extends AbstractTableData> extends BasicHDU<T> 
      */
     public int addColumn(Object newCol) throws FitsException {
         int nCols = getNCols();
-        myHeader.addValue(TFIELDS, nCols);
+        myHeader.findCard(TFIELDS).setValue(nCols);
         setDefaultColumnName(nCols);
         return nCols;
     }
@@ -97,7 +97,7 @@ public abstract class TableHDU<T extends AbstractTableData> extends BasicHDU<T> 
      */
     public int addRow(Object[] newRows) throws FitsException {
         int row = myData.addRow(newRows);
-        myHeader.addValue(NAXISn.n(2), getNRows());
+        myHeader.findCard(NAXISn.n(2)).setValue(getNRows());
         return row;
     }
 
@@ -112,10 +112,15 @@ public abstract class TableHDU<T extends AbstractTableData> extends BasicHDU<T> 
     /**
      * Delete a set of columns from a table.
      *
-     * @param  column        The one-indexed start column.
-     * @param  len           The number of columns to delete.
+     * @param      column        The one-indexed start column.
+     * @param      len           The number of columns to delete.
      *
-     * @throws FitsException if the operation failed
+     * @throws     FitsException if the operation failed
+     * 
+     * @deprecated               It is not entirely foolproof for keeping the header in sync -- it is better to use
+     *                               {@link TableData#deleteColumns(int, int)} to edit tables before wrapping them in an
+     *                               HDU and editing the header as necessary to incorporate custom entries. May be
+     *                               removed from the API in the future.
      */
     public void deleteColumnsIndexOne(int column, int len) throws FitsException {
         deleteColumnsIndexZero(column - 1, len);
@@ -124,11 +129,16 @@ public abstract class TableHDU<T extends AbstractTableData> extends BasicHDU<T> 
     /**
      * Delete a set of columns from a table.
      *
-     * @param  column        The one-indexed start column.
-     * @param  len           The number of columns to delete.
-     * @param  fields        Stems for the header fields to be removed for the table.
+     * @param      column        The one-indexed start column.
+     * @param      len           The number of columns to delete.
+     * @param      fields        Stems for the header fields to be removed for the table.
      *
-     * @throws FitsException if the operation failed
+     * @throws     FitsException if the operation failed
+     * 
+     * @deprecated               It is not entirely foolproof for keeping the header in sync -- it is better to use
+     *                               {@link TableData#deleteColumns(int, int)} to edit tables before wrapping them in an
+     *                               HDU and editing the header as necessary to incorporate custom entries. May be
+     *                               removed from the API in the future.
      */
     public void deleteColumnsIndexOne(int column, int len, String[] fields) throws FitsException {
         deleteColumnsIndexZero(column - 1, len, GenericKey.create(fields));
@@ -137,10 +147,15 @@ public abstract class TableHDU<T extends AbstractTableData> extends BasicHDU<T> 
     /**
      * Delete a set of columns from a table.
      *
-     * @param  column        The one-indexed start column.
-     * @param  len           The number of columns to delete.
+     * @param      column        The one-indexed start column.
+     * @param      len           The number of columns to delete.
      *
-     * @throws FitsException if the operation failed
+     * @throws     FitsException if the operation failed
+     * 
+     * @deprecated               It is not entirely foolproof for keeping the header in sync -- it is better to use
+     *                               {@link TableData#deleteColumns(int, int)} to edit tables before wrapping them in an
+     *                               HDU and editing the header as necessary to incorporate custom entries. May be
+     *                               removed from the API in the future.
      */
     public void deleteColumnsIndexZero(int column, int len) throws FitsException {
         deleteColumnsIndexZero(column, len, columnKeyStems());
@@ -149,11 +164,16 @@ public abstract class TableHDU<T extends AbstractTableData> extends BasicHDU<T> 
     /**
      * Delete a set of columns from a table.
      *
-     * @param  column        The zero-indexed start column.
-     * @param  len           The number of columns to delete.
-     * @param  fields        Stems for the header fields to be removed for the table.
+     * @param      column        The zero-indexed start column.
+     * @param      len           The number of columns to delete.
+     * @param      fields        Stems for the header fields to be removed for the table.
      *
-     * @throws FitsException if the operation failed
+     * @throws     FitsException if the operation failed
+     * 
+     * @deprecated               It is not entirely foolproof for keeping the header in sync -- it is better to use
+     *                               {@link TableData#deleteColumns(int, int)} to edit tables before wrapping them in an
+     *                               HDU and editing the header as necessary to incorporate custom entries. May be
+     *                               removed from the API in the future.
      */
     public void deleteColumnsIndexZero(int column, int len, IFitsHeader[] fields) throws FitsException {
 
@@ -187,7 +207,7 @@ public abstract class TableHDU<T extends AbstractTableData> extends BasicHDU<T> 
             }
         }
         // Update the number of fields.
-        myHeader.addValue(TFIELDS, getNCols());
+        myHeader.findCard(TFIELDS).setValue(getNCols());
 
         // Give the data sections a chance to update the header too.
         myData.updateAfterDelete(ncol, myHeader);
@@ -198,9 +218,14 @@ public abstract class TableHDU<T extends AbstractTableData> extends BasicHDU<T> 
      * but re-implemented using the DataTable and changes to AsciiTable so that it can be done easily for both Binary
      * and ASCII tables.
      *
-     * @param  row           the (0-based) index of the first row to be deleted.
+     * @param      row           the (0-based) index of the first row to be deleted.
      *
-     * @throws FitsException if an error occurs.
+     * @throws     FitsException if an error occurs.
+     * 
+     * @deprecated               It is not entirely foolproof for keeping the header in sync -- it is better to use
+     *                               {@link TableData#deleteRows(int, int)} to edit tables before wrapping them in an
+     *                               HDU and editing the header as necessary to incorporate custom entries. May be
+     *                               removed from the API in the future.
      */
     public void deleteRows(final int row) throws FitsException {
         deleteRows(row, getNRows() - row);
@@ -210,11 +235,16 @@ public abstract class TableHDU<T extends AbstractTableData> extends BasicHDU<T> 
      * Remove a number of adjacent rows from the table. This routine was inspired by code by R.Mathar but re-implemented
      * using changes in the ColumnTable class abd AsciiTable so that we can do it for all FITS tables.
      *
-     * @param  firstRow      the (0-based) index of the first row to be deleted. This is zero-based indexing:
-     *                           0&lt;=firstrow&lt; number of rows.
-     * @param  nRow          the total number of rows to be deleted.
+     * @param      firstRow      the (0-based) index of the first row to be deleted. This is zero-based indexing:
+     *                               0&lt;=firstrow&lt; number of rows.
+     * @param      nRow          the total number of rows to be deleted.
      *
-     * @throws FitsException If an error occurs in the deletion.
+     * @throws     FitsException If an error occurs in the deletion.
+     * 
+     * @deprecated               It is not entirely foolproof for keeping the header in sync -- it is better to use
+     *                               {@link TableData#deleteRows(int, int)} to edit tables before wrapping them in an
+     *                               HDU and editing the header as necessary to incorporate custom entries. May be
+     *                               removed from the API in the future.
      */
     public void deleteRows(final int firstRow, int nRow) throws FitsException {
 
@@ -250,41 +280,45 @@ public abstract class TableHDU<T extends AbstractTableData> extends BasicHDU<T> 
     }
 
     /**
-     * Returns the column of the specified index
+     * <p>
+     * Returns the data for a particular column in as an array of elements. See {@link TableData#addColumn(Object)} for
+     * more information about the format of data elements in general.
+     * </p>
      * 
-     * @return                   a specific column from the table using 0-based column indexing.
+     * @param  col           The 0-based column index.
+     * 
+     * @return               an array of primitives (for scalar columns), or else an <code>Object[]</code> array, or
+     *                           possibly <code>null</code>
+     * 
+     * @throws FitsException if the table could not be accessed
      *
-     * @param      col           column index to get
-     *
-     * @throws     FitsException if the operation failed
-     * 
-     * @deprecated               Strongly discouraged, since it returns data in an unnatural flattened format or heap
-     *                               pointers only for variable-sized data (use {@link #getElement(int, int)} instead)
-     * 
-     * @see                      #getColumn(String)
-     * @see                      #setColumn(int, Object)
-     * @see                      #getRow(int)
+     * @see                  TableData#getColumn(int)
+     * @see                  #setColumn(int, Object)
+     * @see                  #getElement(int, int)
+     * @see                  #getNCols()
      */
     public Object getColumn(int col) throws FitsException {
         return myData.getColumn(col);
     }
 
     /**
-     * Returns the column of the specified name
+     * <p>
+     * Returns the data for a particular column in as an array of elements. See {@link TableData#addColumn(Object)} for
+     * more information about the format of data elements in general.
+     * </p>
      * 
-     * @return                   a specific column of the table where the column name is specified using the TTYPEn
-     *                               keywords in the header.
+     * @param  colName       The name or ID of the column as stored by the <code>TTYPE</code><i>n</i> FITS header
+     *                           keyword.
+     * 
+     * @return               an array of primitives (for scalar columns), or else an <code>Object[]</code> array, or
+     *                           possibly <code>null</code>
+     * 
+     * @throws FitsException if the table could not be accessed
      *
-     * @param      colName       The name of the column to be extracted.
-     *
-     * @throws     FitsException if the operation failed
-     * 
-     * @deprecated               Strongly discouraged, since it returns data in an unnatural flattened format or heap
-     *                               pointers only for variable-sized data (use {@link #findColumn(String)} in
-     *                               combination with with {@link #getElement(int, int)} instead)
-     * 
-     * @see                      #getColumn(int)
-     * @see                      #setColumn(String, Object)
+     * @see                  TableData#getColumn(int)
+     * @see                  #setColumn(int, Object)
+     * @see                  #getElement(int, int)
+     * @see                  #getNCols()
      */
     public Object getColumn(String colName) throws FitsException {
         return getColumn(findColumn(colName));
@@ -338,15 +372,21 @@ public abstract class TableHDU<T extends AbstractTableData> extends BasicHDU<T> 
     }
 
     /**
-     * Returns all columns in this table as an array.
+     * <p>
+     * Returns the data for all columns in as an array. See {@link TableData#addColumn(Object)} for more information
+     * about the column format of each element in the returned array.
+     * </p>
      * 
-     * @return                   all of the columns of the table.
+     * @return               An array containing the column data for all columns. Each entry in the returned array is
+     *                           itself an array of primitives (for scalar columns), or else an <code>Object[]</code>
+     *                           array, or possibly <code>null</code>.
+     * 
+     * @throws FitsException if the table could not be accessed
      *
-     * @throws     FitsException if the operation failed
-     * 
-     * @deprecated               Strongly discouraged, since it returns columns in an unnatural flattened format or heap
-     *                               pointers only for variable-sized data (use {@link #getElement(int, int)} or
-     *                               {@link #getRow(int)} instead)
+     * @see                  TableData#getColumn(int)
+     * @see                  #setColumn(int, Object)
+     * @see                  #getElement(int, int)
+     * @see                  #getNCols()
      */
     public Object[] getColumns() throws FitsException {
         Object[] result = new Object[getNCols()];

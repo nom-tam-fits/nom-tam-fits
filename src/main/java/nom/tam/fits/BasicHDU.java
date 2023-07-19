@@ -381,16 +381,13 @@ public abstract class BasicHDU<DataClass extends Data> implements FitsElement {
     /**
      * Return the Bitpix enum type for this HDU.
      *
-     * @return                   The Bitpix enum object for this HDU.
+     * @return               The Bitpix enum object for this HDU.
      *
-     * @throws     FitsException if the BITPIX value in the header is absent or invalid.
+     * @throws FitsException if the BITPIX value in the header is absent or invalid.
      *
-     * @since                    1.16
-     * 
-     * @deprecated               <code>BITPIX</code> is meaningful internally only, the user should never care. Will
-     *                               reduce visibility or remove in the future.
+     * @since                1.16
      *
-     * @see                      #getBitPix()
+     * @see                  #getBitPix()
      */
     public Bitpix getBitpix() throws FitsException {
         return Bitpix.fromHeader(myHeader);

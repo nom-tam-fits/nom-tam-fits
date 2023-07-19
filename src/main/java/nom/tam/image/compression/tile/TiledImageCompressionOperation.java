@@ -377,6 +377,7 @@ public class TiledImageCompressionOperation extends AbstractTiledImageOperation<
         return compressAlgorithm;
     }
 
+    @SuppressWarnings("deprecation")
     private <T> T getNullableColumn(Header header, Class<T> class1, String columnName) throws FitsException {
         for (int i = 1; i <= binaryTable.getNCols(); i++) {
             String val = header.getStringValue(TTYPEn.n(i));

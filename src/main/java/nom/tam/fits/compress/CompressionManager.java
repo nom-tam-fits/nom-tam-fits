@@ -45,11 +45,11 @@ import nom.tam.fits.FitsException;
 import static nom.tam.util.LoggerHelper.getLogger;
 
 /**
- * Decompression of compressed FITS files of all supported types (<code>.gz</code>, <code>.Z</code>, <code>.bz2</code>).
- * It autodetects the type of compression used based on the first 2-bytes of the compressed input stream. When possible,
- * preference will be given to perform the decompression using a system command (<code>uncompress</code> or
- * <code>bzip2</code>, which are likely faster for large files). If such a tool is not available, then the Apache
- * <b>common-compress</b> classes will be used to the same effect.
+ * (<i>for internal use</i>) Decompression of compressed FITS files of all supported types (<code>.gz</code>,
+ * <code>.Z</code>, <code>.bz2</code>). It autodetects the type of compression used based on the first 2-bytes of the
+ * compressed input stream. When possible, preference will be given to perform the decompression using a system command
+ * (<code>uncompress</code> or <code>bzip2</code>, which are likely faster for large files). If such a tool is not
+ * available, then the Apache <b>common-compress</b> classes will be used to the same effect.
  * 
  * @see GZipCompressionProvider
  * @see BZip2CompressionProvider

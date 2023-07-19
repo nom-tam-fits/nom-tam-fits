@@ -40,6 +40,7 @@ import nom.tam.fits.utilities.FitsLineAppender;
  * keywords and will format them according to its rules when writing them to FITS headers.
  * 
  * @see nom.tam.fits.FitsFactory#setHierarchFormater(IHierarchKeyFormatter)
+ * @see Hierarch
  */
 @SuppressWarnings("deprecation")
 public interface IHierarchKeyFormatter {

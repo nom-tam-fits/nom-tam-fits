@@ -97,7 +97,8 @@ public class FitsEncoder extends OutputEncoder {
     }
 
     /**
-     * @deprecated             Low-level reading/writing should be handled internally as arrays by this library only.
+     * @deprecated             (<i>for internal use</i>) Low-level reading/writing should be handled internally as
+     *                             arrays by this library only.
      *
      * @param      b           a boolean value or <code>null</code>.
      *
@@ -109,7 +110,8 @@ public class FitsEncoder extends OutputEncoder {
     }
 
     /**
-     * @deprecated             Low-level reading/writing should be handled internally as arrays by this library only.
+     * @deprecated             (<i>for internal use</i>) Low-level reading/writing should be handled internally as
+     *                             arrays by this library only.
      *
      * @param      c           An ASCII character.
      *
@@ -120,7 +122,7 @@ public class FitsEncoder extends OutputEncoder {
         if (FitsFactory.isUseUnicodeChars()) {
             writeShort((short) c);
         } else {
-            write(c);
+            write(c & FitsIO.BYTE_MASK);
         }
     }
 
@@ -301,7 +303,8 @@ public class FitsEncoder extends OutputEncoder {
     }
 
     /**
-     * @deprecated             Low-level reading/writing should be handled internally as arrays by this library only.
+     * @deprecated             (<i>for internal use</i>) Low-level reading/writing should be handled internally as
+     *                             arrays by this library only.
      *
      * @param      b           a single byte.
      *
@@ -313,7 +316,8 @@ public class FitsEncoder extends OutputEncoder {
     }
 
     /**
-     * @deprecated             Low-level reading/writing should be handled internally as arrays by this library only.
+     * @deprecated             (<i>for internal use</i>) Low-level reading/writing should be handled internally as
+     *                             arrays by this library only.
      *
      * @param      s           a 16-bit integer value.
      *
@@ -326,7 +330,8 @@ public class FitsEncoder extends OutputEncoder {
     }
 
     /**
-     * @deprecated             Low-level reading/writing should be handled internally as arrays by this library only.
+     * @deprecated             (<i>for internal use</i>) Low-level reading/writing should be handled internally as
+     *                             arrays by this library only.
      *
      * @param      i           a 32-bit integer value.
      *
@@ -339,7 +344,8 @@ public class FitsEncoder extends OutputEncoder {
     }
 
     /**
-     * @deprecated             Low-level reading/writing should be handled internally as arrays by this library only.
+     * @deprecated             (<i>for internal use</i>) Low-level reading/writing should be handled internally as
+     *                             arrays by this library only.
      *
      * @param      l           a 64-bit integer value.
      *
@@ -352,7 +358,8 @@ public class FitsEncoder extends OutputEncoder {
     }
 
     /**
-     * @deprecated             Low-level reading/writing should be handled internally by this library only.
+     * @deprecated             (<i>for internal use</i>) Low-level reading/writing should be handled internally by this
+     *                             library only.
      *
      * @param      f           a single-precision (32-bit) floating point value.
      *
@@ -365,7 +372,8 @@ public class FitsEncoder extends OutputEncoder {
     }
 
     /**
-     * @deprecated             Low-level reading/writing should be handled internally as arrays by this library only.
+     * @deprecated             (<i>for internal use</i>) Low-level reading/writing should be handled internally as
+     *                             arrays by this library only.
      *
      * @param      d           a double-precision (64-bit) floating point value.
      *

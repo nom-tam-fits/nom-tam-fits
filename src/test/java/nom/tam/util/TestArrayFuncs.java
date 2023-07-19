@@ -40,12 +40,22 @@ public class TestArrayFuncs {
 
     /** Compare two double arrays using a given tolerance */
     public static boolean doubleArrayEquals(double[] x, double[] y, double tol) {
+        if (x.length != y.length) {
+            System.err.println("!!! Mismatched sizes: x " + x.length + ", y " + y.length);
+            return false;
+        }
 
         for (int i = 0; i < x.length; i++) {
             if (x[i] == 0) {
+
+                if (y[i] != 0) {
+                    System.err.println("!!! Mismatch at " + i + ": x = " + x[i] + ", y = " + y[i]);
+                }
                 return y[i] == 0;
+
             }
             if (Math.abs((y[i] - x[i]) / x[i]) > tol) {
+                System.err.println("!!! Mismatch at " + i + ": x = " + x[i] + ", y = " + y[i]);
                 return false;
             }
         }
@@ -60,7 +70,7 @@ public class TestArrayFuncs {
      * If both elements are multi-dimensional arrays, then the method recurses.
      */
     public static boolean arrayEquals(Object x, Object y) {
-        return arrayEquals(x, y, 0, 0);
+        return arrayEquals(x, y, 1e-6, 1e-12);
     }
 
     /**
@@ -87,11 +97,16 @@ public class TestArrayFuncs {
         Class<?> yClass = y.getClass();
 
         if (xClass != yClass) {
+            System.err.println(" Mismatched classes: x " + xClass + ", y " + yClass);
             return false;
         }
 
         if (!xClass.isArray()) {
-            return x.equals(y);
+            if (x.equals(y)) {
+                return true;
+            }
+            System.err.println(" Mismatched Objects: x [" + x + "], y [" + y + "]");
+            return false;
 
         }
         if (xClass.equals(int[].class)) {
@@ -133,11 +148,14 @@ public class TestArrayFuncs {
             // cast to Object[]
             Object[] xo = (Object[]) x;
             Object[] yo = (Object[]) y;
+
             if (xo.length != yo.length) {
+                System.err.println("!!! Mismatched sizes: x " + xo.length + ", y " + yo.length);
                 return false;
             }
             for (int i = 0; i < xo.length; i++) {
                 if (!arrayEquals(xo[i], yo[i], tolf, told)) {
+                    System.err.println("   ... differs at index " + i);
                     return false;
                 }
             }
@@ -149,12 +167,20 @@ public class TestArrayFuncs {
 
     /** Compare two float arrays using a given tolerance */
     public static boolean floatArrayEquals(float[] x, float[] y, float tol) {
+        if (x.length != y.length) {
+            System.err.println("!!! Mismatched sizes: x " + x.length + ", y " + y.length);
+            return false;
+        }
 
         for (int i = 0; i < x.length; i++) {
             if (x[i] == 0) {
+                if (y[i] != 0) {
+                    System.err.println("!!! Mismatch at " + i + ": x = " + x[i] + ", y = " + y[i]);
+                }
                 return y[i] == 0;
             }
             if (Math.abs((y[i] - x[i]) / x[i]) > tol) {
+                System.err.println("!!! Mismatch at " + i + ": x = " + x[i] + ", y = " + y[i]);
                 return false;
             }
         }

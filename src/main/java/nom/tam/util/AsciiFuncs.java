@@ -5,6 +5,7 @@
 package nom.tam.util;
 
 import java.nio.charset.Charset;
+import java.text.ParsePosition;
 
 /*
  * #%L
@@ -97,5 +98,64 @@ public final class AsciiFuncs {
     @Deprecated
     public static boolean isWhitespace(char c) {
         return Character.isWhitespace(c);
+    }
+
+    /**
+     * Returns an integer value contained in a string the specified position. Leading spaces will be skipped and the
+     * parsing will stop at the first non-digit character after. *
+     * 
+     * @param  s                         A string
+     * @param  pos                       the position in the string to parse an integer. The position is updated to
+     *                                       point to after the white spaces and integer component (if any).
+     * 
+     * @return                           the integer value parsed.
+     * 
+     * @throws NumberFormatException     if there is no integer value present at the position.
+     * @throws IndexOutOfBoundsException if the parse position is outside of the string bounds
+     * 
+     * @since                            1.18
+     */
+    public static int parseInteger(String s, ParsePosition pos) throws IndexOutOfBoundsException, NumberFormatException {
+        int from = pos.getIndex();
+
+        for (; from < s.length(); from++) {
+            if (!Character.isWhitespace(s.charAt(from))) {
+                break;
+            }
+        }
+
+        int to = from;
+
+        if (s.charAt(from) == '-') {
+            to++;
+        }
+
+        for (; to < s.length(); to++) {
+            if (!Character.isDigit(s.charAt(to))) {
+                break;
+            }
+        }
+
+        pos.setIndex(to);
+
+        return Integer.parseInt(s.substring(from, to));
+    }
+
+    /**
+     * Returns a character from a string, incrementing the position argument.
+     * 
+     * @param  s                         a string
+     * @param  pos                       the position of the character to return. It is incremented.
+     * 
+     * @return                           the character at the requested position
+     * 
+     * @throws IndexOutOfBoundsException if the parse position is outside of the string bounds
+     * 
+     * @since                            1.18
+     */
+    public static char extractChar(String s, ParsePosition pos) throws IndexOutOfBoundsException {
+        int i = pos.getIndex();
+        pos.setIndex(i + 1);
+        return s.charAt(i);
     }
 }

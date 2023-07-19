@@ -34,10 +34,13 @@ package nom.tam.fits;
 import java.io.Closeable;
 import java.io.IOException;
 import java.io.InputStream;
+import java.lang.reflect.Array;
 import java.net.HttpURLConnection;
 import java.net.ProtocolException;
 import java.net.URL;
 import java.net.URLConnection;
+import java.text.ParsePosition;
+import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.logging.Level;
 import java.util.logging.Logger;
@@ -49,14 +52,24 @@ import nom.tam.util.FitsEncoder;
 import nom.tam.util.FitsIO;
 import nom.tam.util.RandomAccess;
 
+import edu.umd.cs.findbugs.annotations.SuppressFBWarnings;
+
 /**
  * Static utility functions used throughout the FITS classes.
  */
 public final class FitsUtil {
 
-    private static final int BYTE_REPRESENTING_BLANK = 32;
+    /** Lowest ASCII value that can be in FITS strings */
+    static final byte BLANK_SPACE = 0x20;
 
-    private static final int BYTE_REPRESENTING_MAX_ASCII_VALUE = 126;
+    /** Highest ASCII value that can be in FITS strings */
+    static final byte MIN_ASCII_VALUE = 0x20;
+
+    /** Highest ASCII value that can be in FITS strings */
+    static final byte MAX_ASCII_VALUE = 0x7e;
+
+    /** Highest ASCII value that can be in FITS strings */
+    static final byte ASCII_NULL = 0x00;
 
     /**
      * the logger to log to.
@@ -98,32 +111,266 @@ public final class FitsUtil {
     }
 
     /**
-     * Converts a boolean array to its FITS representation as an array of bytes.
+     * Converts an array of <code>boolean</code> or {@link Boolean} values to FITS logicals (bytes containint 'T', 'F'
+     * or '\0'). The shapes and size of the resulting array matches that of the input. Values of '\0' are converted to
+     * <code>null</code> values.
      * 
-     * @return      Convert an array of booleans to bytes.
-     *
-     * @param  bool array of booleans
+     * @param  o a new array of <code>Boolean</code>
+     * 
+     * @return   and array of FITS logical values with the same size and shape as the input
+     * 
+     * @see      #bytesToBooleanObjects(Object)
+     * @see      #byteToBoolean(byte[])
+     * 
+     * @since    1.18
      */
-    static byte[] booleanToByte(boolean[] bool) {
-
-        byte[] byt = new byte[bool.length];
-        for (int i = 0; i < bool.length; i++) {
-            byt[i] = FitsEncoder.byteForBoolean(bool[i]);
+    static Object booleansToBytes(Object o) {
+        if (o == null) {
+            return FitsEncoder.byteForBoolean(null);
         }
-        return byt;
+
+        if (o instanceof Boolean) {
+            return FitsEncoder.byteForBoolean((Boolean) o);
+        }
+
+        if (o instanceof boolean[]) {
+            boolean[] bool = (boolean[]) o;
+            byte[] b = new byte[bool.length];
+            for (int i = 0; i < bool.length; i++) {
+                b[i] = FitsEncoder.byteForBoolean(bool[i]);
+            }
+            return b;
+        }
+
+        if (o instanceof Boolean[]) {
+            Boolean[] bool = (Boolean[]) o;
+            byte[] b = new byte[bool.length];
+            for (int i = 0; i < bool.length; i++) {
+                b[i] = FitsEncoder.byteForBoolean(bool[i]);
+            }
+            return b;
+        }
+
+        if (o instanceof Object[]) {
+            Object[] array = (Object[]) o;
+            Object[] b = null;
+
+            for (int i = 0; i < array.length; i++) {
+                Object e = booleansToBytes(array[i]);
+                if (b == null) {
+                    b = (Object[]) Array.newInstance(e.getClass(), array.length);
+                }
+                b[i] = e;
+            }
+
+            return b;
+        }
+
+        throw new IllegalArgumentException("Not boolean values: " + o.getClass().getName());
     }
 
     /**
-     * Converts a FITS byte sequence to a Java string array
+     * Converts an array of FITS logicals (bytes containint 'T', 'F' or '\0') to an array of {@link Boolean}. The shapes
+     * and size of the resulting array matches that of the input. Values of '\0' are converted to <code>null</code>
+     * values.
      * 
-     * @return        Convert bytes to Strings.
-     *
-     * @param  bytes  byte array to convert
-     * @param  maxLen the max string length
+     * @param  bytes and array of FITS logical values
+     * 
+     * @return       a new array of <code>Boolean</code> with the same size and shape as the input
+     * 
+     * @see          #booleansToBytes(Object)
+     * 
+     * @since        1.18
      */
-    public static String[] byteArrayToStrings(byte[] bytes, int maxLen) {
+    static Object bytesToBooleanObjects(Object bytes) {
+        if (bytes instanceof Byte) {
+            return FitsDecoder.booleanObjectFor(((Number) bytes).intValue());
+        }
+
+        if (bytes instanceof byte[]) {
+            byte[] b = (byte[]) bytes;
+            Boolean[] bool = new Boolean[b.length];
+            for (int i = 0; i < b.length; i++) {
+                bool[i] = FitsDecoder.booleanObjectFor(b[i]);
+            }
+            return bool;
+        }
+
+        if (bytes instanceof Object[]) {
+            Object[] array = (Object[]) bytes;
+            Object[] bool = null;
+
+            for (int i = 0; i < array.length; i++) {
+                Object e = bytesToBooleanObjects(array[i]);
+                if (bool == null) {
+                    bool = (Object[]) Array.newInstance(e.getClass(), array.length);
+                }
+                bool[i] = e;
+            }
+
+            return bool;
+        }
+
+        throw new IllegalArgumentException("Cannot convert to boolean values: " + bytes.getClass().getName());
+    }
+
+    /**
+     * Converts an array of booleans into the bits packed into a block of bytes.
+     * 
+     * @param  bits an array of bits
+     * 
+     * @return      a new byte array containing the packed bits (in big-endian order)
+     * 
+     * @see         #bytesToBits(Object)
+     * 
+     * @since       1.18
+     */
+    static byte[] bitsToBytes(boolean[] bits) throws IllegalArgumentException {
+        byte[] bytes = new byte[(bits.length + Byte.SIZE - 1) / Byte.SIZE];
+        for (int i = 0; i < bits.length; i++) {
+            if (bits[i]) {
+                int pos = Byte.SIZE - 1 - i % Byte.SIZE;
+                bytes[i / Byte.SIZE] |= 1 << pos;
+            }
+        }
+
+        return bytes;
+    }
+
+    /**
+     * Converts an array of bit segments into the bits packed into a blocks of bytes.
+     * 
+     * @param  bits an array of bits
+     * @param  l    the number of bits in a segment that are to be kept together
+     * 
+     * @return      a new byte array containing the packed bits (in big-endian order)
+     * 
+     * @see         #bytesToBits(Object)
+     * 
+     * @since       1.18
+     */
+    static byte[] bitsToBytes(boolean[] bits, int l) throws IllegalArgumentException {
+        int n = bits.length / l; // Number of bit segments
+        int bl = (l + Byte.SIZE - 1) / Byte.SIZE; // Number of bytes per segment
+        byte[] bytes = new byte[n * bl]; // The converted byte array
+
+        for (int i = 0; i < n; i++) {
+            int off = i * l; // bit offset
+            int boff = i * bl; // byte offset
+
+            for (int j = 0; j < l; j++) {
+                if (bits[off + j]) {
+                    int pos = Byte.SIZE - 1 - j % Byte.SIZE;
+                    bytes[boff + (j / Byte.SIZE)] |= 1 << pos;
+                }
+            }
+        }
+
+        return bytes;
+    }
+
+    /**
+     * Converts the bits packed into a block of bytes into a boolean array.
+     * 
+     * @param  bytes the byte array containing the packed bits (in big-endian order)
+     * @param  count the number of bits to extract
+     * 
+     * @return       an array of boolean with the separated bit values.
+     * 
+     * @see          #bitsToBytes(Object)
+     * 
+     * @since        1.18
+     */
+    static boolean[] bytesToBits(byte[] bytes, int count) {
+        boolean[] bits = new boolean[count];
+
+        for (int i = 0; i < bits.length; i++) {
+            int pos = Byte.SIZE - 1 - i % Byte.SIZE;
+            bits[i] = ((bytes[i / Byte.SIZE] >>> pos) & 1) == 1;
+        }
+
+        return bits;
+    }
+
+    /**
+     * Extracts a string from a byte array at the specified offset, maximal length and termination byte. This method
+     * trims trailing spaces but not leading ones.
+     * 
+     * @param  bytes      an array of ASCII bytes
+     * @param  offset     the array index at which the string begins
+     * @param  maxLen     the maximum number of bytes to extract from the position
+     * @param  terminator the byte value that terminates the string, such as 0x00.
+     * 
+     * @return            a new String with the relevant bytes, with length not exceeding the specified limit.
+     * 
+     * @since             1.18
+     */
+    static String extractString(byte[] bytes, ParsePosition pos, int maxLen, byte terminator) {
+        int offset = pos.getIndex();
+
+        if (offset >= bytes.length) {
+            return "";
+        }
+
+        if (offset + maxLen > bytes.length) {
+            maxLen = bytes.length - offset;
+        }
+
+        int end = -1;
+
+        // Check up to the specified length or termination
+        for (int i = 0; i < maxLen; i++) {
+            byte b = bytes[offset + i];
+            pos.setIndex(offset + i);
+
+            if (b == terminator || b == 0) {
+                break;
+            }
+
+            if (b != BLANK_SPACE) {
+                end = i;
+            }
+        }
+
+        pos.setIndex(pos.getIndex() + 1);
+
+        byte[] sanitized = new byte[end + 1];
         boolean checking = FitsFactory.getCheckAsciiStrings();
 
+        // Up to the specified length or terminator
+        for (int i = 0; i <= end; i++) {
+            byte b = bytes[offset + i];
+
+            if (checking && (b < BLANK_SPACE || b > MAX_ASCII_VALUE)) {
+                if (!wroteCheckingError) {
+                    LOG.warning("WARNING! Converting invalid table string character[s] to spaces.");
+                    wroteCheckingError = true;
+                }
+                b = BLANK_SPACE;
+            }
+
+            sanitized[i] = b;
+        }
+
+        return AsciiFuncs.asciiString(sanitized);
+    }
+
+    /**
+     * Converts a FITS byte sequence to a Java string array, triming spaces at the heads and tails of each element.
+     * While FITS typically considers leading spaces significant, this library has been removing them from regularly
+     * shaped string arrays for a very long time, apparently based on request by users then... Even though it seems like
+     * a bad choice, since users could always call {@link String#trim()} if they needed to, we cannot recover the
+     * leading spaces once the string was trimmed. At this point we have no real choice but to continue the tradition,
+     * lest we want to break exising applications, which may rely on this behavior.
+     * 
+     * @return            Convert bytes to Strings, removing leading and trailing spaces from each entry.
+     *
+     * @param      bytes  byte array to convert
+     * @param      maxLen the max string length
+     * 
+     * @deprecated        (<i>for internal use</i>) No longer used internally, will be removed in the future.
+     */
+    public static String[] byteArrayToStrings(byte[] bytes, int maxLen) {
         // Note that if a String in a binary table contains an internal 0,
         // the FITS standard says that it is to be considered as terminating
         // the string at that point, so that software reading the
@@ -132,64 +379,7 @@ public final class FitsUtil {
 
         String[] res = new String[bytes.length / maxLen];
         for (int i = 0; i < res.length; i++) {
-
-            int start = i * maxLen;
-
-            // AK: The FITS standard states that a 0 byte terminates the
-            // string before the fixed length, and characters beyond it
-            // are undefined. So, we first check where the string ends.
-            int l = 0;
-            for (; l < maxLen; l++) {
-                if (bytes[l] == 0) {
-                    break;
-                }
-            }
-            int end = start + l;
-
-            // Pre-trim the string to avoid keeping memory
-            // hanging around. (Suggested by J.C. Segovia, ESA).
-
-            // Note that the FITS standard does not mandate
-            // that we should be trimming the string at all, but
-            // this seems to best meet the desires of the community.
-            for (; start < end; start++) {
-                if (bytes[start] != BYTE_REPRESENTING_BLANK) {
-                    break; // Skip only spaces.
-                }
-            }
-
-            for (; end > start; end--) {
-                if (bytes[end - 1] != BYTE_REPRESENTING_BLANK) {
-                    break;
-                }
-            }
-
-            // For FITS binary tables, 0 values are supposed
-            // to terminate strings, a la C. [They shouldn't appear in
-            // any other context.]
-            // Other non-printing ASCII characters
-            // should always be an error which we can check for
-            // if the user requests.
-
-            // The lack of handling of null bytes was noted by Laurent Bourges.
-            boolean errFound = false;
-            for (int j = start; j < end; j++) {
-
-                if (bytes[j] == 0) {
-                    end = j;
-                    break;
-                }
-                if (checking && (bytes[j] < BYTE_REPRESENTING_BLANK || bytes[j] > BYTE_REPRESENTING_MAX_ASCII_VALUE)) {
-                    errFound = true;
-                    bytes[j] = BYTE_REPRESENTING_BLANK;
-                }
-            }
-            res[i] = AsciiFuncs.asciiString(bytes, start, end - start);
-            if (errFound && !FitsUtil.wroteCheckingError) {
-                LOG.log(Level.SEVERE, "Warning: Invalid ASCII character[s] detected in string: " + res[i]
-                        + " Converted to space[s].  Any subsequent invalid characters will be converted silently");
-                FitsUtil.wroteCheckingError = true;
-            }
+            res[i] = extractString(bytes, new ParsePosition(i * maxLen), maxLen, (byte) '\0').trim();
         }
         return res;
     }
@@ -214,11 +404,59 @@ public final class FitsUtil {
     }
 
     /**
+     * Parses a logical value from a string, using loose conversion. The string may contain either 'true'/'false' or
+     * 'T'/'F' (case insensitive), or else a zero (<code>false</code>) or non-zero number value (<code>true</code>). All
+     * other strings will return <code>null</code> corresponding to an undefined logical value.
+     * 
+     * @param  s A string
+     * 
+     * @return   <code>true</code>, <code>false</code>, or <code>null</code> (if undefined).
+     */
+    @SuppressFBWarnings(value = "NP_BOOLEAN_RETURN_NULL", justification = "null has specific meaning here")
+    static Boolean parseLogical(String s) {
+        if (s == null) {
+            return null;
+        }
+
+        s = s.trim();
+
+        if (s.isEmpty()) {
+            return null;
+        }
+        if (s.equalsIgnoreCase("true") || s.equalsIgnoreCase("t")) {
+            return true;
+        }
+        if (s.equalsIgnoreCase("false") || s.equalsIgnoreCase("f")) {
+            return false;
+        }
+
+        try {
+            long l = Long.parseLong(s);
+            return l != 0;
+        } catch (NumberFormatException e) {
+            // Nothing to do....
+        }
+
+        try {
+            double d = Double.parseDouble(s);
+            if (!Double.isNaN(d)) {
+                return d != 0;
+            }
+        } catch (NumberFormatException e) {
+            // Nothing to do....
+        }
+
+        return null;
+    }
+
+    /**
      * Gets the file offset for the given IO resource.
      * 
-     * @return   The offset from the beginning of file (if random accessible), or -1 otherwise.
+     * @return       The offset from the beginning of file (if random accessible), or -1 otherwise.
      *
-     * @param  o the stream to get the position
+     * @param      o the stream to get the position
+     * 
+     * @deprecated   (<i>for internal use</i>) Visibility may be reduced to the package level in the future.
      */
     public static long findOffset(Closeable o) {
         if (o instanceof RandomAccess) {
@@ -255,16 +493,15 @@ public final class FitsUtil {
     }
 
     /**
-     * Returns the maximum String length in an array of Strings.
+     * Returns the maximum string length in an array.
      * 
-     * @return               Get the maximum length of a String in a String array.
+     * @return             the maximum length of string in an array.
      *
-     * @param  strings       array of strings to check
-     *
-     * @throws FitsException if the operation failed
+     * @param      strings array of strings to check
+     * 
+     * @deprecated         (<i>for internal use</i>) No longer used internally, may be removed in the future.
      */
-    public static int maxLength(String[] strings) throws FitsException {
-
+    public static int maxLength(String[] strings) {
         int max = 0;
         for (String element : strings) {
             if (element != null && element.length() > max) {
@@ -275,15 +512,81 @@ public final class FitsUtil {
     }
 
     /**
+     * Returns the maximum string length in an array of strings. Non-string elements nd null values are ignored.
+     * 
+     * @return   the maximum length of strings in an array.
+     *
+     * @param  o array of strings to check
+     */
+    static int maxStringLength(Object o) {
+        if (o instanceof String) {
+            return ((String) o).length();
+        }
+
+        int max = 0;
+
+        if (o instanceof Object[]) {
+            for (Object e : (Object[]) o) {
+                if (e == null) {
+                    continue;
+                }
+
+                int l = maxStringLength(e);
+                if (l > max) {
+                    max = l;
+                }
+            }
+        }
+
+        return max;
+    }
+
+    /**
+     * Returns the minimum string length in an array of strings. Non-string elements nd null values are ignored.
+     * 
+     * @return   the minimum length of strings in an array.
+     *
+     * @param  o strings array of strings to check
+     */
+    static int minStringLength(Object o) {
+        if (o instanceof String) {
+            return ((String) o).length();
+        }
+
+        int min = -1;
+
+        if (o instanceof Object[]) {
+            for (Object e : (Object[]) o) {
+                if (e == null) {
+                    return 0;
+                }
+
+                int l = minStringLength(e);
+                if (l == 0) {
+                    return 0;
+                }
+
+                if (min < 0 || l < min) {
+                    min = l;
+                }
+            }
+        }
+
+        return min < 0 ? 0 : min;
+    }
+
+    /**
      * Adds the necessary amount of padding needed to complete the last FITS block.
      *
-     * @param  stream        stream to pad
-     * @param  size          the current size of the stream (total number of bytes written to it since the beginning of
-     *                           the FITS).
+     * @param      stream        stream to pad
+     * @param      size          the current size of the stream (total number of bytes written to it since the beginning
+     *                               of the FITS).
      *
-     * @throws FitsException if the operation failed
+     * @throws     FitsException if the operation failed
      * 
-     * @see                  #pad(ArrayDataOutput, long, byte)
+     * @see                      #pad(ArrayDataOutput, long, byte)
+     * 
+     * @deprecated               (<i>for internal use</i>) Visibility may be reduced to package level in the future
      */
     public static void pad(ArrayDataOutput stream, long size) throws FitsException {
         pad(stream, size, (byte) 0);
@@ -293,14 +596,16 @@ public final class FitsUtil {
      * Adds the necessary amount of padding needed to complete the last FITS block., usign the designated padding byte
      * value.
      *
-     * @param  stream        stream to pad
-     * @param  size          the current size of the stream (total number of bytes written to it since the beginning of
-     *                           the FITS).
-     * @param  fill          the byte value to use for the padding
+     * @param      stream        stream to pad
+     * @param      size          the current size of the stream (total number of bytes written to it since the beginning
+     *                               of the FITS).
+     * @param      fill          the byte value to use for the padding
      *
-     * @throws FitsException if the operation failed
+     * @throws     FitsException if the operation failed
      * 
-     * @see                  #pad(ArrayDataOutput, long)
+     * @see                      #pad(ArrayDataOutput, long)
+     * 
+     * @deprecated               (<i>for internal use</i>) Visibility may be reduced to private in the future
      */
     public static void pad(ArrayDataOutput stream, long size, byte fill) throws FitsException {
         int len = padding(size);
@@ -383,31 +688,169 @@ public final class FitsUtil {
     }
 
     /**
-     * Convert an array of Strings to bytes.
+     * Converts a string to ASCII bytes in the specified array, padding (with 0x00) or truncating as necessary to
+     * provide the expected length at the specified arrya offset.
+     * 
+     * @param s      a string
+     * @param res    the byte array into which to extract the ASCII bytes
+     * @param offset array index in the byte array at which the extracted bytes should begin
+     * @param len    the maximum number of bytes to extract, truncating or padding (with 0x00) as needed.
+     * @param pad    the byte value to use to pad the remainder of the string
+     */
+    private static void stringToBytes(String s, byte[] res, int offset, int len, byte pad) {
+        int l = 0;
+
+        if (s != null) {
+            byte[] b = AsciiFuncs.getBytes(s);
+            l = Math.min(b.length, len);
+            if (l > 0) {
+                System.arraycopy(b, 0, res, offset, l);
+            }
+        }
+
+        // Terminate and pad as necessary
+        if (l < len) {
+            Arrays.fill(res, offset + l, offset + len, pad);
+        }
+    }
+
+    /**
+     * Converts a string to an array of ASCII bytes, padding (with 0x00) or truncating as necessary to provide the
+     * expected length.
+     * 
+     * @param  s   a string
+     * @param  len the number of bytes for the return value, also the maximum number of bytes that are extracted from
+     *                 the string
+     * 
+     * @return     a byte array of the specified length containing the truncated or padded string value.
+     * 
+     * @see        #stringsToByteArray(String[], int, byte) q
+     * 
+     * @since      1.18
+     */
+    static byte[] stringToByteArray(String s, int len) {
+        byte[] res = new byte[len];
+        stringToBytes(s, res, 0, len, BLANK_SPACE);
+        return res;
+    }
+
+    /**
+     * Convert an array of Strings to bytes. padding (with 0x00) or truncating as necessary to provide the expected
+     * length.
+     *
+     * @return                 the resulting bytes
+     *
+     * @param      stringArray the array with Strings
+     * @param      len         the number of bytes used for each string element. The string will be truncated ot padded
+     *                             as necessary to fit into that size.
+     * 
+     * @deprecated             (<i>for internal use</i>) Visibility may be reduced to package level in the future.
+     */
+    public static byte[] stringsToByteArray(String[] stringArray, int len) {
+        return stringsToByteArray(stringArray, len, BLANK_SPACE);
+    }
+
+    /**
+     * Convert an array of Strings to bytes. padding (with 0x00) or truncating as necessary to provide the expected
+     * length.
      *
      * @return             the resulting bytes
      *
      * @param  stringArray the array with Strings
-     * @param  maxLen      the max length (in bytes) of every String
+     * @param  len         the number of bytes used for each string element. The string will be truncated ot padded as
+     *                         necessary to fit into that size.
+     * @param  pad         the byte value to use for padding strings as necessary to the requisite length.
      */
-    public static byte[] stringsToByteArray(String[] stringArray, int maxLen) {
-        byte[] res = new byte[stringArray.length * maxLen];
+    static byte[] stringsToByteArray(String[] stringArray, int len, byte pad) {
+        byte[] res = new byte[stringArray.length * len];
         for (int i = 0; i < stringArray.length; i++) {
-            byte[] bstr;
-            if (stringArray[i] == null) {
-                bstr = new byte[0];
-            } else {
-                bstr = AsciiFuncs.getBytes(stringArray[i]);
-            }
-            int cnt = bstr.length;
-            if (cnt > maxLen) {
-                cnt = maxLen;
-            }
-            System.arraycopy(bstr, 0, res, i * maxLen, cnt);
-            for (int j = cnt; j < maxLen; j++) {
-                res[i * maxLen + j] = (byte) ' ';
-            }
+            stringToBytes(stringArray[i], res, i * len, len, pad);
         }
         return res;
     }
+
+    /**
+     * Convert an array of strings to a delimited sequence of bytes, e.g. for sequentialized variable-sized storage of
+     * multiple string elements. The last string component is terminated by an ASCII NUL (0x00).
+     *
+     * @return        the resulting bytes
+     *
+     * @param  array  the array with Strings
+     * @param  maxlen the maximum string length or -1 of unlimited.
+     * @param  delim  the byte value that delimits string components
+     * 
+     * @see           #stringToByteArray(String, int)
+     * 
+     * @since         1.18
+     */
+    static byte[] stringsToDelimitedBytes(String[] array, int maxlen, byte delim) {
+        int l = array.length - 1;
+        for (String s : array) {
+            l += (s == null) ? 1 : Math.max(s.length() + 1, maxlen);
+        }
+        byte[] b = new byte[l];
+        l = 0;
+        for (String s : array) {
+            if (s != null) {
+                stringToBytes(s, b, l, s.length(), BLANK_SPACE);
+                l += s.length();
+            }
+            b[l++] = delim;
+        }
+        b[l - 1] = (byte) 0;
+        return b;
+    }
+
+    /**
+     * Extracts strings from a packed delimited byte sequence. Strings start either immediately after the prior string
+     * reached its maximum length, or else immediately after the specified delimiter byte value.
+     * 
+     * @param  bytes  bytes containing the packed strings
+     * @param  maxlen the maximum length of individual string components
+     * @param  delim  the byte value that delimits strings shorter than the maximum length
+     * 
+     * @return        An array of the extracted strings
+     *
+     * @see           #stringsToDelimitedBytes(String[], int, byte)
+     * 
+     * @since         1.18
+     */
+    private static String[] delimitedBytesToStrings(byte[] bytes, byte delim) {
+        ArrayList<String> s = new ArrayList<>();
+        ParsePosition pos = new ParsePosition(0);
+        while (pos.getIndex() < bytes.length) {
+            s.add(extractString(bytes, pos, bytes.length, delim));
+        }
+        String[] a = new String[s.size()];
+        s.toArray(a);
+        return a;
+    }
+
+    /**
+     * Extracts strings from a packed delimited byte sequence. Strings start either immediately after the prior string
+     * reached its maximum length, or else immediately after the specified delimiter byte value.
+     * 
+     * @param  bytes  bytes containing the packed strings
+     * @param  maxlen the maximum length of individual string components
+     * @param  delim  the byte value that delimits strings shorter than the maximum length
+     * 
+     * @return        An array of the extracted strings
+     *
+     * @see           #stringsToDelimitedBytes(String[], int, byte)
+     * 
+     * @since         1.18
+     */
+    static String[] delimitedBytesToStrings(byte[] bytes, int maxlen, byte delim) {
+        if (maxlen <= 0) {
+            return delimitedBytesToStrings(bytes, delim);
+        }
+
+        String[] res = new String[(bytes.length + maxlen - 1) / maxlen];
+        ParsePosition pos = new ParsePosition(0);
+        for (int i = 0; i < res.length; i++) {
+            res[i] = extractString(bytes, pos, maxlen, delim);
+        }
+        return res;
+    }
+
 }

@@ -36,9 +36,9 @@ import nom.tam.fits.utilities.FitsLineAppender;
  */
 
 /**
- * HIERARCH keyword formatter built around the ESO convention. This formatter can format HIERARCH keywords that conform
- * to hte ESO convention, but takes a more liberal approach by supporting the full range of ASCII characters allowed in
- * FITS headers, including the option to preserve case. (The ESO convention is upper-case only).
+ * HIERARCH keyword formatter based on the ESO convention. This formatter writes HIERARCH keywords that conform to the
+ * ESO convention, but takes a more liberal approach by supporting the full range of ASCII characters allowed in FITS
+ * headers, including the option to preserve case. (The ESO convention is upper-case only).
  * 
  * @see nom.tam.fits.FitsFactory#setUseHierarch(boolean)
  */

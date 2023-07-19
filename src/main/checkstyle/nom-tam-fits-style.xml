@@ -36,7 +36,7 @@
 	<!-- See http://checkstyle.sf.net/config_sizes.html -->
 	<module name="FileLength">
 		<!-- Don't hold back on the javadoc! -->
-		<property name="max" value="4000"/>
+		<property name="max" value="5000"/>
 	</module>
 	
 	<!-- Checks for whitespace -->

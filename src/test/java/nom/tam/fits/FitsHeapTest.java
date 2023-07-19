@@ -150,6 +150,16 @@ public class FitsHeapTest {
         heap.getData(0, new float[1]);
     }
 
+    @Test
+    public void testHeapPutData() throws Exception {
+        FitsHeap heap = new FitsHeap(0);
+        // Trying to put an object on the heap that does not belong...
+        heap.putData(new int[] {1, 2, 3});
+        int[] got = new int[3];
+        heap.getData(0, got);
+        Assert.assertArrayEquals(new int[] {1, 2, 3}, got);
+    }
+
     @Test(expected = FitsException.class)
     public void testHeapPutDataEOF() throws Exception {
         FitsHeap heap = new FitsHeap(3);

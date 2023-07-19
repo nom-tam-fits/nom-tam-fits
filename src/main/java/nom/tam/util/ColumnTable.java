@@ -31,12 +31,11 @@ package nom.tam.util;
  * #L%
  */
 
+import java.io.EOFException;
 import java.io.IOException;
 import java.lang.reflect.Array;
+import java.util.ArrayList;
 import java.util.Arrays;
-import java.util.Collections;
-import java.util.HashMap;
-import java.util.Map;
 
 import nom.tam.util.type.ElementType;
 
@@ -44,287 +43,46 @@ import edu.umd.cs.findbugs.annotations.SuppressFBWarnings;
 
 /**
  * <p>
- * (<i>for internal use</i>) Table data that is stored (internally) in column major format. A data table is
- * conventionally considered to consist of rows and columns, where the structure within each column is constant, but
- * different columns may have different structures. I.e., structurally columns may differ but rows are identical.
- * Typically tabular data is usually stored in row order which can make it extremely difficult to access efficiently
- * using Java. This class provides efficient access to data which is stored in row order and allows users to get and set
- * the elements of the table. The table can consist only of arrays of primitive types. Data stored in column order can
- * be efficiently read and written using the BufferedDataXputStream classes. The table is represented entirely as a set
- * of one-dimensional primitive arrays. For a given column, a row consists of some number of contiguous elements of the
- * array. Each column is required to have the same number of rows. Information regarding the dimensionality of columns
- * and possible data pointers is retained for use by clients which can understand them.
+ * Table data that is stored (internally) in column major format. This class has been completely re-written by A. Kovacs
+ * for 1.18. We keep the old API for compatibility, but make some practical additions to it.
  * </p>
+ * Note that while column tables are fine to use for accessing data from FITS ASCII tables, they are generally not
+ * suitable for user-access of binary table data, because the column tables contain data in the format that is used for
+ * storing values in the regular FITS table in the file. That is:
+ * <ul>
+ * <li>logical values are represented by <code>byte</code> entries of 'T', 'F' or '0'.</li>
+ * <li>String values are represented as ASCII arrays bytes.</li>
+ * <li>Complex values are represented by <code>float[2]</code> or <code>double[2]</code>.</li>
+ * <li>Variable length columns of all types are represented by heap pointers of <code>int[2]</code> or
+ * <code>long[2]</code>.</li>
+ * </ul>
  *
- * @param <T> the generic type of extra state information associated with this table.
+ * @param <T> dummy generic type parameter that is no longer used. We'll stick to it a a memento of the bad design
+ *                decisions of the past...
  */
-public class ColumnTable<T> implements DataTable {
+public class ColumnTable<T> implements DataTable, Cloneable {
 
-    private static final int MAX_COLUMN_INDEXES = 256;
-
-    private static final int MAX_TYPE_VALUE = MAX_COLUMN_INDEXES;
-
-    private interface PointerAccess<X extends Object> {
-
-        void set(ColumnTable<?> table, X array);
-
-        X get(ColumnTable<?> table);
-
-        void write(ColumnTable<?> table, ArrayDataOutput os, int index, int arrOffset, int size) throws IOException;
-
-        void read(ColumnTable<?> table, ArrayDataInput is, int index, int arrOffset, int size) throws IOException;
-
-    }
-
-    private static final Map<ElementType<?>, PointerAccess<?>> POINTER_ACCESSORS;
-
-    private static final PointerAccess<?>[] POINTER_ACCESSORS_BY_TYPE = new PointerAccess<?>[MAX_TYPE_VALUE];
-    static {
-        POINTER_ACCESSORS_BY_TYPE[ElementType.BYTE.type()] = new PointerAccess<byte[][]>() {
-
-            @Override
-            public byte[][] get(ColumnTable<?> table) {
-                return table.bytePointers;
-            }
-
-            @Override
-            public void set(ColumnTable<?> table, byte[][] array) {
-                table.bytePointers = array;
-            }
-
-            @Override
-            public void write(ColumnTable<?> table, ArrayDataOutput os, int index, int arrOffset, int size)
-                    throws IOException {
-                os.write(table.bytePointers[index], arrOffset, size);
-            }
-
-            @Override
-            @SuppressFBWarnings(value = "RR_NOT_CHECKED", justification = "this read will never return less than the requested length")
-            public void read(ColumnTable<?> table, ArrayDataInput is, int index, int arrOffset, int size)
-                    throws IOException {
-                is.read(table.bytePointers[index], arrOffset, size);
-            }
-        };
-        POINTER_ACCESSORS_BY_TYPE[ElementType.BOOLEAN.type()] = new PointerAccess<boolean[][]>() {
-
-            @Override
-            public boolean[][] get(ColumnTable<?> table) {
-                return table.booleanPointers;
-            }
-
-            @Override
-            public void set(ColumnTable<?> table, boolean[][] array) {
-                table.booleanPointers = array;
-            }
-
-            @Override
-            public void write(ColumnTable<?> table, ArrayDataOutput os, int index, int arrOffset, int size)
-                    throws IOException {
-                os.write(table.booleanPointers[index], arrOffset, size);
-            }
-
-            @Override
-            public void read(ColumnTable<?> table, ArrayDataInput is, int index, int arrOffset, int size)
-                    throws IOException {
-                is.read(table.booleanPointers[index], arrOffset, size);
-            }
-        };
-        POINTER_ACCESSORS_BY_TYPE[ElementType.SHORT.type()] = new PointerAccess<short[][]>() {
-
-            @Override
-            public short[][] get(ColumnTable<?> table) {
-                return table.shortPointers;
-            }
-
-            @Override
-            public void set(ColumnTable<?> table, short[][] array) {
-                table.shortPointers = array;
-            }
-
-            @Override
-            public void write(ColumnTable<?> table, ArrayDataOutput os, int index, int arrOffset, int size)
-                    throws IOException {
-                os.write(table.shortPointers[index], arrOffset, size);
-            }
-
-            @Override
-            public void read(ColumnTable<?> table, ArrayDataInput is, int index, int arrOffset, int size)
-                    throws IOException {
-                is.read(table.shortPointers[index], arrOffset, size);
-            }
-        };
-        POINTER_ACCESSORS_BY_TYPE[ElementType.CHAR.type()] = new PointerAccess<char[][]>() {
-
-            @Override
-            public char[][] get(ColumnTable<?> table) {
-                return table.charPointers;
-            }
-
-            @Override
-            public void set(ColumnTable<?> table, char[][] array) {
-                table.charPointers = array;
-            }
-
-            @Override
-            public void write(ColumnTable<?> table, ArrayDataOutput os, int index, int arrOffset, int size)
-                    throws IOException {
-                os.write(table.charPointers[index], arrOffset, size);
-            }
-
-            @Override
-            @SuppressFBWarnings(value = "RR_NOT_CHECKED", justification = "this read will never return less than the requested length")
-            public void read(ColumnTable<?> table, ArrayDataInput is, int index, int arrOffset, int size)
-                    throws IOException {
-                is.read(table.charPointers[index], arrOffset, size);
-            }
-        };
-        POINTER_ACCESSORS_BY_TYPE[ElementType.INT.type()] = new PointerAccess<int[][]>() {
-
-            @Override
-            public int[][] get(ColumnTable<?> table) {
-                return table.intPointers;
-            }
-
-            @Override
-            public void set(ColumnTable<?> table, int[][] array) {
-                table.intPointers = array;
-            }
-
-            @Override
-            public void write(ColumnTable<?> table, ArrayDataOutput os, int index, int arrOffset, int size)
-                    throws IOException {
-                os.write(table.intPointers[index], arrOffset, size);
-            }
-
-            @Override
-            public void read(ColumnTable<?> table, ArrayDataInput is, int index, int arrOffset, int size)
-                    throws IOException {
-                is.read(table.intPointers[index], arrOffset, size);
-            }
-        };
-        POINTER_ACCESSORS_BY_TYPE[ElementType.LONG.type()] = new PointerAccess<long[][]>() {
-
-            @Override
-            public long[][] get(ColumnTable<?> table) {
-                return table.longPointers;
-            }
-
-            @Override
-            public void set(ColumnTable<?> table, long[][] array) {
-                table.longPointers = array;
-            }
-
-            @Override
-            public void write(ColumnTable<?> table, ArrayDataOutput os, int index, int arrOffset, int size)
-                    throws IOException {
-                os.write(table.longPointers[index], arrOffset, size);
-            }
-
-            @Override
-            public void read(ColumnTable<?> table, ArrayDataInput is, int index, int arrOffset, int size)
-                    throws IOException {
-                is.read(table.longPointers[index], arrOffset, size);
-            }
-        };
-        POINTER_ACCESSORS_BY_TYPE[ElementType.FLOAT.type()] = new PointerAccess<float[][]>() {
-
-            @Override
-            public float[][] get(ColumnTable<?> table) {
-                return table.floatPointers;
-            }
-
-            @Override
-            public void set(ColumnTable<?> table, float[][] array) {
-                table.floatPointers = array;
-            }
-
-            @Override
-            public void write(ColumnTable<?> table, ArrayDataOutput os, int index, int arrOffset, int size)
-                    throws IOException {
-                os.write(table.floatPointers[index], arrOffset, size);
-            }
-
-            @Override
-            public void read(ColumnTable<?> table, ArrayDataInput is, int index, int arrOffset, int size)
-                    throws IOException {
-                is.read(table.floatPointers[index], arrOffset, size);
-            }
-        };
-        POINTER_ACCESSORS_BY_TYPE[ElementType.DOUBLE.type()] = new PointerAccess<double[][]>() {
-
-            @Override
-            public double[][] get(ColumnTable<?> table) {
-                return table.doublePointers;
-            }
-
-            @Override
-            public void set(ColumnTable<?> table, double[][] array) {
-                table.doublePointers = array;
-            }
-
-            @Override
-            public void write(ColumnTable<?> table, ArrayDataOutput os, int index, int arrOffset, int size)
-                    throws IOException {
-                os.write(table.doublePointers[index], arrOffset, size);
-            }
-
-            @Override
-            public void read(ColumnTable<?> table, ArrayDataInput is, int index, int arrOffset, int size)
-                    throws IOException {
-                is.read(table.doublePointers[index], arrOffset, size);
-            }
-        };
-        Map<ElementType<?>, PointerAccess<?>> pointerAccess = new HashMap<>();
-        pointerAccess.put(ElementType.BYTE, POINTER_ACCESSORS_BY_TYPE[ElementType.BYTE.type()]);
-        pointerAccess.put(ElementType.BOOLEAN, POINTER_ACCESSORS_BY_TYPE[ElementType.BOOLEAN.type()]);
-        pointerAccess.put(ElementType.CHAR, POINTER_ACCESSORS_BY_TYPE[ElementType.CHAR.type()]);
-        pointerAccess.put(ElementType.SHORT, POINTER_ACCESSORS_BY_TYPE[ElementType.SHORT.type()]);
-        pointerAccess.put(ElementType.INT, POINTER_ACCESSORS_BY_TYPE[ElementType.INT.type()]);
-        pointerAccess.put(ElementType.LONG, POINTER_ACCESSORS_BY_TYPE[ElementType.LONG.type()]);
-        pointerAccess.put(ElementType.FLOAT, POINTER_ACCESSORS_BY_TYPE[ElementType.FLOAT.type()]);
-        pointerAccess.put(ElementType.DOUBLE, POINTER_ACCESSORS_BY_TYPE[ElementType.DOUBLE.type()]);
-        POINTER_ACCESSORS = Collections.unmodifiableMap(pointerAccess);
-    }
-
-    /** The columns to be read/written */
-    private Object[] arrays;
-
-    /** The number of elements in a row for each column */
-    private int[] sizes;
+    /** A list of columns contained in this table */
+    private ArrayList<Column<?>> columns = new ArrayList<>();
 
     /** The number of rows */
-    private int nrow;
+    private int nrow = 0;
 
-    /**
-     * The base type of each row (using the second character of the [x class names of the arrays.
-     */
-    private char[] types;
-
-    private Class<?>[] bases;
-
-    // The following arrays are used to avoid having to check
-    // casts during the I/O loops.
-    // They point to elements of arrays.
-    private byte[][] bytePointers;
-
-    private short[][] shortPointers;
-
-    private int[][] intPointers;
-
-    private long[][] longPointers;
-
-    private float[][] floatPointers;
-
-    private double[][] doublePointers;
-
-    private char[][] charPointers;
-
-    private boolean[][] booleanPointers;
+    /** The smallest dynamic allocation when addig / deleting rows */
+    private static final int MIN_CAPACITY = 16;
 
     /**
      * Allow the client to provide opaque data.
      */
     private T extraState;
+
+    /**
+     * Creates an empty column table.
+     * 
+     * @since 1.18
+     */
+    public ColumnTable() {
+    }
 
     /**
      * Create the object after checking consistency.
@@ -335,182 +93,349 @@ public class ColumnTable<T> implements DataTable {
      * @throws TableException if the structure of the columns is not consistent
      */
     public ColumnTable(Object[] arrays, int[] sizes) throws TableException {
-        setup(arrays, sizes);
+        for (int i = 0; i < arrays.length; i++) {
+            addColumn(arrays[i], sizes[i]);
+        }
     }
 
     /**
-     * Add a column .
+     * Checks if the table is empty (contains no data and no column definitions)
+     * 
+     * @return <code>true</code> if the table has no columns defined, otherwise <code>false</code>
+     * 
+     * @since  1.18
+     * 
+     * @see    #clear()
+     * @see    #deleteAllRows()
+     */
+    public final boolean isEmpty() {
+        return columns.isEmpty();
+    }
+
+    /**
+     * Clears the table, discarding all columns.
+     * 
+     * @see   #deleteAllRows()
+     * 
+     * @since 1.18
+     */
+    public void clear() {
+        columns.clear();
+        nrow = 0;
+    }
+
+    /**
+     * Makes sure that the table is expanded to hold up to the specified number of rows without having to grow
+     * dynamically. Typically it not necessary when adding new rows to the table, as the automatic dynamic allocation is
+     * quite efficient, but if you know in advance how many rows you want to add to the table, it does not hurt to just
+     * grow the table once, raher than a few times potentially. Note, that if deleting rows may annul the effect of this
+     * call, and shrink the table to a reasonable size after the deletions.
+     * 
+     * @param rows the number of rows we will want the table to hold at some point in the future...
+     * 
+     * @see        #addRow(Object[])
+     */
+    public void ensureSize(int rows) {
+        for (Column<?> c : columns) {
+            c.ensureSize(rows);
+        }
+    }
+
+    /**
+     * Checks a column data, in which elements have been already wrapped to ensure that the column is self consistent,
+     * containing
+     * 
+     * @param  newColumn      An array holding the column data with each entry corresponding to hte data for a row.
+     * 
+     * @return                the element count
+     * 
+     * @throws TableException if the data is inconsistent, or contains null, or non-arrays
+     */
+    private int checkWrappedColumn(Object newColumn) throws TableException, NullPointerException {
+        // For array elements, check consistency...
+        if (!(newColumn instanceof Object[])) {
+            // Check as scalar column...
+            checkFlatColumn(newColumn, 1);
+            return 1;
+        }
+
+        try {
+            int[] dims = ArrayFuncs.checkRegularArray(newColumn, false);
+            if (dims.length != 2) {
+                throw new TableException("Not a 2D array: " + newColumn.getClass());
+            }
+        } catch (Exception e) {
+            throw new TableException(e);
+        }
+
+        Object[] entries = (Object[]) newColumn;
+        if (entries.length == 0) {
+            return 0;
+        }
+
+        Object first = entries[0];
+        if (!first.getClass().getComponentType().isPrimitive()) {
+            throw new TableException("Entries are not a primitive arrays: " + first.getClass());
+        }
+
+        return Array.getLength(first);
+    }
+
+    /**
+     * Adds a column as an array of scalars or regular 1D primitve array elements.
+     *
+     * @param  newColumn      the column to add, either as a 1D array of scalar primitives, or a regular 2D array of
+     *                            primitives, in which each row contains the same type of 1D primitive array of the same
+     *                            sizes.
+     *
+     * @throws TableException if the new column is not a 1D or 2D array of primitives, or it it does not match the
+     *                            number of existing table rows or if the column contains an irregular 2D array.
+     * 
+     * @since                 1.18
+     * 
+     * @see                   #getWrappedColumn(int)
+     * @see                   #setWrappedColumn(int, Object)
+     */
+    @SuppressWarnings("unchecked")
+    public void addWrappedColumn(Object newColumn) throws TableException {
+        if (newColumn == null) {
+            throw new TableException("Cannot add a null column.");
+        }
+
+        int eCount = checkWrappedColumn(newColumn);
+
+        Class<?> eType = newColumn.getClass().getComponentType();
+        if (eType.isArray()) {
+            eType = eType.getComponentType();
+        }
+
+        @SuppressWarnings("rawtypes")
+        Column c = createColumn(eType, eCount);
+        c.data = newColumn;
+        nrow = Array.getLength(newColumn);
+        columns.add(c);
+    }
+
+    /**
+     * Adds a new column with the specified primitive base class and element count.
+     * 
+     * @param  type           the primitive class of the elements in this colymn, such as <code>boolean.class</code>
+     * @param  size           the number of primitive elements (use 1 to create scalar columns)
+     * 
+     * @throws TableException if the type is not a primitive type or the size is invalid.
+     * 
+     * @see                   #addColumn(Object, int)
+     * 
+     * @since                 1.18
+     */
+    public void addColumn(Class<?> type, int size) throws TableException {
+        columns.add(createColumn(type, size));
+    }
+
+    /**
+     * Converts a one-dimensional flat array of elements to a wrapped column, in which each top-level entry contains the
+     * specified number of row elements
+     * 
+     * @param  data           a one-domensional primitive array
+     * @param  size           the number of column data elements per row
+     * 
+     * @return                the wrapped column data, in which each tp-level entry contains data for a specific row.
+     * 
+     * @throws TableException If the data could not be converted
+     */
+    private Object wrapColumn(Object data, int size) throws TableException {
+
+        checkFlatColumn(data, size);
+
+        // Fold the 1D array into 2D array of subarrays for storing
+        Class<?> type = data.getClass().getComponentType();
+        int len = size == 0 ? nrow : Array.getLength(data) / size;
+
+        // The parent array
+        Object[] array = (Object[]) Array.newInstance(data.getClass(), len);
+
+        int offset = 0;
+        for (int i = 0; i < len; i++, offset += size) {
+            // subarrays...
+            array[i] = Array.newInstance(type, size);
+            System.arraycopy(data, offset, array[i], 0, size);
+        }
+
+        return array;
+    }
+
+    /**
+     * Adds a column in flattened 1D format, specifying the size of array 'elements'.
      *
      * @param  newColumn      the column to add.
      * @param  size           size for the column
      *
-     * @throws TableException if the structure of the new column does not fit the structure of the rows/columns
+     * @throws TableException if the new column is not a 1D array of primitives, or it it does not conform to the number
+     *                            of existing table rows for the given element size.
+     * 
+     * @see                   #addColumn(Class, int)
+     * @see                   #setColumn(int, Object)
      */
+    @SuppressWarnings("unchecked")
     public void addColumn(Object newColumn, int size) throws TableException {
-
-        String classname = newColumn.getClass().getName();
-        nrow = checkColumnConsistency(newColumn, classname, nrow, size);
-
-        int ncol = arrays.length;
-
-        Object[] newArrays = new Object[ncol + 1];
-        int[] newSizes = new int[ncol + 1];
-        Class<?>[] newBases = new Class[ncol + 1];
-        char[] newTypes = new char[ncol + 1];
-
-        System.arraycopy(arrays, 0, newArrays, 0, ncol);
-        System.arraycopy(sizes, 0, newSizes, 0, ncol);
-        System.arraycopy(bases, 0, newBases, 0, ncol);
-        System.arraycopy(types, 0, newTypes, 0, ncol);
-
-        arrays = newArrays;
-        sizes = newSizes;
-        bases = newBases;
-        types = newTypes;
-
-        arrays[ncol] = newColumn;
-        sizes[ncol] = size;
-        bases[ncol] = ArrayFuncs.getBaseClass(newColumn);
-        types[ncol] = classname.charAt(1);
-        addPointer(newColumn);
-    }
-
-    /**
-     * Add a pointer in the pointer lists.
-     *
-     * @param  data           data pointer to add
-     *
-     * @throws TableException if the structure of the specified array does not fit the structure of the rows/columns
-     */
-    protected void addPointer(Object data) throws TableException {
-        PointerAccess<Object> accessor = selectPointerAccessor(data);
-        if (accessor == null) {
-            throw new TableException("Invalid type for added column:" + data.getClass().getComponentType());
+        if (newColumn == null) {
+            throw new TableException("Cannot add a null column: we don't know its type.");
         }
-        accessor.set(this, extendArray(accessor.get(this), data));
-    }
 
-    @SuppressWarnings("unchecked")
-    private PointerAccess<Object> selectPointerAccessor(Object data) {
-        return (PointerAccess<Object>) POINTER_ACCESSORS.get(ElementType.forClass(data.getClass().getComponentType()));
-    }
+        if (size < 0) {
+            throw new TableException("Invalid element size: " + size);
+        }
 
-    @SuppressWarnings("unchecked")
-    private <ArrayType> ArrayType extendArray(ArrayType originalArray, Object data) {
-        int length = Array.getLength(originalArray);
-        Object xb = Array.newInstance(originalArray.getClass().getComponentType(), length + 1);
-        System.arraycopy(originalArray, 0, xb, 0, length);
-        Array.set(xb, length, data);
-        return (ArrayType) xb;
+        if (size == 1 && newColumn.getClass().getComponentType().isPrimitive()) {
+            // Add scalar columns as is...
+            addWrappedColumn(newColumn);
+            return;
+        }
+
+        checkFlatColumn(newColumn, size);
+
+        @SuppressWarnings("rawtypes")
+        Column c = createColumn(newColumn.getClass().getComponentType(), size);
+        c.data = wrapColumn(newColumn, size);
+
+        columns.add(c);
+        nrow = Array.getLength(c.data);
     }
 
     /**
-     * Add a row to the table. This method is very inefficient for adding multiple rows and should be avoided if
-     * possible.
+     * Returns the next standard table capacity step that will allow adding at least one more row to the table.
+     * 
+     * @return the standard capacity (number of rows) to which we'd want to grow to contain another table row.
+     */
+    private int nextLargerCapacity() {
+        return nextLargerCapacity(nrow);
+    }
+
+    /**
+     * Returns the next standard table capacity step that will allow adding at least one more row to the table.
+     * 
+     * @param  rows The number of rows we should be able to store.
+     * 
+     * @return      the standard capacity (number of rows) to which we'd want to grow to contain another table row.
+     */
+    private int nextLargerCapacity(int rows) {
+        if (rows < MIN_CAPACITY) {
+            return MIN_CAPACITY;
+        }
+        // Predictable doubling beyond the minimum size...
+        return (int) Math.min(Long.highestOneBit(nrow) << 1, Integer.MAX_VALUE);
+    }
+
+    /**
+     * Checks the integrity of an array containing element for a new row, with each element corresponding to an entry to
+     * the respective table column.
+     * 
+     * @param  row            An array containing data for a new table row.
+     * 
+     * @throws TableException If the row structure is inconsistent with that of the table.
+     */
+    private void checkRow(Object[] row) throws TableException {
+        // Check that the row matches existing columns
+        if (row.length != columns.size()) {
+            throw new TableException("Mismatched row size: " + row.length + ", expected " + columns.size());
+        }
+
+        for (int col = 0; col < row.length; col++) {
+            Column<?> c = columns.get(col);
+            c.checkEntry(row[col]);
+        }
+    }
+
+    /**
+     * Add a row to the table. Each element of the row must be a 1D primitive array. If this is not the first row in the
+     * table, each element must match the types and sizes of existing rows.
      *
      * @param  row            the row to add
      *
-     * @throws TableException if the structure of the specified array does not fit the structure of the rows/columns
+     * @throws TableException if the row contains other than 1D primitive array elements or if the elements do not match
+     *                            the types and sizes of existing table columns.
+     * 
+     * @see                   #deleteRow(int)
+     * @see                   #ensureSize(int)
      */
     public void addRow(Object[] row) throws TableException {
-        if (arrays.length == 0) {
-            for (Object element : row) {
-                addColumn(element, Array.getLength(element));
-            }
-        } else {
-            if (row.length != arrays.length) {
-                throw new TableException("Row length mismatch");
-            }
-            for (int i = 0; i < row.length; i++) {
-                if (row[i].getClass() != arrays[i].getClass() || Array.getLength(row[i]) != sizes[i]) {
-                    throw new TableException("Row column mismatch at column:" + i);
-                }
-                Object xarray = ArrayFuncs.newInstance(bases[i], (nrow + 1) * sizes[i]);
-                System.arraycopy(arrays[i], 0, xarray, 0, nrow * sizes[i]);
-                System.arraycopy(row[i], 0, xarray, nrow * sizes[i], sizes[i]);
-                arrays[i] = xarray;
-            }
-            initializePointers();
-            nrow++;
+        if (row == null) {
+            throw new TableException("Cannot add null row");
         }
+
+        if (nrow == Integer.MAX_VALUE) {
+            throw new TableException("Table has reached its capacity limit");
+        }
+
+        if (isEmpty()) {
+            // This is the first row in the table, create columns with their elements if possible
+            try {
+                for (int col = 0; col < row.length; col++) {
+                    addColumn(row[col], Array.getLength(row[col]));
+                }
+                return;
+            } catch (TableException e) {
+                // The row was invalid, clear the table and re-throw the exception
+                columns = new ArrayList<>();
+                throw e;
+            }
+        }
+
+        checkRow(row);
+
+        // Get the size we'll grow to if we must...
+        int capacity = nextLargerCapacity();
+
+        for (int i = 0; i < row.length; i++) {
+            Column<?> c = columns.get(i);
+            c.ensureSize(capacity);
+            c.setArrayElement(nrow, row[i]);
+        }
+        nrow++;
     }
 
     /**
-     * Check that the columns and sizes are consistent. Inconsistencies include:
-     * <ul>
-     * <li>arrays and sizes have different lengths.
-     * <li>an element of arrays is not a primitive array.
-     * <li>the size of an array is not divisible by the sizes entry.
-     * <li>the number of rows differs for the columns.
-     * </ul>
-     *
-     * @param  newArrays      The arrays defining the columns.
-     * @param  newSizes       The number of elements in each row for the column.
-     *
-     * @throws TableException if the table was inconsistent
+     * Checks if a data in column format is consistent with this table, for example before adding it.
+     * 
+     * @param  data           A one-dimensional representation of the column data
+     * @param  size           the number of primitive elements per table row
+     * 
+     * @throws TableException if the column is not consistent with the current table structure.
      */
-    protected void checkArrayConsistency(Object[] newArrays, int[] newSizes) throws TableException {
-
-        // This routine throws an error if it detects an inconsistency
-        // between the arrays being read in.
-
-        // First check that the lengths of the two arrays are the same.
-        if (newArrays.length != newSizes.length) {
-            throw new TableException("readArraysAsColumns: Incompatible arrays and sizes.");
+    private void checkFlatColumn(Object data, int size) throws TableException {
+        if (!data.getClass().isArray()) {
+            throw new TableException("Argument is not an array: " + data.getClass());
         }
 
-        // Now check that that we fill up all of the arrays exactly.
-        int ratio = 0;
+        int len = Array.getLength(data);
 
-        types = new char[newArrays.length];
-        bases = new Class[newArrays.length];
+        // Data cannot be null here (we check upstream)
+        // if (data == null) {
+        // throw new TableException("Unexpected null column");
+        // }
 
-        for (int i = 0; i < newArrays.length; i++) {
-
-            String classname = newArrays[i].getClass().getName();
-
-            ratio = checkColumnConsistency(newArrays[i], classname, ratio, newSizes[i]);
-
-            types[i] = classname.charAt(1);
-            bases[i] = ArrayFuncs.getBaseClass(newArrays[i]);
+        if (size > 0 && len % size != 0) {
+            throw new TableException("The column size " + len + " is not a multiple of the element size " + size);
         }
 
-        nrow = ratio;
-        arrays = newArrays;
-        sizes = newSizes;
+        if (nrow == 0 || size == 0) {
+            return;
+        }
+
+        if (len != nrow * size) {
+            throw new TableException("Mismatched element count: " + len + ", expected " + (nrow * size) + " for " + nrow
+                    + " rows of size " + size);
+        }
     }
 
-    private int checkColumnConsistency(Object data, String classname, int ratio, int size) throws TableException {
-
-        if (classname.charAt(0) != '[' || classname.length() != 2) {
-            throw new TableException("Non-primitive array for column");
+    @Override
+    @SuppressWarnings("unchecked")
+    protected ColumnTable<T> clone() {
+        try {
+            return (ColumnTable<T>) super.clone();
+        } catch (CloneNotSupportedException e) {
+            return null;
         }
-
-        int thisSize = Array.getLength(data);
-        if (thisSize == 0 && size != 0 && ratio != 0 || thisSize != 0 && size == 0) {
-            throw new TableException("Size mismatch in column: " + thisSize + " != " + size);
-        }
-
-        // The row size must evenly divide the size of the array.
-        if (size != 0 && thisSize % size != 0) {
-            throw new TableException("Row size does not divide array for column");
-        }
-
-        // Finally the ratio of sizes must be the same for all columns -- this
-        // is the number of rows in the table.
-        int thisRatio = 0;
-        if (size > 0) {
-            thisRatio = thisSize / size;
-
-            if (ratio != 0 && thisRatio != ratio) {
-                throw new TableException("Different number of rows in different columns");
-            }
-        }
-        if (thisRatio > 0) {
-            return thisRatio;
-        }
-        return ratio;
-
     }
 
     /**
@@ -519,10 +444,38 @@ public class ColumnTable<T> implements DataTable {
      * 
      * @return                A deep (independent) copy of this column table
      * 
-     * @throws TableException if a copy could not be created
+     * @throws TableException (<i>for back compatibility</i>) never thrown.
      */
+    @SuppressWarnings("cast")
     public ColumnTable<T> copy() throws TableException {
-        return new ColumnTable<>((Object[]) ArrayFuncs.deepClone(arrays), sizes.clone());
+        ColumnTable<T> copy = (ColumnTable<T>) clone();
+        copy.columns = new ArrayList<>(columns.size());
+        for (Column<?> c : columns) {
+            copy.columns.add(c.copy(nrow));
+        }
+        return copy;
+    }
+
+    /**
+     * Deletes a column from this table.
+     * 
+     * @param  col            the 0-based column index.
+     * 
+     * @throws TableException if the column index is out of bounds
+     * 
+     * @see                   #deleteColumns(int, int)
+     * 
+     * @since                 1.18
+     */
+    public void deleteColumn(int col) throws TableException {
+        if (col < 0 || col >= columns.size()) {
+            throw new TableException("Column out of bounds: col=" + col + ", size=" + columns.size());
+        }
+        columns.remove(col);
+
+        if (isEmpty()) {
+            nrow = 0;
+        }
     }
 
     /**
@@ -532,42 +485,48 @@ public class ColumnTable<T> implements DataTable {
      * @param  len            The number of columns to be deleted.
      *
      * @throws TableException if the request goes outside the boundaries of the table or if the length is negative.
+     * 
+     * @see                   #deleteColumn(int)
      */
     public void deleteColumns(int start, int len) throws TableException {
-        int ncol = arrays.length;
-        if (start < 0 || len < 0 || start + len > ncol) {
-            throw new TableException("Invalid request to delete columns start: " + start + " length:" + len
-                    + " for table with " + ncol + " columns.");
-        }
         if (len == 0) {
             return;
         }
-        int ocol = ncol;
-        ncol -= len;
 
-        Object[] newArrays = new Object[ncol];
-        int[] newSizes = new int[ncol];
-        Class<?>[] newBases = new Class<?>[ncol];
-        char[] newTypes = new char[ncol];
+        if (start < 0 || len < 0 || start + len > columns.size()) {
+            throw new TableException(
+                    "Column eange out of bounds: start=" + start + ", len=" + len + ", size=" + columns.size());
+        }
 
-        System.arraycopy(arrays, 0, newArrays, 0, start);
-        System.arraycopy(sizes, 0, newSizes, 0, start);
-        System.arraycopy(bases, 0, newBases, 0, start);
-        System.arraycopy(types, 0, newTypes, 0, start);
+        ArrayList<Column<?>> c = new ArrayList<>();
+        int i;
+        for (i = 0; i < start; i++) {
+            c.add(columns.get(i));
+        }
+        i += len;
+        for (; i < columns.size(); i++) {
+            c.add(columns.get(i));
+        }
+        columns = c;
 
-        int rem = ocol - (start + len);
+        if (isEmpty()) {
+            nrow = 0;
+        }
+    }
 
-        System.arraycopy(arrays, start + len, newArrays, start, rem);
-        System.arraycopy(sizes, start + len, newSizes, start, rem);
-        System.arraycopy(bases, start + len, newBases, start, rem);
-        System.arraycopy(types, start + len, newTypes, start, rem);
-
-        arrays = newArrays;
-        sizes = newSizes;
-        bases = newBases;
-        types = newTypes;
-
-        initializePointers();
+    /**
+     * Delete all rows from the table, but leaving the column structure intact.
+     *
+     * @throws TableException if the request goes outside the boundaries of the table or if the length is negative.
+     * 
+     * @see                   #deleteRows(int, int)
+     * @see                   #clear()
+     */
+    public final void deleteAllRows() throws TableException {
+        nrow = 0;
+        for (Column<?> c : columns) {
+            c.trim(MIN_CAPACITY);
+        }
     }
 
     /**
@@ -576,280 +535,405 @@ public class ColumnTable<T> implements DataTable {
      * @param  row            The row (0-indexed) to be deleted.
      *
      * @throws TableException if the request goes outside the boundaries of the table or if the length is negative.
+     * 
+     * @see                   #deleteRows(int, int)
      */
-    public void deleteRow(int row) throws TableException {
+    public final void deleteRow(int row) throws TableException {
         deleteRows(row, 1);
     }
 
     /**
      * Delete a contiguous set of rows from the table.
      *
-     * @param  row            The row (0-indexed) to be deleted.
+     * @param  from           the 0-based index of the first tow to be deleted.
      * @param  length         The number of rows to be deleted.
      *
      * @throws TableException if the request goes outside the boundaries of the table or if the length is negative.
+     * 
+     * @see                   #deleteRow(int)
      */
-    public void deleteRows(int row, int length) throws TableException {
-
-        if (row < 0 || length < 0 || row + length > nrow) {
-            throw new TableException("Invalid request to delete rows start: " + row + " length:" + length
-                    + " for table with " + nrow + " rows.");
-        }
-
+    public void deleteRows(int from, int length) throws TableException {
         if (length == 0) {
             return;
         }
 
-        for (int col = 0; col < arrays.length; col++) {
-
-            int sz = sizes[col];
-            int newSize = sz * (nrow - length);
-            Object newArr = ArrayFuncs.newInstance(bases[col], newSize);
-
-            // Copy whatever comes before the deletion
-            System.arraycopy(arrays[col], 0, newArr, 0, row * sz);
-
-            // Copy whatever comes after the deletion
-            System.arraycopy(arrays[col], (row + length) * sz, newArr, row * sz, (nrow - row - length) * sz);
-            arrays[col] = newArr;
+        if (from < 0 || length < 0 || from + length > nrow) {
+            throw new TableException("Row range out of bounds: start=" + from + ", len=" + length + ", size=" + nrow);
         }
+
+        int maxSize = nextLargerCapacity(nrow - length);
+        for (Column<?> c : columns) {
+            c.deleteRows(from, length, nrow, maxSize);
+        }
+
         nrow -= length;
-        initializePointers();
+    }
+
+    /**
+     * Returns the primitive based class of the elements in a given colum.
+     * 
+     * @param  col the 0-based column index
+     * 
+     * @return     the primitive base class of the elements in the column, e.g. <code>short.class</code>.
+     * 
+     * @since      1.18
+     */
+    public final Class<?> getElementClass(int col) {
+        return columns.get(col).baseType();
     }
 
     /**
      * Get the base classes of the columns. As of 1.18, this method returns a copy ot the array used internally, which
      * is safe to modify.
      *
-     * @return An array of Class objects, one for each column.
+     * @return     An array of Class objects, one for each column.
+     * 
+     * @deprecated Use {@link #getElementClass(int)} instead. This method may be removed in the future.
+     * 
+     * @see        #getElementClass(int)
      */
     public Class<?>[] getBases() {
-        // bases is initialized at construction so no need to check for null here
-        return Arrays.copyOf(bases, bases.length);
+        Class<?>[] bases = new Class<?>[columns.size()];
+        for (int i = 0; i < bases.length; i++) {
+            bases[i] = getElementClass(i);
+        }
+        return bases;
     }
 
     /**
-     * @deprecated Strongly discouraged, since it returns data in an unnatural flattened format or heap pointers only
-     *                 for variable-sized data (use {@link #getElement(int, int)} instead)
+     * Returns the wrapped column data, in which each entry correspond to data for a given row. If the column contains
+     * non-scalar elements, then each entry in the returned array will be a primitive array of the column's element
+     * size.
+     * 
+     * @param  col the 0-based column index
+     * 
+     * @return     the array in which each entry corresponds to table row. For scalar columns this will be a primitive
+     *                 array of {@link #getNRows()} entries. Otherwise, it will be an array, whch contains the primitive
+     *                 array elements for each row.
+     * 
+     * @see        #getColumn(int)
+     * @see        #addWrappedColumn(Object)
+     * @see        #setWrappedColumn(int, Object)
+     * 
+     * @since      1.18
+     */
+    public Object getWrappedColumn(int col) {
+        Column<?> c = columns.get(col);
+        c.trim(nrow);
+        return c.getData();
+    }
+
+    /**
+     * <p>
+     * Returns the data for a particular column in as a single 1D array of primitives. See
+     * {@link nom.tam.fits.TableData#addColumn(Object)} for more information about the format of data elements in
+     * general.
+     * </p>
+     * 
+     * @param  col The 0-based column index.
+     * 
+     * @return     an array of primitives (for scalar columns), or else an <code>Object[]</code> array, or possibly
+     *                 <code>null</code>
+     *
+     * @see        #getWrappedColumn(int)
+     * @see        #setColumn(int, Object)
+     * @see        #getElement(int, int)
+     * @see        #getNCols()
      */
     @Override
     public Object getColumn(int col) {
-        return arrays[col];
+        Column<?> c = columns.get(col);
+        c.trim(nrow);
+        return c.getFlatData();
     }
 
     /**
-     * @deprecated Strongly discouraged, since it returns columns in an unnatural flattened format or heap pointers only
-     *                 for variable-sized data (use {@link #getElement(int, int)} or {@link #getRow(int)} instead)
+     * Returns the data for all columns as an array of flattened 1D primitive arrays.
      * 
-     * @return     An array containing the flattened data for each column. Each columns's data is represented by a
-     *                 single 1D array holding all elements for that column. Because this is not an easily digestible
-     *                 format, you are probably better off using {@link #getElement(int, int)} or {@link #getRow(int)}
-     *                 instead.
+     * @return An array containing the flattened data for each column. Each columns's data is represented by a single 1D
+     *             array holding all elements for that column. Because this is not an easily digestible format, you are
+     *             probably better off using {@link #getElement(int, int)} or {@link #getRow(int)} instead.
+     * 
+     * @see    #getColumn(int)
      */
-    @SuppressFBWarnings(value = "EI_EXPOSE_REP", justification = "intended exposure of mutable data")
     public Object[] getColumns() {
-        return arrays;
+        Object[] table = new Object[columns.size()];
+        for (int i = 0; i < table.length; i++) {
+            table[i] = getColumn(i);
+        }
+        return table;
     }
 
     @Override
     public Object getElement(int row, int col) {
-
-        Object x = ArrayFuncs.newInstance(bases[col], sizes[col]);
-        System.arraycopy(arrays[col], sizes[col] * row, x, 0, sizes[col]);
-        return x;
+        if (row < 0 || row >= nrow) {
+            throw new ArrayIndexOutOfBoundsException(row);
+        }
+        return columns.get(col).getArrayElement(row);
     }
 
     /**
      * Returns the extra state information of the table. The type and nature of this information is implementation
      * dependent.
      * 
-     * @return the object capturing the implementation-specific table state
+     * @return     the object capturing the implementation-specific table state
+     * 
+     * @deprecated (<i>for internal use</i>) No longer used, will be removed in the future.
      */
     public T getExtraState() {
         return extraState;
     }
 
     @Override
-    public int getNCols() {
-        return arrays.length;
+    public final int getNCols() {
+        return columns.size();
     }
 
     @Override
-    public int getNRows() {
+    public final int getNRows() {
         return nrow;
     }
 
     @Override
     public Object getRow(int row) {
+        if (row < 0 || row >= nrow) {
+            throw new ArrayIndexOutOfBoundsException(row);
+        }
 
-        Object[] x = new Object[arrays.length];
-        for (int col = 0; col < arrays.length; col++) {
+        Object[] x = new Object[columns.size()];
+        for (int col = 0; col < x.length; col++) {
             x[col] = getElement(row, col);
         }
         return x;
     }
 
     /**
+     * Returns the size of 1D array elements stored in a given column
+     * 
+     * @param  col the 0-based column index
+     * 
+     * @return     the array size in the column (scalars return 1)
+     * 
+     * @since      1.18
+     */
+    public final int getElementSize(int col) {
+        return columns.get(col).elementCount();
+    }
+
+    /**
      * Returns the flattened (1D) size of elements in each column of this table. As of 1.18, this method returns a copy
      * ot the array used internally, which is safe to modify.
      * 
-     * @return an array with the byte sizes of each column
+     * @return     an array with the byte sizes of each column
+     * 
+     * @see        #getElementSize(int)
+     * 
+     * @deprecated Use {@link #getElementSize(int)} instead. This method may be removed in the future.
+     * 
+     * @since      1.18
      */
     public int[] getSizes() {
-        // sizes is initialized at construction so no need to check for null here
-        return Arrays.copyOf(sizes, sizes.length);
+        int[] sizes = new int[columns.size()];
+        for (int i = 0; i < sizes.length; i++) {
+            sizes[i] = getElementSize(i);
+        }
+        return sizes;
+    }
+
+    /**
+     * Returns the Java array type character for the elements stored in a given column.
+     * 
+     * @param  col the 0-based column index
+     * 
+     * @return     the Java array type of the elements in the column, such as 'I' if the array is class is
+     *                 <code>I[</code> (that is for <code>int[]</code>).
+     */
+    public final char getTypeChar(int col) {
+        return columns.get(col).getElementType().type();
     }
 
     /**
      * Get the characters describing the base classes of the columns. As of 1.18, this method returns a copy ot the
      * array used internally, which is safe to modify.
      *
-     * @return An array of type characters (Java array types), one for each column.
+     * @return     An array of type characters (Java array types), one for each column.
+     * 
+     * @deprecated Use {@link #getTypeChar(int)} instead. This method may be removed in the future.
+     * 
+     * @see        #getTypeChar(int)
      */
     public char[] getTypes() {
-        // types is initialized at construction so no need to check for null here
-        return Arrays.copyOf(types, types.length);
+        char[] types = new char[columns.size()];
+        for (int i = 0; i < types.length; i++) {
+            types[i] = getTypeChar(i);
+        }
+        return types;
     }
 
     /**
-     * Set the pointer arrays for the eight primitive types to point to the appropriate elements of arrays.
-     */
-    protected void initializePointers() {
-        int[] columnIndex = new int[MAX_COLUMN_INDEXES];
-        for (int col = 0; col < arrays.length; col++) {
-            columnIndex[types[col]]++;
-        }
-        // Allocate the pointer arrays. Note that many will be
-        // zero-length.
-        bytePointers = new byte[columnIndex[ElementType.BYTE.type()]][];
-        shortPointers = new short[columnIndex[ElementType.SHORT.type()]][];
-        intPointers = new int[columnIndex[ElementType.INT.type()]][];
-        longPointers = new long[columnIndex[ElementType.LONG.type()]][];
-        floatPointers = new float[columnIndex[ElementType.FLOAT.type()]][];
-        doublePointers = new double[columnIndex[ElementType.DOUBLE.type()]][];
-        charPointers = new char[columnIndex[ElementType.CHAR.type()]][];
-        booleanPointers = new boolean[columnIndex[ElementType.BOOLEAN.type()]][];
-        // Now set the pointers.
-        Arrays.fill(columnIndex, 0);
-        for (int col = 0; col < arrays.length; col++) {
-            char colType = types[col];
-            PointerAccess<?> accessor = POINTER_ACCESSORS_BY_TYPE[colType];
-            Array.set(accessor.get(this), columnIndex[colType], arrays[col]);
-            columnIndex[colType]++;
-        }
-    }
-
-    /**
-     * Read a table.
+     * Reads the table's data from the input, in row-major format
      *
-     * @param  is          The input stream to read from.
+     * @param  in           The input to read from.
      *
-     * @throws IOException if the reading failed
+     * @throws EOFException is already at the end of file.
+     * @throws IOException  if the reading failed
+     * 
+     * @see                 #write(ArrayDataOutput)
      */
-    public void read(ArrayDataInput is) throws IOException {
-        int[] columnIndex = new int[MAX_COLUMN_INDEXES];
-        // While we have not finished reading the table..
+    public void read(ArrayDataInput in) throws EOFException, IOException {
         for (int row = 0; row < nrow; row++) {
-            Arrays.fill(columnIndex, 0);
-            // Loop over the columns within the row.
-            for (int col = 0; col < arrays.length; col++) {
-                int arrOffset = sizes[col] * row;
-                int size = sizes[col];
-                char colType = types[col];
-                PointerAccess<?> accessor = POINTER_ACCESSORS_BY_TYPE[colType];
-                accessor.read(this, is, columnIndex[colType], arrOffset, size);
-                columnIndex[colType]++;
+            for (Column<?> c : columns) {
+                c.read(row, in);
             }
         }
     }
 
+    @SuppressWarnings("unchecked")
     @Override
     public void setColumn(int col, Object newColumn) throws TableException {
-
-        boolean reset = newColumn.getClass() != arrays[col].getClass()
-                || Array.getLength(newColumn) != Array.getLength(arrays[col]);
-        arrays[col] = newColumn;
-        if (reset) {
-            setup(arrays, sizes);
-        } else {
-            // This is required, because otherwise the typed pointer may point
-            // to the old
-            // array, which has been replaced by newColumn. Added by Jeroen de
-            // Jong, 1 Aug 2006
-            initializePointers();
+        if (newColumn == null) {
+            throw new TableException("Cannot set column data to null");
         }
+
+        if (!newColumn.getClass().isArray()) {
+            throw new TableException("Not an array: " + newColumn.getClass().getName());
+        }
+
+        @SuppressWarnings("rawtypes")
+        Column c = columns.get(col);
+
+        if (!c.baseType().equals(newColumn.getClass().getComponentType())) {
+            throw new TableException(
+                    "Mismatched type " + newColumn.getClass().getName() + ", expected " + c.baseType().getName());
+        }
+
+        if (Array.getLength(newColumn) != nrow * c.elementCount()) {
+            throw new TableException(
+                    "Mismatched size " + Array.getLength(newColumn) + ", expected " + (nrow * c.elementCount()));
+        }
+
+        c.data = c.elementCount() > 1 ? wrapColumn(newColumn, c.elementCount()) : newColumn;
+    }
+
+    /**
+     * Sets new data for a column, in wrapped format. The argument is an 1D or 2D array of primitives, in which the
+     * eading dimension must match the number of rows already in the table (if any).
+     *
+     * @param  col            the zero-based column index
+     * @param  newColumn      the new column data, either as a 1D array of scalar primitives, or a regular 2D array of
+     *                            primitives, in which each row contains the same type of 1D primitive array of the same
+     *                            sizes.
+     *
+     * @throws TableException if the new column data is not a 1D or 2D array of primitives, or it it does not match the
+     *                            number of existing table rows or if the column contains an irregular 2D array.
+     * 
+     * @since                 1.18
+     * 
+     * @see                   #getWrappedColumn(int)
+     * @see                   #addWrappedColumn(Object)
+     */
+    @SuppressWarnings("unchecked")
+    public void setWrappedColumn(int col, Object newColumn) throws TableException {
+
+        if (!newColumn.getClass().isArray()) {
+            throw new TableException("Not an array: " + newColumn.getClass().getName());
+        }
+
+        if (Array.getLength(newColumn) != nrow) {
+            throw new TableException("Mismatched row count " + Array.getLength(newColumn) + ", expected " + nrow);
+        }
+
+        @SuppressWarnings("rawtypes")
+        Column c = columns.get(col);
+
+        int eSize = 0;
+
+        try {
+            eSize = checkWrappedColumn(newColumn);
+        } catch (Exception e) {
+            throw new TableException(e);
+        }
+
+        if (eSize != c.elementCount()) {
+            throw new TableException("Mismatched element size " + eSize + ", expected " + c.elementCount());
+        }
+
+        Class<?> eType = newColumn.getClass().getComponentType();
+        if (newColumn instanceof Object[]) {
+            eType = eType.getComponentType();
+        }
+
+        if (!c.baseType().equals(eType)) {
+            throw new TableException(
+                    "Mismatched type " + newColumn.getClass().getName() + ", expected " + c.baseType().getName());
+        }
+
+        c.data = newColumn;
     }
 
     @Override
     public void setElement(int row, int col, Object x) throws TableException {
-
-        String classname = x.getClass().getName();
-
-        if (!classname.equals("[" + types[col])) {
-            throw new TableException("setElement: Incompatible element type");
+        if (row < 0 || row >= nrow) {
+            throw new ArrayIndexOutOfBoundsException(row);
         }
-
-        if (Array.getLength(x) != sizes[col]) {
-            throw new TableException("setElement: Incompatible element size");
-        }
-
-        System.arraycopy(x, 0, arrays[col], sizes[col] * row, sizes[col]);
+        Column<?> c = columns.get(col);
+        c.checkEntry(x);
+        c.setArrayElement(row, x);
     }
 
     /**
      * Store additional information that may be needed by the client to regenerate initial arrays.
      *
-     * @param opaque the extra state to set.
+     * @param      opaque the extra state to set.
+     * 
+     * @deprecated        (<i>for internal use</i>) No longer used, will be removed in the future. We used the extra
+     *                        state to carry properties of an enclosing class in this enclosed object, so we could
+     *                        inherit those to new enclosing class instances. This is bad practie. If one needs data
+     *                        from the enclosing object, it should be handled by passing the enclsing object, and not
+     *                        this enclosed table.
      */
     public void setExtraState(T opaque) {
         extraState = opaque;
     }
 
     @Override
-    public void setRow(int row, Object x) throws TableException {
-
-        if (!(x instanceof Object[])) {
-            throw new TableException("setRow: Incompatible row");
+    public void setRow(int row, Object data) throws TableException {
+        if (row < 0 || row >= nrow) {
+            throw new ArrayIndexOutOfBoundsException(row);
         }
 
-        for (int col = 0; col < arrays.length; col++) {
-            setElement(row, col, ((Object[]) x)[col]);
+        if (data == null) {
+            throw new TableException("Unexpected null data for row " + row);
         }
+
+        if (!(data instanceof Object[])) {
+            throw new TableException("Not an Object[] array: " + data.getClass().getName());
+        }
+
+        Object[] r = (Object[]) data;
+
+        checkRow(r);
+
+        for (int i = 0; i < columns.size(); i++) {
+            Column<?> c = columns.get(i);
+            c.setArrayElement(row, r[i]);
+        }
+
     }
 
     /**
-     * Actually perform the initialization.
+     * Writes the table's data to an output, in row-major format.
      *
-     * @param  newArrays      An array of one-d primitive arrays.
-     * @param  newSizes       The number of elements in each row for the corresponding column
-     *
-     * @throws TableException if the structure of the columns is not consistent
-     */
-    private void setup(Object[] newArrays, int[] newSizes) throws TableException {
-        checkArrayConsistency(newArrays, newSizes);
-        initializePointers();
-    }
-
-    /**
-     * Write a table.
-     *
-     * @param  os          the output stream to write to.
+     * @param  out         the output stream to write to.
      *
      * @throws IOException if the write operation failed
+     * 
+     * @see                #read(ArrayDataInput)
      */
-    public void write(ArrayDataOutput os) throws IOException {
-        int[] columnIndex = new int[MAX_COLUMN_INDEXES];
+    public void write(ArrayDataOutput out) throws IOException {
         for (int row = 0; row < nrow; row++) {
-            Arrays.fill(columnIndex, 0);
-            // Loop over the columns within the row.
-            for (int col = 0; col < arrays.length; col++) {
-
-                int arrOffset = sizes[col] * row;
-                int size = sizes[col];
-
-                char colType = types[col];
-                POINTER_ACCESSORS_BY_TYPE[colType].write(this, os, columnIndex[colType], arrOffset, size);
-                columnIndex[colType]++;
+            for (Column<?> c : columns) {
+                c.write(row, out);
             }
         }
     }
@@ -857,61 +941,822 @@ public class ColumnTable<T> implements DataTable {
     /**
      * Write a column of a table.
      *
-     * @param  os          the output stream to write to.
+     * @param  out         the output stream to write to.
      * @param  rowStart    first row to write
-     * @param  rowEnd      row number that should not be written anymore
-     * @param  columnNr    zero based column number to write.
+     * @param  rowEnd      the exclusive ending row index (not witten)
+     * @param  col         the zero-based column index to write.
      *
      * @throws IOException if the write operation failed
      */
-    public void write(ArrayDataOutput os, int rowStart, int rowEnd, int columnNr) throws IOException {
-        int[] columnIndex = new int[MAX_COLUMN_INDEXES];
-        for (int row = 0; row < nrow; row++) {
-            if (row >= rowStart && row < rowEnd) {
-                Arrays.fill(columnIndex, 0);
-                // Loop over the columns within the row.
-                for (int col = 0; col < arrays.length; col++) {
+    public void write(ArrayDataOutput out, int rowStart, int rowEnd, int col) throws IOException {
+        columns.get(col).write(rowStart, rowEnd - rowStart, out);
+    }
 
-                    int arrOffset = sizes[col] * row;
-                    int size = sizes[col];
+    /**
+     * Reads a column of a table from a
+     *
+     * @param  in           The input stream to read from.
+     * @param  rowStart     first row to read
+     * @param  rowEnd       the exclusive ending row index (not read)
+     * @param  col          the zero-based column index to read.
+     *
+     * @throws EOFException is already at the end of file.
+     * @throws IOException  if the reading failed
+     */
+    public void read(ArrayDataInput in, int rowStart, int rowEnd, int col) throws EOFException, IOException {
+        columns.get(col).read(rowStart, rowEnd - rowStart, in);
+    }
 
-                    char colType = types[col];
-                    if (columnNr == col) {
-                        POINTER_ACCESSORS_BY_TYPE[colType].write(this, os, columnIndex[colType], arrOffset, size);
-                    }
-                    columnIndex[colType]++;
-                }
+    private Column<?> createColumn(Class<?> type, int size) throws TableException {
+        if (type == null) {
+            throw new TableException("Column type cannot be null.");
+        }
+
+        if (!type.isPrimitive()) {
+            throw new TableException("Not a primitive base type: " + type.getName());
+        }
+
+        if (size == 1) {
+            if (type.equals(byte.class)) {
+                return new Bytes();
             }
+            if (type.equals(boolean.class)) {
+                return new Booleans();
+            }
+            if (type.equals(char.class)) {
+                return new Chars();
+            }
+            if (type.equals(short.class)) {
+                return new Shorts();
+            }
+            if (type.equals(int.class)) {
+                return new Integers();
+            }
+            if (type.equals(long.class)) {
+                return new Longs();
+            }
+            if (type.equals(float.class)) {
+                return new Floats();
+            }
+            if (type.equals(double.class)) {
+                return new Doubles();
+            }
+        }
+        return new Generic(type, size);
+    }
+
+    /**
+     * Container for one column in the table.
+     * 
+     * @author        Attila Kovacs
+     *
+     * @param  <Data> The generic type of the data elements held in the table
+     */
+    private abstract static class Column<Data> implements Cloneable {
+        protected Data data;
+        private ElementType<?> fitsType;
+
+        /**
+         * Instantiates a new column data container
+         * 
+         * @param fitsType The primitive element type that is used to store data for this column in the FITS
+         */
+        Column(ElementType<?> fitsType) {
+            this.fitsType = fitsType;
+            init(fitsType.primitiveClass());
+        }
+
+        @SuppressWarnings("unchecked")
+        void init(Class<?> storeType) {
+            data = (Data) Array.newInstance(storeType, 0);
+        }
+
+        /**
+         * Returns the data array that holds all elements (one entry per row) for this column. It may be a primitive
+         * array or an object array.
+         * 
+         * @return the array that holds data for this column.
+         */
+        Data getData() {
+            return data;
+        }
+
+        /**
+         * Returns the data a a 1D array containing all elements for this column. It may be a primitive array or an
+         * object array.
+         * 
+         * @return the array that holds data for this column.
+         */
+        Object getFlatData() {
+            return data;
+        }
+
+        /**
+         * Returns the FITS element type contained in this column.
+         * 
+         * @return the FITS type of data elements as they are stored in FITS
+         */
+        ElementType<?> getElementType() {
+            return fitsType;
+        }
+
+        /**
+         * Returns the primitive element type which reprensents data for this column in FITS.
+         * 
+         * @return the primitive type that is used when writing this column's data into FITS
+         */
+        Class<?> baseType() {
+            return fitsType.primitiveClass();
+        }
+
+        /**
+         * Returns the array data class that stores elements in this column.
+         * 
+         * @return the class of array that holds elements in this column
+         */
+        Class<?> arrayType() {
+            return data.getClass();
+        }
+
+        /**
+         * Returns the number of basic elements stored per row in this column.
+         * 
+         * @return the number of basic elements per row
+         */
+        int elementCount() {
+            return 1;
+        }
+
+        /**
+         * Returns the number of rows currently allocated in this column, which may exceed the number of entries
+         * currently populated.
+         * 
+         * @return the number of rows allocated at present
+         */
+        int capacity() {
+            return Array.getLength(data);
+        }
+
+        void deleteRows(int from, int len, int size, int maxCapacity) {
+            int end = from + len;
+            System.arraycopy(data, end, data, from, size - end);
+            trim(maxCapacity);
+        }
+
+        /**
+         * Reads a single table entry from an input
+         * 
+         * @param  index        the zero-based row index of the column entry
+         * @param  in           the input to read from
+         * 
+         * @return              the number of bytes read from the input.
+         * 
+         * @throws EOFException if already at the end of file.
+         * @throws IOException  if the entry could not be read
+         */
+        abstract int read(int index, ArrayDataInput in) throws EOFException, IOException;
+
+        /**
+         * Writes a since table entry to an output
+         * 
+         * @param  index       the zero-based row index of the column entry
+         * @param  out         the output to write to
+         * 
+         * @throws IOException if the entry could not be written
+         */
+        abstract void write(int index, ArrayDataOutput out) throws IOException;
+
+        /**
+         * Reads a sequence of consecutive table entries from an input
+         * 
+         * @param  from         the zero-based row index of the first column entry to read
+         * @param  n            the number of consecutive rows to read
+         * @param  in           the input to read from
+         * 
+         * @return              the number of bytes read from the input.
+         * 
+         * @throws EOFException if already at the end of file.
+         * @throws IOException  if the entry could not be read
+         */
+        abstract int read(int from, int n, ArrayDataInput in) throws EOFException, IOException;
+
+        /**
+         * Writes a sequence of consecutive table entries to an output
+         * 
+         * @param  from        the zero-based row index of the first column entry to write
+         * @param  n           the number of consecutive rows to write
+         * @param  in          the output to write to
+         * 
+         * @throws IOException if the entry could not be written
+         */
+        abstract void write(int from, int n, ArrayDataOutput out) throws IOException;
+
+        /**
+         * Checks if an object is consistent with becoming an entry in this column.
+         * 
+         * @param  x              an object that is expected to be a compatible column entry
+         * 
+         * @throws TableException if the object is not consistent with the data expected for this column.
+         */
+        void checkEntry(Object x) throws TableException {
+
+            if (x == null) {
+                throw new TableException("Unexpected null element");
+            }
+
+            if (!baseType().equals(x.getClass().getComponentType())) {
+                throw new TableException(
+                        "Incompatible element type: " + x.getClass().getName() + ", expected " + arrayType());
+            }
+
+            if (Array.getLength(x) != elementCount()) {
+                throw new TableException(
+                        "Incompatible element size: " + Array.getLength(x) + ", expected " + elementCount());
+            }
+
+        }
+
+        /**
+         * Returns the entry at the specified index as an array. Primitive elements will be wrapped into an array of one
+         * 
+         * @param  i the zero-based row index of the entry.
+         * 
+         * @return   the entry as an array. Primitive values will be returned as a new array of one.
+         */
+        abstract Object getArrayElement(int i);
+
+        /**
+         * Sets a new array entry at the specified index. Primitive values must be be wrapped into an array of one.
+         * 
+         * @param i the zero-based row index of the entry.
+         * @param o the new entry as an array. Primitive values must be wrapped into an array of one.
+         */
+        abstract void setArrayElement(int i, Object o);
+
+        /**
+         * Resized this columns storage to an allocation of the specified size. The size should be greater or equals to
+         * the number of elements already contained to avoid loss of data.
+         * 
+         * @param size the new allocation (number of rows that can be contained)
+         */
+        abstract void resize(int size);
+
+        /**
+         * Ensures that the column has storage allocated to contain the speciifed number of entries, and grows the
+         * column's allocation as necessaty to contain the specified number of rows in the future.
+         * 
+         * @param size the number of rows that the table should be able to contain
+         */
+        void ensureSize(int size) {
+            if (size > capacity()) {
+                resize(size);
+            }
+        }
+
+        /**
+         * Trims the table to the specified size, as needed. The size should be greater or equals to the number of
+         * elements already contained to avoid loss of data.
+         * 
+         * @param size the new allocation (number of rows that can be contained)
+         */
+        void trim(int size) {
+            if (capacity() > size) {
+                resize(size);
+            }
+        }
+
+        @SuppressWarnings("unchecked")
+        @Override
+        protected Column<Data> clone() {
+            try {
+                return (Column<Data>) super.clone();
+            } catch (CloneNotSupportedException e) {
+                return null;
+            }
+        }
+
+        @SuppressWarnings("unchecked")
+        Data copyData(int length) {
+            Data copy = (Data) Array.newInstance(baseType(), length);
+            System.arraycopy(data, 0, copy, 0, Math.min(length, Array.getLength(data)));
+            return copy;
+        }
+
+        /**
+         * Makes a copy of this column of the specified allocation for the number of rows in the copy. If the size is
+         * less than the number of entries this column contains, the excess entries will be discared from the copy.
+         * 
+         * @param  size the number of rows the copy might contain.
+         * 
+         * @return      A copy of this column with storage for the specified number of rows.
+         */
+        Column<Data> copy(int size) {
+            Column<Data> c = clone();
+            c.data = copyData(size);
+            return c;
         }
     }
 
     /**
-     * Read a column of a table.
-     *
-     * @param  is          The input stream to read from.
-     * @param  rowStart    first row to read
-     * @param  rowEnd      row number that should not be read anymore
-     * @param  columnNr    the columnNumber to read.
-     *
-     * @throws IOException if the reading failed
+     * A column for data consisting of 8-bit bytes.
+     * 
+     * @author Attila Kovacs
      */
-    public void read(ArrayDataInput is, int rowStart, int rowEnd, int columnNr) throws IOException {
-        int[] columnIndex = new int[MAX_COLUMN_INDEXES];
-        // While we have not finished reading the table..
-        for (int row = 0; row < nrow; row++) {
-            if (row >= rowStart && row < rowEnd) {
-                Arrays.fill(columnIndex, 0);
-                // Loop over the columns within the row.
-                for (int col = 0; col < arrays.length; col++) {
-                    int arrOffset = sizes[col] * row;
-                    int size = sizes[col];
-                    char colType = types[col];
-                    if (col == columnNr) {
-                        POINTER_ACCESSORS_BY_TYPE[colType].read(this, is, columnIndex[colType], arrOffset, size);
-                    }
-                    columnIndex[colType]++;
-                }
+    private static class Bytes extends Column<byte[]> {
+
+        /** Construct as new container for a byte-based data column */
+        Bytes() {
+            super(ElementType.BYTE);
+        }
+
+        @Override
+        void resize(int size) {
+            data = Arrays.copyOf(data, size);
+        }
+
+        @Override
+        int read(int index, ArrayDataInput in) throws IOException {
+            int i = in.read();
+            if (i < 0) {
+                throw new EOFException();
             }
+            data[index] = (byte) i;
+            return 1;
+        }
+
+        @Override
+        void write(int index, ArrayDataOutput out) throws IOException {
+            out.write(data[index]);
+        }
+
+        @Override
+        int read(int from, int n, ArrayDataInput in) throws IOException {
+            int got = in.read(data, from, n);
+            if (got < 0) {
+                throw new EOFException();
+            }
+            return -1;
+        }
+
+        @Override
+        void write(int from, int n, ArrayDataOutput out) throws IOException {
+            out.write(data, from, n);
+        }
+
+        @Override
+        byte[] getArrayElement(int i) {
+            return new byte[] {data[i]};
+        }
+
+        @Override
+        void setArrayElement(int i, Object o) {
+            data[i] = ((byte[]) o)[0];
+        }
+
+    }
+
+    /**
+     * A column for data consisting of boolean values.
+     * 
+     * @author Attila Kovacs
+     */
+    private static class Booleans extends Column<boolean[]> {
+
+        /** Construct as new container for a boolean-based data column */
+        Booleans() {
+            super(ElementType.BOOLEAN);
+        }
+
+        @Override
+        void resize(int size) {
+            data = Arrays.copyOf(data, size);
+        }
+
+        @Override
+        int read(int index, ArrayDataInput in) throws IOException {
+            data[index] = in.readBoolean();
+            return 1;
+        }
+
+        @Override
+        void write(int index, ArrayDataOutput out) throws IOException {
+            out.writeBoolean(data[index]);
+        }
+
+        @Override
+        int read(int from, int n, ArrayDataInput in) throws IOException {
+            return in.read(data, from, n);
+        }
+
+        @Override
+        void write(int from, int n, ArrayDataOutput out) throws IOException {
+            out.write(data, from, n);
+        }
+
+        @Override
+        boolean[] getArrayElement(int i) {
+            return new boolean[] {data[i]};
+        }
+
+        @Override
+        void setArrayElement(int i, Object o) {
+            data[i] = ((boolean[]) o)[0];
         }
     }
+
+    /**
+     * A column for data consisting of 16-bit unicode character values.
+     * 
+     * @author Attila Kovacs
+     */
+    private static class Chars extends Column<char[]> {
+
+        /** Construct as new container for a unicode-based data column */
+        Chars() {
+            super(ElementType.CHAR);
+        }
+
+        @Override
+        void resize(int size) {
+            data = Arrays.copyOf(data, size);
+        }
+
+        @Override
+        int read(int index, ArrayDataInput in) throws IOException {
+            data[index] = in.readChar();
+            return ElementType.CHAR.size();
+        }
+
+        @Override
+        void write(int index, ArrayDataOutput out) throws IOException {
+            out.writeChar(data[index]);
+        }
+
+        @SuppressFBWarnings(value = "RR_NOT_CHECKED", justification = "not exposed and never needed locally")
+        @Override
+        int read(int from, int n, ArrayDataInput in) throws IOException {
+            return in.read(data, from, n);
+        }
+
+        @Override
+        void write(int from, int n, ArrayDataOutput out) throws IOException {
+            out.write(data, from, n);
+        }
+
+        @Override
+        char[] getArrayElement(int i) {
+            return new char[] {data[i]};
+        }
+
+        @Override
+        void setArrayElement(int i, Object o) {
+            data[i] = ((char[]) o)[0];
+        }
+    }
+
+    /**
+     * A column for data consisting of 16-bit integer values.
+     * 
+     * @author Attila Kovacs
+     */
+    private static class Shorts extends Column<short[]> {
+
+        /** Construct as new container for a 16-bit integer based data column */
+        Shorts() {
+            super(ElementType.SHORT);
+        }
+
+        @Override
+        void resize(int size) {
+            data = Arrays.copyOf(data, size);
+        }
+
+        @Override
+        int read(int index, ArrayDataInput in) throws IOException {
+            int i = in.readUnsignedShort();
+            if (i < 0) {
+                throw new EOFException();
+            }
+            data[index] = (short) i;
+            return Short.BYTES;
+        }
+
+        @Override
+        void write(int index, ArrayDataOutput out) throws IOException {
+            out.writeShort(data[index]);
+        }
+
+        @SuppressFBWarnings(value = "RR_NOT_CHECKED", justification = "not exposed and never needed locally")
+        @Override
+        int read(int from, int n, ArrayDataInput in) throws IOException {
+            return in.read(data, from, n);
+        }
+
+        @Override
+        void write(int from, int n, ArrayDataOutput out) throws IOException {
+            out.write(data, from, n);
+        }
+
+        @Override
+        short[] getArrayElement(int i) {
+            return new short[] {data[i]};
+        }
+
+        @Override
+        void setArrayElement(int i, Object o) {
+            data[i] = ((short[]) o)[0];
+        }
+    }
+
+    /**
+     * A column for data consisting of 32-bit integer values.
+     * 
+     * @author Attila Kovacs
+     */
+    private static class Integers extends Column<int[]> {
+
+        /** Construct as new container for a 32-bit integer based data column */
+        Integers() {
+            super(ElementType.INT);
+        }
+
+        @Override
+        void resize(int size) {
+            data = Arrays.copyOf(data, size);
+        }
+
+        @Override
+        int read(int index, ArrayDataInput in) throws IOException {
+            data[index] = in.readInt();
+            return Integer.BYTES;
+        }
+
+        @Override
+        void write(int index, ArrayDataOutput out) throws IOException {
+            out.writeInt(data[index]);
+        }
+
+        @Override
+        int read(int from, int n, ArrayDataInput in) throws IOException {
+            return in.read(data, from, n);
+        }
+
+        @Override
+        void write(int from, int n, ArrayDataOutput out) throws IOException {
+            out.write(data, from, n);
+        }
+
+        @Override
+        int[] getArrayElement(int i) {
+            return new int[] {data[i]};
+        }
+
+        @Override
+        void setArrayElement(int i, Object o) {
+            data[i] = ((int[]) o)[0];
+        }
+    }
+
+    /**
+     * A column for data consisting of 64-bit integer values.
+     * 
+     * @author Attila Kovacs
+     */
+    private static class Longs extends Column<long[]> {
+
+        /** Construct as new container for a 64-bit integer based data column */
+        Longs() {
+            super(ElementType.LONG);
+        }
+
+        @Override
+        void resize(int size) {
+            data = Arrays.copyOf(data, size);
+        }
+
+        @Override
+        int read(int index, ArrayDataInput in) throws IOException {
+            data[index] = in.readLong();
+            return Long.BYTES;
+        }
+
+        @Override
+        void write(int index, ArrayDataOutput out) throws IOException {
+            out.writeLong(data[index]);
+        }
+
+        @Override
+        int read(int from, int n, ArrayDataInput in) throws IOException {
+            return in.read(data, from, n);
+        }
+
+        @Override
+        void write(int from, int n, ArrayDataOutput out) throws IOException {
+            out.write(data, from, n);
+        }
+
+        @Override
+        long[] getArrayElement(int i) {
+            return new long[] {data[i]};
+        }
+
+        @Override
+        void setArrayElement(int i, Object o) {
+            data[i] = ((long[]) o)[0];
+        }
+    }
+
+    /**
+     * A column for data consisting of 32-bit floating point values.
+     * 
+     * @author Attila Kovacs
+     */
+    private static class Floats extends Column<float[]> {
+
+        /** Construct as new container for a 32-bit floating-point based data column */
+        Floats() {
+            super(ElementType.FLOAT);
+        }
+
+        @Override
+        void resize(int size) {
+            data = Arrays.copyOf(data, size);
+        }
+
+        @Override
+        int read(int index, ArrayDataInput in) throws IOException {
+            data[index] = in.readFloat();
+            return Float.BYTES;
+        }
+
+        @Override
+        void write(int index, ArrayDataOutput out) throws IOException {
+            out.writeFloat(data[index]);
+        }
+
+        @Override
+        int read(int from, int n, ArrayDataInput in) throws IOException {
+            return in.read(data, from, n);
+        }
+
+        @Override
+        void write(int from, int n, ArrayDataOutput out) throws IOException {
+            out.write(data, from, n);
+        }
+
+        @Override
+        float[] getArrayElement(int i) {
+            return new float[] {data[i]};
+        }
+
+        @Override
+        void setArrayElement(int i, Object o) {
+            data[i] = ((float[]) o)[0];
+        }
+    }
+
+    /**
+     * A column for data consisting of 64-bit floating point values.
+     * 
+     * @author Attila Kovacs
+     */
+    private static class Doubles extends Column<double[]> {
+
+        /** Construct as new container for a 32-bit floating-point based data column */
+        Doubles() {
+            super(ElementType.DOUBLE);
+        }
+
+        @Override
+        void resize(int size) {
+            data = Arrays.copyOf(data, size);
+        }
+
+        @Override
+        int read(int index, ArrayDataInput in) throws IOException {
+            data[index] = in.readDouble();
+            return Double.BYTES;
+        }
+
+        @Override
+        void write(int index, ArrayDataOutput out) throws IOException {
+            out.writeDouble(data[index]);
+        }
+
+        @Override
+        int read(int from, int n, ArrayDataInput in) throws IOException {
+            return in.read(data, from, n);
+        }
+
+        @Override
+        void write(int from, int n, ArrayDataOutput out) throws IOException {
+            out.write(data, from, n);
+        }
+
+        @Override
+        double[] getArrayElement(int i) {
+            return new double[] {data[i]};
+        }
+
+        @Override
+        void setArrayElement(int i, Object o) {
+            data[i] = ((double[]) o)[0];
+        }
+    }
+
+    /**
+     * A column for data consisting of Objects (primitive arrays).
+     * 
+     * @author Attila Kovacs
+     */
+    private static class Generic extends Column<Object[]> {
+        private Class<?> type;
+        private int size;
+
+        /**
+         * Construct as new container for an object (primitive array) based data column
+         * 
+         * @param type the primitive type of elements this columns contains
+         * @param size the primitive array size per column entry
+         */
+        Generic(Class<?> type, int size) {
+            super(ElementType.forClass(type));
+            this.type = type;
+            this.size = size;
+        }
+
+        @Override
+        void init(Class<?> storeType) {
+            data = (Object[]) Array.newInstance(storeType, 0, 0);
+        }
+
+        @Override
+        int elementCount() {
+            return size;
+        }
+
+        @Override
+        void resize(int newSize) {
+            data = Arrays.copyOf(data, newSize);
+        }
+
+        @Override
+        int read(int index, ArrayDataInput in) throws IOException {
+            in.readArrayFully(data[index]);
+            return size * getElementType().size();
+        }
+
+        @Override
+        void write(int index, ArrayDataOutput out) throws IOException {
+            out.writeArray(data[index]);
+        }
+
+        @Override
+        int read(int from, int n, ArrayDataInput in) throws IOException {
+            int to = from + n;
+            for (int i = from; i < to; i++) {
+                in.readArrayFully(data[i]);
+            }
+            return n * size * getElementType().size();
+        }
+
+        @Override
+        void write(int from, int n, ArrayDataOutput out) throws IOException {
+            int to = from + n;
+            for (int i = from; i < to; i++) {
+                out.writeArray(data[i]);
+            }
+        }
+
+        @Override
+        Object getArrayElement(int i) {
+            return data[i];
+        }
+
+        @Override
+        void setArrayElement(int i, Object o) {
+            data[i] = o;
+        }
+
+        @Override
+        Object[] copyData(int length) {
+            Object[] array = Arrays.copyOf(data, length);
+            for (int i = 0; i < length; i++) {
+                array[i] = Array.newInstance(type, size);
+                System.arraycopy(data[i], 0, array[i], 0, size);
+            }
+            return array;
+        }
+
+        @Override
+        Object getFlatData() {
+            Object array = Array.newInstance(type, data.length * size);
+            int offset = 0;
+            for (int i = 0; i < data.length; i++, offset += size) {
+                System.arraycopy(data[i], 0, array, offset, size);
+            }
+            return array;
+        }
+    }
+
 }

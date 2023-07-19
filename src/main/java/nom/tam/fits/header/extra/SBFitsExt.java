@@ -39,12 +39,12 @@ import nom.tam.fits.header.IFitsHeader;
  * A Set of FITS Standard Extensions for Amateur Astronomical Processing Software Packages published by SBIG.
  * </p>
  * <p>
- * Please note that SBIG has published a FITS Standard SBIGFITSEXT that SBIG with CCDOps , Software Bisque with CCDSoft
+ * Please note that SBIG has published a FITS Standard SBIGFITSEXT that SBIG with CCDOps, Software Bisque with CCDSoft
  * and Diffraction Limited with MaximDl all agreed to and implemented.
  * </p>
  * <p>
- * See
- * <a href="http://archive.sbig.com/pdffiles/SBFITSEXT_1r0.pdf">http://archive.sbig.com/pdffiles/SBFITSEXT_1r0.pdf</a>
+ * See <a href= "https://diffractionlimited.com/wp-content/uploads/2016/11/sbfitsext_1r0.pdf">
+ * https://diffractionlimited.com/wp-content/uploads/2016/11/sbfitsext_1r0.pdf</a>
  * </p>
  *
  * @author Richard van Nieuwenhoven.

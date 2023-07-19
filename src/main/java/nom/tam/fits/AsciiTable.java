@@ -655,8 +655,20 @@ public class AsciiTable extends AbstractTableData {
     }
 
     /**
-     * @deprecated Strongly discouraged, since it returns data in an unnatural flattened format or heap pointers only
-     *                 for variable-sized data (use {@link #getElement(int, int)} instead)
+     * <p>
+     * Returns the data for a particular column in as a flattened 1D array of elements. See {@link #addColumn(Object)}
+     * for more information about the format of data elements in general.
+     * </p>
+     * 
+     * @param  col           The 0-based column index.
+     * 
+     * @return               an array of primitives (for scalar columns), or else an <code>Object[]</code> array.
+     * 
+     * @throws FitsException if the table could not be accessed
+     *
+     * @see                  #setColumn(int, Object)
+     * @see                  #getElement(int, int)
+     * @see                  #getNCols()
      */
     @Override
     public Object getColumn(int col) throws FitsException {
@@ -888,6 +900,11 @@ public class AsciiTable extends AbstractTableData {
         return res;
     }
 
+    /**
+     * @deprecated It is not entirely foolproof for keeping the header in sync -- it is better to (re)wrap tables in a
+     *                 new HDU and editing the header as necessary to incorporate custom entries. May be removed from
+     *                 the API in the future.
+     */
     @Override
     public void updateAfterDelete(int oldNCol, Header hdr) throws FitsException {
 
@@ -907,7 +924,9 @@ public class AsciiTable extends AbstractTableData {
     @Override
     public void write(ArrayDataOutput str) throws FitsException {
         // Make sure we have the data in hand.
-        ensureData();
+        if (str != currInput) {
+            ensureData();
+        }
 
         // If buffer is still around we can just reuse it,
         // since nothing we've done has invalidated it.

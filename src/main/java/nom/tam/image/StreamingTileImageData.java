@@ -1,21 +1,18 @@
-package nom.tam.fits;
-
-import java.io.IOException;
-import java.util.Arrays;
+package nom.tam.image;
 
 /*-
  * #%L
- * nom.tam FITS library
+ * nom.tam.fits
  * %%
  * Copyright (C) 1996 - 2023 nom-tam-fits
  * %%
  * This is free and unencumbered software released into the public domain.
- *
+ * 
  * Anyone is free to copy, modify, publish, use, compile, sell, or
  * distribute this software, either in source code form or as a compiled
  * binary, for any purpose, commercial or non-commercial, and by any
  * means.
- *
+ * 
  * In jurisdictions that recognize copyright laws, the author or authors
  * of this software dedicate any and all copyright interest in the
  * software to the public domain. We make this dedication for the benefit
@@ -23,7 +20,7 @@ import java.util.Arrays;
  * successors. We intend this dedication to be an overt act of
  * relinquishment in perpetuity of all present and future rights to this
  * software under copyright law.
- *
+ * 
  * THE SOFTWARE IS PROVIDED "AS IS", WITHOUT WARRANTY OF ANY KIND,
  * EXPRESS OR IMPLIED, INCLUDING BUT NOT LIMITED TO THE WARRANTIES OF
  * MERCHANTABILITY, FITNESS FOR A PARTICULAR PURPOSE AND NONINFRINGEMENT.
@@ -34,14 +31,24 @@ import java.util.Arrays;
  * #L%
  */
 
-import nom.tam.image.ImageTiler;
+import java.io.IOException;
+import java.util.Arrays;
+
+import nom.tam.fits.FitsException;
+import nom.tam.fits.FitsUtil;
+import nom.tam.fits.Header;
+import nom.tam.fits.ImageData;
 import nom.tam.util.ArrayDataOutput;
 import nom.tam.util.ArrayFuncs;
 
 /**
+ * <p>
  * Simple streaming image tile implementation. Useful for web applications that provide a cutout service. The idea is
  * that the ImageData object will be extracted from an overlapping HDU (without first reading so as not to fill up the
- * memory), and one of these objects are created for the output. <code>
+ * memory), and one of these objects are created for the output.
+ * </p>
+ * 
+ * <pre>
  *     Fits source = new Fits(myFile);
  *     ImageHDU imageHDU = source.getHDU(1);
  *
@@ -63,7 +70,7 @@ import nom.tam.util.ArrayFuncs;
  *
  *     // The cutout happens at write time!
  *     output.write(outputStream);
- * </code>
+ * </pre>
  *
  * @since 1.18
  */
@@ -117,6 +124,7 @@ public class StreamingTileImageData extends ImageData {
         return Arrays.copyOf(steps, steps.length);
     }
 
+    @SuppressWarnings("deprecation")
     @Override
     public void write(ArrayDataOutput o) throws FitsException {
         try {
