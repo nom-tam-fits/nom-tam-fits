@@ -32,6 +32,7 @@ You may find the following links useful:
  - [API Documentation](http://nom-tam-fits.github.io/nom-tam-fits/apidocs/index.html)
  - [FITS Standard page](https://fits.gsfc.nasa.gov/fits_standard.html)
  - [Releases](https://github.com/nom-tam-fits/nom-tam-fits/releases)
+ - [History of Changes](http://nom-tam-fits.github.io/nom-tam-fits/changes-report.html)
  - [Project site](http://nom-tam-fits.github.io/nom-tam-fits/index.html)
  - [Github repository](https://github.com/nom-tam-fits/nom-tam-fits)
  - [Maven Central repository](https://mvnrepository.com/artifact/gov.nasa.gsfc.heasarc/nom-tam-fits)
@@ -63,15 +64,27 @@ This is an open-source, community maintained, project hosted on github as [nom-t
 
 The current FITS standard (4.0) recognizes the following principal HDU / data types: 
 
- 1. **Image** can store a regular array of 1-999 dimensions with a type corresponding to Java numerical primitives, such as a one-dimensional time series of samples (e.g. `int[]`), or a three-dimensional cube of voxels (e.g. `float[][][]`). (Note, that Java supports images up to 255 dimensions only but it's unlikely you'll find that limiting for your application.)
+ 1. **Image** can store a regular array of 1-999 dimensions with a type corresponding to Java numerical primitives, such as a 
+ one-dimensional time series of samples (e.g. `int[]`), or a three-dimensional cube of voxels (e.g. `float[][][]`). (Note, that 
+ Java supports images up to 255 dimensions only but it's unlikely you'll find that limiting for your application.)
 
- 2. **Binary table** can store rows and columns of assorted of elements. Each column entry may be either a single value, or a fixed-sized (multidimensional) array, or else a variable-length 1D arrays of a given type. All Java primitive integer and floating-point types are supported, as wells as `String`, `Boolean` (logical), `boolean` (bits), and `ComplexValue` types.
+ 2. **Binary table** can store rows and columns of assorted of elements. Each column entry may be either a single value, or a 
+ fixed-sized (multidimensional) array, or else a variable-length 1D arrays of a given type. All Java primitive numerical types 
+ are supported, but also `String`, `Boolean` (logical), `boolean` (bits), and `ComplexValue` types.
 
- 3. **ASCII Table** (_discouraged_) is a simpler, less capable table format with support for storing singular primitive numerical types, and Strings only -- in human-readable format. You should probably use the more flexible (and more compact) binary tables instead for your application, and reserve use of ASCII tables for reading data that may still contain these.
+ 3. **ASCII Table** (_discouraged_) is a simpler, less capable table format with support for storing singular primitive numerical 
+ types, and Strings only -- in human-readable format. You should probably use the more flexible (and more compact) binary tables 
+ instead for your application, and reserve use of ASCII tables for reading data that may still contain these.
 
- 4. **Random-Groups** (_discouraged_) can contain a set of images of the same type and dimensions along with a set of parameters of the same type (for example an `int[][]` image, along with a set of `int` parameters). They were never widely used and the FITS 4.0 standard discourages them going forward, given that binary tables provide far superior capabilities for storing the same type of data. Support for these type of HDUs is thus very basic, and aimed mainly at providing a way to access data that was already written in this format.
+ 4. **Random-Groups** (_discouraged_) can contain a set of images of the same type and dimensions along with a set of parameters 
+ of the same type (for example an `int[][]` image, along with a set of `int` parameters). They were never widely used and the 
+ FITS 4.0 standard discourages them going forward, given that binary tables provide far superior capabilities for storing the 
+ same type of data. Support for these type of HDUs is thus very basic, and aimed mainly at providing a way to access data that 
+ was already written in this format.
 
- 5. **Foreign File** can encapsulate various other files within the FITS. Foreign file HDUs are a recognised convention, but not (yet) officially part of the FITS standard. We do not explicitly support foreign file encapsulation yet, but it is something that we are considering for a future release.
+ 5. **Foreign File** can encapsulate various other files within the FITS. Foreign file HDUs are a recognised convention, but not 
+ (yet) officially part of the FITS standard. We do not explicitly support foreign file encapsulation yet, but it is something that 
+ we are considering for a future release.
  
  In addition to the basic HDU types, there are extension of table HDUs that serve specific purposes, such as:
 
@@ -79,7 +92,10 @@ The current FITS standard (4.0) recognizes the following principal HDU / data ty
  format, with tiling support to make parts easily accessible from the whole. We provide full support for compressing and decompressing
  images and tables, and for accessing specific regions of compressed data stored in this format.
 
- - The **Hierarchical grouping** convention is an extension of table HDUs (ASCII or binary) for storing information on the hierarchical relation of HDUs contained within (or external to) the FITS. The hierarchical grouping is a recognized convention, but not (yet) officially part of the FITS standard. We do not explicitly support this convention yet, but it is something that we are considering for a future release.
+ - The **Hierarchical grouping** convention is an extension of table HDUs (ASCII or binary) for storing information on the 
+ hierarchical relation of HDUs contained within (or external to) the FITS. The hierarchical grouping is a recognized convention, 
+ but not (yet) officially part of the FITS standard. We do not explicitly support this convention yet, but it is something that 
+ we are considering for a future release.
 
 
 
