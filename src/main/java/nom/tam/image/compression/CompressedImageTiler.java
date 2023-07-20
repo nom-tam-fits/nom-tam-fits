@@ -537,7 +537,7 @@ public class CompressedImageTiler implements ImageTiler {
         final int[] imageDimensions = new int[n];
         final Header header = getHeader();
         for (int i = 0; i < n; i++) {
-            imageDimensions[i] = header.getIntValue(Compression.ZNAXISn.n(i + 1));
+            imageDimensions[n - i - 1] = header.getIntValue(Compression.ZNAXISn.n(i + 1));
         }
 
         return imageDimensions;
