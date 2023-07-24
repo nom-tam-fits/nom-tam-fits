@@ -545,7 +545,7 @@
 <a class="jxr_linenumber" name="L537" href="#L537">537</a>         <strong class="jxr_keyword">final</strong> <strong class="jxr_keyword">int</strong>[] imageDimensions = <strong class="jxr_keyword">new</strong> <strong class="jxr_keyword">int</strong>[n];
 <a class="jxr_linenumber" name="L538" href="#L538">538</a>         <strong class="jxr_keyword">final</strong> <a name="Header" href="../../../../nom/tam/fits/Header.html#Header">Header</a> header = getHeader();
 <a class="jxr_linenumber" name="L539" href="#L539">539</a>         <strong class="jxr_keyword">for</strong> (<strong class="jxr_keyword">int</strong> i = 0; i &lt; n; i++) {
-<a class="jxr_linenumber" name="L540" href="#L540">540</a>             imageDimensions[i] = header.getIntValue(Compression.ZNAXISn.n(i + 1));
+<a class="jxr_linenumber" name="L540" href="#L540">540</a>             imageDimensions[n - i - 1] = header.getIntValue(Compression.ZNAXISn.n(i + 1));
 <a class="jxr_linenumber" name="L541" href="#L541">541</a>         }
 <a class="jxr_linenumber" name="L542" href="#L542">542</a> 
 <a class="jxr_linenumber" name="L543" href="#L543">543</a>         <strong class="jxr_keyword">return</strong> imageDimensions;

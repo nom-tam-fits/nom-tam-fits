@@ -239,7 +239,7 @@
 <a class="jxr_linenumber" name="L231" href="#L231">231</a> 
 <a class="jxr_linenumber" name="L232" href="#L232">232</a>     <strong class="jxr_keyword">private</strong> <strong class="jxr_keyword">final</strong> <strong class="jxr_keyword">int</strong> fsMax;
 <a class="jxr_linenumber" name="L233" href="#L233">233</a> 
-<a class="jxr_linenumber" name="L234" href="#L234">234</a>     <strong class="jxr_keyword">private</strong> RiceCompressor(<a name="RiceCompressOption" href="../../../../../../nom/tam/fits/compression/algorithm/rice/RiceCompressOption.html#RiceCompressOption">RiceCompressOption</a> option) {
+<a class="jxr_linenumber" name="L234" href="#L234">234</a>     <strong class="jxr_keyword">private</strong> RiceCompressor(<a name="RiceCompressOption" href="../../../../../../nom/tam/fits/compression/algorithm/rice/RiceCompressOption.html#RiceCompressOption">RiceCompressOption</a> option) <strong class="jxr_keyword">throws</strong> UnsupportedOperationException {
 <a class="jxr_linenumber" name="L235" href="#L235">235</a>         blockSize = option.getBlockSize();
 <a class="jxr_linenumber" name="L236" href="#L236">236</a>         <strong class="jxr_keyword">if</strong> (option.getBytePix() == ElementType.BYTE.size()) {
 <a class="jxr_linenumber" name="L237" href="#L237">237</a>             fsBits = FS_BITS_FOR_BYTE;
@@ -254,7 +254,7 @@
 <a class="jxr_linenumber" name="L246" href="#L246">246</a>             fsMax = FS_MAX_FOR_INT;
 <a class="jxr_linenumber" name="L247" href="#L247">247</a>             bitsPerPixel = FitsIO.BITS_OF_4_BYTES;
 <a class="jxr_linenumber" name="L248" href="#L248">248</a>         } <strong class="jxr_keyword">else</strong> {
-<a class="jxr_linenumber" name="L249" href="#L249">249</a>             <strong class="jxr_keyword">throw</strong> <strong class="jxr_keyword">new</strong> UnsupportedOperationException(<span class="jxr_string">"Rice only supports 1/2/4 type per pixel"</span>);
+<a class="jxr_linenumber" name="L249" href="#L249">249</a>             <strong class="jxr_keyword">throw</strong> <strong class="jxr_keyword">new</strong> UnsupportedOperationException(<span class="jxr_string">"Implemented for 1/2/4 bytes only"</span>);
 <a class="jxr_linenumber" name="L250" href="#L250">250</a>         }
 <a class="jxr_linenumber" name="L251" href="#L251">251</a>         <em class="jxr_comment">/*</em>
 <a class="jxr_linenumber" name="L252" href="#L252">252</a> <em class="jxr_comment">         * From bsize derive: FSBITS = # bits required to store FS FSMAX = maximum value for FS BBITS = bits/pixel for</em>
