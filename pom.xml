@@ -8,10 +8,10 @@
   </parent>
   <groupId>gov.nasa.gsfc.heasarc</groupId>
   <artifactId>nom-tam-fits</artifactId>
-  <version>1.18.0-SNAPSHOT</version>
+  <version>1.18.0</version>
   <packaging>jar</packaging>
   <name>nom.tam.fits</name>
-  <description>Java library for reading and writing FITS files. FITS, the Flexible Image Transport System, is the format commonly used in the archiving and transport of astronomical data.</description>
+  <description>Java library for reading and writing FITS files. FITS, the Flexible Image Transport System, is commonly used for the archival and distribution of astronomical data.</description>
   <inceptionYear>1996</inceptionYear>
   <organization>
     <name>nom-tam-fits</name>
@@ -736,25 +736,6 @@
               <classpathScope>test</classpathScope>
               <mainClass>nom.tam.fits.doc.GenerateReleaseNote</mainClass>
             </configuration>
-          </plugin>
-          <plugin>
-            <artifactId>maven-assembly-plugin</artifactId>
-            <version>3.6.0</version>
-            <configuration>
-              <attach>false</attach>
-              <descriptors>
-                <descriptor>src/assembly/heasarc.xml</descriptor>
-              </descriptors>
-            </configuration>
-            <executions>
-              <execution>
-                <id>make-assembly</id>
-                <phase>package</phase>
-                <goals>
-                  <goal>single</goal>
-                </goals>
-              </execution>
-            </executions>
           </plugin>
         </plugins>
       </build>

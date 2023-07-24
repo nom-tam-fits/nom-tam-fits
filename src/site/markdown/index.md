@@ -8,6 +8,7 @@
 
 # Getting started with the _nom.tam.fits_ library.
 
+Updated for 1.18 and/or later 1.x releases.
 
 ## Table of Contents
 
@@ -29,10 +30,10 @@
 
 You may find the following links useful:
 
- - [API Documentation](http://nom-tam-fits.github.io/nom-tam-fits/apidocs/index.html)
- - [FITS Standard page](https://fits.gsfc.nasa.gov/fits_standard.html)
+ - [API documentation](http://nom-tam-fits.github.io/nom-tam-fits/apidocs/index.html)
+ - [FITS Standard](https://fits.gsfc.nasa.gov/fits_standard.html)
  - [Releases](https://github.com/nom-tam-fits/nom-tam-fits/releases)
- - [History of Changes](http://nom-tam-fits.github.io/nom-tam-fits/changes-report.html)
+ - [History of changes](http://nom-tam-fits.github.io/nom-tam-fits/changes-report.html)
  - [Project site](http://nom-tam-fits.github.io/nom-tam-fits/index.html)
  - [Github repository](https://github.com/nom-tam-fits/nom-tam-fits)
  - [Maven Central repository](https://mvnrepository.com/artifact/gov.nasa.gsfc.heasarc/nom-tam-fits)
