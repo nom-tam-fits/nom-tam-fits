@@ -1,5 +1,11 @@
 <document xmlns="http://maven.apache.org/changes/1.0.0" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:schemaLocation="http://maven.apache.org/changes/1.0.0 http://maven.apache.org/xsd/changes-1.0.0.xsd">
 <body>
+
+   <release version="1.18.1-SNAPSHOT" date="2023-07-26" description="Bug fix release.">
+      <action type="fix" dev="attipaci" issue="466">
+	      Fixed broken default reading of ASCII tables, without explicitly setting FitsFactory.setUseAsciiTables(true).
+      </action>
+   </release>
 	
    <release version="1.18.0" date="2023-07-24" description="Feature release with compression fixes and many improvements.">
       <action type="fix" dev="attipaci" issue="377">
