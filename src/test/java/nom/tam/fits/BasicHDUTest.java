@@ -34,11 +34,15 @@ package nom.tam.fits;
 import static org.junit.Assert.assertEquals;
 
 import java.io.PrintStream;
+import java.nio.ByteBuffer;
 
 import org.junit.Assert;
 import org.junit.Test;
 
 import nom.tam.fits.header.Standard;
+import nom.tam.util.ByteBufferInputStream;
+import nom.tam.util.ByteBufferOutputStream;
+import nom.tam.util.FitsOutputStream;
 
 public class BasicHDUTest {
 
@@ -71,5 +75,41 @@ public class BasicHDUTest {
         ImageData im = new ImageData(h);
         im.read(null);
         Assert.assertTrue(im.isEmpty());
+    }
+
+    @Test
+    public void testAsciiTableDefaultRead() throws Exception {
+        FitsFactory.setUseAsciiTables(true);
+        Object[] data = new Object[] {new int[] {1}, new double[] {2.0}, new String[] {"blah"}};
+        BasicHDU hdu = FitsFactory.hduFactory(data);
+
+        Assert.assertEquals(AsciiTableHDU.class, hdu.getClass());
+
+        Fits fits = new Fits();
+        fits.addHDU(hdu);
+
+        byte[] bytes = new byte[10000];
+        ByteBuffer buf = ByteBuffer.wrap(bytes);
+
+        ByteBufferOutputStream out = new ByteBufferOutputStream(buf);
+        fits.write(new FitsOutputStream(out));
+        fits.close();
+
+        FitsFactory.setUseAsciiTables(false);
+        buf.flip();
+        ByteBufferInputStream in = new ByteBufferInputStream(buf);
+        fits = new Fits(in);
+
+        hdu = fits.getHDU(1);
+        Assert.assertEquals(AsciiTableHDU.class, hdu.getClass());
+
+        Object[] readback = (Object[]) hdu.getKernel();
+
+        Assert.assertEquals(data.length, readback.length);
+        Assert.assertArrayEquals((int[]) data[0], (int[]) readback[0]);
+        Assert.assertArrayEquals((double[]) data[1], (double[]) readback[1], 1e-12);
+        Assert.assertArrayEquals((String[]) data[2], (String[]) readback[2]);
+
+        fits.close();
     }
 }

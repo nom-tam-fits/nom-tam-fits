@@ -297,7 +297,7 @@ public final class FitsFactory {
         if (RandomGroupsHDU.isHeader(hdr)) {
             return RandomGroupsHDU.manufactureData(hdr);
         }
-        if (current().isUseAsciiTables() && AsciiTableHDU.isHeader(hdr)) {
+        if (AsciiTableHDU.isHeader(hdr)) {
             return AsciiTableHDU.manufactureData(hdr);
         }
         if (CompressedImageHDU.isHeader(hdr)) {
