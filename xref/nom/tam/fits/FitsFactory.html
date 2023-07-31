@@ -305,7 +305,7 @@
 <a class="jxr_linenumber" name="L297" href="#L297">297</a>         <strong class="jxr_keyword">if</strong> (RandomGroupsHDU.isHeader(hdr)) {
 <a class="jxr_linenumber" name="L298" href="#L298">298</a>             <strong class="jxr_keyword">return</strong> RandomGroupsHDU.manufactureData(hdr);
 <a class="jxr_linenumber" name="L299" href="#L299">299</a>         }
-<a class="jxr_linenumber" name="L300" href="#L300">300</a>         <strong class="jxr_keyword">if</strong> (current().isUseAsciiTables() &amp;&amp; AsciiTableHDU.isHeader(hdr)) {
+<a class="jxr_linenumber" name="L300" href="#L300">300</a>         <strong class="jxr_keyword">if</strong> (AsciiTableHDU.isHeader(hdr)) {
 <a class="jxr_linenumber" name="L301" href="#L301">301</a>             <strong class="jxr_keyword">return</strong> AsciiTableHDU.manufactureData(hdr);
 <a class="jxr_linenumber" name="L302" href="#L302">302</a>         }
 <a class="jxr_linenumber" name="L303" href="#L303">303</a>         <strong class="jxr_keyword">if</strong> (CompressedImageHDU.isHeader(hdr)) {
