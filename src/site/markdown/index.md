@@ -1400,7 +1400,7 @@ The reverse process is simply via the `asImageHDU()` method. E.g.:
 When compressing or decompression images, all available CPU's are automatically utilized.
 
 
-#### Accesing image header values without decompressing:
+#### Accessing image header values without decompressing:
 
 You don't need to decompress the image to see what the decompressed image header is.
 You can simply call `CompressedImageHDU.getImageHeader()` to peek into the reconstructed header of 
@@ -1468,7 +1468,7 @@ The reverse process is simply via the `asBinaryTableHDU()` method. E.g.:
     BinaryTableHDU table = compressed.asBinaryTableHDU();
 ```
 
-#### Accesing image header values without decompressing
+#### Accessing image header values without decompressing
 
 You don't need to decompress the table to see what the decompressed table header is. You can 
 simply call `CompressedTableHDU.getTableHeader()` to peek into the reconstructed header of the original table 
