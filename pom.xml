@@ -672,7 +672,7 @@
     <dependency>
       <groupId>org.openjdk.jmh</groupId>
       <artifactId>jmh-generator-annprocess</artifactId>
-      <version>1.36</version>
+      <version>1.37</version>
       <scope>test</scope>
     </dependency>
     <!-- https://mvnrepository.com/artifact/javax.annotation/javax.annotation-api -->
