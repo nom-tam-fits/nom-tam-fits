@@ -50,6 +50,7 @@ import java.nio.channels.FileChannel;
  */
 class BufferedFileIO implements InputReader, OutputWriter, Flushable, Closeable {
 
+    /** Bit mask for a single byte */
     protected static final int BYTE_MASK = 0xFF;
 
     /** The underlying unbuffered random access file IO */
@@ -107,6 +108,14 @@ class BufferedFileIO implements InputReader, OutputWriter, Flushable, Closeable 
         writeAhead = false;
     }
 
+    /**
+     * Sets a new position in the file for subsequent reading or writing.
+     * 
+     * @param  newPos      the new byte offset from the beginning of the file. It may be beyond the current end of the
+     *                         file, for example for writing more data after some 'gap'.
+     * 
+     * @throws IOException if the position is negative or cannot be set.
+     */
     public final synchronized void seek(long newPos) throws IOException {
         // Check that the new position is valid
         if (newPos < 0) {

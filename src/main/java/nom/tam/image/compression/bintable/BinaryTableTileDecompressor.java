@@ -44,6 +44,7 @@ import nom.tam.util.FitsInputStream;
 /**
  * (<i>for internal use</i>) Handles the decompression of binary table 'tiles'.
  */
+@SuppressWarnings("javadoc")
 public class BinaryTableTileDecompressor extends BinaryTableTile {
 
     private final ByteBuffer compressedBytes;
@@ -55,7 +56,6 @@ public class BinaryTableTileDecompressor extends BinaryTableTile {
     /**
      * @deprecated (<i>for internal use</i>)
      */
-    @SuppressWarnings("javadoc")
     public BinaryTableTileDecompressor(CompressedTableData binData, ColumnTable<?> columnTable,
             BinaryTableTileDescription description) throws FitsException {
         super(columnTable, description);

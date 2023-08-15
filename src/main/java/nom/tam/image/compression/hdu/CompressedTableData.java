@@ -270,7 +270,8 @@ public class CompressedTableData extends BinaryTable {
     }
 
     /**
-     * This should only be called by {@link CompressedTableHDU}.
+     * (<i>for internal use</i>) Visibility may be reduced to the package level. This should only be called by
+     * {@link CompressedTableHDU}.
      */
     @SuppressWarnings("javadoc")
     protected void setColumnCompressionAlgorithms(String[] columnCompressionAlgorithms) {
@@ -278,7 +279,8 @@ public class CompressedTableData extends BinaryTable {
     }
 
     /**
-     * This should only be called by {@link CompressedTableHDU}.
+     * (<i>for internal use</i>) Visibility may be reduced to the package level. This should only be called by
+     * {@link CompressedTableHDU}.
      */
     @SuppressWarnings("javadoc")
     protected CompressedTableData setRowsPerTile(int value) {

@@ -52,6 +52,7 @@ import static nom.tam.fits.header.Compression.ZIMAGE;
  * 
  * @see CompressedImageHDU
  */
+@SuppressWarnings("deprecation")
 public class CompressedImageData extends BinaryTable {
 
     /**
@@ -167,9 +168,12 @@ public class CompressedImageData extends BinaryTable {
     }
 
     /**
-     * This should only be called by {@link CompressedImageHDU}.
+     * Sets the size of the image to be compressed.
+     * 
+     * @param  axes the image size
+     * 
+     * @return      itself This should only be called by {@link CompressedImageHDU}.
      */
-    @SuppressWarnings("javadoc")
     protected CompressedImageData setAxis(int[] axes) {
         tiledImageOperation().setAxes(axes);
         return this;
@@ -200,9 +204,14 @@ public class CompressedImageData extends BinaryTable {
     }
 
     /**
-     * This should only be called by {@link CompressedImageHDU}.
+     * Sets the tile size to use for sompressing.
+     * 
+     * @param  axes          the tile size along all dimensions. Only the last 2 dimensions may differ from 1.
+     * 
+     * @return               itself
+     * 
+     * @throws FitsException if the tile size is invalid. This should only be called by {@link CompressedImageHDU}.
      */
-    @SuppressWarnings("javadoc")
     protected CompressedImageData setTileSize(int... axes) throws FitsException {
         tiledImageOperation().setTileAxes(axes);
         return this;

@@ -59,6 +59,13 @@ public abstract class CompressColumnParameter<T, OPTION> extends CompressParamet
 
     private final Class<T> type;
 
+    /**
+     * Creates a new compression parameter, which stores a per-tile value for a compression option in a table column.
+     * 
+     * @param name   the FITS parameter name, that is the column name which stores the values
+     * @param option the compression option that uses the parameter value
+     * @param type   the Java class of the parameter, such as {@link java.lang.Integer} or {@link java.lang.String}.
+     */
     protected CompressColumnParameter(String name, OPTION option, Class<T> type) {
         super(name, option);
         column = new Data();

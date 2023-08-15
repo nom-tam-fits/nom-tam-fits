@@ -207,7 +207,15 @@ public class CompressedImageHDU extends BinaryTableHDU {
     }
 
     /**
-     * @deprecated (<i>for internal use</i>) Will reduce visibility in the future
+     * Returns an empty compressed image data object based on its description in a FITS header.
+     * 
+     * @param      hdr           the FITS header containing a description of the compressed image
+     * 
+     * @return                   an empty compressed image data corresponding to the header description.
+     * 
+     * @throws     FitsException if the header does not sufficiently describe a compressed image
+     * 
+     * @deprecated               (<i>for internal use</i>) Will reduce visibility in the future
      */
     @Deprecated
     public static CompressedImageData manufactureData(Header hdr) throws FitsException {
