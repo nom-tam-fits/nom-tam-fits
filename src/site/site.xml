@@ -6,7 +6,7 @@
 		<version>1.9</version>
 	</skin>
 	<bannerLeft>
-		<src>images/fits_logo.png</src>
+		<src>images/fits_logo_text.png</src>
 	</bannerLeft>
 	<publishDate position="left" format="yyyy-MM-dd" />
 	<version position="right" />
