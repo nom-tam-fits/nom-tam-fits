@@ -133,6 +133,9 @@ public class BinaryTableHDU extends TableHDU<BinaryTable> {
      *
      * @param      o a column table object, an Object[][], or an Object[]. This routine doesn't check that the
      *                   dimensions of arrays are properly consistent.
+     * 
+     * @return       <code>true</code> if the data object can be represented as a FITS binary table, otherwise
+     *                   <code>false</code>.
      *
      * @deprecated   (<i>for internal use</i>) Will reduce visibility in the future
      */

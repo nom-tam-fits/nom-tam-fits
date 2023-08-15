@@ -62,6 +62,13 @@ public abstract class AbstractTiledImageOperation<OPERATION extends ITileOperati
 
     private final Class<OPERATION> operationClass;
 
+    /**
+     * Creates a new tiling foperation.
+     * 
+     * @param      operationClass the class of tile operation.
+     * 
+     * @deprecated                (<i>for internal use</i>) This constructor should have protected visibility.
+     */
     public AbstractTiledImageOperation(Class<OPERATION> operationClass) {
         this.operationClass = operationClass;
     }
@@ -71,6 +78,11 @@ public abstract class AbstractTiledImageOperation<OPERATION extends ITileOperati
         return baseType;
     }
 
+    /**
+     * Returns the number of elements that a buffer must have to store the entire image.
+     * 
+     * @return The number of points in the full image.
+     */
     public int getBufferSize() {
         int bufferSize = 1;
         for (int axisValue : axes) {
@@ -124,10 +136,20 @@ public abstract class AbstractTiledImageOperation<OPERATION extends ITileOperati
         tileAxes = Arrays.copyOf(value, value.length);
     }
 
+    /**
+     * Checks if the image size has been defined.
+     * 
+     * @return <code>true</code> if the size of the image to be tiled has been set, otherwise <code>false</code>.
+     */
     protected boolean hasAxes() {
         return axes != null;
     }
 
+    /**
+     * Checks if the tiling has been defined and tile sizes are set.
+     * 
+     * @return <code>true</code> if the tile sizes have been defined already, otherwise <code>false</code>
+     */
     protected boolean hasTileAxes() {
         return tileAxes != null;
     }
@@ -142,6 +164,13 @@ public abstract class AbstractTiledImageOperation<OPERATION extends ITileOperati
         return l;
     }
 
+    /**
+     * Creates a tiling pattern for an image.
+     * 
+     * @param  init          the parameters that determine the tiling pattern
+     * 
+     * @throws FitsException if the parameters are invalid.
+     */
     @SuppressWarnings("unchecked")
     protected void createTiles(ITileOperationInitialisation<OPERATION> init) throws FitsException {
         int[] offset = new int[axes.length]; // Tile start in image (Java index order)
@@ -203,10 +232,20 @@ public abstract class AbstractTiledImageOperation<OPERATION extends ITileOperati
         }
     }
 
+    /**
+     * Returns the dimensionality of the image.
+     * 
+     * @return the dimensinality of the image, that is the number of cartesian axes it contains.
+     */
     protected int getNAxes() {
         return axes.length;
     }
 
+    /**
+     * Returns the number of tile operations that are needed to cover a tiled image.
+     * 
+     * @return the number of tiles in the image.
+     */
     protected int getNumberOfTileOperations() {
         return tileOperations.length;
     }
@@ -221,10 +260,20 @@ public abstract class AbstractTiledImageOperation<OPERATION extends ITileOperati
         return tileAxes;
     }
 
+    /**
+     * Returns an array of parallel tile oprations, which cover the full image.
+     * 
+     * @return an array of parallel tile operations.
+     */
     protected OPERATION[] getTileOperations() {
         return tileOperations;
     }
 
+    /**
+     * Sets the FITS element type that is contained in the tiles for this operation.
+     * 
+     * @param baseType the FITS element type of data in the tile.
+     */
     protected void setBaseType(ElementType<Buffer> baseType) {
         this.baseType = baseType;
     }

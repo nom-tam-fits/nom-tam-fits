@@ -39,10 +39,11 @@ import static nom.tam.fits.header.Compression.ZNAMEn;
 import static nom.tam.fits.header.Compression.ZVALn;
 
 /**
- * (<i>for internal use</i>)
+ * (<i>for internal use</i>) Visibility may be reduced to protected.
  * 
  * @param <OPTION> The generic type of the compression option for which this parameter is used.
  */
+@SuppressWarnings("javadoc")
 public abstract class CompressHeaderParameter<OPTION> extends CompressParameter<OPTION>
         implements ICompressHeaderParameter {
 

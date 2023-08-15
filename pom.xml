@@ -241,6 +241,7 @@
           <source>8</source>
           <aggregate>false</aggregate>
           <failOnError>true</failOnError>
+          <doclint>all,-missing</doclint>
         </configuration>
         <executions>
           <execution>

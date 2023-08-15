@@ -50,6 +50,7 @@ public class AbstractNullPixelMask {
 
     private static final byte[] EMPTY_BYTE_ARRAY = new byte[0];
 
+    /** Byte value signifying invalid / null data */
     protected static final byte NULL_INDICATOR = (byte) 1;
 
     private final TileBuffer tileBuffer;
@@ -62,6 +63,20 @@ public class AbstractNullPixelMask {
 
     private final ICompressorControl compressorControl;
 
+    /**
+     * Creates a new pixel mask got a given image tile and designated null
+     * value.
+     * 
+     * @param tileBuffer
+     *            the buffer containing the tile data
+     * @param tileIndex
+     *            the tile index
+     * @param nullValue
+     *            the integer value representing <code>null</code> or invalid
+     *            data
+     * @param compressorControl
+     *            The class managing the compression
+     */
     protected AbstractNullPixelMask(TileBuffer tileBuffer, int tileIndex, long nullValue, ICompressorControl compressorControl) {
         this.tileBuffer = tileBuffer;
         this.tileIndex = tileIndex;
@@ -72,6 +87,13 @@ public class AbstractNullPixelMask {
         }
     }
 
+    /**
+     * Returns a byte array containing the mask
+     * 
+     * @return the byte array containing the pixel mask for the tile.
+     * @deprecated (<i>for internal use</i>) Visibility may be reduced to package
+     *             level in the future.
+     */
     public byte[] getMaskBytes() {
         if (mask == null) {
             return EMPTY_BYTE_ARRAY;
@@ -83,30 +105,72 @@ public class AbstractNullPixelMask {
         return result;
     }
 
+    /**
+     * Sets data for a new mask as a flattened buffer of data.
+     * 
+     * @param mask
+     *            the buffer containing the mask data in flattened format.
+     */
     public void setMask(ByteBuffer mask) {
         this.mask = mask;
     }
 
+    /**
+     * Returns the object that manages the compression, and which therefore
+     * handles the masking
+     * 
+     * @return the object that manages the compression.
+     */
     protected ICompressorControl getCompressorControl() {
         return compressorControl;
     }
 
+    /**
+     * Returns the mask data as a buffer in flattened format.
+     * 
+     * @return the buffer containing the mask data in flattened format.
+     */
     protected ByteBuffer getMask() {
         return mask;
     }
 
+    /**
+     * Returns the value that represents a <code>null</code> or an undefined
+     * data point.
+     * 
+     * @return the value that demarks an undefined datum.
+     */
     protected long getNullValue() {
         return nullValue;
     }
 
+    /**
+     * Returns the buffer that holds data for an image tile.
+     * 
+     * @return the buffer that holds data for a single image tile.
+     */
     protected TileBuffer getTileBuffer() {
         return tileBuffer;
     }
 
+    /**
+     * Return the tile index for the image tile that is processed.
+     * 
+     * @return the image tile index
+     */
     protected int getTileIndex() {
         return tileIndex;
     }
 
+    /**
+     * Creates an internal buffer for holding the mask data, for the specified
+     * number of points.
+     * 
+     * @param remaining
+     *            the number of points the mask should accomodate.
+     * @return the internal buffer that may store the mask data for the specified
+     *         number of data points.
+     */
     protected ByteBuffer initializedMask(int remaining) {
         if (mask == null) {
             mask = ByteBuffer.allocate(remaining);

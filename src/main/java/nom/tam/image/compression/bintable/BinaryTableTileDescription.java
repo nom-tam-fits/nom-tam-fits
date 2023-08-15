@@ -36,6 +36,7 @@ import nom.tam.fits.header.Compression;
 /**
  * (<i>for internal use</i>) The specifications of a binary table 'tile'.
  */
+@SuppressWarnings("javadoc")
 public final class BinaryTableTileDescription {
 
     private int rowStart;

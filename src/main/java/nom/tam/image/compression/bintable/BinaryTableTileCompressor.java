@@ -44,6 +44,7 @@ import nom.tam.util.FitsOutputStream;
 /**
  * (<i>for internal use</i>) Handles the compression of binary table 'tiles'.
  */
+@SuppressWarnings("javadoc")
 public class BinaryTableTileCompressor extends BinaryTableTile {
 
     private static final int FACTOR_15 = 15;
@@ -59,7 +60,6 @@ public class BinaryTableTileCompressor extends BinaryTableTile {
     /**
      * @deprecated for internal use
      */
-    @SuppressWarnings("javadoc")
     public BinaryTableTileCompressor(CompressedTableData binData, ColumnTable<?> columnTable,
             BinaryTableTileDescription description) {
         super(columnTable, description);
