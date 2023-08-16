@@ -830,9 +830,15 @@ public class Fits implements Closeable {
     }
 
     /**
-     * Get the current number of HDUs in the Fits object.
+     * Get the number of HDUs currently available in memory. For FITS objects associated with an input this method
+     * returns only the number of HDUs that have already been read / scanned, e.g. via {@link #readHDU()} or
+     * {@link #read()} methods. Thus, if you want to know how many HDUs a FITS file might actually contain, you should
+     * call {@link #read()} to register them all before calling this method.
      *
      * @return The number of HDU's in the object.
+     * 
+     * @see    #read()
+     * @see    #readHDU()
      */
     public int getNumberOfHDUs() {
         return hduList.size();

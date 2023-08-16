@@ -8,6 +8,7 @@ import static org.junit.Assert.assertTrue;
 import java.io.ByteArrayOutputStream;
 import java.io.File;
 import java.io.FileInputStream;
+import java.io.IOException;
 import java.io.RandomAccessFile;
 import java.nio.file.Files;
 import java.nio.file.StandardCopyOption;
@@ -229,6 +230,20 @@ public class ChecksumTest {
         assertFalse(fits.verifyIntegrity(0));
         assertFalse(fits.verifyDataIntegrity(0));
         // No exception...
+    }
+
+    @Test(expected = IOException.class)
+    public void testCheckSumVerifyStream() throws Exception {
+        try (Fits fits = new Fits(new FileInputStream(new File("src/test/resources/nom/tam/fits/test/checksum.fits")))) {
+            fits.verifyIntegrity();
+        }
+    }
+
+    @Test(expected = IOException.class)
+    public void testDatasumVerifyStream() throws Exception {
+        try (Fits fits = new Fits(new FileInputStream(new File("src/test/resources/nom/tam/fits/test/checksum.fits")))) {
+            fits.verifyDataIntegrity(0);
+        }
     }
 
     @Test
