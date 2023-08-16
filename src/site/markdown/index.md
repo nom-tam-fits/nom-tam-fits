@@ -1172,40 +1172,21 @@ Or you can set checksums for all HDUs in your `Fits` in one go before writing th
   f.write(new FitsFile("my-checksummed-image.fits"));
 ```
 
-Then later you can verify the integrity of FITS files using the stored checksums just as easily too:
+Then later you can verify the integrity of FITS files using the stored checksums (or data sums) just as easily too:
 
 ```java
-  Fits f = new Fits("my-huge-fits-file.fits");
-  
-  // We'll check the integrity of the first HDU without loading its
-  // potentially huge data into RAM (staying in deferred mode).
-  BasicHDU<?> hdu = f.readHDU();
-  
-  // Calculate the HDU's checksum (still in deferred mode), and check...
-  if (fits.calcChecksum(0) != hdu.getStoredChecksum()) {
-      System.err.println("WARNING! The HDU might be corrupted.");
+  try(Fits f = new Fits("my-huge-fits-file.fits")) {
+      f.verifyIntegrity();
+  } catch (FitsException e) {
+      // Failed integrity test
+      System.err.println("WARNING! " + e.getMessage());
+  } catch (IOException e( {
+      // some IO error...
   }
 ```
 
-(Note that `Fits.calcChecksum(int)` will compute the checksum from the file if the data has not been loaded into RAM already 
-(in deferred read mode). Otherwise, it will compute the checksum from the data that was loaded into memory. You can also 
-calculate the checksums from the file (equivalently to the above) via:
-
-```java
-  FitsFile in = new FitsFile("my-huge-fits-file.fits");
-  Fits f = new Fits(in);
- 
-  BasicHDU<?> hdu = f.read();
-
-  // Calculate checksum directly from the file
-  long actual = FitsCheckSum.checksum(in, hdu.getFileOffset(), hdu.getSize());
-  if (actual != f.getHDU(i).getStoredChecksum()) {
-      System.err.println("WARNING! The HDU might be corruputed.");
-  }
-```
-
-And, if you want to verify the integrity of the data segment separately (without the header) you might use `getStoredDatasum()` 
-instead and changing the `checksum()` call range to correspond to the location of the data block in the file. 
+If you just want to verify the integrity of the data segment separately (without the header) you might compare `BasicHDU.getStoredDatasum()` with `Fits.calcDatasum(int)` for a given HDU. (Note, that in deferred read mode 
+`Fits.calcDatasum(int)` will calculate the data sum directly from the the input file).
 
 Finally, you might want to update the checksums for a FITS you modify in place:
 

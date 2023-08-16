@@ -627,6 +627,23 @@ public class Header implements FitsElement {
     }
 
     /**
+     * Returns the card associated with a given key. Unlike {@link #findCard(IFitsHeader)}, it does not change the mark
+     * at which new cards are added.
+     *
+     * @param  key the header key.
+     *
+     * @return     <CODE>null</CODE> if the keyword could not be found; return the HeaderCard object otherwise.
+     * 
+     * @see        #getCard(String)
+     * @see        #findCard(IFitsHeader)
+     * 
+     * @since      1.18.1
+     */
+    public HeaderCard getCard(IFitsHeader key) {
+        return this.getCard(key.key());
+    }
+
+    /**
      * Find the card associated with a given key. If found this sets the mark to the card, otherwise it unsets the mark.
      *
      * @param  key The header key.
@@ -635,6 +652,23 @@ public class Header implements FitsElement {
      */
     public HeaderCard findCard(IFitsHeader key) {
         return this.findCard(key.key());
+    }
+
+    /**
+     * Returns the card associated with a given key. Unlike {@link #findCard(String)}, it does not change the mark at
+     * which new cards are added.
+     *
+     * @param  key the header key.
+     *
+     * @return     <CODE>null</CODE> if the keyword could not be found; return the HeaderCard object otherwise.
+     * 
+     * @see        #getCard(IFitsHeader)
+     * @see        #findCard(String)
+     * 
+     * @since      1.18.1
+     */
+    public HeaderCard getCard(String key) {
+        return cards.get(key);
     }
 
     /**
@@ -723,7 +757,7 @@ public class Header implements FitsElement {
      * @return         the associated value.
      */
     public BigDecimal getBigDecimalValue(String key, BigDecimal dft) {
-        HeaderCard fcard = findCard(key);
+        HeaderCard fcard = getCard(key);
         if (fcard == null) {
             return dft;
         }
@@ -785,7 +819,7 @@ public class Header implements FitsElement {
      * @return         the associated value.
      */
     public BigInteger getBigIntegerValue(String key, BigInteger dft) {
-        HeaderCard fcard = findCard(key);
+        HeaderCard fcard = getCard(key);
         if (fcard == null) {
             return dft;
         }
@@ -824,7 +858,7 @@ public class Header implements FitsElement {
      * @see        #addValue(String, ComplexValue, String)
      */
     public ComplexValue getComplexValue(String key, ComplexValue dft) {
-        HeaderCard fcard = findCard(key);
+        HeaderCard fcard = getCard(key);
         if (fcard == null) {
             return dft;
         }
@@ -876,7 +910,7 @@ public class Header implements FitsElement {
      * @return     the associated value.
      */
     public boolean getBooleanValue(String key, boolean dft) {
-        HeaderCard fcard = findCard(key);
+        HeaderCard fcard = getCard(key);
         if (fcard == null) {
             return dft;
         }
@@ -953,7 +987,7 @@ public class Header implements FitsElement {
      * @return     the associated value.
      */
     public double getDoubleValue(String key, double dft) {
-        HeaderCard fcard = findCard(key);
+        HeaderCard fcard = getCard(key);
         if (fcard == null) {
             return dft;
         }
@@ -1052,7 +1086,7 @@ public class Header implements FitsElement {
      * @param  dft The value to be returned if the key is not found.
      */
     public float getFloatValue(String key, float dft) {
-        HeaderCard fcard = findCard(key);
+        HeaderCard fcard = getCard(key);
         if (fcard == null) {
             return dft;
         }
@@ -1167,7 +1201,7 @@ public class Header implements FitsElement {
      * @return     the associated value.
      */
     public long getLongValue(String key, long dft) {
-        HeaderCard fcard = findCard(key);
+        HeaderCard fcard = getCard(key);
         if (fcard == null) {
             return dft;
         }
@@ -1209,7 +1243,7 @@ public class Header implements FitsElement {
      * @see            #addHexValue(String, long, String)
      */
     public long getHexValue(String key, long dft) {
-        HeaderCard fcard = findCard(key);
+        HeaderCard fcard = getCard(key);
         if (fcard == null) {
             return dft;
         }
@@ -1351,7 +1385,7 @@ public class Header implements FitsElement {
      */
     public String getStringValue(String key, String dft) {
 
-        HeaderCard fcard = findCard(key);
+        HeaderCard fcard = getCard(key);
         if (fcard == null || !fcard.isStringValue()) {
             return dft;
         }
@@ -1549,6 +1583,43 @@ public class Header implements FitsElement {
     }
 
     /**
+     * Move the cursor to the end of the header. Subsequently, all <code>addValue()</code> calls will add new cards to
+     * the end of the header.
+     * 
+     * @return the cursor after it has been repositioned to the end
+     * 
+     * @since  1.18.1
+     * 
+     * @see    #seekTail()
+     * @see    #findCard(String)
+     */
+    public Cursor<String, HeaderCard> seekHead() {
+        Cursor<String, HeaderCard> c = cursor();
+
+        while (c.hasPrev()) {
+            c.prev();
+        }
+
+        return c;
+    }
+
+    /**
+     * Move the cursor to the end of the header. Subsequently, all <code>addValue()</code> calls will add new cards to
+     * the end of the header.
+     * 
+     * @return the cursor after it has been repositioned to the end
+     * 
+     * @since  1.18.1
+     * 
+     * @see    #seekHead()
+     * @see    #findCard(String)
+     */
+    public Cursor<String, HeaderCard> seekTail() {
+        cursor().end();
+        return cursor();
+    }
+
+    /**
      * @deprecated               (<i>for internal use</i>) Normally we either want to write a Java object to FITS (in
      *                               which case we have the dataand want to make a header for it), or we read some data
      *                               from a FITS input. In either case, there is no benefit of exposing such a function
@@ -1644,11 +1715,13 @@ public class Header implements FitsElement {
         }
 
         int trailingBlanks = 0;
+        minCards = 0;
 
         HeaderCardCountingArrayDataInput cardCountingArray = new HeaderCardCountingArrayDataInput(dis);
         try {
             for (;;) {
                 HeaderCard fcard = new HeaderCard(cardCountingArray);
+                minCards += fcard.cardSize();
 
                 // AK: Note, 'key' can never be null, as per contract of getKey(). So no need to check...
                 String key = fcard.getKey();
@@ -1725,6 +1798,9 @@ public class Header implements FitsElement {
             // padding before EOF. We'll just log that, but otherwise keep going.
             LOG.warning("Premature end-of-file: no padding after header.");
         }
+
+        // Move the cursor to after the last card -- this is where new cards will be added.
+        cursor().end();
     }
 
     /**
@@ -2145,7 +2221,7 @@ public class Header implements FitsElement {
                 if (END.key().equals(card.getKey()) && minCards * HeaderCard.FITS_HEADER_CARD_SIZE > size) {
                     // AK: Add preallocated blank header space before the END key.
                     writeBlankCards(dos, minCards - size / HeaderCard.FITS_HEADER_CARD_SIZE);
-                    size = minCards;
+                    size = minCards * HeaderCard.FITS_HEADER_CARD_SIZE;
                 }
 
                 dos.write(b);
@@ -2365,7 +2441,7 @@ public class Header implements FitsElement {
             throw new IllegalArgumentException("cannot replace comment-style " + oldKey.key());
         }
 
-        HeaderCard card = findCard(oldKey);
+        HeaderCard card = getCard(oldKey);
         VALUE newType = newKey.valueType();
 
         if (card != null && oldKey.valueType() != newType && newType != VALUE.ANY) {
@@ -2409,7 +2485,7 @@ public class Header implements FitsElement {
      * @exception HeaderCardException If <CODE>newKey</CODE> is not a valid FITS keyword. TODO should be private
      */
     boolean replaceKey(String oldKey, String newKey) throws HeaderCardException {
-        HeaderCard oldCard = findCard(oldKey);
+        HeaderCard oldCard = getCard(oldKey);
         if (oldCard == null) {
             return false;
         }

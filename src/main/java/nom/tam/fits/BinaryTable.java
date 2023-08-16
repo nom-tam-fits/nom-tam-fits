@@ -1383,7 +1383,7 @@ public class BinaryTable extends AbstractTableData implements Cloneable {
             rowLen += processCol(myHeader, col, rowLen);
         }
 
-        HeaderCard card = myHeader.findCard(NAXIS1);
+        HeaderCard card = myHeader.getCard(NAXIS1);
         card.setValue(String.valueOf(rowLen));
     }
 
@@ -3092,7 +3092,6 @@ public class BinaryTable extends AbstractTableData implements Cloneable {
             }
 
             FitsUtil.pad(os, getTrueSize());
-
         } catch (IOException e) {
             throw new FitsException("Unable to write table:" + e, e);
         }

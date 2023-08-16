@@ -92,7 +92,7 @@ public class HeaderCardBuilder {
      */
     public HeaderCardBuilder card(IFitsHeader newKey) {
         key = newKey;
-        card = header.findCard(key);
+        card = header.getCard(key);
         return this;
     }
 

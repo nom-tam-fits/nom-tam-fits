@@ -99,6 +99,9 @@ public final class FitsCheckSum {
     private static final String EXCLUDE = ":;<=>?@[\\]^_`";
     private static final String CHECKSUM_DEFAULT = "0000000000000000";
 
+    /** The expected checksum for a HDU that already contains a valid CHECKSUM keyword */
+    public static final long HDU_CHECKSUM = 0xffffffffL;
+
     private FitsCheckSum() {
     }
 
@@ -300,13 +303,15 @@ public final class FitsCheckSum {
      * @since                1.17
      */
     public static long checksum(Header header) throws FitsException {
-        HeaderCard hc = header.findCard(CHECKSUM);
+        HeaderCard hc = header.getCard(CHECKSUM);
         String prior = null;
 
         if (hc != null) {
             prior = hc.getValue();
             hc.setValue(CHECKSUM_DEFAULT);
+            hc.setComment(CHECKSUM.comment()); // Reset comment in case it contained a timestamp
         } else {
+            header.seekTail();
             hc = header.addValue(CHECKSUM, CHECKSUM_DEFAULT);
         }
 
@@ -576,7 +581,8 @@ public final class FitsCheckSum {
     public static void setDatasum(Header header, long datasum) throws FitsException {
         // Add the freshly calculated datasum to the header, before calculating the checksum
         header.addValue(DATASUM, Long.toString(datasum));
-        header.addValue(CHECKSUM, encode(sumOf(checksum(header), datasum)));
+        long hsum = checksum(header);
+        header.getCard(CHECKSUM).setValue(encode(sumOf(hsum, datasum)));
     }
 
     /**
@@ -624,7 +630,7 @@ public final class FitsCheckSum {
      * @see                  BasicHDU#getStoredDatasum()
      */
     public static long getStoredDatasum(Header header) throws FitsException {
-        HeaderCard hc = header.findCard(DATASUM);
+        HeaderCard hc = header.getCard(DATASUM);
 
         if (hc == null) {
             throw new FitsException("Header does not have a DATASUM value.");

@@ -227,7 +227,7 @@ public class TiledImageCompressionOperation extends AbstractTiledImageOperation<
     }
 
     private synchronized void setQuantAlgorithm(final Header header) {
-        setQuantAlgorithm(header.findCard(ZQUANTIZ));
+        setQuantAlgorithm(header.getCard(ZQUANTIZ));
 
         if (quantAlgorithm != null) {
             return;
@@ -259,7 +259,7 @@ public class TiledImageCompressionOperation extends AbstractTiledImageOperation<
 
     public TiledImageCompressionOperation read(final Header header) throws FitsException {
         readPrimaryHeaders(header);
-        setCompressAlgorithm(header.findCard(ZCMPTYPE));
+        setCompressAlgorithm(header.getCard(ZCMPTYPE));
         setQuantAlgorithm(header);
 
         createTiles(new TileDecompressorInitialisation(this, //
