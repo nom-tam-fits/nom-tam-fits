@@ -1185,8 +1185,10 @@ Then later you can verify the integrity of FITS files using the stored checksums
   }
 ```
 
-If you just want to verify the integrity of the data segment separately (without the header) you might compare `BasicHDU.getStoredDatasum()` with `Fits.calcDatasum(int)` for a given HDU. (Note, that in deferred read mode 
-`Fits.calcDatasum(int)` will calculate the data sum directly from the the input file).
+The above will calculate checksum directly from file without reading the potentially large data into memory, and compare
+HDU checksums and/or data checksums to those stored in the FITS file.
+
+If you just want to verify the integrity of the data segment separately (without the header) you might use `Fits.verifyDataIntegrity(int)` for a given HDU.
 
 Finally, you might want to update the checksums for a FITS you modify in place:
 
