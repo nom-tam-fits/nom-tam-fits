@@ -627,8 +627,8 @@ public class Header implements FitsElement {
     }
 
     /**
-     * Returns the card associated with a given key. Unlike {@link #findCard(IFitsHeader)}, it does not change the mark
-     * at which new cards are added.
+     * Returns the card associated with a given key. Unlike {@link #findCard(IFitsHeader)}, it does not alter the mark
+     * position at which new cards are added.
      *
      * @param  key the header key.
      *
@@ -644,19 +644,24 @@ public class Header implements FitsElement {
     }
 
     /**
-     * Find the card associated with a given key. If found this sets the mark to the card, otherwise it unsets the mark.
+     * Find the card associated with a given key. If found this sets the mark (cursor) to the card, otherwise it unsets
+     * the mark. The mark is where new cards will be added to the header by default. If you do not want to change the
+     * mark position, use {@link #getCard(IFitsHeader)} instead.
      *
      * @param  key The header key.
      *
      * @return     <CODE>null</CODE> if the keyword could not be found; return the HeaderCard object otherwise.
+     * 
+     * @see        #getCard(IFitsHeader)
+     * @see        #findCard(String)
      */
     public HeaderCard findCard(IFitsHeader key) {
         return this.findCard(key.key());
     }
 
     /**
-     * Returns the card associated with a given key. Unlike {@link #findCard(String)}, it does not change the mark at
-     * which new cards are added.
+     * Returns the card associated with a given key. Unlike {@link #findCard(String)}, it does not alter the mark
+     * position at which new cards are added.
      *
      * @param  key the header key.
      *
@@ -672,11 +677,16 @@ public class Header implements FitsElement {
     }
 
     /**
-     * Find the card associated with a given key. If found this sets the mark to the card, otherwise it unsets the mark.
-     *
-     * @param  key The header key.
+     * Find the card associated with a given key. If found this sets the mark (cursor) to the card, otherwise it unsets
+     * the mark. The mark is where new cards will be added to the header by default. If you do not want to change the
+     * mark position, use {@link #getCard(String)} instead.
+     * 
+     * @param  key the header key.
      *
      * @return     <CODE>null</CODE> if the keyword could not be found; return the HeaderCard object otherwise.
+     * 
+     * @see        #getCard(String)
+     * @see        #findCard(String)
      */
     public HeaderCard findCard(String key) {
         HeaderCard card = cards.get(key);
@@ -687,7 +697,8 @@ public class Header implements FitsElement {
     }
 
     /**
-     * @deprecated     Use {@link #findCard(String)} instead. Find the card associated with a given key.
+     * @deprecated     Use {@link #findCard(String)} or {@link #getCard(String)} instead. Find the card associated with
+     *                     a given key.
      *
      * @param      key The header key.
      *
