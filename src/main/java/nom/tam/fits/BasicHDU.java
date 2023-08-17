@@ -538,16 +538,21 @@ public abstract class BasicHDU<DataClass extends Data> implements FitsElement {
     /**
      * Returns the decoded checksum that is stored in the header of this HDU under the <code>CHECKSUM</code> keyword.
      *
-     * @return               the decoded FITS checksum value recorded in the HDU
+     * @deprecated               Not very useful, since it has no meaning other than ensuring that the checksum of the
+     *                               HDU yields <code>(int) -1</code> (that is <code>0xffffffff</code>) after including
+     *                               this value for the CHECKSUM keyword in the header. It will be removed in the
+     *                               future.
      *
-     * @throws FitsException if the HDU's header does not contain a <code>CHECKSUM</code> keyword.
+     * @return                   the decoded FITS checksum value recorded in the HDU
      *
-     * @see                  #calcChecksum()
-     * @see                  Fits#calcChecksum(int)
-     * @see                  #getStoredDatasum()
-     * @see                  FitsCheckSum#getStoredDatasum(Header)
+     * @throws     FitsException if the HDU's header does not contain a <code>CHECKSUM</code> keyword.
      *
-     * @since                1.17
+     * @see                      #calcChecksum()
+     * @see                      Fits#calcChecksum(int)
+     * @see                      #getStoredDatasum()
+     * @see                      FitsCheckSum#getStoredDatasum(Header)
+     *
+     * @since                    1.17
      */
     public long getStoredChecksum() throws FitsException {
         return FitsCheckSum.getStoredChecksum(myHeader);
@@ -563,8 +568,6 @@ public abstract class BasicHDU<DataClass extends Data> implements FitsElement {
      *
      * @see                  Data#calcChecksum()
      * @see                  Fits#calcDatasum(int)
-     * @see                  #getStoredChecksum()
-     * @see                  FitsCheckSum#getStoredChecksum(Header)
      *
      * @since                1.17
      */
@@ -586,7 +589,6 @@ public abstract class BasicHDU<DataClass extends Data> implements FitsElement {
      *
      * @see                  Fits#setChecksum(int)
      * @see                  FitsCheckSum#setChecksum(BasicHDU)
-     * @see                  #getStoredChecksum()
      * @see                  #getStoredDatasum()
      *
      * @since                1.17

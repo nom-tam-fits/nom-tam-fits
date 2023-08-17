@@ -573,7 +573,6 @@ public final class FitsCheckSum {
      *                           <code>FitsException</code> when they occur.
      *
      * @see                  #setChecksum(BasicHDU)
-     * @see                  #getStoredChecksum(Header)
      * @see                  #getStoredDatasum(Header)
      *
      * @since                1.17
@@ -598,7 +597,6 @@ public final class FitsCheckSum {
      *                           <code>FitsException</code> when they occur.
      *
      * @see                  #setDatasum(Header, long)
-     * @see                  #getStoredChecksum(Header)
      * @see                  #sumOf(long...)
      * @see                  #differenceOf(long, long)
      *
@@ -625,7 +623,6 @@ public final class FitsCheckSum {
      *
      * @since                1.17
      *
-     * @see                  #getStoredChecksum(Header)
      * @see                  #setDatasum(Header, long)
      * @see                  BasicHDU#getStoredDatasum()
      */
@@ -642,18 +639,22 @@ public final class FitsCheckSum {
     /**
      * Returns the decoded CHECKSUM value stored in a FITS header.
      *
-     * @param  header        the FITS header
+     * @deprecated               Not very useful, since it has no meaning other than ensuring that the checksum of the
+     *                               HDU yields <code>(int) -1</code> (that is <code>0xffffffff</code>) after including
+     *                               this value for the CHECKSUM keyword in the header. It will be removed in the
+     *                               future.
      *
-     * @return               The decoded <code>CHECKSUM</code> value (unsigned 32-bit integer) recorded in the header as
-     *                           a Java <code>long</code>.
+     * @param      header        the FITS header
      *
-     * @throws FitsException if the header does not contain a <code>CHECKSUM</code> entry, or it is invalid.
+     * @return                   The decoded <code>CHECKSUM</code> value (unsigned 32-bit integer) recorded in the
+     *                               header as a Java <code>long</code>.
      *
-     * @since                1.17
+     * @throws     FitsException if the header does not contain a <code>CHECKSUM</code> entry, or it is invalid.
      *
-     * @see                  #getStoredDatasum(Header)
-     * @see                  #setChecksum(BasicHDU)
-     * @see                  BasicHDU#getStoredChecksum()
+     * @since                    1.17
+     *
+     * @see                      #getStoredDatasum(Header)
+     * @see                      #setChecksum(BasicHDU)
      */
     public static long getStoredChecksum(Header header) throws FitsException {
         String encoded = header.getStringValue(CHECKSUM);

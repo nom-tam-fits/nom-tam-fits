@@ -1092,7 +1092,6 @@ public class Fits implements Closeable {
      * @author               R J Mather, Attila Kovacs
      *
      * @see                  #setChecksum(int)
-     * @see                  BasicHDU#getStoredChecksum()
      * @see                  BasicHDU#getStoredDatasum()
      * @see                  #rewrite()
      */
@@ -1161,9 +1160,8 @@ public class Fits implements Closeable {
      * @return               The checksum value that would appear in the header if this HDU was written to an output.
      *                           This may differ from the checksum recorded in the input, due to different formating
      *                           conventions used by this library vs the one that was used to generate the input. Thus,
-     *                           you should not compare this checksum to that returned by
-     *                           {@link BasicHDU#getStoredChecksum()} directly. Instead, use
-     *                           {@link #verifyIntegrity(int)} instead.
+     *                           you should not compare this checksum to that stored by the CHECKSUM key. Instead, use
+     *                           {@link #verifyIntegrity(int)}.
      * 
      * @throws FitsException if there was an error processing the HDU.
      * @throws IOException   if there was an I/O error accessing the input.
@@ -1171,7 +1169,6 @@ public class Fits implements Closeable {
      * @see                  BasicHDU#calcChecksum()
      * @see                  #calcDatasum(int)
      * @see                  #setChecksum(int)
-     * @see                  BasicHDU#getStoredChecksum()
      *
      * @since                1.17
      */
@@ -1195,7 +1192,6 @@ public class Fits implements Closeable {
      * 
      * @see                  #verifyIntegrity()
      * @see                  #verifyDataIntegrity(int)
-     * @see                  BasicHDU#getStoredChecksum()
      * @see                  #calcChecksum(int)
      * 
      * @since                1.18.1
@@ -1235,7 +1231,6 @@ public class Fits implements Closeable {
      * 
      * @see                  #verifyIntegrity()
      * @see                  #verifyDataIntegrity(int)
-     * @see                  BasicHDU#getStoredChecksum()
      * @see                  #calcChecksum(int)
      * 
      * @since                1.18.1
