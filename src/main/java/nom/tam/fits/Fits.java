@@ -1064,8 +1064,9 @@ public class Fits implements Closeable {
      * @throws FitsException if there was a problem computing the checksum for the HDU
      * @throws IOException   if there was an I/O error while accessing the data from the input
      *
-     * @see                  #calcChecksum(int)
      * @see                  #setChecksum()
+     * @see                  BasicHDU#verifyIntegrity()
+     * @see                  BasicHDU#verifyDataIntegrity()
      *
      * @since                1.17
      */
@@ -1132,7 +1133,7 @@ public class Fits implements Closeable {
      * @throws IOException   if there was an I/O error accessing the input.
      *
      * @see                  Data#calcChecksum()
-     * @see                  #calcChecksum(int)
+     * @see                  BasicHDU#verifyDataIntegrity()
      * @see                  #setChecksum(int)
      * @see                  BasicHDU#getStoredDatasum()
      * @see                  FitsCheckSum#setDatasum(Header, long)
