@@ -538,7 +538,9 @@ public abstract class BasicHDU<DataClass extends Data> implements FitsElement {
     }
 
     /**
-     * Returns the decoded checksum that is stored in the header of this HDU under the <code>CHECKSUM</code> keyword.
+     * Returns the decoded checksum that is stored in the header of this HDU under the <code>CHECKSUM</code> keyword. It
+     * does not have much use, and is not needed for integrity verification since the purpose of the CHECKSUM value is
+     * merely to ensure that the checksum of the HDU is always <code>(int) -1</code>.
      *
      * @deprecated               Not very useful, since it has no meaning other than ensuring that the checksum of the
      *                               HDU yields <code>(int) -1</code> (that is <code>0xffffffff</code>) after including
@@ -562,7 +564,11 @@ public abstract class BasicHDU<DataClass extends Data> implements FitsElement {
 
     /**
      * Returns the FITS checksum for the HDU's data that is stored in the header of this HDU under the
-     * <code>DATASUM</code> keyword.
+     * <code>DATASUM</code> keyword. This may be useful to compare against the checksum calculated from data in memory
+     * (e.g. via {@link Data#calcChecksum()}) to check changes / corruption of the in-memory data vs what was stored in
+     * the file. Note however, that this type of checkum test will fail if the file used non-standard padding at the end
+     * of the data segment, even if the data themselves are identical. Hence, for verifying data contained in a file
+     * {@link #verifyDataIntegrity()} or {@link #verifyIntegrity()} should be preferred.
      *
      * @return               the FITS <code>DATASUM</code> value recorded in the HDU
      *

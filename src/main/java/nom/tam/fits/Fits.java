@@ -1152,7 +1152,7 @@ public class Fits implements Closeable {
     /**
      * Calculates the FITS checksum for a given HDU in the Fits. If the HDU does not currently have data loaded from
      * disk (i.e. in deferred read mode), the method will compute the checksum directly from disk. Otherwise, it will
-     * calculate the checksum from the data in memory, and using the standard padding.
+     * calculate the checksum from the data in memory and using the standard padding after it.
      * 
      * @deprecated               Use {@link BasicHDU#verifyIntegrity()} instead when appropriate. It's not particularly
      *                               useful since integrity checking does not use or require knowledge of this sum. May
