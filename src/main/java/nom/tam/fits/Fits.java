@@ -1122,25 +1122,22 @@ public class Fits implements Closeable {
      * calculate the datasum from the data in memory.
      * </p>
      * 
-     * @deprecated               Use {@link BasicHDU#verifyDataIntegrity()} or {@link Data#calcChecksum()} instead as
-     *                               appropriate. May be removed from future releases.
-     * 
-     * @param      hduIndex      The index of the HDU for which to calculate the data checksum
+     * @param  hduIndex      The index of the HDU for which to calculate the data checksum
      *
-     * @return                   The data checksum. This may differ from the datasum or the original FITS input due to
-     *                               differences in padding used at the end of the data record by this library vs the
-     *                               library that was used to generate the FITS.
+     * @return               The data checksum. This may differ from the datasum or the original FITS input due to
+     *                           differences in padding used at the end of the data record by this library vs the
+     *                           library that was used to generate the FITS.
      *
-     * @throws     FitsException if there was an error processing the HDU.
-     * @throws     IOException   if there was an I/O error accessing the input.
+     * @throws FitsException if there was an error processing the HDU.
+     * @throws IOException   if there was an I/O error accessing the input.
      *
-     * @see                      Data#calcChecksum()
-     * @see                      #calcChecksum(int)
-     * @see                      #setChecksum(int)
-     * @see                      BasicHDU#getStoredDatasum()
-     * @see                      FitsCheckSum#setDatasum(Header, long)
+     * @see                  Data#calcChecksum()
+     * @see                  #calcChecksum(int)
+     * @see                  #setChecksum(int)
+     * @see                  BasicHDU#getStoredDatasum()
+     * @see                  FitsCheckSum#setDatasum(Header, long)
      *
-     * @since                    1.17
+     * @since                1.17
      */
     public long calcDatasum(int hduIndex) throws FitsException, IOException {
         BasicHDU<?> hdu = getHDU(hduIndex);
@@ -1158,7 +1155,7 @@ public class Fits implements Closeable {
      * calculate the checksum from the data in memory, and using the standard padding.
      * 
      * @deprecated               Use {@link BasicHDU#verifyIntegrity()} instead when appropriate. It's not particularly
-     *                               useful since integrity checking does not use or require knowleadge of this sum. May
+     *                               useful since integrity checking does not use or require knowledge of this sum. May
      *                               be removed from future releases.
      *
      * @param      hduIndex      The index of the HDU for which to calculate the HDU checksum

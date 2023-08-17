@@ -681,7 +681,7 @@ public abstract class BasicHDU<DataClass extends Data> implements FitsElement {
      * mode, you can use {@link Fits#calcChecksum(int)} instead.
      * 
      * @deprecated               Use {@link #verifyIntegrity()} instead when appropriate. It's not particularly useful
-     *                               since integrity checking does not use or require knowleadge of this sum. May be
+     *                               since integrity checking does not use or require knowledge of this sum. May be
      *                               removed from future releases.
      *
      * @return                   the computed HDU checksum (in memory).
