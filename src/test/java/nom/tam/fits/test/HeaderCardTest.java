@@ -1850,6 +1850,9 @@ public class HeaderCardTest {
 
         Assert.assertEquals(2, (int) header.findCard("TEST2").getValue(Integer.class, -1));
         Assert.assertEquals(1, (int) header.prevCard().getValue(Integer.class, -1));
+
+        header.seekHead();
+        Assert.assertNull(header.prevCard());
     }
 
 }
