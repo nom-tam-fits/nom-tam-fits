@@ -134,14 +134,13 @@ public abstract class Data implements FitsElement {
      * the FITS header. This method always computes the checksum from data in into memory. As such it will fully load
      * deferred read mode data into RAM to perform the calculation. If you prefer to leave the data in deferred read
      * mode, you can use {@link FitsCheckSum#checksum(RandomAccess, long, long)} instead directly on the input with this
-     * data's {@link #getFileOffset()} and {@link #getSize()} arguments; or equivalently use
-     * {@link Fits#calcDatasum(int)}.
+     * data's {@link #getFileOffset()} and {@link #getSize()} arguments; or to verify the data integrity simply use
+     * {@link BasicHDU#verifyDataIntegrity()}.
      *
      * @return               the computed FITS checksum from the data (fully loaded in memory).
      *
      * @throws FitsException if there was an error while calculating the checksum
      *
-     * @see                  Fits#calcDatasum(int)
      * @see                  FitsCheckSum#checksum(RandomAccess, long, long)
      * @see                  FitsCheckSum#checksum(Data)
      *

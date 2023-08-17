@@ -184,8 +184,8 @@ public class ChecksumTest {
         int n = fits.getNumberOfHDUs();
 
         for (int i = 0; i < n; i++) {
-            assertTrue(fits.verifyDataIntegrity(i));
-            assertTrue(fits.verifyIntegrity(i));
+            assertTrue(fits.getHDU(i).verifyDataIntegrity());
+            assertTrue(fits.getHDU(i).verifyIntegrity());
         }
     }
 
@@ -227,8 +227,8 @@ public class ChecksumTest {
     public void testCheckSumVerifyNoSum() throws Exception {
         Fits fits = new Fits("src/test/resources/nom/tam/fits/test/test.fits");
         fits.verifyIntegrity();
-        assertFalse(fits.verifyIntegrity(0));
-        assertFalse(fits.verifyDataIntegrity(0));
+        assertFalse(fits.getHDU(0).verifyIntegrity());
+        assertFalse(fits.getHDU(0).verifyDataIntegrity());
         // No exception...
     }
 
@@ -242,7 +242,7 @@ public class ChecksumTest {
     @Test(expected = IOException.class)
     public void testDatasumVerifyStream() throws Exception {
         try (Fits fits = new Fits(new FileInputStream(new File("src/test/resources/nom/tam/fits/test/checksum.fits")))) {
-            fits.verifyDataIntegrity(0);
+            fits.getHDU(0).verifyDataIntegrity();
         }
     }
 
@@ -253,7 +253,6 @@ public class ChecksumTest {
         fits.setChecksum();
 
         ImageHDU im = (ImageHDU) fits.getHDU(0);
-        Header h = im.getHeader();
 
         short[][] data = (short[][]) im.getData().getData();
         data[0][0]++;

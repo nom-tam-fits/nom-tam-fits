@@ -48,7 +48,6 @@ import java.util.logging.Level;
 import java.util.logging.Logger;
 
 import nom.tam.fits.compress.CompressionManager;
-import nom.tam.fits.header.Checksum;
 import nom.tam.fits.utilities.FitsCheckSum;
 import nom.tam.util.ArrayDataInput;
 import nom.tam.util.ArrayDataOutput;
@@ -1123,22 +1122,25 @@ public class Fits implements Closeable {
      * calculate the datasum from the data in memory.
      * </p>
      * 
-     * @param  hduIndex      The index of the HDU for which to calculate the data checksum
+     * @deprecated               Use {@link BasicHDU#verifyDataIntegrity()} or {@link Data#calcChecksum()} instead as
+     *                               appropriate. May be removed from future releases.
+     * 
+     * @param      hduIndex      The index of the HDU for which to calculate the data checksum
      *
-     * @return               The data checksum. This may differ from the datasum or the original FITS input due to
-     *                           differences in padding used at the end of the data record by this library vs the
-     *                           library that was used to generate the FITS.
+     * @return                   The data checksum. This may differ from the datasum or the original FITS input due to
+     *                               differences in padding used at the end of the data record by this library vs the
+     *                               library that was used to generate the FITS.
      *
-     * @throws FitsException if there was an error processing the HDU.
-     * @throws IOException   if there was an I/O error accessing the input.
+     * @throws     FitsException if there was an error processing the HDU.
+     * @throws     IOException   if there was an I/O error accessing the input.
      *
-     * @see                  Data#calcChecksum()
-     * @see                  #calcChecksum(int)
-     * @see                  #setChecksum(int)
-     * @see                  BasicHDU#getStoredDatasum()
-     * @see                  FitsCheckSum#setDatasum(Header, long)
+     * @see                      Data#calcChecksum()
+     * @see                      #calcChecksum(int)
+     * @see                      #setChecksum(int)
+     * @see                      BasicHDU#getStoredDatasum()
+     * @see                      FitsCheckSum#setDatasum(Header, long)
      *
-     * @since                1.17
+     * @since                    1.17
      */
     public long calcDatasum(int hduIndex) throws FitsException, IOException {
         BasicHDU<?> hdu = getHDU(hduIndex);
@@ -1147,111 +1149,36 @@ public class Fits implements Closeable {
             // Compute datasum directly from file...
             return FitsCheckSum.checksum((RandomAccess) dataStr, data.getFileOffset(), data.getSize());
         }
-        return FitsCheckSum.checksum(data);
+        return data.calcChecksum();
     }
 
     /**
      * Calculates the FITS checksum for a given HDU in the Fits. If the HDU does not currently have data loaded from
      * disk (i.e. in deferred read mode), the method will compute the checksum directly from disk. Otherwise, it will
-     * calculate the checksum from the data in memory.
-     *
-     * @param  hduIndex      The index of the HDU for which to calculate the HDU checksum
-     *
-     * @return               The checksum value that would appear in the header if this HDU was written to an output.
-     *                           This may differ from the checksum recorded in the input, due to different formating
-     *                           conventions used by this library vs the one that was used to generate the input. Thus,
-     *                           you should not compare this checksum to that stored by the CHECKSUM key. Instead, use
-     *                           {@link #verifyIntegrity(int)}.
+     * calculate the checksum from the data in memory, and using the standard padding.
      * 
-     * @throws FitsException if there was an error processing the HDU.
-     * @throws IOException   if there was an I/O error accessing the input.
+     * @deprecated               Use {@link BasicHDU#verifyIntegrity()} instead when appropriate. It's not particularly
+     *                               useful since integrity checking does not use or require knowleadge of this sum. May
+     *                               be removed from future releases.
      *
-     * @see                  BasicHDU#calcChecksum()
-     * @see                  #calcDatasum(int)
-     * @see                  #setChecksum(int)
+     * @param      hduIndex      The index of the HDU for which to calculate the HDU checksum
      *
-     * @since                1.17
+     * @return                   The checksum value that would appear in the header if this HDU was written to an
+     *                               output. This may differ from the checksum recorded in the input, due to different
+     *                               formating conventions used by this library vs the one that was used to generate the
+     *                               input.
+     * 
+     * @throws     FitsException if there was an error processing the HDU.
+     * @throws     IOException   if there was an I/O error accessing the input.
+     *
+     * @see                      BasicHDU#calcChecksum()
+     * @see                      #calcDatasum(int)
+     * @see                      #setChecksum(int)
+     *
+     * @since                    1.17
      */
     public long calcChecksum(int hduIndex) throws FitsException, IOException {
         return FitsCheckSum.sumOf(FitsCheckSum.checksum(getHDU(hduIndex).getHeader()), calcDatasum(hduIndex));
-    }
-
-    /**
-     * Checks the HDU's integrity, using the recorded CHECKSUM and/or DATASUM keywords if present. When the header has a
-     * CHECKSUM keyword stored, the overall checksum of the HDU overall must be <code>0xffffffff</code>, that is -1 in
-     * 32-bit representation.
-     * 
-     * @param  hduIndex      The index of the HDU for which to calculate the HDU checksum
-     * 
-     * @return               <code>true</code> if the HDU has a CHECHSUM and/or DATASUM record to check against,
-     *                           otherwise <code>false</code>
-     * 
-     * @throws FitsException if the HDU fails the integrity test.
-     * @throws IOException   if the Fits object is not associated to a random-accessible input, or if there was an I/O
-     *                           error accessing the input.
-     * 
-     * @see                  #verifyIntegrity()
-     * @see                  #verifyDataIntegrity(int)
-     * @see                  #calcChecksum(int)
-     * 
-     * @since                1.18.1
-     */
-    public boolean verifyIntegrity(int hduIndex) throws FitsException, IOException {
-        if (!(dataStr instanceof RandomAccess)) {
-            throw new IOException("FITS not associated to a random-accessible input");
-        }
-
-        BasicHDU<?> hdu = getHDU(hduIndex);
-
-        boolean result = verifyDataIntegrity(hduIndex);
-
-        if (hdu.getHeader().getCard(Checksum.CHECKSUM) != null) {
-            long fsum = FitsCheckSum.checksum((RandomAccess) dataStr, hdu.getFileOffset(), hdu.getSize());
-            if (fsum != FitsCheckSum.HDU_CHECKSUM) {
-                throw new FitsException("Failed checksum: got " + fsum + ", expected " + FitsCheckSum.HDU_CHECKSUM);
-            }
-            return true;
-        }
-
-        return result;
-    }
-
-    /**
-     * Checks that the HDUs data checksum is correct. The recorded DATASUM will be used, if available, to check the
-     * integrity of the data segment.
-     * 
-     * @param  hduIndex      The index of the HDU for which to calculate the HDU checksum
-     * 
-     * @return               <code>true</code> if the HDU has a CHECHSUM or DATASUM record to check against, otherwise
-     *                           <code>false</code>
-     * 
-     * @throws FitsException if the HDU fails the integrity test.
-     * @throws IOException   if the Fits object is not associated to a random-accessible input, or if there was an I/O
-     *                           error accessing the input.
-     * 
-     * @see                  #verifyIntegrity()
-     * @see                  #verifyDataIntegrity(int)
-     * @see                  #calcChecksum(int)
-     * 
-     * @since                1.18.1
-     */
-    public boolean verifyDataIntegrity(int hduIndex) throws FitsException, IOException {
-        if (!(dataStr instanceof RandomAccess)) {
-            throw new IOException("FITS not associated to a random-accessible input");
-        }
-
-        BasicHDU<?> hdu = getHDU(hduIndex);
-
-        if (hdu.getHeader().getCard(Checksum.DATASUM) != null) {
-            Data d = hdu.getData();
-            long fsum = FitsCheckSum.checksum((RandomAccess) dataStr, d.getFileOffset(), d.getSize());
-            if (fsum != hdu.getStoredDatasum()) {
-                throw new FitsException("Failed datasum: got " + fsum + ", expected " + hdu.getStoredDatasum());
-            }
-            return true;
-        }
-
-        return false;
     }
 
     /**
@@ -1262,14 +1189,19 @@ public class Fits implements Closeable {
      * @throws IOException   if the Fits object is not associated to a random-accessible input, or if there was an I/O
      *                           error accessing the input.
      * 
-     * @see                  #verifyIntegrity(int)
+     * @see                  BasicHDU#verifyIntegrity()
      * 
      * @since                1.18.1
      */
     public void verifyIntegrity() throws FitsException, IOException {
-        for (int i = 0; readHDU() != null; i++) {
+        for (int i = 0;; i++) {
+            BasicHDU<?> hdu = readHDU();
+            if (hdu == null) {
+                break;
+            }
+
             try {
-                verifyIntegrity(i);
+                hdu.verifyIntegrity();
             } catch (FitsException e) {
                 throw new FitsException("Corrupted HDU[" + i + "]", e);
             }
