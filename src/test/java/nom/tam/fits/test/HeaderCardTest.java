@@ -1839,7 +1839,17 @@ public class HeaderCardTest {
         for (int i = 0; c.hasNext(); i++) {
             Assert.assertEquals(i, (int) c.next().getValue(Integer.class, -1));
         }
+    }
 
+    @Test
+    public void testPrev() throws Exception {
+        Header header = new Header();
+        header.addValue("TEST1", 1, "one");
+        header.addValue("TEST2", 2, "two");
+        header.addValue("TEST3", 3, "three");
+
+        Assert.assertEquals(2, (int) header.findCard("TEST2").getValue(Integer.class, -1));
+        Assert.assertEquals(1, (int) header.prevCard().getValue(Integer.class, -1));
     }
 
 }
