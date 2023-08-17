@@ -317,7 +317,9 @@ public class Header implements FitsElement {
 
     /**
      * Add or replace a key with the given boolean value and its standardized comment. If the value is not compatible
-     * with the convention of the keyword, a warning message is logged but no exception is thrown (at this point).
+     * with the convention of the keyword, a warning message is logged but no exception is thrown (at this point). The
+     * new card will be placed at the current mark position, as set e.g. by {@link #findCard(IFitsHeader)}, and the mark
+     * is icremented by one.
      *
      * @param  key                      The header key.
      * @param  val                      The boolean value.
@@ -337,7 +339,9 @@ public class Header implements FitsElement {
 
     /**
      * Add or replace a key with the given double value and its standardized comment. If the value is not compatible
-     * with the convention of the keyword, a warning message is logged but no exception is thrown (at this point).
+     * with the convention of the keyword, a warning message is logged but no exception is thrown (at this point). The
+     * new card will be placed at the current mark position, as set e.g. by {@link #findCard(IFitsHeader)}, and the mark
+     * is icremented by one.
      *
      * @param  key                      The header key.
      * @param  val                      The double value.
@@ -357,7 +361,9 @@ public class Header implements FitsElement {
 
     /**
      * Add or replace a key with the given string value and its standardized comment. If the value is not compatible
-     * with the convention of the keyword, a warning message is logged but no exception is thrown (at this point).
+     * with the convention of the keyword, a warning message is logged but no exception is thrown (at this point). The
+     * new card will be placed at the current mark position, as set e.g. by {@link #findCard(IFitsHeader)}, and the mark
+     * is icremented by one.
      *
      * @param  key                      The header key.
      * @param  val                      The string value.
@@ -377,7 +383,9 @@ public class Header implements FitsElement {
 
     /**
      * Add or replace a key with the given complex value and its standardized comment. If the value is not compatible
-     * with the convention of the keyword, a warning message is logged but no exception is thrown (at this point).
+     * with the convention of the keyword, a warning message is logged but no exception is thrown (at this point). The
+     * new card will be placed at the current mark position, as set e.g. by {@link #findCard(IFitsHeader)}, and the mark
+     * is icremented by one.
      *
      * @param  key                      The header key.
      * @param  val                      The complex value.
@@ -398,7 +406,8 @@ public class Header implements FitsElement {
     }
 
     /**
-     * Add or replace a key with the given boolean value and comment.
+     * Add or replace a key with the given boolean value and comment. The new card will be placed at the current mark
+     * position, as set e.g. by {@link #findCard(String)}, and the mark is icremented by one.
      *
      * @param  key                 The header key.
      * @param  val                 The boolean value.
@@ -420,7 +429,8 @@ public class Header implements FitsElement {
     /**
      * Add or replace a key with the given number value and comment. The value will be represented in the header card
      * with use the native precision of the value or at least {@link nom.tam.util.FlexFormat#DOUBLE_DECIMALS}, whichever
-     * fits in the available card space. Trailing zeroes will be ommitted.
+     * fits in the available card space. Trailing zeroes will be ommitted. The new card will be placed at the current
+     * mark position, as set e.g. by {@link #findCard(String)}, and the mark is icremented by one.
      *
      * @param  key                 The header key.
      * @param  val                 The number value.
@@ -442,7 +452,8 @@ public class Header implements FitsElement {
 
     /**
      * Add or replace a key with the given number value and comment, using up to the specified decimal places after the
-     * leading figure. Trailing zeroes will be ommitted.
+     * leading figure. Trailing zeroes will be ommitted. The new card will be placed at the current mark position, as
+     * set e.g. by {@link #findCard(String)}, and the mark is icremented by one.
      *
      * @param  key                 The header key.
      * @param  val                 The number value.
@@ -466,7 +477,9 @@ public class Header implements FitsElement {
     }
 
     /**
-     * Add or replace a key with the given complex number value and comment. Trailing zeroes will be ommitted.
+     * Add or replace a key with the given complex number value and comment. Trailing zeroes will be ommitted. The new
+     * card will be placed at the current mark position, as set e.g. by {@link #findCard(String)}, and the mark is
+     * icremented by one.
      *
      * @param  key                 The header keyword.
      * @param  val                 The complex number value.
@@ -489,7 +502,8 @@ public class Header implements FitsElement {
 
     /**
      * Add or replace a key with the given complex number value and comment, using up to the specified decimal places
-     * after the leading figure. Trailing zeroes will be ommitted.
+     * after the leading figure. Trailing zeroes will be ommitted. The new card will be placed at the current mark
+     * position, as set e.g. by {@link #findCard(String)}, and the mark is icremented by one.
      *
      * @param  key                 The header keyword.
      * @param  val                 The complex number value.
@@ -540,7 +554,8 @@ public class Header implements FitsElement {
     }
 
     /**
-     * Add or replace a key with the given string value and comment.
+     * Add or replace a key with the given string value and comment. The new card will be placed at the current mark
+     * position, as set e.g. by {@link #findCard(String)}, and the mark is icremented by one.
      *
      * @param  key                 The header key.
      * @param  val                 The string value.
@@ -615,9 +630,12 @@ public class Header implements FitsElement {
     }
 
     /**
-     * Print the header to a given stream.
+     * Print the header to a given stream. Note that this method does not show reserved card space before the END
+     * keyword, and thus does not necessarily show the same layout as what would appear in a file.
      *
      * @param ps the stream to which the card images are dumped.
+     * 
+     * @see      #ensureCardSpace(int)
      */
     public void dumpHeader(PrintStream ps) {
         Cursor<String, HeaderCard> iter = iterator();
@@ -677,13 +695,15 @@ public class Header implements FitsElement {
     }
 
     /**
-     * Find the card associated with a given key. If found this sets the mark (cursor) to the card, otherwise it unsets
-     * the mark. The mark is where new cards will be added to the header by default. If you do not want to change the
-     * mark position, use {@link #getCard(String)} instead.
+     * Finds the card associated with a given key, and returns it. If found this sets the mark (cursor) to just before
+     * the card, such that {@link #nextCard()} will return that very same card on the first subsequent call. If the
+     * header contains no matching entry, the mark is reset to the tail of the header (the same as {@link #seekTail()}).
+     * The mark determines where new cards will be added to the header by default. If you do not want to alter the mark
+     * position, use {@link #getCard(String)} instead.
      * 
      * @param  key the header key.
      *
-     * @return     <CODE>null</CODE> if the keyword could not be found; return the HeaderCard object otherwise.
+     * @return     Returns the header entry for the given keyword, or <CODE>null</CODE> if the header has no such entry.
      * 
      * @see        #getCard(String)
      * @see        #findCard(String)
@@ -692,6 +712,8 @@ public class Header implements FitsElement {
         HeaderCard card = cards.get(key);
         if (card != null) {
             cursor().setKey(key);
+        } else {
+            cursor().end();
         }
         return card;
     }
@@ -1603,6 +1625,7 @@ public class Header implements FitsElement {
      * 
      * @see    #seekTail()
      * @see    #findCard(String)
+     * @see    #nextCard()
      */
     public Cursor<String, HeaderCard> seekHead() {
         Cursor<String, HeaderCard> c = cursor();
@@ -1646,16 +1669,42 @@ public class Header implements FitsElement {
     }
 
     /**
-     * Returns the header card after the one that was last accessed through us, and not via a separate iterator
-     * instance.
+     * Returns the header card at the currently set mark position and increments the mark position by one. The mark
+     * position determines the location at which new entries are added to the header. The mark is set either by finding
+     * a particular card, or seeking the head ot tail of the header. It is also incremented after adding new entries to
+     * the header via one of the <code>addValue()</code> methods, to point to the space after the card that was last
+     * added.
      * 
-     * @return the next card in the Header using the current iterator
+     * @return the next card in the Header using the built-in iterator
      * 
-     * @see    #iterator()
+     * @see    #prevCard()
+     * @see    #findCard(IFitsHeader)
+     * @see    #findCard(String)
+     * @see    #seekHead()
      */
     public HeaderCard nextCard() {
         if (cursor().hasNext()) {
             return cursor().next();
+        }
+        return null;
+    }
+
+    /**
+     * Returns the header card prior to the currently set mark position and decrements the mark position by one. The
+     * mark position determines the location at which new entries are added to the header.
+     * 
+     * @return the next card in the Header using the built-in iterator
+     * 
+     * @see    #nextCard()
+     * @see    #findCard(IFitsHeader)
+     * @see    #findCard(String)
+     * @see    #seekHead()
+     * 
+     * @since  1.18.1
+     */
+    public HeaderCard prevCard() {
+        if (cursor().hasPrev()) {
+            return cursor().prev();
         }
         return null;
     }
@@ -1811,7 +1860,7 @@ public class Header implements FitsElement {
         }
 
         // Move the cursor to after the last card -- this is where new cards will be added.
-        cursor().end();
+        seekTail();
     }
 
     /**
