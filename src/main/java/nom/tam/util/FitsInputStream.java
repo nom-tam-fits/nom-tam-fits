@@ -37,10 +37,10 @@ import java.io.DataInputStream;
 import java.io.EOFException;
 import java.io.IOException;
 import java.io.InputStream;
-import java.util.logging.Level;
-import java.util.logging.Logger;
+import java.nio.ByteBuffer;
 
-import static nom.tam.util.LoggerHelper.getLogger;
+import nom.tam.fits.FitsFactory;
+import nom.tam.fits.utilities.FitsCheckSum;
 
 /**
  * For reading FITS files through an {@link InputStream}.
@@ -63,7 +63,11 @@ import static nom.tam.util.LoggerHelper.getLogger;
 @SuppressWarnings("deprecation")
 public class FitsInputStream extends ArrayInputStream implements ArrayDataInput {
 
-    private static final Logger LOG = getLogger(FitsInputStream.class);
+    /** buffer for checksum calculation */
+    private ByteBuffer check;
+
+    /** aggregated checksum */
+    private long sum;
 
     /** the input, as accessible via the <code>DataInput</code> interface */
     private DataInput data;
@@ -77,6 +81,8 @@ public class FitsInputStream extends ArrayInputStream implements ArrayDataInput 
     public FitsInputStream(InputStream i, int bufLength) {
         super(i, bufLength);
         data = new DataInputStream(this);
+        check = ByteBuffer.allocate(FitsFactory.FITS_BLOCK_SIZE);
+        check.limit(check.capacity());
         setDecoder(new FitsDecoder(this));
     }
 
@@ -92,6 +98,62 @@ public class FitsInputStream extends ArrayInputStream implements ArrayDataInput 
     @Override
     protected FitsDecoder getDecoder() {
         return (FitsDecoder) super.getDecoder();
+    }
+
+    @Override
+    public int read() throws IOException {
+        int i = super.read();
+        if (i >= 0) {
+            check.put((byte) i);
+            if (check.remaining() <= 0) {
+                aggregate();
+            }
+        }
+        return i;
+    }
+
+    @Override
+    public int read(byte[] b, int from, int len) throws IOException {
+        int n = super.read(b, from, len);
+        for (int i = 0; i < n;) {
+            int l = Math.min(n - i, check.remaining());
+            check.put(b, from + i, l);
+            if (check.remaining() <= 0) {
+                aggregate();
+            }
+            i += l;
+        }
+        return n;
+    }
+
+    private void aggregate() {
+        sum = FitsCheckSum.sumOf(sum, FitsCheckSum.checksum(check));
+        check.position(0);
+    }
+
+    /**
+     * (<i>for internal use</i>) Returns the aggregated checksum for this stream since the last {@link #newChecksum()}
+     * or since instantiation.
+     * 
+     * @return the aggregated checksum since the last call to {@link #newChecksum()}, or else since instantiation.
+     * 
+     * @since  1.18.1
+     * 
+     * @see    #newChecksum()
+     */
+    public long getAggregatedChecksum() {
+        return sum;
+    }
+
+    /**
+     * (<i>for internal use</i>) Starts accumulating a new checksum, discarding the prior sum.
+     * 
+     * @since 1.18.1
+     * 
+     * @see   #getAggregatedChecksum()
+     */
+    public void newChecksum() {
+        sum = 0;
     }
 
     @Override
@@ -164,21 +226,16 @@ public class FitsInputStream extends ArrayInputStream implements ArrayDataInput 
 
     @Override
     public long skip(long n) throws IOException {
-        // The underlying stream may or may not support skip(). So, if skip()
-        // fails, we'll just default to reading byte-by-byte...
-        try {
-            return super.skip(n);
-        } catch (Exception e) {
-            LOG.log(Level.WARNING, "Built-in skip failed (will try work around it...)", e);
-            // Move on...
-        }
+        byte[] b = new byte[FitsFactory.FITS_BLOCK_SIZE];
 
-        // Fallback byte-by-byte read()...
+        // Always read so we can checksum.
         long skipped = 0;
-        for (; skipped < n; skipped++) {
-            if (read() < 0) {
+        while (skipped < n) {
+            int got = read(b, 0, (int) Math.min(n - skipped, b.length));
+            if (got < 0) {
                 break;
             }
+            skipped += got;
         }
         return skipped;
     }

@@ -40,6 +40,7 @@ import java.util.logging.Logger;
 import nom.tam.fits.utilities.FitsCheckSum;
 import nom.tam.util.ArrayDataInput;
 import nom.tam.util.ArrayDataOutput;
+import nom.tam.util.FitsInputStream;
 import nom.tam.util.RandomAccess;
 
 import static nom.tam.util.LoggerHelper.getLogger;
@@ -82,6 +83,9 @@ public abstract class Data implements FitsElement {
      */
     @Deprecated
     protected RandomAccess input;
+
+    /** The data checksum calculated from the input stream */
+    private long checksum = 0;
 
     /**
      * Returns the random accessible input from which this data can be read, if any.
@@ -150,6 +154,16 @@ public abstract class Data implements FitsElement {
      */
     public long calcChecksum() throws FitsException {
         return FitsCheckSum.checksum(this);
+    }
+
+    /**
+     * Returns the checksum value calculated duting reading from a stream.
+     * 
+     * @return the checksum calculated for the data read from a stream, or else zero if the data was not read from the
+     *             stream.
+     */
+    long getStreamChecksum() {
+        return checksum;
     }
 
     /**
@@ -301,6 +315,12 @@ public abstract class Data implements FitsElement {
             return;
         }
 
+        checksum = 0L;
+
+        if (in instanceof FitsInputStream) {
+            ((FitsInputStream) in).newChecksum();
+        }
+
         setFileOffset(in);
 
         if (getTrueSize() == 0) {
@@ -323,6 +343,10 @@ public abstract class Data implements FitsElement {
         }
 
         skipPadding(in);
+
+        if (in instanceof FitsInputStream) {
+            checksum = ((FitsInputStream) in).getAggregatedChecksum();
+        }
     }
 
     @SuppressWarnings("resource")

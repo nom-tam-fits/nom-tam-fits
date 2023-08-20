@@ -1001,8 +1001,15 @@ public class Fits implements Closeable {
             }
             return null;
         }
+
         if (dataStr instanceof RandomAccess && lastFileOffset > 0) {
             FitsUtil.reposition(dataStr, lastFileOffset);
+        }
+
+        long sum = -1;
+
+        if (dataStr instanceof FitsInputStream) {
+            ((FitsInputStream) dataStr).newChecksum();
         }
 
         Header hdr = Header.readHeader(dataStr);
@@ -1011,6 +1018,8 @@ public class Fits implements Closeable {
             return null;
         }
 
+        long hsum = (dataStr instanceof FitsInputStream) ? ((FitsInputStream) dataStr).getAggregatedChecksum() : -1L;
+
         Data data = FitsFactory.dataFactory(hdr);
         try {
             data.read(dataStr);
@@ -1018,6 +1027,8 @@ public class Fits implements Closeable {
                 // Check for truncation even if we successfully skipped to the expected
                 // end since skip may allow going beyond the EOF.
                 LOG.warning("Missing padding after data segment");
+            } else if (dataStr instanceof FitsInputStream) {
+                sum = FitsCheckSum.sumOf(hsum, data.getStreamChecksum());
             }
         } catch (PaddingException e) {
             // Stream end before required padding after data...
@@ -1025,10 +1036,13 @@ public class Fits implements Closeable {
         }
 
         lastFileOffset = FitsUtil.findOffset(dataStr);
-        BasicHDU<Data> nextHDU = FitsFactory.hduFactory(hdr, data);
-        hduList.add(nextHDU);
+        BasicHDU<Data> hdu = FitsFactory.hduFactory(hdr, data);
+        if (sum > 0) {
+            hdu.setStreamChecksum(sum);
+        }
+        hduList.add(hdu);
 
-        return nextHDU;
+        return hdu;
     }
 
     /**
@@ -1200,7 +1214,7 @@ public class Fits implements Closeable {
 
             try {
                 hdu.verifyIntegrity();
-            } catch (FitsException e) {
+            } catch (FitsIntegrityException e) {
                 throw new FitsException("Corrupted HDU[" + i + "]", e);
             }
         }
