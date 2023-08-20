@@ -38,7 +38,8 @@ import nom.tam.fits.header.Standard;
 import static nom.tam.fits.header.Standard.XTENSION;
 
 /**
- * A HDU that holds a type of data we don't recognise.
+ * A HDU that holds a type of data we don't recognise. We can still access that data in its raw binary form, and the
+ * user can interpret the headers to make sense of particular but not (yet) supported FITS HDU types.
  * 
  * @see UndefinedData
  */
