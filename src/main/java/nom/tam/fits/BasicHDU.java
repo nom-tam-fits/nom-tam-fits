@@ -611,7 +611,7 @@ public abstract class BasicHDU<DataClass extends Data> implements FitsElement {
      * possible. When the header has a CHECKSUM keyword stored, the overall checksum of the HDU overall must be
      * <code>0xffffffff</code>, that is -1 in 32-bit representation.
      * 
-     * @return               <code>true</code> if the HDU has a CHECHSUM and/or DATASUM record to check against,
+     * @return               <code>true</code> if the HDU has a CHECKSUM and/or DATASUM record to check against,
      *                           otherwise <code>false</code>
      * 
      * @throws FitsException if the HDU fails the integrity test.
@@ -648,7 +648,7 @@ public abstract class BasicHDU<DataClass extends Data> implements FitsElement {
      * Checks that the HDUs data checksum is correct. The recorded DATASUM will be used, if available, to check the
      * integrity of the data segment.
      * 
-     * @return               <code>true</code> if the HDU has a CHECHSUM or DATASUM record to check against, otherwise
+     * @return               <code>true</code> if the HDU has DATASUM record to check against, otherwise
      *                           <code>false</code>
      * 
      * @throws FitsException if the HDU fails the integrity test.
