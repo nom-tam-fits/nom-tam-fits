@@ -130,20 +130,21 @@ public abstract class Data implements FitsElement {
     }
 
     /**
-     * Computes and returns the FITS checksum for this data, e.g. to compare agains the stored <code>DATASUM</code> in
-     * the FITS header. This method always computes the checksum from data in into memory. As such it will fully load
-     * deferred read mode data into RAM to perform the calculation. If you prefer to leave the data in deferred read
-     * mode, you can use {@link FitsCheckSum#checksum(RandomAccess, long, long)} instead directly on the input with this
-     * data's {@link #getFileOffset()} and {@link #getSize()} arguments; or equivalently use
-     * {@link Fits#calcDatasum(int)}.
-     *
+     * Computes and returns the FITS checksum for this data, for example to compare against the stored
+     * <code>DATASUM</code> in the FITS header (e.g. via {@link BasicHDU#getStoredDatasum()}). This method always
+     * computes the checksum from data in memory. As such it will fully load deferred read mode data into RAM to perform
+     * the calculation, and use the standard padding to complete the FITS block for the calculation. As such the
+     * checksum may differ from that of the file if the file uses a non-standard padding. Hence, for verifying data
+     * integrity as stored in a file {@link BasicHDU#verifyDataIntegrity()} or {@link BasicHDU#verifyIntegrity()} should
+     * be preferred.
+     * 
      * @return               the computed FITS checksum from the data (fully loaded in memory).
      *
      * @throws FitsException if there was an error while calculating the checksum
      *
-     * @see                  Fits#calcDatasum(int)
-     * @see                  FitsCheckSum#checksum(RandomAccess, long, long)
-     * @see                  FitsCheckSum#checksum(Data)
+     * @see                  BasicHDU#getStoredDatasum()
+     * @see                  BasicHDU#verifyDataIntegrity()
+     * @see                  BasicHDU#verifyIntegrity()
      *
      * @since                1.17
      */

@@ -207,7 +207,7 @@ public abstract class TableHDU<T extends AbstractTableData> extends BasicHDU<T> 
             }
         }
         // Update the number of fields.
-        myHeader.findCard(TFIELDS).setValue(getNCols());
+        myHeader.getCard(TFIELDS).setValue(getNCols());
 
         // Give the data sections a chance to update the header too.
         myData.updateAfterDelete(ncol, myHeader);

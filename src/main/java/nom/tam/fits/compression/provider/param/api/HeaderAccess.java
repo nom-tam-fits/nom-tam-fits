@@ -84,12 +84,12 @@ public class HeaderAccess implements IHeaderAccess {
 
     @Override
     public HeaderCard findCard(IFitsHeader key) {
-        return header.findCard(key);
+        return header.getCard(key);
     }
 
     @Override
     public HeaderCard findCard(String key) {
-        return header.findCard(key);
+        return header.getCard(key);
     }
 
     private HeaderCardBuilder card(IFitsHeader key) {

@@ -8,7 +8,7 @@
 
 # Getting started with the _nom.tam.fits_ library.
 
-Updated for 1.18 and/or later 1.x releases.
+Updated for 1.18.1 and/or later 1.x releases.
 
 ## Table of Contents
 
@@ -48,15 +48,24 @@ You may find the following links useful:
  - [FITS vs Java data types](#fits-vs-java-data-types)
 
 
-FITS (Flexible Image Transport System) is a binary format devised and primarily used for the storage of astronomical datasets. A FITS
-file is composed of one or more *Header-Data Units* (HDUs). Each HDU consists of a *header*, which describes the data and possibly contain extra metadata (as key-value pairs) or comments, and a *data* section.
+FITS (Flexible Image Transport System) is a binary format devised and primarily used for the storage of astronomical 
+datasets. A FITS file is composed of one or more *Header-Data Units* (HDUs). Each HDU consists of a *header*, which 
+describes the data and possibly contain extra metadata (as key-value pairs) or comments, and a *data* section.
 
-The library requires a level of familiarity with FITS and its common standards and conventions for effective use. For example, while
-the library will automatically interpret and populate the mandatory minimum data description in FITS headers, it will not automatically process optional standard or conventional header entries. It is up to the users to extract or complete the description of data, for example to include FITS world coordinate systems (WCS), physical units, etc. Users are encouraged to familiarize themselves with the [FITS standard](https://fits.gsfc.nasa.gov/fits_standard.html) and conventions described therein to be effective users of this library. 
+The library requires a level of familiarity with FITS and its common standards and conventions for effective use. For 
+example, while the library will automatically interpret and populate the mandatory minimum data description in FITS 
+headers, it will not automatically process optional standard or conventional header entries. It is up to the users to 
+extract or complete the description of data, for example to include FITS world coordinate systems (WCS), physical 
+units, etc. Users are encouraged to familiarize themselves with the 
+[FITS standard](https://fits.gsfc.nasa.gov/fits_standard.html) and conventions described therein to be effective users 
+of this library. 
 
-This library was originally written in Java 1.0 and therefore its design and implementation were strongly influenced by the limited functionality and efficiencies of early versions of Java.
+This library was originally written in Java 1.0 and therefore its design and implementation were strongly influenced 
+by the limited functionality and efficiencies of early versions of Java.
 
-This is an open-source, community maintained, project hosted on github as [nom-tam-fits](https://github.com/nom-tam-fits/nom-tam-fits). Further information and documentation, including API docs, can be found on the [project site](http://nom-tam-fits.github.io/nom-tam-fits/index.html).
+This is an open-source, community maintained, project hosted on github as 
+[nom-tam-fits](https://github.com/nom-tam-fits/nom-tam-fits). Further information and documentation, including API 
+docs, can be found on the [project site](http://nom-tam-fits.github.io/nom-tam-fits/index.html).
 
 
 <a name="Fits-data-types"></a>
@@ -65,38 +74,42 @@ This is an open-source, community maintained, project hosted on github as [nom-t
 
 The current FITS standard (4.0) recognizes the following principal HDU / data types: 
 
- 1. **Image** can store a regular array of 1-999 dimensions with a type corresponding to Java numerical primitives, such as a 
- one-dimensional time series of samples (e.g. `int[]`), or a three-dimensional cube of voxels (e.g. `float[][][]`). (Note, that 
- Java supports images up to 255 dimensions only but it's unlikely you'll find that limiting for your application.)
+ 1. **Image** can store a regular array of 1-999 dimensions with a type corresponding to Java numerical primitives, 
+ such as a one-dimensional time series of samples (e.g. `int[]`), or a three-dimensional cube of voxels (e.g. 
+ `float[][][]`). (Note, that Java supports images up to 255 dimensions only but it's unlikely you'll find that 
+ limiting for your application.)
 
- 2. **Binary table** can store rows and columns of assorted of elements. Each column entry may be either a single value, or a 
- fixed-sized (multidimensional) array, or else a variable-length 1D arrays of a given type. All Java primitive numerical types 
- are supported, but also `String`, `Boolean` (logical), `boolean` (bits), and `ComplexValue` types.
+ 2. **Binary table** can store rows and columns of assorted of elements. Each column entry may be either a single 
+ value, or a fixed-sized (multidimensional) array, or else a variable-length 1D arrays of a given type. All Java 
+ primitive numerical types are supported, but also `String`, `Boolean` (logical), `boolean` (bits), and `ComplexValue` 
+ types.
 
- 3. **ASCII Table** (_discouraged_) is a simpler, less capable table format with support for storing singular primitive numerical 
- types, and Strings only -- in human-readable format. You should probably use the more flexible (and more compact) binary tables 
- instead for your application, and reserve use of ASCII tables for reading data that may still contain these.
+ 3. **ASCII Table** (_discouraged_) is a simpler, less capable table format with support for storing singular 
+ primitive numerical types, and Strings only -- in human-readable format. You should probably use the more flexible 
+ (and more compact) binary tables instead for your application, and reserve use of ASCII tables for reading data that 
+ may still contain these.
 
- 4. **Random-Groups** (_discouraged_) can contain a set of images of the same type and dimensions along with a set of parameters 
- of the same type (for example an `int[][]` image, along with a set of `int` parameters). They were never widely used and the 
- FITS 4.0 standard discourages them going forward, given that binary tables provide far superior capabilities for storing the 
- same type of data. Support for these type of HDUs is thus very basic, and aimed mainly at providing a way to access data that 
- was already written in this format.
+ 4. **Random-Groups** (_discouraged_) can contain a set of images of the same type and dimensions along with a set of 
+ parameters of the same type (for example an `int[][]` image, along with a set of `int` parameters). They were never 
+ widely used and the FITS 4.0 standard discourages them going forward, given that binary tables provide far superior 
+ capabilities for storing the same type of data. Support for these type of HDUs is thus very basic, and aimed mainly 
+ at providing a way to access data that was already written in this format.
 
- 5. **Foreign File** can encapsulate various other files within the FITS. Foreign file HDUs are a recognised convention, but not 
- (yet) officially part of the FITS standard. We do not explicitly support foreign file encapsulation yet, but it is something that 
- we are considering for a future release.
+ 5. **Foreign File** can encapsulate various other files within the FITS. Foreign file HDUs are a recognised 
+ convention, but not (yet) officially part of the FITS standard. We do not explicitly support foreign file 
+ encapsulation yet, but it is something that we are considering for a future release.
  
  In addition to the basic HDU types, there are extension of table HDUs that serve specific purposes, such as:
 
- - **Compressed images or tables** are an extension of the binary table HDUs for storing an image or a binary table in a compressed 
- format, with tiling support to make parts easily accessible from the whole. We provide full support for compressing and decompressing
- images and tables, and for accessing specific regions of compressed data stored in this format.
+ - **Compressed images or tables** are an extension of the binary table HDUs for storing an image or a binary table in 
+ a compressed format, with tiling support to make parts easily accessible from the whole. We provide full support for 
+ compressing and decompressing images and tables, and for accessing specific regions of compressed data stored in this 
+ format.
 
- - The **Hierarchical grouping** convention is an extension of table HDUs (ASCII or binary) for storing information on the 
- hierarchical relation of HDUs contained within (or external to) the FITS. The hierarchical grouping is a recognized convention, 
- but not (yet) officially part of the FITS standard. We do not explicitly support this convention yet, but it is something that 
- we are considering for a future release.
+ - The **Hierarchical grouping** convention is an extension of table HDUs (ASCII or binary) for storing information on 
+ the hierarchical relation of HDUs contained within (or external to) the FITS. The hierarchical grouping is a 
+ recognized convention, but not (yet) officially part of the FITS standard. We do not explicitly support this 
+ convention yet, but it is something that we are considering for a future release.
 
 
 
@@ -108,8 +121,9 @@ The current FITS standard (4.0) recognizes the following principal HDU / data ty
 #### Signed vs unsigned bytes
 
 Java bytes are signed, but FITS bytes are not. If any arithmetic processing is to be done on byte valued data,
-users may need to be careful of Java’s automated conversion of signed bytes to widened integers. Thus, a value of `0xFF`
-would signify 255 in FITS, but has a Java value of -1. To preserve the FITS meaning, we may upconvert it to `short` as:
+users may need to be careful of Java’s automated conversion of signed bytes to widened integers. Thus, a value of 
+`0xFF`would signify 255 in FITS, but has a Java value of -1. To preserve the FITS meaning, we may upconvert it to 
+`short` as:
 
 ```java
   short shortValue = (byteValue & 0xFF);
@@ -123,7 +137,8 @@ undesired sign extension of bytes.
 FITS generally represents character strings a byte arrays of ASCII characters, with legal values between `0x20` and 
 `0x7E` (inclusive). The library automatically converts between Java `String`s and their FITS representations, by the 
 appropriate narrowing conversion of 16-bit Unicode `char` to `byte`. Therefore, you should be careful to avoid using 
-extended Unicode characters (and also ASCII beyond the `0x20` -- `0x7E` range) in `String`s, when including these in FITS.
+extended Unicode characters (and also ASCII beyond the `0x20` -- `0x7E` range) in `String`s, when including these in 
+FITS.
 
 
 -----------------------------------------------------------------------------
@@ -142,15 +157,15 @@ extended Unicode characters (and also ASCII beyond the `0x20` -- `0x7E` range) i
 <a name="deferred-reading"></a>
 ### Deferred reading
 
-When FITS data are being read from a non-compressed random accessible input (such as a `FitsFile`), the `read()` call will 
-parse all HDU headers but will typically skip over the data segments (noting their position in the file however). Only when 
-the user tries to access data from an HDU, will the library load that data from the previously noted file position. The behavior 
-allows to inspect the contents of a FITS file very quickly even when the file is large, and reduces the need for IO when only 
-parts of the whole are of interest to the user. Deferred input, however, is not possible when the input is compressed or if it 
-is uses an stream rather than a random-access `FitsFile`.
+When FITS data are being read from a non-compressed random accessible input (such as a `FitsFile`), the `read()` call 
+will parse all HDU headers but will typically skip over the data segments (noting their position in the file however). 
+Only when the user tries to access data from an HDU, will the library load that data from the previously noted file 
+position. The behavior allows to inspect the contents of a FITS file very quickly even when the file is large, and 
+reduces the need for IO when only parts of the whole are of interest to the user. Deferred input, however, is not 
+possible when the input is compressed or if it is uses an stream rather than a random-access `FitsFile`.
 
-One thing to keep in mind with deferred reading is that you should not close your `Fits` or its random-accessible input file 
-before all the required data has been loaded. For example, the following will cause an error:
+One thing to keep in mind with deferred reading is that you should not close your `Fits` or its random-accessible 
+input file before all the required data has been loaded. For example, the following will cause an error:
 
 ```java
   Fits fits = new Fits("somedata.fits");
@@ -188,14 +203,15 @@ As of version 1.18, all data classes of the library support deferred reading.
 ### Tolerance to standard violations in 3rd party FITS files.
 
 By default the library will be tolerant to FITS standard violations when parsing 3rd-party FITS files. We believe that 
-if you use this library to read a FITS produced by other software, you are mainly interested to find out what's inside it, 
-rather than know if it was written properly. However, problems such as missing padding at the end of the file, or an 
-unexpected end-of-file before content was fully parsed, will be logged so they can be inspected. Soft violations of header 
-standards (those that can be overcome with educated guesses) are also tolerared when reading, but logging for these is not 
-enabled by default (since they may be many, and likely you don't care). You can enable logging standard violations in 
-3rd-party headers by `Header.setParserWarningsEnabled(true)`. You can also enforce stricter compliance to standard when 
-reading FITS files via `FitsFactory.setAllowHeaderRepairs(false)` and `FitsFactory.setAllowTerminalJunk(false)`. When 
-violations are not tolerated, appropriate exceptions will be thrown during reading.
+if you use this library to read a FITS produced by other software, you are mainly interested to find out what's inside 
+it, rather than know if it was written properly. However, problems such as missing padding at the end of the file, or 
+an unexpected end-of-file before content was fully parsed, will be logged so they can be inspected. Soft violations of 
+header standards (those that can be overcome with educated guesses) are also tolerared when reading, but logging for 
+these is not enabled by default (since they may be many, and likely you don't care). You can enable logging standard 
+violations in 3rd-party headers by `Header.setParserWarningsEnabled(true)`. You can also enforce stricter compliance 
+to standard when reading FITS files via `FitsFactory.setAllowHeaderRepairs(false)` and 
+`FitsFactory.setAllowTerminalJunk(false)`. When violations are not tolerated, appropriate exceptions will be thrown 
+during reading.
 
 
 
@@ -220,30 +236,37 @@ The simplest example of reading an image contained in the first HDU is given bel
   int[][] image = (int[][]) hdu.getKernel();
 ```
 
-First we create a new instance of `Fits` with the filename. Then we can get first HDU using 
-the `getHDU()` method. Note the casting into an `ImageHDU`.
+First we create a new instance of `Fits` with the filename. Then we can get first HDU using the `getHDU()` method. 
+Note the casting into an `ImageHDU`.
 
 When reading FITS data using the nom.tam library the user will often need to cast the results to the appropriate type.
-Given that the FITS file may contain many different kinds of data and that Java provides us with no class that can point to different kinds of primitive arrays other than `Object`, such explicit casting is inevitable if you want to use the data from the FITS files.
+Given that the FITS file may contain many different kinds of data and that Java provides us with no class that can 
+point to different kinds of primitive arrays other than `Object`, such explicit casting is inevitable if you want to 
+use the data from the FITS files.
 
 
 
 <a name="reading-cutouts"></a>
 #### Reading selected parts of an image only (cutouts)
 
-Since 1.18, it is possible to read select cutouts of large images, including sparse sampling of specific image regions. When reading image data users may not want to read an entire array especially if the data is very large. An `ImageTiler` can be used to read in only a portion of an array.
-The user can specify a box (or a sequence of boxes) within the image and extract the desired subsets.
-`ImageTiler` can be used for any image.
-The library will try to only read the subsets requested if the FITS data is being read from an uncompressed file but in many cases it will need to read in the entire image before subsetting.
+Since 1.18, it is possible to read select cutouts of large images, including sparse sampling of specific image 
+regions. When reading image data users may not want to read an entire array especially if the data is very large. An 
+`ImageTiler` can be used to read in only a portion of an array. The user can specify a box (or a sequence of boxes) 
+within the image and extract the desired subsets. `ImageTiler` can be used for any image. The library will try to only 
+read the subsets requested if the FITS data is being read from an uncompressed file but in many cases it will need to 
+read in the entire image before subsetting.
 
-Suppose the image we retrieve above has 2000x2000 pixels, but we only want to see the innermost 100x100 pixels. This can be achieved with
+Suppose the image we retrieve above has 2000x2000 pixels, but we only want to see the innermost 100x100 pixels. This 
+can be achieved with
 
 ```java
   ImageTiler tiler = hdu.getTiler();
   short[] center = (short[]) tiler.getTile(new int[] {950, 950}, new int[] {100, 100});
 ```
 
-The tiler needs to know the corners and size of the tile we want. Note that we can tile an image of any dimensionality. `getTile()` returns a one-dimensional array with the flattend image. You can convert it to a 2D image afterwards using `ArrayFuncs.curl()`, e.g.:
+The tiler needs to know the corners and size of the tile we want. Note that we can tile an image of any 
+dimensionality. `getTile()` returns a one-dimensional array with the flattend image. You can convert it to a 2D image 
+afterwards using `ArrayFuncs.curl()`, e.g.:
 
 ```java
   short[][] center2D = (short[][]) ArrayFuncs.curl(center, 100, 100);
@@ -252,9 +275,9 @@ The tiler needs to know the corners and size of the tile we want. Note that we c
 
 <a name="reading-streaming-cutouts"></a>
 #### Streaming image cutouts
-Since version 1.18 it it is possible to stream cutouts, using the `StreamingTileImageData` class. The streaming can be used with 
-any source that implements the `RandomAccessFileIO` interface, which provides file-like random access, for example for a resource 
-on the Amazon S3 cloud:
+Since version 1.18 it it is possible to stream cutouts, using the `StreamingTileImageData` class. The streaming can be 
+used with any source that implements the `RandomAccessFileIO` interface, which provides file-like random access, for 
+example for a resource on the Amazon S3 cloud:
 
 ```java
   import nom.tam.util.RandomAccessFileIO;
@@ -290,11 +313,11 @@ Below is an example code sketch for streaming image cutouts from very large imag
   output.write(outputStream);
 ```
 
-As of version 1.18 it is also possible to stream cutouts from compressed images using the `CompressedImageTiler` class. 
-Whereas the `asImageHDU()` method decompresses the entire image in memory, the `CompressedImageTiler` will decompress only the 
-tiles necessary for obtaining the desired cutout. For example, consider writing the cutout from a compressed image as a regular 
-non-compressed `ImageHDU`. This can be achieved much the same way as in the above example, replacing `imageHDU.getTiler()` with 
-a `CompressedImageTiler` step, such as:
+As of version 1.18 it is also possible to stream cutouts from compressed images using the `CompressedImageTiler` 
+class. Whereas the `asImageHDU()` method decompresses the entire image in memory, the `CompressedImageTiler` will 
+decompress only the tiles necessary for obtaining the desired cutout. For example, consider writing the cutout from a 
+compressed image as a regular non-compressed `ImageHDU`. This can be achieved much the same way as in the above 
+example, replacing `imageHDU.getTiler()` with a `CompressedImageTiler` step, such as:
 
 ```java
   ...
@@ -310,9 +333,9 @@ a `CompressedImageTiler` step, such as:
 <a name="low-level-image-read"></a>
 #### Low-level reading of image data
 
-Suppose we want to get the average value of a 100,000 x 40,000 pixel image. If the pixels are 32-bit integers, that would be an 
-16 GB file. However, we do not need to load the entire image into memory at once. Instead we can analyze it via bite-sized chunks. 
-For example,
+Suppose we want to get the average value of a 100,000 x 40,000 pixel image. If the pixels are 32-bit integers, that 
+would be an 16 GB file. However, we do not need to load the entire image into memory at once. Instead we can analyze 
+it via bite-sized chunks. For example,
 
 ```java
   Fits fits = new Fits("bigimg.fits");
@@ -325,8 +348,9 @@ For example,
   }
 ```
 
-The `reset()` method causes the internal stream to seek to the beginning of the data area. If that’s not possible it returns `false`.
-Next, we obtain the input file or stream for reading, query the image size, and set up our chunk-sized storage (e.g. by image row):
+The `reset()` method causes the internal stream to seek to the beginning of the data area. If that’s not possible it 
+returns `false`. Next, we obtain the input file or stream for reading, query the image size, and set up our 
+chunk-sized storage (e.g. by image row):
 
 ```java  
   // Get the input associated to the FITS
@@ -369,10 +393,10 @@ table HDU in the FITS:
   TableHDU hdu = (TableHDU) f.getHDU(1);
 ```
 
-If we are using a random-accessible input (like the file above), we have the option (for binary tables) to load the entire 
-table into memory first. This may be a good idea for small tables, and/or if we plan to access all the data contained in the 
-table -- or not such a good idea if we deal with huge tables from which we need only a selection of the entries. To load the 
-entire HDU into memory:
+If we are using a random-accessible input (like the file above), we have the option (for binary tables) to load the 
+entire table into memory first. This may be a good idea for small tables, and/or if we plan to access all the data 
+contained in the table -- or not such a good idea if we deal with huge tables from which we need only a selection of 
+the entries. To load the entire HDU into memory:
 
 ```java
   // This will load the main table and the heap area into memory (if we want to...)
@@ -410,9 +434,9 @@ and a spectrum stored in the fifth column (i.e. 4 in Java indexing):
   }
 ```
 
-The old `getElement()` / `setElement()` methods supported access as arrays only. While this is still a viable alternative 
-(though slightly less elegant), we recommend against it going forward. Nevetheless, the equivalent to the above using this 
-approach would be:
+The old `getElement()` / `setElement()` methods supported access as arrays only. While this is still a viable 
+alternative (though slightly less elegant), we recommend against it going forward. Nevetheless, the equivalent to the 
+above using this approach would be:
 
 ```java   
   // Loop through rows, accessing the relevant column data
@@ -512,23 +536,27 @@ second HDU (Java index 1).
 
 #### Binary versus ASCII tables
 
-When writing simple tables it may be possible to write the tables in either binary or ASCII format, provided all columns are scalar types. By default, the library will create and write binary tables for such data. To create ASCII tables instead the user should call `FitsFactory.setUseAsciiTables(true)` first. Given the superiority and compactness of binary tables, we recommend against using
-ASCII tables, unless you have to for a compelling reason.
+When writing simple tables it may be possible to write the tables in either binary or ASCII format, provided all 
+columns are scalar types. By default, the library will create and write binary tables for such data. To create ASCII 
+tables instead the user should call `FitsFactory.setUseAsciiTables(true)` first. Given the superiority and 
+compactness of binary tables, we recommend against using ASCII tables, unless you have to for a compelling reason.
 
 
 
 <a name="incremental-writing"></a>
 ### Writing one HDU at a time
 
-Sometimes you do not want to add all your HDUs to a `Fits` object before writing it out to a file or stream. Maybe because they 
-use up too much RAM, or you are recording from a live stream and want to add HDUs to the file as they come in. As of version 
-__1.17__ of the library, you can write FITS files one HDU at a time without having to place them in a `Fits` container first, or 
-having to worry about the mandatory keywords having been set for primary or extension HDUs. Or, you can write a `Fits` object 
-with some number of HDUs, but then keep appending further HDUs after, worry-free. The `FitsFile` or `FitsOutputStream` object 
-will keep track of where things go in the file or stream, and set the required header keywords for the appended HDUs as appropriate 
-for a primary or extension HDU automatically.
+Sometimes you do not want to add all your HDUs to a `Fits` object before writing it out to a file or stream. Maybe 
+because they use up too much RAM, or you are recording from a live stream and want to add HDUs to the file as they 
+come in. As of version __1.17__ of the library, you can write FITS files one HDU at a time without having to place 
+them in a `Fits` container first, or having to worry about the mandatory keywords having been set for primary or 
+extension HDUs. Or, you can write a `Fits` object with some number of HDUs, but then keep appending further HDUs 
+after, worry-free. The `FitsFile` or `FitsOutputStream` object will keep track of where things go in the file or 
+stream, and set the required header keywords for the appended HDUs as appropriate for a primary or extension HDU 
+automatically.
 
-Here is an example of how building a FITS file HDU-by-HDU without the need to create a `Fits` object as a holding container:
+Here is an example of how building a FITS file HDU-by-HDU without the need to create a `Fits` object as a holding 
+container:
 
 ```java
   // Create the file to which to write the HDUs as they come
@@ -544,9 +572,9 @@ Here is an example of how building a FITS file HDU-by-HDU without the need to cr
   out.close(); 
 ```
 
-In this case you can use random access, which means you can go back and re-write HDUs (or their headers) in place later. If 
-you do go all the way back to the head of the file, and re-write the first HDU, you can be assured that it will contain the 
-necessary header entries for a primary HDU, even if you did not set them yourself. Easy as pie. 
+In this case you can use random access, which means you can go back and re-write HDUs (or their headers) in place 
+later. If you do go all the way back to the head of the file, and re-write the first HDU, you can be assured that 
+it will contain the necessary header entries for a primary HDU, even if you did not set them yourself. Easy as pie. 
 
 Of course, you can use a `FitsOutputStream` as opposed to a file as the output also, e.g.:
 
@@ -726,9 +754,9 @@ location:
 <a name="modifying-existing-files"></a>
 ## Modifying existing files
 
-An existing FITS file can be modified in place in some circumstances. The file must be an uncompressed (random-accessible) file, with
-permissions to read and write. The user can then modify elements either by directly modifying the kernel data object for image data, 
-or by using the `setElement` or similar methods for tables.
+An existing FITS file can be modified in place in some circumstances. The file must be an uncompressed 
+(random-accessible) file, with permissions to read and write. The user can then modify elements either by directly 
+modifying the kernel data object for image data, or by using the `setElement` or similar methods for tables.
 
 Suppose we have just a couple of specific elements we know we need to change in a given file:
 
@@ -759,18 +787,18 @@ Same goes for a table HDU:
   hdu.rewrite();
 ```
 
-Note, that in the above table example, the `rewrite()` call may be superfluous since `BinaryTable.set()` may be editing the file
-in situ if the data has been left in deferred-read mode (random accessible file, without data loaded to memory). Nevertheless,
-it is best practice to call `rewrite()` anyway to ensure that the updates are synched to the output under all circumstances. And, 
-you should also close the output (e.g. via `Fits.close()`) after done editing the FITS file to ensure that any pending file changes 
-are fully flushed to the output.
+Note, that in the above table example, the `rewrite()` call may be superfluous since `BinaryTable.set()` may be 
+editing the file in situ if the data has been left in deferred-read mode (random accessible file, without data loaded 
+to memory). Nevertheless, it is best practice to call `rewrite()` anyway to ensure that the updates are synched to the 
+output under all circumstances. And, you should also close the output (e.g. via `Fits.close()`) after done editing the 
+FITS file to ensure that any pending file changes are fully flushed to the output.
 
-Defragmenting binary tables allows to reclaim heap space that is no longer used in the heap area. When deleting variable-length 
-columns, or when replacing entries inside variable-length columns, some or all of the space occupied by old entries on the heap 
-may become dead storage, needlessly bloaing the heap storage. Also, repaced entries may be placed on the heap out of order, 
-which can slow down caching effectiveness for sequential table acces. Thus when modifying tables with variable-length columns, 
-it may be a good idea to defragment the heap before writing in to the output. For the above example, this would be adding an 
-extra step before `rewrite)`. 
+Defragmenting binary tables allows to reclaim heap space that is no longer used in the heap area. When deleting 
+variable-length columns, or when replacing entries inside variable-length columns, some or all of the space occupied by 
+old entries on the heap may become dead storage, needlessly bloaing the heap storage. Also, repaced entries may be 
+placed on the heap out of order, which can slow down caching effectiveness for sequential table acces. Thus when 
+modifying tables with variable-length columns, it may be a good idea to defragment the heap before writing in to the 
+output. For the above example, this would be adding an extra step before `rewrite)`. 
 
 ```java
   ...
@@ -782,10 +810,11 @@ extra step before `rewrite)`.
   hdu.rewrite();
 ```
 
-Defragmenting might also be a good idea when building tables with variable-length data column by column (as opposed to
-row-by-row).
+Defragmenting might also be a good idea when building tables with variable-length data column by column (as 
+opposed to row-by-row).
 
-And, headers can also be updated in place also -- you don't even need to access the data, which can be left in deferred state:
+And, headers can also be updated in place also -- you don't even need to access the data, which can be left in 
+deferred state:
 
 ```java 
   BasicHDU<?> hdu = f.getHDU(1);
@@ -800,9 +829,10 @@ And, headers can also be updated in place also -- you don't even need to access 
 
 Generally rewrites can be made as long as the only change is to the data content, but not to the data size 
 (and the FITS file meets the criteria mentioned above). An exception will be thrown if the data has been added 
-or deleted or too many changes have been made to the header. Some additiona to the header may be allowed as long as the 
-header still fits in the same number of FITS blocks (of 2880 bytes) as before. (Hint, you can always reserve space in 
-headers for later additions using `Header.ensureCardSpace(int)` prior to writing the header or HDU originally.)
+or deleted or too many changes have been made to the header. Some additiona to the header may be allowed as long as 
+the header still fits in the same number of FITS blocks (of 2880 bytes) as before. (Hint, you can always reserve 
+space in headers for later additions using `Header.ensureCardSpace(int)` prior to writing the header or HDU 
+originally.)
 
 
 -----------------------------------------------------------------------------
@@ -837,25 +867,25 @@ There are some requirements on the array though:
      * primitive arrays (e.g. `int[]`, `float[][]`), or
      * Arrays of `Boolean` (logicals), `String` or `ComplexValue`, such as `Boolean[][]` or `String[]`, or
      * Scalar primitives stored as arrays of 1 (e.g. `short[1]`).
- - If entries are multi-dimensional arrays, all rows in a column must have the same dimensionality and shape. (If not, they
-   will be stored as variable-length arrays in flattened 1D format, where the shape may be lost). 
+ - If entries are multi-dimensional arrays, all rows in a column must have the same dimensionality and shape. (If 
+   not, they will be stored as variable-length arrays in flattened 1D format, where the shape may be lost). 
  - If entries are one-dimensional, they can freely vary in size from row to row
  - Java `null` entries are allowed for `String` and `Boolean` (logical) types, but not for the other data types.
    (these will map to empty strings or _undefined_ logical values respectively)
 
    
-Note, that while the library supports ASCII tables, it is generally better to just use binary tables for storing table data
-regardless. ASCII tables are more limited, and were meant to be readable from a console without needing any tools to display. 
-However, much has happened since the 1970s, and there is no truly compelling reason for using ASCII tables today. Binary 
-tables are simply better, because they:
+Note, that while the library supports ASCII tables, it is generally better to just use binary tables for storing table 
+data regardless. ASCII tables are more limited, and were meant to be readable from a console without needing any tools 
+to display. However, much has happened since the 1970s, and there is no truly compelling reason for using ASCII tables 
+today. Binary tables are simply better, because they:
 
  - Offer more flexibility, and more data types (such as complex values, variable sized arrays, and 
    multidimensional arrays).
  - Take up less space on disk
  - Can be compressed to an even smaller size
  
-To create ASCII tables (provided the data allows for it) you will need to call `FitsFactory.setUseAsciiTables(true)` prior 
-to calling `Fits.makeHDU()` or one of the factory methods to encapsulate a table data object.
+To create ASCII tables (provided the data allows for it) you will need to call `FitsFactory.setUseAsciiTables(true)` 
+prior to calling `Fits.makeHDU()` or one of the factory methods to encapsulate a table data object.
  
 When creating or modifying binary tables containing variable-length columns, defragmenting might also be a good idea 
 before writing out binary tables to a file or stream:
@@ -871,10 +901,10 @@ just before calling `write()`.
 <a name="building-by-row"></a>
 ### Buiding tables row-by-row
 
-As of __1.18__ building tables one row at a time is both easy and efficient -- and may be the least confusing way to get
-tables done right. (In prior releases, adding rows to existing tables was painfully slow, and much more constrained). You may 
-want to start by defining the types and dimensions of the data (or whether variable-length) that will be contained in each 
-table column:
+As of __1.18__ building tables one row at a time is both easy and efficient -- and may be the least confusing way to 
+get tables done right. (In prior releases, adding rows to existing tables was painfully slow, and much more 
+constrained). You may want to start by defining the types and dimensions of the data (or whether variable-length) that 
+will be contained in each table column:
 
 ```java
    BinaryTable table = new BinaryTable();
@@ -891,11 +921,13 @@ table column:
    ...
 ```
 
-Defining columns this way is not always necessary before adding rows to the table. However, it is necessary if you will 
-have data that needs variable-length storage row-after-row; or you want more control over specifics of the column format. 
-As such, it is best practice to define the columns explictly even if not strictly required for your particular application. 
+Defining columns this way is not always necessary before adding rows to the table. However, it is necessary if you 
+will have data that needs variable-length storage row-after-row; or you want more control over specifics of the column 
+format. As such, it is best practice to define the columns explictly even if not strictly required for your particular 
+application. 
 
-Now you can populate the table with your data, one row at a time, using the `addRow()` method as many times over as necessary:
+Now you can populate the table with your data, one row at a time, using the `addRow()` method as many times over as 
+necessary:
 
 ```java   
    for (...) {
@@ -907,15 +939,16 @@ Now you can populate the table with your data, one row at a time, using the `add
    }
 ```
 
-As of __1.18__, you may use Java boxed types (as an alternative to primitive arrays-of-one) to specify primitive scalar table elements, including auto-boxing of literals or variables. You may also use vararg syntax for adding rows if that is more convenient in your 
-application. Thus, you may simply write:
+As of __1.18__, you may use Java boxed types (as an alternative to primitive arrays-of-one) to specify primitive 
+scalar table elements, including auto-boxing of literals or variables. You may also use vararg syntax for adding rows 
+if that is more convenient in your application. Thus, you may simply write:
 
 ```java
    table.addRowEntries(1, 3.14159265);
 ```
 
-to add a row consisting of an 32-bit integer, a double-precision floating point value (presuming your table has those two types of
-columns). Prior to __1.18__, the same would have to have been written as:
+to add a row consisting of an 32-bit integer, a double-precision floating point value (presuming your table has those 
+two types of columns). Prior to __1.18__, the same would have to have been written as:
 
 ```java  
   table.addRow(new Object[] { new int[] {1}, new double[] {3.14159265} }; 
@@ -932,7 +965,8 @@ Once the table is complete, you can wrap it in a HDU:
 which will populate the header with the requisite entries that describe the table. You can then edit the new header
 to add any extra information (while being careful to not modify the essential table description). Note, that once the
 table is encompassed in a HDU, it is generally not safe to edit it beyond additions, since the library has no foolproof 
-way to keep the header perfectly in sync. Thus it is recommended that you create table HDUs only after the table data has been fully populated.
+way to keep the header perfectly in sync. Thus it is recommended that you create table HDUs only after the table data 
+has been fully populated.
 
 
 
@@ -960,8 +994,8 @@ There are just a few thing to keep in mind when constructing tables in this way:
   
   - All columns added this way must contain the same number of rows
   - In column data, scalars are simply elements in a 1D primitive array, in which each entry contains
-    the scalar value for a given row. (I.e. unlike in the row-major table format required to create entire tables at once, 
-    we do not have to wrap scalar values in self-contained arrays of 1)
+    the scalar value for a given row. (I.e. unlike in the row-major table format required to create entire tables at 
+    once, we do not have to wrap scalar values in self-contained arrays of 1)
   - Other than the above, the same rules apply as for creating HDUs from complete table data above.
   - If setting complex columns with arrays of `float[2]` or `double[2]` (the old way), you will want to call 
     `setComplexColumn(int)` afterwards for that column to make sure they are labeled properly in the FITS header 
@@ -971,8 +1005,8 @@ There are just a few thing to keep in mind when constructing tables in this way:
     (default).
     
 
-Defragmenting might also be a good idea before writing binary tables with variable-length data built column by column (as 
-opposed to row-by-row):
+Defragmenting might also be a good idea before writing binary tables with variable-length data built column by column 
+(as opposed to row-by-row):
 
 ```java
   table.defragment();
@@ -1023,8 +1057,8 @@ Or if we want to know the RA of the center of the image:
   double ra = header.getDoubleValue("CRVAL1"); 
 ```
 
-[The FITS WCS convention is being used here. For typical images the central coordinates are in the pair of keys, `CRVAL1` 
-and `CRVAL2` and our example assumes an equatorial coordinate system.]
+[The FITS WCS convention is being used here. For typical images the central coordinates are in the pair of keys, 
+`CRVAL1` and `CRVAL2` and our example assumes an equatorial coordinate system.]
 
 Perhaps we have a FITS file where the RA was not originally known, or for which we’ve just found a correction.
 
@@ -1047,35 +1081,36 @@ This is most easily accomplished using a header Cursor and using the `HeaderCard
   Cursor<String, HeaderCard> c = header.iterator();
 ```
 
-returns a cursor object that points to the first card of the header. We have `prev()` and `next()` methods that allow us to 
-move through the header, and `add()` and `delete()` methods to add new records. The methods of `HeaderCard` allow us to 
-manipulate the entire current card as a single string or broken down into keyword, value and comment components. Comment and 
-history header cards can be created and added to the header.
+returns a cursor object that points to the first card of the header. We have `prev()` and `next()` methods that allow 
+us to move through the header, and `add()` and `delete()` methods to add new records. The methods of `HeaderCard` 
+allow us to manipulate the entire current card as a single string or broken down into keyword, value and comment 
+components. Comment and history header cards can be created and added to the header.
 
-For tables much of the metadata describes individual columns. There are a set of `setTableMeta()` methods that can be used 
-to help organize these as the user wishes.
+For tables much of the metadata describes individual columns. There are a set of `setTableMeta()` methods that can be 
+used to help organize these as the user wishes.
 
 
 
 <a name="standard-and-conventional-fits-header-keywords"></a>
 ### Standard and conventional FITS header keywords
 
-FITS defines a set of standard keywords, and recognizes a set of registered conventions. You can find a collection of these 
-under the `nom.tam.fits.header` package:
+FITS defines a set of standard keywords, and recognizes a set of registered conventions. You can find a collection of 
+these under the `nom.tam.fits.header` package:
 
- * `Standard` -- [keywords defined by the FITS standard](http://heasarc.gsfc.nasa.gov/docs/fcg/standard_dict.html). Some of
-   the standard keywords are broken out into separate enumerations by theme, as listed below:
+ * `Standard` -- [keywords defined by the FITS standard](http://heasarc.gsfc.nasa.gov/docs/fcg/standard_dict.html). 
+   Some of the standard keywords are broken out into separate enumerations by theme, as listed below:
    * `DataDescription` -- FITS standard keywords for describing the data content
    * `InstrumentDescription` -- Standard keywords for describing the instrumentation used for observing
    * `ObservationDescription` -- Standard keywords that describe the observation
    * `ObservationDurationDescription` -- Standard keywords for the timing of observations
    * `Compression` -- Standard keywords used for describing compressed data
    * `Checksum` -- Standard keywords used for data checksumming
- * `HierarchicalGrouping` -- Keywords for the [Hierarchical Grouping Convention](https://fits.gsfc.nasa.gov/registry/grouping.html)
+ * `HierarchicalGrouping` -- Keywords for the 
+    [Hierarchical Grouping Convention](https://fits.gsfc.nasa.gov/registry/grouping.html)
  * `NonStandard` -- Commonly used and recognized keywords that are not strictly part of the FITS standard
  
-Additionally, many organisations (or groups of organisations) have defined their own sets of FITS keywords. Some of these can be 
-found under the `nom.tam.fits-header.extra` package, such as:
+Additionally, many organisations (or groups of organisations) have defined their own sets of FITS keywords. Some of 
+these can be found under the `nom.tam.fits-header.extra` package, such as:
  
  * `NOAOExt` -- [Keywords used by the National Optical Astronomy Observatory](http://iraf.noao.edu/iraf/web/projects/ccdmosaic/imagedef/fitsdic.html)
  * `SBFitsExt` -- [Santa Barbara Instrument Group FITS Extension (SBFITSEXT)](https://diffractionlimited.com/wp-content/uploads/2016/11/sbfitsext_1r0.pdf)
@@ -1083,7 +1118,8 @@ found under the `nom.tam.fits-header.extra` package, such as:
  * `CXCExt` -- [keywords defined for the Chandra X-ray Observatory](http://cxc.harvard.edu/contrib/arots/fits/content.txt)
  * `STScIExt` -- [keywords used by the Space Telescope Science Institute](http://tucana.noao.edu/ADASS/adass_proc/adass_95/zaraten/zaraten.html)
 
-You can use the standardized keywords contained in these enums to populate headers or access header values. For example,
+You can use the standardized keywords contained in these enums to populate headers or access header values. For 
+example,
 
 ```java
   hdr.addValue(Standard.INSTRUME, "My very big telescope");
@@ -1091,10 +1127,12 @@ You can use the standardized keywords contained in these enums to populate heade
   ...
 ```
 
-The advantage of using these standardized keywords, as opposed to strings, is that they avoid typos in the source code, since the compiler (or your IDE) will warn unless the keyword is known. 
+The advantage of using these standardized keywords, as opposed to strings, is that they avoid typos in the source 
+code, since the compiler (or your IDE) will warn unless the keyword is known. 
 
-Some keywords contain indices that must be specified via the `n()` method. You must spececify one integer (one-based index) for each 
-'n' appearing in the keyword name. For example, to set the value of the `WAT9_234` keyword to the string value of `"50"`:
+Some keywords contain indices that must be specified via the `n()` method. You must spececify one integer (one-based 
+index) for each 'n' appearing in the keyword name. For example, to set the value of the `WAT9_234` keyword to the 
+string value of `"50"`:
 
 ```java
   hdr.addValue(NOAOExt.WATn_nnn.n(9, 2, 3, 4), "50");
@@ -1107,14 +1145,23 @@ For best practice, try rely on the standard keywords, or those in registered con
 <a name="long-string-values"></a>
 ### Long string values
 
-The standard maximum length for string values in the header is 68 characters. As of FITS 4.0, the OGIP 1.0 long string convention is part of the standard. And, as of version 1.16 of this library, it is supported by default. Support for long strings can be turned off (or on again) via `FitsFactory.setLongStringEnabled(boolean)` if necessary. If the settings is disabled, any attempt to set a header value to a string longer than the space available for it in a single 80-character header record will throw a `LongStringsNotEnabledException` runtime exception.
+The standard maximum length for string values in the header is 68 characters. As of FITS 4.0, the OGIP 1.0 long string 
+convention is part of the standard. And, as of version 1.16 of this library, it is supported by default. Support for 
+long strings can be turned off (or on again) via `FitsFactory.setLongStringEnabled(boolean)` if necessary. If the 
+settings is disabled, any attempt to set a header value to a string longer than the space available for it in a single 
+80-character header record will throw a `LongStringsNotEnabledException` runtime exception.
 
 
 
 <a name="hierarch-style-header-keywords"></a>
 ### HIERARCH style header keywords
 
-The standard FITS header keywords consists of maximum 8 upper case letters or number, plus dash `-` and underscore `_`. The HIERARCH keyword convention allows for longer and/or hierarchical sets of FITS keywords, and/or for supporting a somewhat more extended set of ASCII characters (in the range of `0x20` to `0x7E`).  Support for HIERARCH-style keywords is enabled by default as of version 1.16. HIERARCH support can be toggled if needed via `FitsFactory.setUseHierarch(boolean)`. By default, HIERARCH keywords are converted to upper-case only (__cfitsio__ convention), so
+The standard FITS header keywords consists of maximum 8 upper case letters or number, plus dash `-` and underscore 
+`_`. The HIERARCH keyword convention allows for longer and/or hierarchical sets of FITS keywords, and/or for 
+supporting a somewhat more extended set of ASCII characters (in the range of `0x20` to `0x7E`).  Support for 
+HIERARCH-style keywords is enabled by default as of version 1.16. HIERARCH support can be toggled if needed via
+`FitsFactory.setUseHierarch(boolean)`. By default, HIERARCH keywords are converted to upper-case only (__cfitsio__ 
+convention), so
 
 ```java
   HeaderCard hc = new HeaderCard(Hierarch.key("my.lower.case.keyword[!]"), "value", "comment");
@@ -1126,7 +1173,8 @@ will write the header entry to FITS as:
   HIERARCH MY LOWER CASE KEYWORD[!] = 'value' / comment
 ```
 
-You can use `FitsFactory.getHierarchFormater().setCaseSensitive(true)` to allow the use of lower-case characters, and hence enable case-sensitive keywords. After the setting, the same card will be written to FITS as:
+You can use `FitsFactory.getHierarchFormater().setCaseSensitive(true)` to allow the use of lower-case characters, and 
+hence enable case-sensitive keywords. After the setting, the same card will be written to FITS as:
 
 ```
   HIERARCH my lower case keyword[!] = 'value' / comment
@@ -1134,23 +1182,49 @@ You can use `FitsFactory.getHierarchFormater().setCaseSensitive(true)` to allow 
 
 You may note a few other properties of HIERARCH keywords as implemented by this library:
 
- 1. The convention of the library is to refer to HIERARCH keywords internally as a dot-separated hierarchy, preceded by `HIERARCH.`, e.g. `HIERARCH.my.keyword`. (The static methods of the `Hierarch` class can make it easier to create such keywords).
- 2. The HIERARCH keywords may contain all printable standard ASCII characters that are allowed in FITS headers (`0x20` thru `0x7E`). As such, we take a liberal reading of the ESO convention, which designated only upper-case letters, numbers, plus dash `-` and underscore `_`. If you want to conform to the ESO convention more closely, you should avoid using characters outside of the set of the original convention.
- 3. The library adds a space between the keywords and the `=` sign, as prescribed by the __cfitsio__ convention. The original ESO convention does not require such a space (but certainly allows for it). We add the extra space to offer better compatibility with __cfitsio__.
- 4. The HIERARCH parsing is tolerant, and does not care about extra space (or spaces) between the hierarchical components or before `=`. It also recognises `.` as a separator of hierarchy besides the conventional white space.
- 5. The case sensitive setting (above) also determines whether or not HIERARCH keywords are converted to upper-case upon parsing. As such, the header entry in last example above may be referred either as `HIERARCH.my.lower.case.keyword[!]` or as `HIERARCH.MY.LOWER.CASE.KEYWORD[!]` internally after parsing, depending on whether case-sensitive mode is enabled or not.
- 6. If `FitsFactory` has HIERARCH support disabled, any attempt to define a HIERARCH-style long keyword will throw a `HierarchNotEnabledException` runtime exception. (However, just `HIERARCH` by itself will still be allowed as a standard 8-character FITS keyword on its own). 
+ 1. The convention of the library is to refer to HIERARCH keywords internally as a dot-separated hierarchy, preceded 
+ by `HIERARCH.`, e.g. `HIERARCH.my.keyword`. (The static methods of the `Hierarch` class can make it easier to create 
+ such keywords).
+ 
+ 2. The HIERARCH keywords may contain all printable standard ASCII characters that are allowed in FITS headers (`0x20` 
+ thru `0x7E`). As such, we take a liberal reading of the ESO convention, which designated only upper-case letters, 
+ numbers, plus dash `-` and underscore `_`. If you want to conform to the ESO convention more closely, you should 
+ avoid using characters outside of the set of the original convention.
+ 
+ 3. The library adds a space between the keywords and the `=` sign, as prescribed by the __cfitsio__ convention. The 
+ original ESO convention does not require such a space (but certainly allows for it). We add the extra space to offer 
+ better compatibility with __cfitsio__.
+ 
+ 4. The HIERARCH parsing is tolerant, and does not care about extra space (or spaces) between the hierarchical 
+ components or before `=`. It also recognises `.` as a separator of hierarchy besides the conventional white space.
+
+ 5. The case sensitive setting (above) also determines whether or not HIERARCH keywords are converted to upper-case 
+ upon parsing. As such, the header entry in last example above may be referred either as 
+ `HIERARCH.my.lower.case.keyword[!]` or as `HIERARCH.MY.LOWER.CASE.KEYWORD[!]` internally after parsing, depending on 
+ whether case-sensitive mode is enabled or not.
+ 
+ 6. If `FitsFactory` has HIERARCH support disabled, any attempt to define a HIERARCH-style long keyword will throw a
+ `HierarchNotEnabledException` runtime exception. (However, just `HIERARCH` by itself will still be allowed as a 
+ standard 8-character FITS keyword on its own). 
  
  
  
 <a name="checksums"></a>
 ### Checksums
 
-Checksums can be added to (and updated in) the headers of HDUs to allow checking the integrity of the FITS data at a later time.
+Checksums can be added to (and updated in) the headers of HDUs to allow checking the integrity of the FITS data at a 
+later time.
 
-As of version __1.17__, it is also possible to apply incremental updates to existing checksums. See the various static methods of the `nom.tam.utilities.FitsChecksum` class on updating checksums for modified headers or data. There are also methods to simplify verification of checksums when reading FITS files, and for calculating checksums directly from a file without the need for reading and storing potentially huge amounts of data in RAM. Calculating data checksums directly from the file is now default (as of 1.17) for data that is in deferred read mode (i.e. not currently loaded into RAM), making it possible to checksum huge FITS files without having to load entire segments of data into RAM at any point.
+As of version __1.17__, it is also possible to apply incremental updates to existing checksums. See the various static 
+methods of the `nom.tam.utilities.FitsChecksum` class on updating checksums for modified headers or data. There are 
+also methods to simplify verification of checksums when reading FITS files, and for calculating checksums directly 
+from a file without the need for reading and storing potentially huge amounts of data in RAM. Calculating data 
+checksums directly from the file is now default (as of 1.17) for data that is in deferred read mode (i.e. not 
+currently loaded into RAM), making it possible to checksum huge FITS files without having to load entire segments of 
+data into RAM at any point.
 
-Setting the checksums (`CHECKSUM` and `DATASUM` keywords) should be the last modification to the FITS object or HDU before writing. Here is an example of settting a checksum for an HDU before you write it to disk:
+Setting the checksums (`CHECKSUM` and `DATASUM` keywords) should be the last modification to the FITS object or HDU 
+before writing. Here is an example of settting a checksum for an HDU before you write it to disk:
 
 ```java
   BasicHDU<?> hdu;
@@ -1172,40 +1246,28 @@ Or you can set checksums for all HDUs in your `Fits` in one go before writing th
   f.write(new FitsFile("my-checksummed-image.fits"));
 ```
 
-Then later you can verify the integrity of FITS files using the stored checksums just as easily too:
+Then later, as of 1.18.1, you can verify the integrity of FITS files using the stored checksums (or data sums) just as 
+easily too:
 
 ```java
-  Fits f = new Fits("my-huge-fits-file.fits");
-  
-  // We'll check the integrity of the first HDU without loading its
-  // potentially huge data into RAM (staying in deferred mode).
-  BasicHDU<?> hdu = f.readHDU();
-  
-  // Calculate the HDU's checksum (still in deferred mode), and check...
-  if (fits.calcChecksum(0) != hdu.getStoredChecksum()) {
-      System.err.println("WARNING! The HDU might be corrupted.");
+  try(Fits f = new Fits("my-huge-fits-file.fits")) {
+      f.verifyIntegrity();
+  } catch (FitsException e) {
+      // Failed integrity test
+      System.err.println("WARNING! " + e.getMessage());
+  } catch (IOException e( {
+      // some IO error...
   }
 ```
 
-(Note that `Fits.calcChecksum(int)` will compute the checksum from the file if the data has not been loaded into RAM already 
-(in deferred read mode). Otherwise, it will compute the checksum from the data that was loaded into memory. You can also 
-calculate the checksums from the file (equivalently to the above) via:
+The above will calculate checksum directly from the (random-accessible) file without reading the potentially large 
+data into memory, and compare HDU checksums and/or data checksums to those stored in the FITS file.
 
-```java
-  FitsFile in = new FitsFile("my-huge-fits-file.fits");
-  Fits f = new Fits(in);
- 
-  BasicHDU<?> hdu = f.read();
+You can also verify the integrity of HDUs or their data segments individually, via `BasicHDU.verifyIntegrity()` or
+`BasicHDU.verifyDataIntegrity()` calls on specific HDUs.
 
-  // Calculate checksum directly from the file
-  long actual = FitsCheckSum.checksum(in, hdu.getFileOffset(), hdu.getSize());
-  if (actual != f.getHDU(i).getStoredChecksum()) {
-      System.err.println("WARNING! The HDU might be corruputed.");
-  }
-```
-
-And, if you want to verify the integrity of the data segment separately (without the header) you might use `getStoredDatasum()` 
-instead and changing the `checksum()` call range to correspond to the location of the data block in the file. 
+Note, that because checksum verification requires a second pass over the input byte sequence, it is available only 
+for random accessible inputs. Thus, you cannot (yet) verify checksums from streams or compressed FITS files.
 
 Finally, you might want to update the checksums for a FITS you modify in place:
 
@@ -1226,7 +1288,8 @@ Finally, you might want to update the checksums for a FITS you modify in place:
   im.rewrite();
 ```
 
-Or, (re)calculate and set checksums for all HDUs in a FITS file, once again leaving deferred data in unloaded state and computing the checksums for these directly from disk.:
+Or, (re)calculate and set checksums for all HDUs in a FITS file, once again leaving deferred data in unloaded state 
+and computing the checksums for these directly from disk:
 
 ```java
   Fits f = new Fits("my.fits");
@@ -1234,18 +1297,33 @@ Or, (re)calculate and set checksums for all HDUs in a FITS file, once again leav
   f.rewrite();
 ```
 
-The above will work as expected provided the original FITS already had `CHECKSUM` and `DATASUM` keys in the HDUs, or else the headers had enough unused space for adding these without growing the size of the headers. If any of the headers or data in the `Fits` have changed size, the `Fits.rewrite()` call will throw a `FitsException` without modifying any of the records. In such cases You may proceed re-writing a selection of the HDUs, or else write the `Fits` to a new file with a different size.
+The above will work as expected provided the original FITS already had `CHECKSUM` and `DATASUM` keys in the HDUs, 
+or else the headers had enough unused space for adding these without growing the size of the headers. If any of the 
+headers or data in the `Fits` have changed size, the `Fits.rewrite()` call will throw a `FitsException` without 
+modifying any of the records. In such cases You may proceed re-writing a selection of the HDUs, or else write the 
+`Fits` to a new file with a different size.
 
 
 
 <a name="preallocated-header-space"></a>
 ### Preallocated header space
 
-Many FITS files are created by live-recording of data, e.g. from astronomical instruments. As such not all header values may be defined when writing the data segment of the HDU that follows the header. For example, we do not know in advance how many rows the binary table will contain, which will depend on when the recording stops at a later point. Other metadata may simply not be provided until a later time. For this reason version 4.0 of the FITS standard has specified preallocating header space as some number of blank header records between the last defined header entry and the `END` keyword.
+Many FITS files are created by live-recording of data, e.g. from astronomical instruments. As such not all header 
+values may be defined when writing the data segment of the HDU that follows the header. For example, we do not know 
+in advance how many rows the binary table will contain, which will depend on when the recording stops at a later 
+point. Other metadata may simply not be provided until a later time. For this reason version 4.0 of the FITS 
+standard has specified preallocating header space as some number of blank header records between the last defined 
+header entry and the `END` keyword.
 
-As of version 1.16, this library supports preallocated header space via `Header.ensureCardSpace(int)`, which can be used to ensure that the header can contain _at least_ the specified number of 80-character records when written to the output. (In reality it may accommodate somewhat more than that because of the required padding to multiples of 2880 bytes or 36 records -- and you can use `Header.getMinimumSize()` to find out just how many bytes are reserved/used by any header object at any point). 
+As of version 1.16, this library supports preallocated header space via `Header.ensureCardSpace(int)`, which can be 
+used to ensure that the header can contain _at least_ the specified number of 80-character records when written to 
+the output. (In reality it may accommodate somewhat more than that because of the required padding to multiples of 
+2880 bytes or 36 records -- and you can use `Header.getMinimumSize()` to find out just how many bytes are 
+reserved / used by any header object at any point). 
 
-Once the space has been reserved, the header can be written to the output, and one may begin recording data after it. Cards may be filled later, up to the number of records defined (and sometimes beyond), and the header can be rewritten at a later point in place, with the additional entries.
+Once the space has been reserved, the header can be written to the output, and one may begin recording data after it.
+Cards may be filled later, up to the number of records defined (and sometimes beyond), and the header can be 
+rewritten at a later point in place, with the additional entries.
 
 
 For example,
@@ -1264,7 +1342,9 @@ For example,
   h.write(out);
 ```
   
-Now you can proceed to recording the data, such as a binary table row-by-row. Once you are done with it, you can go back and make edits to the header, adding more header cards, in the space you reserved earlier, and rewrite the header in front of the data without issues:
+Now you can proceed to recording the data, such as a binary table row-by-row. Once you are done with it, you can go 
+back and make edits to the header, adding more header cards, in the space you reserved earlier, and rewrite the 
+header in front of the data without issues:
  
 ``` java
   // Once the data has been recorded we can proceed to fill in 
@@ -1275,20 +1355,37 @@ Now you can proceed to recording the data, such as a binary table row-by-row. On
   h.rewrite();
 ```
 
-Preallocated header space is also preserved when reading the data in. When parsing headers trailing blank header records (before the `END` key) are counted as reserved card space. (Internal blank cards, between two regular keyword entries, are however preserved as blank comment cards and their space will not be reusable unless these cards are explicitly removed first). After reading a header with preallocated space, the user can add at least as many new cards into that header as trailing blank records were found, and still call `rewrite()` on that header without any problems.
+Preallocated header space is also preserved when reading the data in. When parsing headers trailing blank header 
+records (before the `END` key) are counted as reserved card space. (Internal blank cards, between two regular keyword 
+entries, are however preserved as blank comment cards and their space will not be reusable unless these cards are 
+explicitly removed first). After reading a header with preallocated space, the user can add at least as many new cards 
+into that header as trailing blank records were found, and still call `rewrite()` on that header without any problems.
 
 
 
 <a name="standard-compliance"></a>
 ### Standard compliance
 
-As of version 1.16, the library offers a two-pronged approach to ensure header compliance to the [FITS standard](#https://fits.gsfc.nasa.gov/fits_standard.html). 
+As of version 1.16, the library offers a two-pronged approach to ensure header compliance to the 
+[FITS standard](#https://fits.gsfc.nasa.gov/fits_standard.html). 
 
-- First, we fully enforce the standards when creating FITS headers using this library, and we do it in a way that is compliant with earlier FITS specifications (prior to 4.0) also. We will prevent the creation of non-standard header entries (cards) by throwing appropriate runtime exceptions (such as `IllegalArgumentException`, `LongValueException`, `LongStringsNotEnabledException`, `HierarchNotEnabledException`) as soon as one attempts to set a header component that is not supported by FITS or by the set of standards selected in the current `FitsFactory` settings.
+- First, we fully enforce the standards when creating FITS headers using this library, and we do it in a way that is 
+compliant with earlier FITS specifications (prior to 4.0) also. We will prevent the creation of non-standard header 
+entries (cards) by throwing appropriate runtime exceptions (such as `IllegalArgumentException`, `LongValueException`,
+`LongStringsNotEnabledException`, `HierarchNotEnabledException`) as soon as one attempts to set a header component 
+that is not supported by FITS or by the set of standards selected in the current `FitsFactory` settings.
 
-- Second, we offer the choice between tolerant and strict interpretation of 3rd-party FITS headers when parsing these. In tolerant mode (default), the parser will do its best to overcome standard violations as much as possible, such that the header can be parsed as fully as possible, even if some entries may have malformed content. The user may enable `Header.setParserWarningsEnabled(true)` to log each violation detected by the parser as warnings, so these can be inspected if the user cares to know. Stricter parsing can be enabled by `FitsFactory.setAllowHeaderRepairs(false)`. In this mode, the parser will throw an exception when it encounters a severely corrupted header entry, such as a string value with no closing quote (`UnclosedQuoteException`) or a complex value without a closing bracket (`IllegalArgumentException`). Lesser violations can still be logged, the same way as in tolerant mode.
+- Second, we offer the choice between tolerant and strict interpretation of 3rd-party FITS headers when parsing these. 
+In tolerant mode (default), the parser will do its best to overcome standard violations as much as possible, such that 
+the header can be parsed as fully as possible, even if some entries may have malformed content. The user may enable `Header.setParserWarningsEnabled(true)` to log each violation detected by the parser as warnings, so these can be 
+inspected if the user cares to know. Stricter parsing can be enabled by `FitsFactory.setAllowHeaderRepairs(false)`. 
+In this mode, the parser will throw an exception when it encounters a severely corrupted header entry, such as a 
+string value with no closing quote (`UnclosedQuoteException`) or a complex value without a closing bracket 
+(`IllegalArgumentException`). Lesser violations can still be logged, the same way as in tolerant mode.
 
-Additionally, we provide `HeaderCard.sanitize(String)` method that the user can call to ensure that `String`s can be used in FITS headers. The method will replace illegal characters (outside of the range of `0x20` thru `0x7E`) with `?`.
+Additionally, we provide `HeaderCard.sanitize(String)` method that the user can call to ensure that `String`s can be 
+used in FITS headers. The method will replace illegal characters (outside of the range of `0x20` thru `0x7E`) with 
+`?`.
 
 
 
@@ -1301,7 +1398,9 @@ Additionally, we provide `HeaderCard.sanitize(String)` method that the user can 
  - [Image compression](#image-compression)
  - [Table compression](#table-compression)
 
-Starting with version 1.15.0 we include support for compressing images and tables. The compression algorithms have been ported to Java from __cfitsio__ to provide a pure 100% Java implementation. However, versions prior to 1.18.0 had a number of lingering compression related bugs of varying severity, that may have prevented realiable use.
+Starting with version 1.15.0 we include support for compressing images and tables. The compression algorithms have 
+been ported to Java from __cfitsio__ to provide a pure 100% Java implementation. However, versions prior to 1.18.0 had 
+a number of lingering compression related bugs of varying severity, that may have prevented realiable use.
 
 
 
@@ -1323,10 +1422,10 @@ stream into a `GZIPOutputStream` or , such as:
   f.write(out);
 ```
 
-While we only support GZIP compression for writing compressed files (thanks to Java's support out of the box), we can read
-more compressed formats using Apaches commons-compress library. We support reading compressed files produced via __gzip__
-(`.gz`), the Linux __compress__ tools (`.Z`), and via __bzip2__ (`.bz2`). The decompression happens automatically when
-we construct a `Fits` object with an input stream:
+While we only support GZIP compression for writing compressed files (thanks to Java's support out of the box), we can 
+read more compressed formats using Apaches commons-compress library. We support reading compressed files produced via 
+__gzip__ (`.gz`), the Linux __compress__ tools (`.Z`), and via __bzip2__ (`.bz2`). The decompression happens 
+automatically when we construct a `Fits` object with an input stream:
 
 
 ```java
@@ -1453,13 +1552,16 @@ Tile compression mimics image compression, and is typically a 2-step process:
    compressed.compress();
 ```
 
-The two step process (as opposed to a single-step one) was probably chosen because it mimics that of `CompressedImageHDU`, where further configuration steps may be inserted in-between. But, of course we can combine the steps into a single line:
+The two step process (as opposed to a single-step one) was probably chosen because it mimics that of 
+`CompressedImageHDU`, where further configuration steps may be inserted in-between. But, of course we can combine the 
+steps into a single line:
 
 ```java
    CompressedTableHDU compressed = CompressedTableHDU.fromBinaryTableHDU(table, 4, Compression.GZIP_2).compress();
 ```
 
-After the compression, the compressed table HDU can be handled just like any other HDU, and written to a file or stream, for example.
+After the compression, the compressed table HDU can be handled just like any other HDU, and written to a file or 
+stream, for example.
 
 The reverse process is simply via the `asBinaryTableHDU()` method. E.g.:
 
@@ -1470,9 +1572,8 @@ The reverse process is simply via the `asBinaryTableHDU()` method. E.g.:
 
 #### Accessing image header values without decompressing
 
-You don't need to decompress the table to see what the decompressed table header is. You can 
-simply call `CompressedTableHDU.getTableHeader()` to peek into the reconstructed header of the original table 
-before it was compressed:
+You don't need to decompress the table to see what the decompressed table header is. You can simply call `CompressedTableHDU.getTableHeader()` to peek into the reconstructed header of the original table before it was 
+compressed:
 
 ```java
    CompressedTableHDU compressed = ...
@@ -1504,23 +1605,54 @@ And, if you want to surgically access a range of data from select columns (and t
 <a name="contribute"></a>
 ## How to contribute
 
-The _nom-tam-fits_ library is a community-maintained project. We absolutely rely on developers like you to make it better and to keep it going. Whether there is a nagging issue you would like to fix, or a new feature you'd like to see, you can make a difference yourself. We welcome you as a contributor. More than that, we feel like you became part of our community the moment you landed on this page. We very much encourange you to make this project a little bit your own, by submitting pull requests with fixes and enhancement. When you are ready, here are the typical steps for contributing to the project:
+The _nom-tam-fits_ library is a community-maintained project. We absolutely rely on developers like you to make it 
+better and to keep it going. Whether there is a nagging issue you would like to fix, or a new feature you'd like to 
+see, you can make a difference yourself. We welcome you as a contributor. More than that, we feel like you became part 
+of our community the moment you landed on this page. We very much encourange you to make this project a little bit 
+your own, by submitting pull requests with fixes and enhancement. When you are ready, here are the typical steps for 
+contributing to the project:
 
-1. Old or new __Issue__? Whether you just found a bug, or you are missing a much needed feature, start by checking open (and closed) [Issues](https://github.com/nom-tam-fits/nom-tam-fits/issues). If an existing issue seems like a good match to yours, feel free to raise your hand and comment on it, to make your voice heard, or to offer help in resolving it. If you find no issues that match, go ahead and create a new one.
+1. Old or new __Issue__? Whether you just found a bug, or you are missing a much needed feature, start by checking 
+open (and closed) [Issues](https://github.com/nom-tam-fits/nom-tam-fits/issues). If an existing issue seems like a 
+good match to yours, feel free to raise your hand and comment on it, to make your voice heard, or to offer help in 
+resolving it. If you find no issues that match, go ahead and create a new one.
 
-2. __Fork__. Is it something you'd like to help resolve? Great! You should start by creating your own fork of the repository so you can work freely on your solution. We also recommend that you place your work on a branch of your fork, which is named either after the issue number, e.g. `issue-192`, or some other descriptive name, such as `implement-foreign-hdu`.
+2. __Fork__. Is it something you'd like to help resolve? Great! You should start by creating your own fork of the 
+repository so you can work freely on your solution. We also recommend that you place your work on a branch of your 
+fork, which is named either after the issue number, e.g. `issue-192`, or some other descriptive name, such as 
+`implement-foreign-hdu`.
 
-3. __Develop__. Feel free to experiment on your fork/branch. If you run into a dead-end, you can always abandon it (which is why branches are great) and start anew. You can run your own test builds locally using `mvn clean test` before committing your changes. If the tests pass, you should also try running `mvn clean package` to ensure that the javadoc etc. are also in order. Remember to synchronize your `master` branch by fetching changes from upstream every once in a while, and merging them into your development branch. Don't forget to:
+3. __Develop__. Feel free to experiment on your fork/branch. If you run into a dead-end, you can always abandon it 
+(which is why branches are great) and start anew. You can run your own test builds locally using `mvn clean test` 
+before committing your changes. If the tests pass, you should also try running `mvn clean package` to ensure that the 
+javadoc etc. are also in order. Remember to synchronize your `master` branch by fetching changes from upstream every 
+once in a while, and merging them into your development branch. Don't forget to:
 
-   - Add __Javadoc__ your new code. You can keep it sweet and simple, but make sure it properly explains your methods, their arguments and return values, and why and what exceptions may be thrown. You should also cross-reference other methods that are similar, related, or relevant to what you just added.
+   - Add __Javadoc__ your new code. You can keep it sweet and simple, but make sure it properly explains your methods, 
+   their arguments and return values, and why and what exceptions may be thrown. You should also cross-reference other 
+   methods that are similar, related, or relevant to what you just added.
 
-   - Add __Unit Tests__. Make sure your new code has as close to full unit test coverage as possible. You should aim for 100% diff coverage. When pushing changes to your fork, you can get a coverage report by checking the Github Actions result of your commit (click the Codecov link), and you can analyze what line(s) of code need to have tests added. Try to create tests that are simple but meaningful (i.e. check for valid results, rather than just confirm existing behavior), and try to cover as many realistic scenarios as appropriate. Write lots of tests if you need to. It's OK to write 100 lines of test code for 5 lines of change. Go for it! And, you will get extra kudos for filling unit testing holes outside of your area of development!
+   - Add __Unit Tests__. Make sure your new code has as close to full unit test coverage as possible. You should aim 
+   for 100% diff coverage. When pushing changes to your fork, you can get a coverage report by checking the Github 
+   Actions result of your commit (click the Codecov link), and you can analyze what line(s) of code need to have tests 
+   added. Try to create tests that are simple but meaningful (i.e. check for valid results, rather than just confirm 
+   existing behavior), and try to cover as many realistic scenarios as appropriate. Write lots of tests if you need to. 
+   It's OK to write 100 lines of test code for 5 lines of change. Go for it! And, you will get extra kudos for filling 
+   unit testing holes outside of your area of development!
 
-4. __Pull Request__. Once you feel your work can be integrated, create a pull request from your fork/branch. You can do that easily from the github page of your fork/branch directly. In the pull request, provide a concise description of what you added or changed. You may get some feedback at this point, and maybe there will be discussions about possible improvements or regressions etc. It's a good thing too, and your changes will likely end up with added polish as a result. You can be all the more proud of it in the end!
+4. __Pull Request__. Once you feel your work can be integrated, create a pull request from your fork/branch. You can 
+do that easily from the github page of your fork/branch directly. In the pull request, provide a concise description 
+of what you added or changed. You may get some feedback at this point, and maybe there will be discussions about 
+possible improvements or regressions etc. It's a good thing too, and your changes will likely end up with added polish 
+as a result. You can be all the more proud of it in the end!
 
-5. If all goes well (and why would it not?), your pull-request will get merged, and will be included in the upcoming release of _nom-tam-fits_. Congratulations for your excellent work, and many thanks for dedicating some of your time for making this library a little bit better. There will be many who will appreciate it. :-)
+5. If all goes well (and why would it not?), your pull-request will get merged, and will be included in the upcoming 
+release of _nom-tam-fits_. Congratulations for your excellent work, and many thanks for dedicating some of your time 
+for making this library a little bit better. There will be many who will appreciate it. :-)
 
 
-If at any point you have questions, or need feedback, don't be afraid to ask. You can put your questions into the issue you found or created, or your pull-request, or as a Q&amp;A in [Discussions](https://github.com/nom-tam-fits/nom-tam-fits/discussions).
+If at any point you have questions, or need feedback, don't be afraid to ask. You can put your questions into the 
+issue you found or created, or your pull-request, or as a Q&amp;A in 
+[Discussions](https://github.com/nom-tam-fits/nom-tam-fits/discussions).
 
 

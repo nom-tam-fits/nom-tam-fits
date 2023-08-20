@@ -59,6 +59,7 @@ import nom.tam.fits.TruncatedFileException;
 import nom.tam.fits.header.hierarch.BlanksDotHierarchKeyFormatter;
 import nom.tam.util.AsciiFuncs;
 import nom.tam.util.ComplexValue;
+import nom.tam.util.Cursor;
 import nom.tam.util.FitsInputStream;
 
 public class HeaderCardTest {
@@ -1817,4 +1818,41 @@ public class HeaderCardTest {
         hc = new HeaderCard("TEST", false, "comment");
         assertTrue(hc.toString(), hc.toString().charAt(29) == 'F');
     }
+
+    @Test
+    public void testSeek() throws Exception {
+        Header header = new Header();
+        header.addValue("TEST1", 1, "one");
+        header.addValue("TEST3", 3, "three");
+
+        Assert.assertNotNull(header.findCard("TEST3"));
+        header.addValue("TEST2", 2, "two");
+
+        header.seekHead();
+        header.addValue("TEST0", 0, "zero");
+
+        header.seekTail();
+        header.addValue("TEST4", 4, "four");
+
+        Cursor<String, HeaderCard> c = header.iterator();
+
+        for (int i = 0; c.hasNext(); i++) {
+            Assert.assertEquals(i, (int) c.next().getValue(Integer.class, -1));
+        }
+    }
+
+    @Test
+    public void testPrev() throws Exception {
+        Header header = new Header();
+        header.addValue("TEST1", 1, "one");
+        header.addValue("TEST2", 2, "two");
+        header.addValue("TEST3", 3, "three");
+
+        Assert.assertEquals(2, (int) header.findCard("TEST2").getValue(Integer.class, -1));
+        Assert.assertEquals(1, (int) header.prevCard().getValue(Integer.class, -1));
+
+        header.seekHead();
+        Assert.assertNull(header.prevCard());
+    }
+
 }
