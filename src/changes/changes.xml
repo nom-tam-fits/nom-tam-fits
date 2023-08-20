@@ -1,9 +1,23 @@
 <document xmlns="http://maven.apache.org/changes/1.0.0" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:schemaLocation="http://maven.apache.org/changes/1.0.0 http://maven.apache.org/xsd/changes-1.0.0.xsd">
 <body>
 
-   <release version="1.18.1-rc1" date="2023-07-31" description="Bug fix release.">
+   <release version="1.18.1-rc2" date="2023-0-20" description="Bug fix release with minor enhancements.">
       <action type="fix" dev="attipaci" issue="466">
 	      Fixed broken default reading of ASCII tables, without explicitly setting FitsFactory.setUseAsciiTables(true).
+      </action>
+      <action type="add" dev="attipaci" issue="473">
+	      New Fits.verifyIntegrity(), BasicHDU.verifyIntegrity() and .verifyDataIntegrity() methods for verifying 
+	      (random accessible) file / HDU integrity based on stored checksums. Updated README for proper checksum 
+	      verification. Deprecated the useless checksum access methods of before.
+      </action>
+      <action type="add" dev="attipaci" issue="475">
+	      Added Header.getCard() methods similar to existing .findCard(), but without changing the position at which
+	      new cards are added. The new method is now used more widely internally when interpreting headers.
+	      New Header.prevCard() method to complement existing .nextCard(), and .seekHead() / .seekTail()
+	      methods to set the position for new additions at the head or tail of the header space respectively.
+      </action>
+      <action type="update" dev="attipaci" issue="472">
+              New cleaner-looking logos for github icons / profile image.
       </action>
    </release>
 	
