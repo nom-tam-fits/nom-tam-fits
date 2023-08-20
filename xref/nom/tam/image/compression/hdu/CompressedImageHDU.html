@@ -215,319 +215,327 @@
 <a class="jxr_linenumber" name="L207" href="#L207">207</a>     }
 <a class="jxr_linenumber" name="L208" href="#L208">208</a> 
 <a class="jxr_linenumber" name="L209" href="#L209">209</a>     <em class="jxr_javadoccomment">/**</em>
-<a class="jxr_linenumber" name="L210" href="#L210">210</a> <em class="jxr_javadoccomment">     * @deprecated (&lt;i&gt;for internal use&lt;/i&gt;) Will reduce visibility in the future</em>
-<a class="jxr_linenumber" name="L211" href="#L211">211</a> <em class="jxr_javadoccomment">     */</em>
-<a class="jxr_linenumber" name="L212" href="#L212">212</a>     @Deprecated
-<a class="jxr_linenumber" name="L213" href="#L213">213</a>     <strong class="jxr_keyword">public</strong> <strong class="jxr_keyword">static</strong> <a name="CompressedImageData" href="../../../../../nom/tam/image/compression/hdu/CompressedImageData.html#CompressedImageData">CompressedImageData</a> manufactureData(<a name="Header" href="../../../../../nom/tam/fits/Header.html#Header">Header</a> hdr) <strong class="jxr_keyword">throws</strong> <a name="FitsException" href="../../../../../nom/tam/fits/FitsException.html#FitsException">FitsException</a> {
-<a class="jxr_linenumber" name="L214" href="#L214">214</a>         <strong class="jxr_keyword">return</strong> <strong class="jxr_keyword">new</strong> <a name="CompressedImageData" href="../../../../../nom/tam/image/compression/hdu/CompressedImageData.html#CompressedImageData">CompressedImageData</a>(hdr);
-<a class="jxr_linenumber" name="L215" href="#L215">215</a>     }
-<a class="jxr_linenumber" name="L216" href="#L216">216</a> 
-<a class="jxr_linenumber" name="L217" href="#L217">217</a>     <em class="jxr_javadoccomment">/**</em>
-<a class="jxr_linenumber" name="L218" href="#L218">218</a> <em class="jxr_javadoccomment">     * Creates an new compressed image HDU with the specified header and compressed data.</em>
-<a class="jxr_linenumber" name="L219" href="#L219">219</a> <em class="jxr_javadoccomment">     * </em>
-<a class="jxr_linenumber" name="L220" href="#L220">220</a> <em class="jxr_javadoccomment">     * @param hdr   the header</em>
-<a class="jxr_linenumber" name="L221" href="#L221">221</a> <em class="jxr_javadoccomment">     * @param datum the compressed image data. The data may not be actually compressed at this point, int which case you</em>
-<a class="jxr_linenumber" name="L222" href="#L222">222</a> <em class="jxr_javadoccomment">     *                  may need to call {@link #compress()} before writing the new compressed HDU to a stream.</em>
-<a class="jxr_linenumber" name="L223" href="#L223">223</a> <em class="jxr_javadoccomment">     * </em>
-<a class="jxr_linenumber" name="L224" href="#L224">224</a> <em class="jxr_javadoccomment">     * @see         #compress()</em>
-<a class="jxr_linenumber" name="L225" href="#L225">225</a> <em class="jxr_javadoccomment">     */</em>
-<a class="jxr_linenumber" name="L226" href="#L226">226</a>     <strong class="jxr_keyword">public</strong> <a name="CompressedImageHDU" href="../../../../../nom/tam/image/compression/hdu/CompressedImageHDU.html#CompressedImageHDU">CompressedImageHDU</a>(<a name="Header" href="../../../../../nom/tam/fits/Header.html#Header">Header</a> hdr, <a name="CompressedImageData" href="../../../../../nom/tam/image/compression/hdu/CompressedImageData.html#CompressedImageData">CompressedImageData</a> datum) {
-<a class="jxr_linenumber" name="L227" href="#L227">227</a>         <strong class="jxr_keyword">super</strong>(hdr, datum);
-<a class="jxr_linenumber" name="L228" href="#L228">228</a>     }
-<a class="jxr_linenumber" name="L229" href="#L229">229</a> 
-<a class="jxr_linenumber" name="L230" href="#L230">230</a>     <em class="jxr_javadoccomment">/**</em>
-<a class="jxr_linenumber" name="L231" href="#L231">231</a> <em class="jxr_javadoccomment">     * Restores the original image HDU by decompressing the data contained in this compresed image HDU.</em>
-<a class="jxr_linenumber" name="L232" href="#L232">232</a> <em class="jxr_javadoccomment">     * </em>
-<a class="jxr_linenumber" name="L233" href="#L233">233</a> <em class="jxr_javadoccomment">     * @return               The uncompressed Image HDU.</em>
-<a class="jxr_linenumber" name="L234" href="#L234">234</a> <em class="jxr_javadoccomment">     * </em>
-<a class="jxr_linenumber" name="L235" href="#L235">235</a> <em class="jxr_javadoccomment">     * @throws FitsException If there was an issue with the decompression.</em>
-<a class="jxr_linenumber" name="L236" href="#L236">236</a> <em class="jxr_javadoccomment">     * </em>
-<a class="jxr_linenumber" name="L237" href="#L237">237</a> <em class="jxr_javadoccomment">     * @see                  #getTileHDU(int[], int[])</em>
-<a class="jxr_linenumber" name="L238" href="#L238">238</a> <em class="jxr_javadoccomment">     * @see                  #fromImageHDU(ImageHDU, int...)</em>
-<a class="jxr_linenumber" name="L239" href="#L239">239</a> <em class="jxr_javadoccomment">     */</em>
-<a class="jxr_linenumber" name="L240" href="#L240">240</a>     <strong class="jxr_keyword">public</strong> <a name="ImageHDU" href="../../../../../nom/tam/fits/ImageHDU.html#ImageHDU">ImageHDU</a> asImageHDU() <strong class="jxr_keyword">throws</strong> <a name="FitsException" href="../../../../../nom/tam/fits/FitsException.html#FitsException">FitsException</a> {
-<a class="jxr_linenumber" name="L241" href="#L241">241</a>         <strong class="jxr_keyword">final</strong> <a name="Header" href="../../../../../nom/tam/fits/Header.html#Header">Header</a> header = getImageHeader();
-<a class="jxr_linenumber" name="L242" href="#L242">242</a>         <a name="ImageData" href="../../../../../nom/tam/fits/ImageData.html#ImageData">ImageData</a> data = ImageHDU.manufactureData(header);
-<a class="jxr_linenumber" name="L243" href="#L243">243</a>         <a name="ImageHDU" href="../../../../../nom/tam/fits/ImageHDU.html#ImageHDU">ImageHDU</a> imageHDU = <strong class="jxr_keyword">new</strong> <a name="ImageHDU" href="../../../../../nom/tam/fits/ImageHDU.html#ImageHDU">ImageHDU</a>(header, data);
-<a class="jxr_linenumber" name="L244" href="#L244">244</a>         data.setBuffer(getUncompressedData());
-<a class="jxr_linenumber" name="L245" href="#L245">245</a>         <strong class="jxr_keyword">return</strong> imageHDU;
-<a class="jxr_linenumber" name="L246" href="#L246">246</a>     }
-<a class="jxr_linenumber" name="L247" href="#L247">247</a> 
-<a class="jxr_linenumber" name="L248" href="#L248">248</a>     <em class="jxr_javadoccomment">/**</em>
-<a class="jxr_linenumber" name="L249" href="#L249">249</a> <em class="jxr_javadoccomment">     * Returns an &lt;code&gt;ImageHDU&lt;/code&gt;, with the specified decompressed image area. The HDU's header will be adjusted</em>
-<a class="jxr_linenumber" name="L250" href="#L250">250</a> <em class="jxr_javadoccomment">     * as necessary to reflect the correct size and coordinate system of the image cutout.</em>
-<a class="jxr_linenumber" name="L251" href="#L251">251</a> <em class="jxr_javadoccomment">     * </em>
-<a class="jxr_linenumber" name="L252" href="#L252">252</a> <em class="jxr_javadoccomment">     * @param  corners                  the location in pixels where the tile begins in the full (uncompressed) image.</em>
-<a class="jxr_linenumber" name="L253" href="#L253">253</a> <em class="jxr_javadoccomment">     *                                      The number of elements in the array must match the image dimnesion.</em>
-<a class="jxr_linenumber" name="L254" href="#L254">254</a> <em class="jxr_javadoccomment">     * @param  lengths                  the size of the tile in pixels. The number of elements in the array must match</em>
-<a class="jxr_linenumber" name="L255" href="#L255">255</a> <em class="jxr_javadoccomment">     *                                      the image dimnesion.</em>
-<a class="jxr_linenumber" name="L256" href="#L256">256</a> <em class="jxr_javadoccomment">     * </em>
-<a class="jxr_linenumber" name="L257" href="#L257">257</a> <em class="jxr_javadoccomment">     * @return                          a new image HDU containing the selected area of the uncompresed image, including</em>
-<a class="jxr_linenumber" name="L258" href="#L258">258</a> <em class="jxr_javadoccomment">     *                                      the adjusted header for the selected area,</em>
+<a class="jxr_linenumber" name="L210" href="#L210">210</a> <em class="jxr_javadoccomment">     * Returns an empty compressed image data object based on its description in a FITS header.</em>
+<a class="jxr_linenumber" name="L211" href="#L211">211</a> <em class="jxr_javadoccomment">     * </em>
+<a class="jxr_linenumber" name="L212" href="#L212">212</a> <em class="jxr_javadoccomment">     * @param      hdr           the FITS header containing a description of the compressed image</em>
+<a class="jxr_linenumber" name="L213" href="#L213">213</a> <em class="jxr_javadoccomment">     * </em>
+<a class="jxr_linenumber" name="L214" href="#L214">214</a> <em class="jxr_javadoccomment">     * @return                   an empty compressed image data corresponding to the header description.</em>
+<a class="jxr_linenumber" name="L215" href="#L215">215</a> <em class="jxr_javadoccomment">     * </em>
+<a class="jxr_linenumber" name="L216" href="#L216">216</a> <em class="jxr_javadoccomment">     * @throws     FitsException if the header does not sufficiently describe a compressed image</em>
+<a class="jxr_linenumber" name="L217" href="#L217">217</a> <em class="jxr_javadoccomment">     * </em>
+<a class="jxr_linenumber" name="L218" href="#L218">218</a> <em class="jxr_javadoccomment">     * @deprecated               (&lt;i&gt;for internal use&lt;/i&gt;) Will reduce visibility in the future</em>
+<a class="jxr_linenumber" name="L219" href="#L219">219</a> <em class="jxr_javadoccomment">     */</em>
+<a class="jxr_linenumber" name="L220" href="#L220">220</a>     @Deprecated
+<a class="jxr_linenumber" name="L221" href="#L221">221</a>     <strong class="jxr_keyword">public</strong> <strong class="jxr_keyword">static</strong> <a name="CompressedImageData" href="../../../../../nom/tam/image/compression/hdu/CompressedImageData.html#CompressedImageData">CompressedImageData</a> manufactureData(<a name="Header" href="../../../../../nom/tam/fits/Header.html#Header">Header</a> hdr) <strong class="jxr_keyword">throws</strong> <a name="FitsException" href="../../../../../nom/tam/fits/FitsException.html#FitsException">FitsException</a> {
+<a class="jxr_linenumber" name="L222" href="#L222">222</a>         <strong class="jxr_keyword">return</strong> <strong class="jxr_keyword">new</strong> <a name="CompressedImageData" href="../../../../../nom/tam/image/compression/hdu/CompressedImageData.html#CompressedImageData">CompressedImageData</a>(hdr);
+<a class="jxr_linenumber" name="L223" href="#L223">223</a>     }
+<a class="jxr_linenumber" name="L224" href="#L224">224</a> 
+<a class="jxr_linenumber" name="L225" href="#L225">225</a>     <em class="jxr_javadoccomment">/**</em>
+<a class="jxr_linenumber" name="L226" href="#L226">226</a> <em class="jxr_javadoccomment">     * Creates an new compressed image HDU with the specified header and compressed data.</em>
+<a class="jxr_linenumber" name="L227" href="#L227">227</a> <em class="jxr_javadoccomment">     * </em>
+<a class="jxr_linenumber" name="L228" href="#L228">228</a> <em class="jxr_javadoccomment">     * @param hdr   the header</em>
+<a class="jxr_linenumber" name="L229" href="#L229">229</a> <em class="jxr_javadoccomment">     * @param datum the compressed image data. The data may not be actually compressed at this point, int which case you</em>
+<a class="jxr_linenumber" name="L230" href="#L230">230</a> <em class="jxr_javadoccomment">     *                  may need to call {@link #compress()} before writing the new compressed HDU to a stream.</em>
+<a class="jxr_linenumber" name="L231" href="#L231">231</a> <em class="jxr_javadoccomment">     * </em>
+<a class="jxr_linenumber" name="L232" href="#L232">232</a> <em class="jxr_javadoccomment">     * @see         #compress()</em>
+<a class="jxr_linenumber" name="L233" href="#L233">233</a> <em class="jxr_javadoccomment">     */</em>
+<a class="jxr_linenumber" name="L234" href="#L234">234</a>     <strong class="jxr_keyword">public</strong> <a name="CompressedImageHDU" href="../../../../../nom/tam/image/compression/hdu/CompressedImageHDU.html#CompressedImageHDU">CompressedImageHDU</a>(<a name="Header" href="../../../../../nom/tam/fits/Header.html#Header">Header</a> hdr, <a name="CompressedImageData" href="../../../../../nom/tam/image/compression/hdu/CompressedImageData.html#CompressedImageData">CompressedImageData</a> datum) {
+<a class="jxr_linenumber" name="L235" href="#L235">235</a>         <strong class="jxr_keyword">super</strong>(hdr, datum);
+<a class="jxr_linenumber" name="L236" href="#L236">236</a>     }
+<a class="jxr_linenumber" name="L237" href="#L237">237</a> 
+<a class="jxr_linenumber" name="L238" href="#L238">238</a>     <em class="jxr_javadoccomment">/**</em>
+<a class="jxr_linenumber" name="L239" href="#L239">239</a> <em class="jxr_javadoccomment">     * Restores the original image HDU by decompressing the data contained in this compresed image HDU.</em>
+<a class="jxr_linenumber" name="L240" href="#L240">240</a> <em class="jxr_javadoccomment">     * </em>
+<a class="jxr_linenumber" name="L241" href="#L241">241</a> <em class="jxr_javadoccomment">     * @return               The uncompressed Image HDU.</em>
+<a class="jxr_linenumber" name="L242" href="#L242">242</a> <em class="jxr_javadoccomment">     * </em>
+<a class="jxr_linenumber" name="L243" href="#L243">243</a> <em class="jxr_javadoccomment">     * @throws FitsException If there was an issue with the decompression.</em>
+<a class="jxr_linenumber" name="L244" href="#L244">244</a> <em class="jxr_javadoccomment">     * </em>
+<a class="jxr_linenumber" name="L245" href="#L245">245</a> <em class="jxr_javadoccomment">     * @see                  #getTileHDU(int[], int[])</em>
+<a class="jxr_linenumber" name="L246" href="#L246">246</a> <em class="jxr_javadoccomment">     * @see                  #fromImageHDU(ImageHDU, int...)</em>
+<a class="jxr_linenumber" name="L247" href="#L247">247</a> <em class="jxr_javadoccomment">     */</em>
+<a class="jxr_linenumber" name="L248" href="#L248">248</a>     <strong class="jxr_keyword">public</strong> <a name="ImageHDU" href="../../../../../nom/tam/fits/ImageHDU.html#ImageHDU">ImageHDU</a> asImageHDU() <strong class="jxr_keyword">throws</strong> <a name="FitsException" href="../../../../../nom/tam/fits/FitsException.html#FitsException">FitsException</a> {
+<a class="jxr_linenumber" name="L249" href="#L249">249</a>         <strong class="jxr_keyword">final</strong> <a name="Header" href="../../../../../nom/tam/fits/Header.html#Header">Header</a> header = getImageHeader();
+<a class="jxr_linenumber" name="L250" href="#L250">250</a>         <a name="ImageData" href="../../../../../nom/tam/fits/ImageData.html#ImageData">ImageData</a> data = ImageHDU.manufactureData(header);
+<a class="jxr_linenumber" name="L251" href="#L251">251</a>         <a name="ImageHDU" href="../../../../../nom/tam/fits/ImageHDU.html#ImageHDU">ImageHDU</a> imageHDU = <strong class="jxr_keyword">new</strong> <a name="ImageHDU" href="../../../../../nom/tam/fits/ImageHDU.html#ImageHDU">ImageHDU</a>(header, data);
+<a class="jxr_linenumber" name="L252" href="#L252">252</a>         data.setBuffer(getUncompressedData());
+<a class="jxr_linenumber" name="L253" href="#L253">253</a>         <strong class="jxr_keyword">return</strong> imageHDU;
+<a class="jxr_linenumber" name="L254" href="#L254">254</a>     }
+<a class="jxr_linenumber" name="L255" href="#L255">255</a> 
+<a class="jxr_linenumber" name="L256" href="#L256">256</a>     <em class="jxr_javadoccomment">/**</em>
+<a class="jxr_linenumber" name="L257" href="#L257">257</a> <em class="jxr_javadoccomment">     * Returns an &lt;code&gt;ImageHDU&lt;/code&gt;, with the specified decompressed image area. The HDU's header will be adjusted</em>
+<a class="jxr_linenumber" name="L258" href="#L258">258</a> <em class="jxr_javadoccomment">     * as necessary to reflect the correct size and coordinate system of the image cutout.</em>
 <a class="jxr_linenumber" name="L259" href="#L259">259</a> <em class="jxr_javadoccomment">     * </em>
-<a class="jxr_linenumber" name="L260" href="#L260">260</a> <em class="jxr_javadoccomment">     * @throws IOException              If the tiling operation itself could not be performed</em>
-<a class="jxr_linenumber" name="L261" href="#L261">261</a> <em class="jxr_javadoccomment">     * @throws FitsException            If the compressed image itself if invalid or imcomplete</em>
-<a class="jxr_linenumber" name="L262" href="#L262">262</a> <em class="jxr_javadoccomment">     * @throws IllegalArgumentException if the tile area is not fully contained inside the uncompressed image or if the</em>
-<a class="jxr_linenumber" name="L263" href="#L263">263</a> <em class="jxr_javadoccomment">     *                                      lengths are not positive definite.</em>
+<a class="jxr_linenumber" name="L260" href="#L260">260</a> <em class="jxr_javadoccomment">     * @param  corners                  the location in pixels where the tile begins in the full (uncompressed) image.</em>
+<a class="jxr_linenumber" name="L261" href="#L261">261</a> <em class="jxr_javadoccomment">     *                                      The number of elements in the array must match the image dimnesion.</em>
+<a class="jxr_linenumber" name="L262" href="#L262">262</a> <em class="jxr_javadoccomment">     * @param  lengths                  the size of the tile in pixels. The number of elements in the array must match</em>
+<a class="jxr_linenumber" name="L263" href="#L263">263</a> <em class="jxr_javadoccomment">     *                                      the image dimnesion.</em>
 <a class="jxr_linenumber" name="L264" href="#L264">264</a> <em class="jxr_javadoccomment">     * </em>
-<a class="jxr_linenumber" name="L265" href="#L265">265</a> <em class="jxr_javadoccomment">     * @see                             #asImageHDU()</em>
-<a class="jxr_linenumber" name="L266" href="#L266">266</a> <em class="jxr_javadoccomment">     * @see                             CompressedImageTiler#getTile(int[], int[])</em>
+<a class="jxr_linenumber" name="L265" href="#L265">265</a> <em class="jxr_javadoccomment">     * @return                          a new image HDU containing the selected area of the uncompresed image, including</em>
+<a class="jxr_linenumber" name="L266" href="#L266">266</a> <em class="jxr_javadoccomment">     *                                      the adjusted header for the selected area,</em>
 <a class="jxr_linenumber" name="L267" href="#L267">267</a> <em class="jxr_javadoccomment">     * </em>
-<a class="jxr_linenumber" name="L268" href="#L268">268</a> <em class="jxr_javadoccomment">     * @since                           1.18</em>
-<a class="jxr_linenumber" name="L269" href="#L269">269</a> <em class="jxr_javadoccomment">     */</em>
-<a class="jxr_linenumber" name="L270" href="#L270">270</a>     <strong class="jxr_keyword">public</strong> <a name="ImageHDU" href="../../../../../nom/tam/fits/ImageHDU.html#ImageHDU">ImageHDU</a> getTileHDU(<strong class="jxr_keyword">int</strong>[] corners, <strong class="jxr_keyword">int</strong>[] lengths) <strong class="jxr_keyword">throws</strong> IOException, FitsException, IllegalArgumentException {
-<a class="jxr_linenumber" name="L271" href="#L271">271</a>         <a name="Header" href="../../../../../nom/tam/fits/Header.html#Header">Header</a> h = getImageHeader();
-<a class="jxr_linenumber" name="L272" href="#L272">272</a> 
-<a class="jxr_linenumber" name="L273" href="#L273">273</a>         <strong class="jxr_keyword">int</strong> dim = h.getIntValue(Standard.NAXIS);
-<a class="jxr_linenumber" name="L274" href="#L274">274</a> 
-<a class="jxr_linenumber" name="L275" href="#L275">275</a>         <strong class="jxr_keyword">if</strong> (corners.length != lengths.length || corners.length != dim) {
-<a class="jxr_linenumber" name="L276" href="#L276">276</a>             <strong class="jxr_keyword">throw</strong> <strong class="jxr_keyword">new</strong> IllegalArgumentException(<span class="jxr_string">"arguments for mismatched dimensions"</span>);
-<a class="jxr_linenumber" name="L277" href="#L277">277</a>         }
-<a class="jxr_linenumber" name="L278" href="#L278">278</a> 
-<a class="jxr_linenumber" name="L279" href="#L279">279</a>         <em class="jxr_comment">// Edit the image bound for the tile</em>
-<a class="jxr_linenumber" name="L280" href="#L280">280</a>         <strong class="jxr_keyword">for</strong> (<strong class="jxr_keyword">int</strong> i = 0; i &lt; corners.length; i++) {
-<a class="jxr_linenumber" name="L281" href="#L281">281</a>             <strong class="jxr_keyword">int</strong> naxis = h.getIntValue(Standard.NAXISn.n(dim - i));
+<a class="jxr_linenumber" name="L268" href="#L268">268</a> <em class="jxr_javadoccomment">     * @throws IOException              If the tiling operation itself could not be performed</em>
+<a class="jxr_linenumber" name="L269" href="#L269">269</a> <em class="jxr_javadoccomment">     * @throws FitsException            If the compressed image itself if invalid or imcomplete</em>
+<a class="jxr_linenumber" name="L270" href="#L270">270</a> <em class="jxr_javadoccomment">     * @throws IllegalArgumentException if the tile area is not fully contained inside the uncompressed image or if the</em>
+<a class="jxr_linenumber" name="L271" href="#L271">271</a> <em class="jxr_javadoccomment">     *                                      lengths are not positive definite.</em>
+<a class="jxr_linenumber" name="L272" href="#L272">272</a> <em class="jxr_javadoccomment">     * </em>
+<a class="jxr_linenumber" name="L273" href="#L273">273</a> <em class="jxr_javadoccomment">     * @see                             #asImageHDU()</em>
+<a class="jxr_linenumber" name="L274" href="#L274">274</a> <em class="jxr_javadoccomment">     * @see                             CompressedImageTiler#getTile(int[], int[])</em>
+<a class="jxr_linenumber" name="L275" href="#L275">275</a> <em class="jxr_javadoccomment">     * </em>
+<a class="jxr_linenumber" name="L276" href="#L276">276</a> <em class="jxr_javadoccomment">     * @since                           1.18</em>
+<a class="jxr_linenumber" name="L277" href="#L277">277</a> <em class="jxr_javadoccomment">     */</em>
+<a class="jxr_linenumber" name="L278" href="#L278">278</a>     <strong class="jxr_keyword">public</strong> <a name="ImageHDU" href="../../../../../nom/tam/fits/ImageHDU.html#ImageHDU">ImageHDU</a> getTileHDU(<strong class="jxr_keyword">int</strong>[] corners, <strong class="jxr_keyword">int</strong>[] lengths) <strong class="jxr_keyword">throws</strong> IOException, FitsException, IllegalArgumentException {
+<a class="jxr_linenumber" name="L279" href="#L279">279</a>         <a name="Header" href="../../../../../nom/tam/fits/Header.html#Header">Header</a> h = getImageHeader();
+<a class="jxr_linenumber" name="L280" href="#L280">280</a> 
+<a class="jxr_linenumber" name="L281" href="#L281">281</a>         <strong class="jxr_keyword">int</strong> dim = h.getIntValue(Standard.NAXIS);
 <a class="jxr_linenumber" name="L282" href="#L282">282</a> 
-<a class="jxr_linenumber" name="L283" href="#L283">283</a>             <strong class="jxr_keyword">if</strong> (lengths[0] &lt;= 0) {
-<a class="jxr_linenumber" name="L284" href="#L284">284</a>                 <strong class="jxr_keyword">throw</strong> <strong class="jxr_keyword">new</strong> IllegalArgumentException(<span class="jxr_string">"Illegal tile size in dim "</span> + i + <span class="jxr_string">": "</span> + lengths[i]);
-<a class="jxr_linenumber" name="L285" href="#L285">285</a>             }
+<a class="jxr_linenumber" name="L283" href="#L283">283</a>         <strong class="jxr_keyword">if</strong> (corners.length != lengths.length || corners.length != dim) {
+<a class="jxr_linenumber" name="L284" href="#L284">284</a>             <strong class="jxr_keyword">throw</strong> <strong class="jxr_keyword">new</strong> IllegalArgumentException(<span class="jxr_string">"arguments for mismatched dimensions"</span>);
+<a class="jxr_linenumber" name="L285" href="#L285">285</a>         }
 <a class="jxr_linenumber" name="L286" href="#L286">286</a> 
-<a class="jxr_linenumber" name="L287" href="#L287">287</a>             <strong class="jxr_keyword">if</strong> (corners[i] &lt; 0 || corners[i] + lengths[i] &gt; naxis) {
-<a class="jxr_linenumber" name="L288" href="#L288">288</a>                 <strong class="jxr_keyword">throw</strong> <strong class="jxr_keyword">new</strong> IllegalArgumentException(<span class="jxr_string">"tile out of bounds in dim "</span> + i + <span class="jxr_string">": ["</span> + corners[i] + <span class="jxr_string">":"</span>
-<a class="jxr_linenumber" name="L289" href="#L289">289</a>                         + (corners[i] + lengths[i]) + <span class="jxr_string">"] in "</span> + naxis);
-<a class="jxr_linenumber" name="L290" href="#L290">290</a>             }
-<a class="jxr_linenumber" name="L291" href="#L291">291</a> 
-<a class="jxr_linenumber" name="L292" href="#L292">292</a>             h.addValue(Standard.NAXISn.n(dim - i), lengths[i]);
-<a class="jxr_linenumber" name="L293" href="#L293">293</a> 
-<a class="jxr_linenumber" name="L294" href="#L294">294</a>             <a name="HeaderCard" href="../../../../../nom/tam/fits/HeaderCard.html#HeaderCard">HeaderCard</a> crpix = h.findCard(Standard.CRPIXn.n(dim - i));
-<a class="jxr_linenumber" name="L295" href="#L295">295</a>             <strong class="jxr_keyword">if</strong> (crpix != <strong class="jxr_keyword">null</strong>) {
-<a class="jxr_linenumber" name="L296" href="#L296">296</a>                 crpix.setValue(crpix.getValue(Double.<strong class="jxr_keyword">class</strong>, Double.NaN) - corners[i]);
-<a class="jxr_linenumber" name="L297" href="#L297">297</a>             }
-<a class="jxr_linenumber" name="L298" href="#L298">298</a>         }
+<a class="jxr_linenumber" name="L287" href="#L287">287</a>         <em class="jxr_comment">// Edit the image bound for the tile</em>
+<a class="jxr_linenumber" name="L288" href="#L288">288</a>         <strong class="jxr_keyword">for</strong> (<strong class="jxr_keyword">int</strong> i = 0; i &lt; corners.length; i++) {
+<a class="jxr_linenumber" name="L289" href="#L289">289</a>             <strong class="jxr_keyword">int</strong> naxis = h.getIntValue(Standard.NAXISn.n(dim - i));
+<a class="jxr_linenumber" name="L290" href="#L290">290</a> 
+<a class="jxr_linenumber" name="L291" href="#L291">291</a>             <strong class="jxr_keyword">if</strong> (lengths[0] &lt;= 0) {
+<a class="jxr_linenumber" name="L292" href="#L292">292</a>                 <strong class="jxr_keyword">throw</strong> <strong class="jxr_keyword">new</strong> IllegalArgumentException(<span class="jxr_string">"Illegal tile size in dim "</span> + i + <span class="jxr_string">": "</span> + lengths[i]);
+<a class="jxr_linenumber" name="L293" href="#L293">293</a>             }
+<a class="jxr_linenumber" name="L294" href="#L294">294</a> 
+<a class="jxr_linenumber" name="L295" href="#L295">295</a>             <strong class="jxr_keyword">if</strong> (corners[i] &lt; 0 || corners[i] + lengths[i] &gt; naxis) {
+<a class="jxr_linenumber" name="L296" href="#L296">296</a>                 <strong class="jxr_keyword">throw</strong> <strong class="jxr_keyword">new</strong> IllegalArgumentException(<span class="jxr_string">"tile out of bounds in dim "</span> + i + <span class="jxr_string">": ["</span> + corners[i] + <span class="jxr_string">":"</span>
+<a class="jxr_linenumber" name="L297" href="#L297">297</a>                         + (corners[i] + lengths[i]) + <span class="jxr_string">"] in "</span> + naxis);
+<a class="jxr_linenumber" name="L298" href="#L298">298</a>             }
 <a class="jxr_linenumber" name="L299" href="#L299">299</a> 
-<a class="jxr_linenumber" name="L300" href="#L300">300</a>         <a name="ImageData" href="../../../../../nom/tam/fits/ImageData.html#ImageData">ImageData</a> im = ImageHDU.manufactureData(h);
-<a class="jxr_linenumber" name="L301" href="#L301">301</a>         ByteBuffer buf = ByteBuffer.wrap(<strong class="jxr_keyword">new</strong> byte[(<strong class="jxr_keyword">int</strong>) FitsUtil.addPadding(im.getSize())]);
-<a class="jxr_linenumber" name="L302" href="#L302">302</a> 
-<a class="jxr_linenumber" name="L303" href="#L303">303</a>         <strong class="jxr_keyword">try</strong> (<a name="FitsOutputStream" href="../../../../../nom/tam/util/FitsOutputStream.html#FitsOutputStream">FitsOutputStream</a> out = <strong class="jxr_keyword">new</strong> <a name="FitsOutputStream" href="../../../../../nom/tam/util/FitsOutputStream.html#FitsOutputStream">FitsOutputStream</a>(<strong class="jxr_keyword">new</strong> <a name="ByteBufferOutputStream" href="../../../../../nom/tam/util/ByteBufferOutputStream.html#ByteBufferOutputStream">ByteBufferOutputStream</a>(buf))) {
-<a class="jxr_linenumber" name="L304" href="#L304">304</a>             <strong class="jxr_keyword">new</strong> <a name="CompressedImageTiler" href="../../../../../nom/tam/image/compression/CompressedImageTiler.html#CompressedImageTiler">CompressedImageTiler</a>(<strong class="jxr_keyword">this</strong>).getTile(out, corners, lengths);
-<a class="jxr_linenumber" name="L305" href="#L305">305</a>             out.close();
+<a class="jxr_linenumber" name="L300" href="#L300">300</a>             h.addValue(Standard.NAXISn.n(dim - i), lengths[i]);
+<a class="jxr_linenumber" name="L301" href="#L301">301</a> 
+<a class="jxr_linenumber" name="L302" href="#L302">302</a>             <a name="HeaderCard" href="../../../../../nom/tam/fits/HeaderCard.html#HeaderCard">HeaderCard</a> crpix = h.getCard(Standard.CRPIXn.n(dim - i));
+<a class="jxr_linenumber" name="L303" href="#L303">303</a>             <strong class="jxr_keyword">if</strong> (crpix != <strong class="jxr_keyword">null</strong>) {
+<a class="jxr_linenumber" name="L304" href="#L304">304</a>                 crpix.setValue(crpix.getValue(Double.<strong class="jxr_keyword">class</strong>, Double.NaN) - corners[i]);
+<a class="jxr_linenumber" name="L305" href="#L305">305</a>             }
 <a class="jxr_linenumber" name="L306" href="#L306">306</a>         }
 <a class="jxr_linenumber" name="L307" href="#L307">307</a> 
-<a class="jxr_linenumber" name="L308" href="#L308">308</a>         <em class="jxr_comment">// Rewind buffer for reading, including padding.</em>
-<a class="jxr_linenumber" name="L309" href="#L309">309</a>         buf.limit(buf.capacity());
-<a class="jxr_linenumber" name="L310" href="#L310">310</a>         buf.position(0);
-<a class="jxr_linenumber" name="L311" href="#L311">311</a> 
-<a class="jxr_linenumber" name="L312" href="#L312">312</a>         <strong class="jxr_keyword">try</strong> (<a name="FitsInputStream" href="../../../../../nom/tam/util/FitsInputStream.html#FitsInputStream">FitsInputStream</a> in = <strong class="jxr_keyword">new</strong> <a name="FitsInputStream" href="../../../../../nom/tam/util/FitsInputStream.html#FitsInputStream">FitsInputStream</a>(<strong class="jxr_keyword">new</strong> <a name="ByteBufferInputStream" href="../../../../../nom/tam/util/ByteBufferInputStream.html#ByteBufferInputStream">ByteBufferInputStream</a>(buf))) {
-<a class="jxr_linenumber" name="L313" href="#L313">313</a>             im.read(in);
-<a class="jxr_linenumber" name="L314" href="#L314">314</a>             in.close();
-<a class="jxr_linenumber" name="L315" href="#L315">315</a>         }
-<a class="jxr_linenumber" name="L316" href="#L316">316</a> 
-<a class="jxr_linenumber" name="L317" href="#L317">317</a>         <strong class="jxr_keyword">return</strong> <strong class="jxr_keyword">new</strong> <a name="ImageHDU" href="../../../../../nom/tam/fits/ImageHDU.html#ImageHDU">ImageHDU</a>(h, im);
-<a class="jxr_linenumber" name="L318" href="#L318">318</a>     }
+<a class="jxr_linenumber" name="L308" href="#L308">308</a>         <a name="ImageData" href="../../../../../nom/tam/fits/ImageData.html#ImageData">ImageData</a> im = ImageHDU.manufactureData(h);
+<a class="jxr_linenumber" name="L309" href="#L309">309</a>         ByteBuffer buf = ByteBuffer.wrap(<strong class="jxr_keyword">new</strong> byte[(<strong class="jxr_keyword">int</strong>) FitsUtil.addPadding(im.getSize())]);
+<a class="jxr_linenumber" name="L310" href="#L310">310</a> 
+<a class="jxr_linenumber" name="L311" href="#L311">311</a>         <strong class="jxr_keyword">try</strong> (<a name="FitsOutputStream" href="../../../../../nom/tam/util/FitsOutputStream.html#FitsOutputStream">FitsOutputStream</a> out = <strong class="jxr_keyword">new</strong> <a name="FitsOutputStream" href="../../../../../nom/tam/util/FitsOutputStream.html#FitsOutputStream">FitsOutputStream</a>(<strong class="jxr_keyword">new</strong> <a name="ByteBufferOutputStream" href="../../../../../nom/tam/util/ByteBufferOutputStream.html#ByteBufferOutputStream">ByteBufferOutputStream</a>(buf))) {
+<a class="jxr_linenumber" name="L312" href="#L312">312</a>             <strong class="jxr_keyword">new</strong> <a name="CompressedImageTiler" href="../../../../../nom/tam/image/compression/CompressedImageTiler.html#CompressedImageTiler">CompressedImageTiler</a>(<strong class="jxr_keyword">this</strong>).getTile(out, corners, lengths);
+<a class="jxr_linenumber" name="L313" href="#L313">313</a>             out.close();
+<a class="jxr_linenumber" name="L314" href="#L314">314</a>         }
+<a class="jxr_linenumber" name="L315" href="#L315">315</a> 
+<a class="jxr_linenumber" name="L316" href="#L316">316</a>         <em class="jxr_comment">// Rewind buffer for reading, including padding.</em>
+<a class="jxr_linenumber" name="L317" href="#L317">317</a>         buf.limit(buf.capacity());
+<a class="jxr_linenumber" name="L318" href="#L318">318</a>         buf.position(0);
 <a class="jxr_linenumber" name="L319" href="#L319">319</a> 
-<a class="jxr_linenumber" name="L320" href="#L320">320</a>     <em class="jxr_javadoccomment">/**</em>
-<a class="jxr_linenumber" name="L321" href="#L321">321</a> <em class="jxr_javadoccomment">     * Given this compressed HDU, get the original (decompressed) axes.</em>
-<a class="jxr_linenumber" name="L322" href="#L322">322</a> <em class="jxr_javadoccomment">     *</em>
-<a class="jxr_linenumber" name="L323" href="#L323">323</a> <em class="jxr_javadoccomment">     * @return               the dimensions of the axis.</em>
-<a class="jxr_linenumber" name="L324" href="#L324">324</a> <em class="jxr_javadoccomment">     *</em>
-<a class="jxr_linenumber" name="L325" href="#L325">325</a> <em class="jxr_javadoccomment">     * @throws FitsException if the axis are configured wrong.</em>
-<a class="jxr_linenumber" name="L326" href="#L326">326</a> <em class="jxr_javadoccomment">     *</em>
-<a class="jxr_linenumber" name="L327" href="#L327">327</a> <em class="jxr_javadoccomment">     * @since                1.18</em>
-<a class="jxr_linenumber" name="L328" href="#L328">328</a> <em class="jxr_javadoccomment">     */</em>
-<a class="jxr_linenumber" name="L329" href="#L329">329</a>     <strong class="jxr_keyword">public</strong> <strong class="jxr_keyword">int</strong>[] getImageAxes() <strong class="jxr_keyword">throws</strong> <a name="FitsException" href="../../../../../nom/tam/fits/FitsException.html#FitsException">FitsException</a> {
-<a class="jxr_linenumber" name="L330" href="#L330">330</a>         <strong class="jxr_keyword">int</strong> nAxis = myHeader.getIntValue(Compression.ZNAXIS);
-<a class="jxr_linenumber" name="L331" href="#L331">331</a>         <strong class="jxr_keyword">if</strong> (nAxis &lt; 0) {
-<a class="jxr_linenumber" name="L332" href="#L332">332</a>             <strong class="jxr_keyword">throw</strong> <strong class="jxr_keyword">new</strong> <a name="FitsException" href="../../../../../nom/tam/fits/FitsException.html#FitsException">FitsException</a>(<span class="jxr_string">"Negative ZNAXIS (or NAXIS) value "</span> + nAxis);
-<a class="jxr_linenumber" name="L333" href="#L333">333</a>         }
-<a class="jxr_linenumber" name="L334" href="#L334">334</a>         <strong class="jxr_keyword">if</strong> (nAxis &gt; CompressedImageHDU.MAX_NAXIS_ALLOWED) {
-<a class="jxr_linenumber" name="L335" href="#L335">335</a>             <strong class="jxr_keyword">throw</strong> <strong class="jxr_keyword">new</strong> <a name="FitsException" href="../../../../../nom/tam/fits/FitsException.html#FitsException">FitsException</a>(<span class="jxr_string">"ZNAXIS/NAXIS value "</span> + nAxis + <span class="jxr_string">" too large"</span>);
-<a class="jxr_linenumber" name="L336" href="#L336">336</a>         }
-<a class="jxr_linenumber" name="L337" href="#L337">337</a> 
-<a class="jxr_linenumber" name="L338" href="#L338">338</a>         <strong class="jxr_keyword">if</strong> (nAxis == 0) {
-<a class="jxr_linenumber" name="L339" href="#L339">339</a>             <strong class="jxr_keyword">return</strong> <strong class="jxr_keyword">null</strong>;
-<a class="jxr_linenumber" name="L340" href="#L340">340</a>         }
-<a class="jxr_linenumber" name="L341" href="#L341">341</a> 
-<a class="jxr_linenumber" name="L342" href="#L342">342</a>         <strong class="jxr_keyword">final</strong> <strong class="jxr_keyword">int</strong>[] axes = <strong class="jxr_keyword">new</strong> <strong class="jxr_keyword">int</strong>[nAxis];
-<a class="jxr_linenumber" name="L343" href="#L343">343</a>         <strong class="jxr_keyword">for</strong> (<strong class="jxr_keyword">int</strong> i = 1; i &lt;= nAxis; i++) {
-<a class="jxr_linenumber" name="L344" href="#L344">344</a>             axes[nAxis - i] = myHeader.getIntValue(Compression.ZNAXISn.n(i));
-<a class="jxr_linenumber" name="L345" href="#L345">345</a>         }
-<a class="jxr_linenumber" name="L346" href="#L346">346</a> 
-<a class="jxr_linenumber" name="L347" href="#L347">347</a>         <strong class="jxr_keyword">return</strong> axes;
-<a class="jxr_linenumber" name="L348" href="#L348">348</a>     }
+<a class="jxr_linenumber" name="L320" href="#L320">320</a>         <strong class="jxr_keyword">try</strong> (<a name="FitsInputStream" href="../../../../../nom/tam/util/FitsInputStream.html#FitsInputStream">FitsInputStream</a> in = <strong class="jxr_keyword">new</strong> <a name="FitsInputStream" href="../../../../../nom/tam/util/FitsInputStream.html#FitsInputStream">FitsInputStream</a>(<strong class="jxr_keyword">new</strong> <a name="ByteBufferInputStream" href="../../../../../nom/tam/util/ByteBufferInputStream.html#ByteBufferInputStream">ByteBufferInputStream</a>(buf))) {
+<a class="jxr_linenumber" name="L321" href="#L321">321</a>             im.read(in);
+<a class="jxr_linenumber" name="L322" href="#L322">322</a>             in.close();
+<a class="jxr_linenumber" name="L323" href="#L323">323</a>         }
+<a class="jxr_linenumber" name="L324" href="#L324">324</a> 
+<a class="jxr_linenumber" name="L325" href="#L325">325</a>         <strong class="jxr_keyword">return</strong> <strong class="jxr_keyword">new</strong> <a name="ImageHDU" href="../../../../../nom/tam/fits/ImageHDU.html#ImageHDU">ImageHDU</a>(h, im);
+<a class="jxr_linenumber" name="L326" href="#L326">326</a>     }
+<a class="jxr_linenumber" name="L327" href="#L327">327</a> 
+<a class="jxr_linenumber" name="L328" href="#L328">328</a>     <em class="jxr_javadoccomment">/**</em>
+<a class="jxr_linenumber" name="L329" href="#L329">329</a> <em class="jxr_javadoccomment">     * Given this compressed HDU, get the original (decompressed) axes.</em>
+<a class="jxr_linenumber" name="L330" href="#L330">330</a> <em class="jxr_javadoccomment">     *</em>
+<a class="jxr_linenumber" name="L331" href="#L331">331</a> <em class="jxr_javadoccomment">     * @return               the dimensions of the axis.</em>
+<a class="jxr_linenumber" name="L332" href="#L332">332</a> <em class="jxr_javadoccomment">     *</em>
+<a class="jxr_linenumber" name="L333" href="#L333">333</a> <em class="jxr_javadoccomment">     * @throws FitsException if the axis are configured wrong.</em>
+<a class="jxr_linenumber" name="L334" href="#L334">334</a> <em class="jxr_javadoccomment">     *</em>
+<a class="jxr_linenumber" name="L335" href="#L335">335</a> <em class="jxr_javadoccomment">     * @since                1.18</em>
+<a class="jxr_linenumber" name="L336" href="#L336">336</a> <em class="jxr_javadoccomment">     */</em>
+<a class="jxr_linenumber" name="L337" href="#L337">337</a>     <strong class="jxr_keyword">public</strong> <strong class="jxr_keyword">int</strong>[] getImageAxes() <strong class="jxr_keyword">throws</strong> <a name="FitsException" href="../../../../../nom/tam/fits/FitsException.html#FitsException">FitsException</a> {
+<a class="jxr_linenumber" name="L338" href="#L338">338</a>         <strong class="jxr_keyword">int</strong> nAxis = myHeader.getIntValue(Compression.ZNAXIS);
+<a class="jxr_linenumber" name="L339" href="#L339">339</a>         <strong class="jxr_keyword">if</strong> (nAxis &lt; 0) {
+<a class="jxr_linenumber" name="L340" href="#L340">340</a>             <strong class="jxr_keyword">throw</strong> <strong class="jxr_keyword">new</strong> <a name="FitsException" href="../../../../../nom/tam/fits/FitsException.html#FitsException">FitsException</a>(<span class="jxr_string">"Negative ZNAXIS (or NAXIS) value "</span> + nAxis);
+<a class="jxr_linenumber" name="L341" href="#L341">341</a>         }
+<a class="jxr_linenumber" name="L342" href="#L342">342</a>         <strong class="jxr_keyword">if</strong> (nAxis &gt; CompressedImageHDU.MAX_NAXIS_ALLOWED) {
+<a class="jxr_linenumber" name="L343" href="#L343">343</a>             <strong class="jxr_keyword">throw</strong> <strong class="jxr_keyword">new</strong> <a name="FitsException" href="../../../../../nom/tam/fits/FitsException.html#FitsException">FitsException</a>(<span class="jxr_string">"ZNAXIS/NAXIS value "</span> + nAxis + <span class="jxr_string">" too large"</span>);
+<a class="jxr_linenumber" name="L344" href="#L344">344</a>         }
+<a class="jxr_linenumber" name="L345" href="#L345">345</a> 
+<a class="jxr_linenumber" name="L346" href="#L346">346</a>         <strong class="jxr_keyword">if</strong> (nAxis == 0) {
+<a class="jxr_linenumber" name="L347" href="#L347">347</a>             <strong class="jxr_keyword">return</strong> <strong class="jxr_keyword">null</strong>;
+<a class="jxr_linenumber" name="L348" href="#L348">348</a>         }
 <a class="jxr_linenumber" name="L349" href="#L349">349</a> 
-<a class="jxr_linenumber" name="L350" href="#L350">350</a>     <em class="jxr_javadoccomment">/**</em>
-<a class="jxr_linenumber" name="L351" href="#L351">351</a> <em class="jxr_javadoccomment">     * Obtain a header representative of a decompressed ImageHDU.</em>
-<a class="jxr_linenumber" name="L352" href="#L352">352</a> <em class="jxr_javadoccomment">     *</em>
-<a class="jxr_linenumber" name="L353" href="#L353">353</a> <em class="jxr_javadoccomment">     * @return                     Header with decompressed cards.</em>
-<a class="jxr_linenumber" name="L354" href="#L354">354</a> <em class="jxr_javadoccomment">     *</em>
-<a class="jxr_linenumber" name="L355" href="#L355">355</a> <em class="jxr_javadoccomment">     * @throws HeaderCardException if the card could not be copied</em>
-<a class="jxr_linenumber" name="L356" href="#L356">356</a> <em class="jxr_javadoccomment">     *</em>
-<a class="jxr_linenumber" name="L357" href="#L357">357</a> <em class="jxr_javadoccomment">     * @since                      1.18</em>
-<a class="jxr_linenumber" name="L358" href="#L358">358</a> <em class="jxr_javadoccomment">     */</em>
-<a class="jxr_linenumber" name="L359" href="#L359">359</a>     <strong class="jxr_keyword">public</strong> <a name="Header" href="../../../../../nom/tam/fits/Header.html#Header">Header</a> getImageHeader() <strong class="jxr_keyword">throws</strong> <a name="HeaderCardException" href="../../../../../nom/tam/fits/HeaderCardException.html#HeaderCardException">HeaderCardException</a> {
-<a class="jxr_linenumber" name="L360" href="#L360">360</a>         <a name="Header" href="../../../../../nom/tam/fits/Header.html#Header">Header</a> header = <strong class="jxr_keyword">new</strong> <a name="Header" href="../../../../../nom/tam/fits/Header.html#Header">Header</a>();
-<a class="jxr_linenumber" name="L361" href="#L361">361</a> 
-<a class="jxr_linenumber" name="L362" href="#L362">362</a>         Cursor&lt;String, HeaderCard&gt; imageIterator = header.iterator();
-<a class="jxr_linenumber" name="L363" href="#L363">363</a>         Cursor&lt;String, HeaderCard&gt; iterator = getHeader().iterator();
-<a class="jxr_linenumber" name="L364" href="#L364">364</a> 
-<a class="jxr_linenumber" name="L365" href="#L365">365</a>         <strong class="jxr_keyword">while</strong> (iterator.hasNext()) {
-<a class="jxr_linenumber" name="L366" href="#L366">366</a>             <a name="HeaderCard" href="../../../../../nom/tam/fits/HeaderCard.html#HeaderCard">HeaderCard</a> card = iterator.next();
-<a class="jxr_linenumber" name="L367" href="#L367">367</a> 
-<a class="jxr_linenumber" name="L368" href="#L368">368</a>             <strong class="jxr_keyword">if</strong> (!TABLE_COLUMN_KEYS.contains(GenericKey.lookup(card.getKey()))) {
-<a class="jxr_linenumber" name="L369" href="#L369">369</a>                 CompressedCard.backup(card, imageIterator);
-<a class="jxr_linenumber" name="L370" href="#L370">370</a>             }
-<a class="jxr_linenumber" name="L371" href="#L371">371</a>         }
-<a class="jxr_linenumber" name="L372" href="#L372">372</a>         <strong class="jxr_keyword">return</strong> header;
-<a class="jxr_linenumber" name="L373" href="#L373">373</a>     }
-<a class="jxr_linenumber" name="L374" href="#L374">374</a> 
-<a class="jxr_linenumber" name="L375" href="#L375">375</a>     <em class="jxr_javadoccomment">/**</em>
-<a class="jxr_linenumber" name="L376" href="#L376">376</a> <em class="jxr_javadoccomment">     * Performs the actual compression with the selected algorithm(s) and options. When creating a compressed image HDU,</em>
-<a class="jxr_linenumber" name="L377" href="#L377">377</a> <em class="jxr_javadoccomment">     * e.g using the {@link #fromImageHDU(ImageHDU, int...)} method, the HDU is merely prepared but without actually</em>
-<a class="jxr_linenumber" name="L378" href="#L378">378</a> <em class="jxr_javadoccomment">     * performing the compression to allow the user to configure the algorithm(S) to be used as well as any specific</em>
-<a class="jxr_linenumber" name="L379" href="#L379">379</a> <em class="jxr_javadoccomment">     * compression (or quantization) options. See details in the class description.</em>
-<a class="jxr_linenumber" name="L380" href="#L380">380</a> <em class="jxr_javadoccomment">     * </em>
-<a class="jxr_linenumber" name="L381" href="#L381">381</a> <em class="jxr_javadoccomment">     * @throws FitsException if the compression could not be performed</em>
-<a class="jxr_linenumber" name="L382" href="#L382">382</a> <em class="jxr_javadoccomment">     * </em>
-<a class="jxr_linenumber" name="L383" href="#L383">383</a> <em class="jxr_javadoccomment">     * @see                  #fromImageHDU(ImageHDU, int...)</em>
-<a class="jxr_linenumber" name="L384" href="#L384">384</a> <em class="jxr_javadoccomment">     * @see                  #setCompressAlgorithm(String)</em>
-<a class="jxr_linenumber" name="L385" href="#L385">385</a> <em class="jxr_javadoccomment">     * @see                  #setQuantAlgorithm(String)</em>
-<a class="jxr_linenumber" name="L386" href="#L386">386</a> <em class="jxr_javadoccomment">     * @see                  #getCompressOption(Class)</em>
-<a class="jxr_linenumber" name="L387" href="#L387">387</a> <em class="jxr_javadoccomment">     */</em>
-<a class="jxr_linenumber" name="L388" href="#L388">388</a>     <strong class="jxr_keyword">public</strong> <strong class="jxr_keyword">void</strong> compress() <strong class="jxr_keyword">throws</strong> <a name="FitsException" href="../../../../../nom/tam/fits/FitsException.html#FitsException">FitsException</a> {
-<a class="jxr_linenumber" name="L389" href="#L389">389</a>         getData().compress(<strong class="jxr_keyword">this</strong>);
-<a class="jxr_linenumber" name="L390" href="#L390">390</a>     }
-<a class="jxr_linenumber" name="L391" href="#L391">391</a> 
-<a class="jxr_linenumber" name="L392" href="#L392">392</a>     <em class="jxr_javadoccomment">/**</em>
-<a class="jxr_linenumber" name="L393" href="#L393">393</a> <em class="jxr_javadoccomment">     * Specify an area within the image that will not undergo a lossy compression. This will only have affect it the</em>
-<a class="jxr_linenumber" name="L394" href="#L394">394</a> <em class="jxr_javadoccomment">     * selected compression (including the options) is a lossy compression. All tiles touched by this region will be</em>
-<a class="jxr_linenumber" name="L395" href="#L395">395</a> <em class="jxr_javadoccomment">     * handled so that there is no loss of any data, the reconstruction will be exact.</em>
-<a class="jxr_linenumber" name="L396" href="#L396">396</a> <em class="jxr_javadoccomment">     *</em>
-<a class="jxr_linenumber" name="L397" href="#L397">397</a> <em class="jxr_javadoccomment">     * @param  x      the x position in the image</em>
-<a class="jxr_linenumber" name="L398" href="#L398">398</a> <em class="jxr_javadoccomment">     * @param  y      the y position in the image</em>
-<a class="jxr_linenumber" name="L399" href="#L399">399</a> <em class="jxr_javadoccomment">     * @param  width  the width of the area</em>
-<a class="jxr_linenumber" name="L400" href="#L400">400</a> <em class="jxr_javadoccomment">     * @param  heigth the height of the area</em>
-<a class="jxr_linenumber" name="L401" href="#L401">401</a> <em class="jxr_javadoccomment">     *</em>
-<a class="jxr_linenumber" name="L402" href="#L402">402</a> <em class="jxr_javadoccomment">     * @return        this</em>
-<a class="jxr_linenumber" name="L403" href="#L403">403</a> <em class="jxr_javadoccomment">     */</em>
-<a class="jxr_linenumber" name="L404" href="#L404">404</a>     <strong class="jxr_keyword">public</strong> <a name="CompressedImageHDU" href="../../../../../nom/tam/image/compression/hdu/CompressedImageHDU.html#CompressedImageHDU">CompressedImageHDU</a> forceNoLoss(<strong class="jxr_keyword">int</strong> x, <strong class="jxr_keyword">int</strong> y, <strong class="jxr_keyword">int</strong> width, <strong class="jxr_keyword">int</strong> heigth) {
-<a class="jxr_linenumber" name="L405" href="#L405">405</a>         getData().forceNoLoss(x, y, width, heigth);
-<a class="jxr_linenumber" name="L406" href="#L406">406</a>         <strong class="jxr_keyword">return</strong> <strong class="jxr_keyword">this</strong>;
-<a class="jxr_linenumber" name="L407" href="#L407">407</a>     }
-<a class="jxr_linenumber" name="L408" href="#L408">408</a> 
-<a class="jxr_linenumber" name="L409" href="#L409">409</a>     <em class="jxr_javadoccomment">/**</em>
-<a class="jxr_linenumber" name="L410" href="#L410">410</a> <em class="jxr_javadoccomment">     * Returns the compression (or quantization) options for a selected compression option class. It is presumed that</em>
-<a class="jxr_linenumber" name="L411" href="#L411">411</a> <em class="jxr_javadoccomment">     * the requested options are appropriate for the compression and/or quantization algorithm that was selected. E.g.,</em>
-<a class="jxr_linenumber" name="L412" href="#L412">412</a> <em class="jxr_javadoccomment">     * if you called &lt;code&gt;setCompressionAlgorithm({@link Compression#ZCMPTYPE_RICE_1})&lt;/code&gt;, then you can retrieve</em>
-<a class="jxr_linenumber" name="L413" href="#L413">413</a> <em class="jxr_javadoccomment">     * options for it with this method as</em>
-<a class="jxr_linenumber" name="L414" href="#L414">414</a> <em class="jxr_javadoccomment">     * &lt;code&gt;getCompressOption({@link nom.tam.fits.compression.algorithm.rice.RiceCompressOption}.class)&lt;/code&gt;.</em>
-<a class="jxr_linenumber" name="L415" href="#L415">415</a> <em class="jxr_javadoccomment">     * </em>
-<a class="jxr_linenumber" name="L416" href="#L416">416</a> <em class="jxr_javadoccomment">     * @param  &lt;T&gt;   The generic type of the compression class</em>
-<a class="jxr_linenumber" name="L417" href="#L417">417</a> <em class="jxr_javadoccomment">     * @param  clazz the compression class</em>
-<a class="jxr_linenumber" name="L418" href="#L418">418</a> <em class="jxr_javadoccomment">     * </em>
-<a class="jxr_linenumber" name="L419" href="#L419">419</a> <em class="jxr_javadoccomment">     * @return       The current set of options for the requested type, or &lt;code&gt;null&lt;/code&gt; if there are no options or</em>
-<a class="jxr_linenumber" name="L420" href="#L420">420</a> <em class="jxr_javadoccomment">     *                   if the requested type does not match the algorithm(s) selected.</em>
-<a class="jxr_linenumber" name="L421" href="#L421">421</a> <em class="jxr_javadoccomment">     * </em>
-<a class="jxr_linenumber" name="L422" href="#L422">422</a> <em class="jxr_javadoccomment">     * @see          nom.tam.fits.compression.algorithm.hcompress.HCompressorOption</em>
-<a class="jxr_linenumber" name="L423" href="#L423">423</a> <em class="jxr_javadoccomment">     * @see          nom.tam.fits.compression.algorithm.rice.RiceCompressOption</em>
-<a class="jxr_linenumber" name="L424" href="#L424">424</a> <em class="jxr_javadoccomment">     * @see          nom.tam.fits.compression.algorithm.quant.QuantizeOption</em>
-<a class="jxr_linenumber" name="L425" href="#L425">425</a> <em class="jxr_javadoccomment">     */</em>
-<a class="jxr_linenumber" name="L426" href="#L426">426</a>     <strong class="jxr_keyword">public</strong> &lt;T <strong class="jxr_keyword">extends</strong> ICompressOption&gt; T getCompressOption(Class&lt;T&gt; clazz) {
-<a class="jxr_linenumber" name="L427" href="#L427">427</a>         <strong class="jxr_keyword">return</strong> getData().getCompressOption(clazz);
-<a class="jxr_linenumber" name="L428" href="#L428">428</a>     }
-<a class="jxr_linenumber" name="L429" href="#L429">429</a> 
-<a class="jxr_linenumber" name="L430" href="#L430">430</a>     @Override
-<a class="jxr_linenumber" name="L431" href="#L431">431</a>     <strong class="jxr_keyword">public</strong> <a name="CompressedImageData" href="../../../../../nom/tam/image/compression/hdu/CompressedImageData.html#CompressedImageData">CompressedImageData</a> getData() {
-<a class="jxr_linenumber" name="L432" href="#L432">432</a>         <strong class="jxr_keyword">return</strong> (<a name="CompressedImageData" href="../../../../../nom/tam/image/compression/hdu/CompressedImageData.html#CompressedImageData">CompressedImageData</a>) <strong class="jxr_keyword">super</strong>.getData();
-<a class="jxr_linenumber" name="L433" href="#L433">433</a>     }
-<a class="jxr_linenumber" name="L434" href="#L434">434</a> 
-<a class="jxr_linenumber" name="L435" href="#L435">435</a>     <em class="jxr_javadoccomment">/**</em>
-<a class="jxr_linenumber" name="L436" href="#L436">436</a> <em class="jxr_javadoccomment">     * Returns the uncompressed image in serialized form, as it would appear in a stream.</em>
-<a class="jxr_linenumber" name="L437" href="#L437">437</a> <em class="jxr_javadoccomment">     * </em>
-<a class="jxr_linenumber" name="L438" href="#L438">438</a> <em class="jxr_javadoccomment">     * @deprecated               (&lt;i&gt;for internal use&lt;/i&gt;) There is no reason why this should be exposed to users. Use</em>
-<a class="jxr_linenumber" name="L439" href="#L439">439</a> <em class="jxr_javadoccomment">     *                               {@link #asImageHDU()} instead. Future release may restrict the visibility to</em>
-<a class="jxr_linenumber" name="L440" href="#L440">440</a> <em class="jxr_javadoccomment">     *                               private.</em>
-<a class="jxr_linenumber" name="L441" href="#L441">441</a> <em class="jxr_javadoccomment">     * </em>
-<a class="jxr_linenumber" name="L442" href="#L442">442</a> <em class="jxr_javadoccomment">     * @return                   the buffer containing the serialized form of the uncompressed image.</em>
-<a class="jxr_linenumber" name="L443" href="#L443">443</a> <em class="jxr_javadoccomment">     * </em>
-<a class="jxr_linenumber" name="L444" href="#L444">444</a> <em class="jxr_javadoccomment">     * @throws     FitsException if the decompression could not be performed.</em>
+<a class="jxr_linenumber" name="L350" href="#L350">350</a>         <strong class="jxr_keyword">final</strong> <strong class="jxr_keyword">int</strong>[] axes = <strong class="jxr_keyword">new</strong> <strong class="jxr_keyword">int</strong>[nAxis];
+<a class="jxr_linenumber" name="L351" href="#L351">351</a>         <strong class="jxr_keyword">for</strong> (<strong class="jxr_keyword">int</strong> i = 1; i &lt;= nAxis; i++) {
+<a class="jxr_linenumber" name="L352" href="#L352">352</a>             axes[nAxis - i] = myHeader.getIntValue(Compression.ZNAXISn.n(i));
+<a class="jxr_linenumber" name="L353" href="#L353">353</a>         }
+<a class="jxr_linenumber" name="L354" href="#L354">354</a> 
+<a class="jxr_linenumber" name="L355" href="#L355">355</a>         <strong class="jxr_keyword">return</strong> axes;
+<a class="jxr_linenumber" name="L356" href="#L356">356</a>     }
+<a class="jxr_linenumber" name="L357" href="#L357">357</a> 
+<a class="jxr_linenumber" name="L358" href="#L358">358</a>     <em class="jxr_javadoccomment">/**</em>
+<a class="jxr_linenumber" name="L359" href="#L359">359</a> <em class="jxr_javadoccomment">     * Obtain a header representative of a decompressed ImageHDU.</em>
+<a class="jxr_linenumber" name="L360" href="#L360">360</a> <em class="jxr_javadoccomment">     *</em>
+<a class="jxr_linenumber" name="L361" href="#L361">361</a> <em class="jxr_javadoccomment">     * @return                     Header with decompressed cards.</em>
+<a class="jxr_linenumber" name="L362" href="#L362">362</a> <em class="jxr_javadoccomment">     *</em>
+<a class="jxr_linenumber" name="L363" href="#L363">363</a> <em class="jxr_javadoccomment">     * @throws HeaderCardException if the card could not be copied</em>
+<a class="jxr_linenumber" name="L364" href="#L364">364</a> <em class="jxr_javadoccomment">     *</em>
+<a class="jxr_linenumber" name="L365" href="#L365">365</a> <em class="jxr_javadoccomment">     * @since                      1.18</em>
+<a class="jxr_linenumber" name="L366" href="#L366">366</a> <em class="jxr_javadoccomment">     */</em>
+<a class="jxr_linenumber" name="L367" href="#L367">367</a>     <strong class="jxr_keyword">public</strong> <a name="Header" href="../../../../../nom/tam/fits/Header.html#Header">Header</a> getImageHeader() <strong class="jxr_keyword">throws</strong> <a name="HeaderCardException" href="../../../../../nom/tam/fits/HeaderCardException.html#HeaderCardException">HeaderCardException</a> {
+<a class="jxr_linenumber" name="L368" href="#L368">368</a>         <a name="Header" href="../../../../../nom/tam/fits/Header.html#Header">Header</a> header = <strong class="jxr_keyword">new</strong> <a name="Header" href="../../../../../nom/tam/fits/Header.html#Header">Header</a>();
+<a class="jxr_linenumber" name="L369" href="#L369">369</a> 
+<a class="jxr_linenumber" name="L370" href="#L370">370</a>         Cursor&lt;String, HeaderCard&gt; imageIterator = header.iterator();
+<a class="jxr_linenumber" name="L371" href="#L371">371</a>         Cursor&lt;String, HeaderCard&gt; iterator = getHeader().iterator();
+<a class="jxr_linenumber" name="L372" href="#L372">372</a> 
+<a class="jxr_linenumber" name="L373" href="#L373">373</a>         <strong class="jxr_keyword">while</strong> (iterator.hasNext()) {
+<a class="jxr_linenumber" name="L374" href="#L374">374</a>             <a name="HeaderCard" href="../../../../../nom/tam/fits/HeaderCard.html#HeaderCard">HeaderCard</a> card = iterator.next();
+<a class="jxr_linenumber" name="L375" href="#L375">375</a> 
+<a class="jxr_linenumber" name="L376" href="#L376">376</a>             <strong class="jxr_keyword">if</strong> (!TABLE_COLUMN_KEYS.contains(GenericKey.lookup(card.getKey()))) {
+<a class="jxr_linenumber" name="L377" href="#L377">377</a>                 CompressedCard.backup(card, imageIterator);
+<a class="jxr_linenumber" name="L378" href="#L378">378</a>             }
+<a class="jxr_linenumber" name="L379" href="#L379">379</a>         }
+<a class="jxr_linenumber" name="L380" href="#L380">380</a>         <strong class="jxr_keyword">return</strong> header;
+<a class="jxr_linenumber" name="L381" href="#L381">381</a>     }
+<a class="jxr_linenumber" name="L382" href="#L382">382</a> 
+<a class="jxr_linenumber" name="L383" href="#L383">383</a>     <em class="jxr_javadoccomment">/**</em>
+<a class="jxr_linenumber" name="L384" href="#L384">384</a> <em class="jxr_javadoccomment">     * Performs the actual compression with the selected algorithm(s) and options. When creating a compressed image HDU,</em>
+<a class="jxr_linenumber" name="L385" href="#L385">385</a> <em class="jxr_javadoccomment">     * e.g using the {@link #fromImageHDU(ImageHDU, int...)} method, the HDU is merely prepared but without actually</em>
+<a class="jxr_linenumber" name="L386" href="#L386">386</a> <em class="jxr_javadoccomment">     * performing the compression to allow the user to configure the algorithm(S) to be used as well as any specific</em>
+<a class="jxr_linenumber" name="L387" href="#L387">387</a> <em class="jxr_javadoccomment">     * compression (or quantization) options. See details in the class description.</em>
+<a class="jxr_linenumber" name="L388" href="#L388">388</a> <em class="jxr_javadoccomment">     * </em>
+<a class="jxr_linenumber" name="L389" href="#L389">389</a> <em class="jxr_javadoccomment">     * @throws FitsException if the compression could not be performed</em>
+<a class="jxr_linenumber" name="L390" href="#L390">390</a> <em class="jxr_javadoccomment">     * </em>
+<a class="jxr_linenumber" name="L391" href="#L391">391</a> <em class="jxr_javadoccomment">     * @see                  #fromImageHDU(ImageHDU, int...)</em>
+<a class="jxr_linenumber" name="L392" href="#L392">392</a> <em class="jxr_javadoccomment">     * @see                  #setCompressAlgorithm(String)</em>
+<a class="jxr_linenumber" name="L393" href="#L393">393</a> <em class="jxr_javadoccomment">     * @see                  #setQuantAlgorithm(String)</em>
+<a class="jxr_linenumber" name="L394" href="#L394">394</a> <em class="jxr_javadoccomment">     * @see                  #getCompressOption(Class)</em>
+<a class="jxr_linenumber" name="L395" href="#L395">395</a> <em class="jxr_javadoccomment">     */</em>
+<a class="jxr_linenumber" name="L396" href="#L396">396</a>     <strong class="jxr_keyword">public</strong> <strong class="jxr_keyword">void</strong> compress() <strong class="jxr_keyword">throws</strong> <a name="FitsException" href="../../../../../nom/tam/fits/FitsException.html#FitsException">FitsException</a> {
+<a class="jxr_linenumber" name="L397" href="#L397">397</a>         getData().compress(<strong class="jxr_keyword">this</strong>);
+<a class="jxr_linenumber" name="L398" href="#L398">398</a>     }
+<a class="jxr_linenumber" name="L399" href="#L399">399</a> 
+<a class="jxr_linenumber" name="L400" href="#L400">400</a>     <em class="jxr_javadoccomment">/**</em>
+<a class="jxr_linenumber" name="L401" href="#L401">401</a> <em class="jxr_javadoccomment">     * Specify an area within the image that will not undergo a lossy compression. This will only have affect it the</em>
+<a class="jxr_linenumber" name="L402" href="#L402">402</a> <em class="jxr_javadoccomment">     * selected compression (including the options) is a lossy compression. All tiles touched by this region will be</em>
+<a class="jxr_linenumber" name="L403" href="#L403">403</a> <em class="jxr_javadoccomment">     * handled so that there is no loss of any data, the reconstruction will be exact.</em>
+<a class="jxr_linenumber" name="L404" href="#L404">404</a> <em class="jxr_javadoccomment">     *</em>
+<a class="jxr_linenumber" name="L405" href="#L405">405</a> <em class="jxr_javadoccomment">     * @param  x      the x position in the image</em>
+<a class="jxr_linenumber" name="L406" href="#L406">406</a> <em class="jxr_javadoccomment">     * @param  y      the y position in the image</em>
+<a class="jxr_linenumber" name="L407" href="#L407">407</a> <em class="jxr_javadoccomment">     * @param  width  the width of the area</em>
+<a class="jxr_linenumber" name="L408" href="#L408">408</a> <em class="jxr_javadoccomment">     * @param  heigth the height of the area</em>
+<a class="jxr_linenumber" name="L409" href="#L409">409</a> <em class="jxr_javadoccomment">     *</em>
+<a class="jxr_linenumber" name="L410" href="#L410">410</a> <em class="jxr_javadoccomment">     * @return        this</em>
+<a class="jxr_linenumber" name="L411" href="#L411">411</a> <em class="jxr_javadoccomment">     */</em>
+<a class="jxr_linenumber" name="L412" href="#L412">412</a>     <strong class="jxr_keyword">public</strong> <a name="CompressedImageHDU" href="../../../../../nom/tam/image/compression/hdu/CompressedImageHDU.html#CompressedImageHDU">CompressedImageHDU</a> forceNoLoss(<strong class="jxr_keyword">int</strong> x, <strong class="jxr_keyword">int</strong> y, <strong class="jxr_keyword">int</strong> width, <strong class="jxr_keyword">int</strong> heigth) {
+<a class="jxr_linenumber" name="L413" href="#L413">413</a>         getData().forceNoLoss(x, y, width, heigth);
+<a class="jxr_linenumber" name="L414" href="#L414">414</a>         <strong class="jxr_keyword">return</strong> <strong class="jxr_keyword">this</strong>;
+<a class="jxr_linenumber" name="L415" href="#L415">415</a>     }
+<a class="jxr_linenumber" name="L416" href="#L416">416</a> 
+<a class="jxr_linenumber" name="L417" href="#L417">417</a>     <em class="jxr_javadoccomment">/**</em>
+<a class="jxr_linenumber" name="L418" href="#L418">418</a> <em class="jxr_javadoccomment">     * Returns the compression (or quantization) options for a selected compression option class. It is presumed that</em>
+<a class="jxr_linenumber" name="L419" href="#L419">419</a> <em class="jxr_javadoccomment">     * the requested options are appropriate for the compression and/or quantization algorithm that was selected. E.g.,</em>
+<a class="jxr_linenumber" name="L420" href="#L420">420</a> <em class="jxr_javadoccomment">     * if you called &lt;code&gt;setCompressionAlgorithm({@link Compression#ZCMPTYPE_RICE_1})&lt;/code&gt;, then you can retrieve</em>
+<a class="jxr_linenumber" name="L421" href="#L421">421</a> <em class="jxr_javadoccomment">     * options for it with this method as</em>
+<a class="jxr_linenumber" name="L422" href="#L422">422</a> <em class="jxr_javadoccomment">     * &lt;code&gt;getCompressOption({@link nom.tam.fits.compression.algorithm.rice.RiceCompressOption}.class)&lt;/code&gt;.</em>
+<a class="jxr_linenumber" name="L423" href="#L423">423</a> <em class="jxr_javadoccomment">     * </em>
+<a class="jxr_linenumber" name="L424" href="#L424">424</a> <em class="jxr_javadoccomment">     * @param  &lt;T&gt;   The generic type of the compression class</em>
+<a class="jxr_linenumber" name="L425" href="#L425">425</a> <em class="jxr_javadoccomment">     * @param  clazz the compression class</em>
+<a class="jxr_linenumber" name="L426" href="#L426">426</a> <em class="jxr_javadoccomment">     * </em>
+<a class="jxr_linenumber" name="L427" href="#L427">427</a> <em class="jxr_javadoccomment">     * @return       The current set of options for the requested type, or &lt;code&gt;null&lt;/code&gt; if there are no options or</em>
+<a class="jxr_linenumber" name="L428" href="#L428">428</a> <em class="jxr_javadoccomment">     *                   if the requested type does not match the algorithm(s) selected.</em>
+<a class="jxr_linenumber" name="L429" href="#L429">429</a> <em class="jxr_javadoccomment">     * </em>
+<a class="jxr_linenumber" name="L430" href="#L430">430</a> <em class="jxr_javadoccomment">     * @see          nom.tam.fits.compression.algorithm.hcompress.HCompressorOption</em>
+<a class="jxr_linenumber" name="L431" href="#L431">431</a> <em class="jxr_javadoccomment">     * @see          nom.tam.fits.compression.algorithm.rice.RiceCompressOption</em>
+<a class="jxr_linenumber" name="L432" href="#L432">432</a> <em class="jxr_javadoccomment">     * @see          nom.tam.fits.compression.algorithm.quant.QuantizeOption</em>
+<a class="jxr_linenumber" name="L433" href="#L433">433</a> <em class="jxr_javadoccomment">     */</em>
+<a class="jxr_linenumber" name="L434" href="#L434">434</a>     <strong class="jxr_keyword">public</strong> &lt;T <strong class="jxr_keyword">extends</strong> ICompressOption&gt; T getCompressOption(Class&lt;T&gt; clazz) {
+<a class="jxr_linenumber" name="L435" href="#L435">435</a>         <strong class="jxr_keyword">return</strong> getData().getCompressOption(clazz);
+<a class="jxr_linenumber" name="L436" href="#L436">436</a>     }
+<a class="jxr_linenumber" name="L437" href="#L437">437</a> 
+<a class="jxr_linenumber" name="L438" href="#L438">438</a>     @Override
+<a class="jxr_linenumber" name="L439" href="#L439">439</a>     <strong class="jxr_keyword">public</strong> <a name="CompressedImageData" href="../../../../../nom/tam/image/compression/hdu/CompressedImageData.html#CompressedImageData">CompressedImageData</a> getData() {
+<a class="jxr_linenumber" name="L440" href="#L440">440</a>         <strong class="jxr_keyword">return</strong> (<a name="CompressedImageData" href="../../../../../nom/tam/image/compression/hdu/CompressedImageData.html#CompressedImageData">CompressedImageData</a>) <strong class="jxr_keyword">super</strong>.getData();
+<a class="jxr_linenumber" name="L441" href="#L441">441</a>     }
+<a class="jxr_linenumber" name="L442" href="#L442">442</a> 
+<a class="jxr_linenumber" name="L443" href="#L443">443</a>     <em class="jxr_javadoccomment">/**</em>
+<a class="jxr_linenumber" name="L444" href="#L444">444</a> <em class="jxr_javadoccomment">     * Returns the uncompressed image in serialized form, as it would appear in a stream.</em>
 <a class="jxr_linenumber" name="L445" href="#L445">445</a> <em class="jxr_javadoccomment">     * </em>
-<a class="jxr_linenumber" name="L446" href="#L446">446</a> <em class="jxr_javadoccomment">     * @see                      #asImageHDU()</em>
-<a class="jxr_linenumber" name="L447" href="#L447">447</a> <em class="jxr_javadoccomment">     */</em>
-<a class="jxr_linenumber" name="L448" href="#L448">448</a>     @Deprecated
-<a class="jxr_linenumber" name="L449" href="#L449">449</a>     <strong class="jxr_keyword">public</strong> Buffer getUncompressedData() <strong class="jxr_keyword">throws</strong> <a name="FitsException" href="../../../../../nom/tam/fits/FitsException.html#FitsException">FitsException</a> {
-<a class="jxr_linenumber" name="L450" href="#L450">450</a>         <strong class="jxr_keyword">return</strong> getData().getUncompressedData(getHeader());
-<a class="jxr_linenumber" name="L451" href="#L451">451</a>     }
-<a class="jxr_linenumber" name="L452" href="#L452">452</a> 
-<a class="jxr_linenumber" name="L453" href="#L453">453</a>     @Override
-<a class="jxr_linenumber" name="L454" href="#L454">454</a>     @Deprecated
-<a class="jxr_linenumber" name="L455" href="#L455">455</a>     <strong class="jxr_keyword">public</strong> <strong class="jxr_keyword">boolean</strong> isHeader() {
-<a class="jxr_linenumber" name="L456" href="#L456">456</a>         <strong class="jxr_keyword">return</strong> <strong class="jxr_keyword">super</strong>.isHeader() &amp;&amp; isHeader(myHeader);
-<a class="jxr_linenumber" name="L457" href="#L457">457</a>     }
-<a class="jxr_linenumber" name="L458" href="#L458">458</a> 
-<a class="jxr_linenumber" name="L459" href="#L459">459</a>     <em class="jxr_javadoccomment">/**</em>
-<a class="jxr_linenumber" name="L460" href="#L460">460</a> <em class="jxr_javadoccomment">     * Sets the compression algorithm used for preserving the blank values in the original image even if the compression</em>
-<a class="jxr_linenumber" name="L461" href="#L461">461</a> <em class="jxr_javadoccomment">     * is lossy. When compression an integer image, a BLANK header should be defined in its header. You should typically</em>
-<a class="jxr_linenumber" name="L462" href="#L462">462</a> <em class="jxr_javadoccomment">     * use one of the enum values defined in {@link Compression}.</em>
-<a class="jxr_linenumber" name="L463" href="#L463">463</a> <em class="jxr_javadoccomment">     *</em>
-<a class="jxr_linenumber" name="L464" href="#L464">464</a> <em class="jxr_javadoccomment">     * @param  compressionAlgorithm compression algorithm to use for the null pixel mask, see {@link Compression} for</em>
-<a class="jxr_linenumber" name="L465" href="#L465">465</a> <em class="jxr_javadoccomment">     *                                  recognized names.</em>
-<a class="jxr_linenumber" name="L466" href="#L466">466</a> <em class="jxr_javadoccomment">     *</em>
-<a class="jxr_linenumber" name="L467" href="#L467">467</a> <em class="jxr_javadoccomment">     * @return                      itself</em>
-<a class="jxr_linenumber" name="L468" href="#L468">468</a> <em class="jxr_javadoccomment">     * </em>
-<a class="jxr_linenumber" name="L469" href="#L469">469</a> <em class="jxr_javadoccomment">     * @see                         Compression</em>
-<a class="jxr_linenumber" name="L470" href="#L470">470</a> <em class="jxr_javadoccomment">     * @see                         #setCompressAlgorithm(String)</em>
-<a class="jxr_linenumber" name="L471" href="#L471">471</a> <em class="jxr_javadoccomment">     * @see                         #setQuantAlgorithm(String)</em>
-<a class="jxr_linenumber" name="L472" href="#L472">472</a> <em class="jxr_javadoccomment">     */</em>
-<a class="jxr_linenumber" name="L473" href="#L473">473</a>     <strong class="jxr_keyword">public</strong> <a name="CompressedImageHDU" href="../../../../../nom/tam/image/compression/hdu/CompressedImageHDU.html#CompressedImageHDU">CompressedImageHDU</a> preserveNulls(String compressionAlgorithm) {
-<a class="jxr_linenumber" name="L474" href="#L474">474</a>         <strong class="jxr_keyword">long</strong> nullValue = getHeader().getLongValue(BLANK, Long.MIN_VALUE);
-<a class="jxr_linenumber" name="L475" href="#L475">475</a>         getData().preserveNulls(nullValue, compressionAlgorithm);
-<a class="jxr_linenumber" name="L476" href="#L476">476</a>         <strong class="jxr_keyword">return</strong> <strong class="jxr_keyword">this</strong>;
-<a class="jxr_linenumber" name="L477" href="#L477">477</a>     }
-<a class="jxr_linenumber" name="L478" href="#L478">478</a> 
-<a class="jxr_linenumber" name="L479" href="#L479">479</a>     <em class="jxr_javadoccomment">/**</em>
-<a class="jxr_linenumber" name="L480" href="#L480">480</a> <em class="jxr_javadoccomment">     * Sets the compression algorithm to use, by its standard FITS name. You should typically use one of the enum values</em>
-<a class="jxr_linenumber" name="L481" href="#L481">481</a> <em class="jxr_javadoccomment">     * defined in {@link Compression}.</em>
-<a class="jxr_linenumber" name="L482" href="#L482">482</a> <em class="jxr_javadoccomment">     * </em>
-<a class="jxr_linenumber" name="L483" href="#L483">483</a> <em class="jxr_javadoccomment">     * @param  compressAlgorithm compression algorithm to use, see {@link Compression} for recognized names.</em>
-<a class="jxr_linenumber" name="L484" href="#L484">484</a> <em class="jxr_javadoccomment">     * </em>
-<a class="jxr_linenumber" name="L485" href="#L485">485</a> <em class="jxr_javadoccomment">     * @return                   itself</em>
-<a class="jxr_linenumber" name="L486" href="#L486">486</a> <em class="jxr_javadoccomment">     * </em>
-<a class="jxr_linenumber" name="L487" href="#L487">487</a> <em class="jxr_javadoccomment">     * @throws FitsException     if no algorithm is available by the specified name</em>
-<a class="jxr_linenumber" name="L488" href="#L488">488</a> <em class="jxr_javadoccomment">     * </em>
-<a class="jxr_linenumber" name="L489" href="#L489">489</a> <em class="jxr_javadoccomment">     * @see                      Compression</em>
-<a class="jxr_linenumber" name="L490" href="#L490">490</a> <em class="jxr_javadoccomment">     * @see                      #setQuantAlgorithm(String)</em>
-<a class="jxr_linenumber" name="L491" href="#L491">491</a> <em class="jxr_javadoccomment">     * @see                      #preserveNulls(String)</em>
-<a class="jxr_linenumber" name="L492" href="#L492">492</a> <em class="jxr_javadoccomment">     */</em>
-<a class="jxr_linenumber" name="L493" href="#L493">493</a>     <strong class="jxr_keyword">public</strong> <a name="CompressedImageHDU" href="../../../../../nom/tam/image/compression/hdu/CompressedImageHDU.html#CompressedImageHDU">CompressedImageHDU</a> setCompressAlgorithm(String compressAlgorithm) <strong class="jxr_keyword">throws</strong> <a name="FitsException" href="../../../../../nom/tam/fits/FitsException.html#FitsException">FitsException</a> {
-<a class="jxr_linenumber" name="L494" href="#L494">494</a>         <a name="HeaderCard" href="../../../../../nom/tam/fits/HeaderCard.html#HeaderCard">HeaderCard</a> compressAlgorithmCard = HeaderCard.create(Compression.ZCMPTYPE, compressAlgorithm);
-<a class="jxr_linenumber" name="L495" href="#L495">495</a>         getData().setCompressAlgorithm(compressAlgorithmCard);
-<a class="jxr_linenumber" name="L496" href="#L496">496</a>         <strong class="jxr_keyword">return</strong> <strong class="jxr_keyword">this</strong>;
-<a class="jxr_linenumber" name="L497" href="#L497">497</a>     }
-<a class="jxr_linenumber" name="L498" href="#L498">498</a> 
-<a class="jxr_linenumber" name="L499" href="#L499">499</a>     <em class="jxr_javadoccomment">/**</em>
-<a class="jxr_linenumber" name="L500" href="#L500">500</a> <em class="jxr_javadoccomment">     * Sets the quantization algorithm to use, by its standard FITS name. You should typically use one of the enum</em>
-<a class="jxr_linenumber" name="L501" href="#L501">501</a> <em class="jxr_javadoccomment">     * values defined in {@link Compression}.</em>
-<a class="jxr_linenumber" name="L502" href="#L502">502</a> <em class="jxr_javadoccomment">     * </em>
-<a class="jxr_linenumber" name="L503" href="#L503">503</a> <em class="jxr_javadoccomment">     * @param  quantAlgorithm quantization algorithm to use, see {@link Compression} for recognized names.</em>
-<a class="jxr_linenumber" name="L504" href="#L504">504</a> <em class="jxr_javadoccomment">     * </em>
-<a class="jxr_linenumber" name="L505" href="#L505">505</a> <em class="jxr_javadoccomment">     * @return                itself</em>
-<a class="jxr_linenumber" name="L506" href="#L506">506</a> <em class="jxr_javadoccomment">     * </em>
-<a class="jxr_linenumber" name="L507" href="#L507">507</a> <em class="jxr_javadoccomment">     * @throws FitsException  if no algorithm is available by the specified name</em>
-<a class="jxr_linenumber" name="L508" href="#L508">508</a> <em class="jxr_javadoccomment">     * </em>
-<a class="jxr_linenumber" name="L509" href="#L509">509</a> <em class="jxr_javadoccomment">     * @see                   Compression</em>
-<a class="jxr_linenumber" name="L510" href="#L510">510</a> <em class="jxr_javadoccomment">     * @see                   #setCompressAlgorithm(String)</em>
-<a class="jxr_linenumber" name="L511" href="#L511">511</a> <em class="jxr_javadoccomment">     * @see                   #preserveNulls(String)</em>
-<a class="jxr_linenumber" name="L512" href="#L512">512</a> <em class="jxr_javadoccomment">     */</em>
-<a class="jxr_linenumber" name="L513" href="#L513">513</a>     <strong class="jxr_keyword">public</strong> <a name="CompressedImageHDU" href="../../../../../nom/tam/image/compression/hdu/CompressedImageHDU.html#CompressedImageHDU">CompressedImageHDU</a> setQuantAlgorithm(String quantAlgorithm) <strong class="jxr_keyword">throws</strong> <a name="FitsException" href="../../../../../nom/tam/fits/FitsException.html#FitsException">FitsException</a> {
-<a class="jxr_linenumber" name="L514" href="#L514">514</a>         <strong class="jxr_keyword">if</strong> (quantAlgorithm != <strong class="jxr_keyword">null</strong> &amp;&amp; !quantAlgorithm.isEmpty()) {
-<a class="jxr_linenumber" name="L515" href="#L515">515</a>             <a name="HeaderCard" href="../../../../../nom/tam/fits/HeaderCard.html#HeaderCard">HeaderCard</a> quantAlgorithmCard = HeaderCard.create(Compression.ZQUANTIZ, quantAlgorithm);
-<a class="jxr_linenumber" name="L516" href="#L516">516</a>             getData().setQuantAlgorithm(quantAlgorithmCard);
-<a class="jxr_linenumber" name="L517" href="#L517">517</a>         } <strong class="jxr_keyword">else</strong> {
-<a class="jxr_linenumber" name="L518" href="#L518">518</a>             getData().setQuantAlgorithm(<strong class="jxr_keyword">null</strong>);
-<a class="jxr_linenumber" name="L519" href="#L519">519</a>         }
-<a class="jxr_linenumber" name="L520" href="#L520">520</a>         <strong class="jxr_keyword">return</strong> <strong class="jxr_keyword">this</strong>;
-<a class="jxr_linenumber" name="L521" href="#L521">521</a>     }
-<a class="jxr_linenumber" name="L522" href="#L522">522</a> }
+<a class="jxr_linenumber" name="L446" href="#L446">446</a> <em class="jxr_javadoccomment">     * @deprecated               (&lt;i&gt;for internal use&lt;/i&gt;) There is no reason why this should be exposed to users. Use</em>
+<a class="jxr_linenumber" name="L447" href="#L447">447</a> <em class="jxr_javadoccomment">     *                               {@link #asImageHDU()} instead. Future release may restrict the visibility to</em>
+<a class="jxr_linenumber" name="L448" href="#L448">448</a> <em class="jxr_javadoccomment">     *                               private.</em>
+<a class="jxr_linenumber" name="L449" href="#L449">449</a> <em class="jxr_javadoccomment">     * </em>
+<a class="jxr_linenumber" name="L450" href="#L450">450</a> <em class="jxr_javadoccomment">     * @return                   the buffer containing the serialized form of the uncompressed image.</em>
+<a class="jxr_linenumber" name="L451" href="#L451">451</a> <em class="jxr_javadoccomment">     * </em>
+<a class="jxr_linenumber" name="L452" href="#L452">452</a> <em class="jxr_javadoccomment">     * @throws     FitsException if the decompression could not be performed.</em>
+<a class="jxr_linenumber" name="L453" href="#L453">453</a> <em class="jxr_javadoccomment">     * </em>
+<a class="jxr_linenumber" name="L454" href="#L454">454</a> <em class="jxr_javadoccomment">     * @see                      #asImageHDU()</em>
+<a class="jxr_linenumber" name="L455" href="#L455">455</a> <em class="jxr_javadoccomment">     */</em>
+<a class="jxr_linenumber" name="L456" href="#L456">456</a>     @Deprecated
+<a class="jxr_linenumber" name="L457" href="#L457">457</a>     <strong class="jxr_keyword">public</strong> Buffer getUncompressedData() <strong class="jxr_keyword">throws</strong> <a name="FitsException" href="../../../../../nom/tam/fits/FitsException.html#FitsException">FitsException</a> {
+<a class="jxr_linenumber" name="L458" href="#L458">458</a>         <strong class="jxr_keyword">return</strong> getData().getUncompressedData(getHeader());
+<a class="jxr_linenumber" name="L459" href="#L459">459</a>     }
+<a class="jxr_linenumber" name="L460" href="#L460">460</a> 
+<a class="jxr_linenumber" name="L461" href="#L461">461</a>     @Override
+<a class="jxr_linenumber" name="L462" href="#L462">462</a>     @Deprecated
+<a class="jxr_linenumber" name="L463" href="#L463">463</a>     <strong class="jxr_keyword">public</strong> <strong class="jxr_keyword">boolean</strong> isHeader() {
+<a class="jxr_linenumber" name="L464" href="#L464">464</a>         <strong class="jxr_keyword">return</strong> <strong class="jxr_keyword">super</strong>.isHeader() &amp;&amp; isHeader(myHeader);
+<a class="jxr_linenumber" name="L465" href="#L465">465</a>     }
+<a class="jxr_linenumber" name="L466" href="#L466">466</a> 
+<a class="jxr_linenumber" name="L467" href="#L467">467</a>     <em class="jxr_javadoccomment">/**</em>
+<a class="jxr_linenumber" name="L468" href="#L468">468</a> <em class="jxr_javadoccomment">     * Sets the compression algorithm used for preserving the blank values in the original image even if the compression</em>
+<a class="jxr_linenumber" name="L469" href="#L469">469</a> <em class="jxr_javadoccomment">     * is lossy. When compression an integer image, a BLANK header should be defined in its header. You should typically</em>
+<a class="jxr_linenumber" name="L470" href="#L470">470</a> <em class="jxr_javadoccomment">     * use one of the enum values defined in {@link Compression}.</em>
+<a class="jxr_linenumber" name="L471" href="#L471">471</a> <em class="jxr_javadoccomment">     *</em>
+<a class="jxr_linenumber" name="L472" href="#L472">472</a> <em class="jxr_javadoccomment">     * @param  compressionAlgorithm compression algorithm to use for the null pixel mask, see {@link Compression} for</em>
+<a class="jxr_linenumber" name="L473" href="#L473">473</a> <em class="jxr_javadoccomment">     *                                  recognized names.</em>
+<a class="jxr_linenumber" name="L474" href="#L474">474</a> <em class="jxr_javadoccomment">     *</em>
+<a class="jxr_linenumber" name="L475" href="#L475">475</a> <em class="jxr_javadoccomment">     * @return                      itself</em>
+<a class="jxr_linenumber" name="L476" href="#L476">476</a> <em class="jxr_javadoccomment">     * </em>
+<a class="jxr_linenumber" name="L477" href="#L477">477</a> <em class="jxr_javadoccomment">     * @see                         Compression</em>
+<a class="jxr_linenumber" name="L478" href="#L478">478</a> <em class="jxr_javadoccomment">     * @see                         #setCompressAlgorithm(String)</em>
+<a class="jxr_linenumber" name="L479" href="#L479">479</a> <em class="jxr_javadoccomment">     * @see                         #setQuantAlgorithm(String)</em>
+<a class="jxr_linenumber" name="L480" href="#L480">480</a> <em class="jxr_javadoccomment">     */</em>
+<a class="jxr_linenumber" name="L481" href="#L481">481</a>     <strong class="jxr_keyword">public</strong> <a name="CompressedImageHDU" href="../../../../../nom/tam/image/compression/hdu/CompressedImageHDU.html#CompressedImageHDU">CompressedImageHDU</a> preserveNulls(String compressionAlgorithm) {
+<a class="jxr_linenumber" name="L482" href="#L482">482</a>         <strong class="jxr_keyword">long</strong> nullValue = getHeader().getLongValue(BLANK, Long.MIN_VALUE);
+<a class="jxr_linenumber" name="L483" href="#L483">483</a>         getData().preserveNulls(nullValue, compressionAlgorithm);
+<a class="jxr_linenumber" name="L484" href="#L484">484</a>         <strong class="jxr_keyword">return</strong> <strong class="jxr_keyword">this</strong>;
+<a class="jxr_linenumber" name="L485" href="#L485">485</a>     }
+<a class="jxr_linenumber" name="L486" href="#L486">486</a> 
+<a class="jxr_linenumber" name="L487" href="#L487">487</a>     <em class="jxr_javadoccomment">/**</em>
+<a class="jxr_linenumber" name="L488" href="#L488">488</a> <em class="jxr_javadoccomment">     * Sets the compression algorithm to use, by its standard FITS name. You should typically use one of the enum values</em>
+<a class="jxr_linenumber" name="L489" href="#L489">489</a> <em class="jxr_javadoccomment">     * defined in {@link Compression}.</em>
+<a class="jxr_linenumber" name="L490" href="#L490">490</a> <em class="jxr_javadoccomment">     * </em>
+<a class="jxr_linenumber" name="L491" href="#L491">491</a> <em class="jxr_javadoccomment">     * @param  compressAlgorithm compression algorithm to use, see {@link Compression} for recognized names.</em>
+<a class="jxr_linenumber" name="L492" href="#L492">492</a> <em class="jxr_javadoccomment">     * </em>
+<a class="jxr_linenumber" name="L493" href="#L493">493</a> <em class="jxr_javadoccomment">     * @return                   itself</em>
+<a class="jxr_linenumber" name="L494" href="#L494">494</a> <em class="jxr_javadoccomment">     * </em>
+<a class="jxr_linenumber" name="L495" href="#L495">495</a> <em class="jxr_javadoccomment">     * @throws FitsException     if no algorithm is available by the specified name</em>
+<a class="jxr_linenumber" name="L496" href="#L496">496</a> <em class="jxr_javadoccomment">     * </em>
+<a class="jxr_linenumber" name="L497" href="#L497">497</a> <em class="jxr_javadoccomment">     * @see                      Compression</em>
+<a class="jxr_linenumber" name="L498" href="#L498">498</a> <em class="jxr_javadoccomment">     * @see                      #setQuantAlgorithm(String)</em>
+<a class="jxr_linenumber" name="L499" href="#L499">499</a> <em class="jxr_javadoccomment">     * @see                      #preserveNulls(String)</em>
+<a class="jxr_linenumber" name="L500" href="#L500">500</a> <em class="jxr_javadoccomment">     */</em>
+<a class="jxr_linenumber" name="L501" href="#L501">501</a>     <strong class="jxr_keyword">public</strong> <a name="CompressedImageHDU" href="../../../../../nom/tam/image/compression/hdu/CompressedImageHDU.html#CompressedImageHDU">CompressedImageHDU</a> setCompressAlgorithm(String compressAlgorithm) <strong class="jxr_keyword">throws</strong> <a name="FitsException" href="../../../../../nom/tam/fits/FitsException.html#FitsException">FitsException</a> {
+<a class="jxr_linenumber" name="L502" href="#L502">502</a>         <a name="HeaderCard" href="../../../../../nom/tam/fits/HeaderCard.html#HeaderCard">HeaderCard</a> compressAlgorithmCard = HeaderCard.create(Compression.ZCMPTYPE, compressAlgorithm);
+<a class="jxr_linenumber" name="L503" href="#L503">503</a>         getData().setCompressAlgorithm(compressAlgorithmCard);
+<a class="jxr_linenumber" name="L504" href="#L504">504</a>         <strong class="jxr_keyword">return</strong> <strong class="jxr_keyword">this</strong>;
+<a class="jxr_linenumber" name="L505" href="#L505">505</a>     }
+<a class="jxr_linenumber" name="L506" href="#L506">506</a> 
+<a class="jxr_linenumber" name="L507" href="#L507">507</a>     <em class="jxr_javadoccomment">/**</em>
+<a class="jxr_linenumber" name="L508" href="#L508">508</a> <em class="jxr_javadoccomment">     * Sets the quantization algorithm to use, by its standard FITS name. You should typically use one of the enum</em>
+<a class="jxr_linenumber" name="L509" href="#L509">509</a> <em class="jxr_javadoccomment">     * values defined in {@link Compression}.</em>
+<a class="jxr_linenumber" name="L510" href="#L510">510</a> <em class="jxr_javadoccomment">     * </em>
+<a class="jxr_linenumber" name="L511" href="#L511">511</a> <em class="jxr_javadoccomment">     * @param  quantAlgorithm quantization algorithm to use, see {@link Compression} for recognized names.</em>
+<a class="jxr_linenumber" name="L512" href="#L512">512</a> <em class="jxr_javadoccomment">     * </em>
+<a class="jxr_linenumber" name="L513" href="#L513">513</a> <em class="jxr_javadoccomment">     * @return                itself</em>
+<a class="jxr_linenumber" name="L514" href="#L514">514</a> <em class="jxr_javadoccomment">     * </em>
+<a class="jxr_linenumber" name="L515" href="#L515">515</a> <em class="jxr_javadoccomment">     * @throws FitsException  if no algorithm is available by the specified name</em>
+<a class="jxr_linenumber" name="L516" href="#L516">516</a> <em class="jxr_javadoccomment">     * </em>
+<a class="jxr_linenumber" name="L517" href="#L517">517</a> <em class="jxr_javadoccomment">     * @see                   Compression</em>
+<a class="jxr_linenumber" name="L518" href="#L518">518</a> <em class="jxr_javadoccomment">     * @see                   #setCompressAlgorithm(String)</em>
+<a class="jxr_linenumber" name="L519" href="#L519">519</a> <em class="jxr_javadoccomment">     * @see                   #preserveNulls(String)</em>
+<a class="jxr_linenumber" name="L520" href="#L520">520</a> <em class="jxr_javadoccomment">     */</em>
+<a class="jxr_linenumber" name="L521" href="#L521">521</a>     <strong class="jxr_keyword">public</strong> <a name="CompressedImageHDU" href="../../../../../nom/tam/image/compression/hdu/CompressedImageHDU.html#CompressedImageHDU">CompressedImageHDU</a> setQuantAlgorithm(String quantAlgorithm) <strong class="jxr_keyword">throws</strong> <a name="FitsException" href="../../../../../nom/tam/fits/FitsException.html#FitsException">FitsException</a> {
+<a class="jxr_linenumber" name="L522" href="#L522">522</a>         <strong class="jxr_keyword">if</strong> (quantAlgorithm != <strong class="jxr_keyword">null</strong> &amp;&amp; !quantAlgorithm.isEmpty()) {
+<a class="jxr_linenumber" name="L523" href="#L523">523</a>             <a name="HeaderCard" href="../../../../../nom/tam/fits/HeaderCard.html#HeaderCard">HeaderCard</a> quantAlgorithmCard = HeaderCard.create(Compression.ZQUANTIZ, quantAlgorithm);
+<a class="jxr_linenumber" name="L524" href="#L524">524</a>             getData().setQuantAlgorithm(quantAlgorithmCard);
+<a class="jxr_linenumber" name="L525" href="#L525">525</a>         } <strong class="jxr_keyword">else</strong> {
+<a class="jxr_linenumber" name="L526" href="#L526">526</a>             getData().setQuantAlgorithm(<strong class="jxr_keyword">null</strong>);
+<a class="jxr_linenumber" name="L527" href="#L527">527</a>         }
+<a class="jxr_linenumber" name="L528" href="#L528">528</a>         <strong class="jxr_keyword">return</strong> <strong class="jxr_keyword">this</strong>;
+<a class="jxr_linenumber" name="L529" href="#L529">529</a>     }
+<a class="jxr_linenumber" name="L530" href="#L530">530</a> }
 </pre>
 <hr/>
 <div id="footer">Copyright &#169; 1996&#x2013;2023 nom-tam-fits. All rights reserved.</div>

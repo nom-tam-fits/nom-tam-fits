@@ -278,22 +278,24 @@
 <a class="jxr_linenumber" name="L270" href="#L270">270</a>     }
 <a class="jxr_linenumber" name="L271" href="#L271">271</a> 
 <a class="jxr_linenumber" name="L272" href="#L272">272</a>     <em class="jxr_javadoccomment">/**</em>
-<a class="jxr_linenumber" name="L273" href="#L273">273</a> <em class="jxr_javadoccomment">     * This should only be called by {@link CompressedTableHDU}.</em>
-<a class="jxr_linenumber" name="L274" href="#L274">274</a> <em class="jxr_javadoccomment">     */</em>
-<a class="jxr_linenumber" name="L275" href="#L275">275</a>     @SuppressWarnings(<span class="jxr_string">"javadoc"</span>)
-<a class="jxr_linenumber" name="L276" href="#L276">276</a>     <strong class="jxr_keyword">protected</strong> <strong class="jxr_keyword">void</strong> setColumnCompressionAlgorithms(String[] columnCompressionAlgorithms) {
-<a class="jxr_linenumber" name="L277" href="#L277">277</a>         <strong class="jxr_keyword">this</strong>.columnCompressionAlgorithms = columnCompressionAlgorithms;
-<a class="jxr_linenumber" name="L278" href="#L278">278</a>     }
-<a class="jxr_linenumber" name="L279" href="#L279">279</a> 
-<a class="jxr_linenumber" name="L280" href="#L280">280</a>     <em class="jxr_javadoccomment">/**</em>
-<a class="jxr_linenumber" name="L281" href="#L281">281</a> <em class="jxr_javadoccomment">     * This should only be called by {@link CompressedTableHDU}.</em>
-<a class="jxr_linenumber" name="L282" href="#L282">282</a> <em class="jxr_javadoccomment">     */</em>
-<a class="jxr_linenumber" name="L283" href="#L283">283</a>     @SuppressWarnings(<span class="jxr_string">"javadoc"</span>)
-<a class="jxr_linenumber" name="L284" href="#L284">284</a>     <strong class="jxr_keyword">protected</strong> <a name="CompressedTableData" href="../../../../../nom/tam/image/compression/hdu/CompressedTableData.html#CompressedTableData">CompressedTableData</a> setRowsPerTile(<strong class="jxr_keyword">int</strong> value) {
-<a class="jxr_linenumber" name="L285" href="#L285">285</a>         rowsPerTile = value;
-<a class="jxr_linenumber" name="L286" href="#L286">286</a>         <strong class="jxr_keyword">return</strong> <strong class="jxr_keyword">this</strong>;
-<a class="jxr_linenumber" name="L287" href="#L287">287</a>     }
-<a class="jxr_linenumber" name="L288" href="#L288">288</a> }
+<a class="jxr_linenumber" name="L273" href="#L273">273</a> <em class="jxr_javadoccomment">     * (&lt;i&gt;for internal use&lt;/i&gt;) Visibility may be reduced to the package level. This should only be called by</em>
+<a class="jxr_linenumber" name="L274" href="#L274">274</a> <em class="jxr_javadoccomment">     * {@link CompressedTableHDU}.</em>
+<a class="jxr_linenumber" name="L275" href="#L275">275</a> <em class="jxr_javadoccomment">     */</em>
+<a class="jxr_linenumber" name="L276" href="#L276">276</a>     @SuppressWarnings(<span class="jxr_string">"javadoc"</span>)
+<a class="jxr_linenumber" name="L277" href="#L277">277</a>     <strong class="jxr_keyword">protected</strong> <strong class="jxr_keyword">void</strong> setColumnCompressionAlgorithms(String[] columnCompressionAlgorithms) {
+<a class="jxr_linenumber" name="L278" href="#L278">278</a>         <strong class="jxr_keyword">this</strong>.columnCompressionAlgorithms = columnCompressionAlgorithms;
+<a class="jxr_linenumber" name="L279" href="#L279">279</a>     }
+<a class="jxr_linenumber" name="L280" href="#L280">280</a> 
+<a class="jxr_linenumber" name="L281" href="#L281">281</a>     <em class="jxr_javadoccomment">/**</em>
+<a class="jxr_linenumber" name="L282" href="#L282">282</a> <em class="jxr_javadoccomment">     * (&lt;i&gt;for internal use&lt;/i&gt;) Visibility may be reduced to the package level. This should only be called by</em>
+<a class="jxr_linenumber" name="L283" href="#L283">283</a> <em class="jxr_javadoccomment">     * {@link CompressedTableHDU}.</em>
+<a class="jxr_linenumber" name="L284" href="#L284">284</a> <em class="jxr_javadoccomment">     */</em>
+<a class="jxr_linenumber" name="L285" href="#L285">285</a>     @SuppressWarnings(<span class="jxr_string">"javadoc"</span>)
+<a class="jxr_linenumber" name="L286" href="#L286">286</a>     <strong class="jxr_keyword">protected</strong> <a name="CompressedTableData" href="../../../../../nom/tam/image/compression/hdu/CompressedTableData.html#CompressedTableData">CompressedTableData</a> setRowsPerTile(<strong class="jxr_keyword">int</strong> value) {
+<a class="jxr_linenumber" name="L287" href="#L287">287</a>         rowsPerTile = value;
+<a class="jxr_linenumber" name="L288" href="#L288">288</a>         <strong class="jxr_keyword">return</strong> <strong class="jxr_keyword">this</strong>;
+<a class="jxr_linenumber" name="L289" href="#L289">289</a>     }
+<a class="jxr_linenumber" name="L290" href="#L290">290</a> }
 </pre>
 <hr/>
 <div id="footer">Copyright &#169; 1996&#x2013;2023 nom-tam-fits. All rights reserved.</div>
