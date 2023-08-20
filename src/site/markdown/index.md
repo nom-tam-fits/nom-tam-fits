@@ -1260,14 +1260,12 @@ easily too:
   }
 ```
 
-The above will calculate checksum directly from the (random-accessible) file without reading the potentially large 
-data into memory, and compare HDU checksums and/or data checksums to those stored in the FITS file.
+The above will calculate checksum directly from the file or stream without reading the potentially large 
+data into memory (for random-access inputs), and compare HDU checksums and/or data checksums to those stored in the 
+FITS file.
 
 You can also verify the integrity of HDUs or their data segments individually, via `BasicHDU.verifyIntegrity()` or
 `BasicHDU.verifyDataIntegrity()` calls on specific HDUs.
-
-Note, that because checksum verification requires a second pass over the input byte sequence, it is available only 
-for random accessible inputs. Thus, you cannot (yet) verify checksums from streams or compressed FITS files.
 
 Finally, you might want to update the checksums for a FITS you modify in place:
 
