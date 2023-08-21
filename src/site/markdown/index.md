@@ -1250,7 +1250,7 @@ Then later, as of 1.18.1, you can verify the integrity of FITS files using the s
 easily too:
 
 ```java
-  try(Fits f = new Fits("my-huge-fits-file.fits")) {
+  try (Fits f = new Fits("my-huge-fits-file.fits")) {
       f.verifyIntegrity();
   } catch (FitsIntegrityException e) {
       // Failed integrity test
