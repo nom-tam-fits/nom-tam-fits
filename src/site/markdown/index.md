@@ -1252,10 +1252,10 @@ easily too:
 ```java
   try(Fits f = new Fits("my-huge-fits-file.fits")) {
       f.verifyIntegrity();
-  } catch (FitsException e) {
+  } catch (FitsIntegrityException e) {
       // Failed integrity test
       System.err.println("WARNING! " + e.getMessage());
-  } catch (IOException e( {
+  } catch (IOException e) {
       // some IO error...
   }
 ```
