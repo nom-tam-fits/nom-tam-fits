@@ -6,9 +6,9 @@
 	      Fixed broken default reading of ASCII tables, without explicitly setting FitsFactory.setUseAsciiTables(true).
       </action>
       <action type="add" dev="attipaci" issue="473">
-	      New Fits.verifyIntegrity(), BasicHDU.verifyIntegrity() and .verifyDataIntegrity() methods for verifying 
-	      file / HDU integrity based on the stored checksums and/or data sums. Updated README for proper checksum 
-	      verification. Deprecated the useless checksum access methods of before.
+              New Fits.verifyIntegrity(), BasicHDU.verifyIntegrity() and .verifyDataIntegrity() methods for verifying 
+              file / HDU integrity based on the stored checksums and/or data sums. Updated README for proper checksum 
+              verification. Deprecated the useless checksum access methods of before.
       </action>
       <action type="add" dev="attipaci" issue="476">
               FitsInputStream to calculate checksums for all bytes that are read/skipped, allowing checksum verification
