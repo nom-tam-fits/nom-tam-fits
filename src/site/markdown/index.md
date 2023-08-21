@@ -1260,9 +1260,9 @@ easily too:
   }
 ```
 
-The above will calculate checksum directly from the file or stream without reading the potentially large 
-data into memory (for random-access inputs), and compare HDU checksums and/or data checksums to those stored in the 
-FITS file.
+The above will calculate checksums for each HDU directly from the file without reading the potentially large data into 
+memory, and compare HDU checksums and/or data checksums to those stored in the FITS headers. The verification can also 
+be performed on stream inputs, but unlike for files data will be invariable loaded into memory (at least temporarily).
 
 You can also verify the integrity of HDUs or their data segments individually, via `BasicHDU.verifyIntegrity()` or
 `BasicHDU.verifyDataIntegrity()` calls on specific HDUs.
