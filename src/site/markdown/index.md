@@ -30,11 +30,11 @@ Updated for 1.18.1 and/or later 1.x releases.
 
 You may find the following links useful:
 
- - [API documentation](http://nom-tam-fits.github.io/nom-tam-fits/apidocs/index.html)
+ - [API documentation](https://nom-tam-fits.github.io/nom-tam-fits/apidocs/index.html)
  - [FITS Standard](https://fits.gsfc.nasa.gov/fits_standard.html)
  - [Releases](https://github.com/nom-tam-fits/nom-tam-fits/releases)
- - [History of changes](http://nom-tam-fits.github.io/nom-tam-fits/changes-report.html)
- - [Project site](http://nom-tam-fits.github.io/nom-tam-fits/index.html)
+ - [History of changes](https://nom-tam-fits.github.io/nom-tam-fits/changes-report.html)
+ - [Project site](https://nom-tam-fits.github.io/nom-tam-fits/index.html)
  - [Github repository](https://github.com/nom-tam-fits/nom-tam-fits)
  - [Maven Central repository](https://mvnrepository.com/artifact/gov.nasa.gsfc.heasarc/nom-tam-fits)
 
@@ -65,7 +65,7 @@ by the limited functionality and efficiencies of early versions of Java.
 
 This is an open-source, community maintained, project hosted on github as 
 [nom-tam-fits](https://github.com/nom-tam-fits/nom-tam-fits). Further information and documentation, including API 
-docs, can be found on the [project site](http://nom-tam-fits.github.io/nom-tam-fits/index.html).
+docs, can be found on the [project site](https://nom-tam-fits.github.io/nom-tam-fits/index.html).
 
 
 <a name="Fits-data-types"></a>
@@ -1097,7 +1097,7 @@ used to help organize these as the user wishes.
 FITS defines a set of standard keywords, and recognizes a set of registered conventions. You can find a collection of 
 these under the `nom.tam.fits.header` package:
 
- * `Standard` -- [keywords defined by the FITS standard](http://heasarc.gsfc.nasa.gov/docs/fcg/standard_dict.html). 
+ * `Standard` -- [keywords defined by the FITS standard](https://heasarc.gsfc.nasa.gov/docs/fcg/standard_dict.html). 
    Some of the standard keywords are broken out into separate enumerations by theme, as listed below:
    * `DataDescription` -- FITS standard keywords for describing the data content
    * `InstrumentDescription` -- Standard keywords for describing the instrumentation used for observing
@@ -1112,11 +1112,11 @@ these under the `nom.tam.fits.header` package:
 Additionally, many organisations (or groups of organisations) have defined their own sets of FITS keywords. Some of 
 these can be found under the `nom.tam.fits-header.extra` package, such as:
  
- * `NOAOExt` -- [Keywords used by the National Optical Astronomy Observatory](http://iraf.noao.edu/iraf/web/projects/ccdmosaic/imagedef/fitsdic.html)
+ * `NOAOExt` -- Keywords used by the National Optical Astronomy Observatory (_no longer available since the IRAF project is no longer supported_) 
  * `SBFitsExt` -- [Santa Barbara Instrument Group FITS Extension (SBFITSEXT)](https://diffractionlimited.com/wp-content/uploads/2016/11/sbfitsext_1r0.pdf)
-   * `MaxImDLExt` -- [MaxIm DL Astronomy and Scientific Imaging Solutions](http://www.cyanogen.com/help/maximdl/FITS_File_Header_Definitions.htm)
- * `CXCExt` -- [keywords defined for the Chandra X-ray Observatory](http://cxc.harvard.edu/contrib/arots/fits/content.txt)
- * `STScIExt` -- [keywords used by the Space Telescope Science Institute](http://tucana.noao.edu/ADASS/adass_proc/adass_95/zaraten/zaraten.html)
+   * `MaxImDLExt` -- [MaxIm DL Astronomy and Scientific Imaging Solutions](https://www.cyanogen.com/help/maximdl/FITS_File_Header_Definitions.htm)
+ * `CXCExt` -- [keywords defined for the Chandra X-ray Observatory](https://cxc.harvard.edu/contrib/arots/fits/content.txt)
+ * `STScIExt` -- keywords used by the Space Telescope Science Institute (_link no longer available_)
 
 You can use the standardized keywords contained in these enums to populate headers or access header values. For 
 example,
