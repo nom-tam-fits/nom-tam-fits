@@ -615,8 +615,7 @@ public abstract class BasicHDU<DataClass extends Data> implements FitsElement {
      *                           otherwise <code>false</code>
      * 
      * @throws FitsException if the HDU fails the integrity test.
-     * @throws IOException   if the HDU is not associated to a random-accessible input, or if there was an I/O error
-     *                           accessing the input.
+     * @throws IOException   if there was an I/O error accessing the input.
      * 
      * @see                  #verifyDataIntegrity()
      * @see                  Fits#verifyIntegrity()
@@ -625,23 +624,20 @@ public abstract class BasicHDU<DataClass extends Data> implements FitsElement {
      */
     @SuppressWarnings("resource")
     public boolean verifyIntegrity() throws FitsException, IOException {
-        RandomAccess file = myData.getRandomAccessInput();
-
-        if (file == null) {
-            throw new IOException("HDU not associated to a random-accessible input");
-        }
-
         boolean result = verifyDataIntegrity();
 
-        if (getHeader().getCard(Checksum.CHECKSUM) != null) {
-            long fsum = FitsCheckSum.checksum(file, getFileOffset(), getSize());
-            if (fsum != FitsCheckSum.HDU_CHECKSUM) {
-                throw new FitsException("Failed checksum: got " + fsum + ", expected " + FitsCheckSum.HDU_CHECKSUM);
-            }
-            return true;
+        if (myHeader.getCard(Checksum.CHECKSUM) == null) {
+            return result;
         }
 
-        return result;
+        long fsum = (myHeader.getStreamChecksum() < 0) ?
+                FitsCheckSum.checksum(myData.getRandomAccessInput(), getFileOffset(), getSize()) :
+                FitsCheckSum.sumOf(myHeader.getStreamChecksum(), myData.getStreamChecksum());
+
+        if (fsum != FitsCheckSum.HDU_CHECKSUM) {
+            throw new FitsIntegrityException("checksum", fsum, FitsCheckSum.HDU_CHECKSUM);
+        }
+        return true;
     }
 
     /**
@@ -652,8 +648,7 @@ public abstract class BasicHDU<DataClass extends Data> implements FitsElement {
      *                           <code>false</code>
      * 
      * @throws FitsException if the HDU fails the integrity test.
-     * @throws IOException   if the HDU is not associated to a random-accessible input, or if there was an I/O error
-     *                           accessing the input.
+     * @throws IOException   if there was an I/O error accessing the input.
      * 
      * @see                  #verifyIntegrity()
      * @see                  Fits#verifyIntegrity()
@@ -662,22 +657,18 @@ public abstract class BasicHDU<DataClass extends Data> implements FitsElement {
      */
     @SuppressWarnings("resource")
     public boolean verifyDataIntegrity() throws FitsException, IOException {
-        RandomAccess file = myData.getRandomAccessInput();
-
-        if (file == null) {
-            throw new IOException("HDU not associated to a random-accessible input");
+        if (getHeader().getCard(Checksum.DATASUM) == null) {
+            return false;
         }
 
-        if (getHeader().getCard(Checksum.DATASUM) != null) {
-            Data d = getData();
-            long fsum = FitsCheckSum.checksum(file, d.getFileOffset(), d.getSize());
-            if (fsum != getStoredDatasum()) {
-                throw new FitsException("Failed datasum: got " + fsum + ", expected " + getStoredDatasum());
-            }
-            return true;
-        }
+        Data d = getData();
+        RandomAccess rin = myData.getRandomAccessInput();
+        long fsum = (rin != null) ? FitsCheckSum.checksum(rin, d.getFileOffset(), d.getSize()) : d.getStreamChecksum();
 
-        return false;
+        if (fsum != getStoredDatasum()) {
+            throw new FitsIntegrityException("datasum", fsum, getStoredDatasum());
+        }
+        return true;
     }
 
     /**

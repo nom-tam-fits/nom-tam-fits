@@ -545,18 +545,21 @@ public final class FitsCheckSum {
      * segment from tha prior datasum, and then add the checksum of the new data segment -- without hacing to
      * recalculate the checksum for the entire data again.
      *
-     * @param  total The total checksum.
-     * @param  part  The partial checksum to be subtracted from the total.
+     * @deprecated       Not foolproof, because of the carry over handling in checksums, some additionas are not
+     *                       reversible. E.g. 0xffffffff + 0xffffffff = 0xffffffff, but 0xffffffff - 0xffffffff = 0;
      *
-     * @return       The checksum after subtracting the partial sum, as a 32-bit unsigned value.
+     * @param      total The total checksum.
+     * @param      part  The partial checksum to be subtracted from the total.
      *
-     * @see          #sumOf(long...)
+     * @return           The checksum after subtracting the partial sum, as a 32-bit unsigned value.
      *
-     * @since        1.17
+     * @see              #sumOf(long...)
+     *
+     * @since            1.17
      */
     public static long differenceOf(long total, long part) {
         Checksum sum = new Checksum(total);
-        sum.h -= (part >>> SHIFT_2_BYTES);
+        sum.h -= part >>> SHIFT_2_BYTES;
         sum.l -= part & MASK_2_BYTES;
         return sum.getChecksum();
     }

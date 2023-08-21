@@ -40,6 +40,7 @@ import java.util.logging.Logger;
 import nom.tam.fits.utilities.FitsCheckSum;
 import nom.tam.util.ArrayDataInput;
 import nom.tam.util.ArrayDataOutput;
+import nom.tam.util.FitsInputStream;
 import nom.tam.util.RandomAccess;
 
 import static nom.tam.util.LoggerHelper.getLogger;
@@ -82,6 +83,9 @@ public abstract class Data implements FitsElement {
      */
     @Deprecated
     protected RandomAccess input;
+
+    /** The data checksum calculated from the input stream */
+    private long streamSum = 0L;
 
     /**
      * Returns the random accessible input from which this data can be read, if any.
@@ -150,6 +154,23 @@ public abstract class Data implements FitsElement {
      */
     public long calcChecksum() throws FitsException {
         return FitsCheckSum.checksum(this);
+    }
+
+    /**
+     * Returns the checksum value calculated duting reading from a stream. It always returns a value that is greater or
+     * equal to zero. It is only populated when reading from {@link FitsInputStream} imputs, and never from other types
+     * of inputs. The default return value is zero.
+     * 
+     * @return the checksum calculated for the data read from a stream, or else zero if the data was not read from the
+     *             stream.
+     * 
+     * @see    FitsInputStream
+     * @see    Header#getStreamChecksum()
+     * 
+     * @since  1.18.1
+     */
+    final long getStreamChecksum() {
+        return streamSum;
     }
 
     /**
@@ -301,6 +322,11 @@ public abstract class Data implements FitsElement {
             return;
         }
 
+        if (in instanceof FitsInputStream) {
+            ((FitsInputStream) in).nextChecksum();
+        }
+        streamSum = 0L;
+
         setFileOffset(in);
 
         if (getTrueSize() == 0) {
@@ -323,6 +349,10 @@ public abstract class Data implements FitsElement {
         }
 
         skipPadding(in);
+
+        if (in instanceof FitsInputStream) {
+            streamSum = ((FitsInputStream) in).nextChecksum();
+        }
     }
 
     @SuppressWarnings("resource")

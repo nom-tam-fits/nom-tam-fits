@@ -1001,6 +1001,7 @@ public class Fits implements Closeable {
             }
             return null;
         }
+
         if (dataStr instanceof RandomAccess && lastFileOffset > 0) {
             FitsUtil.reposition(dataStr, lastFileOffset);
         }
@@ -1025,10 +1026,10 @@ public class Fits implements Closeable {
         }
 
         lastFileOffset = FitsUtil.findOffset(dataStr);
-        BasicHDU<Data> nextHDU = FitsFactory.hduFactory(hdr, data);
-        hduList.add(nextHDU);
+        BasicHDU<Data> hdu = FitsFactory.hduFactory(hdr, data);
+        hduList.add(hdu);
 
-        return nextHDU;
+        return hdu;
     }
 
     /**
@@ -1200,7 +1201,7 @@ public class Fits implements Closeable {
 
             try {
                 hdu.verifyIntegrity();
-            } catch (FitsException e) {
+            } catch (FitsIntegrityException e) {
                 throw new FitsException("Corrupted HDU[" + i + "]", e);
             }
         }

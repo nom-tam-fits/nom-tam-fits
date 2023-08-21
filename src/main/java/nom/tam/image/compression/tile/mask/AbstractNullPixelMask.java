@@ -91,8 +91,8 @@ public class AbstractNullPixelMask {
      * Returns a byte array containing the mask
      * 
      * @return the byte array containing the pixel mask for the tile.
-     * @deprecated (<i>for internal use</i>) Visibility may be reduced to package
-     *             level in the future.
+     * @deprecated (<i>for internal use</i>) Visibility may be reduced to
+     *             package level in the future.
      */
     public byte[] getMaskBytes() {
         if (mask == null) {
@@ -168,8 +168,8 @@ public class AbstractNullPixelMask {
      * 
      * @param remaining
      *            the number of points the mask should accomodate.
-     * @return the internal buffer that may store the mask data for the specified
-     *         number of data points.
+     * @return the internal buffer that may store the mask data for the
+     *         specified number of data points.
      */
     protected ByteBuffer initializedMask(int remaining) {
         if (mask == null) {
