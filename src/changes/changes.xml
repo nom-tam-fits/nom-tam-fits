@@ -3,1692 +3,1706 @@
 
    <release version="1.18.1-rc3" date="2023-08-27" description="Bug fix release with minor enhancements.">
       <action type="fix" dev="attipaci" issue="466">
-	      Fixed broken default reading of ASCII tables, without explicitly setting FitsFactory.setUseAsciiTables(true).
+          Fixed broken default reading of ASCII tables, without explicitly setting FitsFactory.setUseAsciiTables(true).
       </action>
       <action type="add" dev="attipaci" issue="473">
-              New Fits.verifyIntegrity(), BasicHDU.verifyIntegrity() and .verifyDataIntegrity() methods for verifying 
-              file / HDU integrity based on the stored checksums and/or data sums. Updated README for proper checksum 
-              verification. Deprecated the useless checksum access methods of before.
+          New Fits.verifyIntegrity(), BasicHDU.verifyIntegrity() and .verifyDataIntegrity() methods for verifying 
+          file / HDU integrity based on the stored checksums and/or data sums. Updated README for proper checksum 
+          verification. Deprecated the useless checksum access methods of before.
       </action>
       <action type="add" dev="attipaci" issue="476">
-              FitsInputStream to calculate checksums for all bytes that are read/skipped, allowing checksum verification
-              for stream-based inputs also.
+          FitsInputStream to calculate checksums for all bytes that are read/skipped, allowing checksum verification
+          for stream-based inputs also.
       </action>
       <action type="add" dev="attipaci" issue="475">
-	      Added Header.getCard() methods similar to existing .findCard(), but without changing the position at which
-	      new cards are added. The new method is now used more widely internally when interpreting headers.
-	      New Header.prevCard() method to complement existing .nextCard(), and .seekHead() / .seekTail()
-	      methods to set the position for new additions at the head or tail of the header space respectively.
+          Added Header.getCard() methods similar to existing .findCard(), but without changing the position at which
+          new cards are added. The new method is now used more widely internally when interpreting headers.
+          New Header.prevCard() method to complement existing .nextCard(), and .seekHead() / .seekTail()
+          methods to set the position for new additions at the head or tail of the header space respectively.
       </action>
       <action type="update" dev="attipaci" issue="472">
-              New cleaner-looking logos for github icons / profile image.
+          New cleaner-looking logos for github icons / profile image.
       </action>
    </release>
-	
+    
    <release version="1.18.0" date="2023-07-24" description="Feature release with compression fixes and many improvements.">
       <action type="fix" dev="attipaci" issue="377">
-	      Fixed use of ZDITHER0 keyword to restore or record random generator seed when dithering is used 
-	      in (de)compression.
+          Fixed use of ZDITHER0 keyword to restore or record random generator seed when dithering is used 
+          in (de)compression.
       </action>
       <action type="fix" dev="attipaci" issue="349">
-	      Fixed tiled (de)compresssion of some quantized images via GZIP.
+          Fixed tiled (de)compresssion of some quantized images via GZIP.
       </action>
       <action type="fix" dev="attipaci" issue="436">
-	      Fixed incorrect handling of CONTINUE keywords with no quoted string value (a regression since 1.16).
+          Fixed incorrect handling of CONTINUE keywords with no quoted string value (a regression since 1.16).
       </action>
       <action type="fix" dev="attipaci" issue="438">
-	      Conversion of variable length float[] or double[] arrays to complex was broken since forever. Now 
-	      it works for the first time as expected.
+          Conversion of variable length float[] or double[] arrays to complex was broken since forever. Now 
+          it works for the first time as expected.
       </action>
       <action type="fix" dev="attipaci" issue="455">
-	      Fixed incorrect variable-length complex array descriptors in binary tables.
+          Fixed incorrect variable-length complex array descriptors in binary tables.
       </action>
       <action type="fix" dev="attipaci" issue="445">
-	      Consistent String return for both fixed and variable-length string columns in binary tables.
+          Consistent String return for both fixed and variable-length string columns in binary tables.
       </action>
       <action type="fix" dev="attipaci" issue="456">
-	      Fixed compressed table tiling with tile sizes that do not divide the table rows.
+          Fixed compressed table tiling with tile sizes that do not divide the table rows.
       </action>
       <action type="fix" dev="attipaci" issue="462">
-	      Fixed incorrect HCompress SCALE parameter handling.
+          Fixed incorrect HCompress SCALE parameter handling.
       </action>
       <action type="add" dev="at88mph" issue="387">
-	      Added ability to stride while tiling.
+          Added ability to stride while tiling.
       </action>
       <action type="add" dev="at88mph" issue="356">
-	      Added ability to stream image cutouts.
+          Added ability to stream image cutouts.
       </action>
       <action type="add" dev="at88mph" issue="400">
-	      Added ability to stream compressed image cutouts.
+          Added ability to stream compressed image cutouts.
       </action>
       <action type="add" dev="attipaci" issue="335">
-	      Added NullDataHDU for more intuitive support for header only HDUs with no associated data.
+          Added NullDataHDU for more intuitive support for header only HDUs with no associated data.
       </action>
       <action type="add" dev="at88mph" issue="352">
-	      Added support for alternative RandomAccess immplementations.
+          Added support for alternative RandomAccess immplementations.
       </action>
       <action type="add" dev="attipaci" issue="183">
-	      Added support for ComplexValue-based column in BinaryTable 
+          Added support for ComplexValue-based column in BinaryTable 
       </action>
       <action type="add" dev="attipaci" issue="450">
-	      Added support for bit-based columns (FITS type 'X') in binary tables. 
+          Added support for bit-based columns (FITS type 'X') in binary tables. 
       </action>
       <action type="add" dev="attipaci" issue="451">
-	      Added support for null (undefined) logical values for FITS logical columns in binary tables. 
+          Added support for null (undefined) logical values for FITS logical columns in binary tables. 
       </action>
       <action type="add" dev="attipaci" issue="448">
-              More user-friendly data access in BinaryTable, using Java boxing for scalar primitive entries,
-              and automatic type conversion (both narrowing and widening) for singleton values when possible.
-              Many new BinaryTable methods to make it easier to build and use binary tables.
+          More user-friendly data access in BinaryTable, using Java boxing for scalar primitive entries,
+          and automatic type conversion (both narrowing and widening) for singleton values when possible.
+          Many new BinaryTable methods to make it easier to build and use binary tables.
       </action>
       <action type="add" dev="attipaci" issue="437">
-	      Allow accessing binary table entries / rows directly from file in deferred read mode.
-	      The README for reading binary tables has been updated accordingly.
+          Allow accessing binary table entries / rows directly from file in deferred read mode.
+          The README for reading binary tables has been updated accordingly.
       </action>
       <action type="add" dev="attipaci" issue="453">
-      	      Allow defragmenting binary table heaps to expunge stale data, and to optimize heap area for 
-      	      best sequential read performance.
+            Allow defragmenting binary table heaps to expunge stale data, and to optimize heap area for 
+            best sequential read performance.
       </action>
       <action type="add" dev="attipaci" issue="452">
-	      Simplified access to select tiles / regions of compressed data in both tile compressed
-	      tables and images.
+          Simplified access to select tiles / regions of compressed data in both tile compressed
+          tables and images.
       </action>
       <action type="add" dev="attipaci" issue="178">
-	      Support for the Substring Array Convention. (However, we will prefer the use of the more generic 
-	      TDIM over the convention for fixed-width string-based columns.)
+          Support for the Substring Array Convention. (However, we will prefer the use of the more generic 
+          TDIM over the convention for fixed-width string-based columns.)
       </action>
       <action type="add" dev="attipaci" issue="458">
-              Use HIERARCH-style keywords more easily within the library via the static methods of 
-              the Hierarch class.
+          Use HIERARCH-style keywords more easily within the library via the static methods of 
+          the Hierarch class.
       </action>
       <action type="update" dev="attipaci" issue="414">
-	      Significantly improved IO performance, now typically 2.5 to 4 times faster for images than prior 
-	      releases and a whopping 25-50 times faster for reading streams than 1.15.2.
+          Significantly improved IO performance, now typically 2.5 to 4 times faster for images than prior 
+          releases and a whopping 25-50 times faster for reading streams than 1.15.2.
       </action>
       <action type="update" dev="attipaci" issue="407">
-	      Improved dithering performance by calculating the random sequence only once, and more efficiently.
+          Improved dithering performance by calculating the random sequence only once, and more efficiently.
       </action>
       <action type="update" dev="attipaci" issue="441">
-              Significantly faster table data access and row additions.
+          Significantly faster table data access and row additions.
       </action>
       <action type="update" dev="attipaci" issue="207">
-	      Unified deferred read implementation for all Data classes.
+          Unified deferred read implementation for all Data classes.
       </action>
       <action type="update" dev="attipaci" issue="395">
-	      Consistent behavior and method visibilities across Data subclasses.
+          Consistent behavior and method visibilities across Data subclasses.
       </action>
       <action type="update" dev="attipaci" issue="434">
-	      Stop the automatic creation of random group HDUs from compatible table data. Instead create binary 
-	      or ASCII tables as appropriate given the FitsFactory settings. The FITS standard discourages the 
-	      use of random group HDUs going forward, and support should be typically limited to dealing with 
-	      some older existing data files in that format. If there is ever a need to create new random group 
-	      HDUs, you can do it explicitly via RandomGroupsHDU.createFrom(Object[][]). 
+          Stop the automatic creation of random group HDUs from compatible table data. Instead create binary 
+          or ASCII tables as appropriate given the FitsFactory settings. The FITS standard discourages the 
+          use of random group HDUs going forward, and support should be typically limited to dealing with 
+          some older existing data files in that format. If there is ever a need to create new random group 
+          HDUs, you can do it explicitly via RandomGroupsHDU.createFrom(Object[][]). 
       </action>
       <action type="update" dev="attipaci" issue="446">
-	      Disable automatic (and inconsistent) detection of complex binary table data, when adding 
-	      real-valued data columns to a binary table. Users should call BinaryTable.setComplexColumn() 
-	      explicitly if pairwise real values should be converted to complex. 
+          Disable automatic (and inconsistent) detection of complex binary table data, when adding 
+          real-valued data columns to a binary table. Users should call BinaryTable.setComplexColumn() 
+          explicitly if pairwise real values should be converted to complex. 
       </action>
       <action type="update" dev="attipaci" issue="447">
-              Check data consistency when adding or setting data in binary tables.
+          Check data consistency when adding or setting data in binary tables.
       </action>
       <action type="update" dev="attipaci" issue="454">
-              Do not use ASCII NUL (0x00) for padding between string array elements in binary tables, since it 
-              violates the FITS standard, in which an ASCII NUL terminates the entire string array entry.
+          Do not use ASCII NUL (0x00) for padding between string array elements in binary tables, since it 
+          violates the FITS standard, in which an ASCII NUL terminates the entire string array entry.
       </action>
       <action type="update" dev="attipaci" issue="131">
-	      Tables now support up to Integer.MAX_VALUE (~2-billion) rows regardless of entry size.
+          Tables now support up to Integer.MAX_VALUE (~2-billion) rows regardless of entry size.
       </action>
       <action type="update" dev="attipaci" issue="461">
-	      Improved handling of shared compression settings across option copies, and including validation
+          Improved handling of shared compression settings across option copies, and including validation
       </action>
       <action type="update" dev="attipaci" issue="394">
-	      Various tweaks to FitsDate that should not affect user behavior.
+          Various tweaks to FitsDate that should not affect user behavior.
       </action>
       <action type="update" dev="attipaci" issue="420">
-	      Revised PaddingException API and seamless internal handling.
+          Revised PaddingException API and seamless internal handling.
       </action>
       <action type="update" dev="attipaci" issue="435">
-              Header access methods in BasicHDU no longer remove significant leading spaces from strings.
+          Header access methods in BasicHDU no longer remove significant leading spaces from strings.
       </action>
       <action type="update" dev="attipaci" issue="426">
-	      No longer exposing mutable internal arrays to users, giving them copies instead.
+          No longer exposing mutable internal arrays to users, giving them copies instead.
       </action>
       <action type="update" dev="attipaci" issue="336">
-	      Deprecate unsafe methods that should only be used internally (if at all) and never by users.
+          Deprecate unsafe methods that should only be used internally (if at all) and never by users.
       </action>
       <action type="update" dev="attipaci" issue="209">
-	      FitsUtil.reposition() deprecated and changed to take FitsIO argument to match usage.
+          FitsUtil.reposition() deprecated and changed to take FitsIO argument to match usage.
       </action>
       <action type="update" dev="attipaci" issue="429">
-	      Remove unnecessary IO synchronization in FitsFile, FitsInputStream, and FitsOutputStream classes.
+          Remove unnecessary IO synchronization in FitsFile, FitsInputStream, and FitsOutputStream classes.
       </action>
       <action type="update" dev="attipaci" issue="425">
-	      Deprecate hexadecimal values in headers. FITS does not support these, and you should not use them.
+          Deprecate hexadecimal values in headers. FITS does not support these, and you should not use them.
       </action>
       <action type="update" dev="attipaci" issue="430">
-	      Deprecate BigInteger and BigDecimal values in headers. FITS does not support these, and you should 
-	      not use them.
+          Deprecate BigInteger and BigDecimal values in headers. FITS does not support these, and you should 
+          not use them.
       </action>
       <action type="update" dev="attipaci" issue="424">
-	      Code cleanup -- Consistent source code formating etc.
+          Code cleanup -- Consistent source code formating etc.
       </action>
       <action type="update" dev="attipaci" issue="160">
-	      Public user API javadoc now complete. It could be improved, but at least all packages, classes, 
-	      and methods intentionally exposed to users are documented.
+          Public user API javadoc now complete. It could be improved, but at least all packages, classes, 
+          and methods intentionally exposed to users are documented.
       </action>
       <action type="update" dev="attipaci" issue="427">
-	      Online API documentation is restricted to public classes and methods only, as appropriate for 
-	      users who want to read/write FITS files. Classes and methods intended for internal use are 
-	      clearly indicated when these are exposed in the public. Contributors can still generate the 
-	      full documentation locally if desired using maven.
+          Online API documentation is restricted to public classes and methods only, as appropriate for 
+          users who want to read/write FITS files. Classes and methods intended for internal use are 
+          clearly indicated when these are exposed in the public. Contributors can still generate the 
+          full documentation locally if desired using maven.
       </action>
       <action type="update" dev="attipaci">
-              Fully revised README (Getting Started guide) with better and more up-to-date examples.
+          Fully revised README (Getting Started guide) with better and more up-to-date examples.
       </action>
       <action type="update" dev="attipaci" issue="402">
-	      Upgrade from JDK 11 to 17 for creating signed packages in the CI (but still in Java 8 
-	      compatibility mode).
+          Upgrade from JDK 11 to 17 for creating signed packages in the CI (but still in Java 8 
+          compatibility mode).
       </action>
       <action type="update" dev="attipaci">
-	      Updated maven build and runtime dependencies to their latest releases.
+          Updated maven build and runtime dependencies to their latest releases.
       </action>
    </release>
 
 
    <release version="1.17.1" date="2023-03-15" description="Maintenance release with critical bug fixes.">
       <action type="fix" dev="attipaci" issue="368">
-	      Fixed first extension written as primary if primary HDU contained no data (affects 1.17.0).
+          Fixed first extension written as primary if primary HDU contained no data (affects 1.17.0).
       </action>
       <action type="fix" dev="attipaci" issue="367">
-	      Fixed incorrect checksum calculated directly from file in multi-HDU FITS, and other checksum fixes (affects 1.17.0).
+          Fixed incorrect checksum calculated directly from file in multi-HDU FITS, and other checksum fixes (affects 
+          1.17.0).
       </action>
       <action type="fix" dev="keastrid" issue="341">
-              Fixed occasional NullPointerException in tiled image compression resulting from incomplete initializiation of
-              TiledImageCompressionOperation.
+          Fixed occasional NullPointerException in tiled image compression resulting from incomplete initializiation 
+          of TiledImageCompressionOperation.
       </action>
       <action type="update" dev="attipaci" issue="373">
-              Fixed GitHub Actions site build error, by removing unused broken dependency from POM.
+          Fixed GitHub Actions site build error, by removing unused broken dependency from POM.
       </action>
       <action type="add" dev="attipaci" issue="376">
-              Upload coverage report to Coveralls.io also (forks need to set a repo token via the repo secret 
-              COVERALLS_REPO_TOKEN if want to enable reporting also).
+          Upload coverage report to Coveralls.io also (forks need to set a repo token via the repo secret 
+          COVERALLS_REPO_TOKEN if want to enable reporting also).
       </action>
    </release>
 
 
    <release version="1.17.0" date="2022-09-11" description="Improved image compression, checksum support, and incremental writing">
       <action type="add" dev="attipaci" issue="319">
-	      Generalized tile compression for any-dimensional images based on the FITSIO convention. 
+          Generalized tile compression for any-dimensional images based on the FITSIO convention. 
       </action>
       <action type="fix" dev="attipaci" issue="318">
-	      Fixed broken tile compression of non-square images. 
+          Fixed broken tile compression of non-square images. 
       </action>
       <action type="fix" dev="attipaci" issue="318">
-	      CompressedImageHDU.fromInageHDU() now defaults to tiling by row if tile size is not explicitly specified, as per FITS 
-	      specification and also for consistent behavior in higher dimensions.
+          CompressedImageHDU.fromInageHDU() now defaults to tiling by row if tile size is not explicitly specified, as 
+          per FITS specification and also for consistent behavior in higher dimensions.
       </action>
       <action type="update" dev="attipaci" issue="266">
-              Safe incremental HDU writing via new FitsOutput interface, which is used to check whether HDUs should be set 
-	      primary or not depending on where it is located in the output.
+          Safe incremental HDU writing via new FitsOutput interface, which is used to check whether HDUs should be set 
+          primary or not depending on where it is located in the output.
       </action>
       <action type="update" dev="attipaci" issue="323">
-              Simpler, faster, and more versatile FitsChecksum class, with support for incremental checksum updates, 
-              checksum retrieval, and checksum computations directly from files.
+          Simpler, faster, and more versatile FitsChecksum class, with support for incremental checksum updates, 
+          checksum retrieval, and checksum computations directly from files.
       </action>
       <action type="add" dev="attipaci" issue="323">
-	      New checksumming methods: BasicHDU.calcChecksum(), .setChecksum(), .getStoredChecksum(), and .getStoredDataSum();
-	      Data.calcChecksum(); Fits.calcChecksum(int) and .setChecksum(int) -- as well as an extended static API for `FitsCheckSum`.
+          New checksumming methods: BasicHDU.calcChecksum(), .setChecksum(), .getStoredChecksum(), and 
+          .getStoredDataSum(); Data.calcChecksum(); Fits.calcChecksum(int) and .setChecksum(int) -- as well as an 
+          extended static API for `FitsCheckSum`.
       </action>
       <action type="update" dev="attipaci" issue="328">
-	      Checksum in-memory headers/data with less overhead through piped streams.
+          Checksum in-memory headers/data with less overhead through piped streams.
       </action>
       <action type="update" dev="attipaci" issue="323">
-              Fits.setChecksum(), .setCheckSum(int), and .calcChecksum(int) compute checksum directly from the file, if possible, for 
-              deferred read data (i.e. data not currently loaded into RAM). This eliminates the need to keep 
-              potentially huge data volumes in RAM when computing or updating checksums in an existing FITS file.
+          Fits.setChecksum(), .setCheckSum(int), and .calcChecksum(int) compute checksum directly from the file, if 
+          possible, for deferred read data (i.e. data not currently loaded into RAM). This eliminates the need to 
+          keep potentially huge data volumes in RAM when computing or updating checksums in an existing FITS file.
       </action>
       <action type="update" dev="attipaci" issue="323">
-              Fits.setChecksum() will now checksum all HDUs, including those not already loaded from disk -- 
-              keeping data in deferred read mode if possible.
+          Fits.setChecksum() will now checksum all HDUs, including those not already loaded from disk -- 
+          keeping data in deferred read mode if possible.
       </action>
       <action type="add" dev="attipaci" issue="323">
-              Added Fits.rewrite() to simplify re-writing the entire Fits objects, e.g. after updating checksums. The 
-              implementation is efficient in that it skips data segments in deferred read mode. BasicHDU.rewrite()
-              is modified to make it efficient also.
+          Added Fits.rewrite() to simplify re-writing the entire Fits objects, e.g. after updating checksums. The 
+          implementation is efficient in that it skips data segments in deferred read mode. BasicHDU.rewrite()
+          is modified to make it efficient also.
       </action>
       <action type="add" dev="attipaci" issue="283">
-	      User adjustable header comment alignment position via Header.setCommentAlignPosition(int) and checking 
-	      via .getCommentAlignPosition(). 
+          User adjustable header comment alignment position via Header.setCommentAlignPosition(int) and checking 
+          via .getCommentAlignPosition(). 
       </action>
       <action type="add" dev="attipaci" issue="145">
-              New Fits.getHDU() methods to select HDU from Fits by name (and version).
+          New Fits.getHDU() methods to select HDU from Fits by name (and version).
       </action>
       <action type="update" dev="attipaci" issue="311">
-              Duplicate header keys, during parsing, are repoted though separate logger instance from Header's, with verbosity
-              controlled via Header.setParserWarningsEnabled(boolean). 
+          Duplicate header keys, during parsing, are repoted though separate logger instance from Header's, with 
+          verbosity controlled via Header.setParserWarningsEnabled(boolean). 
       </action>
       <action type="update" dev="attipaci" issue="292">
-              Suppress repeated duplicate keyword warnings when parsing and improve checks for FITS standard violations. Added
-              Header.getDuplicateKeySet() method to check which keywords have duplicates. 
+          Suppress repeated duplicate keyword warnings when parsing and improve checks for FITS standard violations. 
+          Added Header.getDuplicateKeySet() method to check which keywords have duplicates. 
       </action>
       <action type="update" dev="attipaci" issue="292">
-              Replacing header keys logs a warning when existing value type is incompatible wth the newly associated 
-              standardized keyword.
+          Replacing header keys logs a warning when existing value type is incompatible wth the newly associated 
+          standardized keyword.
       </action>
       <action type="update" dev="attipaci" issue="292">
-              Creation of header entries with standardized keywords logs a warning if associated value type is incompatible 
-              with the keyword. 
+          Creation of header entries with standardized keywords logs a warning if associated value type is 
+          incompatible with the keyword. 
       </action>
       <action type="update" dev="attipaci" issue="292">
-              Improved header card ordering implementation.
+          Improved header card ordering implementation.
       </action>
       <action type="add" dev="attipaci" issue="323">
-              Added Data.isDeferred() method (defaulting to false) that can be used to check if a FITS Data 
-              object might be in deferred read mode, that is if it may not be fully loaded into RAM. Note, that while 
-              the method is properly implemented for the built-in data types of the library, it may not properly reflect 
-              the deferred status of external data implementations unless these override the method with something 
-              meaningful also.
+          Added Data.isDeferred() method (defaulting to false) that can be used to check if a FITS Data 
+          object might be in deferred read mode, that is if it may not be fully loaded into RAM. Note, that while 
+          the method is properly implemented for the built-in data types of the library, it may not properly reflect 
+          the deferred status of external data implementations unless these override the method with something 
+          meaningful also.
       </action>
       <action type="update" dev="attipaci" issue="74">
-              New logo.
+          New logo.
       </action>
    </release>
-	  
+      
    <release version="1.16.1" date="2022-03-21" description="Maintenance release with bug fixes.">
       <action type="fix" dev="attipaci" issue="252">
-              Fixed broken Java 8 compatibility of 1.16.0 due to Java compiler flags in POM. Note, after the change the build 
-              itself will require Java 9 or later!
+          Fixed broken Java 8 compatibility of 1.16.0 due to Java compiler flags in POM. Note, after the change the 
+          build itself will require Java 9 or later!
       </action>
       <action type="fix" dev="attipaci" issue="243">
-              Fixed potential unchecked null in BinaryTableHDU.
+          Fixed potential unchecked null in BinaryTableHDU.
       </action>
       <action type="update" dev="attipaci" issue="257">
-              No Logger warnings about duplicate header cards if Header parser warnings are disabled.
+          No Logger warnings about duplicate header cards if Header parser warnings are disabled.
       </action>
       <action type="update" dev="attipaci" issue="210">
-              Added default ArrayDataInput/Output implementations.
+          Added default ArrayDataInput/Output implementations.
       </action>
       <action type="update" dev="attipaci" issue="229">
-              Removed runtime dependency on javax.annotation-api.
+          Removed runtime dependency on javax.annotation-api.
       </action>
       <action type="update" dev="dependabot">
-              Mostly automated updates of dependencies.
+          Mostly automated updates of dependencies.
       </action>
    </release>
-	
+    
    <release version="1.16.0" date="2021-12-13" description="Compliance to FITS 4.0 standard, plus many more fixes and improvements.">
       <action type="update" dev="attipaci" issue="197">
-             This release contains numerous API changes and additions. While the source code is generally back-compatible with 
-             previous versions of this library for compiling, some method signatures have changed, and as a result the JAR should 
-             not be used as a drop-in replacement for applications that were compiled against earlier versions. To use version 
-             1.16.0 of this library you should always compile your application against it.
+         This release contains numerous API changes and additions. While the source code is generally back-compatible 
+         with previous versions of this library for compiling, some method signatures have changed, and as a result 
+         the JAR should not be used as a drop-in replacement for applications that were compiled against earlier 
+         versions. To use version 1.16.0 of this library you should always compile your application against it.
       </action>
       <action type="update" dev="attipaci" issue="161">
-             Long strings enabled by default (FITS 4.0 standard).
-      </action>	
+         Long strings enabled by default (FITS 4.0 standard).
+      </action>    
       <action type="update" dev="attipaci" issue="195">
-             Permissive default 'FitsFactory' settings: error-free reading of some flawed 3rd party files by default (as long 
-             as they can be made sense of). However, issued encountered with 3rd party FITS files are logged so they can be 
-             inspected. Added new 'FitsFactory.setDefaults()' method to restore default settings more easily.
-      </action>	
+         Permissive default 'FitsFactory' settings: error-free reading of some flawed 3rd party files by default (as 
+         long as they can be made sense of). However, issued encountered with 3rd party FITS files are logged so they 
+         can be inspected. Added new 'FitsFactory.setDefaults()' method to restore default settings more easily.
+      </action>    
       <action type="update" dev="olebole" issue="125">
-             Set 'FitsFactory.useHierarch(true)' by default. HIERARCH style keys are written upper-case only by default, but 
-             case-sensitive support can also be enabled via a call to the 'setCaseSensitive(boolean)' method of the 
-             'IHierarchKeyFormatter' instance used by 'FitsFactory'.
+         Set 'FitsFactory.useHierarch(true)' by default. HIERARCH style keys are written upper-case only by default, 
+         but case-sensitive support can also be enabled via a call to the 'setCaseSensitive(boolean)' method of the 
+         'IHierarchKeyFormatter' instance used by 'FitsFactory'.
       </action>
       <action type="add" dev="attipaci" issue="177">
-             Added support for preallocated blank header space, as per FITS 4.0 standard. via 'Header.ensureCardSpace(int)' 
-             and 'Header.getMinimumSize()'. Headers remain rewritable in-place as long as they don't exceed their original size 
-             in the file.
+         Added support for preallocated blank header space, as per FITS 4.0 standard. via 'Header.ensureCardSpace(int)' 
+         and 'Header.getMinimumSize()'. Headers remain rewritable in-place as long as they don't exceed their original 
+         size in the file.
       </action>
       <action type="add" dev="attipaci" issue="172">
-             Added support for complex values in FITS headers, as specified by the FITS standard, via new 'ComplexValue' class.
+         Added support for complex values in FITS headers, as specified by the FITS standard, via new 'ComplexValue' 
+         class.
       </action>
       <action type="add" dev="attipaci" issue="167">
-             Added support for header integers in hexadecimal format, as specified by the FITS standard, e.g. via 'addHexValue(...)'
-             and 'getHexValue(...)' methods in both 'Header' and 'HeaderCard' classes.
+         Added support for header integers in hexadecimal format, as specified by the FITS standard, e.g. via 
+         'addHexValue(...)' and 'getHexValue(...)' methods in both 'Header' and 'HeaderCard' classes.
       </action>
       <action type="fix" dev="attipaci" issue="171">
-             Prevent the creation of invalid header entries from code, by throwing informative runtime exceptions. New 
-             runtime exception classes 'HierarchNotEnabledException', 'LongStringsNotEnabledException', 'LongValueException', 
-             'UnclosedQuoteException' are used to report when illegal action was pre-empted relating to FITS headers.
+         Prevent the creation of invalid header entries from code, by throwing informative runtime exceptions. New 
+         runtime exception classes 'HierarchNotEnabledException', 'LongStringsNotEnabledException', 
+         'LongValueException', 'UnclosedQuoteException' are used to report when illegal action was pre-empted relating 
+         to FITS headers.
       </action>
       <action type="fix" dev="attipaci" issue="165">
-             Prevent creating header cards with NaN and Infinite values. The FITS standard does not support these.
+         Prevent creating header cards with NaN and Infinite values. The FITS standard does not support these.
       </action>
       <action type="update" dev="attipaci" issue="169">
-             More predictable explicit precision control for header decimals. The same number of decimal places are shown 
-             after the leading figure regardless whether fixed-decimal or scientific (exponential) notation is used.
+         More predictable explicit precision control for header decimals. The same number of decimal places are shown 
+         after the leading figure regardless whether fixed-decimal or scientific (exponential) notation is used.
       </action>
       <action type="add" dev="wcleveland" issue="120">
-             Added optional support for using 'D' instead of 'E' as the exponent in decimal representations (via 
-             'FitsFactory.setUseExponentD(boolean)' setting), as specified by the FITS standard.  
+         Added optional support for using 'D' instead of 'E' as the exponent in decimal representations (via 
+         'FitsFactory.setUseExponentD(boolean)' setting), as specified by the FITS standard.  
       </action>
       <action type="update" dev="attipaci" issue="173">
-             Fully preserve long comments for string values, including internal spaces in the comment, using the now standard 
-             long string convention.
+         Fully preserve long comments for string values, including internal spaces in the comment, using the now 
+         standard long string convention.
       </action>
       <action type="update" dev="attipaci" issue="170">
-             Simpler, better methods for adding creating comment and history entries in headers, such as via 
-             'Header.insertComment(String)' or '.insertHistory(String)', or via 'HeaderCard.createCommentCard(String)' or 
-             '.createHistoryCard(String)'.
+         Simpler, better methods for adding creating comment and history entries in headers, such as via 
+         'Header.insertComment(String)' or '.insertHistory(String)', or via 'HeaderCard.createCommentCard(String)' or 
+         '.createHistoryCard(String)'.
       </action>
       <action type="update" dev="attipaci" issue="170">
-             'Header.addValue(...)' and 'Header.insert...(...)' methods now return the newly created 'HeaderCard' objects 
-             for convenience.
+         'Header.addValue(...)' and 'Header.insert...(...)' methods now return the newly created 'HeaderCard' objects 
+         for convenience.
       </action>
       <action type="update" dev="attipaci" issue="121">
-             More predictable header card ordering when editing headers, both directly or indirectly via an iterator. 
+         More predictable header card ordering when editing headers, both directly or indirectly via an iterator. 
       </action>
       <action type="update" dev="attipaci" issue="192">
-             New FITS IO class hierarchies for better layering and separation of functionality. Standard IO functions 
-             (for reading, writing, positioning, and skipping) now conform to their canonical contracts in the core Java 
-             API. The messy old IO API is also supported, though deprecated, to provide back compatibility until the next 
-             major release. The new IO classes are also 2 to 3 times faster than before. 
+         New FITS IO class hierarchies for better layering and separation of functionality. Standard IO functions 
+         (for reading, writing, positioning, and skipping) now conform to their canonical contracts in the core Java 
+         API. The messy old IO API is also supported, though deprecated, to provide back compatibility until the next 
+         major release. The new IO classes are also 2 to 3 times faster than before. 
       </action>
       <action type="update" dev="attipaci" issue="188">
-             'FitsHeap' access made a lot more efficient with true random access.
+         'FitsHeap' access made a lot more efficient with true random access.
       </action>
       <action type="fix" dev="attipaci" issue="187">
-             No 'EOFException' is thrown when skipping beyond the end of file, since it should be allowed in random access 
-             mode.
+         No 'EOFException' is thrown when skipping beyond the end of file, since it should be allowed in random 
+         access mode.
       </action>
       <action type="fix" dev="attipaci" issue="186">
-             Consistent handling of logical ('true'/'false') values in FITS binary tables, including newly added support for 
-             'null' (or undefined) values also as per FITS standard.
+         Consistent handling of logical ('true'/'false') values in FITS binary tables, including newly added support 
+         for 'null' (or undefined) values also as per FITS standard.
       </action>
       <action type="fix" dev="attipaci" issue="184">
-             In prior versions 'char[]' arrays in binary tables were written as 16-bit Unicode and read back as 'short[]' 
-             integers. FITS recognises only ASCII character arrays with 1-byte per character. A new 
-             'FitsFactory.setUseUnicodeChars(boolean)' option can toggle compliance to the FITS standard for 'char[]' arrays. 
-             However, the misconceived prior behavior remains the default to maintain back compatibility until the next 
-             major release. 
+         In prior versions 'char[]' arrays in binary tables were written as 16-bit Unicode and read back as 'short[]' 
+         integers. FITS recognises only ASCII character arrays with 1-byte per character. A new 
+         'FitsFactory.setUseUnicodeChars(boolean)' option can toggle compliance to the FITS standard for 'char[]' 
+         arrays. However, the misconceived prior behavior remains the default to maintain back compatibility until the 
+         next major release. 
       </action>
       <action type="add" dev="attipaci" issue="182">
-             Replace fragmented 'PrimitiveType...' hierarchy with a more aptly named one-stop 'ElementType' class. The old 
-             hierarchy is also available, albeit in deprecated form.
+         Replace fragmented 'PrimitiveType...' hierarchy with a more aptly named one-stop 'ElementType' class. The old 
+         hierarchy is also available, albeit in deprecated form.
       </action>
       <action type="add" dev="attipaci" issue="191">
-             Type safe BITPIX values via new 'Bitpix' enum providing a restricted set. The unsafe BITPIX methods have been 
-             deprecated for removal in a future release.
+         Type safe BITPIX values via new 'Bitpix' enum providing a restricted set. The unsafe BITPIX methods have been 
+         deprecated for removal in a future release.
       </action>
       <action type="add" dev="attipaci" issue="175">
-             Added new 'Header.setParserWarningsEnabled(boolean)' option to log FITS standard violations when reading 
-             (3rd party) headers.
+         Added new 'Header.setParserWarningsEnabled(boolean)' option to log FITS standard violations when reading 
+         (3rd party) headers.
       </action>
       <action type="fix" dev="attipaci" issue="153">
-             No more 'Logger' warnings on multiple CONTINUE keywords, tolerant HIERARCH parsing, and other small fixes.
+         No more 'Logger' warnings on multiple CONTINUE keywords, tolerant HIERARCH parsing, and other small fixes.
       </action>
       <action type="add" dev="FinitePhaseSpace" issue="138">
-             'FitsDate' equals() / hashCode() / compareTo() implementations.
+         'FitsDate' equals() / hashCode() / compareTo() implementations.
       </action>
       <action type="fix" dev="Zlika" issue="135">
-             Fix management of sub-seconds in 'FitsDate'
+         Fix management of sub-seconds in 'FitsDate'
       </action>
       <action type="fix" dev="olebole" issue="130">
-             Check for and reject non-ASCII or non-printable characters in headers. The FITS standard allows only ASCII 
-             characters in the range of 0x20 to 0x7E in the headers. The new static method 'HeaderCard.sanitize(String)' 
-             is available to users to replace characters outside of the supported range with '?'. 
+         Check for and reject non-ASCII or non-printable characters in headers. The FITS standard allows only ASCII 
+         characters in the range of 0x20 to 0x7E in the headers. The new static method 'HeaderCard.sanitize(String)' 
+         is available to users to replace characters outside of the supported range with '?'. 
       </action>
       <action type="fix" dev="wcleveland" issue="123">
-             Minor fixes prior to release
+         Minor fixes prior to release
       </action>
       <action type="update" dev="attipaci" issue="164">
-             Source code updated for Java 8, with diamond operators and try-with-resources used throughout as appropriate.
+         Source code updated for Java 8, with diamond operators and try-with-resources used throughout as appropriate.
       </action>
       <action type="fix" dev="attipaci" issue="162">
-             Revised when exceptions are thrown, and they are made more informative by providing more essential details 
-             and traceable causes.
+         Revised when exceptions are thrown, and they are made more informative by providing more essential details 
+         and traceable causes.
       </action>
       <action type="fix" dev="attipaci" issue="159">
-             HIERARCH header cards are now written to conform to 'cfitsio' specification, which requires a space before 
-             '='. While the HIERARCH convention itself does not specify the extra space, it certainly allows for it, and 
-             with the change our FITS files shall be more conformant to, and readable, by yet another widely used library.
+         HIERARCH header cards are now written to conform to 'cfitsio' specification, which requires a space before 
+         '='. While the HIERARCH convention itself does not specify the extra space, it certainly allows for it, and 
+         with the change our FITS files shall be more conformant to, and readable, by yet another widely used library.
       </action>
       <action type="fix" dev="mbtaylor" issue="158">
-             Check for 'markSupported()' when attempting to use 'mark()' or 'reset()' methods in 'ArrayDataInput', and 
-             throw an appropriate runtime exception if the methods are not supported by the implementation.
+         Check for 'markSupported()' when attempting to use 'mark()' or 'reset()' methods in 'ArrayDataInput', and 
+         throw an appropriate runtime exception if the methods are not supported by the implementation.
       </action>
       <action type="fix" dev="attipaci" issue="156">
-             Fixed issues with handling of single quotes as part of user-supplied strings.
+         Fixed issues with handling of single quotes as part of user-supplied strings.
       </action>
       <action type="fix" dev="mbtaylor" issue="143">
-             "I10" format ASCII tables are parsed as 32-bit 'int[]' by default (for back compatibility), unless 
-             'TLMIN/TLMAX' or 'TDMIN/TDMAX' header entries indicate a more extended range. Added new 
-             'AsciiTable(Header, boolean)' constructor to optionally change the preference to read "I10" ASCII table 
-             data as 64-bit 'long[]' columns.
+         "I10" format ASCII tables are parsed as 32-bit 'int[]' by default (for back compatibility), unless 
+         'TLMIN/TLMAX' or 'TDMIN/TDMAX' header entries indicate a more extended range. Added new 
+         'AsciiTable(Header, boolean)' constructor to optionally change the preference to read "I10" ASCII table 
+         data as 64-bit 'long[]' columns.
       </action>
       <action type="fix" dev="attipaci" issue="190">
-             Changed to generated serialVersionUIDs from 1L for classes that require it.
+         Changed to generated serialVersionUIDs from 1L for classes that require it.
       </action>
       <action type="fix" dev="attipaci">
-             Various smaller fixes and improvements throughout, increased unit test coverage, and more comprehensive 
-             unit tests.
+         Various smaller fixes and improvements throughout, increased unit test coverage, and more comprehensive 
+         unit tests.
       </action>
       <action type="fix" dev="attipaci">
-             Deprecated classes and methods that (a) were exposed in the public API even though they should not have 
-             been, (b) had names that poorly reflected their function, (c) were poorly conceived/designed in the first 
-             place, and/or (d) were prone to misuse with unpredictable results. The deprecated API remains supported 
-             nonetheless, and slated for removal in the next major release (2.0) only.
+         Deprecated classes and methods that (a) were exposed in the public API even though they should not have 
+         been, (b) had names that poorly reflected their function, (c) were poorly conceived/designed in the first 
+         place, and/or (d) were prone to misuse with unpredictable results. The deprecated API remains supported 
+         nonetheless, and slated for removal in the next major release (2.0) only.
       </action>
       <action type="fix" dev="attipaci">
-             A lot of the Javadoc API documentation has been revised and improved.
+         A lot of the Javadoc API documentation has been revised and improved.
       </action>
    </release>
-	  
-		<release version="1.15.2" date="2017-04-28" description="Maintenance release with bug fixes.">
-			<action type="update">
-				Maintenance release with bug fixes.
-			</action>
-			<action type="add" dev="ritchieGitHub" issue="113">
-				Header can be controlled to specify the header card order.
-			</action>
-			<action type="fix" dev="ritchieGitHub" issue="112">
-				ImageHDU tiler corrupts values after 2GB worth of data bug fixed.
-			</action>
-			<action type="fix" dev="ritchieGitHub" issue="108">
-				Non standard BITPIX allowed during de/compression. 
-			</action>
-			<action type="fix" dev="ritchieGitHub" issue="107">
-				Add tiler support for ImageHDU from uncompressing a CompressedImageHDU?
-			</action>
-			<action type="fix" dev="ritchieGitHub" issue="106">
-				Remove redundant spaces in HIERARCH keys .
-			</action>
-			<action type="fix" dev="ritchieGitHub" issue="105">
-				Fix integer overflow in case of negative values in combination with a defined blank value of Integer.MIN_VANUE.
-			</action>
-			<action type="fix" dev="ritchieGitHub" issue="104">
-				make the worker threads deamons so they do not hold of a shutdown enhancement.
-			</action>
-			<action type="fix" dev="ritchieGitHub" issue="98">
-				Update Outdated documentation in introduction enhancement, thanks to MaxNoe.
-			</action>
-			<action type="fix" dev="ritchieGitHub" issue="90">
-				Fix Reading boolean arrays with getColumn bug.
-			</action>
-		</release>
-		<release version="1.15.1" date="2016-08-19" description="Maintenance release with bug fixes.">
-			<action type="update">
-				Maintenance release with bug fixes.
-			</action>
-			<action type="fix" dev="ritchieGitHub" issue="102">
-				Comment type header cards where not protected against to long comments, that can result in corrupted headers. 
-			</action>
-			<action type="fix" dev="MaxNoe" issue="101">
-				Introduction document verified and corrected kind thanks to Maximilian Nöthe. 
-			</action>
-		</release>
-		<release version="1.15.0" date="2016-08-07" description="Table compression activated.">
-			<action type="update">
-				Binary table compression and tiling are now fully supported by nom-tam-fits. An API for easy handling of compressed tables is now provided.
-			</action>
-			<action type="add" dev="ritchieGitHub" issue="61">
-				Binary table compression now fully supported.
-			</action>
-			<action type="add" dev="ritchieGitHub" issue="70">
-				The dummy compression algorithm NOCOMPRESS is now supported.
-			</action>
-			<action type="update" issue="96">
-				Multiple code quality fixes, provided by various developers.
-			</action>
-		</release>
-		<release version="1.14.3" date="2016-06-05" description="Maintenance release with minor bug fixes.">
-			<action type="update">
-				Maintenance release with bug fixes.
-			</action>
-			<action type="update" dev="ritchieGitHub" issue="92">
-				 Removal of redundent attribute "rowSize". Attention here the public api has a minor change, the deletColumns in the ColumnTable does not return an int anymore.
-			</action>
-			<action type="update" dev="ritchieGitHub" issue="91">
-				 Fix for a bug in encurling the multim arrays of the BinaryTable with variable length columns.
-			</action>
-	    </release>
-		<release version="1.14.2" date="2016-03-11" description="Maintenance release with minor bug fixes and enhancements.">
-			<action type="update">
-				Maintenance release with important bug fixes and the restoration of java 6 support.
-			</action>
-			<action type="update" dev="ritchieGitHub" issue="84">
-				Fits does not handle comments that start with 8 blank characters correctly when reading/writing/reading bug .
-			</action>
-			<action type="update" dev="ritchieGitHub" issue="80">
-				Restored Java 6 compatibility. 
-			</action>
-	    </release>
-		<release version="1.14.1" date="2016-02-24" description="Maintenance release with minor bug fixes and enhancements.">
-			<action type="update">
-				Maintenance release with minor bug fixes and enhancements.
-			</action>
-			<action type="update" dev="ritchieGitHub" issue="79">
-				Important note for all users, since 1.13.0 a bug is fixed in the table behavior. This can cause problems for users expecting the "buggy" result. See the issue on github for more details.
-			</action>
-			<action type="update" dev="ritchieGitHub" issue="77">
-				Since a approximately 1.12.0 nom-tam-fits uses java.util.logging for all logs, the details what and where to log to can therefore be configured freely.
-			</action>
-			<action type="fix" dev="ritchieGitHub" issue="76">
-				In case of long strings the difference between a null comment and an empty string was not detected correctly.
-			</action>
-			<action type="add" dev="ritchieGitHub" issue="60">
-				Image compression support for the null pixel mask, this allows correct NaN with the use of lossy compression's.
-			</action>
-		</release>
-		<release version="1.14.0" date="2016-01-10" description="full Image compression support">
-			<action type="update">
-				Image compression and tiling are now fully supported by nom-tam-fits. A 100% Java implementation of the compression libraries available in cfitsio
-				was implemented. An API for easy handling of compressed images is now provided. Support for binary table compression and the NULL_PIXEL_MASK features is
-				anticipated in the next release.
-			</action>
-			<action type="update">
-				When [de]compressing all available CPU's are automatically utilized.
-			</action>
-			<action type="update">
-				Internal compression allows FITS files to be created where the data are efficiently stored, but the
-				metadata is still easily accessible. The tiling of images is particularly critical
-				for supporting efficient access to subsets of very large images. A user can easily access
-				only the tiles that overlap the region of interest and can skip data not of interest.
-				While some skipping might be possible with uncompressed FITS files (i.e., read only the rows
-				overlapping the desired
-				subset), internal tiles can be much more efficient when the image is
-				substantially larger than the subset. Most compression algorithms interfere with the ability to
-				skip uninteresting data, but tiles are compressed independently, so users can benefit both from
-				the compression and the selection of only a subset of the image.
-			</action>
-			<action type="add" dev="ritchieGitHub" issue="48">
-				Added a [de]compression API supporting all compression methods in the proposed updates
-				to the FITS standard.
-			</action>
-			<action type="fix" dev="ritchieGitHub" issue="26">
-				Wrong checksum calculation corrected.
-			</action>
-			<action type="fix" dev="ritchieGitHub" issue="54">
-				Some problems with data segments that are bigger than 2GB corrected.
-			</action>
-			<action type="fix" dev="ritchieGitHub" issue="62">
-				Header parsing performance optimization.
-			</action>
-			<action type="fix" dev="ritchieGitHub" issue="68">
-				Comment style cards with a empty key value can now be used multiple times.
-			</action>
-			<action type="update" dev="ritchieGitHub" issue="68">
-				Alignment of hierarch headercard values deactivated.
-			</action>
-			<action type="add" dev="ritchieGitHub" issue="72">
-				The formatting of hierarch card keys can mow be be controlled. Two formats are provided.
-			</action>
-		</release>
-		<release version="1.13.1" date="2015-08-21" description="Maintenance release with fixes for hierarch/longstring and rewrite bugs">
-			<action type="update">
-				Maintenance release with fixes for hierarch/longstring and rewrite bugs.
-			</action>
-			<action type="fix" dev="ritchieGitHub" issue="46">
-				After the correction of #44 the padding calculation of the fits header was wrong, now the calculation is consistent.
-			</action>
-			<action type="fix" dev="ritchieGitHub" issue="44">
-				Improved the calculation of the number of cards to be used for a longstring in case of a hierarch
-				cards because it was wrong when some special string lengths where used. Now rewriting is useing the
-				new calculation to see if the header fits in place.
-			</action>
-			<action type="fix" dev="ritchieGitHub" issue="43">
-				More variants of the hierarch keywords as in #16.
-			</action>
-			<action type="fix" dev="ritchieGitHub" issue="16">
-				More variants of the hierarch keywords allowed (lowercase and dot), but writing will convert the keywords back to the standard.
-			</action>
-		</release>
-		<release version="1.13.0" date="2015-07-17" description="This is a stability release, before the new fits standard will be implemented in version 2.0">
-			<action type="update">
-				Major updates to the util package including a set of routines for efficient
-				copyying of arrays of all types. Some of the special FITS values are
-				collected in the FitsIO class. New buffering utility classes have also been created.
-				Some methods that were public in the util package but which were not used in
-				the FITS library have been removed. The logging is now using java.util.logging, no
-				standard out or stanard error is used anymore.
-			</action>
-			<action type="update">
-				Added utilty class for updating checksums
-			</action>
-			<action type="update">
-				Added examples in utilities package for how to use new Header enumerations.
-			</action>
-			<action type="update" dev="ritchieGitHub" issue="35">
-				Builder pattern for the creation of cards introduced.
-			</action>
-			<action type="fix" issue="24">
-				Fixed handling of binary tables built from an empty state row by row. Fixed coupling of binary
-				tables and the FITS heap to allow copying of binary tables using the internal
-				ColumnTable representation.
-			</action>
-			<action type="update" dev="ritchieGitHub" issue="23">
-				Reorganized compression and added internal compression package.
-			</action>
-			<action type="remove" dev="ritchieGitHub" issue="23">
-				Tile compression, will be implemented from scratch in 2.0 and is not yet available in 1.13.0
-			</action>
-			<action type="update" dev="ritchieGitHub" issue="29">
-				Unit tests extended to cover 92% of the library .
-			</action>
-			<action type="update" dev="ritchieGitHub" issue="17">
-				Longstring support was improved and longer comments are now supported.
-			</action>
-			<action type="fix" dev="ritchieGitHub" issue="20">
-				Compression dependecy to apache compression is now optional again.
-			</action>
-			<action type="fix" dev="ritchieGitHub" issue="12">
-				When reading/writing the same card the comment moved one blank to the right.
-			</action>
-			<action type="fix" dev="ritchieGitHub" issue="29">
-				All javadoc's are now java-8 compatible and produce no warnings.
-			</action>
-			<action type="update" dev="ritchieGitHub" issue="15">
-				Support for biginteger and bigdecimal.
-			</action>
-			<action type="update" dev="ritchieGitHub" issue="14">
-				Generic detection of the value type of a card.
-			</action>
-			<action type="update" dev="ritchieGitHub" issue="7">
-				Insert a header card at a specific position.
-			</action>
-			<action type="update" dev="ritchieGitHub" issue="36">
-				All internally used keyword references are now enumerations.
-			</action>
-			<action type="update" dev="ritchieGitHub" issue="37">
-				Comment mapping is now moved to the standard keyword enumeration.
-			</action>
-			<action type="update" dev="ritchieGitHub" issue="21">
-				The settings of FitsFactory are now changeable to thread local specific settings.
-			</action>
-		</release>
-		<release version="1.12.0" date="2015-02-20">
-			<action type="add" dev="ritchieGitHub">
-				Enumerations where added for ~1000 more or less Standard fits headers are now included (making compile references to headers possible).
-			</action>
-			<action type="add" dev="ritchieGitHub">
-				Moved the sources to github and the artifacts to the central repo.
-			</action>
-			<action type="add" dev="ritchieGitHub">
-				Moved the license to maven as build system, incl reorganisation of the project. tests are no included in the published jars any more.
-			</action>
-			<action type="update" dev="ritchieGitHub">
-				Moved the license to the official unlicensed.
-			</action>
-			<action type="add" dev="ritchieGitHub">
-				Creation of a project site on github with issue management.
-			</action>
-			<action type="update" dev="ritchieGitHub">
-				Java formatting/licence updating is now done by the maven plug ins.
-			</action>
-			<action type="update" dev="ritchieGitHub">
-				Moved the code to Java 1.6 and @Override is now consistent.
-			</action>
-			<action type="add" dev="tmcglynn">
-				Richard van Nieuwenhoven joined the team.
-			</action>
-		</release>
+      
+        <release version="1.15.2" date="2017-04-28" description="Maintenance release with bug fixes.">
+        <action type="update">
+            Maintenance release with bug fixes.
+        </action>
+        <action type="add" dev="ritchieGitHub" issue="113">
+            Header can be controlled to specify the header card order.
+        </action>
+        <action type="fix" dev="ritchieGitHub" issue="112">
+            ImageHDU tiler corrupts values after 2GB worth of data bug fixed.
+        </action>
+        <action type="fix" dev="ritchieGitHub" issue="108">
+            Non standard BITPIX allowed during de/compression. 
+        </action>
+        <action type="fix" dev="ritchieGitHub" issue="107">
+            Add tiler support for ImageHDU from uncompressing a CompressedImageHDU?
+        </action>
+        <action type="fix" dev="ritchieGitHub" issue="106">
+            Remove redundant spaces in HIERARCH keys .
+        </action>
+        <action type="fix" dev="ritchieGitHub" issue="105">
+            Fix integer overflow in case of negative values in combination with a defined blank value of Integer.MIN_VANUE.
+        </action>
+        <action type="fix" dev="ritchieGitHub" issue="104">
+            make the worker threads deamons so they do not hold of a shutdown enhancement.
+        </action>
+        <action type="fix" dev="ritchieGitHub" issue="98">
+            Update Outdated documentation in introduction enhancement, thanks to MaxNoe.
+        </action>
+        <action type="fix" dev="ritchieGitHub" issue="90">
+            Fix Reading boolean arrays with getColumn bug.
+        </action>
+        </release>
+        <release version="1.15.1" date="2016-08-19" description="Maintenance release with bug fixes.">
+        <action type="update">
+            Maintenance release with bug fixes.
+        </action>
+        <action type="fix" dev="ritchieGitHub" issue="102">
+            Comment type header cards where not protected against to long comments, that can result in corrupted headers. 
+        </action>
+        <action type="fix" dev="MaxNoe" issue="101">
+            Introduction document verified and corrected kind thanks to Maximilian Nöthe. 
+        </action>
+        </release>
+        <release version="1.15.0" date="2016-08-07" description="Table compression activated.">
+        <action type="update">
+            Binary table compression and tiling are now fully supported by nom-tam-fits. An API for easy handling of 
+            compressed tables is now provided.
+        </action>
+        <action type="add" dev="ritchieGitHub" issue="61">
+            Binary table compression now fully supported.
+        </action>
+        <action type="add" dev="ritchieGitHub" issue="70">
+            The dummy compression algorithm NOCOMPRESS is now supported.
+        </action>
+        <action type="update" issue="96">
+            Multiple code quality fixes, provided by various developers.
+        </action>
+        </release>
+        <release version="1.14.3" date="2016-06-05" description="Maintenance release with minor bug fixes.">
+        <action type="update">
+            Maintenance release with bug fixes.
+        </action>
+        <action type="update" dev="ritchieGitHub" issue="92">
+             Removal of redundent attribute "rowSize". Attention here the public api has a minor change, the 
+             deletColumns in the ColumnTable does not return an int anymore.
+        </action>
+        <action type="update" dev="ritchieGitHub" issue="91">
+             Fix for a bug in encurling the multim arrays of the BinaryTable with variable length columns.
+        </action>
+        </release>
+        <release version="1.14.2" date="2016-03-11" description="Maintenance release with minor bug fixes and enhancements.">
+        <action type="update">
+            Maintenance release with important bug fixes and the restoration of java 6 support.
+        </action>
+        <action type="update" dev="ritchieGitHub" issue="84">
+            Fits does not handle comments that start with 8 blank characters correctly when reading/writing/reading 
+            bug.
+        </action>
+        <action type="update" dev="ritchieGitHub" issue="80">
+            Restored Java 6 compatibility. 
+        </action>
+        </release>
+        <release version="1.14.1" date="2016-02-24" description="Maintenance release with minor bug fixes and enhancements.">
+        <action type="update">
+            Maintenance release with minor bug fixes and enhancements.
+        </action>
+        <action type="update" dev="ritchieGitHub" issue="79">
+            Important note for all users, since 1.13.0 a bug is fixed in the table behavior. This can cause problems 
+            for users expecting the "buggy" result. See the issue on github for more details.
+        </action>
+        <action type="update" dev="ritchieGitHub" issue="77">
+            Since a approximately 1.12.0 nom-tam-fits uses java.util.logging for all logs, the details what and where 
+            to log to can therefore be configured freely.
+        </action>
+        <action type="fix" dev="ritchieGitHub" issue="76">
+            In case of long strings the difference between a null comment and an empty string was not detected correctly.
+        </action>
+        <action type="add" dev="ritchieGitHub" issue="60">
+            Image compression support for the null pixel mask, this allows correct NaN with the use of lossy compression's.
+        </action>
+        </release>
+        <release version="1.14.0" date="2016-01-10" description="full Image compression support">
+        <action type="update">
+            Image compression and tiling are now fully supported by nom-tam-fits. A 100% Java implementation of the 
+            compression libraries available in cfitsio was implemented. An API for easy handling of compressed images 
+            is now provided. Support for binary table compression and the NULL_PIXEL_MASK features is anticipated in 
+            the next release.
+        </action>
+        <action type="update">
+            When [de]compressing all available CPU's are automatically utilized.
+        </action>
+        <action type="update">
+            Internal compression allows FITS files to be created where the data are efficiently stored, but the
+            metadata is still easily accessible. The tiling of images is particularly critical
+            for supporting efficient access to subsets of very large images. A user can easily access
+            only the tiles that overlap the region of interest and can skip data not of interest.
+            While some skipping might be possible with uncompressed FITS files (i.e., read only the rows
+            overlapping the desired
+            subset), internal tiles can be much more efficient when the image is
+            substantially larger than the subset. Most compression algorithms interfere with the ability to
+            skip uninteresting data, but tiles are compressed independently, so users can benefit both from
+            the compression and the selection of only a subset of the image.
+        </action>
+        <action type="add" dev="ritchieGitHub" issue="48">
+            Added a [de]compression API supporting all compression methods in the proposed updates
+            to the FITS standard.
+        </action>
+        <action type="fix" dev="ritchieGitHub" issue="26">
+            Wrong checksum calculation corrected.
+        </action>
+        <action type="fix" dev="ritchieGitHub" issue="54">
+            Some problems with data segments that are bigger than 2GB corrected.
+        </action>
+        <action type="fix" dev="ritchieGitHub" issue="62">
+            Header parsing performance optimization.
+        </action>
+        <action type="fix" dev="ritchieGitHub" issue="68">
+            Comment style cards with a empty key value can now be used multiple times.
+        </action>
+        <action type="update" dev="ritchieGitHub" issue="68">
+            Alignment of hierarch headercard values deactivated.
+        </action>
+        <action type="add" dev="ritchieGitHub" issue="72">
+            The formatting of hierarch card keys can mow be be controlled. Two formats are provided.
+        </action>
+        </release>
+        <release version="1.13.1" date="2015-08-21" description="Maintenance release with fixes for hierarch/longstring and rewrite bugs">
+        <action type="update">
+            Maintenance release with fixes for hierarch/longstring and rewrite bugs.
+        </action>
+        <action type="fix" dev="ritchieGitHub" issue="46">
+            After the correction of #44 the padding calculation of the fits header was wrong, now the calculation is 
+            consistent.
+        </action>
+        <action type="fix" dev="ritchieGitHub" issue="44">
+            Improved the calculation of the number of cards to be used for a longstring in case of a hierarch
+            cards because it was wrong when some special string lengths where used. Now rewriting is useing the
+            new calculation to see if the header fits in place.
+        </action>
+        <action type="fix" dev="ritchieGitHub" issue="43">
+            More variants of the hierarch keywords as in #16.
+        </action>
+        <action type="fix" dev="ritchieGitHub" issue="16">
+            More variants of the hierarch keywords allowed (lowercase and dot), but writing will convert the keywords 
+            back to the standard.
+        </action>
+        </release>
+        <release version="1.13.0" date="2015-07-17" description="This is a stability release, before the new fits standard will be implemented in version 2.0">
+        <action type="update">
+            Major updates to the util package including a set of routines for efficient
+            copyying of arrays of all types. Some of the special FITS values are
+            collected in the FitsIO class. New buffering utility classes have also been created.
+            Some methods that were public in the util package but which were not used in
+            the FITS library have been removed. The logging is now using java.util.logging, no
+            standard out or stanard error is used anymore.
+        </action>
+        <action type="update">
+            Added utilty class for updating checksums
+        </action>
+        <action type="update">
+            Added examples in utilities package for how to use new Header enumerations.
+        </action>
+        <action type="update" dev="ritchieGitHub" issue="35">
+            Builder pattern for the creation of cards introduced.
+        </action>
+        <action type="fix" issue="24">
+            Fixed handling of binary tables built from an empty state row by row. Fixed coupling of binary
+            tables and the FITS heap to allow copying of binary tables using the internal
+            ColumnTable representation.
+        </action>
+        <action type="update" dev="ritchieGitHub" issue="23">
+            Reorganized compression and added internal compression package.
+        </action>
+        <action type="remove" dev="ritchieGitHub" issue="23">
+            Tile compression, will be implemented from scratch in 2.0 and is not yet available in 1.13.0
+        </action>
+        <action type="update" dev="ritchieGitHub" issue="29">
+            Unit tests extended to cover 92% of the library .
+        </action>
+        <action type="update" dev="ritchieGitHub" issue="17">
+            Longstring support was improved and longer comments are now supported.
+        </action>
+        <action type="fix" dev="ritchieGitHub" issue="20">
+            Compression dependecy to apache compression is now optional again.
+        </action>
+        <action type="fix" dev="ritchieGitHub" issue="12">
+            When reading/writing the same card the comment moved one blank to the right.
+        </action>
+        <action type="fix" dev="ritchieGitHub" issue="29">
+            All javadoc's are now java-8 compatible and produce no warnings.
+        </action>
+        <action type="update" dev="ritchieGitHub" issue="15">
+            Support for biginteger and bigdecimal.
+        </action>
+        <action type="update" dev="ritchieGitHub" issue="14">
+            Generic detection of the value type of a card.
+        </action>
+        <action type="update" dev="ritchieGitHub" issue="7">
+            Insert a header card at a specific position.
+        </action>
+        <action type="update" dev="ritchieGitHub" issue="36">
+            All internally used keyword references are now enumerations.
+        </action>
+        <action type="update" dev="ritchieGitHub" issue="37">
+            Comment mapping is now moved to the standard keyword enumeration.
+        </action>
+        <action type="update" dev="ritchieGitHub" issue="21">
+            The settings of FitsFactory are now changeable to thread local specific settings.
+        </action>
+        </release>
+        <release version="1.12.0" date="2015-02-20">
+        <action type="add" dev="ritchieGitHub">
+            Enumerations where added for ~1000 more or less Standard fits headers are now included (making compile 
+            references to headers possible).
+        </action>
+        <action type="add" dev="ritchieGitHub">
+            Moved the sources to github and the artifacts to the central repo.
+        </action>
+        <action type="add" dev="ritchieGitHub">
+            Moved the license to maven as build system, incl reorganisation of the project. tests are no included in 
+            the published jars any more.
+        </action>
+        <action type="update" dev="ritchieGitHub">
+            Moved the license to the official unlicensed.
+        </action>
+        <action type="add" dev="ritchieGitHub">
+            Creation of a project site on github with issue management.
+        </action>
+        <action type="update" dev="ritchieGitHub">
+            Java formatting/licence updating is now done by the maven plug ins.
+        </action>
+        <action type="update" dev="ritchieGitHub">
+            Moved the code to Java 1.6 and @Override is now consistent.
+        </action>
+        <action type="add" dev="tmcglynn">
+            Richard van Nieuwenhoven joined the team.
+        </action>
+        </release>
 
-		<release version="1.11.1" date="2014-07-07">
-			<action type="update" dev="tmcglynn">
-				Debuggging statements inadverently left in V111.0 were removed.
-			</action>
-		</release>
+        <release version="1.11.1" date="2014-07-07">
+        <action type="update" dev="tmcglynn">
+            Debuggging statements inadverently left in V111.0 were removed.
+        </action>
+        </release>
 
-		<release version="1.11.0" date="2013-06-07">
-			<action type="fix" dev="Kevin McAbee">
-				Fixed error in handling of strings with non-terminated quotes
-				so that these don't crash program (thanks to Kevin McAbee)
-			</action>
-			<action type="update" dev="Vincenzo Forchi">
-				Deferred allocation of memory when creating
-				FitsHeap's (thanks to Vincenzo Forchi, ESO).
-			</action>
-			<action type="update" dev="Pat Dowler">
-				Fixed error in getting size of associated data for dummy
-				headers in Header.getDataSize(). This could return 1 rather than 0 if
-				NAXIS=0 was used to
-				signal a
-				dummy. This doesn't affect data
-				when read normally (as full HDUs) since the ImageData class
-				does the computation correctly. (Thanks to Pat Dowler, CADC)
-			</action>
-			<action type="add" dev="tmcglynn">
-				The source code JAR (fits_src.jar) includes a number of new classes for
-				which the corresponding class files are not included in fits.jar. These
-				classes are
-				pre-alpha versions of support for tile compressed data that
-				is being developed. Interested Users may take a look at these, but they
-				definitely are not expected to work
-				today.
-				Support for Rice, Gzip and
-				HCompress compression is expected.
-			</action>
-		</release>
+        <release version="1.11.0" date="2013-06-07">
+        <action type="fix" dev="Kevin McAbee">
+            Fixed error in handling of strings with non-terminated quotes
+            so that these don't crash program (thanks to Kevin McAbee)
+        </action>
+        <action type="update" dev="Vincenzo Forchi">
+            Deferred allocation of memory when creating
+            FitsHeap's (thanks to Vincenzo Forchi, ESO).
+        </action>
+        <action type="update" dev="Pat Dowler">
+            Fixed error in getting size of associated data for dummy
+            headers in Header.getDataSize(). This could return 1 rather than 0 if
+            NAXIS=0 was used to
+            signal a
+            dummy. This doesn't affect data
+            when read normally (as full HDUs) since the ImageData class
+            does the computation correctly. (Thanks to Pat Dowler, CADC)
+        </action>
+        <action type="add" dev="tmcglynn">
+            The source code JAR (fits_src.jar) includes a number of new classes for
+            which the corresponding class files are not included in fits.jar. These
+            classes are
+            pre-alpha versions of support for tile compressed data that
+            is being developed. Interested Users may take a look at these, but they
+            definitely are not expected to work
+            today.
+            Support for Rice, Gzip and
+            HCompress compression is expected.
+        </action>
+        </release>
 
-		<release version="1.10.0" date="2012-10-25">
-			<action type="update" dev="tmcglynn">
-				No functional changes to the FITS code are included in this release.
-				All internal documentation has been updated to reflect that this library
-				is
-				now available
-				in the public domain.
-			</action>
-		</release>
-		<release version="1.08.1" date="2012-02-01">
-			<action type="fix" dev="Jason Weiss">
-				Fixed error in the writing of ASCII table columns where
-				all of the elements of the table were null or 0 length
-				strings. Previously we would write a
-				column with
-				TFORM A0.
-				This is not supported by CFITSIO and since it is not
-				valid Fortran is of dubious legality for FITS. Such columns
-				are now written with A1 (issue noted by Jason
-				Weiss,
-				UCLA).
-			</action>
-			<action type="fix" dev="tmcglynn">
-				AsciiTable did not check if columns were of a valid type
-				(if the FitsFactory methods were used, then a BinaryTable
-				would be written, but a user can
-				explicitly
-				instantiate
-				an AsciiTable). A FitsException is now returned if
-				a column other than a String, double, int or long array is
-				used
-			</action>
-		</release>
-
-
-		<release version="1.07.0" date="2012-01-20">
-			<action type="add" dev="tmcglynn">
-				Added
-				boolean hadDuplicates()
-				and
-				List getDuplicates()
-				methods to Header to allow users to track if there were
-				duplicate keywords in a header.
-			</action>
-		</release>
-
-		<release version="1.07.0" date="2011-11-11">
-			<action type="update" dev="Booth Hartley">
-				This release contains some new features suggested by Booth Hartley (IPAC) who supplied
-				modified code including:
-			</action>
-			<action type="update" dev="tmcglynn">
-				Allow a FITS file to have invalid data after a valid FITS HDU.
-				User can call FitsFactory.setAllowTerminalJunk(true) to enable
-				this. The Fits
-				object will return
-				all valid HDUs. Note that
-				whatever follows the valid FITS data must start with something
-				that is clearly not FITs.
-				This includes modifications to FitsFactory and
-				Header.
-			</action>
-			<action type="update" dev="tmcglynn">
-				Allow users to find original size of headers as they were
-				read from some source file. The library throws away duplicate
-				key values, so that the
-				number of
-				header cards in the header as read
-				may be smaller than the original data. The getOriginalSize() gets
-				the original size of the header in bytes. A resetOriginalSize()
-				allows the
-				user to tell the library that this header has been
-				updated on disk and now has the same number of records as internally.
-			</action>
-			<action type="fix" dev="tmcglynn">
-				Fixed the order of the EXTEND keyword to follow the NAXISn keywords
-				when it is specified. This constraint on the EXTEND keyword is
-				no longer required
-				in the
-				latest version of the standard, but it
-				doesn't hurt anything and may make the file more acceptable to some
-				readers.
-			</action>
-			<action type="fix" dev="tmcglynn">
-				Fixed JavaDoc errors for a number of files.
-			</action>
-			<action type="fix" dev="tmcglynn">
-				Fixed a bug in Header.rewriteable() related to the same
-				issue as the original size.
-			</action>
-			<action type="update" dev="tmcglynn">
-				Updated Fits.setChecksum so that it will now set both
-				the CHECKSUM and DATASUM keywords.
-			</action>
-			<action type="update" dev="tmcglynn">
-				Added tests for the new capabilities above and updated the
-				checksum test.
-			</action>
-		</release>
+        <release version="1.10.0" date="2012-10-25">
+        <action type="update" dev="tmcglynn">
+            No functional changes to the FITS code are included in this release.
+            All internal documentation has been updated to reflect that this library
+            is
+            now available
+            in the public domain.
+        </action>
+        </release>
+        <release version="1.08.1" date="2012-02-01">
+        <action type="fix" dev="Jason Weiss">
+            Fixed error in the writing of ASCII table columns where
+            all of the elements of the table were null or 0 length
+            strings. Previously we would write a
+            column with
+            TFORM A0.
+            This is not supported by CFITSIO and since it is not
+            valid Fortran is of dubious legality for FITS. Such columns
+            are now written with A1 (issue noted by Jason
+            Weiss,
+            UCLA).
+        </action>
+        <action type="fix" dev="tmcglynn">
+            AsciiTable did not check if columns were of a valid type
+            (if the FitsFactory methods were used, then a BinaryTable
+            would be written, but a user can
+            explicitly
+            instantiate
+            an AsciiTable). A FitsException is now returned if
+            a column other than a String, double, int or long array is
+            used
+        </action>
+        </release>
 
 
-		<release version="1.06.0" date="2011-05-23">
-			<action type="update" dev="tmcglynn">
-				Substantial reworking of compression to accommodate
-				BZIP2 compression. The Apache Bzip library is used or
-				since this is very slow, the user can
-				specify a local
-				command to do the decompression using the BZIP_DECOMPRESSOR
-				environment variable. This is assumed to require a
-				'-' argument which is added if not supplied by the
-				user.
-				The
-				decompressor should act as a filter between standard input
-				and output.
-			</action>
-			<action type="update" dev="tmcglynn">
-				User compression flags are now completely
-				ignored and the compression and the compression
-				is determined entirely by the content of the stream.
-				The
-				Apache
-				library will be needed in the
-				classpath to accommodate BZIP2 inputs if the user
-				does not supply the BZIP_DECOMPRESSOR.
-			</action>
-			<action type="update" dev="tmcglynn">
-				Adding additional compression methods should be much easier and
-				may only involve adding a couple of lines in the
-				FitsUtil.decompress function if a
-				decompressor
-				class
-				is available.
-			</action>
-			<action type="update" dev="tmcglynn">
-				One subtle consequence of how compression is now handled
-				is that there is no advantage for users to
-				create their own BufferedDataInputStream's.
-				Users should
-				just provide a standard input stream
-				and allow the FITS library to wrap it in a
-				BufferedDataInputStream.
-			</action>
-			<action type="fix" dev="V. Forchi">
-				A bug in the UndefinedData class was detected
-				Vincenzo Forchi and has been corrected.
-			</action>
-			<action type="update" dev="tmcglynn">
-				The nom.tam.util.AsciiFuncs class now handles
-				ASCII encoding to more cleanly separate this
-				functionality from the FITS library and to enable
-				Java
-				1.5
-				compatibitity. (Suggested by changes of L.Bourges)
-				Other V1.5 incompatiblities removed.
-			</action>
-			<action type="update" dev="tmcglynn">
-				The HeaderCommentsMap class is now provided to enable
-				users to control the comments that are generated in system
-				generated header cards. The map
-				is initialized
-				to values
-				that should be the same as the current defaults. This
-				should allow users to emulate the comments of other packages.
-			</action>
-			<action type="update" dev="tmcglynn">
-				All Java code has been passed through NetBeans formatter
-				so that it should have a more uniform appearance.
-			</action>
-		</release>
+        <release version="1.07.0" date="2012-01-20">
+        <action type="add" dev="tmcglynn">
+            Added
+            boolean hadDuplicates()
+            and
+            List getDuplicates()
+            methods to Header to allow users to track if there were
+            duplicate keywords in a header.
+        </action>
+        </release>
 
-		<release version="1.05.1" date="2011-02-16">
-			<action type="fix" dev="V. Forchi">The implementation of long string values was incorrect, using
-				COMMENT rather than CONTINUE cards.noted originally by V. Forchi.
-			</action>
-			<action type="fix" dev="V. Forchi">
-				The placement of the header cursor after opening a primary array
-				was such that unless the user took explicit action to move
-				the cursor, new header
-				records
-				would be written before the
-				EXTEND keyword which is a violation of the FITS standard (although
-				it would not affect the operations of this library). The
-				library now leaves
-				the
-				cursor just after the EXTEND keyword where
-				new keywords are legal. It's still possible for users to write an
-				illegal header but now it requires at
-				least a little effort on
-				their
-				part.noted originally by V. Forchi.
-			</action>
-			<action type="update" dev="tmcglynn">
-				This build procedure for FITS library has been changed. The library is now stored
-				as a NetBeans project and the standard NetBeans build script
-				has been
-				modified
-				to generate the fits.jar and fits_src.jar. The names of a number of the test procedures
-				have been slightly modified (XXXTester -> XXXTest) and test data are
-				included in
-				the class jar file.
-			</action>
-		</release>
-
-		<release version="1.05.0" date="2010-12-12">
-			<action type="update" dev="Laurent Bourges">
-				Adding methods to allow finer control of the placement of
-				metadata records for columns of FITS tables. This could previously
-				be done using
-				Cursors, but the
-				TableHDU.setTableMeta() methods now
-				allow these to be specified more directly.
-
-				This involves changes only to TableHDU. Usage is illustrated in the test
-				method
-				BinaryTableTest.columnMetaTest.by Laurent Bourges
-			</action>
-			<action type="update" dev="Laurent Bourges">
-				Adding more rigor to the transformation between bytes and strings and
-				fixing a bug in the handling of strings with embedded nuls. According
-				to the
-				standard an
-				embedded null should terminate an string in a
-				binary table.by Laurent Bourges
-
-				The standard also precludes other non-printing characters from strings.
-				This has been
-				ignored
-				previously, but there is now a method
-				FitsFactory.setCheckAsciiString(boolean flag) which can be called
-				to turn on checking. A warning will be
-				issued and non-printing
-				characters
-				will be converted to spaces if this flag is set. Only a single
-				warning will be issued regardless of the number of invalid characters are
-				seen.
-
-				There are changes in a
-				number of
-				classes where the conversions occur
-				to ensure that the ASCII charset is used.
-
-				How these changes work is illustrated in BinaryTableTest.specialStringsTest.by Laurent
-				Bourges
-			</action>
-			<action type="update" dev="tmcglynn">
-				Handling fixed and variable length, single and double precision
-				complex data. The library uses a float[2] or double[2]
-				for a complex scalar.
-
-				This
-				is mostly bug
-				fixes to existing code and changes are only
-				in BinaryTable and BinaryTableHDU.
-
-				The method BinaryTableHDU.setComplexColumn() allows the user to
-				tell the FITS writer
-				that a field
-				which otherwise would be treated
-				as a float or double array (with most rapidly varying
-				dimensionality of 2) should be treated as complex.
-				The internal
-				data
-				representations are
-				identical.
-
-				Variable length complex data will be found automatically if
-				number of elements actually varies. A variable length complex
-				column is a 3-D float or
-				double array
-				where the
-				last dimension (for Java) is always 2, the first
-				dimension is the number of rows in the table and the middle
-				dimension is the number of complex numbers in
-				the row and may
-				vary
-				from row to row. Other variable length columns are
-				represented as 2-D arrays, where the first index points to the
-				row, and the second index enumerates the
-				elements in the row.
-
-				Use of complex columns is illustrated in BinaryTableTest in the routines
-				testSimpleComplex (fixed columns), testVar (variable length
-				columns), and
-				buildByColumn and buildByRow
-				where columns
-				and rows containing complex numbers are added to existing
-				tables.by Laurent Bourges
-			</action>
-			<action type="update" dev="tmcglynn">
-				Changing the null HDU created when a table is to be written without
-				a prior image to use a vector with dimensionality 0 rather than
-				a
-				one-dimensional vector
-				with a dimension of 0. I.e, use
-				NAXIS=0 rather than NAXIS=1, NAXIS1=0.by Laurent Bourges
-			</action>
-			<action type="update" dev="tmcglynn">
-				Consolidating the writing of padding at the end of FITS elements into
-				the FitsUtil.pad methods.
-			</action>
-			<action type="update" dev="tmcglynn">
-				Adding the reset() method to the FitsElement interface. This attempts
-				to reset the Fits input stream pointer to the beginning of the element.
-				It
-				does not throw
-				exceptions but will return false if not successful.
-				This is intended to make it easier for user who wish to use low-level
-				I/O to read FITS data, by allowing them to
-				position the
-				stream to the
-				beginning of the data they are interested in.
-			</action>
-			<action type="update" dev="tmcglynn">
-				Changed FitsUtil.HDUFactory(Object x) to accept a Header object as well
-				as the various kinds of data inputs.
-			</action>
-			<action type="update" dev="tmcglynn">
-				Provided a method in BinaryTable to get back the ModelRow array.
-				This makes is easier for users to do low level I/O in binary tables.
-				An
-				ArrayDataInput object
-				will read a row of the table, given the
-				result of getModelRow().
-			</action>
-			<action type="update" dev="tmcglynn">
-				Added a getColumns() method to TableHDU. This returns an Object[] array
-				where each entry is the result of getColumn(n)
-			</action>
-		</release>
-
-		<release version="1.04.0" date="2009-12-24">
-			<action type="update" dev="tmcglynn">
-				Support for the HEASARC long strings convention has been added.
-				This affects only the Header class. Two new public static methods
-				have been added.
-				setLongStringsEnabled(boolean)
-				allows the use to enable/disable the handling of long strings.
-				getLongStringsEnabled()
-				returns the current setting. By default long strings are
-				disabled.
-				The convention is enabled automatically whenever a header is read
-				which has the LONGSTRN keyword is read. It is not disabled if subsequent
-				headers are read which do not
-				have this keyword. The
-				addValue(String,String,String), getStringValue(String) and removeCard(String)
-				methods are affected, allowing the user to set, read and delete long string
-				values. The library does NOT ensure that users do not interpolate new keywords
-				or comments inside the card sequence that is used to store the long
-				string value.
-			</action>
-			<action type="fix" dev="tmcglynn">
-				A bug in the processing of keyword values with embedded apostrophes was fixed.
-				Apostrophe's were properly doubled in encoding but the doubling was
-				left
-				when
-				the values were read.
-			</action>
-			<action type="fix" dev="Mark Taylor">
-				A potential bug in the processing of headers discovered by Mark Taylor was fixed.
-			</action>
-		</release>
-
-		<release version="1.03.1" date="2009-07-27">
-			<action type="add" dev="J.C. Segovia">
-				The implementation of the FitsUtil.byteArrayToStrings method was changed
-				so that trimmed space from strings can be cleaned up more efficiently.
-				Change
-				suggested by J.C. Segovia (ESA).
-				There should be no effect -- other than memory usage -- on external programs.
-			</action>
-			<action type="update" dev="tmcglynn">
-				Users might want to note that when reading string values in binary tables,
-				both leading and trailing spaces are trimmed from the string values.
-			</action>
-		</release>
-
-		<release version="1.03.0" date="2009-07-22">
-			<action type="add" dev="tmcglynn">
-				This release adds further support for large datasets where the size of
-				an HDU may exceed 2GB. In ArrayDataInput (and the BufferedFile
-				and
-				BufferedDataInputStream that implement it)
-				int skipBytes(int)
-				method of java.io.DataInput is now overloaded with
-				long skipBytes(long).
-
-				In ArrayFuncs
-				int computeSize(Object)
-				method is
-				augmented with
-				long computeLSize(Object)
-				It was not possible to use the same name here since the argument type
-				is the same.
-				Similarly
-				int nElements(Object)
-				is now
-				matched with
-				long
-				nLElements(Object)
-
-				These changes should not affect current usage of the existing methods.
-
-				References to skipBytes and computeSize in the FITS classes now take
-				advantage of these
-				new methods.
-
-				While these changes increase the support of the library for large datasets,
-				there are still a number of restictions that arise from Java's limit that
-				array indices
-				must be ints. E.g., no single dimension can exceed 2 GB,
-				and the total size of the heap for a given binary table HDU cannot
-				exceed 2
-				GB. ASCII tables may also be limited to 2 GB
-				in some circumstances.
-				Files which exceed these limits may be readable using line by line
-				approaches, but users will need to use the library at a much lower level.
-			</action>
-			<action type="add" dev="tmcglynn">
-				The Header.read() method may now throw an IOException in circumstances
-				where it would previously throw an Error. It probably should throw
-				a
-				FitsException, but
-				that was not in the signature and might have broken
-				existing programs.
-			</action>
-			<action type="fix" dev="tmcglynn">
-				A bug in the new PaddingException was fixed which allows use of Tilers
-				with truncated Image HDUs.
-			</action>
-			<action type="update" dev="tmcglynn">
-				Some obsolete comments indicating that BITPIX=64 was an extension of
-				FITS were deleted. FITS has officially supported longs for a fair number
-				of
-				years now.
-			</action>
-			<action type="update" dev="tmcglynn">
-				The regression tests have been augmented to test the new features, but users
-				should note that the new BigFileTester test takes a very long time
-				to run. E.g.,
-				on the primary development machine this takes 240 seconds while all of the
-				other tests finish in just a few seconds. The time is simply the time it
-				takes to write a
-				file of known
-				content that is more than 2 GB in size.
-			</action>
-		</release>
-
-		<release version="1.02.0" date="2009-07-08">
-			<action type="update" dev="L. Michel">
-				ASCII tables with data fields that were blank filled were not being handled properly.
-				According to the FITS standards, numeric fields where the
-				FITS table has
-				blanks are
-				to be treated as containing 0. A parsing error was being returned. The getInt, getLong,
-				and getDouble methods in ByteParser were changed to acoommodate
-				this case
-				(getFloat simply
-				calls getDouble).suggested by L. Michel
-			</action>
-			<action type="update" dev="tmcglynn">
-				A new exception, PaddingException, which inherits from FitsException has been added.
-				This exception is thrown when an otherwise valid HDU is not
-				properly
-				padded to the next
-				2880 byte boundary. The exception class has a getTruncatedHDU method which allows the
-				user to get the information in the truncated HDU. In addition to
-				the new
-				class changes were
-				made in BinaryTable, AsciiTable, UndefinedData, ImageData and RandomGroupsData to throw the
-				exception at the appropriate
-				time. The main Fits method was
-				also
-				updated so that when
-				its readHDU() method is being used, the notional header that is given to the truncated HDU
-				in the Data classes is replaced by the actual header. If a
-				user
-				wishes to ignore padding
-				exceptions, then a FITS file may be read using the following idiom in the new nom.tam.fits.test.PaddingTester to see a complete example
-				of this
-				idiom.
-			</action>
-		</release>
-
-		<release version="1.01.0" date="2009-06-24">
-			<action type="update" dev="tmcglynn">
-				A number of changes were implemented to handle large FITS files more
-				gracefully and to correct bugs associated with large files. This includes
-				a
-				change to the
-				method
-				Data.getTrueSize();
-				This method was public only for the BinaryTable data type and previously
-				returned an int. It now returns a long. User programs which called
-				this
-				method
-				will need to be recompiled.
-				Specific bugs were noted by Javier Diaz and Juan Carlos Segovia.
-				Note that the program may still fail on very
-				large files but it should give
-				more
-				informative error messages when it does so
-			</action>
-			<action type="fix" dev="tmcglynn">A bug noted by Thomas Granzer in the handling of HIERARCH keyword values
-				was also corrected.
-			</action>
-		</release>
-
-		<release version="1.00.2" date="2009-03-09">
-			<action type="fix" dev="tmcglynn">
-				Fixed bug where reading a table by rows caused reading
-				a subsequent HDU to fail. Added tests to BinaryTableTester and
-				HeaderCardTester.
-			</action>
-		</release>
+        <release version="1.07.0" date="2011-11-11">
+        <action type="update" dev="Booth Hartley">
+            This release contains some new features suggested by Booth Hartley (IPAC) who supplied
+            modified code including:
+        </action>
+        <action type="update" dev="tmcglynn">
+            Allow a FITS file to have invalid data after a valid FITS HDU.
+            User can call FitsFactory.setAllowTerminalJunk(true) to enable
+            this. The Fits
+            object will return
+            all valid HDUs. Note that
+            whatever follows the valid FITS data must start with something
+            that is clearly not FITs.
+            This includes modifications to FitsFactory and
+            Header.
+        </action>
+        <action type="update" dev="tmcglynn">
+            Allow users to find original size of headers as they were
+            read from some source file. The library throws away duplicate
+            key values, so that the
+            number of
+            header cards in the header as read
+            may be smaller than the original data. The getOriginalSize() gets
+            the original size of the header in bytes. A resetOriginalSize()
+            allows the
+            user to tell the library that this header has been
+            updated on disk and now has the same number of records as internally.
+        </action>
+        <action type="fix" dev="tmcglynn">
+            Fixed the order of the EXTEND keyword to follow the NAXISn keywords
+            when it is specified. This constraint on the EXTEND keyword is
+            no longer required
+            in the
+            latest version of the standard, but it
+            doesn't hurt anything and may make the file more acceptable to some
+            readers.
+        </action>
+        <action type="fix" dev="tmcglynn">
+            Fixed JavaDoc errors for a number of files.
+        </action>
+        <action type="fix" dev="tmcglynn">
+            Fixed a bug in Header.rewriteable() related to the same
+            issue as the original size.
+        </action>
+        <action type="update" dev="tmcglynn">
+            Updated Fits.setChecksum so that it will now set both
+            the CHECKSUM and DATASUM keywords.
+        </action>
+        <action type="update" dev="tmcglynn">
+            Added tests for the new capabilities above and updated the
+            checksum test.
+        </action>
+        </release>
 
 
-		<release version="1.00.1" date="2009-02-19">
-			<action type="fix" dev="Javier Diaz">
-				Fixed bug where exponential notation in FITS header keywords used 'e' rather than 'E' (noted by Javier Diaz)
-			</action>
-		</release>
+        <release version="1.06.0" date="2011-05-23">
+        <action type="update" dev="tmcglynn">
+            Substantial reworking of compression to accommodate
+            BZIP2 compression. The Apache Bzip library is used or
+            since this is very slow, the user can
+            specify a local
+            command to do the decompression using the BZIP_DECOMPRESSOR
+            environment variable. This is assumed to require a
+            '-' argument which is added if not supplied by the
+            user.
+            The
+            decompressor should act as a filter between standard input
+            and output.
+        </action>
+        <action type="update" dev="tmcglynn">
+            User compression flags are now completely
+            ignored and the compression and the compression
+            is determined entirely by the content of the stream.
+            The
+            Apache
+            library will be needed in the
+            classpath to accommodate BZIP2 inputs if the user
+            does not supply the BZIP_DECOMPRESSOR.
+        </action>
+        <action type="update" dev="tmcglynn">
+            Adding additional compression methods should be much easier and
+            may only involve adding a couple of lines in the
+            FitsUtil.decompress function if a
+            decompressor
+            class
+            is available.
+        </action>
+        <action type="update" dev="tmcglynn">
+            One subtle consequence of how compression is now handled
+            is that there is no advantage for users to
+            create their own BufferedDataInputStream's.
+            Users should
+            just provide a standard input stream
+            and allow the FITS library to wrap it in a
+            BufferedDataInputStream.
+        </action>
+        <action type="fix" dev="V. Forchi">
+            A bug in the UndefinedData class was detected
+            Vincenzo Forchi and has been corrected.
+        </action>
+        <action type="update" dev="tmcglynn">
+            The nom.tam.util.AsciiFuncs class now handles
+            ASCII encoding to more cleanly separate this
+            functionality from the FITS library and to enable
+            Java
+            1.5
+            compatibitity. (Suggested by changes of L.Bourges)
+            Other V1.5 incompatiblities removed.
+        </action>
+        <action type="update" dev="tmcglynn">
+            The HeaderCommentsMap class is now provided to enable
+            users to control the comments that are generated in system
+            generated header cards. The map
+            is initialized
+            to values
+            that should be the same as the current defaults. This
+            should allow users to emulate the comments of other packages.
+        </action>
+        <action type="update" dev="tmcglynn">
+            All Java code has been passed through NetBeans formatter
+            so that it should have a more uniform appearance.
+        </action>
+        </release>
+
+        <release version="1.05.1" date="2011-02-16">
+        <action type="fix" dev="V. Forchi">The implementation of long string values was incorrect, using
+            COMMENT rather than CONTINUE cards.noted originally by V. Forchi.
+        </action>
+        <action type="fix" dev="V. Forchi">
+            The placement of the header cursor after opening a primary array
+            was such that unless the user took explicit action to move
+            the cursor, new header
+            records
+            would be written before the
+            EXTEND keyword which is a violation of the FITS standard (although
+            it would not affect the operations of this library). The
+            library now leaves
+            the
+            cursor just after the EXTEND keyword where
+            new keywords are legal. It's still possible for users to write an
+            illegal header but now it requires at
+            least a little effort on
+            their
+            part.noted originally by V. Forchi.
+        </action>
+        <action type="update" dev="tmcglynn">
+            This build procedure for FITS library has been changed. The library is now stored
+            as a NetBeans project and the standard NetBeans build script
+            has been
+            modified
+            to generate the fits.jar and fits_src.jar. The names of a number of the test procedures
+            have been slightly modified (XXXTester -> XXXTest) and test data are
+            included in
+            the class jar file.
+        </action>
+        </release>
+
+        <release version="1.05.0" date="2010-12-12">
+        <action type="update" dev="Laurent Bourges">
+            Adding methods to allow finer control of the placement of
+            metadata records for columns of FITS tables. This could previously
+            be done using
+            Cursors, but the
+            TableHDU.setTableMeta() methods now
+            allow these to be specified more directly.
+
+            This involves changes only to TableHDU. Usage is illustrated in the test
+            method
+            BinaryTableTest.columnMetaTest.by Laurent Bourges
+        </action>
+        <action type="update" dev="Laurent Bourges">
+            Adding more rigor to the transformation between bytes and strings and
+            fixing a bug in the handling of strings with embedded nuls. According
+            to the
+            standard an
+            embedded null should terminate an string in a
+            binary table.by Laurent Bourges
+
+            The standard also precludes other non-printing characters from strings.
+            This has been
+            ignored
+            previously, but there is now a method
+            FitsFactory.setCheckAsciiString(boolean flag) which can be called
+            to turn on checking. A warning will be
+            issued and non-printing
+            characters
+            will be converted to spaces if this flag is set. Only a single
+            warning will be issued regardless of the number of invalid characters are
+            seen.
+
+            There are changes in a
+            number of
+            classes where the conversions occur
+            to ensure that the ASCII charset is used.
+
+            How these changes work is illustrated in BinaryTableTest.specialStringsTest.by Laurent
+            Bourges
+        </action>
+        <action type="update" dev="tmcglynn">
+            Handling fixed and variable length, single and double precision
+            complex data. The library uses a float[2] or double[2]
+            for a complex scalar.
+
+            This
+            is mostly bug
+            fixes to existing code and changes are only
+            in BinaryTable and BinaryTableHDU.
+
+            The method BinaryTableHDU.setComplexColumn() allows the user to
+            tell the FITS writer
+            that a field
+            which otherwise would be treated
+            as a float or double array (with most rapidly varying
+            dimensionality of 2) should be treated as complex.
+            The internal
+            data
+            representations are
+            identical.
+
+            Variable length complex data will be found automatically if
+            number of elements actually varies. A variable length complex
+            column is a 3-D float or
+            double array
+            where the
+            last dimension (for Java) is always 2, the first
+            dimension is the number of rows in the table and the middle
+            dimension is the number of complex numbers in
+            the row and may
+            vary
+            from row to row. Other variable length columns are
+            represented as 2-D arrays, where the first index points to the
+            row, and the second index enumerates the
+            elements in the row.
+
+            Use of complex columns is illustrated in BinaryTableTest in the routines
+            testSimpleComplex (fixed columns), testVar (variable length
+            columns), and
+            buildByColumn and buildByRow
+            where columns
+            and rows containing complex numbers are added to existing
+            tables.by Laurent Bourges
+        </action>
+        <action type="update" dev="tmcglynn">
+            Changing the null HDU created when a table is to be written without
+            a prior image to use a vector with dimensionality 0 rather than
+            a
+            one-dimensional vector
+            with a dimension of 0. I.e, use
+            NAXIS=0 rather than NAXIS=1, NAXIS1=0.by Laurent Bourges
+        </action>
+        <action type="update" dev="tmcglynn">
+            Consolidating the writing of padding at the end of FITS elements into
+            the FitsUtil.pad methods.
+        </action>
+        <action type="update" dev="tmcglynn">
+            Adding the reset() method to the FitsElement interface. This attempts
+            to reset the Fits input stream pointer to the beginning of the element.
+            It
+            does not throw
+            exceptions but will return false if not successful.
+            This is intended to make it easier for user who wish to use low-level
+            I/O to read FITS data, by allowing them to
+            position the
+            stream to the
+            beginning of the data they are interested in.
+        </action>
+        <action type="update" dev="tmcglynn">
+            Changed FitsUtil.HDUFactory(Object x) to accept a Header object as well
+            as the various kinds of data inputs.
+        </action>
+        <action type="update" dev="tmcglynn">
+            Provided a method in BinaryTable to get back the ModelRow array.
+            This makes is easier for users to do low level I/O in binary tables.
+            An
+            ArrayDataInput object
+            will read a row of the table, given the
+            result of getModelRow().
+        </action>
+        <action type="update" dev="tmcglynn">
+            Added a getColumns() method to TableHDU. This returns an Object[] array
+            where each entry is the result of getColumn(n)
+        </action>
+        </release>
+
+        <release version="1.04.0" date="2009-12-24">
+        <action type="update" dev="tmcglynn">
+            Support for the HEASARC long strings convention has been added.
+            This affects only the Header class. Two new public static methods
+            have been added.
+            setLongStringsEnabled(boolean)
+            allows the use to enable/disable the handling of long strings.
+            getLongStringsEnabled()
+            returns the current setting. By default long strings are
+            disabled.
+            The convention is enabled automatically whenever a header is read
+            which has the LONGSTRN keyword is read. It is not disabled if subsequent
+            headers are read which do not
+            have this keyword. The
+            addValue(String,String,String), getStringValue(String) and removeCard(String)
+            methods are affected, allowing the user to set, read and delete long string
+            values. The library does NOT ensure that users do not interpolate new keywords
+            or comments inside the card sequence that is used to store the long
+            string value.
+        </action>
+        <action type="fix" dev="tmcglynn">
+            A bug in the processing of keyword values with embedded apostrophes was fixed.
+            Apostrophe's were properly doubled in encoding but the doubling was
+            left
+            when
+            the values were read.
+        </action>
+        <action type="fix" dev="Mark Taylor">
+            A potential bug in the processing of headers discovered by Mark Taylor was fixed.
+        </action>
+        </release>
+
+        <release version="1.03.1" date="2009-07-27">
+        <action type="add" dev="J.C. Segovia">
+            The implementation of the FitsUtil.byteArrayToStrings method was changed
+            so that trimmed space from strings can be cleaned up more efficiently.
+            Change
+            suggested by J.C. Segovia (ESA).
+            There should be no effect -- other than memory usage -- on external programs.
+        </action>
+        <action type="update" dev="tmcglynn">
+            Users might want to note that when reading string values in binary tables,
+            both leading and trailing spaces are trimmed from the string values.
+        </action>
+        </release>
+
+        <release version="1.03.0" date="2009-07-22">
+        <action type="add" dev="tmcglynn">
+            This release adds further support for large datasets where the size of
+            an HDU may exceed 2GB. In ArrayDataInput (and the BufferedFile
+            and
+            BufferedDataInputStream that implement it)
+            int skipBytes(int)
+            method of java.io.DataInput is now overloaded with
+            long skipBytes(long).
+
+            In ArrayFuncs
+            int computeSize(Object)
+            method is
+            augmented with
+            long computeLSize(Object)
+            It was not possible to use the same name here since the argument type
+            is the same.
+            Similarly
+            int nElements(Object)
+            is now
+            matched with
+            long
+            nLElements(Object)
+
+            These changes should not affect current usage of the existing methods.
+
+            References to skipBytes and computeSize in the FITS classes now take
+            advantage of these
+            new methods.
+
+            While these changes increase the support of the library for large datasets,
+            there are still a number of restictions that arise from Java's limit that
+            array indices
+            must be ints. E.g., no single dimension can exceed 2 GB,
+            and the total size of the heap for a given binary table HDU cannot
+            exceed 2
+            GB. ASCII tables may also be limited to 2 GB
+            in some circumstances.
+            Files which exceed these limits may be readable using line by line
+            approaches, but users will need to use the library at a much lower level.
+        </action>
+        <action type="add" dev="tmcglynn">
+            The Header.read() method may now throw an IOException in circumstances
+            where it would previously throw an Error. It probably should throw
+            a
+            FitsException, but
+            that was not in the signature and might have broken
+            existing programs.
+        </action>
+        <action type="fix" dev="tmcglynn">
+            A bug in the new PaddingException was fixed which allows use of Tilers
+            with truncated Image HDUs.
+        </action>
+        <action type="update" dev="tmcglynn">
+            Some obsolete comments indicating that BITPIX=64 was an extension of
+            FITS were deleted. FITS has officially supported longs for a fair number
+            of
+            years now.
+        </action>
+        <action type="update" dev="tmcglynn">
+            The regression tests have been augmented to test the new features, but users
+            should note that the new BigFileTester test takes a very long time
+            to run. E.g.,
+            on the primary development machine this takes 240 seconds while all of the
+            other tests finish in just a few seconds. The time is simply the time it
+            takes to write a
+            file of known
+            content that is more than 2 GB in size.
+        </action>
+        </release>
+
+        <release version="1.02.0" date="2009-07-08">
+        <action type="update" dev="L. Michel">
+            ASCII tables with data fields that were blank filled were not being handled properly.
+            According to the FITS standards, numeric fields where the
+            FITS table has
+            blanks are
+            to be treated as containing 0. A parsing error was being returned. The getInt, getLong,
+            and getDouble methods in ByteParser were changed to acoommodate
+            this case
+            (getFloat simply
+            calls getDouble).suggested by L. Michel
+        </action>
+        <action type="update" dev="tmcglynn">
+            A new exception, PaddingException, which inherits from FitsException has been added.
+            This exception is thrown when an otherwise valid HDU is not
+            properly
+            padded to the next
+            2880 byte boundary. The exception class has a getTruncatedHDU method which allows the
+            user to get the information in the truncated HDU. In addition to
+            the new
+            class changes were
+            made in BinaryTable, AsciiTable, UndefinedData, ImageData and RandomGroupsData to throw the
+            exception at the appropriate
+            time. The main Fits method was
+            also
+            updated so that when
+            its readHDU() method is being used, the notional header that is given to the truncated HDU
+            in the Data classes is replaced by the actual header. If a
+            user
+            wishes to ignore padding
+            exceptions, then a FITS file may be read using the following idiom in the new nom.tam.fits.test.PaddingTester to see a complete example
+            of this
+            idiom.
+        </action>
+        </release>
+
+        <release version="1.01.0" date="2009-06-24">
+        <action type="update" dev="tmcglynn">
+            A number of changes were implemented to handle large FITS files more
+            gracefully and to correct bugs associated with large files. This includes
+            a
+            change to the
+            method
+            Data.getTrueSize();
+            This method was public only for the BinaryTable data type and previously
+            returned an int. It now returns a long. User programs which called
+            this
+            method
+            will need to be recompiled.
+            Specific bugs were noted by Javier Diaz and Juan Carlos Segovia.
+            Note that the program may still fail on very
+            large files but it should give
+            more
+            informative error messages when it does so
+        </action>
+        <action type="fix" dev="tmcglynn">A bug noted by Thomas Granzer in the handling of HIERARCH keyword values
+            was also corrected.
+        </action>
+        </release>
+
+        <release version="1.00.2" date="2009-03-09">
+        <action type="fix" dev="tmcglynn">
+            Fixed bug where reading a table by rows caused reading
+            a subsequent HDU to fail. Added tests to BinaryTableTester and
+            HeaderCardTester.
+        </action>
+        </release>
 
 
-		<release version="1.00.0.1" date="2008-07-11">
-			<action type="add" dev="tmcglynn">The major chage to this release is support for .Z compressed images.
-				A problem reading past the end of files in normal FITS processing was included
-				in the 1.0
-				release and was fixed (7/11/08). The earlier jars were overwritten.
-				The problem shows up in the regression test suite.
-			</action>
-		</release>
+        <release version="1.00.1" date="2009-02-19">
+        <action type="fix" dev="Javier Diaz">
+            Fixed bug where exponential notation in FITS header keywords used 'e' rather than 'E' (noted by Javier Diaz)
+        </action>
+        </release>
 
-		<release version="1.00.0" date="2008-06-10">
-			<action type="add" dev="tmcglynn">The major chage to this release is support for .Z compressed images.
-				This is implemented by using the uncompress command which must
-				be in the user's
-				execution
-				path.
-			</action>
-			<action type="update" dev="tmcglynn">There is much more dynamic checking of the magic number of inputs
-				to determine whether the input to the FITS constructor is compressed
-				or not, and
-				if
-				compressed what the compression type is.
-				This can still be confused but in many cases it will get the
-				compression right regardless of what the user specifies.
-				Future versions
-				may
-				completely ignore the user specified compression
-				flag.
-			</action>
-			<action type="fix" dev="A. Kovacs">Bug fix to BinaryTable by A. Kovacs
-			</action>
-		</release>
-		<release version="0.99.3" date="2007-12-04">
-			<action type="fix" dev="tmcglynn">
-				Binary table handling of 1 character strings.
-			</action>
-		</release>
 
-		<release version="0.99.5" date="2007-12-04">
-			<action type="update" dev="tmcglynn">
-				Added Support HTTPS, FTP and FILE URLs
-			</action>
-			<action type="update" dev="tmcglynn">
-				Added Fits(String,compressed) constructor
-			</action>
-			<action type="update" dev="tmcglynn">
-				Made some of the methods in FitsFactory public.
-			</action>
-			<action type="update" dev="tmcglynn">
-				Added getRawElement method to Binary table.
-			</action>
-			<action type="update" dev="tmcglynn">
-				Changed handling of double values in header
-				so that they all fit into the fixed format.
-				In rare circumstances this may result in a loss
-				of
-				precision.
-			</action>
-			<action type="fix" dev="tmcglynn">
-				Additional fixes for zero length and null strings
-			</action>
-			<action type="fix" dev="A. Kovacs">
-				Fix to handling of Strings in Binary tables (A. Kovacs)
-			</action>
-		</release>
+        <release version="1.00.0.1" date="2008-07-11">
+        <action type="add" dev="tmcglynn">The major chage to this release is support for .Z compressed images.
+            A problem reading past the end of files in normal FITS processing was included
+            in the 1.0
+            release and was fixed (7/11/08). The earlier jars were overwritten.
+            The problem shows up in the regression test suite.
+        </action>
+        </release>
 
-		<release version="0.99.3" date="2006-12-21">
-			<action type="update" dev="tmcglynn">
-				Additional changes to handle null and zero length strings.
-			</action>
-		</release>
-		<release version="0.99.2" date="2006-12-15">
-			<action type="update" dev="tmcglynn">
-				Moved code to use subversion repository and Ant compile scripts.
-			</action>
-			<action type="update" dev="tmcglynn">
-				Major transformations of all test code to use Junit and automated
-				checking rather than comparing print outs.
-			</action>
-			<action type="update" dev="tmcglynn">
-				nom.tam.fits.utilities package created and FitsCopy and FitsReader
-				classes were moved there.
-			</action>
-			<action type="update" dev="tmcglynn">
-				A few test classes, e.g., BigImage and RMFUpdTest were deleted and
-				their functions subsumed into the other tests.
-			</action>
-			<action type="update" dev="tmcglynn">
-				Test routines now considered standard part of library. There
-				are not separate JARs for the test routines.
-			</action>
-			<action type="update" dev="tmcglynn">
-				Note that the test routines use Annotations and may not compile
-				with versions of Java prior to 1.5.
-			</action>
-			<action type="add" dev="tmcglynn">
-				ArrayFuncs: Added arrayEquals() methods which allow comparison
-				of arrays of arbitrary dimensionality. Used extensively
-				in the updated test classes.
-			</action>
-			<action type="fix" dev="tmcglynn">
-				AsciiTable: Setting a row, column or element de-nulls any
-				elements that were set to null.
-				Fixed offsets in columns after column was deleted.
-			</action>
-			<action type="fix" dev="tmcglynn">
-				FitsUtil: Fixed bug in maxLength which looked for nulls in
-				the array pointer rather than the individual strings.
-				Added check for nulls in
-				stringsToByteArray
-			</action>
-			<action type="fix" dev="tmcglynn">
-				HeaderCard: Truncated String in one argument constructor to
-				a maximum of 80 characters.
-			</action>
-			<action type="fix" dev="tmcglynn">
-				BinaryTable: Fixed handling of columns with 0 width (e.g.,
-				0 length strings, or arrays of 0 length.
-			</action>
-			<action type="fix" dev="tmcglynn">
-				ColumnTable: Fixed handling of columns with 0 width.
-			</action>
-		</release>
+        <release version="1.00.0" date="2008-06-10">
+        <action type="add" dev="tmcglynn">The major chage to this release is support for .Z compressed images.
+            This is implemented by using the uncompress command which must
+            be in the user's
+            execution
+            path.
+        </action>
+        <action type="update" dev="tmcglynn">There is much more dynamic checking of the magic number of inputs
+            to determine whether the input to the FITS constructor is compressed
+            or not, and
+            if
+            compressed what the compression type is.
+            This can still be confused but in many cases it will get the
+            compression right regardless of what the user specifies.
+            Future versions
+            may
+            completely ignore the user specified compression
+            flag.
+        </action>
+        <action type="fix" dev="A. Kovacs">Bug fix to BinaryTable by A. Kovacs
+        </action>
+        </release>
+        <release version="0.99.3" date="2007-12-04">
+        <action type="fix" dev="tmcglynn">
+            Binary table handling of 1 character strings.
+        </action>
+        </release>
 
-		<release version="0.99.1" date="2006-07-29">
-			<action type="update" dev="tmcglynn">
-				Added new methods to delete rows and columns from both binary and ASCII tables.
-				There are changes to many of the table classes including
-				util/ColumnTable.
-				These changes were suggested by row deletion code written by R. Mathar,
-				but the actual implementation is entirely independent and errors
-				are handled somewhat
-				differently than in
-				his code. There are deleteColumns
-				and deleteRows methods in TableHDU that delete either a specified range
-				or all tables or columns after
-				(and including) the
-				one specified.
-			</action>
-			<action type="update" dev="tmcglynn">
-				The util.HashedList implementation has been completely revised. It now
-				uses a HashedMap for keyed access and an ArrayList for sequential access.
-				It no longer
-				implements a simple but custom list structure. The public
-				interface was not significantly changed.
-			</action>
-			<action type="update" dev="tmcglynn">
-				Header now sorts keywords before a header is written to ensure that
-				required keywords come where they need to be. Previously users
-				needed to work
-				to make sure
-				that they wrote required keywords
-				in the right location in the header. A new class, HeaderOrder,
-				is used.
-			</action>
-			<action type="fix" dev="tmcglynn">
-				A number of errors in the handling of variable length arrays were
-				fixed. These were pointed out by Guillame Belanger. This included
-				changes to
-				util.ColumnTable
-				but mostly BinaryTable and FitsHeap.
-			</action>
-			<action type="update" dev="R.J. Mathar">
-				A number of changes mostly to BinaryTable or documentation in other
-				routines suggested by R. MAthar.
-			</action>
-		</release>
-		<release version="0.99.0" date="2006-06-23">
-			<action type="update" dev="tmcglynn">
-				The three packages, nom.tam.fits, nom.tam.util and nom.tam.image
-				have been combined into a single JAR file for the convenience
-				of the user.
-			</action>
-			<action type="add" dev="R.J. Mathar">
-				Added support for Checksums. Use the setChecksum methods in the
-				FITS class to add checksums to FITS HDUs. The static method
-				setChecksum(HDU) adds a
-				checksum to
-				a given HDU. The instance
-				method setChecksum() adds checksums to all HDUs in the file.
-				Note that setting the checksum should be the last step before
-				writing the file
-				since any
-				manipulation of the file is likely
-				to invalidate the checksum.
-				(This code was contributed by R.J. Mathar, Leiden University).
-			</action>
-			<action type="add" dev="tmcglynn">
-				Changed handling of 1-d arrays with a single element so that
-				they can be distinguished from scalar values. No TDIM will be
-				be created for scalar
-				columns, and a
-				TDIMn = '(1)' will give
-				an array rather than a scalar value. (Suggested by Jorgo Bakker. ESA)
-				For data written using the previous version of the FITS library,
-				this
-				may cause
-				problems when the data is read with the new version,
-				since the type of the returned column will be different.
-			</action>
-			<action type="add" dev="Laurent Michel">
-				When checking if a file is compressed, the actual content of the
-				file will be used if possible rather than the name (Suggested by Laurent Michel,
-				CDS)
-			</action>
-			<action type="update" dev="Laurent Michel">
-				The code used to support TFORMn = 'xNNN' where the array dimension followed rather
-				than preceded the format type. This has been deleted
-				(Suggested by Laurent
-				Michel, CDS)
-			</action>
-			<action type="update" dev="Fred Romelfanger and Jorgo Bakker">
-				Zero-length string values should now be allowed as header keyword values
-				(Bug noted by Fred Romelfanger, ST ScI and Jorgo Bakker, ESA).
-			</action>
-			<action type="update" dev="tmcglynn">
-				The addLine methods in Header are now public rather than protected.
-			</action>
-			<action type="update" dev="tmcglynn">
-				If the Fits.write() method is called using a BufferedFile, then the size of the
-				file is truncated at the end of the write. Otherwise if the FITS
-				data was
-				being written into a previously existing file of greater length, there
-				would be extra bytes at the end of the file. This is still possible
-				if the user uses the write
-				methods for
-				individual constituents of the FITS
-				object.
-			</action>
-			<action type="add" dev="tmcglynn">
-				The ArrayFuncs.newInstance method now accepts an dimension array of length
-				0 and returns a 1-d array of length 1 to emulate a scalar.
-			</action>
-			<action type="fix" dev="tmcglynn">
-				Corrected bug in writing a binary table when the read of that table
-				had been deferred.
-			</action>
-		</release>
-		<release version="0.97" date="2003-11-01">
-			<action type="fix" dev="tmcglynn">
-				Version 0.97 corrects several bugs in the handling header
-				keywords and ASCII tables and Images.
-			</action>
-			<action type="update" dev="tmcglynn">
-				The HeaderCard class now has constructor
-				with the signature (String,String,boolean) which
-				may be used to generate either a comment style
-				card with
-				the keyword
-				and value
-				given, or a card with a null value
-			</action>
-			<action type="fix" dev="tmcglynn">The handling of the EXTEND keyword has been made consistent
-				with FITS standards
-			</action>
-			<action type="fix" dev="tmcglynn">ASCII tables are first read to an intermediate byte
-				buffer and then parsed as needed. Bugs where this
-				buffer was being deleted at inappropriate
-				times, or
-				left
-				undeleted when it was invalid were fixed.
-				This should fix errors when AsciiTables are read
-				from non-seekable sources. This should slightly
-				speed up most access to
-				ASCII tables
-			</action>
-			<action type="fix" dev="tmcglynn">In certain circumstances an Image would not be
-				properly initialized before it was to be written
-			</action>
-			<action type="fix" dev="tmcglynn">The routines Header, HeaderCard, ImageData and AsciiTableData
-				where modified in this release
-			</action>
-			<action type="add" dev="tmcglynn">
-				The getChannel method was added to BufferedFile
-			</action>
-		</release>
-		<release version="0.96" date="2003-03-20">
-			<action type="update" dev="tmcglynn">The handling of PCOUNT, GCOUNT and EXTEND keywords
-				was changed in images so that the first two
-				are only generated for extensions and the first
-				only for primary
-				HDU's.
-			</action>
-			<action type="fix" dev="tmcglynn">A bug in the creation of ASCII Table Headers was fixed.
-				Some of the header cards in the header were being
-				inserted as if they were comments, allowing
-				multiple
-				copies to be generated.
-				This was also possible when a Header was created
-				from an array of strings.
-			</action>
-		</release>
-		<release version="0.93" date="2001-01-01">
-			<action type="add" dev="tmcglynn">The HeaderCard class has been modified to handle
-				The HIERARCH keyword convention. The FitsFactory
-				now has methods set/getUseHierarch to
-				enable/disable this
-				processing
-			</action>
-			<action type="add" dev="tmcglynn">A new interface FitsElement has been added which
-				is implemented by the BasicHDU, Header, Data and FitsHeap
-				classes. It enables users to more easily
-				deal with
-				FITS data
-				at the byte level. There is also a public method
-				getDataSize in Header to get the size in bytes
-				of the associated data element including padding.
-				The FitsHeap
-				class has
-				been made public
-			</action>
-			<action type="fix" dev="Jens Knudstrup">Several bugs relating to null images were corrected.
-				(Thanks to Jens Knudstrup) (ImageData)
-			</action>
-			<action type="fix" dev="tmcglynn">The handling of EOF conditions in array reads in
-				the BufferedFile and BufferedDataInputStream classes
-				was made consistent with the behavior of
-				java.io classes
-				reading byte arrays
-			</action>
-			<action type="fix" dev="tmcglynn">Several bug fixes implemented by Alan Brighton (and already
-				fixed in the Jsky distribution) were incorporated
-			</action>
-			<action type="fix" dev="tmcglynn">All references to the java.lang.reflect.Array.newInstance()
-				methods were modified to use new methods with the same signature
-				in ArrayFuncs. These new
-				methods
-				throw an OutOfMemory exception
-				when an array cannot be created. The JVM methods seem -- in
-				contradiction to the documentation -- to simply return null.
-				Previously the
-				program
-				could mysteriously crash when used to read large
-				files, when the null in a dynamic allocation was eventually
-				dereferenced
-			</action>
-		</release>
+        <release version="0.99.5" date="2007-12-04">
+        <action type="update" dev="tmcglynn">
+            Added Support HTTPS, FTP and FILE URLs
+        </action>
+        <action type="update" dev="tmcglynn">
+            Added Fits(String,compressed) constructor
+        </action>
+        <action type="update" dev="tmcglynn">
+            Made some of the methods in FitsFactory public.
+        </action>
+        <action type="update" dev="tmcglynn">
+            Added getRawElement method to Binary table.
+        </action>
+        <action type="update" dev="tmcglynn">
+            Changed handling of double values in header
+            so that they all fit into the fixed format.
+            In rare circumstances this may result in a loss
+            of
+            precision.
+        </action>
+        <action type="fix" dev="tmcglynn">
+            Additional fixes for zero length and null strings
+        </action>
+        <action type="fix" dev="A. Kovacs">
+            Fix to handling of Strings in Binary tables (A. Kovacs)
+        </action>
+        </release>
 
-		<release version="0.92" date="2000-10-12">
-			<action type="update" dev="tmcglynn">
-				BinaryTable
-				Fixed bug initializing BinaryTable's read from streams
-				(rather than files)
-			</action>
-		</release>
+        <release version="0.99.3" date="2006-12-21">
+        <action type="update" dev="tmcglynn">
+            Additional changes to handle null and zero length strings.
+        </action>
+        </release>
+        <release version="0.99.2" date="2006-12-15">
+        <action type="update" dev="tmcglynn">
+            Moved code to use subversion repository and Ant compile scripts.
+        </action>
+        <action type="update" dev="tmcglynn">
+            Major transformations of all test code to use Junit and automated
+            checking rather than comparing print outs.
+        </action>
+        <action type="update" dev="tmcglynn">
+            nom.tam.fits.utilities package created and FitsCopy and FitsReader
+            classes were moved there.
+        </action>
+        <action type="update" dev="tmcglynn">
+            A few test classes, e.g., BigImage and RMFUpdTest were deleted and
+            their functions subsumed into the other tests.
+        </action>
+        <action type="update" dev="tmcglynn">
+            Test routines now considered standard part of library. There
+            are not separate JARs for the test routines.
+        </action>
+        <action type="update" dev="tmcglynn">
+            Note that the test routines use Annotations and may not compile
+            with versions of Java prior to 1.5.
+        </action>
+        <action type="add" dev="tmcglynn">
+            ArrayFuncs: Added arrayEquals() methods which allow comparison
+            of arrays of arbitrary dimensionality. Used extensively
+            in the updated test classes.
+        </action>
+        <action type="fix" dev="tmcglynn">
+            AsciiTable: Setting a row, column or element de-nulls any
+            elements that were set to null.
+            Fixed offsets in columns after column was deleted.
+        </action>
+        <action type="fix" dev="tmcglynn">
+            FitsUtil: Fixed bug in maxLength which looked for nulls in
+            the array pointer rather than the individual strings.
+            Added check for nulls in
+            stringsToByteArray
+        </action>
+        <action type="fix" dev="tmcglynn">
+            HeaderCard: Truncated String in one argument constructor to
+            a maximum of 80 characters.
+        </action>
+        <action type="fix" dev="tmcglynn">
+            BinaryTable: Fixed handling of columns with 0 width (e.g.,
+            0 length strings, or arrays of 0 length.
+        </action>
+        <action type="fix" dev="tmcglynn">
+            ColumnTable: Fixed handling of columns with 0 width.
+        </action>
+        </release>
 
-		<release version="0.91" date="1996-01-02">
-			<action type="update" dev="tmcglynn">
-				FitsDate:
-				added getFitsDateString
-			</action>
-			<action type="update" dev="tmcglynn">Header:
-				FitsDate:
-				made several methods public
-			</action>
-			<action type="update" dev="tmcglynn"> added checking for initial keywords before write</action>
-			<action type="update" dev="tmcglynn">BinaryTable:
-				removed TDIM keywords for variable length columns
-			</action>
-			<action type="update" dev="tmcglynn">BinaryTable:
-				fixed bug that made BinaryTable(Object[][]) constructor
-				unusable
-			</action>
-			<action type="update" dev="tmcglynn">BinaryTableHDU:
-				fixed usage of THEAP keyword
-			</action>
-			<action type="update" dev="tmcglynn">AsciiTable:
-				use blanks for data filler rather than nulls
-			</action>
-			<action type="update" dev="tmcglynn">BasicHDU
-				made getDummyHDU public
-			</action>
-			<action type="update" dev="tmcglynn">HeaderCard
-				fixed padding of string values which
-				sometimes had one too many spaces
-			</action>
-			<action type="update" dev="tmcglynn">image.ImageTiler
-				allow requests for tiles that
-				are not fully within the original image
-			</action>
-			<action type="update" dev="tmcglynn">util.ByteFormatter:
-				changed formatter to use 'E' (rather than 'e')
-				for exponents since 'e' not legal for
-				FITS ASCII tables
-			</action>
-		</release>
+        <release version="0.99.1" date="2006-07-29">
+        <action type="update" dev="tmcglynn">
+            Added new methods to delete rows and columns from both binary and ASCII tables.
+            There are changes to many of the table classes including
+            util/ColumnTable.
+            These changes were suggested by row deletion code written by R. Mathar,
+            but the actual implementation is entirely independent and errors
+            are handled somewhat
+            differently than in
+            his code. There are deleteColumns
+            and deleteRows methods in TableHDU that delete either a specified range
+            or all tables or columns after
+            (and including) the
+            one specified.
+        </action>
+        <action type="update" dev="tmcglynn">
+            The util.HashedList implementation has been completely revised. It now
+            uses a HashedMap for keyed access and an ArrayList for sequential access.
+            It no longer
+            implements a simple but custom list structure. The public
+            interface was not significantly changed.
+        </action>
+        <action type="update" dev="tmcglynn">
+            Header now sorts keywords before a header is written to ensure that
+            required keywords come where they need to be. Previously users
+            needed to work
+            to make sure
+            that they wrote required keywords
+            in the right location in the header. A new class, HeaderOrder,
+            is used.
+        </action>
+        <action type="fix" dev="tmcglynn">
+            A number of errors in the handling of variable length arrays were
+            fixed. These were pointed out by Guillame Belanger. This included
+            changes to
+            util.ColumnTable
+            but mostly BinaryTable and FitsHeap.
+        </action>
+        <action type="update" dev="R.J. Mathar">
+            A number of changes mostly to BinaryTable or documentation in other
+            routines suggested by R. MAthar.
+        </action>
+        </release>
+        <release version="0.99.0" date="2006-06-23">
+        <action type="update" dev="tmcglynn">
+            The three packages, nom.tam.fits, nom.tam.util and nom.tam.image
+            have been combined into a single JAR file for the convenience
+            of the user.
+        </action>
+        <action type="add" dev="R.J. Mathar">
+            Added support for Checksums. Use the setChecksum methods in the
+            FITS class to add checksums to FITS HDUs. The static method
+            setChecksum(HDU) adds a
+            checksum to
+            a given HDU. The instance
+            method setChecksum() adds checksums to all HDUs in the file.
+            Note that setting the checksum should be the last step before
+            writing the file
+            since any
+            manipulation of the file is likely
+            to invalidate the checksum.
+            (This code was contributed by R.J. Mathar, Leiden University).
+        </action>
+        <action type="add" dev="tmcglynn">
+            Changed handling of 1-d arrays with a single element so that
+            they can be distinguished from scalar values. No TDIM will be
+            be created for scalar
+            columns, and a
+            TDIMn = '(1)' will give
+            an array rather than a scalar value. (Suggested by Jorgo Bakker. ESA)
+            For data written using the previous version of the FITS library,
+            this
+            may cause
+            problems when the data is read with the new version,
+            since the type of the returned column will be different.
+        </action>
+        <action type="add" dev="Laurent Michel">
+            When checking if a file is compressed, the actual content of the
+            file will be used if possible rather than the name (Suggested by Laurent Michel,
+            CDS)
+        </action>
+        <action type="update" dev="Laurent Michel">
+            The code used to support TFORMn = 'xNNN' where the array dimension followed rather
+            than preceded the format type. This has been deleted
+            (Suggested by Laurent
+            Michel, CDS)
+        </action>
+        <action type="update" dev="Fred Romelfanger and Jorgo Bakker">
+            Zero-length string values should now be allowed as header keyword values
+            (Bug noted by Fred Romelfanger, ST ScI and Jorgo Bakker, ESA).
+        </action>
+        <action type="update" dev="tmcglynn">
+            The addLine methods in Header are now public rather than protected.
+        </action>
+        <action type="update" dev="tmcglynn">
+            If the Fits.write() method is called using a BufferedFile, then the size of the
+            file is truncated at the end of the write. Otherwise if the FITS
+            data was
+            being written into a previously existing file of greater length, there
+            would be extra bytes at the end of the file. This is still possible
+            if the user uses the write
+            methods for
+            individual constituents of the FITS
+            object.
+        </action>
+        <action type="add" dev="tmcglynn">
+            The ArrayFuncs.newInstance method now accepts an dimension array of length
+            0 and returns a 1-d array of length 1 to emulate a scalar.
+        </action>
+        <action type="fix" dev="tmcglynn">
+            Corrected bug in writing a binary table when the read of that table
+            had been deferred.
+        </action>
+        </release>
+        <release version="0.97" date="2003-11-01">
+        <action type="fix" dev="tmcglynn">
+            Version 0.97 corrects several bugs in the handling header
+            keywords and ASCII tables and Images.
+        </action>
+        <action type="update" dev="tmcglynn">
+            The HeaderCard class now has constructor
+            with the signature (String,String,boolean) which
+            may be used to generate either a comment style
+            card with
+            the keyword
+            and value
+            given, or a card with a null value
+        </action>
+        <action type="fix" dev="tmcglynn">The handling of the EXTEND keyword has been made consistent
+            with FITS standards
+        </action>
+        <action type="fix" dev="tmcglynn">ASCII tables are first read to an intermediate byte
+            buffer and then parsed as needed. Bugs where this
+            buffer was being deleted at inappropriate
+            times, or
+            left
+            undeleted when it was invalid were fixed.
+            This should fix errors when AsciiTables are read
+            from non-seekable sources. This should slightly
+            speed up most access to
+            ASCII tables
+        </action>
+        <action type="fix" dev="tmcglynn">In certain circumstances an Image would not be
+            properly initialized before it was to be written
+        </action>
+        <action type="fix" dev="tmcglynn">The routines Header, HeaderCard, ImageData and AsciiTableData
+            where modified in this release
+        </action>
+        <action type="add" dev="tmcglynn">
+            The getChannel method was added to BufferedFile
+        </action>
+        </release>
+        <release version="0.96" date="2003-03-20">
+        <action type="update" dev="tmcglynn">The handling of PCOUNT, GCOUNT and EXTEND keywords
+            was changed in images so that the first two
+            are only generated for extensions and the first
+            only for primary
+            HDU's.
+        </action>
+        <action type="fix" dev="tmcglynn">A bug in the creation of ASCII Table Headers was fixed.
+            Some of the header cards in the header were being
+            inserted as if they were comments, allowing
+            multiple
+            copies to be generated.
+            This was also possible when a Header was created
+            from an array of strings.
+        </action>
+        </release>
+        <release version="0.93" date="2001-01-01">
+        <action type="add" dev="tmcglynn">The HeaderCard class has been modified to handle
+            The HIERARCH keyword convention. The FitsFactory
+            now has methods set/getUseHierarch to
+            enable/disable this
+            processing
+        </action>
+        <action type="add" dev="tmcglynn">A new interface FitsElement has been added which
+            is implemented by the BasicHDU, Header, Data and FitsHeap
+            classes. It enables users to more easily
+            deal with
+            FITS data
+            at the byte level. There is also a public method
+            getDataSize in Header to get the size in bytes
+            of the associated data element including padding.
+            The FitsHeap
+            class has
+            been made public
+        </action>
+        <action type="fix" dev="Jens Knudstrup">Several bugs relating to null images were corrected.
+            (Thanks to Jens Knudstrup) (ImageData)
+        </action>
+        <action type="fix" dev="tmcglynn">The handling of EOF conditions in array reads in
+            the BufferedFile and BufferedDataInputStream classes
+            was made consistent with the behavior of
+            java.io classes
+            reading byte arrays
+        </action>
+        <action type="fix" dev="tmcglynn">Several bug fixes implemented by Alan Brighton (and already
+            fixed in the Jsky distribution) were incorporated
+        </action>
+        <action type="fix" dev="tmcglynn">All references to the java.lang.reflect.Array.newInstance()
+            methods were modified to use new methods with the same signature
+            in ArrayFuncs. These new
+            methods
+            throw an OutOfMemory exception
+            when an array cannot be created. The JVM methods seem -- in
+            contradiction to the documentation -- to simply return null.
+            Previously the
+            program
+            could mysteriously crash when used to read large
+            files, when the null in a dynamic allocation was eventually
+            dereferenced
+        </action>
+        </release>
 
-		<release version="0.90" date="1996-01-01">
-			<action type="update" dev="tmcglynn">Support for ASCII tables</action>
-			<action type="update" dev="tmcglynn">Deferred input for images and tables (data is read
-				only when user actually requests it)
-			</action>
-			<action type="update" dev="tmcglynn">Image subsetting without reading the entire image</action>
-			<action type="update" dev="tmcglynn">Reading individual rows and elements of tables without
-				reading the entire table
-			</action>
-			<action type="update" dev="tmcglynn">Support for in-place rewriting of headers and data</action>
-			<action type="update" dev="tmcglynn">Transparent support for Strings in ASCII and Binary tables</action>
-			<action type="update" dev="tmcglynn">Transparent support for booleans in binary tables, including
-				varying length columns
-			</action>
-			<action type="update" dev="tmcglynn">Efficient buffered random access methods</action>
-			<action type="update" dev="tmcglynn">More flexible support for I/O of primitive arrays</action>
-		</release>
+        <release version="0.92" date="2000-10-12">
+        <action type="update" dev="tmcglynn">
+            BinaryTable
+            Fixed bug initializing BinaryTable's read from streams
+            (rather than files)
+        </action>
+        </release>
 
-	</body>
+        <release version="0.91" date="1996-01-02">
+        <action type="update" dev="tmcglynn">
+            FitsDate:
+            added getFitsDateString
+        </action>
+        <action type="update" dev="tmcglynn">Header:
+            FitsDate:
+            made several methods public
+        </action>
+        <action type="update" dev="tmcglynn"> added checking for initial keywords before write</action>
+        <action type="update" dev="tmcglynn">BinaryTable:
+            removed TDIM keywords for variable length columns
+        </action>
+        <action type="update" dev="tmcglynn">BinaryTable:
+            fixed bug that made BinaryTable(Object[][]) constructor
+            unusable
+        </action>
+        <action type="update" dev="tmcglynn">BinaryTableHDU:
+            fixed usage of THEAP keyword
+        </action>
+        <action type="update" dev="tmcglynn">AsciiTable:
+            use blanks for data filler rather than nulls
+        </action>
+        <action type="update" dev="tmcglynn">BasicHDU
+            made getDummyHDU public
+        </action>
+        <action type="update" dev="tmcglynn">HeaderCard
+            fixed padding of string values which
+            sometimes had one too many spaces
+        </action>
+        <action type="update" dev="tmcglynn">image.ImageTiler
+            allow requests for tiles that
+            are not fully within the original image
+        </action>
+        <action type="update" dev="tmcglynn">util.ByteFormatter:
+            changed formatter to use 'E' (rather than 'e')
+            for exponents since 'e' not legal for
+            FITS ASCII tables
+        </action>
+        </release>
+
+        <release version="0.90" date="1996-01-01">
+        <action type="update" dev="tmcglynn">Support for ASCII tables</action>
+        <action type="update" dev="tmcglynn">Deferred input for images and tables (data is read
+            only when user actually requests it)
+        </action>
+        <action type="update" dev="tmcglynn">Image subsetting without reading the entire image</action>
+        <action type="update" dev="tmcglynn">Reading individual rows and elements of tables without
+            reading the entire table
+        </action>
+        <action type="update" dev="tmcglynn">Support for in-place rewriting of headers and data</action>
+        <action type="update" dev="tmcglynn">Transparent support for Strings in ASCII and Binary tables</action>
+        <action type="update" dev="tmcglynn">Transparent support for booleans in binary tables, including
+            varying length columns
+        </action>
+        <action type="update" dev="tmcglynn">Efficient buffered random access methods</action>
+        <action type="update" dev="tmcglynn">More flexible support for I/O of primitive arrays</action>
+        </release>
+
+    </body>
 </document>
