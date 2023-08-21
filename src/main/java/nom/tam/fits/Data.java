@@ -85,7 +85,7 @@ public abstract class Data implements FitsElement {
     protected RandomAccess input;
 
     /** The data checksum calculated from the input stream */
-    private long streamSum = 0;
+    private long streamSum = 0L;
 
     /**
      * Returns the random accessible input from which this data can be read, if any.
@@ -157,12 +157,19 @@ public abstract class Data implements FitsElement {
     }
 
     /**
-     * Returns the checksum value calculated duting reading from a stream.
+     * Returns the checksum value calculated duting reading from a stream. It always returns a value that is greater or
+     * equal to zero. It is only populated when reading from {@link FitsInputStream} imputs, and never from other types
+     * of inputs. The default return value is zero.
      * 
      * @return the checksum calculated for the data read from a stream, or else zero if the data was not read from the
      *             stream.
+     * 
+     * @see    FitsInputStream
+     * @see    Header#getStreamChecksum()
+     * 
+     * @since  1.18.1
      */
-    long getStreamChecksum() {
+    final long getStreamChecksum() {
         return streamSum;
     }
 
@@ -315,11 +322,10 @@ public abstract class Data implements FitsElement {
             return;
         }
 
-        streamSum = 0L;
-
         if (in instanceof FitsInputStream) {
             ((FitsInputStream) in).nextChecksum();
         }
+        streamSum = 0L;
 
         setFileOffset(in);
 

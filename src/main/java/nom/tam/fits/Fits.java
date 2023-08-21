@@ -1006,19 +1006,11 @@ public class Fits implements Closeable {
             FitsUtil.reposition(dataStr, lastFileOffset);
         }
 
-        long sum = -1;
-
-        if (dataStr instanceof FitsInputStream) {
-            ((FitsInputStream) dataStr).nextChecksum();
-        }
-
         Header hdr = Header.readHeader(dataStr);
         if (hdr == null) {
             atEOF = true;
             return null;
         }
-
-        long hsum = (dataStr instanceof FitsInputStream) ? ((FitsInputStream) dataStr).nextChecksum() : -1L;
 
         Data data = FitsFactory.dataFactory(hdr);
         try {
@@ -1027,8 +1019,6 @@ public class Fits implements Closeable {
                 // Check for truncation even if we successfully skipped to the expected
                 // end since skip may allow going beyond the EOF.
                 LOG.warning("Missing padding after data segment");
-            } else if (dataStr instanceof FitsInputStream) {
-                sum = FitsCheckSum.sumOf(hsum, data.getStreamChecksum());
             }
         } catch (PaddingException e) {
             // Stream end before required padding after data...
@@ -1037,9 +1027,6 @@ public class Fits implements Closeable {
 
         lastFileOffset = FitsUtil.findOffset(dataStr);
         BasicHDU<Data> hdu = FitsFactory.hduFactory(hdr, data);
-        if (sum > 0) {
-            hdu.setStreamChecksum(sum);
-        }
         hduList.add(hdu);
 
         return hdu;

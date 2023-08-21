@@ -13,7 +13,6 @@ import nom.tam.fits.header.Standard;
 import nom.tam.fits.utilities.FitsCheckSum;
 import nom.tam.util.ArrayDataInput;
 import nom.tam.util.ArrayDataOutput;
-import nom.tam.util.FitsInputStream;
 import nom.tam.util.FitsOutput;
 import nom.tam.util.RandomAccess;
 
@@ -128,9 +127,6 @@ public abstract class BasicHDU<DataClass extends Data> implements FitsElement {
 
     /** The associated data unit. */
     protected DataClass myData = null;
-
-    /** The checksum calculated from the input stream */
-    private Long streamSum = null;
 
     /**
      * Creates a new HDU from the specified FITS header and associated data object.
@@ -609,10 +605,6 @@ public abstract class BasicHDU<DataClass extends Data> implements FitsElement {
         FitsCheckSum.setChecksum(this);
     }
 
-    void setStreamChecksum(Long value) {
-        this.streamSum = value;
-    }
-
     /**
      * Checks the HDU's integrity, using the recorded CHECKSUM and/or DATASUM keywords if present. In addition of
      * performing the same checks as {@link #verifyDataIntegrity()}, it also checks the overall checksum of the HDU is
@@ -634,12 +626,13 @@ public abstract class BasicHDU<DataClass extends Data> implements FitsElement {
     public boolean verifyIntegrity() throws FitsException, IOException {
         boolean result = verifyDataIntegrity();
 
-        if (getHeader().getCard(Checksum.CHECKSUM) == null) {
+        if (myHeader.getCard(Checksum.CHECKSUM) == null) {
             return result;
         }
 
-        long fsum = streamSum == null ? FitsCheckSum.checksum(myData.getRandomAccessInput(), getFileOffset(), getSize()) :
-                streamSum;
+        long fsum = (myHeader.getStreamChecksum() < 0) ?
+                FitsCheckSum.checksum(myData.getRandomAccessInput(), getFileOffset(), getSize()) :
+                FitsCheckSum.sumOf(myHeader.getStreamChecksum(), myData.getStreamChecksum());
 
         if (fsum != FitsCheckSum.HDU_CHECKSUM) {
             throw new FitsIntegrityException("checksum", fsum, FitsCheckSum.HDU_CHECKSUM);
@@ -896,21 +889,9 @@ public abstract class BasicHDU<DataClass extends Data> implements FitsElement {
     @Override
     @SuppressWarnings({"unchecked", "deprecation"})
     public void read(ArrayDataInput stream) throws FitsException, IOException {
-        streamSum = null;
-
-        if (stream instanceof FitsInputStream) {
-            ((FitsInputStream) stream).nextChecksum();
-        }
-
         myHeader = Header.readHeader(stream);
-        long hsum = (stream instanceof FitsInputStream) ? ((FitsInputStream) stream).nextChecksum() : 0;
-
         myData = (DataClass) FitsFactory.dataFactory(myHeader);
         myData.read(stream);
-
-        if (stream instanceof FitsInputStream) {
-            streamSum = FitsCheckSum.sumOf(hsum, myData.getStreamChecksum());
-        }
     }
 
     @Override

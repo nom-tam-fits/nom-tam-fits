@@ -24,6 +24,7 @@ import nom.tam.util.AsciiFuncs;
 import nom.tam.util.ComplexValue;
 import nom.tam.util.Cursor;
 import nom.tam.util.FitsIO;
+import nom.tam.util.FitsInputStream;
 import nom.tam.util.FitsOutput;
 import nom.tam.util.HashedList;
 import nom.tam.util.RandomAccess;
@@ -184,6 +185,9 @@ public class Header implements FitsElement {
      * The number of bytes that this header occupied in file. (for re-writing).
      */
     private long readSize;
+
+    /** The checksum calculated from the input stream */
+    private long streamSum = -1L;
 
     /**
      * the sorter used to sort the header cards defore writing the header.
@@ -1768,6 +1772,11 @@ public class Header implements FitsElement {
             fileOffset = -1;
         }
 
+        if (dis instanceof FitsInputStream) {
+            ((FitsInputStream) dis).nextChecksum();
+        }
+        streamSum = -1L;
+
         int trailingBlanks = 0;
         minCards = 0;
 
@@ -1846,6 +1855,10 @@ public class Header implements FitsElement {
             LOG.log(Level.WARNING, "Premature end-of-file: no padding after header.", e);
         }
 
+        if (dis instanceof FitsInputStream) {
+            streamSum = ((FitsInputStream) dis).nextChecksum();
+        }
+
         // AK: Log if the file ends before the expected end-of-header position.
         if (Fits.checkTruncated(dis)) {
             // No biggy. We got a complete header just fine, it's only that there was no
@@ -1855,6 +1868,23 @@ public class Header implements FitsElement {
 
         // Move the cursor to after the last card -- this is where new cards will be added.
         seekTail();
+    }
+
+    /**
+     * Returns the checksum value calculated duting reading from a stream. It is only populated when reading from
+     * {@link FitsInputStream} imputs, and never from other types of inputs. Valid values are greater or equal to zero.
+     * Thus, the return value will be <code>-1L</code> to indicate an invalid (unpopulated) checksum.
+     * 
+     * @return the non-negative checksum calculated for the data read from a stream, or else <code>-1L</code> if the
+     *             data was not read from the stream.
+     * 
+     * @see    FitsInputStream
+     * @see    Data#getStreamChecksum()
+     * 
+     * @since  1.18.1
+     */
+    final long getStreamChecksum() {
+        return streamSum;
     }
 
     /**
