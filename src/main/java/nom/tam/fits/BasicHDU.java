@@ -130,7 +130,7 @@ public abstract class BasicHDU<DataClass extends Data> implements FitsElement {
     protected DataClass myData = null;
 
     /** The checksum calculated from the input stream */
-    private Long checksum = null;
+    private Long streamSum = null;
 
     /**
      * Creates a new HDU from the specified FITS header and associated data object.
@@ -610,7 +610,7 @@ public abstract class BasicHDU<DataClass extends Data> implements FitsElement {
     }
 
     void setStreamChecksum(Long value) {
-        this.checksum = value;
+        this.streamSum = value;
     }
 
     /**
@@ -638,8 +638,8 @@ public abstract class BasicHDU<DataClass extends Data> implements FitsElement {
             return result;
         }
 
-        long fsum = checksum == null ? FitsCheckSum.checksum(myData.getRandomAccessInput(), getFileOffset(), getSize()) :
-                checksum;
+        long fsum = streamSum == null ? FitsCheckSum.checksum(myData.getRandomAccessInput(), getFileOffset(), getSize()) :
+                streamSum;
 
         if (fsum != FitsCheckSum.HDU_CHECKSUM) {
             throw new FitsIntegrityException("checksum", fsum, FitsCheckSum.HDU_CHECKSUM);
@@ -896,20 +896,20 @@ public abstract class BasicHDU<DataClass extends Data> implements FitsElement {
     @Override
     @SuppressWarnings({"unchecked", "deprecation"})
     public void read(ArrayDataInput stream) throws FitsException, IOException {
-        checksum = null;
+        streamSum = null;
 
         if (stream instanceof FitsInputStream) {
-            ((FitsInputStream) stream).newChecksum();
+            ((FitsInputStream) stream).nextChecksum();
         }
 
         myHeader = Header.readHeader(stream);
-        long hsum = (stream instanceof FitsInputStream) ? ((FitsInputStream) stream).getAggregatedChecksum() : 0;
+        long hsum = (stream instanceof FitsInputStream) ? ((FitsInputStream) stream).nextChecksum() : 0;
 
         myData = (DataClass) FitsFactory.dataFactory(myHeader);
         myData.read(stream);
 
         if (stream instanceof FitsInputStream) {
-            checksum = FitsCheckSum.sumOf(hsum, myData.getStreamChecksum());
+            streamSum = FitsCheckSum.sumOf(hsum, myData.getStreamChecksum());
         }
     }
 

@@ -85,7 +85,7 @@ public abstract class Data implements FitsElement {
     protected RandomAccess input;
 
     /** The data checksum calculated from the input stream */
-    private long checksum = 0;
+    private long streamSum = 0;
 
     /**
      * Returns the random accessible input from which this data can be read, if any.
@@ -163,7 +163,7 @@ public abstract class Data implements FitsElement {
      *             stream.
      */
     long getStreamChecksum() {
-        return checksum;
+        return streamSum;
     }
 
     /**
@@ -315,10 +315,10 @@ public abstract class Data implements FitsElement {
             return;
         }
 
-        checksum = 0L;
+        streamSum = 0L;
 
         if (in instanceof FitsInputStream) {
-            ((FitsInputStream) in).newChecksum();
+            ((FitsInputStream) in).nextChecksum();
         }
 
         setFileOffset(in);
@@ -345,7 +345,7 @@ public abstract class Data implements FitsElement {
         skipPadding(in);
 
         if (in instanceof FitsInputStream) {
-            checksum = ((FitsInputStream) in).getAggregatedChecksum();
+            streamSum = ((FitsInputStream) in).nextChecksum();
         }
     }
 

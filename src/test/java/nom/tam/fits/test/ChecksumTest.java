@@ -27,6 +27,7 @@ import nom.tam.fits.header.Bitpix;
 import nom.tam.fits.header.Standard;
 import nom.tam.fits.utilities.FitsCheckSum;
 import nom.tam.util.ArrayDataOutput;
+import nom.tam.util.FitsFile;
 import nom.tam.util.FitsIO;
 import nom.tam.util.FitsInputStream;
 import nom.tam.util.FitsOutputStream;
@@ -244,6 +245,42 @@ public class ChecksumTest {
         try (Fits fits = new Fits(new FileInputStream(new File("src/test/resources/nom/tam/fits/test/checksum.fits")))) {
             assertTrue(fits.getHDU(0).verifyDataIntegrity());
         }
+    }
+
+    @Test
+    public void testCheckSumReadHDUStream() throws Exception {
+        try (FitsInputStream in = new FitsInputStream(
+                new FileInputStream(new File("src/test/resources/nom/tam/fits/test/checksum.fits")))) {
+            ImageHDU hdu = new ImageHDU(null, null);
+            hdu.read(in);
+            hdu.verifyDataIntegrity();
+            hdu.verifyIntegrity();
+        }
+        /* No exception */
+    }
+
+    @Test
+    public void testCheckSumReadHDUFile() throws Exception {
+        try (FitsFile in = new FitsFile("src/test/resources/nom/tam/fits/test/checksum.fits", "r")) {
+            ImageHDU hdu = new ImageHDU(null, null);
+            hdu.read(in);
+            hdu.verifyDataIntegrity();
+            hdu.verifyIntegrity();
+        }
+        /* No exception */
+    }
+
+    @Test
+    public void testCStreamheckSumReads() throws Exception {
+        try (FitsInputStream in = new FitsInputStream(
+                new FileInputStream(new File("src/test/resources/nom/tam/fits/test/checksum.fits")))) {
+            assertEquals(0, in.nextChecksum());
+            for (int i = 0; i < FitsFactory.FITS_BLOCK_SIZE; i++) {
+                in.read();
+            }
+            assertNotEquals(0, in.nextChecksum());
+        }
+        /* No exception */
     }
 
     @Test

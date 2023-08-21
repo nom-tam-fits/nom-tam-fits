@@ -132,28 +132,20 @@ public class FitsInputStream extends ArrayInputStream implements ArrayDataInput 
     }
 
     /**
-     * (<i>for internal use</i>) Returns the aggregated checksum for this stream since the last {@link #newChecksum()}
-     * or since instantiation.
+     * (<i>for internal use</i>) Returns the aggregated checksum for this stream since the last call to this method, or
+     * else since instantiation. Checsums for a block of data thus may be obtained by calling this method both before
+     * and after reading the data block -- the first call resets the checksum and the block checksum is returned on the
+     * second call. The checksummed block must be a multiple of 2880 bytes (the FITS block size) for the result to be
+     * valid.
      * 
-     * @return the aggregated checksum since the last call to {@link #newChecksum()}, or else since instantiation.
+     * @return the aggregated checksum since the last call to this method, or else since instantiation.
      * 
      * @since  1.18.1
-     * 
-     * @see    #newChecksum()
      */
-    public long getAggregatedChecksum() {
-        return sum;
-    }
-
-    /**
-     * (<i>for internal use</i>) Starts accumulating a new checksum, discarding the prior sum.
-     * 
-     * @since 1.18.1
-     * 
-     * @see   #getAggregatedChecksum()
-     */
-    public void newChecksum() {
+    public long nextChecksum() {
+        long ret = sum;
         sum = 0;
+        return ret;
     }
 
     @Override

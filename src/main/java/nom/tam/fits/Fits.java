@@ -1009,7 +1009,7 @@ public class Fits implements Closeable {
         long sum = -1;
 
         if (dataStr instanceof FitsInputStream) {
-            ((FitsInputStream) dataStr).newChecksum();
+            ((FitsInputStream) dataStr).nextChecksum();
         }
 
         Header hdr = Header.readHeader(dataStr);
@@ -1018,7 +1018,7 @@ public class Fits implements Closeable {
             return null;
         }
 
-        long hsum = (dataStr instanceof FitsInputStream) ? ((FitsInputStream) dataStr).getAggregatedChecksum() : -1L;
+        long hsum = (dataStr instanceof FitsInputStream) ? ((FitsInputStream) dataStr).nextChecksum() : -1L;
 
         Data data = FitsFactory.dataFactory(hdr);
         try {
