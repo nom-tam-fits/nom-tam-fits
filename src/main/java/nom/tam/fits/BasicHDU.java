@@ -631,7 +631,7 @@ public abstract class BasicHDU<DataClass extends Data> implements FitsElement {
         }
 
         long fsum = (myHeader.getStreamChecksum() < 0) ?
-                FitsCheckSum.checksum(myData.getRandomAccessInput(), getFileOffset(), getSize()) :
+                FitsCheckSum.checksum(myHeader.getRandomAccessInput(), getFileOffset(), getSize()) :
                 FitsCheckSum.sumOf(myHeader.getStreamChecksum(), myData.getStreamChecksum());
 
         if (fsum != FitsCheckSum.HDU_CHECKSUM) {

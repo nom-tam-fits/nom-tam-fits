@@ -1871,6 +1871,20 @@ public class Header implements FitsElement {
     }
 
     /**
+     * Returns the random-accessible input from which this header was read, or <code>null</code> if the header is not
+     * associated with an input, or the input is not random accessible.
+     * 
+     * @return the random-accessible input associated with this header or <code>null</code>
+     * 
+     * @see    #read(ArrayDataInput)
+     * 
+     * @since  1.18.1
+     */
+    RandomAccess getRandomAccessInput() {
+        return (input instanceof RandomAccess) ? (RandomAccess) input : null;
+    }
+
+    /**
      * Returns the checksum value calculated duting reading from a stream. It is only populated when reading from
      * {@link FitsInputStream} imputs, and never from other types of inputs. Valid values are greater or equal to zero.
      * Thus, the return value will be <code>-1L</code> to indicate an invalid (unpopulated) checksum.
