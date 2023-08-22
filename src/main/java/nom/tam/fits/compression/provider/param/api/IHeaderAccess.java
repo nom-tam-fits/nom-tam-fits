@@ -92,8 +92,8 @@ public interface IHeaderAccess {
      * 
      * @param key
      *            the standard or conventional FITS header keyword
-     * @return the matching FITS header card, or <code>null</code> if there is no
-     *         such card within out grasp.
+     * @return the matching FITS header card, or <code>null</code> if there is
+     *         no such card within out grasp.
      */
     HeaderCard findCard(IFitsHeader key);
 
@@ -104,8 +104,8 @@ public interface IHeaderAccess {
      * 
      * @param key
      *            the FITS header keyword
-     * @return the matching FITS header card, or <code>null</code> if there is no
-     *         such card within out grasp.
+     * @return the matching FITS header card, or <code>null</code> if there is
+     *         no such card within out grasp.
      */
     HeaderCard findCard(String key);
 

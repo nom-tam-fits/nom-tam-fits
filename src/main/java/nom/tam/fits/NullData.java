@@ -86,6 +86,7 @@ public final class NullData extends ImageData {
 
     @Override
     public void read(ArrayDataInput in) {
+        setFileOffset(in);
     }
 
     @Override
