@@ -1612,4 +1612,19 @@ public class HeaderTest {
         assertEquals(N, h.getBigIntegerValue(NAXISn.n(1)).longValue());
         assertNull(h.getBigIntegerValue(NAXISn.n(2), null));
     }
+
+    @Test
+    public void testGetRandomAccessInputFile() throws Exception {
+        Fits f = new Fits(new FitsFile("src/test/resources/nom/tam/fits/test/test.fits", "r"));
+        BasicHDU<?> hdu = f.readHDU();
+        assertNotNull(hdu.getHeader().getRandomAccessInput());
+    }
+
+    @Test
+    public void testGetRandomAccessInputStream() throws Exception {
+        Fits f = new Fits(
+                new FitsInputStream(new FileInputStream(new File("src/test/resources/nom/tam/fits/test/test.fits"))));
+        BasicHDU<?> hdu = f.readHDU();
+        assertNull(hdu.getHeader().getRandomAccessInput());
+    }
 }
