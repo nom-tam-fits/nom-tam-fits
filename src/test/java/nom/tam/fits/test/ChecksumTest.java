@@ -20,6 +20,7 @@ import nom.tam.fits.BasicHDU;
 import nom.tam.fits.Fits;
 import nom.tam.fits.FitsException;
 import nom.tam.fits.FitsFactory;
+import nom.tam.fits.FitsIntegrityException;
 import nom.tam.fits.Header;
 import nom.tam.fits.ImageData;
 import nom.tam.fits.ImageHDU;
@@ -189,7 +190,7 @@ public class ChecksumTest {
         }
     }
 
-    @Test(expected = FitsException.class)
+    @Test(expected = FitsIntegrityException.class)
     public void testCheckSumVerifyModifiedHeaderFail() throws Exception {
         File copy = new File("target/checksum-modhead.fits");
 
@@ -206,7 +207,7 @@ public class ChecksumTest {
         }
     }
 
-    @Test(expected = FitsException.class)
+    @Test(expected = FitsIntegrityException.class)
     public void testCheckSumVerifyModifiedDatasumFail() throws Exception {
         File copy = new File("target/checksum-moddata.fits");
 

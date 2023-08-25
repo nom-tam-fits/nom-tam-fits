@@ -55,4 +55,16 @@ public class FitsIntegrityException extends FitsException {
         super("Failed " + name + ": got " + got + ", expected " + expected);
     }
 
+    /**
+     * Creates a new checksum verification failure for a verification failure on
+     * a specific HDU
+     * 
+     * @param hduIndex
+     *            the zero-based index of the HDU within the FITS
+     * @param cause
+     *            the undrlying checksum verification failure
+     */
+    FitsIntegrityException(int hduIndex, FitsIntegrityException cause) {
+        super("Corrupted HDU[" + hduIndex + "]: " + cause.getMessage(), cause);
+    }
 }

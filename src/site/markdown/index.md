@@ -1246,17 +1246,17 @@ Or you can set checksums for all HDUs in your `Fits` in one go before writing th
   f.write(new FitsFile("my-checksummed-image.fits"));
 ```
 
-Then later, as of 1.18.1, you can verify the integrity of FITS files using the stored checksums (or data sums) just as 
+Then, as of 1.18.1, you can verify the integrity of FITS files using the stored checksums (or data sums) just as 
 easily too:
 
 ```java
   try (Fits f = new Fits("my-huge-fits-file.fits")) {
       f.verifyIntegrity();
-  } catch (FitsException e) {
+  } catch (FitsIntegrityException e) {
       // Failed integrity test
       System.err.println("WARNING! " + e.getMessage());
-  } catch (IOException e) {
-      // some IO error...
+  } catch (Exception e) {
+      // some other error...
   }
 ```
 

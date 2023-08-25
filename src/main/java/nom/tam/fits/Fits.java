@@ -1183,16 +1183,17 @@ public class Fits implements Closeable {
     /**
      * Checks the integrity of all HDUs. HDUs that do not specify either CHECKSUM or DATASUM keyword will be ignored.
      * 
-     * @throws FitsException if the FITS is corrupted, the message will inform about which HDU failed the integrity test
-     *                           first.
-     * @throws IOException   if the Fits object is not associated to a random-accessible input, or if there was an I/O
-     *                           error accessing the input.
+     * @throws FitsIntegrityException if the FITS is corrupted, the message will inform about which HDU failed the
+     *                                    integrity test first.
+     * @throws FitsException          if the header or HDU is invalid or garbled.
+     * @throws IOException            if the Fits object is not associated to a random-accessible input, or if there was
+     *                                    an I/O error accessing the input.
      * 
-     * @see                  BasicHDU#verifyIntegrity()
+     * @see                           BasicHDU#verifyIntegrity()
      * 
-     * @since                1.18.1
+     * @since                         1.18.1
      */
-    public void verifyIntegrity() throws FitsException, IOException {
+    public void verifyIntegrity() throws FitsIntegrityException, FitsException, IOException {
         for (int i = 0;; i++) {
             BasicHDU<?> hdu = readHDU();
             if (hdu == null) {
@@ -1202,7 +1203,9 @@ public class Fits implements Closeable {
             try {
                 hdu.verifyIntegrity();
             } catch (FitsIntegrityException e) {
-                throw new FitsException("Corrupted HDU[" + i + "]", e);
+                throw new FitsIntegrityException(i, e);
+            } catch (FitsException e) {
+                throw new FitsException("Invalid HDU[" + i + "]: " + e.getMessage(), e);
             }
         }
     }
