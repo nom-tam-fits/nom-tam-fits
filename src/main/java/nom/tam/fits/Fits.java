@@ -1204,8 +1204,6 @@ public class Fits implements Closeable {
                 hdu.verifyIntegrity();
             } catch (FitsIntegrityException e) {
                 throw new FitsIntegrityException(i, e);
-            } catch (FitsException e) {
-                throw new FitsException("Invalid HDU[" + i + "]: " + e.getMessage(), e);
             }
         }
     }
