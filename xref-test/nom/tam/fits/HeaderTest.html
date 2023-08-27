@@ -1620,7 +1620,22 @@
 <a class="jxr_linenumber" name="L1612" href="#L1612">1612</a>         assertEquals(N, h.getBigIntegerValue(NAXISn.n(1)).longValue());
 <a class="jxr_linenumber" name="L1613" href="#L1613">1613</a>         assertNull(h.getBigIntegerValue(NAXISn.n(2), <strong class="jxr_keyword">null</strong>));
 <a class="jxr_linenumber" name="L1614" href="#L1614">1614</a>     }
-<a class="jxr_linenumber" name="L1615" href="#L1615">1615</a> }
+<a class="jxr_linenumber" name="L1615" href="#L1615">1615</a> 
+<a class="jxr_linenumber" name="L1616" href="#L1616">1616</a>     @Test
+<a class="jxr_linenumber" name="L1617" href="#L1617">1617</a>     <strong class="jxr_keyword">public</strong> <strong class="jxr_keyword">void</strong> testGetRandomAccessInputFile() <strong class="jxr_keyword">throws</strong> Exception {
+<a class="jxr_linenumber" name="L1618" href="#L1618">1618</a>         Fits f = <strong class="jxr_keyword">new</strong> Fits(<strong class="jxr_keyword">new</strong> FitsFile(<span class="jxr_string">"src/test/resources/nom/tam/fits/test/test.fits"</span>, <span class="jxr_string">"r"</span>));
+<a class="jxr_linenumber" name="L1619" href="#L1619">1619</a>         BasicHDU&lt;?&gt; hdu = f.readHDU();
+<a class="jxr_linenumber" name="L1620" href="#L1620">1620</a>         assertNotNull(hdu.getHeader().getRandomAccessInput());
+<a class="jxr_linenumber" name="L1621" href="#L1621">1621</a>     }
+<a class="jxr_linenumber" name="L1622" href="#L1622">1622</a> 
+<a class="jxr_linenumber" name="L1623" href="#L1623">1623</a>     @Test
+<a class="jxr_linenumber" name="L1624" href="#L1624">1624</a>     <strong class="jxr_keyword">public</strong> <strong class="jxr_keyword">void</strong> testGetRandomAccessInputStream() <strong class="jxr_keyword">throws</strong> Exception {
+<a class="jxr_linenumber" name="L1625" href="#L1625">1625</a>         Fits f = <strong class="jxr_keyword">new</strong> Fits(
+<a class="jxr_linenumber" name="L1626" href="#L1626">1626</a>                 <strong class="jxr_keyword">new</strong> FitsInputStream(<strong class="jxr_keyword">new</strong> FileInputStream(<strong class="jxr_keyword">new</strong> File(<span class="jxr_string">"src/test/resources/nom/tam/fits/test/test.fits"</span>))));
+<a class="jxr_linenumber" name="L1627" href="#L1627">1627</a>         BasicHDU&lt;?&gt; hdu = f.readHDU();
+<a class="jxr_linenumber" name="L1628" href="#L1628">1628</a>         assertNull(hdu.getHeader().getRandomAccessInput());
+<a class="jxr_linenumber" name="L1629" href="#L1629">1629</a>     }
+<a class="jxr_linenumber" name="L1630" href="#L1630">1630</a> }
 </pre>
 <hr/>
 <div id="footer">Copyright &#169; 1996&#x2013;2023 nom-tam-fits. All rights reserved.</div>
