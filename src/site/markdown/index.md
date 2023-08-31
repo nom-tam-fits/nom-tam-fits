@@ -1205,17 +1205,16 @@ You may note a few other properties of HIERARCH keywords as implemented by this 
  
  6. The HIERARCH parsing is tolerant, and does not care about extra space (or spaces) between the hierarchical 
  components or before `=`. It also recognises `.` as a separator of hierarchy besides the conventional white space.
- As such,
- ```
-   HIERARCH MY KEYWORD
- ```
- ```
-   HIERARCH MY.KEYWORD
- ```
- ```
-   HIERARCH MY .. KEYWORD
- ```
- in the header are all interpreted as the same two-component keyword by this library.
+ As such the following may all appear in a FITS header to define the same two-component keyword:
+  ```
+    HIERARCH MY KEYWORD
+  ```
+  ```
+    HIERARCH MY.KEYWORD
+  ```
+  ```
+    HIERARCH MY .. KEYWORD
+  ```
 
 
  
