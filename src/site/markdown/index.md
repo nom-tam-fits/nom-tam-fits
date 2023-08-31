@@ -79,7 +79,7 @@ The current FITS standard (4.0) recognizes the following principal HDU / data ty
  `float[][][]`). (Note, that Java supports images up to 255 dimensions only but it's unlikely you'll find that 
  limiting for your application.)
 
- 2. **Binary table** can store rows and columns of assorted of elements. Each column entry may be either a single 
+ 2. **Binary Table** can store rows and columns of assorted of elements. Each column entry may be either a single 
  value, or a fixed-sized (multidimensional) array, or else a variable-length 1D arrays of a given type. All Java 
  primitive numerical types are supported, but also `String`, `Boolean` (logical), `boolean` (bits), and `ComplexValue` 
  types.
@@ -89,7 +89,7 @@ The current FITS standard (4.0) recognizes the following principal HDU / data ty
  (and more compact) binary tables instead for your application, and reserve use of ASCII tables for reading data that 
  may still contain these.
 
- 4. **Random-Groups** (_discouraged_) can contain a set of images of the same type and dimensions along with a set of 
+ 4. **Random Groups** (_discouraged_) can contain a set of images of the same type and dimensions along with a set of 
  parameters of the same type (for example an `int[][]` image, along with a set of `int` parameters). They were never 
  widely used and the FITS 4.0 standard discourages them going forward, given that binary tables provide far superior 
  capabilities for storing the same type of data. Support for these type of HDUs is thus very basic, and aimed mainly 
@@ -101,12 +101,12 @@ The current FITS standard (4.0) recognizes the following principal HDU / data ty
  
  In addition to the basic HDU types, there are extension of table HDUs that serve specific purposes, such as:
 
- - **Compressed images or tables** are an extension of the binary table HDUs for storing an image or a binary table in 
+ - **Compressed Tmages / Tables** are an extension of the binary table HDUs for storing an image or a binary table in 
  a compressed format, with tiling support to make parts easily accessible from the whole. We provide full support for 
  compressing and decompressing images and tables, and for accessing specific regions of compressed data stored in this 
  format.
 
- - The **Hierarchical grouping** convention is an extension of table HDUs (ASCII or binary) for storing information on 
+ - The **Hierarchical Grouping** convention is an extension of table HDUs (ASCII or binary) for storing information on 
  the hierarchical relation of HDUs contained within (or external to) the FITS. The hierarchical grouping is a 
  recognized convention, but not (yet) officially part of the FITS standard. We do not explicitly support this 
  convention yet, but it is something that we are considering for a future release.
@@ -1409,7 +1409,7 @@ used in FITS headers. The method will replace illegal characters (outside of the
 
 Starting with version 1.15.0 we include support for compressing images and tables. The compression algorithms have 
 been ported to Java from __cfitsio__ to provide a pure 100% Java implementation. However, versions prior to 1.18.0 had 
-a number of lingering compression related bugs of varying severity, that may have prevented realiable use.
+a number of lingering compression related bugs of varying severity, which may have prevented realiable use before now.
 
 
 
@@ -1502,7 +1502,7 @@ The reverse process is simply via the `asImageHDU()` method. E.g.:
   ImageHDU image = compressed.asImageHDU();
 ```
 
-When compressing or decompression images, all available CPU's are automatically utilized.
+When compressing or decompression images, all available CPUs are automatically utilized.
 
 
 #### Accessing image header values without decompressing:
@@ -1630,9 +1630,10 @@ fork, which is named either after the issue number, e.g. `issue-192`, or some ot
 
 3. __Develop__. Feel free to experiment on your fork/branch. If you run into a dead-end, you can always abandon it 
 (which is why branches are great) and start anew. You can run your own test builds locally using `mvn clean test` 
-before committing your changes. If the tests pass, you should also try running `mvn clean package` to ensure that the 
-javadoc etc. are also in order. Remember to synchronize your `master` branch by fetching changes from upstream every 
-once in a while, and merging them into your development branch. Don't forget to:
+before committing your changes. If the tests pass, you should also try running `mvn clean package` and 
+`mvn site stage` to ensure that the package and javadoc are also in order. Remember to synchronize your `master` 
+branch by fetching changes from upstream every once in a while, and merging them into your development branch. Don't 
+forget to:
 
    - Add __Javadoc__ your new code. You can keep it sweet and simple, but make sure it properly explains your methods, 
    their arguments and return values, and why and what exceptions may be thrown. You should also cross-reference other 
@@ -1648,13 +1649,13 @@ once in a while, and merging them into your development branch. Don't forget to:
 
 4. __Pull Request__. Once you feel your work can be integrated, create a pull request from your fork/branch. You can 
 do that easily from the github page of your fork/branch directly. In the pull request, provide a concise description 
-of what you added or changed. You may get some feedback at this point, and maybe there will be discussions about 
-possible improvements or regressions etc. It's a good thing too, and your changes will likely end up with added polish 
-as a result. You can be all the more proud of it in the end!
+of what you added or changed. Your pull request will be rewied. You may get some feedback at this point, and maybe 
+there will be discussions about possible improvements or regressions etc. It's a good thing too, and your changes will 
+likely end up with added polish as a result. You can be all the more proud of it in the end!
 
-5. If all goes well (and why would it not?), your pull-request will get merged, and will be included in the upcoming 
-release of _nom-tam-fits_. Congratulations for your excellent work, and many thanks for dedicating some of your time 
-for making this library a little bit better. There will be many who will appreciate it. :-)
+5. If all goes well, your pull-request will get merged, and will be included in the upcoming release of 
+_nom-tam-fits_. Congratulations for your excellent work, and many thanks for dedicating some of your time for making 
+this library a little bit better. There will be many who will appreciate it. :-)
 
 
 If at any point you have questions, or need feedback, don't be afraid to ask. You can put your questions into the 
