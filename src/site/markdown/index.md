@@ -15,8 +15,8 @@ Updated for 1.18.1 and/or later 1.x releases.
  - [Related Links](#related-links)
  - [Introduction](#introduction)
  - [Reading FITS files](#reading-fits-files)
- - [Writing data](#writing-data)
- - [Modifying existing files](#modifying-existing-files)
+ - [Writing FITS data](#writing-data)
+ - [Modifying existing FITS files](#modifying-existing-files)
  - [Buliding binary tables from local data](#building-tables-from-data)
  - [FITS headers](#fits-headers)
  - [Compression support](#compression-support)
@@ -55,8 +55,8 @@ describes the data and possibly contain extra metadata (as key-value pairs) or c
 The library requires a level of familiarity with FITS and its common standards and conventions for effective use. For 
 example, while the library will automatically interpret and populate the mandatory minimum data description in FITS 
 headers, it will not automatically process optional standard or conventional header entries. It is up to the users to 
-extract or complete the description of data, for example to include FITS world coordinate systems (WCS), physical 
-units, etc. Users are encouraged to familiarize themselves with the 
+extract or complete the description of data to its full extent, for example to include FITS world coordinate systems 
+(WCS), physical units, etc. Users are encouraged to familiarize themselves with the 
 [FITS standard](https://fits.gsfc.nasa.gov/fits_standard.html) and conventions described therein to be effective users 
 of this library. 
 
@@ -475,7 +475,7 @@ forward because these methods can be confounding to use, with overlapping data t
 -----------------------------------------------------------------------------
 
 <a name="writing-data"></a>
-## Writing data
+## Writing FITS data
 
  - [Writing complete FITS files](#writing-files)
  - [Writing one HDU at a time](#incremental-writing)
@@ -752,7 +752,7 @@ location:
 -----------------------------------------------------------------------------
 
 <a name="modifying-existing-files"></a>
-## Modifying existing files
+## Modifying existing FITS files
 
 An existing FITS file can be modified in place in some circumstances. The file must be an uncompressed 
 (random-accessible) file, with permissions to read and write. The user can then modify elements either by directly 
@@ -931,11 +931,10 @@ necessary:
 
 ```java   
    for (...) {
-   	// prepare the row data, making sure each row is compatible with prior rows...
-   	...
+       // prepare the row data, making sure each row is compatible with prior rows...
    	
-   	// Add the row to the table
-   	table.addRow(...);
+       // Add the row to the table
+       table.addRow(...);
    }
 ```
 
@@ -1127,8 +1126,8 @@ example,
   ...
 ```
 
-The advantage of using these standardized keywords, as opposed to strings, is that they avoid typos in the source 
-code, since the compiler (or your IDE) will warn unless the keyword is known. 
+The advantage of using these standardized keywords, as opposed to strings, is that they help avoid keyword typos, 
+since the compiler (or your IDE) will warn you if the keyword name is not recognised. 
 
 Some keywords contain indices that must be specified via the `n()` method. You must spececify one integer (one-based 
 index) for each 'n' appearing in the keyword name. For example, to set the value of the `WAT9_234` keyword to the 
@@ -1159,7 +1158,7 @@ settings is disabled, any attempt to set a header value to a string longer than 
 The standard FITS header keywords consists of maximum 8 upper case letters or number, plus dash `-` and underscore 
 `_`. The HIERARCH keyword convention allows for longer and/or hierarchical sets of FITS keywords, and/or for 
 supporting a somewhat more extended set of ASCII characters (in the range of `0x20` to `0x7E`).  Support for 
-HIERARCH-style keywords is enabled by default as of version 1.16. HIERARCH support can be toggled if needed via
+HIERARCH-style keywords is enabled by default as of version __1.16__. HIERARCH support can be toggled if needed via
 `FitsFactory.setUseHierarch(boolean)`. By default, HIERARCH keywords are converted to upper-case only (__cfitsio__ 
 convention), so
 
@@ -1182,31 +1181,43 @@ hence enable case-sensitive keywords. After the setting, the same card will be w
 
 You may note a few other properties of HIERARCH keywords as implemented by this library:
 
- 1. The convention of the library is to refer to HIERARCH keywords internally as a dot-separated hierarchy, preceded 
+ 1. The case sensitive setting (above) also determines whether or not HIERARCH keywords are converted to upper-case 
+ upon parsing also. As such, the header entry in last example above may be referred either as 
+ `HIERARCH.my.lower.case.keyword[!]` or as `HIERARCH.MY.LOWER.CASE.KEYWORD[!]` internally after parsing, depending on 
+ whether case-sensitive mode is enabled or not.
+
+ 2. If `FitsFactory` has HIERARCH support disabled, any attempt to define a HIERARCH-style long keyword will throw a
+ `HierarchNotEnabledException` runtime exception. (However, just `HIERARCH` by itself will still be allowed as a 
+ standard 8-character FITS keyword on its own). 
+ 
+ 3. The convention of the library is to refer to HIERARCH keywords internally as a dot-separated hierarchy, preceded 
  by `HIERARCH.`, e.g. `HIERARCH.my.keyword`. (The static methods of the `Hierarch` class can make it easier to create 
  such keywords).
  
- 2. The HIERARCH keywords may contain all printable standard ASCII characters that are allowed in FITS headers (`0x20` 
+ 4. The HIERARCH keywords may contain all printable standard ASCII characters that are allowed in FITS headers (`0x20` 
  thru `0x7E`). As such, we take a liberal reading of the ESO convention, which designated only upper-case letters, 
  numbers, plus dash `-` and underscore `_`. If you want to conform to the ESO convention more closely, you should 
  avoid using characters outside of the set of the original convention.
  
- 3. The library adds a space between the keywords and the `=` sign, as prescribed by the __cfitsio__ convention. The 
+ 5. The library adds a space between the keywords and the `=` sign, as prescribed by the __cfitsio__ convention. The 
  original ESO convention does not require such a space (but certainly allows for it). We add the extra space to offer 
  better compatibility with __cfitsio__.
  
- 4. The HIERARCH parsing is tolerant, and does not care about extra space (or spaces) between the hierarchical 
+ 6. The HIERARCH parsing is tolerant, and does not care about extra space (or spaces) between the hierarchical 
  components or before `=`. It also recognises `.` as a separator of hierarchy besides the conventional white space.
+ As such,
+ ```
+   HIERARCH MY KEYWORD
+ ```
+ ```
+   HIERARCH MY.KEYWORD
+ ```
+ ```
+   HIERARCH MY .. KEYWORD
+ ```
+ in the header are all interpreted as the same two-component keyword by this library.
 
- 5. The case sensitive setting (above) also determines whether or not HIERARCH keywords are converted to upper-case 
- upon parsing. As such, the header entry in last example above may be referred either as 
- `HIERARCH.my.lower.case.keyword[!]` or as `HIERARCH.MY.LOWER.CASE.KEYWORD[!]` internally after parsing, depending on 
- whether case-sensitive mode is enabled or not.
- 
- 6. If `FitsFactory` has HIERARCH support disabled, any attempt to define a HIERARCH-style long keyword will throw a
- `HierarchNotEnabledException` runtime exception. (However, just `HIERARCH` by itself will still be allowed as a 
- standard 8-character FITS keyword on its own). 
- 
+
  
  
 <a name="checksums"></a>
@@ -1219,7 +1230,7 @@ As of version __1.17__, it is also possible to apply incremental updates to exis
 methods of the `nom.tam.utilities.FitsChecksum` class on updating checksums for modified headers or data. There are 
 also methods to simplify verification of checksums when reading FITS files, and for calculating checksums directly 
 from a file without the need for reading and storing potentially huge amounts of data in RAM. Calculating data 
-checksums directly from the file is now default (as of 1.17) for data that is in deferred read mode (i.e. not 
+checksums directly from the file is now default (as of __1.17__) for data that is in deferred read mode (i.e. not 
 currently loaded into RAM), making it possible to checksum huge FITS files without having to load entire segments of 
 data into RAM at any point.
 
@@ -1232,31 +1243,31 @@ before writing. Here is an example of settting a checksum for an HDU before you 
   // ... prepare the HDU and header ...
    
   hdu.setChecksum();
-  hdu.write(new FitsFile("my-checksummed-image.fits"));
+  hdu.write(...);
 ```
 
 Or you can set checksums for all HDUs in your `Fits` in one go before writing the entire `Fits` object out to disk:
 
 ```java
-  Fits f = new Fits();
+  Fits f;
   
   // ... Compose the FITS with the HDUs ...
   
   f.setChecksum();
-  f.write(new FitsFile("my-checksummed-image.fits"));
+  f.write(...);
 ```
 
-Then, as of 1.18.1, you can verify the integrity of FITS files using the stored checksums (or data sums) just as 
+Then later, as of 1.18.1, you can verify the integrity of FITS files using the stored checksums (or data sums) just as 
 easily too:
 
 ```java
-  try (Fits f = new Fits("my-huge-fits-file.fits")) {
+  try (Fits f = new Fits("huge-file.fits")) {
       f.verifyIntegrity();
-  } catch (FitsIntegrityException e) {
-      // Failed integrity test
+  } catch (FitsException e) {
+      // Failed integrity check
       System.err.println("WARNING! " + e.getMessage());
-  } catch (Exception e) {
-      // some other error...
+  } catch (IOException e) {
+      // some IO error...
   }
 ```
 
@@ -1411,9 +1422,7 @@ compact form. The library supports the creation of gzipped fits out of the box, 
 stream into a `GZIPOutputStream` or , such as:
 
 ```java
-  Fits f = new Fits();
-  
-  ...
+  Fits f = ...
   
   FitsOutputStream out = new FitsOutputStream(new GZIPOutputStream(
   	new FileOutputStream(new File("mydata.fits.gz"))));
@@ -1432,7 +1441,6 @@ automatically when we construct a `Fits` object with an input stream:
   // The input stream will be filtered through a decompression algorithm
   // All read access to the FITS will pass through that decompression...
   Fits fits = new Fits(compressedStream);
-
   ...
 ```
 
