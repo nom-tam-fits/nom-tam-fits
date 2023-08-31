@@ -1264,8 +1264,7 @@ easily too:
       f.verifyIntegrity();
   } catch (FitsIntegrityException e) {
       // Failed integrity check
-      System.err.println("WARNING! " + e.getMessage());
-  } catch (Exception e) {
+  } catch (...)
       // some other error...
   }
 ```
