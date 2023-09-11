@@ -1,14 +1,15 @@
 <document xmlns="http://maven.apache.org/changes/1.0.0" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:schemaLocation="http://maven.apache.org/changes/1.0.0 http://maven.apache.org/xsd/changes-1.0.0.xsd">
 <body>
 
-   <release version="1.18.1-rc3" date="2023-08-27" description="Bug fix release with minor enhancements.">
+   <release version="1.18.1" date="2023-09-11" description="Important bug fix release with minor enhancements.">
       <action type="fix" dev="attipaci" issue="466">
-          Fixed broken default reading of ASCII tables, without explicitly setting FitsFactory.setUseAsciiTables(true).
+          Fixed broken default reading of ASCII tables in 1.18.0, without explicitly having to set 
+          FitsFactory.setUseAsciiTables(true).
       </action>
-      <action type="add" dev="attipaci" issue="473">
+      <action type="add" dev="attipaci" issue="474">
           New Fits.verifyIntegrity(), BasicHDU.verifyIntegrity() and .verifyDataIntegrity() methods for verifying 
-          file / HDU integrity based on the stored checksums and/or data sums. Updated README for proper checksum 
-          verification. Deprecated the useless checksum access methods of before.
+          file / HDU integrity based on the stored checksums and/or data sums. The now useless checksum access methods 
+          of before have been deprecated and should be avoided.
       </action>
       <action type="add" dev="attipaci" issue="476">
           FitsInputStream to calculate checksums for all bytes that are read/skipped, allowing checksum verification
@@ -20,8 +21,14 @@
           New Header.prevCard() method to complement existing .nextCard(), and .seekHead() / .seekTail()
           methods to set the position for new additions at the head or tail of the header space respectively.
       </action>
+      <action type="update" dev="attipaci" issue="473">
+          Updated README for proper checksum verification procedures.
+      </action>
       <action type="update" dev="attipaci" issue="472">
           New cleaner-looking logos for github icons / profile image.
+      </action>
+      <action type="update" dev="attipaci">
+          Updated maven build and runtime dependencies to their latest releases.
       </action>
    </release>
     
