@@ -1,6 +1,15 @@
 <document xmlns="http://maven.apache.org/changes/1.0.0" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:schemaLocation="http://maven.apache.org/changes/1.0.0 http://maven.apache.org/xsd/changes-1.0.0.xsd">
 <body>
 
+   <release version="1.18.2-SNAPSHOT" date="2023-09-12" description="Minor enhancements.">
+      <action type="update" dev="attipaci">
+          Change from unmaintained findbugs build dep to spotbugs successor
+      </action>
+      <action type="update" dev="attipaci">
+          Migrate testing from JUnit 4 to JUnit 5 Vintage.
+      </action>
+   </release>
+   
    <release version="1.18.1" date="2023-09-11" description="Important bug fix release with minor enhancements.">
       <action type="fix" dev="attipaci" issue="466">
           Fixed broken default reading of ASCII tables in 1.18.0, without explicitly having to set 
