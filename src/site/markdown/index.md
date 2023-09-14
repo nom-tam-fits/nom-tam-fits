@@ -150,9 +150,9 @@ Starting with version __1.16__, we started deprecated some of the older API, eit
 ill-conceived, confusing, or generaly unsafe to use; or because they were internals of the library that should never 
 have been exposed to users in the first place. Rest assured, the deprecations do not cripple the intended 
 functionality of the library. If anything they make the library less confusing and safer to use. The Javadoc API 
-documnetation mentions alternatives for the methods that were deprecated, when appropriate. And, if nothing else 
+documentation mentions alternatives for the methods that were deprecated, when appropriate. And, if nothing else 
 works, you should still be able to compile your old code with deprecations enabled in the compiler options. Rest 
-assured, the deprecated methods, no matter how ill-conceived or dangerous they may be, will be supported in all 
+assured, all deprecated methods, no matter how ill-conceived or dangerous they may be, will be supported in all
 future releases prior to version __2.0__ of the library.
 
 
