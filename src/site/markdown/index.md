@@ -46,7 +46,7 @@ You may find the following links useful:
 
  - [FITS data (HDU) types](#fits-data-type)
  - [FITS vs Java data types](#fits-vs-java-data-types)
-
+ - [Deprecated methods](#deprecated-methods)
 
 FITS (Flexible Image Transport System) is a binary format devised and primarily used for the storage of astronomical 
 datasets. A FITS file is composed of one or more *Header-Data Units* (HDUs). Each HDU consists of a *header*, which 
@@ -139,6 +139,21 @@ FITS generally represents character strings as byte arrays of ASCII characters, 
 appropriate narrowing conversion of 16-bit Unicode `char` to `byte`. Therefore, you should be careful to avoid using 
 extended Unicode characters (and also ASCII beyond the `0x20` -- `0x7E` range) in `String`s, when including these in 
 FITS.
+
+
+
+
+<a name="deprecated-methods"></a>
+### Deprecated methods
+
+Starting with version __1.16__, we started deprecated some of the older API, either because methods were confusing
+or generaly unsafe to use, or because they were internals of the library that should never have been exposed to users 
+in the first place. Rest assured, the deprecations do not cripple the intended functionality of the library. If 
+anything they make the library less confusing and safer to use. The Javadoc API documnetation mentions alternatives
+for the methods that were deprecated, when appropriate. And, if nothing else works, you should still be able to 
+compile your old code with deprecations enabled in the compiler options. Rest assured, the deprecated methods, no 
+matter how ill-conceived or dangerous they may be, will be supported in all future releases prior to version __2.0__ 
+of the library.
 
 
 -----------------------------------------------------------------------------
