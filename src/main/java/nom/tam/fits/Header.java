@@ -308,6 +308,32 @@ public class Header implements FitsElement {
     }
 
     /**
+     * Inherits all cards from another header, which are not readily present in this header. That is, it itherits only
+     * the non-conflicting header entries from the designated source (in contrast to {@link #updateLines(Header)}). All
+     * comment cards are ingerited also (since these can always appear multiple times). The inherited entries are added
+     * at the end of the header, in the same order as they appear in the source. The inherited entries are copies of thr
+     * cards in the oirignal, such that subsequent modifications to the source will not affect this header ot vice
+     * versa.
+     * 
+     * @param source The header from which to inherit non-conflicting entries
+     * 
+     * @since        1.19
+     * 
+     * @see          #updateLines(Header)
+     */
+    public void inherit(Header source) {
+        seekTail();
+
+        Cursor<String, HeaderCard> c = source.iterator();
+        while (c.hasNext()) {
+            HeaderCard card = c.next();
+            if (card.isCommentStyleCard() || !containsKey(card.getKey())) {
+                addLine(card.copy());
+            }
+        }
+    }
+
+    /**
      * Insert a new header card at the current position, deleting any prior occurence of the same card while maintaining
      * the current position to point to after the newly inserted card.
      *
@@ -2177,6 +2203,8 @@ public class Header implements FitsElement {
      * @param  newHdr              the list of new header data lines to replace the current ones.
      *
      * @throws HeaderCardException if the operation failed
+     * 
+     * @sa                         {@link #inherit(Header)}
      */
     public void updateLines(final Header newHdr) throws HeaderCardException {
         Cursor<String, HeaderCard> j = newHdr.iterator();
