@@ -270,10 +270,15 @@ public class RandomGroupsHDU extends BasicHDU<RandomGroupsData> {
     public RandomGroupsHDU(Header header, RandomGroupsData data) throws IllegalStateException {
         super(header, data);
 
+        if (header == null) {
+            return;
+        }
+
         int eSize = 1;
+
         try {
             eSize = getBitpix().byteSize();
-        } catch (FitsException e) {
+        } catch (Exception e) {
             throw new IllegalStateException(e.getMessage(), e);
         }
 
@@ -284,8 +289,9 @@ public class RandomGroupsHDU extends BasicHDU<RandomGroupsData> {
 
         for (int i = 1; i <= nparms; i++) {
             String name = header.getStringValue(Standard.PTYPEn.n(i));
-            if (name == null)
+            if (name == null) {
                 continue;
+            }
 
             Parameter p = parameters.get(name);
             if (p == null) {
@@ -429,6 +435,8 @@ public class RandomGroupsHDU extends BasicHDU<RandomGroupsData> {
      * @return A set containing the parameter names contained in this HDU
      * 
      * @see    #getParameter(String, int)
+     * 
+     * @since  1.19
      */
     public Set<String> getParameterNames() {
         return parameters.keySet();
@@ -447,6 +455,8 @@ public class RandomGroupsHDU extends BasicHDU<RandomGroupsData> {
      * 
      * @see                                   #getParameterNames()
      * @see                                   RandomGroupsData#getImage(int)
+     * 
+     * @since                                 1.19
      */
     public double getParameter(String name, int group) throws ArrayIndexOutOfBoundsException {
         Parameter p = parameters.get(name);
@@ -457,10 +467,19 @@ public class RandomGroupsHDU extends BasicHDU<RandomGroupsData> {
         return p.getValue(getData().getParameterArray(group));
     }
 
-    private class ParameterScaling {
-        int index;
-        double scaling;
-        double offset;
+    /**
+     * A conversion recipe from the native BITPIX type to a floating-point value. Each parameter may have multiple such
+     * recipes, which in combination can provide the required precision for the parameter regardless the BITPIX storage
+     * type.
+     * 
+     * @author Attila Kovacs
+     * 
+     * @since  1.19
+     */
+    private final class ParameterScaling {
+        private int index;
+        private double scaling;
+        private double offset;
 
         private ParameterScaling(Header h, int n) {
             index = n - 1;
@@ -469,8 +488,15 @@ public class RandomGroupsHDU extends BasicHDU<RandomGroupsData> {
         }
     }
 
+    /**
+     * Represents a single parameter in the random groups data.
+     * 
+     * @author Attila Kovacs
+     * 
+     * @since  1.19
+     */
     private class Parameter {
-        ArrayList<ParameterScaling> components = new ArrayList<>();
+        private ArrayList<ParameterScaling> components = new ArrayList<>();
 
         private double getValue(Object array) {
             double value = 0.0;

@@ -266,6 +266,8 @@ public class RandomGroupsData extends Data {
      * @throws ArrayIndexOutOfBoundsException if the group index is out of bounds
      * 
      * @see                                   RandomGroupsHDU#getParameter(String, int)
+     * 
+     * @since                                 1.19
      */
     public Object getImage(int group) throws ArrayIndexOutOfBoundsException {
         return dataArray[group][1];

@@ -122,8 +122,8 @@ public class ImageData extends Data {
     }
 
     /**
-     * Create an array from a header description. This is typically how data will be created when reading FITS data from
-     * a file where the header is read first. This creates an empty array.
+     * (<i>for internal use</i>) Create an array from a header description. This is typically how data will be created
+     * when reading FITS data from a file where the header is read first. This creates an empty array.
      *
      * @param  h             header to be used as a template.
      *
