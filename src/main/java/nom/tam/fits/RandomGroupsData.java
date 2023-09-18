@@ -259,7 +259,7 @@ public class RandomGroupsData extends Data {
     /**
      * Returns the image component stored in the specified group.
      * 
-     * @param  group                          The group index
+     * @param  group                          The zero-based group index
      * 
      * @return                                The image array for the specified group
      * 

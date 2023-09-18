@@ -67,11 +67,10 @@ import static nom.tam.fits.header.Standard.XTENSION_IMAGE;
  * parameters. When analyzing group data structure only the first group is examined, but for a valid FITS file all
  * groups must have the same structure.
  * <p>
- * Note also, that we do not provide support for accessing parameters by names or for building up higher-precision
- * values by combining multiple related parameters through scalings and offsets, as described in the FITS standard (e.g.
- * combining 3 or 4 related <code>byte</code> parameter values to obtain a full-precision 32-bit <code>float</code>
- * parameter value when <code>BITPIX</code> is 8). Users of random groups must make these translations themselves. We
- * may add more support in the future...
+ * As of version 1.19, we provide support for accessing parameters by names including building up higher-precision
+ * values by combining multiple related parameter conversion recipes through scalings and offsets, as described in the
+ * FITS standard (e.g. combining 3 or 4 related <code>byte</code> parameter values to obtain a full-precision 32-bit
+ * <code>float</code> parameter value when <code>BITPIX</code> is 8).
  * </p>
  * 
  * @see BinaryTableHDU
