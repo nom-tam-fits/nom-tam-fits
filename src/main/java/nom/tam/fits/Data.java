@@ -433,4 +433,12 @@ public abstract class Data implements FitsElement {
 
     @Override
     public abstract void write(ArrayDataOutput o) throws FitsException;
+
+    /**
+     * Returns an approprotae HDU object that encapsulates this FITS data, and contains the minimal mandatory header
+     * description for that data.
+     * 
+     * @return a HDU object ocntaining the data and its minimal required header description
+     */
+    public abstract BasicHDU<?> toHDU();
 }

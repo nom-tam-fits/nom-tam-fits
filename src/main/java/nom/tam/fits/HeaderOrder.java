@@ -61,8 +61,8 @@ public class HeaderOrder implements java.util.Comparator<String>, Serializable {
     /**
      * This array defines the order of ordered keywords, except END (which we handle separately)
      */
-    private static final String[] ORDER = {SIMPLE.key(), XTENSION.key(), BITPIX.key(), NAXIS.key(), EXTEND.key(),
-            PCOUNT.key(), GCOUNT.key(), TFIELDS.key(), BLOCKED.key(), THEAP.key()};
+    private static final String[] ORDER = {SIMPLE.key(), XTENSION.key(), BITPIX.key(), NAXIS.key(), PCOUNT.key(),
+            GCOUNT.key(), EXTEND.key(), TFIELDS.key(), BLOCKED.key(), THEAP.key()};
 
     /**
      * Every keyword is assigned an index. Because NAXIS can have 999 NAXISn variants, we'll space the indices of the

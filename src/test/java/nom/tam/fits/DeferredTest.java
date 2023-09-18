@@ -113,7 +113,12 @@ public class DeferredTest {
         @Override
         protected void loadData(ArrayDataInput in) {
             // TODO Auto-generated method stub
+        }
 
+        @Override
+        public BasicHDU<?> toHDU() {
+            // TODO Auto-generated method stub
+            return null;
         }
     }
 }

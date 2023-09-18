@@ -1,28 +1,18 @@
 package nom.tam.fits;
 
-import java.io.IOException;
-import java.lang.reflect.Array;
-
-import nom.tam.fits.header.Bitpix;
-import nom.tam.fits.header.Standard;
-import nom.tam.util.ArrayDataInput;
-import nom.tam.util.ArrayDataOutput;
-import nom.tam.util.ArrayFuncs;
-import nom.tam.util.FitsEncoder;
-
 /*-
  * #%L
- * nom.tam FITS library
+ * nom.tam.fits
  * %%
  * Copyright (C) 1996 - 2023 nom-tam-fits
  * %%
  * This is free and unencumbered software released into the public domain.
- *
+ * 
  * Anyone is free to copy, modify, publish, use, compile, sell, or
  * distribute this software, either in source code form or as a compiled
  * binary, for any purpose, commercial or non-commercial, and by any
  * means.
- *
+ * 
  * In jurisdictions that recognize copyright laws, the author or authors
  * of this software dedicate any and all copyright interest in the
  * software to the public domain. We make this dedication for the benefit
@@ -30,7 +20,7 @@ import nom.tam.util.FitsEncoder;
  * successors. We intend this dedication to be an overt act of
  * relinquishment in perpetuity of all present and future rights to this
  * software under copyright law.
- *
+ * 
  * THE SOFTWARE IS PROVIDED "AS IS", WITHOUT WARRANTY OF ANY KIND,
  * EXPRESS OR IMPLIED, INCLUDING BUT NOT LIMITED TO THE WARRANTIES OF
  * MERCHANTABILITY, FITNESS FOR A PARTICULAR PURPOSE AND NONINFRINGEMENT.
@@ -41,10 +31,16 @@ import nom.tam.util.FitsEncoder;
  * #L%
  */
 
-import static nom.tam.fits.header.Standard.GCOUNT;
-import static nom.tam.fits.header.Standard.GROUPS;
-import static nom.tam.fits.header.Standard.NAXISn;
-import static nom.tam.fits.header.Standard.PCOUNT;
+import java.io.IOException;
+import java.lang.reflect.Array;
+
+import nom.tam.fits.header.Bitpix;
+import nom.tam.fits.header.Standard;
+import nom.tam.util.ArrayDataInput;
+import nom.tam.util.ArrayDataOutput;
+import nom.tam.util.ArrayFuncs;
+import nom.tam.util.Cursor;
+import nom.tam.util.FitsEncoder;
 
 import edu.umd.cs.findbugs.annotations.SuppressFBWarnings;
 
@@ -130,7 +126,7 @@ public class RandomGroupsData extends Data {
      *
      * @return The java class of the parameter and data elements.
      *
-     * @since  1,18
+     * @since  1.18
      */
     public Class<?> getElementType() {
         return sampleRow == null ? null : ArrayFuncs.getBaseClass(sampleRow[0]);
@@ -162,7 +158,6 @@ public class RandomGroupsData extends Data {
         return sampleRow == null ? null : ArrayFuncs.getDimensions(sampleRow[1]);
     }
 
-    @SuppressWarnings("deprecation")
     @Override
     protected void fillHeader(Header h) throws FitsException {
         if (groups <= 0) {
@@ -170,22 +165,28 @@ public class RandomGroupsData extends Data {
         }
         Standard.context(RandomGroupsData.class);
 
-        int np = getParameterCount();
-        int[] ddims = getDataDims();
+        // We'll assume it's a primary image, until we know better...
+        // Just in case, we don't want an XTENSION key lingering around...
+        h.deleteKey(Standard.XTENSION);
 
-        // Got the information we need to build the header.
+        Cursor<String, HeaderCard> c = h.iterator();
+        c.add(HeaderCard.create(Standard.SIMPLE, true));
+        c.add(HeaderCard.create(Standard.BITPIX, Bitpix.forPrimitiveType(getElementType()).getHeaderValue()));
 
-        h.setSimple(true);
-        h.setBitpix(Bitpix.forPrimitiveType(getElementType()));
-        h.setNaxes(ddims.length + 1);
-        h.addValue(NAXISn.n(1), 0);
-        for (int i = 2; i <= ddims.length + 1; i++) {
-            h.addValue(NAXISn.n(i), ddims[i - 2]);
+        int[] dims = getDataDims();
+        c.add(HeaderCard.create(Standard.NAXIS, dims.length + 1));
+        h.addValue(Standard.NAXIS1, 0);
+
+        for (int i = 1; i <= dims.length; i++) {
+            c.add(HeaderCard.create(Standard.NAXISn.n(i + 1), dims[dims.length - i]));
         }
 
-        h.addValue(GROUPS, true);
-        h.addValue(GCOUNT, groups);
-        h.addValue(PCOUNT, np);
+        // Just in case!
+        c.add(HeaderCard.create(Standard.GROUPS, true));
+        c.add(HeaderCard.create(Standard.PCOUNT, getParameterCount()));
+        c.add(HeaderCard.create(Standard.GCOUNT, groups));
+        c.add(HeaderCard.create(Standard.EXTEND, true));
+
         Standard.context(null);
     }
 
@@ -241,6 +242,18 @@ public class RandomGroupsData extends Data {
         } catch (IOException e) {
             throw new FitsException("IO error writing random groups data ", e);
         }
+    }
+
+    @SuppressWarnings("deprecation")
+    @Override
+    public RandomGroupsHDU toHDU() {
+        Header h = new Header();
+        try {
+            fillHeader(h);
+        } catch (FitsException e) {
+            throw new IllegalStateException(e.getMessage(), e);
+        }
+        return new RandomGroupsHDU(h, this);
     }
 
 }

@@ -59,20 +59,17 @@ import nom.tam.fits.Fits;
 import nom.tam.fits.FitsException;
 import nom.tam.fits.FitsFactory;
 import nom.tam.fits.Header;
-import nom.tam.fits.HeaderCard;
 import nom.tam.fits.PaddingException;
 import nom.tam.fits.TableHDU;
 import nom.tam.fits.header.Standard;
 import nom.tam.util.ArrayDataInput;
 import nom.tam.util.ArrayDataOutput;
 import nom.tam.util.ArrayFuncs;
-import nom.tam.util.Cursor;
 import nom.tam.util.FitsFile;
 import nom.tam.util.FitsInputStream;
 import nom.tam.util.FitsOutputStream;
 import nom.tam.util.SafeClose;
 import nom.tam.util.TestArrayFuncs;
-import nom.tam.util.test.ThrowAnyException;
 
 import static nom.tam.fits.header.DataDescription.TDMAXn;
 import static nom.tam.fits.header.DataDescription.TDMINn;
@@ -600,21 +597,6 @@ public class AsciiTableTest {
             public void close() throws SecurityException {
             }
         });
-
-        new AsciiTable() {
-            @Override
-            public void fillHeader(Header hdr) {
-                super.fillHeader(hdr);
-            }
-        }.fillHeader(new Header() {
-            @Override
-            public Cursor<String, HeaderCard> iterator() {
-                ThrowAnyException.throwHeaderCardException("all is broken");
-                return null;
-            }
-        });
-        Assert.assertEquals(1, logs.size());
-        Assert.assertEquals("all is broken", logs.get(0).getThrown().getMessage());
     }
 
     @Test

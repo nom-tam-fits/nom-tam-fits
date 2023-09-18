@@ -7,7 +7,6 @@ import java.util.logging.Logger;
 import nom.tam.fits.header.Standard;
 import nom.tam.image.StandardImageTiler;
 import nom.tam.util.ArrayFuncs;
-import nom.tam.util.type.ElementType;
 
 /*
  * #%L
@@ -89,14 +88,12 @@ public class ImageHDU extends BasicHDU<ImageData> {
      */
     @Deprecated
     public static boolean isData(Object o) {
-        if (o.getClass().isArray()) {
-            ElementType<?> type = ElementType.forClass(ArrayFuncs.getBaseClass(o));
-            return type != ElementType.BOOLEAN && //
-                    type != ElementType.STRING && //
-                    type != ElementType.UNKNOWN;
-
+        try {
+            ImageData.checkCompatible(o);
+        } catch (Exception e) {
+            return false;
         }
-        return false;
+        return true;
     }
 
     /**

@@ -181,8 +181,8 @@ public class HashedList<VALUE extends CursorValue<String>> implements Collection
 
     /**
      * Add an element to the list at a specified position. If that element was already in the list, it is first removed
-     * from the list then added again - if it was removed from a position before the position where it was to be added,
-     * that position is decremented by one.
+     * from the list then added again (and if it was removed from a position before the position where it was to be
+     * added, that position is decremented by one).
      *
      * @param pos       The position at which the specified element is to be added. If pos is bigger than the size of
      *                      the list the element is put at the end of the list.

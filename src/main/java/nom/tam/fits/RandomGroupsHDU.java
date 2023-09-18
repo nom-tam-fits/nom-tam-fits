@@ -4,7 +4,9 @@ import java.io.PrintStream;
 
 import nom.tam.fits.header.Bitpix;
 import nom.tam.fits.header.Standard;
+import nom.tam.util.ArrayDataOutput;
 import nom.tam.util.ArrayFuncs;
+import nom.tam.util.FitsOutput;
 
 /*
  * #%L
@@ -373,6 +375,16 @@ public class RandomGroupsHDU extends BasicHDU<RandomGroupsData> {
     @Override
     public double getBZero() {
         return super.getBZero();
+    }
+
+    @Override
+    public void write(ArrayDataOutput stream) throws FitsException {
+        if (stream instanceof FitsOutput) {
+            if (!((FitsOutput) stream).isAtStart()) {
+                throw new FitsException("Random groups are only permitted in the primary HDU");
+            }
+        }
+        super.write(stream);
     }
 
 }

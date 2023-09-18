@@ -42,6 +42,7 @@ import java.util.StringTokenizer;
 import java.util.logging.Logger;
 
 import nom.tam.fits.header.Bitpix;
+import nom.tam.fits.header.NonStandard;
 import nom.tam.fits.header.Standard;
 import nom.tam.util.ArrayDataInput;
 import nom.tam.util.ArrayDataOutput;
@@ -49,22 +50,13 @@ import nom.tam.util.ArrayFuncs;
 import nom.tam.util.AsciiFuncs;
 import nom.tam.util.ColumnTable;
 import nom.tam.util.ComplexValue;
+import nom.tam.util.Cursor;
 import nom.tam.util.FitsEncoder;
 import nom.tam.util.FitsIO;
 import nom.tam.util.RandomAccess;
 import nom.tam.util.ReadWriteAccess;
 import nom.tam.util.TableException;
 import nom.tam.util.type.ElementType;
-
-import static nom.tam.fits.header.Standard.GCOUNT;
-import static nom.tam.fits.header.Standard.NAXIS1;
-import static nom.tam.fits.header.Standard.NAXIS2;
-import static nom.tam.fits.header.Standard.PCOUNT;
-import static nom.tam.fits.header.Standard.TDIMn;
-import static nom.tam.fits.header.Standard.TFIELDS;
-import static nom.tam.fits.header.Standard.TFORMn;
-import static nom.tam.fits.header.Standard.THEAP;
-import static nom.tam.fits.header.Standard.XTENSION_BINTABLE;
 
 import edu.umd.cs.findbugs.annotations.SuppressFBWarnings;
 
@@ -1337,7 +1329,7 @@ public class BinaryTable extends AbstractTableData implements Cloneable {
      * {@link #detach()} any time to force loading the data into memory, so that alterations after that will not be
      * reflected in the original file, at least not unitl {@link #rewrite()} is called explicitly.
      * 
-     * @param      myHeader      A FITS header describing what the binary table should look like.
+     * @param      header        A FITS header describing what the binary table should look like.
      *
      * @throws     FitsException if the specified header is not usable for a binary table
      * 
@@ -1347,12 +1339,19 @@ public class BinaryTable extends AbstractTableData implements Cloneable {
      * 
      * @see                      #isDeferred()
      */
-    public BinaryTable(Header myHeader) throws FitsException {
-        long paramSizeL = myHeader.getLongValue(PCOUNT);
-        long heapOffsetL = myHeader.getLongValue(THEAP);
+    public BinaryTable(Header header) throws FitsException {
+        String ext = header.getStringValue(Standard.XTENSION, Standard.XTENSION_BINTABLE);
 
-        int rwsz = myHeader.getIntValue(NAXIS1);
-        nRow = myHeader.getIntValue(NAXIS2);
+        if (!ext.equalsIgnoreCase(Standard.XTENSION_BINTABLE) && !ext.equalsIgnoreCase(NonStandard.XTENSION_A3DTABLE)) {
+            throw new FitsException(
+                    "Not a binary table header (XTENSION = " + header.getStringValue(Standard.XTENSION) + ")");
+        }
+
+        long paramSizeL = header.getLongValue(Standard.PCOUNT);
+        long heapOffsetL = header.getLongValue(Standard.THEAP);
+
+        int rwsz = header.getIntValue(Standard.NAXIS1);
+        nRow = header.getIntValue(Standard.NAXIS2);
 
         // Subtract out the size of the regular table from
         // the heap offset.
@@ -1376,14 +1375,14 @@ public class BinaryTable extends AbstractTableData implements Cloneable {
         heapOffset = (int) heapOffsetL;
         heapSize = (int) heapSizeL;
 
-        int nCol = myHeader.getIntValue(TFIELDS);
+        int nCol = header.getIntValue(Standard.TFIELDS);
         rowLen = 0;
         columns = new ArrayList<>();
         for (int col = 0; col < nCol; col++) {
-            rowLen += processCol(myHeader, col, rowLen);
+            rowLen += processCol(header, col, rowLen);
         }
 
-        HeaderCard card = myHeader.getCard(NAXIS1);
+        HeaderCard card = header.getCard(Standard.NAXIS1);
         card.setValue(String.valueOf(rowLen));
     }
 
@@ -3061,7 +3060,7 @@ public class BinaryTable extends AbstractTableData implements Cloneable {
      */
     @Override
     public void updateAfterDelete(int oldNcol, Header hdr) throws FitsException {
-        hdr.addValue(NAXIS1, rowLen);
+        hdr.addValue(Standard.NAXIS1, rowLen);
         int l = 0;
         for (ColumnDesc d : columns) {
             d.offset = l;
@@ -3445,7 +3444,7 @@ public class BinaryTable extends AbstractTableData implements Cloneable {
      * @throws FitsException if the header deswcription is invalid or incomplete
      */
     public static ColumnDesc getDescriptor(Header header, int col) throws FitsException {
-        String tform = header.getStringValue(TFORMn.n(col + 1));
+        String tform = header.getStringValue(Standard.TFORMn.n(col + 1));
 
         if (tform == null) {
             throw new FitsException("Missing TFORM" + (col + 1));
@@ -3495,7 +3494,7 @@ public class BinaryTable extends AbstractTableData implements Cloneable {
 
         if (!c.isVariableSize()) {
             // Fixed sized column...
-            int[] dims = parseTDims(header.getStringValue(TDIMn.n(col + 1)));
+            int[] dims = parseTDims(header.getStringValue(Standard.TDIMn.n(col + 1)));
 
             if (dims == null) {
                 c.setFitsShape((count == 1 && type != 'A') ? SINGLETON_SHAPE : new int[] {count});
@@ -3649,19 +3648,26 @@ public class BinaryTable extends AbstractTableData implements Cloneable {
      */
     @Override
     public void fillHeader(Header h) throws FitsException {
+        h.deleteKey(Standard.SIMPLE);
+        h.deleteKey(Standard.EXTEND);
 
-        h.setXtension(XTENSION_BINTABLE);
-        h.setBitpix(Bitpix.BYTE);
-        h.setNaxes(2);
-        h.setNaxis(1, rowLen);
-        h.setNaxis(2, nRow);
-        h.addValue(PCOUNT, getHeapSize());
-        h.addValue(GCOUNT, 1);
-        h.addValue(TFIELDS, columns.size());
+        Standard.context(BinaryTable.class);
+
+        Cursor<String, HeaderCard> c = h.iterator();
+        c.add(HeaderCard.create(Standard.XTENSION, Standard.XTENSION_BINTABLE));
+        c.add(HeaderCard.create(Standard.BITPIX, Bitpix.BYTE.getHeaderValue()));
+        c.add(HeaderCard.create(Standard.NAXIS, 2));
+        c.add(HeaderCard.create(Standard.NAXIS1, rowLen));
+        c.add(HeaderCard.create(Standard.NAXIS2, nRow));
+        c.add(HeaderCard.create(Standard.PCOUNT, getHeapSize()));
+        c.add(HeaderCard.create(Standard.GCOUNT, 1));
+        c.add(HeaderCard.create(Standard.TFIELDS, columns.size()));
 
         for (int i = 0; i < columns.size(); i++) {
-            fillForColumn(h, i);
+            fillForColumn(c, i);
         }
+
+        Standard.context(null);
     }
 
     /**
@@ -3669,16 +3675,16 @@ public class BinaryTable extends AbstractTableData implements Cloneable {
      *
      * @throws FitsException if the operation failed
      */
-    void fillForColumn(Header h, int col) throws FitsException {
+    void fillForColumn(Cursor<String, HeaderCard> hc, int col) throws FitsException {
         ColumnDesc c = columns.get(col);
 
         try {
             Standard.context(BinaryTable.class);
-            h.addValue(TFORMn.n(col + 1), c.getTFORM());
+            hc.add(HeaderCard.create(Standard.TFORMn.n(col + 1), c.getTFORM()));
 
             String tdim = c.getTDIM();
             if (tdim != null) {
-                h.addValue(TDIMn.n(col + 1), tdim);
+                hc.add(HeaderCard.create(Standard.TDIMn.n(col + 1), tdim));
             }
         } finally {
             Standard.context(null);
@@ -3872,5 +3878,16 @@ public class BinaryTable extends AbstractTableData implements Cloneable {
 
         heap = compact;
         return oldSize - compact.size();
+    }
+
+    @Override
+    public BinaryTableHDU toHDU() {
+        Header h = new Header();
+        try {
+            fillHeader(h);
+        } catch (FitsException e) {
+            throw new IllegalStateException(e.getMessage(), e);
+        }
+        return new BinaryTableHDU(h, this);
     }
 }
