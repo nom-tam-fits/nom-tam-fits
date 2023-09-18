@@ -1639,7 +1639,7 @@ public class HeaderTest {
         h2.insertComment("comment");
         h2.addValue("TEST", 3, "a test value");
 
-        h.merge(h2);
+        h.mergeDistinct(h2);
 
         assertEquals("EXIST", 1, h.getIntValue("EXIST", -1));
         assertEquals("TEST", 3, h.getIntValue("TEST", -1));
