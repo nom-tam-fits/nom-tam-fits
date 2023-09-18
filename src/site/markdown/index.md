@@ -836,6 +836,45 @@ space in headers for later additions using `Header.ensureCardSpace(int)` prior t
 originally.)
 
 
+### Creating new HDUs that reuse existing header information
+
+Sometimes we want to create a new HDU based on an existing HDU, such as a 
+cropped image, or a table segment, in which we want to reuse much of the 
+information contained in the original header. The best way to go about it is 
+via the following 3 steps:
+
+ 1. Start by creating the new data, and with it create a brand new HDU. This 
+ HDU will have the correct mandatory data description (type and size) in its 
+ header and nothing else.
+
+ 2. Merge distict header entries from the original HDU into the header of the
+ new HDU, using the `Header.mergeDistinct(Header source)` method. This will 
+ copy over all header entries without overriding the proper mandatory data 
+ description
+
+ 3. Update any other header entries as necessary, such as WCS etc. Pay 
+ attention to removing obsoleted entries also, such as descriptions of table 
+ columns no longer exist in the new data.
+
+For example:
+
+```java
+  ImageHDU origHDU = ...
+  
+  // 1. create the new image HDU with the new data
+  float[][] newImage = ...
+  ImageHDU newHDU = ImageData.from(newImage).toHDU();
+  
+  // 2. copy over non-conflicting header entries from the original
+  Header.newHeader = newHDU.getHeader();
+  newHeader.mergeDistinct(origHDU.getHeader());
+
+  // 3. Update the WCS for the cropped data...
+  newHeader.addValue(Standard.CRPIXn.n(1), ...);
+  ...
+```
+
+
 -----------------------------------------------------------------------------
 
 <a name="building-tables-from-data"></a>
