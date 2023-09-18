@@ -256,4 +256,23 @@ public class RandomGroupsData extends Data {
         return new RandomGroupsHDU(h, this);
     }
 
+    /**
+     * Returns the image component stored in the specified group.
+     * 
+     * @param  group                          The group index
+     * 
+     * @return                                The image array for the specified group
+     * 
+     * @throws ArrayIndexOutOfBoundsException if the group index is out of bounds
+     * 
+     * @see                                   RandomGroupsHDU#getParameter(String, int)
+     */
+    public Object getImage(int group) throws ArrayIndexOutOfBoundsException {
+        return dataArray[group][1];
+    }
+
+    Object getParameterArray(int group) throws ArrayIndexOutOfBoundsException {
+        return dataArray[group][0];
+    }
+
 }

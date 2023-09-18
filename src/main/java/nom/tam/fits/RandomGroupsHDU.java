@@ -1,6 +1,10 @@
 package nom.tam.fits;
 
 import java.io.PrintStream;
+import java.lang.reflect.Array;
+import java.util.ArrayList;
+import java.util.Hashtable;
+import java.util.Set;
 
 import nom.tam.fits.header.Bitpix;
 import nom.tam.fits.header.Standard;
@@ -74,6 +78,8 @@ import static nom.tam.fits.header.Standard.XTENSION_IMAGE;
  */
 @SuppressWarnings("deprecation")
 public class RandomGroupsHDU extends BasicHDU<RandomGroupsData> {
+
+    private Hashtable<String, Parameter> parameters;
 
     @Override
     protected final String getCanonicalXtension() {
@@ -253,13 +259,42 @@ public class RandomGroupsHDU extends BasicHDU<RandomGroupsData> {
     /**
      * Create an HDU from the given header and data.
      * 
-     * @deprecated        (<i>for internal use</i>) Its visibility should be reduced to package level in the future.
+     * @deprecated                       (<i>for internal use</i>) Its visibility should be reduced to package level in
+     *                                       the future.
      *
-     * @param      header header to use
-     * @param      data   data to use
+     * @param      header                header to use
+     * @param      data                  data to use
+     * 
+     * @throws     IllegalStateException if the header does not contain a valid BITPIX value.
      */
-    public RandomGroupsHDU(Header header, RandomGroupsData data) {
+    public RandomGroupsHDU(Header header, RandomGroupsData data) throws IllegalStateException {
         super(header, data);
+
+        int eSize = 1;
+        try {
+            eSize = getBitpix().byteSize();
+        } catch (FitsException e) {
+            throw new IllegalStateException(e.getMessage(), e);
+        }
+
+        // Parse the parameter descriptions from the header
+        int nparms = header.getIntValue(Standard.PCOUNT) / eSize;
+
+        parameters = new Hashtable<>();
+
+        for (int i = 1; i <= nparms; i++) {
+            String name = header.getStringValue(Standard.PTYPEn.n(i));
+            if (name == null)
+                continue;
+
+            Parameter p = parameters.get(name);
+            if (p == null) {
+                p = new Parameter();
+                parameters.put(name, p);
+            }
+
+            p.components.add(new ParameterScaling(header, i));
+        }
     }
 
     @Override
@@ -385,6 +420,66 @@ public class RandomGroupsHDU extends BasicHDU<RandomGroupsData> {
             }
         }
         super.write(stream);
+    }
+
+    /**
+     * Returns a list of parameter names bundled along the images in each group, as extracted from the PTYPE_n_ header
+     * entries.
+     * 
+     * @return A set containing the parameter names contained in this HDU
+     * 
+     * @see    #getParameter(String, int)
+     */
+    public Set<String> getParameterNames() {
+        return parameters.keySet();
+    }
+
+    /**
+     * Returns the value for a given group parameter.
+     * 
+     * @param  name                           the parameter name
+     * @param  group                          the zero-based group index
+     * 
+     * @return                                the stored parameter value in the specified group, or {@link Double#NaN}
+     *                                            if the there is no such group.
+     * 
+     * @throws ArrayIndexOutOfBoundsException if the group index is out of bounds.
+     * 
+     * @see                                   #getParameterNames()
+     * @see                                   RandomGroupsData#getImage(int)
+     */
+    public double getParameter(String name, int group) throws ArrayIndexOutOfBoundsException {
+        Parameter p = parameters.get(name);
+        if (p == null) {
+            return Double.NaN;
+        }
+
+        return p.getValue(getData().getParameterArray(group));
+    }
+
+    private class ParameterScaling {
+        int index;
+        double scaling;
+        double offset;
+
+        private ParameterScaling(Header h, int n) {
+            index = n - 1;
+            scaling = h.getDoubleValue(Standard.PSCALn.n(n), 1.0);
+            offset = h.getDoubleValue(Standard.PZEROn.n(n), 0.0);
+        }
+    }
+
+    private class Parameter {
+        ArrayList<ParameterScaling> components = new ArrayList<>();
+
+        private double getValue(Object array) {
+            double value = 0.0;
+            for (ParameterScaling c : components) {
+                double x = Array.getDouble(array, c.index);
+                value += c.scaling * x + c.offset;
+            }
+            return value;
+        }
     }
 
 }
