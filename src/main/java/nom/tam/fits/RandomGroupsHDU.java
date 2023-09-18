@@ -299,7 +299,7 @@ public class RandomGroupsHDU extends BasicHDU<RandomGroupsData> {
                 parameters.put(name, p);
             }
 
-            p.components.add(new ParameterScaling(header, i));
+            p.components.add(new ParameterConversion(header, i));
         }
     }
 
@@ -469,19 +469,19 @@ public class RandomGroupsHDU extends BasicHDU<RandomGroupsData> {
 
     /**
      * A conversion recipe from the native BITPIX type to a floating-point value. Each parameter may have multiple such
-     * recipes, which in combination can provide the required precision for the parameter regardless the BITPIX storage
+     * recipes, the sum of which can provide the required precision for the parameter regardless the BITPIX storage
      * type.
      * 
      * @author Attila Kovacs
      * 
      * @since  1.19
      */
-    private final class ParameterScaling {
+    private static final class ParameterConversion {
         private int index;
         private double scaling;
         private double offset;
 
-        private ParameterScaling(Header h, int n) {
+        private ParameterConversion(Header h, int n) {
             index = n - 1;
             scaling = h.getDoubleValue(Standard.PSCALn.n(n), 1.0);
             offset = h.getDoubleValue(Standard.PZEROn.n(n), 0.0);
@@ -495,12 +495,12 @@ public class RandomGroupsHDU extends BasicHDU<RandomGroupsData> {
      * 
      * @since  1.19
      */
-    private class Parameter {
-        private ArrayList<ParameterScaling> components = new ArrayList<>();
+    private static class Parameter {
+        private ArrayList<ParameterConversion> components = new ArrayList<>();
 
         private double getValue(Object array) {
             double value = 0.0;
-            for (ParameterScaling c : components) {
+            for (ParameterConversion c : components) {
                 double x = Array.getDouble(array, c.index);
                 value += c.scaling * x + c.offset;
             }
