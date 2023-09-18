@@ -308,12 +308,12 @@ public class Header implements FitsElement {
     }
 
     /**
-     * Inherits all cards from another header, provided they are not readily present in this header. That is, it merges
-     * only the non-conflicting header entries from the designated source (in contrast to {@link #updateLines(Header)}).
-     * All comment cards are merged also (since these can always appear multiple times, so they do not conflict). The
-     * merged entries are added at the end of the header, in the same order as they appear in the source. The merged
-     * entries will be copies of the cards in the original, such that subsequent modifications to the source will not
-     * affect this header or vice versa.
+     * Merges copies of all cards from another header, provided they are not readily present in this header. That is, it
+     * merges only the non-conflicting or distinct header entries from the designated source (in contrast to
+     * {@link #updateLines(Header)}). All comment cards are merged also (since these can always appear multiple times,
+     * so they do not conflict). The merged entries are added at the end of the header, in the same order as they appear
+     * in the source. The merged entries will be copies of the cards in the original, such that subsequent modifications
+     * to the source will not affect this header or vice versa.
      * 
      * @param source The header from which to inherit non-conflicting entries
      * 
@@ -321,7 +321,7 @@ public class Header implements FitsElement {
      * 
      * @see          #updateLines(Header)
      */
-    public void merge(Header source) {
+    public void mergeDistinct(Header source) {
         seekTail();
 
         Cursor<String, HeaderCard> c = source.iterator();
@@ -2204,7 +2204,7 @@ public class Header implements FitsElement {
      *
      * @throws HeaderCardException if the operation failed
      * 
-     * @see                        #merge(Header)
+     * @see                        #mergeDistinct(Header)
      */
     public void updateLines(final Header newHdr) throws HeaderCardException {
         Cursor<String, HeaderCard> j = newHdr.iterator();
