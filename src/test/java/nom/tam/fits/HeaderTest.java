@@ -1629,7 +1629,7 @@ public class HeaderTest {
     }
 
     @Test
-    public void testInheritCards() throws Exception {
+    public void testMergeDistinctCards() throws Exception {
         Header h = new Header();
         h.addValue("EXIST", 1, "existing prior value");
         assertEquals("orig", 1, h.getIntValue("EXIST", -1));
