@@ -264,16 +264,19 @@ public class RandomGroupsData extends Data {
      * @return                                The image array for the specified group
      * 
      * @throws ArrayIndexOutOfBoundsException if the group index is out of bounds
+     * @throws FitsException                  if the deferred data could not be loaded.
      * 
      * @see                                   RandomGroupsHDU#getParameter(String, int)
      * 
      * @since                                 1.19
      */
-    public Object getImage(int group) throws ArrayIndexOutOfBoundsException {
+    public Object getImage(int group) throws ArrayIndexOutOfBoundsException, FitsException {
+        ensureData();
         return dataArray[group][1];
     }
 
-    Object getParameterArray(int group) throws ArrayIndexOutOfBoundsException {
+    Object getParameterArray(int group) throws ArrayIndexOutOfBoundsException, FitsException {
+        ensureData();
         return dataArray[group][0];
     }
 

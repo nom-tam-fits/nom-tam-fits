@@ -255,6 +255,28 @@ public class RandomGroupsHDU extends BasicHDU<RandomGroupsData> {
         return new RandomGroupsHDU(manufactureHeader(d), d);
     }
 
+    private void parseParameters(Header header) {
+        // Parse the parameter descriptions from the header
+        int nparms = header.getIntValue(Standard.PCOUNT);
+
+        parameters = new Hashtable<>();
+
+        for (int i = 1; i <= nparms; i++) {
+            String name = header.getStringValue(Standard.PTYPEn.n(i));
+            if (name == null) {
+                continue;
+            }
+
+            Parameter p = parameters.get(name);
+            if (p == null) {
+                p = new Parameter();
+                parameters.put(name, p);
+            }
+
+            p.components.add(new ParameterConversion(header, i));
+        }
+    }
+
     /**
      * Create an HDU from the given header and data.
      * 
@@ -273,33 +295,7 @@ public class RandomGroupsHDU extends BasicHDU<RandomGroupsData> {
             return;
         }
 
-        int eSize = 1;
-
-        try {
-            eSize = getBitpix().byteSize();
-        } catch (Exception e) {
-            throw new IllegalStateException(e.getMessage(), e);
-        }
-
-        // Parse the parameter descriptions from the header
-        int nparms = header.getIntValue(Standard.PCOUNT) / eSize;
-
-        parameters = new Hashtable<>();
-
-        for (int i = 1; i <= nparms; i++) {
-            String name = header.getStringValue(Standard.PTYPEn.n(i));
-            if (name == null) {
-                continue;
-            }
-
-            Parameter p = parameters.get(name);
-            if (p == null) {
-                p = new Parameter();
-                parameters.put(name, p);
-            }
-
-            p.components.add(new ParameterConversion(header, i));
-        }
+        parseParameters(header);
     }
 
     @Override
@@ -451,13 +447,14 @@ public class RandomGroupsHDU extends BasicHDU<RandomGroupsData> {
      *                                            if the there is no such group.
      * 
      * @throws ArrayIndexOutOfBoundsException if the group index is out of bounds.
+     * @throws FitsException                  if the deferred parameter data cannot be accessed
      * 
      * @see                                   #getParameterNames()
      * @see                                   RandomGroupsData#getImage(int)
      * 
      * @since                                 1.19
      */
-    public double getParameter(String name, int group) throws ArrayIndexOutOfBoundsException {
+    public double getParameter(String name, int group) throws ArrayIndexOutOfBoundsException, FitsException {
         Parameter p = parameters.get(name);
         if (p == null) {
             return Double.NaN;

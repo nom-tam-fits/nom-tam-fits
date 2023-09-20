@@ -869,6 +869,10 @@ public class Fits implements Closeable {
         if (position < 0 || position > getNumberOfHDUs()) {
             throw new FitsException("Attempt to insert HDU at invalid location: " + position);
         }
+        if (myHDU instanceof RandomGroupsHDU && position != 0) {
+            throw new FitsException("Random groups HDUs must be the first (primary) HDU. Requested pos: " + position);
+        }
+
         try {
             if (position == 0) {
                 // Note that the previous initial HDU is no longer the first.
