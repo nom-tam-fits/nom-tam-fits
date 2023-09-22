@@ -1627,4 +1627,32 @@ public class HeaderTest {
         BasicHDU<?> hdu = f.readHDU();
         assertNull(hdu.getHeader().getRandomAccessInput());
     }
+
+    @Test
+    public void testMergeDistinctCards() throws Exception {
+        Header h = new Header();
+        h.addValue("EXIST", 1, "existing prior value");
+        assertEquals("orig", 1, h.getIntValue("EXIST", -1));
+
+        Header h2 = new Header();
+        h2.addValue("EXIST", 2, "another value for EXIST");
+        h2.insertComment("comment");
+        h2.addValue("TEST", 3, "a test value");
+
+        h.mergeDistinct(h2);
+
+        assertEquals("EXIST", 1, h.getIntValue("EXIST", -1));
+        assertEquals("TEST", 3, h.getIntValue("TEST", -1));
+
+        Cursor<String, HeaderCard> c = h.iterator();
+        while (c.hasNext()) {
+            HeaderCard card = c.next();
+            if (card.isCommentStyleCard()) {
+                assertEquals("comment", card.getComment());
+                return;
+            }
+        }
+
+        throw new IllegalStateException("Missing inherited comment");
+    }
 }
