@@ -74,10 +74,6 @@ public class UndefinedData extends Data {
     public UndefinedData(Header h) throws FitsException {
         extensionType = h.getStringValue(Standard.XTENSION, XTENSION_UNKNOWN);
 
-        /**
-         * Just get a byte buffer to hold the data.
-         */
-        // Bug fix by Vincenzo Forzi.
         int naxis = h.getIntValue(Standard.NAXIS);
 
         dims = new int[naxis];
@@ -184,12 +180,12 @@ public class UndefinedData extends Data {
     /**
      * Returns the size of the optional parameter space as stored by the PCOUNT keyword in the FITS header.
      * 
-     * @return The byte size of the optional parameter space accompanying the main data, as stored by the PCOUNT header
-     *             value..
+     * @return The element count of the optional parameter space accompanying the main data, as stored by the PCOUNT
+     *             header value.
      * 
      * @since  1.19
      */
-    public final int getParameterByteCount() {
+    public final int getParameterCount() {
         return pCount;
     }
 
