@@ -80,7 +80,7 @@ public class AsciiTable extends AbstractTableData {
     private static final int DOUBLE_MAX_LENGTH = 24;
 
     /** Whether I10 columns should be treated as <code>int</code> provided that defined limits allow for it. */
-    private static boolean isI10PreferInt = false;
+    private static boolean isI10PreferInt = true;
 
     // private static final Logger LOG = Logger.getLogger(AsciiTable.class.getName());
 
@@ -1001,8 +1001,8 @@ public class AsciiTable extends AbstractTableData {
      * Controls how columns with format "<code>I10</code>" are handled; this is tricky because some, but not all,
      * integers that can be represented in 10 characters form 32-bit integers. Setting it <code>true</code> may make it
      * more likely to avoid unexpected type changes during round-tripping, but it also means that some values in I10
-     * columns may be impossible to read. The default behavior is to assume <code>false</code>, and thus to treat I10
-     * columns as <code>long</code> values.
+     * columns may be impossible to read. The default behavior is to assume <code>true</code>, and thus to treat I10
+     * columns as <code>int</code> values.
      * </p>
      * 
      * @param value if <code>true</code>, format "I10" columns will be assumed <code>int.class</code>, provided
