@@ -79,6 +79,9 @@ public class AsciiTable extends AbstractTableData {
 
     private static final int DOUBLE_MAX_LENGTH = 24;
 
+    /** Whether I10 columns should be treated as <code>int</code> provided that defined limits allow for it. */
+    private static boolean isI10PreferInt = false;
+
     // private static final Logger LOG = Logger.getLogger(AsciiTable.class.getName());
 
     /** The number of rows in the table */
@@ -135,14 +138,18 @@ public class AsciiTable extends AbstractTableData {
     }
 
     /**
-     * Create an ASCII table given a header
+     * Creates an ASCII table given a header. For tables that contain integer-valued columns of format <code>I10</code>,
+     * the {@link #setI10PreferInt(boolean)} mayb be used to control whether to treat them as <code>int</code> or as
+     * </code>long</code> values (the latter is the default).
      *
-     * @param  hdr           The header describing the table
+     * @param      hdr           The header describing the table
      *
-     * @throws FitsException if the operation failed
+     * @throws     FitsException if the operation failed
+     * 
+     * @deprecated               (<i>for internal use</i>) Visibility may be reduced to the package level in the future.
      */
     public AsciiTable(Header hdr) throws FitsException {
-        this(hdr, true);
+        this(hdr, isI10PreferInt);
     }
 
     /**
@@ -155,14 +162,16 @@ public class AsciiTable extends AbstractTableData {
      * integers. Setting it <code>true</code> may make it more likely to avoid unexpected type changes during
      * round-tripping, but it also means that some (large number) data in I10 columns may be impossible to read.
      * </p>
+     * 
+     * @param      hdr           The header describing the table
+     * @param      preferInt     if <code>true</code>, format "I10" columns will be assumed <code>int.class</code>,
+     *                               provided TLMINn/TLMAXn or TDMINn/TDMAXn limits (if defined) allow it. if
+     *                               <code>false</code>, I10 columns that have no clear indication of data range will be
+     *                               assumed <code>long.class</code>.
      *
-     * @param  hdr           The header describing the table
-     * @param  preferInt     if <code>true</code>, format "I10" columns will be assumed <code>int.class</code>, provided
-     *                           TLMINn/TLMAXn or TDMINn/TDMAXn limits (if defined) allow it. if <code>false</code>, I10
-     *                           columns that have no clear indication of data range will be assumed
-     *                           <code>long.class</code>.
-     *
-     * @throws FitsException if the operation failed
+     * @throws     FitsException if the operation failed
+     * 
+     * @deprecated               Use {@link #setI10PreferInt(boolean)} instead prior to reading ASCII tables.
      */
     public AsciiTable(Header hdr, boolean preferInt) throws FitsException {
         if (!hdr.getStringValue(Standard.XTENSION, Standard.XTENSION_ASCIITABLE)
@@ -985,5 +994,41 @@ public class AsciiTable extends AbstractTableData {
         Header h = new Header();
         fillHeader(h);
         return new AsciiTableHDU(h, this);
+    }
+
+    /**
+     * <p>
+     * Controls how columns with format "<code>I10</code>" are handled; this is tricky because some, but not all,
+     * integers that can be represented in 10 characters form 32-bit integers. Setting it <code>true</code> may make it
+     * more likely to avoid unexpected type changes during round-tripping, but it also means that some values in I10
+     * columns may be impossible to read. The default behavior is to assume <code>false</code>, and thus to treat I10
+     * columns as <code>long</code> values.
+     * </p>
+     * 
+     * @param value if <code>true</code>, format "I10" columns will be assumed <code>int.class</code>, provided
+     *                  TLMINn/TLMAXn or TDMINn/TDMAXn limits (if defined) allow it. if <code>false</code>, I10 columns
+     *                  that have no clear indication of data range will be assumed <code>long.class</code>.
+     *
+     * @since       1.19
+     * 
+     * @see         AsciiTable#isI10PreferInt()
+     */
+    public static void setI10PreferInt(boolean value) {
+        isI10PreferInt = value;
+    }
+
+    /**
+     * Checks if I10 columns should be treated as containing 32-bit <code>int</code> values, rather than 64-bit
+     * <code>long</code> values, when possible.
+     * 
+     * @return <code>true</code> if I10 columns should be treated as containing 32-bit <code>int</code> values,
+     *             otherwise <code>false</code>.
+     * 
+     * @since  1.19
+     * 
+     * @see    #setI10PreferInt(boolean)
+     */
+    public static boolean isI10PreferInt() {
+        return isI10PreferInt;
     }
 }
