@@ -315,15 +315,14 @@ public class ImageData extends Data {
 
     /**
      * (<i>for expert users</i>) Overrides the image size description in the header to the specified Java array
-     * dimensions. Typically users would not call this method, unless one want to change a header without the image
-     * object being actually available in its entirety. For example, when using low-level writes of an image row-by-row
-     * without ever having to hold the entire image in memory through a complete object that would automatically
-     * descrive the dimensions correctly.
+     * dimensions. Typically users should not call this method, unless they want to define the image dimensions in the
+     * absence of the actual complete image data. For example, to describe the dimensions when using low-level writes of
+     * an image row-by-row, without ever storing the entire image in memory.
      * 
      * @param  header                   A FITS image header
      * @param  sizes                    The array dimensions in Java order (fastest varying index last)
      * 
-     * @throws FitsException            if the size has negative values
+     * @throws FitsException            if the size has negative values, or the header is not that for an image
      * @throws IllegalArgumentException should not actually happen
      * 
      * @since                           1.18
@@ -331,14 +330,28 @@ public class ImageData extends Data {
      * @see                             #fillHeader(Header)
      */
     public static void overrideHeaderAxes(Header header, int... sizes) throws FitsException, IllegalArgumentException {
-        header.addValue(Standard.NAXIS, sizes.length);
+        String extType = header.getStringValue(Standard.XTENSION, Standard.XTENSION_IMAGE);
+        if (!extType.equals(Standard.XTENSION_IMAGE) && !extType.equals(NonStandard.XTENSION_IUEIMAGE)) {
+            throw new FitsException("Not an image header (XTENSION = " + extType + ")");
+        }
 
-        for (int i = 1; i < sizes.length; i++) {
+        // Remove prior NAXISn values
+        int n = header.getIntValue(Standard.NAXIS);
+        for (int i = 1; i <= n; i++) {
+            header.deleteKey(Standard.NAXISn.n(i));
+        }
+
+        Cursor<String, HeaderCard> c = header.iterator();
+        c.setKey(Standard.NAXIS.key());
+
+        c.add(HeaderCard.create(Standard.NAXIS, sizes.length));
+
+        for (int i = 1; i <= sizes.length; i++) {
             int l = sizes[sizes.length - i];
             if (l < 0) {
                 throw new FitsException("Invalid size[ " + i + "] = " + l);
             }
-            header.addValue(Standard.NAXISn.n(i), l);
+            c.add(HeaderCard.create(Standard.NAXISn.n(i), l));
         }
     }
 

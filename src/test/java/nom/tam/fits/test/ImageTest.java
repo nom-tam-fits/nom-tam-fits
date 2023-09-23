@@ -16,8 +16,11 @@ import nom.tam.fits.BasicHDU;
 import nom.tam.fits.Fits;
 import nom.tam.fits.FitsException;
 import nom.tam.fits.FitsFactory;
+import nom.tam.fits.Header;
+import nom.tam.fits.HeaderCard;
 import nom.tam.fits.ImageData;
 import nom.tam.fits.ImageHDU;
+import nom.tam.fits.header.NonStandard;
 import nom.tam.fits.header.Standard;
 import nom.tam.util.ArrayFuncs;
 import nom.tam.util.FitsFile;
@@ -295,4 +298,51 @@ public class ImageTest {
         Assert.assertTrue(out.toString().contains("Unable"));
 
     }
+
+    @Test
+    public void testOverrideHeaderAxes() throws FitsException {
+        ImageHDU hdu = ImageData.from(new float[3][2]).toHDU();
+
+        Header h = hdu.getHeader();
+        ImageData.overrideHeaderAxes(h, 5, 7, 11);
+
+        Assert.assertEquals(3, h.getIntValue(Standard.NAXIS));
+        Assert.assertEquals(11, h.getIntValue(Standard.NAXIS1));
+        Assert.assertEquals(7, h.getIntValue(Standard.NAXIS2));
+        Assert.assertEquals(5, h.getIntValue(Standard.NAXISn.n(3)));
+    }
+
+    @Test(expected = FitsException.class)
+    public void testOverrideHeaderAxesInvalid() throws FitsException {
+        ImageHDU hdu = ImageData.from(new float[3][2]).toHDU();
+
+        Header h = hdu.getHeader();
+        ImageData.overrideHeaderAxes(h, -1);
+    }
+
+    @Test(expected = FitsException.class)
+    public void testOverrideHeaderAxesNotImage() throws FitsException {
+        Header h = new Header();
+        h.addLine(HeaderCard.create(Standard.XTENSION, "blah"));
+        ImageData.overrideHeaderAxes(h, 5);
+    }
+
+    @Test
+    public void testOverrideHeaderAxesImage() throws FitsException {
+        Header h = new Header();
+        h.addLine(HeaderCard.create(Standard.XTENSION, Standard.XTENSION_IMAGE));
+        ImageData.overrideHeaderAxes(h, 5);
+        Assert.assertEquals(1, h.getIntValue(Standard.NAXIS));
+        Assert.assertEquals(5, h.getIntValue(Standard.NAXIS1));
+    }
+
+    @Test
+    public void testOverrideHeaderAxesIEUImage() throws FitsException {
+        Header h = new Header();
+        h.addLine(HeaderCard.create(Standard.XTENSION, NonStandard.XTENSION_IUEIMAGE));
+        ImageData.overrideHeaderAxes(h, 5);
+        Assert.assertEquals(1, h.getIntValue(Standard.NAXIS));
+        Assert.assertEquals(5, h.getIntValue(Standard.NAXIS1));
+    }
+
 }
