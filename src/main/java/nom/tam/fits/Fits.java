@@ -908,18 +908,21 @@ public class Fits implements Closeable {
     @Deprecated
     protected void randomInit(File file) throws FitsException {
 
-        String permissions = "r";
         if (!file.exists() || !file.canRead()) {
             throw new FitsException("Non-existent or unreadable file");
         }
-        if (file.canWrite()) {
-            permissions += "w";
-        }
         try {
-            dataStr = new FitsFile(file, permissions);
+            // Attempt to open the file for reading and writing.
+            dataStr = new FitsFile(file, "rw");
             ((FitsFile) dataStr).seek(0);
         } catch (IOException e) {
-            throw new FitsException("Unable to open file " + file.getPath(), e);
+            try {
+                // If that fails, try read-only.
+                dataStr = new FitsFile(file, "r");
+                ((FitsFile) dataStr).seek(0);
+            } catch (IOException e2) {
+                throw new FitsException("Unable to open file " + file.getPath(), e2);
+            }
         }
     }
 
