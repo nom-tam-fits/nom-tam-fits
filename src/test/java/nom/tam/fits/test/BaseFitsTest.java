@@ -1380,6 +1380,11 @@ public class BaseFitsTest {
     public void testReadOnlyFile() throws Exception {
         String fileName = "target/ReadOnly.fits";
 
+        File file = new File(fileName);
+        if (file.exists()) {
+            file.delete();
+        }
+
         // Create a trivial FITS file.
         FitsFile fitsFile = null;
         try {
@@ -1389,7 +1394,6 @@ public class BaseFitsTest {
         }
 
         // Make the test file read-only.
-        File file = new File(fileName);
         Assert.assertTrue(file.exists());
         Assert.assertTrue(file.setReadOnly());
         // Create a Fits object from the read-only file.
