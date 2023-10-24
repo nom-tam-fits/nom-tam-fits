@@ -1376,6 +1376,26 @@ public class BaseFitsTest {
         hdu.getBlankValue(); // throws FitsException
     }
 
+    @Test
+    public void testReadOnlyFile() throws Exception {
+        String fileName = "target/ReadOnly.fits";
+
+        // Create a trivial FITS file.
+        FitsFile fitsFile = null;
+        try {
+            fitsFile = new FitsFile(fileName, "rw");
+        } finally {
+            SafeClose.close(fitsFile);
+        }
+
+        // Make the test file read-only.
+        File file = new File(fileName);
+        Assert.assertTrue(file.exists());
+        Assert.assertTrue(file.setReadOnly());
+        // Create a Fits object from the read-only file.
+        Fits fits = new Fits(fileName);
+    }
+
     private static class TestRandomAccessFileIO extends java.io.RandomAccessFile implements RandomAccessFileIO {
         final String name;
 
