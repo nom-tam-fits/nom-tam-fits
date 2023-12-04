@@ -36,7 +36,7 @@ jobs:
         path: blackbox-images
         
     - name: Set up JDK 17
-      uses: actions/setup-java@v3
+      uses: actions/setup-java@v4
       with:
         java-version: '17'
         distribution: 'adopt'
@@ -93,7 +93,7 @@ jobs:
     - uses: actions/checkout@v4
         
     - name: Set up Java for Publishing to Nexus
-      uses: actions/setup-java@v3
+      uses: actions/setup-java@v4
       with:
         java-version: '17'
         distribution: 'adopt'
