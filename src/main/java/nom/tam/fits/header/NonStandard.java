@@ -79,6 +79,16 @@ public enum NonStandard implements IFitsHeader {
     @SuppressWarnings("CPD-START")
     private final IFitsHeader key;
 
+    /**
+     * An alternative older value of the XTENSION keword in case of an image.
+     */
+    public static final String XTENSION_IUEIMAGE = "IUEIMAGE";
+
+    /**
+     * an alternative olde value of the XTENSION keword in case of an earlier version of binary table.
+     */
+    public static final String XTENSION_A3DTABLE = "A3DTABLE";
+
     NonStandard(IFitsHeader.SOURCE status, HDU hdu, VALUE valueType, String comment) {
         key = new FitsHeaderImpl(name(), status, hdu, valueType, comment);
     }

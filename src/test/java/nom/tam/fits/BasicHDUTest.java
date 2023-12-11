@@ -112,4 +112,29 @@ public class BasicHDUTest {
 
         fits.close();
     }
+
+    @Test
+    public void imageToHDUTest() throws Exception {
+        ImageData im = new ImageData();
+        ImageHDU hdu = im.toHDU();
+        Assert.assertEquals(im, hdu.getData());
+    }
+
+    @Test(expected = IllegalStateException.class)
+    public void imageToHDUExceptionTest() throws Exception {
+        ImageData im = new ImageData() {
+            @Override
+            public void fillHeader(Header h) throws FitsException {
+                throw new FitsException("Test exception");
+            }
+        };
+        im.toHDU(); // throws exception
+    }
+
+    @Test
+    public void undefinedToHDUTest() throws Exception {
+        UndefinedData ud = new UndefinedData(new int[100]);
+        UndefinedHDU hdu = ud.toHDU();
+        Assert.assertEquals(ud, hdu.getData());
+    }
 }

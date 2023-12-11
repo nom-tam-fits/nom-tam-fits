@@ -35,6 +35,7 @@ import static org.junit.Assert.assertEquals;
 
 import java.io.ByteArrayOutputStream;
 import java.io.PrintStream;
+import java.util.Set;
 
 import org.junit.Assert;
 import org.junit.Test;
@@ -44,6 +45,7 @@ import nom.tam.fits.Fits;
 import nom.tam.fits.FitsException;
 import nom.tam.fits.FitsUtil;
 import nom.tam.fits.Header;
+import nom.tam.fits.NullDataHDU;
 import nom.tam.fits.RandomGroupsData;
 import nom.tam.fits.RandomGroupsHDU;
 import nom.tam.fits.header.Bitpix;
@@ -105,7 +107,6 @@ public class RandomGroupsTest {
             BasicHDU<?>[] hdus = f.read();
 
             data = (Object[][]) hdus[0].getKernel();
-            System.err.println("### [1] " + data.length);
 
             for (int i = 0; i < data.length; i++) {
 
@@ -128,7 +129,6 @@ public class RandomGroupsTest {
             f = new Fits();
             bf = new FitsFile("target/rg2.fits", "rw");
             // Generate a FITS HDU from the kernel.
-            System.err.println("### [2] " + data.length);
             f.addHDU(RandomGroupsHDU.createFrom(data));
             f.write(bf);
 
@@ -355,5 +355,108 @@ public class RandomGroupsTest {
         Header h = hdu.getHeader();
         h.addValue(Standard.BUNIT, "m/s");
         Assert.assertEquals("m/s", hdu.getBUnit());
+    }
+
+    @Test
+    public void testRandomGroupsParameterAccess() throws Exception {
+        short[][] img = new short[7][11];
+        short[] parms = new short[] {1, 2, 3, 4, 5, 6};
+        String filename = "target/random-parameters.fits";
+
+        RandomGroupsData data = new RandomGroupsData(new Object[][] {{parms, img}});
+        RandomGroupsHDU hdu = data.toHDU();
+
+        hdu.addValue(Standard.PTYPEn.n(1), "Param A"); // --> 1 * 1 + 0 = 1
+        // Default scaling + offset
+
+        hdu.addValue(Standard.PTYPEn.n(2), "Param A");
+        hdu.addValue(Standard.PSCALn.n(2), 0.5); // --> 0.5 * 2 = 1
+
+        hdu.addValue(Standard.PTYPEn.n(3), "Param A");
+        hdu.addValue(Standard.PZEROn.n(3), -2); // --> 1 * 3 - 2 = 1
+
+        hdu.addValue(Standard.PTYPEn.n(4), "Param A");
+        hdu.addValue(Standard.PSCALn.n(4), 0.5);
+        hdu.addValue(Standard.PZEROn.n(4), -1); // --> 0.5 * 4 - 1 = 1
+
+        hdu.addValue(Standard.PTYPEn.n(5), "Param B"); // --> 1 * 5 + 0 = 5
+
+        hdu.addValue(Standard.PTYPEn.n(6), "Param B1"); // --> 1 * 16 + 0 = 6
+
+        try (Fits f = new Fits()) {
+            f.addHDU(hdu);
+            f.write(filename);
+            f.close();
+        }
+
+        try (Fits f = new Fits(filename)) {
+            hdu = (RandomGroupsHDU) f.readHDU();
+
+            Set<String> names = hdu.getParameterNames();
+            Assert.assertTrue("contains A", names.contains("Param A"));
+            Assert.assertTrue("contains B", names.contains("Param B"));
+            Assert.assertTrue("contains B1", names.contains("Param B1"));
+            Assert.assertEquals(3, names.size());
+
+            Assert.assertEquals(4.0, hdu.getParameter("Param A", 0), 1e-12);
+            Assert.assertEquals(5.0, hdu.getParameter("Param B", 0), 1e-12);
+            Assert.assertEquals(6.0, hdu.getParameter("Param B1", 0), 1e-12);
+            Assert.assertTrue("no such parameter", Double.isNaN(hdu.getParameter("blah", 0)));
+
+            short[][] im = (short[][]) hdu.getData().getImage(0);
+            Assert.assertArrayEquals(img, im);
+            f.close();
+        }
+    }
+
+    @Test(expected = FitsException.class)
+    public void testRandomGroupsInExtensionException() throws Exception {
+        short[][] img = new short[7][11];
+        short[] parms = new short[] {1, 2, 3, 4, 5, 6};
+
+        RandomGroupsData data = new RandomGroupsData(new Object[][] {{parms, img}});
+        RandomGroupsHDU hdu = data.toHDU();
+
+        try (FitsFile out = new FitsFile("target/random-extension.fits", "rw")) {
+            new NullDataHDU().write(out);
+            hdu.write(out);
+        }
+    }
+
+    @Test(expected = FitsException.class)
+    public void testAddRandomGroupsAsExtensionException() throws Exception {
+        short[][] img = new short[7][11];
+        short[] parms = new short[] {1, 2, 3, 4, 5, 6};
+
+        RandomGroupsData data = new RandomGroupsData(new Object[][] {{parms, img}});
+        RandomGroupsHDU hdu = data.toHDU();
+
+        Fits fits = new Fits();
+        fits.addHDU(new NullDataHDU());
+        fits.addHDU(hdu); // throws exception
+    }
+
+    @Test
+    public void toHDUTest() throws Exception {
+        RandomGroupsData rg = new RandomGroupsData(new Object[][] {{new int[2], new int[10][10]}});
+        RandomGroupsHDU hdu = rg.toHDU();
+        Assert.assertEquals(rg, hdu.getData());
+    }
+
+    @Test(expected = IllegalStateException.class)
+    public void toHDUEmptyTest() throws Exception {
+        RandomGroupsData rg = new RandomGroupsData();
+        rg.toHDU(); // Throws exception because of empry group
+    }
+
+    @Test(expected = IllegalStateException.class)
+    public void toHDUExceptionTest() throws Exception {
+        RandomGroupsData rg = new RandomGroupsData() {
+            @Override
+            public void fillHeader(Header h) throws FitsException {
+                throw new FitsException("Test exception");
+            }
+        };
+        rg.toHDU(); // throws exception
     }
 }

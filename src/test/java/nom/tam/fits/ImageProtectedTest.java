@@ -48,22 +48,19 @@ import static nom.tam.fits.header.Standard.GCOUNT;
 
 public class ImageProtectedTest {
 
-    @Test(expected = FitsException.class)
+    @Test(expected = IllegalArgumentException.class)
     public void testImageDataFail() throws Exception {
         ImageData data = new ImageData("test");
-        data.fillHeader(new Header());
     }
 
-    @Test(expected = FitsException.class)
+    @Test(expected = IllegalArgumentException.class)
     public void testImageDataFailWrongDatatype() throws Exception {
         ImageData data = new ImageData(new String[] {"test"});
-        data.fillHeader(new Header());
     }
 
-    @Test(expected = FitsException.class)
+    @Test(expected = IllegalArgumentException.class)
     public void testImageDataFailUnfilledDimention() throws Exception {
         ImageData data = new ImageData(new int[][] {null});
-        data.fillHeader(new Header());
     }
 
     @Test(expected = FitsException.class)

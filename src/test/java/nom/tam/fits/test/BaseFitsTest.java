@@ -196,6 +196,11 @@ public class BaseFitsTest {
 
     }
 
+    @Test(expected = FitsException.class)
+    public void testFitsDeleteHduOutOfBounds() throws Exception {
+        new Fits().deleteHDU(0);
+    }
+
     @Test
     public void testFitsDeleteHduNewPrimary() throws Exception {
         Fits fits1 = makeAsciiTable();
@@ -329,15 +334,11 @@ public class BaseFitsTest {
 
         Cursor<String, HeaderCard> iter = header.iterator();
 
-        String[] headers = new String[header.getNumberOfCards() - 1];
+        String[] headers = new String[header.getNumberOfCards()];
         int index = 0;
         while (iter.hasNext()) {
             HeaderCard headerCard = iter.next();
-            // the EXTEND key will be deleted later on because the header is no
-            // primary header so don't use it
-            if (!headerCard.getKey().equals("EXTEND")) {
-                headers[index++] = headerCard.toString();
-            }
+            headers[index++] = headerCard.toString();
         }
         Header newHeader = new Header(headers);
         for (index = 0; index < headers.length; index++) {
@@ -576,7 +577,7 @@ public class BaseFitsTest {
 
     @Test
     public void testFitsRandomGroupDataWrite() throws Exception {
-        RandomGroupsData data = new RandomGroupsData(new Object[][] {new Object[] {new int[10], new int[10],}});
+        RandomGroupsData data = new RandomGroupsData(new Object[][] {new Object[] {new int[10], new int[10]}});
         FitsOutputStream out = new FitsOutputStream(new ByteArrayOutputStream()) {
 
             @Override
@@ -599,7 +600,7 @@ public class BaseFitsTest {
     public void testFitsRandomGroupDataRead() throws Exception {
         ByteArrayOutputStream outBytes = new ByteArrayOutputStream();
         FitsOutputStream out = new FitsOutputStream(outBytes);
-        Object[][] dataArray = new Object[][] {new Object[] {new int[10], new int[10],}};
+        Object[][] dataArray = new Object[][] {new Object[] {new int[10], new int[10]}};
         out.writeArray(dataArray);
         out.close();
 

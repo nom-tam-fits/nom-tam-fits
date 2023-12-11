@@ -92,7 +92,7 @@ The current FITS standard (4.0) recognizes the following principal HDU / data ty
  4. **Random Groups** (_discouraged_) can contain a set of images of the same type and dimensions along with a set of 
  parameters of the same type (for example an `int[][]` image, along with a set of `int` parameters). They were never 
  widely used and the FITS 4.0 standard discourages them going forward, given that binary tables provide far superior 
- capabilities for storing the same type of data. Support for these type of HDUs is thus very basic, and aimed mainly 
+ capabilities for storing the same type of data. Support for these type of HDUs is basic, and aimed mainly 
  at providing a way to access data that was already written in this format.
 
  5. **Foreign File** can encapsulate various other files within the FITS. Foreign file HDUs are a recognised 
@@ -514,12 +514,12 @@ image and/or table HDUs we create. When everything is assembled, we write the FI
   fits.write("myfits.fits");
 ```
 
-Images can be added to the FITS at any point. For example, consider a 2D `float[][]` image we want to  add to a FITS:
+Images can be added to the FITS at any point. For example, consider a 2D `float[][]` image we want to add to a FITS:
 
 ```java
   float[][] image ...
   
-  ImageHDU imageHDU = fits.makeHDU(image);
+  ImageHDU imageHDU = Fits.makeHDU(image);
   fits.addHDU(imageHDU);
 ```
 

@@ -1,29 +1,18 @@
 package nom.tam.fits;
 
-import java.io.IOException;
-import java.util.logging.Level;
-import java.util.logging.Logger;
-
-import nom.tam.fits.header.Bitpix;
-import nom.tam.fits.header.Standard;
-import nom.tam.util.ArrayDataInput;
-import nom.tam.util.ArrayDataOutput;
-import nom.tam.util.ArrayFuncs;
-import nom.tam.util.FitsEncoder;
-
-/*
+/*-
  * #%L
- * nom.tam FITS library
+ * nom.tam.fits
  * %%
- * Copyright (C) 2004 - 2021 nom-tam-fits
+ * Copyright (C) 1996 - 2023 nom-tam-fits
  * %%
  * This is free and unencumbered software released into the public domain.
- *
+ * 
  * Anyone is free to copy, modify, publish, use, compile, sell, or
  * distribute this software, either in source code form or as a compiled
  * binary, for any purpose, commercial or non-commercial, and by any
  * means.
- *
+ * 
  * In jurisdictions that recognize copyright laws, the author or authors
  * of this software dedicate any and all copyright interest in the
  * software to the public domain. We make this dedication for the benefit
@@ -31,7 +20,7 @@ import nom.tam.util.FitsEncoder;
  * successors. We intend this dedication to be an overt act of
  * relinquishment in perpetuity of all present and future rights to this
  * software under copyright law.
- *
+ * 
  * THE SOFTWARE IS PROVIDED "AS IS", WITHOUT WARRANTY OF ANY KIND,
  * EXPRESS OR IMPLIED, INCLUDING BUT NOT LIMITED TO THE WARRANTIES OF
  * MERCHANTABILITY, FITNESS FOR A PARTICULAR PURPOSE AND NONINFRINGEMENT.
@@ -42,12 +31,15 @@ import nom.tam.util.FitsEncoder;
  * #L%
  */
 
-import static nom.tam.fits.header.Standard.EXTEND;
-import static nom.tam.fits.header.Standard.GCOUNT;
-import static nom.tam.fits.header.Standard.NAXIS;
-import static nom.tam.fits.header.Standard.NAXISn;
-import static nom.tam.fits.header.Standard.PCOUNT;
-import static nom.tam.util.LoggerHelper.getLogger;
+import java.io.IOException;
+
+import nom.tam.fits.header.Bitpix;
+import nom.tam.fits.header.Standard;
+import nom.tam.util.ArrayDataInput;
+import nom.tam.util.ArrayDataOutput;
+import nom.tam.util.ArrayFuncs;
+import nom.tam.util.Cursor;
+import nom.tam.util.FitsEncoder;
 
 import edu.umd.cs.findbugs.annotations.SuppressFBWarnings;
 
@@ -60,79 +52,159 @@ import edu.umd.cs.findbugs.annotations.SuppressFBWarnings;
  */
 public class UndefinedData extends Data {
 
-    private static final Logger LOG = getLogger(UndefinedData.class);
+    private static final String XTENSION_UNKNOWN = "UNKNOWN";
+    // private static final Logger LOG = getLogger(UndefinedData.class);
 
+    private Bitpix bitpix = Bitpix.BYTE;
+    private int[] dims;
     private int byteSize = 0;
     private byte[] data;
+    private int pCount = 0;
+    private int gCount = 1;
+
+    private String extensionType = XTENSION_UNKNOWN;
 
     /**
      * Creates a new empty container for data of unknown type based on the provided FITS header information.
      *
-     * @param  h             The FITS header corresponding to the data segment in the HDU
+     * @param      h             The FITS header corresponding to the data segment in the HDU
      * 
-     * @throws FitsException if there wan an error accessing or interpreting the provided header information.
+     * @throws     FitsException if there wan an error accessing or interpreting the provided header information.
+     * 
+     * @deprecated               (<i>for internal use</i>). Visibility will be reduced to the package level in the
+     *                               future.
      */
     public UndefinedData(Header h) throws FitsException {
+        extensionType = h.getStringValue(Standard.XTENSION, XTENSION_UNKNOWN);
 
-        /**
-         * Just get a byte buffer to hold the data.
-         */
-        // Bug fix by Vincenzo Forzi.
-        int naxis = h.getIntValue(NAXIS);
+        int naxis = h.getIntValue(Standard.NAXIS);
+
+        dims = new int[naxis];
 
         int size = naxis > 0 ? 1 : 0;
-        for (int i = 0; i < naxis; i++) {
-            size *= h.getIntValue(NAXISn.n(i + 1));
+        for (int i = 1; i <= naxis; i++) {
+            dims[naxis - i] = h.getIntValue(Standard.NAXISn.n(i));
+            size *= dims[naxis - i];
         }
-        size += h.getIntValue(PCOUNT);
-        if (h.getIntValue(GCOUNT) > 1) {
-            size *= h.getIntValue(GCOUNT);
+
+        pCount = h.getIntValue(Standard.PCOUNT);
+        size += pCount;
+
+        gCount = h.getIntValue(Standard.GCOUNT);
+        if (gCount > 1) {
+            size *= h.getIntValue(Standard.GCOUNT);
         }
-        size *= Bitpix.fromHeader(h).byteSize();
+
+        bitpix = Bitpix.fromHeader(h);
+        size *= bitpix.byteSize();
 
         byteSize = size;
     }
 
     /**
-     * Create an UndefinedData object using the specified object.
-     *
-     * @param x object to create the hdu from
+     * @deprecated                          (<i>for internal use</i>). Users should always construct known data types.
+     *                                          Reduce visibility to the package level.
+     * 
+     * @param      x                        object to create the hdu from
+     * 
+     * @throws     IllegalArgumentException If the object is not an array or contains elements that do not have a known
+     *                                          binary size.
      */
-    public UndefinedData(Object x) {
+    public UndefinedData(Object x) throws IllegalArgumentException {
         byteSize = (int) FitsEncoder.computeSize(x);
+        dims = ArrayFuncs.getDimensions(x);
         data = new byte[byteSize];
         ArrayFuncs.copyInto(x, data);
     }
 
-    @SuppressWarnings("deprecation")
     @Override
     protected void fillHeader(Header head) {
-        try {
-            Standard.context(UndefinedData.class);
-            head.setXtension("UNKNOWN");
-            head.setBitpix(Bitpix.BYTE);
-            head.setNaxes(1);
-            head.addValue(NAXISn.n(1), byteSize);
-            head.addValue(PCOUNT, 0);
-            head.addValue(GCOUNT, 1);
-            // Just in case!
-            head.addValue(EXTEND, true);
-        } catch (HeaderCardException e) {
-            LOG.log(Level.SEVERE, "Unable to create unknown header", e);
-        } finally {
-            Standard.context(null);
+        // We'll assume it's a primary image, until we know better...
+        // Just in case, we don't want an XTENSION key lingering around...
+        head.deleteKey(Standard.SIMPLE);
+        head.deleteKey(Standard.EXTEND);
+
+        Standard.context(null);
+
+        Cursor<String, HeaderCard> c = head.iterator();
+        c.add(HeaderCard.create(Standard.XTENSION, extensionType));
+        c.add(HeaderCard.create(Standard.BITPIX, bitpix.getHeaderValue()));
+
+        c.add(HeaderCard.create(Standard.NAXIS, dims.length));
+
+        for (int i = 1; i <= dims.length; i++) {
+            c.add(HeaderCard.create(Standard.NAXISn.n(i), dims[dims.length - i]));
         }
+
+        c.add(HeaderCard.create(Standard.PCOUNT, pCount));
+        c.add(HeaderCard.create(Standard.GCOUNT, gCount));
     }
 
     @Override
     @SuppressFBWarnings(value = "EI_EXPOSE_REP", justification = "intended exposure of mutable data")
-    protected Object getCurrentData() {
+    protected byte[] getCurrentData() {
         return data;
     }
 
     @Override
     protected long getTrueSize() {
         return byteSize;
+    }
+
+    /**
+     * Returns the FITS extension type as stored by the XTENSION keyword in the FITS header.
+     * 
+     * @return The value used for the XTENSION keyword in the FITS header
+     * 
+     * @since  1.19
+     */
+    public final String getXtension() {
+        return extensionType;
+    }
+
+    /**
+     * Returns the FITS element type as a Bitpux value.
+     * 
+     * @return The FITS Bitpix value for the type of primitive data element used by this data
+     * 
+     * @since  1.19
+     */
+    public final Bitpix getBitpix() {
+        return bitpix;
+    }
+
+    /**
+     * Returns the size of the optional parameter space as stored by the PCOUNT keyword in the FITS header.
+     * 
+     * @return The element count of the optional parameter space accompanying the main data, as stored by the PCOUNT
+     *             header value.
+     * 
+     * @since  1.19
+     */
+    public final int getParameterCount() {
+        return pCount;
+    }
+
+    /**
+     * Returns the number of repeated (data + parameter) groups in this data object
+     * 
+     * @return The number of repeated data + parameter blocks, as stored by the GCOUNT header value.
+     * 
+     * @since  1.19
+     */
+    public final int getGroupCount() {
+        return gCount;
+    }
+
+    /**
+     * Returns the dimensionality of the data (if any), in Java array index order. That is, The value for NAXIS1 is the
+     * last value in the returned array
+     * 
+     * @return the regular dimensions of the data in Java index order (that is NAXIS1 is the last entry in the array),
+     *             or possibly <code>null</code> if no dimensions have been defined.
+     */
+    public final int[] getDimensions() {
+        return dims;
     }
 
     @Override
@@ -164,5 +236,13 @@ public class UndefinedData extends Data {
             throw new FitsException("IO Error on unknown data write", e);
         }
         FitsUtil.pad(o, getTrueSize());
+    }
+
+    @Override
+    @SuppressWarnings("deprecation")
+    public UndefinedHDU toHDU() {
+        Header h = new Header();
+        fillHeader(h);
+        return new UndefinedHDU(h, this);
     }
 }

@@ -1,9 +1,38 @@
 package nom.tam.fits;
 
+/*-
+ * #%L
+ * nom.tam.fits
+ * %%
+ * Copyright (C) 1996 - 2023 nom-tam-fits
+ * %%
+ * This is free and unencumbered software released into the public domain.
+ * 
+ * Anyone is free to copy, modify, publish, use, compile, sell, or
+ * distribute this software, either in source code form or as a compiled
+ * binary, for any purpose, commercial or non-commercial, and by any
+ * means.
+ * 
+ * In jurisdictions that recognize copyright laws, the author or authors
+ * of this software dedicate any and all copyright interest in the
+ * software to the public domain. We make this dedication for the benefit
+ * of the public at large and to the detriment of our heirs and
+ * successors. We intend this dedication to be an overt act of
+ * relinquishment in perpetuity of all present and future rights to this
+ * software under copyright law.
+ * 
+ * THE SOFTWARE IS PROVIDED "AS IS", WITHOUT WARRANTY OF ANY KIND,
+ * EXPRESS OR IMPLIED, INCLUDING BUT NOT LIMITED TO THE WARRANTIES OF
+ * MERCHANTABILITY, FITNESS FOR A PARTICULAR PURPOSE AND NONINFRINGEMENT.
+ * IN NO EVENT SHALL THE AUTHORS BE LIABLE FOR ANY CLAIM, DAMAGES OR
+ * OTHER LIABILITY, WHETHER IN AN ACTION OF CONTRACT, TORT OR OTHERWISE,
+ * ARISING FROM, OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR
+ * OTHER DEALINGS IN THE SOFTWARE.
+ * #L%
+ */
+
 import java.io.IOException;
 import java.lang.reflect.Array;
-import java.util.logging.Level;
-import java.util.logging.Logger;
 
 import nom.tam.fits.header.Bitpix;
 import nom.tam.fits.header.IFitsHeader;
@@ -20,42 +49,8 @@ import static nom.tam.fits.header.DataDescription.TDMAXn;
 import static nom.tam.fits.header.DataDescription.TDMINn;
 import static nom.tam.fits.header.DataDescription.TLMAXn;
 import static nom.tam.fits.header.DataDescription.TLMINn;
-
-/*
- * #%L
- * nom.tam FITS library
- * %%
- * Copyright (C) 2004 - 2021 nom-tam-fits
- * %%
- * This is free and unencumbered software released into the public domain.
- *
- * Anyone is free to copy, modify, publish, use, compile, sell, or
- * distribute this software, either in source code form or as a compiled
- * binary, for any purpose, commercial or non-commercial, and by any
- * means.
- *
- * In jurisdictions that recognize copyright laws, the author or authors
- * of this software dedicate any and all copyright interest in the
- * software to the public domain. We make this dedication for the benefit
- * of the public at large and to the detriment of our heirs and
- * successors. We intend this dedication to be an overt act of
- * relinquishment in perpetuity of all present and future rights to this
- * software under copyright law.
- *
- * THE SOFTWARE IS PROVIDED "AS IS", WITHOUT WARRANTY OF ANY KIND,
- * EXPRESS OR IMPLIED, INCLUDING BUT NOT LIMITED TO THE WARRANTIES OF
- * MERCHANTABILITY, FITNESS FOR A PARTICULAR PURPOSE AND NONINFRINGEMENT.
- * IN NO EVENT SHALL THE AUTHORS BE LIABLE FOR ANY CLAIM, DAMAGES OR
- * OTHER LIABILITY, WHETHER IN AN ACTION OF CONTRACT, TORT OR OTHERWISE,
- * ARISING FROM, OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR
- * OTHER DEALINGS IN THE SOFTWARE.
- * #L%
- */
-
-import static nom.tam.fits.header.Standard.GCOUNT;
 import static nom.tam.fits.header.Standard.NAXIS1;
 import static nom.tam.fits.header.Standard.NAXIS2;
-import static nom.tam.fits.header.Standard.PCOUNT;
 import static nom.tam.fits.header.Standard.TBCOLn;
 import static nom.tam.fits.header.Standard.TFIELDS;
 import static nom.tam.fits.header.Standard.TFORMn;
@@ -84,7 +79,10 @@ public class AsciiTable extends AbstractTableData {
 
     private static final int DOUBLE_MAX_LENGTH = 24;
 
-    private static final Logger LOG = Logger.getLogger(AsciiTable.class.getName());
+    /** Whether I10 columns should be treated as <code>int</code> provided that defined limits allow for it. */
+    private static boolean isI10PreferInt = true;
+
+    // private static final Logger LOG = Logger.getLogger(AsciiTable.class.getName());
 
     /** The number of rows in the table */
     private int nRows;
@@ -140,14 +138,18 @@ public class AsciiTable extends AbstractTableData {
     }
 
     /**
-     * Create an ASCII table given a header
+     * Creates an ASCII table given a header. For tables that contain integer-valued columns of format <code>I10</code>,
+     * the {@link #setI10PreferInt(boolean)} mayb be used to control whether to treat them as <code>int</code> or as
+     * <code>long</code> values (the latter is the default).
      *
-     * @param  hdr           The header describing the table
+     * @param      hdr           The header describing the table
      *
-     * @throws FitsException if the operation failed
+     * @throws     FitsException if the operation failed
+     * 
+     * @deprecated               (<i>for internal use</i>) Visibility may be reduced to the package level in the future.
      */
     public AsciiTable(Header hdr) throws FitsException {
-        this(hdr, true);
+        this(hdr, isI10PreferInt);
     }
 
     /**
@@ -160,16 +162,23 @@ public class AsciiTable extends AbstractTableData {
      * integers. Setting it <code>true</code> may make it more likely to avoid unexpected type changes during
      * round-tripping, but it also means that some (large number) data in I10 columns may be impossible to read.
      * </p>
+     * 
+     * @param      hdr           The header describing the table
+     * @param      preferInt     if <code>true</code>, format "I10" columns will be assumed <code>int.class</code>,
+     *                               provided TLMINn/TLMAXn or TDMINn/TDMAXn limits (if defined) allow it. if
+     *                               <code>false</code>, I10 columns that have no clear indication of data range will be
+     *                               assumed <code>long.class</code>.
      *
-     * @param  hdr           The header describing the table
-     * @param  preferInt     if <code>true</code>, format "I10" columns will be assumed <code>int.class</code>, provided
-     *                           TLMINn/TLMAXn or TDMINn/TDMAXn limits (if defined) allow it. if <code>false</code>, I10
-     *                           columns that have no clear indication of data range will be assumed
-     *                           <code>long.class</code>.
-     *
-     * @throws FitsException if the operation failed
+     * @throws     FitsException if the operation failed
+     * 
+     * @deprecated               Use {@link #setI10PreferInt(boolean)} instead prior to reading ASCII tables.
      */
     public AsciiTable(Header hdr, boolean preferInt) throws FitsException {
+        String ext = hdr.getStringValue(Standard.XTENSION, Standard.XTENSION_IMAGE);
+
+        if (!ext.equalsIgnoreCase(Standard.XTENSION_ASCIITABLE)) {
+            throw new FitsException("Not an ASCII table header (XTENSION = " + hdr.getStringValue(Standard.XTENSION) + ")");
+        }
 
         nRows = hdr.getIntValue(NAXIS2);
         nFields = hdr.getIntValue(TFIELDS);
@@ -291,8 +300,7 @@ public class AsciiTable extends AbstractTableData {
         return types[col];
     }
 
-    int addColInfo(int col, Cursor<String, HeaderCard> iter) throws HeaderCardException {
-
+    int addColInfo(int col, Cursor<String, HeaderCard> iter) {
         String tform = null;
         if (types[col] == String.class) {
             tform = "A" + lengths[col];
@@ -303,11 +311,10 @@ public class AsciiTable extends AbstractTableData {
         } else if (types[col] == double.class) {
             tform = "D" + lengths[col] + ".0";
         }
+
         Standard.context(AsciiTable.class);
-        IFitsHeader key = TFORMn.n(col + 1);
-        iter.add(new HeaderCard(key.key(), tform, key.comment()));
-        key = TBCOLn.n(col + 1);
-        iter.add(new HeaderCard(key.key(), offsets[col] + 1, key.comment()));
+        iter.add(HeaderCard.create(Standard.TFORMn.n(col + 1), tform));
+        iter.add(HeaderCard.create(Standard.TBCOLn.n(col + 1), offsets[col] + 1));
         Standard.context(null);
         return lengths[col];
     }
@@ -608,29 +615,27 @@ public class AsciiTable extends AbstractTableData {
     }
 
     @Override
-    protected void fillHeader(Header hdr) {
-        try {
-            Standard.context(AsciiTable.class);
-            hdr.setXtension(Standard.XTENSION_ASCIITABLE);
-            hdr.setBitpix(Bitpix.BYTE);
-            hdr.setNaxes(2);
-            hdr.setNaxis(1, rowLen);
-            hdr.setNaxis(2, nRows);
-            Cursor<String, HeaderCard> iter = hdr.iterator();
-            iter.setKey(NAXIS2.key());
-            iter.next();
-            iter.add(new HeaderCard(PCOUNT.key(), 0, PCOUNT.comment()));
-            iter.add(new HeaderCard(GCOUNT.key(), 1, GCOUNT.comment()));
-            iter.add(new HeaderCard(TFIELDS.key(), nFields, TFIELDS.comment()));
+    protected void fillHeader(Header h) {
+        h.deleteKey(Standard.SIMPLE);
+        h.deleteKey(Standard.EXTEND);
 
-            for (int i = 0; i < nFields; i++) {
-                addColInfo(i, iter);
-            }
-        } catch (HeaderCardException e) {
-            LOG.log(Level.SEVERE, "ImpossibleException in fillHeader:" + e.getMessage(), e);
-        } finally {
-            Standard.context(null);
+        Standard.context(AsciiTable.class);
+
+        Cursor<String, HeaderCard> c = h.iterator();
+        c.add(HeaderCard.create(Standard.XTENSION, Standard.XTENSION_ASCIITABLE));
+        c.add(HeaderCard.create(Standard.BITPIX, Bitpix.BYTE.getHeaderValue()));
+        c.add(HeaderCard.create(Standard.NAXIS, 2));
+        c.add(HeaderCard.create(Standard.NAXIS1, rowLen));
+        c.add(HeaderCard.create(Standard.NAXIS2, nRows));
+        c.add(HeaderCard.create(Standard.PCOUNT, 0));
+        c.add(HeaderCard.create(Standard.GCOUNT, 1));
+        c.add(HeaderCard.create(Standard.TFIELDS, nFields));
+
+        for (int i = 0; i < nFields; i++) {
+            addColInfo(i, c);
         }
+
+        Standard.context(null);
     }
 
     /**
@@ -983,5 +988,48 @@ public class AsciiTable extends AbstractTableData {
         } catch (IOException e) {
             throw new FitsException("Error writing ASCII Table data", e);
         }
+    }
+
+    @Override
+    public AsciiTableHDU toHDU() {
+        Header h = new Header();
+        fillHeader(h);
+        return new AsciiTableHDU(h, this);
+    }
+
+    /**
+     * <p>
+     * Controls how columns with format "<code>I10</code>" are handled; this is tricky because some, but not all,
+     * integers that can be represented in 10 characters form 32-bit integers. Setting it <code>true</code> may make it
+     * more likely to avoid unexpected type changes during round-tripping, but it also means that some values in I10
+     * columns may be impossible to read. The default behavior is to assume <code>true</code>, and thus to treat I10
+     * columns as <code>int</code> values.
+     * </p>
+     * 
+     * @param value if <code>true</code>, format "I10" columns will be assumed <code>int.class</code>, provided
+     *                  TLMINn/TLMAXn or TDMINn/TDMAXn limits (if defined) allow it. if <code>false</code>, I10 columns
+     *                  that have no clear indication of data range will be assumed <code>long.class</code>.
+     *
+     * @since       1.19
+     * 
+     * @see         AsciiTable#isI10PreferInt()
+     */
+    public static void setI10PreferInt(boolean value) {
+        isI10PreferInt = value;
+    }
+
+    /**
+     * Checks if I10 columns should be treated as containing 32-bit <code>int</code> values, rather than 64-bit
+     * <code>long</code> values, when possible.
+     * 
+     * @return <code>true</code> if I10 columns should be treated as containing 32-bit <code>int</code> values,
+     *             otherwise <code>false</code>.
+     * 
+     * @since  1.19
+     * 
+     * @see    #setI10PreferInt(boolean)
+     */
+    public static boolean isI10PreferInt() {
+        return isI10PreferInt;
     }
 }

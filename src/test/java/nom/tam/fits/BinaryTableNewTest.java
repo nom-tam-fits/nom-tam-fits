@@ -41,6 +41,7 @@ import org.junit.Assert;
 import org.junit.Test;
 
 import nom.tam.fits.BinaryTable.ColumnDesc;
+import nom.tam.fits.header.NonStandard;
 import nom.tam.fits.header.Standard;
 import nom.tam.util.ComplexValue;
 import nom.tam.util.FitsInputStream;
@@ -1669,6 +1670,45 @@ public class BinaryTableNewTest {
         fits.read();
         fits.close();
         fits.write((DataOutput) fits.getStream());
+    }
+
+    @Test
+    public void toHDUTest() throws Exception {
+        BinaryTable tab = new BinaryTable();
+        BinaryTableHDU hdu = tab.toHDU();
+        Assert.assertEquals(tab, hdu.getData());
+    }
+
+    @Test(expected = IllegalStateException.class)
+    public void toHDUExceptionTest() throws Exception {
+        BinaryTable tab = new BinaryTable() {
+            @Override
+            public void fillHeader(Header h) throws FitsException {
+                throw new FitsException("Test exception");
+            }
+        };
+        tab.toHDU(); // throws exception
+    }
+
+    @Test(expected = FitsException.class)
+    public void testConstructAsciiTableHeader() throws Exception {
+        Header h = new Header();
+        h.addValue(Standard.XTENSION, Standard.XTENSION_ASCIITABLE);
+        new BinaryTable(h);
+    }
+
+    @Test(expected = FitsException.class)
+    public void testConstructImageHeader() throws Exception {
+        Header h = new Header();
+        h.addValue(Standard.XTENSION, Standard.XTENSION_IMAGE);
+        new BinaryTable(h);
+    }
+
+    @Test(expected = FitsException.class)
+    public void testConstructIUEImageHeader() throws Exception {
+        Header h = new Header();
+        h.addValue(Standard.XTENSION, NonStandard.XTENSION_IUEIMAGE);
+        new BinaryTable(h);
     }
 
 }

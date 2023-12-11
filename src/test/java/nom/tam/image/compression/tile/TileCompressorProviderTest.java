@@ -93,6 +93,7 @@ public class TileCompressorProviderTest {
         private static Header emptyHeader() {
             Header header = new Header();
             try {
+                header.card(Standard.XTENSION).value(Standard.XTENSION_BINTABLE);
                 header.card(Standard.NAXIS1).value(1);
             } catch (HeaderCardException e) {
                 throw new RuntimeException();

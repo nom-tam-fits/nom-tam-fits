@@ -59,20 +59,18 @@ import nom.tam.fits.Fits;
 import nom.tam.fits.FitsException;
 import nom.tam.fits.FitsFactory;
 import nom.tam.fits.Header;
-import nom.tam.fits.HeaderCard;
 import nom.tam.fits.PaddingException;
 import nom.tam.fits.TableHDU;
+import nom.tam.fits.header.NonStandard;
 import nom.tam.fits.header.Standard;
 import nom.tam.util.ArrayDataInput;
 import nom.tam.util.ArrayDataOutput;
 import nom.tam.util.ArrayFuncs;
-import nom.tam.util.Cursor;
 import nom.tam.util.FitsFile;
 import nom.tam.util.FitsInputStream;
 import nom.tam.util.FitsOutputStream;
 import nom.tam.util.SafeClose;
 import nom.tam.util.TestArrayFuncs;
-import nom.tam.util.test.ThrowAnyException;
 
 import static nom.tam.fits.header.DataDescription.TDMAXn;
 import static nom.tam.fits.header.DataDescription.TDMINn;
@@ -600,21 +598,6 @@ public class AsciiTableTest {
             public void close() throws SecurityException {
             }
         });
-
-        new AsciiTable() {
-            @Override
-            public void fillHeader(Header hdr) {
-                super.fillHeader(hdr);
-            }
-        }.fillHeader(new Header() {
-            @Override
-            public Cursor<String, HeaderCard> iterator() {
-                ThrowAnyException.throwHeaderCardException("all is broken");
-                return null;
-            }
-        });
-        Assert.assertEquals(1, logs.size());
-        Assert.assertEquals("all is broken", logs.get(0).getThrown().getMessage());
     }
 
     @Test
@@ -733,7 +716,8 @@ public class AsciiTableTest {
     @Test
     public void testToInvalidTable() throws Exception {
         Header hdr = new Header();
-        hdr.card(Standard.NAXIS1).value(Integer.MAX_VALUE)//
+        hdr.card(Standard.XTENSION).value(Standard.XTENSION_ASCIITABLE)//
+                .card(Standard.NAXIS1).value(Integer.MAX_VALUE)//
                 .card(Standard.NAXIS2).value(Integer.MAX_VALUE)//
                 .card(Standard.TFIELDS).value(1)//
                 .card(Standard.TBCOLn.n(1)).value(4)//
@@ -762,7 +746,8 @@ public class AsciiTableTest {
     @Test
     public void testToBigTable() throws Exception {
         Header hdr = new Header();
-        hdr.card(Standard.NAXIS1).value(Integer.MAX_VALUE)//
+        hdr.card(Standard.XTENSION).value(Standard.XTENSION_ASCIITABLE)//
+                .card(Standard.NAXIS1).value(Integer.MAX_VALUE)//
                 .card(Standard.NAXIS2).value(Integer.MAX_VALUE)//
                 .card(Standard.TFIELDS).value(1)//
                 .card(Standard.TBCOLn.n(1)).value(4)//
@@ -781,7 +766,8 @@ public class AsciiTableTest {
     @Test
     public void testToBigTable2() throws Exception {
         Header hdr = new Header();
-        hdr.card(Standard.NAXIS1).value(Integer.MAX_VALUE)//
+        hdr.card(Standard.XTENSION).value(Standard.XTENSION_ASCIITABLE)//
+                .card(Standard.NAXIS1).value(Integer.MAX_VALUE)//
                 .card(Standard.NAXIS2).value(Integer.MAX_VALUE)//
                 .card(Standard.TFIELDS).value(1)//
                 .card(Standard.TBCOLn.n(1)).value(4)//
@@ -812,7 +798,8 @@ public class AsciiTableTest {
     @Test
     public void testToFailedWrite() throws Exception {
         Header hdr = new Header();
-        hdr.card(Standard.NAXIS1).value(Integer.MAX_VALUE)//
+        hdr.card(Standard.XTENSION).value(Standard.XTENSION_ASCIITABLE)//
+                .card(Standard.NAXIS1).value(Integer.MAX_VALUE)//
                 .card(Standard.NAXIS2).value(Integer.MAX_VALUE)//
                 .card(Standard.TFIELDS).value(1)//
                 .card(Standard.TBCOLn.n(1)).value(4)//
@@ -864,7 +851,8 @@ public class AsciiTableTest {
     @Test
     public void testFailingGetElementTable() throws Exception {
         Header hdr = new Header();
-        hdr.card(Standard.NAXIS1).value(Integer.MAX_VALUE)//
+        hdr.card(Standard.XTENSION).value(Standard.XTENSION_ASCIITABLE)//
+                .card(Standard.NAXIS1).value(Integer.MAX_VALUE)//
                 .card(Standard.NAXIS2).value(Integer.MAX_VALUE)//
                 .card(Standard.TFIELDS).value(1)//
                 .card(Standard.TBCOLn.n(1)).value(4)//
@@ -882,7 +870,8 @@ public class AsciiTableTest {
     @Test
     public void testFailingGetRowTable() throws Exception {
         Header hdr = new Header();
-        hdr.card(Standard.NAXIS1).value(Integer.MAX_VALUE)//
+        hdr.card(Standard.XTENSION).value(Standard.XTENSION_ASCIITABLE)//
+                .card(Standard.NAXIS1).value(Integer.MAX_VALUE)//
                 .card(Standard.NAXIS2).value(Integer.MAX_VALUE)//
                 .card(Standard.TFIELDS).value(1)//
                 .card(Standard.TBCOLn.n(1)).value(4)//
@@ -900,7 +889,8 @@ public class AsciiTableTest {
     @Test
     public void testIncompatibleElement() throws Exception {
         Header hdr = new Header();
-        hdr.card(Standard.NAXIS1).value(1)//
+        hdr.card(Standard.XTENSION).value(Standard.XTENSION_ASCIITABLE)//
+                .card(Standard.NAXIS1).value(1)//
                 .card(Standard.NAXIS2).value(1)//
                 .card(Standard.TFIELDS).value(1)//
                 .card(Standard.TBCOLn.n(1)).value(2)//
@@ -922,7 +912,8 @@ public class AsciiTableTest {
     @Test
     public void testIllegalSetRow() throws Exception {
         Header hdr = new Header();
-        hdr.card(Standard.NAXIS1).value(1)//
+        hdr.card(Standard.XTENSION).value(Standard.XTENSION_ASCIITABLE)//
+                .card(Standard.NAXIS1).value(1)//
                 .card(Standard.NAXIS2).value(1)//
                 .card(Standard.TFIELDS).value(1)//
                 .card(Standard.TBCOLn.n(1)).value(2)//
@@ -948,7 +939,8 @@ public class AsciiTableTest {
     @Test
     public void testIllegalSetRow2() throws Exception {
         Header hdr = new Header();
-        hdr.card(Standard.NAXIS1).value(1)//
+        hdr.card(Standard.XTENSION).value(Standard.XTENSION_ASCIITABLE)//
+                .card(Standard.NAXIS1).value(1)//
                 .card(Standard.NAXIS2).value(1)//
                 .card(Standard.TFIELDS).value(1)//
                 .card(Standard.TBCOLn.n(1)).value(2)//
@@ -967,7 +959,8 @@ public class AsciiTableTest {
     @Test(expected = PaddingException.class)
     public void testFailedRead() throws Exception {
         Header hdr = new Header();
-        hdr.card(Standard.NAXIS1).value(1)//
+        hdr.card(Standard.XTENSION).value(Standard.XTENSION_ASCIITABLE)//
+                .card(Standard.NAXIS1).value(1)//
                 .card(Standard.NAXIS2).value(1)//
                 .card(Standard.TFIELDS).value(1)//
                 .card(Standard.TBCOLn.n(1)).value(2)//
@@ -992,7 +985,8 @@ public class AsciiTableTest {
     @Test(expected = FitsException.class)
     public void testFailedRead2() throws Exception {
         Header hdr = new Header();
-        hdr.card(Standard.NAXIS1).value(1)//
+        hdr.card(Standard.XTENSION).value(Standard.XTENSION_ASCIITABLE)//
+                .card(Standard.NAXIS1).value(1)//
                 .card(Standard.NAXIS2).value(1)//
                 .card(Standard.TFIELDS).value(1)//
                 .card(Standard.TBCOLn.n(1)).value(2)//
@@ -1218,4 +1212,51 @@ public class AsciiTableTest {
         assertEquals(long.class, t1.getColumnType(col));
     }
 
+    @Test
+    public void toHDUTest() throws Exception {
+        AsciiTable tab = new AsciiTable();
+        AsciiTableHDU hdu = tab.toHDU();
+        Assert.assertEquals(tab, hdu.getData());
+    }
+
+    @Test
+    public void testSetPreferredI10() {
+        boolean defValue = AsciiTable.isI10PreferInt();
+
+        AsciiTable.setI10PreferInt(true);
+        Assert.assertTrue(AsciiTable.isI10PreferInt());
+
+        AsciiTable.setI10PreferInt(false);
+        Assert.assertFalse(AsciiTable.isI10PreferInt());
+
+        AsciiTable.setI10PreferInt(defValue);
+    }
+
+    @Test(expected = FitsException.class)
+    public void testConstructBinTableHeader() throws Exception {
+        Header h = new Header();
+        h.addValue(Standard.XTENSION, Standard.XTENSION_BINTABLE);
+        new AsciiTable(h);
+    }
+
+    @Test(expected = FitsException.class)
+    public void testConstructA3DTableHeader() throws Exception {
+        Header h = new Header();
+        h.addValue(Standard.XTENSION, NonStandard.XTENSION_A3DTABLE);
+        new AsciiTable(h);
+    }
+
+    @Test(expected = FitsException.class)
+    public void testConstructImageHeader() throws Exception {
+        Header h = new Header();
+        h.addValue(Standard.XTENSION, Standard.XTENSION_IMAGE);
+        new AsciiTable(h);
+    }
+
+    @Test(expected = FitsException.class)
+    public void testConstructIUEImageHeader() throws Exception {
+        Header h = new Header();
+        h.addValue(Standard.XTENSION, NonStandard.XTENSION_IUEIMAGE);
+        new AsciiTable(h);
+    }
 }

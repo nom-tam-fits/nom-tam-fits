@@ -1,10 +1,16 @@
 package nom.tam.fits;
 
 import java.io.PrintStream;
+import java.lang.reflect.Array;
+import java.util.ArrayList;
+import java.util.Hashtable;
+import java.util.Set;
 
 import nom.tam.fits.header.Bitpix;
 import nom.tam.fits.header.Standard;
+import nom.tam.util.ArrayDataOutput;
 import nom.tam.util.ArrayFuncs;
+import nom.tam.util.FitsOutput;
 
 /*
  * #%L
@@ -61,17 +67,18 @@ import static nom.tam.fits.header.Standard.XTENSION_IMAGE;
  * parameters. When analyzing group data structure only the first group is examined, but for a valid FITS file all
  * groups must have the same structure.
  * <p>
- * Note also, that we do not provide support for accessing parameters by names or for building up higher-precision
- * values by combining multiple related parameters through scalings and offsets, as described in the FITS standard (e.g.
- * combining 3 or 4 related <code>byte</code> parameter values to obtain a full-precision 32-bit <code>float</code>
- * parameter value when <code>BITPIX</code> is 8). Users of random groups must make these translations themselves. We
- * may add more support in the future...
+ * As of version 1.19, we provide support for accessing parameters by names including building up higher-precision
+ * values by combining multiple related parameter conversion recipes through scalings and offsets, as described in the
+ * FITS standard (e.g. combining 3 or 4 related <code>byte</code> parameter values to obtain a full-precision 32-bit
+ * <code>float</code> parameter value when <code>BITPIX</code> is 8).
  * </p>
  * 
  * @see BinaryTableHDU
  */
 @SuppressWarnings("deprecation")
 public class RandomGroupsHDU extends BasicHDU<RandomGroupsData> {
+
+    private Hashtable<String, Parameter> parameters;
 
     @Override
     protected final String getCanonicalXtension() {
@@ -248,16 +255,47 @@ public class RandomGroupsHDU extends BasicHDU<RandomGroupsData> {
         return new RandomGroupsHDU(manufactureHeader(d), d);
     }
 
+    private void parseParameters(Header header) {
+        // Parse the parameter descriptions from the header
+        int nparms = header.getIntValue(Standard.PCOUNT);
+
+        parameters = new Hashtable<>();
+
+        for (int i = 1; i <= nparms; i++) {
+            String name = header.getStringValue(Standard.PTYPEn.n(i));
+            if (name == null) {
+                continue;
+            }
+
+            Parameter p = parameters.get(name);
+            if (p == null) {
+                p = new Parameter();
+                parameters.put(name, p);
+            }
+
+            p.components.add(new ParameterConversion(header, i));
+        }
+    }
+
     /**
      * Create an HDU from the given header and data.
      * 
-     * @deprecated        (<i>for internal use</i>) Its visibility should be reduced to package level in the future.
+     * @deprecated                       (<i>for internal use</i>) Its visibility should be reduced to package level in
+     *                                       the future.
      *
-     * @param      header header to use
-     * @param      data   data to use
+     * @param      header                header to use
+     * @param      data                  data to use
+     * 
+     * @throws     IllegalStateException if the header does not contain a valid BITPIX value.
      */
-    public RandomGroupsHDU(Header header, RandomGroupsData data) {
+    public RandomGroupsHDU(Header header, RandomGroupsData data) throws IllegalStateException {
         super(header, data);
+
+        if (header == null) {
+            return;
+        }
+
+        parseParameters(header);
     }
 
     @Override
@@ -373,6 +411,97 @@ public class RandomGroupsHDU extends BasicHDU<RandomGroupsData> {
     @Override
     public double getBZero() {
         return super.getBZero();
+    }
+
+    @Override
+    public void write(ArrayDataOutput stream) throws FitsException {
+        if (stream instanceof FitsOutput) {
+            if (!((FitsOutput) stream).isAtStart()) {
+                throw new FitsException("Random groups are only permitted in the primary HDU");
+            }
+        }
+        super.write(stream);
+    }
+
+    /**
+     * Returns a list of parameter names bundled along the images in each group, as extracted from the PTYPE_n_ header
+     * entries.
+     * 
+     * @return A set containing the parameter names contained in this HDU
+     * 
+     * @see    #getParameter(String, int)
+     * 
+     * @since  1.19
+     */
+    public Set<String> getParameterNames() {
+        return parameters.keySet();
+    }
+
+    /**
+     * Returns the value for a given group parameter.
+     * 
+     * @param  name                           the parameter name
+     * @param  group                          the zero-based group index
+     * 
+     * @return                                the stored parameter value in the specified group, or {@link Double#NaN}
+     *                                            if the there is no such group.
+     * 
+     * @throws ArrayIndexOutOfBoundsException if the group index is out of bounds.
+     * @throws FitsException                  if the deferred parameter data cannot be accessed
+     * 
+     * @see                                   #getParameterNames()
+     * @see                                   RandomGroupsData#getImage(int)
+     * 
+     * @since                                 1.19
+     */
+    public double getParameter(String name, int group) throws ArrayIndexOutOfBoundsException, FitsException {
+        Parameter p = parameters.get(name);
+        if (p == null) {
+            return Double.NaN;
+        }
+
+        return p.getValue(getData().getParameterArray(group));
+    }
+
+    /**
+     * A conversion recipe from the native BITPIX type to a floating-point value. Each parameter may have multiple such
+     * recipes, the sum of which can provide the required precision for the parameter regardless the BITPIX storage
+     * type.
+     * 
+     * @author Attila Kovacs
+     * 
+     * @since  1.19
+     */
+    private static final class ParameterConversion {
+        private int index;
+        private double scaling;
+        private double offset;
+
+        private ParameterConversion(Header h, int n) {
+            index = n - 1;
+            scaling = h.getDoubleValue(Standard.PSCALn.n(n), 1.0);
+            offset = h.getDoubleValue(Standard.PZEROn.n(n), 0.0);
+        }
+    }
+
+    /**
+     * Represents a single parameter in the random groups data.
+     * 
+     * @author Attila Kovacs
+     * 
+     * @since  1.19
+     */
+    private static class Parameter {
+        private ArrayList<ParameterConversion> components = new ArrayList<>();
+
+        private double getValue(Object array) {
+            double value = 0.0;
+            for (ParameterConversion c : components) {
+                double x = Array.getDouble(array, c.index);
+                value += c.scaling * x + c.offset;
+            }
+            return value;
+        }
     }
 
 }

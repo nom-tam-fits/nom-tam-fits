@@ -35,22 +35,18 @@ import java.io.IOException;
 import java.nio.Buffer;
 
 import nom.tam.fits.header.Bitpix;
+import nom.tam.fits.header.NonStandard;
 import nom.tam.fits.header.Standard;
 import nom.tam.image.ImageTiler;
 import nom.tam.image.StandardImageTiler;
 import nom.tam.util.ArrayDataInput;
 import nom.tam.util.ArrayDataOutput;
 import nom.tam.util.ArrayFuncs;
+import nom.tam.util.Cursor;
 import nom.tam.util.FitsEncoder;
 import nom.tam.util.RandomAccess;
 import nom.tam.util.array.MultiArrayIterator;
 import nom.tam.util.type.ElementType;
-
-import static nom.tam.fits.header.Standard.EXTEND;
-import static nom.tam.fits.header.Standard.GCOUNT;
-import static nom.tam.fits.header.Standard.NAXIS;
-import static nom.tam.fits.header.Standard.NAXISn;
-import static nom.tam.fits.header.Standard.PCOUNT;
 
 /**
  * <p>
@@ -126,8 +122,8 @@ public class ImageData extends Data {
     }
 
     /**
-     * Create an array from a header description. This is typically how data will be created when reading FITS data from
-     * a file where the header is read first. This creates an empty array.
+     * (<i>for internal use</i>) Create an array from a header description. This is typically how data will be created
+     * when reading FITS data from a file where the header is read first. This creates an empty array.
      *
      * @param  h             header to be used as a template.
      *
@@ -140,9 +136,18 @@ public class ImageData extends Data {
     /**
      * Create an ImageData object using the specified object to initialize the data array.
      *
-     * @param x The initial data array. This should be a primitive array but this is not checked currently.
+     * @param  x                        The initial data array. This should be a primitive array but this is not checked
+     *                                      currently.
+     * 
+     * @throws IllegalArgumentException if x is not a suitable primitive array
      */
-    public ImageData(Object x) {
+    public ImageData(Object x) throws IllegalArgumentException {
+        try {
+            checkCompatible(x);
+        } catch (FitsException e) {
+            throw new IllegalArgumentException(e.getMessage(), e);
+        }
+
         dataArray = x;
         byteSize = FitsEncoder.computeSize(x);
     }
@@ -229,32 +234,27 @@ public class ImageData extends Data {
         }
 
         Standard.context(ImageData.class);
-        String classname = dataArray.getClass().getName();
 
-        int[] dimens = ArrayFuncs.getDimensions(dataArray);
+        // We'll assume it's a primary image, until we know better...
+        // Just in case, we don't want an XTENSION key lingering around...
+        head.deleteKey(Standard.XTENSION);
 
-        if (dimens == null || dimens.length == 0) {
-            throw new FitsException("Image data object not array");
+        Cursor<String, HeaderCard> c = head.iterator();
+        c.add(HeaderCard.create(Standard.SIMPLE, true));
+        c.add(HeaderCard.create(Standard.BITPIX,
+                Bitpix.forPrimitiveType(ArrayFuncs.getBaseClass(dataArray)).getHeaderValue()));
+
+        int[] dims = ArrayFuncs.getDimensions(dataArray);
+        c.add(HeaderCard.create(Standard.NAXIS, dims.length));
+
+        for (int i = 1; i <= dims.length; i++) {
+            c.add(HeaderCard.create(Standard.NAXISn.n(i), dims[dims.length - i]));
         }
 
-        // if this is neither a primary header nor an image extension,
-        // make it a primary header
-        head.setSimple(true);
-        head.setBitpix(Bitpix.forArrayID(classname.charAt(dimens.length)));
-
-        overrideHeaderAxes(head, dimens);
-
-        for (int i = 1; i <= dimens.length; i++) {
-            if (dimens[i - 1] == -1) {
-                throw new FitsException("Unfilled array for dimension: " + i);
-            }
-            head.setNaxis(i, dimens[dimens.length - i]);
-        }
         // Just in case!
-        head.addValue(EXTEND, true);
-
-        head.addValue(PCOUNT, 0);
-        head.addValue(GCOUNT, 1);
+        c.add(HeaderCard.create(Standard.PCOUNT, 0));
+        c.add(HeaderCard.create(Standard.GCOUNT, 1));
+        c.add(HeaderCard.create(Standard.EXTEND, true));
 
         Standard.context(null);
     }
@@ -274,28 +274,34 @@ public class ImageData extends Data {
      * @throws FitsException If there was a problem accessing or interpreting the required header values.
      */
     protected ArrayDesc parseHeader(Header h) throws FitsException {
-        int gCount = h.getIntValue(GCOUNT, 1);
-        int pCount = h.getIntValue(PCOUNT, 0);
+        String ext = h.getStringValue(Standard.XTENSION, Standard.XTENSION_IMAGE);
+
+        if (!ext.equalsIgnoreCase(Standard.XTENSION_IMAGE) && !ext.equalsIgnoreCase(NonStandard.XTENSION_IUEIMAGE)) {
+            throw new FitsException("Not an image header (XTENSION = " + h.getStringValue(Standard.XTENSION) + ")");
+        }
+
+        int gCount = h.getIntValue(Standard.GCOUNT, 1);
+        int pCount = h.getIntValue(Standard.PCOUNT, 0);
         if (gCount > 1 || pCount != 0) {
             throw new FitsException("Group data treated as images");
         }
 
         Bitpix bitpix = Bitpix.fromHeader(h);
         Class<?> baseClass = bitpix.getPrimitiveType();
-        int ndim = h.getIntValue(NAXIS, 0);
+        int ndim = h.getIntValue(Standard.NAXIS, 0);
         int[] dims = new int[ndim];
         // Note that we have to invert the order of the axes
         // for the FITS file to get the order in the array we
         // are generating.
 
         byteSize = ndim > 0 ? 1 : 0;
-        for (int i = 0; i < ndim; i++) {
-            int cdim = h.getIntValue(NAXISn.n(i + 1), 0);
+        for (int i = 1; i <= ndim; i++) {
+            int cdim = h.getIntValue(Standard.NAXISn.n(i), 0);
             if (cdim < 0) {
                 throw new FitsException("Invalid array dimension:" + cdim);
             }
             byteSize *= cdim;
-            dims[ndim - i - 1] = cdim;
+            dims[ndim - i] = cdim;
         }
         byteSize *= bitpix.byteSize();
         return new ArrayDesc(dims, baseClass);
@@ -307,15 +313,14 @@ public class ImageData extends Data {
 
     /**
      * (<i>for expert users</i>) Overrides the image size description in the header to the specified Java array
-     * dimensions. Typically users would not call this method, unless one want to change a header without the image
-     * object being actually available in its entirety. For example, when using low-level writes of an image row-by-row
-     * without ever having to hold the entire image in memory through a complete object that would automatically
-     * descrive the dimensions correctly.
+     * dimensions. Typically users should not call this method, unless they want to define the image dimensions in the
+     * absence of the actual complete image data. For example, to describe the dimensions when using low-level writes of
+     * an image row-by-row, without ever storing the entire image in memory.
      * 
      * @param  header                   A FITS image header
      * @param  sizes                    The array dimensions in Java order (fastest varying index last)
      * 
-     * @throws FitsException            if the size has negative values
+     * @throws FitsException            if the size has negative values, or the header is not that for an image
      * @throws IllegalArgumentException should not actually happen
      * 
      * @since                           1.18
@@ -323,14 +328,75 @@ public class ImageData extends Data {
      * @see                             #fillHeader(Header)
      */
     public static void overrideHeaderAxes(Header header, int... sizes) throws FitsException, IllegalArgumentException {
-        header.addValue(Standard.NAXIS, sizes.length);
+        String extType = header.getStringValue(Standard.XTENSION, Standard.XTENSION_IMAGE);
+        if (!extType.equals(Standard.XTENSION_IMAGE) && !extType.equals(NonStandard.XTENSION_IUEIMAGE)) {
+            throw new FitsException("Not an image header (XTENSION = " + extType + ")");
+        }
 
-        for (int i = 1; i < sizes.length; i++) {
+        // Remove prior NAXISn values
+        int n = header.getIntValue(Standard.NAXIS);
+        for (int i = 1; i <= n; i++) {
+            header.deleteKey(Standard.NAXISn.n(i));
+        }
+
+        Cursor<String, HeaderCard> c = header.iterator();
+        c.setKey(Standard.NAXIS.key());
+
+        c.add(HeaderCard.create(Standard.NAXIS, sizes.length));
+
+        for (int i = 1; i <= sizes.length; i++) {
             int l = sizes[sizes.length - i];
             if (l < 0) {
                 throw new FitsException("Invalid size[ " + i + "] = " + l);
             }
-            header.addValue(Standard.NAXISn.n(i), l);
+            c.add(HeaderCard.create(Standard.NAXISn.n(i), l));
         }
+    }
+
+    /**
+     * Creates a new FITS image using the specified primitive numerical Java array containing data.
+     * 
+     * @param  data                     A regulatly shaped primitive numerical Java array, which can be
+     *                                      multi-dimensional.
+     * 
+     * @return                          A new FITS image that encapsulates the specified array data.
+     * 
+     * @throws IllegalArgumentException if the argument is not a primitive numerical Java array.
+     * 
+     * @since                           1.19
+     */
+    public static ImageData from(Object data) throws IllegalArgumentException {
+        return new ImageData(data);
+    }
+
+    /**
+     * Checks if a given data object may constitute the kernel for an image. To conform, the data must be a regularly
+     * shaped primitive numerical array of ant dimensions, or <code>null</code>.
+     * 
+     * @param  data                     A regularly shaped primitive numerical array of ny dimension, or
+     *                                      <code>null</code>
+     * 
+     * @throws IllegalArgumentException If the array is not regularly shaped.
+     * @throws FitsException            If the argument is not a primitive numerical array type
+     * 
+     * @since                           1.19
+     */
+    static void checkCompatible(Object data) throws IllegalArgumentException, FitsException {
+        if (data != null) {
+            Bitpix.forPrimitiveType(ArrayFuncs.getBaseClass(data));
+            ArrayFuncs.checkRegularArray(data, false);
+        }
+    }
+
+    @Override
+    @SuppressWarnings("deprecation")
+    public ImageHDU toHDU() throws IllegalStateException {
+        Header h = new Header();
+        try {
+            fillHeader(h);
+        } catch (FitsException e) {
+            throw new IllegalStateException(e.getMessage(), e);
+        }
+        return new ImageHDU(h, this);
     }
 }
