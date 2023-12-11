@@ -1340,7 +1340,7 @@ public class BinaryTable extends AbstractTableData implements Cloneable {
      * @see                      #isDeferred()
      */
     public BinaryTable(Header header) throws FitsException {
-        String ext = header.getStringValue(Standard.XTENSION, Standard.XTENSION_BINTABLE);
+        String ext = header.getStringValue(Standard.XTENSION, Standard.XTENSION_IMAGE);
 
         if (!ext.equalsIgnoreCase(Standard.XTENSION_BINTABLE) && !ext.equalsIgnoreCase(NonStandard.XTENSION_A3DTABLE)) {
             throw new FitsException(

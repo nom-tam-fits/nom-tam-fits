@@ -345,4 +345,25 @@ public class ImageTest {
         Assert.assertEquals(5, h.getIntValue(Standard.NAXIS1));
     }
 
+    @Test(expected = FitsException.class)
+    public void testConstructAsciiTableHeader() throws Exception {
+        Header h = new Header();
+        h.addValue(Standard.XTENSION, Standard.XTENSION_ASCIITABLE);
+        new ImageData(h);
+    }
+
+    @Test(expected = FitsException.class)
+    public void testConstructBinTableHeader() throws Exception {
+        Header h = new Header();
+        h.addValue(Standard.XTENSION, Standard.XTENSION_BINTABLE);
+        new ImageData(h);
+    }
+
+    @Test(expected = FitsException.class)
+    public void testConstructA3DTableHeader() throws Exception {
+        Header h = new Header();
+        h.addValue(Standard.XTENSION, NonStandard.XTENSION_A3DTABLE);
+        new ImageData(h);
+    }
+
 }

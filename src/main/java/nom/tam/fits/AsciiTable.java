@@ -174,8 +174,9 @@ public class AsciiTable extends AbstractTableData {
      * @deprecated               Use {@link #setI10PreferInt(boolean)} instead prior to reading ASCII tables.
      */
     public AsciiTable(Header hdr, boolean preferInt) throws FitsException {
-        if (!hdr.getStringValue(Standard.XTENSION, Standard.XTENSION_ASCIITABLE)
-                .equalsIgnoreCase(Standard.XTENSION_ASCIITABLE)) {
+        String ext = hdr.getStringValue(Standard.XTENSION, Standard.XTENSION_IMAGE);
+
+        if (!ext.equalsIgnoreCase(Standard.XTENSION_ASCIITABLE)) {
             throw new FitsException("Not an ASCII table header (XTENSION = " + hdr.getStringValue(Standard.XTENSION) + ")");
         }
 

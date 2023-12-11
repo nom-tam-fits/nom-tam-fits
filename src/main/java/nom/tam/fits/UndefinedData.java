@@ -102,22 +102,17 @@ public class UndefinedData extends Data {
     }
 
     /**
-     * @deprecated   (<i>for internal use</i>). Users should always construct known data types. Reduce visibility to the
-     *                   package level.
-     *
-     * @param      x object to create the hdu from
+     * @deprecated                          (<i>for internal use</i>). Users should always construct known data types.
+     *                                          Reduce visibility to the package level.
+     * 
+     * @param      x                        object to create the hdu from
+     * 
+     * @throws     IllegalArgumentException If the object is not an array or contains elements that do not have a known
+     *                                          binary size.
      */
-    public UndefinedData(Object x) {
+    public UndefinedData(Object x) throws IllegalArgumentException {
         byteSize = (int) FitsEncoder.computeSize(x);
-
         dims = ArrayFuncs.getDimensions(x);
-        for (int i = 0; i < dims.length; i++) {
-            if (dims[i] < 0) {
-                dims = new int[byteSize];
-                break;
-            }
-        }
-
         data = new byte[byteSize];
         ArrayFuncs.copyInto(x, data);
     }
@@ -135,12 +130,10 @@ public class UndefinedData extends Data {
         c.add(HeaderCard.create(Standard.XTENSION, extensionType));
         c.add(HeaderCard.create(Standard.BITPIX, bitpix.getHeaderValue()));
 
-        c.add(HeaderCard.create(Standard.NAXIS, dims == null ? 0 : dims.length));
+        c.add(HeaderCard.create(Standard.NAXIS, dims.length));
 
-        if (dims != null) {
-            for (int i = 1; i <= dims.length; i++) {
-                c.add(HeaderCard.create(Standard.NAXISn.n(i), dims[dims.length - i]));
-            }
+        for (int i = 1; i <= dims.length; i++) {
+            c.add(HeaderCard.create(Standard.NAXISn.n(i), dims[dims.length - i]));
         }
 
         c.add(HeaderCard.create(Standard.PCOUNT, pCount));

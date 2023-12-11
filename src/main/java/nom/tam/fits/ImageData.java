@@ -245,12 +245,10 @@ public class ImageData extends Data {
                 Bitpix.forPrimitiveType(ArrayFuncs.getBaseClass(dataArray)).getHeaderValue()));
 
         int[] dims = ArrayFuncs.getDimensions(dataArray);
-        c.add(HeaderCard.create(Standard.NAXIS, dims == null ? 0 : dims.length));
+        c.add(HeaderCard.create(Standard.NAXIS, dims.length));
 
-        if (dims != null) {
-            for (int i = 1; i <= dims.length; i++) {
-                c.add(HeaderCard.create(Standard.NAXISn.n(i), dims[dims.length - i]));
-            }
+        for (int i = 1; i <= dims.length; i++) {
+            c.add(HeaderCard.create(Standard.NAXISn.n(i), dims[dims.length - i]));
         }
 
         // Just in case!

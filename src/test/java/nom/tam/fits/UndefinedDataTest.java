@@ -31,6 +31,8 @@ package nom.tam.fits;
  * #L%
  */
 
+import java.io.File;
+
 import org.junit.Assert;
 import org.junit.Test;
 
@@ -65,4 +67,8 @@ public class UndefinedDataTest {
         Assert.assertEquals(11, d.getGroupCount());
     }
 
+    @Test(expected = IllegalArgumentException.class)
+    public void testUknownSizeData() throws Exception {
+        new UndefinedData(new File("blah"));
+    }
 }
