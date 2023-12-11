@@ -8,7 +8,7 @@
 
 # Getting started with the _nom.tam.fits_ library.
 
-Updated for 1.18.1 and/or later 1.x releases.
+Updated for 1.19.0 and/or later 1.x releases.
 
 ## Table of Contents
 

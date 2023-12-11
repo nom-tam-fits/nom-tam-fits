@@ -1,11 +1,14 @@
 <document xmlns="http://maven.apache.org/changes/1.0.0" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:schemaLocation="http://maven.apache.org/changes/1.0.0 http://maven.apache.org/xsd/changes-1.0.0.xsd">
 <body>
 
-   <release version="1.19.0-rc1" date="2023-12-11" description="Feature release with bug fixes.">
+   <release version="1.19.0-SNAPSHOT" date="2023-12-11" description="Feature release with bug fixes.">
+      <action type="fix" dev="cek" issue="496">
+          Workaround for read-only FITS files on Windows network shares.
+      </action>
       <action type="add" dev="attipaci" issue="488">
-          Targeted Data and HDU creation from Java objects via new [...]Data.from(Object) and
-          [...]Data.toHDU() methods, replacing the now deprecated and unsafe 
-          [...]HDU.encapsulate(Object) methods.
+          Targeted Data and HDU creation from Java objects via new Data+.from(Object) and
+          Data+.toHDU() methods, replacing the now deprecated and unsafe 
+          HDU+.encapsulate(Object) methods.
       </action>
       <action type="add" dev="attipaci" issue="489">
           Added Header.mergeDistinct(Header) method to allow copying non-conflicting header 
@@ -16,18 +19,15 @@
           the FITS specification.
       </action>
       <action type="add" dev="attipaci" issue="490">
-          Added inspection methods to UndefineData class, to easily retrieve XTENSION type, 
+          Added inspection methods to UndefinedData class, to easily retrieve XTENSION type, 
           BITPIX, and data size/shape information from HDUs containing unsupported data types.
       </action>
-      <action type="fix" dev="cek" issue="496">
-          Workaround for read-only FITS files on Windows network shares.
-      </action>
-      <action type="update" dev="attipaci" issue="494">
+            <action type="add" dev="attipaci" issue="494">
           A better way to control how FITS I10 type columns are treated in ASCII tables, via
           static AsciiTable.setI10PreferInt(boolean) and .isI10PreferInt() methods.
       </action>
       <action type="update" dev="attipaci">
-          Change from unmaintained findbugs build dep to spotbugs successor
+          Change from unmaintained findbugs build dep to spotbugs successor.
       </action>
       <action type="update" dev="attipaci">
           Migrate testing from JUnit 4 to JUnit 5 Vintage.
