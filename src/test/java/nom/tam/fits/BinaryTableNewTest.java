@@ -1710,4 +1710,5 @@ public class BinaryTableNewTest {
         h.addValue(Standard.XTENSION, NonStandard.XTENSION_IUEIMAGE);
         new BinaryTable(h);
     }
+
 }

@@ -522,9 +522,6 @@ public class BinaryTable extends AbstractTableData implements Cloneable {
          * @see    #getLeadingShape()
          */
         private int getLastFitsDim() {
-            if (fitsShape.length == 0) {
-                return 1;
-            }
             return fitsShape[fitsShape.length - 1];
         }
 
@@ -1304,9 +1301,8 @@ public class BinaryTable extends AbstractTableData implements Cloneable {
         this();
 
         try {
-            table = tab.copy();
+            table = new ColumnTable<>();
             nRow = tab.getNRows();
-
             columns = new ArrayList<>();
 
             for (int i = 0; i < tab.getNCols(); i++) {

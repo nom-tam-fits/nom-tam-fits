@@ -196,6 +196,11 @@ public class BaseFitsTest {
 
     }
 
+    @Test(expected = FitsException.class)
+    public void testFitsDeleteHduOutOfBounds() throws Exception {
+        new Fits().deleteHDU(0);
+    }
+
     @Test
     public void testFitsDeleteHduNewPrimary() throws Exception {
         Fits fits1 = makeAsciiTable();

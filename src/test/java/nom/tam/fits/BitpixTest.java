@@ -155,4 +155,18 @@ public class BitpixTest {
         Bitpix.forNumberType(BigDecimal.class);
     }
 
+    @Test
+    public void testForArrayID() throws Exception {
+        assertEquals(Bitpix.BYTE, Bitpix.forArrayID('B'));
+        assertEquals(Bitpix.SHORT, Bitpix.forArrayID('S'));
+        assertEquals(Bitpix.INTEGER, Bitpix.forArrayID('I'));
+        assertEquals(Bitpix.LONG, Bitpix.forArrayID('J'));
+        assertEquals(Bitpix.FLOAT, Bitpix.forArrayID('F'));
+        assertEquals(Bitpix.DOUBLE, Bitpix.forArrayID('D'));
+    }
+
+    @Test(expected = FitsException.class)
+    public void testForInvalidArrayID() throws Exception {
+        Bitpix.forArrayID('?');
+    }
 }
