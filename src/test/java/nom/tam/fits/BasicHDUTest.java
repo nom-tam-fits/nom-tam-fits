@@ -125,7 +125,7 @@ public class BasicHDUTest {
         ImageData im = new ImageData() {
             @Override
             public void fillHeader(Header h) throws FitsException {
-                throw new IllegalStateException("Test exception");
+                throw new FitsException("Test exception");
             }
         };
         im.toHDU(); // throws exception

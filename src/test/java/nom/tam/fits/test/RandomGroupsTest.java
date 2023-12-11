@@ -454,7 +454,7 @@ public class RandomGroupsTest {
         RandomGroupsData rg = new RandomGroupsData() {
             @Override
             public void fillHeader(Header h) throws FitsException {
-                throw new IllegalStateException("Test exception");
+                throw new FitsException("Test exception");
             }
         };
         rg.toHDU(); // throws exception

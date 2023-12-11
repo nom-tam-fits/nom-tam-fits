@@ -1200,4 +1200,11 @@ public class AsciiTableTest {
         assertEquals(long.class, t1.getColumnType(col));
     }
 
+    @Test
+    public void toHDUTest() throws Exception {
+        AsciiTable tab = new AsciiTable();
+        AsciiTableHDU hdu = tab.toHDU();
+        Assert.assertEquals(tab, hdu.getData());
+    }
+
 }

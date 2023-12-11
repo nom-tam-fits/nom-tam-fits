@@ -1683,7 +1683,7 @@ public class BinaryTableNewTest {
         BinaryTable tab = new BinaryTable() {
             @Override
             public void fillHeader(Header h) throws FitsException {
-                throw new IllegalStateException("Test exception");
+                throw new FitsException("Test exception");
             }
         };
         tab.toHDU(); // throws exception

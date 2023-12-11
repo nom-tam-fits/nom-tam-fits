@@ -140,7 +140,7 @@ public class AsciiTable extends AbstractTableData {
     /**
      * Creates an ASCII table given a header. For tables that contain integer-valued columns of format <code>I10</code>,
      * the {@link #setI10PreferInt(boolean)} mayb be used to control whether to treat them as <code>int</code> or as
-     * </code>long</code> values (the latter is the default).
+     * <code>long</code> values (the latter is the default).
      *
      * @param      hdr           The header describing the table
      *
