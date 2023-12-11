@@ -3881,7 +3881,7 @@ public class BinaryTable extends AbstractTableData implements Cloneable {
     }
 
     @Override
-    public BinaryTableHDU toHDU() {
+    public BinaryTableHDU toHDU() throws IllegalStateException {
         Header h = new Header();
         try {
             fillHeader(h);

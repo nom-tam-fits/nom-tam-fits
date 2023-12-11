@@ -67,9 +67,12 @@ public class UndefinedData extends Data {
     /**
      * Creates a new empty container for data of unknown type based on the provided FITS header information.
      *
-     * @param  h             The FITS header corresponding to the data segment in the HDU
+     * @param      h             The FITS header corresponding to the data segment in the HDU
      * 
-     * @throws FitsException if there wan an error accessing or interpreting the provided header information.
+     * @throws     FitsException if there wan an error accessing or interpreting the provided header information.
+     * 
+     * @deprecated               (<i>for internal use</i>). Visibility will be reduced to the package level in the
+     *                               future.
      */
     public UndefinedData(Header h) throws FitsException {
         extensionType = h.getStringValue(Standard.XTENSION, XTENSION_UNKNOWN);
@@ -99,8 +102,8 @@ public class UndefinedData extends Data {
     }
 
     /**
-     * @deprecated   (<i>for internal use</i>). Visibility will be reduced to package level. Users should always
-     *                   construct known data types. Create an UndefinedData object using the specified object.
+     * @deprecated   (<i>for internal use</i>). Users should always construct known data types. Reduce visibility to the
+     *                   package level.
      *
      * @param      x object to create the hdu from
      */
@@ -146,7 +149,7 @@ public class UndefinedData extends Data {
 
     @Override
     @SuppressFBWarnings(value = "EI_EXPOSE_REP", justification = "intended exposure of mutable data")
-    protected Object getCurrentData() {
+    protected byte[] getCurrentData() {
         return data;
     }
 

@@ -1671,4 +1671,22 @@ public class BinaryTableNewTest {
         fits.write((DataOutput) fits.getStream());
     }
 
+    @Test
+    public void toHDUTest() throws Exception {
+        BinaryTable tab = new BinaryTable();
+        BinaryTableHDU hdu = tab.toHDU();
+        Assert.assertEquals(tab, hdu.getData());
+    }
+
+    @Test(expected = IllegalStateException.class)
+    public void toHDUExceptionTest() throws Exception {
+        BinaryTable tab = new BinaryTable() {
+            @Override
+            public void fillHeader(Header h) throws FitsException {
+                throw new IllegalStateException("Test exception");
+            }
+        };
+        tab.toHDU(); // throws exception
+    }
+
 }

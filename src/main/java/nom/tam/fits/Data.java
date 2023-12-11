@@ -438,7 +438,9 @@ public abstract class Data implements FitsElement {
      * Returns an approprotae HDU object that encapsulates this FITS data, and contains the minimal mandatory header
      * description for that data.
      * 
-     * @return a HDU object ocntaining the data and its minimal required header description
+     * @throws IllegalStateException If the data cannot be converted to an HDU for some reason.
+     * 
+     * @return                       a HDU object ocntaining the data and its minimal required header description
      */
-    public abstract BasicHDU<?> toHDU();
+    public abstract BasicHDU<?> toHDU() throws IllegalStateException;
 }

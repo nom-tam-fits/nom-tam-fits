@@ -392,12 +392,12 @@ public class ImageData extends Data {
 
     @Override
     @SuppressWarnings("deprecation")
-    public ImageHDU toHDU() {
+    public ImageHDU toHDU() throws IllegalStateException {
         Header h = new Header();
         try {
             fillHeader(h);
         } catch (FitsException e) {
-            // This should never happen really...
+            throw new IllegalStateException(e.getMessage(), e);
         }
         return new ImageHDU(h, this);
     }

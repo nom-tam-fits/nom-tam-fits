@@ -435,4 +435,28 @@ public class RandomGroupsTest {
         fits.addHDU(new NullDataHDU());
         fits.addHDU(hdu); // throws exception
     }
+
+    @Test
+    public void toHDUTest() throws Exception {
+        RandomGroupsData rg = new RandomGroupsData(new Object[][] {{new int[2], new int[10][10]}});
+        RandomGroupsHDU hdu = rg.toHDU();
+        Assert.assertEquals(rg, hdu.getData());
+    }
+
+    @Test(expected = IllegalStateException.class)
+    public void toHDUEmptyTest() throws Exception {
+        RandomGroupsData rg = new RandomGroupsData();
+        rg.toHDU(); // Throws exception because of empry group
+    }
+
+    @Test(expected = IllegalStateException.class)
+    public void toHDUExceptionTest() throws Exception {
+        RandomGroupsData rg = new RandomGroupsData() {
+            @Override
+            public void fillHeader(Header h) throws FitsException {
+                throw new IllegalStateException("Test exception");
+            }
+        };
+        rg.toHDU(); // throws exception
+    }
 }
