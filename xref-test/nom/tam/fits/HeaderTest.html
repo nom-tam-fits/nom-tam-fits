@@ -1635,7 +1635,35 @@
 <a class="jxr_linenumber" name="L1627" href="#L1627">1627</a>         BasicHDU&lt;?&gt; hdu = f.readHDU();
 <a class="jxr_linenumber" name="L1628" href="#L1628">1628</a>         assertNull(hdu.getHeader().getRandomAccessInput());
 <a class="jxr_linenumber" name="L1629" href="#L1629">1629</a>     }
-<a class="jxr_linenumber" name="L1630" href="#L1630">1630</a> }
+<a class="jxr_linenumber" name="L1630" href="#L1630">1630</a> 
+<a class="jxr_linenumber" name="L1631" href="#L1631">1631</a>     @Test
+<a class="jxr_linenumber" name="L1632" href="#L1632">1632</a>     <strong class="jxr_keyword">public</strong> <strong class="jxr_keyword">void</strong> testMergeDistinctCards() <strong class="jxr_keyword">throws</strong> Exception {
+<a class="jxr_linenumber" name="L1633" href="#L1633">1633</a>         Header h = <strong class="jxr_keyword">new</strong> Header();
+<a class="jxr_linenumber" name="L1634" href="#L1634">1634</a>         h.addValue(<span class="jxr_string">"EXIST"</span>, 1, <span class="jxr_string">"existing prior value"</span>);
+<a class="jxr_linenumber" name="L1635" href="#L1635">1635</a>         assertEquals(<span class="jxr_string">"orig"</span>, 1, h.getIntValue(<span class="jxr_string">"EXIST"</span>, -1));
+<a class="jxr_linenumber" name="L1636" href="#L1636">1636</a> 
+<a class="jxr_linenumber" name="L1637" href="#L1637">1637</a>         Header h2 = <strong class="jxr_keyword">new</strong> Header();
+<a class="jxr_linenumber" name="L1638" href="#L1638">1638</a>         h2.addValue(<span class="jxr_string">"EXIST"</span>, 2, <span class="jxr_string">"another value for EXIST"</span>);
+<a class="jxr_linenumber" name="L1639" href="#L1639">1639</a>         h2.insertComment(<span class="jxr_string">"comment"</span>);
+<a class="jxr_linenumber" name="L1640" href="#L1640">1640</a>         h2.addValue(<span class="jxr_string">"TEST"</span>, 3, <span class="jxr_string">"a test value"</span>);
+<a class="jxr_linenumber" name="L1641" href="#L1641">1641</a> 
+<a class="jxr_linenumber" name="L1642" href="#L1642">1642</a>         h.mergeDistinct(h2);
+<a class="jxr_linenumber" name="L1643" href="#L1643">1643</a> 
+<a class="jxr_linenumber" name="L1644" href="#L1644">1644</a>         assertEquals(<span class="jxr_string">"EXIST"</span>, 1, h.getIntValue(<span class="jxr_string">"EXIST"</span>, -1));
+<a class="jxr_linenumber" name="L1645" href="#L1645">1645</a>         assertEquals(<span class="jxr_string">"TEST"</span>, 3, h.getIntValue(<span class="jxr_string">"TEST"</span>, -1));
+<a class="jxr_linenumber" name="L1646" href="#L1646">1646</a> 
+<a class="jxr_linenumber" name="L1647" href="#L1647">1647</a>         Cursor&lt;String, HeaderCard&gt; c = h.iterator();
+<a class="jxr_linenumber" name="L1648" href="#L1648">1648</a>         <strong class="jxr_keyword">while</strong> (c.hasNext()) {
+<a class="jxr_linenumber" name="L1649" href="#L1649">1649</a>             HeaderCard card = c.next();
+<a class="jxr_linenumber" name="L1650" href="#L1650">1650</a>             <strong class="jxr_keyword">if</strong> (card.isCommentStyleCard()) {
+<a class="jxr_linenumber" name="L1651" href="#L1651">1651</a>                 assertEquals(<span class="jxr_string">"comment"</span>, card.getComment());
+<a class="jxr_linenumber" name="L1652" href="#L1652">1652</a>                 <strong class="jxr_keyword">return</strong>;
+<a class="jxr_linenumber" name="L1653" href="#L1653">1653</a>             }
+<a class="jxr_linenumber" name="L1654" href="#L1654">1654</a>         }
+<a class="jxr_linenumber" name="L1655" href="#L1655">1655</a> 
+<a class="jxr_linenumber" name="L1656" href="#L1656">1656</a>         <strong class="jxr_keyword">throw</strong> <strong class="jxr_keyword">new</strong> IllegalStateException(<span class="jxr_string">"Missing inherited comment"</span>);
+<a class="jxr_linenumber" name="L1657" href="#L1657">1657</a>     }
+<a class="jxr_linenumber" name="L1658" href="#L1658">1658</a> }
 </pre>
 <hr/>
 <div id="footer">Copyright &#169; 1996&#x2013;2023 nom-tam-fits. All rights reserved.</div>

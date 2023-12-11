@@ -43,226 +43,226 @@
 <a class="jxr_linenumber" name="L35" href="#L35">35</a>  <strong class="jxr_keyword">import</strong> java.nio.Buffer;
 <a class="jxr_linenumber" name="L36" href="#L36">36</a>  
 <a class="jxr_linenumber" name="L37" href="#L37">37</a>  <strong class="jxr_keyword">import</strong> nom.tam.fits.header.Bitpix;
-<a class="jxr_linenumber" name="L38" href="#L38">38</a>  <strong class="jxr_keyword">import</strong> nom.tam.fits.header.Standard;
-<a class="jxr_linenumber" name="L39" href="#L39">39</a>  <strong class="jxr_keyword">import</strong> nom.tam.image.ImageTiler;
-<a class="jxr_linenumber" name="L40" href="#L40">40</a>  <strong class="jxr_keyword">import</strong> nom.tam.image.StandardImageTiler;
-<a class="jxr_linenumber" name="L41" href="#L41">41</a>  <strong class="jxr_keyword">import</strong> nom.tam.util.ArrayDataInput;
-<a class="jxr_linenumber" name="L42" href="#L42">42</a>  <strong class="jxr_keyword">import</strong> nom.tam.util.ArrayDataOutput;
-<a class="jxr_linenumber" name="L43" href="#L43">43</a>  <strong class="jxr_keyword">import</strong> nom.tam.util.ArrayFuncs;
-<a class="jxr_linenumber" name="L44" href="#L44">44</a>  <strong class="jxr_keyword">import</strong> nom.tam.util.FitsEncoder;
-<a class="jxr_linenumber" name="L45" href="#L45">45</a>  <strong class="jxr_keyword">import</strong> nom.tam.util.RandomAccess;
-<a class="jxr_linenumber" name="L46" href="#L46">46</a>  <strong class="jxr_keyword">import</strong> nom.tam.util.array.MultiArrayIterator;
-<a class="jxr_linenumber" name="L47" href="#L47">47</a>  <strong class="jxr_keyword">import</strong> nom.tam.util.type.ElementType;
-<a class="jxr_linenumber" name="L48" href="#L48">48</a>  
-<a class="jxr_linenumber" name="L49" href="#L49">49</a>  <strong class="jxr_keyword">import</strong> <strong class="jxr_keyword">static</strong> nom.tam.fits.header.Standard.EXTEND;
-<a class="jxr_linenumber" name="L50" href="#L50">50</a>  <strong class="jxr_keyword">import</strong> <strong class="jxr_keyword">static</strong> nom.tam.fits.header.Standard.GCOUNT;
-<a class="jxr_linenumber" name="L51" href="#L51">51</a>  <strong class="jxr_keyword">import</strong> <strong class="jxr_keyword">static</strong> nom.tam.fits.header.Standard.NAXIS;
-<a class="jxr_linenumber" name="L52" href="#L52">52</a>  <strong class="jxr_keyword">import</strong> <strong class="jxr_keyword">static</strong> nom.tam.fits.header.Standard.NAXISn;
-<a class="jxr_linenumber" name="L53" href="#L53">53</a>  <strong class="jxr_keyword">import</strong> <strong class="jxr_keyword">static</strong> nom.tam.fits.header.Standard.PCOUNT;
-<a class="jxr_linenumber" name="L54" href="#L54">54</a>  
-<a class="jxr_linenumber" name="L55" href="#L55">55</a>  <em class="jxr_javadoccomment">/**</em>
+<a class="jxr_linenumber" name="L38" href="#L38">38</a>  <strong class="jxr_keyword">import</strong> nom.tam.fits.header.NonStandard;
+<a class="jxr_linenumber" name="L39" href="#L39">39</a>  <strong class="jxr_keyword">import</strong> nom.tam.fits.header.Standard;
+<a class="jxr_linenumber" name="L40" href="#L40">40</a>  <strong class="jxr_keyword">import</strong> nom.tam.image.ImageTiler;
+<a class="jxr_linenumber" name="L41" href="#L41">41</a>  <strong class="jxr_keyword">import</strong> nom.tam.image.StandardImageTiler;
+<a class="jxr_linenumber" name="L42" href="#L42">42</a>  <strong class="jxr_keyword">import</strong> nom.tam.util.ArrayDataInput;
+<a class="jxr_linenumber" name="L43" href="#L43">43</a>  <strong class="jxr_keyword">import</strong> nom.tam.util.ArrayDataOutput;
+<a class="jxr_linenumber" name="L44" href="#L44">44</a>  <strong class="jxr_keyword">import</strong> nom.tam.util.ArrayFuncs;
+<a class="jxr_linenumber" name="L45" href="#L45">45</a>  <strong class="jxr_keyword">import</strong> nom.tam.util.Cursor;
+<a class="jxr_linenumber" name="L46" href="#L46">46</a>  <strong class="jxr_keyword">import</strong> nom.tam.util.FitsEncoder;
+<a class="jxr_linenumber" name="L47" href="#L47">47</a>  <strong class="jxr_keyword">import</strong> nom.tam.util.RandomAccess;
+<a class="jxr_linenumber" name="L48" href="#L48">48</a>  <strong class="jxr_keyword">import</strong> nom.tam.util.array.MultiArrayIterator;
+<a class="jxr_linenumber" name="L49" href="#L49">49</a>  <strong class="jxr_keyword">import</strong> nom.tam.util.type.ElementType;
+<a class="jxr_linenumber" name="L50" href="#L50">50</a>  
+<a class="jxr_linenumber" name="L51" href="#L51">51</a>  <em class="jxr_javadoccomment">/**</em>
+<a class="jxr_linenumber" name="L52" href="#L52">52</a>  <em class="jxr_javadoccomment"> * &lt;p&gt;</em>
+<a class="jxr_linenumber" name="L53" href="#L53">53</a>  <em class="jxr_javadoccomment"> * Image data. Essentially these data are a primitive multi-dimensional array, such as a &lt;code&gt;double[]&lt;/code&gt;,</em>
+<a class="jxr_linenumber" name="L54" href="#L54">54</a>  <em class="jxr_javadoccomment"> * &lt;code&gt;float[][]&lt;/code&gt;, or &lt;code&gt;short[][][]&lt;/code&gt;</em>
+<a class="jxr_linenumber" name="L55" href="#L55">55</a>  <em class="jxr_javadoccomment"> * &lt;/p&gt;</em>
 <a class="jxr_linenumber" name="L56" href="#L56">56</a>  <em class="jxr_javadoccomment"> * &lt;p&gt;</em>
-<a class="jxr_linenumber" name="L57" href="#L57">57</a>  <em class="jxr_javadoccomment"> * Image data. Essentially these data are a primitive multi-dimensional array, such as a &lt;code&gt;double[]&lt;/code&gt;,</em>
-<a class="jxr_linenumber" name="L58" href="#L58">58</a>  <em class="jxr_javadoccomment"> * &lt;code&gt;float[][]&lt;/code&gt;, or &lt;code&gt;short[][][]&lt;/code&gt;</em>
-<a class="jxr_linenumber" name="L59" href="#L59">59</a>  <em class="jxr_javadoccomment"> * &lt;/p&gt;</em>
-<a class="jxr_linenumber" name="L60" href="#L60">60</a>  <em class="jxr_javadoccomment"> * &lt;p&gt;</em>
-<a class="jxr_linenumber" name="L61" href="#L61">61</a>  <em class="jxr_javadoccomment"> * Starting in version 0.9 of the FITS library, this class allows users to defer the reading of images if the FITS data</em>
-<a class="jxr_linenumber" name="L62" href="#L62">62</a>  <em class="jxr_javadoccomment"> * is being read from a file. An {@link ImageTiler} object is supplied which can return an arbitrary subset of the image</em>
-<a class="jxr_linenumber" name="L63" href="#L63">63</a>  <em class="jxr_javadoccomment"> * as a one dimensional array -- suitable for manipulation by standard Java libraries. A call to the {@link #getData()}</em>
-<a class="jxr_linenumber" name="L64" href="#L64">64</a>  <em class="jxr_javadoccomment"> * method will still return a multi-dimensional array, but the image data will not be read until the user explicitly</em>
-<a class="jxr_linenumber" name="L65" href="#L65">65</a>  <em class="jxr_javadoccomment"> * requests.</em>
-<a class="jxr_linenumber" name="L66" href="#L66">66</a>  <em class="jxr_javadoccomment"> * &lt;/p&gt;</em>
-<a class="jxr_linenumber" name="L67" href="#L67">67</a>  <em class="jxr_javadoccomment"> * </em>
-<a class="jxr_linenumber" name="L68" href="#L68">68</a>  <em class="jxr_javadoccomment"> * @see ImageHDU</em>
-<a class="jxr_linenumber" name="L69" href="#L69">69</a>  <em class="jxr_javadoccomment"> */</em>
-<a class="jxr_linenumber" name="L70" href="#L70">70</a>  <strong class="jxr_keyword">public</strong> <strong class="jxr_keyword">class</strong> <a name="ImageData" href="../../../nom/tam/fits/ImageData.html#ImageData">ImageData</a> <strong class="jxr_keyword">extends</strong> <a name="Data" href="../../../nom/tam/fits/Data.html#Data">Data</a> {
-<a class="jxr_linenumber" name="L71" href="#L71">71</a>  
-<a class="jxr_linenumber" name="L72" href="#L72">72</a>      <em class="jxr_javadoccomment">/**</em>
-<a class="jxr_linenumber" name="L73" href="#L73">73</a>  <em class="jxr_javadoccomment">     * This class describes an array</em>
-<a class="jxr_linenumber" name="L74" href="#L74">74</a>  <em class="jxr_javadoccomment">     */</em>
-<a class="jxr_linenumber" name="L75" href="#L75">75</a>      <strong class="jxr_keyword">protected</strong> <strong class="jxr_keyword">static</strong> <strong class="jxr_keyword">class</strong> ArrayDesc {
+<a class="jxr_linenumber" name="L57" href="#L57">57</a>  <em class="jxr_javadoccomment"> * Starting in version 0.9 of the FITS library, this class allows users to defer the reading of images if the FITS data</em>
+<a class="jxr_linenumber" name="L58" href="#L58">58</a>  <em class="jxr_javadoccomment"> * is being read from a file. An {@link ImageTiler} object is supplied which can return an arbitrary subset of the image</em>
+<a class="jxr_linenumber" name="L59" href="#L59">59</a>  <em class="jxr_javadoccomment"> * as a one dimensional array -- suitable for manipulation by standard Java libraries. A call to the {@link #getData()}</em>
+<a class="jxr_linenumber" name="L60" href="#L60">60</a>  <em class="jxr_javadoccomment"> * method will still return a multi-dimensional array, but the image data will not be read until the user explicitly</em>
+<a class="jxr_linenumber" name="L61" href="#L61">61</a>  <em class="jxr_javadoccomment"> * requests.</em>
+<a class="jxr_linenumber" name="L62" href="#L62">62</a>  <em class="jxr_javadoccomment"> * &lt;/p&gt;</em>
+<a class="jxr_linenumber" name="L63" href="#L63">63</a>  <em class="jxr_javadoccomment"> * </em>
+<a class="jxr_linenumber" name="L64" href="#L64">64</a>  <em class="jxr_javadoccomment"> * @see ImageHDU</em>
+<a class="jxr_linenumber" name="L65" href="#L65">65</a>  <em class="jxr_javadoccomment"> */</em>
+<a class="jxr_linenumber" name="L66" href="#L66">66</a>  <strong class="jxr_keyword">public</strong> <strong class="jxr_keyword">class</strong> <a name="ImageData" href="../../../nom/tam/fits/ImageData.html#ImageData">ImageData</a> <strong class="jxr_keyword">extends</strong> <a name="Data" href="../../../nom/tam/fits/Data.html#Data">Data</a> {
+<a class="jxr_linenumber" name="L67" href="#L67">67</a>  
+<a class="jxr_linenumber" name="L68" href="#L68">68</a>      <em class="jxr_javadoccomment">/**</em>
+<a class="jxr_linenumber" name="L69" href="#L69">69</a>  <em class="jxr_javadoccomment">     * This class describes an array</em>
+<a class="jxr_linenumber" name="L70" href="#L70">70</a>  <em class="jxr_javadoccomment">     */</em>
+<a class="jxr_linenumber" name="L71" href="#L71">71</a>      <strong class="jxr_keyword">protected</strong> <strong class="jxr_keyword">static</strong> <strong class="jxr_keyword">class</strong> ArrayDesc {
+<a class="jxr_linenumber" name="L72" href="#L72">72</a>  
+<a class="jxr_linenumber" name="L73" href="#L73">73</a>          <strong class="jxr_keyword">private</strong> <strong class="jxr_keyword">final</strong> <strong class="jxr_keyword">int</strong>[] dims;
+<a class="jxr_linenumber" name="L74" href="#L74">74</a>  
+<a class="jxr_linenumber" name="L75" href="#L75">75</a>          <strong class="jxr_keyword">private</strong> <strong class="jxr_keyword">final</strong> Class&lt;?&gt; type;
 <a class="jxr_linenumber" name="L76" href="#L76">76</a>  
-<a class="jxr_linenumber" name="L77" href="#L77">77</a>          <strong class="jxr_keyword">private</strong> <strong class="jxr_keyword">final</strong> <strong class="jxr_keyword">int</strong>[] dims;
-<a class="jxr_linenumber" name="L78" href="#L78">78</a>  
-<a class="jxr_linenumber" name="L79" href="#L79">79</a>          <strong class="jxr_keyword">private</strong> <strong class="jxr_keyword">final</strong> Class&lt;?&gt; type;
-<a class="jxr_linenumber" name="L80" href="#L80">80</a>  
-<a class="jxr_linenumber" name="L81" href="#L81">81</a>          ArrayDesc(<strong class="jxr_keyword">int</strong>[] dims, Class&lt;?&gt; type) {
-<a class="jxr_linenumber" name="L82" href="#L82">82</a>              <strong class="jxr_keyword">this</strong>.dims = dims;
-<a class="jxr_linenumber" name="L83" href="#L83">83</a>              <strong class="jxr_keyword">this</strong>.type = type;
-<a class="jxr_linenumber" name="L84" href="#L84">84</a>          }
-<a class="jxr_linenumber" name="L85" href="#L85">85</a>      }
-<a class="jxr_linenumber" name="L86" href="#L86">86</a>  
-<a class="jxr_linenumber" name="L87" href="#L87">87</a>      <em class="jxr_javadoccomment">/**</em>
-<a class="jxr_linenumber" name="L88" href="#L88">88</a>  <em class="jxr_javadoccomment">     * This inner class allows the ImageTiler to see if the user has read in the data.</em>
-<a class="jxr_linenumber" name="L89" href="#L89">89</a>  <em class="jxr_javadoccomment">     */</em>
-<a class="jxr_linenumber" name="L90" href="#L90">90</a>      <strong class="jxr_keyword">protected</strong> <strong class="jxr_keyword">class</strong> ImageDataTiler <strong class="jxr_keyword">extends</strong> <a name="StandardImageTiler" href="../../../nom/tam/image/StandardImageTiler.html#StandardImageTiler">StandardImageTiler</a> {
+<a class="jxr_linenumber" name="L77" href="#L77">77</a>          ArrayDesc(<strong class="jxr_keyword">int</strong>[] dims, Class&lt;?&gt; type) {
+<a class="jxr_linenumber" name="L78" href="#L78">78</a>              <strong class="jxr_keyword">this</strong>.dims = dims;
+<a class="jxr_linenumber" name="L79" href="#L79">79</a>              <strong class="jxr_keyword">this</strong>.type = type;
+<a class="jxr_linenumber" name="L80" href="#L80">80</a>          }
+<a class="jxr_linenumber" name="L81" href="#L81">81</a>      }
+<a class="jxr_linenumber" name="L82" href="#L82">82</a>  
+<a class="jxr_linenumber" name="L83" href="#L83">83</a>      <em class="jxr_javadoccomment">/**</em>
+<a class="jxr_linenumber" name="L84" href="#L84">84</a>  <em class="jxr_javadoccomment">     * This inner class allows the ImageTiler to see if the user has read in the data.</em>
+<a class="jxr_linenumber" name="L85" href="#L85">85</a>  <em class="jxr_javadoccomment">     */</em>
+<a class="jxr_linenumber" name="L86" href="#L86">86</a>      <strong class="jxr_keyword">protected</strong> <strong class="jxr_keyword">class</strong> ImageDataTiler <strong class="jxr_keyword">extends</strong> <a name="StandardImageTiler" href="../../../nom/tam/image/StandardImageTiler.html#StandardImageTiler">StandardImageTiler</a> {
+<a class="jxr_linenumber" name="L87" href="#L87">87</a>  
+<a class="jxr_linenumber" name="L88" href="#L88">88</a>          ImageDataTiler(<a name="RandomAccess" href="../../../nom/tam/util/RandomAccess.html#RandomAccess">RandomAccess</a> o, <strong class="jxr_keyword">long</strong> offset, ArrayDesc d) {
+<a class="jxr_linenumber" name="L89" href="#L89">89</a>              <strong class="jxr_keyword">super</strong>(o, offset, d.dims, d.type);
+<a class="jxr_linenumber" name="L90" href="#L90">90</a>          }
 <a class="jxr_linenumber" name="L91" href="#L91">91</a>  
-<a class="jxr_linenumber" name="L92" href="#L92">92</a>          ImageDataTiler(<a name="RandomAccess" href="../../../nom/tam/util/RandomAccess.html#RandomAccess">RandomAccess</a> o, <strong class="jxr_keyword">long</strong> offset, ArrayDesc d) {
-<a class="jxr_linenumber" name="L93" href="#L93">93</a>              <strong class="jxr_keyword">super</strong>(o, offset, d.dims, d.type);
-<a class="jxr_linenumber" name="L94" href="#L94">94</a>          }
-<a class="jxr_linenumber" name="L95" href="#L95">95</a>  
-<a class="jxr_linenumber" name="L96" href="#L96">96</a>          @Override
-<a class="jxr_linenumber" name="L97" href="#L97">97</a>          <strong class="jxr_keyword">protected</strong> Object getMemoryImage() {
-<a class="jxr_linenumber" name="L98" href="#L98">98</a>              <strong class="jxr_keyword">return</strong> dataArray;
-<a class="jxr_linenumber" name="L99" href="#L99">99</a>          }
-<a class="jxr_linenumber" name="L100" href="#L100">100</a>     }
-<a class="jxr_linenumber" name="L101" href="#L101">101</a> 
-<a class="jxr_linenumber" name="L102" href="#L102">102</a>     <em class="jxr_comment">// private static final Logger LOG = getLogger(ImageData.class);</em>
-<a class="jxr_linenumber" name="L103" href="#L103">103</a> 
-<a class="jxr_linenumber" name="L104" href="#L104">104</a>     <em class="jxr_javadoccomment">/** The size of the data */</em>
-<a class="jxr_linenumber" name="L105" href="#L105">105</a>     <strong class="jxr_keyword">private</strong> <strong class="jxr_keyword">long</strong> byteSize;
-<a class="jxr_linenumber" name="L106" href="#L106">106</a> 
-<a class="jxr_linenumber" name="L107" href="#L107">107</a>     <em class="jxr_javadoccomment">/**</em>
-<a class="jxr_linenumber" name="L108" href="#L108">108</a> <em class="jxr_javadoccomment">     * The actual array of data. This is normally a multi-dimensional primitive array. It may be null until the</em>
-<a class="jxr_linenumber" name="L109" href="#L109">109</a> <em class="jxr_javadoccomment">     * getData() routine is invoked, or it may be filled by during the read call when a non-random access device is</em>
-<a class="jxr_linenumber" name="L110" href="#L110">110</a> <em class="jxr_javadoccomment">     * used.</em>
-<a class="jxr_linenumber" name="L111" href="#L111">111</a> <em class="jxr_javadoccomment">     */</em>
-<a class="jxr_linenumber" name="L112" href="#L112">112</a>     <strong class="jxr_keyword">private</strong> Object dataArray;
-<a class="jxr_linenumber" name="L113" href="#L113">113</a> 
-<a class="jxr_linenumber" name="L114" href="#L114">114</a>     <em class="jxr_javadoccomment">/** A description of what the data should look like */</em>
-<a class="jxr_linenumber" name="L115" href="#L115">115</a>     <strong class="jxr_keyword">private</strong> ArrayDesc dataDescription;
-<a class="jxr_linenumber" name="L116" href="#L116">116</a> 
-<a class="jxr_linenumber" name="L117" href="#L117">117</a>     <em class="jxr_javadoccomment">/** The image tiler associated with this image. */</em>
-<a class="jxr_linenumber" name="L118" href="#L118">118</a>     <strong class="jxr_keyword">private</strong> <a name="StandardImageTiler" href="../../../nom/tam/image/StandardImageTiler.html#StandardImageTiler">StandardImageTiler</a> tiler;
-<a class="jxr_linenumber" name="L119" href="#L119">119</a> 
-<a class="jxr_linenumber" name="L120" href="#L120">120</a>     <em class="jxr_javadoccomment">/**</em>
-<a class="jxr_linenumber" name="L121" href="#L121">121</a> <em class="jxr_javadoccomment">     * Create the equivalent of a null data element.</em>
-<a class="jxr_linenumber" name="L122" href="#L122">122</a> <em class="jxr_javadoccomment">     */</em>
-<a class="jxr_linenumber" name="L123" href="#L123">123</a>     <strong class="jxr_keyword">public</strong> <a name="ImageData" href="../../../nom/tam/fits/ImageData.html#ImageData">ImageData</a>() {
-<a class="jxr_linenumber" name="L124" href="#L124">124</a>         dataArray = <strong class="jxr_keyword">new</strong> byte[0];
-<a class="jxr_linenumber" name="L125" href="#L125">125</a>         byteSize = 0;
-<a class="jxr_linenumber" name="L126" href="#L126">126</a>     }
-<a class="jxr_linenumber" name="L127" href="#L127">127</a> 
-<a class="jxr_linenumber" name="L128" href="#L128">128</a>     <em class="jxr_javadoccomment">/**</em>
-<a class="jxr_linenumber" name="L129" href="#L129">129</a> <em class="jxr_javadoccomment">     * Create an array from a header description. This is typically how data will be created when reading FITS data from</em>
-<a class="jxr_linenumber" name="L130" href="#L130">130</a> <em class="jxr_javadoccomment">     * a file where the header is read first. This creates an empty array.</em>
-<a class="jxr_linenumber" name="L131" href="#L131">131</a> <em class="jxr_javadoccomment">     *</em>
-<a class="jxr_linenumber" name="L132" href="#L132">132</a> <em class="jxr_javadoccomment">     * @param  h             header to be used as a template.</em>
-<a class="jxr_linenumber" name="L133" href="#L133">133</a> <em class="jxr_javadoccomment">     *</em>
-<a class="jxr_linenumber" name="L134" href="#L134">134</a> <em class="jxr_javadoccomment">     * @throws FitsException if there was a problem with the header description.</em>
-<a class="jxr_linenumber" name="L135" href="#L135">135</a> <em class="jxr_javadoccomment">     */</em>
-<a class="jxr_linenumber" name="L136" href="#L136">136</a>     <strong class="jxr_keyword">public</strong> <a name="ImageData" href="../../../nom/tam/fits/ImageData.html#ImageData">ImageData</a>(<a name="Header" href="../../../nom/tam/fits/Header.html#Header">Header</a> h) <strong class="jxr_keyword">throws</strong> <a name="FitsException" href="../../../nom/tam/fits/FitsException.html#FitsException">FitsException</a> {
-<a class="jxr_linenumber" name="L137" href="#L137">137</a>         dataDescription = parseHeader(h);
-<a class="jxr_linenumber" name="L138" href="#L138">138</a>     }
-<a class="jxr_linenumber" name="L139" href="#L139">139</a> 
-<a class="jxr_linenumber" name="L140" href="#L140">140</a>     <em class="jxr_javadoccomment">/**</em>
-<a class="jxr_linenumber" name="L141" href="#L141">141</a> <em class="jxr_javadoccomment">     * Create an ImageData object using the specified object to initialize the data array.</em>
-<a class="jxr_linenumber" name="L142" href="#L142">142</a> <em class="jxr_javadoccomment">     *</em>
-<a class="jxr_linenumber" name="L143" href="#L143">143</a> <em class="jxr_javadoccomment">     * @param x The initial data array. This should be a primitive array but this is not checked currently.</em>
-<a class="jxr_linenumber" name="L144" href="#L144">144</a> <em class="jxr_javadoccomment">     */</em>
-<a class="jxr_linenumber" name="L145" href="#L145">145</a>     <strong class="jxr_keyword">public</strong> <a name="ImageData" href="../../../nom/tam/fits/ImageData.html#ImageData">ImageData</a>(Object x) {
-<a class="jxr_linenumber" name="L146" href="#L146">146</a>         dataArray = x;
-<a class="jxr_linenumber" name="L147" href="#L147">147</a>         byteSize = FitsEncoder.computeSize(x);
-<a class="jxr_linenumber" name="L148" href="#L148">148</a>     }
-<a class="jxr_linenumber" name="L149" href="#L149">149</a> 
-<a class="jxr_linenumber" name="L150" href="#L150">150</a>     @Override
-<a class="jxr_linenumber" name="L151" href="#L151">151</a>     <strong class="jxr_keyword">protected</strong> <strong class="jxr_keyword">void</strong> loadData(<a name="ArrayDataInput" href="../../../nom/tam/util/ArrayDataInput.html#ArrayDataInput">ArrayDataInput</a> in) <strong class="jxr_keyword">throws</strong> IOException, <a name="FitsException" href="../../../nom/tam/fits/FitsException.html#FitsException">FitsException</a> {
-<a class="jxr_linenumber" name="L152" href="#L152">152</a>         <strong class="jxr_keyword">if</strong> (tiler != <strong class="jxr_keyword">null</strong>) {
-<a class="jxr_linenumber" name="L153" href="#L153">153</a>             dataArray = tiler.getCompleteImage();
-<a class="jxr_linenumber" name="L154" href="#L154">154</a>         } <strong class="jxr_keyword">else</strong> {
-<a class="jxr_linenumber" name="L155" href="#L155">155</a>             dataArray = ArrayFuncs.newInstance(dataDescription.type, dataDescription.dims);
-<a class="jxr_linenumber" name="L156" href="#L156">156</a>             in.readImage(dataArray);
-<a class="jxr_linenumber" name="L157" href="#L157">157</a>         }
-<a class="jxr_linenumber" name="L158" href="#L158">158</a>     }
-<a class="jxr_linenumber" name="L159" href="#L159">159</a> 
-<a class="jxr_linenumber" name="L160" href="#L160">160</a>     @Override
-<a class="jxr_linenumber" name="L161" href="#L161">161</a>     <strong class="jxr_keyword">public</strong> <strong class="jxr_keyword">void</strong> read(<a name="ArrayDataInput" href="../../../nom/tam/util/ArrayDataInput.html#ArrayDataInput">ArrayDataInput</a> in) <strong class="jxr_keyword">throws</strong> <a name="FitsException" href="../../../nom/tam/fits/FitsException.html#FitsException">FitsException</a> {
-<a class="jxr_linenumber" name="L162" href="#L162">162</a>         tiler = (in instanceof <a name="RandomAccess" href="../../../nom/tam/util/RandomAccess.html#RandomAccess">RandomAccess</a>) ?
-<a class="jxr_linenumber" name="L163" href="#L163">163</a>                 <strong class="jxr_keyword">new</strong> ImageDataTiler((<a name="RandomAccess" href="../../../nom/tam/util/RandomAccess.html#RandomAccess">RandomAccess</a>) in, ((<a name="RandomAccess" href="../../../nom/tam/util/RandomAccess.html#RandomAccess">RandomAccess</a>) in).getFilePointer(), dataDescription) :
-<a class="jxr_linenumber" name="L164" href="#L164">164</a>                 <strong class="jxr_keyword">null</strong>;
-<a class="jxr_linenumber" name="L165" href="#L165">165</a>         <strong class="jxr_keyword">super</strong>.read(in);
-<a class="jxr_linenumber" name="L166" href="#L166">166</a>     }
-<a class="jxr_linenumber" name="L167" href="#L167">167</a> 
-<a class="jxr_linenumber" name="L168" href="#L168">168</a>     @Override
-<a class="jxr_linenumber" name="L169" href="#L169">169</a>     <strong class="jxr_keyword">protected</strong> Object getCurrentData() {
-<a class="jxr_linenumber" name="L170" href="#L170">170</a>         <strong class="jxr_keyword">return</strong> dataArray;
+<a class="jxr_linenumber" name="L92" href="#L92">92</a>          @Override
+<a class="jxr_linenumber" name="L93" href="#L93">93</a>          <strong class="jxr_keyword">protected</strong> Object getMemoryImage() {
+<a class="jxr_linenumber" name="L94" href="#L94">94</a>              <strong class="jxr_keyword">return</strong> dataArray;
+<a class="jxr_linenumber" name="L95" href="#L95">95</a>          }
+<a class="jxr_linenumber" name="L96" href="#L96">96</a>      }
+<a class="jxr_linenumber" name="L97" href="#L97">97</a>  
+<a class="jxr_linenumber" name="L98" href="#L98">98</a>      <em class="jxr_comment">// private static final Logger LOG = getLogger(ImageData.class);</em>
+<a class="jxr_linenumber" name="L99" href="#L99">99</a>  
+<a class="jxr_linenumber" name="L100" href="#L100">100</a>     <em class="jxr_javadoccomment">/** The size of the data */</em>
+<a class="jxr_linenumber" name="L101" href="#L101">101</a>     <strong class="jxr_keyword">private</strong> <strong class="jxr_keyword">long</strong> byteSize;
+<a class="jxr_linenumber" name="L102" href="#L102">102</a> 
+<a class="jxr_linenumber" name="L103" href="#L103">103</a>     <em class="jxr_javadoccomment">/**</em>
+<a class="jxr_linenumber" name="L104" href="#L104">104</a> <em class="jxr_javadoccomment">     * The actual array of data. This is normally a multi-dimensional primitive array. It may be null until the</em>
+<a class="jxr_linenumber" name="L105" href="#L105">105</a> <em class="jxr_javadoccomment">     * getData() routine is invoked, or it may be filled by during the read call when a non-random access device is</em>
+<a class="jxr_linenumber" name="L106" href="#L106">106</a> <em class="jxr_javadoccomment">     * used.</em>
+<a class="jxr_linenumber" name="L107" href="#L107">107</a> <em class="jxr_javadoccomment">     */</em>
+<a class="jxr_linenumber" name="L108" href="#L108">108</a>     <strong class="jxr_keyword">private</strong> Object dataArray;
+<a class="jxr_linenumber" name="L109" href="#L109">109</a> 
+<a class="jxr_linenumber" name="L110" href="#L110">110</a>     <em class="jxr_javadoccomment">/** A description of what the data should look like */</em>
+<a class="jxr_linenumber" name="L111" href="#L111">111</a>     <strong class="jxr_keyword">private</strong> ArrayDesc dataDescription;
+<a class="jxr_linenumber" name="L112" href="#L112">112</a> 
+<a class="jxr_linenumber" name="L113" href="#L113">113</a>     <em class="jxr_javadoccomment">/** The image tiler associated with this image. */</em>
+<a class="jxr_linenumber" name="L114" href="#L114">114</a>     <strong class="jxr_keyword">private</strong> <a name="StandardImageTiler" href="../../../nom/tam/image/StandardImageTiler.html#StandardImageTiler">StandardImageTiler</a> tiler;
+<a class="jxr_linenumber" name="L115" href="#L115">115</a> 
+<a class="jxr_linenumber" name="L116" href="#L116">116</a>     <em class="jxr_javadoccomment">/**</em>
+<a class="jxr_linenumber" name="L117" href="#L117">117</a> <em class="jxr_javadoccomment">     * Create the equivalent of a null data element.</em>
+<a class="jxr_linenumber" name="L118" href="#L118">118</a> <em class="jxr_javadoccomment">     */</em>
+<a class="jxr_linenumber" name="L119" href="#L119">119</a>     <strong class="jxr_keyword">public</strong> <a name="ImageData" href="../../../nom/tam/fits/ImageData.html#ImageData">ImageData</a>() {
+<a class="jxr_linenumber" name="L120" href="#L120">120</a>         dataArray = <strong class="jxr_keyword">new</strong> byte[0];
+<a class="jxr_linenumber" name="L121" href="#L121">121</a>         byteSize = 0;
+<a class="jxr_linenumber" name="L122" href="#L122">122</a>     }
+<a class="jxr_linenumber" name="L123" href="#L123">123</a> 
+<a class="jxr_linenumber" name="L124" href="#L124">124</a>     <em class="jxr_javadoccomment">/**</em>
+<a class="jxr_linenumber" name="L125" href="#L125">125</a> <em class="jxr_javadoccomment">     * (&lt;i&gt;for internal use&lt;/i&gt;) Create an array from a header description. This is typically how data will be created</em>
+<a class="jxr_linenumber" name="L126" href="#L126">126</a> <em class="jxr_javadoccomment">     * when reading FITS data from a file where the header is read first. This creates an empty array.</em>
+<a class="jxr_linenumber" name="L127" href="#L127">127</a> <em class="jxr_javadoccomment">     *</em>
+<a class="jxr_linenumber" name="L128" href="#L128">128</a> <em class="jxr_javadoccomment">     * @param  h             header to be used as a template.</em>
+<a class="jxr_linenumber" name="L129" href="#L129">129</a> <em class="jxr_javadoccomment">     *</em>
+<a class="jxr_linenumber" name="L130" href="#L130">130</a> <em class="jxr_javadoccomment">     * @throws FitsException if there was a problem with the header description.</em>
+<a class="jxr_linenumber" name="L131" href="#L131">131</a> <em class="jxr_javadoccomment">     */</em>
+<a class="jxr_linenumber" name="L132" href="#L132">132</a>     <strong class="jxr_keyword">public</strong> <a name="ImageData" href="../../../nom/tam/fits/ImageData.html#ImageData">ImageData</a>(<a name="Header" href="../../../nom/tam/fits/Header.html#Header">Header</a> h) <strong class="jxr_keyword">throws</strong> <a name="FitsException" href="../../../nom/tam/fits/FitsException.html#FitsException">FitsException</a> {
+<a class="jxr_linenumber" name="L133" href="#L133">133</a>         dataDescription = parseHeader(h);
+<a class="jxr_linenumber" name="L134" href="#L134">134</a>     }
+<a class="jxr_linenumber" name="L135" href="#L135">135</a> 
+<a class="jxr_linenumber" name="L136" href="#L136">136</a>     <em class="jxr_javadoccomment">/**</em>
+<a class="jxr_linenumber" name="L137" href="#L137">137</a> <em class="jxr_javadoccomment">     * Create an ImageData object using the specified object to initialize the data array.</em>
+<a class="jxr_linenumber" name="L138" href="#L138">138</a> <em class="jxr_javadoccomment">     *</em>
+<a class="jxr_linenumber" name="L139" href="#L139">139</a> <em class="jxr_javadoccomment">     * @param  x                        The initial data array. This should be a primitive array but this is not checked</em>
+<a class="jxr_linenumber" name="L140" href="#L140">140</a> <em class="jxr_javadoccomment">     *                                      currently.</em>
+<a class="jxr_linenumber" name="L141" href="#L141">141</a> <em class="jxr_javadoccomment">     * </em>
+<a class="jxr_linenumber" name="L142" href="#L142">142</a> <em class="jxr_javadoccomment">     * @throws IllegalArgumentException if x is not a suitable primitive array</em>
+<a class="jxr_linenumber" name="L143" href="#L143">143</a> <em class="jxr_javadoccomment">     */</em>
+<a class="jxr_linenumber" name="L144" href="#L144">144</a>     <strong class="jxr_keyword">public</strong> <a name="ImageData" href="../../../nom/tam/fits/ImageData.html#ImageData">ImageData</a>(Object x) <strong class="jxr_keyword">throws</strong> IllegalArgumentException {
+<a class="jxr_linenumber" name="L145" href="#L145">145</a>         <strong class="jxr_keyword">try</strong> {
+<a class="jxr_linenumber" name="L146" href="#L146">146</a>             checkCompatible(x);
+<a class="jxr_linenumber" name="L147" href="#L147">147</a>         } <strong class="jxr_keyword">catch</strong> (<a name="FitsException" href="../../../nom/tam/fits/FitsException.html#FitsException">FitsException</a> e) {
+<a class="jxr_linenumber" name="L148" href="#L148">148</a>             <strong class="jxr_keyword">throw</strong> <strong class="jxr_keyword">new</strong> IllegalArgumentException(e.getMessage(), e);
+<a class="jxr_linenumber" name="L149" href="#L149">149</a>         }
+<a class="jxr_linenumber" name="L150" href="#L150">150</a> 
+<a class="jxr_linenumber" name="L151" href="#L151">151</a>         dataArray = x;
+<a class="jxr_linenumber" name="L152" href="#L152">152</a>         byteSize = FitsEncoder.computeSize(x);
+<a class="jxr_linenumber" name="L153" href="#L153">153</a>     }
+<a class="jxr_linenumber" name="L154" href="#L154">154</a> 
+<a class="jxr_linenumber" name="L155" href="#L155">155</a>     @Override
+<a class="jxr_linenumber" name="L156" href="#L156">156</a>     <strong class="jxr_keyword">protected</strong> <strong class="jxr_keyword">void</strong> loadData(<a name="ArrayDataInput" href="../../../nom/tam/util/ArrayDataInput.html#ArrayDataInput">ArrayDataInput</a> in) <strong class="jxr_keyword">throws</strong> IOException, <a name="FitsException" href="../../../nom/tam/fits/FitsException.html#FitsException">FitsException</a> {
+<a class="jxr_linenumber" name="L157" href="#L157">157</a>         <strong class="jxr_keyword">if</strong> (tiler != <strong class="jxr_keyword">null</strong>) {
+<a class="jxr_linenumber" name="L158" href="#L158">158</a>             dataArray = tiler.getCompleteImage();
+<a class="jxr_linenumber" name="L159" href="#L159">159</a>         } <strong class="jxr_keyword">else</strong> {
+<a class="jxr_linenumber" name="L160" href="#L160">160</a>             dataArray = ArrayFuncs.newInstance(dataDescription.type, dataDescription.dims);
+<a class="jxr_linenumber" name="L161" href="#L161">161</a>             in.readImage(dataArray);
+<a class="jxr_linenumber" name="L162" href="#L162">162</a>         }
+<a class="jxr_linenumber" name="L163" href="#L163">163</a>     }
+<a class="jxr_linenumber" name="L164" href="#L164">164</a> 
+<a class="jxr_linenumber" name="L165" href="#L165">165</a>     @Override
+<a class="jxr_linenumber" name="L166" href="#L166">166</a>     <strong class="jxr_keyword">public</strong> <strong class="jxr_keyword">void</strong> read(<a name="ArrayDataInput" href="../../../nom/tam/util/ArrayDataInput.html#ArrayDataInput">ArrayDataInput</a> in) <strong class="jxr_keyword">throws</strong> <a name="FitsException" href="../../../nom/tam/fits/FitsException.html#FitsException">FitsException</a> {
+<a class="jxr_linenumber" name="L167" href="#L167">167</a>         tiler = (in instanceof <a name="RandomAccess" href="../../../nom/tam/util/RandomAccess.html#RandomAccess">RandomAccess</a>) ?
+<a class="jxr_linenumber" name="L168" href="#L168">168</a>                 <strong class="jxr_keyword">new</strong> ImageDataTiler((<a name="RandomAccess" href="../../../nom/tam/util/RandomAccess.html#RandomAccess">RandomAccess</a>) in, ((<a name="RandomAccess" href="../../../nom/tam/util/RandomAccess.html#RandomAccess">RandomAccess</a>) in).getFilePointer(), dataDescription) :
+<a class="jxr_linenumber" name="L169" href="#L169">169</a>                 <strong class="jxr_keyword">null</strong>;
+<a class="jxr_linenumber" name="L170" href="#L170">170</a>         <strong class="jxr_keyword">super</strong>.read(in);
 <a class="jxr_linenumber" name="L171" href="#L171">171</a>     }
 <a class="jxr_linenumber" name="L172" href="#L172">172</a> 
-<a class="jxr_linenumber" name="L173" href="#L173">173</a>     <em class="jxr_javadoccomment">/**</em>
-<a class="jxr_linenumber" name="L174" href="#L174">174</a> <em class="jxr_javadoccomment">     * Returns the class that can be used to divide this image into tiles that may be processed separately (and in</em>
-<a class="jxr_linenumber" name="L175" href="#L175">175</a> <em class="jxr_javadoccomment">     * parallel).</em>
-<a class="jxr_linenumber" name="L176" href="#L176">176</a> <em class="jxr_javadoccomment">     * </em>
-<a class="jxr_linenumber" name="L177" href="#L177">177</a> <em class="jxr_javadoccomment">     * @return image tiler for this image instance.</em>
-<a class="jxr_linenumber" name="L178" href="#L178">178</a> <em class="jxr_javadoccomment">     */</em>
-<a class="jxr_linenumber" name="L179" href="#L179">179</a>     <strong class="jxr_keyword">public</strong> <a name="StandardImageTiler" href="../../../nom/tam/image/StandardImageTiler.html#StandardImageTiler">StandardImageTiler</a> getTiler() {
-<a class="jxr_linenumber" name="L180" href="#L180">180</a>         <strong class="jxr_keyword">return</strong> tiler;
-<a class="jxr_linenumber" name="L181" href="#L181">181</a>     }
-<a class="jxr_linenumber" name="L182" href="#L182">182</a> 
-<a class="jxr_linenumber" name="L183" href="#L183">183</a>     <em class="jxr_javadoccomment">/**</em>
-<a class="jxr_linenumber" name="L184" href="#L184">184</a> <em class="jxr_javadoccomment">     * Sets the buffer that may hold a serialized version of the data for this image.</em>
-<a class="jxr_linenumber" name="L185" href="#L185">185</a> <em class="jxr_javadoccomment">     * </em>
-<a class="jxr_linenumber" name="L186" href="#L186">186</a> <em class="jxr_javadoccomment">     * @param data the buffer that may hold this image's data in serialized form.</em>
-<a class="jxr_linenumber" name="L187" href="#L187">187</a> <em class="jxr_javadoccomment">     */</em>
-<a class="jxr_linenumber" name="L188" href="#L188">188</a>     <strong class="jxr_keyword">public</strong> <strong class="jxr_keyword">void</strong> setBuffer(Buffer data) {
-<a class="jxr_linenumber" name="L189" href="#L189">189</a>         ElementType&lt;Buffer&gt; elementType = ElementType.forClass(dataDescription.type);
-<a class="jxr_linenumber" name="L190" href="#L190">190</a>         dataArray = ArrayFuncs.newInstance(dataDescription.type, dataDescription.dims);
-<a class="jxr_linenumber" name="L191" href="#L191">191</a>         MultiArrayIterator&lt;?&gt; iterator = <strong class="jxr_keyword">new</strong> MultiArrayIterator&lt;&gt;(dataArray);
-<a class="jxr_linenumber" name="L192" href="#L192">192</a>         Object array = iterator.next();
-<a class="jxr_linenumber" name="L193" href="#L193">193</a>         <strong class="jxr_keyword">while</strong> (array != <strong class="jxr_keyword">null</strong>) {
-<a class="jxr_linenumber" name="L194" href="#L194">194</a>             elementType.getArray(data, array);
-<a class="jxr_linenumber" name="L195" href="#L195">195</a>             array = iterator.next();
-<a class="jxr_linenumber" name="L196" href="#L196">196</a>         }
-<a class="jxr_linenumber" name="L197" href="#L197">197</a>         tiler = <strong class="jxr_keyword">new</strong> ImageDataTiler(<strong class="jxr_keyword">null</strong>, 0, dataDescription);
-<a class="jxr_linenumber" name="L198" href="#L198">198</a>     }
-<a class="jxr_linenumber" name="L199" href="#L199">199</a> 
-<a class="jxr_linenumber" name="L200" href="#L200">200</a>     @SuppressWarnings({<span class="jxr_string">"resource"</span>, <span class="jxr_string">"deprecation"</span>})
-<a class="jxr_linenumber" name="L201" href="#L201">201</a>     @Override
-<a class="jxr_linenumber" name="L202" href="#L202">202</a>     <strong class="jxr_keyword">public</strong> <strong class="jxr_keyword">void</strong> write(<a name="ArrayDataOutput" href="../../../nom/tam/util/ArrayDataOutput.html#ArrayDataOutput">ArrayDataOutput</a> o) <strong class="jxr_keyword">throws</strong> <a name="FitsException" href="../../../nom/tam/fits/FitsException.html#FitsException">FitsException</a> {
-<a class="jxr_linenumber" name="L203" href="#L203">203</a> 
-<a class="jxr_linenumber" name="L204" href="#L204">204</a>         <em class="jxr_comment">// Don't need to write null data (noted by Jens Knudstrup)</em>
-<a class="jxr_linenumber" name="L205" href="#L205">205</a>         <strong class="jxr_keyword">if</strong> (byteSize == 0) {
-<a class="jxr_linenumber" name="L206" href="#L206">206</a>             <strong class="jxr_keyword">return</strong>;
-<a class="jxr_linenumber" name="L207" href="#L207">207</a>         }
+<a class="jxr_linenumber" name="L173" href="#L173">173</a>     @Override
+<a class="jxr_linenumber" name="L174" href="#L174">174</a>     <strong class="jxr_keyword">protected</strong> Object getCurrentData() {
+<a class="jxr_linenumber" name="L175" href="#L175">175</a>         <strong class="jxr_keyword">return</strong> dataArray;
+<a class="jxr_linenumber" name="L176" href="#L176">176</a>     }
+<a class="jxr_linenumber" name="L177" href="#L177">177</a> 
+<a class="jxr_linenumber" name="L178" href="#L178">178</a>     <em class="jxr_javadoccomment">/**</em>
+<a class="jxr_linenumber" name="L179" href="#L179">179</a> <em class="jxr_javadoccomment">     * Returns the class that can be used to divide this image into tiles that may be processed separately (and in</em>
+<a class="jxr_linenumber" name="L180" href="#L180">180</a> <em class="jxr_javadoccomment">     * parallel).</em>
+<a class="jxr_linenumber" name="L181" href="#L181">181</a> <em class="jxr_javadoccomment">     * </em>
+<a class="jxr_linenumber" name="L182" href="#L182">182</a> <em class="jxr_javadoccomment">     * @return image tiler for this image instance.</em>
+<a class="jxr_linenumber" name="L183" href="#L183">183</a> <em class="jxr_javadoccomment">     */</em>
+<a class="jxr_linenumber" name="L184" href="#L184">184</a>     <strong class="jxr_keyword">public</strong> <a name="StandardImageTiler" href="../../../nom/tam/image/StandardImageTiler.html#StandardImageTiler">StandardImageTiler</a> getTiler() {
+<a class="jxr_linenumber" name="L185" href="#L185">185</a>         <strong class="jxr_keyword">return</strong> tiler;
+<a class="jxr_linenumber" name="L186" href="#L186">186</a>     }
+<a class="jxr_linenumber" name="L187" href="#L187">187</a> 
+<a class="jxr_linenumber" name="L188" href="#L188">188</a>     <em class="jxr_javadoccomment">/**</em>
+<a class="jxr_linenumber" name="L189" href="#L189">189</a> <em class="jxr_javadoccomment">     * Sets the buffer that may hold a serialized version of the data for this image.</em>
+<a class="jxr_linenumber" name="L190" href="#L190">190</a> <em class="jxr_javadoccomment">     * </em>
+<a class="jxr_linenumber" name="L191" href="#L191">191</a> <em class="jxr_javadoccomment">     * @param data the buffer that may hold this image's data in serialized form.</em>
+<a class="jxr_linenumber" name="L192" href="#L192">192</a> <em class="jxr_javadoccomment">     */</em>
+<a class="jxr_linenumber" name="L193" href="#L193">193</a>     <strong class="jxr_keyword">public</strong> <strong class="jxr_keyword">void</strong> setBuffer(Buffer data) {
+<a class="jxr_linenumber" name="L194" href="#L194">194</a>         ElementType&lt;Buffer&gt; elementType = ElementType.forClass(dataDescription.type);
+<a class="jxr_linenumber" name="L195" href="#L195">195</a>         dataArray = ArrayFuncs.newInstance(dataDescription.type, dataDescription.dims);
+<a class="jxr_linenumber" name="L196" href="#L196">196</a>         MultiArrayIterator&lt;?&gt; iterator = <strong class="jxr_keyword">new</strong> MultiArrayIterator&lt;&gt;(dataArray);
+<a class="jxr_linenumber" name="L197" href="#L197">197</a>         Object array = iterator.next();
+<a class="jxr_linenumber" name="L198" href="#L198">198</a>         <strong class="jxr_keyword">while</strong> (array != <strong class="jxr_keyword">null</strong>) {
+<a class="jxr_linenumber" name="L199" href="#L199">199</a>             elementType.getArray(data, array);
+<a class="jxr_linenumber" name="L200" href="#L200">200</a>             array = iterator.next();
+<a class="jxr_linenumber" name="L201" href="#L201">201</a>         }
+<a class="jxr_linenumber" name="L202" href="#L202">202</a>         tiler = <strong class="jxr_keyword">new</strong> ImageDataTiler(<strong class="jxr_keyword">null</strong>, 0, dataDescription);
+<a class="jxr_linenumber" name="L203" href="#L203">203</a>     }
+<a class="jxr_linenumber" name="L204" href="#L204">204</a> 
+<a class="jxr_linenumber" name="L205" href="#L205">205</a>     @SuppressWarnings({<span class="jxr_string">"resource"</span>, <span class="jxr_string">"deprecation"</span>})
+<a class="jxr_linenumber" name="L206" href="#L206">206</a>     @Override
+<a class="jxr_linenumber" name="L207" href="#L207">207</a>     <strong class="jxr_keyword">public</strong> <strong class="jxr_keyword">void</strong> write(<a name="ArrayDataOutput" href="../../../nom/tam/util/ArrayDataOutput.html#ArrayDataOutput">ArrayDataOutput</a> o) <strong class="jxr_keyword">throws</strong> <a name="FitsException" href="../../../nom/tam/fits/FitsException.html#FitsException">FitsException</a> {
 <a class="jxr_linenumber" name="L208" href="#L208">208</a> 
-<a class="jxr_linenumber" name="L209" href="#L209">209</a>         <strong class="jxr_keyword">if</strong> (o != getRandomAccessInput()) {
-<a class="jxr_linenumber" name="L210" href="#L210">210</a>             ensureData();
-<a class="jxr_linenumber" name="L211" href="#L211">211</a>         }
-<a class="jxr_linenumber" name="L212" href="#L212">212</a> 
-<a class="jxr_linenumber" name="L213" href="#L213">213</a>         <strong class="jxr_keyword">try</strong> {
-<a class="jxr_linenumber" name="L214" href="#L214">214</a>             o.writeArray(dataArray);
-<a class="jxr_linenumber" name="L215" href="#L215">215</a>         } <strong class="jxr_keyword">catch</strong> (IOException e) {
-<a class="jxr_linenumber" name="L216" href="#L216">216</a>             <strong class="jxr_keyword">throw</strong> <strong class="jxr_keyword">new</strong> <a name="FitsException" href="../../../nom/tam/fits/FitsException.html#FitsException">FitsException</a>(<span class="jxr_string">"IO Error on image write"</span> + e);
-<a class="jxr_linenumber" name="L217" href="#L217">217</a>         }
-<a class="jxr_linenumber" name="L218" href="#L218">218</a> 
-<a class="jxr_linenumber" name="L219" href="#L219">219</a>         FitsUtil.pad(o, getTrueSize());
-<a class="jxr_linenumber" name="L220" href="#L220">220</a>     }
-<a class="jxr_linenumber" name="L221" href="#L221">221</a> 
-<a class="jxr_linenumber" name="L222" href="#L222">222</a>     @SuppressWarnings(<span class="jxr_string">"deprecation"</span>)
-<a class="jxr_linenumber" name="L223" href="#L223">223</a>     @Override
-<a class="jxr_linenumber" name="L224" href="#L224">224</a>     <strong class="jxr_keyword">protected</strong> <strong class="jxr_keyword">void</strong> fillHeader(<a name="Header" href="../../../nom/tam/fits/Header.html#Header">Header</a> head) <strong class="jxr_keyword">throws</strong> <a name="FitsException" href="../../../nom/tam/fits/FitsException.html#FitsException">FitsException</a> {
-<a class="jxr_linenumber" name="L225" href="#L225">225</a> 
-<a class="jxr_linenumber" name="L226" href="#L226">226</a>         <strong class="jxr_keyword">if</strong> (dataArray == <strong class="jxr_keyword">null</strong>) {
-<a class="jxr_linenumber" name="L227" href="#L227">227</a>             head.nullImage();
-<a class="jxr_linenumber" name="L228" href="#L228">228</a>             <strong class="jxr_keyword">return</strong>;
-<a class="jxr_linenumber" name="L229" href="#L229">229</a>         }
+<a class="jxr_linenumber" name="L209" href="#L209">209</a>         <em class="jxr_comment">// Don't need to write null data (noted by Jens Knudstrup)</em>
+<a class="jxr_linenumber" name="L210" href="#L210">210</a>         <strong class="jxr_keyword">if</strong> (byteSize == 0) {
+<a class="jxr_linenumber" name="L211" href="#L211">211</a>             <strong class="jxr_keyword">return</strong>;
+<a class="jxr_linenumber" name="L212" href="#L212">212</a>         }
+<a class="jxr_linenumber" name="L213" href="#L213">213</a> 
+<a class="jxr_linenumber" name="L214" href="#L214">214</a>         <strong class="jxr_keyword">if</strong> (o != getRandomAccessInput()) {
+<a class="jxr_linenumber" name="L215" href="#L215">215</a>             ensureData();
+<a class="jxr_linenumber" name="L216" href="#L216">216</a>         }
+<a class="jxr_linenumber" name="L217" href="#L217">217</a> 
+<a class="jxr_linenumber" name="L218" href="#L218">218</a>         <strong class="jxr_keyword">try</strong> {
+<a class="jxr_linenumber" name="L219" href="#L219">219</a>             o.writeArray(dataArray);
+<a class="jxr_linenumber" name="L220" href="#L220">220</a>         } <strong class="jxr_keyword">catch</strong> (IOException e) {
+<a class="jxr_linenumber" name="L221" href="#L221">221</a>             <strong class="jxr_keyword">throw</strong> <strong class="jxr_keyword">new</strong> <a name="FitsException" href="../../../nom/tam/fits/FitsException.html#FitsException">FitsException</a>(<span class="jxr_string">"IO Error on image write"</span> + e);
+<a class="jxr_linenumber" name="L222" href="#L222">222</a>         }
+<a class="jxr_linenumber" name="L223" href="#L223">223</a> 
+<a class="jxr_linenumber" name="L224" href="#L224">224</a>         FitsUtil.pad(o, getTrueSize());
+<a class="jxr_linenumber" name="L225" href="#L225">225</a>     }
+<a class="jxr_linenumber" name="L226" href="#L226">226</a> 
+<a class="jxr_linenumber" name="L227" href="#L227">227</a>     @SuppressWarnings(<span class="jxr_string">"deprecation"</span>)
+<a class="jxr_linenumber" name="L228" href="#L228">228</a>     @Override
+<a class="jxr_linenumber" name="L229" href="#L229">229</a>     <strong class="jxr_keyword">protected</strong> <strong class="jxr_keyword">void</strong> fillHeader(<a name="Header" href="../../../nom/tam/fits/Header.html#Header">Header</a> head) <strong class="jxr_keyword">throws</strong> <a name="FitsException" href="../../../nom/tam/fits/FitsException.html#FitsException">FitsException</a> {
 <a class="jxr_linenumber" name="L230" href="#L230">230</a> 
-<a class="jxr_linenumber" name="L231" href="#L231">231</a>         Standard.context(ImageData.<strong class="jxr_keyword">class</strong>);
-<a class="jxr_linenumber" name="L232" href="#L232">232</a>         String classname = dataArray.getClass().getName();
-<a class="jxr_linenumber" name="L233" href="#L233">233</a> 
-<a class="jxr_linenumber" name="L234" href="#L234">234</a>         <strong class="jxr_keyword">int</strong>[] dimens = ArrayFuncs.getDimensions(dataArray);
+<a class="jxr_linenumber" name="L231" href="#L231">231</a>         <strong class="jxr_keyword">if</strong> (dataArray == <strong class="jxr_keyword">null</strong>) {
+<a class="jxr_linenumber" name="L232" href="#L232">232</a>             head.nullImage();
+<a class="jxr_linenumber" name="L233" href="#L233">233</a>             <strong class="jxr_keyword">return</strong>;
+<a class="jxr_linenumber" name="L234" href="#L234">234</a>         }
 <a class="jxr_linenumber" name="L235" href="#L235">235</a> 
-<a class="jxr_linenumber" name="L236" href="#L236">236</a>         <strong class="jxr_keyword">if</strong> (dimens == <strong class="jxr_keyword">null</strong> || dimens.length == 0) {
-<a class="jxr_linenumber" name="L237" href="#L237">237</a>             <strong class="jxr_keyword">throw</strong> <strong class="jxr_keyword">new</strong> <a name="FitsException" href="../../../nom/tam/fits/FitsException.html#FitsException">FitsException</a>(<span class="jxr_string">"Image data object not array"</span>);
-<a class="jxr_linenumber" name="L238" href="#L238">238</a>         }
-<a class="jxr_linenumber" name="L239" href="#L239">239</a> 
-<a class="jxr_linenumber" name="L240" href="#L240">240</a>         <em class="jxr_comment">// if this is neither a primary header nor an image extension,</em>
-<a class="jxr_linenumber" name="L241" href="#L241">241</a>         <em class="jxr_comment">// make it a primary header</em>
-<a class="jxr_linenumber" name="L242" href="#L242">242</a>         head.setSimple(<strong class="jxr_keyword">true</strong>);
-<a class="jxr_linenumber" name="L243" href="#L243">243</a>         head.setBitpix(Bitpix.forArrayID(classname.charAt(dimens.length)));
-<a class="jxr_linenumber" name="L244" href="#L244">244</a> 
-<a class="jxr_linenumber" name="L245" href="#L245">245</a>         overrideHeaderAxes(head, dimens);
+<a class="jxr_linenumber" name="L236" href="#L236">236</a>         Standard.context(ImageData.<strong class="jxr_keyword">class</strong>);
+<a class="jxr_linenumber" name="L237" href="#L237">237</a> 
+<a class="jxr_linenumber" name="L238" href="#L238">238</a>         <em class="jxr_comment">// We'll assume it's a primary image, until we know better...</em>
+<a class="jxr_linenumber" name="L239" href="#L239">239</a>         <em class="jxr_comment">// Just in case, we don't want an XTENSION key lingering around...</em>
+<a class="jxr_linenumber" name="L240" href="#L240">240</a>         head.deleteKey(Standard.XTENSION);
+<a class="jxr_linenumber" name="L241" href="#L241">241</a> 
+<a class="jxr_linenumber" name="L242" href="#L242">242</a>         Cursor&lt;String, HeaderCard&gt; c = head.iterator();
+<a class="jxr_linenumber" name="L243" href="#L243">243</a>         c.add(HeaderCard.create(Standard.SIMPLE, <strong class="jxr_keyword">true</strong>));
+<a class="jxr_linenumber" name="L244" href="#L244">244</a>         c.add(HeaderCard.create(Standard.BITPIX,
+<a class="jxr_linenumber" name="L245" href="#L245">245</a>                 Bitpix.forPrimitiveType(ArrayFuncs.getBaseClass(dataArray)).getHeaderValue()));
 <a class="jxr_linenumber" name="L246" href="#L246">246</a> 
-<a class="jxr_linenumber" name="L247" href="#L247">247</a>         <strong class="jxr_keyword">for</strong> (<strong class="jxr_keyword">int</strong> i = 1; i &lt;= dimens.length; i++) {
-<a class="jxr_linenumber" name="L248" href="#L248">248</a>             <strong class="jxr_keyword">if</strong> (dimens[i - 1] == -1) {
-<a class="jxr_linenumber" name="L249" href="#L249">249</a>                 <strong class="jxr_keyword">throw</strong> <strong class="jxr_keyword">new</strong> <a name="FitsException" href="../../../nom/tam/fits/FitsException.html#FitsException">FitsException</a>(<span class="jxr_string">"Unfilled array for dimension: "</span> + i);
-<a class="jxr_linenumber" name="L250" href="#L250">250</a>             }
-<a class="jxr_linenumber" name="L251" href="#L251">251</a>             head.setNaxis(i, dimens[dimens.length - i]);
+<a class="jxr_linenumber" name="L247" href="#L247">247</a>         <strong class="jxr_keyword">int</strong>[] dims = ArrayFuncs.getDimensions(dataArray);
+<a class="jxr_linenumber" name="L248" href="#L248">248</a>         c.add(HeaderCard.create(Standard.NAXIS, dims.length));
+<a class="jxr_linenumber" name="L249" href="#L249">249</a> 
+<a class="jxr_linenumber" name="L250" href="#L250">250</a>         <strong class="jxr_keyword">for</strong> (<strong class="jxr_keyword">int</strong> i = 1; i &lt;= dims.length; i++) {
+<a class="jxr_linenumber" name="L251" href="#L251">251</a>             c.add(HeaderCard.create(Standard.NAXISn.n(i), dims[dims.length - i]));
 <a class="jxr_linenumber" name="L252" href="#L252">252</a>         }
-<a class="jxr_linenumber" name="L253" href="#L253">253</a>         <em class="jxr_comment">// Just in case!</em>
-<a class="jxr_linenumber" name="L254" href="#L254">254</a>         head.addValue(EXTEND, <strong class="jxr_keyword">true</strong>);
-<a class="jxr_linenumber" name="L255" href="#L255">255</a> 
-<a class="jxr_linenumber" name="L256" href="#L256">256</a>         head.addValue(PCOUNT, 0);
-<a class="jxr_linenumber" name="L257" href="#L257">257</a>         head.addValue(GCOUNT, 1);
+<a class="jxr_linenumber" name="L253" href="#L253">253</a> 
+<a class="jxr_linenumber" name="L254" href="#L254">254</a>         <em class="jxr_comment">// Just in case!</em>
+<a class="jxr_linenumber" name="L255" href="#L255">255</a>         c.add(HeaderCard.create(Standard.PCOUNT, 0));
+<a class="jxr_linenumber" name="L256" href="#L256">256</a>         c.add(HeaderCard.create(Standard.GCOUNT, 1));
+<a class="jxr_linenumber" name="L257" href="#L257">257</a>         c.add(HeaderCard.create(Standard.EXTEND, <strong class="jxr_keyword">true</strong>));
 <a class="jxr_linenumber" name="L258" href="#L258">258</a> 
 <a class="jxr_linenumber" name="L259" href="#L259">259</a>         Standard.context(<strong class="jxr_keyword">null</strong>);
 <a class="jxr_linenumber" name="L260" href="#L260">260</a>     }
@@ -282,66 +282,132 @@
 <a class="jxr_linenumber" name="L274" href="#L274">274</a> <em class="jxr_javadoccomment">     * @throws FitsException If there was a problem accessing or interpreting the required header values.</em>
 <a class="jxr_linenumber" name="L275" href="#L275">275</a> <em class="jxr_javadoccomment">     */</em>
 <a class="jxr_linenumber" name="L276" href="#L276">276</a>     <strong class="jxr_keyword">protected</strong> ArrayDesc parseHeader(<a name="Header" href="../../../nom/tam/fits/Header.html#Header">Header</a> h) <strong class="jxr_keyword">throws</strong> <a name="FitsException" href="../../../nom/tam/fits/FitsException.html#FitsException">FitsException</a> {
-<a class="jxr_linenumber" name="L277" href="#L277">277</a>         <strong class="jxr_keyword">int</strong> gCount = h.getIntValue(GCOUNT, 1);
-<a class="jxr_linenumber" name="L278" href="#L278">278</a>         <strong class="jxr_keyword">int</strong> pCount = h.getIntValue(PCOUNT, 0);
-<a class="jxr_linenumber" name="L279" href="#L279">279</a>         <strong class="jxr_keyword">if</strong> (gCount &gt; 1 || pCount != 0) {
-<a class="jxr_linenumber" name="L280" href="#L280">280</a>             <strong class="jxr_keyword">throw</strong> <strong class="jxr_keyword">new</strong> <a name="FitsException" href="../../../nom/tam/fits/FitsException.html#FitsException">FitsException</a>(<span class="jxr_string">"Group data treated as images"</span>);
+<a class="jxr_linenumber" name="L277" href="#L277">277</a>         String ext = h.getStringValue(Standard.XTENSION, Standard.XTENSION_IMAGE);
+<a class="jxr_linenumber" name="L278" href="#L278">278</a> 
+<a class="jxr_linenumber" name="L279" href="#L279">279</a>         <strong class="jxr_keyword">if</strong> (!ext.equalsIgnoreCase(Standard.XTENSION_IMAGE) &amp;&amp; !ext.equalsIgnoreCase(NonStandard.XTENSION_IUEIMAGE)) {
+<a class="jxr_linenumber" name="L280" href="#L280">280</a>             <strong class="jxr_keyword">throw</strong> <strong class="jxr_keyword">new</strong> <a name="FitsException" href="../../../nom/tam/fits/FitsException.html#FitsException">FitsException</a>(<span class="jxr_string">"Not an image header (XTENSION = "</span> + h.getStringValue(Standard.XTENSION) + <span class="jxr_string">")"</span>);
 <a class="jxr_linenumber" name="L281" href="#L281">281</a>         }
 <a class="jxr_linenumber" name="L282" href="#L282">282</a> 
-<a class="jxr_linenumber" name="L283" href="#L283">283</a>         <a name="Bitpix" href="../../../nom/tam/fits/header/Bitpix.html#Bitpix">Bitpix</a> bitpix = Bitpix.fromHeader(h);
-<a class="jxr_linenumber" name="L284" href="#L284">284</a>         Class&lt;?&gt; baseClass = bitpix.getPrimitiveType();
-<a class="jxr_linenumber" name="L285" href="#L285">285</a>         <strong class="jxr_keyword">int</strong> ndim = h.getIntValue(NAXIS, 0);
-<a class="jxr_linenumber" name="L286" href="#L286">286</a>         <strong class="jxr_keyword">int</strong>[] dims = <strong class="jxr_keyword">new</strong> <strong class="jxr_keyword">int</strong>[ndim];
-<a class="jxr_linenumber" name="L287" href="#L287">287</a>         <em class="jxr_comment">// Note that we have to invert the order of the axes</em>
-<a class="jxr_linenumber" name="L288" href="#L288">288</a>         <em class="jxr_comment">// for the FITS file to get the order in the array we</em>
-<a class="jxr_linenumber" name="L289" href="#L289">289</a>         <em class="jxr_comment">// are generating.</em>
-<a class="jxr_linenumber" name="L290" href="#L290">290</a> 
-<a class="jxr_linenumber" name="L291" href="#L291">291</a>         byteSize = ndim &gt; 0 ? 1 : 0;
-<a class="jxr_linenumber" name="L292" href="#L292">292</a>         <strong class="jxr_keyword">for</strong> (<strong class="jxr_keyword">int</strong> i = 0; i &lt; ndim; i++) {
-<a class="jxr_linenumber" name="L293" href="#L293">293</a>             <strong class="jxr_keyword">int</strong> cdim = h.getIntValue(NAXISn.n(i + 1), 0);
-<a class="jxr_linenumber" name="L294" href="#L294">294</a>             <strong class="jxr_keyword">if</strong> (cdim &lt; 0) {
-<a class="jxr_linenumber" name="L295" href="#L295">295</a>                 <strong class="jxr_keyword">throw</strong> <strong class="jxr_keyword">new</strong> <a name="FitsException" href="../../../nom/tam/fits/FitsException.html#FitsException">FitsException</a>(<span class="jxr_string">"Invalid array dimension:"</span> + cdim);
-<a class="jxr_linenumber" name="L296" href="#L296">296</a>             }
-<a class="jxr_linenumber" name="L297" href="#L297">297</a>             byteSize *= cdim;
-<a class="jxr_linenumber" name="L298" href="#L298">298</a>             dims[ndim - i - 1] = cdim;
-<a class="jxr_linenumber" name="L299" href="#L299">299</a>         }
-<a class="jxr_linenumber" name="L300" href="#L300">300</a>         byteSize *= bitpix.byteSize();
-<a class="jxr_linenumber" name="L301" href="#L301">301</a>         <strong class="jxr_keyword">return</strong> <strong class="jxr_keyword">new</strong> ArrayDesc(dims, baseClass);
-<a class="jxr_linenumber" name="L302" href="#L302">302</a>     }
-<a class="jxr_linenumber" name="L303" href="#L303">303</a> 
-<a class="jxr_linenumber" name="L304" href="#L304">304</a>     <strong class="jxr_keyword">void</strong> setTiler(<a name="StandardImageTiler" href="../../../nom/tam/image/StandardImageTiler.html#StandardImageTiler">StandardImageTiler</a> tiler) {
-<a class="jxr_linenumber" name="L305" href="#L305">305</a>         <strong class="jxr_keyword">this</strong>.tiler = tiler;
-<a class="jxr_linenumber" name="L306" href="#L306">306</a>     }
-<a class="jxr_linenumber" name="L307" href="#L307">307</a> 
-<a class="jxr_linenumber" name="L308" href="#L308">308</a>     <em class="jxr_javadoccomment">/**</em>
-<a class="jxr_linenumber" name="L309" href="#L309">309</a> <em class="jxr_javadoccomment">     * (&lt;i&gt;for expert users&lt;/i&gt;) Overrides the image size description in the header to the specified Java array</em>
-<a class="jxr_linenumber" name="L310" href="#L310">310</a> <em class="jxr_javadoccomment">     * dimensions. Typically users would not call this method, unless one want to change a header without the image</em>
-<a class="jxr_linenumber" name="L311" href="#L311">311</a> <em class="jxr_javadoccomment">     * object being actually available in its entirety. For example, when using low-level writes of an image row-by-row</em>
-<a class="jxr_linenumber" name="L312" href="#L312">312</a> <em class="jxr_javadoccomment">     * without ever having to hold the entire image in memory through a complete object that would automatically</em>
-<a class="jxr_linenumber" name="L313" href="#L313">313</a> <em class="jxr_javadoccomment">     * descrive the dimensions correctly.</em>
-<a class="jxr_linenumber" name="L314" href="#L314">314</a> <em class="jxr_javadoccomment">     * </em>
-<a class="jxr_linenumber" name="L315" href="#L315">315</a> <em class="jxr_javadoccomment">     * @param  header                   A FITS image header</em>
-<a class="jxr_linenumber" name="L316" href="#L316">316</a> <em class="jxr_javadoccomment">     * @param  sizes                    The array dimensions in Java order (fastest varying index last)</em>
-<a class="jxr_linenumber" name="L317" href="#L317">317</a> <em class="jxr_javadoccomment">     * </em>
-<a class="jxr_linenumber" name="L318" href="#L318">318</a> <em class="jxr_javadoccomment">     * @throws FitsException            if the size has negative values</em>
-<a class="jxr_linenumber" name="L319" href="#L319">319</a> <em class="jxr_javadoccomment">     * @throws IllegalArgumentException should not actually happen</em>
-<a class="jxr_linenumber" name="L320" href="#L320">320</a> <em class="jxr_javadoccomment">     * </em>
-<a class="jxr_linenumber" name="L321" href="#L321">321</a> <em class="jxr_javadoccomment">     * @since                           1.18</em>
+<a class="jxr_linenumber" name="L283" href="#L283">283</a>         <strong class="jxr_keyword">int</strong> gCount = h.getIntValue(Standard.GCOUNT, 1);
+<a class="jxr_linenumber" name="L284" href="#L284">284</a>         <strong class="jxr_keyword">int</strong> pCount = h.getIntValue(Standard.PCOUNT, 0);
+<a class="jxr_linenumber" name="L285" href="#L285">285</a>         <strong class="jxr_keyword">if</strong> (gCount &gt; 1 || pCount != 0) {
+<a class="jxr_linenumber" name="L286" href="#L286">286</a>             <strong class="jxr_keyword">throw</strong> <strong class="jxr_keyword">new</strong> <a name="FitsException" href="../../../nom/tam/fits/FitsException.html#FitsException">FitsException</a>(<span class="jxr_string">"Group data treated as images"</span>);
+<a class="jxr_linenumber" name="L287" href="#L287">287</a>         }
+<a class="jxr_linenumber" name="L288" href="#L288">288</a> 
+<a class="jxr_linenumber" name="L289" href="#L289">289</a>         <a name="Bitpix" href="../../../nom/tam/fits/header/Bitpix.html#Bitpix">Bitpix</a> bitpix = Bitpix.fromHeader(h);
+<a class="jxr_linenumber" name="L290" href="#L290">290</a>         Class&lt;?&gt; baseClass = bitpix.getPrimitiveType();
+<a class="jxr_linenumber" name="L291" href="#L291">291</a>         <strong class="jxr_keyword">int</strong> ndim = h.getIntValue(Standard.NAXIS, 0);
+<a class="jxr_linenumber" name="L292" href="#L292">292</a>         <strong class="jxr_keyword">int</strong>[] dims = <strong class="jxr_keyword">new</strong> <strong class="jxr_keyword">int</strong>[ndim];
+<a class="jxr_linenumber" name="L293" href="#L293">293</a>         <em class="jxr_comment">// Note that we have to invert the order of the axes</em>
+<a class="jxr_linenumber" name="L294" href="#L294">294</a>         <em class="jxr_comment">// for the FITS file to get the order in the array we</em>
+<a class="jxr_linenumber" name="L295" href="#L295">295</a>         <em class="jxr_comment">// are generating.</em>
+<a class="jxr_linenumber" name="L296" href="#L296">296</a> 
+<a class="jxr_linenumber" name="L297" href="#L297">297</a>         byteSize = ndim &gt; 0 ? 1 : 0;
+<a class="jxr_linenumber" name="L298" href="#L298">298</a>         <strong class="jxr_keyword">for</strong> (<strong class="jxr_keyword">int</strong> i = 1; i &lt;= ndim; i++) {
+<a class="jxr_linenumber" name="L299" href="#L299">299</a>             <strong class="jxr_keyword">int</strong> cdim = h.getIntValue(Standard.NAXISn.n(i), 0);
+<a class="jxr_linenumber" name="L300" href="#L300">300</a>             <strong class="jxr_keyword">if</strong> (cdim &lt; 0) {
+<a class="jxr_linenumber" name="L301" href="#L301">301</a>                 <strong class="jxr_keyword">throw</strong> <strong class="jxr_keyword">new</strong> <a name="FitsException" href="../../../nom/tam/fits/FitsException.html#FitsException">FitsException</a>(<span class="jxr_string">"Invalid array dimension:"</span> + cdim);
+<a class="jxr_linenumber" name="L302" href="#L302">302</a>             }
+<a class="jxr_linenumber" name="L303" href="#L303">303</a>             byteSize *= cdim;
+<a class="jxr_linenumber" name="L304" href="#L304">304</a>             dims[ndim - i] = cdim;
+<a class="jxr_linenumber" name="L305" href="#L305">305</a>         }
+<a class="jxr_linenumber" name="L306" href="#L306">306</a>         byteSize *= bitpix.byteSize();
+<a class="jxr_linenumber" name="L307" href="#L307">307</a>         <strong class="jxr_keyword">return</strong> <strong class="jxr_keyword">new</strong> ArrayDesc(dims, baseClass);
+<a class="jxr_linenumber" name="L308" href="#L308">308</a>     }
+<a class="jxr_linenumber" name="L309" href="#L309">309</a> 
+<a class="jxr_linenumber" name="L310" href="#L310">310</a>     <strong class="jxr_keyword">void</strong> setTiler(<a name="StandardImageTiler" href="../../../nom/tam/image/StandardImageTiler.html#StandardImageTiler">StandardImageTiler</a> tiler) {
+<a class="jxr_linenumber" name="L311" href="#L311">311</a>         <strong class="jxr_keyword">this</strong>.tiler = tiler;
+<a class="jxr_linenumber" name="L312" href="#L312">312</a>     }
+<a class="jxr_linenumber" name="L313" href="#L313">313</a> 
+<a class="jxr_linenumber" name="L314" href="#L314">314</a>     <em class="jxr_javadoccomment">/**</em>
+<a class="jxr_linenumber" name="L315" href="#L315">315</a> <em class="jxr_javadoccomment">     * (&lt;i&gt;for expert users&lt;/i&gt;) Overrides the image size description in the header to the specified Java array</em>
+<a class="jxr_linenumber" name="L316" href="#L316">316</a> <em class="jxr_javadoccomment">     * dimensions. Typically users should not call this method, unless they want to define the image dimensions in the</em>
+<a class="jxr_linenumber" name="L317" href="#L317">317</a> <em class="jxr_javadoccomment">     * absence of the actual complete image data. For example, to describe the dimensions when using low-level writes of</em>
+<a class="jxr_linenumber" name="L318" href="#L318">318</a> <em class="jxr_javadoccomment">     * an image row-by-row, without ever storing the entire image in memory.</em>
+<a class="jxr_linenumber" name="L319" href="#L319">319</a> <em class="jxr_javadoccomment">     * </em>
+<a class="jxr_linenumber" name="L320" href="#L320">320</a> <em class="jxr_javadoccomment">     * @param  header                   A FITS image header</em>
+<a class="jxr_linenumber" name="L321" href="#L321">321</a> <em class="jxr_javadoccomment">     * @param  sizes                    The array dimensions in Java order (fastest varying index last)</em>
 <a class="jxr_linenumber" name="L322" href="#L322">322</a> <em class="jxr_javadoccomment">     * </em>
-<a class="jxr_linenumber" name="L323" href="#L323">323</a> <em class="jxr_javadoccomment">     * @see                             #fillHeader(Header)</em>
-<a class="jxr_linenumber" name="L324" href="#L324">324</a> <em class="jxr_javadoccomment">     */</em>
-<a class="jxr_linenumber" name="L325" href="#L325">325</a>     <strong class="jxr_keyword">public</strong> <strong class="jxr_keyword">static</strong> <strong class="jxr_keyword">void</strong> overrideHeaderAxes(<a name="Header" href="../../../nom/tam/fits/Header.html#Header">Header</a> header, <strong class="jxr_keyword">int</strong>... sizes) <strong class="jxr_keyword">throws</strong> FitsException, IllegalArgumentException {
-<a class="jxr_linenumber" name="L326" href="#L326">326</a>         header.addValue(Standard.NAXIS, sizes.length);
-<a class="jxr_linenumber" name="L327" href="#L327">327</a> 
-<a class="jxr_linenumber" name="L328" href="#L328">328</a>         <strong class="jxr_keyword">for</strong> (<strong class="jxr_keyword">int</strong> i = 1; i &lt; sizes.length; i++) {
-<a class="jxr_linenumber" name="L329" href="#L329">329</a>             <strong class="jxr_keyword">int</strong> l = sizes[sizes.length - i];
-<a class="jxr_linenumber" name="L330" href="#L330">330</a>             <strong class="jxr_keyword">if</strong> (l &lt; 0) {
-<a class="jxr_linenumber" name="L331" href="#L331">331</a>                 <strong class="jxr_keyword">throw</strong> <strong class="jxr_keyword">new</strong> <a name="FitsException" href="../../../nom/tam/fits/FitsException.html#FitsException">FitsException</a>(<span class="jxr_string">"Invalid size[ "</span> + i + <span class="jxr_string">"] = "</span> + l);
-<a class="jxr_linenumber" name="L332" href="#L332">332</a>             }
-<a class="jxr_linenumber" name="L333" href="#L333">333</a>             header.addValue(Standard.NAXISn.n(i), l);
+<a class="jxr_linenumber" name="L323" href="#L323">323</a> <em class="jxr_javadoccomment">     * @throws FitsException            if the size has negative values, or the header is not that for an image</em>
+<a class="jxr_linenumber" name="L324" href="#L324">324</a> <em class="jxr_javadoccomment">     * @throws IllegalArgumentException should not actually happen</em>
+<a class="jxr_linenumber" name="L325" href="#L325">325</a> <em class="jxr_javadoccomment">     * </em>
+<a class="jxr_linenumber" name="L326" href="#L326">326</a> <em class="jxr_javadoccomment">     * @since                           1.18</em>
+<a class="jxr_linenumber" name="L327" href="#L327">327</a> <em class="jxr_javadoccomment">     * </em>
+<a class="jxr_linenumber" name="L328" href="#L328">328</a> <em class="jxr_javadoccomment">     * @see                             #fillHeader(Header)</em>
+<a class="jxr_linenumber" name="L329" href="#L329">329</a> <em class="jxr_javadoccomment">     */</em>
+<a class="jxr_linenumber" name="L330" href="#L330">330</a>     <strong class="jxr_keyword">public</strong> <strong class="jxr_keyword">static</strong> <strong class="jxr_keyword">void</strong> overrideHeaderAxes(<a name="Header" href="../../../nom/tam/fits/Header.html#Header">Header</a> header, <strong class="jxr_keyword">int</strong>... sizes) <strong class="jxr_keyword">throws</strong> FitsException, IllegalArgumentException {
+<a class="jxr_linenumber" name="L331" href="#L331">331</a>         String extType = header.getStringValue(Standard.XTENSION, Standard.XTENSION_IMAGE);
+<a class="jxr_linenumber" name="L332" href="#L332">332</a>         <strong class="jxr_keyword">if</strong> (!extType.equals(Standard.XTENSION_IMAGE) &amp;&amp; !extType.equals(NonStandard.XTENSION_IUEIMAGE)) {
+<a class="jxr_linenumber" name="L333" href="#L333">333</a>             <strong class="jxr_keyword">throw</strong> <strong class="jxr_keyword">new</strong> <a name="FitsException" href="../../../nom/tam/fits/FitsException.html#FitsException">FitsException</a>(<span class="jxr_string">"Not an image header (XTENSION = "</span> + extType + <span class="jxr_string">")"</span>);
 <a class="jxr_linenumber" name="L334" href="#L334">334</a>         }
-<a class="jxr_linenumber" name="L335" href="#L335">335</a>     }
-<a class="jxr_linenumber" name="L336" href="#L336">336</a> }
+<a class="jxr_linenumber" name="L335" href="#L335">335</a> 
+<a class="jxr_linenumber" name="L336" href="#L336">336</a>         <em class="jxr_comment">// Remove prior NAXISn values</em>
+<a class="jxr_linenumber" name="L337" href="#L337">337</a>         <strong class="jxr_keyword">int</strong> n = header.getIntValue(Standard.NAXIS);
+<a class="jxr_linenumber" name="L338" href="#L338">338</a>         <strong class="jxr_keyword">for</strong> (<strong class="jxr_keyword">int</strong> i = 1; i &lt;= n; i++) {
+<a class="jxr_linenumber" name="L339" href="#L339">339</a>             header.deleteKey(Standard.NAXISn.n(i));
+<a class="jxr_linenumber" name="L340" href="#L340">340</a>         }
+<a class="jxr_linenumber" name="L341" href="#L341">341</a> 
+<a class="jxr_linenumber" name="L342" href="#L342">342</a>         Cursor&lt;String, HeaderCard&gt; c = header.iterator();
+<a class="jxr_linenumber" name="L343" href="#L343">343</a>         c.setKey(Standard.NAXIS.key());
+<a class="jxr_linenumber" name="L344" href="#L344">344</a> 
+<a class="jxr_linenumber" name="L345" href="#L345">345</a>         c.add(HeaderCard.create(Standard.NAXIS, sizes.length));
+<a class="jxr_linenumber" name="L346" href="#L346">346</a> 
+<a class="jxr_linenumber" name="L347" href="#L347">347</a>         <strong class="jxr_keyword">for</strong> (<strong class="jxr_keyword">int</strong> i = 1; i &lt;= sizes.length; i++) {
+<a class="jxr_linenumber" name="L348" href="#L348">348</a>             <strong class="jxr_keyword">int</strong> l = sizes[sizes.length - i];
+<a class="jxr_linenumber" name="L349" href="#L349">349</a>             <strong class="jxr_keyword">if</strong> (l &lt; 0) {
+<a class="jxr_linenumber" name="L350" href="#L350">350</a>                 <strong class="jxr_keyword">throw</strong> <strong class="jxr_keyword">new</strong> <a name="FitsException" href="../../../nom/tam/fits/FitsException.html#FitsException">FitsException</a>(<span class="jxr_string">"Invalid size[ "</span> + i + <span class="jxr_string">"] = "</span> + l);
+<a class="jxr_linenumber" name="L351" href="#L351">351</a>             }
+<a class="jxr_linenumber" name="L352" href="#L352">352</a>             c.add(HeaderCard.create(Standard.NAXISn.n(i), l));
+<a class="jxr_linenumber" name="L353" href="#L353">353</a>         }
+<a class="jxr_linenumber" name="L354" href="#L354">354</a>     }
+<a class="jxr_linenumber" name="L355" href="#L355">355</a> 
+<a class="jxr_linenumber" name="L356" href="#L356">356</a>     <em class="jxr_javadoccomment">/**</em>
+<a class="jxr_linenumber" name="L357" href="#L357">357</a> <em class="jxr_javadoccomment">     * Creates a new FITS image using the specified primitive numerical Java array containing data.</em>
+<a class="jxr_linenumber" name="L358" href="#L358">358</a> <em class="jxr_javadoccomment">     * </em>
+<a class="jxr_linenumber" name="L359" href="#L359">359</a> <em class="jxr_javadoccomment">     * @param  data                     A regulatly shaped primitive numerical Java array, which can be</em>
+<a class="jxr_linenumber" name="L360" href="#L360">360</a> <em class="jxr_javadoccomment">     *                                      multi-dimensional.</em>
+<a class="jxr_linenumber" name="L361" href="#L361">361</a> <em class="jxr_javadoccomment">     * </em>
+<a class="jxr_linenumber" name="L362" href="#L362">362</a> <em class="jxr_javadoccomment">     * @return                          A new FITS image that encapsulates the specified array data.</em>
+<a class="jxr_linenumber" name="L363" href="#L363">363</a> <em class="jxr_javadoccomment">     * </em>
+<a class="jxr_linenumber" name="L364" href="#L364">364</a> <em class="jxr_javadoccomment">     * @throws IllegalArgumentException if the argument is not a primitive numerical Java array.</em>
+<a class="jxr_linenumber" name="L365" href="#L365">365</a> <em class="jxr_javadoccomment">     * </em>
+<a class="jxr_linenumber" name="L366" href="#L366">366</a> <em class="jxr_javadoccomment">     * @since                           1.19</em>
+<a class="jxr_linenumber" name="L367" href="#L367">367</a> <em class="jxr_javadoccomment">     */</em>
+<a class="jxr_linenumber" name="L368" href="#L368">368</a>     <strong class="jxr_keyword">public</strong> <strong class="jxr_keyword">static</strong> <a name="ImageData" href="../../../nom/tam/fits/ImageData.html#ImageData">ImageData</a> from(Object data) <strong class="jxr_keyword">throws</strong> IllegalArgumentException {
+<a class="jxr_linenumber" name="L369" href="#L369">369</a>         <strong class="jxr_keyword">return</strong> <strong class="jxr_keyword">new</strong> <a name="ImageData" href="../../../nom/tam/fits/ImageData.html#ImageData">ImageData</a>(data);
+<a class="jxr_linenumber" name="L370" href="#L370">370</a>     }
+<a class="jxr_linenumber" name="L371" href="#L371">371</a> 
+<a class="jxr_linenumber" name="L372" href="#L372">372</a>     <em class="jxr_javadoccomment">/**</em>
+<a class="jxr_linenumber" name="L373" href="#L373">373</a> <em class="jxr_javadoccomment">     * Checks if a given data object may constitute the kernel for an image. To conform, the data must be a regularly</em>
+<a class="jxr_linenumber" name="L374" href="#L374">374</a> <em class="jxr_javadoccomment">     * shaped primitive numerical array of ant dimensions, or &lt;code&gt;null&lt;/code&gt;.</em>
+<a class="jxr_linenumber" name="L375" href="#L375">375</a> <em class="jxr_javadoccomment">     * </em>
+<a class="jxr_linenumber" name="L376" href="#L376">376</a> <em class="jxr_javadoccomment">     * @param  data                     A regularly shaped primitive numerical array of ny dimension, or</em>
+<a class="jxr_linenumber" name="L377" href="#L377">377</a> <em class="jxr_javadoccomment">     *                                      &lt;code&gt;null&lt;/code&gt;</em>
+<a class="jxr_linenumber" name="L378" href="#L378">378</a> <em class="jxr_javadoccomment">     * </em>
+<a class="jxr_linenumber" name="L379" href="#L379">379</a> <em class="jxr_javadoccomment">     * @throws IllegalArgumentException If the array is not regularly shaped.</em>
+<a class="jxr_linenumber" name="L380" href="#L380">380</a> <em class="jxr_javadoccomment">     * @throws FitsException            If the argument is not a primitive numerical array type</em>
+<a class="jxr_linenumber" name="L381" href="#L381">381</a> <em class="jxr_javadoccomment">     * </em>
+<a class="jxr_linenumber" name="L382" href="#L382">382</a> <em class="jxr_javadoccomment">     * @since                           1.19</em>
+<a class="jxr_linenumber" name="L383" href="#L383">383</a> <em class="jxr_javadoccomment">     */</em>
+<a class="jxr_linenumber" name="L384" href="#L384">384</a>     <strong class="jxr_keyword">static</strong> <strong class="jxr_keyword">void</strong> checkCompatible(Object data) <strong class="jxr_keyword">throws</strong> IllegalArgumentException, <a name="FitsException" href="../../../nom/tam/fits/FitsException.html#FitsException">FitsException</a> {
+<a class="jxr_linenumber" name="L385" href="#L385">385</a>         <strong class="jxr_keyword">if</strong> (data != <strong class="jxr_keyword">null</strong>) {
+<a class="jxr_linenumber" name="L386" href="#L386">386</a>             Bitpix.forPrimitiveType(ArrayFuncs.getBaseClass(data));
+<a class="jxr_linenumber" name="L387" href="#L387">387</a>             ArrayFuncs.checkRegularArray(data, false);
+<a class="jxr_linenumber" name="L388" href="#L388">388</a>         }
+<a class="jxr_linenumber" name="L389" href="#L389">389</a>     }
+<a class="jxr_linenumber" name="L390" href="#L390">390</a> 
+<a class="jxr_linenumber" name="L391" href="#L391">391</a>     @Override
+<a class="jxr_linenumber" name="L392" href="#L392">392</a>     @SuppressWarnings(<span class="jxr_string">"deprecation"</span>)
+<a class="jxr_linenumber" name="L393" href="#L393">393</a>     <strong class="jxr_keyword">public</strong> <a name="ImageHDU" href="../../../nom/tam/fits/ImageHDU.html#ImageHDU">ImageHDU</a> toHDU() <strong class="jxr_keyword">throws</strong> IllegalStateException {
+<a class="jxr_linenumber" name="L394" href="#L394">394</a>         <a name="Header" href="../../../nom/tam/fits/Header.html#Header">Header</a> h = <strong class="jxr_keyword">new</strong> <a name="Header" href="../../../nom/tam/fits/Header.html#Header">Header</a>();
+<a class="jxr_linenumber" name="L395" href="#L395">395</a>         <strong class="jxr_keyword">try</strong> {
+<a class="jxr_linenumber" name="L396" href="#L396">396</a>             fillHeader(h);
+<a class="jxr_linenumber" name="L397" href="#L397">397</a>         } <strong class="jxr_keyword">catch</strong> (<a name="FitsException" href="../../../nom/tam/fits/FitsException.html#FitsException">FitsException</a> e) {
+<a class="jxr_linenumber" name="L398" href="#L398">398</a>             <strong class="jxr_keyword">throw</strong> <strong class="jxr_keyword">new</strong> IllegalStateException(e.getMessage(), e);
+<a class="jxr_linenumber" name="L399" href="#L399">399</a>         }
+<a class="jxr_linenumber" name="L400" href="#L400">400</a>         <strong class="jxr_keyword">return</strong> <strong class="jxr_keyword">new</strong> <a name="ImageHDU" href="../../../nom/tam/fits/ImageHDU.html#ImageHDU">ImageHDU</a>(h, <strong class="jxr_keyword">this</strong>);
+<a class="jxr_linenumber" name="L401" href="#L401">401</a>     }
+<a class="jxr_linenumber" name="L402" href="#L402">402</a> }
 </pre>
 <hr/>
 <div id="footer">Copyright &#169; 1996&#x2013;2023 nom-tam-fits. All rights reserved.</div>
