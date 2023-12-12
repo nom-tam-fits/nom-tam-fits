@@ -491,7 +491,7 @@ public class RandomGroupsHDU extends BasicHDU<RandomGroupsData> {
      * 
      * @since  1.19
      */
-    private static class Parameter {
+    private static final class Parameter {
         private ArrayList<ParameterConversion> components = new ArrayList<>();
 
         private double getValue(Object array) {
