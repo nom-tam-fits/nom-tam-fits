@@ -45,7 +45,7 @@ import java.util.Map;
 @Deprecated
 public class MultiArrayCopyFactory<Source, Destination> {
 
-    private static class ByteToChar extends MultiArrayCopyFactory<byte[], char[]> {
+    private static final class ByteToChar extends MultiArrayCopyFactory<byte[], char[]> {
 
         @Override
         public void arraycopy(byte[] src, int srcPos, char[] dest, int destPos, int length) {
@@ -55,7 +55,7 @@ public class MultiArrayCopyFactory<Source, Destination> {
         }
     }
 
-    private static class ByteToDouble extends MultiArrayCopyFactory<byte[], double[]> {
+    private static final class ByteToDouble extends MultiArrayCopyFactory<byte[], double[]> {
 
         @Override
         public void arraycopy(byte[] src, int srcPos, double[] dest, int destPos, int length) {
@@ -65,7 +65,7 @@ public class MultiArrayCopyFactory<Source, Destination> {
         }
     }
 
-    private static class ByteToFloat extends MultiArrayCopyFactory<byte[], float[]> {
+    private static final class ByteToFloat extends MultiArrayCopyFactory<byte[], float[]> {
 
         @Override
         public void arraycopy(byte[] src, int srcPos, float[] dest, int destPos, int length) {
@@ -75,7 +75,7 @@ public class MultiArrayCopyFactory<Source, Destination> {
         }
     }
 
-    private static class ByteToInt extends MultiArrayCopyFactory<byte[], int[]> {
+    private static final class ByteToInt extends MultiArrayCopyFactory<byte[], int[]> {
 
         @Override
         public void arraycopy(byte[] src, int srcPos, int[] dest, int destPos, int length) {
@@ -85,7 +85,7 @@ public class MultiArrayCopyFactory<Source, Destination> {
         }
     }
 
-    private static class ByteToLong extends MultiArrayCopyFactory<byte[], long[]> {
+    private static final class ByteToLong extends MultiArrayCopyFactory<byte[], long[]> {
 
         @Override
         public void arraycopy(byte[] src, int srcPos, long[] dest, int destPos, int length) {
@@ -95,7 +95,7 @@ public class MultiArrayCopyFactory<Source, Destination> {
         }
     }
 
-    private static class ByteToShort extends MultiArrayCopyFactory<byte[], short[]> {
+    private static final class ByteToShort extends MultiArrayCopyFactory<byte[], short[]> {
 
         @Override
         public void arraycopy(byte[] src, int srcPos, short[] dest, int destPos, int length) {
@@ -105,7 +105,7 @@ public class MultiArrayCopyFactory<Source, Destination> {
         }
     }
 
-    private static class CharToByte extends MultiArrayCopyFactory<char[], byte[]> {
+    private static final class CharToByte extends MultiArrayCopyFactory<char[], byte[]> {
 
         @Override
         public void arraycopy(char[] src, int srcPos, byte[] dest, int destPos, int length) {
@@ -115,7 +115,7 @@ public class MultiArrayCopyFactory<Source, Destination> {
         }
     }
 
-    private static class CharToDouble extends MultiArrayCopyFactory<char[], double[]> {
+    private static final class CharToDouble extends MultiArrayCopyFactory<char[], double[]> {
 
         @Override
         public void arraycopy(char[] src, int srcPos, double[] dest, int destPos, int length) {
@@ -125,7 +125,7 @@ public class MultiArrayCopyFactory<Source, Destination> {
         }
     }
 
-    private static class CharToFloat extends MultiArrayCopyFactory<char[], float[]> {
+    private static final class CharToFloat extends MultiArrayCopyFactory<char[], float[]> {
 
         @Override
         public void arraycopy(char[] src, int srcPos, float[] dest, int destPos, int length) {
@@ -135,7 +135,7 @@ public class MultiArrayCopyFactory<Source, Destination> {
         }
     }
 
-    private static class CharToInt extends MultiArrayCopyFactory<char[], int[]> {
+    private static final class CharToInt extends MultiArrayCopyFactory<char[], int[]> {
 
         @Override
         public void arraycopy(char[] src, int srcPos, int[] dest, int destPos, int length) {
@@ -145,7 +145,7 @@ public class MultiArrayCopyFactory<Source, Destination> {
         }
     }
 
-    private static class CharToLong extends MultiArrayCopyFactory<char[], long[]> {
+    private static final class CharToLong extends MultiArrayCopyFactory<char[], long[]> {
 
         @Override
         public void arraycopy(char[] src, int srcPos, long[] dest, int destPos, int length) {
@@ -155,7 +155,7 @@ public class MultiArrayCopyFactory<Source, Destination> {
         }
     }
 
-    private static class CharToShort extends MultiArrayCopyFactory<char[], short[]> {
+    private static final class CharToShort extends MultiArrayCopyFactory<char[], short[]> {
 
         @Override
         public void arraycopy(char[] src, int srcPos, short[] dest, int destPos, int length) {
@@ -165,7 +165,7 @@ public class MultiArrayCopyFactory<Source, Destination> {
         }
     }
 
-    private static class DoubleToByte extends MultiArrayCopyFactory<double[], byte[]> {
+    private static final class DoubleToByte extends MultiArrayCopyFactory<double[], byte[]> {
 
         @Override
         public void arraycopy(double[] src, int srcPos, byte[] dest, int destPos, int length) {
@@ -175,7 +175,7 @@ public class MultiArrayCopyFactory<Source, Destination> {
         }
     }
 
-    private static class DoubleToChar extends MultiArrayCopyFactory<double[], char[]> {
+    private static final class DoubleToChar extends MultiArrayCopyFactory<double[], char[]> {
 
         @Override
         public void arraycopy(double[] src, int srcPos, char[] dest, int destPos, int length) {
@@ -185,7 +185,7 @@ public class MultiArrayCopyFactory<Source, Destination> {
         }
     }
 
-    private static class DoubleToFloat extends MultiArrayCopyFactory<double[], float[]> {
+    private static final class DoubleToFloat extends MultiArrayCopyFactory<double[], float[]> {
 
         @Override
         public void arraycopy(double[] src, int srcPos, float[] dest, int destPos, int length) {
@@ -195,7 +195,7 @@ public class MultiArrayCopyFactory<Source, Destination> {
         }
     }
 
-    private static class DoubleToInt extends MultiArrayCopyFactory<double[], int[]> {
+    private static final class DoubleToInt extends MultiArrayCopyFactory<double[], int[]> {
 
         @Override
         public void arraycopy(double[] src, int srcPos, int[] dest, int destPos, int length) {
@@ -205,7 +205,7 @@ public class MultiArrayCopyFactory<Source, Destination> {
         }
     }
 
-    private static class DoubleToLong extends MultiArrayCopyFactory<double[], long[]> {
+    private static final class DoubleToLong extends MultiArrayCopyFactory<double[], long[]> {
 
         @Override
         public void arraycopy(double[] src, int srcPos, long[] dest, int destPos, int length) {
@@ -215,7 +215,7 @@ public class MultiArrayCopyFactory<Source, Destination> {
         }
     }
 
-    private static class DoubleToShort extends MultiArrayCopyFactory<double[], short[]> {
+    private static final class DoubleToShort extends MultiArrayCopyFactory<double[], short[]> {
 
         @Override
         public void arraycopy(double[] src, int srcPos, short[] dest, int destPos, int length) {
@@ -225,7 +225,7 @@ public class MultiArrayCopyFactory<Source, Destination> {
         }
     }
 
-    private static class FloatToByte extends MultiArrayCopyFactory<float[], byte[]> {
+    private static final class FloatToByte extends MultiArrayCopyFactory<float[], byte[]> {
 
         @Override
         public void arraycopy(float[] src, int srcPos, byte[] dest, int destPos, int length) {
@@ -235,7 +235,7 @@ public class MultiArrayCopyFactory<Source, Destination> {
         }
     }
 
-    private static class FloatToChar extends MultiArrayCopyFactory<float[], char[]> {
+    private static final class FloatToChar extends MultiArrayCopyFactory<float[], char[]> {
 
         @Override
         public void arraycopy(float[] src, int srcPos, char[] dest, int destPos, int length) {
@@ -245,7 +245,7 @@ public class MultiArrayCopyFactory<Source, Destination> {
         }
     }
 
-    private static class FloatToDouble extends MultiArrayCopyFactory<float[], double[]> {
+    private static final class FloatToDouble extends MultiArrayCopyFactory<float[], double[]> {
 
         @Override
         public void arraycopy(float[] src, int srcPos, double[] dest, int destPos, int length) {
@@ -255,7 +255,7 @@ public class MultiArrayCopyFactory<Source, Destination> {
         }
     }
 
-    private static class FloatToInt extends MultiArrayCopyFactory<float[], int[]> {
+    private static final class FloatToInt extends MultiArrayCopyFactory<float[], int[]> {
 
         @Override
         public void arraycopy(float[] src, int srcPos, int[] dest, int destPos, int length) {
@@ -265,7 +265,7 @@ public class MultiArrayCopyFactory<Source, Destination> {
         }
     }
 
-    private static class FloatToLong extends MultiArrayCopyFactory<float[], long[]> {
+    private static final class FloatToLong extends MultiArrayCopyFactory<float[], long[]> {
 
         @Override
         public void arraycopy(float[] src, int srcPos, long[] dest, int destPos, int length) {
@@ -275,7 +275,7 @@ public class MultiArrayCopyFactory<Source, Destination> {
         }
     }
 
-    private static class FloatToShort extends MultiArrayCopyFactory<float[], short[]> {
+    private static final class FloatToShort extends MultiArrayCopyFactory<float[], short[]> {
 
         @Override
         public void arraycopy(float[] src, int srcPos, short[] dest, int destPos, int length) {
@@ -285,7 +285,7 @@ public class MultiArrayCopyFactory<Source, Destination> {
         }
     }
 
-    private static class Generic extends MultiArrayCopyFactory<Object, Object> {
+    private static final class Generic extends MultiArrayCopyFactory<Object, Object> {
 
         @Override
         public void arraycopy(Object srcO, int srcPos, Object destO, int destPos, int length) {
@@ -293,7 +293,7 @@ public class MultiArrayCopyFactory<Source, Destination> {
         }
     }
 
-    private static class IntToByte extends MultiArrayCopyFactory<int[], byte[]> {
+    private static final class IntToByte extends MultiArrayCopyFactory<int[], byte[]> {
 
         @Override
         public void arraycopy(int[] src, int srcPos, byte[] dest, int destPos, int length) {
@@ -303,7 +303,7 @@ public class MultiArrayCopyFactory<Source, Destination> {
         }
     }
 
-    private static class IntToChar extends MultiArrayCopyFactory<int[], char[]> {
+    private static final class IntToChar extends MultiArrayCopyFactory<int[], char[]> {
 
         @Override
         public void arraycopy(int[] src, int srcPos, char[] dest, int destPos, int length) {
@@ -313,7 +313,7 @@ public class MultiArrayCopyFactory<Source, Destination> {
         }
     }
 
-    private static class IntToDouble extends MultiArrayCopyFactory<int[], double[]> {
+    private static final class IntToDouble extends MultiArrayCopyFactory<int[], double[]> {
 
         @Override
         public void arraycopy(int[] src, int srcPos, double[] dest, int destPos, int length) {
@@ -323,7 +323,7 @@ public class MultiArrayCopyFactory<Source, Destination> {
         }
     }
 
-    private static class IntToFloat extends MultiArrayCopyFactory<int[], float[]> {
+    private static final class IntToFloat extends MultiArrayCopyFactory<int[], float[]> {
 
         @Override
         public void arraycopy(int[] src, int srcPos, float[] dest, int destPos, int length) {
@@ -333,7 +333,7 @@ public class MultiArrayCopyFactory<Source, Destination> {
         }
     }
 
-    private static class IntToLong extends MultiArrayCopyFactory<int[], long[]> {
+    private static final class IntToLong extends MultiArrayCopyFactory<int[], long[]> {
 
         @Override
         public void arraycopy(int[] src, int srcPos, long[] dest, int destPos, int length) {
@@ -343,7 +343,7 @@ public class MultiArrayCopyFactory<Source, Destination> {
         }
     }
 
-    private static class IntToShort extends MultiArrayCopyFactory<int[], short[]> {
+    private static final class IntToShort extends MultiArrayCopyFactory<int[], short[]> {
 
         @Override
         public void arraycopy(int[] src, int srcPos, short[] dest, int destPos, int length) {
@@ -353,7 +353,7 @@ public class MultiArrayCopyFactory<Source, Destination> {
         }
     }
 
-    private static class LongToByte extends MultiArrayCopyFactory<long[], byte[]> {
+    private static final class LongToByte extends MultiArrayCopyFactory<long[], byte[]> {
 
         @Override
         public void arraycopy(long[] src, int srcPos, byte[] dest, int destPos, int length) {
@@ -363,7 +363,7 @@ public class MultiArrayCopyFactory<Source, Destination> {
         }
     }
 
-    private static class LongToChar extends MultiArrayCopyFactory<long[], char[]> {
+    private static final class LongToChar extends MultiArrayCopyFactory<long[], char[]> {
 
         @Override
         public void arraycopy(long[] src, int srcPos, char[] dest, int destPos, int length) {
@@ -373,7 +373,7 @@ public class MultiArrayCopyFactory<Source, Destination> {
         }
     }
 
-    private static class LongToDouble extends MultiArrayCopyFactory<long[], double[]> {
+    private static final class LongToDouble extends MultiArrayCopyFactory<long[], double[]> {
 
         @Override
         public void arraycopy(long[] src, int srcPos, double[] dest, int destPos, int length) {
@@ -383,7 +383,7 @@ public class MultiArrayCopyFactory<Source, Destination> {
         }
     }
 
-    private static class LongToFloat extends MultiArrayCopyFactory<long[], float[]> {
+    private static final class LongToFloat extends MultiArrayCopyFactory<long[], float[]> {
 
         @Override
         public void arraycopy(long[] src, int srcPos, float[] dest, int destPos, int length) {
@@ -393,7 +393,7 @@ public class MultiArrayCopyFactory<Source, Destination> {
         }
     }
 
-    private static class LongToInt extends MultiArrayCopyFactory<long[], int[]> {
+    private static final class LongToInt extends MultiArrayCopyFactory<long[], int[]> {
 
         @Override
         public void arraycopy(long[] src, int srcPos, int[] dest, int destPos, int length) {
@@ -403,7 +403,7 @@ public class MultiArrayCopyFactory<Source, Destination> {
         }
     }
 
-    private static class LongToShort extends MultiArrayCopyFactory<long[], short[]> {
+    private static final class LongToShort extends MultiArrayCopyFactory<long[], short[]> {
 
         @Override
         public void arraycopy(long[] src, int srcPos, short[] dest, int destPos, int length) {
@@ -413,7 +413,7 @@ public class MultiArrayCopyFactory<Source, Destination> {
         }
     }
 
-    private static class ShortToByte extends MultiArrayCopyFactory<short[], byte[]> {
+    private static final class ShortToByte extends MultiArrayCopyFactory<short[], byte[]> {
 
         @Override
         public void arraycopy(short[] src, int srcPos, byte[] dest, int destPos, int length) {
@@ -423,7 +423,7 @@ public class MultiArrayCopyFactory<Source, Destination> {
         }
     }
 
-    private static class ShortToChar extends MultiArrayCopyFactory<short[], char[]> {
+    private static final class ShortToChar extends MultiArrayCopyFactory<short[], char[]> {
 
         @Override
         public void arraycopy(short[] src, int srcPos, char[] dest, int destPos, int length) {
@@ -433,7 +433,7 @@ public class MultiArrayCopyFactory<Source, Destination> {
         }
     }
 
-    private static class ShortToDouble extends MultiArrayCopyFactory<short[], double[]> {
+    private static final class ShortToDouble extends MultiArrayCopyFactory<short[], double[]> {
 
         @Override
         public void arraycopy(short[] src, int srcPos, double[] dest, int destPos, int length) {
@@ -443,7 +443,7 @@ public class MultiArrayCopyFactory<Source, Destination> {
         }
     }
 
-    private static class ShortToFloat extends MultiArrayCopyFactory<short[], float[]> {
+    private static final class ShortToFloat extends MultiArrayCopyFactory<short[], float[]> {
 
         @Override
         public void arraycopy(short[] src, int srcPos, float[] dest, int destPos, int length) {
@@ -453,7 +453,7 @@ public class MultiArrayCopyFactory<Source, Destination> {
         }
     }
 
-    private static class ShortToInt extends MultiArrayCopyFactory<short[], int[]> {
+    private static final class ShortToInt extends MultiArrayCopyFactory<short[], int[]> {
 
         @Override
         public void arraycopy(short[] src, int srcPos, int[] dest, int destPos, int length) {
@@ -463,7 +463,7 @@ public class MultiArrayCopyFactory<Source, Destination> {
         }
     }
 
-    private static class ShortToLong extends MultiArrayCopyFactory<short[], long[]> {
+    private static final class ShortToLong extends MultiArrayCopyFactory<short[], long[]> {
 
         @Override
         public void arraycopy(short[] src, int srcPos, long[] dest, int destPos, int length) {

@@ -89,7 +89,7 @@ public abstract class CompressColumnParameter<T, OPTION> extends CompressParamet
      *
      * @since  1.18
      */
-    private class Data {
+    private final class Data {
         private T values;
 
         private synchronized T getValues() {
