@@ -111,7 +111,7 @@ public final class FitsCheckSum {
     private static class Checksum {
         private long h, l;
 
-        Checksum(long prior) throws IllegalArgumentException {
+        Checksum(long prior) {
             h = (prior >>> SHIFT_2_BYTES) & MASK_2_BYTES;
             l = prior & MASK_2_BYTES;
         }
@@ -147,6 +147,12 @@ public final class FitsCheckSum {
         PipeWriter(FitsElement data, PipedInputStream in) throws IOException {
             this.data = data;
             out = new PipedOutputStream(in);
+        }
+
+        @Override
+        protected final void finalize() {
+            // final to protect against vulnerability when throwing an exception in the constructor
+            // See CT_CONSTRUCTOR_THROW in spotbugs for mode explanation.
         }
 
         @Override

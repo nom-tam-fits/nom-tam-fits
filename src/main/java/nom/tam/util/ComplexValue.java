@@ -236,6 +236,12 @@ public class ComplexValue {
         }
     }
 
+    @Override
+    protected final void finalize() {
+        // final to protect against vulnerability when throwing an exception in the constructor
+        // See CT_CONSTRUCTOR_THROW in spotbugs for mode explanation.
+    }
+
     /**
      * Converts this comlex value to its string representation using up to the specified number of characters only. The
      * precision may be reduced as necessary to ensure that the representation fits in the allotted space.

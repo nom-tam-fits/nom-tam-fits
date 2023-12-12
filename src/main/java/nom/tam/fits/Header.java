@@ -273,6 +273,12 @@ public class Header implements FitsElement {
         }
     }
 
+    @Override
+    protected final void finalize() {
+        // final to protect against vulnerability when throwing an exception in the constructor
+        // See CT_CONSTRUCTOR_THROW in spotbugs for mode explanation.
+    }
+
     /**
      * <p>
      * Preallocates a minimum header card space. When written to a stream, the header will be large enough to hold at

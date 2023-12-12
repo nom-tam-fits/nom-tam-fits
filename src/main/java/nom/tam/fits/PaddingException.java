@@ -48,7 +48,8 @@ public class PaddingException extends FitsException {
      */
     private static final long serialVersionUID = 8716484905278318366L;
 
-    PaddingException(String msg, Exception cause) throws FitsException {
+    PaddingException(String msg, Exception cause) {
         super(msg, cause);
     }
+
 }

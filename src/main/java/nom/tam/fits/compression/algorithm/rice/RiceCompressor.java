@@ -255,6 +255,12 @@ public abstract class RiceCompressor<T extends Buffer> implements ICompressor<T>
         bBits = 1 << fsBits;
     }
 
+    @Override
+    protected final void finalize() {
+        // final to protect against vulnerability when throwing an exception in the constructor
+        // See CT_CONSTRUCTOR_THROW in spotbugs for mode explanation.
+    }
+
     /**
      * <p>
      * undo mapping and differencing Note that some of these operations will overflow the unsigned int arithmetic --

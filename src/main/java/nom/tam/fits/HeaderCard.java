@@ -490,6 +490,12 @@ public class HeaderCard implements CursorValue<String>, Cloneable {
         this.type = type;
     }
 
+    @Override
+    protected final void finalize() {
+        // final to protect against vulnerability when throwing an exception in the constructor
+        // See CT_CONSTRUCTOR_THROW in spotbugs for mode explanation.
+    }
+
     /**
      * Sets all components of the card to the specified values. For internal use only.
      *

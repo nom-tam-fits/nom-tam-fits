@@ -199,6 +199,12 @@ public class FitsDate implements Comparable<FitsDate> {
         }
     }
 
+    @Override
+    protected final void finalize() {
+        // final to protect against vulnerability when throwing an exception in the constructor
+        // See CT_CONSTRUCTOR_THROW in spotbugs for mode explanation.
+    }
+
     private static int getInt(Matcher match, int groupIndex) {
         String value = match.group(groupIndex);
         if (value != null) {

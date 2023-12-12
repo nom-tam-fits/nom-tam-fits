@@ -78,11 +78,13 @@ public class CloseIS extends FilterInputStream {
     /**
      * Instantiates a new thread that will watch and close the input stream whenever the process using it compeletes.
      * 
-     * @param proc       The process that is using the input stream
-     * @param compressed the compressed input stream that is used by the process.
+     * @param  proc                 The process that is using the input stream
+     * @param  compressed           the compressed input stream that is used by the process.
+     * 
+     * @throws NullPointerException if the compressed argument is <code>null</code>.
      */
     @SuppressWarnings("resource")
-    public CloseIS(Process proc, final InputStream compressed) {
+    public CloseIS(Process proc, final InputStream compressed) throws NullPointerException {
         super(new BufferedInputStream(proc.getInputStream(), CompressionManager.ONE_MEGABYTE));
         if (compressed == null) {
             throw new NullPointerException();
@@ -134,6 +136,12 @@ public class CloseIS extends FilterInputStream {
             }
         });
         start();
+    }
+
+    @Override
+    protected final void finalize() {
+        // final to protect against vulnerability when throwing an exception in the constructor
+        // See CT_CONSTRUCTOR_THROW in spotbugs for mode explanation.
     }
 
     /**

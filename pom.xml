@@ -239,7 +239,6 @@
         <version>3.6.3</version>
         <configuration>
           <source>8</source>
-          <aggregate>false</aggregate>
           <failOnError>true</failOnError>
           <doclint>all,-missing</doclint>
         </configuration>
@@ -432,7 +431,7 @@
                        we know we exposse some internal data of our classes -->
           <!-- Skip warnings for CT_CONSTRUCTOR_THROW, a vulnerability
 ￼               when throwing exceptions in constructors -->
-          <omitVisitors>FindReturnRef,ConstructorThrow</omitVisitors>
+          <omitVisitors>FindReturnRef</omitVisitors>
         </configuration>
       </plugin>
       <plugin>
@@ -529,7 +528,6 @@
         <configuration>
           <source>8</source>
           <failOnError>false</failOnError>
-          <aggregate>false</aggregate>
           <doctitle>
             ${project.name} ${project.version} Public User API
           </doctitle>
@@ -624,7 +622,7 @@
                we know we exposse some internal data of our classes -->
           <!-- Skip warnings for CT_CONSTRUCTOR_THROW, a vulnerability
                when throwing exceptions in constructors -->
-          <omitVisitors>FindReturnRef,ConstructorThrow</omitVisitors>
+          <omitVisitors>FindReturnRef</omitVisitors>
         </configuration>
       </plugin>
       <plugin>
@@ -760,7 +758,6 @@
             <configuration>
               <source>8</source>
               <failOnError>false</failOnError>
-              <aggregate>false</aggregate>
               <doctitle>
                 ${project.name} ${project.version} Public User API
               </doctitle>

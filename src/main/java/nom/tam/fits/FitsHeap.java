@@ -77,7 +77,7 @@ public class FitsHeap implements FitsElement {
      *
      * @throws IllegalArgumentException if the size argument is negative.
      */
-    FitsHeap(int size) {
+    FitsHeap(int size) throws IllegalArgumentException {
         if (size < 0) {
             throw new IllegalArgumentException("Illegal size for FITS heap: " + size);
         }
@@ -87,6 +87,12 @@ public class FitsHeap implements FitsElement {
         setData(data);
         encoder = new FitsEncoder(store);
         decoder = new FitsDecoder(store);
+    }
+
+    @Override
+    protected final void finalize() {
+        // final to protect against vulnerability when throwing an exception in the constructor
+        // See CT_CONSTRUCTOR_THROW in spotbugs for mode explanation.
     }
 
     /**

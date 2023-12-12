@@ -136,6 +136,12 @@ class HeaderCardParser {
         parseComment();
     }
 
+    @Override
+    protected final void finalize() {
+        // final to protect against vulnerability when throwing an exception in the constructor
+        // See CT_CONSTRUCTOR_THROW in spotbugs for mode explanation.
+    }
+
     /**
      * Returns the keyword component of the parsed header line. If the processing of HIERARCH keywords is enabled, it
      * may be a `HIERARCH` style long key with the components separated by dots (e.g.

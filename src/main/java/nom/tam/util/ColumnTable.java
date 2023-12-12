@@ -98,6 +98,12 @@ public class ColumnTable<T> implements DataTable, Cloneable {
         }
     }
 
+    @Override
+    protected final void finalize() {
+        // final to protect against vulnerability when throwing an exception in the constructor
+        // See CT_CONSTRUCTOR_THROW in spotbugs for mode explanation.
+    }
+
     /**
      * Checks if the table is empty (contains no data and no column definitions)
      * 

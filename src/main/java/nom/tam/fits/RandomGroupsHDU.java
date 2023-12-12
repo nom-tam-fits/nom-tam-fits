@@ -299,6 +299,12 @@ public class RandomGroupsHDU extends BasicHDU<RandomGroupsData> {
     }
 
     @Override
+    protected final void finalize() {
+        // final to protect against vulnerability when throwing an exception in the constructor
+        // See CT_CONSTRUCTOR_THROW in spotbugs for mode explanation.
+    }
+
+    @Override
     public void info(PrintStream stream) {
 
         stream.println("Random Groups HDU");

@@ -519,6 +519,12 @@ public class Fits implements Closeable {
         LOG.log(Level.INFO, "compression ignored, will be autodetected. was set to " + compressed);
     }
 
+    @Override
+    protected final void finalize() {
+        // final to protect against vulnerability when throwing an exception in the constructor
+        // See CT_CONSTRUCTOR_THROW in spotbugs for mode explanation.
+    }
+
     /**
      * Creates a new empty HDU for the given data type.
      * 

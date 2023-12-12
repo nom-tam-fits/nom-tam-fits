@@ -213,6 +213,12 @@ public class BinaryTable extends AbstractTableData implements Cloneable {
             setBoxedShape(dim);
         }
 
+        @Override
+        protected final void finalize() {
+            // final to protect against vulnerability when throwing an exception in the constructor
+            // See CT_CONSTRUCTOR_THROW in spotbugs for mode explanation.
+        }
+
         /**
          * Recalculate the FITS element count based on the shape of the data
          */
@@ -1449,6 +1455,12 @@ public class BinaryTable extends AbstractTableData implements Cloneable {
         for (Object element : columns) {
             addColumn(element);
         }
+    }
+
+    @Override
+    protected final void finalize() {
+        // final to protect against vulnerability when throwing an exception in the constructor
+        // See CT_CONSTRUCTOR_THROW in spotbugs for mode explanation.
     }
 
     /**
