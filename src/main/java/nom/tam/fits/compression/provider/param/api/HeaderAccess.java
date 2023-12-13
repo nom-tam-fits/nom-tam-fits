@@ -33,7 +33,6 @@ package nom.tam.fits.compression.provider.param.api;
 
 import nom.tam.fits.Header;
 import nom.tam.fits.HeaderCard;
-import nom.tam.fits.HeaderCardBuilder;
 import nom.tam.fits.HeaderCardException;
 
 /**
@@ -54,8 +53,6 @@ import nom.tam.fits.HeaderCardException;
 public class HeaderAccess implements IHeaderAccess {
 
     private final Header header;
-
-    private HeaderCardBuilder builder;
 
     /**
      * <p>
