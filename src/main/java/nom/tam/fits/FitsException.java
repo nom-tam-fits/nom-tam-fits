@@ -32,12 +32,11 @@ package nom.tam.fits;
  */
 
 /**
- * A hard exception for when we cannot deal with some FITS data as expected. In
- * retrospect it would have been better to make this a softer runtime exception,
- * but this goes back to the beginning of this library so it is here to stay.
- * You have no choice but to catch these an deal with them all the time.
+ * When we cannot deal with some FITS data as expected. Originally it was a hard exception, that you had no choice by to
+ * catch. Since 1.19, it has been demoted to a softer, runtime exception. This is a back compatible change, which gives
+ * more freedom to programmers on dealing with these (or not).
  */
-public class FitsException extends Exception {
+public class FitsException extends IllegalStateException {
 
     /**
      *
@@ -47,24 +46,18 @@ public class FitsException extends Exception {
     /**
      * Instantiates this exception with the designated message string.
      * 
-     * @param msg
-     *            a human readable message that describes what in fact caused
-     *            the exception
+     * @param msg a human readable message that describes what in fact caused the exception
      */
     public FitsException(String msg) {
         super(msg);
     }
 
     /**
-     * Instantiates this exception with the designated message string, when it
-     * was triggered by some other type of exception
+     * Instantiates this exception with the designated message string, when it was triggered by some other type of
+     * exception
      * 
-     * @param msg
-     *            a human readable message that describes what in fact caused
-     *            the exception
-     * @param reason
-     *            the original exception (or other throwable) that triggered
-     *            this exception.
+     * @param msg    a human readable message that describes what in fact caused the exception
+     * @param reason the original exception (or other throwable) that triggered this exception.
      */
     public FitsException(String msg, Throwable reason) {
         super(msg, reason);
