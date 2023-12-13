@@ -9,7 +9,6 @@ import nom.tam.fits.HeaderCardException;
 import nom.tam.fits.compression.provider.param.api.ICompressColumnParameter;
 import nom.tam.fits.compression.provider.param.api.ICompressHeaderParameter;
 import nom.tam.fits.compression.provider.param.api.ICompressParameters;
-import nom.tam.fits.compression.provider.param.api.IHeaderAccess;
 
 /*
  * #%L
@@ -110,11 +109,6 @@ public abstract class CompressParameters implements ICompressParameters, Cloneab
         for (ICompressColumnParameter parameter : columnParameters()) {
             parameter.setValueInColumn(index);
         }
-    }
-
-    @Deprecated
-    private Object getNullableColumn(IHeaderAccess header, BinaryTable binaryTable, String columnName) {
-        return getNullableColumn(header.getHeader(), binaryTable, columnName);
     }
 
     @Override
