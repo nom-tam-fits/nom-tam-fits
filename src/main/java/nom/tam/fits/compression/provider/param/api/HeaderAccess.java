@@ -35,7 +35,6 @@ import nom.tam.fits.Header;
 import nom.tam.fits.HeaderCard;
 import nom.tam.fits.HeaderCardBuilder;
 import nom.tam.fits.HeaderCardException;
-import nom.tam.fits.header.IFitsHeader;
 
 /**
  * (<i>for internal use</i>) Access to FITS header values with runtime exceptions only. Regular header access throws
@@ -80,42 +79,6 @@ public class HeaderAccess implements IHeaderAccess {
     @Override
     public final Header getHeader() {
         return header;
-    }
-
-    @Override
-    public void addValue(IFitsHeader key, int value) throws IllegalArgumentException {
-        try {
-            card(key).value(value);
-        } catch (HeaderCardException e) {
-            throw new IllegalArgumentException("header card could not be created: " + e.getMessage(), e);
-        }
-    }
-
-    @Override
-    public void addValue(IFitsHeader key, String value) throws IllegalArgumentException {
-        try {
-            card(key).value(value);
-        } catch (HeaderCardException e) {
-            throw new IllegalArgumentException("header card could not be created " + e.getMessage(), e);
-        }
-    }
-
-    @Override
-    public HeaderCard findCard(IFitsHeader key) {
-        return header.getCard(key);
-    }
-
-    @Override
-    public HeaderCard findCard(String key) {
-        return header.getCard(key);
-    }
-
-    private HeaderCardBuilder card(IFitsHeader key) {
-        if (builder == null) {
-            builder = header.card(key);
-            return builder;
-        }
-        return builder.card(key);
     }
 
 }

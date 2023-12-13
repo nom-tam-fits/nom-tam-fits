@@ -14,7 +14,6 @@ import nom.tam.fits.BinaryTable;
 import nom.tam.fits.FitsException;
 import nom.tam.fits.FitsFactory;
 import nom.tam.fits.Header;
-import nom.tam.fits.HeaderCard;
 import nom.tam.fits.HeaderCardException;
 import nom.tam.fits.compression.algorithm.api.ICompressOption;
 import nom.tam.fits.compression.algorithm.api.ICompressor;
@@ -22,7 +21,6 @@ import nom.tam.fits.compression.algorithm.api.ICompressorControl;
 import nom.tam.fits.compression.algorithm.rice.RiceCompressOption;
 import nom.tam.fits.compression.provider.CompressorProvider;
 import nom.tam.fits.compression.provider.TileCompressorAlternativProvider;
-import nom.tam.fits.compression.provider.param.api.HeaderAccess;
 import nom.tam.fits.compression.provider.param.api.HeaderCardAccess;
 import nom.tam.fits.header.Compression;
 import nom.tam.fits.header.IFitsHeader;
@@ -300,30 +298,6 @@ public class TileCompressorProviderTest {
         };
         tileDecompressor.setCompressed(new byte[10], null);
         tileDecompressor.run();
-    }
-
-    @Test(expected = IllegalArgumentException.class)
-    public void headerAccessExceptionIntTest() throws Exception {
-        HeaderAccess headerAccess = new HeaderAccess(new Header() {
-
-            @Override
-            public void addLine(HeaderCard fcard) {
-                ThrowAnyException.throwHeaderCardException("");
-            }
-        });
-        headerAccess.addValue(ZBITPIX, 32);
-    }
-
-    @Test(expected = IllegalArgumentException.class)
-    public void headerAccessExceptionStringTest() throws Exception {
-        HeaderAccess headerAccess = new HeaderAccess(new Header() {
-
-            @Override
-            public void addLine(HeaderCard fcard) {
-                ThrowAnyException.throwHeaderCardException("");
-            }
-        });
-        headerAccess.addValue(ZCMPTYPE, "XXX");
     }
 
     @Test
