@@ -36,7 +36,7 @@ package nom.tam.fits;
  * catch. Since 1.19, it has been demoted to a softer, runtime exception. This is a back compatible change, which gives
  * more freedom to programmers on dealing with these (or not).
  */
-public class FitsException extends Exception {
+public class FitsException extends IllegalStateException {
 
     /**
      *
