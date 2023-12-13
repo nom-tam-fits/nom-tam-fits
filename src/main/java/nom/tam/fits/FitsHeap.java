@@ -77,7 +77,7 @@ public class FitsHeap implements FitsElement {
      *
      * @throws IllegalArgumentException if the size argument is negative.
      */
-    FitsHeap(int size) {
+    FitsHeap(int size) throws IllegalArgumentException {
         if (size < 0) {
             throw new IllegalArgumentException("Illegal size for FITS heap: " + size);
         }
