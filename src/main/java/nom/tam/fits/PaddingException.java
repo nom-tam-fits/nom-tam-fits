@@ -32,14 +32,11 @@ package nom.tam.fits;
  */
 
 /**
- * This exception is thrown if padding is missing between the end of a FITS data
- * segment and the end-of-file. This padding is required by the FITS standard,
- * but some FITS writers may not add it. As of 1.17 our `Fits` class deals
- * seamlessly with such data, since the missing padding at the end-of-file is
- * harmless when reading in data. It will log a warning but proceed normally.
- * However, the exception is still thrown when using low-level
- * {@link Data#read(nom.tam.util.ArrayDataInput)} to allow expert users to deal
- * with this issue in any way they see fit.
+ * This exception is thrown if padding is missing between the end of a FITS data segment and the end-of-file. This
+ * padding is required by the FITS standard, but some FITS writers may not add it. As of 1.17 our `Fits` class deals
+ * seamlessly with such data, since the missing padding at the end-of-file is harmless when reading in data. It will log
+ * a warning but proceed normally. However, the exception is still thrown when using low-level
+ * {@link Data#read(nom.tam.util.ArrayDataInput)} to allow expert users to deal with this issue in any way they see fit.
  */
 public class PaddingException extends FitsException {
 
@@ -48,7 +45,7 @@ public class PaddingException extends FitsException {
      */
     private static final long serialVersionUID = 8716484905278318366L;
 
-    PaddingException(String msg, Exception cause) throws FitsException {
+    PaddingException(String msg, Exception cause) {
         super(msg, cause);
     }
 }

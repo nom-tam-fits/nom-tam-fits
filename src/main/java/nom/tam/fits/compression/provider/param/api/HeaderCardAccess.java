@@ -67,10 +67,13 @@ public class HeaderCardAccess implements IHeaderAccess {
      * the selected card if and only if the keyword matches that of the card's keyword.
      * </p>
      * 
-     * @param headerCard the FITS keyword of the card we will provide access to
-     * @param value      the initial string value for the card (assuming the keyword allows string values).
+     * @param  headerCard               the FITS keyword of the card we will provide access to
+     * @param  value                    the initial string value for the card (assuming the keyword allows string
+     *                                      values).
+     * 
+     * @throws IllegalArgumentException if the header card could not be created
      */
-    public HeaderCardAccess(IFitsHeader headerCard, String value) {
+    public HeaderCardAccess(IFitsHeader headerCard, String value) throws IllegalArgumentException {
         try {
             this.headerCard = new HeaderCard(headerCard.key(), value, null);
         } catch (HeaderCardException e) {
