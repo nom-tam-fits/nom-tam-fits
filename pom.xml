@@ -429,8 +429,6 @@
         <configuration>
           <!-- Skip bug warnings for EI_EXPOSE_REP and EI_EXPOSE_REP2
                        we know we exposse some internal data of our classes -->
-          <!-- Skip warnings for CT_CONSTRUCTOR_THROW, a vulnerability
-￼               when throwing exceptions in constructors -->
           <omitVisitors>FindReturnRef</omitVisitors>
         </configuration>
       </plugin>
@@ -620,8 +618,6 @@
         <configuration>
           <!-- Skip bug warnings for EI_EXPOSE_REP and EI_EXPOSE_REP2
                we know we exposse some internal data of our classes -->
-          <!-- Skip warnings for CT_CONSTRUCTOR_THROW, a vulnerability
-               when throwing exceptions in constructors -->
           <omitVisitors>FindReturnRef</omitVisitors>
         </configuration>
       </plugin>
