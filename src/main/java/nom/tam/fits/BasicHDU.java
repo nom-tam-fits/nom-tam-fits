@@ -882,9 +882,11 @@ public abstract class BasicHDU<DataClass extends Data> implements FitsElement {
     /**
      * Print out some information about this HDU.
      *
-     * @param stream the printstream to write the info on
+     * @param  stream        the printstream to write the info on
+     * 
+     * @throws FitsException if the HDU is malformed
      */
-    public abstract void info(PrintStream stream);
+    public abstract void info(PrintStream stream) throws FitsException;
 
     @Override
     @SuppressWarnings({"unchecked", "deprecation"})

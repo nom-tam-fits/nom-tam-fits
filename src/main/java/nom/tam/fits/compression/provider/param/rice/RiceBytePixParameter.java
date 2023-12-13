@@ -1,5 +1,7 @@
 package nom.tam.fits.compression.provider.param.rice;
 
+import nom.tam.fits.Header;
+
 /*
  * #%L
  * nom.tam FITS library
@@ -32,6 +34,7 @@ package nom.tam.fits.compression.provider.param.rice;
  */
 
 import nom.tam.fits.HeaderCard;
+import nom.tam.fits.HeaderCardException;
 import nom.tam.fits.compression.algorithm.rice.RiceCompressOption;
 import nom.tam.fits.compression.provider.param.api.IHeaderAccess;
 import nom.tam.fits.compression.provider.param.base.CompressHeaderParameter;
@@ -40,6 +43,7 @@ import nom.tam.fits.header.Compression;
 /**
  * (<i>for internal use</i>) The BYTEPIX value for the Rice compression as recorded in the FITS header.
  */
+@SuppressWarnings("deprecation")
 public final class RiceBytePixParameter extends CompressHeaderParameter<RiceCompressOption> {
 
     /**
@@ -51,6 +55,7 @@ public final class RiceBytePixParameter extends CompressHeaderParameter<RiceComp
         super(Compression.BYTEPIX, riceCompressOption);
     }
 
+    @Deprecated
     @Override
     public void getValueFromHeader(IHeaderAccess header) {
         HeaderCard value = findZVal(header);
@@ -61,8 +66,26 @@ public final class RiceBytePixParameter extends CompressHeaderParameter<RiceComp
         }
     }
 
+    @Deprecated
     @Override
     public void setValueInHeader(IHeaderAccess header) {
+        int zvalIndex = nextFreeZVal(header);
+        header.addValue(Compression.ZNAMEn.n(zvalIndex), getName());
+        header.addValue(Compression.ZVALn.n(zvalIndex), getOption().getBytePix());
+    }
+
+    @Override
+    public void getValueFromHeader(Header header) throws HeaderCardException {
+        HeaderCard value = findZVal(header);
+        if (value != null) {
+            getOption().setBytePix(value.getValue(Integer.class, getOption().getBytePix()));
+        } else {
+            getOption().setBytePix(RiceCompressOption.DEFAULT_RICE_BYTEPIX);
+        }
+    }
+
+    @Override
+    public void setValueInHeader(Header header) throws HeaderCardException {
         int zvalIndex = nextFreeZVal(header);
         header.addValue(Compression.ZNAMEn.n(zvalIndex), getName());
         header.addValue(Compression.ZVALn.n(zvalIndex), getOption().getBytePix());

@@ -3,6 +3,7 @@ package nom.tam.fits.compression.provider.param.api;
 import nom.tam.fits.BinaryTable;
 import nom.tam.fits.BinaryTableHDU;
 import nom.tam.fits.FitsException;
+import nom.tam.fits.Header;
 import nom.tam.fits.HeaderCardException;
 import nom.tam.fits.compression.algorithm.api.ICompressOption;
 import nom.tam.fits.compression.provider.param.base.CompressParameters;
@@ -87,20 +88,49 @@ public interface ICompressParameters {
     /**
      * extract the option values that are represented by headers from the hdu header.
      *
-     * @param header the header to extract the option values.
+     * @param      header the header to extract the option values.
+     * 
+     * @deprecated        Use {@link #getValuesFromHeader(Header)} instead.
      */
-    void getValuesFromHeader(IHeaderAccess header);
+    default void getValuesFromHeader(IHeaderAccess header) {
+        getValuesFromHeader(header.getHeader());
+    }
 
     /**
      * initialize the column based options of the compression algorithm from the binary table.
      *
-     * @param  header        the header of the hdu
-     * @param  binaryTable   the table of the hdu
-     * @param  size          the column size
+     * @param      header        the header of the hdu
+     * @param      binaryTable   the table of the hdu
+     * @param      size          the column size
      *
-     * @throws FitsException if the column could not be initialized
+     * @throws     FitsException if the column could not be initialized
+     * 
+     * @deprecated               Use {@link #initializeColumns(Header, BinaryTable, int)} instead
      */
-    void initializeColumns(IHeaderAccess header, BinaryTable binaryTable, int size) throws FitsException;
+    default void initializeColumns(IHeaderAccess header, BinaryTable binaryTable, int size) throws FitsException {
+        initializeColumns(header.getHeader(), binaryTable, size);
+    }
+
+    /**
+     * extract the option values that are represented by headers from the hdu header.
+     *
+     * @param  header              the header to extract the option values.
+     * 
+     * @throws HeaderCardException if there was an issue accessing the header
+     */
+    void getValuesFromHeader(Header header) throws HeaderCardException;
+
+    /**
+     * initialize the column based options of the compression algorithm from the binary table.
+     *
+     * @param  header              the header of the hdu
+     * @param  binaryTable         the table of the hdu
+     * @param  size                the column size
+     *
+     * @throws HeaderCardException if there was an issue accessing the header
+     * @throws FitsException       if the column could not be initialized
+     */
+    void initializeColumns(Header header, BinaryTable binaryTable, int size) throws HeaderCardException, FitsException;
 
     /**
      * initialize the column based parameter to the specified column length.
@@ -130,10 +160,22 @@ public interface ICompressParameters {
     /**
      * set the options values, that are hdu based, into the header.
      *
+     * @param      header              the header to set the option value
+     *
+     * @throws     HeaderCardException if the header could not be set.
+     * 
+     * @deprecated                     Use {@link #setValuesInHeader(Header)} instead
+     */
+    default void setValuesInHeader(IHeaderAccess header) throws HeaderCardException {
+        setValuesInHeader(header == null ? null : header.getHeader());
+    }
+
+    /**
+     * set the options values, that are hdu based, into the header.
+     *
      * @param  header              the header to set the option value
      *
      * @throws HeaderCardException if the header could not be set.
      */
-    void setValuesInHeader(IHeaderAccess header) throws HeaderCardException;
-
+    void setValuesInHeader(Header header) throws HeaderCardException;
 }

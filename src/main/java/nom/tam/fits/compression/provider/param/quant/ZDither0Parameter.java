@@ -1,5 +1,7 @@
 package nom.tam.fits.compression.provider.param.quant;
 
+import nom.tam.fits.Header;
+
 /*
  * #%L
  * nom.tam FITS library
@@ -32,8 +34,8 @@ package nom.tam.fits.compression.provider.param.quant;
  */
 
 import nom.tam.fits.HeaderCard;
+import nom.tam.fits.HeaderCardException;
 import nom.tam.fits.compression.algorithm.quant.QuantizeOption;
-import nom.tam.fits.compression.provider.param.api.IHeaderAccess;
 import nom.tam.fits.compression.provider.param.base.CompressHeaderParameter;
 import nom.tam.fits.header.Compression;
 
@@ -81,17 +83,17 @@ final class ZDither0Parameter extends CompressHeaderParameter<QuantizeOption> {
     }
 
     @Override
-    public void getValueFromHeader(IHeaderAccess header) {
+    public void getValueFromHeader(Header header) throws HeaderCardException {
         if (getOption() == null) {
             return;
         }
 
-        HeaderCard card = header.findCard(Compression.ZDITHER0);
+        HeaderCard card = header.getCard(Compression.ZDITHER0);
         getOption().setSeed(card == null ? 1L : card.getValue(Long.class, 1L));
     }
 
     @Override
-    public void setValueInHeader(IHeaderAccess header) {
+    public void setValueInHeader(Header header) throws HeaderCardException {
         if (getOption() == null) {
             return;
         }

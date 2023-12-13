@@ -1,6 +1,8 @@
 package nom.tam.fits.compression.provider.param.base;
 
+import nom.tam.fits.Header;
 import nom.tam.fits.HeaderCard;
+import nom.tam.fits.HeaderCardException;
 import nom.tam.fits.compression.provider.param.api.ICompressHeaderParameter;
 import nom.tam.fits.compression.provider.param.api.IHeaderAccess;
 
@@ -51,23 +53,55 @@ public abstract class CompressHeaderParameter<OPTION> extends CompressParameter<
         super(name, option);
     }
 
+    /**
+     * @deprecated Use {@link #findZVal(Header)} instead.
+     */
     public HeaderCard findZVal(IHeaderAccess header) {
+        return findZVal(header.getHeader());
+    }
+
+    /**
+     * @deprecated Use {@link #nextFreeZVal(Header)} instead.
+     */
+    public int nextFreeZVal(IHeaderAccess header) {
+        return nextFreeZVal(header.getHeader());
+    }
+
+    /**
+     * Finds the ZVAL header value corresponding to this compression parameter
+     * 
+     * @param  header              The compressed HDU header
+     * 
+     * @return                     the header card containing the ZVAL for this compression parameter
+     * 
+     * @throws HeaderCardException if there was an issue accessing the header
+     */
+    public HeaderCard findZVal(Header header) throws HeaderCardException {
         int nval = 1;
-        HeaderCard card = header.findCard(ZNAMEn.n(nval));
+        HeaderCard card = header.getCard(ZNAMEn.n(nval));
         while (card != null) {
             if (card.getValue().equals(getName())) {
-                return header.findCard(ZVALn.n(nval));
+                return header.getCard(ZVALn.n(nval));
             }
-            card = header.findCard(ZNAMEn.n(++nval));
+            card = header.getCard(ZNAMEn.n(++nval));
         }
         return null;
     }
 
-    public int nextFreeZVal(IHeaderAccess header) {
+    /**
+     * Finds next unused ZNAME / ZVAL index in the header, that we can use to store this parameter
+     * 
+     * @param  header              The compressed HDU header
+     * 
+     * @return                     the ZNAME / ZVAL index we might use to store a new parameter
+     * 
+     * @throws HeaderCardException if there was an issue accessing the header
+     */
+    public int nextFreeZVal(Header header) throws HeaderCardException {
         int nval = 1;
-        HeaderCard card = header.findCard(ZNAMEn.n(nval));
+        HeaderCard card = header.getCard(ZNAMEn.n(nval));
         while (card != null) {
-            card = header.findCard(ZNAMEn.n(++nval));
+            card = header.getCard(ZNAMEn.n(++nval));
         }
         return nval;
     }

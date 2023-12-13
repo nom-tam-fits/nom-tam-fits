@@ -1,5 +1,8 @@
 package nom.tam.fits.compression.provider.param.api;
 
+import nom.tam.fits.Header;
+import nom.tam.fits.HeaderCardException;
+
 /*
  * #%L
  * nom.tam FITS library
@@ -32,24 +35,47 @@ package nom.tam.fits.compression.provider.param.api;
  */
 
 /**
- * (<i>for internal use</i>) Compression parameter that must be stored along the
- * header meta data of the hdu.
+ * (<i>for internal use</i>) Compression parameter that must be stored along the header meta data of the hdu.
  */
 public interface ICompressHeaderParameter extends ICompressParameter {
 
     /**
      * get the value from the header and set it in the compression option.
      * 
-     * @param header
-     *            the header of the hdu
+     * @param      header the header of the hdu
+     * 
+     * @deprecated        Use {@link #getValueFromHeader(Header)} instead.
      */
-    void getValueFromHeader(IHeaderAccess header);
+    default void getValueFromHeader(IHeaderAccess header) {
+        getValueFromHeader(header.getHeader());
+    }
 
     /**
      * Get the parameter value from the option and set it into the fits header.
      * 
-     * @param header
-     *            the header to add the parameter.
+     * @param      header the header to add the parameter.
+     * 
+     * @deprecated        Use {@link #setValueInHeader(Header)} instead
      */
-    void setValueInHeader(IHeaderAccess header);
+    default void setValueInHeader(IHeaderAccess header) {
+        setValueInHeader(header.getHeader());
+    }
+
+    /**
+     * get the value from the header and set it in the compression option.
+     * 
+     * @param  header              the header of the hdu
+     * 
+     * @throws HeaderCardException if there was a problem accessing the header
+     */
+    void getValueFromHeader(Header header) throws HeaderCardException;
+
+    /**
+     * Get the parameter value from the option and set it into the fits header.
+     * 
+     * @param  header              the header to add the parameter.
+     * 
+     * @throws HeaderCardException if there was a problem accessing the header
+     */
+    void setValueInHeader(Header header) throws HeaderCardException;
 }

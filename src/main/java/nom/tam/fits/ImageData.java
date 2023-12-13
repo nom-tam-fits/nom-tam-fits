@@ -390,13 +390,9 @@ public class ImageData extends Data {
 
     @Override
     @SuppressWarnings("deprecation")
-    public ImageHDU toHDU() throws IllegalStateException {
+    public ImageHDU toHDU() throws FitsException {
         Header h = new Header();
-        try {
-            fillHeader(h);
-        } catch (FitsException e) {
-            throw new IllegalStateException(e.getMessage(), e);
-        }
+        fillHeader(h);
         return new ImageHDU(h, this);
     }
 }

@@ -264,7 +264,7 @@ public class TileCompressorProviderTest {
                 null, //
                 null, //
                 null, //
-                new HeaderAccess(header)));
+                header));
         // lets see if we can call the no loss function with no errors even if
         // it has no effect.
         operationsOfImage.forceNoLoss(1, 1, 10, 10);

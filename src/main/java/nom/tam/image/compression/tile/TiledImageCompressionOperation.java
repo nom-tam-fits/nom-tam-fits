@@ -18,7 +18,6 @@ import nom.tam.fits.compression.algorithm.api.ICompressOption;
 import nom.tam.fits.compression.algorithm.api.ICompressorControl;
 import nom.tam.fits.compression.provider.CompressorProvider;
 import nom.tam.fits.compression.provider.param.api.HeaderAccess;
-import nom.tam.fits.compression.provider.param.api.HeaderCardAccess;
 import nom.tam.fits.header.Compression;
 import nom.tam.image.compression.tile.mask.ImageNullPixelMask;
 import nom.tam.image.tile.operation.AbstractTiledImageOperation;
@@ -147,8 +146,9 @@ public class TiledImageCompressionOperation extends AbstractTiledImageOperation<
             getCompressorControl();
             compressOptions = compressorControl.option();
             if (quantAlgorithm != null) {
-                compressOptions.getCompressionParameters()
-                        .getValuesFromHeader(new HeaderCardAccess(ZQUANTIZ, quantAlgorithm));
+                Header h = new Header();
+                h.addLine(HeaderCard.create(ZQUANTIZ, quantAlgorithm));
+                compressOptions.getCompressionParameters().getValuesFromHeader(h);
             }
             compressOptions.getCompressionParameters().initializeColumns(getNumberOfTileOperations());
         }
@@ -267,7 +267,7 @@ public class TiledImageCompressionOperation extends AbstractTiledImageOperation<
                 getNullableColumn(header, Object[].class, UNCOMPRESSED_DATA_COLUMN), //
                 getNullableColumn(header, Object[].class, COMPRESSED_DATA_COLUMN), //
                 getNullableColumn(header, Object[].class, GZIP_COMPRESSED_DATA_COLUMN), //
-                new HeaderAccess(header)));
+                header));
         byte[][] nullPixels = getNullableColumn(header, byte[][].class, NULL_PIXEL_MASK_COLUMN);
         if (nullPixels != null) {
             preserveNulls(0L, header.getStringValue(ZMASKCMP)).setColumn(nullPixels);

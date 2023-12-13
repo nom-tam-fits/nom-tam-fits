@@ -3,6 +3,7 @@ package nom.tam.fits.compression.provider.param.base;
 import nom.tam.fits.BinaryTable;
 import nom.tam.fits.BinaryTableHDU;
 import nom.tam.fits.FitsException;
+import nom.tam.fits.Header;
 import nom.tam.fits.HeaderCard;
 import nom.tam.fits.HeaderCardException;
 import nom.tam.fits.compression.provider.param.api.ICompressColumnParameter;
@@ -49,6 +50,7 @@ import static nom.tam.fits.header.Standard.TTYPEn;
  * 
  * @see CompressParameter
  */
+@SuppressWarnings("deprecation")
 public abstract class CompressParameters implements ICompressParameters, Cloneable {
 
     @Override
@@ -82,14 +84,15 @@ public abstract class CompressParameters implements ICompressParameters, Cloneab
     }
 
     @Override
-    public void getValuesFromHeader(IHeaderAccess header) {
+    public void getValuesFromHeader(Header header) throws HeaderCardException {
         for (ICompressHeaderParameter compressionParameter : headerParameters()) {
             compressionParameter.getValueFromHeader(header);
         }
     }
 
     @Override
-    public void initializeColumns(IHeaderAccess header, BinaryTable binaryTable, int size) throws FitsException {
+    public void initializeColumns(Header header, BinaryTable binaryTable, int size)
+            throws HeaderCardException, FitsException {
         for (ICompressColumnParameter parameter : columnParameters()) {
             parameter.setColumnData(getNullableColumn(header, binaryTable, parameter.getName()), size);
         }
@@ -109,17 +112,22 @@ public abstract class CompressParameters implements ICompressParameters, Cloneab
         }
     }
 
+    @Deprecated
+    private Object getNullableColumn(IHeaderAccess header, BinaryTable binaryTable, String columnName) {
+        return getNullableColumn(header.getHeader(), binaryTable, columnName);
+    }
+
     @Override
-    public void setValuesInHeader(IHeaderAccess header) throws HeaderCardException {
+    public void setValuesInHeader(Header header) throws HeaderCardException {
         for (ICompressHeaderParameter parameter : headerParameters()) {
             parameter.setValueInHeader(header);
         }
     }
 
-    private Object getNullableColumn(IHeaderAccess header, BinaryTable binaryTable, String columnName)
-            throws FitsException {
+    private Object getNullableColumn(Header header, BinaryTable binaryTable, String columnName)
+            throws HeaderCardException, FitsException {
         for (int i = 1; i <= binaryTable.getNCols(); i++) {
-            HeaderCard card = header.findCard(TTYPEn.n(i));
+            HeaderCard card = header.getCard(TTYPEn.n(i));
             if (card != null) {
                 if (card.getValue().trim().equals(columnName)) {
                     return binaryTable.getColumn(i - 1);

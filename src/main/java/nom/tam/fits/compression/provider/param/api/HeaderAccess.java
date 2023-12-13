@@ -44,7 +44,13 @@ import nom.tam.fits.header.IFitsHeader;
  * least until the next major code revision (major version 2 at the earliest). So this class provides an alternative
  * access to headers converting any <code>HeaderCardException</code>s to {@link IllegalArgumentException}.
  * 
- * @see Header
+ * @see        Header
+ * 
+ * @deprecated This class serves no purpose since 1.19. Will remove in some future. Prior to 1.19 {@link Header} threw
+ *                 hard {@link HeaderCardException}, and this class was added so we can convert these into soft
+ *                 {@link IllegalArgumentException} instead. However, now that we demoted
+ *                 <code>HeaderCardException</code> to be soft exceptions itself, there is no reason to convert. It just
+ *                 adds confusion.
  */
 public class HeaderAccess implements IHeaderAccess {
 
@@ -64,8 +70,20 @@ public class HeaderAccess implements IHeaderAccess {
         this.header = header;
     }
 
+    /**
+     * Returns the header that this class is providing access to.
+     * 
+     * @return the Header that we access through this class
+     * 
+     * @since  1.19
+     */
     @Override
-    public void addValue(IFitsHeader key, int value) {
+    public final Header getHeader() {
+        return header;
+    }
+
+    @Override
+    public void addValue(IFitsHeader key, int value) throws IllegalArgumentException {
         try {
             card(key).value(value);
         } catch (HeaderCardException e) {
@@ -74,7 +92,7 @@ public class HeaderAccess implements IHeaderAccess {
     }
 
     @Override
-    public void addValue(IFitsHeader key, String value) {
+    public void addValue(IFitsHeader key, String value) throws IllegalArgumentException {
         try {
             card(key).value(value);
         } catch (HeaderCardException e) {

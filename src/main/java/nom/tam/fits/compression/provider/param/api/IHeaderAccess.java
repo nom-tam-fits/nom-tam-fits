@@ -56,8 +56,23 @@ import nom.tam.fits.header.IFitsHeader;
  * </p>
  * 
  * @see Header
+ * @deprecated This internal interface serves no purpose since 1.19. Will remove
+ *             in some future. Prior to 1.19 {@link Header} threw hard
+ *             {@link HeaderCardException}, and this class was added so we can
+ *             convert these into soft {@link IllegalArgumentException} instead.
+ *             However, now that we demoted <code>HeaderCardException</code> to
+ *             be soft exceptions itself, there is no reason to convert. It just
+ *             adds confusion.
  */
 public interface IHeaderAccess {
+
+    /**
+     * Returns the header that this class is providing access to.
+     * 
+     * @return the Header that we access through this class
+     * @since 1.19
+     */
+    Header getHeader();
 
     /**
      * Sets a new integer value for the specified FITS keyword, adding it to the
@@ -69,6 +84,7 @@ public interface IHeaderAccess {
      *            the integer value to assign to the keyword
      * @throws IllegalArgumentException
      *             if the value could not be set as requested.
+     * @deprecated Just add values to the header directly
      */
     void addValue(IFitsHeader key, int value) throws IllegalArgumentException;
 
@@ -82,6 +98,7 @@ public interface IHeaderAccess {
      *            the string value to assign to the keyword
      * @throws IllegalArgumentException
      *             if the value could not be set as requested.
+     * @deprecated Just add values to the header directly
      */
     void addValue(IFitsHeader key, String value) throws IllegalArgumentException;
 
@@ -92,8 +109,9 @@ public interface IHeaderAccess {
      * 
      * @param key
      *            the standard or conventional FITS header keyword
-     * @return the matching FITS header card, or <code>null</code> if there is
-     *         no such card within out grasp.
+     * @return the matching FITS header card, or <code>null</code> if there is no
+     *         such card within out grasp.
+     * @deprecated Use {@link Header#getCard(IFitsHeader)} instead.
      */
     HeaderCard findCard(IFitsHeader key);
 
@@ -104,8 +122,9 @@ public interface IHeaderAccess {
      * 
      * @param key
      *            the FITS header keyword
-     * @return the matching FITS header card, or <code>null</code> if there is
-     *         no such card within out grasp.
+     * @return the matching FITS header card, or <code>null</code> if there is no
+     *         such card within out grasp.
+     * @deprecated Use {@link Header#getCard(String)} instead.
      */
     HeaderCard findCard(String key);
 

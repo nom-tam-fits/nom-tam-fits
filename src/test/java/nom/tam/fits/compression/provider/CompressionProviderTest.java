@@ -37,6 +37,7 @@ import org.junit.Test;
 import nom.tam.fits.FitsException;
 import nom.tam.fits.compression.algorithm.api.ICompressOption;
 import nom.tam.fits.compression.algorithm.api.ICompressorControl;
+import nom.tam.fits.compression.provider.param.api.HeaderAccess;
 import nom.tam.fits.compression.provider.param.api.ICompressParameters;
 
 public class CompressionProviderTest {
@@ -46,7 +47,7 @@ public class CompressionProviderTest {
         ICompressorControl compressor = CompressorProvider.findCompressorControl(null, "GZIP_1", byte.class);
         ICompressOption option = compressor.option();
         Assert.assertFalse(option.isLossyCompression());
-        option.setParameters(null); // nothinh should happen ;-)
+        option.setParameters(null); // nothing should happen ;-)
         Assert.assertNull(option.unwrap(String.class));
         Assert.assertSame(option, option.unwrap(ICompressOption.class));
     }
@@ -57,9 +58,9 @@ public class CompressionProviderTest {
         ICompressOption option = compressor.option();
         ICompressParameters parameters = option.getCompressionParameters();
 
-        parameters.addColumnsToTable(null);// nothinh should happen ;-)
+        parameters.addColumnsToTable(null);// nothing should happen ;-)
         Assert.assertSame(parameters, parameters.copy(option));
-        parameters.setValuesInColumn(10000);// nothinh should happen ;-)
-        parameters.setValuesInHeader(null);// nothinh should happen ;-)
+        parameters.setValuesInColumn(10000);// nothing should happen ;-)
+        parameters.setValuesInHeader((HeaderAccess) null);// nothing should happen ;-)
     }
 }
