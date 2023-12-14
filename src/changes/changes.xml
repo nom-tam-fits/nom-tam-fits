@@ -1,7 +1,7 @@
 <document xmlns="http://maven.apache.org/changes/1.0.0" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:schemaLocation="http://maven.apache.org/changes/1.0.0 http://maven.apache.org/xsd/changes-1.0.0.xsd">
 <body>
 
-   <release version="1.19.0-SNAPSHOT" date="2023-12-11" description="Feature release with bug fixes.">
+   <release version="1.19.0-SNAPSHOT" date="2023-12-14" description="Feature release with bug fixes.">
       <action type="fix" dev="cek" issue="496">
           Workaround for read-only FITS files on Windows network shares.
       </action>
@@ -22,9 +22,26 @@
           Added inspection methods to UndefinedData class, to easily retrieve XTENSION type, 
           BITPIX, and data size/shape information from HDUs containing unsupported data types.
       </action>
-            <action type="add" dev="attipaci" issue="494">
+      <action type="add" dev="attipaci" issue="494">
           A better way to control how FITS I10 type columns are treated in ASCII tables, via
           static AsciiTable.setI10PreferInt(boolean) and .isI10PreferInt() methods.
+      </action>
+      <action type="update" dev="attipaci" issue="519">
+          Demoted FitsException to be a soft exception, extending IllegalStateException. As
+          a result, users are no longer required to catch these, or its derivatives such as
+          HeaderCardException. Some methods that have previously thrown IllegalStateException
+          may now throw a FitsException, in a fully backwards compatible way.
+      </action>
+      <action type="update" dev="attipaci" issue="519">
+          Deprecated IHeaderAccess interface and its implementations. These were meant for 
+          internal use anyway, and with HeaderCardException now being a soft exception these
+          classes just add confusion without providing any functionality that isn't readily
+          available without them.
+      </action>
+      <action type="update" dev="attipaci" issue="518">
+          The constructor of PaddingException does not throw a FitsException, and 
+          FitsCheckSum.Checksum also does not throw an IllegalArgumentException -- so they 
+          are now declared as such. Some related javadoc updates.
       </action>
       <action type="update" dev="attipaci">
           Change from unmaintained findbugs build dep to spotbugs successor.
