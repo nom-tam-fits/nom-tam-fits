@@ -13,8 +13,10 @@ import org.junit.Test;
 import nom.tam.fits.BinaryTable;
 import nom.tam.fits.BinaryTableHDU;
 import nom.tam.fits.Fits;
+import nom.tam.fits.FitsException;
 import nom.tam.fits.Header;
 import nom.tam.fits.HeaderCard;
+import nom.tam.fits.header.Compression;
 import nom.tam.fits.header.IFitsHeader;
 import nom.tam.fits.header.Standard;
 import nom.tam.fits.util.BlackBoxImages;
@@ -405,6 +407,30 @@ public class CompressedTableTest {
                 .fromBinaryTableHDU((BinaryTableHDU) fitsUncompressed.getHDU(1), tileSize).compress();
         compressedTable.compress();
         compressedTable.getColumnData(0, 1, compressedTable.getNRows() + 1);
+    }
+
+    @Test(expected = FitsException.class)
+    public void testB12TableDecompressNoZTILELEN() throws Exception {
+        Fits fitsUncompressed = new Fits("src/test/resources/nom/tam/table/comp/bt12.fits");
+        int tileSize = 5;
+
+        CompressedTableHDU compressedTable = CompressedTableHDU
+                .fromBinaryTableHDU((BinaryTableHDU) fitsUncompressed.getHDU(1), tileSize).compress();
+        compressedTable.compress();
+        compressedTable.getHeader().deleteKey(Compression.ZTILELEN);
+        compressedTable.getTileRows(); // Throws exception...
+    }
+
+    @Test(expected = FitsException.class)
+    public void testB12TableDecompressInvalidZTILELEN() throws Exception {
+        Fits fitsUncompressed = new Fits("src/test/resources/nom/tam/table/comp/bt12.fits");
+        int tileSize = 5;
+
+        CompressedTableHDU compressedTable = CompressedTableHDU
+                .fromBinaryTableHDU((BinaryTableHDU) fitsUncompressed.getHDU(1), tileSize).compress();
+        compressedTable.compress();
+        compressedTable.addValue(Compression.ZTILELEN, 0);
+        compressedTable.getTileRows(); // Throws exception...
     }
 
     @Test

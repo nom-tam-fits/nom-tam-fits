@@ -37,11 +37,14 @@ import nom.tam.fits.compression.algorithm.api.ICompressorControl;
 import nom.tam.image.tile.operation.buffer.TileBuffer;
 
 /**
- * (<i>for internal use</i>) Base support for blank (<code>null</code>) in compressed images. In regular images specific
- * values (such as {@link Double#NaN} or a specific integer value) may be used to indicate missing data. However,
- * because of e.g. quantization or lossy compression, these specific values may not be recovered exactly when
- * compressing / decompressing images. Hence, there is a need to demark <code>null</code> values differently in
- * copmressed images. This class provides support for that purpose.
+ * (<i>for internal use</i>) Base support for blank (<code>null</code>) in
+ * compressed images. In regular images specific values (such as
+ * {@link Double#NaN} or a specific integer value) may be used to indicate
+ * missing data. However, because of e.g. quantization or lossy compression,
+ * these specific values may not be recovered exactly when compressing /
+ * decompressing images. Hence, there is a need to demark <code>null</code>
+ * values differently in copmressed images. This class provides support for that
+ * purpose.
  */
 public class AbstractNullPixelMask {
 
@@ -61,17 +64,22 @@ public class AbstractNullPixelMask {
     private final ICompressorControl compressorControl;
 
     /**
-     * Creates a new pixel mask got a given image tile and designated null value.
+     * Creates a new pixel mask got a given image tile and designated null
+     * value.
      * 
-     * @param  tileBuffer            the buffer containing the tile data
-     * @param  tileIndex             the tile index
-     * @param  nullValue             the integer value representing <code>null</code> or invalid data
-     * @param  compressorControl     The class managing the compression
-     * 
-     * @throws IllegalStateException if the compressorControl argument is <code>null</code>
+     * @param tileBuffer
+     *            the buffer containing the tile data
+     * @param tileIndex
+     *            the tile index
+     * @param nullValue
+     *            the integer value representing <code>null</code> or invalid
+     *            data
+     * @param compressorControl
+     *            The class managing the compression
+     * @throws IllegalStateException
+     *             if the compressorControl argument is <code>null</code>
      */
-    protected AbstractNullPixelMask(TileBuffer tileBuffer, int tileIndex, long nullValue,
-            ICompressorControl compressorControl) throws IllegalStateException {
+    protected AbstractNullPixelMask(TileBuffer tileBuffer, int tileIndex, long nullValue, ICompressorControl compressorControl) throws IllegalStateException {
         this.tileBuffer = tileBuffer;
         this.tileIndex = tileIndex;
         this.nullValue = nullValue;
@@ -84,9 +92,9 @@ public class AbstractNullPixelMask {
     /**
      * Returns a byte array containing the mask
      * 
-     * @return     the byte array containing the pixel mask for the tile.
-     * 
-     * @deprecated (<i>for internal use</i>) Visibility may be reduced to package level in the future.
+     * @return the byte array containing the pixel mask for the tile.
+     * @deprecated (<i>for internal use</i>) Visibility may be reduced to package
+     *             level in the future.
      */
     public byte[] getMaskBytes() {
         if (mask == null) {
@@ -102,14 +110,16 @@ public class AbstractNullPixelMask {
     /**
      * Sets data for a new mask as a flattened buffer of data.
      * 
-     * @param mask the buffer containing the mask data in flattened format.
+     * @param mask
+     *            the buffer containing the mask data in flattened format.
      */
     public void setMask(ByteBuffer mask) {
         this.mask = mask;
     }
 
     /**
-     * Returns the object that manages the compression, and which therefore handles the masking
+     * Returns the object that manages the compression, and which therefore
+     * handles the masking
      * 
      * @return the object that manages the compression.
      */
@@ -127,7 +137,8 @@ public class AbstractNullPixelMask {
     }
 
     /**
-     * Returns the value that represents a <code>null</code> or an undefined data point.
+     * Returns the value that represents a <code>null</code> or an undefined
+     * data point.
      * 
      * @return the value that demarks an undefined datum.
      */
@@ -154,11 +165,13 @@ public class AbstractNullPixelMask {
     }
 
     /**
-     * Creates an internal buffer for holding the mask data, for the specified number of points.
+     * Creates an internal buffer for holding the mask data, for the specified
+     * number of points.
      * 
-     * @param  remaining the number of points the mask should accomodate.
-     * 
-     * @return           the internal buffer that may store the mask data for the specified number of data points.
+     * @param remaining
+     *            the number of points the mask should accomodate.
+     * @return the internal buffer that may store the mask data for the specified
+     *         number of data points.
      */
     protected ByteBuffer initializedMask(int remaining) {
         if (mask == null) {

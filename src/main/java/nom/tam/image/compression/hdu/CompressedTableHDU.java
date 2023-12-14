@@ -190,6 +190,43 @@ public class CompressedTableHDU extends BinaryTableHDU {
     }
 
     /**
+     * Returns the number of table rows that are compressed in each table tile. This may be useful for figuring out what
+     * tiles to decompress, e.g. via {@link #asBinaryTableHDU(int, int)}, when wanting to access select table rows only.
+     * This value is stored under the FITS keyword ZTILELEN in the compressed header. Thus, this method simply provides
+     * a user-friendly way to access it. (If the header does not contain the keyword, it is assumed that the entire
+     * table is compressed into a single tile.
+     * 
+     * @return               the number of table rows that are compressed into a tile.
+     * 
+     * @throws FitsException if the compressed header does not contain the required ZTILELEN keyword, or it is &lt;= 0.
+     * 
+     * @see                  #asBinaryTableHDU(int, int)
+     * 
+     * @since                1.19
+     */
+    public int getTileRows() throws FitsException {
+        int n = getHeader().getIntValue(Compression.ZTILELEN, -1);
+        if (n <= 0) {
+            throw new FitsException("imnvalid or missing ZTILELEN header keyword");
+        }
+        return n;
+    }
+
+    /**
+     * Returns the number of compressed tiles contained in this HDU.
+     * 
+     * @return the number of compressed tiles in this table. It is the same as the NAXIS2 value of the header, which is
+     *             also returned by {@link #getNRows()} for this compressed table.
+     * 
+     * @see    #getTileRows()
+     * 
+     * @since  1.19
+     */
+    public int getTileCount() {
+        return getNRows();
+    }
+
+    /**
      * Restores a section of the original binary table HDU by decompressing a selected range of compressed table tiles.
      * 
      * @param  fromTile                 Java index of first tile to decompress
@@ -200,12 +237,19 @@ public class CompressedTableHDU extends BinaryTableHDU {
      * @throws IllegalArgumentException If the tile range is out of bounds
      * @throws FitsException            If there was an issue with the decompression.
      * 
+     * @see                             #getTileRows()
+     * @see                             #getTileCount()
      * @see                             #asBinaryTableHDU()
      * @see                             #fromBinaryTableHDU(BinaryTableHDU, int, String...)
      */
     public BinaryTableHDU asBinaryTableHDU(int fromTile, int toTile) throws FitsException, IllegalArgumentException {
         Header header = getTableHeader();
-        int tileSize = getHeader().getIntValue(Compression.ZTILELEN, getNRows());
+        int tileSize = getTileRows();
+
+        if (fromTile < 0 || toTile > getTileCount() || toTile <= fromTile) {
+            throw new IllegalArgumentException(
+                    "illegal tile range [" + fromTile + ", " + toTile + "] for " + getTileCount() + " tiles");
+        }
 
         // Set the correct number of rows
         header.addValue(Standard.NAXIS2, toTile * tileSize - fromTile * tileSize);
