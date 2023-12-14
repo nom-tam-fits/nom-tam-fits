@@ -89,7 +89,15 @@ public abstract class CompressHeaderParameter<OPTION> extends CompressParameter<
     }
 
     /**
-     * Finds next unused ZNAME / ZVAL index in the header, that we can use to store this parameter
+     * <p>
+     * Finds the next available (or previously used) the ZNAME / ZVAL index in the header that we can use to store this
+     * parameter.
+     * </p>
+     * <p>
+     * Unfortunately, the way it was implemented, using this repeatedly on the same header and compression parameter
+     * keeps adding new entries, rather than updating the existing one. As of 1.19, the behavior is changed to update
+     * existing values -- resulting in a more predictable behavior.
+     * </p>
      * 
      * @param  header              The compressed HDU header
      * 
@@ -98,11 +106,14 @@ public abstract class CompressHeaderParameter<OPTION> extends CompressParameter<
      * @throws HeaderCardException if there was an issue accessing the header
      */
     public int nextFreeZVal(Header header) throws HeaderCardException {
-        int nval = 1;
-        HeaderCard card = header.getCard(ZNAMEn.n(nval));
-        while (card != null) {
-            card = header.getCard(ZNAMEn.n(++nval));
+        for (int n = 1;; n++) {
+            HeaderCard card = header.getCard(ZNAMEn.n(n));
+            if (card == null) {
+                return n;
+            }
+            if (getName().equals(card.getValue())) {
+                return n;
+            }
         }
-        return nval;
     }
 }
