@@ -193,8 +193,7 @@ public class CompressedTableHDU extends BinaryTableHDU {
      * Returns the number of table rows that are compressed in each table tile. This may be useful for figuring out what
      * tiles to decompress, e.g. via {@link #asBinaryTableHDU(int, int)}, when wanting to access select table rows only.
      * This value is stored under the FITS keyword ZTILELEN in the compressed header. Thus, this method simply provides
-     * a user-friendly way to access it. (If the header does not contain the keyword, it is assumed that the entire
-     * table is compressed into a single tile.
+     * a user-friendly way to access it. Note that the last tile may contain fewer rows than the value indicated by this
      * 
      * @return               the number of table rows that are compressed into a tile.
      * 
@@ -228,6 +227,7 @@ public class CompressedTableHDU extends BinaryTableHDU {
 
     /**
      * Restores a section of the original binary table HDU by decompressing a selected range of compressed table tiles.
+     * The returned section will start at row index <code>fromTile * getTileRows()</code> of the full table.
      * 
      * @param  fromTile                 Java index of first tile to decompress
      * @param  toTile                   Java index of last tile to decompress
@@ -252,13 +252,33 @@ public class CompressedTableHDU extends BinaryTableHDU {
         }
 
         // Set the correct number of rows
-        header.addValue(Standard.NAXIS2, toTile * tileSize - fromTile * tileSize);
+        int rows = getHeader().getIntValue(Compression.ZNAXISn.n(2));
+        header.addValue(Standard.NAXIS2, Integer.min(rows, toTile * tileSize) - fromTile * tileSize);
 
         BinaryTable data = BinaryTableHDU.manufactureData(header);
         BinaryTableHDU tableHDU = new BinaryTableHDU(header, data);
         getData().asBinaryTable(data, getHeader(), header, fromTile);
 
         return tableHDU;
+    }
+
+    /**
+     * Restores a section of the original binary table HDU by decompressing a single compressed table tile. The returned
+     * section will start at row index <code>tile * getTileRows()</code> of the full table.
+     * 
+     * @param  tile                     Java index of the table tile to decompress
+     * 
+     * @return                          The uncompressed binary table HDU from the selected compressed tile.
+     * 
+     * @throws IllegalArgumentException If the tile index is out of bounds
+     * @throws FitsException            If there was an issue with the decompression.
+     * 
+     * @see                             #asBinaryTableHDU(int, int)
+     * @see                             #getTileRows()
+     * @see                             #getTileCount()
+     */
+    public final BinaryTableHDU asBinaryTableHDU(int tile) throws FitsException, IllegalArgumentException {
+        return asBinaryTableHDU(tile, tile + 1);
     }
 
     /**

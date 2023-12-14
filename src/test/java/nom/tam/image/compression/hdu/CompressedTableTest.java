@@ -294,9 +294,9 @@ public class CompressedTableTest {
                 .fromBinaryTableHDU((BinaryTableHDU) fitsUncompressed.getHDU(1), tileSize).compress();
         compressedTable.compress();
 
-        BinaryTableHDU hdu = compressedTable.asBinaryTableHDU(1, 3);
+        BinaryTableHDU hdu = compressedTable.asBinaryTableHDU(1);
 
-        Assert.assertEquals(2 * tileSize, hdu.getNRows());
+        Assert.assertEquals(tileSize, hdu.getNRows());
 
         BinaryTableHDU hdu0 = (BinaryTableHDU) fitsUncompressed.getHDU(1);
 
