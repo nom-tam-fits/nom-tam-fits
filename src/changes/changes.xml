@@ -6,25 +6,29 @@
           Workaround for read-only FITS files on Windows network shares.
       </action>
       <action type="add" dev="attipaci" issue="488">
-          Targeted Data and HDU creation from Java objects via new Data+.from(Object) and
+          New targeted Data and HDU creation from Java objects via new Data+.from(Object) and
           Data+.toHDU() methods, replacing the now deprecated and unsafe 
-          HDU+.encapsulate(Object) methods.
+          [...]HDU.encapsulate(Object) methods.
       </action>
       <action type="add" dev="attipaci" issue="489">
-          Added Header.mergeDistinct(Header) method to allow copying non-conflicting header 
+          New Header.mergeDistinct(Header) method to allow copying non-conflicting header 
           keywords from one FITS header to another.
       </action>
       <action type="add" dev="attipaci" issue="492">
-          Added new access methods to parameters stored in RandomGroupsHDU types, in line with
+          New access methods to parameters stored in RandomGroupsHDU types, in line with
           the FITS specification.
       </action>
       <action type="add" dev="attipaci" issue="490">
-          Added inspection methods to UndefinedData class, to easily retrieve XTENSION type, 
+          New inspection methods to UndefinedData class, to easily retrieve XTENSION type, 
           BITPIX, and data size/shape information from HDUs containing unsupported data types.
       </action>
       <action type="add" dev="attipaci" issue="494">
           A better way to control how FITS I10 type columns are treated in ASCII tables, via
           static AsciiTable.setI10PreferInt(boolean) and .isI10PreferInt() methods.
+      </action>
+      <action type="add" dev="attipaci" issue="520">
+          New methods to make the decompression of selected CompressedTableHDU tiles 
+          even easier (and safer) to use.
       </action>
       <action type="update" dev="attipaci" issue="519">
           Demoted FitsException to be a soft exception, extending IllegalStateException. As
