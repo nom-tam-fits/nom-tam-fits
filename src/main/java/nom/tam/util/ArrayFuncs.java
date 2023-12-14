@@ -239,12 +239,14 @@ public final class ArrayFuncs {
     /**
      * Curl an input array up into a multi-dimensional array.
      *
-     * @param  input  The one dimensional array to be curled.
-     * @param  dimens The desired dimensions
+     * @param  input                 The one dimensional array to be curled.
+     * @param  dimens                The desired dimensions
      *
-     * @return        The curled array.
+     * @return                       The curled array.
+     * 
+     * @throws IllegalStateException if the size of the input does not match the specified dimensions.
      */
-    public static Object curl(Object input, int... dimens) {
+    public static Object curl(Object input, int... dimens) throws IllegalStateException {
         if (input == null) {
             return null;
         }

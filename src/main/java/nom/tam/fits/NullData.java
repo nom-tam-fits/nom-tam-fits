@@ -59,14 +59,10 @@ public final class NullData extends ImageData {
         head.setBitpix(Bitpix.INTEGER);
         head.setNaxes(0);
 
-        try {
-            // Just in case!
-            head.addValue(EXTEND, true);
-            head.addValue(GCOUNT, 1);
-            head.addValue(PCOUNT, 0);
-        } catch (HeaderCardException e) {
-            // we don't really care...
-        }
+        // Just in case!
+        head.addValue(EXTEND, true);
+        head.addValue(GCOUNT, 1);
+        head.addValue(PCOUNT, 0);
     }
 
     @Override

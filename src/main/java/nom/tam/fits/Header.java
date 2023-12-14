@@ -2473,13 +2473,7 @@ public class Header implements FitsElement {
             }
         }
         // End cannot have a comment
-
-        try {
-            iter.add(HeaderCard.createCommentStyleCard(END.key(), null));
-        } catch (HeaderCardException e) {
-            // Cannot happen.
-        }
-
+        iter.add(HeaderCard.createCommentStyleCard(END.key(), null));
     }
 
     /**

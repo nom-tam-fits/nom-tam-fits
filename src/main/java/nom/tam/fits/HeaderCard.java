@@ -1753,27 +1753,22 @@ public class HeaderCard implements CursorValue<String>, Cloneable {
      * This method was designed for use internally. It is 'safe' (not save!) in the sense that the runtime exception it
      * may throw does not need to be caught.
      *
-     * @param      key                   keyword
-     * @param      comment               optional comment, or <code>null</code>
-     * @param      hasValue              does this card have a (<code>null</code>) value field? If <code>true</code> a
-     *                                       null value of type <code>String.class</code> is assumed (for backward
-     *                                       compatibility).
+     * @param      key                 keyword
+     * @param      comment             optional comment, or <code>null</code>
+     * @param      hasValue            does this card have a (<code>null</code>) value field? If <code>true</code> a
+     *                                     null value of type <code>String.class</code> is assumed (for backward
+     *                                     compatibility).
      *
-     * @return                           the new HeaderCard
+     * @return                         the new HeaderCard
      *
-     * @throws     IllegalStateException if the card could not be created for some reason (noted as the cause).
+     * @throws     HeaderCardException if the card could not be created for some reason (noted as the cause).
      *
-     * @deprecated                       This was to be used internally only, without public visibility. It will become
-     *                                       unexposed to users in a future release...
+     * @deprecated                     This was to be used internally only, without public visibility. It will become
+     *                                     unexposed to users in a future release...
      */
     @Deprecated
-    public static HeaderCard saveNewHeaderCard(String key, String comment, boolean hasValue) throws IllegalStateException {
-        try {
-            return new HeaderCard(key, null, comment, hasValue ? String.class : null);
-        } catch (HeaderCardException e) {
-            LOG.log(Level.SEVERE, "Impossible Exception for internal card creation:" + key, e);
-            throw new IllegalStateException(e);
-        }
+    public static HeaderCard saveNewHeaderCard(String key, String comment, boolean hasValue) throws HeaderCardException {
+        return new HeaderCard(key, null, comment, hasValue ? String.class : null);
     }
 
     /**

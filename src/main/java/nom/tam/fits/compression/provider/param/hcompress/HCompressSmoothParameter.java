@@ -1,5 +1,7 @@
 package nom.tam.fits.compression.provider.param.hcompress;
 
+import nom.tam.fits.Header;
+
 /*
  * #%L
  * nom.tam FITS library
@@ -32,8 +34,8 @@ package nom.tam.fits.compression.provider.param.hcompress;
  */
 
 import nom.tam.fits.HeaderCard;
+import nom.tam.fits.HeaderCardException;
 import nom.tam.fits.compression.algorithm.hcompress.HCompressorOption;
-import nom.tam.fits.compression.provider.param.api.IHeaderAccess;
 import nom.tam.fits.compression.provider.param.base.CompressHeaderParameter;
 import nom.tam.fits.header.Compression;
 
@@ -50,7 +52,7 @@ public final class HCompressSmoothParameter extends CompressHeaderParameter<HCom
     }
 
     @Override
-    public void getValueFromHeader(IHeaderAccess header) {
+    public void getValueFromHeader(Header header) throws HeaderCardException {
         HeaderCard value = findZVal(header);
         if (value != null) {
             getOption().setSmooth(value.getValue(Integer.class, 0) != 0);
@@ -58,7 +60,7 @@ public final class HCompressSmoothParameter extends CompressHeaderParameter<HCom
     }
 
     @Override
-    public void setValueInHeader(IHeaderAccess header) {
+    public void setValueInHeader(Header header) throws HeaderCardException {
         int zvalIndex = nextFreeZVal(header);
         header.addValue(Compression.ZNAMEn.n(zvalIndex), getName());
         header.addValue(Compression.ZVALn.n(zvalIndex), getOption().isSmooth() ? 1 : 0);

@@ -246,13 +246,9 @@ public class RandomGroupsData extends Data {
 
     @SuppressWarnings("deprecation")
     @Override
-    public RandomGroupsHDU toHDU() throws IllegalStateException {
+    public RandomGroupsHDU toHDU() throws FitsException {
         Header h = new Header();
-        try {
-            fillHeader(h);
-        } catch (FitsException e) {
-            throw new IllegalStateException(e.getMessage(), e);
-        }
+        fillHeader(h);
         return new RandomGroupsHDU(h, this);
     }
 

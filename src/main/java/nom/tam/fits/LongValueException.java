@@ -40,7 +40,7 @@ package nom.tam.fits;
  * @author Attila Kovacs
  * @since 1.16
  */
-public class LongValueException extends IllegalStateException {
+public class LongValueException extends FitsException {
 
     /**
      *

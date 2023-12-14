@@ -39,7 +39,7 @@ package nom.tam.fits;
  * @see FitsFactory#setUseHierarch(boolean)
  * @since 1.16
  */
-public class HierarchNotEnabledException extends IllegalStateException {
+public class HierarchNotEnabledException extends FitsException {
 
     /**
      *

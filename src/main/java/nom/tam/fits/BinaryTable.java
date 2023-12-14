@@ -283,9 +283,7 @@ public class BinaryTable extends AbstractTableData implements Cloneable {
         /**
          * Sets the maximum length of string elements in this column.
          *
-         * @param  len                   The fixed string length in bytes.
-         * 
-         * @throws IllegalStateException if this is not a String column.
+         * @param len The fixed string length in bytes.
          */
         private void setStringLength(int len) {
             stringLength = len;
@@ -1280,38 +1278,33 @@ public class BinaryTable extends AbstractTableData implements Cloneable {
      * constructor, you should assume that it will not use anything beyond what's available in any generic vanilla
      * column table.
      *
-     * @param      tab                   the column table to create the binary table from. It must be a regular column
-     *                                       table that contains regular data of scalar or fixed 1D arrays only (not
-     *                                       heap pointers). No information beyond what a generic vanilla column table
-     *                                       provides will be used. Column tables don't store imensions for their
-     *                                       elements, and don't have variable-sized entries. Thus, if the table was the
-     *                                       used in another binary table to store flattened multidimensional data,
-     *                                       we'll detect that data as 1D arrays. Andm if the table was used to store
-     *                                       heap pointers for variable length arrays, we'll detect these as regular
-     *                                       <code>int[2]</code> or <code>long[2]</code> values.
+     * @param      tab           the column table to create the binary table from. It must be a regular column table
+     *                               that contains regular data of scalar or fixed 1D arrays only (not heap pointers).
+     *                               No information beyond what a generic vanilla column table provides will be used.
+     *                               Column tables don't store imensions for their elements, and don't have
+     *                               variable-sized entries. Thus, if the table was the used in another binary table to
+     *                               store flattened multidimensional data, we'll detect that data as 1D arrays. Andm if
+     *                               the table was used to store heap pointers for variable length arrays, we'll detect
+     *                               these as regular <code>int[2]</code> or <code>long[2]</code> values.
      * 
-     * @deprecated                       DO NOT USE -- it will be removed in the future.
+     * @deprecated               DO NOT USE -- it will be removed in the future.
      * 
-     * @throws     IllegalStateException if the table could not be copied and threw a
-     *                                       {@link nom.tam.util.TableException}, which is preserved as the cause.
+     * @throws     FitsException if the table could not be copied and threw a {@link nom.tam.util.TableException}, which
+     *                               is preserved as the cause.
      * 
-     * @see                              #copy()
+     * @see                      #copy()
      */
-    public BinaryTable(ColumnTable<?> tab) throws IllegalStateException {
+    public BinaryTable(ColumnTable<?> tab) throws FitsException {
         this();
 
-        try {
-            table = new ColumnTable<>();
-            nRow = tab.getNRows();
-            columns = new ArrayList<>();
+        table = new ColumnTable<>();
+        nRow = tab.getNRows();
+        columns = new ArrayList<>();
 
-            for (int i = 0; i < tab.getNCols(); i++) {
-                int n = tab.getElementSize(i);
-                ColumnDesc c = new ColumnDesc(tab.getElementClass(i), n > 1 ? new int[] {n} : SINGLETON_SHAPE);
-                addFlattenedColumn(tab.getColumn(i), nRow, c, true);
-            }
-        } catch (FitsException e) {
-            throw new IllegalStateException(e.getMessage(), e);
+        for (int i = 0; i < tab.getNCols(); i++) {
+            int n = tab.getElementSize(i);
+            ColumnDesc c = new ColumnDesc(tab.getElementClass(i), n > 1 ? new int[] {n} : SINGLETON_SHAPE);
+            addFlattenedColumn(tab.getColumn(i), nRow, c, true);
         }
     }
 
@@ -2167,19 +2160,14 @@ public class BinaryTable extends AbstractTableData implements Cloneable {
     }
 
     /**
-     * @deprecated                       (<i>for internal use</i>) It may be private in the future.
+     * @deprecated               (<i>for internal use</i>) It may be private in the future.
      * 
-     * @return                           An array with flattened data, in which each column's data is represented by a
-     *                                       1D array
+     * @return                   An array with flattened data, in which each column's data is represented by a 1D array
      * 
-     * @throws     IllegalStateException if the reading of the data failed.
+     * @throws     FitsException if the reading of the data failed.
      */
-    public Object[] getFlatColumns() throws IllegalStateException {
-        try {
-            ensureData();
-        } catch (FitsException e) {
-            throw new IllegalStateException("Reading of data failed: " + e.getMessage(), e);
-        }
+    public Object[] getFlatColumns() throws FitsException {
+        ensureData();
         return table.getColumns();
     }
 
@@ -3530,13 +3518,9 @@ public class BinaryTable extends AbstractTableData implements Cloneable {
      *                 it would make a better private method in there.. `
      */
     protected void addByteVaryingColumn() {
-        try {
-            ColumnDesc c = ColumnDesc.createForVariableSize(byte.class);
-            columns.add(c);
-            table.addColumn(c.newInstance(nRow), c.getTableBaseCount());
-        } catch (FitsException e) {
-            // Should not happen
-        }
+        ColumnDesc c = ColumnDesc.createForVariableSize(byte.class);
+        columns.add(c);
+        table.addColumn(c.newInstance(nRow), c.getTableBaseCount());
     }
 
     /**
@@ -3877,13 +3861,9 @@ public class BinaryTable extends AbstractTableData implements Cloneable {
     }
 
     @Override
-    public BinaryTableHDU toHDU() throws IllegalStateException {
+    public BinaryTableHDU toHDU() throws FitsException {
         Header h = new Header();
-        try {
-            fillHeader(h);
-        } catch (FitsException e) {
-            throw new IllegalStateException(e.getMessage(), e);
-        }
+        fillHeader(h);
         return new BinaryTableHDU(h, this);
     }
 }

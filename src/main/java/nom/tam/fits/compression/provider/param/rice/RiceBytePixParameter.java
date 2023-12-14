@@ -1,5 +1,7 @@
 package nom.tam.fits.compression.provider.param.rice;
 
+import nom.tam.fits.Header;
+
 /*
  * #%L
  * nom.tam FITS library
@@ -32,8 +34,8 @@ package nom.tam.fits.compression.provider.param.rice;
  */
 
 import nom.tam.fits.HeaderCard;
+import nom.tam.fits.HeaderCardException;
 import nom.tam.fits.compression.algorithm.rice.RiceCompressOption;
-import nom.tam.fits.compression.provider.param.api.IHeaderAccess;
 import nom.tam.fits.compression.provider.param.base.CompressHeaderParameter;
 import nom.tam.fits.header.Compression;
 
@@ -52,7 +54,7 @@ public final class RiceBytePixParameter extends CompressHeaderParameter<RiceComp
     }
 
     @Override
-    public void getValueFromHeader(IHeaderAccess header) {
+    public void getValueFromHeader(Header header) throws HeaderCardException {
         HeaderCard value = findZVal(header);
         if (value != null) {
             getOption().setBytePix(value.getValue(Integer.class, getOption().getBytePix()));
@@ -62,7 +64,7 @@ public final class RiceBytePixParameter extends CompressHeaderParameter<RiceComp
     }
 
     @Override
-    public void setValueInHeader(IHeaderAccess header) {
+    public void setValueInHeader(Header header) throws HeaderCardException {
         int zvalIndex = nextFreeZVal(header);
         header.addValue(Compression.ZNAMEn.n(zvalIndex), getName());
         header.addValue(Compression.ZVALn.n(zvalIndex), getOption().getBytePix());

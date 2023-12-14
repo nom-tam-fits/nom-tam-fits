@@ -39,7 +39,7 @@ package nom.tam.fits;
  * @see FitsFactory#setLongStringsEnabled(boolean)
  * @since 1.16
  */
-public class LongStringsNotEnabledException extends IllegalStateException {
+public class LongStringsNotEnabledException extends FitsException {
 
     /**
      *

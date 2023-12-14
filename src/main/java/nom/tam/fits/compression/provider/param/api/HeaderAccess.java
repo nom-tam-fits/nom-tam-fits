@@ -33,9 +33,7 @@ package nom.tam.fits.compression.provider.param.api;
 
 import nom.tam.fits.Header;
 import nom.tam.fits.HeaderCard;
-import nom.tam.fits.HeaderCardBuilder;
 import nom.tam.fits.HeaderCardException;
-import nom.tam.fits.header.IFitsHeader;
 
 /**
  * (<i>for internal use</i>) Access to FITS header values with runtime exceptions only. Regular header access throws
@@ -44,13 +42,17 @@ import nom.tam.fits.header.IFitsHeader;
  * least until the next major code revision (major version 2 at the earliest). So this class provides an alternative
  * access to headers converting any <code>HeaderCardException</code>s to {@link IllegalArgumentException}.
  * 
- * @see Header
+ * @see        Header
+ * 
+ * @deprecated This class serves no purpose since 1.19. Will remove in some future. Prior to 1.19 {@link Header} threw
+ *                 hard {@link HeaderCardException}, and this class was added so we can convert these into soft
+ *                 {@link IllegalArgumentException} instead. However, now that we demoted
+ *                 <code>HeaderCardException</code> to be soft exceptions itself, there is no reason to convert. It just
+ *                 adds confusion.
  */
 public class HeaderAccess implements IHeaderAccess {
 
     private final Header header;
-
-    private HeaderCardBuilder builder;
 
     /**
      * <p>
@@ -64,40 +66,16 @@ public class HeaderAccess implements IHeaderAccess {
         this.header = header;
     }
 
+    /**
+     * Returns the header that this class is providing access to.
+     * 
+     * @return the Header that we access through this class
+     * 
+     * @since  1.19
+     */
     @Override
-    public void addValue(IFitsHeader key, int value) {
-        try {
-            card(key).value(value);
-        } catch (HeaderCardException e) {
-            throw new IllegalArgumentException("header card could not be created: " + e.getMessage(), e);
-        }
-    }
-
-    @Override
-    public void addValue(IFitsHeader key, String value) {
-        try {
-            card(key).value(value);
-        } catch (HeaderCardException e) {
-            throw new IllegalArgumentException("header card could not be created " + e.getMessage(), e);
-        }
-    }
-
-    @Override
-    public HeaderCard findCard(IFitsHeader key) {
-        return header.getCard(key);
-    }
-
-    @Override
-    public HeaderCard findCard(String key) {
-        return header.getCard(key);
-    }
-
-    private HeaderCardBuilder card(IFitsHeader key) {
-        if (builder == null) {
-            builder = header.card(key);
-            return builder;
-        }
-        return builder.card(key);
+    public final Header getHeader() {
+        return header;
     }
 
 }
