@@ -127,7 +127,7 @@ public abstract class BufferEncoder extends FitsEncoder {
      * @throws IllegalStateException if there was an IO error flushing the conversion buffer or writing the new byte
      *                                   after it.
      */
-    protected void writeUncheckedByte(byte b) {
+    protected void writeUncheckedByte(byte b) throws IllegalStateException {
         try {
             flush();
             write(b);

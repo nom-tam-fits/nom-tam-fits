@@ -283,9 +283,7 @@ public class BinaryTable extends AbstractTableData implements Cloneable {
         /**
          * Sets the maximum length of string elements in this column.
          *
-         * @param  len                   The fixed string length in bytes.
-         * 
-         * @throws IllegalStateException if this is not a String column.
+         * @param len The fixed string length in bytes.
          */
         private void setStringLength(int len) {
             stringLength = len;

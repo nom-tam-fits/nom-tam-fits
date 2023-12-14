@@ -280,15 +280,12 @@ public class RandomGroupsHDU extends BasicHDU<RandomGroupsData> {
     /**
      * Create an HDU from the given header and data.
      * 
-     * @deprecated                       (<i>for internal use</i>) Its visibility should be reduced to package level in
-     *                                       the future.
+     * @deprecated        (<i>for internal use</i>) Its visibility should be reduced to package level in the future.
      *
-     * @param      header                header to use
-     * @param      data                  data to use
-     * 
-     * @throws     IllegalStateException if the header does not contain a valid BITPIX value.
+     * @param      header header to use
+     * @param      data   data to use
      */
-    public RandomGroupsHDU(Header header, RandomGroupsData data) throws IllegalStateException {
+    public RandomGroupsHDU(Header header, RandomGroupsData data) {
         super(header, data);
 
         if (header == null) {

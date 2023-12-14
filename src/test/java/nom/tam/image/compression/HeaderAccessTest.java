@@ -34,12 +34,14 @@ package nom.tam.image.compression;
 import org.junit.Assert;
 import org.junit.Test;
 
+import nom.tam.fits.BinaryTable;
 import nom.tam.fits.Header;
 import nom.tam.fits.HeaderCard;
 import nom.tam.fits.compression.algorithm.hcompress.HCompressorOption;
 import nom.tam.fits.compression.provider.param.api.HeaderAccess;
 import nom.tam.fits.compression.provider.param.api.HeaderCardAccess;
 import nom.tam.fits.compression.provider.param.api.ICompressHeaderParameter;
+import nom.tam.fits.compression.provider.param.base.CompressHeaderParameter;
 import nom.tam.fits.compression.provider.param.hcompress.HCompressParameters;
 import nom.tam.fits.header.Standard;
 
@@ -63,6 +65,10 @@ public class HeaderAccessTest {
         Assert.assertNotNull(c);
         Assert.assertEquals(Standard.XTENSION.key(), c.getKey());
         Assert.assertEquals("Test", c.getValue());
+
+        // Check if findCard(String) returns the same as findCard(IFitsHeader)
+        Assert.assertEquals(ha.findCard(Standard.BITPIX), ha.findCard(Standard.BITPIX.key()));
+        Assert.assertEquals(ha.findCard(Standard.XTENSION), ha.findCard(Standard.XTENSION.key()));
     }
 
     @Test
@@ -94,6 +100,8 @@ public class HeaderAccessTest {
         o1.setScale(2);
         o1.setSmooth(true);
 
+        o1.getCompressionParameters().initializeColumns(ha, new BinaryTable(), 1);
+
         final HCompressorOption o2 = new HCompressorOption();
         o2.setScale(3);
         o2.setSmooth(false);
@@ -114,8 +122,17 @@ public class HeaderAccessTest {
 
         // Write o1 parameters into the header, and read them back into o2 individually
         hp1.setValuesInHeader(ha);
+        boolean usedIndex[] = new boolean[hp2.headerParameters().length + 1];
+
         for (ICompressHeaderParameter p2 : hp2.headerParameters()) {
             p2.getValueFromHeader(ha);
+
+            CompressHeaderParameter<?> cp2 = (CompressHeaderParameter<?>) p2;
+            Assert.assertNotNull(cp2.findZVal(ha));
+            int idx = cp2.nextFreeZVal(ha);
+
+            Assert.assertFalse(usedIndex[idx]);
+            usedIndex[idx] = true;
         }
 
         Assert.assertEquals(2, o2.getScale());
