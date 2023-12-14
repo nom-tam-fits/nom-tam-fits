@@ -13,8 +13,10 @@ import org.junit.Test;
 import nom.tam.fits.BinaryTable;
 import nom.tam.fits.BinaryTableHDU;
 import nom.tam.fits.Fits;
+import nom.tam.fits.FitsException;
 import nom.tam.fits.Header;
 import nom.tam.fits.HeaderCard;
+import nom.tam.fits.header.Compression;
 import nom.tam.fits.header.IFitsHeader;
 import nom.tam.fits.header.Standard;
 import nom.tam.fits.util.BlackBoxImages;
@@ -292,9 +294,9 @@ public class CompressedTableTest {
                 .fromBinaryTableHDU((BinaryTableHDU) fitsUncompressed.getHDU(1), tileSize).compress();
         compressedTable.compress();
 
-        BinaryTableHDU hdu = compressedTable.asBinaryTableHDU(1, 3);
+        BinaryTableHDU hdu = compressedTable.asBinaryTableHDU(1);
 
-        Assert.assertEquals(2 * tileSize, hdu.getNRows());
+        Assert.assertEquals(tileSize, hdu.getNRows());
 
         BinaryTableHDU hdu0 = (BinaryTableHDU) fitsUncompressed.getHDU(1);
 
@@ -407,6 +409,30 @@ public class CompressedTableTest {
         compressedTable.getColumnData(0, 1, compressedTable.getNRows() + 1);
     }
 
+    @Test(expected = FitsException.class)
+    public void testB12TableDecompressNoZTILELEN() throws Exception {
+        Fits fitsUncompressed = new Fits("src/test/resources/nom/tam/table/comp/bt12.fits");
+        int tileSize = 5;
+
+        CompressedTableHDU compressedTable = CompressedTableHDU
+                .fromBinaryTableHDU((BinaryTableHDU) fitsUncompressed.getHDU(1), tileSize).compress();
+        compressedTable.compress();
+        compressedTable.getHeader().deleteKey(Compression.ZTILELEN);
+        compressedTable.getTileRows(); // Throws exception...
+    }
+
+    @Test(expected = FitsException.class)
+    public void testB12TableDecompressInvalidZTILELEN() throws Exception {
+        Fits fitsUncompressed = new Fits("src/test/resources/nom/tam/table/comp/bt12.fits");
+        int tileSize = 5;
+
+        CompressedTableHDU compressedTable = CompressedTableHDU
+                .fromBinaryTableHDU((BinaryTableHDU) fitsUncompressed.getHDU(1), tileSize).compress();
+        compressedTable.compress();
+        compressedTable.addValue(Compression.ZTILELEN, 0);
+        compressedTable.getTileRows(); // Throws exception...
+    }
+
     @Test
     public void testB12TableDecompressEmptyRange() throws Exception {
         Fits fitsUncompressed = new Fits("src/test/resources/nom/tam/table/comp/bt12.fits");
@@ -416,6 +442,39 @@ public class CompressedTableTest {
                 .fromBinaryTableHDU((BinaryTableHDU) fitsUncompressed.getHDU(1), tileSize).compress();
         compressedTable.compress();
         Assert.assertNull(compressedTable.getColumnData(0, 1, 1));
+    }
+
+    @Test(expected = IllegalArgumentException.class)
+    public void testB12TableDecompressInvalidTileFrom() throws Exception {
+        Fits fitsUncompressed = new Fits("src/test/resources/nom/tam/table/comp/bt12.fits");
+        int tileSize = 5;
+
+        CompressedTableHDU compressedTable = CompressedTableHDU
+                .fromBinaryTableHDU((BinaryTableHDU) fitsUncompressed.getHDU(1), tileSize).compress();
+        compressedTable.compress();
+        compressedTable.asBinaryTableHDU(-1);
+    }
+
+    @Test(expected = IllegalArgumentException.class)
+    public void testB12TableDecompressInvalidTileTo() throws Exception {
+        Fits fitsUncompressed = new Fits("src/test/resources/nom/tam/table/comp/bt12.fits");
+        int tileSize = 5;
+
+        CompressedTableHDU compressedTable = CompressedTableHDU
+                .fromBinaryTableHDU((BinaryTableHDU) fitsUncompressed.getHDU(1), tileSize).compress();
+        compressedTable.compress();
+        compressedTable.asBinaryTableHDU(0, compressedTable.getTileCount() + 1);
+    }
+
+    @Test(expected = IllegalArgumentException.class)
+    public void testB12TableDecompressEmptyTileRange() throws Exception {
+        Fits fitsUncompressed = new Fits("src/test/resources/nom/tam/table/comp/bt12.fits");
+        int tileSize = 5;
+
+        CompressedTableHDU compressedTable = CompressedTableHDU
+                .fromBinaryTableHDU((BinaryTableHDU) fitsUncompressed.getHDU(1), tileSize).compress();
+        compressedTable.compress();
+        compressedTable.asBinaryTableHDU(0, 0);
     }
 
 }
