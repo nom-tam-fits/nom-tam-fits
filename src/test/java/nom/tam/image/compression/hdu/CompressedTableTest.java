@@ -444,4 +444,37 @@ public class CompressedTableTest {
         Assert.assertNull(compressedTable.getColumnData(0, 1, 1));
     }
 
+    @Test(expected = IllegalArgumentException.class)
+    public void testB12TableDecompressInvalidTileFrom() throws Exception {
+        Fits fitsUncompressed = new Fits("src/test/resources/nom/tam/table/comp/bt12.fits");
+        int tileSize = 5;
+
+        CompressedTableHDU compressedTable = CompressedTableHDU
+                .fromBinaryTableHDU((BinaryTableHDU) fitsUncompressed.getHDU(1), tileSize).compress();
+        compressedTable.compress();
+        compressedTable.asBinaryTableHDU(-1);
+    }
+
+    @Test(expected = IllegalArgumentException.class)
+    public void testB12TableDecompressInvalidTileTo() throws Exception {
+        Fits fitsUncompressed = new Fits("src/test/resources/nom/tam/table/comp/bt12.fits");
+        int tileSize = 5;
+
+        CompressedTableHDU compressedTable = CompressedTableHDU
+                .fromBinaryTableHDU((BinaryTableHDU) fitsUncompressed.getHDU(1), tileSize).compress();
+        compressedTable.compress();
+        compressedTable.asBinaryTableHDU(0, compressedTable.getTileCount() + 1);
+    }
+
+    @Test(expected = IllegalArgumentException.class)
+    public void testB12TableDecompressEmptyTileRange() throws Exception {
+        Fits fitsUncompressed = new Fits("src/test/resources/nom/tam/table/comp/bt12.fits");
+        int tileSize = 5;
+
+        CompressedTableHDU compressedTable = CompressedTableHDU
+                .fromBinaryTableHDU((BinaryTableHDU) fitsUncompressed.getHDU(1), tileSize).compress();
+        compressedTable.compress();
+        compressedTable.asBinaryTableHDU(0, 0);
+    }
+
 }
