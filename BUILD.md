@@ -4,7 +4,7 @@ Starting with version 1.14 the FITS library uses a number of features that
 make Maven the recommended method for building the FITS library. These instructions 
 are provided for a Unix/Linux but can be easily adapted for other platforms (such
 as Windows or MacOS X) also (Architecture independence is one reason using tools like 
-Maven in nice!)
+Maven is nice!)
 
 1. Grab the source from 
   [github.com/nom-tam-fits/nom-tam-fits](https://github.com/nom.tam.fits/nom.tam.fits) 
@@ -53,8 +53,8 @@ Maven in nice!)
   This will check and compile the source, create the jars, runs the tests suite, 
   builds the javadocs, checks for bugs, and builds the web-site locally.
 
-  The JARs can be found under the `target/` directory (sorry there is also a lot of 
-  junk there from the tests. The full API documentation can be found under 
+  The JARs can be found under the `target/` directory (sorry, there is also a lot of 
+  junk there from the tests_. The full API documentation can be found under 
   `target/apidocs`, while the more restricted set of Public User API documentation is 
   under `target/site/apidocs`. The local web-site including the Getting Started guide, 
   unit test coverage information, changelog, etc are under `target/site` (you can 

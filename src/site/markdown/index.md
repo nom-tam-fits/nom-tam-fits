@@ -60,9 +60,6 @@ extract or complete the description of data to its full extent, for example to i
 [FITS standard](https://fits.gsfc.nasa.gov/fits_standard.html) and conventions described therein to be effective users 
 of this library. 
 
-This library was originally written in Java 1.0 and therefore its design and implementation were strongly influenced 
-by the limited functionality and efficiencies of early versions of Java.
-
 This is an open-source, community maintained, project hosted on github as 
 [nom-tam-fits](https://github.com/nom-tam-fits/nom-tam-fits). Further information and documentation, including API 
 docs, can be found on the [project site](https://nom-tam-fits.github.io/nom-tam-fits/index.html).
@@ -264,7 +261,7 @@ use the data from the FITS files.
 <a name="reading-cutouts"></a>
 #### Reading selected parts of an image only (cutouts)
 
-Since ersion __1.18__, it is possible to read select cutouts of large images, including sparse sampling of specific 
+Since version __1.18__, it is possible to read select cutouts of large images, including sparse sampling of specific 
 image regions. When reading image data users may not want to read an entire array especially if the data is very 
 large. An `ImageTiler` can be used to read in only a portion of an array. The user can specify a box (or a sequence of 
 boxes) within the image and extract the desired subsets. `ImageTiler` can be used for any image. The library will try 
