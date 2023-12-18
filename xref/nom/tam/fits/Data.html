@@ -446,11 +446,11 @@
 <a class="jxr_linenumber" name="L438" href="#L438">438</a> <em class="jxr_javadoccomment">     * Returns an approprotae HDU object that encapsulates this FITS data, and contains the minimal mandatory header</em>
 <a class="jxr_linenumber" name="L439" href="#L439">439</a> <em class="jxr_javadoccomment">     * description for that data.</em>
 <a class="jxr_linenumber" name="L440" href="#L440">440</a> <em class="jxr_javadoccomment">     * </em>
-<a class="jxr_linenumber" name="L441" href="#L441">441</a> <em class="jxr_javadoccomment">     * @throws IllegalStateException If the data cannot be converted to an HDU for some reason.</em>
+<a class="jxr_linenumber" name="L441" href="#L441">441</a> <em class="jxr_javadoccomment">     * @throws FitsException If the data cannot be converted to an HDU for some reason.</em>
 <a class="jxr_linenumber" name="L442" href="#L442">442</a> <em class="jxr_javadoccomment">     * </em>
-<a class="jxr_linenumber" name="L443" href="#L443">443</a> <em class="jxr_javadoccomment">     * @return                       a HDU object ocntaining the data and its minimal required header description</em>
+<a class="jxr_linenumber" name="L443" href="#L443">443</a> <em class="jxr_javadoccomment">     * @return               a HDU object ocntaining the data and its minimal required header description</em>
 <a class="jxr_linenumber" name="L444" href="#L444">444</a> <em class="jxr_javadoccomment">     */</em>
-<a class="jxr_linenumber" name="L445" href="#L445">445</a>     <strong class="jxr_keyword">public</strong> <strong class="jxr_keyword">abstract</strong> BasicHDU&lt;?&gt; toHDU() <strong class="jxr_keyword">throws</strong> IllegalStateException;
+<a class="jxr_linenumber" name="L445" href="#L445">445</a>     <strong class="jxr_keyword">public</strong> <strong class="jxr_keyword">abstract</strong> BasicHDU&lt;?&gt; toHDU() <strong class="jxr_keyword">throws</strong> FitsException;
 <a class="jxr_linenumber" name="L446" href="#L446">446</a> }
 </pre>
 <hr/>

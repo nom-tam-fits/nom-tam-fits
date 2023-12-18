@@ -398,16 +398,12 @@
 <a class="jxr_linenumber" name="L390" href="#L390">390</a> 
 <a class="jxr_linenumber" name="L391" href="#L391">391</a>     @Override
 <a class="jxr_linenumber" name="L392" href="#L392">392</a>     @SuppressWarnings(<span class="jxr_string">"deprecation"</span>)
-<a class="jxr_linenumber" name="L393" href="#L393">393</a>     <strong class="jxr_keyword">public</strong> <a name="ImageHDU" href="../../../nom/tam/fits/ImageHDU.html#ImageHDU">ImageHDU</a> toHDU() <strong class="jxr_keyword">throws</strong> IllegalStateException {
+<a class="jxr_linenumber" name="L393" href="#L393">393</a>     <strong class="jxr_keyword">public</strong> <a name="ImageHDU" href="../../../nom/tam/fits/ImageHDU.html#ImageHDU">ImageHDU</a> toHDU() <strong class="jxr_keyword">throws</strong> <a name="FitsException" href="../../../nom/tam/fits/FitsException.html#FitsException">FitsException</a> {
 <a class="jxr_linenumber" name="L394" href="#L394">394</a>         <a name="Header" href="../../../nom/tam/fits/Header.html#Header">Header</a> h = <strong class="jxr_keyword">new</strong> <a name="Header" href="../../../nom/tam/fits/Header.html#Header">Header</a>();
-<a class="jxr_linenumber" name="L395" href="#L395">395</a>         <strong class="jxr_keyword">try</strong> {
-<a class="jxr_linenumber" name="L396" href="#L396">396</a>             fillHeader(h);
-<a class="jxr_linenumber" name="L397" href="#L397">397</a>         } <strong class="jxr_keyword">catch</strong> (<a name="FitsException" href="../../../nom/tam/fits/FitsException.html#FitsException">FitsException</a> e) {
-<a class="jxr_linenumber" name="L398" href="#L398">398</a>             <strong class="jxr_keyword">throw</strong> <strong class="jxr_keyword">new</strong> IllegalStateException(e.getMessage(), e);
-<a class="jxr_linenumber" name="L399" href="#L399">399</a>         }
-<a class="jxr_linenumber" name="L400" href="#L400">400</a>         <strong class="jxr_keyword">return</strong> <strong class="jxr_keyword">new</strong> <a name="ImageHDU" href="../../../nom/tam/fits/ImageHDU.html#ImageHDU">ImageHDU</a>(h, <strong class="jxr_keyword">this</strong>);
-<a class="jxr_linenumber" name="L401" href="#L401">401</a>     }
-<a class="jxr_linenumber" name="L402" href="#L402">402</a> }
+<a class="jxr_linenumber" name="L395" href="#L395">395</a>         fillHeader(h);
+<a class="jxr_linenumber" name="L396" href="#L396">396</a>         <strong class="jxr_keyword">return</strong> <strong class="jxr_keyword">new</strong> <a name="ImageHDU" href="../../../nom/tam/fits/ImageHDU.html#ImageHDU">ImageHDU</a>(h, <strong class="jxr_keyword">this</strong>);
+<a class="jxr_linenumber" name="L397" href="#L397">397</a>     }
+<a class="jxr_linenumber" name="L398" href="#L398">398</a> }
 </pre>
 <hr/>
 <div id="footer">Copyright &#169; 1996&#x2013;2023 nom-tam-fits. All rights reserved.</div>

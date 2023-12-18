@@ -8,118 +8,120 @@
 <div id="overview"><a href="../../../../../../../../apidocs/nom/tam/fits/compression/provider/param/quant/ZDither0Parameter.html">View Javadoc</a></div><pre>
 <a class="jxr_linenumber" name="L1" href="#L1">1</a>   <strong class="jxr_keyword">package</strong> nom.tam.fits.compression.provider.param.quant;
 <a class="jxr_linenumber" name="L2" href="#L2">2</a>   
-<a class="jxr_linenumber" name="L3" href="#L3">3</a>   <em class="jxr_comment">/*</em>
-<a class="jxr_linenumber" name="L4" href="#L4">4</a>   <em class="jxr_comment"> * #%L</em>
-<a class="jxr_linenumber" name="L5" href="#L5">5</a>   <em class="jxr_comment"> * nom.tam FITS library</em>
-<a class="jxr_linenumber" name="L6" href="#L6">6</a>   <em class="jxr_comment"> * %%</em>
-<a class="jxr_linenumber" name="L7" href="#L7">7</a>   <em class="jxr_comment"> * Copyright (C) 1996 - 2021 nom-tam-fits</em>
+<a class="jxr_linenumber" name="L3" href="#L3">3</a>   <strong class="jxr_keyword">import</strong> nom.tam.fits.Header;
+<a class="jxr_linenumber" name="L4" href="#L4">4</a>   
+<a class="jxr_linenumber" name="L5" href="#L5">5</a>   <em class="jxr_comment">/*</em>
+<a class="jxr_linenumber" name="L6" href="#L6">6</a>   <em class="jxr_comment"> * #%L</em>
+<a class="jxr_linenumber" name="L7" href="#L7">7</a>   <em class="jxr_comment"> * nom.tam FITS library</em>
 <a class="jxr_linenumber" name="L8" href="#L8">8</a>   <em class="jxr_comment"> * %%</em>
-<a class="jxr_linenumber" name="L9" href="#L9">9</a>   <em class="jxr_comment"> * This is free and unencumbered software released into the public domain.</em>
-<a class="jxr_linenumber" name="L10" href="#L10">10</a>  <em class="jxr_comment"> *</em>
-<a class="jxr_linenumber" name="L11" href="#L11">11</a>  <em class="jxr_comment"> * Anyone is free to copy, modify, publish, use, compile, sell, or</em>
-<a class="jxr_linenumber" name="L12" href="#L12">12</a>  <em class="jxr_comment"> * distribute this software, either in source code form or as a compiled</em>
-<a class="jxr_linenumber" name="L13" href="#L13">13</a>  <em class="jxr_comment"> * binary, for any purpose, commercial or non-commercial, and by any</em>
-<a class="jxr_linenumber" name="L14" href="#L14">14</a>  <em class="jxr_comment"> * means.</em>
-<a class="jxr_linenumber" name="L15" href="#L15">15</a>  <em class="jxr_comment"> *</em>
-<a class="jxr_linenumber" name="L16" href="#L16">16</a>  <em class="jxr_comment"> * In jurisdictions that recognize copyright laws, the author or authors</em>
-<a class="jxr_linenumber" name="L17" href="#L17">17</a>  <em class="jxr_comment"> * of this software dedicate any and all copyright interest in the</em>
-<a class="jxr_linenumber" name="L18" href="#L18">18</a>  <em class="jxr_comment"> * software to the public domain. We make this dedication for the benefit</em>
-<a class="jxr_linenumber" name="L19" href="#L19">19</a>  <em class="jxr_comment"> * of the public at large and to the detriment of our heirs and</em>
-<a class="jxr_linenumber" name="L20" href="#L20">20</a>  <em class="jxr_comment"> * successors. We intend this dedication to be an overt act of</em>
-<a class="jxr_linenumber" name="L21" href="#L21">21</a>  <em class="jxr_comment"> * relinquishment in perpetuity of all present and future rights to this</em>
-<a class="jxr_linenumber" name="L22" href="#L22">22</a>  <em class="jxr_comment"> * software under copyright law.</em>
-<a class="jxr_linenumber" name="L23" href="#L23">23</a>  <em class="jxr_comment"> *</em>
-<a class="jxr_linenumber" name="L24" href="#L24">24</a>  <em class="jxr_comment"> * THE SOFTWARE IS PROVIDED "AS IS", WITHOUT WARRANTY OF ANY KIND,</em>
-<a class="jxr_linenumber" name="L25" href="#L25">25</a>  <em class="jxr_comment"> * EXPRESS OR IMPLIED, INCLUDING BUT NOT LIMITED TO THE WARRANTIES OF</em>
-<a class="jxr_linenumber" name="L26" href="#L26">26</a>  <em class="jxr_comment"> * MERCHANTABILITY, FITNESS FOR A PARTICULAR PURPOSE AND NONINFRINGEMENT.</em>
-<a class="jxr_linenumber" name="L27" href="#L27">27</a>  <em class="jxr_comment"> * IN NO EVENT SHALL THE AUTHORS BE LIABLE FOR ANY CLAIM, DAMAGES OR</em>
-<a class="jxr_linenumber" name="L28" href="#L28">28</a>  <em class="jxr_comment"> * OTHER LIABILITY, WHETHER IN AN ACTION OF CONTRACT, TORT OR OTHERWISE,</em>
-<a class="jxr_linenumber" name="L29" href="#L29">29</a>  <em class="jxr_comment"> * ARISING FROM, OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR</em>
-<a class="jxr_linenumber" name="L30" href="#L30">30</a>  <em class="jxr_comment"> * OTHER DEALINGS IN THE SOFTWARE.</em>
-<a class="jxr_linenumber" name="L31" href="#L31">31</a>  <em class="jxr_comment"> * #L%</em>
-<a class="jxr_linenumber" name="L32" href="#L32">32</a>  <em class="jxr_comment"> */</em>
-<a class="jxr_linenumber" name="L33" href="#L33">33</a>  
-<a class="jxr_linenumber" name="L34" href="#L34">34</a>  <strong class="jxr_keyword">import</strong> nom.tam.fits.HeaderCard;
-<a class="jxr_linenumber" name="L35" href="#L35">35</a>  <strong class="jxr_keyword">import</strong> nom.tam.fits.compression.algorithm.quant.QuantizeOption;
-<a class="jxr_linenumber" name="L36" href="#L36">36</a>  <strong class="jxr_keyword">import</strong> nom.tam.fits.compression.provider.param.api.IHeaderAccess;
-<a class="jxr_linenumber" name="L37" href="#L37">37</a>  <strong class="jxr_keyword">import</strong> nom.tam.fits.compression.provider.param.base.CompressHeaderParameter;
-<a class="jxr_linenumber" name="L38" href="#L38">38</a>  <strong class="jxr_keyword">import</strong> nom.tam.fits.header.Compression;
-<a class="jxr_linenumber" name="L39" href="#L39">39</a>  
-<a class="jxr_linenumber" name="L40" href="#L40">40</a>  <em class="jxr_javadoccomment">/**</em>
-<a class="jxr_linenumber" name="L41" href="#L41">41</a>  <em class="jxr_javadoccomment"> * (&lt;i&gt;for internal use&lt;/i&gt;) The The random seed initialization parameter as recorded in the FITS header.</em>
-<a class="jxr_linenumber" name="L42" href="#L42">42</a>  <em class="jxr_javadoccomment"> * &lt;p&gt;</em>
-<a class="jxr_linenumber" name="L43" href="#L43">43</a>  <em class="jxr_javadoccomment"> * The storing of the random seed provides consistent dither implementations. Dithering adds a small amount of noise (at</em>
-<a class="jxr_linenumber" name="L44" href="#L44">44</a>  <em class="jxr_javadoccomment"> * the level of the quantization level increments) to remove possible systematics biases of the quantization. Since the</em>
-<a class="jxr_linenumber" name="L45" href="#L45">45</a>  <em class="jxr_javadoccomment"> * quantization (integer representation of floating-point values) is inherently lossy (noisy) the added dithering noise</em>
-<a class="jxr_linenumber" name="L46" href="#L46">46</a>  <em class="jxr_javadoccomment"> * is generally inconsequential in terms of preseving information in the original image. As such, the image can be</em>
-<a class="jxr_linenumber" name="L47" href="#L47">47</a>  <em class="jxr_javadoccomment"> * recovered close enough to the original, within the level of the quantization noise, without knowing the exact random</em>
-<a class="jxr_linenumber" name="L48" href="#L48">48</a>  <em class="jxr_javadoccomment"> * sequence that was used to generate the dither.</em>
-<a class="jxr_linenumber" name="L49" href="#L49">49</a>  <em class="jxr_javadoccomment"> * &lt;/p&gt;</em>
-<a class="jxr_linenumber" name="L50" href="#L50">50</a>  <em class="jxr_javadoccomment"> * &lt;p&gt;</em>
-<a class="jxr_linenumber" name="L51" href="#L51">51</a>  <em class="jxr_javadoccomment"> * However, The FITS standard requires that when dithering is used in the compression the same tool (or library) should</em>
-<a class="jxr_linenumber" name="L52" href="#L52">52</a>  <em class="jxr_javadoccomment"> * also undo the dithering exactly using the same sequence of random numbers as was used when compressing the image.</em>
-<a class="jxr_linenumber" name="L53" href="#L53">53</a>  <em class="jxr_javadoccomment"> * Furthermore, the standard makes some explicit suggestions on how pseudo-random sequences should be generated, and</em>
-<a class="jxr_linenumber" name="L54" href="#L54">54</a>  <em class="jxr_javadoccomment"> * offers a specific convention for an algorithm that may be used to provide consistent dithering across tools,</em>
-<a class="jxr_linenumber" name="L55" href="#L55">55</a>  <em class="jxr_javadoccomment"> * platforms, and library implementations.</em>
-<a class="jxr_linenumber" name="L56" href="#L56">56</a>  <em class="jxr_javadoccomment"> * &lt;/p&gt;</em>
-<a class="jxr_linenumber" name="L57" href="#L57">57</a>  <em class="jxr_javadoccomment"> * &lt;p&gt;</em>
-<a class="jxr_linenumber" name="L58" href="#L58">58</a>  <em class="jxr_javadoccomment"> * For the dithering to be reversible, the FITS header should store the integer value, usually between 1 and 10000</em>
-<a class="jxr_linenumber" name="L59" href="#L59">59</a>  <em class="jxr_javadoccomment"> * inclusive, under the &lt;code&gt;ZDITHER0&lt;/code&gt; keyword to indicate the value (random sequence index) that was used for</em>
-<a class="jxr_linenumber" name="L60" href="#L60">60</a>  <em class="jxr_javadoccomment"> * seeding the random number generator according to the described standard.</em>
-<a class="jxr_linenumber" name="L61" href="#L61">61</a>  <em class="jxr_javadoccomment"> * &lt;/p&gt;</em>
-<a class="jxr_linenumber" name="L62" href="#L62">62</a>  <em class="jxr_javadoccomment"> * &lt;p&gt;</em>
-<a class="jxr_linenumber" name="L63" href="#L63">63</a>  <em class="jxr_javadoccomment"> * The nom-tam FITS library implements the suggested convention for the random number generator, and this parameter</em>
-<a class="jxr_linenumber" name="L64" href="#L64">64</a>  <em class="jxr_javadoccomment"> * deals with recording the corresponding random seed value via the &lt;code&gt;ZDITHER0&lt;/code&gt; keyword in the compressed</em>
-<a class="jxr_linenumber" name="L65" href="#L65">65</a>  <em class="jxr_javadoccomment"> * image headers; as well as retrieving this value to seed the random number generator when decompressing the image, in</em>
-<a class="jxr_linenumber" name="L66" href="#L66">66</a>  <em class="jxr_javadoccomment"> * a way that is consistent with the FITS standard and recommended convention.</em>
-<a class="jxr_linenumber" name="L67" href="#L67">67</a>  <em class="jxr_javadoccomment"> * &lt;/p&gt;</em>
-<a class="jxr_linenumber" name="L68" href="#L68">68</a>  <em class="jxr_javadoccomment"> *</em>
-<a class="jxr_linenumber" name="L69" href="#L69">69</a>  <em class="jxr_javadoccomment"> * @author Attila Kovacs</em>
-<a class="jxr_linenumber" name="L70" href="#L70">70</a>  <em class="jxr_javadoccomment"> */</em>
-<a class="jxr_linenumber" name="L71" href="#L71">71</a>  <strong class="jxr_keyword">final</strong> <strong class="jxr_keyword">class</strong> <a name="ZDither0Parameter" href="../../../../../../../nom/tam/fits/compression/provider/param/quant/ZDither0Parameter.html#ZDither0Parameter">ZDither0Parameter</a> <strong class="jxr_keyword">extends</strong> CompressHeaderParameter&lt;QuantizeOption&gt; {
-<a class="jxr_linenumber" name="L72" href="#L72">72</a>  
-<a class="jxr_linenumber" name="L73" href="#L73">73</a>      <em class="jxr_javadoccomment">/**</em>
-<a class="jxr_linenumber" name="L74" href="#L74">74</a>  <em class="jxr_javadoccomment">     * Creates a new compression parameter that can be used to configure the quantization options when cmpressing /</em>
-<a class="jxr_linenumber" name="L75" href="#L75">75</a>  <em class="jxr_javadoccomment">     * decompressing image tiles.</em>
-<a class="jxr_linenumber" name="L76" href="#L76">76</a>  <em class="jxr_javadoccomment">     *</em>
-<a class="jxr_linenumber" name="L77" href="#L77">77</a>  <em class="jxr_javadoccomment">     * @param quantizeOption The quantization option that will be configured using this particular parameter.</em>
-<a class="jxr_linenumber" name="L78" href="#L78">78</a>  <em class="jxr_javadoccomment">     */</em>
-<a class="jxr_linenumber" name="L79" href="#L79">79</a>      <a name="ZDither0Parameter" href="../../../../../../../nom/tam/fits/compression/provider/param/quant/ZDither0Parameter.html#ZDither0Parameter">ZDither0Parameter</a>(<a name="QuantizeOption" href="../../../../../../../nom/tam/fits/compression/algorithm/quant/QuantizeOption.html#QuantizeOption">QuantizeOption</a> quantizeOption) {
-<a class="jxr_linenumber" name="L80" href="#L80">80</a>          <strong class="jxr_keyword">super</strong>(Compression.ZDITHER0.name(), quantizeOption);
-<a class="jxr_linenumber" name="L81" href="#L81">81</a>      }
-<a class="jxr_linenumber" name="L82" href="#L82">82</a>  
-<a class="jxr_linenumber" name="L83" href="#L83">83</a>      @Override
-<a class="jxr_linenumber" name="L84" href="#L84">84</a>      <strong class="jxr_keyword">public</strong> <strong class="jxr_keyword">void</strong> getValueFromHeader(<a name="IHeaderAccess" href="../../../../../../../nom/tam/fits/compression/provider/param/api/IHeaderAccess.html#IHeaderAccess">IHeaderAccess</a> header) {
-<a class="jxr_linenumber" name="L85" href="#L85">85</a>          <strong class="jxr_keyword">if</strong> (getOption() == <strong class="jxr_keyword">null</strong>) {
-<a class="jxr_linenumber" name="L86" href="#L86">86</a>              <strong class="jxr_keyword">return</strong>;
-<a class="jxr_linenumber" name="L87" href="#L87">87</a>          }
-<a class="jxr_linenumber" name="L88" href="#L88">88</a>  
-<a class="jxr_linenumber" name="L89" href="#L89">89</a>          <a name="HeaderCard" href="../../../../../../../nom/tam/fits/HeaderCard.html#HeaderCard">HeaderCard</a> card = header.findCard(Compression.ZDITHER0);
-<a class="jxr_linenumber" name="L90" href="#L90">90</a>          getOption().setSeed(card == <strong class="jxr_keyword">null</strong> ? 1L : card.getValue(Long.<strong class="jxr_keyword">class</strong>, 1L));
-<a class="jxr_linenumber" name="L91" href="#L91">91</a>      }
-<a class="jxr_linenumber" name="L92" href="#L92">92</a>  
-<a class="jxr_linenumber" name="L93" href="#L93">93</a>      @Override
-<a class="jxr_linenumber" name="L94" href="#L94">94</a>      <strong class="jxr_keyword">public</strong> <strong class="jxr_keyword">void</strong> setValueInHeader(<a name="IHeaderAccess" href="../../../../../../../nom/tam/fits/compression/provider/param/api/IHeaderAccess.html#IHeaderAccess">IHeaderAccess</a> header) {
-<a class="jxr_linenumber" name="L95" href="#L95">95</a>          <strong class="jxr_keyword">if</strong> (getOption() == <strong class="jxr_keyword">null</strong>) {
-<a class="jxr_linenumber" name="L96" href="#L96">96</a>              <strong class="jxr_keyword">return</strong>;
-<a class="jxr_linenumber" name="L97" href="#L97">97</a>          }
-<a class="jxr_linenumber" name="L98" href="#L98">98</a>  
-<a class="jxr_linenumber" name="L99" href="#L99">99</a>          header.addValue(Compression.ZDITHER0, (<strong class="jxr_keyword">int</strong>) getOption().getSeed());
-<a class="jxr_linenumber" name="L100" href="#L100">100</a>     }
-<a class="jxr_linenumber" name="L101" href="#L101">101</a> 
-<a class="jxr_linenumber" name="L102" href="#L102">102</a>     <em class="jxr_javadoccomment">/**</em>
-<a class="jxr_linenumber" name="L103" href="#L103">103</a> <em class="jxr_javadoccomment">     * Seeds the random generator for the specific tile</em>
-<a class="jxr_linenumber" name="L104" href="#L104">104</a> <em class="jxr_javadoccomment">     *</em>
-<a class="jxr_linenumber" name="L105" href="#L105">105</a> <em class="jxr_javadoccomment">     * @param  index                the 0-based tile index.</em>
+<a class="jxr_linenumber" name="L9" href="#L9">9</a>   <em class="jxr_comment"> * Copyright (C) 1996 - 2021 nom-tam-fits</em>
+<a class="jxr_linenumber" name="L10" href="#L10">10</a>  <em class="jxr_comment"> * %%</em>
+<a class="jxr_linenumber" name="L11" href="#L11">11</a>  <em class="jxr_comment"> * This is free and unencumbered software released into the public domain.</em>
+<a class="jxr_linenumber" name="L12" href="#L12">12</a>  <em class="jxr_comment"> *</em>
+<a class="jxr_linenumber" name="L13" href="#L13">13</a>  <em class="jxr_comment"> * Anyone is free to copy, modify, publish, use, compile, sell, or</em>
+<a class="jxr_linenumber" name="L14" href="#L14">14</a>  <em class="jxr_comment"> * distribute this software, either in source code form or as a compiled</em>
+<a class="jxr_linenumber" name="L15" href="#L15">15</a>  <em class="jxr_comment"> * binary, for any purpose, commercial or non-commercial, and by any</em>
+<a class="jxr_linenumber" name="L16" href="#L16">16</a>  <em class="jxr_comment"> * means.</em>
+<a class="jxr_linenumber" name="L17" href="#L17">17</a>  <em class="jxr_comment"> *</em>
+<a class="jxr_linenumber" name="L18" href="#L18">18</a>  <em class="jxr_comment"> * In jurisdictions that recognize copyright laws, the author or authors</em>
+<a class="jxr_linenumber" name="L19" href="#L19">19</a>  <em class="jxr_comment"> * of this software dedicate any and all copyright interest in the</em>
+<a class="jxr_linenumber" name="L20" href="#L20">20</a>  <em class="jxr_comment"> * software to the public domain. We make this dedication for the benefit</em>
+<a class="jxr_linenumber" name="L21" href="#L21">21</a>  <em class="jxr_comment"> * of the public at large and to the detriment of our heirs and</em>
+<a class="jxr_linenumber" name="L22" href="#L22">22</a>  <em class="jxr_comment"> * successors. We intend this dedication to be an overt act of</em>
+<a class="jxr_linenumber" name="L23" href="#L23">23</a>  <em class="jxr_comment"> * relinquishment in perpetuity of all present and future rights to this</em>
+<a class="jxr_linenumber" name="L24" href="#L24">24</a>  <em class="jxr_comment"> * software under copyright law.</em>
+<a class="jxr_linenumber" name="L25" href="#L25">25</a>  <em class="jxr_comment"> *</em>
+<a class="jxr_linenumber" name="L26" href="#L26">26</a>  <em class="jxr_comment"> * THE SOFTWARE IS PROVIDED "AS IS", WITHOUT WARRANTY OF ANY KIND,</em>
+<a class="jxr_linenumber" name="L27" href="#L27">27</a>  <em class="jxr_comment"> * EXPRESS OR IMPLIED, INCLUDING BUT NOT LIMITED TO THE WARRANTIES OF</em>
+<a class="jxr_linenumber" name="L28" href="#L28">28</a>  <em class="jxr_comment"> * MERCHANTABILITY, FITNESS FOR A PARTICULAR PURPOSE AND NONINFRINGEMENT.</em>
+<a class="jxr_linenumber" name="L29" href="#L29">29</a>  <em class="jxr_comment"> * IN NO EVENT SHALL THE AUTHORS BE LIABLE FOR ANY CLAIM, DAMAGES OR</em>
+<a class="jxr_linenumber" name="L30" href="#L30">30</a>  <em class="jxr_comment"> * OTHER LIABILITY, WHETHER IN AN ACTION OF CONTRACT, TORT OR OTHERWISE,</em>
+<a class="jxr_linenumber" name="L31" href="#L31">31</a>  <em class="jxr_comment"> * ARISING FROM, OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR</em>
+<a class="jxr_linenumber" name="L32" href="#L32">32</a>  <em class="jxr_comment"> * OTHER DEALINGS IN THE SOFTWARE.</em>
+<a class="jxr_linenumber" name="L33" href="#L33">33</a>  <em class="jxr_comment"> * #L%</em>
+<a class="jxr_linenumber" name="L34" href="#L34">34</a>  <em class="jxr_comment"> */</em>
+<a class="jxr_linenumber" name="L35" href="#L35">35</a>  
+<a class="jxr_linenumber" name="L36" href="#L36">36</a>  <strong class="jxr_keyword">import</strong> nom.tam.fits.HeaderCard;
+<a class="jxr_linenumber" name="L37" href="#L37">37</a>  <strong class="jxr_keyword">import</strong> nom.tam.fits.HeaderCardException;
+<a class="jxr_linenumber" name="L38" href="#L38">38</a>  <strong class="jxr_keyword">import</strong> nom.tam.fits.compression.algorithm.quant.QuantizeOption;
+<a class="jxr_linenumber" name="L39" href="#L39">39</a>  <strong class="jxr_keyword">import</strong> nom.tam.fits.compression.provider.param.base.CompressHeaderParameter;
+<a class="jxr_linenumber" name="L40" href="#L40">40</a>  <strong class="jxr_keyword">import</strong> nom.tam.fits.header.Compression;
+<a class="jxr_linenumber" name="L41" href="#L41">41</a>  
+<a class="jxr_linenumber" name="L42" href="#L42">42</a>  <em class="jxr_javadoccomment">/**</em>
+<a class="jxr_linenumber" name="L43" href="#L43">43</a>  <em class="jxr_javadoccomment"> * (&lt;i&gt;for internal use&lt;/i&gt;) The The random seed initialization parameter as recorded in the FITS header.</em>
+<a class="jxr_linenumber" name="L44" href="#L44">44</a>  <em class="jxr_javadoccomment"> * &lt;p&gt;</em>
+<a class="jxr_linenumber" name="L45" href="#L45">45</a>  <em class="jxr_javadoccomment"> * The storing of the random seed provides consistent dither implementations. Dithering adds a small amount of noise (at</em>
+<a class="jxr_linenumber" name="L46" href="#L46">46</a>  <em class="jxr_javadoccomment"> * the level of the quantization level increments) to remove possible systematics biases of the quantization. Since the</em>
+<a class="jxr_linenumber" name="L47" href="#L47">47</a>  <em class="jxr_javadoccomment"> * quantization (integer representation of floating-point values) is inherently lossy (noisy) the added dithering noise</em>
+<a class="jxr_linenumber" name="L48" href="#L48">48</a>  <em class="jxr_javadoccomment"> * is generally inconsequential in terms of preseving information in the original image. As such, the image can be</em>
+<a class="jxr_linenumber" name="L49" href="#L49">49</a>  <em class="jxr_javadoccomment"> * recovered close enough to the original, within the level of the quantization noise, without knowing the exact random</em>
+<a class="jxr_linenumber" name="L50" href="#L50">50</a>  <em class="jxr_javadoccomment"> * sequence that was used to generate the dither.</em>
+<a class="jxr_linenumber" name="L51" href="#L51">51</a>  <em class="jxr_javadoccomment"> * &lt;/p&gt;</em>
+<a class="jxr_linenumber" name="L52" href="#L52">52</a>  <em class="jxr_javadoccomment"> * &lt;p&gt;</em>
+<a class="jxr_linenumber" name="L53" href="#L53">53</a>  <em class="jxr_javadoccomment"> * However, The FITS standard requires that when dithering is used in the compression the same tool (or library) should</em>
+<a class="jxr_linenumber" name="L54" href="#L54">54</a>  <em class="jxr_javadoccomment"> * also undo the dithering exactly using the same sequence of random numbers as was used when compressing the image.</em>
+<a class="jxr_linenumber" name="L55" href="#L55">55</a>  <em class="jxr_javadoccomment"> * Furthermore, the standard makes some explicit suggestions on how pseudo-random sequences should be generated, and</em>
+<a class="jxr_linenumber" name="L56" href="#L56">56</a>  <em class="jxr_javadoccomment"> * offers a specific convention for an algorithm that may be used to provide consistent dithering across tools,</em>
+<a class="jxr_linenumber" name="L57" href="#L57">57</a>  <em class="jxr_javadoccomment"> * platforms, and library implementations.</em>
+<a class="jxr_linenumber" name="L58" href="#L58">58</a>  <em class="jxr_javadoccomment"> * &lt;/p&gt;</em>
+<a class="jxr_linenumber" name="L59" href="#L59">59</a>  <em class="jxr_javadoccomment"> * &lt;p&gt;</em>
+<a class="jxr_linenumber" name="L60" href="#L60">60</a>  <em class="jxr_javadoccomment"> * For the dithering to be reversible, the FITS header should store the integer value, usually between 1 and 10000</em>
+<a class="jxr_linenumber" name="L61" href="#L61">61</a>  <em class="jxr_javadoccomment"> * inclusive, under the &lt;code&gt;ZDITHER0&lt;/code&gt; keyword to indicate the value (random sequence index) that was used for</em>
+<a class="jxr_linenumber" name="L62" href="#L62">62</a>  <em class="jxr_javadoccomment"> * seeding the random number generator according to the described standard.</em>
+<a class="jxr_linenumber" name="L63" href="#L63">63</a>  <em class="jxr_javadoccomment"> * &lt;/p&gt;</em>
+<a class="jxr_linenumber" name="L64" href="#L64">64</a>  <em class="jxr_javadoccomment"> * &lt;p&gt;</em>
+<a class="jxr_linenumber" name="L65" href="#L65">65</a>  <em class="jxr_javadoccomment"> * The nom-tam FITS library implements the suggested convention for the random number generator, and this parameter</em>
+<a class="jxr_linenumber" name="L66" href="#L66">66</a>  <em class="jxr_javadoccomment"> * deals with recording the corresponding random seed value via the &lt;code&gt;ZDITHER0&lt;/code&gt; keyword in the compressed</em>
+<a class="jxr_linenumber" name="L67" href="#L67">67</a>  <em class="jxr_javadoccomment"> * image headers; as well as retrieving this value to seed the random number generator when decompressing the image, in</em>
+<a class="jxr_linenumber" name="L68" href="#L68">68</a>  <em class="jxr_javadoccomment"> * a way that is consistent with the FITS standard and recommended convention.</em>
+<a class="jxr_linenumber" name="L69" href="#L69">69</a>  <em class="jxr_javadoccomment"> * &lt;/p&gt;</em>
+<a class="jxr_linenumber" name="L70" href="#L70">70</a>  <em class="jxr_javadoccomment"> *</em>
+<a class="jxr_linenumber" name="L71" href="#L71">71</a>  <em class="jxr_javadoccomment"> * @author Attila Kovacs</em>
+<a class="jxr_linenumber" name="L72" href="#L72">72</a>  <em class="jxr_javadoccomment"> */</em>
+<a class="jxr_linenumber" name="L73" href="#L73">73</a>  <strong class="jxr_keyword">final</strong> <strong class="jxr_keyword">class</strong> <a name="ZDither0Parameter" href="../../../../../../../nom/tam/fits/compression/provider/param/quant/ZDither0Parameter.html#ZDither0Parameter">ZDither0Parameter</a> <strong class="jxr_keyword">extends</strong> CompressHeaderParameter&lt;QuantizeOption&gt; {
+<a class="jxr_linenumber" name="L74" href="#L74">74</a>  
+<a class="jxr_linenumber" name="L75" href="#L75">75</a>      <em class="jxr_javadoccomment">/**</em>
+<a class="jxr_linenumber" name="L76" href="#L76">76</a>  <em class="jxr_javadoccomment">     * Creates a new compression parameter that can be used to configure the quantization options when cmpressing /</em>
+<a class="jxr_linenumber" name="L77" href="#L77">77</a>  <em class="jxr_javadoccomment">     * decompressing image tiles.</em>
+<a class="jxr_linenumber" name="L78" href="#L78">78</a>  <em class="jxr_javadoccomment">     *</em>
+<a class="jxr_linenumber" name="L79" href="#L79">79</a>  <em class="jxr_javadoccomment">     * @param quantizeOption The quantization option that will be configured using this particular parameter.</em>
+<a class="jxr_linenumber" name="L80" href="#L80">80</a>  <em class="jxr_javadoccomment">     */</em>
+<a class="jxr_linenumber" name="L81" href="#L81">81</a>      <a name="ZDither0Parameter" href="../../../../../../../nom/tam/fits/compression/provider/param/quant/ZDither0Parameter.html#ZDither0Parameter">ZDither0Parameter</a>(<a name="QuantizeOption" href="../../../../../../../nom/tam/fits/compression/algorithm/quant/QuantizeOption.html#QuantizeOption">QuantizeOption</a> quantizeOption) {
+<a class="jxr_linenumber" name="L82" href="#L82">82</a>          <strong class="jxr_keyword">super</strong>(Compression.ZDITHER0.name(), quantizeOption);
+<a class="jxr_linenumber" name="L83" href="#L83">83</a>      }
+<a class="jxr_linenumber" name="L84" href="#L84">84</a>  
+<a class="jxr_linenumber" name="L85" href="#L85">85</a>      @Override
+<a class="jxr_linenumber" name="L86" href="#L86">86</a>      <strong class="jxr_keyword">public</strong> <strong class="jxr_keyword">void</strong> getValueFromHeader(<a name="Header" href="../../../../../../../nom/tam/fits/Header.html#Header">Header</a> header) <strong class="jxr_keyword">throws</strong> <a name="HeaderCardException" href="../../../../../../../nom/tam/fits/HeaderCardException.html#HeaderCardException">HeaderCardException</a> {
+<a class="jxr_linenumber" name="L87" href="#L87">87</a>          <strong class="jxr_keyword">if</strong> (getOption() == <strong class="jxr_keyword">null</strong>) {
+<a class="jxr_linenumber" name="L88" href="#L88">88</a>              <strong class="jxr_keyword">return</strong>;
+<a class="jxr_linenumber" name="L89" href="#L89">89</a>          }
+<a class="jxr_linenumber" name="L90" href="#L90">90</a>  
+<a class="jxr_linenumber" name="L91" href="#L91">91</a>          <a name="HeaderCard" href="../../../../../../../nom/tam/fits/HeaderCard.html#HeaderCard">HeaderCard</a> card = header.getCard(Compression.ZDITHER0);
+<a class="jxr_linenumber" name="L92" href="#L92">92</a>          getOption().setSeed(card == <strong class="jxr_keyword">null</strong> ? 1L : card.getValue(Long.<strong class="jxr_keyword">class</strong>, 1L));
+<a class="jxr_linenumber" name="L93" href="#L93">93</a>      }
+<a class="jxr_linenumber" name="L94" href="#L94">94</a>  
+<a class="jxr_linenumber" name="L95" href="#L95">95</a>      @Override
+<a class="jxr_linenumber" name="L96" href="#L96">96</a>      <strong class="jxr_keyword">public</strong> <strong class="jxr_keyword">void</strong> setValueInHeader(<a name="Header" href="../../../../../../../nom/tam/fits/Header.html#Header">Header</a> header) <strong class="jxr_keyword">throws</strong> <a name="HeaderCardException" href="../../../../../../../nom/tam/fits/HeaderCardException.html#HeaderCardException">HeaderCardException</a> {
+<a class="jxr_linenumber" name="L97" href="#L97">97</a>          <strong class="jxr_keyword">if</strong> (getOption() == <strong class="jxr_keyword">null</strong>) {
+<a class="jxr_linenumber" name="L98" href="#L98">98</a>              <strong class="jxr_keyword">return</strong>;
+<a class="jxr_linenumber" name="L99" href="#L99">99</a>          }
+<a class="jxr_linenumber" name="L100" href="#L100">100</a> 
+<a class="jxr_linenumber" name="L101" href="#L101">101</a>         header.addValue(Compression.ZDITHER0, (<strong class="jxr_keyword">int</strong>) getOption().getSeed());
+<a class="jxr_linenumber" name="L102" href="#L102">102</a>     }
+<a class="jxr_linenumber" name="L103" href="#L103">103</a> 
+<a class="jxr_linenumber" name="L104" href="#L104">104</a>     <em class="jxr_javadoccomment">/**</em>
+<a class="jxr_linenumber" name="L105" href="#L105">105</a> <em class="jxr_javadoccomment">     * Seeds the random generator for the specific tile</em>
 <a class="jxr_linenumber" name="L106" href="#L106">106</a> <em class="jxr_javadoccomment">     *</em>
-<a class="jxr_linenumber" name="L107" href="#L107">107</a> <em class="jxr_javadoccomment">     * @throws NullPointerException if the parameter is no linked to a {@link QuantizeOption} instance (that is</em>
-<a class="jxr_linenumber" name="L108" href="#L108">108</a> <em class="jxr_javadoccomment">     *                                  &lt;code&gt;null&lt;/code&gt; was specified in the constructor).</em>
-<a class="jxr_linenumber" name="L109" href="#L109">109</a> <em class="jxr_javadoccomment">     */</em>
-<a class="jxr_linenumber" name="L110" href="#L110">110</a>     <strong class="jxr_keyword">void</strong> setTileIndex(<strong class="jxr_keyword">int</strong> index) <strong class="jxr_keyword">throws</strong> NullPointerException {
-<a class="jxr_linenumber" name="L111" href="#L111">111</a>         getOption().setTileIndex(index);
-<a class="jxr_linenumber" name="L112" href="#L112">112</a>     }
-<a class="jxr_linenumber" name="L113" href="#L113">113</a> 
-<a class="jxr_linenumber" name="L114" href="#L114">114</a> }
+<a class="jxr_linenumber" name="L107" href="#L107">107</a> <em class="jxr_javadoccomment">     * @param  index                the 0-based tile index.</em>
+<a class="jxr_linenumber" name="L108" href="#L108">108</a> <em class="jxr_javadoccomment">     *</em>
+<a class="jxr_linenumber" name="L109" href="#L109">109</a> <em class="jxr_javadoccomment">     * @throws NullPointerException if the parameter is no linked to a {@link QuantizeOption} instance (that is</em>
+<a class="jxr_linenumber" name="L110" href="#L110">110</a> <em class="jxr_javadoccomment">     *                                  &lt;code&gt;null&lt;/code&gt; was specified in the constructor).</em>
+<a class="jxr_linenumber" name="L111" href="#L111">111</a> <em class="jxr_javadoccomment">     */</em>
+<a class="jxr_linenumber" name="L112" href="#L112">112</a>     <strong class="jxr_keyword">void</strong> setTileIndex(<strong class="jxr_keyword">int</strong> index) <strong class="jxr_keyword">throws</strong> NullPointerException {
+<a class="jxr_linenumber" name="L113" href="#L113">113</a>         getOption().setTileIndex(index);
+<a class="jxr_linenumber" name="L114" href="#L114">114</a>     }
+<a class="jxr_linenumber" name="L115" href="#L115">115</a> 
+<a class="jxr_linenumber" name="L116" href="#L116">116</a> }
 </pre>
 <hr/>
 <div id="footer">Copyright &#169; 1996&#x2013;2023 nom-tam-fits. All rights reserved.</div>

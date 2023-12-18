@@ -2481,294 +2481,288 @@
 <a class="jxr_linenumber" name="L2473" href="#L2473">2473</a>             }
 <a class="jxr_linenumber" name="L2474" href="#L2474">2474</a>         }
 <a class="jxr_linenumber" name="L2475" href="#L2475">2475</a>         <em class="jxr_comment">// End cannot have a comment</em>
-<a class="jxr_linenumber" name="L2476" href="#L2476">2476</a> 
-<a class="jxr_linenumber" name="L2477" href="#L2477">2477</a>         <strong class="jxr_keyword">try</strong> {
-<a class="jxr_linenumber" name="L2478" href="#L2478">2478</a>             iter.add(HeaderCard.createCommentStyleCard(END.key(), <strong class="jxr_keyword">null</strong>));
-<a class="jxr_linenumber" name="L2479" href="#L2479">2479</a>         } <strong class="jxr_keyword">catch</strong> (<a name="HeaderCardException" href="../../../nom/tam/fits/HeaderCardException.html#HeaderCardException">HeaderCardException</a> e) {
-<a class="jxr_linenumber" name="L2480" href="#L2480">2480</a>             <em class="jxr_comment">// Cannot happen.</em>
-<a class="jxr_linenumber" name="L2481" href="#L2481">2481</a>         }
-<a class="jxr_linenumber" name="L2482" href="#L2482">2482</a> 
-<a class="jxr_linenumber" name="L2483" href="#L2483">2483</a>     }
-<a class="jxr_linenumber" name="L2484" href="#L2484">2484</a> 
-<a class="jxr_linenumber" name="L2485" href="#L2485">2485</a>     <em class="jxr_javadoccomment">/**</em>
-<a class="jxr_linenumber" name="L2486" href="#L2486">2486</a> <em class="jxr_javadoccomment">     * Is this a valid header.</em>
-<a class="jxr_linenumber" name="L2487" href="#L2487">2487</a> <em class="jxr_javadoccomment">     *</em>
-<a class="jxr_linenumber" name="L2488" href="#L2488">2488</a> <em class="jxr_javadoccomment">     * @return &lt;CODE&gt;true&lt;/CODE&gt; for a valid header, &lt;CODE&gt;false&lt;/CODE&gt; otherwise.</em>
-<a class="jxr_linenumber" name="L2489" href="#L2489">2489</a> <em class="jxr_javadoccomment">     */</em>
-<a class="jxr_linenumber" name="L2490" href="#L2490">2490</a>     <em class="jxr_comment">// TODO retire?</em>
-<a class="jxr_linenumber" name="L2491" href="#L2491">2491</a>     <strong class="jxr_keyword">private</strong> <strong class="jxr_keyword">boolean</strong> isValidHeader() {
-<a class="jxr_linenumber" name="L2492" href="#L2492">2492</a>         <strong class="jxr_keyword">if</strong> (getNumberOfCards() &lt; MIN_NUMBER_OF_CARDS_FOR_VALID_HEADER) {
-<a class="jxr_linenumber" name="L2493" href="#L2493">2493</a>             <strong class="jxr_keyword">return</strong> false;
-<a class="jxr_linenumber" name="L2494" href="#L2494">2494</a>         }
-<a class="jxr_linenumber" name="L2495" href="#L2495">2495</a>         Cursor&lt;String, HeaderCard&gt; iter = iterator();
-<a class="jxr_linenumber" name="L2496" href="#L2496">2496</a>         String key = iter.next().getKey();
-<a class="jxr_linenumber" name="L2497" href="#L2497">2497</a>         <strong class="jxr_keyword">if</strong> (!key.equals(SIMPLE.key()) &amp;&amp; !key.equals(XTENSION.key())) {
-<a class="jxr_linenumber" name="L2498" href="#L2498">2498</a>             <strong class="jxr_keyword">return</strong> false;
-<a class="jxr_linenumber" name="L2499" href="#L2499">2499</a>         }
-<a class="jxr_linenumber" name="L2500" href="#L2500">2500</a>         key = iter.next().getKey();
-<a class="jxr_linenumber" name="L2501" href="#L2501">2501</a>         <strong class="jxr_keyword">if</strong> (!key.equals(BITPIX.key())) {
-<a class="jxr_linenumber" name="L2502" href="#L2502">2502</a>             <strong class="jxr_keyword">return</strong> false;
-<a class="jxr_linenumber" name="L2503" href="#L2503">2503</a>         }
-<a class="jxr_linenumber" name="L2504" href="#L2504">2504</a>         key = iter.next().getKey();
-<a class="jxr_linenumber" name="L2505" href="#L2505">2505</a>         <strong class="jxr_keyword">if</strong> (!key.equals(NAXIS.key())) {
-<a class="jxr_linenumber" name="L2506" href="#L2506">2506</a>             <strong class="jxr_keyword">return</strong> false;
-<a class="jxr_linenumber" name="L2507" href="#L2507">2507</a>         }
-<a class="jxr_linenumber" name="L2508" href="#L2508">2508</a>         <strong class="jxr_keyword">while</strong> (iter.hasNext()) {
-<a class="jxr_linenumber" name="L2509" href="#L2509">2509</a>             key = iter.next().getKey();
-<a class="jxr_linenumber" name="L2510" href="#L2510">2510</a>         }
-<a class="jxr_linenumber" name="L2511" href="#L2511">2511</a>         <strong class="jxr_keyword">return</strong> key.equals(END.key());
-<a class="jxr_linenumber" name="L2512" href="#L2512">2512</a>     }
-<a class="jxr_linenumber" name="L2513" href="#L2513">2513</a> 
-<a class="jxr_linenumber" name="L2514" href="#L2514">2514</a>     <em class="jxr_javadoccomment">/**</em>
-<a class="jxr_linenumber" name="L2515" href="#L2515">2515</a> <em class="jxr_javadoccomment">     * @deprecated Use {@link NullDataHDU} instead. Create a header for a null image.</em>
-<a class="jxr_linenumber" name="L2516" href="#L2516">2516</a> <em class="jxr_javadoccomment">     */</em>
-<a class="jxr_linenumber" name="L2517" href="#L2517">2517</a>     @Deprecated
-<a class="jxr_linenumber" name="L2518" href="#L2518">2518</a>     <strong class="jxr_keyword">void</strong> nullImage() {
-<a class="jxr_linenumber" name="L2519" href="#L2519">2519</a>         Cursor&lt;String, HeaderCard&gt; iter = iterator();
-<a class="jxr_linenumber" name="L2520" href="#L2520">2520</a>         iter.add(HeaderCard.create(SIMPLE, <strong class="jxr_keyword">true</strong>));
-<a class="jxr_linenumber" name="L2521" href="#L2521">2521</a>         iter.add(Bitpix.BYTE.getHeaderCard());
-<a class="jxr_linenumber" name="L2522" href="#L2522">2522</a>         iter.add(HeaderCard.create(NAXIS, 0));
-<a class="jxr_linenumber" name="L2523" href="#L2523">2523</a>         iter.add(HeaderCard.create(EXTEND, <strong class="jxr_keyword">true</strong>));
-<a class="jxr_linenumber" name="L2524" href="#L2524">2524</a>     }
-<a class="jxr_linenumber" name="L2525" href="#L2525">2525</a> 
-<a class="jxr_linenumber" name="L2526" href="#L2526">2526</a>     <em class="jxr_javadoccomment">/**</em>
-<a class="jxr_linenumber" name="L2527" href="#L2527">2527</a> <em class="jxr_javadoccomment">     * Find the end of a set of keywords describing a column or axis (or anything else terminated by an index. This</em>
-<a class="jxr_linenumber" name="L2528" href="#L2528">2528</a> <em class="jxr_javadoccomment">     * routine leaves the header ready to add keywords after any existing keywords with the index specified. The user</em>
-<a class="jxr_linenumber" name="L2529" href="#L2529">2529</a> <em class="jxr_javadoccomment">     * should specify a prefix to a keyword that is guaranteed to be present.</em>
-<a class="jxr_linenumber" name="L2530" href="#L2530">2530</a> <em class="jxr_javadoccomment">     */</em>
-<a class="jxr_linenumber" name="L2531" href="#L2531">2531</a>     Cursor&lt;String, HeaderCard&gt; positionAfterIndex(<a name="IFitsHeader" href="../../../nom/tam/fits/header/IFitsHeader.html#IFitsHeader">IFitsHeader</a> prefix, <strong class="jxr_keyword">int</strong> col) {
-<a class="jxr_linenumber" name="L2532" href="#L2532">2532</a>         String colnum = String.valueOf(col);
-<a class="jxr_linenumber" name="L2533" href="#L2533">2533</a>         cursor().setKey(prefix.n(col).key());
-<a class="jxr_linenumber" name="L2534" href="#L2534">2534</a>         <strong class="jxr_keyword">if</strong> (cursor().hasNext()) {
-<a class="jxr_linenumber" name="L2535" href="#L2535">2535</a>             <em class="jxr_comment">// Bug fix (references to forward) here by Laurent Borges</em>
-<a class="jxr_linenumber" name="L2536" href="#L2536">2536</a>             <strong class="jxr_keyword">boolean</strong> toFar = false;
-<a class="jxr_linenumber" name="L2537" href="#L2537">2537</a>             <strong class="jxr_keyword">while</strong> (cursor().hasNext()) {
-<a class="jxr_linenumber" name="L2538" href="#L2538">2538</a>                 String key = cursor().next().getKey().trim();
-<a class="jxr_linenumber" name="L2539" href="#L2539">2539</a>                 <em class="jxr_comment">// AK: getKey() cannot return null so no need to check.</em>
-<a class="jxr_linenumber" name="L2540" href="#L2540">2540</a>                 <strong class="jxr_keyword">if</strong> (key.length() &lt;= colnum.length() || !key.substring(key.length() - colnum.length()).equals(colnum)) {
-<a class="jxr_linenumber" name="L2541" href="#L2541">2541</a>                     toFar = <strong class="jxr_keyword">true</strong>;
-<a class="jxr_linenumber" name="L2542" href="#L2542">2542</a>                     <strong class="jxr_keyword">break</strong>;
-<a class="jxr_linenumber" name="L2543" href="#L2543">2543</a>                 }
-<a class="jxr_linenumber" name="L2544" href="#L2544">2544</a>             }
-<a class="jxr_linenumber" name="L2545" href="#L2545">2545</a>             <strong class="jxr_keyword">if</strong> (toFar) {
-<a class="jxr_linenumber" name="L2546" href="#L2546">2546</a>                 cursor().prev(); <em class="jxr_comment">// Gone one too far, so skip back an element.</em>
-<a class="jxr_linenumber" name="L2547" href="#L2547">2547</a>             }
-<a class="jxr_linenumber" name="L2548" href="#L2548">2548</a>         }
-<a class="jxr_linenumber" name="L2549" href="#L2549">2549</a>         <strong class="jxr_keyword">return</strong> cursor();
-<a class="jxr_linenumber" name="L2550" href="#L2550">2550</a>     }
-<a class="jxr_linenumber" name="L2551" href="#L2551">2551</a> 
-<a class="jxr_linenumber" name="L2552" href="#L2552">2552</a>     <em class="jxr_javadoccomment">/**</em>
-<a class="jxr_linenumber" name="L2553" href="#L2553">2553</a> <em class="jxr_javadoccomment">     * Replace the key with a new key. Typically this is used when deleting or inserting columns. If the convention of</em>
-<a class="jxr_linenumber" name="L2554" href="#L2554">2554</a> <em class="jxr_javadoccomment">     * the new keyword is not compatible with the existing value a warning message is logged but no exception is thrown</em>
-<a class="jxr_linenumber" name="L2555" href="#L2555">2555</a> <em class="jxr_javadoccomment">     * (at this point).</em>
-<a class="jxr_linenumber" name="L2556" href="#L2556">2556</a> <em class="jxr_javadoccomment">     *</em>
-<a class="jxr_linenumber" name="L2557" href="#L2557">2557</a> <em class="jxr_javadoccomment">     * @param  oldKey              The old header keyword.</em>
-<a class="jxr_linenumber" name="L2558" href="#L2558">2558</a> <em class="jxr_javadoccomment">     * @param  newKey              the new header keyword.</em>
-<a class="jxr_linenumber" name="L2559" href="#L2559">2559</a> <em class="jxr_javadoccomment">     *</em>
-<a class="jxr_linenumber" name="L2560" href="#L2560">2560</a> <em class="jxr_javadoccomment">     * @return                     &lt;CODE&gt;true&lt;/CODE&gt; if the card was replaced.</em>
-<a class="jxr_linenumber" name="L2561" href="#L2561">2561</a> <em class="jxr_javadoccomment">     *</em>
-<a class="jxr_linenumber" name="L2562" href="#L2562">2562</a> <em class="jxr_javadoccomment">     * @throws HeaderCardException If &lt;CODE&gt;newKey&lt;/CODE&gt; is not a valid FITS keyword.</em>
-<a class="jxr_linenumber" name="L2563" href="#L2563">2563</a> <em class="jxr_javadoccomment">     */</em>
-<a class="jxr_linenumber" name="L2564" href="#L2564">2564</a>     <strong class="jxr_keyword">boolean</strong> replaceKey(<a name="IFitsHeader" href="../../../nom/tam/fits/header/IFitsHeader.html#IFitsHeader">IFitsHeader</a> oldKey, <a name="IFitsHeader" href="../../../nom/tam/fits/header/IFitsHeader.html#IFitsHeader">IFitsHeader</a> newKey) <strong class="jxr_keyword">throws</strong> <a name="HeaderCardException" href="../../../nom/tam/fits/HeaderCardException.html#HeaderCardException">HeaderCardException</a> {
-<a class="jxr_linenumber" name="L2565" href="#L2565">2565</a> 
-<a class="jxr_linenumber" name="L2566" href="#L2566">2566</a>         <strong class="jxr_keyword">if</strong> (oldKey.valueType() == VALUE.NONE) {
-<a class="jxr_linenumber" name="L2567" href="#L2567">2567</a>             <strong class="jxr_keyword">throw</strong> <strong class="jxr_keyword">new</strong> IllegalArgumentException(<span class="jxr_string">"cannot replace comment-style "</span> + oldKey.key());
-<a class="jxr_linenumber" name="L2568" href="#L2568">2568</a>         }
-<a class="jxr_linenumber" name="L2569" href="#L2569">2569</a> 
-<a class="jxr_linenumber" name="L2570" href="#L2570">2570</a>         <a name="HeaderCard" href="../../../nom/tam/fits/HeaderCard.html#HeaderCard">HeaderCard</a> card = getCard(oldKey);
-<a class="jxr_linenumber" name="L2571" href="#L2571">2571</a>         VALUE newType = newKey.valueType();
-<a class="jxr_linenumber" name="L2572" href="#L2572">2572</a> 
-<a class="jxr_linenumber" name="L2573" href="#L2573">2573</a>         <strong class="jxr_keyword">if</strong> (card != <strong class="jxr_keyword">null</strong> &amp;&amp; oldKey.valueType() != newType &amp;&amp; newType != VALUE.ANY) {
-<a class="jxr_linenumber" name="L2574" href="#L2574">2574</a>             Class&lt;?&gt; type = card.valueType();
-<a class="jxr_linenumber" name="L2575" href="#L2575">2575</a>             Exception e = <strong class="jxr_keyword">null</strong>;
-<a class="jxr_linenumber" name="L2576" href="#L2576">2576</a> 
-<a class="jxr_linenumber" name="L2577" href="#L2577">2577</a>             <em class="jxr_comment">// Check that the exisating cards value is compatible with the expected type of the new key.</em>
-<a class="jxr_linenumber" name="L2578" href="#L2578">2578</a>             <strong class="jxr_keyword">if</strong> (newType == VALUE.NONE) {
-<a class="jxr_linenumber" name="L2579" href="#L2579">2579</a>                 e = <strong class="jxr_keyword">new</strong> IllegalArgumentException(
-<a class="jxr_linenumber" name="L2580" href="#L2580">2580</a>                         <span class="jxr_string">"comment-style "</span> + newKey.key() + <span class="jxr_string">" cannot replace valued key "</span> + oldKey.key());
-<a class="jxr_linenumber" name="L2581" href="#L2581">2581</a>             } <strong class="jxr_keyword">else</strong> <strong class="jxr_keyword">if</strong> (Boolean.<strong class="jxr_keyword">class</strong>.isAssignableFrom(type) &amp;&amp; newType != VALUE.LOGICAL) {
-<a class="jxr_linenumber" name="L2582" href="#L2582">2582</a>                 e = <strong class="jxr_keyword">new</strong> IllegalArgumentException(newKey.key() + <span class="jxr_string">" cannot not support the existing boolean value."</span>);
-<a class="jxr_linenumber" name="L2583" href="#L2583">2583</a>             } <strong class="jxr_keyword">else</strong> <strong class="jxr_keyword">if</strong> (String.<strong class="jxr_keyword">class</strong>.isAssignableFrom(type) &amp;&amp; newType != VALUE.STRING) {
-<a class="jxr_linenumber" name="L2584" href="#L2584">2584</a>                 e = <strong class="jxr_keyword">new</strong> IllegalArgumentException(newKey.key() + <span class="jxr_string">" cannot not support the existing string value."</span>);
-<a class="jxr_linenumber" name="L2585" href="#L2585">2585</a>             } <strong class="jxr_keyword">else</strong> <strong class="jxr_keyword">if</strong> (ComplexValue.<strong class="jxr_keyword">class</strong>.isAssignableFrom(type) &amp;&amp; newType != VALUE.COMPLEX) {
-<a class="jxr_linenumber" name="L2586" href="#L2586">2586</a>                 e = <strong class="jxr_keyword">new</strong> IllegalArgumentException(newKey.key() + <span class="jxr_string">" cannot not support the existing complex value."</span>);
-<a class="jxr_linenumber" name="L2587" href="#L2587">2587</a>             } <strong class="jxr_keyword">else</strong> <strong class="jxr_keyword">if</strong> (card.isDecimalType() &amp;&amp; newType != VALUE.REAL &amp;&amp; newType != VALUE.COMPLEX) {
-<a class="jxr_linenumber" name="L2588" href="#L2588">2588</a>                 e = <strong class="jxr_keyword">new</strong> IllegalArgumentException(newKey.key() + <span class="jxr_string">" cannot not support the existing decimal values."</span>);
-<a class="jxr_linenumber" name="L2589" href="#L2589">2589</a>             } <strong class="jxr_keyword">else</strong> <strong class="jxr_keyword">if</strong> (Number.<strong class="jxr_keyword">class</strong>.isAssignableFrom(type) &amp;&amp; newType != VALUE.REAL &amp;&amp; newType != VALUE.INTEGER
-<a class="jxr_linenumber" name="L2590" href="#L2590">2590</a>                     &amp;&amp; newType != VALUE.COMPLEX) {
-<a class="jxr_linenumber" name="L2591" href="#L2591">2591</a>                 e = <strong class="jxr_keyword">new</strong> IllegalArgumentException(newKey.key() + <span class="jxr_string">" cannot not support the existing numerical value."</span>);
-<a class="jxr_linenumber" name="L2592" href="#L2592">2592</a>             }
-<a class="jxr_linenumber" name="L2593" href="#L2593">2593</a> 
-<a class="jxr_linenumber" name="L2594" href="#L2594">2594</a>             <strong class="jxr_keyword">if</strong> (e != <strong class="jxr_keyword">null</strong>) {
-<a class="jxr_linenumber" name="L2595" href="#L2595">2595</a>                 LOG.log(Level.WARNING, e.getMessage(), e);
-<a class="jxr_linenumber" name="L2596" href="#L2596">2596</a>             }
-<a class="jxr_linenumber" name="L2597" href="#L2597">2597</a>         }
-<a class="jxr_linenumber" name="L2598" href="#L2598">2598</a> 
-<a class="jxr_linenumber" name="L2599" href="#L2599">2599</a>         <strong class="jxr_keyword">return</strong> replaceKey(oldKey.key(), newKey.key());
-<a class="jxr_linenumber" name="L2600" href="#L2600">2600</a>     }
-<a class="jxr_linenumber" name="L2601" href="#L2601">2601</a> 
-<a class="jxr_linenumber" name="L2602" href="#L2602">2602</a>     <em class="jxr_javadoccomment">/**</em>
-<a class="jxr_linenumber" name="L2603" href="#L2603">2603</a> <em class="jxr_javadoccomment">     * Replace the key with a new key. Typically this is used when deleting or inserting columns so that TFORMx -&gt;</em>
-<a class="jxr_linenumber" name="L2604" href="#L2604">2604</a> <em class="jxr_javadoccomment">     * TFORMx-1</em>
-<a class="jxr_linenumber" name="L2605" href="#L2605">2605</a> <em class="jxr_javadoccomment">     *</em>
-<a class="jxr_linenumber" name="L2606" href="#L2606">2606</a> <em class="jxr_javadoccomment">     * @param     oldKey              The old header keyword.</em>
-<a class="jxr_linenumber" name="L2607" href="#L2607">2607</a> <em class="jxr_javadoccomment">     * @param     newKey              the new header keyword.</em>
-<a class="jxr_linenumber" name="L2608" href="#L2608">2608</a> <em class="jxr_javadoccomment">     *</em>
-<a class="jxr_linenumber" name="L2609" href="#L2609">2609</a> <em class="jxr_javadoccomment">     * @return                        &lt;CODE&gt;true&lt;/CODE&gt; if the card was replaced.</em>
-<a class="jxr_linenumber" name="L2610" href="#L2610">2610</a> <em class="jxr_javadoccomment">     *</em>
-<a class="jxr_linenumber" name="L2611" href="#L2611">2611</a> <em class="jxr_javadoccomment">     * @exception HeaderCardException If &lt;CODE&gt;newKey&lt;/CODE&gt; is not a valid FITS keyword. TODO should be private</em>
-<a class="jxr_linenumber" name="L2612" href="#L2612">2612</a> <em class="jxr_javadoccomment">     */</em>
-<a class="jxr_linenumber" name="L2613" href="#L2613">2613</a>     <strong class="jxr_keyword">boolean</strong> replaceKey(String oldKey, String newKey) <strong class="jxr_keyword">throws</strong> <a name="HeaderCardException" href="../../../nom/tam/fits/HeaderCardException.html#HeaderCardException">HeaderCardException</a> {
-<a class="jxr_linenumber" name="L2614" href="#L2614">2614</a>         <a name="HeaderCard" href="../../../nom/tam/fits/HeaderCard.html#HeaderCard">HeaderCard</a> oldCard = getCard(oldKey);
-<a class="jxr_linenumber" name="L2615" href="#L2615">2615</a>         <strong class="jxr_keyword">if</strong> (oldCard == <strong class="jxr_keyword">null</strong>) {
-<a class="jxr_linenumber" name="L2616" href="#L2616">2616</a>             <strong class="jxr_keyword">return</strong> false;
-<a class="jxr_linenumber" name="L2617" href="#L2617">2617</a>         }
-<a class="jxr_linenumber" name="L2618" href="#L2618">2618</a>         <strong class="jxr_keyword">if</strong> (!cards.replaceKey(oldKey, newKey)) {
-<a class="jxr_linenumber" name="L2619" href="#L2619">2619</a>             <strong class="jxr_keyword">throw</strong> <strong class="jxr_keyword">new</strong> <a name="HeaderCardException" href="../../../nom/tam/fits/HeaderCardException.html#HeaderCardException">HeaderCardException</a>(<span class="jxr_string">"Duplicate key ["</span> + newKey + <span class="jxr_string">"] in replace"</span>);
-<a class="jxr_linenumber" name="L2620" href="#L2620">2620</a>         }
-<a class="jxr_linenumber" name="L2621" href="#L2621">2621</a>         <strong class="jxr_keyword">try</strong> {
-<a class="jxr_linenumber" name="L2622" href="#L2622">2622</a>             oldCard.changeKey(newKey);
-<a class="jxr_linenumber" name="L2623" href="#L2623">2623</a>         } <strong class="jxr_keyword">catch</strong> (IllegalArgumentException e) {
-<a class="jxr_linenumber" name="L2624" href="#L2624">2624</a>             <strong class="jxr_keyword">throw</strong> <strong class="jxr_keyword">new</strong> <a name="HeaderCardException" href="../../../nom/tam/fits/HeaderCardException.html#HeaderCardException">HeaderCardException</a>(<span class="jxr_string">"New key ["</span> + newKey + <span class="jxr_string">"] is invalid or too long for existing value."</span>, e);
-<a class="jxr_linenumber" name="L2625" href="#L2625">2625</a>         }
-<a class="jxr_linenumber" name="L2626" href="#L2626">2626</a>         <strong class="jxr_keyword">return</strong> <strong class="jxr_keyword">true</strong>;
-<a class="jxr_linenumber" name="L2627" href="#L2627">2627</a>     }
-<a class="jxr_linenumber" name="L2628" href="#L2628">2628</a> 
-<a class="jxr_linenumber" name="L2629" href="#L2629">2629</a>     <em class="jxr_javadoccomment">/**</em>
-<a class="jxr_linenumber" name="L2630" href="#L2630">2630</a> <em class="jxr_javadoccomment">     * Calculate the unpadded size of the data segment from the header information.</em>
-<a class="jxr_linenumber" name="L2631" href="#L2631">2631</a> <em class="jxr_javadoccomment">     *</em>
-<a class="jxr_linenumber" name="L2632" href="#L2632">2632</a> <em class="jxr_javadoccomment">     * @return the unpadded data segment size.</em>
-<a class="jxr_linenumber" name="L2633" href="#L2633">2633</a> <em class="jxr_javadoccomment">     */</em>
-<a class="jxr_linenumber" name="L2634" href="#L2634">2634</a>     <strong class="jxr_keyword">private</strong> <strong class="jxr_keyword">long</strong> trueDataSize() {
-<a class="jxr_linenumber" name="L2635" href="#L2635">2635</a> 
-<a class="jxr_linenumber" name="L2636" href="#L2636">2636</a>         <em class="jxr_comment">// AK: No need to be too strict here. We can get a data size even if the</em>
-<a class="jxr_linenumber" name="L2637" href="#L2637">2637</a>         <em class="jxr_comment">// header isn't 100% to spec,</em>
-<a class="jxr_linenumber" name="L2638" href="#L2638">2638</a>         <em class="jxr_comment">// as long as the necessary keys are present. So, just check for the</em>
-<a class="jxr_linenumber" name="L2639" href="#L2639">2639</a>         <em class="jxr_comment">// required keys, and no more...</em>
-<a class="jxr_linenumber" name="L2640" href="#L2640">2640</a>         <strong class="jxr_keyword">if</strong> (!containsKey(BITPIX.key()) || !containsKey(NAXIS.key())) {
-<a class="jxr_linenumber" name="L2641" href="#L2641">2641</a>             <strong class="jxr_keyword">return</strong> 0L;
-<a class="jxr_linenumber" name="L2642" href="#L2642">2642</a>         }
-<a class="jxr_linenumber" name="L2643" href="#L2643">2643</a> 
-<a class="jxr_linenumber" name="L2644" href="#L2644">2644</a>         <strong class="jxr_keyword">int</strong> naxis = getIntValue(NAXIS, 0);
-<a class="jxr_linenumber" name="L2645" href="#L2645">2645</a> 
-<a class="jxr_linenumber" name="L2646" href="#L2646">2646</a>         <em class="jxr_comment">// If there are no axes then there is no data.</em>
-<a class="jxr_linenumber" name="L2647" href="#L2647">2647</a>         <strong class="jxr_keyword">if</strong> (naxis == 0) {
-<a class="jxr_linenumber" name="L2648" href="#L2648">2648</a>             <strong class="jxr_keyword">return</strong> 0L;
+<a class="jxr_linenumber" name="L2476" href="#L2476">2476</a>         iter.add(HeaderCard.createCommentStyleCard(END.key(), <strong class="jxr_keyword">null</strong>));
+<a class="jxr_linenumber" name="L2477" href="#L2477">2477</a>     }
+<a class="jxr_linenumber" name="L2478" href="#L2478">2478</a> 
+<a class="jxr_linenumber" name="L2479" href="#L2479">2479</a>     <em class="jxr_javadoccomment">/**</em>
+<a class="jxr_linenumber" name="L2480" href="#L2480">2480</a> <em class="jxr_javadoccomment">     * Is this a valid header.</em>
+<a class="jxr_linenumber" name="L2481" href="#L2481">2481</a> <em class="jxr_javadoccomment">     *</em>
+<a class="jxr_linenumber" name="L2482" href="#L2482">2482</a> <em class="jxr_javadoccomment">     * @return &lt;CODE&gt;true&lt;/CODE&gt; for a valid header, &lt;CODE&gt;false&lt;/CODE&gt; otherwise.</em>
+<a class="jxr_linenumber" name="L2483" href="#L2483">2483</a> <em class="jxr_javadoccomment">     */</em>
+<a class="jxr_linenumber" name="L2484" href="#L2484">2484</a>     <em class="jxr_comment">// TODO retire?</em>
+<a class="jxr_linenumber" name="L2485" href="#L2485">2485</a>     <strong class="jxr_keyword">private</strong> <strong class="jxr_keyword">boolean</strong> isValidHeader() {
+<a class="jxr_linenumber" name="L2486" href="#L2486">2486</a>         <strong class="jxr_keyword">if</strong> (getNumberOfCards() &lt; MIN_NUMBER_OF_CARDS_FOR_VALID_HEADER) {
+<a class="jxr_linenumber" name="L2487" href="#L2487">2487</a>             <strong class="jxr_keyword">return</strong> false;
+<a class="jxr_linenumber" name="L2488" href="#L2488">2488</a>         }
+<a class="jxr_linenumber" name="L2489" href="#L2489">2489</a>         Cursor&lt;String, HeaderCard&gt; iter = iterator();
+<a class="jxr_linenumber" name="L2490" href="#L2490">2490</a>         String key = iter.next().getKey();
+<a class="jxr_linenumber" name="L2491" href="#L2491">2491</a>         <strong class="jxr_keyword">if</strong> (!key.equals(SIMPLE.key()) &amp;&amp; !key.equals(XTENSION.key())) {
+<a class="jxr_linenumber" name="L2492" href="#L2492">2492</a>             <strong class="jxr_keyword">return</strong> false;
+<a class="jxr_linenumber" name="L2493" href="#L2493">2493</a>         }
+<a class="jxr_linenumber" name="L2494" href="#L2494">2494</a>         key = iter.next().getKey();
+<a class="jxr_linenumber" name="L2495" href="#L2495">2495</a>         <strong class="jxr_keyword">if</strong> (!key.equals(BITPIX.key())) {
+<a class="jxr_linenumber" name="L2496" href="#L2496">2496</a>             <strong class="jxr_keyword">return</strong> false;
+<a class="jxr_linenumber" name="L2497" href="#L2497">2497</a>         }
+<a class="jxr_linenumber" name="L2498" href="#L2498">2498</a>         key = iter.next().getKey();
+<a class="jxr_linenumber" name="L2499" href="#L2499">2499</a>         <strong class="jxr_keyword">if</strong> (!key.equals(NAXIS.key())) {
+<a class="jxr_linenumber" name="L2500" href="#L2500">2500</a>             <strong class="jxr_keyword">return</strong> false;
+<a class="jxr_linenumber" name="L2501" href="#L2501">2501</a>         }
+<a class="jxr_linenumber" name="L2502" href="#L2502">2502</a>         <strong class="jxr_keyword">while</strong> (iter.hasNext()) {
+<a class="jxr_linenumber" name="L2503" href="#L2503">2503</a>             key = iter.next().getKey();
+<a class="jxr_linenumber" name="L2504" href="#L2504">2504</a>         }
+<a class="jxr_linenumber" name="L2505" href="#L2505">2505</a>         <strong class="jxr_keyword">return</strong> key.equals(END.key());
+<a class="jxr_linenumber" name="L2506" href="#L2506">2506</a>     }
+<a class="jxr_linenumber" name="L2507" href="#L2507">2507</a> 
+<a class="jxr_linenumber" name="L2508" href="#L2508">2508</a>     <em class="jxr_javadoccomment">/**</em>
+<a class="jxr_linenumber" name="L2509" href="#L2509">2509</a> <em class="jxr_javadoccomment">     * @deprecated Use {@link NullDataHDU} instead. Create a header for a null image.</em>
+<a class="jxr_linenumber" name="L2510" href="#L2510">2510</a> <em class="jxr_javadoccomment">     */</em>
+<a class="jxr_linenumber" name="L2511" href="#L2511">2511</a>     @Deprecated
+<a class="jxr_linenumber" name="L2512" href="#L2512">2512</a>     <strong class="jxr_keyword">void</strong> nullImage() {
+<a class="jxr_linenumber" name="L2513" href="#L2513">2513</a>         Cursor&lt;String, HeaderCard&gt; iter = iterator();
+<a class="jxr_linenumber" name="L2514" href="#L2514">2514</a>         iter.add(HeaderCard.create(SIMPLE, <strong class="jxr_keyword">true</strong>));
+<a class="jxr_linenumber" name="L2515" href="#L2515">2515</a>         iter.add(Bitpix.BYTE.getHeaderCard());
+<a class="jxr_linenumber" name="L2516" href="#L2516">2516</a>         iter.add(HeaderCard.create(NAXIS, 0));
+<a class="jxr_linenumber" name="L2517" href="#L2517">2517</a>         iter.add(HeaderCard.create(EXTEND, <strong class="jxr_keyword">true</strong>));
+<a class="jxr_linenumber" name="L2518" href="#L2518">2518</a>     }
+<a class="jxr_linenumber" name="L2519" href="#L2519">2519</a> 
+<a class="jxr_linenumber" name="L2520" href="#L2520">2520</a>     <em class="jxr_javadoccomment">/**</em>
+<a class="jxr_linenumber" name="L2521" href="#L2521">2521</a> <em class="jxr_javadoccomment">     * Find the end of a set of keywords describing a column or axis (or anything else terminated by an index. This</em>
+<a class="jxr_linenumber" name="L2522" href="#L2522">2522</a> <em class="jxr_javadoccomment">     * routine leaves the header ready to add keywords after any existing keywords with the index specified. The user</em>
+<a class="jxr_linenumber" name="L2523" href="#L2523">2523</a> <em class="jxr_javadoccomment">     * should specify a prefix to a keyword that is guaranteed to be present.</em>
+<a class="jxr_linenumber" name="L2524" href="#L2524">2524</a> <em class="jxr_javadoccomment">     */</em>
+<a class="jxr_linenumber" name="L2525" href="#L2525">2525</a>     Cursor&lt;String, HeaderCard&gt; positionAfterIndex(<a name="IFitsHeader" href="../../../nom/tam/fits/header/IFitsHeader.html#IFitsHeader">IFitsHeader</a> prefix, <strong class="jxr_keyword">int</strong> col) {
+<a class="jxr_linenumber" name="L2526" href="#L2526">2526</a>         String colnum = String.valueOf(col);
+<a class="jxr_linenumber" name="L2527" href="#L2527">2527</a>         cursor().setKey(prefix.n(col).key());
+<a class="jxr_linenumber" name="L2528" href="#L2528">2528</a>         <strong class="jxr_keyword">if</strong> (cursor().hasNext()) {
+<a class="jxr_linenumber" name="L2529" href="#L2529">2529</a>             <em class="jxr_comment">// Bug fix (references to forward) here by Laurent Borges</em>
+<a class="jxr_linenumber" name="L2530" href="#L2530">2530</a>             <strong class="jxr_keyword">boolean</strong> toFar = false;
+<a class="jxr_linenumber" name="L2531" href="#L2531">2531</a>             <strong class="jxr_keyword">while</strong> (cursor().hasNext()) {
+<a class="jxr_linenumber" name="L2532" href="#L2532">2532</a>                 String key = cursor().next().getKey().trim();
+<a class="jxr_linenumber" name="L2533" href="#L2533">2533</a>                 <em class="jxr_comment">// AK: getKey() cannot return null so no need to check.</em>
+<a class="jxr_linenumber" name="L2534" href="#L2534">2534</a>                 <strong class="jxr_keyword">if</strong> (key.length() &lt;= colnum.length() || !key.substring(key.length() - colnum.length()).equals(colnum)) {
+<a class="jxr_linenumber" name="L2535" href="#L2535">2535</a>                     toFar = <strong class="jxr_keyword">true</strong>;
+<a class="jxr_linenumber" name="L2536" href="#L2536">2536</a>                     <strong class="jxr_keyword">break</strong>;
+<a class="jxr_linenumber" name="L2537" href="#L2537">2537</a>                 }
+<a class="jxr_linenumber" name="L2538" href="#L2538">2538</a>             }
+<a class="jxr_linenumber" name="L2539" href="#L2539">2539</a>             <strong class="jxr_keyword">if</strong> (toFar) {
+<a class="jxr_linenumber" name="L2540" href="#L2540">2540</a>                 cursor().prev(); <em class="jxr_comment">// Gone one too far, so skip back an element.</em>
+<a class="jxr_linenumber" name="L2541" href="#L2541">2541</a>             }
+<a class="jxr_linenumber" name="L2542" href="#L2542">2542</a>         }
+<a class="jxr_linenumber" name="L2543" href="#L2543">2543</a>         <strong class="jxr_keyword">return</strong> cursor();
+<a class="jxr_linenumber" name="L2544" href="#L2544">2544</a>     }
+<a class="jxr_linenumber" name="L2545" href="#L2545">2545</a> 
+<a class="jxr_linenumber" name="L2546" href="#L2546">2546</a>     <em class="jxr_javadoccomment">/**</em>
+<a class="jxr_linenumber" name="L2547" href="#L2547">2547</a> <em class="jxr_javadoccomment">     * Replace the key with a new key. Typically this is used when deleting or inserting columns. If the convention of</em>
+<a class="jxr_linenumber" name="L2548" href="#L2548">2548</a> <em class="jxr_javadoccomment">     * the new keyword is not compatible with the existing value a warning message is logged but no exception is thrown</em>
+<a class="jxr_linenumber" name="L2549" href="#L2549">2549</a> <em class="jxr_javadoccomment">     * (at this point).</em>
+<a class="jxr_linenumber" name="L2550" href="#L2550">2550</a> <em class="jxr_javadoccomment">     *</em>
+<a class="jxr_linenumber" name="L2551" href="#L2551">2551</a> <em class="jxr_javadoccomment">     * @param  oldKey              The old header keyword.</em>
+<a class="jxr_linenumber" name="L2552" href="#L2552">2552</a> <em class="jxr_javadoccomment">     * @param  newKey              the new header keyword.</em>
+<a class="jxr_linenumber" name="L2553" href="#L2553">2553</a> <em class="jxr_javadoccomment">     *</em>
+<a class="jxr_linenumber" name="L2554" href="#L2554">2554</a> <em class="jxr_javadoccomment">     * @return                     &lt;CODE&gt;true&lt;/CODE&gt; if the card was replaced.</em>
+<a class="jxr_linenumber" name="L2555" href="#L2555">2555</a> <em class="jxr_javadoccomment">     *</em>
+<a class="jxr_linenumber" name="L2556" href="#L2556">2556</a> <em class="jxr_javadoccomment">     * @throws HeaderCardException If &lt;CODE&gt;newKey&lt;/CODE&gt; is not a valid FITS keyword.</em>
+<a class="jxr_linenumber" name="L2557" href="#L2557">2557</a> <em class="jxr_javadoccomment">     */</em>
+<a class="jxr_linenumber" name="L2558" href="#L2558">2558</a>     <strong class="jxr_keyword">boolean</strong> replaceKey(<a name="IFitsHeader" href="../../../nom/tam/fits/header/IFitsHeader.html#IFitsHeader">IFitsHeader</a> oldKey, <a name="IFitsHeader" href="../../../nom/tam/fits/header/IFitsHeader.html#IFitsHeader">IFitsHeader</a> newKey) <strong class="jxr_keyword">throws</strong> <a name="HeaderCardException" href="../../../nom/tam/fits/HeaderCardException.html#HeaderCardException">HeaderCardException</a> {
+<a class="jxr_linenumber" name="L2559" href="#L2559">2559</a> 
+<a class="jxr_linenumber" name="L2560" href="#L2560">2560</a>         <strong class="jxr_keyword">if</strong> (oldKey.valueType() == VALUE.NONE) {
+<a class="jxr_linenumber" name="L2561" href="#L2561">2561</a>             <strong class="jxr_keyword">throw</strong> <strong class="jxr_keyword">new</strong> IllegalArgumentException(<span class="jxr_string">"cannot replace comment-style "</span> + oldKey.key());
+<a class="jxr_linenumber" name="L2562" href="#L2562">2562</a>         }
+<a class="jxr_linenumber" name="L2563" href="#L2563">2563</a> 
+<a class="jxr_linenumber" name="L2564" href="#L2564">2564</a>         <a name="HeaderCard" href="../../../nom/tam/fits/HeaderCard.html#HeaderCard">HeaderCard</a> card = getCard(oldKey);
+<a class="jxr_linenumber" name="L2565" href="#L2565">2565</a>         VALUE newType = newKey.valueType();
+<a class="jxr_linenumber" name="L2566" href="#L2566">2566</a> 
+<a class="jxr_linenumber" name="L2567" href="#L2567">2567</a>         <strong class="jxr_keyword">if</strong> (card != <strong class="jxr_keyword">null</strong> &amp;&amp; oldKey.valueType() != newType &amp;&amp; newType != VALUE.ANY) {
+<a class="jxr_linenumber" name="L2568" href="#L2568">2568</a>             Class&lt;?&gt; type = card.valueType();
+<a class="jxr_linenumber" name="L2569" href="#L2569">2569</a>             Exception e = <strong class="jxr_keyword">null</strong>;
+<a class="jxr_linenumber" name="L2570" href="#L2570">2570</a> 
+<a class="jxr_linenumber" name="L2571" href="#L2571">2571</a>             <em class="jxr_comment">// Check that the exisating cards value is compatible with the expected type of the new key.</em>
+<a class="jxr_linenumber" name="L2572" href="#L2572">2572</a>             <strong class="jxr_keyword">if</strong> (newType == VALUE.NONE) {
+<a class="jxr_linenumber" name="L2573" href="#L2573">2573</a>                 e = <strong class="jxr_keyword">new</strong> IllegalArgumentException(
+<a class="jxr_linenumber" name="L2574" href="#L2574">2574</a>                         <span class="jxr_string">"comment-style "</span> + newKey.key() + <span class="jxr_string">" cannot replace valued key "</span> + oldKey.key());
+<a class="jxr_linenumber" name="L2575" href="#L2575">2575</a>             } <strong class="jxr_keyword">else</strong> <strong class="jxr_keyword">if</strong> (Boolean.<strong class="jxr_keyword">class</strong>.isAssignableFrom(type) &amp;&amp; newType != VALUE.LOGICAL) {
+<a class="jxr_linenumber" name="L2576" href="#L2576">2576</a>                 e = <strong class="jxr_keyword">new</strong> IllegalArgumentException(newKey.key() + <span class="jxr_string">" cannot not support the existing boolean value."</span>);
+<a class="jxr_linenumber" name="L2577" href="#L2577">2577</a>             } <strong class="jxr_keyword">else</strong> <strong class="jxr_keyword">if</strong> (String.<strong class="jxr_keyword">class</strong>.isAssignableFrom(type) &amp;&amp; newType != VALUE.STRING) {
+<a class="jxr_linenumber" name="L2578" href="#L2578">2578</a>                 e = <strong class="jxr_keyword">new</strong> IllegalArgumentException(newKey.key() + <span class="jxr_string">" cannot not support the existing string value."</span>);
+<a class="jxr_linenumber" name="L2579" href="#L2579">2579</a>             } <strong class="jxr_keyword">else</strong> <strong class="jxr_keyword">if</strong> (ComplexValue.<strong class="jxr_keyword">class</strong>.isAssignableFrom(type) &amp;&amp; newType != VALUE.COMPLEX) {
+<a class="jxr_linenumber" name="L2580" href="#L2580">2580</a>                 e = <strong class="jxr_keyword">new</strong> IllegalArgumentException(newKey.key() + <span class="jxr_string">" cannot not support the existing complex value."</span>);
+<a class="jxr_linenumber" name="L2581" href="#L2581">2581</a>             } <strong class="jxr_keyword">else</strong> <strong class="jxr_keyword">if</strong> (card.isDecimalType() &amp;&amp; newType != VALUE.REAL &amp;&amp; newType != VALUE.COMPLEX) {
+<a class="jxr_linenumber" name="L2582" href="#L2582">2582</a>                 e = <strong class="jxr_keyword">new</strong> IllegalArgumentException(newKey.key() + <span class="jxr_string">" cannot not support the existing decimal values."</span>);
+<a class="jxr_linenumber" name="L2583" href="#L2583">2583</a>             } <strong class="jxr_keyword">else</strong> <strong class="jxr_keyword">if</strong> (Number.<strong class="jxr_keyword">class</strong>.isAssignableFrom(type) &amp;&amp; newType != VALUE.REAL &amp;&amp; newType != VALUE.INTEGER
+<a class="jxr_linenumber" name="L2584" href="#L2584">2584</a>                     &amp;&amp; newType != VALUE.COMPLEX) {
+<a class="jxr_linenumber" name="L2585" href="#L2585">2585</a>                 e = <strong class="jxr_keyword">new</strong> IllegalArgumentException(newKey.key() + <span class="jxr_string">" cannot not support the existing numerical value."</span>);
+<a class="jxr_linenumber" name="L2586" href="#L2586">2586</a>             }
+<a class="jxr_linenumber" name="L2587" href="#L2587">2587</a> 
+<a class="jxr_linenumber" name="L2588" href="#L2588">2588</a>             <strong class="jxr_keyword">if</strong> (e != <strong class="jxr_keyword">null</strong>) {
+<a class="jxr_linenumber" name="L2589" href="#L2589">2589</a>                 LOG.log(Level.WARNING, e.getMessage(), e);
+<a class="jxr_linenumber" name="L2590" href="#L2590">2590</a>             }
+<a class="jxr_linenumber" name="L2591" href="#L2591">2591</a>         }
+<a class="jxr_linenumber" name="L2592" href="#L2592">2592</a> 
+<a class="jxr_linenumber" name="L2593" href="#L2593">2593</a>         <strong class="jxr_keyword">return</strong> replaceKey(oldKey.key(), newKey.key());
+<a class="jxr_linenumber" name="L2594" href="#L2594">2594</a>     }
+<a class="jxr_linenumber" name="L2595" href="#L2595">2595</a> 
+<a class="jxr_linenumber" name="L2596" href="#L2596">2596</a>     <em class="jxr_javadoccomment">/**</em>
+<a class="jxr_linenumber" name="L2597" href="#L2597">2597</a> <em class="jxr_javadoccomment">     * Replace the key with a new key. Typically this is used when deleting or inserting columns so that TFORMx -&gt;</em>
+<a class="jxr_linenumber" name="L2598" href="#L2598">2598</a> <em class="jxr_javadoccomment">     * TFORMx-1</em>
+<a class="jxr_linenumber" name="L2599" href="#L2599">2599</a> <em class="jxr_javadoccomment">     *</em>
+<a class="jxr_linenumber" name="L2600" href="#L2600">2600</a> <em class="jxr_javadoccomment">     * @param     oldKey              The old header keyword.</em>
+<a class="jxr_linenumber" name="L2601" href="#L2601">2601</a> <em class="jxr_javadoccomment">     * @param     newKey              the new header keyword.</em>
+<a class="jxr_linenumber" name="L2602" href="#L2602">2602</a> <em class="jxr_javadoccomment">     *</em>
+<a class="jxr_linenumber" name="L2603" href="#L2603">2603</a> <em class="jxr_javadoccomment">     * @return                        &lt;CODE&gt;true&lt;/CODE&gt; if the card was replaced.</em>
+<a class="jxr_linenumber" name="L2604" href="#L2604">2604</a> <em class="jxr_javadoccomment">     *</em>
+<a class="jxr_linenumber" name="L2605" href="#L2605">2605</a> <em class="jxr_javadoccomment">     * @exception HeaderCardException If &lt;CODE&gt;newKey&lt;/CODE&gt; is not a valid FITS keyword. TODO should be private</em>
+<a class="jxr_linenumber" name="L2606" href="#L2606">2606</a> <em class="jxr_javadoccomment">     */</em>
+<a class="jxr_linenumber" name="L2607" href="#L2607">2607</a>     <strong class="jxr_keyword">boolean</strong> replaceKey(String oldKey, String newKey) <strong class="jxr_keyword">throws</strong> <a name="HeaderCardException" href="../../../nom/tam/fits/HeaderCardException.html#HeaderCardException">HeaderCardException</a> {
+<a class="jxr_linenumber" name="L2608" href="#L2608">2608</a>         <a name="HeaderCard" href="../../../nom/tam/fits/HeaderCard.html#HeaderCard">HeaderCard</a> oldCard = getCard(oldKey);
+<a class="jxr_linenumber" name="L2609" href="#L2609">2609</a>         <strong class="jxr_keyword">if</strong> (oldCard == <strong class="jxr_keyword">null</strong>) {
+<a class="jxr_linenumber" name="L2610" href="#L2610">2610</a>             <strong class="jxr_keyword">return</strong> false;
+<a class="jxr_linenumber" name="L2611" href="#L2611">2611</a>         }
+<a class="jxr_linenumber" name="L2612" href="#L2612">2612</a>         <strong class="jxr_keyword">if</strong> (!cards.replaceKey(oldKey, newKey)) {
+<a class="jxr_linenumber" name="L2613" href="#L2613">2613</a>             <strong class="jxr_keyword">throw</strong> <strong class="jxr_keyword">new</strong> <a name="HeaderCardException" href="../../../nom/tam/fits/HeaderCardException.html#HeaderCardException">HeaderCardException</a>(<span class="jxr_string">"Duplicate key ["</span> + newKey + <span class="jxr_string">"] in replace"</span>);
+<a class="jxr_linenumber" name="L2614" href="#L2614">2614</a>         }
+<a class="jxr_linenumber" name="L2615" href="#L2615">2615</a>         <strong class="jxr_keyword">try</strong> {
+<a class="jxr_linenumber" name="L2616" href="#L2616">2616</a>             oldCard.changeKey(newKey);
+<a class="jxr_linenumber" name="L2617" href="#L2617">2617</a>         } <strong class="jxr_keyword">catch</strong> (IllegalArgumentException e) {
+<a class="jxr_linenumber" name="L2618" href="#L2618">2618</a>             <strong class="jxr_keyword">throw</strong> <strong class="jxr_keyword">new</strong> <a name="HeaderCardException" href="../../../nom/tam/fits/HeaderCardException.html#HeaderCardException">HeaderCardException</a>(<span class="jxr_string">"New key ["</span> + newKey + <span class="jxr_string">"] is invalid or too long for existing value."</span>, e);
+<a class="jxr_linenumber" name="L2619" href="#L2619">2619</a>         }
+<a class="jxr_linenumber" name="L2620" href="#L2620">2620</a>         <strong class="jxr_keyword">return</strong> <strong class="jxr_keyword">true</strong>;
+<a class="jxr_linenumber" name="L2621" href="#L2621">2621</a>     }
+<a class="jxr_linenumber" name="L2622" href="#L2622">2622</a> 
+<a class="jxr_linenumber" name="L2623" href="#L2623">2623</a>     <em class="jxr_javadoccomment">/**</em>
+<a class="jxr_linenumber" name="L2624" href="#L2624">2624</a> <em class="jxr_javadoccomment">     * Calculate the unpadded size of the data segment from the header information.</em>
+<a class="jxr_linenumber" name="L2625" href="#L2625">2625</a> <em class="jxr_javadoccomment">     *</em>
+<a class="jxr_linenumber" name="L2626" href="#L2626">2626</a> <em class="jxr_javadoccomment">     * @return the unpadded data segment size.</em>
+<a class="jxr_linenumber" name="L2627" href="#L2627">2627</a> <em class="jxr_javadoccomment">     */</em>
+<a class="jxr_linenumber" name="L2628" href="#L2628">2628</a>     <strong class="jxr_keyword">private</strong> <strong class="jxr_keyword">long</strong> trueDataSize() {
+<a class="jxr_linenumber" name="L2629" href="#L2629">2629</a> 
+<a class="jxr_linenumber" name="L2630" href="#L2630">2630</a>         <em class="jxr_comment">// AK: No need to be too strict here. We can get a data size even if the</em>
+<a class="jxr_linenumber" name="L2631" href="#L2631">2631</a>         <em class="jxr_comment">// header isn't 100% to spec,</em>
+<a class="jxr_linenumber" name="L2632" href="#L2632">2632</a>         <em class="jxr_comment">// as long as the necessary keys are present. So, just check for the</em>
+<a class="jxr_linenumber" name="L2633" href="#L2633">2633</a>         <em class="jxr_comment">// required keys, and no more...</em>
+<a class="jxr_linenumber" name="L2634" href="#L2634">2634</a>         <strong class="jxr_keyword">if</strong> (!containsKey(BITPIX.key()) || !containsKey(NAXIS.key())) {
+<a class="jxr_linenumber" name="L2635" href="#L2635">2635</a>             <strong class="jxr_keyword">return</strong> 0L;
+<a class="jxr_linenumber" name="L2636" href="#L2636">2636</a>         }
+<a class="jxr_linenumber" name="L2637" href="#L2637">2637</a> 
+<a class="jxr_linenumber" name="L2638" href="#L2638">2638</a>         <strong class="jxr_keyword">int</strong> naxis = getIntValue(NAXIS, 0);
+<a class="jxr_linenumber" name="L2639" href="#L2639">2639</a> 
+<a class="jxr_linenumber" name="L2640" href="#L2640">2640</a>         <em class="jxr_comment">// If there are no axes then there is no data.</em>
+<a class="jxr_linenumber" name="L2641" href="#L2641">2641</a>         <strong class="jxr_keyword">if</strong> (naxis == 0) {
+<a class="jxr_linenumber" name="L2642" href="#L2642">2642</a>             <strong class="jxr_keyword">return</strong> 0L;
+<a class="jxr_linenumber" name="L2643" href="#L2643">2643</a>         }
+<a class="jxr_linenumber" name="L2644" href="#L2644">2644</a> 
+<a class="jxr_linenumber" name="L2645" href="#L2645">2645</a>         <strong class="jxr_keyword">int</strong>[] axes = <strong class="jxr_keyword">new</strong> <strong class="jxr_keyword">int</strong>[naxis];
+<a class="jxr_linenumber" name="L2646" href="#L2646">2646</a> 
+<a class="jxr_linenumber" name="L2647" href="#L2647">2647</a>         <strong class="jxr_keyword">for</strong> (<strong class="jxr_keyword">int</strong> axis = 1; axis &lt;= naxis; axis++) {
+<a class="jxr_linenumber" name="L2648" href="#L2648">2648</a>             axes[axis - 1] = getIntValue(NAXISn.n(axis), 0);
 <a class="jxr_linenumber" name="L2649" href="#L2649">2649</a>         }
 <a class="jxr_linenumber" name="L2650" href="#L2650">2650</a> 
-<a class="jxr_linenumber" name="L2651" href="#L2651">2651</a>         <strong class="jxr_keyword">int</strong>[] axes = <strong class="jxr_keyword">new</strong> <strong class="jxr_keyword">int</strong>[naxis];
+<a class="jxr_linenumber" name="L2651" href="#L2651">2651</a>         <strong class="jxr_keyword">boolean</strong> isGroup = getBooleanValue(GROUPS, false);
 <a class="jxr_linenumber" name="L2652" href="#L2652">2652</a> 
-<a class="jxr_linenumber" name="L2653" href="#L2653">2653</a>         <strong class="jxr_keyword">for</strong> (<strong class="jxr_keyword">int</strong> axis = 1; axis &lt;= naxis; axis++) {
-<a class="jxr_linenumber" name="L2654" href="#L2654">2654</a>             axes[axis - 1] = getIntValue(NAXISn.n(axis), 0);
-<a class="jxr_linenumber" name="L2655" href="#L2655">2655</a>         }
-<a class="jxr_linenumber" name="L2656" href="#L2656">2656</a> 
-<a class="jxr_linenumber" name="L2657" href="#L2657">2657</a>         <strong class="jxr_keyword">boolean</strong> isGroup = getBooleanValue(GROUPS, false);
-<a class="jxr_linenumber" name="L2658" href="#L2658">2658</a> 
-<a class="jxr_linenumber" name="L2659" href="#L2659">2659</a>         <strong class="jxr_keyword">int</strong> pcount = getIntValue(PCOUNT, 0);
-<a class="jxr_linenumber" name="L2660" href="#L2660">2660</a>         <strong class="jxr_keyword">int</strong> gcount = getIntValue(GCOUNT, 1);
+<a class="jxr_linenumber" name="L2653" href="#L2653">2653</a>         <strong class="jxr_keyword">int</strong> pcount = getIntValue(PCOUNT, 0);
+<a class="jxr_linenumber" name="L2654" href="#L2654">2654</a>         <strong class="jxr_keyword">int</strong> gcount = getIntValue(GCOUNT, 1);
+<a class="jxr_linenumber" name="L2655" href="#L2655">2655</a> 
+<a class="jxr_linenumber" name="L2656" href="#L2656">2656</a>         <strong class="jxr_keyword">int</strong> startAxis = 0;
+<a class="jxr_linenumber" name="L2657" href="#L2657">2657</a> 
+<a class="jxr_linenumber" name="L2658" href="#L2658">2658</a>         <strong class="jxr_keyword">if</strong> (isGroup &amp;&amp; naxis &gt; 1 &amp;&amp; axes[0] == 0) {
+<a class="jxr_linenumber" name="L2659" href="#L2659">2659</a>             startAxis = 1;
+<a class="jxr_linenumber" name="L2660" href="#L2660">2660</a>         }
 <a class="jxr_linenumber" name="L2661" href="#L2661">2661</a> 
-<a class="jxr_linenumber" name="L2662" href="#L2662">2662</a>         <strong class="jxr_keyword">int</strong> startAxis = 0;
-<a class="jxr_linenumber" name="L2663" href="#L2663">2663</a> 
-<a class="jxr_linenumber" name="L2664" href="#L2664">2664</a>         <strong class="jxr_keyword">if</strong> (isGroup &amp;&amp; naxis &gt; 1 &amp;&amp; axes[0] == 0) {
-<a class="jxr_linenumber" name="L2665" href="#L2665">2665</a>             startAxis = 1;
-<a class="jxr_linenumber" name="L2666" href="#L2666">2666</a>         }
-<a class="jxr_linenumber" name="L2667" href="#L2667">2667</a> 
-<a class="jxr_linenumber" name="L2668" href="#L2668">2668</a>         <strong class="jxr_keyword">long</strong> size = 1;
-<a class="jxr_linenumber" name="L2669" href="#L2669">2669</a>         <strong class="jxr_keyword">for</strong> (<strong class="jxr_keyword">int</strong> i = startAxis; i &lt; naxis; i++) {
-<a class="jxr_linenumber" name="L2670" href="#L2670">2670</a>             size *= axes[i];
-<a class="jxr_linenumber" name="L2671" href="#L2671">2671</a>         }
-<a class="jxr_linenumber" name="L2672" href="#L2672">2672</a> 
-<a class="jxr_linenumber" name="L2673" href="#L2673">2673</a>         size += pcount;
-<a class="jxr_linenumber" name="L2674" href="#L2674">2674</a>         size *= gcount;
-<a class="jxr_linenumber" name="L2675" href="#L2675">2675</a> 
-<a class="jxr_linenumber" name="L2676" href="#L2676">2676</a>         <em class="jxr_comment">// Now multiply by the number of bits per pixel and</em>
-<a class="jxr_linenumber" name="L2677" href="#L2677">2677</a>         <em class="jxr_comment">// convert to bytes.</em>
-<a class="jxr_linenumber" name="L2678" href="#L2678">2678</a>         size *= Math.abs(getIntValue(BITPIX, 0)) / FitsIO.BITS_OF_1_BYTE;
-<a class="jxr_linenumber" name="L2679" href="#L2679">2679</a> 
-<a class="jxr_linenumber" name="L2680" href="#L2680">2680</a>         <strong class="jxr_keyword">return</strong> size;
-<a class="jxr_linenumber" name="L2681" href="#L2681">2681</a>     }
-<a class="jxr_linenumber" name="L2682" href="#L2682">2682</a> 
-<a class="jxr_linenumber" name="L2683" href="#L2683">2683</a>     <em class="jxr_javadoccomment">/**</em>
-<a class="jxr_linenumber" name="L2684" href="#L2684">2684</a> <em class="jxr_javadoccomment">     * &lt;p&gt;</em>
-<a class="jxr_linenumber" name="L2685" href="#L2685">2685</a> <em class="jxr_javadoccomment">     * Sets whether warnings about FITS standard violations are logged when a header is being read (parsed). Enabling</em>
-<a class="jxr_linenumber" name="L2686" href="#L2686">2686</a> <em class="jxr_javadoccomment">     * this feature can help identifying various standard violations in existing FITS headers, which nevertheless do not</em>
-<a class="jxr_linenumber" name="L2687" href="#L2687">2687</a> <em class="jxr_javadoccomment">     * prevent the successful reading of the header by this library.</em>
-<a class="jxr_linenumber" name="L2688" href="#L2688">2688</a> <em class="jxr_javadoccomment">     * &lt;/p&gt;</em>
-<a class="jxr_linenumber" name="L2689" href="#L2689">2689</a> <em class="jxr_javadoccomment">     * &lt;p&gt;</em>
-<a class="jxr_linenumber" name="L2690" href="#L2690">2690</a> <em class="jxr_javadoccomment">     * If {@link FitsFactory#setAllowHeaderRepairs(boolean)} is set &lt;code&gt;false&lt;/code&gt;, this will affect only minor</em>
-<a class="jxr_linenumber" name="L2691" href="#L2691">2691</a> <em class="jxr_javadoccomment">     * violations (e.g. a misplaced '=', missing space after '=', non-standard characters in header etc.), which</em>
-<a class="jxr_linenumber" name="L2692" href="#L2692">2692</a> <em class="jxr_javadoccomment">     * nevertheless do not interfere with the unamiguous parsing of the header information. More severe standard</em>
-<a class="jxr_linenumber" name="L2693" href="#L2693">2693</a> <em class="jxr_javadoccomment">     * violations, where some guessing may be required about the intent of some malformed header record, will throw</em>
-<a class="jxr_linenumber" name="L2694" href="#L2694">2694</a> <em class="jxr_javadoccomment">     * appropriate exceptions. If, however, {@link FitsFactory#setAllowHeaderRepairs(boolean)} is set &lt;code&gt;true&lt;/code&gt;,</em>
-<a class="jxr_linenumber" name="L2695" href="#L2695">2695</a> <em class="jxr_javadoccomment">     * the parsing will throw fewer exceptions, and the additional issues may get logged as additional warning instead.</em>
+<a class="jxr_linenumber" name="L2662" href="#L2662">2662</a>         <strong class="jxr_keyword">long</strong> size = 1;
+<a class="jxr_linenumber" name="L2663" href="#L2663">2663</a>         <strong class="jxr_keyword">for</strong> (<strong class="jxr_keyword">int</strong> i = startAxis; i &lt; naxis; i++) {
+<a class="jxr_linenumber" name="L2664" href="#L2664">2664</a>             size *= axes[i];
+<a class="jxr_linenumber" name="L2665" href="#L2665">2665</a>         }
+<a class="jxr_linenumber" name="L2666" href="#L2666">2666</a> 
+<a class="jxr_linenumber" name="L2667" href="#L2667">2667</a>         size += pcount;
+<a class="jxr_linenumber" name="L2668" href="#L2668">2668</a>         size *= gcount;
+<a class="jxr_linenumber" name="L2669" href="#L2669">2669</a> 
+<a class="jxr_linenumber" name="L2670" href="#L2670">2670</a>         <em class="jxr_comment">// Now multiply by the number of bits per pixel and</em>
+<a class="jxr_linenumber" name="L2671" href="#L2671">2671</a>         <em class="jxr_comment">// convert to bytes.</em>
+<a class="jxr_linenumber" name="L2672" href="#L2672">2672</a>         size *= Math.abs(getIntValue(BITPIX, 0)) / FitsIO.BITS_OF_1_BYTE;
+<a class="jxr_linenumber" name="L2673" href="#L2673">2673</a> 
+<a class="jxr_linenumber" name="L2674" href="#L2674">2674</a>         <strong class="jxr_keyword">return</strong> size;
+<a class="jxr_linenumber" name="L2675" href="#L2675">2675</a>     }
+<a class="jxr_linenumber" name="L2676" href="#L2676">2676</a> 
+<a class="jxr_linenumber" name="L2677" href="#L2677">2677</a>     <em class="jxr_javadoccomment">/**</em>
+<a class="jxr_linenumber" name="L2678" href="#L2678">2678</a> <em class="jxr_javadoccomment">     * &lt;p&gt;</em>
+<a class="jxr_linenumber" name="L2679" href="#L2679">2679</a> <em class="jxr_javadoccomment">     * Sets whether warnings about FITS standard violations are logged when a header is being read (parsed). Enabling</em>
+<a class="jxr_linenumber" name="L2680" href="#L2680">2680</a> <em class="jxr_javadoccomment">     * this feature can help identifying various standard violations in existing FITS headers, which nevertheless do not</em>
+<a class="jxr_linenumber" name="L2681" href="#L2681">2681</a> <em class="jxr_javadoccomment">     * prevent the successful reading of the header by this library.</em>
+<a class="jxr_linenumber" name="L2682" href="#L2682">2682</a> <em class="jxr_javadoccomment">     * &lt;/p&gt;</em>
+<a class="jxr_linenumber" name="L2683" href="#L2683">2683</a> <em class="jxr_javadoccomment">     * &lt;p&gt;</em>
+<a class="jxr_linenumber" name="L2684" href="#L2684">2684</a> <em class="jxr_javadoccomment">     * If {@link FitsFactory#setAllowHeaderRepairs(boolean)} is set &lt;code&gt;false&lt;/code&gt;, this will affect only minor</em>
+<a class="jxr_linenumber" name="L2685" href="#L2685">2685</a> <em class="jxr_javadoccomment">     * violations (e.g. a misplaced '=', missing space after '=', non-standard characters in header etc.), which</em>
+<a class="jxr_linenumber" name="L2686" href="#L2686">2686</a> <em class="jxr_javadoccomment">     * nevertheless do not interfere with the unamiguous parsing of the header information. More severe standard</em>
+<a class="jxr_linenumber" name="L2687" href="#L2687">2687</a> <em class="jxr_javadoccomment">     * violations, where some guessing may be required about the intent of some malformed header record, will throw</em>
+<a class="jxr_linenumber" name="L2688" href="#L2688">2688</a> <em class="jxr_javadoccomment">     * appropriate exceptions. If, however, {@link FitsFactory#setAllowHeaderRepairs(boolean)} is set &lt;code&gt;true&lt;/code&gt;,</em>
+<a class="jxr_linenumber" name="L2689" href="#L2689">2689</a> <em class="jxr_javadoccomment">     * the parsing will throw fewer exceptions, and the additional issues may get logged as additional warning instead.</em>
+<a class="jxr_linenumber" name="L2690" href="#L2690">2690</a> <em class="jxr_javadoccomment">     *</em>
+<a class="jxr_linenumber" name="L2691" href="#L2691">2691</a> <em class="jxr_javadoccomment">     * @param value &lt;code&gt;true&lt;/code&gt; if parser warnings about FITS standard violations when reading in existing FITS</em>
+<a class="jxr_linenumber" name="L2692" href="#L2692">2692</a> <em class="jxr_javadoccomment">     *                  headers are to be logged, otherwise &lt;code&gt;false&lt;/code&gt;</em>
+<a class="jxr_linenumber" name="L2693" href="#L2693">2693</a> <em class="jxr_javadoccomment">     *</em>
+<a class="jxr_linenumber" name="L2694" href="#L2694">2694</a> <em class="jxr_javadoccomment">     * @see         #isParserWarningsEnabled()</em>
+<a class="jxr_linenumber" name="L2695" href="#L2695">2695</a> <em class="jxr_javadoccomment">     * @see         FitsFactory#setAllowHeaderRepairs(boolean)</em>
 <a class="jxr_linenumber" name="L2696" href="#L2696">2696</a> <em class="jxr_javadoccomment">     *</em>
-<a class="jxr_linenumber" name="L2697" href="#L2697">2697</a> <em class="jxr_javadoccomment">     * @param value &lt;code&gt;true&lt;/code&gt; if parser warnings about FITS standard violations when reading in existing FITS</em>
-<a class="jxr_linenumber" name="L2698" href="#L2698">2698</a> <em class="jxr_javadoccomment">     *                  headers are to be logged, otherwise &lt;code&gt;false&lt;/code&gt;</em>
-<a class="jxr_linenumber" name="L2699" href="#L2699">2699</a> <em class="jxr_javadoccomment">     *</em>
-<a class="jxr_linenumber" name="L2700" href="#L2700">2700</a> <em class="jxr_javadoccomment">     * @see         #isParserWarningsEnabled()</em>
-<a class="jxr_linenumber" name="L2701" href="#L2701">2701</a> <em class="jxr_javadoccomment">     * @see         FitsFactory#setAllowHeaderRepairs(boolean)</em>
-<a class="jxr_linenumber" name="L2702" href="#L2702">2702</a> <em class="jxr_javadoccomment">     *</em>
-<a class="jxr_linenumber" name="L2703" href="#L2703">2703</a> <em class="jxr_javadoccomment">     * @since       1.16</em>
-<a class="jxr_linenumber" name="L2704" href="#L2704">2704</a> <em class="jxr_javadoccomment">     */</em>
-<a class="jxr_linenumber" name="L2705" href="#L2705">2705</a>     <strong class="jxr_keyword">public</strong> <strong class="jxr_keyword">static</strong> <strong class="jxr_keyword">void</strong> setParserWarningsEnabled(<strong class="jxr_keyword">boolean</strong> value) {
-<a class="jxr_linenumber" name="L2706" href="#L2706">2706</a>         Level level = value ? Level.WARNING : Level.SEVERE;
-<a class="jxr_linenumber" name="L2707" href="#L2707">2707</a>         HeaderCardParser.getLogger().setLevel(level);
-<a class="jxr_linenumber" name="L2708" href="#L2708">2708</a>         Logger.getLogger(ComplexValue.<strong class="jxr_keyword">class</strong>.getName()).setLevel(level);
-<a class="jxr_linenumber" name="L2709" href="#L2709">2709</a>     }
-<a class="jxr_linenumber" name="L2710" href="#L2710">2710</a> 
-<a class="jxr_linenumber" name="L2711" href="#L2711">2711</a>     <em class="jxr_javadoccomment">/**</em>
-<a class="jxr_linenumber" name="L2712" href="#L2712">2712</a> <em class="jxr_javadoccomment">     * Checks whether warnings about FITS standard violations are logged when a header is being read (parsed).</em>
-<a class="jxr_linenumber" name="L2713" href="#L2713">2713</a> <em class="jxr_javadoccomment">     *</em>
-<a class="jxr_linenumber" name="L2714" href="#L2714">2714</a> <em class="jxr_javadoccomment">     * @return &lt;code&gt;true&lt;/code&gt; if parser warnings about FITS standard violations when reading in existing FITS headers</em>
-<a class="jxr_linenumber" name="L2715" href="#L2715">2715</a> <em class="jxr_javadoccomment">     *             are enabled and logged, otherwise &lt;code&gt;false&lt;/code&gt;</em>
-<a class="jxr_linenumber" name="L2716" href="#L2716">2716</a> <em class="jxr_javadoccomment">     *</em>
-<a class="jxr_linenumber" name="L2717" href="#L2717">2717</a> <em class="jxr_javadoccomment">     * @see    #setParserWarningsEnabled(boolean)</em>
-<a class="jxr_linenumber" name="L2718" href="#L2718">2718</a> <em class="jxr_javadoccomment">     *</em>
-<a class="jxr_linenumber" name="L2719" href="#L2719">2719</a> <em class="jxr_javadoccomment">     * @since  1.16</em>
-<a class="jxr_linenumber" name="L2720" href="#L2720">2720</a> <em class="jxr_javadoccomment">     */</em>
-<a class="jxr_linenumber" name="L2721" href="#L2721">2721</a>     <strong class="jxr_keyword">public</strong> <strong class="jxr_keyword">static</strong> <strong class="jxr_keyword">boolean</strong> isParserWarningsEnabled() {
-<a class="jxr_linenumber" name="L2722" href="#L2722">2722</a>         <strong class="jxr_keyword">return</strong> !HeaderCardParser.getLogger().getLevel().equals(Level.SEVERE);
-<a class="jxr_linenumber" name="L2723" href="#L2723">2723</a>     }
-<a class="jxr_linenumber" name="L2724" href="#L2724">2724</a> 
-<a class="jxr_linenumber" name="L2725" href="#L2725">2725</a>     <em class="jxr_javadoccomment">/**</em>
-<a class="jxr_linenumber" name="L2726" href="#L2726">2726</a> <em class="jxr_javadoccomment">     * Returns the current preferred alignment character position of inline header comments. This is the position at</em>
-<a class="jxr_linenumber" name="L2727" href="#L2727">2727</a> <em class="jxr_javadoccomment">     * which the '/' is placed for the inline comment. #deprecated</em>
-<a class="jxr_linenumber" name="L2728" href="#L2728">2728</a> <em class="jxr_javadoccomment">     *</em>
-<a class="jxr_linenumber" name="L2729" href="#L2729">2729</a> <em class="jxr_javadoccomment">     * @return The current alignment position for inline comments.</em>
-<a class="jxr_linenumber" name="L2730" href="#L2730">2730</a> <em class="jxr_javadoccomment">     *</em>
-<a class="jxr_linenumber" name="L2731" href="#L2731">2731</a> <em class="jxr_javadoccomment">     * @see    #setCommentAlignPosition(int)</em>
-<a class="jxr_linenumber" name="L2732" href="#L2732">2732</a> <em class="jxr_javadoccomment">     * </em>
-<a class="jxr_linenumber" name="L2733" href="#L2733">2733</a> <em class="jxr_javadoccomment">     * @since  1.17</em>
-<a class="jxr_linenumber" name="L2734" href="#L2734">2734</a> <em class="jxr_javadoccomment">     */</em>
-<a class="jxr_linenumber" name="L2735" href="#L2735">2735</a>     <strong class="jxr_keyword">public</strong> <strong class="jxr_keyword">static</strong> <strong class="jxr_keyword">int</strong> getCommentAlignPosition() {
-<a class="jxr_linenumber" name="L2736" href="#L2736">2736</a>         <strong class="jxr_keyword">return</strong> commentAlign;
-<a class="jxr_linenumber" name="L2737" href="#L2737">2737</a>     }
-<a class="jxr_linenumber" name="L2738" href="#L2738">2738</a> 
-<a class="jxr_linenumber" name="L2739" href="#L2739">2739</a>     <em class="jxr_javadoccomment">/**</em>
-<a class="jxr_linenumber" name="L2740" href="#L2740">2740</a> <em class="jxr_javadoccomment">     * Sets a new alignment position for inline header comments.</em>
-<a class="jxr_linenumber" name="L2741" href="#L2741">2741</a> <em class="jxr_javadoccomment">     *</em>
-<a class="jxr_linenumber" name="L2742" href="#L2742">2742</a> <em class="jxr_javadoccomment">     * @param      pos                      [20:70] The character position to which inline comments should be aligned if</em>
-<a class="jxr_linenumber" name="L2743" href="#L2743">2743</a> <em class="jxr_javadoccomment">     *                                          possible.</em>
-<a class="jxr_linenumber" name="L2744" href="#L2744">2744</a> <em class="jxr_javadoccomment">     *</em>
-<a class="jxr_linenumber" name="L2745" href="#L2745">2745</a> <em class="jxr_javadoccomment">     * @throws     IllegalArgumentException if the position is outside of the allowed range.</em>
-<a class="jxr_linenumber" name="L2746" href="#L2746">2746</a> <em class="jxr_javadoccomment">     *</em>
-<a class="jxr_linenumber" name="L2747" href="#L2747">2747</a> <em class="jxr_javadoccomment">     * @see                                 #getCommentAlignPosition()</em>
-<a class="jxr_linenumber" name="L2748" href="#L2748">2748</a> <em class="jxr_javadoccomment">     * </em>
-<a class="jxr_linenumber" name="L2749" href="#L2749">2749</a> <em class="jxr_javadoccomment">     * @deprecated                          Not recommended as it may violate the FITS standart for 'fixed-format'</em>
-<a class="jxr_linenumber" name="L2750" href="#L2750">2750</a> <em class="jxr_javadoccomment">     *                                          header entries, and make our FITS files unreadable by software that</em>
-<a class="jxr_linenumber" name="L2751" href="#L2751">2751</a> <em class="jxr_javadoccomment">     *                                          expects strict adherence to the standard. We will remove this feature in</em>
-<a class="jxr_linenumber" name="L2752" href="#L2752">2752</a> <em class="jxr_javadoccomment">     *                                          the future.</em>
-<a class="jxr_linenumber" name="L2753" href="#L2753">2753</a> <em class="jxr_javadoccomment">     * </em>
-<a class="jxr_linenumber" name="L2754" href="#L2754">2754</a> <em class="jxr_javadoccomment">     * @since                               1.17</em>
-<a class="jxr_linenumber" name="L2755" href="#L2755">2755</a> <em class="jxr_javadoccomment">     */</em>
-<a class="jxr_linenumber" name="L2756" href="#L2756">2756</a>     <strong class="jxr_keyword">public</strong> <strong class="jxr_keyword">static</strong> <strong class="jxr_keyword">void</strong> setCommentAlignPosition(<strong class="jxr_keyword">int</strong> pos) <strong class="jxr_keyword">throws</strong> IllegalArgumentException {
-<a class="jxr_linenumber" name="L2757" href="#L2757">2757</a>         <strong class="jxr_keyword">if</strong> (pos &lt; Header.MIN_COMMENT_ALIGN || pos &gt; Header.MAX_COMMENT_ALIGN) {
-<a class="jxr_linenumber" name="L2758" href="#L2758">2758</a>             <strong class="jxr_keyword">throw</strong> <strong class="jxr_keyword">new</strong> IllegalArgumentException(
-<a class="jxr_linenumber" name="L2759" href="#L2759">2759</a>                     <span class="jxr_string">"Comment alignment "</span> + pos + <span class="jxr_string">" out of range ("</span> + MIN_COMMENT_ALIGN + <span class="jxr_string">":"</span> + MAX_COMMENT_ALIGN + <span class="jxr_string">")."</span>);
-<a class="jxr_linenumber" name="L2760" href="#L2760">2760</a>         }
-<a class="jxr_linenumber" name="L2761" href="#L2761">2761</a>         commentAlign = pos;
-<a class="jxr_linenumber" name="L2762" href="#L2762">2762</a>     }
-<a class="jxr_linenumber" name="L2763" href="#L2763">2763</a> }
+<a class="jxr_linenumber" name="L2697" href="#L2697">2697</a> <em class="jxr_javadoccomment">     * @since       1.16</em>
+<a class="jxr_linenumber" name="L2698" href="#L2698">2698</a> <em class="jxr_javadoccomment">     */</em>
+<a class="jxr_linenumber" name="L2699" href="#L2699">2699</a>     <strong class="jxr_keyword">public</strong> <strong class="jxr_keyword">static</strong> <strong class="jxr_keyword">void</strong> setParserWarningsEnabled(<strong class="jxr_keyword">boolean</strong> value) {
+<a class="jxr_linenumber" name="L2700" href="#L2700">2700</a>         Level level = value ? Level.WARNING : Level.SEVERE;
+<a class="jxr_linenumber" name="L2701" href="#L2701">2701</a>         HeaderCardParser.getLogger().setLevel(level);
+<a class="jxr_linenumber" name="L2702" href="#L2702">2702</a>         Logger.getLogger(ComplexValue.<strong class="jxr_keyword">class</strong>.getName()).setLevel(level);
+<a class="jxr_linenumber" name="L2703" href="#L2703">2703</a>     }
+<a class="jxr_linenumber" name="L2704" href="#L2704">2704</a> 
+<a class="jxr_linenumber" name="L2705" href="#L2705">2705</a>     <em class="jxr_javadoccomment">/**</em>
+<a class="jxr_linenumber" name="L2706" href="#L2706">2706</a> <em class="jxr_javadoccomment">     * Checks whether warnings about FITS standard violations are logged when a header is being read (parsed).</em>
+<a class="jxr_linenumber" name="L2707" href="#L2707">2707</a> <em class="jxr_javadoccomment">     *</em>
+<a class="jxr_linenumber" name="L2708" href="#L2708">2708</a> <em class="jxr_javadoccomment">     * @return &lt;code&gt;true&lt;/code&gt; if parser warnings about FITS standard violations when reading in existing FITS headers</em>
+<a class="jxr_linenumber" name="L2709" href="#L2709">2709</a> <em class="jxr_javadoccomment">     *             are enabled and logged, otherwise &lt;code&gt;false&lt;/code&gt;</em>
+<a class="jxr_linenumber" name="L2710" href="#L2710">2710</a> <em class="jxr_javadoccomment">     *</em>
+<a class="jxr_linenumber" name="L2711" href="#L2711">2711</a> <em class="jxr_javadoccomment">     * @see    #setParserWarningsEnabled(boolean)</em>
+<a class="jxr_linenumber" name="L2712" href="#L2712">2712</a> <em class="jxr_javadoccomment">     *</em>
+<a class="jxr_linenumber" name="L2713" href="#L2713">2713</a> <em class="jxr_javadoccomment">     * @since  1.16</em>
+<a class="jxr_linenumber" name="L2714" href="#L2714">2714</a> <em class="jxr_javadoccomment">     */</em>
+<a class="jxr_linenumber" name="L2715" href="#L2715">2715</a>     <strong class="jxr_keyword">public</strong> <strong class="jxr_keyword">static</strong> <strong class="jxr_keyword">boolean</strong> isParserWarningsEnabled() {
+<a class="jxr_linenumber" name="L2716" href="#L2716">2716</a>         <strong class="jxr_keyword">return</strong> !HeaderCardParser.getLogger().getLevel().equals(Level.SEVERE);
+<a class="jxr_linenumber" name="L2717" href="#L2717">2717</a>     }
+<a class="jxr_linenumber" name="L2718" href="#L2718">2718</a> 
+<a class="jxr_linenumber" name="L2719" href="#L2719">2719</a>     <em class="jxr_javadoccomment">/**</em>
+<a class="jxr_linenumber" name="L2720" href="#L2720">2720</a> <em class="jxr_javadoccomment">     * Returns the current preferred alignment character position of inline header comments. This is the position at</em>
+<a class="jxr_linenumber" name="L2721" href="#L2721">2721</a> <em class="jxr_javadoccomment">     * which the '/' is placed for the inline comment. #deprecated</em>
+<a class="jxr_linenumber" name="L2722" href="#L2722">2722</a> <em class="jxr_javadoccomment">     *</em>
+<a class="jxr_linenumber" name="L2723" href="#L2723">2723</a> <em class="jxr_javadoccomment">     * @return The current alignment position for inline comments.</em>
+<a class="jxr_linenumber" name="L2724" href="#L2724">2724</a> <em class="jxr_javadoccomment">     *</em>
+<a class="jxr_linenumber" name="L2725" href="#L2725">2725</a> <em class="jxr_javadoccomment">     * @see    #setCommentAlignPosition(int)</em>
+<a class="jxr_linenumber" name="L2726" href="#L2726">2726</a> <em class="jxr_javadoccomment">     * </em>
+<a class="jxr_linenumber" name="L2727" href="#L2727">2727</a> <em class="jxr_javadoccomment">     * @since  1.17</em>
+<a class="jxr_linenumber" name="L2728" href="#L2728">2728</a> <em class="jxr_javadoccomment">     */</em>
+<a class="jxr_linenumber" name="L2729" href="#L2729">2729</a>     <strong class="jxr_keyword">public</strong> <strong class="jxr_keyword">static</strong> <strong class="jxr_keyword">int</strong> getCommentAlignPosition() {
+<a class="jxr_linenumber" name="L2730" href="#L2730">2730</a>         <strong class="jxr_keyword">return</strong> commentAlign;
+<a class="jxr_linenumber" name="L2731" href="#L2731">2731</a>     }
+<a class="jxr_linenumber" name="L2732" href="#L2732">2732</a> 
+<a class="jxr_linenumber" name="L2733" href="#L2733">2733</a>     <em class="jxr_javadoccomment">/**</em>
+<a class="jxr_linenumber" name="L2734" href="#L2734">2734</a> <em class="jxr_javadoccomment">     * Sets a new alignment position for inline header comments.</em>
+<a class="jxr_linenumber" name="L2735" href="#L2735">2735</a> <em class="jxr_javadoccomment">     *</em>
+<a class="jxr_linenumber" name="L2736" href="#L2736">2736</a> <em class="jxr_javadoccomment">     * @param      pos                      [20:70] The character position to which inline comments should be aligned if</em>
+<a class="jxr_linenumber" name="L2737" href="#L2737">2737</a> <em class="jxr_javadoccomment">     *                                          possible.</em>
+<a class="jxr_linenumber" name="L2738" href="#L2738">2738</a> <em class="jxr_javadoccomment">     *</em>
+<a class="jxr_linenumber" name="L2739" href="#L2739">2739</a> <em class="jxr_javadoccomment">     * @throws     IllegalArgumentException if the position is outside of the allowed range.</em>
+<a class="jxr_linenumber" name="L2740" href="#L2740">2740</a> <em class="jxr_javadoccomment">     *</em>
+<a class="jxr_linenumber" name="L2741" href="#L2741">2741</a> <em class="jxr_javadoccomment">     * @see                                 #getCommentAlignPosition()</em>
+<a class="jxr_linenumber" name="L2742" href="#L2742">2742</a> <em class="jxr_javadoccomment">     * </em>
+<a class="jxr_linenumber" name="L2743" href="#L2743">2743</a> <em class="jxr_javadoccomment">     * @deprecated                          Not recommended as it may violate the FITS standart for 'fixed-format'</em>
+<a class="jxr_linenumber" name="L2744" href="#L2744">2744</a> <em class="jxr_javadoccomment">     *                                          header entries, and make our FITS files unreadable by software that</em>
+<a class="jxr_linenumber" name="L2745" href="#L2745">2745</a> <em class="jxr_javadoccomment">     *                                          expects strict adherence to the standard. We will remove this feature in</em>
+<a class="jxr_linenumber" name="L2746" href="#L2746">2746</a> <em class="jxr_javadoccomment">     *                                          the future.</em>
+<a class="jxr_linenumber" name="L2747" href="#L2747">2747</a> <em class="jxr_javadoccomment">     * </em>
+<a class="jxr_linenumber" name="L2748" href="#L2748">2748</a> <em class="jxr_javadoccomment">     * @since                               1.17</em>
+<a class="jxr_linenumber" name="L2749" href="#L2749">2749</a> <em class="jxr_javadoccomment">     */</em>
+<a class="jxr_linenumber" name="L2750" href="#L2750">2750</a>     <strong class="jxr_keyword">public</strong> <strong class="jxr_keyword">static</strong> <strong class="jxr_keyword">void</strong> setCommentAlignPosition(<strong class="jxr_keyword">int</strong> pos) <strong class="jxr_keyword">throws</strong> IllegalArgumentException {
+<a class="jxr_linenumber" name="L2751" href="#L2751">2751</a>         <strong class="jxr_keyword">if</strong> (pos &lt; Header.MIN_COMMENT_ALIGN || pos &gt; Header.MAX_COMMENT_ALIGN) {
+<a class="jxr_linenumber" name="L2752" href="#L2752">2752</a>             <strong class="jxr_keyword">throw</strong> <strong class="jxr_keyword">new</strong> IllegalArgumentException(
+<a class="jxr_linenumber" name="L2753" href="#L2753">2753</a>                     <span class="jxr_string">"Comment alignment "</span> + pos + <span class="jxr_string">" out of range ("</span> + MIN_COMMENT_ALIGN + <span class="jxr_string">":"</span> + MAX_COMMENT_ALIGN + <span class="jxr_string">")."</span>);
+<a class="jxr_linenumber" name="L2754" href="#L2754">2754</a>         }
+<a class="jxr_linenumber" name="L2755" href="#L2755">2755</a>         commentAlign = pos;
+<a class="jxr_linenumber" name="L2756" href="#L2756">2756</a>     }
+<a class="jxr_linenumber" name="L2757" href="#L2757">2757</a> }
 </pre>
 <hr/>
 <div id="footer">Copyright &#169; 1996&#x2013;2023 nom-tam-fits. All rights reserved.</div>

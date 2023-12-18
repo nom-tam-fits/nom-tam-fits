@@ -288,231 +288,228 @@
 <a class="jxr_linenumber" name="L280" href="#L280">280</a>     <em class="jxr_javadoccomment">/**</em>
 <a class="jxr_linenumber" name="L281" href="#L281">281</a> <em class="jxr_javadoccomment">     * Create an HDU from the given header and data.</em>
 <a class="jxr_linenumber" name="L282" href="#L282">282</a> <em class="jxr_javadoccomment">     * </em>
-<a class="jxr_linenumber" name="L283" href="#L283">283</a> <em class="jxr_javadoccomment">     * @deprecated                       (&lt;i&gt;for internal use&lt;/i&gt;) Its visibility should be reduced to package level in</em>
-<a class="jxr_linenumber" name="L284" href="#L284">284</a> <em class="jxr_javadoccomment">     *                                       the future.</em>
-<a class="jxr_linenumber" name="L285" href="#L285">285</a> <em class="jxr_javadoccomment">     *</em>
-<a class="jxr_linenumber" name="L286" href="#L286">286</a> <em class="jxr_javadoccomment">     * @param      header                header to use</em>
-<a class="jxr_linenumber" name="L287" href="#L287">287</a> <em class="jxr_javadoccomment">     * @param      data                  data to use</em>
-<a class="jxr_linenumber" name="L288" href="#L288">288</a> <em class="jxr_javadoccomment">     * </em>
-<a class="jxr_linenumber" name="L289" href="#L289">289</a> <em class="jxr_javadoccomment">     * @throws     IllegalStateException if the header does not contain a valid BITPIX value.</em>
-<a class="jxr_linenumber" name="L290" href="#L290">290</a> <em class="jxr_javadoccomment">     */</em>
-<a class="jxr_linenumber" name="L291" href="#L291">291</a>     <strong class="jxr_keyword">public</strong> <a name="RandomGroupsHDU" href="../../../nom/tam/fits/RandomGroupsHDU.html#RandomGroupsHDU">RandomGroupsHDU</a>(<a name="Header" href="../../../nom/tam/fits/Header.html#Header">Header</a> header, <a name="RandomGroupsData" href="../../../nom/tam/fits/RandomGroupsData.html#RandomGroupsData">RandomGroupsData</a> data) <strong class="jxr_keyword">throws</strong> IllegalStateException {
-<a class="jxr_linenumber" name="L292" href="#L292">292</a>         <strong class="jxr_keyword">super</strong>(header, data);
-<a class="jxr_linenumber" name="L293" href="#L293">293</a> 
-<a class="jxr_linenumber" name="L294" href="#L294">294</a>         <strong class="jxr_keyword">if</strong> (header == <strong class="jxr_keyword">null</strong>) {
-<a class="jxr_linenumber" name="L295" href="#L295">295</a>             <strong class="jxr_keyword">return</strong>;
-<a class="jxr_linenumber" name="L296" href="#L296">296</a>         }
+<a class="jxr_linenumber" name="L283" href="#L283">283</a> <em class="jxr_javadoccomment">     * @deprecated        (&lt;i&gt;for internal use&lt;/i&gt;) Its visibility should be reduced to package level in the future.</em>
+<a class="jxr_linenumber" name="L284" href="#L284">284</a> <em class="jxr_javadoccomment">     *</em>
+<a class="jxr_linenumber" name="L285" href="#L285">285</a> <em class="jxr_javadoccomment">     * @param      header header to use</em>
+<a class="jxr_linenumber" name="L286" href="#L286">286</a> <em class="jxr_javadoccomment">     * @param      data   data to use</em>
+<a class="jxr_linenumber" name="L287" href="#L287">287</a> <em class="jxr_javadoccomment">     */</em>
+<a class="jxr_linenumber" name="L288" href="#L288">288</a>     <strong class="jxr_keyword">public</strong> <a name="RandomGroupsHDU" href="../../../nom/tam/fits/RandomGroupsHDU.html#RandomGroupsHDU">RandomGroupsHDU</a>(<a name="Header" href="../../../nom/tam/fits/Header.html#Header">Header</a> header, <a name="RandomGroupsData" href="../../../nom/tam/fits/RandomGroupsData.html#RandomGroupsData">RandomGroupsData</a> data) {
+<a class="jxr_linenumber" name="L289" href="#L289">289</a>         <strong class="jxr_keyword">super</strong>(header, data);
+<a class="jxr_linenumber" name="L290" href="#L290">290</a> 
+<a class="jxr_linenumber" name="L291" href="#L291">291</a>         <strong class="jxr_keyword">if</strong> (header == <strong class="jxr_keyword">null</strong>) {
+<a class="jxr_linenumber" name="L292" href="#L292">292</a>             <strong class="jxr_keyword">return</strong>;
+<a class="jxr_linenumber" name="L293" href="#L293">293</a>         }
+<a class="jxr_linenumber" name="L294" href="#L294">294</a> 
+<a class="jxr_linenumber" name="L295" href="#L295">295</a>         parseParameters(header);
+<a class="jxr_linenumber" name="L296" href="#L296">296</a>     }
 <a class="jxr_linenumber" name="L297" href="#L297">297</a> 
-<a class="jxr_linenumber" name="L298" href="#L298">298</a>         parseParameters(header);
-<a class="jxr_linenumber" name="L299" href="#L299">299</a>     }
+<a class="jxr_linenumber" name="L298" href="#L298">298</a>     @Override
+<a class="jxr_linenumber" name="L299" href="#L299">299</a>     <strong class="jxr_keyword">public</strong> <strong class="jxr_keyword">void</strong> info(PrintStream stream) {
 <a class="jxr_linenumber" name="L300" href="#L300">300</a> 
-<a class="jxr_linenumber" name="L301" href="#L301">301</a>     @Override
-<a class="jxr_linenumber" name="L302" href="#L302">302</a>     <strong class="jxr_keyword">public</strong> <strong class="jxr_keyword">void</strong> info(PrintStream stream) {
-<a class="jxr_linenumber" name="L303" href="#L303">303</a> 
-<a class="jxr_linenumber" name="L304" href="#L304">304</a>         stream.println(<span class="jxr_string">"Random Groups HDU"</span>);
-<a class="jxr_linenumber" name="L305" href="#L305">305</a>         <strong class="jxr_keyword">if</strong> (myHeader != <strong class="jxr_keyword">null</strong>) {
-<a class="jxr_linenumber" name="L306" href="#L306">306</a>             stream.println(<span class="jxr_string">"   HeaderInformation:"</span>);
-<a class="jxr_linenumber" name="L307" href="#L307">307</a>             stream.println(<span class="jxr_string">"     Ngroups:"</span> + myHeader.getIntValue(GCOUNT));
-<a class="jxr_linenumber" name="L308" href="#L308">308</a>             stream.println(<span class="jxr_string">"     Npar:   "</span> + myHeader.getIntValue(PCOUNT));
-<a class="jxr_linenumber" name="L309" href="#L309">309</a>             stream.println(<span class="jxr_string">"     BITPIX: "</span> + myHeader.getIntValue(BITPIX));
-<a class="jxr_linenumber" name="L310" href="#L310">310</a>             stream.println(<span class="jxr_string">"     NAXIS:  "</span> + myHeader.getIntValue(NAXIS));
-<a class="jxr_linenumber" name="L311" href="#L311">311</a>             <strong class="jxr_keyword">for</strong> (<strong class="jxr_keyword">int</strong> i = 0; i &lt; myHeader.getIntValue(NAXIS); i++) {
-<a class="jxr_linenumber" name="L312" href="#L312">312</a>                 stream.println(<span class="jxr_string">"      NAXIS"</span> + (i + 1) + <span class="jxr_string">"= "</span> + myHeader.getIntValue(NAXISn.n(i + 1)));
-<a class="jxr_linenumber" name="L313" href="#L313">313</a>             }
-<a class="jxr_linenumber" name="L314" href="#L314">314</a>         } <strong class="jxr_keyword">else</strong> {
-<a class="jxr_linenumber" name="L315" href="#L315">315</a>             stream.println(<span class="jxr_string">"    No Header Information"</span>);
-<a class="jxr_linenumber" name="L316" href="#L316">316</a>         }
-<a class="jxr_linenumber" name="L317" href="#L317">317</a> 
-<a class="jxr_linenumber" name="L318" href="#L318">318</a>         Object[][] data = <strong class="jxr_keyword">null</strong>;
-<a class="jxr_linenumber" name="L319" href="#L319">319</a>         <strong class="jxr_keyword">if</strong> (myData != <strong class="jxr_keyword">null</strong>) {
-<a class="jxr_linenumber" name="L320" href="#L320">320</a>             <strong class="jxr_keyword">try</strong> {
-<a class="jxr_linenumber" name="L321" href="#L321">321</a>                 data = myData.getData();
-<a class="jxr_linenumber" name="L322" href="#L322">322</a>             } <strong class="jxr_keyword">catch</strong> (<a name="FitsException" href="../../../nom/tam/fits/FitsException.html#FitsException">FitsException</a> e) {
-<a class="jxr_linenumber" name="L323" href="#L323">323</a>                 <em class="jxr_comment">// nothing to do...</em>
-<a class="jxr_linenumber" name="L324" href="#L324">324</a>             }
-<a class="jxr_linenumber" name="L325" href="#L325">325</a>         }
-<a class="jxr_linenumber" name="L326" href="#L326">326</a> 
-<a class="jxr_linenumber" name="L327" href="#L327">327</a>         <strong class="jxr_keyword">if</strong> (data == <strong class="jxr_keyword">null</strong> || data.length &lt; 1 || data[0].length != 2) {
-<a class="jxr_linenumber" name="L328" href="#L328">328</a>             stream.println(<span class="jxr_string">"    Invalid/unreadable data"</span>);
-<a class="jxr_linenumber" name="L329" href="#L329">329</a>         } <strong class="jxr_keyword">else</strong> {
-<a class="jxr_linenumber" name="L330" href="#L330">330</a>             stream.println(<span class="jxr_string">"    Number of groups:"</span> + data.length);
-<a class="jxr_linenumber" name="L331" href="#L331">331</a>             stream.println(<span class="jxr_string">"    Parameters: "</span> + ArrayFuncs.arrayDescription(data[0][0]));
-<a class="jxr_linenumber" name="L332" href="#L332">332</a>             stream.println(<span class="jxr_string">"    Data:"</span> + ArrayFuncs.arrayDescription(data[0][1]));
-<a class="jxr_linenumber" name="L333" href="#L333">333</a>         }
-<a class="jxr_linenumber" name="L334" href="#L334">334</a>     }
-<a class="jxr_linenumber" name="L335" href="#L335">335</a> 
-<a class="jxr_linenumber" name="L336" href="#L336">336</a>     <em class="jxr_javadoccomment">/**</em>
-<a class="jxr_linenumber" name="L337" href="#L337">337</a> <em class="jxr_javadoccomment">     * Returns the number of parameter bytes (per data group) accompanying each data object in the group.</em>
-<a class="jxr_linenumber" name="L338" href="#L338">338</a> <em class="jxr_javadoccomment">     */</em>
-<a class="jxr_linenumber" name="L339" href="#L339">339</a>     @Override
-<a class="jxr_linenumber" name="L340" href="#L340">340</a>     <strong class="jxr_keyword">public</strong> <strong class="jxr_keyword">int</strong> getParameterCount() {
-<a class="jxr_linenumber" name="L341" href="#L341">341</a>         <strong class="jxr_keyword">return</strong> <strong class="jxr_keyword">super</strong>.getParameterCount();
-<a class="jxr_linenumber" name="L342" href="#L342">342</a>     }
-<a class="jxr_linenumber" name="L343" href="#L343">343</a> 
-<a class="jxr_linenumber" name="L344" href="#L344">344</a>     <em class="jxr_javadoccomment">/**</em>
-<a class="jxr_linenumber" name="L345" href="#L345">345</a> <em class="jxr_javadoccomment">     * Returns the number of data objects (of identical shape and size) that are group together in this HDUs data</em>
-<a class="jxr_linenumber" name="L346" href="#L346">346</a> <em class="jxr_javadoccomment">     * segment.</em>
-<a class="jxr_linenumber" name="L347" href="#L347">347</a> <em class="jxr_javadoccomment">     */</em>
-<a class="jxr_linenumber" name="L348" href="#L348">348</a>     @Override
-<a class="jxr_linenumber" name="L349" href="#L349">349</a>     <strong class="jxr_keyword">public</strong> <strong class="jxr_keyword">int</strong> getGroupCount() {
-<a class="jxr_linenumber" name="L350" href="#L350">350</a>         <strong class="jxr_keyword">return</strong> <strong class="jxr_keyword">super</strong>.getGroupCount();
-<a class="jxr_linenumber" name="L351" href="#L351">351</a>     }
-<a class="jxr_linenumber" name="L352" href="#L352">352</a> 
-<a class="jxr_linenumber" name="L353" href="#L353">353</a>     <em class="jxr_javadoccomment">/**</em>
-<a class="jxr_linenumber" name="L354" href="#L354">354</a> <em class="jxr_javadoccomment">     * Check that this HDU has a valid header.</em>
-<a class="jxr_linenumber" name="L355" href="#L355">355</a> <em class="jxr_javadoccomment">     *</em>
-<a class="jxr_linenumber" name="L356" href="#L356">356</a> <em class="jxr_javadoccomment">     * @return &lt;CODE&gt;true&lt;/CODE&gt; if this HDU has a valid header.</em>
-<a class="jxr_linenumber" name="L357" href="#L357">357</a> <em class="jxr_javadoccomment">     */</em>
-<a class="jxr_linenumber" name="L358" href="#L358">358</a>     <strong class="jxr_keyword">public</strong> <strong class="jxr_keyword">boolean</strong> isHeader() {
-<a class="jxr_linenumber" name="L359" href="#L359">359</a>         <strong class="jxr_keyword">return</strong> isHeader(myHeader);
-<a class="jxr_linenumber" name="L360" href="#L360">360</a>     }
-<a class="jxr_linenumber" name="L361" href="#L361">361</a> 
-<a class="jxr_linenumber" name="L362" href="#L362">362</a>     <em class="jxr_javadoccomment">/**</em>
-<a class="jxr_linenumber" name="L363" href="#L363">363</a> <em class="jxr_javadoccomment">     * Returns the name of the physical unit in which image data are represented.</em>
-<a class="jxr_linenumber" name="L364" href="#L364">364</a> <em class="jxr_javadoccomment">     * </em>
-<a class="jxr_linenumber" name="L365" href="#L365">365</a> <em class="jxr_javadoccomment">     * @return the standard name of the physical unit in which the image is expressed, e.g. &lt;code&gt;"Jy beam^{-1}"&lt;/code&gt;.</em>
-<a class="jxr_linenumber" name="L366" href="#L366">366</a> <em class="jxr_javadoccomment">     */</em>
-<a class="jxr_linenumber" name="L367" href="#L367">367</a>     @Override
-<a class="jxr_linenumber" name="L368" href="#L368">368</a>     <strong class="jxr_keyword">public</strong> String getBUnit() {
-<a class="jxr_linenumber" name="L369" href="#L369">369</a>         <strong class="jxr_keyword">return</strong> <strong class="jxr_keyword">super</strong>.getBUnit();
-<a class="jxr_linenumber" name="L370" href="#L370">370</a>     }
-<a class="jxr_linenumber" name="L371" href="#L371">371</a> 
-<a class="jxr_linenumber" name="L372" href="#L372">372</a>     <em class="jxr_javadoccomment">/**</em>
-<a class="jxr_linenumber" name="L373" href="#L373">373</a> <em class="jxr_javadoccomment">     * Returns the integer value that signifies blank (missing or &lt;code&gt;null&lt;/code&gt;) data in an integer image.</em>
-<a class="jxr_linenumber" name="L374" href="#L374">374</a> <em class="jxr_javadoccomment">     *</em>
-<a class="jxr_linenumber" name="L375" href="#L375">375</a> <em class="jxr_javadoccomment">     * @return               the integer value used for identifying blank / missing data in integer images.</em>
-<a class="jxr_linenumber" name="L376" href="#L376">376</a> <em class="jxr_javadoccomment">     * </em>
-<a class="jxr_linenumber" name="L377" href="#L377">377</a> <em class="jxr_javadoccomment">     * @throws FitsException if the header does not specify a blanking value or if it is not appropriate for the type of</em>
-<a class="jxr_linenumber" name="L378" href="#L378">378</a> <em class="jxr_javadoccomment">     *                           imge (that is not an integer type image)</em>
-<a class="jxr_linenumber" name="L379" href="#L379">379</a> <em class="jxr_javadoccomment">     */</em>
-<a class="jxr_linenumber" name="L380" href="#L380">380</a>     @Override
-<a class="jxr_linenumber" name="L381" href="#L381">381</a>     <strong class="jxr_keyword">public</strong> <strong class="jxr_keyword">long</strong> getBlankValue() <strong class="jxr_keyword">throws</strong> <a name="FitsException" href="../../../nom/tam/fits/FitsException.html#FitsException">FitsException</a> {
-<a class="jxr_linenumber" name="L382" href="#L382">382</a>         <strong class="jxr_keyword">if</strong> (getBitpix().getHeaderValue() &lt; 0) {
-<a class="jxr_linenumber" name="L383" href="#L383">383</a>             <strong class="jxr_keyword">throw</strong> <strong class="jxr_keyword">new</strong> <a name="FitsException" href="../../../nom/tam/fits/FitsException.html#FitsException">FitsException</a>(<span class="jxr_string">"No integer blanking value in floating-point images."</span>);
-<a class="jxr_linenumber" name="L384" href="#L384">384</a>         }
-<a class="jxr_linenumber" name="L385" href="#L385">385</a>         <strong class="jxr_keyword">return</strong> <strong class="jxr_keyword">super</strong>.getBlankValue();
-<a class="jxr_linenumber" name="L386" href="#L386">386</a>     }
-<a class="jxr_linenumber" name="L387" href="#L387">387</a> 
-<a class="jxr_linenumber" name="L388" href="#L388">388</a>     <em class="jxr_javadoccomment">/**</em>
-<a class="jxr_linenumber" name="L389" href="#L389">389</a> <em class="jxr_javadoccomment">     * Returns the floating-point increment between adjacent integer values in the image. Strictly speaking, only</em>
-<a class="jxr_linenumber" name="L390" href="#L390">390</a> <em class="jxr_javadoccomment">     * integer-type images should define a quantization scaling, but there is no harm in having this value in</em>
-<a class="jxr_linenumber" name="L391" href="#L391">391</a> <em class="jxr_javadoccomment">     * floating-point images also -- which may be interpreted as a hint for quantization, perhaps.</em>
-<a class="jxr_linenumber" name="L392" href="#L392">392</a> <em class="jxr_javadoccomment">     * </em>
-<a class="jxr_linenumber" name="L393" href="#L393">393</a> <em class="jxr_javadoccomment">     * @return the floating-point quantum that corresponds to the increment of 1 in the integer data representation.</em>
-<a class="jxr_linenumber" name="L394" href="#L394">394</a> <em class="jxr_javadoccomment">     * </em>
-<a class="jxr_linenumber" name="L395" href="#L395">395</a> <em class="jxr_javadoccomment">     * @see    #getBZero()</em>
-<a class="jxr_linenumber" name="L396" href="#L396">396</a> <em class="jxr_javadoccomment">     */</em>
-<a class="jxr_linenumber" name="L397" href="#L397">397</a>     @Override
-<a class="jxr_linenumber" name="L398" href="#L398">398</a>     <strong class="jxr_keyword">public</strong> <strong class="jxr_keyword">double</strong> getBScale() {
-<a class="jxr_linenumber" name="L399" href="#L399">399</a>         <strong class="jxr_keyword">return</strong> <strong class="jxr_keyword">super</strong>.getBScale();
-<a class="jxr_linenumber" name="L400" href="#L400">400</a>     }
-<a class="jxr_linenumber" name="L401" href="#L401">401</a> 
-<a class="jxr_linenumber" name="L402" href="#L402">402</a>     <em class="jxr_javadoccomment">/**</em>
-<a class="jxr_linenumber" name="L403" href="#L403">403</a> <em class="jxr_javadoccomment">     * Returns the floating-point value that corresponds to an 0 integer value in the image. Strictly speaking, only</em>
-<a class="jxr_linenumber" name="L404" href="#L404">404</a> <em class="jxr_javadoccomment">     * integer-type images should define a quantization scaling, but there is no harm in having this value in</em>
-<a class="jxr_linenumber" name="L405" href="#L405">405</a> <em class="jxr_javadoccomment">     * floating-point images also -- which may be interpreted as a hint for quantization, perhaps.</em>
-<a class="jxr_linenumber" name="L406" href="#L406">406</a> <em class="jxr_javadoccomment">     * </em>
-<a class="jxr_linenumber" name="L407" href="#L407">407</a> <em class="jxr_javadoccomment">     * @return the floating point value that correspond to the integer 0 in the image data.</em>
-<a class="jxr_linenumber" name="L408" href="#L408">408</a> <em class="jxr_javadoccomment">     * </em>
-<a class="jxr_linenumber" name="L409" href="#L409">409</a> <em class="jxr_javadoccomment">     * @see    #getBScale()</em>
-<a class="jxr_linenumber" name="L410" href="#L410">410</a> <em class="jxr_javadoccomment">     */</em>
-<a class="jxr_linenumber" name="L411" href="#L411">411</a>     @Override
-<a class="jxr_linenumber" name="L412" href="#L412">412</a>     <strong class="jxr_keyword">public</strong> <strong class="jxr_keyword">double</strong> getBZero() {
-<a class="jxr_linenumber" name="L413" href="#L413">413</a>         <strong class="jxr_keyword">return</strong> <strong class="jxr_keyword">super</strong>.getBZero();
-<a class="jxr_linenumber" name="L414" href="#L414">414</a>     }
-<a class="jxr_linenumber" name="L415" href="#L415">415</a> 
-<a class="jxr_linenumber" name="L416" href="#L416">416</a>     @Override
-<a class="jxr_linenumber" name="L417" href="#L417">417</a>     <strong class="jxr_keyword">public</strong> <strong class="jxr_keyword">void</strong> write(<a name="ArrayDataOutput" href="../../../nom/tam/util/ArrayDataOutput.html#ArrayDataOutput">ArrayDataOutput</a> stream) <strong class="jxr_keyword">throws</strong> <a name="FitsException" href="../../../nom/tam/fits/FitsException.html#FitsException">FitsException</a> {
-<a class="jxr_linenumber" name="L418" href="#L418">418</a>         <strong class="jxr_keyword">if</strong> (stream instanceof <a name="FitsOutput" href="../../../nom/tam/util/FitsOutput.html#FitsOutput">FitsOutput</a>) {
-<a class="jxr_linenumber" name="L419" href="#L419">419</a>             <strong class="jxr_keyword">if</strong> (!((<a name="FitsOutput" href="../../../nom/tam/util/FitsOutput.html#FitsOutput">FitsOutput</a>) stream).isAtStart()) {
-<a class="jxr_linenumber" name="L420" href="#L420">420</a>                 <strong class="jxr_keyword">throw</strong> <strong class="jxr_keyword">new</strong> <a name="FitsException" href="../../../nom/tam/fits/FitsException.html#FitsException">FitsException</a>(<span class="jxr_string">"Random groups are only permitted in the primary HDU"</span>);
-<a class="jxr_linenumber" name="L421" href="#L421">421</a>             }
-<a class="jxr_linenumber" name="L422" href="#L422">422</a>         }
-<a class="jxr_linenumber" name="L423" href="#L423">423</a>         <strong class="jxr_keyword">super</strong>.write(stream);
-<a class="jxr_linenumber" name="L424" href="#L424">424</a>     }
-<a class="jxr_linenumber" name="L425" href="#L425">425</a> 
-<a class="jxr_linenumber" name="L426" href="#L426">426</a>     <em class="jxr_javadoccomment">/**</em>
-<a class="jxr_linenumber" name="L427" href="#L427">427</a> <em class="jxr_javadoccomment">     * Returns a list of parameter names bundled along the images in each group, as extracted from the PTYPE_n_ header</em>
-<a class="jxr_linenumber" name="L428" href="#L428">428</a> <em class="jxr_javadoccomment">     * entries.</em>
-<a class="jxr_linenumber" name="L429" href="#L429">429</a> <em class="jxr_javadoccomment">     * </em>
-<a class="jxr_linenumber" name="L430" href="#L430">430</a> <em class="jxr_javadoccomment">     * @return A set containing the parameter names contained in this HDU</em>
-<a class="jxr_linenumber" name="L431" href="#L431">431</a> <em class="jxr_javadoccomment">     * </em>
-<a class="jxr_linenumber" name="L432" href="#L432">432</a> <em class="jxr_javadoccomment">     * @see    #getParameter(String, int)</em>
-<a class="jxr_linenumber" name="L433" href="#L433">433</a> <em class="jxr_javadoccomment">     * </em>
-<a class="jxr_linenumber" name="L434" href="#L434">434</a> <em class="jxr_javadoccomment">     * @since  1.19</em>
-<a class="jxr_linenumber" name="L435" href="#L435">435</a> <em class="jxr_javadoccomment">     */</em>
-<a class="jxr_linenumber" name="L436" href="#L436">436</a>     <strong class="jxr_keyword">public</strong> Set&lt;String&gt; getParameterNames() {
-<a class="jxr_linenumber" name="L437" href="#L437">437</a>         <strong class="jxr_keyword">return</strong> parameters.keySet();
-<a class="jxr_linenumber" name="L438" href="#L438">438</a>     }
-<a class="jxr_linenumber" name="L439" href="#L439">439</a> 
-<a class="jxr_linenumber" name="L440" href="#L440">440</a>     <em class="jxr_javadoccomment">/**</em>
-<a class="jxr_linenumber" name="L441" href="#L441">441</a> <em class="jxr_javadoccomment">     * Returns the value for a given group parameter.</em>
+<a class="jxr_linenumber" name="L301" href="#L301">301</a>         stream.println(<span class="jxr_string">"Random Groups HDU"</span>);
+<a class="jxr_linenumber" name="L302" href="#L302">302</a>         <strong class="jxr_keyword">if</strong> (myHeader != <strong class="jxr_keyword">null</strong>) {
+<a class="jxr_linenumber" name="L303" href="#L303">303</a>             stream.println(<span class="jxr_string">"   HeaderInformation:"</span>);
+<a class="jxr_linenumber" name="L304" href="#L304">304</a>             stream.println(<span class="jxr_string">"     Ngroups:"</span> + myHeader.getIntValue(GCOUNT));
+<a class="jxr_linenumber" name="L305" href="#L305">305</a>             stream.println(<span class="jxr_string">"     Npar:   "</span> + myHeader.getIntValue(PCOUNT));
+<a class="jxr_linenumber" name="L306" href="#L306">306</a>             stream.println(<span class="jxr_string">"     BITPIX: "</span> + myHeader.getIntValue(BITPIX));
+<a class="jxr_linenumber" name="L307" href="#L307">307</a>             stream.println(<span class="jxr_string">"     NAXIS:  "</span> + myHeader.getIntValue(NAXIS));
+<a class="jxr_linenumber" name="L308" href="#L308">308</a>             <strong class="jxr_keyword">for</strong> (<strong class="jxr_keyword">int</strong> i = 0; i &lt; myHeader.getIntValue(NAXIS); i++) {
+<a class="jxr_linenumber" name="L309" href="#L309">309</a>                 stream.println(<span class="jxr_string">"      NAXIS"</span> + (i + 1) + <span class="jxr_string">"= "</span> + myHeader.getIntValue(NAXISn.n(i + 1)));
+<a class="jxr_linenumber" name="L310" href="#L310">310</a>             }
+<a class="jxr_linenumber" name="L311" href="#L311">311</a>         } <strong class="jxr_keyword">else</strong> {
+<a class="jxr_linenumber" name="L312" href="#L312">312</a>             stream.println(<span class="jxr_string">"    No Header Information"</span>);
+<a class="jxr_linenumber" name="L313" href="#L313">313</a>         }
+<a class="jxr_linenumber" name="L314" href="#L314">314</a> 
+<a class="jxr_linenumber" name="L315" href="#L315">315</a>         Object[][] data = <strong class="jxr_keyword">null</strong>;
+<a class="jxr_linenumber" name="L316" href="#L316">316</a>         <strong class="jxr_keyword">if</strong> (myData != <strong class="jxr_keyword">null</strong>) {
+<a class="jxr_linenumber" name="L317" href="#L317">317</a>             <strong class="jxr_keyword">try</strong> {
+<a class="jxr_linenumber" name="L318" href="#L318">318</a>                 data = myData.getData();
+<a class="jxr_linenumber" name="L319" href="#L319">319</a>             } <strong class="jxr_keyword">catch</strong> (<a name="FitsException" href="../../../nom/tam/fits/FitsException.html#FitsException">FitsException</a> e) {
+<a class="jxr_linenumber" name="L320" href="#L320">320</a>                 <em class="jxr_comment">// nothing to do...</em>
+<a class="jxr_linenumber" name="L321" href="#L321">321</a>             }
+<a class="jxr_linenumber" name="L322" href="#L322">322</a>         }
+<a class="jxr_linenumber" name="L323" href="#L323">323</a> 
+<a class="jxr_linenumber" name="L324" href="#L324">324</a>         <strong class="jxr_keyword">if</strong> (data == <strong class="jxr_keyword">null</strong> || data.length &lt; 1 || data[0].length != 2) {
+<a class="jxr_linenumber" name="L325" href="#L325">325</a>             stream.println(<span class="jxr_string">"    Invalid/unreadable data"</span>);
+<a class="jxr_linenumber" name="L326" href="#L326">326</a>         } <strong class="jxr_keyword">else</strong> {
+<a class="jxr_linenumber" name="L327" href="#L327">327</a>             stream.println(<span class="jxr_string">"    Number of groups:"</span> + data.length);
+<a class="jxr_linenumber" name="L328" href="#L328">328</a>             stream.println(<span class="jxr_string">"    Parameters: "</span> + ArrayFuncs.arrayDescription(data[0][0]));
+<a class="jxr_linenumber" name="L329" href="#L329">329</a>             stream.println(<span class="jxr_string">"    Data:"</span> + ArrayFuncs.arrayDescription(data[0][1]));
+<a class="jxr_linenumber" name="L330" href="#L330">330</a>         }
+<a class="jxr_linenumber" name="L331" href="#L331">331</a>     }
+<a class="jxr_linenumber" name="L332" href="#L332">332</a> 
+<a class="jxr_linenumber" name="L333" href="#L333">333</a>     <em class="jxr_javadoccomment">/**</em>
+<a class="jxr_linenumber" name="L334" href="#L334">334</a> <em class="jxr_javadoccomment">     * Returns the number of parameter bytes (per data group) accompanying each data object in the group.</em>
+<a class="jxr_linenumber" name="L335" href="#L335">335</a> <em class="jxr_javadoccomment">     */</em>
+<a class="jxr_linenumber" name="L336" href="#L336">336</a>     @Override
+<a class="jxr_linenumber" name="L337" href="#L337">337</a>     <strong class="jxr_keyword">public</strong> <strong class="jxr_keyword">int</strong> getParameterCount() {
+<a class="jxr_linenumber" name="L338" href="#L338">338</a>         <strong class="jxr_keyword">return</strong> <strong class="jxr_keyword">super</strong>.getParameterCount();
+<a class="jxr_linenumber" name="L339" href="#L339">339</a>     }
+<a class="jxr_linenumber" name="L340" href="#L340">340</a> 
+<a class="jxr_linenumber" name="L341" href="#L341">341</a>     <em class="jxr_javadoccomment">/**</em>
+<a class="jxr_linenumber" name="L342" href="#L342">342</a> <em class="jxr_javadoccomment">     * Returns the number of data objects (of identical shape and size) that are group together in this HDUs data</em>
+<a class="jxr_linenumber" name="L343" href="#L343">343</a> <em class="jxr_javadoccomment">     * segment.</em>
+<a class="jxr_linenumber" name="L344" href="#L344">344</a> <em class="jxr_javadoccomment">     */</em>
+<a class="jxr_linenumber" name="L345" href="#L345">345</a>     @Override
+<a class="jxr_linenumber" name="L346" href="#L346">346</a>     <strong class="jxr_keyword">public</strong> <strong class="jxr_keyword">int</strong> getGroupCount() {
+<a class="jxr_linenumber" name="L347" href="#L347">347</a>         <strong class="jxr_keyword">return</strong> <strong class="jxr_keyword">super</strong>.getGroupCount();
+<a class="jxr_linenumber" name="L348" href="#L348">348</a>     }
+<a class="jxr_linenumber" name="L349" href="#L349">349</a> 
+<a class="jxr_linenumber" name="L350" href="#L350">350</a>     <em class="jxr_javadoccomment">/**</em>
+<a class="jxr_linenumber" name="L351" href="#L351">351</a> <em class="jxr_javadoccomment">     * Check that this HDU has a valid header.</em>
+<a class="jxr_linenumber" name="L352" href="#L352">352</a> <em class="jxr_javadoccomment">     *</em>
+<a class="jxr_linenumber" name="L353" href="#L353">353</a> <em class="jxr_javadoccomment">     * @return &lt;CODE&gt;true&lt;/CODE&gt; if this HDU has a valid header.</em>
+<a class="jxr_linenumber" name="L354" href="#L354">354</a> <em class="jxr_javadoccomment">     */</em>
+<a class="jxr_linenumber" name="L355" href="#L355">355</a>     <strong class="jxr_keyword">public</strong> <strong class="jxr_keyword">boolean</strong> isHeader() {
+<a class="jxr_linenumber" name="L356" href="#L356">356</a>         <strong class="jxr_keyword">return</strong> isHeader(myHeader);
+<a class="jxr_linenumber" name="L357" href="#L357">357</a>     }
+<a class="jxr_linenumber" name="L358" href="#L358">358</a> 
+<a class="jxr_linenumber" name="L359" href="#L359">359</a>     <em class="jxr_javadoccomment">/**</em>
+<a class="jxr_linenumber" name="L360" href="#L360">360</a> <em class="jxr_javadoccomment">     * Returns the name of the physical unit in which image data are represented.</em>
+<a class="jxr_linenumber" name="L361" href="#L361">361</a> <em class="jxr_javadoccomment">     * </em>
+<a class="jxr_linenumber" name="L362" href="#L362">362</a> <em class="jxr_javadoccomment">     * @return the standard name of the physical unit in which the image is expressed, e.g. &lt;code&gt;"Jy beam^{-1}"&lt;/code&gt;.</em>
+<a class="jxr_linenumber" name="L363" href="#L363">363</a> <em class="jxr_javadoccomment">     */</em>
+<a class="jxr_linenumber" name="L364" href="#L364">364</a>     @Override
+<a class="jxr_linenumber" name="L365" href="#L365">365</a>     <strong class="jxr_keyword">public</strong> String getBUnit() {
+<a class="jxr_linenumber" name="L366" href="#L366">366</a>         <strong class="jxr_keyword">return</strong> <strong class="jxr_keyword">super</strong>.getBUnit();
+<a class="jxr_linenumber" name="L367" href="#L367">367</a>     }
+<a class="jxr_linenumber" name="L368" href="#L368">368</a> 
+<a class="jxr_linenumber" name="L369" href="#L369">369</a>     <em class="jxr_javadoccomment">/**</em>
+<a class="jxr_linenumber" name="L370" href="#L370">370</a> <em class="jxr_javadoccomment">     * Returns the integer value that signifies blank (missing or &lt;code&gt;null&lt;/code&gt;) data in an integer image.</em>
+<a class="jxr_linenumber" name="L371" href="#L371">371</a> <em class="jxr_javadoccomment">     *</em>
+<a class="jxr_linenumber" name="L372" href="#L372">372</a> <em class="jxr_javadoccomment">     * @return               the integer value used for identifying blank / missing data in integer images.</em>
+<a class="jxr_linenumber" name="L373" href="#L373">373</a> <em class="jxr_javadoccomment">     * </em>
+<a class="jxr_linenumber" name="L374" href="#L374">374</a> <em class="jxr_javadoccomment">     * @throws FitsException if the header does not specify a blanking value or if it is not appropriate for the type of</em>
+<a class="jxr_linenumber" name="L375" href="#L375">375</a> <em class="jxr_javadoccomment">     *                           imge (that is not an integer type image)</em>
+<a class="jxr_linenumber" name="L376" href="#L376">376</a> <em class="jxr_javadoccomment">     */</em>
+<a class="jxr_linenumber" name="L377" href="#L377">377</a>     @Override
+<a class="jxr_linenumber" name="L378" href="#L378">378</a>     <strong class="jxr_keyword">public</strong> <strong class="jxr_keyword">long</strong> getBlankValue() <strong class="jxr_keyword">throws</strong> <a name="FitsException" href="../../../nom/tam/fits/FitsException.html#FitsException">FitsException</a> {
+<a class="jxr_linenumber" name="L379" href="#L379">379</a>         <strong class="jxr_keyword">if</strong> (getBitpix().getHeaderValue() &lt; 0) {
+<a class="jxr_linenumber" name="L380" href="#L380">380</a>             <strong class="jxr_keyword">throw</strong> <strong class="jxr_keyword">new</strong> <a name="FitsException" href="../../../nom/tam/fits/FitsException.html#FitsException">FitsException</a>(<span class="jxr_string">"No integer blanking value in floating-point images."</span>);
+<a class="jxr_linenumber" name="L381" href="#L381">381</a>         }
+<a class="jxr_linenumber" name="L382" href="#L382">382</a>         <strong class="jxr_keyword">return</strong> <strong class="jxr_keyword">super</strong>.getBlankValue();
+<a class="jxr_linenumber" name="L383" href="#L383">383</a>     }
+<a class="jxr_linenumber" name="L384" href="#L384">384</a> 
+<a class="jxr_linenumber" name="L385" href="#L385">385</a>     <em class="jxr_javadoccomment">/**</em>
+<a class="jxr_linenumber" name="L386" href="#L386">386</a> <em class="jxr_javadoccomment">     * Returns the floating-point increment between adjacent integer values in the image. Strictly speaking, only</em>
+<a class="jxr_linenumber" name="L387" href="#L387">387</a> <em class="jxr_javadoccomment">     * integer-type images should define a quantization scaling, but there is no harm in having this value in</em>
+<a class="jxr_linenumber" name="L388" href="#L388">388</a> <em class="jxr_javadoccomment">     * floating-point images also -- which may be interpreted as a hint for quantization, perhaps.</em>
+<a class="jxr_linenumber" name="L389" href="#L389">389</a> <em class="jxr_javadoccomment">     * </em>
+<a class="jxr_linenumber" name="L390" href="#L390">390</a> <em class="jxr_javadoccomment">     * @return the floating-point quantum that corresponds to the increment of 1 in the integer data representation.</em>
+<a class="jxr_linenumber" name="L391" href="#L391">391</a> <em class="jxr_javadoccomment">     * </em>
+<a class="jxr_linenumber" name="L392" href="#L392">392</a> <em class="jxr_javadoccomment">     * @see    #getBZero()</em>
+<a class="jxr_linenumber" name="L393" href="#L393">393</a> <em class="jxr_javadoccomment">     */</em>
+<a class="jxr_linenumber" name="L394" href="#L394">394</a>     @Override
+<a class="jxr_linenumber" name="L395" href="#L395">395</a>     <strong class="jxr_keyword">public</strong> <strong class="jxr_keyword">double</strong> getBScale() {
+<a class="jxr_linenumber" name="L396" href="#L396">396</a>         <strong class="jxr_keyword">return</strong> <strong class="jxr_keyword">super</strong>.getBScale();
+<a class="jxr_linenumber" name="L397" href="#L397">397</a>     }
+<a class="jxr_linenumber" name="L398" href="#L398">398</a> 
+<a class="jxr_linenumber" name="L399" href="#L399">399</a>     <em class="jxr_javadoccomment">/**</em>
+<a class="jxr_linenumber" name="L400" href="#L400">400</a> <em class="jxr_javadoccomment">     * Returns the floating-point value that corresponds to an 0 integer value in the image. Strictly speaking, only</em>
+<a class="jxr_linenumber" name="L401" href="#L401">401</a> <em class="jxr_javadoccomment">     * integer-type images should define a quantization scaling, but there is no harm in having this value in</em>
+<a class="jxr_linenumber" name="L402" href="#L402">402</a> <em class="jxr_javadoccomment">     * floating-point images also -- which may be interpreted as a hint for quantization, perhaps.</em>
+<a class="jxr_linenumber" name="L403" href="#L403">403</a> <em class="jxr_javadoccomment">     * </em>
+<a class="jxr_linenumber" name="L404" href="#L404">404</a> <em class="jxr_javadoccomment">     * @return the floating point value that correspond to the integer 0 in the image data.</em>
+<a class="jxr_linenumber" name="L405" href="#L405">405</a> <em class="jxr_javadoccomment">     * </em>
+<a class="jxr_linenumber" name="L406" href="#L406">406</a> <em class="jxr_javadoccomment">     * @see    #getBScale()</em>
+<a class="jxr_linenumber" name="L407" href="#L407">407</a> <em class="jxr_javadoccomment">     */</em>
+<a class="jxr_linenumber" name="L408" href="#L408">408</a>     @Override
+<a class="jxr_linenumber" name="L409" href="#L409">409</a>     <strong class="jxr_keyword">public</strong> <strong class="jxr_keyword">double</strong> getBZero() {
+<a class="jxr_linenumber" name="L410" href="#L410">410</a>         <strong class="jxr_keyword">return</strong> <strong class="jxr_keyword">super</strong>.getBZero();
+<a class="jxr_linenumber" name="L411" href="#L411">411</a>     }
+<a class="jxr_linenumber" name="L412" href="#L412">412</a> 
+<a class="jxr_linenumber" name="L413" href="#L413">413</a>     @Override
+<a class="jxr_linenumber" name="L414" href="#L414">414</a>     <strong class="jxr_keyword">public</strong> <strong class="jxr_keyword">void</strong> write(<a name="ArrayDataOutput" href="../../../nom/tam/util/ArrayDataOutput.html#ArrayDataOutput">ArrayDataOutput</a> stream) <strong class="jxr_keyword">throws</strong> <a name="FitsException" href="../../../nom/tam/fits/FitsException.html#FitsException">FitsException</a> {
+<a class="jxr_linenumber" name="L415" href="#L415">415</a>         <strong class="jxr_keyword">if</strong> (stream instanceof <a name="FitsOutput" href="../../../nom/tam/util/FitsOutput.html#FitsOutput">FitsOutput</a>) {
+<a class="jxr_linenumber" name="L416" href="#L416">416</a>             <strong class="jxr_keyword">if</strong> (!((<a name="FitsOutput" href="../../../nom/tam/util/FitsOutput.html#FitsOutput">FitsOutput</a>) stream).isAtStart()) {
+<a class="jxr_linenumber" name="L417" href="#L417">417</a>                 <strong class="jxr_keyword">throw</strong> <strong class="jxr_keyword">new</strong> <a name="FitsException" href="../../../nom/tam/fits/FitsException.html#FitsException">FitsException</a>(<span class="jxr_string">"Random groups are only permitted in the primary HDU"</span>);
+<a class="jxr_linenumber" name="L418" href="#L418">418</a>             }
+<a class="jxr_linenumber" name="L419" href="#L419">419</a>         }
+<a class="jxr_linenumber" name="L420" href="#L420">420</a>         <strong class="jxr_keyword">super</strong>.write(stream);
+<a class="jxr_linenumber" name="L421" href="#L421">421</a>     }
+<a class="jxr_linenumber" name="L422" href="#L422">422</a> 
+<a class="jxr_linenumber" name="L423" href="#L423">423</a>     <em class="jxr_javadoccomment">/**</em>
+<a class="jxr_linenumber" name="L424" href="#L424">424</a> <em class="jxr_javadoccomment">     * Returns a list of parameter names bundled along the images in each group, as extracted from the PTYPE_n_ header</em>
+<a class="jxr_linenumber" name="L425" href="#L425">425</a> <em class="jxr_javadoccomment">     * entries.</em>
+<a class="jxr_linenumber" name="L426" href="#L426">426</a> <em class="jxr_javadoccomment">     * </em>
+<a class="jxr_linenumber" name="L427" href="#L427">427</a> <em class="jxr_javadoccomment">     * @return A set containing the parameter names contained in this HDU</em>
+<a class="jxr_linenumber" name="L428" href="#L428">428</a> <em class="jxr_javadoccomment">     * </em>
+<a class="jxr_linenumber" name="L429" href="#L429">429</a> <em class="jxr_javadoccomment">     * @see    #getParameter(String, int)</em>
+<a class="jxr_linenumber" name="L430" href="#L430">430</a> <em class="jxr_javadoccomment">     * </em>
+<a class="jxr_linenumber" name="L431" href="#L431">431</a> <em class="jxr_javadoccomment">     * @since  1.19</em>
+<a class="jxr_linenumber" name="L432" href="#L432">432</a> <em class="jxr_javadoccomment">     */</em>
+<a class="jxr_linenumber" name="L433" href="#L433">433</a>     <strong class="jxr_keyword">public</strong> Set&lt;String&gt; getParameterNames() {
+<a class="jxr_linenumber" name="L434" href="#L434">434</a>         <strong class="jxr_keyword">return</strong> parameters.keySet();
+<a class="jxr_linenumber" name="L435" href="#L435">435</a>     }
+<a class="jxr_linenumber" name="L436" href="#L436">436</a> 
+<a class="jxr_linenumber" name="L437" href="#L437">437</a>     <em class="jxr_javadoccomment">/**</em>
+<a class="jxr_linenumber" name="L438" href="#L438">438</a> <em class="jxr_javadoccomment">     * Returns the value for a given group parameter.</em>
+<a class="jxr_linenumber" name="L439" href="#L439">439</a> <em class="jxr_javadoccomment">     * </em>
+<a class="jxr_linenumber" name="L440" href="#L440">440</a> <em class="jxr_javadoccomment">     * @param  name                           the parameter name</em>
+<a class="jxr_linenumber" name="L441" href="#L441">441</a> <em class="jxr_javadoccomment">     * @param  group                          the zero-based group index</em>
 <a class="jxr_linenumber" name="L442" href="#L442">442</a> <em class="jxr_javadoccomment">     * </em>
-<a class="jxr_linenumber" name="L443" href="#L443">443</a> <em class="jxr_javadoccomment">     * @param  name                           the parameter name</em>
-<a class="jxr_linenumber" name="L444" href="#L444">444</a> <em class="jxr_javadoccomment">     * @param  group                          the zero-based group index</em>
+<a class="jxr_linenumber" name="L443" href="#L443">443</a> <em class="jxr_javadoccomment">     * @return                                the stored parameter value in the specified group, or {@link Double#NaN}</em>
+<a class="jxr_linenumber" name="L444" href="#L444">444</a> <em class="jxr_javadoccomment">     *                                            if the there is no such group.</em>
 <a class="jxr_linenumber" name="L445" href="#L445">445</a> <em class="jxr_javadoccomment">     * </em>
-<a class="jxr_linenumber" name="L446" href="#L446">446</a> <em class="jxr_javadoccomment">     * @return                                the stored parameter value in the specified group, or {@link Double#NaN}</em>
-<a class="jxr_linenumber" name="L447" href="#L447">447</a> <em class="jxr_javadoccomment">     *                                            if the there is no such group.</em>
+<a class="jxr_linenumber" name="L446" href="#L446">446</a> <em class="jxr_javadoccomment">     * @throws ArrayIndexOutOfBoundsException if the group index is out of bounds.</em>
+<a class="jxr_linenumber" name="L447" href="#L447">447</a> <em class="jxr_javadoccomment">     * @throws FitsException                  if the deferred parameter data cannot be accessed</em>
 <a class="jxr_linenumber" name="L448" href="#L448">448</a> <em class="jxr_javadoccomment">     * </em>
-<a class="jxr_linenumber" name="L449" href="#L449">449</a> <em class="jxr_javadoccomment">     * @throws ArrayIndexOutOfBoundsException if the group index is out of bounds.</em>
-<a class="jxr_linenumber" name="L450" href="#L450">450</a> <em class="jxr_javadoccomment">     * @throws FitsException                  if the deferred parameter data cannot be accessed</em>
+<a class="jxr_linenumber" name="L449" href="#L449">449</a> <em class="jxr_javadoccomment">     * @see                                   #getParameterNames()</em>
+<a class="jxr_linenumber" name="L450" href="#L450">450</a> <em class="jxr_javadoccomment">     * @see                                   RandomGroupsData#getImage(int)</em>
 <a class="jxr_linenumber" name="L451" href="#L451">451</a> <em class="jxr_javadoccomment">     * </em>
-<a class="jxr_linenumber" name="L452" href="#L452">452</a> <em class="jxr_javadoccomment">     * @see                                   #getParameterNames()</em>
-<a class="jxr_linenumber" name="L453" href="#L453">453</a> <em class="jxr_javadoccomment">     * @see                                   RandomGroupsData#getImage(int)</em>
-<a class="jxr_linenumber" name="L454" href="#L454">454</a> <em class="jxr_javadoccomment">     * </em>
-<a class="jxr_linenumber" name="L455" href="#L455">455</a> <em class="jxr_javadoccomment">     * @since                                 1.19</em>
-<a class="jxr_linenumber" name="L456" href="#L456">456</a> <em class="jxr_javadoccomment">     */</em>
-<a class="jxr_linenumber" name="L457" href="#L457">457</a>     <strong class="jxr_keyword">public</strong> <strong class="jxr_keyword">double</strong> getParameter(String name, <strong class="jxr_keyword">int</strong> group) <strong class="jxr_keyword">throws</strong> ArrayIndexOutOfBoundsException, <a name="FitsException" href="../../../nom/tam/fits/FitsException.html#FitsException">FitsException</a> {
-<a class="jxr_linenumber" name="L458" href="#L458">458</a>         Parameter p = parameters.get(name);
-<a class="jxr_linenumber" name="L459" href="#L459">459</a>         <strong class="jxr_keyword">if</strong> (p == <strong class="jxr_keyword">null</strong>) {
-<a class="jxr_linenumber" name="L460" href="#L460">460</a>             <strong class="jxr_keyword">return</strong> Double.NaN;
-<a class="jxr_linenumber" name="L461" href="#L461">461</a>         }
+<a class="jxr_linenumber" name="L452" href="#L452">452</a> <em class="jxr_javadoccomment">     * @since                                 1.19</em>
+<a class="jxr_linenumber" name="L453" href="#L453">453</a> <em class="jxr_javadoccomment">     */</em>
+<a class="jxr_linenumber" name="L454" href="#L454">454</a>     <strong class="jxr_keyword">public</strong> <strong class="jxr_keyword">double</strong> getParameter(String name, <strong class="jxr_keyword">int</strong> group) <strong class="jxr_keyword">throws</strong> ArrayIndexOutOfBoundsException, <a name="FitsException" href="../../../nom/tam/fits/FitsException.html#FitsException">FitsException</a> {
+<a class="jxr_linenumber" name="L455" href="#L455">455</a>         Parameter p = parameters.get(name);
+<a class="jxr_linenumber" name="L456" href="#L456">456</a>         <strong class="jxr_keyword">if</strong> (p == <strong class="jxr_keyword">null</strong>) {
+<a class="jxr_linenumber" name="L457" href="#L457">457</a>             <strong class="jxr_keyword">return</strong> Double.NaN;
+<a class="jxr_linenumber" name="L458" href="#L458">458</a>         }
+<a class="jxr_linenumber" name="L459" href="#L459">459</a> 
+<a class="jxr_linenumber" name="L460" href="#L460">460</a>         <strong class="jxr_keyword">return</strong> p.getValue(getData().getParameterArray(group));
+<a class="jxr_linenumber" name="L461" href="#L461">461</a>     }
 <a class="jxr_linenumber" name="L462" href="#L462">462</a> 
-<a class="jxr_linenumber" name="L463" href="#L463">463</a>         <strong class="jxr_keyword">return</strong> p.getValue(getData().getParameterArray(group));
-<a class="jxr_linenumber" name="L464" href="#L464">464</a>     }
-<a class="jxr_linenumber" name="L465" href="#L465">465</a> 
-<a class="jxr_linenumber" name="L466" href="#L466">466</a>     <em class="jxr_javadoccomment">/**</em>
-<a class="jxr_linenumber" name="L467" href="#L467">467</a> <em class="jxr_javadoccomment">     * A conversion recipe from the native BITPIX type to a floating-point value. Each parameter may have multiple such</em>
-<a class="jxr_linenumber" name="L468" href="#L468">468</a> <em class="jxr_javadoccomment">     * recipes, the sum of which can provide the required precision for the parameter regardless the BITPIX storage</em>
-<a class="jxr_linenumber" name="L469" href="#L469">469</a> <em class="jxr_javadoccomment">     * type.</em>
-<a class="jxr_linenumber" name="L470" href="#L470">470</a> <em class="jxr_javadoccomment">     * </em>
-<a class="jxr_linenumber" name="L471" href="#L471">471</a> <em class="jxr_javadoccomment">     * @author Attila Kovacs</em>
-<a class="jxr_linenumber" name="L472" href="#L472">472</a> <em class="jxr_javadoccomment">     * </em>
-<a class="jxr_linenumber" name="L473" href="#L473">473</a> <em class="jxr_javadoccomment">     * @since  1.19</em>
-<a class="jxr_linenumber" name="L474" href="#L474">474</a> <em class="jxr_javadoccomment">     */</em>
-<a class="jxr_linenumber" name="L475" href="#L475">475</a>     <strong class="jxr_keyword">private</strong> <strong class="jxr_keyword">static</strong> <strong class="jxr_keyword">final</strong> <strong class="jxr_keyword">class</strong> ParameterConversion {
-<a class="jxr_linenumber" name="L476" href="#L476">476</a>         <strong class="jxr_keyword">private</strong> <strong class="jxr_keyword">int</strong> index;
-<a class="jxr_linenumber" name="L477" href="#L477">477</a>         <strong class="jxr_keyword">private</strong> <strong class="jxr_keyword">double</strong> scaling;
-<a class="jxr_linenumber" name="L478" href="#L478">478</a>         <strong class="jxr_keyword">private</strong> <strong class="jxr_keyword">double</strong> offset;
-<a class="jxr_linenumber" name="L479" href="#L479">479</a> 
-<a class="jxr_linenumber" name="L480" href="#L480">480</a>         <strong class="jxr_keyword">private</strong> ParameterConversion(<a name="Header" href="../../../nom/tam/fits/Header.html#Header">Header</a> h, <strong class="jxr_keyword">int</strong> n) {
-<a class="jxr_linenumber" name="L481" href="#L481">481</a>             index = n - 1;
-<a class="jxr_linenumber" name="L482" href="#L482">482</a>             scaling = h.getDoubleValue(Standard.PSCALn.n(n), 1.0);
-<a class="jxr_linenumber" name="L483" href="#L483">483</a>             offset = h.getDoubleValue(Standard.PZEROn.n(n), 0.0);
-<a class="jxr_linenumber" name="L484" href="#L484">484</a>         }
-<a class="jxr_linenumber" name="L485" href="#L485">485</a>     }
-<a class="jxr_linenumber" name="L486" href="#L486">486</a> 
-<a class="jxr_linenumber" name="L487" href="#L487">487</a>     <em class="jxr_javadoccomment">/**</em>
-<a class="jxr_linenumber" name="L488" href="#L488">488</a> <em class="jxr_javadoccomment">     * Represents a single parameter in the random groups data.</em>
-<a class="jxr_linenumber" name="L489" href="#L489">489</a> <em class="jxr_javadoccomment">     * </em>
-<a class="jxr_linenumber" name="L490" href="#L490">490</a> <em class="jxr_javadoccomment">     * @author Attila Kovacs</em>
-<a class="jxr_linenumber" name="L491" href="#L491">491</a> <em class="jxr_javadoccomment">     * </em>
-<a class="jxr_linenumber" name="L492" href="#L492">492</a> <em class="jxr_javadoccomment">     * @since  1.19</em>
-<a class="jxr_linenumber" name="L493" href="#L493">493</a> <em class="jxr_javadoccomment">     */</em>
-<a class="jxr_linenumber" name="L494" href="#L494">494</a>     <strong class="jxr_keyword">private</strong> <strong class="jxr_keyword">static</strong> <strong class="jxr_keyword">class</strong> Parameter {
-<a class="jxr_linenumber" name="L495" href="#L495">495</a>         <strong class="jxr_keyword">private</strong> ArrayList&lt;ParameterConversion&gt; components = <strong class="jxr_keyword">new</strong> ArrayList&lt;&gt;();
-<a class="jxr_linenumber" name="L496" href="#L496">496</a> 
-<a class="jxr_linenumber" name="L497" href="#L497">497</a>         <strong class="jxr_keyword">private</strong> <strong class="jxr_keyword">double</strong> getValue(Object array) {
-<a class="jxr_linenumber" name="L498" href="#L498">498</a>             <strong class="jxr_keyword">double</strong> value = 0.0;
-<a class="jxr_linenumber" name="L499" href="#L499">499</a>             <strong class="jxr_keyword">for</strong> (ParameterConversion c : components) {
-<a class="jxr_linenumber" name="L500" href="#L500">500</a>                 <strong class="jxr_keyword">double</strong> x = Array.getDouble(array, c.index);
-<a class="jxr_linenumber" name="L501" href="#L501">501</a>                 value += c.scaling * x + c.offset;
-<a class="jxr_linenumber" name="L502" href="#L502">502</a>             }
-<a class="jxr_linenumber" name="L503" href="#L503">503</a>             <strong class="jxr_keyword">return</strong> value;
-<a class="jxr_linenumber" name="L504" href="#L504">504</a>         }
-<a class="jxr_linenumber" name="L505" href="#L505">505</a>     }
-<a class="jxr_linenumber" name="L506" href="#L506">506</a> 
-<a class="jxr_linenumber" name="L507" href="#L507">507</a> }
+<a class="jxr_linenumber" name="L463" href="#L463">463</a>     <em class="jxr_javadoccomment">/**</em>
+<a class="jxr_linenumber" name="L464" href="#L464">464</a> <em class="jxr_javadoccomment">     * A conversion recipe from the native BITPIX type to a floating-point value. Each parameter may have multiple such</em>
+<a class="jxr_linenumber" name="L465" href="#L465">465</a> <em class="jxr_javadoccomment">     * recipes, the sum of which can provide the required precision for the parameter regardless the BITPIX storage</em>
+<a class="jxr_linenumber" name="L466" href="#L466">466</a> <em class="jxr_javadoccomment">     * type.</em>
+<a class="jxr_linenumber" name="L467" href="#L467">467</a> <em class="jxr_javadoccomment">     * </em>
+<a class="jxr_linenumber" name="L468" href="#L468">468</a> <em class="jxr_javadoccomment">     * @author Attila Kovacs</em>
+<a class="jxr_linenumber" name="L469" href="#L469">469</a> <em class="jxr_javadoccomment">     * </em>
+<a class="jxr_linenumber" name="L470" href="#L470">470</a> <em class="jxr_javadoccomment">     * @since  1.19</em>
+<a class="jxr_linenumber" name="L471" href="#L471">471</a> <em class="jxr_javadoccomment">     */</em>
+<a class="jxr_linenumber" name="L472" href="#L472">472</a>     <strong class="jxr_keyword">private</strong> <strong class="jxr_keyword">static</strong> <strong class="jxr_keyword">final</strong> <strong class="jxr_keyword">class</strong> ParameterConversion {
+<a class="jxr_linenumber" name="L473" href="#L473">473</a>         <strong class="jxr_keyword">private</strong> <strong class="jxr_keyword">int</strong> index;
+<a class="jxr_linenumber" name="L474" href="#L474">474</a>         <strong class="jxr_keyword">private</strong> <strong class="jxr_keyword">double</strong> scaling;
+<a class="jxr_linenumber" name="L475" href="#L475">475</a>         <strong class="jxr_keyword">private</strong> <strong class="jxr_keyword">double</strong> offset;
+<a class="jxr_linenumber" name="L476" href="#L476">476</a> 
+<a class="jxr_linenumber" name="L477" href="#L477">477</a>         <strong class="jxr_keyword">private</strong> ParameterConversion(<a name="Header" href="../../../nom/tam/fits/Header.html#Header">Header</a> h, <strong class="jxr_keyword">int</strong> n) {
+<a class="jxr_linenumber" name="L478" href="#L478">478</a>             index = n - 1;
+<a class="jxr_linenumber" name="L479" href="#L479">479</a>             scaling = h.getDoubleValue(Standard.PSCALn.n(n), 1.0);
+<a class="jxr_linenumber" name="L480" href="#L480">480</a>             offset = h.getDoubleValue(Standard.PZEROn.n(n), 0.0);
+<a class="jxr_linenumber" name="L481" href="#L481">481</a>         }
+<a class="jxr_linenumber" name="L482" href="#L482">482</a>     }
+<a class="jxr_linenumber" name="L483" href="#L483">483</a> 
+<a class="jxr_linenumber" name="L484" href="#L484">484</a>     <em class="jxr_javadoccomment">/**</em>
+<a class="jxr_linenumber" name="L485" href="#L485">485</a> <em class="jxr_javadoccomment">     * Represents a single parameter in the random groups data.</em>
+<a class="jxr_linenumber" name="L486" href="#L486">486</a> <em class="jxr_javadoccomment">     * </em>
+<a class="jxr_linenumber" name="L487" href="#L487">487</a> <em class="jxr_javadoccomment">     * @author Attila Kovacs</em>
+<a class="jxr_linenumber" name="L488" href="#L488">488</a> <em class="jxr_javadoccomment">     * </em>
+<a class="jxr_linenumber" name="L489" href="#L489">489</a> <em class="jxr_javadoccomment">     * @since  1.19</em>
+<a class="jxr_linenumber" name="L490" href="#L490">490</a> <em class="jxr_javadoccomment">     */</em>
+<a class="jxr_linenumber" name="L491" href="#L491">491</a>     <strong class="jxr_keyword">private</strong> <strong class="jxr_keyword">static</strong> <strong class="jxr_keyword">final</strong> <strong class="jxr_keyword">class</strong> Parameter {
+<a class="jxr_linenumber" name="L492" href="#L492">492</a>         <strong class="jxr_keyword">private</strong> ArrayList&lt;ParameterConversion&gt; components = <strong class="jxr_keyword">new</strong> ArrayList&lt;&gt;();
+<a class="jxr_linenumber" name="L493" href="#L493">493</a> 
+<a class="jxr_linenumber" name="L494" href="#L494">494</a>         <strong class="jxr_keyword">private</strong> <strong class="jxr_keyword">double</strong> getValue(Object array) {
+<a class="jxr_linenumber" name="L495" href="#L495">495</a>             <strong class="jxr_keyword">double</strong> value = 0.0;
+<a class="jxr_linenumber" name="L496" href="#L496">496</a>             <strong class="jxr_keyword">for</strong> (ParameterConversion c : components) {
+<a class="jxr_linenumber" name="L497" href="#L497">497</a>                 <strong class="jxr_keyword">double</strong> x = Array.getDouble(array, c.index);
+<a class="jxr_linenumber" name="L498" href="#L498">498</a>                 value += c.scaling * x + c.offset;
+<a class="jxr_linenumber" name="L499" href="#L499">499</a>             }
+<a class="jxr_linenumber" name="L500" href="#L500">500</a>             <strong class="jxr_keyword">return</strong> value;
+<a class="jxr_linenumber" name="L501" href="#L501">501</a>         }
+<a class="jxr_linenumber" name="L502" href="#L502">502</a>     }
+<a class="jxr_linenumber" name="L503" href="#L503">503</a> 
+<a class="jxr_linenumber" name="L504" href="#L504">504</a> }
 </pre>
 <hr/>
 <div id="footer">Copyright &#169; 1996&#x2013;2023 nom-tam-fits. All rights reserved.</div>

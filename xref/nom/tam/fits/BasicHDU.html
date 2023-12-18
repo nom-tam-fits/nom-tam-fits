@@ -890,94 +890,96 @@
 <a class="jxr_linenumber" name="L882" href="#L882">882</a>     <em class="jxr_javadoccomment">/**</em>
 <a class="jxr_linenumber" name="L883" href="#L883">883</a> <em class="jxr_javadoccomment">     * Print out some information about this HDU.</em>
 <a class="jxr_linenumber" name="L884" href="#L884">884</a> <em class="jxr_javadoccomment">     *</em>
-<a class="jxr_linenumber" name="L885" href="#L885">885</a> <em class="jxr_javadoccomment">     * @param stream the printstream to write the info on</em>
-<a class="jxr_linenumber" name="L886" href="#L886">886</a> <em class="jxr_javadoccomment">     */</em>
-<a class="jxr_linenumber" name="L887" href="#L887">887</a>     <strong class="jxr_keyword">public</strong> <strong class="jxr_keyword">abstract</strong> <strong class="jxr_keyword">void</strong> info(PrintStream stream);
-<a class="jxr_linenumber" name="L888" href="#L888">888</a> 
-<a class="jxr_linenumber" name="L889" href="#L889">889</a>     @Override
-<a class="jxr_linenumber" name="L890" href="#L890">890</a>     @SuppressWarnings({<span class="jxr_string">"unchecked"</span>, <span class="jxr_string">"deprecation"</span>})
-<a class="jxr_linenumber" name="L891" href="#L891">891</a>     <strong class="jxr_keyword">public</strong> <strong class="jxr_keyword">void</strong> read(<a name="ArrayDataInput" href="../../../nom/tam/util/ArrayDataInput.html#ArrayDataInput">ArrayDataInput</a> stream) <strong class="jxr_keyword">throws</strong> FitsException, IOException {
-<a class="jxr_linenumber" name="L892" href="#L892">892</a>         myHeader = Header.readHeader(stream);
-<a class="jxr_linenumber" name="L893" href="#L893">893</a>         myData = (DataClass) FitsFactory.dataFactory(myHeader);
-<a class="jxr_linenumber" name="L894" href="#L894">894</a>         myData.read(stream);
-<a class="jxr_linenumber" name="L895" href="#L895">895</a>     }
-<a class="jxr_linenumber" name="L896" href="#L896">896</a> 
-<a class="jxr_linenumber" name="L897" href="#L897">897</a>     @Override
-<a class="jxr_linenumber" name="L898" href="#L898">898</a>     <strong class="jxr_keyword">public</strong> <strong class="jxr_keyword">boolean</strong> reset() {
-<a class="jxr_linenumber" name="L899" href="#L899">899</a>         <strong class="jxr_keyword">return</strong> myHeader.reset();
-<a class="jxr_linenumber" name="L900" href="#L900">900</a>     }
-<a class="jxr_linenumber" name="L901" href="#L901">901</a> 
-<a class="jxr_linenumber" name="L902" href="#L902">902</a>     @Override
-<a class="jxr_linenumber" name="L903" href="#L903">903</a>     <strong class="jxr_keyword">public</strong> <strong class="jxr_keyword">void</strong> rewrite() <strong class="jxr_keyword">throws</strong> FitsException, IOException {
-<a class="jxr_linenumber" name="L904" href="#L904">904</a>         <strong class="jxr_keyword">if</strong> (!rewriteable()) {
-<a class="jxr_linenumber" name="L905" href="#L905">905</a>             <strong class="jxr_keyword">throw</strong> <strong class="jxr_keyword">new</strong> <a name="FitsException" href="../../../nom/tam/fits/FitsException.html#FitsException">FitsException</a>(<span class="jxr_string">"Invalid attempt to rewrite HDU"</span>);
-<a class="jxr_linenumber" name="L906" href="#L906">906</a>         }
-<a class="jxr_linenumber" name="L907" href="#L907">907</a>         myHeader.rewrite();
-<a class="jxr_linenumber" name="L908" href="#L908">908</a>         <strong class="jxr_keyword">if</strong> (!myData.isDeferred()) {
-<a class="jxr_linenumber" name="L909" href="#L909">909</a>             myData.rewrite();
-<a class="jxr_linenumber" name="L910" href="#L910">910</a>         }
-<a class="jxr_linenumber" name="L911" href="#L911">911</a>     }
-<a class="jxr_linenumber" name="L912" href="#L912">912</a> 
-<a class="jxr_linenumber" name="L913" href="#L913">913</a>     @Override
-<a class="jxr_linenumber" name="L914" href="#L914">914</a>     <strong class="jxr_keyword">public</strong> <strong class="jxr_keyword">boolean</strong> rewriteable() {
-<a class="jxr_linenumber" name="L915" href="#L915">915</a>         <strong class="jxr_keyword">return</strong> myHeader.rewriteable() &amp;&amp; myData.rewriteable();
-<a class="jxr_linenumber" name="L916" href="#L916">916</a>     }
-<a class="jxr_linenumber" name="L917" href="#L917">917</a> 
-<a class="jxr_linenumber" name="L918" href="#L918">918</a>     <em class="jxr_javadoccomment">/**</em>
-<a class="jxr_linenumber" name="L919" href="#L919">919</a> <em class="jxr_javadoccomment">     * Indicate that an HDU is the first element of a FITS file.</em>
-<a class="jxr_linenumber" name="L920" href="#L920">920</a> <em class="jxr_javadoccomment">     *</em>
-<a class="jxr_linenumber" name="L921" href="#L921">921</a> <em class="jxr_javadoccomment">     * @param  value         value to set</em>
+<a class="jxr_linenumber" name="L885" href="#L885">885</a> <em class="jxr_javadoccomment">     * @param  stream        the printstream to write the info on</em>
+<a class="jxr_linenumber" name="L886" href="#L886">886</a> <em class="jxr_javadoccomment">     * </em>
+<a class="jxr_linenumber" name="L887" href="#L887">887</a> <em class="jxr_javadoccomment">     * @throws FitsException if the HDU is malformed</em>
+<a class="jxr_linenumber" name="L888" href="#L888">888</a> <em class="jxr_javadoccomment">     */</em>
+<a class="jxr_linenumber" name="L889" href="#L889">889</a>     <strong class="jxr_keyword">public</strong> <strong class="jxr_keyword">abstract</strong> <strong class="jxr_keyword">void</strong> info(PrintStream stream) <strong class="jxr_keyword">throws</strong> FitsException;
+<a class="jxr_linenumber" name="L890" href="#L890">890</a> 
+<a class="jxr_linenumber" name="L891" href="#L891">891</a>     @Override
+<a class="jxr_linenumber" name="L892" href="#L892">892</a>     @SuppressWarnings({<span class="jxr_string">"unchecked"</span>, <span class="jxr_string">"deprecation"</span>})
+<a class="jxr_linenumber" name="L893" href="#L893">893</a>     <strong class="jxr_keyword">public</strong> <strong class="jxr_keyword">void</strong> read(<a name="ArrayDataInput" href="../../../nom/tam/util/ArrayDataInput.html#ArrayDataInput">ArrayDataInput</a> stream) <strong class="jxr_keyword">throws</strong> FitsException, IOException {
+<a class="jxr_linenumber" name="L894" href="#L894">894</a>         myHeader = Header.readHeader(stream);
+<a class="jxr_linenumber" name="L895" href="#L895">895</a>         myData = (DataClass) FitsFactory.dataFactory(myHeader);
+<a class="jxr_linenumber" name="L896" href="#L896">896</a>         myData.read(stream);
+<a class="jxr_linenumber" name="L897" href="#L897">897</a>     }
+<a class="jxr_linenumber" name="L898" href="#L898">898</a> 
+<a class="jxr_linenumber" name="L899" href="#L899">899</a>     @Override
+<a class="jxr_linenumber" name="L900" href="#L900">900</a>     <strong class="jxr_keyword">public</strong> <strong class="jxr_keyword">boolean</strong> reset() {
+<a class="jxr_linenumber" name="L901" href="#L901">901</a>         <strong class="jxr_keyword">return</strong> myHeader.reset();
+<a class="jxr_linenumber" name="L902" href="#L902">902</a>     }
+<a class="jxr_linenumber" name="L903" href="#L903">903</a> 
+<a class="jxr_linenumber" name="L904" href="#L904">904</a>     @Override
+<a class="jxr_linenumber" name="L905" href="#L905">905</a>     <strong class="jxr_keyword">public</strong> <strong class="jxr_keyword">void</strong> rewrite() <strong class="jxr_keyword">throws</strong> FitsException, IOException {
+<a class="jxr_linenumber" name="L906" href="#L906">906</a>         <strong class="jxr_keyword">if</strong> (!rewriteable()) {
+<a class="jxr_linenumber" name="L907" href="#L907">907</a>             <strong class="jxr_keyword">throw</strong> <strong class="jxr_keyword">new</strong> <a name="FitsException" href="../../../nom/tam/fits/FitsException.html#FitsException">FitsException</a>(<span class="jxr_string">"Invalid attempt to rewrite HDU"</span>);
+<a class="jxr_linenumber" name="L908" href="#L908">908</a>         }
+<a class="jxr_linenumber" name="L909" href="#L909">909</a>         myHeader.rewrite();
+<a class="jxr_linenumber" name="L910" href="#L910">910</a>         <strong class="jxr_keyword">if</strong> (!myData.isDeferred()) {
+<a class="jxr_linenumber" name="L911" href="#L911">911</a>             myData.rewrite();
+<a class="jxr_linenumber" name="L912" href="#L912">912</a>         }
+<a class="jxr_linenumber" name="L913" href="#L913">913</a>     }
+<a class="jxr_linenumber" name="L914" href="#L914">914</a> 
+<a class="jxr_linenumber" name="L915" href="#L915">915</a>     @Override
+<a class="jxr_linenumber" name="L916" href="#L916">916</a>     <strong class="jxr_keyword">public</strong> <strong class="jxr_keyword">boolean</strong> rewriteable() {
+<a class="jxr_linenumber" name="L917" href="#L917">917</a>         <strong class="jxr_keyword">return</strong> myHeader.rewriteable() &amp;&amp; myData.rewriteable();
+<a class="jxr_linenumber" name="L918" href="#L918">918</a>     }
+<a class="jxr_linenumber" name="L919" href="#L919">919</a> 
+<a class="jxr_linenumber" name="L920" href="#L920">920</a>     <em class="jxr_javadoccomment">/**</em>
+<a class="jxr_linenumber" name="L921" href="#L921">921</a> <em class="jxr_javadoccomment">     * Indicate that an HDU is the first element of a FITS file.</em>
 <a class="jxr_linenumber" name="L922" href="#L922">922</a> <em class="jxr_javadoccomment">     *</em>
-<a class="jxr_linenumber" name="L923" href="#L923">923</a> <em class="jxr_javadoccomment">     * @throws FitsException if the operation failed</em>
-<a class="jxr_linenumber" name="L924" href="#L924">924</a> <em class="jxr_javadoccomment">     */</em>
-<a class="jxr_linenumber" name="L925" href="#L925">925</a>     <strong class="jxr_keyword">void</strong> setPrimaryHDU(<strong class="jxr_keyword">boolean</strong> value) <strong class="jxr_keyword">throws</strong> <a name="FitsException" href="../../../nom/tam/fits/FitsException.html#FitsException">FitsException</a> {
-<a class="jxr_linenumber" name="L926" href="#L926">926</a>         <strong class="jxr_keyword">if</strong> (value &amp;&amp; !canBePrimary()) {
-<a class="jxr_linenumber" name="L927" href="#L927">927</a>             <strong class="jxr_keyword">throw</strong> <strong class="jxr_keyword">new</strong> <a name="FitsException" href="../../../nom/tam/fits/FitsException.html#FitsException">FitsException</a>(<span class="jxr_string">"Invalid attempt to make HDU of type:"</span> + <strong class="jxr_keyword">this</strong>.getClass().getName() + <span class="jxr_string">" primary."</span>);
-<a class="jxr_linenumber" name="L928" href="#L928">928</a>         }
-<a class="jxr_linenumber" name="L929" href="#L929">929</a> 
-<a class="jxr_linenumber" name="L930" href="#L930">930</a>         myHeader.setRequiredKeys(value ? <strong class="jxr_keyword">null</strong> : getCanonicalXtension());
-<a class="jxr_linenumber" name="L931" href="#L931">931</a>     }
-<a class="jxr_linenumber" name="L932" href="#L932">932</a> 
-<a class="jxr_linenumber" name="L933" href="#L933">933</a>     <em class="jxr_javadoccomment">/**</em>
-<a class="jxr_linenumber" name="L934" href="#L934">934</a> <em class="jxr_javadoccomment">     * Returns the canonical (expected) value for the XTENSION keywords for this type of HDU. Concrete HDU</em>
-<a class="jxr_linenumber" name="L935" href="#L935">935</a> <em class="jxr_javadoccomment">     * implementations should override this method as appropriate. As of FITS version 4, only the following XTENSION</em>
-<a class="jxr_linenumber" name="L936" href="#L936">936</a> <em class="jxr_javadoccomment">     * values are recognised: 'IMAGE', 'TABLE', and 'BINTABLE'.</em>
-<a class="jxr_linenumber" name="L937" href="#L937">937</a> <em class="jxr_javadoccomment">     *</em>
-<a class="jxr_linenumber" name="L938" href="#L938">938</a> <em class="jxr_javadoccomment">     * @return The value to use for the XTENSION keyword.</em>
+<a class="jxr_linenumber" name="L923" href="#L923">923</a> <em class="jxr_javadoccomment">     * @param  value         value to set</em>
+<a class="jxr_linenumber" name="L924" href="#L924">924</a> <em class="jxr_javadoccomment">     *</em>
+<a class="jxr_linenumber" name="L925" href="#L925">925</a> <em class="jxr_javadoccomment">     * @throws FitsException if the operation failed</em>
+<a class="jxr_linenumber" name="L926" href="#L926">926</a> <em class="jxr_javadoccomment">     */</em>
+<a class="jxr_linenumber" name="L927" href="#L927">927</a>     <strong class="jxr_keyword">void</strong> setPrimaryHDU(<strong class="jxr_keyword">boolean</strong> value) <strong class="jxr_keyword">throws</strong> <a name="FitsException" href="../../../nom/tam/fits/FitsException.html#FitsException">FitsException</a> {
+<a class="jxr_linenumber" name="L928" href="#L928">928</a>         <strong class="jxr_keyword">if</strong> (value &amp;&amp; !canBePrimary()) {
+<a class="jxr_linenumber" name="L929" href="#L929">929</a>             <strong class="jxr_keyword">throw</strong> <strong class="jxr_keyword">new</strong> <a name="FitsException" href="../../../nom/tam/fits/FitsException.html#FitsException">FitsException</a>(<span class="jxr_string">"Invalid attempt to make HDU of type:"</span> + <strong class="jxr_keyword">this</strong>.getClass().getName() + <span class="jxr_string">" primary."</span>);
+<a class="jxr_linenumber" name="L930" href="#L930">930</a>         }
+<a class="jxr_linenumber" name="L931" href="#L931">931</a> 
+<a class="jxr_linenumber" name="L932" href="#L932">932</a>         myHeader.setRequiredKeys(value ? <strong class="jxr_keyword">null</strong> : getCanonicalXtension());
+<a class="jxr_linenumber" name="L933" href="#L933">933</a>     }
+<a class="jxr_linenumber" name="L934" href="#L934">934</a> 
+<a class="jxr_linenumber" name="L935" href="#L935">935</a>     <em class="jxr_javadoccomment">/**</em>
+<a class="jxr_linenumber" name="L936" href="#L936">936</a> <em class="jxr_javadoccomment">     * Returns the canonical (expected) value for the XTENSION keywords for this type of HDU. Concrete HDU</em>
+<a class="jxr_linenumber" name="L937" href="#L937">937</a> <em class="jxr_javadoccomment">     * implementations should override this method as appropriate. As of FITS version 4, only the following XTENSION</em>
+<a class="jxr_linenumber" name="L938" href="#L938">938</a> <em class="jxr_javadoccomment">     * values are recognised: 'IMAGE', 'TABLE', and 'BINTABLE'.</em>
 <a class="jxr_linenumber" name="L939" href="#L939">939</a> <em class="jxr_javadoccomment">     *</em>
-<a class="jxr_linenumber" name="L940" href="#L940">940</a> <em class="jxr_javadoccomment">     * @since  1.18</em>
-<a class="jxr_linenumber" name="L941" href="#L941">941</a> <em class="jxr_javadoccomment">     */</em>
-<a class="jxr_linenumber" name="L942" href="#L942">942</a>     <strong class="jxr_keyword">protected</strong> String getCanonicalXtension() {
-<a class="jxr_linenumber" name="L943" href="#L943">943</a>         <em class="jxr_comment">// TODO this should become an abstract method for 2.0. Prior to that we provide a default</em>
-<a class="jxr_linenumber" name="L944" href="#L944">944</a>         <em class="jxr_comment">// implementation for API back-compatibility reasons for any 3rd-party HDU implementations.</em>
-<a class="jxr_linenumber" name="L945" href="#L945">945</a>         <em class="jxr_comment">// To warn that this should be ovewritten, we'll log a warning...</em>
-<a class="jxr_linenumber" name="L946" href="#L946">946</a>         LOG.warning(getClass().getName() + <span class="jxr_string">" should override getCanonicalXtension() method as appropriate."</span>);
-<a class="jxr_linenumber" name="L947" href="#L947">947</a>         <strong class="jxr_keyword">return</strong> <span class="jxr_string">"UNKNOWN"</span>;
-<a class="jxr_linenumber" name="L948" href="#L948">948</a>     }
-<a class="jxr_linenumber" name="L949" href="#L949">949</a> 
-<a class="jxr_linenumber" name="L950" href="#L950">950</a>     @Override
-<a class="jxr_linenumber" name="L951" href="#L951">951</a>     <strong class="jxr_keyword">public</strong> <strong class="jxr_keyword">void</strong> write(<a name="ArrayDataOutput" href="../../../nom/tam/util/ArrayDataOutput.html#ArrayDataOutput">ArrayDataOutput</a> stream) <strong class="jxr_keyword">throws</strong> <a name="FitsException" href="../../../nom/tam/fits/FitsException.html#FitsException">FitsException</a> {
-<a class="jxr_linenumber" name="L952" href="#L952">952</a>         <strong class="jxr_keyword">if</strong> (myHeader == <strong class="jxr_keyword">null</strong>) {
-<a class="jxr_linenumber" name="L953" href="#L953">953</a>             myHeader = <strong class="jxr_keyword">new</strong> <a name="Header" href="../../../nom/tam/fits/Header.html#Header">Header</a>();
-<a class="jxr_linenumber" name="L954" href="#L954">954</a>         }
-<a class="jxr_linenumber" name="L955" href="#L955">955</a> 
-<a class="jxr_linenumber" name="L956" href="#L956">956</a>         <strong class="jxr_keyword">if</strong> (stream instanceof <a name="FitsOutput" href="../../../nom/tam/util/FitsOutput.html#FitsOutput">FitsOutput</a>) {
-<a class="jxr_linenumber" name="L957" href="#L957">957</a>             <strong class="jxr_keyword">boolean</strong> isFirst = ((<a name="FitsOutput" href="../../../nom/tam/util/FitsOutput.html#FitsOutput">FitsOutput</a>) stream).isAtStart();
-<a class="jxr_linenumber" name="L958" href="#L958">958</a>             setPrimaryHDU(canBePrimary() &amp;&amp; isFirst);
-<a class="jxr_linenumber" name="L959" href="#L959">959</a>         }
-<a class="jxr_linenumber" name="L960" href="#L960">960</a> 
-<a class="jxr_linenumber" name="L961" href="#L961">961</a>         myHeader.write(stream);
+<a class="jxr_linenumber" name="L940" href="#L940">940</a> <em class="jxr_javadoccomment">     * @return The value to use for the XTENSION keyword.</em>
+<a class="jxr_linenumber" name="L941" href="#L941">941</a> <em class="jxr_javadoccomment">     *</em>
+<a class="jxr_linenumber" name="L942" href="#L942">942</a> <em class="jxr_javadoccomment">     * @since  1.18</em>
+<a class="jxr_linenumber" name="L943" href="#L943">943</a> <em class="jxr_javadoccomment">     */</em>
+<a class="jxr_linenumber" name="L944" href="#L944">944</a>     <strong class="jxr_keyword">protected</strong> String getCanonicalXtension() {
+<a class="jxr_linenumber" name="L945" href="#L945">945</a>         <em class="jxr_comment">// TODO this should become an abstract method for 2.0. Prior to that we provide a default</em>
+<a class="jxr_linenumber" name="L946" href="#L946">946</a>         <em class="jxr_comment">// implementation for API back-compatibility reasons for any 3rd-party HDU implementations.</em>
+<a class="jxr_linenumber" name="L947" href="#L947">947</a>         <em class="jxr_comment">// To warn that this should be ovewritten, we'll log a warning...</em>
+<a class="jxr_linenumber" name="L948" href="#L948">948</a>         LOG.warning(getClass().getName() + <span class="jxr_string">" should override getCanonicalXtension() method as appropriate."</span>);
+<a class="jxr_linenumber" name="L949" href="#L949">949</a>         <strong class="jxr_keyword">return</strong> <span class="jxr_string">"UNKNOWN"</span>;
+<a class="jxr_linenumber" name="L950" href="#L950">950</a>     }
+<a class="jxr_linenumber" name="L951" href="#L951">951</a> 
+<a class="jxr_linenumber" name="L952" href="#L952">952</a>     @Override
+<a class="jxr_linenumber" name="L953" href="#L953">953</a>     <strong class="jxr_keyword">public</strong> <strong class="jxr_keyword">void</strong> write(<a name="ArrayDataOutput" href="../../../nom/tam/util/ArrayDataOutput.html#ArrayDataOutput">ArrayDataOutput</a> stream) <strong class="jxr_keyword">throws</strong> <a name="FitsException" href="../../../nom/tam/fits/FitsException.html#FitsException">FitsException</a> {
+<a class="jxr_linenumber" name="L954" href="#L954">954</a>         <strong class="jxr_keyword">if</strong> (myHeader == <strong class="jxr_keyword">null</strong>) {
+<a class="jxr_linenumber" name="L955" href="#L955">955</a>             myHeader = <strong class="jxr_keyword">new</strong> <a name="Header" href="../../../nom/tam/fits/Header.html#Header">Header</a>();
+<a class="jxr_linenumber" name="L956" href="#L956">956</a>         }
+<a class="jxr_linenumber" name="L957" href="#L957">957</a> 
+<a class="jxr_linenumber" name="L958" href="#L958">958</a>         <strong class="jxr_keyword">if</strong> (stream instanceof <a name="FitsOutput" href="../../../nom/tam/util/FitsOutput.html#FitsOutput">FitsOutput</a>) {
+<a class="jxr_linenumber" name="L959" href="#L959">959</a>             <strong class="jxr_keyword">boolean</strong> isFirst = ((<a name="FitsOutput" href="../../../nom/tam/util/FitsOutput.html#FitsOutput">FitsOutput</a>) stream).isAtStart();
+<a class="jxr_linenumber" name="L960" href="#L960">960</a>             setPrimaryHDU(canBePrimary() &amp;&amp; isFirst);
+<a class="jxr_linenumber" name="L961" href="#L961">961</a>         }
 <a class="jxr_linenumber" name="L962" href="#L962">962</a> 
-<a class="jxr_linenumber" name="L963" href="#L963">963</a>         <strong class="jxr_keyword">if</strong> (myData != <strong class="jxr_keyword">null</strong>) {
-<a class="jxr_linenumber" name="L964" href="#L964">964</a>             myData.write(stream);
-<a class="jxr_linenumber" name="L965" href="#L965">965</a>         }
-<a class="jxr_linenumber" name="L966" href="#L966">966</a>         <strong class="jxr_keyword">try</strong> {
-<a class="jxr_linenumber" name="L967" href="#L967">967</a>             stream.flush();
-<a class="jxr_linenumber" name="L968" href="#L968">968</a>         } <strong class="jxr_keyword">catch</strong> (IOException e) {
-<a class="jxr_linenumber" name="L969" href="#L969">969</a>             <strong class="jxr_keyword">throw</strong> <strong class="jxr_keyword">new</strong> <a name="FitsException" href="../../../nom/tam/fits/FitsException.html#FitsException">FitsException</a>(<span class="jxr_string">"Error flushing at end of HDU"</span>, e);
-<a class="jxr_linenumber" name="L970" href="#L970">970</a>         }
-<a class="jxr_linenumber" name="L971" href="#L971">971</a>     }
-<a class="jxr_linenumber" name="L972" href="#L972">972</a> }
+<a class="jxr_linenumber" name="L963" href="#L963">963</a>         myHeader.write(stream);
+<a class="jxr_linenumber" name="L964" href="#L964">964</a> 
+<a class="jxr_linenumber" name="L965" href="#L965">965</a>         <strong class="jxr_keyword">if</strong> (myData != <strong class="jxr_keyword">null</strong>) {
+<a class="jxr_linenumber" name="L966" href="#L966">966</a>             myData.write(stream);
+<a class="jxr_linenumber" name="L967" href="#L967">967</a>         }
+<a class="jxr_linenumber" name="L968" href="#L968">968</a>         <strong class="jxr_keyword">try</strong> {
+<a class="jxr_linenumber" name="L969" href="#L969">969</a>             stream.flush();
+<a class="jxr_linenumber" name="L970" href="#L970">970</a>         } <strong class="jxr_keyword">catch</strong> (IOException e) {
+<a class="jxr_linenumber" name="L971" href="#L971">971</a>             <strong class="jxr_keyword">throw</strong> <strong class="jxr_keyword">new</strong> <a name="FitsException" href="../../../nom/tam/fits/FitsException.html#FitsException">FitsException</a>(<span class="jxr_string">"Error flushing at end of HDU"</span>, e);
+<a class="jxr_linenumber" name="L972" href="#L972">972</a>         }
+<a class="jxr_linenumber" name="L973" href="#L973">973</a>     }
+<a class="jxr_linenumber" name="L974" href="#L974">974</a> }
 </pre>
 <hr/>
 <div id="footer">Copyright &#169; 1996&#x2013;2023 nom-tam-fits. All rights reserved.</div>
