@@ -97,13 +97,7 @@ public class AsciiTableHDU extends TableHDU<AsciiTable> {
      */
     @Deprecated
     public static AsciiTable encapsulate(Object o) throws FitsException {
-
-        Object[] oo = (Object[]) o;
-        AsciiTable d = new AsciiTable();
-        for (Object element : oo) {
-            d.addColumn(element);
-        }
-        return d;
+        return AsciiTable.fromColumnMajor((Object[]) o);
     }
 
     /**

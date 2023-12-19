@@ -66,16 +66,18 @@ public class ImageHDU extends BasicHDU<ImageData> {
     }
 
     /**
-     * @deprecated               (<i>for internal use</i>) Will reduce visibility in the future
+     * @deprecated                          (<i>for internal use</i>) Will reduce visibility in the future
      *
-     * @return                   Encapsulate an object as an ImageHDU.
+     * @return                              Encapsulate an object as an ImageHDU.
      *
-     * @param      o             object to encapsulate
+     * @param      o                        object to encapsulate
      *
-     * @throws     FitsException if the operation failed
+     * @throws     FitsException            <i>does not actually throw this exception</i>
+     * @throws     IllegalArgumentException if the data is not a regular primitive numerical array suitable for an
+     *                                          image.
      */
     @Deprecated
-    public static ImageData encapsulate(Object o) throws FitsException {
+    public static ImageData encapsulate(Object o) throws IllegalArgumentException, FitsException {
         return new ImageData(o);
     }
 

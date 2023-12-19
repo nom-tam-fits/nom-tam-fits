@@ -233,6 +233,60 @@ public class AsciiTable extends AbstractTableData {
     }
 
     /**
+     * Create an ASCII table from existing data in column-major format order.
+     *
+     * @param  columns       array of columns. The data for scalar entries is a primive array. For all else, the entry
+     *                           is an <code>Object[]</code> array of sorts.
+     * 
+     * @return               a new ASCII table with the data. The tables data may be partially independent from the
+     *                           argument. Modifications to the table data, or that to the argument have undefined
+     *                           effect on the other object. If it is important to decouple them, you can use a
+     *                           {@link ArrayFuncs#deepClone(Object)} of your original data as an argument.
+     * 
+     * @throws FitsException if the argument is not a suitable representation of FITS data in columns
+     * 
+     * @see                  #fromColumnMajor(Object[])
+     * @see                  BinaryTable#fromColumnMajor(Object[])
+     * 
+     * @since                1.19
+     */
+    public static AsciiTable fromColumnMajor(Object[] columns) throws FitsException {
+        AsciiTable t = new AsciiTable();
+        for (Object element : columns) {
+            t.addColumn(element);
+        }
+        return t;
+    }
+
+    /**
+     * Create an ASCII table from existing table data in row-major format. That is the first array index is the row
+     * index while the second array index is the column index;
+     *
+     * @param  table         Row / column array. Scalars elements are wrapped in arrays of 1, s.t. a single
+     *                           <code>int</code> elements is stored as <code>int[1]</code> at its
+     *                           <code>[row][col]</code> index.
+     * 
+     * @return               a new ASCII table with the data. The tables data may be partially independent from the
+     *                           argument. Modifications to the table data, or that to the argument have undefined
+     *                           effect on the other object. If it is important to decouple them, you can use a
+     *                           {@link ArrayFuncs#deepClone(Object)} of your original data as an argument.
+     *
+     * @throws FitsException if the argument is not a suitable representation of FITS data in rows.
+     * 
+     * @see                  #fromColumnMajor(Object[])
+     * @see                  BinaryTable#fromRowMajor(Object[][])
+     * 
+     * @since                1.19
+     */
+    public static AsciiTable fromRowMajor(Object[][] table) throws FitsException {
+        AsciiTable tab = new AsciiTable();
+        for (Object[] row : table) {
+            tab.addRow(row);
+        }
+        return tab;
+    }
+
+    /**
      * Checks if the integer value of a specific key requires <code>long</code> value type to store.
      *
      * @param  h   the header

@@ -1383,7 +1383,7 @@ public class BinaryTable extends AbstractTableData implements Cloneable {
      *                               <code>int</code> elements is stored as <code>int[1]</code> at its
      *                               <code>[row][col]</code> index.
      *
-     * @throws     FitsException if the data for the columns could not be used as columns
+     * @throws     FitsException if the argument is not a suitable representation of data in rows.
      * 
      * @deprecated               The constructor is ambiguous, use {@link #fromRowMajor(Object[][])} instead. You can
      *                               have a column-major array that has no scalar primitives which would also be an
@@ -1397,7 +1397,7 @@ public class BinaryTable extends AbstractTableData implements Cloneable {
     }
 
     /**
-     * Create a binary table from existing table data int row-major format. That is the first array index is the row
+     * Create a binary table from existing table data in row-major format. That is the first array index is the row
      * index while the second array index is the column index;
      *
      * @param  table         Row / column array. Scalars elements are wrapped in arrays of 1, s.t. a single
@@ -1409,7 +1409,7 @@ public class BinaryTable extends AbstractTableData implements Cloneable {
      *                           effect on the other object. If it is important to decouple them, you can use a
      *                           {@link ArrayFuncs#deepClone(Object)} of your original data as an argument.
      *
-     * @throws FitsException if the data for the columns could not be used as columns
+     * @throws FitsException if the argument is not a suitable representation of FITS data in rows.
      * 
      * @see                  #fromColumnMajor(Object[])
      * 
@@ -1455,7 +1455,7 @@ public class BinaryTable extends AbstractTableData implements Cloneable {
      *                           effect on the other object. If it is important to decouple them, you can use a
      *                           {@link ArrayFuncs#deepClone(Object)} of your original data as an argument.
      * 
-     * @throws FitsException if the data for the columns could not be used as columns
+     * @throws FitsException if the argument is not a suitable representation of FITS data in rows.
      * 
      * @see                  #fromColumnMajor(Object[])
      * 
