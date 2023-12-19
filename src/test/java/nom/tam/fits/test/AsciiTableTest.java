@@ -1261,27 +1261,11 @@ public class AsciiTableTest {
     }
 
     @Test
-    public void testFromRowMajor() throws Exception {
-        Object[][] rows = {new Object[] {new int[1], new float[1]}, new Object[] {new int[1], new float[1]},
-                new Object[] {new int[1], new float[1]}};
-        AsciiTable tab = AsciiTable.fromRowMajor(rows);
-        assertEquals(3, tab.getNRows());
-        assertEquals(2, tab.getNCols());
-    }
-
-    @Test
     public void testFromColumnMajor() throws Exception {
         Object[] cols = new Object[] {new int[3], new float[3]};
         AsciiTable tab = AsciiTable.fromColumnMajor(cols);
         assertEquals(3, tab.getNRows());
         assertEquals(2, tab.getNCols());
-    }
-
-    @Test(expected = FitsException.class)
-    public void testFromRowMajorException() throws Exception {
-        Object[][] rows = {new Object[] {new int[1], new float[2]}, new Object[] {new int[1], new float[2]},
-                new Object[] {new int[1], new float[2]}};
-        AsciiTable.fromRowMajor(rows); // ASCII tables can't store arrays...
     }
 
     @Test(expected = FitsException.class)

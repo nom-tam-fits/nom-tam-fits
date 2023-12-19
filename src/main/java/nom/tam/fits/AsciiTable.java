@@ -259,34 +259,6 @@ public class AsciiTable extends AbstractTableData {
     }
 
     /**
-     * Create an ASCII table from existing table data in row-major format. That is the first array index is the row
-     * index while the second array index is the column index;
-     *
-     * @param  table         Row / column array. Scalars elements are wrapped in arrays of 1, s.t. a single
-     *                           <code>int</code> elements is stored as <code>int[1]</code> at its
-     *                           <code>[row][col]</code> index.
-     * 
-     * @return               a new ASCII table with the data. The tables data may be partially independent from the
-     *                           argument. Modifications to the table data, or that to the argument have undefined
-     *                           effect on the other object. If it is important to decouple them, you can use a
-     *                           {@link ArrayFuncs#deepClone(Object)} of your original data as an argument.
-     *
-     * @throws FitsException if the argument is not a suitable representation of FITS data in rows.
-     * 
-     * @see                  #fromColumnMajor(Object[])
-     * @see                  BinaryTable#fromRowMajor(Object[][])
-     * 
-     * @since                1.19
-     */
-    public static AsciiTable fromRowMajor(Object[][] table) throws FitsException {
-        AsciiTable tab = new AsciiTable();
-        for (Object[] row : table) {
-            tab.addRow(row);
-        }
-        return tab;
-    }
-
-    /**
      * Checks if the integer value of a specific key requires <code>long</code> value type to store.
      *
      * @param  h   the header
@@ -492,7 +464,7 @@ public class AsciiTable extends AbstractTableData {
             buffer = null;
             return nRows;
         } catch (Exception e) {
-            throw new FitsException("Error addnig row:" + e.getMessage(), e);
+            throw new FitsException("Error adding row:" + e.getMessage(), e);
         }
     }
 
