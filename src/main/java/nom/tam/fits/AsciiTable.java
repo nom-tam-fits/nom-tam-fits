@@ -254,11 +254,11 @@ public class AsciiTable extends AbstractTableData {
      */
     public static AsciiTable fromColumnMajor(Object[] columns) throws FitsException {
         AsciiTable t = new AsciiTable();
-        for (Object element : columns) {
+        for (int i = 0; i < columns.length; i++) {
             try {
-                t.addColumn(element);
-            } catch (IllegalArgumentException e) {
-                throw new FitsException(e.getMessage(), e);
+                t.addColumn(columns[i]);
+            } catch (Exception e) {
+                throw new FitsException("col[" + i + "]: " + e.getMessage(), e);
             }
         }
         return t;

@@ -1357,4 +1357,10 @@ public class AsciiTableTest {
         AsciiTable tab = AsciiTable.fromColumnMajor(cols);
         tab.addColumn(new int[3], 0);
     }
+
+    @Test(expected = FitsException.class)
+    public void testFromColumnMajorRecastException() throws Exception {
+        Object[] cols = new Object[] {new int[3], "blah"};
+        AsciiTable.fromColumnMajor(cols); /// addColumn("blah") throws IllegalArgumentException, recast to FitsException
+    }
 }
