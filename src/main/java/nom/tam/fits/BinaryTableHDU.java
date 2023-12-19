@@ -107,7 +107,9 @@ public class BinaryTableHDU extends TableHDU<BinaryTable> {
     }
 
     /**
-     * @deprecated               (<i>for internal use</i>) Will reduce visibility in the future.
+     * @deprecated               (<i>for internal use</i>) Use {@link BinaryTable#fromColumnMajor(Object[])} or
+     *                               {@link BinaryTable#fromRowMajor(Object[][])} instead. Will reduce visibility in the
+     *                               future.
      *
      * @return                   Encapsulate data in a BinaryTable data type
      *

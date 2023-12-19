@@ -61,7 +61,8 @@ import edu.umd.cs.findbugs.annotations.SuppressFBWarnings;
 /**
  * ASCII table data. ASCII tables are meant for human readability without any special tools. However, they are far less
  * flexible or compact than {@link BinaryTable}. As such, users are generally discouraged from using this type of table
- * to represent FITS table data.
+ * to represent FITS table data. This class only supports scalar entries of type <code>int</code>, <code>long</code>,
+ * <code>float</code>, <code>double</code>, or else <code>String</code> types.
  * 
  * @see AsciiTableHDU
  * @see BinaryTable
@@ -233,6 +234,37 @@ public class AsciiTable extends AbstractTableData {
     }
 
     /**
+     * Creates an ASCII table from existing data in column-major format order.
+     *
+     * @param  columns       The data for scalar-valued columns. Each column must be an array of <code>int[]</code>,
+     *                           <code>long[]</code>, <code>float[]</code>, <code>double[]</code>, or else
+     *                           <code>String[]</code>, containing the same number of elements in each column (the
+     *                           number of rows).
+     * 
+     * @return               a new ASCII table with the data. The tables data may be partially independent from the
+     *                           argument. Modifications to the table data, or that to the argument have undefined
+     *                           effect on the other object. If it is important to decouple them, you can use a
+     *                           {@link ArrayFuncs#deepClone(Object)} of your original data as an argument.
+     * 
+     * @throws FitsException if the argument is not a suitable representation of FITS data in columns
+     * 
+     * @see                  BinaryTable#fromColumnMajor(Object[])
+     * 
+     * @since                1.19
+     */
+    public static AsciiTable fromColumnMajor(Object[] columns) throws FitsException {
+        AsciiTable t = new AsciiTable();
+        for (int i = 0; i < columns.length; i++) {
+            try {
+                t.addColumn(columns[i]);
+            } catch (Exception e) {
+                throw new FitsException("col[" + i + "]: " + e.getMessage(), e);
+            }
+        }
+        return t;
+    }
+
+    /**
      * Checks if the integer value of a specific key requires <code>long</code> value type to store.
      *
      * @param  h   the header
@@ -320,10 +352,17 @@ public class AsciiTable extends AbstractTableData {
     }
 
     @Override
-    public int addColumn(Object newCol) throws FitsException {
+    public int addColumn(Object newCol) throws FitsException, IllegalArgumentException {
+        if (newCol == null) {
+            throw new FitsException("data is null");
+        }
+
+        if (!newCol.getClass().isArray()) {
+            throw new IllegalArgumentException("Not an array: " + newCol.getClass().getName());
+        }
+
         int maxLen = 1;
         if (newCol instanceof String[]) {
-
             String[] sa = (String[]) newCol;
             for (String element : sa) {
                 if (element != null && element.length() > maxLen) {
@@ -339,7 +378,8 @@ public class AsciiTable extends AbstractTableData {
         } else if (newCol instanceof float[]) {
             maxLen = FLOAT_MAX_LENGTH;
         } else {
-            throw new FitsException("Adding invalid type to ASCII table");
+            throw new FitsException(
+                    "No AsciiTable support for elements of " + newCol.getClass().getComponentType().getName());
         }
         addColumn(newCol, maxLen);
 
@@ -350,23 +390,46 @@ public class AsciiTable extends AbstractTableData {
     }
 
     /**
-     * This version of addColumn allows the user to override the default length associated with each column type.
+     * Adds an ASCII table column with the specified ASCII text width for storing its elements.
      *
-     * @param  newCol        The new column data
-     * @param  length        the requested length for the column
+     * @param  newCol                   The new column data, which must be one of: <code>int[]</code>,
+     *                                      <code>long[]</code>, <code>float[]</code>, <code>double[]</code>, or else
+     *                                      <code>String[]</code>. If the table already contains data, the length of the
+     *                                      array must match the number of rows already contained in the table.
+     * @param  width                    the ASCII text width of the for the column entries (without the string
+     *                                      termination).
      *
-     * @return               the number of columns after this one is added.
+     * @return                          the number of columns after this one is added.
      *
-     * @throws FitsException if the operation failed
+     * @throws IllegalArgumentException if the column data is not an array or the specified text <code>width</code> is
+     *                                      &le;1.
+     * @throws FitsException            if the column us of an unsupported data type or if the number of entries does
+     *                                      not match the number of rows already contained in the table.
+     * 
+     * @see                             #addColumn(Object)
      */
-    public int addColumn(Object newCol, int length) throws FitsException {
+    public int addColumn(Object newCol, int width) throws FitsException, IllegalArgumentException {
+        if (width < 1) {
+            throw new IllegalArgumentException("Illegal ASCII column width: " + width);
+        }
+
+        if (!newCol.getClass().isArray()) {
+            throw new IllegalArgumentException("Not an array: " + newCol.getClass().getName());
+        }
 
         if (nFields > 0 && Array.getLength(newCol) != nRows) {
-            throw new FitsException("New column has different number of rows");
+            throw new FitsException(
+                    "Mismatched number of rows: expected " + nRows + ", got " + Array.getLength(newCol) + "rows.");
         }
 
         if (nFields == 0) {
             nRows = Array.getLength(newCol);
+        }
+
+        Class<?> type = ArrayFuncs.getBaseClass(newCol);
+        if (type != int.class && type != long.class && type != float.class && type != double.class
+                && type != String.class) {
+            throw new FitsException("No AsciiTable support for elements of " + type.getName());
         }
 
         Object[] newData = new Object[nFields + 1];
@@ -389,10 +452,10 @@ public class AsciiTable extends AbstractTableData {
 
         newData[nFields] = newCol;
         offsets[nFields] = rowLen + 1;
-        lengths[nFields] = length;
+        lengths[nFields] = width;
         types[nFields] = ArrayFuncs.getBaseClass(newCol);
 
-        rowLen += length + 1;
+        rowLen += width + 1;
         if (isNull != null) {
             boolean[] newIsNull = new boolean[nRows * (nFields + 1)];
             // Fix the null pointers.
@@ -415,6 +478,9 @@ public class AsciiTable extends AbstractTableData {
         return nFields;
     }
 
+    /**
+     * Beware that adding rows to ASCII tables may be very inefficient. Avoid addding more than a few rows if you can.
+     */
     @Override
     public int addRow(Object[] newRow) throws FitsException {
         try {
@@ -438,7 +504,7 @@ public class AsciiTable extends AbstractTableData {
             buffer = null;
             return nRows;
         } catch (Exception e) {
-            throw new FitsException("Error addnig row:" + e.getMessage(), e);
+            throw new FitsException("Error adding row:" + e.getMessage(), e);
         }
     }
 
@@ -505,6 +571,10 @@ public class AsciiTable extends AbstractTableData {
         nFields -= len;
     }
 
+    /**
+     * Beware that repeatedly deleting rows from ASCII tables may be very inefficient. Avoid calling this more than once
+     * (or a few times) if you can.
+     */
     @Override
     public void deleteRows(int start, int len) throws FitsException {
         if (nRows == 0 || start < 0 || start >= nRows || len <= 0) {

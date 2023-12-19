@@ -87,7 +87,8 @@ public class AsciiTableHDU extends TableHDU<AsciiTable> {
     }
 
     /**
-     * @deprecated               (<i>for internal use</i>) Will reduce visibility in the future
+     * @deprecated               (<i>for internal use</i>) Use {@link AsciiTable#fromColumnMajor(Object[])} instead.
+     *                               Will reduce visibility in the future
      *
      * @return                   a ASCII table data structure from an array of objects representing the columns.
      *
@@ -97,13 +98,7 @@ public class AsciiTableHDU extends TableHDU<AsciiTable> {
      */
     @Deprecated
     public static AsciiTable encapsulate(Object o) throws FitsException {
-
-        Object[] oo = (Object[]) o;
-        AsciiTable d = new AsciiTable();
-        for (Object element : oo) {
-            d.addColumn(element);
-        }
-        return d;
+        return AsciiTable.fromColumnMajor((Object[]) o);
     }
 
     /**

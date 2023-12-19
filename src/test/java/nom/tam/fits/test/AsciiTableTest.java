@@ -1259,4 +1259,108 @@ public class AsciiTableTest {
         h.addValue(Standard.XTENSION, NonStandard.XTENSION_IUEIMAGE);
         new AsciiTable(h);
     }
+
+    @Test
+    public void testFromColumnMajor() throws Exception {
+        Object[] cols = new Object[] {new int[3], new float[3]};
+        AsciiTable tab = AsciiTable.fromColumnMajor(cols);
+        assertEquals(3, tab.getNRows());
+        assertEquals(2, tab.getNCols());
+    }
+
+    @Test(expected = FitsException.class)
+    public void testFromColumnMajorException() throws Exception {
+        Object[] cols = new Object[] {new int[3], new float[3][2]};
+        AsciiTable.fromColumnMajor(cols); // ASCII tables can't store arrays...
+    }
+
+    @Test(expected = IllegalArgumentException.class)
+    public void testAddColumnNotAnArrayException() throws Exception {
+        Object[] cols = new Object[] {new int[3], new float[3]};
+        AsciiTable tab = AsciiTable.fromColumnMajor(cols);
+        tab.addColumn("blah");
+    }
+
+    @Test(expected = FitsException.class)
+    public void testAddBooleanColumnException() throws Exception {
+        Object[] cols = new Object[] {new int[3], new float[3]};
+        AsciiTable tab = AsciiTable.fromColumnMajor(cols);
+        tab.addColumn(new boolean[3]);
+    }
+
+    @Test(expected = FitsException.class)
+    public void testAddByteColumnException() throws Exception {
+        Object[] cols = new Object[] {new int[3], new float[3]};
+        AsciiTable tab = AsciiTable.fromColumnMajor(cols);
+        tab.addColumn(new byte[3]);
+    }
+
+    @Test(expected = FitsException.class)
+    public void testAddShortColumnException() throws Exception {
+        Object[] cols = new Object[] {new int[3], new float[3]};
+        AsciiTable tab = AsciiTable.fromColumnMajor(cols);
+        tab.addColumn(new short[3]);
+    }
+
+    @Test(expected = FitsException.class)
+    public void testAddWrongTypeColumnException() throws Exception {
+        Object[] cols = new Object[] {new int[3], new float[3]};
+        AsciiTable tab = AsciiTable.fromColumnMajor(cols);
+        tab.addColumn(new Integer[3]);
+    }
+
+    @Test(expected = FitsException.class)
+    public void testAddColumnWrongRowsException() throws Exception {
+        Object[] cols = new Object[] {new int[3], new float[3]};
+        AsciiTable tab = AsciiTable.fromColumnMajor(cols);
+        tab.addColumn(new int[4]);
+    }
+
+    @Test(expected = IllegalArgumentException.class)
+    public void testAddColumnWidthNotAnArrayException() throws Exception {
+        Object[] cols = new Object[] {new int[3], new float[3]};
+        AsciiTable tab = AsciiTable.fromColumnMajor(cols);
+        tab.addColumn("blah", 10);
+    }
+
+    @Test(expected = FitsException.class)
+    public void testAddBooleanColumnWidthException() throws Exception {
+        Object[] cols = new Object[] {new int[3], new float[3]};
+        AsciiTable tab = AsciiTable.fromColumnMajor(cols);
+        tab.addColumn(new boolean[3], 10);
+    }
+
+    @Test(expected = FitsException.class)
+    public void testAddByteColumnWidthException() throws Exception {
+        Object[] cols = new Object[] {new int[3], new float[3]};
+        AsciiTable tab = AsciiTable.fromColumnMajor(cols);
+        tab.addColumn(new byte[3], 10);
+    }
+
+    @Test(expected = FitsException.class)
+    public void testAddShortColumnWidthException() throws Exception {
+        Object[] cols = new Object[] {new int[3], new float[3]};
+        AsciiTable tab = AsciiTable.fromColumnMajor(cols);
+        tab.addColumn(new short[3], 10);
+    }
+
+    @Test(expected = FitsException.class)
+    public void testAddWrongTypeColumnWidthException() throws Exception {
+        Object[] cols = new Object[] {new int[3], new float[3]};
+        AsciiTable tab = AsciiTable.fromColumnMajor(cols);
+        tab.addColumn(new Integer[3], 10);
+    }
+
+    @Test(expected = IllegalArgumentException.class)
+    public void testAddColumnInvalidWidthException() throws Exception {
+        Object[] cols = new Object[] {new int[3], new float[3]};
+        AsciiTable tab = AsciiTable.fromColumnMajor(cols);
+        tab.addColumn(new int[3], 0);
+    }
+
+    @Test(expected = FitsException.class)
+    public void testFromColumnMajorRecastException() throws Exception {
+        Object[] cols = new Object[] {new int[3], "blah"};
+        AsciiTable.fromColumnMajor(cols); /// addColumn("blah") throws IllegalArgumentException, recast to FitsException
+    }
 }
