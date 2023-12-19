@@ -1,7 +1,7 @@
 <document xmlns="http://maven.apache.org/changes/1.0.0" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:schemaLocation="http://maven.apache.org/changes/1.0.0 http://maven.apache.org/xsd/changes-1.0.0.xsd">
 <body>
 
-   <release version="1.19.0-rc2" date="2023-12-18" description="Feature release with bug fixes.">
+   <release version="1.19.0-SNAPSHOT" date="2023-12-19" description="Feature release with bug fixes.">
       <action type="fix" dev="cek" issue="496">
           Workaround for read-only FITS files on Windows network shares.
       </action>
@@ -46,6 +46,10 @@
           The constructor of PaddingException does not throw a FitsException, and 
           FitsCheckSum.Checksum also does not throw an IllegalArgumentException -- so they 
           are now declared as such. Some related javadoc updates.
+      </action>
+      <action type="update" dev="attipaci" issue="525">
+          Improvements to AsciiTable with addColumn() argument checking and more specific
+          documentation.
       </action>
       <action type="update" dev="attipaci">
           Change from unmaintained findbugs build dep to spotbugs successor.

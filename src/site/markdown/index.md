@@ -143,7 +143,7 @@ FITS.
 <a name="deprecated-methods"></a>
 ### Deprecated methods
 
-Starting with version __1.16__, we started deprecated some of the older API, either because methods were 
+Starting with version __1.16__, we started deprecating some of the older API, either because methods were 
 ill-conceived, confusing, or generaly unsafe to use; or because they were internals of the library that should never 
 have been exposed to users in the first place. Rest assured, the deprecations do not cripple the intended 
 functionality of the library. If anything they make the library less confusing and safer to use. The Javadoc API 
