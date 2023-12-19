@@ -1397,7 +1397,7 @@ public class BinaryTable extends AbstractTableData implements Cloneable {
     }
 
     /**
-     * Create a binary table from existing table data in row-major format. That is the first array index is the row
+     * Creates a binary table from existing table data in row-major format. That is the first array index is the row
      * index while the second array index is the column index;
      *
      * @param  table         Row / column array. Scalars elements are wrapped in arrays of 1, s.t. a single
@@ -1445,7 +1445,7 @@ public class BinaryTable extends AbstractTableData implements Cloneable {
     }
 
     /**
-     * Create a binary table from existing data in column-major format order.
+     * Creates a binary table from existing data in column-major format order.
      *
      * @param  columns       array of columns. The data for scalar entries is a primive array. For all else, the entry
      *                           is an <code>Object[]</code> array of sorts.

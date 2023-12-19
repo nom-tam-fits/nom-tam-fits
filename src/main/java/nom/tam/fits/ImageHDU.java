@@ -66,7 +66,8 @@ public class ImageHDU extends BasicHDU<ImageData> {
     }
 
     /**
-     * @deprecated                          (<i>for internal use</i>) Will reduce visibility in the future
+     * @deprecated                          (<i>for internal use</i>) Use {@link ImageData#from(Object)} instead. Will
+     *                                          reduce visibility in the future
      *
      * @return                              Encapsulate an object as an ImageHDU.
      *

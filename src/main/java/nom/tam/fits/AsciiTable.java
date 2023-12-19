@@ -233,7 +233,7 @@ public class AsciiTable extends AbstractTableData {
     }
 
     /**
-     * Create an ASCII table from existing data in column-major format order.
+     * Creates an ASCII table from existing data in column-major format order.
      *
      * @param  columns       array of columns. The data for scalar entries is a primive array. For all else, the entry
      *                           is an <code>Object[]</code> array of sorts.
@@ -245,7 +245,6 @@ public class AsciiTable extends AbstractTableData {
      * 
      * @throws FitsException if the argument is not a suitable representation of FITS data in columns
      * 
-     * @see                  #fromColumnMajor(Object[])
      * @see                  BinaryTable#fromColumnMajor(Object[])
      * 
      * @since                1.19
@@ -441,6 +440,9 @@ public class AsciiTable extends AbstractTableData {
         return nFields;
     }
 
+    /**
+     * Beware that adding rows to ASCII tables may be very inefficient. Avoid addding more than a few rows if you can.
+     */
     @Override
     public int addRow(Object[] newRow) throws FitsException {
         try {
@@ -531,6 +533,10 @@ public class AsciiTable extends AbstractTableData {
         nFields -= len;
     }
 
+    /**
+     * Beware that repeatedly deleting rows from ASCII tables may be very inefficient. Avoid calling this more than once
+     * (or a few times) if you can.
+     */
     @Override
     public void deleteRows(int start, int len) throws FitsException {
         if (nRows == 0 || start < 0 || start >= nRows || len <= 0) {

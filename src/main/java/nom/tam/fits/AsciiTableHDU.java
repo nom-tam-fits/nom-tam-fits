@@ -87,7 +87,8 @@ public class AsciiTableHDU extends TableHDU<AsciiTable> {
     }
 
     /**
-     * @deprecated               (<i>for internal use</i>) Will reduce visibility in the future
+     * @deprecated               (<i>for internal use</i>) Use {@link AsciiTable#fromColumnMajor(Object[])} instead.
+     *                               Will reduce visibility in the future
      *
      * @return                   a ASCII table data structure from an array of objects representing the columns.
      *
