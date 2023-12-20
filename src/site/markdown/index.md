@@ -848,43 +848,7 @@ space in headers for later additions using `Header.ensureCardSpace(int)` prior t
 originally.)
 
 
-### Creating new HDUs that reuse existing header information
 
-Sometimes we want to create a new HDU based on an existing HDU, such as a 
-cropped image, or a table segment, in which we want to reuse much of the 
-information contained in the original header. The best way to go about it is 
-via the following 3 steps:
-
- 1. Start by creating the new data, and with it create a brand new HDU. This 
- HDU will have the correct mandatory data description (type and size) in its 
- header and nothing else.
-
- 2. Merge distict header entries from the original HDU into the header of the
- new HDU, using the `Header.mergeDistinct(Header source)` method. This will 
- copy over all header entries without overriding the proper mandatory data 
- description
-
- 3. Update any other header entries as necessary, such as WCS etc. Pay 
- attention to removing obsoleted entries also, such as descriptions of table 
- columns no longer exist in the new data.
-
-For example:
-
-```java
-  ImageHDU origHDU = ...
-  
-  // 1. create the new image HDU with the new data
-  float[][] newImage = ...
-  ImageHDU newHDU = ImageData.from(newImage).toHDU();
-  
-  // 2. copy over non-conflicting header entries from the original
-  Header.newHeader = newHDU.getHeader();
-  newHeader.mergeDistinct(origHDU.getHeader());
-
-  // 3. Update the WCS for the cropped data...
-  newHeader.addValue(Standard.CRPIXn.n(1), ...);
-  ...
-```
 
 
 -----------------------------------------------------------------------------
@@ -899,6 +863,7 @@ For example:
  - [Checksums](#checksums)
  - [Preallocated header space](#preallocated-header-space)
  - [Standard compliance](#standard-compliance)
+ - [Migrating header data between HDUs](#migrating-headers)
 
 The metadata that describes the FITS files contents is stored in the headers of each HDU.
 
@@ -960,6 +925,8 @@ components. Comment and history header cards can be created and added to the hea
 
 For tables much of the metadata describes individual columns. There are a set of `setTableMeta()` methods that can be 
 used to help organize these as the user wishes.
+
+
 
 
 
@@ -1269,6 +1236,52 @@ string value with no closing quote (`UnclosedQuoteException`) or a complex value
 Additionally, we provide `HeaderCard.sanitize(String)` method that the user can call to ensure that a Java `String` 
 can be used in FITS headers. The method will replace illegal FITS characters (outside of the range of `0x20` thru 
 `0x7E`) with `?`.
+
+
+<a name="migrating-headers"></a>
+## Migrating header data between HDUs
+
+Sometimes we want to create a new HDU based on an existing HDU, such as a 
+cropped image, or a table segment, in which we want to reuse much of the 
+information contained in the original header. The best way to go about it is 
+via the following 3 steps:
+
+ 1. Start by creating the new data, and with it create a brand new HDU. This 
+ HDU will have the correct mandatory data description (type and size) in its 
+ header and nothing else.
+
+ 2. Merge distict header entries from the original HDU into the header of the
+ new HDU, using the `Header.mergeDistinct(Header source)` method. This will 
+ copy over all header entries without overriding the proper mandatory data 
+ description
+
+ 3. Update any other header entries as necessary, such as WCS etc. Pay 
+ attention to removing obsoleted entries also, such as descriptions of table 
+ columns no longer exist in the new data.
+ 
+ 4. If the header contains checksums, make sure you update these before 
+ writing the headers to an output).
+
+For example:
+
+```java
+  ImageHDU origHDU = ...
+  
+  // 1. create the new image HDU with the new data
+  float[][] newImage = ...
+  ImageHDU newHDU = ImageData.from(newImage).toHDU();
+  
+  // 2. copy over non-conflicting header entries from the original
+  Header.newHeader = newHDU.getHeader();
+  newHeader.mergeDistinct(origHDU.getHeader());
+
+  // 3. Update the WCS for the cropped data...
+  newHeader.addValue(Standard.CRPIXn.n(1), ...);
+  ...
+  
+  // 4. Update checksums
+  newHDU.setChecksum();
+```
 
 
 
