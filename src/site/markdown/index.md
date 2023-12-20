@@ -17,8 +17,8 @@ Updated for 1.19.0 and/or later 1.x releases.
  - [Reading FITS files](#reading-fits-files)
  - [Writing FITS data](#writing-data)
  - [Modifying existing FITS files](#modifying-existing-files)
- - [Creating and populating tables](#building-tables-from-data)
  - [FITS headers](#fits-headers)
+ - [Creating tables](#building-tables-from-data)
  - [Compression support](#compression-support)
  - [How to contribute](#contribute)
 
@@ -889,175 +889,6 @@ For example:
 
 -----------------------------------------------------------------------------
 
-<a name="building-tables-from-data"></a>
-## Creating and populating tables
-
- - [Buiding tables row-by-row](#building-by-row)
- - [Buiding tables column-by-column](#building-by-column)
- - [Creating ASCII tables (discouraged](#creating-ascii-tables)
-
-
-
-<a name="building-by-row"></a>
-### Building tables row-by-row
-
-As of version __1.18__ building tables one row at a time is both easy and efficient -- and may be the least confusing 
-way to get tables done right. (In prior releases, adding rows to existing tables was painfully slow, and much more 
-constrained). You may want to start by defining the types and dimensions of the data (or whether variable-length) that 
-will be contained in each table column:
-
-```java
-   BinaryTable table = new BinaryTable();
-   
-   // A column containing 64-bit floating point scalar values, 1 per row...
-   table.addColumn(ColumnDesc.createForScalars(double.class));
-   
-   // A column containing 5x4 arrays of single-precision complex values...
-   table.addColumn(ColumnDesc.createForArrays(ComplexValue.Float.class, 5, 4));
-   
-   // A column containing Strings of variable length using 32-bit heap pointers...
-   table.addColumn(ColumnDesc.createForVariableLength(String.class));
-   
-   ...
-```
-
-Defining columns this way is not always necessary before adding rows to the table. However, it is necessary if you 
-will have data that needs variable-length storage row-after-row; or if you want more control over specifics of the 
-column format. As such, it is best practice to define the columns explictly even if not strictly required for your 
-particular application. 
-
-Now you can populate the table with your data, one row at a time, using the `addRow()` method as many times over as 
-necessary:
-
-```java   
-   for (...) {
-       // prepare the row data, making sure each row is compatible with prior rows...
-       ...
-   	
-       // Add the row to the table
-       table.addRow(...);
-   }
-```
-
-As of version __1.18__, you may use Java boxed types (as an alternative to primitive arrays-of-one) to specify 
-primitive scalar table elements, including auto-boxing of literals or variables. You may also use _vararg_ syntax for 
-adding rows if that is more convenient in your application. Thus, you may simply write:
-
-```java
-   table.addRowEntries(1, 3.14159265);
-```
-
-to add a row consisting of an 32-bit integer, a double-precision floating point value (presuming your table has those 
-two types of columns). Prior to __1.18__, the same would have to have been written as:
-
-```java  
-  table.addRow(new Object[] { new int[] {1}, new double[] {3.14159265} }; 
-```
-
-Tables built entirely row-by-row are naturally defragmented, as long as they are not modified subsequently.
-
-Once the table is complete, you can make a HDU from it:
-
-```java
-  BinaryTableHDU hdu = table.toHDU();
-```
-
-which will populate the header with the requisite entries that describe the table. You can then edit the new header
-to add any extra information (while being careful to not modify the essential table description). Note, that once the
-table is encompassed in a HDU, it is generally not safe to edit the table data, since the library has no foolproof way 
-to keep the header description of the table perfectly in sync. Thus it is recommended that you create table HDUs only 
-after the table data has been fully populated.
-
-A few rules to remember when building tables by rows:
- 
- - All rows must contain the same number of entries (the number of columns)
- - Entries in the same column must match in their column type in every row.
- - Entries must be of the following supported types:
-     * A supported Java type (`String` or `ComplexValue`), or
-     * primitive arrays (e.g. `int[]`, `float[][]`), or
-     * Arrays of `Boolean` (logicals), `String` or `ComplexValue` (such as `Boolean[][]` or `String[]`), or
-     * Scalar primitives stored as arrays of 1 (e.g. `short[1]`).
- - If entries are multi-dimensional arrays, they must have the same dimensionality and shape in every row. 
-   (Otherwise, they will be stored as variable-length arrays in flattened 1D format, where the shape may be lost). 
- - If entries are one-dimensional, they can vary in size from row to row freely.
- - Java `null` entries are allowed for `String` and `Boolean` (logical) types, but not for the other data types. 
-   (these will map to empty strings or _undefined_ logical values respectively)
- 
-
-<a name="building-by-column"></a>
-### Building tables column-by-column
-
-Sometimes we might want to assemble a table from a selection of data which will readily consitute columns in the table. 
-We can add these as columns to an existing table (empty or not) using the `BinaryTable.addColumn(Object)` method.
-For example, say we have two arrays, one a time-series of spectra, and a matching array of corresponding timestamps. We
-can create a table with these (or add them to an existing table with a matching number of rows) as:
-
-```java  
-   double[] timestamps = new double[nRows]; 
-   ComplexValue[][] spectra = new ComplexValue[nRows][];
-   ...
-   
-   BinaryTable tab = new BinaryTable();
-   
-   table.addColumn(timeStamps);
-   table.addColumn(spectra);
-```
-  
-There are just a few rules to keep in mind when constructing tables in this way:
-  
-  - All columns added this way must contain the same number of elements (number of rows).
-  - In column data, scalars entries are simply elements in a 1D primitive array, in which each element contains
-    the scalar value for a given row. (I.e. unlike in the row-major table format required to create entire tables at 
-    once, we do not have to wrap scalar values in self-contained arrays of 1)
-  - Other than the above, the same rules apply as for creating HDUs row-by-row (above).
-  - If setting complex columns with arrays of `float[2]` or `double[2]` (the old way), you will want to call 
-    `setComplexColumn(int)` afterwards for that column to make sure they are labeled properly in the FITS header 
-    (rather than as real-valued arrays of `float` or `double`).
-  - Similarly, if adding arrays of `boolean` values, you might consider calling `convertToBits(int)` on that
-    column for a more compact storage option of the `true`/`false` values, rather than as 1-byte FITS logicals 
-    (default).
-    
-Defragmenting might also be a good idea before writing binary tables with variable-length data built column by column 
-(as opposed to row-by-row):
-
-```java
-  table.defragment();
-```
- 
-before calling `write()` on the encompassing HDU.
-
-
-<a name="creating-ascii-tables"></a>
-### Creating ASCII tables (discouraged)
-   
-While the library also supports ASCII tables for storing a more limited assortment of _scalar_ entries, binary tables 
-should always be your choice for storing table data. ASCII tables are far less capable overall. And while they may be 
-readable from a console without needing any tools to display, there is no compelling reason for using ASCII tables 
-today. Binary tables are simply better, because they:
-
- - Support more data types (such as arrays, logical, and complex values).
- - Offer additional flexibility, such as variable sized and multi-dimensional array entries.
- - Take up less space on disk
- - Can be compressed to an even smaller size
- 
-However, if you insist on creating ASCII tables (provided the data allows for it) you may:
-
- - Build them column by column using one of the `AsciiTable.addColumn(...)` methods (since __1.19__), or
- - Build all at once, from a set of readily available columns via `AsciiTable.fromColumnMajor(Object[])`, or else
- - Set `FitsFactory.setUseAsciiTables(true)` prior to calling  `Fits.makeHDU()` or one of the factory methods to 
-   encapsulate a column-major table data objects automatically as ASCII tables whenever it is possible.
- 
- 
-(Note that while the `AsciiTable` class also provides an `.addRow(Object[])` method, we strongly recommend against 
- it because it is extremely inefficient, i.e. painfully slow). Either way, you should keep in mind the inherent 
- limitations of ASCII tables:
-
- - Only scalar entries are allowed (no arrays whatsoever!)
- - Only `int`, `long`, `float`, `double` and `String` entries are supported.
- 
-
------------------------------------------------------------------------------
-
 <a name="fits-headers"></a>
 ## FITS headers
 
@@ -1439,6 +1270,176 @@ Additionally, we provide `HeaderCard.sanitize(String)` method that the user can 
 can be used in FITS headers. The method will replace illegal FITS characters (outside of the range of `0x20` thru 
 `0x7E`) with `?`.
 
+
+
+-----------------------------------------------------------------------------
+
+<a name="building-tables-from-data"></a>
+## Creating tables
+
+ - [Buiding tables row-by-row](#building-by-row)
+ - [Buiding tables column-by-column](#building-by-column)
+ - [Creating ASCII tables (discouraged)](#creating-ascii-tables)
+
+
+
+<a name="building-by-row"></a>
+### Building tables row-by-row
+
+As of version __1.18__ building tables one row at a time is both easy and efficient -- and may be the least confusing 
+way to get tables done right. (In prior releases, adding rows to existing tables was painfully slow, and much more 
+constrained). You may want to start by defining the types and dimensions of the data (or whether variable-length) that 
+will be contained in each table column:
+
+```java
+   BinaryTable table = new BinaryTable();
+   
+   // A column containing 64-bit floating point scalar values, 1 per row...
+   table.addColumn(ColumnDesc.createForScalars(double.class));
+   
+   // A column containing 5x4 arrays of single-precision complex values...
+   table.addColumn(ColumnDesc.createForArrays(ComplexValue.Float.class, 5, 4));
+   
+   // A column containing Strings of variable length using 32-bit heap pointers...
+   table.addColumn(ColumnDesc.createForVariableLength(String.class));
+   
+   ...
+```
+
+Defining columns this way is not always necessary before adding rows to the table. However, it is necessary if you 
+will have data that needs variable-length storage row-after-row; or if you want more control over specifics of the 
+column format. As such, it is best practice to define the columns explictly even if not strictly required for your 
+particular application. 
+
+Now you can populate the table with your data, one row at a time, using the `addRow()` method as many times over as 
+necessary:
+
+```java   
+   for (...) {
+       // prepare the row data, making sure each row is compatible with prior rows...
+       ...
+   	
+       // Add the row to the table
+       table.addRow(...);
+   }
+```
+
+As of version __1.18__, you may use Java boxed types (as an alternative to primitive arrays-of-one) to specify 
+primitive scalar table elements, including auto-boxing of literals or variables. You may also use _vararg_ syntax for 
+adding rows if that is more convenient in your application. Thus, you may simply write:
+
+```java
+   table.addRowEntries(1, 3.14159265);
+```
+
+to add a row consisting of an 32-bit integer, a double-precision floating point value (presuming your table has those 
+two types of columns). Prior to __1.18__, the same would have to have been written as:
+
+```java  
+  table.addRow(new Object[] { new int[] {1}, new double[] {3.14159265} }; 
+```
+
+Tables built entirely row-by-row are naturally defragmented, as long as they are not modified subsequently.
+
+Once the table is complete, you can make a HDU from it:
+
+```java
+  BinaryTableHDU hdu = table.toHDU();
+```
+
+which will populate the header with the requisite entries that describe the table. You can then edit the new header
+to add any extra information (while being careful to not modify the essential table description). Note, that once the
+table is encompassed in a HDU, it is generally not safe to edit the table data, since the library has no foolproof way 
+to keep the header description of the table perfectly in sync. Thus it is recommended that you create table HDUs only 
+after the table data has been fully populated.
+
+A few rules to remember when building tables by rows:
+ 
+ - All rows must contain the same number of entries (the number of columns)
+ - Entries in the same column must match in their column type in every row.
+ - Entries must be of the following supported types:
+     * A supported Java type (`String` or `ComplexValue`), or
+     * primitive arrays (e.g. `int[]`, `float[][]`), or
+     * Arrays of `Boolean` (logicals), `String` or `ComplexValue` (such as `Boolean[][]` or `String[]`), or
+     * Scalar primitives stored as arrays of 1 (e.g. `short[1]`).
+ - If entries are multi-dimensional arrays, they must have the same dimensionality and shape in every row. 
+   (Otherwise, they will be stored as variable-length arrays in flattened 1D format, where the shape may be lost). 
+ - If entries are one-dimensional, they can vary in size from row to row freely.
+ - Java `null` entries are allowed for `String` and `Boolean` (logical) types, but not for the other data types. 
+   (these will map to empty strings or _undefined_ logical values respectively)
+ 
+
+<a name="building-by-column"></a>
+### Building tables column-by-column
+
+Sometimes we might want to assemble a table from a selection of data which will readily consitute columns in the table. 
+We can add these as columns to an existing table (empty or not) using the `BinaryTable.addColumn(Object)` method.
+For example, say we have two arrays, one a time-series of spectra, and a matching array of corresponding timestamps. We
+can create a table with these (or add them to an existing table with a matching number of rows) as:
+
+```java  
+   double[] timestamps = new double[nRows]; 
+   ComplexValue[][] spectra = new ComplexValue[nRows][];
+   ...
+   
+   BinaryTable tab = new BinaryTable();
+   
+   table.addColumn(timeStamps);
+   table.addColumn(spectra);
+```
+  
+There are just a few rules to keep in mind when constructing tables in this way:
+  
+  - All columns added this way must contain the same number of elements (number of rows).
+  - In column data, scalars entries are simply elements in a 1D primitive array, in which each element contains
+    the scalar value for a given row. (I.e. unlike in the row-major table format required to create entire tables at 
+    once, we do not have to wrap scalar values in self-contained arrays of 1)
+  - Other than the above, the same rules apply as for creating HDUs row-by-row (above).
+  - If setting complex columns with arrays of `float[2]` or `double[2]` (the old way), you will want to call 
+    `setComplexColumn(int)` afterwards for that column to make sure they are labeled properly in the FITS header 
+    (rather than as real-valued arrays of `float` or `double`).
+  - Similarly, if adding arrays of `boolean` values, you might consider calling `convertToBits(int)` on that
+    column for a more compact storage option of the `true`/`false` values, rather than as 1-byte FITS logicals 
+    (default).
+    
+Defragmenting might also be a good idea before writing binary tables with variable-length data built column by column 
+(as opposed to row-by-row):
+
+```java
+  table.defragment();
+```
+ 
+before calling `write()` on the encompassing HDU.
+
+
+<a name="creating-ascii-tables"></a>
+### Creating ASCII tables (discouraged)
+   
+While the library also supports ASCII tables for storing a more limited assortment of _scalar_ entries, binary tables 
+should always be your choice for storing table data. ASCII tables are far less capable overall. And while they may be 
+readable from a console without needing any tools to display, there is no compelling reason for using ASCII tables 
+today. Binary tables are simply better, because they:
+
+ - Support more data types (such as arrays, logical, and complex values).
+ - Offer additional flexibility, such as variable sized and multi-dimensional array entries.
+ - Take up less space on disk
+ - Can be compressed to an even smaller size
+ 
+However, if you insist on creating ASCII tables (provided the data allows for it) you may:
+
+ - Build them column by column using one of the `AsciiTable.addColumn(...)` methods (since __1.19__), or
+ - Build all at once, from a set of readily available columns via `AsciiTable.fromColumnMajor(Object[])`, or else
+ - Set `FitsFactory.setUseAsciiTables(true)` prior to calling  `Fits.makeHDU()` or one of the factory methods to 
+   encapsulate a column-major table data objects automatically as ASCII tables whenever it is possible.
+ 
+ 
+(Note that while the `AsciiTable` class also provides an `.addRow(Object[])` method, we strongly recommend against 
+ it because it is extremely inefficient, i.e. painfully slow). Either way, you should keep in mind the inherent 
+ limitations of ASCII tables:
+
+ - Only scalar entries are allowed (no arrays whatsoever!)
+ - Only `int`, `long`, `float`, `double` and `String` entries are supported.
+ 
 
 
 -----------------------------------------------------------------------------
