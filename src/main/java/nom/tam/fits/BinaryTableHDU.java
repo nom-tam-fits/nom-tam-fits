@@ -93,6 +93,7 @@ public class BinaryTableHDU extends TableHDU<BinaryTable> {
      * @throws FitsException if the table structure is invalid, and cannot be described in a header (should never really
      *                           happen, but we keep the possibility open to it).
      * 
+     * @see                  #toHDU()
      * @since                1.18
      */
     public static BinaryTableHDU wrap(BinaryTable tab) throws FitsException {
