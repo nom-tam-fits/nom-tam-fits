@@ -189,6 +189,7 @@ public class TileCompressionTest {
         Fits f = new Fits(fileName);
         CompressedImageHDU cHDU = (CompressedImageHDU) f.getHDU(1);
         cHDU.addValue(Standard.CRPIXn.n(1), 1);
+        cHDU.addValue("CRPIX1A", 1, "");
 
         int fromi = 1;
         int fromj = 1;
@@ -199,6 +200,7 @@ public class TileCompressionTest {
         int[][] tile = (int[][]) hdu.getKernel();
 
         Assert.assertEquals(1 - fromi, hdu.getHeader().getDoubleValue(Standard.CRPIXn.n(1)), 1e-12);
+	Assert.assertEquals(1 - fromi, hdu.getHeader().getDoubleValue(Standard.CRPIXn.n(1) + "A"), 1e-12);
 
         for (int i = 0; i < ni; i++) {
             for (int j = 0; j < nj; j++) {
