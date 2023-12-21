@@ -783,7 +783,7 @@ Suppose we have just a couple of specific elements we know we need to change in 
   img[i][j] = ...
   ...
   
-  // No write the new data back in the place of the old
+  // write the new data back in the place of the old
   hdu.rewrite();
 ```
 
@@ -919,9 +919,10 @@ records. This is most easily accomplished using a header Cursor and using the `H
 ```
 
 returns a cursor object that points to the first card of the header. We have `prev()` and `next()` methods that allow 
-us to move through the header, and `add()` and `delete()` methods to add new records. The methods of `HeaderCard` 
-allow us to manipulate the entire current card as a single string or broken down into keyword, value and comment 
-components. Comment and history header cards can be created and added to the header.
+us to move through the header, and `add()` and `delete()` methods to add/remove records at specific locations. The 
+methods of `HeaderCard` allow us to manipulate the entire current card as a single string or broken down into keyword, 
+value and comment components. Comment and history header cards can be created and added to the header, e.g. via
+`HeaderCard.createCommentCard()` or `.createHistoryCard()` respectively.
 
 For tables much of the metadata describes individual columns. There are a set of `setTableMeta()` methods that can be 
 used to help organize these as the user wishes.
@@ -1433,8 +1434,9 @@ today. Binary tables are simply better, because they:
  
 However, if you insist on creating ASCII tables (provided the data allows for it) you may:
 
- - Build them column by column using one of the `AsciiTable.addColumn(...)` methods (since __1.19__), or
- - Build all at once, from a set of readily available columns via `AsciiTable.fromColumnMajor(Object[])`, or else
+ - Build them column by column using one of the `AsciiTable.addColumn(...)` method, or
+ - Build all at once, from a set of readily available columns via `AsciiTable.fromColumnMajor(Object[])` 
+   (since __1.19__), or else
  - Set `FitsFactory.setUseAsciiTables(true)` prior to calling  `Fits.makeHDU()` or one of the factory methods to 
    encapsulate a column-major table data objects automatically as ASCII tables whenever it is possible.
  

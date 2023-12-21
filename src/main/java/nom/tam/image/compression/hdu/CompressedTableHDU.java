@@ -296,7 +296,7 @@ public class CompressedTableHDU extends BinaryTableHDU {
      * @see                             #fromBinaryTableHDU(BinaryTableHDU, int, String...)
      */
     public Object getColumnData(int col) throws FitsException, IllegalArgumentException {
-        return getColumnData(col, 0, getNRows());
+        return getColumnData(col, 0, getTileCount());
     }
 
     /**
