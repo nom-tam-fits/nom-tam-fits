@@ -1470,7 +1470,7 @@ had a number of lingering compression related bugs of varying severity, which ma
 
 
 It is common practice to compress FITS files using __gzip__ (`.gz` extension) so they can be exchanged in a more 
-compact form. The library supports the creation of gzipped fits out of the box, by wrapping the file's output 
+compact form. Java 8+ supports the creation of gzipped FITS out of the box, by wrapping the file's output 
 stream into a `GZIPOutputStream` or , such as:
 
 ```java
@@ -1644,7 +1644,7 @@ Sometimes we are interested in a section of the compressed table only. As of ver
 also. If you just want to uncompress a range of the compressed tiles, you can
 
 ```java
-   CompressedImageHDU compressed = ...
+   CompressedTableHDU compressed = ...
    TableHDU section = compressed.asTableHDU(fromTile, toTile);
 ```
 
@@ -1653,10 +1653,12 @@ The resulting HDU will contain all columns but on only the uncompressed rows for
 And, if you want to surgically access a range of data from select columns (and tiles) only:
 
 ```java
-   CompressedImageHDU compressed = ...
+   CompressedTableHDU compressed = ...
    Object[] colData = compressed.getColumnData(colIndex, fromTile, toTile);
 ```
 
+The methods `CompressedTableHDU.getTileRows()` and `.getTileCount()` can be used to help determined which tile(s)
+to decompress to get access to specific table rows.
 
 -----------------------------------------------------------------------------
 

@@ -299,9 +299,18 @@ public class CompressedImageHDU extends BinaryTableHDU {
 
             h.addValue(Standard.NAXISn.n(dim - i), lengths[i]);
 
+            // Adjust the CRPIXn values
             HeaderCard crpix = h.getCard(Standard.CRPIXn.n(dim - i));
             if (crpix != null) {
                 crpix.setValue(crpix.getValue(Double.class, Double.NaN) - corners[i]);
+            }
+            
+            // Adjust CRPIXna values
+            for (char c = 'A'; c <= 'Z'; c++) {
+                crpix = h.getCard(Standard.CRPIXn.n(dim - i) + Character.toString(c));
+                if (crpix != null) {
+                    crpix.setValue(crpix.getValue(Double.class, Double.NaN) - corners[i]);
+                }
             }
         }
 
