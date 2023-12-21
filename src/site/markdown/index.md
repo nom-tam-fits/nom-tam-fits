@@ -858,8 +858,8 @@ originally.)
 
  - [Accessing header values](#accessing-header-values)
  - [Standard and conventional FITS header keywords](#standard-and-conventional-fits-header-keywords)
+ - [Hierarchical and long header keywords](#hierarch-style-header-keywords)
  - [Long string values](#long-string-values)
- - [HIERARCH-style header keywords](#hierarch-style-header-keywords)
  - [Checksums](#checksums)
  - [Preallocated header space](#preallocated-header-space)
  - [Standard compliance](#standard-compliance)
@@ -983,27 +983,15 @@ For best practice, try rely on the standard keywords, or those in registered con
 
 
 
-<a name="long-string-values"></a>
-### Long string values
-
-The standard maximum length for string values in the header is 68 characters. As of FITS 4.0, the [CONTINUE long 
-string convention](https://fits.gsfc.nasa.gov/registry/continue_keyword.html) is part of the standard. And, as of 
-version __1.16__ of this library, it is supported by default. Support for long strings can be turned off (or on again) 
-via `FitsFactory.setLongStringEnabled(boolean)` if necessary. If the settings is disabled, any attempt to set a header 
-value to a string longer than the space available for it in a single 80-character header record will throw a
-`LongStringsNotEnabledException` runtime exception.
-
-
-
 <a name="hierarch-style-header-keywords"></a>
-### HIERARCH style header keywords
+### Hierarchical and long header keywords
 
-The standard FITS header keywords consists of maximum 8 upper case letters or number, plus dash `-` and underscore 
-`_`. The HIERARCH keyword convention allows for longer and/or hierarchical sets of FITS keywords, and/or for 
-supporting a somewhat more extended set of ASCII characters (in the range of `0x20` to `0x7E`).  Support for 
-HIERARCH-style keywords is enabled by default as of version __1.16__. HIERARCH support can be toggled if needed via
-`FitsFactory.setUseHierarch(boolean)`. By default, HIERARCH keywords are converted to upper-case only (__cfitsio__ 
-convention), so
+The standard FITS header keywords consists of maximum 8 upper case letters or numbers or dashes (`-`) and 
+underscores (`_`). The [HIERARCH keyword convention](https://fits.gsfc.nasa.gov/registry/hierarch_keyword.html) 
+allows for longer and/or hierarchical sets of FITS keywords, and/or for supporting a somewhat more extended set of 
+ASCII characters (in the range of `0x20` to `0x7E`).  Support for HIERARCH-style keywords is enabled by default as of 
+version __1.16__. HIERARCH support can be toggled if needed via `FitsFactory.setUseHierarch(boolean)`. By default, 
+HIERARCH keywords are converted to upper-case only (__cfitsio__ convention), so
 
 ```java
   HeaderCard hc = new HeaderCard(Hierarch.key("my.lower.case.keyword[!]"), "value", "comment");
@@ -1016,7 +1004,7 @@ will write the header entry to FITS as:
 ```
 
 You can use `FitsFactory.getHierarchFormater().setCaseSensitive(true)` to allow the use of lower-case characters, and 
-hence enable case-sensitive keywords. After the setting, the same card will be written to FITS as:
+hence enable case-sensitive keywords also. After the setting, the same card will be written to FITS as:
 
 ```
   HIERARCH my lower case keyword[!] = 'value' / comment
@@ -1025,9 +1013,9 @@ hence enable case-sensitive keywords. After the setting, the same card will be w
 You may note a few other properties of HIERARCH keywords as implemented by this library:
 
  1. The case sensitive setting (above) also determines whether or not HIERARCH keywords are converted to upper-case 
- upon parsing also. As such, the header entry in last example above may be referred either as 
+ upon parsing also. As such, the header entry in last example above may be referred as 
  `HIERARCH.my.lower.case.keyword[!]` or as `HIERARCH.MY.LOWER.CASE.KEYWORD[!]` internally after parsing, depending on 
- whether case-sensitive mode is enabled or not.
+ whether case-sensitive mode is enabled or not, respectively.
 
  2. If `FitsFactory` has HIERARCH support disabled, any attempt to define a HIERARCH-style long keyword will throw a
  `HierarchNotEnabledException` runtime exception. (However, just `HIERARCH` by itself will still be allowed as a 
@@ -1039,7 +1027,7 @@ You may note a few other properties of HIERARCH keywords as implemented by this 
  
  4. The HIERARCH keywords may contain all printable standard ASCII characters that are allowed in FITS headers (`0x20` 
  thru `0x7E`). As such, we take a liberal reading of the ESO convention, which designated only upper-case letters, 
- numbers, plus dash `-` and underscore `_`. If you want to conform to the ESO convention more closely, you should 
+ numbers, dashes (`-`) and underscores (`_`). If you want to conform to the ESO convention more closely, you should 
  avoid using characters outside of the set of the original convention.
  
  5. The library adds a space between the keywords and the `=` sign, as prescribed by the __cfitsio__ convention. The 
@@ -1059,7 +1047,15 @@ You may note a few other properties of HIERARCH keywords as implemented by this 
     HIERARCH MY .. KEYWORD
   ```
 
+<a name="long-string-values"></a>
+### Long string values
 
+The standard maximum length for string values in the header is 68 characters. As of FITS 4.0, the [CONTINUE long 
+string convention](https://fits.gsfc.nasa.gov/registry/continue_keyword.html) is part of the standard. And, as of 
+version __1.16__ of this library, it is supported by default. Support for long strings can be turned off (or on again) 
+via `FitsFactory.setLongStringEnabled(boolean)` if necessary. If the settings is disabled, any attempt to set a header 
+value to a string longer than the space available for it in a single 80-character header record will throw a
+`LongStringsNotEnabledException` runtime exception.
  
  
 <a name="checksums"></a>
@@ -1159,11 +1155,11 @@ modifying any of the records. In such cases You may proceed re-writing a selecti
 ### Preallocated header space
 
 Many FITS files are created by live-recording of data, e.g. from astronomical instruments. As such not all header 
-values may be defined when writing the data segment of the HDU that follows the header. For example, we do not know 
-in advance how many rows the binary table will contain, which will depend on when the recording stops at a later 
-point. Other metadata may simply not be provided until a later time. For this reason version 4.0 of the FITS 
-standard has specified preallocating header space as some number of blank header records between the last defined 
-header entry and the `END` keyword.
+values may be defined when one begins writing the data segment of the HDU that follows the header. For example, we do 
+not know in advance how many rows the binary table will contain, which will depend on when the recording will stop. 
+Other metadata may simply not be available until a later time. For this reason version 4.0 of the FITS standard has 
+specified preallocating header space as some number of blank header records between the last defined header entry and 
+the `END` keyword.
 
 As of version __1.16__, this library supports preallocated header space via `Header.ensureCardSpace(int)`, which can 
 be used to ensure that the header can contain _at least_ the specified number of 80-character records when written to 
@@ -1172,8 +1168,8 @@ the output. (In reality it may accommodate somewhat more than that because of th
 reserved / used by any header object at any point). 
 
 Once the space has been reserved, the header can be written to the output, and one may begin recording data after it.
-Cards may be filled later, up to the number of records defined (and sometimes beyond), and the header can be 
-rewritten at a later point in place, with the additional entries.
+The header can be completed later, up to the number of additional card specified (and sometimes beyond), and the 
+updated header can be rewritten place at a later time with the additional entries.
 
 
 For example,
@@ -1238,33 +1234,30 @@ can be used in FITS headers. The method will replace illegal FITS characters (ou
 `0x7E`) with `?`.
 
 
+
 <a name="migrating-headers"></a>
 ## Migrating header data between HDUs
 
-Sometimes we want to create a new HDU based on an existing HDU, such as a 
-cropped image, or a table segment, in which we want to reuse much of the 
-information contained in the original header. The best way to go about it is 
-via the following 3 steps:
+Sometimes we want to create a new HDU based on an existing HDU, such as a cropped image, or a table segment, in which 
+we want to reuse much of the information contained in the original header. The best way to go about it is via the 
+following steps:
 
- 1. Start by creating the new data, and with it create a brand new HDU. This 
- HDU will have the correct mandatory data description (type and size) in its 
- header and nothing else.
+ 1. Start by creating the new HDU from the data it will hold. This HDU will have the correct mandatory data 
+ description (type and size) in its header.
 
- 2. Merge distict header entries from the original HDU into the header of the
- new HDU, using the `Header.mergeDistinct(Header source)` method. This will 
- copy over all header entries without overriding the proper mandatory data 
- description
+ 2. Merge distict header entries from the original HDU into the header of the new HDU, using the 
+ `Header.mergeDistinct(Header source)` method. This will copy over all header entries without overriding the proper 
+ mandatory data description.
 
- 3. Update any other header entries as necessary, such as WCS etc. Pay 
- attention to removing obsoleted entries also, such as descriptions of table 
- columns no longer exist in the new data.
+ 3. Update the header entries as necessary, such as WCS etc. Pay attention to removing obsoleted entries also, such as 
+ descriptions of table columns that no longer exist in the new data.
  
- 4. If the header contains checksums, make sure you update these before 
- writing the headers to an output).
+ 4. If the header contains checksums, make sure you update these before writing the header or HDU to an output.
 
 For example:
 
 ```java
+  // Some image HDU whose header we want to reuse for another...
   ImageHDU origHDU = ...
   
   // 1. create the new image HDU with the new data
@@ -1279,7 +1272,7 @@ For example:
   newHeader.addValue(Standard.CRPIXn.n(1), ...);
   ...
   
-  // 4. Update checksums
+  // 4. Update checksums, if necessary
   newHDU.setChecksum();
 ```
 
