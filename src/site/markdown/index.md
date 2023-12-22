@@ -14,6 +14,7 @@ Updated for 1.19.0 and/or later 1.x releases.
 
  - [Related Links](#related-links)
  - [Introduction](#introduction)
+ - [Compatibility with prior releases](#deprecated-methods)
  - [Reading FITS files](#reading-fits-files)
  - [Writing FITS data](#writing-data)
  - [Modifying existing FITS files](#modifying-existing-files)
@@ -46,7 +47,6 @@ You may find the following links useful:
 
  - [FITS data (HDU) types](#fits-data-type)
  - [FITS vs Java data types](#fits-vs-java-data-types)
- - [Deprecated methods](#deprecated-methods)
 
 FITS (Flexible Image Transport System) is a binary format devised and primarily used for the storage of astronomical 
 datasets. A FITS file is composed of one or more *Header-Data Units* (HDUs). Each HDU consists of a *header*, which 
@@ -141,15 +141,25 @@ FITS.
 
 
 <a name="deprecated-methods"></a>
-### Deprecated methods
+## Compatibility with prior releases
+
+We strive to maintain backwards compatibility with earlier releases of this library, and to an overwhelming extent 
+we continue to deliver on that. However, in a few corner cases we had no choice but to change the API and behavior 
+slightly to fix bugs, nagging inconsistencies, or non-compliance to the FITS standard. Such changes are generally 
+rare, and typically affect some of the more obscure features of the library -- often classes and methods that probably 
+should never have been expossed to users in the first place. Most typical users (and use cases) of this library will 
+never see a difference, but some of the more advanced users may find changes that would require some small 
+modifications to their application in how they use __nom-tam-fits__ with recent releases. If you find yourself to be 
+one of the ones affected, please know that the decision to 'break' previously existing functionality was not taken 
+lightly, and was done only because it was inavoidable on order to make the library function better overall.
 
 Starting with version __1.16__, we started deprecating some of the older API, either because methods were 
 ill-conceived, confusing, or generaly unsafe to use; or because they were internals of the library that should never 
 have been exposed to users in the first place. Rest assured, the deprecations do not cripple the intended 
 functionality of the library. If anything they make the library less confusing and safer to use. The Javadoc API 
-documentation mentions alternatives for the methods that were deprecated, when appropriate. And, if nothing else 
+documentation mentions alternatives for the methods that were deprecated, as appropriate. And, if nothing else 
 works, you should still be able to compile your old code with deprecations enabled in the compiler options. Rest 
-assured, all deprecated methods, no matter how ill-conceived or dangerous they may be, will be supported in all
+assured, all deprecated methods, no matter how ill-conceived or dodgy they may be, will be supported in all
 future releases prior to version __2.0__ of the library.
 
 
@@ -1243,15 +1253,15 @@ Sometimes we want to create a new HDU based on an existing HDU, such as a croppe
 we want to reuse much of the information contained in the original header. The best way to go about it is via the 
 following steps:
 
- 1. Start by creating the new HDU from the data it will hold. This HDU will have the correct mandatory data 
- description (type and size) in its header.
+ 1. Start by creating the new HDU from the data it will hold. It ensures that the new HDU will have the correct 
+ essential data description (type and size) in its header.
 
- 2. Merge distict header entries from the original HDU into the header of the new HDU, using the 
- `Header.mergeDistinct(Header source)` method. This will copy over all header entries without overriding the proper 
- mandatory data description.
+ 2. Merge distict (non-clonflicting) header entries from the original HDU into the header of the new HDU, using the 
+ `Header.mergeDistinct(Header source)` method. It will migrate the header entries from the original HDU to the new one 
+ without overriding the proper essential data description.
 
- 3. Update the header entries as necessary, such as WCS etc. Pay attention to removing obsoleted entries also, such as 
- descriptions of table columns that no longer exist in the new data.
+ 3. Update the header entries as necessary, such as WCS etc, in the new HDU. Pay attention to removing obsoleted entries 
+ also, such as descriptions of table columns that no longer exist in the new data.
  
  4. If the header contains checksums, make sure you update these before writing the header or HDU to an output.
 
