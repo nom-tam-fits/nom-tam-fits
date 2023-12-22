@@ -52,8 +52,8 @@
           documentation.
       </action>
       <action type="update" dev="attipaci">
-          CompressedImageHDU.getTileHDU() now updated CRPIXna keywords also in alternate
-          coordinate systems for the selected cutout image.
+          CompressedImageHDU.getTileHDU() now updates CRPIXna keywords also in the 
+          alternate coordinate systems (if present) for the selected cutout image.
       </action>
       <action type="update" dev="attipaci">
           Change from unmaintained findbugs build dep to spotbugs successor.
