@@ -304,7 +304,7 @@
 <a class="jxr_linenumber" name="L296" href="#L296">296</a> <em class="jxr_javadoccomment">     * @see                             #fromBinaryTableHDU(BinaryTableHDU, int, String...)</em>
 <a class="jxr_linenumber" name="L297" href="#L297">297</a> <em class="jxr_javadoccomment">     */</em>
 <a class="jxr_linenumber" name="L298" href="#L298">298</a>     <strong class="jxr_keyword">public</strong> Object getColumnData(<strong class="jxr_keyword">int</strong> col) <strong class="jxr_keyword">throws</strong> FitsException, IllegalArgumentException {
-<a class="jxr_linenumber" name="L299" href="#L299">299</a>         <strong class="jxr_keyword">return</strong> getColumnData(col, 0, getNRows());
+<a class="jxr_linenumber" name="L299" href="#L299">299</a>         <strong class="jxr_keyword">return</strong> getColumnData(col, 0, getTileCount());
 <a class="jxr_linenumber" name="L300" href="#L300">300</a>     }
 <a class="jxr_linenumber" name="L301" href="#L301">301</a> 
 <a class="jxr_linenumber" name="L302" href="#L302">302</a>     <em class="jxr_javadoccomment">/**</em>

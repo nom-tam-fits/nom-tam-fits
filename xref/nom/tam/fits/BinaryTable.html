@@ -1391,7 +1391,7 @@
 <a class="jxr_linenumber" name="L1383" href="#L1383">1383</a> <em class="jxr_javadoccomment">     *                               &lt;code&gt;int&lt;/code&gt; elements is stored as &lt;code&gt;int[1]&lt;/code&gt; at its</em>
 <a class="jxr_linenumber" name="L1384" href="#L1384">1384</a> <em class="jxr_javadoccomment">     *                               &lt;code&gt;[row][col]&lt;/code&gt; index.</em>
 <a class="jxr_linenumber" name="L1385" href="#L1385">1385</a> <em class="jxr_javadoccomment">     *</em>
-<a class="jxr_linenumber" name="L1386" href="#L1386">1386</a> <em class="jxr_javadoccomment">     * @throws     FitsException if the data for the columns could not be used as columns</em>
+<a class="jxr_linenumber" name="L1386" href="#L1386">1386</a> <em class="jxr_javadoccomment">     * @throws     FitsException if the argument is not a suitable representation of data in rows.</em>
 <a class="jxr_linenumber" name="L1387" href="#L1387">1387</a> <em class="jxr_javadoccomment">     * </em>
 <a class="jxr_linenumber" name="L1388" href="#L1388">1388</a> <em class="jxr_javadoccomment">     * @deprecated               The constructor is ambiguous, use {@link #fromRowMajor(Object[][])} instead. You can</em>
 <a class="jxr_linenumber" name="L1389" href="#L1389">1389</a> <em class="jxr_javadoccomment">     *                               have a column-major array that has no scalar primitives which would also be an</em>
@@ -1405,7 +1405,7 @@
 <a class="jxr_linenumber" name="L1397" href="#L1397">1397</a>     }
 <a class="jxr_linenumber" name="L1398" href="#L1398">1398</a> 
 <a class="jxr_linenumber" name="L1399" href="#L1399">1399</a>     <em class="jxr_javadoccomment">/**</em>
-<a class="jxr_linenumber" name="L1400" href="#L1400">1400</a> <em class="jxr_javadoccomment">     * Create a binary table from existing table data int row-major format. That is the first array index is the row</em>
+<a class="jxr_linenumber" name="L1400" href="#L1400">1400</a> <em class="jxr_javadoccomment">     * Creates a binary table from existing table data in row-major format. That is the first array index is the row</em>
 <a class="jxr_linenumber" name="L1401" href="#L1401">1401</a> <em class="jxr_javadoccomment">     * index while the second array index is the column index;</em>
 <a class="jxr_linenumber" name="L1402" href="#L1402">1402</a> <em class="jxr_javadoccomment">     *</em>
 <a class="jxr_linenumber" name="L1403" href="#L1403">1403</a> <em class="jxr_javadoccomment">     * @param  table         Row / column array. Scalars elements are wrapped in arrays of 1, s.t. a single</em>
@@ -1417,7 +1417,7 @@
 <a class="jxr_linenumber" name="L1409" href="#L1409">1409</a> <em class="jxr_javadoccomment">     *                           effect on the other object. If it is important to decouple them, you can use a</em>
 <a class="jxr_linenumber" name="L1410" href="#L1410">1410</a> <em class="jxr_javadoccomment">     *                           {@link ArrayFuncs#deepClone(Object)} of your original data as an argument.</em>
 <a class="jxr_linenumber" name="L1411" href="#L1411">1411</a> <em class="jxr_javadoccomment">     *</em>
-<a class="jxr_linenumber" name="L1412" href="#L1412">1412</a> <em class="jxr_javadoccomment">     * @throws FitsException if the data for the columns could not be used as columns</em>
+<a class="jxr_linenumber" name="L1412" href="#L1412">1412</a> <em class="jxr_javadoccomment">     * @throws FitsException if the argument is not a suitable representation of FITS data in rows.</em>
 <a class="jxr_linenumber" name="L1413" href="#L1413">1413</a> <em class="jxr_javadoccomment">     * </em>
 <a class="jxr_linenumber" name="L1414" href="#L1414">1414</a> <em class="jxr_javadoccomment">     * @see                  #fromColumnMajor(Object[])</em>
 <a class="jxr_linenumber" name="L1415" href="#L1415">1415</a> <em class="jxr_javadoccomment">     * </em>
@@ -1453,7 +1453,7 @@
 <a class="jxr_linenumber" name="L1445" href="#L1445">1445</a>     }
 <a class="jxr_linenumber" name="L1446" href="#L1446">1446</a> 
 <a class="jxr_linenumber" name="L1447" href="#L1447">1447</a>     <em class="jxr_javadoccomment">/**</em>
-<a class="jxr_linenumber" name="L1448" href="#L1448">1448</a> <em class="jxr_javadoccomment">     * Create a binary table from existing data in column-major format order.</em>
+<a class="jxr_linenumber" name="L1448" href="#L1448">1448</a> <em class="jxr_javadoccomment">     * Creates a binary table from existing data in column-major format order.</em>
 <a class="jxr_linenumber" name="L1449" href="#L1449">1449</a> <em class="jxr_javadoccomment">     *</em>
 <a class="jxr_linenumber" name="L1450" href="#L1450">1450</a> <em class="jxr_javadoccomment">     * @param  columns       array of columns. The data for scalar entries is a primive array. For all else, the entry</em>
 <a class="jxr_linenumber" name="L1451" href="#L1451">1451</a> <em class="jxr_javadoccomment">     *                           is an &lt;code&gt;Object[]&lt;/code&gt; array of sorts.</em>
@@ -1463,7 +1463,7 @@
 <a class="jxr_linenumber" name="L1455" href="#L1455">1455</a> <em class="jxr_javadoccomment">     *                           effect on the other object. If it is important to decouple them, you can use a</em>
 <a class="jxr_linenumber" name="L1456" href="#L1456">1456</a> <em class="jxr_javadoccomment">     *                           {@link ArrayFuncs#deepClone(Object)} of your original data as an argument.</em>
 <a class="jxr_linenumber" name="L1457" href="#L1457">1457</a> <em class="jxr_javadoccomment">     * </em>
-<a class="jxr_linenumber" name="L1458" href="#L1458">1458</a> <em class="jxr_javadoccomment">     * @throws FitsException if the data for the columns could not be used as columns</em>
+<a class="jxr_linenumber" name="L1458" href="#L1458">1458</a> <em class="jxr_javadoccomment">     * @throws FitsException if the argument is not a suitable representation of FITS data in rows.</em>
 <a class="jxr_linenumber" name="L1459" href="#L1459">1459</a> <em class="jxr_javadoccomment">     * </em>
 <a class="jxr_linenumber" name="L1460" href="#L1460">1460</a> <em class="jxr_javadoccomment">     * @see                  #fromColumnMajor(Object[])</em>
 <a class="jxr_linenumber" name="L1461" href="#L1461">1461</a> <em class="jxr_javadoccomment">     * </em>

@@ -615,8 +615,8 @@
 <a class="jxr_linenumber" name="L607" href="#L607">607</a> 
 <a class="jxr_linenumber" name="L608" href="#L608">608</a>     <em class="jxr_javadoccomment">/**</em>
 <a class="jxr_linenumber" name="L609" href="#L609">609</a> <em class="jxr_javadoccomment">     * Checks the HDU's integrity, using the recorded CHECKSUM and/or DATASUM keywords if present. In addition of</em>
-<a class="jxr_linenumber" name="L610" href="#L610">610</a> <em class="jxr_javadoccomment">     * performing the same checks as {@link #verifyDataIntegrity()}, it also checks the overall checksum of the HDU is</em>
-<a class="jxr_linenumber" name="L611" href="#L611">611</a> <em class="jxr_javadoccomment">     * possible. When the header has a CHECKSUM keyword stored, the overall checksum of the HDU overall must be</em>
+<a class="jxr_linenumber" name="L610" href="#L610">610</a> <em class="jxr_javadoccomment">     * performing the same checks as {@link #verifyDataIntegrity()}, it also checks the overall checksum of the HDU if</em>
+<a class="jxr_linenumber" name="L611" href="#L611">611</a> <em class="jxr_javadoccomment">     * possible. When the header has a CHECKSUM keyword stored, the overall checksum of the HDU must be</em>
 <a class="jxr_linenumber" name="L612" href="#L612">612</a> <em class="jxr_javadoccomment">     * &lt;code&gt;0xffffffff&lt;/code&gt;, that is -1 in 32-bit representation.</em>
 <a class="jxr_linenumber" name="L613" href="#L613">613</a> <em class="jxr_javadoccomment">     * </em>
 <a class="jxr_linenumber" name="L614" href="#L614">614</a> <em class="jxr_javadoccomment">     * @return               &lt;code&gt;true&lt;/code&gt; if the HDU has a CHECKSUM and/or DATASUM record to check against,</em>
