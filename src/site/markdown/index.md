@@ -143,17 +143,24 @@ FITS.
 <a name="deprecated-methods"></a>
 ## Compatibility with prior releases
 
-We strive to maintain backwards compatibility with earlier releases of this library, and to an overwhelming extent 
-we continue to deliver on that. However, in a few corner cases we had no choice but to change the API and behavior 
+We strive to maintain API compatibility with earlier releases of this library, and to an overwhelming extent 
+we continue to deliver on that. However, in a few corner cases we had no choice but to change the API and/or behavior 
 slightly to fix bugs, nagging inconsistencies, or non-compliance to the FITS standard. Such changes are generally 
 rare, and typically affect some of the more obscure features of the library -- often classes and methods that probably 
 should never have been expossed to users in the first place. Most typical users (and use cases) of this library will 
 never see a difference, but some of the more advanced users may find changes that would require some small 
 modifications to their application in how they use __nom-tam-fits__ with recent releases. If you find yourself to be 
 one of the ones affected, please know that the decision to 'break' previously existing functionality was not taken 
-lightly, and was done only because it was inavoidable on order to make the library function better overall.
+lightly, and was done only because it was inavoidable in order to make the library function better overall.
 
-Starting with version __1.16__, we started deprecating some of the older API, either because methods were 
+Note, that as of __1.16__ we offer only API compatibility to earlier releases, but not binary compatilibility. In 
+practical terms it means that you cannot simply drop-in replace you JAR file, from say version __1.15.2__ to 
+__1.19.0__. Instead, you are expected to (re)compile your application with the JAR version of this library that you 
+intend to use. This is because some method signatures have changed to use an encompassing argument type, such as 
+`Number` instead of the previously separate `byte`, `short`, `int`, `long`, `float`, `double` methods. (These 
+otherwise changes harmless API changes improve consistency across numerical types.)
+
+Starting with version __1.16__, we also started deprecating some of the older API, either because methods were 
 ill-conceived, confusing, or generaly unsafe to use; or because they were internals of the library that should never 
 have been exposed to users in the first place. Rest assured, the deprecations do not cripple the intended 
 functionality of the library. If anything they make the library less confusing and safer to use. The Javadoc API 
@@ -161,6 +168,8 @@ documentation mentions alternatives for the methods that were deprecated, as app
 works, you should still be able to compile your old code with deprecations enabled in the compiler options. Rest 
 assured, all deprecated methods, no matter how ill-conceived or dodgy they may be, will be supported in all
 future releases prior to version __2.0__ of the library.
+
+
 
 
 -----------------------------------------------------------------------------
