@@ -158,7 +158,7 @@ practical terms it means that you cannot simply drop-in replace you JAR file, fr
 __1.19.0__. Instead, you are expected to (re)compile your application with the JAR version of this library that you 
 intend to use. This is because some method signatures have changed to use an encompassing argument type, such as 
 `Number` instead of the previously separate `byte`, `short`, `int`, `long`, `float`, `double` methods. (These 
-otherwise changes harmless API changes improve consistency across numerical types.)
+otherwise harmless API changes improve consistency across numerical types.)
 
 Starting with version __1.16__, we also started deprecating some of the older API, either because methods were 
 ill-conceived, confusing, or generaly unsafe to use; or because they were internals of the library that should never 
