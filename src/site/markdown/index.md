@@ -8,7 +8,11 @@
 
 # Getting started with the _nom.tam.fits_ library.
 
-Updated for 1.19.0 and/or later 1.x releases.
+__nom.tam.fits__ is an efficient 100% pure Java library for reading, writing, and modifying
+[FITS files](https://fits.gsfc.nasa.gov/fits_standard.html). The library owes its origins to Tom A. McGlynn 
+(hence the _nom.tam_ prefix) at NASA Goddard Space Flight Center.
+
+This document has been updated for 1.19.0 and/or later 1.x releases.
 
 ## Table of Contents
 
@@ -1265,11 +1269,11 @@ following steps:
  1. Start by creating the new HDU from the data it will hold. It ensures that the new HDU will have the correct 
  essential data description (type and size) in its header.
 
- 2. Merge distict (non-clonflicting) header entries from the original HDU into the header of the new HDU, using the 
- `Header.mergeDistinct(Header source)` method. It will migrate the header entries from the original HDU to the new one 
+ 2. Merge distict (non-conflicting) header entries from the original HDU into the header of the new HDU, using the 
+ `Header.mergeDistinct(Header source)` method. It will migrate the header entries from the original HDU to the new one, 
  without overriding the proper essential data description.
 
- 3. Update the header entries as necessary, such as WCS etc, in the new HDU. Pay attention to removing obsoleted entries 
+ 3. Update the header entries as necessary, such as WCS, in the new HDU. Pay attention to removing obsoleted entries 
  also, such as descriptions of table columns that no longer exist in the new data.
  
  4. If the header contains checksums, make sure you update these before writing the header or HDU to an output.
@@ -1410,16 +1414,16 @@ can create a table with these (or add them to an existing table with a matching 
    
    BinaryTable tab = new BinaryTable();
    
-   table.addColumn(timeStamps);
+   table.addColumn(timestamps);
    table.addColumn(spectra);
 ```
   
 There are just a few rules to keep in mind when constructing tables in this way:
   
   - All columns added this way must contain the same number of elements (number of rows).
-  - In column data, scalars entries are simply elements in a 1D primitive array, in which each element contains
-    the scalar value for a given row. (I.e. unlike in the row-major table format required to create entire tables at 
-    once, we do not have to wrap scalar values in self-contained arrays of 1)
+  - In column data, scalars entries are simply elements in a 1D primitive array (e.g. `double[]`), in which each 
+    element (e.g. a `double`) is the scalar value for a given row. (I.e. unlike in the row-major table format required 
+    to create entire tables at once, we do not have to wrap scalar values in self-contained arrays of 1)
   - Other than the above, the same rules apply as for creating HDUs row-by-row (above).
   - If setting complex columns with arrays of `float[2]` or `double[2]` (the old way), you will want to call 
     `setComplexColumn(int)` afterwards for that column to make sure they are labeled properly in the FITS header 
@@ -1443,10 +1447,11 @@ before calling `write()` on the encompassing HDU.
    
 While the library also supports ASCII tables for storing a more limited assortment of _scalar_ entries, binary tables 
 should always be your choice for storing table data. ASCII tables are far less capable overall. And while they may be 
-readable from a console without needing any tools to display, there is no compelling reason for using ASCII tables 
+readable from a console without the need for other tools, there is no compelling reason for using ASCII tables 
 today. Binary tables are simply better, because they:
 
- - Support more data types (such as arrays, logical, and complex values).
+ - Support arrays (including multidim and variable-length).
+ - Support more data types (such as logical, and complex values).
  - Offer additional flexibility, such as variable sized and multi-dimensional array entries.
  - Take up less space on disk
  - Can be compressed to an even smaller size
