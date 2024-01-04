@@ -879,7 +879,7 @@ originally.)
 <a name="fits-headers"></a>
 ## FITS headers
 
- - [What is in a FITS header](#what-is-in-a-fits-header) 
+ - [What is in a header](#what-is-in-a-header) 
  - [Accessing header values](#accessing-header-values)
  - [Standard and conventional FITS header keywords](#standard-and-conventional-fits-header-keywords)
  - [Hierarchical and long header keywords](#hierarch-style-header-keywords)
@@ -890,8 +890,8 @@ originally.)
  - [Migrating header data between HDUs](#migrating-headers)
 
 
-<a name="what-is-in-a-fits-header"></a>
-### What is in a FITS header
+<a name="what-is-in-a-header"></a>
+### What is in a header
 
 The FITS header consists of a list of 80-byte records -- key/value pairs and comments -- and serves two distinct 
 roles. 
@@ -923,18 +923,18 @@ shared space of the same FITS header. It is therefore best practice for all crea
  - use comment cards to make headers self explanatory for other humans who may try to make sense of them.
 
 
-<a name="accessing-header-values"></a>
-### Accessing header values
+<a name="accessing-header-entries"></a>
+### Accessing header entries
 
-There are two basic ways to access data contained in FITS headers:
+There are two basic ways to access data contained in FITS headers: direct (by keyword) or ordered (iterator-based).
 
 
-#### A. Direct access header values
+#### A. Direct access header entries
 
-If you are not concerned with the internal ordering of the header you can get values from the header using the 
-`get...Value()` methods. To set values use the `addValue()` method.
+You can retrieve header values by their associated keyword from the header using the `get...Value()` methods. To set 
+values use one of the `addValue(...)` methods. These methods define a standard dictionary lookup access. 
 
-To find out the telescope used you might want to know the value of the `TELESCOP` key.
+For example, to find out the telescope used to obtain the data you might want to know the value of the `TELESCOP` key.
 
 ```java
   Fits f = new Fits("img.fits")
@@ -948,8 +948,8 @@ Or if we want to know the RA of the center of the image:
   double ra = header.getDoubleValue("CRVAL1"); 
 ```
 
-[The FITS WCS convention is being used here. For typical images the central coordinates are in the pair of keys, 
-`CRVAL1` and `CRVAL2` and our example assumes an equatorial coordinate system.]
+[Note, that the FITS WCS convention is being used here. For typical images the central coordinates are in the pair of 
+keys, `CRVAL1` and `CRVAL2` and our example assumes an equatorial coordinate system.]
 
 Perhaps we have a FITS file where the RA was not originally known, or for which we’ve just found a correction.
 
@@ -962,28 +962,31 @@ To add or change the RA value, we use:
 The second argument is our new RA. The third is a comment field that will also be written to that header in the space
 remaining.
 
-If the header already contained the `CRVAL1` keyword that existing record will be updated _in situ_ with the newly
-defined value and comment.
-
-Alternatively, adding _new_ header entries this way will add/insert a new card in the header at the current _mark_ 
-position. By default, this means adding entries at the end of the header, unless you have called `Header.findCard(...)` 
-earlier to change the _mark_ position at which new card are added to that immediately before the specified other card, 
-or you called `Header.seekHead()` to add new cards at the start of the header. Note, that you can always restore the 
-default behavior of adding new entries at the end by calling `Header.seekTail()`, if desired. (This may be a little
-confusing at first, but the origins of the position marking behavior go a long way back in the history of the library, 
-and therefore we shall stick to it until at least version __2.0__.)
+The `addValue(...)` methods will update existing matching header entries _in situ_ with the newly defined value and 
+comment, while it will add/insert _new_ header entries at the current _mark_ position. By default, this means that new 
+entries will be appended at the end of the header, unless you have called `Header.findCard(...)` earlier to change the 
+_mark_ position at which new card are added to that immediately before the specified other card, or else you called 
+`Header.seekHead()` to add new cards at the start of the (non-essential) header space. Note, that you can always 
+restore the default behavior of adding new entries at the end by calling `Header.seekTail()`, if desired. (This may be 
+a little confusing at first, but the origins of the position marking behavior go a long way back in the history of the 
+library, and therefore it is here to stay until at least version __2.0__.)
 
 Note, that the _mark_ position also applies to adding comment cards via `Header.insertComment()`, `.insertHistory()`, 
-`insertCommentStyle()` and related methods. 
+`.insertCommentStyle()` and related methods. 
 
-Thus, direct access methods do allow for surgical header editing when combined with `Header.findCard()`, `.seekHead()`
-and/or `.seekTail()` methods.
+Thus, direct access methods do allow for surgically controlling header order while editing when combined with 
+`Header.findCard()`, `.seekHead()` and/or `.seekTail()` methods.
+
+Table HDUs may contain several standard kewords to describe individual columns, and the `TableHDU.setColumnMeta(...)` 
+methods can help you add these optional descriptor for your data while keeping column-specific keywords organized into
+header blocks around the mandatory `TFORMn` keywords. Note the the `.setColumnMeta(...)` methods also change the mark
+position at which new header entries are added.
 
 
 #### B. Iterator-based access of header values
 
-For ordered access of header values you can use the `nom.tam.util.Cursor` interface to step through header cards in the 
-order they appear.
+For ordered access of header values you can also use the `nom.tam.util.Cursor` interface to step through header cards 
+in the order they are stored in the FITS.
 
 ```java
   Cursor<String, HeaderCard> c = header.iterator();
@@ -991,14 +994,13 @@ order they appear.
 
 returns a cursor object that points to the first card of the header. We have `prev()` and `next()` methods that allow 
 us to move through the header, and `add()` and `delete()` methods to add/remove records at specific locations. The 
-methods of `HeaderCard` allow us to manipulate the entire current card as a single string or broken down into keyword, 
-value and comment components. Comment and history header cards can be created and added to the header, e.g. via
-`HeaderCard.createCommentCard()` or `.createHistoryCard()` respectively.
+methods of `HeaderCard` allow us to manipulate the contents of the current card as desired. Comment and history header 
+cards can be created and added to the header, e.g. via `HeaderCard.createCommentCard()` or `.createHistoryCard()` 
+respectively.
 
-For tables much of the metadata describes individual columns. There are a set of `setTableMeta()` methods that can be 
-used to help organize these as the user wishes.
-
-
+Note that the iterator-based approach is the only way to extract comment cards from a header (if you are so inclined), 
+since these are by design not unique (i.e. dictionary lookup will not work for these -- as comment cards are by 
+definition not key/value pairs).
 
 
 
