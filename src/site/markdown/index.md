@@ -893,23 +893,24 @@ originally.)
 <a name="what-is-in-a-header"></a>
 ### What is in a header
 
-The FITS header consists of a list of 80-byte records -- key/value pairs and comments -- and serves two distinct 
+The FITS header consists of a list of 80-byte records -- key/value pairs and comments -- and serves three distinct 
 roles. 
 
-First, the header provides a description of the data segment with a set of reserved FITS keywords and associated 
-values. Some of this _standard_ data description is _essential_, with a set of keywords that _must_ appear in a 
-specific order at the start (or end) of all FITS headers (these are `SIMPLE` or `XTENSION`, `BITPIX`, `NAXIS`, 
-`NAXISn`, `PCOUNT`, `GCOUNT`, `GROUPS`, `THEAP`, `TFIELDS`, `TTYPEn`, `TBCOLn`, `TFORMn`, and `END`). The library 
-automatically takes care of adding these header entries in the required order, and users of the library should never 
-attempt to set or modify the essential data description manually. FITS reserves further _standard_ header keywords to 
-provide optional standardized descriptions of the data, such as HDU names or versions, physical units, World 
-Coordinate Systems (WCS), column names etc. It is up to the user to familiarize themselves with the standard keywords 
-and their usage, and use these to describe their data as fully as appropriate, or to extract information from 3rd 
-party FITS headers.
+ 1. First and foremost, the header provides an essential description of the data segment with a set of reserved FITS 
+    keywords and associated values. Some of this _standard_ data description is _essential_, with a set of keywords 
+    that _must_ appear in a specific order at the start (or end) of all FITS headers (these are `SIMPLE` or 
+    `XTENSION`, `BITPIX`, `NAXIS`, `NAXISn`, `PCOUNT`, `GCOUNT`, `GROUPS`, `THEAP`, `TFIELDS`, `TTYPEn`, `TBCOLn`, 
+    `TFORMn`, and `END`). The library automatically takes care of adding these header entries in the required order, 
+    and users of the library should never attempt to set or modify the essential data description manually.
+    
+ 2. Secondly, FITS reserves further _standard_ header keywords to provide optional standardized descriptions of the 
+    data, such as HDU names or versions, physical units, World Coordinate Systems (WCS), column names etc. It is up to 
+    the user to familiarize themselves with the standard keywords and their usage, and use these to describe their 
+    data as fully as appropriate, or to extract information from 3rd party FITS headers.
 
-The second role of the FITS header is to store a user _dictionary_ of key/value pairs, and comments. The user's can
-store whatever further information they like (within the constraints of what FITS allows) as long as they stay clear
-of the set of reserved FITS keywords described in the [FITS standard](https://fits.gsfc.nasa.gov/fits_standard.html).
+ 3. Finally, the FITS headers may also store a user _dictionary_ of key/value pairs, and comments. The users may store 
+    whatever further information they like (within the constraints of what FITS allows) as long as they stay clear of 
+    the set of reserved FITS keywords described in the [FITS standard](https://fits.gsfc.nasa.gov/fits_standard.html).
 
 It is a bit unfortunate that FITS was designed to mix the essential, standard, and user-defined keys in a single 
 shared space of the same FITS header. It is therefore best practice for all creators of FITS files to:
