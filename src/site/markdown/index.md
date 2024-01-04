@@ -893,17 +893,17 @@ originally.)
 <a name="what-is-in-a-header"></a>
 ### What is in a header
 
-The FITS header consists of a list of 80-byte records -- key/value pairs and comments -- and serves three distinct 
-roles. 
+The FITS header consists of a list of 80-byte records at the beginning of each HDU. They contain key/value pairs and 
+comments and serves three distinct purposes:
 
- 1. First and foremost, the header provides an essential description of the data segment with a set of reserved FITS 
-    keywords and associated values. Some of this _standard_ data description is _essential_, with a set of keywords 
-    that _must_ appear in a specific order at the start (or end) of all FITS headers (these are `SIMPLE` or 
-    `XTENSION`, `BITPIX`, `NAXIS`, `NAXISn`, `PCOUNT`, `GCOUNT`, `GROUPS`, `THEAP`, `TFIELDS`, `TTYPEn`, `TBCOLn`, 
-    `TFORMn`, and `END`). The library automatically takes care of adding these header entries in the required order, 
-    and users of the library should never attempt to set or modify the essential data description manually.
+ 1. First and foremost, the header provides an _essential_ description of the HDU's data segment with a set of 
+    reserved FITS keywords and associated values. These _must_ appear in a specific place and order order in all FITS 
+    headers. The keywords `SIMPLE` or `XTENSION`, `BITPIX`, `NAXIS`, `NAXISn`, `PCOUNT`, `GCOUNT`, `GROUPS`, `THEAP`, 
+    `TFIELDS`, `TTYPEn`, `TBCOLn`, `TFORMn`, and `END` form the set of essential keywords. The library automatically 
+    takes care of adding these header entries in the required order, and users of the library should never attempt to 
+    set or modify the essential data description manually.
     
- 2. Secondly, FITS reserves further _standard_ header keywords to provide optional standardized descriptions of the 
+ 2. Secondly, FITS reserves further _standard_ header keywords to provide _optional_ standardized descriptions of the 
     data, such as HDU names or versions, physical units, World Coordinate Systems (WCS), column names etc. It is up to 
     the user to familiarize themselves with the standard keywords and their usage, and use these to describe their 
     data as fully as appropriate, or to extract information from 3rd party FITS headers.
@@ -915,13 +915,13 @@ roles.
 It is a bit unfortunate that FITS was designed to mix the essential, standard, and user-defined keys in a single 
 shared space of the same FITS header. It is therefore best practice for all creators of FITS files to:
  
- - avoid setting or modifying the essential data description (which could result in corrupted or unreadable FITS 
+ - Avoid setting or modifying the essential data description (which could result in corrupted or unreadable FITS 
    files). Let the library handle these appropriately.
- - keep standard (reserved) keywords separated from user-defined keywords in the header. It is recommended for users 
+ - Keep standard (reserved) keywords separated from user-defined keywords in the header. It is recommended for users 
    to add the standardized header entries first, and then add any/all user-defined entries after. It is also 
    recommended that users add a comment line (or lines) in-between to cleary demark where the standard FITS 
    description ends, and where the user dictionary begins after.
- - use comment cards to make headers self explanatory for other humans who may try to make sense of them.
+ - Use comment cards to make headers self explanatory for other humans who may try to make sense of them.
 
 
 <a name="accessing-header-entries"></a>
@@ -932,10 +932,12 @@ There are two basic ways to access data contained in FITS headers: direct (by ke
 
 #### A. Direct access header entries
 
-You can retrieve header values by their associated keyword from the header using the `get...Value()` methods. To set 
-values use one of the `addValue(...)` methods. These methods define a standard dictionary lookup access. 
+You can retrieve keyed values by their associated keyword from the header using the `get...Value()` methods. To set 
+values use one of the `addValue(...)` methods. These methods define a standard dictionary lookup access to key/value
+pair stored in the FITS headers. 
 
-For example, to find out the telescope used to obtain the data you might want to know the value of the `TELESCOP` key.
+For example, to find out the telescope or observatory was used to obtain the data you might want to know the value of 
+the `TELESCOP` key.
 
 ```java
   Fits f = new Fits("img.fits")
@@ -943,25 +945,25 @@ For example, to find out the telescope used to obtain the data you might want to
   String telescope =  header.getStringValue("TELESCOP");
 ```
 
-Or if we want to know the RA of the center of the image:
+Or if we want to know the right ascension (R.A.) coordinate of the reference position in the image:
 
 ```java
   double ra = header.getDoubleValue("CRVAL1"); 
 ```
 
-[Note, that the FITS WCS convention is being used here. For typical images the central coordinates are in the pair of 
+[Note, that the FITS WCS convention is being used here. For typical images the reference coordinates are in the pair of 
 keys, `CRVAL1` and `CRVAL2` and our example assumes an equatorial coordinate system.]
 
-Perhaps we have a FITS file where the RA was not originally known, or for which we’ve just found a correction.
+Perhaps we have a FITS file where the R.A. was not originally known, or for which we’ve just found a correction.
 
 To add or change the RA value, we use:
 
 ```java
-  header.addValue("CRVAL1", updatedRA, "Corrected RA");
+  header.addValue("CRVAL1", updatedRADeg, "[deg] Corrected R.A. coordinate");
 ```
 
-The second argument is our new RA. The third is a comment field that will also be written to that header in the space
-remaining.
+The second argument is our new right ascension coordinate (in degrees). The third is a comment field that will also be 
+written to that header in the space remaining.
 
 The `addValue(...)` methods will update existing matching header entries _in situ_ with the newly defined value and 
 comment, while it will add/insert _new_ header entries at the current _mark_ position. By default, this means that new 
