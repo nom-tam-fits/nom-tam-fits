@@ -86,7 +86,7 @@ The current FITS standard (4.0) recognizes the following principal HDU / data ty
  types.
 
  3. **ASCII Table** (_discouraged_) is a simpler, less capable table format with support for storing singular 
- primitive numerical types, and Strings only -- in human-readable format. You should probably use the more flexible 
+ primitive numerical types, and strings only -- in human-readable format. You should probably use the more flexible 
  (and more compact) binary tables instead for your application, and reserve use of ASCII tables for reading data that 
  may still contain these.
 
@@ -922,7 +922,7 @@ Or if we want to know the RA of the center of the image:
 
 Perhaps we have a FITS file where the RA was not originally known, or for which we’ve just found a correction.
 
-To add or change the RA we use:
+To add or change the RA value, we use:
 
 ```java
   header.addValue("CRVAL1", updatedRA, "Corrected RA");
@@ -931,11 +931,28 @@ To add or change the RA we use:
 The second argument is our new RA. The third is a comment field that will also be written to that header in the space
 remaining.
 
+If the header already contained the `CRVAL1` keyword that existing record will be updated _in situ_ with the newly
+defined value and comment.
+
+Alternatively, adding _new_ header entries this way will add/insert a new card in the header at the current _mark_ 
+position. By default, this means adding entries at the end of the header, unless you have called `Header.findCard(...)` 
+earlier to change the _mark_ position at which new card are added to that immediately before the specified other card, 
+or you called `Header.seekHead()` to add new cards at the start of the header. Note, that you can always restore the 
+default behavior of adding new entries at the end by calling `Header.seekTail()`, if desired. (This may be a little
+confusing at first, but the origins of the position marking behavior go a long way back in the history of the library, 
+and therefore we shall stick to it until at least version __2.0__.)
+
+Note, that the _mark_ position also applies to adding comment cards via `Header.insertComment()`, `.insertHistory()`, 
+`insertCommentStyle()` and related methods. 
+
+Thus, direct access methods do allow for surgical header editing when combined with `Header.findCard()`, `.seekHead()`
+and/or `.seekTail()` methods.
+
 
 #### B. Iterator-based access of header values
 
-If you are writing files, it’s often desirable to organize the header and include copious amount of comments and history 
-records. This is most easily accomplished using a header Cursor and using the `HeaderCard`.
+For ordered access of header values you can use the `nom.tam.util.Cursor` interface to step through header cards in the 
+order they appear.
 
 ```java
   Cursor<String, HeaderCard> c = header.iterator();
@@ -1318,8 +1335,10 @@ For example:
 
 As of version __1.18__ building tables one row at a time is both easy and efficient -- and may be the least confusing 
 way to get tables done right. (In prior releases, adding rows to existing tables was painfully slow, and much more 
-constrained). You may want to start by defining the types and dimensions of the data (or whether variable-length) that 
-will be contained in each table column:
+constrained). 
+
+You may want to start by defining the types and dimensions of the data (or whether variable-length) that will be 
+contained in each table column:
 
 ```java
    BinaryTable table = new BinaryTable();
@@ -1614,7 +1633,7 @@ class to decompress only the selected image area. As of version __1.18__, this i
 ### Table compression
 
 Table compression is also supported in nom-tam-fits from version __1.15__, and more completely since
-__1.18__. When compressing a table 'tiles' that are sets of contiguous rows within a column. The compression 
+__1.18__. When compressing a table, the 'tiles' are sets of contiguous rows within a column. The compression 
 algorithms are the same as the ones provided for image compression. Default compression is `GZIP_2`. 
 (In principle, every column could use a different algorithm.)
 
@@ -1727,7 +1746,7 @@ forget to:
 
 4. __Pull Request__. Once you feel your work can be integrated, create a pull request from your fork/branch. You can 
 do that easily from the github page of your fork/branch directly. In the pull request, provide a concise description 
-of what you added or changed. Your pull request will be rewied. You may get some feedback at this point, and maybe 
+of what you added or changed. Your pull request will be reviwed. You may get some feedback at this point, and maybe 
 there will be discussions about possible improvements or regressions etc. It's a good thing too, and your changes will 
 likely end up with added polish as a result. You can be all the more proud of it in the end!
 
