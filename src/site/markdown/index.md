@@ -879,6 +879,7 @@ originally.)
 <a name="fits-headers"></a>
 ## FITS headers
 
+ - [What is in a FITS header](#what-is-in-a-fits-header) 
  - [Accessing header values](#accessing-header-values)
  - [Standard and conventional FITS header keywords](#standard-and-conventional-fits-header-keywords)
  - [Hierarchical and long header keywords](#hierarch-style-header-keywords)
@@ -888,8 +889,38 @@ originally.)
  - [Standard compliance](#standard-compliance)
  - [Migrating header data between HDUs](#migrating-headers)
 
-The metadata that describes the FITS files contents is stored in the headers of each HDU.
 
+<a name="what-is-in-a-fits-header"></a>
+### What is in a FITS header
+
+The FITS header consists of a list of 80-byte records -- key/value pairs and comments -- and serves two distinct 
+roles. 
+
+First, the header provides a description of the data segment with a set of reserved FITS keywords and associated 
+values. Some of this _standard_ data description is _essential_, with a set of keywords that _must_ appear in a 
+specific order at the start (or end) of all FITS headers (these are `SIMPLE` or `XTENSION`, `BITPIX`, `NAXIS`, 
+`NAXISn`, `PCOUNT`, `GCOUNT`, `GROUPS`, `THEAP`, `TFIELDS`, `TTYPEn`, `TBCOLn`, `TFORMn`, and `END`). The library 
+automatically takes care of adding these header entries in the required order, and users of the library should never 
+attempt to set or modify the essential data description manually. FITS reserves further _standard_ header keywords to 
+provide optional standardized descriptions of the data, such as HDU names or versions, physical units, World 
+Coordinate Systems (WCS), column names etc. It is up to the user to familiarize themselves with the standard keywords 
+and their usage, and use these to describe their data as fully as appropriate, or to extract information from 3rd 
+party FITS headers.
+
+The second role of the FITS header is to store a user _dictionary_ of key/value pairs, and comments. The user's can
+store whatever further information they like (within the constraints of what FITS allows) as long as they stay clear
+of the set of reserved FITS keywords described in the [FITS standard](https://fits.gsfc.nasa.gov/fits_standard.html).
+
+It is a bit unfortunate that FITS was designed to mix the essential, standard, and user-defined keys in a single 
+shared space of the same FITS header. It is therefore best practice for all creators of FITS files to:
+ 
+ - avoid setting or modifying the essential data description (which could result in corrupted or unreadable FITS 
+   files). Let the library handle these appropriately.
+ - keep standard (reserved) keywords separated from user-defined keywords in the header. It is recommended for users 
+   to add the standardized header entries first, and then add any/all user-defined entries after. It is also 
+   recommended that users add a comment line (or lines) in-between to cleary demark where the standard FITS 
+   description ends, and where the user dictionary begins after.
+ - use comment cards to make headers self explanatory for other humans who may try to make sense of them.
 
 
 <a name="accessing-header-values"></a>
