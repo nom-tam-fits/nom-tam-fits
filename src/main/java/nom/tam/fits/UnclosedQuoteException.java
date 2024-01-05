@@ -39,7 +39,7 @@ package nom.tam.fits;
  * @see FitsFactory#setAllowHeaderRepairs(boolean)
  * @since 1.16
  */
-public class UnclosedQuoteException extends FitsException {
+public class UnclosedQuoteException extends HeaderCardException {
 
     /**
      *

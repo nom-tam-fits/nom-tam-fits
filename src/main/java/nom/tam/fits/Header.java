@@ -2518,7 +2518,7 @@ public class Header implements FitsElement {
     }
 
     /**
-     * Find the end of a set of keywords describing a column or axis (or anything else terminated by an index. This
+     * Find the end of a set of keywords describing a column or axis (or anything else terminated by an index). This
      * routine leaves the header ready to add keywords after any existing keywords with the index specified. The user
      * should specify a prefix to a keyword that is guaranteed to be present.
      */
