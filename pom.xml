@@ -228,7 +228,7 @@
       <plugin>
         <groupId>org.apache.maven.plugins</groupId>
         <artifactId>maven-compiler-plugin</artifactId>
-        <version>3.12.0</version>
+        <version>3.12.1</version>
         <configuration>
           <release>8</release>
         </configuration>
@@ -343,7 +343,7 @@
           <dependency>
             <groupId>com.puppycrawl.tools</groupId>
             <artifactId>checkstyle</artifactId>
-            <version>10.12.6</version>
+            <version>10.12.7</version>
           </dependency>
         </dependencies>
         <executions>
@@ -580,7 +580,7 @@
       <plugin>
         <groupId>org.apache.maven.plugins</groupId>
         <artifactId>maven-jxr-plugin</artifactId>
-        <version>3.3.1</version>
+        <version>3.3.2</version>
         <configuration>
           <linkJavadoc>true</linkJavadoc>
         </configuration>
