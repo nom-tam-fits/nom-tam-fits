@@ -894,7 +894,7 @@ originally.)
 ### What is in a header
 
 The FITS header consists of a list of 80-byte records at the beginning of each HDU. They contain key/value pairs and 
-comments and serves three distinct purposes:
+comments and serve three distinct purposes:
 
  1. First and foremost, the header provides an _essential_ description of the HDU's data segment with a set of 
     reserved FITS keywords and associated values. These _must_ appear in a specific place and order order in all FITS 
@@ -903,25 +903,36 @@ comments and serves three distinct purposes:
     takes care of adding these header entries in the required order, and users of the library should never attempt to 
     set or modify the essential data description manually.
     
- 2. Secondly, FITS reserves further _standard_ header keywords to provide _optional_ standardized descriptions of the 
-    data, such as HDU names or versions, physical units, World Coordinate Systems (WCS), column names etc. It is up to 
-    the user to familiarize themselves with the standard keywords and their usage, and use these to describe their 
-    data as fully as appropriate, or to extract information from 3rd party FITS headers.
+ 2. [FITS standard](https://fits.gsfc.nasa.gov/fits_standard.html) also reserves further header keywords to provide 
+    _optional_ standardized descriptions of the data, such as HDU names or versions, physical units, World Coordinate 
+    Systems (WCS), column names etc. It is up to the user to familiarize themselves with the _standard_ keywords and 
+    their usage, and use these to describe their data as fully as appropriate, or to extract information from 3rd 
+    party FITS headers.
 
- 3. Finally, the FITS headers may also store a user _dictionary_ of key/value pairs, and comments. The users may store 
-    whatever further information they like (within the constraints of what FITS allows) as long as they stay clear of 
-    the set of reserved FITS keywords described in the [FITS standard](https://fits.gsfc.nasa.gov/fits_standard.html).
+ 3. Finally, the FITS headers may also store a user _dictionary_ of key/value pairs and/or comments. You may store 
+    whatever further information you like (within the constraints of what FITS allows) as long as they stay clear of 
+    the set of reserved FITS keywords mentioned above.
 
 It is a bit unfortunate that FITS was designed to mix the essential, standard, and user-defined keys in a single 
 shared space of the same FITS header. It is therefore best practice for all creators of FITS files to:
  
  - Avoid setting or modifying the essential data description (which could result in corrupted or unreadable FITS 
    files). Let the library handle these appropriately.
- - Keep standard (reserved) keywords separated from user-defined keywords in the header. It is recommended for users 
-   to add the standardized header entries first, and then add any/all user-defined entries after. It is also 
-   recommended that users add a comment line (or lines) in-between to cleary demark where the standard FITS 
-   description ends, and where the user dictionary begins after.
- - Use comment cards to make headers self explanatory for other humans who may try to make sense of them.
+ - Keep standard (reserved) keywords separated from user-defined keywords in the header if possible. It is 
+   recommended for users to add the standardized header entries first, and then add any/all user-defined entries 
+   after. It is also recommended that users add a comment line (or lines) in-between to cleary demark where the 
+   standard FITS description ends, and where the user dictionary begins after.
+ - Use comment cards to make headers self explanatory and easy for other humans to understand and digest. The header
+   is also in a sense the self-comntained documentation of your FITS data.
+
+Note, that originally, header keywords were limited to a maximum of 8 upper-case alphanumeric characters (`A` to `Z`
+and `0` to `9`), plus hyphens (`-`) and underscores (`_`), and string values may not exceed 68 characters in length. 
+However, the [HIERARCH keyword convention](https://fits.gsfc.nasa.gov/registry/hierarch_keyword.html) allows for 
+longer and/or more extended set of keywords that may utilize the ASCII range from `0x21` through `0x7E`, and which
+can contain hierarchies. And string values of arbitrary length may be added to headers via the 
+[CONTINUE longkeyword convention](https://fits.gsfc.nasa.gov/registry/continue_keyword.html), which is now an 
+integral part of the standard as of FITS version 4.0. See more about these conventions, and their usage within this 
+library, further below.
 
 
 <a name="accessing-header-entries"></a>
@@ -956,7 +967,7 @@ keys, `CRVAL1` and `CRVAL2` and our example assumes an equatorial coordinate sys
 
 Perhaps we have a FITS file where the R.A. was not originally known, or for which we’ve just found a correction.
 
-To add or change the RA value, we use:
+To add or change the R.A. coordinate value, we use:
 
 ```java
   header.addValue("CRVAL1", updatedRADeg, "[deg] Corrected R.A. coordinate");
@@ -977,8 +988,8 @@ library, and therefore it is here to stay until at least version __2.0__.)
 Note, that the _mark_ position also applies to adding comment cards via `Header.insertComment()`, `.insertHistory()`, 
 `.insertCommentStyle()` and related methods. 
 
-Thus, direct access methods do allow for surgically controlling header order while editing when combined with 
-`Header.findCard()`, `.seekHead()` and/or `.seekTail()` methods.
+Thus, `Header.findCard()`, `.seekHead()` and/or `.seekTail()` methods will allow you to surgically control header order 
+when adding new cards to headers using the direct access methods.
 
 Table HDUs may contain several standard kewords to describe individual columns, and the `TableHDU.setColumnMeta(...)` 
 methods can help you add these optional descriptor for your data while keeping column-specific keywords organized into
@@ -995,15 +1006,14 @@ in the order they are stored in the FITS.
   Cursor<String, HeaderCard> c = header.iterator();
 ```
 
-returns a cursor object that points to the first card of the header. We have `prev()` and `next()` methods that allow 
-us to move through the header, and `add()` and `delete()` methods to add/remove records at specific locations. The 
+returns a cursor object that points to the first card of the header. The `Cursor.prev()` and `.next()` methods allow 
+to step through the header, and `.add()` and `.delete()` methods can add/remove records at specific locations. The 
 methods of `HeaderCard` allow us to manipulate the contents of the current card as desired. Comment and history header 
 cards can be created and added to the header, e.g. via `HeaderCard.createCommentCard()` or `.createHistoryCard()` 
 respectively.
 
 Note that the iterator-based approach is the only way to extract comment cards from a header (if you are so inclined), 
-since these are by design not unique (i.e. dictionary lookup will not work for these -- as comment cards are by 
-definition not key/value pairs).
+since dictionary lookup will not work for these -- as comment cards are by definition not key/value pairs).
 
 
 
@@ -1063,10 +1073,11 @@ For best practice, try rely on the standard keywords, or those in registered con
 <a name="hierarch-style-header-keywords"></a>
 ### Hierarchical and long header keywords
 
-The standard FITS header keywords consists of maximum 8 upper case letters or numbers or dashes (`-`) and 
-underscores (`_`). The [HIERARCH keyword convention](https://fits.gsfc.nasa.gov/registry/hierarch_keyword.html) 
-allows for longer and/or hierarchical sets of FITS keywords, and/or for supporting a somewhat more extended set of 
-ASCII characters (in the range of `0x20` to `0x7E`).  Support for HIERARCH-style keywords is enabled by default as of 
+The standard FITS header keywords consists of maximum 8 upper case letters (`A` through `Z`) or numbers (`0` through `9`) 
+and/or dashes (`-`) and underscores (`_`). The 
+[HIERARCH keyword convention](https://fits.gsfc.nasa.gov/registry/hierarch_keyword.html) allows for storing longer and/or 
+hierarchical sets of FITS keywords, and can support a somewhat more extended set of ASCII characters (in the range of 
+`0x21` to `0x7E`).  Support for HIERARCH-style keywords is enabled by default as of 
 version __1.16__. HIERARCH support can be toggled if needed via `FitsFactory.setUseHierarch(boolean)`. By default, 
 HIERARCH keywords are converted to upper-case only (__cfitsio__ convention), so
 
