@@ -100,7 +100,7 @@ public enum Synonyms {
     WCSna(WCS.WCSna, WCS.TWCSna),
 
     /**
-     * Equivalent keywords for array column axis parameter names. The shorter form may be required for column indices
+     * Equivalent keywords for array column axis string parameters. The shorter form may be required for column indices
      * &gt;99 with alternate coordinate systems.
      * 
      * @since 1.19
