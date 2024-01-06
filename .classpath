@@ -21,7 +21,6 @@
 	<classpathentry kind="lib" path="/usr/share/java/junit5/junit-platform-commons.jar"/>
 	<classpathentry kind="lib" path="/usr/share/java/junit5/junit-platform-engine.jar"/>
 	<classpathentry kind="lib" path="/usr/share/java/junit5/junit-platform-launcher.jar"/>
-	<classpathentry kind="lib" path="/usr/share/java/junit5/junit-platform-reporting.jar"/>
 	<classpathentry kind="lib" path="/usr/share/java/junit5/junit-platform-runner.jar"/>
 	<classpathentry kind="lib" path="/usr/share/java/junit5/junit-platform-suite-api.jar"/>
 	<classpathentry kind="lib" path="/usr/share/java/junit5/junit-platform-suite-commons.jar"/>

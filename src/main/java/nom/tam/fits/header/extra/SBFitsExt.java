@@ -193,7 +193,6 @@ public enum SBFitsExt implements IFitsHeader {
      */
     YPIXSZ(VALUE.REAL, "Pixel height in microns");
 
-    @SuppressWarnings("CPD-START")
     private final IFitsHeader key;
 
     SBFitsExt(String key, VALUE valueType, String comment) {
@@ -205,34 +204,8 @@ public enum SBFitsExt implements IFitsHeader {
     }
 
     @Override
-    public String comment() {
-        return key.comment();
-    }
-
-    @Override
-    public HDU hdu() {
-        return key.hdu();
-    }
-
-    @Override
-    public String key() {
-        return key.key();
-    }
-
-    @Override
-    public IFitsHeader n(int... number) {
-        return key.n(number);
-    }
-
-    @Override
-    public SOURCE status() {
-        return key.status();
-    }
-
-    @Override
-    @SuppressWarnings("CPD-END")
-    public VALUE valueType() {
-        return key.valueType();
+    public final IFitsHeader impl() {
+        return key;
     }
 
 }

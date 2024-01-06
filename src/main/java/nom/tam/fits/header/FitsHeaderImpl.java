@@ -81,6 +81,11 @@ public class FitsHeaderImpl implements IFitsHeader, Serializable {
     }
 
     @Override
+    public final IFitsHeader impl() {
+        return this;
+    }
+
+    @Override
     public String comment() {
         return comment;
     }
@@ -96,16 +101,6 @@ public class FitsHeaderImpl implements IFitsHeader, Serializable {
     }
 
     @Override
-    public IFitsHeader n(int... numbers) {
-        StringBuffer headerName = new StringBuffer(key);
-        for (int number : numbers) {
-            int indexOfN = headerName.indexOf("n");
-            headerName.replace(indexOfN, indexOfN + 1, Integer.toString(number));
-        }
-        return new FitsHeaderImpl(headerName.toString(), status, hdu, valueType, comment);
-    }
-
-    @Override
     public SOURCE status() {
         return status;
     }
@@ -116,9 +111,9 @@ public class FitsHeaderImpl implements IFitsHeader, Serializable {
     }
 
     /**
-     * Checks if a keywords is known to be a comment-style keyword. That is, it checks if the <code>key</code> argument
-     * matches any {@link IFitsHeader} constructed via this implementation with a <code>valueType</code> argument that
-     * was <code>null</code>, or if the key is empty.
+     * (<i>for internal use</i>) Checks if a keywords is known to be a comment-style keyword. That is, it checks if the
+     * <code>key</code> argument matches any {@link IFitsHeader} constructed via this implementation with a
+     * <code>valueType</code> argument that was <code>null</code>, or if the key is empty.
      *
      * @param  key the keyword to check
      *

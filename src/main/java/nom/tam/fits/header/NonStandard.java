@@ -76,7 +76,6 @@ public enum NonStandard implements IFitsHeader {
      */
     INHERIT(SOURCE.STScI, HDU.EXTENSION, VALUE.LOGICAL, "denotes the INHERIT keyword convention");
 
-    @SuppressWarnings("CPD-START")
     private final IFitsHeader key;
 
     /**
@@ -94,33 +93,7 @@ public enum NonStandard implements IFitsHeader {
     }
 
     @Override
-    public String comment() {
-        return key.comment();
-    }
-
-    @Override
-    public HDU hdu() {
-        return key.hdu();
-    }
-
-    @Override
-    public String key() {
-        return key.key();
-    }
-
-    @Override
-    public IFitsHeader n(int... number) {
-        return key.n(number);
-    }
-
-    @Override
-    public SOURCE status() {
-        return key.status();
-    }
-
-    @Override
-    @SuppressWarnings("CPD-END")
-    public VALUE valueType() {
-        return key.valueType();
+    public final IFitsHeader impl() {
+        return key;
     }
 }

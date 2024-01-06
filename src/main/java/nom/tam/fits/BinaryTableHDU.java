@@ -94,6 +94,7 @@ public class BinaryTableHDU extends TableHDU<BinaryTable> {
      *                           happen, but we keep the possibility open to it).
      * 
      * @see                  BinaryTable#toHDU()
+     * 
      * @since                1.18
      */
     public static BinaryTableHDU wrap(BinaryTable tab) throws FitsException {

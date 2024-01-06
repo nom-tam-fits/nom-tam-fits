@@ -214,7 +214,6 @@ public enum STScIExt implements IFitsHeader {
      */
     MJD_OBS("MJD-OBS", "MJD of exposure start");
 
-    @SuppressWarnings("CPD-START")
     private final IFitsHeader key;
 
     STScIExt(String comment) {
@@ -226,33 +225,8 @@ public enum STScIExt implements IFitsHeader {
     }
 
     @Override
-    public String comment() {
-        return key.comment();
+    public final IFitsHeader impl() {
+        return key;
     }
 
-    @Override
-    public HDU hdu() {
-        return key.hdu();
-    }
-
-    @Override
-    public String key() {
-        return key.key();
-    }
-
-    @Override
-    public IFitsHeader n(int... number) {
-        return key.n(number);
-    }
-
-    @Override
-    public SOURCE status() {
-        return key.status();
-    }
-
-    @Override
-    @SuppressWarnings("CPD-END")
-    public VALUE valueType() {
-        return key.valueType();
-    }
 }

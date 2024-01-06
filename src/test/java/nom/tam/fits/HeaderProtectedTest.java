@@ -116,6 +116,15 @@ public class HeaderProtectedTest {
         Assert.assertEquals(1, GenericKey.getN(Standard.TFORMn.n(1).key()));
         Assert.assertEquals(12, GenericKey.getN(Standard.TFORMn.n(12).key()));
         Assert.assertEquals(123, GenericKey.getN(Standard.TFORMn.n(123).key()));
-        Assert.assertEquals(1234, GenericKey.getN(Standard.TFORMn.n(1234).key()));
+    }
+
+    @Test(expected = IllegalArgumentException.class)
+    public void testKeyIndexNegative() {
+        Standard.TFORMn.n(-1);
+    }
+
+    @Test(expected = IllegalArgumentException.class)
+    public void testKeyIndexTooLarge() {
+        Standard.TFORMn.n(1000);
     }
 }

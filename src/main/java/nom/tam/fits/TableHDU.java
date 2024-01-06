@@ -661,7 +661,7 @@ public abstract class TableHDU<T extends AbstractTableData> extends BasicHDU<T> 
     }
 
     /**
-     * Set the cursor in the header to point either before the TFORM value or after the column metadat
+     * Set the cursor in the header to point either before the TFORM value or after the column metadata
      *
      * @param      col   The 0-based index of the column
      * @param      after True if the cursor should be placed after the existing column metadata or false if the cursor

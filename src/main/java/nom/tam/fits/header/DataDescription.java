@@ -187,7 +187,6 @@ public enum DataDescription implements IFitsHeader {
      */
     TSORTKEY(SOURCE.HEASARC, HDU.TABLE, VALUE.STRING, "defines the sort order of a table");
 
-    @SuppressWarnings("CPD-START")
     private final IFitsHeader key;
 
     DataDescription(IFitsHeader.SOURCE status, HDU hdu, VALUE valueType, String comment) {
@@ -195,33 +194,7 @@ public enum DataDescription implements IFitsHeader {
     }
 
     @Override
-    public String comment() {
-        return key.comment();
-    }
-
-    @Override
-    public HDU hdu() {
-        return key.hdu();
-    }
-
-    @Override
-    public String key() {
-        return key.key();
-    }
-
-    @Override
-    public IFitsHeader n(int... number) {
-        return key.n(number);
-    }
-
-    @Override
-    public SOURCE status() {
-        return key.status();
-    }
-
-    @Override
-    @SuppressWarnings("CPD-END")
-    public VALUE valueType() {
-        return key.valueType();
+    public final IFitsHeader impl() {
+        return key;
     }
 }

@@ -187,14 +187,17 @@ public enum Standard implements IFitsHeader {
      * The date on which the HDU was created, in the format specified in the FITS Standard. The old date format was
      * 'yy/mm/dd' and may be used only for dates from 1900 through 1999. the new Y2K compliant date format is
      * 'yyyy-mm-dd' or 'yyyy-mm-ddTHH:MM:SS[.sss]'.
+     * 
+     * @see DateTime#DATE
      */
-
     DATE(SOURCE.RESERVED, HDU.ANY, VALUE.STRING, "date of file creation"),
 
     /**
      * The date of the observation, in the format specified in the FITS Standard. The old date format was 'yy/mm/dd' and
      * may be used only for dates from 1900 through 1999. The new Y2K compliant date format is 'yyyy-mm-dd' or
      * 'yyyy-mm-ddTHH:MM:SS[.sss]'.
+     * 
+     * @see DateTime#DATE_OBS
      */
     DATE_OBS("DATE-OBS", SOURCE.RESERVED, HDU.ANY, VALUE.STRING, "date of the observation"),
 
@@ -209,13 +212,16 @@ public enum Standard implements IFitsHeader {
      * EPOCH keyword and thus it shall not be used in FITS files created after the adoption of the standard; rather, the
      * EQUINOX keyword shall be used.
      *
-     * @deprecated use {@link #EQUINOX} in stead
+     * @deprecated use {@link #EQUINOX} instead
      */
-    @Deprecated
     EPOCH(SOURCE.RESERVED, HDU.ANY, VALUE.REAL, "equinox of celestial coordinate system"),
+
     /**
      * The value field shall contain a floating point number giving the equinox in years for the celestial coordinate
-     * system in which positions are expressed.
+     * system in which positions are expressed. This version of the keyword does not support alternative coordinate
+     * systems
+     * 
+     * @see WCS#EQUINOX
      */
     EQUINOX(SOURCE.RESERVED, HDU.ANY, VALUE.REAL, "equinox of celestial coordinate system"),
 
@@ -382,16 +388,18 @@ public enum Standard implements IFitsHeader {
     PZEROn(SOURCE.RESERVED, HDU.GROUPS, VALUE.REAL, "parameter scaling zero point"),
 
     /**
-     * Coordinate reference frame of major/minor axes.If absent the default value is 'FK5'.
+     * Coordinate reference frame of major/minor axes.If absent the default value is 'FK5'. This version of the keyword
+     * does not support alternative coordinate systems.
+     * 
+     * @see WCS#RADESYS
      */
     RADESYS(SOURCE.RESERVED, HDU.ANY, VALUE.STRING, "Coordinate reference frame of major/minor axes."),
 
     /**
-     * Coordinate reference frame of major/minor axes. use RADESYS instead.
+     * Coordinate reference frame of major/minor axes (generic).
      *
-     * @deprecated use {@link #RADESYS} instead.
+     * @deprecated Deprecated in the current FITS satndard, use {@link WCS#RADESYS} instead.
      */
-    @Deprecated
     RADECSYS(SOURCE.RESERVED, HDU.ANY, VALUE.STRING, "Coordinate reference frame of major/minor axes."),
 
     /**
@@ -531,6 +539,8 @@ public enum Standard implements IFitsHeader {
      */
     XTENSION(SOURCE.MANDATORY, HDU.EXTENSION, VALUE.STRING, "marks beginning of new HDU");
 
+    private static final ThreadLocal<Class<?>> COMMENT_CONTEXT = new ThreadLocal<>();
+
     /**
      * A shorthand for {@link #NAXISn}<code>.n(1)</code>, that is the regular dimension along the first, fastest FITS
      * array index (this is the same as the last dimension of Java arrays).
@@ -542,8 +552,6 @@ public enum Standard implements IFitsHeader {
      * array index (this is the same as the one before the last dimension of Java arrays).
      */
     public static final IFitsHeader NAXIS2 = NAXISn.n(2);
-
-    private static final ThreadLocal<Class<?>> COMMENT_CONTEXT = new ThreadLocal<>();
 
     /**
      * The value of the XTENSION keword in case of a binary table.
@@ -562,7 +570,6 @@ public enum Standard implements IFitsHeader {
 
     private final StandardCommentReplacement[] commentReplacements;
 
-    @SuppressWarnings("CPD-START")
     private final IFitsHeader key;
 
     Standard(SOURCE status, HDU hdu, VALUE valueType, String comment, StandardCommentReplacement... replacements) {
@@ -574,6 +581,11 @@ public enum Standard implements IFitsHeader {
             StandardCommentReplacement... replacements) {
         key = new FitsHeaderImpl(headerName == null ? name() : headerName, status, hdu, valueType, comment);
         commentReplacements = replacements;
+    }
+
+    @Override
+    public final IFitsHeader impl() {
+        return key;
     }
 
     @Override
@@ -590,32 +602,6 @@ public enum Standard implements IFitsHeader {
             }
         }
         return key.comment();
-    }
-
-    @Override
-    public HDU hdu() {
-        return key.hdu();
-    }
-
-    @Override
-    public String key() {
-        return key.key();
-    }
-
-    @Override
-    public IFitsHeader n(int... number) {
-        return key.n(number);
-    }
-
-    @Override
-    public SOURCE status() {
-        return key.status();
-    }
-
-    @Override
-    @SuppressWarnings("CPD-END")
-    public VALUE valueType() {
-        return key.valueType();
     }
 
     /**

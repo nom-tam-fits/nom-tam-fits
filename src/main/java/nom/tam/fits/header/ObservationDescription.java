@@ -183,7 +183,6 @@ public enum ObservationDescription implements IFitsHeader {
      */
     SUNANGLE(SOURCE.STScI, HDU.ANY, VALUE.REAL, "angle between the observation and the sun");
 
-    @SuppressWarnings("CPD-START")
     private final IFitsHeader key;
 
     ObservationDescription(IFitsHeader.SOURCE status, HDU hdu, VALUE valueType, String comment) {
@@ -191,33 +190,7 @@ public enum ObservationDescription implements IFitsHeader {
     }
 
     @Override
-    public String comment() {
-        return key.comment();
-    }
-
-    @Override
-    public HDU hdu() {
-        return key.hdu();
-    }
-
-    @Override
-    public String key() {
-        return key.key();
-    }
-
-    @Override
-    public IFitsHeader n(int... number) {
-        return key.n(number);
-    }
-
-    @Override
-    public SOURCE status() {
-        return key.status();
-    }
-
-    @Override
-    @SuppressWarnings("CPD-END")
-    public VALUE valueType() {
-        return key.valueType();
+    public final IFitsHeader impl() {
+        return key;
     }
 }

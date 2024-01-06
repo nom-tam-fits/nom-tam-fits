@@ -38,23 +38,82 @@ import nom.tam.fits.header.extra.STScIExt;
  */
 
 /**
- * This enum wil try to list synonyms inside or over different dictionaries. So please use always the higest level
+ * This enum wil try to list synonyms inside or over different dictionaries. So please use always the highest level
  * keyword you can find.
  *
  * @author Richard van Nieuwenhoven
  */
+@SuppressWarnings("deprecation")
 public enum Synonyms {
 
     /** EQUINOX is now preferred over the old EPOCH */
-    @SuppressWarnings("deprecation")
+
     EQUINOX(Standard.EQUINOX, Standard.EPOCH),
 
     /** TIMESYS appears in multiple conventions */
     TIMESYS(NOAOExt.TIMESYS, STScIExt.TIMESYS),
 
-    /** RADESYS is no preferred over the old RADECSYS */
-    @SuppressWarnings("deprecation")
+    /** RADESYS is now preferred over the old RADECSYS */
     RADESYS(Standard.RADESYS, Standard.RADECSYS),
+
+    /** RESTFRQ is now preferred over the old RESTFREQ */
+    RESTFRQ(WCS.RESTFRQ, WCS.RESTFREQ),
+
+    /**
+     * Equivalent keywords for column coordinate transformation matrix (PC convention). The shorter form may be required
+     * for column indices &gt;99 with alternate coordinate systems.
+     * 
+     * @since 1.19
+     */
+    TPn_n(WCS.TPn_n, WCS.TPCn_n),
+
+    /**
+     * Equivalent keywords for column coordinate transformation matrix (CD convention). The shorter form may be required
+     * for column indices &gt;99 with alternate coordinate systems.
+     * 
+     * @since 1.19
+     */
+    TCn_n(WCS.TCn_n, WCS.TCDn_n),
+
+    /**
+     * Equivalent keywords for column parameter names. The shorter form may be required for column indices &gt;99 with
+     * alternate coordinate systems.
+     * 
+     * @since 1.19
+     */
+    TSn_n(WCS.TVn_n, WCS.TPSn_n),
+
+    /**
+     * Equivalent keywords for column parameter values. The shorter form may be required for column indices &gt;99 with
+     * alternate coordinate systems.
+     * 
+     * @since 1.19
+     */
+    TVn_n(WCS.TVn_n, WCS.TPVn_n),
+
+    /**
+     * Equivalent keywords for column coordinate transformation matrix (PC convention). The shorter form may be required
+     * for column indices &gt;99 with alternate coordinate systems.
+     * 
+     * @since 1.19
+     */
+    WCSn(WCS.WCSn, WCS.TWCSn),
+
+    /**
+     * Equivalent keywords for array column axis parameter names. The shorter form may be required for column indices
+     * &gt;99 with alternate coordinate systems.
+     * 
+     * @since 1.19
+     */
+    nSn_n(WCS.nSn_n, WCS.nPSn_n),
+
+    /**
+     * Equivalent keywords for array column axis parameter values. The shorter form may be required for column indices
+     * &gt;99 with alternate coordinate systems.
+     * 
+     * @since 1.19
+     */
+    nVn_n(WCS.nVn_n, WCS.nPVn_n),
 
     /** DARKTIME appears in multiple conventions */
     DARKTIME(NOAOExt.DARKTIME, SBFitsExt.DARKTIME);
