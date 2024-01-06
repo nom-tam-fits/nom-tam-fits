@@ -189,28 +189,28 @@ public enum DateTime implements IFitsHeader {
      * 
      * @since 1.19
      */
-    BEPOCH(SOURCE.RESERVED, HDU.ANY, VALUE.REAL, "Besselian epoch of observation"),
+    BEPOCH(SOURCE.RESERVED, HDU.ANY, VALUE.REAL, "[Ba] Besselian epoch of observation"),
 
     /**
      * [yr] Julian epoch of observation
      * 
      * @since 1.19
      */
-    JEPOCH(SOURCE.RESERVED, HDU.ANY, VALUE.REAL, "Julian epoch of observation"),
+    JEPOCH(SOURCE.RESERVED, HDU.ANY, VALUE.REAL, "[yr] Julian epoch of observation"),
 
     /**
-     * [s] Net exposure duration
+     * Net exposure duration
      * 
      * @since 1.19
      */
-    XPOSURE(SOURCE.RESERVED, HDU.ANY, VALUE.REAL, "[s] Net exposure duration"),
+    XPOSURE(SOURCE.RESERVED, HDU.ANY, VALUE.REAL, "Net exposure duration"),
 
     /**
-     * [s] Wall clock exposure duration
+     * Wall clock exposure duration
      * 
      * @since 1.19
      */
-    TELAPSE(SOURCE.RESERVED, HDU.ANY, VALUE.REAL, "[s] Wall-clock exposure duration"),
+    TELAPSE(SOURCE.RESERVED, HDU.ANY, VALUE.REAL, "Wall-clock exposure duration"),
 
     /**
      * Time reference system name
@@ -220,14 +220,14 @@ public enum DateTime implements IFitsHeader {
     TIMESYS(SOURCE.RESERVED, HDU.ANY, VALUE.STRING, "Time scale"),
 
     /**
-     * Time reference position, e.g. 'TOPOCENT'
+     * Time reference position
      * 
      * @since 1.19
      */
     TREFPOS(SOURCE.RESERVED, HDU.ANY, VALUE.STRING, "Time reference position"),
 
     /**
-     * Time reference position for given column index, e.g. 'TOPOCENT'
+     * Time reference position for given column index.
      * 
      * @since 1.19
      */
@@ -262,32 +262,32 @@ public enum DateTime implements IFitsHeader {
     TIMEUNIT(SOURCE.RESERVED, HDU.ANY, VALUE.STRING, "Time unit"),
 
     /**
-     * [s] Precision time offset
+     * Precision time offset
      * 
      * @since 1.19
      */
-    TIMEOFFS(SOURCE.RESERVED, HDU.ANY, VALUE.REAL, "[s] Time offset"),
+    TIMEOFFS(SOURCE.RESERVED, HDU.ANY, VALUE.REAL, "Time offset"),
 
     /**
-     * [s] Systematic time error
+     * Systematic time error
      * 
      * @since 1.19
      */
-    TIMESYER(SOURCE.RESERVED, HDU.ANY, VALUE.REAL, "[s] Systematic time error"),
+    TIMESYER(SOURCE.RESERVED, HDU.ANY, VALUE.REAL, "Systematic time error"),
 
     /**
-     * [s] Random time error
+     * Random time error
      * 
      * @since 1.19
      */
-    TIMERDER(SOURCE.RESERVED, HDU.ANY, VALUE.REAL, "[s] Random time error"),
+    TIMERDER(SOURCE.RESERVED, HDU.ANY, VALUE.REAL, "Random time error"),
 
     /**
-     * [s] Time resolution
+     * Time resolution
      * 
      * @since 1.19
      */
-    TIMEDEL(SOURCE.RESERVED, HDU.ANY, VALUE.REAL, "[s] Time resolution"),
+    TIMEDEL(SOURCE.RESERVED, HDU.ANY, VALUE.REAL, "Time resolution"),
 
     /**
      * Time location within pixel, between 0.0 and 1.0 (default 0.5).

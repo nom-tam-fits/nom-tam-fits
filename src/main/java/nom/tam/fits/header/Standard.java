@@ -221,7 +221,7 @@ public enum Standard implements IFitsHeader {
      * system in which positions are expressed. This version of the keyword does not support alternative coordinate
      * systems
      * 
-     * @see WCS#EQUINOX
+     * @see WCS#EQUINOXa
      */
     EQUINOX(SOURCE.RESERVED, HDU.ANY, VALUE.REAL, "equinox of celestial coordinate system"),
 
@@ -391,16 +391,32 @@ public enum Standard implements IFitsHeader {
      * Coordinate reference frame of major/minor axes.If absent the default value is 'FK5'. This version of the keyword
      * does not support alternative coordinate systems.
      * 
-     * @see WCS#RADESYS
+     * @see WCS#RADESYSa
      */
     RADESYS(SOURCE.RESERVED, HDU.ANY, VALUE.STRING, "Coordinate reference frame of major/minor axes."),
 
     /**
      * Coordinate reference frame of major/minor axes (generic).
      *
-     * @deprecated Deprecated in the current FITS satndard, use {@link WCS#RADESYS} instead.
+     * @deprecated Deprecated in the current FITS satndard, use {@link #RADESYS} instead.
      */
     RADECSYS(SOURCE.RESERVED, HDU.ANY, VALUE.STRING, "Coordinate reference frame of major/minor axes."),
+
+    /**
+     * [Hz] Rest frequency of observed spectral line.
+     * 
+     * @since 1.19
+     * 
+     * @see   WCS#RESTFRQa
+     */
+    RESTFRQ(SOURCE.RESERVED, HDU.IMAGE, VALUE.REAL, "[Hz] Line rest frequency"),
+
+    /**
+     * [Hz] Rest frequeny of observed spectral line (generic).
+     *
+     * @deprecated Deprecated in the current FITS standard, use {@link #RESTFRQ} instead.
+     */
+    RESTFREQ(SOURCE.RESERVED, HDU.ANY, VALUE.REAL, "[Hz] Observed line rest frequency"),
 
     /**
      * The value field shall contain a character string citing a reference where the data associated with the key are

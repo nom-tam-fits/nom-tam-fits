@@ -137,30 +137,28 @@ public class HeaderProtectedTest {
 
     @Test(expected = IllegalArgumentException.class)
     public void testWCSInvalidAlt1() {
-        WCS.WCSNAME.alt((char) ('A' - 1));
+        WCS.WCSNAMEa.alt((char) ('A' - 1));
     }
 
     @Test(expected = IllegalArgumentException.class)
     public void testWCSInvalidAlt2() {
-        WCS.WCSNAME.alt((char) ('Z' + 1));
+        WCS.WCSNAMEa.alt((char) ('Z' + 1));
     }
 
     @Test(expected = IllegalStateException.class)
     public void testWCSLongIndex() {
-        WCS.TCDn_n.n(999, 999);
+        WCS.TCDn_na.n(999, 999);
     }
 
     @Test(expected = UnsupportedOperationException.class)
     public void testWCSNoAlt() {
-        Assert.assertFalse(WCS.OBSGEO_X.supportsAlt());
         WCS.OBSGEO_X.alt('A');
     }
 
     @Test
     public void testWCSAlt() {
-        Assert.assertTrue(WCS.WCSNAME.supportsAlt());
-        Assert.assertEquals("WCSNAMEA", WCS.WCSNAME.alt('A').key());
-        Assert.assertEquals("WCSNAMEZ", WCS.WCSNAME.alt('Z').key());
+        Assert.assertEquals("WCSNAMEA", WCS.WCSNAMEa.alt('A').key());
+        Assert.assertEquals("WCSNAMEZ", WCS.WCSNAMEa.alt('Z').key());
     }
 
     @Test

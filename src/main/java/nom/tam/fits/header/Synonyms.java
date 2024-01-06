@@ -57,7 +57,7 @@ public enum Synonyms {
     RADESYS(Standard.RADESYS, Standard.RADECSYS),
 
     /** RESTFRQ is now preferred over the old RESTFREQ */
-    RESTFRQ(WCS.RESTFRQ, WCS.RESTFREQ),
+    RESTFRQ(Standard.RESTFRQ, WCS.RESTFREQ),
 
     /**
      * Equivalent keywords for column coordinate transformation matrix (PC convention). The shorter form may be required
@@ -65,7 +65,7 @@ public enum Synonyms {
      * 
      * @since 1.19
      */
-    TPn_n(WCS.TPn_n, WCS.TPCn_n),
+    TPn_na(WCS.TPn_na, WCS.TPCn_na),
 
     /**
      * Equivalent keywords for column coordinate transformation matrix (CD convention). The shorter form may be required
@@ -73,7 +73,7 @@ public enum Synonyms {
      * 
      * @since 1.19
      */
-    TCn_n(WCS.TCn_n, WCS.TCDn_n),
+    TCn_na(WCS.TCn_na, WCS.TCDn_na),
 
     /**
      * Equivalent keywords for column parameter names. The shorter form may be required for column indices &gt;99 with
@@ -81,7 +81,7 @@ public enum Synonyms {
      * 
      * @since 1.19
      */
-    TSn_n(WCS.TVn_n, WCS.TPSn_n),
+    TSn_na(WCS.TVn_na, WCS.TPSn_na),
 
     /**
      * Equivalent keywords for column parameter values. The shorter form may be required for column indices &gt;99 with
@@ -89,7 +89,7 @@ public enum Synonyms {
      * 
      * @since 1.19
      */
-    TVn_n(WCS.TVn_n, WCS.TPVn_n),
+    TVn_na(WCS.TVn_na, WCS.TPVn_na),
 
     /**
      * Equivalent keywords for column coordinate transformation matrix (PC convention). The shorter form may be required
@@ -97,7 +97,7 @@ public enum Synonyms {
      * 
      * @since 1.19
      */
-    WCSn(WCS.WCSn, WCS.TWCSn),
+    WCSna(WCS.WCSna, WCS.TWCSna),
 
     /**
      * Equivalent keywords for array column axis parameter names. The shorter form may be required for column indices
@@ -105,7 +105,7 @@ public enum Synonyms {
      * 
      * @since 1.19
      */
-    nSn_n(WCS.nSn_n, WCS.nPSn_n),
+    nSn_na(WCS.nSn_na, WCS.nPSn_na),
 
     /**
      * Equivalent keywords for array column axis parameter values. The shorter form may be required for column indices
@@ -113,7 +113,7 @@ public enum Synonyms {
      * 
      * @since 1.19
      */
-    nVn_n(WCS.nVn_n, WCS.nPVn_n),
+    nVn_na(WCS.nVn_na, WCS.nPVn_na),
 
     /** DARKTIME appears in multiple conventions */
     DARKTIME(NOAOExt.DARKTIME, SBFitsExt.DARKTIME);
