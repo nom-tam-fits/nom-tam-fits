@@ -573,8 +573,7 @@ public enum Standard implements IFitsHeader {
     private final IFitsHeader key;
 
     Standard(SOURCE status, HDU hdu, VALUE valueType, String comment, StandardCommentReplacement... replacements) {
-        key = new FitsHeaderImpl(name(), status, hdu, valueType, comment);
-        commentReplacements = replacements;
+        this(null, status, hdu, valueType, comment, replacements);
     }
 
     Standard(String headerName, SOURCE status, HDU hdu, VALUE valueType, String comment,

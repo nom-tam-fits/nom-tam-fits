@@ -7947,11 +7947,11 @@ public enum NOAOExt implements IFitsHeader {
     private final IFitsHeader key;
 
     NOAOExt(HDU hdu, VALUE valueType, String comment) {
-        key = new FitsHeaderImpl(name(), IFitsHeader.SOURCE.NOAO, hdu, valueType, comment);
+        this(null, hdu, valueType, comment);
     }
 
     NOAOExt(String key, HDU hdu, VALUE valueType, String comment) {
-        this.key = new FitsHeaderImpl(name(), IFitsHeader.SOURCE.NOAO, hdu, valueType, comment);
+        this.key = new FitsHeaderImpl(key == null ? name() : key, IFitsHeader.SOURCE.NOAO, hdu, valueType, comment);
     }
 
     @Override

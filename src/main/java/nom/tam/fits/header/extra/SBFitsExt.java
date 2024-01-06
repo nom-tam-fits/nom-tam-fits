@@ -196,11 +196,11 @@ public enum SBFitsExt implements IFitsHeader {
     private final IFitsHeader key;
 
     SBFitsExt(String key, VALUE valueType, String comment) {
-        this.key = new FitsHeaderImpl(key, IFitsHeader.SOURCE.SBIG, HDU.IMAGE, valueType, comment);
+        this.key = new FitsHeaderImpl(key == null ? name() : key, IFitsHeader.SOURCE.SBIG, HDU.IMAGE, valueType, comment);
     }
 
     SBFitsExt(VALUE valueType, String comment) {
-        key = new FitsHeaderImpl(name(), IFitsHeader.SOURCE.SBIG, HDU.IMAGE, valueType, comment);
+        this(null, valueType, comment);
     }
 
     @Override

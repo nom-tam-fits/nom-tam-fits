@@ -222,11 +222,12 @@ public enum MaxImDLExt implements IFitsHeader {
     private final IFitsHeader key;
 
     MaxImDLExt(String key, VALUE valueType, String comment) {
-        this.key = new FitsHeaderImpl(key, IFitsHeader.SOURCE.MaxImDL, HDU.IMAGE, valueType, comment);
+        this.key = new FitsHeaderImpl(key == null ? name() : key, IFitsHeader.SOURCE.MaxImDL, HDU.IMAGE, valueType,
+                comment);
     }
 
     MaxImDLExt(VALUE valueType, String comment) {
-        key = new FitsHeaderImpl(name(), IFitsHeader.SOURCE.MaxImDL, HDU.IMAGE, valueType, comment);
+        this(null, valueType, comment);
     }
 
     @Override

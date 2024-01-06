@@ -433,7 +433,7 @@ public enum DateTime implements IFitsHeader {
     private final IFitsHeader key;
 
     DateTime(SOURCE status, HDU hdu, VALUE valueType, String comment) {
-        key = new FitsHeaderImpl(name(), status, hdu, valueType, comment);
+        this(null, status, hdu, valueType, comment);
     }
 
     DateTime(String headerName, SOURCE status, HDU hdu, VALUE valueType, String comment) {
