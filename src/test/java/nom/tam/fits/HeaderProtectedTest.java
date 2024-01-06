@@ -5,8 +5,10 @@ import java.io.ByteArrayOutputStream;
 import org.junit.Assert;
 import org.junit.Test;
 
+import nom.tam.fits.header.DateTime;
 import nom.tam.fits.header.GenericKey;
 import nom.tam.fits.header.Standard;
+import nom.tam.fits.header.WCS;
 import nom.tam.util.FitsOutputStream;
 
 /*
@@ -126,5 +128,27 @@ public class HeaderProtectedTest {
     @Test(expected = IllegalArgumentException.class)
     public void testKeyIndexTooLarge() {
         Standard.TFORMn.n(1000);
+    }
+
+    @Test(expected = IllegalArgumentException.class)
+    public void testWCSInvalidAlt() {
+        WCS.WCSNAME.alt('0');
+    }
+
+    @Test(expected = UnsupportedOperationException.class)
+    public void testWCSNoAlt() {
+        WCS.OBSGEO_X.alt('A');
+    }
+
+    @Test
+    public void testWCSAlt() {
+        Assert.assertEquals("WCSNAMEA", WCS.WCSNAME.alt('A').key());
+        Assert.assertEquals("WCSNAMEZ", WCS.WCSNAME.alt('Z').key());
+    }
+
+    @Test
+    public void testDateTime() {
+        Assert.assertEquals("DATE-OBS", DateTime.DATE_OBS.key());
+        Assert.assertEquals("MJDREF", DateTime.MJDREF.key());
     }
 }

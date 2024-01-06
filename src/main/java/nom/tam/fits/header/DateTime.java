@@ -401,6 +401,35 @@ public enum DateTime implements IFitsHeader {
     /** Solar System ephemeris value for {@link #PLEPHEM} for Folkner, et al. (2014). */
     public static final String PLEPHEM_DE432 = "DE432";
 
+    /** Time unit value for time measured in seconds */
+    public static final String TIMEUNIT_SECOND = "s";
+
+    /** Time unit value for time measured in days */
+    public static final String TIMEUNIT_DAY = "d";
+
+    /** Time unit value for time measured in Julian years (1 a = 365.25 d) */
+    public static final String TIMEUNIT_JULIAN_YEAR = "a";
+
+    /** Time unit value for time measured in seconds (1 cy = 36525 d) */
+    public static final String TIMEUNIT_JULIAN_CENTURY = "cy";
+
+    /** Time unit value for time measured in minutes */
+    public static final String TIMEUNIT_MINUTE = "min";
+
+    /** Time unit value for time measured in hours */
+    public static final String TIMEUNIT_HOUR = "h";
+
+    /** Time unit value for time measured in Julian years (same as {@link #TIMEUNIT_JULIAN_YEAR}) */
+    public static final String TIMEUNIT_YEAR = "yr";
+
+    /** Time unit value for time measured in tropical years (1 ta ~ 365.2422 d) */
+    public static final String TIMEUNIT_TROPICAL_YEAR = "ta";
+
+    /**
+     * Time unit value for time measured in Besselian years (essentially the sdame as {@link #TIMEUNIT_TROPICAL_YEAR})
+     */
+    public static final String TIMEUNIT_BESSELIAN_YEAR = "Ba";
+
     private final IFitsHeader key;
 
     DateTime(SOURCE status, HDU hdu, VALUE valueType, String comment) {

@@ -952,6 +952,11 @@ public enum WCS implements IFitsHeader {
         supportsAlt = allowsAlt;
     }
 
+    @Override
+    public final IFitsHeader impl() {
+        return key;
+    }
+
     /**
      * Use for specifying an alternative coordinate system.
      * 
