@@ -8,7 +8,11 @@
 
 # Getting started with the _nom.tam.fits_ library.
 
-Updated for 1.19.0 and/or later 1.x releases.
+__nom.tam.fits__ is an efficient 100% pure Java library for reading, writing, and modifying
+[FITS files](https://fits.gsfc.nasa.gov/fits_standard.html). The library owes its origins to Tom A. McGlynn 
+(hence the _nom.tam_ prefix) at NASA Goddard Space Flight Center.
+
+This document has been updated for 1.19.0 and/or later 1.x releases.
 
 ## Table of Contents
 
@@ -82,7 +86,7 @@ The current FITS standard (4.0) recognizes the following principal HDU / data ty
  types.
 
  3. **ASCII Table** (_discouraged_) is a simpler, less capable table format with support for storing singular 
- primitive numerical types, and Strings only -- in human-readable format. You should probably use the more flexible 
+ primitive numerical types, and strings only -- in human-readable format. You should probably use the more flexible 
  (and more compact) binary tables instead for your application, and reserve use of ASCII tables for reading data that 
  may still contain these.
 
@@ -158,7 +162,7 @@ practical terms it means that you cannot simply drop-in replace you JAR file, fr
 __1.19.0__. Instead, you are expected to (re)compile your application with the JAR version of this library that you 
 intend to use. This is because some method signatures have changed to use an encompassing argument type, such as 
 `Number` instead of the previously separate `byte`, `short`, `int`, `long`, `float`, `double` methods. (These 
-otherwise changes harmless API changes improve consistency across numerical types.)
+otherwise harmless API changes improve consistency across numerical types.)
 
 Starting with version __1.16__, we also started deprecating some of the older API, either because methods were 
 ill-conceived, confusing, or generaly unsafe to use; or because they were internals of the library that should never 
@@ -875,6 +879,7 @@ originally.)
 <a name="fits-headers"></a>
 ## FITS headers
 
+ - [What is in a header](#what-is-in-a-header) 
  - [Accessing header values](#accessing-header-values)
  - [Standard and conventional FITS header keywords](#standard-and-conventional-fits-header-keywords)
  - [Hierarchical and long header keywords](#hierarch-style-header-keywords)
@@ -884,22 +889,66 @@ originally.)
  - [Standard compliance](#standard-compliance)
  - [Migrating header data between HDUs](#migrating-headers)
 
-The metadata that describes the FITS files contents is stored in the headers of each HDU.
+
+<a name="what-is-in-a-header"></a>
+### What is in a header
+
+The FITS header consists of a list of 80-byte records at the beginning of each HDU. They contain key/value pairs and 
+comments and serve three distinct purposes:
+
+ 1. First and foremost, the header provides an _essential_ description of the HDU's data segment with a set of 
+    reserved FITS keywords and associated values. These _must_ appear in a specific place and order order in all FITS 
+    headers. The keywords `SIMPLE` or `XTENSION`, `BITPIX`, `NAXIS`, `NAXISn`, `PCOUNT`, `GCOUNT`, `GROUPS`, `THEAP`, 
+    `TFIELDS`, `TTYPEn`, `TBCOLn`, `TFORMn`, and `END` form the set of essential keywords. The library automatically 
+    takes care of adding these header entries in the required order, and users of the library should never attempt to 
+    set or modify the essential data description manually.
+    
+ 2. [FITS standard](https://fits.gsfc.nasa.gov/fits_standard.html) also reserves further header keywords to provide 
+    _optional_ standardized descriptions of the data, such as HDU names or versions, physical units, World Coordinate 
+    Systems (WCS), column names etc. It is up to the user to familiarize themselves with the _standard_ keywords and 
+    their usage, and use these to describe their data as fully as appropriate, or to extract information from 3rd 
+    party FITS headers.
+
+ 3. Finally, the FITS headers may also store a user _dictionary_ of key/value pairs and/or comments. You may store 
+    whatever further information you like (within the constraints of what FITS allows) as long as they stay clear of 
+    the set of reserved FITS keywords mentioned above.
+
+It is a bit unfortunate that FITS was designed to mix the essential, standard, and user-defined keys in a single 
+shared space of the same FITS header. It is therefore best practice for all creators of FITS files to:
+ 
+ - Avoid setting or modifying the essential data description (which could result in corrupted or unreadable FITS 
+   files). Let the library handle these appropriately.
+ - Keep standard (reserved) keywords separated from user-defined keywords in the header if possible. It is 
+   recommended for users to add the standardized header entries first, and then add any/all user-defined entries 
+   after. It is also recommended that users add a comment line (or lines) in-between to cleary demark where the 
+   standard FITS description ends, and where the user dictionary begins after.
+ - Use comment cards to make headers self explanatory and easy for other humans to understand and digest. The header
+   is also in a sense the self-comntained documentation of your FITS data.
+
+Note, that originally, header keywords were limited to a maximum of 8 upper-case alphanumeric characters (`A` to `Z`
+and `0` to `9`), plus hyphens (`-`) and underscores (`_`), and string values may not exceed 68 characters in length. 
+However, the [HIERARCH keyword convention](https://fits.gsfc.nasa.gov/registry/hierarch_keyword.html) allows for 
+longer and/or more extended set of keywords that may utilize the ASCII range from `0x21` through `0x7E`, and which
+can contain hierarchies. And string values of arbitrary length may be added to headers via the 
+[CONTINUE longkeyword convention](https://fits.gsfc.nasa.gov/registry/continue_keyword.html), which is now an 
+integral part of the standard as of FITS version 4.0. See more about these conventions, and their usage within this 
+library, further below.
 
 
+<a name="accessing-header-entries"></a>
+### Accessing header entries
 
-<a name="accessing-header-values"></a>
-### Accessing header values
-
-There are two basic ways to access data contained in FITS headers:
+There are two basic ways to access data contained in FITS headers: direct (by keyword) or ordered (iterator-based).
 
 
-#### A. Direct access header values
+#### A. Direct access header entries
 
-If you are not concerned with the internal ordering of the header you can get values from the header using the 
-`get...Value()` methods. To set values use the `addValue()` method.
+You can retrieve keyed values by their associated keyword from the header using the `get...Value()` methods. To set 
+values use one of the `addValue(...)` methods. These methods define a standard dictionary lookup access to key/value
+pair stored in the FITS headers. 
 
-To find out the telescope used you might want to know the value of the `TELESCOP` key.
+For example, to find out the telescope or observatory was used to obtain the data you might want to know the value of 
+the `TELESCOP` key.
 
 ```java
   Fits f = new Fits("img.fits")
@@ -907,46 +956,64 @@ To find out the telescope used you might want to know the value of the `TELESCOP
   String telescope =  header.getStringValue("TELESCOP");
 ```
 
-Or if we want to know the RA of the center of the image:
+Or if we want to know the right ascension (R.A.) coordinate of the reference position in the image:
 
 ```java
   double ra = header.getDoubleValue("CRVAL1"); 
 ```
 
-[The FITS WCS convention is being used here. For typical images the central coordinates are in the pair of keys, 
-`CRVAL1` and `CRVAL2` and our example assumes an equatorial coordinate system.]
+[Note, that the FITS WCS convention is being used here. For typical images the reference coordinates are in the pair of 
+keys, `CRVAL1` and `CRVAL2` and our example assumes an equatorial coordinate system.]
 
-Perhaps we have a FITS file where the RA was not originally known, or for which we’ve just found a correction.
+Perhaps we have a FITS file where the R.A. was not originally known, or for which we’ve just found a correction.
 
-To add or change the RA we use:
+To add or change the R.A. coordinate value, we use:
 
 ```java
-  header.addValue("CRVAL1", updatedRA, "Corrected RA");
+  header.addValue("CRVAL1", updatedRADeg, "[deg] Corrected R.A. coordinate");
 ```
 
-The second argument is our new RA. The third is a comment field that will also be written to that header in the space
-remaining.
+The second argument is our new right ascension coordinate (in degrees). The third is a comment field that will also be 
+written to that header in the space remaining.
+
+The `addValue(...)` methods will update existing matching header entries _in situ_ with the newly defined value and 
+comment, while it will add/insert _new_ header entries at the current _mark_ position. By default, this means that new 
+entries will be appended at the end of the header, unless you have called `Header.findCard(...)` earlier to change the 
+_mark_ position at which new card are added to that immediately before the specified other card, or else you called 
+`Header.seekHead()` to add new cards at the start of the (non-essential) header space. Note, that you can always 
+restore the default behavior of adding new entries at the end by calling `Header.seekTail()`, if desired. (This may be 
+a little confusing at first, but the origins of the position marking behavior go a long way back in the history of the 
+library, and therefore it is here to stay until at least version __2.0__.)
+
+Note, that the _mark_ position also applies to adding comment cards via `Header.insertComment()`, `.insertHistory()`, 
+`.insertCommentStyle()` and related methods. 
+
+Thus, `Header.findCard()`, `.seekHead()` and/or `.seekTail()` methods will allow you to surgically control header order 
+when adding new cards to headers using the direct access methods.
+
+Table HDUs may contain several standard kewords to describe individual columns, and the `TableHDU.setColumnMeta(...)` 
+methods can help you add these optional descriptor for your data while keeping column-specific keywords organized into
+header blocks around the mandatory `TFORMn` keywords. Note the the `.setColumnMeta(...)` methods also change the mark
+position at which new header entries are added.
 
 
 #### B. Iterator-based access of header values
 
-If you are writing files, it’s often desirable to organize the header and include copious amount of comments and history 
-records. This is most easily accomplished using a header Cursor and using the `HeaderCard`.
+For ordered access of header values you can also use the `nom.tam.util.Cursor` interface to step through header cards 
+in the order they are stored in the FITS.
 
 ```java
   Cursor<String, HeaderCard> c = header.iterator();
 ```
 
-returns a cursor object that points to the first card of the header. We have `prev()` and `next()` methods that allow 
-us to move through the header, and `add()` and `delete()` methods to add/remove records at specific locations. The 
-methods of `HeaderCard` allow us to manipulate the entire current card as a single string or broken down into keyword, 
-value and comment components. Comment and history header cards can be created and added to the header, e.g. via
-`HeaderCard.createCommentCard()` or `.createHistoryCard()` respectively.
+returns a cursor object that points to the first card of the header. The `Cursor.prev()` and `.next()` methods allow 
+to step through the header, and `.add()` and `.delete()` methods can add/remove records at specific locations. The 
+methods of `HeaderCard` allow us to manipulate the contents of the current card as desired. Comment and history header 
+cards can be created and added to the header, e.g. via `HeaderCard.createCommentCard()` or `.createHistoryCard()` 
+respectively.
 
-For tables much of the metadata describes individual columns. There are a set of `setTableMeta()` methods that can be 
-used to help organize these as the user wishes.
-
-
+Note that the iterator-based approach is the only way to extract comment cards from a header (if you are so inclined), 
+since dictionary lookup will not work for these -- as comment cards are by definition not key/value pairs).
 
 
 
@@ -1006,10 +1073,11 @@ For best practice, try rely on the standard keywords, or those in registered con
 <a name="hierarch-style-header-keywords"></a>
 ### Hierarchical and long header keywords
 
-The standard FITS header keywords consists of maximum 8 upper case letters or numbers or dashes (`-`) and 
-underscores (`_`). The [HIERARCH keyword convention](https://fits.gsfc.nasa.gov/registry/hierarch_keyword.html) 
-allows for longer and/or hierarchical sets of FITS keywords, and/or for supporting a somewhat more extended set of 
-ASCII characters (in the range of `0x20` to `0x7E`).  Support for HIERARCH-style keywords is enabled by default as of 
+The standard FITS header keywords consists of maximum 8 upper case letters (`A` through `Z`) or numbers (`0` through `9`) 
+and/or dashes (`-`) and underscores (`_`). The 
+[HIERARCH keyword convention](https://fits.gsfc.nasa.gov/registry/hierarch_keyword.html) allows for storing longer and/or 
+hierarchical sets of FITS keywords, and can support a somewhat more extended set of ASCII characters (in the range of 
+`0x21` to `0x7E`).  Support for HIERARCH-style keywords is enabled by default as of 
 version __1.16__. HIERARCH support can be toggled if needed via `FitsFactory.setUseHierarch(boolean)`. By default, 
 HIERARCH keywords are converted to upper-case only (__cfitsio__ convention), so
 
@@ -1265,11 +1333,11 @@ following steps:
  1. Start by creating the new HDU from the data it will hold. It ensures that the new HDU will have the correct 
  essential data description (type and size) in its header.
 
- 2. Merge distict (non-clonflicting) header entries from the original HDU into the header of the new HDU, using the 
- `Header.mergeDistinct(Header source)` method. It will migrate the header entries from the original HDU to the new one 
+ 2. Merge distict (non-conflicting) header entries from the original HDU into the header of the new HDU, using the 
+ `Header.mergeDistinct(Header source)` method. It will migrate the header entries from the original HDU to the new one, 
  without overriding the proper essential data description.
 
- 3. Update the header entries as necessary, such as WCS etc, in the new HDU. Pay attention to removing obsoleted entries 
+ 3. Update the header entries as necessary, such as WCS, in the new HDU. Pay attention to removing obsoleted entries 
  also, such as descriptions of table columns that no longer exist in the new data.
  
  4. If the header contains checksums, make sure you update these before writing the header or HDU to an output.
@@ -1314,8 +1382,10 @@ For example:
 
 As of version __1.18__ building tables one row at a time is both easy and efficient -- and may be the least confusing 
 way to get tables done right. (In prior releases, adding rows to existing tables was painfully slow, and much more 
-constrained). You may want to start by defining the types and dimensions of the data (or whether variable-length) that 
-will be contained in each table column:
+constrained). 
+
+You may want to start by defining the types and dimensions of the data (or whether variable-length) that will be 
+contained in each table column:
 
 ```java
    BinaryTable table = new BinaryTable();
@@ -1410,16 +1480,16 @@ can create a table with these (or add them to an existing table with a matching 
    
    BinaryTable tab = new BinaryTable();
    
-   table.addColumn(timeStamps);
+   table.addColumn(timestamps);
    table.addColumn(spectra);
 ```
   
 There are just a few rules to keep in mind when constructing tables in this way:
   
   - All columns added this way must contain the same number of elements (number of rows).
-  - In column data, scalars entries are simply elements in a 1D primitive array, in which each element contains
-    the scalar value for a given row. (I.e. unlike in the row-major table format required to create entire tables at 
-    once, we do not have to wrap scalar values in self-contained arrays of 1)
+  - In column data, scalars entries are simply elements in a 1D primitive array (e.g. `double[]`), in which each 
+    element (e.g. a `double`) is the scalar value for a given row. (I.e. unlike in the row-major table format required 
+    to create entire tables at once, we do not have to wrap scalar values in self-contained arrays of 1)
   - Other than the above, the same rules apply as for creating HDUs row-by-row (above).
   - If setting complex columns with arrays of `float[2]` or `double[2]` (the old way), you will want to call 
     `setComplexColumn(int)` afterwards for that column to make sure they are labeled properly in the FITS header 
@@ -1443,10 +1513,11 @@ before calling `write()` on the encompassing HDU.
    
 While the library also supports ASCII tables for storing a more limited assortment of _scalar_ entries, binary tables 
 should always be your choice for storing table data. ASCII tables are far less capable overall. And while they may be 
-readable from a console without needing any tools to display, there is no compelling reason for using ASCII tables 
+readable from a console without the need for other tools, there is no compelling reason for using ASCII tables 
 today. Binary tables are simply better, because they:
 
- - Support more data types (such as arrays, logical, and complex values).
+ - Support arrays (including multidim and variable-length).
+ - Support more data types (such as logical, and complex values).
  - Offer additional flexibility, such as variable sized and multi-dimensional array entries.
  - Take up less space on disk
  - Can be compressed to an even smaller size
@@ -1609,7 +1680,7 @@ class to decompress only the selected image area. As of version __1.18__, this i
 ### Table compression
 
 Table compression is also supported in nom-tam-fits from version __1.15__, and more completely since
-__1.18__. When compressing a table 'tiles' that are sets of contiguous rows within a column. The compression 
+__1.18__. When compressing a table, the 'tiles' are sets of contiguous rows within a column. The compression 
 algorithms are the same as the ones provided for image compression. Default compression is `GZIP_2`. 
 (In principle, every column could use a different algorithm.)
 
@@ -1722,7 +1793,7 @@ forget to:
 
 4. __Pull Request__. Once you feel your work can be integrated, create a pull request from your fork/branch. You can 
 do that easily from the github page of your fork/branch directly. In the pull request, provide a concise description 
-of what you added or changed. Your pull request will be rewied. You may get some feedback at this point, and maybe 
+of what you added or changed. Your pull request will be reviwed. You may get some feedback at this point, and maybe 
 there will be discussions about possible improvements or regressions etc. It's a good thing too, and your changes will 
 likely end up with added polish as a result. You can be all the more proud of it in the end!
 

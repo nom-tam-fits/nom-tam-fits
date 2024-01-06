@@ -36,7 +36,7 @@ forget to:
 
 4. __Pull Request__. Once you feel your work can be integrated, create a pull request from your fork/branch. You can 
 do that easily from the github page of your fork/branch directly. In the pull request, provide a concise description 
-of what you added or changed. Your pull request will be rewied. You may get some feedback at this point, and maybe 
+of what you added or changed. Your pull request will be reviwed. You may get some feedback at this point, and maybe 
 there will be discussions about possible improvements or regressions etc. It's a good thing too, and your changes will 
 likely end up with added polish as a result. You can be all the more proud of it in the end!
 

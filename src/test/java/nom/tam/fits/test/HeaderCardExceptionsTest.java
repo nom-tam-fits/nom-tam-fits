@@ -190,13 +190,7 @@ public class HeaderCardExceptionsTest {
     @Test(expected = LongValueException.class)
     public void testLongValueException1() throws Throwable {
         FitsFactory.setUseHierarch(true);
-        try {
-            new HeaderCard("HIERARCH.AAA.BBB.CCC.DDD.EEE.FFF.GGG.HHH.III.JJJ.KKK.LLL.MMM.NNN.OOO", 1234567890123456789L);
-        } catch (HeaderCardException e) {
-            if (e.getCause() != null) {
-                throw e.getCause();
-            }
-        }
+        new HeaderCard("HIERARCH.AAA.BBB.CCC.DDD.EEE.FFF.GGG.HHH.III.JJJ.KKK.LLL.MMM.NNN.OOO", 1234567890123456789L);
     }
 
     @Test(expected = LongValueException.class)
