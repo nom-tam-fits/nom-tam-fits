@@ -168,9 +168,11 @@ public interface IFitsHeader {
      * Returns the FITS header keyword for this header entry. Standard FITS keywords are limited to 8 characters, and
      * contain only epper-case letters, numbers, hyphen, and underscore characters.
      * 
-     * @return the FITS header keyword for this entry
+     * @return                       the FITS header keyword for this entry
+     * 
+     * @throws IllegalStateException if there are unfilled indices remaining in the keyword template.
      */
-    default String key() {
+    default String key() throws IllegalStateException {
         return impl().key();
     }
 

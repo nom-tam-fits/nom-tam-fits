@@ -157,6 +157,7 @@ public class HeaderProtectedTest {
 
     @Test
     public void testWCSAlt() {
+        Assert.assertEquals("WCSNAME", WCS.WCSNAMEa.key());
         Assert.assertEquals("WCSNAMEA", WCS.WCSNAMEa.alt('A').key());
         Assert.assertEquals("WCSNAMEZ", WCS.WCSNAMEa.alt('Z').key());
     }
@@ -176,9 +177,7 @@ public class HeaderProtectedTest {
     @Test
     public void testIFitsHeaderDefaultImpl() {
         class MyKeyword implements IFitsHeader {
-
         }
-
         Assert.assertNull(new MyKeyword().impl());
     }
 }

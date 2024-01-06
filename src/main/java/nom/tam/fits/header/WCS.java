@@ -954,12 +954,13 @@ public enum WCS implements IFitsHeader {
     }
 
     /**
-     * Use for specifying an alternative coordinate system. This call is available only for the enums, which have a
-     * lower-case 'a' at the end of their Java names. Attempting to call this on keywords that do not end with
-     * lower-case 'a' will throw and {@link UnsupportedOperationException}. You will want to call this before chaining
-     * other calls to {@link IFitsHeader}.
+     * Use for specifying an alternative coordinate system. Alterntive systems are labelled 'A' through 'Z'. This call
+     * is available only for the enums, which have a lower-case 'a' at the end of their Java names (such as
+     * {@link #WCSNAMEa}). Attempting to call this on WCS keywords that do not end with lower-case 'a' in their Java
+     * names (such as {@link #OBSGEO_X} will throw and {@link UnsupportedOperationException}. You will want to call this
+     * before chaining other calls to {@link IFitsHeader}.
      * 
-     * @param  c                             The alternativce coordinate system marker 'A' through 'Z' (case
+     * @param  c                             The alternative coordinate system marker 'A' through 'Z' (case
      *                                           insensitive).
      * 
      * @return                               The standard FITS keyword with the alternate coordinate system marker
@@ -970,7 +971,7 @@ public enum WCS implements IFitsHeader {
      * @throws UnsupportedOperationException if the keyword does not support alternative coordinate systems
      */
     public IFitsHeader alt(char c) throws IllegalArgumentException, UnsupportedOperationException {
-        if (!key().contains("a")) {
+        if (!name().endsWith("a")) {
             throw new UnsupportedOperationException("WCS keyword " + key.key() + " does not support alternatives.");
         }
 
@@ -979,9 +980,7 @@ public enum WCS implements IFitsHeader {
             throw new IllegalArgumentException("Expected 'A' through 'Z': Got '%c'");
         }
 
-        String headerName = key().replace('a', Character.toUpperCase(c));
-
-        return new FitsHeaderImpl(headerName.toString(), status(), hdu(), valueType(), comment());
+        return new FitsHeaderImpl(key() + Character.toUpperCase(c), status(), hdu(), valueType(), comment());
     }
 
 }

@@ -97,6 +97,9 @@ public class FitsHeaderImpl implements IFitsHeader, Serializable {
 
     @Override
     public String key() {
+        if (key.endsWith("a")) {
+            return key.substring(0, key.length() - 1);
+        }
         return key;
     }
 

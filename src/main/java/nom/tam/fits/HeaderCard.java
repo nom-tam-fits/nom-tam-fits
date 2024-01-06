@@ -1389,11 +1389,16 @@ public class HeaderCard implements CursorValue<String>, Cloneable {
      * @param  key                      The standard or conventional FITS keyword
      * @param  type                     The type we want to use with that key
      *
-     * @throws IllegalArgumentException if the keyword does not support the given value type.
+     * @throws IllegalArgumentException if the keyword does not support the given value type, or if the keyword contains
+     *                                      an unfilled index.
      *
      * @since                           1.16
      */
     private static boolean checkType(IFitsHeader key, VALUE type) throws IllegalArgumentException {
+        if (key.key().contains("n")) {
+            throw new IllegalArgumentException("Unfilled index(es) in keyword " + key.key());
+        }
+
         if (key.valueType() == type || key.valueType() == VALUE.ANY) {
             return true;
         }
