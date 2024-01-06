@@ -146,11 +146,6 @@ public class HeaderProtectedTest {
     }
 
     @Test(expected = IllegalStateException.class)
-    public void testWCSLongAlt() {
-        WCS.TPCn_n.alt('A').n(999, 999);
-    }
-
-    @Test(expected = IllegalStateException.class)
     public void testWCSLongIndex() {
         WCS.TCDn_n.n(999, 999);
     }

@@ -1,38 +1,5 @@
 package nom.tam.fits.header;
 
-/*-
- * #%L
- * nom.tam.fits
- * %%
- * Copyright (C) 1996 - 2024 nom-tam-fits
- * %%
- * This is free and unencumbered software released into the public domain.
- * 
- * Anyone is free to copy, modify, publish, use, compile, sell, or
- * distribute this software, either in source code form or as a compiled
- * binary, for any purpose, commercial or non-commercial, and by any
- * means.
- * 
- * In jurisdictions that recognize copyright laws, the author or authors
- * of this software dedicate any and all copyright interest in the
- * software to the public domain. We make this dedication for the benefit
- * of the public at large and to the detriment of our heirs and
- * successors. We intend this dedication to be an overt act of
- * relinquishment in perpetuity of all present and future rights to this
- * software under copyright law.
- * 
- * THE SOFTWARE IS PROVIDED "AS IS", WITHOUT WARRANTY OF ANY KIND,
- * EXPRESS OR IMPLIED, INCLUDING BUT NOT LIMITED TO THE WARRANTIES OF
- * MERCHANTABILITY, FITNESS FOR A PARTICULAR PURPOSE AND NONINFRINGEMENT.
- * IN NO EVENT SHALL THE AUTHORS BE LIABLE FOR ANY CLAIM, DAMAGES OR
- * OTHER LIABILITY, WHETHER IN AN ACTION OF CONTRACT, TORT OR OTHERWISE,
- * ARISING FROM, OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR
- * OTHER DEALINGS IN THE SOFTWARE.
- * #L%
- */
-
-import nom.tam.fits.HeaderCard;
-
 /**
  * Standard FITS keywords for defining world coordinate systems (WCS). Many (but not all) keywords listed here support
  * alternative coordinate systems, which can be set via the {@link #alt(char)} method.
@@ -969,14 +936,11 @@ public enum WCS implements IFitsHeader {
      * 
      * @throws IllegalArgumentException      if the marker is outside of the legal range of 'A' through 'Z' (case
      *                                           insensitive).
-     * @throws IllegalStateException         if the keyword with the alternate coordinate marker exceeeds the maximum
-     *                                           8-byre length of standard FITS keywords. You might want to use an
-     *                                           equivalent shorter alternative keyword.
      * @throws UnsupportedOperationException if the keyword does not support alternative coordinate systems
      * 
      * @see                                  #supportsAlt()
      */
-    public IFitsHeader alt(char c) throws IllegalArgumentException, IllegalStateException, UnsupportedOperationException {
+    public IFitsHeader alt(char c) throws IllegalArgumentException, UnsupportedOperationException {
         if (!supportsAlt) {
             throw new UnsupportedOperationException("WCS keyword " + key.key() + " does not support alternatives.");
         }
@@ -988,11 +952,6 @@ public enum WCS implements IFitsHeader {
 
         StringBuffer headerName = new StringBuffer(key.key());
         headerName.append(Character.toUpperCase(c));
-
-        if (headerName.length() > HeaderCard.MAX_KEYWORD_LENGTH) {
-            throw new IllegalStateException(
-                    "Alternate keyword " + headerName.toString() + " is too long. Use shorter equivalent instead.");
-        }
 
         return new FitsHeaderImpl(headerName.toString(), status(), hdu(), valueType(), comment());
     }
