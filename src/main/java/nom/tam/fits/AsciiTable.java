@@ -45,15 +45,15 @@ import nom.tam.util.ByteParser;
 import nom.tam.util.Cursor;
 import nom.tam.util.FormatException;
 
-import static nom.tam.fits.header.DataDescription.TDMAXn;
-import static nom.tam.fits.header.DataDescription.TDMINn;
-import static nom.tam.fits.header.DataDescription.TLMAXn;
-import static nom.tam.fits.header.DataDescription.TLMINn;
 import static nom.tam.fits.header.Standard.NAXIS1;
 import static nom.tam.fits.header.Standard.NAXIS2;
 import static nom.tam.fits.header.Standard.TBCOLn;
+import static nom.tam.fits.header.Standard.TDMAXn;
+import static nom.tam.fits.header.Standard.TDMINn;
 import static nom.tam.fits.header.Standard.TFIELDS;
 import static nom.tam.fits.header.Standard.TFORMn;
+import static nom.tam.fits.header.Standard.TLMAXn;
+import static nom.tam.fits.header.Standard.TLMINn;
 import static nom.tam.fits.header.Standard.TNULLn;
 
 import edu.umd.cs.findbugs.annotations.SuppressFBWarnings;

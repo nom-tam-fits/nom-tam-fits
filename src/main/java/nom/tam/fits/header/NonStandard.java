@@ -50,6 +50,7 @@ public enum NonStandard implements IFitsHeader {
      */
     @Deprecated
     CONTINUE(SOURCE.HEASARC, HDU.ANY, VALUE.NONE, "denotes the CONTINUE long string keyword convention"),
+
     /**
      * The HIERARCH keyword, when followed by spaces in columns 9 and 10 of the FITS card image, indicates that the ESO
      * HIERARCH keyword convention should be used to interpret the name and value of the keyword. The HIERARCH keyword
@@ -69,6 +70,7 @@ public enum NonStandard implements IFitsHeader {
      * filter position". In this example the logical name of the keyword is 'Filter Wheel' and the value is 12.
      */
     HIERARCH(SOURCE.ESO, HDU.ANY, VALUE.NONE, "denotes the HIERARCH keyword convention"),
+
     /**
      * The presence of this keyword with a value = T in an extension key indicates that the keywords contained in the
      * primary key (except the FITS Mandatory keywords, and any COMMENT, HISTORY or 'blank' keywords) are to be

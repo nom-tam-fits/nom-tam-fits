@@ -549,6 +549,46 @@ public enum Standard implements IFitsHeader {
     TZEROn(SOURCE.RESERVED, HDU.TABLE, VALUE.REAL, "column scaling zero point"),
 
     /**
+     * The value field of this indexed keyword shall contain a floating point number specifying the maximum valid
+     * physical value represented in column n of the table, exclusive of any special values. This keyword may only be
+     * used in 'TABLE' or 'BINTABLE' extensions and is analogous to the DATAMAX keyword used for FITS images.
+     * 
+     * @since 1.19
+     */
+    TDMAXn(SOURCE.HEASARC, HDU.TABLE, VALUE.REAL, "maximum value in the column"),
+
+    /**
+     * The value field of this indexed keyword shall contain a floating point number specifying the minimum valid
+     * physical value represented in column n of the table, exclusive of any special values. This keyword may only be
+     * used in 'TABLE' or 'BINTABLE' extensions and is analogous to the DATAMIN keyword used for FITS images.
+     * 
+     * @since 1.19
+     */
+    TDMINn(SOURCE.HEASARC, HDU.TABLE, VALUE.REAL, "minimum value in the column"),
+
+    /**
+     * The value field of this indexed keyword shall contain a floating point number specifying the upper bound of the
+     * legal range of physical values that may be represented in column n of the table. The column may contain values
+     * that are greater than this legal maximum value but the interpretation of such values is not defined here. The
+     * value of this keyword is typically used as the maxinum value when constructing a histogram of the values in the
+     * column. This keyword may only be used in 'TABLE' or 'BINTABLE' extensions.
+     * 
+     * @since 1.19
+     */
+    TLMAXn(SOURCE.HEASARC, HDU.TABLE, VALUE.REAL, "maximum legal value in the column"),
+
+    /**
+     * The value field of this indexed keyword shall contain a floating point number specifying the lower bound of the
+     * legal range of physical values that may be represented in column n of the table. The column may contain values
+     * that are less than this legal minimum value but the interpretation of such values is not defined here. The value
+     * of this keyword is typically used as the mininum value when constructing a histogram of the values in the column.
+     * This keyword may only be used in 'TABLE' or 'BINTABLE' extensions.
+     * 
+     * @since 1.19
+     */
+    TLMINn(SOURCE.HEASARC, HDU.TABLE, VALUE.REAL, "minimum legal value in the column"),
+
+    /**
      * The value field shall contain a character string giving the name of the extension type. This keyword is mandatory
      * for an extension key and must not appear in the primary key. For an extension that is not a standard extension,
      * the type name must not be the same as that of a standard extension.

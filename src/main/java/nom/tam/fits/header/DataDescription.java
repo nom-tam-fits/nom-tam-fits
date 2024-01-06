@@ -144,12 +144,16 @@ public enum DataDescription implements IFitsHeader {
      * The value field of this indexed keyword shall contain a floating point number specifying the maximum valid
      * physical value represented in column n of the table, exclusive of any special values. This keyword may only be
      * used in 'TABLE' or 'BINTABLE' extensions and is analogous to the DATAMAX keyword used for FITS images.
+     * 
+     * @deprecated Use {@link Standard#TDMAXn} instead.
      */
     TDMAXn(SOURCE.HEASARC, HDU.TABLE, VALUE.REAL, "maximum value in the column"),
     /**
      * The value field of this indexed keyword shall contain a floating point number specifying the minimum valid
      * physical value represented in column n of the table, exclusive of any special values. This keyword may only be
      * used in 'TABLE' or 'BINTABLE' extensions and is analogous to the DATAMIN keyword used for FITS images.
+     * 
+     * @deprecated Use {@link Standard#TDMINn} instead.
      */
     TDMINn(SOURCE.HEASARC, HDU.TABLE, VALUE.REAL, "minimum value in the column"),
     /**
@@ -163,6 +167,8 @@ public enum DataDescription implements IFitsHeader {
      * that are greater than this legal maximum value but the interpretation of such values is not defined here. The
      * value of this keyword is typically used as the maxinum value when constructing a histogram of the values in the
      * column. This keyword may only be used in 'TABLE' or 'BINTABLE' extensions.
+     * 
+     * @deprecated Use {@link Standard#TLMAXn} instead.
      */
     TLMAXn(SOURCE.HEASARC, HDU.TABLE, VALUE.REAL, "maximum legal value in the column"),
     /**
@@ -171,6 +177,8 @@ public enum DataDescription implements IFitsHeader {
      * that are less than this legal minimum value but the interpretation of such values is not defined here. The value
      * of this keyword is typically used as the mininum value when constructing a histogram of the values in the column.
      * This keyword may only be used in 'TABLE' or 'BINTABLE' extensions.
+     * 
+     * @deprecated Use {@link Standard#TLMINn} instead.
      */
     TLMINn(SOURCE.HEASARC, HDU.TABLE, VALUE.REAL, "minimum legal value in the column"),
     /**
