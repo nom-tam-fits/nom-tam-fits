@@ -958,7 +958,8 @@ public enum WCS implements IFitsHeader {
     }
 
     /**
-     * Use for specifying an alternative coordinate system.
+     * Use for specifying an alternative coordinate system. You will want to call this before chaining other calls to
+     * {@link IFitsHeader}.
      * 
      * @param  c                             The alternativce coordinate system marker 'A' through 'Z' (case
      *                                           insensitive).

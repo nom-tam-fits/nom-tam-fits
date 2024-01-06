@@ -6,7 +6,12 @@ import org.junit.Assert;
 import org.junit.Test;
 
 import nom.tam.fits.header.DateTime;
+import nom.tam.fits.header.FitsHeaderImpl;
 import nom.tam.fits.header.GenericKey;
+import nom.tam.fits.header.IFitsHeader;
+import nom.tam.fits.header.IFitsHeader.HDU;
+import nom.tam.fits.header.IFitsHeader.SOURCE;
+import nom.tam.fits.header.IFitsHeader.VALUE;
 import nom.tam.fits.header.Standard;
 import nom.tam.fits.header.WCS;
 import nom.tam.util.FitsOutputStream;
@@ -131,17 +136,34 @@ public class HeaderProtectedTest {
     }
 
     @Test(expected = IllegalArgumentException.class)
-    public void testWCSInvalidAlt() {
-        WCS.WCSNAME.alt('0');
+    public void testWCSInvalidAlt1() {
+        WCS.WCSNAME.alt((char) ('A' - 1));
+    }
+
+    @Test(expected = IllegalArgumentException.class)
+    public void testWCSInvalidAlt2() {
+        WCS.WCSNAME.alt((char) ('Z' + 1));
+    }
+
+    @Test(expected = IllegalStateException.class)
+    public void testWCSLongAlt() {
+        WCS.TPCn_n.alt('A').n(999, 999);
+    }
+
+    @Test(expected = IllegalStateException.class)
+    public void testWCSLongIndex() {
+        WCS.TCDn_n.n(999, 999);
     }
 
     @Test(expected = UnsupportedOperationException.class)
     public void testWCSNoAlt() {
+        Assert.assertFalse(WCS.OBSGEO_X.supportsAlt());
         WCS.OBSGEO_X.alt('A');
     }
 
     @Test
     public void testWCSAlt() {
+        Assert.assertTrue(WCS.WCSNAME.supportsAlt());
         Assert.assertEquals("WCSNAMEA", WCS.WCSNAME.alt('A').key());
         Assert.assertEquals("WCSNAMEZ", WCS.WCSNAME.alt('Z').key());
     }
@@ -150,5 +172,20 @@ public class HeaderProtectedTest {
     public void testDateTime() {
         Assert.assertEquals("DATE-OBS", DateTime.DATE_OBS.key());
         Assert.assertEquals("MJDREF", DateTime.MJDREF.key());
+    }
+
+    @Test
+    public void testIFitsHeaderSelfImpl() {
+        IFitsHeader key = new FitsHeaderImpl("BLAH", SOURCE.UNKNOWN, HDU.ANY, VALUE.ANY, "for testing only");
+        Assert.assertNotNull(key.impl());
+    }
+
+    @Test
+    public void testIFitsHeaderDefaultImpl() {
+        class MyKeyword implements IFitsHeader {
+
+        }
+
+        Assert.assertNull(new MyKeyword().impl());
     }
 }
