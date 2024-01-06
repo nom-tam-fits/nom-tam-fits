@@ -952,26 +952,6 @@ public enum WCS implements IFitsHeader {
         supportsAlt = allowsAlt;
     }
 
-    @Override
-    public String comment() {
-        return key.comment();
-    }
-
-    @Override
-    public HDU hdu() {
-        return key.hdu();
-    }
-
-    @Override
-    public String key() {
-        return key.key();
-    }
-
-    @Override
-    public IFitsHeader n(int... number) {
-        return key.n(number);
-    }
-
     /**
      * Use for specifying an alternative coordinate system.
      * 
@@ -1021,17 +1001,6 @@ public enum WCS implements IFitsHeader {
      */
     public boolean supportsAlt() {
         return supportsAlt;
-    }
-
-    @Override
-    public SOURCE status() {
-        return key.status();
-    }
-
-    @Override
-    @SuppressWarnings("CPD-END")
-    public VALUE valueType() {
-        return key.valueType();
     }
 
 }
