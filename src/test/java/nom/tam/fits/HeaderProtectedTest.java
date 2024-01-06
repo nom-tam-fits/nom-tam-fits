@@ -155,6 +155,11 @@ public class HeaderProtectedTest {
         WCS.OBSGEO_X.alt('A');
     }
 
+    @Test(expected = IndexOutOfBoundsException.class)
+    public void testTooManyIndices() {
+        Standard.CTYPEn.n(1, 2);
+    }
+
     @Test
     public void testWCSAlt() {
         Assert.assertEquals("WCSNAME", WCS.WCSNAMEa.key());

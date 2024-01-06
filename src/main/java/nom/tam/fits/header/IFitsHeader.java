@@ -180,17 +180,18 @@ public interface IFitsHeader {
      * Constructs a numbered FITS header keyword entry from this stem, attachinh the specified number after the stem.
      * Numbering for FITS header keywords always starts from 1.
      * 
-     * @param  numbers                  the 1-based indices to add to the stem, in the order they appear in the the enum
-     *                                      name.
+     * @param  numbers                   the 1-based indices to add to the stem, in the order they appear in the the
+     *                                       enum name.
      * 
-     * @return                          an indexed instance of this FITS header entry
+     * @return                           an indexed instance of this FITS header entry
      * 
-     * @throws IllegalArgumentException if the index is less than 0 or exceeds 999. (In truth we should throw an
-     *                                      exception for 0 as well, but there may be not quite legal FITS files that
-     *                                      contain these, which we still want to be able to read. Hence we'll relax the
-     *                                      condition).
-     * @throws IllegalStateException    if the resulting indexed keyword exceeds the maximum 8-bytes allowed for
-     *                                      standard FITS keywords.
+     * @throws IllegalArgumentException  if the index is less than 0 or exceeds 999. (In truth we should throw an
+     *                                       exception for 0 as well, but there may be not quite legal FITS files that
+     *                                       contain these, which we still want to be able to read. Hence we'll relax
+     *                                       the condition).
+     * @throws IllegalStateException     if the resulting indexed keyword exceeds the maximum 8-bytes allowed for
+     *                                       standard FITS keywords.
+     * @throws IndexOutOfBoundsException If more indices were supplied than can be filled for this keyword.
      */
     default IFitsHeader n(int... numbers) throws IllegalArgumentException, IllegalStateException {
         StringBuffer headerName = new StringBuffer(key());
@@ -200,6 +201,11 @@ public interface IFitsHeader {
             }
 
             int indexOfN = headerName.indexOf("n");
+
+            if (indexOfN < 0) {
+                throw new IndexOutOfBoundsException("Too many indices (" + numbers.length + ") supplied for " + key());
+            }
+
             headerName.replace(indexOfN, indexOfN + 1, Integer.toString(number));
         }
 
