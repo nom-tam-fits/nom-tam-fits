@@ -7952,50 +7952,24 @@
 <a class="jxr_linenumber" name="L7944" href="#L7944">7944</a> <em class="jxr_javadoccomment">     */</em>
 <a class="jxr_linenumber" name="L7945" href="#L7945">7945</a>     MJD_OBS(<span class="jxr_string">"MJD-OBS"</span>, HDU.PRIMARY_EXTENSION, VALUE.REAL, <span class="jxr_string">"MJD of exposure start"</span>);
 <a class="jxr_linenumber" name="L7946" href="#L7946">7946</a> 
-<a class="jxr_linenumber" name="L7947" href="#L7947">7947</a>     @SuppressWarnings(<span class="jxr_string">"CPD-START"</span>)
-<a class="jxr_linenumber" name="L7948" href="#L7948">7948</a>     <strong class="jxr_keyword">private</strong> <strong class="jxr_keyword">final</strong> <a name="IFitsHeader" href="../../../../../nom/tam/fits/header/IFitsHeader.html#IFitsHeader">IFitsHeader</a> key;
-<a class="jxr_linenumber" name="L7949" href="#L7949">7949</a> 
-<a class="jxr_linenumber" name="L7950" href="#L7950">7950</a>     <a name="NOAOExt" href="../../../../../nom/tam/fits/header/extra/NOAOExt.html#NOAOExt">NOAOExt</a>(HDU hdu, VALUE valueType, String comment) {
-<a class="jxr_linenumber" name="L7951" href="#L7951">7951</a>         key = <strong class="jxr_keyword">new</strong> <a name="FitsHeaderImpl" href="../../../../../nom/tam/fits/header/FitsHeaderImpl.html#FitsHeaderImpl">FitsHeaderImpl</a>(name(), IFitsHeader.SOURCE.NOAO, hdu, valueType, comment);
-<a class="jxr_linenumber" name="L7952" href="#L7952">7952</a>     }
-<a class="jxr_linenumber" name="L7953" href="#L7953">7953</a> 
-<a class="jxr_linenumber" name="L7954" href="#L7954">7954</a>     <a name="NOAOExt" href="../../../../../nom/tam/fits/header/extra/NOAOExt.html#NOAOExt">NOAOExt</a>(String key, HDU hdu, VALUE valueType, String comment) {
-<a class="jxr_linenumber" name="L7955" href="#L7955">7955</a>         <strong class="jxr_keyword">this</strong>.key = <strong class="jxr_keyword">new</strong> <a name="FitsHeaderImpl" href="../../../../../nom/tam/fits/header/FitsHeaderImpl.html#FitsHeaderImpl">FitsHeaderImpl</a>(name(), IFitsHeader.SOURCE.NOAO, hdu, valueType, comment);
-<a class="jxr_linenumber" name="L7956" href="#L7956">7956</a>     }
-<a class="jxr_linenumber" name="L7957" href="#L7957">7957</a> 
-<a class="jxr_linenumber" name="L7958" href="#L7958">7958</a>     @Override
-<a class="jxr_linenumber" name="L7959" href="#L7959">7959</a>     <strong class="jxr_keyword">public</strong> String comment() {
-<a class="jxr_linenumber" name="L7960" href="#L7960">7960</a>         <strong class="jxr_keyword">return</strong> key.comment();
-<a class="jxr_linenumber" name="L7961" href="#L7961">7961</a>     }
-<a class="jxr_linenumber" name="L7962" href="#L7962">7962</a> 
-<a class="jxr_linenumber" name="L7963" href="#L7963">7963</a>     @Override
-<a class="jxr_linenumber" name="L7964" href="#L7964">7964</a>     <strong class="jxr_keyword">public</strong> HDU hdu() {
-<a class="jxr_linenumber" name="L7965" href="#L7965">7965</a>         <strong class="jxr_keyword">return</strong> key.hdu();
-<a class="jxr_linenumber" name="L7966" href="#L7966">7966</a>     }
-<a class="jxr_linenumber" name="L7967" href="#L7967">7967</a> 
-<a class="jxr_linenumber" name="L7968" href="#L7968">7968</a>     @Override
-<a class="jxr_linenumber" name="L7969" href="#L7969">7969</a>     <strong class="jxr_keyword">public</strong> String key() {
-<a class="jxr_linenumber" name="L7970" href="#L7970">7970</a>         <strong class="jxr_keyword">return</strong> key.key();
-<a class="jxr_linenumber" name="L7971" href="#L7971">7971</a>     }
-<a class="jxr_linenumber" name="L7972" href="#L7972">7972</a> 
-<a class="jxr_linenumber" name="L7973" href="#L7973">7973</a>     @Override
-<a class="jxr_linenumber" name="L7974" href="#L7974">7974</a>     <strong class="jxr_keyword">public</strong> <a name="IFitsHeader" href="../../../../../nom/tam/fits/header/IFitsHeader.html#IFitsHeader">IFitsHeader</a> n(<strong class="jxr_keyword">int</strong>... number) {
-<a class="jxr_linenumber" name="L7975" href="#L7975">7975</a>         <strong class="jxr_keyword">return</strong> key.n(number);
-<a class="jxr_linenumber" name="L7976" href="#L7976">7976</a>     }
-<a class="jxr_linenumber" name="L7977" href="#L7977">7977</a> 
-<a class="jxr_linenumber" name="L7978" href="#L7978">7978</a>     @Override
-<a class="jxr_linenumber" name="L7979" href="#L7979">7979</a>     <strong class="jxr_keyword">public</strong> SOURCE status() {
-<a class="jxr_linenumber" name="L7980" href="#L7980">7980</a>         <strong class="jxr_keyword">return</strong> key.status();
-<a class="jxr_linenumber" name="L7981" href="#L7981">7981</a>     }
-<a class="jxr_linenumber" name="L7982" href="#L7982">7982</a> 
-<a class="jxr_linenumber" name="L7983" href="#L7983">7983</a>     @Override
-<a class="jxr_linenumber" name="L7984" href="#L7984">7984</a>     @SuppressWarnings(<span class="jxr_string">"CPD-END"</span>)
-<a class="jxr_linenumber" name="L7985" href="#L7985">7985</a>     <strong class="jxr_keyword">public</strong> VALUE valueType() {
-<a class="jxr_linenumber" name="L7986" href="#L7986">7986</a>         <strong class="jxr_keyword">return</strong> key.valueType();
-<a class="jxr_linenumber" name="L7987" href="#L7987">7987</a>     }
-<a class="jxr_linenumber" name="L7988" href="#L7988">7988</a> }
+<a class="jxr_linenumber" name="L7947" href="#L7947">7947</a>     <strong class="jxr_keyword">private</strong> <strong class="jxr_keyword">final</strong> <a name="IFitsHeader" href="../../../../../nom/tam/fits/header/IFitsHeader.html#IFitsHeader">IFitsHeader</a> key;
+<a class="jxr_linenumber" name="L7948" href="#L7948">7948</a> 
+<a class="jxr_linenumber" name="L7949" href="#L7949">7949</a>     <a name="NOAOExt" href="../../../../../nom/tam/fits/header/extra/NOAOExt.html#NOAOExt">NOAOExt</a>(HDU hdu, VALUE valueType, String comment) {
+<a class="jxr_linenumber" name="L7950" href="#L7950">7950</a>         <strong class="jxr_keyword">this</strong>(<strong class="jxr_keyword">null</strong>, hdu, valueType, comment);
+<a class="jxr_linenumber" name="L7951" href="#L7951">7951</a>     }
+<a class="jxr_linenumber" name="L7952" href="#L7952">7952</a> 
+<a class="jxr_linenumber" name="L7953" href="#L7953">7953</a>     <a name="NOAOExt" href="../../../../../nom/tam/fits/header/extra/NOAOExt.html#NOAOExt">NOAOExt</a>(String key, HDU hdu, VALUE valueType, String comment) {
+<a class="jxr_linenumber" name="L7954" href="#L7954">7954</a>         <strong class="jxr_keyword">this</strong>.key = <strong class="jxr_keyword">new</strong> <a name="FitsHeaderImpl" href="../../../../../nom/tam/fits/header/FitsHeaderImpl.html#FitsHeaderImpl">FitsHeaderImpl</a>(key == <strong class="jxr_keyword">null</strong> ? name() : key, IFitsHeader.SOURCE.NOAO, hdu, valueType, comment);
+<a class="jxr_linenumber" name="L7955" href="#L7955">7955</a>     }
+<a class="jxr_linenumber" name="L7956" href="#L7956">7956</a> 
+<a class="jxr_linenumber" name="L7957" href="#L7957">7957</a>     @Override
+<a class="jxr_linenumber" name="L7958" href="#L7958">7958</a>     <strong class="jxr_keyword">public</strong> <strong class="jxr_keyword">final</strong> <a name="IFitsHeader" href="../../../../../nom/tam/fits/header/IFitsHeader.html#IFitsHeader">IFitsHeader</a> impl() {
+<a class="jxr_linenumber" name="L7959" href="#L7959">7959</a>         <strong class="jxr_keyword">return</strong> key;
+<a class="jxr_linenumber" name="L7960" href="#L7960">7960</a>     }
+<a class="jxr_linenumber" name="L7961" href="#L7961">7961</a> 
+<a class="jxr_linenumber" name="L7962" href="#L7962">7962</a> }
 </pre>
 <hr/>
-<div id="footer">Copyright &#169; 1996&#x2013;2023 nom-tam-fits. All rights reserved.</div>
+<div id="footer">Copyright &#169; 1996&#x2013;2024 nom-tam-fits. All rights reserved.</div>
 </body>
 </html>
