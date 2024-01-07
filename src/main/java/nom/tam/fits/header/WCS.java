@@ -563,7 +563,7 @@ public enum WCS implements IFitsHeader {
     /**
      * The coordinate string parameter <i>m</i> (trailing index) for axis <i>i</i> (leading index) for array entries in
      * this column (middle index). The number of coordinate axes (leading index) defined this way should match the
-     * dimensionality of the array elements in the column. Same as {@value #nPSn_na}. This shorter form may be required
+     * dimensionality of the array elements in the column. Same as {@link #nPSn_na}. This shorter form may be required
      * for column indices &gt;99 with alternate coordinate systems.
      * 
      * @since 1.19
@@ -836,7 +836,7 @@ public enum WCS implements IFitsHeader {
 
     /**
      * The coordinate parameter value <i>m</i> (trailing index) for the (1D) pixel list entries in this column (leading
-     * index). Same as {@value #TPVn_na}. This shorter form may be required for column indices &gt;99 with alternate
+     * index). Same as {@link #TPVn_na}. This shorter form may be required for column indices &gt;99 with alternate
      * coordinate systems.
      * 
      * @since 1.19

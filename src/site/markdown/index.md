@@ -59,10 +59,10 @@ describes the data and possibly contain extra metadata (as key-value pairs) or c
 The library requires a level of familiarity with FITS and its common standards and conventions for effective use. For 
 example, while the library will automatically interpret and populate the mandatory minimum data description in FITS 
 headers, it will not automatically process optional standard or conventional header entries. It is up to the users to 
-extract or complete the description of data to its full extent, for example to include FITS world coordinate systems 
-(WCS), physical units, etc. Users are encouraged to familiarize themselves with the 
-[FITS standard](https://fits.gsfc.nasa.gov/fits_standard.html) and conventions described therein to be effective users 
-of this library. 
+extract or complete the description of data to its full extent, for example to include [FITS world coordinate systems 
+(WCS)](https://fits.gsfc.nasa.gov/fits_wcs.html), physical units, etc. Users are encouraged to familiarize themselves 
+with the [FITS standard](https://fits.gsfc.nasa.gov/fits_standard.html) and conventions described therein to be 
+effective users of this library. 
 
 This is an open-source, community maintained, project hosted on github as 
 [nom-tam-fits](https://github.com/nom-tam-fits/nom-tam-fits). Further information and documentation, including API 
@@ -904,10 +904,10 @@ comments and serve three distinct purposes:
     set or modify the essential data description manually.
     
  2. [FITS standard](https://fits.gsfc.nasa.gov/fits_standard.html) also reserves further header keywords to provide 
-    _optional_ standardized descriptions of the data, such as HDU names or versions, physical units, World Coordinate 
-    Systems (WCS), column names etc. It is up to the user to familiarize themselves with the _standard_ keywords and 
-    their usage, and use these to describe their data as fully as appropriate, or to extract information from 3rd 
-    party FITS headers.
+    _optional_ standardized descriptions of the data, such as HDU names or versions, physical units, [World Coordinate 
+    Systems (WCS)](https://fits.gsfc.nasa.gov/fits_wcs.html), column names etc. It is up to the user to familiarize 
+    themselves with the _standard_ keywords and their usage, and use these to describe their data as fully as 
+    appropriate, or to extract information from 3rd party FITS headers.
 
  3. Finally, the FITS headers may also store a user _dictionary_ of key/value pairs and/or comments. You may store 
     whatever further information you like (within the constraints of what FITS allows) as long as they stay clear of 
@@ -961,25 +961,41 @@ inspecting headers of HDUs stored in the FITS file, since the header returned by
 keywords indirectly inherited from the primary HDU, when the `INHERIT` keywords is used and set to `T` (true) in the 
 header of the specified HDU extension.
 
+You can also use `header.getStringValue(Standard.TELESCOPE)` instead of the string constant to retrieve the same value
+with less chance of a typo spoiling your intent. See more on the use of standard keywords in the section below).
+
 Or if we want to know the right ascension (R.A.) coordinate of the reference position in the image:
 
 ```java
   double ra = header.getDoubleValue("CRVAL1"); 
 ```
 
-[Note, that the FITS WCS convention is being used here. For typical images the reference coordinates are in the pair of 
-keys, `CRVAL1` and `CRVAL2` and our example assumes an equatorial coordinate system.]
-
-Perhaps we have a FITS file where the R.A. was not originally known, or for which we’ve just found a correction.
-
-To add or change the R.A. coordinate value, we use:
+or, equivalently
 
 ```java
-  header.addValue("CRVAL1", updatedRADeg, "[deg] Corrected R.A. coordinate");
+  double ra = header.getDoubleValue(Standard.CRVALn.n(1));
+```
+
+[Note, that the FITS [WCS convention](https://fits.gsfc.nasa.gov/fits_wcs.html) is being used here. For typical 2D 
+images the reference coordinates are in the pair of keys, `CRVAL1` and `CRVAL2` and our example assumes an equatorial 
+coordinate system.]
+
+To add or change the R.A. coordinate value, you can use:
+
+```java
+  header.addValue("CRVAL1", ra, "[deg] R.A. coordinate");
+```
+
+or, similarly
+
+```java
+  header.addValue(Standard.CRVALn.n(1), ra);
 ```
 
 The second argument is our new right ascension coordinate (in degrees). The third is a comment field that will also be 
-written to that header in the space remaining.
+written to that header in the space remaining. (When using the standard keyword, the netry is created with the the 
+standard comment belonging to the keyword, and you may change that by adding `.comment(...)` if you want it to be 
+something more specific).
 
 The `addValue(...)` methods will update existing matching header entries _in situ_ with the newly defined value and 
 comment, while it will add/insert _new_ header entries at the current _mark_ position. By default, this means that new 
@@ -998,7 +1014,7 @@ when adding new cards to headers using the direct access methods.
 
 Table HDUs may contain several standard kewords to describe individual columns, and the `TableHDU.setColumnMeta(...)` 
 methods can help you add these optional descriptor for your data while keeping column-specific keywords organized into
-header blocks around the mandatory `TFORMn` keywords. Note the the `.setColumnMeta(...)` methods also change the mark
+header blocks around the mandatory `TFORMn` keywords. Notem that the `.setColumnMeta(...)` methods also change the mark
 position at which new header entries are added.
 
 
@@ -1017,8 +1033,8 @@ methods of `HeaderCard` allow us to manipulate the contents of the current card 
 cards can be created and added to the header, e.g. via `HeaderCard.createCommentCard()` or `.createHistoryCard()` 
 respectively.
 
-Note that the iterator-based approach is the only way to extract comment cards from a header (if you are so inclined), 
-since dictionary lookup will not work for these -- as comment cards are by definition not key/value pairs).
+Note, that the iterator-based approach is the only way to extract comment cards from a header (if you are so inclined), 
+since dictionary lookup will not work for these -- as comment cards are by definition not key/value pairs.
 
 
 
@@ -1058,8 +1074,8 @@ You can use the standardized keywords contained in these enums to populate heade
 example,
 
 ```java
-  hdr.addValue(Standard.INSTRUME, "My very big telescope");
-  hdr.addValue(InstrumentDescription.FILTER, "meade #25A Red");
+  hdr.addValue(Standard.INSTRUME, "My super-duper camera");
+  hdr.addValue(InstrumentDescription.FILTER, "Meade #25A Red");
   ...
 ```
 
@@ -1345,8 +1361,9 @@ following steps:
  `Header.mergeDistinct(Header source)` method. It will migrate the header entries from the original HDU to the new one, 
  without overriding the proper essential data description.
 
- 3. Update the header entries as necessary, such as WCS, in the new HDU. Pay attention to removing obsoleted entries 
- also, such as descriptions of table columns that no longer exist in the new data.
+ 3. Update the header entries as necessary, such as [WCS](https://fits.gsfc.nasa.gov/fits_wcs.html), in the new HDU. 
+ Pay attention to removing obsoleted entries also, such as descriptions of table columns that no longer exist in the 
+ new data.
  
  4. If the header contains checksums, make sure you update these before writing the header or HDU to an output.
 
@@ -1453,9 +1470,9 @@ Once the table is complete, you can make a HDU from it:
 
 which will populate the header with the requisite entries that describe the table. You can then edit the new header
 to add any extra information (while being careful to not modify the essential table description). Note, that once the
-table is encompassed in a HDU, it is generally not safe to edit the table data, since the library has no foolproof way 
-to keep the header description of the table perfectly in sync. Thus it is recommended that you create table HDUs only 
-after the table data has been fully populated.
+table is encompassed in an HDU, it is generally not safe to edit the table data, since the library has no foolproof 
+way to keep the header description of the table perfectly in sync. Thus it is recommended that you create table HDUs 
+only after the table data has been fully populated.
 
 A few rules to remember when building tables by rows:
  

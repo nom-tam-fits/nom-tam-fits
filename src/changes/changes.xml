@@ -1,7 +1,7 @@
 <document xmlns="http://maven.apache.org/changes/1.0.0" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:schemaLocation="http://maven.apache.org/changes/1.0.0 http://maven.apache.org/xsd/changes-1.0.0.xsd">
 <body>
 
-   <release version="1.19.0-SNAPSHOT" date="2024-01-07" description="Feature release with bug fixes.">
+   <release version="1.19.0" date="2024-01-08" description="Feature release with bug fixes.">
       <action type="fix" dev="cek" issue="496">
           Workaround for read-only FITS files on Windows network shares.
       </action>
@@ -52,8 +52,10 @@
       <action type="update" dev="attipaci" issue="519">
           Demoted FitsException to be a soft exception, extending IllegalStateException. As
           a result, users are no longer required to catch these, or its derivatives such as
-          HeaderCardException. Some methods that have previously thrown IllegalStateException
-          may now throw a FitsException, in a fully backwards compatible way.
+          HeaderCardException. Header card related soft exceptions, which were direct 
+          subclasses of IllegalStateException, are now moved further down the hierarchy as 
+          direct subclasses of HeaderCardException. Some methods that have previously thrown 
+          IllegalStateException may now throw a FitsException, in a fully backwards compatible way.
       </action>
       <action type="update" dev="attipaci" issue="519">
           Deprecated IHeaderAccess interface and its implementations. These were meant for 
@@ -105,6 +107,10 @@
       </action>
       <action type="update" dev="attipaci">
           Uses the latest maven build and runtime dependencies
+      </action>
+      <action type="update" dev="attipaci">
+          Fully revised README (User's guide), with better organization, new sections, further
+          clarifications, and many corrections.
       </action>
    </release>
    

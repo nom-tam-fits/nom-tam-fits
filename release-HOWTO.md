@@ -5,21 +5,21 @@ This document is meant for package maintainers only. Its purpose is to provide i
 
 ## Prerequisites
 
-To release packages, you will need to:
+To release packages, you will need:
 
- 1. have admin privileges on the mainline [nom-tam-fits](https://www.github.com/nom-tam-fits/nom-tam-fits) repo.
+ 1. admin privileges on the mainline [nom-tam-fits](https://www.github.com/nom-tam-fits/nom-tam-fits) repo.
  
- 2. have a Nexus Sonatype account. If not register one (see the [guide to publishing packages on Sonatype](https://central.sonatype.org/publish/publish-guide/)). We use the Sonatype Nexus repository for staging releases before pushing them to Maven Central, and also to provide automatic SNAPSHOT releases. (Releases, including SNAPSHOTs are pushed automatically to the Nexus repository by the GitHub Actions CI (`.github/workflows/maven.yml`).
+ 2. a Nexus Sonatype account. If not register one (see the [guide to publishing packages on Sonatype](https://central.sonatype.org/publish/publish-guide/)). We use the Sonatype Nexus repository for staging releases before pushing them to Maven Central, and also to provide automatic SNAPSHOT releases. (Releases, including SNAPSHOTs are pushed automatically to the Nexus repository by the GitHub Actions CI (`.github/workflows/maven.yml`).
  
- 3. have push privileges to the `gov.nasa.gsfc.heasarc` repo on Nexus. If you don't already have them, one of the other nom-tam-fits maintainers can request it for you. (It may take up to 2 days after the request to gain access).
+ 3. push privileges to the `gov.nasa.gsfc.heasarc` repo on Nexus. If you don't already have them, one of the other nom-tam-fits maintainers can request it for you. (It may take up to 2 days after the request to gain access).
  
- 4. update the `NEXUS_USERNAME` and `NEXUS_PASSWORD` repository secrets on github with your Nexus username and authentication token. At any point, there should be only one of the maintainers publishing packages to Nexus. So use your credentials only if you are that designated person.
+ 4. the `NEXUS_USERNAME` and `NEXUS_PASSWORD` repository secrets on github with your Nexus username and authentication token. At any point, there should be only one of the maintainers publishing packages to Nexus. So use your credentials only if you are that designated person.
 
 
 ## Preparing the release
 
 
- * Make sure the CI build on github passes without errors. If the CI build has issues, get them fixed before proceeding.
+ * Make sure the CI build on github passes without errors. If the CI build has issues, fix them before proceeding.
  
  * Check that unit tests coverage did not decrease compared to the prior release. (You should not merge pull request in the first place until they maintain or increase test coverage.) Small decrements in overall coverage due to a reduction in the total lines of code are acceptable, as long as the diff coverage itself is equal or above the previous coverage metric. (You should generally insist on 100% diff-coverage, unless there is a good reason why it cannot be attained.) 
 
