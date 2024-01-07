@@ -401,6 +401,12 @@ public enum DateTime implements IFitsHeader {
     /** Solar System ephemeris value for {@link #PLEPHEM} for Folkner, et al. (2014). */
     public static final String PLEPHEM_DE432 = "DE432";
 
+    /** Solar System ephemeris value for {@link #PLEPHEM} for Park, et al. (2021). */
+    public static final String PLEPHEM_DE440 = "DE440";
+   
+    /** Solar System ephemeris value for {@link #PLEPHEM} for Park, et al. (2021). */
+    public static final String PLEPHEM_DE441 = "DE441";
+
     /** Time unit value for time measured in seconds */
     public static final String TIMEUNIT_SECOND = "s";
 
