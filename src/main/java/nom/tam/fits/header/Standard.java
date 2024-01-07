@@ -529,7 +529,15 @@ public enum Standard implements IFitsHeader {
      * for an extension key and must not appear in the primary key. For an extension that is not a standard extension,
      * the type name must not be the same as that of a standard extension.
      */
-    XTENSION(SOURCE.MANDATORY, HDU.EXTENSION, VALUE.STRING, "marks beginning of new HDU");
+    XTENSION(SOURCE.MANDATORY, HDU.EXTENSION, VALUE.STRING, "marks beginning of new HDU"),
+
+    /**
+     * If set to <code>true</code>, it indicates that the HDU should inherit all non-confliucting keywords from the
+     * primary HDU.
+     * 
+     * @since 1.19
+     */
+    INHERIT(SOURCE.RESERVED, HDU.EXTENSION, VALUE.LOGICAL, "Inherit primary header entries");
 
     /**
      * A shorthand for {@link #NAXISn}<code>.n(1)</code>, that is the regular dimension along the first, fastest FITS

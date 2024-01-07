@@ -26,6 +26,7 @@ import java.lang.reflect.Proxy;
 import java.net.URL;
 import java.nio.channels.FileChannel;
 import java.util.Arrays;
+import java.util.NoSuchElementException;
 
 import org.junit.After;
 import org.junit.Assert;
@@ -47,6 +48,7 @@ import nom.tam.fits.HeaderCardException;
 import nom.tam.fits.HeaderCommentsMap;
 import nom.tam.fits.ImageData;
 import nom.tam.fits.ImageHDU;
+import nom.tam.fits.NullDataHDU;
 import nom.tam.fits.RandomGroupsData;
 import nom.tam.fits.RandomGroupsHDU;
 import nom.tam.fits.UndefinedData;
@@ -1399,6 +1401,127 @@ public class BaseFitsTest {
         Assert.assertTrue(file.setReadOnly());
         // Create a Fits object from the read-only file.
         Fits fits = new Fits(fileName);
+    }
+
+    @Test
+    public void testGetPrimaryHDU() throws Exception {
+        Fits fits = new Fits();
+        BasicHDU<?> primary = new NullDataHDU();
+
+        fits.addHDU(primary);
+        fits.addHDU(ImageData.from(new int[10][10]).toHDU());
+
+        Assert.assertEquals(primary.getHeader(), fits.getPrimaryHeader());
+        Assert.assertTrue(fits.getPrimaryHeader().containsKey(Standard.SIMPLE));
+    }
+
+    @Test(expected = FitsException.class)
+    public void testGetPrimaryHeaderEmpty() throws Exception {
+        Fits fits = new Fits();
+        fits.getPrimaryHeader();
+    }
+
+    @Test
+    public void testGetCompleteHeaderInherit() throws Exception {
+        Fits fits = new Fits();
+        BasicHDU<?> primary = new NullDataHDU();
+        primary.addValue("TEST", "blah", "no comment");
+
+        BasicHDU<?> im = ImageData.from(new int[10][10]).toHDU();
+        im.addValue(Standard.INHERIT, true);
+
+        fits.addHDU(primary);
+        fits.addHDU(im);
+
+        Assert.assertEquals(primary.getHeader(), fits.getCompleteHeader(0));
+        Assert.assertTrue(fits.getCompleteHeader(0).containsKey("TEST"));
+
+        Assert.assertNotEquals(im.getHeader(), fits.getCompleteHeader(1));
+        Assert.assertTrue(fits.getCompleteHeader(1).containsKey("TEST"));
+        Assert.assertFalse(fits.getCompleteHeader(1).containsKey(Standard.SIMPLE));
+    }
+
+    @Test
+    public void testGetCompleteHeaderNoInherit() throws Exception {
+        Fits fits = new Fits();
+        BasicHDU<?> primary = new NullDataHDU();
+        BasicHDU<?> im = ImageData.from(new int[10][10]).toHDU();
+
+        fits.addHDU(primary);
+        fits.addHDU(im);
+
+        Assert.assertEquals(primary.getHeader(), fits.getCompleteHeader(0));
+        Assert.assertTrue(fits.getCompleteHeader(0).containsKey(Standard.SIMPLE));
+
+        Assert.assertEquals(im.getHeader(), fits.getCompleteHeader(1));
+        Assert.assertTrue(fits.getCompleteHeader(1).containsKey(Standard.XTENSION));
+    }
+
+    @Test
+    public void testGetCompleteHeaderByName() throws Exception {
+        Fits fits = new Fits();
+        BasicHDU<?> primary = new NullDataHDU();
+        primary.addValue("TEST", "blah", "no comment");
+
+        BasicHDU<?> im = ImageData.from(new int[10][10]).toHDU();
+        im.addValue(Standard.EXTNAME, "TEST");
+
+        fits.addHDU(new NullDataHDU());
+        fits.addHDU(im);
+
+        Assert.assertEquals(im.getHeader(), fits.getCompleteHeader("TEST"));
+    }
+
+    @Test(expected = NoSuchElementException.class)
+    public void testGetCompleteHeaderByNameException() throws Exception {
+        Fits fits = new Fits();
+        fits.getCompleteHeader("TEST");
+    }
+
+    @Test
+    public void testGetCompleteHeaderByNameVersion() throws Exception {
+        Fits fits = new Fits();
+        BasicHDU<?> primary = new NullDataHDU();
+        primary.addValue("TEST", "blah", "no comment");
+
+        BasicHDU<?> im1 = ImageData.from(new int[10][10]).toHDU();
+        im1.addValue(Standard.EXTNAME, "TEST");
+
+        BasicHDU<?> im2 = ImageData.from(new int[10][10]).toHDU();
+        im2.addValue(Standard.EXTNAME, "TEST");
+        im2.addValue(Standard.EXTVER, "2");
+
+        fits.addHDU(new NullDataHDU());
+        fits.addHDU(im1);
+        fits.addHDU(im2);
+
+        Assert.assertEquals(im2.getHeader(), fits.getCompleteHeader("TEST", 2));
+    }
+
+    @Test(expected = NoSuchElementException.class)
+    public void testGetCompleteHeaderByNameVersionException() throws Exception {
+        Fits fits = new Fits();
+        BasicHDU<?> primary = new NullDataHDU();
+        primary.addValue("TEST", "blah", "no comment");
+
+        BasicHDU<?> im1 = ImageData.from(new int[10][10]).toHDU();
+        im1.addValue(Standard.EXTNAME, "TEST");
+
+        BasicHDU<?> im2 = ImageData.from(new int[10][10]).toHDU();
+        im2.addValue(Standard.EXTNAME, "TEST");
+        im2.addValue(Standard.EXTVER, "2");
+
+        fits.addHDU(new NullDataHDU());
+        fits.addHDU(im1);
+        fits.addHDU(im2);
+
+        fits.getCompleteHeader("TEST", 3);
+    }
+
+    @Test(expected = IndexOutOfBoundsException.class)
+    public void testGetCompleteHeaderIndexOutOfBounds() throws Exception {
+        Fits fits = new Fits();
+        fits.getCompleteHeader(0);
     }
 
     private static class TestRandomAccessFileIO extends java.io.RandomAccessFile implements RandomAccessFileIO {

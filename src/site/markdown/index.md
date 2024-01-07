@@ -956,6 +956,11 @@ the `TELESCOP` key.
   String telescope =  header.getStringValue("TELESCOP");
 ```
 
+Note, that as of version __1.19__ you might want to use one of the `Fits.getCompleteHeader(...)` methods when 
+inspecting headers of HDUs stored in the FITS file, since the header returned by these methods would also contain 
+keywords indirectly inherited from the primary HDU, when the `INHERIT` keywords is used and set to `T` (true) in the 
+header of the specified HDU extension.
+
 Or if we want to know the right ascension (R.A.) coordinate of the reference position in the image:
 
 ```java

@@ -18,6 +18,7 @@ import nom.tam.fits.FitsFactory.FitsSettings;
 import nom.tam.fits.header.Bitpix;
 import nom.tam.fits.header.IFitsHeader;
 import nom.tam.fits.header.IFitsHeader.VALUE;
+import nom.tam.fits.header.Standard;
 import nom.tam.util.ArrayDataInput;
 import nom.tam.util.ArrayDataOutput;
 import nom.tam.util.AsciiFuncs;
@@ -328,6 +329,10 @@ public class Header implements FitsElement {
         while (c.hasNext()) {
             HeaderCard card = c.next();
             if (card.isCommentStyleCard() || !containsKey(card.getKey())) {
+                if (card.getKey().equals(Standard.SIMPLE.key()) || card.getKey().equals(Standard.XTENSION.key())) {
+                    // Do not merge SIMPLE / XTENSION -- these are private matters...
+                    continue;
+                }
                 addLine(card.copy());
             }
         }
