@@ -308,7 +308,7 @@ public enum DateTime implements IFitsHeader {
     /** Ephemeris Time (ET) timescale value. */
     public static final String TIMESYS_ET = "ET";
 
-    /** @deprecated DEprecated by the FITS standard, use {@link #TIMESYS_TAI} instead. */
+    /** @deprecated Deprecated by the FITS standard, use {@link #TIMESYS_TAI} instead. */
     public static final String TIMESYS_IAT = "IAT";
 
     /** Earth rotation time (UT1) timescale value. */
@@ -318,7 +318,7 @@ public enum DateTime implements IFitsHeader {
     public static final String TIMESYS_UTC = "UTC";
 
     /**
-     * @deprecated Greenwih Mean time (GMT) timescale value; deprecated by the FITS standard, use {@link #TIMESYS_UTC}
+     * @deprecated Greenwich Mean time (GMT) timescale value; deprecated by the FITS standard, use {@link #TIMESYS_UTC}
      *                 instead.
      */
     public static final String TIMESYS_GMT = "GMT";
