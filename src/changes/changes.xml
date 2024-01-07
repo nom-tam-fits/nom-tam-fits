@@ -1,9 +1,15 @@
 <document xmlns="http://maven.apache.org/changes/1.0.0" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:schemaLocation="http://maven.apache.org/changes/1.0.0 http://maven.apache.org/xsd/changes-1.0.0.xsd">
 <body>
 
-   <release version="1.19.0-rc3" date="2023-12-22" description="Feature release with bug fixes.">
+   <release version="1.19.0-SNAPSHOT" date="2024-01-07" description="Feature release with bug fixes.">
       <action type="fix" dev="cek" issue="496">
           Workaround for read-only FITS files on Windows network shares.
+      </action>
+      <action type="fix" dev="attipaci" issue="532">
+          Keywords with hyphens in STScIExt had the wrong form previously.
+      </action>
+      <action type="fix" dev="attipaci" issue="531">
+          Small fixes to HashedList handling iterator access corner cases.
       </action>
       <action type="add" dev="attipaci" issue="488">
           New targeted Data and HDU creation from Java objects via new Data+.from(Object) and
@@ -30,6 +36,19 @@
           New methods to make the decompression of selected CompressedTableHDU tiles 
           even easier (and safer) to use.
       </action>
+      <action type="add" dev="attipaci" issue="531">
+          Support for INHERIT keywords via Fits.getCompleteHeader(...) methods. These methods
+          will populate he mandatory FITS header keywords in the the selected HDU, and may 
+          return an independent HDU that is composed of both the explicitly defined keywords
+          in the selected HDU and the inherited (non-conflicting) keywords from the primary
+          HDU.
+      </action>
+      <action type="add" dev="attipaci" issue="532">
+          New WCS and DateTime classes with an enumeration of all standard FITS WCS and 
+          date-time related keywords, and recognized values (constants). The WCS enums support
+          alternate coordinate systems via the WCS.alt(char) method. For ecample to generate
+          the "CTYPE1A" standard keywords you may call Standard.CTYPEna.alt('A').n(1). 
+      </action>
       <action type="update" dev="attipaci" issue="519">
           Demoted FitsException to be a soft exception, extending IllegalStateException. As
           a result, users are no longer required to catch these, or its derivatives such as
@@ -50,6 +69,29 @@
       <action type="update" dev="attipaci" issue="525">
           Improvements to AsciiTable with addColumn() argument checking and more specific
           documentation.
+      </action>
+      <action type="update" dev="attipaci" issue="532">
+          Synonyms has been extended to enumerate all synonymous WCS keys also.
+      </action>
+      <action type="update" dev="attipaci" issue="532">
+          Added impl() method to IFitsHeader interface with a default implementation to 
+          eliminate code that was duplicated many times over in implementing enums.
+      </action>
+      <action type="update" dev="attipaci" issue="532">
+          IFitsHeader.n(int...) now checks that the supplied indices are in the 0-999 range 
+          (we'll accept 0, even though it's not really proper FITS, but apears to be used 
+          nevertheless), and throw an IllegalArgumentException if any of the indices are out 
+          of bounds. The method now also checks that the resulting indexed keyword does not 
+          exceed the 8-byte limit of standard FITS keywords, or else will throw an 
+          IllegalStateException.
+      </action>
+      <action type="update" dev="attipaci" issue="532">
+          Specifying more indices than can be filled for an IFitsHeader will throw an 
+          IndexOutOfBoundsException.
+      </action>
+      <action type="update" dev="attipaci" issue="532">
+          Attempting to create a HeaderCard with a standard keyword that has unfilled 
+          indices will throw an IllegalArgumentException.
       </action>
       <action type="update" dev="attipaci">
           CompressedImageHDU.getTileHDU() now updates CRPIXna keywords also in the 
