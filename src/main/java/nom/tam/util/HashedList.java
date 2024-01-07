@@ -110,7 +110,11 @@ public class HashedList<VALUE extends CursorValue<String>> implements Collection
 
         @Override
         public VALUE end() {
-            current = Math.max(0, HashedList.this.ordered.size() - 1);
+            current = HashedList.this.ordered.size() - 1;
+            if (current < 0) {
+                current = 0;
+                return null;
+            }
             return next();
         }
 
@@ -127,7 +131,7 @@ public class HashedList<VALUE extends CursorValue<String>> implements Collection
         @Override
         public VALUE next() {
             if (current < 0 || current >= HashedList.this.ordered.size()) {
-                throw new NoSuchElementException("Outside list");
+                throw new NoSuchElementException("Outside list: " + current);
             }
             VALUE entry = HashedList.this.ordered.get(current);
             current++;

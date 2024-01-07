@@ -48,6 +48,7 @@ import java.util.logging.Level;
 import java.util.logging.Logger;
 
 import nom.tam.fits.compress.CompressionManager;
+import nom.tam.fits.header.Standard;
 import nom.tam.fits.utilities.FitsCheckSum;
 import nom.tam.util.ArrayDataInput;
 import nom.tam.util.ArrayDataOutput;
@@ -693,17 +694,18 @@ public class Fits implements Closeable {
      * Returns the n'th HDU. If the HDU is already read simply return a pointer to the cached data. Otherwise read the
      * associated stream until the n'th HDU is read.
      *
-     * @param  n             The index of the HDU to be read. The primary HDU is index 0.
+     * @param  n                         The index of the HDU to be read. The primary HDU is index 0.
      *
-     * @return               The n'th HDU or null if it could not be found.
+     * @return                           The n'th HDU or null if it could not be found.
      *
-     * @throws FitsException if the header could not be read
-     * @throws IOException   if the underlying buffer threw an error
+     * @throws FitsException             if the header could not be read
+     * @throws IOException               if the underlying buffer threw an error
+     * @throws IndexOutOfBoundsException if the Fits contains no HDU by the given index.
      *
-     * @see                  #getHDU(String)
-     * @see                  #getHDU(String, int)
+     * @see                              #getHDU(String)
+     * @see                              #getHDU(String, int)
      */
-    public BasicHDU<?> getHDU(int n) throws FitsException, IOException {
+    public BasicHDU<?> getHDU(int n) throws FitsException, IOException, IndexOutOfBoundsException {
         for (int i = getNumberOfHDUs(); i <= n; i++) {
             BasicHDU<?> hdu = readHDU();
             if (hdu == null) {
@@ -711,6 +713,153 @@ public class Fits implements Closeable {
             }
         }
         return hduList.get(n);
+    }
+
+    /**
+     * Returns the primary header of this FITS file, that is the header of the primary HDU in the Fits. The primary
+     * header this way will be properly configured as the primary HDU with all mandatory keywords, even if the HDU's
+     * header did not contain these entries originally.
+     * 
+     * @return               The primary header of this FITS file/object.
+     * 
+     * @throws FitsException If the Fits is empty (does not contain a primary HDU)
+     * @throws IOException
+     * 
+     * @see                  #getCompleteHeader(int)
+     * 
+     * @since                1.19
+     */
+    public Header getPrimaryHeader() throws FitsException, IOException {
+        if (hduList.isEmpty()) {
+            throw new FitsException("Empty Fits object");
+        }
+        BasicHDU<?> primary = getHDU(0);
+        primary.setPrimaryHDU(true);
+        return primary.getHeader();
+    }
+
+    /**
+     * Returns the complete header of the n<sup>th</sup> HDU in this FITS file/object. This differs from
+     * {@link #getHDU(int)}<code>.getHeader()</code> in two important ways:
+     * <ul>
+     * <li>The header will be populated with the mandatory FITS keywords based on whether it is that of a primary or
+     * extension HDU in the Fits, and the type of HDU it is.</li>
+     * <li>If the header contains the INHERIT keyword, a new header object is returned, which merges the non-conflicting
+     * primary header keys on top of the keywords explicitly defined in the HDU already.
+     * </ul>
+     * 
+     * @param  n                         The zero-based index of the HDU.
+     * 
+     * @return                           The completed header of the HDU. If the HDU contains the INHERIT key this
+     *                                       header will be a new header object constructed by this call to include also
+     *                                       all non-conflicting primary header keywords. Otherwise it will simply
+     *                                       return the HDUs header (after adding the mandatory keywords).
+     * 
+     * @throws FitsException             If the FITS is empty
+     * @throws IOException               If the HDU is not accessible from its source
+     * @throws IndexOutOfBoundsException If the FITS does not contain a HDU by the specified index
+     * 
+     * @see                              #getCompleteHeader(String)
+     * @see                              #getCompleteHeader(String, int)
+     * @see                              #getPrimaryHeader()
+     * @see                              #getHDU(int)
+     * 
+     * @since                            1.19
+     */
+    public Header getCompleteHeader(int n) throws FitsException, IOException, IndexOutOfBoundsException {
+        BasicHDU<?> hdu = getHDU(n);
+        if (hdu == null) {
+            throw new IndexOutOfBoundsException("FITS has no HDU index " + n);
+        }
+        return getCompleteHeader(hdu);
+    }
+
+    /**
+     * Returns the complete header of the first HDU by the specified name in this FITS file/object. This differs from
+     * {@link #getHDU(String)}<code>.getHeader()</code> in two important ways:
+     * <ul>
+     * <li>The header will be populated with the mandatory FITS keywords based on whether it is that of a primary or
+     * extension HDU in the Fits, and the type of HDU it is.</li>
+     * <li>If the header contains the INHERIT keyword, a new header object is returned, which merges the non-conflicting
+     * primary header keys on top of the keywords explicitly defined in the HDU already.
+     * </ul>
+     * 
+     * @param  name                      The HDU name
+     * 
+     * @return                           The completed header of the HDU. If the HDU contains the INHERIT key this
+     *                                       header will be a new header object constructed by this call to include also
+     *                                       all non-conflicting primary header keywords. Otherwise it will simply
+     *                                       return the HDUs header (after adding the mandatory keywords).
+     * 
+     * @throws FitsException             If the FITS is empty
+     * @throws IOException               If the HDU is not accessible from its source
+     * @throws IndexOutOfBoundsException If the FITS does not contain a HDU by the specified index
+     * 
+     * @see                              #getCompleteHeader(String, int)
+     * @see                              #getCompleteHeader(int)
+     * @see                              #getPrimaryHeader()
+     * @see                              #getHDU(int)
+     * 
+     * @since                            1.19
+     */
+    public Header getCompleteHeader(String name) throws FitsException, IOException {
+        BasicHDU<?> hdu = getHDU(name);
+        if (hdu == null) {
+            throw new FitsException("Fits contains no HDU named " + name);
+        }
+        return getCompleteHeader(hdu);
+    }
+
+    /**
+     * Returns the complete header of the first HDU by the specified name and version in this FITS file/object. This
+     * differs from {@link #getHDU(String)}<code>.getHeader()</code> in two important ways:
+     * <ul>
+     * <li>The header will be populated with the mandatory FITS keywords based on whether it is that of a primary or
+     * extension HDU in the Fits, and the type of HDU it is.</li>
+     * <li>If the header contains the INHERIT keyword, a new header object is returned, which merges the non-conflicting
+     * primary header keys on top of the keywords explicitly defined in the HDU already.
+     * </ul>
+     * 
+     * @param  name                      The HDU name
+     * @param  version                   The HDU version
+     * 
+     * @return                           The completed header of the HDU. If the HDU contains the INHERIT key this
+     *                                       header will be a new header object constructed by this call to include also
+     *                                       all non-conflicting primary header keywords. Otherwise it will simply
+     *                                       return the HDUs header (after adding the mandatory keywords).
+     * 
+     * @throws FitsException             If the FITS is empty
+     * @throws IOException               If the HDU is not accessible from its source
+     * @throws IndexOutOfBoundsException If the FITS does not contain a HDU by the specified index
+     * 
+     * @see                              #getCompleteHeader(String)
+     * @see                              #getCompleteHeader(int)
+     * @see                              #getPrimaryHeader()
+     * @see                              #getHDU(int)
+     * 
+     * @since                            1.19
+     */
+    public Header getCompleteHeader(String name, int version) throws FitsException, IOException {
+        BasicHDU<?> hdu = getHDU(name, version);
+        if (hdu == null) {
+            throw new FitsException("Fits contains no HDU named " + name);
+        }
+        return getCompleteHeader(hdu);
+    }
+
+    private Header getCompleteHeader(BasicHDU<?> hdu) throws FitsException, IOException {
+        if (hdu == getHDU(0)) {
+            return getPrimaryHeader();
+        }
+        hdu.setPrimaryHDU(false);
+        Header h = hdu.getHeader();
+        if (h.getBooleanValue(Standard.INHERIT)) {
+            Header merged = new Header();
+            merged.mergeDistinct(h);
+            merged.mergeDistinct(getPrimaryHeader());
+            return merged;
+        }
+        return h;
     }
 
     /**
@@ -1034,6 +1183,7 @@ public class Fits implements Closeable {
 
         lastFileOffset = FitsUtil.findOffset(dataStr);
         BasicHDU<Data> hdu = FitsFactory.hduFactory(hdr, data);
+
         hduList.add(hdu);
 
         return hdu;
