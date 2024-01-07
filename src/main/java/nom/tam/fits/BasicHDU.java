@@ -699,6 +699,11 @@ public abstract class BasicHDU<DataClass extends Data> implements FitsElement {
      * Returns the FITS header component of this HDU
      * 
      * @return the associated header
+     * 
+     * @see    Fits#getPrimaryHeader()
+     * @see    Fits#getCompleteHeader(int)
+     * @see    Fits#getCompleteHeader(String)
+     * @see    Fits#getCompleteHeader(String, int)
      */
     public Header getHeader() {
         return myHeader;

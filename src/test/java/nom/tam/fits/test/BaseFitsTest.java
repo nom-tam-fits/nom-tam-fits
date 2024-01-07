@@ -26,6 +26,7 @@ import java.lang.reflect.Proxy;
 import java.net.URL;
 import java.nio.channels.FileChannel;
 import java.util.Arrays;
+import java.util.NoSuchElementException;
 
 import org.junit.After;
 import org.junit.Assert;
@@ -1471,6 +1472,12 @@ public class BaseFitsTest {
         Assert.assertEquals(im.getHeader(), fits.getCompleteHeader("TEST"));
     }
 
+    @Test(expected = NoSuchElementException.class)
+    public void testGetCompleteHeaderByNameException() throws Exception {
+        Fits fits = new Fits();
+        fits.getCompleteHeader("TEST");
+    }
+
     @Test
     public void testGetCompleteHeaderByNameVersion() throws Exception {
         Fits fits = new Fits();
@@ -1489,6 +1496,26 @@ public class BaseFitsTest {
         fits.addHDU(im2);
 
         Assert.assertEquals(im2.getHeader(), fits.getCompleteHeader("TEST", 2));
+    }
+
+    @Test(expected = NoSuchElementException.class)
+    public void testGetCompleteHeaderByNameVersionException() throws Exception {
+        Fits fits = new Fits();
+        BasicHDU<?> primary = new NullDataHDU();
+        primary.addValue("TEST", "blah", "no comment");
+
+        BasicHDU<?> im1 = ImageData.from(new int[10][10]).toHDU();
+        im1.addValue(Standard.EXTNAME, "TEST");
+
+        BasicHDU<?> im2 = ImageData.from(new int[10][10]).toHDU();
+        im2.addValue(Standard.EXTNAME, "TEST");
+        im2.addValue(Standard.EXTVER, "2");
+
+        fits.addHDU(new NullDataHDU());
+        fits.addHDU(im1);
+        fits.addHDU(im2);
+
+        fits.getCompleteHeader("TEST", 3);
     }
 
     @Test(expected = IndexOutOfBoundsException.class)
