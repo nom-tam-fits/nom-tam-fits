@@ -123,6 +123,8 @@ public enum Standard implements IFitsHeader {
      * by the CTYPEn keywords with respect to the pixel index, evaluated at the reference point CRPIXn, in units of the
      * coordinate specified by the CTYPEn keyword. These units must follow the prescriptions of section 5.3 of the FITS
      * Standard.
+     *
+     * @see WCS#CDELTna
      */
     CDELTn(SOURCE.RESERVED, HDU.IMAGE, VALUE.REAL, "coordinate increment along axis"),
 
@@ -157,17 +159,23 @@ public enum Standard implements IFitsHeader {
      * n, in units of the axis index. This value is based upon a counter that runs from 1 to NAXISn with an increment of
      * 1 per pixel. The reference point value need not be that for the center of a pixel nor lie within the actual data
      * array. Use comments to indicate the location of the index point relative to the pixel.
+     * 
+     * @see WCS#CRPIXna
      */
     CRPIXn(SOURCE.RESERVED, HDU.IMAGE, VALUE.REAL, "coordinate system reference pixel"),
 
     /**
      * The value field shall contain a floating point number, giving the value of the coordinate specified by the CTYPEn
      * keyword at the reference point CRPIXn. Units must follow the prescriptions of section 5.3 of the FITS Standard.
+     *
+     * @see WCS#CRVALna
      */
     CRVALn(SOURCE.RESERVED, HDU.IMAGE, VALUE.REAL, "coordinate system value at reference pixel"),
 
     /**
      * The value field shall contain a character string, giving the name of the coordinate represented by axis n.
+     *
+     * @see WCS#CTYPEna
      */
     CTYPEn(SOURCE.RESERVED, HDU.IMAGE, VALUE.STRING, "name of the coordinate axis"),
 
