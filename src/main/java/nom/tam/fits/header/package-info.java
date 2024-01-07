@@ -21,36 +21,36 @@
  *
  * <pre>
  * Standard
- *    source: [http://heasarc.gsfc.nasa.gov/docs/fcg/standard_dict.html](http://heasarc.gsfc.nasa.gov/docs/fcg/standard_dict.html) |
- * Common standard
- *   inherits from Standard
- *   source: [http://heasarc.gsfc.nasa.gov/docs/fcg/common_dict.html](http://heasarc.gsfc.nasa.gov/docs/fcg/common_dict.html) |
+ *   The core mandatory and reserved keywords of the FITS standard  
+ *   source: [http://heasarc.gsfc.nasa.gov/docs/fcg/standard_dict.html](http://heasarc.gsfc.nasa.gov/docs/fcg/standard_dict.html) |
+ * WCS
+ *   World Coordinate Systems (WCS) standard keywords, with support for alternate coordinate systems
+ * DateTime
+ *   FITS standard date-time related keywords
+ * NonStandard
+ *   A set of commonly used keyword conventions outside of the FITS standard
+ * DataDescription
+ *   Commonly used keywords to further describe the data
+ * InstrumentDescription
+ *   Commonly used keywords to describe the instrument used to obtain the data
+ * ObservationDescription
+ *   Commonly used keywords that describe the observation
+ * ObservationDurationDescription
+ *   Commonly used keywords that describe the length of observation.
  * NOAO
- *   inherits from Common standard
  *   source: [http://iraf.noao.edu/iraf/web/projects/ccdmosaic/imagedef/fitsdic.html](http://iraf.noao.edu/iraf/web/projects/ccdmosaic/imagedef/fitsdic.html)
  * SBFits
- *   inherits from Common standard
  *   source: [http://archive.sbig.com/pdffiles/SBFITSEXT_1r0.pdf](http://archive.sbig.com/pdffiles/SBFITSEXT_1r0.pdf)
  * MaxImDL
- *   inherits from SBFits
  *   source: [http://www.cyanogen.com/help/maximdl/FITS_File_Header_Definitions.htm](http://www.cyanogen.com/help/maximdl/FITS_File_Header_Definitions.htm)
- * CXCStclShared
- *   inherits from Common standard
- *   source: we found these duplicated
  * CXC
- *   inherits from CXCStclShared
  *   source: [http://cxc.harvard.edu/contrib/arots/fits/content.txt](http://cxc.harvard.edu/contrib/arots/fits/content.txt)
  * STScI
- *   inherits from CXCStclShared
  *   source: [http://tucana.noao.edu/ADASS/adass_proc/adass_95/zaraten/zaraten.html](http://tucana.noao.edu/ADASS/adass_proc/adass_95/zaraten/zaraten.html)  |
  * </pre>
  * <p>
- * All duplicates where eliminated from enumerations including the enumerations that where already defined in one of the
- * "parent" standards. So always use a keyword of one of the higher level standards when possible.
- * </p>
- * <p>
- * Furthermore there are synonym keywords inside and over dictionaries, These we also started to collect in the Synonyms
- * class in the header package. So you can easily find the primary keyword to use instead of the synonym.
+ * There are synonymous keywords within these dictionaries, These we also started to collect in the {@link Synonyms}
+ * class in the header package.
  * </p>
  * <p>
  * All these enums have no real effect for now in the library apart from the fact that you can now make compiler checked
