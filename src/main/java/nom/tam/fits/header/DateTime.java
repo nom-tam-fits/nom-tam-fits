@@ -297,46 +297,46 @@ public enum DateTime implements IFitsHeader {
     TIMEPIXR(SOURCE.RESERVED, HDU.ANY, VALUE.REAL, "Time location in pixel");
 
     /** International Atomic Time (TAI) timescale value. */
-    public static final String TIMESCALE_TAI = "TAI";
+    public static final String TIMESYS_TAI = "TAI";
 
     /** Terrestrial Time (TT) timescale value. */
-    public static final String TIMESCALE_TT = "TT";
+    public static final String TIMESYS_TT = "TT";
 
     /** Terrestrial Dynamical Time (TDT) timescale value. */
-    public static final String TIMESCALE_TDT = "TDT";
+    public static final String TIMESYS_TDT = "TDT";
 
     /** Ephemeris Time (ET) timescale value. */
-    public static final String TIMESCALE_ET = "ET";
+    public static final String TIMESYS_ET = "ET";
 
-    /** @deprecated DEprecated by the FITS standard, use {@link #TIMESCALE_TAI} instead. */
-    public static final String TIMESCALE_IAT = "IAT";
+    /** @deprecated DEprecated by the FITS standard, use {@link #TIMESYS_TAI} instead. */
+    public static final String TIMESYS_IAT = "IAT";
 
     /** Earth rotation time (UT1) timescale value. */
-    public static final String TIMESCALE_UT1 = "UT1";
+    public static final String TIMESYS_UT1 = "UT1";
 
     /** Universal Coordinated Time (UTC) timescale value. */
-    public static final String TIMESCALE_UTC = "UTC";
+    public static final String TIMESYS_UTC = "UTC";
 
     /**
-     * @deprecated Greenwih Mean time (GMT) timescale value; deprecated by the FITS standard, use {@link #TIMESCALE_UTC}
+     * @deprecated Greenwih Mean time (GMT) timescale value; deprecated by the FITS standard, use {@link #TIMESYS_UTC}
      *                 instead.
      */
-    public static final String TIMESCALE_GMT = "GMT";
+    public static final String TIMESYS_GMT = "GMT";
 
     /** Global Positioning System (GPS) time timescale value. */
-    public static final String TIMESCALE_GPS = "GPS";
+    public static final String TIMESYS_GPS = "GPS";
 
     /** Geocentric Coordinated Time (TCG) timescale value. */
-    public static final String TIMESCALE_TCG = "TCG";
+    public static final String TIMESYS_TCG = "TCG";
 
     /** Barycentric Coordinated Time (TCB) timescale value. */
-    public static final String TIMESCALE_TCB = "TCB";
+    public static final String TIMESYS_TCB = "TCB";
 
     /** Barycentric Dynamical Time (TDB) timescale value. */
-    public static final String TIMESCALE_TDB = "TDB";
+    public static final String TIMESYS_TDB = "TDB";
 
     /** Local time timescale value for free-running clocks. */
-    public static final String TIMESCALE_LOCAL = "LOCAL";
+    public static final String TIMESYS_LOCAL = "LOCAL";
 
     /** Topocentric time reference position */
     public static final String TREFPOS_TOPOCENTER = "TOPOCENTER";
