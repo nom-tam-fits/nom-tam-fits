@@ -38,16 +38,16 @@
       </action>
       <action type="add" dev="attipaci" issue="531">
           Support for INHERIT keywords via Fits.getCompleteHeader(...) methods. These methods
-          will populate he mandatory FITS header keywords in the the selected HDU, and may 
-          return an independent HDU that is composed of both the explicitly defined keywords
+          will populate the mandatory FITS header keywords in the the selected HDU, and may 
+          return an independent header composed of both the explicitly defined keywords
           in the selected HDU and the inherited (non-conflicting) keywords from the primary
           HDU.
       </action>
       <action type="add" dev="attipaci" issue="532">
-          New WCS and DateTime classes with an enumeration of all standard FITS WCS and 
+          New WCS and DateTime enums with an enumeration of all standard FITS WCS and 
           date-time related keywords, and recognized values (constants). The WCS enums support
-          alternate coordinate systems via the WCS.alt(char) method. For ecample to generate
-          the "CTYPE1A" standard keywords you may call Standard.CTYPEna.alt('A').n(1). 
+          alternate coordinate systems via the WCS.alt(char) method. For example to generate
+          the "CTYPE1A" standard keywords you may call WCS.CTYPEna.alt('A').n(1). 
       </action>
       <action type="update" dev="attipaci" issue="519">
           Demoted FitsException to be a soft exception, extending IllegalStateException. As
@@ -77,7 +77,7 @@
       </action>
       <action type="update" dev="attipaci" issue="532">
           Added impl() method to IFitsHeader interface with a default implementation to 
-          eliminate code that was duplicated many times over in implementing enums.
+          eliminate code that was duplicated many times over in enum implementations.
       </action>
       <action type="update" dev="attipaci" issue="532">
           IFitsHeader.n(int...) now checks that the supplied indices are in the 0-999 range 
