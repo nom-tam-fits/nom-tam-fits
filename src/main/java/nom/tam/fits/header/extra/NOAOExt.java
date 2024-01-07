@@ -7944,45 +7944,19 @@ public enum NOAOExt implements IFitsHeader {
      */
     MJD_OBS("MJD-OBS", HDU.PRIMARY_EXTENSION, VALUE.REAL, "MJD of exposure start");
 
-    @SuppressWarnings("CPD-START")
     private final IFitsHeader key;
 
     NOAOExt(HDU hdu, VALUE valueType, String comment) {
-        key = new FitsHeaderImpl(name(), IFitsHeader.SOURCE.NOAO, hdu, valueType, comment);
+        this(null, hdu, valueType, comment);
     }
 
     NOAOExt(String key, HDU hdu, VALUE valueType, String comment) {
-        this.key = new FitsHeaderImpl(name(), IFitsHeader.SOURCE.NOAO, hdu, valueType, comment);
+        this.key = new FitsHeaderImpl(key == null ? name() : key, IFitsHeader.SOURCE.NOAO, hdu, valueType, comment);
     }
 
     @Override
-    public String comment() {
-        return key.comment();
+    public final IFitsHeader impl() {
+        return key;
     }
 
-    @Override
-    public HDU hdu() {
-        return key.hdu();
-    }
-
-    @Override
-    public String key() {
-        return key.key();
-    }
-
-    @Override
-    public IFitsHeader n(int... number) {
-        return key.n(number);
-    }
-
-    @Override
-    public SOURCE status() {
-        return key.status();
-    }
-
-    @Override
-    @SuppressWarnings("CPD-END")
-    public VALUE valueType() {
-        return key.valueType();
-    }
 }

@@ -1030,15 +1030,18 @@ these under the `nom.tam.fits.header` package:
 
  * `Standard` -- [keywords defined by the FITS standard](https://heasarc.gsfc.nasa.gov/docs/fcg/standard_dict.html). 
    Some of the standard keywords are broken out into separate enumerations by theme, as listed below:
-   * `DataDescription` -- FITS standard keywords for describing the data content
-   * `InstrumentDescription` -- Standard keywords for describing the instrumentation used for observing
-   * `ObservationDescription` -- Standard keywords that describe the observation
-   * `ObservationDurationDescription` -- Standard keywords for the timing of observations
+   * `WCS` -- Standard FITS Word coordinate system (WCS) keywords
+   * `DateTime` -- Standard date-time related FITS keywords
    * `Compression` -- Standard keywords used for describing compressed data
    * `Checksum` -- Standard keywords used for data checksumming
  * `HierarchicalGrouping` -- Keywords for the 
     [Hierarchical Grouping Convention](https://fits.gsfc.nasa.gov/registry/grouping.html)
  * `NonStandard` -- Commonly used and recognized keywords that are not strictly part of the FITS standard
+   Some commonly used conventions are broken out into separate enumerations by theme, as listed below:
+   * `DataDescription` -- Conventional keywords for describing the data content
+   * `InstrumentDescription` -- Conventional keywords for describing the instrumentation used for observing
+   * `ObservationDescription` -- Commonly used keywords that describe the observation
+   * `ObservationDurationDescription` -- Commonly used keywords for the timing of observations
  
 Additionally, many organisations (or groups of organisations) have defined their own sets of FITS keywords. Some of 
 these can be found under the `nom.tam.fits-header.extra` package, such as:

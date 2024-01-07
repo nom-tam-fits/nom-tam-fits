@@ -187,14 +187,17 @@ public enum Standard implements IFitsHeader {
      * The date on which the HDU was created, in the format specified in the FITS Standard. The old date format was
      * 'yy/mm/dd' and may be used only for dates from 1900 through 1999. the new Y2K compliant date format is
      * 'yyyy-mm-dd' or 'yyyy-mm-ddTHH:MM:SS[.sss]'.
+     * 
+     * @see DateTime#DATE
      */
-
     DATE(SOURCE.RESERVED, HDU.ANY, VALUE.STRING, "date of file creation"),
 
     /**
      * The date of the observation, in the format specified in the FITS Standard. The old date format was 'yy/mm/dd' and
      * may be used only for dates from 1900 through 1999. The new Y2K compliant date format is 'yyyy-mm-dd' or
      * 'yyyy-mm-ddTHH:MM:SS[.sss]'.
+     * 
+     * @see DateTime#DATE_OBS
      */
     DATE_OBS("DATE-OBS", SOURCE.RESERVED, HDU.ANY, VALUE.STRING, "date of the observation"),
 
@@ -209,13 +212,16 @@ public enum Standard implements IFitsHeader {
      * EPOCH keyword and thus it shall not be used in FITS files created after the adoption of the standard; rather, the
      * EQUINOX keyword shall be used.
      *
-     * @deprecated use {@link #EQUINOX} in stead
+     * @deprecated use {@link #EQUINOX} instead
      */
-    @Deprecated
     EPOCH(SOURCE.RESERVED, HDU.ANY, VALUE.REAL, "equinox of celestial coordinate system"),
+
     /**
      * The value field shall contain a floating point number giving the equinox in years for the celestial coordinate
-     * system in which positions are expressed.
+     * system in which positions are expressed. This version of the keyword does not support alternative coordinate
+     * systems
+     * 
+     * @see WCS#EQUINOXa
      */
     EQUINOX(SOURCE.RESERVED, HDU.ANY, VALUE.REAL, "equinox of celestial coordinate system"),
 
@@ -382,17 +388,35 @@ public enum Standard implements IFitsHeader {
     PZEROn(SOURCE.RESERVED, HDU.GROUPS, VALUE.REAL, "parameter scaling zero point"),
 
     /**
-     * Coordinate reference frame of major/minor axes.If absent the default value is 'FK5'.
+     * Coordinate reference frame of major/minor axes.If absent the default value is 'FK5'. This version of the keyword
+     * does not support alternative coordinate systems.
+     * 
+     * @see WCS#RADESYSa
      */
     RADESYS(SOURCE.RESERVED, HDU.ANY, VALUE.STRING, "Coordinate reference frame of major/minor axes."),
 
     /**
-     * Coordinate reference frame of major/minor axes. use RADESYS instead.
+     * Coordinate reference frame of major/minor axes (generic).
      *
-     * @deprecated use {@link #RADESYS} instead.
+     * @deprecated Deprecated in the current FITS satndard, use {@link #RADESYS} instead.
      */
-    @Deprecated
     RADECSYS(SOURCE.RESERVED, HDU.ANY, VALUE.STRING, "Coordinate reference frame of major/minor axes."),
+
+    /**
+     * [Hz] Rest frequency of observed spectral line.
+     * 
+     * @since 1.19
+     * 
+     * @see   WCS#RESTFRQa
+     */
+    RESTFRQ(SOURCE.RESERVED, HDU.IMAGE, VALUE.REAL, "[Hz] Line rest frequency"),
+
+    /**
+     * [Hz] Rest frequeny of observed spectral line (generic).
+     *
+     * @deprecated Deprecated in the current FITS standard, use {@link #RESTFRQ} instead.
+     */
+    RESTFREQ(SOURCE.RESERVED, HDU.ANY, VALUE.REAL, "[Hz] Observed line rest frequency"),
 
     /**
      * The value field shall contain a character string citing a reference where the data associated with the key are
@@ -525,6 +549,46 @@ public enum Standard implements IFitsHeader {
     TZEROn(SOURCE.RESERVED, HDU.TABLE, VALUE.REAL, "column scaling zero point"),
 
     /**
+     * The value field of this indexed keyword shall contain a floating point number specifying the maximum valid
+     * physical value represented in column n of the table, exclusive of any special values. This keyword may only be
+     * used in 'TABLE' or 'BINTABLE' extensions and is analogous to the DATAMAX keyword used for FITS images.
+     * 
+     * @since 1.19
+     */
+    TDMAXn(SOURCE.HEASARC, HDU.TABLE, VALUE.REAL, "maximum value in the column"),
+
+    /**
+     * The value field of this indexed keyword shall contain a floating point number specifying the minimum valid
+     * physical value represented in column n of the table, exclusive of any special values. This keyword may only be
+     * used in 'TABLE' or 'BINTABLE' extensions and is analogous to the DATAMIN keyword used for FITS images.
+     * 
+     * @since 1.19
+     */
+    TDMINn(SOURCE.HEASARC, HDU.TABLE, VALUE.REAL, "minimum value in the column"),
+
+    /**
+     * The value field of this indexed keyword shall contain a floating point number specifying the upper bound of the
+     * legal range of physical values that may be represented in column n of the table. The column may contain values
+     * that are greater than this legal maximum value but the interpretation of such values is not defined here. The
+     * value of this keyword is typically used as the maxinum value when constructing a histogram of the values in the
+     * column. This keyword may only be used in 'TABLE' or 'BINTABLE' extensions.
+     * 
+     * @since 1.19
+     */
+    TLMAXn(SOURCE.HEASARC, HDU.TABLE, VALUE.REAL, "maximum legal value in the column"),
+
+    /**
+     * The value field of this indexed keyword shall contain a floating point number specifying the lower bound of the
+     * legal range of physical values that may be represented in column n of the table. The column may contain values
+     * that are less than this legal minimum value but the interpretation of such values is not defined here. The value
+     * of this keyword is typically used as the mininum value when constructing a histogram of the values in the column.
+     * This keyword may only be used in 'TABLE' or 'BINTABLE' extensions.
+     * 
+     * @since 1.19
+     */
+    TLMINn(SOURCE.HEASARC, HDU.TABLE, VALUE.REAL, "minimum legal value in the column"),
+
+    /**
      * The value field shall contain a character string giving the name of the extension type. This keyword is mandatory
      * for an extension key and must not appear in the primary key. For an extension that is not a standard extension,
      * the type name must not be the same as that of a standard extension.
@@ -539,6 +603,8 @@ public enum Standard implements IFitsHeader {
      */
     INHERIT(SOURCE.RESERVED, HDU.EXTENSION, VALUE.LOGICAL, "Inherit primary header entries");
 
+    private static final ThreadLocal<Class<?>> COMMENT_CONTEXT = new ThreadLocal<>();
+
     /**
      * A shorthand for {@link #NAXISn}<code>.n(1)</code>, that is the regular dimension along the first, fastest FITS
      * array index (this is the same as the last dimension of Java arrays).
@@ -550,8 +616,6 @@ public enum Standard implements IFitsHeader {
      * array index (this is the same as the one before the last dimension of Java arrays).
      */
     public static final IFitsHeader NAXIS2 = NAXISn.n(2);
-
-    private static final ThreadLocal<Class<?>> COMMENT_CONTEXT = new ThreadLocal<>();
 
     /**
      * The value of the XTENSION keword in case of a binary table.
@@ -570,18 +634,21 @@ public enum Standard implements IFitsHeader {
 
     private final StandardCommentReplacement[] commentReplacements;
 
-    @SuppressWarnings("CPD-START")
     private final IFitsHeader key;
 
     Standard(SOURCE status, HDU hdu, VALUE valueType, String comment, StandardCommentReplacement... replacements) {
-        key = new FitsHeaderImpl(name(), status, hdu, valueType, comment);
-        commentReplacements = replacements;
+        this(null, status, hdu, valueType, comment, replacements);
     }
 
     Standard(String headerName, SOURCE status, HDU hdu, VALUE valueType, String comment,
             StandardCommentReplacement... replacements) {
         key = new FitsHeaderImpl(headerName == null ? name() : headerName, status, hdu, valueType, comment);
         commentReplacements = replacements;
+    }
+
+    @Override
+    public final IFitsHeader impl() {
+        return key;
     }
 
     @Override
@@ -598,32 +665,6 @@ public enum Standard implements IFitsHeader {
             }
         }
         return key.comment();
-    }
-
-    @Override
-    public HDU hdu() {
-        return key.hdu();
-    }
-
-    @Override
-    public String key() {
-        return key.key();
-    }
-
-    @Override
-    public IFitsHeader n(int... number) {
-        return key.n(number);
-    }
-
-    @Override
-    public SOURCE status() {
-        return key.status();
-    }
-
-    @Override
-    @SuppressWarnings("CPD-END")
-    public VALUE valueType() {
-        return key.valueType();
     }
 
     /**

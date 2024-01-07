@@ -5,8 +5,15 @@ import java.io.ByteArrayOutputStream;
 import org.junit.Assert;
 import org.junit.Test;
 
+import nom.tam.fits.header.DateTime;
+import nom.tam.fits.header.FitsHeaderImpl;
 import nom.tam.fits.header.GenericKey;
+import nom.tam.fits.header.IFitsHeader;
+import nom.tam.fits.header.IFitsHeader.HDU;
+import nom.tam.fits.header.IFitsHeader.SOURCE;
+import nom.tam.fits.header.IFitsHeader.VALUE;
 import nom.tam.fits.header.Standard;
+import nom.tam.fits.header.WCS;
 import nom.tam.util.FitsOutputStream;
 
 /*
@@ -116,6 +123,66 @@ public class HeaderProtectedTest {
         Assert.assertEquals(1, GenericKey.getN(Standard.TFORMn.n(1).key()));
         Assert.assertEquals(12, GenericKey.getN(Standard.TFORMn.n(12).key()));
         Assert.assertEquals(123, GenericKey.getN(Standard.TFORMn.n(123).key()));
-        Assert.assertEquals(1234, GenericKey.getN(Standard.TFORMn.n(1234).key()));
+    }
+
+    @Test(expected = IllegalArgumentException.class)
+    public void testKeyIndexNegative() {
+        Standard.TFORMn.n(-1);
+    }
+
+    @Test(expected = IllegalArgumentException.class)
+    public void testKeyIndexTooLarge() {
+        Standard.TFORMn.n(1000);
+    }
+
+    @Test(expected = IllegalArgumentException.class)
+    public void testWCSInvalidAlt1() {
+        WCS.WCSNAMEa.alt((char) ('A' - 1));
+    }
+
+    @Test(expected = IllegalArgumentException.class)
+    public void testWCSInvalidAlt2() {
+        WCS.WCSNAMEa.alt((char) ('Z' + 1));
+    }
+
+    @Test(expected = IllegalStateException.class)
+    public void testWCSLongIndex() {
+        WCS.TCDn_na.n(999, 999);
+    }
+
+    @Test(expected = UnsupportedOperationException.class)
+    public void testWCSNoAlt() {
+        WCS.OBSGEO_X.alt('A');
+    }
+
+    @Test(expected = IndexOutOfBoundsException.class)
+    public void testTooManyIndices() {
+        Standard.CTYPEn.n(1, 2);
+    }
+
+    @Test
+    public void testWCSAlt() {
+        Assert.assertEquals("WCSNAME", WCS.WCSNAMEa.key());
+        Assert.assertEquals("WCSNAMEA", WCS.WCSNAMEa.alt('A').key());
+        Assert.assertEquals("WCSNAMEZ", WCS.WCSNAMEa.alt('Z').key());
+    }
+
+    @Test
+    public void testDateTime() {
+        Assert.assertEquals("DATE-OBS", DateTime.DATE_OBS.key());
+        Assert.assertEquals("MJDREF", DateTime.MJDREF.key());
+    }
+
+    @Test
+    public void testIFitsHeaderSelfImpl() {
+        IFitsHeader key = new FitsHeaderImpl("BLAH", SOURCE.UNKNOWN, HDU.ANY, VALUE.ANY, "for testing only");
+        Assert.assertNotNull(key.impl());
+    }
+
+    @Test
+    public void testIFitsHeaderDefaultImpl() {
+        class MyKeyword implements IFitsHeader {
+        }
+        Assert.assertNull(new MyKeyword().impl());
     }
 }

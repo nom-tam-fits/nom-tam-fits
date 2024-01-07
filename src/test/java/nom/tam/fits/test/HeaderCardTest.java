@@ -56,6 +56,7 @@ import nom.tam.fits.HeaderCardException;
 import nom.tam.fits.LongStringsNotEnabledException;
 import nom.tam.fits.LongValueException;
 import nom.tam.fits.TruncatedFileException;
+import nom.tam.fits.header.Standard;
 import nom.tam.fits.header.hierarch.BlanksDotHierarchKeyFormatter;
 import nom.tam.util.AsciiFuncs;
 import nom.tam.util.ComplexValue;
@@ -1855,4 +1856,8 @@ public class HeaderCardTest {
         Assert.assertNull(header.prevCard());
     }
 
+    @Test(expected = IllegalArgumentException.class)
+    public void testUnfilledKeywordIndex() {
+        HeaderCard.create(Standard.CTYPEn, "blah");
+    }
 }

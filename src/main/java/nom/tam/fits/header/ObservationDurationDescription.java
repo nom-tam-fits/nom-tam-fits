@@ -33,8 +33,10 @@ package nom.tam.fits.header;
 
 /**
  * <p>
- * This data dictionary contains FITS keywords that have been widely used within the astronomical community. It is
- * recommended that these keywords only be used as defined here. These are the Keywords that describe the observation.
+ * This data dictionary contains FITS keywords that have been widely used within the astronomical community. Many of
+ * them are not part of the FITS standard. For more standard FITS keywords relating to date-time see {@link DateTime}
+ * instead. It is recommended that these keywords only be used as defined here. These are the Keywords that describe the
+ * observation.
  * </p>
  * <p>
  * See <a href=
@@ -42,6 +44,8 @@ package nom.tam.fits.header;
  * </p>
  *
  * @author Richard van Nieuwenhoven
+ * 
+ * @see    DateTime
  */
 public enum ObservationDurationDescription implements IFitsHeader {
     /**
@@ -49,6 +53,8 @@ public enum ObservationDurationDescription implements IFitsHeader {
      * has the same format, and is used in conjunction with, the standard DATA-OBS keyword that gives the starting date
      * of the observation. These 2 keywords may give either the calendar date using the 'yyyy-mm-dd' format, or may give
      * the full date and time using the 'yyyy-mm-ddThh:mm:ss.sss' format.
+     * 
+     * @see DateTime#DATE_END
      */
     DATE_END("DATE-END", SOURCE.HEASARC, HDU.ANY, VALUE.STRING, "date of the end of observation"),
     /**
@@ -61,6 +67,8 @@ public enum ObservationDurationDescription implements IFitsHeader {
      * seconds. The exact definition of 'exposure time' is mission dependent and may, for example, include corrections
      * for shutter open and close duration, detector dead time, vignetting, or other effects. This keyword is synonymous
      * with the EXPTIME keyword.
+     * 
+     * @see DateTime#XPOSURE
      */
     EXPOSURE(SOURCE.HEASARC, HDU.ANY, VALUE.REAL, "exposure time"),
     /**
@@ -85,6 +93,8 @@ public enum ObservationDurationDescription implements IFitsHeader {
     /**
      * The value field shall contain a floating point number giving the difference between the stop and start times of
      * the observation in units of seconds. This keyword is synonymous with the ELAPTIME keyword.
+     * 
+     * @see DateTime#TELAPSE
      */
     TELAPSE(SOURCE.HEASARC, HDU.ANY, VALUE.REAL, "elapsed time of the observation"),
     /**
@@ -104,11 +114,10 @@ public enum ObservationDurationDescription implements IFitsHeader {
      */
     TIME_OBS("TIME-OBS", SOURCE.HEASARC, HDU.ANY, VALUE.STRING, "time at the start of the observation");
 
-    @SuppressWarnings("CPD-START")
     private final IFitsHeader key;
 
     ObservationDurationDescription(SOURCE status, HDU hdu, VALUE valueType, String comment) {
-        key = new FitsHeaderImpl(name(), status, hdu, valueType, comment);
+        this(null, status, hdu, valueType, comment);
     }
 
     ObservationDurationDescription(String key, SOURCE status, HDU hdu, VALUE valueType, String comment) {
@@ -116,34 +125,8 @@ public enum ObservationDurationDescription implements IFitsHeader {
     }
 
     @Override
-    public String comment() {
-        return key.comment();
-    }
-
-    @Override
-    public HDU hdu() {
-        return key.hdu();
-    }
-
-    @Override
-    public String key() {
-        return key.key();
-    }
-
-    @Override
-    public IFitsHeader n(int... number) {
-        return key.n(number);
-    }
-
-    @Override
-    public SOURCE status() {
-        return key.status();
-    }
-
-    @Override
-    @SuppressWarnings("CPD-END")
-    public VALUE valueType() {
-        return key.valueType();
+    public final IFitsHeader impl() {
+        return key;
     }
 
 }

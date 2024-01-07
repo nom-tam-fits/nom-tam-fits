@@ -406,7 +406,6 @@ public enum Compression implements IFitsHeader {
      */
     public static final String SMOOTH = "SMOOTH";
 
-    @SuppressWarnings("CPD-START")
     private final IFitsHeader key;
 
     private final IFitsHeader uncompressedKey;
@@ -421,8 +420,8 @@ public enum Compression implements IFitsHeader {
     }
 
     @Override
-    public String comment() {
-        return key.comment();
+    public final IFitsHeader impl() {
+        return key;
     }
 
     /**
@@ -433,32 +432,6 @@ public enum Compression implements IFitsHeader {
      */
     public IFitsHeader getUncompressedKey() {
         return uncompressedKey;
-    }
-
-    @Override
-    public HDU hdu() {
-        return key.hdu();
-    }
-
-    @Override
-    public String key() {
-        return key.key();
-    }
-
-    @Override
-    public IFitsHeader n(int... number) {
-        return key.n(number);
-    }
-
-    @Override
-    public SOURCE status() {
-        return key.status();
-    }
-
-    @Override
-    @SuppressWarnings("CPD-END")
-    public VALUE valueType() {
-        return key.valueType();
     }
 
 }

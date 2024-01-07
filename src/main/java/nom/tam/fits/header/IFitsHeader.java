@@ -1,5 +1,7 @@
 package nom.tam.fits.header;
 
+import nom.tam.fits.HeaderCard;
+
 /*
  * #%L
  * INDI for Java Utilities for the fits image format
@@ -37,6 +39,9 @@ package nom.tam.fits.header;
  * one to end up with inproperly constructed FITS files. Therefore, their usage is highly encouranged when possible.
  */
 public interface IFitsHeader {
+
+    /** Max numeric index we may use to replace <i>n</i> in the Java name of indexed variables. */
+    int MAX_INDEX = 999;
 
     /** An enumeration of HDU types in which a header keyword may be used. */
     enum HDU {
@@ -128,50 +133,104 @@ public interface IFitsHeader {
     }
 
     /**
+     * (<i>primarily for internal use</i>) Returns the concrete implementation of this header entry, which provides
+     * implementation of access methods.
+     * 
+     * @return the implementation of this keyword, which provides the actual access methods. It may return itself.
+     * 
+     * @since  1.19
+     */
+    default IFitsHeader impl() {
+        return null;
+    }
+
+    /**
      * Returns the comment associated to this FITS header entry. The comment is entirely optional, and it may not be
      * appear in full (or at all) in the FITS header. Comments should thus never contain essential information. Their
      * purpose is only to provide non-essential extra information for human use.
      * 
      * @return the associated standard comment.
      */
-    String comment();
+    default String comment() {
+        return impl().comment();
+    }
 
     /**
      * Returns the type of HDU(s) in which this header entry may be used.
      * 
      * @return the HDU type(s) that this keyword may support.
      */
-    HDU hdu();
+    default HDU hdu() {
+        return impl().hdu();
+    }
 
     /**
      * Returns the FITS header keyword for this header entry. Standard FITS keywords are limited to 8 characters, and
      * contain only epper-case letters, numbers, hyphen, and underscore characters.
      * 
-     * @return the FITS header keyword for this entry
+     * @return                       the FITS header keyword for this entry
+     * 
+     * @throws IllegalStateException if there are unfilled indices remaining in the keyword template.
      */
-    String key();
+    default String key() throws IllegalStateException {
+        return impl().key();
+    }
 
     /**
      * Constructs a numbered FITS header keyword entry from this stem, attachinh the specified number after the stem.
      * Numbering for FITS header keywords always starts from 1.
      * 
-     * @param  number the 1-based index to add to the stem
+     * @param  numbers                   the 1-based indices to add to the stem, in the order they appear in the the
+     *                                       enum name.
      * 
-     * @return        an indexed instance of this FITS header entry
+     * @return                           an indexed instance of this FITS header entry
+     * 
+     * @throws IllegalArgumentException  if the index is less than 0 or exceeds 999. (In truth we should throw an
+     *                                       exception for 0 as well, but there may be not quite legal FITS files that
+     *                                       contain these, which we still want to be able to read. Hence we'll relax
+     *                                       the condition).
+     * @throws IllegalStateException     if the resulting indexed keyword exceeds the maximum 8-bytes allowed for
+     *                                       standard FITS keywords.
+     * @throws IndexOutOfBoundsException If more indices were supplied than can be filled for this keyword.
      */
-    IFitsHeader n(int... number);
+    default IFitsHeader n(int... numbers) throws IllegalArgumentException, IllegalStateException {
+        StringBuffer headerName = new StringBuffer(key());
+        for (int number : numbers) {
+            if (number < 0 || number > MAX_INDEX) {
+                throw new IllegalArgumentException(key() + ": index " + number + " is out of bounds.");
+            }
+
+            int indexOfN = headerName.indexOf("n");
+
+            if (indexOfN < 0) {
+                throw new IndexOutOfBoundsException("Too many indices (" + numbers.length + ") supplied for " + key());
+            }
+
+            headerName.replace(indexOfN, indexOfN + 1, Integer.toString(number));
+        }
+
+        if (headerName.length() > HeaderCard.MAX_KEYWORD_LENGTH) {
+            throw new IllegalStateException("indexed keyword " + headerName.toString() + " is too long.");
+        }
+
+        return new FitsHeaderImpl(headerName.toString(), status(), hdu(), valueType(), comment());
+    }
 
     /**
      * Returns the standard convention, which defines this FITS header entry
      * 
      * @return the standard or convention that specifies this FITS heacer keyword
      */
-    SOURCE status();
+    default SOURCE status() {
+        return impl().status();
+    }
 
     /**
      * The type(s) of value(s) this FITS header entry might take.
      * 
      * @return the value type(s) for this FITS header entry
      */
-    VALUE valueType();
+    default VALUE valueType() {
+        return impl().valueType();
+    }
 }
