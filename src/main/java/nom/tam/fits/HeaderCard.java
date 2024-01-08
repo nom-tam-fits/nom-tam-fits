@@ -1360,13 +1360,23 @@ public class HeaderCard implements CursorValue<String>, Cloneable {
      * @return the current value type checking policy
      * 
      * @since  1.19
+     * 
+     * @see    #setValueCheckingPolicy(ValueCheck)
      */
     public static ValueCheck getValueCheckingPolicy() {
         return valueCheck;
     }
 
     /**
-     * @param policy
+     * Sets the policy to used for checking if set values conform to the expected types for cards that use standardized
+     * FITS keywords via the {@link IFitsHeader} interface.
+     * 
+     * @param policy the new polict to use for checking value types.
+     * 
+     * @see          #getValueCheckingPolicy()
+     * @see          Header#setKeywordCheckingPolicy(nom.tam.fits.Header.KeywordCheck)
+     * 
+     * @since        1.19
      */
     public static void setValueCheckingPolicy(ValueCheck policy) {
         valueCheck = policy;

@@ -403,13 +403,14 @@ public class Header implements FitsElement {
      * will throw an {@link IllegalArgumentException} if the specified keyword is not allowed for that type of HDU.
      * </p>
      * <p>
-     * This method changes the keyword checking mode for this header instance only. If you want to change the mode for
-     * all newly created headers globally, use {@link #setDefaultKeywordCheckingPolicy(KeywordCheck)} instead.
+     * This method changes the keyword checking policy for this header instance only. If you want to change the policy
+     * for all newly created headers globally, use {@link #setDefaultKeywordCheckingPolicy(KeywordCheck)} instead.
      * </p>
      * 
-     * @param policy The keyword checking mode to use.
+     * @param policy The keyword checking policy to use.
      * 
      * @see          #getKeywordCheckingPolicy()
+     * @see          HeaderCard#setValueCheckingPolicy(nom.tam.fits.HeaderCard.ValueCheck)
      * 
      * @since        1.19
      */
@@ -418,15 +419,16 @@ public class Header implements FitsElement {
     }
 
     /**
-     * Sets the default mode for built-in standard keyword checking mode for new headers. When populating the header
+     * Sets the default policy for built-in standard keyword checking mode for new headers. When populating the header
      * using {@link IFitsHeader} keywords the library will check if the given keyword is appropriate for the type of HDU
      * that the header represents, and will throw an {@link IllegalArgumentException} if the specified keyword is not
      * allowed for that type of HDU.
      * 
-     * @param policy The keyword checking mode to use.
+     * @param policy The keyword checking policy to use.
      * 
      * @see          #setKeywordCheckingPolicy(KeywordCheck)
      * @see          #getKeywordCheckingPolicy()
+     * @see          HeaderCard#setValueCheckingPolicy(nom.tam.fits.HeaderCard.ValueCheck)
      * 
      * @since        1.19
      */
@@ -435,9 +437,9 @@ public class Header implements FitsElement {
     }
 
     /**
-     * Returns the current keyword checking mode.
+     * Returns the current keyword checking policy.
      * 
-     * @return the current keyword checking mode
+     * @return the current keyword checking policy
      * 
      * @see    #setKeywordCheckingPolicy(KeywordCheck)
      * 
@@ -453,6 +455,7 @@ public class Header implements FitsElement {
         }
 
         switch (keyword.hdu()) {
+
         case ANY:
             return;
         case EXTENSION:
