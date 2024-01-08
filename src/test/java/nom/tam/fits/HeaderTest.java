@@ -703,6 +703,7 @@ public class HeaderTest {
     public void addValueTests() throws Exception {
         FileInputStream in = null;
         Fits fits = null;
+
         try {
             in = new FileInputStream("target/ht1.fits");
             fits = new Fits();
@@ -710,6 +711,7 @@ public class HeaderTest {
 
             BasicHDU<?> hdu = fits.getHDU(0);
             Header hdr = hdu.getHeader();
+            hdr.setKeywordChecking(Header.KeywordCheck.NONE);
 
             hdu.addValue(CTYPE1, true);
             assertEquals(hdr.getBooleanValue(CTYPE1.name()), true);
@@ -1702,23 +1704,23 @@ public class HeaderTest {
 
     @Test
     public void testKeywordCheckingNone() throws Exception {
+        Header.setDefaultKeywordChecking(Header.KeywordCheck.NONE);
         Header h = ImageData.from(new int[10][10]).toHDU().getHeader();
-        h.setKeywordChecking(Header.KeywordCheck.NONE);
         h.addValue(Standard.TFORMn.n(1), "blah");
         /* No exception */
     }
 
     @Test(expected = IllegalArgumentException.class)
     public void testKeywordCheckingPrimary() throws Exception {
+        Header.setDefaultKeywordChecking(Header.KeywordCheck.STRICT);
         Header h = new BinaryTable().toHDU().getHeader();
-        h.setKeywordChecking(Header.KeywordCheck.STRICT);
         h.addValue(Standard.SIMPLE, true);
     }
 
     @Test(expected = IllegalArgumentException.class)
     public void testKeywordCheckingExtension() throws Exception {
+        Header.setDefaultKeywordChecking(Header.KeywordCheck.STRICT);
         Header h = new BinaryTable().toHDU().getHeader();
-        h.setKeywordChecking(Header.KeywordCheck.STRICT);
         h.addValue(Standard.XTENSION, Standard.XTENSION_BINTABLE);
     }
 }

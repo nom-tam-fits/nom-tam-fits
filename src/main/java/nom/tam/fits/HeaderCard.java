@@ -116,6 +116,8 @@ public class HeaderCard implements CursorValue<String>, Cloneable {
     /** The comment part of the card (set to null if there's no comment) */
     private String comment;
 
+    private IFitsHeader standardKey;
+
     /**
      * The Java class associated to the value
      *
@@ -1275,6 +1277,7 @@ public class HeaderCard implements CursorValue<String>, Cloneable {
             }
         }
         key = newKey;
+        standardKey = null;
     }
 
     /**
@@ -1411,7 +1414,12 @@ public class HeaderCard implements CursorValue<String>, Cloneable {
 
         LOG.log(Level.WARNING, "[" + key + "] with unexpected value type.",
                 new IllegalArgumentException("Expected " + type + ", got " + key.valueType()));
+
         return false;
+    }
+
+    final IFitsHeader getStandardKey() {
+        return standardKey;
     }
 
     /**
@@ -1434,7 +1442,9 @@ public class HeaderCard implements CursorValue<String>, Cloneable {
         checkType(key, VALUE.LOGICAL);
 
         try {
-            return new HeaderCard(key.key(), value, key.comment());
+            HeaderCard hc = new HeaderCard(key.key(), value, key.comment());
+            hc.standardKey = key;
+            return hc;
         } catch (HeaderCardException e) {
             throw new IllegalArgumentException("Invalid sconventional key [" + key.key() + "]", e);
         }
@@ -1472,7 +1482,9 @@ public class HeaderCard implements CursorValue<String>, Cloneable {
         }
 
         try {
-            return new HeaderCard(key.key(), value, key.comment());
+            HeaderCard hc = new HeaderCard(key.key(), value, key.comment());
+            hc.standardKey = key;
+            return hc;
         } catch (HeaderCardException e) {
             throw new IllegalArgumentException("Invalid conventional key [" + key.key() + "]", e);
         }
@@ -1497,7 +1509,9 @@ public class HeaderCard implements CursorValue<String>, Cloneable {
         checkType(key, VALUE.COMPLEX);
 
         try {
-            return new HeaderCard(key.key(), value, key.comment());
+            HeaderCard hc = new HeaderCard(key.key(), value, key.comment());
+            hc.standardKey = key;
+            return hc;
         } catch (HeaderCardException e) {
             throw new IllegalArgumentException("Invalid conventional key [" + key.key() + "]", e);
         }
@@ -1524,7 +1538,9 @@ public class HeaderCard implements CursorValue<String>, Cloneable {
         validateChars(value);
 
         try {
-            return new HeaderCard(key.key(), value, key.comment());
+            HeaderCard hc = new HeaderCard(key.key(), value, key.comment());
+            hc.standardKey = key;
+            return hc;
         } catch (HeaderCardException e) {
             throw new IllegalArgumentException("Invalid conventional key [" + key.key() + "]", e);
         }

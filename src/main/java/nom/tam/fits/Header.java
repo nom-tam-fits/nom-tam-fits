@@ -218,7 +218,9 @@ public class Header implements FitsElement {
         STRICT
     }
 
-    private KeywordCheck checkMode = KeywordCheck.DATA_TYPE;
+    private static KeywordCheck defaultCheckMode = KeywordCheck.DATA_TYPE;
+
+    private KeywordCheck checkMode = defaultCheckMode;
 
     /**
      * Create a header by reading the information from the input stream.
@@ -374,19 +376,35 @@ public class Header implements FitsElement {
      * Insert a new header card at the current position, deleting any prior occurence of the same card while maintaining
      * the current position to point to after the newly inserted card.
      *
-     * @param fcard The card to be inserted.
+     * @param  fcard                    The card to be inserted.
+     * 
+     * @throws IllegalArgumentException if the current keyword checking mode does not allow the headercard with its
+     *                                      standard keyword in the header.
+     * 
+     * @sa                              {@link #setKeywordChecking(KeywordCheck)}
      */
-    public void addLine(HeaderCard fcard) {
-        if (fcard != null) {
-            cursor().add(fcard);
+    public void addLine(HeaderCard fcard) throws IllegalArgumentException {
+        if (fcard == null) {
+            return;
         }
+
+        if (fcard.getStandardKey() != null) {
+            checkKeyword(fcard.getStandardKey());
+        }
+
+        cursor().add(fcard);
     }
 
     /**
-     * Sets the built-in standard keyword checking mode. When using <code>Header.addValue(IFitsHeader, ...)</code> or
-     * <code>BasicHDU.addValue(IFitsHeader, ...)</code> methods to populate the header, it will check if the given
-     * keyword is appropriate for the type of HDU that the header represents, those methods will throw an
-     * {@link IllegalArgumentException} if the specified keyword is not allowed for that type of HDU.
+     * <p>
+     * Sets the built-in standard keyword checking mode. When populating the header using {@link IFitsHeader} keywords
+     * the library will check if the given keyword is appropriate for the type of HDU that the header represents, and
+     * will throw an {@link IllegalArgumentException} if the specified keyword is not allowed for that type of HDU.
+     * </p>
+     * <p>
+     * This method changes the keyword checking mode for this header instance only. If you want to change the mode for
+     * all newly created headers globally, use {@link #setDefaultKeywordChecking(KeywordCheck)} instead.
+     * </p>
      * 
      * @param mode The keyword checking mode to use.
      * 
@@ -396,6 +414,23 @@ public class Header implements FitsElement {
      */
     public void setKeywordChecking(KeywordCheck mode) {
         checkMode = mode;
+    }
+
+    /**
+     * Sets the default mode for built-in standard keyword checking mode for new headers. When populating the header
+     * using {@link IFitsHeader} keywords the library will check if the given keyword is appropriate for the type of HDU
+     * that the header represents, and will throw an {@link IllegalArgumentException} if the specified keyword is not
+     * allowed for that type of HDU.
+     * 
+     * @param mode The keyword checking mode to use.
+     * 
+     * @see        #setKeywordChecking(KeywordCheck)
+     * @see        #getKeywordChecking()
+     * 
+     * @since      1.19
+     */
+    public static void setDefaultKeywordChecking(KeywordCheck mode) {
+        defaultCheckMode = mode;
     }
 
     /**
@@ -454,6 +489,7 @@ public class Header implements FitsElement {
         // TODO unclear what checking we should do for these type of keywords.
         // return;
         default:
+            System.err.println("### keyword " + keyword.key() + ", hdu " + owner.getClass().getName());
             return;
         }
 
@@ -477,7 +513,6 @@ public class Header implements FitsElement {
      * @see                             #addValue(String, Boolean, String)
      */
     public HeaderCard addValue(IFitsHeader key, Boolean val) throws HeaderCardException, IllegalArgumentException {
-        checkKeyword(key);
         HeaderCard card = HeaderCard.create(key, val);
         addLine(card);
         return card;
@@ -499,7 +534,6 @@ public class Header implements FitsElement {
      * @see                             #addValue(String, Number, String)
      */
     public HeaderCard addValue(IFitsHeader key, Number val) throws HeaderCardException, IllegalArgumentException {
-        checkKeyword(key);
         HeaderCard card = HeaderCard.create(key, val);
         addLine(card);
         return card;
@@ -521,7 +555,6 @@ public class Header implements FitsElement {
      * @see                             #addValue(String, String, String)
      */
     public HeaderCard addValue(IFitsHeader key, String val) throws HeaderCardException, IllegalArgumentException {
-        checkKeyword(key);
         HeaderCard card = HeaderCard.create(key, val);
         addLine(card);
         return card;
@@ -545,7 +578,6 @@ public class Header implements FitsElement {
      * @since                           1.17
      */
     public HeaderCard addValue(IFitsHeader key, ComplexValue val) throws HeaderCardException, IllegalArgumentException {
-        checkKeyword(key);
         HeaderCard card = HeaderCard.create(key, val);
         addLine(card);
         return card;
