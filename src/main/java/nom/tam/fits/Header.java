@@ -195,6 +195,31 @@ public class Header implements FitsElement {
      */
     private Comparator<String> headerSorter;
 
+    private BasicHDU<?> owner;
+
+    /**
+     * Keyword checking mode when adding standardized keywords. When using
+     * <code>Header.addValue(IFitsHeader, ...)</code> or <code>BasicHDU.addValue(IFitsHeader, ...)</code> methods to
+     * populate the header, it will check if the given keyword is appropriate for the type of HDU that the header
+     * represents, those methods will throw an {@link IllegalArgumentException} if the specified keyword is not allowed
+     * for that type of HDU.
+     * 
+     * @author Attila Kovacs
+     */
+    public enum KeywordCheck {
+        /** No keyword checking will be performed. */
+        NONE,
+        /** Check only that the keyword is appropriate for the type of data contained in the associated HDU */
+        DATA_TYPE,
+        /**
+         * Strict checking, will refuse to set mandatory FITS keywords -- which should normally be set by the library
+         * alone.
+         */
+        STRICT
+    }
+
+    private KeywordCheck checkMode = KeywordCheck.DATA_TYPE;
+
     /**
      * Create a header by reading the information from the input stream.
      *
@@ -274,11 +299,18 @@ public class Header implements FitsElement {
         }
     }
 
+    void assignTo(BasicHDU<?> hdu) {
+        // if (owner != null) {
+        // throw new IllegalStateException("This header was already assigned to a HDU");
+        // }
+        this.owner = hdu;
+    }
+
     /**
      * <p>
-     * Preallocates a minimum header card space. When written to a stream, the header will be large enough to hold at
-     * least the specified number of cards. If the header has fewer physical cards then the remaining space will be
-     * padded with blanks, leaving space for future additions, as specified by the FITS 4.0 standard for
+     * Reserves header card space for populating at a later time. When written to a stream, the header will be large
+     * enough to hold at least the specified number of cards. If the header has fewer physical cards then the remaining
+     * space will be padded with blanks, leaving space for future additions, as specified by the FITS 4.0 standard for
      * <a href="https://fits.gsfc.nasa.gov/registry/headerspace.html"> preallocated header space</a>.
      * </p>
      * <p>
@@ -351,6 +383,85 @@ public class Header implements FitsElement {
     }
 
     /**
+     * Sets the built-in standard keyword checking mode. When using <code>Header.addValue(IFitsHeader, ...)</code> or
+     * <code>BasicHDU.addValue(IFitsHeader, ...)</code> methods to populate the header, it will check if the given
+     * keyword is appropriate for the type of HDU that the header represents, those methods will throw an
+     * {@link IllegalArgumentException} if the specified keyword is not allowed for that type of HDU.
+     * 
+     * @param mode The keyword checking mode to use.
+     * 
+     * @see        #getKeywordChecking()
+     * 
+     * @since      1.19
+     */
+    public void setKeywordChecking(KeywordCheck mode) {
+        checkMode = mode;
+    }
+
+    /**
+     * Returns the current keyword checking mode.
+     * 
+     * @return the current keyword checking mode
+     * 
+     * @see    #setKeywordChecking(KeywordCheck)
+     * 
+     * @since  1.19
+     */
+    public final KeywordCheck getKeywordChecking() {
+        return checkMode;
+    }
+
+    private void checkKeyword(IFitsHeader keyword) throws IllegalArgumentException {
+        if (checkMode == KeywordCheck.NONE || owner == null) {
+            return;
+        }
+
+        switch (keyword.hdu()) {
+        case ANY:
+            return;
+        case EXTENSION:
+        case PRIMARY:
+            if (checkMode == KeywordCheck.STRICT) {
+                throw new IllegalArgumentException("Keyword " + keyword + " should be set by the library only");
+            }
+            return;
+        case IMAGE:
+            if (owner instanceof ImageHDU || owner instanceof RandomGroupsHDU) {
+                return;
+            }
+            break;
+        case GROUPS:
+            if (owner instanceof RandomGroupsHDU) {
+                return;
+            }
+            break;
+        case TABLE:
+            if (owner instanceof TableHDU) {
+                return;
+            }
+            break;
+        case ASCII_TABLE:
+            if (owner instanceof AsciiTableHDU) {
+                return;
+            }
+            break;
+        case BINTABLE:
+            if (owner instanceof BinaryTableHDU) {
+                return;
+            }
+            break;
+        // case PRIMARY_EXTENSION:
+        // TODO unclear what checking we should do for these type of keywords.
+        // return;
+        default:
+            return;
+        }
+
+        throw new IllegalArgumentException(
+                "Keyword " + keyword.key() + " is not appropriate for " + owner.getClass().getName());
+    }
+
+    /**
      * Add or replace a key with the given boolean value and its standardized comment. If the value is not compatible
      * with the convention of the keyword, a warning message is logged but no exception is thrown (at this point). The
      * new card will be placed at the current mark position, as set e.g. by {@link #findCard(IFitsHeader)}.
@@ -366,6 +477,7 @@ public class Header implements FitsElement {
      * @see                             #addValue(String, Boolean, String)
      */
     public HeaderCard addValue(IFitsHeader key, Boolean val) throws HeaderCardException, IllegalArgumentException {
+        checkKeyword(key);
         HeaderCard card = HeaderCard.create(key, val);
         addLine(card);
         return card;
@@ -387,6 +499,7 @@ public class Header implements FitsElement {
      * @see                             #addValue(String, Number, String)
      */
     public HeaderCard addValue(IFitsHeader key, Number val) throws HeaderCardException, IllegalArgumentException {
+        checkKeyword(key);
         HeaderCard card = HeaderCard.create(key, val);
         addLine(card);
         return card;
@@ -408,6 +521,7 @@ public class Header implements FitsElement {
      * @see                             #addValue(String, String, String)
      */
     public HeaderCard addValue(IFitsHeader key, String val) throws HeaderCardException, IllegalArgumentException {
+        checkKeyword(key);
         HeaderCard card = HeaderCard.create(key, val);
         addLine(card);
         return card;
@@ -431,6 +545,7 @@ public class Header implements FitsElement {
      * @since                           1.17
      */
     public HeaderCard addValue(IFitsHeader key, ComplexValue val) throws HeaderCardException, IllegalArgumentException {
+        checkKeyword(key);
         HeaderCard card = HeaderCard.create(key, val);
         addLine(card);
         return card;

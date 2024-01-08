@@ -27,6 +27,7 @@ import org.junit.Test;
 import nom.tam.fits.header.GenericKey;
 import nom.tam.fits.header.IFitsHeader;
 import nom.tam.fits.header.Standard;
+import nom.tam.fits.header.extra.NOAOExt;
 import nom.tam.fits.header.hierarch.BlanksDotHierarchKeyFormatter;
 import nom.tam.fits.header.hierarch.Hierarch;
 import nom.tam.util.ArrayDataOutput;
@@ -1654,5 +1655,70 @@ public class HeaderTest {
         }
 
         throw new IllegalStateException("Missing inherited comment");
+    }
+
+    @Test(expected = IllegalArgumentException.class)
+    public void testImageKeywordChecking() throws Exception {
+        Header h = new BinaryTable().toHDU().getHeader();
+        h.addValue(Standard.BUNIT, "blah");
+    }
+
+    public void testImageKeywordCheckingGroup() throws Exception {
+        Header h = new RandomGroupsData(new Object[][] {{new int[4], new int[2]}}).toHDU().getHeader();
+        h.addValue(Standard.BUNIT, "blah");
+        /* no exception */
+    }
+
+    @Test(expected = IllegalArgumentException.class)
+    public void testRandomGroupsKeywordChecking() throws Exception {
+        Header h = ImageData.from(new int[10][10]).toHDU().getHeader();
+        h.addValue(Standard.PTYPEn.n(1), "blah");
+    }
+
+    @Test(expected = IllegalArgumentException.class)
+    public void testTableKeywordChecking() throws Exception {
+        Header h = ImageData.from(new int[10][10]).toHDU().getHeader();
+        h.addValue(Standard.TFORMn.n(1), "blah");
+    }
+
+    @Test(expected = IllegalArgumentException.class)
+    public void testAsciiTableKeywordChecking() throws Exception {
+        Header h = new BinaryTable().toHDU().getHeader();
+        h.addValue(Standard.TBCOLn.n(1), 10);
+    }
+
+    @Test(expected = IllegalArgumentException.class)
+    public void testBinbaryTableKeywordChecking() throws Exception {
+        Header h = new AsciiTable().toHDU().getHeader();
+        h.addValue(Standard.TDIMn.n(1), "blah");
+    }
+
+    @Test
+    public void testNOAOKeywordChecking() throws Exception {
+        Header h = new AsciiTable().toHDU().getHeader();
+        h.addValue(NOAOExt.AMPMJD, 60000.0);
+        /* No exception */
+    }
+
+    @Test
+    public void testKeywordCheckingNone() throws Exception {
+        Header h = ImageData.from(new int[10][10]).toHDU().getHeader();
+        h.setKeywordChecking(Header.KeywordCheck.NONE);
+        h.addValue(Standard.TFORMn.n(1), "blah");
+        /* No exception */
+    }
+
+    @Test(expected = IllegalArgumentException.class)
+    public void testKeywordCheckingPrimary() throws Exception {
+        Header h = new BinaryTable().toHDU().getHeader();
+        h.setKeywordChecking(Header.KeywordCheck.STRICT);
+        h.addValue(Standard.SIMPLE, true);
+    }
+
+    @Test(expected = IllegalArgumentException.class)
+    public void testKeywordCheckingExtension() throws Exception {
+        Header h = new BinaryTable().toHDU().getHeader();
+        h.setKeywordChecking(Header.KeywordCheck.STRICT);
+        h.addValue(Standard.XTENSION, Standard.XTENSION_BINTABLE);
     }
 }
