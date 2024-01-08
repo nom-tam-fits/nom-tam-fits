@@ -876,33 +876,61 @@ public class HeaderCard implements CursorValue<String>, Cloneable {
      * @see                          #setValue(Number)
      */
     public synchronized HeaderCard setValue(Number update, int decimals) throws NumberFormatException, LongValueException {
+        try {
+            checkValueType(IFitsHeader.VALUE.REAL);
+        } catch (MismatchedValueTypeException e) {
+            if (update instanceof Float || update instanceof Double || update instanceof BigDecimal
+                    || update instanceof BigDecimal) {
+                throw e;
+            }
+            checkValueType(IFitsHeader.VALUE.INTEGER);
+        }
+
         if (update == null) {
             value = null;
             type = Integer.class;
         } else {
+            type = update.getClass();
             checkNumber(update);
             setUnquotedValue(new FlexFormat().forCard(this).setPrecision(decimals).format(update));
-
-            type = update.getClass();
         }
         return this;
+    }
+
+    private void checkValueType(IFitsHeader.VALUE t) throws MismatchedValueTypeException {
+        if (standardKey == null) {
+            return;
+        }
+
+        IFitsHeader.VALUE expect = standardKey.valueType();
+        if (expect == IFitsHeader.VALUE.ANY) {
+            return;
+        }
+
+        if (t != expect) {
+            throw new MismatchedValueTypeException(key, t.name());
+        }
     }
 
     /**
      * Sets a new boolean value for this card.
      *
-     * @param  update             the new value to se (can be <code>null</code>).
+     * @param  update                       the new value to se (can be <code>null</code>).
      *
-     * @throws LongValueException if the card has no room even for the single-character 'T' or 'F'. This can never
-     *                                happen with cards created programmatically as they will not allow setting
-     *                                HIERARCH-style keywords long enough to ever trigger this condition. But, it is
-     *                                possible to read cards from a non-standard header, which breaches this limit, by
-     *                                ommitting some required spaces (esp. after the '='), and have a null value. When
-     *                                that happens, we can be left without room for even a single character.
+     * @throws LongValueException           if the card has no room even for the single-character 'T' or 'F'. This can
+     *                                          never happen with cards created programmatically as they will not allow
+     *                                          setting HIERARCH-style keywords long enough to ever trigger this
+     *                                          condition. But, it is possible to read cards from a non-standard header,
+     *                                          which breaches this limit, by ommitting some required spaces (esp. after
+     *                                          the '='), and have a null value. When that happens, we can be left
+     *                                          without room for even a single character.
+     * @throws MismatchedValueTypeException if the card's standard keyword does not support boolean values.
      *
-     * @return                    the card itself
+     * @return                              the card itself
      */
-    public synchronized HeaderCard setValue(Boolean update) throws LongValueException {
+    public synchronized HeaderCard setValue(Boolean update) throws LongValueException, MismatchedValueTypeException {
+        checkValueType(IFitsHeader.VALUE.LOGICAL);
+
         if (update == null) {
             value = null;
         } else if (spaceForValue() < 1) {
@@ -954,6 +982,8 @@ public class HeaderCard implements CursorValue<String>, Cloneable {
      * @since                        1.16
      */
     public synchronized HeaderCard setValue(ComplexValue update, int decimals) throws LongValueException {
+        checkValueType(IFitsHeader.VALUE.COMPLEX);
+
         if (update == null) {
             value = null;
         } else {
@@ -1017,6 +1047,8 @@ public class HeaderCard implements CursorValue<String>, Cloneable {
      * @see                                   #validateChars(String)
      */
     public synchronized HeaderCard setValue(String update) throws IllegalArgumentException, LongStringsNotEnabledException {
+        checkValueType(IFitsHeader.VALUE.STRING);
+
         if (update == null) {
             // There is always room for an empty string...
             value = null;
@@ -1442,8 +1474,9 @@ public class HeaderCard implements CursorValue<String>, Cloneable {
         checkType(key, VALUE.LOGICAL);
 
         try {
-            HeaderCard hc = new HeaderCard(key.key(), value, key.comment());
+            HeaderCard hc = new HeaderCard(key.key(), (Boolean) null, key.comment());
             hc.standardKey = key;
+            hc.setValue(value);
             return hc;
         } catch (HeaderCardException e) {
             throw new IllegalArgumentException("Invalid sconventional key [" + key.key() + "]", e);
@@ -1482,8 +1515,9 @@ public class HeaderCard implements CursorValue<String>, Cloneable {
         }
 
         try {
-            HeaderCard hc = new HeaderCard(key.key(), value, key.comment());
+            HeaderCard hc = new HeaderCard(key.key(), (Number) null, key.comment());
             hc.standardKey = key;
+            hc.setValue(value);
             return hc;
         } catch (HeaderCardException e) {
             throw new IllegalArgumentException("Invalid conventional key [" + key.key() + "]", e);
@@ -1509,8 +1543,9 @@ public class HeaderCard implements CursorValue<String>, Cloneable {
         checkType(key, VALUE.COMPLEX);
 
         try {
-            HeaderCard hc = new HeaderCard(key.key(), value, key.comment());
+            HeaderCard hc = new HeaderCard(key.key(), (ComplexValue) null, key.comment());
             hc.standardKey = key;
+            hc.setValue(value);
             return hc;
         } catch (HeaderCardException e) {
             throw new IllegalArgumentException("Invalid conventional key [" + key.key() + "]", e);
@@ -1538,8 +1573,9 @@ public class HeaderCard implements CursorValue<String>, Cloneable {
         validateChars(value);
 
         try {
-            HeaderCard hc = new HeaderCard(key.key(), value, key.comment());
+            HeaderCard hc = new HeaderCard(key.key(), (String) null, key.comment());
             hc.standardKey = key;
+            hc.setValue(value);
             return hc;
         } catch (HeaderCardException e) {
             throw new IllegalArgumentException("Invalid conventional key [" + key.key() + "]", e);

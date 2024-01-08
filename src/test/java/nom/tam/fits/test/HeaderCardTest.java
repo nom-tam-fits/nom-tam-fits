@@ -1860,4 +1860,25 @@ public class HeaderCardTest {
     public void testUnfilledKeywordIndex() {
         HeaderCard.create(Standard.CTYPEn, "blah");
     }
+
+    @Test(expected = IllegalArgumentException.class)
+    public void testIntegerKeyValueException() {
+        HeaderCard.create(Standard.NAXIS, 3.1415);
+    }
+
+    @Test(expected = IllegalArgumentException.class)
+    public void testDecimalKeyValueException() {
+        HeaderCard.create(Standard.BSCALE, new ComplexValue(1.0, 0.0));
+    }
+
+    @Test(expected = IllegalArgumentException.class)
+    public void testLogicalKeyValueException() {
+        HeaderCard.create(Standard.SIMPLE, 0);
+    }
+
+    @Test(expected = IllegalArgumentException.class)
+    public void testStringKeyValueException() {
+        HeaderCard.create(Standard.EXTNAME, 0);
+    }
+
 }
