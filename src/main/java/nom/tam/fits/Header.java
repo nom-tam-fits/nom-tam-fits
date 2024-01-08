@@ -219,9 +219,9 @@ public class Header implements FitsElement {
     /** The keyword checking mode used by the library until the user changes it it. */
     public static final KeywordCheck DEFAULT_KEYWORD_CHECK_POLICY = KeywordCheck.DATA_TYPE;
 
-    private static KeywordCheck defaultCheckMode = DEFAULT_KEYWORD_CHECK_POLICY;
+    private static KeywordCheck defaultKeyCheck = DEFAULT_KEYWORD_CHECK_POLICY;
 
-    private KeywordCheck checkMode = defaultCheckMode;
+    private KeywordCheck keyCheck = defaultKeyCheck;
 
     /**
      * Create a header by reading the information from the input stream.
@@ -414,7 +414,7 @@ public class Header implements FitsElement {
      * @since        1.19
      */
     public void setKeywordCheckingPolicy(KeywordCheck policy) {
-        checkMode = policy;
+        keyCheck = policy;
     }
 
     /**
@@ -431,7 +431,7 @@ public class Header implements FitsElement {
      * @since        1.19
      */
     public static void setDefaultKeywordCheckingPolicy(KeywordCheck policy) {
-        defaultCheckMode = policy;
+        defaultKeyCheck = policy;
     }
 
     /**
@@ -444,11 +444,11 @@ public class Header implements FitsElement {
      * @since  1.19
      */
     public final KeywordCheck getKeywordCheckingPolicy() {
-        return checkMode;
+        return keyCheck;
     }
 
     private void checkKeyword(IFitsHeader keyword) throws IllegalArgumentException {
-        if (checkMode == KeywordCheck.NONE || owner == null) {
+        if (keyCheck == KeywordCheck.NONE || owner == null) {
             return;
         }
 
@@ -457,7 +457,7 @@ public class Header implements FitsElement {
             return;
         case EXTENSION:
         case PRIMARY:
-            if (checkMode == KeywordCheck.STRICT && keyword.status() == IFitsHeader.SOURCE.MANDATORY) {
+            if (keyCheck == KeywordCheck.STRICT && keyword.status() == IFitsHeader.SOURCE.MANDATORY) {
                 throw new IllegalArgumentException("Keyword " + keyword + " should be set by the library only");
             }
             return;

@@ -900,16 +900,8 @@ public class HeaderCard implements CursorValue<String>, Cloneable {
         try {
             checkValueType(IFitsHeader.VALUE.REAL);
         } catch (ValueTypeException e) {
-            if (update instanceof Float) {
-                throw e;
-            }
-            if (update instanceof Double) {
-                throw e;
-            }
-            if (update instanceof BigDecimal) {
-                throw e;
-            }
-            if (update instanceof BigInteger) {
+            if (update instanceof Float || update instanceof Double || update instanceof BigDecimal
+                    || update instanceof BigInteger) {
                 throw e;
             }
             checkValueType(IFitsHeader.VALUE.INTEGER);

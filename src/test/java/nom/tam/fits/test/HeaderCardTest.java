@@ -1906,27 +1906,27 @@ public class HeaderCardTest {
         HeaderCard.create(Standard.EXTNAME, 0);
     }
 
-    @Test
-    public void testSetStandardFloat() {
-        HeaderCard hc = HeaderCard.create(Standard.BZERO, 1.0F);
+    @Test(expected = IllegalArgumentException.class)
+    public void testSetStandardFloatException() {
+        HeaderCard hc = HeaderCard.create(Standard.NAXIS, 1.0F);
         Assert.assertEquals(1.0F, hc.getValue(Float.class, 0.0F), 1e-6);
     }
 
-    @Test
-    public void testSetStandardDouble() {
-        HeaderCard hc = HeaderCard.create(Standard.BZERO, 1.0);
+    @Test(expected = IllegalArgumentException.class)
+    public void testSetStandardDoubleException() {
+        HeaderCard hc = HeaderCard.create(Standard.NAXIS, 1.0);
         Assert.assertEquals(1.0, hc.getValue(Double.class, 0.0), 1e-12);
     }
 
-    @Test
-    public void testSetStandardBigDecimal() {
-        HeaderCard hc = HeaderCard.create(Standard.BZERO, new BigDecimal("1.0"));
+    @Test(expected = IllegalArgumentException.class)
+    public void testSetStandardBigDecimalException() {
+        HeaderCard hc = HeaderCard.create(Standard.NAXIS, new BigDecimal("1.0"));
         Assert.assertEquals(1.0, hc.getValue(Double.class, 0.0), 1e-12);
     }
 
-    @Test
-    public void testSetStandardBigInteger() {
-        HeaderCard hc = HeaderCard.create(Standard.BZERO, new BigInteger("1"));
+    @Test(expected = IllegalArgumentException.class)
+    public void testSetStandardBigIntegerException() {
+        HeaderCard hc = HeaderCard.create(Standard.NAXIS, new BigInteger("1"));
         Assert.assertEquals(1.0, hc.getValue(Double.class, 0.0), 1e-12);
     }
 
