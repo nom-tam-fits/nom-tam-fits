@@ -1374,7 +1374,7 @@ public class HeaderCard implements CursorValue<String>, Cloneable {
      * @param policy the new polict to use for checking value types.
      * 
      * @see          #getValueCheckingPolicy()
-     * @see          Header#setKeywordCheckingPolicy(nom.tam.fits.Header.KeywordCheck)
+     * @see          Header#setKeywordChecking(nom.tam.fits.Header.KeywordCheck)
      * 
      * @since        1.19
      */

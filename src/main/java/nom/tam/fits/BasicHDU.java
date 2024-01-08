@@ -941,10 +941,10 @@ public abstract class BasicHDU<DataClass extends Data> implements FitsElement {
             throw new FitsException("Invalid attempt to make HDU of type:" + this.getClass().getName() + " primary.");
         }
 
-        Header.KeywordCheck mode = myHeader.getKeywordCheckingPolicy();
-        myHeader.setKeywordCheckingPolicy(Header.KeywordCheck.DATA_TYPE);
+        Header.KeywordCheck mode = myHeader.getKeywordChecking();
+        myHeader.setKeywordChecking(Header.KeywordCheck.DATA_TYPE);
         myHeader.setRequiredKeys(value ? null : getCanonicalXtension());
-        myHeader.setKeywordCheckingPolicy(mode);
+        myHeader.setKeywordChecking(mode);
     }
 
     /**
