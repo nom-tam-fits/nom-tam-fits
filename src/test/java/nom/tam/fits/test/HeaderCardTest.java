@@ -1931,6 +1931,12 @@ public class HeaderCardTest {
     }
 
     @Test
+    public void testSetStandardInteger() {
+        HeaderCard hc = HeaderCard.create(Standard.BZERO, 1);
+        Assert.assertEquals(1, (int) hc.getValue(Integer.class, 0));
+    }
+
+    @Test
     public void testGetValueCheckPolicy() {
         for (HeaderCard.ValueCheck policy : HeaderCard.ValueCheck.values()) {
             HeaderCard.setValueCheckingPolicy(policy);

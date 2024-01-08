@@ -198,7 +198,7 @@ public class Header implements FitsElement {
     private BasicHDU<?> owner;
 
     /**
-     * Keyword checking mode when adding standardized keywords via the {@link IFitsHeader} interface.
+     * Keyword checking policy when adding standardized keywords via the {@link IFitsHeader} interface.
      * 
      * @author Attila Kovacs
      * 

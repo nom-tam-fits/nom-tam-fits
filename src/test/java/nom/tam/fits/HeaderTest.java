@@ -1727,16 +1727,38 @@ public class HeaderTest {
     }
 
     @Test(expected = IllegalArgumentException.class)
-    public void testKeywordCheckingPrimary() throws Exception {
+    public void testKeywordCheckingPrimaryException() throws Exception {
         Header.setDefaultKeywordCheckingPolicy(Header.KeywordCheck.STRICT);
         Header h = new BinaryTable().toHDU().getHeader();
         h.addValue(Standard.SIMPLE, true);
     }
 
     @Test(expected = IllegalArgumentException.class)
-    public void testKeywordCheckingExtension() throws Exception {
+    public void testKeywordCheckingExtensionException() throws Exception {
         Header.setDefaultKeywordCheckingPolicy(Header.KeywordCheck.STRICT);
         Header h = new BinaryTable().toHDU().getHeader();
         h.addValue(Standard.XTENSION, Standard.XTENSION_BINTABLE);
     }
+
+    @Test
+    public void testKeywordCheckingPrimary() throws Exception {
+        Header.setDefaultKeywordCheckingPolicy(Header.KeywordCheck.DATA_TYPE);
+        Header h = new BinaryTable().toHDU().getHeader();
+        h.addValue(Standard.SIMPLE, true);
+    }
+
+    @Test(expected = IllegalArgumentException.class)
+    public void testStrictKeywordCheckingExtension() throws Exception {
+        Header.setDefaultKeywordCheckingPolicy(Header.KeywordCheck.STRICT);
+        Header h = new BinaryTable().toHDU().getHeader();
+        h.addValue(Standard.XTENSION, Standard.XTENSION_BINTABLE);
+    }
+
+    @Test
+    public void testKeywordCheckingOptional() throws Exception {
+        Header.setDefaultKeywordCheckingPolicy(Header.KeywordCheck.DATA_TYPE);
+        Header h = new BinaryTable().toHDU().getHeader();
+        h.addValue(Standard.OBJECT, "blah");
+    }
+
 }
