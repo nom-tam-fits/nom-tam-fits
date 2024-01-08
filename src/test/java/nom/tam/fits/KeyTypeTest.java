@@ -51,7 +51,7 @@ public class KeyTypeTest {
 
     @Before
     public void before() {
-        HeaderCard.setValueCheckingPolicy(HeaderCard.ValueCheck.LOG);
+        HeaderCard.setValueCheckingPolicy(HeaderCard.ValueCheck.LOGGING);
     }
 
     private class ComplexKey implements IFitsHeader {

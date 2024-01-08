@@ -216,7 +216,11 @@ public class Header implements FitsElement {
         STRICT
     }
 
-    /** The keyword checking mode used by the library until the user changes it it. */
+    /**
+     * The keyword checking mode used by the library until the user changes it it.
+     *
+     * @since 1.19
+     */
     public static final KeywordCheck DEFAULT_KEYWORD_CHECK_POLICY = KeywordCheck.DATA_TYPE;
 
     private static KeywordCheck defaultKeyCheck = DEFAULT_KEYWORD_CHECK_POLICY;

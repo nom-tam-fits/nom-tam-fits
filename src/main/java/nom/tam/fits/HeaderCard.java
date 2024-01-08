@@ -136,12 +136,16 @@ public class HeaderCard implements CursorValue<String>, Cloneable {
         /** No value type checking will be performed */
         NONE,
         /** Attempting to set values of the wrong type for standardized keywords will log warnings */
-        LOG,
+        LOGGING,
         /** Throw exception when setting a value of the wrong type for a standardized keyword */
         EXCEPTION
     }
 
-    /** Default value type checking policy for cards with standardized {@link IFitsHeader} keywords. */
+    /**
+     * Default value type checking policy for cards with standardized {@link IFitsHeader} keywords.
+     * 
+     * @since 1.19
+     */
     public static final ValueCheck DEFAULT_VALUE_CHECK_POLICY = ValueCheck.EXCEPTION;
 
     private static ValueCheck valueCheck = DEFAULT_VALUE_CHECK_POLICY;
@@ -931,7 +935,7 @@ public class HeaderCard implements CursorValue<String>, Cloneable {
         if (t != expect) {
             ValueTypeException e = new ValueTypeException(key, t.name());
 
-            if (valueCheck == ValueCheck.LOG) {
+            if (valueCheck == ValueCheck.LOGGING) {
                 LOG.warning(e.getMessage());
             } else {
                 throw e;
