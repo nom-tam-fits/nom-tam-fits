@@ -198,13 +198,11 @@ public class Header implements FitsElement {
     private BasicHDU<?> owner;
 
     /**
-     * Keyword checking mode when adding standardized keywords. When using
-     * <code>Header.addValue(IFitsHeader, ...)</code> or <code>BasicHDU.addValue(IFitsHeader, ...)</code> methods to
-     * populate the header, it will check if the given keyword is appropriate for the type of HDU that the header
-     * represents, those methods will throw an {@link IllegalArgumentException} if the specified keyword is not allowed
-     * for that type of HDU.
+     * Keyword checking mode when adding standardized keywords via the {@link IFitsHeader} interface.
      * 
      * @author Attila Kovacs
+     * 
+     * @since  1.19
      */
     public enum KeywordCheck {
         /** No keyword checking will be performed. */
@@ -219,9 +217,9 @@ public class Header implements FitsElement {
     }
 
     /** The keyword checking mode used by the library until the user changes it it. */
-    public static final KeywordCheck DEFAULT_KEYWORD_CHECK_MODE = KeywordCheck.DATA_TYPE;
+    public static final KeywordCheck DEFAULT_KEYWORD_CHECK_POLICY = KeywordCheck.DATA_TYPE;
 
-    private static KeywordCheck defaultCheckMode = DEFAULT_KEYWORD_CHECK_MODE;
+    private static KeywordCheck defaultCheckMode = DEFAULT_KEYWORD_CHECK_POLICY;
 
     private KeywordCheck checkMode = defaultCheckMode;
 
@@ -384,7 +382,7 @@ public class Header implements FitsElement {
      * @throws IllegalArgumentException if the current keyword checking mode does not allow the headercard with its
      *                                      standard keyword in the header.
      * 
-     * @sa                              {@link #setKeywordChecking(KeywordCheck)}
+     * @sa                              {@link #setKeywordCheckingPolicy(KeywordCheck)}
      */
     public void addLine(HeaderCard fcard) throws IllegalArgumentException {
         if (fcard == null) {
@@ -406,17 +404,17 @@ public class Header implements FitsElement {
      * </p>
      * <p>
      * This method changes the keyword checking mode for this header instance only. If you want to change the mode for
-     * all newly created headers globally, use {@link #setDefaultKeywordChecking(KeywordCheck)} instead.
+     * all newly created headers globally, use {@link #setDefaultKeywordCheckingPolicy(KeywordCheck)} instead.
      * </p>
      * 
-     * @param mode The keyword checking mode to use.
+     * @param policy The keyword checking mode to use.
      * 
-     * @see        #getKeywordChecking()
+     * @see          #getKeywordCheckingPolicy()
      * 
-     * @since      1.19
+     * @since        1.19
      */
-    public void setKeywordChecking(KeywordCheck mode) {
-        checkMode = mode;
+    public void setKeywordCheckingPolicy(KeywordCheck policy) {
+        checkMode = policy;
     }
 
     /**
@@ -425,15 +423,15 @@ public class Header implements FitsElement {
      * that the header represents, and will throw an {@link IllegalArgumentException} if the specified keyword is not
      * allowed for that type of HDU.
      * 
-     * @param mode The keyword checking mode to use.
+     * @param policy The keyword checking mode to use.
      * 
-     * @see        #setKeywordChecking(KeywordCheck)
-     * @see        #getKeywordChecking()
+     * @see          #setKeywordCheckingPolicy(KeywordCheck)
+     * @see          #getKeywordCheckingPolicy()
      * 
-     * @since      1.19
+     * @since        1.19
      */
-    public static void setDefaultKeywordChecking(KeywordCheck mode) {
-        defaultCheckMode = mode;
+    public static void setDefaultKeywordCheckingPolicy(KeywordCheck policy) {
+        defaultCheckMode = policy;
     }
 
     /**
@@ -441,11 +439,11 @@ public class Header implements FitsElement {
      * 
      * @return the current keyword checking mode
      * 
-     * @see    #setKeywordChecking(KeywordCheck)
+     * @see    #setKeywordCheckingPolicy(KeywordCheck)
      * 
      * @since  1.19
      */
-    public final KeywordCheck getKeywordChecking() {
+    public final KeywordCheck getKeywordCheckingPolicy() {
         return checkMode;
     }
 

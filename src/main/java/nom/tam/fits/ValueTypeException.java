@@ -37,7 +37,7 @@ package nom.tam.fits;
  * @author Attila Kovacs
  * @since 1.19
  */
-public class MismatchedValueTypeException extends HeaderCardException {
+public class ValueTypeException extends HeaderCardException {
 
     private static final long serialVersionUID = -4338698718509151861L;
 
@@ -49,7 +49,7 @@ public class MismatchedValueTypeException extends HeaderCardException {
      * @param valueType
      *            the type of value that was problematic.
      */
-    public MismatchedValueTypeException(String key, String valueType) {
+    public ValueTypeException(String key, String valueType) {
         super(key + " does not support " + valueType + " type values");
     }
 
