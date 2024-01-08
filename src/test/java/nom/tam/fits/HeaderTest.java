@@ -1756,7 +1756,7 @@ public class HeaderTest {
 
     @Test
     public void testKeywordCheckingOptional() throws Exception {
-        Header.setDefaultKeywordCheckingPolicy(Header.KeywordCheck.DATA_TYPE);
+        Header.setDefaultKeywordCheckingPolicy(Header.KeywordCheck.STRICT);
         Header h = new BinaryTable().toHDU().getHeader();
         h.addValue(Standard.OBJECT, "blah");
     }
