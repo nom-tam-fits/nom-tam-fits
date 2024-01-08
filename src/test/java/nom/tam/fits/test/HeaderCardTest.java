@@ -68,6 +68,7 @@ public class HeaderCardTest {
     @Before
     public void before() {
         FitsFactory.setDefaults();
+        HeaderCard.setValueCheckingPolicy(HeaderCard.DEFAULT_VALUE_CHECK_POLICY);
     }
 
     @After
@@ -1879,6 +1880,62 @@ public class HeaderCardTest {
     @Test(expected = IllegalArgumentException.class)
     public void testStringKeyValueException() {
         HeaderCard.create(Standard.EXTNAME, 0);
+    }
+
+    @Test
+    public void testIntegerKeyValueIgnore() {
+        HeaderCard.setValueCheckingPolicy(HeaderCard.ValueCheck.NONE);
+        HeaderCard.create(Standard.NAXIS, 3.1415);
+    }
+
+    @Test
+    public void testDecimalKeyValueIgnore() {
+        HeaderCard.setValueCheckingPolicy(HeaderCard.ValueCheck.NONE);
+        HeaderCard.create(Standard.BSCALE, new ComplexValue(1.0, 0.0));
+    }
+
+    @Test
+    public void testLogicalKeyValueIgnore() {
+        HeaderCard.setValueCheckingPolicy(HeaderCard.ValueCheck.NONE);
+        HeaderCard.create(Standard.SIMPLE, 0);
+    }
+
+    @Test
+    public void testStringKeyValueIgnore() {
+        HeaderCard.setValueCheckingPolicy(HeaderCard.ValueCheck.NONE);
+        HeaderCard.create(Standard.EXTNAME, 0);
+    }
+
+    @Test
+    public void testSetStandardFloat() {
+        HeaderCard hc = HeaderCard.create(Standard.BZERO, 1.0F);
+        Assert.assertEquals(1.0F, hc.getValue(Float.class, 0.0F), 1e-6);
+    }
+
+    @Test
+    public void testSetStandardDouble() {
+        HeaderCard hc = HeaderCard.create(Standard.BZERO, 1.0);
+        Assert.assertEquals(1.0, hc.getValue(Double.class, 0.0), 1e-12);
+    }
+
+    @Test
+    public void testSetStandardBigDecimal() {
+        HeaderCard hc = HeaderCard.create(Standard.BZERO, new BigDecimal("1.0"));
+        Assert.assertEquals(1.0, hc.getValue(Double.class, 0.0), 1e-12);
+    }
+
+    @Test
+    public void testSetStandardBigInteger() {
+        HeaderCard hc = HeaderCard.create(Standard.BZERO, new BigInteger("1"));
+        Assert.assertEquals(1.0, hc.getValue(Double.class, 0.0), 1e-12);
+    }
+
+    @Test
+    public void testGetValueCheckPolicy() {
+        for (HeaderCard.ValueCheck policy : HeaderCard.ValueCheck.values()) {
+            HeaderCard.setValueCheckingPolicy(policy);
+            Assert.assertEquals(policy.name(), policy, HeaderCard.getValueCheckingPolicy());
+        }
     }
 
 }
