@@ -92,6 +92,7 @@ public class HeaderTest {
     @Before
     public void before() throws Exception {
         FitsFactory.setDefaults();
+        Header.setDefaultKeywordChecking(Header.DEFAULT_KEYWORD_CHECK_MODE);
 
         float[][] img = new float[300][300];
         Fits f = null;
@@ -1659,12 +1660,14 @@ public class HeaderTest {
         throw new IllegalStateException("Missing inherited comment");
     }
 
-    @Test(expected = IllegalArgumentException.class)
+    @Test
     public void testImageKeywordChecking() throws Exception {
-        Header h = new BinaryTable().toHDU().getHeader();
+        Header h = ImageData.from(new int[10][10]).toHDU().getHeader();
         h.addValue(Standard.BUNIT, "blah");
+        /* no exception */
     }
 
+    @Test
     public void testImageKeywordCheckingGroup() throws Exception {
         Header h = new RandomGroupsData(new Object[][] {{new int[4], new int[2]}}).toHDU().getHeader();
         h.addValue(Standard.BUNIT, "blah");
@@ -1672,25 +1675,38 @@ public class HeaderTest {
     }
 
     @Test(expected = IllegalArgumentException.class)
-    public void testRandomGroupsKeywordChecking() throws Exception {
+    public void testImageKeywordCheckingException() throws Exception {
+        Header h = new BinaryTable().toHDU().getHeader();
+        h.addValue(Standard.BUNIT, "blah");
+    }
+
+    @Test
+    public void testGroupKeywordChecking() throws Exception {
+        Header h = new RandomGroupsData(new Object[][] {{new int[4], new int[2]}}).toHDU().getHeader();
+        h.addValue(Standard.PTYPEn.n(1), "blah");
+        /* no exception */
+    }
+
+    @Test(expected = IllegalArgumentException.class)
+    public void testGroupsKeywordCheckingException() throws Exception {
         Header h = ImageData.from(new int[10][10]).toHDU().getHeader();
         h.addValue(Standard.PTYPEn.n(1), "blah");
     }
 
     @Test(expected = IllegalArgumentException.class)
-    public void testTableKeywordChecking() throws Exception {
+    public void testTableKeywordCheckingException() throws Exception {
         Header h = ImageData.from(new int[10][10]).toHDU().getHeader();
         h.addValue(Standard.TFORMn.n(1), "blah");
     }
 
     @Test(expected = IllegalArgumentException.class)
-    public void testAsciiTableKeywordChecking() throws Exception {
+    public void testAsciiTableKeywordCheckingException() throws Exception {
         Header h = new BinaryTable().toHDU().getHeader();
         h.addValue(Standard.TBCOLn.n(1), 10);
     }
 
     @Test(expected = IllegalArgumentException.class)
-    public void testBinbaryTableKeywordChecking() throws Exception {
+    public void testBinbaryTableKeywordCheckingException() throws Exception {
         Header h = new AsciiTable().toHDU().getHeader();
         h.addValue(Standard.TDIMn.n(1), "blah");
     }

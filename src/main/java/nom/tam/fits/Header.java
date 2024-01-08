@@ -218,7 +218,10 @@ public class Header implements FitsElement {
         STRICT
     }
 
-    private static KeywordCheck defaultCheckMode = KeywordCheck.DATA_TYPE;
+    /** The keyword checking mode used by the library until the user changes it it. */
+    public static final KeywordCheck DEFAULT_KEYWORD_CHECK_MODE = KeywordCheck.DATA_TYPE;
+
+    private static KeywordCheck defaultCheckMode = DEFAULT_KEYWORD_CHECK_MODE;
 
     private KeywordCheck checkMode = defaultCheckMode;
 
@@ -456,7 +459,7 @@ public class Header implements FitsElement {
             return;
         case EXTENSION:
         case PRIMARY:
-            if (checkMode == KeywordCheck.STRICT) {
+            if (checkMode == KeywordCheck.STRICT && keyword.status() == IFitsHeader.SOURCE.MANDATORY) {
                 throw new IllegalArgumentException("Keyword " + keyword + " should be set by the library only");
             }
             return;
@@ -471,6 +474,7 @@ public class Header implements FitsElement {
             }
             break;
         case TABLE:
+            System.err.println("### keyword " + keyword.key() + ", hdu " + owner.getClass().getName());
             if (owner instanceof TableHDU) {
                 return;
             }
@@ -489,7 +493,6 @@ public class Header implements FitsElement {
         // TODO unclear what checking we should do for these type of keywords.
         // return;
         default:
-            System.err.println("### keyword " + keyword.key() + ", hdu " + owner.getClass().getName());
             return;
         }
 
