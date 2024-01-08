@@ -137,8 +137,15 @@ public abstract class BasicHDU<DataClass extends Data> implements FitsElement {
      * @param      myData   the corresponding data object
      */
     protected BasicHDU(Header myHeader, DataClass myData) {
-        this.myHeader = myHeader;
+        setHeader(myHeader);
         this.myData = myData;
+    }
+
+    private void setHeader(Header header) {
+        this.myHeader = header;
+        if (header != null) {
+            this.myHeader.assignTo(this);
+        }
     }
 
     /**
@@ -896,7 +903,7 @@ public abstract class BasicHDU<DataClass extends Data> implements FitsElement {
     @Override
     @SuppressWarnings({"unchecked", "deprecation"})
     public void read(ArrayDataInput stream) throws FitsException, IOException {
-        myHeader = Header.readHeader(stream);
+        setHeader(Header.readHeader(stream));
         myData = (DataClass) FitsFactory.dataFactory(myHeader);
         myData.read(stream);
     }
@@ -934,7 +941,10 @@ public abstract class BasicHDU<DataClass extends Data> implements FitsElement {
             throw new FitsException("Invalid attempt to make HDU of type:" + this.getClass().getName() + " primary.");
         }
 
+        Header.KeywordCheck mode = myHeader.getKeywordChecking();
+        myHeader.setKeywordChecking(Header.KeywordCheck.DATA_TYPE);
         myHeader.setRequiredKeys(value ? null : getCanonicalXtension());
+        myHeader.setKeywordChecking(mode);
     }
 
     /**
@@ -957,7 +967,7 @@ public abstract class BasicHDU<DataClass extends Data> implements FitsElement {
     @Override
     public void write(ArrayDataOutput stream) throws FitsException {
         if (myHeader == null) {
-            myHeader = new Header();
+            setHeader(new Header());
         }
 
         if (stream instanceof FitsOutput) {

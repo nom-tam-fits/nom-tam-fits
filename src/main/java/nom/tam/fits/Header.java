@@ -195,6 +195,38 @@ public class Header implements FitsElement {
      */
     private Comparator<String> headerSorter;
 
+    private BasicHDU<?> owner;
+
+    /**
+     * Keyword checking mode when adding standardized keywords via the {@link IFitsHeader} interface.
+     * 
+     * @author Attila Kovacs
+     * 
+     * @since  1.19
+     */
+    public enum KeywordCheck {
+        /** No keyword checking will be performed. */
+        NONE,
+        /** Check only that the keyword is appropriate for the type of data contained in the associated HDU */
+        DATA_TYPE,
+        /**
+         * Strict checking, will refuse to set mandatory FITS keywords -- which should normally be set by the library
+         * alone.
+         */
+        STRICT
+    }
+
+    /**
+     * The keyword checking mode used by the library until the user changes it it.
+     *
+     * @since 1.19
+     */
+    public static final KeywordCheck DEFAULT_KEYWORD_CHECK_POLICY = KeywordCheck.DATA_TYPE;
+
+    private static KeywordCheck defaultKeyCheck = DEFAULT_KEYWORD_CHECK_POLICY;
+
+    private KeywordCheck keyCheck = defaultKeyCheck;
+
     /**
      * Create a header by reading the information from the input stream.
      *
@@ -274,11 +306,18 @@ public class Header implements FitsElement {
         }
     }
 
+    void assignTo(BasicHDU<?> hdu) {
+        // if (owner != null) {
+        // throw new IllegalStateException("This header was already assigned to a HDU");
+        // }
+        this.owner = hdu;
+    }
+
     /**
      * <p>
-     * Preallocates a minimum header card space. When written to a stream, the header will be large enough to hold at
-     * least the specified number of cards. If the header has fewer physical cards then the remaining space will be
-     * padded with blanks, leaving space for future additions, as specified by the FITS 4.0 standard for
+     * Reserves header card space for populating at a later time. When written to a stream, the header will be large
+     * enough to hold at least the specified number of cards. If the header has fewer physical cards then the remaining
+     * space will be padded with blanks, leaving space for future additions, as specified by the FITS 4.0 standard for
      * <a href="https://fits.gsfc.nasa.gov/registry/headerspace.html"> preallocated header space</a>.
      * </p>
      * <p>
@@ -342,12 +381,128 @@ public class Header implements FitsElement {
      * Insert a new header card at the current position, deleting any prior occurence of the same card while maintaining
      * the current position to point to after the newly inserted card.
      *
-     * @param fcard The card to be inserted.
+     * @param  fcard                    The card to be inserted.
+     * 
+     * @throws IllegalArgumentException if the current keyword checking mode does not allow the headercard with its
+     *                                      standard keyword in the header.
+     * 
+     * @sa                              {@link #setKeywordChecking(KeywordCheck)}
      */
-    public void addLine(HeaderCard fcard) {
-        if (fcard != null) {
-            cursor().add(fcard);
+    public void addLine(HeaderCard fcard) throws IllegalArgumentException {
+        if (fcard == null) {
+            return;
         }
+
+        if (fcard.getStandardKey() != null) {
+            checkKeyword(fcard.getStandardKey());
+        }
+
+        cursor().add(fcard);
+    }
+
+    /**
+     * <p>
+     * Sets the built-in standard keyword checking mode. When populating the header using {@link IFitsHeader} keywords
+     * the library will check if the given keyword is appropriate for the type of HDU that the header represents, and
+     * will throw an {@link IllegalArgumentException} if the specified keyword is not allowed for that type of HDU.
+     * </p>
+     * <p>
+     * This method changes the keyword checking mode for this header instance only. If you want to change the mode for
+     * all newly created headers globally, use {@link #setDefaultKeywordChecking(KeywordCheck)} instead.
+     * </p>
+     * 
+     * @param mode The keyword checking mode to use.
+     * 
+     * @see        #getKeywordChecking()
+     * @see        HeaderCard#setValueCheckingPolicy(nom.tam.fits.HeaderCard.ValueCheck)
+     * 
+     * @since      1.19
+     */
+    public void setKeywordChecking(KeywordCheck mode) {
+        keyCheck = mode;
+    }
+
+    /**
+     * Sets the default mode of built-in standard keyword checking mode for new headers. When populating the header
+     * using {@link IFitsHeader} keywords the library will check if the given keyword is appropriate for the type of HDU
+     * that the header represents, and will throw an {@link IllegalArgumentException} if the specified keyword is not
+     * allowed for that type of HDU.
+     * 
+     * @param mode The keyword checking policy to use.
+     * 
+     * @see        #setKeywordChecking(KeywordCheck)
+     * @see        #getKeywordChecking()
+     * @see        HeaderCard#setValueCheckingPolicy(nom.tam.fits.HeaderCard.ValueCheck)
+     * 
+     * @since      1.19
+     */
+    public static void setDefaultKeywordChecking(KeywordCheck mode) {
+        defaultKeyCheck = mode;
+    }
+
+    /**
+     * Returns the current keyword checking mode.
+     * 
+     * @return the current keyword checking mode
+     * 
+     * @see    #setKeywordChecking(KeywordCheck)
+     * 
+     * @since  1.19
+     */
+    public final KeywordCheck getKeywordChecking() {
+        return keyCheck;
+    }
+
+    private void checkKeyword(IFitsHeader keyword) throws IllegalArgumentException {
+        if (keyCheck == KeywordCheck.NONE || owner == null) {
+            return;
+        }
+
+        switch (keyword.hdu()) {
+
+        case ANY:
+            return;
+        case EXTENSION:
+        case PRIMARY:
+            if (keyCheck == KeywordCheck.STRICT && keyword.status() == IFitsHeader.SOURCE.MANDATORY) {
+                throw new IllegalArgumentException("Keyword " + keyword + " should be set by the library only");
+            }
+            return;
+        case IMAGE:
+            if (owner instanceof ImageHDU || owner instanceof RandomGroupsHDU) {
+                return;
+            }
+            break;
+        case GROUPS:
+            if (owner instanceof RandomGroupsHDU) {
+                return;
+            }
+            break;
+        case TABLE:
+            System.err.println("### keyword " + keyword.key() + ", hdu " + owner.getClass().getName());
+            if (owner instanceof TableHDU) {
+                return;
+            }
+            break;
+        case ASCII_TABLE:
+            if (owner instanceof AsciiTableHDU) {
+                return;
+            }
+            break;
+        case BINTABLE:
+            if (owner instanceof BinaryTableHDU) {
+                return;
+            }
+            break;
+        // case PRIMARY_EXTENSION:
+        // TODO unclear what checking we should do for these type of keywords.
+        // return;
+        default:
+            return;
+        }
+
+        throw new IllegalArgumentException(
+                "Keyword " + keyword.key() + " is not appropriate for " + owner.getClass().getName());
     }
 
     /**

@@ -498,7 +498,6 @@ public enum Standard implements IFitsHeader {
     TFORMn(SOURCE.MANDATORY, HDU.TABLE, VALUE.STRING, "column data format", //
             replaceable("asciitable:tformN", AsciiTable.class), //
             replaceable("binarytable:tformN", BinaryTable.class) //
-
     ),
 
     /**

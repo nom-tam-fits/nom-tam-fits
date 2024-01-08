@@ -1372,7 +1372,7 @@ public class BinaryTable extends AbstractTableData implements Cloneable {
         }
 
         HeaderCard card = header.getCard(Standard.NAXIS1);
-        card.setValue(String.valueOf(rowLen));
+        card.setValue(rowLen);
     }
 
     /**

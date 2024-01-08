@@ -68,6 +68,7 @@ public class HeaderCardTest {
     @Before
     public void before() {
         FitsFactory.setDefaults();
+        HeaderCard.setValueCheckingPolicy(HeaderCard.DEFAULT_VALUE_CHECK_POLICY);
     }
 
     @After
@@ -1860,4 +1861,87 @@ public class HeaderCardTest {
     public void testUnfilledKeywordIndex() {
         HeaderCard.create(Standard.CTYPEn, "blah");
     }
+
+    @Test(expected = IllegalArgumentException.class)
+    public void testIntegerKeyValueException() {
+        HeaderCard.create(Standard.NAXIS, 3.1415);
+    }
+
+    @Test(expected = IllegalArgumentException.class)
+    public void testDecimalKeyValueException() {
+        HeaderCard.create(Standard.BSCALE, new ComplexValue(1.0, 0.0));
+    }
+
+    @Test(expected = IllegalArgumentException.class)
+    public void testLogicalKeyValueException() {
+        HeaderCard.create(Standard.SIMPLE, 0);
+    }
+
+    @Test(expected = IllegalArgumentException.class)
+    public void testStringKeyValueException() {
+        HeaderCard.create(Standard.EXTNAME, 0);
+    }
+
+    @Test
+    public void testIntegerKeyValueIgnore() {
+        HeaderCard.setValueCheckingPolicy(HeaderCard.ValueCheck.NONE);
+        HeaderCard.create(Standard.NAXIS, 3.1415);
+    }
+
+    @Test
+    public void testDecimalKeyValueIgnore() {
+        HeaderCard.setValueCheckingPolicy(HeaderCard.ValueCheck.NONE);
+        HeaderCard.create(Standard.BSCALE, new ComplexValue(1.0, 0.0));
+    }
+
+    @Test
+    public void testLogicalKeyValueIgnore() {
+        HeaderCard.setValueCheckingPolicy(HeaderCard.ValueCheck.NONE);
+        HeaderCard.create(Standard.SIMPLE, 0);
+    }
+
+    @Test
+    public void testStringKeyValueIgnore() {
+        HeaderCard.setValueCheckingPolicy(HeaderCard.ValueCheck.NONE);
+        HeaderCard.create(Standard.EXTNAME, 0);
+    }
+
+    @Test(expected = IllegalArgumentException.class)
+    public void testSetStandardFloatException() {
+        HeaderCard hc = HeaderCard.create(Standard.NAXIS, 1.0F);
+        Assert.assertEquals(1.0F, hc.getValue(Float.class, 0.0F), 1e-6);
+    }
+
+    @Test(expected = IllegalArgumentException.class)
+    public void testSetStandardDoubleException() {
+        HeaderCard hc = HeaderCard.create(Standard.NAXIS, 1.0);
+        Assert.assertEquals(1.0, hc.getValue(Double.class, 0.0), 1e-12);
+    }
+
+    @Test(expected = IllegalArgumentException.class)
+    public void testSetStandardBigDecimalException() {
+        HeaderCard hc = HeaderCard.create(Standard.NAXIS, new BigDecimal("1.0"));
+        Assert.assertEquals(1.0, hc.getValue(Double.class, 0.0), 1e-12);
+    }
+
+    @Test(expected = IllegalArgumentException.class)
+    public void testSetStandardBigIntegerException() {
+        HeaderCard hc = HeaderCard.create(Standard.NAXIS, new BigInteger("1"));
+        Assert.assertEquals(1.0, hc.getValue(Double.class, 0.0), 1e-12);
+    }
+
+    @Test
+    public void testSetStandardInteger() {
+        HeaderCard hc = HeaderCard.create(Standard.BZERO, 1);
+        Assert.assertEquals(1, (int) hc.getValue(Integer.class, 0));
+    }
+
+    @Test
+    public void testGetValueCheckPolicy() {
+        for (HeaderCard.ValueCheck policy : HeaderCard.ValueCheck.values()) {
+            HeaderCard.setValueCheckingPolicy(policy);
+            Assert.assertEquals(policy.name(), policy, HeaderCard.getValueCheckingPolicy());
+        }
+    }
+
 }

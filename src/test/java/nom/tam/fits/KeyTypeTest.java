@@ -40,6 +40,7 @@ import java.util.logging.Level;
 import java.util.logging.LogRecord;
 import java.util.logging.Logger;
 
+import org.junit.Before;
 import org.junit.Test;
 
 import nom.tam.fits.header.IFitsHeader;
@@ -47,6 +48,11 @@ import nom.tam.fits.header.Standard;
 import nom.tam.util.ComplexValue;
 
 public class KeyTypeTest {
+
+    @Before
+    public void before() {
+        HeaderCard.setValueCheckingPolicy(HeaderCard.ValueCheck.LOGGING);
+    }
 
     private class ComplexKey implements IFitsHeader {
         String name;

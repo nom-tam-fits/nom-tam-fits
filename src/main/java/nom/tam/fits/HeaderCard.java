@@ -116,12 +116,39 @@ public class HeaderCard implements CursorValue<String>, Cloneable {
     /** The comment part of the card (set to null if there's no comment) */
     private String comment;
 
+    private IFitsHeader standardKey;
+
     /**
      * The Java class associated to the value
      *
      * @since 1.16
      */
     private Class<?> type;
+
+    /**
+     * Value type checking policies for when setting values for standardized keywords.
+     * 
+     * @author Attila Kovacs
+     * 
+     * @since  1.19
+     */
+    public enum ValueCheck {
+        /** No value type checking will be performed */
+        NONE,
+        /** Attempting to set values of the wrong type for standardized keywords will log warnings */
+        LOGGING,
+        /** Throw exception when setting a value of the wrong type for a standardized keyword */
+        EXCEPTION
+    }
+
+    /**
+     * Default value type checking policy for cards with standardized {@link IFitsHeader} keywords.
+     * 
+     * @since 1.19
+     */
+    public static final ValueCheck DEFAULT_VALUE_CHECK_POLICY = ValueCheck.EXCEPTION;
+
+    private static ValueCheck valueCheck = DEFAULT_VALUE_CHECK_POLICY;
 
     /** Private constructor for an empty card, used by other constructors. */
     private HeaderCard() {
@@ -874,16 +901,46 @@ public class HeaderCard implements CursorValue<String>, Cloneable {
      * @see                          #setValue(Number)
      */
     public synchronized HeaderCard setValue(Number update, int decimals) throws NumberFormatException, LongValueException {
+        try {
+            checkValueType(IFitsHeader.VALUE.REAL);
+        } catch (ValueTypeException e) {
+            if (update instanceof Float || update instanceof Double || update instanceof BigDecimal
+                    || update instanceof BigInteger) {
+                throw e;
+            }
+            checkValueType(IFitsHeader.VALUE.INTEGER);
+        }
+
         if (update == null) {
             value = null;
             type = Integer.class;
         } else {
+            type = update.getClass();
             checkNumber(update);
             setUnquotedValue(new FlexFormat().forCard(this).setPrecision(decimals).format(update));
-
-            type = update.getClass();
         }
         return this;
+    }
+
+    private void checkValueType(IFitsHeader.VALUE t) throws ValueTypeException {
+        if (standardKey == null || valueCheck == ValueCheck.NONE) {
+            return;
+        }
+
+        IFitsHeader.VALUE expect = standardKey.valueType();
+        if (expect == IFitsHeader.VALUE.ANY) {
+            return;
+        }
+
+        if (t != expect) {
+            ValueTypeException e = new ValueTypeException(key, t.name());
+
+            if (valueCheck == ValueCheck.LOGGING) {
+                LOG.warning(e.getMessage());
+            } else {
+                throw e;
+            }
+        }
     }
 
     /**
@@ -897,10 +954,13 @@ public class HeaderCard implements CursorValue<String>, Cloneable {
      *                                possible to read cards from a non-standard header, which breaches this limit, by
      *                                ommitting some required spaces (esp. after the '='), and have a null value. When
      *                                that happens, we can be left without room for even a single character.
+     * @throws ValueTypeException if the card's standard keyword does not support boolean values.
      *
      * @return                    the card itself
      */
-    public synchronized HeaderCard setValue(Boolean update) throws LongValueException {
+    public synchronized HeaderCard setValue(Boolean update) throws LongValueException, ValueTypeException {
+        checkValueType(IFitsHeader.VALUE.LOGICAL);
+
         if (update == null) {
             value = null;
         } else if (spaceForValue() < 1) {
@@ -952,6 +1012,8 @@ public class HeaderCard implements CursorValue<String>, Cloneable {
      * @since                        1.16
      */
     public synchronized HeaderCard setValue(ComplexValue update, int decimals) throws LongValueException {
+        checkValueType(IFitsHeader.VALUE.COMPLEX);
+
         if (update == null) {
             value = null;
         } else {
@@ -1015,6 +1077,8 @@ public class HeaderCard implements CursorValue<String>, Cloneable {
      * @see                                   #validateChars(String)
      */
     public synchronized HeaderCard setValue(String update) throws IllegalArgumentException, LongStringsNotEnabledException {
+        checkValueType(IFitsHeader.VALUE.STRING);
+
         if (update == null) {
             // There is always room for an empty string...
             value = null;
@@ -1025,7 +1089,7 @@ public class HeaderCard implements CursorValue<String>, Cloneable {
                 throw new LongStringsNotEnabledException("New string value for [" + key + "] is too long."
                         + "\n\n --> You can enable long string support by FitsFactory.setLongStringEnabled(true).\n");
             }
-            value = update;
+            value = trimEnd(update);
         }
 
         type = String.class;
@@ -1275,6 +1339,7 @@ public class HeaderCard implements CursorValue<String>, Cloneable {
             }
         }
         key = newKey;
+        standardKey = null;
     }
 
     /**
@@ -1290,6 +1355,35 @@ public class HeaderCard implements CursorValue<String>, Cloneable {
             return true;
         }
         return comment.isEmpty();
+    }
+
+    /**
+     * Returns the current policy for checking if set values are of the allowed type for cards with standardized
+     * {@link IFitsHeader} keywords.
+     * 
+     * @return the current value type checking policy
+     * 
+     * @since  1.19
+     * 
+     * @see    #setValueCheckingPolicy(ValueCheck)
+     */
+    public static ValueCheck getValueCheckingPolicy() {
+        return valueCheck;
+    }
+
+    /**
+     * Sets the policy to used for checking if set values conform to the expected types for cards that use standardized
+     * FITS keywords via the {@link IFitsHeader} interface.
+     * 
+     * @param policy the new polict to use for checking value types.
+     * 
+     * @see          #getValueCheckingPolicy()
+     * @see          Header#setKeywordChecking(nom.tam.fits.Header.KeywordCheck)
+     * 
+     * @since        1.19
+     */
+    public static void setValueCheckingPolicy(ValueCheck policy) {
+        valueCheck = policy;
     }
 
     /**
@@ -1411,7 +1505,12 @@ public class HeaderCard implements CursorValue<String>, Cloneable {
 
         LOG.log(Level.WARNING, "[" + key + "] with unexpected value type.",
                 new IllegalArgumentException("Expected " + type + ", got " + key.valueType()));
+
         return false;
+    }
+
+    final IFitsHeader getStandardKey() {
+        return standardKey;
     }
 
     /**
@@ -1434,9 +1533,12 @@ public class HeaderCard implements CursorValue<String>, Cloneable {
         checkType(key, VALUE.LOGICAL);
 
         try {
-            return new HeaderCard(key.key(), value, key.comment());
+            HeaderCard hc = new HeaderCard(key.key(), (Boolean) null, key.comment());
+            hc.standardKey = key;
+            hc.setValue(value);
+            return hc;
         } catch (HeaderCardException e) {
-            throw new IllegalArgumentException("Invalid sconventional key [" + key.key() + "]", e);
+            throw new IllegalArgumentException(e.getMessage(), e);
         }
     }
 
@@ -1472,9 +1574,12 @@ public class HeaderCard implements CursorValue<String>, Cloneable {
         }
 
         try {
-            return new HeaderCard(key.key(), value, key.comment());
+            HeaderCard hc = new HeaderCard(key.key(), (Number) null, key.comment());
+            hc.standardKey = key;
+            hc.setValue(value);
+            return hc;
         } catch (HeaderCardException e) {
-            throw new IllegalArgumentException("Invalid conventional key [" + key.key() + "]", e);
+            throw new IllegalArgumentException(e.getMessage(), e);
         }
     }
 
@@ -1497,9 +1602,12 @@ public class HeaderCard implements CursorValue<String>, Cloneable {
         checkType(key, VALUE.COMPLEX);
 
         try {
-            return new HeaderCard(key.key(), value, key.comment());
+            HeaderCard hc = new HeaderCard(key.key(), (ComplexValue) null, key.comment());
+            hc.standardKey = key;
+            hc.setValue(value);
+            return hc;
         } catch (HeaderCardException e) {
-            throw new IllegalArgumentException("Invalid conventional key [" + key.key() + "]", e);
+            throw new IllegalArgumentException(e.getMessage(), e);
         }
     }
 
@@ -1524,9 +1632,12 @@ public class HeaderCard implements CursorValue<String>, Cloneable {
         validateChars(value);
 
         try {
-            return new HeaderCard(key.key(), value, key.comment());
+            HeaderCard hc = new HeaderCard(key.key(), (String) null, key.comment());
+            hc.standardKey = key;
+            hc.setValue(value);
+            return hc;
         } catch (HeaderCardException e) {
-            throw new IllegalArgumentException("Invalid conventional key [" + key.key() + "]", e);
+            throw new IllegalArgumentException(e.getMessage(), e);
         }
     }
 
@@ -1955,4 +2066,5 @@ public class HeaderCard implements CursorValue<String>, Cloneable {
             }
         }
     }
+
 }

@@ -1092,6 +1092,35 @@ string value of `"50"`:
 
 For best practice, try rely on the standard keywords, or those in registered conventions, when possible. 
 
+#### Keyword checking
+
+Another advantage of using the standardized keywords implementing the `IFitsHeader` interface is that the library can
+check (since __1.19__) automatically that (_a_) the keyword is appropriate for the type of HDU it is used in, and (_b_) 
+if the keyword is one of the essential keywords that should be set by the library alone without users tinkering with 
+them. If the keyword should not be used in the header belonging to a specific type of HDU under the current checking 
+policy, the library will throw an `IllegalArgumentException`.
+
+You can use `Header.setKeywordChecking()` to adjust the type of checking to be applied on a per header instance basis,
+or use the static `Header.setDEfaultKeywordChecking()` to change the default policy for all newly created headers.
+
+The `Header.KeywordCheck` enum defines the following policies that may be used:
+
+- `NONE` -- no keyword checking will be applied. You can do whatever you want without consequences. This policy is the 
+  most backward compatible one, since we have not done checking before.
+- `DATA_TYPE` -- Checks that the keyword is supported by the data type that the header is meant to describe. This is 
+  the default policy since __1.19__.
+- `STRICT` -- In addition to checking if the keyword is suitable for the data type, the library will also prevent 
+  users from setting essential keywords that really should be handled by the library alone (such as `SIMPLE` or 
+  `XTENSION`, `BITPIX`, `NAXIS` etc.).
+
+
+#### Value checking
+
+The standardized keywords that implement the `IFitsHeader` interface can also specify the type of acceptable values
+to use. As of __1.19__ we will throw an appropriate exception (`IllegalArgumentException` or 
+`MismatchedValueTypeException`, depending on the method) if the user attempt to set a value of unsupported type. For
+example trying to set the value of the `Standard.TELESCOP` keyword (which expects a string value) to a boolean will
+throw an exception. 
 
 
 <a name="hierarch-style-header-keywords"></a>

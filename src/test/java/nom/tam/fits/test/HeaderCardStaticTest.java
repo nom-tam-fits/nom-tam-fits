@@ -151,9 +151,9 @@ public class HeaderCardStaticTest {
         assertEquals(Long.class, hc.valueType());
         assertEquals(4000000000L, hc.getValue(Long.class, -1L).longValue());
 
-        hc = HeaderCard.create(Standard.BUNIT, 3.002f);
+        hc = HeaderCard.create(Standard.BZERO, 3.002f);
         assertTrue(hc.isKeyValuePair());
-        assertEquals(Standard.BUNIT.key(), hc.getKey());
+        assertEquals(Standard.BZERO.key(), hc.getKey());
         assertEquals(Float.class, hc.valueType());
         assertEquals(3.002f, hc.getValue(Float.class, 0.0f).floatValue(), 1e-6);
 
@@ -220,7 +220,7 @@ public class HeaderCardStaticTest {
         assertNull(hc);
     }
 
-    @Test
+    @Test(expected = IllegalArgumentException.class)
     public void testCreateWrongValueTypeFitsCard1() throws Exception {
         HeaderCard hc = HeaderCard.create(new CustomIFitsHeader("TEST", null, VALUE.STRING), 1);
         assertNotNull(hc);
