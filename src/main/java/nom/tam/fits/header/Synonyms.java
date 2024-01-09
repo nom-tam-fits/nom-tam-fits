@@ -47,7 +47,6 @@ import nom.tam.fits.header.extra.STScIExt;
 public enum Synonyms {
 
     /** EQUINOX is now preferred over the old EPOCH */
-
     EQUINOX(Standard.EQUINOX, Standard.EPOCH),
 
     /** TIMESYS appears in multiple conventions */
@@ -114,6 +113,21 @@ public enum Synonyms {
      * @since 1.19
      */
     nVn_na(WCS.nVn_na, WCS.nPVn_na),
+
+    /**
+     * EXTNAME and HDUNAME are synonymous, but EXTNAME is part of the standard since 1.19
+     */
+    EXTNAME(Standard.EXTNAME, DataDescription.HDUNAME),
+
+    /**
+     * EXTVER and HDUVER are synonymous, but EXTVER is part of the standard since 1.19
+     */
+    EXTVER(Standard.EXTVER, DataDescription.HDUVER),
+
+    /**
+     * EXTLEVEL and HDULEVEL are synonymous, but EXTLEVEL is part of the standard since 1.19
+     */
+    EXTLEVEL(Standard.EXTLEVEL, DataDescription.HDULEVEL),
 
     /** DARKTIME appears in multiple conventions */
     DARKTIME(NOAOExt.DARKTIME, SBFitsExt.DARKTIME);

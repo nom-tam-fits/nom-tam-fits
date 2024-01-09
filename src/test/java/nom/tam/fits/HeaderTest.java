@@ -1744,7 +1744,7 @@ public class HeaderTest {
     public void testKeywordCheckingExtensionException() throws Exception {
         Header.setDefaultKeywordChecking(Header.KeywordCheck.DATA_TYPE);
         Header h = new RandomGroupsData(new Object[][] {{new int[4], new int[2]}}).toHDU().getHeader();
-        h.addValue(Standard.XTENSION, true);
+        h.addValue(Standard.INHERIT, true);
     }
 
     @Test(expected = IllegalArgumentException.class)

@@ -92,22 +92,20 @@ public enum DataDescription implements IFitsHeader {
     HDUDOC(SOURCE.HEASARC, HDU.ANY, VALUE.STRING, "reference to document describing the data format"),
 
     /**
-     * This keyword is synonymous to the standard EXTLEVEL keyword except that it may also be used in the primary key.
-     * It is recommended that the HDULEVEL and EXTLEVEL keywords should not both be given in the same HDU key, but if
-     * they are, then the HDULEVEL keyword will have precedence.
+     * This keyword is synonymous to the standard EXTLEVEL. It is recommended that the HDULEVEL and EXTLEVEL keywords
+     * should not both be given in the same HDU key, but if they are, then the HDULEVEL keyword will have precedence.
      */
     HDULEVEL(SOURCE.UNKNOWN, HDU.ANY, VALUE.INTEGER, "hierarchical level of the HDU"),
     /**
-     * This keyword is synonymous to the standard EXTNAME keyword except that it may also be used in the primary key. It
-     * is recommended that the HDUNAME and EXTNAME keywords should not both be given in the same HDU key, but if they
-     * are, then the HDUNAME keyword will have precedence.
+     * This keyword is synonymous to the standard EXTNAME keyword except. It is recommended that the HDUNAME and EXTNAME
+     * keywords should not both be given in the same HDU key, but if they are, then the HDUNAME keyword will have
+     * precedence.
      */
     HDUNAME(SOURCE.UNKNOWN, HDU.ANY, VALUE.STRING, "descriptive name of the HDU"),
 
     /**
-     * This keyword is synonymous to the standard EXTVER keyword except that it may also be used in the primary key. It
-     * is recommended that the HDUVER and EXTVER keywords should not both be given in the same HDU key, but if they are,
-     * then the HDUVER keyword will have precedence.
+     * This keyword is synonymous to the standard EXTVER keyword. It is recommended that the HDUVER and EXTVER keywords
+     * should not both be given in the same HDU key, but if they are, then the HDUVER keyword will have precedence.
      */
     HDUVER(SOURCE.UNKNOWN, HDU.ANY, VALUE.INTEGER, "version number of the HDU"),
     /**

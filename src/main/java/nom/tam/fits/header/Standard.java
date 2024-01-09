@@ -254,14 +254,14 @@ public enum Standard implements IFitsHeader {
      * treated as if the value were 1. This keyword is used to describe an extension and should not appear in the
      * primary key.RANGE: [1:] DEFAULT: 1
      */
-    EXTLEVEL(SOURCE.RESERVED, HDU.EXTENSION, VALUE.INTEGER, "hierarchical level of the extension"),
+    EXTLEVEL(SOURCE.RESERVED, HDU.ANY, VALUE.INTEGER, "hierarchical level of the extension"),
 
     /**
      * The value field shall contain a character string, to be used to distinguish among different extensions of the
      * same type, i.e., with the same value of XTENSION, in a FITS file. This keyword is used to describe an extension
-     * and should not appear in the primary key.
+     * and but may appear in the primary header also.
      */
-    EXTNAME(SOURCE.RESERVED, HDU.EXTENSION, VALUE.STRING, "name of the extension"),
+    EXTNAME(SOURCE.RESERVED, HDU.ANY, VALUE.STRING, "name of the extension"),
 
     /**
      * The value field shall contain an integer, to be used to distinguish among different extensions in a FITS file
@@ -270,14 +270,14 @@ public enum Standard implements IFitsHeader {
      * EXTVER keyword is absent, the file should be treated as if the value were 1. This keyword is used to describe an
      * extension and should not appear in the primary key.RANGE: [1:] DEFAULT: 1
      */
-    EXTVER(SOURCE.RESERVED, HDU.EXTENSION, VALUE.INTEGER, "version of the extension"),
+    EXTVER(SOURCE.RESERVED, HDU.ANY, VALUE.INTEGER, "version of the extension"),
 
     /**
      * The value field shall contain an integer that shall be used in any way appropriate to define the data structure,
      * consistent with Eq. 5.2 in the FITS Standard. This keyword originated for use in FITS Random Groups where it
      * specifies the number of random groups present. In most other cases this keyword will have the value 1.
      */
-    GCOUNT(SOURCE.MANDATORY, HDU.EXTENSION, VALUE.INTEGER, "group count", //
+    GCOUNT(SOURCE.MANDATORY, HDU.ANY, VALUE.INTEGER, "group count", //
             replaceable("randomgroupsdata:gcount", RandomGroupsData.class), //
             replaceable("asciitable:gcount", AsciiTable.class), //
             replaceable("basichdu:gcount", Object.class, "Required value"), //
@@ -355,7 +355,7 @@ public enum Standard implements IFitsHeader {
      * represented the number of parameters preceding each group. It has since been used in 'BINTABLE' extensions to
      * represent the size of the data heap following the main data table. In most other cases its value will be zero.
      */
-    PCOUNT(SOURCE.MANDATORY, HDU.EXTENSION, VALUE.INTEGER, "parameter count", //
+    PCOUNT(SOURCE.MANDATORY, HDU.ANY, VALUE.INTEGER, "parameter count", //
             replaceable("asciitable:pcount", AsciiTable.class, "No group data"), //
             replaceable("basichdu:pcount", Object.class, "Required value"), //
             replaceable("binarytablehdu:pcount", BinaryTable.class, "Includes heap"), //
