@@ -90,11 +90,11 @@ public interface IFitsHeader {
          */
         HEASARC("http://heasarc.gsfc.nasa.gov/docs/heasarc/ofwg/docs/ofwg_recomm/r13.html"),
         /**
-         * integral.
+         * The keyword is integral to the workings of the library. Users should not attempt set set or modify.
          */
         INTEGRAL(null),
         /**
-         * Mandatory keywords defined by the fits standard.
+         * Mandatory keywords defined by the FITS standard.
          */
         MANDATORY("http://heasarc.gsfc.nasa.gov/docs/fcg/standard_dict.html"),
         /**

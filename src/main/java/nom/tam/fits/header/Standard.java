@@ -239,7 +239,7 @@ public enum Standard implements IFitsHeader {
      * NAXIS card image. The presence of this keyword with the value T in the primary key does not require that
      * extensions be present.
      */
-    EXTEND(SOURCE.RESERVED, HDU.PRIMARY, VALUE.LOGICAL, "may the FITS file contain extensions?", //
+    EXTEND(SOURCE.INTEGRAL, HDU.PRIMARY, VALUE.LOGICAL, "may the FITS file contain extensions?", //
             replaceable("basichdu:extend", BasicHDU.class, "Allow extensions"), //
             replaceable("header:extend", Object.class, "Extensions are permitted"), //
             replaceable("imagedata:extend", ImageData.class, "Extension permitted"), //
@@ -374,7 +374,7 @@ public enum Standard implements IFitsHeader {
      * coefficient of the linear term, the scaling factor between true values and group parameter values at zero offset.
      * The default value for this keyword is 1.0.
      */
-    PSCALn(SOURCE.RESERVED, HDU.GROUPS, VALUE.REAL, "parameter scaling factor"),
+    PSCALn(SOURCE.INTEGRAL, HDU.GROUPS, VALUE.REAL, "parameter scaling factor"),
 
     /**
      * This keyword is reserved for use within the FITS Random Groups structure. The value field shall contain a
@@ -384,7 +384,7 @@ public enum Standard implements IFitsHeader {
      * parameter may have more precision than the accompanying data array elements; for example, by summing two 16-bit
      * values with the first scaled relative to the other such that the sum forms a number of up to 32-bit precision.
      */
-    PTYPEn(SOURCE.RESERVED, HDU.GROUPS, VALUE.STRING, "name of random groups parameter"),
+    PTYPEn(SOURCE.INTEGRAL, HDU.GROUPS, VALUE.STRING, "name of random groups parameter"),
 
     /**
      * This keyword is reserved for use within the FITS Random Groups structure. This keyword shall be used, along with
@@ -393,7 +393,7 @@ public enum Standard implements IFitsHeader {
      * the true value corresponding to a group parameter value of zero. The default value for this keyword is 0.0. The
      * transformation equation is as follows: physical_value = PZEROn + PSCALn * group_parameter_value.DEFAULT: 0.0
      */
-    PZEROn(SOURCE.RESERVED, HDU.GROUPS, VALUE.REAL, "parameter scaling zero point"),
+    PZEROn(SOURCE.INTEGRAL, HDU.GROUPS, VALUE.REAL, "parameter scaling zero point"),
 
     /**
      * Coordinate reference frame of major/minor axes.If absent the default value is 'FK5'. This version of the keyword
@@ -506,7 +506,7 @@ public enum Standard implements IFitsHeader {
      * product of the values of NAXIS1 and NAXIS2. This keyword shall not be used if the value of PCOUNT is zero. A
      * proposed application of this keyword is presented in Appendix B.1 of the FITS Standard.
      */
-    THEAP(SOURCE.RESERVED, HDU.BINTABLE, VALUE.INTEGER, "offset to starting data heap address", //
+    THEAP(SOURCE.INTEGRAL, HDU.BINTABLE, VALUE.INTEGER, "offset to starting data heap address", //
             replaceable("binarytablehdu:theap", BinaryTable.class) //
     ),
 
@@ -517,7 +517,7 @@ public enum Standard implements IFitsHeader {
      * represents an undefined value for field n of data type B, I, or J. The keyword may not be used in 'BINTABLE'
      * extensions if field n is of any other data type.
      */
-    TNULLn(SOURCE.RESERVED, HDU.TABLE, VALUE.STRING, "value used to indicate undefined table element"),
+    TNULLn(SOURCE.INTEGRAL, HDU.TABLE, VALUE.STRING, "value used to indicate undefined table element"),
 
     /**
      * This indexed keyword shall be used, along with the TZEROn keyword, when the quantity in field n does not

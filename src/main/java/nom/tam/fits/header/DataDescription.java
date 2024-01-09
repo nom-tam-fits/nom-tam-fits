@@ -51,7 +51,7 @@ public enum DataDescription implements IFitsHeader {
      * CREATOR keyword in that it give the name and version of the overall processing system and not just the name and
      * version of a single program.
      */
-    CONFIGUR(SOURCE.INTEGRAL, HDU.ANY, VALUE.STRING, "software configuration used to process the data"),
+    CONFIGUR(SOURCE.UNKNOWN, HDU.ANY, VALUE.STRING, "software configuration used to process the data"),
     /**
      * The value field shall contain a character string giving the name, and optionally, the version of the program that
      * originally created the current FITS HDU. This keyword is synonymous with the PROGRAM keyword. Example: 'TASKNAME

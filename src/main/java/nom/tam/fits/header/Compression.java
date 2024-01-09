@@ -41,14 +41,14 @@ public enum Compression implements IFitsHeader {
      * indicate that the FITS binary table extension contains a compressed BINTABLE, and that logically this extension
      * should be interpreted as a tile-compressed binary table.
      */
-    ZTABLE(HDU.ANY, VALUE.LOGICAL, ""),
+    ZTABLE(VALUE.LOGICAL, ""),
 
     /**
      * (required keyword) This keyword must have the logical value T. It indicates that the FITS binary table extension
      * contains a compressed image and that logically this extension should be interpreted as an image and not as a
      * table.
      */
-    ZIMAGE(HDU.ANY, VALUE.LOGICAL, ""),
+    ZIMAGE(VALUE.LOGICAL, ""),
 
     /**
      * (required keyword) The value field of this keyword shall contain a character string giving the name of the
@@ -56,25 +56,25 @@ public enum Compression implements IFitsHeader {
      * HCOMPRESS 1 are reserved, and the corresponding algorithms are described in a later section of this document .
      * The value RICE ONE is also reserved as an alias for RICE 1 .
      */
-    ZCMPTYPE(HDU.ANY, VALUE.STRING, ""),
+    ZCMPTYPE(VALUE.STRING, ""),
 
     /**
      * (required keyword) The value field of this keyword shall contain an integer that gives the value of the BITPIX
      * keyword in the uncompressed FITS image. 1
      */
-    ZBITPIX(HDU.ANY, VALUE.INTEGER, "", Standard.BITPIX),
+    ZBITPIX(VALUE.INTEGER, "", Standard.BITPIX),
 
     /**
      * (required keyword) The value field of this keyword shall contain an integer that gives the value of the NAXIS
      * keyword in the uncompressed FITS image.
      */
-    ZNAXIS(HDU.ANY, VALUE.INTEGER, "", Standard.NAXIS),
+    ZNAXIS(VALUE.INTEGER, "", Standard.NAXIS),
 
     /**
      * (required keywords) The value field of these keywords shall contain a positive integer that gives the value of
      * the NAXISn keywords in the uncompressed FITS image.
      */
-    ZNAXISn(HDU.ANY, VALUE.INTEGER, "", Standard.NAXISn),
+    ZNAXISn(VALUE.INTEGER, "", Standard.NAXISn),
     /**
      * (optional keywords) The value of these indexed keywords (where n ranges from 1 to ZNAXIS ) shall contain a
      * positive integer representing the number o f pixels along axis n of the compression tiles. Each tile of pixels is
@@ -87,7 +87,7 @@ public enum Compression implements IFitsHeader {
      * first pixel in the image appears in the first row of the table, and the tile containing the last pixel in the
      * image appears in the last row of the binary table.
      */
-    ZTILEn(HDU.ANY, VALUE.INTEGER, ""),
+    ZTILEn(VALUE.INTEGER, ""),
 
     /**
      * (optional keywords) These pairs of optional array keywords (where n is an integer index number starting with 1)
@@ -96,7 +96,7 @@ public enum Compression implements IFitsHeader {
      * parameters may be significant, and may be defined as part of the description of the specific decompression
      * algorithm.
      */
-    ZNAMEn(HDU.ANY, VALUE.STRING, ""),
+    ZNAMEn(VALUE.STRING, ""),
     /**
      * (optional keywords) These pairs of optional array keywords (where n is an integer index number starting with 1)
      * supply the name and value, respectively, of any algorithm-specific parameters that are needed to compress o r
@@ -104,13 +104,13 @@ public enum Compression implements IFitsHeader {
      * parameters may be significant, and may be defined as part of the description of the specific decompression
      * algorithm.
      */
-    ZVALn(HDU.ANY, VALUE.ANY, ""),
+    ZVALn(VALUE.ANY, ""),
     /**
      * (optional keyword) Used to record the name of the image compression algorithm that was used to compress the
      * optional null pixel data mask. See the “Preserving undefined pixels with lossy compression” section for more
      * details.
      */
-    ZMASKCMP(HDU.ANY, VALUE.STRING, ""),
+    ZMASKCMP(VALUE.STRING, ""),
 
     /**
      * The following optional keyword is defined to store a verbatim copy of the the value and comment field of the
@@ -118,7 +118,7 @@ public enum Compression implements IFitsHeader {
      * identical copy of the original FITS file when the image is uncompressed.preserves the original SIMPLE keyword.may
      * only be used if the original uncompressed image was contained in the primary array of the FITS file.
      */
-    ZSIMPLE(HDU.PRIMARY, VALUE.LOGICAL, "", Standard.SIMPLE),
+    ZSIMPLE(VALUE.LOGICAL, "", Standard.SIMPLE),
 
     /**
      * The following optional keyword is defined to store a verbatim copy of the the value and comment field of the
@@ -127,7 +127,7 @@ public enum Compression implements IFitsHeader {
      * keyword.may only be used if the original uncompressed image was contained in in IMAGE extension.
      */
 
-    ZTENSION(HDU.ANY, VALUE.STRING, "", Standard.XTENSION),
+    ZTENSION(VALUE.STRING, "", Standard.XTENSION),
 
     /**
      * The following optional keyword is defined to store a verbatim copy of the the value and comment field of the
@@ -135,7 +135,7 @@ public enum Compression implements IFitsHeader {
      * identical copy of the original FITS file when the image is uncompressed.preserves the original EXTEND keyword.may
      * only be used if the original uncompressed image was contained in the primary array of the FITS file.
      */
-    ZEXTEND(HDU.PRIMARY, VALUE.LOGICAL, "", Standard.EXTEND),
+    ZEXTEND(VALUE.LOGICAL, "", Standard.EXTEND),
 
     /**
      * The following optional keyword is defined to store a verbatim copy of the the value and comment field of the
@@ -144,7 +144,7 @@ public enum Compression implements IFitsHeader {
      * keyword.may only be used if the original uncompressed image was contained in the primary array of the FITS file,
      */
     @Deprecated
-    ZBLOCKED(HDU.PRIMARY, VALUE.LOGICAL, "", Standard.BLOCKED),
+    ZBLOCKED(VALUE.LOGICAL, "", Standard.BLOCKED),
 
     /**
      * The following optional keyword is defined to store a verbatim copy of the the value and comment field of the
@@ -152,7 +152,7 @@ public enum Compression implements IFitsHeader {
      * identical copy o f the original FITS file when the image is uncompressed.preserves the original PCOUNT
      * keyword.may only be used if the original uncompressed image was contained in in IMAGE extension.
      */
-    ZPCOUNT(HDU.EXTENSION, VALUE.INTEGER, "", Standard.PCOUNT),
+    ZPCOUNT(VALUE.INTEGER, "", Standard.PCOUNT),
 
     /**
      * The following optional keyword is defined to store a verbatim copy of the the value and comment field of the
@@ -160,34 +160,34 @@ public enum Compression implements IFitsHeader {
      * identical copy o f the original FITS file when the image is uncompressed.preserves the original GCOUNT
      * keyword.may only be used if the original uncompressed image was contained in in IMAGE extension.
      */
-    ZGCOUNT(HDU.EXTENSION, VALUE.INTEGER, "", Standard.GCOUNT),
+    ZGCOUNT(VALUE.INTEGER, "", Standard.GCOUNT),
 
     /**
      * The following optional keyword is defined to store a verbatim copy of the the value and comment field of the
      * corresponding keyword in the original uncompressed FITS image. These keywords can be used to reconstruct an
      * identical copy o f the original FITS file when the image is uncompressed.preserves the original CHECKSUM keyword.
      */
-    ZHECKSUM(HDU.ANY, VALUE.STRING, "", Checksum.CHECKSUM),
+    ZHECKSUM(VALUE.STRING, "", Checksum.CHECKSUM),
 
     /**
      * The following optional keyword is defined to store a verbatim copy of the the value and comment field of the
      * corresponding keyword in the original uncompressed FITS image. These keywords can be used to reconstruct an
      * identical copy o f the original FITS file when the image is uncompressed.preserves the original DATASUM
      */
-    ZDATASUM(HDU.ANY, VALUE.STRING, "", Checksum.DATASUM),
+    ZDATASUM(VALUE.STRING, "", Checksum.DATASUM),
 
     /**
      * (optional keyword) This keyword records the name of the algorithm that was used to quantize floating-point image
      * pixels into integer values which are then passed to the compression algorithm.
      */
-    ZQUANTIZ(HDU.ANY, VALUE.STRING, ""),
+    ZQUANTIZ(VALUE.STRING, ""),
 
     /**
      * (optional keyword) The value field of this keyword shall contain an integer that gives the seed value for the
      * random dithering pattern that was used when quantizing the floating-point pixel values. The value may range from
      * 1 to 100.00, inclusive.
      */
-    ZDITHER0(HDU.ANY, VALUE.INTEGER, ""),
+    ZDITHER0(VALUE.INTEGER, ""),
 
     /**
      * When using the quantization method to compress floating-point images, this header is used to store the integer
@@ -195,7 +195,7 @@ public enum Compression implements IFitsHeader {
      * value (Not a Number) in the uncompressed floating-point image. The recommended value for ZBLANK is -2147483648
      * (the largest negative 32-bit integer).
      */
-    ZBLANK(HDU.ANY, VALUE.INTEGER, ""),
+    ZBLANK(VALUE.INTEGER, ""),
 
     /**
      * The value field of this keyword shall contain an integer representing the number of rows of data from the
@@ -204,20 +204,20 @@ public enum Compression implements IFitsHeader {
      * the compressed table will only contains a single row, and the ZTILELEN and ZNAXIS2 keywords will have the same
      * value.
      */
-    ZTILELEN(HDU.ANY, VALUE.INTEGER, ""),
+    ZTILELEN(VALUE.INTEGER, ""),
 
     /**
      * The value field of these keywords shall contain the character string values of the corresponding TFORMn keywords
      * that defines the data type of column n in the original uncompressed FITS table.
      */
-    ZFORMn(HDU.ANY, VALUE.STRING, "", Standard.TFORMn),
+    ZFORMn(VALUE.STRING, "", Standard.TFORMn),
 
     /**
      * The value field of these keywords shall contain a charac- ter string giving the mnemonic name of the algorithm
      * that was used to compress column n of the table. The current allowed values are GZIP_1, GZIP_2, and RICE_1, and
      * the corresponding algorithms
      */
-    ZCTYPn(HDU.ANY, VALUE.STRING, "");
+    ZCTYPn(VALUE.STRING, "");
 
     /**
      * This is the simplest option in which no dithering is performed. The floating-point pixels are simply quantized
@@ -410,12 +410,12 @@ public enum Compression implements IFitsHeader {
 
     private final IFitsHeader uncompressedKey;
 
-    Compression(HDU hdu, VALUE valueType, String comment) {
-        this(hdu, valueType, comment, null);
+    Compression(VALUE valueType, String comment) {
+        this(valueType, comment, null);
     }
 
-    Compression(HDU hdu, VALUE valueType, String comment, IFitsHeader uncompressedKey) {
-        key = new FitsHeaderImpl(name(), IFitsHeader.SOURCE.HEASARC, hdu, valueType, comment);
+    Compression(VALUE valueType, String comment, IFitsHeader uncompressedKey) {
+        key = new FitsHeaderImpl(name(), IFitsHeader.SOURCE.INTEGRAL, HDU.BINTABLE, valueType, comment);
         this.uncompressedKey = uncompressedKey;
     }
 

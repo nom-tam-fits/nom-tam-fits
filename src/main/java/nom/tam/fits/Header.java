@@ -458,7 +458,8 @@ public class Header implements FitsElement {
             return;
         }
 
-        if (keyCheck == KeywordCheck.STRICT && keyword.status() == IFitsHeader.SOURCE.MANDATORY) {
+        if (keyCheck == KeywordCheck.STRICT
+                && (keyword.status() == IFitsHeader.SOURCE.MANDATORY || keyword.status() == IFitsHeader.SOURCE.INTEGRAL)) {
             throw new IllegalArgumentException("Keyword " + keyword + " should be set by the library only");
         }
 
