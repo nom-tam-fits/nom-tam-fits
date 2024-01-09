@@ -932,7 +932,7 @@ public class HeaderCard implements CursorValue<String>, Cloneable {
 
     private static void checkValueType(String key, IFitsHeader.VALUE expect, IFitsHeader.VALUE valueType)
             throws ValueTypeException {
-        if (expect == null || expect == IFitsHeader.VALUE.ANY || valueCheck == ValueCheck.NONE) {
+        if (expect == IFitsHeader.VALUE.ANY || valueCheck == ValueCheck.NONE) {
             return;
         }
 

@@ -1727,17 +1727,24 @@ public class HeaderTest {
     }
 
     @Test(expected = IllegalArgumentException.class)
-    public void testKeywordCheckingPrimaryException() throws Exception {
+    public void testKeywordCheckingMandatoryException() throws Exception {
         Header.setDefaultKeywordChecking(Header.KeywordCheck.STRICT);
         Header h = new BinaryTable().toHDU().getHeader();
         h.addValue(Standard.SIMPLE, true);
     }
 
     @Test(expected = IllegalArgumentException.class)
-    public void testKeywordCheckingExtensionException() throws Exception {
-        Header.setDefaultKeywordChecking(Header.KeywordCheck.STRICT);
+    public void testKeywordCheckingPrimaryException() throws Exception {
+        Header.setDefaultKeywordChecking(Header.KeywordCheck.DATA_TYPE);
         Header h = new BinaryTable().toHDU().getHeader();
-        h.addValue(Standard.XTENSION, Standard.XTENSION_BINTABLE);
+        h.addValue(Standard.SIMPLE, true);
+    }
+
+    @Test(expected = IllegalArgumentException.class)
+    public void testKeywordCheckingExtensionException() throws Exception {
+        Header.setDefaultKeywordChecking(Header.KeywordCheck.DATA_TYPE);
+        Header h = new RandomGroupsData(new Object[][] {{new int[4], new int[2]}}).toHDU().getHeader();
+        h.addValue(Standard.XTENSION, true);
     }
 
     @Test(expected = IllegalArgumentException.class)
