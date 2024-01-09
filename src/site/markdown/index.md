@@ -1118,7 +1118,7 @@ The `Header.KeywordCheck` enum defines the following policies that may be used:
 
 The standardized keywords that implement the `IFitsHeader` interface can also specify the type of acceptable values
 to use. As of __1.19__ we will throw an appropriate exception (`IllegalArgumentException` or 
-`MismatchedValueTypeException`, depending on the method) if the user attempt to set a value of unsupported type. For
+`ValueTypeException`, depending on the method) if the user attempt to set a value of unsupported type. For
 example trying to set the value of the `Standard.TELESCOP` keyword (which expects a string value) to a boolean will
 throw an exception. 
 
