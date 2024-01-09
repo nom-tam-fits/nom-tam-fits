@@ -24,6 +24,7 @@ import org.junit.Assert;
 import org.junit.Before;
 import org.junit.Test;
 
+import nom.tam.fits.header.Compression;
 import nom.tam.fits.header.GenericKey;
 import nom.tam.fits.header.IFitsHeader;
 import nom.tam.fits.header.Standard;
@@ -1731,6 +1732,13 @@ public class HeaderTest {
         Header.setDefaultKeywordChecking(Header.KeywordCheck.STRICT);
         Header h = new BinaryTable().toHDU().getHeader();
         h.addValue(Standard.SIMPLE, true);
+    }
+
+    @Test(expected = IllegalArgumentException.class)
+    public void testKeywordCheckingIntegralException() throws Exception {
+        Header.setDefaultKeywordChecking(Header.KeywordCheck.STRICT);
+        Header h = new BinaryTable().toHDU().getHeader();
+        h.addValue(Compression.ZIMAGE, true);
     }
 
     @Test(expected = IllegalArgumentException.class)
