@@ -24,6 +24,7 @@ import org.junit.Assert;
 import org.junit.Before;
 import org.junit.Test;
 
+import nom.tam.fits.header.Compression;
 import nom.tam.fits.header.GenericKey;
 import nom.tam.fits.header.IFitsHeader;
 import nom.tam.fits.header.Standard;
@@ -1727,17 +1728,31 @@ public class HeaderTest {
     }
 
     @Test(expected = IllegalArgumentException.class)
-    public void testKeywordCheckingPrimaryException() throws Exception {
+    public void testKeywordCheckingMandatoryException() throws Exception {
         Header.setDefaultKeywordChecking(Header.KeywordCheck.STRICT);
         Header h = new BinaryTable().toHDU().getHeader();
         h.addValue(Standard.SIMPLE, true);
     }
 
     @Test(expected = IllegalArgumentException.class)
-    public void testKeywordCheckingExtensionException() throws Exception {
+    public void testKeywordCheckingIntegralException() throws Exception {
         Header.setDefaultKeywordChecking(Header.KeywordCheck.STRICT);
         Header h = new BinaryTable().toHDU().getHeader();
-        h.addValue(Standard.XTENSION, Standard.XTENSION_BINTABLE);
+        h.addValue(Compression.ZIMAGE, true);
+    }
+
+    @Test(expected = IllegalArgumentException.class)
+    public void testKeywordCheckingPrimaryException() throws Exception {
+        Header.setDefaultKeywordChecking(Header.KeywordCheck.DATA_TYPE);
+        Header h = new BinaryTable().toHDU().getHeader();
+        h.addValue(Standard.SIMPLE, true);
+    }
+
+    @Test(expected = IllegalArgumentException.class)
+    public void testKeywordCheckingExtensionException() throws Exception {
+        Header.setDefaultKeywordChecking(Header.KeywordCheck.DATA_TYPE);
+        Header h = new RandomGroupsData(new Object[][] {{new int[4], new int[2]}}).toHDU().getHeader();
+        h.addValue(Standard.INHERIT, true);
     }
 
     @Test(expected = IllegalArgumentException.class)
@@ -1750,14 +1765,14 @@ public class HeaderTest {
     @Test
     public void testKeywordCheckingPrimary() throws Exception {
         Header.setDefaultKeywordChecking(Header.KeywordCheck.DATA_TYPE);
-        Header h = new BinaryTable().toHDU().getHeader();
+        Header h = ImageData.from(new int[10][10]).toHDU().getHeader();
         h.addValue(Standard.SIMPLE, true);
     }
 
     @Test
     public void testKeywordCheckingOptional() throws Exception {
         Header.setDefaultKeywordChecking(Header.KeywordCheck.STRICT);
-        Header h = new BinaryTable().toHDU().getHeader();
+        Header h = ImageData.from(new int[10][10]).toHDU().getHeader();
         h.addValue(NOAOExt.ADCMJD, 0.0);
     }
 

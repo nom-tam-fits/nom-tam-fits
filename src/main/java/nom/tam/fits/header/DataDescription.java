@@ -51,7 +51,7 @@ public enum DataDescription implements IFitsHeader {
      * CREATOR keyword in that it give the name and version of the overall processing system and not just the name and
      * version of a single program.
      */
-    CONFIGUR(SOURCE.INTEGRAL, HDU.ANY, VALUE.STRING, "software configuration used to process the data"),
+    CONFIGUR(SOURCE.UNKNOWN, HDU.ANY, VALUE.STRING, "software configuration used to process the data"),
     /**
      * The value field shall contain a character string giving the name, and optionally, the version of the program that
      * originally created the current FITS HDU. This keyword is synonymous with the PROGRAM keyword. Example: 'TASKNAME
@@ -92,22 +92,20 @@ public enum DataDescription implements IFitsHeader {
     HDUDOC(SOURCE.HEASARC, HDU.ANY, VALUE.STRING, "reference to document describing the data format"),
 
     /**
-     * This keyword is synonymous to the standard EXTLEVEL keyword except that it may also be used in the primary key.
-     * It is recommended that the HDULEVEL and EXTLEVEL keywords should not both be given in the same HDU key, but if
-     * they are, then the HDULEVEL keyword will have precedence.
+     * This keyword is synonymous to the standard EXTLEVEL. It is recommended that the HDULEVEL and EXTLEVEL keywords
+     * should not both be given in the same HDU key, but if they are, then the HDULEVEL keyword will have precedence.
      */
     HDULEVEL(SOURCE.UNKNOWN, HDU.ANY, VALUE.INTEGER, "hierarchical level of the HDU"),
     /**
-     * This keyword is synonymous to the standard EXTNAME keyword except that it may also be used in the primary key. It
-     * is recommended that the HDUNAME and EXTNAME keywords should not both be given in the same HDU key, but if they
-     * are, then the HDUNAME keyword will have precedence.
+     * This keyword is synonymous to the standard EXTNAME keyword except. It is recommended that the HDUNAME and EXTNAME
+     * keywords should not both be given in the same HDU key, but if they are, then the HDUNAME keyword will have
+     * precedence.
      */
     HDUNAME(SOURCE.UNKNOWN, HDU.ANY, VALUE.STRING, "descriptive name of the HDU"),
 
     /**
-     * This keyword is synonymous to the standard EXTVER keyword except that it may also be used in the primary key. It
-     * is recommended that the HDUVER and EXTVER keywords should not both be given in the same HDU key, but if they are,
-     * then the HDUVER keyword will have precedence.
+     * This keyword is synonymous to the standard EXTVER keyword. It is recommended that the HDUVER and EXTVER keywords
+     * should not both be given in the same HDU key, but if they are, then the HDUVER keyword will have precedence.
      */
     HDUVER(SOURCE.UNKNOWN, HDU.ANY, VALUE.INTEGER, "version number of the HDU"),
     /**

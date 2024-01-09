@@ -99,9 +99,6 @@ public class ProtectedFitsTest {
         Assert.assertTrue(randomGroupsHDU.isHeader());
         randomGroupsHDU.setPrimaryHDU(true);
         Assert.assertTrue(randomGroupsHDU.getHeader().getBooleanValue(Standard.SIMPLE));
-        randomGroupsHDU.setPrimaryHDU(false);
-        Assert.assertFalse(randomGroupsHDU.getHeader().getBooleanValue(Standard.SIMPLE));
-        Assert.assertEquals(XTENSION_IMAGE, randomGroupsHDU.getHeader().getStringValue(Standard.XTENSION));
 
         randomGroupsHDU = new RandomGroupsHDU(null, RandomGroupsHDU.manufactureData(header));
         ByteArrayOutputStream out = new ByteArrayOutputStream();

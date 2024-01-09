@@ -37,12 +37,10 @@ import java.io.IOException;
 import java.math.BigDecimal;
 import java.math.BigInteger;
 import java.util.Arrays;
-import java.util.logging.Level;
 import java.util.logging.Logger;
 
 import nom.tam.fits.FitsFactory.FitsSettings;
 import nom.tam.fits.header.IFitsHeader;
-import nom.tam.fits.header.IFitsHeader.VALUE;
 import nom.tam.fits.header.NonStandard;
 import nom.tam.util.ArrayDataInput;
 import nom.tam.util.AsciiFuncs;
@@ -901,13 +899,11 @@ public class HeaderCard implements CursorValue<String>, Cloneable {
      * @see                          #setValue(Number)
      */
     public synchronized HeaderCard setValue(Number update, int decimals) throws NumberFormatException, LongValueException {
-        try {
+
+        if (update instanceof Float || update instanceof Double || update instanceof BigDecimal
+                || update instanceof BigInteger) {
             checkValueType(IFitsHeader.VALUE.REAL);
-        } catch (ValueTypeException e) {
-            if (update instanceof Float || update instanceof Double || update instanceof BigDecimal
-                    || update instanceof BigInteger) {
-                throw e;
-            }
+        } else {
             checkValueType(IFitsHeader.VALUE.INTEGER);
         }
 
@@ -922,18 +918,30 @@ public class HeaderCard implements CursorValue<String>, Cloneable {
         return this;
     }
 
-    private void checkValueType(IFitsHeader.VALUE t) throws ValueTypeException {
-        if (standardKey == null || valueCheck == ValueCheck.NONE) {
+    private static void checkKeyword(IFitsHeader keyword) throws IllegalArgumentException {
+        if (keyword.key().contains("n")) {
+            throw new IllegalArgumentException("Keyword " + keyword.key() + " has unfilled index(es)");
+        }
+    }
+
+    private void checkValueType(IFitsHeader.VALUE valueType) throws ValueTypeException {
+        if (standardKey != null) {
+            checkValueType(key, standardKey.valueType(), valueType);
+        }
+    }
+
+    private static void checkValueType(String key, IFitsHeader.VALUE expect, IFitsHeader.VALUE valueType)
+            throws ValueTypeException {
+        if (expect == IFitsHeader.VALUE.ANY || valueCheck == ValueCheck.NONE) {
             return;
         }
 
-        IFitsHeader.VALUE expect = standardKey.valueType();
-        if (expect == IFitsHeader.VALUE.ANY) {
-            return;
-        }
+        if (valueType != expect) {
+            if (expect == IFitsHeader.VALUE.REAL && valueType == IFitsHeader.VALUE.INTEGER) {
+                return;
+            }
 
-        if (t != expect) {
-            ValueTypeException e = new ValueTypeException(key, t.name());
+            ValueTypeException e = new ValueTypeException(key, valueType.name());
 
             if (valueCheck == ValueCheck.LOGGING) {
                 LOG.warning(e.getMessage());
@@ -944,7 +952,7 @@ public class HeaderCard implements CursorValue<String>, Cloneable {
     }
 
     /**
-     * Sets a new boolean value for this card.
+     * Sets a new boolean value for this cardvalueType
      *
      * @param  update             the new value to se (can be <code>null</code>).
      *
@@ -1468,47 +1476,6 @@ public class HeaderCard implements CursorValue<String>, Cloneable {
         }
     }
 
-    /**
-     * <p>
-     * Checks if the value type is compatible with what's expected for a standard FITS keyword and prints out debugging
-     * information if there is a mismatch.
-     * </p>
-     * <p>
-     * A type mismatch is a programmer's error that we can let pass, but the programmer should probably fix, either
-     * because the IFitsHeader was defined with an incorrect (too restrictive?) type, or because someone is trying to
-     * set a value that does not belong to the keyword... So we just print the stack trace to provide the debugging
-     * information for the developer.
-     * </p>
-     *
-     * @param  key                      The standard or conventional FITS keyword
-     * @param  type                     The type we want to use with that key
-     *
-     * @throws IllegalArgumentException if the keyword does not support the given value type, or if the keyword contains
-     *                                      an unfilled index.
-     *
-     * @since                           1.16
-     */
-    private static boolean checkType(IFitsHeader key, VALUE type) throws IllegalArgumentException {
-        if (key.key().contains("n")) {
-            throw new IllegalArgumentException("Unfilled index(es) in keyword " + key.key());
-        }
-
-        if (key.valueType() == type || key.valueType() == VALUE.ANY) {
-            return true;
-        }
-        if (key.valueType() == VALUE.COMPLEX && (type == VALUE.REAL || type == VALUE.INTEGER)) {
-            return true;
-        }
-        if (key.valueType() == VALUE.REAL && type == VALUE.INTEGER) {
-            return true;
-        }
-
-        LOG.log(Level.WARNING, "[" + key + "] with unexpected value type.",
-                new IllegalArgumentException("Expected " + type + ", got " + key.valueType()));
-
-        return false;
-    }
-
     final IFitsHeader getStandardKey() {
         return standardKey;
     }
@@ -1530,7 +1497,7 @@ public class HeaderCard implements CursorValue<String>, Cloneable {
      * @since                           1.16
      */
     public static HeaderCard create(IFitsHeader key, Boolean value) throws IllegalArgumentException {
-        checkType(key, VALUE.LOGICAL);
+        checkKeyword(key);
 
         try {
             HeaderCard hc = new HeaderCard(key.key(), (Boolean) null, key.comment());
@@ -1567,11 +1534,7 @@ public class HeaderCard implements CursorValue<String>, Cloneable {
      * @since                           1.16
      */
     public static HeaderCard create(IFitsHeader key, Number value) throws IllegalArgumentException {
-        if (value instanceof Float || value instanceof Double || value instanceof BigDecimal) {
-            checkType(key, VALUE.REAL);
-        } else {
-            checkType(key, VALUE.INTEGER);
-        }
+        checkKeyword(key);
 
         try {
             HeaderCard hc = new HeaderCard(key.key(), (Number) null, key.comment());
@@ -1599,7 +1562,7 @@ public class HeaderCard implements CursorValue<String>, Cloneable {
      * @since                           1.16
      */
     public static HeaderCard create(IFitsHeader key, ComplexValue value) throws IllegalArgumentException {
-        checkType(key, VALUE.COMPLEX);
+        checkKeyword(key);
 
         try {
             HeaderCard hc = new HeaderCard(key.key(), (ComplexValue) null, key.comment());
@@ -1628,7 +1591,7 @@ public class HeaderCard implements CursorValue<String>, Cloneable {
      *                                      key was ill-defined.
      */
     public static HeaderCard create(IFitsHeader key, String value) throws IllegalArgumentException {
-        checkType(key, VALUE.STRING);
+        checkKeyword(key);
         validateChars(value);
 
         try {
