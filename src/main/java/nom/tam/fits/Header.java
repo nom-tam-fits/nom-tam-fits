@@ -386,7 +386,7 @@ public class Header implements FitsElement {
      * @throws IllegalArgumentException if the current keyword checking mode does not allow the headercard with its
      *                                      standard keyword in the header.
      * 
-     * @sa                              {@link #setKeywordChecking(KeywordCheck)}
+     * @see                             #setKeywordChecking(KeywordCheck)
      */
     public void addLine(HeaderCard fcard) throws IllegalArgumentException {
         if (fcard == null) {
@@ -458,14 +458,22 @@ public class Header implements FitsElement {
             return;
         }
 
+        if (keyCheck == KeywordCheck.STRICT && keyword.status() == IFitsHeader.SOURCE.MANDATORY) {
+            throw new IllegalArgumentException("Keyword " + keyword + " should be set by the library only");
+        }
+
         switch (keyword.hdu()) {
 
-        case ANY:
+        case PRIMARY:
+            if (owner != null && !owner.canBePrimary()) {
+                throw new IllegalArgumentException(
+                        "Keyword " + keyword + " is a primary keyword and may not be used in extensions");
+            }
             return;
         case EXTENSION:
-        case PRIMARY:
-            if (keyCheck == KeywordCheck.STRICT && keyword.status() == IFitsHeader.SOURCE.MANDATORY) {
-                throw new IllegalArgumentException("Keyword " + keyword + " should be set by the library only");
+            if (owner instanceof RandomGroupsHDU) {
+                throw new IllegalArgumentException(
+                        "Keyword " + keyword + " is an extension keyword but random groups may only be primary");
             }
             return;
         case IMAGE:
@@ -494,9 +502,6 @@ public class Header implements FitsElement {
                 return;
             }
             break;
-        // case PRIMARY_EXTENSION:
-        // TODO unclear what checking we should do for these type of keywords.
-        // return;
         default:
             return;
         }

@@ -1750,14 +1750,14 @@ public class HeaderTest {
     @Test
     public void testKeywordCheckingPrimary() throws Exception {
         Header.setDefaultKeywordChecking(Header.KeywordCheck.DATA_TYPE);
-        Header h = new BinaryTable().toHDU().getHeader();
+        Header h = ImageData.from(new int[10][10]).toHDU().getHeader();
         h.addValue(Standard.SIMPLE, true);
     }
 
     @Test
     public void testKeywordCheckingOptional() throws Exception {
         Header.setDefaultKeywordChecking(Header.KeywordCheck.STRICT);
-        Header h = new BinaryTable().toHDU().getHeader();
+        Header h = ImageData.from(new int[10][10]).toHDU().getHeader();
         h.addValue(NOAOExt.ADCMJD, 0.0);
     }
 

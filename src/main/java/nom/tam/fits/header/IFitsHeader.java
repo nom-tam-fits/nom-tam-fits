@@ -45,7 +45,25 @@ public interface IFitsHeader {
 
     /** An enumeration of HDU types in which a header keyword may be used. */
     enum HDU {
-        ANY, ASCII_TABLE, BINTABLE, EXTENSION, GROUPS, IMAGE, PRIMARY, PRIMARY_EXTENSION, TABLE
+        /** keyword may be used in any HDU */
+        ANY,
+        /** image and/or random groups keywords */
+        IMAGE,
+        /** keyword for random groups only */
+        GROUPS,
+        /** Generic table keyword, can be used both in ASCII and binary tables */
+        TABLE,
+        /** keyword for ASCII tables only */
+        ASCII_TABLE,
+        /** keyword for binary tables */
+        BINTABLE,
+        /** keyword must appear in the primary HDU only */
+        PRIMARY,
+        /** keyword must appear in extension HDUs only */
+        EXTENSION,
+        /** @deprecated Use {@link #ANY} instead */
+        PRIMARY_EXTENSION;
+
     }
 
     /** Documentation sources for the various known conventions. */
@@ -129,7 +147,26 @@ public interface IFitsHeader {
 
     /** Values types to which implementing keywords can be restricted to. */
     enum VALUE {
-        INTEGER, LOGICAL, NONE, REAL, COMPLEX, STRING, ANY
+        /** The keyword takes no value (i.e. END or comment-style keywords */
+        NONE,
+
+        /** keyword expects a logical 'T' or 'F' value */
+        LOGICAL,
+
+        /** keyword expects a String value */
+        STRING,
+
+        /** keyword expects an integer type value */
+        INTEGER,
+
+        /** keyword expects a floating-point value (integers allowed). */
+        REAL,
+
+        /** keyword expects a complex value */
+        COMPLEX,
+
+        /** The keyword may be used with any value type */
+        ANY
     }
 
     /**

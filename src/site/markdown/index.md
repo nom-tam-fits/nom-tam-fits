@@ -1101,7 +1101,7 @@ them. If the keyword should not be used in the header belonging to a specific ty
 policy, the library will throw an `IllegalArgumentException`.
 
 You can use `Header.setKeywordChecking()` to adjust the type of checking to be applied on a per header instance basis,
-or use the static `Header.setDEfaultKeywordChecking()` to change the default policy for all newly created headers.
+or use the static `Header.setDefaultKeywordChecking()` to change the default policy for all newly created headers.
 
 The `Header.KeywordCheck` enum defines the following policies that may be used:
 
@@ -1121,6 +1121,17 @@ to use. As of __1.19__ we will throw an appropriate exception (`IllegalArgumentE
 `MismatchedValueTypeException`, depending on the method) if the user attempt to set a value of unsupported type. For
 example trying to set the value of the `Standard.TELESCOP` keyword (which expects a string value) to a boolean will
 throw an exception. 
+
+The keyword checking policy can be adjusted via the `HeaderCard.setValueCheckingPolicy()` method. 
+`HeaderCard.ValueCheck` defines the following policies:
+
+- `NONE` -- no value type checking will be performed. You can do whatever you want without consequences. This policy 
+  is the most backward compatible one, since we have not done checking before.
+- `LOGGING` -- Attempting to set values of the wrong type for `IFitsHeader` keywords will be allowed but a warning 
+  will be logged each time.
+- `EXCEPTION` --  Attempting to set values of the wrong type for `IFitsHeader` keywords will throw an appropriate 
+  exception, such as `ValueTypeException` or `IllegalArgumentException` depending on the method used. 
+
 
 
 <a name="hierarch-style-header-keywords"></a>
