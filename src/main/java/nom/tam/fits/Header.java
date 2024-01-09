@@ -465,7 +465,7 @@ public class Header implements FitsElement {
         switch (keyword.hdu()) {
 
         case PRIMARY:
-            if (owner != null && !owner.canBePrimary()) {
+            if (!owner.canBePrimary()) {
                 throw new IllegalArgumentException(
                         "Keyword " + keyword + " is a primary keyword and may not be used in extensions");
             }
