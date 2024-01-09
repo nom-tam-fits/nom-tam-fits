@@ -428,11 +428,11 @@ public enum DateTime implements IFitsHeader {
     /** Time unit value for time measured in Julian years (same as {@link #TIMEUNIT_JULIAN_YEAR}) */
     public static final String TIMEUNIT_YEAR = "yr";
 
-    /** Time unit value for time measured in tropical years (1 ta ~ 365.2422 d) */
+    /** Time unit value for time measured in tropical years (1 ta ~ 365.2421988 d) */
     public static final String TIMEUNIT_TROPICAL_YEAR = "ta";
 
     /**
-     * Time unit value for time measured in Besselian years (essentially the sdame as {@link #TIMEUNIT_TROPICAL_YEAR})
+     * Time unit value for time measured in Besselian years (essentially the same as {@link #TIMEUNIT_TROPICAL_YEAR})
      */
     public static final String TIMEUNIT_BESSELIAN_YEAR = "Ba";
 

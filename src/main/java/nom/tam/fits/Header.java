@@ -386,7 +386,7 @@ public class Header implements FitsElement {
      * @throws IllegalArgumentException if the current keyword checking mode does not allow the headercard with its
      *                                      standard keyword in the header.
      * 
-     * @sa                              {@link #setKeywordChecking(KeywordCheck)}
+     * @see                             #setKeywordChecking(KeywordCheck)
      */
     public void addLine(HeaderCard fcard) throws IllegalArgumentException {
         if (fcard == null) {
