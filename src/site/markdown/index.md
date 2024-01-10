@@ -1055,8 +1055,7 @@ commonly used keyword, which as also collected in the `nom.tam.fits.header` pack
    
  * `HierarchicalGrouping` -- Keywords for the 
     [Hierarchical Grouping Convention](https://fits.gsfc.nasa.gov/registry/grouping.html)
- * `NonStandard` -- Commonly used and recognized keywords that are not strictly part of the FITS standard
-   Some commonly used conventions are broken out into separate enumerations by theme, as listed below:
+ * `NonStandard` -- A few commonly used and recognized keywords that are not strictly part of the FITS standard
  * `DataDescription` -- Conventional keywords for describing the data content
  * `InstrumentDescription` -- Conventional keywords for describing the instrumentation used for observing
  * `ObservationDescription` -- Commonly used keywords that describe the observation
