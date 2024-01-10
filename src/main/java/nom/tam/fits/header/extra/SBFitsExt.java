@@ -193,7 +193,7 @@ public enum SBFitsExt implements IFitsHeader {
      */
     YPIXSZ(VALUE.REAL, "Pixel height in microns");
 
-    private final IFitsHeader key;
+    private final FitsHeaderImpl key;
 
     SBFitsExt(String key, VALUE valueType, String comment) {
         this.key = new FitsHeaderImpl(key == null ? name() : key, IFitsHeader.SOURCE.SBIG, HDU.IMAGE, valueType, comment);
@@ -204,7 +204,7 @@ public enum SBFitsExt implements IFitsHeader {
     }
 
     @Override
-    public final IFitsHeader impl() {
+    public final FitsHeaderImpl impl() {
         return key;
     }
 

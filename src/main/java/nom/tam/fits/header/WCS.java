@@ -938,7 +938,7 @@ public enum WCS implements IFitsHeader {
      */
     public static final String SPECTRAL_ALGO_A2V = "A2V";
 
-    private final IFitsHeader key;
+    private final FitsHeaderImpl key;
 
     WCS(SOURCE status, HDU hdu, VALUE valueType, String comment) {
         this(null, status, hdu, valueType, comment);
@@ -949,7 +949,7 @@ public enum WCS implements IFitsHeader {
     }
 
     @Override
-    public final IFitsHeader impl() {
+    public final FitsHeaderImpl impl() {
         return key;
     }
 

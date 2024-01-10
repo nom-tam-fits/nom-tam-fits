@@ -406,7 +406,7 @@ public enum Compression implements IFitsHeader {
      */
     public static final String SMOOTH = "SMOOTH";
 
-    private final IFitsHeader key;
+    private final FitsHeaderImpl key;
 
     private final IFitsHeader uncompressedKey;
 
@@ -420,7 +420,7 @@ public enum Compression implements IFitsHeader {
     }
 
     @Override
-    public final IFitsHeader impl() {
+    public final FitsHeaderImpl impl() {
         return key;
     }
 

@@ -641,7 +641,7 @@ public enum Standard implements IFitsHeader {
 
     private final StandardCommentReplacement[] commentReplacements;
 
-    private final IFitsHeader key;
+    private final FitsHeaderImpl key;
 
     Standard(SOURCE status, HDU hdu, VALUE valueType, String comment, StandardCommentReplacement... replacements) {
         this(null, status, hdu, valueType, comment, replacements);
@@ -654,7 +654,7 @@ public enum Standard implements IFitsHeader {
     }
 
     @Override
-    public final IFitsHeader impl() {
+    public final FitsHeaderImpl impl() {
         return key;
     }
 

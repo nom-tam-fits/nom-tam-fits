@@ -219,7 +219,7 @@ public enum MaxImDLExt implements IFitsHeader {
      */
     YBAYROFF(VALUE.REAL, "Y offset of Bayer array");
 
-    private final IFitsHeader key;
+    private final FitsHeaderImpl key;
 
     MaxImDLExt(String key, VALUE valueType, String comment) {
         this.key = new FitsHeaderImpl(key == null ? name() : key, IFitsHeader.SOURCE.MaxImDL, HDU.IMAGE, valueType,
@@ -231,7 +231,7 @@ public enum MaxImDLExt implements IFitsHeader {
     }
 
     @Override
-    public final IFitsHeader impl() {
+    public final FitsHeaderImpl impl() {
         return key;
     }
 

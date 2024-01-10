@@ -7944,7 +7944,7 @@ public enum NOAOExt implements IFitsHeader {
      */
     MJD_OBS("MJD-OBS", HDU.ANY, VALUE.REAL, "MJD of exposure start");
 
-    private final IFitsHeader key;
+    private final FitsHeaderImpl key;
 
     NOAOExt(HDU hdu, VALUE valueType, String comment) {
         this(null, hdu, valueType, comment);
@@ -7955,7 +7955,7 @@ public enum NOAOExt implements IFitsHeader {
     }
 
     @Override
-    public final IFitsHeader impl() {
+    public final FitsHeaderImpl impl() {
         return key;
     }
 

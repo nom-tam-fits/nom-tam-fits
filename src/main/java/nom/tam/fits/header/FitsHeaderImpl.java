@@ -81,7 +81,7 @@ public class FitsHeaderImpl implements IFitsHeader, Serializable {
     }
 
     @Override
-    public final IFitsHeader impl() {
+    public final FitsHeaderImpl impl() {
         return this;
     }
 

@@ -57,14 +57,14 @@ public enum HierarchicalGrouping implements IFitsHeader {
      */
     GRPNAME(SOURCE.HEASARC, HDU.TABLE, VALUE.STRING, "the grouping table name");
 
-    private final IFitsHeader key;
+    private final FitsHeaderImpl key;
 
     HierarchicalGrouping(IFitsHeader.SOURCE status, HDU hdu, VALUE valueType, String comment) {
         key = new FitsHeaderImpl(name(), status, hdu, valueType, comment);
     }
 
     @Override
-    public final IFitsHeader impl() {
+    public final FitsHeaderImpl impl() {
         return key;
     }
 }

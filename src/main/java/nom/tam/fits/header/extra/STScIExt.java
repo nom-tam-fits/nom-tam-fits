@@ -214,7 +214,7 @@ public enum STScIExt implements IFitsHeader {
      */
     MJD_OBS("MJD-OBS", "MJD of exposure start");
 
-    private final IFitsHeader key;
+    private final FitsHeaderImpl key;
 
     STScIExt(String comment) {
         this(null, comment);
@@ -225,7 +225,7 @@ public enum STScIExt implements IFitsHeader {
     }
 
     @Override
-    public final IFitsHeader impl() {
+    public final FitsHeaderImpl impl() {
         return key;
     }
 

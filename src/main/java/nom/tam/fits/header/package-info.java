@@ -49,7 +49,7 @@
  *   source: [http://tucana.noao.edu/ADASS/adass_proc/adass_95/zaraten/zaraten.html](http://tucana.noao.edu/ADASS/adass_proc/adass_95/zaraten/zaraten.html)  |
  * </pre>
  * <p>
- * There are synonymous keywords within these dictionaries, These we also started to collect in the {@link Synonyms}
+ * There are synonymous keywords within these dictionaries, These we also started to collect in the {@link nom.tam.fits.header.Synonyms}
  * class in the header package.
  * </p>
  * <p>

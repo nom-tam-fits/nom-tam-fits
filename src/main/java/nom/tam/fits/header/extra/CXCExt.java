@@ -174,14 +174,14 @@ public enum CXCExt implements IFitsHeader {
      */
     TSTOP("add TIMEZERO and MJDREF for absolute TT");
 
-    private final IFitsHeader key;
+    private final FitsHeaderImpl key;
 
     CXCExt(String comment) {
         key = new FitsHeaderImpl(name(), IFitsHeader.SOURCE.CXC, HDU.ANY, VALUE.STRING, comment);
     }
 
     @Override
-    public final IFitsHeader impl() {
+    public final FitsHeaderImpl impl() {
         return key;
     }
 

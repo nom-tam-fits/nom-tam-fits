@@ -37,6 +37,9 @@ import nom.tam.fits.HeaderCard;
  * Interface for standardized header keyword implementations. Standardized header keys help with proper usage, with
  * restricted use and value types as appropriate. Using keywords that implement this interface make it less likely for
  * one to end up with inproperly constructed FITS files. Therefore, their usage is highly encouranged when possible.
+ * 
+ * @see HeaderCard#setValueCheckingPolicy(nom.tam.fits.HeaderCard.ValueCheck)
+ * @see nom.tam.fits.Header#setKeywordChecking(nom.tam.fits.Header.KeywordCheck)
  */
 public interface IFitsHeader {
 
@@ -177,7 +180,7 @@ public interface IFitsHeader {
      * 
      * @since  1.19
      */
-    default IFitsHeader impl() {
+    default FitsHeaderImpl impl() {
         return null;
     }
 

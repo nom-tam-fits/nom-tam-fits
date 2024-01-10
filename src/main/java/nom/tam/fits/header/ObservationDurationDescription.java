@@ -124,7 +124,7 @@ public enum ObservationDurationDescription implements IFitsHeader {
      */
     TIME_OBS("TIME-OBS", SOURCE.HEASARC, HDU.ANY, VALUE.STRING, "time at the start of the observation");
 
-    private final IFitsHeader key;
+    private final FitsHeaderImpl key;
 
     ObservationDurationDescription(SOURCE status, HDU hdu, VALUE valueType, String comment) {
         this(null, status, hdu, valueType, comment);
@@ -135,7 +135,7 @@ public enum ObservationDurationDescription implements IFitsHeader {
     }
 
     @Override
-    public final IFitsHeader impl() {
+    public final FitsHeaderImpl impl() {
         return key;
     }
 

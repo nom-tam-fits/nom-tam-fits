@@ -436,7 +436,7 @@ public enum DateTime implements IFitsHeader {
      */
     public static final String TIMEUNIT_BESSELIAN_YEAR = "Ba";
 
-    private final IFitsHeader key;
+    private final FitsHeaderImpl key;
 
     DateTime(SOURCE status, HDU hdu, VALUE valueType, String comment) {
         this(null, status, hdu, valueType, comment);
@@ -447,7 +447,7 @@ public enum DateTime implements IFitsHeader {
     }
 
     @Override
-    public final IFitsHeader impl() {
+    public final FitsHeaderImpl impl() {
         return key;
     }
 
