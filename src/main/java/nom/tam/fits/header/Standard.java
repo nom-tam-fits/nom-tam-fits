@@ -143,7 +143,7 @@ public enum Standard implements IFitsHeader {
      * string value may be continued on any number of consecutive CONTINUE keywords, thus effectively allowing
      * arbitrarily long strings to be written as keyword values.
      */
-    CONTINUE(SOURCE.HEASARC, HDU.ANY, VALUE.NONE, "denotes the CONTINUE long string keyword convention"),
+    CONTINUE(SOURCE.RESERVED, HDU.ANY, VALUE.NONE, "denotes the CONTINUE long string keyword convention"),
 
     /**
      * This keyword is used to indicate a rotation from a standard coordinate system described by the CTYPEn to a
@@ -562,7 +562,7 @@ public enum Standard implements IFitsHeader {
      * 
      * @since 1.19
      */
-    TDMAXn(SOURCE.HEASARC, HDU.TABLE, VALUE.REAL, "maximum value in the column"),
+    TDMAXn(SOURCE.RESERVED, HDU.TABLE, VALUE.REAL, "maximum value in the column"),
 
     /**
      * The value field of this indexed keyword shall contain a floating point number specifying the minimum valid
@@ -571,7 +571,7 @@ public enum Standard implements IFitsHeader {
      * 
      * @since 1.19
      */
-    TDMINn(SOURCE.HEASARC, HDU.TABLE, VALUE.REAL, "minimum value in the column"),
+    TDMINn(SOURCE.RESERVED, HDU.TABLE, VALUE.REAL, "minimum value in the column"),
 
     /**
      * The value field of this indexed keyword shall contain a floating point number specifying the upper bound of the
@@ -582,7 +582,7 @@ public enum Standard implements IFitsHeader {
      * 
      * @since 1.19
      */
-    TLMAXn(SOURCE.HEASARC, HDU.TABLE, VALUE.REAL, "maximum legal value in the column"),
+    TLMAXn(SOURCE.RESERVED, HDU.TABLE, VALUE.REAL, "maximum legal value in the column"),
 
     /**
      * The value field of this indexed keyword shall contain a floating point number specifying the lower bound of the
@@ -593,7 +593,7 @@ public enum Standard implements IFitsHeader {
      * 
      * @since 1.19
      */
-    TLMINn(SOURCE.HEASARC, HDU.TABLE, VALUE.REAL, "minimum legal value in the column"),
+    TLMINn(SOURCE.RESERVED, HDU.TABLE, VALUE.REAL, "minimum legal value in the column"),
 
     /**
      * The value field shall contain a character string giving the name of the extension type. This keyword is mandatory

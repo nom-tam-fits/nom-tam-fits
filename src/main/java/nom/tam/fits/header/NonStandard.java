@@ -75,6 +75,8 @@ public enum NonStandard implements IFitsHeader {
      * The presence of this keyword with a value = T in an extension key indicates that the keywords contained in the
      * primary key (except the FITS Mandatory keywords, and any COMMENT, HISTORY or 'blank' keywords) are to be
      * inherited, or logically included in that extension key.
+     * 
+     * @deprecated Part of the FITS standard, use {@link Standard#INHERIT} instead.
      */
     INHERIT(SOURCE.STScI, HDU.EXTENSION, VALUE.LOGICAL, "denotes the INHERIT keyword convention");
 

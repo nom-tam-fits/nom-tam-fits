@@ -32,7 +32,7 @@ package nom.tam.fits.header;
  */
 
 /**
- * Date-time related standard FITS keywords.
+ * Date-time related keywords defined by the FITS standard.
  * 
  * @author Attila Kovacs
  *
@@ -171,14 +171,14 @@ public enum DateTime implements IFitsHeader {
     JDREF(SOURCE.RESERVED, HDU.ANY, VALUE.REAL, "[day] reference Julian Date"),
 
     /**
-     * The start time of the observation, in the format specified in the FITS Standard, in the format HH:MM:SS[.sss]'.
+     * The start time of the observation, in the format specified in the FITS Standard, in the format HH:MM:SS[.s...]'.
      * 
      * @since 1.19
      */
     TSTART(SOURCE.RESERVED, HDU.ANY, VALUE.STRING, "start time of observation"),
 
     /**
-     * The end time of the observation, in the format specified in the FITS Standard, in the format HH:MM:SS[.sss]'.
+     * The end time of the observation, in the format specified in the FITS Standard, in the format HH:MM:SS[.s...]'.
      * 
      * @since 1.19
      */
@@ -199,14 +199,14 @@ public enum DateTime implements IFitsHeader {
     JEPOCH(SOURCE.RESERVED, HDU.ANY, VALUE.REAL, "[yr] Julian epoch of observation"),
 
     /**
-     * Net exposure duration
+     * Net exposure duration (in specified time units, or else seconds)
      * 
      * @since 1.19
      */
     XPOSURE(SOURCE.RESERVED, HDU.ANY, VALUE.REAL, "Net exposure duration"),
 
     /**
-     * Wall clock exposure duration
+     * Wall clock exposure duration (in specified time units, or else seconds)
      * 
      * @since 1.19
      */
@@ -262,28 +262,28 @@ public enum DateTime implements IFitsHeader {
     TIMEUNIT(SOURCE.RESERVED, HDU.ANY, VALUE.STRING, "Time unit"),
 
     /**
-     * Precision time offset
+     * Precision time offset (in specified time units, or else seconds)
      * 
      * @since 1.19
      */
     TIMEOFFS(SOURCE.RESERVED, HDU.ANY, VALUE.REAL, "Time offset"),
 
     /**
-     * Systematic time error
+     * Systematic time error (in specified time units, or else seconds)
      * 
      * @since 1.19
      */
     TIMESYER(SOURCE.RESERVED, HDU.ANY, VALUE.REAL, "Systematic time error"),
 
     /**
-     * Random time error
+     * Random time error (in specified time units, or else seconds)
      * 
      * @since 1.19
      */
     TIMERDER(SOURCE.RESERVED, HDU.ANY, VALUE.REAL, "Random time error"),
 
     /**
-     * Time resolution
+     * Time resolution (in specified time units, or else seconds)
      * 
      * @since 1.19
      */
@@ -403,7 +403,7 @@ public enum DateTime implements IFitsHeader {
 
     /** Solar System ephemeris value for {@link #PLEPHEM} for Park, et al. (2021). */
     public static final String PLEPHEM_DE440 = "DE440";
-   
+
     /** Solar System ephemeris value for {@link #PLEPHEM} for Park, et al. (2021). */
     public static final String PLEPHEM_DE441 = "DE441";
 

@@ -129,6 +129,24 @@ public enum Synonyms {
      */
     EXTLEVEL(Standard.EXTLEVEL, DataDescription.HDULEVEL),
 
+    /**
+     * [s] Non-standard exposure time conventions.
+     * 
+     * @see DateTime#XPOSURE
+     */
+    EXPOSURE(ObservationDurationDescription.EXPOSURE, ObservationDurationDescription.EXPTIME,
+            ObservationDurationDescription.ONTIME),
+
+    /**
+     * Variants for recording the start time of observation in HH:MM:SS[.s...] format
+     */
+    TSTART(DateTime.TSTART, ObservationDurationDescription.TIME_OBS),
+
+    /**
+     * Variants for recording the ending time of observation in HH:MM:SS[.s...] format
+     */
+    TSTOP(DateTime.TSTOP, ObservationDurationDescription.TIME_END),
+
     /** DARKTIME appears in multiple conventions */
     DARKTIME(NOAOExt.DARKTIME, SBFitsExt.DARKTIME);
 
