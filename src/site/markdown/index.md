@@ -1041,7 +1041,7 @@ since dictionary lookup will not work for these -- as comment cards are by defin
 <a name="standard-and-conventional-fits-header-keywords"></a>
 ### Standard and conventional FITS header keywords
 
-The [FITS standard]((https://heasarc.gsfc.nasa.gov/docs/fcg/standard_dict.html)) defines a set of reserved keywords. 
+The [FITS standard](https://heasarc.gsfc.nasa.gov/docs/fcg/standard_dict.html) defines a set of reserved keywords. 
 You can find a collection of these under the `nom.tam.fits.header` package:
 
  * `Standard` -- The core keywords of the FITS standard. 
