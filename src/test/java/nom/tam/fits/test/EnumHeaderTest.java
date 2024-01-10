@@ -19,7 +19,7 @@ import nom.tam.fits.Header;
 import nom.tam.fits.header.Checksum;
 import nom.tam.fits.header.Compression;
 import nom.tam.fits.header.DataDescription;
-import nom.tam.fits.header.FitsHeaderImpl;
+import nom.tam.fits.header.FitsKey;
 import nom.tam.fits.header.GenericKey;
 import nom.tam.fits.header.HierarchicalGrouping;
 import nom.tam.fits.header.IFitsHeader;
@@ -190,7 +190,7 @@ public class EnumHeaderTest {
         IFitsHeader[] result = GenericKey.create(new String[] {"BITPIX", "SIMPLE", "UNKOWN"});
         assertSame(Standard.BITPIX, result[0]);
         assertSame(Standard.SIMPLE, result[1]);
-        assertTrue(result[2] instanceof FitsHeaderImpl);
+        assertTrue(result[2] instanceof FitsKey);
     }
 
     @Test

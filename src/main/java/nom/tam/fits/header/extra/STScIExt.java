@@ -31,7 +31,7 @@ package nom.tam.fits.header.extra;
  * #L%
  */
 
-import nom.tam.fits.header.FitsHeaderImpl;
+import nom.tam.fits.header.FitsKey;
 import nom.tam.fits.header.IFitsHeader;
 
 /**
@@ -214,18 +214,18 @@ public enum STScIExt implements IFitsHeader {
      */
     MJD_OBS("MJD-OBS", "MJD of exposure start");
 
-    private final FitsHeaderImpl key;
+    private final FitsKey key;
 
     STScIExt(String comment) {
         this(null, comment);
     }
 
     STScIExt(String key, String comment) {
-        this.key = new FitsHeaderImpl(key == null ? name() : key, IFitsHeader.SOURCE.CXC, HDU.ANY, VALUE.STRING, comment);
+        this.key = new FitsKey(key == null ? name() : key, IFitsHeader.SOURCE.CXC, HDU.ANY, VALUE.STRING, comment);
     }
 
     @Override
-    public final FitsHeaderImpl impl() {
+    public final FitsKey impl() {
         return key;
     }
 

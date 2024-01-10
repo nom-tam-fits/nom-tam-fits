@@ -33,6 +33,11 @@ package nom.tam.fits;
 
 import org.junit.Test;
 
+import nom.tam.fits.header.FitsHeaderImpl;
+import nom.tam.fits.header.IFitsHeader.HDU;
+import nom.tam.fits.header.IFitsHeader.SOURCE;
+import nom.tam.fits.header.IFitsHeader.VALUE;
+
 @SuppressWarnings("deprecation")
 public class DeprecatedTest {
 
@@ -41,5 +46,10 @@ public class DeprecatedTest {
         FitsFactory.setAllowHeaderRepairs(false);
         Header h = new Header();
         h.setBitpix(20);
+    }
+
+    @Test
+    public void testFitsHeaderImpl() throws Exception {
+        new FitsHeaderImpl("BLAH", SOURCE.UNKNOWN, HDU.ANY, VALUE.ANY, "blah");
     }
 }

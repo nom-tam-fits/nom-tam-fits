@@ -938,18 +938,18 @@ public enum WCS implements IFitsHeader {
      */
     public static final String SPECTRAL_ALGO_A2V = "A2V";
 
-    private final FitsHeaderImpl key;
+    private final FitsKey key;
 
     WCS(SOURCE status, HDU hdu, VALUE valueType, String comment) {
         this(null, status, hdu, valueType, comment);
     }
 
     WCS(String headerName, SOURCE status, HDU hdu, VALUE valueType, String comment) {
-        key = new FitsHeaderImpl(headerName == null ? name() : headerName, status, hdu, valueType, comment);
+        key = new FitsKey(headerName == null ? name() : headerName, status, hdu, valueType, comment);
     }
 
     @Override
-    public final FitsHeaderImpl impl() {
+    public final FitsKey impl() {
         return key;
     }
 
@@ -980,7 +980,7 @@ public enum WCS implements IFitsHeader {
             throw new IllegalArgumentException("Expected 'A' through 'Z': Got '%c'");
         }
 
-        return new FitsHeaderImpl(key() + Character.toUpperCase(c), status(), hdu(), valueType(), comment());
+        return new FitsKey(key() + Character.toUpperCase(c), status(), hdu(), valueType(), comment());
     }
 
 }

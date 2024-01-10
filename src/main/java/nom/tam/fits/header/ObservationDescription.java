@@ -183,14 +183,14 @@ public enum ObservationDescription implements IFitsHeader {
      */
     SUNANGLE(SOURCE.STScI, HDU.ANY, VALUE.REAL, "angle between the observation and the sun");
 
-    private final FitsHeaderImpl key;
+    private final FitsKey key;
 
     ObservationDescription(IFitsHeader.SOURCE status, HDU hdu, VALUE valueType, String comment) {
-        key = new FitsHeaderImpl(name(), status, hdu, valueType, comment);
+        key = new FitsKey(name(), status, hdu, valueType, comment);
     }
 
     @Override
-    public final FitsHeaderImpl impl() {
+    public final FitsKey impl() {
         return key;
     }
 }

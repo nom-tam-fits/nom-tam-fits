@@ -6,7 +6,7 @@ import org.junit.Assert;
 import org.junit.Test;
 
 import nom.tam.fits.header.DateTime;
-import nom.tam.fits.header.FitsHeaderImpl;
+import nom.tam.fits.header.FitsKey;
 import nom.tam.fits.header.GenericKey;
 import nom.tam.fits.header.IFitsHeader;
 import nom.tam.fits.header.IFitsHeader.HDU;
@@ -175,7 +175,7 @@ public class HeaderProtectedTest {
 
     @Test
     public void testIFitsHeaderSelfImpl() {
-        IFitsHeader key = new FitsHeaderImpl("BLAH", SOURCE.UNKNOWN, HDU.ANY, VALUE.ANY, "for testing only");
+        IFitsHeader key = new FitsKey("BLAH", SOURCE.UNKNOWN, HDU.ANY, VALUE.ANY, "for testing only");
         Assert.assertNotNull(key.impl());
     }
 

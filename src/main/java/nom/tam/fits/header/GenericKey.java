@@ -89,7 +89,7 @@ public final class GenericKey {
     public static IFitsHeader create(String key) {
         IFitsHeader result = STANDARD_KEYS.get(key);
         if (result == null) {
-            result = new FitsHeaderImpl(key, SOURCE.UNKNOWN, HDU.ANY, VALUE.ANY, "");
+            result = new FitsKey(key, SOURCE.UNKNOWN, HDU.ANY, VALUE.ANY, "");
         }
         return result;
     }

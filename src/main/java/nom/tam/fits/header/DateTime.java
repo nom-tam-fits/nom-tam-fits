@@ -436,18 +436,18 @@ public enum DateTime implements IFitsHeader {
      */
     public static final String TIMEUNIT_BESSELIAN_YEAR = "Ba";
 
-    private final FitsHeaderImpl key;
+    private final FitsKey key;
 
     DateTime(SOURCE status, HDU hdu, VALUE valueType, String comment) {
         this(null, status, hdu, valueType, comment);
     }
 
     DateTime(String headerName, SOURCE status, HDU hdu, VALUE valueType, String comment) {
-        key = new FitsHeaderImpl(headerName == null ? name() : headerName, status, hdu, valueType, comment);
+        key = new FitsKey(headerName == null ? name() : headerName, status, hdu, valueType, comment);
     }
 
     @Override
-    public final FitsHeaderImpl impl() {
+    public final FitsKey impl() {
         return key;
     }
 

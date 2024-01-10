@@ -99,14 +99,14 @@ public enum InstrumentDescription implements IFitsHeader {
      */
     SATURATE(SOURCE.STScI, HDU.ANY, VALUE.INTEGER, "Data value at which saturation occurs");
 
-    private final FitsHeaderImpl key;
+    private final FitsKey key;
 
     InstrumentDescription(IFitsHeader.SOURCE status, HDU hdu, VALUE valueType, String comment) {
-        key = new FitsHeaderImpl(name(), status, hdu, valueType, comment);
+        key = new FitsKey(name(), status, hdu, valueType, comment);
     }
 
     @Override
-    public final FitsHeaderImpl impl() {
+    public final FitsKey impl() {
         return key;
     }
 }

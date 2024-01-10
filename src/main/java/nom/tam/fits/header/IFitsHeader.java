@@ -180,7 +180,7 @@ public interface IFitsHeader {
      * 
      * @since  1.19
      */
-    default FitsHeaderImpl impl() {
+    default FitsKey impl() {
         return null;
     }
 
@@ -253,7 +253,7 @@ public interface IFitsHeader {
             throw new IllegalStateException("indexed keyword " + headerName.toString() + " is too long.");
         }
 
-        return new FitsHeaderImpl(headerName.toString(), status(), hdu(), valueType(), comment());
+        return new FitsKey(headerName.toString(), status(), hdu(), valueType(), comment());
     }
 
     /**

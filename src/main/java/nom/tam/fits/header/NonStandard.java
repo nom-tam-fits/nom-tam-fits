@@ -80,7 +80,7 @@ public enum NonStandard implements IFitsHeader {
      */
     INHERIT(SOURCE.STScI, HDU.EXTENSION, VALUE.LOGICAL, "denotes the INHERIT keyword convention");
 
-    private final FitsHeaderImpl key;
+    private final FitsKey key;
 
     /**
      * An alternative older value of the XTENSION keword in case of an image.
@@ -93,11 +93,11 @@ public enum NonStandard implements IFitsHeader {
     public static final String XTENSION_A3DTABLE = "A3DTABLE";
 
     NonStandard(IFitsHeader.SOURCE status, HDU hdu, VALUE valueType, String comment) {
-        key = new FitsHeaderImpl(name(), status, hdu, valueType, comment);
+        key = new FitsKey(name(), status, hdu, valueType, comment);
     }
 
     @Override
-    public final FitsHeaderImpl impl() {
+    public final FitsKey impl() {
         return key;
     }
 }

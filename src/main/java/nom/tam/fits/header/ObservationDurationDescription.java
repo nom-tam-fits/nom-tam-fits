@@ -124,18 +124,18 @@ public enum ObservationDurationDescription implements IFitsHeader {
      */
     TIME_OBS("TIME-OBS", SOURCE.HEASARC, HDU.ANY, VALUE.STRING, "time at the start of the observation");
 
-    private final FitsHeaderImpl key;
+    private final FitsKey key;
 
     ObservationDurationDescription(SOURCE status, HDU hdu, VALUE valueType, String comment) {
         this(null, status, hdu, valueType, comment);
     }
 
     ObservationDurationDescription(String key, SOURCE status, HDU hdu, VALUE valueType, String comment) {
-        this.key = new FitsHeaderImpl(key == null ? name() : key, status, hdu, valueType, comment);
+        this.key = new FitsKey(key == null ? name() : key, status, hdu, valueType, comment);
     }
 
     @Override
-    public final FitsHeaderImpl impl() {
+    public final FitsKey impl() {
         return key;
     }
 

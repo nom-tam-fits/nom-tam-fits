@@ -31,7 +31,7 @@ package nom.tam.fits.header.extra;
  * #L%
  */
 
-import nom.tam.fits.header.FitsHeaderImpl;
+import nom.tam.fits.header.FitsKey;
 import nom.tam.fits.header.IFitsHeader;
 
 /**
@@ -193,10 +193,10 @@ public enum SBFitsExt implements IFitsHeader {
      */
     YPIXSZ(VALUE.REAL, "Pixel height in microns");
 
-    private final FitsHeaderImpl key;
+    private final FitsKey key;
 
     SBFitsExt(String key, VALUE valueType, String comment) {
-        this.key = new FitsHeaderImpl(key == null ? name() : key, IFitsHeader.SOURCE.SBIG, HDU.IMAGE, valueType, comment);
+        this.key = new FitsKey(key == null ? name() : key, IFitsHeader.SOURCE.SBIG, HDU.IMAGE, valueType, comment);
     }
 
     SBFitsExt(VALUE valueType, String comment) {
@@ -204,7 +204,7 @@ public enum SBFitsExt implements IFitsHeader {
     }
 
     @Override
-    public final FitsHeaderImpl impl() {
+    public final FitsKey impl() {
         return key;
     }
 
