@@ -1041,14 +1041,14 @@ since dictionary lookup will not work for these -- as comment cards are by defin
 <a name="standard-and-conventional-fits-header-keywords"></a>
 ### Standard and conventional FITS header keywords
 
-FITS defines a set of standard keywords. You can find a collection of these under the `nom.tam.fits.header` package:
+The [FITS standard]((https://heasarc.gsfc.nasa.gov/docs/fcg/standard_dict.html)) defines a set of reserved keywords. 
+You can find a collection of these under the `nom.tam.fits.header` package:
 
- * `Standard` -- [keywords defined by the FITS standard](https://heasarc.gsfc.nasa.gov/docs/fcg/standard_dict.html). 
-   Some of the standard keywords are broken out into separate enumerations by theme, as listed below:
-   * `WCS` -- Standard FITS Word coordinate system (WCS) keywords
-   * `DateTime` -- Standard date-time related FITS keywords
-   * `Compression` -- Standard keywords used for describing compressed data
-   * `Checksum` -- Standard keywords used for data checksumming
+ * `Standard` -- The core keywords of the FITS standard. 
+ * `WCS` -- Standard FITS Word coordinate system (WCS) keywords
+ * `DateTime` -- Standard date-time related FITS keywords
+ * `Compression` -- Standard keywords used for describing compressed data
+ * `Checksum` -- Standard keywords used for data checksumming
    
 In addition to the keywords defined by the FITS standard, the library also recognizes further conventional and
 commonly used keyword, which as also collected in the `nom.tam.fits.header` package:
@@ -1062,7 +1062,7 @@ commonly used keyword, which as also collected in the `nom.tam.fits.header` pack
  * `ObservationDescription` -- Commonly used keywords that describe the observation
  * `ObservationDurationDescription` -- Commonly used keywords for the timing of observations
  
-Additionally, many organisations (or groups of organisations) have defined their own sets of FITS keywords. Some of 
+Finally, many organisations (or groups of organisations) have defined their own sets of FITS keywords. Some of 
 these can be found under the `nom.tam.fits-header.extra` package, such as:
  
  * `NOAOExt` -- keywords used by the National Optical Astronomy Observatory (_no longer available since the IRAF 
