@@ -1041,8 +1041,7 @@ since dictionary lookup will not work for these -- as comment cards are by defin
 <a name="standard-and-conventional-fits-header-keywords"></a>
 ### Standard and conventional FITS header keywords
 
-FITS defines a set of standard keywords, and recognizes a set of registered conventions. You can find a collection of 
-these under the `nom.tam.fits.header` package:
+FITS defines a set of standard keywords. You can find a collection of these under the `nom.tam.fits.header` package:
 
  * `Standard` -- [keywords defined by the FITS standard](https://heasarc.gsfc.nasa.gov/docs/fcg/standard_dict.html). 
    Some of the standard keywords are broken out into separate enumerations by theme, as listed below:
@@ -1050,14 +1049,18 @@ these under the `nom.tam.fits.header` package:
    * `DateTime` -- Standard date-time related FITS keywords
    * `Compression` -- Standard keywords used for describing compressed data
    * `Checksum` -- Standard keywords used for data checksumming
+   
+In addition to the keywords defined by the FITS standard, the library also recognizes further conventional and
+commonly used keyword, which as also collected in the `nom.tam.fits.header` package:
+   
  * `HierarchicalGrouping` -- Keywords for the 
     [Hierarchical Grouping Convention](https://fits.gsfc.nasa.gov/registry/grouping.html)
  * `NonStandard` -- Commonly used and recognized keywords that are not strictly part of the FITS standard
    Some commonly used conventions are broken out into separate enumerations by theme, as listed below:
-   * `DataDescription` -- Conventional keywords for describing the data content
-   * `InstrumentDescription` -- Conventional keywords for describing the instrumentation used for observing
-   * `ObservationDescription` -- Commonly used keywords that describe the observation
-   * `ObservationDurationDescription` -- Commonly used keywords for the timing of observations
+ * `DataDescription` -- Conventional keywords for describing the data content
+ * `InstrumentDescription` -- Conventional keywords for describing the instrumentation used for observing
+ * `ObservationDescription` -- Commonly used keywords that describe the observation
+ * `ObservationDurationDescription` -- Commonly used keywords for the timing of observations
  
 Additionally, many organisations (or groups of organisations) have defined their own sets of FITS keywords. Some of 
 these can be found under the `nom.tam.fits-header.extra` package, such as:
