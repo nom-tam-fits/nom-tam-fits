@@ -58,33 +58,30 @@ public final class GenericKey {
         for (IFitsHeader key : Standard.values()) {
             headers.put(key.key(), key);
         }
+        for (IFitsHeader key : DateTime.values()) {
+            headers.put(key.key(), key);
+        }
+        for (IFitsHeader key : WCS.values()) {
+            headers.put(key.key(), key);
+        }
         for (IFitsHeader key : Checksum.values()) {
             headers.put(key.key(), key);
         }
         for (IFitsHeader key : Compression.values()) {
             headers.put(key.key(), key);
         }
-        for (IFitsHeader key : DataDescription.values()) {
-            headers.put(key.key(), key);
-        }
-        for (IFitsHeader key : InstrumentDescription.values()) {
-            headers.put(key.key(), key);
-        }
-        for (IFitsHeader key : NonStandard.values()) {
-            headers.put(key.key(), key);
-        }
-        for (IFitsHeader key : ObservationDescription.values()) {
-            headers.put(key.key(), key);
-        }
         STANDARD_KEYS = Collections.unmodifiableMap(headers);
     }
 
     /**
-     * create a fits header key from a free string
+     * Creates a generic FITS header key that may be used in any HDU, with any type of value, and does not have a
+     * standard comment.
      *
-     * @param  key the string to create the key for
+     * @param      key the string to create the key for
      *
-     * @return     the IFitsHeader implementation for the key.
+     * @return         the IFitsHeader implementation for the key.
+     * 
+     * @deprecated     Use {@link FitsKey#FitsKey(String, VALUE, String)} instead.
      */
     public static IFitsHeader create(String key) {
         IFitsHeader result = STANDARD_KEYS.get(key);
@@ -95,11 +92,13 @@ public final class GenericKey {
     }
 
     /**
-     * create a array of generic fits header keys from a array of string keys.
+     * @deprecated      (<i>for internal use</i>) Creates a array of generic FITS header keys. The resulting keys have
+     *                      no HDU assignment or value type restrictions, not default comments. As such they may be used
+     *                      for accessing existing keys by the specified names, more so than for adding new values.
      *
-     * @param  keys the array of string keys
+     * @param      keys the array of string keys
      *
-     * @return      the array of IFitsHeaderKeys.
+     * @return          the equivalent array of super-generic standarddized keys.
      */
     public static IFitsHeader[] create(String[] keys) {
         IFitsHeader[] result = new IFitsHeader[keys.length];
@@ -122,6 +121,12 @@ public final class GenericKey {
         int index = key.length() - 1;
         int n = 0;
         int numberBase = 1;
+
+        // Skip coordinate alternative marker letter at end...
+        if (Character.isAlphabetic(key.charAt(index))) {
+            index--;
+        }
+
         while (index >= 0 && Character.isDigit(key.charAt(index))) {
             n = n + (key.charAt(index) - '0') * numberBase;
             numberBase *= NUMBER_BASE;
@@ -131,29 +136,53 @@ public final class GenericKey {
     }
 
     /**
-     * lookup a string key in the standard key sets.
+     * Lookup a string key in the standard key sets.
      *
      * @param  key the fits key to search.
      *
      * @return     the found fits key or null
      */
     public static IFitsHeader lookup(String key) {
-        int keyLength = key.length();
-        if (keyLength > 0 && Character.isDigit(key.charAt(keyLength - 1))) {
-            StringBuilder builder = new StringBuilder();
-            for (int index = 0; index < keyLength; index++) {
-                char character = key.charAt(index);
-                if (Character.isDigit(character)) {
-                    if (builder.charAt(builder.length() - 1) != 'n') {
-                        builder.append('n');
-                    }
-                } else {
-                    builder.append(character);
-                }
-            }
-            return STANDARD_KEYS.get(builder.toString());
+        int i = 0, l = key.length();
+        StringBuilder pattern = new StringBuilder();
+
+        // If ends with digit + letter, then it must alt coordinate if standard...
+        if (l > 1 && Character.isAlphabetic(key.charAt(l - 1)) && Character.isDigit(key.charAt(l - 2))) {
+            key = key.substring(0, --l);
         }
-        return STANDARD_KEYS.get(key);
+
+        // If the first digit is a number it may be a coordinate index
+        if (i < l && Character.isDigit(key.charAt(i))) {
+            pattern.append('n');
+            i++;
+
+            // If the second digit is a number it may be a coordinate index
+            if (i < l && Character.isDigit(key.charAt(i))) {
+                pattern.append('n');
+                i++;
+            }
+        }
+
+        // Replace sequence of digits with 'n'
+        while (i < l) {
+            char c = key.charAt(i);
+
+            if (Character.isDigit(c)) {
+                pattern.append('n');
+
+                // Skip successive digits.
+                while (i < l && Character.isDigit(key.charAt(i))) {
+                    i++;
+                }
+            } else {
+                pattern.append(c);
+                i++;
+            }
+        }
+
+        System.err.println("### " + pattern.toString());
+
+        return STANDARD_KEYS.get(pattern.toString());
     }
 
     /**

@@ -80,6 +80,39 @@ public class FitsKey implements IFitsHeader, Serializable {
         }
     }
 
+    /**
+     * Creates a new standardized user-defined FITS keyword. The keyword will have source set to
+     * {@link IFitsHeader.SOURCE#UNKNOWN}.
+     * 
+     * @param headerName The keyword as it will appear in the FITS headers, usually a string with up to 8 characters,
+     *                       containing uppper case letters (A-Z), digits (0-9), and/or underscore (<code>_</code>) or
+     *                       hyphen (<code>-</code>) characters for standard FITS keywords.
+     * @param hdu        the type of HDU this keyword may appear in
+     * @param valueType  the type of value that may be associated with this keyword
+     * @param comment    the standard comment to include with this keyword
+     * 
+     * @since            1.19
+     */
+    public FitsKey(String headerName, HDU hdu, VALUE valueType, String comment) {
+        this(headerName, SOURCE.UNKNOWN, hdu, valueType, comment);
+    }
+
+    /**
+     * Creates a new standardized user-defined FITS keyword. The keyword will have source set to
+     * {@link IFitsHeader.SOURCE#UNKNOWN} and HDY type to {@link IFitsHeader.HDU#ANY}.
+     * 
+     * @param headerName The keyword as it will appear in the FITS headers, usually a string with up to 8 characters,
+     *                       containing uppper case letters (A-Z), digits (0-9), and/or underscore (<code>_</code>) or
+     *                       hyphen (<code>-</code>) characters for standard FITS keywords.
+     * @param valueType  the type of value that may be associated with this keyword
+     * @param comment    the standard comment to include with this keyword
+     * 
+     * @since            1.19
+     */
+    public FitsKey(String headerName, VALUE valueType, String comment) {
+        this(headerName, HDU.ANY, valueType, comment);
+    }
+
     @Override
     public final FitsKey impl() {
         return this;

@@ -29,6 +29,7 @@ import nom.tam.fits.header.ObservationDescription;
 import nom.tam.fits.header.ObservationDurationDescription;
 import nom.tam.fits.header.Standard;
 import nom.tam.fits.header.Synonyms;
+import nom.tam.fits.header.WCS;
 import nom.tam.fits.header.extra.CXCExt;
 import nom.tam.fits.header.extra.CXCStclSharedExt;
 import nom.tam.fits.header.extra.MaxImDLExt;
@@ -208,5 +209,20 @@ public class EnumHeaderTest {
         assertSame(IFitsHeader.SOURCE.UNKNOWN, IFitsHeader.SOURCE.valueOf(IFitsHeader.SOURCE.UNKNOWN.name()));
         assertEquals(7, IFitsHeader.VALUE.values().length);
         assertSame(IFitsHeader.VALUE.ANY, IFitsHeader.VALUE.valueOf(IFitsHeader.VALUE.ANY.name()));
+    }
+
+    @Test
+    public void testLookups() {
+        assertEquals(WCS.nCDEna, GenericKey.lookup("1CDE100A"));
+        assertEquals(WCS.nSn_na, GenericKey.lookup("1S100_1A"));
+        assertEquals(WCS.nnCDna, GenericKey.lookup("12CD100A"));
+
+        assertEquals(WCS.nCDEna, GenericKey.lookup("1CDE100Z"));
+        assertEquals(WCS.nSn_na, GenericKey.lookup("1S100_1Z"));
+        assertEquals(WCS.nnCDna, GenericKey.lookup("12CD100Z"));
+
+        assertEquals(WCS.nCDEna, GenericKey.lookup("1CDE100"));
+        assertEquals(WCS.nSn_na, GenericKey.lookup("1S100_1"));
+        assertEquals(WCS.nnCDna, GenericKey.lookup("12CD100"));
     }
 }
