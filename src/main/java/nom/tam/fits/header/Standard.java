@@ -725,4 +725,20 @@ public enum Standard implements IFitsHeader {
     private static StandardCommentReplacement replaceable(String string, Class<?> clazz, String comment) {
         return new StandardCommentReplacement(string, clazz, comment);
     }
+
+    /**
+     * Returns the standard FITS keyword that matches the specified actual key.
+     * 
+     * @param  key The key as it may appear in a FITS header, e.g. "CTYPE1"
+     * 
+     * @return     The standard FITS keyword/pattern that matches, e.g. {@link Standard#CTYPEn}.
+     * 
+     * @see        IFitsHeader#extractIndices(String)
+     * 
+     * @since      1.19
+     */
+    public static IFitsHeader match(String key) {
+        return GenericKey.lookup(key);
+    }
+
 }

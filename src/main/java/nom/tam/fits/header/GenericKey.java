@@ -84,7 +84,7 @@ public final class GenericKey {
      * @deprecated     Use {@link FitsKey#FitsKey(String, VALUE, String)} instead.
      */
     public static IFitsHeader create(String key) {
-        IFitsHeader result = STANDARD_KEYS.get(key);
+        IFitsHeader result = lookup(key);
         if (result == null) {
             result = new FitsKey(key, SOURCE.UNKNOWN, HDU.ANY, VALUE.ANY, "");
         }
@@ -113,9 +113,12 @@ public final class GenericKey {
      * it will return 2, while for <code>TFORM17</code> it will return 17. If there keyword does not end with a number,
      * 0 is returned (FITS keywords are always numbered from 1 and up).
      * 
-     * @param  key The FITS keyword from which to extract the trailing number.
+     * @param      key The FITS keyword from which to extract the trailing number.
      * 
-     * @return     the number contained at the end of the keyword or else 0 if the keyword does not end with a number.
+     * @return         the number contained at the end of the keyword or else 0 if the keyword does not end with a
+     *                     number.
+     * 
+     * @deprecated     Use {@link IFitsHeader#extractIndices(String)} instead.
      */
     public static int getN(String key) {
         int index = key.length() - 1;
@@ -136,11 +139,14 @@ public final class GenericKey {
     }
 
     /**
-     * Lookup a string key in the standard key sets.
+     * Lookup a string key in the standard key sets, resolving indexes and coordinate alternatives as appropriate for
+     * the set of standard FITS keywords. Same as {@link Standard#match(String)}, which is preferred.
      *
      * @param  key the fits key to search.
      *
      * @return     the found fits key or null
+     * 
+     * @see        Standard#match(String)
      */
     public static IFitsHeader lookup(String key) {
         int i = 0, l = key.length();

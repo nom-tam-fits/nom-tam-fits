@@ -844,6 +844,9 @@ public enum WCS implements IFitsHeader {
     TVn_na(SOURCE.RESERVED, HDU.TABLE, VALUE.REAL, "column pixel axis parameter value");
 
     /** ICRS coordinate reference frame */
+    public static final int WCSAXES_MAX_VALUE = 9;
+
+    /** ICRS coordinate reference frame */
     public static final String RADESYS_ICRS = "ICRS";
 
     /** IAU 1984 FK5 coordinate reference frame */

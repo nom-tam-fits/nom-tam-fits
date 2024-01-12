@@ -162,4 +162,6 @@ public class FitsKey implements IFitsHeader, Serializable {
     public static boolean isCommentStyleKey(String key) {
         return commentStyleKeys.contains(key) || key.trim().isEmpty();
     }
+
+    static final int BASE_10 = 10;
 }

@@ -213,16 +213,49 @@ public class EnumHeaderTest {
 
     @Test
     public void testLookups() {
-        assertEquals(WCS.nCDEna, GenericKey.lookup("1CDE100A"));
-        assertEquals(WCS.nSn_na, GenericKey.lookup("1S100_1A"));
-        assertEquals(WCS.nnCDna, GenericKey.lookup("12CD100A"));
+        Assert.assertNull(Standard.match("BLAH"));
 
-        assertEquals(WCS.nCDEna, GenericKey.lookup("1CDE100Z"));
-        assertEquals(WCS.nSn_na, GenericKey.lookup("1S100_1Z"));
-        assertEquals(WCS.nnCDna, GenericKey.lookup("12CD100Z"));
+        assertEquals(Standard.SIMPLE, Standard.match("SIMPLE"));
 
-        assertEquals(WCS.nCDEna, GenericKey.lookup("1CDE100"));
-        assertEquals(WCS.nSn_na, GenericKey.lookup("1S100_1"));
-        assertEquals(WCS.nnCDna, GenericKey.lookup("12CD100"));
+        assertEquals(WCS.CTYPEna, Standard.match("CTYPE1"));
+        assertEquals(WCS.CTYPEna, Standard.match("CTYPE1A"));
+        assertEquals(WCS.CTYPEna, Standard.match("CTYPE1Z"));
+
+        assertEquals(WCS.nCDEna, Standard.match("1CDE100A"));
+        assertEquals(WCS.nSn_na, Standard.match("1S100_1A"));
+        assertEquals(WCS.nnCDna, Standard.match("12CD100A"));
+
+        assertEquals(WCS.nCDEna, Standard.match("1CDE100Z"));
+        assertEquals(WCS.nSn_na, Standard.match("1S100_1Z"));
+        assertEquals(WCS.nnCDna, Standard.match("12CD100Z"));
+
+        assertEquals(WCS.nCDEna, Standard.match("1CDE100"));
+        assertEquals(WCS.nSn_na, Standard.match("1S100_1"));
+        assertEquals(WCS.nnCDna, Standard.match("12CD100"));
+    }
+
+    @Test
+    public void testResolveIndices() {
+        Assert.assertNull(Standard.SIMPLE.extractIndices("SIMPLE"));
+
+        Assert.assertArrayEquals(new int[] {1}, WCS.CTYPEna.extractIndices("CTYPE1"));
+        Assert.assertArrayEquals(new int[] {1}, WCS.CTYPEna.extractIndices("CTYPE1A"));
+
+        Assert.assertArrayEquals(new int[] {1, 100}, WCS.nCDEna.extractIndices("1CDE100A"));
+        Assert.assertArrayEquals(new int[] {1, 100, 1}, WCS.nSn_na.extractIndices("1S100_1A"));
+        Assert.assertArrayEquals(new int[] {1, 2, 100}, WCS.nnCDna.extractIndices("12CD100A"));
+
+        Assert.assertArrayEquals(new int[] {1, 100}, WCS.nCDEna.extractIndices("1CDE100Z"));
+        Assert.assertArrayEquals(new int[] {1, 100, 1}, WCS.nSn_na.extractIndices("1S100_1Z"));
+        Assert.assertArrayEquals(new int[] {1, 2, 100}, WCS.nnCDna.extractIndices("12CD100Z"));
+
+        Assert.assertArrayEquals(new int[] {1, 100}, WCS.nCDEna.extractIndices("1CDE100"));
+        Assert.assertArrayEquals(new int[] {1, 100, 1}, WCS.nSn_na.extractIndices("1S100_1"));
+        Assert.assertArrayEquals(new int[] {1, 2, 100}, WCS.nnCDna.extractIndices("12CD100"));
+    }
+
+    @Test(expected = IllegalArgumentException.class)
+    public void testResolveIndicesException() throws Exception {
+        WCS.CTYPEna.extractIndices("CRPIX1");
     }
 }
