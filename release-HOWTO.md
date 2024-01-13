@@ -2,7 +2,6 @@
 
 This document is meant for package maintainers only. Its purpose is to provide instructions on preparing and releasing updates to the __nom-tam-fits__ library.
 
-
 ## Prerequisites
 
 To release packages, you will need:
