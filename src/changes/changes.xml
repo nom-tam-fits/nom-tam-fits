@@ -1,7 +1,7 @@
 <document xmlns="http://maven.apache.org/changes/1.0.0" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:schemaLocation="http://maven.apache.org/changes/1.0.0 http://maven.apache.org/xsd/changes-1.0.0.xsd">
 <body>
 
-   <release version="1.19.0-rc5" date="2024-01-15" description="Feature release with bug fixes.">
+   <release version="1.19.0-SNAPSHOT" date="2024-01-15" description="Feature release with bug fixes.">
       <action type="fix" dev="cek" issue="496">
           Workaround for read-only FITS files on Windows network shares.
       </action>
@@ -10,11 +10,6 @@
       </action>
       <action type="fix" dev="attipaci" issue="531">
           Small fixes to HashedList handling iterator access corner cases.
-      </action>
-      <action type="fix" dev="attipaci" issue="537">
-          The Standard.PCOUNT and GCOUNT were designated as extension only keywords, but both are
-          required in all HDUs, including the primary. Therefore the HDU association for these
-          is changed to ANY.
       </action>
       <action type="add" dev="attipaci" issue="488">
           New targeted Data and HDU creation from Java objects via new Data+.from(Object) and
@@ -25,13 +20,13 @@
           New Header.mergeDistinct(Header) method to allow copying non-conflicting header 
           keywords from one FITS header to another.
       </action>
-      <action type="add" dev="attipaci" issue="492">
-          New access methods to parameters stored in RandomGroupsHDU types, in line with
-          the FITS specification.
-      </action>
       <action type="add" dev="attipaci" issue="490">
           New inspection methods to UndefinedData class, to easily retrieve XTENSION type, 
           BITPIX, and data size/shape information from HDUs containing unsupported data types.
+      </action>
+            <action type="add" dev="attipaci" issue="492">
+          New access methods to parameters stored in RandomGroupsHDU types, in line with
+          the FITS specification.
       </action>
       <action type="add" dev="attipaci" issue="494">
           A better way to control how FITS I10 type columns are treated in ASCII tables, via
@@ -56,9 +51,9 @@
       </action>
       <action type="add" dev="attipaci" issue="534">
 	  Adding standardized (IFitsHeader) keywords to HDU headers will now check that the keyword
-	  can be used with the associated HDU type (if any), and may throw an IllegalArgumentException.
-	  The type of checks (if any) can be adjusted via the new Header.setKeywordChecking() and/or 
-	  the static Header.setDefaultKeywordChecking() methods.
+	  can be used with the associated HDU type (if any), and may throw an IllegalArgumentException
+	  if the usage is inappropriate. The type of checks (if any) can be adjusted via the new
+	  Header.setKeywordChecking() and/or the static Header.setDefaultKeywordChecking() methods.
       </action>
       <action type="add" dev="attipaci" issue="534">
 	  Setting values for HeaderCards with standardized (IFitsHeader) keywords now checks that
@@ -78,10 +73,8 @@
       <action type="update" dev="attipaci" issue="519">
           Demoted FitsException to be a soft exception, extending IllegalStateException. As
           a result, users are no longer required to catch these, or its derivatives such as
-          HeaderCardException. Header card related soft exceptions, which were direct 
-          subclasses of IllegalStateException, are now moved further down the hierarchy as 
-          direct subclasses of HeaderCardException. Some methods that have previously thrown 
-          IllegalStateException may now throw a FitsException, in a fully backwards compatible way.
+          HeaderCardException. Some methods that have previously thrown IllegalStateException may 
+          now throw a FitsException, in a fully backwards compatible way. 
       </action>
       <action type="update" dev="attipaci" issue="519">
           Deprecated IHeaderAccess interface and its implementations. These were meant for 
