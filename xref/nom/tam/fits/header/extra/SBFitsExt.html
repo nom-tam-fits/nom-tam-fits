@@ -39,7 +39,7 @@
 <a class="jxr_linenumber" name="L31" href="#L31">31</a>  <em class="jxr_comment"> * #L%</em>
 <a class="jxr_linenumber" name="L32" href="#L32">32</a>  <em class="jxr_comment"> */</em>
 <a class="jxr_linenumber" name="L33" href="#L33">33</a>  
-<a class="jxr_linenumber" name="L34" href="#L34">34</a>  <strong class="jxr_keyword">import</strong> nom.tam.fits.header.FitsHeaderImpl;
+<a class="jxr_linenumber" name="L34" href="#L34">34</a>  <strong class="jxr_keyword">import</strong> nom.tam.fits.header.FitsKey;
 <a class="jxr_linenumber" name="L35" href="#L35">35</a>  <strong class="jxr_keyword">import</strong> nom.tam.fits.header.IFitsHeader;
 <a class="jxr_linenumber" name="L36" href="#L36">36</a>  
 <a class="jxr_linenumber" name="L37" href="#L37">37</a>  <em class="jxr_javadoccomment">/**</em>
@@ -201,10 +201,10 @@
 <a class="jxr_linenumber" name="L193" href="#L193">193</a> <em class="jxr_javadoccomment">     */</em>
 <a class="jxr_linenumber" name="L194" href="#L194">194</a>     YPIXSZ(VALUE.REAL, <span class="jxr_string">"Pixel height in microns"</span>);
 <a class="jxr_linenumber" name="L195" href="#L195">195</a> 
-<a class="jxr_linenumber" name="L196" href="#L196">196</a>     <strong class="jxr_keyword">private</strong> <strong class="jxr_keyword">final</strong> <a name="IFitsHeader" href="../../../../../nom/tam/fits/header/IFitsHeader.html#IFitsHeader">IFitsHeader</a> key;
+<a class="jxr_linenumber" name="L196" href="#L196">196</a>     <strong class="jxr_keyword">private</strong> <strong class="jxr_keyword">final</strong> <a name="FitsKey" href="../../../../../nom/tam/fits/header/FitsKey.html#FitsKey">FitsKey</a> key;
 <a class="jxr_linenumber" name="L197" href="#L197">197</a> 
 <a class="jxr_linenumber" name="L198" href="#L198">198</a>     <a name="SBFitsExt" href="../../../../../nom/tam/fits/header/extra/SBFitsExt.html#SBFitsExt">SBFitsExt</a>(String key, VALUE valueType, String comment) {
-<a class="jxr_linenumber" name="L199" href="#L199">199</a>         <strong class="jxr_keyword">this</strong>.key = <strong class="jxr_keyword">new</strong> <a name="FitsHeaderImpl" href="../../../../../nom/tam/fits/header/FitsHeaderImpl.html#FitsHeaderImpl">FitsHeaderImpl</a>(key == <strong class="jxr_keyword">null</strong> ? name() : key, IFitsHeader.SOURCE.SBIG, HDU.IMAGE, valueType, comment);
+<a class="jxr_linenumber" name="L199" href="#L199">199</a>         <strong class="jxr_keyword">this</strong>.key = <strong class="jxr_keyword">new</strong> <a name="FitsKey" href="../../../../../nom/tam/fits/header/FitsKey.html#FitsKey">FitsKey</a>(key == <strong class="jxr_keyword">null</strong> ? name() : key, IFitsHeader.SOURCE.SBIG, HDU.IMAGE, valueType, comment);
 <a class="jxr_linenumber" name="L200" href="#L200">200</a>     }
 <a class="jxr_linenumber" name="L201" href="#L201">201</a> 
 <a class="jxr_linenumber" name="L202" href="#L202">202</a>     <a name="SBFitsExt" href="../../../../../nom/tam/fits/header/extra/SBFitsExt.html#SBFitsExt">SBFitsExt</a>(VALUE valueType, String comment) {
@@ -212,7 +212,7 @@
 <a class="jxr_linenumber" name="L204" href="#L204">204</a>     }
 <a class="jxr_linenumber" name="L205" href="#L205">205</a> 
 <a class="jxr_linenumber" name="L206" href="#L206">206</a>     @Override
-<a class="jxr_linenumber" name="L207" href="#L207">207</a>     <strong class="jxr_keyword">public</strong> <strong class="jxr_keyword">final</strong> <a name="IFitsHeader" href="../../../../../nom/tam/fits/header/IFitsHeader.html#IFitsHeader">IFitsHeader</a> impl() {
+<a class="jxr_linenumber" name="L207" href="#L207">207</a>     <strong class="jxr_keyword">public</strong> <strong class="jxr_keyword">final</strong> <a name="FitsKey" href="../../../../../nom/tam/fits/header/FitsKey.html#FitsKey">FitsKey</a> impl() {
 <a class="jxr_linenumber" name="L208" href="#L208">208</a>         <strong class="jxr_keyword">return</strong> key;
 <a class="jxr_linenumber" name="L209" href="#L209">209</a>     }
 <a class="jxr_linenumber" name="L210" href="#L210">210</a> 

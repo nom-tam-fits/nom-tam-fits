@@ -39,7 +39,7 @@
 <a class="jxr_linenumber" name="L31" href="#L31">31</a>  <em class="jxr_comment"> * #L%</em>
 <a class="jxr_linenumber" name="L32" href="#L32">32</a>  <em class="jxr_comment"> */</em>
 <a class="jxr_linenumber" name="L33" href="#L33">33</a>  
-<a class="jxr_linenumber" name="L34" href="#L34">34</a>  <strong class="jxr_keyword">import</strong> nom.tam.fits.header.FitsHeaderImpl;
+<a class="jxr_linenumber" name="L34" href="#L34">34</a>  <strong class="jxr_keyword">import</strong> nom.tam.fits.header.FitsKey;
 <a class="jxr_linenumber" name="L35" href="#L35">35</a>  <strong class="jxr_keyword">import</strong> nom.tam.fits.header.IFitsHeader;
 <a class="jxr_linenumber" name="L36" href="#L36">36</a>  
 <a class="jxr_linenumber" name="L37" href="#L37">37</a>  <em class="jxr_javadoccomment">/**</em>
@@ -950,7 +950,7 @@
 <a class="jxr_linenumber" name="L942" href="#L942">942</a> <em class="jxr_javadoccomment">     * index = none</em>
 <a class="jxr_linenumber" name="L943" href="#L943">943</a> <em class="jxr_javadoccomment">     * &lt;/p&gt;</em>
 <a class="jxr_linenumber" name="L944" href="#L944">944</a> <em class="jxr_javadoccomment">     */</em>
-<a class="jxr_linenumber" name="L945" href="#L945">945</a>     AMPINTEG(HDU.PRIMARY_EXTENSION, VALUE.REAL, <span class="jxr_string">"Amplifier integration/sample time"</span>),
+<a class="jxr_linenumber" name="L945" href="#L945">945</a>     AMPINTEG(HDU.ANY, VALUE.REAL, <span class="jxr_string">"Amplifier integration/sample time"</span>),
 <a class="jxr_linenumber" name="L946" href="#L946">946</a>     <em class="jxr_javadoccomment">/**</em>
 <a class="jxr_linenumber" name="L947" href="#L947">947</a> <em class="jxr_javadoccomment">     * Times for the amplifier sensor measurements given as modified Julian dates. The MJDHDR keyword may be used for</em>
 <a class="jxr_linenumber" name="L948" href="#L948">948</a> <em class="jxr_javadoccomment">     * the time at which the image header is created or the MJD-OBS keyword may be used for the time of observation.</em>
@@ -964,7 +964,7 @@
 <a class="jxr_linenumber" name="L956" href="#L956">956</a> <em class="jxr_javadoccomment">     * index = none 1-999</em>
 <a class="jxr_linenumber" name="L957" href="#L957">957</a> <em class="jxr_javadoccomment">     * &lt;/p&gt;</em>
 <a class="jxr_linenumber" name="L958" href="#L958">958</a> <em class="jxr_javadoccomment">     */</em>
-<a class="jxr_linenumber" name="L959" href="#L959">959</a>     AMPMJD(HDU.PRIMARY_EXTENSION, VALUE.REAL, <span class="jxr_string">""</span>),
+<a class="jxr_linenumber" name="L959" href="#L959">959</a>     AMPMJD(HDU.ANY, VALUE.REAL, <span class="jxr_string">""</span>),
 <a class="jxr_linenumber" name="L960" href="#L960">960</a>     <em class="jxr_javadoccomment">/**</em>
 <a class="jxr_linenumber" name="L961" href="#L961">961</a> <em class="jxr_javadoccomment">     * Times for the amplifier sensor measurements given as modified Julian dates. The MJDHDR keyword may be used for</em>
 <a class="jxr_linenumber" name="L962" href="#L962">962</a> <em class="jxr_javadoccomment">     * the time at which the image header is created or the MJD-OBS keyword may be used for the time of observation.</em>
@@ -978,7 +978,7 @@
 <a class="jxr_linenumber" name="L970" href="#L970">970</a> <em class="jxr_javadoccomment">     * index = none 1-999</em>
 <a class="jxr_linenumber" name="L971" href="#L971">971</a> <em class="jxr_javadoccomment">     * &lt;/p&gt;</em>
 <a class="jxr_linenumber" name="L972" href="#L972">972</a> <em class="jxr_javadoccomment">     */</em>
-<a class="jxr_linenumber" name="L973" href="#L973">973</a>     AMPMJDn(HDU.PRIMARY_EXTENSION, VALUE.REAL, <span class="jxr_string">""</span>),
+<a class="jxr_linenumber" name="L973" href="#L973">973</a>     AMPMJDn(HDU.ANY, VALUE.REAL, <span class="jxr_string">""</span>),
 <a class="jxr_linenumber" name="L974" href="#L974">974</a>     <em class="jxr_javadoccomment">/**</em>
 <a class="jxr_linenumber" name="L975" href="#L975">975</a> <em class="jxr_javadoccomment">     * Amplifier name.</em>
 <a class="jxr_linenumber" name="L976" href="#L976">976</a> <em class="jxr_javadoccomment">     * &lt;p&gt;</em>
@@ -998,7 +998,7 @@
 <a class="jxr_linenumber" name="L990" href="#L990">990</a> <em class="jxr_javadoccomment">     * index = none 1-999</em>
 <a class="jxr_linenumber" name="L991" href="#L991">991</a> <em class="jxr_javadoccomment">     * &lt;/p&gt;</em>
 <a class="jxr_linenumber" name="L992" href="#L992">992</a> <em class="jxr_javadoccomment">     */</em>
-<a class="jxr_linenumber" name="L993" href="#L993">993</a>     AMPPAN(HDU.PRIMARY_EXTENSION, VALUE.REAL, <span class="jxr_string">""</span>),
+<a class="jxr_linenumber" name="L993" href="#L993">993</a>     AMPPAN(HDU.ANY, VALUE.REAL, <span class="jxr_string">""</span>),
 <a class="jxr_linenumber" name="L994" href="#L994">994</a>     <em class="jxr_javadoccomment">/**</em>
 <a class="jxr_linenumber" name="L995" href="#L995">995</a> <em class="jxr_javadoccomment">     * CCD amplifier position angle measurements in appropriate units.</em>
 <a class="jxr_linenumber" name="L996" href="#L996">996</a> <em class="jxr_javadoccomment">     * &lt;p&gt;</em>
@@ -1008,7 +1008,7 @@
 <a class="jxr_linenumber" name="L1000" href="#L1000">1000</a> <em class="jxr_javadoccomment">     * index = none 1-999</em>
 <a class="jxr_linenumber" name="L1001" href="#L1001">1001</a> <em class="jxr_javadoccomment">     * &lt;/p&gt;</em>
 <a class="jxr_linenumber" name="L1002" href="#L1002">1002</a> <em class="jxr_javadoccomment">     */</em>
-<a class="jxr_linenumber" name="L1003" href="#L1003">1003</a>     AMPPANn(HDU.PRIMARY_EXTENSION, VALUE.REAL, <span class="jxr_string">""</span>),
+<a class="jxr_linenumber" name="L1003" href="#L1003">1003</a>     AMPPANn(HDU.ANY, VALUE.REAL, <span class="jxr_string">""</span>),
 <a class="jxr_linenumber" name="L1004" href="#L1004">1004</a>     <em class="jxr_javadoccomment">/**</em>
 <a class="jxr_linenumber" name="L1005" href="#L1005">1005</a> <em class="jxr_javadoccomment">     * CCD amplifier linear position sensor measurements in appropriate units.</em>
 <a class="jxr_linenumber" name="L1006" href="#L1006">1006</a> <em class="jxr_javadoccomment">     * &lt;p&gt;</em>
@@ -1018,7 +1018,7 @@
 <a class="jxr_linenumber" name="L1010" href="#L1010">1010</a> <em class="jxr_javadoccomment">     * index = none 1-999</em>
 <a class="jxr_linenumber" name="L1011" href="#L1011">1011</a> <em class="jxr_javadoccomment">     * &lt;/p&gt;</em>
 <a class="jxr_linenumber" name="L1012" href="#L1012">1012</a> <em class="jxr_javadoccomment">     */</em>
-<a class="jxr_linenumber" name="L1013" href="#L1013">1013</a>     AMPPOS(HDU.PRIMARY_EXTENSION, VALUE.REAL, <span class="jxr_string">""</span>),
+<a class="jxr_linenumber" name="L1013" href="#L1013">1013</a>     AMPPOS(HDU.ANY, VALUE.REAL, <span class="jxr_string">""</span>),
 <a class="jxr_linenumber" name="L1014" href="#L1014">1014</a>     <em class="jxr_javadoccomment">/**</em>
 <a class="jxr_linenumber" name="L1015" href="#L1015">1015</a> <em class="jxr_javadoccomment">     * CCD amplifier linear position sensor measurements in appropriate units.</em>
 <a class="jxr_linenumber" name="L1016" href="#L1016">1016</a> <em class="jxr_javadoccomment">     * &lt;p&gt;</em>
@@ -1028,7 +1028,7 @@
 <a class="jxr_linenumber" name="L1020" href="#L1020">1020</a> <em class="jxr_javadoccomment">     * index = none 1-999</em>
 <a class="jxr_linenumber" name="L1021" href="#L1021">1021</a> <em class="jxr_javadoccomment">     * &lt;/p&gt;</em>
 <a class="jxr_linenumber" name="L1022" href="#L1022">1022</a> <em class="jxr_javadoccomment">     */</em>
-<a class="jxr_linenumber" name="L1023" href="#L1023">1023</a>     AMPPOSn(HDU.PRIMARY_EXTENSION, VALUE.REAL, <span class="jxr_string">""</span>),
+<a class="jxr_linenumber" name="L1023" href="#L1023">1023</a>     AMPPOSn(HDU.ANY, VALUE.REAL, <span class="jxr_string">""</span>),
 <a class="jxr_linenumber" name="L1024" href="#L1024">1024</a>     <em class="jxr_javadoccomment">/**</em>
 <a class="jxr_linenumber" name="L1025" href="#L1025">1025</a> <em class="jxr_javadoccomment">     * CCD amplifier pressure sensor measurements in appropriate units.</em>
 <a class="jxr_linenumber" name="L1026" href="#L1026">1026</a> <em class="jxr_javadoccomment">     * &lt;p&gt;</em>
@@ -1041,7 +1041,7 @@
 <a class="jxr_linenumber" name="L1033" href="#L1033">1033</a> <em class="jxr_javadoccomment">     * index = none 1-999</em>
 <a class="jxr_linenumber" name="L1034" href="#L1034">1034</a> <em class="jxr_javadoccomment">     * &lt;/p&gt;</em>
 <a class="jxr_linenumber" name="L1035" href="#L1035">1035</a> <em class="jxr_javadoccomment">     */</em>
-<a class="jxr_linenumber" name="L1036" href="#L1036">1036</a>     AMPPRE(HDU.PRIMARY_EXTENSION, VALUE.REAL, <span class="jxr_string">""</span>),
+<a class="jxr_linenumber" name="L1036" href="#L1036">1036</a>     AMPPRE(HDU.ANY, VALUE.REAL, <span class="jxr_string">""</span>),
 <a class="jxr_linenumber" name="L1037" href="#L1037">1037</a>     <em class="jxr_javadoccomment">/**</em>
 <a class="jxr_linenumber" name="L1038" href="#L1038">1038</a> <em class="jxr_javadoccomment">     * CCD amplifier pressure sensor measurements in appropriate units.</em>
 <a class="jxr_linenumber" name="L1039" href="#L1039">1039</a> <em class="jxr_javadoccomment">     * &lt;p&gt;</em>
@@ -1054,7 +1054,7 @@
 <a class="jxr_linenumber" name="L1046" href="#L1046">1046</a> <em class="jxr_javadoccomment">     * index = none 1-999</em>
 <a class="jxr_linenumber" name="L1047" href="#L1047">1047</a> <em class="jxr_javadoccomment">     * &lt;/p&gt;</em>
 <a class="jxr_linenumber" name="L1048" href="#L1048">1048</a> <em class="jxr_javadoccomment">     */</em>
-<a class="jxr_linenumber" name="L1049" href="#L1049">1049</a>     AMPPREn(HDU.PRIMARY_EXTENSION, VALUE.REAL, <span class="jxr_string">""</span>),
+<a class="jxr_linenumber" name="L1049" href="#L1049">1049</a>     AMPPREn(HDU.ANY, VALUE.REAL, <span class="jxr_string">""</span>),
 <a class="jxr_linenumber" name="L1050" href="#L1050">1050</a>     <em class="jxr_javadoccomment">/**</em>
 <a class="jxr_linenumber" name="L1051" href="#L1051">1051</a> <em class="jxr_javadoccomment">     * Amplifier unbinned pixel read time.</em>
 <a class="jxr_linenumber" name="L1052" href="#L1052">1052</a> <em class="jxr_javadoccomment">     * &lt;p&gt;</em>
@@ -1067,7 +1067,7 @@
 <a class="jxr_linenumber" name="L1059" href="#L1059">1059</a> <em class="jxr_javadoccomment">     * index = none none</em>
 <a class="jxr_linenumber" name="L1060" href="#L1060">1060</a> <em class="jxr_javadoccomment">     * &lt;/p&gt;</em>
 <a class="jxr_linenumber" name="L1061" href="#L1061">1061</a> <em class="jxr_javadoccomment">     */</em>
-<a class="jxr_linenumber" name="L1062" href="#L1062">1062</a>     AMPREAD(HDU.PRIMARY_EXTENSION, VALUE.REAL, <span class="jxr_string">"Unbinned pixel read time"</span>),
+<a class="jxr_linenumber" name="L1062" href="#L1062">1062</a>     AMPREAD(HDU.ANY, VALUE.REAL, <span class="jxr_string">"Unbinned pixel read time"</span>),
 <a class="jxr_linenumber" name="L1063" href="#L1063">1063</a>     <em class="jxr_javadoccomment">/**</em>
 <a class="jxr_linenumber" name="L1064" href="#L1064">1064</a> <em class="jxr_javadoccomment">     * CCD amplifier sampling method used. This may also include any integration times.</em>
 <a class="jxr_linenumber" name="L1065" href="#L1065">1065</a> <em class="jxr_javadoccomment">     * &lt;p&gt;</em>
@@ -1077,7 +1077,7 @@
 <a class="jxr_linenumber" name="L1069" href="#L1069">1069</a> <em class="jxr_javadoccomment">     * index = none</em>
 <a class="jxr_linenumber" name="L1070" href="#L1070">1070</a> <em class="jxr_javadoccomment">     * &lt;/p&gt;</em>
 <a class="jxr_linenumber" name="L1071" href="#L1071">1071</a> <em class="jxr_javadoccomment">     */</em>
-<a class="jxr_linenumber" name="L1072" href="#L1072">1072</a>     AMPSAMPL(HDU.PRIMARY_EXTENSION, VALUE.STRING, <span class="jxr_string">"Amplifier sampling method"</span>),
+<a class="jxr_linenumber" name="L1072" href="#L1072">1072</a>     AMPSAMPL(HDU.ANY, VALUE.STRING, <span class="jxr_string">"Amplifier sampling method"</span>),
 <a class="jxr_linenumber" name="L1073" href="#L1073">1073</a>     <em class="jxr_javadoccomment">/**</em>
 <a class="jxr_linenumber" name="L1074" href="#L1074">1074</a> <em class="jxr_javadoccomment">     * Mapping of the CCD section to amplifier coordinates.</em>
 <a class="jxr_linenumber" name="L1075" href="#L1075">1075</a> <em class="jxr_javadoccomment">     * &lt;p&gt;</em>
@@ -1111,7 +1111,7 @@
 <a class="jxr_linenumber" name="L1103" href="#L1103">1103</a> <em class="jxr_javadoccomment">     * index = none 1-999</em>
 <a class="jxr_linenumber" name="L1104" href="#L1104">1104</a> <em class="jxr_javadoccomment">     * &lt;/p&gt;</em>
 <a class="jxr_linenumber" name="L1105" href="#L1105">1105</a> <em class="jxr_javadoccomment">     */</em>
-<a class="jxr_linenumber" name="L1106" href="#L1106">1106</a>     AMPTEM(HDU.PRIMARY_EXTENSION, VALUE.REAL, <span class="jxr_string">""</span>),
+<a class="jxr_linenumber" name="L1106" href="#L1106">1106</a>     AMPTEM(HDU.ANY, VALUE.REAL, <span class="jxr_string">""</span>),
 <a class="jxr_linenumber" name="L1107" href="#L1107">1107</a>     <em class="jxr_javadoccomment">/**</em>
 <a class="jxr_linenumber" name="L1108" href="#L1108">1108</a> <em class="jxr_javadoccomment">     * CCD amplifier temperature sensor measurements in degrees Celsius.</em>
 <a class="jxr_linenumber" name="L1109" href="#L1109">1109</a> <em class="jxr_javadoccomment">     * &lt;p&gt;</em>
@@ -1124,7 +1124,7 @@
 <a class="jxr_linenumber" name="L1116" href="#L1116">1116</a> <em class="jxr_javadoccomment">     * index = none 1-999</em>
 <a class="jxr_linenumber" name="L1117" href="#L1117">1117</a> <em class="jxr_javadoccomment">     * &lt;/p&gt;</em>
 <a class="jxr_linenumber" name="L1118" href="#L1118">1118</a> <em class="jxr_javadoccomment">     */</em>
-<a class="jxr_linenumber" name="L1119" href="#L1119">1119</a>     AMPTEMn(HDU.PRIMARY_EXTENSION, VALUE.REAL, <span class="jxr_string">""</span>),
+<a class="jxr_linenumber" name="L1119" href="#L1119">1119</a>     AMPTEMn(HDU.ANY, VALUE.REAL, <span class="jxr_string">""</span>),
 <a class="jxr_linenumber" name="L1120" href="#L1120">1120</a>     <em class="jxr_javadoccomment">/**</em>
 <a class="jxr_linenumber" name="L1121" href="#L1121">1121</a> <em class="jxr_javadoccomment">     * CCD amplifier voltage sensor measurements in volts. }</em>
 <a class="jxr_linenumber" name="L1122" href="#L1122">1122</a> <em class="jxr_javadoccomment">     * &lt;p&gt;</em>
@@ -1137,7 +1137,7 @@
 <a class="jxr_linenumber" name="L1129" href="#L1129">1129</a> <em class="jxr_javadoccomment">     * index = none 1-999</em>
 <a class="jxr_linenumber" name="L1130" href="#L1130">1130</a> <em class="jxr_javadoccomment">     * &lt;/p&gt;</em>
 <a class="jxr_linenumber" name="L1131" href="#L1131">1131</a> <em class="jxr_javadoccomment">     */</em>
-<a class="jxr_linenumber" name="L1132" href="#L1132">1132</a>     AMPVOL(HDU.PRIMARY_EXTENSION, VALUE.REAL, <span class="jxr_string">""</span>),
+<a class="jxr_linenumber" name="L1132" href="#L1132">1132</a>     AMPVOL(HDU.ANY, VALUE.REAL, <span class="jxr_string">""</span>),
 <a class="jxr_linenumber" name="L1133" href="#L1133">1133</a>     <em class="jxr_javadoccomment">/**</em>
 <a class="jxr_linenumber" name="L1134" href="#L1134">1134</a> <em class="jxr_javadoccomment">     * CCD amplifier voltage sensor measurements in volts. }</em>
 <a class="jxr_linenumber" name="L1135" href="#L1135">1135</a> <em class="jxr_javadoccomment">     * &lt;p&gt;</em>
@@ -1150,7 +1150,7 @@
 <a class="jxr_linenumber" name="L1142" href="#L1142">1142</a> <em class="jxr_javadoccomment">     * index = none 1-999</em>
 <a class="jxr_linenumber" name="L1143" href="#L1143">1143</a> <em class="jxr_javadoccomment">     * &lt;/p&gt;</em>
 <a class="jxr_linenumber" name="L1144" href="#L1144">1144</a> <em class="jxr_javadoccomment">     */</em>
-<a class="jxr_linenumber" name="L1145" href="#L1145">1145</a>     AMPVOLn(HDU.PRIMARY_EXTENSION, VALUE.REAL, <span class="jxr_string">""</span>),
+<a class="jxr_linenumber" name="L1145" href="#L1145">1145</a>     AMPVOLn(HDU.ANY, VALUE.REAL, <span class="jxr_string">""</span>),
 <a class="jxr_linenumber" name="L1146" href="#L1146">1146</a>     <em class="jxr_javadoccomment">/**</em>
 <a class="jxr_linenumber" name="L1147" href="#L1147">1147</a> <em class="jxr_javadoccomment">     * Aperture position angle unit.</em>
 <a class="jxr_linenumber" name="L1148" href="#L1148">1148</a> <em class="jxr_javadoccomment">     * &lt;p&gt;</em>
@@ -1540,7 +1540,7 @@
 <a class="jxr_linenumber" name="L1532" href="#L1532">1532</a> <em class="jxr_javadoccomment">     * index = none</em>
 <a class="jxr_linenumber" name="L1533" href="#L1533">1533</a> <em class="jxr_javadoccomment">     * &lt;/p&gt;</em>
 <a class="jxr_linenumber" name="L1534" href="#L1534">1534</a> <em class="jxr_javadoccomment">     */</em>
-<a class="jxr_linenumber" name="L1535" href="#L1535">1535</a>     ARCONWD(HDU.PRIMARY_EXTENSION, VALUE.STRING, <span class="jxr_string">"Date CCD waveforms last compiled"</span>),
+<a class="jxr_linenumber" name="L1535" href="#L1535">1535</a>     ARCONWD(HDU.ANY, VALUE.STRING, <span class="jxr_string">"Date CCD waveforms last compiled"</span>),
 <a class="jxr_linenumber" name="L1536" href="#L1536">1536</a>     <em class="jxr_javadoccomment">/**</em>
 <a class="jxr_linenumber" name="L1537" href="#L1537">1537</a> <em class="jxr_javadoccomment">     * Arcon waveform options enabled.</em>
 <a class="jxr_linenumber" name="L1538" href="#L1538">1538</a> <em class="jxr_javadoccomment">     * &lt;p&gt;</em>
@@ -1550,7 +1550,7 @@
 <a class="jxr_linenumber" name="L1542" href="#L1542">1542</a> <em class="jxr_javadoccomment">     * index = none</em>
 <a class="jxr_linenumber" name="L1543" href="#L1543">1543</a> <em class="jxr_javadoccomment">     * &lt;/p&gt;</em>
 <a class="jxr_linenumber" name="L1544" href="#L1544">1544</a> <em class="jxr_javadoccomment">     */</em>
-<a class="jxr_linenumber" name="L1545" href="#L1545">1545</a>     ARCONWM(HDU.PRIMARY_EXTENSION, VALUE.STRING, <span class="jxr_string">"Arcon waveform options enabled"</span>),
+<a class="jxr_linenumber" name="L1545" href="#L1545">1545</a>     ARCONWM(HDU.ANY, VALUE.STRING, <span class="jxr_string">"Arcon waveform options enabled"</span>),
 <a class="jxr_linenumber" name="L1546" href="#L1546">1546</a>     <em class="jxr_javadoccomment">/**</em>
 <a class="jxr_linenumber" name="L1547" href="#L1547">1547</a> <em class="jxr_javadoccomment">     * Aperture coordinate system type for the aperture(s).</em>
 <a class="jxr_linenumber" name="L1548" href="#L1548">1548</a> <em class="jxr_javadoccomment">     * &lt;p&gt;</em>
@@ -1615,7 +1615,7 @@
 <a class="jxr_linenumber" name="L1607" href="#L1607">1607</a> <em class="jxr_javadoccomment">     * index = none</em>
 <a class="jxr_linenumber" name="L1608" href="#L1608">1608</a> <em class="jxr_javadoccomment">     * &lt;/p&gt;</em>
 <a class="jxr_linenumber" name="L1609" href="#L1609">1609</a> <em class="jxr_javadoccomment">     */</em>
-<a class="jxr_linenumber" name="L1610" href="#L1610">1610</a>     BPM(HDU.PRIMARY_EXTENSION, VALUE.STRING, <span class="jxr_string">"Bad pixels"</span>),
+<a class="jxr_linenumber" name="L1610" href="#L1610">1610</a>     BPM(HDU.ANY, VALUE.STRING, <span class="jxr_string">"Bad pixels"</span>),
 <a class="jxr_linenumber" name="L1611" href="#L1611">1611</a>     <em class="jxr_javadoccomment">/**</em>
 <a class="jxr_linenumber" name="L1612" href="#L1612">1612</a> <em class="jxr_javadoccomment">     * Camera configuration.</em>
 <a class="jxr_linenumber" name="L1613" href="#L1613">1613</a> <em class="jxr_javadoccomment">     * &lt;p&gt;</em>
@@ -1841,7 +1841,7 @@
 <a class="jxr_linenumber" name="L1833" href="#L1833">1833</a> <em class="jxr_javadoccomment">     * index = none</em>
 <a class="jxr_linenumber" name="L1834" href="#L1834">1834</a> <em class="jxr_javadoccomment">     * &lt;/p&gt;</em>
 <a class="jxr_linenumber" name="L1835" href="#L1835">1835</a> <em class="jxr_javadoccomment">     */</em>
-<a class="jxr_linenumber" name="L1836" href="#L1836">1836</a>     CCDDEC(HDU.PRIMARY_EXTENSION, VALUE.STRING, <span class="jxr_string">"CCD declination"</span>),
+<a class="jxr_linenumber" name="L1836" href="#L1836">1836</a>     CCDDEC(HDU.ANY, VALUE.STRING, <span class="jxr_string">"CCD declination"</span>),
 <a class="jxr_linenumber" name="L1837" href="#L1837">1837</a>     <em class="jxr_javadoccomment">/**</em>
 <a class="jxr_linenumber" name="L1838" href="#L1838">1838</a> <em class="jxr_javadoccomment">     * Declination unit.</em>
 <a class="jxr_linenumber" name="L1839" href="#L1839">1839</a> <em class="jxr_javadoccomment">     * &lt;p&gt;</em>
@@ -1851,7 +1851,7 @@
 <a class="jxr_linenumber" name="L1843" href="#L1843">1843</a> <em class="jxr_javadoccomment">     * index = none</em>
 <a class="jxr_linenumber" name="L1844" href="#L1844">1844</a> <em class="jxr_javadoccomment">     * &lt;/p&gt;</em>
 <a class="jxr_linenumber" name="L1845" href="#L1845">1845</a> <em class="jxr_javadoccomment">     */</em>
-<a class="jxr_linenumber" name="L1846" href="#L1846">1846</a>     CCDDECU(HDU.PRIMARY_EXTENSION, VALUE.STRING, <span class="jxr_string">"Declination unit"</span>),
+<a class="jxr_linenumber" name="L1846" href="#L1846">1846</a>     CCDDECU(HDU.ANY, VALUE.STRING, <span class="jxr_string">"Declination unit"</span>),
 <a class="jxr_linenumber" name="L1847" href="#L1847">1847</a>     <em class="jxr_javadoccomment">/**</em>
 <a class="jxr_linenumber" name="L1848" href="#L1848">1848</a> <em class="jxr_javadoccomment">     * Epoch of the CCD center coordinates.</em>
 <a class="jxr_linenumber" name="L1849" href="#L1849">1849</a> <em class="jxr_javadoccomment">     * &lt;p&gt;</em>
@@ -1864,7 +1864,7 @@
 <a class="jxr_linenumber" name="L1856" href="#L1856">1856</a> <em class="jxr_javadoccomment">     * index = none</em>
 <a class="jxr_linenumber" name="L1857" href="#L1857">1857</a> <em class="jxr_javadoccomment">     * &lt;/p&gt;</em>
 <a class="jxr_linenumber" name="L1858" href="#L1858">1858</a> <em class="jxr_javadoccomment">     */</em>
-<a class="jxr_linenumber" name="L1859" href="#L1859">1859</a>     CCDEPOCH(HDU.PRIMARY_EXTENSION, VALUE.REAL, <span class="jxr_string">"CCD coordinate epoch"</span>),
+<a class="jxr_linenumber" name="L1859" href="#L1859">1859</a>     CCDEPOCH(HDU.ANY, VALUE.REAL, <span class="jxr_string">"CCD coordinate epoch"</span>),
 <a class="jxr_linenumber" name="L1860" href="#L1860">1860</a>     <em class="jxr_javadoccomment">/**</em>
 <a class="jxr_linenumber" name="L1861" href="#L1861">1861</a> <em class="jxr_javadoccomment">     * CCD coordinate system equinox. A value before 1984 is Besselian otherwise it is Julian.</em>
 <a class="jxr_linenumber" name="L1862" href="#L1862">1862</a> <em class="jxr_javadoccomment">     * &lt;p&gt;</em>
@@ -1877,7 +1877,7 @@
 <a class="jxr_linenumber" name="L1869" href="#L1869">1869</a> <em class="jxr_javadoccomment">     * index = none</em>
 <a class="jxr_linenumber" name="L1870" href="#L1870">1870</a> <em class="jxr_javadoccomment">     * &lt;/p&gt;</em>
 <a class="jxr_linenumber" name="L1871" href="#L1871">1871</a> <em class="jxr_javadoccomment">     */</em>
-<a class="jxr_linenumber" name="L1872" href="#L1872">1872</a>     CCDEQUIN(HDU.PRIMARY_EXTENSION, VALUE.REAL, <span class="jxr_string">"CCD coordinate equinox"</span>),
+<a class="jxr_linenumber" name="L1872" href="#L1872">1872</a>     CCDEQUIN(HDU.ANY, VALUE.REAL, <span class="jxr_string">"CCD coordinate equinox"</span>),
 <a class="jxr_linenumber" name="L1873" href="#L1873">1873</a>     <em class="jxr_javadoccomment">/**</em>
 <a class="jxr_linenumber" name="L1874" href="#L1874">1874</a> <em class="jxr_javadoccomment">     * CCD hardware version</em>
 <a class="jxr_linenumber" name="L1875" href="#L1875">1875</a> <em class="jxr_javadoccomment">     * &lt;p&gt;</em>
@@ -1887,7 +1887,7 @@
 <a class="jxr_linenumber" name="L1879" href="#L1879">1879</a> <em class="jxr_javadoccomment">     * index = none</em>
 <a class="jxr_linenumber" name="L1880" href="#L1880">1880</a> <em class="jxr_javadoccomment">     * &lt;/p&gt;</em>
 <a class="jxr_linenumber" name="L1881" href="#L1881">1881</a> <em class="jxr_javadoccomment">     */</em>
-<a class="jxr_linenumber" name="L1882" href="#L1882">1882</a>     CCDHWV(HDU.PRIMARY_EXTENSION, VALUE.STRING, <span class="jxr_string">"CCD version"</span>),
+<a class="jxr_linenumber" name="L1882" href="#L1882">1882</a>     CCDHWV(HDU.ANY, VALUE.STRING, <span class="jxr_string">"CCD version"</span>),
 <a class="jxr_linenumber" name="L1883" href="#L1883">1883</a>     <em class="jxr_javadoccomment">/**</em>
 <a class="jxr_linenumber" name="L1884" href="#L1884">1884</a> <em class="jxr_javadoccomment">     * Times for the CCD sensor measurements given as modified Julian dates. The MJDHDR keyword may be used for the time</em>
 <a class="jxr_linenumber" name="L1885" href="#L1885">1885</a> <em class="jxr_javadoccomment">     * at which the image header is created or the MJD-OBS keyword may be used for the time of observation.</em>
@@ -1901,7 +1901,7 @@
 <a class="jxr_linenumber" name="L1893" href="#L1893">1893</a> <em class="jxr_javadoccomment">     * index = none 1-999</em>
 <a class="jxr_linenumber" name="L1894" href="#L1894">1894</a> <em class="jxr_javadoccomment">     * &lt;/p&gt;</em>
 <a class="jxr_linenumber" name="L1895" href="#L1895">1895</a> <em class="jxr_javadoccomment">     */</em>
-<a class="jxr_linenumber" name="L1896" href="#L1896">1896</a>     CCDMJD(HDU.PRIMARY_EXTENSION, VALUE.REAL, <span class="jxr_string">""</span>),
+<a class="jxr_linenumber" name="L1896" href="#L1896">1896</a>     CCDMJD(HDU.ANY, VALUE.REAL, <span class="jxr_string">""</span>),
 <a class="jxr_linenumber" name="L1897" href="#L1897">1897</a>     <em class="jxr_javadoccomment">/**</em>
 <a class="jxr_linenumber" name="L1898" href="#L1898">1898</a> <em class="jxr_javadoccomment">     * Times for the CCD sensor measurements given as modified Julian dates. The MJDHDR keyword may be used for the time</em>
 <a class="jxr_linenumber" name="L1899" href="#L1899">1899</a> <em class="jxr_javadoccomment">     * at which the image header is created or the MJD-OBS keyword may be used for the time of observation.</em>
@@ -1915,7 +1915,7 @@
 <a class="jxr_linenumber" name="L1907" href="#L1907">1907</a> <em class="jxr_javadoccomment">     * index = none 1-999</em>
 <a class="jxr_linenumber" name="L1908" href="#L1908">1908</a> <em class="jxr_javadoccomment">     * &lt;/p&gt;</em>
 <a class="jxr_linenumber" name="L1909" href="#L1909">1909</a> <em class="jxr_javadoccomment">     */</em>
-<a class="jxr_linenumber" name="L1910" href="#L1910">1910</a>     CCDMJDn(HDU.PRIMARY_EXTENSION, VALUE.REAL, <span class="jxr_string">""</span>),
+<a class="jxr_linenumber" name="L1910" href="#L1910">1910</a>     CCDMJDn(HDU.ANY, VALUE.REAL, <span class="jxr_string">""</span>),
 <a class="jxr_linenumber" name="L1911" href="#L1911">1911</a>     <em class="jxr_javadoccomment">/**</em>
 <a class="jxr_linenumber" name="L1912" href="#L1912">1912</a> <em class="jxr_javadoccomment">     * CCD identification.</em>
 <a class="jxr_linenumber" name="L1913" href="#L1913">1913</a> <em class="jxr_javadoccomment">     * &lt;p&gt;</em>
@@ -1925,7 +1925,7 @@
 <a class="jxr_linenumber" name="L1917" href="#L1917">1917</a> <em class="jxr_javadoccomment">     * index = none</em>
 <a class="jxr_linenumber" name="L1918" href="#L1918">1918</a> <em class="jxr_javadoccomment">     * &lt;/p&gt;</em>
 <a class="jxr_linenumber" name="L1919" href="#L1919">1919</a> <em class="jxr_javadoccomment">     */</em>
-<a class="jxr_linenumber" name="L1920" href="#L1920">1920</a>     CCDNAME(HDU.PRIMARY_EXTENSION, VALUE.STRING, <span class="jxr_string">"CCD identification"</span>),
+<a class="jxr_linenumber" name="L1920" href="#L1920">1920</a>     CCDNAME(HDU.ANY, VALUE.STRING, <span class="jxr_string">"CCD identification"</span>),
 <a class="jxr_linenumber" name="L1921" href="#L1921">1921</a>     <em class="jxr_javadoccomment">/**</em>
 <a class="jxr_linenumber" name="L1922" href="#L1922">1922</a> <em class="jxr_javadoccomment">     * Number of amplifiers used to readout the CCD. This keyword may be absent if only one amplifier is used.</em>
 <a class="jxr_linenumber" name="L1923" href="#L1923">1923</a> <em class="jxr_javadoccomment">     * &lt;p&gt;</em>
@@ -1935,7 +1935,7 @@
 <a class="jxr_linenumber" name="L1927" href="#L1927">1927</a> <em class="jxr_javadoccomment">     * index = none</em>
 <a class="jxr_linenumber" name="L1928" href="#L1928">1928</a> <em class="jxr_javadoccomment">     * &lt;/p&gt;</em>
 <a class="jxr_linenumber" name="L1929" href="#L1929">1929</a> <em class="jxr_javadoccomment">     */</em>
-<a class="jxr_linenumber" name="L1930" href="#L1930">1930</a>     CCDNAMPS(HDU.PRIMARY_EXTENSION, VALUE.INTEGER, <span class="jxr_string">"Number of amplifiers used"</span>),
+<a class="jxr_linenumber" name="L1930" href="#L1930">1930</a>     CCDNAMPS(HDU.ANY, VALUE.INTEGER, <span class="jxr_string">"Number of amplifiers used"</span>),
 <a class="jxr_linenumber" name="L1931" href="#L1931">1931</a>     <em class="jxr_javadoccomment">/**</em>
 <a class="jxr_linenumber" name="L1932" href="#L1932">1932</a> <em class="jxr_javadoccomment">     * CCD position angle measurements in appropriate units.</em>
 <a class="jxr_linenumber" name="L1933" href="#L1933">1933</a> <em class="jxr_javadoccomment">     * &lt;p&gt;</em>
@@ -1945,7 +1945,7 @@
 <a class="jxr_linenumber" name="L1937" href="#L1937">1937</a> <em class="jxr_javadoccomment">     * index = none 1-999</em>
 <a class="jxr_linenumber" name="L1938" href="#L1938">1938</a> <em class="jxr_javadoccomment">     * &lt;/p&gt;</em>
 <a class="jxr_linenumber" name="L1939" href="#L1939">1939</a> <em class="jxr_javadoccomment">     */</em>
-<a class="jxr_linenumber" name="L1940" href="#L1940">1940</a>     CCDPAN(HDU.PRIMARY_EXTENSION, VALUE.REAL, <span class="jxr_string">""</span>),
+<a class="jxr_linenumber" name="L1940" href="#L1940">1940</a>     CCDPAN(HDU.ANY, VALUE.REAL, <span class="jxr_string">""</span>),
 <a class="jxr_linenumber" name="L1941" href="#L1941">1941</a>     <em class="jxr_javadoccomment">/**</em>
 <a class="jxr_linenumber" name="L1942" href="#L1942">1942</a> <em class="jxr_javadoccomment">     * CCD position angle measurements in appropriate units.</em>
 <a class="jxr_linenumber" name="L1943" href="#L1943">1943</a> <em class="jxr_javadoccomment">     * &lt;p&gt;</em>
@@ -1955,7 +1955,7 @@
 <a class="jxr_linenumber" name="L1947" href="#L1947">1947</a> <em class="jxr_javadoccomment">     * index = none 1-999</em>
 <a class="jxr_linenumber" name="L1948" href="#L1948">1948</a> <em class="jxr_javadoccomment">     * &lt;/p&gt;</em>
 <a class="jxr_linenumber" name="L1949" href="#L1949">1949</a> <em class="jxr_javadoccomment">     */</em>
-<a class="jxr_linenumber" name="L1950" href="#L1950">1950</a>     CCDPANn(HDU.PRIMARY_EXTENSION, VALUE.REAL, <span class="jxr_string">""</span>),
+<a class="jxr_linenumber" name="L1950" href="#L1950">1950</a>     CCDPANn(HDU.ANY, VALUE.REAL, <span class="jxr_string">""</span>),
 <a class="jxr_linenumber" name="L1951" href="#L1951">1951</a>     <em class="jxr_javadoccomment">/**</em>
 <a class="jxr_linenumber" name="L1952" href="#L1952">1952</a> <em class="jxr_javadoccomment">     * CCD linear position sensor measurements in appropriate units.</em>
 <a class="jxr_linenumber" name="L1953" href="#L1953">1953</a> <em class="jxr_javadoccomment">     * &lt;p&gt;</em>
@@ -1965,7 +1965,7 @@
 <a class="jxr_linenumber" name="L1957" href="#L1957">1957</a> <em class="jxr_javadoccomment">     * index = none 1-999</em>
 <a class="jxr_linenumber" name="L1958" href="#L1958">1958</a> <em class="jxr_javadoccomment">     * &lt;/p&gt;</em>
 <a class="jxr_linenumber" name="L1959" href="#L1959">1959</a> <em class="jxr_javadoccomment">     */</em>
-<a class="jxr_linenumber" name="L1960" href="#L1960">1960</a>     CCDPOS(HDU.PRIMARY_EXTENSION, VALUE.REAL, <span class="jxr_string">""</span>),
+<a class="jxr_linenumber" name="L1960" href="#L1960">1960</a>     CCDPOS(HDU.ANY, VALUE.REAL, <span class="jxr_string">""</span>),
 <a class="jxr_linenumber" name="L1961" href="#L1961">1961</a>     <em class="jxr_javadoccomment">/**</em>
 <a class="jxr_linenumber" name="L1962" href="#L1962">1962</a> <em class="jxr_javadoccomment">     * CCD linear position sensor measurements in appropriate units.</em>
 <a class="jxr_linenumber" name="L1963" href="#L1963">1963</a> <em class="jxr_javadoccomment">     * &lt;p&gt;</em>
@@ -1975,7 +1975,7 @@
 <a class="jxr_linenumber" name="L1967" href="#L1967">1967</a> <em class="jxr_javadoccomment">     * index = none 1-999</em>
 <a class="jxr_linenumber" name="L1968" href="#L1968">1968</a> <em class="jxr_javadoccomment">     * &lt;/p&gt;</em>
 <a class="jxr_linenumber" name="L1969" href="#L1969">1969</a> <em class="jxr_javadoccomment">     */</em>
-<a class="jxr_linenumber" name="L1970" href="#L1970">1970</a>     CCDPOSn(HDU.PRIMARY_EXTENSION, VALUE.REAL, <span class="jxr_string">""</span>),
+<a class="jxr_linenumber" name="L1970" href="#L1970">1970</a>     CCDPOSn(HDU.ANY, VALUE.REAL, <span class="jxr_string">""</span>),
 <a class="jxr_linenumber" name="L1971" href="#L1971">1971</a>     <em class="jxr_javadoccomment">/**</em>
 <a class="jxr_linenumber" name="L1972" href="#L1972">1972</a> <em class="jxr_javadoccomment">     * CCD pressure sensor measurements in appropriate units.</em>
 <a class="jxr_linenumber" name="L1973" href="#L1973">1973</a> <em class="jxr_javadoccomment">     * &lt;p&gt;</em>
@@ -1988,7 +1988,7 @@
 <a class="jxr_linenumber" name="L1980" href="#L1980">1980</a> <em class="jxr_javadoccomment">     * index = none 1-999</em>
 <a class="jxr_linenumber" name="L1981" href="#L1981">1981</a> <em class="jxr_javadoccomment">     * &lt;/p&gt;</em>
 <a class="jxr_linenumber" name="L1982" href="#L1982">1982</a> <em class="jxr_javadoccomment">     */</em>
-<a class="jxr_linenumber" name="L1983" href="#L1983">1983</a>     CCDPRE(HDU.PRIMARY_EXTENSION, VALUE.REAL, <span class="jxr_string">""</span>),
+<a class="jxr_linenumber" name="L1983" href="#L1983">1983</a>     CCDPRE(HDU.ANY, VALUE.REAL, <span class="jxr_string">""</span>),
 <a class="jxr_linenumber" name="L1984" href="#L1984">1984</a>     <em class="jxr_javadoccomment">/**</em>
 <a class="jxr_linenumber" name="L1985" href="#L1985">1985</a> <em class="jxr_javadoccomment">     * CCD pressure sensor measurements in appropriate units.</em>
 <a class="jxr_linenumber" name="L1986" href="#L1986">1986</a> <em class="jxr_javadoccomment">     * &lt;p&gt;</em>
@@ -2001,7 +2001,7 @@
 <a class="jxr_linenumber" name="L1993" href="#L1993">1993</a> <em class="jxr_javadoccomment">     * index = none 1-999</em>
 <a class="jxr_linenumber" name="L1994" href="#L1994">1994</a> <em class="jxr_javadoccomment">     * &lt;/p&gt;</em>
 <a class="jxr_linenumber" name="L1995" href="#L1995">1995</a> <em class="jxr_javadoccomment">     */</em>
-<a class="jxr_linenumber" name="L1996" href="#L1996">1996</a>     CCDPREn(HDU.PRIMARY_EXTENSION, VALUE.REAL, <span class="jxr_string">""</span>),
+<a class="jxr_linenumber" name="L1996" href="#L1996">1996</a>     CCDPREn(HDU.ANY, VALUE.REAL, <span class="jxr_string">""</span>),
 <a class="jxr_linenumber" name="L1997" href="#L1997">1997</a>     <em class="jxr_javadoccomment">/**</em>
 <a class="jxr_linenumber" name="L1998" href="#L1998">1998</a> <em class="jxr_javadoccomment">     * The actual format size of the CCD. This is the same as the CCDSIZE keyword except in the case of drift scanning.</em>
 <a class="jxr_linenumber" name="L1999" href="#L1999">1999</a> <em class="jxr_javadoccomment">     * &lt;p&gt;</em>
@@ -2011,7 +2011,7 @@
 <a class="jxr_linenumber" name="L2003" href="#L2003">2003</a> <em class="jxr_javadoccomment">     * index = none</em>
 <a class="jxr_linenumber" name="L2004" href="#L2004">2004</a> <em class="jxr_javadoccomment">     * &lt;/p&gt;</em>
 <a class="jxr_linenumber" name="L2005" href="#L2005">2005</a> <em class="jxr_javadoccomment">     */</em>
-<a class="jxr_linenumber" name="L2006" href="#L2006">2006</a>     CCDPSIZE(HDU.PRIMARY_EXTENSION, VALUE.STRING, <span class="jxr_string">"CCD size"</span>),
+<a class="jxr_linenumber" name="L2006" href="#L2006">2006</a>     CCDPSIZE(HDU.ANY, VALUE.STRING, <span class="jxr_string">"CCD size"</span>),
 <a class="jxr_linenumber" name="L2007" href="#L2007">2007</a>     <em class="jxr_javadoccomment">/**</em>
 <a class="jxr_linenumber" name="L2008" href="#L2008">2008</a> <em class="jxr_javadoccomment">     * Right ascension of the CCD center.</em>
 <a class="jxr_linenumber" name="L2009" href="#L2009">2009</a> <em class="jxr_javadoccomment">     * &lt;p&gt;</em>
@@ -2024,7 +2024,7 @@
 <a class="jxr_linenumber" name="L2016" href="#L2016">2016</a> <em class="jxr_javadoccomment">     * index = none</em>
 <a class="jxr_linenumber" name="L2017" href="#L2017">2017</a> <em class="jxr_javadoccomment">     * &lt;/p&gt;</em>
 <a class="jxr_linenumber" name="L2018" href="#L2018">2018</a> <em class="jxr_javadoccomment">     */</em>
-<a class="jxr_linenumber" name="L2019" href="#L2019">2019</a>     CCDRA(HDU.PRIMARY_EXTENSION, VALUE.STRING, <span class="jxr_string">"CCD right ascension"</span>),
+<a class="jxr_linenumber" name="L2019" href="#L2019">2019</a>     CCDRA(HDU.ANY, VALUE.STRING, <span class="jxr_string">"CCD right ascension"</span>),
 <a class="jxr_linenumber" name="L2020" href="#L2020">2020</a>     <em class="jxr_javadoccomment">/**</em>
 <a class="jxr_linenumber" name="L2021" href="#L2021">2021</a> <em class="jxr_javadoccomment">     * CCD coordinate system type.</em>
 <a class="jxr_linenumber" name="L2022" href="#L2022">2022</a> <em class="jxr_javadoccomment">     * &lt;p&gt;</em>
@@ -2034,7 +2034,7 @@
 <a class="jxr_linenumber" name="L2026" href="#L2026">2026</a> <em class="jxr_javadoccomment">     * index = none</em>
 <a class="jxr_linenumber" name="L2027" href="#L2027">2027</a> <em class="jxr_javadoccomment">     * &lt;/p&gt;</em>
 <a class="jxr_linenumber" name="L2028" href="#L2028">2028</a> <em class="jxr_javadoccomment">     */</em>
-<a class="jxr_linenumber" name="L2029" href="#L2029">2029</a>     CCDRADEC(HDU.PRIMARY_EXTENSION, VALUE.STRING, <span class="jxr_string">"CCD coordinate system"</span>),
+<a class="jxr_linenumber" name="L2029" href="#L2029">2029</a>     CCDRADEC(HDU.ANY, VALUE.STRING, <span class="jxr_string">"CCD coordinate system"</span>),
 <a class="jxr_linenumber" name="L2030" href="#L2030">2030</a>     <em class="jxr_javadoccomment">/**</em>
 <a class="jxr_linenumber" name="L2031" href="#L2031">2031</a> <em class="jxr_javadoccomment">     * Right ascension unit.</em>
 <a class="jxr_linenumber" name="L2032" href="#L2032">2032</a> <em class="jxr_javadoccomment">     * &lt;p&gt;</em>
@@ -2044,7 +2044,7 @@
 <a class="jxr_linenumber" name="L2036" href="#L2036">2036</a> <em class="jxr_javadoccomment">     * index = none</em>
 <a class="jxr_linenumber" name="L2037" href="#L2037">2037</a> <em class="jxr_javadoccomment">     * &lt;/p&gt;</em>
 <a class="jxr_linenumber" name="L2038" href="#L2038">2038</a> <em class="jxr_javadoccomment">     */</em>
-<a class="jxr_linenumber" name="L2039" href="#L2039">2039</a>     CCDRAU(HDU.PRIMARY_EXTENSION, VALUE.STRING, <span class="jxr_string">"Right ascension unit"</span>),
+<a class="jxr_linenumber" name="L2039" href="#L2039">2039</a>     CCDRAU(HDU.ANY, VALUE.STRING, <span class="jxr_string">"Right ascension unit"</span>),
 <a class="jxr_linenumber" name="L2040" href="#L2040">2040</a>     <em class="jxr_javadoccomment">/**</em>
 <a class="jxr_linenumber" name="L2041" href="#L2041">2041</a> <em class="jxr_javadoccomment">     * The unbinned section of the logical CCD pixel raster covered by the amplifier readout in section notation. The</em>
 <a class="jxr_linenumber" name="L2042" href="#L2042">2042</a> <em class="jxr_javadoccomment">     * section must map directly to the specified data section through the binning and CCD to image coordiante</em>
@@ -2069,7 +2069,7 @@
 <a class="jxr_linenumber" name="L2061" href="#L2061">2061</a> <em class="jxr_javadoccomment">     * index = none</em>
 <a class="jxr_linenumber" name="L2062" href="#L2062">2062</a> <em class="jxr_javadoccomment">     * &lt;/p&gt;</em>
 <a class="jxr_linenumber" name="L2063" href="#L2063">2063</a> <em class="jxr_javadoccomment">     */</em>
-<a class="jxr_linenumber" name="L2064" href="#L2064">2064</a>     CCDSIZE(HDU.PRIMARY_EXTENSION, VALUE.STRING, <span class="jxr_string">"CCD size"</span>),
+<a class="jxr_linenumber" name="L2064" href="#L2064">2064</a>     CCDSIZE(HDU.ANY, VALUE.STRING, <span class="jxr_string">"CCD size"</span>),
 <a class="jxr_linenumber" name="L2065" href="#L2065">2065</a>     <em class="jxr_javadoccomment">/**</em>
 <a class="jxr_linenumber" name="L2066" href="#L2066">2066</a> <em class="jxr_javadoccomment">     * CCD on-chip summing given as two or four integer numbers. These define the summing of CCD pixels in the amplifier</em>
 <a class="jxr_linenumber" name="L2067" href="#L2067">2067</a> <em class="jxr_javadoccomment">     * readout order. The first two numbers give the number of pixels summed in the serial and parallel directions</em>
@@ -2095,7 +2095,7 @@
 <a class="jxr_linenumber" name="L2087" href="#L2087">2087</a> <em class="jxr_javadoccomment">     * index = none</em>
 <a class="jxr_linenumber" name="L2088" href="#L2088">2088</a> <em class="jxr_javadoccomment">     * &lt;/p&gt;</em>
 <a class="jxr_linenumber" name="L2089" href="#L2089">2089</a> <em class="jxr_javadoccomment">     */</em>
-<a class="jxr_linenumber" name="L2090" href="#L2090">2090</a>     CCDSWV(HDU.PRIMARY_EXTENSION, VALUE.STRING, <span class="jxr_string">"CCD software version"</span>),
+<a class="jxr_linenumber" name="L2090" href="#L2090">2090</a>     CCDSWV(HDU.ANY, VALUE.STRING, <span class="jxr_string">"CCD software version"</span>),
 <a class="jxr_linenumber" name="L2091" href="#L2091">2091</a>     <em class="jxr_javadoccomment">/**</em>
 <a class="jxr_linenumber" name="L2092" href="#L2092">2092</a> <em class="jxr_javadoccomment">     * CCD temperature sensor measurements in degrees Celsius.</em>
 <a class="jxr_linenumber" name="L2093" href="#L2093">2093</a> <em class="jxr_javadoccomment">     * &lt;p&gt;</em>
@@ -2108,7 +2108,7 @@
 <a class="jxr_linenumber" name="L2100" href="#L2100">2100</a> <em class="jxr_javadoccomment">     * index = none 1-999</em>
 <a class="jxr_linenumber" name="L2101" href="#L2101">2101</a> <em class="jxr_javadoccomment">     * &lt;/p&gt;</em>
 <a class="jxr_linenumber" name="L2102" href="#L2102">2102</a> <em class="jxr_javadoccomment">     */</em>
-<a class="jxr_linenumber" name="L2103" href="#L2103">2103</a>     CCDTEM(HDU.PRIMARY_EXTENSION, VALUE.REAL, <span class="jxr_string">"CCD temperature"</span>),
+<a class="jxr_linenumber" name="L2103" href="#L2103">2103</a>     CCDTEM(HDU.ANY, VALUE.REAL, <span class="jxr_string">"CCD temperature"</span>),
 <a class="jxr_linenumber" name="L2104" href="#L2104">2104</a>     <em class="jxr_javadoccomment">/**</em>
 <a class="jxr_linenumber" name="L2105" href="#L2105">2105</a> <em class="jxr_javadoccomment">     * CCD temperature sensor measurements in degrees Celsius.</em>
 <a class="jxr_linenumber" name="L2106" href="#L2106">2106</a> <em class="jxr_javadoccomment">     * &lt;p&gt;</em>
@@ -2121,7 +2121,7 @@
 <a class="jxr_linenumber" name="L2113" href="#L2113">2113</a> <em class="jxr_javadoccomment">     * index = none 1-999</em>
 <a class="jxr_linenumber" name="L2114" href="#L2114">2114</a> <em class="jxr_javadoccomment">     * &lt;/p&gt;</em>
 <a class="jxr_linenumber" name="L2115" href="#L2115">2115</a> <em class="jxr_javadoccomment">     */</em>
-<a class="jxr_linenumber" name="L2116" href="#L2116">2116</a>     CCDTEMn(HDU.PRIMARY_EXTENSION, VALUE.REAL, <span class="jxr_string">"CCD temperature"</span>),
+<a class="jxr_linenumber" name="L2116" href="#L2116">2116</a>     CCDTEMn(HDU.ANY, VALUE.REAL, <span class="jxr_string">"CCD temperature"</span>),
 <a class="jxr_linenumber" name="L2117" href="#L2117">2117</a>     <em class="jxr_javadoccomment">/**</em>
 <a class="jxr_linenumber" name="L2118" href="#L2118">2118</a> <em class="jxr_javadoccomment">     * CCD voltage sensor measurements in volts.</em>
 <a class="jxr_linenumber" name="L2119" href="#L2119">2119</a> <em class="jxr_javadoccomment">     * &lt;p&gt;</em>
@@ -2134,7 +2134,7 @@
 <a class="jxr_linenumber" name="L2126" href="#L2126">2126</a> <em class="jxr_javadoccomment">     * index = none 1-999</em>
 <a class="jxr_linenumber" name="L2127" href="#L2127">2127</a> <em class="jxr_javadoccomment">     * &lt;/p&gt;</em>
 <a class="jxr_linenumber" name="L2128" href="#L2128">2128</a> <em class="jxr_javadoccomment">     */</em>
-<a class="jxr_linenumber" name="L2129" href="#L2129">2129</a>     CCDVOL(HDU.PRIMARY_EXTENSION, VALUE.REAL, <span class="jxr_string">""</span>),
+<a class="jxr_linenumber" name="L2129" href="#L2129">2129</a>     CCDVOL(HDU.ANY, VALUE.REAL, <span class="jxr_string">""</span>),
 <a class="jxr_linenumber" name="L2130" href="#L2130">2130</a>     <em class="jxr_javadoccomment">/**</em>
 <a class="jxr_linenumber" name="L2131" href="#L2131">2131</a> <em class="jxr_javadoccomment">     * CCD voltage sensor measurements in volts.</em>
 <a class="jxr_linenumber" name="L2132" href="#L2132">2132</a> <em class="jxr_javadoccomment">     * &lt;p&gt;</em>
@@ -2147,7 +2147,7 @@
 <a class="jxr_linenumber" name="L2139" href="#L2139">2139</a> <em class="jxr_javadoccomment">     * index = none 1-999</em>
 <a class="jxr_linenumber" name="L2140" href="#L2140">2140</a> <em class="jxr_javadoccomment">     * &lt;/p&gt;</em>
 <a class="jxr_linenumber" name="L2141" href="#L2141">2141</a> <em class="jxr_javadoccomment">     */</em>
-<a class="jxr_linenumber" name="L2142" href="#L2142">2142</a>     CCDVOLn(HDU.PRIMARY_EXTENSION, VALUE.REAL, <span class="jxr_string">""</span>),
+<a class="jxr_linenumber" name="L2142" href="#L2142">2142</a>     CCDVOLn(HDU.ANY, VALUE.REAL, <span class="jxr_string">""</span>),
 <a class="jxr_linenumber" name="L2143" href="#L2143">2143</a>     <em class="jxr_javadoccomment">/**</em>
 <a class="jxr_linenumber" name="L2144" href="#L2144">2144</a> <em class="jxr_javadoccomment">     * Spectrum coordinate matrix. World coordinate axis 1 is defined to be the dispersion and the other axes are</em>
 <a class="jxr_linenumber" name="L2145" href="#L2145">2145</a> <em class="jxr_javadoccomment">     * spatial. The matrix implies a dispersion axis in the image coordinates.</em>
@@ -2597,7 +2597,7 @@
 <a class="jxr_linenumber" name="L2589" href="#L2589">2589</a> <em class="jxr_javadoccomment">     * index = none</em>
 <a class="jxr_linenumber" name="L2590" href="#L2590">2590</a> <em class="jxr_javadoccomment">     * &lt;/p&gt;</em>
 <a class="jxr_linenumber" name="L2591" href="#L2591">2591</a> <em class="jxr_javadoccomment">     */</em>
-<a class="jxr_linenumber" name="L2592" href="#L2592">2592</a>     CONHWV(HDU.PRIMARY_EXTENSION, VALUE.STRING, <span class="jxr_string">"Controller hardware version"</span>),
+<a class="jxr_linenumber" name="L2592" href="#L2592">2592</a>     CONHWV(HDU.ANY, VALUE.STRING, <span class="jxr_string">"Controller hardware version"</span>),
 <a class="jxr_linenumber" name="L2593" href="#L2593">2593</a>     <em class="jxr_javadoccomment">/**</em>
 <a class="jxr_linenumber" name="L2594" href="#L2594">2594</a> <em class="jxr_javadoccomment">     * Controller status.</em>
 <a class="jxr_linenumber" name="L2595" href="#L2595">2595</a> <em class="jxr_javadoccomment">     * &lt;p&gt;</em>
@@ -2607,7 +2607,7 @@
 <a class="jxr_linenumber" name="L2599" href="#L2599">2599</a> <em class="jxr_javadoccomment">     * index = none</em>
 <a class="jxr_linenumber" name="L2600" href="#L2600">2600</a> <em class="jxr_javadoccomment">     * &lt;/p&gt;</em>
 <a class="jxr_linenumber" name="L2601" href="#L2601">2601</a> <em class="jxr_javadoccomment">     */</em>
-<a class="jxr_linenumber" name="L2602" href="#L2602">2602</a>     CONSTAT(HDU.PRIMARY_EXTENSION, VALUE.STRING, <span class="jxr_string">"Controller status"</span>),
+<a class="jxr_linenumber" name="L2602" href="#L2602">2602</a>     CONSTAT(HDU.ANY, VALUE.STRING, <span class="jxr_string">"Controller status"</span>),
 <a class="jxr_linenumber" name="L2603" href="#L2603">2603</a>     <em class="jxr_javadoccomment">/**</em>
 <a class="jxr_linenumber" name="L2604" href="#L2604">2604</a> <em class="jxr_javadoccomment">     * Controller software version.</em>
 <a class="jxr_linenumber" name="L2605" href="#L2605">2605</a> <em class="jxr_javadoccomment">     * &lt;p&gt;</em>
@@ -2617,7 +2617,7 @@
 <a class="jxr_linenumber" name="L2609" href="#L2609">2609</a> <em class="jxr_javadoccomment">     * index = none</em>
 <a class="jxr_linenumber" name="L2610" href="#L2610">2610</a> <em class="jxr_javadoccomment">     * &lt;/p&gt;</em>
 <a class="jxr_linenumber" name="L2611" href="#L2611">2611</a> <em class="jxr_javadoccomment">     */</em>
-<a class="jxr_linenumber" name="L2612" href="#L2612">2612</a>     CONSWV(HDU.PRIMARY_EXTENSION, VALUE.STRING, <span class="jxr_string">"Controller software version"</span>),
+<a class="jxr_linenumber" name="L2612" href="#L2612">2612</a>     CONSWV(HDU.ANY, VALUE.STRING, <span class="jxr_string">"Controller software version"</span>),
 <a class="jxr_linenumber" name="L2613" href="#L2613">2613</a>     <em class="jxr_javadoccomment">/**</em>
 <a class="jxr_linenumber" name="L2614" href="#L2614">2614</a> <em class="jxr_javadoccomment">     * Detector controller name.</em>
 <a class="jxr_linenumber" name="L2615" href="#L2615">2615</a> <em class="jxr_javadoccomment">     * &lt;p&gt;</em>
@@ -2627,7 +2627,7 @@
 <a class="jxr_linenumber" name="L2619" href="#L2619">2619</a> <em class="jxr_javadoccomment">     * index = none</em>
 <a class="jxr_linenumber" name="L2620" href="#L2620">2620</a> <em class="jxr_javadoccomment">     * &lt;/p&gt;</em>
 <a class="jxr_linenumber" name="L2621" href="#L2621">2621</a> <em class="jxr_javadoccomment">     */</em>
-<a class="jxr_linenumber" name="L2622" href="#L2622">2622</a>     CONTROLR(HDU.PRIMARY_EXTENSION, VALUE.STRING, <span class="jxr_string">"Detector controller"</span>),
+<a class="jxr_linenumber" name="L2622" href="#L2622">2622</a>     CONTROLR(HDU.ANY, VALUE.STRING, <span class="jxr_string">"Detector controller"</span>),
 <a class="jxr_linenumber" name="L2623" href="#L2623">2623</a>     <em class="jxr_javadoccomment">/**</em>
 <a class="jxr_linenumber" name="L2624" href="#L2624">2624</a> <em class="jxr_javadoccomment">     * Correctors in the optical path.</em>
 <a class="jxr_linenumber" name="L2625" href="#L2625">2625</a> <em class="jxr_javadoccomment">     * &lt;p&gt;</em>
@@ -2667,7 +2667,7 @@
 <a class="jxr_linenumber" name="L2659" href="#L2659">2659</a> <em class="jxr_javadoccomment">     * index = none</em>
 <a class="jxr_linenumber" name="L2660" href="#L2660">2660</a> <em class="jxr_javadoccomment">     * &lt;/p&gt;</em>
 <a class="jxr_linenumber" name="L2661" href="#L2661">2661</a> <em class="jxr_javadoccomment">     */</em>
-<a class="jxr_linenumber" name="L2662" href="#L2662">2662</a>     CROSUNIT(HDU.PRIMARY_EXTENSION, VALUE.STRING, <span class="jxr_string">"Declination unit"</span>),
+<a class="jxr_linenumber" name="L2662" href="#L2662">2662</a>     CROSUNIT(HDU.ANY, VALUE.STRING, <span class="jxr_string">"Declination unit"</span>),
 <a class="jxr_linenumber" name="L2663" href="#L2663">2663</a>     <em class="jxr_javadoccomment">/**</em>
 <a class="jxr_linenumber" name="L2664" href="#L2664">2664</a> <em class="jxr_javadoccomment">     * Default cross dispersion coordinate value.</em>
 <a class="jxr_linenumber" name="L2665" href="#L2665">2665</a> <em class="jxr_javadoccomment">     * &lt;p&gt;</em>
@@ -2680,7 +2680,7 @@
 <a class="jxr_linenumber" name="L2672" href="#L2672">2672</a> <em class="jxr_javadoccomment">     * index = none</em>
 <a class="jxr_linenumber" name="L2673" href="#L2673">2673</a> <em class="jxr_javadoccomment">     * &lt;/p&gt;</em>
 <a class="jxr_linenumber" name="L2674" href="#L2674">2674</a> <em class="jxr_javadoccomment">     */</em>
-<a class="jxr_linenumber" name="L2675" href="#L2675">2675</a>     CROSVAL(HDU.PRIMARY_EXTENSION, VALUE.REAL, <span class="jxr_string">"Cross dispersion coordinate"</span>),
+<a class="jxr_linenumber" name="L2675" href="#L2675">2675</a>     CROSVAL(HDU.ANY, VALUE.REAL, <span class="jxr_string">"Cross dispersion coordinate"</span>),
 <a class="jxr_linenumber" name="L2676" href="#L2676">2676</a>     <em class="jxr_javadoccomment">/**</em>
 <a class="jxr_linenumber" name="L2677" href="#L2677">2677</a> <em class="jxr_javadoccomment">     * Reference spectrum pixel coordinate. Generally this should be the at the center of the spectrum. In raw data the</em>
 <a class="jxr_linenumber" name="L2678" href="#L2678">2678</a> <em class="jxr_javadoccomment">     * spectrum position(s) may be predicted apart from an offset that will be determined during data reduction.</em>
@@ -2914,7 +2914,7 @@
 <a class="jxr_linenumber" name="L2906" href="#L2906">2906</a> <em class="jxr_javadoccomment">     * index = none</em>
 <a class="jxr_linenumber" name="L2907" href="#L2907">2907</a> <em class="jxr_javadoccomment">     * &lt;/p&gt;</em>
 <a class="jxr_linenumber" name="L2908" href="#L2908">2908</a> <em class="jxr_javadoccomment">     */</em>
-<a class="jxr_linenumber" name="L2909" href="#L2909">2909</a>     DARKTIME(HDU.PRIMARY_EXTENSION, VALUE.REAL, <span class="jxr_string">"Dark time"</span>),
+<a class="jxr_linenumber" name="L2909" href="#L2909">2909</a>     DARKTIME(HDU.ANY, VALUE.REAL, <span class="jxr_string">"Dark time"</span>),
 <a class="jxr_linenumber" name="L2910" href="#L2910">2910</a>     <em class="jxr_javadoccomment">/**</em>
 <a class="jxr_linenumber" name="L2911" href="#L2911">2911</a> <em class="jxr_javadoccomment">     * Mapping of the CCD section to image coordinates.</em>
 <a class="jxr_linenumber" name="L2912" href="#L2912">2912</a> <em class="jxr_javadoccomment">     * &lt;p&gt;</em>
@@ -2934,7 +2934,7 @@
 <a class="jxr_linenumber" name="L2926" href="#L2926">2926</a> <em class="jxr_javadoccomment">     * index = none</em>
 <a class="jxr_linenumber" name="L2927" href="#L2927">2927</a> <em class="jxr_javadoccomment">     * &lt;/p&gt;</em>
 <a class="jxr_linenumber" name="L2928" href="#L2928">2928</a> <em class="jxr_javadoccomment">     */</em>
-<a class="jxr_linenumber" name="L2929" href="#L2929">2929</a>     DATEEND(HDU.PRIMARY_EXTENSION, VALUE.STRING, <span class="jxr_string">"Date at end of exposure"</span>),
+<a class="jxr_linenumber" name="L2929" href="#L2929">2929</a>     DATEEND(HDU.ANY, VALUE.STRING, <span class="jxr_string">"Date at end of exposure"</span>),
 <a class="jxr_linenumber" name="L2930" href="#L2930">2930</a>     <em class="jxr_javadoccomment">/**</em>
 <a class="jxr_linenumber" name="L2931" href="#L2931">2931</a> <em class="jxr_javadoccomment">     * Date header creation. The format follows the FITS 'date' standard.</em>
 <a class="jxr_linenumber" name="L2932" href="#L2932">2932</a> <em class="jxr_javadoccomment">     * &lt;p&gt;</em>
@@ -2944,7 +2944,7 @@
 <a class="jxr_linenumber" name="L2936" href="#L2936">2936</a> <em class="jxr_javadoccomment">     * index = none</em>
 <a class="jxr_linenumber" name="L2937" href="#L2937">2937</a> <em class="jxr_javadoccomment">     * &lt;/p&gt;</em>
 <a class="jxr_linenumber" name="L2938" href="#L2938">2938</a> <em class="jxr_javadoccomment">     */</em>
-<a class="jxr_linenumber" name="L2939" href="#L2939">2939</a>     DATEHDR(HDU.PRIMARY_EXTENSION, VALUE.STRING, <span class="jxr_string">"Date of header creation"</span>),
+<a class="jxr_linenumber" name="L2939" href="#L2939">2939</a>     DATEHDR(HDU.ANY, VALUE.STRING, <span class="jxr_string">"Date of header creation"</span>),
 <a class="jxr_linenumber" name="L2940" href="#L2940">2940</a>     <em class="jxr_javadoccomment">/**</em>
 <a class="jxr_linenumber" name="L2941" href="#L2941">2941</a> <em class="jxr_javadoccomment">     * Default date for the observation. This keyword is generally not used and is DATE-OBS keyword for the start of the</em>
 <a class="jxr_linenumber" name="L2942" href="#L2942">2942</a> <em class="jxr_javadoccomment">     * exposure on the detector is used.</em>
@@ -2955,7 +2955,7 @@
 <a class="jxr_linenumber" name="L2947" href="#L2947">2947</a> <em class="jxr_javadoccomment">     * index = none</em>
 <a class="jxr_linenumber" name="L2948" href="#L2948">2948</a> <em class="jxr_javadoccomment">     * &lt;/p&gt;</em>
 <a class="jxr_linenumber" name="L2949" href="#L2949">2949</a> <em class="jxr_javadoccomment">     */</em>
-<a class="jxr_linenumber" name="L2950" href="#L2950">2950</a>     DATEOBS(HDU.PRIMARY_EXTENSION, VALUE.STRING, <span class="jxr_string">"Date of observation"</span>),
+<a class="jxr_linenumber" name="L2950" href="#L2950">2950</a>     DATEOBS(HDU.ANY, VALUE.STRING, <span class="jxr_string">"Date of observation"</span>),
 <a class="jxr_linenumber" name="L2951" href="#L2951">2951</a>     <em class="jxr_javadoccomment">/**</em>
 <a class="jxr_linenumber" name="L2952" href="#L2952">2952</a> <em class="jxr_javadoccomment">     * Projected position angle of the positive declination axis on the detector. The position angle is measured</em>
 <a class="jxr_linenumber" name="L2953" href="#L2953">2953</a> <em class="jxr_javadoccomment">     * clockwise from the image y axis.</em>
@@ -2979,7 +2979,7 @@
 <a class="jxr_linenumber" name="L2971" href="#L2971">2971</a> <em class="jxr_javadoccomment">     * index = none</em>
 <a class="jxr_linenumber" name="L2972" href="#L2972">2972</a> <em class="jxr_javadoccomment">     * &lt;/p&gt;</em>
 <a class="jxr_linenumber" name="L2973" href="#L2973">2973</a> <em class="jxr_javadoccomment">     */</em>
-<a class="jxr_linenumber" name="L2974" href="#L2974">2974</a>     DECUNIT(HDU.PRIMARY_EXTENSION, VALUE.STRING, <span class="jxr_string">"Declination unit"</span>),
+<a class="jxr_linenumber" name="L2974" href="#L2974">2974</a>     DECUNIT(HDU.ANY, VALUE.STRING, <span class="jxr_string">"Declination unit"</span>),
 <a class="jxr_linenumber" name="L2975" href="#L2975">2975</a>     <em class="jxr_javadoccomment">/**</em>
 <a class="jxr_linenumber" name="L2976" href="#L2976">2976</a> <em class="jxr_javadoccomment">     * Detector configuration.</em>
 <a class="jxr_linenumber" name="L2977" href="#L2977">2977</a> <em class="jxr_javadoccomment">     * &lt;p&gt;</em>
@@ -3165,7 +3165,7 @@
 <a class="jxr_linenumber" name="L3157" href="#L3157">3157</a> <em class="jxr_javadoccomment">     * index = none</em>
 <a class="jxr_linenumber" name="L3158" href="#L3158">3158</a> <em class="jxr_javadoccomment">     * &lt;/p&gt;</em>
 <a class="jxr_linenumber" name="L3159" href="#L3159">3159</a> <em class="jxr_javadoccomment">     */</em>
-<a class="jxr_linenumber" name="L3160" href="#L3160">3160</a>     DETRA(HDU.PRIMARY_EXTENSION, VALUE.STRING, <span class="jxr_string">"Detector right ascension"</span>),
+<a class="jxr_linenumber" name="L3160" href="#L3160">3160</a>     DETRA(HDU.ANY, VALUE.STRING, <span class="jxr_string">"Detector right ascension"</span>),
 <a class="jxr_linenumber" name="L3161" href="#L3161">3161</a>     <em class="jxr_javadoccomment">/**</em>
 <a class="jxr_linenumber" name="L3162" href="#L3162">3162</a> <em class="jxr_javadoccomment">     * Detector coordinate system type.</em>
 <a class="jxr_linenumber" name="L3163" href="#L3163">3163</a> <em class="jxr_javadoccomment">     * &lt;p&gt;</em>
@@ -3185,7 +3185,7 @@
 <a class="jxr_linenumber" name="L3177" href="#L3177">3177</a> <em class="jxr_javadoccomment">     * index = none</em>
 <a class="jxr_linenumber" name="L3178" href="#L3178">3178</a> <em class="jxr_javadoccomment">     * &lt;/p&gt;</em>
 <a class="jxr_linenumber" name="L3179" href="#L3179">3179</a> <em class="jxr_javadoccomment">     */</em>
-<a class="jxr_linenumber" name="L3180" href="#L3180">3180</a>     DETRAU(HDU.PRIMARY_EXTENSION, VALUE.STRING, <span class="jxr_string">"Right ascension unit"</span>),
+<a class="jxr_linenumber" name="L3180" href="#L3180">3180</a>     DETRAU(HDU.ANY, VALUE.STRING, <span class="jxr_string">"Right ascension unit"</span>),
 <a class="jxr_linenumber" name="L3181" href="#L3181">3181</a>     <em class="jxr_javadoccomment">/**</em>
 <a class="jxr_linenumber" name="L3182" href="#L3182">3182</a> <em class="jxr_javadoccomment">     * Mapping of the CCD section to detector coordinates.</em>
 <a class="jxr_linenumber" name="L3183" href="#L3183">3183</a> <em class="jxr_javadoccomment">     * &lt;p&gt;</em>
@@ -3298,7 +3298,7 @@
 <a class="jxr_linenumber" name="L3290" href="#L3290">3290</a> <em class="jxr_javadoccomment">     * index = none</em>
 <a class="jxr_linenumber" name="L3291" href="#L3291">3291</a> <em class="jxr_javadoccomment">     * &lt;/p&gt;</em>
 <a class="jxr_linenumber" name="L3292" href="#L3292">3292</a> <em class="jxr_javadoccomment">     */</em>
-<a class="jxr_linenumber" name="L3293" href="#L3293">3293</a>     DEWHWV(HDU.PRIMARY_EXTENSION, VALUE.STRING, <span class="jxr_string">"Dewar hardware"</span>),
+<a class="jxr_linenumber" name="L3293" href="#L3293">3293</a>     DEWHWV(HDU.ANY, VALUE.STRING, <span class="jxr_string">"Dewar hardware"</span>),
 <a class="jxr_linenumber" name="L3294" href="#L3294">3294</a>     <em class="jxr_javadoccomment">/**</em>
 <a class="jxr_linenumber" name="L3295" href="#L3295">3295</a> <em class="jxr_javadoccomment">     * Times for the dewar sensor measurements given as modified Julian dates. The MJDHDR keyword may be used for the</em>
 <a class="jxr_linenumber" name="L3296" href="#L3296">3296</a> <em class="jxr_javadoccomment">     * time at which the image header is created or the MJD-OBS keyword may be used for the time of observation.</em>
@@ -3312,7 +3312,7 @@
 <a class="jxr_linenumber" name="L3304" href="#L3304">3304</a> <em class="jxr_javadoccomment">     * index = none 1-999</em>
 <a class="jxr_linenumber" name="L3305" href="#L3305">3305</a> <em class="jxr_javadoccomment">     * &lt;/p&gt;</em>
 <a class="jxr_linenumber" name="L3306" href="#L3306">3306</a> <em class="jxr_javadoccomment">     */</em>
-<a class="jxr_linenumber" name="L3307" href="#L3307">3307</a>     DEWMJD(HDU.PRIMARY_EXTENSION, VALUE.REAL, <span class="jxr_string">""</span>),
+<a class="jxr_linenumber" name="L3307" href="#L3307">3307</a>     DEWMJD(HDU.ANY, VALUE.REAL, <span class="jxr_string">""</span>),
 <a class="jxr_linenumber" name="L3308" href="#L3308">3308</a>     <em class="jxr_javadoccomment">/**</em>
 <a class="jxr_linenumber" name="L3309" href="#L3309">3309</a> <em class="jxr_javadoccomment">     * Times for the dewar sensor measurements given as modified Julian dates. The MJDHDR keyword may be used for the</em>
 <a class="jxr_linenumber" name="L3310" href="#L3310">3310</a> <em class="jxr_javadoccomment">     * time at which the image header is created or the MJD-OBS keyword may be used for the time of observation.</em>
@@ -3326,7 +3326,7 @@
 <a class="jxr_linenumber" name="L3318" href="#L3318">3318</a> <em class="jxr_javadoccomment">     * index = none 1-999</em>
 <a class="jxr_linenumber" name="L3319" href="#L3319">3319</a> <em class="jxr_javadoccomment">     * &lt;/p&gt;</em>
 <a class="jxr_linenumber" name="L3320" href="#L3320">3320</a> <em class="jxr_javadoccomment">     */</em>
-<a class="jxr_linenumber" name="L3321" href="#L3321">3321</a>     DEWMJDn(HDU.PRIMARY_EXTENSION, VALUE.REAL, <span class="jxr_string">""</span>),
+<a class="jxr_linenumber" name="L3321" href="#L3321">3321</a>     DEWMJDn(HDU.ANY, VALUE.REAL, <span class="jxr_string">""</span>),
 <a class="jxr_linenumber" name="L3322" href="#L3322">3322</a>     <em class="jxr_javadoccomment">/**</em>
 <a class="jxr_linenumber" name="L3323" href="#L3323">3323</a> <em class="jxr_javadoccomment">     * Dewar position angle measurements in appropriate units.</em>
 <a class="jxr_linenumber" name="L3324" href="#L3324">3324</a> <em class="jxr_javadoccomment">     * &lt;p&gt;</em>
@@ -3336,7 +3336,7 @@
 <a class="jxr_linenumber" name="L3328" href="#L3328">3328</a> <em class="jxr_javadoccomment">     * index = none 1-999</em>
 <a class="jxr_linenumber" name="L3329" href="#L3329">3329</a> <em class="jxr_javadoccomment">     * &lt;/p&gt;</em>
 <a class="jxr_linenumber" name="L3330" href="#L3330">3330</a> <em class="jxr_javadoccomment">     */</em>
-<a class="jxr_linenumber" name="L3331" href="#L3331">3331</a>     DEWPAN(HDU.PRIMARY_EXTENSION, VALUE.REAL, <span class="jxr_string">""</span>),
+<a class="jxr_linenumber" name="L3331" href="#L3331">3331</a>     DEWPAN(HDU.ANY, VALUE.REAL, <span class="jxr_string">""</span>),
 <a class="jxr_linenumber" name="L3332" href="#L3332">3332</a>     <em class="jxr_javadoccomment">/**</em>
 <a class="jxr_linenumber" name="L3333" href="#L3333">3333</a> <em class="jxr_javadoccomment">     * Dewar position angle measurements in appropriate units.</em>
 <a class="jxr_linenumber" name="L3334" href="#L3334">3334</a> <em class="jxr_javadoccomment">     * &lt;p&gt;</em>
@@ -3346,7 +3346,7 @@
 <a class="jxr_linenumber" name="L3338" href="#L3338">3338</a> <em class="jxr_javadoccomment">     * index = none 1-999</em>
 <a class="jxr_linenumber" name="L3339" href="#L3339">3339</a> <em class="jxr_javadoccomment">     * &lt;/p&gt;</em>
 <a class="jxr_linenumber" name="L3340" href="#L3340">3340</a> <em class="jxr_javadoccomment">     */</em>
-<a class="jxr_linenumber" name="L3341" href="#L3341">3341</a>     DEWPANn(HDU.PRIMARY_EXTENSION, VALUE.REAL, <span class="jxr_string">""</span>),
+<a class="jxr_linenumber" name="L3341" href="#L3341">3341</a>     DEWPANn(HDU.ANY, VALUE.REAL, <span class="jxr_string">""</span>),
 <a class="jxr_linenumber" name="L3342" href="#L3342">3342</a>     <em class="jxr_javadoccomment">/**</em>
 <a class="jxr_linenumber" name="L3343" href="#L3343">3343</a> <em class="jxr_javadoccomment">     * Dewar linear position sensor measurements in appropriate units.</em>
 <a class="jxr_linenumber" name="L3344" href="#L3344">3344</a> <em class="jxr_javadoccomment">     * &lt;p&gt;</em>
@@ -3356,7 +3356,7 @@
 <a class="jxr_linenumber" name="L3348" href="#L3348">3348</a> <em class="jxr_javadoccomment">     * index = none 1-999</em>
 <a class="jxr_linenumber" name="L3349" href="#L3349">3349</a> <em class="jxr_javadoccomment">     * &lt;/p&gt;</em>
 <a class="jxr_linenumber" name="L3350" href="#L3350">3350</a> <em class="jxr_javadoccomment">     */</em>
-<a class="jxr_linenumber" name="L3351" href="#L3351">3351</a>     DEWPOS(HDU.PRIMARY_EXTENSION, VALUE.REAL, <span class="jxr_string">""</span>),
+<a class="jxr_linenumber" name="L3351" href="#L3351">3351</a>     DEWPOS(HDU.ANY, VALUE.REAL, <span class="jxr_string">""</span>),
 <a class="jxr_linenumber" name="L3352" href="#L3352">3352</a>     <em class="jxr_javadoccomment">/**</em>
 <a class="jxr_linenumber" name="L3353" href="#L3353">3353</a> <em class="jxr_javadoccomment">     * Dewar linear position sensor measurements in appropriate units.</em>
 <a class="jxr_linenumber" name="L3354" href="#L3354">3354</a> <em class="jxr_javadoccomment">     * &lt;p&gt;</em>
@@ -3366,7 +3366,7 @@
 <a class="jxr_linenumber" name="L3358" href="#L3358">3358</a> <em class="jxr_javadoccomment">     * index = none 1-999</em>
 <a class="jxr_linenumber" name="L3359" href="#L3359">3359</a> <em class="jxr_javadoccomment">     * &lt;/p&gt;</em>
 <a class="jxr_linenumber" name="L3360" href="#L3360">3360</a> <em class="jxr_javadoccomment">     */</em>
-<a class="jxr_linenumber" name="L3361" href="#L3361">3361</a>     DEWPOSn(HDU.PRIMARY_EXTENSION, VALUE.REAL, <span class="jxr_string">""</span>),
+<a class="jxr_linenumber" name="L3361" href="#L3361">3361</a>     DEWPOSn(HDU.ANY, VALUE.REAL, <span class="jxr_string">""</span>),
 <a class="jxr_linenumber" name="L3362" href="#L3362">3362</a>     <em class="jxr_javadoccomment">/**</em>
 <a class="jxr_linenumber" name="L3363" href="#L3363">3363</a> <em class="jxr_javadoccomment">     * Dewar pressure sensor measurements in appropriate units.</em>
 <a class="jxr_linenumber" name="L3364" href="#L3364">3364</a> <em class="jxr_javadoccomment">     * &lt;p&gt;</em>
@@ -3379,7 +3379,7 @@
 <a class="jxr_linenumber" name="L3371" href="#L3371">3371</a> <em class="jxr_javadoccomment">     * index = none 1-999</em>
 <a class="jxr_linenumber" name="L3372" href="#L3372">3372</a> <em class="jxr_javadoccomment">     * &lt;/p&gt;</em>
 <a class="jxr_linenumber" name="L3373" href="#L3373">3373</a> <em class="jxr_javadoccomment">     */</em>
-<a class="jxr_linenumber" name="L3374" href="#L3374">3374</a>     DEWPRE(HDU.PRIMARY_EXTENSION, VALUE.REAL, <span class="jxr_string">""</span>),
+<a class="jxr_linenumber" name="L3374" href="#L3374">3374</a>     DEWPRE(HDU.ANY, VALUE.REAL, <span class="jxr_string">""</span>),
 <a class="jxr_linenumber" name="L3375" href="#L3375">3375</a>     <em class="jxr_javadoccomment">/**</em>
 <a class="jxr_linenumber" name="L3376" href="#L3376">3376</a> <em class="jxr_javadoccomment">     * Dewar pressure sensor measurements in appropriate units.</em>
 <a class="jxr_linenumber" name="L3377" href="#L3377">3377</a> <em class="jxr_javadoccomment">     * &lt;p&gt;</em>
@@ -3392,7 +3392,7 @@
 <a class="jxr_linenumber" name="L3384" href="#L3384">3384</a> <em class="jxr_javadoccomment">     * index = none 1-999</em>
 <a class="jxr_linenumber" name="L3385" href="#L3385">3385</a> <em class="jxr_javadoccomment">     * &lt;/p&gt;</em>
 <a class="jxr_linenumber" name="L3386" href="#L3386">3386</a> <em class="jxr_javadoccomment">     */</em>
-<a class="jxr_linenumber" name="L3387" href="#L3387">3387</a>     DEWPREn(HDU.PRIMARY_EXTENSION, VALUE.REAL, <span class="jxr_string">""</span>),
+<a class="jxr_linenumber" name="L3387" href="#L3387">3387</a>     DEWPREn(HDU.ANY, VALUE.REAL, <span class="jxr_string">""</span>),
 <a class="jxr_linenumber" name="L3388" href="#L3388">3388</a>     <em class="jxr_javadoccomment">/**</em>
 <a class="jxr_linenumber" name="L3389" href="#L3389">3389</a> <em class="jxr_javadoccomment">     * Dewar status.</em>
 <a class="jxr_linenumber" name="L3390" href="#L3390">3390</a> <em class="jxr_javadoccomment">     * &lt;p&gt;</em>
@@ -3402,7 +3402,7 @@
 <a class="jxr_linenumber" name="L3394" href="#L3394">3394</a> <em class="jxr_javadoccomment">     * index = none</em>
 <a class="jxr_linenumber" name="L3395" href="#L3395">3395</a> <em class="jxr_javadoccomment">     * &lt;/p&gt;</em>
 <a class="jxr_linenumber" name="L3396" href="#L3396">3396</a> <em class="jxr_javadoccomment">     */</em>
-<a class="jxr_linenumber" name="L3397" href="#L3397">3397</a>     DEWSTAT(HDU.PRIMARY_EXTENSION, VALUE.STRING, <span class="jxr_string">"Dewar status"</span>),
+<a class="jxr_linenumber" name="L3397" href="#L3397">3397</a>     DEWSTAT(HDU.ANY, VALUE.STRING, <span class="jxr_string">"Dewar status"</span>),
 <a class="jxr_linenumber" name="L3398" href="#L3398">3398</a>     <em class="jxr_javadoccomment">/**</em>
 <a class="jxr_linenumber" name="L3399" href="#L3399">3399</a> <em class="jxr_javadoccomment">     * Dewar software version.</em>
 <a class="jxr_linenumber" name="L3400" href="#L3400">3400</a> <em class="jxr_javadoccomment">     * &lt;p&gt;</em>
@@ -3412,7 +3412,7 @@
 <a class="jxr_linenumber" name="L3404" href="#L3404">3404</a> <em class="jxr_javadoccomment">     * index = none</em>
 <a class="jxr_linenumber" name="L3405" href="#L3405">3405</a> <em class="jxr_javadoccomment">     * &lt;/p&gt;</em>
 <a class="jxr_linenumber" name="L3406" href="#L3406">3406</a> <em class="jxr_javadoccomment">     */</em>
-<a class="jxr_linenumber" name="L3407" href="#L3407">3407</a>     DEWSWV(HDU.PRIMARY_EXTENSION, VALUE.STRING, <span class="jxr_string">"Dewar software version"</span>),
+<a class="jxr_linenumber" name="L3407" href="#L3407">3407</a>     DEWSWV(HDU.ANY, VALUE.STRING, <span class="jxr_string">"Dewar software version"</span>),
 <a class="jxr_linenumber" name="L3408" href="#L3408">3408</a>     <em class="jxr_javadoccomment">/**</em>
 <a class="jxr_linenumber" name="L3409" href="#L3409">3409</a> <em class="jxr_javadoccomment">     * Dewar temperature sensor measurements in degrees Celsius.</em>
 <a class="jxr_linenumber" name="L3410" href="#L3410">3410</a> <em class="jxr_javadoccomment">     * &lt;p&gt;</em>
@@ -3425,7 +3425,7 @@
 <a class="jxr_linenumber" name="L3417" href="#L3417">3417</a> <em class="jxr_javadoccomment">     * index = none 1-999</em>
 <a class="jxr_linenumber" name="L3418" href="#L3418">3418</a> <em class="jxr_javadoccomment">     * &lt;/p&gt;</em>
 <a class="jxr_linenumber" name="L3419" href="#L3419">3419</a> <em class="jxr_javadoccomment">     */</em>
-<a class="jxr_linenumber" name="L3420" href="#L3420">3420</a>     DEWTEM(HDU.PRIMARY_EXTENSION, VALUE.REAL, <span class="jxr_string">"Dewar temperature"</span>),
+<a class="jxr_linenumber" name="L3420" href="#L3420">3420</a>     DEWTEM(HDU.ANY, VALUE.REAL, <span class="jxr_string">"Dewar temperature"</span>),
 <a class="jxr_linenumber" name="L3421" href="#L3421">3421</a>     <em class="jxr_javadoccomment">/**</em>
 <a class="jxr_linenumber" name="L3422" href="#L3422">3422</a> <em class="jxr_javadoccomment">     * Dewar temperature sensor measurements in degrees Celsius.</em>
 <a class="jxr_linenumber" name="L3423" href="#L3423">3423</a> <em class="jxr_javadoccomment">     * &lt;p&gt;</em>
@@ -3438,7 +3438,7 @@
 <a class="jxr_linenumber" name="L3430" href="#L3430">3430</a> <em class="jxr_javadoccomment">     * index = none 1-999</em>
 <a class="jxr_linenumber" name="L3431" href="#L3431">3431</a> <em class="jxr_javadoccomment">     * &lt;/p&gt;</em>
 <a class="jxr_linenumber" name="L3432" href="#L3432">3432</a> <em class="jxr_javadoccomment">     */</em>
-<a class="jxr_linenumber" name="L3433" href="#L3433">3433</a>     DEWTEMn(HDU.PRIMARY_EXTENSION, VALUE.REAL, <span class="jxr_string">"Dewar temperature"</span>),
+<a class="jxr_linenumber" name="L3433" href="#L3433">3433</a>     DEWTEMn(HDU.ANY, VALUE.REAL, <span class="jxr_string">"Dewar temperature"</span>),
 <a class="jxr_linenumber" name="L3434" href="#L3434">3434</a>     <em class="jxr_javadoccomment">/**</em>
 <a class="jxr_linenumber" name="L3435" href="#L3435">3435</a> <em class="jxr_javadoccomment">     * Dewar voltage sensor measurements in volts.</em>
 <a class="jxr_linenumber" name="L3436" href="#L3436">3436</a> <em class="jxr_javadoccomment">     * &lt;p&gt;</em>
@@ -3451,7 +3451,7 @@
 <a class="jxr_linenumber" name="L3443" href="#L3443">3443</a> <em class="jxr_javadoccomment">     * index = none 1-999</em>
 <a class="jxr_linenumber" name="L3444" href="#L3444">3444</a> <em class="jxr_javadoccomment">     * &lt;/p&gt;</em>
 <a class="jxr_linenumber" name="L3445" href="#L3445">3445</a> <em class="jxr_javadoccomment">     */</em>
-<a class="jxr_linenumber" name="L3446" href="#L3446">3446</a>     DEWVOL(HDU.PRIMARY_EXTENSION, VALUE.REAL, <span class="jxr_string">""</span>),
+<a class="jxr_linenumber" name="L3446" href="#L3446">3446</a>     DEWVOL(HDU.ANY, VALUE.REAL, <span class="jxr_string">""</span>),
 <a class="jxr_linenumber" name="L3447" href="#L3447">3447</a>     <em class="jxr_javadoccomment">/**</em>
 <a class="jxr_linenumber" name="L3448" href="#L3448">3448</a> <em class="jxr_javadoccomment">     * Dewar voltage sensor measurements in volts.</em>
 <a class="jxr_linenumber" name="L3449" href="#L3449">3449</a> <em class="jxr_javadoccomment">     * &lt;p&gt;</em>
@@ -3464,7 +3464,7 @@
 <a class="jxr_linenumber" name="L3456" href="#L3456">3456</a> <em class="jxr_javadoccomment">     * index = none 1-999</em>
 <a class="jxr_linenumber" name="L3457" href="#L3457">3457</a> <em class="jxr_javadoccomment">     * &lt;/p&gt;</em>
 <a class="jxr_linenumber" name="L3458" href="#L3458">3458</a> <em class="jxr_javadoccomment">     */</em>
-<a class="jxr_linenumber" name="L3459" href="#L3459">3459</a>     DEWVOLn(HDU.PRIMARY_EXTENSION, VALUE.REAL, <span class="jxr_string">""</span>),
+<a class="jxr_linenumber" name="L3459" href="#L3459">3459</a>     DEWVOLn(HDU.ANY, VALUE.REAL, <span class="jxr_string">""</span>),
 <a class="jxr_linenumber" name="L3460" href="#L3460">3460</a>     <em class="jxr_javadoccomment">/**</em>
 <a class="jxr_linenumber" name="L3461" href="#L3461">3461</a> <em class="jxr_javadoccomment">     * Times for the disperser sensor measurements given as modified Julian dates.</em>
 <a class="jxr_linenumber" name="L3462" href="#L3462">3462</a> <em class="jxr_javadoccomment">     * &lt;p&gt;</em>
@@ -3609,7 +3609,7 @@
 <a class="jxr_linenumber" name="L3601" href="#L3601">3601</a> <em class="jxr_javadoccomment">     * index = none</em>
 <a class="jxr_linenumber" name="L3602" href="#L3602">3602</a> <em class="jxr_javadoccomment">     * &lt;/p&gt;</em>
 <a class="jxr_linenumber" name="L3603" href="#L3603">3603</a> <em class="jxr_javadoccomment">     */</em>
-<a class="jxr_linenumber" name="L3604" href="#L3604">3604</a>     DISPUNIT(HDU.PRIMARY_EXTENSION, VALUE.STRING, <span class="jxr_string">"Dispersion coordinate unit"</span>),
+<a class="jxr_linenumber" name="L3604" href="#L3604">3604</a>     DISPUNIT(HDU.ANY, VALUE.STRING, <span class="jxr_string">"Dispersion coordinate unit"</span>),
 <a class="jxr_linenumber" name="L3605" href="#L3605">3605</a>     <em class="jxr_javadoccomment">/**</em>
 <a class="jxr_linenumber" name="L3606" href="#L3606">3606</a> <em class="jxr_javadoccomment">     * Default dispersion coordinate value.</em>
 <a class="jxr_linenumber" name="L3607" href="#L3607">3607</a> <em class="jxr_javadoccomment">     * &lt;p&gt;</em>
@@ -3622,7 +3622,7 @@
 <a class="jxr_linenumber" name="L3614" href="#L3614">3614</a> <em class="jxr_javadoccomment">     * index = none</em>
 <a class="jxr_linenumber" name="L3615" href="#L3615">3615</a> <em class="jxr_javadoccomment">     * &lt;/p&gt;</em>
 <a class="jxr_linenumber" name="L3616" href="#L3616">3616</a> <em class="jxr_javadoccomment">     */</em>
-<a class="jxr_linenumber" name="L3617" href="#L3617">3617</a>     DISPVAL(HDU.PRIMARY_EXTENSION, VALUE.REAL, <span class="jxr_string">"Dispersion coordinate"</span>),
+<a class="jxr_linenumber" name="L3617" href="#L3617">3617</a>     DISPVAL(HDU.ANY, VALUE.REAL, <span class="jxr_string">"Dispersion coordinate"</span>),
 <a class="jxr_linenumber" name="L3618" href="#L3618">3618</a>     <em class="jxr_javadoccomment">/**</em>
 <a class="jxr_linenumber" name="L3619" href="#L3619">3619</a> <em class="jxr_javadoccomment">     * Approximate central dispersion coordinate on the detector.</em>
 <a class="jxr_linenumber" name="L3620" href="#L3620">3620</a> <em class="jxr_javadoccomment">     * &lt;p&gt;</em>
@@ -4284,7 +4284,7 @@
 <a class="jxr_linenumber" name="L4276" href="#L4276">4276</a> <em class="jxr_javadoccomment">     * index = none</em>
 <a class="jxr_linenumber" name="L4277" href="#L4277">4277</a> <em class="jxr_javadoccomment">     * &lt;/p&gt;</em>
 <a class="jxr_linenumber" name="L4278" href="#L4278">4278</a> <em class="jxr_javadoccomment">     */</em>
-<a class="jxr_linenumber" name="L4279" href="#L4279">4279</a>     EXPREQ(HDU.PRIMARY_EXTENSION, VALUE.REAL, <span class="jxr_string">"Requested exposure time"</span>),
+<a class="jxr_linenumber" name="L4279" href="#L4279">4279</a>     EXPREQ(HDU.ANY, VALUE.REAL, <span class="jxr_string">"Requested exposure time"</span>),
 <a class="jxr_linenumber" name="L4280" href="#L4280">4280</a>     <em class="jxr_javadoccomment">/**</em>
 <a class="jxr_linenumber" name="L4281" href="#L4281">4281</a> <em class="jxr_javadoccomment">     * Fiber identification for the fiber(s). The string consists of a fiber number, an object type number (0=sky,</em>
 <a class="jxr_linenumber" name="L4282" href="#L4282">4282</a> <em class="jxr_javadoccomment">     * 1=object, etc.), the right ascension and declination, and the object name or title. This can replace OBJNAME,</em>
@@ -5371,7 +5371,7 @@
 <a class="jxr_linenumber" name="L5363" href="#L5363">5363</a> <em class="jxr_javadoccomment">     * index = none</em>
 <a class="jxr_linenumber" name="L5364" href="#L5364">5364</a> <em class="jxr_javadoccomment">     * &lt;/p&gt;</em>
 <a class="jxr_linenumber" name="L5365" href="#L5365">5365</a> <em class="jxr_javadoccomment">     */</em>
-<a class="jxr_linenumber" name="L5366" href="#L5366">5366</a>     LST_OBS(<span class="jxr_string">"LST-OBS"</span>, HDU.PRIMARY_EXTENSION, VALUE.STRING, <span class="jxr_string">"LST of exposure start"</span>),
+<a class="jxr_linenumber" name="L5366" href="#L5366">5366</a>     LST_OBS(<span class="jxr_string">"LST-OBS"</span>, HDU.ANY, VALUE.STRING, <span class="jxr_string">"LST of exposure start"</span>),
 <a class="jxr_linenumber" name="L5367" href="#L5367">5367</a>     <em class="jxr_javadoccomment">/**</em>
 <a class="jxr_linenumber" name="L5368" href="#L5368">5368</a> <em class="jxr_javadoccomment">     * Local siderial time at the end of the exposure.</em>
 <a class="jxr_linenumber" name="L5369" href="#L5369">5369</a> <em class="jxr_javadoccomment">     * &lt;p&gt;</em>
@@ -5384,7 +5384,7 @@
 <a class="jxr_linenumber" name="L5376" href="#L5376">5376</a> <em class="jxr_javadoccomment">     * index = none</em>
 <a class="jxr_linenumber" name="L5377" href="#L5377">5377</a> <em class="jxr_javadoccomment">     * &lt;/p&gt;</em>
 <a class="jxr_linenumber" name="L5378" href="#L5378">5378</a> <em class="jxr_javadoccomment">     */</em>
-<a class="jxr_linenumber" name="L5379" href="#L5379">5379</a>     LSTEND(HDU.PRIMARY_EXTENSION, VALUE.STRING, <span class="jxr_string">"LST at end of exposure"</span>),
+<a class="jxr_linenumber" name="L5379" href="#L5379">5379</a>     LSTEND(HDU.ANY, VALUE.STRING, <span class="jxr_string">"LST at end of exposure"</span>),
 <a class="jxr_linenumber" name="L5380" href="#L5380">5380</a>     <em class="jxr_javadoccomment">/**</em>
 <a class="jxr_linenumber" name="L5381" href="#L5381">5381</a> <em class="jxr_javadoccomment">     * Local siderial time of the header creation.</em>
 <a class="jxr_linenumber" name="L5382" href="#L5382">5382</a> <em class="jxr_javadoccomment">     * &lt;p&gt;</em>
@@ -5397,7 +5397,7 @@
 <a class="jxr_linenumber" name="L5389" href="#L5389">5389</a> <em class="jxr_javadoccomment">     * index = none</em>
 <a class="jxr_linenumber" name="L5390" href="#L5390">5390</a> <em class="jxr_javadoccomment">     * &lt;/p&gt;</em>
 <a class="jxr_linenumber" name="L5391" href="#L5391">5391</a> <em class="jxr_javadoccomment">     */</em>
-<a class="jxr_linenumber" name="L5392" href="#L5392">5392</a>     LSTHDR(HDU.PRIMARY_EXTENSION, VALUE.STRING, <span class="jxr_string">"LST of header creation"</span>),
+<a class="jxr_linenumber" name="L5392" href="#L5392">5392</a>     LSTHDR(HDU.ANY, VALUE.STRING, <span class="jxr_string">"LST of header creation"</span>),
 <a class="jxr_linenumber" name="L5393" href="#L5393">5393</a>     <em class="jxr_javadoccomment">/**</em>
 <a class="jxr_linenumber" name="L5394" href="#L5394">5394</a> <em class="jxr_javadoccomment">     * Default local siderial time for the observation. This keyword is generally not used and is LST-OBS keyword for</em>
 <a class="jxr_linenumber" name="L5395" href="#L5395">5395</a> <em class="jxr_javadoccomment">     * the start of the exposure on the detector is used.</em>
@@ -5411,7 +5411,7 @@
 <a class="jxr_linenumber" name="L5403" href="#L5403">5403</a> <em class="jxr_javadoccomment">     * index = none</em>
 <a class="jxr_linenumber" name="L5404" href="#L5404">5404</a> <em class="jxr_javadoccomment">     * &lt;/p&gt;</em>
 <a class="jxr_linenumber" name="L5405" href="#L5405">5405</a> <em class="jxr_javadoccomment">     */</em>
-<a class="jxr_linenumber" name="L5406" href="#L5406">5406</a>     LSTOBS(HDU.PRIMARY_EXTENSION, VALUE.STRING, <span class="jxr_string">"LST of observation"</span>),
+<a class="jxr_linenumber" name="L5406" href="#L5406">5406</a>     LSTOBS(HDU.ANY, VALUE.STRING, <span class="jxr_string">"LST of observation"</span>),
 <a class="jxr_linenumber" name="L5407" href="#L5407">5407</a>     <em class="jxr_javadoccomment">/**</em>
 <a class="jxr_linenumber" name="L5408" href="#L5408">5408</a> <em class="jxr_javadoccomment">     * Transformation matrix between CCD and image coordinates. If missing the default is an identify matrix.</em>
 <a class="jxr_linenumber" name="L5409" href="#L5409">5409</a> <em class="jxr_javadoccomment">     * &lt;p&gt;</em>
@@ -5470,7 +5470,7 @@
 <a class="jxr_linenumber" name="L5462" href="#L5462">5462</a> <em class="jxr_javadoccomment">     * index = none</em>
 <a class="jxr_linenumber" name="L5463" href="#L5463">5463</a> <em class="jxr_javadoccomment">     * &lt;/p&gt;</em>
 <a class="jxr_linenumber" name="L5464" href="#L5464">5464</a> <em class="jxr_javadoccomment">     */</em>
-<a class="jxr_linenumber" name="L5465" href="#L5465">5465</a>     MJDHDR(HDU.PRIMARY_EXTENSION, VALUE.REAL, <span class="jxr_string">"MJD of header creation"</span>),
+<a class="jxr_linenumber" name="L5465" href="#L5465">5465</a>     MJDHDR(HDU.ANY, VALUE.REAL, <span class="jxr_string">"MJD of header creation"</span>),
 <a class="jxr_linenumber" name="L5466" href="#L5466">5466</a>     <em class="jxr_javadoccomment">/**</em>
 <a class="jxr_linenumber" name="L5467" href="#L5467">5467</a> <em class="jxr_javadoccomment">     * Default modified Julian date for the observation. The fractional part of the date is given to better than a</em>
 <a class="jxr_linenumber" name="L5468" href="#L5468">5468</a> <em class="jxr_javadoccomment">     * second of time. This keyword is generally not used and is MJD-OBS keyword for the start of the exposure on the</em>
@@ -5485,7 +5485,7 @@
 <a class="jxr_linenumber" name="L5477" href="#L5477">5477</a> <em class="jxr_javadoccomment">     * index = none</em>
 <a class="jxr_linenumber" name="L5478" href="#L5478">5478</a> <em class="jxr_javadoccomment">     * &lt;/p&gt;</em>
 <a class="jxr_linenumber" name="L5479" href="#L5479">5479</a> <em class="jxr_javadoccomment">     */</em>
-<a class="jxr_linenumber" name="L5480" href="#L5480">5480</a>     MJDOBS(HDU.PRIMARY_EXTENSION, VALUE.REAL, <span class="jxr_string">"MJD of observation"</span>),
+<a class="jxr_linenumber" name="L5480" href="#L5480">5480</a>     MJDOBS(HDU.ANY, VALUE.REAL, <span class="jxr_string">"MJD of observation"</span>),
 <a class="jxr_linenumber" name="L5481" href="#L5481">5481</a>     <em class="jxr_javadoccomment">/**</em>
 <a class="jxr_linenumber" name="L5482" href="#L5482">5482</a> <em class="jxr_javadoccomment">     * The number of amplifiers in the detector. When there is only a single amplifier used it may be absent since the</em>
 <a class="jxr_linenumber" name="L5483" href="#L5483">5483</a> <em class="jxr_javadoccomment">     * default value is 1.</em>
@@ -5726,7 +5726,7 @@
 <a class="jxr_linenumber" name="L5718" href="#L5718">5718</a> <em class="jxr_javadoccomment">     * index = none</em>
 <a class="jxr_linenumber" name="L5719" href="#L5719">5719</a> <em class="jxr_javadoccomment">     * &lt;/p&gt;</em>
 <a class="jxr_linenumber" name="L5720" href="#L5720">5720</a> <em class="jxr_javadoccomment">     */</em>
-<a class="jxr_linenumber" name="L5721" href="#L5721">5721</a>     NSUBEXPS(HDU.PRIMARY_EXTENSION, VALUE.INTEGER, <span class="jxr_string">"Number of subexposures"</span>),
+<a class="jxr_linenumber" name="L5721" href="#L5721">5721</a>     NSUBEXPS(HDU.ANY, VALUE.INTEGER, <span class="jxr_string">"Number of subexposures"</span>),
 <a class="jxr_linenumber" name="L5722" href="#L5722">5722</a>     <em class="jxr_javadoccomment">/**</em>
 <a class="jxr_linenumber" name="L5723" href="#L5723">5723</a> <em class="jxr_javadoccomment">     * Declination of the target astronomical object(s).</em>
 <a class="jxr_linenumber" name="L5724" href="#L5724">5724</a> <em class="jxr_javadoccomment">     * &lt;p&gt;</em>
@@ -5912,7 +5912,7 @@
 <a class="jxr_linenumber" name="L5904" href="#L5904">5904</a> <em class="jxr_javadoccomment">     * index = none</em>
 <a class="jxr_linenumber" name="L5905" href="#L5905">5905</a> <em class="jxr_javadoccomment">     * &lt;/p&gt;</em>
 <a class="jxr_linenumber" name="L5906" href="#L5906">5906</a> <em class="jxr_javadoccomment">     */</em>
-<a class="jxr_linenumber" name="L5907" href="#L5907">5907</a>     OBSID(HDU.PRIMARY_EXTENSION, VALUE.STRING, <span class="jxr_string">"Observation identification"</span>),
+<a class="jxr_linenumber" name="L5907" href="#L5907">5907</a>     OBSID(HDU.ANY, VALUE.STRING, <span class="jxr_string">"Observation identification"</span>),
 <a class="jxr_linenumber" name="L5908" href="#L5908">5908</a>     <em class="jxr_javadoccomment">/**</em>
 <a class="jxr_linenumber" name="L5909" href="#L5909">5909</a> <em class="jxr_javadoccomment">     * Right ascension of the observation. This may be distinct from the object coordinates and the telescope</em>
 <a class="jxr_linenumber" name="L5910" href="#L5910">5910</a> <em class="jxr_javadoccomment">     * coordinates. It may be used to indicate the requested observation coordinates.</em>
@@ -5976,7 +5976,7 @@
 <a class="jxr_linenumber" name="L5968" href="#L5968">5968</a> <em class="jxr_javadoccomment">     * index = none</em>
 <a class="jxr_linenumber" name="L5969" href="#L5969">5969</a> <em class="jxr_javadoccomment">     * &lt;/p&gt;</em>
 <a class="jxr_linenumber" name="L5970" href="#L5970">5970</a> <em class="jxr_javadoccomment">     */</em>
-<a class="jxr_linenumber" name="L5971" href="#L5971">5971</a>     OBSTYPE(HDU.PRIMARY_EXTENSION, VALUE.STRING, <span class="jxr_string">"Observation type"</span>),
+<a class="jxr_linenumber" name="L5971" href="#L5971">5971</a>     OBSTYPE(HDU.ANY, VALUE.STRING, <span class="jxr_string">"Observation type"</span>),
 <a class="jxr_linenumber" name="L5972" href="#L5972">5972</a>     <em class="jxr_javadoccomment">/**</em>
 <a class="jxr_linenumber" name="L5973" href="#L5973">5973</a> <em class="jxr_javadoccomment">     * Declination of the target astronomical object(s).</em>
 <a class="jxr_linenumber" name="L5974" href="#L5974">5974</a> <em class="jxr_javadoccomment">     * &lt;p&gt;</em>
@@ -6070,7 +6070,7 @@
 <a class="jxr_linenumber" name="L6062" href="#L6062">6062</a> <em class="jxr_javadoccomment">     * index = none</em>
 <a class="jxr_linenumber" name="L6063" href="#L6063">6063</a> <em class="jxr_javadoccomment">     * &lt;/p&gt;</em>
 <a class="jxr_linenumber" name="L6064" href="#L6064">6064</a> <em class="jxr_javadoccomment">     */</em>
-<a class="jxr_linenumber" name="L6065" href="#L6065">6065</a>     PHOTCAL(HDU.PRIMARY_EXTENSION, VALUE.LOGICAL, <span class="jxr_string">"Data proportional to photons?"</span>),
+<a class="jxr_linenumber" name="L6065" href="#L6065">6065</a>     PHOTCAL(HDU.ANY, VALUE.LOGICAL, <span class="jxr_string">"Data proportional to photons?"</span>),
 <a class="jxr_linenumber" name="L6066" href="#L6066">6066</a>     <em class="jxr_javadoccomment">/**</em>
 <a class="jxr_linenumber" name="L6067" href="#L6067">6067</a> <em class="jxr_javadoccomment">     * Photometric conditions during the observation.</em>
 <a class="jxr_linenumber" name="L6068" href="#L6068">6068</a> <em class="jxr_javadoccomment">     * &lt;p&gt;</em>
@@ -6090,7 +6090,7 @@
 <a class="jxr_linenumber" name="L6082" href="#L6082">6082</a> <em class="jxr_javadoccomment">     * index = none 1-99</em>
 <a class="jxr_linenumber" name="L6083" href="#L6083">6083</a> <em class="jxr_javadoccomment">     * &lt;/p&gt;</em>
 <a class="jxr_linenumber" name="L6084" href="#L6084">6084</a> <em class="jxr_javadoccomment">     */</em>
-<a class="jxr_linenumber" name="L6085" href="#L6085">6085</a>     PIPEHW(HDU.PRIMARY_EXTENSION, VALUE.STRING, <span class="jxr_string">"Processing hardware"</span>),
+<a class="jxr_linenumber" name="L6085" href="#L6085">6085</a>     PIPEHW(HDU.ANY, VALUE.STRING, <span class="jxr_string">"Processing hardware"</span>),
 <a class="jxr_linenumber" name="L6086" href="#L6086">6086</a>     <em class="jxr_javadoccomment">/**</em>
 <a class="jxr_linenumber" name="L6087" href="#L6087">6087</a> <em class="jxr_javadoccomment">     * Processing hardware used.</em>
 <a class="jxr_linenumber" name="L6088" href="#L6088">6088</a> <em class="jxr_javadoccomment">     * &lt;p&gt;</em>
@@ -6100,7 +6100,7 @@
 <a class="jxr_linenumber" name="L6092" href="#L6092">6092</a> <em class="jxr_javadoccomment">     * index = none 1-99</em>
 <a class="jxr_linenumber" name="L6093" href="#L6093">6093</a> <em class="jxr_javadoccomment">     * &lt;/p&gt;</em>
 <a class="jxr_linenumber" name="L6094" href="#L6094">6094</a> <em class="jxr_javadoccomment">     */</em>
-<a class="jxr_linenumber" name="L6095" href="#L6095">6095</a>     PIPEHWn(HDU.PRIMARY_EXTENSION, VALUE.STRING, <span class="jxr_string">"Processing hardware"</span>),
+<a class="jxr_linenumber" name="L6095" href="#L6095">6095</a>     PIPEHWn(HDU.ANY, VALUE.STRING, <span class="jxr_string">"Processing hardware"</span>),
 <a class="jxr_linenumber" name="L6096" href="#L6096">6096</a>     <em class="jxr_javadoccomment">/**</em>
 <a class="jxr_linenumber" name="L6097" href="#L6097">6097</a> <em class="jxr_javadoccomment">     * Name of processing pipeline applied.</em>
 <a class="jxr_linenumber" name="L6098" href="#L6098">6098</a> <em class="jxr_javadoccomment">     * &lt;p&gt;</em>
@@ -6110,7 +6110,7 @@
 <a class="jxr_linenumber" name="L6102" href="#L6102">6102</a> <em class="jxr_javadoccomment">     * index = none</em>
 <a class="jxr_linenumber" name="L6103" href="#L6103">6103</a> <em class="jxr_javadoccomment">     * &lt;/p&gt;</em>
 <a class="jxr_linenumber" name="L6104" href="#L6104">6104</a> <em class="jxr_javadoccomment">     */</em>
-<a class="jxr_linenumber" name="L6105" href="#L6105">6105</a>     PIPELINE(HDU.PRIMARY_EXTENSION, VALUE.STRING, <span class="jxr_string">"Pipeline used"</span>),
+<a class="jxr_linenumber" name="L6105" href="#L6105">6105</a>     PIPELINE(HDU.ANY, VALUE.STRING, <span class="jxr_string">"Pipeline used"</span>),
 <a class="jxr_linenumber" name="L6106" href="#L6106">6106</a>     <em class="jxr_javadoccomment">/**</em>
 <a class="jxr_linenumber" name="L6107" href="#L6107">6107</a> <em class="jxr_javadoccomment">     * Processing software version.</em>
 <a class="jxr_linenumber" name="L6108" href="#L6108">6108</a> <em class="jxr_javadoccomment">     * &lt;p&gt;</em>
@@ -6120,7 +6120,7 @@
 <a class="jxr_linenumber" name="L6112" href="#L6112">6112</a> <em class="jxr_javadoccomment">     * index = none 1-99</em>
 <a class="jxr_linenumber" name="L6113" href="#L6113">6113</a> <em class="jxr_javadoccomment">     * &lt;/p&gt;</em>
 <a class="jxr_linenumber" name="L6114" href="#L6114">6114</a> <em class="jxr_javadoccomment">     */</em>
-<a class="jxr_linenumber" name="L6115" href="#L6115">6115</a>     PIPESW(HDU.PRIMARY_EXTENSION, VALUE.STRING, <span class="jxr_string">"Processing software"</span>),
+<a class="jxr_linenumber" name="L6115" href="#L6115">6115</a>     PIPESW(HDU.ANY, VALUE.STRING, <span class="jxr_string">"Processing software"</span>),
 <a class="jxr_linenumber" name="L6116" href="#L6116">6116</a>     <em class="jxr_javadoccomment">/**</em>
 <a class="jxr_linenumber" name="L6117" href="#L6117">6117</a> <em class="jxr_javadoccomment">     * Processing software version.</em>
 <a class="jxr_linenumber" name="L6118" href="#L6118">6118</a> <em class="jxr_javadoccomment">     * &lt;p&gt;</em>
@@ -6130,7 +6130,7 @@
 <a class="jxr_linenumber" name="L6122" href="#L6122">6122</a> <em class="jxr_javadoccomment">     * index = none 1-99</em>
 <a class="jxr_linenumber" name="L6123" href="#L6123">6123</a> <em class="jxr_javadoccomment">     * &lt;/p&gt;</em>
 <a class="jxr_linenumber" name="L6124" href="#L6124">6124</a> <em class="jxr_javadoccomment">     */</em>
-<a class="jxr_linenumber" name="L6125" href="#L6125">6125</a>     PIPESWn(HDU.PRIMARY_EXTENSION, VALUE.STRING, <span class="jxr_string">"Processing software"</span>),
+<a class="jxr_linenumber" name="L6125" href="#L6125">6125</a>     PIPESWn(HDU.ANY, VALUE.STRING, <span class="jxr_string">"Processing software"</span>),
 <a class="jxr_linenumber" name="L6126" href="#L6126">6126</a>     <em class="jxr_javadoccomment">/**</em>
 <a class="jxr_linenumber" name="L6127" href="#L6127">6127</a> <em class="jxr_javadoccomment">     * Projected pixel scale along axis n.</em>
 <a class="jxr_linenumber" name="L6128" href="#L6128">6128</a> <em class="jxr_javadoccomment">     * &lt;p&gt;</em>
@@ -6157,7 +6157,7 @@
 <a class="jxr_linenumber" name="L6149" href="#L6149">6149</a> <em class="jxr_javadoccomment">     * index = 1-9</em>
 <a class="jxr_linenumber" name="L6150" href="#L6150">6150</a> <em class="jxr_javadoccomment">     * &lt;/p&gt;</em>
 <a class="jxr_linenumber" name="L6151" href="#L6151">6151</a> <em class="jxr_javadoccomment">     */</em>
-<a class="jxr_linenumber" name="L6152" href="#L6152">6152</a>     PIXSIZEn(HDU.PRIMARY_EXTENSION, VALUE.REAL, <span class="jxr_string">"Pixel size"</span>),
+<a class="jxr_linenumber" name="L6152" href="#L6152">6152</a>     PIXSIZEn(HDU.ANY, VALUE.REAL, <span class="jxr_string">"Pixel size"</span>),
 <a class="jxr_linenumber" name="L6153" href="#L6153">6153</a>     <em class="jxr_javadoccomment">/**</em>
 <a class="jxr_linenumber" name="L6154" href="#L6154">6154</a> <em class="jxr_javadoccomment">     * Pixel limit for region occupied by the spectrum.</em>
 <a class="jxr_linenumber" name="L6155" href="#L6155">6155</a> <em class="jxr_javadoccomment">     * &lt;p&gt;</em>
@@ -6274,7 +6274,7 @@
 <a class="jxr_linenumber" name="L6266" href="#L6266">6266</a> <em class="jxr_javadoccomment">     * index = none</em>
 <a class="jxr_linenumber" name="L6267" href="#L6267">6267</a> <em class="jxr_javadoccomment">     * &lt;/p&gt;</em>
 <a class="jxr_linenumber" name="L6268" href="#L6268">6268</a> <em class="jxr_javadoccomment">     */</em>
-<a class="jxr_linenumber" name="L6269" href="#L6269">6269</a>     PREFLASH(HDU.PRIMARY_EXTENSION, VALUE.REAL, <span class="jxr_string">"Preflash time"</span>),
+<a class="jxr_linenumber" name="L6269" href="#L6269">6269</a>     PREFLASH(HDU.ANY, VALUE.REAL, <span class="jxr_string">"Preflash time"</span>),
 <a class="jxr_linenumber" name="L6270" href="#L6270">6270</a>     <em class="jxr_javadoccomment">/**</em>
 <a class="jxr_linenumber" name="L6271" href="#L6271">6271</a> <em class="jxr_javadoccomment">     * Processing log information formatted as FITS comments.</em>
 <a class="jxr_linenumber" name="L6272" href="#L6272">6272</a> <em class="jxr_javadoccomment">     * &lt;p&gt;</em>
@@ -6284,7 +6284,7 @@
 <a class="jxr_linenumber" name="L6276" href="#L6276">6276</a> <em class="jxr_javadoccomment">     * index = 1-9999</em>
 <a class="jxr_linenumber" name="L6277" href="#L6277">6277</a> <em class="jxr_javadoccomment">     * &lt;/p&gt;</em>
 <a class="jxr_linenumber" name="L6278" href="#L6278">6278</a> <em class="jxr_javadoccomment">     */</em>
-<a class="jxr_linenumber" name="L6279" href="#L6279">6279</a>     PROCnnn(HDU.PRIMARY_EXTENSION, VALUE.STRING, <span class="jxr_string">""</span>),
+<a class="jxr_linenumber" name="L6279" href="#L6279">6279</a>     PROCnnn(HDU.ANY, VALUE.STRING, <span class="jxr_string">""</span>),
 <a class="jxr_linenumber" name="L6280" href="#L6280">6280</a>     <em class="jxr_javadoccomment">/**</em>
 <a class="jxr_linenumber" name="L6281" href="#L6281">6281</a> <em class="jxr_javadoccomment">     * Processing status.</em>
 <a class="jxr_linenumber" name="L6282" href="#L6282">6282</a> <em class="jxr_javadoccomment">     * &lt;p&gt;</em>
@@ -6294,7 +6294,7 @@
 <a class="jxr_linenumber" name="L6286" href="#L6286">6286</a> <em class="jxr_javadoccomment">     * index = none</em>
 <a class="jxr_linenumber" name="L6287" href="#L6287">6287</a> <em class="jxr_javadoccomment">     * &lt;/p&gt;</em>
 <a class="jxr_linenumber" name="L6288" href="#L6288">6288</a> <em class="jxr_javadoccomment">     */</em>
-<a class="jxr_linenumber" name="L6289" href="#L6289">6289</a>     PROCSTAT(HDU.PRIMARY_EXTENSION, VALUE.STRING, <span class="jxr_string">"Processing status"</span>),
+<a class="jxr_linenumber" name="L6289" href="#L6289">6289</a>     PROCSTAT(HDU.ANY, VALUE.STRING, <span class="jxr_string">"Processing status"</span>),
 <a class="jxr_linenumber" name="L6290" href="#L6290">6290</a>     <em class="jxr_javadoccomment">/**</em>
 <a class="jxr_linenumber" name="L6291" href="#L6291">6291</a> <em class="jxr_javadoccomment">     * The unique observatory proposal identification.</em>
 <a class="jxr_linenumber" name="L6292" href="#L6292">6292</a> <em class="jxr_javadoccomment">     * &lt;p&gt;</em>
@@ -6348,7 +6348,7 @@
 <a class="jxr_linenumber" name="L6340" href="#L6340">6340</a> <em class="jxr_javadoccomment">     * index = none</em>
 <a class="jxr_linenumber" name="L6341" href="#L6341">6341</a> <em class="jxr_javadoccomment">     * &lt;/p&gt;</em>
 <a class="jxr_linenumber" name="L6342" href="#L6342">6342</a> <em class="jxr_javadoccomment">     */</em>
-<a class="jxr_linenumber" name="L6343" href="#L6343">6343</a>     RADECEQ(HDU.PRIMARY_EXTENSION, VALUE.REAL, <span class="jxr_string">"Default coordinate equinox"</span>),
+<a class="jxr_linenumber" name="L6343" href="#L6343">6343</a>     RADECEQ(HDU.ANY, VALUE.REAL, <span class="jxr_string">"Default coordinate equinox"</span>),
 <a class="jxr_linenumber" name="L6344" href="#L6344">6344</a> 
 <a class="jxr_linenumber" name="L6345" href="#L6345">6345</a>     <em class="jxr_javadoccomment">/**</em>
 <a class="jxr_linenumber" name="L6346" href="#L6346">6346</a> <em class="jxr_javadoccomment">     * Projected position angle of the positive right ascension axis on the detector. The position angle is measured</em>
@@ -6373,7 +6373,7 @@
 <a class="jxr_linenumber" name="L6365" href="#L6365">6365</a> <em class="jxr_javadoccomment">     * index = none</em>
 <a class="jxr_linenumber" name="L6366" href="#L6366">6366</a> <em class="jxr_javadoccomment">     * &lt;/p&gt;</em>
 <a class="jxr_linenumber" name="L6367" href="#L6367">6367</a> <em class="jxr_javadoccomment">     */</em>
-<a class="jxr_linenumber" name="L6368" href="#L6368">6368</a>     RAUNIT(HDU.PRIMARY_EXTENSION, VALUE.STRING, <span class="jxr_string">"Right ascension unit"</span>),
+<a class="jxr_linenumber" name="L6368" href="#L6368">6368</a>     RAUNIT(HDU.ANY, VALUE.STRING, <span class="jxr_string">"Right ascension unit"</span>),
 <a class="jxr_linenumber" name="L6369" href="#L6369">6369</a>     <em class="jxr_javadoccomment">/**</em>
 <a class="jxr_linenumber" name="L6370" href="#L6370">6370</a> <em class="jxr_javadoccomment">     * CCD readout noise in rms electrons. This is the most current estimate.</em>
 <a class="jxr_linenumber" name="L6371" href="#L6371">6371</a> <em class="jxr_javadoccomment">     * &lt;p&gt;</em>
@@ -6399,7 +6399,7 @@
 <a class="jxr_linenumber" name="L6391" href="#L6391">6391</a> <em class="jxr_javadoccomment">     * index = none none</em>
 <a class="jxr_linenumber" name="L6392" href="#L6392">6392</a> <em class="jxr_javadoccomment">     * &lt;/p&gt;</em>
 <a class="jxr_linenumber" name="L6393" href="#L6393">6393</a> <em class="jxr_javadoccomment">     */</em>
-<a class="jxr_linenumber" name="L6394" href="#L6394">6394</a>     READTIME(HDU.PRIMARY_EXTENSION, VALUE.REAL, <span class="jxr_string">"Unbinned pixel read time"</span>),
+<a class="jxr_linenumber" name="L6394" href="#L6394">6394</a>     READTIME(HDU.ANY, VALUE.REAL, <span class="jxr_string">"Unbinned pixel read time"</span>),
 <a class="jxr_linenumber" name="L6395" href="#L6395">6395</a>     <em class="jxr_javadoccomment">/**</em>
 <a class="jxr_linenumber" name="L6396" href="#L6396">6396</a> <em class="jxr_javadoccomment">     * Archive identification. This may be the same as the observation identification.</em>
 <a class="jxr_linenumber" name="L6397" href="#L6397">6397</a> <em class="jxr_javadoccomment">     * &lt;p&gt;</em>
@@ -6479,7 +6479,7 @@
 <a class="jxr_linenumber" name="L6471" href="#L6471">6471</a> <em class="jxr_javadoccomment">     * index = none 1-9999</em>
 <a class="jxr_linenumber" name="L6472" href="#L6472">6472</a> <em class="jxr_javadoccomment">     * &lt;/p&gt;</em>
 <a class="jxr_linenumber" name="L6473" href="#L6473">6473</a> <em class="jxr_javadoccomment">     */</em>
-<a class="jxr_linenumber" name="L6474" href="#L6474">6474</a>     SEXP(HDU.PRIMARY_EXTENSION, VALUE.REAL, <span class="jxr_string">"Subexposure time"</span>),
+<a class="jxr_linenumber" name="L6474" href="#L6474">6474</a>     SEXP(HDU.ANY, VALUE.REAL, <span class="jxr_string">"Subexposure time"</span>),
 <a class="jxr_linenumber" name="L6475" href="#L6475">6475</a>     <em class="jxr_javadoccomment">/**</em>
 <a class="jxr_linenumber" name="L6476" href="#L6476">6476</a> <em class="jxr_javadoccomment">     * Exposure time of the nth subexposure. If all subexposures are the same length then only the first keyword, SEXP,</em>
 <a class="jxr_linenumber" name="L6477" href="#L6477">6477</a> <em class="jxr_javadoccomment">     * is needed. For charge shuffling the subexposure time is the total time for each charge shuffled exposure. There</em>
@@ -6495,7 +6495,7 @@
 <a class="jxr_linenumber" name="L6487" href="#L6487">6487</a> <em class="jxr_javadoccomment">     * index = none 1-9999</em>
 <a class="jxr_linenumber" name="L6488" href="#L6488">6488</a> <em class="jxr_javadoccomment">     * &lt;/p&gt;</em>
 <a class="jxr_linenumber" name="L6489" href="#L6489">6489</a> <em class="jxr_javadoccomment">     */</em>
-<a class="jxr_linenumber" name="L6490" href="#L6490">6490</a>     SEXPnnn(HDU.PRIMARY_EXTENSION, VALUE.REAL, <span class="jxr_string">"Subexposure time"</span>),
+<a class="jxr_linenumber" name="L6490" href="#L6490">6490</a>     SEXPnnn(HDU.ANY, VALUE.REAL, <span class="jxr_string">"Subexposure time"</span>),
 <a class="jxr_linenumber" name="L6491" href="#L6491">6491</a>     <em class="jxr_javadoccomment">/**</em>
 <a class="jxr_linenumber" name="L6492" href="#L6492">6492</a> <em class="jxr_javadoccomment">     * Time for the shutter to close fully.</em>
 <a class="jxr_linenumber" name="L6493" href="#L6493">6493</a> <em class="jxr_javadoccomment">     * &lt;p&gt;</em>
@@ -6602,7 +6602,7 @@
 <a class="jxr_linenumber" name="L6594" href="#L6594">6594</a> <em class="jxr_javadoccomment">     * index = none 1-9999</em>
 <a class="jxr_linenumber" name="L6595" href="#L6595">6595</a> <em class="jxr_javadoccomment">     * &lt;/p&gt;</em>
 <a class="jxr_linenumber" name="L6596" href="#L6596">6596</a> <em class="jxr_javadoccomment">     */</em>
-<a class="jxr_linenumber" name="L6597" href="#L6597">6597</a>     SUT(HDU.PRIMARY_EXTENSION, VALUE.STRING, <span class="jxr_string">"UTC of subexposure start"</span>),
+<a class="jxr_linenumber" name="L6597" href="#L6597">6597</a>     SUT(HDU.ANY, VALUE.STRING, <span class="jxr_string">"UTC of subexposure start"</span>),
 <a class="jxr_linenumber" name="L6598" href="#L6598">6598</a>     <em class="jxr_javadoccomment">/**</em>
 <a class="jxr_linenumber" name="L6599" href="#L6599">6599</a> <em class="jxr_javadoccomment">     * UTC of the start of each subexposure.</em>
 <a class="jxr_linenumber" name="L6600" href="#L6600">6600</a> <em class="jxr_javadoccomment">     * &lt;p&gt;</em>
@@ -6615,7 +6615,7 @@
 <a class="jxr_linenumber" name="L6607" href="#L6607">6607</a> <em class="jxr_javadoccomment">     * index = none 1-9999</em>
 <a class="jxr_linenumber" name="L6608" href="#L6608">6608</a> <em class="jxr_javadoccomment">     * &lt;/p&gt;</em>
 <a class="jxr_linenumber" name="L6609" href="#L6609">6609</a> <em class="jxr_javadoccomment">     */</em>
-<a class="jxr_linenumber" name="L6610" href="#L6610">6610</a>     SUTn(HDU.PRIMARY_EXTENSION, VALUE.STRING, <span class="jxr_string">"UTC of subexposure start"</span>),
+<a class="jxr_linenumber" name="L6610" href="#L6610">6610</a>     SUTn(HDU.ANY, VALUE.STRING, <span class="jxr_string">"UTC of subexposure start"</span>),
 <a class="jxr_linenumber" name="L6611" href="#L6611">6611</a>     <em class="jxr_javadoccomment">/**</em>
 <a class="jxr_linenumber" name="L6612" href="#L6612">6612</a> <em class="jxr_javadoccomment">     * FWHM of the object spectrum profile on the detector. The width is in the units of the spatial world coordinate</em>
 <a class="jxr_linenumber" name="L6613" href="#L6613">6613</a> <em class="jxr_javadoccomment">     * system. This may be approximate. It is particularly useful for specifying the profile width of fiber fed spectra.</em>
@@ -6988,7 +6988,7 @@
 <a class="jxr_linenumber" name="L6980" href="#L6980">6980</a> <em class="jxr_javadoccomment">     * index = none</em>
 <a class="jxr_linenumber" name="L6981" href="#L6981">6981</a> <em class="jxr_javadoccomment">     * &lt;/p&gt;</em>
 <a class="jxr_linenumber" name="L6982" href="#L6982">6982</a> <em class="jxr_javadoccomment">     */</em>
-<a class="jxr_linenumber" name="L6983" href="#L6983">6983</a>     TIMEEND(HDU.PRIMARY_EXTENSION, VALUE.STRING, <span class="jxr_string">"Time of exposure end"</span>),
+<a class="jxr_linenumber" name="L6983" href="#L6983">6983</a>     TIMEEND(HDU.ANY, VALUE.STRING, <span class="jxr_string">"Time of exposure end"</span>),
 <a class="jxr_linenumber" name="L6984" href="#L6984">6984</a>     <em class="jxr_javadoccomment">/**</em>
 <a class="jxr_linenumber" name="L6985" href="#L6985">6985</a> <em class="jxr_javadoccomment">     * Time of header creation.</em>
 <a class="jxr_linenumber" name="L6986" href="#L6986">6986</a> <em class="jxr_javadoccomment">     * &lt;p&gt;</em>
@@ -7001,7 +7001,7 @@
 <a class="jxr_linenumber" name="L6993" href="#L6993">6993</a> <em class="jxr_javadoccomment">     * index = none</em>
 <a class="jxr_linenumber" name="L6994" href="#L6994">6994</a> <em class="jxr_javadoccomment">     * &lt;/p&gt;</em>
 <a class="jxr_linenumber" name="L6995" href="#L6995">6995</a> <em class="jxr_javadoccomment">     */</em>
-<a class="jxr_linenumber" name="L6996" href="#L6996">6996</a>     TIMEHDR(HDU.PRIMARY_EXTENSION, VALUE.STRING, <span class="jxr_string">"Time of header creation"</span>),
+<a class="jxr_linenumber" name="L6996" href="#L6996">6996</a>     TIMEHDR(HDU.ANY, VALUE.STRING, <span class="jxr_string">"Time of header creation"</span>),
 <a class="jxr_linenumber" name="L6997" href="#L6997">6997</a>     <em class="jxr_javadoccomment">/**</em>
 <a class="jxr_linenumber" name="L6998" href="#L6998">6998</a> <em class="jxr_javadoccomment">     * Default time system. All times which do not have a "timesys" element associated with them in this dictionary</em>
 <a class="jxr_linenumber" name="L6999" href="#L6999">6999</a> <em class="jxr_javadoccomment">     * default to this keyword. .</em>
@@ -7033,7 +7033,7 @@
 <a class="jxr_linenumber" name="L7025" href="#L7025">7025</a> <em class="jxr_javadoccomment">     * index = none</em>
 <a class="jxr_linenumber" name="L7026" href="#L7026">7026</a> <em class="jxr_javadoccomment">     * &lt;/p&gt;</em>
 <a class="jxr_linenumber" name="L7027" href="#L7027">7027</a> <em class="jxr_javadoccomment">     */</em>
-<a class="jxr_linenumber" name="L7028" href="#L7028">7028</a>     TSYSEND(HDU.PRIMARY_EXTENSION, VALUE.STRING, <span class="jxr_string">"Time system for TIMEEND"</span>),
+<a class="jxr_linenumber" name="L7028" href="#L7028">7028</a>     TSYSEND(HDU.ANY, VALUE.STRING, <span class="jxr_string">"Time system for TIMEEND"</span>),
 <a class="jxr_linenumber" name="L7029" href="#L7029">7029</a>     <em class="jxr_javadoccomment">/**</em>
 <a class="jxr_linenumber" name="L7030" href="#L7030">7030</a> <em class="jxr_javadoccomment">     * Time system for the header creation keywords.</em>
 <a class="jxr_linenumber" name="L7031" href="#L7031">7031</a> <em class="jxr_javadoccomment">     * &lt;p&gt;</em>
@@ -7043,7 +7043,7 @@
 <a class="jxr_linenumber" name="L7035" href="#L7035">7035</a> <em class="jxr_javadoccomment">     * index = none</em>
 <a class="jxr_linenumber" name="L7036" href="#L7036">7036</a> <em class="jxr_javadoccomment">     * &lt;/p&gt;</em>
 <a class="jxr_linenumber" name="L7037" href="#L7037">7037</a> <em class="jxr_javadoccomment">     */</em>
-<a class="jxr_linenumber" name="L7038" href="#L7038">7038</a>     TSYSHDR(HDU.PRIMARY_EXTENSION, VALUE.STRING, <span class="jxr_string">"Time system for header creation"</span>),
+<a class="jxr_linenumber" name="L7038" href="#L7038">7038</a>     TSYSHDR(HDU.ANY, VALUE.STRING, <span class="jxr_string">"Time system for header creation"</span>),
 <a class="jxr_linenumber" name="L7039" href="#L7039">7039</a>     <em class="jxr_javadoccomment">/**</em>
 <a class="jxr_linenumber" name="L7040" href="#L7040">7040</a> <em class="jxr_javadoccomment">     * Time system for the TIME-OBS keyword.</em>
 <a class="jxr_linenumber" name="L7041" href="#L7041">7041</a> <em class="jxr_javadoccomment">     * &lt;p&gt;</em>
@@ -7053,7 +7053,7 @@
 <a class="jxr_linenumber" name="L7045" href="#L7045">7045</a> <em class="jxr_javadoccomment">     * index = none</em>
 <a class="jxr_linenumber" name="L7046" href="#L7046">7046</a> <em class="jxr_javadoccomment">     * &lt;/p&gt;</em>
 <a class="jxr_linenumber" name="L7047" href="#L7047">7047</a> <em class="jxr_javadoccomment">     */</em>
-<a class="jxr_linenumber" name="L7048" href="#L7048">7048</a>     TSYSOBS(HDU.PRIMARY_EXTENSION, VALUE.STRING, <span class="jxr_string">"Time system for TIME-OBS"</span>),
+<a class="jxr_linenumber" name="L7048" href="#L7048">7048</a>     TSYSOBS(HDU.ANY, VALUE.STRING, <span class="jxr_string">"Time system for TIME-OBS"</span>),
 <a class="jxr_linenumber" name="L7049" href="#L7049">7049</a>     <em class="jxr_javadoccomment">/**</em>
 <a class="jxr_linenumber" name="L7050" href="#L7050">7050</a> <em class="jxr_javadoccomment">     * TV name.</em>
 <a class="jxr_linenumber" name="L7051" href="#L7051">7051</a> <em class="jxr_javadoccomment">     * &lt;p&gt;</em>
@@ -7774,7 +7774,7 @@
 <a class="jxr_linenumber" name="L7766" href="#L7766">7766</a> <em class="jxr_javadoccomment">     * index = none</em>
 <a class="jxr_linenumber" name="L7767" href="#L7767">7767</a> <em class="jxr_javadoccomment">     * &lt;/p&gt;</em>
 <a class="jxr_linenumber" name="L7768" href="#L7768">7768</a> <em class="jxr_javadoccomment">     */</em>
-<a class="jxr_linenumber" name="L7769" href="#L7769">7769</a>     UTC_OBS(<span class="jxr_string">"UTC-OBS"</span>, HDU.PRIMARY_EXTENSION, VALUE.STRING, <span class="jxr_string">"UTC of exposure start"</span>),
+<a class="jxr_linenumber" name="L7769" href="#L7769">7769</a>     UTC_OBS(<span class="jxr_string">"UTC-OBS"</span>, HDU.ANY, VALUE.STRING, <span class="jxr_string">"UTC of exposure start"</span>),
 <a class="jxr_linenumber" name="L7770" href="#L7770">7770</a>     <em class="jxr_javadoccomment">/**</em>
 <a class="jxr_linenumber" name="L7771" href="#L7771">7771</a> <em class="jxr_javadoccomment">     * UTC at the end of the exposure.</em>
 <a class="jxr_linenumber" name="L7772" href="#L7772">7772</a> <em class="jxr_javadoccomment">     * &lt;p&gt;</em>
@@ -7787,7 +7787,7 @@
 <a class="jxr_linenumber" name="L7779" href="#L7779">7779</a> <em class="jxr_javadoccomment">     * index = none</em>
 <a class="jxr_linenumber" name="L7780" href="#L7780">7780</a> <em class="jxr_javadoccomment">     * &lt;/p&gt;</em>
 <a class="jxr_linenumber" name="L7781" href="#L7781">7781</a> <em class="jxr_javadoccomment">     */</em>
-<a class="jxr_linenumber" name="L7782" href="#L7782">7782</a>     UTCEND(HDU.PRIMARY_EXTENSION, VALUE.STRING, <span class="jxr_string">"UTC at end of exposure"</span>),
+<a class="jxr_linenumber" name="L7782" href="#L7782">7782</a>     UTCEND(HDU.ANY, VALUE.STRING, <span class="jxr_string">"UTC at end of exposure"</span>),
 <a class="jxr_linenumber" name="L7783" href="#L7783">7783</a>     <em class="jxr_javadoccomment">/**</em>
 <a class="jxr_linenumber" name="L7784" href="#L7784">7784</a> <em class="jxr_javadoccomment">     * UTC of header creation.</em>
 <a class="jxr_linenumber" name="L7785" href="#L7785">7785</a> <em class="jxr_javadoccomment">     * &lt;p&gt;</em>
@@ -7800,7 +7800,7 @@
 <a class="jxr_linenumber" name="L7792" href="#L7792">7792</a> <em class="jxr_javadoccomment">     * index = none</em>
 <a class="jxr_linenumber" name="L7793" href="#L7793">7793</a> <em class="jxr_javadoccomment">     * &lt;/p&gt;</em>
 <a class="jxr_linenumber" name="L7794" href="#L7794">7794</a> <em class="jxr_javadoccomment">     */</em>
-<a class="jxr_linenumber" name="L7795" href="#L7795">7795</a>     UTCHDR(HDU.PRIMARY_EXTENSION, VALUE.STRING, <span class="jxr_string">"UTC of header creation"</span>),
+<a class="jxr_linenumber" name="L7795" href="#L7795">7795</a>     UTCHDR(HDU.ANY, VALUE.STRING, <span class="jxr_string">"UTC of header creation"</span>),
 <a class="jxr_linenumber" name="L7796" href="#L7796">7796</a>     <em class="jxr_javadoccomment">/**</em>
 <a class="jxr_linenumber" name="L7797" href="#L7797">7797</a> <em class="jxr_javadoccomment">     * Default UTC time for the observation. This keyword is generally not used and is UTC-OBS keyword for the start of</em>
 <a class="jxr_linenumber" name="L7798" href="#L7798">7798</a> <em class="jxr_javadoccomment">     * the exposure on the detector is used.</em>
@@ -7814,7 +7814,7 @@
 <a class="jxr_linenumber" name="L7806" href="#L7806">7806</a> <em class="jxr_javadoccomment">     * index = none</em>
 <a class="jxr_linenumber" name="L7807" href="#L7807">7807</a> <em class="jxr_javadoccomment">     * &lt;/p&gt;</em>
 <a class="jxr_linenumber" name="L7808" href="#L7808">7808</a> <em class="jxr_javadoccomment">     */</em>
-<a class="jxr_linenumber" name="L7809" href="#L7809">7809</a>     UTCOBS(HDU.PRIMARY_EXTENSION, VALUE.STRING, <span class="jxr_string">"UTC of observation"</span>),
+<a class="jxr_linenumber" name="L7809" href="#L7809">7809</a>     UTCOBS(HDU.ANY, VALUE.STRING, <span class="jxr_string">"UTC of observation"</span>),
 <a class="jxr_linenumber" name="L7810" href="#L7810">7810</a>     <em class="jxr_javadoccomment">/**</em>
 <a class="jxr_linenumber" name="L7811" href="#L7811">7811</a> <em class="jxr_javadoccomment">     * IRAF WCS attribute strings for all axes. These are defined by the IRAF WCS system.</em>
 <a class="jxr_linenumber" name="L7812" href="#L7812">7812</a> <em class="jxr_javadoccomment">     * &lt;p&gt;</em>
@@ -7824,7 +7824,7 @@
 <a class="jxr_linenumber" name="L7816" href="#L7816">7816</a> <em class="jxr_javadoccomment">     * index = 1-999</em>
 <a class="jxr_linenumber" name="L7817" href="#L7817">7817</a> <em class="jxr_javadoccomment">     * &lt;/p&gt;</em>
 <a class="jxr_linenumber" name="L7818" href="#L7818">7818</a> <em class="jxr_javadoccomment">     */</em>
-<a class="jxr_linenumber" name="L7819" href="#L7819">7819</a>     WAT_nnn(HDU.PRIMARY_EXTENSION, VALUE.STRING, <span class="jxr_string">""</span>),
+<a class="jxr_linenumber" name="L7819" href="#L7819">7819</a>     WAT_nnn(HDU.ANY, VALUE.STRING, <span class="jxr_string">""</span>),
 <a class="jxr_linenumber" name="L7820" href="#L7820">7820</a>     <em class="jxr_javadoccomment">/**</em>
 <a class="jxr_linenumber" name="L7821" href="#L7821">7821</a> <em class="jxr_javadoccomment">     * IRAF WCS attribute strings. These are defined by the IRAF WCS system.</em>
 <a class="jxr_linenumber" name="L7822" href="#L7822">7822</a> <em class="jxr_javadoccomment">     * &lt;p&gt;</em>
@@ -7834,7 +7834,7 @@
 <a class="jxr_linenumber" name="L7826" href="#L7826">7826</a> <em class="jxr_javadoccomment">     * index = 1-9,1-999</em>
 <a class="jxr_linenumber" name="L7827" href="#L7827">7827</a> <em class="jxr_javadoccomment">     * &lt;/p&gt;</em>
 <a class="jxr_linenumber" name="L7828" href="#L7828">7828</a> <em class="jxr_javadoccomment">     */</em>
-<a class="jxr_linenumber" name="L7829" href="#L7829">7829</a>     WATn_nnn(HDU.PRIMARY_EXTENSION, VALUE.STRING, <span class="jxr_string">""</span>),
+<a class="jxr_linenumber" name="L7829" href="#L7829">7829</a>     WATn_nnn(HDU.ANY, VALUE.STRING, <span class="jxr_string">""</span>),
 <a class="jxr_linenumber" name="L7830" href="#L7830">7830</a>     <em class="jxr_javadoccomment">/**</em>
 <a class="jxr_linenumber" name="L7831" href="#L7831">7831</a> <em class="jxr_javadoccomment">     * Descriptive string identifying the source of the astrometry used to derive the WCS. One example is the exposure</em>
 <a class="jxr_linenumber" name="L7832" href="#L7832">7832</a> <em class="jxr_javadoccomment">     * used to derive a WCS apart from the reference coordinate.</em>
@@ -7845,7 +7845,7 @@
 <a class="jxr_linenumber" name="L7837" href="#L7837">7837</a> <em class="jxr_javadoccomment">     * index = none 1-9999</em>
 <a class="jxr_linenumber" name="L7838" href="#L7838">7838</a> <em class="jxr_javadoccomment">     * &lt;/p&gt;</em>
 <a class="jxr_linenumber" name="L7839" href="#L7839">7839</a> <em class="jxr_javadoccomment">     */</em>
-<a class="jxr_linenumber" name="L7840" href="#L7840">7840</a>     WCSAnnn(HDU.PRIMARY_EXTENSION, VALUE.STRING, <span class="jxr_string">"WCS Source"</span>),
+<a class="jxr_linenumber" name="L7840" href="#L7840">7840</a>     WCSAnnn(HDU.ANY, VALUE.STRING, <span class="jxr_string">"WCS Source"</span>),
 <a class="jxr_linenumber" name="L7841" href="#L7841">7841</a>     <em class="jxr_javadoccomment">/**</em>
 <a class="jxr_linenumber" name="L7842" href="#L7842">7842</a> <em class="jxr_javadoccomment">     * Descriptive string identifying the source of the astrometry used to derive the WCS. One example is the exposure</em>
 <a class="jxr_linenumber" name="L7843" href="#L7843">7843</a> <em class="jxr_javadoccomment">     * used to derive a WCS apart from the reference coordinate.</em>
@@ -7856,7 +7856,7 @@
 <a class="jxr_linenumber" name="L7848" href="#L7848">7848</a> <em class="jxr_javadoccomment">     * index = none 1-9999</em>
 <a class="jxr_linenumber" name="L7849" href="#L7849">7849</a> <em class="jxr_javadoccomment">     * &lt;/p&gt;</em>
 <a class="jxr_linenumber" name="L7850" href="#L7850">7850</a> <em class="jxr_javadoccomment">     */</em>
-<a class="jxr_linenumber" name="L7851" href="#L7851">7851</a>     WCSASTRM(HDU.PRIMARY_EXTENSION, VALUE.STRING, <span class="jxr_string">"WCS Source"</span>),
+<a class="jxr_linenumber" name="L7851" href="#L7851">7851</a>     WCSASTRM(HDU.ANY, VALUE.STRING, <span class="jxr_string">"WCS Source"</span>),
 <a class="jxr_linenumber" name="L7852" href="#L7852">7852</a>     <em class="jxr_javadoccomment">/**</em>
 <a class="jxr_linenumber" name="L7853" href="#L7853">7853</a> <em class="jxr_javadoccomment">     * Dimensionality of the WCS physical system. In IRAF a WCS can have a higher dimensionality than the image.</em>
 <a class="jxr_linenumber" name="L7854" href="#L7854">7854</a> <em class="jxr_javadoccomment">     * &lt;p&gt;</em>
@@ -7866,7 +7866,7 @@
 <a class="jxr_linenumber" name="L7858" href="#L7858">7858</a> <em class="jxr_javadoccomment">     * index = none</em>
 <a class="jxr_linenumber" name="L7859" href="#L7859">7859</a> <em class="jxr_javadoccomment">     * &lt;/p&gt;</em>
 <a class="jxr_linenumber" name="L7860" href="#L7860">7860</a> <em class="jxr_javadoccomment">     */</em>
-<a class="jxr_linenumber" name="L7861" href="#L7861">7861</a>     WCSDIM(HDU.PRIMARY_EXTENSION, VALUE.INTEGER, <span class="jxr_string">"WCS dimensionality"</span>),
+<a class="jxr_linenumber" name="L7861" href="#L7861">7861</a>     WCSDIM(HDU.ANY, VALUE.INTEGER, <span class="jxr_string">"WCS dimensionality"</span>),
 <a class="jxr_linenumber" name="L7862" href="#L7862">7862</a>     <em class="jxr_javadoccomment">/**</em>
 <a class="jxr_linenumber" name="L7863" href="#L7863">7863</a> <em class="jxr_javadoccomment">     * Epoch of the coordinates used in the world coordinate system.</em>
 <a class="jxr_linenumber" name="L7864" href="#L7864">7864</a> <em class="jxr_javadoccomment">     * &lt;p&gt;</em>
@@ -7879,7 +7879,7 @@
 <a class="jxr_linenumber" name="L7871" href="#L7871">7871</a> <em class="jxr_javadoccomment">     * index = none 1-9999</em>
 <a class="jxr_linenumber" name="L7872" href="#L7872">7872</a> <em class="jxr_javadoccomment">     * &lt;/p&gt;</em>
 <a class="jxr_linenumber" name="L7873" href="#L7873">7873</a> <em class="jxr_javadoccomment">     */</em>
-<a class="jxr_linenumber" name="L7874" href="#L7874">7874</a>     WCSEnnn(HDU.PRIMARY_EXTENSION, VALUE.REAL, <span class="jxr_string">"WCS coordinate epoch"</span>),
+<a class="jxr_linenumber" name="L7874" href="#L7874">7874</a>     WCSEnnn(HDU.ANY, VALUE.REAL, <span class="jxr_string">"WCS coordinate epoch"</span>),
 <a class="jxr_linenumber" name="L7875" href="#L7875">7875</a>     <em class="jxr_javadoccomment">/**</em>
 <a class="jxr_linenumber" name="L7876" href="#L7876">7876</a> <em class="jxr_javadoccomment">     * Equinox when equatorial coordinates are used in the world coordinate system. A value before 1984 is Besselian</em>
 <a class="jxr_linenumber" name="L7877" href="#L7877">7877</a> <em class="jxr_javadoccomment">     * otherwise it is Julian.</em>
@@ -7893,7 +7893,7 @@
 <a class="jxr_linenumber" name="L7885" href="#L7885">7885</a> <em class="jxr_javadoccomment">     * index = none 1-9999</em>
 <a class="jxr_linenumber" name="L7886" href="#L7886">7886</a> <em class="jxr_javadoccomment">     * &lt;/p&gt;</em>
 <a class="jxr_linenumber" name="L7887" href="#L7887">7887</a> <em class="jxr_javadoccomment">     */</em>
-<a class="jxr_linenumber" name="L7888" href="#L7888">7888</a>     WCSEPOCH(HDU.PRIMARY_EXTENSION, VALUE.REAL, <span class="jxr_string">"WCS coordinate epoch"</span>),
+<a class="jxr_linenumber" name="L7888" href="#L7888">7888</a>     WCSEPOCH(HDU.ANY, VALUE.REAL, <span class="jxr_string">"WCS coordinate epoch"</span>),
 <a class="jxr_linenumber" name="L7889" href="#L7889">7889</a>     <em class="jxr_javadoccomment">/**</em>
 <a class="jxr_linenumber" name="L7890" href="#L7890">7890</a> <em class="jxr_javadoccomment">     * Coordinate system type when equatorial coordinates are used in the world coordinate system.</em>
 <a class="jxr_linenumber" name="L7891" href="#L7891">7891</a> <em class="jxr_javadoccomment">     * &lt;p&gt;</em>
@@ -7903,7 +7903,7 @@
 <a class="jxr_linenumber" name="L7895" href="#L7895">7895</a> <em class="jxr_javadoccomment">     * index = none 1-9999</em>
 <a class="jxr_linenumber" name="L7896" href="#L7896">7896</a> <em class="jxr_javadoccomment">     * &lt;/p&gt;</em>
 <a class="jxr_linenumber" name="L7897" href="#L7897">7897</a> <em class="jxr_javadoccomment">     */</em>
-<a class="jxr_linenumber" name="L7898" href="#L7898">7898</a>     WCSRADEC(HDU.PRIMARY_EXTENSION, VALUE.STRING, <span class="jxr_string">"WCS coordinate system"</span>),
+<a class="jxr_linenumber" name="L7898" href="#L7898">7898</a>     WCSRADEC(HDU.ANY, VALUE.STRING, <span class="jxr_string">"WCS coordinate system"</span>),
 <a class="jxr_linenumber" name="L7899" href="#L7899">7899</a>     <em class="jxr_javadoccomment">/**</em>
 <a class="jxr_linenumber" name="L7900" href="#L7900">7900</a> <em class="jxr_javadoccomment">     * Coordinate system type when equatorial coordinates are used in the world coordinate system.</em>
 <a class="jxr_linenumber" name="L7901" href="#L7901">7901</a> <em class="jxr_javadoccomment">     * &lt;p&gt;</em>
@@ -7913,7 +7913,7 @@
 <a class="jxr_linenumber" name="L7905" href="#L7905">7905</a> <em class="jxr_javadoccomment">     * index = none 1-9999</em>
 <a class="jxr_linenumber" name="L7906" href="#L7906">7906</a> <em class="jxr_javadoccomment">     * &lt;/p&gt;</em>
 <a class="jxr_linenumber" name="L7907" href="#L7907">7907</a> <em class="jxr_javadoccomment">     */</em>
-<a class="jxr_linenumber" name="L7908" href="#L7908">7908</a>     WCSRnnn(HDU.PRIMARY_EXTENSION, VALUE.STRING, <span class="jxr_string">"WCS coordinate system"</span>),
+<a class="jxr_linenumber" name="L7908" href="#L7908">7908</a>     WCSRnnn(HDU.ANY, VALUE.STRING, <span class="jxr_string">"WCS coordinate system"</span>),
 <a class="jxr_linenumber" name="L7909" href="#L7909">7909</a>     <em class="jxr_javadoccomment">/**</em>
 <a class="jxr_linenumber" name="L7910" href="#L7910">7910</a> <em class="jxr_javadoccomment">     * Weather condition description. Generally this would be either 'clear' or 'partly cloudy'.</em>
 <a class="jxr_linenumber" name="L7911" href="#L7911">7911</a> <em class="jxr_javadoccomment">     * &lt;p&gt;</em>
@@ -7950,20 +7950,20 @@
 <a class="jxr_linenumber" name="L7942" href="#L7942">7942</a> <em class="jxr_javadoccomment">     * index = none</em>
 <a class="jxr_linenumber" name="L7943" href="#L7943">7943</a> <em class="jxr_javadoccomment">     * &lt;/p&gt;</em>
 <a class="jxr_linenumber" name="L7944" href="#L7944">7944</a> <em class="jxr_javadoccomment">     */</em>
-<a class="jxr_linenumber" name="L7945" href="#L7945">7945</a>     MJD_OBS(<span class="jxr_string">"MJD-OBS"</span>, HDU.PRIMARY_EXTENSION, VALUE.REAL, <span class="jxr_string">"MJD of exposure start"</span>);
+<a class="jxr_linenumber" name="L7945" href="#L7945">7945</a>     MJD_OBS(<span class="jxr_string">"MJD-OBS"</span>, HDU.ANY, VALUE.REAL, <span class="jxr_string">"MJD of exposure start"</span>);
 <a class="jxr_linenumber" name="L7946" href="#L7946">7946</a> 
-<a class="jxr_linenumber" name="L7947" href="#L7947">7947</a>     <strong class="jxr_keyword">private</strong> <strong class="jxr_keyword">final</strong> <a name="IFitsHeader" href="../../../../../nom/tam/fits/header/IFitsHeader.html#IFitsHeader">IFitsHeader</a> key;
+<a class="jxr_linenumber" name="L7947" href="#L7947">7947</a>     <strong class="jxr_keyword">private</strong> <strong class="jxr_keyword">final</strong> <a name="FitsKey" href="../../../../../nom/tam/fits/header/FitsKey.html#FitsKey">FitsKey</a> key;
 <a class="jxr_linenumber" name="L7948" href="#L7948">7948</a> 
 <a class="jxr_linenumber" name="L7949" href="#L7949">7949</a>     <a name="NOAOExt" href="../../../../../nom/tam/fits/header/extra/NOAOExt.html#NOAOExt">NOAOExt</a>(HDU hdu, VALUE valueType, String comment) {
 <a class="jxr_linenumber" name="L7950" href="#L7950">7950</a>         <strong class="jxr_keyword">this</strong>(<strong class="jxr_keyword">null</strong>, hdu, valueType, comment);
 <a class="jxr_linenumber" name="L7951" href="#L7951">7951</a>     }
 <a class="jxr_linenumber" name="L7952" href="#L7952">7952</a> 
 <a class="jxr_linenumber" name="L7953" href="#L7953">7953</a>     <a name="NOAOExt" href="../../../../../nom/tam/fits/header/extra/NOAOExt.html#NOAOExt">NOAOExt</a>(String key, HDU hdu, VALUE valueType, String comment) {
-<a class="jxr_linenumber" name="L7954" href="#L7954">7954</a>         <strong class="jxr_keyword">this</strong>.key = <strong class="jxr_keyword">new</strong> <a name="FitsHeaderImpl" href="../../../../../nom/tam/fits/header/FitsHeaderImpl.html#FitsHeaderImpl">FitsHeaderImpl</a>(key == <strong class="jxr_keyword">null</strong> ? name() : key, IFitsHeader.SOURCE.NOAO, hdu, valueType, comment);
+<a class="jxr_linenumber" name="L7954" href="#L7954">7954</a>         <strong class="jxr_keyword">this</strong>.key = <strong class="jxr_keyword">new</strong> <a name="FitsKey" href="../../../../../nom/tam/fits/header/FitsKey.html#FitsKey">FitsKey</a>(key == <strong class="jxr_keyword">null</strong> ? name() : key, IFitsHeader.SOURCE.NOAO, hdu, valueType, comment);
 <a class="jxr_linenumber" name="L7955" href="#L7955">7955</a>     }
 <a class="jxr_linenumber" name="L7956" href="#L7956">7956</a> 
 <a class="jxr_linenumber" name="L7957" href="#L7957">7957</a>     @Override
-<a class="jxr_linenumber" name="L7958" href="#L7958">7958</a>     <strong class="jxr_keyword">public</strong> <strong class="jxr_keyword">final</strong> <a name="IFitsHeader" href="../../../../../nom/tam/fits/header/IFitsHeader.html#IFitsHeader">IFitsHeader</a> impl() {
+<a class="jxr_linenumber" name="L7958" href="#L7958">7958</a>     <strong class="jxr_keyword">public</strong> <strong class="jxr_keyword">final</strong> <a name="FitsKey" href="../../../../../nom/tam/fits/header/FitsKey.html#FitsKey">FitsKey</a> impl() {
 <a class="jxr_linenumber" name="L7959" href="#L7959">7959</a>         <strong class="jxr_keyword">return</strong> key;
 <a class="jxr_linenumber" name="L7960" href="#L7960">7960</a>     }
 <a class="jxr_linenumber" name="L7961" href="#L7961">7961</a> 

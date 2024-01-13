@@ -65,14 +65,14 @@
 <a class="jxr_linenumber" name="L57" href="#L57">57</a>  <em class="jxr_javadoccomment">     */</em>
 <a class="jxr_linenumber" name="L58" href="#L58">58</a>      GRPNAME(SOURCE.HEASARC, HDU.TABLE, VALUE.STRING, <span class="jxr_string">"the grouping table name"</span>);
 <a class="jxr_linenumber" name="L59" href="#L59">59</a>  
-<a class="jxr_linenumber" name="L60" href="#L60">60</a>      <strong class="jxr_keyword">private</strong> <strong class="jxr_keyword">final</strong> <a name="IFitsHeader" href="../../../../nom/tam/fits/header/IFitsHeader.html#IFitsHeader">IFitsHeader</a> key;
+<a class="jxr_linenumber" name="L60" href="#L60">60</a>      <strong class="jxr_keyword">private</strong> <strong class="jxr_keyword">final</strong> <a name="FitsKey" href="../../../../nom/tam/fits/header/FitsKey.html#FitsKey">FitsKey</a> key;
 <a class="jxr_linenumber" name="L61" href="#L61">61</a>  
 <a class="jxr_linenumber" name="L62" href="#L62">62</a>      <a name="HierarchicalGrouping" href="../../../../nom/tam/fits/header/HierarchicalGrouping.html#HierarchicalGrouping">HierarchicalGrouping</a>(IFitsHeader.SOURCE status, HDU hdu, VALUE valueType, String comment) {
-<a class="jxr_linenumber" name="L63" href="#L63">63</a>          key = <strong class="jxr_keyword">new</strong> <a name="FitsHeaderImpl" href="../../../../nom/tam/fits/header/FitsHeaderImpl.html#FitsHeaderImpl">FitsHeaderImpl</a>(name(), status, hdu, valueType, comment);
+<a class="jxr_linenumber" name="L63" href="#L63">63</a>          key = <strong class="jxr_keyword">new</strong> <a name="FitsKey" href="../../../../nom/tam/fits/header/FitsKey.html#FitsKey">FitsKey</a>(name(), status, hdu, valueType, comment);
 <a class="jxr_linenumber" name="L64" href="#L64">64</a>      }
 <a class="jxr_linenumber" name="L65" href="#L65">65</a>  
 <a class="jxr_linenumber" name="L66" href="#L66">66</a>      @Override
-<a class="jxr_linenumber" name="L67" href="#L67">67</a>      <strong class="jxr_keyword">public</strong> <strong class="jxr_keyword">final</strong> <a name="IFitsHeader" href="../../../../nom/tam/fits/header/IFitsHeader.html#IFitsHeader">IFitsHeader</a> impl() {
+<a class="jxr_linenumber" name="L67" href="#L67">67</a>      <strong class="jxr_keyword">public</strong> <strong class="jxr_keyword">final</strong> <a name="FitsKey" href="../../../../nom/tam/fits/header/FitsKey.html#FitsKey">FitsKey</a> impl() {
 <a class="jxr_linenumber" name="L68" href="#L68">68</a>          <strong class="jxr_keyword">return</strong> key;
 <a class="jxr_linenumber" name="L69" href="#L69">69</a>      }
 <a class="jxr_linenumber" name="L70" href="#L70">70</a>  }

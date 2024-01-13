@@ -14,7 +14,7 @@
 <a class="jxr_linenumber" name="L6" href="#L6">6</a>   <strong class="jxr_keyword">import</strong> org.junit.Test;
 <a class="jxr_linenumber" name="L7" href="#L7">7</a>   
 <a class="jxr_linenumber" name="L8" href="#L8">8</a>   <strong class="jxr_keyword">import</strong> nom.tam.fits.header.DateTime;
-<a class="jxr_linenumber" name="L9" href="#L9">9</a>   <strong class="jxr_keyword">import</strong> nom.tam.fits.header.FitsHeaderImpl;
+<a class="jxr_linenumber" name="L9" href="#L9">9</a>   <strong class="jxr_keyword">import</strong> nom.tam.fits.header.FitsKey;
 <a class="jxr_linenumber" name="L10" href="#L10">10</a>  <strong class="jxr_keyword">import</strong> nom.tam.fits.header.GenericKey;
 <a class="jxr_linenumber" name="L11" href="#L11">11</a>  <strong class="jxr_keyword">import</strong> nom.tam.fits.header.IFitsHeader;
 <a class="jxr_linenumber" name="L12" href="#L12">12</a>  <strong class="jxr_keyword">import</strong> nom.tam.fits.header.IFitsHeader.HDU;
@@ -183,7 +183,7 @@
 <a class="jxr_linenumber" name="L175" href="#L175">175</a> 
 <a class="jxr_linenumber" name="L176" href="#L176">176</a>     @Test
 <a class="jxr_linenumber" name="L177" href="#L177">177</a>     <strong class="jxr_keyword">public</strong> <strong class="jxr_keyword">void</strong> testIFitsHeaderSelfImpl() {
-<a class="jxr_linenumber" name="L178" href="#L178">178</a>         IFitsHeader key = <strong class="jxr_keyword">new</strong> FitsHeaderImpl(<span class="jxr_string">"BLAH"</span>, SOURCE.UNKNOWN, HDU.ANY, VALUE.ANY, <span class="jxr_string">"for testing only"</span>);
+<a class="jxr_linenumber" name="L178" href="#L178">178</a>         IFitsHeader key = <strong class="jxr_keyword">new</strong> FitsKey(<span class="jxr_string">"BLAH"</span>, SOURCE.UNKNOWN, HDU.ANY, VALUE.ANY, <span class="jxr_string">"for testing only"</span>);
 <a class="jxr_linenumber" name="L179" href="#L179">179</a>         Assert.assertNotNull(key.impl());
 <a class="jxr_linenumber" name="L180" href="#L180">180</a>     }
 <a class="jxr_linenumber" name="L181" href="#L181">181</a> 

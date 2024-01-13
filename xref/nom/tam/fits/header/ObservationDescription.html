@@ -191,14 +191,14 @@
 <a class="jxr_linenumber" name="L183" href="#L183">183</a> <em class="jxr_javadoccomment">     */</em>
 <a class="jxr_linenumber" name="L184" href="#L184">184</a>     SUNANGLE(SOURCE.STScI, HDU.ANY, VALUE.REAL, <span class="jxr_string">"angle between the observation and the sun"</span>);
 <a class="jxr_linenumber" name="L185" href="#L185">185</a> 
-<a class="jxr_linenumber" name="L186" href="#L186">186</a>     <strong class="jxr_keyword">private</strong> <strong class="jxr_keyword">final</strong> <a name="IFitsHeader" href="../../../../nom/tam/fits/header/IFitsHeader.html#IFitsHeader">IFitsHeader</a> key;
+<a class="jxr_linenumber" name="L186" href="#L186">186</a>     <strong class="jxr_keyword">private</strong> <strong class="jxr_keyword">final</strong> <a name="FitsKey" href="../../../../nom/tam/fits/header/FitsKey.html#FitsKey">FitsKey</a> key;
 <a class="jxr_linenumber" name="L187" href="#L187">187</a> 
 <a class="jxr_linenumber" name="L188" href="#L188">188</a>     <a name="ObservationDescription" href="../../../../nom/tam/fits/header/ObservationDescription.html#ObservationDescription">ObservationDescription</a>(IFitsHeader.SOURCE status, HDU hdu, VALUE valueType, String comment) {
-<a class="jxr_linenumber" name="L189" href="#L189">189</a>         key = <strong class="jxr_keyword">new</strong> <a name="FitsHeaderImpl" href="../../../../nom/tam/fits/header/FitsHeaderImpl.html#FitsHeaderImpl">FitsHeaderImpl</a>(name(), status, hdu, valueType, comment);
+<a class="jxr_linenumber" name="L189" href="#L189">189</a>         key = <strong class="jxr_keyword">new</strong> <a name="FitsKey" href="../../../../nom/tam/fits/header/FitsKey.html#FitsKey">FitsKey</a>(name(), status, hdu, valueType, comment);
 <a class="jxr_linenumber" name="L190" href="#L190">190</a>     }
 <a class="jxr_linenumber" name="L191" href="#L191">191</a> 
 <a class="jxr_linenumber" name="L192" href="#L192">192</a>     @Override
-<a class="jxr_linenumber" name="L193" href="#L193">193</a>     <strong class="jxr_keyword">public</strong> <strong class="jxr_keyword">final</strong> <a name="IFitsHeader" href="../../../../nom/tam/fits/header/IFitsHeader.html#IFitsHeader">IFitsHeader</a> impl() {
+<a class="jxr_linenumber" name="L193" href="#L193">193</a>     <strong class="jxr_keyword">public</strong> <strong class="jxr_keyword">final</strong> <a name="FitsKey" href="../../../../nom/tam/fits/header/FitsKey.html#FitsKey">FitsKey</a> impl() {
 <a class="jxr_linenumber" name="L194" href="#L194">194</a>         <strong class="jxr_keyword">return</strong> key;
 <a class="jxr_linenumber" name="L195" href="#L195">195</a>     }
 <a class="jxr_linenumber" name="L196" href="#L196">196</a> }

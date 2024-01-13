@@ -489,7 +489,7 @@
 <a class="jxr_linenumber" name="L481" href="#L481">481</a>         Map&lt;Class&lt;?&gt;, Map&lt;Class&lt;?&gt;, MultiArrayCopyFactory&lt;?, ?&gt;&gt;&gt; factories = <strong class="jxr_keyword">new</strong> HashMap&lt;&gt;();
 <a class="jxr_linenumber" name="L482" href="#L482">482</a> 
 <a class="jxr_linenumber" name="L483" href="#L483">483</a>         Map&lt;Class&lt;?&gt;, MultiArrayCopyFactory&lt;byte[], ?&gt;&gt; byteMap = <strong class="jxr_keyword">new</strong> HashMap&lt;&gt;();
-<a class="jxr_linenumber" name="L484" href="#L484">484</a>         byteMap.put(byte.<strong class="jxr_keyword">class</strong>, <strong class="jxr_keyword">new</strong> MultiArrayCopyFactory&lt;byte[], byte[]&gt;());
+<a class="jxr_linenumber" name="L484" href="#L484">484</a>         byteMap.put(byte.<strong class="jxr_keyword">class</strong>, <strong class="jxr_keyword">new</strong> MultiArrayCopyFactory&lt;&gt;());
 <a class="jxr_linenumber" name="L485" href="#L485">485</a>         byteMap.put(<strong class="jxr_keyword">char</strong>.<strong class="jxr_keyword">class</strong>, <strong class="jxr_keyword">new</strong> ByteToChar());
 <a class="jxr_linenumber" name="L486" href="#L486">486</a>         byteMap.put(<strong class="jxr_keyword">short</strong>.<strong class="jxr_keyword">class</strong>, <strong class="jxr_keyword">new</strong> ByteToShort());
 <a class="jxr_linenumber" name="L487" href="#L487">487</a>         byteMap.put(<strong class="jxr_keyword">int</strong>.<strong class="jxr_keyword">class</strong>, <strong class="jxr_keyword">new</strong> ByteToInt());
@@ -500,7 +500,7 @@
 <a class="jxr_linenumber" name="L492" href="#L492">492</a> 
 <a class="jxr_linenumber" name="L493" href="#L493">493</a>         Map&lt;Class&lt;?&gt;, MultiArrayCopyFactory&lt;<strong class="jxr_keyword">char</strong>[], ?&gt;&gt; charMap = <strong class="jxr_keyword">new</strong> HashMap&lt;&gt;();
 <a class="jxr_linenumber" name="L494" href="#L494">494</a>         charMap.put(byte.<strong class="jxr_keyword">class</strong>, <strong class="jxr_keyword">new</strong> CharToByte());
-<a class="jxr_linenumber" name="L495" href="#L495">495</a>         charMap.put(<strong class="jxr_keyword">char</strong>.<strong class="jxr_keyword">class</strong>, <strong class="jxr_keyword">new</strong> MultiArrayCopyFactory&lt;<strong class="jxr_keyword">char</strong>[], <strong class="jxr_keyword">char</strong>[]&gt;());
+<a class="jxr_linenumber" name="L495" href="#L495">495</a>         charMap.put(<strong class="jxr_keyword">char</strong>.<strong class="jxr_keyword">class</strong>, <strong class="jxr_keyword">new</strong> MultiArrayCopyFactory&lt;&gt;());
 <a class="jxr_linenumber" name="L496" href="#L496">496</a>         charMap.put(<strong class="jxr_keyword">short</strong>.<strong class="jxr_keyword">class</strong>, <strong class="jxr_keyword">new</strong> CharToShort());
 <a class="jxr_linenumber" name="L497" href="#L497">497</a>         charMap.put(<strong class="jxr_keyword">int</strong>.<strong class="jxr_keyword">class</strong>, <strong class="jxr_keyword">new</strong> CharToInt());
 <a class="jxr_linenumber" name="L498" href="#L498">498</a>         charMap.put(<strong class="jxr_keyword">long</strong>.<strong class="jxr_keyword">class</strong>, <strong class="jxr_keyword">new</strong> CharToLong());
@@ -511,7 +511,7 @@
 <a class="jxr_linenumber" name="L503" href="#L503">503</a>         Map&lt;Class&lt;?&gt;, MultiArrayCopyFactory&lt;<strong class="jxr_keyword">short</strong>[], ?&gt;&gt; shortMap = <strong class="jxr_keyword">new</strong> HashMap&lt;&gt;();
 <a class="jxr_linenumber" name="L504" href="#L504">504</a>         shortMap.put(byte.<strong class="jxr_keyword">class</strong>, <strong class="jxr_keyword">new</strong> ShortToByte());
 <a class="jxr_linenumber" name="L505" href="#L505">505</a>         shortMap.put(<strong class="jxr_keyword">char</strong>.<strong class="jxr_keyword">class</strong>, <strong class="jxr_keyword">new</strong> ShortToChar());
-<a class="jxr_linenumber" name="L506" href="#L506">506</a>         shortMap.put(<strong class="jxr_keyword">short</strong>.<strong class="jxr_keyword">class</strong>, <strong class="jxr_keyword">new</strong> MultiArrayCopyFactory&lt;<strong class="jxr_keyword">short</strong>[], <strong class="jxr_keyword">short</strong>[]&gt;());
+<a class="jxr_linenumber" name="L506" href="#L506">506</a>         shortMap.put(<strong class="jxr_keyword">short</strong>.<strong class="jxr_keyword">class</strong>, <strong class="jxr_keyword">new</strong> MultiArrayCopyFactory&lt;&gt;());
 <a class="jxr_linenumber" name="L507" href="#L507">507</a>         shortMap.put(<strong class="jxr_keyword">int</strong>.<strong class="jxr_keyword">class</strong>, <strong class="jxr_keyword">new</strong> ShortToInt());
 <a class="jxr_linenumber" name="L508" href="#L508">508</a>         shortMap.put(<strong class="jxr_keyword">long</strong>.<strong class="jxr_keyword">class</strong>, <strong class="jxr_keyword">new</strong> ShortToLong());
 <a class="jxr_linenumber" name="L509" href="#L509">509</a>         shortMap.put(<strong class="jxr_keyword">float</strong>.<strong class="jxr_keyword">class</strong>, <strong class="jxr_keyword">new</strong> ShortToFloat());
@@ -522,7 +522,7 @@
 <a class="jxr_linenumber" name="L514" href="#L514">514</a>         intMap.put(byte.<strong class="jxr_keyword">class</strong>, <strong class="jxr_keyword">new</strong> IntToByte());
 <a class="jxr_linenumber" name="L515" href="#L515">515</a>         intMap.put(<strong class="jxr_keyword">char</strong>.<strong class="jxr_keyword">class</strong>, <strong class="jxr_keyword">new</strong> IntToChar());
 <a class="jxr_linenumber" name="L516" href="#L516">516</a>         intMap.put(<strong class="jxr_keyword">short</strong>.<strong class="jxr_keyword">class</strong>, <strong class="jxr_keyword">new</strong> IntToShort());
-<a class="jxr_linenumber" name="L517" href="#L517">517</a>         intMap.put(<strong class="jxr_keyword">int</strong>.<strong class="jxr_keyword">class</strong>, <strong class="jxr_keyword">new</strong> MultiArrayCopyFactory&lt;<strong class="jxr_keyword">int</strong>[], <strong class="jxr_keyword">int</strong>[]&gt;());
+<a class="jxr_linenumber" name="L517" href="#L517">517</a>         intMap.put(<strong class="jxr_keyword">int</strong>.<strong class="jxr_keyword">class</strong>, <strong class="jxr_keyword">new</strong> MultiArrayCopyFactory&lt;&gt;());
 <a class="jxr_linenumber" name="L518" href="#L518">518</a>         intMap.put(<strong class="jxr_keyword">long</strong>.<strong class="jxr_keyword">class</strong>, <strong class="jxr_keyword">new</strong> IntToLong());
 <a class="jxr_linenumber" name="L519" href="#L519">519</a>         intMap.put(<strong class="jxr_keyword">float</strong>.<strong class="jxr_keyword">class</strong>, <strong class="jxr_keyword">new</strong> IntToFloat());
 <a class="jxr_linenumber" name="L520" href="#L520">520</a>         intMap.put(<strong class="jxr_keyword">double</strong>.<strong class="jxr_keyword">class</strong>, <strong class="jxr_keyword">new</strong> IntToDouble());
@@ -533,7 +533,7 @@
 <a class="jxr_linenumber" name="L525" href="#L525">525</a>         longMap.put(<strong class="jxr_keyword">char</strong>.<strong class="jxr_keyword">class</strong>, <strong class="jxr_keyword">new</strong> LongToChar());
 <a class="jxr_linenumber" name="L526" href="#L526">526</a>         longMap.put(<strong class="jxr_keyword">short</strong>.<strong class="jxr_keyword">class</strong>, <strong class="jxr_keyword">new</strong> LongToShort());
 <a class="jxr_linenumber" name="L527" href="#L527">527</a>         longMap.put(<strong class="jxr_keyword">int</strong>.<strong class="jxr_keyword">class</strong>, <strong class="jxr_keyword">new</strong> LongToInt());
-<a class="jxr_linenumber" name="L528" href="#L528">528</a>         longMap.put(<strong class="jxr_keyword">long</strong>.<strong class="jxr_keyword">class</strong>, <strong class="jxr_keyword">new</strong> MultiArrayCopyFactory&lt;<strong class="jxr_keyword">long</strong>[], <strong class="jxr_keyword">long</strong>[]&gt;());
+<a class="jxr_linenumber" name="L528" href="#L528">528</a>         longMap.put(<strong class="jxr_keyword">long</strong>.<strong class="jxr_keyword">class</strong>, <strong class="jxr_keyword">new</strong> MultiArrayCopyFactory&lt;&gt;());
 <a class="jxr_linenumber" name="L529" href="#L529">529</a>         longMap.put(<strong class="jxr_keyword">float</strong>.<strong class="jxr_keyword">class</strong>, <strong class="jxr_keyword">new</strong> LongToFloat());
 <a class="jxr_linenumber" name="L530" href="#L530">530</a>         longMap.put(<strong class="jxr_keyword">double</strong>.<strong class="jxr_keyword">class</strong>, <strong class="jxr_keyword">new</strong> LongToDouble());
 <a class="jxr_linenumber" name="L531" href="#L531">531</a>         factories.put(<strong class="jxr_keyword">long</strong>.<strong class="jxr_keyword">class</strong>, Collections.unmodifiableMap(longMap));
@@ -544,7 +544,7 @@
 <a class="jxr_linenumber" name="L536" href="#L536">536</a>         floatMap.put(<strong class="jxr_keyword">short</strong>.<strong class="jxr_keyword">class</strong>, <strong class="jxr_keyword">new</strong> FloatToShort());
 <a class="jxr_linenumber" name="L537" href="#L537">537</a>         floatMap.put(<strong class="jxr_keyword">int</strong>.<strong class="jxr_keyword">class</strong>, <strong class="jxr_keyword">new</strong> FloatToInt());
 <a class="jxr_linenumber" name="L538" href="#L538">538</a>         floatMap.put(<strong class="jxr_keyword">long</strong>.<strong class="jxr_keyword">class</strong>, <strong class="jxr_keyword">new</strong> FloatToLong());
-<a class="jxr_linenumber" name="L539" href="#L539">539</a>         floatMap.put(<strong class="jxr_keyword">float</strong>.<strong class="jxr_keyword">class</strong>, <strong class="jxr_keyword">new</strong> MultiArrayCopyFactory&lt;<strong class="jxr_keyword">float</strong>[], <strong class="jxr_keyword">float</strong>[]&gt;());
+<a class="jxr_linenumber" name="L539" href="#L539">539</a>         floatMap.put(<strong class="jxr_keyword">float</strong>.<strong class="jxr_keyword">class</strong>, <strong class="jxr_keyword">new</strong> MultiArrayCopyFactory&lt;&gt;());
 <a class="jxr_linenumber" name="L540" href="#L540">540</a>         floatMap.put(<strong class="jxr_keyword">double</strong>.<strong class="jxr_keyword">class</strong>, <strong class="jxr_keyword">new</strong> FloatToDouble());
 <a class="jxr_linenumber" name="L541" href="#L541">541</a>         factories.put(<strong class="jxr_keyword">float</strong>.<strong class="jxr_keyword">class</strong>, Collections.unmodifiableMap(floatMap));
 <a class="jxr_linenumber" name="L542" href="#L542">542</a> 
@@ -555,7 +555,7 @@
 <a class="jxr_linenumber" name="L547" href="#L547">547</a>         doubleMap.put(<strong class="jxr_keyword">int</strong>.<strong class="jxr_keyword">class</strong>, <strong class="jxr_keyword">new</strong> DoubleToInt());
 <a class="jxr_linenumber" name="L548" href="#L548">548</a>         doubleMap.put(<strong class="jxr_keyword">long</strong>.<strong class="jxr_keyword">class</strong>, <strong class="jxr_keyword">new</strong> DoubleToLong());
 <a class="jxr_linenumber" name="L549" href="#L549">549</a>         doubleMap.put(<strong class="jxr_keyword">float</strong>.<strong class="jxr_keyword">class</strong>, <strong class="jxr_keyword">new</strong> DoubleToFloat());
-<a class="jxr_linenumber" name="L550" href="#L550">550</a>         doubleMap.put(<strong class="jxr_keyword">double</strong>.<strong class="jxr_keyword">class</strong>, <strong class="jxr_keyword">new</strong> MultiArrayCopyFactory&lt;<strong class="jxr_keyword">double</strong>[], <strong class="jxr_keyword">double</strong>[]&gt;());
+<a class="jxr_linenumber" name="L550" href="#L550">550</a>         doubleMap.put(<strong class="jxr_keyword">double</strong>.<strong class="jxr_keyword">class</strong>, <strong class="jxr_keyword">new</strong> MultiArrayCopyFactory&lt;&gt;());
 <a class="jxr_linenumber" name="L551" href="#L551">551</a>         factories.put(<strong class="jxr_keyword">double</strong>.<strong class="jxr_keyword">class</strong>, Collections.unmodifiableMap(doubleMap));
 <a class="jxr_linenumber" name="L552" href="#L552">552</a> 
 <a class="jxr_linenumber" name="L553" href="#L553">553</a>         FACTORIES = Collections.unmodifiableMap(factories);

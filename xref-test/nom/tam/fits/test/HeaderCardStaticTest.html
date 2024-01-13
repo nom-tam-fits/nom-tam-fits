@@ -159,9 +159,9 @@
 <a class="jxr_linenumber" name="L151" href="#L151">151</a>         assertEquals(Long.<strong class="jxr_keyword">class</strong>, hc.valueType());
 <a class="jxr_linenumber" name="L152" href="#L152">152</a>         assertEquals(4000000000L, hc.getValue(Long.<strong class="jxr_keyword">class</strong>, -1L).longValue());
 <a class="jxr_linenumber" name="L153" href="#L153">153</a> 
-<a class="jxr_linenumber" name="L154" href="#L154">154</a>         hc = HeaderCard.create(Standard.BUNIT, 3.002f);
+<a class="jxr_linenumber" name="L154" href="#L154">154</a>         hc = HeaderCard.create(Standard.BZERO, 3.002f);
 <a class="jxr_linenumber" name="L155" href="#L155">155</a>         assertTrue(hc.isKeyValuePair());
-<a class="jxr_linenumber" name="L156" href="#L156">156</a>         assertEquals(Standard.BUNIT.key(), hc.getKey());
+<a class="jxr_linenumber" name="L156" href="#L156">156</a>         assertEquals(Standard.BZERO.key(), hc.getKey());
 <a class="jxr_linenumber" name="L157" href="#L157">157</a>         assertEquals(Float.<strong class="jxr_keyword">class</strong>, hc.valueType());
 <a class="jxr_linenumber" name="L158" href="#L158">158</a>         assertEquals(3.002f, hc.getValue(Float.<strong class="jxr_keyword">class</strong>, 0.0f).floatValue(), 1e-6);
 <a class="jxr_linenumber" name="L159" href="#L159">159</a> 
@@ -228,7 +228,7 @@
 <a class="jxr_linenumber" name="L220" href="#L220">220</a>         assertNull(hc);
 <a class="jxr_linenumber" name="L221" href="#L221">221</a>     }
 <a class="jxr_linenumber" name="L222" href="#L222">222</a> 
-<a class="jxr_linenumber" name="L223" href="#L223">223</a>     @Test
+<a class="jxr_linenumber" name="L223" href="#L223">223</a>     @Test(expected = IllegalArgumentException.<strong class="jxr_keyword">class</strong>)
 <a class="jxr_linenumber" name="L224" href="#L224">224</a>     <strong class="jxr_keyword">public</strong> <strong class="jxr_keyword">void</strong> testCreateWrongValueTypeFitsCard1() <strong class="jxr_keyword">throws</strong> Exception {
 <a class="jxr_linenumber" name="L225" href="#L225">225</a>         HeaderCard hc = HeaderCard.create(<strong class="jxr_keyword">new</strong> CustomIFitsHeader(<span class="jxr_string">"TEST"</span>, <strong class="jxr_keyword">null</strong>, VALUE.STRING), 1);
 <a class="jxr_linenumber" name="L226" href="#L226">226</a>         assertNotNull(hc);

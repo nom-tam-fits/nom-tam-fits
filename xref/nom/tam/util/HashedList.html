@@ -65,7 +65,7 @@
 <a class="jxr_linenumber" name="L57" href="#L57">57</a>  <strong class="jxr_keyword">import</strong> java.util.List;
 <a class="jxr_linenumber" name="L58" href="#L58">58</a>  <strong class="jxr_keyword">import</strong> java.util.NoSuchElementException;
 <a class="jxr_linenumber" name="L59" href="#L59">59</a>  
-<a class="jxr_linenumber" name="L60" href="#L60">60</a>  <strong class="jxr_keyword">import</strong> nom.tam.fits.header.FitsHeaderImpl;
+<a class="jxr_linenumber" name="L60" href="#L60">60</a>  <strong class="jxr_keyword">import</strong> nom.tam.fits.header.FitsKey;
 <a class="jxr_linenumber" name="L61" href="#L61">61</a>  
 <a class="jxr_linenumber" name="L62" href="#L62">62</a>  <em class="jxr_javadoccomment">/**</em>
 <a class="jxr_linenumber" name="L63" href="#L63">63</a>  <em class="jxr_javadoccomment"> * An ordered hash map implementation.</em>
@@ -202,7 +202,7 @@
 <a class="jxr_linenumber" name="L194" href="#L194">194</a> <em class="jxr_javadoccomment">     */</em>
 <a class="jxr_linenumber" name="L195" href="#L195">195</a>     <strong class="jxr_keyword">private</strong> <strong class="jxr_keyword">void</strong> add(<strong class="jxr_keyword">int</strong> pos, VALUE entry) {
 <a class="jxr_linenumber" name="L196" href="#L196">196</a>         String key = entry.getKey();
-<a class="jxr_linenumber" name="L197" href="#L197">197</a>         <strong class="jxr_keyword">if</strong> (keyed.containsKey(key) &amp;&amp; !FitsHeaderImpl.isCommentStyleKey(key)) {
+<a class="jxr_linenumber" name="L197" href="#L197">197</a>         <strong class="jxr_keyword">if</strong> (keyed.containsKey(key) &amp;&amp; !FitsKey.isCommentStyleKey(key)) {
 <a class="jxr_linenumber" name="L198" href="#L198">198</a>             <strong class="jxr_keyword">int</strong> oldPos = indexOf(entry);
 <a class="jxr_linenumber" name="L199" href="#L199">199</a>             internalRemove(oldPos, entry);
 <a class="jxr_linenumber" name="L200" href="#L200">200</a>             <strong class="jxr_keyword">if</strong> (oldPos &lt; pos) {
@@ -247,7 +247,7 @@
 <a class="jxr_linenumber" name="L239" href="#L239">239</a> <em class="jxr_javadoccomment">     * @param entry The element to add to the list.</em>
 <a class="jxr_linenumber" name="L240" href="#L240">240</a> <em class="jxr_javadoccomment">     */</em>
 <a class="jxr_linenumber" name="L241" href="#L241">241</a>     <strong class="jxr_keyword">public</strong> <strong class="jxr_keyword">void</strong> update(String key, VALUE entry) {
-<a class="jxr_linenumber" name="L242" href="#L242">242</a>         <strong class="jxr_keyword">if</strong> (keyed.containsKey(key) &amp;&amp; !FitsHeaderImpl.isCommentStyleKey(key)) {
+<a class="jxr_linenumber" name="L242" href="#L242">242</a>         <strong class="jxr_keyword">if</strong> (keyed.containsKey(key) &amp;&amp; !FitsKey.isCommentStyleKey(key)) {
 <a class="jxr_linenumber" name="L243" href="#L243">243</a>             <strong class="jxr_keyword">int</strong> index = indexOf(get(key));
 <a class="jxr_linenumber" name="L244" href="#L244">244</a>             remove(index);
 <a class="jxr_linenumber" name="L245" href="#L245">245</a>             add(index, entry);

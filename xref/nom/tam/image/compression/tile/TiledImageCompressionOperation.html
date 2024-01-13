@@ -428,7 +428,7 @@
 <a class="jxr_linenumber" name="L420" href="#L420">420</a>             <strong class="jxr_keyword">int</strong> zBitPix = header.getIntValue(ZBITPIX);
 <a class="jxr_linenumber" name="L421" href="#L421">421</a>             ElementType&lt;Buffer&gt; elementType = ElementType.forNearestBitpix(zBitPix);
 <a class="jxr_linenumber" name="L422" href="#L422">422</a>             <strong class="jxr_keyword">if</strong> (elementType == ElementType.UNKNOWN) {
-<a class="jxr_linenumber" name="L423" href="#L423">423</a>                 <strong class="jxr_keyword">throw</strong> <strong class="jxr_keyword">new</strong> IllegalArgumentException(<span class="jxr_string">"illegal value for ZBITPIX "</span> + zBitPix);
+<a class="jxr_linenumber" name="L423" href="#L423">423</a>                 <strong class="jxr_keyword">throw</strong> <strong class="jxr_keyword">new</strong> IllegalArgumentException(<span class="jxr_string">"Illegal value for ZBITPIX: "</span> + zBitPix);
 <a class="jxr_linenumber" name="L424" href="#L424">424</a>             }
 <a class="jxr_linenumber" name="L425" href="#L425">425</a>             setBaseType(elementType);
 <a class="jxr_linenumber" name="L426" href="#L426">426</a>         }
