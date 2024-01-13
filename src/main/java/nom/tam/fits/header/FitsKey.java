@@ -218,7 +218,8 @@ public class FitsKey implements IFitsHeader, Serializable {
     }
 
     /**
-     * cache of all standard keys, for reusing the standards.
+     * A registry of all standard keys, for reusing the standards. We keep the registry outside of the enums that define
+     * keys to avoid circular dependency issues.
      */
     private static final Map<String, IFitsHeader> STANDARD_KEYS = new HashMap<>();
 
@@ -278,5 +279,6 @@ public class FitsKey implements IFitsHeader, Serializable {
         return STANDARD_KEYS.get(pattern.toString());
     }
 
+    /** We define this here with package level visibility for IFitsHeader */
     static final int BASE_10 = 10;
 }
