@@ -23,6 +23,8 @@ import nom.tam.fits.header.FitsKey;
 import nom.tam.fits.header.GenericKey;
 import nom.tam.fits.header.HierarchicalGrouping;
 import nom.tam.fits.header.IFitsHeader;
+import nom.tam.fits.header.IFitsHeader.HDU;
+import nom.tam.fits.header.IFitsHeader.VALUE;
 import nom.tam.fits.header.InstrumentDescription;
 import nom.tam.fits.header.NonStandard;
 import nom.tam.fits.header.ObservationDescription;
@@ -214,6 +216,7 @@ public class EnumHeaderTest {
     @Test
     public void testLookups() {
         Assert.assertNull(Standard.match("BLAH"));
+        Assert.assertNull(Standard.match("1"));
 
         assertEquals(Standard.SIMPLE, Standard.match("SIMPLE"));
 
@@ -258,4 +261,26 @@ public class EnumHeaderTest {
     public void testResolveIndicesException() throws Exception {
         WCS.CTYPEna.extractIndices("CRPIX1");
     }
+
+    @Test
+    public void testFitsKeyConstructors() {
+        assertEquals("AZ_1-3n", new FitsKey("AZ_1-3na", HDU.ANY, VALUE.ANY, "blah").key());
+        assertEquals("AZ_1-3n", new FitsKey("AZ_1-3na", VALUE.ANY, "blah").key());
+    }
+
+    @Test(expected = IllegalArgumentException.class)
+    public void testFitsKeyConstructorLongException() {
+        new FitsKey("AZ_100-300na", VALUE.ANY, "blah");
+    }
+
+    @Test(expected = IllegalArgumentException.class)
+    public void testFitsKeyConstructorIllegalAltException() {
+        new FitsKey("AZ_1-3an", VALUE.ANY, "blah");
+    }
+
+    @Test(expected = IllegalArgumentException.class)
+    public void testFitsKeyConstructorIllegalCharacterException() {
+        new FitsKey("AZ_1-3nb", VALUE.ANY, "blah");
+    }
+
 }

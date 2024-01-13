@@ -186,8 +186,6 @@ public final class GenericKey {
             }
         }
 
-        System.err.println("### " + pattern.toString());
-
         return STANDARD_KEYS.get(pattern.toString());
     }
 

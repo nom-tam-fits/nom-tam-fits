@@ -3,6 +3,8 @@ package nom.tam.fits.header;
 import java.io.Serializable;
 import java.util.HashSet;
 
+import nom.tam.fits.HeaderCard;
+
 /*
  * #%L
  * nom.tam FITS library
@@ -59,22 +61,58 @@ public class FitsKey implements IFitsHeader, Serializable {
     private static HashSet<String> commentStyleKeys = new HashSet<>();
 
     /**
-     * Creates a new standardized FITS keyword with the specific usage constraints
+     * Creates a new standardized FITS keyword with the specific usage constraints. The keyword must be composed of
+     * uppper-case 'A'-'Z', digits, underscore ('_') and hyphen ('-') characters. Additionally, lower case 'n' may be
+     * used as a place-holder for a numerical index, and the keyword name may end with a lower-case 'a' to indicate that
+     * it may be used for/with alternate WCS coordinate systems. (We also allow '/' because some STScI keywords use
+     * these even though they violate the FITS standard.
      * 
-     * @param headerName The keyword as it will appear in the FITS headers, usually a string with up to 8 characters,
-     *                       containing uppper case letters (A-Z), digits (0-9), and/or underscore (<code>_</code>) or
-     *                       hyphen (<code>-</code>) characters for standard FITS keywords.
-     * @param status     The convention that defines this keyword
-     * @param hdu        the type of HDU this keyword may appear in
-     * @param valueType  the type of value that may be associated with this keyword
-     * @param comment    the standard comment to include with this keyword
+     * @param  headerName               The keyword as it will appear in the FITS headers, usually a string with up to 8
+     *                                      characters, containing uppper case letters (A-Z), digits (0-9), and/or
+     *                                      underscore (<code>_</code>) or hyphen (<code>-</code>) characters for
+     *                                      standard FITS keywords.
+     * @param  status                   The convention that defines this keyword
+     * @param  hdu                      the type of HDU this keyword may appear in
+     * @param  valueType                the type of value that may be associated with this keyword
+     * @param  comment                  the standard comment to include with this keyword
+     * 
+     * @throws IllegalArgumentException if the keyword name is invalid.
      */
-    public FitsKey(String headerName, SOURCE status, HDU hdu, VALUE valueType, String comment) {
-        key = headerName;
+    public FitsKey(String headerName, SOURCE status, HDU hdu, VALUE valueType, String comment)
+            throws IllegalArgumentException {
+        if (headerName.length() > HeaderCard.MAX_KEYWORD_LENGTH) {
+            throw new IllegalArgumentException(
+                    "Keyword " + headerName + " exceeeds the FITS " + HeaderCard.MAX_KEYWORD_LENGTH + " character limit");
+        }
+
+        for (int i = 0; i < headerName.length(); i++) {
+            char c = headerName.charAt(i);
+
+            if (c >= 'A' && c <= 'Z') {
+                continue;
+            }
+            if (c >= '0' && c <= '9') {
+                continue;
+            }
+            if (c == '-' || c == '_' || c == '/') {
+                continue;
+            }
+            if (c == 'n') {
+                continue;
+            }
+            if (c == 'a' && (i + 1) == headerName.length()) {
+                continue;
+            }
+
+            throw new IllegalArgumentException("Invalid FITS keyword: " + headerName);
+        }
+
+        this.key = headerName;
         this.status = status;
         this.hdu = hdu;
         this.valueType = valueType;
         this.comment = comment;
+
         if (valueType == VALUE.NONE) {
             commentStyleKeys.add(headerName);
         }
@@ -82,34 +120,46 @@ public class FitsKey implements IFitsHeader, Serializable {
 
     /**
      * Creates a new standardized user-defined FITS keyword. The keyword will have source set to
-     * {@link IFitsHeader.SOURCE#UNKNOWN}.
+     * {@link IFitsHeader.SOURCE#UNKNOWN}. The keyword must be composed of uppper-case 'A'-'Z', digits, underscore ('_')
+     * and hyphen ('-') characters. Additionally, lower case 'n' may be used as a place-holder for a numerical index,
+     * and the keyword name may end with a lower-case 'a' to indicate that it may be used for/with alternate WCS
+     * coordinate systems.
      * 
-     * @param headerName The keyword as it will appear in the FITS headers, usually a string with up to 8 characters,
-     *                       containing uppper case letters (A-Z), digits (0-9), and/or underscore (<code>_</code>) or
-     *                       hyphen (<code>-</code>) characters for standard FITS keywords.
-     * @param hdu        the type of HDU this keyword may appear in
-     * @param valueType  the type of value that may be associated with this keyword
-     * @param comment    the standard comment to include with this keyword
+     * @param  headerName               The keyword as it will appear in the FITS headers, usually a string with up to 8
+     *                                      characters, containing uppper case letters (A-Z), digits (0-9), and/or
+     *                                      underscore (<code>_</code>) or hyphen (<code>-</code>) characters for
+     *                                      standard FITS keywords.
+     * @param  hdu                      the type of HDU this keyword may appear in
+     * @param  valueType                the type of value that may be associated with this keyword
+     * @param  comment                  the standard comment to include with this keyword
      * 
-     * @since            1.19
+     * @throws IllegalArgumentException if the keyword name is invalid.
+     * 
+     * @since                           1.19
      */
-    public FitsKey(String headerName, HDU hdu, VALUE valueType, String comment) {
+    public FitsKey(String headerName, HDU hdu, VALUE valueType, String comment) throws IllegalArgumentException {
         this(headerName, SOURCE.UNKNOWN, hdu, valueType, comment);
     }
 
     /**
      * Creates a new standardized user-defined FITS keyword. The keyword will have source set to
-     * {@link IFitsHeader.SOURCE#UNKNOWN} and HDY type to {@link IFitsHeader.HDU#ANY}.
+     * {@link IFitsHeader.SOURCE#UNKNOWN} and HDY type to {@link IFitsHeader.HDU#ANY}. The keyword must be composed of
+     * uppper-case 'A'-'Z', digits, underscore ('_') and hyphen ('-') characters. Additionally, lower case 'n' may be
+     * used as a place-holder for a numerical index, and the keyword name may end with a lower-case 'a' to indicate that
+     * it may be used for/with alternate WCS coordinate systems.
      * 
-     * @param headerName The keyword as it will appear in the FITS headers, usually a string with up to 8 characters,
-     *                       containing uppper case letters (A-Z), digits (0-9), and/or underscore (<code>_</code>) or
-     *                       hyphen (<code>-</code>) characters for standard FITS keywords.
-     * @param valueType  the type of value that may be associated with this keyword
-     * @param comment    the standard comment to include with this keyword
+     * @param  headerName               The keyword as it will appear in the FITS headers, usually a string with up to 8
+     *                                      characters, containing uppper case letters (A-Z), digits (0-9), and/or
+     *                                      underscore (<code>_</code>) or hyphen (<code>-</code>) characters for
+     *                                      standard FITS keywords.
+     * @param  valueType                the type of value that may be associated with this keyword
+     * @param  comment                  the standard comment to include with this keyword
      * 
-     * @since            1.19
+     * @throws IllegalArgumentException if the keyword name is invalid.
+     * 
+     * @since                           1.19
      */
-    public FitsKey(String headerName, VALUE valueType, String comment) {
+    public FitsKey(String headerName, VALUE valueType, String comment) throws IllegalArgumentException {
         this(headerName, HDU.ANY, valueType, comment);
     }
 

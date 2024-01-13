@@ -488,7 +488,6 @@ public class Header implements FitsElement {
             }
             break;
         case TABLE:
-            System.err.println("### keyword " + keyword.key() + ", hdu " + owner.getClass().getName());
             if (owner instanceof TableHDU) {
                 return;
             }

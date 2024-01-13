@@ -76,7 +76,7 @@ public enum Standard implements IFitsHeader {
      * Columns 1-8 contain ASCII blanks. This keyword has no associated value. Columns 9-80 may contain any ASCII text.
      * Any number of card images with blank keyword fields may appear in a key.
      */
-    BLANKS("        ", SOURCE.RESERVED, HDU.ANY, VALUE.NONE, null),
+    BLANKS("", SOURCE.RESERVED, HDU.ANY, VALUE.NONE, null),
 
     /**
      * This keyword may be used only in the primary key. It shall appear within the first 36 card images of the FITS
