@@ -444,7 +444,7 @@ public enum DateTime implements IFitsHeader {
 
     DateTime(String headerName, SOURCE status, HDU hdu, VALUE valueType, String comment) {
         key = new FitsKey(headerName == null ? name() : headerName, status, hdu, valueType, comment);
-        FitsKey.registerStandard(headerName, this);
+        FitsKey.registerStandard(this);
     }
 
     @Override

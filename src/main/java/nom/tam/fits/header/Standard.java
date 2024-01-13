@@ -651,7 +651,7 @@ public enum Standard implements IFitsHeader {
             StandardCommentReplacement... replacements) {
         key = new FitsKey(headerName == null ? name() : headerName, status, hdu, valueType, comment);
         commentReplacements = replacements;
-        FitsKey.registerStandard(headerName, this);
+        FitsKey.registerStandard(this);
     }
 
     @Override

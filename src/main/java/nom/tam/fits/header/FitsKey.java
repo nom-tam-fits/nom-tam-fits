@@ -222,8 +222,8 @@ public class FitsKey implements IFitsHeader, Serializable {
      */
     private static final Map<String, IFitsHeader> STANDARD_KEYS = new HashMap<>();
 
-    static void registerStandard(String name, IFitsHeader key) throws IllegalArgumentException {
-        STANDARD_KEYS.put(name, key);
+    static void registerStandard(IFitsHeader key) throws IllegalArgumentException {
+        STANDARD_KEYS.put(key.key(), key);
     }
 
     /**
@@ -275,7 +275,7 @@ public class FitsKey implements IFitsHeader, Serializable {
             }
         }
 
-        return FitsKey.STANDARD_KEYS.get(pattern.toString());
+        return STANDARD_KEYS.get(pattern.toString());
     }
 
     static final int BASE_10 = 10;

@@ -36,8 +36,8 @@ package nom.tam.fits.header;
  * unintuitive class name.
  * 
  * @author Attila Kovacs
- * @deprecated Use the more intuitively named {@link FitsKey} class instead. This
- *             class is provided for compatibility with prior releases.
+ * @deprecated Use the more intuitively named {@link FitsKey} class instead.
+ *             This class is provided for compatibility with prior releases.
  */
 public class FitsHeaderImpl extends FitsKey {
 

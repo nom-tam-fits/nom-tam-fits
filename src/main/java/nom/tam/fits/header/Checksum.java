@@ -74,7 +74,7 @@ public enum Checksum implements IFitsHeader {
 
     Checksum(HDU hdu, VALUE valueType, String comment) {
         key = new FitsKey(name(), IFitsHeader.SOURCE.CHECKSUM, hdu, valueType, comment);
-        FitsKey.registerStandard(name(), this);
+        FitsKey.registerStandard(this);
     }
 
     @Override

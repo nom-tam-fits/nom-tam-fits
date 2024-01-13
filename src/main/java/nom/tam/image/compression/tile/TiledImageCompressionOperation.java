@@ -420,7 +420,7 @@ public class TiledImageCompressionOperation extends AbstractTiledImageOperation<
             int zBitPix = header.getIntValue(ZBITPIX);
             ElementType<Buffer> elementType = ElementType.forNearestBitpix(zBitPix);
             if (elementType == ElementType.UNKNOWN) {
-                throw new IllegalArgumentException("illegal value for ZBITPIX " + zBitPix);
+                throw new IllegalArgumentException("Illegal value for ZBITPIX: " + zBitPix);
             }
             setBaseType(elementType);
         }

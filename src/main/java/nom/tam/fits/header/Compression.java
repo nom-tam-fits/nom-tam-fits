@@ -419,7 +419,7 @@ public enum Compression implements IFitsHeader {
     Compression(VALUE valueType, String comment, IFitsHeader uncompressedKey) {
         key = new FitsKey(name(), IFitsHeader.SOURCE.INTEGRAL, HDU.BINTABLE, valueType, comment);
         this.uncompressedKey = uncompressedKey;
-        FitsKey.registerStandard(name(), this);
+        FitsKey.registerStandard(this);
     }
 
     @Override
