@@ -1,7 +1,9 @@
 package nom.tam.fits.header;
 
 import java.io.Serializable;
+import java.util.HashMap;
 import java.util.HashSet;
+import java.util.Map;
 
 import nom.tam.fits.HeaderCard;
 
@@ -213,6 +215,67 @@ public class FitsKey implements IFitsHeader, Serializable {
      */
     public static boolean isCommentStyleKey(String key) {
         return commentStyleKeys.contains(key) || key.trim().isEmpty();
+    }
+
+    /**
+     * cache of all standard keys, for reusing the standards.
+     */
+    private static final Map<String, IFitsHeader> STANDARD_KEYS = new HashMap<>();
+
+    static void registerStandard(String name, IFitsHeader key) throws IllegalArgumentException {
+        STANDARD_KEYS.put(name, key);
+    }
+
+    /**
+     * Returns the standard FITS keyword that matches the specified actual key.
+     * 
+     * @param  key The key as it may appear in a FITS header, e.g. "CTYPE1A"
+     * 
+     * @return     The standard FITS keyword/pattern that matches, e.g. {@link WCS#CTYPEna}.
+     * 
+     * @see        IFitsHeader#extractIndices(String)
+     * 
+     * @since      1.19
+     */
+    static IFitsHeader matchStandard(String key) {
+        int i = 0, l = key.length();
+        StringBuilder pattern = new StringBuilder();
+
+        // If ends with digit + letter, then it must alt coordinate if standard...
+        if (l > 1 && Character.isAlphabetic(key.charAt(l - 1)) && Character.isDigit(key.charAt(l - 2))) {
+            key = key.substring(0, --l);
+        }
+
+        // If the first digit is a number it may be a coordinate index
+        if (i < l && Character.isDigit(key.charAt(i))) {
+            pattern.append('n');
+            i++;
+
+            // If the second digit is a number it may be a coordinate index
+            if (i < l && Character.isDigit(key.charAt(i))) {
+                pattern.append('n');
+                i++;
+            }
+        }
+
+        // Replace sequence of digits with 'n'
+        while (i < l) {
+            char c = key.charAt(i);
+
+            if (Character.isDigit(c)) {
+                pattern.append('n');
+
+                // Skip successive digits.
+                while (i < l && Character.isDigit(key.charAt(i))) {
+                    i++;
+                }
+            } else {
+                pattern.append(c);
+                i++;
+            }
+        }
+
+        return FitsKey.STANDARD_KEYS.get(pattern.toString());
     }
 
     static final int BASE_10 = 10;
