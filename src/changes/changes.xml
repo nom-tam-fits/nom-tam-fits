@@ -67,6 +67,14 @@
 	  depending on the current value checking policy. The policy can be adjusted via the new 
 	  static HeaderCard.setValueCheckPolicy() method.	  
       </action>
+      <action type="add" dev="attipaci" issue="538">
+	  New FitsKey class to replace the poorly named FitsHeaderImpl. (The latter class
+	  continues to exist in deprecated form for compatibility). Added new functionality.
+      </action>
+      <action type="add" dev="attipaci" issue="538">
+	  New Standard.match(String) method to match one of the reserved keyword templates of 
+	  the FITS standard to a keyword instance, such as "CTYPE1A" to WCS.CTYPEna.
+      </action>
       <action type="update" dev="attipaci" issue="519">
           Demoted FitsException to be a soft exception, extending IllegalStateException. As
           a result, users are no longer required to catch these, or its derivatives such as
@@ -96,7 +104,7 @@
       </action>
       <action type="update" dev="attipaci" issue="532">
           Added impl() method to IFitsHeader interface with a default implementation to 
-          eliminate code that was duplicated many times over in enum implementations.
+          eliminate code that was duplicated many times over across enums.
       </action>
       <action type="update" dev="attipaci" issue="532">
           IFitsHeader.n(int...) now checks that the supplied indices are in the 0-999 range 
@@ -108,28 +116,16 @@
       </action>
       <action type="update" dev="attipaci" issue="532">
           Attempting to create a HeaderCard with a standard keyword that has unfilled 
-          indices will throw an IllegalArgumentException.
-      </action>
-      <action type="update" dev="attipaci" issue="532">
-          Specifying more indices than can be filled for an IFitsHeader will throw an 
-          IndexOutOfBoundsException.
+          indices will throw an IllegalArgumentException, while specifying more indices than can 
+          be filled for an IFitsHeader will throw an IndexOutOfBoundsException.
       </action>
       <action type="update" dev="attipaci">
           CompressedImageHDU.getTileHDU() now updates CRPIXna keywords also in the 
           alternate coordinate systems (if present) for the selected cutout image.
       </action>
-      <action type="update" dev="attipaci" issue="537">
-          Changed designation of Compression keywords. These all must appear in binary table HDUs 
-          only, and should be managed by the library only (INTEGRAL).
-      </action>
-      <action type="update" dev="attipaci" issue="537">
-          Changed designation of some Standard (IFitsHeader) keywords to INTEGRAL if they are to
-          be managed by the library only. Users should not attempt to set or modify the header
-          entries of these keywords as they may result in corrupted FITS files.
-      </action>
-      <action type="update" dev="attipaci" issue="537">
-          Change designation of EXTNAME, EXTVER, and EXTLEVEL keywords. These may appear in any
-          HDU, including the primary, according to the FITS standard.
+      <action type="update" dev="attipaci" issue="538">
+          Corrections to standard keyword sources, deprecations, synonyms, and associated 
+          javadoc.
       </action>
       <action type="update" dev="attipaci">
           Change from unmaintained findbugs build dep to spotbugs successor.
