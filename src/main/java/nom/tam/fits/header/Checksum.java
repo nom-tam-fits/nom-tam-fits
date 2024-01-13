@@ -70,14 +70,15 @@ public enum Checksum implements IFitsHeader {
      */
     DATASUM(HDU.ANY, VALUE.STRING, "checksum of the data records");
 
-    private final IFitsHeader key;
+    private final FitsKey key;
 
     Checksum(HDU hdu, VALUE valueType, String comment) {
-        key = new FitsHeaderImpl(name(), IFitsHeader.SOURCE.CHECKSUM, hdu, valueType, comment);
+        key = new FitsKey(name(), IFitsHeader.SOURCE.CHECKSUM, hdu, valueType, comment);
+        FitsKey.registerStandard(this);
     }
 
     @Override
-    public final IFitsHeader impl() {
+    public FitsKey impl() {
         return key;
     }
 }

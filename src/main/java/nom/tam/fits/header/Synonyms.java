@@ -129,6 +129,24 @@ public enum Synonyms {
      */
     EXTLEVEL(Standard.EXTLEVEL, DataDescription.HDULEVEL),
 
+    /**
+     * [s] Non-standard exposure time conventions.
+     * 
+     * @see DateTime#XPOSURE
+     */
+    EXPOSURE(ObservationDurationDescription.EXPOSURE, ObservationDurationDescription.EXPTIME,
+            ObservationDurationDescription.ONTIME),
+
+    /**
+     * Variants for recording the start time of observation in HH:MM:SS[.s...] format
+     */
+    TSTART(DateTime.TSTART, ObservationDurationDescription.TIME_OBS),
+
+    /**
+     * Variants for recording the ending time of observation in HH:MM:SS[.s...] format
+     */
+    TSTOP(DateTime.TSTOP, ObservationDurationDescription.TIME_END),
+
     /** DARKTIME appears in multiple conventions */
     DARKTIME(NOAOExt.DARKTIME, SBFitsExt.DARKTIME);
 
@@ -163,22 +181,22 @@ public enum Synonyms {
      * Returns the primary or preferred FITS header keyword to prefer for the given header entry to provide this
      * information in a FITS header.
      * 
-     * @param  header the standard or conventional header keyword.
+     * @param  key the standard or conventional header keyword.
      * 
      * @return        the primary (or preferred) FITS header keyword form to use
      * 
      * @see           #primaryKeyword(String)
      * @see           #primaryKeyword()
      */
-    public static IFitsHeader primaryKeyword(IFitsHeader header) {
+    public static IFitsHeader primaryKeyword(IFitsHeader key) {
         for (Synonyms synonym : values()) {
             for (IFitsHeader synHeader : synonym.synonyms) {
-                if (synHeader.equals(header)) {
+                if (synHeader.equals(key)) {
                     return synonym.primaryKeyword();
                 }
             }
         }
-        return header;
+        return key;
     }
 
     /**

@@ -60,7 +60,7 @@ public enum Compression implements IFitsHeader {
 
     /**
      * (required keyword) The value field of this keyword shall contain an integer that gives the value of the BITPIX
-     * keyword in the uncompressed FITS image. 1
+     * keyword in the uncompressed FITS image.
      */
     ZBITPIX(VALUE.INTEGER, "", Standard.BITPIX),
 
@@ -75,6 +75,7 @@ public enum Compression implements IFitsHeader {
      * the NAXISn keywords in the uncompressed FITS image.
      */
     ZNAXISn(VALUE.INTEGER, "", Standard.NAXISn),
+
     /**
      * (optional keywords) The value of these indexed keywords (where n ranges from 1 to ZNAXIS ) shall contain a
      * positive integer representing the number o f pixels along axis n of the compression tiles. Each tile of pixels is
@@ -97,6 +98,7 @@ public enum Compression implements IFitsHeader {
      * algorithm.
      */
     ZNAMEn(VALUE.STRING, ""),
+
     /**
      * (optional keywords) These pairs of optional array keywords (where n is an integer index number starting with 1)
      * supply the name and value, respectively, of any algorithm-specific parameters that are needed to compress o r
@@ -105,6 +107,7 @@ public enum Compression implements IFitsHeader {
      * algorithm.
      */
     ZVALn(VALUE.ANY, ""),
+
     /**
      * (optional keyword) Used to record the name of the image compression algorithm that was used to compress the
      * optional null pixel data mask. See the “Preserving undefined pixels with lossy compression” section for more
@@ -126,7 +129,6 @@ public enum Compression implements IFitsHeader {
      * identical copy o f the original FITS file when the image is uncompressed.preserves the original XTENSION
      * keyword.may only be used if the original uncompressed image was contained in in IMAGE extension.
      */
-
     ZTENSION(VALUE.STRING, "", Standard.XTENSION),
 
     /**
@@ -406,7 +408,7 @@ public enum Compression implements IFitsHeader {
      */
     public static final String SMOOTH = "SMOOTH";
 
-    private final IFitsHeader key;
+    private final FitsKey key;
 
     private final IFitsHeader uncompressedKey;
 
@@ -415,12 +417,13 @@ public enum Compression implements IFitsHeader {
     }
 
     Compression(VALUE valueType, String comment, IFitsHeader uncompressedKey) {
-        key = new FitsHeaderImpl(name(), IFitsHeader.SOURCE.INTEGRAL, HDU.BINTABLE, valueType, comment);
+        key = new FitsKey(name(), IFitsHeader.SOURCE.INTEGRAL, HDU.BINTABLE, valueType, comment);
         this.uncompressedKey = uncompressedKey;
+        FitsKey.registerStandard(this);
     }
 
     @Override
-    public final IFitsHeader impl() {
+    public final FitsKey impl() {
         return key;
     }
 

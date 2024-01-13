@@ -65,6 +65,7 @@ public class ImageNullPixelMask {
         return add(new NullPixelMaskRestorer(tileBuffer, tileIndex, nullValue, compressorControl));
     }
 
+    @SuppressWarnings("deprecation")
     public byte[][] getColumn() {
         byte[][] column = new byte[nullPixelMasks.length][];
         for (AbstractNullPixelMask tileMask : nullPixelMasks) {

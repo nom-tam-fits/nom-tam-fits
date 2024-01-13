@@ -193,14 +193,14 @@ public enum DataDescription implements IFitsHeader {
      */
     TSORTKEY(SOURCE.HEASARC, HDU.TABLE, VALUE.STRING, "defines the sort order of a table");
 
-    private final IFitsHeader key;
+    private final FitsKey key;
 
     DataDescription(IFitsHeader.SOURCE status, HDU hdu, VALUE valueType, String comment) {
-        key = new FitsHeaderImpl(name(), status, hdu, valueType, comment);
+        key = new FitsKey(name(), status, hdu, valueType, comment);
     }
 
     @Override
-    public final IFitsHeader impl() {
+    public final FitsKey impl() {
         return key;
     }
 }

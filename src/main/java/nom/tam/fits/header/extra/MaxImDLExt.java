@@ -31,7 +31,7 @@ package nom.tam.fits.header.extra;
  * #L%
  */
 
-import nom.tam.fits.header.FitsHeaderImpl;
+import nom.tam.fits.header.FitsKey;
 import nom.tam.fits.header.IFitsHeader;
 
 /**
@@ -219,10 +219,10 @@ public enum MaxImDLExt implements IFitsHeader {
      */
     YBAYROFF(VALUE.REAL, "Y offset of Bayer array");
 
-    private final IFitsHeader key;
+    private final FitsKey key;
 
     MaxImDLExt(String key, VALUE valueType, String comment) {
-        this.key = new FitsHeaderImpl(key == null ? name() : key, IFitsHeader.SOURCE.MaxImDL, HDU.IMAGE, valueType,
+        this.key = new FitsKey(key == null ? name() : key, IFitsHeader.SOURCE.MaxImDL, HDU.IMAGE, valueType,
                 comment);
     }
 
@@ -231,7 +231,7 @@ public enum MaxImDLExt implements IFitsHeader {
     }
 
     @Override
-    public final IFitsHeader impl() {
+    public final FitsKey impl() {
         return key;
     }
 

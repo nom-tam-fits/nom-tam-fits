@@ -31,7 +31,7 @@ package nom.tam.fits.header.extra;
  * #L%
  */
 
-import nom.tam.fits.header.FitsHeaderImpl;
+import nom.tam.fits.header.FitsKey;
 import nom.tam.fits.header.IFitsHeader;
 
 /**
@@ -7944,18 +7944,18 @@ public enum NOAOExt implements IFitsHeader {
      */
     MJD_OBS("MJD-OBS", HDU.ANY, VALUE.REAL, "MJD of exposure start");
 
-    private final IFitsHeader key;
+    private final FitsKey key;
 
     NOAOExt(HDU hdu, VALUE valueType, String comment) {
         this(null, hdu, valueType, comment);
     }
 
     NOAOExt(String key, HDU hdu, VALUE valueType, String comment) {
-        this.key = new FitsHeaderImpl(key == null ? name() : key, IFitsHeader.SOURCE.NOAO, hdu, valueType, comment);
+        this.key = new FitsKey(key == null ? name() : key, IFitsHeader.SOURCE.NOAO, hdu, valueType, comment);
     }
 
     @Override
-    public final IFitsHeader impl() {
+    public final FitsKey impl() {
         return key;
     }
 

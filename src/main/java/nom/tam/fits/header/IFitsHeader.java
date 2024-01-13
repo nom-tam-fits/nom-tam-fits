@@ -37,6 +37,9 @@ import nom.tam.fits.HeaderCard;
  * Interface for standardized header keyword implementations. Standardized header keys help with proper usage, with
  * restricted use and value types as appropriate. Using keywords that implement this interface make it less likely for
  * one to end up with inproperly constructed FITS files. Therefore, their usage is highly encouranged when possible.
+ * 
+ * @see HeaderCard#setValueCheckingPolicy(nom.tam.fits.HeaderCard.ValueCheck)
+ * @see nom.tam.fits.Header#setKeywordChecking(nom.tam.fits.Header.KeywordCheck)
  */
 public interface IFitsHeader {
 
@@ -177,7 +180,7 @@ public interface IFitsHeader {
      * 
      * @since  1.19
      */
-    default IFitsHeader impl() {
+    default FitsKey impl() {
         return null;
     }
 
@@ -250,7 +253,7 @@ public interface IFitsHeader {
             throw new IllegalStateException("indexed keyword " + headerName.toString() + " is too long.");
         }
 
-        return new FitsHeaderImpl(headerName.toString(), status(), hdu(), valueType(), comment());
+        return new FitsKey(headerName.toString(), status(), hdu(), valueType(), comment());
     }
 
     /**
@@ -270,4 +273,56 @@ public interface IFitsHeader {
     default VALUE valueType() {
         return impl().valueType();
     }
+
+    /**
+     * Extracts the indices for this key from an actual keyword. The keyword realization must be for this key, or else
+     * an exception will be thrown.
+     * 
+     * @param  key                      The actual keyword as it appears in a FITS header
+     * 
+     * @return                          An array of indices that appear in the key, or <code>null</code> if the keyword
+     *                                      is not one that can be indexed.
+     * 
+     * @throws IllegalArgumentException if the keyword does not match the pattern of this standardized FITS key
+     * 
+     * @see                             Standard#match(String)
+     * 
+     * @since                           1.19
+     */
+    default int[] extractIndices(String key) throws IllegalArgumentException {
+        String pattern = key();
+        int i, j = 0, lp = pattern.length(), lk = key.length();
+        int n = 0;
+
+        for (i = 0; i < lp; i++) {
+            if (pattern.charAt(i) == 'n') {
+                n++;
+            }
+        }
+
+        if (n == 0) {
+            return null;
+        }
+
+        int[] idx = new int[n];
+
+        for (i = 0, n = 0; i < lp; i++) {
+            if (pattern.charAt(i) == 'n') {
+                if (i + 1 < lp && pattern.charAt(i + 1) == 'n') {
+                    idx[n++] = key.charAt(j++) - '0';
+                } else {
+                    int value = 0;
+                    while (j < lk && Character.isDigit(key.charAt(j))) {
+                        value = FitsKey.BASE_10 * value + key.charAt(j++) - '0';
+                    }
+                    idx[n++] = value;
+                }
+            } else if (key.charAt(j++) != pattern.charAt(i)) {
+                throw new IllegalArgumentException("Key " + key + " does no match pattern " + pattern);
+            }
+        }
+
+        return idx;
+    }
+
 }

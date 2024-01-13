@@ -49,7 +49,6 @@ import static nom.tam.fits.header.Standard.TTYPEn;
  * 
  * @see CompressParameter
  */
-@SuppressWarnings("deprecation")
 public abstract class CompressParameters implements ICompressParameters, Cloneable {
 
     @Override

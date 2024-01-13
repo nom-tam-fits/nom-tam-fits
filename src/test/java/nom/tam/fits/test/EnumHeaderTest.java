@@ -19,16 +19,19 @@ import nom.tam.fits.Header;
 import nom.tam.fits.header.Checksum;
 import nom.tam.fits.header.Compression;
 import nom.tam.fits.header.DataDescription;
-import nom.tam.fits.header.FitsHeaderImpl;
+import nom.tam.fits.header.FitsKey;
 import nom.tam.fits.header.GenericKey;
 import nom.tam.fits.header.HierarchicalGrouping;
 import nom.tam.fits.header.IFitsHeader;
+import nom.tam.fits.header.IFitsHeader.HDU;
+import nom.tam.fits.header.IFitsHeader.VALUE;
 import nom.tam.fits.header.InstrumentDescription;
 import nom.tam.fits.header.NonStandard;
 import nom.tam.fits.header.ObservationDescription;
 import nom.tam.fits.header.ObservationDurationDescription;
 import nom.tam.fits.header.Standard;
 import nom.tam.fits.header.Synonyms;
+import nom.tam.fits.header.WCS;
 import nom.tam.fits.header.extra.CXCExt;
 import nom.tam.fits.header.extra.CXCStclSharedExt;
 import nom.tam.fits.header.extra.MaxImDLExt;
@@ -190,7 +193,7 @@ public class EnumHeaderTest {
         IFitsHeader[] result = GenericKey.create(new String[] {"BITPIX", "SIMPLE", "UNKOWN"});
         assertSame(Standard.BITPIX, result[0]);
         assertSame(Standard.SIMPLE, result[1]);
-        assertTrue(result[2] instanceof FitsHeaderImpl);
+        assertTrue(result[2] instanceof FitsKey);
     }
 
     @Test
@@ -209,4 +212,92 @@ public class EnumHeaderTest {
         assertEquals(7, IFitsHeader.VALUE.values().length);
         assertSame(IFitsHeader.VALUE.ANY, IFitsHeader.VALUE.valueOf(IFitsHeader.VALUE.ANY.name()));
     }
+
+    @Test
+    public void testLookups() {
+        Assert.assertNull(Standard.match("BLAH"));
+        Assert.assertNull(Standard.match("1"));
+
+        assertEquals(Standard.SIMPLE, Standard.match("SIMPLE"));
+
+        assertEquals(WCS.CTYPEna, Standard.match("CTYPE1"));
+        assertEquals(WCS.CTYPEna, Standard.match("CTYPE1A"));
+        assertEquals(WCS.CTYPEna, Standard.match("CTYPE1Z"));
+
+        assertEquals(WCS.nCDEna, Standard.match("1CDE100A"));
+        assertEquals(WCS.nSn_na, Standard.match("1S100_1A"));
+        assertEquals(WCS.nnCDna, Standard.match("12CD100A"));
+
+        assertEquals(WCS.nCDEna, Standard.match("1CDE100Z"));
+        assertEquals(WCS.nSn_na, Standard.match("1S100_1Z"));
+        assertEquals(WCS.nnCDna, Standard.match("12CD100Z"));
+
+        assertEquals(WCS.nCDEna, Standard.match("1CDE100"));
+        assertEquals(WCS.nSn_na, Standard.match("1S100_1"));
+        assertEquals(WCS.nnCDna, Standard.match("12CD100"));
+
+        assertEquals(Standard.SIMPLE, GenericKey.lookup("SIMPLE"));
+    }
+
+    @Test
+    public void testResolveIndices() {
+        Assert.assertNull(Standard.SIMPLE.extractIndices("SIMPLE"));
+
+        Assert.assertArrayEquals(new int[] {1}, WCS.CTYPEna.extractIndices("CTYPE1"));
+        Assert.assertArrayEquals(new int[] {1}, WCS.CTYPEna.extractIndices("CTYPE1A"));
+
+        Assert.assertArrayEquals(new int[] {1, 100}, WCS.nCDEna.extractIndices("1CDE100A"));
+        Assert.assertArrayEquals(new int[] {1, 100, 1}, WCS.nSn_na.extractIndices("1S100_1A"));
+        Assert.assertArrayEquals(new int[] {1, 2, 100}, WCS.nnCDna.extractIndices("12CD100A"));
+
+        Assert.assertArrayEquals(new int[] {1, 100}, WCS.nCDEna.extractIndices("1CDE100Z"));
+        Assert.assertArrayEquals(new int[] {1, 100, 1}, WCS.nSn_na.extractIndices("1S100_1Z"));
+        Assert.assertArrayEquals(new int[] {1, 2, 100}, WCS.nnCDna.extractIndices("12CD100Z"));
+
+        Assert.assertArrayEquals(new int[] {1, 100}, WCS.nCDEna.extractIndices("1CDE100"));
+        Assert.assertArrayEquals(new int[] {1, 100, 1}, WCS.nSn_na.extractIndices("1S100_1"));
+        Assert.assertArrayEquals(new int[] {1, 2, 100}, WCS.nnCDna.extractIndices("12CD100"));
+    }
+
+    @Test
+    public void testGetN() {
+        assertEquals(1, GenericKey.getN("1"));
+        assertEquals(1, GenericKey.getN("A1"));
+
+        assertEquals(11, GenericKey.getN("11"));
+        assertEquals(11, GenericKey.getN("A11"));
+
+        assertEquals(1, GenericKey.getN("1A"));
+        assertEquals(1, GenericKey.getN("A1A"));
+
+        assertEquals(0, GenericKey.getN("1AA"));
+        assertEquals(0, GenericKey.getN("A1AA"));
+    }
+
+    @Test(expected = IllegalArgumentException.class)
+    public void testResolveIndicesException() throws Exception {
+        WCS.CTYPEna.extractIndices("CRPIX1");
+    }
+
+    @Test
+    public void testFitsKeyConstructors() {
+        assertEquals("AZ_1-3n", new FitsKey("AZ_1-3na", HDU.ANY, VALUE.ANY, "blah").key());
+        assertEquals("AZ_1-3n", new FitsKey("AZ_1-3na", VALUE.ANY, "blah").key());
+    }
+
+    @Test(expected = IllegalArgumentException.class)
+    public void testFitsKeyConstructorLongException() {
+        new FitsKey("AZ_100-300na", VALUE.ANY, "blah");
+    }
+
+    @Test(expected = IllegalArgumentException.class)
+    public void testFitsKeyConstructorIllegalAltException() {
+        new FitsKey("AZ_1-3an", VALUE.ANY, "blah");
+    }
+
+    @Test(expected = IllegalArgumentException.class)
+    public void testFitsKeyConstructorIllegalCharacterException() {
+        new FitsKey("AZ_1-3nb", VALUE.ANY, "blah");
+    }
+
 }

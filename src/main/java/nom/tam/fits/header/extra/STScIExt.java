@@ -31,7 +31,7 @@ package nom.tam.fits.header.extra;
  * #L%
  */
 
-import nom.tam.fits.header.FitsHeaderImpl;
+import nom.tam.fits.header.FitsKey;
 import nom.tam.fits.header.IFitsHeader;
 
 /**
@@ -75,7 +75,9 @@ public enum STScIExt implements IFitsHeader {
      */
     FOV_Y_MM("Detector Y field of view (mm)"),
     /**
-     * BITS/PIXEL OF IPPS RASTER.
+     * BITS/PIXEL OF IPPS RASTER. In truth this is an illegal FITS keyword, as the character '/' should not be allowed
+     * in standard FITS keywords. If possible, avoid using it since it may result in FITS that is not readable by some
+     * software.
      */
     IPPS_B_P("IPPS-B/P", "BITS/PIXEL OF IPPS RASTER."),
     /**
@@ -214,18 +216,18 @@ public enum STScIExt implements IFitsHeader {
      */
     MJD_OBS("MJD-OBS", "MJD of exposure start");
 
-    private final IFitsHeader key;
+    private final FitsKey key;
 
     STScIExt(String comment) {
         this(null, comment);
     }
 
     STScIExt(String key, String comment) {
-        this.key = new FitsHeaderImpl(key == null ? name() : key, IFitsHeader.SOURCE.CXC, HDU.ANY, VALUE.STRING, comment);
+        this.key = new FitsKey(key == null ? name() : key, IFitsHeader.SOURCE.CXC, HDU.ANY, VALUE.STRING, comment);
     }
 
     @Override
-    public final IFitsHeader impl() {
+    public final FitsKey impl() {
         return key;
     }
 

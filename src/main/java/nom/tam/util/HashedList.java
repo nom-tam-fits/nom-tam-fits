@@ -57,7 +57,7 @@ import java.util.Iterator;
 import java.util.List;
 import java.util.NoSuchElementException;
 
-import nom.tam.fits.header.FitsHeaderImpl;
+import nom.tam.fits.header.FitsKey;
 
 /**
  * An ordered hash map implementation.
@@ -194,7 +194,7 @@ public class HashedList<VALUE extends CursorValue<String>> implements Collection
      */
     private void add(int pos, VALUE entry) {
         String key = entry.getKey();
-        if (keyed.containsKey(key) && !FitsHeaderImpl.isCommentStyleKey(key)) {
+        if (keyed.containsKey(key) && !FitsKey.isCommentStyleKey(key)) {
             int oldPos = indexOf(entry);
             internalRemove(oldPos, entry);
             if (oldPos < pos) {
@@ -239,7 +239,7 @@ public class HashedList<VALUE extends CursorValue<String>> implements Collection
      * @param entry The element to add to the list.
      */
     public void update(String key, VALUE entry) {
-        if (keyed.containsKey(key) && !FitsHeaderImpl.isCommentStyleKey(key)) {
+        if (keyed.containsKey(key) && !FitsKey.isCommentStyleKey(key)) {
             int index = indexOf(get(key));
             remove(index);
             add(index, entry);

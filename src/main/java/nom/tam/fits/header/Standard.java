@@ -76,7 +76,7 @@ public enum Standard implements IFitsHeader {
      * Columns 1-8 contain ASCII blanks. This keyword has no associated value. Columns 9-80 may contain any ASCII text.
      * Any number of card images with blank keyword fields may appear in a key.
      */
-    BLANKS("        ", SOURCE.RESERVED, HDU.ANY, VALUE.NONE, null),
+    BLANKS("", SOURCE.RESERVED, HDU.ANY, VALUE.NONE, null),
 
     /**
      * This keyword may be used only in the primary key. It shall appear within the first 36 card images of the FITS
@@ -143,7 +143,7 @@ public enum Standard implements IFitsHeader {
      * string value may be continued on any number of consecutive CONTINUE keywords, thus effectively allowing
      * arbitrarily long strings to be written as keyword values.
      */
-    CONTINUE(SOURCE.HEASARC, HDU.ANY, VALUE.NONE, "denotes the CONTINUE long string keyword convention"),
+    CONTINUE(SOURCE.RESERVED, HDU.ANY, VALUE.NONE, "denotes the CONTINUE long string keyword convention"),
 
     /**
      * This keyword is used to indicate a rotation from a standard coordinate system described by the CTYPEn to a
@@ -562,7 +562,7 @@ public enum Standard implements IFitsHeader {
      * 
      * @since 1.19
      */
-    TDMAXn(SOURCE.HEASARC, HDU.TABLE, VALUE.REAL, "maximum value in the column"),
+    TDMAXn(SOURCE.RESERVED, HDU.TABLE, VALUE.REAL, "maximum value in the column"),
 
     /**
      * The value field of this indexed keyword shall contain a floating point number specifying the minimum valid
@@ -571,7 +571,7 @@ public enum Standard implements IFitsHeader {
      * 
      * @since 1.19
      */
-    TDMINn(SOURCE.HEASARC, HDU.TABLE, VALUE.REAL, "minimum value in the column"),
+    TDMINn(SOURCE.RESERVED, HDU.TABLE, VALUE.REAL, "minimum value in the column"),
 
     /**
      * The value field of this indexed keyword shall contain a floating point number specifying the upper bound of the
@@ -582,7 +582,7 @@ public enum Standard implements IFitsHeader {
      * 
      * @since 1.19
      */
-    TLMAXn(SOURCE.HEASARC, HDU.TABLE, VALUE.REAL, "maximum legal value in the column"),
+    TLMAXn(SOURCE.RESERVED, HDU.TABLE, VALUE.REAL, "maximum legal value in the column"),
 
     /**
      * The value field of this indexed keyword shall contain a floating point number specifying the lower bound of the
@@ -593,7 +593,7 @@ public enum Standard implements IFitsHeader {
      * 
      * @since 1.19
      */
-    TLMINn(SOURCE.HEASARC, HDU.TABLE, VALUE.REAL, "minimum legal value in the column"),
+    TLMINn(SOURCE.RESERVED, HDU.TABLE, VALUE.REAL, "minimum legal value in the column"),
 
     /**
      * The value field shall contain a character string giving the name of the extension type. This keyword is mandatory
@@ -641,7 +641,7 @@ public enum Standard implements IFitsHeader {
 
     private final StandardCommentReplacement[] commentReplacements;
 
-    private final IFitsHeader key;
+    private final FitsKey key;
 
     Standard(SOURCE status, HDU hdu, VALUE valueType, String comment, StandardCommentReplacement... replacements) {
         this(null, status, hdu, valueType, comment, replacements);
@@ -649,12 +649,13 @@ public enum Standard implements IFitsHeader {
 
     Standard(String headerName, SOURCE status, HDU hdu, VALUE valueType, String comment,
             StandardCommentReplacement... replacements) {
-        key = new FitsHeaderImpl(headerName == null ? name() : headerName, status, hdu, valueType, comment);
+        key = new FitsKey(headerName == null ? name() : headerName, status, hdu, valueType, comment);
         commentReplacements = replacements;
+        FitsKey.registerStandard(this);
     }
 
     @Override
-    public final IFitsHeader impl() {
+    public final FitsKey impl() {
         return key;
     }
 
@@ -725,4 +726,20 @@ public enum Standard implements IFitsHeader {
     private static StandardCommentReplacement replaceable(String string, Class<?> clazz, String comment) {
         return new StandardCommentReplacement(string, clazz, comment);
     }
+
+    /**
+     * Returns the standard FITS keyword that matches the specified actual key.
+     * 
+     * @param  key The key as it may appear in a FITS header, e.g. "CTYPE1A"
+     * 
+     * @return     The standard FITS keyword/pattern that matches, e.g. {@link WCS#CTYPEna}.
+     * 
+     * @see        IFitsHeader#extractIndices(String)
+     * 
+     * @since      1.19
+     */
+    public static IFitsHeader match(String key) {
+        return FitsKey.matchStandard(key);
+    }
+
 }

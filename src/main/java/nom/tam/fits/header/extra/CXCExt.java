@@ -31,7 +31,7 @@ package nom.tam.fits.header.extra;
  * #L%
  */
 
-import nom.tam.fits.header.FitsHeaderImpl;
+import nom.tam.fits.header.FitsKey;
 import nom.tam.fits.header.IFitsHeader;
 
 /**
@@ -174,14 +174,14 @@ public enum CXCExt implements IFitsHeader {
      */
     TSTOP("add TIMEZERO and MJDREF for absolute TT");
 
-    private final IFitsHeader key;
+    private final FitsKey key;
 
     CXCExt(String comment) {
-        key = new FitsHeaderImpl(name(), IFitsHeader.SOURCE.CXC, HDU.ANY, VALUE.STRING, comment);
+        key = new FitsKey(name(), IFitsHeader.SOURCE.CXC, HDU.ANY, VALUE.STRING, comment);
     }
 
     @Override
-    public final IFitsHeader impl() {
+    public final FitsKey impl() {
         return key;
     }
 

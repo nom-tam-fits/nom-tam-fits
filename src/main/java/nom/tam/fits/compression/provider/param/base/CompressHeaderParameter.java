@@ -45,7 +45,7 @@ import static nom.tam.fits.header.Compression.ZVALn;
  * 
  * @param <OPTION> The generic type of the compression option for which this parameter is used.
  */
-@SuppressWarnings("javadoc")
+@SuppressWarnings({"javadoc", "deprecation"})
 public abstract class CompressHeaderParameter<OPTION> extends CompressParameter<OPTION>
         implements ICompressHeaderParameter {
 

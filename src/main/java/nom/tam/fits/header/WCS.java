@@ -844,6 +844,9 @@ public enum WCS implements IFitsHeader {
     TVn_na(SOURCE.RESERVED, HDU.TABLE, VALUE.REAL, "column pixel axis parameter value");
 
     /** ICRS coordinate reference frame */
+    public static final int WCSAXES_MAX_VALUE = 9;
+
+    /** ICRS coordinate reference frame */
     public static final String RADESYS_ICRS = "ICRS";
 
     /** IAU 1984 FK5 coordinate reference frame */
@@ -938,18 +941,19 @@ public enum WCS implements IFitsHeader {
      */
     public static final String SPECTRAL_ALGO_A2V = "A2V";
 
-    private final IFitsHeader key;
+    private final FitsKey key;
 
     WCS(SOURCE status, HDU hdu, VALUE valueType, String comment) {
         this(null, status, hdu, valueType, comment);
     }
 
     WCS(String headerName, SOURCE status, HDU hdu, VALUE valueType, String comment) {
-        key = new FitsHeaderImpl(headerName == null ? name() : headerName, status, hdu, valueType, comment);
+        key = new FitsKey(headerName == null ? name() : headerName, status, hdu, valueType, comment);
+        FitsKey.registerStandard(this);
     }
 
     @Override
-    public final IFitsHeader impl() {
+    public final FitsKey impl() {
         return key;
     }
 
@@ -980,7 +984,7 @@ public enum WCS implements IFitsHeader {
             throw new IllegalArgumentException("Expected 'A' through 'Z': Got '%c'");
         }
 
-        return new FitsHeaderImpl(key() + Character.toUpperCase(c), status(), hdu(), valueType(), comment());
+        return new FitsKey(key() + Character.toUpperCase(c), status(), hdu(), valueType(), comment());
     }
 
 }

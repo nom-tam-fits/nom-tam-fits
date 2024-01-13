@@ -1776,4 +1776,11 @@ public class HeaderTest {
         h.addValue(NOAOExt.ADCMJD, 0.0);
     }
 
+    @Test(expected = IllegalArgumentException.class)
+    public void testReplaceCommentKeyException() throws Exception {
+        Header h = new Header();
+        h.insertComment("blah");
+        h.replaceKey(Standard.COMMENT, Standard.BLANKS);
+    }
+
 }
