@@ -257,6 +257,21 @@ public class EnumHeaderTest {
         Assert.assertArrayEquals(new int[] {1, 2, 100}, WCS.nnCDna.extractIndices("12CD100"));
     }
 
+    @Test
+    public void testGetN() {
+        assertEquals(1, GenericKey.getN("1"));
+        assertEquals(1, GenericKey.getN("A1"));
+
+        assertEquals(11, GenericKey.getN("11"));
+        assertEquals(11, GenericKey.getN("A11"));
+
+        assertEquals(1, GenericKey.getN("1A"));
+        assertEquals(1, GenericKey.getN("A1A"));
+
+        assertEquals(0, GenericKey.getN("1AA"));
+        assertEquals(0, GenericKey.getN("A1AA"));
+    }
+
     @Test(expected = IllegalArgumentException.class)
     public void testResolveIndicesException() throws Exception {
         WCS.CTYPEna.extractIndices("CRPIX1");

@@ -64,8 +64,8 @@ public class FitsKey implements IFitsHeader, Serializable {
      * Creates a new standardized FITS keyword with the specific usage constraints. The keyword must be composed of
      * uppper-case 'A'-'Z', digits, underscore ('_') and hyphen ('-') characters. Additionally, lower case 'n' may be
      * used as a place-holder for a numerical index, and the keyword name may end with a lower-case 'a' to indicate that
-     * it may be used for/with alternate WCS coordinate systems. (We also allow '/' because some STScI keywords use
-     * these even though they violate the FITS standard.
+     * it may be used for/with alternate WCS coordinate systems. (We also allow '/' because some STScI keywords use it
+     * even though it violates the FITS standard.)
      * 
      * @param  headerName               The keyword as it will appear in the FITS headers, usually a string with up to 8
      *                                      characters, containing uppper case letters (A-Z), digits (0-9), and/or
@@ -123,7 +123,8 @@ public class FitsKey implements IFitsHeader, Serializable {
      * {@link IFitsHeader.SOURCE#UNKNOWN}. The keyword must be composed of uppper-case 'A'-'Z', digits, underscore ('_')
      * and hyphen ('-') characters. Additionally, lower case 'n' may be used as a place-holder for a numerical index,
      * and the keyword name may end with a lower-case 'a' to indicate that it may be used for/with alternate WCS
-     * coordinate systems.
+     * coordinate systems. (We also allow '/' because some STScI keywords use it even though it violates the FITS
+     * standard.)
      * 
      * @param  headerName               The keyword as it will appear in the FITS headers, usually a string with up to 8
      *                                      characters, containing uppper case letters (A-Z), digits (0-9), and/or
@@ -146,7 +147,8 @@ public class FitsKey implements IFitsHeader, Serializable {
      * {@link IFitsHeader.SOURCE#UNKNOWN} and HDY type to {@link IFitsHeader.HDU#ANY}. The keyword must be composed of
      * uppper-case 'A'-'Z', digits, underscore ('_') and hyphen ('-') characters. Additionally, lower case 'n' may be
      * used as a place-holder for a numerical index, and the keyword name may end with a lower-case 'a' to indicate that
-     * it may be used for/with alternate WCS coordinate systems.
+     * it may be used for/with alternate WCS coordinate systems. (We also allow '/' because some STScI keywords use it
+     * even though it violates the FITS standard.)
      * 
      * @param  headerName               The keyword as it will appear in the FITS headers, usually a string with up to 8
      *                                      characters, containing uppper case letters (A-Z), digits (0-9), and/or
