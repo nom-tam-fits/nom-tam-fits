@@ -235,6 +235,8 @@ public class EnumHeaderTest {
         assertEquals(WCS.nCDEna, Standard.match("1CDE100"));
         assertEquals(WCS.nSn_na, Standard.match("1S100_1"));
         assertEquals(WCS.nnCDna, Standard.match("12CD100"));
+
+        assertEquals(Standard.SIMPLE, GenericKey.lookup("SIMPLE"));
     }
 
     @Test
