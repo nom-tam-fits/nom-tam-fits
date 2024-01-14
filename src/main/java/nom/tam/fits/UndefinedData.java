@@ -117,6 +117,7 @@ public class UndefinedData extends Data {
         ArrayFuncs.copyInto(x, data);
     }
 
+    @SuppressWarnings("deprecation")
     @Override
     protected void fillHeader(Header head) {
         // We'll assume it's a primary image, until we know better...
@@ -124,7 +125,7 @@ public class UndefinedData extends Data {
         head.deleteKey(Standard.SIMPLE);
         head.deleteKey(Standard.EXTEND);
 
-        Standard.context(null);
+        Standard.context(UndefinedData.class);
 
         Cursor<String, HeaderCard> c = head.iterator();
         c.add(HeaderCard.create(Standard.XTENSION, extensionType));
@@ -138,6 +139,8 @@ public class UndefinedData extends Data {
 
         c.add(HeaderCard.create(Standard.PCOUNT, pCount));
         c.add(HeaderCard.create(Standard.GCOUNT, gCount));
+
+        Standard.context(null);
     }
 
     @Override

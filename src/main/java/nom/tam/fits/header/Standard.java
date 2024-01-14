@@ -656,9 +656,13 @@ public enum Standard implements IFitsHeader {
     }
 
     /**
-     * (<i>for internal use</i>) Set the {#link nom.tam.fits.Data} subclass in whose context the keyword is being used.
+     * @deprecated       (<i>for internal use</i>) Using {@link nom.tam.fits.HeaderCard#setComment(String)} after
+     *                       creating a header card with this keyword provides a more transparent way of setting
+     *                       context-specific comments. This convoluted approach will be removed in the future.
      * 
-     * @param clazz Usually a subclass of <code>nom.tam.fits.Data</code>.
+     * @param      clazz Usually a subclass of <code>nom.tam.fits.Data</code>.
+     * 
+     * @see              nom.tam.fits.HeaderCard#setComment(String)
      */
     public static void context(Class<?> clazz) {
         COMMENT_CONTEXT.set(clazz);

@@ -565,6 +565,30 @@
             <exclude>**/FitsCopy.java</exclude>
             <exclude>**/FitsReader.java</exclude>
             <exclude>**/Main.java</exclude>
+            <exclude>**/FitsLineAppender.java</exclude>
+            <exclude>**/FitsSubsctring.java</exclude>
+            <exclude>**/AsciiTableData.java</exclude>
+            <exclude>**/HeaderCommentsMap.java</exclude>
+            <exclude>**/HeaderCardCountingArrayDataInput</exclude>
+            <exclude>**/HeaderOrder.java</exclude>
+            <exclude>**/FitsHeaderImpl.java</exclude>
+            <exclude>**/GenericKey.java</exclude>
+            <exclude>**/StandardCommentReplacement.java</exclude>
+            <exclude>**/BlanksDotHierarchKeyFormatter.java</exclude>
+            <exclude>**/BufferDecoder.java</exclude>
+            <exclude>**/BufferEncoder.java</exclude>
+            <exclude>**/BufferPointer.java</exclude>
+            <exclude>**/BufferedData*putStream.java</exclude>
+            <exclude>**/BufferedFile.java</exclude>
+            <exclude>**/ByteFormatter.java</exclude>
+            <exclude>**/ByteParser.java</exclude>
+            <exclude>**/SafeClose.java</exclude>
+            <exclude>**/MultiArrayCopyFactory.java</exclude>
+            <exclude>**/MultiArrayPointer.java</exclude>
+            <exclude>**/PrimitiveType*.java</exclude>
+            <exclude>**/CXCStclSharedExt.java</exclude>
+            <exclude>**/HCompressorQuantizeOption.java</exclude>
+            <exclude>**/RiceQuantizeCompressOption.java</exclude>
           </sourceFileExcludes>
         </configuration>
         <reportSets>
@@ -796,6 +820,30 @@
                 <exclude>**/FitsCopy.java</exclude>
                 <exclude>**/FitsReader.java</exclude>
                 <exclude>**/Main.java</exclude>
+                <exclude>**/FitsLineAppender.java</exclude>
+                <exclude>**/FitsSubsctring.java</exclude>
+                <exclude>**/AsciiTableData.java</exclude>
+                <exclude>**/HeaderCommentsMap.java</exclude>
+                <exclude>**/HeaderCardCountingArrayDataInput</exclude>
+                <exclude>**/HeaderOrder.java</exclude>
+                <exclude>**/FitsHeaderImpl.java</exclude>
+                <exclude>**/GenericKey.java</exclude>
+                <exclude>**/StandardCommentReplacement.java</exclude>
+                <exclude>**/BlanksDotHierarchKeyFormatter.java</exclude>
+                <exclude>**/BufferDecoder.java</exclude>
+                <exclude>**/BufferEncoder.java</exclude>
+                <exclude>**/BufferPointer.java</exclude>
+                <exclude>**/BufferedData*putStream.java</exclude>
+                <exclude>**/BufferedFile.java</exclude>
+                <exclude>**/ByteFormatter.java</exclude>
+                <exclude>**/ByteParser.java</exclude>
+                <exclude>**/SafeClose.java</exclude>
+                <exclude>**/MultiArrayCopyFactory.java</exclude>
+                <exclude>**/MultiArrayPointer.java</exclude>
+                <exclude>**/PrimitiveType*.java</exclude>
+                <exclude>**/CXCStclSharedExt.java</exclude>
+                <exclude>**/HCompressorQuantizeOption.java</exclude>
+                <exclude>**/RiceQuantizeCompressOption.java</exclude>
               </sourceFileExcludes>
             </configuration>
           </plugin>
