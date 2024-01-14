@@ -39,10 +39,17 @@ import nom.tam.fits.HeaderCard;
  */
 
 /**
- * A concrete implementation of standardized FITS header keywords, which may be extended to provide arbitrary further
- * conventional keywords, beyond what is provided by this library. Wsers may instantiate this class or extend it to
+ * <p>
+ * A concrete implementation of standardized FITS header keywords. Users may instantiate this class or extend it to
  * define commonly used keywords for their applications, and benefit for the extra checks they afford, and to avoid
  * typos when using these.
+ * </p>
+ * <p>
+ * FITS keywords must be composed of uppper-case 'A'-'Z', digits, underscore ('_') and hyphen ('-') characters.
+ * Additionally, lower case 'n' may be used as a place-holder for a numerical index, and the keyword name may end with a
+ * lower-case 'a' to indicate that it may be used for/with alternate WCS coordinate systems. (We also allow '/' because
+ * some STScI keywords use it even though it violates the FITS standard.)
+ * </p>
  * 
  * @since 1.19
  */

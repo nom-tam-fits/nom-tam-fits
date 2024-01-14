@@ -34,7 +34,9 @@ package nom.tam.fits.header;
 /**
  * Specify user defined comments for standard keywords.
  *
- * @author ritchie
+ * @author     ritchie
+ * 
+ * @deprecated (<i>for internal use</i>) Visibility may be reduced to package level in the future.
  */
 class StandardCommentReplacement {
 

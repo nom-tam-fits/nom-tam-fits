@@ -52,7 +52,7 @@ public enum Checksum implements IFitsHeader {
      * value of the CHECKSUM keyword shall be set to the string '0000000000000000' (ASCII 0's, hex 30) before the
      * checksum is computed.
      */
-    CHECKSUM(HDU.ANY, VALUE.STRING, "checksum for the current HDU"),
+    CHECKSUM(HDU.ANY, VALUE.STRING, "complement checksum for the current HDU"),
     /**
      * The value field of the CHECKVER keyword shall contain a string, unique in the first 8 characters, which
      * distinguishes between any future alternative checksum algorithms which may be defined. The default value for a

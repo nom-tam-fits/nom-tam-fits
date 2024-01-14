@@ -75,8 +75,8 @@ public enum STScIExt implements IFitsHeader {
      */
     FOV_Y_MM("Detector Y field of view (mm)"),
     /**
-     * BITS/PIXEL OF IPPS RASTER. In truth this is an illegal FITS keyword, as the character '/' should not be allowed
-     * in standard FITS keywords. If possible, avoid using it since it may result in FITS that is not readable by some
+     * BITS/PIXEL OF IPPS RASTER. In truth this is an illegal FITS keyword, as the character '/' is not allowed in
+     * standard FITS keywords. If possible, avoid using it since it may result in FITS that is not readable by some
      * software.
      */
     IPPS_B_P("IPPS-B/P", "BITS/PIXEL OF IPPS RASTER."),

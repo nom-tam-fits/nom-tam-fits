@@ -112,7 +112,7 @@ public enum DateTime implements IFitsHeader {
      * 
      * @since 1.19
      */
-    DATEREF(SOURCE.RESERVED, HDU.ANY, VALUE.STRING, "Reference date"),
+    DATEREF(SOURCE.RESERVED, HDU.ANY, VALUE.STRING, "reference date"),
 
     /**
      * [day] Modified Julian Date of observation
@@ -203,98 +203,98 @@ public enum DateTime implements IFitsHeader {
      * 
      * @since 1.19
      */
-    XPOSURE(SOURCE.RESERVED, HDU.ANY, VALUE.REAL, "Net exposure duration"),
+    XPOSURE(SOURCE.RESERVED, HDU.ANY, VALUE.REAL, "net exposure duration"),
 
     /**
      * Wall clock exposure duration (in specified time units, or else seconds)
      * 
      * @since 1.19
      */
-    TELAPSE(SOURCE.RESERVED, HDU.ANY, VALUE.REAL, "Wall-clock exposure duration"),
+    TELAPSE(SOURCE.RESERVED, HDU.ANY, VALUE.REAL, "wall-clock exposure duration"),
 
     /**
      * Time reference system name
      * 
      * @since 1.19
      */
-    TIMESYS(SOURCE.RESERVED, HDU.ANY, VALUE.STRING, "Time scale"),
+    TIMESYS(SOURCE.RESERVED, HDU.ANY, VALUE.STRING, "time reference system"),
 
     /**
-     * Time reference position
+     * Time reference location
      * 
      * @since 1.19
      */
-    TREFPOS(SOURCE.RESERVED, HDU.ANY, VALUE.STRING, "Time reference position"),
+    TREFPOS(SOURCE.RESERVED, HDU.ANY, VALUE.STRING, "time reference location"),
 
     /**
-     * Time reference position for given column index.
+     * Time reference location for given column index.
      * 
      * @since 1.19
      */
-    TRPOSn(SOURCE.RESERVED, HDU.TABLE, VALUE.STRING, "Time reference position in column"),
+    TRPOSn(SOURCE.RESERVED, HDU.TABLE, VALUE.STRING, "time reference location in column"),
 
     /**
      * Pointer to time reference direction
      * 
      * @since 1.19
      */
-    TREFDIR(SOURCE.RESERVED, HDU.ANY, VALUE.STRING, "Time reference direction"),
+    TREFDIR(SOURCE.RESERVED, HDU.ANY, VALUE.STRING, "time reference direction"),
 
     /**
      * Time reference direction for given column index, e.g. 'TOPOCENT'
      * 
      * @since 1.19
      */
-    TRDIRn(SOURCE.RESERVED, HDU.TABLE, VALUE.STRING, "Time reference direction in column"),
+    TRDIRn(SOURCE.RESERVED, HDU.TABLE, VALUE.STRING, "time reference direction in column"),
 
     /**
      * Solar system ephemeris used, e.g. 'DE-405'.
      * 
      * @since 1.19
      */
-    PLEPHEM(SOURCE.RESERVED, HDU.ANY, VALUE.STRING, "Solar system ephemeris"),
+    PLEPHEM(SOURCE.RESERVED, HDU.ANY, VALUE.STRING, "solar-system ephemeris ID"),
 
     /**
      * Time unit name
      * 
      * @since 1.19
      */
-    TIMEUNIT(SOURCE.RESERVED, HDU.ANY, VALUE.STRING, "Time unit"),
+    TIMEUNIT(SOURCE.RESERVED, HDU.ANY, VALUE.STRING, "time unit"),
 
     /**
      * Precision time offset (in specified time units, or else seconds)
      * 
      * @since 1.19
      */
-    TIMEOFFS(SOURCE.RESERVED, HDU.ANY, VALUE.REAL, "Time offset"),
+    TIMEOFFS(SOURCE.RESERVED, HDU.ANY, VALUE.REAL, "time offset"),
 
     /**
      * Systematic time error (in specified time units, or else seconds)
      * 
      * @since 1.19
      */
-    TIMESYER(SOURCE.RESERVED, HDU.ANY, VALUE.REAL, "Systematic time error"),
+    TIMESYER(SOURCE.RESERVED, HDU.ANY, VALUE.REAL, "systematic time error"),
 
     /**
      * Random time error (in specified time units, or else seconds)
      * 
      * @since 1.19
      */
-    TIMERDER(SOURCE.RESERVED, HDU.ANY, VALUE.REAL, "Random time error"),
+    TIMERDER(SOURCE.RESERVED, HDU.ANY, VALUE.REAL, "random time error"),
 
     /**
      * Time resolution (in specified time units, or else seconds)
      * 
      * @since 1.19
      */
-    TIMEDEL(SOURCE.RESERVED, HDU.ANY, VALUE.REAL, "Time resolution"),
+    TIMEDEL(SOURCE.RESERVED, HDU.ANY, VALUE.REAL, "time resolution"),
 
     /**
      * Time location within pixel, between 0.0 and 1.0 (default 0.5).
      * 
      * @since 1.19
      */
-    TIMEPIXR(SOURCE.RESERVED, HDU.ANY, VALUE.REAL, "Time location in pixel");
+    TIMEPIXR(SOURCE.RESERVED, HDU.ANY, VALUE.REAL, "time location within pixel");
 
     /** International Atomic Time (TAI) timescale value. */
     public static final String TIMESYS_TAI = "TAI";

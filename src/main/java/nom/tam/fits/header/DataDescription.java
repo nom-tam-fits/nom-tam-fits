@@ -57,7 +57,7 @@ public enum DataDescription implements IFitsHeader {
      * originally created the current FITS HDU. This keyword is synonymous with the PROGRAM keyword. Example: 'TASKNAME
      * V1.2.3'
      */
-    CREATOR(SOURCE.HEASARC, HDU.ANY, VALUE.STRING, "the name of the software task that created the file"),
+    CREATOR(SOURCE.HEASARC, HDU.ANY, VALUE.STRING, "name of the software task that created the file"),
 
     /**
      * The value field shall contain a character string giving the the host file name used to record the original data.

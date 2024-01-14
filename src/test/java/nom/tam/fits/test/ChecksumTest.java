@@ -139,7 +139,7 @@ public class ChecksumTest {
         fits.read();
         in.close();
         fits.setChecksum();
-        assertEquals("kGpMn9mJkEmJk9mJ", fits.getHDU(0).getHeader().getStringValue("CHECKSUM"));
+        assertEquals("Bd5LEb5LBb5LBb5L", fits.getHDU(0).getHeader().getStringValue("CHECKSUM"));
     }
 
     // TODO This test fails in the CI for some reason, but not locally.

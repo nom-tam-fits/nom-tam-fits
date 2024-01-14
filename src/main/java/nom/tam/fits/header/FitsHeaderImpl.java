@@ -32,12 +32,12 @@ package nom.tam.fits.header;
  */
 
 /**
- * The old concrete implementation of standardized FITS keywords, with a very unintuitive class name.
+ * The old concrete implementation of standardized FITS keywords, with a very
+ * unintuitive class name.
  * 
- * @author     ritchie
- * 
- * @deprecated Use the more intuitively named {@link FitsKey} class instead. This class is provided for compatibility
- *                 with prior releases.
+ * @author ritchie
+ * @deprecated Use the more intuitively named {@link FitsKey} class instead.
+ *             This class is provided for compatibility with prior releases.
  */
 public class FitsHeaderImpl extends FitsKey {
 
@@ -47,21 +47,26 @@ public class FitsHeaderImpl extends FitsKey {
     private static final long serialVersionUID = 2393951402526656978L;
 
     /**
-     * Creates a new standardized FITS keyword with the specific usage constraints
+     * Creates a new standardized FITS keyword with the specific usage
+     * constraints
      * 
-     * @param  headerName               The keyword as it will appear in the FITS headers, usually a string with up to 8
-     *                                      characters, containing uppper case letters (A-Z), digits (0-9), and/or
-     *                                      underscore (<code>_</code>) or hyphen (<code>-</code>) characters for
-     *                                      standard FITS keywords.
-     * @param  status                   The convention that defines this keyword
-     * @param  hdu                      the type of HDU this keyword may appear in
-     * @param  valueType                the type of value that may be associated with this keyword
-     * @param  comment                  the standard comment to include with this keyword
-     * 
-     * @throws IllegalArgumentException if the keyword name is invalid.
+     * @param headerName
+     *            The keyword as it will appear in the FITS headers, usually a
+     *            string with up to 8 characters, containing uppper case letters
+     *            (A-Z), digits (0-9), and/or underscore (<code>_</code>) or
+     *            hyphen (<code>-</code>) characters for standard FITS keywords.
+     * @param status
+     *            The convention that defines this keyword
+     * @param hdu
+     *            the type of HDU this keyword may appear in
+     * @param valueType
+     *            the type of value that may be associated with this keyword
+     * @param comment
+     *            the standard comment to include with this keyword
+     * @throws IllegalArgumentException
+     *             if the keyword name is invalid.
      */
-    public FitsHeaderImpl(String headerName, SOURCE status, HDU hdu, VALUE valueType, String comment)
-            throws IllegalArgumentException {
+    public FitsHeaderImpl(String headerName, SOURCE status, HDU hdu, VALUE valueType, String comment) throws IllegalArgumentException {
         super(headerName, status, hdu, valueType, comment);
         // TODO Auto-generated constructor stub
     }

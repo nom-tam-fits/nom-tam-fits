@@ -97,7 +97,7 @@ public enum InstrumentDescription implements IFitsHeader {
      * keyword value may differ from the maximum value implied by the BITPIX in that more bits may be allocated in the
      * FITS pixel values than the detector can accommodate.
      */
-    SATURATE(SOURCE.STScI, HDU.ANY, VALUE.INTEGER, "Data value at which saturation occurs");
+    SATURATE(SOURCE.STScI, HDU.ANY, VALUE.INTEGER, "data value at which saturation occurs");
 
     private final FitsKey key;
 
