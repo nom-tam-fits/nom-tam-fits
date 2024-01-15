@@ -9,7 +9,7 @@ package nom.tam.fits.compression.provider.api;
  * #%L
  * nom.tam FITS library
  * %%
- * Copyright (C) 1996 - 2023 nom-tam-fits
+ * Copyright (C) 1996 - 2024 nom-tam-fits
  * %%
  * This is free and unencumbered software released into the public domain.
  * 
