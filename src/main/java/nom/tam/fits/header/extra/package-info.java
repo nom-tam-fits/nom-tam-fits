@@ -1,6 +1,6 @@
 /**
  * <p>
- * Various registered conventions for FITS header keywords.
+ * Various commonly used conventions for FITS header keywords, listed by organization.
  * </p>
  */
 

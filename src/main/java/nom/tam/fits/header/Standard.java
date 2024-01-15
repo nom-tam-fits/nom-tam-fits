@@ -61,9 +61,10 @@ public enum Standard implements IFitsHeader {
      * The value field shall contain an integer. The absolute value is used in computing the sizes of data structures.
      * It shall specify the number of bits that represent a data value. RANGE: -64,-32,8,16,32
      * 
-     * @see {@link Bitpix}
+     * @see Bitpix
      */
-    BITPIX(SOURCE.MANDATORY, HDU.ANY, VALUE.INTEGER, "bits per data element", replaceable("header:bitpix", Object.class) //
+    BITPIX(SOURCE.MANDATORY, HDU.ANY, VALUE.INTEGER, "bits per data element", //
+            replaceable("header:bitpix", Object.class) //
     ),
 
     /**
@@ -658,7 +659,8 @@ public enum Standard implements IFitsHeader {
     /**
      * @deprecated       (<i>for internal use</i>) Using {@link nom.tam.fits.HeaderCard#setComment(String)} after
      *                       creating a header card with this keyword provides a more transparent way of setting
-     *                       context-specific comments. This convoluted approach will be removed in the future.
+     *                       context-specific comments. This convoluted approach is no longer supported and will be
+     *                       removed in the future.
      * 
      * @param      clazz Usually a subclass of <code>nom.tam.fits.Data</code>.
      * 

@@ -566,7 +566,7 @@
             <exclude>**/FitsReader.java</exclude>
             <exclude>**/Main.java</exclude>
             <exclude>**/FitsLineAppender.java</exclude>
-            <exclude>**/FitsSubsctring.java</exclude>
+            <exclude>**/FitsSubstring.java</exclude>
             <exclude>**/AsciiTableData.java</exclude>
             <exclude>**/HeaderCommentsMap.java</exclude>
             <exclude>**/HeaderCardCountingArrayDataInput</exclude>
@@ -786,65 +786,12 @@
               <failOnError>false</failOnError>
               <aggregate>false</aggregate>
               <doctitle>
-                ${project.name} ${project.version} Public User API
+                ${project.name} ${project.version} Complete User API
               </doctitle>
               <windowtitle>
-                ${project.name} ${project.version} Public User API
+                ${project.name} ${project.version} Complete User API
               </windowtitle>
               <show>public</show>
-              <excludePackageNames>
-                nom.tam.fits.compress:
-                nom.tam.fits.compression.algorithm.gzip:
-                nom.tam.fits.compression.algorithm.gzip2:
-                nom.tam.fits.compression.algorithm.plio:
-                nom.tam.fits.compression.algorithm.uncompressed:
-                nom.tam.fits.compression.provider:
-                nom.tam.fits.compression.provider.param.*:
-                nom.tam.image.compression.bintable:
-                nom.tam.image.compression.tile:
-                nom.tam.image.compression.tile.mask:
-                nom.tam.image.tile.*
-              </excludePackageNames>
-              <sourceFileExcludes>
-                <exclude>**/CompressionLibLoaderProtection.java</exclude>
-                <exclude>**/CloseIS.java</exclude>
-                <exclude>**/ICompressor*.java</exclude>
-                <exclude>**/HCompress.java</exclude>
-                <exclude>**/HDecompress.java</exclude>
-                <exclude>**/HCompressor.java</exclude>
-                <exclude>**/RiceCompressor.java</exclude>
-                <exclude>**/BitBuffer.java</exclude>
-                <exclude>**/BitBuffer.java</exclude>
-                <exclude>**/Quantize.java</exclude>
-                <exclude>**/QuantizeProcessor.java</exclude>
-                <exclude>**/FitsCopy.java</exclude>
-                <exclude>**/FitsReader.java</exclude>
-                <exclude>**/Main.java</exclude>
-                <exclude>**/FitsLineAppender.java</exclude>
-                <exclude>**/FitsSubsctring.java</exclude>
-                <exclude>**/AsciiTableData.java</exclude>
-                <exclude>**/HeaderCommentsMap.java</exclude>
-                <exclude>**/HeaderCardCountingArrayDataInput</exclude>
-                <exclude>**/HeaderOrder.java</exclude>
-                <exclude>**/FitsHeaderImpl.java</exclude>
-                <exclude>**/GenericKey.java</exclude>
-                <exclude>**/StandardCommentReplacement.java</exclude>
-                <exclude>**/BlanksDotHierarchKeyFormatter.java</exclude>
-                <exclude>**/BufferDecoder.java</exclude>
-                <exclude>**/BufferEncoder.java</exclude>
-                <exclude>**/BufferPointer.java</exclude>
-                <exclude>**/BufferedData*putStream.java</exclude>
-                <exclude>**/BufferedFile.java</exclude>
-                <exclude>**/ByteFormatter.java</exclude>
-                <exclude>**/ByteParser.java</exclude>
-                <exclude>**/SafeClose.java</exclude>
-                <exclude>**/MultiArrayCopyFactory.java</exclude>
-                <exclude>**/MultiArrayPointer.java</exclude>
-                <exclude>**/PrimitiveType*.java</exclude>
-                <exclude>**/CXCStclSharedExt.java</exclude>
-                <exclude>**/HCompressorQuantizeOption.java</exclude>
-                <exclude>**/RiceQuantizeCompressOption.java</exclude>
-              </sourceFileExcludes>
             </configuration>
           </plugin>
         </plugins>
