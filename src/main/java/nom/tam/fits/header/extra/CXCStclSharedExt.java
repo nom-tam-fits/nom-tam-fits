@@ -4,7 +4,7 @@ package nom.tam.fits.header.extra;
  * #%L
  * nom.tam FITS library
  * %%
- * Copyright (C) 1996 - 2021 nom-tam-fits
+ * Copyright (C) 1996 - 2024 nom-tam-fits
  * %%
  * This is free and unencumbered software released into the public domain.
  *
@@ -39,8 +39,8 @@ import nom.tam.fits.header.IFitsHeader;
  *
  * @author     Richard van Nieuwenhoven
  * 
- * @deprecated Will be removed in the future. This enum is duplicated by both {@link CXCExt} and {@link STScIExt}, and
- *                 users would (should) typically use one or the other.
+ * @deprecated This enum is duplicated by both {@link CXCExt} and {@link STScIExt}, and users would (should) typically
+ *                 use one or the other.
  */
 public enum CXCStclSharedExt implements IFitsHeader {
     /**

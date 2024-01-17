@@ -1,6 +1,7 @@
 package nom.tam.fits;
 
 import java.io.ByteArrayOutputStream;
+import java.util.NoSuchElementException;
 
 import org.junit.Assert;
 import org.junit.Test;
@@ -20,7 +21,7 @@ import nom.tam.util.FitsOutputStream;
  * #%L
  * nom.tam FITS library
  * %%
- * Copyright (C) 1996 - 2021 nom-tam-fits
+ * Copyright (C) 1996 - 2024 nom-tam-fits
  * %%
  * This is free and unencumbered software released into the public domain.
  *
@@ -125,12 +126,12 @@ public class HeaderProtectedTest {
         Assert.assertEquals(123, GenericKey.getN(Standard.TFORMn.n(123).key()));
     }
 
-    @Test(expected = IllegalArgumentException.class)
+    @Test(expected = IndexOutOfBoundsException.class)
     public void testKeyIndexNegative() {
         Standard.TFORMn.n(-1);
     }
 
-    @Test(expected = IllegalArgumentException.class)
+    @Test(expected = IndexOutOfBoundsException.class)
     public void testKeyIndexTooLarge() {
         Standard.TFORMn.n(1000);
     }
@@ -155,7 +156,7 @@ public class HeaderProtectedTest {
         WCS.OBSGEO_X.alt('A');
     }
 
-    @Test(expected = IndexOutOfBoundsException.class)
+    @Test(expected = NoSuchElementException.class)
     public void testTooManyIndices() {
         Standard.CTYPEn.n(1, 2);
     }

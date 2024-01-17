@@ -49,42 +49,42 @@ public enum WCS implements IFitsHeader {
      * 
      * @since 1.19
      */
-    WCSNAMEa(SOURCE.RESERVED, HDU.IMAGE, VALUE.STRING, "Coordinate system name"),
+    WCSNAMEa(SOURCE.RESERVED, HDU.IMAGE, VALUE.STRING, "coordinate system name"),
 
     /**
      * Dimensionality of image coordinate system
      * 
      * @since 1.19
      */
-    WCSAXESa(SOURCE.RESERVED, HDU.IMAGE, VALUE.INTEGER, "Coordinate system dimensions"),
+    WCSAXESa(SOURCE.RESERVED, HDU.IMAGE, VALUE.INTEGER, "coordinate dimensions"),
 
     /**
      * Coordinate reference frame of major/minor axes.If absent the default value is 'FK5'.
      * 
      * @since 1.19
      */
-    RADESYSa(SOURCE.RESERVED, HDU.IMAGE, VALUE.STRING, "Coordinate reference frame of major/minor axes."),
+    RADESYSa(SOURCE.RESERVED, HDU.IMAGE, VALUE.STRING, "celestial coordinate reference frame."),
 
     /**
      * Coordinate reference frame of major/minor axes (generic).
      *
      * @deprecated Deprecated in the current FITS standard, use {@link #RADESYSa} instead.
      */
-    RADECSYS(SOURCE.RESERVED, HDU.ANY, VALUE.STRING, "Coordinate reference frame of major/minor axes."),
+    RADECSYS(SOURCE.RESERVED, HDU.ANY, VALUE.STRING, "celestial coordinate reference frame."),
 
     /**
      * [deg] The longitude of the celestial pole (for spherical coordinates).
      * 
      * @since 1.19
      */
-    LONPOLEa(SOURCE.RESERVED, HDU.IMAGE, VALUE.REAL, "[deg] Celestial pole longitude"),
+    LONPOLEa(SOURCE.RESERVED, HDU.IMAGE, VALUE.REAL, "[deg] celestial pole longitude"),
 
     /**
      * [deg] The latitude of the celestial pole (for spherical coordinates).
      * 
      * @since 1.19
      */
-    LATPOLEa(SOURCE.RESERVED, HDU.IMAGE, VALUE.REAL, "[deg] Celestial pole latitude"),
+    LATPOLEa(SOURCE.RESERVED, HDU.IMAGE, VALUE.REAL, "[deg] celestial pole latitude"),
 
     /**
      * The value field shall contain a floating point number giving the equinox in years for the celestial coordinate
@@ -120,7 +120,7 @@ public enum WCS implements IFitsHeader {
      * 
      * @since 1.19
      */
-    CRPIXna(SOURCE.RESERVED, HDU.IMAGE, VALUE.REAL, "coordinate system reference pixel"),
+    CRPIXna(SOURCE.RESERVED, HDU.IMAGE, VALUE.REAL, "coordinate axis reference pixel"),
 
     /**
      * The value field shall contain a floating point number, giving the value of the coordinate specified by the CTYPEn
@@ -128,7 +128,7 @@ public enum WCS implements IFitsHeader {
      * 
      * @since 1.19
      */
-    CRVALna(SOURCE.RESERVED, HDU.IMAGE, VALUE.REAL, "coordinate system value at reference pixel"),
+    CRVALna(SOURCE.RESERVED, HDU.IMAGE, VALUE.REAL, "coordinate axis value at reference pixel"),
 
     /**
      * The value field shall contain a character string, giving the name of the coordinate represented by axis n.
@@ -145,7 +145,7 @@ public enum WCS implements IFitsHeader {
      * 
      * @since 1.19
      */
-    CDELTna(SOURCE.RESERVED, HDU.IMAGE, VALUE.REAL, "coordinate increment along axis"),
+    CDELTna(SOURCE.RESERVED, HDU.IMAGE, VALUE.REAL, "coordinate spacing along axis"),
 
     /**
      * Random coordinate error on axis <i>n</i> in the physical coordinate unit (if defined).
@@ -178,42 +178,42 @@ public enum WCS implements IFitsHeader {
      * 
      * @since 1.19
      */
-    RESTFRQa(SOURCE.RESERVED, HDU.IMAGE, VALUE.REAL, "[Hz] Line rest frequency"),
+    RESTFRQa(SOURCE.RESERVED, HDU.IMAGE, VALUE.REAL, "[Hz] line rest frequency"),
 
     /**
      * [Hz] Rest frequeny of observed spectral line (generic).
      *
      * @deprecated Deprecated in the current FITS standard, use {@link #RESTFRQa} instead.
      */
-    RESTFREQ(SOURCE.RESERVED, HDU.ANY, VALUE.REAL, "[Hz] Observed line rest frequency"),
+    RESTFREQ(SOURCE.RESERVED, HDU.ANY, VALUE.REAL, "[Hz] observed line rest frequency"),
 
     /**
      * [m] Rest wavelength of observed spectral line in image.
      * 
      * @since 1.19
      */
-    RESTWAVa(SOURCE.RESERVED, HDU.IMAGE, VALUE.REAL, "[m] Line rest wavelength"),
+    RESTWAVa(SOURCE.RESERVED, HDU.IMAGE, VALUE.REAL, "[m] line rest wavelength"),
 
     /**
      * Image spectral reference system name.
      * 
      * @since 1.19
      */
-    SPECSYSa(SOURCE.RESERVED, HDU.IMAGE, VALUE.STRING, "Spectral reference frame"),
+    SPECSYSa(SOURCE.RESERVED, HDU.IMAGE, VALUE.STRING, "spectral reference frame"),
 
     /**
      * Image spectral reference system name of observer.
      * 
      * @since 1.19
      */
-    SSYSOBSa(SOURCE.RESERVED, HDU.IMAGE, VALUE.STRING, "Spectral reference frame of observer"),
+    SSYSOBSa(SOURCE.RESERVED, HDU.IMAGE, VALUE.STRING, "spectral reference frame of observer"),
 
     /**
      * Spectral reference system name of source.
      * 
      * @since 1.19
      */
-    SSYSSRCa(SOURCE.RESERVED, HDU.IMAGE, VALUE.STRING, "Spectral reference frame of source"),
+    SSYSSRCa(SOURCE.RESERVED, HDU.IMAGE, VALUE.STRING, "spectral reference frame of source"),
 
     /**
      * [m/s] Radial velocity of source in the spectral reference frame.
@@ -234,35 +234,35 @@ public enum WCS implements IFitsHeader {
      * 
      * @since 1.19
      */
-    VELANGLa(SOURCE.RESERVED, HDU.IMAGE, VALUE.REAL, "[deg] True velocity angle"),
+    VELANGLa(SOURCE.RESERVED, HDU.IMAGE, VALUE.REAL, "[deg] true velocity angle"),
 
     /**
      * [m] Geodetic location of observer (<i>x</i> coordinate).
      * 
      * @since 1.19
      */
-    OBSGEO_X("OBSGEO-X", SOURCE.RESERVED, HDU.ANY, VALUE.REAL, "[m] Geodetic location x of observer"),
+    OBSGEO_X("OBSGEO-X", SOURCE.RESERVED, HDU.ANY, VALUE.REAL, "[m] geodetic location x of observer"),
 
     /**
      * [m] Geodetic location of observer (<i>y</i> coordinate).
      * 
      * @since 1.19
      */
-    OBSGEO_Y("OBSGEO-Y", SOURCE.RESERVED, HDU.ANY, VALUE.REAL, "[m] Geodetic location y of observer"),
+    OBSGEO_Y("OBSGEO-Y", SOURCE.RESERVED, HDU.ANY, VALUE.REAL, "[m] geodetic location y of observer"),
 
     /**
      * [m] Geodetic location of observer (<i>z</i> coordinate).
      * 
      * @since 1.19
      */
-    OBSGEO_Z("OBSGEO-Z", SOURCE.RESERVED, HDU.ANY, VALUE.REAL, "[m] Geodetic location z of observer"),
+    OBSGEO_Z("OBSGEO-Z", SOURCE.RESERVED, HDU.ANY, VALUE.REAL, "[m] geodetic location z of observer"),
 
     /**
      * WCS name for the array entries in the given column index.
      * 
      * @since 1.19
      */
-    WCSNna(SOURCE.RESERVED, HDU.TABLE, VALUE.STRING, "column WCS name"),
+    WCSNna(SOURCE.RESERVED, HDU.TABLE, VALUE.STRING, "column coordinate syste name"),
 
     /**
      * [deg] The longitude of the celestial pole for the entries in the given column index (for spherical coordinates).
@@ -619,7 +619,7 @@ public enum WCS implements IFitsHeader {
      * 
      * @since 1.19
      */
-    WCAXna(SOURCE.RESERVED, HDU.TABLE, VALUE.INTEGER, "Coordinate dimensions"),
+    WCAXna(SOURCE.RESERVED, HDU.TABLE, VALUE.INTEGER, "column coordinate dimensions"),
 
     /**
      * The coordinate axis type for (1D) pixel lists in this column (trailing index). This version does not support
@@ -958,8 +958,8 @@ public enum WCS implements IFitsHeader {
     }
 
     /**
-     * Use for specifying an alternative coordinate system. Alterntive systems are labelled 'A' through 'Z'. This call
-     * is available only for the enums, which have a lower-case 'a' at the end of their Java names (such as
+     * Specifying an alternative coordinate system. Alternative systems are labelled 'A' through 'Z'. This call is
+     * available only for the enums, which have a lower-case 'a' at the end of their Java names (such as
      * {@link #WCSNAMEa}). Attempting to call this on WCS keywords that do not end with lower-case 'a' in their Java
      * names (such as {@link #OBSGEO_X} will throw and {@link UnsupportedOperationException}. You will want to call this
      * before chaining other calls to {@link IFitsHeader}.
@@ -973,6 +973,8 @@ public enum WCS implements IFitsHeader {
      * @throws IllegalArgumentException      if the marker is outside of the legal range of 'A' through 'Z' (case
      *                                           insensitive).
      * @throws UnsupportedOperationException if the keyword does not support alternative coordinate systems
+     * 
+     * @since                                1.19
      */
     public IFitsHeader alt(char c) throws IllegalArgumentException, UnsupportedOperationException {
         if (!name().endsWith("a")) {

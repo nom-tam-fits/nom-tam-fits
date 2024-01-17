@@ -1,5 +1,7 @@
 package nom.tam.fits.header;
 
+import java.util.NoSuchElementException;
+
 import nom.tam.fits.HeaderCard;
 
 /*
@@ -64,7 +66,7 @@ public interface IFitsHeader {
         PRIMARY,
         /** keyword must appear in extension HDUs only */
         EXTENSION,
-        /** @deprecated Use {@link #ANY} instead */
+        /** @deprecated Use {@link #ANY} instead. */
         PRIMARY_EXTENSION;
 
     }
@@ -176,7 +178,8 @@ public interface IFitsHeader {
      * (<i>primarily for internal use</i>) Returns the concrete implementation of this header entry, which provides
      * implementation of access methods.
      * 
-     * @return the implementation of this keyword, which provides the actual access methods. It may return itself.
+     * @return the implementation of this keyword, which provides the actual access methods. Implementations of this
+     *             interface should simply return themselves.
      * 
      * @since  1.19
      */
@@ -190,6 +193,9 @@ public interface IFitsHeader {
      * purpose is only to provide non-essential extra information for human use.
      * 
      * @return the associated standard comment.
+     * 
+     * @see    HeaderCard#getComment()
+     * @see    HeaderCard#setComment(String)
      */
     default String comment() {
         return impl().comment();
@@ -205,45 +211,57 @@ public interface IFitsHeader {
     }
 
     /**
-     * Returns the FITS header keyword for this header entry. Standard FITS keywords are limited to 8 characters, and
-     * contain only epper-case letters, numbers, hyphen, and underscore characters.
+     * <p>
+     * Returns the FITS header keyword (or keyword template) for this header entry. Standard FITS keywords are limited
+     * to 8 characters, and contain only epper-case letters, numbers, hyphen, and underscore characters. Lower-case 'n'
+     * characters may be included as placeholders for indexing conventions that must be filled before the keyword may be
+     * used in headers and/or header cards.
+     * </p>
      * 
-     * @return                       the FITS header keyword for this entry
+     * @return the FITS header keyword for this entry. The returned keyword may include an indexing pattern (lower-case
+     *             'n' characters), which may need to be filled via {@link #n(int...)} before the keyword may be used to
+     *             construct header cards or be used in FITS headers. (Alternative coordinate markers, via lower case
+     *             'a' at the end of the keyword definition, are stripped and should not be included in the returned
+     *             keyword name pattern.)
      * 
-     * @throws IllegalStateException if there are unfilled indices remaining in the keyword template.
+     * @see    #n(int...)
      */
-    default String key() throws IllegalStateException {
+    default String key() {
         return impl().key();
     }
 
     /**
-     * Constructs a numbered FITS header keyword entry from this stem, attachinh the specified number after the stem.
-     * Numbering for FITS header keywords always starts from 1.
+     * Constructs an indexed FITS header keyword entry from this stem, replacing index place-holders (indicated by
+     * lower-case 'n' in the name) with actual numerical values. Numbering for FITS header keywords always starts from
+     * 1, and should never exceed 999. Note, that for keywords that have multiple indices, you may specify them all in a
+     * single call, or may use successive calls to fill indices in the order they appear (the latter is somewhat less
+     * efficient, but still entirely legal).
      * 
      * @param  numbers                   the 1-based indices to add to the stem, in the order they appear in the the
      *                                       enum name.
      * 
      * @return                           an indexed instance of this FITS header entry
      * 
-     * @throws IllegalArgumentException  if the index is less than 0 or exceeds 999. (In truth we should throw an
-     *                                       exception for 0 as well, but there may be not quite legal FITS files that
-     *                                       contain these, which we still want to be able to read. Hence we'll relax
-     *                                       the condition).
+     * @throws IndexOutOfBoundsException if the index is less than 0 or exceeds 999. (In truth we should throw an
+     *                                       exception for 0 as well, but seems to be common not-quite-legal FITS usage
+     *                                       with 0 indices. Hence we relax the condition).
      * @throws IllegalStateException     if the resulting indexed keyword exceeds the maximum 8-bytes allowed for
      *                                       standard FITS keywords.
-     * @throws IndexOutOfBoundsException If more indices were supplied than can be filled for this keyword.
+     * @throws NoSuchElementException    If more indices were supplied than can be filled for this keyword.
+     * 
+     * @see                              #extractIndices(String)
      */
-    default IFitsHeader n(int... numbers) throws IllegalArgumentException, IllegalStateException {
+    default IFitsHeader n(int... numbers) throws IndexOutOfBoundsException, NoSuchElementException, IllegalStateException {
         StringBuffer headerName = new StringBuffer(key());
         for (int number : numbers) {
             if (number < 0 || number > MAX_INDEX) {
-                throw new IllegalArgumentException(key() + ": index " + number + " is out of bounds.");
+                throw new IndexOutOfBoundsException(key() + ": index " + number + " is out of bounds.");
             }
 
             int indexOfN = headerName.indexOf("n");
 
             if (indexOfN < 0) {
-                throw new IndexOutOfBoundsException("Too many indices (" + numbers.length + ") supplied for " + key());
+                throw new NoSuchElementException("Too many indices (" + numbers.length + ") supplied for " + key());
             }
 
             headerName.replace(indexOfN, indexOfN + 1, Integer.toString(number));
@@ -275,8 +293,9 @@ public interface IFitsHeader {
     }
 
     /**
-     * Extracts the indices for this key from an actual keyword. The keyword realization must be for this key, or else
-     * an exception will be thrown.
+     * Extracts the indices for this stndardized key from an actual keyword realization. The keyword realization must be
+     * match the indexing and/or alternative coordinate system pattern for this key, or else an exception will be
+     * thrown.
      * 
      * @param  key                      The actual keyword as it appears in a FITS header
      * 
@@ -285,6 +304,7 @@ public interface IFitsHeader {
      * 
      * @throws IllegalArgumentException if the keyword does not match the pattern of this standardized FITS key
      * 
+     * @see                             #n(int...)
      * @see                             Standard#match(String)
      * 
      * @since                           1.19

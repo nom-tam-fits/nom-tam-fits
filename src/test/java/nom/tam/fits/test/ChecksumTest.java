@@ -39,7 +39,7 @@ import nom.tam.util.test.ThrowAnyException;
  * #%L
  * nom.tam FITS library
  * %%
- * Copyright (C) 2004 - 2021 nom-tam-fits
+ * Copyright (C) 2004 - 2024 nom-tam-fits
  * %%
  * This is free and unencumbered software released into the public domain.
  *
@@ -139,7 +139,7 @@ public class ChecksumTest {
         fits.read();
         in.close();
         fits.setChecksum();
-        assertEquals("kGpMn9mJkEmJk9mJ", fits.getHDU(0).getHeader().getStringValue("CHECKSUM"));
+        assertEquals("Bd5LEb5LBb5LBb5L", fits.getHDU(0).getHeader().getStringValue("CHECKSUM"));
     }
 
     // TODO This test fails in the CI for some reason, but not locally.

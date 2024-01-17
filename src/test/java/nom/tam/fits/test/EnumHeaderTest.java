@@ -19,6 +19,7 @@ import nom.tam.fits.Header;
 import nom.tam.fits.header.Checksum;
 import nom.tam.fits.header.Compression;
 import nom.tam.fits.header.DataDescription;
+import nom.tam.fits.header.DateTime;
 import nom.tam.fits.header.FitsKey;
 import nom.tam.fits.header.GenericKey;
 import nom.tam.fits.header.HierarchicalGrouping;
@@ -43,7 +44,7 @@ import nom.tam.fits.header.extra.STScIExt;
  * #%L
  * nom.tam FITS library
  * %%
- * Copyright (C) 1996 - 2021 nom-tam-fits
+ * Copyright (C) 1996 - 2024 nom-tam-fits
  * %%
  * This is free and unencumbered software released into the public domain.
  *
@@ -137,13 +138,13 @@ public class EnumHeaderTest {
         Class<?>[] classes = new Class<?>[] {Checksum.class, CXCExt.class, CXCStclSharedExt.class, DataDescription.class,
                 HierarchicalGrouping.class, InstrumentDescription.class, MaxImDLExt.class, NOAOExt.class, NonStandard.class,
                 ObservationDescription.class, ObservationDurationDescription.class, SBFitsExt.class, Standard.class,
-                STScIExt.class, Compression.class};
+                STScIExt.class, Compression.class, WCS.class, DateTime.class};
         for (Class<?> class1 : classes) {
             for (Object enumConst : class1.getEnumConstants()) {
                 Assert.assertNotNull(class1.getMethod("valueOf", String.class).invoke(class1,
                         enumConst.getClass().getMethod("name").invoke(enumConst)));
                 IFitsHeader iFitsHeader = (IFitsHeader) enumConst;
-                if (class1 != Standard.class) {
+                if (class1 != Standard.class && !FitsKey.isCommentStyleKey(iFitsHeader.key())) {
                     Assert.assertNotNull(iFitsHeader.comment());
                 }
                 String key = iFitsHeader.key();
@@ -157,13 +158,13 @@ public class EnumHeaderTest {
                 }
                 int nCount = 0;
                 int offset = 0;
-                while ((offset = key.indexOf('n', offset)) > 0) {
+                while ((offset = key.indexOf('n', offset)) >= 0) {
                     nCount++;
                     offset++;
                 }
                 int[] n = new int[nCount];
                 Arrays.fill(n, 9);
-                Assert.assertTrue(iFitsHeader.n(n).key().indexOf('n') < 0);
+                Assert.assertTrue(iFitsHeader.key(), iFitsHeader.n(n).key().indexOf('n') < 0);
             }
         }
 

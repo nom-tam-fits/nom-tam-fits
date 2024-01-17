@@ -14,7 +14,7 @@ import nom.tam.util.Cursor;
  * #%L
  * nom.tam FITS library
  * %%
- * Copyright (C) 1996 - 2021 nom-tam-fits
+ * Copyright (C) 1996 - 2024 nom-tam-fits
  * %%
  * This is free and unencumbered software released into the public domain.
  *
@@ -81,6 +81,7 @@ import static nom.tam.fits.header.Standard.XTENSION;
  * uncompressed HDU is remapped to ZNAXIS1 in the compressed HDU so it does not interfere with the different layout of
  * the compressed HDU vs the layout of the original one.
  */
+@SuppressWarnings("deprecation")
 enum CompressedCard {
     MAP_ANY(null) {
 
@@ -105,9 +106,7 @@ enum CompressedCard {
             }
         }
     },
-    MAP_GCOUNT(GCOUNT), MAP_NAXIS(NAXIS), MAP_NAXISn(NAXISn), MAP_PCOUNT(PCOUNT),
-    // MAP_TFIELDS(TFIELDS),
-    MAP_ZFORMn(ZFORMn) {
+    MAP_GCOUNT(GCOUNT), MAP_NAXIS(NAXIS), MAP_NAXISn(NAXISn), MAP_PCOUNT(PCOUNT), MAP_ZFORMn(ZFORMn) {
 
         @Override
         protected void backupCard(HeaderCard card, Cursor<String, HeaderCard> headerIterator) throws HeaderCardException {
@@ -122,22 +121,22 @@ enum CompressedCard {
         }
 
     },
-    MAP_TFORMn(TFORMn), MAP_XTENSION(XTENSION), MAP_ZBITPIX(ZBITPIX), MAP_ZBLANK(ZBLANK), MAP_ZTILELEN(
-            ZTILELEN), MAP_ZCTYPn(ZCTYPn), @SuppressWarnings("deprecation")
-    MAP_ZBLOCKED(ZBLOCKED), MAP_ZCMPTYPE(ZCMPTYPE), MAP_ZDATASUM(ZDATASUM), MAP_ZDITHER0(ZDITHER0), MAP_ZEXTEND(
-            ZEXTEND), MAP_ZGCOUNT(ZGCOUNT), MAP_ZHECKSUM(ZHECKSUM), MAP_ZIMAGE(
-                    ZIMAGE), MAP_ZTABLE(ZTABLE), MAP_ZNAMEn(ZNAMEn), MAP_ZNAXIS(ZNAXIS), MAP_THEAP(THEAP) {
 
-                        @Override
-                        protected void backupCard(HeaderCard card, Cursor<String, HeaderCard> headerIterator)
-                                throws HeaderCardException {
-                        }
+    MAP_TFORMn(TFORMn), MAP_XTENSION(XTENSION), MAP_ZBITPIX(ZBITPIX), MAP_ZBLANK(ZBLANK), //
+    MAP_ZTILELEN(ZTILELEN), MAP_ZCTYPn(ZCTYPn), MAP_ZBLOCKED(ZBLOCKED), MAP_ZCMPTYPE(ZCMPTYPE), //
+    MAP_ZDATASUM(ZDATASUM), MAP_ZDITHER0(ZDITHER0), MAP_ZEXTEND(ZEXTEND), MAP_ZGCOUNT(ZGCOUNT), //
+    MAP_ZHECKSUM(ZHECKSUM), MAP_ZIMAGE(ZIMAGE), MAP_ZTABLE(ZTABLE), MAP_ZNAMEn(ZNAMEn), //
+    MAP_ZNAXIS(ZNAXIS), MAP_THEAP(THEAP) {
 
-                        @Override
-                        protected void restoreCard(HeaderCard card, Cursor<String, HeaderCard> headerIterator)
-                                throws HeaderCardException {
-                        }
-                    },
+        @Override
+        protected void backupCard(HeaderCard card, Cursor<String, HeaderCard> headerIterator) throws HeaderCardException {
+        }
+
+        @Override
+        protected void restoreCard(HeaderCard card, Cursor<String, HeaderCard> headerIterator) throws HeaderCardException {
+        }
+    },
+
     MAP_ZNAXISn(ZNAXISn) {
 
         @Override
@@ -170,8 +169,7 @@ enum CompressedCard {
         mapping.restoreCard(card, headerIterator);
     }
 
-    protected static CompressedCard selectMapping(
-            Map<IFitsHeader, CompressedCard> mappings, HeaderCard card) {
+    protected static CompressedCard selectMapping(Map<IFitsHeader, CompressedCard> mappings, HeaderCard card) {
         IFitsHeader key = GenericKey.lookup(card.getKey());
         if (key != null) {
             CompressedCard mapping = mappings.get(key);

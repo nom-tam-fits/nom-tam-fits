@@ -4,7 +4,7 @@ package nom.tam.fits.header;
  * #%L
  * nom.tam FITS library
  * %%
- * Copyright (C) 1996 - 2021 nom-tam-fits
+ * Copyright (C) 1996 - 2024 nom-tam-fits
  * %%
  * This is free and unencumbered software released into the public domain.
  *
@@ -97,7 +97,7 @@ public enum InstrumentDescription implements IFitsHeader {
      * keyword value may differ from the maximum value implied by the BITPIX in that more bits may be allocated in the
      * FITS pixel values than the detector can accommodate.
      */
-    SATURATE(SOURCE.STScI, HDU.ANY, VALUE.INTEGER, "Data value at which saturation occurs");
+    SATURATE(SOURCE.STScI, HDU.ANY, VALUE.INTEGER, "data value at which saturation occurs");
 
     private final FitsKey key;
 

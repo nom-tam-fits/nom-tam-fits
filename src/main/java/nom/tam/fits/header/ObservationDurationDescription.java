@@ -4,7 +4,7 @@ package nom.tam.fits.header;
  * #%L
  * nom.tam FITS library
  * %%
- * Copyright (C) 1996 - 2021 nom-tam-fits
+ * Copyright (C) 1996 - 2024 nom-tam-fits
  * %%
  * This is free and unencumbered software released into the public domain.
  *
@@ -63,7 +63,7 @@ public enum ObservationDurationDescription implements IFitsHeader {
      * 
      * @see DateTime#TELAPSE
      */
-    ELAPTIME(SOURCE.UCOLICK, HDU.ANY, VALUE.REAL, "elapsed time of the observation"),
+    ELAPTIME(SOURCE.UCOLICK, HDU.ANY, VALUE.REAL, "[s] elapsed time of the observation"),
     /**
      * The value field shall contain a floating point number giving the exposure time of the observation in units of
      * seconds. The exact definition of 'exposure time' is mission dependent and may, for example, include corrections
@@ -72,7 +72,7 @@ public enum ObservationDurationDescription implements IFitsHeader {
      * 
      * @see DateTime#XPOSURE
      */
-    EXPOSURE(SOURCE.HEASARC, HDU.ANY, VALUE.REAL, "exposure time"),
+    EXPOSURE(SOURCE.HEASARC, HDU.ANY, VALUE.REAL, "[s] exposure time"),
     /**
      * The value field shall contain a floating point number giving the exposure time of the observation in units of
      * seconds. The exact definition of 'exposure time' is mission dependent and may, for example, include corrections
@@ -81,13 +81,13 @@ public enum ObservationDurationDescription implements IFitsHeader {
      * 
      * @see DateTime#XPOSURE
      */
-    EXPTIME(SOURCE.NOAO, HDU.ANY, VALUE.REAL, "exposure time"),
+    EXPTIME(SOURCE.NOAO, HDU.ANY, VALUE.REAL, "[s] exposure time"),
     /**
      * The value field shall contain a floating point number giving the total integrated exposure time in units of
      * seconds corrected for detector 'dead time' effects which reduce the net efficiency of the detector. The ratio of
      * LIVETIME/ONTIME gives the mean dead time correction during the observation, which lies in the range 0.0 to 1.0.
      */
-    LIVETIME(SOURCE.HEASARC, HDU.ANY, VALUE.REAL, "exposure time after deadtime correction"),
+    LIVETIME(SOURCE.HEASARC, HDU.ANY, VALUE.REAL, "[s] exposure time after deadtime correction"),
     /**
      * The value field shall contain a floating point number giving the total integrated exposure time of the
      * observation in units of seconds. ONTIME may be less than TELAPSE if there were intevals during the observation in
@@ -95,14 +95,14 @@ public enum ObservationDurationDescription implements IFitsHeader {
      * 
      * @see DateTime#XPOSURE
      */
-    ONTIME(SOURCE.HEASARC, HDU.ANY, VALUE.REAL, "integration time during the observation"),
+    ONTIME(SOURCE.HEASARC, HDU.ANY, VALUE.REAL, "[s] integration time during the observation"),
     /**
      * The value field shall contain a floating point number giving the difference between the stop and start times of
      * the observation in units of seconds. This keyword is synonymous with the ELAPTIME keyword.
      * 
      * @deprecated Part of the FITS standard, use {@link DateTime#TELAPSE} instead.
      */
-    TELAPSE(SOURCE.HEASARC, HDU.ANY, VALUE.REAL, "elapsed time of the observation"),
+    TELAPSE(SOURCE.HEASARC, HDU.ANY, VALUE.REAL, "[s] elapsed time of the observation"),
     /**
      * The value field shall contain a character string that gives the time at which the observation ended. This keyword
      * is used in conjunction with the DATE-END keyword to give the ending time of the observation; the DATE-END keyword

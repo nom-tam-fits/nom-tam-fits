@@ -4,7 +4,7 @@ package nom.tam.fits.header;
  * #%L
  * nom.tam FITS library
  * %%
- * Copyright (C) 1996 - 2021 nom-tam-fits
+ * Copyright (C) 1996 - 2024 nom-tam-fits
  * %%
  * This is free and unencumbered software released into the public domain.
  *
@@ -69,7 +69,7 @@ public enum NonStandard implements IFitsHeader {
      * that the slash character be preceeded and followed by a space character. Example: "HIERARCH Filter Wheel = 12 /
      * filter position". In this example the logical name of the keyword is 'Filter Wheel' and the value is 12.
      */
-    HIERARCH(SOURCE.ESO, HDU.ANY, VALUE.NONE, "denotes the HIERARCH keyword convention"),
+    HIERARCH(SOURCE.ESO, HDU.ANY, VALUE.NONE, null),
 
     /**
      * The presence of this keyword with a value = T in an extension key indicates that the keywords contained in the
@@ -78,7 +78,7 @@ public enum NonStandard implements IFitsHeader {
      * 
      * @deprecated Part of the FITS standard, use {@link Standard#INHERIT} instead.
      */
-    INHERIT(SOURCE.STScI, HDU.EXTENSION, VALUE.LOGICAL, "denotes the INHERIT keyword convention");
+    INHERIT(SOURCE.STScI, HDU.EXTENSION, VALUE.LOGICAL, "inherit header description of primary HDU");
 
     private final FitsKey key;
 

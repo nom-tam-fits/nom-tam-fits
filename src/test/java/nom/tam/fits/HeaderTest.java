@@ -45,7 +45,7 @@ import nom.tam.util.test.ThrowAnyException;
  * #%L
  * nom.tam FITS library
  * %%
- * Copyright (C) 2004 - 2021 nom-tam-fits
+ * Copyright (C) 2004 - 2024 nom-tam-fits
  * %%
  * This is free and unencumbered software released into the public domain.
  *
@@ -808,7 +808,7 @@ public class HeaderTest {
             assertTrue(result.indexOf("NAXIS1  =                  300") >= 0);
             assertTrue(result.indexOf("NAXIS2  =                  300") >= 0);
 
-            assertEquals("NAXIS1  =                  300 / size of the n'th axis", hdr.findKey("NAXIS1").trim());
+            assertEquals("NAXIS1  =                  300 / " + Standard.NAXIS1.comment(), hdr.findKey("NAXIS1").trim());
 
             assertEquals("SIMPLE", hdr.getKey(0));
             assertEquals(7, hdr.size());

@@ -4,7 +4,7 @@ package nom.tam.fits.header;
  * #%L
  * nom.tam FITS library
  * %%
- * Copyright (C) 1996 - 2021 nom-tam-fits
+ * Copyright (C) 1996 - 2024 nom-tam-fits
  * %%
  * This is free and unencumbered software released into the public domain.
  *
@@ -34,7 +34,9 @@ package nom.tam.fits.header;
 /**
  * Specify user defined comments for standard keywords.
  *
- * @author ritchie
+ * @author     ritchie
+ * 
+ * @deprecated (<i>for internal use</i>) Visibility may be reduced to package level in the future.
  */
 class StandardCommentReplacement {
 
