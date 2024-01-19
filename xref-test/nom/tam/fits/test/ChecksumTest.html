@@ -47,7 +47,7 @@
 <a class="jxr_linenumber" name="L39" href="#L39">39</a>  <em class="jxr_comment"> * #%L</em>
 <a class="jxr_linenumber" name="L40" href="#L40">40</a>  <em class="jxr_comment"> * nom.tam FITS library</em>
 <a class="jxr_linenumber" name="L41" href="#L41">41</a>  <em class="jxr_comment"> * %%</em>
-<a class="jxr_linenumber" name="L42" href="#L42">42</a>  <em class="jxr_comment"> * Copyright (C) 2004 - 2021 nom-tam-fits</em>
+<a class="jxr_linenumber" name="L42" href="#L42">42</a>  <em class="jxr_comment"> * Copyright (C) 2004 - 2024 nom-tam-fits</em>
 <a class="jxr_linenumber" name="L43" href="#L43">43</a>  <em class="jxr_comment"> * %%</em>
 <a class="jxr_linenumber" name="L44" href="#L44">44</a>  <em class="jxr_comment"> * This is free and unencumbered software released into the public domain.</em>
 <a class="jxr_linenumber" name="L45" href="#L45">45</a>  <em class="jxr_comment"> *</em>
@@ -147,7 +147,7 @@
 <a class="jxr_linenumber" name="L139" href="#L139">139</a>         fits.read();
 <a class="jxr_linenumber" name="L140" href="#L140">140</a>         in.close();
 <a class="jxr_linenumber" name="L141" href="#L141">141</a>         fits.setChecksum();
-<a class="jxr_linenumber" name="L142" href="#L142">142</a>         assertEquals(<span class="jxr_string">"kGpMn9mJkEmJk9mJ"</span>, fits.getHDU(0).getHeader().getStringValue(<span class="jxr_string">"CHECKSUM"</span>));
+<a class="jxr_linenumber" name="L142" href="#L142">142</a>         assertEquals(<span class="jxr_string">"Bd5LEb5LBb5LBb5L"</span>, fits.getHDU(0).getHeader().getStringValue(<span class="jxr_string">"CHECKSUM"</span>));
 <a class="jxr_linenumber" name="L143" href="#L143">143</a>     }
 <a class="jxr_linenumber" name="L144" href="#L144">144</a> 
 <a class="jxr_linenumber" name="L145" href="#L145">145</a>     <em class="jxr_comment">// TODO This test fails in the CI for some reason, but not locally.</em>
