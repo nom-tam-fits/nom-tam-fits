@@ -70,7 +70,7 @@
 <a class="externalLink" href="https://codecov.io/gh/nom-tam-fits/nom-tam-fits"><img src="https://codecov.io/gh/nom-tam-fits/nom-tam-fits/branch/master/graph/badge.svg?token=8rFyA5YzE5" alt="codecov" /></a>
 <a class="externalLink" href="https://maven-badges.herokuapp.com/maven-central/gov.nasa.gsfc.heasarc/nom-tam-fits"><img src="https://maven-badges.herokuapp.com/maven-central/gov.nasa.gsfc.heasarc/nom-tam-fits/badge.svg" alt="Maven Central" /></a></p>
 <h1>Getting started with the <i>nom.tam.fits</i> library.</h1>
-<p><b>nom.tam.fits</b> is an efficient 100% pure Java library for reading, writing, and modifying
+<p><b>nom.tam.fits</b> is an efficient 100% pure Java 8+ library for reading, writing, and modifying
 <a class="externalLink" href="https://fits.gsfc.nasa.gov/fits_standard.html">FITS files</a>. The library owes its origins to Tom A. McGlynn
 (hence the <i>nom.tam</i> prefix) at NASA Goddard Space Flight Center.</p>
 <p>This document has been updated for 1.19.0 and/or later 1.x releases.</p><section>
@@ -86,6 +86,7 @@
 <li><a href="#fits-headers">FITS headers</a></li>
 <li><a href="#building-tables-from-data">Creating tables</a></li>
 <li><a href="#compression-support">Compression support</a></li>
+<li><a href="#release-schedule">Release schedule</a></li>
 <li><a href="#contribute">How to contribute</a></li>
 </ul><hr />
 <p><a name="related-links"></a></p></section><section>
@@ -200,6 +201,7 @@ extended Unicode characters (and also ASCII beyond the <code>0x20</code> &#x2013
 FITS.</p>
 <p><a name="deprecated-methods"></a></p></section></section></section><section>
 <h2><a name="Compatibility_with_prior_releases"></a>Compatibility with prior releases</h2>
+<p>The current version of the <b>nom.tam.fits</b> library requires Java 8 (or later).</p>
 <p>We strive to maintain API compatibility with earlier releases of this library, and to an overwhelming extent
 we continue to deliver on that. However, in a few corner cases we had no choice but to change the API and/or behavior
 slightly to fix bugs, nagging inconsistencies, or non-compliance to the FITS standard. Such changes are generally
@@ -830,7 +832,7 @@ recommended for users to add the standardized header entries first, and then add
 after. It is also recommended that users add a comment line (or lines) in-between to cleary demark where the
 standard FITS description ends, and where the user dictionary begins after.</li>
 <li>Use comment cards to make headers self explanatory and easy for other humans to understand and digest. The header
-is also in a sense the self-comntained documentation of your FITS data.</li>
+is also in a sense the self-contained documentation of your FITS data.</li>
 </ul>
 <p>Note, that originally, header keywords were limited to a maximum of 8 upper-case alphanumeric characters (<code>A</code> to <code>Z</code>
 and <code>0</code> to <code>9</code>), plus hyphens (<code>-</code>) and underscores (<code>_</code>), and string values may not exceed 68 characters in length.
@@ -1602,7 +1604,28 @@ also. If you just want to uncompress a range of the compressed tiles, you can</p
 </code></pre></div>
 <p>The methods <code>CompressedTableHDU.getTileRows()</code> and <code>.getTileCount()</code> can be used to help determined which tile(s)
 to decompress to get access to specific table rows.</p><hr />
-<p><a name="contribute"></a></p></section></section></section><section>
+<p><a name="release-schedule"></a></p></section></section></section><section>
+<h2><a name="Release_schedule"></a>Release schedule</h2>
+<p>A predictable release schedule and process can help manage expectations and reduce stress on adopters and developers
+alike.</p>
+<p>Releases of the library follow a quarterly release schedule since version <b>1.16</b>. You may expect upcoming releases
+to be published around <b>March 15</b>, <b>June 15</b>, <b>September 15</b>, and/or <b>December 15</b> each year, on an as needed
+basis. That means that if there are outstanding bugs, or new pull requests (PRs), you may expect a release that
+addresses these in the upcoming quarter. The dates are placeholders only, with no guarantee that a release will
+actually be available every quarter. If nothing of note comes up, a potential release date may pass without a release
+being published.</p>
+<p><i>Feature releases</i> (<b>1.x.0</b> version bumps), which may include significant API changes, are provided at least 6
+months apart, to reduce stress on adopters who may need/want to tweak their code to integrate these. Between feature
+releases, <i>bug fix releases</i> (without significant API changes) may be provided as needed to address issues. New
+features are generally reserved for the feature releases, although they may also be rolled out in bug-fix releases as
+long as they do not affect the existing API &#x2013; in line with the desire to keep bug-fix releases fully backwards
+compatible with their parent versions.</p>
+<p>In the month(s) preceding releases one or more <i>release candidates</i> (e.g. <code>1.19.1-rc3</code>) will be available on github
+briefly, under <a class="externalLink" href="https://github.com/nom-tam-fits/nom-tam-fits/releases">Releases</a>, so that changes can be tested by
+adopters before the releases are finalized. Please use due diligence to test such release candidates with your code
+when they become available to avoid unexpected suprises when the finalized release is published. Release candidates
+are typically available for one week only before they are superseded either by another, or by the finalized release.</p><hr />
+<p><a name="contribute"></a></p></section><section>
 <h2><a name="How_to_contribute"></a>How to contribute</h2>
 <p>The <i>nom-tam-fits</i> library is a community-maintained project. We absolutely rely on developers like you to make it
 better and to keep it going. Whether there is a nagging issue you would like to fix, or a new feature you'd like to
