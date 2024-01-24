@@ -8,7 +8,7 @@
   </parent>
   <groupId>gov.nasa.gsfc.heasarc</groupId>
   <artifactId>nom-tam-fits</artifactId>
-  <version>1.19.1-SNAPSHOT</version>
+  <version>1.19.0</version>
   <packaging>jar</packaging>
   <name>nom.tam.fits</name>
   <description>Java library for reading and writing FITS files. FITS, the Flexible Image Transport System, is commonly used for the archival and distribution of astronomical data.</description>
@@ -559,7 +559,6 @@
             <exclude>**/HCompressor.java</exclude>
             <exclude>**/RiceCompressor.java</exclude>
             <exclude>**/BitBuffer.java</exclude>
-            <exclude>**/BitBuffer.java</exclude>
             <exclude>**/Quantize.java</exclude>
             <exclude>**/QuantizeProcessor.java</exclude>
             <exclude>**/FitsCopy.java</exclude>
@@ -571,9 +570,10 @@
             <exclude>**/HeaderCommentsMap.java</exclude>
             <exclude>**/HeaderCardCountingArrayDataInput</exclude>
             <exclude>**/HeaderOrder.java</exclude>
+	    <exclude>**/StandardCommentReplacement.java</exclude>
+            <!-- Deprecated classes to document still
             <exclude>**/FitsHeaderImpl.java</exclude>
             <exclude>**/GenericKey.java</exclude>
-            <exclude>**/StandardCommentReplacement.java</exclude>
             <exclude>**/BlanksDotHierarchKeyFormatter.java</exclude>
             <exclude>**/BufferDecoder.java</exclude>
             <exclude>**/BufferEncoder.java</exclude>
@@ -589,6 +589,7 @@
             <exclude>**/CXCStclSharedExt.java</exclude>
             <exclude>**/HCompressorQuantizeOption.java</exclude>
             <exclude>**/RiceQuantizeCompressOption.java</exclude>
+            -->
           </sourceFileExcludes>
         </configuration>
         <reportSets>

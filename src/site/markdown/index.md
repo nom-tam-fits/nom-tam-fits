@@ -8,7 +8,7 @@
 
 # Getting started with the _nom.tam.fits_ library.
 
-__nom.tam.fits__ is an efficient 100% pure Java library for reading, writing, and modifying
+__nom.tam.fits__ is an efficient 100% pure Java 8+ library for reading, writing, and modifying
 [FITS files](https://fits.gsfc.nasa.gov/fits_standard.html). The library owes its origins to Tom A. McGlynn 
 (hence the _nom.tam_ prefix) at NASA Goddard Space Flight Center.
 
@@ -147,6 +147,8 @@ FITS.
 
 <a name="deprecated-methods"></a>
 ## Compatibility with prior releases
+
+The current version of the __nom.tam.fits__ library requires Java 8 (or later).
 
 We strive to maintain API compatibility with earlier releases of this library, and to an overwhelming extent 
 we continue to deliver on that. However, in a few corner cases we had no choice but to change the API and/or behavior 
@@ -924,7 +926,7 @@ shared space of the same FITS header. It is therefore best practice for all crea
    after. It is also recommended that users add a comment line (or lines) in-between to cleary demark where the 
    standard FITS description ends, and where the user dictionary begins after.
  - Use comment cards to make headers self explanatory and easy for other humans to understand and digest. The header
-   is also in a sense the self-comntained documentation of your FITS data.
+   is also in a sense the self-contained documentation of your FITS data.
 
 Note, that originally, header keywords were limited to a maximum of 8 upper-case alphanumeric characters (`A` to `Z`
 and `0` to `9`), plus hyphens (`-`) and underscores (`_`), and string values may not exceed 68 characters in length. 
