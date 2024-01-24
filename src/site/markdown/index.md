@@ -1823,27 +1823,29 @@ to decompress to get access to specific table rows.
 <a name="release-schedule"></a>
 ## Release schedule
 
-Releases of the library follow a quarterly release schedule since version __1.16__. You may expect upcoming releases 
-to be published around March 15, June 15, September 15, or December 15 each year, on an as needed basis. That means 
-that if there are outstanding bugs, or new pull requests (PRs), you may expect a release that addresses these in the 
-upcoming quarter. The dates are placeholders only, with no guarantee that a release will actually be available every
-quarter. If nothing of note comes up, a potential release date may pass without a release being published.
-
-Feature releases (__1.x.0__ version bumps), which may include significant API changes, are provided at least 6 months
-apart, to reduce stress on adopters who may need/want to tweak their code to integrate these. In-between the feature
-releases, bug fix releases (without significant API changes) may be provided as needed to address issues. New features 
-are generally reserved for the feature releases, although they may also be rolled out in bug-fix releases as long as 
-they do not affect the existing API -- in line with the desire to keep bug-fix releases fully backwards compatible 
-with their parent versions.
-
-In the month(s) preceding releases one or more release candidates (e.g. `1.19.1-rc3`) will be published so that 
-changes can be tested by adopters before the releases are finalized. Please use due diligence to test such release
-candidates with your code when they become available to avoid unexpected suprises when the finalized release is 
-published. Release candidates are typically available for one week before they are superseded either by another, or by 
-the finalized release.
-
 A predictable release schedule and process can help manage expectations and reduce stress on adopters and developers 
 alike.
+
+Releases of the library follow a quarterly release schedule since version __1.16__. You may expect upcoming releases 
+to be published around __March 15__, __June 15__, __September 15__, and/or __December 15__ each year, on an as needed
+basis. That means that if there are outstanding bugs, or new pull requests (PRs), you may expect a release that 
+addresses these in the upcoming quarter. The dates are placeholders only, with no guarantee that a release will 
+actually be available every quarter. If nothing of note comes up, a potential release date may pass without a release 
+being published.
+
+_Feature releases_ (__1.x.0__ version bumps), which may include significant API changes, are provided at least 6 
+months apart, to reduce stress on adopters who may need/want to tweak their code to integrate these. Between feature 
+releases, _bug fix releases_ (without significant API changes) may be provided as needed to address issues. New 
+features are generally reserved for the feature releases, although they may also be rolled out in bug-fix releases as 
+long as they do not affect the existing API -- in line with the desire to keep bug-fix releases fully backwards 
+compatible with their parent versions.
+
+In the month(s) preceding releases one or more _release candidates_ (e.g. `1.19.1-rc3`) will be available on github
+briefly, under [Releases](https://github.com/nom-tam-fits/nom-tam-fits/releases), so that changes can be tested by 
+adopters before the releases are finalized. Please use due diligence to test such release candidates with your code 
+when they become available to avoid unexpected suprises when the finalized release is published. Release candidates 
+are typically available for one week only before they are superseded either by another, or by the finalized release.
+
 
 -----------------------------------------------------------------------------
 
