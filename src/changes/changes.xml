@@ -11,6 +11,9 @@
       <action type="fix" dev="attipaci" issue="532">
           Small fixes to HashedList handling iterator access corner cases.
       </action>
+      <action type="fix" dev="attipaci" issue="535">
+          Binary table NAXIS1 value was sometimes stored as a string.
+      </action>
       <action type="add" dev="attipaci" issue="488">
           New targeted Data and HDU creation from Java objects via new Data+.from(Object) and
           Data+.toHDU() methods, replacing the now deprecated and unsafe 
