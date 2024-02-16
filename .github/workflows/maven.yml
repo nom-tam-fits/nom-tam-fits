@@ -53,7 +53,7 @@ jobs:
         echo "branch coverage = ${{ steps.jacoco.outputs.branches }}"
        
     - name: Upload coverage to Codecov
-      uses: codecov/codecov-action@v3
+      uses: codecov/codecov-action@v4
       continue-on-error: true
       with:
         working-directory: ./nom-tam-fits
@@ -62,7 +62,7 @@ jobs:
         flags: unittests
         name: codecov
         verbose: true
-#        token: ${{ secrets.CODECOV_TOKEN }}
+        token: ${{ secrets.CODECOV_TOKEN }}
         
     - name: Upload coverage to Coveralls.io
       continue-on-error: true
