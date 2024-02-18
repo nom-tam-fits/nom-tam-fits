@@ -11,6 +11,7 @@ import java.util.Comparator;
 import java.util.HashSet;
 import java.util.List;
 import java.util.Set;
+import java.util.Vector;
 import java.util.logging.Level;
 import java.util.logging.Logger;
 
@@ -907,6 +908,43 @@ public class Header implements FitsElement {
         }
         return card;
     }
+
+    /************************************
+    * brief Collect the header cards that match a regular expression.
+    *
+    * This is useful if one needs to search for a keyword that is buried under
+    * some HIERARCH string conventions of unspecified depth. So to search for
+    * some key like "HIERARCH OBO SUBOBO MYOBO", which would appear with the
+    * key HIERARCH.OBO.SUBOBO.MYOBO in this FITS implementation, one could
+    * search with regex="HIER.*MYOBO" and find it, supposed FitsFactory.setUseHierarch(true)
+    * was called before creating the header.
+    * 
+    * @param regex The generalized regular expression for the keyword search
+    * @return The list of header cards that match the regular expression.
+    * @author Richard J. Mathar
+    * @since 2015-03-03
+    */
+    public HeaderCard[] findCards(final String regex) { 
+        /* The collection of header cards that match.
+        */
+        Vector<HeaderCard> crds = new Vector<HeaderCard>(); 
+
+        /* position pointer to start of card stack and loop over all header cards
+        */ 
+        nom.tam.util.Cursor<String, HeaderCard> iter = iterator();
+        while (iter.hasNext()) {
+                final HeaderCard card = iter.next();
+                /* compare with regular expression and add to output list if it does
+                */ 
+                if (card.getKey().matches(regex)) {
+                        crds.add(card);
+                }
+        }
+
+        HeaderCard[] tmp  = new HeaderCard[crds.size()];
+        return crds.toArray(tmp);
+    } /* findCards */
+
 
     /**
      * @deprecated     Use {@link #findCard(String)} or {@link #getCard(String)} instead. Find the card associated with
