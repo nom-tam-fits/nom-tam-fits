@@ -11,7 +11,6 @@ import java.util.Comparator;
 import java.util.HashSet;
 import java.util.List;
 import java.util.Set;
-import java.util.Vector;
 import java.util.logging.Level;
 import java.util.logging.Logger;
 
@@ -922,12 +921,12 @@ public class Header implements FitsElement {
     * @param regex The generalized regular expression for the keyword search
     * @return The list of header cards that match the regular expression.
     * @author Richard J. Mathar
-    * @since 2015-03-03
+    * @since 1.19.1
     */
     public HeaderCard[] findCards(final String regex) { 
         /* The collection of header cards that match.
         */
-        Vector<HeaderCard> crds = new Vector<HeaderCard>(); 
+        ArrayList<HeaderCard> crds = new ArrayList<HeaderCard>(); 
 
         /* position pointer to start of card stack and loop over all header cards
         */ 
