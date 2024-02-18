@@ -1,6 +1,12 @@
 <document xmlns="http://maven.apache.org/changes/1.0.0" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:schemaLocation="http://maven.apache.org/changes/1.0.0 http://maven.apache.org/xsd/changes-1.0.0.xsd">
 <body>
 
+   <release version="1.19.1-SNAPSHOT" date="2024-02-18" description="Upcoming bug fix release.">
+      <action type="add" dev="rmathar" issue="558">
+          Find headers cards with regex pattern matching with `Header.findCards()`.          
+      </action>
+   </release>
+
    <release version="1.19.0" date="2024-01-19" description="Feature release with bug fixes.">
       <action type="fix" dev="cek" issue="496">
           Workaround for read-only FITS files on Windows network shares.
