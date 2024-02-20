@@ -62,7 +62,7 @@ jobs:
         flags: unittests
         name: codecov
         verbose: true
-#        token: ${{ secrets.CODECOV_TOKEN }}
+        token: ${{ secrets.CODECOV_TOKEN }}
         
 
     - name: Upload coverage to Coveralls.io
