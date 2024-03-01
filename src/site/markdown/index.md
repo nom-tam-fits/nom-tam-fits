@@ -8,7 +8,7 @@
 
 # Getting started with the _nom.tam.fits_ library.
 
-__nom.tam.fits__ is an efficient 100% pure Java library for reading, writing, and modifying
+__nom.tam.fits__ is an efficient 100% pure Java 8+ library for reading, writing, and modifying
 [FITS files](https://fits.gsfc.nasa.gov/fits_standard.html). The library owes its origins to Tom A. McGlynn 
 (hence the _nom.tam_ prefix) at NASA Goddard Space Flight Center.
 
@@ -25,6 +25,7 @@ This document has been updated for 1.19.0 and/or later 1.x releases.
  - [FITS headers](#fits-headers)
  - [Creating tables](#building-tables-from-data)
  - [Compression support](#compression-support)
+ - [Release schedule](#release-schedule)
  - [How to contribute](#contribute)
 
 
@@ -146,6 +147,8 @@ FITS.
 
 <a name="deprecated-methods"></a>
 ## Compatibility with prior releases
+
+The current version of the __nom.tam.fits__ library requires Java 8 (or later).
 
 We strive to maintain API compatibility with earlier releases of this library, and to an overwhelming extent 
 we continue to deliver on that. However, in a few corner cases we had no choice but to change the API and/or behavior 
@@ -923,7 +926,7 @@ shared space of the same FITS header. It is therefore best practice for all crea
    after. It is also recommended that users add a comment line (or lines) in-between to cleary demark where the 
    standard FITS description ends, and where the user dictionary begins after.
  - Use comment cards to make headers self explanatory and easy for other humans to understand and digest. The header
-   is also in a sense the self-comntained documentation of your FITS data.
+   is also in a sense the self-contained documentation of your FITS data.
 
 Note, that originally, header keywords were limited to a maximum of 8 upper-case alphanumeric characters (`A` to `Z`
 and `0` to `9`), plus hyphens (`-`) and underscores (`_`), and string values may not exceed 68 characters in length. 
@@ -1818,6 +1821,37 @@ The methods `CompressedTableHDU.getTileRows()` and `.getTileCount()` can be used
 to decompress to get access to specific table rows.
 
 -----------------------------------------------------------------------------
+
+<a name="release-schedule"></a>
+## Release schedule
+
+A predictable release schedule and process can help manage expectations and reduce stress on adopters and developers 
+alike.
+
+Releases of the library follow a quarterly release schedule since version __1.16__. You may expect upcoming releases 
+to be published around __March 15__, __June 15__, __September 15__, and/or __December 15__ each year, on an as needed
+basis. That means that if there are outstanding bugs, or new pull requests (PRs), you may expect a release that 
+addresses these in the upcoming quarter. The dates are placeholders only, with no guarantee that a release will 
+actually be available every quarter. If nothing of note comes up, a potential release date may pass without a release 
+being published.
+
+_Feature releases_ (__1.x.0__ version bumps), which may include significant API changes, are provided at least 6 
+months apart, to reduce stress on adopters who may need/want to tweak their code to integrate these. Between feature 
+releases, _bug fix releases_ (without significant API changes) may be provided as needed to address issues. New 
+features are generally reserved for the feature releases, although they may also be rolled out in bug-fix releases as 
+long as they do not affect the existing API -- in line with the desire to keep bug-fix releases fully backwards 
+compatible with their parent versions.
+
+In the month(s) preceding releases one or more _release candidates_ (e.g. `1.19.1-rc3`) will be available on github
+briefly, under [Releases](https://github.com/nom-tam-fits/nom-tam-fits/releases), so that changes can be tested by 
+adopters before the releases are finalized. Please use due diligence to test such release candidates with your code 
+when they become available to avoid unexpected suprises when the finalized release is published. Release candidates 
+are typically available for one week only before they are superseded either by another, or by the finalized release.
+
+
+-----------------------------------------------------------------------------
+
+
 
 <a name="contribute"></a>
 ## How to contribute
