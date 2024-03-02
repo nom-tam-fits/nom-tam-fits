@@ -11,7 +11,7 @@
 	<publishDate position="left" format="yyyy-MM-dd" />
 	<version position="right" />
 	<poweredBy>
-		<logo name="Maven" href="http://maven.apache.org/" img="http://maven.apache.org/images/logos/maven-feather.png" />
+		<logo name="Maven" href="https://maven.apache.org/" img="https://maven.apache.org/images/logos/maven-feather.png" />
 	</poweredBy>
 	<custom>
 		<fluidoSkin>

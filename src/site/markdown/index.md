@@ -21,11 +21,11 @@ described therein to be effective users of this library.
 
 This site contains various online resources that support the library:
 
+ - [User's guide](https://github.com/nom-tam-fits/nom-tam-fits/README.md) (`README.md`)
+
  - [nom-tam-fits on Maven Central](https://mvnrepository.com/artifact/gov.nasa.gsfc.heasarc/nom-tam-fits)
 
  - Download [Releases](https://github.com/nom-tam-fits/nom-tam-fits/releases) from GitHub.
-
- - [User's guide](https://github.com/nom-tam-fits/nom-tam-fits/README.md) (`README.md`)
  
  - [Project site](https://github.com/nom-tam-fits/nom-tam-fits) on GitHub.
  
