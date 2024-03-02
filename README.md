@@ -51,9 +51,7 @@ You may find the following links useful:
  - [FITS data (HDU) types](#fits-data-type)
  - [FITS vs Java data types](#fits-vs-java-data-types)
 
-FITS (Flexible Image Transport System) is a binary format for the storage of astronomical 
-datasets. A FITS file is composed of one or more *Header-Data Units* (HDUs). Each HDU consists of a *header*, which 
-describes the data and possibly contain extra metadata (as key-value pairs) or comments, and a *data* section.
+FITS (Flexible Image Transport System) is a binary format of many astronomical datasets and images.
 
 The library requires a level of familiarity with FITS and its common standards and conventions for effective use. For 
 example, while the library will automatically interpret and populate the mandatory minimum data description in FITS 
@@ -71,6 +69,8 @@ docs, can be found on the [project site](https://nom-tam-fits.github.io/nom-tam-
 <a name="Fits-data-types"></a>
 ### FITS data (HDU) types
 
+A FITS file is composed of one or more *Header-Data Units* (HDUs). Each HDU consists of a *header*, which describes 
+the data and possibly contain extra metadata (as key-value pairs) or comments, and a *data* section.
 
 The current FITS standard (4.0) recognizes the following principal HDU / data types: 
 
