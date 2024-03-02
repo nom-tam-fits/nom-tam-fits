@@ -1,6 +1,12 @@
 <?xml version="1.0" encoding="UTF-8" standalone="no"?>
 <urlset xmlns="http://www.sitemaps.org/schemas/sitemap/0.9">
     <url>
+        <loc>http://nom-tam-fits.github.io/nom-tam-fits/CONTRIBUTING.html</loc>
+    </url>
+    <url>
+        <loc>http://nom-tam-fits.github.io/nom-tam-fits/README.html</loc>
+    </url>
+    <url>
         <loc>http://nom-tam-fits.github.io/nom-tam-fits/changes-report.html</loc>
     </url>
     <url>
