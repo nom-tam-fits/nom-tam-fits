@@ -1,1 +1,1 @@
-This content has moved [here](index.html).
+This content has moved [here](maven.html).

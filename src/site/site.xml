@@ -43,11 +43,14 @@
 			<item name="${project.name}" href="index.html" />
 		</breadcrumbs>
 		<menu name="Documentation">
-			<item name="Getting Started" href="index.html" />
+			<item name="About" href="index.html" />
+			<item name="User's Guide" href="https://github.com/nom-tam-fits/nom-tam-fits/README.md" />
 			<item name="API Documentation" href="apidocs/index.html" />
-			<item name="Download" href="download.html" />
+			<item name="Releases" href="https://github.com/nom-tam-fits/nom-tam-fits/releases" />
 			<item name="Changes" href="changes-report.html" />
-		  <item name="About" href="about.html" />
+			<item name="Maven" href="maven.html" />
+			<item name="Issues" href="https://github.com/nom-tam-fits/nom-tam-fits/issues" />
+			<item name="Discussions" href="https://github.com/nom-tam-fits/nom-tam-fits/discussions" />
 		</menu>
 		<menu ref="modules" />
 		<menu ref="reports" />
