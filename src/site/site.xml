@@ -27,28 +27,28 @@
 	
 	<body>
 		<head>
-			<![CDATA[
-				<script async src="https://www.googletagmanager.com/gtag/js?id=G-4TM8JE0R8J"></script>
-				<script>
-  					window.dataLayer = window.dataLayer || [];
-  					function gtag(){dataLayer.push(arguments);}
-  					gtag('js', new Date());
+		<![CDATA[
+			<script async src="https://www.googletagmanager.com/gtag/js?id=G-4TM8JE0R8J"></script>
+			<script>
+  				window.dataLayer = window.dataLayer || [];
+  				function gtag(){dataLayer.push(arguments);}
+  				gtag('js', new Date());
 
-				 	gtag('config', 'G-4TM8JE0R8J');
-				</script>
-			]]>
-				
+			 	gtag('config', 'G-4TM8JE0R8J');
+			</script>
+		]]>
 		</head>
 		<breadcrumbs>
 			<item name="${project.name}" href="index.html" />
 		</breadcrumbs>
 		<menu name="Documentation">
 			<item name="About" href="index.html" />
-			<item name="User's Guide" href="https://github.com/nom-tam-fits/nom-tam-fits/README.md" />
+			<item name="User's Guide" href="https://github.com/nom-tam-fits/nom-tam-fits/blob/master/README.md" />
 			<item name="API Documentation" href="apidocs/index.html" />
 			<item name="Releases" href="https://github.com/nom-tam-fits/nom-tam-fits/releases" />
 			<item name="Changes" href="changes-report.html" />
 			<item name="Maven" href="maven.html" />
+			<item name="GitHub" href="https://github.com/nom-tam-fits/nom-tam-fits/" />
 			<item name="Issues" href="https://github.com/nom-tam-fits/nom-tam-fits/issues" />
 			<item name="Discussions" href="https://github.com/nom-tam-fits/nom-tam-fits/discussions" />
 		</menu>
