@@ -43,12 +43,12 @@
 		</breadcrumbs>
 		<menu name="Documentation">
 			<item name="About" href="index.html" />
-			<item name="User's Guide" href="https://github.com/nom-tam-fits/nom-tam-fits/blob/master/README.md" />
+			<item name="User's Guide" href="README.html" />
 			<item name="API Documentation" href="apidocs/index.html" />
 			<item name="Changes" href="changes-report.html" />
 			<item name="Issues" href="https://github.com/nom-tam-fits/nom-tam-fits/issues" />
 			<item name="Discussions" href="https://github.com/nom-tam-fits/nom-tam-fits/discussions" />
-			<item name="Contributing" href="https://github.com/nom-tam-fits/nom-tam-fits/blob/master/COMTRIBUTING.md" />
+			<item name="Contributing" href="CONTRIBUTING.html" />
 		</menu>
 		<menu name="Download">
 			<item name="Releases" href="https://github.com/nom-tam-fits/nom-tam-fits/releases" />
