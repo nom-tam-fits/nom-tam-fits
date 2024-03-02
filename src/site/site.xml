@@ -45,12 +45,14 @@
 			<item name="About" href="index.html" />
 			<item name="User's Guide" href="https://github.com/nom-tam-fits/nom-tam-fits/blob/master/README.md" />
 			<item name="API Documentation" href="apidocs/index.html" />
-			<item name="Releases" href="https://github.com/nom-tam-fits/nom-tam-fits/releases" />
 			<item name="Changes" href="changes-report.html" />
-			<item name="Maven" href="maven.html" />
-			<item name="GitHub" href="https://github.com/nom-tam-fits/nom-tam-fits/" />
 			<item name="Issues" href="https://github.com/nom-tam-fits/nom-tam-fits/issues" />
 			<item name="Discussions" href="https://github.com/nom-tam-fits/nom-tam-fits/discussions" />
+		</menu>
+		<menu name="Download">
+			<item name="Releases" href="https://github.com/nom-tam-fits/nom-tam-fits/releases" />
+			<item name="Maven" href="maven.html" />
+			<item name="GitHub" href="https://github.com/nom-tam-fits/nom-tam-fits/" />
 		</menu>
 		<menu ref="modules" />
 		<menu ref="reports" />
