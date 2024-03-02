@@ -3,7 +3,7 @@
 	<skin>
 		<groupId>org.apache.maven.skins</groupId>
 		<artifactId>maven-fluido-skin</artifactId>
-		<version>1.9</version>
+		<version>2.0.0-M8</version>
 	</skin>
 	<bannerLeft>
 		<src>images/fits_logo_text.png</src>
@@ -48,6 +48,7 @@
 			<item name="Changes" href="changes-report.html" />
 			<item name="Issues" href="https://github.com/nom-tam-fits/nom-tam-fits/issues" />
 			<item name="Discussions" href="https://github.com/nom-tam-fits/nom-tam-fits/discussions" />
+			<item name="Contributing" href="https://github.com/nom-tam-fits/nom-tam-fits/blob/master/COMTRIBUTING.md" />
 		</menu>
 		<menu name="Download">
 			<item name="Releases" href="https://github.com/nom-tam-fits/nom-tam-fits/releases" />
