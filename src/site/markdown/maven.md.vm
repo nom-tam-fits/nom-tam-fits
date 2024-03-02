@@ -12,9 +12,9 @@ For Maven projects add the following to your dependencies:
 
 ```xml
 <dependency>
-	<groupId>gov.nasa.gsfc.heasarc</groupId>
-	<artifactId>nom-tam-fits</artifactId>
-	<version>${project.version}</version>
+  <groupId>gov.nasa.gsfc.heasarc</groupId>
+  <artifactId>nom-tam-fits</artifactId>
+  <version>${project.version}</version>
 </dependency>
 ```
 
@@ -28,21 +28,21 @@ of nom-tam-fits (as it is defined in the nom-tam-fits'
 
 ```xml
 <dependencies>
-	<dependency>
-		<groupId>gov.nasa.gsfc.heasarc</groupId>
-		<artifactId>nom-tam-fits</artifactId>
-		<version>xxxxx-SNAPSHOT</version>
-	</dependency>
+  <dependency>
+    <groupId>gov.nasa.gsfc.heasarc</groupId>
+    <artifactId>nom-tam-fits</artifactId>
+    <version>xxxxx-SNAPSHOT</version>
+  </dependency>
 </dependencies>
 ...
 <repositories>
-	<repository>
-		<id>sonatype-snapshots</id>
-		<url>https://oss.sonatype.org/content/repositories/snapshots</url>
-		<snapshots>
-			<enabled>true</enabled>
-		</snapshots>
-	</repository>
+  <repository>
+    <id>sonatype-snapshots</id>
+    <url>https://oss.sonatype.org/content/repositories/snapshots</url>
+    <snapshots>
+      <enabled>true</enabled>
+    </snapshots>
+  </repository>
 </repositories>    
 ```
 
