@@ -1,4 +1,4 @@
-# nom.tam.fits
+# About
 
 __nom.tam.fits__ is an efficient 100% pure Java 8+ library for reading, writing, and modifying
 [FITS files](https://fits.gsfc.nasa.gov/fits_standard.html). FITS (Flexible Image Transport System) is a binary format 
