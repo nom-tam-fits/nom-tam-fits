@@ -20,7 +20,7 @@
 			<gitHub>
 				<projectId>nom-tam-fits/nom-tam-fits</projectId>
 				<ribbonOrientation>right</ribbonOrientation>
-				<ribbonColor>black</ribbonColor>
+				<ribbonColor>gray</ribbonColor>
 			</gitHub>
 		</fluidoSkin>
 	</custom>
