@@ -1,15 +1,15 @@
 -classpath
-'/home/runner/.m2/repository/org/apache/commons/commons-compress/1.21/commons-compress-1.21.jar:/home/runner/.m2/repository/com/google/code/findbugs/annotations/3.0.1u2/annotations-3.0.1u2.jar:/home/runner/.m2/repository/net/jcip/jcip-annotations/1.0/jcip-annotations-1.0.jar:/home/runner/.m2/repository/com/google/code/findbugs/jsr305/3.0.1/jsr305-3.0.1.jar:/home/runner/.m2/repository/junit/junit/4.13.2/junit-4.13.2.jar:/home/runner/.m2/repository/org/hamcrest/hamcrest-core/1.3/hamcrest-core-1.3.jar:/home/runner/.m2/repository/com/nanohttpd/nanohttpd-webserver/2.1.0/nanohttpd-webserver-2.1.0.jar:/home/runner/.m2/repository/com/nanohttpd/nanohttpd/2.1.0/nanohttpd-2.1.0.jar:/home/runner/.m2/repository/org/openjdk/jmh/jmh-core/1.35/jmh-core-1.35.jar:/home/runner/.m2/repository/net/sf/jopt-simple/jopt-simple/5.0.4/jopt-simple-5.0.4.jar:/home/runner/.m2/repository/org/apache/commons/commons-math3/3.2/commons-math3-3.2.jar:/home/runner/.m2/repository/org/openjdk/jmh/jmh-generator-annprocess/1.35/jmh-generator-annprocess-1.35.jar:/home/runner/.m2/repository/javax/annotation/javax.annotation-api/1.3.2/javax.annotation-api-1.3.2.jar'
+'/home/runner/.m2/repository/org/apache/commons/commons-compress/1.26.0/commons-compress-1.26.0.jar:/home/runner/.m2/repository/commons-io/commons-io/2.15.1/commons-io-2.15.1.jar:/home/runner/.m2/repository/org/apache/commons/commons-lang3/3.14.0/commons-lang3-3.14.0.jar:/home/runner/.m2/repository/com/github/spotbugs/spotbugs-annotations/4.8.3/spotbugs-annotations-4.8.3.jar:/home/runner/.m2/repository/com/google/code/findbugs/jsr305/3.0.2/jsr305-3.0.2.jar:/home/runner/.m2/repository/org/junit/vintage/junit-vintage-engine/5.10.2/junit-vintage-engine-5.10.2.jar:/home/runner/.m2/repository/org/junit/platform/junit-platform-engine/1.10.2/junit-platform-engine-1.10.2.jar:/home/runner/.m2/repository/org/opentest4j/opentest4j/1.3.0/opentest4j-1.3.0.jar:/home/runner/.m2/repository/org/junit/platform/junit-platform-commons/1.10.2/junit-platform-commons-1.10.2.jar:/home/runner/.m2/repository/junit/junit/4.13.2/junit-4.13.2.jar:/home/runner/.m2/repository/org/hamcrest/hamcrest-core/1.3/hamcrest-core-1.3.jar:/home/runner/.m2/repository/org/apiguardian/apiguardian-api/1.1.2/apiguardian-api-1.1.2.jar:/home/runner/.m2/repository/com/nanohttpd/nanohttpd-webserver/2.1.0/nanohttpd-webserver-2.1.0.jar:/home/runner/.m2/repository/com/nanohttpd/nanohttpd/2.1.0/nanohttpd-2.1.0.jar:/home/runner/.m2/repository/org/openjdk/jmh/jmh-core/1.37/jmh-core-1.37.jar:/home/runner/.m2/repository/net/sf/jopt-simple/jopt-simple/5.0.4/jopt-simple-5.0.4.jar:/home/runner/.m2/repository/org/apache/commons/commons-math3/3.6.1/commons-math3-3.6.1.jar:/home/runner/.m2/repository/org/openjdk/jmh/jmh-generator-annprocess/1.37/jmh-generator-annprocess-1.37.jar:/home/runner/.m2/repository/jakarta/annotation/jakarta.annotation-api/2.1.1/jakarta.annotation-api-2.1.1.jar'
 -encoding
 'UTF-8'
--protected
+-public
 -source
 '8'
 -sourcepath
 '/home/runner/work/nom-tam-fits/nom-tam-fits/nom-tam-fits/src/main/java:/home/runner/work/nom-tam-fits/nom-tam-fits/nom-tam-fits/target/generated-sources/annotations'
 -author
 -bottom
-'Copyright &#169; 1996&#x2013;2022 nom-tam-fits. All rights reserved.'
+'Copyright &#169; 1996&#x2013;2024 nom-tam-fits. All rights reserved.'
 -charset
 'UTF-8'
 -d
@@ -17,10 +17,12 @@
 -docencoding
 'UTF-8'
 -doctitle
-'nom.tam FITS library 1.17.0-SNAPSHOT API'
+'nom.tam.fits 1.19.1-SNAPSHOT Public User API'
+-header
+'<script async src="https://www.googletagmanager.com/gtag/js?id=G-4TM8JE0R8J"></script> 		<script>   			window.dataLayer = window.dataLayer || [];   			function gtag(){dataLayer.push(arguments);}   			gtag(\'js\', new Date());  		 	gtag(\'config\', \'G-4TM8JE0R8J\'); 		</script>'
 -linkoffline
 'https://docs.oracle.com/javase/8/docs/api' '/home/runner/work/nom-tam-fits/nom-tam-fits/nom-tam-fits/target/javadoc-bundle-options'
 -use
 -version
 -windowtitle
-'nom.tam FITS library 1.17.0-SNAPSHOT API'
+'nom.tam.fits 1.19.1-SNAPSHOT Public User API'
