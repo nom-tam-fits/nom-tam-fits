@@ -485,6 +485,9 @@
             <goals>
               <goal>gen</goal>
             </goals>
+            <configuration>
+              <maxDepth>10</maxDepth>
+            </configuration>
           </execution>
         </executions>
       </plugin>
