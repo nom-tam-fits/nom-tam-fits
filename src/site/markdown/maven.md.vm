@@ -18,12 +18,13 @@ For Maven projects add the following to your dependencies:
 </dependency>
 ```
 
-You can also download the JARs directly from [Maven Central](https://search.maven.org/#search|ga|1|g%3A%22gov.nasa.gsfc.heasarc%22 "Maven Central").
-
 
 ## Bleeding edge 
 
-If you want to use the bleeding edge version of nom-tam-fits, you can get it from sonatype:
+If you want to use the bleeding edge version of nom-tam-fits, you can get it from sonatype. 
+Add the the into your `pom.xml`, and modify `xxxxx-` to indicate the current SNAPSHOT version
+of nom-tam-fits (as it is defined in the nom-tam-fits' 
+[pom.xml](https://github.com/nom-tam-fits/nom-tam-fits/blob/master/pom.xml)).
 
 ```xml
 <dependencies>
