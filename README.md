@@ -6,7 +6,7 @@
 
 
 
-# Getting started with the _nom.tam.fits_ library.
+# User's guide
 
 __nom.tam.fits__ is an efficient 100% pure Java 8+ library for reading, writing, and modifying
 [FITS files](https://fits.gsfc.nasa.gov/fits_standard.html). The library owes its origins to Tom A. McGlynn 
@@ -16,7 +16,7 @@ This document has been updated for 1.19.0 and/or later 1.x releases.
 
 ## Table of Contents
 
- - [Related Links](#related-links)
+ - [Related links](#related-links)
  - [Introduction](#introduction)
  - [Compatibility with prior releases](#deprecated-methods)
  - [Reading FITS files](#reading-fits-files)
