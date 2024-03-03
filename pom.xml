@@ -579,16 +579,13 @@
           <windowtitle>
             ${project.name} ${project.version} Public User API
           </windowtitle>
-          <description>
-            nom.tam.fits is an efficient 100% pure Java 8+ library for reading, writing, and modifying FITS files. The 
-            library owes its origins to Tom A. McGlynn (hence the nom.tam prefix) at NASA Goddard Space Flight Center. 
-            Currently, it is maintained by Attila Kovacs at the Center for Astrophysics | Harvard &amp; Smithsonian.
-          </description>
           <keywords>
-            software, astronomy, Java library, FITS format, datasets, data analysis, image processing
+            astronomy software, Java library, FITS file, FITS format, datasets, data analysis, image processing
           </keywords>
           <header>
           	<![CDATA[
+          	<meta name="description" content="A full-featured and efficient Java library for reading, writing, and modifying FITS files. />
+          	<meta name="robots" content="index,follow" />
 		<script async src="https://www.googletagmanager.com/gtag/js?id=G-4TM8JE0R8J"></script>
 		<script>
   			window.dataLayer = window.dataLayer || [];
