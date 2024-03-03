@@ -6,7 +6,9 @@
 		<version>1.12.0</version>
 	</skin>
 	<bannerLeft>
+		<name>nom.tam.fits</name>
 		<src>images/fits_logo_text.png</src>
+		<href>https://github.com/nom-tam-fits/nom-tam-fits</href>
 	</bannerLeft>
 	<publishDate position="left" format="yyyy-MM-dd" />
 	<version position="right" />
