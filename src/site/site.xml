@@ -30,7 +30,7 @@
 	<body>
 		<head>
 		<![CDATA[
-			<meta name="description" content="A full-featured and efficient Java library for reading, writing, and modifying FITS files." />
+			<meta name="description" content="A full-featured pure Java library for reading, writing, and modifying FITS files." />
 			<meta name="robots" content="index,follow" />
 			<link rel="shortcut icon" type="image/x-icon" href="/nom-tam-fits/images/favicon.ico" />
 			<script async src="https://www.googletagmanager.com/gtag/js?id=G-4TM8JE0R8J"></script>
