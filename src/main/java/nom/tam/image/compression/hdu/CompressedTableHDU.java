@@ -199,6 +199,7 @@ public class CompressedTableHDU extends BinaryTableHDU {
 
         Header header = new Header();
         CompressedTableData compressedData = new CompressedTableData();
+        compressedData.setColumnCompressionAlgorithms(columnCompressionAlgorithms);
 
         int rowsPerTile = tileRows > 0 ? tileRows : binaryTableHDU.getData().getNRows();
         compressedData.setRowsPerTile(rowsPerTile);
@@ -211,7 +212,6 @@ public class CompressedTableHDU extends BinaryTableHDU {
         }
 
         CompressedTableHDU compressedImageHDU = new CompressedTableHDU(header, compressedData);
-        compressedData.setColumnCompressionAlgorithms(columnCompressionAlgorithms);
         compressedData.prepareUncompressedData(binaryTableHDU.getData());
         compressedData.fillHeader(header);
         return compressedImageHDU;

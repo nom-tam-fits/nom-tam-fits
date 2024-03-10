@@ -102,11 +102,13 @@ public class FitsHeap implements FitsElement {
      * Add a copy constructor to allow us to duplicate a heap. This would be necessary if we wanted to copy an HDU that
      * included variable length columns.
      */
-    FitsHeap copy() {
+    synchronized FitsHeap copy() {
         FitsHeap copy = new FitsHeap();
-        copy.setData(store.copy());
-        copy.encoder = new FitsEncoder(copy.store);
-        copy.decoder = new FitsDecoder(copy.store);
+        synchronized (copy) {
+            copy.setData(store.copy());
+            copy.encoder = new FitsEncoder(copy.store);
+            copy.decoder = new FitsDecoder(copy.store);
+        }
         return copy;
     }
 
@@ -190,7 +192,9 @@ public class FitsHeap implements FitsElement {
      */
     synchronized int copyFrom(FitsHeap src, int offset, int len) {
         int pos = (int) store.length();
-        System.arraycopy(src.store.getBuffer(), offset, store.getBuffer(), pos, len);
+        synchronized (src) {
+            System.arraycopy(src.store.getBuffer(), offset, store.getBuffer(), pos, len);
+        }
         store.setLength(pos + len);
         return pos;
     }
@@ -234,7 +238,7 @@ public class FitsHeap implements FitsElement {
     }
 
     @Override
-    public void write(ArrayDataOutput str) throws FitsException {
+    public synchronized void write(ArrayDataOutput str) throws FitsException {
         try {
             str.write(store.getBuffer(), 0, (int) store.length());
         } catch (IOException e) {

@@ -57,25 +57,21 @@ public class CompressedTableBlackBoxTest {
 
     private void compressThenUncompressTableAndAssert(String originalFileName) throws FitsException, IOException {
         String tableOrgFile = BlackBoxImages.getBlackBoxImage(originalFileName);
-        Fits fitsOrg = null;
         String compressedfileName;
-        try {
-            fitsOrg = new Fits(tableOrgFile);
-            fitsOrg.readHDU(); // skip image
 
-            File file = new File("target/" + originalFileName + ".fz");
-            if (file.exists()) {
-                file.delete();
-            }
-            file.getParentFile().mkdirs();
-            Fits fitsCompressed = new Fits();
+        File file = new File("target/" + originalFileName + ".fz");
+        if (file.exists()) {
+            file.delete();
+        }
+        file.getParentFile().mkdirs();
+
+        try (Fits fitsCompressed = new Fits(); Fits fitsOrg = new Fits(tableOrgFile)) {
             fitsCompressed.addHDU(//
-                    CompressedTableHDU.fromBinaryTableHDU((BinaryTableHDU) fitsOrg.readHDU(), 0)//
+                    CompressedTableHDU.fromBinaryTableHDU((BinaryTableHDU) fitsOrg.getHDU(1), 0)//
                             .compress());
+
             fitsCompressed.write(file);
             compressedfileName = file.getAbsolutePath();
-        } finally {
-            SafeClose.close(fitsOrg);
         }
 
         uncompressTableAndAssert(compressedfileName, originalFileName);

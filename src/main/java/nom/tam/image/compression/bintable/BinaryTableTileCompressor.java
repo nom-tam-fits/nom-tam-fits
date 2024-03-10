@@ -269,7 +269,7 @@ public class BinaryTableTileCompressor extends BinaryTableTile {
     }
 
     @Override
-    public void waitForResult() {
+    public synchronized void waitForResult() {
         super.waitForResult();
 
         if (orig != null && orig.getDescriptor(column).isVariableSize()) {
