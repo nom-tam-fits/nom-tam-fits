@@ -2283,7 +2283,7 @@ public class BinaryTable extends AbstractTableData implements Cloneable {
      * @throws IOException   If there was an I/O error accessing the input
      * @throws FitsException If there was some other error
      */
-    private void readTableElement(Object o, ColumnDesc c, int row) throws IOException, FitsException {
+    private synchronized void readTableElement(Object o, ColumnDesc c, int row) throws IOException, FitsException {
         @SuppressWarnings("resource")
         RandomAccess in = getRandomAccessInput();
 
