@@ -116,7 +116,7 @@ public class TileCompressorProviderTest {
 
         public BrokenClass(BrokenOption option) {
             if (exceptionInConstructor) {
-                throw new RuntimeException("could not instanciate");
+                throw new RuntimeException("could not instantiate");
             }
         }
 
@@ -144,7 +144,7 @@ public class TileCompressorProviderTest {
 
         public BrokenOption() {
             if (exceptionInConstructor) {
-                throw new RuntimeException("could not instanciate");
+                throw new RuntimeException("could not instantiate");
             }
         }
     }

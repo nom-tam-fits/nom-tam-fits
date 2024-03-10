@@ -63,6 +63,7 @@ import static nom.tam.fits.header.Compression.ZQUANTIZ;
 import static nom.tam.fits.header.Compression.ZSIMPLE;
 import static nom.tam.fits.header.Compression.ZTABLE;
 import static nom.tam.fits.header.Compression.ZTENSION;
+import static nom.tam.fits.header.Compression.ZTHEAP;
 import static nom.tam.fits.header.Compression.ZTILELEN;
 import static nom.tam.fits.header.Compression.ZTILEn;
 import static nom.tam.fits.header.Compression.ZVALn;
@@ -152,8 +153,9 @@ enum CompressedCard {
         }
 
     },
-    MAP_ZPCOUNT(ZPCOUNT), MAP_ZQUANTIZ(ZQUANTIZ), MAP_ZSIMPLE(ZSIMPLE), MAP_ZTENSION(ZTENSION), MAP_ZTILEn(
-            ZTILEn), MAP_ZVALn(ZVALn);
+
+    MAP_ZPCOUNT(ZPCOUNT), MAP_ZTHEAP(ZTHEAP), MAP_ZQUANTIZ(ZQUANTIZ), MAP_ZSIMPLE(ZSIMPLE), MAP_ZTENSION(
+            ZTENSION), MAP_ZTILEn(ZTILEn), MAP_ZVALn(ZVALn);
 
     private final IFitsHeader compressedHeaderKey;
 

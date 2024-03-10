@@ -211,7 +211,7 @@ public class RiceCompressOption implements ICompressOption {
      * @since  1.18
      */
     private static final class Config {
-        private int bytePix;
+        private int bytePix = DEFAULT_RICE_BYTEPIX;
 
         private int blockSize = DEFAULT_RICE_BLOCKSIZE;
     }

@@ -55,6 +55,7 @@ import nom.tam.fits.compression.algorithm.gzip2.GZip2Compressor.IntGZip2Compress
 import nom.tam.fits.compression.algorithm.gzip2.GZip2Compressor.LongGZip2Compressor;
 import nom.tam.fits.compression.algorithm.gzip2.GZip2Compressor.ShortGZip2Compressor;
 import nom.tam.fits.compression.algorithm.hcompress.HCompressor.ByteHCompressor;
+import nom.tam.fits.compression.algorithm.hcompress.HCompressor.DoubleHCompressor;
 import nom.tam.fits.compression.algorithm.hcompress.HCompressor.FloatHCompressor;
 import nom.tam.fits.compression.algorithm.hcompress.HCompressor.IntHCompressor;
 import nom.tam.fits.compression.algorithm.hcompress.HCompressor.ShortHCompressor;
@@ -66,6 +67,7 @@ import nom.tam.fits.compression.algorithm.quant.QuantizeOption;
 import nom.tam.fits.compression.algorithm.quant.QuantizeProcessor.DoubleQuantCompressor;
 import nom.tam.fits.compression.algorithm.quant.QuantizeProcessor.FloatQuantCompressor;
 import nom.tam.fits.compression.algorithm.rice.RiceCompressor.ByteRiceCompressor;
+import nom.tam.fits.compression.algorithm.rice.RiceCompressor.DoubleRiceCompressor;
 import nom.tam.fits.compression.algorithm.rice.RiceCompressor.FloatRiceCompressor;
 import nom.tam.fits.compression.algorithm.rice.RiceCompressor.IntRiceCompressor;
 import nom.tam.fits.compression.algorithm.rice.RiceCompressor.ShortRiceCompressor;
@@ -95,17 +97,21 @@ public class CompressorProvider implements ICompressorProvider {
      */
     protected static class TileCompressorControl implements ICompressorControl {
 
-        private final Constructor<ICompressor<Buffer>> constructor;
+        private final Constructor<ICompressor<Buffer>>[] constructors;
 
-        private final Class<? extends ICompressOption> optionClass;
+        private Class<? extends ICompressOption> optionClass;
 
         private Class<?> quantType;
 
         @SuppressWarnings("unchecked")
         protected TileCompressorControl(Class<?> compressorClass) {
-            constructor = (Constructor<ICompressor<Buffer>>) compressorClass.getConstructors()[0];
-            optionClass = (Class<? extends ICompressOption>) (constructor.getParameterTypes().length == 0 ? null :
-                    constructor.getParameterTypes()[0]);
+            constructors = (Constructor<ICompressor<Buffer>>[]) compressorClass.getConstructors();
+            for (Constructor<ICompressor<Buffer>> c : constructors) {
+                if (c.getParameterTypes().length == 1) {
+                    optionClass = (Class<? extends ICompressOption>) c.getParameterTypes()[0];
+                    break;
+                }
+            }
         }
 
         /**
@@ -128,8 +134,8 @@ public class CompressorProvider implements ICompressorProvider {
             try {
                 return newCompressor(option).compress(in, out);
             } catch (Exception e) {
-                LOG.log(Level.FINE,
-                        "could not compress using " + constructor + " must fallback to other compression method", e);
+                LOG.log(Level.FINE, "could not compress using " + constructors[0].getName()
+                        + " must fallback to other compression method", e);
                 return false;
             }
         }
@@ -139,7 +145,7 @@ public class CompressorProvider implements ICompressorProvider {
             try {
                 newCompressor(option).decompress(in, out);
             } catch (Exception e) {
-                throw new IllegalStateException("could not decompress " + constructor, e);
+                throw new IllegalStateException("could not decompress " + constructors[0].getName(), e);
             }
         }
 
@@ -150,7 +156,8 @@ public class CompressorProvider implements ICompressorProvider {
                 try {
                     option = optionClass.getDeclaredConstructor().newInstance();
                 } catch (Exception e) {
-                    throw new IllegalStateException("could not instantiate option class for " + constructor, e);
+                    throw new IllegalStateException("could not instantiate option class for " + constructors[0].getName(),
+                            e);
                 }
             }
 
@@ -168,27 +175,54 @@ public class CompressorProvider implements ICompressorProvider {
         @SuppressWarnings({"unchecked", "rawtypes"})
         private ICompressor<Buffer> newCompressor(ICompressOption option)
                 throws InstantiationException, IllegalAccessException, InvocationTargetException {
+            ICompressor<Buffer> compressor = null;
             QuantizeOption quantOption = null;
 
-            if (option instanceof RiceQuantizeCompressOption) {
-                quantOption = (RiceQuantizeCompressOption) option;
+            if (option == NULL_OPTION) {
+                option = null;
             } else if (option instanceof QuantizeOption) {
                 quantOption = (QuantizeOption) option;
                 option = quantOption.getCompressOption();
             }
 
-            ICompressor<Buffer> compressor = constructor.getParameterTypes().length == 0 ? constructor.newInstance() :
-                    constructor.newInstance(option);
+            try {
+                for (Constructor<ICompressor<Buffer>> c : constructors) {
+                    Class<?>[] parms = c.getParameterTypes();
 
-            if (quantOption != null && quantType != null) {
-                if (quantType.equals(double.class)) {
-                    compressor = (ICompressor) new DoubleQuantCompressor(quantOption, (ICompressor) compressor);
-                } else if (quantType.equals(float.class)) {
-                    compressor = (ICompressor) new FloatQuantCompressor(quantOption, (ICompressor) compressor);
+                    if (option == null && parms.length == 0) {
+                        compressor = c.newInstance();
+                        break;
+                    }
+
+                    if (option != null && parms.length == 1) {
+                        Class<? extends ICompressOption> p = (Class<? extends ICompressOption>) parms[0];
+                        if (quantOption != null && p.isAssignableFrom(quantOption.getClass())) {
+                            compressor = c.newInstance(quantOption);
+                            quantOption = null; // Don't wrap in a quantizer below...
+                            break;
+                        }
+                        if (p.isAssignableFrom(option.getClass())) {
+                            compressor = c.newInstance(option);
+                            break;
+                        }
+                    }
                 }
+
+                if (quantOption != null && quantType != null) {
+                    if (quantType.equals(double.class)) {
+                        return (ICompressor) new DoubleQuantCompressor(quantOption, (ICompressor) compressor);
+                    }
+                    if (quantType.equals(float.class)) {
+                        return (ICompressor) new FloatQuantCompressor(quantOption, (ICompressor) compressor);
+                    }
+                }
+
+                return compressor;
+            } catch (Exception e) {
+                e.printStackTrace();
             }
 
-            return compressor;
+            return null;
         }
     }
 
@@ -243,18 +277,38 @@ public class CompressorProvider implements ICompressorProvider {
     };
 
     // @formatter:off
-    private static final Class<?>[][] AVAILABLE_COMPRESSORS = {{ByteRiceCompressor.class, RiceCompressParameters.class},
-            {ShortRiceCompressor.class, RiceCompressParameters.class},
-            {FloatRiceCompressor.class, RiceQuantizeCompressOption.class},
-            {IntRiceCompressor.class, RiceCompressParameters.class}, {BytePLIOCompressor.class},
-            {ShortPLIOCompressor.class}, {IntPLIOCompressor.class}, {ByteHCompressor.class, HCompressParameters.class},
-            {FloatHCompressor.class, HCompressorQuantizeOption.class}, {ShortHCompressor.class, HCompressParameters.class},
-            {IntHCompressor.class, HCompressParameters.class}, {ByteGZip2Compressor.class}, {ShortGZip2Compressor.class},
-            {IntGZip2Compressor.class}, {FloatGZip2Compressor.class}, {DoubleGZip2Compressor.class},
-            {LongGZip2Compressor.class}, {ByteGZipCompressor.class}, {ShortGZipCompressor.class}, {IntGZipCompressor.class},
-            {LongGZipCompressor.class}, {FloatGZipCompressor.class}, {DoubleGZipCompressor.class},
-            {ByteNoCompressCompressor.class}, {ShortNoCompressCompressor.class}, {IntNoCompressCompressor.class},
-            {LongNoCompressCompressor.class}, {FloatNoCompressCompressor.class}, {DoubleNoCompressCompressor.class}};
+    private static final Class<?>[][] AVAILABLE_COMPRESSORS = {//
+            {ByteRiceCompressor.class, RiceCompressParameters.class}, //
+            {ShortRiceCompressor.class, RiceCompressParameters.class}, //
+            {IntRiceCompressor.class, RiceCompressParameters.class}, //
+            {FloatRiceCompressor.class, RiceQuantizeCompressOption.class}, //
+            {DoubleRiceCompressor.class, RiceQuantizeCompressOption.class}, //
+            {BytePLIOCompressor.class}, //
+            {ShortPLIOCompressor.class}, //
+            {IntPLIOCompressor.class}, //
+            {ByteHCompressor.class, HCompressParameters.class}, //
+            {ShortHCompressor.class, HCompressParameters.class}, //
+            {IntHCompressor.class, HCompressParameters.class}, //
+            {FloatHCompressor.class, HCompressorQuantizeOption.class}, //
+            {DoubleHCompressor.class, HCompressorQuantizeOption.class}, //
+            {ByteGZip2Compressor.class}, //
+            {ShortGZip2Compressor.class}, //
+            {IntGZip2Compressor.class}, //
+            {FloatGZip2Compressor.class}, //
+            {DoubleGZip2Compressor.class}, //
+            {LongGZip2Compressor.class}, //
+            {ByteGZipCompressor.class}, //
+            {ShortGZipCompressor.class}, //
+            {IntGZipCompressor.class}, //
+            {LongGZipCompressor.class}, //
+            {FloatGZipCompressor.class}, //
+            {DoubleGZipCompressor.class}, //
+            {ByteNoCompressCompressor.class}, //
+            {ShortNoCompressCompressor.class}, //
+            {IntNoCompressCompressor.class}, //
+            {LongNoCompressCompressor.class}, //
+            {FloatNoCompressCompressor.class}, //
+            {DoubleNoCompressCompressor.class}};
     // @formatter:on
 
     private static final CompressorControlNameComputer NAME_COMPUTER = new CompressorControlNameComputer();
@@ -292,6 +346,7 @@ public class CompressorProvider implements ICompressorProvider {
         }
 
         String className = NAME_COMPUTER.createCompressorClassName(quantAlgorithm, compressionAlgorithm, baseType);
+
         for (Class<?>[] types : AVAILABLE_COMPRESSORS) {
             Class<?> compressorClass = types[0];
             if (compressorClass.getSimpleName().equals(className)) {

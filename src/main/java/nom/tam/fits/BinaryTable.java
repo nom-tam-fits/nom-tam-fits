@@ -1333,18 +1333,15 @@ public class BinaryTable extends AbstractTableData implements Cloneable {
                     "Not a binary table header (XTENSION = " + header.getStringValue(Standard.XTENSION) + ")");
         }
 
-        long paramSizeL = header.getLongValue(Standard.PCOUNT);
-        long heapOffsetL = header.getLongValue(Standard.THEAP);
-
-        int rwsz = header.getIntValue(Standard.NAXIS1);
         nRow = header.getIntValue(Standard.NAXIS2);
+        int tableSize = nRow * header.getIntValue(Standard.NAXIS1);
+
+        long paramSizeL = header.getLongValue(Standard.PCOUNT);
+        long heapOffsetL = header.getLongValue(Standard.THEAP, tableSize);
 
         // Subtract out the size of the regular table from
         // the heap offset.
-        if (heapOffsetL > 0) {
-            heapOffsetL -= nRow * rwsz;
-        }
-
+        heapOffsetL -= tableSize;
         long heapSizeL = paramSizeL - heapOffsetL;
 
         if (heapSizeL < 0) {
@@ -1501,6 +1498,26 @@ public class BinaryTable extends AbstractTableData implements Cloneable {
         }
 
         return copy;
+    }
+
+    /**
+     * (<i>for internal use</i>) Discards all variable-length arrays from this table, that is all data stored on the
+     * heap, and resets all heap descritors to (0,0).
+     * 
+     * @since 1.19.1
+     */
+    protected void discardVLAs() {
+        for (int col = 0; col < columns.size(); col++) {
+            ColumnDesc c = columns.get(col);
+
+            if (c.isVariableSize()) {
+                for (int row = 0; row < nRow; row++) {
+                    table.setElement(row, col, c.hasLongPointers() ? new long[2] : new int[2]);
+                }
+            }
+        }
+
+        heap = new FitsHeap(0);
     }
 
     /**
@@ -2268,12 +2285,14 @@ public class BinaryTable extends AbstractTableData implements Cloneable {
         @SuppressWarnings("resource")
         RandomAccess in = getRandomAccessInput();
 
-        in.position(getFileOffset() + row * (long) rowLen + c.offset);
+        synchronized (in) {
+            in.position(getFileOffset() + row * (long) rowLen + c.offset);
 
-        if (!c.isLogical()) {
-            in.readImage(o);
-        } else {
-            in.readArrayFully(o);
+            if (!c.isLogical()) {
+                in.readImage(o);
+            } else {
+                in.readArrayFully(o);
+            }
         }
     }
 
@@ -3188,7 +3207,7 @@ public class BinaryTable extends AbstractTableData implements Cloneable {
         long off = getPointerOffset(p);
 
         if (off > Integer.MAX_VALUE || len > Integer.MAX_VALUE) {
-            throw new FitsException("Data located beyond 32-bit accessible heap limit");
+            throw new FitsException("Data located beyond 32-bit accessible heap limit: off=" + off + ", len=" + len);
         }
 
         Object e = null;
@@ -3532,8 +3551,9 @@ public class BinaryTable extends AbstractTableData implements Cloneable {
      * @throws FitsException if we had trouble initializing it from the input.
      */
     @SuppressWarnings("resource")
-    private FitsHeap getHeap() throws FitsException {
+    private synchronized FitsHeap getHeap() throws FitsException {
         if (heap == null) {
+            heap = new FitsHeap(heapSize);
             readHeap(getRandomAccessInput());
         }
         return heap;
@@ -3770,6 +3790,17 @@ public class BinaryTable extends AbstractTableData implements Cloneable {
     }
 
     /**
+     * Checks if this table contains a heap for storing variable length arrays (VLAs).
+     * 
+     * @return <code>true</code> if the table contains a heap, or else <code>false</code>.
+     * 
+     * @since  1.19.1
+     */
+    public final boolean containsHeap() {
+        return heap.size() > 0;
+    }
+
+    /**
      * <p>
      * Defragments the heap area of this table, compacting the heap area, and returning the number of bytes by which the
      * heap size has been reduced. When tables with variable-sized columns are modified, the heap may retain old data as
@@ -3800,20 +3831,12 @@ public class BinaryTable extends AbstractTableData implements Cloneable {
      * 
      * @since                1.18
      */
-    public long defragment() throws FitsException {
-        boolean hasVars = false;
-        int[] eSize = new int[columns.size()];
-
-        for (ColumnDesc c : columns) {
-            if (c.isVariableSize()) {
-                hasVars = true;
-                break;
-            }
-        }
-
-        if (!hasVars) {
+    public synchronized long defragment() throws FitsException {
+        if (!containsHeap()) {
             return 0L;
         }
+
+        int[] eSize = new int[columns.size()];
 
         for (int j = 0; j < columns.size(); j++) {
             ColumnDesc c = columns.get(j);

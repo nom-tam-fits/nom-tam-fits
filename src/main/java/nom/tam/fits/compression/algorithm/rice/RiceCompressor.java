@@ -63,6 +63,17 @@ public abstract class RiceCompressor<T extends Buffer> implements ICompressor<T>
 
         private ByteBuffer pixelBuffer;
 
+        /**
+         * Rice compression of byte streams with the default block size of 32.
+         * 
+         * @since  1.19.1
+         * 
+         * @author Attila Kovacs
+         */
+        public ByteRiceCompressor() {
+            this(new RiceCompressOption());
+        }
+
         public ByteRiceCompressor(RiceCompressOption option) {
             super(option.setDefaultBytePix(ElementType.BYTE.size()));
         }
@@ -92,20 +103,33 @@ public abstract class RiceCompressor<T extends Buffer> implements ICompressor<T>
     }
 
     public static class DoubleRiceCompressor extends DoubleQuantCompressor {
-        public DoubleRiceCompressor(RiceQuantizeCompressOption options) {
-            super(options, new IntRiceCompressor(options.getRiceCompressOption()));
+
+        public DoubleRiceCompressor(RiceQuantizeCompressOption options) throws ClassCastException {
+            super(options, new IntRiceCompressor((RiceCompressOption) options.getCompressOption()));
         }
     }
 
     public static class FloatRiceCompressor extends FloatQuantCompressor {
-        public FloatRiceCompressor(RiceQuantizeCompressOption options) {
-            super(options, new IntRiceCompressor(options.getRiceCompressOption()));
+
+        public FloatRiceCompressor(RiceQuantizeCompressOption options) throws ClassCastException {
+            super(options, new IntRiceCompressor((RiceCompressOption) options.getCompressOption()));
         }
     }
 
     public static class IntRiceCompressor extends RiceCompressor<IntBuffer> {
 
         private IntBuffer pixelBuffer;
+
+        /**
+         * Rice compression of 32-bit integer streams with the default block size of 32.
+         * 
+         * @since  1.19.1
+         * 
+         * @author Attila Kovacs
+         */
+        public IntRiceCompressor() {
+            this(new RiceCompressOption());
+        }
 
         public IntRiceCompressor(RiceCompressOption option) {
             super(option.setDefaultBytePix(ElementType.INT.size()));
@@ -138,6 +162,17 @@ public abstract class RiceCompressor<T extends Buffer> implements ICompressor<T>
     public static class ShortRiceCompressor extends RiceCompressor<ShortBuffer> {
 
         private ShortBuffer pixelBuffer;
+
+        /**
+         * Rice compression of 16-bit integer streams with the default block size of 32.
+         * 
+         * @since  1.19.1
+         * 
+         * @author Attila Kovacs
+         */
+        public ShortRiceCompressor() {
+            this(new RiceCompressOption());
+        }
 
         public ShortRiceCompressor(RiceCompressOption option) {
             super(option.setDefaultBytePix(ElementType.SHORT.size()));

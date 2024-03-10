@@ -101,6 +101,7 @@ public class CompressedImageData extends BinaryTable {
      */
     @SuppressWarnings("javadoc")
     protected void compress(CompressedImageHDU hdu) throws FitsException {
+        discardVLAs();
         tiledImageOperation().compress(hdu);
     }
 

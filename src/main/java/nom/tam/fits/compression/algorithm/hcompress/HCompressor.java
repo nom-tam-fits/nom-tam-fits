@@ -53,6 +53,17 @@ public abstract class HCompressor<T extends Buffer> implements ICompressor<T> {
 
         private static final long BYTE_MASK_FOR_LONG = 0xFFL;
 
+        /**
+         * HCompress of byte streams with the default scale parameter of 0 and no smoothing (lossless compression).
+         * 
+         * @since  1.19.1
+         * 
+         * @author Attila Kovacs
+         */
+        public ByteHCompressor() {
+            this(new HCompressorOption());
+        }
+
         public ByteHCompressor(HCompressorOption options) {
             super(options);
         }
@@ -81,20 +92,34 @@ public abstract class HCompressor<T extends Buffer> implements ICompressor<T> {
     }
 
     public static class DoubleHCompressor extends DoubleQuantCompressor {
+
         @SuppressWarnings("deprecation")
         public DoubleHCompressor(HCompressorQuantizeOption options) {
-            super(options, new IntHCompressor(options.getHCompressorOption()));
+            super(options, new IntHCompressor((HCompressorOption) options.getCompressOption()));
         }
     }
 
     public static class FloatHCompressor extends FloatQuantCompressor {
+
         @SuppressWarnings("deprecation")
         public FloatHCompressor(HCompressorQuantizeOption options) {
-            super(options, new IntHCompressor(options.getHCompressorOption()));
+            super(options, new IntHCompressor((HCompressorOption) options.getCompressOption()));
         }
     }
 
     public static class IntHCompressor extends HCompressor<IntBuffer> {
+
+        /**
+         * HCompress of 32-bit integer streams with the default scale parameter of 0 and no smoothing for lossless
+         * compression.
+         * 
+         * @since  1.19.1
+         * 
+         * @author Attila Kovacs
+         */
+        public IntHCompressor() {
+            this(new HCompressorOption());
+        }
 
         public IntHCompressor(HCompressorOption options) {
             super(options);
@@ -122,6 +147,17 @@ public abstract class HCompressor<T extends Buffer> implements ICompressor<T> {
     }
 
     public static class ShortHCompressor extends HCompressor<ShortBuffer> {
+
+        /**
+         * HCompress of 16-bit integer streams with the default scale parameter of 0 (lossless compression).
+         * 
+         * @since  1.19.1
+         * 
+         * @author Attila Kovacs
+         */
+        public ShortHCompressor() {
+            this(new HCompressorOption());
+        }
 
         public ShortHCompressor(HCompressorOption options) {
             super(options);

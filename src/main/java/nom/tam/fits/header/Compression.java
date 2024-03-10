@@ -200,6 +200,13 @@ public enum Compression implements IFitsHeader {
     ZBLANK(VALUE.INTEGER, ""),
 
     /**
+     * Stores the original heap offset of the uncompressed heap.
+     * 
+     * @since 1.19.1
+     */
+    ZTHEAP(VALUE.INTEGER, "", Standard.THEAP),
+
+    /**
      * The value field of this keyword shall contain an integer representing the number of rows of data from the
      * original binary table that are contained in each tile of the compressed table. The number of rows in the last
      * tile may be less than in the previous tiles. Note that if the entire table is compressed as a single tile, then
