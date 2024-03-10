@@ -1,7 +1,9 @@
 package nom.tam.image.compression.hdu;
 
 import java.util.ArrayList;
+import java.util.Arrays;
 import java.util.List;
+import java.util.Locale;
 
 import nom.tam.fits.BinaryTable;
 import nom.tam.fits.FitsException;
@@ -58,6 +60,9 @@ import static nom.tam.image.compression.bintable.BinaryTableTileDescription.tile
 @SuppressWarnings("deprecation")
 public class CompressedTableData extends BinaryTable {
 
+    private static final List<String> ALLOWED_ALGORITHMS = Arrays.asList(Compression.ZCMPTYPE_GZIP_1,
+            Compression.ZCMPTYPE_GZIP_2, Compression.ZCMPTYPE_RICE_1, Compression.ZCMPTYPE_NOCOMPRESS);
+
     private int rowsPerTile;
 
     private List<BinaryTableTile> tiles;
@@ -105,7 +110,6 @@ public class CompressedTableData extends BinaryTable {
         }
 
         // tiles = null;
-        fillHeader(header);
     }
 
     @Override
@@ -116,6 +120,7 @@ public class CompressedTableData extends BinaryTable {
     @Override
     public void fillHeader(Header h) throws FitsException {
         super.fillHeader(h);
+
         h.setNaxis(2, getData().getNRows());
         h.addValue(Compression.ZTABLE.key(), true, "this is a compressed table");
         long ztilelenValue = getRowsPerTile() > 0 ? getRowsPerTile() : h.getIntValue(Standard.NAXIS2);
@@ -193,6 +198,7 @@ public class CompressedTableData extends BinaryTable {
         int ncols = compressedHeader.getIntValue(TFIELDS);
         int tileSize = compressedHeader.getIntValue(Compression.ZTILELEN, nrows);
 
+        ensureData();
         setColumnCompressionAlgorithms(compressedHeader);
 
         BinaryTable.createColumnDataFor(toTable);
@@ -305,6 +311,12 @@ public class CompressedTableData extends BinaryTable {
      */
     @SuppressWarnings("javadoc")
     protected void setColumnCompressionAlgorithms(String[] columnCompressionAlgorithms) {
+        for (String algo : columnCompressionAlgorithms) {
+            if (!ALLOWED_ALGORITHMS.contains(algo.toUpperCase(Locale.US))) {
+                throw new IllegalArgumentException(algo + " cannot be used to compress tables.");
+            }
+        }
+
         this.colAlgorithm = columnCompressionAlgorithms;
     }
 

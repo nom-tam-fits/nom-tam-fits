@@ -1481,14 +1481,16 @@ public class BinaryTable extends AbstractTableData implements Cloneable {
      * 
      * @since                1.18
      */
-    public BinaryTable copy() throws FitsException {
+    public synchronized BinaryTable copy() throws FitsException {
         BinaryTable copy = clone();
 
         if (table != null) {
             copy.table = table.copy();
         }
         if (heap != null) {
-            copy.heap = heap.copy();
+            synchronized (copy) {
+                copy.heap = heap.copy();
+            }
         }
 
         copy.columns = new ArrayList<>();
@@ -1506,7 +1508,7 @@ public class BinaryTable extends AbstractTableData implements Cloneable {
      * 
      * @since 1.19.1
      */
-    protected void discardVLAs() {
+    protected synchronized void discardVLAs() {
         for (int col = 0; col < columns.size(); col++) {
             ColumnDesc c = columns.get(col);
 
@@ -2231,7 +2233,7 @@ public class BinaryTable extends AbstractTableData implements Cloneable {
     /**
      * @return the size of the heap -- including the offset from the end of the table data.
      */
-    int getHeapSize() {
+    synchronized int getHeapSize() {
         return heapOffset + (heap == null ? heapSize : heap.size());
     }
 
@@ -3553,7 +3555,6 @@ public class BinaryTable extends AbstractTableData implements Cloneable {
     @SuppressWarnings("resource")
     private synchronized FitsHeap getHeap() throws FitsException {
         if (heap == null) {
-            heap = new FitsHeap(heapSize);
             readHeap(getRandomAccessInput());
         }
         return heap;
@@ -3583,7 +3584,7 @@ public class BinaryTable extends AbstractTableData implements Cloneable {
      * 
      * @deprecated               (<i>for internal use</i>) unused.
      */
-    protected void readHeap(ArrayDataInput input) throws FitsException {
+    protected synchronized void readHeap(ArrayDataInput input) throws FitsException {
         if (input instanceof RandomAccess) {
             FitsUtil.reposition(input, getFileOffset() + getRegularTableSize() + heapOffset);
         }
@@ -3600,15 +3601,13 @@ public class BinaryTable extends AbstractTableData implements Cloneable {
      *
      * @throws FitsException if the reading failed
      */
-    protected void readTrueData(ArrayDataInput i) throws FitsException {
+    protected synchronized void readTrueData(ArrayDataInput i) throws FitsException {
         try {
             table.read(i);
             i.skipAllBytes((long) heapOffset);
             if (heap == null) {
-                heap = new FitsHeap(heapSize);
-                heap.read(i);
+                readHeap(i);
             }
-
         } catch (IOException e) {
             throw new FitsException("Error reading binary table data:" + e, e);
         }
@@ -3797,7 +3796,7 @@ public class BinaryTable extends AbstractTableData implements Cloneable {
      * @since  1.19.1
      */
     public final boolean containsHeap() {
-        return heap.size() > 0;
+        return getHeapSize() > 0;
     }
 
     /**

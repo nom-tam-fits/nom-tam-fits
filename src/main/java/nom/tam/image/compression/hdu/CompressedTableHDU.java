@@ -1,9 +1,5 @@
 package nom.tam.image.compression.hdu;
 
-import java.util.Arrays;
-import java.util.List;
-import java.util.Locale;
-
 import nom.tam.fits.BinaryTable;
 import nom.tam.fits.BinaryTableHDU;
 import nom.tam.fits.FitsException;
@@ -103,9 +99,6 @@ import static nom.tam.fits.header.Compression.ZTABLE;
 @SuppressWarnings("deprecation")
 public class CompressedTableHDU extends BinaryTableHDU {
 
-    private static final List<String> ALLOWED_ALGORITHMS = Arrays.asList(Compression.ZCMPTYPE_GZIP_1,
-            Compression.ZCMPTYPE_GZIP_2, Compression.ZCMPTYPE_RICE_1, Compression.ZCMPTYPE_NOCOMPRESS);
-
     private static boolean reversedVLAIndices = false;
 
     /**
@@ -190,12 +183,6 @@ public class CompressedTableHDU extends BinaryTableHDU {
      */
     public static CompressedTableHDU fromBinaryTableHDU(BinaryTableHDU binaryTableHDU, int tileRows,
             String... columnCompressionAlgorithms) throws FitsException {
-
-        for (String algo : columnCompressionAlgorithms) {
-            if (!ALLOWED_ALGORITHMS.contains(algo.toUpperCase(Locale.US))) {
-                throw new IllegalArgumentException(algo + " cannot be used to compress tables.");
-            }
-        }
 
         Header header = new Header();
         CompressedTableData compressedData = new CompressedTableData();

@@ -76,18 +76,18 @@ public class BinaryTableTileDecompressor extends BinaryTableTile {
 
     private void decompressVariable() throws IOException {
         int nRows = rowEnd - rowStart;
+        boolean longPointers = orig.getDescriptor(targetColumn).hasLongPointers();
 
         // Uncompress the adjoint heap pointer data stored in the compressed table using GZIP_1
         ByteBuffer pdata = ByteBuffer.wrap((byte[]) compressed.getElement(getTileIndex(), column));
-        ByteBuffer pointers = ByteBuffer.wrap(new byte[(2 * nRows) * (2 * Long.BYTES)]);
+        ByteBuffer pointers = ByteBuffer
+                .allocateDirect((2 * nRows) * (Long.BYTES + (longPointers ? Long.BYTES : Integer.BYTES)));
 
         getGZipCompressorControl().decompress(pdata, pointers, null);
-        long[][] cdesc = new long[nRows][2];
-
-        boolean longPointers = orig.getDescriptor(targetColumn).hasLongPointers();
-        Object p = longPointers ? new long[nRows][2] : new int[nRows][2];
-
         pointers.flip();
+
+        long[][] cdesc = new long[nRows][2];
+        Object p = longPointers ? new long[nRows][2] : new int[nRows][2];
 
         try (FitsInputStream ips = new FitsInputStream(new ByteBufferInputStream(pointers))) {
             if (CompressedTableHDU.isReversedVLAIndices()) {
@@ -107,53 +107,55 @@ public class BinaryTableTileDecompressor extends BinaryTableTile {
 
         // Save the original pointers for the compressed tile
         final Object bak = compressed.getData().getElement(getTileIndex(), column);
-        ElementType<?> dataType = ElementType.forClass(orig.getDescriptor(column).getElementClass());
 
-        ICompressorControl compressor = getCompressorControl(dataType.primitiveClass());
+        try {
+            ElementType<?> dataType = ElementType.forClass(orig.getDescriptor(column).getElementClass());
 
-        for (int r = 0; r < nRows; r++) {
-            long csize = cdesc[r][0];
-            long coffset = cdesc[r][1];
+            ICompressorControl compressor = getCompressorControl(dataType.primitiveClass());
 
-            if (csize < 0 || csize > Integer.MAX_VALUE || coffset < 0 || coffset > Integer.MAX_VALUE) {
-                throw new FitsException(
-                        "Illegal or unsupported compressed heap pointer (offset=" + coffset + ", size=" + csize);
+            for (int r = 0; r < nRows; r++) {
+                long csize = cdesc[r][0];
+                long coffset = cdesc[r][1];
+
+                if (csize < 0 || csize > Integer.MAX_VALUE || coffset < 0 || coffset > Integer.MAX_VALUE) {
+                    throw new FitsException(
+                            "Illegal or unsupported compressed heap pointer (offset=" + coffset + ", size=" + csize);
+                }
+
+                long dcount = longPointers ? ((long[][]) p)[r][0] : ((int[][]) p)[r][0];
+                long doffset = longPointers ? ((long[][]) p)[r][1] : ((int[][]) p)[r][1];
+
+                if (dcount < 0 || dcount > Integer.MAX_VALUE || doffset < 0 || doffset > Integer.MAX_VALUE) {
+                    throw new FitsException(
+                            "Illegal or unsupported uncompressed heap pointer (offset=" + doffset + ", size=" + dcount);
+                }
+
+                // Temporarily replace the heap pointers in the compressed table with the pointers to the compressed row
+                // entry
+                Object temp = bak instanceof long[] ? new long[] {csize, coffset} : new int[] {(int) csize, (int) coffset};
+                compressed.getData().setElement(getTileIndex(), column, temp);
+
+                // Decompress the row entry, and write it to its original location on the heap
+                ByteBuffer zip = ByteBuffer.wrap((byte[]) compressed.getElement(getTileIndex(), column));
+                Buffer buf = dataType.newBuffer(dcount);
+                compressor.decompress(zip, buf, null);
+                buf.flip();
+
+                // Restore the heap pointer in the uncompressed table
+                data.setElement(rowStart + r, targetColumn, longPointers ? ((long[][]) p)[r] : ((int[][]) p)[r]);
+
+                // Restore the uncompressed entry in the original heap location
+                orig.setElement(rowStart + r, targetColumn, buf.array());
             }
-
-            long dcount = longPointers ? ((long[][]) p)[r][0] : ((int[][]) p)[r][0];
-            long doffset = longPointers ? ((long[][]) p)[r][1] : ((int[][]) p)[r][1];
-
-            if (dcount < 0 || dcount > Integer.MAX_VALUE || doffset < 0 || doffset > Integer.MAX_VALUE) {
-                throw new FitsException(
-                        "Illegal or unsupported uncompressed heap pointer (offset=" + doffset + ", size=" + dcount);
-            }
-
-            // Temporarily replace the heap pointers in the compressed table with the pointers to the compressed row
-            // entry
-            Object temp = bak instanceof long[] ? new long[] {csize, coffset} : new int[] {(int) csize, (int) coffset};
-            compressed.getData().setElement(getTileIndex(), column, temp);
-
-            // Decompress the row entry, and write it to its original location on the heap
-            ByteBuffer zip = ByteBuffer.wrap((byte[]) compressed.getElement(getTileIndex(), column));
-            Buffer buf = dataType.newBuffer(dcount);
-            compressor.decompress(zip, buf, null);
-
-            buf.flip();
-
-            // Restore the heap pointer in the uncompressed table
-            data.setElement(rowStart + r, targetColumn, longPointers ? ((long[][]) p)[r] : ((int[][]) p)[r]);
-
-            // Restore the uncompressed entry in the original heap location
-            orig.setElement(rowStart + r, targetColumn, buf.array());
+        } finally {
+            // Restore the original pointers for the compressed tile.
+            compressed.getData().setElement(getTileIndex(), column, bak);
         }
-
-        // Restore the original pointers for the compressed tile.
-        compressed.getData().setElement(getTileIndex(), column, bak);
     }
 
     private void decompressTableTile() throws IOException {
         ByteBuffer zip = ByteBuffer.wrap((byte[]) compressed.getElement(getTileIndex(), column));
-        ByteBuffer buf = ByteBuffer.wrap(new byte[getUncompressedSizeInBytes()]);
+        ByteBuffer buf = ByteBuffer.allocateDirect(getUncompressedSizeInBytes());
 
         getCompressorControl().decompress(zip, type.asTypedBuffer(buf), null);
         buf.rewind();

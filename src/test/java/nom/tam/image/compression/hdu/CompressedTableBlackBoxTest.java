@@ -57,12 +57,8 @@ public class CompressedTableBlackBoxTest {
 
     private void compressThenUncompressTableAndAssert(String originalFileName) throws FitsException, IOException {
         String tableOrgFile = BlackBoxImages.getBlackBoxImage(originalFileName);
-        String compressedfileName;
 
         File file = new File("target/" + originalFileName + ".fz");
-        if (file.exists()) {
-            file.delete();
-        }
         file.getParentFile().mkdirs();
 
         try (Fits fitsCompressed = new Fits(); Fits fitsOrg = new Fits(tableOrgFile)) {
@@ -71,10 +67,11 @@ public class CompressedTableBlackBoxTest {
                             .compress());
 
             fitsCompressed.write(file);
-            compressedfileName = file.getAbsolutePath();
+            fitsCompressed.close();
+            fitsOrg.close();
         }
 
-        uncompressTableAndAssert(compressedfileName, originalFileName);
+        uncompressTableAndAssert(file.getAbsolutePath(), originalFileName);
     }
 
     private void uncompressTableAndAssert(String compressedfileName, String originalFileName)
@@ -99,6 +96,8 @@ public class CompressedTableBlackBoxTest {
             BinaryTableHDU orgTable = compressedTable.asBinaryTableHDU();
 
             assertEquals(orgTable, uncompressedTable);
+
+            fitsOrg.close();
         } finally {
             SafeClose.close(fitsComp);
             SafeClose.close(fitsOrg);
@@ -166,7 +165,8 @@ public class CompressedTableBlackBoxTest {
     }
 
     @Test
-    public void testCompressAndUncompress_dddtsuvdata() {
+    public void testCompressAndUncompress_dddtsuvdata() throws FitsException, IOException {
+        compressThenUncompressTableAndAssert("bintable/dddtsuvdata.fits");
     }
 
     @Test

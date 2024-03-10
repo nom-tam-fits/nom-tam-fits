@@ -101,13 +101,13 @@ public class BinaryTableTileCompressor extends BinaryTableTile {
 
         // give the compression 10% more space and a minimum of 1024 bytes
         int need = getCushion(getUncompressedSizeInBytes(), NORMAL_OVERHEAD);
-        ByteBuffer cbuf = ByteBuffer.wrap(new byte[need]);
+        ByteBuffer cbuf = ByteBuffer.allocateDirect(need);
 
         Buffer tb = t.asTypedBuffer(buffer);
 
         if (!compressor.compress(tb, cbuf, null)) {
             // very bad case lets try again with 50% more space
-            cbuf = ByteBuffer.wrap(new byte[getCushion(getUncompressedSizeInBytes(), LARGE_OVERHEAD)]);
+            cbuf = ByteBuffer.allocateDirect(getCushion(getUncompressedSizeInBytes(), LARGE_OVERHEAD));
             tb.rewind();
             if (!compressor.compress(tb, cbuf, null)) {
                 throw new IllegalStateException("could not compress the tile with the requested algorithm!");
@@ -126,7 +126,7 @@ public class BinaryTableTileCompressor extends BinaryTableTile {
     private void compressRegular() throws IOException {
         compressedBytes = new byte[1][];
 
-        ByteBuffer buffer = ByteBuffer.wrap(new byte[getUncompressedSizeInBytes()]);
+        ByteBuffer buffer = ByteBuffer.allocateDirect(getUncompressedSizeInBytes());
         try (FitsOutputStream os = new FitsOutputStream(new ByteBufferOutputStream(buffer))) {
             data.write(os, rowStart, rowEnd, column);
         }
@@ -167,7 +167,7 @@ public class BinaryTableTileCompressor extends BinaryTableTile {
         }
 
         // Buffer for the original data chunks to compress
-        ByteBuffer buffer = ByteBuffer.wrap(new byte[(int) max]);
+        ByteBuffer buffer = ByteBuffer.allocateDirect((int) max);
         ElementType<?> dataType = ElementType.forClass(orig.getDescriptor(column).getElementClass());
 
         ICompressorControl compressor = getCompressorControl(dataType.primitiveClass());
