@@ -199,7 +199,7 @@ public class CompressedTableData extends BinaryTable {
         int ncols = compressedHeader.getIntValue(TFIELDS);
         int tileSize = compressedHeader.getIntValue(Compression.ZTILELEN, nrows);
 
-        // ensureData();
+        ensureData();
         setColumnCompressionAlgorithms(compressedHeader);
 
         BinaryTable.createColumnDataFor(toTable);
