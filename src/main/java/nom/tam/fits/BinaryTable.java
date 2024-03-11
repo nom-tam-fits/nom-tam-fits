@@ -58,6 +58,9 @@ import nom.tam.util.ReadWriteAccess;
 import nom.tam.util.TableException;
 import nom.tam.util.type.ElementType;
 
+import static nom.tam.fits.header.Standard.PCOUNT;
+import static nom.tam.fits.header.Standard.THEAP;
+
 import edu.umd.cs.findbugs.annotations.SuppressFBWarnings;
 
 /**
@@ -1225,9 +1228,9 @@ public class BinaryTable extends AbstractTableData implements Cloneable {
     private FitsHeap heap;
 
     /**
-     * The heap start from the end of the main table
+     * The heap start from the head of the HDU
      */
-    private int heapOffset;
+    private long heapAddress;
 
     /**
      * The heap size (from the header)
@@ -1334,15 +1337,13 @@ public class BinaryTable extends AbstractTableData implements Cloneable {
         }
 
         nRow = header.getIntValue(Standard.NAXIS2);
-        int tableSize = nRow * header.getIntValue(Standard.NAXIS1);
-
+        long tableSize = nRow * header.getLongValue(Standard.NAXIS1);
         long paramSizeL = header.getLongValue(Standard.PCOUNT);
         long heapOffsetL = header.getLongValue(Standard.THEAP, tableSize);
 
         // Subtract out the size of the regular table from
         // the heap offset.
-        heapOffsetL -= tableSize;
-        long heapSizeL = paramSizeL - heapOffsetL;
+        long heapSizeL = (tableSize + paramSizeL) - heapOffsetL;
 
         if (heapSizeL < 0) {
             throw new FitsException("Inconsistent THEAP and PCOUNT");
@@ -1352,10 +1353,10 @@ public class BinaryTable extends AbstractTableData implements Cloneable {
         }
         if (heapSizeL == 0L) {
             // There is no heap. Forget the offset
-            heapOffset = 0;
+            heapAddress = 0;
         }
 
-        heapOffset = (int) heapOffsetL;
+        heapAddress = (int) heapOffsetL;
         heapSize = (int) heapSizeL;
 
         int nCol = header.getIntValue(Standard.TFIELDS);
@@ -2222,19 +2223,29 @@ public class BinaryTable extends AbstractTableData implements Cloneable {
     }
 
     /**
+     * Returns the address of the heap from the star of the HDU in the file.
+     * 
+     * @return (bytes) the start of the heap area from the beginning of the HDU.
+     */
+    final long getHeapAddress() {
+        long tableSize = getRegularTableSize();
+        return heapAddress > tableSize ? heapAddress : tableSize;
+    }
+
+    /**
      * Returns the offset from the end of the main table
      * 
      * @return the offset to the heap
      */
-    int getHeapOffset() {
-        return heapOffset;
+    final long getHeapOffset() {
+        return getHeapAddress() - getRegularTableSize();
     }
 
     /**
-     * @return the size of the heap -- including the offset from the end of the table data.
+     * @return the size of the heap -- including the offset from the end of the table data, and reserved space after.
      */
-    synchronized int getHeapSize() {
-        return heapOffset + (heap == null ? heapSize : heap.size());
+    synchronized long getParameterSize() {
+        return getHeapOffset() + (heap == null ? heapSize : heap.size());
     }
 
     /**
@@ -2659,7 +2670,7 @@ public class BinaryTable extends AbstractTableData implements Cloneable {
 
     @Override
     protected long getTrueSize() {
-        return getRegularTableSize() + heapOffset + getHeapSize();
+        return getRegularTableSize() + getParameterSize();
     }
 
     /**
@@ -3082,10 +3093,11 @@ public class BinaryTable extends AbstractTableData implements Cloneable {
             }
 
             // Now check if we need to write the heap
-            if (getHeapSize() > 0) {
-                if (heapOffset > 0) {
-                    FitsUtil.addPadding((long) heapOffset);
+            if (getParameterSize() > 0) {
+                if (getHeapOffset() > 0) {
+                    FitsUtil.addPadding(getHeapOffset());
                 }
+
                 getHeap().write(os);
             }
 
@@ -3584,7 +3596,7 @@ public class BinaryTable extends AbstractTableData implements Cloneable {
      */
     protected synchronized void readHeap(ArrayDataInput input) throws FitsException {
         if (input instanceof RandomAccess) {
-            FitsUtil.reposition(input, getFileOffset() + getRegularTableSize() + heapOffset);
+            FitsUtil.reposition(input, getFileOffset() + getHeapAddress());
         }
         heap = new FitsHeap(heapSize);
         if (input != null) {
@@ -3602,7 +3614,7 @@ public class BinaryTable extends AbstractTableData implements Cloneable {
     protected synchronized void readTrueData(ArrayDataInput i) throws FitsException {
         try {
             table.read(i);
-            i.skipAllBytes((long) heapOffset);
+            i.skipAllBytes(getHeapOffset());
             if (heap == null) {
                 readHeap(i);
             }
@@ -3638,6 +3650,19 @@ public class BinaryTable extends AbstractTableData implements Cloneable {
      */
     @Override
     public void fillHeader(Header h) throws FitsException {
+        fillHeader(h, true);
+    }
+
+    /**
+     * Fills (updates) the essential header description of this table in the header, optionally updating the essential
+     * column descriptions also if desired.
+     * 
+     * @param  h             The FITS header to populate
+     * @param  updateColumns Whether to update the essential column descriptions also
+     * 
+     * @throws FitsException if there was an error accessing the header.
+     */
+    void fillHeader(Header h, boolean updateColumns) throws FitsException {
         h.deleteKey(Standard.SIMPLE);
         h.deleteKey(Standard.EXTEND);
 
@@ -3649,12 +3674,26 @@ public class BinaryTable extends AbstractTableData implements Cloneable {
         c.add(HeaderCard.create(Standard.NAXIS, 2));
         c.add(HeaderCard.create(Standard.NAXIS1, rowLen));
         c.add(HeaderCard.create(Standard.NAXIS2, nRow));
-        c.add(HeaderCard.create(Standard.PCOUNT, getHeapSize()));
+
+        int oldSize = h.getIntValue(PCOUNT);
+        if (oldSize < getParameterSize()) {
+            c.add(HeaderCard.create(PCOUNT, getParameterSize()));
+        }
+
         c.add(HeaderCard.create(Standard.GCOUNT, 1));
         c.add(HeaderCard.create(Standard.TFIELDS, columns.size()));
 
-        for (int i = 0; i < columns.size(); i++) {
-            fillForColumn(c, i);
+        if (h.getIntValue(PCOUNT) == 0 || getHeapOffset() == 0) {
+            h.deleteKey(THEAP);
+        } else {
+            c.add(HeaderCard.create(THEAP, getRegularTableSize() + getHeapOffset()));
+        }
+
+        if (updateColumns) {
+            for (int i = 0; i < columns.size(); i++) {
+                c.setKey(Standard.TFORMn.n(i + 1).key());
+                fillForColumn(c, i);
+            }
         }
 
         Standard.context(null);
@@ -3794,7 +3833,7 @@ public class BinaryTable extends AbstractTableData implements Cloneable {
      * @since  1.19.1
      */
     public final boolean containsHeap() {
-        return getHeapSize() > 0;
+        return getParameterSize() > 0;
     }
 
     /**

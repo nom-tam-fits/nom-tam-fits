@@ -42,12 +42,10 @@ import nom.tam.util.Cursor;
 
 import static nom.tam.fits.header.Standard.NAXIS1;
 import static nom.tam.fits.header.Standard.NAXIS2;
-import static nom.tam.fits.header.Standard.PCOUNT;
 import static nom.tam.fits.header.Standard.TDIMn;
 import static nom.tam.fits.header.Standard.TDISPn;
 import static nom.tam.fits.header.Standard.TFIELDS;
 import static nom.tam.fits.header.Standard.TFORMn;
-import static nom.tam.fits.header.Standard.THEAP;
 import static nom.tam.fits.header.Standard.TNULLn;
 import static nom.tam.fits.header.Standard.TSCALn;
 import static nom.tam.fits.header.Standard.TTYPEn;
@@ -248,7 +246,7 @@ public class BinaryTableHDU extends TableHDU<BinaryTable> {
         stream.println("      Data Information:");
         stream.println("          Number of rows=" + myData.getNRows());
         stream.println("          Number of columns=" + myData.getNCols());
-        stream.println("          Heap size is: " + myData.getHeapSize() + " bytes");
+        stream.println("          Heap size is: " + myData.getParameterSize() + " bytes");
 
         Object[] cols = myData.getFlatColumns();
         for (int i = 0; i < cols.length; i++) {
@@ -349,20 +347,7 @@ public class BinaryTableHDU extends TableHDU<BinaryTable> {
     // Need to tell header about the Heap before writing.
     @Override
     public void write(ArrayDataOutput out) throws FitsException {
-
-        int oldSize = myHeader.getIntValue(PCOUNT);
-        if (oldSize != myData.getHeapSize()) {
-            myHeader.addValue(PCOUNT, myData.getHeapSize());
-        }
-
-        if (myHeader.getIntValue(PCOUNT) == 0 || myData.getHeapOffset() == 0) {
-            myHeader.deleteKey(THEAP);
-        } else {
-            myHeader.findCard(TFIELDS);
-            int offset = myHeader.getIntValue(NAXIS1) * myHeader.getIntValue(NAXIS2) + myData.getHeapOffset();
-            myHeader.addValue(THEAP, offset);
-        }
-
+        myData.fillHeader(myHeader, false);
         super.write(out);
     }
 }
