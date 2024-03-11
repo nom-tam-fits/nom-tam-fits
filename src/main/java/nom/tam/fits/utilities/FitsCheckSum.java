@@ -438,7 +438,7 @@ public final class FitsCheckSum {
             final int byt = MASK_BYTE & (sum >>> SELECT_BYTE[i]);
 
             Arrays.fill(ch, (byte) ((byt >>> 2) + ASCII_ZERO)); // quotient
-            ch[0] += byt & CHECKSUM_BLOCK_MASK; // remainder
+            ch[0] += (byte) (byt & CHECKSUM_BLOCK_MASK); // remainder
 
             for (int j = 0; j < CHECKSUM_BLOCK_SIZE; j += 2) {
                 while (EXCLUDE.indexOf(ch[j]) >= 0 || EXCLUDE.indexOf(ch[j + 1]) >= 0) {
