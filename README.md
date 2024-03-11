@@ -1747,19 +1747,22 @@ class to decompress only the selected image area. As of version __1.18__, this i
 <a name="table-compression"></a>
 ### Table compression
 
-Table compression is also supported in nom-tam-fits from version __1.15__, and more completely since
-__1.18__. When compressing a table, the 'tiles' are sets of contiguous rows within a column. The compression 
-algorithms are the same as the ones provided for image compression. Default compression is `GZIP_2`. 
-(In principle, every column could use a different algorithm.)
+Table compression is also supported in nom-tam-fits from version __1.15__, and more completely since __1.19.1__. When 
+compressing a table, the 'tiles' are sets of contiguous rows within a column. The compression algorithms are the same 
+as the ones provided for image compression. Default compression is `GZIP_2`, which will be used for all columns, 
+unless explicitly defined otherwise. (In principle, very column could use a different algorithm.). As for FITS version
+4.0 only lossless compression is supported for tables, and hence only `GZIP_1`, `GZIP_2` (default), `RICE_1` (with
+default options), and `NOCOMPRESS` are admissible.
 
 Tile compression mimics image compression, and is typically a 2-step process:
 
  1. Create a `CompressedTableHDU`, e.g. with `fromBinaryTableHDU(BinaryTableHDU, int, String...)`, using the 
-    specified number of table rows per compressed block, and compression algorithm(s):
+    specified number of table rows per compressed block, and compression algorithm(s), e.g. `RICE_1` for the
+    first column, and `GZIP_2` for the rest:
  
 ```java
    BinaryTableHDU table = ...
-   CompressedTableHDU compressed = CompressedTableHDU.fromBinaryTableHDU(table, 4, Compression.GZIP_2);
+   CompressedTableHDU compressed = CompressedTableHDU.fromBinaryTableHDU(table, 4, Compression.RICE_1);
 ```
  
  2. Perform the compression via `compress()`:
@@ -1773,7 +1776,7 @@ The two step process (as opposed to a single-step one) was probably chosen becau
 steps into a single line:
 
 ```java
-   CompressedTableHDU compressed = CompressedTableHDU.fromBinaryTableHDU(table, 4, Compression.GZIP_2).compress();
+   CompressedTableHDU compressed = CompressedTableHDU.fromBinaryTableHDU(table, 4, Compression.RICE_1).compress();
 ```
 
 After the compression, the compressed table HDU can be handled just like any other HDU, and written to a file or 
@@ -1786,9 +1789,35 @@ The reverse process is simply via the `asBinaryTableHDU()` method. E.g.:
     BinaryTableHDU table = compressed.asBinaryTableHDU();
 ```
 
+#### Note on compressing variable-length arrays (VLAs)
+
+The compression of variable-length table columns is a fair bit more involved process than that for fixed-sized table 
+entries, and we only added proper support for it in __1.19.1__. When compressing/decompressing tables containing VLAs, 
+you should be aware of some potentially severe pitfalls. 
+
+ 1. VLA table compression is not widely supported by tools.
+
+ 2. Second, the [(C)FITSIO](https://heasarc.gsfc.nasa.gov/fitsio/) implementation diverges from the documented 
+ standard (FITS 4.0 and the original Pence et al. 2013 convention) by storing the adjoint desciptors in reversed order, 
+ w.r.t. the standard, on the heap. Our understanding is that this discrepacy will be resolved by changing the 
+ documentation (the standard) to conform to the (C)FITSIO implementation. Therefore, our implementation for the 
+ compression of VLAs is compliant to that of (C)FITSIO, and not to the current wording of the standard.
+ 
+ 3. (C)FITSIO and its `fpack` tool do not properly handle the `THEAP` keyword (if present), at least as of version 
+ 4.4.0. Therefore, we will skip adding `THEAP` to the table headers when not necessary (that is when the heap follows 
+ immediately after the main table), in order to provide better interoperability with (C)FITSIO and `fpack`.
+
+However, we recognize that some compressed FITS files may have been produced with tools, which implemented the
+current standard as described. We wish to provide support for reading these also. Therefore, we provide the 
+`static` `CompressedTableHDU.useReversedVLAIndices(boolean)` method to select the convention of storing the adjoint 
+table descriptors in either the (C)FITSIO format (`false`; default), or else the original FITS 4.0 / Pence+2013 
+format (`true`).
+
+
 #### Accessing image header values without decompressing
 
-You don't need to decompress the table to see what the decompressed table header is. You can simply call `CompressedTableHDU.getTableHeader()` to peek into the reconstructed header of the original table before it was 
+You don't need to decompress the table to see what the decompressed table header is. You can simply call 
+`CompressedTableHDU.getTableHeader()` to peek into the reconstructed header of the original table before it was 
 compressed:
 
 ```java
@@ -1856,15 +1885,15 @@ are typically available for one week only before they are superseded either by a
 
 The _nom-tam-fits_ library is a community-maintained project. We absolutely rely on developers like you to make it 
 better and to keep it going. Whether there is a nagging issue you would like to fix, or a new feature you'd like to 
-see, you can make a difference yourself. We welcome you as a contributor. More than that, we feel like you became part 
-of our community the moment you landed on this page. We very much encourange you to make this project a little bit 
-your own, by submitting pull requests with fixes and enhancement. When you are ready, here are the typical steps for 
+see, you can make a difference yourself. We welcome you as a contributor. You became part of our community the moment 
+you landed on this page. We very much encourange you to make this project a little bit your own, by submitting pull 
+requests with fixes and enhancement. When you are ready, here are the typical steps for 
 contributing to the project:
 
 1. Old or new __Issue__? Whether you just found a bug, or you are missing a much needed feature, start by checking 
 open (and closed) [Issues](https://github.com/nom-tam-fits/nom-tam-fits/issues). If an existing issue seems like a 
-good match to yours, feel free to raise your hand and comment on it, to make your voice heard, or to offer help in 
-resolving it. If you find no issues that match, go ahead and create a new one.
+good match to yours, feel free to comment on it, and/or to offer help in resolving it. If you find no issues that 
+match, go ahead and create a new one.
 
 2. __Fork__. Is it something you'd like to help resolve? Great! You should start by creating your own fork of the 
 repository so you can work freely on your solution. We also recommend that you place your work on a branch of your 
@@ -1875,7 +1904,7 @@ fork, which is named either after the issue number, e.g. `issue-192`, or some ot
 (which is why branches are great) and start anew. You can run your own test builds locally using `mvn clean test` 
 before committing your changes. If the tests pass, you should also try running `mvn clean package` and 
 `mvn site stage` to ensure that the package and javadoc are also in order. Remember to synchronize your `master` 
-branch by fetching changes from upstream every once in a while, and merging them into your development branch. Don't 
+branch by fetching changes from upstream every once in a while, and rebasing your development branch. Don't 
 forget to:
 
    - Add __Javadoc__ your new code. You can keep it sweet and simple, but make sure it properly explains your methods, 
@@ -1892,7 +1921,7 @@ forget to:
 
 4. __Pull Request__. Once you feel your work can be integrated, create a pull request from your fork/branch. You can 
 do that easily from the github page of your fork/branch directly. In the pull request, provide a concise description 
-of what you added or changed. Your pull request will be reviwed. You may get some feedback at this point, and maybe 
+of what you added or changed. Your pull request will be reviewed. You may get some feedback at this point, and maybe 
 there will be discussions about possible improvements or regressions etc. It's a good thing too, and your changes will 
 likely end up with added polish as a result. You can be all the more proud of it in the end!
 
