@@ -1,9 +1,15 @@
 <document xmlns="http://maven.apache.org/changes/1.0.0" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:schemaLocation="http://maven.apache.org/changes/1.0.0 http://maven.apache.org/xsd/changes-1.0.0.xsd">
 <body>
 
-   <release version="1.19.1-SNAPSHOT" date="2024-02-18" description="Upcoming bug fix release.">
+   <release version="1.19.1-SNAPSHOT" date="2024-03-11" description="Upcoming bug fix release.">
+      <action type="fix" dev="attipaci" issue="552">
+          Fix inconsistently maintained ColumnDesc.fileSize, by replacing it with dynamic .rowLen().
+      </action>
+      <action type="fix" dev="attipaci" issue="570">
+          Fix potential narrowing conversion issues uncovered by GitHub's CodeQL.
+      </action>
       <action type="add" dev="rmathar" issue="558">
-          Find headers cards with regex pattern matching with `Header.findCards()`.          
+          Find header cards with regex pattern matching with `Header.findCards()`.          
       </action>
    </release>
 
