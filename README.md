@@ -12,7 +12,7 @@ __nom.tam.fits__ is an efficient 100% pure Java 8+ library for reading, writing,
 [FITS files](https://fits.gsfc.nasa.gov/fits_standard.html). The library owes its origins to Tom A. McGlynn 
 (hence the _nom.tam_ prefix) at NASA Goddard Space Flight Center.
 
-This document has been updated for 1.19.0 and/or later 1.x releases.
+This document has been updated for 1.19.1 and/or later 1.x releases.
 
 ## Table of Contents
 
