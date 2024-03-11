@@ -316,6 +316,7 @@ public class CompressedTableHDU extends BinaryTableHDU {
     public BinaryTableHDU asBinaryTableHDU(int fromTile, int toTile) throws FitsException, IllegalArgumentException {
         Header header = getTableHeader();
         int tileSize = getTileRows();
+        getData().setRowsPerTile(tileSize);
 
         if (fromTile < 0 || toTile > getTileCount() || toTile <= fromTile) {
             throw new IllegalArgumentException(
@@ -388,6 +389,7 @@ public class CompressedTableHDU extends BinaryTableHDU {
      * @see                             #fromBinaryTableHDU(BinaryTableHDU, int, String...)
      */
     public Object getColumnData(int col, int fromTile, int toTile) throws FitsException, IllegalArgumentException {
+        getData().setRowsPerTile(getTileRows());
         return getData().getColumnData(col, fromTile, toTile, getHeader(), getTableHeader());
     }
 

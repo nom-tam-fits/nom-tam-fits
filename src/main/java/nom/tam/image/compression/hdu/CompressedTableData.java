@@ -108,13 +108,17 @@ public class CompressedTableData extends BinaryTable {
         for (BinaryTableTile tile : tiles) {
             tile.waitForResult();
         }
-
-        // tiles = null;
     }
 
     @Override
     public synchronized long defragment() throws FitsException {
-        return containsHeap() ? 0L : super.defragment();
+        if (orig != null && orig.containsHeap()) {
+            // Don't defragment if the original had VLAs, since these are stored on the heap
+            // with a dual-set of descriptors, includeing compressed ones on the heap itself
+            // which are not trivial to de-fragment.
+            return 0L;
+        }
+        return super.defragment();
     }
 
     @Override
@@ -148,9 +152,6 @@ public class CompressedTableData extends BinaryTable {
 
         int nrows = data.getNRows();
         int ncols = data.getNCols();
-        if (getRowsPerTile() <= 0) {
-            setRowsPerTile(nrows);
-        }
 
         if (!isPrepped) {
             for (int column = 0; column < ncols; column++) {
@@ -198,7 +199,7 @@ public class CompressedTableData extends BinaryTable {
         int ncols = compressedHeader.getIntValue(TFIELDS);
         int tileSize = compressedHeader.getIntValue(Compression.ZTILELEN, nrows);
 
-        ensureData();
+        // ensureData();
         setColumnCompressionAlgorithms(compressedHeader);
 
         BinaryTable.createColumnDataFor(toTable);

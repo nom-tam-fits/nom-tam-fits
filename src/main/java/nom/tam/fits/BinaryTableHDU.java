@@ -355,10 +355,10 @@ public class BinaryTableHDU extends TableHDU<BinaryTable> {
             myHeader.addValue(PCOUNT, myData.getHeapSize());
         }
 
-        if (myHeader.getIntValue(PCOUNT) == 0) {
+        if (myHeader.getIntValue(PCOUNT) == 0 || myData.getHeapOffset() == 0) {
             myHeader.deleteKey(THEAP);
         } else {
-            myHeader.getIntValue(TFIELDS);
+            myHeader.findCard(TFIELDS);
             int offset = myHeader.getIntValue(NAXIS1) * myHeader.getIntValue(NAXIS2) + myData.getHeapOffset();
             myHeader.addValue(THEAP, offset);
         }

@@ -105,14 +105,14 @@ public class BinaryTableTileDecompressor extends BinaryTableTile {
             }
         }
 
+        ElementType<?> dataType = ElementType.forClass(orig.getDescriptor(column).getElementClass());
+
+        ICompressorControl compressor = getCompressorControl(dataType.primitiveClass());
+
         // Save the original pointers for the compressed tile
         final Object bak = compressed.getData().getElement(getTileIndex(), column);
 
         try {
-            ElementType<?> dataType = ElementType.forClass(orig.getDescriptor(column).getElementClass());
-
-            ICompressorControl compressor = getCompressorControl(dataType.primitiveClass());
-
             for (int r = 0; r < nRows; r++) {
                 long csize = cdesc[r][0];
                 long coffset = cdesc[r][1];

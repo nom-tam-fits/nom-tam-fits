@@ -2276,7 +2276,7 @@ public class BinaryTable extends AbstractTableData implements Cloneable {
      * Reads a regular table element in the main table from the input. This method should never be called unless we have
      * a random-accessible input associated, which is a requirement for deferred read mode.
      * 
-     * @param  o             The array element
+     * @param  o             The array element to populate
      * @param  c             the column descriptor
      * @param  row           the zero-based row index of the element
      * 
@@ -2287,14 +2287,12 @@ public class BinaryTable extends AbstractTableData implements Cloneable {
         @SuppressWarnings("resource")
         RandomAccess in = getRandomAccessInput();
 
-        synchronized (in) {
-            in.position(getFileOffset() + row * (long) rowLen + c.offset);
+        in.position(getFileOffset() + row * (long) rowLen + c.offset);
 
-            if (!c.isLogical()) {
-                in.readImage(o);
-            } else {
-                in.readArrayFully(o);
-            }
+        if (c.isLogical()) {
+            in.readArrayFully(o);
+        } else {
+            in.readImage(o);
         }
     }
 
