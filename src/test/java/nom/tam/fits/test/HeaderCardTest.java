@@ -68,12 +68,12 @@ public class HeaderCardTest {
     @Before
     public void before() {
         FitsFactory.setDefaults();
-        HeaderCard.setValueCheckingPolicy(HeaderCard.DEFAULT_VALUE_CHECK_POLICY);
     }
 
     @After
     public void after() {
         FitsFactory.setDefaults();
+        HeaderCard.setValueCheckingPolicy(HeaderCard.DEFAULT_VALUE_CHECK_POLICY);
         Header.setCommentAlignPosition(Header.DEFAULT_COMMENT_ALIGN);
     }
 
