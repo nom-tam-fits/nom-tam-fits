@@ -480,6 +480,36 @@ public class CompressedTableTest {
         compressedTable.asBinaryTableHDU(0, 0);
     }
 
+    @Test(expected = IllegalArgumentException.class)
+    public void testB12TableCompressIllegalAlgo() throws Exception {
+        Fits fitsUncompressed = new Fits("src/test/resources/nom/tam/table/comp/bt12.fits");
+        CompressedTableHDU.fromBinaryTableHDU((BinaryTableHDU) fitsUncompressed.getHDU(1), 0, "BLAH");
+    }
+
+    @Test
+    public void testFixedTableCompressDefragment() throws Exception {
+        BinaryTable btab = new BinaryTable();
+        btab.addColumn(BinaryTable.ColumnDesc.createForFixedArrays(int.class, 6));
+        for (int i = 0; i < 100; i++) {
+            btab.addRowEntries(new int[] {i, i + 1, i + 2, i + 3, i + 4, i + 5});
+        }
+
+        CompressedTableHDU chdu = CompressedTableHDU.fromBinaryTableHDU(btab.toHDU(), 0);
+        chdu.getData().defragment(); // No exception.
+    }
+
+    @Test
+    public void testVLACompressDefragment() throws Exception {
+        BinaryTable btab = new BinaryTable();
+        btab.addColumn(BinaryTable.ColumnDesc.createForVariableSize(int.class));
+        for (int i = 0; i < 100; i++) {
+            btab.addRowEntries(new int[] {i, i + 1, i + 2, i + 3, i + 4, i + 5});
+        }
+
+        CompressedTableHDU chdu = CompressedTableHDU.fromBinaryTableHDU(btab.toHDU(), 0);
+        Assert.assertEquals(0, chdu.getData().defragment());
+    }
+
     @Test
     public void testSetReversedVLAIndices() throws Exception {
         try {

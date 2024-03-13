@@ -81,9 +81,10 @@ public class CompressedTableBlackBoxTest {
         file.getParentFile().mkdirs();
 
         try (Fits fitsCompressed = new Fits(); Fits fitsOrg = new Fits(tableOrgFile)) {
-            fitsCompressed.addHDU(//
-                    CompressedTableHDU.fromBinaryTableHDU((BinaryTableHDU) fitsOrg.getHDU(1), 0, algos)//
-                            .compress());
+            CompressedTableHDU cHDU = CompressedTableHDU.fromBinaryTableHDU((BinaryTableHDU) fitsOrg.getHDU(1), 0, algos)//
+                    .compress();
+
+            fitsCompressed.addHDU(cHDU);
 
             fitsCompressed.write(file);
             fitsCompressed.close();

@@ -49,6 +49,7 @@ import nom.tam.fits.compression.algorithm.hcompress.HCompressor.FloatHCompressor
 import nom.tam.fits.compression.algorithm.hcompress.HCompressor.IntHCompressor;
 import nom.tam.fits.compression.algorithm.hcompress.HCompressor.ShortHCompressor;
 import nom.tam.fits.compression.algorithm.rice.RiceCompressOption;
+import nom.tam.fits.compression.provider.CompressorProvider;
 import nom.tam.fits.compression.provider.param.api.HeaderAccess;
 import nom.tam.fits.compression.provider.param.hcompress.HCompressParameters;
 import nom.tam.fits.compression.provider.param.rice.RiceCompressParameters;
@@ -562,4 +563,20 @@ public class HCompressTest {
         Assert.assertTrue(new HCompressorOption().setScale(0).setSmooth(true).isLossyCompression());
         Assert.assertTrue(new HCompressorOption().setScale(1).setSmooth(true).isLossyCompression());
     }
+
+    @Test
+    public void testByteHCompressConstructor() {
+        Assert.assertNotNull(CompressorProvider.findCompressorControl(null, Compression.ZCMPTYPE_HCOMPRESS_1, byte.class));
+    }
+
+    @Test
+    public void testShortHCompressConstructor() {
+        Assert.assertNotNull(CompressorProvider.findCompressorControl(null, Compression.ZCMPTYPE_HCOMPRESS_1, short.class));
+    }
+
+    @Test
+    public void testIntHCompressConstructor() {
+        Assert.assertNotNull(CompressorProvider.findCompressorControl(null, Compression.ZCMPTYPE_HCOMPRESS_1, int.class));
+    }
+
 }
