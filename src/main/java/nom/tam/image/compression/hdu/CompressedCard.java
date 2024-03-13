@@ -127,16 +127,7 @@ enum CompressedCard {
     MAP_ZTILELEN(ZTILELEN), MAP_ZCTYPn(ZCTYPn), MAP_ZBLOCKED(ZBLOCKED), MAP_ZCMPTYPE(ZCMPTYPE), //
     MAP_ZDATASUM(ZDATASUM), MAP_ZDITHER0(ZDITHER0), MAP_ZEXTEND(ZEXTEND), MAP_ZGCOUNT(ZGCOUNT), //
     MAP_ZHECKSUM(ZHECKSUM), MAP_ZIMAGE(ZIMAGE), MAP_ZTABLE(ZTABLE), MAP_ZNAMEn(ZNAMEn), //
-    MAP_ZNAXIS(ZNAXIS), MAP_THEAP(THEAP) {
-
-        @Override
-        protected void backupCard(HeaderCard card, Cursor<String, HeaderCard> headerIterator) throws HeaderCardException {
-        }
-
-        @Override
-        protected void restoreCard(HeaderCard card, Cursor<String, HeaderCard> headerIterator) throws HeaderCardException {
-        }
-    },
+    MAP_ZNAXIS(ZNAXIS), MAP_THEAP(THEAP),
 
     MAP_ZNAXISn(ZNAXISn) {
 

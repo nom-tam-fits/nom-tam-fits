@@ -20,6 +20,8 @@ import nom.tam.fits.header.Compression;
 import nom.tam.fits.header.IFitsHeader;
 import nom.tam.fits.header.Standard;
 import nom.tam.fits.util.BlackBoxImages;
+import nom.tam.image.compression.bintable.BinaryTableTileDecompressor;
+import nom.tam.util.ColumnTable;
 import nom.tam.util.Cursor;
 import nom.tam.util.SafeClose;
 
@@ -55,6 +57,7 @@ import nom.tam.util.SafeClose;
  */
 
 import static nom.tam.fits.header.Standard.XTENSION_BINTABLE;
+import static nom.tam.image.compression.bintable.BinaryTableTileDescription.tile;
 
 public class CompressedTableTest {
 
@@ -475,6 +478,35 @@ public class CompressedTableTest {
                 .fromBinaryTableHDU((BinaryTableHDU) fitsUncompressed.getHDU(1), tileSize).compress();
         compressedTable.compress();
         compressedTable.asBinaryTableHDU(0, 0);
+    }
+
+    @Test
+    public void testSetReversedVLAIndices() throws Exception {
+        try {
+            Assert.assertFalse(CompressedTableHDU.isReversedVLAIndices());
+            CompressedTableHDU.useReversedVLAIndices(true);
+            Assert.assertTrue(CompressedTableHDU.isReversedVLAIndices());
+            CompressedTableHDU.useReversedVLAIndices(false);
+            Assert.assertFalse(CompressedTableHDU.isReversedVLAIndices());
+        } finally {
+            CompressedTableHDU.useReversedVLAIndices(false);
+        }
+    }
+
+    @Test
+    public void testBinaryTableTileFillHeader() throws Exception {
+        ColumnTable<?> tab = new ColumnTable<>();
+        tab.addColumn(int.class, 10);
+        BinaryTableTileDecompressor tile = new BinaryTableTileDecompressor(new CompressedTableData(), tab, tile()//
+                .rowStart(0)//
+                .rowEnd(10)//
+                .column(0)//
+                .tileIndex(1)//
+                .compressionAlgorithm("BLAH"));
+
+        Header h = new Header();
+        tile.fillHeader(h);
+        Assert.assertEquals("BLAH", h.getStringValue(Compression.ZCTYPn.n(1)));
     }
 
 }

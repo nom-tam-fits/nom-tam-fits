@@ -158,25 +158,6 @@ public class RiceCompressOption implements ICompressOption {
         throw new IllegalArgumentException("Invalid BYTEPIX value: " + value + " (must be 1, 2, 4, or 8)");
     }
 
-    /**
-     * Sets a BYTEPIX value to use, but only when a BYTEPIX value is not already defined. If a value was already defined
-     * it is left unchanged.
-     * 
-     * @param  value the new BYTEPIX value to use as default when no value was set. It is currently not checked for
-     *                   validity, so use carefully.
-     * 
-     * @return       itself
-     *
-     * @see          #setBytePix(int)
-     * @see          #getBytePix()
-     */
-    RiceCompressOption setDefaultBytePix(int value) {
-        if (config.bytePix == 0) {
-            return setBytePix(value);
-        }
-        return this;
-    }
-
     @Override
     public void setParameters(ICompressParameters parameters) {
         if (!(parameters instanceof RiceCompressParameters)) {

@@ -75,7 +75,7 @@ public abstract class RiceCompressor<T extends Buffer> implements ICompressor<T>
         }
 
         public ByteRiceCompressor(RiceCompressOption option) {
-            super(option.setDefaultBytePix(ElementType.BYTE.size()));
+            super(option);
         }
 
         @Override
@@ -132,7 +132,7 @@ public abstract class RiceCompressor<T extends Buffer> implements ICompressor<T>
         }
 
         public IntRiceCompressor(RiceCompressOption option) {
-            super(option.setDefaultBytePix(ElementType.INT.size()));
+            super(option);
         }
 
         @Override
@@ -175,7 +175,7 @@ public abstract class RiceCompressor<T extends Buffer> implements ICompressor<T>
         }
 
         public ShortRiceCompressor(RiceCompressOption option) {
-            super(option.setDefaultBytePix(ElementType.SHORT.size()));
+            super(option);
         }
 
         @Override

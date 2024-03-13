@@ -104,8 +104,7 @@ public class BinaryTableTileCompressor extends BinaryTableTile {
         Buffer tb = t.asTypedBuffer(buffer);
 
         if (!compressor.compress(tb, cbuf, null)) {
-            throw new IllegalStateException(
-                    "Failed to compress: compressed data is significantly larger than the original.");
+            throw new IllegalStateException("Compression error");
         }
 
         cbuf.flip();
