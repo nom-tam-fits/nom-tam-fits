@@ -4,7 +4,7 @@ __nom.tam.fits__ is an efficient 100% pure Java 8+ library for reading, writing,
 [FITS files](https://fits.gsfc.nasa.gov/fits_standard.html). FITS (Flexible Image Transport System) is a binary format 
 of many astronomical datasets and images. The library owes its origins to Tom A. McGlynn 
 (hence the _nom.tam_ prefix) at NASA Goddard Space Flight Center. Currently it is maintained by Attila Kovacs at the
-Center for Astrophysics | Harvard & Smithsonian.
+Center for Astrophysics | Harvard &amp; Smithsonian.
 
 This is an open-source, community maintained, project hosted on github as 
 [nom-tam-fits](https://github.com/nom-tam-fits/nom-tam-fits). 
