@@ -43,6 +43,7 @@ import org.junit.Test;
 
 import nom.tam.fits.Header;
 import nom.tam.fits.HeaderCardException;
+import nom.tam.fits.compression.algorithm.api.ICompressorControl;
 import nom.tam.fits.compression.algorithm.hcompress.HCompressor.ByteHCompressor;
 import nom.tam.fits.compression.algorithm.hcompress.HCompressor.DoubleHCompressor;
 import nom.tam.fits.compression.algorithm.hcompress.HCompressor.FloatHCompressor;
@@ -565,18 +566,49 @@ public class HCompressTest {
     }
 
     @Test
-    public void testByteHCompressConstructor() {
-        Assert.assertNotNull(CompressorProvider.findCompressorControl(null, Compression.ZCMPTYPE_HCOMPRESS_1, byte.class));
+    public void testByteHCompressDefaultOptions() {
+        byte[] data = new byte[100];
+
+        for (int i = 0; i < 100; i++) {
+            data[i] = (byte) i;
+        }
+
+        ByteBuffer buf = ByteBuffer.wrap(data);
+        ByteBuffer zip = ByteBuffer.allocateDirect(200);
+
+        ICompressorControl c = CompressorProvider.findCompressorControl(null, Compression.ZCMPTYPE_HCOMPRESS_1, byte.class);
+        c.compress(buf, zip, null);
     }
 
     @Test
-    public void testShortHCompressConstructor() {
-        Assert.assertNotNull(CompressorProvider.findCompressorControl(null, Compression.ZCMPTYPE_HCOMPRESS_1, short.class));
+    public void testShortHCompressDefaultOptions() {
+        short[] data = new short[100];
+
+        for (int i = 0; i < 100; i++) {
+            data[i] = (short) i;
+        }
+
+        ShortBuffer buf = ShortBuffer.wrap(data);
+        ByteBuffer zip = ByteBuffer.allocateDirect(400);
+
+        ICompressorControl c = CompressorProvider.findCompressorControl(null, Compression.ZCMPTYPE_HCOMPRESS_1,
+                short.class);
+        c.compress(buf, zip, null);
     }
 
     @Test
-    public void testIntHCompressConstructor() {
-        Assert.assertNotNull(CompressorProvider.findCompressorControl(null, Compression.ZCMPTYPE_HCOMPRESS_1, int.class));
+    public void testIntHCompressDefaultOptions() {
+        int[] data = new int[100];
+
+        for (int i = 0; i < 100; i++) {
+            data[i] = i;
+        }
+
+        IntBuffer buf = IntBuffer.wrap(data);
+        ByteBuffer zip = ByteBuffer.allocateDirect(800);
+
+        ICompressorControl c = CompressorProvider.findCompressorControl(null, Compression.ZCMPTYPE_HCOMPRESS_1, int.class);
+        c.compress(buf, zip, null);
     }
 
 }

@@ -238,4 +238,24 @@ public class CompressedTableBlackBoxTest {
     public void testCompressAndUncompress_vtab_q() throws FitsException, IOException {
         compressIntThenUncompressTableAndAssert("bintable/vtab.q.fits");
     }
+
+    @Test(expected = Exception.class)
+    public void test_vtab_q_reversed() throws Exception {
+        try {
+            CompressedTableHDU.useReversedVLAIndices(true);
+            compressIntThenUncompressTableAndAssert("bintable/vtab.q.fits");
+        } finally {
+            CompressedTableHDU.useReversedVLAIndices(false);
+        }
+    }
+
+    @Test(expected = Exception.class)
+    public void test_vtab_p_reversed() throws Exception {
+        try {
+            CompressedTableHDU.useReversedVLAIndices(true);
+            compressIntThenUncompressTableAndAssert("bintable/vtab.p.fits");
+        } finally {
+            CompressedTableHDU.useReversedVLAIndices(false);
+        }
+    }
 }
