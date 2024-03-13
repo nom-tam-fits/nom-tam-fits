@@ -90,7 +90,7 @@ public class BinaryTableTileDecompressor extends BinaryTableTile {
         Object p = longPointers ? new long[nRows][2] : new int[nRows][2];
 
         try (FitsInputStream ips = new FitsInputStream(new ByteBufferInputStream(pointers))) {
-            if (CompressedTableHDU.isOldStandardVLAIndices()) {
+            if (CompressedTableHDU.hasOldStandardVLAIndices()) {
                 // --- The FITS standard way ---
                 // Restore the heap pointers to the compressed data in the compressed heap
                 ips.readLArray(cdesc);

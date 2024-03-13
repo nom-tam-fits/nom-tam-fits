@@ -129,7 +129,7 @@ public class CompressedTableHDU extends BinaryTableHDU {
      *                   <code>funpack</code>. (Our default is to conform to CFITSIO, and the expected revision of the
      *                   standard to match).
      * 
-     * @see          #isOldStandardVLAIndices()
+     * @see          #hasOldStandardVLAIndices()
      * @see          #asBinaryTableHDU()
      * 
      * @since        1.19.1
@@ -156,7 +156,7 @@ public class CompressedTableHDU extends BinaryTableHDU {
      * 
      * @author Attila Kovacs
      */
-    public static boolean isOldStandardVLAIndices() {
+    public static boolean hasOldStandardVLAIndices() {
         return reversedVLAIndices;
     }
 
