@@ -1807,11 +1807,11 @@ you should be aware of some potentially severe pitfalls.
  4.4.0. Therefore, we will skip adding `THEAP` to the table headers when not necessary (that is when the heap follows 
  immediately after the main table), in order to provide better interoperability with (C)FITSIO and `fpack`.
 
-However, we recognize that some compressed FITS files may have been produced with tools, which implemented the
-current standard as described. We wish to provide support for reading these also. Therefore, we provide the 
-`static` `CompressedTableHDU.useReversedVLAIndices(boolean)` method to select the convention of storing the adjoint 
-table descriptors in either the (C)FITSIO format (`false`; default), or else the original FITS 4.0 / Pence+2013 
-format (`true`).
+However, we recognize that some compressed FITS files may have been produced with tools that implemented the
+current standard as described. We wish to support reading such files also. Therefore, we provide the `static`
+`CompressedTableHDU.useOldStandardVLAIndices(boolean)` method to select the convention according to which the adjoint 
+table descriptors are stored in the file: either in the format described by the original FITS 4.0 standard Pence+2013 
+convention (`true`), or else in the (C)FITSIO compatible format (`false`; default).
 
 
 #### Accessing image header values without decompressing
