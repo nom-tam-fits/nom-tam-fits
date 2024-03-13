@@ -487,6 +487,16 @@ public class CompressedTableTest {
     }
 
     @Test
+    public void testB12TableCompressPrepTwice() throws Exception {
+        Fits fitsUncompressed = new Fits("src/test/resources/nom/tam/table/comp/bt12.fits");
+        BinaryTableHDU hdu = (BinaryTableHDU) fitsUncompressed.getHDU(1);
+        CompressedTableHDU cHDU = CompressedTableHDU.fromBinaryTableHDU(hdu, 0);
+        cHDU.getData().prepareUncompressedData(hdu.getData().getData());
+        cHDU.getData().prepareUncompressedData(hdu.getData().getData());
+        // No exception.
+    }
+
+    @Test
     public void testFixedTableCompressDefragment() throws Exception {
         BinaryTable btab = new BinaryTable();
         btab.addColumn(BinaryTable.ColumnDesc.createForFixedArrays(int.class, 6));

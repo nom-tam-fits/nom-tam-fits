@@ -89,6 +89,7 @@ public class CompressedTableData extends BinaryTable {
      */
     public CompressedTableData(Header header) throws FitsException {
         super(header);
+        rowsPerTile = header.getIntValue(Compression.ZTILELEN, header.getIntValue(Standard.NAXIS2));
         setColumnCompressionAlgorithms(header);
     }
 
@@ -127,8 +128,7 @@ public class CompressedTableData extends BinaryTable {
 
         h.setNaxis(2, getData().getNRows());
         h.addValue(Compression.ZTABLE.key(), true, "this is a compressed table");
-        long ztilelenValue = getRowsPerTile() > 0 ? getRowsPerTile() : h.getIntValue(Standard.NAXIS2);
-        h.addValue(Compression.ZTILELEN.key(), ztilelenValue, "number of rows in each tile");
+        h.addValue(Compression.ZTILELEN.key(), getRowsPerTile(), "number of rows in each tile");
 
         for (int i = 0; i < getNCols(); i++) {
             h.findCard(Standard.TTYPEn.n(i + 1));
