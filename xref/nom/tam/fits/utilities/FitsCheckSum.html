@@ -446,7 +446,7 @@
 <a class="jxr_linenumber" name="L438" href="#L438">438</a>             <strong class="jxr_keyword">final</strong> <strong class="jxr_keyword">int</strong> byt = MASK_BYTE &amp; (sum &gt;&gt;&gt; SELECT_BYTE[i]);
 <a class="jxr_linenumber" name="L439" href="#L439">439</a> 
 <a class="jxr_linenumber" name="L440" href="#L440">440</a>             Arrays.fill(ch, (byte) ((byt &gt;&gt;&gt; 2) + ASCII_ZERO)); <em class="jxr_comment">// quotient</em>
-<a class="jxr_linenumber" name="L441" href="#L441">441</a>             ch[0] += byt &amp; CHECKSUM_BLOCK_MASK; <em class="jxr_comment">// remainder</em>
+<a class="jxr_linenumber" name="L441" href="#L441">441</a>             ch[0] += (byte) (byt &amp; CHECKSUM_BLOCK_MASK); <em class="jxr_comment">// remainder</em>
 <a class="jxr_linenumber" name="L442" href="#L442">442</a> 
 <a class="jxr_linenumber" name="L443" href="#L443">443</a>             <strong class="jxr_keyword">for</strong> (<strong class="jxr_keyword">int</strong> j = 0; j &lt; CHECKSUM_BLOCK_SIZE; j += 2) {
 <a class="jxr_linenumber" name="L444" href="#L444">444</a>                 <strong class="jxr_keyword">while</strong> (EXCLUDE.indexOf(ch[j]) &gt;= 0 || EXCLUDE.indexOf(ch[j + 1]) &gt;= 0) {

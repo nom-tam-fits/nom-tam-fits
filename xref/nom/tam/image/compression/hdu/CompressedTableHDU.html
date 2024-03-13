@@ -130,17 +130,17 @@
 <a class="jxr_linenumber" name="L122" href="#L122">122</a> 
 <a class="jxr_linenumber" name="L123" href="#L123">123</a>         <strong class="jxr_keyword">int</strong> rowsPerTile = tileRows &gt; 0 ? tileRows : binaryTableHDU.getData().getNRows();
 <a class="jxr_linenumber" name="L124" href="#L124">124</a>         compressedData.setRowsPerTile(rowsPerTile);
-<a class="jxr_linenumber" name="L125" href="#L125">125</a>         compressedData.fillHeader(header);
-<a class="jxr_linenumber" name="L126" href="#L126">126</a> 
-<a class="jxr_linenumber" name="L127" href="#L127">127</a>         Cursor&lt;String, HeaderCard&gt; headerIterator = header.iterator();
-<a class="jxr_linenumber" name="L128" href="#L128">128</a>         Cursor&lt;String, HeaderCard&gt; imageIterator = binaryTableHDU.getHeader().iterator();
-<a class="jxr_linenumber" name="L129" href="#L129">129</a>         <strong class="jxr_keyword">while</strong> (imageIterator.hasNext()) {
-<a class="jxr_linenumber" name="L130" href="#L130">130</a>             <a name="HeaderCard" href="../../../../../nom/tam/fits/HeaderCard.html#HeaderCard">HeaderCard</a> card = imageIterator.next();
-<a class="jxr_linenumber" name="L131" href="#L131">131</a>             CompressedCard.restore(card, headerIterator);
-<a class="jxr_linenumber" name="L132" href="#L132">132</a>         }
-<a class="jxr_linenumber" name="L133" href="#L133">133</a>         <a name="CompressedTableHDU" href="../../../../../nom/tam/image/compression/hdu/CompressedTableHDU.html#CompressedTableHDU">CompressedTableHDU</a> compressedImageHDU = <strong class="jxr_keyword">new</strong> <a name="CompressedTableHDU" href="../../../../../nom/tam/image/compression/hdu/CompressedTableHDU.html#CompressedTableHDU">CompressedTableHDU</a>(header, compressedData);
-<a class="jxr_linenumber" name="L134" href="#L134">134</a>         compressedData.setColumnCompressionAlgorithms(columnCompressionAlgorithms);
-<a class="jxr_linenumber" name="L135" href="#L135">135</a>         compressedData.prepareUncompressedData(binaryTableHDU.getData().getData());
+<a class="jxr_linenumber" name="L125" href="#L125">125</a> 
+<a class="jxr_linenumber" name="L126" href="#L126">126</a>         Cursor&lt;String, HeaderCard&gt; headerIterator = header.iterator();
+<a class="jxr_linenumber" name="L127" href="#L127">127</a>         Cursor&lt;String, HeaderCard&gt; imageIterator = binaryTableHDU.getHeader().iterator();
+<a class="jxr_linenumber" name="L128" href="#L128">128</a>         <strong class="jxr_keyword">while</strong> (imageIterator.hasNext()) {
+<a class="jxr_linenumber" name="L129" href="#L129">129</a>             <a name="HeaderCard" href="../../../../../nom/tam/fits/HeaderCard.html#HeaderCard">HeaderCard</a> card = imageIterator.next();
+<a class="jxr_linenumber" name="L130" href="#L130">130</a>             CompressedCard.restore(card, headerIterator);
+<a class="jxr_linenumber" name="L131" href="#L131">131</a>         }
+<a class="jxr_linenumber" name="L132" href="#L132">132</a>         <a name="CompressedTableHDU" href="../../../../../nom/tam/image/compression/hdu/CompressedTableHDU.html#CompressedTableHDU">CompressedTableHDU</a> compressedImageHDU = <strong class="jxr_keyword">new</strong> <a name="CompressedTableHDU" href="../../../../../nom/tam/image/compression/hdu/CompressedTableHDU.html#CompressedTableHDU">CompressedTableHDU</a>(header, compressedData);
+<a class="jxr_linenumber" name="L133" href="#L133">133</a>         compressedData.setColumnCompressionAlgorithms(columnCompressionAlgorithms);
+<a class="jxr_linenumber" name="L134" href="#L134">134</a>         compressedData.prepareUncompressedData(binaryTableHDU.getData().getData());
+<a class="jxr_linenumber" name="L135" href="#L135">135</a>         compressedData.fillHeader(header);
 <a class="jxr_linenumber" name="L136" href="#L136">136</a>         <strong class="jxr_keyword">return</strong> compressedImageHDU;
 <a class="jxr_linenumber" name="L137" href="#L137">137</a>     }
 <a class="jxr_linenumber" name="L138" href="#L138">138</a> 
