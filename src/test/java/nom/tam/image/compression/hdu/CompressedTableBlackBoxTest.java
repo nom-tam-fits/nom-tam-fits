@@ -242,20 +242,20 @@ public class CompressedTableBlackBoxTest {
     @Test(expected = Exception.class)
     public void test_vtab_q_reversed() throws Exception {
         try {
-            CompressedTableHDU.useReversedVLAIndices(true);
+            CompressedTableHDU.useOldStandardVLAIndices(true);
             compressIntThenUncompressTableAndAssert("bintable/vtab.q.fits");
         } finally {
-            CompressedTableHDU.useReversedVLAIndices(false);
+            CompressedTableHDU.useOldStandardVLAIndices(false);
         }
     }
 
     @Test(expected = Exception.class)
     public void test_vtab_p_reversed() throws Exception {
         try {
-            CompressedTableHDU.useReversedVLAIndices(true);
+            CompressedTableHDU.useOldStandardVLAIndices(true);
             compressIntThenUncompressTableAndAssert("bintable/vtab.p.fits");
         } finally {
-            CompressedTableHDU.useReversedVLAIndices(false);
+            CompressedTableHDU.useOldStandardVLAIndices(false);
         }
     }
 }

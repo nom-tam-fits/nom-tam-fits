@@ -103,7 +103,7 @@ public class CompressedTableHDU extends BinaryTableHDU {
 
     /**
      * Enables or disables using reversed compressed/uncompressed heap indices for when decompressing variable-length
-     * arrays (VLAs).
+     * arrays (VLAs), as was prescribed by the original FITS 4.0 standard and the Pence et al. 2013 convention.
      * <p>
      * The <a href="https://fits.gsfc.nasa.gov/standard40/fits_standard40aa-le.pdf">FITS 4.0 standard</a> defines the
      * convention of compressing variable-length columns in binary tables. On page 50 it writes:
@@ -126,16 +126,17 @@ public class CompressedTableHDU extends BinaryTableHDU {
      *                   described in the original Pence et al. 2013 convention, and also the FITS 4.0 standard as of
      *                   2024 Mar 1; otherwise <code>false</code>. These original prescriptions define the reverse of
      *                   what is actually implemented by CFITSIO and its tools <code>fpack</code> and
-     *                   <code>funpack</code>. (Our default is to conform to CFITSIO, and the expcted revision of the
+     *                   <code>funpack</code>. (Our default is to conform to CFITSIO, and the expected revision of the
      *                   standard to match).
      * 
+     * @see          #isOldStandardVLAIndices()
      * @see          #asBinaryTableHDU()
      * 
      * @since        1.19.1
      * 
      * @author       Attila Kovacs
      */
-    public static void useReversedVLAIndices(boolean value) {
+    public static void useOldStandardVLAIndices(boolean value) {
         reversedVLAIndices = value;
     }
 
@@ -149,13 +150,13 @@ public class CompressedTableHDU extends BinaryTableHDU {
      *             implemented by CFITSIO and its tools <code>fpack</code> and <code>funpack</code>. (Our default is to
      *             conform to CFITSIO, and the expcted revision of the standard to match).
      * 
-     * @see    #useReversedVLAIndices(boolean)
+     * @see    #useOldStandardVLAIndices(boolean)
      * 
      * @since  1.19.1
      * 
      * @author Attila Kovacs
      */
-    public static boolean isReversedVLAIndices() {
+    public static boolean isOldStandardVLAIndices() {
         return reversedVLAIndices;
     }
 
@@ -179,7 +180,7 @@ public class CompressedTableHDU extends BinaryTableHDU {
      * @throws FitsException               if the binary table could not be used to create a compressed binary table.
      * 
      * @see                                #asBinaryTableHDU()
-     * @see                                #useReversedVLAIndices(boolean)
+     * @see                                #useOldStandardVLAIndices(boolean)
      */
     public static CompressedTableHDU fromBinaryTableHDU(BinaryTableHDU binaryTableHDU, int tileRows,
             String... columnCompressionAlgorithms) throws FitsException {
@@ -248,7 +249,7 @@ public class CompressedTableHDU extends BinaryTableHDU {
      * 
      * @see                  #asBinaryTableHDU(int, int)
      * @see                  #fromBinaryTableHDU(BinaryTableHDU, int, String...)
-     * @see                  #useReversedVLAIndices(boolean)
+     * @see                  #useOldStandardVLAIndices(boolean)
      */
     public BinaryTableHDU asBinaryTableHDU() throws FitsException {
         return asBinaryTableHDU(0, getTileCount());
@@ -311,7 +312,7 @@ public class CompressedTableHDU extends BinaryTableHDU {
      * @see                             #getTileCount()
      * @see                             #asBinaryTableHDU()
      * @see                             #fromBinaryTableHDU(BinaryTableHDU, int, String...)
-     * @see                             #useReversedVLAIndices(boolean)
+     * @see                             #useOldStandardVLAIndices(boolean)
      */
     public BinaryTableHDU asBinaryTableHDU(int fromTile, int toTile) throws FitsException, IllegalArgumentException {
         Header header = getTableHeader();
@@ -348,7 +349,7 @@ public class CompressedTableHDU extends BinaryTableHDU {
      * @see                             #asBinaryTableHDU(int, int)
      * @see                             #getTileRows()
      * @see                             #getTileCount()
-     * @see                             #useReversedVLAIndices(boolean)
+     * @see                             #useOldStandardVLAIndices(boolean)
      */
     public final BinaryTableHDU asBinaryTableHDU(int tile) throws FitsException, IllegalArgumentException {
         return asBinaryTableHDU(tile, tile + 1);
@@ -405,7 +406,7 @@ public class CompressedTableHDU extends BinaryTableHDU {
      * @throws FitsException if the compression could not be performed
      * 
      * @see                  #fromBinaryTableHDU(BinaryTableHDU, int, String...)
-     * @see                  #useReversedVLAIndices(boolean)
+     * @see                  #useOldStandardVLAIndices(boolean)
      */
     public CompressedTableHDU compress() throws FitsException {
         getData().compress(getHeader());
