@@ -58,9 +58,6 @@ import nom.tam.util.ReadWriteAccess;
 import nom.tam.util.TableException;
 import nom.tam.util.type.ElementType;
 
-import static nom.tam.fits.header.Standard.PCOUNT;
-import static nom.tam.fits.header.Standard.THEAP;
-
 import edu.umd.cs.findbugs.annotations.SuppressFBWarnings;
 
 /**
@@ -3675,18 +3672,18 @@ public class BinaryTable extends AbstractTableData implements Cloneable {
         c.add(HeaderCard.create(Standard.NAXIS1, rowLen));
         c.add(HeaderCard.create(Standard.NAXIS2, nRow));
 
-        int oldSize = h.getIntValue(PCOUNT);
+        int oldSize = h.getIntValue(Standard.PCOUNT);
         if (oldSize < getParameterSize()) {
-            c.add(HeaderCard.create(PCOUNT, getParameterSize()));
+            c.add(HeaderCard.create(Standard.PCOUNT, getParameterSize()));
         }
 
         c.add(HeaderCard.create(Standard.GCOUNT, 1));
         c.add(HeaderCard.create(Standard.TFIELDS, columns.size()));
 
-        if (h.getIntValue(PCOUNT) == 0 || getHeapOffset() == 0) {
-            h.deleteKey(THEAP);
+        if (h.getIntValue(Standard.PCOUNT) == 0 || getHeapOffset() == 0) {
+            h.deleteKey(Standard.THEAP);
         } else {
-            c.add(HeaderCard.create(THEAP, getRegularTableSize() + getHeapOffset()));
+            c.add(HeaderCard.create(Standard.THEAP, getRegularTableSize() + getHeapOffset()));
         }
 
         if (updateColumns) {
