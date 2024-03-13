@@ -3881,7 +3881,8 @@ public class BinaryTable extends AbstractTableData implements Cloneable {
             }
         }
 
-        long oldSize = heap.size();
+        FitsHeap hp = getHeap();
+        long oldSize = hp.size();
         FitsHeap compact = new FitsHeap(0);
 
         for (int i = 0; i < nRow; i++) {
@@ -3893,7 +3894,7 @@ public class BinaryTable extends AbstractTableData implements Cloneable {
                     int len = (int) getPointerCount(p);
 
                     // Copy to new heap...
-                    int pos = compact.copyFrom(heap, (int) getPointerOffset(p), c.getFitsBaseCount(len) * eSize[j]);
+                    int pos = compact.copyFrom(hp, (int) getPointerOffset(p), c.getFitsBaseCount(len) * eSize[j]);
 
                     // Same length as before...
                     if (p instanceof long[]) {

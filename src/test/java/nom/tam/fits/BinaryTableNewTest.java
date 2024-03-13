@@ -43,6 +43,7 @@ import org.junit.Test;
 import nom.tam.fits.BinaryTable.ColumnDesc;
 import nom.tam.fits.header.NonStandard;
 import nom.tam.fits.header.Standard;
+import nom.tam.fits.util.BlackBoxImages;
 import nom.tam.util.ComplexValue;
 import nom.tam.util.FitsInputStream;
 
@@ -1723,6 +1724,30 @@ public class BinaryTableNewTest {
         Header h = new Header();
         h.addValue(Standard.PCOUNT, -1);
         new BinaryTable(h);
+    }
+
+    @Test
+    public void testDefragQDescriptors() throws Exception {
+        Fits fits = new Fits(BlackBoxImages.getBlackBoxImage("bintable/vtab.q.fits"));
+        BinaryTableHDU hdu = (BinaryTableHDU) fits.getHDU(1);
+        hdu.getData().defragment();
+    }
+
+    @Test
+    public void testAddBytreVaryingColumn() throws Exception {
+        class MyBinaryTable extends BinaryTable {
+            @Override
+            public void addByteVaryingColumn() {
+                super.addByteVaryingColumn();
+            }
+        }
+
+        MyBinaryTable tab = new MyBinaryTable();
+        tab.addByteVaryingColumn();
+
+        Assert.assertEquals(1, tab.getNCols());
+        Assert.assertTrue(tab.getDescriptor(0).isVariableSize());
+        Assert.assertEquals(byte.class, tab.getDescriptor(0).getElementClass());
     }
 
 }

@@ -4,6 +4,8 @@ import java.io.ByteArrayInputStream;
 import java.io.ByteArrayOutputStream;
 import java.io.File;
 import java.io.IOException;
+import java.nio.Buffer;
+import java.nio.ByteBuffer;
 import java.util.Random;
 import java.util.zip.GZIPInputStream;
 
@@ -16,11 +18,15 @@ import nom.tam.fits.Fits;
 import nom.tam.fits.FitsException;
 import nom.tam.fits.Header;
 import nom.tam.fits.HeaderCard;
+import nom.tam.fits.compression.algorithm.api.ICompressOption;
+import nom.tam.fits.compression.algorithm.api.ICompressorControl;
 import nom.tam.fits.header.Compression;
 import nom.tam.fits.header.IFitsHeader;
 import nom.tam.fits.header.Standard;
 import nom.tam.fits.util.BlackBoxImages;
+import nom.tam.image.compression.bintable.BinaryTableTileCompressor;
 import nom.tam.image.compression.bintable.BinaryTableTileDecompressor;
+import nom.tam.image.compression.bintable.BinaryTableTileDescription;
 import nom.tam.util.ColumnTable;
 import nom.tam.util.Cursor;
 import nom.tam.util.SafeClose;
@@ -547,6 +553,50 @@ public class CompressedTableTest {
         Header h = new Header();
         tile.fillHeader(h);
         Assert.assertEquals("BLAH", h.getStringValue(Compression.ZCTYPn.n(1)));
+    }
+
+    @Test(expected = IllegalStateException.class)
+    public void testBinaryTableTileCompressorError() throws Exception {
+        class MyCompressor extends BinaryTableTileCompressor {
+            public MyCompressor(CompressedTableData compressedTable, ColumnTable<?> table,
+                    BinaryTableTileDescription description) {
+
+                super(compressedTable, table, description);
+                // TODO Auto-generated constructor stub
+            }
+
+            public ICompressorControl getCompressorControl() {
+                return new ICompressorControl() {
+
+                    @Override
+                    public boolean compress(Buffer in, ByteBuffer out, ICompressOption option) {
+                        return false;
+                    }
+
+                    @Override
+                    public void decompress(ByteBuffer in, Buffer out, ICompressOption option) {
+                    }
+
+                    @Override
+                    public ICompressOption option() {
+                        return null;
+                    }
+                };
+            }
+        }
+
+        ColumnTable<?> tab = new ColumnTable<>();
+        tab.addColumn(int.class, 10);
+        tab.setColumn(0, new int[10][10]);
+
+        MyCompressor tile = new MyCompressor(new CompressedTableData(), tab, tile()//
+                .rowStart(0)//
+                .rowEnd(10)//
+                .column(0)//
+                .tileIndex(1)//
+                .compressionAlgorithm(Compression.ZCMPTYPE_GZIP_2));
+
+        tile.run();
     }
 
 }
