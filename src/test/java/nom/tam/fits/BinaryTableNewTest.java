@@ -1714,15 +1714,27 @@ public class BinaryTableNewTest {
 
     @Test(expected = FitsException.class)
     public void testHeaderHeapTooLarge() throws Exception {
-        Header h = new Header();
-        h.addValue(Standard.PCOUNT, Integer.MAX_VALUE + 1L);
+        Header h = null;
+        try {
+            h = new Header();
+            new BinaryTable().fillHeader(h);
+            h.addValue(Standard.PCOUNT, Integer.MAX_VALUE + 1L);
+        } catch (FitsException e) {
+            throw new Exception(e.getMessage(), e);
+        }
         new BinaryTable(h);
     }
 
     @Test(expected = FitsException.class)
     public void testHeaderHeapInvalid() throws Exception {
-        Header h = new Header();
-        h.addValue(Standard.PCOUNT, -1);
+        Header h = null;
+        try {
+            h = new Header();
+            new BinaryTable().fillHeader(h);
+            h.addValue(Standard.PCOUNT, -1);
+        } catch (FitsException e) {
+            throw new Exception(e.getMessage(), e);
+        }
         new BinaryTable(h);
     }
 

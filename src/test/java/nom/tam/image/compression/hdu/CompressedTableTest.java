@@ -585,16 +585,21 @@ public class CompressedTableTest {
             }
         }
 
-        ColumnTable<?> tab = new ColumnTable<>();
-        tab.addColumn(int.class, 10);
-        tab.setColumn(0, new int[10][10]);
+        MyCompressor tile = null;
 
-        MyCompressor tile = new MyCompressor(new CompressedTableData(), tab, tile()//
-                .rowStart(0)//
-                .rowEnd(10)//
-                .column(0)//
-                .tileIndex(1)//
-                .compressionAlgorithm(Compression.ZCMPTYPE_GZIP_2));
+        try {
+            ColumnTable<?> tab = new ColumnTable<>();
+            tab.addColumn(new int[100], 10);
+
+            tile = new MyCompressor(new CompressedTableData(), tab, tile()//
+                    .rowStart(0)//
+                    .rowEnd(10)//
+                    .column(0)//
+                    .tileIndex(1)//
+                    .compressionAlgorithm(Compression.ZCMPTYPE_GZIP_2));
+        } catch (Exception e) {
+            throw new Exception(e.getMessage(), e);
+        }
 
         tile.run();
     }
