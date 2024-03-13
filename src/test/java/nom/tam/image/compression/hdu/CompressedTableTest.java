@@ -595,8 +595,7 @@ public class CompressedTableTest {
                     .rowStart(0)//
                     .rowEnd(10)//
                     .column(0)//
-                    .tileIndex(1)//
-                    .compressionAlgorithm(Compression.ZCMPTYPE_GZIP_2));
+                    .tileIndex(1));
         } catch (Exception e) {
             throw new Exception(e.getMessage(), e);
         }

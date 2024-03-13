@@ -102,7 +102,7 @@ public class RiceCompressOption implements ICompressOption {
      * @see    #setBytePix(int)
      */
     public final int getBytePix() {
-        return config.bytePix == 0 ? DEFAULT_RICE_BYTEPIX : config.bytePix;
+        return config.bytePix;
     }
 
     @Override

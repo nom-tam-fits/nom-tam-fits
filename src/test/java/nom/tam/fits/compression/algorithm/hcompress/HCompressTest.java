@@ -611,4 +611,11 @@ public class HCompressTest {
         c.compress(buf, zip, null);
     }
 
+    @Test
+    public void testHCompressQuantizeOption() {
+        HCompressorOption c = new HCompressorOption();
+        HCompressorQuantizeOption o = new HCompressorQuantizeOption(c);
+        Assert.assertEquals(c, o.getCompressOption());
+    }
+
 }
