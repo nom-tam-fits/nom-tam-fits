@@ -1807,6 +1807,10 @@ you should be aware of some potentially severe pitfalls.
  3. (C)FITSIO and its `fpack` tool do not properly handle the `THEAP` keyword (if present), at least as of version 
  4.4.0. Therefore, we will skip adding `THEAP` to the table headers when not necessary (that is when the heap follows 
  immediately after the main table), in order to provide better interoperability with (C)FITSIO and `fpack`.
+ 
+ 4. (C)FITSIO and `fpack` version &lt;= 4.4.0 do not handle `byte`-type and `short`-type VLA columns properly, 
+ indicating them as compressed via `GZIP_1` and `GZIP_2` respectively, whereas the data appears to be stored 
+ uncompressed form for these data types.
 
 However, we recognize that some compressed FITS files may have been produced with tools that implemented the
 current standard as described. We wish to support reading such files also. Therefore, we provide the `static`
