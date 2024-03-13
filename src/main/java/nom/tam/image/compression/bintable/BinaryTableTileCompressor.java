@@ -51,9 +51,7 @@ import nom.tam.util.type.ElementType;
 @SuppressWarnings("javadoc")
 public class BinaryTableTileCompressor extends BinaryTableTile {
 
-    private static final double LARGE_OVERHEAD = 1.5;
-
-    private static final double NORMAL_OVERHEAD = 1.1;
+    private static final double NORMAL_OVERHEAD = 1.2;
 
     private static final int MINIMUM_EXTRA_SPACE = 1024;
 
@@ -106,12 +104,8 @@ public class BinaryTableTileCompressor extends BinaryTableTile {
         Buffer tb = t.asTypedBuffer(buffer);
 
         if (!compressor.compress(tb, cbuf, null)) {
-            // very bad case lets try again with 50% more space
-            cbuf = ByteBuffer.allocateDirect(getCushion(getUncompressedSizeInBytes(), LARGE_OVERHEAD));
-            tb.rewind();
-            if (!compressor.compress(tb, cbuf, null)) {
-                throw new IllegalStateException("could not compress the tile with the requested algorithm!");
-            }
+            throw new IllegalStateException(
+                    "Failed to compress: compressed data is significantly larger than the original.");
         }
 
         cbuf.flip();

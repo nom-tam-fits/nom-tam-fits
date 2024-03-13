@@ -184,8 +184,7 @@ public class CompressedTableData extends BinaryTable {
     }
 
     /**
-     * (<i>for internal use</i>) This should only be called by {@link CompressedTableHDU}, and its visibility will be
-     * reduced accordingly in the future.
+     * (<i>for internal use</i>) No longer used, and it may be removed in the future.
      */
     @SuppressWarnings("javadoc")
     protected BinaryTable asBinaryTable(BinaryTable toTable, Header compressedHeader, Header targetHeader)
