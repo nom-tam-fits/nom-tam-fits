@@ -1796,7 +1796,8 @@ The compression of variable-length table columns is a fair bit more involved pro
 entries, and we only added proper support for it in __1.19.1__. When compressing/decompressing tables containing VLAs, 
 you should be aware of some potentially severe pitfalls. 
 
- 1. VLA table compression is not widely supported by tools.
+ 1. VLA table compression is not widely supported by tools (including CFITSIO's own `fpack` tool! -- see more on
+ that below).
 
  2. Second, the [(C)FITSIO](https://heasarc.gsfc.nasa.gov/fitsio/) implementation diverges from the documented 
  standard (FITS 4.0 and the original Pence et al. 2013 convention) by storing the adjoint desciptors in reversed order, 
@@ -1804,13 +1805,14 @@ you should be aware of some potentially severe pitfalls.
  documentation (the standard) to conform to the (C)FITSIO implementation. Therefore, our implementation for the 
  compression of VLAs is compliant to that of (C)FITSIO, and not to the current wording of the standard.
  
- 3. (C)FITSIO and its `fpack` tool do not properly handle the `THEAP` keyword (if present), at least as of version 
- 4.4.0. Therefore, we will skip adding `THEAP` to the table headers when not necessary (that is when the heap follows 
- immediately after the main table), in order to provide better interoperability with (C)FITSIO and `fpack`.
+ 3. (C)FITSIO and `fpack`  version &lt;= 4.4.0  do not properly handle the `THEAP` keyword (if present). Therefore, we 
+ will skip adding `THEAP` to the table headers when not necessary (that is when the heap follows immediately after the 
+ main table), in order to provide better interoperability with (C)FITSIO and `fpack`.
  
  4. (C)FITSIO and `fpack` version &lt;= 4.4.0 do not handle `byte`-type and `short`-type VLA columns properly, 
  indicating them as compressed via `GZIP_1` and `GZIP_2` respectively, whereas the data appears to be stored 
- uncompressed form for these data types.
+ uncompressed form for these data types. (They do however compress `int` and `float` type VLAs properly, albeit 
+ invariable with the `RICE_1` algorithm, regardless of the user-selection.)
 
 However, we recognize that some compressed FITS files may have been produced with tools that implemented the
 current standard as described. We wish to support reading such files also. Therefore, we provide the `static`
