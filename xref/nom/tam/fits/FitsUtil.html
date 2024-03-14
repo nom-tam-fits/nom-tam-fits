@@ -651,217 +651,216 @@
 <a class="jxr_linenumber" name="L643" href="#L643">643</a> <em class="jxr_javadoccomment">     * @see         #pad(ArrayDataOutput, long)</em>
 <a class="jxr_linenumber" name="L644" href="#L644">644</a> <em class="jxr_javadoccomment">     */</em>
 <a class="jxr_linenumber" name="L645" href="#L645">645</a>     <strong class="jxr_keyword">public</strong> <strong class="jxr_keyword">static</strong> <strong class="jxr_keyword">int</strong> padding(<strong class="jxr_keyword">long</strong> size) {
-<a class="jxr_linenumber" name="L646" href="#L646">646</a> 
-<a class="jxr_linenumber" name="L647" href="#L647">647</a>         <strong class="jxr_keyword">int</strong> mod = (<strong class="jxr_keyword">int</strong>) (size % FitsFactory.FITS_BLOCK_SIZE);
-<a class="jxr_linenumber" name="L648" href="#L648">648</a>         <strong class="jxr_keyword">if</strong> (mod &gt; 0) {
-<a class="jxr_linenumber" name="L649" href="#L649">649</a>             mod = FitsFactory.FITS_BLOCK_SIZE - mod;
-<a class="jxr_linenumber" name="L650" href="#L650">650</a>         }
-<a class="jxr_linenumber" name="L651" href="#L651">651</a>         <strong class="jxr_keyword">return</strong> mod;
-<a class="jxr_linenumber" name="L652" href="#L652">652</a>     }
-<a class="jxr_linenumber" name="L653" href="#L653">653</a> 
-<a class="jxr_linenumber" name="L654" href="#L654">654</a>     <em class="jxr_javadoccomment">/**</em>
-<a class="jxr_linenumber" name="L655" href="#L655">655</a> <em class="jxr_javadoccomment">     * Attempts to reposition a FITS input ot output. The call will succeed only if the underlying input or output is</em>
-<a class="jxr_linenumber" name="L656" href="#L656">656</a> <em class="jxr_javadoccomment">     * random accessible. Othewise, an exception will be thrown.</em>
-<a class="jxr_linenumber" name="L657" href="#L657">657</a> <em class="jxr_javadoccomment">     *</em>
-<a class="jxr_linenumber" name="L658" href="#L658">658</a> <em class="jxr_javadoccomment">     * @deprecated               This method wraps an {@link IOException} into a {@link FitsException} for no good</em>
-<a class="jxr_linenumber" name="L659" href="#L659">659</a> <em class="jxr_javadoccomment">     *                               reason really. A revision of the API could reduce the visibility of this method,</em>
-<a class="jxr_linenumber" name="L660" href="#L660">660</a> <em class="jxr_javadoccomment">     *                               and/or procees the underlying exception instead.</em>
-<a class="jxr_linenumber" name="L661" href="#L661">661</a> <em class="jxr_javadoccomment">     *</em>
-<a class="jxr_linenumber" name="L662" href="#L662">662</a> <em class="jxr_javadoccomment">     * @param      o             the FITS input or output</em>
-<a class="jxr_linenumber" name="L663" href="#L663">663</a> <em class="jxr_javadoccomment">     * @param      offset        the offset to position it to.</em>
-<a class="jxr_linenumber" name="L664" href="#L664">664</a> <em class="jxr_javadoccomment">     *</em>
-<a class="jxr_linenumber" name="L665" href="#L665">665</a> <em class="jxr_javadoccomment">     * @throws     FitsException if the underlying input/output is not random accessible or if the requested position is</em>
-<a class="jxr_linenumber" name="L666" href="#L666">666</a> <em class="jxr_javadoccomment">     *                               invalid.</em>
-<a class="jxr_linenumber" name="L667" href="#L667">667</a> <em class="jxr_javadoccomment">     */</em>
-<a class="jxr_linenumber" name="L668" href="#L668">668</a>     @Deprecated
-<a class="jxr_linenumber" name="L669" href="#L669">669</a>     <strong class="jxr_keyword">public</strong> <strong class="jxr_keyword">static</strong> <strong class="jxr_keyword">void</strong> reposition(<a name="FitsIO" href="../../../nom/tam/util/FitsIO.html#FitsIO">FitsIO</a> o, <strong class="jxr_keyword">long</strong> offset) <strong class="jxr_keyword">throws</strong> <a name="FitsException" href="../../../nom/tam/fits/FitsException.html#FitsException">FitsException</a> {
-<a class="jxr_linenumber" name="L670" href="#L670">670</a>         <em class="jxr_comment">// TODO AK: argument should be RandomAccess instead of Closeable, since</em>
-<a class="jxr_linenumber" name="L671" href="#L671">671</a>         <em class="jxr_comment">// that's the only type we actually handle...</em>
-<a class="jxr_linenumber" name="L672" href="#L672">672</a> 
-<a class="jxr_linenumber" name="L673" href="#L673">673</a>         <strong class="jxr_keyword">if</strong> (o == <strong class="jxr_keyword">null</strong>) {
-<a class="jxr_linenumber" name="L674" href="#L674">674</a>             <strong class="jxr_keyword">throw</strong> <strong class="jxr_keyword">new</strong> <a name="FitsException" href="../../../nom/tam/fits/FitsException.html#FitsException">FitsException</a>(<span class="jxr_string">"Attempt to reposition null stream"</span>);
-<a class="jxr_linenumber" name="L675" href="#L675">675</a>         }
-<a class="jxr_linenumber" name="L676" href="#L676">676</a> 
-<a class="jxr_linenumber" name="L677" href="#L677">677</a>         <strong class="jxr_keyword">if</strong> (!(o instanceof <a name="RandomAccess" href="../../../nom/tam/util/RandomAccess.html#RandomAccess">RandomAccess</a>) || offset &lt; 0) {
-<a class="jxr_linenumber" name="L678" href="#L678">678</a>             <strong class="jxr_keyword">throw</strong> <strong class="jxr_keyword">new</strong> <a name="FitsException" href="../../../nom/tam/fits/FitsException.html#FitsException">FitsException</a>(
-<a class="jxr_linenumber" name="L679" href="#L679">679</a>                     <span class="jxr_string">"Invalid attempt to reposition stream "</span> + o + <span class="jxr_string">" of type "</span> + o.getClass().getName() + <span class="jxr_string">" to "</span> + offset);
-<a class="jxr_linenumber" name="L680" href="#L680">680</a>         }
-<a class="jxr_linenumber" name="L681" href="#L681">681</a> 
-<a class="jxr_linenumber" name="L682" href="#L682">682</a>         <strong class="jxr_keyword">try</strong> {
-<a class="jxr_linenumber" name="L683" href="#L683">683</a>             ((<a name="RandomAccess" href="../../../nom/tam/util/RandomAccess.html#RandomAccess">RandomAccess</a>) o).seek(offset);
-<a class="jxr_linenumber" name="L684" href="#L684">684</a>         } <strong class="jxr_keyword">catch</strong> (IOException e) {
-<a class="jxr_linenumber" name="L685" href="#L685">685</a>             <strong class="jxr_keyword">throw</strong> <strong class="jxr_keyword">new</strong> <a name="FitsException" href="../../../nom/tam/fits/FitsException.html#FitsException">FitsException</a>(<span class="jxr_string">"Unable to repostion stream "</span> + o + <span class="jxr_string">" of type "</span> + o.getClass().getName() + <span class="jxr_string">" to "</span>
-<a class="jxr_linenumber" name="L686" href="#L686">686</a>                     + offset + <span class="jxr_string">": "</span> + e.getMessage(), e);
-<a class="jxr_linenumber" name="L687" href="#L687">687</a>         }
-<a class="jxr_linenumber" name="L688" href="#L688">688</a>     }
-<a class="jxr_linenumber" name="L689" href="#L689">689</a> 
-<a class="jxr_linenumber" name="L690" href="#L690">690</a>     <em class="jxr_javadoccomment">/**</em>
-<a class="jxr_linenumber" name="L691" href="#L691">691</a> <em class="jxr_javadoccomment">     * Converts a string to ASCII bytes in the specified array, padding (with 0x00) or truncating as necessary to</em>
-<a class="jxr_linenumber" name="L692" href="#L692">692</a> <em class="jxr_javadoccomment">     * provide the expected length at the specified arrya offset.</em>
-<a class="jxr_linenumber" name="L693" href="#L693">693</a> <em class="jxr_javadoccomment">     * </em>
-<a class="jxr_linenumber" name="L694" href="#L694">694</a> <em class="jxr_javadoccomment">     * @param s      a string</em>
-<a class="jxr_linenumber" name="L695" href="#L695">695</a> <em class="jxr_javadoccomment">     * @param res    the byte array into which to extract the ASCII bytes</em>
-<a class="jxr_linenumber" name="L696" href="#L696">696</a> <em class="jxr_javadoccomment">     * @param offset array index in the byte array at which the extracted bytes should begin</em>
-<a class="jxr_linenumber" name="L697" href="#L697">697</a> <em class="jxr_javadoccomment">     * @param len    the maximum number of bytes to extract, truncating or padding (with 0x00) as needed.</em>
-<a class="jxr_linenumber" name="L698" href="#L698">698</a> <em class="jxr_javadoccomment">     * @param pad    the byte value to use to pad the remainder of the string</em>
-<a class="jxr_linenumber" name="L699" href="#L699">699</a> <em class="jxr_javadoccomment">     */</em>
-<a class="jxr_linenumber" name="L700" href="#L700">700</a>     <strong class="jxr_keyword">private</strong> <strong class="jxr_keyword">static</strong> <strong class="jxr_keyword">void</strong> stringToBytes(String s, byte[] res, <strong class="jxr_keyword">int</strong> offset, <strong class="jxr_keyword">int</strong> len, byte pad) {
-<a class="jxr_linenumber" name="L701" href="#L701">701</a>         <strong class="jxr_keyword">int</strong> l = 0;
-<a class="jxr_linenumber" name="L702" href="#L702">702</a> 
-<a class="jxr_linenumber" name="L703" href="#L703">703</a>         <strong class="jxr_keyword">if</strong> (s != <strong class="jxr_keyword">null</strong>) {
-<a class="jxr_linenumber" name="L704" href="#L704">704</a>             byte[] b = AsciiFuncs.getBytes(s);
-<a class="jxr_linenumber" name="L705" href="#L705">705</a>             l = Math.min(b.length, len);
-<a class="jxr_linenumber" name="L706" href="#L706">706</a>             <strong class="jxr_keyword">if</strong> (l &gt; 0) {
-<a class="jxr_linenumber" name="L707" href="#L707">707</a>                 System.arraycopy(b, 0, res, offset, l);
-<a class="jxr_linenumber" name="L708" href="#L708">708</a>             }
-<a class="jxr_linenumber" name="L709" href="#L709">709</a>         }
-<a class="jxr_linenumber" name="L710" href="#L710">710</a> 
-<a class="jxr_linenumber" name="L711" href="#L711">711</a>         <em class="jxr_comment">// Terminate and pad as necessary</em>
-<a class="jxr_linenumber" name="L712" href="#L712">712</a>         <strong class="jxr_keyword">if</strong> (l &lt; len) {
-<a class="jxr_linenumber" name="L713" href="#L713">713</a>             Arrays.fill(res, offset + l, offset + len, pad);
-<a class="jxr_linenumber" name="L714" href="#L714">714</a>         }
-<a class="jxr_linenumber" name="L715" href="#L715">715</a>     }
-<a class="jxr_linenumber" name="L716" href="#L716">716</a> 
-<a class="jxr_linenumber" name="L717" href="#L717">717</a>     <em class="jxr_javadoccomment">/**</em>
-<a class="jxr_linenumber" name="L718" href="#L718">718</a> <em class="jxr_javadoccomment">     * Converts a string to an array of ASCII bytes, padding (with 0x00) or truncating as necessary to provide the</em>
-<a class="jxr_linenumber" name="L719" href="#L719">719</a> <em class="jxr_javadoccomment">     * expected length.</em>
-<a class="jxr_linenumber" name="L720" href="#L720">720</a> <em class="jxr_javadoccomment">     * </em>
-<a class="jxr_linenumber" name="L721" href="#L721">721</a> <em class="jxr_javadoccomment">     * @param  s   a string</em>
-<a class="jxr_linenumber" name="L722" href="#L722">722</a> <em class="jxr_javadoccomment">     * @param  len the number of bytes for the return value, also the maximum number of bytes that are extracted from</em>
-<a class="jxr_linenumber" name="L723" href="#L723">723</a> <em class="jxr_javadoccomment">     *                 the string</em>
-<a class="jxr_linenumber" name="L724" href="#L724">724</a> <em class="jxr_javadoccomment">     * </em>
-<a class="jxr_linenumber" name="L725" href="#L725">725</a> <em class="jxr_javadoccomment">     * @return     a byte array of the specified length containing the truncated or padded string value.</em>
-<a class="jxr_linenumber" name="L726" href="#L726">726</a> <em class="jxr_javadoccomment">     * </em>
-<a class="jxr_linenumber" name="L727" href="#L727">727</a> <em class="jxr_javadoccomment">     * @see        #stringsToByteArray(String[], int, byte) q</em>
-<a class="jxr_linenumber" name="L728" href="#L728">728</a> <em class="jxr_javadoccomment">     * </em>
-<a class="jxr_linenumber" name="L729" href="#L729">729</a> <em class="jxr_javadoccomment">     * @since      1.18</em>
-<a class="jxr_linenumber" name="L730" href="#L730">730</a> <em class="jxr_javadoccomment">     */</em>
-<a class="jxr_linenumber" name="L731" href="#L731">731</a>     <strong class="jxr_keyword">static</strong> byte[] stringToByteArray(String s, <strong class="jxr_keyword">int</strong> len) {
-<a class="jxr_linenumber" name="L732" href="#L732">732</a>         byte[] res = <strong class="jxr_keyword">new</strong> byte[len];
-<a class="jxr_linenumber" name="L733" href="#L733">733</a>         stringToBytes(s, res, 0, len, BLANK_SPACE);
-<a class="jxr_linenumber" name="L734" href="#L734">734</a>         <strong class="jxr_keyword">return</strong> res;
-<a class="jxr_linenumber" name="L735" href="#L735">735</a>     }
-<a class="jxr_linenumber" name="L736" href="#L736">736</a> 
-<a class="jxr_linenumber" name="L737" href="#L737">737</a>     <em class="jxr_javadoccomment">/**</em>
-<a class="jxr_linenumber" name="L738" href="#L738">738</a> <em class="jxr_javadoccomment">     * Convert an array of Strings to bytes. padding (with 0x00) or truncating as necessary to provide the expected</em>
-<a class="jxr_linenumber" name="L739" href="#L739">739</a> <em class="jxr_javadoccomment">     * length.</em>
-<a class="jxr_linenumber" name="L740" href="#L740">740</a> <em class="jxr_javadoccomment">     *</em>
-<a class="jxr_linenumber" name="L741" href="#L741">741</a> <em class="jxr_javadoccomment">     * @return                 the resulting bytes</em>
-<a class="jxr_linenumber" name="L742" href="#L742">742</a> <em class="jxr_javadoccomment">     *</em>
-<a class="jxr_linenumber" name="L743" href="#L743">743</a> <em class="jxr_javadoccomment">     * @param      stringArray the array with Strings</em>
-<a class="jxr_linenumber" name="L744" href="#L744">744</a> <em class="jxr_javadoccomment">     * @param      len         the number of bytes used for each string element. The string will be truncated ot padded</em>
-<a class="jxr_linenumber" name="L745" href="#L745">745</a> <em class="jxr_javadoccomment">     *                             as necessary to fit into that size.</em>
-<a class="jxr_linenumber" name="L746" href="#L746">746</a> <em class="jxr_javadoccomment">     * </em>
-<a class="jxr_linenumber" name="L747" href="#L747">747</a> <em class="jxr_javadoccomment">     * @deprecated             (&lt;i&gt;for internal use&lt;/i&gt;) Visibility may be reduced to package level in the future.</em>
-<a class="jxr_linenumber" name="L748" href="#L748">748</a> <em class="jxr_javadoccomment">     */</em>
-<a class="jxr_linenumber" name="L749" href="#L749">749</a>     <strong class="jxr_keyword">public</strong> <strong class="jxr_keyword">static</strong> byte[] stringsToByteArray(String[] stringArray, <strong class="jxr_keyword">int</strong> len) {
-<a class="jxr_linenumber" name="L750" href="#L750">750</a>         <strong class="jxr_keyword">return</strong> stringsToByteArray(stringArray, len, BLANK_SPACE);
-<a class="jxr_linenumber" name="L751" href="#L751">751</a>     }
-<a class="jxr_linenumber" name="L752" href="#L752">752</a> 
-<a class="jxr_linenumber" name="L753" href="#L753">753</a>     <em class="jxr_javadoccomment">/**</em>
-<a class="jxr_linenumber" name="L754" href="#L754">754</a> <em class="jxr_javadoccomment">     * Convert an array of Strings to bytes. padding (with 0x00) or truncating as necessary to provide the expected</em>
-<a class="jxr_linenumber" name="L755" href="#L755">755</a> <em class="jxr_javadoccomment">     * length.</em>
-<a class="jxr_linenumber" name="L756" href="#L756">756</a> <em class="jxr_javadoccomment">     *</em>
-<a class="jxr_linenumber" name="L757" href="#L757">757</a> <em class="jxr_javadoccomment">     * @return             the resulting bytes</em>
-<a class="jxr_linenumber" name="L758" href="#L758">758</a> <em class="jxr_javadoccomment">     *</em>
-<a class="jxr_linenumber" name="L759" href="#L759">759</a> <em class="jxr_javadoccomment">     * @param  stringArray the array with Strings</em>
-<a class="jxr_linenumber" name="L760" href="#L760">760</a> <em class="jxr_javadoccomment">     * @param  len         the number of bytes used for each string element. The string will be truncated ot padded as</em>
-<a class="jxr_linenumber" name="L761" href="#L761">761</a> <em class="jxr_javadoccomment">     *                         necessary to fit into that size.</em>
-<a class="jxr_linenumber" name="L762" href="#L762">762</a> <em class="jxr_javadoccomment">     * @param  pad         the byte value to use for padding strings as necessary to the requisite length.</em>
-<a class="jxr_linenumber" name="L763" href="#L763">763</a> <em class="jxr_javadoccomment">     */</em>
-<a class="jxr_linenumber" name="L764" href="#L764">764</a>     <strong class="jxr_keyword">static</strong> byte[] stringsToByteArray(String[] stringArray, <strong class="jxr_keyword">int</strong> len, byte pad) {
-<a class="jxr_linenumber" name="L765" href="#L765">765</a>         byte[] res = <strong class="jxr_keyword">new</strong> byte[stringArray.length * len];
-<a class="jxr_linenumber" name="L766" href="#L766">766</a>         <strong class="jxr_keyword">for</strong> (<strong class="jxr_keyword">int</strong> i = 0; i &lt; stringArray.length; i++) {
-<a class="jxr_linenumber" name="L767" href="#L767">767</a>             stringToBytes(stringArray[i], res, i * len, len, pad);
-<a class="jxr_linenumber" name="L768" href="#L768">768</a>         }
-<a class="jxr_linenumber" name="L769" href="#L769">769</a>         <strong class="jxr_keyword">return</strong> res;
-<a class="jxr_linenumber" name="L770" href="#L770">770</a>     }
-<a class="jxr_linenumber" name="L771" href="#L771">771</a> 
-<a class="jxr_linenumber" name="L772" href="#L772">772</a>     <em class="jxr_javadoccomment">/**</em>
-<a class="jxr_linenumber" name="L773" href="#L773">773</a> <em class="jxr_javadoccomment">     * Convert an array of strings to a delimited sequence of bytes, e.g. for sequentialized variable-sized storage of</em>
-<a class="jxr_linenumber" name="L774" href="#L774">774</a> <em class="jxr_javadoccomment">     * multiple string elements. The last string component is terminated by an ASCII NUL (0x00).</em>
-<a class="jxr_linenumber" name="L775" href="#L775">775</a> <em class="jxr_javadoccomment">     *</em>
-<a class="jxr_linenumber" name="L776" href="#L776">776</a> <em class="jxr_javadoccomment">     * @return        the resulting bytes</em>
-<a class="jxr_linenumber" name="L777" href="#L777">777</a> <em class="jxr_javadoccomment">     *</em>
-<a class="jxr_linenumber" name="L778" href="#L778">778</a> <em class="jxr_javadoccomment">     * @param  array  the array with Strings</em>
-<a class="jxr_linenumber" name="L779" href="#L779">779</a> <em class="jxr_javadoccomment">     * @param  maxlen the maximum string length or -1 of unlimited.</em>
-<a class="jxr_linenumber" name="L780" href="#L780">780</a> <em class="jxr_javadoccomment">     * @param  delim  the byte value that delimits string components</em>
-<a class="jxr_linenumber" name="L781" href="#L781">781</a> <em class="jxr_javadoccomment">     * </em>
-<a class="jxr_linenumber" name="L782" href="#L782">782</a> <em class="jxr_javadoccomment">     * @see           #stringToByteArray(String, int)</em>
-<a class="jxr_linenumber" name="L783" href="#L783">783</a> <em class="jxr_javadoccomment">     * </em>
-<a class="jxr_linenumber" name="L784" href="#L784">784</a> <em class="jxr_javadoccomment">     * @since         1.18</em>
-<a class="jxr_linenumber" name="L785" href="#L785">785</a> <em class="jxr_javadoccomment">     */</em>
-<a class="jxr_linenumber" name="L786" href="#L786">786</a>     <strong class="jxr_keyword">static</strong> byte[] stringsToDelimitedBytes(String[] array, <strong class="jxr_keyword">int</strong> maxlen, byte delim) {
-<a class="jxr_linenumber" name="L787" href="#L787">787</a>         <strong class="jxr_keyword">int</strong> l = array.length - 1;
-<a class="jxr_linenumber" name="L788" href="#L788">788</a>         <strong class="jxr_keyword">for</strong> (String s : array) {
-<a class="jxr_linenumber" name="L789" href="#L789">789</a>             l += (s == <strong class="jxr_keyword">null</strong>) ? 1 : Math.max(s.length() + 1, maxlen);
-<a class="jxr_linenumber" name="L790" href="#L790">790</a>         }
-<a class="jxr_linenumber" name="L791" href="#L791">791</a>         byte[] b = <strong class="jxr_keyword">new</strong> byte[l];
-<a class="jxr_linenumber" name="L792" href="#L792">792</a>         l = 0;
-<a class="jxr_linenumber" name="L793" href="#L793">793</a>         <strong class="jxr_keyword">for</strong> (String s : array) {
-<a class="jxr_linenumber" name="L794" href="#L794">794</a>             <strong class="jxr_keyword">if</strong> (s != <strong class="jxr_keyword">null</strong>) {
-<a class="jxr_linenumber" name="L795" href="#L795">795</a>                 stringToBytes(s, b, l, s.length(), BLANK_SPACE);
-<a class="jxr_linenumber" name="L796" href="#L796">796</a>                 l += s.length();
-<a class="jxr_linenumber" name="L797" href="#L797">797</a>             }
-<a class="jxr_linenumber" name="L798" href="#L798">798</a>             b[l++] = delim;
-<a class="jxr_linenumber" name="L799" href="#L799">799</a>         }
-<a class="jxr_linenumber" name="L800" href="#L800">800</a>         b[l - 1] = (byte) 0;
-<a class="jxr_linenumber" name="L801" href="#L801">801</a>         <strong class="jxr_keyword">return</strong> b;
-<a class="jxr_linenumber" name="L802" href="#L802">802</a>     }
-<a class="jxr_linenumber" name="L803" href="#L803">803</a> 
-<a class="jxr_linenumber" name="L804" href="#L804">804</a>     <em class="jxr_javadoccomment">/**</em>
-<a class="jxr_linenumber" name="L805" href="#L805">805</a> <em class="jxr_javadoccomment">     * Extracts strings from a packed delimited byte sequence. Strings start either immediately after the prior string</em>
-<a class="jxr_linenumber" name="L806" href="#L806">806</a> <em class="jxr_javadoccomment">     * reached its maximum length, or else immediately after the specified delimiter byte value.</em>
-<a class="jxr_linenumber" name="L807" href="#L807">807</a> <em class="jxr_javadoccomment">     * </em>
-<a class="jxr_linenumber" name="L808" href="#L808">808</a> <em class="jxr_javadoccomment">     * @param  bytes  bytes containing the packed strings</em>
-<a class="jxr_linenumber" name="L809" href="#L809">809</a> <em class="jxr_javadoccomment">     * @param  maxlen the maximum length of individual string components</em>
-<a class="jxr_linenumber" name="L810" href="#L810">810</a> <em class="jxr_javadoccomment">     * @param  delim  the byte value that delimits strings shorter than the maximum length</em>
-<a class="jxr_linenumber" name="L811" href="#L811">811</a> <em class="jxr_javadoccomment">     * </em>
-<a class="jxr_linenumber" name="L812" href="#L812">812</a> <em class="jxr_javadoccomment">     * @return        An array of the extracted strings</em>
-<a class="jxr_linenumber" name="L813" href="#L813">813</a> <em class="jxr_javadoccomment">     *</em>
-<a class="jxr_linenumber" name="L814" href="#L814">814</a> <em class="jxr_javadoccomment">     * @see           #stringsToDelimitedBytes(String[], int, byte)</em>
-<a class="jxr_linenumber" name="L815" href="#L815">815</a> <em class="jxr_javadoccomment">     * </em>
-<a class="jxr_linenumber" name="L816" href="#L816">816</a> <em class="jxr_javadoccomment">     * @since         1.18</em>
-<a class="jxr_linenumber" name="L817" href="#L817">817</a> <em class="jxr_javadoccomment">     */</em>
-<a class="jxr_linenumber" name="L818" href="#L818">818</a>     <strong class="jxr_keyword">private</strong> <strong class="jxr_keyword">static</strong> String[] delimitedBytesToStrings(byte[] bytes, byte delim) {
-<a class="jxr_linenumber" name="L819" href="#L819">819</a>         ArrayList&lt;String&gt; s = <strong class="jxr_keyword">new</strong> ArrayList&lt;&gt;();
-<a class="jxr_linenumber" name="L820" href="#L820">820</a>         ParsePosition pos = <strong class="jxr_keyword">new</strong> ParsePosition(0);
-<a class="jxr_linenumber" name="L821" href="#L821">821</a>         <strong class="jxr_keyword">while</strong> (pos.getIndex() &lt; bytes.length) {
-<a class="jxr_linenumber" name="L822" href="#L822">822</a>             s.add(extractString(bytes, pos, bytes.length, delim));
-<a class="jxr_linenumber" name="L823" href="#L823">823</a>         }
-<a class="jxr_linenumber" name="L824" href="#L824">824</a>         String[] a = <strong class="jxr_keyword">new</strong> String[s.size()];
-<a class="jxr_linenumber" name="L825" href="#L825">825</a>         s.toArray(a);
-<a class="jxr_linenumber" name="L826" href="#L826">826</a>         <strong class="jxr_keyword">return</strong> a;
-<a class="jxr_linenumber" name="L827" href="#L827">827</a>     }
-<a class="jxr_linenumber" name="L828" href="#L828">828</a> 
-<a class="jxr_linenumber" name="L829" href="#L829">829</a>     <em class="jxr_javadoccomment">/**</em>
-<a class="jxr_linenumber" name="L830" href="#L830">830</a> <em class="jxr_javadoccomment">     * Extracts strings from a packed delimited byte sequence. Strings start either immediately after the prior string</em>
-<a class="jxr_linenumber" name="L831" href="#L831">831</a> <em class="jxr_javadoccomment">     * reached its maximum length, or else immediately after the specified delimiter byte value.</em>
-<a class="jxr_linenumber" name="L832" href="#L832">832</a> <em class="jxr_javadoccomment">     * </em>
-<a class="jxr_linenumber" name="L833" href="#L833">833</a> <em class="jxr_javadoccomment">     * @param  bytes  bytes containing the packed strings</em>
-<a class="jxr_linenumber" name="L834" href="#L834">834</a> <em class="jxr_javadoccomment">     * @param  maxlen the maximum length of individual string components</em>
-<a class="jxr_linenumber" name="L835" href="#L835">835</a> <em class="jxr_javadoccomment">     * @param  delim  the byte value that delimits strings shorter than the maximum length</em>
-<a class="jxr_linenumber" name="L836" href="#L836">836</a> <em class="jxr_javadoccomment">     * </em>
-<a class="jxr_linenumber" name="L837" href="#L837">837</a> <em class="jxr_javadoccomment">     * @return        An array of the extracted strings</em>
-<a class="jxr_linenumber" name="L838" href="#L838">838</a> <em class="jxr_javadoccomment">     *</em>
-<a class="jxr_linenumber" name="L839" href="#L839">839</a> <em class="jxr_javadoccomment">     * @see           #stringsToDelimitedBytes(String[], int, byte)</em>
-<a class="jxr_linenumber" name="L840" href="#L840">840</a> <em class="jxr_javadoccomment">     * </em>
-<a class="jxr_linenumber" name="L841" href="#L841">841</a> <em class="jxr_javadoccomment">     * @since         1.18</em>
-<a class="jxr_linenumber" name="L842" href="#L842">842</a> <em class="jxr_javadoccomment">     */</em>
-<a class="jxr_linenumber" name="L843" href="#L843">843</a>     <strong class="jxr_keyword">static</strong> String[] delimitedBytesToStrings(byte[] bytes, <strong class="jxr_keyword">int</strong> maxlen, byte delim) {
-<a class="jxr_linenumber" name="L844" href="#L844">844</a>         <strong class="jxr_keyword">if</strong> (maxlen &lt;= 0) {
-<a class="jxr_linenumber" name="L845" href="#L845">845</a>             <strong class="jxr_keyword">return</strong> delimitedBytesToStrings(bytes, delim);
-<a class="jxr_linenumber" name="L846" href="#L846">846</a>         }
-<a class="jxr_linenumber" name="L847" href="#L847">847</a> 
-<a class="jxr_linenumber" name="L848" href="#L848">848</a>         String[] res = <strong class="jxr_keyword">new</strong> String[(bytes.length + maxlen - 1) / maxlen];
-<a class="jxr_linenumber" name="L849" href="#L849">849</a>         ParsePosition pos = <strong class="jxr_keyword">new</strong> ParsePosition(0);
-<a class="jxr_linenumber" name="L850" href="#L850">850</a>         <strong class="jxr_keyword">for</strong> (<strong class="jxr_keyword">int</strong> i = 0; i &lt; res.length; i++) {
-<a class="jxr_linenumber" name="L851" href="#L851">851</a>             res[i] = extractString(bytes, pos, maxlen, delim);
-<a class="jxr_linenumber" name="L852" href="#L852">852</a>         }
-<a class="jxr_linenumber" name="L853" href="#L853">853</a>         <strong class="jxr_keyword">return</strong> res;
-<a class="jxr_linenumber" name="L854" href="#L854">854</a>     }
-<a class="jxr_linenumber" name="L855" href="#L855">855</a> 
-<a class="jxr_linenumber" name="L856" href="#L856">856</a> }
+<a class="jxr_linenumber" name="L646" href="#L646">646</a>         <strong class="jxr_keyword">int</strong> mod = (<strong class="jxr_keyword">int</strong>) (size % FitsFactory.FITS_BLOCK_SIZE);
+<a class="jxr_linenumber" name="L647" href="#L647">647</a>         <strong class="jxr_keyword">if</strong> (mod &gt; 0) {
+<a class="jxr_linenumber" name="L648" href="#L648">648</a>             <strong class="jxr_keyword">return</strong> FitsFactory.FITS_BLOCK_SIZE - mod;
+<a class="jxr_linenumber" name="L649" href="#L649">649</a>         }
+<a class="jxr_linenumber" name="L650" href="#L650">650</a>         <strong class="jxr_keyword">return</strong> 0;
+<a class="jxr_linenumber" name="L651" href="#L651">651</a>     }
+<a class="jxr_linenumber" name="L652" href="#L652">652</a> 
+<a class="jxr_linenumber" name="L653" href="#L653">653</a>     <em class="jxr_javadoccomment">/**</em>
+<a class="jxr_linenumber" name="L654" href="#L654">654</a> <em class="jxr_javadoccomment">     * Attempts to reposition a FITS input ot output. The call will succeed only if the underlying input or output is</em>
+<a class="jxr_linenumber" name="L655" href="#L655">655</a> <em class="jxr_javadoccomment">     * random accessible. Othewise, an exception will be thrown.</em>
+<a class="jxr_linenumber" name="L656" href="#L656">656</a> <em class="jxr_javadoccomment">     *</em>
+<a class="jxr_linenumber" name="L657" href="#L657">657</a> <em class="jxr_javadoccomment">     * @deprecated               This method wraps an {@link IOException} into a {@link FitsException} for no good</em>
+<a class="jxr_linenumber" name="L658" href="#L658">658</a> <em class="jxr_javadoccomment">     *                               reason really. A revision of the API could reduce the visibility of this method,</em>
+<a class="jxr_linenumber" name="L659" href="#L659">659</a> <em class="jxr_javadoccomment">     *                               and/or procees the underlying exception instead.</em>
+<a class="jxr_linenumber" name="L660" href="#L660">660</a> <em class="jxr_javadoccomment">     *</em>
+<a class="jxr_linenumber" name="L661" href="#L661">661</a> <em class="jxr_javadoccomment">     * @param      o             the FITS input or output</em>
+<a class="jxr_linenumber" name="L662" href="#L662">662</a> <em class="jxr_javadoccomment">     * @param      offset        the offset to position it to.</em>
+<a class="jxr_linenumber" name="L663" href="#L663">663</a> <em class="jxr_javadoccomment">     *</em>
+<a class="jxr_linenumber" name="L664" href="#L664">664</a> <em class="jxr_javadoccomment">     * @throws     FitsException if the underlying input/output is not random accessible or if the requested position is</em>
+<a class="jxr_linenumber" name="L665" href="#L665">665</a> <em class="jxr_javadoccomment">     *                               invalid.</em>
+<a class="jxr_linenumber" name="L666" href="#L666">666</a> <em class="jxr_javadoccomment">     */</em>
+<a class="jxr_linenumber" name="L667" href="#L667">667</a>     @Deprecated
+<a class="jxr_linenumber" name="L668" href="#L668">668</a>     <strong class="jxr_keyword">public</strong> <strong class="jxr_keyword">static</strong> <strong class="jxr_keyword">void</strong> reposition(<a name="FitsIO" href="../../../nom/tam/util/FitsIO.html#FitsIO">FitsIO</a> o, <strong class="jxr_keyword">long</strong> offset) <strong class="jxr_keyword">throws</strong> <a name="FitsException" href="../../../nom/tam/fits/FitsException.html#FitsException">FitsException</a> {
+<a class="jxr_linenumber" name="L669" href="#L669">669</a>         <em class="jxr_comment">// TODO AK: argument should be RandomAccess instead of Closeable, since</em>
+<a class="jxr_linenumber" name="L670" href="#L670">670</a>         <em class="jxr_comment">// that's the only type we actually handle...</em>
+<a class="jxr_linenumber" name="L671" href="#L671">671</a> 
+<a class="jxr_linenumber" name="L672" href="#L672">672</a>         <strong class="jxr_keyword">if</strong> (o == <strong class="jxr_keyword">null</strong>) {
+<a class="jxr_linenumber" name="L673" href="#L673">673</a>             <strong class="jxr_keyword">throw</strong> <strong class="jxr_keyword">new</strong> <a name="FitsException" href="../../../nom/tam/fits/FitsException.html#FitsException">FitsException</a>(<span class="jxr_string">"Attempt to reposition null stream"</span>);
+<a class="jxr_linenumber" name="L674" href="#L674">674</a>         }
+<a class="jxr_linenumber" name="L675" href="#L675">675</a> 
+<a class="jxr_linenumber" name="L676" href="#L676">676</a>         <strong class="jxr_keyword">if</strong> (!(o instanceof <a name="RandomAccess" href="../../../nom/tam/util/RandomAccess.html#RandomAccess">RandomAccess</a>) || offset &lt; 0) {
+<a class="jxr_linenumber" name="L677" href="#L677">677</a>             <strong class="jxr_keyword">throw</strong> <strong class="jxr_keyword">new</strong> <a name="FitsException" href="../../../nom/tam/fits/FitsException.html#FitsException">FitsException</a>(
+<a class="jxr_linenumber" name="L678" href="#L678">678</a>                     <span class="jxr_string">"Invalid attempt to reposition stream "</span> + o + <span class="jxr_string">" of type "</span> + o.getClass().getName() + <span class="jxr_string">" to "</span> + offset);
+<a class="jxr_linenumber" name="L679" href="#L679">679</a>         }
+<a class="jxr_linenumber" name="L680" href="#L680">680</a> 
+<a class="jxr_linenumber" name="L681" href="#L681">681</a>         <strong class="jxr_keyword">try</strong> {
+<a class="jxr_linenumber" name="L682" href="#L682">682</a>             ((<a name="RandomAccess" href="../../../nom/tam/util/RandomAccess.html#RandomAccess">RandomAccess</a>) o).seek(offset);
+<a class="jxr_linenumber" name="L683" href="#L683">683</a>         } <strong class="jxr_keyword">catch</strong> (IOException e) {
+<a class="jxr_linenumber" name="L684" href="#L684">684</a>             <strong class="jxr_keyword">throw</strong> <strong class="jxr_keyword">new</strong> <a name="FitsException" href="../../../nom/tam/fits/FitsException.html#FitsException">FitsException</a>(<span class="jxr_string">"Unable to repostion stream "</span> + o + <span class="jxr_string">" of type "</span> + o.getClass().getName() + <span class="jxr_string">" to "</span>
+<a class="jxr_linenumber" name="L685" href="#L685">685</a>                     + offset + <span class="jxr_string">": "</span> + e.getMessage(), e);
+<a class="jxr_linenumber" name="L686" href="#L686">686</a>         }
+<a class="jxr_linenumber" name="L687" href="#L687">687</a>     }
+<a class="jxr_linenumber" name="L688" href="#L688">688</a> 
+<a class="jxr_linenumber" name="L689" href="#L689">689</a>     <em class="jxr_javadoccomment">/**</em>
+<a class="jxr_linenumber" name="L690" href="#L690">690</a> <em class="jxr_javadoccomment">     * Converts a string to ASCII bytes in the specified array, padding (with 0x00) or truncating as necessary to</em>
+<a class="jxr_linenumber" name="L691" href="#L691">691</a> <em class="jxr_javadoccomment">     * provide the expected length at the specified arrya offset.</em>
+<a class="jxr_linenumber" name="L692" href="#L692">692</a> <em class="jxr_javadoccomment">     * </em>
+<a class="jxr_linenumber" name="L693" href="#L693">693</a> <em class="jxr_javadoccomment">     * @param s      a string</em>
+<a class="jxr_linenumber" name="L694" href="#L694">694</a> <em class="jxr_javadoccomment">     * @param res    the byte array into which to extract the ASCII bytes</em>
+<a class="jxr_linenumber" name="L695" href="#L695">695</a> <em class="jxr_javadoccomment">     * @param offset array index in the byte array at which the extracted bytes should begin</em>
+<a class="jxr_linenumber" name="L696" href="#L696">696</a> <em class="jxr_javadoccomment">     * @param len    the maximum number of bytes to extract, truncating or padding (with 0x00) as needed.</em>
+<a class="jxr_linenumber" name="L697" href="#L697">697</a> <em class="jxr_javadoccomment">     * @param pad    the byte value to use to pad the remainder of the string</em>
+<a class="jxr_linenumber" name="L698" href="#L698">698</a> <em class="jxr_javadoccomment">     */</em>
+<a class="jxr_linenumber" name="L699" href="#L699">699</a>     <strong class="jxr_keyword">private</strong> <strong class="jxr_keyword">static</strong> <strong class="jxr_keyword">void</strong> stringToBytes(String s, byte[] res, <strong class="jxr_keyword">int</strong> offset, <strong class="jxr_keyword">int</strong> len, byte pad) {
+<a class="jxr_linenumber" name="L700" href="#L700">700</a>         <strong class="jxr_keyword">int</strong> l = 0;
+<a class="jxr_linenumber" name="L701" href="#L701">701</a> 
+<a class="jxr_linenumber" name="L702" href="#L702">702</a>         <strong class="jxr_keyword">if</strong> (s != <strong class="jxr_keyword">null</strong>) {
+<a class="jxr_linenumber" name="L703" href="#L703">703</a>             byte[] b = AsciiFuncs.getBytes(s);
+<a class="jxr_linenumber" name="L704" href="#L704">704</a>             l = Math.min(b.length, len);
+<a class="jxr_linenumber" name="L705" href="#L705">705</a>             <strong class="jxr_keyword">if</strong> (l &gt; 0) {
+<a class="jxr_linenumber" name="L706" href="#L706">706</a>                 System.arraycopy(b, 0, res, offset, l);
+<a class="jxr_linenumber" name="L707" href="#L707">707</a>             }
+<a class="jxr_linenumber" name="L708" href="#L708">708</a>         }
+<a class="jxr_linenumber" name="L709" href="#L709">709</a> 
+<a class="jxr_linenumber" name="L710" href="#L710">710</a>         <em class="jxr_comment">// Terminate and pad as necessary</em>
+<a class="jxr_linenumber" name="L711" href="#L711">711</a>         <strong class="jxr_keyword">if</strong> (l &lt; len) {
+<a class="jxr_linenumber" name="L712" href="#L712">712</a>             Arrays.fill(res, offset + l, offset + len, pad);
+<a class="jxr_linenumber" name="L713" href="#L713">713</a>         }
+<a class="jxr_linenumber" name="L714" href="#L714">714</a>     }
+<a class="jxr_linenumber" name="L715" href="#L715">715</a> 
+<a class="jxr_linenumber" name="L716" href="#L716">716</a>     <em class="jxr_javadoccomment">/**</em>
+<a class="jxr_linenumber" name="L717" href="#L717">717</a> <em class="jxr_javadoccomment">     * Converts a string to an array of ASCII bytes, padding (with 0x00) or truncating as necessary to provide the</em>
+<a class="jxr_linenumber" name="L718" href="#L718">718</a> <em class="jxr_javadoccomment">     * expected length.</em>
+<a class="jxr_linenumber" name="L719" href="#L719">719</a> <em class="jxr_javadoccomment">     * </em>
+<a class="jxr_linenumber" name="L720" href="#L720">720</a> <em class="jxr_javadoccomment">     * @param  s   a string</em>
+<a class="jxr_linenumber" name="L721" href="#L721">721</a> <em class="jxr_javadoccomment">     * @param  len the number of bytes for the return value, also the maximum number of bytes that are extracted from</em>
+<a class="jxr_linenumber" name="L722" href="#L722">722</a> <em class="jxr_javadoccomment">     *                 the string</em>
+<a class="jxr_linenumber" name="L723" href="#L723">723</a> <em class="jxr_javadoccomment">     * </em>
+<a class="jxr_linenumber" name="L724" href="#L724">724</a> <em class="jxr_javadoccomment">     * @return     a byte array of the specified length containing the truncated or padded string value.</em>
+<a class="jxr_linenumber" name="L725" href="#L725">725</a> <em class="jxr_javadoccomment">     * </em>
+<a class="jxr_linenumber" name="L726" href="#L726">726</a> <em class="jxr_javadoccomment">     * @see        #stringsToByteArray(String[], int, byte) q</em>
+<a class="jxr_linenumber" name="L727" href="#L727">727</a> <em class="jxr_javadoccomment">     * </em>
+<a class="jxr_linenumber" name="L728" href="#L728">728</a> <em class="jxr_javadoccomment">     * @since      1.18</em>
+<a class="jxr_linenumber" name="L729" href="#L729">729</a> <em class="jxr_javadoccomment">     */</em>
+<a class="jxr_linenumber" name="L730" href="#L730">730</a>     <strong class="jxr_keyword">static</strong> byte[] stringToByteArray(String s, <strong class="jxr_keyword">int</strong> len) {
+<a class="jxr_linenumber" name="L731" href="#L731">731</a>         byte[] res = <strong class="jxr_keyword">new</strong> byte[len];
+<a class="jxr_linenumber" name="L732" href="#L732">732</a>         stringToBytes(s, res, 0, len, BLANK_SPACE);
+<a class="jxr_linenumber" name="L733" href="#L733">733</a>         <strong class="jxr_keyword">return</strong> res;
+<a class="jxr_linenumber" name="L734" href="#L734">734</a>     }
+<a class="jxr_linenumber" name="L735" href="#L735">735</a> 
+<a class="jxr_linenumber" name="L736" href="#L736">736</a>     <em class="jxr_javadoccomment">/**</em>
+<a class="jxr_linenumber" name="L737" href="#L737">737</a> <em class="jxr_javadoccomment">     * Convert an array of Strings to bytes. padding (with 0x00) or truncating as necessary to provide the expected</em>
+<a class="jxr_linenumber" name="L738" href="#L738">738</a> <em class="jxr_javadoccomment">     * length.</em>
+<a class="jxr_linenumber" name="L739" href="#L739">739</a> <em class="jxr_javadoccomment">     *</em>
+<a class="jxr_linenumber" name="L740" href="#L740">740</a> <em class="jxr_javadoccomment">     * @return                 the resulting bytes</em>
+<a class="jxr_linenumber" name="L741" href="#L741">741</a> <em class="jxr_javadoccomment">     *</em>
+<a class="jxr_linenumber" name="L742" href="#L742">742</a> <em class="jxr_javadoccomment">     * @param      stringArray the array with Strings</em>
+<a class="jxr_linenumber" name="L743" href="#L743">743</a> <em class="jxr_javadoccomment">     * @param      len         the number of bytes used for each string element. The string will be truncated ot padded</em>
+<a class="jxr_linenumber" name="L744" href="#L744">744</a> <em class="jxr_javadoccomment">     *                             as necessary to fit into that size.</em>
+<a class="jxr_linenumber" name="L745" href="#L745">745</a> <em class="jxr_javadoccomment">     * </em>
+<a class="jxr_linenumber" name="L746" href="#L746">746</a> <em class="jxr_javadoccomment">     * @deprecated             (&lt;i&gt;for internal use&lt;/i&gt;) Visibility may be reduced to package level in the future.</em>
+<a class="jxr_linenumber" name="L747" href="#L747">747</a> <em class="jxr_javadoccomment">     */</em>
+<a class="jxr_linenumber" name="L748" href="#L748">748</a>     <strong class="jxr_keyword">public</strong> <strong class="jxr_keyword">static</strong> byte[] stringsToByteArray(String[] stringArray, <strong class="jxr_keyword">int</strong> len) {
+<a class="jxr_linenumber" name="L749" href="#L749">749</a>         <strong class="jxr_keyword">return</strong> stringsToByteArray(stringArray, len, BLANK_SPACE);
+<a class="jxr_linenumber" name="L750" href="#L750">750</a>     }
+<a class="jxr_linenumber" name="L751" href="#L751">751</a> 
+<a class="jxr_linenumber" name="L752" href="#L752">752</a>     <em class="jxr_javadoccomment">/**</em>
+<a class="jxr_linenumber" name="L753" href="#L753">753</a> <em class="jxr_javadoccomment">     * Convert an array of Strings to bytes. padding (with 0x00) or truncating as necessary to provide the expected</em>
+<a class="jxr_linenumber" name="L754" href="#L754">754</a> <em class="jxr_javadoccomment">     * length.</em>
+<a class="jxr_linenumber" name="L755" href="#L755">755</a> <em class="jxr_javadoccomment">     *</em>
+<a class="jxr_linenumber" name="L756" href="#L756">756</a> <em class="jxr_javadoccomment">     * @return             the resulting bytes</em>
+<a class="jxr_linenumber" name="L757" href="#L757">757</a> <em class="jxr_javadoccomment">     *</em>
+<a class="jxr_linenumber" name="L758" href="#L758">758</a> <em class="jxr_javadoccomment">     * @param  stringArray the array with Strings</em>
+<a class="jxr_linenumber" name="L759" href="#L759">759</a> <em class="jxr_javadoccomment">     * @param  len         the number of bytes used for each string element. The string will be truncated ot padded as</em>
+<a class="jxr_linenumber" name="L760" href="#L760">760</a> <em class="jxr_javadoccomment">     *                         necessary to fit into that size.</em>
+<a class="jxr_linenumber" name="L761" href="#L761">761</a> <em class="jxr_javadoccomment">     * @param  pad         the byte value to use for padding strings as necessary to the requisite length.</em>
+<a class="jxr_linenumber" name="L762" href="#L762">762</a> <em class="jxr_javadoccomment">     */</em>
+<a class="jxr_linenumber" name="L763" href="#L763">763</a>     <strong class="jxr_keyword">static</strong> byte[] stringsToByteArray(String[] stringArray, <strong class="jxr_keyword">int</strong> len, byte pad) {
+<a class="jxr_linenumber" name="L764" href="#L764">764</a>         byte[] res = <strong class="jxr_keyword">new</strong> byte[stringArray.length * len];
+<a class="jxr_linenumber" name="L765" href="#L765">765</a>         <strong class="jxr_keyword">for</strong> (<strong class="jxr_keyword">int</strong> i = 0; i &lt; stringArray.length; i++) {
+<a class="jxr_linenumber" name="L766" href="#L766">766</a>             stringToBytes(stringArray[i], res, i * len, len, pad);
+<a class="jxr_linenumber" name="L767" href="#L767">767</a>         }
+<a class="jxr_linenumber" name="L768" href="#L768">768</a>         <strong class="jxr_keyword">return</strong> res;
+<a class="jxr_linenumber" name="L769" href="#L769">769</a>     }
+<a class="jxr_linenumber" name="L770" href="#L770">770</a> 
+<a class="jxr_linenumber" name="L771" href="#L771">771</a>     <em class="jxr_javadoccomment">/**</em>
+<a class="jxr_linenumber" name="L772" href="#L772">772</a> <em class="jxr_javadoccomment">     * Convert an array of strings to a delimited sequence of bytes, e.g. for sequentialized variable-sized storage of</em>
+<a class="jxr_linenumber" name="L773" href="#L773">773</a> <em class="jxr_javadoccomment">     * multiple string elements. The last string component is terminated by an ASCII NUL (0x00).</em>
+<a class="jxr_linenumber" name="L774" href="#L774">774</a> <em class="jxr_javadoccomment">     *</em>
+<a class="jxr_linenumber" name="L775" href="#L775">775</a> <em class="jxr_javadoccomment">     * @return        the resulting bytes</em>
+<a class="jxr_linenumber" name="L776" href="#L776">776</a> <em class="jxr_javadoccomment">     *</em>
+<a class="jxr_linenumber" name="L777" href="#L777">777</a> <em class="jxr_javadoccomment">     * @param  array  the array with Strings</em>
+<a class="jxr_linenumber" name="L778" href="#L778">778</a> <em class="jxr_javadoccomment">     * @param  maxlen the maximum string length or -1 of unlimited.</em>
+<a class="jxr_linenumber" name="L779" href="#L779">779</a> <em class="jxr_javadoccomment">     * @param  delim  the byte value that delimits string components</em>
+<a class="jxr_linenumber" name="L780" href="#L780">780</a> <em class="jxr_javadoccomment">     * </em>
+<a class="jxr_linenumber" name="L781" href="#L781">781</a> <em class="jxr_javadoccomment">     * @see           #stringToByteArray(String, int)</em>
+<a class="jxr_linenumber" name="L782" href="#L782">782</a> <em class="jxr_javadoccomment">     * </em>
+<a class="jxr_linenumber" name="L783" href="#L783">783</a> <em class="jxr_javadoccomment">     * @since         1.18</em>
+<a class="jxr_linenumber" name="L784" href="#L784">784</a> <em class="jxr_javadoccomment">     */</em>
+<a class="jxr_linenumber" name="L785" href="#L785">785</a>     <strong class="jxr_keyword">static</strong> byte[] stringsToDelimitedBytes(String[] array, <strong class="jxr_keyword">int</strong> maxlen, byte delim) {
+<a class="jxr_linenumber" name="L786" href="#L786">786</a>         <strong class="jxr_keyword">int</strong> l = array.length - 1;
+<a class="jxr_linenumber" name="L787" href="#L787">787</a>         <strong class="jxr_keyword">for</strong> (String s : array) {
+<a class="jxr_linenumber" name="L788" href="#L788">788</a>             l += (s == <strong class="jxr_keyword">null</strong>) ? 1 : Math.max(s.length() + 1, maxlen);
+<a class="jxr_linenumber" name="L789" href="#L789">789</a>         }
+<a class="jxr_linenumber" name="L790" href="#L790">790</a>         byte[] b = <strong class="jxr_keyword">new</strong> byte[l];
+<a class="jxr_linenumber" name="L791" href="#L791">791</a>         l = 0;
+<a class="jxr_linenumber" name="L792" href="#L792">792</a>         <strong class="jxr_keyword">for</strong> (String s : array) {
+<a class="jxr_linenumber" name="L793" href="#L793">793</a>             <strong class="jxr_keyword">if</strong> (s != <strong class="jxr_keyword">null</strong>) {
+<a class="jxr_linenumber" name="L794" href="#L794">794</a>                 stringToBytes(s, b, l, s.length(), BLANK_SPACE);
+<a class="jxr_linenumber" name="L795" href="#L795">795</a>                 l += s.length();
+<a class="jxr_linenumber" name="L796" href="#L796">796</a>             }
+<a class="jxr_linenumber" name="L797" href="#L797">797</a>             b[l++] = delim;
+<a class="jxr_linenumber" name="L798" href="#L798">798</a>         }
+<a class="jxr_linenumber" name="L799" href="#L799">799</a>         b[l - 1] = (byte) 0;
+<a class="jxr_linenumber" name="L800" href="#L800">800</a>         <strong class="jxr_keyword">return</strong> b;
+<a class="jxr_linenumber" name="L801" href="#L801">801</a>     }
+<a class="jxr_linenumber" name="L802" href="#L802">802</a> 
+<a class="jxr_linenumber" name="L803" href="#L803">803</a>     <em class="jxr_javadoccomment">/**</em>
+<a class="jxr_linenumber" name="L804" href="#L804">804</a> <em class="jxr_javadoccomment">     * Extracts strings from a packed delimited byte sequence. Strings start either immediately after the prior string</em>
+<a class="jxr_linenumber" name="L805" href="#L805">805</a> <em class="jxr_javadoccomment">     * reached its maximum length, or else immediately after the specified delimiter byte value.</em>
+<a class="jxr_linenumber" name="L806" href="#L806">806</a> <em class="jxr_javadoccomment">     * </em>
+<a class="jxr_linenumber" name="L807" href="#L807">807</a> <em class="jxr_javadoccomment">     * @param  bytes  bytes containing the packed strings</em>
+<a class="jxr_linenumber" name="L808" href="#L808">808</a> <em class="jxr_javadoccomment">     * @param  maxlen the maximum length of individual string components</em>
+<a class="jxr_linenumber" name="L809" href="#L809">809</a> <em class="jxr_javadoccomment">     * @param  delim  the byte value that delimits strings shorter than the maximum length</em>
+<a class="jxr_linenumber" name="L810" href="#L810">810</a> <em class="jxr_javadoccomment">     * </em>
+<a class="jxr_linenumber" name="L811" href="#L811">811</a> <em class="jxr_javadoccomment">     * @return        An array of the extracted strings</em>
+<a class="jxr_linenumber" name="L812" href="#L812">812</a> <em class="jxr_javadoccomment">     *</em>
+<a class="jxr_linenumber" name="L813" href="#L813">813</a> <em class="jxr_javadoccomment">     * @see           #stringsToDelimitedBytes(String[], int, byte)</em>
+<a class="jxr_linenumber" name="L814" href="#L814">814</a> <em class="jxr_javadoccomment">     * </em>
+<a class="jxr_linenumber" name="L815" href="#L815">815</a> <em class="jxr_javadoccomment">     * @since         1.18</em>
+<a class="jxr_linenumber" name="L816" href="#L816">816</a> <em class="jxr_javadoccomment">     */</em>
+<a class="jxr_linenumber" name="L817" href="#L817">817</a>     <strong class="jxr_keyword">private</strong> <strong class="jxr_keyword">static</strong> String[] delimitedBytesToStrings(byte[] bytes, byte delim) {
+<a class="jxr_linenumber" name="L818" href="#L818">818</a>         ArrayList&lt;String&gt; s = <strong class="jxr_keyword">new</strong> ArrayList&lt;&gt;();
+<a class="jxr_linenumber" name="L819" href="#L819">819</a>         ParsePosition pos = <strong class="jxr_keyword">new</strong> ParsePosition(0);
+<a class="jxr_linenumber" name="L820" href="#L820">820</a>         <strong class="jxr_keyword">while</strong> (pos.getIndex() &lt; bytes.length) {
+<a class="jxr_linenumber" name="L821" href="#L821">821</a>             s.add(extractString(bytes, pos, bytes.length, delim));
+<a class="jxr_linenumber" name="L822" href="#L822">822</a>         }
+<a class="jxr_linenumber" name="L823" href="#L823">823</a>         String[] a = <strong class="jxr_keyword">new</strong> String[s.size()];
+<a class="jxr_linenumber" name="L824" href="#L824">824</a>         s.toArray(a);
+<a class="jxr_linenumber" name="L825" href="#L825">825</a>         <strong class="jxr_keyword">return</strong> a;
+<a class="jxr_linenumber" name="L826" href="#L826">826</a>     }
+<a class="jxr_linenumber" name="L827" href="#L827">827</a> 
+<a class="jxr_linenumber" name="L828" href="#L828">828</a>     <em class="jxr_javadoccomment">/**</em>
+<a class="jxr_linenumber" name="L829" href="#L829">829</a> <em class="jxr_javadoccomment">     * Extracts strings from a packed delimited byte sequence. Strings start either immediately after the prior string</em>
+<a class="jxr_linenumber" name="L830" href="#L830">830</a> <em class="jxr_javadoccomment">     * reached its maximum length, or else immediately after the specified delimiter byte value.</em>
+<a class="jxr_linenumber" name="L831" href="#L831">831</a> <em class="jxr_javadoccomment">     * </em>
+<a class="jxr_linenumber" name="L832" href="#L832">832</a> <em class="jxr_javadoccomment">     * @param  bytes  bytes containing the packed strings</em>
+<a class="jxr_linenumber" name="L833" href="#L833">833</a> <em class="jxr_javadoccomment">     * @param  maxlen the maximum length of individual string components</em>
+<a class="jxr_linenumber" name="L834" href="#L834">834</a> <em class="jxr_javadoccomment">     * @param  delim  the byte value that delimits strings shorter than the maximum length</em>
+<a class="jxr_linenumber" name="L835" href="#L835">835</a> <em class="jxr_javadoccomment">     * </em>
+<a class="jxr_linenumber" name="L836" href="#L836">836</a> <em class="jxr_javadoccomment">     * @return        An array of the extracted strings</em>
+<a class="jxr_linenumber" name="L837" href="#L837">837</a> <em class="jxr_javadoccomment">     *</em>
+<a class="jxr_linenumber" name="L838" href="#L838">838</a> <em class="jxr_javadoccomment">     * @see           #stringsToDelimitedBytes(String[], int, byte)</em>
+<a class="jxr_linenumber" name="L839" href="#L839">839</a> <em class="jxr_javadoccomment">     * </em>
+<a class="jxr_linenumber" name="L840" href="#L840">840</a> <em class="jxr_javadoccomment">     * @since         1.18</em>
+<a class="jxr_linenumber" name="L841" href="#L841">841</a> <em class="jxr_javadoccomment">     */</em>
+<a class="jxr_linenumber" name="L842" href="#L842">842</a>     <strong class="jxr_keyword">static</strong> String[] delimitedBytesToStrings(byte[] bytes, <strong class="jxr_keyword">int</strong> maxlen, byte delim) {
+<a class="jxr_linenumber" name="L843" href="#L843">843</a>         <strong class="jxr_keyword">if</strong> (maxlen &lt;= 0) {
+<a class="jxr_linenumber" name="L844" href="#L844">844</a>             <strong class="jxr_keyword">return</strong> delimitedBytesToStrings(bytes, delim);
+<a class="jxr_linenumber" name="L845" href="#L845">845</a>         }
+<a class="jxr_linenumber" name="L846" href="#L846">846</a> 
+<a class="jxr_linenumber" name="L847" href="#L847">847</a>         String[] res = <strong class="jxr_keyword">new</strong> String[(bytes.length + maxlen - 1) / maxlen];
+<a class="jxr_linenumber" name="L848" href="#L848">848</a>         ParsePosition pos = <strong class="jxr_keyword">new</strong> ParsePosition(0);
+<a class="jxr_linenumber" name="L849" href="#L849">849</a>         <strong class="jxr_keyword">for</strong> (<strong class="jxr_keyword">int</strong> i = 0; i &lt; res.length; i++) {
+<a class="jxr_linenumber" name="L850" href="#L850">850</a>             res[i] = extractString(bytes, pos, maxlen, delim);
+<a class="jxr_linenumber" name="L851" href="#L851">851</a>         }
+<a class="jxr_linenumber" name="L852" href="#L852">852</a>         <strong class="jxr_keyword">return</strong> res;
+<a class="jxr_linenumber" name="L853" href="#L853">853</a>     }
+<a class="jxr_linenumber" name="L854" href="#L854">854</a> 
+<a class="jxr_linenumber" name="L855" href="#L855">855</a> }
 </pre>
 <hr/>
 <div id="footer">Copyright &#169; 1996&#x2013;2024 nom-tam-fits. All rights reserved.</div>

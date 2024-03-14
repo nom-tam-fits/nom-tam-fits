@@ -770,39 +770,37 @@
 <a class="jxr_linenumber" name="L762" href="#L762">762</a>     <strong class="jxr_keyword">private</strong> <strong class="jxr_keyword">static</strong> <strong class="jxr_keyword">void</strong> initializeThreadPool() {
 <a class="jxr_linenumber" name="L763" href="#L763">763</a>         <strong class="jxr_keyword">synchronized</strong> (GLOBAL_SETTINGS) {
 <a class="jxr_linenumber" name="L764" href="#L764">764</a>             <strong class="jxr_keyword">if</strong> (threadPool == <strong class="jxr_keyword">null</strong>) {
-<a class="jxr_linenumber" name="L765" href="#L765">765</a>                 <em class="jxr_comment">// 1.5 thread per core</em>
-<a class="jxr_linenumber" name="L766" href="#L766">766</a>                 threadPool = Executors.newFixedThreadPool(Runtime.getRuntime().availableProcessors() * 2, <em class="jxr_comment">//</em>
-<a class="jxr_linenumber" name="L767" href="#L767">767</a>                         <strong class="jxr_keyword">new</strong> ThreadFactory() {
+<a class="jxr_linenumber" name="L765" href="#L765">765</a>                 threadPool = Executors.newFixedThreadPool(Runtime.getRuntime().availableProcessors() * 2, <em class="jxr_comment">//</em>
+<a class="jxr_linenumber" name="L766" href="#L766">766</a>                         <strong class="jxr_keyword">new</strong> ThreadFactory() {
+<a class="jxr_linenumber" name="L767" href="#L767">767</a>                             <strong class="jxr_keyword">private</strong> <strong class="jxr_keyword">int</strong> counter = 1;
 <a class="jxr_linenumber" name="L768" href="#L768">768</a> 
-<a class="jxr_linenumber" name="L769" href="#L769">769</a>                             <strong class="jxr_keyword">private</strong> <strong class="jxr_keyword">int</strong> counter = 1;
-<a class="jxr_linenumber" name="L770" href="#L770">770</a> 
-<a class="jxr_linenumber" name="L771" href="#L771">771</a>                             @Override
-<a class="jxr_linenumber" name="L772" href="#L772">772</a>                             <strong class="jxr_keyword">public</strong> Thread newThread(Runnable r) {
-<a class="jxr_linenumber" name="L773" href="#L773">773</a>                                 Thread thread = <strong class="jxr_keyword">new</strong> Thread(r, <span class="jxr_string">"nom-tam-fits worker "</span> + counter++);
-<a class="jxr_linenumber" name="L774" href="#L774">774</a>                                 thread.setDaemon(<strong class="jxr_keyword">true</strong>);
-<a class="jxr_linenumber" name="L775" href="#L775">775</a>                                 <strong class="jxr_keyword">return</strong> thread;
-<a class="jxr_linenumber" name="L776" href="#L776">776</a>                             }
-<a class="jxr_linenumber" name="L777" href="#L777">777</a>                         });
-<a class="jxr_linenumber" name="L778" href="#L778">778</a>             }
-<a class="jxr_linenumber" name="L779" href="#L779">779</a>         }
-<a class="jxr_linenumber" name="L780" href="#L780">780</a>     }
-<a class="jxr_linenumber" name="L781" href="#L781">781</a> 
-<a class="jxr_linenumber" name="L782" href="#L782">782</a>     <em class="jxr_javadoccomment">/**</em>
-<a class="jxr_linenumber" name="L783" href="#L783">783</a> <em class="jxr_javadoccomment">     * Returns the current settings that guide how we read or produce FITS files.</em>
-<a class="jxr_linenumber" name="L784" href="#L784">784</a> <em class="jxr_javadoccomment">     * </em>
-<a class="jxr_linenumber" name="L785" href="#L785">785</a> <em class="jxr_javadoccomment">     * @return the current active settings for generating or interpreting FITS files.</em>
-<a class="jxr_linenumber" name="L786" href="#L786">786</a> <em class="jxr_javadoccomment">     */</em>
-<a class="jxr_linenumber" name="L787" href="#L787">787</a>     <strong class="jxr_keyword">protected</strong> <strong class="jxr_keyword">static</strong> FitsSettings current() {
-<a class="jxr_linenumber" name="L788" href="#L788">788</a>         FitsSettings settings = LOCAL_SETTINGS.get();
-<a class="jxr_linenumber" name="L789" href="#L789">789</a>         <strong class="jxr_keyword">if</strong> (settings == <strong class="jxr_keyword">null</strong>) {
-<a class="jxr_linenumber" name="L790" href="#L790">790</a>             <strong class="jxr_keyword">return</strong> GLOBAL_SETTINGS;
-<a class="jxr_linenumber" name="L791" href="#L791">791</a>         }
-<a class="jxr_linenumber" name="L792" href="#L792">792</a>         <strong class="jxr_keyword">return</strong> settings;
-<a class="jxr_linenumber" name="L793" href="#L793">793</a>     }
-<a class="jxr_linenumber" name="L794" href="#L794">794</a> 
-<a class="jxr_linenumber" name="L795" href="#L795">795</a>     <strong class="jxr_keyword">private</strong> <a name="FitsFactory" href="../../../nom/tam/fits/FitsFactory.html#FitsFactory">FitsFactory</a>() {
-<a class="jxr_linenumber" name="L796" href="#L796">796</a>     }
-<a class="jxr_linenumber" name="L797" href="#L797">797</a> }
+<a class="jxr_linenumber" name="L769" href="#L769">769</a>                             @Override
+<a class="jxr_linenumber" name="L770" href="#L770">770</a>                             <strong class="jxr_keyword">public</strong> Thread newThread(Runnable r) {
+<a class="jxr_linenumber" name="L771" href="#L771">771</a>                                 Thread thread = <strong class="jxr_keyword">new</strong> Thread(r, <span class="jxr_string">"nom-tam-fits worker "</span> + counter++);
+<a class="jxr_linenumber" name="L772" href="#L772">772</a>                                 thread.setDaemon(<strong class="jxr_keyword">true</strong>);
+<a class="jxr_linenumber" name="L773" href="#L773">773</a>                                 <strong class="jxr_keyword">return</strong> thread;
+<a class="jxr_linenumber" name="L774" href="#L774">774</a>                             }
+<a class="jxr_linenumber" name="L775" href="#L775">775</a>                         });
+<a class="jxr_linenumber" name="L776" href="#L776">776</a>             }
+<a class="jxr_linenumber" name="L777" href="#L777">777</a>         }
+<a class="jxr_linenumber" name="L778" href="#L778">778</a>     }
+<a class="jxr_linenumber" name="L779" href="#L779">779</a> 
+<a class="jxr_linenumber" name="L780" href="#L780">780</a>     <em class="jxr_javadoccomment">/**</em>
+<a class="jxr_linenumber" name="L781" href="#L781">781</a> <em class="jxr_javadoccomment">     * Returns the current settings that guide how we read or produce FITS files.</em>
+<a class="jxr_linenumber" name="L782" href="#L782">782</a> <em class="jxr_javadoccomment">     * </em>
+<a class="jxr_linenumber" name="L783" href="#L783">783</a> <em class="jxr_javadoccomment">     * @return the current active settings for generating or interpreting FITS files.</em>
+<a class="jxr_linenumber" name="L784" href="#L784">784</a> <em class="jxr_javadoccomment">     */</em>
+<a class="jxr_linenumber" name="L785" href="#L785">785</a>     <strong class="jxr_keyword">protected</strong> <strong class="jxr_keyword">static</strong> FitsSettings current() {
+<a class="jxr_linenumber" name="L786" href="#L786">786</a>         FitsSettings settings = LOCAL_SETTINGS.get();
+<a class="jxr_linenumber" name="L787" href="#L787">787</a>         <strong class="jxr_keyword">if</strong> (settings == <strong class="jxr_keyword">null</strong>) {
+<a class="jxr_linenumber" name="L788" href="#L788">788</a>             <strong class="jxr_keyword">return</strong> GLOBAL_SETTINGS;
+<a class="jxr_linenumber" name="L789" href="#L789">789</a>         }
+<a class="jxr_linenumber" name="L790" href="#L790">790</a>         <strong class="jxr_keyword">return</strong> settings;
+<a class="jxr_linenumber" name="L791" href="#L791">791</a>     }
+<a class="jxr_linenumber" name="L792" href="#L792">792</a> 
+<a class="jxr_linenumber" name="L793" href="#L793">793</a>     <strong class="jxr_keyword">private</strong> <a name="FitsFactory" href="../../../nom/tam/fits/FitsFactory.html#FitsFactory">FitsFactory</a>() {
+<a class="jxr_linenumber" name="L794" href="#L794">794</a>     }
+<a class="jxr_linenumber" name="L795" href="#L795">795</a> }
 </pre>
 <hr/>
 <div id="footer">Copyright &#169; 1996&#x2013;2024 nom-tam-fits. All rights reserved.</div>

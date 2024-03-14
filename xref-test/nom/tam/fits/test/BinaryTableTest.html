@@ -1303,7 +1303,7 @@
 <a class="jxr_linenumber" name="L1295" href="#L1295">1295</a>         BinaryTable btab = <strong class="jxr_keyword">new</strong> BinaryTable();
 <a class="jxr_linenumber" name="L1296" href="#L1296">1296</a>         ByteArrayOutputStream out = <strong class="jxr_keyword">new</strong> ByteArrayOutputStream();
 <a class="jxr_linenumber" name="L1297" href="#L1297">1297</a> 
-<a class="jxr_linenumber" name="L1298" href="#L1298">1298</a>         Field field = BinaryTable.<strong class="jxr_keyword">class</strong>.getDeclaredField(<span class="jxr_string">"heapOffset"</span>);
+<a class="jxr_linenumber" name="L1298" href="#L1298">1298</a>         Field field = BinaryTable.<strong class="jxr_keyword">class</strong>.getDeclaredField(<span class="jxr_string">"heapAddress"</span>);
 <a class="jxr_linenumber" name="L1299" href="#L1299">1299</a>         field.setAccessible(<strong class="jxr_keyword">true</strong>);
 <a class="jxr_linenumber" name="L1300" href="#L1300">1300</a>         field.set(btab, 10);
 <a class="jxr_linenumber" name="L1301" href="#L1301">1301</a> 

@@ -301,157 +301,158 @@
 <a class="jxr_linenumber" name="L293" href="#L293">293</a>         } <strong class="jxr_keyword">catch</strong> (IOException e) {
 <a class="jxr_linenumber" name="L294" href="#L294">294</a>             <strong class="jxr_keyword">throw</strong> <strong class="jxr_keyword">new</strong> <a name="FitsException" href="../../../nom/tam/fits/FitsException.html#FitsException">FitsException</a>(<span class="jxr_string">"error reading deferred data: "</span> + e, e);
 <a class="jxr_linenumber" name="L295" href="#L295">295</a>         }
-<a class="jxr_linenumber" name="L296" href="#L296">296</a>     }
-<a class="jxr_linenumber" name="L297" href="#L297">297</a> 
-<a class="jxr_linenumber" name="L298" href="#L298">298</a>     <em class="jxr_javadoccomment">/**</em>
-<a class="jxr_linenumber" name="L299" href="#L299">299</a> <em class="jxr_javadoccomment">     * &lt;p&gt;</em>
-<a class="jxr_linenumber" name="L300" href="#L300">300</a> <em class="jxr_javadoccomment">     * Reads the data or skips over it for reading later, depending on whether reading from a stream or a random</em>
-<a class="jxr_linenumber" name="L301" href="#L301">301</a> <em class="jxr_javadoccomment">     * acessible input, respectively.</em>
-<a class="jxr_linenumber" name="L302" href="#L302">302</a> <em class="jxr_javadoccomment">     * &lt;/p&gt;</em>
-<a class="jxr_linenumber" name="L303" href="#L303">303</a> <em class="jxr_javadoccomment">     * &lt;p&gt;</em>
-<a class="jxr_linenumber" name="L304" href="#L304">304</a> <em class="jxr_javadoccomment">     * In case the argument is a an instance of {@link RandomAccess} input (such as a {@link nom.tam.util.FitsFile}, the</em>
-<a class="jxr_linenumber" name="L305" href="#L305">305</a> <em class="jxr_javadoccomment">     * call will simply note where in the file the data segment can be found for reading at a later point, only when the</em>
-<a class="jxr_linenumber" name="L306" href="#L306">306</a> <em class="jxr_javadoccomment">     * data content is accessed. This 'deferred' reading behavior make it possible to process large HDUs even with small</em>
-<a class="jxr_linenumber" name="L307" href="#L307">307</a> <em class="jxr_javadoccomment">     * amount of RAM, and can result in a significant performance boost when inspectring large FITS files, or using only</em>
-<a class="jxr_linenumber" name="L308" href="#L308">308</a> <em class="jxr_javadoccomment">     * select content from large FITS files.</em>
-<a class="jxr_linenumber" name="L309" href="#L309">309</a> <em class="jxr_javadoccomment">     * &lt;/p&gt;</em>
-<a class="jxr_linenumber" name="L310" href="#L310">310</a> <em class="jxr_javadoccomment">     *</em>
-<a class="jxr_linenumber" name="L311" href="#L311">311</a> <em class="jxr_javadoccomment">     * @throws PaddingException if there is missing padding between the end of the data segment and the enf-of-file.</em>
-<a class="jxr_linenumber" name="L312" href="#L312">312</a> <em class="jxr_javadoccomment">     * @throws FitsException    if the data appears to be corrupted.</em>
-<a class="jxr_linenumber" name="L313" href="#L313">313</a> <em class="jxr_javadoccomment">     *</em>
-<a class="jxr_linenumber" name="L314" href="#L314">314</a> <em class="jxr_javadoccomment">     * @see                     #getData()</em>
-<a class="jxr_linenumber" name="L315" href="#L315">315</a> <em class="jxr_javadoccomment">     * @see                     #ensureData()</em>
-<a class="jxr_linenumber" name="L316" href="#L316">316</a> <em class="jxr_javadoccomment">     */</em>
-<a class="jxr_linenumber" name="L317" href="#L317">317</a>     @Override
-<a class="jxr_linenumber" name="L318" href="#L318">318</a>     <strong class="jxr_keyword">public</strong> <strong class="jxr_keyword">void</strong> read(<a name="ArrayDataInput" href="../../../nom/tam/util/ArrayDataInput.html#ArrayDataInput">ArrayDataInput</a> in) <strong class="jxr_keyword">throws</strong> PaddingException, <a name="FitsException" href="../../../nom/tam/fits/FitsException.html#FitsException">FitsException</a> {
-<a class="jxr_linenumber" name="L319" href="#L319">319</a>         detach();
-<a class="jxr_linenumber" name="L320" href="#L320">320</a> 
-<a class="jxr_linenumber" name="L321" href="#L321">321</a>         <strong class="jxr_keyword">if</strong> (in == <strong class="jxr_keyword">null</strong>) {
-<a class="jxr_linenumber" name="L322" href="#L322">322</a>             <strong class="jxr_keyword">return</strong>;
-<a class="jxr_linenumber" name="L323" href="#L323">323</a>         }
-<a class="jxr_linenumber" name="L324" href="#L324">324</a> 
-<a class="jxr_linenumber" name="L325" href="#L325">325</a>         <strong class="jxr_keyword">if</strong> (in instanceof <a name="FitsInputStream" href="../../../nom/tam/util/FitsInputStream.html#FitsInputStream">FitsInputStream</a>) {
-<a class="jxr_linenumber" name="L326" href="#L326">326</a>             ((<a name="FitsInputStream" href="../../../nom/tam/util/FitsInputStream.html#FitsInputStream">FitsInputStream</a>) in).nextChecksum();
-<a class="jxr_linenumber" name="L327" href="#L327">327</a>         }
-<a class="jxr_linenumber" name="L328" href="#L328">328</a>         streamSum = 0L;
-<a class="jxr_linenumber" name="L329" href="#L329">329</a> 
-<a class="jxr_linenumber" name="L330" href="#L330">330</a>         setFileOffset(in);
-<a class="jxr_linenumber" name="L331" href="#L331">331</a> 
-<a class="jxr_linenumber" name="L332" href="#L332">332</a>         <strong class="jxr_keyword">if</strong> (getTrueSize() == 0) {
-<a class="jxr_linenumber" name="L333" href="#L333">333</a>             <strong class="jxr_keyword">return</strong>;
-<a class="jxr_linenumber" name="L334" href="#L334">334</a>         }
-<a class="jxr_linenumber" name="L335" href="#L335">335</a> 
-<a class="jxr_linenumber" name="L336" href="#L336">336</a>         <strong class="jxr_keyword">if</strong> (in instanceof <a name="RandomAccess" href="../../../nom/tam/util/RandomAccess.html#RandomAccess">RandomAccess</a>) {
-<a class="jxr_linenumber" name="L337" href="#L337">337</a>             <em class="jxr_comment">// If random accessible, then defer reading....</em>
-<a class="jxr_linenumber" name="L338" href="#L338">338</a>             <strong class="jxr_keyword">try</strong> {
-<a class="jxr_linenumber" name="L339" href="#L339">339</a>                 in.skipAllBytes(getTrueSize());
-<a class="jxr_linenumber" name="L340" href="#L340">340</a>             } <strong class="jxr_keyword">catch</strong> (IOException e) {
-<a class="jxr_linenumber" name="L341" href="#L341">341</a>                 <strong class="jxr_keyword">throw</strong> <strong class="jxr_keyword">new</strong> <a name="FitsException" href="../../../nom/tam/fits/FitsException.html#FitsException">FitsException</a>(<span class="jxr_string">"Unable to skip over data segment:"</span> + e, e);
-<a class="jxr_linenumber" name="L342" href="#L342">342</a>             }
-<a class="jxr_linenumber" name="L343" href="#L343">343</a>         } <strong class="jxr_keyword">else</strong> {
-<a class="jxr_linenumber" name="L344" href="#L344">344</a>             <strong class="jxr_keyword">try</strong> {
-<a class="jxr_linenumber" name="L345" href="#L345">345</a>                 loadData(in);
-<a class="jxr_linenumber" name="L346" href="#L346">346</a>             } <strong class="jxr_keyword">catch</strong> (IOException e) {
-<a class="jxr_linenumber" name="L347" href="#L347">347</a>                 <strong class="jxr_keyword">throw</strong> <strong class="jxr_keyword">new</strong> <a name="FitsException" href="../../../nom/tam/fits/FitsException.html#FitsException">FitsException</a>(<span class="jxr_string">"error reading data: "</span> + e, e);
-<a class="jxr_linenumber" name="L348" href="#L348">348</a>             }
-<a class="jxr_linenumber" name="L349" href="#L349">349</a>         }
-<a class="jxr_linenumber" name="L350" href="#L350">350</a> 
-<a class="jxr_linenumber" name="L351" href="#L351">351</a>         skipPadding(in);
-<a class="jxr_linenumber" name="L352" href="#L352">352</a> 
-<a class="jxr_linenumber" name="L353" href="#L353">353</a>         <strong class="jxr_keyword">if</strong> (in instanceof <a name="FitsInputStream" href="../../../nom/tam/util/FitsInputStream.html#FitsInputStream">FitsInputStream</a>) {
-<a class="jxr_linenumber" name="L354" href="#L354">354</a>             streamSum = ((<a name="FitsInputStream" href="../../../nom/tam/util/FitsInputStream.html#FitsInputStream">FitsInputStream</a>) in).nextChecksum();
-<a class="jxr_linenumber" name="L355" href="#L355">355</a>         }
-<a class="jxr_linenumber" name="L356" href="#L356">356</a>     }
-<a class="jxr_linenumber" name="L357" href="#L357">357</a> 
-<a class="jxr_linenumber" name="L358" href="#L358">358</a>     @SuppressWarnings(<span class="jxr_string">"resource"</span>)
-<a class="jxr_linenumber" name="L359" href="#L359">359</a>     @Override
-<a class="jxr_linenumber" name="L360" href="#L360">360</a>     <strong class="jxr_keyword">public</strong> <strong class="jxr_keyword">boolean</strong> reset() {
-<a class="jxr_linenumber" name="L361" href="#L361">361</a>         <strong class="jxr_keyword">try</strong> {
-<a class="jxr_linenumber" name="L362" href="#L362">362</a>             FitsUtil.reposition(getRandomAccessInput(), getFileOffset());
-<a class="jxr_linenumber" name="L363" href="#L363">363</a>             <strong class="jxr_keyword">return</strong> <strong class="jxr_keyword">true</strong>;
-<a class="jxr_linenumber" name="L364" href="#L364">364</a>         } <strong class="jxr_keyword">catch</strong> (Exception e) {
-<a class="jxr_linenumber" name="L365" href="#L365">365</a>             LOG.log(Level.SEVERE, <span class="jxr_string">"Unable to reset"</span>, e);
-<a class="jxr_linenumber" name="L366" href="#L366">366</a>             <strong class="jxr_keyword">return</strong> false;
-<a class="jxr_linenumber" name="L367" href="#L367">367</a>         }
-<a class="jxr_linenumber" name="L368" href="#L368">368</a>     }
-<a class="jxr_linenumber" name="L369" href="#L369">369</a> 
-<a class="jxr_linenumber" name="L370" href="#L370">370</a>     @SuppressWarnings(<span class="jxr_string">"resource"</span>)
-<a class="jxr_linenumber" name="L371" href="#L371">371</a>     @Override
-<a class="jxr_linenumber" name="L372" href="#L372">372</a>     <strong class="jxr_keyword">public</strong> <strong class="jxr_keyword">void</strong> rewrite() <strong class="jxr_keyword">throws</strong> <a name="FitsException" href="../../../nom/tam/fits/FitsException.html#FitsException">FitsException</a> {
-<a class="jxr_linenumber" name="L373" href="#L373">373</a>         <strong class="jxr_keyword">if</strong> (isDeferred()) {
-<a class="jxr_linenumber" name="L374" href="#L374">374</a>             <strong class="jxr_keyword">return</strong>; <em class="jxr_comment">// Nothing to do...</em>
-<a class="jxr_linenumber" name="L375" href="#L375">375</a>         }
-<a class="jxr_linenumber" name="L376" href="#L376">376</a> 
-<a class="jxr_linenumber" name="L377" href="#L377">377</a>         <strong class="jxr_keyword">if</strong> (!rewriteable()) {
-<a class="jxr_linenumber" name="L378" href="#L378">378</a>             <strong class="jxr_keyword">throw</strong> <strong class="jxr_keyword">new</strong> <a name="FitsException" href="../../../nom/tam/fits/FitsException.html#FitsException">FitsException</a>(<span class="jxr_string">"Illegal attempt to rewrite data"</span>);
-<a class="jxr_linenumber" name="L379" href="#L379">379</a>         }
-<a class="jxr_linenumber" name="L380" href="#L380">380</a> 
-<a class="jxr_linenumber" name="L381" href="#L381">381</a>         FitsUtil.reposition(getRandomAccessInput(), getFileOffset());
-<a class="jxr_linenumber" name="L382" href="#L382">382</a>         write((<a name="ArrayDataOutput" href="../../../nom/tam/util/ArrayDataOutput.html#ArrayDataOutput">ArrayDataOutput</a>) getRandomAccessInput());
-<a class="jxr_linenumber" name="L383" href="#L383">383</a>         <strong class="jxr_keyword">try</strong> {
-<a class="jxr_linenumber" name="L384" href="#L384">384</a>             ((<a name="ArrayDataOutput" href="../../../nom/tam/util/ArrayDataOutput.html#ArrayDataOutput">ArrayDataOutput</a>) getRandomAccessInput()).flush();
-<a class="jxr_linenumber" name="L385" href="#L385">385</a>         } <strong class="jxr_keyword">catch</strong> (IOException e) {
-<a class="jxr_linenumber" name="L386" href="#L386">386</a>             <strong class="jxr_keyword">throw</strong> <strong class="jxr_keyword">new</strong> <a name="FitsException" href="../../../nom/tam/fits/FitsException.html#FitsException">FitsException</a>(<span class="jxr_string">"Error in rewrite flush: "</span>, e);
-<a class="jxr_linenumber" name="L387" href="#L387">387</a>         }
-<a class="jxr_linenumber" name="L388" href="#L388">388</a>     }
-<a class="jxr_linenumber" name="L389" href="#L389">389</a> 
-<a class="jxr_linenumber" name="L390" href="#L390">390</a>     @Override
-<a class="jxr_linenumber" name="L391" href="#L391">391</a>     <strong class="jxr_keyword">public</strong> <strong class="jxr_keyword">boolean</strong> rewriteable() {
-<a class="jxr_linenumber" name="L392" href="#L392">392</a>         <strong class="jxr_keyword">return</strong> input != <strong class="jxr_keyword">null</strong> &amp;&amp; getFileOffset() &gt;= 0 &amp;&amp; (getTrueSize() + FITS_BLOCK_SIZE_MINUS_ONE)
-<a class="jxr_linenumber" name="L393" href="#L393">393</a>                 / FitsFactory.FITS_BLOCK_SIZE == (getTrueSize() + FITS_BLOCK_SIZE_MINUS_ONE) / FitsFactory.FITS_BLOCK_SIZE;
-<a class="jxr_linenumber" name="L394" href="#L394">394</a>     }
-<a class="jxr_linenumber" name="L395" href="#L395">395</a> 
-<a class="jxr_linenumber" name="L396" href="#L396">396</a>     <em class="jxr_javadoccomment">/**</em>
-<a class="jxr_linenumber" name="L397" href="#L397">397</a> <em class="jxr_javadoccomment">     * Detaches this data object from the input (if any), such as a file or stream, but not before loading data from the</em>
-<a class="jxr_linenumber" name="L398" href="#L398">398</a> <em class="jxr_javadoccomment">     * previously assigned input into memory.</em>
-<a class="jxr_linenumber" name="L399" href="#L399">399</a> <em class="jxr_javadoccomment">     * </em>
-<a class="jxr_linenumber" name="L400" href="#L400">400</a> <em class="jxr_javadoccomment">     * @throws FitsException if there was an issue loading the data from the previous input (if any)</em>
-<a class="jxr_linenumber" name="L401" href="#L401">401</a> <em class="jxr_javadoccomment">     * </em>
-<a class="jxr_linenumber" name="L402" href="#L402">402</a> <em class="jxr_javadoccomment">     * @see                  #isDeferred()</em>
-<a class="jxr_linenumber" name="L403" href="#L403">403</a> <em class="jxr_javadoccomment">     * </em>
-<a class="jxr_linenumber" name="L404" href="#L404">404</a> <em class="jxr_javadoccomment">     * @since                1.18</em>
-<a class="jxr_linenumber" name="L405" href="#L405">405</a> <em class="jxr_javadoccomment">     */</em>
-<a class="jxr_linenumber" name="L406" href="#L406">406</a>     <strong class="jxr_keyword">public</strong> <strong class="jxr_keyword">void</strong> detach() <strong class="jxr_keyword">throws</strong> <a name="FitsException" href="../../../nom/tam/fits/FitsException.html#FitsException">FitsException</a> {
-<a class="jxr_linenumber" name="L407" href="#L407">407</a>         ensureData();
-<a class="jxr_linenumber" name="L408" href="#L408">408</a>         clearInput();
-<a class="jxr_linenumber" name="L409" href="#L409">409</a>     }
-<a class="jxr_linenumber" name="L410" href="#L410">410</a> 
-<a class="jxr_linenumber" name="L411" href="#L411">411</a>     <strong class="jxr_keyword">private</strong> <strong class="jxr_keyword">void</strong> clearInput() {
-<a class="jxr_linenumber" name="L412" href="#L412">412</a>         input = <strong class="jxr_keyword">null</strong>;
-<a class="jxr_linenumber" name="L413" href="#L413">413</a>         fileOffset = -1;
-<a class="jxr_linenumber" name="L414" href="#L414">414</a>         dataSize = 0L;
-<a class="jxr_linenumber" name="L415" href="#L415">415</a>     }
-<a class="jxr_linenumber" name="L416" href="#L416">416</a> 
-<a class="jxr_linenumber" name="L417" href="#L417">417</a>     <em class="jxr_javadoccomment">/**</em>
-<a class="jxr_linenumber" name="L418" href="#L418">418</a> <em class="jxr_javadoccomment">     * Record the information necessary for eading the data content at a later time (deferred reading).</em>
-<a class="jxr_linenumber" name="L419" href="#L419">419</a> <em class="jxr_javadoccomment">     *</em>
-<a class="jxr_linenumber" name="L420" href="#L420">420</a> <em class="jxr_javadoccomment">     * @param o reread information.</em>
-<a class="jxr_linenumber" name="L421" href="#L421">421</a> <em class="jxr_javadoccomment">     *</em>
-<a class="jxr_linenumber" name="L422" href="#L422">422</a> <em class="jxr_javadoccomment">     * @see     #isDeferred()</em>
-<a class="jxr_linenumber" name="L423" href="#L423">423</a> <em class="jxr_javadoccomment">     */</em>
-<a class="jxr_linenumber" name="L424" href="#L424">424</a>     <strong class="jxr_keyword">protected</strong> <strong class="jxr_keyword">void</strong> setFileOffset(<a name="ArrayDataInput" href="../../../nom/tam/util/ArrayDataInput.html#ArrayDataInput">ArrayDataInput</a> o) {
-<a class="jxr_linenumber" name="L425" href="#L425">425</a>         <strong class="jxr_keyword">if</strong> (o instanceof <a name="RandomAccess" href="../../../nom/tam/util/RandomAccess.html#RandomAccess">RandomAccess</a>) {
-<a class="jxr_linenumber" name="L426" href="#L426">426</a>             fileOffset = FitsUtil.findOffset(o);
-<a class="jxr_linenumber" name="L427" href="#L427">427</a>             dataSize = getTrueSize();
-<a class="jxr_linenumber" name="L428" href="#L428">428</a>             input = (<a name="RandomAccess" href="../../../nom/tam/util/RandomAccess.html#RandomAccess">RandomAccess</a>) o;
-<a class="jxr_linenumber" name="L429" href="#L429">429</a>         } <strong class="jxr_keyword">else</strong> {
-<a class="jxr_linenumber" name="L430" href="#L430">430</a>             clearInput();
-<a class="jxr_linenumber" name="L431" href="#L431">431</a>         }
-<a class="jxr_linenumber" name="L432" href="#L432">432</a>     }
-<a class="jxr_linenumber" name="L433" href="#L433">433</a> 
-<a class="jxr_linenumber" name="L434" href="#L434">434</a>     @Override
-<a class="jxr_linenumber" name="L435" href="#L435">435</a>     <strong class="jxr_keyword">public</strong> <strong class="jxr_keyword">abstract</strong> <strong class="jxr_keyword">void</strong> write(<a name="ArrayDataOutput" href="../../../nom/tam/util/ArrayDataOutput.html#ArrayDataOutput">ArrayDataOutput</a> o) <strong class="jxr_keyword">throws</strong> FitsException;
-<a class="jxr_linenumber" name="L436" href="#L436">436</a> 
-<a class="jxr_linenumber" name="L437" href="#L437">437</a>     <em class="jxr_javadoccomment">/**</em>
-<a class="jxr_linenumber" name="L438" href="#L438">438</a> <em class="jxr_javadoccomment">     * Returns an approprotae HDU object that encapsulates this FITS data, and contains the minimal mandatory header</em>
-<a class="jxr_linenumber" name="L439" href="#L439">439</a> <em class="jxr_javadoccomment">     * description for that data.</em>
-<a class="jxr_linenumber" name="L440" href="#L440">440</a> <em class="jxr_javadoccomment">     * </em>
-<a class="jxr_linenumber" name="L441" href="#L441">441</a> <em class="jxr_javadoccomment">     * @throws FitsException If the data cannot be converted to an HDU for some reason.</em>
-<a class="jxr_linenumber" name="L442" href="#L442">442</a> <em class="jxr_javadoccomment">     * </em>
-<a class="jxr_linenumber" name="L443" href="#L443">443</a> <em class="jxr_javadoccomment">     * @return               a HDU object ocntaining the data and its minimal required header description</em>
-<a class="jxr_linenumber" name="L444" href="#L444">444</a> <em class="jxr_javadoccomment">     */</em>
-<a class="jxr_linenumber" name="L445" href="#L445">445</a>     <strong class="jxr_keyword">public</strong> <strong class="jxr_keyword">abstract</strong> BasicHDU&lt;?&gt; toHDU() <strong class="jxr_keyword">throws</strong> FitsException;
-<a class="jxr_linenumber" name="L446" href="#L446">446</a> }
+<a class="jxr_linenumber" name="L296" href="#L296">296</a> 
+<a class="jxr_linenumber" name="L297" href="#L297">297</a>     }
+<a class="jxr_linenumber" name="L298" href="#L298">298</a> 
+<a class="jxr_linenumber" name="L299" href="#L299">299</a>     <em class="jxr_javadoccomment">/**</em>
+<a class="jxr_linenumber" name="L300" href="#L300">300</a> <em class="jxr_javadoccomment">     * &lt;p&gt;</em>
+<a class="jxr_linenumber" name="L301" href="#L301">301</a> <em class="jxr_javadoccomment">     * Reads the data or skips over it for reading later, depending on whether reading from a stream or a random</em>
+<a class="jxr_linenumber" name="L302" href="#L302">302</a> <em class="jxr_javadoccomment">     * acessible input, respectively.</em>
+<a class="jxr_linenumber" name="L303" href="#L303">303</a> <em class="jxr_javadoccomment">     * &lt;/p&gt;</em>
+<a class="jxr_linenumber" name="L304" href="#L304">304</a> <em class="jxr_javadoccomment">     * &lt;p&gt;</em>
+<a class="jxr_linenumber" name="L305" href="#L305">305</a> <em class="jxr_javadoccomment">     * In case the argument is a an instance of {@link RandomAccess} input (such as a {@link nom.tam.util.FitsFile}, the</em>
+<a class="jxr_linenumber" name="L306" href="#L306">306</a> <em class="jxr_javadoccomment">     * call will simply note where in the file the data segment can be found for reading at a later point, only when the</em>
+<a class="jxr_linenumber" name="L307" href="#L307">307</a> <em class="jxr_javadoccomment">     * data content is accessed. This 'deferred' reading behavior make it possible to process large HDUs even with small</em>
+<a class="jxr_linenumber" name="L308" href="#L308">308</a> <em class="jxr_javadoccomment">     * amount of RAM, and can result in a significant performance boost when inspectring large FITS files, or using only</em>
+<a class="jxr_linenumber" name="L309" href="#L309">309</a> <em class="jxr_javadoccomment">     * select content from large FITS files.</em>
+<a class="jxr_linenumber" name="L310" href="#L310">310</a> <em class="jxr_javadoccomment">     * &lt;/p&gt;</em>
+<a class="jxr_linenumber" name="L311" href="#L311">311</a> <em class="jxr_javadoccomment">     *</em>
+<a class="jxr_linenumber" name="L312" href="#L312">312</a> <em class="jxr_javadoccomment">     * @throws PaddingException if there is missing padding between the end of the data segment and the enf-of-file.</em>
+<a class="jxr_linenumber" name="L313" href="#L313">313</a> <em class="jxr_javadoccomment">     * @throws FitsException    if the data appears to be corrupted.</em>
+<a class="jxr_linenumber" name="L314" href="#L314">314</a> <em class="jxr_javadoccomment">     *</em>
+<a class="jxr_linenumber" name="L315" href="#L315">315</a> <em class="jxr_javadoccomment">     * @see                     #getData()</em>
+<a class="jxr_linenumber" name="L316" href="#L316">316</a> <em class="jxr_javadoccomment">     * @see                     #ensureData()</em>
+<a class="jxr_linenumber" name="L317" href="#L317">317</a> <em class="jxr_javadoccomment">     */</em>
+<a class="jxr_linenumber" name="L318" href="#L318">318</a>     @Override
+<a class="jxr_linenumber" name="L319" href="#L319">319</a>     <strong class="jxr_keyword">public</strong> <strong class="jxr_keyword">void</strong> read(<a name="ArrayDataInput" href="../../../nom/tam/util/ArrayDataInput.html#ArrayDataInput">ArrayDataInput</a> in) <strong class="jxr_keyword">throws</strong> PaddingException, <a name="FitsException" href="../../../nom/tam/fits/FitsException.html#FitsException">FitsException</a> {
+<a class="jxr_linenumber" name="L320" href="#L320">320</a>         detach();
+<a class="jxr_linenumber" name="L321" href="#L321">321</a> 
+<a class="jxr_linenumber" name="L322" href="#L322">322</a>         <strong class="jxr_keyword">if</strong> (in == <strong class="jxr_keyword">null</strong>) {
+<a class="jxr_linenumber" name="L323" href="#L323">323</a>             <strong class="jxr_keyword">return</strong>;
+<a class="jxr_linenumber" name="L324" href="#L324">324</a>         }
+<a class="jxr_linenumber" name="L325" href="#L325">325</a> 
+<a class="jxr_linenumber" name="L326" href="#L326">326</a>         <strong class="jxr_keyword">if</strong> (in instanceof <a name="FitsInputStream" href="../../../nom/tam/util/FitsInputStream.html#FitsInputStream">FitsInputStream</a>) {
+<a class="jxr_linenumber" name="L327" href="#L327">327</a>             ((<a name="FitsInputStream" href="../../../nom/tam/util/FitsInputStream.html#FitsInputStream">FitsInputStream</a>) in).nextChecksum();
+<a class="jxr_linenumber" name="L328" href="#L328">328</a>         }
+<a class="jxr_linenumber" name="L329" href="#L329">329</a>         streamSum = 0L;
+<a class="jxr_linenumber" name="L330" href="#L330">330</a> 
+<a class="jxr_linenumber" name="L331" href="#L331">331</a>         setFileOffset(in);
+<a class="jxr_linenumber" name="L332" href="#L332">332</a> 
+<a class="jxr_linenumber" name="L333" href="#L333">333</a>         <strong class="jxr_keyword">if</strong> (getTrueSize() == 0) {
+<a class="jxr_linenumber" name="L334" href="#L334">334</a>             <strong class="jxr_keyword">return</strong>;
+<a class="jxr_linenumber" name="L335" href="#L335">335</a>         }
+<a class="jxr_linenumber" name="L336" href="#L336">336</a> 
+<a class="jxr_linenumber" name="L337" href="#L337">337</a>         <strong class="jxr_keyword">if</strong> (in instanceof <a name="RandomAccess" href="../../../nom/tam/util/RandomAccess.html#RandomAccess">RandomAccess</a>) {
+<a class="jxr_linenumber" name="L338" href="#L338">338</a>             <em class="jxr_comment">// If random accessible, then defer reading....</em>
+<a class="jxr_linenumber" name="L339" href="#L339">339</a>             <strong class="jxr_keyword">try</strong> {
+<a class="jxr_linenumber" name="L340" href="#L340">340</a>                 in.skipAllBytes(getTrueSize());
+<a class="jxr_linenumber" name="L341" href="#L341">341</a>             } <strong class="jxr_keyword">catch</strong> (IOException e) {
+<a class="jxr_linenumber" name="L342" href="#L342">342</a>                 <strong class="jxr_keyword">throw</strong> <strong class="jxr_keyword">new</strong> <a name="FitsException" href="../../../nom/tam/fits/FitsException.html#FitsException">FitsException</a>(<span class="jxr_string">"Unable to skip over data segment:"</span> + e, e);
+<a class="jxr_linenumber" name="L343" href="#L343">343</a>             }
+<a class="jxr_linenumber" name="L344" href="#L344">344</a>         } <strong class="jxr_keyword">else</strong> {
+<a class="jxr_linenumber" name="L345" href="#L345">345</a>             <strong class="jxr_keyword">try</strong> {
+<a class="jxr_linenumber" name="L346" href="#L346">346</a>                 loadData(in);
+<a class="jxr_linenumber" name="L347" href="#L347">347</a>             } <strong class="jxr_keyword">catch</strong> (IOException e) {
+<a class="jxr_linenumber" name="L348" href="#L348">348</a>                 <strong class="jxr_keyword">throw</strong> <strong class="jxr_keyword">new</strong> <a name="FitsException" href="../../../nom/tam/fits/FitsException.html#FitsException">FitsException</a>(<span class="jxr_string">"error reading data: "</span> + e, e);
+<a class="jxr_linenumber" name="L349" href="#L349">349</a>             }
+<a class="jxr_linenumber" name="L350" href="#L350">350</a>         }
+<a class="jxr_linenumber" name="L351" href="#L351">351</a> 
+<a class="jxr_linenumber" name="L352" href="#L352">352</a>         skipPadding(in);
+<a class="jxr_linenumber" name="L353" href="#L353">353</a> 
+<a class="jxr_linenumber" name="L354" href="#L354">354</a>         <strong class="jxr_keyword">if</strong> (in instanceof <a name="FitsInputStream" href="../../../nom/tam/util/FitsInputStream.html#FitsInputStream">FitsInputStream</a>) {
+<a class="jxr_linenumber" name="L355" href="#L355">355</a>             streamSum = ((<a name="FitsInputStream" href="../../../nom/tam/util/FitsInputStream.html#FitsInputStream">FitsInputStream</a>) in).nextChecksum();
+<a class="jxr_linenumber" name="L356" href="#L356">356</a>         }
+<a class="jxr_linenumber" name="L357" href="#L357">357</a>     }
+<a class="jxr_linenumber" name="L358" href="#L358">358</a> 
+<a class="jxr_linenumber" name="L359" href="#L359">359</a>     @SuppressWarnings(<span class="jxr_string">"resource"</span>)
+<a class="jxr_linenumber" name="L360" href="#L360">360</a>     @Override
+<a class="jxr_linenumber" name="L361" href="#L361">361</a>     <strong class="jxr_keyword">public</strong> <strong class="jxr_keyword">boolean</strong> reset() {
+<a class="jxr_linenumber" name="L362" href="#L362">362</a>         <strong class="jxr_keyword">try</strong> {
+<a class="jxr_linenumber" name="L363" href="#L363">363</a>             FitsUtil.reposition(getRandomAccessInput(), getFileOffset());
+<a class="jxr_linenumber" name="L364" href="#L364">364</a>             <strong class="jxr_keyword">return</strong> <strong class="jxr_keyword">true</strong>;
+<a class="jxr_linenumber" name="L365" href="#L365">365</a>         } <strong class="jxr_keyword">catch</strong> (Exception e) {
+<a class="jxr_linenumber" name="L366" href="#L366">366</a>             LOG.log(Level.SEVERE, <span class="jxr_string">"Unable to reset"</span>, e);
+<a class="jxr_linenumber" name="L367" href="#L367">367</a>             <strong class="jxr_keyword">return</strong> false;
+<a class="jxr_linenumber" name="L368" href="#L368">368</a>         }
+<a class="jxr_linenumber" name="L369" href="#L369">369</a>     }
+<a class="jxr_linenumber" name="L370" href="#L370">370</a> 
+<a class="jxr_linenumber" name="L371" href="#L371">371</a>     @SuppressWarnings(<span class="jxr_string">"resource"</span>)
+<a class="jxr_linenumber" name="L372" href="#L372">372</a>     @Override
+<a class="jxr_linenumber" name="L373" href="#L373">373</a>     <strong class="jxr_keyword">public</strong> <strong class="jxr_keyword">void</strong> rewrite() <strong class="jxr_keyword">throws</strong> <a name="FitsException" href="../../../nom/tam/fits/FitsException.html#FitsException">FitsException</a> {
+<a class="jxr_linenumber" name="L374" href="#L374">374</a>         <strong class="jxr_keyword">if</strong> (isDeferred()) {
+<a class="jxr_linenumber" name="L375" href="#L375">375</a>             <strong class="jxr_keyword">return</strong>; <em class="jxr_comment">// Nothing to do...</em>
+<a class="jxr_linenumber" name="L376" href="#L376">376</a>         }
+<a class="jxr_linenumber" name="L377" href="#L377">377</a> 
+<a class="jxr_linenumber" name="L378" href="#L378">378</a>         <strong class="jxr_keyword">if</strong> (!rewriteable()) {
+<a class="jxr_linenumber" name="L379" href="#L379">379</a>             <strong class="jxr_keyword">throw</strong> <strong class="jxr_keyword">new</strong> <a name="FitsException" href="../../../nom/tam/fits/FitsException.html#FitsException">FitsException</a>(<span class="jxr_string">"Illegal attempt to rewrite data"</span>);
+<a class="jxr_linenumber" name="L380" href="#L380">380</a>         }
+<a class="jxr_linenumber" name="L381" href="#L381">381</a> 
+<a class="jxr_linenumber" name="L382" href="#L382">382</a>         FitsUtil.reposition(getRandomAccessInput(), getFileOffset());
+<a class="jxr_linenumber" name="L383" href="#L383">383</a>         write((<a name="ArrayDataOutput" href="../../../nom/tam/util/ArrayDataOutput.html#ArrayDataOutput">ArrayDataOutput</a>) getRandomAccessInput());
+<a class="jxr_linenumber" name="L384" href="#L384">384</a>         <strong class="jxr_keyword">try</strong> {
+<a class="jxr_linenumber" name="L385" href="#L385">385</a>             ((<a name="ArrayDataOutput" href="../../../nom/tam/util/ArrayDataOutput.html#ArrayDataOutput">ArrayDataOutput</a>) getRandomAccessInput()).flush();
+<a class="jxr_linenumber" name="L386" href="#L386">386</a>         } <strong class="jxr_keyword">catch</strong> (IOException e) {
+<a class="jxr_linenumber" name="L387" href="#L387">387</a>             <strong class="jxr_keyword">throw</strong> <strong class="jxr_keyword">new</strong> <a name="FitsException" href="../../../nom/tam/fits/FitsException.html#FitsException">FitsException</a>(<span class="jxr_string">"Error in rewrite flush: "</span>, e);
+<a class="jxr_linenumber" name="L388" href="#L388">388</a>         }
+<a class="jxr_linenumber" name="L389" href="#L389">389</a>     }
+<a class="jxr_linenumber" name="L390" href="#L390">390</a> 
+<a class="jxr_linenumber" name="L391" href="#L391">391</a>     @Override
+<a class="jxr_linenumber" name="L392" href="#L392">392</a>     <strong class="jxr_keyword">public</strong> <strong class="jxr_keyword">boolean</strong> rewriteable() {
+<a class="jxr_linenumber" name="L393" href="#L393">393</a>         <strong class="jxr_keyword">return</strong> input != <strong class="jxr_keyword">null</strong> &amp;&amp; getFileOffset() &gt;= 0 &amp;&amp; (getTrueSize() + FITS_BLOCK_SIZE_MINUS_ONE)
+<a class="jxr_linenumber" name="L394" href="#L394">394</a>                 / FitsFactory.FITS_BLOCK_SIZE == (getTrueSize() + FITS_BLOCK_SIZE_MINUS_ONE) / FitsFactory.FITS_BLOCK_SIZE;
+<a class="jxr_linenumber" name="L395" href="#L395">395</a>     }
+<a class="jxr_linenumber" name="L396" href="#L396">396</a> 
+<a class="jxr_linenumber" name="L397" href="#L397">397</a>     <em class="jxr_javadoccomment">/**</em>
+<a class="jxr_linenumber" name="L398" href="#L398">398</a> <em class="jxr_javadoccomment">     * Detaches this data object from the input (if any), such as a file or stream, but not before loading data from the</em>
+<a class="jxr_linenumber" name="L399" href="#L399">399</a> <em class="jxr_javadoccomment">     * previously assigned input into memory.</em>
+<a class="jxr_linenumber" name="L400" href="#L400">400</a> <em class="jxr_javadoccomment">     * </em>
+<a class="jxr_linenumber" name="L401" href="#L401">401</a> <em class="jxr_javadoccomment">     * @throws FitsException if there was an issue loading the data from the previous input (if any)</em>
+<a class="jxr_linenumber" name="L402" href="#L402">402</a> <em class="jxr_javadoccomment">     * </em>
+<a class="jxr_linenumber" name="L403" href="#L403">403</a> <em class="jxr_javadoccomment">     * @see                  #isDeferred()</em>
+<a class="jxr_linenumber" name="L404" href="#L404">404</a> <em class="jxr_javadoccomment">     * </em>
+<a class="jxr_linenumber" name="L405" href="#L405">405</a> <em class="jxr_javadoccomment">     * @since                1.18</em>
+<a class="jxr_linenumber" name="L406" href="#L406">406</a> <em class="jxr_javadoccomment">     */</em>
+<a class="jxr_linenumber" name="L407" href="#L407">407</a>     <strong class="jxr_keyword">public</strong> <strong class="jxr_keyword">void</strong> detach() <strong class="jxr_keyword">throws</strong> <a name="FitsException" href="../../../nom/tam/fits/FitsException.html#FitsException">FitsException</a> {
+<a class="jxr_linenumber" name="L408" href="#L408">408</a>         ensureData();
+<a class="jxr_linenumber" name="L409" href="#L409">409</a>         clearInput();
+<a class="jxr_linenumber" name="L410" href="#L410">410</a>     }
+<a class="jxr_linenumber" name="L411" href="#L411">411</a> 
+<a class="jxr_linenumber" name="L412" href="#L412">412</a>     <strong class="jxr_keyword">private</strong> <strong class="jxr_keyword">void</strong> clearInput() {
+<a class="jxr_linenumber" name="L413" href="#L413">413</a>         input = <strong class="jxr_keyword">null</strong>;
+<a class="jxr_linenumber" name="L414" href="#L414">414</a>         fileOffset = -1;
+<a class="jxr_linenumber" name="L415" href="#L415">415</a>         dataSize = 0L;
+<a class="jxr_linenumber" name="L416" href="#L416">416</a>     }
+<a class="jxr_linenumber" name="L417" href="#L417">417</a> 
+<a class="jxr_linenumber" name="L418" href="#L418">418</a>     <em class="jxr_javadoccomment">/**</em>
+<a class="jxr_linenumber" name="L419" href="#L419">419</a> <em class="jxr_javadoccomment">     * Record the information necessary for eading the data content at a later time (deferred reading).</em>
+<a class="jxr_linenumber" name="L420" href="#L420">420</a> <em class="jxr_javadoccomment">     *</em>
+<a class="jxr_linenumber" name="L421" href="#L421">421</a> <em class="jxr_javadoccomment">     * @param o reread information.</em>
+<a class="jxr_linenumber" name="L422" href="#L422">422</a> <em class="jxr_javadoccomment">     *</em>
+<a class="jxr_linenumber" name="L423" href="#L423">423</a> <em class="jxr_javadoccomment">     * @see     #isDeferred()</em>
+<a class="jxr_linenumber" name="L424" href="#L424">424</a> <em class="jxr_javadoccomment">     */</em>
+<a class="jxr_linenumber" name="L425" href="#L425">425</a>     <strong class="jxr_keyword">protected</strong> <strong class="jxr_keyword">void</strong> setFileOffset(<a name="ArrayDataInput" href="../../../nom/tam/util/ArrayDataInput.html#ArrayDataInput">ArrayDataInput</a> o) {
+<a class="jxr_linenumber" name="L426" href="#L426">426</a>         <strong class="jxr_keyword">if</strong> (o instanceof <a name="RandomAccess" href="../../../nom/tam/util/RandomAccess.html#RandomAccess">RandomAccess</a>) {
+<a class="jxr_linenumber" name="L427" href="#L427">427</a>             fileOffset = FitsUtil.findOffset(o);
+<a class="jxr_linenumber" name="L428" href="#L428">428</a>             dataSize = getTrueSize();
+<a class="jxr_linenumber" name="L429" href="#L429">429</a>             input = (<a name="RandomAccess" href="../../../nom/tam/util/RandomAccess.html#RandomAccess">RandomAccess</a>) o;
+<a class="jxr_linenumber" name="L430" href="#L430">430</a>         } <strong class="jxr_keyword">else</strong> {
+<a class="jxr_linenumber" name="L431" href="#L431">431</a>             clearInput();
+<a class="jxr_linenumber" name="L432" href="#L432">432</a>         }
+<a class="jxr_linenumber" name="L433" href="#L433">433</a>     }
+<a class="jxr_linenumber" name="L434" href="#L434">434</a> 
+<a class="jxr_linenumber" name="L435" href="#L435">435</a>     @Override
+<a class="jxr_linenumber" name="L436" href="#L436">436</a>     <strong class="jxr_keyword">public</strong> <strong class="jxr_keyword">abstract</strong> <strong class="jxr_keyword">void</strong> write(<a name="ArrayDataOutput" href="../../../nom/tam/util/ArrayDataOutput.html#ArrayDataOutput">ArrayDataOutput</a> o) <strong class="jxr_keyword">throws</strong> FitsException;
+<a class="jxr_linenumber" name="L437" href="#L437">437</a> 
+<a class="jxr_linenumber" name="L438" href="#L438">438</a>     <em class="jxr_javadoccomment">/**</em>
+<a class="jxr_linenumber" name="L439" href="#L439">439</a> <em class="jxr_javadoccomment">     * Returns an approprotae HDU object that encapsulates this FITS data, and contains the minimal mandatory header</em>
+<a class="jxr_linenumber" name="L440" href="#L440">440</a> <em class="jxr_javadoccomment">     * description for that data.</em>
+<a class="jxr_linenumber" name="L441" href="#L441">441</a> <em class="jxr_javadoccomment">     * </em>
+<a class="jxr_linenumber" name="L442" href="#L442">442</a> <em class="jxr_javadoccomment">     * @throws FitsException If the data cannot be converted to an HDU for some reason.</em>
+<a class="jxr_linenumber" name="L443" href="#L443">443</a> <em class="jxr_javadoccomment">     * </em>
+<a class="jxr_linenumber" name="L444" href="#L444">444</a> <em class="jxr_javadoccomment">     * @return               a HDU object ocntaining the data and its minimal required header description</em>
+<a class="jxr_linenumber" name="L445" href="#L445">445</a> <em class="jxr_javadoccomment">     */</em>
+<a class="jxr_linenumber" name="L446" href="#L446">446</a>     <strong class="jxr_keyword">public</strong> <strong class="jxr_keyword">abstract</strong> BasicHDU&lt;?&gt; toHDU() <strong class="jxr_keyword">throws</strong> FitsException;
+<a class="jxr_linenumber" name="L447" href="#L447">447</a> }
 </pre>
 <hr/>
 <div id="footer">Copyright &#169; 1996&#x2013;2024 nom-tam-fits. All rights reserved.</div>
