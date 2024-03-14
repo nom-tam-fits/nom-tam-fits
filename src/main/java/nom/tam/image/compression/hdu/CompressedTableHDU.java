@@ -171,7 +171,9 @@ public class CompressedTableHDU extends BinaryTableHDU {
      *                                         compression will be used if a column has no compression specified). You
      *                                         should typically use one or more of the enum values defined in
      *                                         {@link Compression}. The FITS standard currently allows only the lossless
-     *                                         GZIP_1, GZIP_2, RICE_1, or NO_COMPRESS.
+     *                                         GZIP_1, GZIP_2, RICE_1, or NOCOMPRESS (e.g.
+     *                                         {@link Compression#ZCMPTYPE_GZIP_1} or
+     *                                         {@link Compression#ZCMPTYPE_NOCOMPRESS}.)
      *
      * @return                             the prepared compressed binary table HDU.
      *
@@ -179,6 +181,11 @@ public class CompressedTableHDU extends BinaryTableHDU {
      *                                         tables.
      * @throws FitsException               if the binary table could not be used to create a compressed binary table.
      * 
+     * @see                                Compression
+     * @see                                Compression#ZCMPTYPE_GZIP_1
+     * @see                                Compression#ZCMPTYPE_GZIP_2
+     * @see                                Compression#ZCMPTYPE_RICE_1
+     * @see                                Compression#ZCMPTYPE_NOCOMPRESS
      * @see                                #asBinaryTableHDU()
      * @see                                #useOldStandardVLAIndexing(boolean)
      */
