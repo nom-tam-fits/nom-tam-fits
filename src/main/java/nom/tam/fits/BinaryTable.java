@@ -2249,7 +2249,7 @@ public class BinaryTable extends AbstractTableData implements Cloneable {
      * @author      Attila Kovacs
      */
     public void reserveRowSpace(int rows) {
-        heapAddress = rows > 0 ? getRegularTableSize() + rows * getRowBytes() : 0;
+        heapAddress = rows > 0 ? getRegularTableSize() + (long) rows * getRowBytes() : 0;
     }
 
     /**
