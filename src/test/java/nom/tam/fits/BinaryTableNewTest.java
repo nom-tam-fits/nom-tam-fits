@@ -1746,7 +1746,7 @@ public class BinaryTableNewTest {
     }
 
     @Test
-    public void testAddBytreVaryingColumn() throws Exception {
+    public void testAddByteVaryingColumn() throws Exception {
         class MyBinaryTable extends BinaryTable {
             @Override
             public void addByteVaryingColumn() {
@@ -1760,6 +1760,56 @@ public class BinaryTableNewTest {
         Assert.assertEquals(1, tab.getNCols());
         Assert.assertTrue(tab.getDescriptor(0).isVariableSize());
         Assert.assertEquals(byte.class, tab.getDescriptor(0).getElementClass());
+    }
+
+    @Test
+    public void testReserveRowSpace() throws Exception {
+        BinaryTable tab = new BinaryTable();
+        tab.addColumn(BinaryTable.ColumnDesc.createForFixedArrays(int.class, 20));
+
+        // 36 rows is exactly 1 FITS block...
+        tab.reserveRowSpace(37);
+        BinaryTableHDU hdu = tab.toHDU();
+
+        Assert.assertEquals(37 * 80, hdu.getHeader().getIntValue(Standard.THEAP));
+        Assert.assertEquals(37 * 80, hdu.getHeader().getIntValue(Standard.PCOUNT));
+
+        File file = new File("target/bintable/resrows.fits");
+        file.getParentFile().mkdirs();
+
+        try (Fits f = new Fits()) {
+            f.addHDU(hdu);
+            f.write(file);
+            f.close();
+        }
+
+        // 2 headers, and 2 table blocks...
+        Assert.assertEquals(4 * FitsFactory.FITS_BLOCK_SIZE, file.length());
+    }
+
+    @Test
+    public void testReserveHeapSpace() throws Exception {
+        BinaryTable tab = new BinaryTable();
+        tab.addColumn(BinaryTable.ColumnDesc.createForFixedArrays(int.class, 20));
+
+        // 36 rows is exactly 1 FITS block...
+        tab.reserveHeapSpace(FitsFactory.FITS_BLOCK_SIZE + 1);
+        BinaryTableHDU hdu = tab.toHDU();
+
+        Assert.assertEquals(0, hdu.getHeader().getIntValue(Standard.THEAP));
+        Assert.assertEquals(FitsFactory.FITS_BLOCK_SIZE + 1, hdu.getHeader().getIntValue(Standard.PCOUNT));
+
+        File file = new File("target/bintable/resheap.fits");
+        file.getParentFile().mkdirs();
+
+        try (Fits f = new Fits()) {
+            f.addHDU(hdu);
+            f.write(file);
+            f.close();
+        }
+
+        // 2 headers, and 2 table blocks...
+        Assert.assertEquals(4 * FitsFactory.FITS_BLOCK_SIZE, file.length());
     }
 
 }

@@ -643,12 +643,11 @@ public final class FitsUtil {
      * @see         #pad(ArrayDataOutput, long)
      */
     public static int padding(long size) {
-
         int mod = (int) (size % FitsFactory.FITS_BLOCK_SIZE);
         if (mod > 0) {
-            mod = FitsFactory.FITS_BLOCK_SIZE - mod;
+            return FitsFactory.FITS_BLOCK_SIZE - mod;
         }
-        return mod;
+        return 0;
     }
 
     /**

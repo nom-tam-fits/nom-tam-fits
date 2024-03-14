@@ -1230,6 +1230,11 @@ public class BinaryTable extends AbstractTableData implements Cloneable {
     private long heapAddress;
 
     /**
+     * (bytes) Empty space to leave after the populated heap area for future additions.
+     */
+    private int heapReserve;
+
+    /**
      * The heap size (from the header)
      */
     private int heapSize;
@@ -2220,6 +2225,53 @@ public class BinaryTable extends AbstractTableData implements Cloneable {
     }
 
     /**
+     * <p>
+     * Reserves space for future addition of rows at the end of the regular table. In effect, this pushes the heap to
+     * start at an offset value, leaving a gap between the main table and the heap in the FITS file. If your table
+     * contains variable-length data columns, you may also want to reserve extra heap space for these via
+     * {@link #reserveHeapSpace()}.
+     * </p>
+     * <p>
+     * Note, that (C)FITSIO, as of version 4.4.0, has no proper support for offset heaps, and so you may want to be
+     * careful using this function as the resulting FITS files, while standard, may not be readable by other tools due
+     * to their own lack of support. Note, however, that you may also use this function to undo an offset heap with an
+     * argument &lt;=0;
+     * </p>
+     * 
+     * @param  rows The number of future rows fow which space should be reserved (relative to the current table size)
+     *                  for future additions, or &lt;=0 to ensure that the heap always follows immediately after the
+     *                  main table, e.g. for better (C)FITSIO interoperability.
+     * 
+     * @see         #reserveHeapSpace(int)
+     * 
+     * @since       1.19.1
+     * 
+     * @author      Attila Kovacs
+     */
+    public void reserveRowSpace(int rows) {
+        heapAddress = getRegularTableSize() + Math.max(0, rows) * getRowBytes();
+    }
+
+    /**
+     * Reserves space in the file at the end of the heap for future heap growth (e.g. different/longer or new VLA
+     * entries). You may generally want to call this along with {@link #reserveRowSpace(int)} if yuor table contains
+     * variable-length columns, to ensure storage for future data in these. You may call with &lt;=0 to discards any
+     * previously reserved space.
+     * 
+     * @param  bytes The number of bytes of unused space to reserve at the end of the heap, e.g. for future
+     *                   modifications or additions, when writing the data to file.
+     * 
+     * @see          #reserveRowSpace(int)
+     * 
+     * @since        1.19.1
+     * 
+     * @author       Attila Kovacs
+     */
+    public void reserveHeapSpace(int bytes) {
+        heapReserve = Math.max(0, bytes);
+    }
+
+    /**
      * Returns the address of the heap from the star of the HDU in the file.
      * 
      * @return (bytes) the start of the heap area from the beginning of the HDU.
@@ -2238,11 +2290,18 @@ public class BinaryTable extends AbstractTableData implements Cloneable {
         return getHeapAddress() - getRegularTableSize();
     }
 
+    private int getHeapSize() {
+        if (heap != null && heap.size() > heapSize) {
+            return heap.size();
+        }
+        return heapSize;
+    }
+
     /**
      * @return the size of the heap -- including the offset from the end of the table data, and reserved space after.
      */
     synchronized long getParameterSize() {
-        return getHeapOffset() + (heap == null ? heapSize : heap.size());
+        return getHeapOffset() + getHeapSize() + heapReserve;
     }
 
     /**
@@ -3091,14 +3150,21 @@ public class BinaryTable extends AbstractTableData implements Cloneable {
 
             // Now check if we need to write the heap
             if (getParameterSize() > 0) {
-                if (getHeapOffset() > 0) {
-                    FitsUtil.addPadding(getHeapOffset());
+                for (long rem = getHeapOffset(); rem > 0;) {
+                    byte[] b = new byte[(int) Math.min(getHeapOffset(), Integer.MAX_VALUE)];
+                    os.write(b);
+                    rem -= b.length;
                 }
 
                 getHeap().write(os);
+
+                if (heapReserve > 0) {
+                    byte[] b = new byte[heapReserve];
+                    os.write(b);
+                }
             }
 
-            FitsUtil.pad(os, getTrueSize());
+            FitsUtil.pad(os, getTrueSize(), (byte) 0);
         } catch (IOException e) {
             throw new FitsException("Unable to write table:" + e, e);
         }

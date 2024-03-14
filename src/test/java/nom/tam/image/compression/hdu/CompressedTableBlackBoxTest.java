@@ -84,6 +84,10 @@ public class CompressedTableBlackBoxTest {
             CompressedTableHDU cHDU = CompressedTableHDU.fromBinaryTableHDU((BinaryTableHDU) fitsOrg.getHDU(1), 0, algos)//
                     .compress();
 
+            for (int col = 0; col < cHDU.getNCols(); col++) {
+                Assert.assertEquals(algo, cHDU.getHeader().getStringValue(Compression.ZCTYPn.n(col + 1)));
+            }
+
             fitsCompressed.addHDU(cHDU);
 
             fitsCompressed.write(file);
