@@ -1235,9 +1235,9 @@ public class BinaryTable extends AbstractTableData implements Cloneable {
     private int heapReserve;
 
     /**
-     * The heap size (from the header)
+     * The original heap size (from the header)
      */
-    private int heapSize;
+    private int heapFileSize;
 
     /**
      * A list describing each of the columns in the table
@@ -1359,7 +1359,7 @@ public class BinaryTable extends AbstractTableData implements Cloneable {
         }
 
         heapAddress = (int) heapOffsetL;
-        heapSize = (int) heapSizeL;
+        heapFileSize = (int) heapSizeL;
 
         int nCol = header.getIntValue(Standard.TFIELDS);
         rowLen = 0;
@@ -2290,11 +2290,19 @@ public class BinaryTable extends AbstractTableData implements Cloneable {
         return getHeapAddress() - getRegularTableSize();
     }
 
+    /**
+     * It returns the heap size for storing in the FITS, which is the larger of the actual space occupied by the current
+     * heap, or the original heap size based on the header when the HDU was read from an input.
+     * 
+     * @return (byte) the size of the heap in the FITS file.
+     * 
+     * @see    #compact()
+     */
     private int getHeapSize() {
-        if (heap != null && heap.size() > heapSize) {
+        if (heap != null && heap.size() > heapFileSize) {
             return heap.size();
         }
-        return heapSize;
+        return heapFileSize;
     }
 
     /**
@@ -3137,15 +3145,20 @@ public class BinaryTable extends AbstractTableData implements Cloneable {
     @SuppressWarnings("resource")
     @Override
     public void write(ArrayDataOutput os) throws FitsException {
-        if (os != getRandomAccessInput()) {
-            ensureData();
-        }
 
         try {
-            if (table != null) {
-                table.write(os);
-            } else {
+            if (isDeferred() && os == getRandomAccessInput()) {
+                // It it's a deferred mode re-write, then data were edited in place if at all,
+                // so we can skip the main table.
                 ((RandomAccess) os).skipAllBytes(getRegularTableSize());
+            } else {
+                // otherwise make sure we loaded all data before writing to the output
+                ensureData();
+
+                // Write the regular table (if any)
+                if (getRegularTableSize() > 0) {
+                    table.write(os);
+                }
             }
 
             // Now check if we need to write the heap
@@ -3661,7 +3674,7 @@ public class BinaryTable extends AbstractTableData implements Cloneable {
         if (input instanceof RandomAccess) {
             FitsUtil.reposition(input, getFileOffset() + getHeapAddress());
         }
-        heap = new FitsHeap(heapSize);
+        heap = new FitsHeap(heapFileSize);
         if (input != null) {
             heap.read(input);
         }
@@ -3922,6 +3935,7 @@ public class BinaryTable extends AbstractTableData implements Cloneable {
      * @throws FitsException if there was an error accessing the heap or the main data table comntaining the heap
      *                           locators. In case of an error the table content may be left in a damaged state.
      * 
+     * @see                  #compact()
      * @see                  #setElement(int, int, Object)
      * @see                  #addColumn(Object)
      * @see                  #deleteColumns(int, int)
@@ -3973,6 +3987,24 @@ public class BinaryTable extends AbstractTableData implements Cloneable {
 
         heap = compact;
         return oldSize - compact.size();
+    }
+
+    /**
+     * Discard the information about the original heap size (if this table was read from an input), and instead use the
+     * real size of the actual heap (plus reserved space around it) when writing to an output. Compacted tables may not
+     * be re-writeable to the same file from which they were read, since they may be shorter than the original, but they
+     * can always be written to a different file, which may at times be smaller than the original. It may be used along
+     * with {@link #defragment()} to create FITS files with optimized storage from FITS files that may contain wasted
+     * space.
+     * 
+     * @see    #defragment()
+     * 
+     * @since  1.19.1
+     * 
+     * @author Attila Kovacs
+     */
+    public void compact() {
+        heapFileSize = 0;
     }
 
     @Override

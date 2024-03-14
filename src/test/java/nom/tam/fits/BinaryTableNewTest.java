@@ -1814,6 +1814,41 @@ public class BinaryTableNewTest {
     }
 
     @Test
+    public void testCompact() throws Exception {
+        BinaryTable tab = new BinaryTable();
+        tab.addColumn(BinaryTable.ColumnDesc.createForFixedArrays(int.class, 20));
+
+        // 36 rows is exactly 1 FITS block...
+        tab.reserveRowSpace(37);
+        BinaryTableHDU hdu = tab.toHDU();
+
+        File file = new File("target/bintable/resrows.fits");
+        file.getParentFile().mkdirs();
+
+        try (Fits f = new Fits()) {
+            f.addHDU(hdu);
+            f.write(file);
+            f.close();
+        }
+
+        Assert.assertEquals(4 * FitsFactory.FITS_BLOCK_SIZE, file.length());
+
+        try (Fits f = new Fits(file); Fits compacted = new Fits()) {
+            hdu = (BinaryTableHDU) f.getHDU(1);
+            hdu.getData().reserveRowSpace(0); // Clear reserved space
+            hdu.getData().compact();
+
+            compacted.addHDU(hdu);
+
+            file = new File("target/bintable/resrows-compacted.fits");
+            compacted.write(file);
+            compacted.close();
+        }
+
+        Assert.assertEquals(2 * FitsFactory.FITS_BLOCK_SIZE, file.length());
+    }
+
+    @Test
     public void testReserveHeapSpace() throws Exception {
         BinaryTable tab = new BinaryTable();
         tab.addColumn(BinaryTable.ColumnDesc.createForFixedArrays(int.class, 20));
