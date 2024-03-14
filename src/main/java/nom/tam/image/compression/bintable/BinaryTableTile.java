@@ -70,7 +70,7 @@ public abstract class BinaryTableTile implements Runnable {
 
     protected final int length;
 
-    protected final int tileIndex;
+    protected final int tileIndex; /// 0-based tile index
 
     private Future<?> future;
 
@@ -79,7 +79,7 @@ public abstract class BinaryTableTile implements Runnable {
         rowStart = description.getRowStart();
         rowEnd = description.getRowEnd();
         column = description.getColumn();
-        tileIndex = description.getTileIndex();
+        tileIndex = description.getTileIndex() - 1;
         compressionAlgorithm = description.getCompressionAlgorithm();
         type = ElementType.forClass(data.getElementClass(column));
         length = (rowEnd - rowStart) * data.getElementSize(column);
@@ -89,10 +89,18 @@ public abstract class BinaryTableTile implements Runnable {
         future = threadPool.submit(this);
     }
 
+    /**
+     * @deprecated (<i> for internal use</i>) No longer used.
+     */
     public void fillHeader(Header header) throws HeaderCardException {
-        header.card(Compression.ZCTYPn.n(column)).value(compressionAlgorithm);
+        header.card(Compression.ZCTYPn.n(column + 1)).value(compressionAlgorithm);
     }
 
+    /**
+     * Returns the zero-based tile index.
+     * 
+     * @return the zero-based tile index (a.k.a. Java index).
+     */
     public int getTileIndex() {
         return tileIndex;
     }
@@ -101,7 +109,8 @@ public abstract class BinaryTableTile implements Runnable {
         try {
             future.get();
         } catch (Exception e) {
-            throw new IllegalStateException("could not process tile " + tileIndex + ": " + e.getMessage(), e);
+            throw new IllegalStateException(
+                    "could not process tile " + (tileIndex + 1) + ", column " + column + ": " + e.getMessage(), e);
         }
     }
 
@@ -109,8 +118,15 @@ public abstract class BinaryTableTile implements Runnable {
         return CompressorProvider.findCompressorControl(null, compressionAlgorithm, type.primitiveClass());
     }
 
+    protected ICompressorControl getCompressorControl(Class<?> dataType) {
+        return CompressorProvider.findCompressorControl(null, compressionAlgorithm, dataType);
+    }
+
+    protected ICompressorControl getGZipCompressorControl() {
+        return CompressorProvider.findCompressorControl(null, Compression.ZCMPTYPE_GZIP_1, byte.class);
+    }
+
     protected int getUncompressedSizeInBytes() {
         return length * type.size();
     }
-
 }

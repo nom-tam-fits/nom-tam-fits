@@ -4,6 +4,8 @@ import java.io.ByteArrayInputStream;
 import java.io.ByteArrayOutputStream;
 import java.io.File;
 import java.io.IOException;
+import java.nio.Buffer;
+import java.nio.ByteBuffer;
 import java.util.Random;
 import java.util.zip.GZIPInputStream;
 
@@ -16,10 +18,16 @@ import nom.tam.fits.Fits;
 import nom.tam.fits.FitsException;
 import nom.tam.fits.Header;
 import nom.tam.fits.HeaderCard;
+import nom.tam.fits.compression.algorithm.api.ICompressOption;
+import nom.tam.fits.compression.algorithm.api.ICompressorControl;
 import nom.tam.fits.header.Compression;
 import nom.tam.fits.header.IFitsHeader;
 import nom.tam.fits.header.Standard;
 import nom.tam.fits.util.BlackBoxImages;
+import nom.tam.image.compression.bintable.BinaryTableTileCompressor;
+import nom.tam.image.compression.bintable.BinaryTableTileDecompressor;
+import nom.tam.image.compression.bintable.BinaryTableTileDescription;
+import nom.tam.util.ColumnTable;
 import nom.tam.util.Cursor;
 import nom.tam.util.SafeClose;
 
@@ -55,6 +63,7 @@ import nom.tam.util.SafeClose;
  */
 
 import static nom.tam.fits.header.Standard.XTENSION_BINTABLE;
+import static nom.tam.image.compression.bintable.BinaryTableTileDescription.tile;
 
 public class CompressedTableTest {
 
@@ -475,6 +484,123 @@ public class CompressedTableTest {
                 .fromBinaryTableHDU((BinaryTableHDU) fitsUncompressed.getHDU(1), tileSize).compress();
         compressedTable.compress();
         compressedTable.asBinaryTableHDU(0, 0);
+    }
+
+    @Test(expected = IllegalArgumentException.class)
+    public void testB12TableCompressIllegalAlgo() throws Exception {
+        Fits fitsUncompressed = new Fits("src/test/resources/nom/tam/table/comp/bt12.fits");
+        CompressedTableHDU.fromBinaryTableHDU((BinaryTableHDU) fitsUncompressed.getHDU(1), 0, "BLAH");
+    }
+
+    @Test
+    public void testB12TableCompressPrepTwice() throws Exception {
+        Fits fitsUncompressed = new Fits("src/test/resources/nom/tam/table/comp/bt12.fits");
+        BinaryTableHDU hdu = (BinaryTableHDU) fitsUncompressed.getHDU(1);
+        CompressedTableHDU cHDU = CompressedTableHDU.fromBinaryTableHDU(hdu, 0);
+        cHDU.getData().prepareUncompressedData(hdu.getData().getData());
+        cHDU.getData().prepareUncompressedData(hdu.getData().getData());
+        // No exception.
+    }
+
+    @Test
+    public void testFixedTableCompressDefragment() throws Exception {
+        BinaryTable btab = new BinaryTable();
+        btab.addColumn(BinaryTable.ColumnDesc.createForFixedArrays(int.class, 6));
+        for (int i = 0; i < 100; i++) {
+            btab.addRowEntries(new int[] {i, i + 1, i + 2, i + 3, i + 4, i + 5});
+        }
+
+        CompressedTableHDU chdu = CompressedTableHDU.fromBinaryTableHDU(btab.toHDU(), 0);
+        chdu.getData().defragment(); // No exception.
+    }
+
+    @Test
+    public void testVLACompressDefragment() throws Exception {
+        BinaryTable btab = new BinaryTable();
+        btab.addColumn(BinaryTable.ColumnDesc.createForVariableSize(int.class));
+        for (int i = 0; i < 100; i++) {
+            btab.addRowEntries(new int[] {i, i + 1, i + 2, i + 3, i + 4, i + 5});
+        }
+
+        CompressedTableHDU chdu = CompressedTableHDU.fromBinaryTableHDU(btab.toHDU(), 0);
+        Assert.assertEquals(0, chdu.getData().defragment());
+    }
+
+    @Test
+    public void testSetReversedVLAIndices() throws Exception {
+        try {
+            Assert.assertFalse(CompressedTableHDU.hasOldStandardVLAIndexing());
+            CompressedTableHDU.useOldStandardVLAIndexing(true);
+            Assert.assertTrue(CompressedTableHDU.hasOldStandardVLAIndexing());
+            CompressedTableHDU.useOldStandardVLAIndexing(false);
+            Assert.assertFalse(CompressedTableHDU.hasOldStandardVLAIndexing());
+        } finally {
+            CompressedTableHDU.useOldStandardVLAIndexing(false);
+        }
+    }
+
+    @Test
+    public void testBinaryTableTileFillHeader() throws Exception {
+        ColumnTable<?> tab = new ColumnTable<>();
+        tab.addColumn(int.class, 10);
+        BinaryTableTileDecompressor tile = new BinaryTableTileDecompressor(new CompressedTableData(), tab, tile()//
+                .rowStart(0)//
+                .rowEnd(10)//
+                .column(0)//
+                .tileIndex(1)//
+                .compressionAlgorithm("BLAH"));
+
+        Header h = new Header();
+        tile.fillHeader(h);
+        Assert.assertEquals("BLAH", h.getStringValue(Compression.ZCTYPn.n(1)));
+    }
+
+    @Test(expected = IllegalStateException.class)
+    public void testBinaryTableTileCompressorError() throws Exception {
+        class MyCompressor extends BinaryTableTileCompressor {
+            public MyCompressor(CompressedTableData compressedTable, ColumnTable<?> table,
+                    BinaryTableTileDescription description) {
+
+                super(compressedTable, table, description);
+                // TODO Auto-generated constructor stub
+            }
+
+            public ICompressorControl getCompressorControl() {
+                return new ICompressorControl() {
+
+                    @Override
+                    public boolean compress(Buffer in, ByteBuffer out, ICompressOption option) {
+                        return false;
+                    }
+
+                    @Override
+                    public void decompress(ByteBuffer in, Buffer out, ICompressOption option) {
+                    }
+
+                    @Override
+                    public ICompressOption option() {
+                        return null;
+                    }
+                };
+            }
+        }
+
+        MyCompressor tile = null;
+
+        try {
+            ColumnTable<?> tab = new ColumnTable<>();
+            tab.addColumn(new int[100], 10);
+
+            tile = new MyCompressor(new CompressedTableData(), tab, tile()//
+                    .rowStart(0)//
+                    .rowEnd(10)//
+                    .column(0)//
+                    .tileIndex(1));
+        } catch (Exception e) {
+            throw new Exception(e.getMessage(), e);
+        }
+
+        tile.run();
     }
 
 }

@@ -127,7 +127,7 @@ public final class GenericKey {
     }
 
     /**
-     * utility class do not instanciate it.
+     * utility class do not instantiate it.
      */
     private GenericKey() {
     }

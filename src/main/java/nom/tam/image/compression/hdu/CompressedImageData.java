@@ -42,8 +42,6 @@ import nom.tam.util.ArrayFuncs;
  * #L%
  */
 
-import static nom.tam.fits.header.Compression.ZIMAGE;
-
 /**
  * FITS representation of a compressed image. Compressed images are essentially stored as FITS binary tables. They are
  * distinguished only by a set of mandatory header keywords and specific column data structure. The image-specific
@@ -81,7 +79,8 @@ public class CompressedImageData extends BinaryTable {
     @Override
     public void fillHeader(Header h) throws FitsException {
         super.fillHeader(h);
-        h.addValue(ZIMAGE, true);
+        h.addValue(Compression.ZIMAGE, true);
+        h.deleteKey(Compression.ZTABLE);
     }
 
     /**
@@ -101,6 +100,7 @@ public class CompressedImageData extends BinaryTable {
      */
     @SuppressWarnings("javadoc")
     protected void compress(CompressedImageHDU hdu) throws FitsException {
+        discardVLAs();
         tiledImageOperation().compress(hdu);
     }
 

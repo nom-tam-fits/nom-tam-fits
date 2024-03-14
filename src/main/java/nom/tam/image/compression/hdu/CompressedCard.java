@@ -63,6 +63,7 @@ import static nom.tam.fits.header.Compression.ZQUANTIZ;
 import static nom.tam.fits.header.Compression.ZSIMPLE;
 import static nom.tam.fits.header.Compression.ZTABLE;
 import static nom.tam.fits.header.Compression.ZTENSION;
+import static nom.tam.fits.header.Compression.ZTHEAP;
 import static nom.tam.fits.header.Compression.ZTILELEN;
 import static nom.tam.fits.header.Compression.ZTILEn;
 import static nom.tam.fits.header.Compression.ZVALn;
@@ -126,16 +127,7 @@ enum CompressedCard {
     MAP_ZTILELEN(ZTILELEN), MAP_ZCTYPn(ZCTYPn), MAP_ZBLOCKED(ZBLOCKED), MAP_ZCMPTYPE(ZCMPTYPE), //
     MAP_ZDATASUM(ZDATASUM), MAP_ZDITHER0(ZDITHER0), MAP_ZEXTEND(ZEXTEND), MAP_ZGCOUNT(ZGCOUNT), //
     MAP_ZHECKSUM(ZHECKSUM), MAP_ZIMAGE(ZIMAGE), MAP_ZTABLE(ZTABLE), MAP_ZNAMEn(ZNAMEn), //
-    MAP_ZNAXIS(ZNAXIS), MAP_THEAP(THEAP) {
-
-        @Override
-        protected void backupCard(HeaderCard card, Cursor<String, HeaderCard> headerIterator) throws HeaderCardException {
-        }
-
-        @Override
-        protected void restoreCard(HeaderCard card, Cursor<String, HeaderCard> headerIterator) throws HeaderCardException {
-        }
-    },
+    MAP_ZNAXIS(ZNAXIS), MAP_THEAP(THEAP),
 
     MAP_ZNAXISn(ZNAXISn) {
 
@@ -152,8 +144,9 @@ enum CompressedCard {
         }
 
     },
-    MAP_ZPCOUNT(ZPCOUNT), MAP_ZQUANTIZ(ZQUANTIZ), MAP_ZSIMPLE(ZSIMPLE), MAP_ZTENSION(ZTENSION), MAP_ZTILEn(
-            ZTILEn), MAP_ZVALn(ZVALn);
+
+    MAP_ZPCOUNT(ZPCOUNT), MAP_ZTHEAP(ZTHEAP), MAP_ZQUANTIZ(ZQUANTIZ), MAP_ZSIMPLE(ZSIMPLE), MAP_ZTENSION(
+            ZTENSION), MAP_ZTILEn(ZTILEn), MAP_ZVALn(ZVALn);
 
     private final IFitsHeader compressedHeaderKey;
 

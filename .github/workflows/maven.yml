@@ -77,8 +77,8 @@ jobs:
         fi
       working-directory: ./nom-tam-fits
         
-    - name: Check ppackage
-      run: mvn package -Ppublic-api
+    - name: Check package
+      run: mvn clean package -Ppublic-api
       working-directory: ./nom-tam-fits
         
   release:

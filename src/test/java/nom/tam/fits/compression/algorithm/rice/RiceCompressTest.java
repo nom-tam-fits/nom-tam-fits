@@ -420,4 +420,11 @@ public class RiceCompressTest {
         }
     }
 
+    @Test
+    public void testRiceQuantizeCompressIption() {
+        RiceCompressOption c = new RiceCompressOption();
+        RiceQuantizeCompressOption o = new RiceQuantizeCompressOption(c);
+        Assert.assertEquals(c, o.getRiceCompressOption());
+    }
+
 }

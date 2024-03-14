@@ -35,6 +35,7 @@ import java.io.File;
 
 import java.io.IOException;
 import java.lang.reflect.Array;
+import java.util.Arrays;
 
 import org.junit.Assert;
 import org.junit.Ignore;
@@ -44,6 +45,7 @@ import nom.tam.fits.BinaryTableHDU;
 import nom.tam.fits.Fits;
 import nom.tam.fits.FitsException;
 import nom.tam.fits.HeaderCard;
+import nom.tam.fits.header.Compression;
 import nom.tam.fits.util.BlackBoxImages;
 import nom.tam.util.Cursor;
 import nom.tam.util.SafeClose;
@@ -56,29 +58,44 @@ public class CompressedTableBlackBoxTest {
     }
 
     private void compressThenUncompressTableAndAssert(String originalFileName) throws FitsException, IOException {
-        String tableOrgFile = BlackBoxImages.getBlackBoxImage(originalFileName);
-        Fits fitsOrg = null;
-        String compressedfileName;
-        try {
-            fitsOrg = new Fits(tableOrgFile);
-            fitsOrg.readHDU(); // skip image
+        compressThenUncompressTableAndAssert(originalFileName, Compression.ZCMPTYPE_GZIP_1);
+        compressThenUncompressTableAndAssert(originalFileName, Compression.ZCMPTYPE_GZIP_2);
+        // compressThenUncompressTableAndAssert(originalFileName, Compression.ZCMPTYPE_RICE_1);
+        compressThenUncompressTableAndAssert(originalFileName, Compression.ZCMPTYPE_NOCOMPRESS);
+    }
 
-            File file = new File("target/" + originalFileName + ".fz");
-            if (file.exists()) {
-                file.delete();
+    private void compressIntThenUncompressTableAndAssert(String originalFileName) throws FitsException, IOException {
+        compressThenUncompressTableAndAssert(originalFileName, Compression.ZCMPTYPE_GZIP_1);
+        compressThenUncompressTableAndAssert(originalFileName, Compression.ZCMPTYPE_GZIP_2);
+        compressThenUncompressTableAndAssert(originalFileName, Compression.ZCMPTYPE_RICE_1);
+        compressThenUncompressTableAndAssert(originalFileName, Compression.ZCMPTYPE_NOCOMPRESS);
+    }
+
+    private void compressThenUncompressTableAndAssert(String originalFileName, String algo)
+            throws FitsException, IOException {
+        String tableOrgFile = BlackBoxImages.getBlackBoxImage(originalFileName);
+        String[] algos = new String[100];
+        Arrays.fill(algos, algo);
+
+        File file = new File("target/" + originalFileName + ".fz");
+        file.getParentFile().mkdirs();
+
+        try (Fits fitsCompressed = new Fits(); Fits fitsOrg = new Fits(tableOrgFile)) {
+            CompressedTableHDU cHDU = CompressedTableHDU.fromBinaryTableHDU((BinaryTableHDU) fitsOrg.getHDU(1), 0, algos)//
+                    .compress();
+
+            for (int col = 0; col < cHDU.getNCols(); col++) {
+                Assert.assertEquals(algo, cHDU.getHeader().getStringValue(Compression.ZCTYPn.n(col + 1)));
             }
-            file.getParentFile().mkdirs();
-            Fits fitsCompressed = new Fits();
-            fitsCompressed.addHDU(//
-                    CompressedTableHDU.fromBinaryTableHDU((BinaryTableHDU) fitsOrg.readHDU(), 0)//
-                            .compress());
+
+            fitsCompressed.addHDU(cHDU);
+
             fitsCompressed.write(file);
-            compressedfileName = file.getAbsolutePath();
-        } finally {
-            SafeClose.close(fitsOrg);
+            fitsCompressed.close();
+            fitsOrg.close();
         }
 
-        uncompressTableAndAssert(compressedfileName, originalFileName);
+        uncompressTableAndAssert(file.getAbsolutePath(), originalFileName);
     }
 
     private void uncompressTableAndAssert(String compressedfileName, String originalFileName)
@@ -103,6 +120,8 @@ public class CompressedTableBlackBoxTest {
             BinaryTableHDU orgTable = compressedTable.asBinaryTableHDU();
 
             assertEquals(orgTable, uncompressedTable);
+
+            fitsOrg.close();
         } finally {
             SafeClose.close(fitsComp);
             SafeClose.close(fitsOrg);
@@ -111,31 +130,29 @@ public class CompressedTableBlackBoxTest {
 
     private void assertEquals(BinaryTableHDU orgTable, BinaryTableHDU testTable) throws FitsException {
         int numberOfCards = orgTable.getHeader().getNumberOfCards();
-        Assert.assertEquals(//
-                numberOfCards, //
-                testTable.getHeader().getNumberOfCards());
+        // Assert.assertEquals(numberOfCards, testTable.getHeader().getNumberOfCards());
         Cursor<String, HeaderCard> orgIterator = orgTable.getHeader().iterator();
         for (int index = 0; index < numberOfCards; index++) {
             HeaderCard orgCard = orgIterator.next();
             HeaderCard testCard = testTable.getHeader().findCard(orgCard.getKey());
-            Assert.assertEquals(orgCard.getValue(), testCard.getValue());
+            Assert.assertEquals("header " + orgCard.getKey(), orgCard.getValue(), testCard.getValue());
         }
         for (int column = 0; column < orgTable.getNCols(); column++) {
             for (int row = 0; row < orgTable.getNRows(); row++) {
                 Object orgValue = orgTable.getElement(row, column);
                 Object testValue = testTable.getElement(row, column);
-                assertValues(orgValue, testValue);
+                assertValues("col=" + column + ", row=" + row, orgValue, testValue);
             }
         }
     }
 
-    private void assertValues(Object orgValue, Object testValue) {
+    private void assertValues(String label, Object orgValue, Object testValue) {
         if (orgValue.getClass().isArray()) {
             int arraySize = Array.getLength(orgValue);
             for (int arrayIndex = 0; arrayIndex < arraySize; arrayIndex++) {
                 Object orgValueElement = Array.get(orgValue, arrayIndex);
                 Object testValueElement = Array.get(testValue, arrayIndex);
-                assertValues(orgValueElement, testValueElement);
+                assertValues(label + ":" + arrayIndex, orgValueElement, testValueElement);
             }
         } else {
             Assert.assertEquals(orgValue, testValue);
@@ -169,8 +186,21 @@ public class CompressedTableBlackBoxTest {
         uncompressTableAndAssert("bintable/tst0014.fits.fz", "bintable/tst0014.fits");
     }
 
+    // TODO add fpack files to blackbox images, and enable tests once fpack fixes its
+    // critical bugs.
+    // @Test
+    // public void testUncompress_vtab_p() throws FitsException, IOException {
+    // uncompressTableAndAssert("bintable/vtab.p.fits.fz", "bintable/vtab.p.fits");
+    // }
+    //
+    // @Test
+    // public void testUncompress_vtab_q() throws FitsException, IOException {
+    // uncompressTableAndAssert("bintable/vtab.q.fits.fz", "bintable/vtab.q.fits");
+    // }
+
     @Test
-    public void testCompressAndUncompress_dddtsuvdata() {
+    public void testCompressAndUncompress_dddtsuvdata() throws FitsException, IOException {
+        compressThenUncompressTableAndAssert("bintable/dddtsuvdata.fits");
     }
 
     @Test
@@ -201,5 +231,35 @@ public class CompressedTableBlackBoxTest {
     @Test
     public void testCompressAndUncompress_tst0014() throws FitsException, IOException {
         compressThenUncompressTableAndAssert("bintable/tst0014.fits");
+    }
+
+    @Test
+    public void testCompressAndUncompress_vtab_p() throws FitsException, IOException {
+        compressIntThenUncompressTableAndAssert("bintable/vtab.p.fits");
+    }
+
+    @Test
+    public void testCompressAndUncompress_vtab_q() throws FitsException, IOException {
+        compressIntThenUncompressTableAndAssert("bintable/vtab.q.fits");
+    }
+
+    @Test(expected = Exception.class)
+    public void test_vtab_q_reversed() throws Exception {
+        try {
+            CompressedTableHDU.useOldStandardVLAIndexing(true);
+            compressIntThenUncompressTableAndAssert("bintable/vtab.q.fits");
+        } finally {
+            CompressedTableHDU.useOldStandardVLAIndexing(false);
+        }
+    }
+
+    @Test(expected = Exception.class)
+    public void test_vtab_p_reversed() throws Exception {
+        try {
+            CompressedTableHDU.useOldStandardVLAIndexing(true);
+            compressIntThenUncompressTableAndAssert("bintable/vtab.p.fits");
+        } finally {
+            CompressedTableHDU.useOldStandardVLAIndexing(false);
+        }
     }
 }

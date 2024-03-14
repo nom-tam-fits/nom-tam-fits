@@ -34,7 +34,7 @@ package nom.tam.fits.compression.algorithm.rice;
 import nom.tam.fits.compression.algorithm.quant.QuantizeOption;
 
 /**
- * @deprecated Use {@link QuantizeOption} with a {@link RiceCompressOption} instance instead.
+ * @deprecated (<i>for internal use</i>) This class should not be exposed to users.
  *                 <p>
  *                 Options to the Rice compression algorithm when the compression includes quantization. When
  *                 compressing tables and images using the Rice algorithm, including quantization, users can control how

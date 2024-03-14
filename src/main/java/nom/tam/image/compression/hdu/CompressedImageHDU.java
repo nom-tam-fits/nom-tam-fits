@@ -304,7 +304,7 @@ public class CompressedImageHDU extends BinaryTableHDU {
             if (crpix != null) {
                 crpix.setValue(crpix.getValue(Double.class, Double.NaN) - corners[i]);
             }
-            
+
             // Adjust CRPIXna values
             for (char c = 'A'; c <= 'Z'; c++) {
                 crpix = h.getCard("CRPIX" + (dim - i) + Character.toString(c));

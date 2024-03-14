@@ -94,7 +94,7 @@ public class FitsHeap implements FitsElement {
      *
      * @param data the new underlying storage object for this heap instance.
      */
-    protected void setData(ByteArrayIO data) {
+    protected synchronized void setData(ByteArrayIO data) {
         store = data;
     }
 
@@ -102,11 +102,13 @@ public class FitsHeap implements FitsElement {
      * Add a copy constructor to allow us to duplicate a heap. This would be necessary if we wanted to copy an HDU that
      * included variable length columns.
      */
-    FitsHeap copy() {
+    synchronized FitsHeap copy() {
         FitsHeap copy = new FitsHeap();
-        copy.setData(store.copy());
-        copy.encoder = new FitsEncoder(copy.store);
-        copy.decoder = new FitsDecoder(copy.store);
+        synchronized (copy) {
+            copy.setData(store.copy());
+            copy.encoder = new FitsEncoder(copy.store);
+            copy.decoder = new FitsDecoder(copy.store);
+        }
         return copy;
     }
 
@@ -118,13 +120,13 @@ public class FitsHeap implements FitsElement {
      *
      * @throws FitsException if the operation failed
      */
-    public void getData(int offset, Object array) throws FitsException {
+    public synchronized void getData(int offset, Object array) throws FitsException {
         try {
             store.position(offset);
             decoder.readArrayFully(array);
         } catch (Exception e) {
             throw new FitsException("Error decoding heap area at offset=" + offset + ", size="
-                    + FitsEncoder.computeSize(array) + " (size " + size() + "): " + e.getMessage(), e);
+                    + FitsEncoder.computeSize(array) + " (heap size " + size() + "): " + e.getMessage(), e);
         }
     }
 
@@ -134,7 +136,7 @@ public class FitsHeap implements FitsElement {
     }
 
     @Override
-    public long getSize() {
+    public synchronized long getSize() {
         return size();
     }
 
@@ -148,7 +150,7 @@ public class FitsHeap implements FitsElement {
      * @see         #putData(Object, long)
      * @see         #getData(int, Object)
      */
-    long putData(Object data) throws FitsException {
+    synchronized long putData(Object data) throws FitsException {
         return putData(data, store.length());
     }
 
@@ -163,7 +165,7 @@ public class FitsHeap implements FitsElement {
      * @see         #putData(Object, long)
      * @see         #getData(int, Object)
      */
-    long putData(Object data, long pos) throws FitsException {
+    synchronized long putData(Object data, long pos) throws FitsException {
         long lsize = pos + FitsEncoder.computeSize(data);
         if (lsize > Integer.MAX_VALUE) {
             throw new FitsException("FITS Heap > 2 G");
@@ -188,16 +190,18 @@ public class FitsHeap implements FitsElement {
      * 
      * @return        the position of the copied data in this heap.
      */
-    int copyFrom(FitsHeap src, int offset, int len) {
+    synchronized int copyFrom(FitsHeap src, int offset, int len) {
         int pos = (int) store.length();
-        System.arraycopy(src.store.getBuffer(), offset, store.getBuffer(), pos, len);
+        synchronized (src) {
+            System.arraycopy(src.store.getBuffer(), offset, store.getBuffer(), pos, len);
+        }
         store.setLength(pos + len);
         return pos;
     }
 
     @SuppressFBWarnings(value = "RR_NOT_CHECKED", justification = "this read will never return less than the requested length")
     @Override
-    public void read(ArrayDataInput str) throws FitsException {
+    public synchronized void read(ArrayDataInput str) throws FitsException {
         if (store.length() == 0) {
             return;
         }
@@ -229,12 +233,12 @@ public class FitsHeap implements FitsElement {
      *
      * @return the size of the heap in bytes
      */
-    public int size() {
+    public synchronized int size() {
         return (int) store.length();
     }
 
     @Override
-    public void write(ArrayDataOutput str) throws FitsException {
+    public synchronized void write(ArrayDataOutput str) throws FitsException {
         try {
             str.write(store.getBuffer(), 0, (int) store.length());
         } catch (IOException e) {

@@ -43,6 +43,7 @@ import org.junit.Test;
 import nom.tam.fits.BinaryTable.ColumnDesc;
 import nom.tam.fits.header.NonStandard;
 import nom.tam.fits.header.Standard;
+import nom.tam.fits.util.BlackBoxImages;
 import nom.tam.util.ComplexValue;
 import nom.tam.util.FitsInputStream;
 
@@ -1709,6 +1710,167 @@ public class BinaryTableNewTest {
         Header h = new Header();
         h.addValue(Standard.XTENSION, NonStandard.XTENSION_IUEIMAGE);
         new BinaryTable(h);
+    }
+
+    @Test(expected = FitsException.class)
+    public void testHeaderHeapTooLarge() throws Exception {
+        Header h = null;
+        try {
+            h = new Header();
+            new BinaryTable().fillHeader(h);
+            h.addValue(Standard.PCOUNT, Integer.MAX_VALUE + 1L);
+        } catch (FitsException e) {
+            throw new Exception(e.getMessage(), e);
+        }
+        new BinaryTable(h);
+    }
+
+    @Test(expected = FitsException.class)
+    public void testHeaderHeapInvalid() throws Exception {
+        Header h = null;
+        try {
+            h = new Header();
+            new BinaryTable().fillHeader(h);
+            h.addValue(Standard.PCOUNT, -1);
+        } catch (FitsException e) {
+            throw new Exception(e.getMessage(), e);
+        }
+        new BinaryTable(h);
+    }
+
+    @Test
+    public void testDefragQDescriptors() throws Exception {
+        Fits fits = new Fits(BlackBoxImages.getBlackBoxImage("bintable/vtab.q.fits"));
+        BinaryTableHDU hdu = (BinaryTableHDU) fits.getHDU(1);
+        hdu.getData().defragment();
+    }
+
+    @Test
+    public void testAddByteVaryingColumn() throws Exception {
+        class MyBinaryTable extends BinaryTable {
+            @Override
+            public void addByteVaryingColumn() {
+                super.addByteVaryingColumn();
+            }
+        }
+
+        MyBinaryTable tab = new MyBinaryTable();
+        tab.addByteVaryingColumn();
+
+        Assert.assertEquals(1, tab.getNCols());
+        Assert.assertTrue(tab.getDescriptor(0).isVariableSize());
+        Assert.assertEquals(byte.class, tab.getDescriptor(0).getElementClass());
+    }
+
+    @Test
+    public void testReserveRowSpace() throws Exception {
+        BinaryTable tab = new BinaryTable();
+        tab.addColumn(BinaryTable.ColumnDesc.createForFixedArrays(int.class, 20));
+
+        // 36 rows is exactly 1 FITS block...
+        tab.reserveRowSpace(37);
+        BinaryTableHDU hdu = tab.toHDU();
+
+        Assert.assertEquals(37 * 80, hdu.getHeader().getIntValue(Standard.THEAP));
+        Assert.assertEquals(37 * 80, hdu.getHeader().getIntValue(Standard.PCOUNT));
+
+        File file = new File("target/bintable/resrows.fits");
+        file.getParentFile().mkdirs();
+
+        try (Fits f = new Fits()) {
+            f.addHDU(hdu);
+            f.write(file);
+            f.close();
+        }
+
+        // 2 headers, and 2 table blocks...
+        Assert.assertEquals(4 * FitsFactory.FITS_BLOCK_SIZE, file.length());
+    }
+
+    @Test
+    public void testResetReserveRowSpace() throws Exception {
+        BinaryTable tab = new BinaryTable();
+        tab.addColumn(BinaryTable.ColumnDesc.createForFixedArrays(int.class, 20));
+
+        // 36 rows is exactly 1 FITS block...
+        tab.reserveRowSpace(37);
+        tab.reserveRowSpace(0);
+        BinaryTableHDU hdu = tab.toHDU();
+
+        Assert.assertEquals(0, hdu.getHeader().getIntValue(Standard.THEAP));
+        Assert.assertEquals(0, hdu.getHeader().getIntValue(Standard.PCOUNT));
+
+        File file = new File("target/bintable/resrows.fits");
+        file.getParentFile().mkdirs();
+
+        try (Fits f = new Fits()) {
+            f.addHDU(hdu);
+            f.write(file);
+            f.close();
+        }
+
+        // 2 headers only
+        Assert.assertEquals(2 * FitsFactory.FITS_BLOCK_SIZE, file.length());
+    }
+
+    @Test
+    public void testCompact() throws Exception {
+        BinaryTable tab = new BinaryTable();
+        tab.addColumn(BinaryTable.ColumnDesc.createForFixedArrays(int.class, 20));
+
+        // 36 rows is exactly 1 FITS block...
+        tab.reserveRowSpace(37);
+        BinaryTableHDU hdu = tab.toHDU();
+
+        File file = new File("target/bintable/resrows.fits");
+        file.getParentFile().mkdirs();
+
+        try (Fits f = new Fits()) {
+            f.addHDU(hdu);
+            f.write(file);
+            f.close();
+        }
+
+        Assert.assertEquals(4 * FitsFactory.FITS_BLOCK_SIZE, file.length());
+
+        try (Fits f = new Fits(file); Fits compacted = new Fits()) {
+            hdu = (BinaryTableHDU) f.getHDU(1);
+            hdu.getData().reserveRowSpace(0); // Clear reserved space
+            hdu.getData().compact();
+
+            compacted.addHDU(hdu);
+
+            file = new File("target/bintable/resrows-compacted.fits");
+            compacted.write(file);
+            compacted.close();
+        }
+
+        Assert.assertEquals(2 * FitsFactory.FITS_BLOCK_SIZE, file.length());
+    }
+
+    @Test
+    public void testReserveHeapSpace() throws Exception {
+        BinaryTable tab = new BinaryTable();
+        tab.addColumn(BinaryTable.ColumnDesc.createForFixedArrays(int.class, 20));
+
+        // 36 rows is exactly 1 FITS block...
+        tab.reserveHeapSpace(FitsFactory.FITS_BLOCK_SIZE + 1);
+        BinaryTableHDU hdu = tab.toHDU();
+
+        Assert.assertEquals(0, hdu.getHeader().getIntValue(Standard.THEAP));
+        Assert.assertEquals(FitsFactory.FITS_BLOCK_SIZE + 1, hdu.getHeader().getIntValue(Standard.PCOUNT));
+
+        File file = new File("target/bintable/resheap.fits");
+        file.getParentFile().mkdirs();
+
+        try (Fits f = new Fits()) {
+            f.addHDU(hdu);
+            f.write(file);
+            f.close();
+        }
+
+        // 2 headers, and 2 table blocks...
+        Assert.assertEquals(4 * FitsFactory.FITS_BLOCK_SIZE, file.length());
     }
 
 }

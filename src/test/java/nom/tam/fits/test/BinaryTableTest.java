@@ -1295,7 +1295,7 @@ public class BinaryTableTest {
         BinaryTable btab = new BinaryTable();
         ByteArrayOutputStream out = new ByteArrayOutputStream();
 
-        Field field = BinaryTable.class.getDeclaredField("heapOffset");
+        Field field = BinaryTable.class.getDeclaredField("heapAddress");
         field.setAccessible(true);
         field.set(btab, 10);
 

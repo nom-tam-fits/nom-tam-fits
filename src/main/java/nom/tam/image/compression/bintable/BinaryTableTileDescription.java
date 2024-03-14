@@ -45,6 +45,7 @@ public final class BinaryTableTileDescription {
 
     private int column;
 
+    /** 1-based tile index */
     private int tileIndex;
 
     private String compressionAlgorithm;
@@ -77,6 +78,13 @@ public final class BinaryTableTileDescription {
         return this;
     }
 
+    /**
+     * Set the FITS table tile index
+     * 
+     * @param  value The 1-based table tile index
+     * 
+     * @return       itself
+     */
     public BinaryTableTileDescription tileIndex(int value) {
         tileIndex = value;
         return this;

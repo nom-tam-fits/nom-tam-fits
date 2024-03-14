@@ -99,6 +99,67 @@ import static nom.tam.fits.header.Compression.ZTABLE;
 @SuppressWarnings("deprecation")
 public class CompressedTableHDU extends BinaryTableHDU {
 
+    private static boolean reversedVLAIndices = false;
+
+    /**
+     * Enables or disables using reversed compressed/uncompressed heap indices for when decompressing variable-length
+     * arrays (VLAs), as was prescribed by the original FITS 4.0 standard and the Pence et al. 2013 convention.
+     * <p>
+     * The <a href="https://fits.gsfc.nasa.gov/standard40/fits_standard40aa-le.pdf">FITS 4.0 standard</a> defines the
+     * convention of compressing variable-length columns in binary tables. On page 50 it writes:
+     * </p>
+     * <blockquote> 2. Append the VLA descriptors from the uncompressed table (which may be either Q-type or P-type) to
+     * the temporary array of VLA descriptors for the compressed table. </blockquote>
+     * <p>
+     * And the original <a href="https://fits.gsfc.nasa.gov/registry/tiletablecompression/tiletable2.0.pdf">Tiled-table
+     * convention</a> by W. Pence et al. also writes:
+     * </p>
+     * <blockquote> [...] we concatenate the array of descriptors from the uncompressed table onto the end of the
+     * temporary array of descriptors (to the compressed VLAs in the compressed table) before the 2 combined arrays of
+     * descriptors are compressed and written into the heap in the compressed table. </blockquote> However, it appears
+     * that the commonly used tools <code>fpack</code> / <code>funpack</code> provided in CFITSIO do just the reverse of
+     * this presciption. They store the uncopressed pointer <i>before</i> the compressed pointers. Because these tools
+     * are widely used we want to support files created or consumed by these tools. As such we allow to deviate from the
+     * FITS standard, and swap the order of the stored VLA indices inside compressed tables.
+     * 
+     * @param  value <code>true</code> if we should use VLA indices in compressed tables that follow the format
+     *                   described in the original Pence et al. 2013 convention, and also the FITS 4.0 standard as of
+     *                   2024 Mar 1; otherwise <code>false</code>. These original prescriptions define the reverse of
+     *                   what is actually implemented by CFITSIO and its tools <code>fpack</code> and
+     *                   <code>funpack</code>. (Our default is to conform to CFITSIO, and the expected revision of the
+     *                   standard to match).
+     * 
+     * @see          #hasOldStandardVLAIndexing()
+     * @see          #asBinaryTableHDU()
+     * 
+     * @since        1.19.1
+     * 
+     * @author       Attila Kovacs
+     */
+    public static void useOldStandardVLAIndexing(boolean value) {
+        reversedVLAIndices = value;
+    }
+
+    /**
+     * Checks if we should use reversed compressed/uncompressed heap indices for when decompressing variable-length
+     * arrays (VLAs).
+     * 
+     * @return value <code>true</code> if we will assime VLA indices in compressed tables that follow the format
+     *             described in the original Pence et al. 2013 convention, and also the FITS 4.0 standard as of 2024 Mar
+     *             1; otherwise <code>false</code>. These original prescriptions define the reverse of what is actually
+     *             implemented by CFITSIO and its tools <code>fpack</code> and <code>funpack</code>. (Our default is to
+     *             conform to CFITSIO, and the expcted revision of the standard to match).
+     * 
+     * @see    #useOldStandardVLAIndexing(boolean)
+     * 
+     * @since  1.19.1
+     * 
+     * @author Attila Kovacs
+     */
+    public static boolean hasOldStandardVLAIndexing() {
+        return reversedVLAIndices;
+    }
+
     /**
      * Prepare a compressed binary table HDU for the specified binary table. When the tile row size is specified with
      * -1, the value will be set ti the number of rows in the table. The table will be compressed in "rows" that are
@@ -109,16 +170,32 @@ public class CompressedTableHDU extends BinaryTableHDU {
      * @param  columnCompressionAlgorithms the compression algorithms to use for the columns (optional default
      *                                         compression will be used if a column has no compression specified). You
      *                                         should typically use one or more of the enum values defined in
-     *                                         {@link Compression}.
+     *                                         {@link Compression}. The FITS standard currently allows only the lossless
+     *                                         GZIP_1, GZIP_2, RICE_1, or NOCOMPRESS (e.g.
+     *                                         {@link Compression#ZCMPTYPE_GZIP_1} or
+     *                                         {@link Compression#ZCMPTYPE_NOCOMPRESS}.)
      *
      * @return                             the prepared compressed binary table HDU.
      *
+     * @throws IllegalArgumentException    if any of the listed compression algorithms are not approved for use with
+     *                                         tables.
      * @throws FitsException               if the binary table could not be used to create a compressed binary table.
+     * 
+     * @see                                Compression
+     * @see                                Compression#ZCMPTYPE_GZIP_1
+     * @see                                Compression#ZCMPTYPE_GZIP_2
+     * @see                                Compression#ZCMPTYPE_RICE_1
+     * @see                                Compression#ZCMPTYPE_NOCOMPRESS
+     * @see                                #asBinaryTableHDU()
+     * @see                                #useOldStandardVLAIndexing(boolean)
      */
     public static CompressedTableHDU fromBinaryTableHDU(BinaryTableHDU binaryTableHDU, int tileRows,
             String... columnCompressionAlgorithms) throws FitsException {
+
         Header header = new Header();
+
         CompressedTableData compressedData = new CompressedTableData();
+        compressedData.setColumnCompressionAlgorithms(columnCompressionAlgorithms);
 
         int rowsPerTile = tileRows > 0 ? tileRows : binaryTableHDU.getData().getNRows();
         compressedData.setRowsPerTile(rowsPerTile);
@@ -129,10 +206,11 @@ public class CompressedTableHDU extends BinaryTableHDU {
             HeaderCard card = imageIterator.next();
             CompressedCard.restore(card, headerIterator);
         }
+
         CompressedTableHDU compressedImageHDU = new CompressedTableHDU(header, compressedData);
-        compressedData.setColumnCompressionAlgorithms(columnCompressionAlgorithms);
-        compressedData.prepareUncompressedData(binaryTableHDU.getData().getData());
+        compressedData.prepareUncompressedData(binaryTableHDU.getData());
         compressedData.fillHeader(header);
+
         return compressedImageHDU;
     }
 
@@ -180,13 +258,15 @@ public class CompressedTableHDU extends BinaryTableHDU {
      * 
      * @see                  #asBinaryTableHDU(int, int)
      * @see                  #fromBinaryTableHDU(BinaryTableHDU, int, String...)
+     * @see                  #useOldStandardVLAIndexing(boolean)
      */
     public BinaryTableHDU asBinaryTableHDU() throws FitsException {
-        Header header = getTableHeader();
-        BinaryTable data = BinaryTableHDU.manufactureData(header);
-        BinaryTableHDU tableHDU = new BinaryTableHDU(header, data);
-        getData().asBinaryTable(data, getHeader(), header);
-        return tableHDU;
+        return asBinaryTableHDU(0, getTileCount());
+        // Header header = getTableHeader();
+        // BinaryTable data = BinaryTableHDU.manufactureData(header);
+        // BinaryTableHDU tableHDU = new BinaryTableHDU(header, data);
+        // getData().asBinaryTable(data, getHeader(), header);
+        // return tableHDU;
     }
 
     /**
@@ -241,10 +321,12 @@ public class CompressedTableHDU extends BinaryTableHDU {
      * @see                             #getTileCount()
      * @see                             #asBinaryTableHDU()
      * @see                             #fromBinaryTableHDU(BinaryTableHDU, int, String...)
+     * @see                             #useOldStandardVLAIndexing(boolean)
      */
     public BinaryTableHDU asBinaryTableHDU(int fromTile, int toTile) throws FitsException, IllegalArgumentException {
         Header header = getTableHeader();
         int tileSize = getTileRows();
+        getData().setRowsPerTile(tileSize);
 
         if (fromTile < 0 || toTile > getTileCount() || toTile <= fromTile) {
             throw new IllegalArgumentException(
@@ -276,6 +358,7 @@ public class CompressedTableHDU extends BinaryTableHDU {
      * @see                             #asBinaryTableHDU(int, int)
      * @see                             #getTileRows()
      * @see                             #getTileCount()
+     * @see                             #useOldStandardVLAIndexing(boolean)
      */
     public final BinaryTableHDU asBinaryTableHDU(int tile) throws FitsException, IllegalArgumentException {
         return asBinaryTableHDU(tile, tile + 1);
@@ -316,6 +399,7 @@ public class CompressedTableHDU extends BinaryTableHDU {
      * @see                             #fromBinaryTableHDU(BinaryTableHDU, int, String...)
      */
     public Object getColumnData(int col, int fromTile, int toTile) throws FitsException, IllegalArgumentException {
+        getData().setRowsPerTile(getTileRows());
         return getData().getColumnData(col, fromTile, toTile, getHeader(), getTableHeader());
     }
 
@@ -331,6 +415,7 @@ public class CompressedTableHDU extends BinaryTableHDU {
      * @throws FitsException if the compression could not be performed
      * 
      * @see                  #fromBinaryTableHDU(BinaryTableHDU, int, String...)
+     * @see                  #useOldStandardVLAIndexing(boolean)
      */
     public CompressedTableHDU compress() throws FitsException {
         getData().compress(getHeader());

@@ -42,6 +42,7 @@ import java.util.StringTokenizer;
 import java.util.logging.Logger;
 
 import nom.tam.fits.header.Bitpix;
+import nom.tam.fits.header.Compression;
 import nom.tam.fits.header.NonStandard;
 import nom.tam.fits.header.Standard;
 import nom.tam.util.ArrayDataInput;
@@ -1225,14 +1226,19 @@ public class BinaryTable extends AbstractTableData implements Cloneable {
     private FitsHeap heap;
 
     /**
-     * The heap start from the end of the main table
+     * The heap start from the head of the HDU
      */
-    private int heapOffset;
+    private long heapAddress;
 
     /**
-     * The heap size (from the header)
+     * (bytes) Empty space to leave after the populated heap area for future additions.
      */
-    private int heapSize;
+    private int heapReserve;
+
+    /**
+     * The original heap size (from the header)
+     */
+    private int heapFileSize;
 
     /**
      * A list describing each of the columns in the table
@@ -1333,19 +1339,14 @@ public class BinaryTable extends AbstractTableData implements Cloneable {
                     "Not a binary table header (XTENSION = " + header.getStringValue(Standard.XTENSION) + ")");
         }
 
-        long paramSizeL = header.getLongValue(Standard.PCOUNT);
-        long heapOffsetL = header.getLongValue(Standard.THEAP);
-
-        int rwsz = header.getIntValue(Standard.NAXIS1);
         nRow = header.getIntValue(Standard.NAXIS2);
+        long tableSize = nRow * header.getLongValue(Standard.NAXIS1);
+        long paramSizeL = header.getLongValue(Standard.PCOUNT);
+        long heapOffsetL = header.getLongValue(Standard.THEAP, tableSize);
 
         // Subtract out the size of the regular table from
         // the heap offset.
-        if (heapOffsetL > 0) {
-            heapOffsetL -= nRow * rwsz;
-        }
-
-        long heapSizeL = paramSizeL - heapOffsetL;
+        long heapSizeL = (tableSize + paramSizeL) - heapOffsetL;
 
         if (heapSizeL < 0) {
             throw new FitsException("Inconsistent THEAP and PCOUNT");
@@ -1355,11 +1356,11 @@ public class BinaryTable extends AbstractTableData implements Cloneable {
         }
         if (heapSizeL == 0L) {
             // There is no heap. Forget the offset
-            heapOffset = 0;
+            heapAddress = 0;
         }
 
-        heapOffset = (int) heapOffsetL;
-        heapSize = (int) heapSizeL;
+        heapAddress = (int) heapOffsetL;
+        heapFileSize = (int) heapSizeL;
 
         int nCol = header.getIntValue(Standard.TFIELDS);
         rowLen = 0;
@@ -1484,14 +1485,16 @@ public class BinaryTable extends AbstractTableData implements Cloneable {
      * 
      * @since                1.18
      */
-    public BinaryTable copy() throws FitsException {
+    public synchronized BinaryTable copy() throws FitsException {
         BinaryTable copy = clone();
 
         if (table != null) {
             copy.table = table.copy();
         }
         if (heap != null) {
-            copy.heap = heap.copy();
+            synchronized (copy) {
+                copy.heap = heap.copy();
+            }
         }
 
         copy.columns = new ArrayList<>();
@@ -1501,6 +1504,26 @@ public class BinaryTable extends AbstractTableData implements Cloneable {
         }
 
         return copy;
+    }
+
+    /**
+     * (<i>for internal use</i>) Discards all variable-length arrays from this table, that is all data stored on the
+     * heap, and resets all heap descritors to (0,0).
+     * 
+     * @since 1.19.1
+     */
+    protected synchronized void discardVLAs() {
+        for (int col = 0; col < columns.size(); col++) {
+            ColumnDesc c = columns.get(col);
+
+            if (c.isVariableSize()) {
+                for (int row = 0; row < nRow; row++) {
+                    table.setElement(row, col, c.hasLongPointers() ? new long[2] : new int[2]);
+                }
+            }
+        }
+
+        heap = new FitsHeap(0);
     }
 
     /**
@@ -2203,19 +2226,94 @@ public class BinaryTable extends AbstractTableData implements Cloneable {
     }
 
     /**
+     * <p>
+     * Reserves space for future addition of rows at the end of the regular table. In effect, this pushes the heap to
+     * start at an offset value, leaving a gap between the main table and the heap in the FITS file. If your table
+     * contains variable-length data columns, you may also want to reserve extra heap space for these via
+     * {@link #reserveHeapSpace(int)}.
+     * </p>
+     * <p>
+     * Note, that (C)FITSIO, as of version 4.4.0, has no proper support for offset heaps, and so you may want to be
+     * careful using this function as the resulting FITS files, while standard, may not be readable by other tools due
+     * to their own lack of support. Note, however, that you may also use this function to undo an offset heap with an
+     * argument &lt;=0;
+     * </p>
+     * 
+     * @param  rows The number of future rows fow which space should be reserved (relative to the current table size)
+     *                  for future additions, or &lt;=0 to ensure that the heap always follows immediately after the
+     *                  main table, e.g. for better (C)FITSIO interoperability.
+     * 
+     * @see         #reserveHeapSpace(int)
+     * 
+     * @since       1.19.1
+     * 
+     * @author      Attila Kovacs
+     */
+    public void reserveRowSpace(int rows) {
+        heapAddress = rows > 0 ? getRegularTableSize() + (long) rows * getRowBytes() : 0;
+    }
+
+    /**
+     * Reserves space in the file at the end of the heap for future heap growth (e.g. different/longer or new VLA
+     * entries). You may generally want to call this along with {@link #reserveRowSpace(int)} if yuor table contains
+     * variable-length columns, to ensure storage for future data in these. You may call with &lt;=0 to discards any
+     * previously reserved space.
+     * 
+     * @param  bytes The number of bytes of unused space to reserve at the end of the heap, e.g. for future
+     *                   modifications or additions, when writing the data to file.
+     * 
+     * @see          #reserveRowSpace(int)
+     * 
+     * @since        1.19.1
+     * 
+     * @author       Attila Kovacs
+     */
+    public void reserveHeapSpace(int bytes) {
+        heapReserve = Math.max(0, bytes);
+    }
+
+    /**
+     * Returns the address of the heap from the star of the HDU in the file.
+     * 
+     * @return (bytes) the start of the heap area from the beginning of the HDU.
+     */
+    final long getHeapAddress() {
+        long tableSize = getRegularTableSize();
+        return heapAddress > tableSize ? heapAddress : tableSize;
+    }
+
+    /**
      * Returns the offset from the end of the main table
      * 
      * @return the offset to the heap
      */
-    int getHeapOffset() {
-        return heapOffset;
+    final long getHeapOffset() {
+        return getHeapAddress() - getRegularTableSize();
     }
 
     /**
-     * @return the size of the heap -- including the offset from the end of the table data.
+     * It returns the heap size for storing in the FITS, which is the larger of the actual space occupied by the current
+     * heap, or the original heap size based on the header when the HDU was read from an input. In the former case it
+     * will also include heap space reserved for future additions.
+     * 
+     * @return (byte) the size of the heap in the FITS file.
+     * 
+     * @see    #compact()
+     * @see    #reserveHeapSpace(int)
      */
-    int getHeapSize() {
-        return heapOffset + (heap == null ? heapSize : heap.size());
+    private int getHeapSize() {
+
+        if (heap != null && heap.size() + heapReserve > heapFileSize) {
+            return heap.size() + heapReserve;
+        }
+        return heapFileSize;
+    }
+
+    /**
+     * @return the size of the heap -- including the offset from the end of the table data, and reserved space after.
+     */
+    synchronized long getParameterSize() {
+        return getHeapOffset() + getHeapSize();
     }
 
     /**
@@ -2257,23 +2355,23 @@ public class BinaryTable extends AbstractTableData implements Cloneable {
      * Reads a regular table element in the main table from the input. This method should never be called unless we have
      * a random-accessible input associated, which is a requirement for deferred read mode.
      * 
-     * @param  o             The array element
+     * @param  o             The array element to populate
      * @param  c             the column descriptor
      * @param  row           the zero-based row index of the element
      * 
      * @throws IOException   If there was an I/O error accessing the input
      * @throws FitsException If there was some other error
      */
-    private void readTableElement(Object o, ColumnDesc c, int row) throws IOException, FitsException {
+    private synchronized void readTableElement(Object o, ColumnDesc c, int row) throws IOException, FitsException {
         @SuppressWarnings("resource")
         RandomAccess in = getRandomAccessInput();
 
         in.position(getFileOffset() + row * (long) rowLen + c.offset);
 
-        if (!c.isLogical()) {
-            in.readImage(o);
-        } else {
+        if (c.isLogical()) {
             in.readArrayFully(o);
+        } else {
+            in.readImage(o);
         }
     }
 
@@ -2640,7 +2738,7 @@ public class BinaryTable extends AbstractTableData implements Cloneable {
 
     @Override
     protected long getTrueSize() {
-        return getRegularTableSize() + heapOffset + getHeapSize();
+        return getRegularTableSize() + getParameterSize();
     }
 
     /**
@@ -3051,26 +3149,39 @@ public class BinaryTable extends AbstractTableData implements Cloneable {
     @SuppressWarnings("resource")
     @Override
     public void write(ArrayDataOutput os) throws FitsException {
-        if (os != getRandomAccessInput()) {
-            ensureData();
-        }
 
         try {
-            if (table != null) {
-                table.write(os);
-            } else {
+            if (isDeferred() && os == getRandomAccessInput()) {
+                // It it's a deferred mode re-write, then data were edited in place if at all,
+                // so we can skip the main table.
                 ((RandomAccess) os).skipAllBytes(getRegularTableSize());
+            } else {
+                // otherwise make sure we loaded all data before writing to the output
+                ensureData();
+
+                // Write the regular table (if any)
+                if (getRegularTableSize() > 0) {
+                    table.write(os);
+                }
             }
 
             // Now check if we need to write the heap
-            if (getHeapSize() > 0) {
-                if (heapOffset > 0) {
-                    FitsUtil.addPadding((long) heapOffset);
+            if (getParameterSize() > 0) {
+                for (long rem = getHeapOffset(); rem > 0;) {
+                    byte[] b = new byte[(int) Math.min(getHeapOffset(), 1 << Short.SIZE)];
+                    os.write(b);
+                    rem -= b.length;
                 }
+
                 getHeap().write(os);
+
+                if (heapReserve > 0) {
+                    byte[] b = new byte[heapReserve];
+                    os.write(b);
+                }
             }
 
-            FitsUtil.pad(os, getTrueSize());
+            FitsUtil.pad(os, getTrueSize(), (byte) 0);
         } catch (IOException e) {
             throw new FitsException("Unable to write table:" + e, e);
         }
@@ -3188,7 +3299,7 @@ public class BinaryTable extends AbstractTableData implements Cloneable {
         long off = getPointerOffset(p);
 
         if (off > Integer.MAX_VALUE || len > Integer.MAX_VALUE) {
-            throw new FitsException("Data located beyond 32-bit accessible heap limit");
+            throw new FitsException("Data located beyond 32-bit accessible heap limit: off=" + off + ", len=" + len);
         }
 
         Object e = null;
@@ -3532,7 +3643,7 @@ public class BinaryTable extends AbstractTableData implements Cloneable {
      * @throws FitsException if we had trouble initializing it from the input.
      */
     @SuppressWarnings("resource")
-    private FitsHeap getHeap() throws FitsException {
+    private synchronized FitsHeap getHeap() throws FitsException {
         if (heap == null) {
             readHeap(getRandomAccessInput());
         }
@@ -3563,11 +3674,11 @@ public class BinaryTable extends AbstractTableData implements Cloneable {
      * 
      * @deprecated               (<i>for internal use</i>) unused.
      */
-    protected void readHeap(ArrayDataInput input) throws FitsException {
+    protected synchronized void readHeap(ArrayDataInput input) throws FitsException {
         if (input instanceof RandomAccess) {
-            FitsUtil.reposition(input, getFileOffset() + getRegularTableSize() + heapOffset);
+            FitsUtil.reposition(input, getFileOffset() + getHeapAddress());
         }
-        heap = new FitsHeap(heapSize);
+        heap = new FitsHeap(heapFileSize);
         if (input != null) {
             heap.read(input);
         }
@@ -3580,15 +3691,13 @@ public class BinaryTable extends AbstractTableData implements Cloneable {
      *
      * @throws FitsException if the reading failed
      */
-    protected void readTrueData(ArrayDataInput i) throws FitsException {
+    protected synchronized void readTrueData(ArrayDataInput i) throws FitsException {
         try {
             table.read(i);
-            i.skipAllBytes((long) heapOffset);
+            i.skipAllBytes(getHeapOffset());
             if (heap == null) {
-                heap = new FitsHeap(heapSize);
-                heap.read(i);
+                readHeap(i);
             }
-
         } catch (IOException e) {
             throw new FitsException("Error reading binary table data:" + e, e);
         }
@@ -3621,6 +3730,19 @@ public class BinaryTable extends AbstractTableData implements Cloneable {
      */
     @Override
     public void fillHeader(Header h) throws FitsException {
+        fillHeader(h, true);
+    }
+
+    /**
+     * Fills (updates) the essential header description of this table in the header, optionally updating the essential
+     * column descriptions also if desired.
+     * 
+     * @param  h             The FITS header to populate
+     * @param  updateColumns Whether to update the essential column descriptions also
+     * 
+     * @throws FitsException if there was an error accessing the header.
+     */
+    void fillHeader(Header h, boolean updateColumns) throws FitsException {
         h.deleteKey(Standard.SIMPLE);
         h.deleteKey(Standard.EXTEND);
 
@@ -3632,12 +3754,25 @@ public class BinaryTable extends AbstractTableData implements Cloneable {
         c.add(HeaderCard.create(Standard.NAXIS, 2));
         c.add(HeaderCard.create(Standard.NAXIS1, rowLen));
         c.add(HeaderCard.create(Standard.NAXIS2, nRow));
-        c.add(HeaderCard.create(Standard.PCOUNT, getHeapSize()));
+
+        if (h.getLongValue(Standard.PCOUNT, -1L) < getParameterSize()) {
+            c.add(HeaderCard.create(Standard.PCOUNT, getParameterSize()));
+        }
+
         c.add(HeaderCard.create(Standard.GCOUNT, 1));
         c.add(HeaderCard.create(Standard.TFIELDS, columns.size()));
 
-        for (int i = 0; i < columns.size(); i++) {
-            fillForColumn(c, i);
+        if (getHeapOffset() == 0) {
+            h.deleteKey(Standard.THEAP);
+        } else {
+            c.add(HeaderCard.create(Standard.THEAP, getHeapAddress()));
+        }
+
+        if (updateColumns) {
+            for (int i = 0; i < columns.size(); i++) {
+                c.setKey(Compression.ZFORMn.n(i + 1).key());
+                fillForColumn(c, i);
+            }
         }
 
         Standard.context(null);
@@ -3770,6 +3905,17 @@ public class BinaryTable extends AbstractTableData implements Cloneable {
     }
 
     /**
+     * Checks if this table contains a heap for storing variable length arrays (VLAs).
+     * 
+     * @return <code>true</code> if the table contains a heap, or else <code>false</code>.
+     * 
+     * @since  1.19.1
+     */
+    public final boolean containsHeap() {
+        return getParameterSize() > 0;
+    }
+
+    /**
      * <p>
      * Defragments the heap area of this table, compacting the heap area, and returning the number of bytes by which the
      * heap size has been reduced. When tables with variable-sized columns are modified, the heap may retain old data as
@@ -3793,6 +3939,7 @@ public class BinaryTable extends AbstractTableData implements Cloneable {
      * @throws FitsException if there was an error accessing the heap or the main data table comntaining the heap
      *                           locators. In case of an error the table content may be left in a damaged state.
      * 
+     * @see                  #compact()
      * @see                  #setElement(int, int, Object)
      * @see                  #addColumn(Object)
      * @see                  #deleteColumns(int, int)
@@ -3800,20 +3947,12 @@ public class BinaryTable extends AbstractTableData implements Cloneable {
      * 
      * @since                1.18
      */
-    public long defragment() throws FitsException {
-        boolean hasVars = false;
-        int[] eSize = new int[columns.size()];
-
-        for (ColumnDesc c : columns) {
-            if (c.isVariableSize()) {
-                hasVars = true;
-                break;
-            }
-        }
-
-        if (!hasVars) {
+    public synchronized long defragment() throws FitsException {
+        if (!containsHeap()) {
             return 0L;
         }
+
+        int[] eSize = new int[columns.size()];
 
         for (int j = 0; j < columns.size(); j++) {
             ColumnDesc c = columns.get(j);
@@ -3822,7 +3961,8 @@ public class BinaryTable extends AbstractTableData implements Cloneable {
             }
         }
 
-        long oldSize = heap.size();
+        FitsHeap hp = getHeap();
+        long oldSize = hp.size();
         FitsHeap compact = new FitsHeap(0);
 
         for (int i = 0; i < nRow; i++) {
@@ -3834,7 +3974,7 @@ public class BinaryTable extends AbstractTableData implements Cloneable {
                     int len = (int) getPointerCount(p);
 
                     // Copy to new heap...
-                    int pos = compact.copyFrom(heap, (int) getPointerOffset(p), c.getFitsBaseCount(len) * eSize[j]);
+                    int pos = compact.copyFrom(hp, (int) getPointerOffset(p), c.getFitsBaseCount(len) * eSize[j]);
 
                     // Same length as before...
                     if (p instanceof long[]) {
@@ -3851,6 +3991,24 @@ public class BinaryTable extends AbstractTableData implements Cloneable {
 
         heap = compact;
         return oldSize - compact.size();
+    }
+
+    /**
+     * Discard the information about the original heap size (if this table was read from an input), and instead use the
+     * real size of the actual heap (plus reserved space around it) when writing to an output. Compacted tables may not
+     * be re-writeable to the same file from which they were read, since they may be shorter than the original, but they
+     * can always be written to a different file, which may at times be smaller than the original. It may be used along
+     * with {@link #defragment()} to create FITS files with optimized storage from FITS files that may contain wasted
+     * space.
+     * 
+     * @see    #defragment()
+     * 
+     * @since  1.19.1
+     * 
+     * @author Attila Kovacs
+     */
+    public synchronized void compact() {
+        heapFileSize = 0;
     }
 
     @Override
