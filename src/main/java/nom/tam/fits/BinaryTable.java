@@ -3682,7 +3682,7 @@ public class BinaryTable extends AbstractTableData implements Cloneable {
         if (getHeapOffset() == 0) {
             h.deleteKey(Standard.THEAP);
         } else {
-            c.add(HeaderCard.create(Standard.THEAP, getRegularTableSize() + getHeapOffset()));
+            c.add(HeaderCard.create(Standard.THEAP, getHeapAddress()));
         }
 
         if (updateColumns) {

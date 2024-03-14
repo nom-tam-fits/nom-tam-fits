@@ -529,13 +529,13 @@ public class CompressedTableTest {
     @Test
     public void testSetReversedVLAIndices() throws Exception {
         try {
-            Assert.assertFalse(CompressedTableHDU.hasOldStandardVLAIndices());
-            CompressedTableHDU.useOldStandardVLAIndices(true);
-            Assert.assertTrue(CompressedTableHDU.hasOldStandardVLAIndices());
-            CompressedTableHDU.useOldStandardVLAIndices(false);
-            Assert.assertFalse(CompressedTableHDU.hasOldStandardVLAIndices());
+            Assert.assertFalse(CompressedTableHDU.hasOldStandardVLAIndexing());
+            CompressedTableHDU.useOldStandardVLAIndexing(true);
+            Assert.assertTrue(CompressedTableHDU.hasOldStandardVLAIndexing());
+            CompressedTableHDU.useOldStandardVLAIndexing(false);
+            Assert.assertFalse(CompressedTableHDU.hasOldStandardVLAIndexing());
         } finally {
-            CompressedTableHDU.useOldStandardVLAIndices(false);
+            CompressedTableHDU.useOldStandardVLAIndexing(false);
         }
     }
 

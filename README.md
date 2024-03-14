@@ -1816,7 +1816,7 @@ you should be aware of some potentially severe pitfalls.
 
 However, we recognize that some compressed FITS files may have been produced with tools that implemented the
 current standard as described. We wish to support reading such files also. Therefore, we provide the `static`
-`CompressedTableHDU.useOldStandardVLAIndices(boolean)` method to select the convention according to which the adjoint 
+`CompressedTableHDU.useOldStandardVLAIndexing(boolean)` method to select the convention according to which the adjoint 
 table descriptors are stored in the file: either in the format described by the original FITS 4.0 standard Pence+2013 
 convention (`true`), or else in the (C)FITSIO compatible format (`false`; default).
 
