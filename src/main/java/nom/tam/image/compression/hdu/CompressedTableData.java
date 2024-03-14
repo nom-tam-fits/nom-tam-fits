@@ -127,13 +127,15 @@ public class CompressedTableData extends BinaryTable {
         super.fillHeader(h);
 
         h.setNaxis(2, getData().getNRows());
-        h.addValue(Compression.ZTABLE.key(), true, "this is a compressed table");
-        h.addValue(Compression.ZTILELEN.key(), getRowsPerTile(), "number of rows in each tile");
+        h.addValue(Compression.ZTABLE, true);
+        h.addValue(Compression.ZTILELEN, getRowsPerTile());
 
         for (int i = 0; i < getNCols(); i++) {
-            h.findCard(Standard.TTYPEn.n(i + 1));
+            h.findCard(Compression.ZFORMn.n(i + 1));
             h.addValue(Compression.ZCTYPn.n(i + 1), getAlgorithm(i));
         }
+
+        h.deleteKey(Compression.ZIMAGE);
     }
 
     void prepareUncompressedData(BinaryTable fromTable) throws FitsException {

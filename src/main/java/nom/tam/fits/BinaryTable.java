@@ -42,6 +42,7 @@ import java.util.StringTokenizer;
 import java.util.logging.Logger;
 
 import nom.tam.fits.header.Bitpix;
+import nom.tam.fits.header.Compression;
 import nom.tam.fits.header.NonStandard;
 import nom.tam.fits.header.Standard;
 import nom.tam.util.ArrayDataInput;
@@ -3769,7 +3770,7 @@ public class BinaryTable extends AbstractTableData implements Cloneable {
 
         if (updateColumns) {
             for (int i = 0; i < columns.size(); i++) {
-                c.setKey(Standard.TFORMn.n(i + 1).key());
+                c.setKey(Compression.ZFORMn.n(i + 1).key());
                 fillForColumn(c, i);
             }
         }

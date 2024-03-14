@@ -186,6 +186,7 @@ public class CompressedTableHDU extends BinaryTableHDU {
             String... columnCompressionAlgorithms) throws FitsException {
 
         Header header = new Header();
+
         CompressedTableData compressedData = new CompressedTableData();
         compressedData.setColumnCompressionAlgorithms(columnCompressionAlgorithms);
 
@@ -202,6 +203,7 @@ public class CompressedTableHDU extends BinaryTableHDU {
         CompressedTableHDU compressedImageHDU = new CompressedTableHDU(header, compressedData);
         compressedData.prepareUncompressedData(binaryTableHDU.getData());
         compressedData.fillHeader(header);
+
         return compressedImageHDU;
     }
 
