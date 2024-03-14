@@ -3151,7 +3151,7 @@ public class BinaryTable extends AbstractTableData implements Cloneable {
             // Now check if we need to write the heap
             if (getParameterSize() > 0) {
                 for (long rem = getHeapOffset(); rem > 0;) {
-                    byte[] b = new byte[(int) Math.min(getHeapOffset(), Integer.MAX_VALUE)];
+                    byte[] b = new byte[(int) Math.min(getHeapOffset(), 1 << Short.SIZE)];
                     os.write(b);
                     rem -= b.length;
                 }
