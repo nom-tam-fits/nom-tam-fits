@@ -6,7 +6,7 @@
           Fix inconsistently maintained ColumnDesc.fileSize, by replacing it with dynamic .rowLen().
       </action>
       <action type="fix" dev="attipaci" issue="562">
-          Compressed tables had the ZCTYPn keywords wirtten with a 0-based index, and thus were off-by-one in
+          Compressed tables had the ZCTYPn keywords written with a 0-based index, and thus were off-by-one in
           the FITS convention. Now fixed.
       </action>
       <action type="fix" dev="attipaci" issue="557">
@@ -23,7 +23,7 @@
       <action type="fix" dev="attipaci" issue="570">
           Fix potential narrowing conversion issues uncovered by GitHub's CodeQL.
       </action>
-      <action type="fix" dev="attipaci" issue="570">
+      <action type="fix" dev="attipaci" issue="576">
           Eliminate unexpected exception throws if trying to write an empty table to a file/stream. Now it works as
           expected.
       </action>
@@ -43,14 +43,14 @@
           that (C)FITSIO may not be able to read files with reserved row space due to its lack of support for
           the standard THEAP keyword.
       </action>
-      <action type="add" dev="attipaci" issue="563">
+      <action type="update" dev="attipaci" issue="563">
           Creating compressed tables now also checks that the requested compression algorithms are in fact 
           suitable for table compression, or else throws an IllegalArgumentException. (Currently, only the lossless 
           GZIP_1, GZIP_2, RICE_1, and NOCOMPRESS are allowed by the FITS standard for tables.)
       </action>
       <action type="update" dev="attipaci" issue="567">
           The parallel table compression has previously resulted in a heap in irreproducible random ordering.
-          Now, the compressed heap is ordered for optimal sequential read performace.
+          Now, the compressed heap is ordered for optimal sequential read performance.
       </action>
       <action type="update" dev="attipaci" issue="571">
           From here on we'll omit writing the THEAP keyword into binary table headers when they are not necessary
