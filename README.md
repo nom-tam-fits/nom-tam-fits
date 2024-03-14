@@ -1799,11 +1799,15 @@ you should be aware of some potentially severe pitfalls.
  1. VLA table compression is not widely supported by tools (including CFITSIO's own `fpack` tool! -- see more on
  that below).
 
- 2. Second, the [(C)FITSIO](https://heasarc.gsfc.nasa.gov/fitsio/) implementation diverges from the documented 
+ 2. The [(C)FITSIO](https://heasarc.gsfc.nasa.gov/fitsio/) implementation diverges from the documented 
  standard (FITS 4.0 and the original Pence et al. 2013 convention) by storing the adjoint desciptors in reversed order, 
- w.r.t. the standard, on the heap. Our understanding is that this discrepacy will be resolved by changing the 
- documentation (the standard) to conform to the (C)FITSIO implementation. Therefore, our implementation for the 
- compression of VLAs is compliant to that of (C)FITSIO, and not to the current wording of the standard.
+ w.r.t. the standard, on the heap. Our understanding, based on communication with the maintainers of the standard, is 
+ that this discrepacy will be resolved by changing the documentation (the standard) to conform to the (C)FITSIO 
+ implementation. Therefore, our implementation for the compression of VLAs is compliant to that of (C)FITSIO, and not 
+ to the current wording of the standard. However, we wish to support reading files produced either way via the `static` 
+ `CompressedTableHDU.useOldStandardVLAIndexing(boolean)` method selecting the convention according to which the 
+ adjoint table descriptors are stored in the file: either in the format described by the original FITS 4.0 standard / 
+ Pence+2013 convention (`true`), or else in the (C)FITSIO compatible format (`false`; default).
  
  3. (C)FITSIO and `fpack`  version &lt;= 4.4.0  do not properly handle the `THEAP` keyword (if present). Therefore, we 
  will skip adding `THEAP` to the table headers when not necessary (that is when the heap follows immediately after the 
@@ -1814,11 +1818,7 @@ you should be aware of some potentially severe pitfalls.
  uncompressed form for these data types. (They do however compress `int` and `float` type VLAs properly, albeit 
  invariable with the `RICE_1` algorithm, regardless of the user-selection.)
 
-However, we recognize that some compressed FITS files may have been produced with tools that implemented the
-current standard as described. We wish to support reading such files also. Therefore, we provide the `static`
-`CompressedTableHDU.useOldStandardVLAIndexing(boolean)` method to select the convention according to which the adjoint 
-table descriptors are stored in the file: either in the format described by the original FITS 4.0 standard Pence+2013 
-convention (`true`), or else in the (C)FITSIO compatible format (`false`; default).
+
 
 
 #### Accessing image header values without decompressing
