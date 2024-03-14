@@ -615,7 +615,7 @@ public class HCompressTest {
     public void testHCompressQuantizeOption() {
         HCompressorOption c = new HCompressorOption();
         HCompressorQuantizeOption o = new HCompressorQuantizeOption(c);
-        Assert.assertEquals(c, o.getCompressOption());
+        Assert.assertEquals(c, o.getHCompressorOption());
     }
 
 }
