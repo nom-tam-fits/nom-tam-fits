@@ -2292,15 +2292,18 @@ public class BinaryTable extends AbstractTableData implements Cloneable {
 
     /**
      * It returns the heap size for storing in the FITS, which is the larger of the actual space occupied by the current
-     * heap, or the original heap size based on the header when the HDU was read from an input.
+     * heap, or the original heap size based on the header when the HDU was read from an input. In the former case it
+     * will also include heap space reserved for future additions.
      * 
      * @return (byte) the size of the heap in the FITS file.
      * 
      * @see    #compact()
+     * @see    #reserveHeapSpace(int)
      */
     private int getHeapSize() {
-        if (heap != null && heap.size() > heapFileSize) {
-            return heap.size();
+
+        if (heap != null && heap.size() + heapReserve > heapFileSize) {
+            return heap.size() + heapReserve;
         }
         return heapFileSize;
     }
@@ -2309,7 +2312,7 @@ public class BinaryTable extends AbstractTableData implements Cloneable {
      * @return the size of the heap -- including the offset from the end of the table data, and reserved space after.
      */
     synchronized long getParameterSize() {
-        return getHeapOffset() + getHeapSize() + heapReserve;
+        return getHeapOffset() + getHeapSize();
     }
 
     /**
@@ -4003,7 +4006,7 @@ public class BinaryTable extends AbstractTableData implements Cloneable {
      * 
      * @author Attila Kovacs
      */
-    public void compact() {
+    public synchronized void compact() {
         heapFileSize = 0;
     }
 
