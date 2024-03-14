@@ -1788,6 +1788,32 @@ public class BinaryTableNewTest {
     }
 
     @Test
+    public void testResetReserveRowSpace() throws Exception {
+        BinaryTable tab = new BinaryTable();
+        tab.addColumn(BinaryTable.ColumnDesc.createForFixedArrays(int.class, 20));
+
+        // 36 rows is exactly 1 FITS block...
+        tab.reserveRowSpace(37);
+        tab.reserveRowSpace(0);
+        BinaryTableHDU hdu = tab.toHDU();
+
+        Assert.assertEquals(0, hdu.getHeader().getIntValue(Standard.THEAP));
+        Assert.assertEquals(0, hdu.getHeader().getIntValue(Standard.PCOUNT));
+
+        File file = new File("target/bintable/resrows.fits");
+        file.getParentFile().mkdirs();
+
+        try (Fits f = new Fits()) {
+            f.addHDU(hdu);
+            f.write(file);
+            f.close();
+        }
+
+        // 2 headers only
+        Assert.assertEquals(2 * FitsFactory.FITS_BLOCK_SIZE, file.length());
+    }
+
+    @Test
     public void testReserveHeapSpace() throws Exception {
         BinaryTable tab = new BinaryTable();
         tab.addColumn(BinaryTable.ColumnDesc.createForFixedArrays(int.class, 20));

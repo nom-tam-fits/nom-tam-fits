@@ -2229,7 +2229,7 @@ public class BinaryTable extends AbstractTableData implements Cloneable {
      * Reserves space for future addition of rows at the end of the regular table. In effect, this pushes the heap to
      * start at an offset value, leaving a gap between the main table and the heap in the FITS file. If your table
      * contains variable-length data columns, you may also want to reserve extra heap space for these via
-     * {@link #reserveHeapSpace()}.
+     * {@link #reserveHeapSpace(int)}.
      * </p>
      * <p>
      * Note, that (C)FITSIO, as of version 4.4.0, has no proper support for offset heaps, and so you may want to be
@@ -2249,7 +2249,7 @@ public class BinaryTable extends AbstractTableData implements Cloneable {
      * @author      Attila Kovacs
      */
     public void reserveRowSpace(int rows) {
-        heapAddress = getRegularTableSize() + Math.max(0, rows) * getRowBytes();
+        heapAddress = rows > 0 ? getRegularTableSize() + rows * getRowBytes() : 0;
     }
 
     /**
