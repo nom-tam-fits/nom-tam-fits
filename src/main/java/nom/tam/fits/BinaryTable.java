@@ -3672,15 +3672,14 @@ public class BinaryTable extends AbstractTableData implements Cloneable {
         c.add(HeaderCard.create(Standard.NAXIS1, rowLen));
         c.add(HeaderCard.create(Standard.NAXIS2, nRow));
 
-        int oldSize = h.getIntValue(Standard.PCOUNT);
-        if (oldSize < getParameterSize()) {
+        if (h.getLongValue(Standard.PCOUNT, -1L) < getParameterSize()) {
             c.add(HeaderCard.create(Standard.PCOUNT, getParameterSize()));
         }
 
         c.add(HeaderCard.create(Standard.GCOUNT, 1));
         c.add(HeaderCard.create(Standard.TFIELDS, columns.size()));
 
-        if (h.getIntValue(Standard.PCOUNT) == 0 || getHeapOffset() == 0) {
+        if (getHeapOffset() == 0) {
             h.deleteKey(Standard.THEAP);
         } else {
             c.add(HeaderCard.create(Standard.THEAP, getRegularTableSize() + getHeapOffset()));
