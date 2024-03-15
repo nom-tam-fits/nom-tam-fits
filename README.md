@@ -1790,36 +1790,6 @@ The reverse process is simply via the `asBinaryTableHDU()` method. E.g.:
     BinaryTableHDU table = compressed.asBinaryTableHDU();
 ```
 
-#### Note on compressing variable-length arrays (VLAs)
-
-The compression of variable-length table columns is a fair bit more involved process than that for fixed-sized table 
-entries, and we only added proper support for it in __1.19.1__. When compressing/decompressing tables containing VLAs, 
-you should be aware of some potentially severe pitfalls. 
-
- 1. VLA table compression is not widely supported by tools (including CFITSIO's own `fpack` tool! -- see more on
- that below).
-
- 2. The [(C)FITSIO](https://heasarc.gsfc.nasa.gov/fitsio/) implementation diverges from the documented 
- standard (FITS 4.0 and the original Pence et al. 2013 convention) by storing the adjoint desciptors in reversed order, 
- w.r.t. the standard, on the heap. Our understanding, based on communication with the maintainers of the standard, is 
- that this discrepacy will be resolved by changing the documentation (the standard) to conform to the (C)FITSIO 
- implementation. Therefore, our implementation for the compression of VLAs is compliant to that of (C)FITSIO, and not 
- to the current wording of the standard. However, we wish to support reading files produced either way via the `static` 
- `CompressedTableHDU.useOldStandardVLAIndexing(boolean)` method selecting the convention according to which the 
- adjoint table descriptors are stored in the file: either in the format described by the original FITS 4.0 standard / 
- Pence+2013 convention (`true`), or else in the (C)FITSIO compatible format (`false`; default).
- 
- 3. (C)FITSIO and `fpack`  version &lt;= 4.4.0  do not properly handle the `THEAP` keyword (if present). Therefore, we 
- will skip adding `THEAP` to the table headers when not necessary (that is when the heap follows immediately after the 
- main table), in order to provide better interoperability with (C)FITSIO and `fpack`.
- 
- 4. (C)FITSIO and `fpack` version &lt;= 4.4.0 do not handle `byte`-type and `short`-type VLA columns properly, 
- indicating them as compressed via `GZIP_1` and `GZIP_2` respectively, whereas the data appears to be stored 
- uncompressed form for these data types. (They do however compress `int` and `float` type VLAs properly, albeit 
- invariable with the `RICE_1` algorithm, regardless of the user-selection.)
-
-
-
 
 #### Accessing image header values without decompressing
 
@@ -1853,6 +1823,51 @@ And, if you want to surgically access a range of data from select columns (and t
 
 The methods `CompressedTableHDU.getTileRows()` and `.getTileCount()` can be used to help determined which tile(s)
 to decompress to get access to specific table rows.
+
+
+#### Note on compressing variable-length arrays (VLAs)
+
+The compression of variable-length table columns is a fair bit more involved process than that for fixed-sized table 
+entries, and we only added proper support for it in __1.19.1__. When compressing/decompressing tables containing VLAs, 
+you should be aware of the very limited interoperability with other tools, including (C)FITSIO and its `fpack` / 
+`funpack` (more on these below). In fact, we are not aware of any tool other than __nom.tam.fits__ that offers a 
+truly complete and accurate implementation of this part of the standard.
+
+Note, that the [(C)FITSIO](https://heasarc.gsfc.nasa.gov/fitsio/) implementation of VLA compression diverges from the 
+documented standard (FITS 4.0 and the original Pence et al. 2013 convention) by storing the adjoint desciptors in 
+reversed order, w.r.t. the standard, on the heap. Our understanding, based on communication with the maintainers of 
+the FITS standard, is that this discrepacy will be resolved by changing the documentation (the standard) to conform to 
+the (C)FITSIO implementation. Therefore, our implementation for the compression of VLAs is generally compliant to that 
+of (C)FITSIO, and not to the current prescription of the standard. However, we wish to support reading files produced 
+either way via the `static` `CompressedTableHDU.useOldStandardVLAIndexing(boolean)` method selecting the convention 
+according to which the adjoint table descriptors are stored in the file: either in the format described by the 
+original FITS 4.0 standard / Pence+2013 convention (`true`), or else in the (C)FITSIO compatible format (`false`; 
+default).
+
+#### Limts to interoperability with (C)FITSIO's `fpack` / `funpack`
+
+The table compression implementation of __nom.tam.fits__ is now both more standard(!) and  more reliable(!) than that 
+of (C)FITSIO and `fpack` / `funpack`. Thus issues of interoperability are not due to a fault of our own. Specifically, 
+the current (4.4.0) and earlier [(C)FITSIO](https://heasarc.gsfc.nasa.gov/fitsio/) releases are affected by a slew of 
+table-compression related bugs, quirks, and oddities -- which severely limit its interoperability with other tools. 
+Some of the bugs in `fpack` may result in entirely corrupted FITS files, while others limit what standard compressed 
+data `funpack` is able to decompress:
+ 
+ 1. (C)FITSIO and `fpack`  version &lt;= 4.4.0 do not properly handle the `THEAP` keyword (if present). If the keyword
+ is present, `fpack` will use it incorrectly, resulting in a bloated compressed FITS that is also unreadable because of
+ an incorrect `PCOUNT` value in the compressed header. Therefore, we will skip adding `THEAP` to the table headers when 
+ not necessary (that is when the heap follows immediately after the main table), in order to provide better 
+ interoperability with (C)FITSIO and `fpack`.
+ 
+ 2. (C)FITSIO and `fpack` version &lt;= 4.4.0 do not handle `byte`-type and `short`-type VLA columns properly. In the
+ `fpack`-compressed headers these are indicated as compressed via `GZIP_1` and `GZIP_2` respectively, whereas the data 
+ on the heap is not actually GZIP compressed for either (in fact, they appear to be actually uncompressed). Note, that 
+ `fpack` does compress `int` type VLAs properly, albeit always with the `RICE_1` algorithm, regardless of the 
+ user selection of the compression option; and for fixed-sized `byte[]` and `short[]` array columns they are in fact 
+ compressed with `GZIP_1` and `GZIP_2` respectively. Thus, this bug affects specific VLAs types only.
+ 
+ 3. (C)FITSIO and `funpack` version &lt;= 4.4.0 do not handle uncompressed data columns (with `ZCTYPn = 'NOCOMPRESS')` 
+ in compressed tables, despite these being standard.
 
 -----------------------------------------------------------------------------
 
