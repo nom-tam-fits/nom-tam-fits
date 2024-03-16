@@ -558,6 +558,20 @@ public class ColumnTableTest {
         tab.setRow(tab.getNRows(), new int[] {3});
     }
 
+    @Test(expected = TableException.class)
+    public void checkAddMismatchedRow() throws Exception {
+        ColumnTable<?> tab = new ColumnTable<>();
+        tab.addColumn(new int[] {1, 2}, 1);
+        tab.addRow(new Object[] {new int[] {1, 2}});
+    }
+
+    @Test(expected = TableException.class)
+    public void checkSetMismatchedRow() throws Exception {
+        ColumnTable<?> tab = new ColumnTable<>();
+        tab.addColumn(new int[] {1, 2}, 1);
+        tab.setRow(0, new Object[] {new int[] {1, 2}});
+    }
+
     @SuppressWarnings("deprecation")
     @Test
     public void testExtraState() throws Exception {
