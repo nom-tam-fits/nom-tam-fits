@@ -63,6 +63,9 @@
           (that is when the heap follows immediately after the main table). This allows better interoperability 
           with (C)FITSIO, which currently lacks proper support for this standard FITS keyword.
       </action>
+      <action type="update" dev="attipaci" issue="582">
+          Support heaps up to 2GB (previously they were limited to 1GB max).
+      </action>
       <action type="update" dev="attipaci">
           Uses the latest maven build and runtime dependencies.
       </action>
