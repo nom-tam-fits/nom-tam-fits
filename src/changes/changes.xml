@@ -1,7 +1,7 @@
 <document xmlns="http://maven.apache.org/changes/1.0.0" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:schemaLocation="http://maven.apache.org/changes/1.0.0 http://maven.apache.org/xsd/changes-1.0.0.xsd">
 <body>
 
-   <release version="1.19.1-rc1" date="2024-03-15" description="Upcoming bug fix release.">
+   <release version="1.19.1-SNAPSHOT" date="2024-03-16" description="Bug fix release, with much improved table compression support.">
       <action type="fix" dev="attipaci" issue="552">
           Fix inconsistently maintained ColumnDesc.fileSize, by replacing it with dynamic .rowLen().
       </action>
@@ -13,8 +13,8 @@
           Fix the compression of variable-length table columns. These were completely off-spec in prior releases, 
           but are now properly supported as per the (C)FITSIO convention, which is slightly deviating from the
           documented standard. However, based on private communication with the maintainers, they are inclined
-          to resolve this discrepancy by updating the standard to match the (C)FITSIO implementation, so that is
-          why we chose that implementation also. Nevertheless, we provide the static 
+          to resolve this discrepancy by updating the standard to match the (C)FITSIO implementation, and therefore
+          we adopt the (C)FITSIO way also for compressing tables. Nevertheless, we provide the static 
           CompressedTableHDU.useOldStandardIndexing(boolean) method to allow reading compressed VLA columns 
           produced in the other way also (i.e as the current standard actually describes it). Note, that our VLA 
           compression support is now much better than that of (C)FITSIO, whose current release contains multiple 
@@ -24,8 +24,14 @@
           Fix potential narrowing conversion issues uncovered by GitHub's CodeQL.
       </action>
       <action type="fix" dev="attipaci" issue="576">
-          Eliminate unexpected exception throws if trying to write an empty table to a file/stream. Now it works as
+          Eliminate unexpected exception thrown if trying to write an empty table to a file/stream. Now it works as
           expected.
+      </action>
+      <action type="fix" dev="attipaci" issue="578">
+          Check setting elements in ColumnTable more consistently to avoid creating corrupted FITS tables.
+      </action>
+      <action type="fix" dev="attipaci" issue="580">
+          Fix ArrayIndexOutOfBoundsException when defragmenting larger heaps. 
       </action>
       <action type="add" dev="rmathar" issue="558">
           Find header cards with regex pattern matching with `Header.findCards()`.
@@ -49,13 +55,16 @@
           GZIP_1, GZIP_2, RICE_1, and NOCOMPRESS are allowed by the FITS standard for tables.)
       </action>
       <action type="update" dev="attipaci" issue="567">
-          The parallel table compression has previously resulted in a heap in irreproducible random ordering.
-          Now, the compressed heap is ordered for optimal sequential read performance.
+          The parallel table compression has previously resulted in a heap with irreproducible random ordering.
+          Now, the compressed heap is ordered consistently for optimal sequential read performance.
       </action>
       <action type="update" dev="attipaci" issue="571">
           From here on we'll omit writing the THEAP keyword into binary table headers when they are not necessary
           (that is when the heap follows immediately after the main table). This allows better interoperability 
           with (C)FITSIO, which currently lacks proper support for this standard FITS keyword.
+      </action>
+      <action type="update" dev="attipaci">
+          Uses the latest maven build and runtime dependencies.
       </action>
       
    </release>
