@@ -206,12 +206,12 @@ public class ByteArrayIO implements ReadWriteAccess {
      * @param need the minimum number of extra bytes needed beyond the current capacity.
      */
     private synchronized void grow(int need) {
-        int size = capacity() + need;
-        int below = Integer.highestOneBit(size);
+        long size = capacity() + need;
+        long below = Long.highestOneBit(size);
         if (below != size) {
             size = below << 1;
         }
-        byte[] newbuf = new byte[size];
+        byte[] newbuf = new byte[(int) Math.min(size, Integer.MAX_VALUE)];
         System.arraycopy(buf, 0, newbuf, 0, buf.length);
         buf = newbuf;
     }
