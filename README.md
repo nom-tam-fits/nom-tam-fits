@@ -246,7 +246,7 @@ an unexpected end-of-file before content was fully parsed, will be logged so the
 header standards (those that can be overcome with educated guesses) are also tolerared when reading, but logging for 
 these is not enabled by default (since they may be many, and likely you don't care). You can enable logging standard 
 violations in 3rd-party headers by `Header.setParserWarningsEnabled(true)`. You can also enforce stricter compliance 
-to standard when reading FITS files via `FitsFactory.setAllowHeaderRepairs(false)` and 
+to the standard when reading FITS files via `FitsFactory.setAllowHeaderRepairs(false)` and 
 `FitsFactory.setAllowTerminalJunk(false)`. When violations are not tolerated, appropriate exceptions will be thrown 
 during reading.
 
@@ -274,12 +274,11 @@ The simplest example of reading an image contained in the first HDU is given bel
 ```
 
 First we create a new instance of `Fits` with the filename. Then we can get first HDU using the `getHDU()` method. 
-Note the casting into an `ImageHDU`.
 
-When reading FITS data using the nom.tam library the user will often need to cast the results to the appropriate type.
-Given that the FITS file may contain many different kinds of data and that Java provides us with no class that can 
-point to different kinds of primitive arrays other than `Object`, such explicit casting is inevitable if you want to 
-use the data from the FITS files.
+Note the casting into an `ImageHDU`. When reading FITS data using the nom.tam library the user will often need to cast 
+the results to the appropriate type. Given that the FITS file may contain many different kinds of data and that Java 
+provides us with no class that can point to different kinds of primitive arrays other than `Object`, such explicit 
+casting is inevitable if you want to use the data from the FITS files.
 
 
 
@@ -1217,16 +1216,11 @@ value to a string longer than the space available for it in a single 80-characte
 <a name="checksums"></a>
 ### Checksums
 
-Checksums can be added to (and updated in) the headers of HDUs to allow checking the integrity of the FITS data at a 
-later time.
-
-As of version __1.17__, it is also possible to apply incremental updates to existing checksums. See the various static 
-methods of the `nom.tam.utilities.FitsChecksum` class on updating checksums for modified headers or data. There are 
-also methods to simplify verification of checksums when reading FITS files, and for calculating checksums directly 
-from a file without the need for reading and storing potentially huge amounts of data in RAM. Calculating data 
-checksums directly from the file is now default (as of __1.17__) for data that is in deferred read mode (i.e. not 
-currently loaded into RAM), making it possible to checksum huge FITS files without having to load entire segments of 
-data into RAM at any point.
+Checksums can be added to (and updated in) the headers of HDUs, and can be used to check the integrity of the FITS 
+data after. `Fits`, `BasicHDU`, and `Data` classes provide methods both for setting / updating or for verifying 
+checksums. The checksums will be calculated directly from the file (as of __1.17__) for all data in deferred read 
+mode. Thus, it is possible to checksum or verify huge FITS files without having to load large volumes of data into RAM 
+at any point.
 
 Setting the checksums (`CHECKSUM` and `DATASUM` keywords) should be the last modification to the FITS object or HDU 
 before writing. Here is an example of settting a checksum for an HDU before you write it to disk:
@@ -1266,7 +1260,7 @@ sums) just as easily too:
 
 The above will calculate checksums for each HDU directly from the file without reading the potentially large data into 
 memory, and compare HDU checksums and/or data checksums to those stored in the FITS headers. The verification can also 
-be performed on stream inputs, but unlike for files data will be invariable loaded into memory (at least temporarily).
+be performed on stream inputs but, unlike for files, data will be invariable loaded into memory (at least temporarily).
 
 You can also verify the integrity of HDUs or their data segments individually, via `BasicHDU.verifyIntegrity()` or
 `BasicHDU.verifyDataIntegrity()` calls on specific HDUs.
