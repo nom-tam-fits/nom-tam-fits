@@ -323,7 +323,7 @@ public class ColumnTable<T> implements DataTable, Cloneable {
             return MIN_CAPACITY;
         }
         // Predictable doubling beyond the minimum size...
-        return (int) Math.min(Long.highestOneBit(nrow) << 1, Integer.MAX_VALUE);
+        return (int) Math.min(Long.highestOneBit(rows) << 1, Integer.MAX_VALUE);
     }
 
     /**
