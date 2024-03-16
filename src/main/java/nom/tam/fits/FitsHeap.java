@@ -192,10 +192,10 @@ public class FitsHeap implements FitsElement {
      */
     synchronized int copyFrom(FitsHeap src, int offset, int len) {
         int pos = (int) store.length();
+        store.setLength(pos + len);
         synchronized (src) {
             System.arraycopy(src.store.getBuffer(), offset, store.getBuffer(), pos, len);
         }
-        store.setLength(pos + len);
         return pos;
     }
 
