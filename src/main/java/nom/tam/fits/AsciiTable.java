@@ -33,6 +33,7 @@ package nom.tam.fits;
 
 import java.io.IOException;
 import java.lang.reflect.Array;
+import java.util.Arrays;
 
 import nom.tam.fits.header.Bitpix;
 import nom.tam.fits.header.IFitsHeader;
@@ -112,6 +113,9 @@ public class AsciiTable extends AbstractTableData {
     /** Markers indicating fields that are null */
     private boolean[] isNull;
 
+    /** Column names */
+    private String[] names;
+
     /**
      * An array of arrays giving the data in the table in binary numbers
      */
@@ -136,6 +140,7 @@ public class AsciiTable extends AbstractTableData {
         lengths = new int[0];
         offsets = new int[0];
         nulls = new String[0];
+        names = new String[0];
     }
 
     /**
@@ -189,8 +194,10 @@ public class AsciiTable extends AbstractTableData {
         offsets = new int[nFields];
         lengths = new int[nFields];
         nulls = new String[nFields];
+        names = new String[nFields];
 
         for (int i = 0; i < nFields; i++) {
+            names[i] = hdr.getStringValue(Standard.TTYPEn.n(i + 1), TableHDU.getDefaultColumnName(i));
             offsets[i] = hdr.getIntValue(TBCOLn.n(i + 1)) - 1;
             String s = hdr.getStringValue(TFORMn.n(i + 1));
             if (offsets[i] < 0 || s == null) {
@@ -262,6 +269,12 @@ public class AsciiTable extends AbstractTableData {
             }
         }
         return t;
+    }
+
+    void setColumnName(int col, String value)
+            throws IllegalArgumentException, IndexOutOfBoundsException, HeaderCardException {
+        HeaderCard.validateChars(value);
+        names[col] = value;
     }
 
     /**
@@ -345,6 +358,9 @@ public class AsciiTable extends AbstractTableData {
         }
 
         Standard.context(AsciiTable.class);
+        if (names[col] != null) {
+            iter.add(HeaderCard.create(Standard.TTYPEn.n(col + 1), names[col]));
+        }
         iter.add(HeaderCard.create(Standard.TFORMn.n(col + 1), tform));
         iter.add(HeaderCard.create(Standard.TBCOLn.n(col + 1), offsets[col] + 1));
         Standard.context(null);
@@ -432,28 +448,18 @@ public class AsciiTable extends AbstractTableData {
             throw new FitsException("No AsciiTable support for elements of " + type.getName());
         }
 
-        Object[] newData = new Object[nFields + 1];
-        int[] newOffsets = new int[nFields + 1];
-        int[] newLengths = new int[nFields + 1];
-        Class<?>[] newTypes = new Class[nFields + 1];
-        String[] newNulls = new String[nFields + 1];
+        data = Arrays.copyOf(data, nFields + 1);
+        offsets = Arrays.copyOf(offsets, nFields + 1);
+        lengths = Arrays.copyOf(lengths, nFields + 1);
+        types = Arrays.copyOf(types, nFields + 1);
+        nulls = Arrays.copyOf(nulls, nFields + 1);
+        names = Arrays.copyOf(names, nFields + 1);
 
-        System.arraycopy(data, 0, newData, 0, nFields);
-        System.arraycopy(offsets, 0, newOffsets, 0, nFields);
-        System.arraycopy(lengths, 0, newLengths, 0, nFields);
-        System.arraycopy(types, 0, newTypes, 0, nFields);
-        System.arraycopy(nulls, 0, newNulls, 0, nFields);
-
-        data = newData;
-        offsets = newOffsets;
-        lengths = newLengths;
-        types = newTypes;
-        nulls = newNulls;
-
-        newData[nFields] = newCol;
+        data[nFields] = newCol;
         offsets[nFields] = rowLen + 1;
         lengths[nFields] = width;
         types[nFields] = ArrayFuncs.getBaseClass(newCol);
+        names[nFields] = TableHDU.getDefaultColumnName(nFields);
 
         rowLen += width + 1;
         if (isNull != null) {

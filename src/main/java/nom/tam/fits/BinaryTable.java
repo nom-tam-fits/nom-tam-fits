@@ -42,7 +42,6 @@ import java.util.StringTokenizer;
 import java.util.logging.Logger;
 
 import nom.tam.fits.header.Bitpix;
-import nom.tam.fits.header.Compression;
 import nom.tam.fits.header.NonStandard;
 import nom.tam.fits.header.Standard;
 import nom.tam.util.ArrayDataInput;
@@ -135,6 +134,11 @@ public class BinaryTable extends AbstractTableData implements Cloneable {
         private boolean isBits;
 
         /**
+         * User defined column name
+         */
+        private String name;
+
+        /**
          * Creates a new column descriptor with default settings and 32-bit integer heap pointers.
          */
         protected ColumnDesc() {
@@ -209,6 +213,47 @@ public class BinaryTable extends AbstractTableData implements Cloneable {
         public ColumnDesc(Class<?> base, int... dim) throws FitsException {
             this(base);
             setBoxedShape(dim);
+        }
+
+        /**
+         * Sets a user-specified name for this column. The specified name will be used as the TTYPEn value for this
+         * column.
+         * 
+         * @param  value                    The new name for this column.
+         * 
+         * @return                          itself, to support builder patterns.
+         * 
+         * @throws IllegalArgumentException If the name contains characters outside of the ASCII range of 0x20 - 0x7F
+         *                                      allowed by FITS.
+         * 
+         * @see                             #name()
+         * @see                             #getDescriptor(String)
+         * @see                             #indexOf(String)
+         * @see                             #addColumn(ColumnDesc)
+         * 
+         * @since                           1.20
+         * 
+         * @author                          Attila Kovacs
+         */
+        public ColumnDesc name(String value) throws IllegalArgumentException {
+            HeaderCard.validateChars(value);
+            this.name = value;
+            return this;
+        }
+
+        /**
+         * Returns the name of this column, as it was stored or would be stored by a TTYPEn value in the FITS header.
+         * 
+         * @return the name of this column
+         * 
+         * @see    #name(String)
+         * 
+         * @since  1.20
+         * 
+         * @author Attila Kovacs
+         */
+        public String name() {
+            return this.name;
         }
 
         /**
@@ -1588,10 +1633,16 @@ public class BinaryTable extends AbstractTableData implements Cloneable {
     }
 
     /**
+     * <p>
      * Adds a column of complex values stored as the specified decimal type of components in the FITS. While you can
      * also use {@link #addColumn(Object)} to add complex values, that method will always add them as 64-bit
      * double-precision values. So, this method is provided to allow users more control over how they want their complex
      * data be stored.
+     * </p>
+     * <p>
+     * The new column will be named as "Column <i>n</i>" (where <i>n</i> is the 1-based index of the column) by default,
+     * which can be changed by {@link ColumnDesc#name(String)} after.
+     * </p>
      * 
      * @param  o             A {@link ComplexValue} or an array (possibly multi-dimensional) thereof.
      * @param  decimalType   <code>float.class</code> or <code>double.class</code> (all other values default to
@@ -1617,10 +1668,16 @@ public class BinaryTable extends AbstractTableData implements Cloneable {
     }
 
     /**
+     * <p>
      * Adds a column of string values (one per row), optimized for storage size. Unlike {@link #addColumn(Object)},
      * which always store strings in fixed format, this method will automatically use variable-length columns for
      * storing the strings if their lengths vary sufficiently to make that form of storage more efficient, or if the
      * array contains nulls (which may be defined later).
+     * </p>
+     * <p>
+     * The new column will be named as "Column <i>n</i>" (where <i>n</i> is the 1-based index of the column) by default,
+     * which can be changed by {@link ColumnDesc#name(String)} after.
+     * </p>
      * 
      * @param  o             A 1D string array, with 1 string element per table row. The array may contain
      *                           <code>null</code> entries, in which case variable-length columns will be used, since
@@ -1656,8 +1713,14 @@ public class BinaryTable extends AbstractTableData implements Cloneable {
     }
 
     /**
+     * <p>
      * Adds a column of bits. This uses much less space than if adding boolean values as logicals (the default behaviot
      * of {@link #addColumn(Object)}, since logicals take up 1 byte per element, whereas bits are really single bits.
+     * </p>
+     * <p>
+     * The new column will be named as "Column <i>n</i>" (where <i>n</i> is the 1-based index of the column) by default,
+     * which can be changed by {@link ColumnDesc#name(String)} after.
+     * </p>
      * 
      * @param  o                        An any-dimensional array of <code>boolean</code> values.
      * 
@@ -1678,8 +1741,16 @@ public class BinaryTable extends AbstractTableData implements Cloneable {
     }
 
     /**
+     * <p>
      * Adds a new empty column to the table to the specification. This is useful when the user may want ot have more
-     * control on how columns are configured before calling {@link #addRow(Object[])} to start populating.
+     * control on how columns are configured before calling {@link #addRow(Object[])} to start populating. The new
+     * column will be named as "Column <i>n</i>" (where <i>n</i> is the 1-based index of the column) by default, unless
+     * already named otherwise.
+     * </p>
+     * <p>
+     * The new column will be named as "Column <i>n</i>" (where <i>n</i> is the 1-based index of the column) by default,
+     * which can be changed by {@link ColumnDesc#name(String)} after.
+     * </p>
      * 
      * @param  descriptor            the column descriptor
      * 
@@ -1689,6 +1760,7 @@ public class BinaryTable extends AbstractTableData implements Cloneable {
      *                                   comlumns.
      * 
      * @see                          #addRow(Object[])
+     * @see                          ColumnDesc#name(String)
      */
     public int addColumn(ColumnDesc descriptor) throws IllegalStateException {
         if (nRow != 0) {
@@ -1697,6 +1769,10 @@ public class BinaryTable extends AbstractTableData implements Cloneable {
         descriptor.offset = rowLen;
         rowLen += descriptor.rowLen();
         columns.add(descriptor);
+        if (descriptor.name() == null) {
+            // Set default column name;
+            descriptor.name(TableHDU.getDefaultColumnName(columns.size()));
+        }
         return columns.size();
     }
 
@@ -1733,6 +1809,10 @@ public class BinaryTable extends AbstractTableData implements Cloneable {
      * as fixed sized (sized for the longest string element contained).
      * </p>
      * <p>
+     * The new column will be named as "Column <i>n</i>" (where <i>n</i> is the 1-based index of the column) by default,
+     * which can be changed by {@link ColumnDesc#name(String)} after.
+     * </p>
+     * <p>
      * If you want other complex-valued representations use {@link #addComplexColumn(Object, Class)} instead, and if you
      * want to pack <code>boolean</code>-based data more efficiently (using up to 8 times less space), use
      * {@link #addBitsColumn(Object)} instead, or else convert the column to bits afterwards using
@@ -1748,6 +1828,7 @@ public class BinaryTable extends AbstractTableData implements Cloneable {
      * @see #addBitsColumn(Object)
      * @see #convertToBits(int)
      * @see #addStringColumn(String[])
+     * @see ColumnDesc#name(String)
      */
     @Override
     public int addColumn(Object o) throws FitsException {
@@ -1819,10 +1900,16 @@ public class BinaryTable extends AbstractTableData implements Cloneable {
     }
 
     /**
+     * <p>
      * Adds a new variable-length data column, populating it with the specified data object. Unlike
      * {@link #addColumn(Object)} which will use fixed-size data storage provided the data allows it, this method forces
      * the use of variable-sized storage regardless of the data layout -- for example to accommodate addiing rows /
      * elements of different sized at a later time.
+     * </p>
+     * <p>
+     * The new column will be named as "Column <i>n</i>" (where <i>n</i> is the 1-based index of the column) by default,
+     * which can be changed by {@link ColumnDesc#name(String)} after.
+     * </p>
      * 
      * @param  o             An array containing one entry per row. Multi-dimensional entries will be flattened to 1D
      *                           for storage on the heap.
@@ -1868,6 +1955,11 @@ public class BinaryTable extends AbstractTableData implements Cloneable {
         if (nRow == 0) {
             // Set the table row count to match first colum
             nRow = rows;
+        }
+
+        if (c.name() == null) {
+            // Set the default column name
+            c.name(TableHDU.getDefaultColumnName(columns.size()));
         }
 
         return columns.size();
@@ -2146,6 +2238,29 @@ public class BinaryTable extends AbstractTableData implements Cloneable {
         }
 
         return data;
+    }
+
+    /**
+     * Returns the Java index of the first column by the specified name.
+     * 
+     * @param  name the name of the column (case sensitive).
+     * 
+     * @return      The column index, or else -1 if this table does not contain a column by the specified name.
+     * 
+     * @see         #getDescriptor(String)
+     * @see         ColumnDesc#name(String)
+     * 
+     * @since       1.20
+     * 
+     * @author      Attila Kovacs
+     */
+    public int indexOf(String name) {
+        for (int col = 0; col < columns.size(); col++) {
+            if (name.equals(getDescriptor(col).name())) {
+                return col;
+            }
+        }
+        return -1;
     }
 
     @Override
@@ -3560,6 +3675,10 @@ public class BinaryTable extends AbstractTableData implements Cloneable {
 
         ColumnDesc c = new ColumnDesc();
 
+        if (header.containsKey(Standard.TTYPEn.n(col + 1))) {
+            c.name(header.getStringValue(Standard.TTYPEn.n(col + 1)));
+        }
+
         if (type == POINTER_INT || type == POINTER_LONG) {
             // Variable length column...
             c.setVariableSize(type == POINTER_LONG);
@@ -3770,8 +3889,8 @@ public class BinaryTable extends AbstractTableData implements Cloneable {
 
         if (updateColumns) {
             for (int i = 0; i < columns.size(); i++) {
-                c.setKey(Compression.ZFORMn.n(i + 1).key());
-                fillForColumn(c, i);
+                c.setKey(Standard.TFORMn.n(i + 1).key());
+                fillForColumn(h, c, i);
             }
         }
 
@@ -3783,11 +3902,16 @@ public class BinaryTable extends AbstractTableData implements Cloneable {
      *
      * @throws FitsException if the operation failed
      */
-    void fillForColumn(Cursor<String, HeaderCard> hc, int col) throws FitsException {
+    void fillForColumn(Header header, Cursor<String, HeaderCard> hc, int col) throws FitsException {
         ColumnDesc c = columns.get(col);
 
         try {
             Standard.context(BinaryTable.class);
+
+            if (c.name() != null) {
+                hc.add(HeaderCard.create(Standard.TTYPEn.n(col + 1), c.name()));
+            }
+
             hc.add(HeaderCard.create(Standard.TFORMn.n(col + 1), c.getTFORM()));
 
             String tdim = c.getTDIM();
@@ -3802,12 +3926,36 @@ public class BinaryTable extends AbstractTableData implements Cloneable {
     /**
      * Returns the column descriptor of a given column in this table
      * 
-     * @param  column the zero-based column index
+     * @param  column                         the zero-based column index
      * 
-     * @return        the column's descriptor
+     * @return                                the column's descriptor
+     * 
+     * @throws ArrayIndexOutOfBoundsException if this table does not contain a column with that index.
+     * 
+     * @see                                   #getDescriptor(String)
      */
-    public ColumnDesc getDescriptor(int column) {
+    public ColumnDesc getDescriptor(int column) throws ArrayIndexOutOfBoundsException {
         return columns.get(column);
+    }
+
+    /**
+     * Returns the (first) column descriptor whose name matches the specified value.
+     * 
+     * @param  name The column name (case sensitive).
+     * 
+     * @return      The descriptor of the first column by that name, or <code>null</null> if the table contains no
+     *                  column by that name.
+     * 
+     * @see         #getDescriptor(int)
+     * @see         #indexOf(String)
+     * 
+     * @since       1.20
+     * 
+     * @author      Attila Kovacs
+     */
+    public ColumnDesc getDescriptor(String name) {
+        int col = indexOf(name);
+        return col < 0 ? null : getDescriptor(col);
     }
 
     /**
