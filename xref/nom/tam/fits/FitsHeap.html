@@ -200,10 +200,10 @@
 <a class="jxr_linenumber" name="L192" href="#L192">192</a> <em class="jxr_javadoccomment">     */</em>
 <a class="jxr_linenumber" name="L193" href="#L193">193</a>     <strong class="jxr_keyword">synchronized</strong> <strong class="jxr_keyword">int</strong> copyFrom(<a name="FitsHeap" href="../../../nom/tam/fits/FitsHeap.html#FitsHeap">FitsHeap</a> src, <strong class="jxr_keyword">int</strong> offset, <strong class="jxr_keyword">int</strong> len) {
 <a class="jxr_linenumber" name="L194" href="#L194">194</a>         <strong class="jxr_keyword">int</strong> pos = (<strong class="jxr_keyword">int</strong>) store.length();
-<a class="jxr_linenumber" name="L195" href="#L195">195</a>         <strong class="jxr_keyword">synchronized</strong> (src) {
-<a class="jxr_linenumber" name="L196" href="#L196">196</a>             System.arraycopy(src.store.getBuffer(), offset, store.getBuffer(), pos, len);
-<a class="jxr_linenumber" name="L197" href="#L197">197</a>         }
-<a class="jxr_linenumber" name="L198" href="#L198">198</a>         store.setLength(pos + len);
+<a class="jxr_linenumber" name="L195" href="#L195">195</a>         store.setLength(pos + len);
+<a class="jxr_linenumber" name="L196" href="#L196">196</a>         <strong class="jxr_keyword">synchronized</strong> (src) {
+<a class="jxr_linenumber" name="L197" href="#L197">197</a>             System.arraycopy(src.store.getBuffer(), offset, store.getBuffer(), pos, len);
+<a class="jxr_linenumber" name="L198" href="#L198">198</a>         }
 <a class="jxr_linenumber" name="L199" href="#L199">199</a>         <strong class="jxr_keyword">return</strong> pos;
 <a class="jxr_linenumber" name="L200" href="#L200">200</a>     }
 <a class="jxr_linenumber" name="L201" href="#L201">201</a> 

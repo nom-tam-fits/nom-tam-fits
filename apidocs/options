@@ -17,7 +17,7 @@
 -docencoding
 'UTF-8'
 -doctitle
-'nom.tam.fits 1.19.1-rc1 Public User API'
+'nom.tam.fits 1.19.1 Public User API'
 -header
 '<meta name="description" content="A full-featured pure Java library for reading, writing, and modifying FITS files." />           	<meta name="robots" content="index,follow" />           	<link rel="shortcut icon" type="image/x-icon" href="/nom-tam-fits/images/favicon.ico" /> 		<script async src="https://www.googletagmanager.com/gtag/js?id=G-4TM8JE0R8J"></script> 		<script>   			window.dataLayer = window.dataLayer || [];   			function gtag(){dataLayer.push(arguments);}   			gtag(\'js\', new Date());  		 	gtag(\'config\', \'G-4TM8JE0R8J\'); 		</script>'
 -linkoffline
@@ -25,4 +25,4 @@
 -use
 -version
 -windowtitle
-'nom.tam.fits 1.19.1-rc1 Public User API'
+'nom.tam.fits 1.19.1 Public User API'

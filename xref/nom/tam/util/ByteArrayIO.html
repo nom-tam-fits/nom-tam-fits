@@ -214,12 +214,12 @@
 <a class="jxr_linenumber" name="L206" href="#L206">206</a> <em class="jxr_javadoccomment">     * @param need the minimum number of extra bytes needed beyond the current capacity.</em>
 <a class="jxr_linenumber" name="L207" href="#L207">207</a> <em class="jxr_javadoccomment">     */</em>
 <a class="jxr_linenumber" name="L208" href="#L208">208</a>     <strong class="jxr_keyword">private</strong> <strong class="jxr_keyword">synchronized</strong> <strong class="jxr_keyword">void</strong> grow(<strong class="jxr_keyword">int</strong> need) {
-<a class="jxr_linenumber" name="L209" href="#L209">209</a>         <strong class="jxr_keyword">int</strong> size = capacity() + need;
-<a class="jxr_linenumber" name="L210" href="#L210">210</a>         <strong class="jxr_keyword">int</strong> below = Integer.highestOneBit(size);
+<a class="jxr_linenumber" name="L209" href="#L209">209</a>         <strong class="jxr_keyword">long</strong> size = capacity() + need;
+<a class="jxr_linenumber" name="L210" href="#L210">210</a>         <strong class="jxr_keyword">long</strong> below = Long.highestOneBit(size);
 <a class="jxr_linenumber" name="L211" href="#L211">211</a>         <strong class="jxr_keyword">if</strong> (below != size) {
 <a class="jxr_linenumber" name="L212" href="#L212">212</a>             size = below &lt;&lt; 1;
 <a class="jxr_linenumber" name="L213" href="#L213">213</a>         }
-<a class="jxr_linenumber" name="L214" href="#L214">214</a>         byte[] newbuf = <strong class="jxr_keyword">new</strong> byte[size];
+<a class="jxr_linenumber" name="L214" href="#L214">214</a>         byte[] newbuf = <strong class="jxr_keyword">new</strong> byte[(<strong class="jxr_keyword">int</strong>) Math.min(size, Integer.MAX_VALUE)];
 <a class="jxr_linenumber" name="L215" href="#L215">215</a>         System.arraycopy(buf, 0, newbuf, 0, buf.length);
 <a class="jxr_linenumber" name="L216" href="#L216">216</a>         buf = newbuf;
 <a class="jxr_linenumber" name="L217" href="#L217">217</a>     }
