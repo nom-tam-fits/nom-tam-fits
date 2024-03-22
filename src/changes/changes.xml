@@ -1,13 +1,13 @@
 <document xmlns="http://maven.apache.org/changes/1.0.0" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:schemaLocation="http://maven.apache.org/changes/1.0.0 http://maven.apache.org/xsd/changes-1.0.0.xsd">
 <body>
 
-   <release version="1.19.1-SNAPSHOT" date="2024-03-16" description="Bug fix release, with much improved table compression support.">
-      <action type="fix" dev="attipaci" issue="552">
-          Fix inconsistently maintained ColumnDesc.fileSize, by replacing it with dynamic .rowLen().
-      </action>
+   <release version="1.19.1" date="2024-03-25" description="Bug fix release, with improved table compression support.">
       <action type="fix" dev="attipaci" issue="562">
           Compressed tables had the ZCTYPn keywords written with a 0-based index, and thus were off-by-one in
           the FITS convention. Now fixed.
+      </action>
+      <action type="fix" dev="attipaci" issue="552">
+          Fix inconsistently maintained ColumnDesc.fileSize, by replacing it with dynamic .rowLen().
       </action>
       <action type="fix" dev="attipaci" issue="557">
           Fix the compression of variable-length table columns. These were completely off-spec in prior releases, 

@@ -832,10 +832,10 @@ FITS file to ensure that any pending file changes are fully flushed to the outpu
 
 Defragmenting binary tables allows to reclaim heap space that is no longer used in the heap area. When deleting 
 variable-length columns, or when replacing entries inside variable-length columns, some or all of the space occupied 
-by old entries on the heap may become orphanes storage, needlessly bloating the heap storage. Also, changed entries 
-may be placed on the heap out of order, which can slow down caching effectiveness for sequential table acces. Thus 
-when modifying tables with variable-length columns, it may be a good idea to defragment the heap before writing in to 
-the output. For the above example, this would be adding an extra step before `rewrite)`. 
+by old entries on the heap may become orphaned, needlessly bloating the heap storage. Also, changed entries may be 
+placed on the heap out of order, which can slow down caching effectiveness for sequential table acces. Thus when 
+modifying tables with variable-length columns, it may be a good idea to defragment the heap before writing in to the 
+output. For the above example, this would be adding an extra step before `rewrite)`. 
 
 ```java
   ...
@@ -974,7 +974,7 @@ Or if we want to know the right ascension (R.A.) coordinate of the reference pos
 or, equivalently
 
 ```java
-  double ra = header.getDoubleValue(Standard.CRVALn.n(1));
+  double ra = header.getDoubleValue(WCS.CRVALna.n(1));
 ```
 
 [Note, that the FITS [WCS convention](https://fits.gsfc.nasa.gov/fits_wcs.html) is being used here. For typical 2D 
@@ -990,7 +990,7 @@ To add or change the R.A. coordinate value, you can use:
 or, similarly
 
 ```java
-  header.addValue(Standard.CRVALn.n(1), ra);
+  header.addValue(WCS.CRVALna.n(1), ra);
 ```
 
 The second argument is our new right ascension coordinate (in degrees). The third is a comment field that will also be 
@@ -1613,7 +1613,7 @@ However, if you insist on creating ASCII tables (provided the data allows for it
  - [Table compression](#table-compression)
 
 Starting with version __1.15__ we include support for compressing images and tables. The compression algorithms have 
-been ported to Java from __cfitsio__ to provide a pure 100% Java implementation. However, versions prior to __1.18__ 
+been ported to Java from __cfitsio__ to provide a pure 100% Java implementation. However, versions prior to __1.19.1__ 
 had a number of lingering compression related bugs of varying severity, which may have prevented realiable use.
 
 
@@ -1697,8 +1697,8 @@ Compressing an image HDU is typically a multi-step process:
  ```
 
  
-After the compression, the compressed image HDU can be handled just like any other HDU, and written to a file 
-or stream, for example (just not as the first HDU in a FITS...).
+After the compression, the compressed image HDU can be handled just like any other HDU, and written to a file or 
+stream, for example (just not as the first HDU in a FITS...).
 
 The reverse process is simply via the `asImageHDU()` method. E.g.:
 
@@ -1712,9 +1712,8 @@ When compressing or decompression images, all available CPUs are automatically u
 
 #### Accessing image header values without decompressing:
 
-You don't need to decompress the image to see what the decompressed image header is.
-You can simply call `CompressedImageHDU.getImageHeader()` to peek into the reconstructed header of 
-the image before it was compressed:
+You don't need to decompress the image to see what the decompressed image header is. You can simply call 
+`CompressedImageHDU.getImageHeader()` to peek into the reconstructed header of the image before it was compressed:
 
 ```java
   CompressedImageHDU compressed = ...
@@ -1723,10 +1722,9 @@ the image before it was compressed:
 
 #### Accessing specific parts of a compressed image
 
-Often compressed images can be very large, and we are interested in specific areas of it only.
-As such, we do not want to decompress the entire image. In these cases we can use the `getTileHDU()`
-method of `CompressedImageHDU`
-class to decompress only the selected image area. As of version __1.18__, this is really easy also:
+Often compressed images can be very large, and we are interested in specific areas of it only. As such, we do not want 
+to decompress the entire image. In these cases we can use the `getTileHDU()` method of `CompressedImageHDU` class to 
+decompress only the selected image area. As of version __1.18__, this is really easy also:
 
 ```java
   CompressedImageHDU compressed = ...
@@ -1743,11 +1741,10 @@ class to decompress only the selected image area. As of version __1.18__, this i
 ### Table compression
 
 Table compression is also supported in nom-tam-fits from version __1.15__, and more completely since __1.19.1__. When 
-compressing a table, the 'tiles' are sets of contiguous rows within a column. The compression algorithms are the same 
-as the ones provided for image compression. Default compression is `GZIP_2`, which will be used for all columns, 
-unless explicitly defined otherwise. (In principle, very column could use a different algorithm.). As for FITS version
-4.0 only lossless compression is supported for tables, and hence only `GZIP_1`, `GZIP_2` (default), `RICE_1` (with
-default options), and `NOCOMPRESS` are admissible.
+compressing a table, the 'tiles' are sets of contiguous rows within a column. Each column may use a different 
+compression algorithm. As for FITS version 4.0 only lossless compression is supported for tables, and hence only 
+`GZIP_1`, `GZIP_2` (default), `RICE_1` (with default options), and `NOCOMPRESS` are admissible. The default 
+compression is with `GZIP_2`, unless explicitly defined otherwise.
 
 Tile compression mimics image compression, and is typically a 2-step process:
 
@@ -1767,8 +1764,8 @@ Tile compression mimics image compression, and is typically a 2-step process:
 ```
 
 The two step process (as opposed to a single-step one) was probably chosen because it mimics that of 
-`CompressedImageHDU`, where further configuration steps may be inserted in-between. But, of course we can combine the 
-steps into a single line:
+`CompressedImageHDU`, where further configuration steps may be inserted in-between (which might become possible in a 
+future FITS standard). But, of course we can combine the steps into a single line:
 
 ```java
    CompressedTableHDU compressed = CompressedTableHDU.fromBinaryTableHDU(table, 4, Compression.RICE_1).compress();
@@ -1822,8 +1819,8 @@ to decompress to get access to specific table rows.
 #### Note on compressing variable-length arrays (VLAs)
 
 The compression of variable-length table columns is a fair bit more involved process than that for fixed-sized table 
-entries, and we only added proper support for it in __1.19.1__. When compressing/decompressing tables containing VLAs, 
-you should be aware of the very limited interoperability with other tools, including (C)FITSIO and its `fpack` / 
+entries, and we only started properly supporting it in __1.19.1__. When compressing/decompressing tables containing 
+VLAs, you should be aware of the very limited interoperability with other tools, including (C)FITSIO and its `fpack` / 
 `funpack` (more on these below). In fact, we are not aware of any tool other than __nom.tam.fits__ that offers a 
 truly complete and accurate implementation of this part of the standard.
 
@@ -1838,10 +1835,10 @@ according to which the adjoint table descriptors are stored in the file: either 
 original FITS 4.0 standard / Pence+2013 convention (`true`), or else in the (C)FITSIO compatible format (`false`; 
 default).
 
-#### Limts to interoperability with (C)FITSIO's `fpack` / `funpack`
+#### Interoperability with (C)FITSIO's `fpack` / `funpack`
 
 The table compression implementation of __nom.tam.fits__ is now both more standard(!) and  more reliable(!) than that 
-of (C)FITSIO and `fpack` / `funpack`. Thus issues of interoperability are not due to a fault of our own. Specifically, 
+of (C)FITSIO and `fpack` / `funpack`. Issues of interoperability are not due to a fault of our own. Specifically, 
 the current (4.4.0) and earlier [(C)FITSIO](https://heasarc.gsfc.nasa.gov/fitsio/) releases are affected by a slew of 
 table-compression related bugs, quirks, and oddities -- which severely limit its interoperability with other tools. 
 Some of the bugs in `fpack` may result in entirely corrupted FITS files, while others limit what standard compressed 
@@ -1854,11 +1851,11 @@ data `funpack` is able to decompress:
  interoperability with (C)FITSIO and `fpack`.
  
  2. (C)FITSIO and `fpack` version &lt;= 4.4.0 do not handle `byte`-type and `short`-type VLA columns properly. In the
- `fpack`-compressed headers these are indicated as compressed via `GZIP_1` and `GZIP_2` respectively, whereas the data 
- on the heap is not actually GZIP compressed for either (in fact, they appear to be actually uncompressed). Note, that 
- `fpack` does compress `int` type VLAs properly, albeit always with the `RICE_1` algorithm, regardless of the 
- user selection of the compression option; and for fixed-sized `byte[]` and `short[]` array columns they are in fact 
- compressed with `GZIP_1` and `GZIP_2` respectively. Thus, this bug affects specific VLAs types only.
+ `fpack`-compressed headers these are indicated as compressed via `GZIP_1` and `GZIP_2` respectively (regardless of 
+ the user-specified compression option), whereas the data on the heap is not actually GZIP compressed for either (in 
+ fact, they appear uncompressed, actually). Note, that `fpack` does compress `int` type VLAs properly, albeit always 
+ with `RICE_1`, regardless of the user selection for the compression option; whereas fixed-sized `byte[]` and 
+ `short[]` array columns they are in fact compressed with `GZIP_1` and `GZIP_2` respectively, as indicated.
  
  3. (C)FITSIO and `funpack` version &lt;= 4.4.0 do not handle uncompressed data columns (with `ZCTYPn = 'NOCOMPRESS')` 
  in compressed tables, despite these being standard.
