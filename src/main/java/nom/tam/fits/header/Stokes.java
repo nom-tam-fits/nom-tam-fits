@@ -354,7 +354,7 @@ public enum Stokes {
                     continue;
                 }
 
-                new AbstractMap.SimpleImmutableEntry(i, p);
+                return new AbstractMap.SimpleImmutableEntry(i, p);
             }
         }
 
@@ -407,7 +407,7 @@ public enum Stokes {
                     continue;
                 }
 
-                new AbstractMap.SimpleImmutableEntry(i, p);
+                return new AbstractMap.SimpleImmutableEntry(i, p);
             }
         }
 
