@@ -1949,17 +1949,16 @@ public class BinaryTable extends AbstractTableData implements Cloneable {
 
         // Load any deferred data (we will not be able to do that once we alter the column structure)
         ensureData();
+
+        // Set the default column name
+        c.name(TableHDU.getDefaultColumnName(columns.size()));
+
         table.addColumn(o, c.getTableBaseCount());
         columns.add(c);
 
         if (nRow == 0) {
             // Set the table row count to match first colum
             nRow = rows;
-        }
-
-        if (c.name() == null) {
-            // Set the default column name
-            c.name(TableHDU.getDefaultColumnName(columns.size()));
         }
 
         return columns.size();

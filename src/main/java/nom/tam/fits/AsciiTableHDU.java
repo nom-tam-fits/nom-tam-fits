@@ -180,11 +180,7 @@ public class AsciiTableHDU extends TableHDU<AsciiTable> {
     public void setColumnName(int index, String name, String comment)
             throws IndexOutOfBoundsException, HeaderCardException {
         super.setColumnName(index, name, comment);
-        try {
-            myData.setColumnName(index, name);
-        } catch (IllegalArgumentException e) {
-            throw new HeaderCardException(e.getMessage(), e);
-        }
+        myData.setColumnName(index, name);
     }
 
     @SuppressWarnings("deprecation")
