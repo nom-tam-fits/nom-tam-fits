@@ -1768,11 +1768,11 @@ public class BinaryTable extends AbstractTableData implements Cloneable {
         }
         descriptor.offset = rowLen;
         rowLen += descriptor.rowLen();
-        columns.add(descriptor);
         if (descriptor.name() == null) {
             // Set default column name;
             descriptor.name(TableHDU.getDefaultColumnName(columns.size()));
         }
+        columns.add(descriptor);
         return columns.size();
     }
 

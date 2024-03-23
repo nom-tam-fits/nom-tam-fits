@@ -178,9 +178,13 @@ public class AsciiTableHDU extends TableHDU<AsciiTable> {
 
     @Override
     public void setColumnName(int index, String name, String comment)
-            throws IllegalArgumentException, IndexOutOfBoundsException, HeaderCardException {
+            throws IndexOutOfBoundsException, HeaderCardException {
         super.setColumnName(index, name, comment);
-        myData.setColumnName(index, name);
+        try {
+            myData.setColumnName(index, name);
+        } catch (IllegalArgumentException e) {
+            throw new HeaderCardException(e.getMessage(), e);
+        }
     }
 
     @SuppressWarnings("deprecation")

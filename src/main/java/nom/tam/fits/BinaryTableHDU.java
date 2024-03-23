@@ -290,7 +290,7 @@ public class BinaryTableHDU extends TableHDU<BinaryTable> {
 
     @Override
     public void setColumnName(int index, String name, String comment)
-            throws IllegalArgumentException, IndexOutOfBoundsException, HeaderCardException {
+            throws IndexOutOfBoundsException, HeaderCardException {
         super.setColumnName(index, name, comment);
         getColumnDescriptor(index).name(name);
     }

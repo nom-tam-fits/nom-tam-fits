@@ -640,8 +640,6 @@ public abstract class TableHDU<T extends AbstractTableData> extends BasicHDU<T> 
      *                                       (The comment may be truncated or even ommitted, depending on space
      *                                       constraints in the FITS header.
      * 
-     * @throws IllegalArgumentException  if the name contains characters outside of the legal ASCII range of 0x20
-     *                                       through 0x7F
      * @throws IndexOutOfBoundsException if the table has no column matching the index
      * @throws HeaderCardException       if there was a problem wil adding the associated descriptive FITS header
      *                                       keywords to this table's header.
@@ -650,7 +648,7 @@ public abstract class TableHDU<T extends AbstractTableData> extends BasicHDU<T> 
      * @see                              #getDefaultColumnName(int)
      */
     public void setColumnName(int index, String name, String comment)
-            throws IllegalArgumentException, IndexOutOfBoundsException, HeaderCardException {
+            throws IndexOutOfBoundsException, HeaderCardException {
         if (index < 0 || index >= getNCols()) {
             throw new IndexOutOfBoundsException(
                     "column index " + index + " is out of bounds for table with " + getNCols() + " columns");

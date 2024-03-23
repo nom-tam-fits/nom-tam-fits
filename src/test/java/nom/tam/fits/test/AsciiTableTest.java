@@ -59,6 +59,7 @@ import nom.tam.fits.Fits;
 import nom.tam.fits.FitsException;
 import nom.tam.fits.FitsFactory;
 import nom.tam.fits.Header;
+import nom.tam.fits.HeaderCardException;
 import nom.tam.fits.PaddingException;
 import nom.tam.fits.TableHDU;
 import nom.tam.fits.header.NonStandard;
@@ -1359,5 +1360,44 @@ public class AsciiTableTest {
     public void testFromColumnMajorRecastException() throws Exception {
         Object[] cols = new Object[] {new int[3], "blah"};
         AsciiTable.fromColumnMajor(cols); /// addColumn("blah") throws IllegalArgumentException, recast to FitsException
+    }
+
+    @Test
+    public void testSetColumnName() throws Exception {
+        Object[] cols = new Object[] {new int[3], new float[3]};
+        AsciiTable tab = AsciiTable.fromColumnMajor(cols);
+        AsciiTableHDU hdu = tab.toHDU();
+
+        hdu.setColumnName(1, "my column", "custom column name");
+
+        Assert.assertEquals(TableHDU.getDefaultColumnName(0), hdu.getColumnName(0));
+        Assert.assertEquals("my column", hdu.getColumnName(1));
+    }
+
+    @Test(expected = HeaderCardException.class)
+    public void testSetColumnNameInvalidString() throws Exception {
+        Object[] cols = new Object[] {new int[3], new float[3]};
+        AsciiTable tab = AsciiTable.fromColumnMajor(cols);
+        AsciiTableHDU hdu = tab.toHDU();
+
+        hdu.setColumnName(1, "my column\n", "invalid column name");
+    }
+
+    @Test(expected = IndexOutOfBoundsException.class)
+    public void testSetColumnNameNegativeIndex() throws Exception {
+        Object[] cols = new Object[] {new int[3], new float[3]};
+        AsciiTable tab = AsciiTable.fromColumnMajor(cols);
+        AsciiTableHDU hdu = tab.toHDU();
+
+        hdu.setColumnName(-1, "my column", "invalid column name");
+    }
+
+    @Test(expected = IndexOutOfBoundsException.class)
+    public void testSetColumnNameIndexOutOfBounds() throws Exception {
+        Object[] cols = new Object[] {new int[3], new float[3]};
+        AsciiTable tab = AsciiTable.fromColumnMajor(cols);
+        AsciiTableHDU hdu = tab.toHDU();
+
+        hdu.setColumnName(2, "my column", "invalid column name");
     }
 }
