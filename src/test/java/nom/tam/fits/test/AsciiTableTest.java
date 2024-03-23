@@ -1400,4 +1400,5 @@ public class AsciiTableTest {
 
         hdu.setColumnName(2, "my column", "invalid column name");
     }
+
 }

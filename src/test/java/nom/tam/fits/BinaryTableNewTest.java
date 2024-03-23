@@ -1895,4 +1895,16 @@ public class BinaryTableNewTest {
         Assert.assertNull(tab.getDescriptor("not in this table"));
     }
 
+    @Test
+    public void testSetColumnNameNull() throws Exception {
+        BinaryTable tab = new BinaryTable();
+        tab.addColumn(BinaryTable.ColumnDesc.createForScalars(byte.class));
+        tab.addColumn(BinaryTable.ColumnDesc.createForScalars(int.class));
+        tab.getDescriptor(1).name(null);
+        BinaryTableHDU hdu = tab.toHDU();
+
+        Assert.assertEquals(TableHDU.getDefaultColumnName(0), hdu.getHeader().getStringValue(Standard.TTYPEn.n(1)));
+        Assert.assertFalse(hdu.getHeader().containsKey(Standard.TTYPEn.n(2)));
+    }
+
 }
