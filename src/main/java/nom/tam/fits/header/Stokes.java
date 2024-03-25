@@ -107,7 +107,7 @@ public enum Stokes {
 
     private int index;
 
-    private static Stokes[] ordered = {YX, XY, YY, XX, LR, RL, LL, RR, null, V, U, Q, I};
+    private static Stokes[] ordered = {YX, XY, YY, XX, LR, RL, LL, RR, null, I, Q, U, V};
 
     Stokes(int value) {
         this.index = value;
@@ -141,7 +141,7 @@ public enum Stokes {
      * @see                              #getCoordinateValue()
      */
     public static Stokes forCoordinateValue(int value) throws IndexOutOfBoundsException {
-        return ordered[value + YX.getCoordinateValue()];
+        return ordered[value - YX.getCoordinateValue()];
     }
 
     /**
@@ -157,7 +157,7 @@ public enum Stokes {
          * Stokes parameters for a dual-input cross polarization (circular, and possibly followed by linear
          * cross-polarization components.
          */
-        CROSS_POLARIZATION(Stokes.RR.getCoordinateValue(), -1),
+        CIRCULAR_CROSS_POLARIZATION(Stokes.RR.getCoordinateValue(), -1),
 
         /** Stokes parameters for linear only cross-polarization measurements */
         LINEAR_CROSS_POLARIZATION(Stokes.XX.getCoordinateValue(), -1);
@@ -168,7 +168,6 @@ public enum Stokes {
         Parameters(int rpix, int delt) {
             this.offset = rpix;
             this.step = delt;
-
         }
 
         /**
@@ -191,7 +190,7 @@ public enum Stokes {
          * @author                           Attila Kovacs
          */
         public Stokes getParameter(int idx) throws IndexOutOfBoundsException {
-            if (idx < 0 || idx > -XX.getCoordinateValue()) {
+            if (idx < 0 || idx >= V.getCoordinateValue()) {
                 throw new IndexOutOfBoundsException();
             }
             return Stokes.forCoordinateValue(offset + step * idx);
@@ -206,9 +205,9 @@ public enum Stokes {
          * @see    #getParameter(int)
          */
         public ArrayList<Stokes> getAvailableParameters() {
-            ArrayList<Stokes> list = new ArrayList<>(-Stokes.YX.index);
-            for (int i = offset; i != 0 && i < V.index; i++) {
-                list.add(Stokes.forCoordinateValue(i));
+            ArrayList<Stokes> list = new ArrayList<>(V.index);
+            for (int i = 0; i < V.index; i++) {
+                list.add(getParameter(i));
             }
             return list;
         }
@@ -243,25 +242,32 @@ public enum Stokes {
          * Adds WCS description for the coordinate axis containing Stokes parameters. The header must already contain a
          * NAXIS keyword specifying the dimensionality of the data, or else a FitsException will be thrown.
          * 
-         * @param  header          the FITS header to populate (it must already have an NAXIS keyword present).
-         * @param  coordinateIndex The 0-based Java coordinate index for the array dimension that corresponds to the
-         *                             stokes parameter.
+         * @param  header                   the FITS header to populate (it must already have an NAXIS keyword present).
+         * @param  coordinateIndex          The 0-based Java coordinate index for the array dimension that corresponds
+         *                                      to the stokes parameter.
          * 
-         * @throws FitsException   if the header does not contain an NAXIS keyword, necessary for translating Java array
-         *                             indices to FITS array indices.
+         * @throws IllegalArgumentException if the coordinate index is negative or out of bounds for the array
+         *                                      dimensions
+         * @throws FitsException            if the header does not contain an NAXIS keyword, or if the header is not
+         *                                      accessible
          * 
-         * @see                    #fillTableHeader(Header, int, int)
-         * @see                    Stokes#fromImageHeader(Header)
+         * @see                             #fillTableHeader(Header, int, int)
+         * @see                             Stokes#fromImageHeader(Header)
          * 
-         * @since                  1.20
+         * @since                           1.20
          * 
-         * @author                 Attila Kovacs
+         * @author                          Attila Kovacs
          */
         public void fillImageHeader(Header header, int coordinateIndex) throws FitsException {
             int n = header.getIntValue(Standard.NAXIS);
-            if (n <= coordinateIndex) {
-                throw new FitsException("Missing, invalid, or insufficient NAXIS in header");
+            if (n == 0) {
+                throw new FitsException("Missing NAXIS in header");
             }
+            if (coordinateIndex < 0 || coordinateIndex >= n) {
+                throw new IllegalArgumentException(
+                        "Invalid Java coordinate index " + coordinateIndex + " (for " + n + " dimensions)");
+            }
+
             int i = n - coordinateIndex;
 
             header.addValue(WCS.CTYPEna.n(i), Stokes.CTYPE);
@@ -274,39 +280,47 @@ public enum Stokes {
          * Adds WCS description for the coordinate axis containing Stokes parameters to a table column containign
          * images.
          * 
-         * @param  header          the binary table header to populate (it should already contain a TDIMn keyword for
-         *                             the specified column, or else 1D data is assumed).
-         * @param  column          the zero-based Java column index containing the 'image' array.
-         * @param  coordinateIndex the zero-based Java coordinate index for the array dimension that corresponds to the
-         *                             stokes parameter.
+         * @param  header                   the binary table header to populate (it should already contain a TDIMn
+         *                                      keyword for the specified column, or else 1D data is assumed).
+         * @param  column                   the zero-based Java column index containing the 'image' array.
+         * @param  coordinateIndex          the zero-based Java coordinate index for the array dimension that
+         *                                      corresponds to the stokes parameter.
          * 
-         * @throws FitsException   if the header is not accessible
+         * @throws IllegalArgumentException if the coordinate index is negative or out of bounds for the array
+         *                                      dimensions, or if the column index is invalid.
+         * @throws FitsException            if the header does not specify the dimensionality of the array elements, or
+         *                                      if the header is not accessible
          * 
-         * @see                    #fillImageHeader(Header, int)
-         * @see                    Stokes#fromTableHeader(Header, int)
+         * @see                             #fillImageHeader(Header, int)
+         * @see                             Stokes#fromTableHeader(Header, int)
          * 
-         * @since                  1.20
+         * @since                           1.20
          * 
-         * @author                 Attila Kovacs
+         * @author                          Attila Kovacs
          */
         public void fillTableHeader(Header header, int column, int coordinateIndex) throws FitsException {
-            String dims = header.getStringValue(Standard.TDIMn.n(column));
-            int n = 1;
-            if (dims != null) {
-                StringTokenizer tokens = new StringTokenizer(dims, "(, )");
-                n = tokens.countTokens();
+            String dims = header.getStringValue(Standard.TDIMn.n(++column));
+            if (dims == null) {
+                throw new FitsException("Missing TDIM" + column + " in header");
             }
 
-            if (n < coordinateIndex) {
-                throw new FitsException("Invalid or insufficient TDIM" + column + " in header");
+            StringTokenizer tokens = new StringTokenizer(dims, "(, )");
+            int n = tokens.countTokens();
+
+            if (coordinateIndex < 0 || coordinateIndex >= n) {
+                throw new IllegalArgumentException(
+                        "Invalid Java coordinate index " + coordinateIndex + " (for " + n + " dimensions)");
+            }
+            if (column < 0) {
+                throw new IllegalArgumentException("Invalid Java column index " + column);
             }
 
             int i = n - coordinateIndex;
 
-            header.addValue(WCS.nCTYPn.n(column, i), Stokes.CTYPE);
-            header.addValue(WCS.nCRPXn.n(column, i), 0);
-            header.addValue(WCS.nCRVLn.n(column, i), offset);
-            header.addValue(WCS.nCDLTn.n(column, i), step);
+            header.addValue(WCS.nCTYPn.n(i, column), Stokes.CTYPE);
+            header.addValue(WCS.nCRPXn.n(i, column), 0);
+            header.addValue(WCS.nCRVLn.n(i, column), offset);
+            header.addValue(WCS.nCDLTn.n(i, column), step);
         }
     }
 
@@ -323,7 +337,8 @@ public enum Stokes {
      *                           coordinate axis.
      * 
      * @throws FitsException if the header does not contain an NAXIS keyword, necessary for translating Java array
-     *                           indices to FITS array indices.
+     *                           indices to FITS array indices, or if the CRPIXna or CDELTna values are inconsistent
+     *                           with a Stokes coordinate definition.
      * 
      * @see                  #fromTableHeader(Header, int)
      * @see                  Parameters#fillImageHeader(Header, int)
@@ -347,14 +362,16 @@ public enum Stokes {
                 }
 
                 if (header.getDoubleValue(WCS.CRPIXna.n(i)) != 0.0) {
-                    continue;
+                    throw new FitsException("Invalid Stokes " + WCS.CRPIXna.n(i).key() + " value: "
+                            + header.getDoubleValue(WCS.CRPIXna.n(i)) + ", expected 0");
                 }
 
                 if (header.getDoubleValue(WCS.CDELTna.n(i)) != p.step) {
-                    continue;
+                    throw new FitsException("Invalid Stokes " + WCS.CDELTna.n(i).key() + " value: "
+                            + header.getDoubleValue(WCS.CDELTna.n(i)) + ", expected " + p.step);
                 }
 
-                return new AbstractMap.SimpleImmutableEntry(i, p);
+                return new AbstractMap.SimpleImmutableEntry(n - i, p);
             }
         }
 
@@ -365,27 +382,34 @@ public enum Stokes {
      * Returns a mapping of a Java array dimension to a set of Stokes parameters, based on the WCS coordinate
      * description in the image header.
      * 
-     * @param  header        the FITS header to populate.
-     * @param  column        the zero-based Java column index containing the 'image' array.
+     * @param  header                   the FITS header to populate.
+     * @param  column                   the zero-based Java column index containing the 'image' array.
      * 
-     * @return               A mapping from a zero-based Java array dimension which corresponds to the Stokes dimension
-     *                           of the data, to the set of stokes Parameters defined in that dimension; or
-     *                           <code>null</code> if the header does not contain a fully valid description of a Stokes
-     *                           coordinate axis.
+     * @return                          A mapping from a zero-based Java array dimension which corresponds to the Stokes
+     *                                      dimension of the data, to the set of stokes Parameters defined in that
+     *                                      dimension; or <code>null</code> if the header does not contain a fully valid
+     *                                      description of a Stokes coordinate axis.
      * 
-     * @throws FitsException if there is an issue accessing the header values.
+     * @throws IllegalArgumentException if the column index is invalid.
+     * @throws FitsException            if the header does not contain an TDIMn keyword for the column, necessary for
+     *                                      translating Java array indices to FITS array indices, or if the iCRPXn or
+     *                                      iCDLTn values are inconsistent with a Stokes coordinate definition.
      * 
-     * @see                  #fromImageHeader(Header)
-     * @see                  Parameters#fillTableHeader(Header, int, int)
+     * @see                             #fromImageHeader(Header)
+     * @see                             Parameters#fillTableHeader(Header, int, int)
      * 
-     * @since                1.20
+     * @since                           1.20
      * 
-     * @author               Attila Kovacs
+     * @author                          Attila Kovacs
      */
     @SuppressWarnings({"unchecked", "rawtypes"})
     public static Map.Entry<Integer, Parameters> fromTableHeader(Header header, int column) throws FitsException {
-        String dims = header.getStringValue(Standard.TDIMn.n(column));
+        String dims = header.getStringValue(Standard.TDIMn.n(++column));
         int n = 1;
+
+        if (column < 0) {
+            throw new IllegalArgumentException("Invalid Java column index " + column);
+        }
 
         if (dims != null) {
             StringTokenizer tokens = new StringTokenizer(dims, "(, )");
@@ -393,21 +417,23 @@ public enum Stokes {
         }
 
         for (int i = 1; i <= n; i++) {
-            if (Stokes.CTYPE.equalsIgnoreCase(header.getStringValue(WCS.nCTYPn.n(column, i)))) {
-                Parameters p = Parameters.forReferenceCoordinate(header.getIntValue(WCS.nCRVLn.n(column, i)));
+            if (Stokes.CTYPE.equalsIgnoreCase(header.getStringValue(WCS.nCTYPn.n(i, column)))) {
+                Parameters p = Parameters.forReferenceCoordinate(header.getIntValue(WCS.nCRVLn.n(i, column)));
                 if (p == null) {
                     continue;
                 }
 
-                if (header.getDoubleValue(WCS.nCRPXn.n(column, i)) != 0.0) {
-                    continue;
+                if (header.getDoubleValue(WCS.nCRPXn.n(i, column)) != 0.0) {
+                    throw new FitsException("Invalid Stokes " + WCS.nCRPXn.n(i, column).key() + " value: "
+                            + header.getDoubleValue(WCS.nCRPXn.n(i, column)) + ", expected 0");
                 }
 
-                if (header.getDoubleValue(WCS.nCDLTn.n(column, i)) != p.step) {
-                    continue;
+                if (header.getDoubleValue(WCS.nCDLTn.n(i, column)) != p.step) {
+                    throw new FitsException("Invalid Stokes " + WCS.nCDLTn.n(i, column).key() + " value: "
+                            + header.getDoubleValue(WCS.nCDLTn.n(i, column)) + ", expected " + p.step);
                 }
 
-                return new AbstractMap.SimpleImmutableEntry(i, p);
+                return new AbstractMap.SimpleImmutableEntry(n - i, p);
             }
         }
 
