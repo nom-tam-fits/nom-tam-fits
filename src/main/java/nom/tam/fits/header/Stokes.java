@@ -340,8 +340,8 @@ public enum Stokes {
      *                           coordinate axis.
      * 
      * @throws FitsException if the header does not contain an NAXIS keyword, necessary for translating Java array
-     *                           indices to FITS array indices, or if the CRPIXna or CDELTna values are inconsistent
-     *                           with a Stokes coordinate definition.
+     *                           indices to FITS array indices, or if the CRVALn, CRPIXna or CDELTna values for the
+     *                           'STOKES' dimension are inconsistent with a Stokes coordinate definition.
      * 
      * @see                  #fromTableHeader(Header, int)
      * @see                  Parameters#fillImageHeader(Header, int)
@@ -396,8 +396,9 @@ public enum Stokes {
      * 
      * @throws IndexOutOfBoundsException if the column index is invalid.
      * @throws FitsException             if the header does not contain an TDIMn keyword for the column, necessary for
-     *                                       translating Java array indices to FITS array indices, or if the iCRPXn or
-     *                                       iCDLTn values are inconsistent with a Stokes coordinate definition.
+     *                                       translating Java array indices to FITS array indices, or if the iCRVLn,
+     *                                       iCRPXn or iCDLTn values for the 'STOKES' dimension are inconsistent with a
+     *                                       Stokes coordinate definition.
      * 
      * @see                              #fromImageHeader(Header)
      * @see                              Parameters#fillTableHeader(Header, int, int)
