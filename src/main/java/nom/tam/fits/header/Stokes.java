@@ -42,9 +42,9 @@ import nom.tam.fits.Header;
 /**
  * <p>
  * A mapping of image coordinate values for a coordinate axis with {@link WCS#CTYPEna} = <code>'STOKES'</code> (or
- * equivalent). specifying polarization (or cross-polarization) data products along the image direction. The FITS
- * standard (4.0) defines a mapping of pixel coordinates to Stokes parameters, and this enum provides an implementation
- * of that for this library.
+ * equivalent), specifying polarization (or cross-polarization) data products along the image direction. The FITS
+ * standard (4.0) defines a mapping of pixel coordinate values along an image imension to Stokes parameters, and this
+ * enum provides an implementation of that for this library.
  * </p>
  * <p>
  * An dataset may typically contain 4 or 8 Stokes parameters (or fewer), which depending on the type of measurement can
@@ -58,6 +58,7 @@ import nom.tam.fits.Header;
  * @since  1.20
  * 
  * @see    WCS
+ * @see    Parameters
  */
 public enum Stokes {
     /** Stokes I: total (polarized + unpolarized) power */
@@ -109,6 +110,9 @@ public enum Stokes {
 
     private static Stokes[] ordered = {YX, XY, YY, XX, LR, RL, LL, RR, null, I, Q, U, V};
 
+    private static final int STANDARD_PARAMETER_COUNT = 4;
+    private static final int FULL_PARAMETER_COUNT = 8;
+
     Stokes(int value) {
         this.index = value;
     }
@@ -145,29 +149,21 @@ public enum Stokes {
     }
 
     /**
-     * A helper for setting or interpreting WCS for a set of measured Stokes parameters.
+     * Helper class for setting or interpreting a set of measured Stokes parameters stored along an array dimension.
      * 
      * @author Attila Kovacs
+     * 
+     * @since  1.20
      */
-    public enum Parameters {
-        /** Stokes parameters for a single-ended polarization measurement */
-        SINGLE_ENDED_POLARIZATION(Stokes.I.getCoordinateValue(), 1),
-
-        /**
-         * Stokes parameters for a dual-input cross polarization (circular, and possibly followed by linear
-         * cross-polarization components.
-         */
-        CIRCULAR_CROSS_POLARIZATION(Stokes.RR.getCoordinateValue(), -1),
-
-        /** Stokes parameters for linear only cross-polarization measurements */
-        LINEAR_CROSS_POLARIZATION(Stokes.XX.getCoordinateValue(), -1);
-
+    public abstract static class Parameters {
         private int offset;
         private int step;
+        private int count;
 
-        Parameters(int rpix, int delt) {
+        private Parameters(int rpix, int delt, int n) {
             this.offset = rpix;
             this.step = delt;
+            this.count = n;
         }
 
         /**
@@ -182,7 +178,6 @@ public enum Stokes {
          * 
          * @throws IndexOutOfBoundsException if the index is outside of the expected range.
          * 
-         * @see                              #getArrayIndex(Stokes)
          * @see                              #getAvailableParameters()
          * 
          * @since                            1.19.1
@@ -190,7 +185,7 @@ public enum Stokes {
          * @author                           Attila Kovacs
          */
         public Stokes getParameter(int idx) throws IndexOutOfBoundsException {
-            if (idx < 0 || idx >= V.getCoordinateValue()) {
+            if (idx < 0 || idx >= count) {
                 throw new IndexOutOfBoundsException();
             }
             return Stokes.forCoordinateValue(offset + step * idx);
@@ -205,8 +200,8 @@ public enum Stokes {
          * @see    #getParameter(int)
          */
         public ArrayList<Stokes> getAvailableParameters() {
-            ArrayList<Stokes> list = new ArrayList<>(V.index);
-            for (int i = 0; i < V.index; i++) {
+            ArrayList<Stokes> list = new ArrayList<>(count);
+            for (int i = 0; i < count; i++) {
                 list.add(getParameter(i));
             }
             return list;
@@ -227,15 +222,6 @@ public enum Stokes {
          */
         public int getArrayIndex(Stokes s) {
             return (s.getCoordinateValue() - offset) / step;
-        }
-
-        private static Parameters forReferenceCoordinate(int value) {
-            for (Parameters p : values()) {
-                if (value == p.offset) {
-                    return p;
-                }
-            }
-            return null;
         }
 
         /**
@@ -328,6 +314,144 @@ public enum Stokes {
     }
 
     /**
+     * Stokes parameters for a single-ended polarization measurement (I, Q, U, V)
+     * 
+     * @author Attila Kovacs
+     * 
+     * @since  1.20
+     */
+    public static class SingleEndedPolarization extends Parameters {
+
+        /** Constructor for single ended polarization parameters in I, Q, U, V order. */
+        public SingleEndedPolarization() {
+            this(false);
+        }
+
+        /**
+         * Constructor for single ended polarization parameters in the specified index order.
+         *
+         * @param reversedOrder <code>true</code> If the parameters are to be stored in the order V, U, Q, I; or else
+         *                          <code>false</code> to store them in I, Q, U, V index order.
+         */
+        public SingleEndedPolarization(boolean reversedOrder) {
+            super(reversedOrder ? Stokes.V.getCoordinateValue() : Stokes.I.getCoordinateValue(), reversedOrder ? -1 : 1,
+                    STANDARD_PARAMETER_COUNT);
+        }
+    }
+
+    /**
+     * Stokes parameters for a dual-input cross polarization (circular or linear, or full cross polarization containing
+     * both circular and linear parameters).
+     * 
+     * @author Attila Kovacs
+     * 
+     * @since  1.20
+     */
+    public abstract static class CrossPolarization extends Parameters {
+        private CrossPolarization(int rpix, int delt, int n) {
+            super(rpix, delt, n);
+        }
+
+    }
+
+    /**
+     * Stokes parameters for a dual-input circular cross-polarization parameters (RR, LL, RL, LR).
+     * 
+     * @author Attila Kovacs
+     * 
+     * @since  1.20
+     */
+    public static class CircularCrossPolarization extends CrossPolarization {
+
+        /** Constructor for circular cross-polarization parameters in RR, LL, RL, LR order. */
+        public CircularCrossPolarization() {
+            this(false);
+        }
+
+        /**
+         * Constructor for circular cross-polarization parameters in the specified index order.
+         *
+         * @param reversedOrder <code>true</code> If the parameters are to be stored in the order LR, RL, LL, RR; or
+         *                          else <code>false</code> to store them in RR, LL, RL, LR index order.
+         */
+        public CircularCrossPolarization(boolean reversedOrder) {
+            super(reversedOrder ? Stokes.LR.getCoordinateValue() : Stokes.RR.getCoordinateValue(), reversedOrder ? 1 : -1,
+                    STANDARD_PARAMETER_COUNT);
+        }
+    }
+
+    /**
+     * Stokes parameters for a dual-input linear cross-polarization parameters (XX, YY, XY, YX).
+     * 
+     * @author Attila Kovacs
+     * 
+     * @since  1.20
+     */
+    public static class LinearCrossPolarization extends CrossPolarization {
+
+        /** Constructor for linear cross-polarization parameters in XX, YY, XY, YX order. */
+        public LinearCrossPolarization() {
+            this(false);
+        }
+
+        /**
+         * Constructor for linear cross-polarization parameters in the specified index order.
+         *
+         * @param reversedOrder <code>true</code> If the parameters are to be stored in the order YX, XY, YY, XX; or
+         *                          else <code>false</code> to store them in XX, YY, XY, YX index order.
+         */
+        public LinearCrossPolarization(boolean reversedOrder) {
+            super(reversedOrder ? Stokes.YX.getCoordinateValue() : Stokes.XX.getCoordinateValue(), reversedOrder ? 1 : -1,
+                    STANDARD_PARAMETER_COUNT);
+        }
+    }
+
+    /**
+     * Stokes parameters for full (circular + linear) cross-polarization measurements
+     * 
+     * @author Attila Kovacs
+     * 
+     * @since  1.20
+     */
+    public static class FullCrossPolarization extends CrossPolarization {
+
+        /** Constructor for full cross-polarization parameters in RR, LL, RL, LR, XX, YY, XY, YX order. */
+        public FullCrossPolarization() {
+            this(false);
+        }
+
+        /**
+         * Constructor for full cross-polarization parameters in the specified index order.
+         *
+         * @param reversedOrder <code>true</code> If the parameters are to be stored in the order YX, XY, YY, XX, LR,
+         *                          RL, LL, RR; or else <code>false</code> to store them in RR, LL, RL, LR, XX, YY, XY,
+         *                          YX index order.
+         */
+        public FullCrossPolarization(boolean reversedOrder) {
+            super(reversedOrder ? Stokes.YX.getCoordinateValue() : Stokes.RR.getCoordinateValue(), reversedOrder ? 1 : -1,
+                    FULL_PARAMETER_COUNT);
+        }
+    }
+
+    private static Parameters forCoordinateRange(int start, int count) {
+        if (start == I.index) {
+            return new SingleEndedPolarization();
+        } else if (start == V.index) {
+            return new SingleEndedPolarization(true);
+        } else if (start == RR.index) {
+            return count <= V.index ? new CircularCrossPolarization() : new FullCrossPolarization();
+        } else if (start == LR.index) {
+            return new CircularCrossPolarization(true);
+        } else if (start == XX.index) {
+            return new LinearCrossPolarization();
+        } else if (start == YX.index) {
+            return count <= V.index ? new LinearCrossPolarization(true) : new FullCrossPolarization(true);
+        } else {
+            return null;
+        }
+    }
+
+    /**
      * Returns a mapping of a Java array dimension to a set of Stokes parameters, based on the WCS coordinate
      * description in the image header. The header must already contain a NAXIS keyword specifying the dimensionality of
      * the data, or else a FitsException will be thrown.
@@ -359,7 +483,8 @@ public enum Stokes {
 
         for (int i = 1; i <= n; i++) {
             if (Stokes.CTYPE.equalsIgnoreCase(header.getStringValue(WCS.CTYPEna.n(i)))) {
-                Parameters p = Parameters.forReferenceCoordinate(header.getIntValue(WCS.CRVALna.n(i)));
+                Parameters p = forCoordinateRange(header.getIntValue(WCS.CRVALna.n(i)),
+                        header.getIntValue(Standard.NAXISn.n(i), 0));
                 if (p == null) {
                     throw new FitsException("Invalid Stokes " + WCS.CRVALna.n(i).key() + " value: "
                             + header.getDoubleValue(WCS.CRVALna.n(i)));
@@ -423,8 +548,10 @@ public enum Stokes {
         int n = tokens.countTokens();
 
         for (int i = 1; i <= n; i++) {
+            String d = tokens.nextToken();
+
             if (Stokes.CTYPE.equalsIgnoreCase(header.getStringValue(WCS.nCTYPn.n(i, column)))) {
-                Parameters p = Parameters.forReferenceCoordinate(header.getIntValue(WCS.nCRVLn.n(i, column)));
+                Parameters p = forCoordinateRange(header.getIntValue(WCS.nCRVLn.n(i, column)), Integer.parseInt(d));
                 if (p == null) {
                     throw new FitsException("Invalid Stokes " + WCS.nCRVLn.n(i, column).key() + " value: "
                             + header.getDoubleValue(WCS.nCRVLn.n(i, column)));
