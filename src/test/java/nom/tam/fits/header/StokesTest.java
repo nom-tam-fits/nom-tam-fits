@@ -257,28 +257,35 @@ public class StokesTest {
         Stokes.Parameters.SINGLE_ENDED_POLARIZATION.fillTableHeader(new Header(), 0, 0);
     }
 
-    @Test(expected = IllegalArgumentException.class)
+    @Test(expected = IndexOutOfBoundsException.class)
     public void testFillImageHeaderNegIndex() throws Exception {
         Header h = new Header();
         h.addValue(Standard.NAXIS, 3);
         Stokes.Parameters.SINGLE_ENDED_POLARIZATION.fillImageHeader(h, -1);
     }
 
-    @Test(expected = IllegalArgumentException.class)
+    @Test(expected = IndexOutOfBoundsException.class)
     public void testFillImageHeaderOutOfBoundsIndex() throws Exception {
         Header h = new Header();
         h.addValue(Standard.NAXIS, 3);
         Stokes.Parameters.SINGLE_ENDED_POLARIZATION.fillImageHeader(h, 3);
     }
 
-    @Test(expected = IllegalArgumentException.class)
+    @Test(expected = IndexOutOfBoundsException.class)
+    public void testFillTableHeaderInvalidColumn() throws Exception {
+        Header h = new Header();
+        h.addValue(Standard.TDIMn.n(1), "(4)");
+        Stokes.Parameters.SINGLE_ENDED_POLARIZATION.fillTableHeader(h, -1, 0);
+    }
+
+    @Test(expected = IndexOutOfBoundsException.class)
     public void testFillTableHeaderNegIndex() throws Exception {
         Header h = new Header();
         h.addValue(Standard.TDIMn.n(1), "(4)");
         Stokes.Parameters.SINGLE_ENDED_POLARIZATION.fillTableHeader(h, 0, -1);
     }
 
-    @Test(expected = IllegalArgumentException.class)
+    @Test(expected = IndexOutOfBoundsException.class)
     public void testFillTableHeaderOutOfBoundsIndex() throws Exception {
         Header h = new Header();
         h.addValue(Standard.TDIMn.n(1), "(4)");
@@ -295,8 +302,28 @@ public class StokesTest {
     @Test
     public void testFromTableHeaderNoStokes() throws Exception {
         Header h = new Header();
-        h.addValue(Standard.TDIMn.n(0), "(4)");
+        h.addValue(Standard.TDIMn.n(1), "(4)");
         Assert.assertNull(Stokes.fromTableHeader(h, 0));
+    }
+
+    @Test(expected = FitsException.class)
+    public void testFromImageHeaderNoNAXIS() throws Exception {
+        Header h = new Header();
+        h.addValue(Standard.NAXIS, 1);
+
+        Stokes.Parameters.SINGLE_ENDED_POLARIZATION.fillImageHeader(h, 0);
+        h.deleteKey(Standard.NAXIS);
+        Stokes.fromImageHeader(h);
+    }
+
+    @Test(expected = FitsException.class)
+    public void testFromImageHeaderInvalidCRVAL() throws Exception {
+        Header h = new Header();
+        h.addValue(Standard.NAXIS, 1);
+
+        Stokes.Parameters.SINGLE_ENDED_POLARIZATION.fillImageHeader(h, 0);
+        h.addValue("CRVAL1", 0.0, null);
+        Stokes.fromImageHeader(h);
     }
 
     @Test(expected = FitsException.class)
@@ -319,23 +346,49 @@ public class StokesTest {
         Stokes.fromImageHeader(h);
     }
 
+    @Test(expected = IndexOutOfBoundsException.class)
+    public void testFromTableHeaderInvalidColumn() throws Exception {
+        Header h = new Header();
+        Stokes.fromTableHeader(h, -1);
+    }
+
+    @Test(expected = FitsException.class)
+    public void testFromTableHeaderNoTDIM() throws Exception {
+        Header h = new Header();
+        h.addValue(Standard.TDIMn.n(1), "(4)");
+
+        Stokes.Parameters.SINGLE_ENDED_POLARIZATION.fillTableHeader(h, 0, 0);
+        h.deleteKey(Standard.TDIMn.n(1));
+        Stokes.fromTableHeader(h, 0);
+    }
+
+    @Test(expected = FitsException.class)
+    public void testFromTableHeaderInvalidCRVAL() throws Exception {
+        Header h = new Header();
+        h.addValue(Standard.TDIMn.n(1), "(4)");
+
+        Stokes.Parameters.SINGLE_ENDED_POLARIZATION.fillTableHeader(h, 0, 0);
+        h.addValue("1CRVL1", 0.0, null);
+        Stokes.fromTableHeader(h, 0);
+    }
+
     @Test(expected = FitsException.class)
     public void testFromTableHeaderInvalidCRPIX() throws Exception {
         Header h = new Header();
-        h.addValue(Standard.TDIMn.n(0), "(4)");
+        h.addValue(Standard.TDIMn.n(1), "(4)");
 
         Stokes.Parameters.SINGLE_ENDED_POLARIZATION.fillTableHeader(h, 0, 0);
         h.addValue("1CRPX1", 1.0, null);
-        Stokes.fromImageHeader(h);
+        Stokes.fromTableHeader(h, 0);
     }
 
     @Test(expected = FitsException.class)
     public void testFromTableHeaderInvalidCDELT() throws Exception {
         Header h = new Header();
-        h.addValue(Standard.TDIMn.n(0), "(4)");
+        h.addValue(Standard.TDIMn.n(1), "(4)");
 
         Stokes.Parameters.SINGLE_ENDED_POLARIZATION.fillTableHeader(h, 0, 0);
         h.addValue("1CDLT1", 2.0, null);
-        Stokes.fromImageHeader(h);
+        Stokes.fromTableHeader(h, 0);
     }
 }
